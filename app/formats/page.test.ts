@@ -1,6 +1,7 @@
 // Tests for /formats page component logic
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
+import { FORMAT_MODES } from '../../src/config/formatModes'
 
 describe('/formats page', () => {
   describe('Mode cards', () => {
@@ -63,6 +64,38 @@ describe('/formats page', () => {
       assert.strictEqual(isComingSoon('rotisserie'), true)
       assert.strictEqual(isComingSoon('pack-wars'), true)
       assert.strictEqual(isComingSoon('pack-blitz'), true)
+    })
+  })
+
+  describe('Mode access levels', () => {
+    it('Pack Wars should have open access like Chaos Sealed and Chaos Draft', () => {
+      const packWars = FORMAT_MODES.find(m => m.id === 'pack-wars')
+      assert.ok(packWars, 'Pack Wars mode should exist')
+      assert.strictEqual(packWars.access, 'open', 'Pack Wars should be accessible to all users')
+    })
+
+    it('should have Chaos Sealed as open access', () => {
+      const chaosSealed = FORMAT_MODES.find(m => m.id === 'chaos-sealed')
+      assert.ok(chaosSealed)
+      assert.strictEqual(chaosSealed.access, 'open')
+    })
+
+    it('should have Chaos Draft as open access', () => {
+      const chaosDraft = FORMAT_MODES.find(m => m.id === 'chaos-draft')
+      assert.ok(chaosDraft)
+      assert.strictEqual(chaosDraft.access, 'open')
+    })
+
+    it('should have Pack Blitz as beta access', () => {
+      const packBlitz = FORMAT_MODES.find(m => m.id === 'pack-blitz')
+      assert.ok(packBlitz)
+      assert.strictEqual(packBlitz.access, 'beta')
+    })
+
+    it('should have Rotisserie as coming-soon', () => {
+      const rotisserie = FORMAT_MODES.find(m => m.id === 'rotisserie')
+      assert.ok(rotisserie)
+      assert.strictEqual(rotisserie.access, 'coming-soon')
     })
   })
 })
