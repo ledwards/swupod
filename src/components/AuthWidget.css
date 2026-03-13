@@ -108,12 +108,13 @@
   align-items: center;
   padding: 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  gap: 12px;
+  gap: 16px;
 }
 
 .auth-widget-drawer-avatar {
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.2);
+  margin-right: 4px;
 }
 
 .auth-widget-drawer-avatar-placeholder {
@@ -152,10 +153,23 @@
   color: #ffb347;
   text-decoration: none;
   font-weight: 600;
+  padding-left: 2px;
 }
 
 .auth-widget-beta-link:hover {
   text-decoration: underline;
+}
+
+.auth-widget-beta-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffb347;
+  background: rgba(255, 179, 71, 0.15);
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  margin-left: 2px;
 }
 
 .auth-widget-drawer-menu {

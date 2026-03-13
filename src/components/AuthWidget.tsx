@@ -220,7 +220,7 @@ export default function AuthWidget() {
                     {user.email}
                   </div>
                 )}
-                {isPatron && !user.is_beta_tester && (
+                {isPatron && !user.is_beta_tester && !user.is_admin && (
                   <a
                     href="/beta"
                     className="auth-widget-beta-link"
@@ -232,6 +232,9 @@ export default function AuthWidget() {
                   >
                     Join the Beta Program!
                   </a>
+                )}
+                {(user.is_beta_tester || user.is_admin) && (
+                  <span className="auth-widget-beta-tag">BETA PROGRAM</span>
                 )}
               </div>
             </div>
@@ -255,7 +258,7 @@ export default function AuthWidget() {
                 </a>
               )}
 
-              <div className="auth-widget-drawer-section-label">Solo</div>
+              <div className="auth-widget-drawer-section-label">Solo Play</div>
               <a
                 href="/sealed"
                 className="auth-widget-drawer-menu-item"
