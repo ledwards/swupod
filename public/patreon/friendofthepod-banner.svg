@@ -1,0 +1,42 @@
+<svg width="900" height="260" viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffb347"/>
+      <stop offset="50%" stop-color="#ff8c00"/>
+      <stop offset="100%" stop-color="#cc6a00"/>
+    </linearGradient>
+    <linearGradient id="goldEdge" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffd27f"/>
+      <stop offset="100%" stop-color="#8a4a00"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Ribbon ends -->
+  <path d="M70 120 L140 90 L140 170 Z" fill="url(#gold)"/>
+  <path d="M830 120 L760 90 L760 170 Z" fill="url(#gold)"/>
+
+  <!-- Main ribbon -->
+  <path d="
+    M140 90
+    C200 70, 700 70, 760 90
+    L760 170
+    C700 190, 200 190, 140 170
+    Z"
+    fill="url(#gold)"
+    stroke="url(#goldEdge)"
+    stroke-width="6"/>
+
+  <!-- Text -->
+  <text
+    x="450"
+    y="140"
+    text-anchor="middle"
+    dominant-baseline="central"
+    font-family="Barlow, sans-serif"
+    font-size="64"
+    font-weight="700"
+    fill="#ffffff"
+    letter-spacing="3">
+    FRIEND OF THE POD
+  </text>
+</svg>
