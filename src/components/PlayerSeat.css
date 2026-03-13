@@ -42,14 +42,17 @@
     0 0 8px rgba(255, 179, 71, 0.5);
 }
 
-/* Patron badge — outside seat-avatar to avoid border-radius clipping */
+/* Patron badge — outside seat-avatar to avoid border-radius clipping.
+   Sized to ~130% of 44px avatar to match UserAvatar's proportions. */
 .seat-patron-badge {
   position: absolute;
-  bottom: 2px;
+  bottom: 6px;
   left: 50%;
   transform: translateX(-50%);
-  width: 56px;
+  width: 58px;
+  max-width: 58px;
   height: auto;
+  max-height: 40px;
   pointer-events: none;
   z-index: 10;
 }
