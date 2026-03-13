@@ -41,6 +41,20 @@
   color: rgba(255, 255, 255, 0.9);
 }
 
+.patreon-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto 0.75rem;
+  max-width: 600px;
+  text-align: left;
+}
+
+.patreon-benefits li {
+  padding: 0.4rem 0;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .about-link {
   color: rgba(128, 170, 255, 0.9);
   text-decoration: none;
