@@ -20,7 +20,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const {
       setCode,
       maxPlayers = 8,
-      timerEnabled = true,
+      timerEnabled = false,
       timerSeconds = 30,
       isPublic,
       settings = {}
