@@ -5,6 +5,11 @@ import { requireAuth } from '@/lib/auth'
 import { handleApiError } from '@/lib/utils'
 import { NextRequest, NextResponse } from 'next/server'
 
+// Format card name with subtitle: "Title, Subtitle" or just "Title"
+function formatCardName(name: string, subtitle?: string | null): string {
+  return subtitle ? `${name}, ${subtitle}` : name
+}
+
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const session = requireAuth(request)
@@ -74,7 +79,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       opponentsByPod[podId].push({
         discordHandle: opp.is_bot ? `Bot (seat ${opp.seat_number})` : (opp.discord_handle || 'Unknown'),
         seatNumber: opp.seat_number,
-        playerNumber: opp.player_number,
         isBot: opp.is_bot || false,
         leaders,
       })
@@ -98,6 +102,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         updated_at
       FROM card_pools
       WHERE user_id = $1
+        AND pod_id IS NOT NULL
       ORDER BY created_at DESC`,
       [session.id]
     )
@@ -158,7 +163,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         packNumber: pick.pack_number,
         pickInPack: pick.pick_in_pack,
         pickNumber: pick.pick_number,
-        leaderRound: pick.leader_round,
         pickedAt: pick.picked_at,
       })
     }
@@ -189,6 +193,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       const leaderName = dbs?.leaderCard?.name || dbs?.leaderCard?.cardName || null
       const baseName = dbs?.baseCard?.name || dbs?.baseCard?.cardName || null
 
+      // pool.cards may be a JSON string or already parsed array
+      const rawCards = pool.cards
+      const cards = Array.isArray(rawCards)
+        ? rawCards
+        : (typeof rawCards === 'string' ? JSON.parse(rawCards) : [])
+
       return {
         poolId: pool.pool_id,
         shareId: pool.share_id,
@@ -197,10 +207,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         setName: pool.set_name,
         poolName: pool.pool_name,
         poolType: pool.pool_type,
-        cardCount: (pool.cards || []).length,
-        cards: (pool.cards || []).map((c: any) => ({
+        cardCount: cards.length,
+        cards: cards.map((c: any) => ({
           id: c.id,
-          name: c.name,
+          name: formatCardName(c.name, c.subtitle),
           setCode: c.set,
           rarity: c.rarity,
           type: c.type,
@@ -210,7 +220,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           power: c.power,
           hp: c.hp,
         })),
-        packCount: (pool.packs || []).length,
+        packCount: Array.isArray(pool.packs) ? pool.packs.length : 0,
         selectedLeader: leaderName,
         selectedBase: baseName,
         isPublic: pool.is_public,
@@ -224,11 +234,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       poolId: deck.pool_id,
       setCode: deck.set_code,
       poolType: deck.pool_type,
-      leader: deck.leader ? { name: deck.leader.name || deck.leader.cardName, id: deck.leader.id, aspects: deck.leader.aspects } : null,
-      base: deck.base ? { name: deck.base.name || deck.base.cardName, id: deck.base.id, aspects: deck.base.aspects } : null,
+      leader: deck.leader ? { name: formatCardName(deck.leader.name || deck.leader.cardName, deck.leader.subtitle), id: deck.leader.id, aspects: deck.leader.aspects } : null,
+      base: deck.base ? { name: formatCardName(deck.base.name || deck.base.cardName, deck.base.subtitle), id: deck.base.id, aspects: deck.base.aspects } : null,
       deckCards: (deck.deck || []).map((c: any) => ({
         id: c.id,
-        name: c.name,
+        name: formatCardName(c.name, c.subtitle),
         setCode: c.set,
         rarity: c.rarity,
         type: c.type,
@@ -238,7 +248,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       })),
       sideboardCards: (deck.sideboard || []).map((c: any) => ({
         id: c.id,
-        name: c.name,
+        name: formatCardName(c.name, c.subtitle),
         setCode: c.set,
         rarity: c.rarity,
         type: c.type,
