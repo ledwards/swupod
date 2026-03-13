@@ -110,6 +110,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       if (!leader) continue
       const leaderId = leader.id || leader.cardId || ''
       const cardData = cardMap.get(leaderId)
+
+      // Skip non-leader cards (data quality: some built_decks have non-leader cards stored as leader)
+      if (cardData && cardData.type !== 'Leader') continue
+
       const name = cardData?.name || leader.name || leader.cardName || 'Unknown'
 
       if (!leaderStats.has(name)) {

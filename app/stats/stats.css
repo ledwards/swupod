@@ -1065,11 +1065,7 @@
   }
 
   .stats-row-all {
-    font-size: 0.75rem;
-  }
-
-  .stats-row-label {
-    width: 5em;
+    font-size: 0.7rem;
   }
 
   .reference-sections {
@@ -1483,7 +1479,7 @@
 }
 
 .sort-indicator {
-  margin-left: 0.5rem;
+  margin-left: 0.75rem;
   font-size: 0.7rem;
 }
 
@@ -1531,18 +1527,18 @@
 
 .stats-row-label {
   display: inline-block;
-  width: 6em;
+  margin-right: 0.4em;
   font-weight: 600;
 }
 
 .stats-row-you {
-  color: #64B5F6;
-  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.85rem;
 }
 
 .stats-row-all {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.85rem;
+  color: #64B5F6;
+  font-size: 0.8rem;
 }
 
 .stats-row-top {
@@ -1593,19 +1589,19 @@
 }
 
 .stats-legend-you {
-  color: #64B5F6;
-}
-
-.stats-legend-you input[type="checkbox"] {
-  accent-color: #64B5F6;
-}
-
-.stats-legend-all {
   color: rgba(255, 255, 255, 0.9);
 }
 
-.stats-legend-all input[type="checkbox"] {
+.stats-legend-you input[type="checkbox"] {
   accent-color: #fff;
+}
+
+.stats-legend-all {
+  color: #64B5F6;
+}
+
+.stats-legend-all input[type="checkbox"] {
+  accent-color: #64B5F6;
 }
 
 .stats-legend-top {
