@@ -42,6 +42,13 @@ export default function UserAvatar({
           {fallback}
         </span>
       )}
+      {isPatron && (
+        <img
+          src="/icons/friend-of-the-pod.png"
+          alt="Friend of the Pod"
+          className="user-avatar-badge"
+        />
+      )}
     </span>
   )
 }

@@ -30,3 +30,15 @@
     0 0 8px rgba(255, 179, 71, 0.5);
   border-radius: 50%;
 }
+
+/* Friend of the Pod badge overlay */
+.user-avatar-badge {
+  position: absolute;
+  bottom: -40%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 180%;
+  height: auto;
+  pointer-events: none;
+  z-index: 1;
+}

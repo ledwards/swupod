@@ -16,6 +16,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const includeBots = url.searchParams.get('includeBots') !== 'false'
     const includeHumans = url.searchParams.get('includeHumans') !== 'false'
     const tournamentOnly = url.searchParams.get('tournamentOnly') === 'true'
+    const topPlayersOnly = url.searchParams.get('topPlayersOnly') === 'true'
     const userId = url.searchParams.get('userId') || null
 
     // Build card lookup map for enrichment, keyed by normalized cardId
@@ -54,6 +55,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       tournamentFilter = `AND bd.user_id = ANY($${queryParams.length}::uuid[])`
     }
 
+    // Top players filter (from top_players table)
+    let topPlayersJoin = ''
+    if (topPlayersOnly) {
+      topPlayersJoin = `JOIN top_players tp ON tp.user_id = bd.user_id`
+    }
+
     // Single user filter
     let userFilter = ''
     if (userId) {
@@ -66,10 +73,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       `SELECT COUNT(*) AS total_decks
        FROM built_decks bd
        ${joinClause}
+       ${topPlayersJoin}
        WHERE bd.set_code = $1 AND bd.built_at >= $2 AND bd.built_at < ($3::date + interval '1 day')
          ${poolTypeFilter}
          ${botFilter}
          ${tournamentFilter}
+
          ${userFilter}`,
       queryParams
     )
@@ -79,10 +88,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       `SELECT bd.leader
        FROM built_decks bd
        ${joinClause}
+       ${topPlayersJoin}
        WHERE bd.set_code = $1 AND bd.built_at >= $2 AND bd.built_at < ($3::date + interval '1 day')
          ${poolTypeFilter}
          ${botFilter}
          ${tournamentFilter}
+
          ${userFilter}`,
       queryParams
     )

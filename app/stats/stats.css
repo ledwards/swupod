@@ -1028,7 +1028,8 @@
   }
 
   .stats-row-you,
-  .stats-row-top {
+  .stats-row-top,
+  .stats-row-tournament {
     font-size: 0.7rem;
   }
 
@@ -1037,7 +1038,7 @@
   }
 
   .stats-row-label {
-    width: 2em;
+    width: 5em;
   }
 
   .reference-sections {
@@ -1491,14 +1492,15 @@
 
 .stats-row-you,
 .stats-row-all,
-.stats-row-top {
+.stats-row-top,
+.stats-row-tournament {
   white-space: nowrap;
   line-height: 1.5;
 }
 
 .stats-row-label {
   display: inline-block;
-  width: 2.5em;
+  width: 6em;
   font-weight: 600;
 }
 
@@ -1514,6 +1516,11 @@
 
 .stats-row-top {
   color: #FFB74D;
+  font-size: 0.8rem;
+}
+
+.stats-row-tournament {
+  color: #CE93D8;
   font-size: 0.8rem;
 }
 
@@ -1570,6 +1577,14 @@
 
 .stats-legend-top input[type="checkbox"] {
   accent-color: #FFB74D;
+}
+
+.stats-legend-tournament {
+  color: #CE93D8;
+}
+
+.stats-legend-tournament input[type="checkbox"] {
+  accent-color: #CE93D8;
 }
 
 .stats-legend-filter {

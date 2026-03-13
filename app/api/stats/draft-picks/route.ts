@@ -17,6 +17,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const includeHumans = url.searchParams.get('includeHumans') !== 'false'
     const builtDeckOnly = url.searchParams.get('builtDeckOnly') === 'true'
     const tournamentOnly = url.searchParams.get('tournamentOnly') === 'true'
+    const topPlayersOnly = url.searchParams.get('topPlayersOnly') === 'true'
     const userId = url.searchParams.get('userId') || null
 
     // Build card lookup map for enrichment, keyed by both CMS id and normalized cardId
@@ -60,6 +61,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       tournamentFilter = `AND dp.user_id = ANY($${queryParams.length}::uuid[])`
     }
 
+    // Top players filter (from top_players table)
+    let topPlayersJoin = ''
+    if (topPlayersOnly) {
+      topPlayersJoin = `JOIN top_players tp ON tp.user_id = dp.user_id`
+    }
+
     // Single user filter
     let userFilter = ''
     if (userId) {
@@ -83,10 +90,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       JOIN pods pod ON pod.id = dp.draft_pod_id
       ${botJoin}
       ${builtDeckJoin}
+      ${topPlayersJoin}
       WHERE dp.set_code = $1 AND dp.is_leader = ${type === 'leaders' ? 'TRUE' : 'FALSE'} AND dp.picked_at >= $2 AND dp.picked_at < ($3::date + interval '1 day')
         AND pod.status = 'complete'
         ${botFilter}
         ${tournamentFilter}
+
         ${userFilter}
       GROUP BY dp.card_name, dp.rarity, dp.card_type
       ORDER BY avg_pick_position ASC`,
@@ -103,10 +112,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       JOIN pods pod ON pod.id = dp.draft_pod_id
       ${botJoin}
       ${builtDeckJoin}
+      ${topPlayersJoin}
       WHERE dp.set_code = $1 AND dp.is_leader = ${type === 'leaders' ? 'TRUE' : 'FALSE'} AND dp.picked_at >= $2 AND dp.picked_at < ($3::date + interval '1 day')
         AND pod.status = 'complete'
         ${botFilter}
         ${tournamentFilter}
+
         ${userFilter}`,
       queryParams
     )

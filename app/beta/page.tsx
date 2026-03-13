@@ -49,11 +49,8 @@ export default function BetaPage() {
           <div className="beta-features">
             <h3>What You Get</h3>
             <ul>
-              <li><strong>Beta Access</strong> — Be the first to try new features as they're developed</li>
+              <li><strong>Beta Access</strong> — Access early features and pre-release sets by becoming an exclusive beta tester</li>
               <li><strong>Pre-Release Sets</strong> — Draft and build sealed pools from upcoming sets before release</li>
-              <li><strong>Aggregated Stats</strong> — Access draft and sealed data across all players</li>
-              <li><strong>Discord Access</strong> — Join the supporters-only Discord channel with the dev team</li>
-              <li><strong>Avatar Flair</strong> — Special avatar treatment so everyone knows you're a supporter</li>
             </ul>
           </div>
         </div>

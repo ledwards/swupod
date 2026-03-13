@@ -147,6 +147,17 @@
   white-space: nowrap;
 }
 
+.auth-widget-beta-link {
+  font-size: 13px;
+  color: #ffb347;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-widget-beta-link:hover {
+  text-decoration: underline;
+}
+
 .auth-widget-drawer-menu {
   padding: 8px;
 }

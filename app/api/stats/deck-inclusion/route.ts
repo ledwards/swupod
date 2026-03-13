@@ -16,6 +16,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const includeBots = url.searchParams.get('includeBots') !== 'false'
     const includeHumans = url.searchParams.get('includeHumans') !== 'false'
     const tournamentOnly = url.searchParams.get('tournamentOnly') === 'true'
+    const topPlayersOnly = url.searchParams.get('topPlayersOnly') === 'true'
     const userId = url.searchParams.get('userId') || null
 
     // Build card lookup map for enrichment, keyed by both CMS id and normalized cardId
@@ -54,6 +55,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       tournamentFilter = `AND cp.user_id = ANY($${queryParams.length}::uuid[])`
     }
 
+    // Top players filter (from top_players table)
+    let topPlayersJoin = ''
+    if (topPlayersOnly) {
+      topPlayersJoin = `JOIN top_players tp ON tp.user_id = cp.user_id`
+    }
+
     // Single user filter
     let userFilter = ''
     if (userId) {
@@ -67,6 +74,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           ${tournamentFilter}
           ${userFilter}`
 
+    const extraJoins = `${joinClause} ${topPlayersJoin}`
+
     // Run count and aggregation queries in parallel.
     // Previously fetched full JSONB card objects (images, text, traits) for every row
     // and processed in JS — caused 30+ second response times.
@@ -77,7 +86,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         `SELECT COUNT(*) AS total
          FROM card_pools cp
          JOIN built_decks bd ON bd.card_pool_id = cp.id
-         ${joinClause}
+         ${extraJoins}
          WHERE ${baseWhere}`,
         queryParams
       ),

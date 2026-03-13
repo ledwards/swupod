@@ -220,6 +220,19 @@ export default function AuthWidget() {
                     {user.email}
                   </div>
                 )}
+                {isPatron && !user.is_beta_tester && (
+                  <a
+                    href="/beta"
+                    className="auth-widget-beta-link"
+                    onClick={(e: MouseEvent<HTMLAnchorElement>) => {
+                      e.preventDefault()
+                      router.push('/beta')
+                      setDrawerOpen(false)
+                    }}
+                  >
+                    Join the Beta Program!
+                  </a>
+                )}
               </div>
             </div>
 

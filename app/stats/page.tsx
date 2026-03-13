@@ -28,17 +28,19 @@ const formatDate = (dateStr: string) =>
 // Get today as YYYY-MM-DD
 const todayStr = () => new Date().toISOString().slice(0, 10)
 
-// === StatsCell: Stacked You/All/Top values ===
+// === StatsCell: Stacked You/All/Top/Tournament values ===
 
-function StatsCell({ you, all, top, format, className, showYou, showAll, showTop, isBlurred }: {
+function StatsCell({ you, all, top, tournament, format, className, showYou, showAll, showTop, showTournament, isBlurred }: {
   you: string | number | null | undefined
   all: string | number | null | undefined
   top: string | number | null | undefined
+  tournament: string | number | null | undefined
   format?: (v: any) => string
   className?: string
   showYou: boolean
   showAll: boolean
   showTop: boolean
+  showTournament: boolean
   isBlurred?: boolean
 }) {
   const f = format || String
@@ -51,7 +53,7 @@ function StatsCell({ you, all, top, format, className, showYou, showAll, showTop
       )}
       {showAll && (
         <div className="stats-row-all">
-          <span className="stats-row-label">All:</span> {isBlurred ? <span className="stats-blur-value">{all != null ? f(all) : '—'}</span> : (all != null ? f(all) : '—')}
+          <span className="stats-row-label">All:</span> {all != null ? f(all) : '—'}
         </div>
       )}
       {showTop && (
@@ -59,20 +61,27 @@ function StatsCell({ you, all, top, format, className, showYou, showAll, showTop
           <span className="stats-row-label">Top:</span> {isBlurred ? <span className="stats-blur-value">{top != null ? f(top) : '—'}</span> : (top != null ? f(top) : '—')}
         </div>
       )}
+      {showTournament && (
+        <div className="stats-row-tournament">
+          <span className="stats-row-label">Tournament:</span> {isBlurred ? <span className="stats-blur-value">{tournament != null ? f(tournament) : '—'}</span> : (tournament != null ? f(tournament) : '—')}
+        </div>
+      )}
     </td>
   )
 }
 
-// === StatsLegend: Toggleable You/All/Top with filters ===
+// === StatsLegend: Toggleable You/All/Top/Tournament with filters ===
 
-function StatsLegend({ user, showYou, showAll, showTop, onToggleYou, onToggleAll, onToggleTop, includeBots, includeHumans, onToggleBots, onToggleHumans, isBlurred }: {
+function StatsLegend({ user, showYou, showAll, showTop, showTournament, onToggleYou, onToggleAll, onToggleTop, onToggleTournament, includeBots, includeHumans, onToggleBots, onToggleHumans, isBlurred }: {
   user: any
   showYou: boolean
   showAll: boolean
   showTop: boolean
+  showTournament: boolean
   onToggleYou: () => void
   onToggleAll: () => void
   onToggleTop: () => void
+  onToggleTournament: () => void
   includeBots: boolean
   includeHumans: boolean
   onToggleBots: () => void
@@ -93,16 +102,16 @@ function StatsLegend({ user, showYou, showAll, showTop, onToggleYou, onToggleAll
       </div>
       <span className="stats-legend-sep">&middot;</span>
       <div className="stats-legend-group">
-        <label className={`stats-legend-toggle stats-legend-all ${isBlurred ? 'stats-legend-locked' : ''}`}>
-          <input type="checkbox" checked={showAll} onChange={onToggleAll} disabled={isBlurred} />
-          All {isBlurred && '🔒'}
+        <label className="stats-legend-toggle stats-legend-all">
+          <input type="checkbox" checked={showAll} onChange={onToggleAll} />
+          All
         </label>
         <label className="stats-legend-filter">
-          <input type="checkbox" checked={includeHumans} onChange={onToggleHumans} disabled={isBlurred} />
+          <input type="checkbox" checked={includeHumans} onChange={onToggleHumans} />
           Humans
         </label>
         <label className="stats-legend-filter">
-          <input type="checkbox" checked={includeBots} onChange={onToggleBots} disabled={isBlurred} />
+          <input type="checkbox" checked={includeBots} onChange={onToggleBots} />
           Bots
         </label>
       </div>
@@ -111,7 +120,21 @@ function StatsLegend({ user, showYou, showAll, showTop, onToggleYou, onToggleAll
         <label className={`stats-legend-toggle stats-legend-top ${isBlurred ? 'stats-legend-locked' : ''}`}>
           <input type="checkbox" checked={showTop} onChange={onToggleTop} disabled={isBlurred} />
           Top {isBlurred && '🔒'}
-          <span className="stats-filter-info" title={`"Top" filters to ${tournamentPlayerCount} app users who have competed in melee.gg tournaments (matched by username from swumetastats.com).`}>
+          <span className="stats-filter-info" title="Curated list of top competitive players.">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="16" x2="12" y2="12"/>
+              <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+          </span>
+        </label>
+      </div>
+      <span className="stats-legend-sep">&middot;</span>
+      <div className="stats-legend-group">
+        <label className={`stats-legend-toggle stats-legend-tournament ${isBlurred ? 'stats-legend-locked' : ''}`}>
+          <input type="checkbox" checked={showTournament} onChange={onToggleTournament} disabled={isBlurred} />
+          Tournament {isBlurred && '🔒'}
+          <span className="stats-filter-info" title={`${tournamentPlayerCount} app users who have competed in melee.gg tournaments (matched by username from swumetastats.com).`}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10"/>
               <line x1="12" y1="16" x2="12" y2="12"/>
@@ -145,6 +168,7 @@ export default function StatsPage() {
   const [showYou, setShowYou] = useState(true)
   const [showAll, setShowAll] = useState(true)
   const [showTop, setShowTop] = useState(true)
+  const [showTournament, setShowTournament] = useState(true)
   const [startDate, setStartDate] = useState(DEFAULT_START_DATE)
   const [endDate, setEndDate] = useState(todayStr())
   const [editingStart, setEditingStart] = useState(false)
@@ -187,10 +211,11 @@ export default function StatsPage() {
 
   const legendProps = {
     user,
-    showYou, showAll, showTop,
+    showYou, showAll, showTop, showTournament,
     onToggleYou: () => setShowYou(!showYou),
     onToggleAll: () => setShowAll(!showAll),
     onToggleTop: () => setShowTop(!showTop),
+    onToggleTournament: () => setShowTournament(!showTournament),
     includeBots, includeHumans,
     onToggleBots: () => setIncludeBots(!includeBots),
     onToggleHumans: () => setIncludeHumans(!includeHumans),
@@ -275,8 +300,8 @@ export default function StatsPage() {
               <div className="stats-patron-cta-text">
                 <span className="stats-patron-cta-icon">🔒</span>
                 <div>
-                  <h3 className="stats-patron-cta-heading">Unlock full stats</h3>
-                  <p className="stats-patron-cta-desc">Support Protect the Pod to see aggregate data across all players and top tournament competitors.</p>
+                  <h3 className="stats-patron-cta-heading">Unlock Top Player Stats</h3>
+                  <p className="stats-patron-cta-desc">Support Protect the Pod to see stats from top tournament competitors.</p>
                 </div>
               </div>
               <a href="https://www.patreon.com/protectthepod" target="_blank" rel="noopener noreferrer">
@@ -295,6 +320,7 @@ export default function StatsPage() {
           showYou={showYou}
           showAll={showAll}
           showTop={showTop}
+          showTournament={showTournament}
           legendProps={legendProps}
           isBlurred={isBlurred}
         />
@@ -313,11 +339,12 @@ interface SetStatsTabProps {
   showYou: boolean
   showAll: boolean
   showTop: boolean
+  showTournament: boolean
   legendProps: any
   isBlurred?: boolean
 }
 
-function SetStatsTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, legendProps, isBlurred }: SetStatsTabProps) {
+function SetStatsTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred }: SetStatsTabProps) {
   const [subTab, setSubTab] = useState('draft')
 
   return (
@@ -338,9 +365,9 @@ function SetStatsTab({ setCode, includeBots, includeHumans, startDate, endDate, 
       </div>
 
       {subTab === 'draft' ? (
-        <DraftTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} legendProps={legendProps} isBlurred={isBlurred} />
+        <DraftTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} />
       ) : (
-        <SealedTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} legendProps={legendProps} isBlurred={isBlurred} />
+        <SealedTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} />
       )}
     </div>
   )
@@ -450,16 +477,21 @@ interface TabProps {
   showYou: boolean
   showAll: boolean
   showTop: boolean
+  showTournament: boolean
   legendProps: any
   isBlurred?: boolean
 }
 
-function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, legendProps, isBlurred }: TabProps) {
+function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred }: TabProps) {
   // All Players data
   const [cardData, setCardData] = useState<DraftPickStats | null>(null)
   const [leaderData, setLeaderData] = useState<DraftPickStats | null>(null)
   const [leaderSelData, setLeaderSelData] = useState<{ totalDecks: number; leaders: LeaderSelection[] } | null>(null)
-  // Top Players data
+  // Tournament Players data (tournamentOnly)
+  const [cardDataTournament, setCardDataTournament] = useState<DraftPickStats | null>(null)
+  const [leaderDataTournament, setLeaderDataTournament] = useState<DraftPickStats | null>(null)
+  const [leaderSelDataTournament, setLeaderSelDataTournament] = useState<{ totalDecks: number; leaders: LeaderSelection[] } | null>(null)
+  // Top Players data (topPlayersOnly)
   const [cardDataTop, setCardDataTop] = useState<DraftPickStats | null>(null)
   const [leaderDataTop, setLeaderDataTop] = useState<DraftPickStats | null>(null)
   const [leaderSelDataTop, setLeaderSelDataTop] = useState<{ totalDecks: number; leaders: LeaderSelection[] } | null>(null)
@@ -497,11 +529,19 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
     })
     baseParams.set('builtDeckOnly', 'true')
 
-    const topParams = new URLSearchParams({
+    const tournamentParams = new URLSearchParams({
       setCode,
       since: startDate,
       until: endDate,
       tournamentOnly: 'true',
+      builtDeckOnly: 'true',
+    })
+
+    const topPlayersParams = new URLSearchParams({
+      setCode,
+      since: startDate,
+      until: endDate,
+      topPlayersOnly: 'true',
       builtDeckOnly: 'true',
     })
 
@@ -516,16 +556,26 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
       fetch(`/api/stats/leader-selection?${baseParams}&poolType=draft`)
         .then(r => r.json()).then(result => setLeaderSelData(result.data || result))
         .catch(err => console.error('Error fetching leader selection:', err)),
+      // Tournament Players (not affected by Humans/Bots filter)
+      fetch(`/api/stats/draft-picks?${tournamentParams}`)
+        .then(r => r.json()).then(result => setCardDataTournament(result.data || result))
+        .catch(err => console.error('Error fetching tournament card draft picks:', err)),
+      fetch(`/api/stats/draft-picks?${tournamentParams}&type=leaders`)
+        .then(r => r.json()).then(result => setLeaderDataTournament(result.data || result))
+        .catch(err => console.error('Error fetching tournament leader draft picks:', err)),
+      fetch(`/api/stats/leader-selection?${tournamentParams}&poolType=draft`)
+        .then(r => r.json()).then(result => setLeaderSelDataTournament(result.data || result))
+        .catch(err => console.error('Error fetching tournament leader selection:', err)),
       // Top Players (not affected by Humans/Bots filter)
-      fetch(`/api/stats/draft-picks?${topParams}`)
+      fetch(`/api/stats/draft-picks?${topPlayersParams}`)
         .then(r => r.json()).then(result => setCardDataTop(result.data || result))
-        .catch(err => console.error('Error fetching top card draft picks:', err)),
-      fetch(`/api/stats/draft-picks?${topParams}&type=leaders`)
+        .catch(err => console.error('Error fetching top player card draft picks:', err)),
+      fetch(`/api/stats/draft-picks?${topPlayersParams}&type=leaders`)
         .then(r => r.json()).then(result => setLeaderDataTop(result.data || result))
-        .catch(err => console.error('Error fetching top leader draft picks:', err)),
-      fetch(`/api/stats/leader-selection?${topParams}&poolType=draft`)
+        .catch(err => console.error('Error fetching top player leader draft picks:', err)),
+      fetch(`/api/stats/leader-selection?${topPlayersParams}&poolType=draft`)
         .then(r => r.json()).then(result => setLeaderSelDataTop(result.data || result))
-        .catch(err => console.error('Error fetching top leader selection:', err)),
+        .catch(err => console.error('Error fetching top player leader selection:', err)),
     ]
 
     // You fetches (only if logged in, not affected by Humans/Bots filter)
@@ -557,11 +607,14 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
     Promise.all(fetches).finally(() => setLoading(false))
   }, [setCode, includeBots, includeHumans, startDate, endDate, user?.id])
 
-  // Build lookup maps for Top and You data
+  // Build lookup maps for Tournament, Top, and You data
+  const cardTournamentMap = useMemo(() => buildLookupMap(cardDataTournament?.cards), [cardDataTournament?.cards])
   const cardTopMap = useMemo(() => buildLookupMap(cardDataTop?.cards), [cardDataTop?.cards])
   const cardYouMap = useMemo(() => buildLookupMap(cardDataYou?.cards), [cardDataYou?.cards])
+  const leaderTournamentMap = useMemo(() => buildLookupMap(leaderDataTournament?.cards), [leaderDataTournament?.cards])
   const leaderTopMap = useMemo(() => buildLookupMap(leaderDataTop?.cards), [leaderDataTop?.cards])
   const leaderYouMap = useMemo(() => buildLookupMap(leaderDataYou?.cards), [leaderDataYou?.cards])
+  const leaderSelTournamentMap = useMemo(() => buildLookupMap(leaderSelDataTournament?.leaders), [leaderSelDataTournament?.leaders])
   const leaderSelTopMap = useMemo(() => buildLookupMap(leaderSelDataTop?.leaders), [leaderSelDataTop?.leaders])
   const leaderSelYouMap = useMemo(() => buildLookupMap(leaderSelDataYou?.leaders), [leaderSelDataYou?.leaders])
 
@@ -655,7 +708,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
     )
   }
 
-  const cellProps = { showYou, showAll, showTop, isBlurred }
+  const cellProps = { showYou, showAll, showTop, showTournament, isBlurred }
 
   return (
     <div className="cards-subtab">
@@ -684,6 +737,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                   </thead>
                   <tbody>
                     {sortedLeaders.map(card => {
+                      const tournamentCard = leaderTournamentMap.get(card.cardName)
                       const topCard = leaderTopMap.get(card.cardName)
                       const youCard = leaderYouMap.get(card.cardName)
                       return (
@@ -704,6 +758,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                             you={youCard?.avgPickPosition}
                             all={card.avgPickPosition}
                             top={topCard?.avgPickPosition}
+                            tournament={tournamentCard?.avgPickPosition}
                             format={(v: number) => v.toFixed(1)}
                           />
                           <StatsCell
@@ -711,12 +766,14 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                             you={youCard ? `${youCard.firstPicks}/${youCard.timesPicked} (${youCard.firstPickPct !== null ? `${youCard.firstPickPct}%` : '—'})` : null}
                             all={`${card.firstPicks}/${card.timesPicked} (${card.firstPickPct !== null ? `${card.firstPickPct}%` : '—'})`}
                             top={topCard ? `${topCard.firstPicks}/${topCard.timesPicked} (${topCard.firstPickPct !== null ? `${topCard.firstPickPct}%` : '—'})` : null}
+                            tournament={tournamentCard ? `${tournamentCard.firstPicks}/${tournamentCard.timesPicked} (${tournamentCard.firstPickPct !== null ? `${tournamentCard.firstPickPct}%` : '—'})` : null}
                           />
                           <StatsCell
                             {...cellProps}
                             you={youCard?.timesPicked}
                             all={card.timesPicked}
                             top={topCard?.timesPicked}
+                            tournament={tournamentCard?.timesPicked}
                             format={fmt}
                           />
                         </tr>
@@ -747,6 +804,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                   </thead>
                   <tbody>
                     {sortedLeaderSel.map(leader => {
+                      const tournamentLeader = leaderSelTournamentMap.get(leader.cardName)
                       const topLeader = leaderSelTopMap.get(leader.cardName)
                       const youLeader = leaderSelYouMap.get(leader.cardName)
                       return (
@@ -767,6 +825,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                             you={youLeader?.selectionRate}
                             all={leader.selectionRate}
                             top={topLeader?.selectionRate}
+                            tournament={tournamentLeader?.selectionRate}
                             format={(v: number) => `${v.toFixed(1)}%`}
                           />
                           <StatsCell
@@ -774,6 +833,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                             you={youLeader?.timesSelected}
                             all={leader.timesSelected}
                             top={topLeader?.timesSelected}
+                            tournament={tournamentLeader?.timesSelected}
                             format={fmt}
                           />
                         </tr>
@@ -827,6 +887,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
               </thead>
               <tbody>
                 {sortedCards.map(card => {
+                  const tournamentCard = cardTournamentMap.get(card.cardName)
                   const topCard = cardTopMap.get(card.cardName)
                   const youCard = cardYouMap.get(card.cardName)
                   return (
@@ -848,6 +909,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                         you={youCard?.avgPickPosition}
                         all={card.avgPickPosition}
                         top={topCard?.avgPickPosition}
+                        tournament={tournamentCard?.avgPickPosition}
                         format={(v: number) => String(Math.round(v))}
                       />
                       <StatsCell
@@ -855,12 +917,14 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                         you={youCard ? `${youCard.firstPicks}/${youCard.timesPicked} (${youCard.firstPickPct !== null ? `${youCard.firstPickPct}%` : '—'})` : null}
                         all={`${card.firstPicks}/${card.timesPicked} (${card.firstPickPct !== null ? `${card.firstPickPct}%` : '—'})`}
                         top={topCard ? `${topCard.firstPicks}/${topCard.timesPicked} (${topCard.firstPickPct !== null ? `${topCard.firstPickPct}%` : '—'})` : null}
+                        tournament={tournamentCard ? `${tournamentCard.firstPicks}/${tournamentCard.timesPicked} (${tournamentCard.firstPickPct !== null ? `${tournamentCard.firstPickPct}%` : '—'})` : null}
                       />
                       <StatsCell
                         {...cellProps}
                         you={youCard?.timesPicked}
                         all={card.timesPicked}
                         top={topCard?.timesPicked}
+                        tournament={tournamentCard?.timesPicked}
                         format={fmt}
                       />
                     </tr>
@@ -889,11 +953,14 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
 
 // === Sealed Tab ===
 
-function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, legendProps, isBlurred }: TabProps) {
+function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred }: TabProps) {
   // All Players data
   const [cardData, setCardData] = useState<DeckInclusionStats | null>(null)
   const [leaderSelData, setLeaderSelData] = useState<{ totalDecks: number; leaders: LeaderSelection[] } | null>(null)
-  // Top Players data
+  // Tournament Players data (tournamentOnly)
+  const [cardDataTournament, setCardDataTournament] = useState<DeckInclusionStats | null>(null)
+  const [leaderSelDataTournament, setLeaderSelDataTournament] = useState<{ totalDecks: number; leaders: LeaderSelection[] } | null>(null)
+  // Top Players data (topPlayersOnly)
   const [cardDataTop, setCardDataTop] = useState<DeckInclusionStats | null>(null)
   const [leaderSelDataTop, setLeaderSelDataTop] = useState<{ totalDecks: number; leaders: LeaderSelection[] } | null>(null)
   // You data
@@ -927,12 +994,20 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
       poolType: 'sealed',
     })
 
-    const topParams = new URLSearchParams({
+    const tournamentParams = new URLSearchParams({
       setCode,
       since: startDate,
       until: endDate,
       poolType: 'sealed',
       tournamentOnly: 'true',
+    })
+
+    const topPlayersParams = new URLSearchParams({
+      setCode,
+      since: startDate,
+      until: endDate,
+      poolType: 'sealed',
+      topPlayersOnly: 'true',
     })
 
     const fetches: Promise<void>[] = [
@@ -943,13 +1018,20 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
       fetch(`/api/stats/leader-selection?${baseParams}`)
         .then(r => r.json()).then(result => setLeaderSelData(result.data || result))
         .catch(err => console.error('Error fetching leader selection:', err)),
+      // Tournament Players (not affected by Humans/Bots filter)
+      fetch(`/api/stats/deck-inclusion?${tournamentParams}`)
+        .then(r => r.json()).then(result => setCardDataTournament(result.data || result))
+        .catch(err => console.error('Error fetching tournament deck inclusion:', err)),
+      fetch(`/api/stats/leader-selection?${tournamentParams}`)
+        .then(r => r.json()).then(result => setLeaderSelDataTournament(result.data || result))
+        .catch(err => console.error('Error fetching tournament leader selection:', err)),
       // Top Players (not affected by Humans/Bots filter)
-      fetch(`/api/stats/deck-inclusion?${topParams}`)
+      fetch(`/api/stats/deck-inclusion?${topPlayersParams}`)
         .then(r => r.json()).then(result => setCardDataTop(result.data || result))
-        .catch(err => console.error('Error fetching top deck inclusion:', err)),
-      fetch(`/api/stats/leader-selection?${topParams}`)
+        .catch(err => console.error('Error fetching top player deck inclusion:', err)),
+      fetch(`/api/stats/leader-selection?${topPlayersParams}`)
         .then(r => r.json()).then(result => setLeaderSelDataTop(result.data || result))
-        .catch(err => console.error('Error fetching top leader selection:', err)),
+        .catch(err => console.error('Error fetching top player leader selection:', err)),
     ]
 
     // You fetches (only if logged in, not affected by Humans/Bots filter)
@@ -978,8 +1060,10 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
   }, [setCode, includeBots, includeHumans, startDate, endDate, user?.id])
 
   // Build lookup maps
+  const cardTournamentMap = useMemo(() => buildLookupMap(cardDataTournament?.cards), [cardDataTournament?.cards])
   const cardTopMap = useMemo(() => buildLookupMap(cardDataTop?.cards), [cardDataTop?.cards])
   const cardYouMap = useMemo(() => buildLookupMap(cardDataYou?.cards), [cardDataYou?.cards])
+  const leaderSelTournamentMap = useMemo(() => buildLookupMap(leaderSelDataTournament?.leaders), [leaderSelDataTournament?.leaders])
   const leaderSelTopMap = useMemo(() => buildLookupMap(leaderSelDataTop?.leaders), [leaderSelDataTop?.leaders])
   const leaderSelYouMap = useMemo(() => buildLookupMap(leaderSelDataYou?.leaders), [leaderSelDataYou?.leaders])
 
@@ -1036,7 +1120,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
   }
 
   const rarityClass = (r: string) => `rarity-${r.toLowerCase()}`
-  const cellProps = { showYou, showAll, showTop, isBlurred }
+  const cellProps = { showYou, showAll, showTop, showTournament, isBlurred }
 
   const CardSortHeader = ({ label, col, title }: { label: string, col: DeckSortKey, title?: string }) => (
     <th className={`sortable ${cardSortKey === col ? 'active' : ''}`} onClick={() => handleCardSort(col)} title={title}>
@@ -1071,6 +1155,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
               </thead>
               <tbody>
                 {sortedLeaderSel.map(leader => {
+                  const tournamentLeader = leaderSelTournamentMap.get(leader.cardName)
                   const topLeader = leaderSelTopMap.get(leader.cardName)
                   const youLeader = leaderSelYouMap.get(leader.cardName)
                   return (
@@ -1091,6 +1176,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                         you={youLeader?.selectionRate}
                         all={leader.selectionRate}
                         top={topLeader?.selectionRate}
+                        tournament={tournamentLeader?.selectionRate}
                         format={(v: number) => `${v.toFixed(1)}%`}
                       />
                       <StatsCell
@@ -1098,6 +1184,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                         you={youLeader?.timesSelected}
                         all={leader.timesSelected}
                         top={topLeader?.timesSelected}
+                        tournament={tournamentLeader?.timesSelected}
                         format={fmt}
                       />
                     </tr>
@@ -1141,6 +1228,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
               </thead>
               <tbody>
                 {sortedCards.map(card => {
+                  const tournamentCard = cardTournamentMap.get(card.cardName)
                   const topCard = cardTopMap.get(card.cardName)
                   const youCard = cardYouMap.get(card.cardName)
                   return (
@@ -1162,6 +1250,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                         you={youCard?.inclusionRate}
                         all={card.inclusionRate}
                         top={topCard?.inclusionRate}
+                        tournament={tournamentCard?.inclusionRate}
                         format={(v: number) => `${v.toFixed(1)}%`}
                       />
                       <StatsCell
@@ -1169,6 +1258,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                         you={youCard?.avgCopiesPlayed}
                         all={card.avgCopiesPlayed}
                         top={topCard?.avgCopiesPlayed}
+                        tournament={tournamentCard?.avgCopiesPlayed}
                         format={(v: number) => v.toFixed(1)}
                       />
                       <StatsCell
@@ -1176,6 +1266,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                         you={youCard?.poolsWithCard}
                         all={card.poolsWithCard}
                         top={topCard?.poolsWithCard}
+                        tournament={tournamentCard?.poolsWithCard}
                         format={fmt}
                       />
                     </tr>
