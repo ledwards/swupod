@@ -21,6 +21,7 @@
   min-width: 44px;
   min-height: 44px;
   border-radius: 50%;
+  background: #333;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -31,6 +32,26 @@
 
 .seat-avatar .user-avatar-placeholder {
   background: #333;
+}
+
+/* Gold frame for patron seats */
+.player-seat:has(.seat-patron-badge) .seat-avatar {
+  border-color: #cc6a00;
+  box-shadow:
+    0 0 0 2px #ffb347,
+    0 0 8px rgba(255, 179, 71, 0.5);
+}
+
+/* Patron badge — outside seat-avatar to avoid border-radius clipping */
+.seat-patron-badge {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 56px;
+  height: auto;
+  pointer-events: none;
+  z-index: 10;
 }
 
 .seat-avatar img:not(.user-avatar-badge) {
