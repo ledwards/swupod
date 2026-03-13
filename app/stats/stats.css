@@ -1889,6 +1889,26 @@
   font-style: italic;
 }
 
+.stats-chart-filter {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stats-chart-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.stats-chart-filter-checks {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
 .stats-charts-section {
   margin-top: 2rem;
   padding-top: 1.5rem;

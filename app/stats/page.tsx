@@ -216,9 +216,9 @@ function StatsLegend({ user, showYou, showAll, showTop, showTournament, onToggle
 const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning']
 const FILTER_OPTIONS = [...ASPECTS, 'Neutral', 'Multicolor']
 
-function useTableFilter() {
+function useTableFilter(startAllOn = true) {
   const [search, setSearch] = useState('')
-  const [activeAspects, setActiveAspects] = useState<Set<string>>(new Set(FILTER_OPTIONS))
+  const [activeAspects, setActiveAspects] = useState<Set<string>>(startAllOn ? new Set(FILTER_OPTIONS) : new Set())
 
   const toggleAspect = (aspect: string) => {
     setActiveAspects(prev => {
@@ -228,17 +228,18 @@ function useTableFilter() {
       } else {
         next.add(aspect)
       }
-      // If all are off, reset to all on
-      if (next.size === 0) return new Set(FILTER_OPTIONS)
       return next
     })
   }
 
+  // All off OR all on = no filtering (show everything)
+  const isFiltering = activeAspects.size > 0 && activeAspects.size < FILTER_OPTIONS.length
+
   const filterFn = (card: { cardName: string; aspects: string[] }) => {
     // Name search
     if (search && !card.cardName.toLowerCase().includes(search.toLowerCase())) return false
-    // Aspect filter (if not all selected)
-    if (activeAspects.size < FILTER_OPTIONS.length) {
+    // Aspect filter (only when partially selected)
+    if (isFiltering) {
       const cardColorAspects = card.aspects.filter(a => COLOR_ASPECTS.includes(a))
       const isNeutral = cardColorAspects.length === 0
       const isMulticolor = cardColorAspects.length >= 2
@@ -259,6 +260,37 @@ function useTableFilter() {
   return { search, setSearch, activeAspects, toggleAspect, filterFn }
 }
 
+function AspectFilterButtons({ activeAspects, toggleAspect }: { activeAspects: Set<string>; toggleAspect: (a: string) => void }) {
+  return (
+    <div className="stats-aspect-filter">
+      {ASPECTS.map(aspect => (
+        <button
+          key={aspect}
+          className={`stats-aspect-btn ${activeAspects.has(aspect) ? 'active' : ''}`}
+          onClick={() => toggleAspect(aspect)}
+          title={aspect}
+        >
+          <AspectIcon aspect={aspect} size="sm" />
+        </button>
+      ))}
+      <button
+        className={`stats-aspect-btn stats-aspect-btn-text ${activeAspects.has('Neutral') ? 'active' : ''}`}
+        onClick={() => toggleAspect('Neutral')}
+        title="Neutral (no color aspects)"
+      >
+        <span className="stats-aspect-label">N</span>
+      </button>
+      <button
+        className={`stats-aspect-btn stats-aspect-btn-text stats-aspect-btn-multi ${activeAspects.has('Multicolor') ? 'active' : ''}`}
+        onClick={() => toggleAspect('Multicolor')}
+        title="Multicolor (2+ color aspects)"
+      >
+        <span className="stats-aspect-label">M</span>
+      </button>
+    </div>
+  )
+}
+
 function TableFilter({ search, setSearch, activeAspects, toggleAspect }: {
   search: string
   setSearch: (s: string) => void
@@ -274,32 +306,43 @@ function TableFilter({ search, setSearch, activeAspects, toggleAspect }: {
         onChange={e => setSearch(e.target.value)}
         className="stats-search-input"
       />
-      <div className="stats-aspect-filter">
-        {ASPECTS.map(aspect => (
-          <button
-            key={aspect}
-            className={`stats-aspect-btn ${activeAspects.has(aspect) ? 'active' : ''}`}
-            onClick={() => toggleAspect(aspect)}
-            title={aspect}
-          >
-            <AspectIcon aspect={aspect} size="sm" />
-          </button>
-        ))}
-        <button
-          className={`stats-aspect-btn stats-aspect-btn-text ${activeAspects.has('Neutral') ? 'active' : ''}`}
-          onClick={() => toggleAspect('Neutral')}
-          title="Neutral (no color aspects)"
-        >
-          <span className="stats-aspect-label">N</span>
-        </button>
-        <button
-          className={`stats-aspect-btn stats-aspect-btn-text stats-aspect-btn-multi ${activeAspects.has('Multicolor') ? 'active' : ''}`}
-          onClick={() => toggleAspect('Multicolor')}
-          title="Multicolor (2+ color aspects)"
-        >
-          <span className="stats-aspect-label">M</span>
-        </button>
+      <AspectFilterButtons activeAspects={activeAspects} toggleAspect={toggleAspect} />
+    </div>
+  )
+}
+
+function ChartFilter({ search, setSearch, activeAspects, toggleAspect, includeHumans, includeBots, onToggleHumans, onToggleBots }: {
+  search: string
+  setSearch: (s: string) => void
+  activeAspects: Set<string>
+  toggleAspect: (a: string) => void
+  includeHumans: boolean
+  includeBots: boolean
+  onToggleHumans: () => void
+  onToggleBots: () => void
+}) {
+  return (
+    <div className="stats-chart-filter">
+      <div className="stats-chart-filter-row">
+        <input
+          type="text"
+          placeholder="Search cards..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="stats-search-input"
+        />
+        <div className="stats-chart-filter-checks">
+          <label className="stats-legend-filter">
+            <input type="checkbox" checked={includeHumans} onChange={onToggleHumans} />
+            Humans
+          </label>
+          <label className="stats-legend-filter">
+            <input type="checkbox" checked={includeBots} onChange={onToggleBots} />
+            Bots
+          </label>
+        </div>
       </div>
+      <AspectFilterButtons activeAspects={activeAspects} toggleAspect={toggleAspect} />
     </div>
   )
 }
@@ -691,6 +734,24 @@ function LoadingSkeleton() {
     <div className="cards-subtab">
       {/* === Charts Section (top) === */}
       <div className="stats-charts-section" style={{ marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
+        <div className="stats-chart-filter">
+          <div className="stats-chart-filter-row">
+            <div className="skeleton-line" style={{ width: '200px', height: '32px', borderRadius: '6px' }} />
+            <div className="stats-chart-filter-checks">
+              <SkeletonBlock width="70px" height={16} />
+              <SkeletonBlock width="50px" height={16} />
+            </div>
+          </div>
+          <div className="stats-aspect-filter">
+            {ASPECTS.map(aspect => (
+              <div key={aspect} className="stats-aspect-btn" style={{ opacity: 0.3 }}>
+                <AspectIcon aspect={aspect} size="sm" />
+              </div>
+            ))}
+            <div className="stats-aspect-btn stats-aspect-btn-text" style={{ opacity: 0.3 }}><span className="stats-aspect-label">N</span></div>
+            <div className="stats-aspect-btn stats-aspect-btn-text" style={{ opacity: 0.3 }}><span className="stats-aspect-label">M</span></div>
+          </div>
+        </div>
         <h4>Leader Draft Frequency</h4>
         <SkeletonChartGrid />
         <h4>Top 25 Cards by Times Drafted</h4>
@@ -844,6 +905,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
   const [leaderSelSortAsc, setLeaderSelSortAsc] = useState(false)
   const leaderFilter = useTableFilter()
   const cardFilter = useTableFilter()
+  const chartFilter = useTableFilter(false)
   const {
     hoveredCardPreview,
     handleCardMouseEnter,
@@ -854,6 +916,12 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
     handleCardTouchEnd,
     dismissPreview,
   } = useCardPreview()
+
+  // Filtered chart data
+  const filterChartData = (data: any[] | null) => {
+    if (!data) return null
+    return data.filter(chartFilter.filterFn)
+  }
 
   useEffect(() => {
     setLoading(true)
@@ -1068,22 +1136,29 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
     <div className="cards-subtab">
       {/* Charts (data visualizations first) */}
       <div className="stats-charts-section" style={{ marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
+        <ChartFilter
+          {...chartFilter}
+          includeHumans={includeHumans}
+          includeBots={includeBots}
+          onToggleHumans={legendProps.onToggleHumans}
+          onToggleBots={legendProps.onToggleBots}
+        />
         <h4>Leader Draft Frequency <span className="stats-chart-subtitle">How often each leader is drafted (total times picked across all drafts)</span></h4>
         <LeaderCharts
-          allData={leaderData?.cards || null}
-          tournamentData={leaderDataTournament?.cards || null}
-          topData={leaderDataTop?.cards || null}
-          youData={leaderDataYou?.cards || null}
+          allData={filterChartData(leaderData?.cards || null)}
+          tournamentData={filterChartData(leaderDataTournament?.cards || null)}
+          topData={filterChartData(leaderDataTop?.cards || null)}
+          youData={filterChartData(leaderDataYou?.cards || null)}
           valueKey="timesPicked"
           canSeeFullStats={canSeeFullStats}
           user={user}
         />
         <h4>Top 25 Cards by Times Drafted <span className="stats-chart-subtitle">Most frequently drafted cards across all drafts</span></h4>
         <CardCharts
-          allData={cardData?.cards || null}
-          tournamentData={cardDataTournament?.cards || null}
-          topData={cardDataTop?.cards || null}
-          youData={cardDataYou?.cards || null}
+          allData={filterChartData(cardData?.cards || null)}
+          tournamentData={filterChartData(cardDataTournament?.cards || null)}
+          topData={filterChartData(cardDataTop?.cards || null)}
+          youData={filterChartData(cardDataYou?.cards || null)}
           valueKey="timesPicked"
           canSeeFullStats={canSeeFullStats}
           user={user}
@@ -1366,6 +1441,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
   const [leaderSelSortAsc, setLeaderSelSortAsc] = useState(false)
   const leaderFilter = useTableFilter()
   const cardFilter = useTableFilter()
+  const chartFilter = useTableFilter(false)
   const {
     hoveredCardPreview,
     handleCardMouseEnter,
@@ -1376,6 +1452,11 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
     handleCardTouchEnd,
     dismissPreview,
   } = useCardPreview()
+
+  const filterChartData = (data: any[] | null) => {
+    if (!data) return null
+    return data.filter(chartFilter.filterFn)
+  }
 
   useEffect(() => {
     setLoading(true)
@@ -1545,22 +1626,29 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
     <div className="cards-subtab">
       {/* Charts (data visualizations first) */}
       <div className="stats-charts-section" style={{ marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
+        <ChartFilter
+          {...chartFilter}
+          includeHumans={includeHumans}
+          includeBots={includeBots}
+          onToggleHumans={legendProps.onToggleHumans}
+          onToggleBots={legendProps.onToggleBots}
+        />
         <h4>Leader Deck Selection <span className="stats-chart-subtitle">How often each leader is chosen for built decks</span></h4>
         <LeaderCharts
-          allData={leaderSelData?.leaders || null}
-          tournamentData={leaderSelDataTournament?.leaders || null}
-          topData={leaderSelDataTop?.leaders || null}
-          youData={leaderSelDataYou?.leaders || null}
+          allData={filterChartData(leaderSelData?.leaders || null)}
+          tournamentData={filterChartData(leaderSelDataTournament?.leaders || null)}
+          topData={filterChartData(leaderSelDataTop?.leaders || null)}
+          youData={filterChartData(leaderSelDataYou?.leaders || null)}
           valueKey="timesSelected"
           canSeeFullStats={canSeeFullStats}
           user={user}
         />
         <h4>Top 25 Cards by Deck Inclusion <span className="stats-chart-subtitle">Most frequently included cards in built decks</span></h4>
         <CardCharts
-          allData={cardData?.cards || null}
-          tournamentData={cardDataTournament?.cards || null}
-          topData={cardDataTop?.cards || null}
-          youData={cardDataYou?.cards || null}
+          allData={filterChartData(cardData?.cards || null)}
+          tournamentData={filterChartData(cardDataTournament?.cards || null)}
+          topData={filterChartData(cardDataTop?.cards || null)}
+          youData={filterChartData(cardDataYou?.cards || null)}
           valueKey="inclusionRate"
           formatValue={(v: number) => `${v.toFixed(1)}%`}
           canSeeFullStats={canSeeFullStats}
