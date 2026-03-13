@@ -1,34 +1,43 @@
 # Release Notes
 
 ## 03.13.2026
+Happy LAW release day! It's also a big release day for Protect the Pod!
+
+Analytics is now much more fully featured for all users, check it out: [https://protecthtepod.com/stats](https://protecthtepod.com/stats).
+
+We've added a lot of benefits to the Patreon membership. Professional Analytics, early access to features and beta release exapnsion sets, and golden flair for your avatars so everyone know you are awesome.
+
+What are "Professional Analytics?" Two things so far:
+1) **Tournament Players** We've cross referenced melee.gg data to our user list and found almost 300 of you who are competing limited tournaments around the world! These "tournament players" have slightly different stats than the general population, so players can compare their choices to these global tournament players.
+2) **Top Players** Using melee.gg, we can also determine the subset of these tournament players who have ranked highly at these events. The data aggregated among the best of the best players is maybe the most exciting part of Professional Analytics.
+
+I always want the entire community to have access to important data about online limited play. But analytics is not free! (I've already had to upgrade the database once since rolling out analytics.) Professional Analytics is intended to be a perk for our power users who want to support development and hosting of PTP, not as a gate for information.
+
+We've also added a button to the analytics page to let anyone download their raw draft and sealed data to do analysis on it. Even if you aren't a data expert yourself, try pasting that downloaded file into an AI chatbot like ChatGPT or Claude and ask the chatbot questions about your data. You might be surprised at how much you can learn this way!
+
+### ❤️ Support the Pod
+We've launched all new rewards for Friends of the Pod (our Patreon supporters).
+Join [https://www.patreon.com/c/ProtectthePod/membership](here)! Or try a free 7 day trial of these perks via Patreon.
+
+- **Professional Stats**: Access draft and sealed data across top limited players.
+- **Beta Access**: Access early features and pre-release sets by becoming an exclusive beta tester.
+- **Discord Access**: Join the supporters-only Discord channel with the dev team.
+- **Avatar Flair**: Special avatar treatment so everyone knows you're a supporter.
+- **Support the Pod**: Earn the eternal gratitude of the community for being a supporter of the pod!
+
+### 🎮 Gameplay
+- **A Lawless Time!**: LAW is now in release mode. Thanks everyone for helping test, especially my data collectors and beta testers!
 
 ### 📊 Stats Page
 - **Data visualizations**: Pie charts for leader draft frequency and bar charts for top 25 cards now appear at the top of each tab, giving you an at-a-glance view before the detailed tables.
-- **Multicolor gradient charts**: Cards with two color aspects (e.g. Command/Aggression) render with gradient fills in pie and bar charts.
-- **XX% (Y/Z) format**: All chart labels and tooltips now show percentage with counts (e.g. "32% (83/259)") so you can see both relative and absolute numbers.
-- **Neutral and Multicolor filters**: New "N" and "M" filter buttons let you filter tables to neutral cards (no color aspects) or multicolor cards (2+ color aspects, excluding Villainy/Heroism).
-- **Card preview on bar charts**: Hovering over a card name in bar charts shows the enlarged card image, just like in tables. Leaders show both sides.
-- **Leader preview shows both sides**: Leader card previews throughout the stats page now display front and back images side-by-side.
-- **Clearer chart headings**: Charts now have descriptive subtitles explaining what they measure (e.g. "How often each leader is drafted").
-- **Renamed panels**: "Tournament" and "Top" are now "Tournament Players" and "Top Players" in charts for clarity. Table rows use compact labels.
-- **Download personal data**: Logged-in users can click "Download Personal Data" to export all their pods, pools, decks, and draft picks as a JSON file. Includes opponent Discord handles and their drafted leaders, draft picks in order, and IDs linking everything together. No PII or other users' private data.
+- **Search and aspect filters**: Filter buttons let you filter stats tables by aspect and search them by text.
+- **Download personal data**: Logged-in users can click "Download Personal Data" to export all their pods, pools, decks, and draft picks as a JSON file. Includes opponent Discord handles and their drafted leaders, draft picks in order, and IDs linking everything together. Other users' data is not included in the export other than their Discrd handles.
 - **Delta badges**: Your stats now show comparison arrows (green/red) against All, Tournament, and Top players so you can see where you're above or below average.
-- **Deck inclusion fix**: Card variants (Normal, Foil, Hyperspace, etc.) are now aggregated as one card in deck inclusion stats instead of being counted separately.
+- **Deck inclusion bug fix**: Card variants (Normal, Foil, Hyperspace, etc.) are now aggregated as one card in deck inclusion stats instead of being counted separately.
 
 ### 🤖 AI Players
 - **Smarter bot leader picks**: Bots now pick leaders based on overall popularity (total times picked by humans) instead of first-pick rate. This fixes an issue where bots were over-drafting niche leaders like Darth Vader in LAW. Bot popularity data excludes other bots to avoid feedback loops.
 - **Updated fallback rankings**: Default leader rankings for all 7 sets updated from real production draft data.
-
-### 🎮 Game Modes/Gameplay
-- **Draft timer off by default**: New drafts start with the pick timer disabled. Hosts can still enable it in settings.
-- **Date-driven set states**: Beta/prerelease flags replaced with date-driven `availableDate` and `releaseDate` fields, so sets automatically transition from beta to prerelease to released.
-
-### 🎨 UI Improvements
-- **Patron gold border**: Patrons now have a gold border around their avatar in the player circle during drafts and sealed.
-- **Friend of the Pod badge**: Patrons display a small patron badge on their avatar throughout the app.
-- **Beta program tag**: Users enrolled in the beta program see a "BETA PROGRAM" badge in their profile dropdown instead of the enrollment link.
-- **Player circle spacing**: The player circle on desktop is larger, giving more breathing room between seats.
-- **Chat private notice fix**: The "Private pods do not store chat history" notice now persists correctly when switching between mobile and desktop layouts, and auto-dismisses when a host makes the pod public.
 
 ### 🐞 Bug Fixes
 - **Stats hydration error**: Fixed a React hydration error on the stats page caused by `<div>` inside `<p>`.
@@ -448,6 +457,7 @@ Additionally, we've got a Discord now: [https://discord.gg/u6fkdDzWqF](https://d
    - 💽 Data Changes
    - 🤖 AI Players
    - 🎮 Game Modes/Gameplay
+   - ❤️ Support the Pod
 4. Keep entries concise and user-friendly
 
 Run `node scripts/postbuild.js` to update the release notes on website.
