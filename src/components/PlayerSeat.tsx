@@ -77,8 +77,8 @@ function PlayerSeat({
   return (
     <div className={`player-seat ${isCurrentUser ? 'current-user' : ''}`}>
       <div
-        className="seat-avatar"
-        style={{ borderColor }}
+        className={`seat-avatar ${isPatron ? 'seat-avatar-patron' : ''}`}
+        style={{ borderColor: isPatron ? undefined : borderColor }}
       >
         {showRemove && (
           <button

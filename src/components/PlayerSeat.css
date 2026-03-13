@@ -34,12 +34,12 @@
   background: #333;
 }
 
-/* Gold frame for patron seats */
-.player-seat:has(.seat-patron-badge) .seat-avatar {
-  border-color: #cc6a00;
+/* Gold frame for patron seats — matches UserAvatar patron styling */
+.seat-avatar-patron {
+  border-color: #cc6a00 !important;
   box-shadow:
     0 0 0 2px #ffb347,
-    0 0 8px rgba(255, 179, 71, 0.5);
+    0 0 8px rgba(255, 179, 71, 0.5) !important;
 }
 
 /* Patron badge — outside seat-avatar to avoid border-radius clipping.
