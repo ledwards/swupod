@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import type { SyntheticEvent } from 'react'
 import './SetSelection.css'
-import { fetchSets } from '../utils/api'
+import { fetchSets, isSetBeta, isSetPrerelease } from '../utils/api'
 import { useAuth } from '../contexts/AuthContext'
 import Button from './Button'
 
@@ -10,7 +10,7 @@ interface SetData {
   code: string
   name: string
   imageUrl?: string
-  beta?: boolean
+  prereleaseDate?: string
   releaseDate?: string
 }
 
@@ -25,7 +25,6 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
   const { user } = useAuth()
   const [sets, setSets] = useState<SetData[]>([])
   const [latestSets, setLatestSets] = useState<SetData[]>([])
-  const [betaSets, setBetaSets] = useState<SetData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [imageFallbacks, setImageFallbacks] = useState<Record<string, number>>({})
@@ -96,13 +95,10 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
       try {
         setLoading(true)
         const setsData = await fetchSets({ includeBeta: hasBetaAccess })
-        // Separate beta sets from regular sets
-        const regular = setsData.filter((set: SetData) => !set.beta && getSetNumber(set.code) < 7)
-        const latest = setsData.filter((set: SetData) => !set.beta && getSetNumber(set.code) >= 7)
-        const beta = setsData.filter((set: SetData) => set.beta)
+        const regular = setsData.filter((set: SetData) => getSetNumber(set.code) < 7)
+        const latest = setsData.filter((set: SetData) => getSetNumber(set.code) >= 7)
         setRawSets(regular)
         setLatestSets(latest)
-        setBetaSets(beta)
       } catch (err) {
         setError((err as Error).message)
       } finally {
@@ -167,15 +163,53 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
       </div>
       {latestSets.length > 0 && (
         <div className="latest-sets-row">
-          {latestSets.map((set) => (
+          {latestSets.map((set) => {
+            const beta = isSetBeta(set)
+            const prerelease = isSetPrerelease(set)
+            const badgeText = beta ? 'Beta' : prerelease ? 'Pre-Release' : null
+            const cardClass = beta ? 'set-card--beta' : prerelease ? 'set-card--prerelease' : ''
+            return (
+              <div
+                key={set.code}
+                className={`set-card ${cardClass}`}
+                onClick={() => onSetSelect(set.code)}
+              >
+                {badgeText && <div className="beta-badge">{badgeText}</div>}
+                <div className="set-image-container">
+                  {set.imageUrl && !failedImages.has(set.code) && (
+                    <img
+                      src={set.imageUrl}
+                      alt={`${set.name} booster pack`}
+                      className="set-image"
+                      onError={(e) => handleImageError(set.code, e)}
+                    />
+                  )}
+                  <div className="set-image-placeholder" style={{ display: (!set.imageUrl || failedImages.has(set.code)) ? 'flex' : 'none' }}>
+                    <div className="placeholder-text">{set.name}</div>
+                    <div className="placeholder-code">{set.code}</div>
+                  </div>
+                </div>
+                <div className="set-info">
+                  <h3>{set.name}</h3>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+      <div className="sets-grid">
+        {sets.map((set) => {
+          const beta = isSetBeta(set)
+          const prerelease = isSetPrerelease(set)
+          const badgeText = beta ? 'Beta' : prerelease ? 'Pre-Release' : null
+          const cardClass = beta ? 'set-card--beta' : prerelease ? 'set-card--prerelease' : ''
+          return (
             <div
               key={set.code}
-              className={`set-card${set.releaseDate && new Date(set.releaseDate) > new Date() ? ' set-card--prerelease' : ''}`}
+              className={`set-card ${cardClass}`}
               onClick={() => onSetSelect(set.code)}
             >
-              {set.releaseDate && new Date(set.releaseDate) > new Date() && (
-                <div className="beta-badge">Pre-Release</div>
-              )}
+              {badgeText && <div className="beta-badge">{badgeText}</div>}
               <div className="set-image-container">
                 {set.imageUrl && !failedImages.has(set.code) && (
                   <img
@@ -194,69 +228,8 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
                 <h3>{set.name}</h3>
               </div>
             </div>
-          ))}
-        </div>
-      )}
-      {betaSets.length > 0 && (
-        <div className="beta-sets-row">
-          {betaSets.map((set) => (
-            <div
-              key={set.code}
-              className="set-card set-card--beta"
-              onClick={() => onSetSelect(set.code)}
-            >
-              <div className="beta-badge">Pre-Release</div>
-              <div className="set-image-container">
-                {set.imageUrl && !failedImages.has(set.code) ? (
-                  <img
-                    src={set.imageUrl}
-                    alt={`${set.name} booster pack`}
-                    className="set-image"
-                    onError={(e) => handleImageError(set.code, e)}
-                  />
-                ) : (
-                  <div className="set-image-placeholder" style={{ position: 'relative' }}>
-                    <div className="placeholder-text">{set.name}</div>
-                    <div className="placeholder-code">{set.code}</div>
-                  </div>
-                )}
-              </div>
-              <div className="set-info">
-                <h3>{set.name}</h3>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-      <div className="sets-grid">
-        {sets.map((set) => (
-          <div
-            key={set.code}
-            className={`set-card${set.releaseDate && new Date(set.releaseDate) > new Date() ? ' set-card--prerelease' : ''}`}
-            onClick={() => onSetSelect(set.code)}
-          >
-            {set.releaseDate && new Date(set.releaseDate) > new Date() && (
-              <div className="beta-badge">Pre-Release</div>
-            )}
-            <div className="set-image-container">
-              {set.imageUrl && !failedImages.has(set.code) && (
-                <img
-                  src={set.imageUrl}
-                  alt={`${set.name} booster pack`}
-                  className="set-image"
-                  onError={(e) => handleImageError(set.code, e)}
-                />
-              )}
-              <div className="set-image-placeholder" style={{ display: (!set.imageUrl || failedImages.has(set.code)) ? 'flex' : 'none' }}>
-                <div className="placeholder-text">{set.name}</div>
-                <div className="placeholder-code">{set.code}</div>
-              </div>
-            </div>
-            <div className="set-info">
-              <h3>{set.name}</h3>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

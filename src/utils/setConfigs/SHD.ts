@@ -14,6 +14,8 @@ export const SHD_CONFIG: SetConfig = {
   setName: 'Shadows of the Galaxy',
   setNumber: 2,
   color: '#9B59B6', // Purple
+  prereleaseDate: '2024-07-05',
+  releaseDate: '2024-07-12',
 
   // Card counts (Normal variants only)
   cardCounts: {

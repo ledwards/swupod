@@ -16,20 +16,20 @@ describe('fetchSets', () => {
       assert.strictEqual(sets.length, 7, 'Should have 7 sets')
     })
 
-    it('should include LAW without beta flag', async () => {
+    it('should include LAW with prereleaseDate', async () => {
       const sets = await fetchSets()
       const lawSet = sets.find(s => s.code === 'LAW')
 
       assert.ok(lawSet, 'LAW set should exist')
-      assert.ok(!lawSet.beta, 'LAW should not have beta flag')
+      assert.strictEqual(lawSet.prereleaseDate, '2026-03-06', 'LAW should have prereleaseDate')
       assert.strictEqual(lawSet.name, 'A Lawless Time', 'LAW should have correct name')
     })
 
-    it('should not mark any sets as beta', async () => {
+    it('should have prereleaseDate for all sets', async () => {
       const sets = await fetchSets()
 
       for (const set of sets) {
-        assert.ok(!set.beta, `${set.code} should not be marked as beta`)
+        assert.ok(set.prereleaseDate, `${set.code} should have prereleaseDate`)
       }
     })
   })

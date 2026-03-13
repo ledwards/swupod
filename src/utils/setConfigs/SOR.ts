@@ -14,6 +14,8 @@ export const SOR_CONFIG: SetConfig = {
   setName: 'Spark of Rebellion',
   setNumber: 1,
   color: '#CC0000', // Darker red
+  prereleaseDate: '2024-03-01',
+  releaseDate: '2024-03-08',
 
   // Card counts (Normal variants only)
   cardCounts: {

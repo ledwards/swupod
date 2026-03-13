@@ -14,6 +14,8 @@ export const JTL_CONFIG: SetConfig = {
   setName: 'Jump to Lightspeed',
   setNumber: 4,
   color: '#FFD700', // Yellow
+  prereleaseDate: '2025-03-07',
+  releaseDate: '2025-03-14',
 
   // Card counts (Normal variants only)
   cardCounts: {

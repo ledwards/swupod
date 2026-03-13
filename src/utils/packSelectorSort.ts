@@ -10,7 +10,8 @@ export interface SetData {
   code: string
   name: string
   imageUrl?: string
-  beta?: boolean
+  prereleaseDate?: string
+  releaseDate?: string
   carbonite?: boolean
 }
 

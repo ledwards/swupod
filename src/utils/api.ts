@@ -8,10 +8,28 @@ import type { RawCard } from './cardData'
 interface SetInfo {
   code: string
   name: string
+  prereleaseDate?: string
   releaseDate: string
-  beta?: boolean
   carbonite?: boolean
   imageUrl: string | null
+}
+
+/**
+ * Check if a set is in beta state (before prereleaseDate)
+ */
+export function isSetBeta(set: { prereleaseDate?: string }): boolean {
+  if (!set.prereleaseDate) return false
+  return new Date().toISOString() < new Date(set.prereleaseDate + 'T00:00:00Z').toISOString()
+}
+
+/**
+ * Check if a set is in pre-release state (between prereleaseDate and releaseDate)
+ */
+export function isSetPrerelease(set: { prereleaseDate?: string; releaseDate?: string }): boolean {
+  if (!set.prereleaseDate || !set.releaseDate) return false
+  const now = new Date().toISOString()
+  return now >= new Date(set.prereleaseDate + 'T00:00:00Z').toISOString() &&
+         now < new Date(set.releaseDate + 'T00:00:00Z').toISOString()
 }
 
 interface FetchSetsOptions {
@@ -30,23 +48,23 @@ export async function fetchSets({ includeBeta = false, includeCarbonite = false 
   // Use hardcoded set data for the expansion sets
   // External API calls fail due to CORS, so we use local data
   const knownSets = [
-    { code: 'SOR', name: 'Spark of Rebellion', releaseDate: '2024-03-08' },
-    { code: 'SHD', name: 'Shadows of the Galaxy', releaseDate: '2024-07-12' },
-    { code: 'TWI', name: 'Twilight of the Republic', releaseDate: '2024-11-08' },
-    { code: 'JTL', name: 'Jump to Lightspeed', releaseDate: '2025-03-14' },
-    { code: 'JTL-CB', name: 'Jump to Lightspeed Carbonite Edition', releaseDate: '2025-03-14', carbonite: true },
-    { code: 'LOF', name: 'Legends of the Force', releaseDate: '2025-07-11' },
-    { code: 'LOF-CB', name: 'Legends of the Force Carbonite Edition', releaseDate: '2025-07-11', carbonite: true },
-    { code: 'SEC', name: 'Secrets of Power', releaseDate: '2025-11-07' },
-    { code: 'SEC-CB', name: 'Secrets of Power Carbonite Edition', releaseDate: '2025-11-07', carbonite: true },
-    { code: 'LAW', name: 'A Lawless Time', releaseDate: '2026-03-13' },
-    { code: 'LAW-CB', name: 'A Lawless Time Carbonite Edition', releaseDate: '2026-03-13', carbonite: true },
+    { code: 'SOR', name: 'Spark of Rebellion', prereleaseDate: '2024-03-01', releaseDate: '2024-03-08' },
+    { code: 'SHD', name: 'Shadows of the Galaxy', prereleaseDate: '2024-07-05', releaseDate: '2024-07-12' },
+    { code: 'TWI', name: 'Twilight of the Republic', prereleaseDate: '2024-11-01', releaseDate: '2024-11-08' },
+    { code: 'JTL', name: 'Jump to Lightspeed', prereleaseDate: '2025-03-07', releaseDate: '2025-03-14' },
+    { code: 'JTL-CB', name: 'Jump to Lightspeed Carbonite Edition', prereleaseDate: '2025-03-07', releaseDate: '2025-03-14', carbonite: true },
+    { code: 'LOF', name: 'Legends of the Force', prereleaseDate: '2025-07-04', releaseDate: '2025-07-11' },
+    { code: 'LOF-CB', name: 'Legends of the Force Carbonite Edition', prereleaseDate: '2025-07-04', releaseDate: '2025-07-11', carbonite: true },
+    { code: 'SEC', name: 'Secrets of Power', prereleaseDate: '2025-10-31', releaseDate: '2025-11-07' },
+    { code: 'SEC-CB', name: 'Secrets of Power Carbonite Edition', prereleaseDate: '2025-10-31', releaseDate: '2025-11-07', carbonite: true },
+    { code: 'LAW', name: 'A Lawless Time', prereleaseDate: '2026-03-06', releaseDate: '2026-03-13' },
+    { code: 'LAW-CB', name: 'A Lawless Time Carbonite Edition', prereleaseDate: '2026-03-06', releaseDate: '2026-03-13', carbonite: true },
   ]
 
-  // Filter out beta and carbonite sets unless explicitly requested
+  // Filter out beta (pre-prereleaseDate) sets unless explicitly requested
   let filteredSets = knownSets
   if (!includeBeta) {
-    filteredSets = filteredSets.filter((set) => !set.beta)
+    filteredSets = filteredSets.filter((set) => !isSetBeta(set))
   }
   if (!includeCarbonite) {
     filteredSets = filteredSets.filter((set) => !set.carbonite)

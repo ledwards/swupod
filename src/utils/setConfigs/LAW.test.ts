@@ -19,8 +19,9 @@ describe('LAW_CONFIG', () => {
       assert.strictEqual(LAW_CONFIG.setNumber, 7)
     })
 
-    it('should be marked as prerelease', () => {
-      assert.strictEqual(LAW_CONFIG.prerelease, true)
+    it('should have prereleaseDate and releaseDate', () => {
+      assert.strictEqual(LAW_CONFIG.prereleaseDate, '2026-03-06')
+      assert.strictEqual(LAW_CONFIG.releaseDate, '2026-03-13')
     })
 
     it('should have a color defined', () => {

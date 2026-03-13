@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import Button from './Button'
-import { getSetConfig } from '../utils/setConfigs'
+import { getSetConfig, isPrerelease } from '../utils/setConfigs'
 import './PackOpeningAnimation.css'
 
 
@@ -70,8 +70,9 @@ export default function PackOpeningAnimation({
   hasBox = false,
   setCode,
 }: PackOpeningAnimationProps) {
-  // Check if this is a prerelease set
-  const isPrerelease = setCode ? getSetConfig(setCode)?.prerelease === true : false
+  // Check if this is a prerelease set (between prereleaseDate and releaseDate)
+  const config = setCode ? getSetConfig(setCode) : null
+  const isPrereleaseSet = config ? isPrerelease(config) : false
   // Get pack image for a specific pack index
   const getPackImage = (index: number) => {
     if (packImageUrls && packImageUrls[index]) {
@@ -526,7 +527,7 @@ export default function PackOpeningAnimation({
       </Button>
 
       {/* Prerelease disclaimer */}
-      {isPrerelease && (
+      {isPrereleaseSet && (
         <div className="prerelease-disclaimer">
           <span className="prerelease-badge">Pre-Release</span>
           <span className="prerelease-text">Taking our best guess at pack collation. Potentially low fidelity to real life pack experience until we have more real world data.</span>

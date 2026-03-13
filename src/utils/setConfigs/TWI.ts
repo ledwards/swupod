@@ -14,6 +14,8 @@ export const TWI_CONFIG: SetConfig = {
   setName: 'Twilight of the Republic',
   setNumber: 3,
   color: '#6B0000', // Reddish maroon
+  prereleaseDate: '2024-11-01',
+  releaseDate: '2024-11-08',
 
   // Card counts (Normal variants only)
   cardCounts: {

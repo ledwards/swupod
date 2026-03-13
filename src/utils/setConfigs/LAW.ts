@@ -26,7 +26,8 @@ export const LAW_CONFIG: SetConfig = {
   setName: 'A Lawless Time',
   setNumber: 7,
   color: '#8B4513', // Brown/western theme
-  prerelease: true, // Pre-release set with estimated collation
+  prereleaseDate: '2026-03-06',
+  releaseDate: '2026-03-13',
 
   // Card counts (Normal variants only) - from swuapi.com data
   // Auto-refreshed via prebuild fetch-cards

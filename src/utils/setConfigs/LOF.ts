@@ -14,6 +14,8 @@ export const LOF_CONFIG: SetConfig = {
   setName: 'Legends of the Force',
   setNumber: 5,
   color: '#5DADE2', // Light blue
+  prereleaseDate: '2025-07-04',
+  releaseDate: '2025-07-11',
 
   // Card counts (Normal variants only)
   cardCounts: {

@@ -11,7 +11,7 @@ import CardPreview from '@/src/components/DeckBuilder/CardPreview'
 import { useCardPreview } from '@/src/hooks/useCardPreview'
 import { useRotisserieSocket } from '@/src/hooks/useRotisserieSocket'
 import { getSetConfig } from '@/src/utils/setConfigs/index'
-import { fetchSets } from '@/src/utils/api'
+import { fetchSets, isSetBeta, isSetPrerelease } from '@/src/utils/api'
 import { getPackArtUrl } from '@/src/utils/packArt'
 import { getSingleAspectColor } from '@/src/utils/aspectColors'
 
@@ -1027,7 +1027,8 @@ export default function RotisseriePlayPage() {
                     onClick={() => isHost && handleToggleSet(set.code)}
                     style={{ '--set-color': setColor } as React.CSSProperties}
                   >
-                    {set.beta && <div className="beta-badge">Beta</div>}
+                    {isSetBeta(set) && <div className="beta-badge">Beta</div>}
+                    {isSetPrerelease(set) && <div className="beta-badge">Pre-Release</div>}
                     <div className="set-image-container">
                       <img
                         src={packArtUrl}

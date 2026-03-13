@@ -14,6 +14,8 @@ export const SEC_CONFIG: SetConfig = {
   setName: 'Secrets of Power',
   setNumber: 6,
   color: '#6A1B9A', // Darker purple
+  prereleaseDate: '2025-10-31',
+  releaseDate: '2025-11-07',
 
   // Card counts (Normal variants only)
   cardCounts: {

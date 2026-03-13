@@ -13,6 +13,7 @@
 
 import { getPackImageUrl } from '@/src/utils/packArt'
 import { getSetConfig } from '@/src/utils/setConfigs'
+import { isSetBeta, isSetPrerelease } from '@/src/utils/api'
 import { getBaseCode, sortSetsForDisplay } from '@/src/utils/packSelectorSort'
 import type { SetData } from '@/src/utils/packSelectorSort'
 import './PackSelector.css'
@@ -136,7 +137,8 @@ export function PackSelector({
         <div className="pack-selector-content">
           <span className="pack-selector-name">{set.name}</span>
         </div>
-        {set.beta && <span className="pack-selector-beta">Beta</span>}
+        {isSetBeta(set) && <span className="pack-selector-beta">Beta</span>}
+        {isSetPrerelease(set) && <span className="pack-selector-beta">Pre-Release</span>}
       </div>
     )
   }

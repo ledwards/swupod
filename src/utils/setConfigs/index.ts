@@ -83,8 +83,8 @@ export interface SetConfig {
   setName: string
   setNumber: number
   color: string
-  beta?: boolean
-  prerelease?: boolean // Pre-release set with estimated collation
+  prereleaseDate?: string // UTC date string (YYYY-MM-DD) when pre-release begins
+  releaseDate?: string    // UTC date string (YYYY-MM-DD) of official release
   cardCounts: CardCounts
   packRules: PackRules
   rarityWeights: SetRarityWeights
@@ -121,4 +121,30 @@ export function getSetConfig(setCode: SetCode | string): SetConfig | null {
  */
 export function getAllSetCodes(): string[] {
   return Object.keys(SET_CONFIGS)
+}
+
+/**
+ * Check if a set is in beta state (before prereleaseDate)
+ */
+export function isBeta(config: SetConfig): boolean {
+  if (!config.prereleaseDate) return false
+  return new Date().toISOString() < new Date(config.prereleaseDate + 'T00:00:00Z').toISOString()
+}
+
+/**
+ * Check if a set is in pre-release state (between prereleaseDate and releaseDate)
+ */
+export function isPrerelease(config: SetConfig): boolean {
+  if (!config.prereleaseDate || !config.releaseDate) return false
+  const now = new Date().toISOString()
+  return now >= new Date(config.prereleaseDate + 'T00:00:00Z').toISOString() &&
+         now < new Date(config.releaseDate + 'T00:00:00Z').toISOString()
+}
+
+/**
+ * Check if a set has been officially released
+ */
+export function isReleased(config: SetConfig): boolean {
+  if (!config.releaseDate) return true
+  return new Date().toISOString() >= new Date(config.releaseDate + 'T00:00:00Z').toISOString()
 }

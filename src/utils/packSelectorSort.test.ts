@@ -156,14 +156,14 @@ describe('sortSetsForDisplay', () => {
     assert.strictEqual(carbonite.length, 0)
   })
 
-  it('preserves beta flag on sets', () => {
+  it('preserves prereleaseDate on sets', () => {
     const sets = [
-      { code: 'LAW', name: 'A Lawless Time', beta: true },
+      { code: 'LAW', name: 'A Lawless Time', prereleaseDate: '2026-03-06' },
       { code: 'LAW-CB', name: 'LAW Carbonite', carbonite: true },
     ]
     const { main, carbonite } = sortSetsForDisplay(sets)
 
-    assert.ok(main[0].beta, 'beta flag should be preserved on main set')
+    assert.strictEqual(main[0].prereleaseDate, '2026-03-06', 'prereleaseDate should be preserved on main set')
     assert.ok(carbonite[0].carbonite, 'carbonite flag should be preserved')
   })
 })
