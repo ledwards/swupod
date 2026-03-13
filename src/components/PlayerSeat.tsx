@@ -106,6 +106,7 @@ function PlayerSeat({
           src="/icons/friend-of-the-pod.png"
           alt="Friend of the Pod"
           className="seat-patron-badge"
+          style={{ position: 'absolute', bottom: '6px', left: '50%', transform: 'translateX(-50%)', width: '58px', maxHeight: '40px', height: 'auto', pointerEvents: 'none', zIndex: 10 }}
         />
       )}
       {showStatus && (
