@@ -41,6 +41,29 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
+.stats-export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  font-family: 'Barlow', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .stats-export-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+  }
+}
+
 .stats-date-range {
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.5);

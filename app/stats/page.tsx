@@ -118,7 +118,7 @@ function StatsCell({ you, all, top, tournament, format, className, showYou, show
       )}
       {showTournament && (
         <div className="stats-row-tournament">
-          <span className="stats-row-label">Tournament:</span> {isBlurred ? <span className="stats-blur-value">---</span> : (<>{tournament != null ? f(tournament) : '—'}{renderDelta(tournament, 'tournament')}</>)}
+          <span className="stats-row-label">Tourn.:</span> {isBlurred ? <span className="stats-blur-value">---</span> : (<>{tournament != null ? f(tournament) : '—'}{renderDelta(tournament, 'tournament')}</>)}
         </div>
       )}
       {showTop && (
@@ -172,7 +172,7 @@ function StatsLegend({ user, showYou, showAll, showTop, showTournament, onToggle
       <div className="stats-legend-group">
         <label className={`stats-legend-toggle stats-legend-tournament ${isBlurred ? 'stats-legend-locked' : ''}`}>
           <input type="checkbox" checked={showTournament} onChange={onToggleTournament} disabled={isBlurred} />
-          Tournament {isBlurred && '🔒'}
+          Tournament Players {isBlurred && '🔒'}
           <span className="stats-filter-info" title={`${tournamentPlayerCount} app users who have competed in melee.gg tournaments (matched by username from swumetastats.com).`}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10"/>
@@ -186,7 +186,7 @@ function StatsLegend({ user, showYou, showAll, showTop, showTournament, onToggle
       <div className="stats-legend-group">
         <label className={`stats-legend-toggle stats-legend-top ${isBlurred ? 'stats-legend-locked' : ''}`}>
           <input type="checkbox" checked={showTop} onChange={onToggleTop} disabled={isBlurred} />
-          Top {isBlurred && '🔒'}
+          Top Players {isBlurred && '🔒'}
           <span className="stats-filter-info" title={`${topPlayerCount != null ? topPlayerCount : '...'} curated top competitive players.`}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10"/>
@@ -393,6 +393,21 @@ export default function StatsPage() {
       <div className="stats-header">
         <h1>Stats</h1>
         <p>Card performance across drafts and sealed</p>
+        {user && (
+          <button
+            className="stats-export-btn"
+            onClick={() => {
+              window.location.href = '/api/export/personal'
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download Personal Data
+          </button>
+        )}
         <div className="stats-date-range">
           <span className="date-field">
             {editingStart ? (

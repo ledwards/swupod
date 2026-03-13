@@ -70,12 +70,15 @@ function ChartPanel({ label, color, blurred, loggedOut, children }: {
 }
 
 // === Custom pie label renderer ===
-function renderPieLabel({ cx, cy, midAngle, innerRadius, outerRadius, name, percent }: any) {
+function renderPieLabel({ cx, cy, midAngle, innerRadius, outerRadius, name, percent, value, payload }: any) {
   if (percent < 0.04) return null // Skip tiny slices
   const RADIAN = Math.PI / 180
   const radius = outerRadius + 18
   const x = cx + radius * Math.cos(-midAngle * RADIAN)
   const y = cy + radius * Math.sin(-midAngle * RADIAN)
+  const total = payload?._total || 0
+  const pctStr = `${(percent * 100).toFixed(0)}%`
+  const label = total > 0 ? `${name} ${pctStr} (${value}/${total})` : `${name} ${pctStr}`
   return (
     <text
       x={x}
@@ -85,7 +88,7 @@ function renderPieLabel({ cx, cy, midAngle, innerRadius, outerRadius, name, perc
       dominantBaseline="central"
       fontSize={10}
     >
-      {name}
+      {label}
     </text>
   )
 }
@@ -97,8 +100,9 @@ function LeaderPieChart({ leaders, valueKey }: {
 }) {
   const data = useMemo(() => {
     if (!leaders?.length) return []
-    return leaders
-      .filter(l => l[valueKey] > 0)
+    const filtered = leaders.filter(l => l[valueKey] > 0)
+    const total = filtered.reduce((sum, l) => sum + l[valueKey], 0)
+    return filtered
       .sort((a, b) => b[valueKey] - a[valueKey])
       .slice(0, 20)
       .map(l => ({
@@ -106,6 +110,7 @@ function LeaderPieChart({ leaders, valueKey }: {
         value: l[valueKey],
         color: getAspectColor({ aspects: l.aspects }),
         colors: getAspectColors({ aspects: l.aspects }),
+        _total: total,
       }))
   }, [leaders, valueKey])
 
@@ -134,7 +139,11 @@ function LeaderPieChart({ leaders, valueKey }: {
         </Pie>
         <Tooltip
           contentStyle={{ background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 6, color: '#fff', fontSize: '0.85rem' }}
-          formatter={(value: number, name: string) => [value, name]}
+          formatter={(value: number, name: string, props: any) => {
+            const total = props?.payload?._total || 0
+            const pct = total > 0 ? ((value / total) * 100).toFixed(1) : '0'
+            return [`${pct}% (${value}/${total})`, name]
+          }}
         />
       </PieChart>
     </ResponsiveContainer>
@@ -146,9 +155,8 @@ function renderBarLabel(formatValue?: (v: number) => string, total?: number) {
   return (props: any) => {
     const { x, y, width, height, value } = props
     if (width < 30) return null // Don't render on tiny bars
-    const fmtVal = formatValue ? formatValue(value) : String(value)
     const pct = total && total > 0 ? `${((value / total) * 100).toFixed(0)}%` : null
-    const label = pct ? `${fmtVal} (${pct})` : fmtVal
+    const label = pct ? `${pct} (${value}/${total})` : (formatValue ? formatValue(value) : String(value))
     return (
       <text
         x={x + width - 6}
@@ -235,13 +243,13 @@ export function LeaderCharts({ allData, tournamentData, topData, youData, valueK
       <ChartPanel label="You" color={PANEL_COLORS.you} loggedOut={!user}>
         <LeaderPieChart leaders={youData || []} valueKey={valueKey} />
       </ChartPanel>
-      <ChartPanel label="All" color={PANEL_COLORS.all}>
+      <ChartPanel label="All Players" color={PANEL_COLORS.all}>
         <LeaderPieChart leaders={allData || []} valueKey={valueKey} />
       </ChartPanel>
-      <ChartPanel label="Tournament" color={PANEL_COLORS.tournament} blurred={!canSeeFullStats}>
+      <ChartPanel label="Tournament Players" color={PANEL_COLORS.tournament} blurred={!canSeeFullStats}>
         <LeaderPieChart leaders={tournamentData || []} valueKey={valueKey} />
       </ChartPanel>
-      <ChartPanel label="Top" color={PANEL_COLORS.top} blurred={!canSeeFullStats}>
+      <ChartPanel label="Top Players" color={PANEL_COLORS.top} blurred={!canSeeFullStats}>
         <LeaderPieChart leaders={topData || []} valueKey={valueKey} />
       </ChartPanel>
     </div>
@@ -264,13 +272,13 @@ export function CardCharts({ allData, tournamentData, topData, youData, valueKey
       <ChartPanel label="You" color={PANEL_COLORS.you} loggedOut={!user}>
         <TopCardsBarChart cards={youData || []} valueKey={valueKey} formatValue={formatValue} />
       </ChartPanel>
-      <ChartPanel label="All" color={PANEL_COLORS.all}>
+      <ChartPanel label="All Players" color={PANEL_COLORS.all}>
         <TopCardsBarChart cards={allData || []} valueKey={valueKey} formatValue={formatValue} />
       </ChartPanel>
-      <ChartPanel label="Tournament" color={PANEL_COLORS.tournament} blurred={!canSeeFullStats}>
+      <ChartPanel label="Tournament Players" color={PANEL_COLORS.tournament} blurred={!canSeeFullStats}>
         <TopCardsBarChart cards={tournamentData || []} valueKey={valueKey} formatValue={formatValue} />
       </ChartPanel>
-      <ChartPanel label="Top" color={PANEL_COLORS.top} blurred={!canSeeFullStats}>
+      <ChartPanel label="Top Players" color={PANEL_COLORS.top} blurred={!canSeeFullStats}>
         <TopCardsBarChart cards={topData || []} valueKey={valueKey} formatValue={formatValue} />
       </ChartPanel>
     </div>
