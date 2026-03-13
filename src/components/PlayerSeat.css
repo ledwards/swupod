@@ -8,7 +8,7 @@
   position: relative;
 }
 
-.player-seat.current-user .seat-avatar {
+.player-seat.current-user .seat-avatar:not(.seat-avatar-patron) {
   border-color: #4a90d9;
   box-shadow: 0 0 10px rgba(74, 144, 217, 0.5);
 }
