@@ -528,29 +528,29 @@ interface SetStatsTabProps {
 }
 
 function SetStatsTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred, canSeeFullStats }: SetStatsTabProps) {
-  const [subTab, setSubTab] = useState('draft')
+  const [subTab, setSubTab] = useState('sealed')
 
   return (
     <div className="generation-stats">
       <div className="stats-subtabs">
-        <button
-          className={`stats-subtab ${subTab === 'draft' ? 'active' : ''}`}
-          onClick={() => setSubTab('draft')}
-        >
-          Draft
-        </button>
         <button
           className={`stats-subtab ${subTab === 'sealed' ? 'active' : ''}`}
           onClick={() => setSubTab('sealed')}
         >
           Sealed
         </button>
+        <button
+          className={`stats-subtab ${subTab === 'draft' ? 'active' : ''}`}
+          onClick={() => setSubTab('draft')}
+        >
+          Draft
+        </button>
       </div>
 
-      {subTab === 'draft' ? (
-        <DraftTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} canSeeFullStats={canSeeFullStats} />
-      ) : (
+      {subTab === 'sealed' ? (
         <SealedTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} canSeeFullStats={canSeeFullStats} />
+      ) : (
+        <DraftTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} canSeeFullStats={canSeeFullStats} />
       )}
     </div>
   )
