@@ -1,5 +1,39 @@
 # Release Notes
 
+## 03.13.2026
+
+### 📊 Stats Page
+- **Data visualizations**: Pie charts for leader draft frequency and bar charts for top 25 cards now appear at the top of each tab, giving you an at-a-glance view before the detailed tables.
+- **Multicolor gradient charts**: Cards with two color aspects (e.g. Command/Aggression) render with gradient fills in pie and bar charts.
+- **XX% (Y/Z) format**: All chart labels and tooltips now show percentage with counts (e.g. "32% (83/259)") so you can see both relative and absolute numbers.
+- **Neutral and Multicolor filters**: New "N" and "M" filter buttons let you filter tables to neutral cards (no color aspects) or multicolor cards (2+ color aspects, excluding Villainy/Heroism).
+- **Card preview on bar charts**: Hovering over a card name in bar charts shows the enlarged card image, just like in tables. Leaders show both sides.
+- **Leader preview shows both sides**: Leader card previews throughout the stats page now display front and back images side-by-side.
+- **Clearer chart headings**: Charts now have descriptive subtitles explaining what they measure (e.g. "How often each leader is drafted").
+- **Renamed panels**: "Tournament" and "Top" are now "Tournament Players" and "Top Players" in charts for clarity. Table rows use compact labels.
+- **Download personal data**: Logged-in users can click "Download Personal Data" to export all their pods, pools, decks, and draft picks as a JSON file. Includes opponent Discord handles and their drafted leaders, draft picks in order, and IDs linking everything together. No PII or other users' private data.
+- **Delta badges**: Your stats now show comparison arrows (green/red) against All, Tournament, and Top players so you can see where you're above or below average.
+- **Deck inclusion fix**: Card variants (Normal, Foil, Hyperspace, etc.) are now aggregated as one card in deck inclusion stats instead of being counted separately.
+
+### 🤖 AI Players
+- **Smarter bot leader picks**: Bots now pick leaders based on overall popularity (total times picked by humans) instead of first-pick rate. This fixes an issue where bots were over-drafting niche leaders like Darth Vader in LAW. Bot popularity data excludes other bots to avoid feedback loops.
+- **Updated fallback rankings**: Default leader rankings for all 7 sets updated from real production draft data.
+
+### 🎮 Game Modes/Gameplay
+- **Draft timer off by default**: New drafts start with the pick timer disabled. Hosts can still enable it in settings.
+- **Date-driven set states**: Beta/prerelease flags replaced with date-driven `availableDate` and `releaseDate` fields, so sets automatically transition from beta to prerelease to released.
+
+### 🎨 UI Improvements
+- **Patron gold border**: Patrons now have a gold border around their avatar in the player circle during drafts and sealed.
+- **Friend of the Pod badge**: Patrons display a small patron badge on their avatar throughout the app.
+- **Beta program tag**: Users enrolled in the beta program see a "BETA PROGRAM" badge in their profile dropdown instead of the enrollment link.
+- **Player circle spacing**: The player circle on desktop is larger, giving more breathing room between seats.
+- **Chat private notice fix**: The "Private pods do not store chat history" notice now persists correctly when switching between mobile and desktop layouts, and auto-dismisses when a host makes the pod public.
+
+### 🐞 Bug Fixes
+- **Stats hydration error**: Fixed a React hydration error on the stats page caused by `<div>` inside `<p>`.
+- **Sort indicator spacing**: Sort arrows in stats tables now have proper left padding.
+
 ## 03.08.2026
 
 ### 🃏 Pack Generation
