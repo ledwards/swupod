@@ -77,7 +77,7 @@ function PlayerSeat({
   return (
     <div className={`player-seat ${isCurrentUser ? 'current-user' : ''}`}>
       <div
-        className="seat-avatar"
+        className={`seat-avatar ${isPatron ? 'seat-avatar-patron' : ''}`}
         style={{ borderColor }}
       >
         {showRemove && (
@@ -93,7 +93,7 @@ function PlayerSeat({
         <UserAvatar
           src={player?.avatarUrl}
           alt={player?.username}
-          isPatron={isPatron}
+          isPatron={false}
           size={44}
           fallback={player?.username?.[0]?.toUpperCase() || '?'}
         />
@@ -101,6 +101,13 @@ function PlayerSeat({
           <div className="status-check">✓</div>
         )}
       </div>
+      {isPatron && (
+        <img
+          src="/icons/friend-of-the-pod.png"
+          alt="Friend of the Pod"
+          className="seat-patron-badge"
+        />
+      )}
       {showStatus && (
         <div
           className="seat-status"

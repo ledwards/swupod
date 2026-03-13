@@ -30,8 +30,23 @@
   position: relative;
 }
 
-/* Let the Friend of the Pod badge overflow the seat circle */
-.seat-avatar .user-avatar-badge {
+/* Gold frame for patron avatars in player seats */
+.seat-avatar-patron {
+  border-color: #cc6a00 !important;
+  box-shadow:
+    0 0 0 2px #ffb347,
+    0 0 8px rgba(255, 179, 71, 0.5);
+}
+
+/* Friend of the Pod badge — rendered outside seat-avatar to avoid border-radius clipping */
+.seat-patron-badge {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: auto;
+  pointer-events: none;
   z-index: 10;
 }
 
