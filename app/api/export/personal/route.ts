@@ -102,7 +102,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         updated_at
       FROM card_pools
       WHERE user_id = $1
-        AND pod_id IS NOT NULL
       ORDER BY created_at DESC`,
       [session.id]
     )
@@ -202,7 +201,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       return {
         poolId: pool.pool_id,
         shareId: pool.share_id,
-        podId: pool.pod_id,
+        podId: pool.pod_id || null,
+        solo: !pool.pod_id,
         setCode: pool.set_code,
         setName: pool.set_name,
         poolName: pool.pool_name,
