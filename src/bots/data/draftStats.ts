@@ -193,7 +193,9 @@ function fetchDraftCount(setCode: string) {
     `SELECT COUNT(DISTINCT dp.draft_pod_id) as count
      FROM draft_picks dp
      JOIN pods p ON p.id = dp.draft_pod_id
-     WHERE dp.set_code = $1 AND p.status = 'complete'`,
+     JOIN pod_players pp ON pp.pod_id = dp.draft_pod_id AND pp.user_id = dp.user_id
+     WHERE dp.set_code = $1 AND p.status = 'complete'
+       AND (pp.is_bot = false OR pp.is_bot IS NULL)`,
     [setCode]
   )
 }

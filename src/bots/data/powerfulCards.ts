@@ -57,6 +57,61 @@ export const POWERFUL_CARDS: Partial<Record<SetCode | string, string[]>> = {
     'Coordinate',
   ],
 
+  // Lawless Lands
+  LAW: [
+    // Top tier units (avg pick position < 2.0)
+    'Admiral Motti',
+    'Maul',
+    'Aerie',
+    'Luke Skywalker',
+    'The Mandalorian',
+    'Lieutenant Gorn',
+    'Ben Solo',
+    'Lawbringer',
+    'IG-88',
+    'Baze Malbus',
+    'The Ghost',
+    'Chirrut Îmwe',
+    'Rey',
+    'Benthic "Two Tubes"',
+    'Boba Fett',
+    'Zeb Orellios',
+    'Kanan Jarrus',
+    'Cinta Kaz',
+
+    // Strong picks (avg pick position 2.0-3.0)
+    'Rose Tico',
+    'Millennium Falcon',
+    'K-2SO',
+    'Single Reactor Ignition',
+    'Sabine Wren',
+    'Zuckuss',
+    'Highsinger',
+    'Enfys Nest\'s Helmet',
+    'Latts Razzi',
+    '0-0-0',
+    'Beilert Valance',
+    'Ezra Bridger',
+    'BT-1',
+    'Chio Fain',
+    'Bodhi Rook',
+    'Honnah',
+    'Urrr\'k',
+
+    // Solid picks (avg pick position 3.0-3.5)
+    'Rhydonium Detonation',
+    'Jango Fett',
+    'Asajj Ventress',
+    'Chopper',
+    'Defiant Hammerhead',
+    '4-LOM',
+    'Taramyn Barcona',
+    'Krrsantan',
+    'Jabba\'s Rancor',
+    'Dengar',
+    'Conveyex Security Captain',
+  ],
+
   // Secrets and Conspiracies
   SEC: [
     // Top tier units

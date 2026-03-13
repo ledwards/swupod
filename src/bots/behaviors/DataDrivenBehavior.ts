@@ -47,14 +47,14 @@ export class DataDrivenBehavior {
     const setCode = context.setCode || this._inferSetCode(leaders)
     const stats = context.draftStats
 
-    // If we have DB stats, rank by first-pick rate
+    // If we have DB stats, rank by overall popularity (times picked)
     if (stats && stats.leaderStats.size > 0) {
       const sorted = [...leaders].sort((a, b) => {
         const statA = stats.leaderStats.get(a.name || '')
         const statB = stats.leaderStats.get(b.name || '')
-        const rateA = statA ? statA.firstPickRate : -1
-        const rateB = statB ? statB.firstPickRate : -1
-        return rateB - rateA  // Higher first-pick rate = better
+        const picksA = statA ? statA.timesPicked : -1
+        const picksB = statB ? statB.timesPicked : -1
+        return picksB - picksA  // More popular = better
       })
       return sorted[0] ?? null
     }
@@ -286,10 +286,10 @@ export class DataDrivenBehavior {
         }
       }
 
-      // Factor in leader popularity from DB stats
+      // Factor in leader popularity from DB stats (overall pick count)
       const leaderStat = stats?.leaderStats.get(leader.name || '')
       if (leaderStat) {
-        score += leaderStat.firstPickRate * 5
+        score += Math.min(leaderStat.timesPicked / 10, 5)
       }
 
       if (score > bestScore) {

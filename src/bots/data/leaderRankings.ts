@@ -2,155 +2,161 @@
 /**
  * Leader Power Rankings for Limited/Draft Play
  *
- * These rankings are based on:
- * - Dexerto tier lists
- * - GarbageRollers draft guides
- * - swumetastats.com tournament data
- * - Community consensus from limited play
+ * Default fallback rankings based on real human draft data from production.
+ * Updated 2026-03-12 from dev database pick frequency stats.
  *
- * Rankings differ from constructed - limited favors:
- * - Leaders that deploy early
- * - Straightforward abilities
- * - Aggro/midrange over control
+ * These are used as fallback when the data-driven behavior can't load
+ * live stats from the database (< 5 completed drafts for a set).
+ * When live data IS available, the DataDrivenBehavior ranks by
+ * overall pick count (timesPicked) from the DB instead.
  */
 
 export const LEADER_RANKINGS: Record<string, string[]> = {
+  // Rankings based on real human draft data from production (pick frequency)
+  // Updated 2026-03-12
+
   SOR: [
-    'Sabine Wren',        // Dominates limited, fast aggro
-    'Boba Fett',          // Most formidable overall
-    'Darth Vader',        // Strong aggression
-    'Han Solo',           // Solid cunning value
-    'Grand Moff Tarkin',  // Straightforward, solid in limited
-    'Luke Skywalker',     // Good vigilance option
-    'Leia Organa',        // Solid command
-    'Hera Syndulla',      // Command/heroism
+    'Boba Fett',          // Most picked overall
+    'IG-88',              // Tied for most picks
+    'Sabine Wren',        // Strong aggro
+    'Chewbacca',          // Solid vigilance
+    'Director Krennic',   // Vigilance/villainy
+    'Leia Organa',        // Command/heroism
+    'Grand Moff Tarkin',  // Straightforward value
+    'Iden Versio',        // Vigilance/villainy
+    'Chirrut Îmwe',       // Vigilance/heroism
+    'Jyn Erso',           // Cunning/heroism
     'Cassian Andor',      // Aggression/heroism
+    'Grand Admiral Thrawn', // Cunning/villainy
+    'Darth Vader',        // Aggression/villainy
+    'Han Solo',           // Cunning/heroism
+    'Luke Skywalker',     // Vigilance/heroism
+    'Hera Syndulla',      // Command/heroism
     'Grand Inquisitor',   // Aggression/villainy
     'Emperor Palpatine',  // Command/villainy
-    'Chewbacca',          // Vigilance/heroism
-    'Director Krennic',   // Vigilance/villainy
-    'IG-88',              // Aggression/villainy
-    'Chirrut Îmwe',       // Vigilance/heroism
-    'Grand Admiral Thrawn', // Cunning/villainy
-    'Iden Versio',        // Vigilance/villainy
-    'Jyn Erso',           // Cunning/heroism
   ],
 
   SHD: [
-    'Han Solo',           // 55.2% win rate, aggression/heroism
-    'Cad Bane',           // Excels in limited, Underworld synergy
-    'Qi\'ra',             // Vigilance/villainy
-    'Boba Fett',          // Strong in limited, command/heroism
-    'Bossk',              // Bounties mechanic, strong limited
+    'Fennec Shand',       // Most popular pick
+    'Cad Bane',           // Strong limited, Underworld synergy
     'Gar Saxon',          // Vigilance/villainy
+    'Hondo Ohnaka',       // Command/villainy
+    'Boba Fett',          // Command/heroism
+    'Qi\'ra',             // Vigilance/villainy
     'Rey',                // Vigilance/heroism
     'Kylo Ren',           // Aggression/villainy
+    'Han Solo',           // Aggression/heroism
+    'Bossk',              // Bounties mechanic
     'Bo-Katan Kryze',     // Aggression/heroism
-    'Fennec Shand',       // Cunning/heroism
     'Jabba the Hutt',     // Command/villainy
     'Finn',               // Vigilance/heroism
-    'Hondo Ohnaka',       // Command/villainy
     'Doctor Aphra',       // Cunning/villainy
     'Lando Calrissian',   // Cunning/heroism
     'Hunter',             // Command/heroism
   ],
 
   TWI: [
-    'Yoda',               // 51% win rate, vigilance/heroism
-    'Anakin Skywalker',   // Excellent design, units trade up
-    'Quinlan Vos',        // Clear upgrade on deployment
+    'Maul',               // Most picked, strong aggro
     'Obi-Wan Kenobi',     // Solid vigilance/heroism
-    'Captain Rex',        // Command/heroism
-    'Mace Windu',         // Aggression/heroism
-    'Maul',               // Aggression/villainy
-    'Asajj Ventress',     // Cunning/villainy
+    'Nute Gunray',        // Surprisingly popular in limited
+    'Anakin Skywalker',   // Units trade up
     'Jango Fett',         // Cunning/villainy
-    'Ahsoka Tano',        // Aggression/heroism
-    'Count Dooku',        // Command/villainy
     'Padmé Amidala',      // Command/heroism
+    'Quinlan Vos',        // Clear upgrade on deployment
+    'Count Dooku',        // Command/villainy
+    'Mace Windu',         // Aggression/heroism
+    'Yoda',               // Vigilance/heroism
+    'Asajj Ventress',     // Cunning/villainy
     'Nala Se',            // Vigilance/villainy
-    'Nute Gunray',        // Vigilance/villainy
+    'Wat Tambor',         // Command/villainy
+    'Ahsoka Tano',        // Aggression/heroism
+    'Captain Rex',        // Command/heroism
     'General Grievous',   // Cunning/villainy
-    'Wat Tambor',         // Beast in limited, command/villainy
     'Pre Vizsla',         // Aggression/villainy
     'Chancellor Palpatine', // Complex but powerful
   ],
 
   JTL: [
-    'Poe Dameron',        // Top 8 appearances, aggression/heroism
-    'Darth Vader',        // Command/villainy powerhouse
-    'Admiral Piett',      // Top 8 appearances, command/villainy
-    'Han Solo',           // Cunning/heroism
-    'Lando Calrissian',   // Buying Time, vigilance/heroism
-    'Asajj Ventress',     // Vigilance/villainy
-    'Luke Skywalker',     // Aggression/heroism
-    'Wedge Antilles',     // Command/heroism
-    'Boba Fett',          // Aggression/villainy
-    'Grand Admiral Thrawn', // Vigilance/villainy
-    'Admiral Ackbar',     // Cunning/heroism
-    'Admiral Holdo',      // Command/heroism
-    'Captain Phasma',     // Aggression/villainy
-    'Admiral Trench',     // Cunning/villainy
-    'Major Vonreg',       // Aggression/villainy
-    'Rose Tico',          // Vigilance/heroism
-    'Kazuda Xiono',       // Cunning/heroism
+    'Admiral Ackbar',     // Tied for most picks
+    'Major Vonreg',       // Tied for most picks
+    'Luke Skywalker',     // Tied for most picks
+    'Grand Admiral Thrawn', // Strong limited pick
+    'Darth Vader',        // Command/villainy
     'Rio Durant',         // Cunning/villainy
+    'Wedge Antilles',     // Command/heroism
+    'Rose Tico',          // Vigilance/heroism
+    'Asajj Ventress',     // Vigilance/villainy
+    'Admiral Holdo',      // Command/heroism
+    'Admiral Piett',      // Command/villainy
+    'Kazuda Xiono',       // Cunning/heroism
+    'Admiral Trench',     // Cunning/villainy
+    'Poe Dameron',        // Aggression/heroism
+    'Han Solo',           // Cunning/heroism
+    'Lando Calrissian',   // Vigilance/heroism
+    'Boba Fett',          // Aggression/villainy
+    'Captain Phasma',     // Aggression/villainy
   ],
 
   LOF: [
-    'Rey',                // Aggression/heroism, strong
-    'Darth Maul',         // Aggression/villainy
-    'Ahsoka Tano',        // Vigilance/heroism
-    'Obi-Wan Kenobi',     // Command/heroism
-    'Kylo Ren',           // Vigilance/villainy
-    'Cal Kestis',         // Cunning/heroism
-    'Kit Fisto',          // Aggression/heroism
+    'Obi-Wan Kenobi',     // Most picked
+    'Mother Talzin',      // Tied for most picks
     'Third Sister',       // Aggression/villainy
-    'Kanan Jarrus',       // Vigilance/heroism
     'Supreme Leader Snoke', // Command/villainy
     'Grand Inquisitor',   // Cunning/villainy
-    'Mother Talzin',      // Vigilance/villainy
+    'Kit Fisto',          // Aggression/heroism
+    'Rey',                // Aggression/heroism
+    'Darth Maul',         // Aggression/villainy
+    'Ahsoka Tano',        // Vigilance/heroism
+    'Kylo Ren',           // Vigilance/villainy
     'Morgan Elsbeth',     // Command/villainy
     'Avar Kriss',         // Command/heroism
-    'Qui-Gon Jinn',       // Cunning/heroism
     'Barriss Offee',      // Cunning/villainy
     'Anakin Skywalker',   // Heroism only
     'Darth Revan',        // Villainy only
+    'Cal Kestis',         // Cunning/heroism
+    'Kanan Jarrus',       // Vigilance/heroism
+    'Qui-Gon Jinn',       // Cunning/heroism
   ],
 
   SEC: [
-    'Leia Organa',        // Vigilance/heroism - top pick
-    'Sly Moore',          // Cunning/villainy
-    'Colonel Yularen',    // Command/villainy
+    'Dedra Meero',        // Most picked overall
+    'Colonel Yularen',    // Command/villainy powerhouse
     'Jabba the Hutt',     // Vigilance/villainy
-    'Mon Mothma',         // Command/heroism
-    'Dedra Meero',        // Aggression/villainy
-    'Sabé',               // Cunning/heroism
-    'Chancellor Palpatine', // Vigilance/villainy, versatile
-    'Cassian Andor',      // Aggression/heroism
-    'Governor Pryce',     // Aggression/villainy
     'Luthen Rael',        // Aggression/heroism
-    'Dryden Vos',         // Command/villainy
-    'Bail Organa',        // Command/heroism
-    'Satine Kryze',       // Vigilance/heroism
-    'Padmé Amidala',      // Cunning/heroism
+    'Mon Mothma',         // Command/heroism
+    'Leia Organa',        // Vigilance/heroism
+    'C-3PO',              // Cunning/heroism
+    'Sly Moore',          // Cunning/villainy
+    'Sabé',               // Cunning/heroism
     'Lama Su',            // Vigilance/villainy
-    'C-3P0',              // Cunning/heroism
-    'DJ',                 // Cunning/cunning (unique)
+    'Governor Pryce',     // Aggression/villainy
+    'Dryden Vos',         // Command/villainy
+    'DJ',                 // Cunning/cunning
+    'Satine Kryze',       // Vigilance/heroism
+    'Cassian Andor',      // Aggression/heroism
+    'Bail Organa',        // Command/heroism
+    'Padmé Amidala',      // Cunning/heroism
+    'Chancellor Palpatine', // Vigilance/villainy
+    'Fennec Shand',       // Cunning/heroism
   ],
 
   LAW: [
-    // LAW is new, using placeholder rankings based on early impressions
-    'Darth Vader',
-    'Luke Skywalker',
-    'Obi-Wan Kenobi',
-    'Yoda',
-    'Emperor Palpatine',
-    'Ahsoka Tano',
-    'Anakin Skywalker',
-    'Han Solo',
-    'Leia Organa',
-    'Boba Fett',
+    'Enfys Nest',         // Most popular, 83 picks
+    'Aurra Sing',         // 82 picks, strong aggro
+    'Vel Sartha',         // 79 picks
+    'Boba Fett',          // 77 picks, high first-pick rate
+    'Hera Syndulla',      // 75 picks
+    'The Client',         // 52 picks
+    'Darth Vader',        // 36 picks
+    'Lando Calrissian',   // 25 picks
+    'Han Solo',           // 20 picks
+    'Agent Kallus',       // 17 picks
+    'Sebulba',            // 17 picks
+    'Director Krennic',   // 15 picks
+    'Saw Gerrera',        // 15 picks
+    'Tobias Beckett',     // 13 picks
+    'Chewbacca',          // 9 picks
+    'Jyn Erso',           // 9 picks
   ],
 }
 
