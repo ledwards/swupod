@@ -393,21 +393,6 @@ export default function StatsPage() {
       <div className="stats-header">
         <h1>Stats</h1>
         <p>Card performance across drafts and sealed</p>
-        {user && (
-          <button
-            className="stats-export-btn"
-            onClick={() => {
-              window.location.href = '/api/export/personal'
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-            Download Personal Data
-          </button>
-        )}
         <div className="stats-date-range">
           <span className="date-field">
             {editingStart ? (
@@ -453,6 +438,21 @@ export default function StatsPage() {
             )}
           </span>
         </div>
+        {user && (
+          <button
+            className="stats-export-btn"
+            onClick={() => {
+              window.location.href = '/api/export/personal'
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download Personal Data
+          </button>
+        )}
       </div>
 
       <div className="stats-tabs">
@@ -641,41 +641,72 @@ function SkeletonTableRows({ columns, rows = 8 }: { columns: string[], rows?: nu
   )
 }
 
+function SkeletonChartGrid() {
+  const labels = ['You', 'All Players', 'Tournament Players', 'Top Players']
+  return (
+    <div className="stats-chart-grid">
+      {labels.map(label => (
+        <div key={label} className="stats-chart-panel">
+          <h4 className="stats-chart-panel-label" style={{ color: label === 'You' ? '#64B5F6' : label.startsWith('Tournament') ? '#CE93D8' : label.startsWith('Top') ? '#FFB74D' : 'rgba(255,255,255,0.9)' }}>{label}</h4>
+          <div className="skeleton-line" style={{ height: '180px', borderRadius: '6px' }} />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function SkeletonFilterBar() {
+  return (
+    <div className="stats-table-filter">
+      <div className="skeleton-line" style={{ width: '200px', height: '32px', borderRadius: '6px' }} />
+      <div className="stats-aspect-filter">
+        {ASPECTS.map(aspect => (
+          <div key={aspect} className="stats-aspect-btn" style={{ opacity: 0.3 }}>
+            <AspectIcon aspect={aspect} size="sm" />
+          </div>
+        ))}
+        <div className="stats-aspect-btn stats-aspect-btn-text" style={{ opacity: 0.3 }}><span className="stats-aspect-label">N</span></div>
+        <div className="stats-aspect-btn stats-aspect-btn-text" style={{ opacity: 0.3 }}><span className="stats-aspect-label">M</span></div>
+      </div>
+    </div>
+  )
+}
+
+function SkeletonLegend() {
+  return (
+    <div className="stats-legend-bar">
+      <SkeletonBlock width="40px" height={16} />
+      <span className="stats-legend-sep">&middot;</span>
+      <SkeletonBlock width="30px" height={16} />
+      <span className="stats-legend-sep">&middot;</span>
+      <SkeletonBlock width="100px" height={16} />
+      <span className="stats-legend-sep">&middot;</span>
+      <SkeletonBlock width="80px" height={16} />
+    </div>
+  )
+}
+
 function LoadingSkeleton() {
   return (
     <div className="cards-subtab">
+      {/* === Charts Section (top) === */}
+      <div className="stats-charts-section" style={{ marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
+        <h4>Leader Draft Frequency</h4>
+        <SkeletonChartGrid />
+        <h4>Top 25 Cards by Times Drafted</h4>
+        <SkeletonChartGrid />
+      </div>
+
       {/* === Leaders Section === */}
       <h3 style={{ marginBottom: '0.5rem' }}>Leaders</h3>
 
-      {/* Filter bar (search + aspect icons) */}
-      <div className="stats-table-filter">
-        <div className="skeleton-line" style={{ width: '200px', height: '32px', borderRadius: '6px' }} />
-        <div className="stats-aspect-filter">
-          {ASPECTS.map(aspect => (
-            <div key={aspect} className="stats-aspect-btn" style={{ opacity: 0.3 }}>
-              <AspectIcon aspect={aspect} size="sm" />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Description */}
       <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', marginBottom: '1rem' }}>
         <SkeletonBlock width="320px" />
       </div>
 
-      {/* Legend */}
-      <div className="stats-legend-bar">
-        <SkeletonBlock width="40px" height={16} />
-        <span className="stats-legend-sep">&middot;</span>
-        <SkeletonBlock width="30px" height={16} />
-        <span className="stats-legend-sep">&middot;</span>
-        <SkeletonBlock width="80px" height={16} />
-        <span className="stats-legend-sep">&middot;</span>
-        <SkeletonBlock width="40px" height={16} />
-      </div>
+      <SkeletonLegend />
+      <SkeletonFilterBar />
 
-      {/* Leader Draft Picks table */}
       <div className="stats-table-container" style={{ marginBottom: '1.5rem' }}>
         <table className="stats-table">
           <thead>
@@ -694,19 +725,10 @@ function LoadingSkeleton() {
         </table>
       </div>
 
-      {/* Leader Deck Selection table */}
       <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', marginBottom: '1rem' }}>
         <SkeletonBlock width="280px" />
       </div>
-      <div className="stats-legend-bar">
-        <SkeletonBlock width="40px" height={16} />
-        <span className="stats-legend-sep">&middot;</span>
-        <SkeletonBlock width="30px" height={16} />
-        <span className="stats-legend-sep">&middot;</span>
-        <SkeletonBlock width="80px" height={16} />
-        <span className="stats-legend-sep">&middot;</span>
-        <SkeletonBlock width="40px" height={16} />
-      </div>
+      <SkeletonLegend />
       <div className="stats-table-container" style={{ marginBottom: '2rem' }}>
         <table className="stats-table">
           <thead>
@@ -727,19 +749,6 @@ function LoadingSkeleton() {
       {/* === Cards Section === */}
       <h3 style={{ marginBottom: '0.5rem' }}>Cards</h3>
 
-      {/* Filter bar */}
-      <div className="stats-table-filter">
-        <div className="skeleton-line" style={{ width: '200px', height: '32px', borderRadius: '6px' }} />
-        <div className="stats-aspect-filter">
-          {ASPECTS.map(aspect => (
-            <div key={aspect} className="stats-aspect-btn" style={{ opacity: 0.3 }}>
-              <AspectIcon aspect={aspect} size="sm" />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Summary stats */}
       <div className="draft-picks-summary">
         <div className="stat-item">
           <span className="stat-label">Drafts:</span>
@@ -755,18 +764,9 @@ function LoadingSkeleton() {
         </div>
       </div>
 
-      {/* Legend */}
-      <div className="stats-legend-bar">
-        <SkeletonBlock width="40px" height={16} />
-        <span className="stats-legend-sep">&middot;</span>
-        <SkeletonBlock width="30px" height={16} />
-        <span className="stats-legend-sep">&middot;</span>
-        <SkeletonBlock width="80px" height={16} />
-        <span className="stats-legend-sep">&middot;</span>
-        <SkeletonBlock width="40px" height={16} />
-      </div>
+      <SkeletonLegend />
+      <SkeletonFilterBar />
 
-      {/* Cards table */}
       <div className="stats-table-container">
         <table className="stats-table">
           <thead>
@@ -783,28 +783,6 @@ function LoadingSkeleton() {
             <SkeletonTableRows columns={['140px', '50px', '60px', '70px', '90px', '60px']} rows={10} />
           </tbody>
         </table>
-      </div>
-
-      {/* === Charts Section === */}
-      <div className="stats-charts-section">
-        <h4>Leader Pick Distribution</h4>
-        <div className="stats-chart-grid">
-          {['You', 'All', 'Tournament', 'Top'].map(label => (
-            <div key={label} className="stats-chart-panel">
-              <h4 className="stats-chart-panel-label" style={{ color: label === 'You' ? '#64B5F6' : label === 'Tournament' ? '#CE93D8' : label === 'Top' ? '#FFB74D' : 'rgba(255,255,255,0.9)' }}>{label}</h4>
-              <div className="skeleton-line" style={{ height: '180px', borderRadius: '6px' }} />
-            </div>
-          ))}
-        </div>
-        <h4>Top 25 Cards by Pick Rate</h4>
-        <div className="stats-chart-grid">
-          {['You', 'All', 'Tournament', 'Top'].map(label => (
-            <div key={label} className="stats-chart-panel">
-              <h4 className="stats-chart-panel-label" style={{ color: label === 'You' ? '#64B5F6' : label === 'Tournament' ? '#CE93D8' : label === 'Top' ? '#FFB74D' : 'rgba(255,255,255,0.9)' }}>{label}</h4>
-              <div className="skeleton-line" style={{ height: '180px', borderRadius: '6px' }} />
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   )
@@ -1090,7 +1068,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
     <div className="cards-subtab">
       {/* Charts (data visualizations first) */}
       <div className="stats-charts-section" style={{ marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
-        <h4>Leader Pick Distribution</h4>
+        <h4>Leader Draft Frequency <span className="stats-chart-subtitle">How often each leader is drafted (total times picked across all drafts)</span></h4>
         <LeaderCharts
           allData={leaderData?.cards || null}
           tournamentData={leaderDataTournament?.cards || null}
@@ -1100,7 +1078,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
           canSeeFullStats={canSeeFullStats}
           user={user}
         />
-        <h4>Top 25 Cards by Pick Rate</h4>
+        <h4>Top 25 Cards by Times Drafted <span className="stats-chart-subtitle">Most frequently drafted cards across all drafts</span></h4>
         <CardCharts
           allData={cardData?.cards || null}
           tournamentData={cardDataTournament?.cards || null}
@@ -1109,6 +1087,8 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
           valueKey="timesPicked"
           canSeeFullStats={canSeeFullStats}
           user={user}
+          onCardHover={(card, e) => handleCardMouseEnter(card, e)}
+          onCardLeave={handleCardMouseLeave}
         />
       </div>
 
@@ -1146,9 +1126,9 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                         <tr key={card.cardId}>
                           <td
                             className="card-name-cell"
-                            onMouseEnter={(e) => handleCardMouseEnter({ imageUrl: card.imageUrl || undefined, name: card.cardName, rarity: card.rarity, isLeader: true }, e)}
+                            onMouseEnter={(e) => handleCardMouseEnter({ imageUrl: card.imageUrl || undefined, backImageUrl: card.backImageUrl || undefined, name: card.cardName, rarity: card.rarity, isLeader: true }, e)}
                             onMouseLeave={handleCardMouseLeave}
-                            onTouchStart={() => handleCardTouchStart({ imageUrl: card.imageUrl || undefined, name: card.cardName, rarity: card.rarity, isLeader: true })}
+                            onTouchStart={() => handleCardTouchStart({ imageUrl: card.imageUrl || undefined, backImageUrl: card.backImageUrl || undefined, name: card.cardName, rarity: card.rarity, isLeader: true })}
                             onTouchEnd={handleCardTouchEnd}
                           >
                             <span className="card-name">{card.cardName}</span>
@@ -1217,9 +1197,9 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                         <tr key={leader.cardId}>
                           <td
                             className="card-name-cell"
-                            onMouseEnter={(e) => handleCardMouseEnter({ imageUrl: leader.imageUrl || undefined, name: leader.cardName, rarity: leader.rarity || 'Legendary', isLeader: true }, e)}
+                            onMouseEnter={(e) => handleCardMouseEnter({ imageUrl: leader.imageUrl || undefined, backImageUrl: leader.backImageUrl || undefined, name: leader.cardName, rarity: leader.rarity || 'Legendary', isLeader: true }, e)}
                             onMouseLeave={handleCardMouseLeave}
-                            onTouchStart={() => handleCardTouchStart({ imageUrl: leader.imageUrl || undefined, name: leader.cardName, rarity: leader.rarity || 'Legendary', isLeader: true })}
+                            onTouchStart={() => handleCardTouchStart({ imageUrl: leader.imageUrl || undefined, backImageUrl: leader.backImageUrl || undefined, name: leader.cardName, rarity: leader.rarity || 'Legendary', isLeader: true })}
                             onTouchEnd={handleCardTouchEnd}
                           >
                             <span className="card-name">{leader.cardName}</span>
@@ -1565,7 +1545,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
     <div className="cards-subtab">
       {/* Charts (data visualizations first) */}
       <div className="stats-charts-section" style={{ marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
-        <h4>Leader Selection Distribution</h4>
+        <h4>Leader Deck Selection <span className="stats-chart-subtitle">How often each leader is chosen for built decks</span></h4>
         <LeaderCharts
           allData={leaderSelData?.leaders || null}
           tournamentData={leaderSelDataTournament?.leaders || null}
@@ -1575,7 +1555,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
           canSeeFullStats={canSeeFullStats}
           user={user}
         />
-        <h4>Top 25 Cards by Inclusion Rate</h4>
+        <h4>Top 25 Cards by Deck Inclusion <span className="stats-chart-subtitle">Most frequently included cards in built decks</span></h4>
         <CardCharts
           allData={cardData?.cards || null}
           tournamentData={cardDataTournament?.cards || null}
@@ -1585,6 +1565,8 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
           formatValue={(v: number) => `${v.toFixed(1)}%`}
           canSeeFullStats={canSeeFullStats}
           user={user}
+          onCardHover={(card, e) => handleCardMouseEnter(card, e)}
+          onCardLeave={handleCardMouseLeave}
         />
       </div>
 
@@ -1617,9 +1599,9 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                     <tr key={leader.cardId}>
                       <td
                         className="card-name-cell"
-                        onMouseEnter={(e) => handleCardMouseEnter({ imageUrl: leader.imageUrl || undefined, name: leader.cardName, rarity: leader.rarity || 'Legendary', isLeader: true }, e)}
+                        onMouseEnter={(e) => handleCardMouseEnter({ imageUrl: leader.imageUrl || undefined, backImageUrl: leader.backImageUrl || undefined, name: leader.cardName, rarity: leader.rarity || 'Legendary', isLeader: true }, e)}
                         onMouseLeave={handleCardMouseLeave}
-                        onTouchStart={() => handleCardTouchStart({ imageUrl: leader.imageUrl || undefined, name: leader.cardName, rarity: leader.rarity || 'Legendary', isLeader: true })}
+                        onTouchStart={() => handleCardTouchStart({ imageUrl: leader.imageUrl || undefined, backImageUrl: leader.backImageUrl || undefined, name: leader.cardName, rarity: leader.rarity || 'Legendary', isLeader: true })}
                         onTouchEnd={handleCardTouchEnd}
                       >
                         <span className="card-name">{leader.cardName}</span>

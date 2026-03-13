@@ -216,6 +216,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           subtitle: cardData?.subtitle || null,
           cost: cardData?.cost ?? null,
           imageUrl: cardData?.imageUrl || null,
+          backImageUrl: cardData?.backImageUrl || null,
         }
       })
       .sort((a, b) => b.inclusionRate - a.inclusionRate)

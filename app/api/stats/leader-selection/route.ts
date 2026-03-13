@@ -134,9 +134,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           cardId: stat.cardId,
           timesSelected: stat.count,
           selectionRate: Math.round(selectionRate * 10) / 10,
+          rarity: cardData?.rarity || null,
           aspects: cardData?.aspects || [],
           subtitle: cardData?.subtitle || null,
           imageUrl: cardData?.imageUrl || null,
+          backImageUrl: cardData?.backImageUrl || null,
         }
       })
       .sort((a, b) => b.timesSelected - a.timesSelected)

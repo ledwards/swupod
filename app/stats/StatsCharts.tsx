@@ -173,31 +173,103 @@ function renderBarLabel(formatValue?: (v: number) => string, total?: number) {
   }
 }
 
+// === Custom YAxis tick with hover for card preview ===
+function BarTickWithPreview({ x, y, payload, dataLookup, onCardHover, onCardLeave }: any) {
+  const entry = dataLookup?.get(payload?.value)
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text
+        x={-4}
+        y={0}
+        dy={4}
+        textAnchor="end"
+        fill="rgba(255,255,255,0.7)"
+        fontSize={10}
+        style={{ cursor: entry ? 'pointer' : 'default' }}
+        onMouseEnter={entry && onCardHover ? (e: any) => onCardHover(entry, e) : undefined}
+        onMouseLeave={onCardLeave}
+      >
+        {payload?.value}
+      </text>
+    </g>
+  )
+}
+
+// === Custom tooltip for bar chart (one or two lines) ===
+function BarChartTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null
+  const entry = payload[0]?.payload
+  const name = entry?.cardName || label
+  const subtitle = entry?.subtitle || null
+  const value = payload[0]?.value
+  const total = entry?._total || 0
+  const pct = total > 0 ? ((value / total) * 100).toFixed(1) : null
+
+  return (
+    <div style={{
+      background: 'rgba(0,0,0,0.85)',
+      border: '1px solid rgba(255,255,255,0.2)',
+      borderRadius: 6,
+      color: '#fff',
+      fontSize: '0.85rem',
+      padding: '6px 10px',
+    }}>
+      <div style={{ fontWeight: 600 }}>{name}</div>
+      {subtitle && <div style={{ fontWeight: 400, opacity: 0.7 }}>{subtitle}</div>}
+      <div style={{ marginTop: 2 }}>{pct ? `${pct}% (${value}/${total})` : value}</div>
+    </div>
+  )
+}
+
 // === Top Cards Bar Chart ===
-function TopCardsBarChart({ cards, valueKey, formatValue }: {
+function TopCardsBarChart({ cards, valueKey, formatValue, onCardHover, onCardLeave }: {
   cards: { cardName: string; aspects: string[]; [key: string]: any }[]
   valueKey: string
   formatValue?: (v: number) => string
+  onCardHover?: (card: any, event: any) => void
+  onCardLeave?: () => void
 }) {
   const data = useMemo(() => {
     if (!cards?.length) return []
-    return cards
-      .filter(c => c[valueKey] > 0)
+    const filtered = cards.filter(c => c[valueKey] > 0)
+    const total = filtered.reduce((sum, c) => sum + c[valueKey], 0)
+    return filtered
       .sort((a, b) => b[valueKey] - a[valueKey])
       .slice(0, 25)
       .map(c => ({
         name: c.cardName,
         fullName: c.cardName,
+        cardName: c.cardName,
+        subtitle: c.subtitle || null,
         value: c[valueKey],
         color: getAspectColor({ aspects: c.aspects }),
         colors: getAspectColors({ aspects: c.aspects }),
+        imageUrl: c.imageUrl || null,
+        backImageUrl: c.backImageUrl || null,
+        isLeader: c.cardType === 'Leader' || c.isLeader || false,
+        rarity: c.rarity || null,
+        _total: total,
       }))
   }, [cards, valueKey])
+
+  // Build lookup map for YAxis tick hover
+  const dataLookup = useMemo(() => {
+    const map = new Map()
+    for (const d of data) {
+      map.set(d.name, {
+        imageUrl: d.imageUrl || undefined,
+        backImageUrl: d.backImageUrl || undefined,
+        name: d.cardName,
+        rarity: d.rarity,
+        isLeader: d.isLeader,
+      })
+    }
+    return map
+  }, [data])
 
   if (!data.length) return <div className="stats-chart-empty">No data</div>
 
   const total = data.reduce((sum, d) => sum + d.value, 0)
-  const fmtVal = formatValue || ((v: number) => String(v))
 
   return (
     <ResponsiveContainer width="100%" height={Math.max(300, data.length * 28)}>
@@ -208,15 +280,11 @@ function TopCardsBarChart({ cards, valueKey, formatValue }: {
           type="category"
           dataKey="name"
           width={180}
-          tick={{ fill: 'rgba(255,255,255,0.7)', fontSize: 10 }}
+          tick={<BarTickWithPreview dataLookup={dataLookup} onCardHover={onCardHover} onCardLeave={onCardLeave} />}
           axisLine={false}
           tickLine={false}
         />
-        <Tooltip
-          contentStyle={{ background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 6, color: '#fff', fontSize: '0.85rem' }}
-          formatter={(value: number) => [fmtVal(value)]}
-          labelFormatter={(label: string, payload: any[]) => payload?.[0]?.payload?.fullName || label}
-        />
+        <Tooltip content={<BarChartTooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
         <Bar dataKey="value" radius={[0, 4, 4, 0]}>
           {data.map((entry, i) => (
             <Cell key={i} fill={getFill(entry.name, entry.colors, 'bar')} />
@@ -257,7 +325,7 @@ export function LeaderCharts({ allData, tournamentData, topData, youData, valueK
 }
 
 // === 4-Panel Card Charts ===
-export function CardCharts({ allData, tournamentData, topData, youData, valueKey, formatValue, canSeeFullStats, user }: {
+export function CardCharts({ allData, tournamentData, topData, youData, valueKey, formatValue, canSeeFullStats, user, onCardHover, onCardLeave }: {
   allData: any[] | null
   tournamentData: any[] | null
   topData: any[] | null
@@ -266,20 +334,22 @@ export function CardCharts({ allData, tournamentData, topData, youData, valueKey
   formatValue?: (v: number) => string
   canSeeFullStats?: boolean
   user?: any
+  onCardHover?: (card: any, event: any) => void
+  onCardLeave?: () => void
 }) {
   return (
     <div className="stats-chart-grid">
       <ChartPanel label="You" color={PANEL_COLORS.you} loggedOut={!user}>
-        <TopCardsBarChart cards={youData || []} valueKey={valueKey} formatValue={formatValue} />
+        <TopCardsBarChart cards={youData || []} valueKey={valueKey} formatValue={formatValue} onCardHover={onCardHover} onCardLeave={onCardLeave} />
       </ChartPanel>
       <ChartPanel label="All Players" color={PANEL_COLORS.all}>
-        <TopCardsBarChart cards={allData || []} valueKey={valueKey} formatValue={formatValue} />
+        <TopCardsBarChart cards={allData || []} valueKey={valueKey} formatValue={formatValue} onCardHover={onCardHover} onCardLeave={onCardLeave} />
       </ChartPanel>
       <ChartPanel label="Tournament Players" color={PANEL_COLORS.tournament} blurred={!canSeeFullStats}>
-        <TopCardsBarChart cards={tournamentData || []} valueKey={valueKey} formatValue={formatValue} />
+        <TopCardsBarChart cards={tournamentData || []} valueKey={valueKey} formatValue={formatValue} onCardHover={onCardHover} onCardLeave={onCardLeave} />
       </ChartPanel>
       <ChartPanel label="Top Players" color={PANEL_COLORS.top} blurred={!canSeeFullStats}>
-        <TopCardsBarChart cards={topData || []} valueKey={valueKey} formatValue={formatValue} />
+        <TopCardsBarChart cards={topData || []} valueKey={valueKey} formatValue={formatValue} onCardHover={onCardHover} onCardLeave={onCardLeave} />
       </ChartPanel>
     </div>
   )
