@@ -14,6 +14,7 @@
 import { getPackImageUrl } from '@/src/utils/packArt'
 import { getSetConfig } from '@/src/utils/setConfigs'
 import { getBaseCode, sortSetsForDisplay } from '@/src/utils/packSelectorSort'
+import { handleMultiSelectSetClick } from '@/src/utils/packSelection'
 import type { SetData } from '@/src/utils/packSelectorSort'
 import './PackSelector.css'
 
@@ -56,16 +57,7 @@ export function PackSelector({
 
   const handleSetClick = (setCode: string) => {
     if (isMultiSelect && onSelectSets) {
-      const count = getSetCount(setCode)
-      if (count === 0) {
-        // First click: add the set
-        if (selectedSets.length < maxSelections) {
-          onSelectSets([...selectedSets, setCode])
-        }
-      } else {
-        // Already selected: remove all instances
-        onSelectSets(selectedSets.filter(s => s !== setCode))
-      }
+      onSelectSets(handleMultiSelectSetClick(selectedSets, setCode, maxSelections))
     } else if (onSelectSet) {
       onSelectSet(setCode)
     }
