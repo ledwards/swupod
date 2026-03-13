@@ -1531,6 +1531,12 @@
   font-size: 0.8rem;
 }
 
+.stats-delta {
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 /* Stats Legend Bar */
 .stats-legend-bar {
   display: flex;

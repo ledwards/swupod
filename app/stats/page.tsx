@@ -30,7 +30,32 @@ const todayStr = () => new Date().toISOString().slice(0, 10)
 
 // === StatsCell: Stacked You/All/Top/Tournament values ===
 
-function StatsCell({ you, all, top, tournament, format, className, showYou, showAll, showTop, showTournament, isBlurred }: {
+function DeltaBadge({ value, youValue, mode }: { value: number, youValue: number, mode: 'pct' | 'num' | 'lowIsGood' }) {
+  if (youValue === 0 && mode === 'num') return null
+  const diff = value - youValue
+  if (Math.abs(diff) < 0.05) return null
+
+  // For 'lowIsGood' (like Avg Pick), lower is better so invert the color
+  const isPositiveGood = mode !== 'lowIsGood'
+  const isGood = isPositiveGood ? diff > 0 : diff < 0
+  const arrow = diff > 0 ? '\u25B2' : '\u25BC'
+  const color = isGood ? '#4ade80' : '#f87171'
+
+  let label: string
+  if (mode === 'pct') {
+    label = `${Math.abs(diff).toFixed(1)}pts`
+  } else if (mode === 'lowIsGood') {
+    label = Math.abs(diff).toFixed(1)
+  } else {
+    const absDiff = Math.abs(diff)
+    const pctChange = youValue !== 0 ? Math.abs((diff / youValue) * 100) : 0
+    label = `${fmt(Math.round(absDiff))} (${pctChange.toFixed(0)}%)`
+  }
+
+  return <span className="stats-delta" style={{ color }}> {arrow}{label}</span>
+}
+
+function StatsCell({ you, all, top, tournament, format, className, showYou, showAll, showTop, showTournament, isBlurred, deltaMode }: {
   you: string | number | null | undefined
   all: string | number | null | undefined
   top: string | number | null | undefined
@@ -42,8 +67,16 @@ function StatsCell({ you, all, top, tournament, format, className, showYou, show
   showTop: boolean
   showTournament: boolean
   isBlurred?: boolean
+  deltaMode?: 'pct' | 'num' | 'lowIsGood'
 }) {
   const f = format || String
+  const youNum = typeof you === 'number' ? you : null
+
+  const renderDelta = (val: string | number | null | undefined) => {
+    if (!deltaMode || youNum == null || typeof val !== 'number') return null
+    return <DeltaBadge value={val} youValue={youNum} mode={deltaMode} />
+  }
+
   return (
     <td className={`stats-stacked-cell ${className || ''}`}>
       {showYou && (
@@ -53,17 +86,17 @@ function StatsCell({ you, all, top, tournament, format, className, showYou, show
       )}
       {showAll && (
         <div className="stats-row-all">
-          <span className="stats-row-label">All:</span> {all != null ? f(all) : '—'}
+          <span className="stats-row-label">All:</span> {all != null ? f(all) : '—'}{renderDelta(all)}
         </div>
       )}
       {showTournament && (
         <div className="stats-row-tournament">
-          <span className="stats-row-label">Tournament:</span> {isBlurred ? <span className="stats-blur-value">{tournament != null ? f(tournament) : '—'}</span> : (tournament != null ? f(tournament) : '—')}
+          <span className="stats-row-label">Tournament:</span> {isBlurred ? <span className="stats-blur-value">{tournament != null ? f(tournament) : '—'}</span> : (<>{tournament != null ? f(tournament) : '—'}{renderDelta(tournament)}</>)}
         </div>
       )}
       {showTop && (
         <div className="stats-row-top">
-          <span className="stats-row-label">Top:</span> {isBlurred ? <span className="stats-blur-value">{top != null ? f(top) : '—'}</span> : (top != null ? f(top) : '—')}
+          <span className="stats-row-label">Top:</span> {isBlurred ? <span className="stats-blur-value">{top != null ? f(top) : '—'}</span> : (<>{top != null ? f(top) : '—'}{renderDelta(top)}</>)}
         </div>
       )}
     </td>
@@ -775,6 +808,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                             top={topCard?.avgPickPosition}
                             tournament={tournamentCard?.avgPickPosition}
                             format={(v: number) => v.toFixed(1)}
+                            deltaMode="lowIsGood"
                           />
                           <StatsCell
                             {...cellProps}
@@ -790,6 +824,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                             top={topCard?.timesPicked}
                             tournament={tournamentCard?.timesPicked}
                             format={fmt}
+                            deltaMode="num"
                           />
                         </tr>
                       )
@@ -842,6 +877,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                             top={topLeader?.selectionRate}
                             tournament={tournamentLeader?.selectionRate}
                             format={(v: number) => `${v.toFixed(1)}%`}
+                            deltaMode="pct"
                           />
                           <StatsCell
                             {...cellProps}
@@ -850,6 +886,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                             top={topLeader?.timesSelected}
                             tournament={tournamentLeader?.timesSelected}
                             format={fmt}
+                            deltaMode="num"
                           />
                         </tr>
                       )
@@ -926,6 +963,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                         top={topCard?.avgPickPosition}
                         tournament={tournamentCard?.avgPickPosition}
                         format={(v: number) => String(Math.round(v))}
+                        deltaMode="lowIsGood"
                       />
                       <StatsCell
                         {...cellProps}
@@ -941,6 +979,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                         top={topCard?.timesPicked}
                         tournament={tournamentCard?.timesPicked}
                         format={fmt}
+                        deltaMode="num"
                       />
                     </tr>
                   )
@@ -1193,6 +1232,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                         top={topLeader?.selectionRate}
                         tournament={tournamentLeader?.selectionRate}
                         format={(v: number) => `${v.toFixed(1)}%`}
+                        deltaMode="pct"
                       />
                       <StatsCell
                         {...cellProps}
@@ -1266,6 +1306,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                         top={topCard?.inclusionRate}
                         tournament={tournamentCard?.inclusionRate}
                         format={(v: number) => `${v.toFixed(1)}%`}
+                        deltaMode="pct"
                       />
                       <StatsCell
                         {...cellProps}
@@ -1274,6 +1315,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                         top={topCard?.avgCopiesPlayed}
                         tournament={tournamentCard?.avgCopiesPlayed}
                         format={(v: number) => v.toFixed(1)}
+                        deltaMode="num"
                       />
                       <StatsCell
                         {...cellProps}
