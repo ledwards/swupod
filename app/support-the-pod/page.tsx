@@ -3,7 +3,7 @@
 
 import About from '../../src/components/About'
 
-export default function AboutPage() {
+export default function SupportThePodPage() {
   const handleBack = () => {
     window.history.pushState({}, '', '/')
     window.location.href = '/'

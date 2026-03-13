@@ -257,7 +257,7 @@ function LandingPage() {
           <span className="footer-separator">·</span>
           <a href="https://swag.protectthepod.com" target="_blank" rel="noopener noreferrer">Swag</a>
           <span className="footer-separator">·</span>
-          <a href="/about" onClick={(e) => { e.preventDefault(); router.push('/about') }}>About</a>
+          <a href="/support-the-pod" onClick={(e) => { e.preventDefault(); router.push('/support-the-pod') }}>Support the Pod</a>
           <span className="footer-separator">·</span>
           <a href="/terms-of-service" onClick={(e) => { e.preventDefault(); router.push('/terms-of-service') }}>Terms</a>
           <span className="footer-separator">·</span>

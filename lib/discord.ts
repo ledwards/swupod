@@ -98,6 +98,52 @@ export async function addRole(discordId: string, roleId: string): Promise<boolea
 }
 
 /**
+ * Remove a role from a Discord user in the server.
+ * Returns true if successful, false on any error.
+ */
+export async function removeRole(discordId: string, roleId: string): Promise<boolean> {
+  if (!BOT_TOKEN || !GUILD_ID) {
+    return false
+  }
+
+  try {
+    const response = await fetch(
+      `https://discord.com/api/v10/guilds/${GUILD_ID}/members/${discordId}/roles/${roleId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bot ${BOT_TOKEN}`,
+        },
+      }
+    )
+
+    return response.ok || response.status === 204
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Add the "Friend of the Pod" patron role to a Discord user.
+ */
+export async function addPatronRole(discordId: string): Promise<boolean> {
+  if (!FRIEND_ROLE_ID) {
+    return false
+  }
+  return addRole(discordId, FRIEND_ROLE_ID)
+}
+
+/**
+ * Remove the "Friend of the Pod" patron role from a Discord user.
+ */
+export async function removePatronRole(discordId: string): Promise<boolean> {
+  if (!FRIEND_ROLE_ID) {
+    return false
+  }
+  return removeRole(discordId, FRIEND_ROLE_ID)
+}
+
+/**
  * Add the beta tester role to a Discord user.
  * No-op if DISCORD_BETA_TESTER_ROLE_ID is not configured.
  */

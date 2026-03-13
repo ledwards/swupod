@@ -9,7 +9,7 @@ import PrivacyPolicy from '../src/components/PrivacyPolicy'
 import About from '../src/components/About'
 import { initializeCardCache } from '../src/utils/cardCache'
 
-type ViewType = 'landing' | 'terms-of-service' | 'privacy-policy' | 'about'
+type ViewType = 'landing' | 'terms-of-service' | 'privacy-policy' | 'support-the-pod'
 
 export default function Home() {
   const [view, setView] = useState<ViewType>('landing')
@@ -28,8 +28,8 @@ export default function Home() {
       setView('terms-of-service')
     } else if (path === '/privacy-policy') {
       setView('privacy-policy')
-    } else if (path === '/about') {
-      setView('about')
+    } else if (path === '/support-the-pod') {
+      setView('support-the-pod')
     } else if (path === '/sets') {
       // Redirect /sets to /sealed
       window.location.href = '/sealed'
@@ -44,8 +44,8 @@ export default function Home() {
         setView('terms-of-service')
       } else if (path === '/privacy-policy') {
         setView('privacy-policy')
-      } else if (path === '/about') {
-        setView('about')
+      } else if (path === '/support-the-pod') {
+        setView('support-the-pod')
       } else if (path === '/sets') {
         window.location.href = '/sealed'
       } else if (path === '/' || path === '') {
@@ -72,7 +72,7 @@ export default function Home() {
       {view === 'privacy-policy' && (
         <PrivacyPolicy onBack={handleBack} />
       )}
-      {view === 'about' && (
+      {view === 'support-the-pod' && (
         <About onBack={handleBack} />
       )}
     </div>
