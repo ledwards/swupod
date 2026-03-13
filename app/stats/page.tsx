@@ -6,6 +6,8 @@ import { useCardPreview } from '@/src/hooks/useCardPreview'
 import { CardPreview } from '@/src/components/DeckBuilder/CardPreview'
 import { useAuth } from '@/src/contexts/AuthContext'
 import Button from '@/src/components/Button'
+import { AspectIcon, ASPECTS } from '@/src/components/AspectIcon'
+import { LeaderCharts, CardCharts } from './StatsCharts'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
 import './stats.css'
 
@@ -55,7 +57,7 @@ function DeltaBadge({ value, youValue, mode }: { value: number, youValue: number
   return <span className="stats-delta" style={{ color }}> {arrow}{label}</span>
 }
 
-function StatsCell({ you, all, top, tournament, format, className, showYou, showAll, showTop, showTournament, isBlurred, deltaMode }: {
+function StatsCell({ you, all, top, tournament, format, className, showYou, showAll, showTop, showTournament, isBlurred, deltaMode, user }: {
   you: string | number | null | undefined
   all: string | number | null | undefined
   top: string | number | null | undefined
@@ -68,35 +70,60 @@ function StatsCell({ you, all, top, tournament, format, className, showYou, show
   showTournament: boolean
   isBlurred?: boolean
   deltaMode?: 'pct' | 'num' | 'lowIsGood'
+  user?: any
 }) {
   const f = format || String
   const youNum = typeof you === 'number' ? you : null
 
-  const renderDelta = (val: string | number | null | undefined) => {
-    if (!deltaMode || youNum == null || typeof val !== 'number') return null
-    return <DeltaBadge value={val} youValue={youNum} mode={deltaMode} />
+  // Determine which datasets are visible, in display order: You, All, Tournament, Top
+  const visibleDatasets: { key: string, val: string | number | null | undefined }[] = []
+  if (showYou) visibleDatasets.push({ key: 'you', val: you })
+  if (showAll) visibleDatasets.push({ key: 'all', val: all })
+  if (showTournament) visibleDatasets.push({ key: 'tournament', val: tournament })
+  if (showTop) visibleDatasets.push({ key: 'top', val: top })
+
+  // For 2-selection comparison: delta bottom from top
+  // For >2 or 1: delta vs You if visible
+  const getBaseValue = (datasetKey: string): number | null => {
+    if (visibleDatasets.length === 2) {
+      // Delta the second from the first
+      if (datasetKey === visibleDatasets[1]?.key) {
+        const baseVal = visibleDatasets[0]?.val
+        return typeof baseVal === 'number' ? baseVal : null
+      }
+      return null // First item gets no delta
+    }
+    // Default: delta vs You
+    return youNum
+  }
+
+  const renderDelta = (val: string | number | null | undefined, datasetKey: string) => {
+    if (!deltaMode || typeof val !== 'number') return null
+    const baseVal = getBaseValue(datasetKey)
+    if (baseVal == null) return null
+    return <DeltaBadge value={val} youValue={baseVal} mode={deltaMode} />
   }
 
   return (
     <td className={`stats-stacked-cell ${className || ''}`}>
       {showYou && (
         <div className="stats-row-you">
-          <span className="stats-row-label">You:</span> {you != null ? f(you) : '—'}
+          <span className="stats-row-label">You:</span> {user ? (<>{you != null ? f(you) : '—'}{renderDelta(you, 'you')}</>) : <a href="/api/auth/signin/discord?return_to=/stats" className="stats-login-link">Log in</a>}
         </div>
       )}
       {showAll && (
         <div className="stats-row-all">
-          <span className="stats-row-label">All:</span> {all != null ? f(all) : '—'}{renderDelta(all)}
+          <span className="stats-row-label">All:</span> {all != null ? f(all) : '—'}{renderDelta(all, 'all')}
         </div>
       )}
       {showTournament && (
         <div className="stats-row-tournament">
-          <span className="stats-row-label">Tournament:</span> {isBlurred ? <span className="stats-blur-value">{tournament != null ? f(tournament) : '—'}</span> : (<>{tournament != null ? f(tournament) : '—'}{renderDelta(tournament)}</>)}
+          <span className="stats-row-label">Tournament:</span> {isBlurred ? <span className="stats-blur-value">---</span> : (<>{tournament != null ? f(tournament) : '—'}{renderDelta(tournament, 'tournament')}</>)}
         </div>
       )}
       {showTop && (
         <div className="stats-row-top">
-          <span className="stats-row-label">Top:</span> {isBlurred ? <span className="stats-blur-value">{top != null ? f(top) : '—'}</span> : (<>{top != null ? f(top) : '—'}{renderDelta(top)}</>)}
+          <span className="stats-row-label">Top:</span> {isBlurred ? <span className="stats-blur-value">---</span> : (<>{top != null ? f(top) : '—'}{renderDelta(top, 'top')}</>)}
         </div>
       )}
     </td>
@@ -179,6 +206,99 @@ function StatsLegend({ user, showYou, showAll, showTop, showTournament, onToggle
           <input type="checkbox" checked={includeBots} onChange={onToggleBots} />
           Bots
         </label>
+      </div>
+    </div>
+  )
+}
+
+// === Table filter: search + aspect icons ===
+
+const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning']
+const FILTER_OPTIONS = [...ASPECTS, 'Neutral', 'Multicolor']
+
+function useTableFilter() {
+  const [search, setSearch] = useState('')
+  const [activeAspects, setActiveAspects] = useState<Set<string>>(new Set(FILTER_OPTIONS))
+
+  const toggleAspect = (aspect: string) => {
+    setActiveAspects(prev => {
+      const next = new Set(prev)
+      if (next.has(aspect)) {
+        next.delete(aspect)
+      } else {
+        next.add(aspect)
+      }
+      // If all are off, reset to all on
+      if (next.size === 0) return new Set(FILTER_OPTIONS)
+      return next
+    })
+  }
+
+  const filterFn = (card: { cardName: string; aspects: string[] }) => {
+    // Name search
+    if (search && !card.cardName.toLowerCase().includes(search.toLowerCase())) return false
+    // Aspect filter (if not all selected)
+    if (activeAspects.size < FILTER_OPTIONS.length) {
+      const cardColorAspects = card.aspects.filter(a => COLOR_ASPECTS.includes(a))
+      const isNeutral = cardColorAspects.length === 0
+      const isMulticolor = cardColorAspects.length >= 2
+
+      let hasMatch = false
+      // Check standard aspect match
+      if (card.aspects.some(a => activeAspects.has(a))) hasMatch = true
+      // Check neutral
+      if (activeAspects.has('Neutral') && isNeutral) hasMatch = true
+      // Check multicolor
+      if (activeAspects.has('Multicolor') && isMulticolor) hasMatch = true
+
+      if (!hasMatch) return false
+    }
+    return true
+  }
+
+  return { search, setSearch, activeAspects, toggleAspect, filterFn }
+}
+
+function TableFilter({ search, setSearch, activeAspects, toggleAspect }: {
+  search: string
+  setSearch: (s: string) => void
+  activeAspects: Set<string>
+  toggleAspect: (a: string) => void
+}) {
+  return (
+    <div className="stats-table-filter">
+      <input
+        type="text"
+        placeholder="Search cards..."
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        className="stats-search-input"
+      />
+      <div className="stats-aspect-filter">
+        {ASPECTS.map(aspect => (
+          <button
+            key={aspect}
+            className={`stats-aspect-btn ${activeAspects.has(aspect) ? 'active' : ''}`}
+            onClick={() => toggleAspect(aspect)}
+            title={aspect}
+          >
+            <AspectIcon aspect={aspect} size="sm" />
+          </button>
+        ))}
+        <button
+          className={`stats-aspect-btn stats-aspect-btn-text ${activeAspects.has('Neutral') ? 'active' : ''}`}
+          onClick={() => toggleAspect('Neutral')}
+          title="Neutral (no color aspects)"
+        >
+          <span className="stats-aspect-label">N</span>
+        </button>
+        <button
+          className={`stats-aspect-btn stats-aspect-btn-text stats-aspect-btn-multi ${activeAspects.has('Multicolor') ? 'active' : ''}`}
+          onClick={() => toggleAspect('Multicolor')}
+          title="Multicolor (2+ color aspects)"
+        >
+          <span className="stats-aspect-label">M</span>
+        </button>
       </div>
     </div>
   )
@@ -340,18 +460,18 @@ export default function StatsPage() {
       </div>
 
       <div className="stats-content">
-        {isBlurred && (
+        {isBlurred && isPatron !== null && (
           <div className="stats-patron-cta">
             <div className="stats-patron-cta-content">
               <div className="stats-patron-cta-text">
                 <span className="stats-patron-cta-icon">🔒</span>
                 <div>
-                  <h3 className="stats-patron-cta-heading">Unlock Top Player Stats</h3>
+                  <h3 className="stats-patron-cta-heading">Unlock <span style={{ color: '#CE93D8' }}>Tournament</span> and Top Player Stats</h3>
                   <p className="stats-patron-cta-desc">Support Protect the Pod to see stats from top tournament competitors.</p>
                 </div>
               </div>
-              <a href="https://www.patreon.com/protectthepod" target="_blank" rel="noopener noreferrer">
-                <Button variant="primary">Support on Patreon</Button>
+              <a href="https://www.patreon.com/ProtectthePod" target="_blank" rel="noopener noreferrer">
+                <Button variant="primary">Support Protect the Pod</Button>
               </a>
             </div>
           </div>
@@ -369,6 +489,7 @@ export default function StatsPage() {
           showTournament={showTournament}
           legendProps={legendProps}
           isBlurred={isBlurred}
+          canSeeFullStats={canSeeFullStats}
         />
       </div>
     </div>
@@ -388,9 +509,10 @@ interface SetStatsTabProps {
   showTournament: boolean
   legendProps: any
   isBlurred?: boolean
+  canSeeFullStats?: boolean
 }
 
-function SetStatsTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred }: SetStatsTabProps) {
+function SetStatsTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred, canSeeFullStats }: SetStatsTabProps) {
   const [subTab, setSubTab] = useState('draft')
 
   return (
@@ -411,9 +533,9 @@ function SetStatsTab({ setCode, includeBots, includeHumans, startDate, endDate, 
       </div>
 
       {subTab === 'draft' ? (
-        <DraftTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} />
+        <DraftTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} canSeeFullStats={canSeeFullStats} />
       ) : (
-        <SealedTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} />
+        <SealedTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} canSeeFullStats={canSeeFullStats} />
       )}
     </div>
   )
@@ -471,6 +593,7 @@ interface LeaderSelection {
   cardId: string
   timesSelected: number
   selectionRate: number
+  rarity: string | null
   aspects: string[]
   subtitle: string | null
   imageUrl: string | null
@@ -485,19 +608,189 @@ const RARITY_ORDER: Record<string, number> = { 'Legendary': 0, 'Rare': 1, 'Uncom
 
 // === Shared Skeleton ===
 
+function SkeletonBlock({ width, height = 14 }: { width?: string, height?: number }) {
+  return <div className="skeleton-line" style={{ maxWidth: width, height: `${height}px` }} />
+}
+
+function SkeletonTableRows({ columns, rows = 8 }: { columns: string[], rows?: number }) {
+  return (
+    <>
+      {Array.from({ length: rows }).map((_, i) => (
+        <tr key={i}>
+          {columns.map((w, j) => (
+            <td key={j}><SkeletonBlock width={w} /></td>
+          ))}
+        </tr>
+      ))}
+    </>
+  )
+}
+
 function LoadingSkeleton() {
   return (
-    <div className="stats-loading-skeleton">
-      {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-        <div key={i} className="skeleton-row">
-          <div className="skeleton-line" style={{ maxWidth: '140px' }} />
-          <div className="skeleton-line" style={{ maxWidth: '40px' }} />
-          <div className="skeleton-line" style={{ maxWidth: '50px' }} />
-          <div className="skeleton-line" style={{ maxWidth: '60px' }} />
-          <div className="skeleton-line" style={{ maxWidth: '70px' }} />
-          <div className="skeleton-line" style={{ maxWidth: '60px' }} />
+    <div className="cards-subtab">
+      {/* === Leaders Section === */}
+      <h3 style={{ marginBottom: '0.5rem' }}>Leaders</h3>
+
+      {/* Filter bar (search + aspect icons) */}
+      <div className="stats-table-filter">
+        <div className="skeleton-line" style={{ width: '200px', height: '32px', borderRadius: '6px' }} />
+        <div className="stats-aspect-filter">
+          {ASPECTS.map(aspect => (
+            <div key={aspect} className="stats-aspect-btn" style={{ opacity: 0.3 }}>
+              <AspectIcon aspect={aspect} size="sm" />
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
+
+      {/* Description */}
+      <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', marginBottom: '1rem' }}>
+        <SkeletonBlock width="320px" />
+      </div>
+
+      {/* Legend */}
+      <div className="stats-legend-bar">
+        <SkeletonBlock width="40px" height={16} />
+        <span className="stats-legend-sep">&middot;</span>
+        <SkeletonBlock width="30px" height={16} />
+        <span className="stats-legend-sep">&middot;</span>
+        <SkeletonBlock width="80px" height={16} />
+        <span className="stats-legend-sep">&middot;</span>
+        <SkeletonBlock width="40px" height={16} />
+      </div>
+
+      {/* Leader Draft Picks table */}
+      <div className="stats-table-container" style={{ marginBottom: '1.5rem' }}>
+        <table className="stats-table">
+          <thead>
+            <tr>
+              <th>Leader</th>
+              <th className="aspects-col">Aspects</th>
+              <th>Rarity</th>
+              <th>Avg Pick</th>
+              <th>1st Pick</th>
+              <th># Drafted</th>
+            </tr>
+          </thead>
+          <tbody>
+            <SkeletonTableRows columns={['140px', '50px', '60px', '80px', '90px', '70px']} rows={6} />
+          </tbody>
+        </table>
+      </div>
+
+      {/* Leader Deck Selection table */}
+      <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', marginBottom: '1rem' }}>
+        <SkeletonBlock width="280px" />
+      </div>
+      <div className="stats-legend-bar">
+        <SkeletonBlock width="40px" height={16} />
+        <span className="stats-legend-sep">&middot;</span>
+        <SkeletonBlock width="30px" height={16} />
+        <span className="stats-legend-sep">&middot;</span>
+        <SkeletonBlock width="80px" height={16} />
+        <span className="stats-legend-sep">&middot;</span>
+        <SkeletonBlock width="40px" height={16} />
+      </div>
+      <div className="stats-table-container" style={{ marginBottom: '2rem' }}>
+        <table className="stats-table">
+          <thead>
+            <tr>
+              <th>Leader</th>
+              <th className="aspects-col">Aspects</th>
+              <th>Rarity</th>
+              <th>Selection %</th>
+              <th># Selected</th>
+            </tr>
+          </thead>
+          <tbody>
+            <SkeletonTableRows columns={['140px', '50px', '60px', '80px', '70px']} rows={6} />
+          </tbody>
+        </table>
+      </div>
+
+      {/* === Cards Section === */}
+      <h3 style={{ marginBottom: '0.5rem' }}>Cards</h3>
+
+      {/* Filter bar */}
+      <div className="stats-table-filter">
+        <div className="skeleton-line" style={{ width: '200px', height: '32px', borderRadius: '6px' }} />
+        <div className="stats-aspect-filter">
+          {ASPECTS.map(aspect => (
+            <div key={aspect} className="stats-aspect-btn" style={{ opacity: 0.3 }}>
+              <AspectIcon aspect={aspect} size="sm" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Summary stats */}
+      <div className="draft-picks-summary">
+        <div className="stat-item">
+          <span className="stat-label">Drafts:</span>
+          <span className="stat-value"><SkeletonBlock width="60px" height={28} /></span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-label">Total Picks:</span>
+          <span className="stat-value"><SkeletonBlock width="80px" height={28} /></span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-label">Drafters:</span>
+          <span className="stat-value"><SkeletonBlock width="50px" height={28} /></span>
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div className="stats-legend-bar">
+        <SkeletonBlock width="40px" height={16} />
+        <span className="stats-legend-sep">&middot;</span>
+        <SkeletonBlock width="30px" height={16} />
+        <span className="stats-legend-sep">&middot;</span>
+        <SkeletonBlock width="80px" height={16} />
+        <span className="stats-legend-sep">&middot;</span>
+        <SkeletonBlock width="40px" height={16} />
+      </div>
+
+      {/* Cards table */}
+      <div className="stats-table-container">
+        <table className="stats-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th className="aspects-col">Aspects</th>
+              <th>Rarity</th>
+              <th>Avg Pick</th>
+              <th>1st Pick</th>
+              <th># Drafted</th>
+            </tr>
+          </thead>
+          <tbody>
+            <SkeletonTableRows columns={['140px', '50px', '60px', '70px', '90px', '60px']} rows={10} />
+          </tbody>
+        </table>
+      </div>
+
+      {/* === Charts Section === */}
+      <div className="stats-charts-section">
+        <h4>Leader Pick Distribution</h4>
+        <div className="stats-chart-grid">
+          {['You', 'All', 'Tournament', 'Top'].map(label => (
+            <div key={label} className="stats-chart-panel">
+              <h4 className="stats-chart-panel-label" style={{ color: label === 'You' ? '#64B5F6' : label === 'Tournament' ? '#CE93D8' : label === 'Top' ? '#FFB74D' : 'rgba(255,255,255,0.9)' }}>{label}</h4>
+              <div className="skeleton-line" style={{ height: '180px', borderRadius: '6px' }} />
+            </div>
+          ))}
+        </div>
+        <h4>Top 25 Cards by Pick Rate</h4>
+        <div className="stats-chart-grid">
+          {['You', 'All', 'Tournament', 'Top'].map(label => (
+            <div key={label} className="stats-chart-panel">
+              <h4 className="stats-chart-panel-label" style={{ color: label === 'You' ? '#64B5F6' : label === 'Tournament' ? '#CE93D8' : label === 'Top' ? '#FFB74D' : 'rgba(255,255,255,0.9)' }}>{label}</h4>
+              <div className="skeleton-line" style={{ height: '180px', borderRadius: '6px' }} />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
@@ -528,9 +821,10 @@ interface TabProps {
   showTournament: boolean
   legendProps: any
   isBlurred?: boolean
+  canSeeFullStats?: boolean
 }
 
-function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred }: TabProps) {
+function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred, canSeeFullStats }: TabProps) {
   // All Players data
   const [cardData, setCardData] = useState<DraftPickStats | null>(null)
   const [leaderData, setLeaderData] = useState<DraftPickStats | null>(null)
@@ -555,6 +849,8 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
   const [leaderSortAsc, setLeaderSortAsc] = useState(true)
   const [leaderSelSortKey, setLeaderSelSortKey] = useState<LeaderSelSortKey>('timesSelected')
   const [leaderSelSortAsc, setLeaderSelSortAsc] = useState(false)
+  const leaderFilter = useTableFilter()
+  const cardFilter = useTableFilter()
   const {
     hoveredCardPreview,
     handleCardMouseEnter,
@@ -604,27 +900,40 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
       fetch(`/api/stats/leader-selection?${baseParams}&poolType=draft`)
         .then(r => r.json()).then(result => setLeaderSelData(result.data || result))
         .catch(err => console.error('Error fetching leader selection:', err)),
-      // Tournament Players (not affected by Humans/Bots filter)
-      fetch(`/api/stats/draft-picks?${tournamentParams}`)
-        .then(r => r.json()).then(result => setCardDataTournament(result.data || result))
-        .catch(err => console.error('Error fetching tournament card draft picks:', err)),
-      fetch(`/api/stats/draft-picks?${tournamentParams}&type=leaders`)
-        .then(r => r.json()).then(result => setLeaderDataTournament(result.data || result))
-        .catch(err => console.error('Error fetching tournament leader draft picks:', err)),
-      fetch(`/api/stats/leader-selection?${tournamentParams}&poolType=draft`)
-        .then(r => r.json()).then(result => setLeaderSelDataTournament(result.data || result))
-        .catch(err => console.error('Error fetching tournament leader selection:', err)),
-      // Top Players (not affected by Humans/Bots filter)
-      fetch(`/api/stats/draft-picks?${topPlayersParams}`)
-        .then(r => r.json()).then(result => setCardDataTop(result.data || result))
-        .catch(err => console.error('Error fetching top player card draft picks:', err)),
-      fetch(`/api/stats/draft-picks?${topPlayersParams}&type=leaders`)
-        .then(r => r.json()).then(result => setLeaderDataTop(result.data || result))
-        .catch(err => console.error('Error fetching top player leader draft picks:', err)),
-      fetch(`/api/stats/leader-selection?${topPlayersParams}&poolType=draft`)
-        .then(r => r.json()).then(result => setLeaderSelDataTop(result.data || result))
-        .catch(err => console.error('Error fetching top player leader selection:', err)),
     ]
+
+    // Tournament + Top Players: only fetch if patron/admin
+    if (canSeeFullStats) {
+      fetches.push(
+        // Tournament Players (not affected by Humans/Bots filter)
+        fetch(`/api/stats/draft-picks?${tournamentParams}`)
+          .then(r => r.json()).then(result => setCardDataTournament(result.data || result))
+          .catch(err => console.error('Error fetching tournament card draft picks:', err)),
+        fetch(`/api/stats/draft-picks?${tournamentParams}&type=leaders`)
+          .then(r => r.json()).then(result => setLeaderDataTournament(result.data || result))
+          .catch(err => console.error('Error fetching tournament leader draft picks:', err)),
+        fetch(`/api/stats/leader-selection?${tournamentParams}&poolType=draft`)
+          .then(r => r.json()).then(result => setLeaderSelDataTournament(result.data || result))
+          .catch(err => console.error('Error fetching tournament leader selection:', err)),
+        // Top Players (not affected by Humans/Bots filter)
+        fetch(`/api/stats/draft-picks?${topPlayersParams}`)
+          .then(r => r.json()).then(result => setCardDataTop(result.data || result))
+          .catch(err => console.error('Error fetching top player card draft picks:', err)),
+        fetch(`/api/stats/draft-picks?${topPlayersParams}&type=leaders`)
+          .then(r => r.json()).then(result => setLeaderDataTop(result.data || result))
+          .catch(err => console.error('Error fetching top player leader draft picks:', err)),
+        fetch(`/api/stats/leader-selection?${topPlayersParams}&poolType=draft`)
+          .then(r => r.json()).then(result => setLeaderSelDataTop(result.data || result))
+          .catch(err => console.error('Error fetching top player leader selection:', err)),
+      )
+    } else {
+      setCardDataTournament(null)
+      setLeaderDataTournament(null)
+      setLeaderSelDataTournament(null)
+      setCardDataTop(null)
+      setLeaderDataTop(null)
+      setLeaderSelDataTop(null)
+    }
 
     // You fetches (only if logged in, not affected by Humans/Bots filter)
     if (user?.id) {
@@ -653,7 +962,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
     }
 
     Promise.all(fetches).finally(() => setLoading(false))
-  }, [setCode, includeBots, includeHumans, startDate, endDate, user?.id])
+  }, [setCode, includeBots, includeHumans, startDate, endDate, user?.id, canSeeFullStats])
 
   // Build lookup maps for Tournament, Top, and You data
   const cardTournamentMap = useMemo(() => buildLookupMap(cardDataTournament?.cards), [cardDataTournament?.cards])
@@ -723,6 +1032,10 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
     })
   }, [leaderSelData?.leaders, leaderSelSortKey, leaderSelSortAsc])
 
+  const filteredCards = useMemo(() => sortedCards.filter(cardFilter.filterFn), [sortedCards, cardFilter.search, cardFilter.activeAspects])
+  const filteredLeaders = useMemo(() => sortedLeaders.filter(leaderFilter.filterFn), [sortedLeaders, leaderFilter.search, leaderFilter.activeAspects])
+  const filteredLeaderSel = useMemo(() => sortedLeaderSel.filter(leaderFilter.filterFn), [sortedLeaderSel, leaderFilter.search, leaderFilter.activeAspects])
+
   if (loading) return <LoadingSkeleton />
 
   const rarityClass = (r: string) => `rarity-${r.toLowerCase()}`
@@ -756,10 +1069,34 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
     )
   }
 
-  const cellProps = { showYou, showAll, showTop, showTournament, isBlurred }
+  const cellProps = { showYou, showAll, showTop, showTournament, isBlurred, user }
 
   return (
     <div className="cards-subtab">
+      {/* Charts (data visualizations first) */}
+      <div className="stats-charts-section" style={{ marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
+        <h4>Leader Pick Distribution</h4>
+        <LeaderCharts
+          allData={leaderData?.cards || null}
+          tournamentData={leaderDataTournament?.cards || null}
+          topData={leaderDataTop?.cards || null}
+          youData={leaderDataYou?.cards || null}
+          valueKey="timesPicked"
+          canSeeFullStats={canSeeFullStats}
+          user={user}
+        />
+        <h4>Top 25 Cards by Pick Rate</h4>
+        <CardCharts
+          allData={cardData?.cards || null}
+          tournamentData={cardDataTournament?.cards || null}
+          topData={cardDataTop?.cards || null}
+          youData={cardDataYou?.cards || null}
+          valueKey="timesPicked"
+          canSeeFullStats={canSeeFullStats}
+          user={user}
+        />
+      </div>
+
       {/* Leaders Section */}
       {(hasLeaders || hasLeaderSel) && (
         <>
@@ -769,22 +1106,24 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
           {hasLeaders && (
             <>
               <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', marginBottom: '1rem' }}>
-                Draft pick order ({fmt(leaderData.totalDrafts)} drafts, {fmt(leaderData.totalPicks)} leader picks)
+                Draft pick order ({fmt(leaderData.totalDrafts)} drafts, {fmt(leaderData.totalPicks)} leader picks{leaderSelData ? `, ${fmt(leaderSelData.totalDecks)} decks built` : ''})
               </p>
               <StatsLegend {...legendProps} showBuiltDeckFilter={true} />
+              <TableFilter {...leaderFilter} />
               <div className="stats-table-container" style={{ marginBottom: '1.5rem' }}>
                 <table className="stats-table">
                   <thead>
                     <tr>
                       <LeaderSortHeader label="Leader" col="cardName" />
                       <th className="aspects-col">Aspects</th>
+                      <LeaderSortHeader label="Rarity" col="cardName" />
                       <LeaderSortHeader label="Avg Pick" col="avgPickPosition" title="Average position this leader is picked in leader rounds (1 = first pick)" />
                       <LeaderSortHeader label="1st Pick" col="firstPickPct" title="How often this leader is picked first overall in leader rounds" />
                       <LeaderSortHeader label="# Drafted" col="timesPicked" />
                     </tr>
                   </thead>
                   <tbody>
-                    {sortedLeaders.map(card => {
+                    {filteredLeaders.map(card => {
                       const tournamentCard = leaderTournamentMap.get(card.cardName)
                       const topCard = leaderTopMap.get(card.cardName)
                       const youCard = leaderYouMap.get(card.cardName)
@@ -801,6 +1140,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                             {card.subtitle && <span className="card-subtitle">{card.subtitle}</span>}
                           </td>
                           <AspectsCell aspects={card.aspects} />
+                          <td><span className={rarityClass(card.rarity)}>{card.rarity}</span></td>
                           <StatsCell
                             {...cellProps}
                             you={youCard?.avgPickPosition}
@@ -848,12 +1188,13 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                     <tr>
                       <LeaderSelSortHeader label="Leader" col="cardName" />
                       <th className="aspects-col">Aspects</th>
+                      <th>Rarity</th>
                       <LeaderSelSortHeader label="Selection %" col="selectionRate" title="Percentage of all built decks that chose this leader" />
                       <LeaderSelSortHeader label="# Selected" col="timesSelected" />
                     </tr>
                   </thead>
                   <tbody>
-                    {sortedLeaderSel.map(leader => {
+                    {filteredLeaderSel.map(leader => {
                       const tournamentLeader = leaderSelTournamentMap.get(leader.cardName)
                       const topLeader = leaderSelTopMap.get(leader.cardName)
                       const youLeader = leaderSelYouMap.get(leader.cardName)
@@ -861,15 +1202,16 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                         <tr key={leader.cardId}>
                           <td
                             className="card-name-cell"
-                            onMouseEnter={(e) => handleCardMouseEnter({ imageUrl: leader.imageUrl || undefined, name: leader.cardName, rarity: 'Legendary', isLeader: true }, e)}
+                            onMouseEnter={(e) => handleCardMouseEnter({ imageUrl: leader.imageUrl || undefined, name: leader.cardName, rarity: leader.rarity || 'Legendary', isLeader: true }, e)}
                             onMouseLeave={handleCardMouseLeave}
-                            onTouchStart={() => handleCardTouchStart({ imageUrl: leader.imageUrl || undefined, name: leader.cardName, rarity: 'Legendary', isLeader: true })}
+                            onTouchStart={() => handleCardTouchStart({ imageUrl: leader.imageUrl || undefined, name: leader.cardName, rarity: leader.rarity || 'Legendary', isLeader: true })}
                             onTouchEnd={handleCardTouchEnd}
                           >
                             <span className="card-name">{leader.cardName}</span>
                             {leader.subtitle && <span className="card-subtitle">{leader.subtitle}</span>}
                           </td>
                           <AspectsCell aspects={leader.aspects} />
+                          <td><span className={rarityClass(leader.rarity || 'Legendary')}>{leader.rarity || 'Legendary'}</span></td>
                           <StatsCell
                             {...cellProps}
                             you={youLeader?.selectionRate}
@@ -925,6 +1267,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
           )}
 
           <StatsLegend {...legendProps} showBuiltDeckFilter={true} />
+          <TableFilter {...cardFilter} />
           <div className="stats-table-container">
             <table className="stats-table">
               <thead>
@@ -938,7 +1281,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                 </tr>
               </thead>
               <tbody>
-                {sortedCards.map(card => {
+                {filteredCards.map(card => {
                   const tournamentCard = cardTournamentMap.get(card.cardName)
                   const topCard = cardTopMap.get(card.cardName)
                   const youCard = cardYouMap.get(card.cardName)
@@ -1007,7 +1350,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
 
 // === Sealed Tab ===
 
-function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred }: TabProps) {
+function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred, canSeeFullStats }: TabProps) {
   // All Players data
   const [cardData, setCardData] = useState<DeckInclusionStats | null>(null)
   const [leaderSelData, setLeaderSelData] = useState<{ totalDecks: number; leaders: LeaderSelection[] } | null>(null)
@@ -1026,6 +1369,8 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
   const [cardSortAsc, setCardSortAsc] = useState(false)
   const [leaderSelSortKey, setLeaderSelSortKey] = useState<LeaderSelSortKey>('timesSelected')
   const [leaderSelSortAsc, setLeaderSelSortAsc] = useState(false)
+  const leaderFilter = useTableFilter()
+  const cardFilter = useTableFilter()
   const {
     hoveredCardPreview,
     handleCardMouseEnter,
@@ -1072,21 +1417,32 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
       fetch(`/api/stats/leader-selection?${baseParams}`)
         .then(r => r.json()).then(result => setLeaderSelData(result.data || result))
         .catch(err => console.error('Error fetching leader selection:', err)),
-      // Tournament Players (not affected by Humans/Bots filter)
-      fetch(`/api/stats/deck-inclusion?${tournamentParams}`)
-        .then(r => r.json()).then(result => setCardDataTournament(result.data || result))
-        .catch(err => console.error('Error fetching tournament deck inclusion:', err)),
-      fetch(`/api/stats/leader-selection?${tournamentParams}`)
-        .then(r => r.json()).then(result => setLeaderSelDataTournament(result.data || result))
-        .catch(err => console.error('Error fetching tournament leader selection:', err)),
-      // Top Players (not affected by Humans/Bots filter)
-      fetch(`/api/stats/deck-inclusion?${topPlayersParams}`)
-        .then(r => r.json()).then(result => setCardDataTop(result.data || result))
-        .catch(err => console.error('Error fetching top player deck inclusion:', err)),
-      fetch(`/api/stats/leader-selection?${topPlayersParams}`)
-        .then(r => r.json()).then(result => setLeaderSelDataTop(result.data || result))
-        .catch(err => console.error('Error fetching top player leader selection:', err)),
     ]
+
+    // Tournament + Top Players: only fetch if patron/admin
+    if (canSeeFullStats) {
+      fetches.push(
+        // Tournament Players (not affected by Humans/Bots filter)
+        fetch(`/api/stats/deck-inclusion?${tournamentParams}`)
+          .then(r => r.json()).then(result => setCardDataTournament(result.data || result))
+          .catch(err => console.error('Error fetching tournament deck inclusion:', err)),
+        fetch(`/api/stats/leader-selection?${tournamentParams}`)
+          .then(r => r.json()).then(result => setLeaderSelDataTournament(result.data || result))
+          .catch(err => console.error('Error fetching tournament leader selection:', err)),
+        // Top Players (not affected by Humans/Bots filter)
+        fetch(`/api/stats/deck-inclusion?${topPlayersParams}`)
+          .then(r => r.json()).then(result => setCardDataTop(result.data || result))
+          .catch(err => console.error('Error fetching top player deck inclusion:', err)),
+        fetch(`/api/stats/leader-selection?${topPlayersParams}`)
+          .then(r => r.json()).then(result => setLeaderSelDataTop(result.data || result))
+          .catch(err => console.error('Error fetching top player leader selection:', err)),
+      )
+    } else {
+      setCardDataTournament(null)
+      setLeaderSelDataTournament(null)
+      setCardDataTop(null)
+      setLeaderSelDataTop(null)
+    }
 
     // You fetches (only if logged in, not affected by Humans/Bots filter)
     if (user?.id) {
@@ -1111,7 +1467,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
     }
 
     Promise.all(fetches).finally(() => setLoading(false))
-  }, [setCode, includeBots, includeHumans, startDate, endDate, user?.id])
+  }, [setCode, includeBots, includeHumans, startDate, endDate, user?.id, canSeeFullStats])
 
   // Build lookup maps
   const cardTournamentMap = useMemo(() => buildLookupMap(cardDataTournament?.cards), [cardDataTournament?.cards])
@@ -1159,6 +1515,9 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
     })
   }, [leaderSelData?.leaders, leaderSelSortKey, leaderSelSortAsc])
 
+  const filteredCards = useMemo(() => sortedCards.filter(cardFilter.filterFn), [sortedCards, cardFilter.search, cardFilter.activeAspects])
+  const filteredLeaderSel = useMemo(() => sortedLeaderSel.filter(leaderFilter.filterFn), [sortedLeaderSel, leaderFilter.search, leaderFilter.activeAspects])
+
   if (loading) return <LoadingSkeleton />
 
   const hasCards = cardData && cardData.cards && cardData.cards.length > 0
@@ -1174,7 +1533,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
   }
 
   const rarityClass = (r: string) => `rarity-${r.toLowerCase()}`
-  const cellProps = { showYou, showAll, showTop, showTournament, isBlurred }
+  const cellProps = { showYou, showAll, showTop, showTournament, isBlurred, user }
 
   const CardSortHeader = ({ label, col, title }: { label: string, col: DeckSortKey, title?: string }) => (
     <th className={`sortable ${cardSortKey === col ? 'active' : ''}`} onClick={() => handleCardSort(col)} title={title}>
@@ -1189,26 +1548,53 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
 
   return (
     <div className="cards-subtab">
+      {/* Charts (data visualizations first) */}
+      <div className="stats-charts-section" style={{ marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
+        <h4>Leader Selection Distribution</h4>
+        <LeaderCharts
+          allData={leaderSelData?.leaders || null}
+          tournamentData={leaderSelDataTournament?.leaders || null}
+          topData={leaderSelDataTop?.leaders || null}
+          youData={leaderSelDataYou?.leaders || null}
+          valueKey="timesSelected"
+          canSeeFullStats={canSeeFullStats}
+          user={user}
+        />
+        <h4>Top 25 Cards by Inclusion Rate</h4>
+        <CardCharts
+          allData={cardData?.cards || null}
+          tournamentData={cardDataTournament?.cards || null}
+          topData={cardDataTop?.cards || null}
+          youData={cardDataYou?.cards || null}
+          valueKey="inclusionRate"
+          formatValue={(v: number) => `${v.toFixed(1)}%`}
+          canSeeFullStats={canSeeFullStats}
+          user={user}
+        />
+      </div>
+
       {/* Leader Selection */}
       {hasLeaderSel && (
         <>
           <h3 style={{ marginBottom: '0.5rem' }}>Leaders</h3>
           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', marginBottom: '1rem' }}>
-            How often each leader is chosen for sealed decks ({fmt(leaderSelData.totalDecks)} decks)
+            How often each leader is chosen for sealed decks ({fmt(leaderSelData.totalDecks)} decks built)
           </p>
           <StatsLegend {...legendProps} showBuiltDeckFilter={false} />
+          <TableFilter {...leaderFilter} />
           <div className="stats-table-container" style={{ marginBottom: '2rem' }}>
             <table className="stats-table">
               <thead>
                 <tr>
                   <LeaderSelSortHeader label="Leader" col="cardName" />
                   <th className="aspects-col">Aspects</th>
+                  <th>Rarity</th>
                   <LeaderSelSortHeader label="Included %" col="selectionRate" title="Percentage of sealed decks that chose this leader" />
                   <LeaderSelSortHeader label="# Included" col="timesSelected" />
                 </tr>
               </thead>
               <tbody>
-                {sortedLeaderSel.map(leader => {
+                {filteredLeaderSel.map(leader => {
                   const tournamentLeader = leaderSelTournamentMap.get(leader.cardName)
                   const topLeader = leaderSelTopMap.get(leader.cardName)
                   const youLeader = leaderSelYouMap.get(leader.cardName)
@@ -1216,15 +1602,16 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                     <tr key={leader.cardId}>
                       <td
                         className="card-name-cell"
-                        onMouseEnter={(e) => handleCardMouseEnter({ imageUrl: leader.imageUrl || undefined, name: leader.cardName, rarity: 'Legendary', isLeader: true }, e)}
+                        onMouseEnter={(e) => handleCardMouseEnter({ imageUrl: leader.imageUrl || undefined, name: leader.cardName, rarity: leader.rarity || 'Legendary', isLeader: true }, e)}
                         onMouseLeave={handleCardMouseLeave}
-                        onTouchStart={() => handleCardTouchStart({ imageUrl: leader.imageUrl || undefined, name: leader.cardName, rarity: 'Legendary', isLeader: true })}
+                        onTouchStart={() => handleCardTouchStart({ imageUrl: leader.imageUrl || undefined, name: leader.cardName, rarity: leader.rarity || 'Legendary', isLeader: true })}
                         onTouchEnd={handleCardTouchEnd}
                       >
                         <span className="card-name">{leader.cardName}</span>
                         {leader.subtitle && <span className="card-subtitle">{leader.subtitle}</span>}
                       </td>
                       <AspectsCell aspects={leader.aspects} />
+                      <td><span className={rarityClass(leader.rarity || 'Legendary')}>{leader.rarity || 'Legendary'}</span></td>
                       <StatsCell
                         {...cellProps}
                         you={youLeader?.selectionRate}
@@ -1256,7 +1643,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
           <h3 style={{ marginBottom: '0.5rem' }}>Cards</h3>
           <div className="draft-picks-summary">
             <div className="stat-item">
-              <span className="stat-label">Pools with Decks:</span>
+              <span className="stat-label">Decks Built:</span>
               <span className="stat-value">{fmt(cardData.totalPoolsWithDecks)}</span>
             </div>
           </div>
@@ -1268,6 +1655,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
           )}
 
           <StatsLegend {...legendProps} showBuiltDeckFilter={false} />
+          <TableFilter {...cardFilter} />
           <div className="stats-table-container">
             <table className="stats-table">
               <thead>
@@ -1281,7 +1669,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                 </tr>
               </thead>
               <tbody>
-                {sortedCards.map(card => {
+                {filteredCards.map(card => {
                   const tournamentCard = cardTournamentMap.get(card.cardName)
                   const topCard = cardTopMap.get(card.cardName)
                   const youCard = cardYouMap.get(card.cardName)

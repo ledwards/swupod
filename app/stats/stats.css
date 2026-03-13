@@ -359,6 +359,7 @@
   width: 1%;
   white-space: nowrap;
   text-align: center;
+  padding-right: 0.25rem;
 }
 
 .aspects-cell {
@@ -1459,7 +1460,7 @@
 }
 
 .sort-indicator {
-  margin-left: 0.25rem;
+  margin-left: 0.5rem;
   font-size: 0.7rem;
 }
 
@@ -1635,6 +1636,103 @@
   text-decoration: underline;
 }
 
+/* Login link in StatsCell */
+.stats-login-link {
+  color: #64B5F6;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.stats-login-link:hover,
+.stats-login-link:visited,
+.stats-login-link:active {
+  color: #64B5F6;
+  text-decoration: underline;
+}
+
+/* Table search + aspect filter */
+.stats-table-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.stats-search-input {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  border-radius: 6px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  font-family: inherit;
+  width: 200px;
+  transition: border-color 0.2s ease;
+}
+
+.stats-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.stats-search-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.stats-aspect-filter {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.stats-aspect-btn {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 3px;
+  cursor: pointer;
+  opacity: 0.35;
+  transition: opacity 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stats-aspect-btn.active {
+  opacity: 1;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.stats-aspect-btn-text {
+  padding: 3px 6px;
+  min-width: 24px;
+}
+
+.stats-aspect-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1;
+}
+
+.stats-aspect-btn-multi.active {
+  background: linear-gradient(135deg, #E74C3C, #F1C40F, #4A90E2, #27AE60);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.stats-aspect-btn-multi.active .stats-aspect-label {
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .stats-aspect-btn:hover {
+    opacity: 0.8;
+  }
+}
+
 /* Locked legend toggles for non-supporters */
 .stats-legend-locked {
   opacity: 0.5;
@@ -1702,4 +1800,94 @@
   .stats-patron-cta-text {
     flex-direction: column;
   }
+}
+
+/* Chart Panels */
+.stats-chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+@media (max-width: 768px) {
+  .stats-chart-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stats-chart-panel {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 1rem;
+  min-height: 200px;
+}
+
+.stats-chart-panel-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stats-chart-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+}
+
+.stats-chart-blurred {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.03),
+    rgba(255, 255, 255, 0.03) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+  border-radius: 6px;
+}
+
+.stats-chart-lock {
+  font-size: 2rem;
+  opacity: 0.5;
+}
+
+.stats-chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+}
+
+.stats-charts-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.stats-charts-section h4 {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 0.5rem 0;
+}
+
+/* === Loading Skeleton === */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.15; }
+}
+
+.skeleton-line {
+  height: 14px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  width: 100%;
 }

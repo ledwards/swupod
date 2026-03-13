@@ -147,6 +147,26 @@ export function getSingleAspectColor(aspect: Aspect): string {
   return ASPECT_COLORS[aspect] || NO_ASPECT_COLOR;
 }
 
+/** Color aspects only (not alignment aspects) */
+const COLOR_ASPECTS: Aspect[] = ['Vigilance', 'Command', 'Aggression', 'Cunning'];
+
+/**
+ * Gets all color aspect hex values for a card.
+ * Returns array of hex colors for the card's color aspects.
+ * Used for multicolor gradient rendering in charts.
+ */
+export function getAspectColors(card: CardWithAspects | null | undefined): string[] {
+  if (!card?.aspects || card.aspects.length === 0) return [NO_ASPECT_COLOR];
+  const colors = card.aspects
+    .filter(a => COLOR_ASPECTS.includes(a as Aspect))
+    .map(a => ASPECT_COLORS[a] || NO_ASPECT_COLOR);
+  if (colors.length === 0) {
+    // Only alignment aspects (Heroism/Villainy) or unknown
+    return [getAspectColor(card)];
+  }
+  return colors;
+}
+
 /**
  * Gets the display color for a card's rarity
  */
