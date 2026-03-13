@@ -354,6 +354,13 @@
 }
 
 /* Aspects Cell */
+.stats-table th.aspects-col,
+.stats-table td.aspects-col {
+  width: 1%;
+  white-space: nowrap;
+  text-align: center;
+}
+
 .aspects-cell {
   display: flex;
   gap: 0.25rem;

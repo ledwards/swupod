@@ -56,14 +56,14 @@ function StatsCell({ you, all, top, tournament, format, className, showYou, show
           <span className="stats-row-label">All:</span> {all != null ? f(all) : '—'}
         </div>
       )}
-      {showTop && (
-        <div className="stats-row-top">
-          <span className="stats-row-label">Top:</span> {isBlurred ? <span className="stats-blur-value">{top != null ? f(top) : '—'}</span> : (top != null ? f(top) : '—')}
-        </div>
-      )}
       {showTournament && (
         <div className="stats-row-tournament">
           <span className="stats-row-label">Tournament:</span> {isBlurred ? <span className="stats-blur-value">{tournament != null ? f(tournament) : '—'}</span> : (tournament != null ? f(tournament) : '—')}
+        </div>
+      )}
+      {showTop && (
+        <div className="stats-row-top">
+          <span className="stats-row-label">Top:</span> {isBlurred ? <span className="stats-blur-value">{top != null ? f(top) : '—'}</span> : (top != null ? f(top) : '—')}
         </div>
       )}
     </td>
@@ -72,7 +72,7 @@ function StatsCell({ you, all, top, tournament, format, className, showYou, show
 
 // === StatsLegend: Toggleable You/All/Top/Tournament with filters ===
 
-function StatsLegend({ user, showYou, showAll, showTop, showTournament, onToggleYou, onToggleAll, onToggleTop, onToggleTournament, includeBots, includeHumans, onToggleBots, onToggleHumans, isBlurred }: {
+function StatsLegend({ user, showYou, showAll, showTop, showTournament, onToggleYou, onToggleAll, onToggleTop, onToggleTournament, includeBots, includeHumans, onToggleBots, onToggleHumans, isBlurred, topPlayerCount }: {
   user: any
   showYou: boolean
   showAll: boolean
@@ -87,6 +87,7 @@ function StatsLegend({ user, showYou, showAll, showTop, showTournament, onToggle
   onToggleBots: () => void
   onToggleHumans: () => void
   isBlurred?: boolean
+  topPlayerCount?: number | null
 }) {
   return (
     <div className="stats-legend-bar">
@@ -106,28 +107,6 @@ function StatsLegend({ user, showYou, showAll, showTop, showTournament, onToggle
           <input type="checkbox" checked={showAll} onChange={onToggleAll} />
           All
         </label>
-        <label className="stats-legend-filter">
-          <input type="checkbox" checked={includeHumans} onChange={onToggleHumans} />
-          Humans
-        </label>
-        <label className="stats-legend-filter">
-          <input type="checkbox" checked={includeBots} onChange={onToggleBots} />
-          Bots
-        </label>
-      </div>
-      <span className="stats-legend-sep">&middot;</span>
-      <div className="stats-legend-group">
-        <label className={`stats-legend-toggle stats-legend-top ${isBlurred ? 'stats-legend-locked' : ''}`}>
-          <input type="checkbox" checked={showTop} onChange={onToggleTop} disabled={isBlurred} />
-          Top {isBlurred && '🔒'}
-          <span className="stats-filter-info" title="Curated list of top competitive players.">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" y1="16" x2="12" y2="12"/>
-              <line x1="12" y1="8" x2="12.01" y2="8"/>
-            </svg>
-          </span>
-        </label>
       </div>
       <span className="stats-legend-sep">&middot;</span>
       <div className="stats-legend-group">
@@ -141,6 +120,31 @@ function StatsLegend({ user, showYou, showAll, showTop, showTournament, onToggle
               <line x1="12" y1="8" x2="12.01" y2="8"/>
             </svg>
           </span>
+        </label>
+      </div>
+      <span className="stats-legend-sep">&middot;</span>
+      <div className="stats-legend-group">
+        <label className={`stats-legend-toggle stats-legend-top ${isBlurred ? 'stats-legend-locked' : ''}`}>
+          <input type="checkbox" checked={showTop} onChange={onToggleTop} disabled={isBlurred} />
+          Top {isBlurred && '🔒'}
+          <span className="stats-filter-info" title={`${topPlayerCount != null ? topPlayerCount : '...'} curated top competitive players.`}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="16" x2="12" y2="12"/>
+              <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+          </span>
+        </label>
+      </div>
+      <span className="stats-legend-sep">&middot;</span>
+      <div className="stats-legend-group">
+        <label className="stats-legend-filter">
+          <input type="checkbox" checked={includeHumans} onChange={onToggleHumans} />
+          Humans
+        </label>
+        <label className="stats-legend-filter">
+          <input type="checkbox" checked={includeBots} onChange={onToggleBots} />
+          Bots
         </label>
       </div>
     </div>
@@ -169,12 +173,20 @@ export default function StatsPage() {
   const [showAll, setShowAll] = useState(true)
   const [showTop, setShowTop] = useState(true)
   const [showTournament, setShowTournament] = useState(true)
+  const [topPlayerCount, setTopPlayerCount] = useState<number | null>(null)
   const [startDate, setStartDate] = useState(DEFAULT_START_DATE)
   const [endDate, setEndDate] = useState(todayStr())
   const [editingStart, setEditingStart] = useState(false)
   const [editingEnd, setEditingEnd] = useState(false)
   const { user, isPatron } = useAuth()
   const canSeeFullStats = isPatron === true || user?.is_admin
+
+  useEffect(() => {
+    fetch('/api/stats/top-player-count')
+      .then(r => r.json())
+      .then(d => setTopPlayerCount(d.count))
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     const hash = window.location.hash.slice(1)
@@ -220,6 +232,7 @@ export default function StatsPage() {
     onToggleBots: () => setIncludeBots(!includeBots),
     onToggleHumans: () => setIncludeHumans(!includeHumans),
     isBlurred,
+    topPlayerCount,
   }
 
   return (
@@ -445,9 +458,11 @@ function LoadingSkeleton() {
       {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
         <div key={i} className="skeleton-row">
           <div className="skeleton-line" style={{ maxWidth: '140px' }} />
+          <div className="skeleton-line" style={{ maxWidth: '40px' }} />
+          <div className="skeleton-line" style={{ maxWidth: '50px' }} />
           <div className="skeleton-line" style={{ maxWidth: '60px' }} />
+          <div className="skeleton-line" style={{ maxWidth: '70px' }} />
           <div className="skeleton-line" style={{ maxWidth: '60px' }} />
-          <div className="skeleton-line" style={{ maxWidth: '80px' }} />
         </div>
       ))}
     </div>
@@ -729,7 +744,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                   <thead>
                     <tr>
                       <LeaderSortHeader label="Leader" col="cardName" />
-                      <th>Aspects</th>
+                      <th className="aspects-col">Aspects</th>
                       <LeaderSortHeader label="Avg Pick" col="avgPickPosition" title="Average position this leader is picked in leader rounds (1 = first pick)" />
                       <LeaderSortHeader label="1st Pick" col="firstPickPct" title="How often this leader is picked first overall in leader rounds" />
                       <LeaderSortHeader label="# Drafted" col="timesPicked" />
@@ -797,7 +812,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
                   <thead>
                     <tr>
                       <LeaderSelSortHeader label="Leader" col="cardName" />
-                      <th>Aspects</th>
+                      <th className="aspects-col">Aspects</th>
                       <LeaderSelSortHeader label="Selection %" col="selectionRate" title="Percentage of all built decks that chose this leader" />
                       <LeaderSelSortHeader label="# Selected" col="timesSelected" />
                     </tr>
@@ -878,7 +893,7 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
               <thead>
                 <tr>
                   <CardSortHeader label="Name" col="cardName" />
-                  <th>Aspects</th>
+                  <th className="aspects-col">Aspects</th>
                   <CardSortHeader label="Rarity" col="rarity" />
                   <CardSortHeader label="Avg Pick" col="avgPickPosition" title="Average position this card is picked within a pack (1 = first pick, 14 = last). Lower is better." />
                   <CardSortHeader label="1st Pick" col="firstPickPct" title="How often this card is the first pick out of a fresh pack (pick position 1 of 14)." />
@@ -1148,9 +1163,9 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
               <thead>
                 <tr>
                   <LeaderSelSortHeader label="Leader" col="cardName" />
-                  <th>Aspects</th>
-                  <LeaderSelSortHeader label="Selection %" col="selectionRate" title="Percentage of sealed decks that chose this leader" />
-                  <LeaderSelSortHeader label="# Selected" col="timesSelected" />
+                  <th className="aspects-col">Aspects</th>
+                  <LeaderSelSortHeader label="Included %" col="selectionRate" title="Percentage of sealed decks that chose this leader" />
+                  <LeaderSelSortHeader label="# Included" col="timesSelected" />
                 </tr>
               </thead>
               <tbody>
@@ -1181,11 +1196,10 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                       />
                       <StatsCell
                         {...cellProps}
-                        you={youLeader?.timesSelected}
-                        all={leader.timesSelected}
-                        top={topLeader?.timesSelected}
-                        tournament={tournamentLeader?.timesSelected}
-                        format={fmt}
+                        you={youLeader ? `${fmt(youLeader.timesSelected)}/${fmt(leaderSelDataYou?.totalDecks || 0)}` : null}
+                        all={`${fmt(leader.timesSelected)}/${fmt(leaderSelData?.totalDecks || 0)}`}
+                        top={topLeader ? `${fmt(topLeader.timesSelected)}/${fmt(leaderSelDataTop?.totalDecks || 0)}` : null}
+                        tournament={tournamentLeader ? `${fmt(tournamentLeader.timesSelected)}/${fmt(leaderSelDataTournament?.totalDecks || 0)}` : null}
                       />
                     </tr>
                   )
@@ -1219,11 +1233,11 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
               <thead>
                 <tr>
                   <CardSortHeader label="Name" col="cardName" />
-                  <th>Aspects</th>
+                  <th className="aspects-col">Aspects</th>
                   <CardSortHeader label="Rarity" col="rarity" />
                   <CardSortHeader label="Inclusion %" col="inclusionRate" title="When this card is in your pool, how often does it make your deck?" />
                   <CardSortHeader label="Avg Copies" col="avgCopiesPlayed" title="When you include this card, how many copies do you run?" />
-                  <CardSortHeader label="Pools" col="poolsWithCard" title="Number of sealed pools that contained this card" />
+                  <CardSortHeader label="# Included" col="decksWithCard" title="Times included in a deck out of total pools with this card" />
                 </tr>
               </thead>
               <tbody>
@@ -1263,11 +1277,10 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                       />
                       <StatsCell
                         {...cellProps}
-                        you={youCard?.poolsWithCard}
-                        all={card.poolsWithCard}
-                        top={topCard?.poolsWithCard}
-                        tournament={tournamentCard?.poolsWithCard}
-                        format={fmt}
+                        you={youCard ? `${fmt(youCard.decksWithCard)}/${fmt(youCard.poolsWithCard)}` : null}
+                        all={`${fmt(card.decksWithCard)}/${fmt(card.poolsWithCard)}`}
+                        top={topCard ? `${fmt(topCard.decksWithCard)}/${fmt(topCard.poolsWithCard)}` : null}
+                        tournament={tournamentCard ? `${fmt(tournamentCard.decksWithCard)}/${fmt(tournamentCard.poolsWithCard)}` : null}
                       />
                     </tr>
                   )
