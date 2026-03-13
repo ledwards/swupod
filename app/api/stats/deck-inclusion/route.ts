@@ -19,9 +19,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const topPlayersOnly = url.searchParams.get('topPlayersOnly') === 'true'
     const userId = url.searchParams.get('userId') || null
 
-    // Build card lookup map for enrichment, keyed by both CMS id and normalized cardId
+    // Build card lookup maps for enrichment
     const allCards = getAllCards()
+    // Keyed by CMS id and normalized cardId (e.g. LAW_001)
     const cardMap = new Map()
+    // Keyed by name|type → Normal variant, for merging variants as one card
+    const nameTypeToCard = new Map()
     allCards.forEach(card => {
       cardMap.set(card.id, card)
       if (card.cardId) {
@@ -29,6 +32,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         if (set && num) {
           cardMap.set(`${set}_${num.padStart(3, '0')}`, card)
           cardMap.set(card.cardId, card)
+        }
+      }
+      if (card.variantType === 'Normal') {
+        const key = `${card.name}|${card.type}`
+        if (!nameTypeToCard.has(key)) {
+          nameTypeToCard.set(key, card)
         }
       }
     })
@@ -153,27 +162,55 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     const totalPoolsWithDecks = parseInt(countResult?.total || '0')
 
-    // Enrich with card data from cache and compute rates
-    const cards = cardRows
-      .filter(row => parseInt(row.pools_with_card) > 0)
-      .map(row => {
-        const poolsWithCard = parseInt(row.pools_with_card)
-        const decksWithCard = parseInt(row.decks_with_card)
-        const totalCopiesInDecks = parseInt(row.total_copies_in_decks)
-        const inclusionRate = poolsWithCard > 0 ? (decksWithCard / poolsWithCard) * 100 : 0
-        const avgCopiesPlayed = decksWithCard > 0 ? totalCopiesInDecks / decksWithCard : 0
+    // Merge variants of the same card by canonical name.
+    // Pool cards use variant-specific cardIds (e.g., LAW-265 for Hyperspace)
+    // while deck cards use base cardIds (e.g., LAW_001 for Normal).
+    // Without merging, variants get separate rows with broken deck JOINs.
+    const mergedByName = new Map<string, {
+      poolsWithCard: number
+      decksWithCard: number
+      totalCopiesInDecks: number
+    }>()
 
-        // Look up card data for enrichment (try normalized ID first, then raw)
-        const cardData = cardMap.get(row.norm_id) || cardMap.get(row.card_id)
+    for (const row of cardRows) {
+      const poolsWithCard = parseInt(row.pools_with_card)
+      if (poolsWithCard <= 0) continue
+
+      const cardData = cardMap.get(row.norm_id) || cardMap.get(row.card_id)
+      const name = cardData?.name || 'Unknown'
+      const type = cardData?.type || ''
+      const key = `${name}|${type}`
+
+      if (!mergedByName.has(key)) {
+        mergedByName.set(key, {
+          poolsWithCard,
+          decksWithCard: parseInt(row.decks_with_card),
+          totalCopiesInDecks: parseInt(row.total_copies_in_decks),
+        })
+      } else {
+        const existing = mergedByName.get(key)!
+        existing.poolsWithCard += poolsWithCard
+        existing.decksWithCard += parseInt(row.decks_with_card)
+        existing.totalCopiesInDecks += parseInt(row.total_copies_in_decks)
+      }
+    }
+
+    // Enrich merged results with Normal variant card data and compute rates
+    const cards = Array.from(mergedByName.entries())
+      .map(([key, merged]) => {
+        const inclusionRate = merged.poolsWithCard > 0 ? (merged.decksWithCard / merged.poolsWithCard) * 100 : 0
+        const avgCopiesPlayed = merged.decksWithCard > 0 ? merged.totalCopiesInDecks / merged.decksWithCard : 0
+
+        const cardData = nameTypeToCard.get(key)
 
         return {
-          cardName: cardData?.name || 'Unknown',
-          cardId: row.card_id,
+          cardName: cardData?.name || key.split('|')[0],
+          cardId: cardData?.cardId || null,
           rarity: cardData?.rarity || 'Unknown',
           cardType: cardData?.type || 'Unknown',
           aspects: cardData?.aspects || [],
-          poolsWithCard,
-          decksWithCard,
+          poolsWithCard: merged.poolsWithCard,
+          decksWithCard: merged.decksWithCard,
           inclusionRate: Math.round(inclusionRate * 10) / 10,
           avgCopiesPlayed: Math.round(avgCopiesPlayed * 10) / 10,
           subtitle: cardData?.subtitle || null,
