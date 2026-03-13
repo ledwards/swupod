@@ -6,8 +6,8 @@
 
 .circle-container {
   position: relative;
-  width: 400px;
-  height: 400px;
+  width: 500px;
+  height: 500px;
 }
 
 /* Seat positions arranged in perfect circle - 8 positions at 45° intervals */
@@ -69,8 +69,8 @@
 
 /* Radial leader info panels */
 .player-circle.with-leader-info .circle-container {
-  width: 500px;
-  height: 500px;
+  width: 600px;
+  height: 600px;
 }
 
 /* Hide seat names when showing leader info (names moved to leader info area) */
