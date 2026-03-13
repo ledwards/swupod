@@ -386,7 +386,7 @@ export default function SealedPodPage({ params }: PageProps) {
         </Modal.Actions>
       </Modal>
 
-      <ChatPanel shareId={shareId} isHost={!!pod?.isHost} onMakePublic={() => handleSettingsChange({ isPublic: true })} />
+      <ChatPanel shareId={shareId} isHost={!!pod?.isHost} isPublic={pod?.isPublic} onMakePublic={() => handleSettingsChange({ isPublic: true })} />
     </div>
   )
 }

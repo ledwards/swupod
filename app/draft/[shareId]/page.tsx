@@ -43,7 +43,6 @@ export default function DraftRoomPage({ params }: PageProps) {
   const [randomizing, setRandomizing] = useState(false)
   const [randomizingPacks, setRandomizingPacks] = useState(false)
   const [addingBot, setAddingBot] = useState(false)
-  const [changingSettings, setChangingSettings] = useState(false)
   const [picking, setPicking] = useState(false)
   const [selecting, setSelecting] = useState(false)
   const [togglingPause, setTogglingPause] = useState(false)
@@ -193,15 +192,11 @@ export default function DraftRoomPage({ params }: PageProps) {
   }
 
   const handleSettingsChange = async (settings: Record<string, unknown>) => {
-    if (changingSettings) return
-    setChangingSettings(true)
     try {
       await updateSettings(shareId, settings)
       await refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
-    } finally {
-      setChangingSettings(false)
     }
   }
 
@@ -647,7 +642,7 @@ export default function DraftRoomPage({ params }: PageProps) {
         </Modal.Actions>
       </Modal>
 
-      <ChatPanel shareId={shareId} isHost={isHost} onMakePublic={() => handleSettingsChange({ isPublic: true })} />
+      <ChatPanel shareId={shareId} isHost={isHost} isPublic={draft?.isPublic} onMakePublic={() => handleSettingsChange({ isPublic: true })} />
     </div>
   )
 }

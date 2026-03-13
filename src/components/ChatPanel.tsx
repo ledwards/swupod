@@ -15,6 +15,7 @@ interface ChatPanelProps {
   defaultOpen?: boolean
   onMakePublic?: () => void
   isHost?: boolean
+  isPublic?: boolean
 }
 
 /**
@@ -22,7 +23,7 @@ interface ChatPanelProps {
  * 1. Pod chat (shareId) — syncs with a pod's Discord thread
  * 2. Lobby chat (lobbyType) — mirrors #draft-now or #sealed-now Discord channel
  */
-export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = true, onMakePublic, isHost = false }: ChatPanelProps) {
+export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = true, onMakePublic, isHost = false, isPublic: isPublicProp }: ChatPanelProps) {
   const { user } = useAuth()
   const [isMobile, setIsMobile] = useState(false)
   const [isOpen, setIsOpen] = useState(() => {
@@ -30,6 +31,7 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
     return defaultOpen
   })
   const hasAutoOpened = useRef(false)
+  const [dismissedPrivateNotice, setDismissedPrivateNotice] = useState(false)
   const [inputText, setInputText] = useState('')
   const [isGuildMember, setIsGuildMember] = useState<boolean | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -57,7 +59,7 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
   // Use the appropriate chat based on mode
   const chat = isLobbyMode ? lobbyChat : podChat
   const { messages, sendMessage, connected, loading, unreadCount, markRead, historyCount } = chat
-  const isPublic = isPodMode ? (podChat as ReturnType<typeof useChat>).isPublic : true
+  const isPublic = isPublicProp ?? (isPodMode ? (podChat as ReturnType<typeof useChat>).isPublic : true)
   const discordThreadUrl = isPodMode ? (podChat as ReturnType<typeof useChat>).discordThreadUrl : null
 
   const chatTitle = isLobbyMode
@@ -191,6 +193,8 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
               isHost={isHost}
               onMakePublic={onMakePublic}
               discordThreadUrl={discordThreadUrl}
+              dismissedPrivateNotice={dismissedPrivateNotice}
+              setDismissedPrivateNotice={setDismissedPrivateNotice}
             />
             </div>
           </div>
@@ -254,6 +258,8 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
             isHost={isHost}
             onMakePublic={onMakePublic}
             discordThreadUrl={discordThreadUrl}
+            dismissedPrivateNotice={dismissedPrivateNotice}
+            setDismissedPrivateNotice={setDismissedPrivateNotice}
           />
         </>
       )}
@@ -281,6 +287,8 @@ function ChatContent({
   isHost = false,
   onMakePublic,
   discordThreadUrl,
+  dismissedPrivateNotice = false,
+  setDismissedPrivateNotice,
 }: {
   messages: ChatMessage[]
   loading: boolean
@@ -300,8 +308,9 @@ function ChatContent({
   isHost?: boolean
   onMakePublic?: () => void
   discordThreadUrl?: string | null
+  dismissedPrivateNotice?: boolean
+  setDismissedPrivateNotice?: (v: boolean) => void
 }) {
-  const [dismissedPrivateNotice, setDismissedPrivateNotice] = useState(false)
   // Auth gate overlay
   if (needsAuth) {
     return (
@@ -344,11 +353,11 @@ function ChatContent({
     <>
       {!isPublic && !isLobbyMode && isHost && !dismissedPrivateNotice && (
         <div className="chat-private-notice">
-          <button className="chat-private-notice-dismiss" onClick={() => setDismissedPrivateNotice(true)} aria-label="Dismiss">&times;</button>
+          <button className="chat-private-notice-dismiss" onClick={() => setDismissedPrivateNotice?.(true)} aria-label="Dismiss">&times;</button>
           <p>Private pods do not store chat history.</p>
           <p>Messages are live only.</p>
           {onMakePublic && (
-            <Button variant="primary" size="sm" onClick={onMakePublic}>
+            <Button variant="primary" size="sm" onClick={() => { onMakePublic(); setDismissedPrivateNotice?.(true) }}>
               Make Pod Public
             </Button>
           )}
