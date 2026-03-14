@@ -3,7 +3,7 @@
 import { queryRows, queryRow } from '@/lib/db'
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
-import { buildCardLookupMaps, cardNameKey } from '@/src/utils/cardNormalization'
+import { buildCardLookupMaps, cardIdentityKey } from '@/src/utils/cardNormalization'
 import { calculateAspectPenalty } from '@/src/services/cards/aspectPenalties'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
 import { NextRequest, NextResponse } from 'next/server'
@@ -21,10 +21,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const topPlayersOnly = url.searchParams.get('topPlayersOnly') === 'true'
     const userId = url.searchParams.get('userId') || null
 
-    // Build card lookup maps — all variants merge to same card via name|type key
+    // Build card lookup maps — all variants merge to same card via name|type|subtitle key
     // See src/utils/cardNormalization.ts for the canonical normalization pattern
     const allCards = getAllCards()
-    const { cardMap, nameTypeToCard } = buildCardLookupMaps(allCards)
+    const { cardMap, normalCardMap } = buildCardLookupMaps(allCards)
 
     // Build bot/human filter clause
     let botFilter = ''
@@ -174,7 +174,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       if (poolsWithCard <= 0) continue
 
       const cardData = cardMap.get(row.norm_id) || cardMap.get(row.card_id)
-      const key = cardData ? cardNameKey(cardData) : 'Unknown|'
+      const key = cardData ? cardIdentityKey(cardData) : 'Unknown|'
 
       if (!mergedByName.has(key)) {
         mergedByName.set(key, {
@@ -207,7 +207,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         const card = cardMap.get(cardId)
         if (!card || card.type === 'Leader' || card.type === 'Base') continue
 
-        const nameKey = cardNameKey(card)
+        const nameKey = cardIdentityKey(card)
         if (!offAspectCounts.has(nameKey)) {
           offAspectCounts.set(nameKey, { offAspectDecks: 0, totalDecks: 0 })
         }
@@ -233,7 +233,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       const leaderCard = cardMap.get(row.leader_id)
       if (!leaderCard) continue
 
-      const leaderKey = cardNameKey(leaderCard)
+      const leaderKey = cardIdentityKey(leaderCard)
       leaderDeckCounts.set(leaderKey, (leaderDeckCounts.get(leaderKey) || 0) + 1)
       totalDecksForSynergy++
 
@@ -249,7 +249,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         const card = cardMap.get(cardId)
         if (!card || card.type === 'Leader' || card.type === 'Base') continue
 
-        const ck = cardNameKey(card)
+        const ck = cardIdentityKey(card)
         const copies = entry?.count || 1
         leaderCards.set(ck, (leaderCards.get(ck) || 0) + copies)
         overallCardCopies.set(ck, (overallCardCopies.get(ck) || 0) + copies)
@@ -267,7 +267,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         const leaderRate = copies / leaderCount
         const overallRate = (overallCardCopies.get(ck) || 0) / totalDecksForSynergy
         const synergy = leaderRate - overallRate
-        const cardData = nameTypeToCard.get(ck)
+        const cardData = normalCardMap.get(ck)
         synergies.push({ cardKey: ck, cardName: cardData?.name || ck.split('|')[0], synergy })
       }
 
@@ -279,7 +279,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const cardTopLeaders = new Map<string, { leaderName: string; synergy: number }[]>()
     for (const [leaderKey, cardCopies] of leaderCardCopies) {
       const leaderCount = leaderDeckCounts.get(leaderKey) || 1
-      const leaderData = nameTypeToCard.get(leaderKey)
+      const leaderData = normalCardMap.get(leaderKey)
       const leaderName = leaderData?.name || leaderKey.split('|')[0]
 
       for (const [ck, copies] of cardCopies) {
@@ -303,7 +303,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         const inclusionRate = merged.poolsWithCard > 0 ? (merged.decksWithCard / merged.poolsWithCard) * 100 : 0
         const avgCopiesPlayed = merged.decksWithCard > 0 ? merged.totalCopiesInDecks / merged.decksWithCard : 0
 
-        const cardData = nameTypeToCard.get(key)
+        const cardData = normalCardMap.get(key)
 
         const ooa = offAspectCounts.get(key)
         const offAspectRate = ooa && ooa.totalDecks > 0
@@ -335,7 +335,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     // Build leader synergy summaries for the response
     const leaderSynergySummaries = Array.from(leaderSynergies.entries()).map(([leaderKey, synCards]) => {
-      const leaderData = nameTypeToCard.get(leaderKey)
+      const leaderData = normalCardMap.get(leaderKey)
       return {
         leaderName: leaderData?.name || leaderKey.split('|')[0],
         leaderSubtitle: leaderData?.subtitle || null,

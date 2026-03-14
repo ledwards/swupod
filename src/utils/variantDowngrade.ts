@@ -15,6 +15,7 @@
  */
 
 import { getCachedCards } from './cardCache'
+import { cardIdentityKey } from './cardNormalization'
 import type { RawCard } from './cardData'
 import type { SetCode } from '../types'
 
@@ -45,10 +46,10 @@ function formatCardIdForExport(cardId: string): string | null {
 }
 
 /**
- * Build a map of card name+type -> Normal variant card
+ * Build a map of card identity -> Normal variant card
  *
  * @param setCode - The set code (e.g., 'SOR')
- * @returns Map of "name|type" -> Normal variant card
+ * @returns Map of "name|type|subtitle" -> Normal variant card
  */
 export function buildBaseCardMap(setCode: SetCode | string | null | undefined): Map<string, RawCard> {
   // Handle null/undefined setCode
@@ -62,24 +63,22 @@ export function buildBaseCardMap(setCode: SetCode | string | null | undefined): 
   }
   if (!cards || cards.length === 0) return new Map()
 
-  const nameTypeToBaseCard = new Map<string, RawCard>()
+  const identityToBaseCard = new Map<string, RawCard>()
 
   cards.forEach(card => {
     // Only consider Normal variants as base cards
     if (card.variantType !== 'Normal') return
 
-    // Use name + type as key to distinguish Units from Leaders with same name
-    // e.g., "Emperor Palpatine" exists as both a Leader and a Unit
-    const key = `${card.name}|${card.type}`
+    // Use name|type|subtitle as key (see cardNormalization.ts)
+    // Subtitle needed because e.g. LOF has two "Anakin Skywalker|Unit" cards
+    const key = cardIdentityKey(card)
 
-    // Store the Normal variant for this name+type
-    // (there should only be one Normal variant per name+type, but if multiple, first wins)
-    if (!nameTypeToBaseCard.has(key)) {
-      nameTypeToBaseCard.set(key, card)
+    if (!identityToBaseCard.has(key)) {
+      identityToBaseCard.set(key, card)
     }
   })
 
-  return nameTypeToBaseCard
+  return identityToBaseCard
 }
 
 /**
@@ -97,8 +96,8 @@ export function buildBaseCardMap(setCode: SetCode | string | null | undefined): 
 export function getBaseCardId(card: RawCard | null | undefined, baseCardMap?: Map<string, RawCard>): string | null {
   if (!card) return null
 
-  // Look up the Normal variant by name + type
-  const key = `${card.name}|${card.type}`
+  // Look up the Normal variant by identity key (name|type|subtitle)
+  const key = cardIdentityKey(card)
   const baseCard = baseCardMap?.get(key)
 
   if (baseCard && baseCard.cardId) {

@@ -53,10 +53,13 @@
 .release-notes-content {
   padding: 20px;
   overflow-y: auto;
+  overflow-x: hidden;
   flex: 1;
   color: #e0e0e0;
   line-height: 1.6;
   font-size: 0.9rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Custom scrollbar */

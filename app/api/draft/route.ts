@@ -30,14 +30,22 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const podIsPublic = isPublic !== undefined ? isPublic === true : (settings.isPublic !== undefined ? settings.isPublic === true : true)
 
     // Get set name from config
-    // For chaos draft, use "Chaos Draft (SET1, SET2, SET3) MM/DD/YYYY"
+    // For chaos draft, use "Chaos Draft (LAW x6)" or "Chaos Draft (SOR x2, LAW x4)"
     let setName: string
     if (settings.draftMode === 'chaos' && settings.chaosSets) {
       const now = new Date()
       const month = String(now.getMonth() + 1).padStart(2, '0')
       const day = String(now.getDate()).padStart(2, '0')
       const year = now.getFullYear()
-      setName = `Chaos Draft (${settings.chaosSets.join(', ')}) ${month}/${day}/${year}`
+      // Compress duplicate sets: [LAW, LAW, LAW] → "LAW x3"
+      const counts: Record<string, number> = {}
+      for (const s of settings.chaosSets) {
+        counts[s] = (counts[s] || 0) + 1
+      }
+      const setList = Object.entries(counts)
+        .map(([code, count]) => count > 1 ? `${code} x${count}` : code)
+        .join(', ')
+      setName = `Chaos Draft (${setList}) ${month}/${day}/${year}`
     } else {
       const setConfig = getSetConfig(setCode)
       setName = setConfig?.setName || setCode

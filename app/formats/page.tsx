@@ -195,8 +195,8 @@ export default function OtherFormatsPage() {
             Back
           </Button>
         </div>
-        <h1>Other Formats</h1>
-        <p className="formats-subtitle">Alternative limited formats</p>
+        <h1>Casual Formats</h1>
+        <p className="formats-subtitle">Alternative ways to play limited</p>
 
         <div className="formats-modes-grid">
           {FORMAT_MODES.map((mode) => {

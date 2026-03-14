@@ -1,5 +1,14 @@
 # Release Notes
 
+## 03.14.2026
+
+### 🤖 AI Players
+- **7 unique bot strategies**: Draft bots are no longer all the same! Each bot now uses one of 7 distinct strategies: Top Player (drafts like the best), Tournament Player (drafts like competitors), All Player (community consensus), Nemesis (counter-drafts you in solo mode), Diversity (maximizes aspect spread), Primary Color Corner (locks one color early), and Secondary Aspect Corner (locks hero/villain alignment). No two bots in a pod use the same strategy.
+- **Mixin modifiers**: Each bot also gets a random personality modifier — High Optionality (stays flexible longer), High Conviction (commits early), or High Groupthink (follows the crowd). This means even bots with the same strategy will draft differently.
+- **Per-leader card popularity**: Bots now use leader-specific card popularity data. After committing to a leader, they prioritize cards that are popular with that specific leader, not just overall.
+- **LAW splash rule**: In LAW, bots will now intelligently splash 3-5 off-aspect bombs when exactly one primary color is out of aspect, matching how real players build LAW decks.
+- **Leader trait synergy**: Bots recognize when their leader's text mentions a trait (like SPECTRE or OFFICIAL) and prioritize cards with that trait.
+
 ## 03.13.2026
 Happy LAW release day! It's also a big release day for Protect the Pod!
 
@@ -34,6 +43,11 @@ Join [https://www.patreon.com/c/ProtectthePod/membership](here)! Or try a free 7
 - **Download personal data**: Logged-in users can click "Download Personal Data" to export all their pods, pools, decks, and draft picks as a JSON file. Includes opponent Discord handles and their drafted leaders, draft picks in order, and IDs linking everything together. Other users' data is not included in the export other than their Discrd handles.
 - **Delta badges**: Your stats now show comparison arrows (green/red) against All, Tournament, and Top players so you can see where you're above or below average.
 - **Deck inclusion bug fix**: Card variants (Normal, Foil, Hyperspace, etc.) are now aggregated as one card in deck inclusion stats instead of being counted separately.
+- **Off-aspect inclusion rate**: New column in sealed stats showing how often each card is played outside its natural aspects (with the +2 resource penalty). Includes a bar chart visualization.
+- **Leader synergies**: Each leader now shows its top 5 "high synergy" cards — the cards most disproportionately included in decks with that leader compared to overall. Each card also shows the top 3 leaders it's most popular with.
+
+### 🐛 Bug Fixes
+- **Patreon free trial support**: Free trial signups on Patreon now correctly assign the Friend of the Pod role automatically. Previously, trials could be missed because Patreon sends a different webhook event for brand new users.
 
 ### 🤖 AI Players
 - **Smarter bot leader picks**: Bots now pick leaders based on overall popularity (total times picked by humans) instead of first-pick rate. This fixes an issue where bots were over-drafting niche leaders like Darth Vader in LAW. Bot popularity data excludes other bots to avoid feedback loops.

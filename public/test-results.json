@@ -1,6 +1,6 @@
 {
-  "runAt": "2026-03-13T17:54:28.467Z",
-  "executionTime": 27115,
+  "runAt": "2026-03-14T20:42:52.850Z",
+  "executionTime": 28330,
   "summary": {
     "totalSuites": 22,
     "passedSuites": 21,
@@ -15,7 +15,7 @@
       "suite": "utils",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 8676,
+      "executionTime": 8774,
       "tests": [
         {
           "suite": "utils",
@@ -220,7 +220,7 @@
       "suite": "utils",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 945,
+      "executionTime": 1018,
       "tests": [
         {
           "suite": "utils",
@@ -234,7 +234,7 @@
         },
         {
           "suite": "utils",
-          "name": "buildBaseCardMap includes all unique name+type combinations\u001b[0m",
+          "name": "buildBaseCardMap includes all unique name+type+subtitle combinations\u001b[0m",
           "status": "passed"
         },
         {
@@ -315,7 +315,7 @@
       "suite": "utils",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 730,
+      "executionTime": 641,
       "tests": [
         {
           "suite": "utils",
@@ -330,7 +330,7 @@
       "suite": "utils",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 648,
+      "executionTime": 599,
       "tests": [
         {
           "suite": "utils",
@@ -345,7 +345,7 @@
       "suite": "belts",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 1114,
+      "executionTime": 979,
       "tests": [
         {
           "suite": "belts",
@@ -425,7 +425,7 @@
       "suite": "belts",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 1005,
+      "executionTime": 924,
       "tests": [
         {
           "suite": "belts",
@@ -565,7 +565,7 @@
       "suite": "belts",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 1171,
+      "executionTime": 1179,
       "tests": [
         {
           "suite": "belts",
@@ -660,7 +660,7 @@
       "suite": "belts",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 983,
+      "executionTime": 963,
       "tests": [
         {
           "suite": "belts",
@@ -740,7 +740,7 @@
       "suite": "belts",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 949,
+      "executionTime": 1048,
       "tests": [
         {
           "suite": "belts",
@@ -755,7 +755,7 @@
       "suite": "belts",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 940,
+      "executionTime": 993,
       "tests": [
         {
           "suite": "belts",
@@ -830,7 +830,7 @@
       "suite": "belts",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 1416,
+      "executionTime": 1627,
       "tests": [
         {
           "suite": "belts",
@@ -920,7 +920,7 @@
       "suite": "belts",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 976,
+      "executionTime": 1180,
       "tests": [
         {
           "suite": "belts",
@@ -975,7 +975,7 @@
       "suite": "belts",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 936,
+      "executionTime": 1045,
       "tests": [
         {
           "suite": "belts",
@@ -1065,7 +1065,7 @@
       "suite": "fixes",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 555,
+      "executionTime": 652,
       "tests": [
         {
           "suite": "fixes",
@@ -1080,7 +1080,7 @@
       "suite": "draft",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 1099,
+      "executionTime": 1105,
       "tests": [
         {
           "suite": "draft",
@@ -1095,7 +1095,7 @@
       "suite": "bots",
       "status": "failed",
       "exitCode": 1,
-      "executionTime": 666,
+      "executionTime": 612,
       "tests": [
         {
           "suite": "bots",
@@ -1245,7 +1245,7 @@
       "suite": "data",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 926,
+      "executionTime": 1018,
       "tests": [
         {
           "suite": "data",
@@ -1680,7 +1680,7 @@
       "suite": "data",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 937,
+      "executionTime": 1020,
       "tests": [
         {
           "suite": "data",
@@ -2715,7 +2715,7 @@
       "suite": "hooks",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 597,
+      "executionTime": 743,
       "tests": [
         {
           "suite": "hooks",
@@ -2730,7 +2730,7 @@
       "suite": "hooks",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 624,
+      "executionTime": 746,
       "tests": [
         {
           "suite": "hooks",
@@ -2745,7 +2745,7 @@
       "suite": "hooks",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 620,
+      "executionTime": 753,
       "tests": [
         {
           "suite": "hooks",
@@ -2760,7 +2760,7 @@
       "suite": "hooks",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 598,
+      "executionTime": 708,
       "tests": [
         {
           "suite": "hooks",
@@ -2979,7 +2979,7 @@
     },
     {
       "suite": "utils",
-      "name": "buildBaseCardMap includes all unique name+type combinations\u001b[0m",
+      "name": "buildBaseCardMap includes all unique name+type+subtitle combinations\u001b[0m",
       "status": "passed"
     },
     {

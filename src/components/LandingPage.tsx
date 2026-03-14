@@ -198,6 +198,16 @@ function LandingPage() {
                   <span className="mode-button-subtitle">Draft against bots</span>
                 </div>
               </button>
+              <button className="mode-button art-unit" onClick={() => router.push('/formats')}>
+                <div
+                  className="mode-button-art"
+                  style={{ backgroundImage: `url("https://cdn.starwarsunlimited.com//card_0302467_EN_Jar_Jar_Binks_0e94fbc644.png")` }}
+                />
+                <div className="mode-button-content">
+                  <span className="mode-button-title">Other</span>
+                  <span className="mode-button-subtitle">Chaos, Pack Wars, and more</span>
+                </div>
+              </button>
             </div>
           </div>
           <div className="mode-section">
@@ -223,6 +233,16 @@ function LandingPage() {
                   )}
                 </div>
               </button>
+              <button className="mode-button art-event" onClick={() => router.push('/formats')}>
+                <div
+                  className="mode-button-art"
+                  style={{ backgroundImage: `url("https://cdn.starwarsunlimited.com//card_0302467_EN_Jar_Jar_Binks_0e94fbc644.png")` }}
+                />
+                <div className="mode-button-content">
+                  <span className="mode-button-title">Other</span>
+                  <span className="mode-button-subtitle">Chaos, Pack Wars, and more</span>
+                </div>
+              </button>
             </div>
           </div>
         </div>
@@ -232,16 +252,6 @@ function LandingPage() {
             <span>{playerCount} player{playerCount !== 1 ? 's' : ''} online</span>
           </div>
         )}
-        <button className="mode-button casual-button art-unit" onClick={() => router.push('/casual')}>
-          <div
-            className="mode-button-art"
-            style={{ backgroundImage: `url("https://cdn.starwarsunlimited.com//card_0302467_EN_Jar_Jar_Binks_0e94fbc644.png")` }}
-          />
-          <div className="mode-button-content">
-            <span className="mode-button-title">Casual Formats</span>
-            <span className="mode-button-subtitle">Chaos, Pack Wars, and more</span>
-          </div>
-        </button>
       </div>
       <div className="landing-disclaimer">
         <div className="landing-footer-links">

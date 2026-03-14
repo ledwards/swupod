@@ -34,7 +34,6 @@ export default function ChaosDraftPage() {
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [showAuthPrompt, setShowAuthPrompt] = useState(false)
 
   const hasBetaAccess = user?.is_beta_tester || user?.is_admin
 
@@ -72,9 +71,9 @@ export default function ChaosDraftPage() {
   const handleCreate = async () => {
     if (selectedSets.length !== packCount) return
 
-    // Draft requires authentication for multiplayer tracking
     if (!isAuthenticated) {
-      setShowAuthPrompt(true)
+      const returnUrl = encodeURIComponent('/formats/chaos-draft')
+      window.location.href = `/api/auth/signin/discord?return_to=${returnUrl}`
       return
     }
 
@@ -82,12 +81,10 @@ export default function ChaosDraftPage() {
       setCreating(true)
       setError(null)
 
-      // Create a draft pod with chaos settings (use default timer/players)
       const result = await createDraft(selectedSets[0], {
-        maxPlayers: 8,
-        timerEnabled: true,
-        timerSeconds: 30,
+        isPublic: false,
         settings: {
+          isSolo: true,
           draftMode: 'chaos',
           chaosSets: selectedSets
         }
@@ -101,6 +98,13 @@ export default function ChaosDraftPage() {
       trackEvent(AnalyticsEvents.CHAOS_DRAFT_CREATED, {
         set_codes: selectedSets,
         unique_sets: uniqueSets.length,
+        solo: true,
+      })
+
+      // Auto-add 7 bots
+      await fetch(`/api/draft/${result.shareId}/dev/add-bots?count=7`, {
+        method: 'POST',
+        credentials: 'include',
       })
 
       router.push(`/draft/${result.shareId}`)
@@ -109,12 +113,6 @@ export default function ChaosDraftPage() {
     } finally {
       setCreating(false)
     }
-  }
-
-  const handleLogin = () => {
-    // Redirect to Discord login, then back to this page
-    const returnUrl = encodeURIComponent('/formats/chaos-draft')
-    window.location.href = `/api/auth/signin/discord?return_to=${returnUrl}`
   }
 
   if (loading) {
@@ -130,7 +128,7 @@ export default function ChaosDraftPage() {
   return (
     <div className="chaos-draft-page">
       <div className="chaos-draft-container">
-        <h1>Chaos Draft</h1>
+        <h1>Solo Chaos Draft</h1>
         <p className="chaos-draft-subtitle">
           Select{' '}
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', verticalAlign: 'middle', margin: '0 0.4rem' }}>
@@ -187,15 +185,6 @@ export default function ChaosDraftPage() {
         </div>
 
         {error && <div className="error-message">{error}</div>}
-
-        {showAuthPrompt && (
-          <div className="auth-prompt">
-            <p>Draft requires a Discord login to track players in multiplayer.</p>
-            <Button variant="primary" onClick={handleLogin}>
-              Login with Discord
-            </Button>
-          </div>
-        )}
 
         <div className="chaos-draft-actions">
           <Button

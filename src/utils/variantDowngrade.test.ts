@@ -9,6 +9,7 @@
 import assert from 'assert'
 import { initializeCardCache, getCachedCards } from './cardCache'
 import { buildBaseCardMap, getBaseCardId } from './variantDowngrade'
+import { cardIdentityKey } from './cardNormalization'
 
 // Simple test framework
 const results = { passed: 0, failed: 0 }
@@ -56,13 +57,13 @@ test('buildBaseCardMap only includes Normal variants', () => {
   }
 })
 
-test('buildBaseCardMap includes all unique name+type combinations', () => {
+test('buildBaseCardMap includes all unique name+type+subtitle combinations', () => {
   const map = buildBaseCardMap('SOR')
   const cards = getCachedCards('SOR')
 
-  // Count unique Normal cards by name+type
+  // Count unique Normal cards by identity key (name|type|subtitle)
   const normalCards = cards.filter(c => c.variantType === 'Normal')
-  const uniqueNormal = new Set(normalCards.map(c => `${c.name}|${c.type}`))
+  const uniqueNormal = new Set(normalCards.map(c => cardIdentityKey(c)))
 
   assert(
     map.size === uniqueNormal.size,
@@ -72,21 +73,21 @@ test('buildBaseCardMap includes all unique name+type combinations', () => {
 
 test('buildBaseCardMap handles Leaders and Units with same name separately', () => {
   const map = buildBaseCardMap('SOR')
+  const cards = getCachedCards('SOR')
 
-  // Leia Organa exists as both a Leader and a Unit
-  const leiaLeaderKey = 'Leia Organa|Leader'
-  const leiaUnitKey = 'Leia Organa|Unit'
+  // Leia Organa exists as both a Leader and a Unit — find their identity keys
+  const leiaLeader = cards.find(c => c.name === 'Leia Organa' && c.type === 'Leader' && c.variantType === 'Normal')
+  const leiaUnit = cards.find(c => c.name === 'Leia Organa' && c.type === 'Unit' && c.variantType === 'Normal')
 
-  const leiaLeader = map.get(leiaLeaderKey)
-  const leiaUnit = map.get(leiaUnitKey)
+  assert(leiaLeader, 'Leia Organa Leader should exist in SOR')
+  const leiaLeaderEntry = map.get(cardIdentityKey(leiaLeader))
+  assert(leiaLeaderEntry, 'Leia Organa Leader should exist in map')
+  assert(leiaLeaderEntry.type === 'Leader', 'Leia Organa Leader should be type Leader')
 
-  // At least the leader should exist
-  assert(leiaLeader, 'Leia Organa Leader should exist in map')
-  assert(leiaLeader.type === 'Leader', 'Leia Organa Leader should be type Leader')
-
-  // The unit may or may not exist depending on set
   if (leiaUnit) {
-    assert(leiaUnit.type === 'Unit', 'Leia Organa Unit should be type Unit')
+    const leiaUnitEntry = map.get(cardIdentityKey(leiaUnit))
+    assert(leiaUnitEntry, 'Leia Organa Unit should exist in map')
+    assert(leiaUnitEntry.type === 'Unit', 'Leia Organa Unit should be type Unit')
   }
 })
 
@@ -315,12 +316,10 @@ test('buildBaseCardMap handles comma-separated set codes', () => {
   const sorCard = sorCards[0]
   const shdCard = shdCards[0]
   if (sorCard) {
-    const sorKey = `${sorCard.name}|${sorCard.type}`
-    assert(map.has(sorKey), `Should contain SOR card "${sorCard.name}"`)
+    assert(map.has(cardIdentityKey(sorCard)), `Should contain SOR card "${sorCard.name}"`)
   }
   if (shdCard) {
-    const shdKey = `${shdCard.name}|${shdCard.type}`
-    assert(map.has(shdKey), `Should contain SHD card "${shdCard.name}"`)
+    assert(map.has(cardIdentityKey(shdCard)), `Should contain SHD card "${shdCard.name}"`)
   }
 })
 

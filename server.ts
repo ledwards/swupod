@@ -5,9 +5,9 @@ import { createServer, IncomingMessage, ServerResponse } from 'http'
 import { spawn } from 'child_process'
 import next from 'next'
 import { Server } from 'socket.io'
-import { query, queryRow } from './lib/db.js'
+import { query, queryRow, queryRows } from './lib/db.js'
 import { broadcastPublicPodsUpdate } from './src/lib/socketBroadcast.js'
-import { postUserMessageForPod, postLobbyMessage } from './lib/discordLfg.js'
+import { postUserMessageForPod, postLobbyMessage, deletePodMessage } from './lib/discordLfg.js'
 
 declare global {
   var io: Server | undefined
@@ -90,6 +90,62 @@ app.prepare().then(() => {
   // Delist timers: when a host disconnects, wait before hiding their public pods
   const delistTimers = new Map<string, NodeJS.Timeout>()
   const DELIST_DELAY_MS = 60_000 // 60 seconds
+
+  // Abandoned pod cleanup
+  const CLEANUP_INTERVAL_MS = 15 * 60 * 1000 // 15 minutes
+  const ABANDONED_AGE_HOURS = 2
+
+  async function cleanupAbandonedPods(): Promise<void> {
+    try {
+      // Find waiting pods older than 2 hours with fewer than 2 human players
+      const candidates = await queryRows(
+        `SELECT p.id, p.share_id, p.set_code, p.name, p.max_players, p.host_id,
+                p.pod_type, p.is_public,
+                COALESCE(p.set_code, '') as set_name,
+                (SELECT COUNT(*) FROM pod_players pp WHERE pp.pod_id = p.id AND pp.is_bot = false) as human_count
+         FROM pods p
+         WHERE p.status = 'waiting'
+           AND p.created_at < NOW() - INTERVAL '${ABANDONED_AGE_HOURS} hours'
+         HAVING (SELECT COUNT(*) FROM pod_players pp WHERE pp.pod_id = p.id AND pp.is_bot = false) < 2`,
+        []
+      )
+
+      // Filter to pods whose host is offline
+      const abandoned = candidates.filter((pod: any) => !presenceMap.has(pod.host_id))
+
+      if (abandoned.length === 0) return
+
+      console.log(`[Cleanup] Found ${abandoned.length} abandoned pod(s), cleaning up...`)
+
+      for (const pod of abandoned) {
+        try {
+          // Delete Discord message (if any)
+          await deletePodMessage({
+            id: pod.id as string,
+            share_id: pod.share_id as string,
+            set_code: pod.set_code as string,
+            set_name: pod.set_name as string,
+            name: pod.name as string | null,
+            max_players: pod.max_players as number,
+            current_players: Number(pod.human_count) || 0,
+            pod_type: pod.pod_type as string,
+            is_public: pod.is_public as boolean,
+          })
+          // Delete card_pools, pod_players, then the pod
+          await query('DELETE FROM card_pools WHERE pod_id = $1', [pod.id])
+          await query('DELETE FROM pod_players WHERE pod_id = $1', [pod.id])
+          await query('DELETE FROM pods WHERE id = $1', [pod.id])
+          console.log(`[Cleanup] Deleted abandoned pod ${pod.share_id}`)
+        } catch (err) {
+          console.error(`[Cleanup] Failed to delete pod ${pod.share_id}:`, err)
+        }
+      }
+
+      await broadcastPublicPodsUpdate()
+    } catch (err) {
+      console.error('[Cleanup] Error during abandoned pod cleanup:', err)
+    }
+  }
 
   function startDelistTimer(userId: string): void {
     // Cancel any existing timer first
@@ -264,5 +320,6 @@ app.prepare().then(() => {
 
   server.listen(port, () => {
     console.log(`> Ready on http://localhost:${port}`)
+    setInterval(cleanupAbandonedPods, CLEANUP_INTERVAL_MS)
   })
 })

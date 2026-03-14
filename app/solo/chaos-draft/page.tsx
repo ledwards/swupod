@@ -3,5 +3,5 @@
 import { redirect } from 'next/navigation'
 
 export default function SoloChaosDraftRedirect() {
-  redirect('/casual/chaos-draft')
+  redirect('/formats/chaos-draft')
 }

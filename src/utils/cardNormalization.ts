@@ -3,40 +3,51 @@
  * Card Normalization Utilities
  *
  * IMPORTANT: All stats, analytics, and bot code MUST treat card variants
- * (Normal, Foil, Hyperspace, Hyperspace Foil, Showcase) as the SAME card.
+ * (Normal, Foil, Hyperspace, Hyperspace Foil, Showcase, Prestige) as the
+ * SAME game piece. A "Leia Organa" Hyperspace Foil is the same card as
+ * a "Leia Organa" Normal — they should never be counted separately.
  *
- * A "Leia Organa" Hyperspace Foil is the same game piece as a "Leia Organa" Normal.
- * Stats should never count them separately.
+ * HOW VARIANTS RELATE TO BASE CARDS:
+ * - Every card has a unique `id` (CMS ID) and `cardId` (e.g. "LAW-10")
+ * - Variants of the same game piece share: name, type, AND subtitle
+ * - They differ in: id, cardId, number, variantType
+ * - Example: LAW Leia Organa Leader has id=46102 (Normal), 47437 (HS), 47582 (Showcase)
+ * - The canonical key is `name|type|subtitle` (NOT just name|type)
+ * - Why subtitle? "Anakin Skywalker|Unit" has TWO different cards in LOF:
+ *   "Force Prodigy" (Special) and "Champion of Mortis" (Legendary)
  *
- * This module provides shared utilities for normalizing card identity:
+ * This module provides:
  *
- * - `cardNameKey(card)` — canonical key: "Name|Type" (e.g. "Leia Organa|Leader")
- *   Type is included because the same name can be both a Leader and a Unit.
+ * - `cardIdentityKey(card)` — canonical key: "Name|Type|Subtitle"
+ *   Uniquely identifies a game piece across all variants.
  *
- * - `buildCardLookupMaps(allCards)` — returns { cardMap, nameTypeToCard }
- *   cardMap: keyed by id, cardId, and normalized SET_XXX format
- *   nameTypeToCard: keyed by "Name|Type" → Normal variant card data
+ * - `buildCardLookupMaps(allCards)` — returns { cardMap, normalCardMap, toNormalCard }
+ *   cardMap: any id/cardId → card data (for enrichment lookups)
+ *   normalCardMap: identity key → Normal variant (for display/export)
+ *   toNormalCard: any card id → its Normal variant (for variant merging)
  *
  * - `normalizeCardId(rawId)` — converts "LAW-1" or "LAW_1" to "LAW_001"
  *
  * Usage in stats APIs:
- *   import { buildCardLookupMaps, cardNameKey } from '@/src/utils/cardNormalization'
- *   const { cardMap, nameTypeToCard } = buildCardLookupMaps(getAllCards())
- *
- * Usage in bot code:
- *   Bot code already groups by card.name which is correct.
- *   If you need type disambiguation, use cardNameKey(card).
+ *   import { buildCardLookupMaps, cardIdentityKey } from '@/src/utils/cardNormalization'
+ *   const { cardMap, normalCardMap, toNormalCard } = buildCardLookupMaps(getAllCards())
+ *   // Look up any card: cardMap.get(someId)
+ *   // Get Normal variant: toNormalCard.get(someCard.id) or normalCardMap.get(cardIdentityKey(card))
+ *   // Merge variants: group by cardIdentityKey(card)
  */
 
 import type { RawCard } from './cardData'
 
 /**
- * Canonical key for a card: "Name|Type"
- * Merges all variants (Normal, Foil, HS, HSF, Showcase) into one identity.
- * Type is included because "Leia Organa" can be both a Leader and a Unit.
+ * Canonical identity key for a card: "Name|Type|Subtitle"
+ * Merges all variants (Normal, Foil, HS, HSF, Showcase, Prestige) into one identity.
+ *
+ * - Type is needed because "Leia Organa" can be both a Leader and a Unit
+ * - Subtitle is needed because "Anakin Skywalker|Unit" can be two different cards
+ *   in the same set (e.g. "Force Prodigy" vs "Champion of Mortis" in LOF)
  */
-export function cardNameKey(card: { name: string; type?: string }): string {
-  return `${card.name}|${card.type || ''}`
+export function cardIdentityKey(card: { name: string; type?: string; subtitle?: string | null }): string {
+  return `${card.name}|${card.type || ''}|${card.subtitle || ''}`
 }
 
 /**
@@ -54,23 +65,27 @@ export function normalizeCardId(rawId: string | null | undefined): string | null
 }
 
 /**
- * Build lookup maps for card data enrichment.
+ * Build lookup maps for card data enrichment and variant normalization.
  *
  * Returns:
- * - cardMap: Map keyed by CMS id, raw cardId (e.g. "LAW-1"), and normalized
- *   cardId (e.g. "LAW_001"). Use for looking up any card by any ID format.
+ * - cardMap: Map keyed by CMS id, raw cardId, and normalized cardId.
+ *   Use for looking up any card by any ID format.
  *
- * - nameTypeToCard: Map keyed by "Name|Type" → first Normal variant found.
+ * - normalCardMap: Map keyed by identity key ("Name|Type|Subtitle") → Normal variant.
  *   Use for merging variants into a single canonical card for stats display.
- *   The Normal variant is preferred because it has the base cardId and imagery.
+ *
+ * - toNormalCard: Map keyed by any card's CMS id → its Normal variant.
+ *   Use to directly resolve any variant to its base card: toNormalCard.get(card.id)
  */
 export function buildCardLookupMaps(allCards: RawCard[]): {
   cardMap: Map<string, RawCard>
-  nameTypeToCard: Map<string, RawCard>
+  normalCardMap: Map<string, RawCard>
+  toNormalCard: Map<string, RawCard>
 } {
   const cardMap = new Map<string, RawCard>()
-  const nameTypeToCard = new Map<string, RawCard>()
+  const normalCardMap = new Map<string, RawCard>()
 
+  // First pass: index all cards and find Normal variants
   for (const card of allCards) {
     cardMap.set(card.id, card)
     if (card.cardId) {
@@ -79,12 +94,22 @@ export function buildCardLookupMaps(allCards: RawCard[]): {
       cardMap.set(card.cardId, card)
     }
     if (card.variantType === 'Normal') {
-      const key = cardNameKey(card)
-      if (!nameTypeToCard.has(key)) {
-        nameTypeToCard.set(key, card)
+      const key = cardIdentityKey(card)
+      if (!normalCardMap.has(key)) {
+        normalCardMap.set(key, card)
       }
     }
   }
 
-  return { cardMap, nameTypeToCard }
+  // Second pass: map every card id to its Normal variant
+  const toNormalCard = new Map<string, RawCard>()
+  for (const card of allCards) {
+    const key = cardIdentityKey(card)
+    const normal = normalCardMap.get(key)
+    if (normal) {
+      toNormalCard.set(card.id, normal)
+    }
+  }
+
+  return { cardMap, normalCardMap, toNormalCard }
 }
