@@ -9,6 +9,9 @@
 - **LAW splash rule**: In LAW, bots will now intelligently splash 3-5 off-aspect bombs when exactly one primary color is out of aspect, matching how real players build LAW decks.
 - **Leader trait synergy**: Bots recognize when their leader's text mentions a trait (like SPECTRE or OFFICIAL) and prioritize cards with that trait.
 
+### 🎨 UI Improvements
+- **Landing page polish**: Tighter spacing, players-online count moved above mode buttons for visibility, wider mode button row, art images swapped for better fit, and unit art shifted to hide aspect icons.
+
 ## 03.13.2026
 Happy LAW release day! It's also a big release day for Protect the Pod!
 

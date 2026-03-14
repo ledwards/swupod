@@ -154,6 +154,12 @@ function LandingPage() {
             Join the Discord
           </a>
         )}
+        {playerCount > 0 && (
+          <div className="players-online-landing">
+            <span className="online-dot-landing" />
+            <span>{playerCount} player{playerCount !== 1 ? 's' : ''} online</span>
+          </div>
+        )}
         {activeDraft && (
           <div className="active-draft-banner">
             <span>Live Pod: {activeDraft.draftName || activeDraft.setName || ''} Draft{activeDraft.createdAt ? ` ${new Date(activeDraft.createdAt).toLocaleDateString()}` : ''}</span>
@@ -185,23 +191,23 @@ function LandingPage() {
             <h3 className="mode-section-header">Solo</h3>
             <div className="mode-column">
               <button className="mode-button art-unit" onClick={() => router.push('/sealed')}>
-                <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.sealedSolo}")` }} />
+                <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.draftSolo}")` }} />
                 <div className="mode-button-content">
                   <span className="mode-button-title">Sealed</span>
                   <span className="mode-button-subtitle">Build a deck from 6 packs</span>
                 </div>
               </button>
               <button className="mode-button art-unit" onClick={() => router.push('/draft/solo')}>
-                <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.draftSolo}")` }} />
+                <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.sealedSolo}")` }} />
                 <div className="mode-button-content">
                   <span className="mode-button-title">Draft</span>
                   <span className="mode-button-subtitle">Draft against bots</span>
                 </div>
               </button>
-              <button className="mode-button art-unit" onClick={() => router.push('/formats')}>
+              <button className="mode-button art-leader-unit" onClick={() => router.push('/formats')}>
                 <div
                   className="mode-button-art"
-                  style={{ backgroundImage: `url("https://cdn.starwarsunlimited.com//card_0302467_EN_Jar_Jar_Binks_0e94fbc644.png")` }}
+                  style={{ backgroundImage: `url("https://cdn.starwarsunlimited.com//card_SWH_01_283_Hansolo_Leader_Unit_HYP_6c91c1ab96.png")` }}
                 />
                 <div className="mode-button-content">
                   <span className="mode-button-title">Other</span>
@@ -233,7 +239,7 @@ function LandingPage() {
                   )}
                 </div>
               </button>
-              <button className="mode-button art-event" onClick={() => router.push('/formats')}>
+              <button className="mode-button art-unit" onClick={() => router.push('/formats')}>
                 <div
                   className="mode-button-art"
                   style={{ backgroundImage: `url("https://cdn.starwarsunlimited.com//card_0302467_EN_Jar_Jar_Binks_0e94fbc644.png")` }}
@@ -246,12 +252,6 @@ function LandingPage() {
             </div>
           </div>
         </div>
-        {playerCount > 0 && (
-          <div className="players-online-landing">
-            <span className="online-dot-landing" />
-            <span>{playerCount} player{playerCount !== 1 ? 's' : ''} online</span>
-          </div>
-        )}
       </div>
       <div className="landing-disclaimer">
         <div className="landing-footer-links">
