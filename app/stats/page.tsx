@@ -646,6 +646,7 @@ interface DeckInclusionCard {
   decksWithCard: number
   inclusionRate: number
   avgCopiesPlayed: number
+  offAspectRate: number
   subtitle: string | null
   cost: number | null
   imageUrl: string | null
@@ -669,7 +670,7 @@ interface LeaderSelection {
 }
 
 type SortKey = 'cardName' | 'rarity' | 'avgPickPosition' | 'firstPickPct' | 'timesPicked'
-type DeckSortKey = 'cardName' | 'rarity' | 'inclusionRate' | 'avgCopiesPlayed' | 'poolsWithCard'
+type DeckSortKey = 'cardName' | 'rarity' | 'inclusionRate' | 'avgCopiesPlayed' | 'poolsWithCard' | 'offAspectRate'
 type LeaderSortKey = 'cardName' | 'avgPickPosition' | 'firstPickPct' | 'timesPicked'
 type LeaderSelSortKey = 'cardName' | 'timesSelected' | 'selectionRate'
 
@@ -1603,6 +1604,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
         case 'inclusionRate': cmp = a.inclusionRate - b.inclusionRate; break
         case 'avgCopiesPlayed': cmp = a.avgCopiesPlayed - b.avgCopiesPlayed; break
         case 'poolsWithCard': cmp = a.poolsWithCard - b.poolsWithCard; break
+        case 'offAspectRate': cmp = a.offAspectRate - b.offAspectRate; break
       }
       return cardSortAsc ? cmp : -cmp
     })
@@ -1687,6 +1689,26 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
           topData={filterCardChartData(cardDataTop?.cards || null)}
           youData={filterCardChartData(cardDataYou?.cards || null)}
           valueKey="inclusionRate"
+          formatValue={(v: number) => `${v.toFixed(1)}%`}
+          canSeeFullStats={canSeeFullStats}
+          user={user}
+          onCardHover={(card, e) => handleCardMouseEnter(card, e)}
+          onCardLeave={handleCardMouseLeave}
+        />
+      </div>
+
+      {/* Off-Aspect Inclusion Chart */}
+      <div style={{ marginBottom: '2rem' }}>
+        <h3 style={{ marginBottom: '0.5rem' }}>Off-Aspect Inclusions</h3>
+        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', marginBottom: '1rem' }}>
+          When a card is included in a deck, how often is it played out of aspect (with a +2 penalty)?
+        </p>
+        <CardCharts
+          allData={filterCardChartData(cardData?.cards || null)}
+          tournamentData={filterCardChartData(cardDataTournament?.cards || null)}
+          topData={filterCardChartData(cardDataTop?.cards || null)}
+          youData={filterCardChartData(cardDataYou?.cards || null)}
+          valueKey="offAspectRate"
           formatValue={(v: number) => `${v.toFixed(1)}%`}
           canSeeFullStats={canSeeFullStats}
           user={user}
@@ -1786,6 +1808,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                   <th className="aspects-col">Aspects</th>
                   <CardSortHeader label="Rarity" col="rarity" />
                   <CardSortHeader label="Inclusion %" col="inclusionRate" title="When this card is in your pool, how often does it make your deck?" />
+                  <CardSortHeader label="Off-Aspect %" col="offAspectRate" title="When this card is included in a deck, how often is it played out of aspect (with a +2 penalty)?" />
                   <CardSortHeader label="Avg Copies" col="avgCopiesPlayed" title="When you include this card, how many copies do you run?" />
                   <CardSortHeader label="# Included" col="decksWithCard" title="Times included in a deck out of total pools with this card" />
                 </tr>
@@ -1815,6 +1838,15 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                         all={card.inclusionRate}
                         top={topCard?.inclusionRate}
                         tournament={tournamentCard?.inclusionRate}
+                        format={(v: number) => `${v.toFixed(1)}%`}
+                        deltaMode="pct"
+                      />
+                      <StatsCell
+                        {...cellProps}
+                        you={youCard?.offAspectRate}
+                        all={card.offAspectRate}
+                        top={topCard?.offAspectRate}
+                        tournament={tournamentCard?.offAspectRate}
                         format={(v: number) => `${v.toFixed(1)}%`}
                         deltaMode="pct"
                       />

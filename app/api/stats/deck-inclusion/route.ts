@@ -3,6 +3,7 @@
 import { queryRows, queryRow } from '@/lib/db'
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
+import { calculateAspectPenalty } from '@/src/services/cards/aspectPenalties'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -89,7 +90,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // Previously fetched full JSONB card objects (images, text, traits) for every row
     // and processed in JS — caused 30+ second response times.
     // Now pushes aggregation to SQL via CTEs, returning only per-card summary rows.
-    const [countResult, cardRows] = await Promise.all([
+    const [countResult, cardRows, deckRows] = await Promise.all([
       // Query 1: Count total pool-deck pairs (fast, no JSONB processing)
       queryRow(
         `SELECT COUNT(*) AS total
@@ -158,6 +159,19 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         GROUP BY pc.norm_id`,
         queryParams
       ),
+      // Query 3: Fetch leader/base/deck per built deck for off-aspect computation.
+      // Lightweight: only IDs needed, aspects resolved from card cache.
+      queryRows(
+        `SELECT
+          bd.leader->>'id' AS leader_id,
+          bd.base->>'id' AS base_id,
+          bd.deck AS deck
+        FROM card_pools cp
+        JOIN built_decks bd ON bd.card_pool_id = cp.id
+        ${extraJoins}
+        WHERE ${baseWhere}`,
+        queryParams
+      ),
     ])
 
     const totalPoolsWithDecks = parseInt(countResult?.total || '0')
@@ -195,6 +209,35 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }
     }
 
+    // Compute off-aspect inclusion stats from per-deck data.
+    // For each built deck, check which cards are out-of-aspect for that deck's leader+base.
+    // Track: how many decks include this card off-aspect, and how many decks total include it.
+    const offAspectCounts = new Map<string, { offAspectDecks: number, totalDecks: number }>()
+
+    for (const row of deckRows) {
+      const leaderCard = cardMap.get(row.leader_id)
+      const baseCard = cardMap.get(row.base_id)
+      if (!leaderCard || !baseCard) continue
+
+      const deckCards = Array.isArray(row.deck) ? row.deck : []
+      for (const entry of deckCards) {
+        const cardId = entry?.id
+        if (!cardId) continue
+        const card = cardMap.get(cardId)
+        if (!card || card.type === 'Leader' || card.type === 'Base') continue
+
+        const nameKey = `${card.name}|${card.type}`
+        if (!offAspectCounts.has(nameKey)) {
+          offAspectCounts.set(nameKey, { offAspectDecks: 0, totalDecks: 0 })
+        }
+        const counts = offAspectCounts.get(nameKey)!
+        counts.totalDecks++
+        if (calculateAspectPenalty(card, leaderCard, baseCard) > 0) {
+          counts.offAspectDecks++
+        }
+      }
+    }
+
     // Enrich merged results with Normal variant card data and compute rates
     const cards = Array.from(mergedByName.entries())
       .map(([key, merged]) => {
@@ -202,6 +245,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         const avgCopiesPlayed = merged.decksWithCard > 0 ? merged.totalCopiesInDecks / merged.decksWithCard : 0
 
         const cardData = nameTypeToCard.get(key)
+
+        const ooa = offAspectCounts.get(key)
+        const offAspectRate = ooa && ooa.totalDecks > 0
+          ? Math.round((ooa.offAspectDecks / ooa.totalDecks) * 1000) / 10
+          : 0
 
         return {
           cardName: cardData?.name || key.split('|')[0],
@@ -213,6 +261,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           decksWithCard: merged.decksWithCard,
           inclusionRate: Math.round(inclusionRate * 10) / 10,
           avgCopiesPlayed: Math.round(avgCopiesPlayed * 10) / 10,
+          offAspectRate,
           subtitle: cardData?.subtitle || null,
           cost: cardData?.cost ?? null,
           imageUrl: cardData?.imageUrl || null,

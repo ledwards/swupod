@@ -286,7 +286,7 @@ function TopCardsBarChart({ cards, valueKey, formatValue, onCardHover, onCardLea
 }) {
   // Count-based metrics get XX% (Y/Z) labels; percentage metrics just show the value
   const isCountMetric = valueKey === 'timesPicked' || valueKey === 'timesSelected'
-  const isPercentage = valueKey === 'inclusionRate' || valueKey === 'selectionRate'
+  const isPercentage = valueKey === 'inclusionRate' || valueKey === 'selectionRate' || valueKey === 'offAspectRate'
 
   const data = useMemo(() => {
     if (!cards?.length) return []
