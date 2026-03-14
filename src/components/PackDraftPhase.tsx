@@ -133,6 +133,7 @@ function PackDraftPhase({
   const currentPack = myPlayer?.currentPack || []
   const draftedCards = myPlayer?.draftedCards || []
   const draftedLeaders = myPlayer?.draftedLeaders || []
+  const totalPacks = draftState?.totalPacks || draft?.settings?.chaosSets?.length || 3
   const canSelect = (myPlayer?.pickStatus === 'picking' || myPlayer?.pickStatus === 'selected') && currentPack.length > 0
   const hasSelected = myPlayer?.pickStatus === 'selected'
 
@@ -186,7 +187,7 @@ function PackDraftPhase({
     // Clean up selections from previous picks in localStorage
     // This prevents stale selections from being re-sent after pause/unpause
     const keysToCheck: string[] = []
-    for (let p = 1; p <= 3; p++) {
+    for (let p = 1; p <= totalPacks; p++) {
       for (let pick = 1; pick <= 16; pick++) {
         const key = `draft-selection-${shareId}-pack-${p}-${pick}`
         if (key !== storageKey) {
@@ -195,7 +196,7 @@ function PackDraftPhase({
       }
     }
     keysToCheck.forEach(key => localStorage.removeItem(key))
-  }, [packNumber, pickInPack, shareId, storageKey])
+  }, [packNumber, pickInPack, shareId, storageKey, totalPacks])
 
   // Track the previous pick number to detect when packs should pass
   const prevPickRef = useRef({ packNumber: 0, pickInPack: 0 })
@@ -387,7 +388,7 @@ function PackDraftPhase({
             <div className="draft-progress-info">
               <span className="progress-item">
                 <span className="info-label">Cards:</span>
-                <span className="info-value">{draftedCards.length}/{(draft?.packSize || 14) * 3}</span>
+                <span className="info-value">{draftedCards.length}/{(draft?.packSize || 14) * totalPacks}</span>
               </span>
               <Button variant="secondary" size="sm" className="review-button" onClick={() => setShowReviewModal(true)}>
                 <ReviewIcon />

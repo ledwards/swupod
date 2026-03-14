@@ -13,7 +13,7 @@
 
 import { describe, it, before } from 'node:test'
 import assert from 'node:assert'
-import { generateDraftPacks } from './draftLogic'
+import { generateDraftPacks, processBoxPacksForDraft } from './draftLogic'
 import { initializeCardCache } from './cardCache'
 
 describe('Draft pack format', () => {
@@ -74,6 +74,42 @@ describe('Draft pack format', () => {
     const firstPack = packs[0][0]
     const hasLeader = firstPack.cards.some(c => c.isLeader)
     assert.ok(!hasLeader, 'pack.cards should not contain leaders')
+  })
+
+  it('chaos draft uses all selected sets when more than 3 packs are chosen', async () => {
+    const chaosSets = ['SHD', 'SHD', 'LAW', 'LAW']
+    const { packs, leaders } = generateDraftPacks('SHD', {
+      playerCount: 2,
+      chaosSets
+    })
+
+    assert.strictEqual(packs[0].length, 4, 'player 1 should receive 4 packs')
+    assert.strictEqual(packs[1].length, 4, 'player 2 should receive 4 packs')
+    assert.strictEqual(leaders[0].length, 4, 'player 1 should receive 4 leaders')
+    assert.strictEqual(leaders[1].length, 4, 'player 2 should receive 4 leaders')
+  })
+
+  it('chaos box processing distributes packs by round so each player gets a set mix', () => {
+    const boxPacks = Array.from({ length: 32 }, (_, idx) => {
+      const setCode = idx < 16 ? 'SHD' : 'LAW' // 2 SHD groups + 2 LAW groups of 8 each
+      return {
+        cards: [
+          { id: `${setCode}-${idx}-leader`, name: `Leader ${idx}`, set: setCode, isLeader: true },
+          { id: `${setCode}-${idx}-base`, name: `Base ${idx}`, set: setCode, isBase: true },
+          { id: `${setCode}-${idx}-card`, name: `Card ${idx}`, set: setCode },
+        ]
+      }
+    })
+
+    const result = processBoxPacksForDraft(boxPacks, 8, { packsPerPlayer: 4, chaosSetCount: 4 })
+    const player0Sets = result.originalPacks[0].map(pack => pack[0]?.set)
+
+    assert.deepStrictEqual(
+      player0Sets,
+      ['SHD', 'SHD', 'LAW', 'LAW'],
+      'player 1 should get one pack per selected chaos set slot'
+    )
+    assert.strictEqual(result.leaders[0].length, 4, 'player 1 should receive 4 leaders')
   })
 })
 

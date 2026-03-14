@@ -73,6 +73,7 @@ function LeaderDraftPhase({
   const canSelect = (myPlayer?.pickStatus === 'picking' || myPlayer?.pickStatus === 'selected') && leaders.length > 0
   const hasSelected = myPlayer?.pickStatus === 'selected'
   const round = draftState?.leaderRound || 1
+  const totalLeaderRounds = draftState?.totalPacks || draft?.settings?.chaosSets?.length || 3
 
   // Local selection state, persisted to localStorage
   const storageKey = `draft-selection-${shareId}-leader-${round}`
@@ -124,13 +125,13 @@ function LeaderDraftPhase({
   // Clear all old leader selections when round changes
   useEffect(() => {
     // Clean up selections from previous rounds
-    for (let r = 1; r <= 3; r++) {
+    for (let r = 1; r <= totalLeaderRounds; r++) {
       if (r !== round) {
         const oldKey = `draft-selection-${shareId}-leader-${r}`
         localStorage.removeItem(oldKey)
       }
     }
-  }, [round, shareId])
+  }, [round, shareId, totalLeaderRounds])
 
   // Manage "passing" state - show skeleton cards when ALL players have picked
   // Check public data (players array) for immediate feedback, don't wait for HTTP
@@ -251,7 +252,7 @@ function LeaderDraftPhase({
           />
 
           <div className="drafted-leaders">
-            <h3>Your Drafted Leaders ({draftedLeaders.length}/3)</h3>
+            <h3>Your Drafted Leaders ({draftedLeaders.length}/{totalLeaderRounds})</h3>
             <div className="drafted-leaders-grid">
               {draftedLeaders.map((leader, idx) => (
                 <DraftableCard
@@ -261,7 +262,7 @@ function LeaderDraftPhase({
                   useStaticPreview={true}
                 />
               ))}
-              {Array(3 - draftedLeaders.length)
+              {Array(Math.max(0, totalLeaderRounds - draftedLeaders.length))
                 .fill(null)
                 .map((_, idx) => (
                   <div key={`empty-${idx}`} className="drafted-leader empty">
@@ -318,7 +319,7 @@ function LeaderDraftPhase({
                     ? 'Waiting for other players...'
                     : 'Ready')
                 : canSelect
-                  ? (round === 3 ? 'Select Your Final Leader' : 'Select a Leader')
+                  ? (round === totalLeaderRounds ? 'Select Your Final Leader' : 'Select a Leader')
                   : 'Waiting...'}
             </h3>
             {/* Show skeleton cards when waiting for next round */}

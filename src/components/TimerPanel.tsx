@@ -138,13 +138,14 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
   const timerLabel = displayLastPlayer
     ? (compact ? "Last Player" : "Last Player:")
     : (compact ? "Pick" : "Pick Timeout:")
+  const totalLeaderRounds = draftState?.totalPacks || draft?.settings?.chaosSets?.length || 3
 
   return (
     <>
       {/* Round/Pick info displayed ABOVE the timer box */}
       {draftState?.phase === 'leader_draft' && (
         <div className="round-pick-info">
-          Leader {draftState?.leaderRound || 1}/3
+          Leader {draftState?.leaderRound || 1}/{totalLeaderRounds}
         </div>
       )}
       {draftState?.phase === 'pack_draft' && (

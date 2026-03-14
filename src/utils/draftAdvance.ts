@@ -14,6 +14,7 @@ import type { RawCard } from './cardData'
 interface DraftState {
   phase?: string
   leaderRound?: number
+  totalPacks?: number
   packNumber?: number
   pickInPack?: number
   setCode?: string
@@ -26,6 +27,7 @@ interface DraftPod {
   status: string
   draft_state: string | DraftState
   state_version: number
+  settings?: string | Record<string, unknown>
   all_packs?: string | unknown[]
 }
 
@@ -49,6 +51,21 @@ interface CardWithMetadata extends RawCard {
   leaderRound?: number
   packNumber?: number
   pickInPack?: number
+}
+
+function getTotalPacks(draftState: DraftState, pod: DraftPod): number {
+  if (typeof draftState.totalPacks === 'number' && draftState.totalPacks > 0) {
+    return draftState.totalPacks
+  }
+
+  const settings = typeof pod?.settings === 'string'
+    ? JSON.parse(pod.settings)
+    : pod?.settings || {}
+  const chaosSets = settings?.draftMode === 'chaos' && Array.isArray(settings?.chaosSets)
+    ? settings.chaosSets
+    : null
+
+  return chaosSets?.length || 3
 }
 
 export function parseCurrentPack(currentPack: string | RawCard[] | null | undefined): RawCard[] {
@@ -254,18 +271,17 @@ async function advanceLeaderDraftAfterPicks(
   players: DraftPlayer[]
 ): Promise<void> {
   const currentRound = draftState.leaderRound
+  const totalPacks = getTotalPacks(draftState, pod)
 
-  if (currentRound === 1) {
-    // Pass remaining leaders (2) to the right
-    const direction = getLeaderPassDirection(1)
-    // Need to re-fetch players to get updated leaders
+  if (currentRound < totalPacks) {
+    const direction = getLeaderPassDirection(currentRound)
     const updatedPlayers = await queryRows(
       'SELECT * FROM pod_players WHERE pod_id = $1 ORDER BY seat_number',
       [podId]
     )
     await passLeaders(updatedPlayers, direction)
 
-    draftState.leaderRound = 2
+    draftState.leaderRound = currentRound + 1
     delete draftState.lastPlayerStartedAt // Clear last player timer for new round
     await query(
       `UPDATE pods
@@ -281,34 +297,7 @@ async function advanceLeaderDraftAfterPicks(
       `UPDATE pod_players SET pick_status = 'picking' WHERE pod_id = $1`,
       [podId]
     )
-
-  } else if (currentRound === 2) {
-    // Pass remaining leader (1) to the right
-    const direction = getLeaderPassDirection(2)
-    const updatedPlayers = await queryRows(
-      'SELECT * FROM pod_players WHERE pod_id = $1 ORDER BY seat_number',
-      [podId]
-    )
-    await passLeaders(updatedPlayers, direction)
-
-    draftState.leaderRound = 3
-    delete draftState.lastPlayerStartedAt // Clear last player timer for new round
-    await query(
-      `UPDATE pods
-       SET draft_state = $1,
-           state_version = state_version + 1,
-           pick_started_at = NOW(),
-           paused_duration_seconds = 0
-       WHERE id = $2`,
-      [JSON.stringify(draftState), podId]
-    )
-
-    await query(
-      `UPDATE pod_players SET pick_status = 'picking' WHERE pod_id = $1`,
-      [podId]
-    )
-
-  } else if (currentRound === 3) {
+  } else {
     // Transition to pack draft
     draftState.phase = 'pack_draft'
     draftState.packNumber = 1
@@ -369,7 +358,7 @@ async function advancePackDraftAfterPicks(
 
   const packNumber = draftState.packNumber || 1
   const pickInPack = draftState.pickInPack || 1
-  const totalPacks = 3
+  const totalPacks = getTotalPacks(draftState, pod)
 
   // Check if current pack is exhausted
   const firstPlayer = players[0]
@@ -486,14 +475,13 @@ export async function checkAndAdvanceLeaderDraft(
 
   // All players have picked - advance to next round
   const currentRound = draftState.leaderRound
+  const totalPacks = getTotalPacks(draftState, pod)
 
-  if (currentRound === 1) {
-    // Pass remaining leaders (2) to the right
-    const direction = getLeaderPassDirection(1) // 'right'
+  if (currentRound < totalPacks) {
+    const direction = getLeaderPassDirection(currentRound) // 'right'
     await passLeaders(players, direction)
 
-    // Update state for round 2
-    draftState.leaderRound = 2
+    draftState.leaderRound = currentRound + 1
     delete draftState.lastPlayerStartedAt // Clear last player timer for new round
     await query(
       `UPDATE pods
@@ -505,41 +493,13 @@ export async function checkAndAdvanceLeaderDraft(
       [JSON.stringify(draftState), podId]
     )
 
-    // Reset pick status
     await query(
       `UPDATE pod_players
        SET pick_status = 'picking'
        WHERE pod_id = $1`,
       [podId]
     )
-
-  } else if (currentRound === 2) {
-    // Pass remaining leader (1) to the right before round 3
-    const direction = getLeaderPassDirection(2) // 'right'
-    await passLeaders(players, direction)
-
-    // Move to round 3 - let players confirm their final leader
-    draftState.leaderRound = 3
-    delete draftState.lastPlayerStartedAt // Clear last player timer for new round
-    await query(
-      `UPDATE pods
-       SET draft_state = $1,
-           state_version = state_version + 1,
-           pick_started_at = NOW(),
-           paused_duration_seconds = 0
-       WHERE id = $2`,
-      [JSON.stringify(draftState), podId]
-    )
-
-    // Reset pick status for round 3
-    await query(
-      `UPDATE pod_players
-       SET pick_status = 'picking'
-       WHERE pod_id = $1`,
-      [podId]
-    )
-
-  } else if (currentRound === 3) {
+  } else {
     // Round 3 complete - transition to pack draft phase
     draftState.phase = 'pack_draft'
     draftState.packNumber = 1
@@ -637,7 +597,7 @@ export async function checkAndAdvancePackDraft(
   // All players have picked
   const packNumber = draftState.packNumber || 1
   const pickInPack = draftState.pickInPack || 1
-  const totalPacks = 3
+  const totalPacks = getTotalPacks(draftState, pod)
 
   // Check if current pack is exhausted
   const firstPlayer = players[0]

@@ -52,6 +52,16 @@ interface DraftPacksOptions {
   chaosSets?: (SetCode | string)[];
 }
 
+interface ProcessBoxPacksOptions {
+  /** Packs per player (default 3) */
+  packsPerPlayer?: number;
+  /**
+   * Number of selected chaos set slots used when box packs were generated
+   * in contiguous set groups (8 packs per selected slot).
+   */
+  chaosSetCount?: number;
+}
+
 /**
  * Process pre-generated box packs for draft
  * Takes packs from a 24-pack box and processes them for player distribution
@@ -63,9 +73,11 @@ interface DraftPacksOptions {
  */
 export function processBoxPacksForDraft(
   boxPacks: Pack[],
-  playerCount: number
+  playerCount: number,
+  options: ProcessBoxPacksOptions = {}
 ): DraftPacksResult {
-  const packsPerPlayer = 3;
+  const packsPerPlayer = options.packsPerPlayer ?? 3;
+  const chaosSetCount = options.chaosSetCount ?? 0;
   const totalPacksNeeded = playerCount * packsPerPlayer;
 
   if (boxPacks.length < totalPacksNeeded) {
@@ -85,8 +97,11 @@ export function processBoxPacksForDraft(
     const playerOriginalPacks: RawCard[] = [];
 
     for (let packNum = 0; packNum < packsPerPlayer; packNum++) {
-      // Get pack from box (player 0 gets packs 0,1,2; player 1 gets 3,4,5; etc.)
-      const packIndex = player * packsPerPlayer + packNum;
+      // Chaos boxes are generated in contiguous set groups (8 packs per selected set slot).
+      // Distribute by round so every player receives one pack from each selected slot.
+      const packIndex = chaosSetCount > 0
+        ? (packNum * 8) + player
+        : (player * packsPerPlayer + packNum);
       const pack = boxPacks[packIndex];
 
       // Get cards array from pack (handle both { cards: [...] } and raw array)
@@ -153,11 +168,11 @@ export function generateDraftPacks(
 
   const playerCount = options.playerCount ?? 8;
   const chaosSets = options.chaosSets;
+  const packsPerPlayer = chaosSets?.length || 3;
 
   // Clear belt cache for fresh generation
   clearBeltCache();
 
-  const packsPerPlayer = 3;
   const allPlayerPacks: DraftPack[][] = [];
   const allPlayerLeaders: DraftCard[][] = [];
   const allOriginalPacks: RawCard[][] = [];
