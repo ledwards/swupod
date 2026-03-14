@@ -44,6 +44,9 @@ sheets/
 /playwright/.cache/
 tests/e2e/screenshots/*.png
 !tests/e2e/screenshots/.gitkeep
+data/screenshots/*.png
+data/auth-state.json
+.leebo/screenshots/*.png
 
 # Test results (generated)
 src/tests/results.json

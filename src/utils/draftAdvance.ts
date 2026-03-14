@@ -51,6 +51,31 @@ interface CardWithMetadata extends RawCard {
   pickInPack?: number
 }
 
+export function parseCurrentPack(currentPack: string | RawCard[] | null | undefined): RawCard[] {
+  if (Array.isArray(currentPack)) {
+    return currentPack
+  }
+  if (typeof currentPack === 'string') {
+    try {
+      const parsed = JSON.parse(currentPack)
+      return Array.isArray(parsed) ? parsed : []
+    } catch {
+      return []
+    }
+  }
+  return []
+}
+
+export function isPackPickComplete(player: Pick<DraftPlayer, 'pick_status' | 'current_pack'>): boolean {
+  if (player.pick_status === 'picked') {
+    return true
+  }
+  if (player.pick_status !== 'picking') {
+    return false
+  }
+  return parseCurrentPack(player.current_pack).length === 0
+}
+
 /**
  * Process all staged picks when all players have selected
  * This is the new "staged pick" system where:
@@ -156,9 +181,7 @@ export async function processAllStagedPicks(
       const cardId = player.selected_card_id
       if (!cardId) continue
 
-      const currentPack: CardWithMetadata[] = typeof player.current_pack === 'string'
-        ? JSON.parse(player.current_pack)
-        : player.current_pack || []
+      const currentPack: CardWithMetadata[] = parseCurrentPack(player.current_pack)
 
       const draftedCards: CardWithMetadata[] = typeof player.drafted_cards === 'string'
         ? JSON.parse(player.drafted_cards)
@@ -350,9 +373,7 @@ async function advancePackDraftAfterPicks(
 
   // Check if current pack is exhausted
   const firstPlayer = players[0]
-  const remainingPack: RawCard[] = typeof firstPlayer.current_pack === 'string'
-    ? JSON.parse(firstPlayer.current_pack)
-    : firstPlayer.current_pack || []
+  const remainingPack: RawCard[] = parseCurrentPack(firstPlayer.current_pack)
 
   if (remainingPack.length === 0) {
     if (packNumber >= totalPacks) {
@@ -453,7 +474,7 @@ export async function checkAndAdvanceLeaderDraft(
     [podId]
   )
 
-  const allPicked = players.every(p => p.pick_status === 'picked')
+  const allPicked = players.every(isPackPickComplete)
   if (!allPicked) {
     // Just increment state version
     await query(
@@ -620,9 +641,7 @@ export async function checkAndAdvancePackDraft(
 
   // Check if current pack is exhausted
   const firstPlayer = players[0]
-  const remainingPack: RawCard[] = typeof firstPlayer.current_pack === 'string'
-    ? JSON.parse(firstPlayer.current_pack)
-    : firstPlayer.current_pack || []
+  const remainingPack: RawCard[] = parseCurrentPack(firstPlayer.current_pack)
 
   if (remainingPack.length === 0) {
     // Pack is done, move to next pack or complete draft
@@ -725,9 +744,7 @@ async function passPacks(players: DraftPlayer[], direction: 'left' | 'right'): P
   // Collect all current packs
   const packsByPlayer: { playerId: string; seatNumber: number; pack: RawCard[] }[] = []
   for (const player of players) {
-    const currentPack: RawCard[] = typeof player.current_pack === 'string'
-      ? JSON.parse(player.current_pack)
-      : player.current_pack || []
+    const currentPack: RawCard[] = parseCurrentPack(player.current_pack)
     packsByPlayer.push({ playerId: player.id, seatNumber: player.seat_number, pack: currentPack })
   }
 
