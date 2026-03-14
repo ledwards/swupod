@@ -10,6 +10,7 @@
 import { query, queryRow, queryRows } from '@/lib/db'
 import { buildDeckFromState } from '@/lib/deckBuilder'
 import { DataDrivenBehavior } from '@/src/bots/behaviors/DataDrivenBehavior'
+import { createStrategy } from '@/src/bots/behaviors/index'
 import { getCardsBySet } from '@/src/utils/cardData'
 import { broadcastPodState } from '@/src/lib/socketBroadcast'
 import { nanoid } from 'nanoid'
@@ -70,25 +71,25 @@ async function buildSingleBotDeck(
 
   if (draftedLeaders.length === 0 && draftedCards.length === 0) return
 
-  // 1. Select best leader using rankings
-  const behavior = new DataDrivenBehavior()
-  const selectedLeader = behavior.selectLeader(draftedLeaders, { setCode })
+  // 1. Select best leader using strategy-based rankings
+  const strategy = createStrategy()
+  const selectedLeader = strategy.selectLeader(draftedLeaders, { setCode })
 
   if (!selectedLeader) return
 
   // 2. Select best common base
   const selectedBase = selectBestBase(draftedLeaders, selectedLeader, setCode)
 
-  // 3. Score and sort all drafted cards using the behavior's scoring
+  // 3. Score and sort all drafted cards using the strategy's scoring
   // Simulate a committed state so cards are scored in-color
-  behavior.committedLeader = selectedLeader
-  behavior.committedBaseColor = selectBestBaseColor(selectedLeader)
+  strategy.committedLeader = selectedLeader
+  strategy.committedBaseColor = selectBestBaseColor(selectedLeader)
 
   const scoredCards = draftedCards
     .filter(c => !c.isLeader && !c.isBase)
     .map(card => ({
       card,
-      score: behavior._scoreCard(card, [selectedLeader], draftedCards, 42, null, { setCode })
+      score: strategy._scoreCard(card, [selectedLeader], draftedCards, 42, null, { setCode })
     }))
     .sort((a, b) => b.score - a.score)
 

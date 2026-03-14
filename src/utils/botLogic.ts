@@ -8,15 +8,16 @@
 
 import { query, queryRow, queryRows } from '@/lib/db'
 import { processAllStagedPicks } from './draftAdvance'
-import { getBehavior } from '@/src/bots/behaviors/index'
+import { getBehavior, assignStrategies, createStrategy } from '@/src/bots/behaviors/index'
 import { broadcastDraftState } from '@/src/lib/socketBroadcast'
 import { jsonParse } from './json'
 import { getDraftStats, hasEnoughData } from '@/src/bots/data/draftStats'
 import type { RawCard } from './cardData'
 import type { SetDraftStats } from '@/src/bots/data/draftStats'
+import type { BaseStrategy } from '@/src/bots/behaviors/BaseStrategy'
 
-// Behavior instance type
-type BehaviorInstance = ReturnType<typeof getBehavior>
+// Behavior instance type — supports both legacy and new strategies
+type BehaviorInstance = ReturnType<typeof getBehavior> | BaseStrategy
 
 interface DraftPod {
   id: string
@@ -81,6 +82,9 @@ export async function triggerBotPicks(podId: string): Promise<boolean> {
 
   if (botsNeedingPicks.length === 0) return false
 
+  // Assign strategies on first bot pick for this pod
+  await assignPodStrategies(podId)
+
   let picksMade = false
   for (const bot of botsNeedingPicks) {
     const made = await makeBotPick(bot.id, draftState)
@@ -119,15 +123,57 @@ async function makeBotPick(botId: string, draftState: DraftState): Promise<boole
 }
 
 /**
- * Get or create a behavior instance for a bot
+ * Get or create a behavior instance for a bot.
+ * If strategies haven't been assigned yet for this pod, assigns them now.
  * @param botId - Bot player ID
+ * @param podId - Pod ID (for strategy assignment)
  * @returns Behavior instance
  */
-function getBotBehavior(botId: string): BehaviorInstance {
+function getBotBehavior(botId: string, podId?: string): BehaviorInstance {
   if (!botBehaviors.has(botId)) {
-    botBehaviors.set(botId, getBehavior())
+    // Check if we need to do bulk strategy assignment
+    if (podId && !podStrategyAssigned.has(podId)) {
+      // Will be assigned by assignPodStrategies — for now, create a default
+      botBehaviors.set(botId, createStrategy())
+    } else {
+      botBehaviors.set(botId, createStrategy())
+    }
   }
   return botBehaviors.get(botId)!
+}
+
+/** Track which pods have had strategies assigned */
+const podStrategyAssigned = new Set<string>()
+
+/**
+ * Assign strategies to all bots in a pod.
+ * Called once when first bot pick is triggered for a pod.
+ */
+async function assignPodStrategies(podId: string): Promise<void> {
+  if (podStrategyAssigned.has(podId)) return
+
+  const botPlayers = await queryRows(
+    `SELECT id, is_bot FROM pod_players WHERE pod_id = $1 AND is_bot = true`,
+    [podId]
+  )
+
+  if (botPlayers.length === 0) return
+
+  // Determine if solo mode
+  const humanPlayers = await queryRows(
+    `SELECT id FROM pod_players WHERE pod_id = $1 AND (is_bot = false OR is_bot IS NULL)`,
+    [podId]
+  )
+  const isSolo = humanPlayers.length <= 1
+
+  const botIds = botPlayers.map(b => b.id as string)
+  const assignments = assignStrategies(botIds, isSolo)
+
+  for (const [botId, strategy] of assignments) {
+    botBehaviors.set(botId, strategy)
+  }
+
+  podStrategyAssigned.add(podId)
 }
 
 /**
@@ -136,16 +182,29 @@ function getBotBehavior(botId: string): BehaviorInstance {
 export function clearBotBehaviors(): void {
   botBehaviors.clear()
   podStatsCache.clear()
+  podStrategyAssigned.clear()
 }
 
 /**
- * Load draft stats for a pod's set code, using per-pod cache
+ * Load draft stats for a pod's set code, using per-pod cache.
+ * Passes hostUserId for Nemesis strategy per-user queries.
  */
 async function loadPodStats(podId: string, setCode: string): Promise<SetDraftStats | null> {
   if (podStatsCache.has(podId)) {
     return podStatsCache.get(podId) || null
   }
-  const stats = await getDraftStats(setCode)
+
+  // Get the host user ID for Nemesis strategy queries
+  let hostUserId: string | undefined
+  const humanPlayers = await queryRows(
+    `SELECT user_id FROM pod_players WHERE pod_id = $1 AND (is_bot = false OR is_bot IS NULL) LIMIT 1`,
+    [podId]
+  )
+  if (humanPlayers.length > 0) {
+    hostUserId = humanPlayers[0]?.user_id as string | undefined
+  }
+
+  const stats = await getDraftStats(setCode, hostUserId)
   const result = hasEnoughData(stats) ? stats : null
   podStatsCache.set(podId, result)
   return result
