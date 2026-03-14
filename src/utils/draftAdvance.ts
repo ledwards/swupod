@@ -51,6 +51,25 @@ interface CardWithMetadata extends RawCard {
   pickInPack?: number
 }
 
+function parseCurrentPack(currentPack: string | RawCard[] | null | undefined): RawCard[] {
+  if (Array.isArray(currentPack)) return currentPack
+  if (typeof currentPack === 'string') {
+    try {
+      const parsed = JSON.parse(currentPack)
+      return Array.isArray(parsed) ? parsed as RawCard[] : []
+    } catch {
+      return []
+    }
+  }
+  return []
+}
+
+export function areAllPackPicksResolved(players: Pick<DraftPlayer, 'pick_status' | 'current_pack'>[]): boolean {
+  return players.every(player =>
+    player.pick_status === 'picked' || parseCurrentPack(player.current_pack).length === 0
+  )
+}
+
 /**
  * Process all staged picks when all players have selected
  * This is the new "staged pick" system where:
@@ -603,7 +622,7 @@ export async function checkAndAdvancePackDraft(
     [podId]
   )
 
-  const allPicked = players.every(p => p.pick_status === 'picked')
+  const allPicked = areAllPackPicksResolved(players)
   if (!allPicked) {
     // Just increment state version
     await query(
