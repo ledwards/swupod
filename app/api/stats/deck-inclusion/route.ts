@@ -3,6 +3,7 @@
 import { queryRows, queryRow } from '@/lib/db'
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
+import { buildCardLookupMaps, cardNameKey } from '@/src/utils/cardNormalization'
 import { calculateAspectPenalty } from '@/src/services/cards/aspectPenalties'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
 import { NextRequest, NextResponse } from 'next/server'
@@ -20,28 +21,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const topPlayersOnly = url.searchParams.get('topPlayersOnly') === 'true'
     const userId = url.searchParams.get('userId') || null
 
-    // Build card lookup maps for enrichment
+    // Build card lookup maps — all variants merge to same card via name|type key
+    // See src/utils/cardNormalization.ts for the canonical normalization pattern
     const allCards = getAllCards()
-    // Keyed by CMS id and normalized cardId (e.g. LAW_001)
-    const cardMap = new Map()
-    // Keyed by name|type → Normal variant, for merging variants as one card
-    const nameTypeToCard = new Map()
-    allCards.forEach(card => {
-      cardMap.set(card.id, card)
-      if (card.cardId) {
-        const [set, num] = card.cardId.split('-')
-        if (set && num) {
-          cardMap.set(`${set}_${num.padStart(3, '0')}`, card)
-          cardMap.set(card.cardId, card)
-        }
-      }
-      if (card.variantType === 'Normal') {
-        const key = `${card.name}|${card.type}`
-        if (!nameTypeToCard.has(key)) {
-          nameTypeToCard.set(key, card)
-        }
-      }
-    })
+    const { cardMap, nameTypeToCard } = buildCardLookupMaps(allCards)
 
     // Build bot/human filter clause
     let botFilter = ''
@@ -191,9 +174,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       if (poolsWithCard <= 0) continue
 
       const cardData = cardMap.get(row.norm_id) || cardMap.get(row.card_id)
-      const name = cardData?.name || 'Unknown'
-      const type = cardData?.type || ''
-      const key = `${name}|${type}`
+      const key = cardData ? cardNameKey(cardData) : 'Unknown|'
 
       if (!mergedByName.has(key)) {
         mergedByName.set(key, {
@@ -226,7 +207,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         const card = cardMap.get(cardId)
         if (!card || card.type === 'Leader' || card.type === 'Base') continue
 
-        const nameKey = `${card.name}|${card.type}`
+        const nameKey = cardNameKey(card)
         if (!offAspectCounts.has(nameKey)) {
           offAspectCounts.set(nameKey, { offAspectDecks: 0, totalDecks: 0 })
         }
@@ -236,6 +217,84 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           counts.offAspectDecks++
         }
       }
+    }
+
+    // Compute leader synergy: for each card, how much more/less popular is it
+    // in decks with a specific leader vs overall?
+    // Per-leader: total copies of card across all decks with that leader / number of decks with that leader
+    // Overall: total copies of card across all decks / total decks
+    // Synergy delta = per-leader rate - overall rate (positive = high synergy)
+    const leaderDeckCounts = new Map<string, number>() // leaderKey -> total decks
+    const leaderCardCopies = new Map<string, Map<string, number>>() // leaderKey -> cardKey -> total copies
+    const overallCardCopies = new Map<string, number>() // cardKey -> total copies across all decks
+    let totalDecksForSynergy = 0
+
+    for (const row of deckRows) {
+      const leaderCard = cardMap.get(row.leader_id)
+      if (!leaderCard) continue
+
+      const leaderKey = cardNameKey(leaderCard)
+      leaderDeckCounts.set(leaderKey, (leaderDeckCounts.get(leaderKey) || 0) + 1)
+      totalDecksForSynergy++
+
+      if (!leaderCardCopies.has(leaderKey)) {
+        leaderCardCopies.set(leaderKey, new Map())
+      }
+      const leaderCards = leaderCardCopies.get(leaderKey)!
+
+      const deckCards = Array.isArray(row.deck) ? row.deck : []
+      for (const entry of deckCards) {
+        const cardId = entry?.id
+        if (!cardId) continue
+        const card = cardMap.get(cardId)
+        if (!card || card.type === 'Leader' || card.type === 'Base') continue
+
+        const ck = cardNameKey(card)
+        const copies = entry?.count || 1
+        leaderCards.set(ck, (leaderCards.get(ck) || 0) + copies)
+        overallCardCopies.set(ck, (overallCardCopies.get(ck) || 0) + copies)
+      }
+    }
+
+    // For each leader, compute top 5 synergy cards
+    // synergy = (copies in leader decks / leader deck count) - (copies overall / total decks)
+    const leaderSynergies = new Map<string, { cardKey: string; cardName: string; synergy: number }[]>()
+    for (const [leaderKey, cardCopies] of leaderCardCopies) {
+      const leaderCount = leaderDeckCounts.get(leaderKey) || 1
+      const synergies: { cardKey: string; cardName: string; synergy: number }[] = []
+
+      for (const [ck, copies] of cardCopies) {
+        const leaderRate = copies / leaderCount
+        const overallRate = (overallCardCopies.get(ck) || 0) / totalDecksForSynergy
+        const synergy = leaderRate - overallRate
+        const cardData = nameTypeToCard.get(ck)
+        synergies.push({ cardKey: ck, cardName: cardData?.name || ck.split('|')[0], synergy })
+      }
+
+      synergies.sort((a, b) => b.synergy - a.synergy)
+      leaderSynergies.set(leaderKey, synergies.slice(0, 5))
+    }
+
+    // For each card, find top 3 leaders it's most synergistic with
+    const cardTopLeaders = new Map<string, { leaderName: string; synergy: number }[]>()
+    for (const [leaderKey, cardCopies] of leaderCardCopies) {
+      const leaderCount = leaderDeckCounts.get(leaderKey) || 1
+      const leaderData = nameTypeToCard.get(leaderKey)
+      const leaderName = leaderData?.name || leaderKey.split('|')[0]
+
+      for (const [ck, copies] of cardCopies) {
+        const leaderRate = copies / leaderCount
+        const overallRate = (overallCardCopies.get(ck) || 0) / totalDecksForSynergy
+        const synergy = leaderRate - overallRate
+
+        if (!cardTopLeaders.has(ck)) cardTopLeaders.set(ck, [])
+        cardTopLeaders.get(ck)!.push({ leaderName, synergy })
+      }
+    }
+    // Sort and keep top 3 per card
+    for (const [ck, leaders] of cardTopLeaders) {
+      leaders.sort((a, b) => b.synergy - a.synergy)
+      cardTopLeaders.set(ck, leaders.slice(0, 3))
     }
 
     // Enrich merged results with Normal variant card data and compute rates
@@ -262,6 +321,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           inclusionRate: Math.round(inclusionRate * 10) / 10,
           avgCopiesPlayed: Math.round(avgCopiesPlayed * 10) / 10,
           offAspectRate,
+          topLeaders: (cardTopLeaders.get(key) || []).map(l => ({
+            leaderName: l.leaderName,
+            synergy: Math.round(l.synergy * 100) / 100,
+          })),
           subtitle: cardData?.subtitle || null,
           cost: cardData?.cost ?? null,
           imageUrl: cardData?.imageUrl || null,
@@ -270,10 +333,27 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       })
       .sort((a, b) => b.inclusionRate - a.inclusionRate)
 
+    // Build leader synergy summaries for the response
+    const leaderSynergySummaries = Array.from(leaderSynergies.entries()).map(([leaderKey, synCards]) => {
+      const leaderData = nameTypeToCard.get(leaderKey)
+      return {
+        leaderName: leaderData?.name || leaderKey.split('|')[0],
+        leaderSubtitle: leaderData?.subtitle || null,
+        leaderImageUrl: leaderData?.imageUrl || null,
+        deckCount: leaderDeckCounts.get(leaderKey) || 0,
+        topSynergyCards: synCards.map(s => ({
+          cardName: s.cardName,
+          synergy: Math.round(s.synergy * 100) / 100,
+        })),
+      }
+    }).filter(l => l.deckCount >= 3) // Only leaders with enough data
+      .sort((a, b) => b.deckCount - a.deckCount)
+
     return jsonResponse({
       setCode,
       totalPoolsWithDecks,
       cards,
+      leaderSynergies: leaderSynergySummaries,
     })
   } catch (error) {
     return handleApiError(error)

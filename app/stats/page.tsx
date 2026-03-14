@@ -647,15 +647,25 @@ interface DeckInclusionCard {
   inclusionRate: number
   avgCopiesPlayed: number
   offAspectRate: number
+  topLeaders: { leaderName: string; synergy: number }[]
   subtitle: string | null
   cost: number | null
   imageUrl: string | null
+}
+
+interface LeaderSynergy {
+  leaderName: string
+  leaderSubtitle: string | null
+  leaderImageUrl: string | null
+  deckCount: number
+  topSynergyCards: { cardName: string; synergy: number }[]
 }
 
 interface DeckInclusionStats {
   setCode: string
   totalPoolsWithDecks: number
   cards: DeckInclusionCard[]
+  leaderSynergies?: LeaderSynergy[]
 }
 
 interface LeaderSelection {
@@ -1811,6 +1821,7 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                   <CardSortHeader label="Off-Aspect %" col="offAspectRate" title="When this card is included in a deck, how often is it played out of aspect (with a +2 penalty)?" />
                   <CardSortHeader label="Avg Copies" col="avgCopiesPlayed" title="When you include this card, how many copies do you run?" />
                   <CardSortHeader label="# Included" col="decksWithCard" title="Times included in a deck out of total pools with this card" />
+                  <th title="Top 3 leaders this card is most synergistic with (highest inclusion delta vs overall)">Top Leaders</th>
                 </tr>
               </thead>
               <tbody>
@@ -1866,9 +1877,62 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
                         top={topCard ? `${fmt(topCard.decksWithCard)}/${fmt(topCard.poolsWithCard)}` : null}
                         tournament={tournamentCard ? `${fmt(tournamentCard.decksWithCard)}/${fmt(tournamentCard.poolsWithCard)}` : null}
                       />
+                      <td className="top-leaders-cell">
+                        {(card.topLeaders || []).map((l, i) => (
+                          <span key={i} className="synergy-leader" title={`Synergy: +${l.synergy.toFixed(2)} copies/deck vs average`}>
+                            {l.leaderName}{i < (card.topLeaders?.length || 0) - 1 ? ', ' : ''}
+                          </span>
+                        ))}
+                      </td>
                     </tr>
                   )
                 })}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
+      {/* Leader Synergy Cards */}
+      {cardData?.leaderSynergies && cardData.leaderSynergies.length > 0 && (
+        <>
+          <h3 style={{ marginBottom: '0.5rem', marginTop: '2rem' }}>Leader Synergies</h3>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', marginBottom: '1rem' }}>
+            Top 5 high-synergy cards per leader (synergy = extra copies per deck above average)
+          </p>
+          <div className="stats-table-container">
+            <table className="stats-table">
+              <thead>
+                <tr>
+                  <th>Leader</th>
+                  <th>Decks</th>
+                  <th>Top Synergy Cards</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cardData.leaderSynergies.map(leader => (
+                  <tr key={leader.leaderName}>
+                    <td
+                      className="card-name-cell"
+                      onMouseEnter={(e) => handleCardMouseEnter({ imageUrl: leader.leaderImageUrl || undefined, name: leader.leaderName, rarity: 'Rare' }, e)}
+                      onMouseLeave={handleCardMouseLeave}
+                      onTouchStart={() => handleCardTouchStart({ imageUrl: leader.leaderImageUrl || undefined, name: leader.leaderName, rarity: 'Rare' })}
+                      onTouchEnd={handleCardTouchEnd}
+                    >
+                      <span className="card-name">{leader.leaderName}</span>
+                      {leader.leaderSubtitle && <span className="card-subtitle">{leader.leaderSubtitle}</span>}
+                    </td>
+                    <td>{fmt(leader.deckCount)}</td>
+                    <td>
+                      {leader.topSynergyCards.map((c, i) => (
+                        <span key={i} className="synergy-card-tag" title={`+${c.synergy.toFixed(2)} copies/deck above average`}>
+                          {c.cardName} <span className="synergy-value">+{c.synergy.toFixed(2)}</span>
+                          {i < leader.topSynergyCards.length - 1 ? ' ' : ''}
+                        </span>
+                      ))}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

@@ -3,6 +3,7 @@
 import { queryRows, queryRow } from '@/lib/db'
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
+import { buildCardLookupMaps } from '@/src/utils/cardNormalization'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -19,19 +20,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const topPlayersOnly = url.searchParams.get('topPlayersOnly') === 'true'
     const userId = url.searchParams.get('userId') || null
 
-    // Build card lookup map for enrichment, keyed by normalized cardId
+    // Build card lookup maps — all variants merge to same card via name|type key
+    // See src/utils/cardNormalization.ts for the canonical normalization pattern
     const allCards = getAllCards()
-    const cardMap = new Map()
-    allCards.forEach(card => {
-      cardMap.set(card.id, card)
-      // Also index by normalized cardId (e.g. LAW_003)
-      if (card.cardId) {
-        const [set, num] = card.cardId.split('-')
-        if (set && num) {
-          cardMap.set(`${set}_${num.padStart(3, '0')}`, card)
-        }
-      }
-    })
+    const { cardMap } = buildCardLookupMaps(allCards)
 
     // Build bot/human filter clause
     let botFilter = ''
