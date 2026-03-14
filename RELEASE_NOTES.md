@@ -35,6 +35,9 @@ Join [https://www.patreon.com/c/ProtectthePod/membership](here)! Or try a free 7
 - **Delta badges**: Your stats now show comparison arrows (green/red) against All, Tournament, and Top players so you can see where you're above or below average.
 - **Deck inclusion bug fix**: Card variants (Normal, Foil, Hyperspace, etc.) are now aggregated as one card in deck inclusion stats instead of being counted separately.
 
+### 🐛 Bug Fixes
+- **Patreon free trial support**: Free trial signups on Patreon now correctly assign the Friend of the Pod role automatically. Previously, trials could be missed because Patreon sends a different webhook event for brand new users.
+
 ### 🤖 AI Players
 - **Smarter bot leader picks**: Bots now pick leaders based on overall popularity (total times picked by humans) instead of first-pick rate. This fixes an issue where bots were over-drafting niche leaders like Darth Vader in LAW. Bot popularity data excludes other bots to avoid feedback loops.
 - **Updated fallback rankings**: Default leader rankings for all 7 sets updated from real production draft data.

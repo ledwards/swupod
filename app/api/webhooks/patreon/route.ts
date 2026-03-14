@@ -54,15 +54,20 @@ export async function POST(request: NextRequest) {
   console.log('Patreon webhook:', { event, patronStatus, discordId })
 
   try {
-    if (event === 'members:pledge:create') {
-      await addPatronRole(discordId)
-    } else if (event === 'members:pledge:delete' || (event === 'members:pledge:update' && patronStatus !== 'active_patron')) {
+    if (event === 'members:pledge:create' || event === 'members:create') {
+      // members:create fires for brand new users (e.g. free trial signups)
+      // members:pledge:create fires when existing followers upgrade to paid/trial
+      if (patronStatus === 'active_patron') {
+        await addPatronRole(discordId)
+      }
+    } else if (event === 'members:pledge:delete' || event === 'members:delete' ||
+               ((event === 'members:pledge:update' || event === 'members:update') && patronStatus !== 'active_patron')) {
       await removePatronRole(discordId)
       await query(
         'UPDATE users SET is_beta_tester = FALSE WHERE discord_id = $1',
         [discordId]
       )
-    } else if (event === 'members:pledge:update' && patronStatus === 'active_patron') {
+    } else if ((event === 'members:pledge:update' || event === 'members:update') && patronStatus === 'active_patron') {
       await addPatronRole(discordId)
     }
   } catch (err) {
