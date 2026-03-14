@@ -10,7 +10,9 @@
 - **Leader trait synergy**: Bots recognize when their leader's text mentions a trait (like SPECTRE or OFFICIAL) and prioritize cards with that trait.
 
 ### 🎨 UI Improvements
-- **Landing page polish**: Tighter spacing, players-online count moved above mode buttons for visibility, wider mode button row, art images swapped for better fit, and unit art shifted to hide aspect icons.
+- **Landing page redesign**: Solo and Live Pod columns now each show Sealed, Draft, and Other formats. Smaller logo, bigger buttons, tighter spacing, players-online count moved under logo.
+- **URL consolidation**: `/formats` is now the canonical hub for casual formats. `/casual` redirects to `/formats` for backward compatibility.
+- **Release notes**: Fixed horizontal scrolling — text now wraps properly.
 
 ## 03.13.2026
 Happy LAW release day! It's also a big release day for Protect the Pod!
