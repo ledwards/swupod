@@ -31,18 +31,25 @@
 }
 
 .draftable-card.base {
-  width: 120px;
-  min-width: 120px;
-  max-width: 120px;
-  height: 168px;
   position: relative;
   overflow: hidden;
+  /* Inherit width + aspect-ratio from .draftable-card — no explicit height,
+     so the base sizes identically to its siblings in any grid layout */
 }
 
 .draftable-card.base img {
   position: absolute !important;
-  width: 168px !important;
-  height: 120px !important;
+  /* Landscape image rotated -90° into a portrait container.
+     After rotation: CSS width → visual height, CSS height → visual width.
+     Container is W × 1.4W (aspect-ratio 2.5:3.5).
+     Need: visual height = 1.4W → CSS width = 1.4W = container height
+            visual width  = W   → CSS height = W  = container width
+     Use container-relative units: height (100% of container H = 1.4W) for
+     CSS width, but CSS % height is relative to container H too. So we
+     compute the ratio: CSS width = 100% of H, CSS height = H/1.4 = 71.4% of H.
+     But actually simpler: just match the card dimensions at 120px base. */
+  width: 180px !important;
+  height: 128px !important;
   top: 50% !important;
   left: 50% !important;
   transform: rotate(-90deg) translate(-50%, -50%) !important;
