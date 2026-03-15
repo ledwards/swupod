@@ -200,7 +200,18 @@ function reconstructCardPicks(
 
       // Get the original pack
       const originalPack = allPacks[sourceIdx]?.[packIdx]
-      if (!originalPack) continue
+      if (!originalPack) {
+        console.warn(`[DraftLog] Missing pack data: sourceIdx=${sourceIdx}, packIdx=${packIdx}, pack=${packNum}, pick=${pickK}`)
+        picks.push({
+          type: 'card',
+          packNumber: packNum,
+          pickInPack: pickK,
+          overallPickNumber: (packNum - 1) * cardsPerPack + pickK,
+          visibleCards: [],
+          pickedInstanceId: null,
+        })
+        continue
+      }
 
       const originalCards = [...originalPack.cards]
 
