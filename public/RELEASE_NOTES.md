@@ -1,6 +1,7 @@
 # Release Notes
 
 ## 03.14.2026
+Major updates to the draft bot AI. Try it out and let us know what you think!
 
 ### 🤖 AI Players
 - **7 unique bot strategies**: Draft bots are no longer all the same! Each bot now uses one of 7 distinct strategies: Top Player (drafts like the best), Tournament Player (drafts like competitors), All Player (community consensus), Nemesis (counter-drafts you in solo mode), Diversity (maximizes aspect spread), Primary Color Corner (locks one color early), and Secondary Aspect Corner (locks hero/villain alignment). No two bots in a pod use the same strategy.
@@ -10,7 +11,9 @@
 - **Leader trait synergy**: Bots recognize when their leader's text mentions a trait (like SPECTRE or OFFICIAL) and prioritize cards with that trait.
 
 ### 🎨 UI Improvements
-- **Landing page polish**: Tighter spacing, players-online count moved above mode buttons for visibility, wider mode button row, art images swapped for better fit, and unit art shifted to hide aspect icons.
+- **Landing page redesign**: Solo and Live Pod columns now each show Sealed, Draft, and Other formats. Smaller logo, bigger buttons, tighter spacing, players-online count moved under logo.
+- **URL consolidation**: `/formats` is now the canonical hub for casual formats. `/casual` redirects to `/formats` for backward compatibility.
+- **Release notes**: Yo dawg, I heard you like release notes. Fixed horizontal scrolling in release notes — text now wraps properly.
 
 ## 03.13.2026
 Happy LAW release day! It's also a big release day for Protect the Pod!
