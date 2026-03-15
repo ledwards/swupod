@@ -540,7 +540,7 @@ export default function DraftLogPage({ params }: PageProps) {
                   </div>
                 ))}
               </div>
-            ))
+            ))}
             </>
           )}
         </div>

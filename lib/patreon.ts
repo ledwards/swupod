@@ -1,0 +1,89 @@
+// Patreon API client for fetching patron data
+// Requires: PATREON_CREATOR_ACCESS_TOKEN, PATREON_CAMPAIGN_ID
+
+const ACCESS_TOKEN = process.env['PATREON_CREATOR_ACCESS_TOKEN']
+const CAMPAIGN_ID = process.env['PATREON_CAMPAIGN_ID']
+
+const PATREON_API_BASE = 'https://www.patreon.com/api/oauth2/v2'
+
+interface PatreonMember {
+  patreonUserId: string
+  fullName: string | null
+  email: string | null
+  patronStatus: string | null
+  discordUserId: string | null
+}
+
+/**
+ * Fetch all active patrons from the Patreon API, including their Discord connections.
+ * Paginates through all members automatically.
+ */
+export async function fetchAllPatrons(): Promise<PatreonMember[]> {
+  if (!ACCESS_TOKEN || !CAMPAIGN_ID) {
+    throw new Error('Missing PATREON_CREATOR_ACCESS_TOKEN or PATREON_CAMPAIGN_ID env vars')
+  }
+
+  const members: PatreonMember[] = []
+  let cursor: string | null = null
+
+  do {
+    const url = new URL(`${PATREON_API_BASE}/campaigns/${CAMPAIGN_ID}/members`)
+    url.searchParams.set('include', 'user')
+    url.searchParams.set('fields[member]', 'full_name,email,patron_status')
+    url.searchParams.set('fields[user]', 'social_connections')
+    url.searchParams.set('page[count]', '100')
+    if (cursor) {
+      url.searchParams.set('page[cursor]', cursor)
+    }
+
+    const response = await fetch(url.toString(), {
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+      },
+    })
+
+    if (!response.ok) {
+      const body = await response.text()
+      throw new Error(`Patreon API error ${response.status}: ${body}`)
+    }
+
+    const data = await response.json()
+
+    // Build a map of user IDs to their social connections
+    const userSocials = new Map<string, string | null>()
+    if (Array.isArray(data.included)) {
+      for (const resource of data.included) {
+        if (resource.type === 'user') {
+          const discordId = resource.attributes?.social_connections?.discord?.user_id || null
+          userSocials.set(resource.id, discordId)
+        }
+      }
+    }
+
+    // Process members
+    if (Array.isArray(data.data)) {
+      for (const member of data.data) {
+        const userId = member.relationships?.user?.data?.id
+        members.push({
+          patreonUserId: userId || member.id,
+          fullName: member.attributes?.full_name || null,
+          email: member.attributes?.email || null,
+          patronStatus: member.attributes?.patron_status || null,
+          discordUserId: userId ? (userSocials.get(userId) || null) : null,
+        })
+      }
+    }
+
+    cursor = data.meta?.pagination?.cursors?.next || null
+  } while (cursor)
+
+  return members
+}
+
+/**
+ * Fetch only active patrons (patron_status === 'active_patron') with linked Discord accounts.
+ */
+export async function fetchActivePatronsWithDiscord(): Promise<PatreonMember[]> {
+  const allMembers = await fetchAllPatrons()
+  return allMembers.filter(m => m.patronStatus === 'active_patron' && m.discordUserId)
+}

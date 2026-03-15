@@ -77,6 +77,7 @@ export async function isGuildMember(discordId: string): Promise<boolean> {
  */
 export async function addRole(discordId: string, roleId: string): Promise<boolean> {
   if (!BOT_TOKEN || !GUILD_ID) {
+    console.error('addRole: missing env vars', { hasBotToken: !!BOT_TOKEN, hasGuildId: !!GUILD_ID })
     return false
   }
 
@@ -91,8 +92,14 @@ export async function addRole(discordId: string, roleId: string): Promise<boolea
       }
     )
 
+    if (!response.ok && response.status !== 204) {
+      const body = await response.text()
+      console.error('addRole: Discord API error', { discordId, roleId, status: response.status, body })
+    }
+
     return response.ok || response.status === 204
-  } catch {
+  } catch (err) {
+    console.error('addRole: fetch error', { discordId, roleId, error: err })
     return false
   }
 }
@@ -103,6 +110,7 @@ export async function addRole(discordId: string, roleId: string): Promise<boolea
  */
 export async function removeRole(discordId: string, roleId: string): Promise<boolean> {
   if (!BOT_TOKEN || !GUILD_ID) {
+    console.error('removeRole: missing env vars', { hasBotToken: !!BOT_TOKEN, hasGuildId: !!GUILD_ID })
     return false
   }
 
@@ -117,8 +125,14 @@ export async function removeRole(discordId: string, roleId: string): Promise<boo
       }
     )
 
+    if (!response.ok && response.status !== 204) {
+      const body = await response.text()
+      console.error('removeRole: Discord API error', { discordId, roleId, status: response.status, body })
+    }
+
     return response.ok || response.status === 204
-  } catch {
+  } catch (err) {
+    console.error('removeRole: fetch error', { discordId, roleId, error: err })
     return false
   }
 }

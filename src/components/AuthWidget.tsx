@@ -157,7 +157,7 @@ export default function AuthWidget() {
     const loginUrl = `/api/auth/signin/discord?return_to=${encodeURIComponent(pathname || '/')}`
     return (
       <div className="auth-widget">
-        <a href={loginUrl} className="btn btn--discord btn--sm auth-widget-login-link" title="Login with Discord">
+        <a href={loginUrl} className="auth-widget-login-circle" title="Login with Discord">
           <svg
             width="20"
             height="20"
@@ -170,7 +170,6 @@ export default function AuthWidget() {
               fill="currentColor"
             />
           </svg>
-          Login
         </a>
       </div>
     )

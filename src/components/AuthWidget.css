@@ -15,13 +15,37 @@
   font-size: 20px;
 }
 
-.auth-widget-login-link {
-  display: inline-flex;
+.auth-widget-login-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: #5865F2;
+  color: white;
+  display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
 }
 
-.auth-widget-login-link svg {
+a.auth-widget-login-circle,
+a.auth-widget-login-circle:visited,
+a.auth-widget-login-circle:hover,
+a.auth-widget-login-circle:active {
+  color: white;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .auth-widget-login-circle:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.auth-widget-login-circle svg {
   flex-shrink: 0;
 }
 

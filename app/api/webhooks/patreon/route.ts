@@ -25,6 +25,14 @@ function extractDiscordId(included: any[]): string | null {
   return null
 }
 
+function extractPatreonEmail(body: any): string | null {
+  return body?.data?.attributes?.email || null
+}
+
+function extractPatreonName(body: any): string | null {
+  return body?.data?.attributes?.full_name || null
+}
+
 export async function POST(request: NextRequest) {
   const rawBody = await request.text()
   const signature = request.headers.get('x-patreon-signature')
@@ -45,33 +53,50 @@ export async function POST(request: NextRequest) {
 
   const patronStatus = body?.data?.attributes?.patron_status
   const discordId = extractDiscordId(body?.included)
+  const patreonEmail = extractPatreonEmail(body)
+  const patreonName = extractPatreonName(body)
 
   if (!discordId) {
-    console.log('Patreon webhook: no Discord connection found, skipping', { event })
+    console.warn('Patreon webhook: no Discord connection found, skipping', {
+      event,
+      patronStatus,
+      patreonEmail,
+      patreonName,
+      includedTypes: Array.isArray(body?.included)
+        ? body.included.map((r: any) => r?.type)
+        : 'not an array',
+    })
     return NextResponse.json({ ok: true, skipped: 'no_discord_connection' })
   }
 
-  console.log('Patreon webhook:', { event, patronStatus, discordId })
+  console.log('Patreon webhook received:', { event, patronStatus, discordId, patreonEmail, patreonName })
 
   try {
     if (event === 'members:pledge:create' || event === 'members:create') {
       // members:create fires for brand new users (e.g. free trial signups)
       // members:pledge:create fires when existing followers upgrade to paid/trial
       if (patronStatus === 'active_patron') {
-        await addPatronRole(discordId)
+        const success = await addPatronRole(discordId)
+        console.log('Patreon webhook: addPatronRole result', { discordId, success, event })
+      } else {
+        console.log('Patreon webhook: create event but not active_patron, skipping role add', { patronStatus, event })
       }
     } else if (event === 'members:pledge:delete' || event === 'members:delete' ||
                ((event === 'members:pledge:update' || event === 'members:update') && patronStatus !== 'active_patron')) {
-      await removePatronRole(discordId)
+      const success = await removePatronRole(discordId)
+      console.log('Patreon webhook: removePatronRole result', { discordId, success, event })
       await query(
         'UPDATE users SET is_beta_tester = FALSE WHERE discord_id = $1',
         [discordId]
       )
     } else if ((event === 'members:pledge:update' || event === 'members:update') && patronStatus === 'active_patron') {
-      await addPatronRole(discordId)
+      const success = await addPatronRole(discordId)
+      console.log('Patreon webhook: addPatronRole result (update)', { discordId, success, event })
+    } else {
+      console.log('Patreon webhook: unhandled event/status combo', { event, patronStatus, discordId })
     }
   } catch (err) {
-    console.error('Patreon webhook: error processing event', err)
+    console.error('Patreon webhook: error processing event', { event, patronStatus, discordId, error: err })
     // Still return 200 — Patreon retries on non-2xx
   }
 
