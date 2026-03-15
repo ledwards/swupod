@@ -8,7 +8,6 @@ const BOT_TOKEN = process.env['DISCORD_BOT_TOKEN']
 const DRAFT_NOW_CHANNEL_ID = process.env['DISCORD_DRAFT_NOW_CHANNEL_ID']
 const SEALED_NOW_CHANNEL_ID = process.env['DISCORD_SEALED_NOW_CHANNEL_ID']
 const DRAFTBOTS_CHANNEL_ID = process.env['DISCORD_DRAFTBOTS_CHANNEL_ID']
-const DRAFTBOTS_DEV_CHANNEL_ID = process.env['DISCORD_DRAFTBOTS_DEV_CHANNEL_ID']
 const APP_URL = process.env['APP_URL'] || process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'
 const DISCORD_API = 'https://discord.com/api/v10'
 
@@ -727,9 +726,7 @@ export async function postBotDeckSummaries(
 ): Promise<void> {
   if (!BOT_TOKEN) return
 
-  const isDev = process.env.NODE_ENV === 'development'
-  const channelId = isDev ? DRAFTBOTS_DEV_CHANNEL_ID : DRAFTBOTS_CHANNEL_ID
-  if (!channelId) return
+  if (!DRAFTBOTS_CHANNEL_ID) return
 
   const botFields = botSummaries.map(bot => ({
     name: bot.botName,
@@ -751,7 +748,7 @@ export async function postBotDeckSummaries(
   }
 
   try {
-    const res = await discordFetch(`/channels/${channelId}/messages`, {
+    const res = await discordFetch(`/channels/${DRAFTBOTS_CHANNEL_ID}/messages`, {
       method: 'POST',
       body: JSON.stringify({ embeds: [embed] }),
     })
