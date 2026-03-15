@@ -713,7 +713,7 @@ export async function postLobbyMessage(
  * Posts one message per bot with leader image, strategy, base, and pool link.
  */
 export async function postBotDeckSummaries(
-  podName: string,
+  _podName: string,
   setCode: string,
   botSummaries: Array<{
     botName: string
@@ -776,7 +776,7 @@ export async function postBotDeckSummaries(
         // Use multipart/form-data to attach the screenshot
         const formData = new FormData()
         formData.append('payload_json', JSON.stringify({ embeds: [embed] }))
-        formData.append('files[0]', new Blob([screenshot], { type: 'image/jpeg' }), 'deck.jpg')
+        formData.append('files[0]', new Blob([screenshot as BlobPart], { type: 'image/jpeg' }), 'deck.jpg')
 
         res = await fetch(`${DISCORD_API}/channels/${DRAFTBOTS_CHANNEL_ID}/messages`, {
           method: 'POST',
@@ -878,7 +878,7 @@ export async function postDeckToDiscord(opts: {
     if (screenshot) {
       const formData = new FormData()
       formData.append('payload_json', JSON.stringify({ embeds: [embed] }))
-      formData.append('files[0]', new Blob([screenshot], { type: 'image/jpeg' }), 'deck.jpg')
+      formData.append('files[0]', new Blob([screenshot as BlobPart], { type: 'image/jpeg' }), 'deck.jpg')
 
       msgRes = await fetch(`${DISCORD_API}/channels/${POOL_DISCUSSION_CHANNEL_ID}/messages`, {
         method: 'POST',

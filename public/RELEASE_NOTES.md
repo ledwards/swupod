@@ -1,5 +1,17 @@
 # Release Notes
 
+## 03.15.2026
+
+### 💬 Post to Discord
+- **New "Post to Discord" button** on the play page lets you share your deck to the Protect the Pod Discord for feedback and discussion. Posts your deck image, leader, base, and a link to your pool — and creates a discussion thread automatically. I'm hoping this ends up a very popular feature as we all try to learn from each other!
+
+### 🤖 AI Players
+- **Bot pools are now public**: Bot deck links are always accessible — no more broken links when viewing bot decks from Discord. This will help us detemrine if the bots are doing a good job drafting!
+- **Smarter drafting**: Off-color penalty during exploration phase increased significantly so bots build more coherent pools.
+
+### 🎨 UI Improvements
+- **Various draft UI tweaks**: Several small UI fixes and improvements on Draft.
+
 ## 03.14.2026
 Major updates to the draft bot AI. Try it out and let us know what you think!
 
@@ -467,8 +479,8 @@ Additionally, we've got a Discord now: [https://discord.gg/u6fkdDzWqF](https://d
 
 ## How to Update Release Notes
 
-1. Add new date section at the top (above the previous date)
-2. Use US date format (MM.DD.YYYY)
+1. Each deploy/push gets its **own date section**, even if there are multiple on the same day. Add it at the top (above the previous section). Do NOT edit a previous section to add new items — always create a new section.
+2. Use US date format (MM.DD.YYYY). If there are multiple sections for the same date, that's fine — each is a separate release.
 3. Use emoji categories:
    - 🎉 New Features
    - 🐞 Bug Fixes

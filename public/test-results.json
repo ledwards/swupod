@@ -1,13 +1,13 @@
 {
-  "runAt": "2026-03-15T01:22:40.966Z",
-  "executionTime": 28303,
+  "runAt": "2026-03-15T10:54:06.363Z",
+  "executionTime": 19056,
   "summary": {
     "totalSuites": 22,
-    "passedSuites": 21,
-    "failedSuites": 1,
-    "totalTests": 508,
-    "passed": 502,
-    "failed": 6
+    "passedSuites": 22,
+    "failedSuites": 0,
+    "totalTests": 507,
+    "passed": 507,
+    "failed": 0
   },
   "suites": [
     {
@@ -15,7 +15,7 @@
       "suite": "utils",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 8476,
+      "executionTime": 6509,
       "tests": [
         {
           "suite": "utils",
@@ -220,7 +220,7 @@
       "suite": "utils",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 1599,
+      "executionTime": 648,
       "tests": [
         {
           "suite": "utils",
@@ -315,7 +315,7 @@
       "suite": "utils",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 698,
+      "executionTime": 421,
       "tests": [
         {
           "suite": "utils",
@@ -330,7 +330,7 @@
       "suite": "utils",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 596,
+      "executionTime": 422,
       "tests": [
         {
           "suite": "utils",
@@ -345,7 +345,7 @@
       "suite": "belts",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 933,
+      "executionTime": 657,
       "tests": [
         {
           "suite": "belts",
@@ -425,7 +425,7 @@
       "suite": "belts",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 915,
+      "executionTime": 649,
       "tests": [
         {
           "suite": "belts",
@@ -565,7 +565,7 @@
       "suite": "belts",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 1114,
+      "executionTime": 805,
       "tests": [
         {
           "suite": "belts",
@@ -660,7 +660,7 @@
       "suite": "belts",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 983,
+      "executionTime": 640,
       "tests": [
         {
           "suite": "belts",
@@ -740,7 +740,7 @@
       "suite": "belts",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 1064,
+      "executionTime": 655,
       "tests": [
         {
           "suite": "belts",
@@ -755,7 +755,7 @@
       "suite": "belts",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 1443,
+      "executionTime": 629,
       "tests": [
         {
           "suite": "belts",
@@ -830,7 +830,7 @@
       "suite": "belts",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 1540,
+      "executionTime": 1027,
       "tests": [
         {
           "suite": "belts",
@@ -920,7 +920,7 @@
       "suite": "belts",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 1012,
+      "executionTime": 646,
       "tests": [
         {
           "suite": "belts",
@@ -975,7 +975,7 @@
       "suite": "belts",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 949,
+      "executionTime": 629,
       "tests": [
         {
           "suite": "belts",
@@ -1065,7 +1065,7 @@
       "suite": "fixes",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 641,
+      "executionTime": 394,
       "tests": [
         {
           "suite": "fixes",
@@ -1080,7 +1080,7 @@
       "suite": "draft",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 1048,
+      "executionTime": 778,
       "tests": [
         {
           "suite": "draft",
@@ -1093,9 +1093,9 @@
     {
       "name": "Bot Behaviors",
       "suite": "bots",
-      "status": "failed",
-      "exitCode": 1,
-      "executionTime": 583,
+      "status": "passed",
+      "exitCode": 0,
+      "executionTime": 407,
       "tests": [
         {
           "suite": "bots",
@@ -1135,7 +1135,7 @@
         {
           "suite": "bots",
           "name": "PopularLeaderBehavior.selectLeader picks highest ranked leader\u001b[0m",
-          "status": "failed"
+          "status": "passed"
         },
         {
           "suite": "bots",
@@ -1169,28 +1169,28 @@
         },
         {
           "suite": "bots",
-          "name": "SOR: Sabine Wren is #1 pick when available\u001b[0m",
+          "name": "SOR: Boba Fett is #1 pick when available\u001b[0m",
           "status": "passed"
         },
         {
           "suite": "bots",
-          "name": "SOR: Picks in ranking order (Sabine > Boba > Vader > Han > Tarkin)\u001b[0m",
-          "status": "failed"
+          "name": "SOR: Picks in ranking order (Boba > Sabine > Tarkin > Jyn > Darth Vader)\u001b[0m",
+          "status": "passed"
         },
         {
           "suite": "bots",
-          "name": "SHD: Han Solo is #1 pick when available\u001b[0m",
-          "status": "failed"
+          "name": "SHD: Cad Bane is #1 pick when available (from ranking data)\u001b[0m",
+          "status": "passed"
         },
         {
           "suite": "bots",
-          "name": "TWI: Yoda is #1 pick when available\u001b[0m",
-          "status": "failed"
+          "name": "TWI: Anakin Skywalker is top pick from available (from ranking data)\u001b[0m",
+          "status": "passed"
         },
         {
           "suite": "bots",
-          "name": "JTL: Poe Dameron is #1 pick when available\u001b[0m",
-          "status": "failed"
+          "name": "JTL: Darth Vader is top pick from available (from ranking data)\u001b[0m",
+          "status": "passed"
         },
         {
           "suite": "bots",
@@ -1229,23 +1229,18 @@
         },
         {
           "suite": "bots",
-          "name": "Tests passed: 21\u001b[0m",
+          "name": "Tests passed: 26\u001b[0m",
           "status": "passed"
-        },
-        {
-          "suite": "bots",
-          "name": "Tests failed: 5\u001b[0m",
-          "status": "failed"
         }
       ],
-      "errorMessage": "[BOT] Unknown behavior \"nonexistent\", falling back to random"
+      "errorMessage": null
     },
     {
       "name": "Card Data",
       "suite": "data",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 1025,
+      "executionTime": 652,
       "tests": [
         {
           "suite": "data",
@@ -1680,7 +1675,7 @@
       "suite": "data",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 986,
+      "executionTime": 658,
       "tests": [
         {
           "suite": "data",
@@ -2715,7 +2710,7 @@
       "suite": "hooks",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 648,
+      "executionTime": 409,
       "tests": [
         {
           "suite": "hooks",
@@ -2730,7 +2725,7 @@
       "suite": "hooks",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 658,
+      "executionTime": 413,
       "tests": [
         {
           "suite": "hooks",
@@ -2745,7 +2740,7 @@
       "suite": "hooks",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 690,
+      "executionTime": 422,
       "tests": [
         {
           "suite": "hooks",
@@ -2760,7 +2755,7 @@
       "suite": "hooks",
       "status": "passed",
       "exitCode": 0,
-      "executionTime": 698,
+      "executionTime": 584,
       "tests": [
         {
           "suite": "hooks",
@@ -3740,7 +3735,7 @@
     {
       "suite": "bots",
       "name": "PopularLeaderBehavior.selectLeader picks highest ranked leader\u001b[0m",
-      "status": "failed"
+      "status": "passed"
     },
     {
       "suite": "bots",
@@ -3774,28 +3769,28 @@
     },
     {
       "suite": "bots",
-      "name": "SOR: Sabine Wren is #1 pick when available\u001b[0m",
+      "name": "SOR: Boba Fett is #1 pick when available\u001b[0m",
       "status": "passed"
     },
     {
       "suite": "bots",
-      "name": "SOR: Picks in ranking order (Sabine > Boba > Vader > Han > Tarkin)\u001b[0m",
-      "status": "failed"
+      "name": "SOR: Picks in ranking order (Boba > Sabine > Tarkin > Jyn > Darth Vader)\u001b[0m",
+      "status": "passed"
     },
     {
       "suite": "bots",
-      "name": "SHD: Han Solo is #1 pick when available\u001b[0m",
-      "status": "failed"
+      "name": "SHD: Cad Bane is #1 pick when available (from ranking data)\u001b[0m",
+      "status": "passed"
     },
     {
       "suite": "bots",
-      "name": "TWI: Yoda is #1 pick when available\u001b[0m",
-      "status": "failed"
+      "name": "TWI: Anakin Skywalker is top pick from available (from ranking data)\u001b[0m",
+      "status": "passed"
     },
     {
       "suite": "bots",
-      "name": "JTL: Poe Dameron is #1 pick when available\u001b[0m",
-      "status": "failed"
+      "name": "JTL: Darth Vader is top pick from available (from ranking data)\u001b[0m",
+      "status": "passed"
     },
     {
       "suite": "bots",
@@ -3834,13 +3829,8 @@
     },
     {
       "suite": "bots",
-      "name": "Tests passed: 21\u001b[0m",
+      "name": "Tests passed: 26\u001b[0m",
       "status": "passed"
-    },
-    {
-      "suite": "bots",
-      "name": "Tests failed: 5\u001b[0m",
-      "status": "failed"
     },
     {
       "suite": "data",

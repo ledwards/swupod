@@ -31,11 +31,6 @@ export async function captureDeckImage(poolShareId: string): Promise<Buffer | nu
     await page.waitForTimeout(3000)
 
     // Find and click the Deck Image button
-    // It's the button with the image icon in PlayInstructions
-    const deckImageButton = page.locator('button:has(svg rect):has(svg circle)')
-      .filter({ hasText: /Deck Image|Image/ })
-
-    // Fallback: find by the specific SVG pattern
     const buttons = page.locator('.play-instructions-action-button')
     const buttonCount = await buttons.count()
 
@@ -107,7 +102,7 @@ export async function captureDeckImage(poolShareId: string): Promise<Buffer | nu
       const bytes = new Uint8Array(arrayBuffer)
       let binary = ''
       for (let i = 0; i < bytes.length; i++) {
-        binary += String.fromCharCode(bytes[i])
+        binary += String.fromCharCode(bytes[i]!)
       }
       return btoa(binary)
     })
