@@ -460,6 +460,7 @@ export default function DraftRoomPage({ params }: PageProps) {
             error={error}
             isHost={isHost}
             onTogglePause={handleTogglePause}
+            onUpdateTimerSettings={handleSettingsChange}
             shareId={shareId}
             onTimerExpire={refresh}
           />
@@ -478,6 +479,7 @@ export default function DraftRoomPage({ params }: PageProps) {
             error={error}
             isHost={isHost}
             onTogglePause={handleTogglePause}
+            onUpdateTimerSettings={handleSettingsChange}
             shareId={shareId}
             onTimerExpire={refresh}
           />

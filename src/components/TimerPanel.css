@@ -127,6 +127,47 @@
   letter-spacing: 1px;
 }
 
+/* Host timer controls */
+.timer-host-controls {
+  display: flex;
+  gap: 1rem;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.timer-host-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.timer-host-row label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.timer-host-row input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.timer-host-row select {
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 0.8rem;
+  font-family: 'Barlow', sans-serif;
+  cursor: pointer;
+}
+
 /* Mobile - 20% smaller text, pause button moves up */
 @media (max-width: 768px) {
   .round-pick-info {

@@ -32,9 +32,18 @@ export async function PATCH(request: NextRequest, { params }: RouteContext): Pro
       return errorResponse('Only the host can update settings', 403)
     }
 
-    // Can only update settings in waiting status
-    if (pod.status !== 'waiting') {
-      return errorResponse('Cannot change settings after draft has started', 400)
+    // Timer settings can be changed during active drafts; other settings only during waiting
+    const isActive = pod.status === 'active'
+    const isWaiting = pod.status === 'waiting'
+    const timerFields = ['timed', 'pickTimeoutSeconds', 'timerSeconds', 'timerEnabled']
+    const hasOnlyTimerFields = Object.keys(body).every(k => timerFields.includes(k))
+
+    if (!isWaiting && !isActive) {
+      return errorResponse('Cannot change settings after draft has completed', 400)
+    }
+
+    if (isActive && !hasOnlyTimerFields) {
+      return errorResponse('Can only change timer settings during an active draft', 400)
     }
 
     // Update allowed fields
@@ -42,7 +51,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext): Pro
     const values: (boolean | number | string)[] = []
     let paramIndex = 1
 
-    if (typeof body.name === 'string' && body.name.trim().length > 0) {
+    if (isWaiting && typeof body.name === 'string' && body.name.trim().length > 0) {
       updates.push('name = $' + paramIndex++)
       values.push(body.name.trim().slice(0, 100))
     }
@@ -67,12 +76,12 @@ export async function PATCH(request: NextRequest, { params }: RouteContext): Pro
       values.push(body.timerEnabled)
     }
 
-    if (typeof body.isPublic === 'boolean') {
+    if (isWaiting && typeof body.isPublic === 'boolean') {
       updates.push('is_public = $' + paramIndex++)
       values.push(body.isPublic)
     }
 
-    if (typeof body.maxPlayers === 'number' && body.maxPlayers >= 2 && body.maxPlayers <= 8) {
+    if (isWaiting && typeof body.maxPlayers === 'number' && body.maxPlayers >= 2 && body.maxPlayers <= 8) {
       if (body.maxPlayers >= pod.current_players) {
         updates.push('max_players = $' + paramIndex++)
         values.push(body.maxPlayers)

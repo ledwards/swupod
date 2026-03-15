@@ -36,6 +36,7 @@ export interface TimerPanelProps {
   compact?: boolean
   isHost?: boolean
   onTogglePause?: () => void
+  onUpdateTimerSettings?: (settings: Record<string, unknown>) => void
   draftState?: DraftState | null
   onTimerExpire?: () => void
 }
@@ -45,7 +46,7 @@ export interface TimerPanelProps {
  * Shows either pick timeout or last player timer (whichever has less time remaining)
  * Both timers can be enabled/disabled independently
  */
-function TimerPanel({ draft, players = [], compact = false, isHost = false, onTogglePause, draftState = null, onTimerExpire }: TimerPanelProps) {
+function TimerPanel({ draft, players = [], compact = false, isHost = false, onTogglePause, onUpdateTimerSettings, draftState = null, onTimerExpire }: TimerPanelProps) {
   const [activeTimer, setActiveTimer] = useState<'round' | 'lastPlayer'>('round')
   const [optimisticPaused, setOptimisticPaused] = useState<boolean | null>(null)
 
@@ -201,6 +202,61 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
           )}
         </div>
       </div>
+
+      {/* Host timer controls — modify timers during active draft */}
+      {isHost && onUpdateTimerSettings && !compact && (
+        <div className="timer-host-controls">
+          <div className="timer-host-row">
+            <label>
+              <input
+                type="checkbox"
+                checked={isRoundTimerEnabled}
+                onChange={(e) => onUpdateTimerSettings({ timed: e.target.checked })}
+              />
+              Round
+            </label>
+            {isRoundTimerEnabled && (
+              <select
+                value={pickTimeoutSeconds}
+                onChange={(e) => onUpdateTimerSettings({ pickTimeoutSeconds: Number(e.target.value) })}
+              >
+                <option value={30}>30s</option>
+                <option value={45}>45s</option>
+                <option value={60}>60s</option>
+                <option value={90}>90s</option>
+                <option value={120}>2m</option>
+                <option value={180}>3m</option>
+                <option value={300}>5m</option>
+                <option value={600}>10m</option>
+              </select>
+            )}
+          </div>
+          <div className="timer-host-row">
+            <label>
+              <input
+                type="checkbox"
+                checked={isLastPlayerTimerEnabled}
+                onChange={(e) => onUpdateTimerSettings({ timerEnabled: e.target.checked })}
+              />
+              Last Player
+            </label>
+            {isLastPlayerTimerEnabled && (
+              <select
+                value={lastPlayerTimerSeconds}
+                onChange={(e) => onUpdateTimerSettings({ timerSeconds: Number(e.target.value) })}
+              >
+                <option value={10}>10s</option>
+                <option value={15}>15s</option>
+                <option value={20}>20s</option>
+                <option value={30}>30s</option>
+                <option value={45}>45s</option>
+                <option value={60}>60s</option>
+                <option value={90}>90s</option>
+              </select>
+            )}
+          </div>
+        </div>
+      )}
     </>
   )
 }

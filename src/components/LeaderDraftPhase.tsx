@@ -51,6 +51,7 @@ interface LeaderDraftPhaseProps {
   error: string | null
   isHost: boolean
   onTogglePause: () => void
+  onUpdateTimerSettings?: (settings: Record<string, unknown>) => void
   shareId: string
   onTimerExpire: () => void
 }
@@ -65,6 +66,7 @@ function LeaderDraftPhase({
   error,
   isHost,
   onTogglePause,
+  onUpdateTimerSettings,
   shareId,
   onTimerExpire,
 }: LeaderDraftPhaseProps) {
@@ -247,6 +249,7 @@ function LeaderDraftPhase({
             compact={false}
             isHost={isHost}
             onTogglePause={onTogglePause}
+            onUpdateTimerSettings={onUpdateTimerSettings}
             draftState={draftState}
             onTimerExpire={onTimerExpire}
           />
