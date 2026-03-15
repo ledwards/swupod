@@ -106,7 +106,7 @@ app.prepare().then(() => {
          FROM pods p
          WHERE p.status = 'waiting'
            AND p.created_at < NOW() - INTERVAL '${ABANDONED_AGE_HOURS} hours'
-         HAVING (SELECT COUNT(*) FROM pod_players pp WHERE pp.pod_id = p.id AND pp.is_bot = false) < 2`,
+           AND (SELECT COUNT(*) FROM pod_players pp WHERE pp.pod_id = p.id AND pp.is_bot = false) < 2`,
         []
       )
 
