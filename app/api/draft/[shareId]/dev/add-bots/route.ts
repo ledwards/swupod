@@ -56,7 +56,9 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
 
     const takenSeats = new Set(players.map(p => p.seat_number))
     const availableSeats: number[] = []
-    for (let i = 1; i <= pod.max_players; i++) {
+    // Fill seats from highest to lowest so bots appear clockwise (right-to-left)
+    // from the host's perspective in the player circle
+    for (let i = pod.max_players; i >= 1; i--) {
       if (!takenSeats.has(i)) availableSeats.push(i)
     }
 
