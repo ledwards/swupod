@@ -3,10 +3,23 @@
 ## 03.15.2026
 
 ### 💬 Post to Discord
-- **New "Post to Discord" button** on the play page lets you share your deck to the Protect the Pod Discord for feedback and discussion. Posts your deck image, leader, base, and a link to your pool — and creates a discussion thread automatically. I'm hoping this ends up a very popular feature as we all try to learn from each other!
+- **Post to Discord** Once you build a deck, share your deck, pool, and draft history to the Protect the Pod Discord for feedback and discussion at #pool-discussion. Posts your deck image, leader, base, and a link to your pool — and creates a discussion thread automatically. I'm hoping this ends up a very popular feature as we all try to learn from each other!
+
+### ❤️ Support the Pod
+- **Fixed automatic Discord role assignment**: Patreon subscribers should now automatically receive the "Friend of the Pod" Discord role. Previously, the webhook wasn't able to find your Discord connection — now it does an API lookup as a fallback.
+- **Free trial support**: Free trial Patreon subscribers now get immediate access, same as paid patrons.
+- **Helpful error message**: If we still can't find your Discord link, the beta page now shows a message explaining how to fix it (link Discord on patreon.com/settings/apps).
+
+### 🎮 Gameplay
+- **Clearer post-draft instructions**: The play page now says "Deck Complete!" and explicitly tells you to find a human opponent on Karabast. Bots draft with you, but you play against other humans.
+- **Smart timeout picks**: If you time out on a pick, the system now uses the top player bot strategy to make a smart pick for you instead of picking randomly. It considers your drafted leaders and cards to pick something in-color. Doing you a bit of a favor here I suppose, but if you disconnect randomly, at least it won't pick garbage for you.
+
+### 💬 Chat UX Improvements
+- **Smarter chat defaults**: Chat now opens automatically during pod formation on desktop, then closes by default once you move into drafting/sealed/deck building so it's not in the way. If you manually open or close chat, your preference is remembered as you navigate between pages.
+- **Unread message indicator**: When chat is closed and a new message arrives, the chat toggle pulses with a green glow so you never miss a message.
 
 ### 🤖 AI Players
-- **Bot pools are now public**: Bot deck links are always accessible — no more broken links when viewing bot decks from Discord. This will help us detemrine if the bots are doing a good job drafting!
+- **Bot pools are now public**: Bot deck links are always accessible — no more broken links when viewing bot decks from Discord. This will help us determine if the bots are doing a good job drafting! Check out #draftbots to see their decks.
 - **Smarter drafting**: Off-color penalty during exploration phase increased significantly so bots build more coherent pools.
 
 ### 🎨 UI Improvements
