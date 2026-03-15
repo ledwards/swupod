@@ -55,6 +55,20 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       await query('UPDATE card_pools SET is_public = true WHERE id = $1', [pool.id])
     }
 
+    // If this pool came from a draft, get the draft share ID and make the log public
+    let draftShareId: string | null = null
+    if (pool.pod_id) {
+      const pod = await queryRow('SELECT share_id FROM pods WHERE id = $1', [pool.pod_id])
+      if (pod) {
+        draftShareId = pod.share_id
+        // Make the player's draft log public
+        await query(
+          'UPDATE pod_players SET is_log_public = true WHERE pod_id = $1 AND user_id = $2',
+          [pool.pod_id, session.id]
+        )
+      }
+    }
+
     // Extract uploaded deck image if present
     let deckImageBuffer: Buffer | null = null
     try {
@@ -79,6 +93,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       setCode: pool.set_code || 'Unknown',
       poolType: pool.pool_type || 'draft',
       deckImage: deckImageBuffer,
+      draftShareId,
     })
 
     if (!result) {

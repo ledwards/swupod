@@ -843,6 +843,7 @@ export async function postDeckToDiscord(opts: {
   setCode: string
   poolType: string
   deckImage?: Buffer | null
+  draftShareId?: string | null
 }): Promise<{ threadId: string; messageId: string } | null> {
   if (!BOT_TOKEN) return null
   if (!POOL_DISCUSSION_CHANNEL_ID) return null
@@ -850,16 +851,21 @@ export async function postDeckToDiscord(opts: {
   const poolUrl = `${APP_URL}/pool/${opts.poolShareId}/deck`
   const screenshot = opts.deckImage || null
 
+  const descriptionLines = [
+    `**Leader:** ${opts.leaderName}`,
+    `**Base:** ${opts.baseName}`,
+    `**Deck:** ${opts.deckSize} cards`,
+    `**Format:** ${opts.poolType === 'draft' ? 'Draft' : opts.poolType === 'sealed' ? 'Sealed' : opts.poolType}`,
+    '',
+    `**[View Deck & Pool](${poolUrl})**`,
+  ]
+  if (opts.draftShareId) {
+    descriptionLines.push(`**[View Draft Log](${APP_URL}/draft/${opts.draftShareId}/log)**`)
+  }
+
   const embed: Record<string, unknown> = {
     title: `${opts.username}'s ${opts.setCode} Deck`,
-    description: [
-      `**Leader:** ${opts.leaderName}`,
-      `**Base:** ${opts.baseName}`,
-      `**Deck:** ${opts.deckSize} cards`,
-      `**Format:** ${opts.poolType === 'draft' ? 'Draft' : opts.poolType === 'sealed' ? 'Sealed' : opts.poolType}`,
-      '',
-      `**[View Deck & Pool](${poolUrl})**`,
-    ].join('\n'),
+    description: descriptionLines.join('\n'),
     color: 0x2ECC71,
     timestamp: new Date().toISOString(),
   }
