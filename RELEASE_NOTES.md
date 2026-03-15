@@ -467,8 +467,8 @@ Additionally, we've got a Discord now: [https://discord.gg/u6fkdDzWqF](https://d
 
 ## How to Update Release Notes
 
-1. Add new date section at the top (above the previous date)
-2. Use US date format (MM.DD.YYYY)
+1. Each deploy/push gets its **own date section**, even if there are multiple on the same day. Add it at the top (above the previous section). Do NOT edit a previous section to add new items — always create a new section.
+2. Use US date format (MM.DD.YYYY). If there are multiple sections for the same date, that's fine — each is a separate release.
 3. Use emoji categories:
    - 🎉 New Features
    - 🐞 Bug Fixes
