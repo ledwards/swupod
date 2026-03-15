@@ -310,7 +310,7 @@ export abstract class BaseStrategy {
       const leaderColors = this._getLeaderColors(this.committedLeader)
 
       // Wrong alignment is an absolute ban — Heroism cards never go in Villainy decks
-      const leaderAlignment = leaderColors.find(c => ALIGNMENT_ASPECTS.includes(c))
+      const leaderAlignment = this._getLeaderAlignment(this.committedLeader)
       if (leaderAlignment) {
         const opposingAlignment = leaderAlignment === 'Villainy' ? 'Heroism' : 'Villainy'
         if (cardAspects.includes(opposingAlignment)) {
@@ -318,6 +318,7 @@ export abstract class BaseStrategy {
         }
       }
 
+      // Only match on COLOR aspects — alignment matching doesn't reduce aspect penalties
       const leaderMatch = this._countMatchingAspects(cardAspects, leaderColors)
 
       if (leaderMatch > 0) {
@@ -643,9 +644,12 @@ export abstract class BaseStrategy {
   // --- Helpers ---
 
   _getLeaderColors(leader: RawCard): string[] {
+    // Returns only COLOR aspects (Vigilance, Command, Aggression, Cunning)
+    // NOT alignment aspects (Heroism, Villainy) — alignment is handled separately
+    // by the opposing alignment ban in _calculateColorScore
     const colors: string[] = []
     for (const aspect of (leader.aspects || [])) {
-      if (COLOR_ASPECTS.includes(aspect) || ALIGNMENT_ASPECTS.includes(aspect)) {
+      if (COLOR_ASPECTS.includes(aspect)) {
         colors.push(aspect)
       }
     }
@@ -653,10 +657,11 @@ export abstract class BaseStrategy {
   }
 
   _getColorsFromLeaders(leaders: RawCard[]): string[] {
+    // Only return COLOR aspects — alignment is handled separately
     const colors = new Set<string>()
     for (const leader of leaders) {
       for (const aspect of (leader.aspects || [])) {
-        if (COLOR_ASPECTS.includes(aspect) || ALIGNMENT_ASPECTS.includes(aspect)) {
+        if (COLOR_ASPECTS.includes(aspect)) {
           colors.add(aspect)
         }
       }
