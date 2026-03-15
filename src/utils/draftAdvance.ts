@@ -27,6 +27,7 @@ interface DraftPod {
   draft_state: string | DraftState
   state_version: number
   all_packs?: string | unknown[]
+  settings?: string | { draftMode?: string; chaosSets?: string[] }
 }
 
 interface DraftPlayer {
@@ -49,6 +50,16 @@ interface CardWithMetadata extends RawCard {
   leaderRound?: number
   packNumber?: number
   pickInPack?: number
+}
+
+function getTotalPacks(pod: DraftPod): number {
+  const settings = typeof pod.settings === 'string'
+    ? JSON.parse(pod.settings)
+    : pod.settings || {}
+  if (settings?.draftMode === 'chaos' && Array.isArray(settings.chaosSets) && settings.chaosSets.length > 0) {
+    return settings.chaosSets.length
+  }
+  return 3
 }
 
 export function parseCurrentPack(currentPack: string | RawCard[] | null | undefined): RawCard[] {
@@ -369,7 +380,7 @@ async function advancePackDraftAfterPicks(
 
   const packNumber = draftState.packNumber || 1
   const pickInPack = draftState.pickInPack || 1
-  const totalPacks = 3
+  const totalPacks = getTotalPacks(pod)
 
   // Check if current pack is exhausted
   const firstPlayer = players[0]
@@ -637,7 +648,7 @@ export async function checkAndAdvancePackDraft(
   // All players have picked
   const packNumber = draftState.packNumber || 1
   const pickInPack = draftState.pickInPack || 1
-  const totalPacks = 3
+  const totalPacks = getTotalPacks(pod)
 
   // Check if current pack is exhausted
   const firstPlayer = players[0]

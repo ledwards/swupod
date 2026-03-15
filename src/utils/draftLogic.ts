@@ -63,9 +63,9 @@ interface DraftPacksOptions {
  */
 export function processBoxPacksForDraft(
   boxPacks: Pack[],
-  playerCount: number
+  playerCount: number,
+  packsPerPlayer: number = 3
 ): DraftPacksResult {
-  const packsPerPlayer = 3;
   const totalPacksNeeded = playerCount * packsPerPlayer;
 
   if (boxPacks.length < totalPacksNeeded) {
@@ -157,7 +157,7 @@ export function generateDraftPacks(
   // Clear belt cache for fresh generation
   clearBeltCache();
 
-  const packsPerPlayer = 3;
+  const packsPerPlayer = chaosSets?.length || 3;
   const allPlayerPacks: DraftPack[][] = [];
   const allPlayerLeaders: DraftCard[][] = [];
   const allOriginalPacks: RawCard[][] = [];

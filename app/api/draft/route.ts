@@ -52,10 +52,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (settings.draftMode === 'chaos' && settings.chaosSets) {
       clearBeltCache()
       boxPacks = []
-      for (const chaosSetCode of settings.chaosSets) {
-        // Generate 8 packs per set for chaos draft
-        const setPacks = generateSealedBox([], chaosSetCode, 8)
-        boxPacks.push(...setPacks)
+      // Generate one pack per selected chaos set for each potential seat.
+      // This preserves the exact selected set order (and duplicates) per player.
+      for (let seat = 0; seat < maxPlayers; seat++) {
+        for (const chaosSetCode of settings.chaosSets) {
+          const [pack] = generateSealedBox([], chaosSetCode, 1)
+          boxPacks.push(pack)
+        }
       }
     } else {
       // Normal draft - generate 24 packs from one set

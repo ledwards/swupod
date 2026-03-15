@@ -70,6 +70,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
     const chaosSets = settings.draftMode === 'chaos' && settings.chaosSets
       ? settings.chaosSets
       : undefined
+    const packsPerPlayer = chaosSets?.length || 3
 
     // Use pre-generated box_packs if available, otherwise generate on the fly (backward compatibility)
     let packs, leaders, originalPacks;
@@ -78,7 +79,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
     if (boxPacks && Array.isArray(boxPacks) && boxPacks.length > 0) {
       // Use pre-generated box packs
       // console.log('[START] Using pre-generated box packs for', players.length, 'players')
-      const result = processBoxPacksForDraft(boxPacks, players.length);
+      const result = processBoxPacksForDraft(boxPacks, players.length, packsPerPlayer);
       packs = result.packs;
       leaders = result.leaders;
       originalPacks = result.originalPacks;
@@ -108,7 +109,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
               sourceType: 'draft',
               sourceId: pod.id,
               sourceShareId: shareId,
-              packIndex: playerIndex * 3 + packIndex,
+              packIndex: playerIndex * packsPerPlayer + packIndex,
               slotType: PACK_SLOT_TYPES[cardIndex] || null,
               userId: null // packs aren't attributed to a specific player at generation
             }
