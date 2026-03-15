@@ -69,8 +69,8 @@ function mockCardStat(cardName: string, avgPos: number, rarity = 'Common'): [str
   return [cardName, { cardName, avgPickPosition: avgPos, timesPicked: 10, rarity, cardType: 'Unit' }]
 }
 
-function mockLeaderStat(name: string, firstPickRate: number): [string, LeaderPickStats] {
-  return [name, { leaderName: name, timesPicked: 20, firstPickRate }]
+function mockLeaderStat(name: string, firstPickRate: number, timesPicked = 20): [string, LeaderPickStats] {
+  return [name, { leaderName: name, timesPicked, firstPickRate }]
 }
 
 function mockProfile(leaderName: string, overrides: Partial<DeckProfile> = {}): [string, DeckProfile] {
@@ -100,11 +100,11 @@ test('selects DB-popular leader over hardcoded-ranked leader', () => {
     mockLeader('Jyn Erso', ['Cunning', 'Heroism']),         // Last in hardcoded SOR
   ]
 
-  // DB says Jyn has 80% first pick rate, Sabine only 20%
+  // DB says Jyn is picked 80 times, Sabine only 20 — selectLeader sorts by timesPicked
   const stats = mockStats({
     leaderStats: new Map([
-      mockLeaderStat('Jyn Erso', 0.8),
-      mockLeaderStat('Sabine Wren', 0.2),
+      mockLeaderStat('Jyn Erso', 0.8, 80),
+      mockLeaderStat('Sabine Wren', 0.2, 20),
     ]),
   })
 
@@ -256,11 +256,11 @@ test('DB popularity breaks ties in leader commitment', () => {
     mockCard('B', { aspects: [] }),  // Neutral
   ]
 
-  // But Boba has higher first pick rate
+  // But Boba has higher pick count in DB
   const stats = mockStats({
     leaderStats: new Map([
-      mockLeaderStat('Boba Fett', 0.9),
-      mockLeaderStat('Sabine Wren', 0.1),
+      mockLeaderStat('Boba Fett', 0.9, 90),
+      mockLeaderStat('Sabine Wren', 0.1, 10),
     ]),
   })
 

@@ -120,17 +120,17 @@ test('PopularLeaderBehavior.selectLeader picks highest ranked leader', () => {
   const behavior = new PopularLeaderBehavior()
   const leader = behavior.selectLeader(mockLeadersSOR, { setCode: 'SOR' })
   assert(leader !== null, 'Should return a leader')
-  // Sabine Wren should be #1 for SOR
-  assert(leader.name === 'Sabine Wren', `Should pick Sabine Wren (got ${leader.name})`)
+  // Boba Fett is #1 for SOR in leaderRankings.ts
+  assert(leader.name === 'Boba Fett', `Should pick Boba Fett (got ${leader.name})`)
 })
 
 test('PopularLeaderBehavior.selectLeader picks from remaining if top not available', () => {
   const behavior = new PopularLeaderBehavior()
-  const limitedLeaders = mockLeadersSOR.filter(l => l.name !== 'Sabine Wren')
+  const limitedLeaders = mockLeadersSOR.filter(l => l.name !== 'Boba Fett')
   const leader = behavior.selectLeader(limitedLeaders, { setCode: 'SOR' })
   assert(leader !== null, 'Should return a leader')
-  // Boba Fett should be #2 for SOR
-  assert(leader.name === 'Boba Fett', `Should pick Boba Fett (got ${leader.name})`)
+  // Sabine Wren is #3 for SOR (after Boba Fett, IG-88 who isn't in the mock)
+  assert(leader.name === 'Sabine Wren', `Should pick Sabine Wren (got ${leader.name})`)
 })
 
 test('PopularLeaderBehavior.selectCard favors in-color units', () => {
@@ -196,19 +196,20 @@ test('PopularLeaderBehavior can reset state', () => {
 // Comprehensive leader ranking tests
 console.log('\n\x1b[36mLeader Ranking Tests\x1b[0m')
 
-test('SOR: Sabine Wren is #1 pick when available', () => {
+test('SOR: Boba Fett is #1 pick when available', () => {
   const behavior = new PopularLeaderBehavior()
   const allSORLeaders = [
     { id: 'SOR-018', name: 'Jyn Erso', set: 'SOR', aspects: ['Cunning', 'Heroism'] },
     { id: 'SOR-014', name: 'Sabine Wren', set: 'SOR', aspects: ['Aggression', 'Heroism'] },
+    { id: 'SOR-015', name: 'Boba Fett', set: 'SOR', aspects: ['Cunning', 'Villainy'] },
     { id: 'SOR-007', name: 'Grand Moff Tarkin', set: 'SOR', aspects: ['Command', 'Villainy'] },
     { id: 'SOR-010', name: 'Darth Vader', set: 'SOR', aspects: ['Aggression', 'Villainy'] },
   ]
   const leader = behavior.selectLeader(allSORLeaders, { setCode: 'SOR' })
-  assert(leader.name === 'Sabine Wren', `Expected Sabine Wren, got ${leader.name}`)
+  assert(leader.name === 'Boba Fett', `Expected Boba Fett, got ${leader.name}`)
 })
 
-test('SOR: Picks in ranking order (Sabine > Boba > Vader > Han > Tarkin)', () => {
+test('SOR: Picks in ranking order (Boba > Sabine > Tarkin > Jyn > Darth Vader)', () => {
   const behavior = new PopularLeaderBehavior()
 
   // Simulate drafting - each pick removes the selected leader
@@ -218,10 +219,10 @@ test('SOR: Picks in ranking order (Sabine > Boba > Vader > Han > Tarkin)', () =>
     { id: 'SOR-015', name: 'Boba Fett', set: 'SOR', aspects: ['Cunning', 'Villainy'] },
     { id: 'SOR-007', name: 'Grand Moff Tarkin', set: 'SOR', aspects: ['Command', 'Villainy'] },
     { id: 'SOR-010', name: 'Darth Vader', set: 'SOR', aspects: ['Aggression', 'Villainy'] },
-    { id: 'SOR-017', name: 'Han Solo', set: 'SOR', aspects: ['Cunning', 'Heroism'] },
   ]
 
-  const expectedOrder = ['Sabine Wren', 'Boba Fett', 'Darth Vader', 'Han Solo', 'Grand Moff Tarkin']
+  // Expected order matches leaderRankings.ts: Boba Fett, Sabine Wren, Grand Moff Tarkin, Jyn Erso, Darth Vader
+  const expectedOrder = ['Boba Fett', 'Sabine Wren', 'Grand Moff Tarkin', 'Jyn Erso', 'Darth Vader']
   const actualOrder: string[] = []
 
   for (let i = 0; i < 5; i++) {
@@ -236,7 +237,7 @@ test('SOR: Picks in ranking order (Sabine > Boba > Vader > Han > Tarkin)', () =>
   )
 })
 
-test('SHD: Han Solo is #1 pick when available', () => {
+test('SHD: Cad Bane is #1 pick when available (from ranking data)', () => {
   const behavior = new PopularLeaderBehavior()
   const shdLeaders = [
     { id: 'SHD-013', name: 'Han Solo', set: 'SHD', aspects: ['Aggression', 'Heroism'] },
@@ -244,10 +245,10 @@ test('SHD: Han Solo is #1 pick when available', () => {
     { id: 'SHD-014', name: 'Cad Bane', set: 'SHD', aspects: ['Cunning', 'Villainy'] },
   ]
   const leader = behavior.selectLeader(shdLeaders, { setCode: 'SHD' })
-  assert(leader.name === 'Han Solo', `Expected Han Solo, got ${leader.name}`)
+  assert(leader.name === 'Cad Bane', `Expected Cad Bane, got ${leader.name}`)
 })
 
-test('TWI: Yoda is #1 pick when available', () => {
+test('TWI: Anakin Skywalker is top pick from available (from ranking data)', () => {
   const behavior = new PopularLeaderBehavior()
   const twiLeaders = [
     { id: 'TWI-004', name: 'Yoda', set: 'TWI', aspects: ['Vigilance', 'Heroism'] },
@@ -255,10 +256,11 @@ test('TWI: Yoda is #1 pick when available', () => {
     { id: 'TWI-018', name: 'Quinlan Vos', set: 'TWI', aspects: ['Cunning', 'Heroism'] },
   ]
   const leader = behavior.selectLeader(twiLeaders, { setCode: 'TWI' })
-  assert(leader.name === 'Yoda', `Expected Yoda, got ${leader.name}`)
+  // Anakin is ranked #4 in TWI, Quinlan #7, Yoda #10
+  assert(leader.name === 'Anakin Skywalker', `Expected Anakin Skywalker, got ${leader.name}`)
 })
 
-test('JTL: Poe Dameron is #1 pick when available', () => {
+test('JTL: Darth Vader is top pick from available (from ranking data)', () => {
   const behavior = new PopularLeaderBehavior()
   const jtlLeaders = [
     { id: 'JTL-013', name: 'Poe Dameron', set: 'JTL', aspects: ['Aggression', 'Heroism'] },
@@ -266,7 +268,8 @@ test('JTL: Poe Dameron is #1 pick when available', () => {
     { id: 'JTL-017', name: 'Han Solo', set: 'JTL', aspects: ['Cunning', 'Heroism'] },
   ]
   const leader = behavior.selectLeader(jtlLeaders, { setCode: 'JTL' })
-  assert(leader.name === 'Poe Dameron', `Expected Poe Dameron, got ${leader.name}`)
+  // Darth Vader is ranked #5 in JTL, Poe #14, Han #15
+  assert(leader.name === 'Darth Vader', `Expected Darth Vader, got ${leader.name}`)
 })
 
 test('LOF: Rey is #1 pick when available', () => {
