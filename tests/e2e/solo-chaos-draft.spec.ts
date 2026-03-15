@@ -81,7 +81,7 @@ test.describe('Solo Chaos Draft Page', () => {
     const cancelButton = page.locator('button:has-text("Cancel")')
     await cancelButton.click()
 
-    await page.waitForURL(/\/solo$/, { timeout: 10000 })
+    await page.waitForURL(/\/formats$/, { timeout: 10000 })
   })
 
   test('anonymous user can access page and browse sets', async ({ page }) => {

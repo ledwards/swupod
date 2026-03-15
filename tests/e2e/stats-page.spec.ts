@@ -5,21 +5,24 @@ import { shouldIgnoreError } from './helpers.ts'
 /**
  * Stats page E2E tests
  *
- * Tests the /stats page UI: stacked You/All/Top cells, legend toggles,
+ * Tests the /stats page UI: stacked You/All/Tournament/Top cells, legend toggles,
  * filter checkboxes, Aspects + Rarity columns, set tabs, and sub-tabs.
  *
- * These tests run against the live page (logged out) so "You" rows show "—".
- * All/Top checkboxes are disabled (paywall) unless logged in as patron/admin.
+ * These tests run against the live page (logged out) so "You" rows show "Log in".
+ * Tournament/Top checkboxes are disabled (paywall) unless logged in as patron/admin.
+ *
+ * Default sub-tab is Sealed (not Draft).
  */
 
 // Stats page loads slowly due to 9+ parallel API calls — use longer timeout
 const STATS_TIMEOUT = 60000
 
-/** Navigate to /stats and wait for tables or empty state to render */
+/** Navigate to /stats and wait for real data to render (not skeleton) */
 async function gotoStats(page) {
   await page.goto('/stats', { timeout: STATS_TIMEOUT, waitUntil: 'domcontentloaded' })
-  // Wait for content, not networkidle (9 API calls may keep connections open)
-  await page.waitForSelector('.stats-table, .stats-empty, .stats-legend-bar', { timeout: 45000 })
+  // Wait for actual content — .stats-legend-toggle only appears in the real StatsLegend, not the skeleton.
+  // Also accept .stats-empty for sets with no data.
+  await page.waitForSelector('.stats-legend-toggle, .stats-empty', { timeout: 45000 })
 }
 
 test.describe('Stats Page', () => {
@@ -55,16 +58,17 @@ test.describe('Stats Page', () => {
     await expect(tabs).toHaveCount(7)
     await expect(tabs.first()).toHaveText('LAW')
 
-    // Sub-tabs (Draft / Sealed) should be visible
-    await expect(page.locator('.stats-subtab').first()).toHaveText('Draft')
-    await expect(page.locator('.stats-subtab').last()).toHaveText('Sealed')
+    // Sub-tabs (Sealed / Draft) should be visible — Sealed is first
+    await expect(page.locator('.stats-subtab').first()).toHaveText('Sealed')
+    await expect(page.locator('.stats-subtab').last()).toHaveText('Draft')
   })
 
-  test('should show legend bar with You/All/Top toggles', async ({ page }) => {
+  test('should show legend bar with You/All/Tournament/Top toggles', async ({ page }) => {
     await gotoStats(page)
-    await page.waitForSelector('.stats-legend-bar', { timeout: 30000 })
 
-    const legendBar = page.locator('.stats-legend-bar').first()
+    // Find a real legend bar (one with actual toggle elements, not skeleton)
+    const legendBar = page.locator('.stats-legend-bar:has(.stats-legend-toggle)').first()
+    await expect(legendBar).toBeVisible({ timeout: 30000 })
 
     // When logged out, should show "Log in" link instead of "You" toggle
     const loginLink = legendBar.locator('.stats-legend-login')
@@ -76,21 +80,27 @@ test.describe('Stats Page', () => {
     // "All" toggle should always be visible
     await expect(legendBar.locator('.stats-legend-all')).toBeVisible()
 
+    // "Tournament" toggle should always be visible
+    await expect(legendBar.locator('.stats-legend-tournament')).toBeVisible()
+
     // "Top" toggle should always be visible
     await expect(legendBar.locator('.stats-legend-top')).toBeVisible()
 
-    // Info icon on Top
-    await expect(legendBar.locator('.stats-filter-info')).toBeVisible()
+    // Info icons on Tournament and Top
+    const infoIcons = legendBar.locator('.stats-filter-info')
+    expect(await infoIcons.count()).toBeGreaterThanOrEqual(2)
   })
 
   test('should show Humans/Bots filter checkboxes in legend bar', async ({ page }) => {
     await gotoStats(page)
-    await page.waitForSelector('.stats-legend-bar', { timeout: 30000 })
 
-    const legendBar = page.locator('.stats-legend-bar').first()
+    // Find a real legend bar with toggles (not skeleton)
+    const legendBar = page.locator('.stats-legend-bar:has(.stats-legend-toggle)').first()
+    await expect(legendBar).toBeVisible({ timeout: 30000 })
+
     const filters = legendBar.locator('.stats-legend-filter')
 
-    // Draft tab should show Humans, Bots
+    // Should show Humans, Bots
     const filterTexts = await filters.allTextContents()
     expect(filterTexts.some(t => t.includes('Humans'))).toBeTruthy()
     expect(filterTexts.some(t => t.includes('Bots'))).toBeTruthy()
@@ -117,7 +127,8 @@ test.describe('Stats Page', () => {
 
   test('should have Aspects column in card tables', async ({ page }) => {
     await gotoStats(page)
-    await page.waitForSelector('.stats-table', { timeout: 30000 })
+    // Wait for real table data (not skeleton) — aspect-icon only appears in real data rows
+    await page.waitForSelector('.aspect-icon', { timeout: 30000 })
 
     // Check that Aspects header exists
     const aspectsHeaders = page.locator('.stats-table th:text("Aspects")')
@@ -130,9 +141,10 @@ test.describe('Stats Page', () => {
 
   test('should have Rarity column in card tables', async ({ page }) => {
     await gotoStats(page)
-    await page.waitForSelector('.stats-table', { timeout: 30000 })
+    // Wait for real data to load — rarity spans only appear in real data rows
+    await page.waitForSelector('[class^="rarity-"]', { timeout: 30000 })
 
-    // Rarity header in Cards table (sortable)
+    // Rarity header in tables (sortable)
     const rarityHeader = page.locator('.stats-table th.sortable:text("Rarity")')
     expect(await rarityHeader.count()).toBeGreaterThan(0)
 
@@ -143,7 +155,9 @@ test.describe('Stats Page', () => {
 
   test('should show All/Top checkboxes as checked (may be locked when logged out)', async ({ page }) => {
     await gotoStats(page)
-    await page.waitForSelector('.stats-legend-bar', { timeout: 30000 })
+
+    // Wait for real legend bar with toggles
+    await page.waitForSelector('.stats-legend-toggle', { timeout: 30000 })
 
     // All and Top checkboxes should be checked by default
     const allToggle = page.locator('.stats-legend-all input[type="checkbox"]').first()
@@ -166,26 +180,26 @@ test.describe('Stats Page', () => {
     // LAW should be active by default
     await expect(page.locator('.stats-tab.active')).toHaveText('LAW')
 
-    // Click SEC tab
+    // Click SEC tab and wait for it to become active
     await page.locator('.stats-tab:text("SEC")').click()
-    await expect(page.locator('.stats-tab.active')).toHaveText('SEC')
+    await expect(page.locator('.stats-tab.active')).toHaveText('SEC', { timeout: 10000 })
 
     // URL hash should update
     expect(page.url()).toContain('#SEC')
   })
 
-  test('should switch between Draft and Sealed sub-tabs', async ({ page }) => {
+  test('should switch between Sealed and Draft sub-tabs', async ({ page }) => {
     await gotoStats(page)
 
-    // Draft should be active by default
-    await expect(page.locator('.stats-subtab.active')).toHaveText('Draft')
-
-    // Click Sealed
-    await page.locator('.stats-subtab:text("Sealed")').click()
+    // Sealed should be active by default
     await expect(page.locator('.stats-subtab.active')).toHaveText('Sealed')
 
-    // Wait for sealed data to load (table, empty state, or loading skeleton to resolve)
-    await page.waitForSelector('.stats-table, .stats-empty, .stats-legend-bar', { timeout: 30000 })
+    // Click Draft sub-tab and wait for it to become active
+    await page.locator('.stats-subtab:text("Draft")').click()
+    await expect(page.locator('.stats-subtab.active')).toHaveText('Draft', { timeout: 10000 })
+
+    // Wait for draft data to load (table, empty state, or real legend toggle)
+    await page.waitForSelector('.stats-table, .stats-empty, .stats-legend-toggle', { timeout: 30000 })
   })
 
   test('should show card subtitle below card name', async ({ page }) => {
@@ -205,16 +219,16 @@ test.describe('Stats Page', () => {
     await gotoStats(page)
     await page.waitForSelector('.stats-table th.sortable', { timeout: 30000 })
 
-    // Click "# Drafted" header to sort descending
-    const draftedHeader = page.locator('.stats-table th.sortable:text("# Drafted")').first()
-    await draftedHeader.click()
+    // Click a sortable header — default tab is Sealed which has sortable columns
+    const sortableHeader = page.locator('.stats-table th.sortable').first()
+    await sortableHeader.click()
 
     // Should show sort indicator
-    await expect(draftedHeader.locator('.sort-indicator')).toBeVisible()
+    await expect(sortableHeader.locator('.sort-indicator')).toBeVisible()
 
     // Click again to reverse
-    await draftedHeader.click()
-    const indicator = await draftedHeader.locator('.sort-indicator').textContent()
+    await sortableHeader.click()
+    const indicator = await sortableHeader.locator('.sort-indicator').textContent()
     expect(indicator).toBeTruthy()
   })
 
