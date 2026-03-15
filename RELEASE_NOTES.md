@@ -12,6 +12,8 @@
 
 ### 🎮 Gameplay
 - **Clearer post-draft instructions**: The play page now says "Deck Complete!" and explicitly tells you to find a human opponent on Karabast. Bots draft with you, but you play against other humans.
+- **Solo draft notice**: Solo drafts now show a clear message that this was a simulated pod — you can't play the bots, but you can check out their decks.
+- **Draft log on play page**: The draft log is now accessible from the play page so you can review picks without navigating back.
 - **Smart timeout picks**: If you time out on a pick, the system now uses the top player bot strategy to make a smart pick for you instead of picking randomly. It considers your drafted leaders and cards to pick something in-color. Doing you a bit of a favor here I suppose, but if you disconnect randomly, at least it won't pick garbage for you.
 
 ### 💬 Chat UX Improvements

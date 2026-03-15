@@ -10,6 +10,7 @@ interface PlayInstructionsProps {
   poolType: 'draft' | 'sealed' | 'sealed_pod' | string
   opponentName?: string | null
   hasBye?: boolean
+  isSoloDraft?: boolean
   onCopyLink?: () => void
   onCopyJson?: () => void
   onDownload?: () => void
@@ -27,6 +28,7 @@ export default function PlayInstructions({
   poolType,
   opponentName = null,
   hasBye = false,
+  isSoloDraft = false,
   onCopyLink,
   onCopyJson,
   onDownload,
@@ -48,6 +50,12 @@ export default function PlayInstructions({
         ? `This deck belongs to ${ownerName}. Want to play too? Here's how:`
         : "Your deck is built! Now find a human opponent and play on Karabast."
       }</p>
+
+      {isSoloDraft && !viewingOthersDeck && (
+        <div className="play-solo-notice">
+          This was a simulated pod — you can't play against the bots, but you can check out their decks from the draft log. Find a human opponent to play your deck!
+        </div>
+      )}
 
       <div className="play-steps">
         {viewingOthersDeck ? (
