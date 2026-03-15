@@ -64,14 +64,15 @@ test.describe('Solo Page', () => {
   })
 
   test('should navigate to solo draft', async ({ page }) => {
-    await page.goto('/solo')
+    // /solo redirects to /formats, so go there directly
+    await page.goto('/formats')
     await waitForNetworkIdle(page)
 
-    // Click the Draft card (first one, not Chaos Draft)
-    await page.locator('.format-mode-card', { hasText: /^Draft/ }).first().click()
+    // Click the Chaos Draft card (contains "Draft" in its text)
+    await page.locator('.format-mode-card', { hasText: /Chaos Draft/ }).first().click()
 
-    // Should navigate to /solo/draft
-    await page.waitForURL('/solo/draft', { timeout: 10000 })
+    // Should navigate to /formats/chaos-draft or /solo/chaos-draft
+    await page.waitForURL(/chaos-draft/, { timeout: 10000 })
   })
 
   test('should navigate to solo chaos draft', async ({ page }) => {

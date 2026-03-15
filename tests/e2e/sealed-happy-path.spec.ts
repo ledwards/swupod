@@ -263,7 +263,7 @@ test.describe('Sealed happy path', () => {
     // Note: Client-side blob downloads don't trigger Playwright download events.
     // We verify the button exists and is enabled. The JSON export logic is the same
     // as getDeckData() which is tested by the deck builder state verification.
-    const downloadButton = page.locator('.play-actions button:has-text("Download"):not(:has-text("Image"))')
+    const downloadButton = page.locator('button:has-text("Download"):not(:has-text("Image"))')
     await expect(downloadButton).toBeVisible({ timeout: 5000 })
     await expect(downloadButton).toBeEnabled()
     console.log('✓ Download button is visible and enabled')

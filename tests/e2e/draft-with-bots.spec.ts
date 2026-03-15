@@ -86,87 +86,34 @@ test.describe('Draft with bots', () => {
   })
 
   test('complete a draft with 7 bots', async () => {
-    // === STEP 1: Create draft ===
-    debugLog('--- STEP 1: Creating draft ---')
-    await page.goto(`${BASE_URL}/draft`)
+    // === STEP 1: Create solo draft (auto-adds 7 bots) ===
+    debugLog('--- STEP 1: Creating solo draft ---')
+    await page.goto(`${BASE_URL}/solo/draft`)
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(2000)
 
-    await page.click('.create-draft-button, button:has-text("Create Draft")')
+    // Select a set
     await page.waitForSelector('.set-selection', { timeout: 10000 })
     await page.locator('.sets-grid .set-card').first().click()
 
+    // Wait for draft lobby to load (solo draft auto-creates and redirects)
     await page.waitForFunction(() => {
       const url = window.location.pathname
-      return url.startsWith('/draft/') && !url.includes('/draft/new')
+      return url.startsWith('/draft/') && !url.includes('/draft/new') && !url.includes('/solo')
     }, { timeout: 20000 })
 
     shareId = page.url().split('/draft/')[1]?.split('?')[0]
-    debugLog(`✓ Draft created: ${shareId}`)
+    debugLog(`✓ Solo draft created: ${shareId}`)
 
     await page.waitForSelector('.draft-lobby', { timeout: 10000 })
 
-    // Configure draft with shorter timeout for testing
-    debugLog('  Configuring draft timeouts...')
-    await page.evaluate(async (shareId) => {
-      try {
-        await fetch(`/api/draft/${shareId}/settings`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({
-            pickTimeoutSeconds: 5  // 5 second timeout for bots in tests
-          })
-        })
-      } catch (e) {
-        console.error('Failed to configure timeouts:', e)
-      }
-    }, shareId)
-    await page.waitForTimeout(500)
-
-    // === STEP 2: Add 7 bots ===
-    debugLog('\n--- STEP 2: Adding 7 bots ---')
-
-    // Add bots using the API
-    const addBotsResponse = await page.evaluate(async (shareId) => {
-      try {
-        const resp = await fetch(`/api/draft/${shareId}/dev/add-bots?count=7`, {
-          method: 'POST',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
-        const text = await resp.text()
-        try {
-          return { ok: resp.ok, status: resp.status, data: JSON.parse(text) }
-        } catch {
-          return { ok: resp.ok, status: resp.status, text }
-        }
-      } catch (e: any) {
-        return { error: e.message }
-      }
-    }, shareId)
-
-    if ((addBotsResponse as any).error) {
-      debugLog(`  ⚠ Error adding bots: ${(addBotsResponse as any).error}`)
-    } else if (!(addBotsResponse as any).ok) {
-      debugLog(`  ⚠ Add bots failed: ${(addBotsResponse as any).status} - ${JSON.stringify((addBotsResponse as any).data || (addBotsResponse as any).text)}`)
-    } else {
-      debugLog(`✓ Added ${(addBotsResponse as any).data?.bots?.length || 0} bots`)
-    }
-
-    // Wait for UI to update and verify player count
+    // Verify bots were added
     await page.waitForTimeout(2000)
-    await page.reload()
-    await page.waitForSelector('.draft-lobby', { timeout: 10000 })
-
-    // Check player count
     const playerCountText = await page.locator('.player-count').textContent()
     debugLog(`  Player count: ${playerCountText}`)
 
-    // === STEP 3: Start draft ===
-    debugLog('\n--- STEP 3: Starting draft ---')
+    // === STEP 2: Start draft ===
+    debugLog('\n--- STEP 2: Starting draft ---')
     const startButton = page.locator('button:has-text("Start Draft")')
     await expect(startButton).toBeEnabled({ timeout: 10000 })
     await startButton.click()
