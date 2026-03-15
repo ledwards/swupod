@@ -29,6 +29,11 @@ interface BotDeckSummary {
   mixinName: string
   poolShareId: string
   leaderName: string
+  leaderImageUrl: string
+  baseName: string
+  baseRarity: string
+  baseAspects: string[]
+  baseHp: number | null
   deckSize: number
 }
 
@@ -63,23 +68,44 @@ export async function buildBotDecks(podId: string, setCode: string, settings: Re
     }
   }
 
-  // Post bot deck summaries to Discord
+  // Post bot deck summaries to Discord (one message per bot)
   if (summaries.length > 0) {
     const APP_URL = process.env['APP_URL'] || process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'
     const podName = (pod.name as string) || `${setCode} Draft`
 
-    const discordSummaries = summaries.map(s => ({
-      botName: s.botName,
-      strategyDisplayName: STRATEGY_DISPLAY_NAMES[s.strategyName] || s.strategyName || 'Unknown',
-      mixinDisplayName: MIXIN_DISPLAY_NAMES[s.mixinName] || s.mixinName || 'None',
-      strategyDescription: STRATEGY_DESCRIPTIONS[s.strategyName] || '',
-      mixinDescription: MIXIN_DESCRIPTIONS[s.mixinName] || '',
-      poolUrl: `${APP_URL}/pool/${s.poolShareId}/deck`,
-      leaderName: s.leaderName,
-      deckSize: s.deckSize,
-    }))
+    // Get host name and all player names for the pod
+    const hostUser = await queryRow('SELECT username FROM users WHERE id = $1', [pod.host_id])
+    const allPlayers = await queryRows(
+      `SELECT u.username FROM pod_players pp JOIN users u ON u.id = pp.user_id WHERE pp.pod_id = $1 ORDER BY pp.seat_number`,
+      [podId]
+    )
+    const hostName = (hostUser?.username as string) || 'Unknown'
+    const playerNames = allPlayers.map(p => p.username as string)
+    const discordSummaries = summaries.map(s => {
+      // For common bases, show aspect(s) + HP. For rare+ bases, show the full name.
+      const baseDisplay = s.baseRarity === 'Common'
+        ? `${s.baseAspects.filter(a => COLOR_ASPECTS.includes(a)).join('/') || s.baseName}${s.baseHp ? ` (${s.baseHp} HP)` : ''}`
+        : s.baseName
 
-    postBotDeckSummaries(podName, setCode, discordSummaries).catch(err =>
+      return {
+        botName: s.botName,
+        strategyDisplayName: STRATEGY_DISPLAY_NAMES[s.strategyName] || s.strategyName || 'Unknown',
+        mixinDisplayName: MIXIN_DISPLAY_NAMES[s.mixinName] || s.mixinName || 'None',
+        strategyDescription: STRATEGY_DESCRIPTIONS[s.strategyName] || '',
+        mixinDescription: MIXIN_DESCRIPTIONS[s.mixinName] || '',
+        poolUrl: `${APP_URL}/pool/${s.poolShareId}/deck`,
+        poolShareId: s.poolShareId,
+        leaderName: s.leaderName,
+        leaderImageUrl: s.leaderImageUrl,
+        baseDisplay,
+        deckSize: s.deckSize,
+      }
+    })
+
+    postBotDeckSummaries(podName, setCode, discordSummaries, {
+      hostName,
+      playerNames,
+    }).catch(err =>
       console.error('[BOT_DECK] Error posting Discord bot summaries:', err)
     )
   }
@@ -125,10 +151,22 @@ async function buildSingleBotDeck(
   // 3. Score and sort all drafted cards using the strategy's scoring
   // Simulate a committed state so cards are scored in-color
   strategy.committedLeader = selectedLeader
-  strategy.committedBaseColor = selectBestBaseColor(selectedLeader)
+  strategy.committedBaseColor = getBaseNewColor(selectedLeader, selectedBase)
+
+  // Hard-filter opposing alignment cards — Heroism never goes in Villainy deck and vice versa
+  const leaderAspects = (selectedLeader.aspects as string[]) || []
+  const leaderAlignment = leaderAspects.find(a => a === 'Heroism' || a === 'Villainy')
+  const opposingAlignment = leaderAlignment === 'Villainy' ? 'Heroism'
+    : leaderAlignment === 'Heroism' ? 'Villainy'
+    : null
 
   const scoredCards = draftedCards
-    .filter(c => !c.isLeader && !c.isBase)
+    .filter(c => {
+      if (c.isLeader || c.isBase) return false
+      // Absolute ban on opposing alignment
+      if (opposingAlignment && (c.aspects || []).includes(opposingAlignment)) return false
+      return true
+    })
     .map(card => ({
       card,
       score: strategy._scoreCard(card, [selectedLeader], draftedCards, 42, null, { setCode })
@@ -297,12 +335,19 @@ async function buildSingleBotDeck(
   }
 
   // Return summary for Discord posting
+  const leader = selectedLeader as Record<string, unknown>
+  const base = selectedBase as Record<string, unknown>
   return {
     botName: (bot.bot_username as string) || 'Unknown Bot',
     strategyName: (bot.strategy_name as string) || strategy.strategyName,
     mixinName: (bot.mixin_name as string) || strategy.mixin?.name || '',
     poolShareId,
-    leaderName: (selectedLeader as Record<string, unknown>).name as string || 'Unknown',
+    leaderName: (leader.name as string) || 'Unknown',
+    leaderImageUrl: (leader.imageUrl as string) || '',
+    baseName: (base.name as string) || 'Unknown Base',
+    baseRarity: (base.rarity as string) || 'Common',
+    baseAspects: (base.aspects as string[]) || [],
+    baseHp: (base.hp as number) || null,
     deckSize: deckCards.length,
   }
 }
@@ -310,21 +355,40 @@ async function buildSingleBotDeck(
 const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning']
 
 /**
- * Pick the best non-leader color aspect for the base from the leader's aspects.
- * Returns the first non-color aspect found, or a random missing color.
+ * Get the new color that the base adds beyond the leader's colors.
+ * Returns the first base color aspect not present on the leader.
  */
-function selectBestBaseColor(leader: Record<string, unknown>): string | null {
+export function getBaseNewColor(leader: Record<string, unknown>, base: Record<string, unknown>): string | null {
   const leaderAspects = (leader.aspects as string[]) || []
   const leaderColors = leaderAspects.filter(a => COLOR_ASPECTS.includes(a))
-  const missingColors = COLOR_ASPECTS.filter(c => !leaderColors.includes(c))
-  return missingColors.length > 0
-    ? missingColors[Math.floor(Math.random() * missingColors.length)]!
-    : null
+  const baseAspects = (base.aspects as string[]) || []
+  const baseColors = baseAspects.filter(a => COLOR_ASPECTS.includes(a))
+  const newColors = baseColors.filter(c => !leaderColors.includes(c))
+  return newColors.length > 0 ? newColors[0]! : null
+}
+
+/**
+ * Score a base for a given leader. Pure function, exported for testing.
+ * Common bases have exactly 1 color aspect.
+ * The base's color must NOT match any of the leader's colors — it provides a new third color.
+ */
+export function scoreBaseForLeader(
+  leaderAspects: string[],
+  baseAspects: string[]
+): number {
+  const leaderColors = leaderAspects.filter(a => COLOR_ASPECTS.includes(a))
+  const baseColors = baseAspects.filter(a => COLOR_ASPECTS.includes(a))
+
+  // Base has 1 color. If it matches a leader color, it's terrible (double-color).
+  // If it's a new color, it's good (adds a third color to the deck).
+  const isNewColor = baseColors.length > 0 && !baseColors.some(c => leaderColors.includes(c))
+
+  return isNewColor ? 10 : -100
 }
 
 /**
  * Select the best common base for the bot's leader.
- * Picks the base whose aspects maximize in-aspect card count.
+ * Picks a random base whose color is NOT one of the leader's colors.
  */
 function selectBestBase(
   draftedLeaders: Record<string, unknown>[],
@@ -337,36 +401,21 @@ function selectBestBase(
   )
 
   if (commonBases.length === 0) {
-    // Fallback: just use first base available
     const anyBase = allSetCards.find(c => c.isBase && c.variantType === 'Normal')
     return anyBase || { id: 'unknown-base', name: 'Unknown Base', isBase: true }
   }
 
   const leaderAspects = (selectedLeader.aspects as string[]) || []
 
-  // Score each base by how many of its aspects overlap with leader aspects
-  let bestBase = commonBases[0]
-  let bestScore = -1
+  // Filter to bases that add a new color (not matching leader colors)
+  const validBases = commonBases.filter(base => {
+    const baseAspects = (base.aspects || []) as string[]
+    return scoreBaseForLeader(leaderAspects, baseAspects) > 0
+  })
 
-  for (const base of commonBases) {
-    const baseAspects = base.aspects || []
-    let score = 0
-
-    for (const aspect of baseAspects) {
-      if (leaderAspects.includes(aspect)) {
-        score += 2 // Matching leader aspect is great
-      } else {
-        score += 1 // Any aspect adds some value (splash)
-      }
-    }
-
-    if (score > bestScore) {
-      bestScore = score
-      bestBase = base
-    }
-  }
-
-  return bestBase
+  // Pick a random valid base, or fall back to any common base
+  const pool = validBases.length > 0 ? validBases : commonBases
+  return pool[Math.floor(Math.random() * pool.length)]
 }
 
 /**
