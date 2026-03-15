@@ -315,13 +315,8 @@ export function useDeckExport({
       const deckRows = Math.ceil(deckCards.length / cardsPerRow)
       const sideboardRows = Math.ceil(sideboardCards.length / cardsPerRow)
       const hasLeaderBase = selectedLeader || selectedBase
-      // Leader/base row height depends on what's shown
-      const leaderBaseRowHeight = hasLeaderBase
-        ? Math.max(
-            selectedLeader ? leaderRotatedHeight : 0,
-            selectedBase ? leaderBaseHeight : 0
-          )
-        : 0
+      // Both leader and base are rotated, so both use leaderRotatedHeight
+      const leaderBaseRowHeight = hasLeaderBase ? leaderRotatedHeight : 0
       const footerHeight = poolOwnerUsername ? 100 : 70
 
       const width = padding * 2 + cardsPerRow * cardWidth + (cardsPerRow - 1) * spacing
@@ -394,11 +389,12 @@ export function useDeckExport({
             img.onload = (): void => {
               clearTimeout(timeoutId)
               try {
-                if (isLeader) {
-                  // Rotate leader 90 degrees CCW
+                if (isLeader || card.isBase) {
+                  // Rotate leader 90° CCW, base 90° CW
+                  const angle = card.isBase ? Math.PI / 2 : -Math.PI / 2
                   ctx.save()
                   ctx.translate(x + cardW / 2, y + cardH / 2)
-                  ctx.rotate(-Math.PI / 2)
+                  ctx.rotate(angle)
                   if (grayscale) {
                     const tempCanvas = document.createElement('canvas')
                     tempCanvas.width = cardH
@@ -488,10 +484,10 @@ export function useDeckExport({
       currentY += titleHeight + sectionSpacing
 
       // Draw selected leader and base at top, centered in one row
-      // Leaders are rotated 90 CCW so they use swapped dimensions
+      // Leaders rotated 90° CCW, bases rotated 90° CW — both use swapped dimensions
       if (selectedLeader || selectedBase) {
         const leaderW = selectedLeader ? leaderRotatedWidth : 0
-        const baseW = selectedBase ? leaderBaseWidth : 0
+        const baseW = selectedBase ? leaderRotatedWidth : 0
         const totalWidth = leaderW + baseW + (selectedLeader && selectedBase ? spacing : 0)
         const startX = (width - totalWidth) / 2
         let x = startX
@@ -500,7 +496,7 @@ export function useDeckExport({
           x += leaderRotatedWidth + spacing
         }
         if (selectedBase) {
-          await drawCard(selectedBase, x, currentY, leaderBaseWidth, leaderBaseHeight, null, false)
+          await drawCard(selectedBase, x, currentY, leaderRotatedWidth, leaderRotatedHeight, null, false)
         }
         currentY += leaderBaseRowHeight + sectionSpacing
       }
@@ -682,20 +678,10 @@ export function useDeckExport({
       const poolRows = Math.ceil(poolCards.length / cardsPerRow)
       const hasLeaderBase = selectedLeader || selectedBase
       const hasOtherLeadersOrBases = otherLeaders.length > 0 || otherBases.length > 0
-      // Leader/base row height depends on what's shown
-      const leaderBaseRowHeight = hasLeaderBase
-        ? Math.max(
-            selectedLeader ? leaderRotatedHeight : 0,
-            selectedBase ? leaderBaseHeight : 0
-          )
-        : 0
-      // Other leaders row height (all leaders rotated, bases not)
-      const otherLeadersRowHeight = hasOtherLeadersOrBases
-        ? Math.max(
-            otherLeaders.length > 0 ? leaderRotatedHeight : 0,
-            otherBases.length > 0 ? leaderBaseHeight : 0
-          )
-        : 0
+      // Both leader and base are rotated, so both use leaderRotatedHeight
+      const leaderBaseRowHeight = hasLeaderBase ? leaderRotatedHeight : 0
+      // Other leaders/bases row height (all rotated)
+      const otherLeadersRowHeight = hasOtherLeadersOrBases ? leaderRotatedHeight : 0
       const footerHeight = poolOwnerUsername ? 100 : 70
 
       const width = padding * 2 + cardsPerRow * cardWidth + (cardsPerRow - 1) * spacing
@@ -767,11 +753,12 @@ export function useDeckExport({
           img.onload = (): void => {
             clearTimeout(timeoutId)
             try {
-              if (isLeader) {
-                // Rotate leader 90 degrees CCW
+              if (isLeader || card.isBase) {
+                // Rotate leader 90° CCW, base 90° CW
+                const angle = card.isBase ? Math.PI / 2 : -Math.PI / 2
                 ctx.save()
                 ctx.translate(x + cardW / 2, y + cardH / 2)
-                ctx.rotate(-Math.PI / 2)
+                ctx.rotate(angle)
                 if (grayscale) {
                   const tempCanvas = document.createElement('canvas')
                   tempCanvas.width = cardH
@@ -842,10 +829,10 @@ export function useDeckExport({
       currentY += titleHeight + sectionSpacing
 
       // Draw selected leader and base at top
-      // Leaders are rotated 90 CCW so they use swapped dimensions
+      // Leaders rotated 90° CCW, bases rotated 90° CW — both use swapped dimensions
       if (selectedLeader || selectedBase) {
         const leaderW = selectedLeader ? leaderRotatedWidth : 0
-        const baseW = selectedBase ? leaderBaseWidth : 0
+        const baseW = selectedBase ? leaderRotatedWidth : 0
         const totalWidth = leaderW + baseW + (selectedLeader && selectedBase ? spacing : 0)
         const startX = (width - totalWidth) / 2
         let x = startX
@@ -854,7 +841,7 @@ export function useDeckExport({
           x += leaderRotatedWidth + spacing
         }
         if (selectedBase) {
-          await drawCard(selectedBase, x, currentY, leaderBaseWidth, leaderBaseHeight, false)
+          await drawCard(selectedBase, x, currentY, leaderRotatedWidth, leaderRotatedHeight, false)
         }
         currentY += leaderBaseRowHeight + sectionSpacing
       }
@@ -903,7 +890,7 @@ export function useDeckExport({
           totalLBWidth += leaderRotatedWidth + spacing
         }
         for (const card of otherBases) {
-          totalLBWidth += leaderBaseWidth + spacing
+          totalLBWidth += leaderRotatedWidth + spacing
         }
         totalLBWidth -= spacing // Remove last spacing
 
@@ -914,8 +901,8 @@ export function useDeckExport({
           x += leaderRotatedWidth + spacing
         }
         for (const card of otherBases) {
-          await drawCard(card, x, currentY, leaderBaseWidth, leaderBaseHeight, true)
-          x += leaderBaseWidth + spacing
+          await drawCard(card, x, currentY, leaderRotatedWidth, leaderRotatedHeight, true)
+          x += leaderRotatedWidth + spacing
         }
         currentY += otherLeadersRowHeight + sectionSpacing
       }
