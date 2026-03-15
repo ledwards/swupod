@@ -83,7 +83,7 @@ test.describe('Mobile Regression Tests', () => {
 
       // Main action buttons should be clickable (not covered by other elements)
       // Use more specific selectors for important buttons
-      const importantButtons = page.locator('.sealed-button, .draft-button, .create-draft-button, .primary-button')
+      const importantButtons = page.locator('.mode-button, .create-draft-button, .primary-button')
       const count = await importantButtons.count()
 
       for (let i = 0; i < count; i++) {
@@ -93,9 +93,13 @@ test.describe('Mobile Regression Tests', () => {
             const rect = el.getBoundingClientRect()
             const centerX = rect.left + rect.width / 2
             const centerY = rect.top + rect.height / 2
+            // Skip buttons that are scrolled out of the viewport
+            if (centerY < 0 || centerY > window.innerHeight || centerX < 0 || centerX > window.innerWidth) {
+              return true
+            }
             const topElement = document.elementFromPoint(centerX, centerY)
-            // Allow for child elements (like icons or text spans)
-            return el.contains(topElement) || el === topElement || topElement?.closest('button') === el
+            // Allow for child elements (like icons, text spans, or inner content divs)
+            return el.contains(topElement) || el === topElement || topElement?.closest('button') === el || topElement?.closest('.mode-button') === el
           })
           expect(isClickable).toBe(true)
         }
@@ -128,11 +132,11 @@ test.describe('CSS Loading Regression', () => {
     const logo = page.locator('.landing-logo')
     await expect(logo).toBeVisible()
 
-    // Buttons should have visible background
-    const sealedButton = page.locator('.sealed-button')
-    await expect(sealedButton).toBeVisible()
+    // Mode buttons should have visible background
+    const modeButton = page.locator('.mode-button').first()
+    await expect(modeButton).toBeVisible()
 
-    const bgColor = await sealedButton.evaluate(el => {
+    const bgColor = await modeButton.evaluate(el => {
       const style = getComputedStyle(el)
       return style.backgroundColor
     })
@@ -172,9 +176,9 @@ test.describe('Navigation Regression', () => {
     await page.goto('/')
     await waitForNetworkIdle(page)
 
-    // Go to sets
-    await page.locator('.sealed-button').click()
-    await expect(page).toHaveURL('/sets')
+    // Click the first mode button (Solo Sealed -> /sealed)
+    await page.locator('.mode-button').first().click()
+    await expect(page).toHaveURL('/sealed')
 
     // Use browser back
     await page.goBack()
@@ -217,10 +221,10 @@ test.describe('Responsive Breakpoints', () => {
       const issues = await checkLayoutIssues(page)
       expect(issues).toHaveLength(0)
 
-      // Logo and buttons should be visible
+      // Logo and mode buttons should be visible
       await expect(page.locator('.landing-logo')).toBeVisible()
-      await expect(page.locator('.sealed-button')).toBeVisible()
-      await expect(page.locator('.draft-button')).toBeVisible()
+      await expect(page.locator('.mode-button').first()).toBeVisible()
+      await expect(page.locator('.mode-section')).toHaveCount(2)
     })
   }
 })

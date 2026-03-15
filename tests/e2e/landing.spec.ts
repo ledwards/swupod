@@ -33,9 +33,13 @@ test.describe('Landing Page', () => {
     // Check logo is visible
     await expect(page.locator('.landing-logo')).toBeVisible()
 
-    // Check mode selection buttons are visible
-    await expect(page.locator('.sealed-button')).toBeVisible()
-    await expect(page.locator('.draft-button')).toBeVisible()
+    // Check Solo and Live Pod section headers are visible
+    await expect(page.locator('.mode-section-header').nth(0)).toContainText('Solo')
+    await expect(page.locator('.mode-section-header').nth(1)).toContainText('Live Pod')
+
+    // Check mode buttons exist (Sealed, Draft, Other in each column)
+    const modeButtons = page.locator('.mode-button')
+    await expect(modeButtons).toHaveCount(6)
 
     // Check for subtitle text
     await expect(page.locator('.subtitle')).toContainText('Star Wars Unlimited')
@@ -52,32 +56,28 @@ test.describe('Landing Page', () => {
     expect(issues).toHaveLength(0)
   })
 
-  test('should navigate to solo page', async ({ page }) => {
+  test('should navigate to solo sealed page', async ({ page }) => {
     await page.goto('/')
     await waitForNetworkIdle(page)
 
-    // Click Solo button
-    await page.locator('.sealed-button').click()
+    // Click the first Sealed button (Solo column)
+    const soloColumn = page.locator('.mode-section').nth(0)
+    await soloColumn.locator('.mode-button', { hasText: 'Sealed' }).click()
 
-    // Should navigate to solo page
-    await expect(page).toHaveURL('/solo')
-
-    // Check solo page elements
-    await expect(page.locator('h1')).toContainText('Solo')
+    // Should navigate to sealed page
+    await expect(page).toHaveURL('/sealed')
   })
 
-  test('should navigate to multiplayer page', async ({ page }) => {
+  test('should navigate to live pod draft page', async ({ page }) => {
     await page.goto('/')
     await waitForNetworkIdle(page)
 
-    // Click Pod button
-    await page.locator('.draft-button').click()
+    // Click the Draft button in Live Pod column
+    const liveColumn = page.locator('.mode-section').nth(1)
+    await liveColumn.locator('.mode-button', { hasText: 'Draft' }).click()
 
-    // Should navigate to multiplayer page
-    await expect(page).toHaveURL('/multiplayer')
-
-    // Check multiplayer page elements
-    await expect(page.locator('h1')).toContainText('Pod')
+    // Should navigate to draft page
+    await expect(page).toHaveURL('/draft')
   })
 
   test('should show login button when not authenticated', async ({ page }) => {
@@ -85,15 +85,15 @@ test.describe('Landing Page', () => {
     await waitForNetworkIdle(page)
 
     // Should show Discord login button
-    await expect(page.locator('.landing-login-button')).toBeVisible()
-    await expect(page.locator('.landing-login-button')).toContainText('Login with Discord')
+    await expect(page.locator('.discord-cta')).toBeVisible()
+    await expect(page.locator('.discord-cta')).toContainText(/Login with Discord|Join the Discord/)
   })
 
   test('should display disclaimer', async ({ page }) => {
     await page.goto('/')
     await waitForNetworkIdle(page)
 
-    // Check disclaimer is present (may be in footer or at bottom of page)
+    // Check disclaimer is present
     const disclaimer = page.locator('.landing-disclaimer').or(page.locator('.disclaimer')).or(page.getByText(/not affiliated/i))
     await expect(disclaimer.first()).toBeVisible()
   })
@@ -110,9 +110,12 @@ test.describe('Landing Page - Mobile', () => {
     const issues = await checkLayoutIssues(page)
     expect(issues).toHaveLength(0)
 
-    // Buttons should still be visible and clickable
-    await expect(page.locator('.sealed-button')).toBeVisible()
-    await expect(page.locator('.draft-button')).toBeVisible()
+    // Mode buttons should still be visible
+    const modeButtons = page.locator('.mode-button')
+    await expect(modeButtons.first()).toBeVisible()
+
+    // Section headers should be visible
+    await expect(page.locator('.mode-section-header').first()).toBeVisible()
 
     // Logo should be visible
     await expect(page.locator('.landing-logo')).toBeVisible()
