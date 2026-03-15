@@ -153,6 +153,7 @@ export default function PodPage({ params }: PageProps) {
 
   const { draft, players, pairings, myOpponent, myBye, isHost, myPoolShareId } = podData
   const packArtUrl = getPackArtUrl(draft.setCode)
+  const isSolo = draft.settings?.isSolo === true
 
   // Build player ID -> poolShareId lookup for owner view links
   const playerPoolMap = new Map(players.map(p => [p.id, p.poolShareId]))
@@ -720,17 +721,56 @@ export default function PodPage({ params }: PageProps) {
             </svg>
             Practice Hand
           </button>
-          <button className="pod-action-button" onClick={() => router.push(`/draft/${shareId}/log`)}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-            Draft Log
-          </button>
         </div>
+
+        {/* In solo mode, show play instructions and actions above pod details */}
+        {isSolo && (
+          <>
+            <PlayInstructions
+              shareId={myPoolShareId}
+              poolType="sealed"
+              hasBye={false}
+              onCopyLink={copyDeckUrl}
+              showActions={false}
+            />
+
+            <div className="pod-actions">
+              <button className="pod-action-button primary" onClick={copyDeckUrl} disabled={!myPoolShareId}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+                Copy Link
+              </button>
+
+              <button className="pod-action-button" onClick={copyToClipboard} disabled={!myPoolShareId || !myPool}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Copy JSON
+              </button>
+
+              <button className="pod-action-button" onClick={downloadJSON} disabled={!myPoolShareId || !myPool}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Download
+              </button>
+
+              <button className="pod-action-button" onClick={exportOwnDeckImage} disabled={!myPoolShareId || !myPool || generatingImage}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                {generatingImage ? 'Generating...' : 'Deck Image'}
+              </button>
+            </div>
+          </>
+        )}
 
         {/* Pod Status — 2-column player grid by seat */}
         <div className="pod-status-section">
@@ -756,11 +796,12 @@ export default function PodPage({ params }: PageProps) {
                     title={`View ${player.username}'s deck`}
                   >
                     {generatingForPlayer === player.id ? (
-                      <span className="pod-eye-spinner">...</span>
+                      <span className="pod-eye-spinner" />
                     ) : (
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
                       </svg>
                     )}
                   </button>
@@ -770,8 +811,8 @@ export default function PodPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Player view: Your opponent */}
-        <div className="pod-opponent-card">
+        {/* Player view: Your opponent (skip in solo mode) */}
+        {!isSolo && <div className="pod-opponent-card">
           <h2>Your Opponent</h2>
           {myBye ? (
             <p className="pod-bye-message">You have a bye this round. Take a break or practice!</p>
@@ -792,20 +833,20 @@ export default function PodPage({ params }: PageProps) {
           ) : (
             <p className="pod-bye-message">Opponent not yet assigned</p>
           )}
-        </div>
+        </div>}
 
-        {/* Instructions */}
-        <PlayInstructions
+        {/* Instructions (non-solo only — solo shows them above) */}
+        {!isSolo && <PlayInstructions
           shareId={myPoolShareId}
           poolType="draft"
           opponentName={myOpponent?.username}
           hasBye={myBye}
           onCopyLink={copyDeckUrl}
           showActions={false}
-        />
+        />}
 
-        {/* Action buttons */}
-        <div className="pod-actions">
+        {/* Action buttons (non-solo — solo shows them above) */}
+        {!isSolo && <div className="pod-actions">
           <button className="pod-action-button primary" onClick={copyDeckUrl} disabled={!myPoolShareId}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
@@ -838,6 +879,20 @@ export default function PodPage({ params }: PageProps) {
               <polyline points="21 15 16 10 5 21"></polyline>
             </svg>
             {generatingImage ? 'Generating...' : 'Deck Image'}
+          </button>
+        </div>}
+
+        {/* Draft log link at bottom */}
+        <div className="practice-hand-button-container" style={{ marginTop: '1rem' }}>
+          <button className="pod-action-button" onClick={() => router.push(`/draft/${shareId}/log`)}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            Draft Log
           </button>
         </div>
 

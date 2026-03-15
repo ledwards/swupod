@@ -25,7 +25,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     const pod = await queryRow(
       `SELECT
         dp.id, dp.share_id, dp.host_id, dp.status, dp.set_code, dp.set_name, dp.name,
-        dp.draft_state, dp.completed_at,
+        dp.draft_state, dp.completed_at, dp.settings,
         u.username as host_username,
         u.avatar_url as host_avatar
        FROM pods dp
@@ -128,6 +128,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         hostId: pod.host_id,
         status: pod.status,
         completedAt: pod.completed_at,
+        settings: typeof pod.settings === 'string' ? JSON.parse(pod.settings) : pod.settings || {},
       },
       players: players.map(p => ({
         id: p.user_id,
