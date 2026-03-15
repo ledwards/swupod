@@ -20,9 +20,21 @@
 ### 🤖 AI Players
 - **Bot pools are now public**: Bot deck links are always accessible — no more broken links when viewing bot decks from Discord. This will help us detemrine if the bots are doing a good job drafting!
 - **Smarter drafting**: Off-color penalty during exploration phase increased significantly so bots build more coherent pools.
+- **Smart timeout picks**: If you time out on a pick, the system now uses the top player bot strategy to make a smart pick for you instead of picking randomly. It considers your drafted leaders and cards to pick something in-color.
+- **Bots seat clockwise**: Bots now fill seats clockwise (right-to-left) in the player circle.
+
+### ⏱️ Timer Controls
+- **Adjust timers mid-draft**: The host can now modify round timer and last player timer settings during an active draft — toggle them on/off and change the duration without pausing or restarting.
+
+### 📋 Draft Log Improvements
+- **Bot strategy info**: Each bot's tab in the draft log now shows their strategy name, mixin, and description so you can understand their drafting approach.
+- **Deck links in draft log**: Every player and bot tab links to their deck and pool (if available). Private decks show a lock icon, and unbuilt decks show "Still deckbuilding."
+- **Missing pick fix**: Picks with missing pack data now show a placeholder instead of being silently skipped.
 
 ### 🎨 UI Improvements
 - **Various draft UI tweaks**: Several small UI fixes and improvements on Draft.
+- **Solo draft flow**: After completing a solo draft, the play section now appears above the pod details so you can start playing immediately.
+- **Base card rotation**: Base cards now display rotated in deck image exports, matching their landscape orientation.
 
 ## 03.14.2026
 Major updates to the draft bot AI. Try it out and let us know what you think!
