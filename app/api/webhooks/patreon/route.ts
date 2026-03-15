@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { addPatronRole, removePatronRole } from '@/lib/discord'
 import { query } from '@/lib/db'
+import { lookupDiscordIdByEmail } from '@/lib/patreon'
 
 const WEBHOOK_SECRET = process.env['PATREON_WEBHOOK_SECRET']
 
@@ -52,44 +53,77 @@ export async function POST(request: NextRequest) {
   }
 
   const patronStatus = body?.data?.attributes?.patron_status
-  const discordId = extractDiscordId(body?.included)
+  let discordId = extractDiscordId(body?.included)
   const patreonEmail = extractPatreonEmail(body)
   const patreonName = extractPatreonName(body)
 
+  // Patreon webhooks don't include social_connections by default.
+  // If Discord ID isn't in the payload, look it up via the Patreon API.
+  if (!discordId && patreonEmail) {
+    console.log('Patreon webhook: no Discord in payload, trying API lookup', { patreonEmail, patreonName, event })
+    discordId = await lookupDiscordIdByEmail(patreonEmail)
+    if (discordId) {
+      console.log('Patreon webhook: found Discord ID via API lookup', { discordId, patreonEmail })
+    }
+  }
+
   if (!discordId) {
-    console.warn('Patreon webhook: no Discord connection found, skipping', {
+    console.warn('Patreon webhook: no Discord connection found (payload + API lookup failed)', {
       event,
       patronStatus,
       patreonEmail,
       patreonName,
-      includedTypes: Array.isArray(body?.included)
-        ? body.included.map((r: any) => r?.type)
-        : 'not an array',
     })
+
+    // Record the failed attempt so patron-status endpoint can warn the user
+    // to link their Discord on Patreon
+    if (patreonEmail && (event === 'members:pledge:create' || event === 'members:create')) {
+      try {
+        await query(
+          `INSERT INTO patreon_pending (email, patreon_name, event, patron_status, created_at)
+           VALUES ($1, $2, $3, $4, NOW())
+           ON CONFLICT (email) DO UPDATE SET
+             patreon_name = EXCLUDED.patreon_name,
+             event = EXCLUDED.event,
+             patron_status = EXCLUDED.patron_status,
+             created_at = NOW()`,
+          [patreonEmail, patreonName, event, patronStatus]
+        )
+        console.log('Patreon webhook: recorded pending patron (no Discord link)', { patreonEmail, patreonName })
+      } catch (dbErr) {
+        // Table might not exist yet — that's OK, just log
+        console.warn('Patreon webhook: could not record pending patron (table may not exist)', { error: dbErr })
+      }
+    }
+
     return NextResponse.json({ ok: true, skipped: 'no_discord_connection' })
   }
 
   console.log('Patreon webhook received:', { event, patronStatus, discordId, patreonEmail, patreonName })
 
+  // Treat free trial users the same as active patrons — they should get the role immediately
+  const isActiveMember = patronStatus === 'active_patron' || patronStatus === 'pay_upfront'
+
   try {
     if (event === 'members:pledge:create' || event === 'members:create') {
-      // members:create fires for brand new users (e.g. free trial signups)
+      // members:create fires for brand new users (including free trial signups)
       // members:pledge:create fires when existing followers upgrade to paid/trial
-      if (patronStatus === 'active_patron') {
-        const success = await addPatronRole(discordId)
-        console.log('Patreon webhook: addPatronRole result', { discordId, success, event })
-      } else {
-        console.log('Patreon webhook: create event but not active_patron, skipping role add', { patronStatus, event })
+      // Always add role on create — free trial users should get immediate access
+      const success = await addPatronRole(discordId)
+      console.log('Patreon webhook: addPatronRole result', { discordId, success, event, patronStatus })
+      // Clean up pending record if role was added successfully
+      if (success && patreonEmail) {
+        try { await query('DELETE FROM patreon_pending WHERE email = $1', [patreonEmail]) } catch { /* ignore */ }
       }
     } else if (event === 'members:pledge:delete' || event === 'members:delete' ||
-               ((event === 'members:pledge:update' || event === 'members:update') && patronStatus !== 'active_patron')) {
+               ((event === 'members:pledge:update' || event === 'members:update') && !isActiveMember)) {
       const success = await removePatronRole(discordId)
       console.log('Patreon webhook: removePatronRole result', { discordId, success, event })
       await query(
         'UPDATE users SET is_beta_tester = FALSE WHERE discord_id = $1',
         [discordId]
       )
-    } else if ((event === 'members:pledge:update' || event === 'members:update') && patronStatus === 'active_patron') {
+    } else if ((event === 'members:pledge:update' || event === 'members:update') && isActiveMember) {
       const success = await addPatronRole(discordId)
       console.log('Patreon webhook: addPatronRole result (update)', { discordId, success, event })
     } else {

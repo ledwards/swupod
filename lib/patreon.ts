@@ -81,9 +81,35 @@ export async function fetchAllPatrons(): Promise<PatreonMember[]> {
 }
 
 /**
- * Fetch only active patrons (patron_status === 'active_patron') with linked Discord accounts.
+ * Fetch active patrons with linked Discord accounts.
+ * Includes both active_patron and pay_upfront (free trial) statuses.
  */
 export async function fetchActivePatronsWithDiscord(): Promise<PatreonMember[]> {
   const allMembers = await fetchAllPatrons()
-  return allMembers.filter(m => m.patronStatus === 'active_patron' && m.discordUserId)
+  const activeStatuses = ['active_patron', 'pay_upfront']
+  return allMembers.filter(m => activeStatuses.includes(m.patronStatus || '') && m.discordUserId)
+}
+
+/**
+ * Look up a single member's Discord ID via the Patreon API.
+ * Used as a fallback when webhook payloads don't include social_connections.
+ * Searches by email since that's what we have from the webhook.
+ * Returns the Discord user ID or null.
+ */
+export async function lookupDiscordIdByEmail(email: string): Promise<string | null> {
+  if (!ACCESS_TOKEN || !CAMPAIGN_ID) {
+    console.warn('lookupDiscordIdByEmail: missing PATREON_CREATOR_ACCESS_TOKEN or PATREON_CAMPAIGN_ID')
+    return null
+  }
+
+  try {
+    // Fetch all members and find by email — Patreon API doesn't support email filter
+    // This is fine for webhook-triggered lookups (infrequent)
+    const allMembers = await fetchAllPatrons()
+    const match = allMembers.find(m => m.email?.toLowerCase() === email.toLowerCase())
+    return match?.discordUserId || null
+  } catch (err) {
+    console.error('lookupDiscordIdByEmail: failed', { email, error: err })
+    return null
+  }
 }

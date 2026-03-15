@@ -2,6 +2,11 @@
 
 ## 03.15.2026
 
+### 🔧 Patreon Role Sync Fix
+- **Fixed automatic Discord role assignment**: Patreon subscribers should now automatically receive the "Friend of the Pod" Discord role. Previously, the webhook wasn't able to find your Discord connection — now it does an API lookup as a fallback.
+- **Free trial support**: Free trial Patreon subscribers now get immediate access, same as paid patrons.
+- **Helpful error message**: If we still can't find your Discord link, the beta page now shows a message explaining how to fix it (link Discord on patreon.com/settings/apps).
+
 ### 🎮 Play Page
 - **Clearer post-draft instructions**: The play page now says "Deck Complete!" and explicitly tells you to find a human opponent on Karabast. Bots draft with you, but you play against other humans.
 

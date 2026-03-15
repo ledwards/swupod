@@ -99,25 +99,35 @@ export async function refreshSession(): Promise<User | null> {
   }
 }
 
+export interface PatronStatusResult {
+  isPatron: boolean
+  pendingPatreon?: boolean
+  message?: string
+}
+
 /**
- * Check if current user is a Patreon patron (has Discord role)
- * @returns True if patron
+ * Check if current user is a Patreon patron (has Discord role).
+ * Also returns pendingPatreon + message if they subscribed but haven't linked Discord on Patreon.
  */
-export async function checkPatronStatus(): Promise<boolean> {
+export async function checkPatronStatus(): Promise<PatronStatusResult> {
   try {
     const response = await fetch(`${API_BASE}/auth/patron-status`, {
       credentials: 'include',
     })
 
     if (!response.ok) {
-      return false
+      return { isPatron: false }
     }
 
     const data = await response.json()
-    return data.data?.isPatron === true
+    return {
+      isPatron: data.data?.isPatron === true,
+      pendingPatreon: data.data?.pendingPatreon || false,
+      message: data.data?.message || undefined,
+    }
   } catch (error) {
     console.error('Failed to check patron status:', error)
-    return false
+    return { isPatron: false }
   }
 }
 

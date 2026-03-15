@@ -11,6 +11,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [isPatron, setIsPatron] = useState(null) // null = loading, true/false = resolved
+  const [patronMessage, setPatronMessage] = useState(null) // Message for pending Patreon users
 
   useEffect(() => {
     // Load session on mount
@@ -54,7 +55,10 @@ export function AuthProvider({ children }) {
       const wasLoggedOut = !user
       setUser(session)
       if (session) {
-        apiCheckPatronStatus().then(setIsPatron)
+        apiCheckPatronStatus().then(result => {
+          setIsPatron(result.isPatron)
+          setPatronMessage(result.message || null)
+        })
         // Track sign in if this is a new session (user wasn't logged in before)
         if (wasLoggedOut) {
           trackEvent(AnalyticsEvents.USER_SIGNED_IN, {
@@ -114,6 +118,7 @@ export function AuthProvider({ children }) {
     user,
     loading,
     isPatron,
+    patronMessage,
     signIn,
     signOut,
     enrollBeta,
