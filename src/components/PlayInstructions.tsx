@@ -43,10 +43,10 @@ export default function PlayInstructions({
 
   return (
     <div className="play-instructions">
-      <h2>{viewingOthersDeck ? `${ownerName}'s Deck` : 'Ready to Play!'}</h2>
+      <h2>{viewingOthersDeck ? `${ownerName}'s Deck` : 'Deck Complete!'}</h2>
       <p>{viewingOthersDeck
         ? `This deck belongs to ${ownerName}. Want to play too? Here's how:`
-        : "Your deck is ready. Here's how to get started:"
+        : "Your deck is built! Now find a human opponent and play on Karabast."
       }</p>
 
       <div className="play-steps">
@@ -92,19 +92,19 @@ export default function PlayInstructions({
                     </>
                   ) : opponentName ? (
                     <>
-                      <h3>Contact Your Opponent</h3>
-                      <p>Your opponent is <strong>{opponentName}</strong>. Reach out to them to coordinate your match!</p>
+                      <h3>Find Your Opponent</h3>
+                      <p>Your opponent is <strong>{opponentName}</strong>. Reach out to them to coordinate your match on Karabast!</p>
                     </>
                   ) : (
                     <>
-                      <h3>Coordinate With Your Pod</h3>
-                      <p>Reach out to your podmates to set up your match.</p>
+                      <h3>Find a Human Opponent</h3>
+                      <p>Reach out to your podmates to set up a match. Bots drafted with you but you play against other humans on Karabast.</p>
                     </>
                   )
                 ) : (
                   <>
-                    <h3>Find an Opponent</h3>
-                    <p>Find an opponent in the <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">Protect the Pod Discord</a> or play against someone you know.</p>
+                    <h3>Find a Human Opponent</h3>
+                    <p>Find an opponent in the <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">Protect the Pod Discord</a> or play against someone you know on Karabast.</p>
                   </>
                 )}
               </div>
