@@ -9,6 +9,11 @@ Major updates to the draft bot AI. Try it out and let us know what you think!
 - **Per-leader card popularity**: Bots now use leader-specific card popularity data. After committing to a leader, they prioritize cards that are popular with that specific leader, not just overall.
 - **LAW splash rule**: In LAW, bots will now intelligently splash 3-5 off-aspect bombs when exactly one primary color is out of aspect, matching how real players build LAW decks.
 - **Leader trait synergy**: Bots recognize when their leader's text mentions a trait (like SPECTRE or OFFICIAL) and prioritize cards with that trait.
+- **Bot deck summaries on Discord**: After every draft, Leebo posts each bot's deck to the #draftbots Discord channel — including their strategy, personality modifier, leader choice, and a link to view their full pool and deck. See how the bots build!
+- **Consistent bot strategy**: Bots now use the same strategy for deck building that they used during the draft. Previously, deck building used a random strategy, which could lead to inconsistent leader/card choices.
+
+### 🐛 Bug Fixes
+- **Chaos Draft pack count**: Fixed a bug where Chaos Drafts with more than 3 selected packs (e.g., 2 SHD + 2 LAW) would only generate 3 packs. All selected packs are now properly generated and drafted, with leaders and cards mixed across sets as expected.
 
 ### 🎨 UI Improvements
 - **Landing page redesign**: Solo and Live Pod columns now each show Sealed, Draft, and Other formats. Smaller logo, bigger buttons, tighter spacing, players-online count moved under logo.

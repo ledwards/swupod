@@ -9,8 +9,10 @@
 
 import { query, queryRow, queryRows } from '@/lib/db'
 import { buildDeckFromState } from '@/lib/deckBuilder'
-import { DataDrivenBehavior } from '@/src/bots/behaviors/DataDrivenBehavior'
 import { createStrategy } from '@/src/bots/behaviors/index'
+import { ALL_MIXINS } from '@/src/bots/behaviors/mixins'
+import { STRATEGY_DISPLAY_NAMES, STRATEGY_DESCRIPTIONS, MIXIN_DISPLAY_NAMES, MIXIN_DESCRIPTIONS } from '@/src/bots/behaviors/strategyDescriptions'
+import { postBotDeckSummaries } from '@/lib/discordLfg'
 import { getCardsBySet } from '@/src/utils/cardData'
 import { broadcastPodState } from '@/src/lib/socketBroadcast'
 import { nanoid } from 'nanoid'
@@ -21,10 +23,22 @@ const DECK_SIZE = 30
  * Build decks for all bot players in a completed draft pod.
  * Creates card_pools, deck_builder_state, and built_decks records.
  */
+interface BotDeckSummary {
+  botName: string
+  strategyName: string
+  mixinName: string
+  poolShareId: string
+  leaderName: string
+  deckSize: number
+}
+
 export async function buildBotDecks(podId: string, setCode: string, settings: Record<string, unknown> = {}): Promise<void> {
-  // Get all bot players in this pod
+  // Get all bot players in this pod (includes strategy_name, mixin_name)
   const botPlayers = await queryRows(
-    `SELECT * FROM pod_players WHERE pod_id = $1 AND is_bot = true`,
+    `SELECT pp.*, u.username as bot_username
+     FROM pod_players pp
+     LEFT JOIN users u ON u.id = pp.user_id
+     WHERE pp.pod_id = $1 AND pp.is_bot = true`,
     [podId]
   )
 
@@ -38,12 +52,36 @@ export async function buildBotDecks(podId: string, setCode: string, settings: Re
 
   if (!pod) return
 
+  const summaries: BotDeckSummary[] = []
+
   for (const bot of botPlayers) {
     try {
-      await buildSingleBotDeck(bot, pod, setCode, settings)
+      const summary = await buildSingleBotDeck(bot, pod, setCode, settings)
+      if (summary) summaries.push(summary)
     } catch (err) {
       console.error(`[BOT_DECK] Error building deck for bot ${bot.id}:`, err)
     }
+  }
+
+  // Post bot deck summaries to Discord
+  if (summaries.length > 0) {
+    const APP_URL = process.env['APP_URL'] || process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'
+    const podName = (pod.name as string) || `${setCode} Draft`
+
+    const discordSummaries = summaries.map(s => ({
+      botName: s.botName,
+      strategyDisplayName: STRATEGY_DISPLAY_NAMES[s.strategyName] || s.strategyName || 'Unknown',
+      mixinDisplayName: MIXIN_DISPLAY_NAMES[s.mixinName] || s.mixinName || 'None',
+      strategyDescription: STRATEGY_DESCRIPTIONS[s.strategyName] || '',
+      mixinDescription: MIXIN_DESCRIPTIONS[s.mixinName] || '',
+      poolUrl: `${APP_URL}/pool/${s.poolShareId}/deck`,
+      leaderName: s.leaderName,
+      deckSize: s.deckSize,
+    }))
+
+    postBotDeckSummaries(podName, setCode, discordSummaries).catch(err =>
+      console.error('[BOT_DECK] Error posting Discord bot summaries:', err)
+    )
   }
 }
 
@@ -52,13 +90,13 @@ async function buildSingleBotDeck(
   pod: Record<string, unknown>,
   setCode: string,
   settings: Record<string, unknown>
-): Promise<void> {
+): Promise<BotDeckSummary | null> {
   // Check if pool already exists for this bot
   const existingPool = await queryRow(
-    'SELECT * FROM card_pools WHERE pod_id = $1 AND user_id = $2',
+    'SELECT share_id FROM card_pools WHERE pod_id = $1 AND user_id = $2',
     [pod.id, bot.user_id]
   )
-  if (existingPool) return // Already built
+  if (existingPool) return null // Already built
 
   // Parse drafted leaders and cards
   const draftedLeaders = typeof bot.drafted_leaders === 'string'
@@ -69,13 +107,17 @@ async function buildSingleBotDeck(
     ? JSON.parse(bot.drafted_cards)
     : bot.drafted_cards || []
 
-  if (draftedLeaders.length === 0 && draftedCards.length === 0) return
+  if (draftedLeaders.length === 0 && draftedCards.length === 0) return null
 
-  // 1. Select best leader using strategy-based rankings
-  const strategy = createStrategy()
+  // 1. Select best leader using the SAME strategy used during the draft
+  // Look up persisted mixin by name, fall back to random if not found
+  const mixinObj = bot.mixin_name
+    ? ALL_MIXINS.find(m => m.name === bot.mixin_name) || null
+    : null
+  const strategy = createStrategy(bot.strategy_name as string || undefined, mixinObj)
   const selectedLeader = strategy.selectLeader(draftedLeaders, { setCode })
 
-  if (!selectedLeader) return
+  if (!selectedLeader) return null
 
   // 2. Select best common base
   const selectedBase = selectBestBase(draftedLeaders, selectedLeader, setCode)
@@ -252,6 +294,16 @@ async function buildSingleBotDeck(
   // 8. Broadcast pod state update so pod page shows bots as "Ready"
   if (pod.share_id) {
     broadcastPodState(pod.share_id as string).catch(() => {})
+  }
+
+  // Return summary for Discord posting
+  return {
+    botName: (bot.bot_username as string) || 'Unknown Bot',
+    strategyName: (bot.strategy_name as string) || strategy.strategyName,
+    mixinName: (bot.mixin_name as string) || strategy.mixin?.name || '',
+    poolShareId,
+    leaderName: (selectedLeader as Record<string, unknown>).name as string || 'Unknown',
+    deckSize: deckCards.length,
   }
 }
 

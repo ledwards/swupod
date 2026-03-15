@@ -13,8 +13,9 @@ import { NemesisStrategy } from './NemesisStrategy'
 import { DiversityStrategy } from './DiversityStrategy'
 import { PrimaryColorCornerStrategy } from './PrimaryColorCornerStrategy'
 import { SecondaryAspectCornerStrategy } from './SecondaryAspectCornerStrategy'
-import { assignStrategies } from '../index'
-import { MIXIN_A, MIXIN_B, MIXIN_C } from '../mixins'
+import { assignStrategies, createStrategy } from '../index'
+import { MIXIN_A, MIXIN_B, MIXIN_C, ALL_MIXINS } from '../mixins'
+import { STRATEGY_DISPLAY_NAMES, STRATEGY_DESCRIPTIONS, MIXIN_DISPLAY_NAMES, MIXIN_DESCRIPTIONS } from '../strategyDescriptions'
 import type { SetDraftStats, CardPickStats, LeaderPickStats, DeckProfile, SegmentedLeaderStats, PerLeaderCardStats } from '../../data/draftStats'
 import type { MixinModifier } from '../mixins'
 
@@ -560,6 +561,107 @@ test('each strategy can complete a 42-pick draft without errors', () => {
     assert(strategy.committedLeader !== null,
       `${strategy.strategyName}: Should have committed to a leader`)
   }
+})
+
+// --- createStrategy Round-Trip Tests ---
+console.log('\n\x1b[36mcreateStrategy Round-Trip (for DB persistence)\x1b[0m')
+
+test('createStrategy with name returns correct strategy type', () => {
+  const pairs: [string, string][] = [
+    ['topPlayer', 'topPlayer'],
+    ['tournamentPlayer', 'tournamentPlayer'],
+    ['allPlayer', 'allPlayer'],
+    ['nemesis', 'nemesis'],
+    ['diversity', 'diversity'],
+    ['primaryColorCorner', 'primaryColorCorner'],
+    ['secondaryAspectCorner', 'secondaryAspectCorner'],
+  ]
+  for (const [input, expected] of pairs) {
+    const s = createStrategy(input, null)
+    assert(s.strategyName === expected, `createStrategy('${input}') should have strategyName '${expected}', got '${s.strategyName}'`)
+  }
+})
+
+test('createStrategy with mixin preserves mixin', () => {
+  const s = createStrategy('topPlayer', MIXIN_A)
+  assert(s.mixin === MIXIN_A, `Should preserve MIXIN_A, got ${s.mixin?.name}`)
+
+  const s2 = createStrategy('allPlayer', MIXIN_B)
+  assert(s2.mixin === MIXIN_B, `Should preserve MIXIN_B, got ${s2.mixin?.name}`)
+})
+
+test('createStrategy with unknown name falls back to allPlayer', () => {
+  const s = createStrategy('nonExistent', null)
+  assert(s.strategyName === 'allPlayer', `Unknown strategy should fall back to allPlayer, got ${s.strategyName}`)
+})
+
+test('mixin lookup by name works for all mixins', () => {
+  const names = ['highOptionality', 'highConviction', 'highGroupthink']
+  for (const name of names) {
+    const found = ALL_MIXINS.find(m => m.name === name)
+    assert(found !== undefined, `Should find mixin by name '${name}'`)
+    assert(found.name === name, `Found mixin name should match`)
+  }
+})
+
+// --- Strategy Descriptions Tests ---
+console.log('\n\x1b[36mStrategy Descriptions\x1b[0m')
+
+test('every strategy has a display name and description', () => {
+  const strategyNames = ['topPlayer', 'tournamentPlayer', 'allPlayer', 'nemesis', 'diversity', 'primaryColorCorner', 'secondaryAspectCorner']
+  for (const name of strategyNames) {
+    assert(STRATEGY_DISPLAY_NAMES[name] !== undefined, `Missing display name for ${name}`)
+    assert(STRATEGY_DESCRIPTIONS[name] !== undefined, `Missing description for ${name}`)
+    assert(STRATEGY_DISPLAY_NAMES[name].length > 0, `Empty display name for ${name}`)
+    assert(STRATEGY_DESCRIPTIONS[name].length > 0, `Empty description for ${name}`)
+  }
+})
+
+test('every mixin has a display name and description', () => {
+  const mixinNames = ['highOptionality', 'highConviction', 'highGroupthink']
+  for (const name of mixinNames) {
+    assert(MIXIN_DISPLAY_NAMES[name] !== undefined, `Missing display name for mixin ${name}`)
+    assert(MIXIN_DESCRIPTIONS[name] !== undefined, `Missing description for mixin ${name}`)
+  }
+})
+
+// --- Bot Deck Building Logic Tests ---
+console.log('\n\x1b[36mBot Deck Building Logic\x1b[0m')
+
+test('strategy scores 42 drafted cards and selects top 30', () => {
+  const strategy = createStrategy('allPlayer', null)
+  const leader = mockLeader('Sabine Wren', ['Aggression', 'Heroism'])
+  strategy.committedLeader = leader
+  strategy.committedBaseColor = 'Cunning'
+
+  // Create 42 drafted cards
+  const aspects = ['Aggression', 'Cunning', 'Vigilance', 'Command']
+  const draftedCards = Array.from({ length: 42 }, (_, i) =>
+    mockCard(`Card_${i}`, {
+      aspects: [aspects[i % aspects.length]!],
+      cost: (i % 6) + 1,
+      rarity: i < 3 ? 'Rare' : 'Common',
+    })
+  )
+
+  const scoredCards = draftedCards
+    .map(card => ({
+      card,
+      score: strategy._scoreCard(card, [leader], draftedCards, 42, null, { setCode: 'SOR' })
+    }))
+    .sort((a, b) => b.score - a.score)
+
+  const deckCards = scoredCards.slice(0, 30)
+  const sideboardCards = scoredCards.slice(30)
+
+  assert(deckCards.length === 30, `Deck should have 30 cards, got ${deckCards.length}`)
+  assert(sideboardCards.length === 12, `Sideboard should have 12 cards, got ${sideboardCards.length}`)
+
+  // Top scored cards should generally be in-color (Aggression)
+  const inColorCount = deckCards.filter(s =>
+    (s.card.aspects as string[]).includes('Aggression')
+  ).length
+  assert(inColorCount >= 8, `Deck should have many in-color cards, got ${inColorCount}/30`)
 })
 
 // Summary

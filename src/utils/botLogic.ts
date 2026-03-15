@@ -171,6 +171,11 @@ async function assignPodStrategies(podId: string): Promise<void> {
 
   for (const [botId, strategy] of assignments) {
     botBehaviors.set(botId, strategy)
+    // Persist strategy and mixin to DB so deck builder uses the same strategy
+    query(
+      `UPDATE pod_players SET strategy_name = $1, mixin_name = $2 WHERE id = $3`,
+      [strategy.strategyName, strategy.mixin?.name || null, botId]
+    ).catch(err => console.error(`[BOT] Error persisting strategy for bot ${botId}:`, err))
   }
 
   podStrategyAssigned.add(podId)
