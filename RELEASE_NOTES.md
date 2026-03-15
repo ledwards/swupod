@@ -1,5 +1,21 @@
 # Release Notes
 
+## 03.15.2026
+
+### 🤖 AI Players
+- **Smarter drafting**: Bots no longer draft cards with opposing alignment (e.g., Heroism cards in a Villainy deck) or mix alignments when picking leaders. Off-color penalty during exploration phase increased significantly so bots build more coherent pools.
+- **Better base selection**: Bots now pick bases that add a new color to their deck rather than doubling up on a leader color.
+- **Bot pools are now public**: Bot deck links are always accessible — no more broken links when viewing bot decks from Discord.
+
+### 💬 Post to Discord
+- **New "Post to Discord" button** on the play page lets you share your deck to the Protect the Pod Discord for feedback and discussion. Posts your deck image, leader, base, and a link to your pool — and creates a discussion thread automatically.
+
+### 🎨 UI Improvements
+- **Base cards rotated in draft view**: Base cards now display in landscape orientation during drafting, matching how they look in real life.
+- **Bots seat clockwise**: Bots now fill seats clockwise (right-to-left) from the host instead of counter-clockwise.
+- **Chat panel remembers state**: If you close the chat panel, it stays closed across all pages until you open it again.
+- **Reduced card corner radius** in the draft pack view for a cleaner look.
+
 ## 03.14.2026
 Major updates to the draft bot AI. Try it out and let us know what you think!
 
