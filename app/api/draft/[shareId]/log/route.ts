@@ -14,6 +14,7 @@ import { queryRow, queryRows } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { jsonParse } from '@/src/utils/json'
+import { STRATEGY_DISPLAY_NAMES, STRATEGY_DESCRIPTIONS, MIXIN_DISPLAY_NAMES, MIXIN_DESCRIPTIONS } from '@/src/bots/behaviors/strategyDescriptions'
 import { reconstructDraftLog } from '@/src/utils/draftLogReconstruction'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -54,9 +55,14 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         dpp.drafted_leaders,
         dpp.is_bot,
         dpp.is_log_public,
-        u.username
+        dpp.strategy_name,
+        dpp.mixin_name,
+        u.username,
+        cp.share_id as pool_share_id,
+        cp.is_public as pool_is_public
        FROM pod_players dpp
        JOIN users u ON dpp.user_id = u.id
+       LEFT JOIN card_pools cp ON cp.pod_id = dpp.pod_id AND cp.user_id = dpp.user_id
        WHERE dpp.pod_id = $1
        ORDER BY dpp.seat_number`,
       [pod.id]
@@ -106,6 +112,14 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
             userId: p.user_id,
             isBot: p.is_bot || false,
             isLogPublic: p.is_log_public || false,
+            strategyName: p.strategy_name || null,
+            strategyDisplayName: p.strategy_name ? (STRATEGY_DISPLAY_NAMES[p.strategy_name] || p.strategy_name) : null,
+            strategyDescription: p.strategy_name ? (STRATEGY_DESCRIPTIONS[p.strategy_name] || '') : null,
+            mixinName: p.mixin_name || null,
+            mixinDisplayName: p.mixin_name ? (MIXIN_DISPLAY_NAMES[p.mixin_name] || p.mixin_name) : null,
+            mixinDescription: p.mixin_name ? (MIXIN_DESCRIPTIONS[p.mixin_name] || '') : null,
+            poolShareId: p.pool_share_id || null,
+            poolIsPublic: p.pool_is_public ?? null,
           })),
           viewableSeats: [],
           isHost: !!isHost,

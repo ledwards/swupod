@@ -239,6 +239,55 @@
   position: relative;
 }
 
+/* Player info header inside tab content */
+.draft-log-player-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.draft-log-strategy {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.draft-log-strategy-desc {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+}
+
+.draft-log-deck-link {
+  color: #4ade80;
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.draft-log-deck-link:hover {
+  text-decoration: underline;
+}
+
+.draft-log-deck-private {
+  color: rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.draft-log-deck-building {
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+  margin-left: auto;
+}
+
 /* Section (Leader Draft, Pack 1, Pack 2, Pack 3) */
 .draft-log-section {
   margin-bottom: 2rem;

@@ -24,6 +24,14 @@ interface PlayerInfo {
   userId: string
   isBot: boolean
   isLogPublic: boolean
+  strategyName: string | null
+  strategyDisplayName: string | null
+  strategyDescription: string | null
+  mixinName: string | null
+  mixinDisplayName: string | null
+  mixinDescription: string | null
+  poolShareId: string | null
+  poolIsPublic: boolean | null
 }
 
 interface DraftLogMeta {
@@ -476,7 +484,39 @@ export default function DraftLogPage({ params }: PageProps) {
               </p>
             </div>
           ) : (
-            sections.map(section => (
+            <>
+            {/* Player info header — strategy for bots, deck link for all */}
+            {(() => {
+              const activePlayer = meta.players.find(p => p.seatNumber === meta.targetSeat)
+              if (!activePlayer) return null
+              return (
+                <div className="draft-log-player-info">
+                  {activePlayer.isBot && activePlayer.strategyDisplayName && (
+                    <div className="draft-log-strategy">
+                      <strong>Strategy:</strong> {activePlayer.strategyDisplayName}
+                      {activePlayer.mixinDisplayName && ` + ${activePlayer.mixinDisplayName}`}
+                      {activePlayer.strategyDescription && (
+                        <p className="draft-log-strategy-desc">{activePlayer.strategyDescription} {activePlayer.mixinDescription || ''}</p>
+                      )}
+                    </div>
+                  )}
+                  {activePlayer.poolShareId ? (
+                    activePlayer.poolIsPublic || activePlayer.isBot || activePlayer.userId === meta.myPlayerId || meta.isHost ? (
+                      <a href={`/pool/${activePlayer.poolShareId}/deck`} className="draft-log-deck-link">
+                        View {activePlayer.isBot ? `${activePlayer.username}'s` : ''} Deck & Pool
+                      </a>
+                    ) : (
+                      <span className="draft-log-deck-private">
+                        <LockClosed /> Deck is private
+                      </span>
+                    )
+                  ) : (
+                    <span className="draft-log-deck-building">Still deckbuilding...</span>
+                  )}
+                </div>
+              )
+            })()}
+            {sections.map(section => (
               <div key={section.title} className="draft-log-section">
                 {section.picks.map((pick, i) => (
                   <div key={i} className="draft-log-pick-row">
@@ -501,6 +541,7 @@ export default function DraftLogPage({ params }: PageProps) {
                 ))}
               </div>
             ))
+            </>
           )}
         </div>
       </div>
