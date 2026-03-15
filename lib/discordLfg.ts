@@ -9,6 +9,7 @@ const BOT_TOKEN = process.env['DISCORD_BOT_TOKEN']
 const DRAFT_NOW_CHANNEL_ID = process.env['DISCORD_DRAFT_NOW_CHANNEL_ID']
 const SEALED_NOW_CHANNEL_ID = process.env['DISCORD_SEALED_NOW_CHANNEL_ID']
 const DRAFTBOTS_CHANNEL_ID = process.env['DISCORD_DRAFTBOTS_CHANNEL_ID']
+const POOL_DISCUSSION_CHANNEL_ID = process.env['DISCORD_POOL_DISCUSSION_CHANNEL_ID']
 const APP_URL = process.env['APP_URL'] || process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'
 const DISCORD_API = 'https://discord.com/api/v10'
 
@@ -825,5 +826,108 @@ export async function postUserMessageForPod(
     )
   } catch (err) {
     console.error('[Discord LFG] Error posting user message for pod:', err)
+  }
+}
+
+/**
+ * Post a user's deck to the #pool-discussion channel and create a thread.
+ * Returns the thread ID and message ID, or null on failure.
+ */
+export async function postDeckToDiscord(opts: {
+  username: string
+  poolShareId: string
+  leaderName: string
+  leaderImageUrl: string
+  baseName: string
+  deckSize: number
+  setCode: string
+  poolType: string
+}): Promise<{ threadId: string; messageId: string } | null> {
+  if (!BOT_TOKEN) return null
+  if (!POOL_DISCUSSION_CHANNEL_ID) return null
+
+  const poolUrl = `${APP_URL}/pool/${opts.poolShareId}/deck`
+
+  // Generate deck image (same as bot deck summaries)
+  const screenshot = await captureDeckImage(opts.poolShareId).catch(err => {
+    console.error('[Discord Deck] Screenshot failed:', err)
+    return null
+  })
+
+  const embed: Record<string, unknown> = {
+    title: `${opts.username}'s ${opts.setCode} Deck`,
+    description: [
+      `**Leader:** ${opts.leaderName}`,
+      `**Base:** ${opts.baseName}`,
+      `**Deck:** ${opts.deckSize} cards`,
+      `**Format:** ${opts.poolType === 'draft' ? 'Draft' : opts.poolType === 'sealed' ? 'Sealed' : opts.poolType}`,
+      '',
+      `**[View Deck & Pool](${poolUrl})**`,
+    ].join('\n'),
+    color: 0x2ECC71,
+    timestamp: new Date().toISOString(),
+  }
+
+  if (screenshot) {
+    embed.image = { url: 'attachment://deck.jpg' }
+  }
+
+  try {
+    // 1. Post the embed (with image attachment if available)
+    let msgRes: Response
+    if (screenshot) {
+      const formData = new FormData()
+      formData.append('payload_json', JSON.stringify({ embeds: [embed] }))
+      formData.append('files[0]', new Blob([screenshot], { type: 'image/jpeg' }), 'deck.jpg')
+
+      msgRes = await fetch(`${DISCORD_API}/channels/${POOL_DISCUSSION_CHANNEL_ID}/messages`, {
+        method: 'POST',
+        headers: { Authorization: `Bot ${BOT_TOKEN}` },
+        body: formData,
+      })
+    } else {
+      msgRes = await discordFetch(`/channels/${POOL_DISCUSSION_CHANNEL_ID}/messages`, {
+        method: 'POST',
+        body: JSON.stringify({ embeds: [embed] }),
+      })
+    }
+
+    if (!msgRes.ok) {
+      console.error('[Discord Deck] Failed to post deck:', msgRes.status, await msgRes.text())
+      return null
+    }
+
+    const msg = await msgRes.json()
+    const messageId = msg.id
+
+    // 2. Create a thread off the message
+    const threadName = `${opts.username}'s ${opts.setCode} ${opts.poolType === 'draft' ? 'Draft' : 'Sealed'} Deck`
+    const threadRes = await discordFetch(`/channels/${POOL_DISCUSSION_CHANNEL_ID}/messages/${messageId}/threads`, {
+      method: 'POST',
+      body: JSON.stringify({
+        name: threadName.slice(0, 100),
+        auto_archive_duration: 1440,
+      }),
+    })
+
+    if (!threadRes.ok) {
+      console.error('[Discord Deck] Failed to create thread:', threadRes.status, await threadRes.text())
+      return { threadId: '', messageId }
+    }
+
+    const thread = await threadRes.json()
+
+    // 3. Post CTA message in the thread
+    await discordFetch(`/channels/${thread.id}/messages`, {
+      method: 'POST',
+      body: JSON.stringify({
+        content: `**${opts.username}** is looking for feedback on this pool and deck, discuss it here!\n\n${poolUrl}`,
+      }),
+    }).catch(() => {}) // Non-critical
+
+    return { threadId: thread.id, messageId }
+  } catch (err) {
+    console.error('[Discord Deck] Error posting deck to Discord:', err)
+    return null
   }
 }

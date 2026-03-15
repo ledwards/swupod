@@ -205,6 +205,7 @@ export default function PlayInstructions({
               {generatingImage ? 'Generating...' : 'Deck Image'}
             </button>
           )}
+
         </div>
       )}
 

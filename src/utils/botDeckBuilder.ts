@@ -283,8 +283,9 @@ async function buildSingleBotDeck(
       cards,
       packs,
       pod_id,
-      deck_builder_state
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      deck_builder_state,
+      is_public
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
     RETURNING id`,
     [
       bot.user_id,
@@ -297,6 +298,7 @@ async function buildSingleBotDeck(
       JSON.stringify(formattedPacks),
       pod.id,
       JSON.stringify(deckBuilderState),
+      true,
     ]
   )
 

@@ -140,6 +140,7 @@
 .practice-hand-button-container {
   display: flex;
   justify-content: center;
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 
@@ -362,6 +363,58 @@ a.login-banner-button:focus {
 .play-action-button:disabled:hover {
   transform: none;
   box-shadow: none;
+}
+
+.play-action-button.posted {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.post-to-discord-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.post-to-discord-help {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: help;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.post-to-discord-help::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: -10px;
+  width: 240px;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.4;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 100;
+}
+
+.post-to-discord-help:hover::after {
+  opacity: 1;
 }
 
 .play-secondary-actions {

@@ -98,6 +98,13 @@ export default function PlayPage({ params }: PageProps) {
   const [poolImageUrl, setPoolImageUrl] = useState<string | null>(null)
   const [showingPool, setShowingPool] = useState(false)
   const [loadingPool, setLoadingPool] = useState(false)
+  const [postingToDiscord, setPostingToDiscord] = useState(false)
+  const [postedToDiscord, setPostedToDiscord] = useState(() => {
+    if (typeof window !== 'undefined' && resolvedParams?.shareId) {
+      return localStorage.getItem(`postedToDiscord_${resolvedParams.shareId}`) === 'true'
+    }
+    return false
+  })
   const [baseCardMap, setBaseCardMap] = useState<Map<string, string> | null>(null)
   const [claiming, setClaiming] = useState(false)
   const [practiceHand, setPracticeHand] = useState<{
@@ -415,6 +422,32 @@ export default function PlayPage({ params }: PageProps) {
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
+  }
+
+  const postToDiscord = async () => {
+    if (!shareId || postingToDiscord || postedToDiscord) return
+    setPostingToDiscord(true)
+    try {
+      const res = await fetch(`/api/pools/${shareId}/post-to-discord`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+      if (res.ok) {
+        setPostedToDiscord(true)
+        if (shareId) localStorage.setItem(`postedToDiscord_${shareId}`, 'true')
+        setMessage('Deck posted to Discord!')
+        setMessageType('success')
+      } else {
+        const data = await res.json().catch(() => ({}))
+        setMessage(data.error || 'Failed to post to Discord')
+        setMessageType('error')
+      }
+    } catch {
+      setMessage('Failed to post to Discord')
+      setMessageType('error')
+    } finally {
+      setPostingToDiscord(false)
+    }
   }
 
   const exportDeckImage = async () => {
@@ -1593,6 +1626,21 @@ export default function PlayPage({ params }: PageProps) {
             </svg>
             Practice Hand
           </button>
+          {isOwner && user && (
+            <div className="post-to-discord-wrapper">
+              <button
+                className={`play-action-button${postedToDiscord ? ' posted' : ''}`}
+                onClick={postToDiscord}
+                disabled={postingToDiscord || postedToDiscord}
+              >
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                {postedToDiscord ? 'Posted!' : postingToDiscord ? 'Posting...' : 'Post to Discord'}
+              </button>
+              <span className="post-to-discord-help" data-tooltip="Share your deck to the Protect the Pod Discord for feedback and discussion. Makes your pool public.">i</span>
+            </div>
+          )}
         </div>
 
         {/* Login banner for logged-out users viewing anonymous (unowned) pools */}
