@@ -68,27 +68,27 @@ function generatePack(
   const offColors = COLOR_ASPECTS.filter(a => !inAspects.includes(a))
   const cards: any[] = []
 
+  // Deterministic pack composition: 9 in-color, 1 neutral, 3 off-color, 1 opposing
+  // This avoids flaky tests from random pack generation
   for (let i = 0; i < 14; i++) {
     const cardNum = packNum * 14 + i
-    const rand = Math.random()
 
-    if (rand < 0.1) {
-      // ~10% neutral cards
+    if (i === 0) {
+      // 1 neutral card
       cards.push(makeCard(`Neutral-${cardNum}`, []))
-    } else if (rand < 0.1 + offColorRatio * 0.15) {
-      // Some opposing alignment cards (should NEVER be drafted)
+    } else if (i === 13) {
+      // 1 opposing alignment card (last in pack — may be forced pick)
       const offColor = offColors[cardNum % offColors.length]
       cards.push(makeCard(`Opposing-${cardNum}`, [offColor, opposingAlignment]))
-    } else if (rand < 0.1 + offColorRatio) {
-      // Off-color cards
+    } else if (i >= 10) {
+      // 3 off-color cards
       const offColor = offColors[cardNum % offColors.length]
       cards.push(makeCard(`Off-${cardNum}`, [offColor]))
     } else {
-      // In-color cards
+      // 9 in-color cards
       const inColor = inAspects[cardNum % inAspects.length]
       const aspects = [inColor]
-      // Sometimes add alignment
-      if (Math.random() < 0.3) aspects.push(alignment)
+      if (i % 3 === 0) aspects.push(alignment)
       cards.push(makeCard(`In-${cardNum}`, aspects))
     }
   }
@@ -271,11 +271,10 @@ describe('Draft Bot Integration', () => {
           (c.aspects || []).includes('Heroism')
         )
 
-        // Bot may be forced to draft a few opposing cards when they're the only cards left
-        // in late pack picks, but should never actively choose them over in-color alternatives.
-        // Max ~1 per pack (3 packs) + margin = 5
-        assert.ok(opposingCards.length <= 5,
-          `Trial ${trial}: Bot drafted ${opposingCards.length} Heroism cards (max 5 forced): ` +
+        // Each pack has exactly 1 opposing card (last position). Bot should never actively
+        // choose it over in-color alternatives. At most 3 forced (1 per pack if it's the last card).
+        assert.ok(opposingCards.length <= 3,
+          `Trial ${trial}: Bot drafted ${opposingCards.length} Heroism cards (max 3 forced): ` +
           opposingCards.map(c => c.name).join(', '))
       }
     })
