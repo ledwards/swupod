@@ -42,12 +42,12 @@
 - Show a spinner while the image is loading
 
 ## Status
-- [ ] Task 1: Solo draft pod reorder
-- [ ] Task 2: Share to Discord on draft play (verify existing)
-- [ ] Task 3: Draft log link on play page
-- [ ] Task 4: Discord post includes draft log
-- [ ] Task 5: Base rotation in draft log (verify)
-- [ ] Task 6: Bug: missing pick in draft log
-- [ ] Task 7: Bot strategy info in draft log
-- [ ] Task 8: Deck links in draft log
-- [ ] Task 9: Deck image icon + spinner
+- [x] Task 1: Solo draft pod reorder
+- [x] Task 2: Share to Discord on draft play (already works - poolType='draft')
+- [x] Task 3: Draft log link on play page (moved to bottom of pod page)
+- [x] Task 4: Discord post includes draft log + makes log public
+- [x] Task 5: Base rotation in draft log — verified: bases display landscape (natural orientation) in log, rotation only applies in draft pack view and image exports
+- [x] Task 6: Bug: missing pick in draft log — placeholder instead of silent skip
+- [x] Task 7: Bot strategy info in draft log
+- [x] Task 8: Deck links in draft log
+- [x] Task 9: Deck image icon + spinner
