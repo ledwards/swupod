@@ -3,6 +3,7 @@
 // creates threads for pod chat, and manages webhooks for user messages.
 
 import { queryRow, query } from '@/lib/db'
+import { captureDeckImage } from '@/lib/deckScreenshot'
 
 const BOT_TOKEN = process.env['DISCORD_BOT_TOKEN']
 const DRAFT_NOW_CHANNEL_ID = process.env['DISCORD_DRAFT_NOW_CHANNEL_ID']
@@ -708,7 +709,7 @@ export async function postLobbyMessage(
 
 /**
  * Post bot deck summaries to the #draftbots channel after a draft completes.
- * Each bot's strategy, mixin, leader, and pool link are shown in a Discord embed.
+ * Posts one message per bot with leader image, strategy, base, and pool link.
  */
 export async function postBotDeckSummaries(
   podName: string,
@@ -720,43 +721,80 @@ export async function postBotDeckSummaries(
     strategyDescription: string
     mixinDescription: string
     poolUrl: string
+    poolShareId: string
     leaderName: string
+    leaderImageUrl: string
+    baseDisplay: string
     deckSize: number
-  }>
+  }>,
+  podInfo: {
+    hostName: string
+    playerNames: string[]
+  }
 ): Promise<void> {
   if (!BOT_TOKEN) return
-
   if (!DRAFTBOTS_CHANNEL_ID) return
 
-  const botFields = botSummaries.map(bot => ({
-    name: bot.botName,
-    value: [
-      `**Strategy:** ${bot.strategyDisplayName} + ${bot.mixinDisplayName}`,
-      `*${bot.strategyDescription} ${bot.mixinDescription}*`,
-      `**Leader:** ${bot.leaderName} | **Deck:** ${bot.deckSize} cards`,
-      `[View Pool & Deck](${bot.poolUrl})`,
-    ].join('\n'),
-    inline: false,
-  }))
-
-  const embed = {
-    title: `🤖 Bot Decks — ${podName}`,
-    description: `My minions just finished a **${setCode}** draft. Here are their decks:`,
-    fields: botFields,
-    color: 0x9B59B6,
-    timestamp: new Date().toISOString(),
-  }
-
-  try {
-    const res = await discordFetch(`/channels/${DRAFTBOTS_CHANNEL_ID}/messages`, {
-      method: 'POST',
-      body: JSON.stringify({ embeds: [embed] }),
+  for (const bot of botSummaries) {
+    // Generate the deck image (canvas-rendered export, not a screenshot)
+    const screenshot = await captureDeckImage(bot.poolShareId).catch(err => {
+      console.error('[Discord Bots] Screenshot failed:', err)
+      return null
     })
-    if (!res.ok) {
-      console.error('[Discord Bots] Failed to post bot deck summaries:', res.status, await res.text())
+
+    const embed: Record<string, unknown> = {
+      title: `${bot.botName}`,
+      description: [
+        `**Strategy:** ${bot.strategyDisplayName} + ${bot.mixinDisplayName}`,
+        `*${bot.strategyDescription} ${bot.mixinDescription}*`,
+        '',
+        `**Leader:** ${bot.leaderName}`,
+        `**Base:** ${bot.baseDisplay}`,
+        `**Deck:** ${bot.deckSize} cards`,
+        '',
+        `**Pool & Deck:** ${bot.poolUrl}`,
+        '',
+        `**Host:** ${podInfo.hostName} | **${setCode}** draft`,
+        `**Players:** ${podInfo.playerNames.join(', ')}`,
+      ].join('\n'),
+      color: 0x9B59B6,
+      timestamp: new Date().toISOString(),
     }
-  } catch (err) {
-    console.error('[Discord Bots] Error posting bot deck summaries:', err)
+
+    // If we have a screenshot, attach it and reference in embed
+    if (screenshot) {
+      embed.image = { url: 'attachment://deck.jpg' }
+    } else if (bot.leaderImageUrl) {
+      // Fall back to leader card image if screenshot fails
+      embed.image = { url: bot.leaderImageUrl }
+    }
+
+    try {
+      let res: Response
+      if (screenshot) {
+        // Use multipart/form-data to attach the screenshot
+        const formData = new FormData()
+        formData.append('payload_json', JSON.stringify({ embeds: [embed] }))
+        formData.append('files[0]', new Blob([screenshot], { type: 'image/jpeg' }), 'deck.jpg')
+
+        res = await fetch(`${DISCORD_API}/channels/${DRAFTBOTS_CHANNEL_ID}/messages`, {
+          method: 'POST',
+          headers: { Authorization: `Bot ${BOT_TOKEN}` },
+          body: formData,
+        })
+      } else {
+        res = await discordFetch(`/channels/${DRAFTBOTS_CHANNEL_ID}/messages`, {
+          method: 'POST',
+          body: JSON.stringify({ embeds: [embed] }),
+        })
+      }
+
+      if (!res.ok) {
+        console.error('[Discord Bots] Failed to post bot deck summary:', res.status, await res.text())
+      }
+    } catch (err) {
+      console.error('[Discord Bots] Error posting bot deck summary:', err)
+    }
   }
 }
 
