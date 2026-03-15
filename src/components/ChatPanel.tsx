@@ -29,8 +29,12 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
   const [isOpen, setIsOpen] = useState(() => {
     if (typeof window !== 'undefined' && window.innerWidth <= 768) return false
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('chatPanelOpen')
-      if (stored !== null) return stored === 'true'
+      // If user has explicitly toggled chat this session, respect their choice
+      const userToggled = sessionStorage.getItem('chatUserToggled')
+      if (userToggled === 'true') {
+        const stored = sessionStorage.getItem('chatPanelOpen')
+        if (stored !== null) return stored === 'true'
+      }
     }
     return defaultOpen
   })
@@ -70,14 +74,14 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
     ? (lobbyType === 'sealed' ? '#sealed-now' : '#draft-now')
     : `Pod Chat (${isPublic ? 'public' : 'private'})`
 
-  // Detect mobile + auto-open lobby chat on desktop (only if user hasn't explicitly closed it)
+  // Detect mobile + auto-open lobby chat on desktop (only if user hasn't explicitly toggled)
   useEffect(() => {
     const check = () => {
       const mobile = window.innerWidth <= 768
       setIsMobile(mobile)
       if (!mobile && !hasAutoOpened.current && defaultOpen) {
-        const stored = localStorage.getItem('chatPanelOpen')
-        if (stored !== 'false') {
+        const userToggled = sessionStorage.getItem('chatUserToggled')
+        if (userToggled !== 'true') {
           setIsOpen(true)
         }
         hasAutoOpened.current = true
@@ -116,7 +120,8 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
 
   const handleOpen = useCallback(() => {
     setIsOpen(true)
-    localStorage.setItem('chatPanelOpen', 'true')
+    sessionStorage.setItem('chatUserToggled', 'true')
+    sessionStorage.setItem('chatPanelOpen', 'true')
     markRead()
     // Focus input after animation
     setTimeout(() => inputRef.current?.focus(), 300)
@@ -124,7 +129,8 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
 
   const handleClose = useCallback(() => {
     setIsOpen(false)
-    localStorage.setItem('chatPanelOpen', 'false')
+    sessionStorage.setItem('chatUserToggled', 'true')
+    sessionStorage.setItem('chatPanelOpen', 'false')
   }, [])
 
   const handleSend = useCallback(() => {
@@ -217,7 +223,7 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
     <div className={`chat-panel ${isOpen ? 'open' : 'closed'}`}>
       {/* Toggle tab — top-aligned, arrow flips with open/close */}
       <button
-        className={`chat-panel-toggle ${isOpen ? 'toggle-open' : ''}`}
+        className={`chat-panel-toggle ${isOpen ? 'toggle-open' : ''} ${!isOpen && unreadCount > 0 ? 'has-unread' : ''}`}
         onClick={isOpen ? handleClose : handleOpen}
         aria-label={isOpen ? 'Close chat' : 'Open chat'}
       >

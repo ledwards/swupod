@@ -77,6 +77,21 @@
   padding: 0 4px;
 }
 
+/* Pulse animation when unread messages while closed */
+.chat-panel-toggle.has-unread {
+  border-color: #27AE60;
+  animation: chat-unread-pulse 2s ease-in-out infinite;
+}
+
+.chat-fab.has-unread {
+  animation: chat-unread-pulse 2s ease-in-out infinite;
+}
+
+@keyframes chat-unread-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(39, 174, 96, 0); }
+}
+
 /* Panel header */
 .chat-panel-header {
   display: flex;

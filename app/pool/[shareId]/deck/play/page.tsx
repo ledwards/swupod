@@ -1896,7 +1896,7 @@ export default function PlayPage({ params }: PageProps) {
       </Modal>
     </div>
     </div>
-    <ChatPanel shareId={pool?.draftShareId} defaultOpen={true} />
+    <ChatPanel shareId={pool?.draftShareId} defaultOpen={false} />
     </div>
   )
 }

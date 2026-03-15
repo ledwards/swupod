@@ -2,6 +2,10 @@
 
 ## 03.15.2026
 
+### 💬 Chat UX Improvements
+- **Smarter chat defaults**: Chat now opens automatically during pod formation on desktop, then closes by default once you move into drafting/sealed/deck building so it's not in the way. If you manually open or close chat, your preference is remembered as you navigate between pages.
+- **Unread message indicator**: When chat is closed and a new message arrives, the chat toggle pulses with a green glow so you never miss a message.
+
 ### 💬 Post to Discord
 - **New "Post to Discord" button** on the play page lets you share your deck to the Protect the Pod Discord for feedback and discussion. Posts your deck image, leader, base, and a link to your pool — and creates a discussion thread automatically. I'm hoping this ends up a very popular feature as we all try to learn from each other!
 
