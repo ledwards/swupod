@@ -114,8 +114,28 @@ export abstract class BaseStrategy {
 
   selectLeader(leaders: RawCard[], context: StrategyContext = {}): RawCard | null {
     if (!leaders || leaders.length === 0) return null
-    const ranked = this.rankLeaders(leaders, context)
+
+    // Filter out leaders with opposing alignment to already-drafted leaders
+    const draftedLeaders = context.draftedLeaders || []
+    const draftedAlignment = this._getDraftedAlignment(draftedLeaders)
+    const eligible = draftedAlignment
+      ? leaders.filter(l => {
+          const alignment = (l.aspects || []).find(a => ALIGNMENT_ASPECTS.includes(a))
+          return !alignment || alignment === draftedAlignment
+        })
+      : leaders
+
+    const ranked = this.rankLeaders(eligible.length > 0 ? eligible : leaders, context)
     return ranked[0] ?? null
+  }
+
+  /** Get the alignment (Heroism/Villainy) from already-drafted leaders, if consistent */
+  _getDraftedAlignment(draftedLeaders: RawCard[]): string | null {
+    for (const leader of draftedLeaders) {
+      const alignment = (leader.aspects || []).find(a => ALIGNMENT_ASPECTS.includes(a))
+      if (alignment) return alignment
+    }
+    return null
   }
 
   // --- Card Selection ---
@@ -323,9 +343,9 @@ export abstract class BaseStrategy {
     const allLeaderColors = this._getColorsFromLeaders(draftedLeaders)
 
     // Even during exploration, NEVER draft opposing alignment cards
-    const leaderAlignment = allLeaderColors.find(c => ALIGNMENT_ASPECTS.includes(c))
-    if (leaderAlignment) {
-      const opposingAlignment = leaderAlignment === 'Villainy' ? 'Heroism' : 'Villainy'
+    const draftedAlignment = this._getDraftedAlignment(draftedLeaders)
+    if (draftedAlignment) {
+      const opposingAlignment = draftedAlignment === 'Villainy' ? 'Heroism' : 'Villainy'
       if (cardAspects.includes(opposingAlignment)) {
         return -10000
       }
@@ -339,7 +359,10 @@ export abstract class BaseStrategy {
     if (cardAspects.length === 0) {
       return 15  // Neutral
     }
-    return -30  // Off-color penalty — stay open but don't actively collect off-color
+    // Off-color penalty must be strong enough that quality scores can't overcome it.
+    // Quality scores range 0-150, colorWeight is 0.6 in exploration.
+    // -150 * 0.6 = -90, which beats most quality bonuses.
+    return -150
   }
 
   /**
