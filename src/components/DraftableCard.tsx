@@ -164,14 +164,14 @@ function DraftableCard({
           left: '1px',
           right: '1px',
           bottom: '1px',
-          borderRadius: '6px',
+          borderRadius: 0,
           overflow: 'hidden',
           filter: 'none',
           opacity: 1,
         } : {
           width: '100%',
           height: '100%',
-          borderRadius: '6px',
+          borderRadius: 0,
           overflow: 'hidden',
         }}>
           {card.imageUrl && !imageError ? (
