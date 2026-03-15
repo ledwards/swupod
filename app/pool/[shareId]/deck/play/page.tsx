@@ -512,7 +512,7 @@ export default function PlayPage({ params }: PageProps) {
     const headerH = 60
     const leaderW = Math.round(cardH * 7 / 5)
     const leaderH = cardH
-    // Base uses same rotated dimensions as leader (both landscape → portrait)
+    // Base is naturally landscape — same dimensions as leader (which is rotated to landscape)
     const baseW = leaderW
     const baseH = leaderH
 
@@ -542,14 +542,10 @@ export default function PlayPage({ params }: PageProps) {
     const leaderY = headerH
     ctx.drawImage(leaderImg, leaderX, leaderY, leaderW, leaderH)
 
-    // Base (landscape rotated 90° CW into portrait)
+    // Base (landscape — draw as-is, no rotation needed)
     const baseX = leaderX + leaderW + gap
     const baseY = headerH
-    ctx.save()
-    ctx.translate(baseX + baseW / 2, baseY + baseH / 2)
-    ctx.rotate(Math.PI / 2)
-    ctx.drawImage(baseImg, -baseH / 2, -baseW / 2, baseH, baseW)
-    ctx.restore()
+    ctx.drawImage(baseImg, baseX, baseY, baseW, baseH)
 
     // Deck cards grid
     const gridX = (width - gridW) / 2

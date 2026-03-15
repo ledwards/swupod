@@ -315,7 +315,8 @@ export function useDeckExport({
       const deckRows = Math.ceil(deckCards.length / cardsPerRow)
       const sideboardRows = Math.ceil(sideboardCards.length / cardsPerRow)
       const hasLeaderBase = selectedLeader || selectedBase
-      // Both leader and base are rotated, so both use leaderRotatedHeight
+      // Leader is rotated (portrait → landscape), base is naturally landscape
+      // Both end up as landscape, so row height = leaderRotatedHeight (= leaderBaseWidth = 180)
       const leaderBaseRowHeight = hasLeaderBase ? leaderRotatedHeight : 0
       const footerHeight = poolOwnerUsername ? 100 : 70
 
@@ -389,12 +390,11 @@ export function useDeckExport({
             img.onload = (): void => {
               clearTimeout(timeoutId)
               try {
-                if (isLeader || card.isBase) {
-                  // Rotate leader 90° CCW, base 90° CW
-                  const angle = card.isBase ? Math.PI / 2 : -Math.PI / 2
+                if (isLeader) {
+                  // Rotate leader 90 degrees CCW
                   ctx.save()
                   ctx.translate(x + cardW / 2, y + cardH / 2)
-                  ctx.rotate(angle)
+                  ctx.rotate(-Math.PI / 2)
                   if (grayscale) {
                     const tempCanvas = document.createElement('canvas')
                     tempCanvas.width = cardH
@@ -484,7 +484,7 @@ export function useDeckExport({
       currentY += titleHeight + sectionSpacing
 
       // Draw selected leader and base at top, centered in one row
-      // Leaders rotated 90° CCW, bases rotated 90° CW — both use swapped dimensions
+      // Leader rotated 90° CCW, base drawn landscape — both end up same dimensions
       if (selectedLeader || selectedBase) {
         const leaderW = selectedLeader ? leaderRotatedWidth : 0
         const baseW = selectedBase ? leaderRotatedWidth : 0
@@ -678,9 +678,9 @@ export function useDeckExport({
       const poolRows = Math.ceil(poolCards.length / cardsPerRow)
       const hasLeaderBase = selectedLeader || selectedBase
       const hasOtherLeadersOrBases = otherLeaders.length > 0 || otherBases.length > 0
-      // Both leader and base are rotated, so both use leaderRotatedHeight
+      // Leader rotated, base landscape — both same height
       const leaderBaseRowHeight = hasLeaderBase ? leaderRotatedHeight : 0
-      // Other leaders/bases row height (all rotated)
+      // Other leaders rotated, other bases landscape — same height
       const otherLeadersRowHeight = hasOtherLeadersOrBases ? leaderRotatedHeight : 0
       const footerHeight = poolOwnerUsername ? 100 : 70
 
@@ -753,12 +753,11 @@ export function useDeckExport({
           img.onload = (): void => {
             clearTimeout(timeoutId)
             try {
-              if (isLeader || card.isBase) {
-                // Rotate leader 90° CCW, base 90° CW
-                const angle = card.isBase ? Math.PI / 2 : -Math.PI / 2
+              if (isLeader) {
+                // Rotate leader 90 degrees CCW
                 ctx.save()
                 ctx.translate(x + cardW / 2, y + cardH / 2)
-                ctx.rotate(angle)
+                ctx.rotate(-Math.PI / 2)
                 if (grayscale) {
                   const tempCanvas = document.createElement('canvas')
                   tempCanvas.width = cardH
@@ -829,7 +828,7 @@ export function useDeckExport({
       currentY += titleHeight + sectionSpacing
 
       // Draw selected leader and base at top
-      // Leaders rotated 90° CCW, bases rotated 90° CW — both use swapped dimensions
+      // Leader rotated 90° CCW, base drawn landscape — both end up same dimensions
       if (selectedLeader || selectedBase) {
         const leaderW = selectedLeader ? leaderRotatedWidth : 0
         const baseW = selectedBase ? leaderRotatedWidth : 0
