@@ -892,6 +892,21 @@ export async function postDeckToDiscord(opts: {
       })
     }
 
+    // If rate limited, wait and retry once
+    if (msgRes.status === 429) {
+      const retryData = await msgRes.json().catch(() => ({}))
+      const retryAfter = (retryData.retry_after || 2) * 1000
+      console.warn(`[Discord Deck] Rate limited, retrying after ${retryAfter}ms`)
+      await new Promise(resolve => setTimeout(resolve, retryAfter))
+
+      // Retry without image to reduce payload size
+      delete embed.image
+      msgRes = await discordFetch(`/channels/${POOL_DISCUSSION_CHANNEL_ID}/messages`, {
+        method: 'POST',
+        body: JSON.stringify({ embeds: [embed] }),
+      })
+    }
+
     if (!msgRes.ok) {
       console.error('[Discord Deck] Failed to post deck:', msgRes.status, await msgRes.text())
       return null
