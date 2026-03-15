@@ -28,6 +28,10 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
   const [isMobile, setIsMobile] = useState(false)
   const [isOpen, setIsOpen] = useState(() => {
     if (typeof window !== 'undefined' && window.innerWidth <= 768) return false
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('chatPanelOpen')
+      if (stored !== null) return stored === 'true'
+    }
     return defaultOpen
   })
   const hasAutoOpened = useRef(false)
@@ -66,13 +70,16 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
     ? (lobbyType === 'sealed' ? '#sealed-now' : '#draft-now')
     : `Pod Chat (${isPublic ? 'public' : 'private'})`
 
-  // Detect mobile + auto-open lobby chat on desktop
+  // Detect mobile + auto-open lobby chat on desktop (only if user hasn't explicitly closed it)
   useEffect(() => {
     const check = () => {
       const mobile = window.innerWidth <= 768
       setIsMobile(mobile)
       if (!mobile && !hasAutoOpened.current && defaultOpen) {
-        setIsOpen(true)
+        const stored = localStorage.getItem('chatPanelOpen')
+        if (stored !== 'false') {
+          setIsOpen(true)
+        }
         hasAutoOpened.current = true
       }
     }
@@ -109,6 +116,7 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
 
   const handleOpen = useCallback(() => {
     setIsOpen(true)
+    localStorage.setItem('chatPanelOpen', 'true')
     markRead()
     // Focus input after animation
     setTimeout(() => inputRef.current?.focus(), 300)
@@ -116,6 +124,7 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
 
   const handleClose = useCallback(() => {
     setIsOpen(false)
+    localStorage.setItem('chatPanelOpen', 'false')
   }, [])
 
   const handleSend = useCallback(() => {
