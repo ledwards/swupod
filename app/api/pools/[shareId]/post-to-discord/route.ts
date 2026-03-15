@@ -55,6 +55,19 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       await query('UPDATE card_pools SET is_public = true WHERE id = $1', [pool.id])
     }
 
+    // Extract uploaded deck image if present
+    let deckImageBuffer: Buffer | null = null
+    try {
+      const formData = await request.formData()
+      const imageFile = formData.get('deckImage') as File | null
+      if (imageFile) {
+        const arrayBuf = await imageFile.arrayBuffer()
+        deckImageBuffer = Buffer.from(arrayBuf)
+      }
+    } catch {
+      // No form data — that's fine, post without image
+    }
+
     // Post to Discord
     const result = await postDeckToDiscord({
       username: session.username || 'Unknown',
@@ -65,6 +78,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       deckSize,
       setCode: pool.set_code || 'Unknown',
       poolType: pool.pool_type || 'draft',
+      deckImage: deckImageBuffer,
     })
 
     if (!result) {

@@ -842,17 +842,13 @@ export async function postDeckToDiscord(opts: {
   deckSize: number
   setCode: string
   poolType: string
+  deckImage?: Buffer | null
 }): Promise<{ threadId: string; messageId: string } | null> {
   if (!BOT_TOKEN) return null
   if (!POOL_DISCUSSION_CHANNEL_ID) return null
 
   const poolUrl = `${APP_URL}/pool/${opts.poolShareId}/deck`
-
-  // Generate deck image (same as bot deck summaries)
-  const screenshot = await captureDeckImage(opts.poolShareId).catch(err => {
-    console.error('[Discord Deck] Screenshot failed:', err)
-    return null
-  })
+  const screenshot = opts.deckImage || null
 
   const embed: Record<string, unknown> = {
     title: `${opts.username}'s ${opts.setCode} Deck`,
