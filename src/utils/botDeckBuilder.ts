@@ -174,8 +174,33 @@ async function buildSingleBotDeck(
     .sort((a, b) => b.score - a.score)
 
   // 4. Take top DECK_SIZE for deck, rest for sideboard
-  const deckCards = scoredCards.slice(0, DECK_SIZE).map(s => s.card)
-  const sideboardCards = scoredCards.slice(DECK_SIZE).map(s => s.card)
+  // Enforce hard cap: max 5 off-aspect cards in deck (LAW splash rule)
+  const leaderColors = leaderAspects.filter(a => COLOR_ASPECTS.includes(a))
+  const baseAspects = ((selectedBase as Record<string, unknown>).aspects as string[]) || []
+  const baseColors = baseAspects.filter(a => COLOR_ASPECTS.includes(a))
+  const inAspectColors = [...new Set([...leaderColors, ...baseColors])]
+  const MAX_OFF_ASPECT = 5
+
+  const deckCards: Record<string, unknown>[] = []
+  const sideboardCards: Record<string, unknown>[] = []
+  let offAspectInDeck = 0
+
+  for (const { card } of scoredCards) {
+    const cardColors = ((card.aspects as string[]) || []).filter(a => COLOR_ASPECTS.includes(a))
+    const isOffAspect = cardColors.length > 0 && !cardColors.some(a => inAspectColors.includes(a))
+
+    if (deckCards.length < DECK_SIZE) {
+      if (isOffAspect && offAspectInDeck >= MAX_OFF_ASPECT) {
+        // Off-aspect cap reached — send to sideboard
+        sideboardCards.push(card)
+      } else {
+        deckCards.push(card)
+        if (isOffAspect) offAspectInDeck++
+      }
+    } else {
+      sideboardCards.push(card)
+    }
+  }
 
   // 5. Build card positions for deck builder state
   const cardPositions: Record<string, unknown> = {}

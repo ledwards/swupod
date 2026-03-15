@@ -21,6 +21,7 @@
 - **Unread message indicator**: When chat is closed and a new message arrives, the chat toggle pulses with a green glow so you never miss a message.
 
 ### 🤖 AI Players
+- **Fixed bot deck building**: Bot decks now strictly enforce the 5 off-aspect card limit for LAW. Previously, the LAW splash bonus could push too many off-aspect cards into the deck (some bots had 10-16 off-aspect cards). Now there's a hard cap enforced at deck build time.
 - **Bot pools are now public**: Bot deck links are always accessible — no more broken links when viewing bot decks from Discord. This will help us determine if the bots are doing a good job drafting! Check out #draftbots to see their decks.
 - **Smarter drafting**: Off-color penalty during exploration phase increased significantly so bots build more coherent pools.
 
