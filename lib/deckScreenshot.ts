@@ -4,7 +4,7 @@
  * and captures the canvas-generated image from the modal.
  */
 
-import { chromium } from '@playwright/test'
+import { chromium } from 'playwright-core'
 
 const APP_URL = process.env['APP_URL'] || process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'
 

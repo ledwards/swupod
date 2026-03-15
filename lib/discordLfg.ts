@@ -775,7 +775,7 @@ export async function postBotDeckSummaries(
       if (screenshot) {
         // Use multipart/form-data to attach the screenshot
         const formData = new FormData()
-        formData.append('payload_json', JSON.stringify({ embeds: [embed] }))
+        formData.append('payload_json', JSON.stringify({ embeds: [embed], attachments: [{ id: 0, filename: 'deck.jpg' }] }))
         formData.append('files[0]', new Blob([screenshot as BlobPart], { type: 'image/jpeg' }), 'deck.jpg')
 
         res = await fetch(`${DISCORD_API}/channels/${DRAFTBOTS_CHANNEL_ID}/messages`, {
@@ -873,7 +873,7 @@ export async function postDeckToDiscord(opts: {
     let msgRes: Response
     if (screenshot) {
       const formData = new FormData()
-      formData.append('payload_json', JSON.stringify({ embeds: [embed] }))
+      formData.append('payload_json', JSON.stringify({ embeds: [embed], attachments: [{ id: 0, filename: 'deck.jpg' }] }))
       formData.append('files[0]', new Blob([screenshot as BlobPart], { type: 'image/jpeg' }), 'deck.jpg')
 
       msgRes = await fetch(`${DISCORD_API}/channels/${POOL_DISCUSSION_CHANNEL_ID}/messages`, {
