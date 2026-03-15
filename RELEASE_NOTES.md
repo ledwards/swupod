@@ -2,6 +2,9 @@
 
 ## 03.15.2026
 
+### 🎮 Play Page
+- **Clearer post-draft instructions**: The play page now says "Deck Complete!" and explicitly tells you to find a human opponent on Karabast. Bots draft with you, but you play against other humans.
+
 ### 💬 Chat UX Improvements
 - **Smarter chat defaults**: Chat now opens automatically during pod formation on desktop, then closes by default once you move into drafting/sealed/deck building so it's not in the way. If you manually open or close chat, your preference is remembered as you navigate between pages.
 - **Unread message indicator**: When chat is closed and a new message arrives, the chat toggle pulses with a green glow so you never miss a message.
