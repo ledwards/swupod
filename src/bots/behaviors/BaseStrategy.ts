@@ -203,6 +203,11 @@ export abstract class BaseStrategy {
     // LAW splash rule: in LAW, allow a few off-aspect bombs
     totalScore += this._calculateLAWSplashBonus(card, draftedCards, context)
 
+    // Rare bases are almost never worth picking — bots should stick to common bases
+    if (card.isBase && card.rarity !== 'Common') {
+      totalScore -= 500
+    }
+
     // Strategy-specific adjustments
     totalScore += this.adjustCardScore(card, totalScore, context)
 
@@ -269,7 +274,9 @@ export abstract class BaseStrategy {
   }
 
   /**
-   * Color score (-40 to +100) based on aspect match with committed leader/base
+   * Color score (-200 to +100) based on aspect match with committed leader/base.
+   * Off-aspect cards get a harsh penalty (-200) to prevent inclusion in decks.
+   * During drafting (pre-commitment), penalties are mild to keep options open.
    */
   _calculateColorScore(
     card: RawCard,
@@ -281,6 +288,16 @@ export abstract class BaseStrategy {
 
     if (isFullyCommitted && this.committedLeader) {
       const leaderColors = this._getLeaderColors(this.committedLeader)
+
+      // Wrong alignment is an absolute ban — Heroism cards never go in Villainy decks
+      const leaderAlignment = leaderColors.find(c => ALIGNMENT_ASPECTS.includes(c))
+      if (leaderAlignment) {
+        const opposingAlignment = leaderAlignment === 'Villainy' ? 'Heroism' : 'Villainy'
+        if (cardAspects.includes(opposingAlignment)) {
+          return -10000
+        }
+      }
+
       const leaderMatch = this._countMatchingAspects(cardAspects, leaderColors)
 
       if (leaderMatch > 0) {
@@ -292,15 +309,28 @@ export abstract class BaseStrategy {
       if (cardAspects.length === 0) {
         return 15  // Neutral
       }
-      return -40  // Off-color penalty
+      // Harsh off-aspect penalty — these cards require paying extra resources
+      // and should almost never make the deck cut.
+      // Must be large enough that even the best quality score can't overcome it.
+      return -500
     }
 
-    // Exploration phase: mild color preference
+    // Exploration phase: prefer in-color, penalize off-color
     if (draftedLeaders.length === 0) {
       return cardAspects.length === 0 ? 15 : 10
     }
 
     const allLeaderColors = this._getColorsFromLeaders(draftedLeaders)
+
+    // Even during exploration, NEVER draft opposing alignment cards
+    const leaderAlignment = allLeaderColors.find(c => ALIGNMENT_ASPECTS.includes(c))
+    if (leaderAlignment) {
+      const opposingAlignment = leaderAlignment === 'Villainy' ? 'Heroism' : 'Villainy'
+      if (cardAspects.includes(opposingAlignment)) {
+        return -10000
+      }
+    }
+
     const inColorCount = this._countMatchingAspects(cardAspects, allLeaderColors)
 
     if (inColorCount > 0) {
@@ -309,7 +339,7 @@ export abstract class BaseStrategy {
     if (cardAspects.length === 0) {
       return 15  // Neutral
     }
-    return 5  // Off-color but stay open
+    return -30  // Off-color penalty — stay open but don't actively collect off-color
   }
 
   /**
@@ -452,23 +482,28 @@ export abstract class BaseStrategy {
 
     if (currentOffAspect >= 5) return 0  // Already at max splash
 
-    // Bonus for splashable bombs — higher in early picks of each pack
-    const pickInPack = context.pickInPack || 7
-    const isEarlyPick = pickInPack <= 2
-    const qualityBonus = isEarlyPick ? 30 : 15
+    // Counteract the -500 off-aspect penalty for valid LAW splashes.
+    // Common bases in LAW provide a third color, so off-by-one-primary cards
+    // can be played with only +2 cost penalty — worth it for bombs.
+    const splashBase = 480  // Mostly negates the -500, making them slightly negative baseline
 
     // Only splash high-quality cards
     const powerfulCardsForSet = POWERFUL_CARDS[setCode] || []
     if (powerfulCardsForSet.includes(card.name || '')) {
-      return qualityBonus
+      return splashBase + 40  // Powerful cards splash easily
     }
 
-    // Check rarity — splash rares and legendaries
+    // Splash rares and legendaries
     if (card.rarity === 'Legendary' || card.rarity === 'Rare') {
-      return qualityBonus * 0.7
+      return splashBase + 20
     }
 
-    return 0
+    // Uncommons can splash if they're decent
+    if (card.rarity === 'Uncommon') {
+      return splashBase
+    }
+
+    return 0  // Don't splash commons
   }
 
   // --- Commitment Decisions ---
