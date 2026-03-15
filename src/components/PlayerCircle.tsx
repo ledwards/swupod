@@ -214,9 +214,6 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
           style={{ color: getStatusColor(player.pickStatus) }}
         >
           {player.pickStatus === 'picked' || player.pickStatus === 'selected' ? 'Done' : 'Picking...'}
-          {typeof player.currentPackSize === 'number' && player.currentPackSize > 0 && (
-            <span className="leader-info-pack-count"> ({player.currentPackSize} cards)</span>
-          )}
         </div>
       </div>
     )
@@ -330,8 +327,8 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
 
   // Radii for concentric circles (in percentage of container)
   // Bring inward on mobile to fit screen, spread out on desktop/iPad
-  const seatRadius = isMobile ? 22 : 35
-  const leaderInfoRadius = isMobile ? 43 : 52
+  const seatRadius = isMobile ? 22 : 27
+  const leaderInfoRadius = isMobile ? 43 : 47
 
   // Render leader preview portal
   const renderLeaderPreview = () => {

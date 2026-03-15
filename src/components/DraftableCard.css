@@ -23,13 +23,33 @@
 }
 
 
-.draftable-card.leader,
-.draftable-card.base {
+.draftable-card.leader {
   width: 168px;
   min-width: 168px;
   max-width: 168px;
   height: auto;
 }
+
+.draftable-card.base {
+  width: 120px;
+  min-width: 120px;
+  max-width: 120px;
+  height: 168px;
+  position: relative;
+  overflow: hidden;
+}
+
+.draftable-card.base img {
+  position: absolute !important;
+  width: 168px !important;
+  height: 120px !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: rotate(-90deg) translate(-50%, -50%) !important;
+  transform-origin: top left !important;
+  object-fit: cover !important;
+}
+
 
 /* No transform on hover - only on selection */
 
@@ -184,8 +204,7 @@
     border-radius: 8px;
   }
 
-  .draftable-card.leader,
-  .draftable-card.base {
+  .draftable-card.leader {
     width: 100%;
     min-width: 0;
     max-width: 100%;
