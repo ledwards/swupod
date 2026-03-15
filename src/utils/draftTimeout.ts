@@ -9,6 +9,7 @@
 import { query, queryRow, queryRows } from '@/lib/db'
 import { processAllStagedPicks } from './draftAdvance'
 import { processBotTurns } from './botLogic'
+import { createStrategy } from '@/src/bots/behaviors/index'
 import type { RawCard } from './cardData'
 
 interface DraftPod {
@@ -31,12 +32,17 @@ interface DraftPlayer {
   pod_id: string
   pick_status: string
   leaders: string | RawCard[]
+  drafted_leaders: string | RawCard[]
+  drafted_cards: string | RawCard[]
   current_pack: string | RawCard[]
 }
 
 interface DraftState {
   phase?: string
   lastPlayerStartedAt?: string
+  setCode?: string
+  packNumber?: number
+  pickInPack?: number
 }
 
 /**
@@ -141,11 +147,12 @@ export async function checkAndEnforceTimeout(podId: string): Promise<boolean> {
   const phase = draftState.phase
 
   // Force selections for each player who hasn't selected
+  // Uses topPlayer bot strategy for smart picks instead of random
   for (const player of players) {
     if (phase === 'leader_draft') {
-      await forceLeaderSelect(player)
+      await forceLeaderSelect(player, draftState)
     } else if (phase === 'pack_draft') {
-      await forcePackSelect(player)
+      await forcePackSelect(player, draftState)
     }
   }
 
@@ -161,15 +168,15 @@ export async function checkAndEnforceTimeout(podId: string): Promise<boolean> {
 }
 
 /**
- * Force a random leader selection for a player (using staged pick system)
+ * Force a smart leader selection for a timed-out player.
+ * Uses the topPlayer bot strategy to pick the best leader.
  */
-async function forceLeaderSelect(player: DraftPlayer): Promise<void> {
+async function forceLeaderSelect(player: DraftPlayer, draftState: DraftState): Promise<void> {
   const leaders: RawCard[] = typeof player.leaders === 'string'
     ? JSON.parse(player.leaders)
     : player.leaders || []
 
   if (leaders.length === 0) {
-    // No leaders to select, just mark as selected with no card
     await query(
       `UPDATE pod_players SET pick_status = 'selected', selected_card_id = NULL WHERE id = $1`,
       [player.id]
@@ -177,9 +184,15 @@ async function forceLeaderSelect(player: DraftPlayer): Promise<void> {
     return
   }
 
-  // Select a random leader
-  const randomIndex = Math.floor(Math.random() * leaders.length)
-  const selectedLeader = leaders[randomIndex]
+  // Use bot strategy to pick the best leader
+  const draftedLeaders: RawCard[] = typeof player.drafted_leaders === 'string'
+    ? JSON.parse(player.drafted_leaders)
+    : (player as any).drafted_leaders || []
+
+  const strategy = createStrategy('topPlayer')
+  const setCode = draftState.setCode || leaders[0]?.set || 'SOR'
+  const picked = strategy.selectLeader(leaders, { draftedLeaders, setCode })
+  const selectedLeader = picked || leaders[0]
   const cardId = (selectedLeader as RawCard & { instanceId?: string }).instanceId || selectedLeader.id
 
   await query(
@@ -192,15 +205,16 @@ async function forceLeaderSelect(player: DraftPlayer): Promise<void> {
 }
 
 /**
- * Force a random card selection for a player (using staged pick system)
+ * Force a smart card selection for a timed-out player.
+ * Uses the topPlayer bot strategy to pick the best card based on
+ * the player's drafted leaders and cards.
  */
-async function forcePackSelect(player: DraftPlayer): Promise<void> {
+async function forcePackSelect(player: DraftPlayer, draftState: DraftState): Promise<void> {
   const currentPack: RawCard[] = typeof player.current_pack === 'string'
     ? JSON.parse(player.current_pack)
     : player.current_pack || []
 
   if (currentPack.length === 0) {
-    // No cards to select, just mark as selected with no card
     await query(
       `UPDATE pod_players SET pick_status = 'selected', selected_card_id = NULL WHERE id = $1`,
       [player.id]
@@ -208,9 +222,24 @@ async function forcePackSelect(player: DraftPlayer): Promise<void> {
     return
   }
 
-  // Select a random card
-  const randomIndex = Math.floor(Math.random() * currentPack.length)
-  const selectedCard = currentPack[randomIndex]
+  // Use bot strategy to pick the best card considering drafted pool
+  const draftedCards: RawCard[] = typeof (player as any).drafted_cards === 'string'
+    ? JSON.parse((player as any).drafted_cards)
+    : (player as any).drafted_cards || []
+  const draftedLeaders: RawCard[] = typeof player.drafted_leaders === 'string'
+    ? JSON.parse(player.drafted_leaders)
+    : (player as any).drafted_leaders || []
+
+  const strategy = createStrategy('topPlayer')
+  const setCode = draftState.setCode || currentPack[0]?.set || 'SOR'
+  const picked = strategy.selectCard(currentPack, {
+    draftedCards,
+    draftedLeaders,
+    setCode,
+    packNumber: draftState.packNumber || 1,
+    pickInPack: draftState.pickInPack || 1,
+  })
+  const selectedCard = picked || currentPack[0]
   const cardId = (selectedCard as RawCard & { instanceId?: string }).instanceId || selectedCard.id
 
   await query(
