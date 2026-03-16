@@ -84,6 +84,9 @@ export async function buildBotDecks(podId: string, setCode: string, settings: Re
     )
     const hostName = (hostUser?.username as string) || 'Unknown'
     const playerNames = allPlayers.map(p => p.username as string)
+    const podType = (pod.pod_type as string) || 'draft'
+    const podShareId_str = pod.share_id as string
+
     const discordSummaries = summaries.map(s => {
       // For common bases, show aspect(s) + HP. For rare+ bases, show the full name.
       const baseDisplay = s.baseRarity === 'Common'
@@ -96,7 +99,8 @@ export async function buildBotDecks(podId: string, setCode: string, settings: Re
         mixinDisplayName: MIXIN_DISPLAY_NAMES[s.mixinName] || s.mixinName || 'None',
         strategyDescription: STRATEGY_DESCRIPTIONS[s.strategyName] || '',
         mixinDescription: MIXIN_DESCRIPTIONS[s.mixinName] || '',
-        poolUrl: `${APP_URL}/pool/${s.poolShareId}/deck/play`,
+        deckBuilderUrl: `${APP_URL}/pool/${s.poolShareId}/deck/play`,
+        draftLogUrl: podType === 'draft' ? `${APP_URL}/draft/${podShareId_str}/log` : null,
         poolShareId: s.poolShareId,
         leaderName: s.leaderName,
         leaderImageUrl: s.leaderImageUrl,

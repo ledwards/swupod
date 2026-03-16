@@ -721,7 +721,8 @@ export async function postBotDeckSummaries(
     mixinDisplayName: string
     strategyDescription: string
     mixinDescription: string
-    poolUrl: string
+    deckBuilderUrl: string
+    draftLogUrl?: string | null
     poolShareId: string
     leaderName: string
     leaderImageUrl: string
@@ -750,12 +751,19 @@ export async function postBotDeckSummaries(
         deckCards: bot.deckCards,
         title: bot.leaderName,
         subtitle: `${bot.botName}\n${bot.strategyDisplayName} + ${bot.mixinDisplayName}`,
-        poolUrl: bot.poolUrl,
+        poolUrl: bot.deckBuilderUrl,
       }).catch(err => {
         console.error('[Discord Bots] Deck image generation failed:', err)
         return null
       })
     }
+
+    // Build links section based on pod type
+    const links: string[] = []
+    if (bot.draftLogUrl) {
+      links.push(`**[Draft Log](${bot.draftLogUrl})**`)
+    }
+    links.push(`**[View Deck](${bot.deckBuilderUrl})**`)
 
     const embed: Record<string, unknown> = {
       title: `${bot.botName}`,
@@ -767,7 +775,7 @@ export async function postBotDeckSummaries(
         `**Base:** ${bot.baseDisplay}`,
         `**Deck:** ${bot.deckSize} cards`,
         '',
-        `**[View Draft Pool](${bot.poolUrl})**`,
+        links.join(' | '),
         '',
         `**Host:** ${podInfo.hostName} | **${setCode}** draft`,
         `**Players:** ${podInfo.playerNames.join(', ')}`,
