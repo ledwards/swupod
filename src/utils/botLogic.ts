@@ -324,6 +324,10 @@ async function makeBotCardPick(bot: BotPlayer, draftState: DraftState): Promise<
   } catch (err) {
     console.error('[BOT] Failed to load draft stats, continuing without:', err)
   }
+  // Lane coordination uses signal reading (already built into BaseStrategy).
+  // The bot infers which colors are open from packs it receives — cards still
+  // available at mid-late picks indicate nobody upstream is drafting that color.
+  // No need to peek at other players' data.
   const context = {
     draftedCards,
     draftedLeaders,

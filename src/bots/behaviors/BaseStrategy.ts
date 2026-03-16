@@ -167,23 +167,33 @@ export abstract class BaseStrategy {
       this._commitToBaseColor(draftedCards, this._getLeaderColors(this.committedLeader), stats)
     }
 
-    // Signal reading: after pack 1 (pick 15) and pack 2 (pick 29), if committed
-    // leader's colors are being cut (less than 40% of drafted cards match),
-    // re-evaluate commitment. A real player would notice they're not seeing
-    // their colors and pivot.
-    if (this.committedLeader && (this.pickCount === 15 || this.pickCount === 29) && draftedLeaders.length > 1) {
+    // Continuous signal reading: after commitment, check EVERY pick whether
+    // colors are flowing. If after 5+ picks post-commitment the in-aspect
+    // ratio is below 50%, pivot immediately. Don't wait for pack boundaries.
+    // A real player notices they're being cut within a few picks and adapts.
+    if (this.committedLeader && draftedLeaders.length > 1) {
       const leaderColors = this._getLeaderColors(this.committedLeader)
-      const nonLeaderCards = draftedCards.filter(c => !c.isLeader && !c.isBase)
-      const matchCount = nonLeaderCards.filter(c =>
-        this._countMatchingAspects(c.aspects || [], leaderColors) > 0
-      ).length
-      const matchRatio = matchCount / Math.max(nonLeaderCards.length, 1)
+      const postCommitCards = draftedCards.filter(c => !c.isLeader && !c.isBase)
 
-      if (matchRatio < 0.4) {
-        // Colors are being cut — re-commit to the leader that best matches our pool
-        this._commitToLeader(draftedLeaders, draftedCards, stats)
-        // Also reset base color to re-evaluate
-        this.committedBaseColor = null
+      // Only check after 5+ cards to avoid noise from tiny samples
+      if (postCommitCards.length >= 5) {
+        const matchCount = postCommitCards.filter(c =>
+          this._countMatchingAspects(c.aspects || [], leaderColors) > 0
+        ).length
+        const matchRatio = matchCount / postCommitCards.length
+
+        if (matchRatio < 0.5) {
+          // Colors are being cut — pivot to the leader that best matches signals + pool
+          const oldLeader = this.committedLeader
+          this._commitToLeader(draftedLeaders, draftedCards, stats)
+          if (this.committedLeader !== oldLeader) {
+            // Leader changed — reset base color
+            this.committedBaseColor = null
+            if (this.pickCount >= this.mentalBasePickTurn) {
+              this._commitToBaseColor(draftedCards, this._getLeaderColors(this.committedLeader), stats)
+            }
+          }
+        }
       }
     }
 
