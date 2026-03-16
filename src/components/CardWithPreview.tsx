@@ -4,8 +4,7 @@
  *
  * Wraps Card with built-in enlarged preview behavior:
  * - Desktop: hover to show preview
- * - iPad/tablet: tap to show preview
- * - Mobile: long-press to show preview
+ * - Touch devices (tablet + phone): long-press to show preview
  *
  * Use this instead of Card when you want preview functionality
  * without manually wiring up useCardPreview.
@@ -14,14 +13,6 @@
 import { useState, useRef, useCallback, type MouseEvent, type TouchEvent } from 'react'
 import Card, { type CardProps, type CardData } from './Card'
 import { CardPreview } from './DeckBuilder/CardPreview'
-
-// Detect tablet (touch + larger screen)
-function isTablet(): boolean {
-  if (typeof window === 'undefined') return false
-  const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
-  const isLargeScreen = window.innerWidth >= 768 && window.innerHeight >= 500
-  return hasTouch && isLargeScreen
-}
 
 // Detect small viewport (phones)
 function isSmallViewport(): boolean {
@@ -75,21 +66,14 @@ export function CardWithPreview({ card, onClick, ...rest }: CardWithPreviewProps
     setPreview(null)
   }, [])
 
-  // Touch handling (tablet tap / mobile long-press)
+  // Touch handling — long press on all touch devices (tablet + phone)
+  // Quick taps must pass through to onClick so users can tap to add cards
   const handleTouchStart = useCallback(() => {
     if (!card) return
     longPressTriggeredRef.current = false
 
     if (longPressTimeoutRef.current) clearTimeout(longPressTimeoutRef.current)
 
-    // Tablet: instant tap
-    if (isTablet()) {
-      longPressTriggeredRef.current = true
-      setPreview({ card, x: 0, y: 0, isMobile: true })
-      return
-    }
-
-    // Phone: long press
     longPressTimeoutRef.current = setTimeout(() => {
       longPressTriggeredRef.current = true
       setPreview({ card, x: 0, y: 0, isMobile: true })

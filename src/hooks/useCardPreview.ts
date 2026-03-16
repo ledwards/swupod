@@ -4,7 +4,7 @@
  *
  * Handles the enlarged card preview.
  * Desktop: shows on hover after 400ms delay.
- * Mobile/small screens: shows on long press (~500ms).
+ * Touch devices (tablets + phones): shows on long press (~500ms).
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
@@ -52,17 +52,6 @@ export interface UseCardPreviewReturn {
 
 function isSmallViewport(): boolean {
   return window.innerHeight <= 500 || window.innerWidth <= 768;
-}
-
-/**
- * Detect if device is a tablet (iPad-like):
- * - Has touch capability
- * - Larger screen (not a phone)
- */
-function isTablet(): boolean {
-  const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  const isLargeScreen = window.innerWidth >= 768 && window.innerHeight >= 500;
-  return hasTouch && isLargeScreen;
 }
 
 // === HOOK ===
@@ -184,21 +173,8 @@ export function useCardPreview(): UseCardPreviewReturn {
       clearTimeout(longPressTimeoutRef.current);
     }
 
-    // On tablets (iPad), use tap instead of long press
-    if (isTablet()) {
-      // If preview is already showing this card, do nothing (let touchEnd dismiss it)
-      // If showing different card or no preview, show this card
-      longPressTriggeredRef.current = true;
-      setHoveredCardPreview({
-        card,
-        x: 0,
-        y: 0,
-        isMobile: true, // Use mobile/centered layout on tablets too
-      });
-      return;
-    }
-
-    // On phones, use long press
+    // Both tablets and phones use long press — quick taps must pass through
+    // to onClick so users can tap to add cards to deck
     longPressTimeoutRef.current = setTimeout(() => {
       longPressTriggeredRef.current = true;
       // Center the preview on screen — CardPreview handles mobile sizing
@@ -208,7 +184,7 @@ export function useCardPreview(): UseCardPreviewReturn {
         y: 0,
         isMobile: true,
       });
-    }, 1000);
+    }, 500);
   }, []);
 
   const handleCardTouchEnd = useCallback((e?: { preventDefault?: () => void }) => {
