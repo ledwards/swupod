@@ -19,7 +19,7 @@ export class PrimaryColorCornerStrategy extends BaseStrategy {
 
   // Very early commitment
   getYRange(): [number, number] { return [1, 3] }
-  getXRange(): [number, number] { return [5, 8] }
+  getXRange(): [number, number] { return [3, 5] }
 
   rankLeaders(leaders: RawCard[], context: StrategyContext): RawCard[] {
     return this.rankLeadersByPopularity(leaders, context)

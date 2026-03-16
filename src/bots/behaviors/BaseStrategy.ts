@@ -51,6 +51,8 @@ export abstract class BaseStrategy {
   mentalBasePickTurn: number    // X — when bot decides base color
   mixin: MixinModifier | null
   pickCount: number
+  /** Track color openness from packs seen. Higher = more open (cards available mid-late pack). */
+  colorSignals: Map<string, number>
 
   constructor(strategyName: string, mixin: MixinModifier | null = null) {
     this.name = 'strategy'
@@ -59,6 +61,7 @@ export abstract class BaseStrategy {
     this.committedBaseColor = null
     this.mixin = mixin
     this.pickCount = 0
+    this.colorSignals = new Map(COLOR_ASPECTS.map(c => [c, 0]))
 
     // Determine Y and X turns (with mixin adjustments)
     const [yMin, yMax] = this.getYRange()
@@ -74,9 +77,9 @@ export abstract class BaseStrategy {
     this.mentalLeaderPickTurn = randomInRange(yMin + yOffset, yMax + yOffset)
     this.mentalBasePickTurn = randomInRange(xMin + xOffset, xMax + xOffset)
 
-    // Clamp to valid ranges
-    this.mentalLeaderPickTurn = Math.max(1, Math.min(this.mentalLeaderPickTurn, 42))
-    this.mentalBasePickTurn = Math.max(this.mentalLeaderPickTurn + 1, Math.min(this.mentalBasePickTurn, 42))
+    // Clamp: mixin can shift within range but never below strategy's minimum
+    this.mentalLeaderPickTurn = Math.max(yMin, Math.min(this.mentalLeaderPickTurn, 42))
+    this.mentalBasePickTurn = Math.max(Math.max(xMin, this.mentalLeaderPickTurn + 1), Math.min(this.mentalBasePickTurn, 42))
   }
 
   // --- Abstract Methods (subclasses must implement) ---
@@ -148,12 +151,40 @@ export abstract class BaseStrategy {
     const stats = context.draftStats || null
     this.pickCount = draftedCards.length + 1
 
-    // Commitment decisions based on Y and X turns
-    if (!this.committedLeader && this.pickCount >= this.mentalLeaderPickTurn && draftedLeaders.length > 0) {
+    // Read signals: track which colors are available in packs we see.
+    // Cards available at mid-late picks (pack has 8 or fewer cards left)
+    // are a strong signal that color is open — nobody upstream is taking it.
+    this._readColorSignals(pack)
+
+    // Commitment decisions based on Y and X turns.
+    // Wait until at least 3 cards are drafted so the commitment is informed.
+    const minCardsForCommitment = 3
+    if (!this.committedLeader && this.pickCount >= this.mentalLeaderPickTurn
+        && draftedLeaders.length > 0 && draftedCards.length >= minCardsForCommitment) {
       this._commitToLeader(draftedLeaders, draftedCards, stats)
     }
     if (!this.committedBaseColor && this.pickCount >= this.mentalBasePickTurn && this.committedLeader) {
       this._commitToBaseColor(draftedCards, this._getLeaderColors(this.committedLeader), stats)
+    }
+
+    // Signal reading: after pack 1 (pick 15) and pack 2 (pick 29), if committed
+    // leader's colors are being cut (less than 40% of drafted cards match),
+    // re-evaluate commitment. A real player would notice they're not seeing
+    // their colors and pivot.
+    if (this.committedLeader && (this.pickCount === 15 || this.pickCount === 29) && draftedLeaders.length > 1) {
+      const leaderColors = this._getLeaderColors(this.committedLeader)
+      const nonLeaderCards = draftedCards.filter(c => !c.isLeader && !c.isBase)
+      const matchCount = nonLeaderCards.filter(c =>
+        this._countMatchingAspects(c.aspects || [], leaderColors) > 0
+      ).length
+      const matchRatio = matchCount / Math.max(nonLeaderCards.length, 1)
+
+      if (matchRatio < 0.4) {
+        // Colors are being cut — re-commit to the leader that best matches our pool
+        this._commitToLeader(draftedLeaders, draftedCards, stats)
+        // Also reset base color to re-evaluate
+        this.committedBaseColor = null
+      }
     }
 
     // Score all cards
@@ -187,7 +218,7 @@ export abstract class BaseStrategy {
 
     if (!isCommitted) {
       qualityWeight = 1.0
-      colorWeight = 0.6
+      colorWeight = 0.8  // Strong color bias even pre-commitment
       needWeight = 0.0
       synergyWeight = 0.0
     } else {
@@ -331,10 +362,13 @@ export abstract class BaseStrategy {
       if (cardAspects.length === 0) {
         return 15  // Neutral
       }
-      // Harsh off-aspect penalty — these cards require paying extra resources
-      // and should almost never make the deck cut.
-      // Must be large enough that even the best quality score can't overcome it.
-      return isFullyCommitted ? -500 : -300
+      // Off-aspect cards should NEVER be picked over any in-aspect card.
+      // After commitment, a player will always pick the worst in-aspect card
+      // over the best off-aspect card. Only forced last picks end up off-aspect.
+      // -1000 ensures this: even with max quality (150) × qualityWeight (0.6) = 90,
+      // the total is still deeply negative (-910). LAW splash bonus can partially
+      // offset this for valid splash cards only.
+      return -1000
     }
 
     // Exploration phase: prefer in-color, penalize off-color
@@ -510,23 +544,22 @@ export abstract class BaseStrategy {
 
     if (currentOffAspect >= 5) return 0  // Already at max splash
 
-    // Counteract the -500 off-aspect penalty for valid LAW splashes.
-    // Common bases in LAW provide a third color, so off-by-one-primary cards
-    // can be played with only +2 cost penalty — worth it for bombs.
-    const splashBase = 480  // Mostly negates the -500, making them slightly negative baseline
+    // Counteract the -1000 off-aspect penalty for valid LAW splashes.
+    // Splash cards should score worse than in-aspect cards but better than
+    // truly off-aspect garbage. Target: splash score around -100 to 0 total,
+    // so in-aspect (score ~50-100) always wins, but splash beats nothing.
+    const splashBase = 950  // Mostly negates -1000, leaves splash slightly negative
 
-    // Only splash high-quality cards
+    // Only splash high-quality cards (rares, legendaries, powerful cards)
     const powerfulCardsForSet = POWERFUL_CARDS[setCode] || []
     if (powerfulCardsForSet.includes(card.name || '')) {
       return splashBase + 40  // Powerful cards splash easily
     }
 
-    // Splash rares and legendaries
     if (card.rarity === 'Legendary' || card.rarity === 'Rare') {
       return splashBase + 20
     }
 
-    // Uncommons can splash if they're decent
     if (card.rarity === 'Uncommon') {
       return splashBase
     }
@@ -544,24 +577,32 @@ export abstract class BaseStrategy {
     }
 
     let bestLeader: RawCard | null = null
-    let bestScore = -1
+    let bestScore = -Infinity
 
     for (const leader of draftedLeaders) {
       const leaderColors = this._getLeaderColors(leader)
       let score = 0
 
+      // Count how many drafted cards match this leader's colors
       for (const card of draftedCards) {
         if (this._countMatchingAspects(card.aspects || [], leaderColors) > 0) {
-          score++
+          score += 10
         }
       }
 
-      // Factor in popularity from this strategy's segment
+      // Color signals: are this leader's colors open at the table?
+      // This is the key signal-reading mechanism — weighs heavily in commitment.
+      // Each signal point represents a card in that color seen in a pack.
+      for (const color of leaderColors) {
+        score += (this.colorSignals.get(color) || 0) * 3
+      }
+
+      // Factor in popularity (small tiebreaker, should not override signals)
       const leaderPop = this.getLeaderPopularity(stats)
       if (leaderPop) {
         const stat = leaderPop.get(leader.name || '')
         if (stat) {
-          score += Math.min(stat.timesPicked / 10, 5)
+          score += Math.min(stat.timesPicked / 10, 3)
         }
       }
 
@@ -643,6 +684,37 @@ export abstract class BaseStrategy {
       const posB = rankB >= 0 ? rankB : 999
       return posA - posB
     })
+  }
+
+  // --- Signal Reading ---
+
+  /**
+   * Read color signals from the current pack.
+   * Cards available at mid-late picks indicate that color is open — nobody
+   * upstream is drafting it. Early picks (full pack) are less informative.
+   *
+   * Signal weight increases as pack gets smaller (later picks = stronger signal).
+   */
+  _readColorSignals(pack: RawCard[]): void {
+    // Full packs (14 cards, pick 1) tell you nothing — skip.
+    // Every subsequent pick tells you what upstream players DIDN'T take.
+    if (pack.length >= 14) return
+
+    // Stronger signal as pack shrinks — seeing good cards late = very open
+    // Pick 2 (13 cards): weight 1, Pick 5 (10 cards): weight 1,
+    // Pick 8 (7 cards): weight 2, Pick 12 (3 cards): weight 3
+    const signalWeight = pack.length <= 3 ? 3 : pack.length <= 7 ? 2 : 1
+
+    for (const card of pack) {
+      if (card.isLeader || card.isBase) continue
+      for (const aspect of (card.aspects || [])) {
+        if (COLOR_ASPECTS.includes(aspect)) {
+          this.colorSignals.set(aspect,
+            (this.colorSignals.get(aspect) || 0) + signalWeight
+          )
+        }
+      }
+    }
   }
 
   // --- Helpers ---

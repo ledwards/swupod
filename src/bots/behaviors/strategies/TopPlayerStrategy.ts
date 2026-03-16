@@ -17,8 +17,8 @@ export class TopPlayerStrategy extends BaseStrategy {
     super('topPlayer', mixin)
   }
 
-  getYRange(): [number, number] { return [3, 8] }
-  getXRange(): [number, number] { return [8, 13] }
+  getYRange(): [number, number] { return [2, 5] }
+  getXRange(): [number, number] { return [5, 8] }
 
   rankLeaders(leaders: RawCard[], context: StrategyContext): RawCard[] {
     return this.rankLeadersByPopularity(leaders, context)

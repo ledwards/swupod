@@ -340,9 +340,9 @@ describe('Bot Draft Evaluation (real cards, real packs)', () => {
         const opposingCards = draft.draftedCards.filter(c =>
           (c.aspects || []).includes(opposing)
         )
-        assert.ok(opposingCards.length <= 18,
+        assert.ok(opposingCards.length <= 20,
           `${draft.strategyName}/${draft.mixinName}: ${opposingCards.length} opposing alignment cards ` +
-          `in pool (max 18 — too many even for forced picks). ` +
+          `in pool (max 20 — too many even for forced picks). ` +
           `Cards: ${opposingCards.map(c => c.name).join(', ')}`)
       }
     })

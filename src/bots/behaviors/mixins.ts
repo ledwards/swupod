@@ -30,7 +30,7 @@ export interface MixinModifier {
 
 export const MIXIN_A: MixinModifier = {
   name: 'highOptionality',
-  commitmentOffset: 3,        // Y and X pushed 3 turns later
+  commitmentOffset: 1,        // Y and X pushed 1 turn later (was 3, too much)
   preCommitColorMultiplier: -0.4,   // Color weight reduced 40% before commitment
   preCommitQualityMultiplier: 0.2,  // Quality weight increased 20% before commitment
   postCommitSynergyMultiplier: 0,

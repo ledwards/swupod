@@ -243,13 +243,13 @@ test('DiversityStrategy maximizes aspect diversity in rounds 2-3', () => {
     `Should pick leader with most new aspects, got ${ranked[0].name}`)
 })
 
-test('DiversityStrategy has late Y and X ranges', () => {
+test('DiversityStrategy has later Y and X ranges than core strategies', () => {
   const strategy = new DiversityStrategy(null)
   const [yMin, yMax] = strategy.getYRange()
   const [xMin, xMax] = strategy.getXRange()
 
-  assert(yMin >= 8, `Y min should be >= 8, got ${yMin}`)
-  assert(xMin >= 10, `X min should be >= 10, got ${xMin}`)
+  assert(yMin >= 4, `Y min should be >= 4, got ${yMin}`)
+  assert(xMin >= 7, `X min should be >= 7, got ${xMin}`)
 })
 
 // --- Primary Color Corner Tests ---
@@ -336,11 +336,11 @@ test('NemesisStrategy commits immediately (Y=1, X=1)', () => {
 // --- Mixin Tests ---
 console.log('\n\x1b[36mMixin Modifiers\x1b[0m')
 
-test('Mixin A (High Optionality) delays commitment', () => {
+test('Mixin A (High Optionality) delays commitment slightly', () => {
   const strategy = new AllPlayerStrategy(MIXIN_A)
-  // Y range is [3,8] + offset 3 = [6,11]
-  assert(strategy.mentalLeaderPickTurn >= 6, `Y should be >= 6, got ${strategy.mentalLeaderPickTurn}`)
-  assert(strategy.mentalLeaderPickTurn <= 11, `Y should be <= 11, got ${strategy.mentalLeaderPickTurn}`)
+  // Y range is [2,5] + offset 1 = [3,6]
+  assert(strategy.mentalLeaderPickTurn >= 3, `Y should be >= 3, got ${strategy.mentalLeaderPickTurn}`)
+  assert(strategy.mentalLeaderPickTurn <= 6, `Y should be <= 6, got ${strategy.mentalLeaderPickTurn}`)
 })
 
 test('Mixin B (High Conviction) accelerates commitment', () => {

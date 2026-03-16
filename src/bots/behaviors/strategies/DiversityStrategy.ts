@@ -16,9 +16,9 @@ export class DiversityStrategy extends BaseStrategy {
     super('diversity', mixin)
   }
 
-  // Late commitment — stays flexible
-  getYRange(): [number, number] { return [8, 12] }
-  getXRange(): [number, number] { return [10, 14] }
+  // Slightly later commitment — stays flexible but still commits mid-pack-1
+  getYRange(): [number, number] { return [4, 7] }
+  getXRange(): [number, number] { return [7, 10] }
 
   rankLeaders(leaders: RawCard[], context: StrategyContext): RawCard[] {
     const draftedLeaders = context.draftedLeaders || []
