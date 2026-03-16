@@ -30,11 +30,14 @@ interface BotDeckSummary {
   poolShareId: string
   leaderName: string
   leaderImageUrl: string
+  leaderVariantType?: string
   baseName: string
+  baseVariantType?: string
   baseRarity: string
   baseAspects: string[]
   baseHp: number | null
   deckSize: number
+  deckCards: Array<{ name: string; variantType?: string }>
 }
 
 export async function buildBotDecks(podId: string, setCode: string, settings: Record<string, unknown> = {}): Promise<void> {
@@ -97,8 +100,12 @@ export async function buildBotDecks(podId: string, setCode: string, settings: Re
         poolShareId: s.poolShareId,
         leaderName: s.leaderName,
         leaderImageUrl: s.leaderImageUrl,
+        leaderVariantType: s.leaderVariantType,
+        baseName: s.baseName,
+        baseVariantType: s.baseVariantType,
         baseDisplay,
         deckSize: s.deckSize,
+        deckCards: s.deckCards,
       }
     })
 
@@ -376,11 +383,17 @@ async function buildSingleBotDeck(
     poolShareId,
     leaderName: (leader.name as string) || 'Unknown',
     leaderImageUrl: (leader.imageUrl as string) || '',
+    leaderVariantType: (leader.variantType as string) || undefined,
     baseName: (base.name as string) || 'Unknown Base',
+    baseVariantType: (base.variantType as string) || undefined,
     baseRarity: (base.rarity as string) || 'Common',
     baseAspects: (base.aspects as string[]) || [],
     baseHp: (base.hp as number) || null,
     deckSize: deckCards.length,
+    deckCards: deckCards.map((c: Record<string, unknown>) => ({
+      name: (c.name as string) || 'Unknown',
+      variantType: (c.variantType as string) || undefined,
+    })),
   }
 }
 

@@ -3,7 +3,7 @@
 // creates threads for pod chat, and manages webhooks for user messages.
 
 import { queryRow, query } from '@/lib/db'
-import { captureDeckImage } from '@/lib/deckScreenshot'
+import { generateDeckImage } from '@/lib/deckImageApi'
 
 const BOT_TOKEN = process.env['DISCORD_BOT_TOKEN']
 const DRAFT_NOW_CHANNEL_ID = process.env['DISCORD_DRAFT_NOW_CHANNEL_ID']
@@ -725,8 +725,12 @@ export async function postBotDeckSummaries(
     poolShareId: string
     leaderName: string
     leaderImageUrl: string
+    leaderVariantType?: string
+    baseName: string
+    baseVariantType?: string
     baseDisplay: string
     deckSize: number
+    deckCards?: Array<{ name: string; variantType?: string }>
   }>,
   podInfo: {
     hostName: string
@@ -737,11 +741,21 @@ export async function postBotDeckSummaries(
   if (!DRAFTBOTS_CHANNEL_ID) return
 
   for (const bot of botSummaries) {
-    // Generate the deck image (canvas-rendered export, not a screenshot)
-    const screenshot = await captureDeckImage(bot.poolShareId).catch(err => {
-      console.error('[Discord Bots] Screenshot failed:', err)
-      return null
-    })
+    // Generate deck image via swuapi
+    let deckImage: Buffer | null = null
+    if (bot.deckCards && bot.deckCards.length > 0) {
+      deckImage = await generateDeckImage({
+        leader: { name: bot.leaderName, variantType: bot.leaderVariantType },
+        base: { name: bot.baseName, variantType: bot.baseVariantType },
+        deckCards: bot.deckCards,
+        title: bot.leaderName,
+        subtitle: `${bot.botName}\n${bot.strategyDisplayName} + ${bot.mixinDisplayName}`,
+        poolUrl: bot.poolUrl,
+      }).catch(err => {
+        console.error('[Discord Bots] Deck image generation failed:', err)
+        return null
+      })
+    }
 
     const embed: Record<string, unknown> = {
       title: `${bot.botName}`,
@@ -753,7 +767,7 @@ export async function postBotDeckSummaries(
         `**Base:** ${bot.baseDisplay}`,
         `**Deck:** ${bot.deckSize} cards`,
         '',
-        `**Pool & Deck:** ${bot.poolUrl}`,
+        `**[Deckbuilder](${bot.poolUrl})**`,
         '',
         `**Host:** ${podInfo.hostName} | **${setCode}** draft`,
         `**Players:** ${podInfo.playerNames.join(', ')}`,
@@ -762,21 +776,18 @@ export async function postBotDeckSummaries(
       timestamp: new Date().toISOString(),
     }
 
-    // If we have a screenshot, attach it and reference in embed
-    if (screenshot) {
-      embed.image = { url: 'attachment://deck.jpg' }
+    if (deckImage) {
+      embed.image = { url: 'attachment://deck.png' }
     } else if (bot.leaderImageUrl) {
-      // Fall back to leader card image if screenshot fails
       embed.image = { url: bot.leaderImageUrl }
     }
 
     try {
       let res: Response
-      if (screenshot) {
-        // Use multipart/form-data to attach the screenshot
+      if (deckImage) {
         const formData = new FormData()
-        formData.append('payload_json', JSON.stringify({ embeds: [embed], attachments: [{ id: 0, filename: 'deck.jpg' }] }))
-        formData.append('files[0]', new Blob([screenshot as BlobPart], { type: 'image/jpeg' }), 'deck.jpg')
+        formData.append('payload_json', JSON.stringify({ embeds: [embed], attachments: [{ id: 0, filename: 'deck.png' }] }))
+        formData.append('files[0]', new Blob([deckImage as BlobPart], { type: 'image/png' }), 'deck.png')
 
         res = await fetch(`${DISCORD_API}/channels/${DRAFTBOTS_CHANNEL_ID}/messages`, {
           method: 'POST',
@@ -838,18 +849,37 @@ export async function postDeckToDiscord(opts: {
   poolShareId: string
   leaderName: string
   leaderImageUrl: string
+  leaderVariantType?: string
   baseName: string
+  baseVariantType?: string
   deckSize: number
   setCode: string
   poolType: string
-  deckImage?: Buffer | null
+  deckCards?: Array<{ name: string; variantType?: string }>
+  sideboardCards?: Array<{ name: string; variantType?: string }>
   draftShareId?: string | null
 }): Promise<{ threadId: string; messageId: string } | null> {
   if (!BOT_TOKEN) return null
   if (!POOL_DISCUSSION_CHANNEL_ID) return null
 
   const poolUrl = `${APP_URL}/pool/${opts.poolShareId}/deck`
-  const screenshot = opts.deckImage || null
+
+  // Generate deck image via swuapi
+  let deckImage: Buffer | null = null
+  if (opts.deckCards && opts.deckCards.length > 0) {
+    deckImage = await generateDeckImage({
+      leader: { name: opts.leaderName, variantType: opts.leaderVariantType },
+      base: { name: opts.baseName, variantType: opts.baseVariantType },
+      deckCards: opts.deckCards,
+      sideboardCards: opts.sideboardCards,
+      title: opts.leaderName,
+      subtitle: `by ${opts.username}`,
+      poolUrl,
+    }).catch(err => {
+      console.error('[Discord Deck] Deck image generation failed:', err)
+      return null
+    })
+  }
 
   const descriptionLines = [
     `**Leader:** ${opts.leaderName}`,
@@ -857,7 +887,7 @@ export async function postDeckToDiscord(opts: {
     `**Deck:** ${opts.deckSize} cards`,
     `**Format:** ${opts.poolType === 'draft' ? 'Draft' : opts.poolType === 'sealed' ? 'Sealed' : opts.poolType}`,
     '',
-    `**[View Deck & Pool](${poolUrl})**`,
+    `**[Deckbuilder](${poolUrl})**`,
   ]
   if (opts.draftShareId) {
     descriptionLines.push(`**[View Draft Log](${APP_URL}/draft/${opts.draftShareId}/log)**`)
@@ -870,17 +900,17 @@ export async function postDeckToDiscord(opts: {
     timestamp: new Date().toISOString(),
   }
 
-  if (screenshot) {
-    embed.image = { url: 'attachment://deck.jpg' }
+  if (deckImage) {
+    embed.image = { url: 'attachment://deck.png' }
   }
 
   try {
     // 1. Post the embed (with image attachment if available)
     let msgRes: Response
-    if (screenshot) {
+    if (deckImage) {
       const formData = new FormData()
-      formData.append('payload_json', JSON.stringify({ embeds: [embed], attachments: [{ id: 0, filename: 'deck.jpg' }] }))
-      formData.append('files[0]', new Blob([screenshot as BlobPart], { type: 'image/jpeg' }), 'deck.jpg')
+      formData.append('payload_json', JSON.stringify({ embeds: [embed], attachments: [{ id: 0, filename: 'deck.png' }] }))
+      formData.append('files[0]', new Blob([deckImage as BlobPart], { type: 'image/png' }), 'deck.png')
 
       msgRes = await fetch(`${DISCORD_API}/channels/${POOL_DISCUSSION_CHANNEL_ID}/messages`, {
         method: 'POST',

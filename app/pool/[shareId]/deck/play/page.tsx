@@ -428,25 +428,9 @@ export default function PlayPage({ params }: PageProps) {
     if (!shareId || postingToDiscord || postedToDiscord) return
     setPostingToDiscord(true)
     try {
-      // Generate deck image client-side if we have deck data
-      let imageBlob: Blob | null = null
-      if (pool?.deckBuilderState) {
-        try {
-          imageBlob = await generateDeckImageBlob()
-        } catch (e) {
-          console.error('Failed to generate deck image for Discord:', e)
-        }
-      }
-
-      const formData = new FormData()
-      if (imageBlob) {
-        formData.append('deckImage', imageBlob, 'deck.jpg')
-      }
-
       const res = await fetch(`/api/pools/${shareId}/post-to-discord`, {
         method: 'POST',
         credentials: 'include',
-        body: formData,
       })
       if (res.ok) {
         setPostedToDiscord(true)
@@ -464,111 +448,6 @@ export default function PlayPage({ params }: PageProps) {
     } finally {
       setPostingToDiscord(false)
     }
-  }
-
-  /** Generate deck image as a JPEG blob (reuses exportDeckImage canvas logic) */
-  const generateDeckImageBlob = async (): Promise<Blob | null> => {
-    const state = jsonParse(pool?.deckBuilderState)
-    const { cardPositions, activeLeader, activeBase } = state
-    if (!cardPositions || !activeLeader || !activeBase) return null
-
-    const leaderCard = cardPositions[activeLeader]?.card
-    const baseCard = cardPositions[activeBase]?.card
-    if (!leaderCard || !baseCard) return null
-
-    const deckCards = Object.values(cardPositions)
-      .filter((pos: any) => pos.section === 'deck' && !pos.card.isBase && !pos.card.isLeader && pos.enabled !== false)
-      .map((pos: any) => pos.card)
-      .sort(defaultSort)
-
-    // Load fonts
-    const barlowFont = new FontFace('Barlow', 'url(https://fonts.gstatic.com/s/barlow/v12/7cHpv4kjgoGqM7E_DMs5.woff2)')
-    const barlowBold = new FontFace('Barlow', 'url(https://fonts.gstatic.com/s/barlow/v12/7cHqv4kjgoGqM7E30-8s51os.woff2)', { weight: '700' })
-    await Promise.all([barlowFont.load(), barlowBold.load()])
-    document.fonts.add(barlowFont)
-    document.fonts.add(barlowBold)
-
-    // Load images
-    const loadImg = (url: string): Promise<HTMLImageElement> => new Promise((resolve, reject) => {
-      const img = new Image()
-      img.crossOrigin = 'anonymous'
-      img.onload = () => resolve(img)
-      img.onerror = reject
-      img.src = url
-    })
-
-    const [leaderImg, baseImg, ...cardImgs] = await Promise.all([
-      loadImg(leaderCard.imageUrl),
-      loadImg(baseCard.imageUrl),
-      ...deckCards.map((c: any) => loadImg(c.imageUrl).catch(() => null)),
-    ])
-
-    // Canvas layout (simplified version of exportDeckImage)
-    const cols = 8
-    const cardW = 160
-    const cardH = Math.round(cardW * 7 / 5)
-    const gap = 8
-    const padding = 30
-    const headerH = 60
-    const leaderW = Math.round(cardH * 7 / 5)
-    const leaderH = cardH
-    // Base is naturally landscape — same dimensions as leader (which is rotated to landscape)
-    const baseW = leaderW
-    const baseH = leaderH
-
-    const rows = Math.ceil(deckCards.length / cols)
-    const gridW = cols * (cardW + gap) - gap
-    const width = Math.max(gridW + padding * 2, leaderW + baseW + gap + padding * 2)
-    const deckGridY = headerH + leaderH + gap + padding
-    const height = deckGridY + rows * (cardH + gap) + 60
-
-    const canvas = document.createElement('canvas')
-    canvas.width = width
-    canvas.height = height
-    const ctx = canvas.getContext('2d')!
-
-    // Background
-    ctx.fillStyle = '#1a1a2e'
-    ctx.fillRect(0, 0, width, height)
-
-    // Title
-    ctx.fillStyle = 'white'
-    ctx.font = 'bold 24px Barlow'
-    ctx.textAlign = 'center'
-    ctx.fillText(`${leaderCard.name} — ${pool?.name || 'Deck'}`, width / 2, headerH - 10)
-
-    // Leader (landscape)
-    const leaderX = padding
-    const leaderY = headerH
-    ctx.drawImage(leaderImg, leaderX, leaderY, leaderW, leaderH)
-
-    // Base (landscape — draw as-is, no rotation needed)
-    const baseX = leaderX + leaderW + gap
-    const baseY = headerH
-    ctx.drawImage(baseImg, baseX, baseY, baseW, baseH)
-
-    // Deck cards grid
-    const gridX = (width - gridW) / 2
-    for (let i = 0; i < deckCards.length; i++) {
-      const img = cardImgs[i]
-      if (!img) continue
-      const col = i % cols
-      const row = Math.floor(i / cols)
-      const x = gridX + col * (cardW + gap)
-      const y = deckGridY + row * (cardH + gap)
-      ctx.drawImage(img, x, y, cardW, cardH)
-    }
-
-    // Footer
-    ctx.fillStyle = 'rgba(255,255,255,0.5)'
-    ctx.font = '14px Barlow'
-    ctx.textAlign = 'center'
-    ctx.fillText('protectthepod.com', width / 2, height - 15)
-
-    // Convert to JPEG blob
-    return new Promise(resolve => {
-      canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.85)
-    })
   }
 
   const exportDeckImage = async () => {

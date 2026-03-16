@@ -48,7 +48,21 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       return errorResponse('No leader selected', 400)
     }
 
-    const deckSize = Object.values(positions).filter((p: any) => p.section === 'deck').length
+    // Extract deck and sideboard cards from positions
+    const deckCards: Array<{ name: string; variantType?: string }> = []
+    const sideboardCards: Array<{ name: string; variantType?: string }> = []
+    for (const pos of Object.values(positions) as any[]) {
+      if (!pos.card || pos.card.isLeader || pos.card.isBase) continue
+      if (pos.enabled === false) continue
+      const cardInfo = { name: pos.card.name, variantType: pos.card.variantType }
+      if (pos.section === 'deck') {
+        deckCards.push(cardInfo)
+      } else if (pos.section === 'sideboard') {
+        sideboardCards.push(cardInfo)
+      }
+    }
+
+    const deckSize = deckCards.length
 
     // Make pool public
     if (!pool.is_public) {
@@ -69,30 +83,20 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       }
     }
 
-    // Extract uploaded deck image if present
-    let deckImageBuffer: Buffer | null = null
-    try {
-      const formData = await request.formData()
-      const imageFile = formData.get('deckImage') as File | null
-      if (imageFile) {
-        const arrayBuf = await imageFile.arrayBuffer()
-        deckImageBuffer = Buffer.from(arrayBuf)
-      }
-    } catch {
-      // No form data — that's fine, post without image
-    }
-
-    // Post to Discord
+    // Post to Discord (image generated server-side via swuapi)
     const result = await postDeckToDiscord({
       username: session.username || 'Unknown',
       poolShareId: shareId,
       leaderName: leader.name || 'Unknown Leader',
       leaderImageUrl: leader.imageUrl || '',
+      leaderVariantType: leader.variantType,
       baseName: base?.name || 'Unknown Base',
+      baseVariantType: base?.variantType,
       deckSize,
       setCode: pool.set_code || 'Unknown',
       poolType: pool.pool_type || 'draft',
-      deckImage: deckImageBuffer,
+      deckCards,
+      sideboardCards,
       draftShareId,
     })
 
