@@ -96,7 +96,7 @@ export async function buildBotDecks(podId: string, setCode: string, settings: Re
         mixinDisplayName: MIXIN_DISPLAY_NAMES[s.mixinName] || s.mixinName || 'None',
         strategyDescription: STRATEGY_DESCRIPTIONS[s.strategyName] || '',
         mixinDescription: MIXIN_DESCRIPTIONS[s.mixinName] || '',
-        poolUrl: `${APP_URL}/pool/${s.poolShareId}/deck`,
+        poolUrl: `${APP_URL}/pool/${s.poolShareId}/deck/play`,
         poolShareId: s.poolShareId,
         leaderName: s.leaderName,
         leaderImageUrl: s.leaderImageUrl,

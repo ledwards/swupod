@@ -2,11 +2,9 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback, use } from 'react'
-import { useRouter } from 'next/navigation'
 import DeckBuilder from '../../../../src/components/DeckBuilder'
 import ChatPanel from '../../../../src/components/ChatPanel'
 import { loadPool, updatePool } from '../../../../src/utils/poolApi'
-import { useAuth } from '../../../../src/contexts/AuthContext'
 import '../../../../src/App.css'
 import '../../../../src/components/ChatPanel.css'
 
@@ -47,8 +45,6 @@ interface PageProps {
 
 export default function DeckBuilderPage({ params }: PageProps) {
   const resolvedParams = use(params)
-  const router = useRouter()
-  const { user, loading: authLoading } = useAuth()
   const [pool, setPool] = useState<PoolData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -91,18 +87,8 @@ export default function DeckBuilderPage({ params }: PageProps) {
   useEffect(() => {
     if (error || (!loading && !pool)) {
       window.location.href = '/sealed'
-      return
     }
-    // Redirect non-owners to the read-only play page.
-    // Anonymous pools (no owner) can be edited by anyone.
-    // Wait for both pool and auth to finish loading.
-    if (!loading && !authLoading && pool && pool.owner) {
-      const isOwner = user?.id === pool.owner.id
-      if (!isOwner) {
-        router.replace(`/pool/${shareId}/deck/play`)
-      }
-    }
-  }, [error, loading, authLoading, pool, user, shareId, router])
+  }, [error, loading, pool])
 
   const handleBack = () => {
     if (shareId) {

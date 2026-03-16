@@ -767,7 +767,7 @@ export async function postBotDeckSummaries(
         `**Base:** ${bot.baseDisplay}`,
         `**Deck:** ${bot.deckSize} cards`,
         '',
-        `**[Deckbuilder](${bot.poolUrl})**`,
+        `**[View Draft Pool](${bot.poolUrl})**`,
         '',
         `**Host:** ${podInfo.hostName} | **${setCode}** draft`,
         `**Players:** ${podInfo.playerNames.join(', ')}`,
@@ -862,7 +862,7 @@ export async function postDeckToDiscord(opts: {
   if (!BOT_TOKEN) return null
   if (!POOL_DISCUSSION_CHANNEL_ID) return null
 
-  const poolUrl = `${APP_URL}/pool/${opts.poolShareId}/deck`
+  const poolUrl = `${APP_URL}/pool/${opts.poolShareId}/deck/play`
 
   // Generate deck image via swuapi
   let deckImage: Buffer | null = null
@@ -887,7 +887,7 @@ export async function postDeckToDiscord(opts: {
     `**Deck:** ${opts.deckSize} cards`,
     `**Format:** ${opts.poolType === 'draft' ? 'Draft' : opts.poolType === 'sealed' ? 'Sealed' : opts.poolType}`,
     '',
-    `**[Deckbuilder](${poolUrl})**`,
+    `**[View ${opts.poolType === 'draft' ? 'Draft' : 'Sealed'} Pool](${poolUrl})**`,
   ]
   if (opts.draftShareId) {
     descriptionLines.push(`**[View Draft Log](${APP_URL}/draft/${opts.draftShareId}/log)**`)
