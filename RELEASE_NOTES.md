@@ -4,6 +4,7 @@
 
 ### 🐛 Bug Fixes
 - **Fixed card preview hijacking taps on iPad**: Quick taps on cards were opening the enlarged preview instead of adding cards to deck. Card preview now requires a long press on all touch devices (tablets and phones), so normal taps work as expected.
+- **Fixed bot decks having fewer than 30 cards**: When bots drafted many off-color cards, the aspect penalty caps would reject cards without backfilling, resulting in decks under 30. Bot decks now always hit 30 cards.
 
 ### 💬 Post to Discord
 - **Post to Discord** Once you build a deck, share your deck, pool, and draft history to the Protect the Pod Discord for feedback and discussion at #pool-discussion. Posts your deck image, leader, base, and a link to your pool — and creates a discussion thread automatically. I'm hoping this ends up a very popular feature as we all try to learn from each other!

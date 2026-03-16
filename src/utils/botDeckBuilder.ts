@@ -214,6 +214,12 @@ async function buildSingleBotDeck(
     }
   }
 
+  // Backfill: if deck is still under 30 after enforcing caps,
+  // pull the best remaining sideboard cards (already sorted by score)
+  while (deckCards.length < DECK_SIZE && sideboardCards.length > 0) {
+    deckCards.push(sideboardCards.shift()!)
+  }
+
   // 5. Build card positions for deck builder state
   const cardPositions: Record<string, unknown> = {}
   let posIndex = 0
