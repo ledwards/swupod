@@ -2,6 +2,9 @@
 
 ## 03.15.2026
 
+### 🐛 Bug Fixes
+- **Fixed card preview hijacking taps on iPad**: Quick taps on cards were opening the enlarged preview instead of adding cards to deck. Card preview now requires a long press on all touch devices (tablets and phones), so normal taps work as expected.
+
 ### 💬 Post to Discord
 - **Post to Discord** Once you build a deck, share your deck, pool, and draft history to the Protect the Pod Discord for feedback and discussion at #pool-discussion. Posts your deck image, leader, base, and a link to your pool — and creates a discussion thread automatically. I'm hoping this ends up a very popular feature as we all try to learn from each other!
 
@@ -12,6 +15,8 @@
 
 ### 🎮 Gameplay
 - **Clearer post-draft instructions**: The play page now says "Deck Complete!" and explicitly tells you to find a human opponent on Karabast. Bots draft with you, but you play against other humans.
+- **Solo draft notice**: Solo drafts now show a clear message that this was a simulated pod — you can't play the bots, but you can check out their decks.
+- **Draft log on play page**: The draft log is now accessible from the play page so you can review picks without navigating back.
 - **Smart timeout picks**: If you time out on a pick, the system now uses the top player bot strategy to make a smart pick for you instead of picking randomly. It considers your drafted leaders and cards to pick something in-color. Doing you a bit of a favor here I suppose, but if you disconnect randomly, at least it won't pick garbage for you.
 
 ### 💬 Chat UX Improvements
@@ -19,8 +24,12 @@
 - **Unread message indicator**: When chat is closed and a new message arrives, the chat toggle pulses with a green glow so you never miss a message.
 
 ### 🤖 AI Players
-- **Bot pools are now public**: Bot deck links are always accessible — no more broken links when viewing bot decks from Discord. This will help us determine if the bots are doing a good job drafting! Check out #draftbots to see their decks.
-- **Smarter drafting**: Off-color penalty during exploration phase increased significantly so bots build more coherent pools.
+- **Bots now read signals**: Bots track which colors are available in the packs they receive — if good cards in a color keep showing up at mid-to-late picks, that color is open. Bots use this to choose leaders whose colors are flowing at the table, and will pivot to a different leader if their colors are being cut. This is the same signal-reading technique real players use.
+- **Earlier, smarter commitment**: Bots commit to a leader and base color earlier (by mid-pack-1) and will continuously re-evaluate if the signals say their colors aren't open.
+- **Fixed bot deck building**: Bot decks now strictly enforce the 5 off-aspect card limit for LAW and at most 1 opposing alignment card. Previously, bots could have 10-16 off-aspect cards.
+- **Fixed color vs alignment scoring**: Bots were treating alignment aspects (Heroism/Villainy) as color matches — a card like Scarif Lieutenant [Command, Heroism] was scored as "in-color" for an Aggression/Heroism leader. Alignment is NOT a color. Fixed.
+- **Bot pools are now public**: Bot deck links are always accessible — no more broken links when viewing bot decks from Discord. Check out #draftbots to see their decks.
+- **Smarter drafting**: Off-color penalty post-commitment is now absolute — any in-aspect card always beats any off-aspect card, no exceptions. Off-aspect cards only enter the pool as forced last picks.
 
 ### 🎨 UI Improvements
 - **Various draft UI tweaks**: Several small UI fixes and improvements on Draft.
