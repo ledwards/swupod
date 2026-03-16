@@ -1,11 +1,11 @@
 {
-  "status": "passing",
+  "status": "warning",
   "summary": {
     "total": 150,
-    "passed": 150,
-    "failed": 0
+    "passed": 148,
+    "failed": 2
   },
-  "passRate": 100,
-  "lastRun": "2026-03-16T02:18:37.817Z",
-  "badgeUrl": "https://img.shields.io/badge/QA_Tests-passing-brightgreen?style=flat-square"
+  "passRate": 98.7,
+  "lastRun": "2026-03-16T07:19:16.657Z",
+  "badgeUrl": "https://img.shields.io/badge/QA_Tests-148/150-yellow?style=flat-square"
 }
