@@ -153,7 +153,7 @@ async function buildSingleBotDeck(
   strategy.committedLeader = selectedLeader
   strategy.committedBaseColor = getBaseNewColor(selectedLeader, selectedBase)
 
-  // Hard-filter opposing alignment cards — Heroism never goes in Villainy deck and vice versa
+  // Filter and score cards for deck building
   const leaderAspects = (selectedLeader.aspects as string[]) || []
   const leaderAlignment = leaderAspects.find(a => a === 'Heroism' || a === 'Villainy')
   const opposingAlignment = leaderAlignment === 'Villainy' ? 'Heroism'
@@ -163,39 +163,44 @@ async function buildSingleBotDeck(
   const scoredCards = draftedCards
     .filter(c => {
       if (c.isLeader || c.isBase) return false
-      // Absolute ban on opposing alignment
-      if (opposingAlignment && (c.aspects || []).includes(opposingAlignment)) return false
       return true
     })
     .map(card => ({
       card,
-      score: strategy._scoreCard(card, [selectedLeader], draftedCards, 42, null, { setCode })
+      score: strategy._scoreCard(card, [selectedLeader], draftedCards, 42, null, { setCode }),
+      isOpposingAlignment: opposingAlignment ? ((card.aspects as string[]) || []).includes(opposingAlignment) : false,
     }))
     .sort((a, b) => b.score - a.score)
 
   // 4. Take top DECK_SIZE for deck, rest for sideboard
-  // Enforce hard cap: max 5 off-aspect cards in deck (LAW splash rule)
+  // Enforce hard caps:
+  // - Max 5 off-aspect cards (LAW splash rule)
+  // - Max 1 opposing alignment card (0 preferred, 1 allowed if pool is thin)
   const leaderColors = leaderAspects.filter(a => COLOR_ASPECTS.includes(a))
   const baseAspects = ((selectedBase as Record<string, unknown>).aspects as string[]) || []
   const baseColors = baseAspects.filter(a => COLOR_ASPECTS.includes(a))
   const inAspectColors = [...new Set([...leaderColors, ...baseColors])]
   const MAX_OFF_ASPECT = 5
+  const MAX_OPPOSING_ALIGNMENT = 1
 
   const deckCards: Record<string, unknown>[] = []
   const sideboardCards: Record<string, unknown>[] = []
   let offAspectInDeck = 0
+  let opposingInDeck = 0
 
-  for (const { card } of scoredCards) {
+  for (const { card, isOpposingAlignment } of scoredCards) {
     const cardColors = ((card.aspects as string[]) || []).filter(a => COLOR_ASPECTS.includes(a))
     const isOffAspect = cardColors.length > 0 && !cardColors.some(a => inAspectColors.includes(a))
 
     if (deckCards.length < DECK_SIZE) {
-      if (isOffAspect && offAspectInDeck >= MAX_OFF_ASPECT) {
-        // Off-aspect cap reached — send to sideboard
+      if (isOpposingAlignment && opposingInDeck >= MAX_OPPOSING_ALIGNMENT) {
+        sideboardCards.push(card)
+      } else if (isOffAspect && offAspectInDeck >= MAX_OFF_ASPECT) {
         sideboardCards.push(card)
       } else {
         deckCards.push(card)
         if (isOffAspect) offAspectInDeck++
+        if (isOpposingAlignment) opposingInDeck++
       }
     } else {
       sideboardCards.push(card)

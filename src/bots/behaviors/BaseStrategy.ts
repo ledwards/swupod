@@ -306,7 +306,8 @@ export abstract class BaseStrategy {
   ): number {
     const cardAspects = card.aspects || []
 
-    if (isFullyCommitted && this.committedLeader) {
+    // After Y (committed to leader): alignment is LOCKED, hard ban on opposing
+    if (this.committedLeader) {
       const leaderColors = this._getLeaderColors(this.committedLeader)
 
       // Wrong alignment is an absolute ban — Heroism cards never go in Villainy decks
@@ -333,7 +334,7 @@ export abstract class BaseStrategy {
       // Harsh off-aspect penalty — these cards require paying extra resources
       // and should almost never make the deck cut.
       // Must be large enough that even the best quality score can't overcome it.
-      return -500
+      return isFullyCommitted ? -500 : -300
     }
 
     // Exploration phase: prefer in-color, penalize off-color
@@ -343,12 +344,14 @@ export abstract class BaseStrategy {
 
     const allLeaderColors = this._getColorsFromLeaders(draftedLeaders)
 
-    // Even during exploration, NEVER draft opposing alignment cards
+    // Pre-Y: alignment is NOT locked — bots can still draft either alignment.
+    // Only penalize (don't ban) opposing alignment cards to keep options open.
+    // The hard ban activates after Y (committed path above).
     const draftedAlignment = this._getDraftedAlignment(draftedLeaders)
     if (draftedAlignment) {
       const opposingAlignment = draftedAlignment === 'Villainy' ? 'Heroism' : 'Villainy'
       if (cardAspects.includes(opposingAlignment)) {
-        return -10000
+        return -500  // Very strong penalty pre-commitment — nearly a ban
       }
     }
 
@@ -360,10 +363,11 @@ export abstract class BaseStrategy {
     if (cardAspects.length === 0) {
       return 15  // Neutral
     }
-    // Off-color penalty must be strong enough that quality scores can't overcome it.
-    // Quality scores range 0-150, colorWeight is 0.6 in exploration.
-    // -150 * 0.6 = -90, which beats most quality bonuses.
-    return -150
+    // Off-color penalty must overwhelm quality even with mixin boosts.
+    // Quality max ~150 × qualityWeight 1.4 (groupthink) = 210.
+    // This needs to survive: colorScore × colorWeight 0.6 = -300 × 0.6 = -180.
+    // Not enough. Use -500 so -500 × 0.6 = -300, beating quality.
+    return -500
   }
 
   /**
