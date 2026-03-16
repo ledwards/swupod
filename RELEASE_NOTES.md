@@ -24,10 +24,12 @@
 - **Unread message indicator**: When chat is closed and a new message arrives, the chat toggle pulses with a green glow so you never miss a message.
 
 ### 🤖 AI Players
-- **Fixed bot deck building**: Bot decks now strictly enforce the 5 off-aspect card limit for LAW. Previously, the LAW splash bonus could push too many off-aspect cards into the deck (some bots had 10-16 off-aspect cards). Now there's a hard cap enforced at deck build time.
-- **Fixed bot drafting**: Bots were treating alignment aspects (Heroism/Villainy) as color matches when scoring cards — so a card like Scarif Lieutenant [Command, Heroism] was scored as "in-color" for an Aggression/Heroism leader because of the Heroism match. Alignment is NOT a color. Bots now correctly distinguish colors from alignment, producing much better focused pools.
-- **Bot pools are now public**: Bot deck links are always accessible — no more broken links when viewing bot decks from Discord. This will help us determine if the bots are doing a good job drafting! Check out #draftbots to see their decks.
-- **Smarter drafting**: Off-color penalty during exploration phase increased significantly so bots build more coherent pools.
+- **Bots now read signals**: Bots track which colors are available in the packs they receive — if good cards in a color keep showing up at mid-to-late picks, that color is open. Bots use this to choose leaders whose colors are flowing at the table, and will pivot to a different leader if their colors are being cut. This is the same signal-reading technique real players use.
+- **Earlier, smarter commitment**: Bots commit to a leader and base color earlier (by mid-pack-1) and will continuously re-evaluate if the signals say their colors aren't open.
+- **Fixed bot deck building**: Bot decks now strictly enforce the 5 off-aspect card limit for LAW and at most 1 opposing alignment card. Previously, bots could have 10-16 off-aspect cards.
+- **Fixed color vs alignment scoring**: Bots were treating alignment aspects (Heroism/Villainy) as color matches — a card like Scarif Lieutenant [Command, Heroism] was scored as "in-color" for an Aggression/Heroism leader. Alignment is NOT a color. Fixed.
+- **Bot pools are now public**: Bot deck links are always accessible — no more broken links when viewing bot decks from Discord. Check out #draftbots to see their decks.
+- **Smarter drafting**: Off-color penalty post-commitment is now absolute — any in-aspect card always beats any off-aspect card, no exceptions. Off-aspect cards only enter the pool as forced last picks.
 
 ### 🎨 UI Improvements
 - **Various draft UI tweaks**: Several small UI fixes and improvements on Draft.
