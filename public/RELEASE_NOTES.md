@@ -4,6 +4,12 @@
 
 ### 🐛 Bug Fixes
 - **Fixed card preview hijacking taps on iPad**: Quick taps on cards were opening the enlarged preview instead of adding cards to deck. Card preview now requires a long press on all touch devices (tablets and phones), so normal taps work as expected.
+- **Fixed bot decks having fewer than 30 cards**: When bots drafted many off-color cards, the aspect penalty caps would reject cards without backfilling, resulting in decks under 30. Bot decks now always hit 30 cards.
+
+### 🤖 AI Players
+- **Bot draft logs are now public**: Bot players' draft logs are now visible to everyone, not just pod participants. You can see exactly what bots picked and why.
+- **Better bot Discord posts**: Bot deck posts now link to the Draft Log and View Pool (for drafts) or View Pool (for sealed), instead of the old play page link.
+- **Fixed viewing bot decks**: Non-owners viewing a bot's deck builder no longer trigger 401 errors from failed auto-save attempts.
 
 ### 💬 Post to Discord
 - **Post to Discord** Once you build a deck, share your deck, pool, and draft history to the Protect the Pod Discord for feedback and discussion at #pool-discussion. Posts your deck image, leader, base, and a link to your pool — and creates a discussion thread automatically. I'm hoping this ends up a very popular feature as we all try to learn from each other!
