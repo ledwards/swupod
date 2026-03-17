@@ -2,7 +2,7 @@
   "cards": [
     {
       "id": "19476",
-      "cardId": "JTL-1",
+      "cardId": "JTL-001",
       "name": "Asajj Ventress",
       "subtitle": "I Work Alone",
       "set": "JTL",
@@ -49,7 +49,7 @@
     },
     {
       "id": "19521",
-      "cardId": "JTL-10",
+      "cardId": "JTL-010",
       "name": "Captain Phasma",
       "subtitle": "Chrome Dome",
       "set": "JTL",
@@ -4989,7 +4989,7 @@
     },
     {
       "id": "19526",
-      "cardId": "JTL-11",
+      "cardId": "JTL-011",
       "name": "Major Vonreg",
       "subtitle": "Red Baron",
       "set": "JTL",
@@ -6496,7 +6496,7 @@
     },
     {
       "id": "19531",
-      "cardId": "JTL-12",
+      "cardId": "JTL-012",
       "name": "Luke Skywalker",
       "subtitle": "Hero of Yavin",
       "set": "JTL",
@@ -6931,7 +6931,7 @@
     },
     {
       "id": "19536",
-      "cardId": "JTL-13",
+      "cardId": "JTL-013",
       "name": "Poe Dameron",
       "subtitle": "I Can Fly Anything",
       "set": "JTL",
@@ -7412,7 +7412,7 @@
     },
     {
       "id": "19541",
-      "cardId": "JTL-14",
+      "cardId": "JTL-014",
       "name": "Admiral Trench",
       "subtitle": "Chk-chk-chk-chk",
       "set": "JTL",
@@ -7900,7 +7900,7 @@
     },
     {
       "id": "19546",
-      "cardId": "JTL-15",
+      "cardId": "JTL-015",
       "name": "Rio Durant",
       "subtitle": "Wisecracking Wheelman",
       "set": "JTL",
@@ -8380,7 +8380,7 @@
     },
     {
       "id": "19551",
-      "cardId": "JTL-16",
+      "cardId": "JTL-016",
       "name": "Admiral Ackbar",
       "subtitle": "It's A Trap!",
       "set": "JTL",
@@ -8860,7 +8860,7 @@
     },
     {
       "id": "19556",
-      "cardId": "JTL-17",
+      "cardId": "JTL-017",
       "name": "Han Solo",
       "subtitle": "Never Tell Me the Odds",
       "set": "JTL",
@@ -9299,7 +9299,7 @@
     },
     {
       "id": "19561",
-      "cardId": "JTL-18",
+      "cardId": "JTL-018",
       "name": "Kazuda Xiono",
       "subtitle": "Best Pilot in the Galaxy",
       "set": "JTL",
@@ -9778,7 +9778,7 @@
     },
     {
       "id": "19566",
-      "cardId": "JTL-19",
+      "cardId": "JTL-019",
       "name": "City in the Clouds",
       "subtitle": null,
       "set": "JTL",
@@ -10246,7 +10246,7 @@
     },
     {
       "id": "19481",
-      "cardId": "JTL-2",
+      "cardId": "JTL-002",
       "name": "Grand Admiral Thrawn",
       "subtitle": "...How Unfortunate",
       "set": "JTL",
@@ -10289,7 +10289,7 @@
     },
     {
       "id": "19571",
-      "cardId": "JTL-20",
+      "cardId": "JTL-020",
       "name": "Shield Generator Complex",
       "subtitle": null,
       "set": "JTL",
@@ -10749,7 +10749,7 @@
     },
     {
       "id": "19576",
-      "cardId": "JTL-21",
+      "cardId": "JTL-021",
       "name": "Colossus",
       "subtitle": null,
       "set": "JTL",
@@ -11221,7 +11221,7 @@
     },
     {
       "id": "19581",
-      "cardId": "JTL-22",
+      "cardId": "JTL-022",
       "name": "Resistance Headquarters",
       "subtitle": null,
       "set": "JTL",
@@ -11684,7 +11684,7 @@
     },
     {
       "id": "19586",
-      "cardId": "JTL-23",
+      "cardId": "JTL-023",
       "name": "Theed Palace",
       "subtitle": null,
       "set": "JTL",
@@ -12129,7 +12129,7 @@
     },
     {
       "id": "19591",
-      "cardId": "JTL-24",
+      "cardId": "JTL-024",
       "name": "Data Vault",
       "subtitle": null,
       "set": "JTL",
@@ -12599,7 +12599,7 @@
     },
     {
       "id": "19596",
-      "cardId": "JTL-25",
+      "cardId": "JTL-025",
       "name": "Thermal Oscillator",
       "subtitle": null,
       "set": "JTL",
@@ -13058,7 +13058,7 @@
     },
     {
       "id": "19601",
-      "cardId": "JTL-26",
+      "cardId": "JTL-026",
       "name": "Massassi Temple",
       "subtitle": null,
       "set": "JTL",
@@ -13515,7 +13515,7 @@
     },
     {
       "id": "19606",
-      "cardId": "JTL-27",
+      "cardId": "JTL-027",
       "name": "Nadiri Dockyards",
       "subtitle": null,
       "set": "JTL",
@@ -13988,7 +13988,7 @@
     },
     {
       "id": "19611",
-      "cardId": "JTL-28",
+      "cardId": "JTL-028",
       "name": "Nabat Village",
       "subtitle": null,
       "set": "JTL",
@@ -14401,7 +14401,7 @@
     },
     {
       "id": "19616",
-      "cardId": "JTL-29",
+      "cardId": "JTL-029",
       "name": "Chopper Base",
       "subtitle": null,
       "set": "JTL",
@@ -14854,7 +14854,7 @@
     },
     {
       "id": "19486",
-      "cardId": "JTL-3",
+      "cardId": "JTL-003",
       "name": "Lando Calrissian",
       "subtitle": "Buying Time",
       "set": "JTL",
@@ -14900,7 +14900,7 @@
     },
     {
       "id": "19621",
-      "cardId": "JTL-30",
+      "cardId": "JTL-030",
       "name": "Mos Eisley",
       "subtitle": null,
       "set": "JTL",
@@ -15380,7 +15380,7 @@
     },
     {
       "id": "19626",
-      "cardId": "JTL-31",
+      "cardId": "JTL-031",
       "name": "Lake Country",
       "subtitle": null,
       "set": "JTL",
@@ -15861,7 +15861,7 @@
     },
     {
       "id": "19631",
-      "cardId": "JTL-32",
+      "cardId": "JTL-032",
       "name": "Director Krennic",
       "subtitle": "On the Verge of Greatness",
       "set": "JTL",
@@ -16343,7 +16343,7 @@
     },
     {
       "id": "19636",
-      "cardId": "JTL-33",
+      "cardId": "JTL-033",
       "name": "Onyx Squadron Brute",
       "subtitle": null,
       "set": "JTL",
@@ -16805,7 +16805,7 @@
     },
     {
       "id": "19641",
-      "cardId": "JTL-34",
+      "cardId": "JTL-034",
       "name": "Interceptor Ace",
       "subtitle": null,
       "set": "JTL",
@@ -17281,7 +17281,7 @@
     },
     {
       "id": "19646",
-      "cardId": "JTL-35",
+      "cardId": "JTL-035",
       "name": "Tam Ryvora",
       "subtitle": "Searching For Purpose",
       "set": "JTL",
@@ -17765,7 +17765,7 @@
     },
     {
       "id": "19651",
-      "cardId": "JTL-36",
+      "cardId": "JTL-036",
       "name": "Iden Versio",
       "subtitle": "Adapt or Die",
       "set": "JTL",
@@ -18252,7 +18252,7 @@
     },
     {
       "id": "19656",
-      "cardId": "JTL-37",
+      "cardId": "JTL-037",
       "name": "Banshee",
       "subtitle": "Crippling Command",
       "set": "JTL",
@@ -18738,7 +18738,7 @@
     },
     {
       "id": "19661",
-      "cardId": "JTL-38",
+      "cardId": "JTL-038",
       "name": "Corvus",
       "subtitle": "Inferno Squadron Raider",
       "set": "JTL",
@@ -19185,7 +19185,7 @@
     },
     {
       "id": "19666",
-      "cardId": "JTL-39",
+      "cardId": "JTL-039",
       "name": "Chimaera",
       "subtitle": "Reinforcing the Center",
       "set": "JTL",
@@ -19652,7 +19652,7 @@
     },
     {
       "id": "19491",
-      "cardId": "JTL-4",
+      "cardId": "JTL-004",
       "name": "Rose Tico",
       "subtitle": "Saving What We Love",
       "set": "JTL",
@@ -19694,7 +19694,7 @@
     },
     {
       "id": "19671",
-      "cardId": "JTL-40",
+      "cardId": "JTL-040",
       "name": "Fleet Interdictor",
       "subtitle": null,
       "set": "JTL",
@@ -20188,7 +20188,7 @@
     },
     {
       "id": "19676",
-      "cardId": "JTL-41",
+      "cardId": "JTL-041",
       "name": "Annihilator",
       "subtitle": "Tagge's Flagship",
       "set": "JTL",
@@ -20669,7 +20669,7 @@
     },
     {
       "id": "19681",
-      "cardId": "JTL-42",
+      "cardId": "JTL-042",
       "name": "Power from Pain",
       "subtitle": null,
       "set": "JTL",
@@ -21146,7 +21146,7 @@
     },
     {
       "id": "19686",
-      "cardId": "JTL-43",
+      "cardId": "JTL-043",
       "name": "No Glory, Only Results",
       "subtitle": null,
       "set": "JTL",
@@ -21591,7 +21591,7 @@
     },
     {
       "id": "19691",
-      "cardId": "JTL-44",
+      "cardId": "JTL-044",
       "name": "Echo Base Engineer",
       "subtitle": null,
       "set": "JTL",
@@ -22057,7 +22057,7 @@
     },
     {
       "id": "19696",
-      "cardId": "JTL-45",
+      "cardId": "JTL-045",
       "name": "Hera Syndulla",
       "subtitle": "We've Lost Enough",
       "set": "JTL",
@@ -22536,7 +22536,7 @@
     },
     {
       "id": "19701",
-      "cardId": "JTL-46",
+      "cardId": "JTL-046",
       "name": "Paige Tico",
       "subtitle": "Dropping the Hammer",
       "set": "JTL",
@@ -23014,7 +23014,7 @@
     },
     {
       "id": "19706",
-      "cardId": "JTL-47",
+      "cardId": "JTL-047",
       "name": "Admiral Yularen",
       "subtitle": "Fleet Coordinator",
       "set": "JTL",
@@ -23493,7 +23493,7 @@
     },
     {
       "id": "19711",
-      "cardId": "JTL-48",
+      "cardId": "JTL-048",
       "name": "Cassian Andor",
       "subtitle": "Threading the Eye",
       "set": "JTL",
@@ -23967,7 +23967,7 @@
     },
     {
       "id": "19716",
-      "cardId": "JTL-49",
+      "cardId": "JTL-049",
       "name": "L3-37",
       "subtitle": "Get Out Of My Seat",
       "set": "JTL",
@@ -24414,7 +24414,7 @@
     },
     {
       "id": "19496",
-      "cardId": "JTL-5",
+      "cardId": "JTL-005",
       "name": "Admiral Piett",
       "subtitle": "Commanding the Armada",
       "set": "JTL",
@@ -24457,7 +24457,7 @@
     },
     {
       "id": "19721",
-      "cardId": "JTL-50",
+      "cardId": "JTL-050",
       "name": "Phantom II",
       "subtitle": "Modified to Dock",
       "set": "JTL",
@@ -24938,7 +24938,7 @@
     },
     {
       "id": "19726",
-      "cardId": "JTL-51",
+      "cardId": "JTL-051",
       "name": "Red Squadron X-Wing",
       "subtitle": null,
       "set": "JTL",
@@ -25406,7 +25406,7 @@
     },
     {
       "id": "19731",
-      "cardId": "JTL-52",
+      "cardId": "JTL-052",
       "name": "D'Qar Cargo Frigate",
       "subtitle": null,
       "set": "JTL",
@@ -25828,7 +25828,7 @@
     },
     {
       "id": "19736",
-      "cardId": "JTL-53",
+      "cardId": "JTL-053",
       "name": "The Ghost",
       "subtitle": "Heart of the Family",
       "set": "JTL",
@@ -26325,7 +26325,7 @@
     },
     {
       "id": "19741",
-      "cardId": "JTL-54",
+      "cardId": "JTL-054",
       "name": "Gold Leader",
       "subtitle": "Fastest Ship in the Fleet",
       "set": "JTL",
@@ -26816,7 +26816,7 @@
     },
     {
       "id": "19746",
-      "cardId": "JTL-55",
+      "cardId": "JTL-055",
       "name": "You're All Clear, Kid",
       "subtitle": null,
       "set": "JTL",
@@ -27295,7 +27295,7 @@
     },
     {
       "id": "19751",
-      "cardId": "JTL-56",
+      "cardId": "JTL-056",
       "name": "Hondo Ohnaka",
       "subtitle": "Superfluous Swindler",
       "set": "JTL",
@@ -27776,7 +27776,7 @@
     },
     {
       "id": "19756",
-      "cardId": "JTL-57",
+      "cardId": "JTL-057",
       "name": "Astromech Pilot",
       "subtitle": null,
       "set": "JTL",
@@ -28225,7 +28225,7 @@
     },
     {
       "id": "19761",
-      "cardId": "JTL-58",
+      "cardId": "JTL-058",
       "name": "Academy Graduate",
       "subtitle": null,
       "set": "JTL",
@@ -28710,7 +28710,7 @@
     },
     {
       "id": "19766",
-      "cardId": "JTL-59",
+      "cardId": "JTL-059",
       "name": "Corporate Defense Shuttle",
       "subtitle": null,
       "set": "JTL",
@@ -29195,7 +29195,7 @@
     },
     {
       "id": "19501",
-      "cardId": "JTL-6",
+      "cardId": "JTL-006",
       "name": "Darth Vader",
       "subtitle": "Victor Squadron Leader",
       "set": "JTL",
@@ -29240,7 +29240,7 @@
     },
     {
       "id": "19771",
-      "cardId": "JTL-60",
+      "cardId": "JTL-060",
       "name": "Desperate Commando",
       "subtitle": null,
       "set": "JTL",
@@ -29727,7 +29727,7 @@
     },
     {
       "id": "19776",
-      "cardId": "JTL-61",
+      "cardId": "JTL-061",
       "name": "Royal Security Fighter",
       "subtitle": null,
       "set": "JTL",
@@ -30202,7 +30202,7 @@
     },
     {
       "id": "19781",
-      "cardId": "JTL-62",
+      "cardId": "JTL-062",
       "name": "Silver Angel",
       "subtitle": "Trace's Hope",
       "set": "JTL",
@@ -30637,7 +30637,7 @@
     },
     {
       "id": "19786",
-      "cardId": "JTL-63",
+      "cardId": "JTL-063",
       "name": "Landing Shuttle",
       "subtitle": null,
       "set": "JTL",
@@ -31131,7 +31131,7 @@
     },
     {
       "id": "19791",
-      "cardId": "JTL-64",
+      "cardId": "JTL-064",
       "name": "Omicron Strike Craft",
       "subtitle": null,
       "set": "JTL",
@@ -31619,7 +31619,7 @@
     },
     {
       "id": "19796",
-      "cardId": "JTL-65",
+      "cardId": "JTL-065",
       "name": "Outer Rim Outlaws",
       "subtitle": null,
       "set": "JTL",
@@ -32094,7 +32094,7 @@
     },
     {
       "id": "19801",
-      "cardId": "JTL-66",
+      "cardId": "JTL-066",
       "name": "Trace Martez",
       "subtitle": "Trusting Sister",
       "set": "JTL",
@@ -32571,7 +32571,7 @@
     },
     {
       "id": "19806",
-      "cardId": "JTL-67",
+      "cardId": "JTL-067",
       "name": "Cloaked StarViper",
       "subtitle": null,
       "set": "JTL",
@@ -33005,7 +33005,7 @@
     },
     {
       "id": "19811",
-      "cardId": "JTL-68",
+      "cardId": "JTL-068",
       "name": "Perimeter AT-RT",
       "subtitle": null,
       "set": "JTL",
@@ -33498,7 +33498,7 @@
     },
     {
       "id": "19816",
-      "cardId": "JTL-69",
+      "cardId": "JTL-069",
       "name": "Munificent Frigate",
       "subtitle": null,
       "set": "JTL",
@@ -33969,7 +33969,7 @@
     },
     {
       "id": "19506",
-      "cardId": "JTL-7",
+      "cardId": "JTL-007",
       "name": "Admiral Holdo",
       "subtitle": "We're Not Alone",
       "set": "JTL",
@@ -34012,7 +34012,7 @@
     },
     {
       "id": "19821",
-      "cardId": "JTL-70",
+      "cardId": "JTL-070",
       "name": "U-Wing Lander",
       "subtitle": null,
       "set": "JTL",
@@ -34481,7 +34481,7 @@
     },
     {
       "id": "19826",
-      "cardId": "JTL-71",
+      "cardId": "JTL-071",
       "name": "CR90 Relief Runner",
       "subtitle": null,
       "set": "JTL",
@@ -34957,7 +34957,7 @@
     },
     {
       "id": "19831",
-      "cardId": "JTL-72",
+      "cardId": "JTL-072",
       "name": "Wing Guard Security Team",
       "subtitle": null,
       "set": "JTL",
@@ -35419,7 +35419,7 @@
     },
     {
       "id": "19836",
-      "cardId": "JTL-73",
+      "cardId": "JTL-073",
       "name": "Grim Valor",
       "subtitle": null,
       "set": "JTL",
@@ -35876,7 +35876,7 @@
     },
     {
       "id": "19841",
-      "cardId": "JTL-74",
+      "cardId": "JTL-074",
       "name": "Close the Shield Gate",
       "subtitle": null,
       "set": "JTL",
@@ -36348,7 +36348,7 @@
     },
     {
       "id": "19846",
-      "cardId": "JTL-75",
+      "cardId": "JTL-075",
       "name": "Repair",
       "subtitle": null,
       "set": "JTL",
@@ -36795,7 +36795,7 @@
     },
     {
       "id": "19851",
-      "cardId": "JTL-76",
+      "cardId": "JTL-076",
       "name": "Covering the Wing",
       "subtitle": null,
       "set": "JTL",
@@ -37234,7 +37234,7 @@
     },
     {
       "id": "19856",
-      "cardId": "JTL-77",
+      "cardId": "JTL-077",
       "name": "In the Heat of Battle",
       "subtitle": null,
       "set": "JTL",
@@ -37716,7 +37716,7 @@
     },
     {
       "id": "19861",
-      "cardId": "JTL-78",
+      "cardId": "JTL-078",
       "name": "Direct Hit",
       "subtitle": null,
       "set": "JTL",
@@ -38207,7 +38207,7 @@
     },
     {
       "id": "19866",
-      "cardId": "JTL-79",
+      "cardId": "JTL-079",
       "name": "Out the Airlock",
       "subtitle": null,
       "set": "JTL",
@@ -38683,7 +38683,7 @@
     },
     {
       "id": "19511",
-      "cardId": "JTL-8",
+      "cardId": "JTL-008",
       "name": "Wedge Antilles",
       "subtitle": "Leader of Red Squadron",
       "set": "JTL",
@@ -38728,7 +38728,7 @@
     },
     {
       "id": "19871",
-      "cardId": "JTL-80",
+      "cardId": "JTL-080",
       "name": "Nebula Ignition",
       "subtitle": null,
       "set": "JTL",
@@ -39191,7 +39191,7 @@
     },
     {
       "id": "19876",
-      "cardId": "JTL-81",
+      "cardId": "JTL-081",
       "name": "First Order TIE Fighter",
       "subtitle": null,
       "set": "JTL",
@@ -39657,7 +39657,7 @@
     },
     {
       "id": "19881",
-      "cardId": "JTL-82",
+      "cardId": "JTL-082",
       "name": "Kijimi Patrollers",
       "subtitle": null,
       "set": "JTL",
@@ -40140,7 +40140,7 @@
     },
     {
       "id": "19886",
-      "cardId": "JTL-83",
+      "cardId": "JTL-083",
       "name": "Pantoran Starship Thief",
       "subtitle": null,
       "set": "JTL",
@@ -40632,7 +40632,7 @@
     },
     {
       "id": "19891",
-      "cardId": "JTL-84",
+      "cardId": "JTL-084",
       "name": "Wingman Victor Two",
       "subtitle": "Mauler Mithel",
       "set": "JTL",
@@ -41117,7 +41117,7 @@
     },
     {
       "id": "19896",
-      "cardId": "JTL-85",
+      "cardId": "JTL-085",
       "name": "Victor Leader",
       "subtitle": "Leading from the Front",
       "set": "JTL",
@@ -41569,7 +41569,7 @@
     },
     {
       "id": "19901",
-      "cardId": "JTL-86",
+      "cardId": "JTL-086",
       "name": "Wingman Victor Three",
       "subtitle": "Backstabber",
       "set": "JTL",
@@ -42025,7 +42025,7 @@
     },
     {
       "id": "19906",
-      "cardId": "JTL-87",
+      "cardId": "JTL-087",
       "name": "TIE Ambush Squadron",
       "subtitle": null,
       "set": "JTL",
@@ -42523,7 +42523,7 @@
     },
     {
       "id": "19911",
-      "cardId": "JTL-88",
+      "cardId": "JTL-088",
       "name": "Captain Phasma",
       "subtitle": "On My Command",
       "set": "JTL",
@@ -43006,7 +43006,7 @@
     },
     {
       "id": "19916",
-      "cardId": "JTL-89",
+      "cardId": "JTL-089",
       "name": "The Invisible Hand",
       "subtitle": "Crawling With Vultures",
       "set": "JTL",
@@ -43481,7 +43481,7 @@
     },
     {
       "id": "19516",
-      "cardId": "JTL-9",
+      "cardId": "JTL-009",
       "name": "Boba Fett",
       "subtitle": "Any Methods Necessary",
       "set": "JTL",
@@ -43525,7 +43525,7 @@
     },
     {
       "id": "19921",
-      "cardId": "JTL-90",
+      "cardId": "JTL-090",
       "name": "Executor",
       "subtitle": "Might of the Empire",
       "set": "JTL",
@@ -43987,7 +43987,7 @@
     },
     {
       "id": "19926",
-      "cardId": "JTL-91",
+      "cardId": "JTL-091",
       "name": "Apology Accepted",
       "subtitle": null,
       "set": "JTL",
@@ -44439,7 +44439,7 @@
     },
     {
       "id": "19931",
-      "cardId": "JTL-92",
+      "cardId": "JTL-092",
       "name": "Scramble Fighters",
       "subtitle": null,
       "set": "JTL",
@@ -44909,7 +44909,7 @@
     },
     {
       "id": "19936",
-      "cardId": "JTL-93",
+      "cardId": "JTL-093",
       "name": "Nien Nunb",
       "subtitle": "Loyal Co-Pilot",
       "set": "JTL",
@@ -45398,7 +45398,7 @@
     },
     {
       "id": "19941",
-      "cardId": "JTL-94",
+      "cardId": "JTL-094",
       "name": "Luke Skywalker",
       "subtitle": "You Still With Me?",
       "set": "JTL",
@@ -45868,7 +45868,7 @@
     },
     {
       "id": "19946",
-      "cardId": "JTL-95",
+      "cardId": "JTL-095",
       "name": "Phoenix Squadron A-Wing",
       "subtitle": null,
       "set": "JTL",
@@ -46345,7 +46345,7 @@
     },
     {
       "id": "19951",
-      "cardId": "JTL-96",
+      "cardId": "JTL-096",
       "name": "Blue Leader",
       "subtitle": "Scarif Air Support",
       "set": "JTL",
@@ -46788,7 +46788,7 @@
     },
     {
       "id": "19956",
-      "cardId": "JTL-97",
+      "cardId": "JTL-097",
       "name": "Leia Organa",
       "subtitle": "Pilots, To Your Stations",
       "set": "JTL",
@@ -47267,7 +47267,7 @@
     },
     {
       "id": "19961",
-      "cardId": "JTL-98",
+      "cardId": "JTL-098",
       "name": "Snap Wexley",
       "subtitle": "Resistance Recon Flier",
       "set": "JTL",
@@ -47738,7 +47738,7 @@
     },
     {
       "id": "19966",
-      "cardId": "JTL-99",
+      "cardId": "JTL-099",
       "name": "Veteran Fleet Officer",
       "subtitle": null,
       "set": "JTL",
@@ -48196,7 +48196,7 @@
     },
     {
       "id": "46057",
-      "cardId": "LAW-1",
+      "cardId": "LAW-001",
       "name": "Saw Gerrera",
       "subtitle": "Bring Down the Empire",
       "set": "LAW",
@@ -48240,7 +48240,7 @@
     },
     {
       "id": "46102",
-      "cardId": "LAW-10",
+      "cardId": "LAW-010",
       "name": "Leia Organa",
       "subtitle": "Someone Who Loves You",
       "set": "LAW",
@@ -48717,7 +48717,7 @@
     },
     {
       "id": "46107",
-      "cardId": "LAW-11",
+      "cardId": "LAW-011",
       "name": "Darth Vader",
       "subtitle": "Unstoppable",
       "set": "LAW",
@@ -49186,7 +49186,7 @@
     },
     {
       "id": "46112",
-      "cardId": "LAW-12",
+      "cardId": "LAW-012",
       "name": "Sebulba",
       "subtitle": "Especially Dangerous Dug",
       "set": "LAW",
@@ -49646,7 +49646,7 @@
     },
     {
       "id": "46117",
-      "cardId": "LAW-13",
+      "cardId": "LAW-013",
       "name": "Chewbacca",
       "subtitle": "Hero of Kessel",
       "set": "LAW",
@@ -50105,7 +50105,7 @@
     },
     {
       "id": "46122",
-      "cardId": "LAW-14",
+      "cardId": "LAW-014",
       "name": "Enfys Nest",
       "subtitle": "Until We Can Go No Higher",
       "set": "LAW",
@@ -50580,7 +50580,7 @@
     },
     {
       "id": "46127",
-      "cardId": "LAW-15",
+      "cardId": "LAW-015",
       "name": "Jabba the Hutt",
       "subtitle": "Crime Boss",
       "set": "LAW",
@@ -51048,7 +51048,7 @@
     },
     {
       "id": "46132",
-      "cardId": "LAW-16",
+      "cardId": "LAW-016",
       "name": "The Client",
       "subtitle": "Please Lower Your Blaster",
       "set": "LAW",
@@ -51504,7 +51504,7 @@
     },
     {
       "id": "46137",
-      "cardId": "LAW-17",
+      "cardId": "LAW-017",
       "name": "Han Solo",
       "subtitle": "I Got a Really Good Feeling",
       "set": "LAW",
@@ -51973,7 +51973,7 @@
     },
     {
       "id": "46142",
-      "cardId": "LAW-18",
+      "cardId": "LAW-018",
       "name": "Lando Calrissian",
       "subtitle": "Full Sabacc",
       "set": "LAW",
@@ -52444,7 +52444,7 @@
     },
     {
       "id": "46147",
-      "cardId": "LAW-19",
+      "cardId": "LAW-019",
       "name": "Alliance Outpost",
       "subtitle": null,
       "set": "LAW",
@@ -52903,7 +52903,7 @@
     },
     {
       "id": "46062",
-      "cardId": "LAW-2",
+      "cardId": "LAW-002",
       "name": "Tobias Beckett",
       "subtitle": "People are Predictable",
       "set": "LAW",
@@ -52945,7 +52945,7 @@
     },
     {
       "id": "46152",
-      "cardId": "LAW-20",
+      "cardId": "LAW-020",
       "name": "Daimyo's Palace",
       "subtitle": null,
       "set": "LAW",
@@ -53384,7 +53384,7 @@
     },
     {
       "id": "46157",
-      "cardId": "LAW-21",
+      "cardId": "LAW-021",
       "name": "Coaxium Mine",
       "subtitle": null,
       "set": "LAW",
@@ -53858,7 +53858,7 @@
     },
     {
       "id": "46162",
-      "cardId": "LAW-22",
+      "cardId": "LAW-022",
       "name": "Aldhani Garrison",
       "subtitle": null,
       "set": "LAW",
@@ -54323,7 +54323,7 @@
     },
     {
       "id": "46167",
-      "cardId": "LAW-23",
+      "cardId": "LAW-023",
       "name": "Great Pit of Carkoon",
       "subtitle": null,
       "set": "LAW",
@@ -54790,7 +54790,7 @@
     },
     {
       "id": "46172",
-      "cardId": "LAW-24",
+      "cardId": "LAW-024",
       "name": "Imperial Command Complex",
       "subtitle": null,
       "set": "LAW",
@@ -55228,7 +55228,7 @@
     },
     {
       "id": "46177",
-      "cardId": "LAW-25",
+      "cardId": "LAW-025",
       "name": "Contested Caverns",
       "subtitle": null,
       "set": "LAW",
@@ -55688,7 +55688,7 @@
     },
     {
       "id": "46182",
-      "cardId": "LAW-26",
+      "cardId": "LAW-026",
       "name": "Shipbreaking Yard",
       "subtitle": null,
       "set": "LAW",
@@ -56138,7 +56138,7 @@
     },
     {
       "id": "46187",
-      "cardId": "LAW-27",
+      "cardId": "LAW-027",
       "name": "Stygeon Spire",
       "subtitle": null,
       "set": "LAW",
@@ -56613,7 +56613,7 @@
     },
     {
       "id": "46192",
-      "cardId": "LAW-28",
+      "cardId": "LAW-028",
       "name": "Canto Bight",
       "subtitle": null,
       "set": "LAW",
@@ -57040,7 +57040,7 @@
     },
     {
       "id": "46197",
-      "cardId": "LAW-29",
+      "cardId": "LAW-029",
       "name": "Citadel Research Center",
       "subtitle": null,
       "set": "LAW",
@@ -57491,7 +57491,7 @@
     },
     {
       "id": "46067",
-      "cardId": "LAW-3",
+      "cardId": "LAW-003",
       "name": "Agent Kallus",
       "subtitle": "Reconsider Your Allegiance",
       "set": "LAW",
@@ -57534,7 +57534,7 @@
     },
     {
       "id": "46202",
-      "cardId": "LAW-30",
+      "cardId": "LAW-030",
       "name": "Partisan Hideout",
       "subtitle": null,
       "set": "LAW",
@@ -58009,7 +58009,7 @@
     },
     {
       "id": "46207",
-      "cardId": "LAW-31",
+      "cardId": "LAW-031",
       "name": "Bossk",
       "subtitle": "Join Our Merry Band",
       "set": "LAW",
@@ -58501,7 +58501,7 @@
     },
     {
       "id": "46212",
-      "cardId": "LAW-32",
+      "cardId": "LAW-032",
       "name": "Cad Bane",
       "subtitle": "Now It's My Turn",
       "set": "LAW",
@@ -58990,7 +58990,7 @@
     },
     {
       "id": "46217",
-      "cardId": "LAW-33",
+      "cardId": "LAW-033",
       "name": "Hound's Tooth",
       "subtitle": "Hunters' Approach",
       "set": "LAW",
@@ -59467,7 +59467,7 @@
     },
     {
       "id": "46222",
-      "cardId": "LAW-34",
+      "cardId": "LAW-034",
       "name": "Chewbacca",
       "subtitle": "Mighty Rescuer",
       "set": "LAW",
@@ -59960,7 +59960,7 @@
     },
     {
       "id": "46227",
-      "cardId": "LAW-35",
+      "cardId": "LAW-035",
       "name": "Ezra Bridger",
       "subtitle": "Spectre Six",
       "set": "LAW",
@@ -60452,7 +60452,7 @@
     },
     {
       "id": "46232",
-      "cardId": "LAW-36",
+      "cardId": "LAW-036",
       "name": "Obi-Wan Kenobi",
       "subtitle": "Protector of Felucia",
       "set": "LAW",
@@ -60927,7 +60927,7 @@
     },
     {
       "id": "46237",
-      "cardId": "LAW-37",
+      "cardId": "LAW-037",
       "name": "Han Solo",
       "subtitle": "Hibernation Sick",
       "set": "LAW",
@@ -61401,7 +61401,7 @@
     },
     {
       "id": "46242",
-      "cardId": "LAW-38",
+      "cardId": "LAW-038",
       "name": "Lepi Lookout",
       "subtitle": null,
       "set": "LAW",
@@ -61873,7 +61873,7 @@
     },
     {
       "id": "46247",
-      "cardId": "LAW-39",
+      "cardId": "LAW-039",
       "name": "Latts Razzi",
       "subtitle": "Deadly Whipmaster",
       "set": "LAW",
@@ -62320,7 +62320,7 @@
     },
     {
       "id": "46072",
-      "cardId": "LAW-4",
+      "cardId": "LAW-004",
       "name": "Aurra Sing",
       "subtitle": "Assassin",
       "set": "LAW",
@@ -62363,7 +62363,7 @@
     },
     {
       "id": "46252",
-      "cardId": "LAW-40",
+      "cardId": "LAW-040",
       "name": "Taramyn Barcona",
       "subtitle": "Eyes Front!",
       "set": "LAW",
@@ -62834,7 +62834,7 @@
     },
     {
       "id": "46257",
-      "cardId": "LAW-41",
+      "cardId": "LAW-041",
       "name": "Nothing Left to Fear",
       "subtitle": null,
       "set": "LAW",
@@ -63305,7 +63305,7 @@
     },
     {
       "id": "46262",
-      "cardId": "LAW-42",
+      "cardId": "LAW-042",
       "name": "IG-88",
       "subtitle": "Programmed to Kill",
       "set": "LAW",
@@ -63775,7 +63775,7 @@
     },
     {
       "id": "46267",
-      "cardId": "LAW-43",
+      "cardId": "LAW-043",
       "name": "Shadow Cloaking",
       "subtitle": null,
       "set": "LAW",
@@ -64225,7 +64225,7 @@
     },
     {
       "id": "46272",
-      "cardId": "LAW-44",
+      "cardId": "LAW-044",
       "name": "Single Reactor Ignition",
       "subtitle": null,
       "set": "LAW",
@@ -64700,7 +64700,7 @@
     },
     {
       "id": "46277",
-      "cardId": "LAW-45",
+      "cardId": "LAW-045",
       "name": "Zeb Orellios",
       "subtitle": "Spectre Four",
       "set": "LAW",
@@ -65166,7 +65166,7 @@
     },
     {
       "id": "46282",
-      "cardId": "LAW-46",
+      "cardId": "LAW-046",
       "name": "Chirrut Îmwe",
       "subtitle": "I Don't Need Luck",
       "set": "LAW",
@@ -65622,7 +65622,7 @@
     },
     {
       "id": "46287",
-      "cardId": "LAW-47",
+      "cardId": "LAW-047",
       "name": "Baze Malbus",
       "subtitle": "Good Luck",
       "set": "LAW",
@@ -66092,7 +66092,7 @@
     },
     {
       "id": "46292",
-      "cardId": "LAW-48",
+      "cardId": "LAW-048",
       "name": "Chio Fain",
       "subtitle": "Four-Armed Slicer",
       "set": "LAW",
@@ -66572,7 +66572,7 @@
     },
     {
       "id": "46297",
-      "cardId": "LAW-49",
+      "cardId": "LAW-049",
       "name": "Bith Brute",
       "subtitle": null,
       "set": "LAW",
@@ -67041,7 +67041,7 @@
     },
     {
       "id": "46077",
-      "cardId": "LAW-5",
+      "cardId": "LAW-005",
       "name": "Jyn Erso",
       "subtitle": "Time to Fight",
       "set": "LAW",
@@ -67083,7 +67083,7 @@
     },
     {
       "id": "46302",
-      "cardId": "LAW-50",
+      "cardId": "LAW-050",
       "name": "Honnah",
       "subtitle": "OINK! SQUEE!",
       "set": "LAW",
@@ -67543,7 +67543,7 @@
     },
     {
       "id": "46307",
-      "cardId": "LAW-51",
+      "cardId": "LAW-051",
       "name": "Beilert Valance",
       "subtitle": "Target: Vader",
       "set": "LAW",
@@ -68007,7 +68007,7 @@
     },
     {
       "id": "46312",
-      "cardId": "LAW-52",
+      "cardId": "LAW-052",
       "name": "The Mandalorian",
       "subtitle": "Let's See the Puck",
       "set": "LAW",
@@ -68446,7 +68446,7 @@
     },
     {
       "id": "46317",
-      "cardId": "LAW-53",
+      "cardId": "LAW-053",
       "name": "Dengar",
       "subtitle": "Take Your Shot",
       "set": "LAW",
@@ -68921,7 +68921,7 @@
     },
     {
       "id": "46322",
-      "cardId": "LAW-54",
+      "cardId": "LAW-054",
       "name": "Maul",
       "subtitle": "Master of the Shadow Collective",
       "set": "LAW",
@@ -69405,7 +69405,7 @@
     },
     {
       "id": "46327",
-      "cardId": "LAW-55",
+      "cardId": "LAW-055",
       "name": "Chopper",
       "subtitle": "Spectre Three",
       "set": "LAW",
@@ -69895,7 +69895,7 @@
     },
     {
       "id": "46332",
-      "cardId": "LAW-56",
+      "cardId": "LAW-056",
       "name": "Cassian Andor",
       "subtitle": "Everything For the Rebellion",
       "set": "LAW",
@@ -70378,7 +70378,7 @@
     },
     {
       "id": "46337",
-      "cardId": "LAW-57",
+      "cardId": "LAW-057",
       "name": "Benthic “Two Tubes”",
       "subtitle": "The War Has Just Begun",
       "set": "LAW",
@@ -70855,7 +70855,7 @@
     },
     {
       "id": "46342",
-      "cardId": "LAW-58",
+      "cardId": "LAW-058",
       "name": "Honor-Bound Partisan",
       "subtitle": null,
       "set": "LAW",
@@ -71352,7 +71352,7 @@
     },
     {
       "id": "46347",
-      "cardId": "LAW-59",
+      "cardId": "LAW-059",
       "name": "Highsinger",
       "subtitle": "Deadly Droid",
       "set": "LAW",
@@ -71831,7 +71831,7 @@
     },
     {
       "id": "46082",
-      "cardId": "LAW-6",
+      "cardId": "LAW-006",
       "name": "Vel Sartha",
       "subtitle": "Aldhani Insurgent",
       "set": "LAW",
@@ -71873,7 +71873,7 @@
     },
     {
       "id": "46352",
-      "cardId": "LAW-60",
+      "cardId": "LAW-060",
       "name": "Quarren Contractor",
       "subtitle": null,
       "set": "LAW",
@@ -72347,7 +72347,7 @@
     },
     {
       "id": "46357",
-      "cardId": "LAW-61",
+      "cardId": "LAW-061",
       "name": "Asajj Ventress",
       "subtitle": "Reluctant Hunter",
       "set": "LAW",
@@ -72820,7 +72820,7 @@
     },
     {
       "id": "46362",
-      "cardId": "LAW-62",
+      "cardId": "LAW-062",
       "name": "Defiant Hammerhead",
       "subtitle": null,
       "set": "LAW",
@@ -73287,7 +73287,7 @@
     },
     {
       "id": "46367",
-      "cardId": "LAW-63",
+      "cardId": "LAW-063",
       "name": "L3-37",
       "subtitle": "Radical Instigator",
       "set": "LAW",
@@ -73742,7 +73742,7 @@
     },
     {
       "id": "46372",
-      "cardId": "LAW-64",
+      "cardId": "LAW-064",
       "name": "Zuckuss",
       "subtitle": "Dangerous",
       "set": "LAW",
@@ -74217,7 +74217,7 @@
     },
     {
       "id": "46377",
-      "cardId": "LAW-65",
+      "cardId": "LAW-065",
       "name": "4-LOM",
       "subtitle": "Devious",
       "set": "LAW",
@@ -74690,7 +74690,7 @@
     },
     {
       "id": "46382",
-      "cardId": "LAW-66",
+      "cardId": "LAW-066",
       "name": "Tear This Ship Apart",
       "subtitle": null,
       "set": "LAW",
@@ -75149,7 +75149,7 @@
     },
     {
       "id": "46387",
-      "cardId": "LAW-67",
+      "cardId": "LAW-067",
       "name": "Jyn Erso",
       "subtitle": "Take the Next Chance",
       "set": "LAW",
@@ -75611,7 +75611,7 @@
     },
     {
       "id": "46392",
-      "cardId": "LAW-68",
+      "cardId": "LAW-068",
       "name": "Millennium Falcon",
       "subtitle": "Dodging Patrols",
       "set": "LAW",
@@ -76083,7 +76083,7 @@
     },
     {
       "id": "46397",
-      "cardId": "LAW-69",
+      "cardId": "LAW-069",
       "name": "The Ghost",
       "subtitle": "Home of the Spectres",
       "set": "LAW",
@@ -76552,7 +76552,7 @@
     },
     {
       "id": "46087",
-      "cardId": "LAW-7",
+      "cardId": "LAW-007",
       "name": "Boba Fett",
       "subtitle": "Krayt's Claw Commander",
       "set": "LAW",
@@ -76597,7 +76597,7 @@
     },
     {
       "id": "46402",
-      "cardId": "LAW-70",
+      "cardId": "LAW-070",
       "name": "Devaronian Doorbuster",
       "subtitle": null,
       "set": "LAW",
@@ -77045,7 +77045,7 @@
     },
     {
       "id": "46407",
-      "cardId": "LAW-71",
+      "cardId": "LAW-071",
       "name": "The Max Rebo Band",
       "subtitle": "Jatz-Wailers",
       "set": "LAW",
@@ -77519,7 +77519,7 @@
     },
     {
       "id": "46412",
-      "cardId": "LAW-72",
+      "cardId": "LAW-072",
       "name": "Max Rebo",
       "subtitle": "Encore!",
       "set": "LAW",
@@ -77995,7 +77995,7 @@
     },
     {
       "id": "46417",
-      "cardId": "LAW-73",
+      "cardId": "LAW-073",
       "name": "Patient Hunter",
       "subtitle": null,
       "set": "LAW",
@@ -78465,7 +78465,7 @@
     },
     {
       "id": "46422",
-      "cardId": "LAW-74",
+      "cardId": "LAW-074",
       "name": "Maz Kanata",
       "subtitle": "Where's My Boyfriend?",
       "set": "LAW",
@@ -78913,7 +78913,7 @@
     },
     {
       "id": "46427",
-      "cardId": "LAW-75",
+      "cardId": "LAW-075",
       "name": "Interrogation Droid",
       "subtitle": null,
       "set": "LAW",
@@ -79378,7 +79378,7 @@
     },
     {
       "id": "46432",
-      "cardId": "LAW-76",
+      "cardId": "LAW-076",
       "name": "Vult Skerris's Defender",
       "subtitle": "Secret Project",
       "set": "LAW",
@@ -79833,7 +79833,7 @@
     },
     {
       "id": "46437",
-      "cardId": "LAW-77",
+      "cardId": "LAW-077",
       "name": "Shadow of Stygeon Prime",
       "subtitle": null,
       "set": "LAW",
@@ -80310,7 +80310,7 @@
     },
     {
       "id": "46442",
-      "cardId": "LAW-78",
+      "cardId": "LAW-078",
       "name": "Sabine Wren",
       "subtitle": "Spectre Five",
       "set": "LAW",
@@ -80795,7 +80795,7 @@
     },
     {
       "id": "46447",
-      "cardId": "LAW-79",
+      "cardId": "LAW-079",
       "name": "K-2SO",
       "subtitle": "Locking the Vault",
       "set": "LAW",
@@ -81298,7 +81298,7 @@
     },
     {
       "id": "46092",
-      "cardId": "LAW-8",
+      "cardId": "LAW-008",
       "name": "Director Krennic",
       "subtitle": "Amidst My Achievement",
       "set": "LAW",
@@ -81341,7 +81341,7 @@
     },
     {
       "id": "46452",
-      "cardId": "LAW-80",
+      "cardId": "LAW-080",
       "name": "Luke Skywalker",
       "subtitle": "Profit or Be Destroyed",
       "set": "LAW",
@@ -81829,7 +81829,7 @@
     },
     {
       "id": "46457",
-      "cardId": "LAW-81",
+      "cardId": "LAW-081",
       "name": "Sullustan Sapper",
       "subtitle": null,
       "set": "LAW",
@@ -82321,7 +82321,7 @@
     },
     {
       "id": "46462",
-      "cardId": "LAW-82",
+      "cardId": "LAW-082",
       "name": "Urrr'k",
       "subtitle": "Elite Sharpshooter",
       "set": "LAW",
@@ -82812,7 +82812,7 @@
     },
     {
       "id": "46467",
-      "cardId": "LAW-83",
+      "cardId": "LAW-083",
       "name": "Broken Horn",
       "subtitle": "Vizago's Pride",
       "set": "LAW",
@@ -83311,7 +83311,7 @@
     },
     {
       "id": "46472",
-      "cardId": "LAW-84",
+      "cardId": "LAW-084",
       "name": "Krrsantan",
       "subtitle": "Hit and Run",
       "set": "LAW",
@@ -83804,7 +83804,7 @@
     },
     {
       "id": "46477",
-      "cardId": "LAW-85",
+      "cardId": "LAW-085",
       "name": "You Hold This",
       "subtitle": null,
       "set": "LAW",
@@ -84287,7 +84287,7 @@
     },
     {
       "id": "46482",
-      "cardId": "LAW-86",
+      "cardId": "LAW-086",
       "name": "The Stranger",
       "subtitle": "No Survivors",
       "set": "LAW",
@@ -84778,7 +84778,7 @@
     },
     {
       "id": "46487",
-      "cardId": "LAW-87",
+      "cardId": "LAW-087",
       "name": "Jango Fett",
       "subtitle": "Wily Mercenary",
       "set": "LAW",
@@ -85280,7 +85280,7 @@
     },
     {
       "id": "46492",
-      "cardId": "LAW-88",
+      "cardId": "LAW-088",
       "name": "Anakin Skywalker",
       "subtitle": "Prescient Podracer",
       "set": "LAW",
@@ -85770,7 +85770,7 @@
     },
     {
       "id": "46497",
-      "cardId": "LAW-89",
+      "cardId": "LAW-089",
       "name": "Kanan Jarrus",
       "subtitle": "Spectre One",
       "set": "LAW",
@@ -86264,7 +86264,7 @@
     },
     {
       "id": "46097",
-      "cardId": "LAW-9",
+      "cardId": "LAW-009",
       "name": "Hera Syndulla",
       "subtitle": "Not Fighting Alone",
       "set": "LAW",
@@ -86310,7 +86310,7 @@
     },
     {
       "id": "46502",
-      "cardId": "LAW-90",
+      "cardId": "LAW-090",
       "name": "Toydarian Technician",
       "subtitle": null,
       "set": "LAW",
@@ -86445,7 +86445,7 @@
     },
     {
       "id": "46507",
-      "cardId": "LAW-91",
+      "cardId": "LAW-091",
       "name": "Val",
       "subtitle": "It's Been a Ride, Babe",
       "set": "LAW",
@@ -86487,7 +86487,7 @@
     },
     {
       "id": "46512",
-      "cardId": "LAW-92",
+      "cardId": "LAW-092",
       "name": "Two-Faced Troig",
       "subtitle": null,
       "set": "LAW",
@@ -86531,7 +86531,7 @@
     },
     {
       "id": "46517",
-      "cardId": "LAW-93",
+      "cardId": "LAW-093",
       "name": "Rio Durant",
       "subtitle": "Beckett's Right Hands",
       "set": "LAW",
@@ -86575,7 +86575,7 @@
     },
     {
       "id": "46522",
-      "cardId": "LAW-94",
+      "cardId": "LAW-094",
       "name": "Hondo Ohnaka",
       "subtitle": "Plays By His Own Rules",
       "set": "LAW",
@@ -86617,7 +86617,7 @@
     },
     {
       "id": "46527",
-      "cardId": "LAW-95",
+      "cardId": "LAW-095",
       "name": "Finn",
       "subtitle": "Looking Closer",
       "set": "LAW",
@@ -86661,7 +86661,7 @@
     },
     {
       "id": "46532",
-      "cardId": "LAW-96",
+      "cardId": "LAW-096",
       "name": "Rhydonium Detonation",
       "subtitle": null,
       "set": "LAW",
@@ -86701,7 +86701,7 @@
     },
     {
       "id": "46537",
-      "cardId": "LAW-97",
+      "cardId": "LAW-097",
       "name": "Imperial Door Technician",
       "subtitle": null,
       "set": "LAW",
@@ -86744,7 +86744,7 @@
     },
     {
       "id": "46542",
-      "cardId": "LAW-98",
+      "cardId": "LAW-098",
       "name": "Vandor Range Troopers",
       "subtitle": null,
       "set": "LAW",
@@ -86787,7 +86787,7 @@
     },
     {
       "id": "46547",
-      "cardId": "LAW-99",
+      "cardId": "LAW-099",
       "name": "Governor's Shuttle",
       "subtitle": null,
       "set": "LAW",
@@ -86831,7 +86831,7 @@
     },
     {
       "id": "27029",
-      "cardId": "LOF-1",
+      "cardId": "LOF-001",
       "name": "Kylo Ren",
       "subtitle": "We're Not Done Yet",
       "set": "LOF",
@@ -86876,7 +86876,7 @@
     },
     {
       "id": "27074",
-      "cardId": "LOF-10",
+      "cardId": "LOF-010",
       "name": "Third Sister",
       "subtitle": "Seething With Ambition",
       "set": "LOF",
@@ -91747,7 +91747,7 @@
     },
     {
       "id": "27079",
-      "cardId": "LOF-11",
+      "cardId": "LOF-011",
       "name": "Kit Fisto",
       "subtitle": "Focused Jedi Master",
       "set": "LOF",
@@ -94906,7 +94906,7 @@
     },
     {
       "id": "27084",
-      "cardId": "LOF-12",
+      "cardId": "LOF-012",
       "name": "Rey",
       "subtitle": "Nobody",
       "set": "LOF",
@@ -95354,7 +95354,7 @@
     },
     {
       "id": "27089",
-      "cardId": "LOF-13",
+      "cardId": "LOF-013",
       "name": "Barriss Offee",
       "subtitle": "We Have Become Villains",
       "set": "LOF",
@@ -95839,7 +95839,7 @@
     },
     {
       "id": "27094",
-      "cardId": "LOF-14",
+      "cardId": "LOF-014",
       "name": "Grand Inquisitor",
       "subtitle": "Stories Travel Quickly",
       "set": "LOF",
@@ -96326,7 +96326,7 @@
     },
     {
       "id": "27099",
-      "cardId": "LOF-15",
+      "cardId": "LOF-015",
       "name": "Cal Kestis",
       "subtitle": "I Can't Keep Hiding",
       "set": "LOF",
@@ -96799,7 +96799,7 @@
     },
     {
       "id": "27104",
-      "cardId": "LOF-16",
+      "cardId": "LOF-016",
       "name": "Qui-Gon Jinn",
       "subtitle": "Student of the Living Force",
       "set": "LOF",
@@ -97274,7 +97274,7 @@
     },
     {
       "id": "27109",
-      "cardId": "LOF-17",
+      "cardId": "LOF-017",
       "name": "Darth Revan",
       "subtitle": "Scourge of the Old Republic",
       "set": "LOF",
@@ -97723,7 +97723,7 @@
     },
     {
       "id": "27114",
-      "cardId": "LOF-18",
+      "cardId": "LOF-018",
       "name": "Anakin Skywalker",
       "subtitle": "Tempted by the Dark Side",
       "set": "LOF",
@@ -98205,7 +98205,7 @@
     },
     {
       "id": "27119",
-      "cardId": "LOF-19",
+      "cardId": "LOF-019",
       "name": "Vergence Temple",
       "subtitle": null,
       "set": "LOF",
@@ -98689,7 +98689,7 @@
     },
     {
       "id": "27034",
-      "cardId": "LOF-2",
+      "cardId": "LOF-002",
       "name": "Mother Talzin",
       "subtitle": "Power Through Magick",
       "set": "LOF",
@@ -98732,7 +98732,7 @@
     },
     {
       "id": "27124",
-      "cardId": "LOF-20",
+      "cardId": "LOF-020",
       "name": "Nightsister Lair",
       "subtitle": null,
       "set": "LOF",
@@ -99189,7 +99189,7 @@
     },
     {
       "id": "27129",
-      "cardId": "LOF-21",
+      "cardId": "LOF-021",
       "name": "Shadowed Undercity",
       "subtitle": null,
       "set": "LOF",
@@ -99641,7 +99641,7 @@
     },
     {
       "id": "27134",
-      "cardId": "LOF-22",
+      "cardId": "LOF-022",
       "name": "Mystic Monastery",
       "subtitle": null,
       "set": "LOF",
@@ -100088,7 +100088,7 @@
     },
     {
       "id": "27139",
-      "cardId": "LOF-23",
+      "cardId": "LOF-023",
       "name": "Jedi Temple",
       "subtitle": null,
       "set": "LOF",
@@ -100552,7 +100552,7 @@
     },
     {
       "id": "27144",
-      "cardId": "LOF-24",
+      "cardId": "LOF-024",
       "name": "Starlight Temple",
       "subtitle": null,
       "set": "LOF",
@@ -101013,7 +101013,7 @@
     },
     {
       "id": "27149",
-      "cardId": "LOF-25",
+      "cardId": "LOF-025",
       "name": "Temple of Destruction",
       "subtitle": null,
       "set": "LOF",
@@ -101461,7 +101461,7 @@
     },
     {
       "id": "27154",
-      "cardId": "LOF-26",
+      "cardId": "LOF-026",
       "name": "Fortress Vader",
       "subtitle": null,
       "set": "LOF",
@@ -101915,7 +101915,7 @@
     },
     {
       "id": "27159",
-      "cardId": "LOF-27",
+      "cardId": "LOF-027",
       "name": "Strangled Cliffs",
       "subtitle": null,
       "set": "LOF",
@@ -102397,7 +102397,7 @@
     },
     {
       "id": "27164",
-      "cardId": "LOF-28",
+      "cardId": "LOF-028",
       "name": "Tomb of Eilram",
       "subtitle": null,
       "set": "LOF",
@@ -102824,7 +102824,7 @@
     },
     {
       "id": "27169",
-      "cardId": "LOF-29",
+      "cardId": "LOF-029",
       "name": "Crystal Caves",
       "subtitle": null,
       "set": "LOF",
@@ -103265,7 +103265,7 @@
     },
     {
       "id": "27039",
-      "cardId": "LOF-3",
+      "cardId": "LOF-003",
       "name": "Ahsoka Tano",
       "subtitle": "Fighting For Peace",
       "set": "LOF",
@@ -103310,7 +103310,7 @@
     },
     {
       "id": "27174",
-      "cardId": "LOF-30",
+      "cardId": "LOF-030",
       "name": "The Holy City",
       "subtitle": null,
       "set": "LOF",
@@ -103778,7 +103778,7 @@
     },
     {
       "id": "27179",
-      "cardId": "LOF-31",
+      "cardId": "LOF-031",
       "name": "Karis",
       "subtitle": "We Don't Like Strangers",
       "set": "LOF",
@@ -104252,7 +104252,7 @@
     },
     {
       "id": "27184",
-      "cardId": "LOF-32",
+      "cardId": "LOF-032",
       "name": "Magistrate's Scout",
       "subtitle": null,
       "set": "LOF",
@@ -104718,7 +104718,7 @@
     },
     {
       "id": "27189",
-      "cardId": "LOF-33",
+      "cardId": "LOF-033",
       "name": "Nameless Terror",
       "subtitle": null,
       "set": "LOF",
@@ -105177,7 +105177,7 @@
     },
     {
       "id": "27194",
-      "cardId": "LOF-34",
+      "cardId": "LOF-034",
       "name": "Supremacy TIE/sf",
       "subtitle": null,
       "set": "LOF",
@@ -105642,7 +105642,7 @@
     },
     {
       "id": "27199",
-      "cardId": "LOF-35",
+      "cardId": "LOF-035",
       "name": "Talzin's Assassin",
       "subtitle": null,
       "set": "LOF",
@@ -106125,7 +106125,7 @@
     },
     {
       "id": "27204",
-      "cardId": "LOF-36",
+      "cardId": "LOF-036",
       "name": "Old Daka",
       "subtitle": "Oldest and Wisest",
       "set": "LOF",
@@ -106610,7 +106610,7 @@
     },
     {
       "id": "27209",
-      "cardId": "LOF-37",
+      "cardId": "LOF-037",
       "name": "Darth Vader",
       "subtitle": "Twilight of the Apprentice",
       "set": "LOF",
@@ -107082,7 +107082,7 @@
     },
     {
       "id": "27214",
-      "cardId": "LOF-38",
+      "cardId": "LOF-038",
       "name": "Pong Krell",
       "subtitle": "It's Treason, Then",
       "set": "LOF",
@@ -107542,7 +107542,7 @@
     },
     {
       "id": "27219",
-      "cardId": "LOF-39",
+      "cardId": "LOF-039",
       "name": "Darth Sidious",
       "subtitle": "The Phantom Menace",
       "set": "LOF",
@@ -108020,7 +108020,7 @@
     },
     {
       "id": "27044",
-      "cardId": "LOF-4",
+      "cardId": "LOF-004",
       "name": "Kanan Jarrus",
       "subtitle": "Help Us Survive",
       "set": "LOF",
@@ -108067,7 +108067,7 @@
     },
     {
       "id": "27224",
-      "cardId": "LOF-40",
+      "cardId": "LOF-040",
       "name": "Kylo Ren's Lightsaber",
       "subtitle": null,
       "set": "LOF",
@@ -108539,7 +108539,7 @@
     },
     {
       "id": "27229",
-      "cardId": "LOF-41",
+      "cardId": "LOF-041",
       "name": "Drain Essence",
       "subtitle": null,
       "set": "LOF",
@@ -109015,7 +109015,7 @@
     },
     {
       "id": "27234",
-      "cardId": "LOF-42",
+      "cardId": "LOF-042",
       "name": "Always Two",
       "subtitle": null,
       "set": "LOF",
@@ -109487,7 +109487,7 @@
     },
     {
       "id": "27239",
-      "cardId": "LOF-43",
+      "cardId": "LOF-043",
       "name": "The Tragedy of Plagueis",
       "subtitle": null,
       "set": "LOF",
@@ -109939,7 +109939,7 @@
     },
     {
       "id": "27244",
-      "cardId": "LOF-44",
+      "cardId": "LOF-044",
       "name": "Loth-Wolf",
       "subtitle": null,
       "set": "LOF",
@@ -110422,7 +110422,7 @@
     },
     {
       "id": "27249",
-      "cardId": "LOF-45",
+      "cardId": "LOF-045",
       "name": "Yaddle",
       "subtitle": "A Chance To Make Things Right",
       "set": "LOF",
@@ -110901,7 +110901,7 @@
     },
     {
       "id": "27254",
-      "cardId": "LOF-46",
+      "cardId": "LOF-046",
       "name": "Ezra Bridger",
       "subtitle": "Attuned With Life",
       "set": "LOF",
@@ -111377,7 +111377,7 @@
     },
     {
       "id": "27259",
-      "cardId": "LOF-47",
+      "cardId": "LOF-047",
       "name": "T-6 Shuttle 1974",
       "subtitle": "Stay Close",
       "set": "LOF",
@@ -111850,7 +111850,7 @@
     },
     {
       "id": "27264",
-      "cardId": "LOF-48",
+      "cardId": "LOF-048",
       "name": "Itinerant Warrior",
       "subtitle": null,
       "set": "LOF",
@@ -112292,7 +112292,7 @@
     },
     {
       "id": "27269",
-      "cardId": "LOF-49",
+      "cardId": "LOF-049",
       "name": "Jedi Guardian",
       "subtitle": null,
       "set": "LOF",
@@ -112766,7 +112766,7 @@
     },
     {
       "id": "27049",
-      "cardId": "LOF-5",
+      "cardId": "LOF-005",
       "name": "Morgan Elsbeth",
       "subtitle": "Following the Call",
       "set": "LOF",
@@ -112810,7 +112810,7 @@
     },
     {
       "id": "27274",
-      "cardId": "LOF-50",
+      "cardId": "LOF-050",
       "name": "Plo Koon",
       "subtitle": "I Don't Believe in Chance",
       "set": "LOF",
@@ -113272,7 +113272,7 @@
     },
     {
       "id": "27279",
-      "cardId": "LOF-51",
+      "cardId": "LOF-051",
       "name": "Jedi Holocron",
       "subtitle": null,
       "set": "LOF",
@@ -113738,7 +113738,7 @@
     },
     {
       "id": "27284",
-      "cardId": "LOF-52",
+      "cardId": "LOF-052",
       "name": "Jedi Trials",
       "subtitle": null,
       "set": "LOF",
@@ -114168,7 +114168,7 @@
     },
     {
       "id": "27289",
-      "cardId": "LOF-53",
+      "cardId": "LOF-053",
       "name": "Heirloom Lightsaber",
       "subtitle": null,
       "set": "LOF",
@@ -114629,7 +114629,7 @@
     },
     {
       "id": "27294",
-      "cardId": "LOF-54",
+      "cardId": "LOF-054",
       "name": "Calm in the Storm",
       "subtitle": null,
       "set": "LOF",
@@ -115102,7 +115102,7 @@
     },
     {
       "id": "27299",
-      "cardId": "LOF-55",
+      "cardId": "LOF-055",
       "name": "Dume",
       "subtitle": "Redeem the Future",
       "set": "LOF",
@@ -115568,7 +115568,7 @@
     },
     {
       "id": "27304",
-      "cardId": "LOF-56",
+      "cardId": "LOF-056",
       "name": "Size Matters Not",
       "subtitle": null,
       "set": "LOF",
@@ -116032,7 +116032,7 @@
     },
     {
       "id": "27309",
-      "cardId": "LOF-57",
+      "cardId": "LOF-057",
       "name": "Owen Lars",
       "subtitle": "Devoted Uncle",
       "set": "LOF",
@@ -116484,7 +116484,7 @@
     },
     {
       "id": "27314",
-      "cardId": "LOF-58",
+      "cardId": "LOF-058",
       "name": "Guardian of the Whills",
       "subtitle": null,
       "set": "LOF",
@@ -116957,7 +116957,7 @@
     },
     {
       "id": "27319",
-      "cardId": "LOF-59",
+      "cardId": "LOF-059",
       "name": "Nightsister Warrior",
       "subtitle": null,
       "set": "LOF",
@@ -117439,7 +117439,7 @@
     },
     {
       "id": "27054",
-      "cardId": "LOF-6",
+      "cardId": "LOF-006",
       "name": "Supreme Leader Snoke",
       "subtitle": "In the Seat of Power",
       "set": "LOF",
@@ -117483,7 +117483,7 @@
     },
     {
       "id": "27324",
-      "cardId": "LOF-60",
+      "cardId": "LOF-060",
       "name": "Padawan Starfighter",
       "subtitle": null,
       "set": "LOF",
@@ -117966,7 +117966,7 @@
     },
     {
       "id": "27329",
-      "cardId": "LOF-61",
+      "cardId": "LOF-061",
       "name": "Secretive Sage",
       "subtitle": null,
       "set": "LOF",
@@ -118437,7 +118437,7 @@
     },
     {
       "id": "27334",
-      "cardId": "LOF-62",
+      "cardId": "LOF-062",
       "name": "Axe Woves",
       "subtitle": "Accomplished Warrior",
       "set": "LOF",
@@ -118889,7 +118889,7 @@
     },
     {
       "id": "27339",
-      "cardId": "LOF-63",
+      "cardId": "LOF-063",
       "name": "Oggdo Bogdo",
       "subtitle": "Bogano Brute",
       "set": "LOF",
@@ -119371,7 +119371,7 @@
     },
     {
       "id": "27344",
-      "cardId": "LOF-64",
+      "cardId": "LOF-064",
       "name": "Tauntaun",
       "subtitle": null,
       "set": "LOF",
@@ -119844,7 +119844,7 @@
     },
     {
       "id": "27349",
-      "cardId": "LOF-65",
+      "cardId": "LOF-065",
       "name": "Watto",
       "subtitle": "No Money, No Parts, No Deal",
       "set": "LOF",
@@ -120317,7 +120317,7 @@
     },
     {
       "id": "27354",
-      "cardId": "LOF-66",
+      "cardId": "LOF-066",
       "name": "Awakened Specters",
       "subtitle": null,
       "set": "LOF",
@@ -120792,7 +120792,7 @@
     },
     {
       "id": "27359",
-      "cardId": "LOF-67",
+      "cardId": "LOF-067",
       "name": "Chirrut Îmwe",
       "subtitle": "Blind, but not Deaf",
       "set": "LOF",
@@ -121238,7 +121238,7 @@
     },
     {
       "id": "27364",
-      "cardId": "LOF-68",
+      "cardId": "LOF-068",
       "name": "Luthen Rael",
       "subtitle": "Masquerading Antiquarian",
       "set": "LOF",
@@ -121727,7 +121727,7 @@
     },
     {
       "id": "27369",
-      "cardId": "LOF-69",
+      "cardId": "LOF-069",
       "name": "Graceful Purrgil",
       "subtitle": null,
       "set": "LOF",
@@ -122206,7 +122206,7 @@
     },
     {
       "id": "27059",
-      "cardId": "LOF-7",
+      "cardId": "LOF-007",
       "name": "Avar Kriss",
       "subtitle": "Marshal of Starlight",
       "set": "LOF",
@@ -122252,7 +122252,7 @@
     },
     {
       "id": "27374",
-      "cardId": "LOF-70",
+      "cardId": "LOF-070",
       "name": "Anakin Skywalker",
       "subtitle": "Champion of Mortis",
       "set": "LOF",
@@ -122718,7 +122718,7 @@
     },
     {
       "id": "27379",
-      "cardId": "LOF-71",
+      "cardId": "LOF-071",
       "name": "Grappling Guardian",
       "subtitle": null,
       "set": "LOF",
@@ -123184,7 +123184,7 @@
     },
     {
       "id": "27384",
-      "cardId": "LOF-72",
+      "cardId": "LOF-072",
       "name": "Priestesses of the Force",
       "subtitle": "Eternal",
       "set": "LOF",
@@ -123623,7 +123623,7 @@
     },
     {
       "id": "27389",
-      "cardId": "LOF-73",
+      "cardId": "LOF-073",
       "name": "Mythosaur",
       "subtitle": "Folklore Awakened",
       "set": "LOF",
@@ -124102,7 +124102,7 @@
     },
     {
       "id": "27394",
-      "cardId": "LOF-74",
+      "cardId": "LOF-074",
       "name": "Bolstered Endurance",
       "subtitle": null,
       "set": "LOF",
@@ -124562,7 +124562,7 @@
     },
     {
       "id": "27399",
-      "cardId": "LOF-75",
+      "cardId": "LOF-075",
       "name": "Cure Wounds",
       "subtitle": null,
       "set": "LOF",
@@ -125019,7 +125019,7 @@
     },
     {
       "id": "27404",
-      "cardId": "LOF-76",
+      "cardId": "LOF-076",
       "name": "Soresu Stance",
       "subtitle": null,
       "set": "LOF",
@@ -125440,7 +125440,7 @@
     },
     {
       "id": "27409",
-      "cardId": "LOF-77",
+      "cardId": "LOF-077",
       "name": "Crushing Blow",
       "subtitle": null,
       "set": "LOF",
@@ -125914,7 +125914,7 @@
     },
     {
       "id": "27414",
-      "cardId": "LOF-78",
+      "cardId": "LOF-078",
       "name": "Whirlwind of Power",
       "subtitle": null,
       "set": "LOF",
@@ -126382,7 +126382,7 @@
     },
     {
       "id": "27419",
-      "cardId": "LOF-79",
+      "cardId": "LOF-079",
       "name": "Shatterpoint",
       "subtitle": null,
       "set": "LOF",
@@ -126841,7 +126841,7 @@
     },
     {
       "id": "27064",
-      "cardId": "LOF-8",
+      "cardId": "LOF-008",
       "name": "Obi-Wan Kenobi",
       "subtitle": "Courage Makes Heroes",
       "set": "LOF",
@@ -126885,7 +126885,7 @@
     },
     {
       "id": "27424",
-      "cardId": "LOF-80",
+      "cardId": "LOF-080",
       "name": "Exegol Patroller",
       "subtitle": null,
       "set": "LOF",
@@ -127357,7 +127357,7 @@
     },
     {
       "id": "27429",
-      "cardId": "LOF-81",
+      "cardId": "LOF-081",
       "name": "Sith Legionnaire",
       "subtitle": null,
       "set": "LOF",
@@ -127803,7 +127803,7 @@
     },
     {
       "id": "27434",
-      "cardId": "LOF-82",
+      "cardId": "LOF-082",
       "name": "Vaneé",
       "subtitle": "I Live to Serve",
       "set": "LOF",
@@ -128295,7 +128295,7 @@
     },
     {
       "id": "27439",
-      "cardId": "LOF-83",
+      "cardId": "LOF-083",
       "name": "Captain Enoch",
       "subtitle": "Captain of the Guard",
       "set": "LOF",
@@ -128772,7 +128772,7 @@
     },
     {
       "id": "27444",
-      "cardId": "LOF-84",
+      "cardId": "LOF-084",
       "name": "Knight of Ren",
       "subtitle": null,
       "set": "LOF",
@@ -129248,7 +129248,7 @@
     },
     {
       "id": "27449",
-      "cardId": "LOF-85",
+      "cardId": "LOF-085",
       "name": "Praetorian Guard",
       "subtitle": null,
       "set": "LOF",
@@ -129719,7 +129719,7 @@
     },
     {
       "id": "27454",
-      "cardId": "LOF-86",
+      "cardId": "LOF-086",
       "name": "Drengir Spawn",
       "subtitle": null,
       "set": "LOF",
@@ -130168,7 +130168,7 @@
     },
     {
       "id": "27459",
-      "cardId": "LOF-87",
+      "cardId": "LOF-087",
       "name": "Eighth Brother",
       "subtitle": "Hunt Together",
       "set": "LOF",
@@ -130655,7 +130655,7 @@
     },
     {
       "id": "27464",
-      "cardId": "LOF-88",
+      "cardId": "LOF-088",
       "name": "Eye of Sion",
       "subtitle": "To Peridea",
       "set": "LOF",
@@ -131145,7 +131145,7 @@
     },
     {
       "id": "27469",
-      "cardId": "LOF-89",
+      "cardId": "LOF-089",
       "name": "Supremacy",
       "subtitle": "Of Unimaginable Size",
       "set": "LOF",
@@ -131621,7 +131621,7 @@
     },
     {
       "id": "27069",
-      "cardId": "LOF-9",
+      "cardId": "LOF-009",
       "name": "Darth Maul",
       "subtitle": "Sith Revealed",
       "set": "LOF",
@@ -131664,7 +131664,7 @@
     },
     {
       "id": "27474",
-      "cardId": "LOF-90",
+      "cardId": "LOF-090",
       "name": "Inquisitor's Lightsaber",
       "subtitle": null,
       "set": "LOF",
@@ -132137,7 +132137,7 @@
     },
     {
       "id": "27479",
-      "cardId": "LOF-91",
+      "cardId": "LOF-091",
       "name": "Craving Power",
       "subtitle": null,
       "set": "LOF",
@@ -132582,7 +132582,7 @@
     },
     {
       "id": "27484",
-      "cardId": "LOF-92",
+      "cardId": "LOF-092",
       "name": "Point Rain Reclaimer",
       "subtitle": null,
       "set": "LOF",
@@ -133065,7 +133065,7 @@
     },
     {
       "id": "27489",
-      "cardId": "LOF-93",
+      "cardId": "LOF-093",
       "name": "Gungi",
       "subtitle": "Finding Himself",
       "set": "LOF",
@@ -133556,7 +133556,7 @@
     },
     {
       "id": "27494",
-      "cardId": "LOF-94",
+      "cardId": "LOF-094",
       "name": "Jedi Consular",
       "subtitle": null,
       "set": "LOF",
@@ -134019,7 +134019,7 @@
     },
     {
       "id": "27499",
-      "cardId": "LOF-95",
+      "cardId": "LOF-095",
       "name": "Lor San Tekka",
       "subtitle": "Secret Keeper",
       "set": "LOF",
@@ -134476,7 +134476,7 @@
     },
     {
       "id": "27504",
-      "cardId": "LOF-96",
+      "cardId": "LOF-096",
       "name": "Obi-Wan Kenobi",
       "subtitle": "Protective Padawan",
       "set": "LOF",
@@ -134932,7 +134932,7 @@
     },
     {
       "id": "27509",
-      "cardId": "LOF-97",
+      "cardId": "LOF-097",
       "name": "Eeth Koth",
       "subtitle": "Spiritual Warrior",
       "set": "LOF",
@@ -135403,7 +135403,7 @@
     },
     {
       "id": "27514",
-      "cardId": "LOF-98",
+      "cardId": "LOF-098",
       "name": "Leia Organa",
       "subtitle": "Extraordinary",
       "set": "LOF",
@@ -135871,7 +135871,7 @@
     },
     {
       "id": "27519",
-      "cardId": "LOF-99",
+      "cardId": "LOF-099",
       "name": "Paladin Training Corvette",
       "subtitle": null,
       "set": "LOF",
@@ -136327,7 +136327,7 @@
     },
     {
       "id": "39380",
-      "cardId": "SEC-1",
+      "cardId": "SEC-001",
       "name": "Chancellor Palpatine",
       "subtitle": "How Liberty Dies",
       "set": "SEC",
@@ -136372,7 +136372,7 @@
     },
     {
       "id": "39425",
-      "cardId": "SEC-10",
+      "cardId": "SEC-010",
       "name": "Dedra Meero",
       "subtitle": "Not Wasting Time",
       "set": "SEC",
@@ -141181,7 +141181,7 @@
     },
     {
       "id": "39430",
-      "cardId": "SEC-11",
+      "cardId": "SEC-011",
       "name": "Governor Pryce",
       "subtitle": "Tyrant of Lothal",
       "set": "SEC",
@@ -144640,7 +144640,7 @@
     },
     {
       "id": "39435",
-      "cardId": "SEC-12",
+      "cardId": "SEC-012",
       "name": "Cassian Andor",
       "subtitle": "Climb!",
       "set": "SEC",
@@ -145093,7 +145093,7 @@
     },
     {
       "id": "39440",
-      "cardId": "SEC-13",
+      "cardId": "SEC-013",
       "name": "Luthen Rael",
       "subtitle": "Don't You Want to Fight For Real?",
       "set": "SEC",
@@ -145562,7 +145562,7 @@
     },
     {
       "id": "39445",
-      "cardId": "SEC-14",
+      "cardId": "SEC-014",
       "name": "Sly Moore",
       "subtitle": "Cipher in the Dark",
       "set": "SEC",
@@ -146041,7 +146041,7 @@
     },
     {
       "id": "39450",
-      "cardId": "SEC-15",
+      "cardId": "SEC-015",
       "name": "C-3PO",
       "subtitle": "Human-Cyborg Relations",
       "set": "SEC",
@@ -146514,7 +146514,7 @@
     },
     {
       "id": "39455",
-      "cardId": "SEC-16",
+      "cardId": "SEC-016",
       "name": "Padmé Amidala",
       "subtitle": "What Do You Have to Hide?",
       "set": "SEC",
@@ -146984,7 +146984,7 @@
     },
     {
       "id": "39460",
-      "cardId": "SEC-17",
+      "cardId": "SEC-017",
       "name": "Sabé",
       "subtitle": "Queen's Shadow",
       "set": "SEC",
@@ -147444,7 +147444,7 @@
     },
     {
       "id": "39465",
-      "cardId": "SEC-18",
+      "cardId": "SEC-018",
       "name": "DJ",
       "subtitle": "Need a Lift?",
       "set": "SEC",
@@ -147909,7 +147909,7 @@
     },
     {
       "id": "39470",
-      "cardId": "SEC-19",
+      "cardId": "SEC-019",
       "name": "Rix Road",
       "subtitle": null,
       "set": "SEC",
@@ -148373,7 +148373,7 @@
     },
     {
       "id": "39385",
-      "cardId": "SEC-2",
+      "cardId": "SEC-002",
       "name": "Jabba the Hutt",
       "subtitle": "Wonderful Human Being",
       "set": "SEC",
@@ -148416,7 +148416,7 @@
     },
     {
       "id": "39475",
-      "cardId": "SEC-20",
+      "cardId": "SEC-020",
       "name": "Uscru Entertainment District",
       "subtitle": null,
       "set": "SEC",
@@ -148904,7 +148904,7 @@
     },
     {
       "id": "39480",
-      "cardId": "SEC-21",
+      "cardId": "SEC-021",
       "name": "Republic City",
       "subtitle": null,
       "set": "SEC",
@@ -149366,7 +149366,7 @@
     },
     {
       "id": "39485",
-      "cardId": "SEC-22",
+      "cardId": "SEC-022",
       "name": "Senate Rotunda",
       "subtitle": null,
       "set": "SEC",
@@ -149816,7 +149816,7 @@
     },
     {
       "id": "39490",
-      "cardId": "SEC-23",
+      "cardId": "SEC-023",
       "name": "Imperial Prison Complex",
       "subtitle": null,
       "set": "SEC",
@@ -150259,7 +150259,7 @@
     },
     {
       "id": "39495",
-      "cardId": "SEC-24",
+      "cardId": "SEC-024",
       "name": "Naval Intelligence HQ",
       "subtitle": null,
       "set": "SEC",
@@ -150719,7 +150719,7 @@
     },
     {
       "id": "39500",
-      "cardId": "SEC-25",
+      "cardId": "SEC-025",
       "name": "Amnesty Housing",
       "subtitle": null,
       "set": "SEC",
@@ -151171,7 +151171,7 @@
     },
     {
       "id": "39505",
-      "cardId": "SEC-26",
+      "cardId": "SEC-026",
       "name": "Mount Tantiss",
       "subtitle": null,
       "set": "SEC",
@@ -151627,7 +151627,7 @@
     },
     {
       "id": "39510",
-      "cardId": "SEC-27",
+      "cardId": "SEC-027",
       "name": "The Chancellor's Shuttle",
       "subtitle": "Grim Harbinger",
       "set": "SEC",
@@ -152108,7 +152108,7 @@
     },
     {
       "id": "39515",
-      "cardId": "SEC-28",
+      "cardId": "SEC-028",
       "name": "Trayus Acolyte",
       "subtitle": null,
       "set": "SEC",
@@ -152541,7 +152541,7 @@
     },
     {
       "id": "39520",
-      "cardId": "SEC-29",
+      "cardId": "SEC-029",
       "name": "Zam Wesell",
       "subtitle": "Inconspicuous Assassin",
       "set": "SEC",
@@ -153025,7 +153025,7 @@
     },
     {
       "id": "39390",
-      "cardId": "SEC-3",
+      "cardId": "SEC-003",
       "name": "Lama Su",
       "subtitle": "We Modified Their Genetics",
       "set": "SEC",
@@ -153068,7 +153068,7 @@
     },
     {
       "id": "39525",
-      "cardId": "SEC-30",
+      "cardId": "SEC-030",
       "name": "Death Trooper",
       "subtitle": null,
       "set": "SEC",
@@ -153541,7 +153541,7 @@
     },
     {
       "id": "39530",
-      "cardId": "SEC-31",
+      "cardId": "SEC-031",
       "name": "Nute Gunray",
       "subtitle": "Escaping Justice",
       "set": "SEC",
@@ -154021,7 +154021,7 @@
     },
     {
       "id": "39535",
-      "cardId": "SEC-32",
+      "cardId": "SEC-032",
       "name": "Kylo Ren's Command Shuttle",
       "subtitle": "Icon of Authority",
       "set": "SEC",
@@ -154495,7 +154495,7 @@
     },
     {
       "id": "39540",
-      "cardId": "SEC-33",
+      "cardId": "SEC-033",
       "name": "Sly Moore",
       "subtitle": "Witness to Power",
       "set": "SEC",
@@ -154950,7 +154950,7 @@
     },
     {
       "id": "39545",
-      "cardId": "SEC-34",
+      "cardId": "SEC-034",
       "name": "Cad Bane",
       "subtitle": "Impressed Now?",
       "set": "SEC",
@@ -155424,7 +155424,7 @@
     },
     {
       "id": "39550",
-      "cardId": "SEC-35",
+      "cardId": "SEC-035",
       "name": "Darth Sion",
       "subtitle": "Lord of Pain",
       "set": "SEC",
@@ -155907,7 +155907,7 @@
     },
     {
       "id": "39555",
-      "cardId": "SEC-36",
+      "cardId": "SEC-036",
       "name": "Dogmatic Shock Squad",
       "subtitle": null,
       "set": "SEC",
@@ -156398,7 +156398,7 @@
     },
     {
       "id": "39560",
-      "cardId": "SEC-37",
+      "cardId": "SEC-037",
       "name": "Cantwell Arrestor Cruiser",
       "subtitle": null,
       "set": "SEC",
@@ -156870,7 +156870,7 @@
     },
     {
       "id": "39565",
-      "cardId": "SEC-38",
+      "cardId": "SEC-038",
       "name": "Condemn",
       "subtitle": null,
       "set": "SEC",
@@ -157336,7 +157336,7 @@
     },
     {
       "id": "39570",
-      "cardId": "SEC-39",
+      "cardId": "SEC-039",
       "name": "Creditor's Claim",
       "subtitle": null,
       "set": "SEC",
@@ -157786,7 +157786,7 @@
     },
     {
       "id": "39395",
-      "cardId": "SEC-4",
+      "cardId": "SEC-004",
       "name": "Leia Organa",
       "subtitle": "Of A Secret Bloodline",
       "set": "SEC",
@@ -157829,7 +157829,7 @@
     },
     {
       "id": "39575",
-      "cardId": "SEC-40",
+      "cardId": "SEC-040",
       "name": "Emergency Powers",
       "subtitle": null,
       "set": "SEC",
@@ -158302,7 +158302,7 @@
     },
     {
       "id": "39580",
-      "cardId": "SEC-41",
+      "cardId": "SEC-041",
       "name": "Populist Advisor",
       "subtitle": null,
       "set": "SEC",
@@ -158789,7 +158789,7 @@
     },
     {
       "id": "39585",
-      "cardId": "SEC-42",
+      "cardId": "SEC-042",
       "name": "Cassian Andor",
       "subtitle": "Lay Low",
       "set": "SEC",
@@ -159251,7 +159251,7 @@
     },
     {
       "id": "39590",
-      "cardId": "SEC-43",
+      "cardId": "SEC-043",
       "name": "Chandrilan Sponsor",
       "subtitle": null,
       "set": "SEC",
@@ -159724,7 +159724,7 @@
     },
     {
       "id": "39595",
-      "cardId": "SEC-44",
+      "cardId": "SEC-044",
       "name": "Populist Champion",
       "subtitle": null,
       "set": "SEC",
@@ -160169,7 +160169,7 @@
     },
     {
       "id": "39600",
-      "cardId": "SEC-45",
+      "cardId": "SEC-045",
       "name": "Senator Chuchi",
       "subtitle": "Voice for the Voiceless",
       "set": "SEC",
@@ -160648,7 +160648,7 @@
     },
     {
       "id": "39605",
-      "cardId": "SEC-46",
+      "cardId": "SEC-046",
       "name": "Galen Erso",
       "subtitle": "You'll Never Win",
       "set": "SEC",
@@ -161134,7 +161134,7 @@
     },
     {
       "id": "39610",
-      "cardId": "SEC-47",
+      "cardId": "SEC-047",
       "name": "Coronet",
       "subtitle": "Stately Vessel",
       "set": "SEC",
@@ -161614,7 +161614,7 @@
     },
     {
       "id": "39615",
-      "cardId": "SEC-48",
+      "cardId": "SEC-048",
       "name": "Captain Rex",
       "subtitle": "Into the Firefight",
       "set": "SEC",
@@ -162086,7 +162086,7 @@
     },
     {
       "id": "39620",
-      "cardId": "SEC-49",
+      "cardId": "SEC-049",
       "name": "Jade Squadron Patrol",
       "subtitle": null,
       "set": "SEC",
@@ -162529,7 +162529,7 @@
     },
     {
       "id": "39400",
-      "cardId": "SEC-5",
+      "cardId": "SEC-005",
       "name": "Satine Kryze",
       "subtitle": "Standing on Principles",
       "set": "SEC",
@@ -162574,7 +162574,7 @@
     },
     {
       "id": "39625",
-      "cardId": "SEC-50",
+      "cardId": "SEC-050",
       "name": "Vigil",
       "subtitle": "Securing the Future",
       "set": "SEC",
@@ -163043,7 +163043,7 @@
     },
     {
       "id": "39630",
-      "cardId": "SEC-51",
+      "cardId": "SEC-051",
       "name": "Bo-Katan Kryze",
       "subtitle": "Alone",
       "set": "SEC",
@@ -163509,7 +163509,7 @@
     },
     {
       "id": "39635",
-      "cardId": "SEC-52",
+      "cardId": "SEC-052",
       "name": "Diplomatic Immunity",
       "subtitle": null,
       "set": "SEC",
@@ -163907,7 +163907,7 @@
     },
     {
       "id": "39640",
-      "cardId": "SEC-53",
+      "cardId": "SEC-053",
       "name": "One in a Million",
       "subtitle": null,
       "set": "SEC",
@@ -164083,7 +164083,7 @@
     },
     {
       "id": "39645",
-      "cardId": "SEC-54",
+      "cardId": "SEC-054",
       "name": "Exiled from the Force",
       "subtitle": null,
       "set": "SEC",
@@ -164563,7 +164563,7 @@
     },
     {
       "id": "39650",
-      "cardId": "SEC-55",
+      "cardId": "SEC-055",
       "name": "Dhani Pilgrim",
       "subtitle": null,
       "set": "SEC",
@@ -165045,7 +165045,7 @@
     },
     {
       "id": "39655",
-      "cardId": "SEC-56",
+      "cardId": "SEC-056",
       "name": "Escape Pod",
       "subtitle": null,
       "set": "SEC",
@@ -165511,7 +165511,7 @@
     },
     {
       "id": "39660",
-      "cardId": "SEC-57",
+      "cardId": "SEC-057",
       "name": "Lobot",
       "subtitle": "Cloud City Coordinator",
       "set": "SEC",
@@ -165981,7 +165981,7 @@
     },
     {
       "id": "39665",
-      "cardId": "SEC-58",
+      "cardId": "SEC-058",
       "name": "Lost Jedi",
       "subtitle": null,
       "set": "SEC",
@@ -166427,7 +166427,7 @@
     },
     {
       "id": "39670",
-      "cardId": "SEC-59",
+      "cardId": "SEC-059",
       "name": "Senate Warden",
       "subtitle": null,
       "set": "SEC",
@@ -166920,7 +166920,7 @@
     },
     {
       "id": "39405",
-      "cardId": "SEC-6",
+      "cardId": "SEC-006",
       "name": "Colonel Yularen",
       "subtitle": "This Is Why We Plan",
       "set": "SEC",
@@ -166963,7 +166963,7 @@
     },
     {
       "id": "39675",
-      "cardId": "SEC-60",
+      "cardId": "SEC-060",
       "name": "Defense Fleet X-Wing",
       "subtitle": null,
       "set": "SEC",
@@ -167445,7 +167445,7 @@
     },
     {
       "id": "39680",
-      "cardId": "SEC-61",
+      "cardId": "SEC-061",
       "name": "Willrow Hood",
       "subtitle": "On the Run",
       "set": "SEC",
@@ -167918,7 +167918,7 @@
     },
     {
       "id": "39685",
-      "cardId": "SEC-62",
+      "cardId": "SEC-062",
       "name": "Bardottan Ornithopter",
       "subtitle": null,
       "set": "SEC",
@@ -168395,7 +168395,7 @@
     },
     {
       "id": "39690",
-      "cardId": "SEC-63",
+      "cardId": "SEC-063",
       "name": "Rotunda Senate Guards",
       "subtitle": null,
       "set": "SEC",
@@ -168848,7 +168848,7 @@
     },
     {
       "id": "39695",
-      "cardId": "SEC-64",
+      "cardId": "SEC-064",
       "name": "Congress of Malastare",
       "subtitle": null,
       "set": "SEC",
@@ -169317,7 +169317,7 @@
     },
     {
       "id": "39700",
-      "cardId": "SEC-65",
+      "cardId": "SEC-065",
       "name": "Nala Se",
       "subtitle": "Chief Medical Scientist",
       "set": "SEC",
@@ -169793,7 +169793,7 @@
     },
     {
       "id": "39705",
-      "cardId": "SEC-66",
+      "cardId": "SEC-066",
       "name": "Alderaanian Envoys",
       "subtitle": null,
       "set": "SEC",
@@ -170267,7 +170267,7 @@
     },
     {
       "id": "39710",
-      "cardId": "SEC-67",
+      "cardId": "SEC-067",
       "name": "Umbaran Mobile Cannon",
       "subtitle": null,
       "set": "SEC",
@@ -170736,7 +170736,7 @@
     },
     {
       "id": "39715",
-      "cardId": "SEC-68",
+      "cardId": "SEC-068",
       "name": "Lando Calrissian",
       "subtitle": "Trust Me",
       "set": "SEC",
@@ -171196,7 +171196,7 @@
     },
     {
       "id": "39720",
-      "cardId": "SEC-69",
+      "cardId": "SEC-069",
       "name": "Nimble Prowess",
       "subtitle": null,
       "set": "SEC",
@@ -171657,7 +171657,7 @@
     },
     {
       "id": "39410",
-      "cardId": "SEC-7",
+      "cardId": "SEC-007",
       "name": "Dryden Vos",
       "subtitle": "I Never Ask Twice",
       "set": "SEC",
@@ -171702,7 +171702,7 @@
     },
     {
       "id": "39725",
-      "cardId": "SEC-70",
+      "cardId": "SEC-070",
       "name": "Armor of Fortune",
       "subtitle": null,
       "set": "SEC",
@@ -172171,7 +172171,7 @@
     },
     {
       "id": "39730",
-      "cardId": "SEC-71",
+      "cardId": "SEC-071",
       "name": "Disciples' Devotion",
       "subtitle": null,
       "set": "SEC",
@@ -172663,7 +172663,7 @@
     },
     {
       "id": "39735",
-      "cardId": "SEC-72",
+      "cardId": "SEC-072",
       "name": "Scour the Archives",
       "subtitle": null,
       "set": "SEC",
@@ -173127,7 +173127,7 @@
     },
     {
       "id": "39740",
-      "cardId": "SEC-73",
+      "cardId": "SEC-073",
       "name": "The Eye of Aldhani",
       "subtitle": null,
       "set": "SEC",
@@ -173580,7 +173580,7 @@
     },
     {
       "id": "39745",
-      "cardId": "SEC-74",
+      "cardId": "SEC-074",
       "name": "Relief Request",
       "subtitle": null,
       "set": "SEC",
@@ -174025,7 +174025,7 @@
     },
     {
       "id": "39750",
-      "cardId": "SEC-75",
+      "cardId": "SEC-075",
       "name": "Knowledge and Defense",
       "subtitle": null,
       "set": "SEC",
@@ -174487,7 +174487,7 @@
     },
     {
       "id": "39755",
-      "cardId": "SEC-76",
+      "cardId": "SEC-076",
       "name": "Charged with Murder",
       "subtitle": null,
       "set": "SEC",
@@ -174941,7 +174941,7 @@
     },
     {
       "id": "39760",
-      "cardId": "SEC-77",
+      "cardId": "SEC-077",
       "name": "Retaliation",
       "subtitle": null,
       "set": "SEC",
@@ -175180,7 +175180,7 @@
     },
     {
       "id": "39765",
-      "cardId": "SEC-78",
+      "cardId": "SEC-078",
       "name": "Hyperspace Disaster",
       "subtitle": null,
       "set": "SEC",
@@ -175533,7 +175533,7 @@
     },
     {
       "id": "39770",
-      "cardId": "SEC-79",
+      "cardId": "SEC-079",
       "name": "Corrupt Politician",
       "subtitle": null,
       "set": "SEC",
@@ -176008,7 +176008,7 @@
     },
     {
       "id": "39415",
-      "cardId": "SEC-8",
+      "cardId": "SEC-008",
       "name": "Bail Organa",
       "subtitle": "Doing Everything He Can",
       "set": "SEC",
@@ -176051,7 +176051,7 @@
     },
     {
       "id": "39775",
-      "cardId": "SEC-80",
+      "cardId": "SEC-080",
       "name": "Imperial Dark Trooper",
       "subtitle": null,
       "set": "SEC",
@@ -176535,7 +176535,7 @@
     },
     {
       "id": "39780",
-      "cardId": "SEC-81",
+      "cardId": "SEC-081",
       "name": "Major Partagaz",
       "subtitle": "Healthcare Provider",
       "set": "SEC",
@@ -177049,7 +177049,7 @@
     },
     {
       "id": "39785",
-      "cardId": "SEC-82",
+      "cardId": "SEC-082",
       "name": "Chancellor Palpatine",
       "subtitle": "I Am the Senate",
       "set": "SEC",
@@ -177468,7 +177468,7 @@
     },
     {
       "id": "39790",
-      "cardId": "SEC-83",
+      "cardId": "SEC-083",
       "name": "ISB Shuttle",
       "subtitle": null,
       "set": "SEC",
@@ -177931,7 +177931,7 @@
     },
     {
       "id": "39795",
-      "cardId": "SEC-84",
+      "cardId": "SEC-084",
       "name": "Mas Amedda",
       "subtitle": "Accomplice to Power",
       "set": "SEC",
@@ -178416,7 +178416,7 @@
     },
     {
       "id": "39800",
-      "cardId": "SEC-85",
+      "cardId": "SEC-085",
       "name": "Vice Admiral Rampart",
       "subtitle": "On Schedule",
       "set": "SEC",
@@ -178907,7 +178907,7 @@
     },
     {
       "id": "39805",
-      "cardId": "SEC-86",
+      "cardId": "SEC-086",
       "name": "Cruel Commandos",
       "subtitle": null,
       "set": "SEC",
@@ -179382,7 +179382,7 @@
     },
     {
       "id": "39810",
-      "cardId": "SEC-87",
+      "cardId": "SEC-087",
       "name": "Dedra Meero",
       "subtitle": "With Verifiable Data",
       "set": "SEC",
@@ -179859,7 +179859,7 @@
     },
     {
       "id": "39815",
-      "cardId": "SEC-88",
+      "cardId": "SEC-088",
       "name": "First Light",
       "subtitle": "Threatening Elegance",
       "set": "SEC",
@@ -180305,7 +180305,7 @@
     },
     {
       "id": "39820",
-      "cardId": "SEC-89",
+      "cardId": "SEC-089",
       "name": "PreMor Personnel Carrier",
       "subtitle": null,
       "set": "SEC",
@@ -180792,7 +180792,7 @@
     },
     {
       "id": "39420",
-      "cardId": "SEC-9",
+      "cardId": "SEC-009",
       "name": "Mon Mothma",
       "subtitle": "Forming a Coalition",
       "set": "SEC",
@@ -180835,7 +180835,7 @@
     },
     {
       "id": "39825",
-      "cardId": "SEC-90",
+      "cardId": "SEC-090",
       "name": "Director Krennic",
       "subtitle": "I Lose Nothing But Time",
       "set": "SEC",
@@ -181314,7 +181314,7 @@
     },
     {
       "id": "39830",
-      "cardId": "SEC-91",
+      "cardId": "SEC-091",
       "name": "Corporate Warmongering",
       "subtitle": null,
       "set": "SEC",
@@ -181779,7 +181779,7 @@
     },
     {
       "id": "39835",
-      "cardId": "SEC-92",
+      "cardId": "SEC-092",
       "name": "I Am the Senate",
       "subtitle": null,
       "set": "SEC",
@@ -182247,7 +182247,7 @@
     },
     {
       "id": "39840",
-      "cardId": "SEC-93",
+      "cardId": "SEC-093",
       "name": "C-3PO",
       "subtitle": "Anything I Might Do?",
       "set": "SEC",
@@ -182690,7 +182690,7 @@
     },
     {
       "id": "39845",
-      "cardId": "SEC-94",
+      "cardId": "SEC-094",
       "name": "Mina Bonteri",
       "subtitle": "Stop This War",
       "set": "SEC",
@@ -183172,7 +183172,7 @@
     },
     {
       "id": "39850",
-      "cardId": "SEC-95",
+      "cardId": "SEC-095",
       "name": "Theed Security",
       "subtitle": null,
       "set": "SEC",
@@ -183650,7 +183650,7 @@
     },
     {
       "id": "39855",
-      "cardId": "SEC-96",
+      "cardId": "SEC-096",
       "name": "Ahsoka Tano",
       "subtitle": "I Learned It from You",
       "set": "SEC",
@@ -184132,7 +184132,7 @@
     },
     {
       "id": "39860",
-      "cardId": "SEC-97",
+      "cardId": "SEC-097",
       "name": "Beloved Orator",
       "subtitle": null,
       "set": "SEC",
@@ -184601,7 +184601,7 @@
     },
     {
       "id": "39865",
-      "cardId": "SEC-98",
+      "cardId": "SEC-098",
       "name": "Captain Typho",
       "subtitle": "All Necessary Precautions",
       "set": "SEC",
@@ -185050,7 +185050,7 @@
     },
     {
       "id": "39870",
-      "cardId": "SEC-99",
+      "cardId": "SEC-099",
       "name": "Naboo Royal Starship",
       "subtitle": "Fit For A Queen",
       "set": "SEC",
@@ -185518,7 +185518,7 @@
     },
     {
       "id": "7888",
-      "cardId": "SHD-1",
+      "cardId": "SHD-001",
       "name": "Gar Saxon",
       "subtitle": "Viceroy of Mandalore",
       "set": "SHD",
@@ -185562,7 +185562,7 @@
     },
     {
       "id": "8664",
-      "cardId": "SHD-1",
+      "cardId": "SHD-001",
       "name": "Moff Gideon",
       "subtitle": "Formidable Commander",
       "set": "SHD",
@@ -185607,7 +185607,7 @@
     },
     {
       "id": "8692",
-      "cardId": "SHD-10",
+      "cardId": "SHD-010",
       "name": "Calculated Lethality",
       "subtitle": null,
       "set": "SHD",
@@ -185647,7 +185647,7 @@
     },
     {
       "id": "7918",
-      "cardId": "SHD-10",
+      "cardId": "SHD-010",
       "name": "Bossk",
       "subtitle": "Hunting His Prey",
       "set": "SHD",
@@ -186534,7 +186534,7 @@
     },
     {
       "id": "7923",
-      "cardId": "SHD-11",
+      "cardId": "SHD-011",
       "name": "Kylo Ren",
       "subtitle": "Rash and Deadly",
       "set": "SHD",
@@ -186577,7 +186577,7 @@
     },
     {
       "id": "8697",
-      "cardId": "SHD-11",
+      "cardId": "SHD-011",
       "name": "The Mandalorian's Rifle",
       "subtitle": null,
       "set": "SHD",
@@ -187485,7 +187485,7 @@
     },
     {
       "id": "5406",
-      "cardId": "SHD-12",
+      "cardId": "SHD-012",
       "name": "Bo-Katan Kryze",
       "subtitle": "Princess in Exile",
       "set": "SHD",
@@ -187527,7 +187527,7 @@
     },
     {
       "id": "8702",
-      "cardId": "SHD-12",
+      "cardId": "SHD-012",
       "name": "Phase-III Dark Trooper",
       "subtitle": null,
       "set": "SHD",
@@ -188405,7 +188405,7 @@
     },
     {
       "id": "7928",
-      "cardId": "SHD-13",
+      "cardId": "SHD-013",
       "name": "Han Solo",
       "subtitle": "Worth the Risk",
       "set": "SHD",
@@ -189311,7 +189311,7 @@
     },
     {
       "id": "7933",
-      "cardId": "SHD-14",
+      "cardId": "SHD-014",
       "name": "Cad Bane",
       "subtitle": "He Who Needs No Introduction",
       "set": "SHD",
@@ -190218,7 +190218,7 @@
     },
     {
       "id": "7938",
-      "cardId": "SHD-15",
+      "cardId": "SHD-015",
       "name": "Doctor Aphra",
       "subtitle": "Rapacious Archaeologist",
       "set": "SHD",
@@ -191112,7 +191112,7 @@
     },
     {
       "id": "7943",
-      "cardId": "SHD-16",
+      "cardId": "SHD-016",
       "name": "Fennec Shand",
       "subtitle": "Honoring the Deal",
       "set": "SHD",
@@ -192029,7 +192029,7 @@
     },
     {
       "id": "7948",
-      "cardId": "SHD-17",
+      "cardId": "SHD-017",
       "name": "Lando Calrissian",
       "subtitle": "With Impeccable Taste",
       "set": "SHD",
@@ -192905,7 +192905,7 @@
     },
     {
       "id": "2755",
-      "cardId": "SHD-18",
+      "cardId": "SHD-018",
       "name": "The Mandalorian",
       "subtitle": "Sworn To The Creed",
       "set": "SHD",
@@ -193808,7 +193808,7 @@
     },
     {
       "id": "5436",
-      "cardId": "SHD-19",
+      "cardId": "SHD-019",
       "name": "Remnant Science Facility",
       "subtitle": null,
       "set": "SHD",
@@ -194671,7 +194671,7 @@
     },
     {
       "id": "8834",
-      "cardId": "SHD-2",
+      "cardId": "SHD-002",
       "name": "The Mandalorian",
       "subtitle": "Sworn To The Creed",
       "set": "SHD",
@@ -194714,7 +194714,7 @@
     },
     {
       "id": "7893",
-      "cardId": "SHD-2",
+      "cardId": "SHD-002",
       "name": "Qi'ra",
       "subtitle": "I Alone Survived",
       "set": "SHD",
@@ -194758,7 +194758,7 @@
     },
     {
       "id": "5441",
-      "cardId": "SHD-20",
+      "cardId": "SHD-020",
       "name": "Remote Village",
       "subtitle": null,
       "set": "SHD",
@@ -195637,7 +195637,7 @@
     },
     {
       "id": "5446",
-      "cardId": "SHD-21",
+      "cardId": "SHD-021",
       "name": "Maz Kanata's Castle",
       "subtitle": null,
       "set": "SHD",
@@ -196544,7 +196544,7 @@
     },
     {
       "id": "5451",
-      "cardId": "SHD-22",
+      "cardId": "SHD-022",
       "name": "Nevarro City",
       "subtitle": null,
       "set": "SHD",
@@ -197358,7 +197358,7 @@
     },
     {
       "id": "5456",
-      "cardId": "SHD-23",
+      "cardId": "SHD-023",
       "name": "Death Watch Hideout",
       "subtitle": null,
       "set": "SHD",
@@ -198099,7 +198099,7 @@
     },
     {
       "id": "5461",
-      "cardId": "SHD-24",
+      "cardId": "SHD-024",
       "name": "Spice Mines",
       "subtitle": null,
       "set": "SHD",
@@ -198893,7 +198893,7 @@
     },
     {
       "id": "5466",
-      "cardId": "SHD-25",
+      "cardId": "SHD-025",
       "name": "Coronet City",
       "subtitle": null,
       "set": "SHD",
@@ -199696,7 +199696,7 @@
     },
     {
       "id": "5471",
-      "cardId": "SHD-26",
+      "cardId": "SHD-026",
       "name": "Jabba's Palace",
       "subtitle": null,
       "set": "SHD",
@@ -200239,7 +200239,7 @@
     },
     {
       "id": "11515",
-      "cardId": "SHD-27",
+      "cardId": "SHD-027",
       "name": "Hylobon Enforcer",
       "subtitle": null,
       "set": "SHD",
@@ -200284,7 +200284,7 @@
     },
     {
       "id": "5476",
-      "cardId": "SHD-27",
+      "cardId": "SHD-027",
       "name": "Hylobon Enforcer",
       "subtitle": null,
       "set": "SHD",
@@ -200764,7 +200764,7 @@
     },
     {
       "id": "7953",
-      "cardId": "SHD-28",
+      "cardId": "SHD-028",
       "name": "Doctor Pershing",
       "subtitle": "Experimenting With Life",
       "set": "SHD",
@@ -200806,7 +200806,7 @@
     },
     {
       "id": "13255",
-      "cardId": "SHD-28",
+      "cardId": "SHD-028",
       "name": "Doctor Pershing",
       "subtitle": "Experimenting With Life",
       "set": "SHD",
@@ -201289,7 +201289,7 @@
     },
     {
       "id": "5486",
-      "cardId": "SHD-29",
+      "cardId": "SHD-029",
       "name": "Pyke Sentinel",
       "subtitle": null,
       "set": "SHD",
@@ -201333,7 +201333,7 @@
     },
     {
       "id": "11520",
-      "cardId": "SHD-29",
+      "cardId": "SHD-029",
       "name": "Pyke Sentinel",
       "subtitle": null,
       "set": "SHD",
@@ -201791,7 +201791,7 @@
     },
     {
       "id": "7898",
-      "cardId": "SHD-3",
+      "cardId": "SHD-003",
       "name": "Finn",
       "subtitle": "This is a Rescue",
       "set": "SHD",
@@ -201834,7 +201834,7 @@
     },
     {
       "id": "5491",
-      "cardId": "SHD-30",
+      "cardId": "SHD-030",
       "name": "Death Trooper",
       "subtitle": null,
       "set": "SHD",
@@ -202504,7 +202504,7 @@
     },
     {
       "id": "13260",
-      "cardId": "SHD-31",
+      "cardId": "SHD-031",
       "name": "The Client",
       "subtitle": "Dictated by Discretion",
       "set": "SHD",
@@ -202550,7 +202550,7 @@
     },
     {
       "id": "7958",
-      "cardId": "SHD-31",
+      "cardId": "SHD-031",
       "name": "The Client",
       "subtitle": "Dictated by Discretion",
       "set": "SHD",
@@ -203490,7 +203490,7 @@
     },
     {
       "id": "13265",
-      "cardId": "SHD-32",
+      "cardId": "SHD-032",
       "name": "Lom Pyke",
       "subtitle": "Dealer in Truths",
       "set": "SHD",
@@ -203534,7 +203534,7 @@
     },
     {
       "id": "7963",
-      "cardId": "SHD-32",
+      "cardId": "SHD-032",
       "name": "Lom Pyke",
       "subtitle": "Dealer in Truths",
       "set": "SHD",
@@ -204432,7 +204432,7 @@
     },
     {
       "id": "7968",
-      "cardId": "SHD-33",
+      "cardId": "SHD-033",
       "name": "Synara San",
       "subtitle": "Loyal to Kragan",
       "set": "SHD",
@@ -204477,7 +204477,7 @@
     },
     {
       "id": "13270",
-      "cardId": "SHD-33",
+      "cardId": "SHD-033",
       "name": "Synara San",
       "subtitle": "Loyal to Kragan",
       "set": "SHD",
@@ -205378,7 +205378,7 @@
     },
     {
       "id": "11530",
-      "cardId": "SHD-34",
+      "cardId": "SHD-034",
       "name": "Supercommando Squad",
       "subtitle": null,
       "set": "SHD",
@@ -205425,7 +205425,7 @@
     },
     {
       "id": "5511",
-      "cardId": "SHD-34",
+      "cardId": "SHD-034",
       "name": "Supercommando Squad",
       "subtitle": null,
       "set": "SHD",
@@ -206290,7 +206290,7 @@
     },
     {
       "id": "5516",
-      "cardId": "SHD-35",
+      "cardId": "SHD-035",
       "name": "Clan Saxon Gauntlet",
       "subtitle": null,
       "set": "SHD",
@@ -206336,7 +206336,7 @@
     },
     {
       "id": "11535",
-      "cardId": "SHD-35",
+      "cardId": "SHD-035",
       "name": "Clan Saxon Gauntlet",
       "subtitle": null,
       "set": "SHD",
@@ -207236,7 +207236,7 @@
     },
     {
       "id": "11540",
-      "cardId": "SHD-36",
+      "cardId": "SHD-036",
       "name": "First Light",
       "subtitle": "Headquarters of the Crimson Dawn",
       "set": "SHD",
@@ -207283,7 +207283,7 @@
     },
     {
       "id": "5521",
-      "cardId": "SHD-36",
+      "cardId": "SHD-036",
       "name": "First Light",
       "subtitle": "Headquarters of the Crimson Dawn",
       "set": "SHD",
@@ -208206,7 +208206,7 @@
     },
     {
       "id": "13275",
-      "cardId": "SHD-37",
+      "cardId": "SHD-037",
       "name": "Supreme Leader Snoke",
       "subtitle": "Shadow Ruler",
       "set": "SHD",
@@ -208250,7 +208250,7 @@
     },
     {
       "id": "7973",
-      "cardId": "SHD-37",
+      "cardId": "SHD-037",
       "name": "Supreme Leader Snoke",
       "subtitle": "Shadow Ruler",
       "set": "SHD",
@@ -209128,7 +209128,7 @@
     },
     {
       "id": "5531",
-      "cardId": "SHD-38",
+      "cardId": "SHD-038",
       "name": "Brutal Traditions",
       "subtitle": null,
       "set": "SHD",
@@ -209168,7 +209168,7 @@
     },
     {
       "id": "11545",
-      "cardId": "SHD-38",
+      "cardId": "SHD-038",
       "name": "Brutal Traditions",
       "subtitle": null,
       "set": "SHD",
@@ -210076,7 +210076,7 @@
     },
     {
       "id": "2757",
-      "cardId": "SHD-39",
+      "cardId": "SHD-039",
       "name": "Calculated Lethality",
       "subtitle": null,
       "set": "SHD",
@@ -210944,7 +210944,7 @@
     },
     {
       "id": "7903",
-      "cardId": "SHD-4",
+      "cardId": "SHD-004",
       "name": "Rey",
       "subtitle": "More Than a Scavenger",
       "set": "SHD",
@@ -210989,7 +210989,7 @@
     },
     {
       "id": "11550",
-      "cardId": "SHD-40",
+      "cardId": "SHD-040",
       "name": "Clan Wren Rescuer",
       "subtitle": null,
       "set": "SHD",
@@ -211032,7 +211032,7 @@
     },
     {
       "id": "5536",
-      "cardId": "SHD-40",
+      "cardId": "SHD-040",
       "name": "Clan Wren Rescuer",
       "subtitle": null,
       "set": "SHD",
@@ -211953,7 +211953,7 @@
     },
     {
       "id": "7978",
-      "cardId": "SHD-41",
+      "cardId": "SHD-041",
       "name": "Kuiil",
       "subtitle": "I Have Spoken",
       "set": "SHD",
@@ -211997,7 +211997,7 @@
     },
     {
       "id": "13280",
-      "cardId": "SHD-41",
+      "cardId": "SHD-041",
       "name": "Kuiil",
       "subtitle": "I Have Spoken",
       "set": "SHD",
@@ -212897,7 +212897,7 @@
     },
     {
       "id": "11555",
-      "cardId": "SHD-42",
+      "cardId": "SHD-042",
       "name": "Concord Dawn Interceptors",
       "subtitle": null,
       "set": "SHD",
@@ -212943,7 +212943,7 @@
     },
     {
       "id": "5546",
-      "cardId": "SHD-42",
+      "cardId": "SHD-042",
       "name": "Concord Dawn Interceptors",
       "subtitle": null,
       "set": "SHD",
@@ -213841,7 +213841,7 @@
     },
     {
       "id": "11560",
-      "cardId": "SHD-43",
+      "cardId": "SHD-043",
       "name": "Village Protectors",
       "subtitle": null,
       "set": "SHD",
@@ -213886,7 +213886,7 @@
     },
     {
       "id": "5551",
-      "cardId": "SHD-43",
+      "cardId": "SHD-043",
       "name": "Village Protectors",
       "subtitle": null,
       "set": "SHD",
@@ -214801,7 +214801,7 @@
     },
     {
       "id": "2761",
-      "cardId": "SHD-44",
+      "cardId": "SHD-044",
       "name": "Razor Crest",
       "subtitle": "Reliable Gunship",
       "set": "SHD",
@@ -215673,7 +215673,7 @@
     },
     {
       "id": "7983",
-      "cardId": "SHD-45",
+      "cardId": "SHD-045",
       "name": "Rose Tico",
       "subtitle": "Dedicated to the Cause",
       "set": "SHD",
@@ -215717,7 +215717,7 @@
     },
     {
       "id": "13285",
-      "cardId": "SHD-45",
+      "cardId": "SHD-045",
       "name": "Rose Tico",
       "subtitle": "Dedicated to the Cause",
       "set": "SHD",
@@ -216633,7 +216633,7 @@
     },
     {
       "id": "7988",
-      "cardId": "SHD-46",
+      "cardId": "SHD-046",
       "name": "Rey",
       "subtitle": "Keeping the Past",
       "set": "SHD",
@@ -216676,7 +216676,7 @@
     },
     {
       "id": "13290",
-      "cardId": "SHD-46",
+      "cardId": "SHD-046",
       "name": "Rey",
       "subtitle": "Keeping the Past",
       "set": "SHD",
@@ -217591,7 +217591,7 @@
     },
     {
       "id": "13295",
-      "cardId": "SHD-47",
+      "cardId": "SHD-047",
       "name": "The Armorer",
       "subtitle": "Survival Is Strength",
       "set": "SHD",
@@ -217633,7 +217633,7 @@
     },
     {
       "id": "7993",
-      "cardId": "SHD-47",
+      "cardId": "SHD-047",
       "name": "The Armorer",
       "subtitle": "Survival Is Strength",
       "set": "SHD",
@@ -218511,7 +218511,7 @@
     },
     {
       "id": "5571",
-      "cardId": "SHD-48",
+      "cardId": "SHD-048",
       "name": "Gentle Giant",
       "subtitle": null,
       "set": "SHD",
@@ -218555,7 +218555,7 @@
     },
     {
       "id": "11565",
-      "cardId": "SHD-48",
+      "cardId": "SHD-048",
       "name": "Gentle Giant",
       "subtitle": null,
       "set": "SHD",
@@ -219467,7 +219467,7 @@
     },
     {
       "id": "11435",
-      "cardId": "SHD-49",
+      "cardId": "SHD-049",
       "name": "The Mandalorian",
       "subtitle": "Wherever I Go, He Goes",
       "set": "SHD",
@@ -219512,7 +219512,7 @@
     },
     {
       "id": "2799",
-      "cardId": "SHD-49",
+      "cardId": "SHD-049",
       "name": "The Mandalorian",
       "subtitle": "Wherever I Go, He Goes",
       "set": "SHD",
@@ -220363,7 +220363,7 @@
     },
     {
       "id": "8667",
-      "cardId": "SHD-5",
+      "cardId": "SHD-005",
       "name": "Gideon's Light Cruiser",
       "subtitle": "Dark Troopers' Station",
       "set": "SHD",
@@ -220408,7 +220408,7 @@
     },
     {
       "id": "7908",
-      "cardId": "SHD-5",
+      "cardId": "SHD-005",
       "name": "Hondo Ohnaka",
       "subtitle": "That's Good Business",
       "set": "SHD",
@@ -220453,7 +220453,7 @@
     },
     {
       "id": "13300",
-      "cardId": "SHD-50",
+      "cardId": "SHD-050",
       "name": "Chewbacca",
       "subtitle": "Pykesbane",
       "set": "SHD",
@@ -220499,7 +220499,7 @@
     },
     {
       "id": "7998",
-      "cardId": "SHD-50",
+      "cardId": "SHD-050",
       "name": "Chewbacca",
       "subtitle": "Pykesbane",
       "set": "SHD",
@@ -221379,7 +221379,7 @@
     },
     {
       "id": "11570",
-      "cardId": "SHD-51",
+      "cardId": "SHD-051",
       "name": "Mystic Reflection",
       "subtitle": null,
       "set": "SHD",
@@ -221419,7 +221419,7 @@
     },
     {
       "id": "5581",
-      "cardId": "SHD-51",
+      "cardId": "SHD-051",
       "name": "Mystic Reflection",
       "subtitle": null,
       "set": "SHD",
@@ -222273,7 +222273,7 @@
     },
     {
       "id": "8003",
-      "cardId": "SHD-52",
+      "cardId": "SHD-052",
       "name": "Sugi",
       "subtitle": "Hired Guardian",
       "set": "SHD",
@@ -222318,7 +222318,7 @@
     },
     {
       "id": "13305",
-      "cardId": "SHD-52",
+      "cardId": "SHD-052",
       "name": "Sugi",
       "subtitle": "Hired Guardian",
       "set": "SHD",
@@ -222607,7 +222607,7 @@
     },
     {
       "id": "5591",
-      "cardId": "SHD-53",
+      "cardId": "SHD-053",
       "name": "Second Chance",
       "subtitle": null,
       "set": "SHD",
@@ -222646,7 +222646,7 @@
     },
     {
       "id": "11575",
-      "cardId": "SHD-53",
+      "cardId": "SHD-053",
       "name": "Second Chance",
       "subtitle": null,
       "set": "SHD",
@@ -222685,7 +222685,7 @@
     },
     {
       "id": "11580",
-      "cardId": "SHD-54",
+      "cardId": "SHD-054",
       "name": "Midnight Repairs",
       "subtitle": null,
       "set": "SHD",
@@ -222724,7 +222724,7 @@
     },
     {
       "id": "5596",
-      "cardId": "SHD-54",
+      "cardId": "SHD-054",
       "name": "Midnight Repairs",
       "subtitle": null,
       "set": "SHD",
@@ -222763,7 +222763,7 @@
     },
     {
       "id": "11585",
-      "cardId": "SHD-55",
+      "cardId": "SHD-055",
       "name": "Moisture Farmer",
       "subtitle": null,
       "set": "SHD",
@@ -222806,7 +222806,7 @@
     },
     {
       "id": "5601",
-      "cardId": "SHD-55",
+      "cardId": "SHD-055",
       "name": "Moisture Farmer",
       "subtitle": null,
       "set": "SHD",
@@ -222849,7 +222849,7 @@
     },
     {
       "id": "11590",
-      "cardId": "SHD-56",
+      "cardId": "SHD-056",
       "name": "Follower of The Way",
       "subtitle": null,
       "set": "SHD",
@@ -222890,7 +222890,7 @@
     },
     {
       "id": "5606",
-      "cardId": "SHD-56",
+      "cardId": "SHD-056",
       "name": "Follower of The Way",
       "subtitle": null,
       "set": "SHD",
@@ -222931,7 +222931,7 @@
     },
     {
       "id": "5611",
-      "cardId": "SHD-57",
+      "cardId": "SHD-057",
       "name": "Rickety Quadjumper",
       "subtitle": null,
       "set": "SHD",
@@ -222974,7 +222974,7 @@
     },
     {
       "id": "11595",
-      "cardId": "SHD-57",
+      "cardId": "SHD-057",
       "name": "Rickety Quadjumper",
       "subtitle": null,
       "set": "SHD",
@@ -223017,7 +223017,7 @@
     },
     {
       "id": "8008",
-      "cardId": "SHD-58",
+      "cardId": "SHD-058",
       "name": "Val",
       "subtitle": "Loyal to the End",
       "set": "SHD",
@@ -223060,7 +223060,7 @@
     },
     {
       "id": "13310",
-      "cardId": "SHD-58",
+      "cardId": "SHD-058",
       "name": "Val",
       "subtitle": "Loyal to the End",
       "set": "SHD",
@@ -223103,7 +223103,7 @@
     },
     {
       "id": "13315",
-      "cardId": "SHD-59",
+      "cardId": "SHD-059",
       "name": "Embo",
       "subtitle": "Stoic and Resolute",
       "set": "SHD",
@@ -223145,7 +223145,7 @@
     },
     {
       "id": "8013",
-      "cardId": "SHD-59",
+      "cardId": "SHD-059",
       "name": "Embo",
       "subtitle": "Stoic and Resolute",
       "set": "SHD",
@@ -223187,7 +223187,7 @@
     },
     {
       "id": "8672",
-      "cardId": "SHD-6",
+      "cardId": "SHD-006",
       "name": "Incinerator Trooper",
       "subtitle": null,
       "set": "SHD",
@@ -223229,7 +223229,7 @@
     },
     {
       "id": "5381",
-      "cardId": "SHD-6",
+      "cardId": "SHD-006",
       "name": "Jabba the Hutt",
       "subtitle": "His High Exaltedness",
       "set": "SHD",
@@ -223274,7 +223274,7 @@
     },
     {
       "id": "5626",
-      "cardId": "SHD-60",
+      "cardId": "SHD-060",
       "name": "HWK-290 Freighter",
       "subtitle": null,
       "set": "SHD",
@@ -223316,7 +223316,7 @@
     },
     {
       "id": "11600",
-      "cardId": "SHD-60",
+      "cardId": "SHD-060",
       "name": "HWK-290 Freighter",
       "subtitle": null,
       "set": "SHD",
@@ -223358,7 +223358,7 @@
     },
     {
       "id": "11605",
-      "cardId": "SHD-61",
+      "cardId": "SHD-061",
       "name": "Wroshyr Tree Tender",
       "subtitle": null,
       "set": "SHD",
@@ -223401,7 +223401,7 @@
     },
     {
       "id": "5631",
-      "cardId": "SHD-61",
+      "cardId": "SHD-061",
       "name": "Wroshyr Tree Tender",
       "subtitle": null,
       "set": "SHD",
@@ -223444,7 +223444,7 @@
     },
     {
       "id": "5636",
-      "cardId": "SHD-62",
+      "cardId": "SHD-062",
       "name": "Niima Outpost Constables",
       "subtitle": null,
       "set": "SHD",
@@ -223487,7 +223487,7 @@
     },
     {
       "id": "11610",
-      "cardId": "SHD-62",
+      "cardId": "SHD-062",
       "name": "Niima Outpost Constables",
       "subtitle": null,
       "set": "SHD",
@@ -223530,7 +223530,7 @@
     },
     {
       "id": "5641",
-      "cardId": "SHD-63",
+      "cardId": "SHD-063",
       "name": "System Patrol Craft",
       "subtitle": null,
       "set": "SHD",
@@ -223574,7 +223574,7 @@
     },
     {
       "id": "5646",
-      "cardId": "SHD-64",
+      "cardId": "SHD-064",
       "name": "Survivors' Gauntlet",
       "subtitle": null,
       "set": "SHD",
@@ -223617,7 +223617,7 @@
     },
     {
       "id": "11620",
-      "cardId": "SHD-64",
+      "cardId": "SHD-064",
       "name": "Survivors' Gauntlet",
       "subtitle": null,
       "set": "SHD",
@@ -223660,7 +223660,7 @@
     },
     {
       "id": "2804",
-      "cardId": "SHD-65",
+      "cardId": "SHD-065",
       "name": "Vigilant Pursuit Craft",
       "subtitle": null,
       "set": "SHD",
@@ -223705,7 +223705,7 @@
     },
     {
       "id": "11440",
-      "cardId": "SHD-65",
+      "cardId": "SHD-065",
       "name": "Vigilant Pursuit Craft",
       "subtitle": null,
       "set": "SHD",
@@ -223750,7 +223750,7 @@
     },
     {
       "id": "5651",
-      "cardId": "SHD-66",
+      "cardId": "SHD-066",
       "name": "Cargo Juggernaut",
       "subtitle": null,
       "set": "SHD",
@@ -223794,7 +223794,7 @@
     },
     {
       "id": "11625",
-      "cardId": "SHD-66",
+      "cardId": "SHD-066",
       "name": "Cargo Juggernaut",
       "subtitle": null,
       "set": "SHD",
@@ -223838,7 +223838,7 @@
     },
     {
       "id": "8018",
-      "cardId": "SHD-67",
+      "cardId": "SHD-067",
       "name": "Fenn Rau",
       "subtitle": "Protector of Concord Dawn",
       "set": "SHD",
@@ -223879,7 +223879,7 @@
     },
     {
       "id": "13320",
-      "cardId": "SHD-67",
+      "cardId": "SHD-067",
       "name": "Fenn Rau",
       "subtitle": "Protector of Concord Dawn",
       "set": "SHD",
@@ -223920,7 +223920,7 @@
     },
     {
       "id": "11630",
-      "cardId": "SHD-68",
+      "cardId": "SHD-068",
       "name": "Public Enemy",
       "subtitle": null,
       "set": "SHD",
@@ -223962,7 +223962,7 @@
     },
     {
       "id": "5661",
-      "cardId": "SHD-68",
+      "cardId": "SHD-068",
       "name": "Public Enemy",
       "subtitle": null,
       "set": "SHD",
@@ -224004,7 +224004,7 @@
     },
     {
       "id": "5666",
-      "cardId": "SHD-69",
+      "cardId": "SHD-069",
       "name": "Foundling",
       "subtitle": null,
       "set": "SHD",
@@ -224043,7 +224043,7 @@
     },
     {
       "id": "11635",
-      "cardId": "SHD-69",
+      "cardId": "SHD-069",
       "name": "Foundling",
       "subtitle": null,
       "set": "SHD",
@@ -224082,7 +224082,7 @@
     },
     {
       "id": "2754",
-      "cardId": "SHD-7",
+      "cardId": "SHD-007",
       "name": "Moff Gideon",
       "subtitle": "Formidable Commander",
       "set": "SHD",
@@ -224127,7 +224127,7 @@
     },
     {
       "id": "8677",
-      "cardId": "SHD-7",
+      "cardId": "SHD-007",
       "name": "Grogu",
       "subtitle": "Irresistible",
       "set": "SHD",
@@ -224169,7 +224169,7 @@
     },
     {
       "id": "5671",
-      "cardId": "SHD-70",
+      "cardId": "SHD-070",
       "name": "Resilient",
       "subtitle": null,
       "set": "SHD",
@@ -224208,7 +224208,7 @@
     },
     {
       "id": "11645",
-      "cardId": "SHD-71",
+      "cardId": "SHD-071",
       "name": "Top Target",
       "subtitle": null,
       "set": "SHD",
@@ -224250,7 +224250,7 @@
     },
     {
       "id": "5676",
-      "cardId": "SHD-71",
+      "cardId": "SHD-071",
       "name": "Top Target",
       "subtitle": null,
       "set": "SHD",
@@ -224292,7 +224292,7 @@
     },
     {
       "id": "11650",
-      "cardId": "SHD-72",
+      "cardId": "SHD-072",
       "name": "Imprisoned",
       "subtitle": null,
       "set": "SHD",
@@ -224332,7 +224332,7 @@
     },
     {
       "id": "5681",
-      "cardId": "SHD-72",
+      "cardId": "SHD-072",
       "name": "Imprisoned",
       "subtitle": null,
       "set": "SHD",
@@ -224372,7 +224372,7 @@
     },
     {
       "id": "11655",
-      "cardId": "SHD-73",
+      "cardId": "SHD-073",
       "name": "Mandalorian Armor",
       "subtitle": null,
       "set": "SHD",
@@ -224412,7 +224412,7 @@
     },
     {
       "id": "5686",
-      "cardId": "SHD-73",
+      "cardId": "SHD-073",
       "name": "Mandalorian Armor",
       "subtitle": null,
       "set": "SHD",
@@ -224452,7 +224452,7 @@
     },
     {
       "id": "5691",
-      "cardId": "SHD-74",
+      "cardId": "SHD-074",
       "name": "Vambrace Grappleshot",
       "subtitle": null,
       "set": "SHD",
@@ -224493,7 +224493,7 @@
     },
     {
       "id": "11660",
-      "cardId": "SHD-74",
+      "cardId": "SHD-074",
       "name": "Vambrace Grappleshot",
       "subtitle": null,
       "set": "SHD",
@@ -224534,7 +224534,7 @@
     },
     {
       "id": "11665",
-      "cardId": "SHD-75",
+      "cardId": "SHD-075",
       "name": "Covert Strength",
       "subtitle": null,
       "set": "SHD",
@@ -224575,7 +224575,7 @@
     },
     {
       "id": "5696",
-      "cardId": "SHD-75",
+      "cardId": "SHD-075",
       "name": "Covert Strength",
       "subtitle": null,
       "set": "SHD",
@@ -224616,7 +224616,7 @@
     },
     {
       "id": "5701",
-      "cardId": "SHD-76",
+      "cardId": "SHD-076",
       "name": "Unexpected Escape",
       "subtitle": null,
       "set": "SHD",
@@ -224655,7 +224655,7 @@
     },
     {
       "id": "11670",
-      "cardId": "SHD-76",
+      "cardId": "SHD-076",
       "name": "Unexpected Escape",
       "subtitle": null,
       "set": "SHD",
@@ -224694,7 +224694,7 @@
     },
     {
       "id": "5706",
-      "cardId": "SHD-77",
+      "cardId": "SHD-077",
       "name": "Evidence of the Crime",
       "subtitle": null,
       "set": "SHD",
@@ -224733,7 +224733,7 @@
     },
     {
       "id": "11675",
-      "cardId": "SHD-77",
+      "cardId": "SHD-077",
       "name": "Evidence of the Crime",
       "subtitle": null,
       "set": "SHD",
@@ -224772,7 +224772,7 @@
     },
     {
       "id": "11680",
-      "cardId": "SHD-78",
+      "cardId": "SHD-078",
       "name": "Fell the Dragon",
       "subtitle": null,
       "set": "SHD",
@@ -224811,7 +224811,7 @@
     },
     {
       "id": "5711",
-      "cardId": "SHD-78",
+      "cardId": "SHD-078",
       "name": "Fell the Dragon",
       "subtitle": null,
       "set": "SHD",
@@ -224850,7 +224850,7 @@
     },
     {
       "id": "5716",
-      "cardId": "SHD-79",
+      "cardId": "SHD-079",
       "name": "Rival's Fall",
       "subtitle": null,
       "set": "SHD",
@@ -224889,7 +224889,7 @@
     },
     {
       "id": "11685",
-      "cardId": "SHD-79",
+      "cardId": "SHD-079",
       "name": "Rival's Fall",
       "subtitle": null,
       "set": "SHD",
@@ -224928,7 +224928,7 @@
     },
     {
       "id": "8682",
-      "cardId": "SHD-8",
+      "cardId": "SHD-008",
       "name": "Greef Karga",
       "subtitle": "Affable Commissioner",
       "set": "SHD",
@@ -224970,7 +224970,7 @@
     },
     {
       "id": "7913",
-      "cardId": "SHD-8",
+      "cardId": "SHD-008",
       "name": "Boba Fett",
       "subtitle": "Daimyo",
       "set": "SHD",
@@ -225012,7 +225012,7 @@
     },
     {
       "id": "13325",
-      "cardId": "SHD-80",
+      "cardId": "SHD-080",
       "name": "Salacious Crumb",
       "subtitle": "Obnoxious Pet",
       "set": "SHD",
@@ -225055,7 +225055,7 @@
     },
     {
       "id": "8023",
-      "cardId": "SHD-80",
+      "cardId": "SHD-080",
       "name": "Salacious Crumb",
       "subtitle": "Obnoxious Pet",
       "set": "SHD",
@@ -225098,7 +225098,7 @@
     },
     {
       "id": "8028",
-      "cardId": "SHD-81",
+      "cardId": "SHD-081",
       "name": "General Tagge",
       "subtitle": "Concerned Commander",
       "set": "SHD",
@@ -225141,7 +225141,7 @@
     },
     {
       "id": "11690",
-      "cardId": "SHD-82",
+      "cardId": "SHD-082",
       "name": "Outland TIE Vanguard",
       "subtitle": null,
       "set": "SHD",
@@ -225185,7 +225185,7 @@
     },
     {
       "id": "5731",
-      "cardId": "SHD-82",
+      "cardId": "SHD-082",
       "name": "Outland TIE Vanguard",
       "subtitle": null,
       "set": "SHD",
@@ -225229,7 +225229,7 @@
     },
     {
       "id": "5736",
-      "cardId": "SHD-83",
+      "cardId": "SHD-083",
       "name": "Seasoned Shoretrooper",
       "subtitle": null,
       "set": "SHD",
@@ -225272,7 +225272,7 @@
     },
     {
       "id": "2756",
-      "cardId": "SHD-84",
+      "cardId": "SHD-084",
       "name": "Phase-III Dark Trooper",
       "subtitle": null,
       "set": "SHD",
@@ -225318,7 +225318,7 @@
     },
     {
       "id": "5741",
-      "cardId": "SHD-85",
+      "cardId": "SHD-085",
       "name": "Superlaser Technician",
       "subtitle": null,
       "set": "SHD",
@@ -225360,7 +225360,7 @@
     },
     {
       "id": "5746",
-      "cardId": "SHD-86",
+      "cardId": "SHD-086",
       "name": "Warbird Stowaway",
       "subtitle": null,
       "set": "SHD",
@@ -225404,7 +225404,7 @@
     },
     {
       "id": "11705",
-      "cardId": "SHD-86",
+      "cardId": "SHD-086",
       "name": "Warbird Stowaway",
       "subtitle": null,
       "set": "SHD",
@@ -225448,7 +225448,7 @@
     },
     {
       "id": "11710",
-      "cardId": "SHD-87",
+      "cardId": "SHD-087",
       "name": "Crosshair",
       "subtitle": "Following Orders",
       "set": "SHD",
@@ -225492,7 +225492,7 @@
     },
     {
       "id": "5751",
-      "cardId": "SHD-87",
+      "cardId": "SHD-087",
       "name": "Crosshair",
       "subtitle": "Following Orders",
       "set": "SHD",
@@ -225536,7 +225536,7 @@
     },
     {
       "id": "13335",
-      "cardId": "SHD-88",
+      "cardId": "SHD-088",
       "name": "Ephant Mon",
       "subtitle": "Head of Security",
       "set": "SHD",
@@ -225578,7 +225578,7 @@
     },
     {
       "id": "8033",
-      "cardId": "SHD-88",
+      "cardId": "SHD-088",
       "name": "Ephant Mon",
       "subtitle": "Head of Security",
       "set": "SHD",
@@ -225620,7 +225620,7 @@
     },
     {
       "id": "11715",
-      "cardId": "SHD-89",
+      "cardId": "SHD-089",
       "name": "Pirate Battle Tank",
       "subtitle": null,
       "set": "SHD",
@@ -225667,7 +225667,7 @@
     },
     {
       "id": "5761",
-      "cardId": "SHD-89",
+      "cardId": "SHD-089",
       "name": "Pirate Battle Tank",
       "subtitle": null,
       "set": "SHD",
@@ -225714,7 +225714,7 @@
     },
     {
       "id": "8687",
-      "cardId": "SHD-9",
+      "cardId": "SHD-009",
       "name": "Razor Crest",
       "subtitle": "Reliable Gunship",
       "set": "SHD",
@@ -225760,7 +225760,7 @@
     },
     {
       "id": "5391",
-      "cardId": "SHD-9",
+      "cardId": "SHD-009",
       "name": "Hunter",
       "subtitle": "Outcast Sergeant",
       "set": "SHD",
@@ -225805,7 +225805,7 @@
     },
     {
       "id": "13340",
-      "cardId": "SHD-90",
+      "cardId": "SHD-090",
       "name": "Maul",
       "subtitle": "Shadow Collective Visionary",
       "set": "SHD",
@@ -225851,7 +225851,7 @@
     },
     {
       "id": "8038",
-      "cardId": "SHD-90",
+      "cardId": "SHD-090",
       "name": "Maul",
       "subtitle": "Shadow Collective Visionary",
       "set": "SHD",
@@ -225897,7 +225897,7 @@
     },
     {
       "id": "8043",
-      "cardId": "SHD-91",
+      "cardId": "SHD-091",
       "name": "Jabba's Rancor",
       "subtitle": "Pateesa",
       "set": "SHD",
@@ -225940,7 +225940,7 @@
     },
     {
       "id": "13345",
-      "cardId": "SHD-91",
+      "cardId": "SHD-091",
       "name": "Jabba's Rancor",
       "subtitle": "Pateesa",
       "set": "SHD",
@@ -225983,7 +225983,7 @@
     },
     {
       "id": "8048",
-      "cardId": "SHD-92",
+      "cardId": "SHD-092",
       "name": "Finalizer",
       "subtitle": "Might of the First Order",
       "set": "SHD",
@@ -226029,7 +226029,7 @@
     },
     {
       "id": "13350",
-      "cardId": "SHD-92",
+      "cardId": "SHD-092",
       "name": "Finalizer",
       "subtitle": "Might of the First Order",
       "set": "SHD",
@@ -226075,7 +226075,7 @@
     },
     {
       "id": "5781",
-      "cardId": "SHD-93",
+      "cardId": "SHD-093",
       "name": "Remnant Reserves",
       "subtitle": null,
       "set": "SHD",
@@ -226115,7 +226115,7 @@
     },
     {
       "id": "11720",
-      "cardId": "SHD-93",
+      "cardId": "SHD-093",
       "name": "Remnant Reserves",
       "subtitle": null,
       "set": "SHD",
@@ -226155,7 +226155,7 @@
     },
     {
       "id": "5786",
-      "cardId": "SHD-94",
+      "cardId": "SHD-094",
       "name": "Palpatine's Return",
       "subtitle": null,
       "set": "SHD",
@@ -226196,7 +226196,7 @@
     },
     {
       "id": "11725",
-      "cardId": "SHD-94",
+      "cardId": "SHD-094",
       "name": "Palpatine's Return",
       "subtitle": null,
       "set": "SHD",
@@ -226237,7 +226237,7 @@
     },
     {
       "id": "11730",
-      "cardId": "SHD-95",
+      "cardId": "SHD-095",
       "name": "Clone Deserter",
       "subtitle": null,
       "set": "SHD",
@@ -226283,7 +226283,7 @@
     },
     {
       "id": "5791",
-      "cardId": "SHD-95",
+      "cardId": "SHD-095",
       "name": "Clone Deserter",
       "subtitle": null,
       "set": "SHD",
@@ -226329,7 +226329,7 @@
     },
     {
       "id": "8053",
-      "cardId": "SHD-96",
+      "cardId": "SHD-096",
       "name": "Maz Kanata",
       "subtitle": "Pirate Queen",
       "set": "SHD",
@@ -226371,7 +226371,7 @@
     },
     {
       "id": "13355",
-      "cardId": "SHD-96",
+      "cardId": "SHD-096",
       "name": "Maz Kanata",
       "subtitle": "Pirate Queen",
       "set": "SHD",
@@ -226413,7 +226413,7 @@
     },
     {
       "id": "5801",
-      "cardId": "SHD-97",
+      "cardId": "SHD-097",
       "name": "Freetown Backup",
       "subtitle": null,
       "set": "SHD",
@@ -226457,7 +226457,7 @@
     },
     {
       "id": "11735",
-      "cardId": "SHD-97",
+      "cardId": "SHD-097",
       "name": "Freetown Backup",
       "subtitle": null,
       "set": "SHD",
@@ -226501,7 +226501,7 @@
     },
     {
       "id": "5806",
-      "cardId": "SHD-98",
+      "cardId": "SHD-098",
       "name": "Sundari Peacekeeper",
       "subtitle": null,
       "set": "SHD",
@@ -226547,7 +226547,7 @@
     },
     {
       "id": "11740",
-      "cardId": "SHD-98",
+      "cardId": "SHD-098",
       "name": "Sundari Peacekeeper",
       "subtitle": null,
       "set": "SHD",
@@ -226593,7 +226593,7 @@
     },
     {
       "id": "5811",
-      "cardId": "SHD-99",
+      "cardId": "SHD-099",
       "name": "Echo",
       "subtitle": "Restored",
       "set": "SHD",
@@ -226638,7 +226638,7 @@
     },
     {
       "id": "11745",
-      "cardId": "SHD-99",
+      "cardId": "SHD-099",
       "name": "Echo",
       "subtitle": "Restored",
       "set": "SHD",
@@ -226683,7 +226683,7 @@
     },
     {
       "id": "60",
-      "cardId": "SOR-1",
+      "cardId": "SOR-001",
       "name": "Director Krennic",
       "subtitle": "Aspiring to Authority",
       "set": "SOR",
@@ -226728,7 +226728,7 @@
     },
     {
       "id": "981",
-      "cardId": "SOR-1",
+      "cardId": "SOR-001",
       "name": "Luke Skywalker",
       "subtitle": "Faithful Friend",
       "set": "SOR",
@@ -226771,7 +226771,7 @@
     },
     {
       "id": "1818",
-      "cardId": "SOR-10",
+      "cardId": "SOR-010",
       "name": "R2-D2",
       "subtitle": "Ignoring Protocol",
       "set": "SOR",
@@ -226813,7 +226813,7 @@
     },
     {
       "id": "6",
-      "cardId": "SOR-10",
+      "cardId": "SOR-010",
       "name": "Darth Vader",
       "subtitle": "Dark Lord of the Sith",
       "set": "SOR",
@@ -227699,7 +227699,7 @@
     },
     {
       "id": "2659",
-      "cardId": "SOR-11",
+      "cardId": "SOR-011",
       "name": "Leia Organa",
       "subtitle": "Defiant Princess",
       "set": "SOR",
@@ -227742,7 +227742,7 @@
     },
     {
       "id": "230",
-      "cardId": "SOR-11",
+      "cardId": "SOR-011",
       "name": "Grand Inquisitor",
       "subtitle": "Hunting the Jedi",
       "set": "SOR",
@@ -228654,7 +228654,7 @@
     },
     {
       "id": "389",
-      "cardId": "SOR-12",
+      "cardId": "SOR-012",
       "name": "IG-88",
       "subtitle": "Ruthless Bounty Hunter",
       "set": "SOR",
@@ -229498,7 +229498,7 @@
     },
     {
       "id": "390",
-      "cardId": "SOR-13",
+      "cardId": "SOR-013",
       "name": "Cassian Andor",
       "subtitle": "Dedicated to the Rebellion",
       "set": "SOR",
@@ -230372,7 +230372,7 @@
     },
     {
       "id": "235",
-      "cardId": "SOR-14",
+      "cardId": "SOR-014",
       "name": "Sabine Wren",
       "subtitle": "Galvanized Revolutionary",
       "set": "SOR",
@@ -231312,7 +231312,7 @@
     },
     {
       "id": "271",
-      "cardId": "SOR-15",
+      "cardId": "SOR-015",
       "name": "Boba Fett",
       "subtitle": "Collecting the Bounty",
       "set": "SOR",
@@ -232185,7 +232185,7 @@
     },
     {
       "id": "305",
-      "cardId": "SOR-16",
+      "cardId": "SOR-016",
       "name": "Grand Admiral Thrawn",
       "subtitle": "Patient and Insightful",
       "set": "SOR",
@@ -233064,7 +233064,7 @@
     },
     {
       "id": "273",
-      "cardId": "SOR-17",
+      "cardId": "SOR-017",
       "name": "Han Solo",
       "subtitle": "Audacious Smuggler",
       "set": "SOR",
@@ -233922,7 +233922,7 @@
     },
     {
       "id": "391",
-      "cardId": "SOR-18",
+      "cardId": "SOR-018",
       "name": "Jyn Erso",
       "subtitle": "Resisting Oppression",
       "set": "SOR",
@@ -234797,7 +234797,7 @@
     },
     {
       "id": "9155",
-      "cardId": "SOR-19",
+      "cardId": "SOR-019",
       "name": "Security Complex",
       "subtitle": null,
       "set": "SOR",
@@ -234834,7 +234834,7 @@
     },
     {
       "id": "306",
-      "cardId": "SOR-19",
+      "cardId": "SOR-019",
       "name": "Security Complex",
       "subtitle": null,
       "set": "SOR",
@@ -235749,7 +235749,7 @@
     },
     {
       "id": "385",
-      "cardId": "SOR-2",
+      "cardId": "SOR-002",
       "name": "Iden Versio",
       "subtitle": "Inferno Squad Commander",
       "set": "SOR",
@@ -235794,7 +235794,7 @@
     },
     {
       "id": "982",
-      "cardId": "SOR-2",
+      "cardId": "SOR-002",
       "name": "Darth Vader",
       "subtitle": "Dark Lord of the Sith",
       "set": "SOR",
@@ -235838,7 +235838,7 @@
     },
     {
       "id": "925",
-      "cardId": "SOR-20",
+      "cardId": "SOR-020",
       "name": "Capital City",
       "subtitle": null,
       "set": "SOR",
@@ -236723,7 +236723,7 @@
     },
     {
       "id": "926",
-      "cardId": "SOR-21",
+      "cardId": "SOR-021",
       "name": "Dagobah Swamp",
       "subtitle": null,
       "set": "SOR",
@@ -237568,7 +237568,7 @@
     },
     {
       "id": "9160",
-      "cardId": "SOR-22",
+      "cardId": "SOR-022",
       "name": "Energy Conversion Lab",
       "subtitle": null,
       "set": "SOR",
@@ -237607,7 +237607,7 @@
     },
     {
       "id": "307",
-      "cardId": "SOR-22",
+      "cardId": "SOR-022",
       "name": "Energy Conversion Lab",
       "subtitle": null,
       "set": "SOR",
@@ -238420,7 +238420,7 @@
     },
     {
       "id": "95",
-      "cardId": "SOR-23",
+      "cardId": "SOR-023",
       "name": "Command Center",
       "subtitle": null,
       "set": "SOR",
@@ -239172,7 +239172,7 @@
     },
     {
       "id": "308",
-      "cardId": "SOR-24",
+      "cardId": "SOR-024",
       "name": "Echo Base",
       "subtitle": null,
       "set": "SOR",
@@ -240039,7 +240039,7 @@
     },
     {
       "id": "309",
-      "cardId": "SOR-25",
+      "cardId": "SOR-025",
       "name": "Tarkintown",
       "subtitle": null,
       "set": "SOR",
@@ -240076,7 +240076,7 @@
     },
     {
       "id": "9170",
-      "cardId": "SOR-25",
+      "cardId": "SOR-025",
       "name": "Tarkintown",
       "subtitle": null,
       "set": "SOR",
@@ -240656,7 +240656,7 @@
     },
     {
       "id": "310",
-      "cardId": "SOR-26",
+      "cardId": "SOR-026",
       "name": "Catacombs of Cadera",
       "subtitle": null,
       "set": "SOR",
@@ -241131,7 +241131,7 @@
     },
     {
       "id": "927",
-      "cardId": "SOR-27",
+      "cardId": "SOR-027",
       "name": "Kestro City",
       "subtitle": null,
       "set": "SOR",
@@ -241613,7 +241613,7 @@
     },
     {
       "id": "9180",
-      "cardId": "SOR-28",
+      "cardId": "SOR-028",
       "name": "Jedha City",
       "subtitle": null,
       "set": "SOR",
@@ -241650,7 +241650,7 @@
     },
     {
       "id": "311",
-      "cardId": "SOR-28",
+      "cardId": "SOR-028",
       "name": "Jedha City",
       "subtitle": null,
       "set": "SOR",
@@ -242164,7 +242164,7 @@
     },
     {
       "id": "55",
-      "cardId": "SOR-29",
+      "cardId": "SOR-029",
       "name": "Administrator's Tower",
       "subtitle": null,
       "set": "SOR",
@@ -242798,7 +242798,7 @@
     },
     {
       "id": "65",
-      "cardId": "SOR-3",
+      "cardId": "SOR-003",
       "name": "Chewbacca",
       "subtitle": "Walking Carpet",
       "set": "SOR",
@@ -242844,7 +242844,7 @@
     },
     {
       "id": "312",
-      "cardId": "SOR-30",
+      "cardId": "SOR-030",
       "name": "Chopper Base",
       "subtitle": null,
       "set": "SOR",
@@ -243749,7 +243749,7 @@
     },
     {
       "id": "9585",
-      "cardId": "SOR-31",
+      "cardId": "SOR-031",
       "name": "Inferno Four",
       "subtitle": "Unforgetting",
       "set": "SOR",
@@ -243793,7 +243793,7 @@
     },
     {
       "id": "392",
-      "cardId": "SOR-31",
+      "cardId": "SOR-031",
       "name": "Inferno Four",
       "subtitle": "Unforgetting",
       "set": "SOR",
@@ -244735,7 +244735,7 @@
     },
     {
       "id": "9785",
-      "cardId": "SOR-32",
+      "cardId": "SOR-032",
       "name": "Scout Bike Pursuer",
       "subtitle": null,
       "set": "SOR",
@@ -244780,7 +244780,7 @@
     },
     {
       "id": "928",
-      "cardId": "SOR-32",
+      "cardId": "SOR-032",
       "name": "Scout Bike Pursuer",
       "subtitle": null,
       "set": "SOR",
@@ -245663,7 +245663,7 @@
     },
     {
       "id": "313",
-      "cardId": "SOR-33",
+      "cardId": "SOR-033",
       "name": "Death Trooper",
       "subtitle": null,
       "set": "SOR",
@@ -245706,7 +245706,7 @@
     },
     {
       "id": "9190",
-      "cardId": "SOR-33",
+      "cardId": "SOR-033",
       "name": "Death Trooper",
       "subtitle": null,
       "set": "SOR",
@@ -246573,7 +246573,7 @@
     },
     {
       "id": "393",
-      "cardId": "SOR-34",
+      "cardId": "SOR-034",
       "name": "Del Meeko",
       "subtitle": "Providing Overwatch",
       "set": "SOR",
@@ -246618,7 +246618,7 @@
     },
     {
       "id": "9590",
-      "cardId": "SOR-34",
+      "cardId": "SOR-034",
       "name": "Del Meeko",
       "subtitle": "Providing Overwatch",
       "set": "SOR",
@@ -247497,7 +247497,7 @@
     },
     {
       "id": "70",
-      "cardId": "SOR-35",
+      "cardId": "SOR-035",
       "name": "Lieutenant Childsen",
       "subtitle": "Death Star Prison Warden",
       "set": "SOR",
@@ -247542,7 +247542,7 @@
     },
     {
       "id": "8915",
-      "cardId": "SOR-35",
+      "cardId": "SOR-035",
       "name": "Lieutenant Childsen",
       "subtitle": "Death Star Prison Warden",
       "set": "SOR",
@@ -248459,7 +248459,7 @@
     },
     {
       "id": "394",
-      "cardId": "SOR-36",
+      "cardId": "SOR-036",
       "name": "Gideon Hask",
       "subtitle": "Ruthless Loyalist",
       "set": "SOR",
@@ -248502,7 +248502,7 @@
     },
     {
       "id": "9595",
-      "cardId": "SOR-36",
+      "cardId": "SOR-036",
       "name": "Gideon Hask",
       "subtitle": "Ruthless Loyalist",
       "set": "SOR",
@@ -249423,7 +249423,7 @@
     },
     {
       "id": "314",
-      "cardId": "SOR-37",
+      "cardId": "SOR-037",
       "name": "Academy Defense Walker",
       "subtitle": null,
       "set": "SOR",
@@ -249469,7 +249469,7 @@
     },
     {
       "id": "9195",
-      "cardId": "SOR-37",
+      "cardId": "SOR-037",
       "name": "Academy Defense Walker",
       "subtitle": null,
       "set": "SOR",
@@ -250361,7 +250361,7 @@
     },
     {
       "id": "9200",
-      "cardId": "SOR-38",
+      "cardId": "SOR-038",
       "name": "Count Dooku",
       "subtitle": "Darth Tyranus",
       "set": "SOR",
@@ -250407,7 +250407,7 @@
     },
     {
       "id": "315",
-      "cardId": "SOR-38",
+      "cardId": "SOR-038",
       "name": "Count Dooku",
       "subtitle": "Darth Tyranus",
       "set": "SOR",
@@ -251267,7 +251267,7 @@
     },
     {
       "id": "9790",
-      "cardId": "SOR-39",
+      "cardId": "SOR-039",
       "name": "AT-AT Suppressor",
       "subtitle": null,
       "set": "SOR",
@@ -251311,7 +251311,7 @@
     },
     {
       "id": "929",
-      "cardId": "SOR-39",
+      "cardId": "SOR-039",
       "name": "AT-AT Suppressor",
       "subtitle": null,
       "set": "SOR",
@@ -252227,7 +252227,7 @@
     },
     {
       "id": "386",
-      "cardId": "SOR-4",
+      "cardId": "SOR-004",
       "name": "Chirrut Îmwe",
       "subtitle": "One With The Force",
       "set": "SOR",
@@ -252270,7 +252270,7 @@
     },
     {
       "id": "2668",
-      "cardId": "SOR-4",
+      "cardId": "SOR-004",
       "name": "Vader's Lightsaber",
       "subtitle": null,
       "set": "SOR",
@@ -252312,7 +252312,7 @@
     },
     {
       "id": "9795",
-      "cardId": "SOR-40",
+      "cardId": "SOR-040",
       "name": "Avenger",
       "subtitle": "Hunting Star Destroyer",
       "set": "SOR",
@@ -252356,7 +252356,7 @@
     },
     {
       "id": "930",
-      "cardId": "SOR-40",
+      "cardId": "SOR-040",
       "name": "Avenger",
       "subtitle": "Hunting Star Destroyer",
       "set": "SOR",
@@ -253268,7 +253268,7 @@
     },
     {
       "id": "395",
-      "cardId": "SOR-41",
+      "cardId": "SOR-041",
       "name": "Power of the Dark Side",
       "subtitle": null,
       "set": "SOR",
@@ -253308,7 +253308,7 @@
     },
     {
       "id": "9600",
-      "cardId": "SOR-41",
+      "cardId": "SOR-041",
       "name": "Power of the Dark Side",
       "subtitle": null,
       "set": "SOR",
@@ -254190,7 +254190,7 @@
     },
     {
       "id": "9205",
-      "cardId": "SOR-42",
+      "cardId": "SOR-042",
       "name": "Search Your Feelings",
       "subtitle": null,
       "set": "SOR",
@@ -254230,7 +254230,7 @@
     },
     {
       "id": "316",
-      "cardId": "SOR-42",
+      "cardId": "SOR-042",
       "name": "Search Your Feelings",
       "subtitle": null,
       "set": "SOR",
@@ -255128,7 +255128,7 @@
     },
     {
       "id": "1339",
-      "cardId": "SOR-43",
+      "cardId": "SOR-043",
       "name": "Superlaser Blast",
       "subtitle": null,
       "set": "SOR",
@@ -255169,7 +255169,7 @@
     },
     {
       "id": "10130",
-      "cardId": "SOR-43",
+      "cardId": "SOR-043",
       "name": "Superlaser Blast",
       "subtitle": null,
       "set": "SOR",
@@ -256000,7 +256000,7 @@
     },
     {
       "id": "9210",
-      "cardId": "SOR-44",
+      "cardId": "SOR-044",
       "name": "Restored ARC-170",
       "subtitle": null,
       "set": "SOR",
@@ -256046,7 +256046,7 @@
     },
     {
       "id": "317",
-      "cardId": "SOR-44",
+      "cardId": "SOR-044",
       "name": "Restored ARC-170",
       "subtitle": null,
       "set": "SOR",
@@ -256974,7 +256974,7 @@
     },
     {
       "id": "318",
-      "cardId": "SOR-45",
+      "cardId": "SOR-045",
       "name": "Yoda",
       "subtitle": "Old Master",
       "set": "SOR",
@@ -257019,7 +257019,7 @@
     },
     {
       "id": "9215",
-      "cardId": "SOR-45",
+      "cardId": "SOR-045",
       "name": "Yoda",
       "subtitle": "Old Master",
       "set": "SOR",
@@ -257946,7 +257946,7 @@
     },
     {
       "id": "323",
-      "cardId": "SOR-46",
+      "cardId": "SOR-046",
       "name": "Consular Security Force",
       "subtitle": null,
       "set": "SOR",
@@ -257989,7 +257989,7 @@
     },
     {
       "id": "9240",
-      "cardId": "SOR-46",
+      "cardId": "SOR-046",
       "name": "Consular Security Force",
       "subtitle": null,
       "set": "SOR",
@@ -258868,7 +258868,7 @@
     },
     {
       "id": "324",
-      "cardId": "SOR-47",
+      "cardId": "SOR-047",
       "name": "Kanan Jarrus",
       "subtitle": "Revealed Jedi",
       "set": "SOR",
@@ -258913,7 +258913,7 @@
     },
     {
       "id": "9245",
-      "cardId": "SOR-47",
+      "cardId": "SOR-047",
       "name": "Kanan Jarrus",
       "subtitle": "Revealed Jedi",
       "set": "SOR",
@@ -259790,7 +259790,7 @@
     },
     {
       "id": "9250",
-      "cardId": "SOR-48",
+      "cardId": "SOR-048",
       "name": "Vigilant Honor Guards",
       "subtitle": null,
       "set": "SOR",
@@ -259834,7 +259834,7 @@
     },
     {
       "id": "325",
-      "cardId": "SOR-48",
+      "cardId": "SOR-048",
       "name": "Vigilant Honor Guards",
       "subtitle": null,
       "set": "SOR",
@@ -260678,7 +260678,7 @@
     },
     {
       "id": "8920",
-      "cardId": "SOR-49",
+      "cardId": "SOR-049",
       "name": "Obi-Wan Kenobi",
       "subtitle": "Following Fate",
       "set": "SOR",
@@ -260723,7 +260723,7 @@
     },
     {
       "id": "75",
-      "cardId": "SOR-49",
+      "cardId": "SOR-049",
       "name": "Obi-Wan Kenobi",
       "subtitle": "Following Fate",
       "set": "SOR",
@@ -261618,7 +261618,7 @@
     },
     {
       "id": "1828",
-      "cardId": "SOR-5",
+      "cardId": "SOR-005",
       "name": "I Am Your Father",
       "subtitle": null,
       "set": "SOR",
@@ -261657,7 +261657,7 @@
     },
     {
       "id": "5",
-      "cardId": "SOR-5",
+      "cardId": "SOR-005",
       "name": "Luke Skywalker",
       "subtitle": "Faithful Friend",
       "set": "SOR",
@@ -261700,7 +261700,7 @@
     },
     {
       "id": "396",
-      "cardId": "SOR-50",
+      "cardId": "SOR-050",
       "name": "The Ghost",
       "subtitle": "Spectre Home Base",
       "set": "SOR",
@@ -261747,7 +261747,7 @@
     },
     {
       "id": "9605",
-      "cardId": "SOR-50",
+      "cardId": "SOR-050",
       "name": "The Ghost",
       "subtitle": "Spectre Home Base",
       "set": "SOR",
@@ -262612,7 +262612,7 @@
     },
     {
       "id": "9745",
-      "cardId": "SOR-51",
+      "cardId": "SOR-051",
       "name": "Luke Skywalker",
       "subtitle": "Jedi Knight",
       "set": "SOR",
@@ -262658,7 +262658,7 @@
     },
     {
       "id": "536",
-      "cardId": "SOR-51",
+      "cardId": "SOR-051",
       "name": "Luke Skywalker",
       "subtitle": "Jedi Knight",
       "set": "SOR",
@@ -262778,7 +262778,7 @@
     },
     {
       "id": "9255",
-      "cardId": "SOR-52",
+      "cardId": "SOR-052",
       "name": "Redemption",
       "subtitle": "Medical Frigate",
       "set": "SOR",
@@ -262824,7 +262824,7 @@
     },
     {
       "id": "326",
-      "cardId": "SOR-52",
+      "cardId": "SOR-052",
       "name": "Redemption",
       "subtitle": "Medical Frigate",
       "set": "SOR",
@@ -262870,7 +262870,7 @@
     },
     {
       "id": "100",
-      "cardId": "SOR-53",
+      "cardId": "SOR-053",
       "name": "Luke's Lightsaber",
       "subtitle": null,
       "set": "SOR",
@@ -262912,7 +262912,7 @@
     },
     {
       "id": "9800",
-      "cardId": "SOR-54",
+      "cardId": "SOR-054",
       "name": "Jedi Lightsaber",
       "subtitle": null,
       "set": "SOR",
@@ -262954,7 +262954,7 @@
     },
     {
       "id": "932",
-      "cardId": "SOR-54",
+      "cardId": "SOR-054",
       "name": "Jedi Lightsaber",
       "subtitle": null,
       "set": "SOR",
@@ -262996,7 +262996,7 @@
     },
     {
       "id": "10070",
-      "cardId": "SOR-55",
+      "cardId": "SOR-055",
       "name": "The Force Is With Me",
       "subtitle": null,
       "set": "SOR",
@@ -263036,7 +263036,7 @@
     },
     {
       "id": "1260",
-      "cardId": "SOR-55",
+      "cardId": "SOR-055",
       "name": "The Force Is With Me",
       "subtitle": null,
       "set": "SOR",
@@ -263076,7 +263076,7 @@
     },
     {
       "id": "1253",
-      "cardId": "SOR-56",
+      "cardId": "SOR-056",
       "name": "Bendu",
       "subtitle": "The One in the Middle",
       "set": "SOR",
@@ -263120,7 +263120,7 @@
     },
     {
       "id": "10065",
-      "cardId": "SOR-56",
+      "cardId": "SOR-056",
       "name": "Bendu",
       "subtitle": "The One in the Middle",
       "set": "SOR",
@@ -263164,7 +263164,7 @@
     },
     {
       "id": "1228",
-      "cardId": "SOR-57",
+      "cardId": "SOR-057",
       "name": "Protector",
       "subtitle": null,
       "set": "SOR",
@@ -263205,7 +263205,7 @@
     },
     {
       "id": "10040",
-      "cardId": "SOR-57",
+      "cardId": "SOR-057",
       "name": "Protector",
       "subtitle": null,
       "set": "SOR",
@@ -263246,7 +263246,7 @@
     },
     {
       "id": "80",
-      "cardId": "SOR-58",
+      "cardId": "SOR-058",
       "name": "Vigilance",
       "subtitle": null,
       "set": "SOR",
@@ -263285,7 +263285,7 @@
     },
     {
       "id": "8925",
-      "cardId": "SOR-58",
+      "cardId": "SOR-058",
       "name": "Vigilance",
       "subtitle": null,
       "set": "SOR",
@@ -263324,7 +263324,7 @@
     },
     {
       "id": "319",
-      "cardId": "SOR-59",
+      "cardId": "SOR-059",
       "name": "2-1B Surgical Droid",
       "subtitle": null,
       "set": "SOR",
@@ -263365,7 +263365,7 @@
     },
     {
       "id": "9220",
-      "cardId": "SOR-59",
+      "cardId": "SOR-059",
       "name": "2-1B Surgical Droid",
       "subtitle": null,
       "set": "SOR",
@@ -263406,7 +263406,7 @@
     },
     {
       "id": "387",
-      "cardId": "SOR-6",
+      "cardId": "SOR-006",
       "name": "Emperor Palpatine",
       "subtitle": "Galactic Ruler",
       "set": "SOR",
@@ -263451,7 +263451,7 @@
     },
     {
       "id": "2673",
-      "cardId": "SOR-6",
+      "cardId": "SOR-006",
       "name": "Grand Moff Tarkin",
       "subtitle": "Death Star Overseer",
       "set": "SOR",
@@ -263494,7 +263494,7 @@
     },
     {
       "id": "9225",
-      "cardId": "SOR-60",
+      "cardId": "SOR-060",
       "name": "Distant Patroller",
       "subtitle": null,
       "set": "SOR",
@@ -263537,7 +263537,7 @@
     },
     {
       "id": "320",
-      "cardId": "SOR-60",
+      "cardId": "SOR-060",
       "name": "Distant Patroller",
       "subtitle": null,
       "set": "SOR",
@@ -263580,7 +263580,7 @@
     },
     {
       "id": "1309",
-      "cardId": "SOR-61",
+      "cardId": "SOR-061",
       "name": "Guardian of the Whills",
       "subtitle": null,
       "set": "SOR",
@@ -263622,7 +263622,7 @@
     },
     {
       "id": "10100",
-      "cardId": "SOR-61",
+      "cardId": "SOR-061",
       "name": "Guardian of the Whills",
       "subtitle": null,
       "set": "SOR",
@@ -263664,7 +263664,7 @@
     },
     {
       "id": "397",
-      "cardId": "SOR-62",
+      "cardId": "SOR-062",
       "name": "Regional Governor",
       "subtitle": null,
       "set": "SOR",
@@ -263706,7 +263706,7 @@
     },
     {
       "id": "9610",
-      "cardId": "SOR-62",
+      "cardId": "SOR-062",
       "name": "Regional Governor",
       "subtitle": null,
       "set": "SOR",
@@ -263748,7 +263748,7 @@
     },
     {
       "id": "321",
-      "cardId": "SOR-63",
+      "cardId": "SOR-063",
       "name": "Cloud City Wing Guard",
       "subtitle": null,
       "set": "SOR",
@@ -263792,7 +263792,7 @@
     },
     {
       "id": "9230",
-      "cardId": "SOR-63",
+      "cardId": "SOR-063",
       "name": "Cloud City Wing Guard",
       "subtitle": null,
       "set": "SOR",
@@ -263836,7 +263836,7 @@
     },
     {
       "id": "933",
-      "cardId": "SOR-64",
+      "cardId": "SOR-064",
       "name": "Wilderness Fighter",
       "subtitle": null,
       "set": "SOR",
@@ -263879,7 +263879,7 @@
     },
     {
       "id": "9805",
-      "cardId": "SOR-64",
+      "cardId": "SOR-064",
       "name": "Wilderness Fighter",
       "subtitle": null,
       "set": "SOR",
@@ -263922,7 +263922,7 @@
     },
     {
       "id": "10095",
-      "cardId": "SOR-65",
+      "cardId": "SOR-065",
       "name": "Baze Malbus",
       "subtitle": "Temple Guardian",
       "set": "SOR",
@@ -263966,7 +263966,7 @@
     },
     {
       "id": "1304",
-      "cardId": "SOR-65",
+      "cardId": "SOR-065",
       "name": "Baze Malbus",
       "subtitle": "Temple Guardian",
       "set": "SOR",
@@ -264010,7 +264010,7 @@
     },
     {
       "id": "322",
-      "cardId": "SOR-66",
+      "cardId": "SOR-066",
       "name": "System Patrol Craft",
       "subtitle": null,
       "set": "SOR",
@@ -264054,7 +264054,7 @@
     },
     {
       "id": "9235",
-      "cardId": "SOR-66",
+      "cardId": "SOR-066",
       "name": "System Patrol Craft",
       "subtitle": null,
       "set": "SOR",
@@ -264098,7 +264098,7 @@
     },
     {
       "id": "9260",
-      "cardId": "SOR-67",
+      "cardId": "SOR-067",
       "name": "Rugged Survivors",
       "subtitle": null,
       "set": "SOR",
@@ -264141,7 +264141,7 @@
     },
     {
       "id": "327",
-      "cardId": "SOR-67",
+      "cardId": "SOR-067",
       "name": "Rugged Survivors",
       "subtitle": null,
       "set": "SOR",
@@ -264184,7 +264184,7 @@
     },
     {
       "id": "934",
-      "cardId": "SOR-68",
+      "cardId": "SOR-068",
       "name": "Cargo Juggernaut",
       "subtitle": null,
       "set": "SOR",
@@ -264228,7 +264228,7 @@
     },
     {
       "id": "9810",
-      "cardId": "SOR-68",
+      "cardId": "SOR-068",
       "name": "Cargo Juggernaut",
       "subtitle": null,
       "set": "SOR",
@@ -264272,7 +264272,7 @@
     },
     {
       "id": "9265",
-      "cardId": "SOR-69",
+      "cardId": "SOR-069",
       "name": "Resilient",
       "subtitle": null,
       "set": "SOR",
@@ -264311,7 +264311,7 @@
     },
     {
       "id": "328",
-      "cardId": "SOR-69",
+      "cardId": "SOR-069",
       "name": "Resilient",
       "subtitle": null,
       "set": "SOR",
@@ -264350,7 +264350,7 @@
     },
     {
       "id": "200",
-      "cardId": "SOR-7",
+      "cardId": "SOR-007",
       "name": "Grand Moff Tarkin",
       "subtitle": "Oversector Governor",
       "set": "SOR",
@@ -264393,7 +264393,7 @@
     },
     {
       "id": "1969",
-      "cardId": "SOR-7",
+      "cardId": "SOR-007",
       "name": "Admiral Motti",
       "subtitle": "Brazen and Scornful",
       "set": "SOR",
@@ -264435,7 +264435,7 @@
     },
     {
       "id": "935",
-      "cardId": "SOR-70",
+      "cardId": "SOR-070",
       "name": "Devotion",
       "subtitle": null,
       "set": "SOR",
@@ -264476,7 +264476,7 @@
     },
     {
       "id": "9815",
-      "cardId": "SOR-70",
+      "cardId": "SOR-070",
       "name": "Devotion",
       "subtitle": null,
       "set": "SOR",
@@ -264517,7 +264517,7 @@
     },
     {
       "id": "10135",
-      "cardId": "SOR-71",
+      "cardId": "SOR-071",
       "name": "Electrostaff",
       "subtitle": null,
       "set": "SOR",
@@ -264557,7 +264557,7 @@
     },
     {
       "id": "1344",
-      "cardId": "SOR-71",
+      "cardId": "SOR-071",
       "name": "Electrostaff",
       "subtitle": null,
       "set": "SOR",
@@ -264597,7 +264597,7 @@
     },
     {
       "id": "9270",
-      "cardId": "SOR-72",
+      "cardId": "SOR-072",
       "name": "Entrenched",
       "subtitle": null,
       "set": "SOR",
@@ -264636,7 +264636,7 @@
     },
     {
       "id": "329",
-      "cardId": "SOR-72",
+      "cardId": "SOR-072",
       "name": "Entrenched",
       "subtitle": null,
       "set": "SOR",
@@ -264675,7 +264675,7 @@
     },
     {
       "id": "9820",
-      "cardId": "SOR-73",
+      "cardId": "SOR-073",
       "name": "Moment of Peace",
       "subtitle": null,
       "set": "SOR",
@@ -264714,7 +264714,7 @@
     },
     {
       "id": "936",
-      "cardId": "SOR-73",
+      "cardId": "SOR-073",
       "name": "Moment of Peace",
       "subtitle": null,
       "set": "SOR",
@@ -264753,7 +264753,7 @@
     },
     {
       "id": "85",
-      "cardId": "SOR-74",
+      "cardId": "SOR-074",
       "name": "Repair",
       "subtitle": null,
       "set": "SOR",
@@ -264792,7 +264792,7 @@
     },
     {
       "id": "8930",
-      "cardId": "SOR-74",
+      "cardId": "SOR-074",
       "name": "Repair",
       "subtitle": null,
       "set": "SOR",
@@ -264831,7 +264831,7 @@
     },
     {
       "id": "330",
-      "cardId": "SOR-75",
+      "cardId": "SOR-075",
       "name": "It Binds All Things",
       "subtitle": null,
       "set": "SOR",
@@ -264870,7 +264870,7 @@
     },
     {
       "id": "9275",
-      "cardId": "SOR-75",
+      "cardId": "SOR-075",
       "name": "It Binds All Things",
       "subtitle": null,
       "set": "SOR",
@@ -264909,7 +264909,7 @@
     },
     {
       "id": "9825",
-      "cardId": "SOR-76",
+      "cardId": "SOR-076",
       "name": "Make an Opening",
       "subtitle": null,
       "set": "SOR",
@@ -264948,7 +264948,7 @@
     },
     {
       "id": "937",
-      "cardId": "SOR-76",
+      "cardId": "SOR-076",
       "name": "Make an Opening",
       "subtitle": null,
       "set": "SOR",
@@ -264987,7 +264987,7 @@
     },
     {
       "id": "331",
-      "cardId": "SOR-77",
+      "cardId": "SOR-077",
       "name": "Takedown",
       "subtitle": null,
       "set": "SOR",
@@ -265026,7 +265026,7 @@
     },
     {
       "id": "9280",
-      "cardId": "SOR-77",
+      "cardId": "SOR-077",
       "name": "Takedown",
       "subtitle": null,
       "set": "SOR",
@@ -265065,7 +265065,7 @@
     },
     {
       "id": "90",
-      "cardId": "SOR-78",
+      "cardId": "SOR-078",
       "name": "Vanquish",
       "subtitle": null,
       "set": "SOR",
@@ -265104,7 +265104,7 @@
     },
     {
       "id": "8935",
-      "cardId": "SOR-78",
+      "cardId": "SOR-078",
       "name": "Vanquish",
       "subtitle": null,
       "set": "SOR",
@@ -265143,7 +265143,7 @@
     },
     {
       "id": "9285",
-      "cardId": "SOR-79",
+      "cardId": "SOR-079",
       "name": "Admiral Piett",
       "subtitle": "Captain of the Executor",
       "set": "SOR",
@@ -265188,7 +265188,7 @@
     },
     {
       "id": "332",
-      "cardId": "SOR-79",
+      "cardId": "SOR-079",
       "name": "Admiral Piett",
       "subtitle": "Captain of the Executor",
       "set": "SOR",
@@ -265233,7 +265233,7 @@
     },
     {
       "id": "2681",
-      "cardId": "SOR-8",
+      "cardId": "SOR-008",
       "name": "Luke's Lightsaber",
       "subtitle": null,
       "set": "SOR",
@@ -265275,7 +265275,7 @@
     },
     {
       "id": "388",
-      "cardId": "SOR-8",
+      "cardId": "SOR-008",
       "name": "Hera Syndulla",
       "subtitle": "Spectre Two",
       "set": "SOR",
@@ -265319,7 +265319,7 @@
     },
     {
       "id": "9290",
-      "cardId": "SOR-80",
+      "cardId": "SOR-080",
       "name": "General Tagge",
       "subtitle": "Concerned Commander",
       "set": "SOR",
@@ -265362,7 +265362,7 @@
     },
     {
       "id": "333",
-      "cardId": "SOR-80",
+      "cardId": "SOR-080",
       "name": "General Tagge",
       "subtitle": "Concerned Commander",
       "set": "SOR",
@@ -265405,7 +265405,7 @@
     },
     {
       "id": "334",
-      "cardId": "SOR-81",
+      "cardId": "SOR-081",
       "name": "Seasoned Shoretrooper",
       "subtitle": null,
       "set": "SOR",
@@ -265448,7 +265448,7 @@
     },
     {
       "id": "9295",
-      "cardId": "SOR-81",
+      "cardId": "SOR-081",
       "name": "Seasoned Shoretrooper",
       "subtitle": null,
       "set": "SOR",
@@ -265491,7 +265491,7 @@
     },
     {
       "id": "335",
-      "cardId": "SOR-82",
+      "cardId": "SOR-082",
       "name": "Emperor's Royal Guard",
       "subtitle": null,
       "set": "SOR",
@@ -265535,7 +265535,7 @@
     },
     {
       "id": "9300",
-      "cardId": "SOR-82",
+      "cardId": "SOR-082",
       "name": "Emperor's Royal Guard",
       "subtitle": null,
       "set": "SOR",
@@ -265579,7 +265579,7 @@
     },
     {
       "id": "105",
-      "cardId": "SOR-83",
+      "cardId": "SOR-083",
       "name": "Superlaser Technician",
       "subtitle": null,
       "set": "SOR",
@@ -265621,7 +265621,7 @@
     },
     {
       "id": "8950",
-      "cardId": "SOR-83",
+      "cardId": "SOR-083",
       "name": "Superlaser Technician",
       "subtitle": null,
       "set": "SOR",
@@ -265663,7 +265663,7 @@
     },
     {
       "id": "25",
-      "cardId": "SOR-84",
+      "cardId": "SOR-084",
       "name": "Grand Moff Tarkin",
       "subtitle": "Death Star Overseer",
       "set": "SOR",
@@ -265706,7 +265706,7 @@
     },
     {
       "id": "9615",
-      "cardId": "SOR-85",
+      "cardId": "SOR-085",
       "name": "Rukh",
       "subtitle": "Thrawn's Assassin",
       "set": "SOR",
@@ -265750,7 +265750,7 @@
     },
     {
       "id": "398",
-      "cardId": "SOR-85",
+      "cardId": "SOR-085",
       "name": "Rukh",
       "subtitle": "Thrawn's Assassin",
       "set": "SOR",
@@ -265794,7 +265794,7 @@
     },
     {
       "id": "9305",
-      "cardId": "SOR-86",
+      "cardId": "SOR-086",
       "name": "Gladiator Star Destroyer",
       "subtitle": null,
       "set": "SOR",
@@ -265840,7 +265840,7 @@
     },
     {
       "id": "336",
-      "cardId": "SOR-86",
+      "cardId": "SOR-086",
       "name": "Gladiator Star Destroyer",
       "subtitle": null,
       "set": "SOR",
@@ -265886,7 +265886,7 @@
     },
     {
       "id": "399",
-      "cardId": "SOR-87",
+      "cardId": "SOR-087",
       "name": "Darth Vader",
       "subtitle": "Commanding the First Legion",
       "set": "SOR",
@@ -265932,7 +265932,7 @@
     },
     {
       "id": "9620",
-      "cardId": "SOR-87",
+      "cardId": "SOR-087",
       "name": "Darth Vader",
       "subtitle": "Commanding the First Legion",
       "set": "SOR",
@@ -265978,7 +265978,7 @@
     },
     {
       "id": "9310",
-      "cardId": "SOR-88",
+      "cardId": "SOR-088",
       "name": "Blizzard Assault AT-AT",
       "subtitle": null,
       "set": "SOR",
@@ -266022,7 +266022,7 @@
     },
     {
       "id": "337",
-      "cardId": "SOR-88",
+      "cardId": "SOR-088",
       "name": "Blizzard Assault AT-AT",
       "subtitle": null,
       "set": "SOR",
@@ -266066,7 +266066,7 @@
     },
     {
       "id": "338",
-      "cardId": "SOR-89",
+      "cardId": "SOR-089",
       "name": "Relentless",
       "subtitle": "Konstantine's Folly",
       "set": "SOR",
@@ -266110,7 +266110,7 @@
     },
     {
       "id": "9315",
-      "cardId": "SOR-89",
+      "cardId": "SOR-089",
       "name": "Relentless",
       "subtitle": "Konstantine's Folly",
       "set": "SOR",
@@ -266154,7 +266154,7 @@
     },
     {
       "id": "205",
-      "cardId": "SOR-9",
+      "cardId": "SOR-009",
       "name": "Leia Organa",
       "subtitle": "Alliance General",
       "set": "SOR",
@@ -266199,7 +266199,7 @@
     },
     {
       "id": "1739",
-      "cardId": "SOR-9",
+      "cardId": "SOR-009",
       "name": "C-3PO",
       "subtitle": "Protocol Droid",
       "set": "SOR",
@@ -266241,7 +266241,7 @@
     },
     {
       "id": "9320",
-      "cardId": "SOR-90",
+      "cardId": "SOR-090",
       "name": "Devastator",
       "subtitle": "Inescapable",
       "set": "SOR",
@@ -266288,7 +266288,7 @@
     },
     {
       "id": "339",
-      "cardId": "SOR-90",
+      "cardId": "SOR-090",
       "name": "Devastator",
       "subtitle": "Inescapable",
       "set": "SOR",
@@ -266335,7 +266335,7 @@
     },
     {
       "id": "9625",
-      "cardId": "SOR-91",
+      "cardId": "SOR-091",
       "name": "The Emperor's Legion",
       "subtitle": null,
       "set": "SOR",
@@ -266376,7 +266376,7 @@
     },
     {
       "id": "400",
-      "cardId": "SOR-91",
+      "cardId": "SOR-091",
       "name": "The Emperor's Legion",
       "subtitle": null,
       "set": "SOR",
@@ -266417,7 +266417,7 @@
     },
     {
       "id": "340",
-      "cardId": "SOR-92",
+      "cardId": "SOR-092",
       "name": "Overwhelming Barrage",
       "subtitle": null,
       "set": "SOR",
@@ -266457,7 +266457,7 @@
     },
     {
       "id": "9325",
-      "cardId": "SOR-92",
+      "cardId": "SOR-092",
       "name": "Overwhelming Barrage",
       "subtitle": null,
       "set": "SOR",
@@ -266497,7 +266497,7 @@
     },
     {
       "id": "938",
-      "cardId": "SOR-93",
+      "cardId": "SOR-093",
       "name": "Alliance Dispatcher",
       "subtitle": null,
       "set": "SOR",
@@ -266539,7 +266539,7 @@
     },
     {
       "id": "9830",
-      "cardId": "SOR-93",
+      "cardId": "SOR-093",
       "name": "Alliance Dispatcher",
       "subtitle": null,
       "set": "SOR",
@@ -266581,7 +266581,7 @@
     },
     {
       "id": "1349",
-      "cardId": "SOR-94",
+      "cardId": "SOR-094",
       "name": "Bail Organa",
       "subtitle": "Rebel Councilor",
       "set": "SOR",
@@ -266624,7 +266624,7 @@
     },
     {
       "id": "10140",
-      "cardId": "SOR-94",
+      "cardId": "SOR-094",
       "name": "Bail Organa",
       "subtitle": "Rebel Councilor",
       "set": "SOR",
@@ -266667,7 +266667,7 @@
     },
     {
       "id": "9835",
-      "cardId": "SOR-95",
+      "cardId": "SOR-095",
       "name": "Battlefield Marine",
       "subtitle": null,
       "set": "SOR",
@@ -266710,7 +266710,7 @@
     },
     {
       "id": "939",
-      "cardId": "SOR-95",
+      "cardId": "SOR-095",
       "name": "Battlefield Marine",
       "subtitle": null,
       "set": "SOR",
@@ -266753,7 +266753,7 @@
     },
     {
       "id": "9840",
-      "cardId": "SOR-96",
+      "cardId": "SOR-096",
       "name": "Mon Mothma",
       "subtitle": "Voice Of The Rebellion",
       "set": "SOR",
@@ -266796,7 +266796,7 @@
     },
     {
       "id": "940",
-      "cardId": "SOR-96",
+      "cardId": "SOR-096",
       "name": "Mon Mothma",
       "subtitle": "Voice Of The Rebellion",
       "set": "SOR",
@@ -266839,7 +266839,7 @@
     },
     {
       "id": "9055",
-      "cardId": "SOR-97",
+      "cardId": "SOR-097",
       "name": "Admiral Ackbar",
       "subtitle": "Brilliant Strategist",
       "set": "SOR",
@@ -266884,7 +266884,7 @@
     },
     {
       "id": "210",
-      "cardId": "SOR-97",
+      "cardId": "SOR-097",
       "name": "Admiral Ackbar",
       "subtitle": "Brilliant Strategist",
       "set": "SOR",
@@ -266929,7 +266929,7 @@
     },
     {
       "id": "941",
-      "cardId": "SOR-98",
+      "cardId": "SOR-098",
       "name": "Echo Base Defender",
       "subtitle": null,
       "set": "SOR",
@@ -266974,7 +266974,7 @@
     },
     {
       "id": "9845",
-      "cardId": "SOR-98",
+      "cardId": "SOR-098",
       "name": "Echo Base Defender",
       "subtitle": null,
       "set": "SOR",
@@ -267019,7 +267019,7 @@
     },
     {
       "id": "9330",
-      "cardId": "SOR-99",
+      "cardId": "SOR-099",
       "name": "Bright Hope",
       "subtitle": "The Last Transport",
       "set": "SOR",
@@ -267065,7 +267065,7 @@
     },
     {
       "id": "341",
-      "cardId": "SOR-99",
+      "cardId": "SOR-099",
       "name": "Bright Hope",
       "subtitle": "The Last Transport",
       "set": "SOR",
@@ -267111,7 +267111,7 @@
     },
     {
       "id": "19456",
-      "cardId": "TWI-1",
+      "cardId": "TWI-001",
       "name": "Ahsoka Tano",
       "subtitle": "Snips",
       "set": "TWI",
@@ -267157,7 +267157,7 @@
     },
     {
       "id": "14216",
-      "cardId": "TWI-1",
+      "cardId": "TWI-001",
       "name": "Nala Se",
       "subtitle": "Clone Engineer",
       "set": "TWI",
@@ -267199,7 +267199,7 @@
     },
     {
       "id": "14261",
-      "cardId": "TWI-10",
+      "cardId": "TWI-010",
       "name": "Pre Vizsla",
       "subtitle": "Pursuing the Throne",
       "set": "TWI",
@@ -267242,7 +267242,7 @@
     },
     {
       "id": "15642",
-      "cardId": "TWI-10",
+      "cardId": "TWI-010",
       "name": "General's Guardian",
       "subtitle": null,
       "set": "TWI",
@@ -268087,7 +268087,7 @@
     },
     {
       "id": "13980",
-      "cardId": "TWI-11",
+      "cardId": "TWI-011",
       "name": "Ahsoka Tano",
       "subtitle": "Snips",
       "set": "TWI",
@@ -269013,7 +269013,7 @@
     },
     {
       "id": "14266",
-      "cardId": "TWI-12",
+      "cardId": "TWI-012",
       "name": "Anakin Skywalker",
       "subtitle": "What it Takes to Win",
       "set": "TWI",
@@ -269767,7 +269767,7 @@
     },
     {
       "id": "14271",
-      "cardId": "TWI-13",
+      "cardId": "TWI-013",
       "name": "Mace Windu",
       "subtitle": "Vaapad Form Master",
       "set": "TWI",
@@ -270701,7 +270701,7 @@
     },
     {
       "id": "14276",
-      "cardId": "TWI-14",
+      "cardId": "TWI-014",
       "name": "Asajj Ventress",
       "subtitle": "Unparalleled Adversary",
       "set": "TWI",
@@ -271589,7 +271589,7 @@
     },
     {
       "id": "13985",
-      "cardId": "TWI-15",
+      "cardId": "TWI-015",
       "name": "General Grievous",
       "subtitle": "General of the Droid Armies",
       "set": "TWI",
@@ -272478,7 +272478,7 @@
     },
     {
       "id": "14281",
-      "cardId": "TWI-16",
+      "cardId": "TWI-016",
       "name": "Jango Fett",
       "subtitle": "Concealing the Conspiracy",
       "set": "TWI",
@@ -273399,7 +273399,7 @@
     },
     {
       "id": "14286",
-      "cardId": "TWI-17",
+      "cardId": "TWI-017",
       "name": "Chancellor Palpatine",
       "subtitle": "Playing Both Sides",
       "set": "TWI",
@@ -274204,7 +274204,7 @@
     },
     {
       "id": "14291",
-      "cardId": "TWI-18",
+      "cardId": "TWI-018",
       "name": "Quinlan Vos",
       "subtitle": "Sticking the Landing",
       "set": "TWI",
@@ -275076,7 +275076,7 @@
     },
     {
       "id": "18087",
-      "cardId": "TWI-19",
+      "cardId": "TWI-019",
       "name": "Pau City",
       "subtitle": null,
       "set": "TWI",
@@ -275113,7 +275113,7 @@
     },
     {
       "id": "15456",
-      "cardId": "TWI-19",
+      "cardId": "TWI-019",
       "name": "Pau City",
       "subtitle": null,
       "set": "TWI",
@@ -276028,7 +276028,7 @@
     },
     {
       "id": "19461",
-      "cardId": "TWI-2",
+      "cardId": "TWI-002",
       "name": "General Grievous",
       "subtitle": "General of the Droid Armies",
       "set": "TWI",
@@ -276073,7 +276073,7 @@
     },
     {
       "id": "14221",
-      "cardId": "TWI-2",
+      "cardId": "TWI-002",
       "name": "Nute Gunray",
       "subtitle": "Vindictive Viceroy",
       "set": "TWI",
@@ -276116,7 +276116,7 @@
     },
     {
       "id": "15461",
-      "cardId": "TWI-20",
+      "cardId": "TWI-020",
       "name": "Sundari",
       "subtitle": null,
       "set": "TWI",
@@ -276991,7 +276991,7 @@
     },
     {
       "id": "15466",
-      "cardId": "TWI-21",
+      "cardId": "TWI-021",
       "name": "The Crystal City",
       "subtitle": null,
       "set": "TWI",
@@ -277884,7 +277884,7 @@
     },
     {
       "id": "15471",
-      "cardId": "TWI-22",
+      "cardId": "TWI-022",
       "name": "Droid Manufactory",
       "subtitle": null,
       "set": "TWI",
@@ -277921,7 +277921,7 @@
     },
     {
       "id": "18092",
-      "cardId": "TWI-22",
+      "cardId": "TWI-022",
       "name": "Droid Manufactory",
       "subtitle": null,
       "set": "TWI",
@@ -278682,7 +278682,7 @@
     },
     {
       "id": "15476",
-      "cardId": "TWI-23",
+      "cardId": "TWI-023",
       "name": "Lair of Grievous",
       "subtitle": null,
       "set": "TWI",
@@ -279526,7 +279526,7 @@
     },
     {
       "id": "15481",
-      "cardId": "TWI-24",
+      "cardId": "TWI-024",
       "name": "Tipoca City",
       "subtitle": null,
       "set": "TWI",
@@ -280357,7 +280357,7 @@
     },
     {
       "id": "15486",
-      "cardId": "TWI-25",
+      "cardId": "TWI-025",
       "name": "Shadow Collective Camp",
       "subtitle": null,
       "set": "TWI",
@@ -280394,7 +280394,7 @@
     },
     {
       "id": "18097",
-      "cardId": "TWI-25",
+      "cardId": "TWI-025",
       "name": "Shadow Collective Camp",
       "subtitle": null,
       "set": "TWI",
@@ -281154,7 +281154,7 @@
     },
     {
       "id": "15491",
-      "cardId": "TWI-26",
+      "cardId": "TWI-026",
       "name": "KCM Mining Facility",
       "subtitle": null,
       "set": "TWI",
@@ -281646,7 +281646,7 @@
     },
     {
       "id": "15496",
-      "cardId": "TWI-27",
+      "cardId": "TWI-027",
       "name": "The Nest",
       "subtitle": null,
       "set": "TWI",
@@ -282121,7 +282121,7 @@
     },
     {
       "id": "18102",
-      "cardId": "TWI-28",
+      "cardId": "TWI-028",
       "name": "Petranaki Arena",
       "subtitle": null,
       "set": "TWI",
@@ -282158,7 +282158,7 @@
     },
     {
       "id": "15501",
-      "cardId": "TWI-28",
+      "cardId": "TWI-028",
       "name": "Petranaki Arena",
       "subtitle": null,
       "set": "TWI",
@@ -282600,7 +282600,7 @@
     },
     {
       "id": "15506",
-      "cardId": "TWI-29",
+      "cardId": "TWI-029",
       "name": "Level 1313",
       "subtitle": null,
       "set": "TWI",
@@ -283061,7 +283061,7 @@
     },
     {
       "id": "15614",
-      "cardId": "TWI-3",
+      "cardId": "TWI-003",
       "name": "Ahsoka's Padawan Lightsaber",
       "subtitle": null,
       "set": "TWI",
@@ -283102,7 +283102,7 @@
     },
     {
       "id": "14226",
-      "cardId": "TWI-3",
+      "cardId": "TWI-003",
       "name": "Obi-Wan Kenobi",
       "subtitle": "Patient Mentor",
       "set": "TWI",
@@ -283148,7 +283148,7 @@
     },
     {
       "id": "15511",
-      "cardId": "TWI-30",
+      "cardId": "TWI-030",
       "name": "Pyke Palace",
       "subtitle": null,
       "set": "TWI",
@@ -283941,7 +283941,7 @@
     },
     {
       "id": "17087",
-      "cardId": "TWI-31",
+      "cardId": "TWI-031",
       "name": "Rune Haako",
       "subtitle": "Scheming Second",
       "set": "TWI",
@@ -283984,7 +283984,7 @@
     },
     {
       "id": "14356",
-      "cardId": "TWI-31",
+      "cardId": "TWI-031",
       "name": "Rune Haako",
       "subtitle": "Scheming Second",
       "set": "TWI",
@@ -284915,7 +284915,7 @@
     },
     {
       "id": "17092",
-      "cardId": "TWI-32",
+      "cardId": "TWI-032",
       "name": "Wartime Trade Official",
       "subtitle": null,
       "set": "TWI",
@@ -284958,7 +284958,7 @@
     },
     {
       "id": "14361",
-      "cardId": "TWI-32",
+      "cardId": "TWI-032",
       "name": "Wartime Trade Official",
       "subtitle": null,
       "set": "TWI",
@@ -285857,7 +285857,7 @@
     },
     {
       "id": "17097",
-      "cardId": "TWI-33",
+      "cardId": "TWI-033",
       "name": "Calculating MagnaGuard",
       "subtitle": null,
       "set": "TWI",
@@ -285902,7 +285902,7 @@
     },
     {
       "id": "14366",
-      "cardId": "TWI-33",
+      "cardId": "TWI-033",
       "name": "Calculating MagnaGuard",
       "subtitle": null,
       "set": "TWI",
@@ -286825,7 +286825,7 @@
     },
     {
       "id": "14371",
-      "cardId": "TWI-34",
+      "cardId": "TWI-034",
       "name": "General Grievous",
       "subtitle": "Trophy Collector",
       "set": "TWI",
@@ -286868,7 +286868,7 @@
     },
     {
       "id": "17102",
-      "cardId": "TWI-34",
+      "cardId": "TWI-034",
       "name": "General Grievous",
       "subtitle": "Trophy Collector",
       "set": "TWI",
@@ -287703,7 +287703,7 @@
     },
     {
       "id": "17107",
-      "cardId": "TWI-35",
+      "cardId": "TWI-035",
       "name": "Morgan Elsbeth",
       "subtitle": "Keeper of Many Secrets",
       "set": "TWI",
@@ -287749,7 +287749,7 @@
     },
     {
       "id": "14376",
-      "cardId": "TWI-35",
+      "cardId": "TWI-035",
       "name": "Morgan Elsbeth",
       "subtitle": "Keeper of Many Secrets",
       "set": "TWI",
@@ -288665,7 +288665,7 @@
     },
     {
       "id": "17112",
-      "cardId": "TWI-36",
+      "cardId": "TWI-036",
       "name": "Devastating Gunship",
       "subtitle": null,
       "set": "TWI",
@@ -288712,7 +288712,7 @@
     },
     {
       "id": "14381",
-      "cardId": "TWI-36",
+      "cardId": "TWI-036",
       "name": "Devastating Gunship",
       "subtitle": null,
       "set": "TWI",
@@ -289643,7 +289643,7 @@
     },
     {
       "id": "17117",
-      "cardId": "TWI-37",
+      "cardId": "TWI-037",
       "name": "Droideka Security",
       "subtitle": null,
       "set": "TWI",
@@ -289689,7 +289689,7 @@
     },
     {
       "id": "14386",
-      "cardId": "TWI-37",
+      "cardId": "TWI-037",
       "name": "Droideka Security",
       "subtitle": null,
       "set": "TWI",
@@ -290575,7 +290575,7 @@
     },
     {
       "id": "17122",
-      "cardId": "TWI-38",
+      "cardId": "TWI-038",
       "name": "Providence Destroyer",
       "subtitle": null,
       "set": "TWI",
@@ -290621,7 +290621,7 @@
     },
     {
       "id": "14391",
-      "cardId": "TWI-38",
+      "cardId": "TWI-038",
       "name": "Providence Destroyer",
       "subtitle": null,
       "set": "TWI",
@@ -291547,7 +291547,7 @@
     },
     {
       "id": "17127",
-      "cardId": "TWI-39",
+      "cardId": "TWI-039",
       "name": "Malevolence",
       "subtitle": "Grievous's Secret Weapon",
       "set": "TWI",
@@ -291594,7 +291594,7 @@
     },
     {
       "id": "14396",
-      "cardId": "TWI-39",
+      "cardId": "TWI-039",
       "name": "Malevolence",
       "subtitle": "Grievous's Secret Weapon",
       "set": "TWI",
@@ -292451,7 +292451,7 @@
     },
     {
       "id": "15618",
-      "cardId": "TWI-4",
+      "cardId": "TWI-004",
       "name": "332nd Stalwart",
       "subtitle": null,
       "set": "TWI",
@@ -292496,7 +292496,7 @@
     },
     {
       "id": "14231",
-      "cardId": "TWI-4",
+      "cardId": "TWI-004",
       "name": "Yoda",
       "subtitle": "Sensing Darkness",
       "set": "TWI",
@@ -292542,7 +292542,7 @@
     },
     {
       "id": "17132",
-      "cardId": "TWI-40",
+      "cardId": "TWI-040",
       "name": "A Fine Addition",
       "subtitle": null,
       "set": "TWI",
@@ -292582,7 +292582,7 @@
     },
     {
       "id": "14401",
-      "cardId": "TWI-40",
+      "cardId": "TWI-040",
       "name": "A Fine Addition",
       "subtitle": null,
       "set": "TWI",
@@ -293506,7 +293506,7 @@
     },
     {
       "id": "17137",
-      "cardId": "TWI-41",
+      "cardId": "TWI-041",
       "name": "Lethal Crackdown",
       "subtitle": null,
       "set": "TWI",
@@ -293546,7 +293546,7 @@
     },
     {
       "id": "14406",
-      "cardId": "TWI-41",
+      "cardId": "TWI-041",
       "name": "Lethal Crackdown",
       "subtitle": null,
       "set": "TWI",
@@ -294474,7 +294474,7 @@
     },
     {
       "id": "14411",
-      "cardId": "TWI-42",
+      "cardId": "TWI-042",
       "name": "Barriss Offee",
       "subtitle": "Unassuming Apprentice",
       "set": "TWI",
@@ -294518,7 +294518,7 @@
     },
     {
       "id": "17142",
-      "cardId": "TWI-42",
+      "cardId": "TWI-042",
       "name": "Barriss Offee",
       "subtitle": "Unassuming Apprentice",
       "set": "TWI",
@@ -295412,7 +295412,7 @@
     },
     {
       "id": "14416",
-      "cardId": "TWI-43",
+      "cardId": "TWI-043",
       "name": "Outspoken Representative",
       "subtitle": null,
       "set": "TWI",
@@ -295457,7 +295457,7 @@
     },
     {
       "id": "17147",
-      "cardId": "TWI-43",
+      "cardId": "TWI-043",
       "name": "Outspoken Representative",
       "subtitle": null,
       "set": "TWI",
@@ -296350,7 +296350,7 @@
     },
     {
       "id": "14421",
-      "cardId": "TWI-44",
+      "cardId": "TWI-044",
       "name": "Kashyyyk Defender",
       "subtitle": null,
       "set": "TWI",
@@ -296394,7 +296394,7 @@
     },
     {
       "id": "17152",
-      "cardId": "TWI-44",
+      "cardId": "TWI-044",
       "name": "Kashyyyk Defender",
       "subtitle": null,
       "set": "TWI",
@@ -297284,7 +297284,7 @@
     },
     {
       "id": "14426",
-      "cardId": "TWI-45",
+      "cardId": "TWI-045",
       "name": "41st Elite Corps",
       "subtitle": null,
       "set": "TWI",
@@ -297330,7 +297330,7 @@
     },
     {
       "id": "17157",
-      "cardId": "TWI-45",
+      "cardId": "TWI-045",
       "name": "41st Elite Corps",
       "subtitle": null,
       "set": "TWI",
@@ -298236,7 +298236,7 @@
     },
     {
       "id": "17162",
-      "cardId": "TWI-46",
+      "cardId": "TWI-046",
       "name": "Captain Typho",
       "subtitle": "Protecting the Senator",
       "set": "TWI",
@@ -298282,7 +298282,7 @@
     },
     {
       "id": "14431",
-      "cardId": "TWI-46",
+      "cardId": "TWI-046",
       "name": "Captain Typho",
       "subtitle": "Protecting the Senator",
       "set": "TWI",
@@ -299172,7 +299172,7 @@
     },
     {
       "id": "14436",
-      "cardId": "TWI-47",
+      "cardId": "TWI-047",
       "name": "Satine Kryze",
       "subtitle": "Committed to Peace",
       "set": "TWI",
@@ -299215,7 +299215,7 @@
     },
     {
       "id": "17167",
-      "cardId": "TWI-47",
+      "cardId": "TWI-047",
       "name": "Satine Kryze",
       "subtitle": "Committed to Peace",
       "set": "TWI",
@@ -300120,7 +300120,7 @@
     },
     {
       "id": "17172",
-      "cardId": "TWI-48",
+      "cardId": "TWI-048",
       "name": "Obi-Wan's Aethersprite",
       "subtitle": "This is Why I Hate Flying",
       "set": "TWI",
@@ -300165,7 +300165,7 @@
     },
     {
       "id": "14441",
-      "cardId": "TWI-48",
+      "cardId": "TWI-048",
       "name": "Obi-Wan's Aethersprite",
       "subtitle": "This is Why I Hate Flying",
       "set": "TWI",
@@ -301032,7 +301032,7 @@
     },
     {
       "id": "17177",
-      "cardId": "TWI-49",
+      "cardId": "TWI-049",
       "name": "Knight of the Republic",
       "subtitle": null,
       "set": "TWI",
@@ -301076,7 +301076,7 @@
     },
     {
       "id": "14446",
-      "cardId": "TWI-49",
+      "cardId": "TWI-049",
       "name": "Knight of the Republic",
       "subtitle": null,
       "set": "TWI",
@@ -301978,7 +301978,7 @@
     },
     {
       "id": "15622",
-      "cardId": "TWI-5",
+      "cardId": "TWI-005",
       "name": "Battle Droid Escort",
       "subtitle": null,
       "set": "TWI",
@@ -302021,7 +302021,7 @@
     },
     {
       "id": "14236",
-      "cardId": "TWI-5",
+      "cardId": "TWI-005",
       "name": "Count Dooku",
       "subtitle": "Face of the Confederacy",
       "set": "TWI",
@@ -302067,7 +302067,7 @@
     },
     {
       "id": "17182",
-      "cardId": "TWI-50",
+      "cardId": "TWI-050",
       "name": "Luminara Unduli",
       "subtitle": "Soft-Spoken Master",
       "set": "TWI",
@@ -302114,7 +302114,7 @@
     },
     {
       "id": "14451",
-      "cardId": "TWI-50",
+      "cardId": "TWI-050",
       "name": "Luminara Unduli",
       "subtitle": "Soft-Spoken Master",
       "set": "TWI",
@@ -303025,7 +303025,7 @@
     },
     {
       "id": "15516",
-      "cardId": "TWI-51",
+      "cardId": "TWI-051",
       "name": "For The Republic",
       "subtitle": null,
       "set": "TWI",
@@ -303068,7 +303068,7 @@
     },
     {
       "id": "18107",
-      "cardId": "TWI-51",
+      "cardId": "TWI-051",
       "name": "For The Republic",
       "subtitle": null,
       "set": "TWI",
@@ -303823,7 +303823,7 @@
     },
     {
       "id": "17187",
-      "cardId": "TWI-52",
+      "cardId": "TWI-052",
       "name": "Hello There",
       "subtitle": null,
       "set": "TWI",
@@ -303863,7 +303863,7 @@
     },
     {
       "id": "14461",
-      "cardId": "TWI-52",
+      "cardId": "TWI-052",
       "name": "Hello There",
       "subtitle": null,
       "set": "TWI",
@@ -303903,7 +303903,7 @@
     },
     {
       "id": "14466",
-      "cardId": "TWI-53",
+      "cardId": "TWI-053",
       "name": "Finn",
       "subtitle": "On the Run",
       "set": "TWI",
@@ -303945,7 +303945,7 @@
     },
     {
       "id": "17192",
-      "cardId": "TWI-53",
+      "cardId": "TWI-053",
       "name": "Finn",
       "subtitle": "On the Run",
       "set": "TWI",
@@ -303987,7 +303987,7 @@
     },
     {
       "id": "17197",
-      "cardId": "TWI-54",
+      "cardId": "TWI-054",
       "name": "Duchess's Champion",
       "subtitle": null,
       "set": "TWI",
@@ -304030,7 +304030,7 @@
     },
     {
       "id": "14471",
-      "cardId": "TWI-54",
+      "cardId": "TWI-054",
       "name": "Duchess's Champion",
       "subtitle": null,
       "set": "TWI",
@@ -304073,7 +304073,7 @@
     },
     {
       "id": "17202",
-      "cardId": "TWI-55",
+      "cardId": "TWI-055",
       "name": "Equalize",
       "subtitle": null,
       "set": "TWI",
@@ -304112,7 +304112,7 @@
     },
     {
       "id": "14476",
-      "cardId": "TWI-55",
+      "cardId": "TWI-055",
       "name": "Equalize",
       "subtitle": null,
       "set": "TWI",
@@ -304151,7 +304151,7 @@
     },
     {
       "id": "17207",
-      "cardId": "TWI-56",
+      "cardId": "TWI-056",
       "name": "Compassionate Senator",
       "subtitle": null,
       "set": "TWI",
@@ -304193,7 +304193,7 @@
     },
     {
       "id": "14481",
-      "cardId": "TWI-56",
+      "cardId": "TWI-056",
       "name": "Compassionate Senator",
       "subtitle": null,
       "set": "TWI",
@@ -304235,7 +304235,7 @@
     },
     {
       "id": "14486",
-      "cardId": "TWI-57",
+      "cardId": "TWI-057",
       "name": "Warrior Drone",
       "subtitle": null,
       "set": "TWI",
@@ -304276,7 +304276,7 @@
     },
     {
       "id": "17212",
-      "cardId": "TWI-57",
+      "cardId": "TWI-057",
       "name": "Warrior Drone",
       "subtitle": null,
       "set": "TWI",
@@ -304317,7 +304317,7 @@
     },
     {
       "id": "14491",
-      "cardId": "TWI-58",
+      "cardId": "TWI-058",
       "name": "Padawan Starfighter",
       "subtitle": null,
       "set": "TWI",
@@ -304361,7 +304361,7 @@
     },
     {
       "id": "17217",
-      "cardId": "TWI-58",
+      "cardId": "TWI-058",
       "name": "Padawan Starfighter",
       "subtitle": null,
       "set": "TWI",
@@ -304405,7 +304405,7 @@
     },
     {
       "id": "17222",
-      "cardId": "TWI-59",
+      "cardId": "TWI-059",
       "name": "Royal Guard Attaché",
       "subtitle": null,
       "set": "TWI",
@@ -304447,7 +304447,7 @@
     },
     {
       "id": "14496",
-      "cardId": "TWI-59",
+      "cardId": "TWI-059",
       "name": "Royal Guard Attaché",
       "subtitle": null,
       "set": "TWI",
@@ -304489,7 +304489,7 @@
     },
     {
       "id": "14241",
-      "cardId": "TWI-6",
+      "cardId": "TWI-006",
       "name": "Wat Tambor",
       "subtitle": "Techno Union Foreman",
       "set": "TWI",
@@ -304532,7 +304532,7 @@
     },
     {
       "id": "15626",
-      "cardId": "TWI-6",
+      "cardId": "TWI-006",
       "name": "Grievous's Wheel Bike",
       "subtitle": null,
       "set": "TWI",
@@ -304573,7 +304573,7 @@
     },
     {
       "id": "17227",
-      "cardId": "TWI-60",
+      "cardId": "TWI-060",
       "name": "Trade Federation Shuttle",
       "subtitle": null,
       "set": "TWI",
@@ -304616,7 +304616,7 @@
     },
     {
       "id": "14501",
-      "cardId": "TWI-60",
+      "cardId": "TWI-060",
       "name": "Trade Federation Shuttle",
       "subtitle": null,
       "set": "TWI",
@@ -304659,7 +304659,7 @@
     },
     {
       "id": "17232",
-      "cardId": "TWI-61",
+      "cardId": "TWI-061",
       "name": "Infantry of the 212th",
       "subtitle": null,
       "set": "TWI",
@@ -304705,7 +304705,7 @@
     },
     {
       "id": "14506",
-      "cardId": "TWI-61",
+      "cardId": "TWI-061",
       "name": "Infantry of the 212th",
       "subtitle": null,
       "set": "TWI",
@@ -304751,7 +304751,7 @@
     },
     {
       "id": "17237",
-      "cardId": "TWI-62",
+      "cardId": "TWI-062",
       "name": "Daughter of Dathomir",
       "subtitle": null,
       "set": "TWI",
@@ -304795,7 +304795,7 @@
     },
     {
       "id": "14511",
-      "cardId": "TWI-62",
+      "cardId": "TWI-062",
       "name": "Daughter of Dathomir",
       "subtitle": null,
       "set": "TWI",
@@ -304839,7 +304839,7 @@
     },
     {
       "id": "17242",
-      "cardId": "TWI-63",
+      "cardId": "TWI-063",
       "name": "Vulture Interceptor Wing",
       "subtitle": null,
       "set": "TWI",
@@ -304883,7 +304883,7 @@
     },
     {
       "id": "14516",
-      "cardId": "TWI-63",
+      "cardId": "TWI-063",
       "name": "Vulture Interceptor Wing",
       "subtitle": null,
       "set": "TWI",
@@ -304927,7 +304927,7 @@
     },
     {
       "id": "14521",
-      "cardId": "TWI-64",
+      "cardId": "TWI-064",
       "name": "Ki-Adi-Mundi",
       "subtitle": "Composed and Confident",
       "set": "TWI",
@@ -304972,7 +304972,7 @@
     },
     {
       "id": "17247",
-      "cardId": "TWI-64",
+      "cardId": "TWI-064",
       "name": "Ki-Adi-Mundi",
       "subtitle": "Composed and Confident",
       "set": "TWI",
@@ -305017,7 +305017,7 @@
     },
     {
       "id": "17252",
-      "cardId": "TWI-65",
+      "cardId": "TWI-065",
       "name": "Falchion Ion Tank",
       "subtitle": null,
       "set": "TWI",
@@ -305062,7 +305062,7 @@
     },
     {
       "id": "14526",
-      "cardId": "TWI-65",
+      "cardId": "TWI-065",
       "name": "Falchion Ion Tank",
       "subtitle": null,
       "set": "TWI",
@@ -305107,7 +305107,7 @@
     },
     {
       "id": "17257",
-      "cardId": "TWI-66",
+      "cardId": "TWI-066",
       "name": "Multi-Troop Transport",
       "subtitle": null,
       "set": "TWI",
@@ -305152,7 +305152,7 @@
     },
     {
       "id": "14531",
-      "cardId": "TWI-66",
+      "cardId": "TWI-066",
       "name": "Multi-Troop Transport",
       "subtitle": null,
       "set": "TWI",
@@ -305197,7 +305197,7 @@
     },
     {
       "id": "14536",
-      "cardId": "TWI-67",
+      "cardId": "TWI-067",
       "name": "The Zillo Beast",
       "subtitle": "Awoken From The Depths",
       "set": "TWI",
@@ -305238,7 +305238,7 @@
     },
     {
       "id": "17262",
-      "cardId": "TWI-67",
+      "cardId": "TWI-067",
       "name": "The Zillo Beast",
       "subtitle": "Awoken From The Depths",
       "set": "TWI",
@@ -305279,7 +305279,7 @@
     },
     {
       "id": "18112",
-      "cardId": "TWI-68",
+      "cardId": "TWI-068",
       "name": "Foresight",
       "subtitle": null,
       "set": "TWI",
@@ -305318,7 +305318,7 @@
     },
     {
       "id": "15521",
-      "cardId": "TWI-68",
+      "cardId": "TWI-068",
       "name": "Foresight",
       "subtitle": null,
       "set": "TWI",
@@ -305357,7 +305357,7 @@
     },
     {
       "id": "18117",
-      "cardId": "TWI-69",
+      "cardId": "TWI-069",
       "name": "Roger Roger",
       "subtitle": null,
       "set": "TWI",
@@ -305396,7 +305396,7 @@
     },
     {
       "id": "15526",
-      "cardId": "TWI-69",
+      "cardId": "TWI-069",
       "name": "Roger Roger",
       "subtitle": null,
       "set": "TWI",
@@ -305435,7 +305435,7 @@
     },
     {
       "id": "14246",
-      "cardId": "TWI-7",
+      "cardId": "TWI-007",
       "name": "Captain Rex",
       "subtitle": "Fighting For His Brothers",
       "set": "TWI",
@@ -305479,7 +305479,7 @@
     },
     {
       "id": "15630",
-      "cardId": "TWI-7",
+      "cardId": "TWI-007",
       "name": "Separatist Commando",
       "subtitle": null,
       "set": "TWI",
@@ -305525,7 +305525,7 @@
     },
     {
       "id": "18122",
-      "cardId": "TWI-70",
+      "cardId": "TWI-070",
       "name": "Perilous Position",
       "subtitle": null,
       "set": "TWI",
@@ -305564,7 +305564,7 @@
     },
     {
       "id": "15531",
-      "cardId": "TWI-70",
+      "cardId": "TWI-070",
       "name": "Perilous Position",
       "subtitle": null,
       "set": "TWI",
@@ -305603,7 +305603,7 @@
     },
     {
       "id": "18127",
-      "cardId": "TWI-71",
+      "cardId": "TWI-071",
       "name": "Unshakeable Will",
       "subtitle": null,
       "set": "TWI",
@@ -305644,7 +305644,7 @@
     },
     {
       "id": "15536",
-      "cardId": "TWI-71",
+      "cardId": "TWI-071",
       "name": "Unshakeable Will",
       "subtitle": null,
       "set": "TWI",
@@ -305685,7 +305685,7 @@
     },
     {
       "id": "17267",
-      "cardId": "TWI-72",
+      "cardId": "TWI-072",
       "name": "I Have the High Ground",
       "subtitle": null,
       "set": "TWI",
@@ -305724,7 +305724,7 @@
     },
     {
       "id": "14561",
-      "cardId": "TWI-72",
+      "cardId": "TWI-072",
       "name": "I Have the High Ground",
       "subtitle": null,
       "set": "TWI",
@@ -305763,7 +305763,7 @@
     },
     {
       "id": "14566",
-      "cardId": "TWI-73",
+      "cardId": "TWI-073",
       "name": "Grievous Reassembly",
       "subtitle": null,
       "set": "TWI",
@@ -305802,7 +305802,7 @@
     },
     {
       "id": "17272",
-      "cardId": "TWI-73",
+      "cardId": "TWI-073",
       "name": "Grievous Reassembly",
       "subtitle": null,
       "set": "TWI",
@@ -305841,7 +305841,7 @@
     },
     {
       "id": "14571",
-      "cardId": "TWI-74",
+      "cardId": "TWI-074",
       "name": "Guarding the Way",
       "subtitle": null,
       "set": "TWI",
@@ -305882,7 +305882,7 @@
     },
     {
       "id": "17277",
-      "cardId": "TWI-74",
+      "cardId": "TWI-074",
       "name": "Guarding the Way",
       "subtitle": null,
       "set": "TWI",
@@ -305923,7 +305923,7 @@
     },
     {
       "id": "14576",
-      "cardId": "TWI-75",
+      "cardId": "TWI-075",
       "name": "Disruptive Burst",
       "subtitle": null,
       "set": "TWI",
@@ -305962,7 +305962,7 @@
     },
     {
       "id": "17282",
-      "cardId": "TWI-75",
+      "cardId": "TWI-075",
       "name": "Disruptive Burst",
       "subtitle": null,
       "set": "TWI",
@@ -306001,7 +306001,7 @@
     },
     {
       "id": "17287",
-      "cardId": "TWI-76",
+      "cardId": "TWI-076",
       "name": "Death by Droids",
       "subtitle": null,
       "set": "TWI",
@@ -306040,7 +306040,7 @@
     },
     {
       "id": "14581",
-      "cardId": "TWI-76",
+      "cardId": "TWI-076",
       "name": "Death by Droids",
       "subtitle": null,
       "set": "TWI",
@@ -306079,7 +306079,7 @@
     },
     {
       "id": "17292",
-      "cardId": "TWI-77",
+      "cardId": "TWI-077",
       "name": "Vanquish",
       "subtitle": null,
       "set": "TWI",
@@ -306118,7 +306118,7 @@
     },
     {
       "id": "14586",
-      "cardId": "TWI-77",
+      "cardId": "TWI-077",
       "name": "Vanquish",
       "subtitle": null,
       "set": "TWI",
@@ -306157,7 +306157,7 @@
     },
     {
       "id": "17297",
-      "cardId": "TWI-78",
+      "cardId": "TWI-078",
       "name": "The Invasion of Christophsis",
       "subtitle": null,
       "set": "TWI",
@@ -306199,7 +306199,7 @@
     },
     {
       "id": "14591",
-      "cardId": "TWI-78",
+      "cardId": "TWI-078",
       "name": "The Invasion of Christophsis",
       "subtitle": null,
       "set": "TWI",
@@ -306241,7 +306241,7 @@
     },
     {
       "id": "17302",
-      "cardId": "TWI-79",
+      "cardId": "TWI-079",
       "name": "Confederate Courier",
       "subtitle": null,
       "set": "TWI",
@@ -306285,7 +306285,7 @@
     },
     {
       "id": "14596",
-      "cardId": "TWI-79",
+      "cardId": "TWI-079",
       "name": "Confederate Courier",
       "subtitle": null,
       "set": "TWI",
@@ -306329,7 +306329,7 @@
     },
     {
       "id": "15634",
-      "cardId": "TWI-8",
+      "cardId": "TWI-008",
       "name": "Anakin Skywalker",
       "subtitle": "Maverick Mentor",
       "set": "TWI",
@@ -306375,7 +306375,7 @@
     },
     {
       "id": "14251",
-      "cardId": "TWI-8",
+      "cardId": "TWI-008",
       "name": "Padmé Amidala",
       "subtitle": "Serving the Republic",
       "set": "TWI",
@@ -306422,7 +306422,7 @@
     },
     {
       "id": "17307",
-      "cardId": "TWI-80",
+      "cardId": "TWI-080",
       "name": "Poggle the Lesser",
       "subtitle": "Archduke of the Stalgasin Hive",
       "set": "TWI",
@@ -306465,7 +306465,7 @@
     },
     {
       "id": "14601",
-      "cardId": "TWI-80",
+      "cardId": "TWI-080",
       "name": "Poggle the Lesser",
       "subtitle": "Archduke of the Stalgasin Hive",
       "set": "TWI",
@@ -306508,7 +306508,7 @@
     },
     {
       "id": "14606",
-      "cardId": "TWI-81",
+      "cardId": "TWI-081",
       "name": "Droid Commando",
       "subtitle": null,
       "set": "TWI",
@@ -306554,7 +306554,7 @@
     },
     {
       "id": "17312",
-      "cardId": "TWI-81",
+      "cardId": "TWI-081",
       "name": "Droid Commando",
       "subtitle": null,
       "set": "TWI",
@@ -306600,7 +306600,7 @@
     },
     {
       "id": "14611",
-      "cardId": "TWI-82",
+      "cardId": "TWI-082",
       "name": "MagnaGuard Wing Leader",
       "subtitle": null,
       "set": "TWI",
@@ -306644,7 +306644,7 @@
     },
     {
       "id": "17317",
-      "cardId": "TWI-82",
+      "cardId": "TWI-082",
       "name": "MagnaGuard Wing Leader",
       "subtitle": null,
       "set": "TWI",
@@ -306688,7 +306688,7 @@
     },
     {
       "id": "13990",
-      "cardId": "TWI-83",
+      "cardId": "TWI-083",
       "name": "General's Guardian",
       "subtitle": null,
       "set": "TWI",
@@ -306731,7 +306731,7 @@
     },
     {
       "id": "17322",
-      "cardId": "TWI-84",
+      "cardId": "TWI-084",
       "name": "Kraken",
       "subtitle": "Confederate Tactician",
       "set": "TWI",
@@ -306774,7 +306774,7 @@
     },
     {
       "id": "14616",
-      "cardId": "TWI-84",
+      "cardId": "TWI-084",
       "name": "Kraken",
       "subtitle": "Confederate Tactician",
       "set": "TWI",
@@ -306817,7 +306817,7 @@
     },
     {
       "id": "14621",
-      "cardId": "TWI-85",
+      "cardId": "TWI-085",
       "name": "Kalani",
       "subtitle": "Analytical General",
       "set": "TWI",
@@ -306860,7 +306860,7 @@
     },
     {
       "id": "17327",
-      "cardId": "TWI-85",
+      "cardId": "TWI-085",
       "name": "Kalani",
       "subtitle": "Analytical General",
       "set": "TWI",
@@ -306903,7 +306903,7 @@
     },
     {
       "id": "17332",
-      "cardId": "TWI-86",
+      "cardId": "TWI-086",
       "name": "Admiral Trench",
       "subtitle": "Holding the Line",
       "set": "TWI",
@@ -306948,7 +306948,7 @@
     },
     {
       "id": "14626",
-      "cardId": "TWI-86",
+      "cardId": "TWI-086",
       "name": "Admiral Trench",
       "subtitle": "Holding the Line",
       "set": "TWI",
@@ -306993,7 +306993,7 @@
     },
     {
       "id": "17337",
-      "cardId": "TWI-87",
+      "cardId": "TWI-087",
       "name": "Separatist Super Tank",
       "subtitle": null,
       "set": "TWI",
@@ -307039,7 +307039,7 @@
     },
     {
       "id": "14631",
-      "cardId": "TWI-87",
+      "cardId": "TWI-087",
       "name": "Separatist Super Tank",
       "subtitle": null,
       "set": "TWI",
@@ -307085,7 +307085,7 @@
     },
     {
       "id": "17342",
-      "cardId": "TWI-88",
+      "cardId": "TWI-088",
       "name": "Reprocess",
       "subtitle": null,
       "set": "TWI",
@@ -307125,7 +307125,7 @@
     },
     {
       "id": "14636",
-      "cardId": "TWI-88",
+      "cardId": "TWI-088",
       "name": "Reprocess",
       "subtitle": null,
       "set": "TWI",
@@ -307165,7 +307165,7 @@
     },
     {
       "id": "14641",
-      "cardId": "TWI-89",
+      "cardId": "TWI-089",
       "name": "Consolidation of Power",
       "subtitle": null,
       "set": "TWI",
@@ -307205,7 +307205,7 @@
     },
     {
       "id": "17347",
-      "cardId": "TWI-89",
+      "cardId": "TWI-089",
       "name": "Consolidation of Power",
       "subtitle": null,
       "set": "TWI",
@@ -307245,7 +307245,7 @@
     },
     {
       "id": "14256",
-      "cardId": "TWI-9",
+      "cardId": "TWI-009",
       "name": "Maul",
       "subtitle": "A Rival in Darkness",
       "set": "TWI",
@@ -307290,7 +307290,7 @@
     },
     {
       "id": "15638",
-      "cardId": "TWI-9",
+      "cardId": "TWI-009",
       "name": "Captain Rex",
       "subtitle": "Lead by Example",
       "set": "TWI",
@@ -307334,7 +307334,7 @@
     },
     {
       "id": "17352",
-      "cardId": "TWI-90",
+      "cardId": "TWI-090",
       "name": "Echo",
       "subtitle": "Valiant ARC Trooper",
       "set": "TWI",
@@ -307380,7 +307380,7 @@
     },
     {
       "id": "14646",
-      "cardId": "TWI-90",
+      "cardId": "TWI-090",
       "name": "Echo",
       "subtitle": "Valiant ARC Trooper",
       "set": "TWI",
@@ -307426,7 +307426,7 @@
     },
     {
       "id": "14651",
-      "cardId": "TWI-91",
+      "cardId": "TWI-091",
       "name": "Republic Tactical Officer",
       "subtitle": null,
       "set": "TWI",
@@ -307469,7 +307469,7 @@
     },
     {
       "id": "17357",
-      "cardId": "TWI-91",
+      "cardId": "TWI-091",
       "name": "Republic Tactical Officer",
       "subtitle": null,
       "set": "TWI",
@@ -307512,7 +307512,7 @@
     },
     {
       "id": "14656",
-      "cardId": "TWI-92",
+      "cardId": "TWI-092",
       "name": "Admiral Yularen",
       "subtitle": "Advising Caution",
       "set": "TWI",
@@ -307557,7 +307557,7 @@
     },
     {
       "id": "17362",
-      "cardId": "TWI-92",
+      "cardId": "TWI-092",
       "name": "Admiral Yularen",
       "subtitle": "Advising Caution",
       "set": "TWI",
@@ -307602,7 +307602,7 @@
     },
     {
       "id": "14661",
-      "cardId": "TWI-93",
+      "cardId": "TWI-093",
       "name": "Advanced Recon Commando",
       "subtitle": null,
       "set": "TWI",
@@ -307648,7 +307648,7 @@
     },
     {
       "id": "17367",
-      "cardId": "TWI-93",
+      "cardId": "TWI-093",
       "name": "Advanced Recon Commando",
       "subtitle": null,
       "set": "TWI",
@@ -307694,7 +307694,7 @@
     },
     {
       "id": "14666",
-      "cardId": "TWI-94",
+      "cardId": "TWI-094",
       "name": "Shaak Ti",
       "subtitle": "Unity Wins Wars",
       "set": "TWI",
@@ -307738,7 +307738,7 @@
     },
     {
       "id": "17372",
-      "cardId": "TWI-94",
+      "cardId": "TWI-094",
       "name": "Shaak Ti",
       "subtitle": "Unity Wins Wars",
       "set": "TWI",
@@ -307782,7 +307782,7 @@
     },
     {
       "id": "17377",
-      "cardId": "TWI-95",
+      "cardId": "TWI-095",
       "name": "Pelta Supply Frigate",
       "subtitle": null,
       "set": "TWI",
@@ -307828,7 +307828,7 @@
     },
     {
       "id": "14671",
-      "cardId": "TWI-95",
+      "cardId": "TWI-095",
       "name": "Pelta Supply Frigate",
       "subtitle": null,
       "set": "TWI",
@@ -307874,7 +307874,7 @@
     },
     {
       "id": "17382",
-      "cardId": "TWI-96",
+      "cardId": "TWI-096",
       "name": "Aayla Secura",
       "subtitle": "Master of the Blade",
       "set": "TWI",
@@ -307920,7 +307920,7 @@
     },
     {
       "id": "14676",
-      "cardId": "TWI-96",
+      "cardId": "TWI-096",
       "name": "Aayla Secura",
       "subtitle": "Master of the Blade",
       "set": "TWI",
@@ -307966,7 +307966,7 @@
     },
     {
       "id": "13995",
-      "cardId": "TWI-97",
+      "cardId": "TWI-097",
       "name": "Captain Rex",
       "subtitle": "Lead by Example",
       "set": "TWI",
@@ -308010,7 +308010,7 @@
     },
     {
       "id": "14681",
-      "cardId": "TWI-98",
+      "cardId": "TWI-098",
       "name": "Republic Defense Carrier",
       "subtitle": null,
       "set": "TWI",
@@ -308056,7 +308056,7 @@
     },
     {
       "id": "17387",
-      "cardId": "TWI-98",
+      "cardId": "TWI-098",
       "name": "Republic Defense Carrier",
       "subtitle": null,
       "set": "TWI",
@@ -308102,7 +308102,7 @@
     },
     {
       "id": "17392",
-      "cardId": "TWI-99",
+      "cardId": "TWI-099",
       "name": "Synchronized Strike",
       "subtitle": null,
       "set": "TWI",
@@ -308142,7 +308142,7 @@
     },
     {
       "id": "14686",
-      "cardId": "TWI-99",
+      "cardId": "TWI-099",
       "name": "Synchronized Strike",
       "subtitle": null,
       "set": "TWI",
