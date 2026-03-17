@@ -721,7 +721,7 @@ export async function postBotDeckSummaries(
     mixinDisplayName: string
     strategyDescription: string
     mixinDescription: string
-    deckBuilderUrl: string
+    poolUrl: string
     draftLogUrl?: string | null
     poolShareId: string
     leaderName: string
@@ -751,7 +751,7 @@ export async function postBotDeckSummaries(
         deckCards: bot.deckCards,
         title: bot.leaderName,
         subtitle: `${bot.botName}\n${bot.strategyDisplayName} + ${bot.mixinDisplayName}`,
-        poolUrl: bot.deckBuilderUrl,
+        poolUrl: bot.poolUrl,
       }).catch(err => {
         console.error('[Discord Bots] Deck image generation failed:', err)
         return null
@@ -763,7 +763,7 @@ export async function postBotDeckSummaries(
     if (bot.draftLogUrl) {
       links.push(`**[Draft Log](${bot.draftLogUrl})**`)
     }
-    links.push(`**[View Deck](${bot.deckBuilderUrl})**`)
+    links.push(`**[View Pool](${bot.poolUrl})**`)
 
     const embed: Record<string, unknown> = {
       title: `${bot.botName}`,

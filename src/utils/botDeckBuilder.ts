@@ -52,6 +52,12 @@ export async function buildBotDecks(podId: string, setCode: string, settings: Re
 
   if (!botPlayers || botPlayers.length === 0) return
 
+  // Make all bot draft logs and pools public
+  await query(
+    `UPDATE pod_players SET is_log_public = true WHERE pod_id = $1 AND is_bot = true`,
+    [podId]
+  )
+
   // Get the pod for metadata
   const pod = await queryRow(
     'SELECT * FROM pods WHERE id = $1',
@@ -99,7 +105,9 @@ export async function buildBotDecks(podId: string, setCode: string, settings: Re
         mixinDisplayName: MIXIN_DISPLAY_NAMES[s.mixinName] || s.mixinName || 'None',
         strategyDescription: STRATEGY_DESCRIPTIONS[s.strategyName] || '',
         mixinDescription: MIXIN_DESCRIPTIONS[s.mixinName] || '',
-        deckBuilderUrl: `${APP_URL}/pool/${s.poolShareId}/deck/play`,
+        poolUrl: podType === 'draft'
+          ? `${APP_URL}/draft_pool/${s.poolShareId}`
+          : `${APP_URL}/pool/${s.poolShareId}/deck/play`,
         draftLogUrl: podType === 'draft' ? `${APP_URL}/draft/${podShareId_str}/log` : null,
         poolShareId: s.poolShareId,
         leaderName: s.leaderName,

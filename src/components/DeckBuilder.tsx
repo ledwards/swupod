@@ -322,7 +322,7 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
   // Function to update pool name when leader or base changes
   // Appends "(Leader BaseColor)" to the original base name
   const updatePoolName = useCallback(async (leaderCard: CardType | null, baseCard: CardType | null) => {
-    if (!shareId || !originalBaseName) return
+    if (!shareId || !originalBaseName || !isOwner) return
     if (userHasRenamedPool) return // Don't auto-update if user manually renamed
 
     // Only proceed if we have a leader

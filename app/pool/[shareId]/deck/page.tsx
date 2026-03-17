@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useCallback, use } from 'react'
 import DeckBuilder from '../../../../src/components/DeckBuilder'
 import ChatPanel from '../../../../src/components/ChatPanel'
 import { loadPool, updatePool } from '../../../../src/utils/poolApi'
+import { useAuth } from '../../../../src/contexts/AuthContext'
 import '../../../../src/App.css'
 import '../../../../src/components/ChatPanel.css'
 
@@ -45,6 +46,7 @@ interface PageProps {
 
 export default function DeckBuilderPage({ params }: PageProps) {
   const resolvedParams = use(params)
+  const { user } = useAuth()
   const [pool, setPool] = useState<PoolData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -174,6 +176,7 @@ export default function DeckBuilderPage({ params }: PageProps) {
   const poolName = getPoolNameFromState()
 
   const draftShareId = pool?.draftShareId || null
+  const isOwner = user && pool?.owner && user.id === (pool.owner.id || pool.userId)
 
   return (
     <div className={draftShareId ? 'page-with-chat' : ''}>
@@ -184,9 +187,9 @@ export default function DeckBuilderPage({ params }: PageProps) {
             setCode={setCode}
             onBack={handleBack}
             savedState={savedState}
-            onStateChange={handleDeckStateChange}
+            onStateChange={isOwner ? handleDeckStateChange : undefined}
             shareId={shareId}
-            poolCreatedAt={pool?.createdAt}
+            poolCreatedAt={isOwner ? pool?.createdAt : undefined}
             poolType={pool?.poolType}
             poolName={poolName}
             poolOwnerUsername={pool?.owner?.username}
