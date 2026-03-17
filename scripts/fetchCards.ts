@@ -26,6 +26,8 @@ const VALID_SET_CODES = new Set(SETS.map(s => s.code))
 
 interface ApiCard {
   strapiId: number
+  collectorNumber: string
+  externalUid: string
   setCode: string
   cardNumber: string
   name: string
@@ -116,9 +118,9 @@ function transformCard(apiCard: ApiCard): TransformedCard {
   const setCode = apiCard.setCode || ''
   const cardNumber = apiCard.cardNumber || ''
   // Use strapiId as unique identifier (setCode-cardNumber is NOT unique across variants)
+  // strapiId will become "id" in Phase 3 of the API rename
   const id = String(apiCard.strapiId)
-  // Keep cardId for display purposes (e.g., "SOR-11")
-  const cardId = `${setCode}-${cardNumber}`
+  const cardId = apiCard.collectorNumber.replace('_', '-')
 
   // Normalize arena to array (API uses singular 'arena')
   let arenas: string[] = []
