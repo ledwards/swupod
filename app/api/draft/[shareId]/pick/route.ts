@@ -116,7 +116,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       try {
         await query(
           `INSERT INTO draft_picks (
-            pod_id, user_id, card_id, card_name, set_code, rarity,
+            draft_pod_id, user_id, card_id, card_name, set_code, rarity,
             card_type, variant_type, is_leader, pack_number, pick_in_pack,
             pick_number, leader_round
           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, true, 0, $9, $10, $11)`,
@@ -178,7 +178,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       try {
         await query(
           `INSERT INTO draft_picks (
-            pod_id, user_id, card_id, card_name, set_code, rarity,
+            draft_pod_id, user_id, card_id, card_name, set_code, rarity,
             card_type, variant_type, is_leader, pack_number, pick_in_pack,
             pick_number, leader_round
           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, false, $9, $10, $11, NULL)`,
