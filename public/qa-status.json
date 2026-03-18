@@ -2,10 +2,10 @@
   "status": "warning",
   "summary": {
     "total": 150,
-    "passed": 149,
-    "failed": 1
+    "passed": 147,
+    "failed": 3
   },
-  "passRate": 99.3,
-  "lastRun": "2026-03-18T06:48:51.912Z",
-  "badgeUrl": "https://img.shields.io/badge/QA_Tests-149/150-yellow?style=flat-square"
+  "passRate": 98,
+  "lastRun": "2026-03-18T06:57:44.807Z",
+  "badgeUrl": "https://img.shields.io/badge/QA_Tests-147/150-yellow?style=flat-square"
 }
