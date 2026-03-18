@@ -139,11 +139,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       })
       .sort((a, b) => b.timesSelected - a.timesSelected)
 
-    return jsonResponse({
+    const response = jsonResponse({
       setCode,
       totalDecks,
       leaders,
     })
+    response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
+    return response
   } catch (error) {
     return handleApiError(error)
   }

@@ -138,13 +138,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }
     })
 
-    return jsonResponse({
+    const response = jsonResponse({
       setCode,
       totalPicks: parseInt(summary?.total_picks || '0'),
       totalDrafts: parseInt(summary?.total_drafts || '0'),
       totalDrafters: parseInt(summary?.total_drafters || '0'),
       cards,
     })
+    // Cache stats for 5 minutes — data only changes when new drafts complete
+    response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
+    return response
   } catch (error) {
     return handleApiError(error)
   }

@@ -349,12 +349,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }).filter(l => l.deckCount >= 3) // Only leaders with enough data
       .sort((a, b) => b.deckCount - a.deckCount)
 
-    return jsonResponse({
+    const response = jsonResponse({
       setCode,
       totalPoolsWithDecks,
       cards,
       leaderSynergies: leaderSynergySummaries,
     })
+    response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
+    return response
   } catch (error) {
     return handleApiError(error)
   }
