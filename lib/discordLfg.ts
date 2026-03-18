@@ -726,12 +726,14 @@ export async function postBotDeckSummaries(
     poolShareId: string
     leaderName: string
     leaderImageUrl: string
+    leaderCardId?: string
     leaderVariantType?: string
     baseName: string
+    baseCardId?: string
     baseVariantType?: string
     baseDisplay: string
     deckSize: number
-    deckCards?: Array<{ name: string; variantType?: string }>
+    deckCards?: Array<{ name: string; cardId?: string; subtitle?: string; variantType?: string }>
   }>,
   podInfo: {
     hostName: string
@@ -746,8 +748,8 @@ export async function postBotDeckSummaries(
     let deckImage: Buffer | null = null
     if (bot.deckCards && bot.deckCards.length > 0) {
       deckImage = await generateDeckImage({
-        leader: { name: bot.leaderName, variantType: bot.leaderVariantType },
-        base: { name: bot.baseName, variantType: bot.baseVariantType },
+        leader: { name: bot.leaderName, cardId: bot.leaderCardId, variantType: bot.leaderVariantType },
+        base: { name: bot.baseName, cardId: bot.baseCardId, variantType: bot.baseVariantType },
         deckCards: bot.deckCards,
         title: bot.leaderName,
         subtitle: `${bot.botName}\n${bot.strategyDisplayName} + ${bot.mixinDisplayName}`,
@@ -857,14 +859,16 @@ export async function postDeckToDiscord(opts: {
   poolShareId: string
   leaderName: string
   leaderImageUrl: string
+  leaderCardId?: string
   leaderVariantType?: string
   baseName: string
+  baseCardId?: string
   baseVariantType?: string
   deckSize: number
   setCode: string
   poolType: string
-  deckCards?: Array<{ name: string; variantType?: string }>
-  sideboardCards?: Array<{ name: string; variantType?: string }>
+  deckCards?: Array<{ name: string; cardId?: string; subtitle?: string; variantType?: string }>
+  sideboardCards?: Array<{ name: string; cardId?: string; subtitle?: string; variantType?: string }>
   draftShareId?: string | null
 }): Promise<{ threadId: string; messageId: string } | null> {
   if (!BOT_TOKEN) return null
@@ -876,8 +880,8 @@ export async function postDeckToDiscord(opts: {
   let deckImage: Buffer | null = null
   if (opts.deckCards && opts.deckCards.length > 0) {
     deckImage = await generateDeckImage({
-      leader: { name: opts.leaderName, variantType: opts.leaderVariantType },
-      base: { name: opts.baseName, variantType: opts.baseVariantType },
+      leader: { name: opts.leaderName, cardId: opts.leaderCardId, variantType: opts.leaderVariantType },
+      base: { name: opts.baseName, cardId: opts.baseCardId, variantType: opts.baseVariantType },
       deckCards: opts.deckCards,
       sideboardCards: opts.sideboardCards,
       title: opts.leaderName,

@@ -30,14 +30,16 @@ interface BotDeckSummary {
   poolShareId: string
   leaderName: string
   leaderImageUrl: string
+  leaderCardId?: string
   leaderVariantType?: string
   baseName: string
+  baseCardId?: string
   baseVariantType?: string
   baseRarity: string
   baseAspects: string[]
   baseHp: number | null
   deckSize: number
-  deckCards: Array<{ name: string; variantType?: string }>
+  deckCards: Array<{ name: string; cardId?: string; subtitle?: string; variantType?: string }>
 }
 
 export async function buildBotDecks(podId: string, setCode: string, settings: Record<string, unknown> = {}): Promise<void> {
@@ -112,8 +114,10 @@ export async function buildBotDecks(podId: string, setCode: string, settings: Re
         poolShareId: s.poolShareId,
         leaderName: s.leaderName,
         leaderImageUrl: s.leaderImageUrl,
+        leaderCardId: s.leaderCardId,
         leaderVariantType: s.leaderVariantType,
         baseName: s.baseName,
+        baseCardId: s.baseCardId,
         baseVariantType: s.baseVariantType,
         baseDisplay,
         deckSize: s.deckSize,
@@ -401,8 +405,10 @@ async function buildSingleBotDeck(
     poolShareId,
     leaderName: (leader.name as string) || 'Unknown',
     leaderImageUrl: (leader.imageUrl as string) || '',
+    leaderCardId: (leader.cardId as string) || undefined,
     leaderVariantType: (leader.variantType as string) || undefined,
     baseName: (base.name as string) || 'Unknown Base',
+    baseCardId: (base.cardId as string) || undefined,
     baseVariantType: (base.variantType as string) || undefined,
     baseRarity: (base.rarity as string) || 'Common',
     baseAspects: (base.aspects as string[]) || [],
@@ -410,6 +416,8 @@ async function buildSingleBotDeck(
     deckSize: deckCards.length,
     deckCards: deckCards.map((c: Record<string, unknown>) => ({
       name: (c.name as string) || 'Unknown',
+      cardId: (c.cardId as string) || undefined,
+      subtitle: (c.subtitle as string) || undefined,
       variantType: (c.variantType as string) || undefined,
     })),
   }

@@ -49,12 +49,17 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
     }
 
     // Extract deck and sideboard cards from positions
-    const deckCards: Array<{ name: string; variantType?: string }> = []
-    const sideboardCards: Array<{ name: string; variantType?: string }> = []
+    const deckCards: Array<{ name: string; cardId?: string; subtitle?: string; variantType?: string }> = []
+    const sideboardCards: Array<{ name: string; cardId?: string; subtitle?: string; variantType?: string }> = []
     for (const pos of Object.values(positions) as any[]) {
       if (!pos.card || pos.card.isLeader || pos.card.isBase) continue
       if (pos.enabled === false) continue
-      const cardInfo = { name: pos.card.name, variantType: pos.card.variantType }
+      const cardInfo = {
+        name: pos.card.name,
+        cardId: pos.card.cardId,
+        subtitle: pos.card.subtitle,
+        variantType: pos.card.variantType,
+      }
       if (pos.section === 'deck') {
         deckCards.push(cardInfo)
       } else if (pos.section === 'sideboard') {
@@ -89,8 +94,10 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       poolShareId: shareId,
       leaderName: leader.name || 'Unknown Leader',
       leaderImageUrl: leader.imageUrl || '',
+      leaderCardId: leader.cardId,
       leaderVariantType: leader.variantType,
       baseName: base?.name || 'Unknown Base',
+      baseCardId: base?.cardId,
       baseVariantType: base?.variantType,
       deckSize,
       setCode: pool.set_code || 'Unknown',
