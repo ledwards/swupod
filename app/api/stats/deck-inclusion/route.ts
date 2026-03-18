@@ -15,7 +15,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const since = url.searchParams.get('since') || '2020-01-01'
     const until = url.searchParams.get('until') || '2099-12-31'
     const poolType = url.searchParams.get('poolType') || null
-    const includeBots = url.searchParams.get('includeBots') !== 'false'
+    const includeBots = url.searchParams.get('includeBots') === 'true'
     const includeHumans = url.searchParams.get('includeHumans') !== 'false'
     const tournamentOnly = url.searchParams.get('tournamentOnly') === 'true'
     const topPlayersOnly = url.searchParams.get('topPlayersOnly') === 'true'

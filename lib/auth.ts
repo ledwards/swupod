@@ -206,3 +206,27 @@ export function requireAdmin(request: Request): Session {
   }
   return session
 }
+
+/**
+ * Require a valid service key for server-to-server API calls.
+ * Used by private endpoints (e.g., SWUTeam integration).
+ * Checks Authorization: Bearer header against PTP_SERVICE_KEY env var.
+ * @param request - HTTP request
+ * @throws Error if service key is missing or invalid
+ */
+export function requireServiceKey(request: Request): void {
+  const serviceKey = process.env['PTP_SERVICE_KEY']
+  if (!serviceKey) {
+    throw new Error('Service key not configured')
+  }
+
+  const authHeader = request.headers.get('authorization')
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new Error('Unauthorized')
+  }
+
+  const token = authHeader.slice(7)
+  if (token !== serviceKey) {
+    throw new Error('Unauthorized')
+  }
+}

@@ -108,6 +108,23 @@ describe('draft-picks query building', () => {
     })
   })
 
+  describe('includeBots param parsing', () => {
+    // Mirrors: const includeBots = url.searchParams.get('includeBots') === 'true'
+    // Default is false — human-only data by default, opt-in to include bots.
+    const parse = (val: string | null) => val === 'true'
+
+    it('defaults to false when param is absent (human-only by default)', () => {
+      assert.strictEqual(parse(null), false)
+    })
+
+    it('is true only when param is exactly "true"', () => {
+      assert.strictEqual(parse('true'), true)
+      assert.strictEqual(parse('false'), false)
+      assert.strictEqual(parse('1'), false)
+      assert.strictEqual(parse(''), false)
+    })
+  })
+
   describe('userId filter', () => {
     it('adds no filter when userId is null', () => {
       const parts = buildQueryParts({ includeBots: true, includeHumans: true, builtDeckOnly: false, userId: null })
