@@ -157,7 +157,7 @@
 
 .canvas-card.foil {
   position: relative;
-  overflow: hidden;
+  /* No overflow:hidden — it clips the rainbow selection border (::before at inset:-2px) */
 }
 
 .canvas-card.foil::after {
@@ -195,7 +195,7 @@
 
 .canvas-card.showcase {
   position: relative;
-  overflow: hidden;
+  /* No overflow:hidden — it clips the rainbow selection border (::before at inset:-2px) */
 }
 
 .canvas-card.showcase::after {

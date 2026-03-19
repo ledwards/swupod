@@ -351,6 +351,15 @@
   align-items: start;
 }
 
+/* Dim non-picked cards so the picked card stands out clearly */
+.draft-log-pack-cards .canvas-card:not(.selected) {
+  opacity: 0.5;
+}
+
+.draft-log-pack-cards .canvas-card.selected {
+  opacity: 1;
+}
+
 /* Blank state when no viewable logs */
 .draft-log-blank {
   text-align: center;

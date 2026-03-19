@@ -525,11 +525,7 @@ export default function DraftLogPage({ params }: PageProps) {
                       <span>Pick {pick.pickInPack}</span>
                     </div>
                     <div className="draft-log-pack-cards cards-grid">
-                      {[...pick.visibleCards].sort((a, b) => {
-                        const aPicked = a.instanceId === pick.pickedInstanceId ? 0 : 1
-                        const bPicked = b.instanceId === pick.pickedInstanceId ? 0 : 1
-                        return aPicked - bPicked
-                      }).map(card => (
+                      {pick.visibleCards.map(card => (
                         <CardWithPreview
                           key={card.instanceId}
                           card={card}
