@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import Button from './Button'
+import { normalizeReleaseNotesContent } from './releaseNotesContent'
 import './ReleaseNotes.css'
 
 function ReleaseNotes() {
@@ -57,7 +58,7 @@ function ReleaseNotes() {
         const howToIndex = text.indexOf('## How to Update Release Notes')
         let contentToDisplay = howToIndex !== -1 ? text.substring(0, howToIndex).replace(/\n---\s*\n*$/, '') : text
         // Remove leading whitespace/newlines
-        contentToDisplay = contentToDisplay.trimStart()
+        contentToDisplay = normalizeReleaseNotesContent(contentToDisplay.trimStart())
         const html = parseMarkdownToHTML(contentToDisplay)
         setContent(html)
         setLoading(false)
