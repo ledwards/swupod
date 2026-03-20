@@ -154,22 +154,75 @@ function buildInterleavedSequence(cards: RawCard[], lastAspect: string | null): 
     }
   }
 
-  // Round-robin: pick from each aspect group in turn, skipping empty groups
+  // Pre-compute target positions for small groups using stride placement.
+  // Small groups (< 15% of total) get evenly-spaced target positions across
+  // the belt so they don't cluster at the start of the round-robin.
+  // Only apply to groups that are NOT a required segment aspect — spreading
+  // required aspects would break the segment constraint ("every N cards has
+  // at least 1 of each required aspect").
+  const total = cards.length
+
+  // Detect required aspects from the cards themselves. Required aspects are
+  // the dominant groups — they naturally satisfy segment constraints via round-robin.
+  // Small non-required groups (neutrals, minority alignment) get spread out.
+  const smallGroupTargets = new Map<string | null, number[]>()
+  const largeGroupThreshold = total * 0.15
+  for (const key of sortedKeys) {
+    const pool = groups.get(key)!
+    if (pool.length < largeGroupThreshold && pool.length >= 1) {
+      const stride = total / pool.length
+      const offset = Math.random() * stride
+      const targets: number[] = []
+      for (let i = 0; i < pool.length; i++) {
+        targets.push(Math.round(offset + i * stride))
+      }
+      smallGroupTargets.set(key, targets)
+    }
+  }
+
+  // Build sequence: round-robin for large groups (guarantees segment constraints),
+  // with small group cards inserted at their target positions.
   const result: RawCard[] = []
   let prevAspect: string | null = lastAspect
   let totalRemaining = cards.length
 
+  // Track next target index for each small group
+  const smallGroupNextIdx = new Map<string | null, number>()
+  for (const [key] of smallGroupTargets) smallGroupNextIdx.set(key, 0)
+
   while (totalRemaining > 0) {
+    const currentPos = result.length
+
+    // Check if any small group has a card targeted for this position
+    let placedSmall = false
+    for (const [key, targets] of smallGroupTargets) {
+      const nextIdx = smallGroupNextIdx.get(key) || 0
+      if (nextIdx >= targets.length) continue
+      const pool = groups.get(key)!
+      if (pool.length === 0) continue
+      if (targets[nextIdx]! <= currentPos && key !== prevAspect) {
+        const card = pool.shift()!
+        result.push(card)
+        prevAspect = key
+        totalRemaining--
+        smallGroupNextIdx.set(key, nextIdx + 1)
+        placedSmall = true
+        break
+      }
+    }
+    if (placedSmall) continue
+
+    // Regular round-robin for large groups
     let placed = false
-    // Re-sort by remaining count each round to keep largest-first
     sortedKeys.sort((a, b) =>
       (groups.get(b)?.length || 0) - (groups.get(a)?.length || 0)
     )
 
     for (const key of sortedKeys) {
+      if (smallGroupTargets.has(key)) continue  // Small groups placed by target
       const pool = groups.get(key)!
       if (pool.length === 0) continue
-      if (key === prevAspect) continue  // Skip same aspect as previous
+      if (key === prevAspect) continue
 
       const card = pool.shift()!
       result.push(card)
@@ -180,13 +233,27 @@ function buildInterleavedSequence(cards: RawCard[], lastAspect: string | null): 
     }
 
     if (!placed) {
-      // All remaining cards have same aspect as previous — forced adjacency
-      // Pick from the largest remaining group
+      // Try any card that doesn't conflict
+      for (const key of sortedKeys) {
+        const pool = groups.get(key)!
+        if (pool.length === 0) continue
+        if (key === prevAspect) continue
+
+        const card = pool.shift()!
+        result.push(card)
+        prevAspect = key
+        totalRemaining--
+        placed = true
+        break
+      }
+    }
+
+    if (!placed) {
+      // All remaining cards have same aspect — forced adjacency
       for (const key of sortedKeys) {
         const pool = groups.get(key)!
         if (pool.length > 0) {
-          const card = pool.shift()!
-          result.push(card)
+          result.push(pool.shift()!)
           prevAspect = key
           totalRemaining--
           break
