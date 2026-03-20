@@ -83,7 +83,7 @@ Major updates to the draft bot AI. Try it out and let us know what you think!
 ## 03.13.2026
 Happy LAW release day! It's also a big release day for Protect the Pod!
 
-Analytics is now much more fully featured for all users, check it out: [https://protecthtepod.com/stats](https://protecthtepod.com/stats).
+Analytics is now much more fully featured for all users, check it out: [https://protectthepod.com/stats](https://protectthepod.com/stats).
 
 We've added a lot of benefits to the Patreon membership. Professional Analytics, early access to features and beta release exapnsion sets, and golden flair for your avatars so everyone know you are awesome.
 
