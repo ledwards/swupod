@@ -520,6 +520,71 @@ async function runTests(): Promise<void> {
       'Neutral cards should never cause false aspect violations')
   })
 
+  // Small aspect groups must be distributed evenly across the belt,
+  // not clustered at the start. This is the test that would have caught
+  // the bug where neutral/mono-alignment cards appeared in only 10-15%
+  // of sealed pools instead of ~50%.
+  test('SPEC: small aspect groups are evenly distributed across belt (not front-loaded)', () => {
+    // LAW Belt A has 50 cards: Vigilance(22), Aggression(21), Villainy(3), Heroism(3), Neutral(1)
+    // Draw 24 cards (simulating 6 packs × 4 per pack from this belt).
+    // Each small-group card should appear in ~48% of pools (24/50).
+    // Old bug: they appeared in ~10% because they clustered at positions 3-13.
+
+    const TRIALS = 200
+    const smallGroupCards = new Map<string, number>() // name → appearances
+    const regularCards = new Map<string, number>()
+
+    // Get the actual small-group card names from LAW Belt A
+    const beltACards = getBeltCards('LAW', 'A')
+    const smallGroupNames = new Set<string>()
+    const regularNames = new Set<string>()
+    for (const card of beltACards) {
+      const aspects = card.aspects || []
+      const colorAspects = aspects.filter(a =>
+        ['Vigilance', 'Command', 'Aggression', 'Cunning'].includes(a)
+      )
+      if (colorAspects.length === 0) {
+        // Neutral or mono-alignment
+        smallGroupNames.add(card.name)
+        smallGroupCards.set(card.name, 0)
+      } else if (regularNames.size < 3) {
+        // Pick a few regular cards for comparison
+        regularNames.add(card.name)
+        regularCards.set(card.name, 0)
+      }
+    }
+
+    for (let t = 0; t < TRIALS; t++) {
+      const belt = new CommonBelt('LAW', 'A')
+      const drawn = new Set<string>()
+      for (let i = 0; i < 24; i++) {
+        const card = belt.next()
+        if (card) drawn.add(card.name)
+      }
+      for (const [name, count] of smallGroupCards) {
+        if (drawn.has(name)) smallGroupCards.set(name, count + 1)
+      }
+      for (const [name, count] of regularCards) {
+        if (drawn.has(name)) regularCards.set(name, count + 1)
+      }
+    }
+
+    // Small group cards should appear at ≥30% rate (spec: ~48%, allow margin)
+    for (const [name, count] of smallGroupCards) {
+      const rate = count / TRIALS
+      assert(rate >= 0.30,
+        `SPEC: Small-group card "${name}" appeared in ${(rate * 100).toFixed(1)}% ` +
+        `of pools (need ≥30%). This means small aspect groups are clustered, not evenly distributed.`)
+    }
+
+    // Verify regular cards are also in expected range (sanity check)
+    for (const [name, count] of regularCards) {
+      const rate = count / TRIALS
+      assert(rate >= 0.30,
+        `Regular card "${name}" appeared in ${(rate * 100).toFixed(1)}% (expected ≥30%)`)
+    }
+  })
+
   // Legacy getCommonPools tests for backward compatibility
   test('getCommonPools returns structured pools (legacy)', () => {
     const { poolA, poolB } = getCommonPools('SOR')

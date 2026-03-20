@@ -1,5 +1,10 @@
 # Release Notes
 
+## 03.20.2026
+
+### 🃏 Pack Changes
+- **Fixed missing neutral, mono-Heroism, and mono-Villainy cards in packs**: These cards were appearing less frequently than expected. The belt interleaving algorithm was clustering small aspect groups (neutrals, mono-alignment cards) in the first few positions, so they were rarely drawn in 6-pack sealed pools. All card types now appear at equal rates. This improvement applies to all sets.
+
 ## 03.19.2026
 
 ### 🎮 Karabast Limited Format Support
