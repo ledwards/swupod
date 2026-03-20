@@ -1673,6 +1673,7 @@ export default function PlayPage({ params }: PageProps) {
         <PlayInstructions
           shareId={shareId}
           poolType={isSoloDraft ? 'sealed' : (pool?.poolType || 'sealed')}
+          setCode={pool?.setCode}
           opponentName={firstOpponent?.username}
           hasBye={hasBye}
           isSoloDraft={isSoloDraft}

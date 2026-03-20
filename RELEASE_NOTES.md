@@ -1,5 +1,16 @@
 # Release Notes
 
+## 03.19.2026
+
+### 🎮 Karabast Limited Format Support
+- **Play your draft and sealed decks directly on Karabast!** Thanks to the Karabast team, Karabast lobbies now support Limited format decks. You can create or join lobbies with your Protect the Pod deck — use your deck link or JSON paste as your decklist. The "Ready to Play" instructions have been updated with the new lobby settings.
+- **Two Limited modes on Karabast**: Current (LAW, 30+ card decks) and Unlimited (any set, anything goes). The play page now tells you which Card Pool setting to use based on your deck's set.
+
+### 🐛 Bug Fixes
+- **Fixed rainbow selection border missing on foil/showcase cards**: The selection highlight was being clipped on foil and showcase card styles, making it impossible to see which card was picked in draft logs.
+- **Draft Log preserves card order**: Cards in each pick now display in their original pack order instead of moving the picked card to the first position.
+- **Non-picked cards dimmed in Draft Log**: Cards you didn't pick are now dimmed so your actual pick stands out clearly.
+
 ## 03.17.2026
 
 ### 🖼️ Deck Images

@@ -8,6 +8,7 @@ const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https:
 interface PlayInstructionsProps {
   shareId: string | null
   poolType: 'draft' | 'sealed' | 'sealed_pod' | string
+  setCode?: string | null
   opponentName?: string | null
   hasBye?: boolean
   isSoloDraft?: boolean
@@ -26,6 +27,7 @@ interface PlayInstructionsProps {
 export default function PlayInstructions({
   shareId,
   poolType,
+  setCode = null,
   opponentName = null,
   hasBye = false,
   isSoloDraft = false,
@@ -42,6 +44,10 @@ export default function PlayInstructions({
 }: PlayInstructionsProps) {
   const inPod = poolType === 'draft' || poolType === 'sealed_pod'
   const viewingOthersDeck = !isOwner && ownerName
+
+  // LAW uses "Current" card pool on Karabast, everything else uses "Unlimited"
+  const isCurrentSet = setCode === 'LAW'
+  const cardPoolName = isCurrentSet ? 'Current' : 'Unlimited'
 
   return (
     <div className="play-instructions">
@@ -81,46 +87,17 @@ export default function PlayInstructions({
               <span className="step-number">3</span>
               <div className="step-content">
                 <h3>Play on Karabast</h3>
-                <p>Go to <a href="https://karabast.net" target="_blank" rel="noopener noreferrer">karabast.net</a> and paste your deck link or JSON. Create a <strong>Private Lobby</strong> with <strong>Open</strong> format and <strong>Mainboard minimum size of 30</strong>.</p>
+                <p>Go to <a href="https://karabast.net" target="_blank" rel="noopener noreferrer">karabast.net</a> and paste your deck link or JSON. Create a lobby with <strong>Format: Limited</strong> and <strong>Card Pool: {cardPoolName}</strong>.</p>
               </div>
             </div>
           </>
         ) : (
           <>
             {/* Owner steps */}
-            {/* Step 1: Find / Message Your Opponent */}
+
+            {/* Step 1: Copy Your Deck */}
             <div className="play-step">
               <span className="step-number">1</span>
-              <div className="step-content">
-                {inPod ? (
-                  hasBye ? (
-                    <>
-                      <h3>You Have a Bye</h3>
-                      <p>You have a bye this round. Take a break or practice!</p>
-                    </>
-                  ) : opponentName ? (
-                    <>
-                      <h3>Find Your Opponent</h3>
-                      <p>Your opponent is <strong>{opponentName}</strong>. Reach out to them to coordinate your match on Karabast!</p>
-                    </>
-                  ) : (
-                    <>
-                      <h3>Find a Human Opponent</h3>
-                      <p>Reach out to your podmates to set up a match. Bots drafted with you but you play against other humans on Karabast.</p>
-                    </>
-                  )
-                ) : (
-                  <>
-                    <h3>Find a Human Opponent</h3>
-                    <p>Find an opponent in the <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">Protect the Pod Discord</a> or play against someone you know on Karabast.</p>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Step 2: Copy Your Deck */}
-            <div className="play-step">
-              <span className="step-number">2</span>
               <div className="step-content">
                 <h3>Copy Your Deck:
                   {onCopyLink && (
@@ -146,22 +123,40 @@ export default function PlayInstructions({
               </div>
             </div>
 
-            {/* Step 3: Play on Karabast */}
+            {/* Step 2: Play on Karabast */}
             <div className="play-step">
-              <span className="step-number">3</span>
+              <span className="step-number">2</span>
               <div className="step-content">
                 <h3>Play on Karabast</h3>
-                <p>Go to <a href="https://karabast.net" target="_blank" rel="noopener noreferrer">karabast.net</a> and paste your deck link or JSON. Create a <strong>Private Lobby</strong> with <strong>Open</strong> format and <strong>Mainboard minimum size of 30</strong>.</p>
+                {inPod ? (
+                  <p>Create a <strong>Private Lobby</strong> on <a href="https://karabast.net" target="_blank" rel="noopener noreferrer">karabast.net</a> with <strong>Format: Limited</strong> and <strong>Card Pool: {cardPoolName}</strong>. Paste your deck link or JSON as your decklist and share the lobby link with your opponent.</p>
+                ) : (
+                  <p>Go to <a href="https://karabast.net" target="_blank" rel="noopener noreferrer">karabast.net</a> and paste your deck link or JSON. Create a <strong>Public Lobby</strong> with <strong>Format: Limited</strong> and <strong>Card Pool: {cardPoolName}</strong> to find a match, join an existing <strong>Limited Lobby</strong>, or make a <strong>Private Lobby</strong> and share the link with a friend from the <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">Protect the Pod Discord</a>.</p>
+                )}
               </div>
             </div>
 
-            {/* Step 4: Pod next steps (only in pod context) */}
+            {/* Step 3: Find opponent (pod only) */}
             {inPod && (
               <div className="play-step">
-                <span className="step-number">4</span>
+                <span className="step-number">3</span>
                 <div className="step-content">
-                  <h3>Keep Playing</h3>
-                  <p>Organize future pairings in your pod if you want to keep playing, or save your deck for later.</p>
+                  {hasBye ? (
+                    <>
+                      <h3>You Have a Bye</h3>
+                      <p>You have a bye this round. Take a break or practice!</p>
+                    </>
+                  ) : opponentName ? (
+                    <>
+                      <h3>Find Your Opponent</h3>
+                      <p>Your opponent is <strong>{opponentName}</strong>. Send them the Karabast lobby link to start your match!</p>
+                    </>
+                  ) : (
+                    <>
+                      <h3>Find a Human Opponent</h3>
+                      <p>Reach out to your podmates to set up a match. Bots drafted with you but you play against other humans on Karabast.</p>
+                    </>
+                  )}
                 </div>
               </div>
             )}
