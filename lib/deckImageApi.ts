@@ -113,7 +113,7 @@ function toDeckCard(card: CardInfo, type?: string): DeckCard {
   // If we have a cardId (e.g. "LAW-104"), convert to swuapi format ("LAW_104") for exact lookup
   if (card.cardId) {
     return {
-      id: card.cardId.replace('-', '_'),
+      id: card.cardId.replaceAll('-', '_'),
       variant: mapVariant(card.variantType),
       type,
       count: 1,
