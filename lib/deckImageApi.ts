@@ -4,6 +4,7 @@
  */
 
 const SWUAPI_URL = process.env['SWUAPI_URL'] || 'https://api.swuapi.com'
+const SWUAPI_API_KEY = process.env['SWUAPI_API_KEY'] || ''
 
 interface DeckCard {
   name?: string | undefined
@@ -87,7 +88,10 @@ export async function generateDeckImage(opts: DeckImageOptions): Promise<Buffer 
 
     const res = await fetch(`${SWUAPI_URL}/deck-image`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SWUAPI_API_KEY}`,
+      },
       body: JSON.stringify(body),
     })
 

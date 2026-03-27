@@ -10,7 +10,8 @@ import { execSync } from 'child_process'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const API_URL = 'https://api.swuapi.com/export/all'
+const SWUAPI_BASE_URL = process.env.SWUAPI_URL || 'https://api.swuapi.com'
+const SWUAPI_API_KEY = process.env.SWUAPI_API_KEY || ''
 const SETS = [
   { code: 'SOR', name: 'Spark of Rebellion' },
   { code: 'SHD', name: 'Shadows of the Galaxy' },
@@ -94,10 +95,12 @@ interface TransformedCard {
  * Fetch all cards from the export endpoint
  */
 async function fetchAllCardsFromAPI(): Promise<ApiCard[]> {
-  console.log(`Fetching all cards from ${API_URL}...`)
+  console.log(`Fetching all cards from ${SWUAPI_BASE_URL}...`)
 
   try {
-    const response = await fetch(API_URL)
+    const response = await fetch(`${SWUAPI_BASE_URL}/export/all`, {
+      headers: { 'Authorization': `Bearer ${SWUAPI_API_KEY}` },
+    })
     if (response.ok) {
       const data = await response.json()
       // API returns { cards: [...] }
