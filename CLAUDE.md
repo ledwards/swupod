@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
-## ⛔ CRITICAL: NEVER PUSH WITHOUT PERMISSION ⛔
+## CRITICAL: NEVER PUSH WITHOUT PERMISSION
 
 **NEVER run `git push` unless the user explicitly says "push".**
 
@@ -56,399 +56,41 @@ npm run make-admin user@email.com     # Grant admin by email
 npm run make-admin -- --discord 123   # Grant admin by Discord ID
 ```
 
-## Architecture
-
-### DeckBuilder Component Structure
-
-The DeckBuilder has been refactored from a 6700-line monolith to a modular structure:
-
-```
-src/components/
-├── Card.jsx                    # Reusable card component
-├── Card.css                    # All .canvas-card styles (416 lines)
-├── DeckBuilder.jsx             # Main orchestrator (2030 lines)
-├── DeckBuilder.css             # Layout/section styles (2066 lines)
-└── DeckBuilder/                # Sub-components (23 files)
-    ├── README.md               # Component documentation
-    ├── CardGrid.jsx            # Reusable card grid container
-    ├── CardPreview.jsx         # Enlarged card preview on hover
-    ├── DeckSection.jsx         # Deck grid view
-    ├── PoolSection.jsx         # Pool grid view
-    ├── PoolListSection.jsx     # List view for pool/deck
-    ├── SelectionListSection.jsx # List view for leaders/bases
-    ├── LeaderBaseSelector.jsx  # Leader/base selection
-    ├── SectionHeader.jsx       # Section header with controls
-    ├── DeckBuilderHeader.jsx   # Main header
-    ├── StickyInfoBar.jsx       # Sticky stats bar
-    └── ... (12 more components)
-```
-
-See `src/components/DeckBuilder/README.md` for full component documentation.
-
-### DeckBuilder Hooks
-
-```
-src/hooks/
-├── README.md               # Hook documentation
-├── useDeckExport.js        # Export to JSON/clipboard/image
-├── useDragAndDrop.js       # Drag and drop card movement
-├── useCardPreview.js       # Card preview hover state
-├── useTooltip.js           # Tooltip positioning
-├── useDraftSocket.js       # WebSocket for drafts
-├── useDraftSync.js         # Draft state sync
-└── useRotisserieSocket.ts  # WebSocket for rotisserie drafts
-```
-
-### DeckBuilder Context
-
-`src/contexts/DeckBuilderContext.jsx` provides shared state:
-- `deckSortOption`, `poolSortOption` - Current sort settings
-- `leaderCard`, `baseCard` - Selected leader and base
-- `showAspectPenalties` - Toggle for aspect penalty display
-- `moveCardsToDeck()`, `moveCardsToPool()` - Bulk card operations
-
-### Belt System (`src/belts/`)
-The pack generation uses a "belt" metaphor - each card slot type has a belt that dispenses cards:
-- **LeaderBelt**: 1 leader per pack, alternates common/rare with seam deduplication
-- **BaseBelt**: 1 common base per pack, aspect-based deduplication
-- **CommonBelt**: 9 commons, uses A/B pools for deduplication
-- **UncommonBelt**: 3 uncommons
-- **RareLegendaryBelt**: 1 rare or legendary
-- **FoilBelt**: 1 foil of any rarity
-- **ShowcaseLeaderBelt**: Very rare showcase leaders (~1 in 288 packs)
-- **HyperspaceUpgradeBelt**: Controls HS upgrade distribution per pack (budget belt, not coin flips). Pre-determines which slots get HS upgrades in cycles of 60 packs. ~2/3 of packs get at least 1 HS, max 2.
-- **Hyperspace belts**: Various hyperspace variants (card selection after upgrade decision)
-
-**Carbonite belts** (for premium Carbonite packs where every card is a variant):
-- **CarboniteSlotBelt**: Configurable belt for rarity-locked carbonite slots. Config specifies rarities, source variant, output flags, and optional weights. Used for Common Foil, UC Foil, Common HS, UC HS, R/L HS, and LAW HS non-foil slots.
-- **CarboniteFoilRLBelt**: Weighted R/L Foil slot (70% Rare / 20% Special / 10% Legendary)
-- **CarbonitePrestigeBelt**: Prestige card slot (synthesized from R/L pool)
-- **HyperfoilBelt**: Hyperspace Foil cards (used in both standard and carbonite packs)
-
-Belts maintain a "hopper" that refills from a "filling pool" when depleted. Every card appears exactly once per boot cycle (no exclusion). Key constraints:
-- **24-position dedup window**: Same card never repeats within min(24, floor(beltSize/2)) positions, including across seam boundaries. Per-card minimum positions ensure the constraint holds even at the seam.
-- **Primary aspect interleaving**: No adjacent cards share the same primary aspect (aspects[0]). Cards are grouped by aspect and round-robin interleaved, largest group first.
-- **Equal occurrence rate**: Every card appears exactly once per boot. Cards are NEVER excluded from boots — dedup is achieved by placement, not exclusion.
-
-### Booster Pack Generation (`src/utils/boosterPack.ts`)
-Orchestrates belt usage to create 16-card packs. HS upgrades are belt-driven (Sets 1-6) for controlled variance. Non-HS upgrades (Showcase, Hyperfoil) remain independent coin flips.
-
-### Carbonite Pack Generation (`src/utils/carboniteBoosterPack.ts`)
-Premium 16-card packs where every card is a variant. Pre-LAW (JTL/LOF/SEC) uses rarity-specific belts:
-- [0] Leader HS, [1-4] Common Foil x4, [5-6] UC Foil x2, [7] R/L Foil, [8] Prestige, [9-11] Common HS x3, [12] UC HS, [13] R/L HS, [14-15] HSF x2
-
-LAW+ uses tiered slot architecture (verified from physical carbonite case):
-- [0] Leader HS, [1] Prestige, [2-5] HS Common x4 (fixed), [6-8] HS Flex x3 (weighted: C:32, UC:63, R:3, S:1, L:1), [9] HS Top x1 (always R/S/L: R:60, S:20, L:20), [10-13] HSF Flex x4 (weighted: C:43, UC:44, R:10, S:1.5, L:1.5), [14-15] HSF Common x2 (fixed)
-- Constants in `src/utils/carboniteConstants.ts`
-
-### Set Configs (`src/utils/setConfigs/`)
-Per-set parameters: card counts, rarity distributions, legendary drop rates. Sets 4-6 (JTL, LOF, SEC) have different rules than sets 1-3. Set 7 (LAW) is a beta set with `beta: true` flag.
-
-**See `docs/sets/` for detailed per-set documentation** including collation rules, belt assignments, and pack construction.
-
-### Real-time Draft (`server.js`, `src/hooks/useDraftSync.js`)
-Custom Next.js server with Socket.io for multiplayer draft synchronization. Draft state stored in PostgreSQL, synced to clients in real-time.
-
-### Card Data (`src/data/cards.json`, `scripts/cardFixes.js`)
-~6000 cards from 7 sets (SOR through LAW). Runtime fix system automatically corrects data issues (variant flags, missing properties) when cards are loaded via `cardCache.js`.
-
-### Utility Functions
-
-```
-src/utils/
-├── cardSort.js             # Card sorting utilities (with tests)
-├── aspectCombinations.js   # Aspect grouping utilities (with tests)
-├── aspectColors.js         # Aspect color/styling utilities
-├── boosterPack.js          # Pack generation
-├── cardCache.js            # Card data caching
-├── variantDowngrade.js     # Variant card mapping
-└── ... (20+ utility files)
-```
-
-### Rotisserie Draft (`src/hooks/useRotisserieSocket.ts`)
-Real-time rotisserie draft with Socket.io. Bot behavior in `src/bots/behaviors/RotisserieBehavior.ts` uses shared leader rankings from `src/bots/data/leaderRankings.ts`.
-
-### App Structure
+## App Structure
 - `app/` - Next.js App Router pages and API routes
 - `app/api/draft/` - Draft CRUD and state management
 - `app/api/sealed/` - Sealed pool generation
 - `app/api/formats/` - Other format APIs (chaos sealed, pack wars, pack blitz, rotisserie)
-- `app/formats/` - Other format pages
-- `app/showcases/` - Showcase collection gallery
-- `src/components/` - React components
+- `src/components/` - React components (see `src/components/DeckBuilder/README.md`)
+- `src/hooks/` - Custom hooks (see `src/hooks/README.md`)
+- `src/contexts/` - React contexts (`DeckBuilderContext`, `AuthContext`)
+- `src/belts/` - Belt system for pack generation
+- `src/services/` - Pure business logic
+- `src/utils/` - Utility functions (20+ files)
+- `src/bots/` - Bot behaviors and leader rankings
+- `lib/` - Server-side utilities (db, auth)
+- `migrations/` - Database migrations
+- `scripts/` - Build and admin scripts
 
-## UI Components & Style Guide
+## Detailed Rules
 
-**IMPORTANT: Always use the style guide for UI work unless explicitly instructed otherwise.**
-
-Read `docs/STYLE_GUIDE.md` before creating or modifying UI components. Key rules:
-
-### Button Component (ALWAYS USE)
-Use `src/components/Button.jsx` for all buttons:
-```jsx
-import Button from '@/src/components/Button'
-
-// Primary CTA (green glow)
-<Button variant="primary">Save</Button>
-
-// Secondary/Cancel
-<Button variant="secondary">Cancel</Button>
-
-// Danger/Delete (red glow)
-<Button variant="danger">Delete</Button>
-
-// Back navigation
-<Button variant="back">Go Back</Button>
-
-// Icon-only (close buttons)
-<Button variant="icon" size="sm">&times;</Button>
-
-// Toggle (sort/filter)
-<Button variant="toggle" active={isActive}>Option</Button>
-
-// Text-only (no background)
-<Button variant="primary" textOnly>Add All</Button>
-```
-
-### Card Component
-Use `src/components/Card.jsx` for rendering cards:
-```jsx
-import Card from '@/src/components/Card'
-
-<Card
-  card={cardData}
-  selected={isSelected}
-  disabled={isDisabled}
-  showPenalty={showAspectPenalties}
-  penaltyAmount={penalty}
-  onClick={handleClick}
-/>
-```
-
-Card styles are in `Card.css`. Key classes:
-- `.canvas-card` - Base card styling
-- `.canvas-card.selected` - Rainbow border animation
-- `.canvas-card.disabled` - Grayscale effect
-- `.canvas-card.foil` - Foil shimmer effect
-
-### Modal Component
-Use `src/components/Modal.jsx` for dialogs with `<Modal.Body>` and `<Modal.Actions>`.
-
-### Design Tokens
-- Dark backgrounds: `rgba(0, 0, 0, 0.7)`
-- Borders: `rgba(255, 255, 255, 0.3)`
-- Primary glow: green, Danger glow: red, Interactive glow: blue
-- Font: Barlow, weights 400/600/700
-- Hover lift: `translateY(-2px)`
-
-### Exceptions (Keep Custom)
-These have unique designs - do NOT replace with Button:
-- Landing page mode buttons (large card-like CTAs)
-- Deselect button (card overlay)
-- Editable title pencil
-- Auth widget avatar
-- Showcase share icon
-
-## Mobile Rules
-
-### Mouseover Does Not Work on Mobile
-- Hover/mouseover does not exist on touch devices. An 8-year-old knows this.
-- `CardPreview` and `useCardPreview` are fine on any page — the hook has a touch device guard that disables them on mobile.
-- **NEVER** add any feature that depends on hover/mouseover as its ONLY interaction method. Mobile users cannot hover.
-- Mobile landscape is a primary use case. Always test mental model: "does this work with just taps?"
-- If the `useCardPreview` touch guard ever breaks, fix it in the hook — don't remove CardPreview from pages.
-
-## Key Patterns
-
-### Card Variant Types
-Cards have `variantType`: Normal, Foil, Hyperspace, Hyperspace Foil, Showcase. Same card with different variants are distinct (not duplicates).
-
-### Aspect Colors
-Use `src/utils/aspectColors.js` for aspect-based styling. Aspects: Vigilance (blue), Command (green), Aggression (red), Cunning (yellow), Villainy (black/purple), Heroism (white).
-
-### Database
-PostgreSQL via `lib/db.js`. Migrations in `migrations/`. Use `queryRows()` for SELECT, `queryRow()` for single row, `query()` for INSERT/UPDATE.
-
-### Hosting & Production Access
-**Hosted on Railway.** Use Railway CLI for production database access:
-
-```bash
-# Check migration status in production
-railway run -e production npm run migrate:prod status
-
-# Run pending migrations in production
-railway run -e production npm run migrate:prod
-
-# Run any command with prod env vars
-railway run -e production <command>
-```
-
-### Migrations on Deploy
-Migrations run automatically at **server startup** (not build time) via `server.js`:
-1. Server starts → spawns `npx tsx scripts/migrate-on-deploy.ts`
-2. Script runs all pending `.sql` and `.js` migrations
-3. Each migration is tracked in `migrations` table to prevent re-runs
-
-**Important:** Migrations must be idempotent. The deploy script uses `tsx` so migrations can import TypeScript files.
-
-### Data Formats
-**See `docs/DATA_FORMATS.md` for canonical data structures.** Key rule: Packs are always `{ cards: [...] }` objects, never raw arrays. The exception is `current_pack` which stores just the cards array.
-
-### Authentication
-Discord OAuth via `lib/auth.js`. JWT tokens in cookies. User context via `src/contexts/AuthContext`.
-
-### User Roles & Beta Access
-Users have two role flags: `is_admin` and `is_beta_tester`. See `docs/BETA_ACCESS.md` for full documentation.
-
-**Server-side authorization:**
-```javascript
-import { requireAuth, requireBetaAccess, requireAdmin } from '@/lib/auth.js'
-
-const session = requireBetaAccess(request)  // throws if not beta/admin
-```
-
-**Client-side:**
-```jsx
-const { user, enrollBeta } = useAuth()
-const hasBetaAccess = user?.is_beta_tester || user?.is_admin
-
-// Enroll user (updates state immediately, no re-login)
-await enrollBeta()
-```
-
-**Beta sets:** Sets with `beta: true` in their config (e.g., LAW) are hidden from non-beta users.
-
-## Testing Notes
-
-Tests use Node's built-in test runner (no Jest). Run individual test files directly with `node`. Statistical QA tests validate pack distribution across 600 packs.
-
-**Test files:**
-- `src/utils/*.test.js` - Utility function tests
-- `src/hooks/*.test.js` - Hook contract tests
-- `src/belts/*.test.js` - Belt system tests
-- `src/utils/setConfigs/*.test.js` - Set config tests
-- `lib/*.test.js` - Server-side utility tests
-- `app/api/**/*.test.js` - API route tests
-- `tests/e2e/*.spec.ts` - Playwright E2E tests (run other format tests with --workers=1)
-
-## ⚠️ CRITICAL: Spec-First Testing (MANDATORY)
-
-**NEVER write tests that validate implementation. ALWAYS test against specifications.**
-
-### The Anti-Pattern (DO NOT DO THIS)
-```javascript
-// BAD: Deriving expected values from the implementation
-const numRares = cards.filter(c => c.rarity === 'Rare').length
-const numLegendaries = cards.filter(c => c.rarity === 'Legendary').length
-const expectedRate = numLegendaries / (ratio * numRares + numLegendaries)  // WRONG!
-```
-This tests that "the code produces what the code produces" - it will pass even if the code is completely wrong.
-
-### The Correct Pattern (DO THIS)
-```javascript
-// GOOD: Hardcode expected values from the SPEC
-// SPEC: Sets 1-3 should have 12.5% legendary rate (1 in 8)
-const expectedRate = 1 / 8  // 0.125 - from spec, not derived from code
-assert(Math.abs(observedRate - expectedRate) < tolerance,
-  `SPEC: Legendary rate should be 12.5%, got ${observedRate}`)
-```
-
-### Where to Find Specs
-- **Pack structure**: `src/utils/packConstants.ts` - rarity weights, upgrade rates, belt configs
-- **Set-specific**: `src/utils/setConfigs/*.ts` - per-set card counts, ratios, rules
-- **Belt ratios**: Documented in belt class comments and set configs
-
-### Write Tests FIRST
-1. Read the spec (packConstants, setConfigs, design docs)
-2. Write test with hardcoded expected values from spec
-3. Run test - it should FAIL if the implementation is wrong
-4. Fix implementation to match spec
-5. Test passes because it matches spec, not because it matches implementation
-
-## Bug Fixing Process (MANDATORY)
-
-**Always use red-green TDD when fixing bugs:**
-
-1. **RED**: Write a test that demonstrates the bug
-   - Extract the buggy logic into a testable function if needed
-   - Show the test failing or producing wrong results with the old code
-   - Name it clearly: `'BUGGY: does X incorrectly'` or `'OLD CODE: fails when Y'`
-
-2. **GREEN**: Write the fix and show the test passing
-   - Add a parallel test with the fixed logic
-   - Name it clearly: `'FIXED: does X correctly'` or `'NEW CODE: handles Y'`
-
-3. **Document**: The test should serve as documentation of what went wrong
-
-Example structure:
-```javascript
-describe('Feature X', () => {
-  it('BUGGY: loses data with format Y', () => {
-    const result = buggyFunction(input)
-    assert.strictEqual(result.thing, null, 'BUG: thing is lost!')
-  })
-
-  it('FIXED: preserves data with format Y', () => {
-    const result = fixedFunction(input)
-    assert.strictEqual(result.thing, 'expected', 'thing preserved')
-  })
-})
-```
-
-**Why this matters:** Tests that demonstrate bugs prevent regressions and document what went wrong for future developers.
+Domain-specific rules are in `.claude/rules/`:
+- **belt-system.md** — Belt metaphor, pack generation, carbonite packs (scoped to `src/belts/`, `src/utils/boosterPack*`)
+- **testing.md** — Spec-first testing, red-green TDD, test locations (scoped to test files)
+- **ui-components.md** — Button/Card/Modal usage, design tokens, style guide (scoped to components/CSS)
+- **mobile.md** — Hover rules, touch guards, chat collapse (scoped to components/hooks/CSS)
+- **architecture.md** — Services/hooks/components pattern, per-set configs (scoped to `src/`)
+- **database.md** — PostgreSQL, migrations, Railway, auth (scoped to `lib/`, `migrations/`, `app/api/`)
 
 ## Plans & Documentation
 
-**Plans go in `/plans/` directory.** When creating implementation plans, feature specs, or migration plans, save them to `/plans/PLAN_NAME.md`.
+**Plans go in `/plans/`.** When complete, move to `/docs/`.
 
-**When a plan is complete, move it to `/docs/`.** Completed plans become documentation.
-
-Current plans:
-- `plans/TOURNAMENT_MODE_PLAN.md` - Swiss-format tournament system
-- `plans/CASUAL_MODE_PLAN.md` - Other limited formats
-- `plans/TYPESCRIPT_MIGRATION_PLAN.md` - Type system spec and TS migration strategy
-- `plans/REFACTORING_PLAN.md` - Large-scale architectural refactoring
-- `plans/STYLEGUIDE_PLAN.md` - Interactive style guide page
-
-Completed plans (now in docs/):
-- `docs/DECKBUILDER_REFACTOR_PLAN.md` - DeckBuilder refactor (6700 to 2030 lines)
-- `docs/COMPONENT_EXTRACTION_PLAN.md` - Component library extraction
-- `docs/HIDE_POOLS_PLAN.md` - Hide pools feature spec
-- `docs/HIDE_POOL_FEATURE.md` - Hide/show pools in history
-- `docs/HYPERSPACE_BELT_PLAN.md` - Hyperspace upgrade belt system
-
-## Architecture & Refactoring
-
-**See `docs/DECKBUILDER_REFACTOR_PLAN.md` for the completed refactoring summary.**
-
-### Key Principles
-1. **Red-Green Bug Fixes**: Always write a failing test that demonstrates the bug BEFORE fixing it (see "Bug Fixing Process" above)
-2. **Test Before Refactor**: Always write characterization tests before changing existing code
-3. **Services are Pure**: No React, no side effects, no I/O in services
-4. **Components Don't Calculate**: Move calculations to services, call via hooks
-5. **Small Files**: Components <300 lines, services <200 lines
-6. **One Canonical Format**: Domain objects should have ONE representation - don't allow multiple formats to proliferate (see `docs/DATA_FORMATS.md`)
-
-### When Adding New Features
-1. Business logic → `src/services/` (with tests)
-2. State management → `src/hooks/`
-3. UI → `src/components/` (receives data via props/hooks)
-
-## Script Guidelines
-
-**Database and slow scripts should be communicative:**
-- Print status messages before each slow operation (e.g., "📥 Dumping production database...")
-- Print success confirmations after completion (e.g., "✅ Done!")
-- Show progress indicators for multi-step operations
-- Display file sizes, counts, or other useful feedback
-- If something might hang, tell the user what's happening and how to troubleshoot
-
-See `scripts/clone-prod-to-dev.sh` as an example.
+Current: `TOURNAMENT_MODE_PLAN.md`, `CASUAL_MODE_PLAN.md`, `TYPESCRIPT_MIGRATION_PLAN.md`, `REFACTORING_PLAN.md`, `STYLEGUIDE_PLAN.md`
 
 ## Important Notes
 
-- **NEVER PUSH OR DEPLOY WITHOUT EXPLICIT DIRECTION** - "commit" means ONLY commit, NOT push. Pushes trigger deploy to production. Only push when the user explicitly says "push" or "push to origin".
-- **"commit" ≠ "commit and push"** - These are separate operations. Always wait for explicit push instruction.
-- **Release Notes structure**: `RELEASE_NOTES.md` has a "How to Update Release Notes" section at the bottom for contributors. This section (and the `---` HR above it) must NEVER appear on the website. `ReleaseNotes.tsx` strips everything from `## How to Update Release Notes` onwards. If you edit the release notes file, keep this section at the very bottom and don't change its heading.
-- The mobile test (`deck-builder.spec.js:220`) is flaky - pre-existing issue
-- Skip 8-player test during iteration (takes 10+ minutes)
+- **NEVER PUSH OR DEPLOY WITHOUT EXPLICIT DIRECTION** — pushes trigger production deploy
+- **Release Notes**: Only edit root `RELEASE_NOTES.md`. The `public/` copy is generated. Each deploy gets its own date section. Keep "How to Update Release Notes" section at the bottom.
+- **Generated files in `public/`**: NEVER edit `public/RELEASE_NOTES.md`, `public/qa-results.json`, `public/qa-status.json`, `public/test-results.json`
+- **Script guidelines**: Database/slow scripts should print status messages and progress indicators
