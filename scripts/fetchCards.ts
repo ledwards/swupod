@@ -25,6 +25,8 @@ const SETS = [
 // Set codes we want to include
 const VALID_SET_CODES = new Set(SETS.map(s => s.code))
 
+const MAX_PAGES = 200
+
 interface ApiCard {
   uuid: string
   externalId: number
@@ -103,6 +105,10 @@ async function fetchAll(entity: string): Promise<ApiCard[]> {
   console.log(`Fetching all ${entity} from ${SWUAPI_URL}/export/${entity}...`)
 
   do {
+    if (page >= MAX_PAGES) {
+      throw new Error(`fetchAll('${entity}') exceeded MAX_PAGES (${MAX_PAGES}). API may be returning a repeated cursor.`)
+    }
+
     const url = cursor
       ? `${SWUAPI_URL}/export/${entity}?cursor=${cursor}`
       : `${SWUAPI_URL}/export/${entity}`
@@ -112,11 +118,10 @@ async function fetchAll(entity: string): Promise<ApiCard[]> {
     })
 
     if (!response.ok) {
-      console.error(`Error fetching ${entity} (page ${page}): HTTP ${response.status}`)
       if (response.status === 401) {
         console.error('→ Check that SWUAPI_API_KEY is set correctly.')
       }
-      return []
+      throw new Error(`Error fetching ${entity} (page ${page}): HTTP ${response.status}`)
     }
 
     const data = await response.json() as { data: ApiCard[]; total: number; has_more: boolean; next_cursor: string | null }
@@ -280,4 +285,7 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch(console.error)
+main().catch(err => {
+  console.error(err)
+  process.exit(1)
+})
