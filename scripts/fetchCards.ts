@@ -140,7 +140,7 @@ function transformCard(apiCard: ApiCard): TransformedCard {
   const cardNumber = apiCard.card_number || ''
   // Use uuid as unique identifier (collector_number is NOT unique across variants)
   const id = apiCard.uuid
-  const cardId = apiCard.collector_number.replace('_', '-')
+  const cardId = apiCard.collector_number.replaceAll('_', '-')
 
   // Normalize arena to array (API uses singular 'arena')
   let arenas: string[] = []
