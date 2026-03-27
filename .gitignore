@@ -62,3 +62,6 @@ migrations/.buildstamp
 
 # Database backups
 .backups/
+
+# Git worktrees
+.worktrees/
