@@ -644,7 +644,7 @@ export default function DraftRoomPage({ params }: PageProps) {
         </Modal.Actions>
       </Modal>
 
-      <ChatPanel shareId={shareId} isHost={isHost} isPublic={draft?.isPublic} onMakePublic={() => handleSettingsChange({ isPublic: true })} defaultOpen={false} />
+      {!draft?.settings?.isSolo && <ChatPanel shareId={shareId} isHost={isHost} isPublic={draft?.isPublic} onMakePublic={() => handleSettingsChange({ isPublic: true })} defaultOpen={false} />}
     </div>
   )
 }

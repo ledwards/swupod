@@ -972,7 +972,7 @@ export default function PodPage({ params }: PageProps) {
         )}
       </div>
       </div>
-      <ChatPanel shareId={shareId} />
+      {!isSolo && <ChatPanel shareId={shareId} />}
     </div>
   )
 }
