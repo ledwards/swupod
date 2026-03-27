@@ -121,9 +121,17 @@ async function runMigration(client: pg.Client, migrationFile: MigrationFile): Pr
     }
     await migration.run(client)
   } else {
-    // Read and execute SQL migration
+    // Read and execute SQL migration - run statements individually so each runs
+    // in autocommit mode (required for CREATE INDEX CONCURRENTLY, which cannot
+    // run inside a transaction block)
     const migrationSQL = readFileSync(migrationPath, 'utf-8')
-    await client.query(migrationSQL)
+    const statements = migrationSQL
+      .split(';')
+      .map(s => s.trim())
+      .filter(s => s.length > 0)
+    for (const statement of statements) {
+      await client.query(statement)
+    }
   }
 
   await markMigrationApplied(client, migrationName)
