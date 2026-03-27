@@ -92,27 +92,41 @@ interface TransformedCard {
 }
 
 /**
- * Fetch all cards from the export endpoint
+ * Fetch all records from a paginated /export/:entity endpoint.
+ * Follows cursor pagination until has_more is false.
  */
-async function fetchAllCardsFromAPI(): Promise<ApiCard[]> {
-  console.log(`Fetching all cards from ${SWUAPI_URL}...`)
+async function fetchAll(entity: string): Promise<ApiCard[]> {
+  const results: ApiCard[] = []
+  let cursor: string | null = null
+  let page = 0
 
-  try {
-    const response = await fetch(`${SWUAPI_URL}/export/all`, {
+  console.log(`Fetching all ${entity} from ${SWUAPI_URL}/export/${entity}...`)
+
+  do {
+    const url = cursor
+      ? `${SWUAPI_URL}/export/${entity}?cursor=${cursor}`
+      : `${SWUAPI_URL}/export/${entity}`
+
+    const response = await fetch(url, {
       headers: { 'Authorization': `Bearer ${SWUAPI_API_KEY}` },
     })
-    if (response.ok) {
-      const data = await response.json()
-      // API returns { cards: [...] }
-      return data.cards || []
-    } else {
-      console.error(`Error fetching cards: ${response.status}`)
+
+    if (!response.ok) {
+      console.error(`Error fetching ${entity} (page ${page}): HTTP ${response.status}`)
+      if (response.status === 401) {
+        console.error('→ Check that SWUAPI_API_KEY is set correctly.')
+      }
       return []
     }
-  } catch (error) {
-    console.error(`Error fetching cards:`, (error as Error).message)
-    return []
-  }
+
+    const data = await response.json() as { data: ApiCard[]; total: number; has_more: boolean; next_cursor: string | null }
+    results.push(...data.data)
+    cursor = data.has_more ? data.next_cursor : null
+    page++
+    console.log(`  Page ${page}: +${data.data.length} cards (total so far: ${results.length} / ${data.total})`)
+  } while (cursor)
+
+  return results
 }
 
 /**
@@ -202,7 +216,7 @@ async function main(): Promise<void> {
   console.log('Starting card data fetch from swuapi.com API...')
   console.log(`Sets to include: ${SETS.map(s => s.code).join(', ')}`)
 
-  const apiCards = await fetchAllCardsFromAPI()
+  const apiCards = await fetchAll('cards')
 
   if (apiCards.length === 0) {
     console.error('No cards fetched from API!')
