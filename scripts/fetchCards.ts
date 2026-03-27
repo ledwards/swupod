@@ -29,11 +29,9 @@ const MAX_PAGES = 200
 
 interface ApiCard {
   uuid: string
-  externalId: number
-  collectorNumber: string
-  externalUid: string
-  setCode: string
-  cardNumber: string
+  collector_number: string
+  set_code: string
+  card_number: string
   name: string
   subtitle?: string
   rarity: string
@@ -45,16 +43,16 @@ interface ApiCard {
   power?: number
   hp?: number
   text?: string
-  backText?: string
-  epicAction?: string
+  back_text?: string
+  epic_action?: string
   keywords?: string[]
   artist?: string
-  isUnique?: boolean
-  variantType?: string
-  isLeader?: boolean
-  isBase?: boolean
-  frontImageUrl?: string
-  backImageUrl?: string
+  is_unique?: boolean
+  variant_type?: string
+  is_leader?: boolean
+  is_base?: boolean
+  front_image_url?: string
+  back_image_url?: string
 }
 
 interface TransformedCard {
@@ -138,11 +136,11 @@ async function fetchAll(entity: string): Promise<ApiCard[]> {
  * Transform API card data to our card schema
  */
 function transformCard(apiCard: ApiCard): TransformedCard {
-  const setCode = apiCard.setCode || ''
-  const cardNumber = apiCard.cardNumber || ''
-  // Use externalId as unique identifier (collector_number is NOT unique across variants)
-  const id = String(apiCard.externalId)
-  const cardId = apiCard.collectorNumber.replace('_', '-')
+  const setCode = apiCard.set_code || ''
+  const cardNumber = apiCard.card_number || ''
+  // Use uuid as unique identifier (collector_number is NOT unique across variants)
+  const id = apiCard.uuid
+  const cardId = apiCard.collector_number.replace('_', '-')
 
   // Normalize arena to array (API uses singular 'arena')
   let arenas: string[] = []
@@ -151,7 +149,7 @@ function transformCard(apiCard: ApiCard): TransformedCard {
   }
 
   // Normalize variantType - map API values to our expected values
-  let variantType = apiCard.variantType || 'Normal'
+  let variantType = apiCard.variant_type || 'Normal'
   // Map swuapi.com variant types to our expected values
   const variantTypeMap: Record<string, string> = {
     'Standard': 'Normal',
@@ -193,24 +191,24 @@ function transformCard(apiCard: ApiCard): TransformedCard {
     power: apiCard.power !== null && apiCard.power !== undefined ? parseInt(String(apiCard.power)) : null,
     hp: apiCard.hp !== null && apiCard.hp !== undefined ? parseInt(String(apiCard.hp)) : null,
     frontText: apiCard.text || null,
-    backText: apiCard.backText || null,
-    epicAction: apiCard.epicAction || null,
+    backText: apiCard.back_text || null,
+    epicAction: apiCard.epic_action || null,
     keywords: apiCard.keywords || [],
     artist: apiCard.artist || null,
-    unique: apiCard.isUnique || false,
-    doubleSided: !!(apiCard.backImageUrl),
+    unique: apiCard.is_unique || false,
+    doubleSided: !!(apiCard.back_image_url),
     variantType,
     marketPrice: null, // Not available in swuapi.com
     lowPrice: null, // Not available in swuapi.com
-    isLeader: apiCard.isLeader || false,
-    isBase: apiCard.isBase || false,
+    isLeader: apiCard.is_leader || false,
+    isBase: apiCard.is_base || false,
     isFoil,
     isHyperspace: variantType === 'Hyperspace' || variantType === 'Hyperspace Foil',
     isShowcase: variantType === 'Showcase',
     isPrestige,
     prestigeTier,
-    imageUrl: apiCard.frontImageUrl || null,
-    backImageUrl: apiCard.backImageUrl || null,
+    imageUrl: apiCard.front_image_url || null,
+    backImageUrl: apiCard.back_image_url || null,
   }
 }
 
@@ -232,7 +230,7 @@ async function main(): Promise<void> {
 
   // Filter to only our desired sets and transform
   const allCards = apiCards
-    .filter(card => VALID_SET_CODES.has(card.setCode))
+    .filter(card => VALID_SET_CODES.has(card.set_code))
     .map(card => transformCard(card))
 
   console.log(`\n✓ Total cards fetched: ${allCards.length}`)
