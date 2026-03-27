@@ -106,7 +106,7 @@ When a Limited game ends on Karabast with the plugin active, Wayfinder links the
 | POST | `/match/deck-lookup` | shared secret | Card list → matching deck/pool/draft IDs |
 | POST | `/match/result` | shared secret | Write W/L/D result to a PTP deck |
 
-**Shared secret:** `WAYFINDER_PLUGIN_SECRET` env var on both PTP and Wayfinder servers. Wayfinder server sends it as `X-Wayfinder-Secret` request header. The secret never appears in plugin source code.
+**Shared secret:** `PTP_SERVICE_KEY` env var on both PTP and Wayfinder servers. Wayfinder server sends it as `Authorization: Bearer <PTP_SERVICE_KEY>`. This env var already exists in both projects. The secret never appears in plugin source code.
 
 ### PTP Schema Changes
 
@@ -219,9 +219,9 @@ ptp-pool-l2
 | Concern | Approach |
 |---------|----------|
 | PTP read endpoints (Phase 1) | No auth — shareId is already public (in the URL) |
-| PTP write endpoints (Phase 2) | `X-Wayfinder-Secret` header — server-to-server only, never in plugin source |
+| PTP write endpoints (Phase 2) | `Authorization: Bearer <PTP_SERVICE_KEY>` — server-to-server only, never in plugin source |
 | Wayfinder plugin auth | Existing Discord OAuth → plugin token flow, unchanged |
-| Secret storage | `WAYFINDER_PLUGIN_SECRET` env var on Railway for both apps |
+| Secret storage | `PTP_SERVICE_KEY` env var on Railway for both apps (already exists) |
 
 ---
 
