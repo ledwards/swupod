@@ -2,18 +2,13 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import { getLatestReleasedSetCode } from '../../../../../../../src/utils/setConfigs/latest.js'
-import { SET_CONFIGS } from '../../../../../../../src/utils/setConfigs/index.js'
 
 describe('getLatestReleasedSetCode', () => {
-  it('returns a set code string', () => {
+  it('returns LAW — the highest setNumber (7) among all released sets', () => {
+    // SPEC: LAW has setNumber 7 and releaseDate 2026-03-13 (released)
+    // It is the latest released set as of the current date.
+    const expectedLatestSet = 'LAW'
     const code = getLatestReleasedSetCode()
-    assert.ok(typeof code === 'string')
-    assert.ok(code.length > 0)
-  })
-
-  it('is one of the known set codes', () => {
-    const code = getLatestReleasedSetCode()
-    assert.ok(Object.keys(SET_CONFIGS).includes(code),
-      `Expected ${code} to be in SET_CONFIGS`)
+    assert.equal(code, expectedLatestSet)
   })
 })
