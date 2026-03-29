@@ -140,3 +140,115 @@ test.describe("W/L/D badge on PTP play page", () => {
     expect(target).toBe("_blank");
   });
 });
+
+test.describe("POST /api/plugin/v1/match/result", () => {
+  test("rejects request with no Authorization header (401)", async () => {
+    const res = await fetch(`${BASE_URL}/api/plugin/v1/match/result`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ poolShareId: "any", result: "win", matchId: "m1" }),
+    });
+    expect(res.status).toBe(401);
+  });
+
+  test("rejects request with wrong Authorization header (401)", async () => {
+    const res = await fetch(`${BASE_URL}/api/plugin/v1/match/result`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer wrong-secret",
+      },
+      body: JSON.stringify({ poolShareId: "any", result: "win", matchId: "m1" }),
+    });
+    expect(res.status).toBe(401);
+  });
+
+  test("records a win result and appends matchId to wayfinder_match_ids", async () => {
+    const serviceKey = process.env.PTP_SERVICE_KEY;
+    if (!serviceKey) {
+      test.skip(true, "PTP_SERVICE_KEY not set in .env.local — skipping auth-dependent test");
+      return;
+    }
+
+    const localDb = await getPool();
+    const winUser = await createTestUser("WinPlayer", TEST_ID);
+    const shareId = await createSealedPool(localDb, winUser.user.id);
+
+    const MATCH_ID = `test-match-${Date.now()}`;
+    const res = await fetch(`${BASE_URL}/api/plugin/v1/match/result`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${serviceKey}`,
+      },
+      body: JSON.stringify({ poolShareId: shareId, result: "win", matchId: MATCH_ID }),
+    });
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.ok).toBe(true);
+
+    // Verify DB was updated
+    const row = await localDb.query(
+      "SELECT wins, losses, draws, wayfinder_match_ids FROM card_pools WHERE share_id = $1",
+      [shareId]
+    );
+    expect(row.rows[0].wins).toBe(1);
+    expect(row.rows[0].losses).toBe(0);
+    expect(row.rows[0].draws).toBe(0);
+    expect(row.rows[0].wayfinder_match_ids).toContain(MATCH_ID);
+
+    await localDb.end();
+  });
+
+  test("records a loss result correctly", async () => {
+    const serviceKey = process.env.PTP_SERVICE_KEY;
+    if (!serviceKey) {
+      test.skip(true, "PTP_SERVICE_KEY not set — skipping");
+      return;
+    }
+
+    const localDb = await getPool();
+    const lossUser = await createTestUser("LossPlayer", TEST_ID);
+    const shareId = await createSealedPool(localDb, lossUser.user.id);
+    const MATCH_ID = `test-loss-${Date.now()}`;
+
+    const res = await fetch(`${BASE_URL}/api/plugin/v1/match/result`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${serviceKey}`,
+      },
+      body: JSON.stringify({ poolShareId: shareId, result: "loss", matchId: MATCH_ID }),
+    });
+
+    expect(res.status).toBe(200);
+
+    const row = await localDb.query(
+      "SELECT wins, losses, draws FROM card_pools WHERE share_id = $1",
+      [shareId]
+    );
+    expect(row.rows[0].wins).toBe(0);
+    expect(row.rows[0].losses).toBe(1);
+    expect(row.rows[0].draws).toBe(0);
+    await localDb.end();
+  });
+
+  test("returns 404 for unknown poolShareId", async () => {
+    const serviceKey = process.env.PTP_SERVICE_KEY;
+    if (!serviceKey) {
+      test.skip(true, "PTP_SERVICE_KEY not set — skipping");
+      return;
+    }
+
+    const res = await fetch(`${BASE_URL}/api/plugin/v1/match/result`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${serviceKey}`,
+      },
+      body: JSON.stringify({ poolShareId: "nonexistent-share-id", result: "win", matchId: "m-nope" }),
+    });
+    expect(res.status).toBe(404);
+  });
+});
