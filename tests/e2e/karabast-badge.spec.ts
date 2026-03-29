@@ -23,7 +23,7 @@ async function getPool(): Promise<pg.Pool> {
 }
 
 async function createSealedPool(db: pg.Pool, userId: string, setCode = "LAW"): Promise<string> {
-  const shareId = `test-badge-${Date.now()}`;
+  const shareId = `test-badge-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   await db.query(
     `INSERT INTO card_pools (share_id, user_id, set_code, pool_type, cards, wins, losses, draws, wayfinder_match_ids, created_at, updated_at)
      VALUES ($1, $2, $3, 'sealed', '[]'::jsonb, 0, 0, 0, '{}', NOW(), NOW())`,
@@ -49,6 +49,10 @@ async function seedMatchResult(
 }
 
 test.describe.configure({ mode: "serial" });
+test.skip(({ browserName, isMobile }) =>
+  browserName !== 'chromium' || isMobile,
+  'Skipped: Desktop Chromium only (long-running integration test)'
+);
 test.setTimeout(120_000);
 
 test.describe("W/L/D badge on PTP play page", () => {
@@ -94,7 +98,7 @@ test.describe("W/L/D badge on PTP play page", () => {
     const shareId = await createSealedPool(db, user.user.id);
 
     await page.goto(`${BASE_URL}/pool/${shareId}/deck/play`, { waitUntil: "networkidle" });
-    await page.waitForTimeout(1000);
+    await page.waitForSelector('.play-header', { timeout: 15_000 });
 
     // WldBadge returns null when all zeros — no badge element should be present
     const badgeVisible = await page
@@ -109,7 +113,7 @@ test.describe("W/L/D badge on PTP play page", () => {
     await seedMatchResult(db, shareId, 3, 1, 0, ["match-aaa", "match-bbb", "match-ccc", "match-ddd"]);
 
     await page.goto(`${BASE_URL}/pool/${shareId}/deck/play`, { waitUntil: "networkidle" });
-    await page.waitForTimeout(1000);
+    await page.waitForSelector('.play-header', { timeout: 15_000 });
 
     const badge = page.locator("text=/3W 1L 0D/");
     await expect(badge).toBeVisible({ timeout: 10_000 });
@@ -121,7 +125,7 @@ test.describe("W/L/D badge on PTP play page", () => {
     await seedMatchResult(db, shareId, 1, 0, 0, [MATCH_ID]);
 
     await page.goto(`${BASE_URL}/pool/${shareId}/deck/play`, { waitUntil: "networkidle" });
-    await page.waitForTimeout(1000);
+    await page.waitForSelector('.play-header', { timeout: 15_000 });
 
     // One "Match 1" link should be present
     const matchLink = page.locator(`a:has-text("Match 1")`);
