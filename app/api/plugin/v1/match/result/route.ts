@@ -47,6 +47,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     return jsonResponse({ ok: true })
   } catch (error) {
+    if (error instanceof Error && (error.message === 'Unauthorized' || error.message === 'Service key not configured')) {
+      return errorResponse('Unauthorized', 401)
+    }
     return handleApiError(error)
   }
 }
