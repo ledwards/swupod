@@ -24,6 +24,33 @@ import '../../../../../src/App.css'
 import '../../../../../src/components/ChatPanel.css'
 import './play.css'
 
+function WldBadge({
+  wins, losses, draws, matchIds
+}: {
+  wins: number; losses: number; draws: number; matchIds: string[]
+}) {
+  if (wins === 0 && losses === 0 && draws === 0) return null
+  const wayfinder = process.env.NEXT_PUBLIC_WAYFINDER_URL ?? 'https://plugin.wayfinder.news'
+  return (
+    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+      <span style={{ fontWeight: 700, fontSize: '14px' }}>
+        {wins}W {losses}L {draws}D
+      </span>
+      {matchIds.map((id, i) => (
+        <a
+          key={id}
+          href={`${wayfinder}/matches/${id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ fontSize: '12px', color: '#93c5fd' }}
+        >
+          Match {i + 1}
+        </a>
+      ))}
+    </div>
+  )
+}
+
 interface CardType {
   id?: string
   name?: string
@@ -67,6 +94,10 @@ interface PoolData {
   userId?: string
   draftShareId?: string
   createdAt?: string
+  wins?: number
+  losses?: number
+  draws?: number
+  wayfinderMatchIds?: string[]
 }
 
 interface Player {
@@ -1615,6 +1646,12 @@ export default function PlayPage({ params }: PageProps) {
             className="play-title"
           />
           <p className="play-pool-type">{poolTypeLabel}</p>
+          <WldBadge
+            wins={pool.wins ?? 0}
+            losses={pool.losses ?? 0}
+            draws={pool.draws ?? 0}
+            matchIds={pool.wayfinderMatchIds ?? []}
+          />
         </div>
 
         <div className="practice-hand-button-container">

@@ -8,6 +8,33 @@ import Button from '@/src/components/Button'
 import { getPackArtUrl } from '@/src/utils/packArt'
 import './play.css'
 
+function WldBadge({
+  wins, losses, draws, matchIds
+}: {
+  wins: number; losses: number; draws: number; matchIds: string[]
+}) {
+  if (wins === 0 && losses === 0 && draws === 0) return null
+  const wayfinder = process.env.NEXT_PUBLIC_WAYFINDER_URL ?? 'https://plugin.wayfinder.news'
+  return (
+    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+      <span style={{ fontWeight: 700, fontSize: '14px' }}>
+        {wins}W {losses}L {draws}D
+      </span>
+      {matchIds.map((id, i) => (
+        <a
+          key={id}
+          href={`${wayfinder}/matches/${id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ fontSize: '12px', color: '#93c5fd' }}
+        >
+          Match {i + 1}
+        </a>
+      ))}
+    </div>
+  )
+}
+
 interface CardData {
   id: string
   name: string
@@ -44,6 +71,10 @@ export default function PackBlitzPlayPage() {
   const [messageType, setMessageType] = useState<string | null>(null)
   const [selectedLeader, setSelectedLeader] = useState<number | null>(null)
   const [selectedBase, setSelectedBase] = useState<number | null>(null)
+  const [wins, setWins] = useState(0)
+  const [losses, setLosses] = useState(0)
+  const [draws, setDraws] = useState(0)
+  const [wayfinderMatchIds, setWayfinderMatchIds] = useState<string[]>([])
 
   const hasSelection = selectedLeader !== null && selectedBase !== null
 
@@ -65,6 +96,10 @@ export default function PackBlitzPlayPage() {
         const poolInfo = typeof data.cards === 'string' ? JSON.parse(data.cards) : data.cards
 
         setPoolData(poolInfo)
+        setWins(data.wins ?? 0)
+        setLosses(data.losses ?? 0)
+        setDraws(data.draws ?? 0)
+        setWayfinderMatchIds(data.wayfinderMatchIds ?? [])
       } catch (err) {
         setError(err.message || 'Failed to load pool')
       } finally {
@@ -177,6 +212,12 @@ export default function PackBlitzPlayPage() {
         <div className="play-header">
           <h1>Pack Blitz</h1>
           <p className="play-pool-type">{poolData.setName}</p>
+          <WldBadge
+            wins={wins}
+            losses={losses}
+            draws={draws}
+            matchIds={wayfinderMatchIds}
+          />
         </div>
 
         {/* Instructions */}

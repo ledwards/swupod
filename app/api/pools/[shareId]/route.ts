@@ -38,6 +38,10 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
           cp.box_packs,
           cp.pack_indices,
           cp.shuffled_packs,
+          cp.wins,
+          cp.losses,
+          cp.draws,
+          cp.wayfinder_match_ids,
           dp.share_id as draft_share_id,
           u.id as owner_id,
           u.username as owner_username
@@ -187,6 +191,10 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       draftShareId: pool.draft_share_id || null,
       hasBox: Boolean(pool.box_packs), // Whether randomization is available
       shuffledPacks: pool.shuffled_packs || false,
+      wins: pool.wins ?? 0,
+      losses: pool.losses ?? 0,
+      draws: pool.draws ?? 0,
+      wayfinderMatchIds: pool.wayfinder_match_ids ?? [],
       owner: pool.owner_id
         ? {
             id: pool.owner_id,
