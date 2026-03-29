@@ -240,6 +240,42 @@ test.describe("POST /api/plugin/v1/match/result", () => {
     }
   });
 
+  test("records a draw result correctly", async () => {
+    test.skip(!process.env.PTP_SERVICE_KEY, "PTP_SERVICE_KEY not set — skipping");
+    const serviceKey = process.env.PTP_SERVICE_KEY!;
+
+    const localDb = await getPool();
+    const drawUser = await createTestUser("DrawPlayer", TEST_ID);
+    const shareId = await createSealedPool(localDb, drawUser.user.id);
+    const MATCH_ID = `test-draw-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+    try {
+      const res = await fetch(`${BASE_URL}/api/plugin/v1/match/result`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${serviceKey}`,
+        },
+        body: JSON.stringify({ poolShareId: shareId, result: "draw", matchId: MATCH_ID }),
+      });
+
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(json.ok).toBe(true);
+
+      const row = await localDb.query(
+        "SELECT wins, losses, draws, wayfinder_match_ids FROM card_pools WHERE share_id = $1",
+        [shareId]
+      );
+      expect(row.rows[0].wins).toBe(0);
+      expect(row.rows[0].losses).toBe(0);
+      expect(row.rows[0].draws).toBe(1);
+      expect(row.rows[0].wayfinder_match_ids).toContain(MATCH_ID);
+    } finally {
+      await localDb.end();
+    }
+  });
+
   test("returns 404 for unknown poolShareId", async () => {
     test.skip(!process.env.PTP_SERVICE_KEY, "PTP_SERVICE_KEY not set — skipping");
     const serviceKey = process.env.PTP_SERVICE_KEY!;
