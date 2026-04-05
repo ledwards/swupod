@@ -257,6 +257,51 @@ export default function AuthWidget() {
                 </a>
               )}
 
+              {(loadingData || latestLivePod || latestSoloPod) && (
+                <div className="auth-widget-drawer-section-label">Recent Pods & Solo Pools</div>
+              )}
+
+              {loadingData && (
+                <>
+                  <div className="auth-widget-drawer-menu-item auth-widget-skeleton-item">
+                    <div className="skeleton-icon"></div>
+                    <div className="skeleton-text"></div>
+                  </div>
+                  <div className="auth-widget-drawer-menu-item auth-widget-skeleton-item">
+                    <div className="skeleton-icon"></div>
+                    <div className="skeleton-text"></div>
+                  </div>
+                </>
+              )}
+
+              {!loadingData && latestLivePod && (
+                <a
+                  href={latestLivePod.url}
+                  className="auth-widget-drawer-menu-item auth-widget-drawer-pool-item"
+                  onClick={() => setDrawerOpen(false)}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
+                  </svg>
+                  <span>{latestLivePod.label}</span>
+                </a>
+              )}
+
+              {!loadingData && latestSoloPod && (
+                <a
+                  href={latestSoloPod.url}
+                  className="auth-widget-drawer-menu-item auth-widget-drawer-pool-item"
+                  onClick={() => setDrawerOpen(false)}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="2" y="3" width="14" height="18" rx="2"></rect>
+                    <rect x="8" y="1" width="14" height="18" rx="2"></rect>
+                  </svg>
+                  <span>{latestSoloPod.label}</span>
+                </a>
+              )}
+
               <div className="auth-widget-drawer-section-label">Solo Play</div>
               <a
                 href="/sealed"
@@ -326,51 +371,6 @@ export default function AuthWidget() {
                 </svg>
                 Draft Pod
               </a>
-
-              {(loadingData || latestLivePod || latestSoloPod) && (
-                <div className="auth-widget-drawer-divider"></div>
-              )}
-
-              {loadingData && (
-                <>
-                  <div className="auth-widget-drawer-menu-item auth-widget-skeleton-item">
-                    <div className="skeleton-icon"></div>
-                    <div className="skeleton-text"></div>
-                  </div>
-                  <div className="auth-widget-drawer-menu-item auth-widget-skeleton-item">
-                    <div className="skeleton-icon"></div>
-                    <div className="skeleton-text"></div>
-                  </div>
-                </>
-              )}
-
-              {!loadingData && latestLivePod && (
-                <a
-                  href={latestLivePod.url}
-                  className="auth-widget-drawer-menu-item auth-widget-drawer-pool-item"
-                  onClick={() => setDrawerOpen(false)}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
-                  </svg>
-                  <span>{latestLivePod.label}</span>
-                </a>
-              )}
-
-              {!loadingData && latestSoloPod && (
-                <a
-                  href={latestSoloPod.url}
-                  className="auth-widget-drawer-menu-item auth-widget-drawer-pool-item"
-                  onClick={() => setDrawerOpen(false)}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="2" y="3" width="14" height="18" rx="2"></rect>
-                    <rect x="8" y="1" width="14" height="18" rx="2"></rect>
-                  </svg>
-                  <span>{latestSoloPod.label}</span>
-                </a>
-              )}
 
               <div className="auth-widget-drawer-divider"></div>
 

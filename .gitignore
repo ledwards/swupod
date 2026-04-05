@@ -65,3 +65,4 @@ migrations/.buildstamp
 
 # Git worktrees
 .worktrees/
+.claude/settings.local.json
