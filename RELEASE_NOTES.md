@@ -8,9 +8,6 @@
 ### 🎮 UI Improvements
 - **Recent pods and pools now at the top of the user menu**: Your most recent live pod and solo pool now appear right at the top of the user menu dropdown (just below Home), making it faster to jump back into a game in progress.
 
-### 🃏 Card Data
-- **42 new Spark of the Rebellion cards**: Updated card data from the SWU API includes 42 additional SOR cards (alternate arts, variants, and missing entries).
-
 ### 💬 Chat
 - **Chat hidden in solo draft mode**: Solo drafts are solo — chat is now hidden when there's no one else in the pod.
 
