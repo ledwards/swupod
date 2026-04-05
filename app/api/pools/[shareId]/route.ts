@@ -53,7 +53,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       )
     } catch (error) {
       // If columns don't exist, use fallback query
-      if (error.message.includes('name') || error.message.includes('set_name') || error.message.includes('pool_type')) {
+      if (error.message.includes('name') || error.message.includes('set_name') || error.message.includes('pool_type') ||
+          error.message.includes('wins') || error.message.includes('losses') || error.message.includes('draws') || error.message.includes('wayfinder')) {
         try {
           pool = await queryRow(
             `SELECT
@@ -81,6 +82,10 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
             pool.name = null
             pool.set_name = pool.set_name || null
             pool.pool_type = pool.pool_type || 'sealed'
+            pool.wins = pool.wins ?? 0
+            pool.losses = pool.losses ?? 0
+            pool.draws = pool.draws ?? 0
+            pool.wayfinder_match_ids = pool.wayfinder_match_ids ?? []
           }
         } catch (innerError) {
           // If set_name or pool_type columns don't exist either
