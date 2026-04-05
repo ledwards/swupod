@@ -55,6 +55,7 @@ function generateRandomIndices(count: number, max: number): number[] {
 export default function NewPoolPage() {
   const router = useRouter()
   const [pool, setPool] = useState<PoolData | null>(null)
+  const [isPoolSaved, setIsPoolSaved] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [setCode, setSetCode] = useState<string | null>(null)
@@ -140,6 +141,7 @@ export default function NewPoolPage() {
         // Set pool state - but don't show it yet (wait for animation)
         // Note: Pool is saved when animation completes to capture any randomization
         setPool(poolData)
+        setIsPoolSaved(false)
         setPackImageUrls(getCyclingPackImageUrls(urlSetCode, 6))
         setPoolReady(true)
         setLoading(false)
@@ -171,12 +173,14 @@ export default function NewPoolPage() {
         boxPacks: pool.boxPacks,
         packIndices: pool.packIndices,
       }).then((saved) => {
+        setIsPoolSaved(true)
         // Server should use the same shareId, but handle mismatch just in case
         if (saved && saved.shareId && saved.shareId !== pool.shareId) {
           window.history.replaceState({}, '', `/pool/${saved.shareId}`)
           setPool(prev => prev ? { ...prev, shareId: saved.shareId } : null)
         }
       }).catch((err) => {
+        setIsPoolSaved(false)
         console.error('Failed to save pool to database:', err)
         // Don't show error to user - pool is already displayed
       })
@@ -244,11 +248,35 @@ export default function NewPoolPage() {
       <SealedPod
         setCode={pool.setCode}
         onBack={handleBack}
-        onBuildDeck={(cards: CardType[], setCode: string) => {
-          router.push(`/pool/${pool.shareId}/deck`)
+        onBuildDeck={async () => {
+          let shareId = pool.shareId
+
+          if (!isPoolSaved) {
+            try {
+              const saved = await savePool({
+                setCode: pool.setCode,
+                cards: pool.cards,
+                packs: pool.packs,
+                isPublic: false,
+                shareId: pool.shareId,
+                boxPacks: pool.boxPacks,
+                packIndices: pool.packIndices,
+              })
+              if (saved?.shareId) {
+                shareId = saved.shareId
+                setPool(prev => prev ? { ...prev, shareId } : null)
+              }
+              setIsPoolSaved(true)
+            } catch (err) {
+              console.error('Failed to save pool before opening deck builder:', err)
+              setError('Unable to save your pool right now. Please try again in a moment.')
+              return
+            }
+          }
+
+          router.push(`/pool/${shareId}/deck`)
         }}
         initialPacks={pool.packs}
-        shareId={pool.shareId}
       />
     </div>
   )

@@ -58,6 +58,20 @@ interface PoolsResponse {
   offset?: number
 }
 
+interface LoadPoolWithRetryOptions {
+  maxRetries?: number
+  initialDelayMs?: number
+  backoffMultiplier?: number
+  loadFn?: (shareId: string) => Promise<SavedPool>
+  sleepFn?: (ms: number) => Promise<void>
+}
+
+function isPoolNotFoundError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false
+  const message = error.message.toLowerCase()
+  return message.includes('pool not found') || message.includes('not found')
+}
+
 /**
  * Save a card pool to the database
  * @param poolData - Pool data
@@ -83,6 +97,34 @@ export async function loadPool(shareId: string): Promise<SavedPool> {
   } catch (error) {
     console.error('Failed to load pool:', error)
     throw error
+  }
+}
+
+/**
+ * Load a pool with retry for transient "not found" races after creation.
+ */
+export async function loadPoolWithRetry(shareId: string, options: LoadPoolWithRetryOptions = {}): Promise<SavedPool> {
+  const {
+    maxRetries = 5,
+    initialDelayMs = 1000,
+    backoffMultiplier = 1,
+    loadFn = loadPool,
+    sleepFn = (ms: number) => new Promise(resolve => setTimeout(resolve, ms)),
+  } = options
+
+  let retries = 0
+
+  while (true) {
+    try {
+      return await loadFn(shareId)
+    } catch (error) {
+      if (!isPoolNotFoundError(error) || retries >= maxRetries) {
+        throw error
+      }
+      retries += 1
+      const delayMs = Math.floor(initialDelayMs * (backoffMultiplier ** (retries - 1)))
+      await sleepFn(delayMs)
+    }
   }
 }
 

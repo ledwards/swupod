@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef, useCallback, use } from 'react'
 import DeckBuilder from '../../../../src/components/DeckBuilder'
 import ChatPanel from '../../../../src/components/ChatPanel'
-import { loadPool, updatePool } from '../../../../src/utils/poolApi'
+import { loadPool, loadPoolWithRetry, updatePool } from '../../../../src/utils/poolApi'
 import { useAuth } from '../../../../src/contexts/AuthContext'
 import '../../../../src/App.css'
 import '../../../../src/components/ChatPanel.css'
@@ -64,7 +64,7 @@ export default function DeckBuilderPage({ params }: PageProps) {
 
       try {
         setLoading(true)
-        const poolData = await loadPool(shareId)
+        const poolData = await loadPoolWithRetry(shareId)
         setPool(poolData)
       } catch (err) {
         console.error('Failed to load pool:', err)
