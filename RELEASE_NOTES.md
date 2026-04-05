@@ -3,7 +3,7 @@
 ## 04.05.2026
 
 ### ⚡ Wayfinder Integration
-- **Your match record now shows on the play page**: After playing games on Karabast with the Wayfinder browser extension, your W/L/D record appears on the play page alongside links to each match's replay on Wayfinder. Track how you're doing with your sealed and draft decks without leaving Protect the Pod.
+- **Wayfinder integration?**: Preparing the way for a new set of features. More soon!
 
 ### 🎮 UI Improvements
 - **Recent pods and pools now at the top of the user menu**: Your most recent live pod and solo pool now appear right at the top of the user menu dropdown (just below Home), making it faster to jump back into a game in progress.

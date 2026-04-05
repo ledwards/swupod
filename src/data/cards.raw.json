@@ -5032,7 +5032,7 @@
     },
     {
       "id": "019d3176-6b61-7fdb-acb6-b2b3822de7ea",
-      "cardId": "LAW-002",
+      "cardId": "LAW-T002",
       "name": "Experience",
       "subtitle": null,
       "set": "LAW",
@@ -5069,7 +5069,7 @@
     },
     {
       "id": "019d3176-6b97-7ca3-bdac-7ed45e508224",
-      "cardId": "LAW-003",
+      "cardId": "LAW-T003",
       "name": "Shield",
       "subtitle": null,
       "set": "LAW",
@@ -6224,7 +6224,7 @@
     },
     {
       "id": "019d3176-71df-71c3-9620-7e857431795f",
-      "cardId": "LAW-004",
+      "cardId": "LAW-T004",
       "name": "Credit",
       "subtitle": null,
       "set": "LAW",
@@ -6261,7 +6261,7 @@
     },
     {
       "id": "019d3176-7215-7f7f-bfb0-322033dd089b",
-      "cardId": "LAW-005",
+      "cardId": "LAW-T005",
       "name": "Experience",
       "subtitle": null,
       "set": "LAW",
@@ -6298,7 +6298,7 @@
     },
     {
       "id": "019d3176-724b-7c15-af66-94c091487375",
-      "cardId": "LAW-006",
+      "cardId": "LAW-T006",
       "name": "Shield",
       "subtitle": null,
       "set": "LAW",
@@ -11824,7 +11824,7 @@
     },
     {
       "id": "019d3176-9150-75a6-87e9-e076fff94601",
-      "cardId": "SOR-004",
+      "cardId": "SOR-T004",
       "name": "Shield",
       "subtitle": null,
       "set": "SOR",
@@ -13123,7 +13123,7 @@
     },
     {
       "id": "019d3176-9833-7708-bf17-04bdc8e0c46f",
-      "cardId": "SOR-003",
+      "cardId": "SOR-T003",
       "name": "Experience",
       "subtitle": null,
       "set": "SOR",
@@ -36164,7 +36164,7 @@
     },
     {
       "id": "019d3177-112e-74ab-b107-de2147d0575b",
-      "cardId": "TWI-003",
+      "cardId": "TWI-T003",
       "name": "Battle Droid",
       "subtitle": null,
       "set": "TWI",
@@ -36493,7 +36493,7 @@
     },
     {
       "id": "019d3177-1317-77a2-866e-c8a40906f90f",
-      "cardId": "SOR-002",
+      "cardId": "SOR-T002",
       "name": "Shield",
       "subtitle": null,
       "set": "SOR",
@@ -38123,7 +38123,7 @@
     },
     {
       "id": "019d3177-1c5c-75c9-b85b-211240880016",
-      "cardId": "SOR-001",
+      "cardId": "SOR-T001",
       "name": "Experience",
       "subtitle": null,
       "set": "SOR",
@@ -43969,7 +43969,7 @@
     },
     {
       "id": "019d3177-3b71-74d5-a715-b0d8555c75cd",
-      "cardId": "LAW-001",
+      "cardId": "LAW-T001",
       "name": "Credit",
       "subtitle": null,
       "set": "LAW",
@@ -82082,7 +82082,7 @@
     },
     {
       "id": "019d3178-0593-75fc-95eb-fa8f0b5919ec",
-      "cardId": "SHD-002",
+      "cardId": "SHD-T002",
       "name": "Shield",
       "subtitle": null,
       "set": "SHD",
@@ -82119,7 +82119,7 @@
     },
     {
       "id": "019d3178-05d8-7ad2-872c-c0669d02f830",
-      "cardId": "SHD-003",
+      "cardId": "SHD-T003",
       "name": "Experience",
       "subtitle": null,
       "set": "SHD",
@@ -82156,7 +82156,7 @@
     },
     {
       "id": "019d3178-060e-76da-b551-ad2b8602748d",
-      "cardId": "SHD-004",
+      "cardId": "SHD-T004",
       "name": "Shield",
       "subtitle": null,
       "set": "SHD",
@@ -83187,7 +83187,7 @@
     },
     {
       "id": "019d3178-0cb2-7267-aaea-001bb306d847",
-      "cardId": "SHD-001",
+      "cardId": "SHD-T001",
       "name": "Experience",
       "subtitle": null,
       "set": "SHD",
@@ -120173,7 +120173,7 @@
     },
     {
       "id": "019d3178-d7dd-7b88-ae59-990f6f00aa3e",
-      "cardId": "TWI-001",
+      "cardId": "TWI-T001",
       "name": "Battle Droid",
       "subtitle": null,
       "set": "TWI",
@@ -120216,7 +120216,7 @@
     },
     {
       "id": "019d3178-d819-7b96-bf26-5a89137c3f0f",
-      "cardId": "TWI-002",
+      "cardId": "TWI-T002",
       "name": "Clone Trooper",
       "subtitle": null,
       "set": "TWI",
@@ -142294,7 +142294,7 @@
     },
     {
       "id": "019d3179-4cf4-78c8-8700-2bdf9013ee95",
-      "cardId": "TWI-003",
+      "cardId": "TWI-T003",
       "name": "Battle Droid",
       "subtitle": null,
       "set": "TWI",
@@ -142337,7 +142337,7 @@
     },
     {
       "id": "019d3179-4d2d-7e70-bfff-d35a260b0540",
-      "cardId": "TWI-004",
+      "cardId": "TWI-T004",
       "name": "Clone Trooper",
       "subtitle": null,
       "set": "TWI",
@@ -144573,7 +144573,7 @@
     },
     {
       "id": "019d3179-58a4-7c1c-a492-d8682dce245d",
-      "cardId": "TWI-001",
+      "cardId": "TWI-T001",
       "name": "Battle Droid",
       "subtitle": null,
       "set": "TWI",
@@ -144616,7 +144616,7 @@
     },
     {
       "id": "019d3179-58d9-78fa-94fc-80e9ea877d58",
-      "cardId": "TWI-002",
+      "cardId": "TWI-T002",
       "name": "Clone Trooper",
       "subtitle": null,
       "set": "TWI",
@@ -162994,7 +162994,7 @@
     },
     {
       "id": "019d3179-bb12-7633-a793-ea84ee8469ab",
-      "cardId": "TWI-004",
+      "cardId": "TWI-T004",
       "name": "Clone Trooper",
       "subtitle": null,
       "set": "TWI",
@@ -174959,7 +174959,7 @@
     },
     {
       "id": "019d3179-fbf7-79f6-bde4-41f1aa343f7f",
-      "cardId": "JTL-001",
+      "cardId": "JTL-T001",
       "name": "TIE Fighter",
       "subtitle": null,
       "set": "JTL",
@@ -175001,7 +175001,7 @@
     },
     {
       "id": "019d3179-fc2d-7c6f-991c-debdad03dc85",
-      "cardId": "JTL-002",
+      "cardId": "JTL-T002",
       "name": "X-Wing",
       "subtitle": null,
       "set": "JTL",
@@ -175043,7 +175043,7 @@
     },
     {
       "id": "019d3179-fc66-7f58-b6a1-c74ca9da33e3",
-      "cardId": "JTL-003",
+      "cardId": "JTL-T003",
       "name": "Experience",
       "subtitle": null,
       "set": "JTL",
@@ -175117,7 +175117,7 @@
     },
     {
       "id": "019d3179-fcd0-70f6-9450-3f1bf6e0b999",
-      "cardId": "JTL-004",
+      "cardId": "JTL-T004",
       "name": "Shield",
       "subtitle": null,
       "set": "JTL",
@@ -186479,7 +186479,7 @@
     },
     {
       "id": "019d317a-3fdf-7426-a1a5-fdd4e984df50",
-      "cardId": "JTL-005",
+      "cardId": "JTL-T005",
       "name": "TIE Fighter",
       "subtitle": null,
       "set": "JTL",
@@ -186521,7 +186521,7 @@
     },
     {
       "id": "019d317a-4020-7200-a68e-46d5d23d0745",
-      "cardId": "JTL-006",
+      "cardId": "JTL-T006",
       "name": "X-Wing",
       "subtitle": null,
       "set": "JTL",
@@ -186563,7 +186563,7 @@
     },
     {
       "id": "019d317a-4058-7851-89b8-41e6ae60d8cb",
-      "cardId": "JTL-008",
+      "cardId": "JTL-T008",
       "name": "Shield",
       "subtitle": null,
       "set": "JTL",
@@ -187382,7 +187382,7 @@
     },
     {
       "id": "019d317a-4491-7ab0-bdb5-7f132d64ec0d",
-      "cardId": "JTL-007",
+      "cardId": "JTL-T007",
       "name": "Experience",
       "subtitle": null,
       "set": "JTL",
@@ -224138,7 +224138,7 @@
     },
     {
       "id": "019d317b-1b8f-7efb-b8d2-868b742c8e69",
-      "cardId": "LOF-001",
+      "cardId": "LOF-T001",
       "name": "Experience",
       "subtitle": null,
       "set": "LOF",
@@ -224175,7 +224175,7 @@
     },
     {
       "id": "019d317b-1bce-73d9-b053-bb86da8da006",
-      "cardId": "LOF-002",
+      "cardId": "LOF-T002",
       "name": "Shield",
       "subtitle": null,
       "set": "LOF",
@@ -224212,7 +224212,7 @@
     },
     {
       "id": "019d317b-1c05-75c6-8cc6-f12114793cc6",
-      "cardId": "LOF-003",
+      "cardId": "LOF-T003",
       "name": "The Force",
       "subtitle": null,
       "set": "LOF",
@@ -262163,7 +262163,7 @@
     },
     {
       "id": "019d317b-f3ba-7c77-b8e4-98eac120af78",
-      "cardId": "LOF-004",
+      "cardId": "LOF-T004",
       "name": "Experience",
       "subtitle": null,
       "set": "LOF",
@@ -262200,7 +262200,7 @@
     },
     {
       "id": "019d317b-f3f9-7681-8a2c-ea74cb2beaf1",
-      "cardId": "LOF-005",
+      "cardId": "LOF-T005",
       "name": "Shield",
       "subtitle": null,
       "set": "LOF",
@@ -262237,7 +262237,7 @@
     },
     {
       "id": "019d317b-f431-7e45-8109-a902b3d27480",
-      "cardId": "LOF-006",
+      "cardId": "LOF-T006",
       "name": "The Force",
       "subtitle": null,
       "set": "LOF",
@@ -274164,7 +274164,7 @@
     },
     {
       "id": "019d317c-5fb4-7190-80c4-e97dd9b18e03",
-      "cardId": "SEC-001",
+      "cardId": "SEC-T001",
       "name": "Spy",
       "subtitle": null,
       "set": "SEC",
@@ -274205,7 +274205,7 @@
     },
     {
       "id": "019d317c-5fec-7f47-8ea8-e4a89bc3c46a",
-      "cardId": "SEC-002",
+      "cardId": "SEC-T002",
       "name": "Experience",
       "subtitle": null,
       "set": "SEC",
@@ -275368,7 +275368,7 @@
     },
     {
       "id": "019d317c-663e-7ce2-9956-8fa0ce21aad5",
-      "cardId": "SEC-003",
+      "cardId": "SEC-T003",
       "name": "Spy",
       "subtitle": null,
       "set": "SEC",
@@ -275409,7 +275409,7 @@
     },
     {
       "id": "019d317c-6674-7b7b-9b27-61e8ccd434ab",
-      "cardId": "SEC-004",
+      "cardId": "SEC-T004",
       "name": "Experience",
       "subtitle": null,
       "set": "SEC",
@@ -316031,7 +316031,7 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-04-02",
+    "lastUpdated": "2026-04-05",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
     "totalCards": 7407,
     "sets": [
