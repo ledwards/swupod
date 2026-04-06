@@ -1,9 +1,12 @@
 // @ts-nocheck
 'use client'
 
+import { useState, useEffect } from 'react'
 import './PlayInstructions.css'
 
 const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/u6fkdDzWqF'
+
+const PRIVATE_LOBBY_PATTERN = /^https:\/\/karabast\.net\/\?lobbyId=[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 interface PlayInstructionsProps {
   shareId: string | null
@@ -22,6 +25,7 @@ interface PlayInstructionsProps {
   showActions?: boolean
   isOwner?: boolean
   ownerName?: string | null
+  wayfinderDetected?: boolean
 }
 
 export default function PlayInstructions({
@@ -41,13 +45,221 @@ export default function PlayInstructions({
   showActions = true,
   isOwner = true,
   ownerName = null,
+  wayfinderDetected = false,
 }: PlayInstructionsProps) {
   const inPod = poolType === 'draft' || poolType === 'sealed_pod'
   const viewingOthersDeck = !isOwner && ownerName
-
-  // LAW uses "Current" card pool on Karabast, everything else uses "Unlimited"
   const isCurrentSet = setCode === 'LAW'
   const cardPoolName = isCurrentSet ? 'Current' : 'Unlimited'
+
+  const [activeTab, setActiveTab] = useState<'wayfinder' | 'manual'>('wayfinder')
+  const [lobbyCount, setLobbyCount] = useState(0)
+  const [joinUrl, setJoinUrl] = useState('')
+  const [joinError, setJoinError] = useState<string | null>(null)
+  const [cardPool, setCardPool] = useState(cardPoolName)
+
+  // Listen for extension events
+  useEffect(() => {
+    if (!wayfinderDetected) return
+
+    const onLobbyCount = (e: Event) => {
+      setLobbyCount((e as CustomEvent).detail.count)
+    }
+    const onMetadata = (e: Event) => {
+      const meta = (e as CustomEvent).detail
+      if (meta.cardPool) setCardPool(meta.cardPool)
+    }
+
+    document.addEventListener('wayfinder:lobby-count', onLobbyCount)
+    document.addEventListener('wayfinder:metadata', onMetadata)
+    return () => {
+      document.removeEventListener('wayfinder:lobby-count', onLobbyCount)
+      document.removeEventListener('wayfinder:metadata', onMetadata)
+    }
+  }, [wayfinderDetected])
+
+  // -- Extension action dispatchers --
+
+  function dispatchCreateLobby(privacy: 'private' | 'public') {
+    document.dispatchEvent(new CustomEvent('wayfinder:create-lobby', {
+      detail: {
+        privacy,
+        deckUrl: window.location.href,
+        shareId,
+        format: poolType === 'sealed_pod' ? 'pool' : poolType === 'draft' ? 'pool' : poolType,
+        cardPool,
+      },
+    }))
+  }
+
+  function dispatchJoinPrivate() {
+    const url = joinUrl.trim()
+    if (!PRIVATE_LOBBY_PATTERN.test(url)) {
+      setJoinError('Not a valid Karabast private lobby URL')
+      return
+    }
+    setJoinError(null)
+    document.dispatchEvent(new CustomEvent('wayfinder:join-lobby', {
+      detail: {
+        lobbyUrl: url,
+        deckUrl: window.location.href,
+        shareId,
+        format: poolType === 'sealed_pod' ? 'pool' : poolType === 'draft' ? 'pool' : poolType,
+        cardPool,
+      },
+    }))
+  }
+
+  // -- Manual steps (existing content, extracted for reuse) --
+
+  function renderManualSteps() {
+    if (viewingOthersDeck) {
+      return (
+        <>
+          <div className="play-step">
+            <span className="step-number">1</span>
+            <div className="step-content">
+              <h3>Get Your Own Deck</h3>
+              <p>Open a sealed pool or join a draft on <a href="/" rel="noopener noreferrer">Protect the Pod</a> to build your own deck.</p>
+            </div>
+          </div>
+          <div className="play-step">
+            <span className="step-number">2</span>
+            <div className="step-content">
+              <h3>Find an Opponent</h3>
+              <p>Join the <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">Protect the Pod Discord</a> to find pods and opponents.</p>
+            </div>
+          </div>
+          <div className="play-step">
+            <span className="step-number">3</span>
+            <div className="step-content">
+              <h3>Play on Karabast</h3>
+              <p>Go to <a href="https://karabast.net" target="_blank" rel="noopener noreferrer">karabast.net</a> and paste your deck link or JSON. Create a lobby with <strong>Format: Limited</strong> and <strong>Card Pool: {cardPoolName}</strong>.</p>
+            </div>
+          </div>
+        </>
+      )
+    }
+
+    return (
+      <>
+        <div className="play-step">
+          <span className="step-number">1</span>
+          <div className="step-content">
+            <h3>Copy Your Deck:
+              {onCopyLink && (
+                <button className="step-copy-button" onClick={onCopyLink} title="Copy deck link">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                  </svg>
+                  Link
+                </button>
+              )}
+              {onCopyJson && (
+                <button className="step-copy-button" onClick={onCopyJson} title="Copy deck JSON">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  JSON
+                </button>
+              )}
+            </h3>
+            <p>Copy your deck link for <a href="https://karabast.net" target="_blank" rel="noopener noreferrer">Karabast</a>, or copy the deck JSON for <a href="https://swudb.com" target="_blank" rel="noopener noreferrer">SWUDB</a>.</p>
+          </div>
+        </div>
+
+        <div className="play-step">
+          <span className="step-number">2</span>
+          <div className="step-content">
+            <h3>Play on Karabast</h3>
+            {inPod ? (
+              <p>Create a <strong>Private Lobby</strong> on <a href="https://karabast.net" target="_blank" rel="noopener noreferrer">karabast.net</a> with <strong>Format: Limited</strong> and <strong>Card Pool: {cardPoolName}</strong>. Paste your deck link or JSON as your decklist and share the lobby link with your opponent.</p>
+            ) : (
+              <p>Go to <a href="https://karabast.net" target="_blank" rel="noopener noreferrer">karabast.net</a> and paste your deck link or JSON. Create a <strong>Public Lobby</strong> with <strong>Format: Limited</strong> and <strong>Card Pool: {cardPoolName}</strong> to find a match, join an existing <strong>Limited Lobby</strong>, or make a <strong>Private Lobby</strong> and share the link with a friend from the <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">Protect the Pod Discord</a>.</p>
+            )}
+          </div>
+        </div>
+
+        {inPod && (
+          <div className="play-step">
+            <span className="step-number">3</span>
+            <div className="step-content">
+              {hasBye ? (
+                <>
+                  <h3>You Have a Bye</h3>
+                  <p>You have a bye this round. Take a break or practice!</p>
+                </>
+              ) : opponentName ? (
+                <>
+                  <h3>Find Your Opponent</h3>
+                  <p>Your opponent is <strong>{opponentName}</strong>. Send them the Karabast lobby link to start your match!</p>
+                </>
+              ) : (
+                <>
+                  <h3>Find a Human Opponent</h3>
+                  <p>Reach out to your podmates to set up a match. Bots drafted with you but you play against other humans on Karabast.</p>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+      </>
+    )
+  }
+
+  // -- Wayfinder tab content --
+
+  function renderWayfinderTab() {
+    return (
+      <div className="wayfinder-tab">
+        <div className="wayfinder-section">
+          <button className="wayfinder-btn primary" onClick={() => dispatchCreateLobby('private')}>
+            Create Private Lobby
+          </button>
+          <button className="wayfinder-btn" onClick={() => dispatchCreateLobby('public')}>
+            Create Public Lobby
+          </button>
+        </div>
+
+        <div className="wayfinder-section">
+          <div className="wayfinder-lobby-row">
+            <span className={`wayfinder-lobby-count${lobbyCount > 0 ? ' has-lobbies' : ''}`}>
+              {lobbyCount} Public Limited Lobb{lobbyCount === 1 ? 'y' : 'ies'}
+            </span>
+            <button
+              className="wayfinder-btn small"
+              disabled={lobbyCount === 0}
+              onClick={() => window.open('https://karabast.net', '_blank')}
+            >
+              Join Public
+            </button>
+          </div>
+        </div>
+
+        <div className="wayfinder-section">
+          <div className="wayfinder-join-label">
+            Join Private Lobby <span className="wayfinder-join-sub">(from another player)</span>
+          </div>
+          <div className="wayfinder-join-row">
+            <input
+              className={`wayfinder-join-input${joinError ? ' error' : ''}`}
+              value={joinUrl}
+              onChange={e => { setJoinUrl(e.target.value); setJoinError(null) }}
+              placeholder="https://karabast.net/?lobbyId=..."
+            />
+            <button className="wayfinder-join-btn" onClick={dispatchJoinPrivate}>
+              Join
+            </button>
+          </div>
+          {joinError && <div className="wayfinder-error">{joinError}</div>}
+        </div>
+      </div>
+    )
+  }
+
+  // -- Render --
 
   return (
     <div className="play-instructions">
@@ -63,106 +275,36 @@ export default function PlayInstructions({
         </div>
       )}
 
-      <div className="play-steps">
-        {viewingOthersDeck ? (
-          <>
-            {/* Non-owner steps */}
-            <div className="play-step">
-              <span className="step-number">1</span>
-              <div className="step-content">
-                <h3>Get Your Own Deck</h3>
-                <p>Open a sealed pool or join a draft on <a href="/" rel="noopener noreferrer">Protect the Pod</a> to build your own deck.</p>
-              </div>
-            </div>
+      {wayfinderDetected && isOwner ? (
+        <>
+          <div className="play-tabs">
+            <button
+              className={`play-tab${activeTab === 'wayfinder' ? ' active' : ''}`}
+              onClick={() => setActiveTab('wayfinder')}
+            >
+              Play with Wayfinder
+            </button>
+            <button
+              className={`play-tab${activeTab === 'manual' ? ' active' : ''}`}
+              onClick={() => setActiveTab('manual')}
+            >
+              Manual
+            </button>
+          </div>
 
-            <div className="play-step">
-              <span className="step-number">2</span>
-              <div className="step-content">
-                <h3>Find an Opponent</h3>
-                <p>Join the <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">Protect the Pod Discord</a> to find pods and opponents.</p>
-              </div>
+          {activeTab === 'wayfinder' ? (
+            renderWayfinderTab()
+          ) : (
+            <div className="play-steps">
+              {renderManualSteps()}
             </div>
-
-            <div className="play-step">
-              <span className="step-number">3</span>
-              <div className="step-content">
-                <h3>Play on Karabast</h3>
-                <p>Go to <a href="https://karabast.net" target="_blank" rel="noopener noreferrer">karabast.net</a> and paste your deck link or JSON. Create a lobby with <strong>Format: Limited</strong> and <strong>Card Pool: {cardPoolName}</strong>.</p>
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-            {/* Owner steps */}
-
-            {/* Step 1: Copy Your Deck */}
-            <div className="play-step">
-              <span className="step-number">1</span>
-              <div className="step-content">
-                <h3>Copy Your Deck:
-                  {onCopyLink && (
-                    <button className="step-copy-button" onClick={onCopyLink} title="Copy deck link">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                      </svg>
-                      Link
-                    </button>
-                  )}
-                  {onCopyJson && (
-                    <button className="step-copy-button" onClick={onCopyJson} title="Copy deck JSON">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                      </svg>
-                      JSON
-                    </button>
-                  )}
-                </h3>
-                <p>Copy your deck link for <a href="https://karabast.net" target="_blank" rel="noopener noreferrer">Karabast</a>, or copy the deck JSON for <a href="https://swudb.com" target="_blank" rel="noopener noreferrer">SWUDB</a>.</p>
-              </div>
-            </div>
-
-            {/* Step 2: Play on Karabast */}
-            <div className="play-step">
-              <span className="step-number">2</span>
-              <div className="step-content">
-                <h3>Play on Karabast</h3>
-                {inPod ? (
-                  <p>Create a <strong>Private Lobby</strong> on <a href="https://karabast.net" target="_blank" rel="noopener noreferrer">karabast.net</a> with <strong>Format: Limited</strong> and <strong>Card Pool: {cardPoolName}</strong>. Paste your deck link or JSON as your decklist and share the lobby link with your opponent.</p>
-                ) : (
-                  <p>Go to <a href="https://karabast.net" target="_blank" rel="noopener noreferrer">karabast.net</a> and paste your deck link or JSON. Create a <strong>Public Lobby</strong> with <strong>Format: Limited</strong> and <strong>Card Pool: {cardPoolName}</strong> to find a match, join an existing <strong>Limited Lobby</strong>, or make a <strong>Private Lobby</strong> and share the link with a friend from the <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">Protect the Pod Discord</a>.</p>
-                )}
-              </div>
-            </div>
-
-            {/* Step 3: Find opponent (pod only) */}
-            {inPod && (
-              <div className="play-step">
-                <span className="step-number">3</span>
-                <div className="step-content">
-                  {hasBye ? (
-                    <>
-                      <h3>You Have a Bye</h3>
-                      <p>You have a bye this round. Take a break or practice!</p>
-                    </>
-                  ) : opponentName ? (
-                    <>
-                      <h3>Find Your Opponent</h3>
-                      <p>Your opponent is <strong>{opponentName}</strong>. Send them the Karabast lobby link to start your match!</p>
-                    </>
-                  ) : (
-                    <>
-                      <h3>Find a Human Opponent</h3>
-                      <p>Reach out to your podmates to set up a match. Bots drafted with you but you play against other humans on Karabast.</p>
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+          )}
+        </>
+      ) : (
+        <div className="play-steps">
+          {renderManualSteps()}
+        </div>
+      )}
 
       {/* Action buttons */}
       {showActions && (
@@ -176,7 +318,6 @@ export default function PlayInstructions({
               Copy Link
             </button>
           )}
-
           {onCopyJson && (
             <button className="play-instructions-action-button" onClick={onCopyJson}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -186,7 +327,6 @@ export default function PlayInstructions({
               Copy JSON
             </button>
           )}
-
           {onDownload && (
             <button className="play-instructions-action-button" onClick={onDownload}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -197,7 +337,6 @@ export default function PlayInstructions({
               Download
             </button>
           )}
-
           {onDeckImage && (
             <button className="play-instructions-action-button" onClick={onDeckImage} disabled={generatingImage}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -208,11 +347,9 @@ export default function PlayInstructions({
               {generatingImage ? 'Generating...' : 'Deck Image'}
             </button>
           )}
-
         </div>
       )}
 
-      {/* Message feedback */}
       {message && (
         <div className={`play-instructions-message ${messageType}`}>
           {message}

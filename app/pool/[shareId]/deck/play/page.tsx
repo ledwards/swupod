@@ -146,6 +146,24 @@ export default function PlayPage({ params }: PageProps) {
     totalCards: number
   } | null>(null)
 
+  // Detect Wayfinder extension — it sets window.__WAYFINDER_INSTALLED__ = true
+  const [wayfinderDetected, setWayfinderDetected] = useState(false)
+  useEffect(() => {
+    if ((window as any).__WAYFINDER_INSTALLED__) {
+      setWayfinderDetected(true)
+      return
+    }
+    const onInstalled = () => setWayfinderDetected(true)
+    document.addEventListener('wayfinder:installed', onInstalled)
+    const timer = setTimeout(() => {
+      if ((window as any).__WAYFINDER_INSTALLED__) setWayfinderDetected(true)
+    }, 1000)
+    return () => {
+      document.removeEventListener('wayfinder:installed', onInstalled)
+      clearTimeout(timer)
+    }
+  }, [])
+
   useEffect(() => {
     setShareId(resolvedParams.shareId)
   }, [resolvedParams])
@@ -1724,6 +1742,7 @@ export default function PlayPage({ params }: PageProps) {
           showActions={true}
           isOwner={!pool?.owner || !!isOwner}
           ownerName={pool?.owner?.username || pool?.owner?.name || null}
+          wayfinderDetected={wayfinderDetected}
         />
 
         {/* Draft log link at bottom (for draft pools) */}
