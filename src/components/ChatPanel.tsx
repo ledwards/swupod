@@ -40,6 +40,8 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
   })
   const hasAutoOpened = useRef(false)
   const [dismissedPrivateNotice, setDismissedPrivateNotice] = useState(false)
+  const [dismissedJoinNotice, setDismissedJoinNotice] = useState(false)
+  const [isGuildMember, setIsGuildMember] = useState<boolean | null>(null)
   const [inputText, setInputText] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -90,6 +92,18 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
   }, [lobbyType])
+
+  // Check guild membership (only for authenticated users, to show join nudge)
+  useEffect(() => {
+    if (!user) {
+      setIsGuildMember(null)
+      return
+    }
+    fetch('/api/auth/discord-member', { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => setIsGuildMember(data?.data?.isMember ?? false))
+      .catch(() => setIsGuildMember(null))
+  }, [user])
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -196,6 +210,9 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
               discordThreadUrl={discordThreadUrl}
               dismissedPrivateNotice={dismissedPrivateNotice}
               setDismissedPrivateNotice={setDismissedPrivateNotice}
+              showJoinDiscord={isAuthenticated && isGuildMember === false}
+              dismissedJoinNotice={dismissedJoinNotice}
+              setDismissedJoinNotice={setDismissedJoinNotice}
             />
             </div>
           </div>
@@ -260,6 +277,9 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
             discordThreadUrl={discordThreadUrl}
             dismissedPrivateNotice={dismissedPrivateNotice}
             setDismissedPrivateNotice={setDismissedPrivateNotice}
+            showJoinDiscord={isAuthenticated && isGuildMember === false}
+            dismissedJoinNotice={dismissedJoinNotice}
+            setDismissedJoinNotice={setDismissedJoinNotice}
           />
         </>
       )}
@@ -288,6 +308,9 @@ function ChatContent({
   discordThreadUrl,
   dismissedPrivateNotice = false,
   setDismissedPrivateNotice,
+  showJoinDiscord = false,
+  dismissedJoinNotice = false,
+  setDismissedJoinNotice,
 }: {
   messages: ChatMessage[]
   loading: boolean
@@ -308,9 +331,25 @@ function ChatContent({
   discordThreadUrl?: string | null
   dismissedPrivateNotice?: boolean
   setDismissedPrivateNotice?: (v: boolean) => void
+  showJoinDiscord?: boolean
+  dismissedJoinNotice?: boolean
+  setDismissedJoinNotice?: (v: boolean) => void
 }) {
   return (
     <>
+      {showJoinDiscord && !dismissedJoinNotice && (
+        <div className="chat-private-notice">
+          <button className="chat-private-notice-dismiss" onClick={() => setDismissedJoinNotice?.(true)} aria-label="Dismiss">&times;</button>
+          <p>Join our Discord server to get the most out of pod chat.</p>
+          <Button
+            variant="discord"
+            size="sm"
+            onClick={() => window.open(process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/u6fkdDzWqF', '_blank')}
+          >
+            Join Discord Server
+          </Button>
+        </div>
+      )}
       {!isPublic && !isLobbyMode && isHost && !dismissedPrivateNotice && (
         <div className="chat-private-notice">
           <button className="chat-private-notice-dismiss" onClick={() => setDismissedPrivateNotice?.(true)} aria-label="Dismiss">&times;</button>
