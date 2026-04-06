@@ -1,5 +1,15 @@
 # Release Notes
 
+## 04.06.2026
+
+### 💬 Chat Improvements
+- **Chat messages now visible to everyone**: Pod chat and lobby chat messages are now visible even if you're not logged in. No more empty chat panel for newcomers.
+- **Anyone logged in can chat**: You no longer need to be a member of the Protect the Pod Discord server to send messages — any Discord login works.
+- **Join Discord nudge**: If you're logged in but not yet in the Discord server, a dismissible banner in the chat panel invites you to join.
+
+### 🐛 Bug Fixes
+- **Fixed deck builder redirect loop**: Clicking "Build Deck" on a solo sealed pool was redirecting back to the set selection page in some cases. This was caused by a database migration not yet being applied when the API was first hit. The API now handles this gracefully.
+
 ## 04.05.2026
 
 ### ⚡ Wayfinder Integration
