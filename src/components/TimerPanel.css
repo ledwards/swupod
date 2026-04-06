@@ -168,6 +168,12 @@
   cursor: pointer;
 }
 
+/* Invisible placeholder to prevent layout shift when timer is hidden */
+.timer-bar-placeholder {
+  height: 55px; /* matches .timer-panel padding (15px*2) + content (~25px) */
+  margin-bottom: 20px; /* matches .timer-panel margin-bottom */
+}
+
 /* Mobile - 20% smaller text, pause button moves up */
 @media (max-width: 768px) {
   .round-pick-info {

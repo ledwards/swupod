@@ -126,8 +126,11 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
   const showRoundTimer = isRoundTimerEnabled
   const showLastPlayerTimer = isLastPlayerTimerEnabled && isLastPlayer
 
-  // If neither timer should be shown, return null (hides entire container)
-  if (!isDrafting || (!showRoundTimer && !showLastPlayerTimer)) return null
+  // If neither timer should be shown, render invisible placeholder to prevent layout shift
+  if (!isDrafting || (!showRoundTimer && !showLastPlayerTimer)) {
+    if (compact) return null
+    return <div className="timer-bar-placeholder" aria-hidden="true" />
+  }
 
   // Determine which timer to display
   const displayLastPlayer = activeTimer === 'lastPlayer' && showLastPlayerTimer
