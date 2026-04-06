@@ -232,6 +232,14 @@
   cursor: pointer;
   text-align: center;
   transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.play-tab-icon {
+  display: block;
 }
 
 .play-tab.active {
@@ -274,19 +282,10 @@
   transition: all 0.2s ease;
 }
 
-.wayfinder-btn.primary {
-  border-color: rgba(74, 222, 128, 0.5);
-  background: rgba(74, 222, 128, 0.1);
-}
-
 @media (hover: hover) and (pointer: fine) {
   .wayfinder-btn:hover {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.3);
-  }
-  .wayfinder-btn.primary:hover {
-    background: rgba(74, 222, 128, 0.2);
-    border-color: #4ade80;
   }
 }
 
@@ -295,27 +294,20 @@
   cursor: default;
 }
 
-.wayfinder-btn.small {
-  width: auto;
-  padding: 8px 14px;
-  font-size: 0.85rem;
+@media (hover: hover) and (pointer: fine) {
+  .wayfinder-btn:disabled:hover {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
 }
 
-.wayfinder-lobby-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 8px 0;
-}
-
-.wayfinder-lobby-count {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 0.85rem;
-}
-
-.wayfinder-lobby-count.has-lobbies {
-  color: #86efac;
+.wayfinder-divider {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0;
 }
 
 .wayfinder-join-label {

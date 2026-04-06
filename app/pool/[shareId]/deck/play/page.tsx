@@ -146,17 +146,20 @@ export default function PlayPage({ params }: PageProps) {
     totalCards: number
   } | null>(null)
 
-  // Detect Wayfinder extension — it sets window.__WAYFINDER_INSTALLED__ = true
+  // Detect Wayfinder extension via DOM marker (content scripts share the DOM
+  // but NOT the page's window — so we check for a <meta name="wayfinder-installed"> tag)
   const [wayfinderDetected, setWayfinderDetected] = useState(false)
   useEffect(() => {
-    if ((window as any).__WAYFINDER_INSTALLED__) {
+    if (document.querySelector('meta[name="wayfinder-installed"]')) {
       setWayfinderDetected(true)
       return
     }
+    // Extension content script may load after React mount — listen for its event
     const onInstalled = () => setWayfinderDetected(true)
     document.addEventListener('wayfinder:installed', onInstalled)
+    // Also poll briefly in case the event fired before this listener was registered
     const timer = setTimeout(() => {
-      if ((window as any).__WAYFINDER_INSTALLED__) setWayfinderDetected(true)
+      if (document.querySelector('meta[name="wayfinder-installed"]')) setWayfinderDetected(true)
     }, 1000)
     return () => {
       document.removeEventListener('wayfinder:installed', onInstalled)

@@ -57,39 +57,42 @@ export default function PlayInstructions({
   const [joinUrl, setJoinUrl] = useState('')
   const [joinError, setJoinError] = useState<string | null>(null)
   const [cardPool, setCardPool] = useState(cardPoolName)
+  const [wayfinderIconUrl, setWayfinderIconUrl] = useState<string | null>(null)
 
-  // Listen for extension events
+  // Read icon URL from extension's meta tag
+  useEffect(() => {
+    const meta = document.querySelector('meta[name="wayfinder-installed"]') as HTMLMetaElement | null
+    if (meta?.dataset.iconUrl) setWayfinderIconUrl(meta.dataset.iconUrl)
+  }, [wayfinderDetected])
+
+  // Listen for extension events via postMessage
   useEffect(() => {
     if (!wayfinderDetected) return
 
-    const onLobbyCount = (e: Event) => {
-      setLobbyCount((e as CustomEvent).detail.count)
-    }
-    const onMetadata = (e: Event) => {
-      const meta = (e as CustomEvent).detail
-      if (meta.cardPool) setCardPool(meta.cardPool)
+    const onMessage = (e: MessageEvent) => {
+      if (e.source !== window) return
+      if (e.data?.type === 'wayfinder:lobby-count') {
+        setLobbyCount(e.data.count)
+      } else if (e.data?.type === 'wayfinder:metadata') {
+        if (e.data.cardPool) setCardPool(e.data.cardPool)
+      }
     }
 
-    document.addEventListener('wayfinder:lobby-count', onLobbyCount)
-    document.addEventListener('wayfinder:metadata', onMetadata)
-    return () => {
-      document.removeEventListener('wayfinder:lobby-count', onLobbyCount)
-      document.removeEventListener('wayfinder:metadata', onMetadata)
-    }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
   }, [wayfinderDetected])
 
   // -- Extension action dispatchers --
 
   function dispatchCreateLobby(privacy: 'private' | 'public') {
-    document.dispatchEvent(new CustomEvent('wayfinder:create-lobby', {
-      detail: {
-        privacy,
-        deckUrl: window.location.href,
-        shareId,
-        format: poolType === 'sealed_pod' ? 'pool' : poolType === 'draft' ? 'pool' : poolType,
-        cardPool,
-      },
-    }))
+    window.postMessage({
+      type: 'wayfinder:create-lobby',
+      privacy,
+      deckUrl: window.location.href,
+      shareId,
+      format: poolType === 'sealed_pod' ? 'pool' : poolType === 'draft' ? 'pool' : poolType,
+      cardPool,
+    }, '*')
   }
 
   function dispatchJoinPrivate() {
@@ -99,15 +102,14 @@ export default function PlayInstructions({
       return
     }
     setJoinError(null)
-    document.dispatchEvent(new CustomEvent('wayfinder:join-lobby', {
-      detail: {
-        lobbyUrl: url,
-        deckUrl: window.location.href,
-        shareId,
-        format: poolType === 'sealed_pod' ? 'pool' : poolType === 'draft' ? 'pool' : poolType,
-        cardPool,
-      },
-    }))
+    window.postMessage({
+      type: 'wayfinder:join-lobby',
+      lobbyUrl: url,
+      deckUrl: window.location.href,
+      shareId,
+      format: poolType === 'sealed_pod' ? 'pool' : poolType === 'draft' ? 'pool' : poolType,
+      cardPool,
+    }, '*')
   }
 
   // -- Manual steps (existing content, extracted for reuse) --
@@ -215,28 +217,22 @@ export default function PlayInstructions({
     return (
       <div className="wayfinder-tab">
         <div className="wayfinder-section">
-          <button className="wayfinder-btn primary" onClick={() => dispatchCreateLobby('private')}>
-            Create Private Lobby
+          <button className="wayfinder-btn" onClick={() => dispatchCreateLobby('private')}>
+            🔒 Create Private Lobby
           </button>
           <button className="wayfinder-btn" onClick={() => dispatchCreateLobby('public')}>
-            Create Public Lobby
+            🌐 Create Public Lobby
+          </button>
+          <button
+            className="wayfinder-btn"
+            disabled={lobbyCount === 0}
+            onClick={() => window.open('https://karabast.net', '_blank')}
+          >
+            🎮 Join Public Game ({lobbyCount} Public Limited Lobb{lobbyCount === 1 ? 'y' : 'ies'})
           </button>
         </div>
 
-        <div className="wayfinder-section">
-          <div className="wayfinder-lobby-row">
-            <span className={`wayfinder-lobby-count${lobbyCount > 0 ? ' has-lobbies' : ''}`}>
-              {lobbyCount} Public Limited Lobb{lobbyCount === 1 ? 'y' : 'ies'}
-            </span>
-            <button
-              className="wayfinder-btn small"
-              disabled={lobbyCount === 0}
-              onClick={() => window.open('https://karabast.net', '_blank')}
-            >
-              Join Public
-            </button>
-          </div>
-        </div>
+        <div className="wayfinder-divider">- OR -</div>
 
         <div className="wayfinder-section">
           <div className="wayfinder-join-label">
@@ -282,6 +278,7 @@ export default function PlayInstructions({
               className={`play-tab${activeTab === 'wayfinder' ? ' active' : ''}`}
               onClick={() => setActiveTab('wayfinder')}
             >
+              {wayfinderIconUrl && <img src={wayfinderIconUrl} alt="" width="16" height="16" className="play-tab-icon" />}
               Play with Wayfinder
             </button>
             <button
