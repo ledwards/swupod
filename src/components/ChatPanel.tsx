@@ -61,7 +61,7 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
     lobbyType || 'draft',
     user?.username || null,
     user?.avatar_url || null,
-    { enabled: enabled && isLobbyMode && !!user }
+    { enabled: enabled && isLobbyMode }
   )
 
   // Use the appropriate chat based on mode
@@ -326,44 +326,6 @@ function ChatContent({
   dismissedPrivateNotice?: boolean
   setDismissedPrivateNotice?: (v: boolean) => void
 }) {
-  // Auth gate overlay
-  if (needsAuth) {
-    return (
-      <div className="chat-auth-gate">
-        <div className="chat-auth-gate-content">
-          <p>{isLobbyMode ? 'Log in to chat' : 'Log in to chat with your pod'}</p>
-          <Button
-            variant="discord"
-            onClick={() => {
-              window.location.href = `/api/auth/signin/discord?return_to=${encodeURIComponent(window.location.pathname)}`
-            }}
-          >
-            Log in with Discord
-          </Button>
-        </div>
-      </div>
-    )
-  }
-
-  if (needsGuild) {
-    return (
-      <div className="chat-auth-gate">
-        <div className="chat-auth-gate-content">
-          <p>Join our Discord to chat</p>
-          <Button
-            variant="discord"
-            onClick={() => window.open(process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/u6fkdDzWqF', '_blank')}
-          >
-            Join Discord Server
-          </Button>
-          <p className="chat-auth-gate-note">
-            {isLobbyMode ? 'Chat syncs with Discord channels' : 'Pod chat syncs with Discord threads'}
-          </p>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <>
       {!isPublic && !isLobbyMode && isHost && !dismissedPrivateNotice && (
@@ -408,25 +370,45 @@ function ChatContent({
         <div ref={messagesEndRef} />
       </div>
       <div className="chat-input-area">
-        <input
-          ref={inputRef}
-          type="text"
-          className="chat-input"
-          placeholder={connected ? 'Type a message...' : 'Connecting...'}
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={!connected}
-          maxLength={500}
-        />
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={handleSend}
-          disabled={!connected || !inputText.trim()}
-        >
-          Send
-        </Button>
+        {needsAuth ? (
+          <Button
+            variant="discord"
+            onClick={() => {
+              window.location.href = `/api/auth/signin/discord?return_to=${encodeURIComponent(window.location.pathname)}`
+            }}
+          >
+            Log in to chat
+          </Button>
+        ) : needsGuild ? (
+          <Button
+            variant="discord"
+            onClick={() => window.open(process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/u6fkdDzWqF', '_blank')}
+          >
+            Join Discord to chat
+          </Button>
+        ) : (
+          <>
+            <input
+              ref={inputRef}
+              type="text"
+              className="chat-input"
+              placeholder={connected ? 'Type a message...' : 'Connecting...'}
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={!connected}
+              maxLength={500}
+            />
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleSend}
+              disabled={!connected || !inputText.trim()}
+            >
+              Send
+            </Button>
+          </>
+        )}
       </div>
     </>
   )
