@@ -41,7 +41,6 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
   const hasAutoOpened = useRef(false)
   const [dismissedPrivateNotice, setDismissedPrivateNotice] = useState(false)
   const [inputText, setInputText] = useState('')
-  const [isGuildMember, setIsGuildMember] = useState<boolean | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -91,18 +90,6 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
   }, [lobbyType])
-
-  // Check guild membership on mount (if authenticated)
-  useEffect(() => {
-    if (!user) {
-      setIsGuildMember(null)
-      return
-    }
-    fetch('/api/auth/discord-member', { credentials: 'include' })
-      .then(res => res.json())
-      .then(data => setIsGuildMember(data?.data?.isMember ?? false))
-      .catch(() => setIsGuildMember(false))
-  }, [user])
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -154,7 +141,6 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
 
   const isAuthenticated = !!user
   const needsAuth = !isAuthenticated
-  const needsGuild = isAuthenticated && isGuildMember === false
 
   // Mobile: floating chat button + full-screen overlay
   if (isMobile) {
@@ -194,7 +180,7 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
               loading={loading}
               connected={connected}
               needsAuth={needsAuth}
-              needsGuild={needsGuild}
+
               inputText={inputText}
               setInputText={setInputText}
               handleSend={handleSend}
@@ -259,7 +245,6 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
             loading={loading}
             connected={connected}
             needsAuth={needsAuth}
-            needsGuild={needsGuild}
             inputText={inputText}
             setInputText={setInputText}
             handleSend={handleSend}
@@ -288,7 +273,6 @@ function ChatContent({
   loading,
   connected,
   needsAuth,
-  needsGuild,
   inputText,
   setInputText,
   handleSend,
@@ -309,7 +293,6 @@ function ChatContent({
   loading: boolean
   connected: boolean
   needsAuth: boolean
-  needsGuild: boolean
   inputText: string
   setInputText: (text: string) => void
   handleSend: () => void
@@ -378,13 +361,6 @@ function ChatContent({
             }}
           >
             Log in to chat
-          </Button>
-        ) : needsGuild ? (
-          <Button
-            variant="discord"
-            onClick={() => window.open(process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/u6fkdDzWqF', '_blank')}
-          >
-            Join Discord to chat
           </Button>
         ) : (
           <>
