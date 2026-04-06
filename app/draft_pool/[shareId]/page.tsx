@@ -212,6 +212,7 @@ export default function DraftPoolPage({ params }: PageProps) {
         shareId={pool?.shareId}
         isLoading={loading}
         poolOwnerId={pool?.owner?.id || pool?.userId}
+        draftShareId={pool?.draftShareId || null}
       />
     </div>
   )

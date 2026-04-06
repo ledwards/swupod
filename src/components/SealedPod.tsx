@@ -58,6 +58,7 @@ export interface SealedPodProps {
   createdAt?: string | null
   isLoading?: boolean
   poolOwnerId?: string | null
+  draftShareId?: string | null
 }
 
 // Helper function to get set name from set code
@@ -72,7 +73,7 @@ function getSetColor(setCode: string) {
   return config?.color || '#ffffff'
 }
 
-function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPacks = null, shareId = null, poolType = 'sealed', setName = null, poolName: initialPoolName = null, createdAt = null, isLoading = false, poolOwnerId = null }: SealedPodProps) {
+function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPacks = null, shareId = null, poolType = 'sealed', setName = null, poolName: initialPoolName = null, createdAt = null, isLoading = false, poolOwnerId = null, draftShareId = null }: SealedPodProps) {
   const { user } = useAuth()
   const [cards, setCards] = useState<Card[]>([])
   const [packs, setPacks] = useState<Pack[]>([])
@@ -396,6 +397,14 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
             }}
           >
             Build Deck
+          </Button>
+        )}
+        {draftShareId && (
+          <Button
+            variant="secondary"
+            onClick={() => { window.location.href = `/draft/${draftShareId}/log` }}
+          >
+            Draft Log
           </Button>
         )}
       </div>

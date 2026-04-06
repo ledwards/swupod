@@ -48,7 +48,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
 
     // Load all players with their pick data and visibility
     const players = await queryRows(
-      `SELECT
+      `SELECT DISTINCT ON (dpp.seat_number)
         dpp.user_id,
         dpp.seat_number,
         dpp.drafted_cards,
@@ -64,7 +64,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
        JOIN users u ON dpp.user_id = u.id
        LEFT JOIN card_pools cp ON cp.pod_id = dpp.pod_id AND cp.user_id = dpp.user_id
        WHERE dpp.pod_id = $1
-       ORDER BY dpp.seat_number`,
+       ORDER BY dpp.seat_number, cp.created_at DESC NULLS LAST`,
       [pod.id]
     )
 

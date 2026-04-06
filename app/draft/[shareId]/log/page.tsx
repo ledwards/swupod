@@ -510,6 +510,8 @@ export default function DraftLogPage({ params }: PageProps) {
                         <LockClosed /> Deck is private
                       </span>
                     )
+                  ) : activePlayer.userId === meta.myPlayerId ? (
+                    <a href={`/draft/${shareId}/pod`} className="draft-log-deck-link">Go to pod to build deck</a>
                   ) : (
                     <span className="draft-log-deck-building">Still deckbuilding...</span>
                   )}
