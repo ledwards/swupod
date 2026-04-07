@@ -412,6 +412,70 @@ test('strategy reset clears state', () => {
   assert(strategy.committedBaseColor === null, 'committedBaseColor should be null after reset')
 })
 
+// --- Neutral Leader Alignment Penalty Tests ---
+console.log('\n\x1b[36mNeutral Leader Alignment Penalty\x1b[0m')
+
+test('neutral leader penalizes Heroism cards after commitment', () => {
+  const strategy = new AllPlayerStrategy(null)
+  // Tobias Beckett: Vigilance + Cunning, no alignment
+  strategy.committedLeader = mockLeader('Tobias Beckett', ['Vigilance', 'Cunning'])
+
+  // Heroism+Vigilance card — shares a color but has unmatched alignment
+  const heroismCard = mockCard('Heroism Unit', { aspects: ['Heroism', 'Vigilance'] })
+  // Pure Vigilance card — fully in-aspect
+  const neutralCard = mockCard('Neutral Unit', { aspects: ['Vigilance'] })
+
+  const heroismScore = strategy._calculateColorScore(heroismCard, [], true, { setCode: 'LAW' })
+  const neutralScore = strategy._calculateColorScore(neutralCard, [], true, { setCode: 'LAW' })
+
+  // Heroism card should score significantly worse than in-aspect neutral card
+  assert(heroismScore < neutralScore - 100,
+    `Heroism card (${heroismScore}) should score much worse than neutral (${neutralScore}) with neutral leader`)
+})
+
+test('neutral leader penalizes Villainy cards after commitment', () => {
+  const strategy = new AllPlayerStrategy(null)
+  strategy.committedLeader = mockLeader('Saw Gerrera', ['Command', 'Aggression'])
+
+  const villainyCard = mockCard('Villainy Unit', { aspects: ['Villainy', 'Aggression'] })
+  const neutralCard = mockCard('Neutral Unit', { aspects: ['Aggression'] })
+
+  const villainyScore = strategy._calculateColorScore(villainyCard, [], true, { setCode: 'LAW' })
+  const neutralScore = strategy._calculateColorScore(neutralCard, [], true, { setCode: 'LAW' })
+
+  assert(villainyScore < neutralScore - 100,
+    `Villainy card (${villainyScore}) should score much worse than neutral (${neutralScore}) with neutral leader`)
+})
+
+test('neutral leader penalizes alignment cards pre-commitment', () => {
+  const strategy = new AllPlayerStrategy(null)
+  // Bot has drafted neutral leaders only, hasn't committed
+  const neutralLeaders = [
+    mockLeader('Tobias Beckett', ['Vigilance', 'Cunning']),
+    mockLeader('Saw Gerrera', ['Command', 'Aggression']),
+  ]
+
+  const heroismCard = mockCard('Heroism Unit', { aspects: ['Heroism', 'Vigilance'] })
+  const pureCard = mockCard('Pure Vig Unit', { aspects: ['Vigilance'] })
+
+  const heroismScore = strategy._calculateColorScore(heroismCard, neutralLeaders, false, { setCode: 'LAW' })
+  const pureScore = strategy._calculateColorScore(pureCard, neutralLeaders, false, { setCode: 'LAW' })
+
+  assert(heroismScore < pureScore - 50,
+    `Pre-commit: Heroism card (${heroismScore}) should score worse than pure in-color (${pureScore})`)
+})
+
+test('aligned leader still allows same-alignment cards', () => {
+  const strategy = new AllPlayerStrategy(null)
+  strategy.committedLeader = mockLeader('Sabine Wren', ['Aggression', 'Heroism'])
+
+  const heroismCard = mockCard('Heroism Unit', { aspects: ['Heroism', 'Aggression'] })
+  const score = strategy._calculateColorScore(heroismCard, [], true, { setCode: 'SOR' })
+
+  // Should be positive — leader provides Heroism
+  assert(score > 0, `Same-alignment card should score positive, got ${score}`)
+})
+
 // --- LAW Splash Rule Tests ---
 console.log('\n\x1b[36mLAW Splash Rule\x1b[0m')
 

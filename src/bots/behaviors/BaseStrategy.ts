@@ -358,6 +358,14 @@ export abstract class BaseStrategy {
         if (cardAspects.includes(opposingAlignment)) {
           return -10000
         }
+      } else {
+        // Neutral leader (no alignment): penalize alignment cards.
+        // Playing Heroism/Villainy cards with a neutral leader requires committing
+        // your base to that alignment, sacrificing a color slot. This is a real cost
+        // that makes these cards significantly worse than in-aspect alternatives.
+        if (cardAspects.includes('Heroism') || cardAspects.includes('Villainy')) {
+          return -300
+        }
       }
 
       // Only match on COLOR aspects — alignment matching doesn't reduce aspect penalties
@@ -396,6 +404,12 @@ export abstract class BaseStrategy {
       const opposingAlignment = draftedAlignment === 'Villainy' ? 'Heroism' : 'Villainy'
       if (cardAspects.includes(opposingAlignment)) {
         return -500  // Very strong penalty pre-commitment — nearly a ban
+      }
+    } else {
+      // All drafted leaders are neutral — alignment cards cost a base slot.
+      // Moderate penalty: bot should prefer neutral cards but isn't fully banned.
+      if (cardAspects.includes('Heroism') || cardAspects.includes('Villainy')) {
+        return -150
       }
     }
 
