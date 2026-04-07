@@ -6,7 +6,11 @@
 export function parseMarkdownToHTML(markdown: string): string {
   let html = markdown
 
-  // Headers
+  // Setext-style headers (underline with == or --)
+  html = html.replace(/^(.+)\n={2,}$/gm, '<h1>$1</h1>')
+  html = html.replace(/^(.+)\n-{2,}$/gm, '<h2>$1</h2>')
+
+  // ATX-style headers
   html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>')
   html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>')
   html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>')

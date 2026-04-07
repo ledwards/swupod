@@ -245,8 +245,8 @@ export default function DraftReportPage({ params }: PageProps) {
     { id: 'log', label: 'Draft Log' },
     { id: 'pool', label: 'Pool' },
     { id: 'deck', label: 'Deck' },
-    { id: 'notes', label: 'Notes' },
     { id: 'gameplay', label: 'Gameplay', placeholder: true },
+    { id: 'notes', label: 'Notes' },
   ]
 
   return (
