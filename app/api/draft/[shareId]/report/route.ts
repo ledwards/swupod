@@ -83,7 +83,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
   // Get user's pool (for Pool + Deck tabs)
   const pool = await queryRow(
     `SELECT cp.id, cp.share_id, cp.cards, cp.packs, cp.deck_builder_state,
-            cp.report_public, cp.pool_type, cp.created_at
+            cp.report_public, cp.pool_type, cp.created_at, cp.notes
      FROM card_pools cp
      WHERE cp.pod_id = $1 AND cp.user_id = $2
      ORDER BY cp.created_at DESC
@@ -115,6 +115,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       deckBuilderState: typeof pool.deck_builder_state === 'string' ? JSON.parse(pool.deck_builder_state) : pool.deck_builder_state,
       reportPublic: pool.report_public,
       createdAt: pool.created_at,
+      notes: pool.notes || null,
     } : null,
   })
 }
