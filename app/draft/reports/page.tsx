@@ -8,6 +8,20 @@ import Button from '../../../src/components/Button'
 import '../../../src/App.css'
 import './reports.css'
 
+const ASPECT_COLORS: Record<string, string> = {
+  'Vigilance': '#4A90E2',
+  'Command': '#27AE60',
+  'Aggression': '#E74C3C',
+  'Cunning': '#F1C40F',
+  'Heroism': '#ffffff',
+  'Villainy': '#8B0000',
+}
+
+function getBaseColor(aspects: string[] | null): string {
+  if (!aspects || aspects.length === 0) return 'rgba(255,255,255,0.2)'
+  return ASPECT_COLORS[aspects[0]] || 'rgba(255,255,255,0.2)'
+}
+
 interface DraftReportEntry {
   draftShareId: string
   name: string
@@ -19,7 +33,9 @@ interface DraftReportEntry {
   competitive: boolean
   seatNumber: number
   leaderName: string | null
-  leaderImageUrl: string | null
+  leaderBackImageUrl: string | null
+  baseName: string | null
+  baseAspects: string[] | null
 }
 
 export default function DraftReportsPage() {
@@ -100,9 +116,12 @@ export default function DraftReportsPage() {
                   router.push(`/draft/${report.draftShareId}/report`)
                 }}
               >
-                <div className="draft-reports-item-leader">
-                  {report.leaderImageUrl && (
-                    <img src={report.leaderImageUrl} alt={report.leaderName || ''} />
+                <div
+                  className="draft-reports-item-leader"
+                  style={{ borderColor: getBaseColor(report.baseAspects) }}
+                >
+                  {report.leaderBackImageUrl && (
+                    <img src={report.leaderBackImageUrl} alt={report.leaderName || ''} />
                   )}
                 </div>
                 <div className="draft-reports-item-info">
@@ -118,6 +137,7 @@ export default function DraftReportsPage() {
                     {' · '}{report.setName}
                     {' · '}{report.maxPlayers} players
                     {report.leaderName && ` · ${report.leaderName}`}
+                    {report.baseName && ` · ${report.baseName}`}
                   </div>
                 </div>
                 {report.competitive && (

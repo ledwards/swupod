@@ -16,9 +16,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             p.completed_at as "completedAt", p.started_at as "startedAt",
             p.settings,
             pp.seat_number as "seatNumber",
-            pp.drafted_leaders as "draftedLeaders"
+            pp.drafted_leaders as "draftedLeaders",
+            cp.deck_builder_state as "deckBuilderState",
+            cp.cards as "poolCards"
      FROM pods p
      JOIN pod_players pp ON pp.pod_id = p.id
+     LEFT JOIN card_pools cp ON cp.pod_player_id = pp.id
      WHERE pp.user_id = $1
        AND p.pod_type = 'draft'
        AND p.status = 'complete'
@@ -31,6 +34,24 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const leaders = row.draftedLeaders
       ? (typeof row.draftedLeaders === 'string' ? JSON.parse(row.draftedLeaders) : row.draftedLeaders)
       : []
+
+    // Get base info from deck builder state
+    let baseName = null
+    let baseAspects = null
+    const deckState = row.deckBuilderState
+      ? (typeof row.deckBuilderState === 'string' ? JSON.parse(row.deckBuilderState) : row.deckBuilderState)
+      : null
+    if (deckState?.activeBase) {
+      const cards = row.poolCards
+        ? (typeof row.poolCards === 'string' ? JSON.parse(row.poolCards) : row.poolCards)
+        : []
+      const baseCard = cards.find(c => (c.instanceId || c.id) === deckState.activeBase)
+      if (baseCard) {
+        baseName = baseCard.name || null
+        baseAspects = baseCard.aspects || null
+      }
+    }
+
     return {
       draftShareId: row.draftShareId,
       name: row.name,
@@ -42,7 +63,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       competitive: row.settings?.competitive || false,
       seatNumber: row.seatNumber,
       leaderName: leaders[0]?.name || null,
-      leaderImageUrl: leaders[0]?.imageUrl || null,
+      leaderBackImageUrl: leaders[0]?.backImageUrl || leaders[0]?.imageUrl || null,
+      baseName,
+      baseAspects,
     }
   })
 
