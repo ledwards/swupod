@@ -218,6 +218,19 @@
   flex: 1;
 }
 
+.cards-section-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: #1a1a1a;
+  overflow-y: auto;
+  padding: 20px;
+  border-radius: 0;
+  border: none;
+  min-width: unset;
+  max-width: unset;
+}
+
 .pack-controls {
   display: flex;
   justify-content: flex-start;
