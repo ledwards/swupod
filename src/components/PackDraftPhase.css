@@ -238,6 +238,11 @@
   margin: 0 30px;
 }
 
+.draft-layout-expanded .leader-thumbnail {
+  width: auto;
+  max-width: 120px;
+}
+
 .pack-controls {
   display: flex;
   justify-content: flex-start;
