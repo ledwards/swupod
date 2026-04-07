@@ -39,7 +39,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
 
   // Get all players for seating display
   const playersResult = await query(
-    `SELECT pp.seat_number, pp.user_id, pp.is_bot, pp.drafted_leaders,
+    `SELECT pp.seat_number, pp.user_id, pp.is_bot, pp.drafted_leaders, pp.drafted_cards,
             pp.strategy_name, pp.mixin_name,
             u.username, u.avatar_url
      FROM pod_players pp
