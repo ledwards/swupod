@@ -48,6 +48,21 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
      ORDER BY pp.seat_number`,
     [pod.id]
   )
+  // Get each player's active leader from their deck builder state
+  const poolsResult = await query(
+    `SELECT cp.user_id, cp.deck_builder_state
+     FROM card_pools cp
+     WHERE cp.pod_id = $1`,
+    [pod.id]
+  )
+  const activeLeaderByUser = new Map()
+  for (const row of poolsResult.rows) {
+    const dbs = typeof row.deck_builder_state === 'string' ? JSON.parse(row.deck_builder_state) : row.deck_builder_state
+    if (dbs?.activeLeader) {
+      activeLeaderByUser.set(row.user_id, dbs.activeLeader)
+    }
+  }
+
   const players = playersResult.rows.map(row => ({
     seatNumber: row.seat_number,
     userId: row.user_id,
@@ -55,6 +70,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     avatarUrl: row.avatar_url,
     isBot: row.is_bot,
     draftedLeaders: row.drafted_leaders ? (typeof row.drafted_leaders === 'string' ? JSON.parse(row.drafted_leaders) : row.drafted_leaders) : [],
+    activeLeaderId: activeLeaderByUser.get(row.user_id) || null,
     strategyName: row.strategy_name,
     mixinName: row.mixin_name,
   }))

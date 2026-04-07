@@ -36,6 +36,7 @@ interface ReportData {
     avatarUrl: string | null
     isBot: boolean
     draftedLeaders: unknown[]
+    activeLeaderId: string | null
     strategyName: string | null
     mixinName: string | null
   }>
@@ -315,18 +316,18 @@ export default function DraftReportPage({ params }: PageProps) {
           <div className="draft-report-seating">
             <PlayerCircle
               players={players.map(p => ({
-                odId: p.userId,
+                id: p.userId,
                 username: p.username,
                 avatarUrl: p.avatarUrl,
                 seatNumber: p.seatNumber,
                 isBot: p.isBot,
                 pickStatus: 'picked',
-                leaders: p.draftedLeaders,
                 draftedLeaders: p.draftedLeaders,
+                activeLeaderId: p.activeLeaderId || null,
               }))}
               maxPlayers={draft.maxPlayers}
               currentUserId={user?.id}
-              showLeaderInfo={true}
+              showLeaderInfo="simple"
             />
           </div>
         )}

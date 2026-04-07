@@ -8,6 +8,8 @@ import PlayerSeat from './PlayerSeat'
 import './PlayerCircle.css'
 
 interface Leader {
+  id?: string
+  instanceId?: string
   name: string
   aspects?: string[]
   imageUrl?: string
@@ -22,6 +24,7 @@ interface Player {
   currentPackSize?: number
   draftedLeaders?: Leader[]
   leaderPack?: Leader[]
+  activeLeaderId?: string | null
 }
 
 interface Draft {
@@ -195,18 +198,22 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
         </div>
         {draftedLeaders.length > 0 && (
           <div className="leader-info-list">
-            {draftedLeaders.map((leader, idx) => (
-              <div key={idx} className="leader-info-item">
-                <span
-                  className="leader-name hoverable"
-                  onMouseEnter={() => handleLeaderMouseEnter(leader)}
-                  onMouseLeave={handleLeaderMouseLeave}
-                >
-                  {leader.name}
-                </span>
-                {renderAspectIcons(leader.aspects)}
-              </div>
-            ))}
+            {draftedLeaders.map((leader, idx) => {
+              const isActive = player.activeLeaderId && (leader.instanceId || leader.id) === player.activeLeaderId
+              return (
+                <div key={idx} className="leader-info-item">
+                  <span
+                    className="leader-name hoverable"
+                    style={isActive ? { fontWeight: 700 } : undefined}
+                    onMouseEnter={() => handleLeaderMouseEnter(leader)}
+                    onMouseLeave={handleLeaderMouseLeave}
+                  >
+                    {leader.name}
+                  </span>
+                  {renderAspectIcons(leader.aspects)}
+                </div>
+              )
+            })}
           </div>
         )}
         <div
