@@ -30,6 +30,7 @@ function About({ onBack }: AboutProps) {
             Start with a <strong>free 7-day trial</strong> to try all the patron features!
           </p>
           <ul className="patreon-benefits">
+            <li><strong>Draft Reports</strong> — Review your draft history with detailed pick-by-pick logs, deck breakdowns, and personal notes</li>
             <li><strong>Professional Stats</strong> — Access draft and sealed data across top limited players</li>
             <li><strong>Beta Access</strong> — Access early features and pre-release sets by becoming an exclusive beta tester</li>
             <li><strong>Discord Access</strong> — Join the supporters-only Discord channel with the dev team</li>

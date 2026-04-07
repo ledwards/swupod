@@ -9,7 +9,7 @@
   background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
   background-position: center center, center center, center center, center center;
   color: white;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 .about-content {
@@ -25,7 +25,7 @@
 }
 
 .support-section {
-  margin-bottom: 0;
+  margin-bottom: 2rem;
 }
 
 .support-section h2 {
