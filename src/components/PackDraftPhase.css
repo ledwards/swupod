@@ -219,19 +219,10 @@
   position: relative;
 }
 
-.cards-section .fullscreen-toggle-button.btn {
-  position: absolute !important;
-  top: 10px !important;
-  right: 10px !important;
-  left: auto !important;
-  z-index: 10;
-  opacity: 0.6;
-  transition: opacity 0.2s ease;
-}
-
+/* Fullscreen button hover - positioning is inline on the element */
 @media (hover: hover) and (pointer: fine) {
-  .cards-section .fullscreen-toggle-button.btn:hover {
-    opacity: 1;
+  .cards-section .fullscreen-toggle-button:hover {
+    opacity: 1 !important;
   }
 }
 

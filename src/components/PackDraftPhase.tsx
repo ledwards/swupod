@@ -411,7 +411,7 @@ function PackDraftPhase({
             </div>
           </div>
 
-          <Button variant="icon" size="sm" className="fullscreen-toggle-button" onClick={() => setIsFullscreen(f => !f)} title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>
+          <Button variant="icon" size="sm" className="fullscreen-toggle-button" style={{ position: 'absolute', top: 10, right: 10, zIndex: 10, opacity: 0.6 }} onClick={() => setIsFullscreen(f => !f)} title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>
             {isFullscreen ? (
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="4 14 10 14 10 20"></polyline>
