@@ -221,9 +221,17 @@
 
 .fullscreen-toggle-button {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 1;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .fullscreen-toggle-button:hover {
+    opacity: 1;
+  }
 }
 
 .cards-section.cards-section-fullscreen {
