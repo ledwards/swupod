@@ -18,6 +18,7 @@ import Card from '../../../../../src/components/Card'
 import CardWithPreview from '../../../../../src/components/CardWithPreview'
 import Modal from '../../../../../src/components/Modal'
 import Button from '../../../../../src/components/Button'
+import DraftReportButton from '../../../../../src/components/DraftReportButton'
 import PlayInstructions from '../../../../../src/components/PlayInstructions'
 import ChatPanel from '../../../../../src/components/ChatPanel'
 import '../../../../../src/App.css'
@@ -114,7 +115,7 @@ interface PageProps {
 export default function PlayPage({ params }: PageProps) {
   const resolvedParams = use(params)
   const router = useRouter()
-  const { user } = useAuth()
+  const { user, isPatron } = useAuth()
   const [pool, setPool] = useState<PoolData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -1710,6 +1711,9 @@ export default function PlayPage({ params }: PageProps) {
               </svg>
               Draft Log
             </button>
+          )}
+          {pool?.draftShareId && pool?.poolType === 'draft' && isPatron && isOwner && (
+            <DraftReportButton draftShareId={pool.draftShareId} variant="play" />
           )}
         </div>
 

@@ -11,6 +11,7 @@
 
 import EditableTitle from '../EditableTitle'
 import Button from '../Button'
+import DraftReportButton from '../DraftReportButton'
 import { savePool } from '../../utils/poolApi'
 import type { CardPosition } from './AspectPenaltyToggle'
 import type { MessageType } from './DeleteDeckSection'
@@ -38,6 +39,7 @@ export interface DeckBuilderHeaderProps {
   setMessageType: (type: MessageType | null) => void
   draftShareId?: string | null
   isLoading?: boolean
+  isPatron?: boolean
 }
 
 export function DeckBuilderHeader({
@@ -62,6 +64,7 @@ export function DeckBuilderHeader({
   setMessageType,
   draftShareId,
   isLoading,
+  isPatron,
 }: DeckBuilderHeaderProps) {
   // Calculate deck legality for Play button
   const deckCardCount = Object.values(cardPositions)
@@ -213,6 +216,29 @@ export function DeckBuilderHeader({
             </svg>
             <span>Copy Share URL</span>
           </Button>
+        )}
+
+        {/* Draft Log button */}
+        {draftShareId && (
+          <Button
+            variant="secondary"
+            className="export-button"
+            onClick={() => { window.location.href = `/draft/${draftShareId}/log` }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <span>Draft Log</span>
+          </Button>
+        )}
+
+        {/* Draft Report button (FOP only) */}
+        {draftShareId && isPatron && isOwner && (
+          <DraftReportButton draftShareId={draftShareId} />
         )}
       </div>}
 

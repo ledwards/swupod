@@ -12,6 +12,7 @@ import { getPackArtUrl } from '../utils/packArt'
 import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 import EditableTitle from './EditableTitle'
 import Button from './Button'
+import DraftReportButton from './DraftReportButton'
 
 interface Card {
   id?: string
@@ -74,7 +75,7 @@ function getSetColor(setCode: string) {
 }
 
 function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPacks = null, shareId = null, poolType = 'sealed', setName = null, poolName: initialPoolName = null, createdAt = null, isLoading = false, poolOwnerId = null, draftShareId = null }: SealedPodProps) {
-  const { user } = useAuth()
+  const { user, isPatron } = useAuth()
   const [cards, setCards] = useState<Card[]>([])
   const [packs, setPacks] = useState<Pack[]>([])
   const [loading, setLoading] = useState(true)
@@ -402,10 +403,14 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
         {draftShareId && (
           <Button
             variant="secondary"
+            className="draft-log-button"
             onClick={() => { window.location.href = `/draft/${draftShareId}/log` }}
           >
             Draft Log
           </Button>
+        )}
+        {draftShareId && isPatron && isOwner && (
+          <DraftReportButton draftShareId={draftShareId} variant="pool" />
         )}
       </div>
 
