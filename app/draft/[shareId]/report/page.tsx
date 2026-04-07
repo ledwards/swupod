@@ -72,7 +72,13 @@ export default function DraftReportPage({ params }: PageProps) {
   const [data, setData] = useState<ReportData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<TabId>('seating')
+  const [activeTab, setActiveTab] = useState<TabId>(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.replace('#', '') as TabId
+      if (['seating', 'log', 'pool', 'deck', 'gameplay'].includes(hash)) return hash
+    }
+    return 'seating'
+  })
   const [message, setMessage] = useState<string | null>(null)
   const [reportPublic, setReportPublic] = useState(false)
 
@@ -121,7 +127,7 @@ export default function DraftReportPage({ params }: PageProps) {
   }
 
   const handleCopyLink = async () => {
-    const url = `${window.location.origin}/draft/${shareId}/report`
+    const url = `${window.location.origin}/draft/${shareId}/report#${activeTab}`
     await navigator.clipboard.writeText(url)
     setMessage('Report link copied!')
     setTimeout(() => setMessage(null), 3000)
@@ -265,7 +271,10 @@ export default function DraftReportPage({ params }: PageProps) {
           <button
             key={tab.id}
             className={`draft-report-tab ${activeTab === tab.id ? 'active' : ''} ${tab.placeholder ? 'placeholder' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => {
+              setActiveTab(tab.id)
+              window.history.replaceState(null, '', `#${tab.id}`)
+            }}
           >
             {tab.label}
           </button>
@@ -381,6 +390,9 @@ export default function DraftReportPage({ params }: PageProps) {
                   </div>
                 )}
 
+                {!activeLeaderCard && !activeBaseCard && deckCards.length === 0 && sideboardCards.length === 0 && (
+                  <div className="draft-report-deck-empty">No deck data available. The deck may not have been saved.</div>
+                )}
               </>
             )}
           </div>
