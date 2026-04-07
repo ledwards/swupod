@@ -75,7 +75,7 @@
 .review-controls-center {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   flex: 1;
   gap: 15px;
 }
