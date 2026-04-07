@@ -2,7 +2,30 @@
 
 ## 04.07.2026
 
+### ✨ Draft Reports (Friends of the Pod)
+- **New Draft Report page**: After completing a draft, Friends of the Pod can view a comprehensive report of their draft at `/draft/{id}/report`. Includes tabbed sections for Draft Seating, Draft Log, Pool, Deck, and a Gameplay placeholder (coming soon with Wayfinder integration).
+- **Golden glow Draft Report button**: A glowing gold button appears on Pool, Deck Builder, and Play pages linking to your draft report.
+- **Draft Reports list page**: Access all your past draft reports from the user dropdown menu under "Draft Reports".
+- **Public/Private sharing**: Toggle your draft report between public and private, and share with a direct link.
+- **Deep-linkable tabs**: Each report tab has a hash anchor (`#seating`, `#log`, `#pool`, `#deck`, `#gameplay`) for direct linking.
+
+### 🎮 UI Improvements
+- **Expand/collapse draft pick window**: New button in the upper right corner of the cards section lets you expand it to full width (hiding the player circle) or collapse back to default. Press Escape to collapse.
+- **No more layout shift from timers**: The draft pick area no longer jumps up/down when timers appear or disappear. Space is always reserved.
+- **Selection and passing banners moved below cards**: "Selected: Card Name" and "Passing Left/Right" banners now appear below the card grid instead of above it, in both leader and pack draft phases.
+- **Timer centered in Your Cards modal**: The pick timeout timer in the "Your Cards" review modal is now centered at the top instead of clipped to the right.
+- **Draft Log button moved to top**: The Draft Log button now appears next to Practice Hand at the top of both the pod page and play page.
+- **Wayfinder on pod page**: Plugin users now see the Wayfinder lobby buttons on the pod page after drafting, not just on the play page.
+- **Draft Report shows username**: The Draft Report label now shows "DRAFT REPORT | username" with the username in bold white.
+- **Deck tab fallback**: When a deck hasn't been built yet, the Deck tab shows the full drafted card pool instead of a blank page.
+- **Drop button redesigned**: The drop/leave button on the draft landing page is now an X icon instead of a door icon.
+- **Draft Log button on Deck Builder**: The Draft Log button now appears in the Deck Builder header alongside other action buttons.
+- **Draft Log button spacing**: Fixed missing spacing between the Build Deck and Draft Log buttons on the pool page.
+- **Play buttons get triangle icon**: All Play buttons across the app now show the play triangle icon consistently.
+- **Solo draft text update**: "Find a human opponent to play your deck!" now reads "You need to find a human opponent to play your deck!"
+
 ### 🐛 Bug Fixes
+- **Fixed card pool detection for Karabast**: Play instructions now dynamically detect the latest released set instead of being hardcoded to LAW. Current set drafts correctly show "Card Pool: Current" instead of "Unlimited".
 - **Fixed broken Showcase Collection page**: Showcase card images were not loading because card IDs in the database were in an old numeric format that didn't match the current UUID-based card data. A data migration converts all old card IDs to the correct format across all tables.
 - **Fixed draft pick recording**: Draft picks were failing to save to the analytics table due to a column rename that wasn't applied everywhere. Picks now record correctly for both human and bot players.
 - **Fixed draft report pages**: Draft reports were returning 500 errors due to a nonexistent column reference. Reports now load correctly.
