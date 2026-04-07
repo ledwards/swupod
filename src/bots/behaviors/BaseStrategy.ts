@@ -272,6 +272,29 @@ export abstract class BaseStrategy {
     // Strategy-specific adjustments
     totalScore += this.adjustCardScore(card, totalScore, context)
 
+    // Cost curve saturation penalty: once a cost bucket is over-drafted,
+    // actively penalize additional picks. This prevents bots from hoarding
+    // turn-1 plays (or any cost bucket) past the point of diminishing returns.
+    // Applied as a direct score penalty (not through need/needWeight) so it
+    // always bites regardless of draft phase.
+    if (isCommitted && stats) {
+      const profile = stats.deckProfiles.get(this.committedLeader?.name || '')
+      if (profile) {
+        const myCards = draftedCards.filter(c => !c.isLeader && !c.isBase)
+        const costBucket = Math.min(card.cost || 0, 7)
+        const targetCount = profile.avgCostCurve[costBucket] || 0
+        const currentCount = myCards.filter(c => Math.min(c.cost || 0, 7) === costBucket).length
+
+        // Penalty kicks in at 130% of target (allows slight over-draft for flexibility)
+        const threshold = targetCount * 1.3
+        if (currentCount > threshold) {
+          const excess = currentCount - threshold
+          // -30 per excess card, capped at -120
+          totalScore -= Math.min(excess * 30, 120)
+        }
+      }
+    }
+
     return totalScore
   }
 
