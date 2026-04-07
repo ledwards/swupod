@@ -1,0 +1,112 @@
+.draft-reports-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0a0a1a 0%, #0d0d0d 100%);
+  color: white;
+  font-family: 'Barlow', sans-serif;
+  padding: 2rem;
+}
+
+.draft-reports-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.draft-reports-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.draft-reports-header h1 {
+  font-size: 2rem;
+  color: rgba(255, 215, 0, 0.9);
+  margin-bottom: 0.5rem;
+}
+
+.draft-reports-header p {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.draft-reports-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.draft-reports-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: white;
+}
+
+.draft-reports-item:hover {
+  border-color: rgba(255, 215, 0, 0.4);
+  background: rgba(255, 215, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.draft-reports-item-leader {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.draft-reports-item-leader img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.draft-reports-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.draft-reports-item-name {
+  font-weight: 600;
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.draft-reports-item-meta {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 2px;
+}
+
+.draft-reports-item-badge {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(255, 215, 0, 0.15);
+  color: rgba(255, 215, 0, 0.9);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  flex-shrink: 0;
+}
+
+.draft-reports-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.draft-reports-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  color: rgba(255, 255, 255, 0.5);
+}
