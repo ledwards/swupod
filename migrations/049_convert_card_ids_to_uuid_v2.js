@@ -82,9 +82,11 @@ function fixCardsArray(cards, lookup) {
 }
 
 /**
- * Create a temp table with name+set+variant -> UUID mappings,
- * then bulk UPDATE the target table in a single statement.
+ * Fix card_id column in batches of BATCH_SIZE rows.
+ * Uses a temp lookup table + batched UPDATE to avoid filling disk with WAL.
  */
+const BATCH_SIZE = 2000
+
 async function bulkFixCardIdColumn(client, tableName, lookup) {
   // Create temp table with the lookup data
   await client.query(`
@@ -129,21 +131,33 @@ async function bulkFixCardIdColumn(client, tableName, lookup) {
     return 0
   }
 
-  // Bulk update: match by name + set + variant_type
-  const updateResult = await client.query(`
-    UPDATE ${tableName} t
-    SET card_id = lu.uuid_id
-    FROM _card_uuid_lookup lu
-    WHERE t.card_name = lu.card_name
-      AND t.set_code = lu.set_code
-      AND COALESCE(t.variant_type, 'Normal') = lu.variant_type
-      AND t.card_id !~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
-  `)
+  console.log(`   Found ${total} non-UUID records, updating in batches of ${BATCH_SIZE}...`)
 
-  const fixed = updateResult.rowCount
-  const unmatched = total - fixed
-  console.log(`   Found ${total} non-UUID records, fixed ${fixed}${unmatched > 0 ? `, ${unmatched} unmatched` : ''}`)
-  return fixed
+  // Update in batches to avoid filling disk with WAL
+  let totalFixed = 0
+  while (true) {
+    const updateResult = await client.query(`
+      UPDATE ${tableName} t
+      SET card_id = lu.uuid_id
+      FROM _card_uuid_lookup lu
+      WHERE t.id IN (
+        SELECT id FROM ${tableName}
+        WHERE card_id !~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+        LIMIT ${BATCH_SIZE}
+      )
+        AND t.card_name = lu.card_name
+        AND t.set_code = lu.set_code
+        AND COALESCE(t.variant_type, 'Normal') = lu.variant_type
+    `)
+
+    if (updateResult.rowCount === 0) break
+    totalFixed += updateResult.rowCount
+    console.log(`   ... ${totalFixed}/${total} fixed`)
+  }
+
+  const unmatched = total - totalFixed
+  console.log(`   Done: ${totalFixed} fixed${unmatched > 0 ? `, ${unmatched} unmatched` : ''}`)
+  return totalFixed
 }
 
 export async function run(client) {
