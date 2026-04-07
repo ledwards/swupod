@@ -10,6 +10,7 @@ import { queryRow, queryRows } from '@/lib/db'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
 import { getAllCards } from '@/src/utils/cardData'
+import { buildCardLookupMaps } from '@/src/utils/cardNormalization'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {
@@ -78,12 +79,9 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       [pod.id]
     )
 
-    // Build card lookup for enrichment
+    // Build card lookup for enrichment (indexes by id, cardId, and normalized cardId)
     const allCards = getAllCards()
-    const cardLookup = new Map<string, any>()
-    for (const card of allCards) {
-      cardLookup.set(card.id, card)
-    }
+    const { cardMap: cardLookup } = buildCardLookupMaps(allCards)
 
     // Separate leader picks from card picks
     const cardPicks = []

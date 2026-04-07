@@ -119,17 +119,17 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           SELECT
             bd.card_pool_id AS pool_id,
             CASE
-              WHEN position('-' in e->>'id') > 0 THEN
-                split_part(e->>'id', '-', 1) || '_' || lpad(split_part(e->>'id', '-', 2), 3, '0')
-              WHEN position('_' in e->>'id') > 0 THEN
-                split_part(e->>'id', '_', 1) || '_' || lpad(split_part(e->>'id', '_', 2), 3, '0')
-              ELSE e->>'id'
+              WHEN position('-' in e->>'cardId') > 0 THEN
+                split_part(e->>'cardId', '-', 1) || '_' || lpad(split_part(e->>'cardId', '-', 2), 3, '0')
+              WHEN position('_' in e->>'cardId') > 0 THEN
+                split_part(e->>'cardId', '_', 1) || '_' || lpad(split_part(e->>'cardId', '_', 2), 3, '0')
+              ELSE e->>'cardId'
             END AS norm_id,
             COALESCE((e->>'count')::int, 1) AS copy_count
           FROM pool_ids pi
           JOIN built_decks bd ON bd.card_pool_id = pi.pool_id,
           LATERAL jsonb_array_elements(bd.deck) AS e
-          WHERE e->>'id' IS NOT NULL
+          WHERE e->>'cardId' IS NOT NULL
         )
         SELECT
           pc.norm_id,
@@ -147,7 +147,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       queryRows(
         `SELECT
           bd.leader->>'id' AS leader_id,
+          bd.leader->>'cardId' AS leader_card_id,
           bd.base->>'id' AS base_id,
+          bd.base->>'cardId' AS base_card_id,
           bd.deck AS deck
         FROM card_pools cp
         JOIN built_decks bd ON bd.card_pool_id = cp.id
@@ -195,16 +197,18 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // Track: how many decks include this card off-aspect, and how many decks total include it.
     const offAspectCounts = new Map<string, { offAspectDecks: number, totalDecks: number }>()
 
+    // Helper: look up a card by id, falling back to cardId (display format)
+    const resolveCard = (id: string | null, cardId: string | null) =>
+      (id && cardMap.get(id)) || (cardId && cardMap.get(cardId)) || null
+
     for (const row of deckRows) {
-      const leaderCard = cardMap.get(row.leader_id)
-      const baseCard = cardMap.get(row.base_id)
+      const leaderCard = resolveCard(row.leader_id, row.leader_card_id)
+      const baseCard = resolveCard(row.base_id, row.base_card_id)
       if (!leaderCard || !baseCard) continue
 
       const deckCards = Array.isArray(row.deck) ? row.deck : []
       for (const entry of deckCards) {
-        const cardId = entry?.id
-        if (!cardId) continue
-        const card = cardMap.get(cardId)
+        const card = resolveCard(entry?.id, entry?.cardId)
         if (!card || card.type === 'Leader' || card.type === 'Base') continue
 
         const nameKey = cardIdentityKey(card)
@@ -230,7 +234,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     let totalDecksForSynergy = 0
 
     for (const row of deckRows) {
-      const leaderCard = cardMap.get(row.leader_id)
+      const leaderCard = resolveCard(row.leader_id, row.leader_card_id)
       if (!leaderCard) continue
 
       const leaderKey = cardIdentityKey(leaderCard)
@@ -244,9 +248,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
       const deckCards = Array.isArray(row.deck) ? row.deck : []
       for (const entry of deckCards) {
-        const cardId = entry?.id
-        if (!cardId) continue
-        const card = cardMap.get(cardId)
+        const card = resolveCard(entry?.id, entry?.cardId)
         if (!card || card.type === 'Leader' || card.type === 'Base') continue
 
         const ck = cardIdentityKey(card)

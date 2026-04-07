@@ -127,7 +127,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // 5. Get all draft picks (ordered by pick sequence)
     const picks = await queryRows(
       `SELECT
-        draft_pod_id as pod_id,
+        pod_id as pod_id,
         card_id,
         card_name,
         set_code,
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         picked_at
       FROM draft_picks
       WHERE user_id = $1
-      ORDER BY draft_pod_id, pick_number`,
+      ORDER BY pod_id, pick_number`,
       [session.id]
     )
 

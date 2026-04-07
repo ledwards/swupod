@@ -30,7 +30,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     let botJoin = ''
     let botFilter = ''
     if (!includeBots || !includeHumans) {
-      botJoin = `JOIN pod_players dpp ON dp.draft_pod_id = dpp.pod_id AND dp.user_id = dpp.user_id`
+      botJoin = `JOIN pod_players dpp ON dp.pod_id = dpp.pod_id AND dp.user_id = dpp.user_id`
       if (!includeBots && includeHumans) {
         botFilter = `AND (dpp.is_bot = false OR dpp.is_bot IS NULL)`
       } else if (includeBots && !includeHumans) {
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // Built deck filter - only include picks from drafters who built a deck
     let builtDeckJoin = ''
     if (builtDeckOnly) {
-      builtDeckJoin = `JOIN card_pools cp_bd ON cp_bd.pod_id = dp.draft_pod_id AND cp_bd.user_id = dp.user_id
+      builtDeckJoin = `JOIN card_pools cp_bd ON cp_bd.pod_id = dp.pod_id AND cp_bd.user_id = dp.user_id
       JOIN built_decks bd ON bd.card_pool_id = cp_bd.id`
     }
 
@@ -77,9 +77,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         COUNT(*) AS times_picked,
         COUNT(*) FILTER (WHERE dp.pick_in_pack = 1) AS first_picks,
         ROUND(AVG(dp.pick_in_pack)::numeric, 2) AS avg_pick_position,
-        COUNT(DISTINCT dp.draft_pod_id) AS drafts_seen_in
+        COUNT(DISTINCT dp.pod_id) AS drafts_seen_in
       FROM draft_picks dp
-      JOIN pods pod ON pod.id = dp.draft_pod_id
+      JOIN pods pod ON pod.id = dp.pod_id
       ${botJoin}
       ${builtDeckJoin}
       ${topPlayersJoin}
@@ -98,10 +98,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const summary = await queryRow(
       `SELECT
         COUNT(*) AS total_picks,
-        COUNT(DISTINCT dp.draft_pod_id) AS total_drafts,
+        COUNT(DISTINCT dp.pod_id) AS total_drafts,
         COUNT(DISTINCT dp.user_id) AS total_drafters
       FROM draft_picks dp
-      JOIN pods pod ON pod.id = dp.draft_pod_id
+      JOIN pods pod ON pod.id = dp.pod_id
       ${botJoin}
       ${builtDeckJoin}
       ${topPlayersJoin}
