@@ -216,6 +216,14 @@
   min-width: 400px;
   max-width: 600px;
   flex: 1;
+  position: relative;
+}
+
+.fullscreen-toggle-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
 }
 
 .cards-section.cards-section-fullscreen {

@@ -408,41 +408,37 @@ function PackDraftPhase({
                 <ReviewIcon />
                 <span>Your Cards</span>
               </Button>
-              <Button variant="icon" size="sm" className="fullscreen-toggle-button" onClick={() => setIsFullscreen(f => !f)} title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>
-                {isFullscreen ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="4 14 10 14 10 20"></polyline>
-                    <polyline points="20 10 14 10 14 4"></polyline>
-                    <line x1="14" y1="10" x2="21" y2="3"></line>
-                    <line x1="3" y1="21" x2="10" y2="14"></line>
-                  </svg>
-                ) : (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="15 3 21 3 21 9"></polyline>
-                    <polyline points="9 21 3 21 3 15"></polyline>
-                    <line x1="21" y1="3" x2="14" y2="10"></line>
-                    <line x1="3" y1="21" x2="10" y2="14"></line>
-                  </svg>
-                )}
-              </Button>
             </div>
           </div>
+
+          <Button variant="icon" size="sm" className="fullscreen-toggle-button" onClick={() => setIsFullscreen(f => !f)} title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>
+            {isFullscreen ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="4 14 10 14 10 20"></polyline>
+                <polyline points="20 10 14 10 14 4"></polyline>
+                <line x1="14" y1="10" x2="21" y2="3"></line>
+                <line x1="3" y1="21" x2="10" y2="14"></line>
+              </svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <polyline points="9 21 3 21 3 15"></polyline>
+                <line x1="21" y1="3" x2="14" y2="10"></line>
+                <line x1="3" y1="21" x2="10" y2="14"></line>
+              </svg>
+            )}
+          </Button>
 
           <div className="current-pack">
             {/* Show skeleton cards when waiting for next pack */}
             {showPassing && (lastPackSize > 0 || currentPack.length > 0) ? (
-              <>
-                <div className="passing-message">
-                  Passing {passDirection === 'left' ? 'Left' : 'Right'}...
-                </div>
-                <div className="pack-grid">
-                  {Array.from({ length: lastPackSize || currentPack.length }).map((_, idx) => (
-                    <div key={`skeleton-${idx}`} className="skeleton-card">
-                      <div className="skeleton-shimmer"></div>
-                    </div>
-                  ))}
-                </div>
-              </>
+              <div className="pack-grid">
+                {Array.from({ length: lastPackSize || currentPack.length }).map((_, idx) => (
+                  <div key={`skeleton-${idx}`} className="skeleton-card">
+                    <div className="skeleton-shimmer"></div>
+                  </div>
+                ))}
+              </div>
             ) : sortedPack.length > 0 ? (
               <div className="pack-grid">
                 {sortedPack.map((card) => {
@@ -469,6 +465,13 @@ function PackDraftPhase({
               </p>
             )}
           </div>
+
+          {/* Passing message - below cards */}
+          {showPassing && (lastPackSize > 0 || currentPack.length > 0) && (
+            <div className="passing-message">
+              Passing {passDirection === 'left' ? 'Left' : 'Right'}...
+            </div>
+          )}
 
           {/* Selection confirmation banner - below cards */}
           {selectedCardId && !showPassing && (() => {
