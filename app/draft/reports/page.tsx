@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
 import Button from '../../../src/components/Button'
 import '../../../src/App.css'
+import '../../../src/styles/backgrounds.css'
 import './reports.css'
 
 const ASPECT_COLORS: Record<string, string> = {
@@ -70,7 +71,7 @@ export default function DraftReportsPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="draft-reports-page">
+      <div className="draft-reports-page page-background">
         <div className="draft-reports-loading">Loading...</div>
       </div>
     )
@@ -78,7 +79,7 @@ export default function DraftReportsPage() {
 
   if (isPatron === false) {
     return (
-      <div className="draft-reports-page">
+      <div className="draft-reports-page page-background">
         <div className="draft-reports-content">
           <div className="draft-reports-empty">
             <h2>Friends of the Pod</h2>
@@ -91,7 +92,7 @@ export default function DraftReportsPage() {
   }
 
   return (
-    <div className="draft-reports-page">
+    <div className="draft-reports-page page-background">
       <div className="draft-reports-content">
         <div className="draft-reports-header">
           <h1>Draft Reports</h1>

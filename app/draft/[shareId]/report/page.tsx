@@ -8,7 +8,11 @@ import Button from '../../../../src/components/Button'
 import PlayerCircle from '../../../../src/components/PlayerCircle'
 import CardWithPreview from '../../../../src/components/CardWithPreview'
 import '../../../../src/App.css'
+import '../../../../src/styles/backgrounds.css'
+import '../../../../src/components/SealedPod.css'
+import '../log/log.css'
 import './report.css'
+import { getPackArtUrl } from '../../../../src/utils/packArt'
 
 interface ReportData {
   draft: {
@@ -125,7 +129,7 @@ export default function DraftReportPage({ params }: PageProps) {
 
   if (loading) {
     return (
-      <div className="draft-report-page">
+      <div className="draft-report-page page-background-with-art">
         <div className="draft-report-loading">Loading report...</div>
       </div>
     )
@@ -133,7 +137,7 @@ export default function DraftReportPage({ params }: PageProps) {
 
   if (error || !data) {
     return (
-      <div className="draft-report-page">
+      <div className="draft-report-page page-background-with-art">
         <div className="draft-report-content">
           <div className="draft-report-error">
             <h2>Error</h2>
@@ -147,7 +151,7 @@ export default function DraftReportPage({ params }: PageProps) {
 
   if (isPatron === false) {
     return (
-      <div className="draft-report-page">
+      <div className="draft-report-page page-background-with-art">
         <div className="draft-report-content">
           <div className="draft-report-error">
             <h2>Friends of the Pod</h2>
@@ -203,6 +207,9 @@ export default function DraftReportPage({ params }: PageProps) {
 
   deckCards.sort((a, b) => (a.cost ?? 0) - (b.cost ?? 0))
 
+  const packArtUrl = data?.draft?.setCode ? getPackArtUrl(data.draft.setCode) : null
+  const setArtStyle = packArtUrl ? { backgroundImage: `url("${packArtUrl}")`, backgroundSize: 'cover', backgroundPosition: 'center center', backgroundRepeat: 'no-repeat' } : {}
+
   const tabs = [
     { id: 'seating', label: 'Draft Seating' },
     { id: 'log', label: 'Draft Log' },
@@ -212,7 +219,9 @@ export default function DraftReportPage({ params }: PageProps) {
   ]
 
   return (
-    <div className="draft-report-page">
+    <div className="draft-report-page page-background-with-art">
+      {packArtUrl && <div className="set-art-header" style={setArtStyle}></div>}
+      <div className="draft-report-page-content">
       <div className="draft-report-header">
         <div className="draft-report-header-content">
           <div className="draft-report-header-info">
@@ -290,15 +299,15 @@ export default function DraftReportPage({ params }: PageProps) {
               <div className="draft-report-deck-empty">No draft log data available.</div>
             ) : (
               logSections.map(section => (
-                <div key={section.title} className="draft-report-log-section">
+                <div key={section.title} className="draft-log-section">
                   <h3>{section.title}</h3>
                   {section.picks.map((pick, i) => (
-                    <div key={i} className="draft-report-pick-row">
-                      <div className="draft-report-pick-label">
+                    <div key={i} className="draft-log-pick-row">
+                      <div className="draft-log-pick-label">
                         {section.title === 'Leader Draft' ? 'Leaders' : `Pack ${pick.packNumber}`}
                         <span>Pick {pick.pickInPack}</span>
                       </div>
-                      <div className="cards-grid">
+                      <div className="draft-log-pack-cards cards-grid">
                         {pick.visibleCards.map(card => (
                           <CardWithPreview
                             key={card.instanceId}
@@ -372,16 +381,6 @@ export default function DraftReportPage({ params }: PageProps) {
                   </div>
                 )}
 
-                {pool?.shareId && (
-                  <div className="draft-report-deck-actions">
-                    <Button variant="secondary" onClick={() => { window.location.href = `/pool/${pool.shareId}/deck` }}>
-                      Open in Deck Builder
-                    </Button>
-                    <Button variant="secondary" onClick={() => { window.location.href = `/pool/${pool.shareId}/deck/play` }}>
-                      Play Page
-                    </Button>
-                  </div>
-                )}
               </>
             )}
           </div>
@@ -403,11 +402,8 @@ export default function DraftReportPage({ params }: PageProps) {
         )}
       </div>
 
-      <div className="draft-report-content draft-report-back">
-        <Button variant="back" onClick={() => router.back()}>Back</Button>
-      </div>
-
       {message && <div className="draft-report-message">{message}</div>}
+      </div>
     </div>
   )
 }
