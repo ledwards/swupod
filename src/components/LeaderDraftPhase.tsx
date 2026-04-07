@@ -275,46 +275,6 @@ function LeaderDraftPhase({
             </div>
           </div>
 
-          {/* Selection confirmation banner - hide during passing transition */}
-          {selectedCardId && !showPassing && (() => {
-            const selectedLeader = leaders.find(l => (l.instanceId || l.id) === selectedCardId)
-            if (!selectedLeader || !selectedLeader.name) return null
-            const firstAspect = selectedLeader.aspects?.[0]
-            const aspectColor = firstAspect ? getSingleAspectColor(firstAspect) : NO_ASPECT_COLOR
-            return (
-              <div
-                className="selection-confirmation-banner"
-                style={{
-                  background: `linear-gradient(135deg, ${aspectColor}33 0%, ${aspectColor}22 100%)`,
-                  borderColor: aspectColor,
-                }}
-              >
-                <div className="selection-info">
-                  <span className="selection-label">Selected:</span>
-                  <span className="selection-card-name" style={{ color: aspectColor }}>
-                    {selectedLeader.name || selectedLeader.title || 'Leader'}
-                  </span>
-                  {selectedLeader.subtitle && (
-                    <span className="selection-card-subtitle">{selectedLeader.subtitle}</span>
-                  )}
-                </div>
-                {hasSelected ? (
-                  // Only show "Waiting" if there are players who aren't done yet
-                  players?.some(p => p.pickStatus !== 'picked' && p.pickStatus !== 'selected') ? (
-                    <div className="selection-status-text">Waiting for other players...</div>
-                  ) : null
-                ) : (
-                  <button className="deselect-button" onClick={(e) => handleDeselect(e)} title="Deselect">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                      <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                  </button>
-                )}
-              </div>
-            )
-          })()}
-
           <div className="available-leaders">
             <h3>
               {hasSelected
@@ -327,18 +287,13 @@ function LeaderDraftPhase({
             </h3>
             {/* Show skeleton cards when waiting for next round */}
             {showPassing && (lastLeadersCount > 0 || leaders.length > 0) ? (
-              <>
-                <div className="passing-message">
-                  Passing Right...
-                </div>
-                <div className="leaders-grid">
-                  {Array.from({ length: lastLeadersCount || leaders.length }).map((_, idx) => (
-                    <div key={`skeleton-${idx}`} className="skeleton-card leader">
-                      <div className="skeleton-shimmer"></div>
-                    </div>
-                  ))}
-                </div>
-              </>
+              <div className="leaders-grid">
+                {Array.from({ length: lastLeadersCount || leaders.length }).map((_, idx) => (
+                  <div key={`skeleton-${idx}`} className="skeleton-card leader">
+                    <div className="skeleton-shimmer"></div>
+                  </div>
+                ))}
+              </div>
             ) : leaders.length > 0 ? (
               <div className="leaders-grid">
                 {leaders.map((leader) => {
@@ -365,6 +320,52 @@ function LeaderDraftPhase({
               </p>
             )}
           </div>
+
+          {/* Passing message - below cards */}
+          {showPassing && (lastLeadersCount > 0 || leaders.length > 0) && (
+            <div className="passing-message">
+              Passing Right...
+            </div>
+          )}
+
+          {/* Selection confirmation banner - below cards */}
+          {selectedCardId && !showPassing && (() => {
+            const selectedLeader = leaders.find(l => (l.instanceId || l.id) === selectedCardId)
+            if (!selectedLeader || !selectedLeader.name) return null
+            const firstAspect = selectedLeader.aspects?.[0]
+            const aspectColor = firstAspect ? getSingleAspectColor(firstAspect) : NO_ASPECT_COLOR
+            return (
+              <div
+                className="selection-confirmation-banner"
+                style={{
+                  background: `linear-gradient(135deg, ${aspectColor}33 0%, ${aspectColor}22 100%)`,
+                  borderColor: aspectColor,
+                }}
+              >
+                <div className="selection-info">
+                  <span className="selection-label">Selected:</span>
+                  <span className="selection-card-name" style={{ color: aspectColor }}>
+                    {selectedLeader.name || selectedLeader.title || 'Leader'}
+                  </span>
+                  {selectedLeader.subtitle && (
+                    <span className="selection-card-subtitle">{selectedLeader.subtitle}</span>
+                  )}
+                </div>
+                {hasSelected ? (
+                  players?.some(p => p.pickStatus !== 'picked' && p.pickStatus !== 'selected') ? (
+                    <div className="selection-status-text">Waiting for other players...</div>
+                  ) : null
+                ) : (
+                  <button className="deselect-button" onClick={(e) => handleDeselect(e)} title="Deselect">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                )}
+              </div>
+            )
+          })()}
         </div>
       </div>
 

@@ -226,17 +226,14 @@
   }
 }
 
-.cards-section.cards-section-fullscreen {
-  position: fixed;
-  inset: 0;
-  z-index: 9998;
-  background: #1a1a1a;
-  overflow-y: auto;
-  padding: 20px;
-  border-radius: 0;
-  border: none;
-  min-width: unset !important;
-  max-width: unset !important;
+/* Expanded mode: hide players, cards section takes full width */
+.draft-layout-expanded .players-section {
+  display: none;
+}
+
+.draft-layout-expanded .cards-section {
+  min-width: 100% !important;
+  max-width: 100% !important;
   width: 100% !important;
 }
 

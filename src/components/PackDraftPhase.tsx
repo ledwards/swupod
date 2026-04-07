@@ -345,7 +345,7 @@ function PackDraftPhase({
 
   return (
     <div className="pack-draft-phase">
-      <div className="draft-layout">
+      <div className={`draft-layout${isFullscreen ? ' draft-layout-expanded' : ''}`}>
         <div className="players-section">
           <PlayerCircle
             players={players}
