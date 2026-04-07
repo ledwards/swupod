@@ -67,8 +67,7 @@
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+  align-items: flex-start;
   gap: 16px;
 }
 
@@ -83,6 +82,12 @@
   color: rgba(255, 215, 0, 0.7);
   text-transform: uppercase;
   letter-spacing: 2px;
+}
+
+.draft-report-username {
+  text-transform: none;
+  font-weight: 700;
+  color: white;
 }
 
 .draft-report-title {
@@ -213,7 +218,7 @@
 .draft-report-seating {
   display: flex;
   justify-content: center;
-  padding: 0.5rem 0 2rem;
+  padding: 0 0 2rem;
 }
 
 .draft-report-log {

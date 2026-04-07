@@ -225,7 +225,7 @@ export default function DraftReportPage({ params }: PageProps) {
       <div className="draft-report-header">
         <div className="draft-report-header-content">
           <div className="draft-report-header-info">
-            <div className="draft-report-label">Draft Report{data.mySeat != null ? ` | ${(players.find(p => p.seatNumber === data.mySeat) || players[data.mySeat])?.username || ''}` : ''}</div>
+            <div className="draft-report-label">Draft Report{data.mySeat != null && (players.find(p => p.seatNumber === data.mySeat) || players[data.mySeat])?.username ? <> | <span className="draft-report-username">{(players.find(p => p.seatNumber === data.mySeat) || players[data.mySeat]).username}</span></> : ''}</div>
             <h1 className="draft-report-title">{draft.name || `${draft.setName} Draft`}</h1>
             <div className="draft-report-meta">
               {completedDate && `${completedDate} · `}
