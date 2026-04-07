@@ -218,7 +218,7 @@
   flex: 1;
 }
 
-.cards-section-fullscreen {
+.cards-section.cards-section-fullscreen {
   position: fixed;
   inset: 0;
   z-index: 9998;
@@ -227,8 +227,9 @@
   padding: 20px;
   border-radius: 0;
   border: none;
-  min-width: unset;
-  max-width: unset;
+  min-width: unset !important;
+  max-width: unset !important;
+  width: 100% !important;
 }
 
 .pack-controls {

@@ -104,6 +104,12 @@ function PackDraftPhase({
   const [showReviewModal, setShowReviewModal] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [hoveredLeaderPreview, setHoveredLeaderPreview] = useState<HoveredLeaderPreview | null>(null)
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
+  const [showPassing, setShowPassing] = useState(false)
+  const [lastPackSize, setLastPackSize] = useState(0)
+  const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const passingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const passingFromPackRef = useRef<string | null>(null) // Track the first card ID when we started passing
 
   // Exit fullscreen on Escape
   useEffect(() => {
@@ -114,12 +120,6 @@ function PackDraftPhase({
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [isFullscreen])
-  const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
-  const [showPassing, setShowPassing] = useState(false)
-  const [lastPackSize, setLastPackSize] = useState(0)
-  const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const passingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const passingFromPackRef = useRef<string | null>(null) // Track the first card ID when we started passing
 
   const handleLeaderNameMouseEnter = (e: React.MouseEvent, leader: Leader) => {
     // Disable hover preview on mobile
