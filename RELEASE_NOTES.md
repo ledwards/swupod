@@ -8,6 +8,17 @@
 - **Fixed deck inclusion stats**: The deck inclusion stats page was failing to match deck cards against pool cards because internal IDs and display IDs were being compared. Deck stats now use display card IDs consistently.
 - **Improved card enrichment in draft stats**: Draft pick and draft log APIs now look up cards by multiple ID formats, so older draft data displays correctly with full card details.
 
+## 04.06.2026 (2)
+
+### 🃏 Draft Pool
+- **Draft Log button on draft pool page**: The Draft Log button now appears on your draft card pool page, right next to Build Deck.
+
+### 💬 Chat Improvements (continued)
+- **Join Discord nudge**: If you're logged in but not yet in the Protect the Pod Discord server, the chat panel shows a dismissible invite button.
+
+### 🐛 Bug Fixes
+- **Fixed "Still deckbuilding..." showing incorrectly in draft log**: If your pool isn't linked yet in the draft log, your own seat now shows a "Go to pod to build deck" link instead of the misleading "Still deckbuilding..." message.
+
 ## 04.06.2026
 
 ### 💬 Chat Improvements
