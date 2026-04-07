@@ -2,6 +2,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { getLatestReleasedSetCode } from '../utils/setConfigs/latest'
 import './PlayInstructions.css'
 
 const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/u6fkdDzWqF'
@@ -49,7 +50,7 @@ export default function PlayInstructions({
 }: PlayInstructionsProps) {
   const inPod = poolType === 'draft' || poolType === 'sealed_pod'
   const viewingOthersDeck = !isOwner && ownerName
-  const isCurrentSet = setCode === 'LAW'
+  const isCurrentSet = setCode === getLatestReleasedSetCode()
   const cardPoolName = isCurrentSet ? 'Current' : 'Unlimited'
 
   const [activeTab, setActiveTab] = useState<'wayfinder' | 'manual'>('wayfinder')
