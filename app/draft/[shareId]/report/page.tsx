@@ -87,6 +87,7 @@ export default function DraftReportPage({ params }: PageProps) {
   const [editingNotes, setEditingNotes] = useState(false)
   const [notesDraft, setNotesDraft] = useState('')
   const [savingNotes, setSavingNotes] = useState(false)
+  const [showMdHelp, setShowMdHelp] = useState(false)
 
   useEffect(() => {
     if (!shareId) return
@@ -473,7 +474,30 @@ export default function DraftReportPage({ params }: PageProps) {
                   <Button variant="secondary" onClick={() => { setEditingNotes(false); setNotesDraft(pool?.notes || '') }}>
                     Cancel
                   </Button>
+                  <button className="draft-report-md-help-btn" onClick={() => setShowMdHelp(v => !v)} title="Markdown reference">
+                    ?
+                  </button>
                 </div>
+                {showMdHelp && (
+                  <div className="draft-report-md-help">
+                    <div className="draft-report-md-help-header">
+                      <strong>Markdown Reference</strong>
+                      <button onClick={() => setShowMdHelp(false)}>&times;</button>
+                    </div>
+                    <table>
+                      <tbody>
+                        <tr><td><code># Heading 1</code></td><td>Large heading</td></tr>
+                        <tr><td><code>## Heading 2</code></td><td>Medium heading</td></tr>
+                        <tr><td><code>### Heading 3</code></td><td>Small heading</td></tr>
+                        <tr><td><code>**bold text**</code></td><td><strong>bold text</strong></td></tr>
+                        <tr><td><code>- item</code></td><td>Bullet list</td></tr>
+                        <tr><td><code>[link](url)</code></td><td>Hyperlink</td></tr>
+                        <tr><td><code>`code`</code></td><td>Inline code</td></tr>
+                        <tr><td><code>---</code></td><td>Horizontal rule</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </>
             ) : pool?.notes ? (
               <>

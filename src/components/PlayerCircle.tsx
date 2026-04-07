@@ -216,14 +216,12 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
             })}
           </div>
         )}
-        {player.pickStatus && (
-          <div
-            className="leader-info-status"
-            style={{ color: getStatusColor(player.pickStatus) }}
-          >
-            {player.pickStatus === 'picked' || player.pickStatus === 'selected' ? 'Done' : 'Picking...'}
-          </div>
-        )}
+        <div
+          className="leader-info-status"
+          style={{ color: getStatusColor(player.pickStatus) }}
+        >
+          {player.pickStatus === 'picked' || player.pickStatus === 'selected' ? 'Done' : 'Picking...'}
+        </div>
       </div>
     )
   }
