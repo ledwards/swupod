@@ -362,3 +362,115 @@
     gap: 8px;
   }
 }
+
+/* Notes tab */
+.draft-report-notes {
+  position: relative;
+  padding: 20px 0;
+}
+
+.draft-report-notes-view {
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+.draft-report-notes-view h1,
+.draft-report-notes-view h2,
+.draft-report-notes-view h3 {
+  color: white;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.draft-report-notes-view h1 { font-size: 1.4rem; }
+.draft-report-notes-view h2 { font-size: 1.2rem; }
+.draft-report-notes-view h3 { font-size: 1.05rem; }
+
+.draft-report-notes-view p {
+  margin: 0.5rem 0;
+}
+
+.draft-report-notes-view a {
+  color: rgba(128, 170, 255, 0.9);
+}
+
+.draft-report-notes-view ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.draft-report-notes-view li {
+  margin: 0.25rem 0;
+}
+
+.draft-report-notes-view code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.85em;
+}
+
+.draft-report-notes-view pre {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+.draft-report-notes-empty {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 1rem;
+  padding: 3rem;
+  text-align: center;
+  cursor: pointer;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+}
+
+.draft-report-notes-edit {
+  width: 100%;
+  min-height: 300px;
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 16px;
+  font-family: 'Barlow', monospace;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.draft-report-notes-edit:focus {
+  outline: none;
+  border-color: rgba(255, 215, 0, 0.5);
+}
+
+.draft-report-notes-edit::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.draft-report-notes-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.draft-report-notes-edit-btn {
+  position: absolute;
+  top: 20px;
+  right: 0;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.6);
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.draft-report-notes-edit-btn:hover {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.5);
+}

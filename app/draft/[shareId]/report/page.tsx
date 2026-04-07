@@ -13,6 +13,7 @@ import '../../../../src/components/SealedPod.css'
 import '../log/log.css'
 import './report.css'
 import { getPackArtUrl } from '../../../../src/utils/packArt'
+import { parseMarkdownToHTML } from '../../../../src/utils/markdown'
 
 interface ReportData {
   draft: {
@@ -53,11 +54,12 @@ interface ReportData {
     packs: Array<{ cards: unknown[]; name?: string }>
     deckBuilderState: unknown
     reportPublic: boolean
+    notes: string | null
     createdAt: string
   } | null
 }
 
-type TabId = 'seating' | 'log' | 'pool' | 'deck' | 'gameplay'
+type TabId = 'seating' | 'log' | 'pool' | 'deck' | 'notes' | 'gameplay'
 
 interface PageProps {
   params: Promise<{ shareId: string }>
@@ -75,12 +77,15 @@ export default function DraftReportPage({ params }: PageProps) {
   const [activeTab, setActiveTab] = useState<TabId>(() => {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash.replace('#', '') as TabId
-      if (['seating', 'log', 'pool', 'deck', 'gameplay'].includes(hash)) return hash
+      if (['seating', 'log', 'pool', 'deck', 'notes', 'gameplay'].includes(hash)) return hash
     }
     return 'seating'
   })
   const [message, setMessage] = useState<string | null>(null)
   const [reportPublic, setReportPublic] = useState(false)
+  const [editingNotes, setEditingNotes] = useState(false)
+  const [notesDraft, setNotesDraft] = useState('')
+  const [savingNotes, setSavingNotes] = useState(false)
 
   useEffect(() => {
     if (!shareId) return
@@ -133,6 +138,29 @@ export default function DraftReportPage({ params }: PageProps) {
     setTimeout(() => setMessage(null), 3000)
   }
 
+  const handleSaveNotes = async () => {
+    setSavingNotes(true)
+    try {
+      const res = await fetch(`/api/draft/${shareId}/report/notes`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ notes: notesDraft }),
+      })
+      if (res.ok) {
+        setData(prev => prev ? {
+          ...prev,
+          pool: prev.pool ? { ...prev.pool, notes: notesDraft || null } : prev.pool,
+        } : prev)
+        setEditingNotes(false)
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setSavingNotes(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="draft-report-page page-background-with-art">
@@ -170,6 +198,7 @@ export default function DraftReportPage({ params }: PageProps) {
   }
 
   const { draft, players, picks, pool } = data
+  const isOwner = user && data.mySeat != null
   const completedDate = draft.completedAt
     ? new Date(draft.completedAt).toLocaleDateString('en-US', {
         weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
@@ -216,6 +245,7 @@ export default function DraftReportPage({ params }: PageProps) {
     { id: 'log', label: 'Draft Log' },
     { id: 'pool', label: 'Pool' },
     { id: 'deck', label: 'Deck' },
+    { id: 'notes', label: 'Notes' },
     { id: 'gameplay', label: 'Gameplay', placeholder: true },
   ]
 
@@ -421,6 +451,56 @@ export default function DraftReportPage({ params }: PageProps) {
                   </div>
                 )}
               </>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'notes' && (
+          <div className="draft-report-notes">
+            {editingNotes ? (
+              <>
+                <textarea
+                  className="draft-report-notes-edit"
+                  value={notesDraft}
+                  onChange={(e) => setNotesDraft(e.target.value)}
+                  placeholder="Write your notes here... (Markdown supported)"
+                  autoFocus
+                />
+                <div className="draft-report-notes-actions">
+                  <Button variant="primary" onClick={handleSaveNotes} disabled={savingNotes}>
+                    {savingNotes ? 'Saving...' : 'Save'}
+                  </Button>
+                  <Button variant="secondary" onClick={() => { setEditingNotes(false); setNotesDraft(pool?.notes || '') }}>
+                    Cancel
+                  </Button>
+                </div>
+              </>
+            ) : pool?.notes ? (
+              <>
+                {isOwner && (
+                  <button className="draft-report-notes-edit-btn" onClick={() => { setNotesDraft(pool.notes || ''); setEditingNotes(true) }} title="Edit notes">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                  </button>
+                )}
+                <div
+                  className="draft-report-notes-view"
+                  dangerouslySetInnerHTML={{ __html: parseMarkdownToHTML(pool.notes) }}
+                />
+              </>
+            ) : isOwner ? (
+              <div
+                className="draft-report-notes-empty"
+                onClick={() => { setNotesDraft(''); setEditingNotes(true) }}
+              >
+                Click to add notes...
+              </div>
+            ) : (
+              <div className="draft-report-notes-empty" style={{ cursor: 'default' }}>
+                No notes yet.
+              </div>
             )}
           </div>
         )}
