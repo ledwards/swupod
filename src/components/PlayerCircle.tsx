@@ -24,7 +24,7 @@ interface Player {
   currentPackSize?: number
   draftedLeaders?: Leader[]
   leaderPack?: Leader[]
-  activeLeaderId?: string | null
+  activeLeaderName?: string | null
 }
 
 interface Draft {
@@ -199,7 +199,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
         {draftedLeaders.length > 0 && (
           <div className="leader-info-list">
             {draftedLeaders.map((leader, idx) => {
-              const isActive = player.activeLeaderId && (leader.instanceId || leader.id) === player.activeLeaderId
+              const isActive = player.activeLeaderName && leader.name === player.activeLeaderName
               return (
                 <div key={idx} className="leader-info-item">
                   <span

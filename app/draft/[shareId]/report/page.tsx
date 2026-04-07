@@ -36,7 +36,7 @@ interface ReportData {
     avatarUrl: string | null
     isBot: boolean
     draftedLeaders: unknown[]
-    activeLeaderId: string | null
+    activeLeaderName: string | null
     strategyName: string | null
     mixinName: string | null
   }>
@@ -323,7 +323,7 @@ export default function DraftReportPage({ params }: PageProps) {
                 seatNumber: p.seatNumber,
                 isBot: p.isBot,
                 draftedLeaders: p.draftedLeaders,
-                activeLeaderId: p.activeLeaderId || null,
+                activeLeaderName: p.activeLeaderName || null,
               }))}
               maxPlayers={draft.maxPlayers}
               currentUserId={user?.id}
