@@ -400,46 +400,6 @@ function PackDraftPhase({
             </div>
           </div>
 
-          {/* Selection confirmation banner - hide during passing transition */}
-          {selectedCardId && !showPassing && (() => {
-            const selectedCard = currentPack.find(c => (c.instanceId || c.id) === selectedCardId)
-            if (!selectedCard || !selectedCard.name) return null
-            const firstAspect = selectedCard.aspects?.[0]
-            const aspectColor = firstAspect ? getSingleAspectColor(firstAspect) : NO_ASPECT_COLOR
-            return (
-              <div
-                className="selection-confirmation-banner"
-                style={{
-                  background: `linear-gradient(135deg, ${aspectColor}33 0%, ${aspectColor}22 100%)`,
-                  borderColor: aspectColor,
-                }}
-              >
-                <div className="selection-info">
-                  <span className="selection-label">Selected:</span>
-                  <span className="selection-card-name" style={{ color: aspectColor }}>
-                    {selectedCard.name || selectedCard.title || 'Card'}
-                  </span>
-                  {selectedCard.subtitle && (
-                    <span className="selection-card-subtitle">{selectedCard.subtitle}</span>
-                  )}
-                </div>
-                {hasSelected ? (
-                  // Only show "Waiting" if there are players who aren't done yet
-                  players?.some(p => p.pickStatus !== 'picked' && p.pickStatus !== 'selected') ? (
-                    <div className="selection-status-text">Waiting for other players...</div>
-                  ) : null
-                ) : (
-                  <button className="deselect-button" onClick={(e) => handleDeselect(e)} title="Deselect">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                      <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                  </button>
-                )}
-              </div>
-            )
-          })()}
-
           <div className="current-pack">
             {/* Show skeleton cards when waiting for next pack */}
             {showPassing && (lastPackSize > 0 || currentPack.length > 0) ? (
@@ -482,6 +442,45 @@ function PackDraftPhase({
             )}
           </div>
 
+          {/* Selection confirmation banner - below cards */}
+          {selectedCardId && !showPassing && (() => {
+            const selectedCard = currentPack.find(c => (c.instanceId || c.id) === selectedCardId)
+            if (!selectedCard || !selectedCard.name) return null
+            const firstAspect = selectedCard.aspects?.[0]
+            const aspectColor = firstAspect ? getSingleAspectColor(firstAspect) : NO_ASPECT_COLOR
+            return (
+              <div
+                className="selection-confirmation-banner"
+                style={{
+                  background: `linear-gradient(135deg, ${aspectColor}33 0%, ${aspectColor}22 100%)`,
+                  borderColor: aspectColor,
+                }}
+              >
+                <div className="selection-info">
+                  <span className="selection-label">Selected:</span>
+                  <span className="selection-card-name" style={{ color: aspectColor }}>
+                    {selectedCard.name || selectedCard.title || 'Card'}
+                  </span>
+                  {selectedCard.subtitle && (
+                    <span className="selection-card-subtitle">{selectedCard.subtitle}</span>
+                  )}
+                </div>
+                {hasSelected ? (
+                  // Only show "Waiting" if there are players who aren't done yet
+                  players?.some(p => p.pickStatus !== 'picked' && p.pickStatus !== 'selected') ? (
+                    <div className="selection-status-text">Waiting for other players...</div>
+                  ) : null
+                ) : (
+                  <button className="deselect-button" onClick={(e) => handleDeselect(e)} title="Deselect">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                )}
+              </div>
+            )
+          })()}
 
         </div>
       </div>
