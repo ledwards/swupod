@@ -321,7 +321,6 @@ export default function DraftReportPage({ params }: PageProps) {
                 avatarUrl: p.avatarUrl,
                 seatNumber: p.seatNumber,
                 isBot: p.isBot,
-                pickStatus: 'picked',
                 draftedLeaders: p.draftedLeaders,
                 activeLeaderId: p.activeLeaderId || null,
               }))}
