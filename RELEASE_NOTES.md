@@ -4,7 +4,9 @@
 
 ### 🐛 Bug Fixes
 - **Fixed broken Showcase Collection page**: Showcase card images were not loading because card IDs in the database were in an old numeric format that didn't match the current UUID-based card data. A data migration converts all old card IDs to the correct format across all tables.
-- **Fixed broken draft log and picks endpoints**: Three API endpoints (`/api/public/draft-log`, `/api/me/drafts/:id/picks`, `/api/private/user-data`) were returning 500 errors due to a column name that was missed during an earlier table rename.
+- **Fixed draft pick recording**: Draft picks were failing to save to the analytics table due to a column rename that wasn't applied everywhere. Picks now record correctly for both human and bot players.
+- **Fixed draft report pages**: Draft reports were returning 500 errors due to a nonexistent column reference. Reports now load correctly.
+- **Fixed broken draft log and picks endpoints**: Several API endpoints were returning 500 errors due to a column name that was missed during an earlier table rename.
 - **Fixed deck inclusion stats**: The deck inclusion stats page was failing to match deck cards against pool cards because internal IDs and display IDs were being compared. Deck stats now use display card IDs consistently.
 - **Improved card enrichment in draft stats**: Draft pick and draft log APIs now look up cards by multiple ID formats, so older draft data displays correctly with full card details.
 
