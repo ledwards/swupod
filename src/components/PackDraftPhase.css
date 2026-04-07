@@ -232,10 +232,10 @@
 }
 
 .draft-layout-expanded .cards-section {
-  min-width: calc(100% - 70px) !important;
-  max-width: calc(100% - 70px) !important;
-  width: calc(100% - 70px) !important;
-  margin: 0 35px;
+  min-width: calc(100% - 60px) !important;
+  max-width: calc(100% - 60px) !important;
+  width: calc(100% - 60px) !important;
+  margin: 0 30px;
 }
 
 .pack-controls {
