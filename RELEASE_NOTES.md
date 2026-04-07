@@ -8,6 +8,10 @@
 - **Draft Reports list page**: Access all your past draft reports from the user dropdown menu under "Draft Reports".
 - **Public/Private sharing**: Toggle your draft report between public and private, and share with a direct link.
 - **Deep-linkable tabs**: Each report tab has a hash anchor (`#seating`, `#log`, `#pool`, `#deck`, `#gameplay`) for direct linking.
+- **Notes tab**: Write and save personal markdown notes on your draft reports. Notes are publicly visible when the report is shared. Includes a markdown reference popup.
+- **Seating shows final state**: The seating chart now shows all 3 drafted leaders per player (not the current pack). The chosen leader is bolded.
+- **Non-patron upgrade prompt**: Non-patrons see a description of Draft Reports and a link to the Patreon page instead of just a back button.
+- **Draft Reports perk listed**: The Support the Pod page now lists Draft Reports as a patron perk.
 
 ### 🎮 UI Improvements
 - **Expand/collapse draft pick window**: New button in the upper right corner of the cards section lets you expand it to full width (hiding the player circle) or collapse back to default. Press Escape to collapse.
@@ -23,6 +27,8 @@
 - **Draft Log button spacing**: Fixed missing spacing between the Build Deck and Draft Log buttons on the pool page.
 - **Play buttons get triangle icon**: All Play buttons across the app now show the play triangle icon consistently.
 - **Solo draft text update**: "Find a human opponent to play your deck!" now reads "You need to find a human opponent to play your deck!"
+- **Support the Pod page scrolls**: The support page now scrolls vertically on smaller screens instead of clipping content.
+- **More spacing on Support page**: Added breathing room between the action buttons and the sponsor/teammate sections.
 
 ### 🐛 Bug Fixes
 - **Fixed card pool detection for Karabast**: Play instructions now dynamically detect the latest released set instead of being hardcoded to LAW. Current set drafts correctly show "Card Pool: Current" instead of "Unlimited".
