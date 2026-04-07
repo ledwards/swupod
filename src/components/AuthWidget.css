@@ -362,6 +362,14 @@ a.auth-widget-login-circle:active {
   white-space: nowrap;
 }
 
+.auth-widget-draft-reports-item {
+  color: rgba(255, 215, 0, 0.9) !important;
+}
+
+.auth-widget-draft-reports-item:hover {
+  color: rgba(255, 215, 0, 1) !important;
+}
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
   .auth-widget {
