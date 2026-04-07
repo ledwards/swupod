@@ -85,8 +85,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     `SELECT cp.id, cp.share_id, cp.cards, cp.packs, cp.deck_builder_state,
             cp.report_public, cp.pool_type, cp.created_at
      FROM card_pools cp
-     JOIN pod_players pp ON pp.id = cp.pod_player_id
-     WHERE pp.pod_id = $1 AND pp.user_id = $2`,
+     WHERE cp.pod_id = $1 AND cp.user_id = $2`,
     [pod.id, session.id]
   )
 

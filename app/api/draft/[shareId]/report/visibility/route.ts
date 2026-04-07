@@ -32,10 +32,8 @@ export async function PATCH(request: NextRequest, { params }: RouteContext): Pro
   // Update the user's pool report_public flag
   const result = await query(
     `UPDATE card_pools SET report_public = $1
-     FROM pod_players pp
-     WHERE card_pools.pod_player_id = pp.id
-       AND pp.pod_id = $2
-       AND pp.user_id = $3`,
+     WHERE card_pools.pod_id = $2
+       AND card_pools.user_id = $3`,
     [reportPublic, pod.id, session.id]
   )
 

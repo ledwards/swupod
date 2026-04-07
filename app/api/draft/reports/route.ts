@@ -21,7 +21,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             cp.cards as "poolCards"
      FROM pods p
      JOIN pod_players pp ON pp.pod_id = p.id
-     LEFT JOIN card_pools cp ON cp.pod_player_id = pp.id
+     LEFT JOIN card_pools cp ON cp.pod_id = pp.pod_id AND cp.user_id = pp.user_id
      WHERE pp.user_id = $1
        AND p.pod_type = 'draft'
        AND p.status = 'complete'

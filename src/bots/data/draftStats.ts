@@ -295,8 +295,8 @@ function fetchLeaderStats(setCode: string) {
             COUNT(*) as times_picked,
             COUNT(*) FILTER (WHERE dp.leader_round = 1) as round_1_picks
      FROM draft_picks dp
-     JOIN pods p ON p.id = dp.draft_pod_id
-     JOIN pod_players pp ON pp.pod_id = dp.draft_pod_id AND pp.user_id = dp.user_id
+     JOIN pods p ON p.id = dp.pod_id
+     JOIN pod_players pp ON pp.pod_id = dp.pod_id AND pp.user_id = dp.user_id
      WHERE dp.set_code = $1 AND dp.is_leader = true
        AND p.status = 'complete' AND (pp.is_bot = false OR pp.is_bot IS NULL)
      GROUP BY dp.card_name`,
@@ -310,8 +310,8 @@ function fetchCardStats(setCode: string) {
             COUNT(*) as times_picked,
             ROUND(AVG(dp.pick_in_pack)::numeric, 2) as avg_pick_position
      FROM draft_picks dp
-     JOIN pods p ON p.id = dp.draft_pod_id
-     JOIN pod_players pp ON pp.pod_id = dp.draft_pod_id AND pp.user_id = dp.user_id
+     JOIN pods p ON p.id = dp.pod_id
+     JOIN pod_players pp ON pp.pod_id = dp.pod_id AND pp.user_id = dp.user_id
      WHERE dp.set_code = $1 AND dp.is_leader = false
        AND p.status = 'complete' AND (pp.is_bot = false OR pp.is_bot IS NULL)
      GROUP BY dp.card_name, dp.rarity, dp.card_type`,
@@ -333,10 +333,10 @@ function fetchDeckRows(setCode: string) {
 
 function fetchDraftCount(setCode: string) {
   return queryRows(
-    `SELECT COUNT(DISTINCT dp.draft_pod_id) as count
+    `SELECT COUNT(DISTINCT dp.pod_id) as count
      FROM draft_picks dp
-     JOIN pods p ON p.id = dp.draft_pod_id
-     JOIN pod_players pp ON pp.pod_id = dp.draft_pod_id AND pp.user_id = dp.user_id
+     JOIN pods p ON p.id = dp.pod_id
+     JOIN pod_players pp ON pp.pod_id = dp.pod_id AND pp.user_id = dp.user_id
      WHERE dp.set_code = $1 AND p.status = 'complete'
        AND (pp.is_bot = false OR pp.is_bot IS NULL)`,
     [setCode]
@@ -352,8 +352,8 @@ function fetchTopPlayerLeaderStats(setCode: string) {
             COUNT(*) as times_picked,
             COUNT(*) FILTER (WHERE dp.leader_round = 1) as round_1_picks
      FROM draft_picks dp
-     JOIN pods p ON p.id = dp.draft_pod_id
-     JOIN pod_players pp ON pp.pod_id = dp.draft_pod_id AND pp.user_id = dp.user_id
+     JOIN pods p ON p.id = dp.pod_id
+     JOIN pod_players pp ON pp.pod_id = dp.pod_id AND pp.user_id = dp.user_id
      JOIN top_players tp ON tp.user_id = dp.user_id
      WHERE dp.set_code = $1 AND dp.is_leader = true
        AND p.status = 'complete' AND (pp.is_bot = false OR pp.is_bot IS NULL)
@@ -369,8 +369,8 @@ function fetchTopPlayerCardStats(setCode: string) {
             COUNT(*) as times_picked,
             ROUND(AVG(dp.pick_in_pack)::numeric, 2) as avg_pick_position
      FROM draft_picks dp
-     JOIN pods p ON p.id = dp.draft_pod_id
-     JOIN pod_players pp ON pp.pod_id = dp.draft_pod_id AND pp.user_id = dp.user_id
+     JOIN pods p ON p.id = dp.pod_id
+     JOIN pod_players pp ON pp.pod_id = dp.pod_id AND pp.user_id = dp.user_id
      JOIN top_players tp ON tp.user_id = dp.user_id
      WHERE dp.set_code = $1 AND dp.is_leader = false
        AND p.status = 'complete' AND (pp.is_bot = false OR pp.is_bot IS NULL)
@@ -387,8 +387,8 @@ function fetchTournamentLeaderStats(setCode: string) {
             COUNT(*) as times_picked,
             COUNT(*) FILTER (WHERE dp.leader_round = 1) as round_1_picks
      FROM draft_picks dp
-     JOIN pods p ON p.id = dp.draft_pod_id
-     JOIN pod_players pp ON pp.pod_id = dp.draft_pod_id AND pp.user_id = dp.user_id
+     JOIN pods p ON p.id = dp.pod_id
+     JOIN pod_players pp ON pp.pod_id = dp.pod_id AND pp.user_id = dp.user_id
      WHERE dp.set_code = $1 AND dp.is_leader = true
        AND dp.user_id = ANY($2::uuid[])
        AND p.status = 'complete' AND (pp.is_bot = false OR pp.is_bot IS NULL)
@@ -405,8 +405,8 @@ function fetchTournamentCardStats(setCode: string) {
             COUNT(*) as times_picked,
             ROUND(AVG(dp.pick_in_pack)::numeric, 2) as avg_pick_position
      FROM draft_picks dp
-     JOIN pods p ON p.id = dp.draft_pod_id
-     JOIN pod_players pp ON pp.pod_id = dp.draft_pod_id AND pp.user_id = dp.user_id
+     JOIN pods p ON p.id = dp.pod_id
+     JOIN pod_players pp ON pp.pod_id = dp.pod_id AND pp.user_id = dp.user_id
      WHERE dp.set_code = $1 AND dp.is_leader = false
        AND dp.user_id = ANY($2::uuid[])
        AND p.status = 'complete' AND (pp.is_bot = false OR pp.is_bot IS NULL)
@@ -422,8 +422,8 @@ function fetchUserLeaderStats(setCode: string, userId: string) {
             COUNT(*) as times_picked,
             COUNT(*) FILTER (WHERE dp.leader_round = 1) as round_1_picks
      FROM draft_picks dp
-     JOIN pods p ON p.id = dp.draft_pod_id
-     JOIN pod_players pp ON pp.pod_id = dp.draft_pod_id AND pp.user_id = dp.user_id
+     JOIN pods p ON p.id = dp.pod_id
+     JOIN pod_players pp ON pp.pod_id = dp.pod_id AND pp.user_id = dp.user_id
      WHERE dp.set_code = $1 AND dp.is_leader = true
        AND dp.user_id = $2
        AND p.status = 'complete' AND (pp.is_bot = false OR pp.is_bot IS NULL)
@@ -440,9 +440,9 @@ function fetchPerLeaderCardStats(setCode: string) {
             COUNT(*) as times_picked,
             ROUND(AVG(dp.pick_in_pack)::numeric, 2) as avg_pick_position
      FROM draft_picks dp
-     JOIN pods p ON p.id = dp.draft_pod_id
+     JOIN pods p ON p.id = dp.pod_id
      JOIN built_decks bd ON bd.user_id = dp.user_id AND bd.set_code = dp.set_code
-     JOIN pod_players pp ON pp.pod_id = dp.draft_pod_id AND pp.user_id = dp.user_id
+     JOIN pod_players pp ON pp.pod_id = dp.pod_id AND pp.user_id = dp.user_id
      WHERE dp.set_code = $1 AND dp.is_leader = false
        AND p.status = 'complete'
        AND (pp.is_bot = false OR pp.is_bot IS NULL)
@@ -460,9 +460,9 @@ function fetchPerLeaderBaseCardStats(setCode: string) {
             COUNT(*) as times_picked,
             ROUND(AVG(dp.pick_in_pack)::numeric, 2) as avg_pick_position
      FROM draft_picks dp
-     JOIN pods p ON p.id = dp.draft_pod_id
+     JOIN pods p ON p.id = dp.pod_id
      JOIN built_decks bd ON bd.user_id = dp.user_id AND bd.set_code = dp.set_code
-     JOIN pod_players pp ON pp.pod_id = dp.draft_pod_id AND pp.user_id = dp.user_id
+     JOIN pod_players pp ON pp.pod_id = dp.pod_id AND pp.user_id = dp.user_id
      CROSS JOIN LATERAL jsonb_array_elements_text(bd.base->'aspects') a(value)
      WHERE dp.set_code = $1 AND dp.is_leader = false
        AND p.status = 'complete'

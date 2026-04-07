@@ -31,7 +31,7 @@ function buildQueryParts(opts: {
   let botJoin = ''
   let botFilter = ''
   if (!opts.includeBots || !opts.includeHumans) {
-    botJoin = `JOIN pod_players dpp ON dp.draft_pod_id = dpp.pod_id AND dp.user_id = dpp.user_id`
+    botJoin = `JOIN pod_players dpp ON dp.pod_id = dpp.pod_id AND dp.user_id = dpp.user_id`
     if (!opts.includeBots && opts.includeHumans) {
       botFilter = `AND (dpp.is_bot = false OR dpp.is_bot IS NULL)`
     } else if (opts.includeBots && !opts.includeHumans) {
@@ -41,7 +41,7 @@ function buildQueryParts(opts: {
 
   let builtDeckJoin = ''
   if (opts.builtDeckOnly) {
-    builtDeckJoin = `JOIN card_pools cp_bd ON cp_bd.pod_id = dp.draft_pod_id AND cp_bd.user_id = dp.user_id
+    builtDeckJoin = `JOIN card_pools cp_bd ON cp_bd.pod_id = dp.pod_id AND cp_bd.user_id = dp.user_id
       JOIN built_decks bd ON bd.card_pool_id = cp_bd.id`
   }
 
@@ -73,7 +73,7 @@ describe('draft-picks query building', () => {
       const parts = buildQueryParts({ includeBots: true, includeHumans: true, builtDeckOnly: true })
       assert.ok(parts.builtDeckJoin.includes('JOIN card_pools'), 'should JOIN card_pools')
       assert.ok(parts.builtDeckJoin.includes('JOIN built_decks'), 'should JOIN built_decks')
-      assert.ok(parts.builtDeckJoin.includes('cp_bd.pod_id = dp.draft_pod_id'), 'should match on pod_id')
+      assert.ok(parts.builtDeckJoin.includes('cp_bd.pod_id = dp.pod_id'), 'should match on pod_id')
       assert.ok(parts.builtDeckJoin.includes('cp_bd.user_id = dp.user_id'), 'should match on user_id')
       assert.ok(parts.builtDeckJoin.includes('bd.card_pool_id = cp_bd.id'), 'should join built_decks via card_pool_id')
     })
