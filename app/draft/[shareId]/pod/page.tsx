@@ -60,6 +60,25 @@ export default function PodPage({ params }: PageProps) {
     turnOnePlays: number
     totalCards: number
   } | null>(null)
+
+  // Detect Wayfinder extension via DOM marker
+  const [wayfinderDetected, setWayfinderDetected] = useState(false)
+  useEffect(() => {
+    if (document.querySelector('meta[name="wayfinder-installed"]')) {
+      setWayfinderDetected(true)
+      return
+    }
+    const onInstalled = () => setWayfinderDetected(true)
+    document.addEventListener('wayfinder:installed', onInstalled)
+    const timer = setTimeout(() => {
+      if (document.querySelector('meta[name="wayfinder-installed"]')) setWayfinderDetected(true)
+    }, 1000)
+    return () => {
+      document.removeEventListener('wayfinder:installed', onInstalled)
+      clearTimeout(timer)
+    }
+  }, [])
+
   const [isDiscordMember, setIsDiscordMember] = useState<boolean | null>(null)
   const botBuildTriggered = useRef(false)
   const shuffleSoundRef = useRef(null)
@@ -729,9 +748,12 @@ export default function PodPage({ params }: PageProps) {
             <PlayInstructions
               shareId={myPoolShareId}
               poolType="sealed"
+              setCode={draft?.setCode || myPool?.setCode}
               hasBye={false}
+              isSoloDraft={true}
               onCopyLink={copyDeckUrl}
               showActions={false}
+              wayfinderDetected={wayfinderDetected}
             />
 
             <div className="pod-actions">
@@ -839,10 +861,12 @@ export default function PodPage({ params }: PageProps) {
         {!isSolo && <PlayInstructions
           shareId={myPoolShareId}
           poolType="draft"
+          setCode={draft?.setCode || myPool?.setCode}
           opponentName={myOpponent?.username}
           hasBye={myBye}
           onCopyLink={copyDeckUrl}
           showActions={false}
+          wayfinderDetected={wayfinderDetected}
         />}
 
         {/* Action buttons (non-solo — solo shows them above) */}
