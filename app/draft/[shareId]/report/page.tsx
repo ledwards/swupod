@@ -354,8 +354,20 @@ export default function DraftReportPage({ params }: PageProps) {
 
         {activeTab === 'deck' && (
           <div className="draft-report-deck">
-            {!deckState ? (
+            {!deckState && (!pool?.cards || pool.cards.length === 0) ? (
               <div className="draft-report-deck-empty">Still deckbuilding...</div>
+            ) : !deckState ? (
+              <>
+                <div className="draft-report-pool-section">
+                  <h3>Drafted Cards ({pool.cards.length})</h3>
+                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', marginBottom: '12px' }}>Deck not yet built — showing full card pool.</p>
+                  <div className="cards-grid">
+                    {[...pool.cards].sort((a, b) => (a.cost ?? 0) - (b.cost ?? 0)).map((card, i) => (
+                      <CardWithPreview key={card.instanceId || i} card={card} />
+                    ))}
+                  </div>
+                </div>
+              </>
             ) : (
               <>
                 {(activeLeaderCard || activeBaseCard) && (
