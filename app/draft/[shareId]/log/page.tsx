@@ -333,7 +333,12 @@ export default function DraftLogPage({ params }: PageProps) {
           <div className="draft-log-error">
             <h2>Error</h2>
             <p>{error}</p>
-            <Button variant="back" onClick={() => router.push(`/draft/${shareId}/pod`)}>Play</Button>
+            <Button variant="primary" onClick={() => router.push(`/draft/${shareId}/pod`)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              Play
+            </Button>
           </div>
         </div>
       </div>
@@ -391,7 +396,12 @@ export default function DraftLogPage({ params }: PageProps) {
 
         {/* Top nav: Play button + Copy Share Link + Host lock + Download JSON */}
         <div className="draft-log-top-nav">
-          <Button variant="primary" onClick={() => router.push(`/draft/${shareId}/pod`)}>Play</Button>
+          <Button variant="primary" onClick={() => router.push(`/draft/${shareId}/pod`)}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            Play
+          </Button>
           <Button variant="secondary" className="draft-log-share-link" onClick={handleCopyShareLink}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />

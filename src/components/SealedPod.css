@@ -233,6 +233,10 @@
   box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
 }
 
+.draft-log-button {
+  margin-top: 0.75rem;
+}
+
 .instruction {
   text-align: center;
   color: #ccc;

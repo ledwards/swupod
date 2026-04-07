@@ -268,7 +268,7 @@ export default function PlayInstructions({
 
       {isSoloDraft && !viewingOthersDeck && (
         <div className="play-solo-notice">
-          This was a simulated pod — you can't play against the bots, but you can check out their decks from the draft log. Find a human opponent to play your deck!
+          This was a simulated pod — you can't play against the bots, but you can check out their decks from the draft log. You need to find a human opponent to play your deck!
         </div>
       )}
 
