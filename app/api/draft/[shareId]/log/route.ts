@@ -188,6 +188,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
           userId: p.user_id,
           isBot: p.is_bot || false,
           isLogPublic: p.is_log_public || false,
+          poolShareId: p.pool_share_id || null,
+          poolIsPublic: p.pool_is_public ?? null,
         })),
         viewableSeats,
         isHost: !!isHost,
