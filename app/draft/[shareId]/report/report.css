@@ -5,9 +5,10 @@
   position: relative;
 }
 
-/* Hide "Done" status text in seating circle on report page */
-.draft-report-page .leader-info-status {
-  display: none;
+/* Hide pick status text in seating circle on report page */
+.draft-report-page .leader-info-status,
+.draft-report-page .seat-status {
+  display: none !important;
 }
 
 .draft-report-page-content {

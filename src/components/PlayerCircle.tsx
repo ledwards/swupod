@@ -4,6 +4,7 @@
 import { useState, useRef, useEffect, memo } from 'react'
 import { createPortal } from 'react-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { ASPECT_COLORS } from '../utils/aspectColors'
 import PlayerSeat from './PlayerSeat'
 import './PlayerCircle.css'
 
@@ -217,7 +218,13 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
             })}
             {player.chosenBase && (
               <div className="leader-info-item">
-                <span className="leader-name" style={{ fontStyle: 'italic' }}>
+                <span
+                  className="leader-name"
+                  style={{
+                    fontStyle: 'italic',
+                    color: player.chosenBase.aspects?.[0] ? (ASPECT_COLORS[player.chosenBase.aspects[0]] || 'white') : 'white',
+                  }}
+                >
                   {player.chosenBase.name}
                 </span>
                 {renderAspectIcons(player.chosenBase.aspects)}
@@ -225,12 +232,14 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
             )}
           </div>
         )}
-        <div
-          className="leader-info-status"
-          style={{ color: getStatusColor(player.pickStatus) }}
-        >
-          {player.pickStatus === 'picked' || player.pickStatus === 'selected' ? 'Done' : 'Picking...'}
-        </div>
+        {player.pickStatus && (
+          <div
+            className="leader-info-status"
+            style={{ color: getStatusColor(player.pickStatus) }}
+          >
+            {player.pickStatus === 'picked' || player.pickStatus === 'selected' ? 'Done' : 'Picking...'}
+          </div>
+        )}
       </div>
     )
   }
