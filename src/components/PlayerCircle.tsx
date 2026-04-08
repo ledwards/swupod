@@ -26,7 +26,7 @@ interface Player {
   draftedLeaders?: Leader[]
   leaderPack?: Leader[]
   activeLeaderName?: string | null
-  chosenBase?: { name: string; aspects?: string[] } | null
+  chosenBase?: { name: string; aspects?: string[]; imageUrl?: string; backImageUrl?: string } | null
 }
 
 interface Draft {
@@ -234,11 +234,13 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
               {player.chosenBase && (
                 <div className="leader-info-item">
                   <span
-                    className="leader-name"
+                    className="leader-name hoverable"
                     style={{
                       fontStyle: 'italic',
                       color: player.chosenBase.aspects?.[0] ? (ASPECT_COLORS[player.chosenBase.aspects[0]] || 'white') : 'white',
                     }}
+                    onMouseEnter={() => handleLeaderMouseEnter(player.chosenBase as Leader)}
+                    onMouseLeave={handleLeaderMouseLeave}
                   >
                     {player.chosenBase.name}
                   </span>
@@ -250,7 +252,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
         )}
         {showDivider && <hr className="leader-info-divider" />}
         {unchosenLeaders.length > 0 && (
-          <div className="leader-info-section">
+          <div className="leader-info-section" style={{ opacity: 0.5 }}>
             <div className="leader-info-label">Drafted</div>
             <div className="leader-info-list">
               {unchosenLeaders.map((leader, idx) => (

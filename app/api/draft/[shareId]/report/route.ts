@@ -74,6 +74,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
           chosenBaseByUser.set(row.user_id, {
             name: basePos.card.name || '',
             aspects: basePos.card.aspects || [],
+            imageUrl: basePos.card.imageUrl || null,
+            backImageUrl: basePos.card.backImageUrl || null,
           })
         }
       }
