@@ -186,27 +186,77 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
     }
   }
 
-  // Render simple leader info (just drafted leaders, no headers) - for pack draft
+  // Render simple leader info - for pack draft and report seating
   const renderSimpleLeaderInfo = (player?: Player) => {
     if (!player) return null
 
     const draftedLeaders = player.draftedLeaders || []
     const displayName = player.username || `Player ${player.seatNumber}`
 
+    // Split into chosen leader (first match only) and unchosen pool
+    let chosenLeader: Leader | null = null
+    const unchosenLeaders: Leader[] = []
+    let foundActive = false
+    for (const leader of draftedLeaders) {
+      if (!foundActive && player.activeLeaderName && leader.name === player.activeLeaderName) {
+        chosenLeader = leader
+        foundActive = true
+      } else {
+        unchosenLeaders.push(leader)
+      }
+    }
+
+    const hasChosenSection = chosenLeader || player.chosenBase
+    const showDivider = hasChosenSection && unchosenLeaders.length > 0
+
     return (
       <div className="radial-leader-info simple">
         <div className="radial-player-name">
           {displayName}
         </div>
-        {draftedLeaders.length > 0 && (
-          <div className="leader-info-list">
-            {draftedLeaders.map((leader, idx) => {
-              const isActive = player.activeLeaderName && leader.name === player.activeLeaderName
-              return (
+        {hasChosenSection && (
+          <div className="leader-info-section">
+            <div className="leader-info-label">Playing</div>
+            <div className="leader-info-list">
+              {chosenLeader && (
+                <div className="leader-info-item">
+                  <span
+                    className="leader-name hoverable"
+                    style={{ fontWeight: 700 }}
+                    onMouseEnter={() => handleLeaderMouseEnter(chosenLeader)}
+                    onMouseLeave={handleLeaderMouseLeave}
+                  >
+                    {chosenLeader.name}
+                  </span>
+                  {renderAspectIcons(chosenLeader.aspects)}
+                </div>
+              )}
+              {player.chosenBase && (
+                <div className="leader-info-item">
+                  <span
+                    className="leader-name"
+                    style={{
+                      fontStyle: 'italic',
+                      color: player.chosenBase.aspects?.[0] ? (ASPECT_COLORS[player.chosenBase.aspects[0]] || 'white') : 'white',
+                    }}
+                  >
+                    {player.chosenBase.name}
+                  </span>
+                  {renderAspectIcons(player.chosenBase.aspects)}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        {showDivider && <hr className="leader-info-divider" />}
+        {unchosenLeaders.length > 0 && (
+          <div className="leader-info-section">
+            <div className="leader-info-label">Drafted</div>
+            <div className="leader-info-list">
+              {unchosenLeaders.map((leader, idx) => (
                 <div key={idx} className="leader-info-item">
                   <span
                     className="leader-name hoverable"
-                    style={isActive ? { fontWeight: 700 } : undefined}
                     onMouseEnter={() => handleLeaderMouseEnter(leader)}
                     onMouseLeave={handleLeaderMouseLeave}
                   >
@@ -214,22 +264,8 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
                   </span>
                   {renderAspectIcons(leader.aspects)}
                 </div>
-              )
-            })}
-            {player.chosenBase && (
-              <div className="leader-info-item">
-                <span
-                  className="leader-name"
-                  style={{
-                    fontStyle: 'italic',
-                    color: player.chosenBase.aspects?.[0] ? (ASPECT_COLORS[player.chosenBase.aspects[0]] || 'white') : 'white',
-                  }}
-                >
-                  {player.chosenBase.name}
-                </span>
-                {renderAspectIcons(player.chosenBase.aspects)}
-              </div>
-            )}
+              ))}
+            </div>
           </div>
         )}
         {player.pickStatus && (
