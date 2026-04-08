@@ -268,7 +268,7 @@ export default function DraftReportPage({ params }: PageProps) {
           </div>
           <div className="draft-report-header-actions">
             <Button
-              variant={reportPublic ? 'secondary' : 'danger'}
+              variant={reportPublic ? 'primary' : 'danger'}
               onClick={handleToggleVisibility}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
