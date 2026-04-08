@@ -675,6 +675,12 @@ export const COMMON_BELT_ASSIGNMENTS: Record<string, SetBeltAssignment> = {
     "beltA": [],
     "beltB": [],
     "autoAssign": true  // Flag to use aspect-based auto-assignment
+  },
+  // ASH (Set 8) - Same block B auto-assignment as LAW
+  "ASH": {
+    "beltA": [],
+    "beltB": [],
+    "autoAssign": true
   }
 }
 
@@ -687,7 +693,7 @@ export const COMMON_BELT_ASSIGNMENTS: Record<string, SetBeltAssignment> = {
 export function getBlockForSet(setCode: SetCode | string): BlockType {
   const block0Sets = ['SOR', 'SHD', 'TWI']
   const blockASets = ['JTL', 'LOF', 'SEC']
-  const blockBSets = ['LAW']
+  const blockBSets = ['LAW', 'ASH']
 
   if (block0Sets.includes(setCode)) return 0
   if (blockASets.includes(setCode)) return 'A'

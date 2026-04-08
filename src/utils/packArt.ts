@@ -33,6 +33,8 @@ const EXPANSION_ART_URLS: Record<string, string> = {
   SEC: '/expansion-art/sec.png',
   // A Lawless Time - Set 7
   LAW: '/expansion-art/law.png',
+  // Ashes of the Empire - Set 8
+  ASH: '/expansion-art/ash.png',
 }
 
 /**

@@ -12,6 +12,7 @@ import { JTL_CONFIG } from './JTL'
 import { LOF_CONFIG } from './LOF'
 import { SEC_CONFIG } from './SEC'
 import { LAW_CONFIG } from './LAW'
+import { ASH_CONFIG } from './ASH'
 import type { SetCode } from '../../types'
 
 export interface LeaderBaseCounts {
@@ -104,6 +105,7 @@ export const SET_CONFIGS: Record<string, SetConfig> = {
   'LOF': LOF_CONFIG,
   'SEC': SEC_CONFIG,
   'LAW': LAW_CONFIG,
+  'ASH': ASH_CONFIG,
 }
 
 /**
