@@ -48,15 +48,18 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
      ORDER BY pp.seat_number`,
     [pod.id]
   )
-  // Get each player's active leader from their deck builder state
+  // Get each player's active leader and built deck (chosen leader + base)
   const poolsResult = await query(
-    `SELECT cp.user_id, cp.deck_builder_state
+    `SELECT cp.user_id, cp.deck_builder_state, bd.leader as built_leader, bd.base as built_base
      FROM card_pools cp
+     LEFT JOIN built_decks bd ON bd.card_pool_id = cp.id
      WHERE cp.pod_id = $1`,
     [pod.id]
   )
   const activeLeaderByUser = new Map()
+  const builtDeckByUser = new Map()
   for (const row of poolsResult.rows) {
+    // Get active leader from deck builder state
     const dbs = typeof row.deck_builder_state === 'string' ? JSON.parse(row.deck_builder_state) : row.deck_builder_state
     if (dbs?.activeLeader && dbs?.cardPositions) {
       const leaderPos = dbs.cardPositions[dbs.activeLeader]
@@ -64,19 +67,34 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         activeLeaderByUser.set(row.user_id, leaderPos.card.name)
       }
     }
+    // Get built deck leader/base (more authoritative than deck builder state)
+    if (row.built_leader) {
+      const leader = typeof row.built_leader === 'string' ? JSON.parse(row.built_leader) : row.built_leader
+      const base = row.built_base ? (typeof row.built_base === 'string' ? JSON.parse(row.built_base) : row.built_base) : null
+      builtDeckByUser.set(row.user_id, { leader, base })
+      // Use built deck leader name as activeLeaderName if not already set
+      if (!activeLeaderByUser.has(row.user_id) && leader?.name) {
+        activeLeaderByUser.set(row.user_id, leader.name)
+      }
+    }
   }
 
-  const players = playersResult.rows.map(row => ({
-    seatNumber: row.seat_number,
-    userId: row.user_id,
-    username: row.username || (row.is_bot ? `Bot (Seat ${row.seat_number})` : `Player ${row.seat_number}`),
-    avatarUrl: row.avatar_url,
-    isBot: row.is_bot,
-    draftedLeaders: row.drafted_leaders ? (typeof row.drafted_leaders === 'string' ? JSON.parse(row.drafted_leaders) : row.drafted_leaders) : [],
-    activeLeaderName: activeLeaderByUser.get(row.user_id) || null,
-    strategyName: row.strategy_name,
-    mixinName: row.mixin_name,
-  }))
+  const players = playersResult.rows.map(row => {
+    const builtDeck = builtDeckByUser.get(row.user_id)
+    return {
+      seatNumber: row.seat_number,
+      userId: row.user_id,
+      username: row.username || (row.is_bot ? `Bot (Seat ${row.seat_number})` : `Player ${row.seat_number}`),
+      avatarUrl: row.avatar_url,
+      isBot: row.is_bot,
+      draftedLeaders: row.drafted_leaders ? (typeof row.drafted_leaders === 'string' ? JSON.parse(row.drafted_leaders) : row.drafted_leaders) : [],
+      activeLeaderName: activeLeaderByUser.get(row.user_id) || null,
+      chosenLeader: builtDeck?.leader || null,
+      chosenBase: builtDeck?.base || null,
+      strategyName: row.strategy_name,
+      mixinName: row.mixin_name,
+    }
+  })
 
   // Get user's draft picks (for Draft Log tab)
   const allPacks = pod.all_packs ? (typeof pod.all_packs === 'string' ? JSON.parse(pod.all_packs) : pod.all_packs) : null

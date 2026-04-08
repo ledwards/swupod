@@ -25,6 +25,7 @@ interface Player {
   draftedLeaders?: Leader[]
   leaderPack?: Leader[]
   activeLeaderName?: string | null
+  chosenBase?: { name: string; aspects?: string[] } | null
 }
 
 interface Draft {
@@ -214,6 +215,14 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
                 </div>
               )
             })}
+            {player.chosenBase && (
+              <div className="leader-info-item">
+                <span className="leader-name" style={{ fontStyle: 'italic' }}>
+                  {player.chosenBase.name}
+                </span>
+                {renderAspectIcons(player.chosenBase.aspects)}
+              </div>
+            )}
           </div>
         )}
         <div

@@ -324,6 +324,7 @@ export default function DraftReportPage({ params }: PageProps) {
                 isBot: p.isBot,
                 draftedLeaders: p.draftedLeaders,
                 activeLeaderName: p.activeLeaderName || null,
+                chosenBase: p.chosenBase || null,
               }))}
               maxPlayers={draft.maxPlayers}
               currentUserId={user?.id}
