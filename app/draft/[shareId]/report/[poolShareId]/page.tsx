@@ -173,12 +173,22 @@ export default function DraftReportPage({ params }: PageProps) {
   }
 
   if (error || !data) {
+    const isPrivate = error === 'This report is private'
     return (
       <div className="draft-report-page page-background-with-art">
         <div className="draft-report-content">
           <div className="draft-report-error">
-            <h2>Error</h2>
-            <p>{error || 'Report not found'}</p>
+            {isPrivate ? (
+              <>
+                <h2>Private Report</h2>
+                <p>This draft report is set to private. Ask the owner to make it public so you can view it.</p>
+              </>
+            ) : (
+              <>
+                <h2>Report Not Found</h2>
+                <p>{error || 'This report could not be loaded.'}</p>
+              </>
+            )}
             <Button variant="back" onClick={() => router.push('/draft')}>Back to Drafts</Button>
           </div>
         </div>
@@ -272,6 +282,10 @@ export default function DraftReportPage({ params }: PageProps) {
               <Button
                 variant={reportPublic ? 'primary' : 'danger'}
                 onClick={handleToggleVisibility}
+                style={{
+                  borderColor: reportPublic ? 'rgba(0, 255, 0, 0.5)' : 'rgba(255, 0, 0, 0.5)',
+                  boxShadow: reportPublic ? '0 0 8px rgba(0, 255, 0, 0.2)' : '0 0 8px rgba(255, 0, 0, 0.2)',
+                }}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   {reportPublic ? (
