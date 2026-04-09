@@ -550,3 +550,52 @@
   border-radius: 3px;
   font-size: 0.85em;
 }
+
+/* Report index list */
+.draft-report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 500px;
+}
+
+.draft-report-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.draft-report-list-item:hover {
+  border-color: rgba(255, 215, 0, 0.4);
+  background: rgba(255, 215, 0, 0.05);
+}
+
+.draft-report-list-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.draft-report-list-name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.draft-report-list-you {
+  font-weight: 400;
+  color: rgba(255, 215, 0, 0.7);
+  font-size: 0.85rem;
+}
+
+.draft-report-list-seat {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
+}

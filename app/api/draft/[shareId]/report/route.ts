@@ -1,22 +1,19 @@
 // app/api/draft/[shareId]/report/route.ts
 // @ts-nocheck
+// Index endpoint — returns list of reports for this draft + the viewer's own pool share ID
 import { NextRequest, NextResponse } from 'next/server'
 import { query, queryRow } from '@/lib/db'
 import { getSession } from '@/lib/auth'
-import { reconstructDraftLog } from '@/src/utils/draftLogReconstruction'
 
 type RouteContext = { params: Promise<{ shareId: string }> }
 
 export async function GET(request: NextRequest, { params }: RouteContext): Promise<NextResponse> {
   const session = getSession(request)
   const { shareId } = await params
-  const poolShareId = request.nextUrl.searchParams.get('pool')
 
-  // Get the draft pod
   const pod = await queryRow(
     `SELECT p.id, p.share_id, p.set_code, p.set_name, p.name, p.status,
-            p.max_players, p.current_players, p.host_id, p.started_at, p.completed_at,
-            p.all_packs, p.settings, p.is_public
+            p.max_players, p.started_at, p.completed_at, p.settings
      FROM pods p WHERE p.share_id = $1 AND p.pod_type = 'draft'`,
     [shareId]
   )
@@ -24,134 +21,39 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     return NextResponse.json({ error: 'Draft not found' }, { status: 404 })
   }
 
-  // Determine whose report to show
-  let targetUserId: string | null = null
-  let isOwner = false
-
-  if (poolShareId) {
-    // Viewing a specific player's shared report
-    const targetPool = await queryRow(
-      `SELECT cp.user_id, cp.report_public
-       FROM card_pools cp
-       WHERE cp.share_id = $1 AND cp.pod_id = $2`,
-      [poolShareId, pod.id]
-    )
-    if (!targetPool) {
-      return NextResponse.json({ error: 'Report not found' }, { status: 404 })
-    }
-    isOwner = session?.id === targetPool.user_id
-    if (!isOwner && !targetPool.report_public) {
-      return NextResponse.json({ error: 'This report is private' }, { status: 403 })
-    }
-    targetUserId = targetPool.user_id
-  } else {
-    // No pool param — show logged-in user's own report
-    if (!session) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
-    }
-    targetUserId = session.id
-    isOwner = true
-  }
-
-  // Find the target player's record in this draft
-  const myPlayer = await queryRow(
-    `SELECT pp.id, pp.seat_number, pp.user_id, pp.drafted_leaders, pp.drafted_cards
-     FROM pod_players pp WHERE pp.pod_id = $1 AND pp.user_id = $2`,
-    [pod.id, targetUserId]
-  )
-  if (!myPlayer) {
-    return NextResponse.json({ error: 'Player not found in this draft' }, { status: 404 })
-  }
-
-  // Get all players for seating display
-  const playersResult = await query(
-    `SELECT pp.seat_number, pp.user_id, pp.is_bot, pp.drafted_leaders, pp.drafted_cards,
-            pp.strategy_name, pp.mixin_name,
-            u.username, u.avatar_url
+  // Get all players with their pool share IDs and report visibility
+  const result = await query(
+    `SELECT pp.seat_number, pp.user_id, pp.is_bot,
+            u.username, u.avatar_url,
+            cp.share_id as pool_share_id, cp.report_public
      FROM pod_players pp
      LEFT JOIN users u ON pp.user_id = u.id
+     LEFT JOIN card_pools cp ON cp.pod_id = pp.pod_id AND cp.user_id = pp.user_id
      WHERE pp.pod_id = $1
      ORDER BY pp.seat_number`,
     [pod.id]
   )
-  // Get each player's active leader and base from deck builder state
-  const poolsResult = await query(
-    `SELECT cp.user_id, cp.deck_builder_state
-     FROM card_pools cp
-     WHERE cp.pod_id = $1`,
-    [pod.id]
-  )
-  const activeLeaderByUser = new Map()
-  const chosenBaseByUser = new Map()
-  for (const row of poolsResult.rows) {
-    const dbs = typeof row.deck_builder_state === 'string' ? JSON.parse(row.deck_builder_state) : row.deck_builder_state
-    if (dbs?.cardPositions) {
-      // Extract active leader
-      if (dbs.activeLeader) {
-        const leaderPos = dbs.cardPositions[dbs.activeLeader]
-        if (leaderPos?.card?.name) {
-          activeLeaderByUser.set(row.user_id, leaderPos.card.name)
-        }
-      }
-      // Extract active base (full card object with name and aspects)
-      if (dbs.activeBase) {
-        const basePos = dbs.cardPositions[dbs.activeBase]
-        if (basePos?.card) {
-          chosenBaseByUser.set(row.user_id, {
-            name: basePos.card.name || '',
-            aspects: basePos.card.aspects || [],
-            imageUrl: basePos.card.imageUrl || null,
-            backImageUrl: basePos.card.backImageUrl || null,
-          })
-        }
-      }
+
+  // Find the viewer's own pool share ID (if they're in the draft)
+  let myPoolShareId: string | null = null
+  if (session) {
+    const myRow = result.rows.find(r => r.user_id === session.id)
+    if (myRow) {
+      myPoolShareId = myRow.pool_share_id || null
     }
   }
 
-  const players = playersResult.rows.map(row => ({
-    seatNumber: row.seat_number,
-    userId: row.user_id,
-    username: row.username || (row.is_bot ? `Bot (Seat ${row.seat_number})` : `Player ${row.seat_number}`),
-    avatarUrl: row.avatar_url,
-    isBot: row.is_bot,
-    draftedLeaders: row.drafted_leaders ? (typeof row.drafted_leaders === 'string' ? JSON.parse(row.drafted_leaders) : row.drafted_leaders) : [],
-    activeLeaderName: activeLeaderByUser.get(row.user_id) || null,
-    chosenBase: chosenBaseByUser.get(row.user_id) || null,
-    strategyName: row.strategy_name,
-    mixinName: row.mixin_name,
-  }))
-
-  // Get user's draft picks (for Draft Log tab)
-  const allPacks = pod.all_packs ? (typeof pod.all_packs === 'string' ? JSON.parse(pod.all_packs) : pod.all_packs) : null
-  let picks: unknown[] = []
-  if (allPacks) {
-    try {
-      picks = reconstructDraftLog({
-        targetSeat: myPlayer.seat_number,
-        totalSeats: pod.max_players,
-        allPacks,
-        players: playersResult.rows.map(r => ({
-          odId: r.user_id,
-          seatNumber: r.seat_number,
-          draftedCards: r.drafted_cards ? (typeof r.drafted_cards === 'string' ? JSON.parse(r.drafted_cards) : r.drafted_cards) : [],
-          draftedLeaders: r.drafted_leaders ? (typeof r.drafted_leaders === 'string' ? JSON.parse(r.drafted_leaders) : r.drafted_leaders) : [],
-        })),
-      })
-    } catch (e) {
-      console.error('Failed to reconstruct draft log for report:', e)
-    }
-  }
-
-  // Get target user's pool (for Pool + Deck tabs)
-  const pool = await queryRow(
-    `SELECT cp.id, cp.share_id, cp.cards, cp.packs, cp.deck_builder_state,
-            cp.report_public, cp.pool_type, cp.created_at, cp.notes
-     FROM card_pools cp
-     WHERE cp.pod_id = $1 AND cp.user_id = $2
-     ORDER BY cp.created_at DESC
-     LIMIT 1`,
-    [pod.id, targetUserId]
-  )
+  const reports = result.rows
+    .filter(r => r.pool_share_id) // Only players with pools
+    .map(r => ({
+      seatNumber: r.seat_number,
+      username: r.username || (r.is_bot ? `Bot (Seat ${r.seat_number})` : `Player ${r.seat_number}`),
+      avatarUrl: r.avatar_url,
+      isBot: r.is_bot,
+      poolShareId: r.pool_share_id,
+      isPublic: r.report_public || false,
+      isMe: session?.id === r.user_id,
+    }))
 
   return NextResponse.json({
     draft: {
@@ -161,24 +63,11 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       setName: pod.set_name,
       status: pod.status,
       maxPlayers: pod.max_players,
-      currentPlayers: pod.current_players,
-      isPublic: pod.is_public,
       startedAt: pod.started_at,
       completedAt: pod.completed_at,
       competitive: pod.settings?.competitive || false,
     },
-    players,
-    mySeat: myPlayer.seat_number,
-    isOwner,
-    picks,
-    pool: pool ? {
-      shareId: pool.share_id,
-      cards: typeof pool.cards === 'string' ? JSON.parse(pool.cards) : (pool.cards || []),
-      packs: typeof pool.packs === 'string' ? JSON.parse(pool.packs) : (pool.packs || []),
-      deckBuilderState: typeof pool.deck_builder_state === 'string' ? JSON.parse(pool.deck_builder_state) : pool.deck_builder_state,
-      reportPublic: pool.report_public,
-      createdAt: pool.created_at,
-      notes: pool.notes || null,
-    } : null,
+    reports,
+    myPoolShareId,
   })
 }
