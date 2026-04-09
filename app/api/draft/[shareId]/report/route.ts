@@ -9,11 +9,8 @@ type RouteContext = { params: Promise<{ shareId: string }> }
 
 export async function GET(request: NextRequest, { params }: RouteContext): Promise<NextResponse> {
   const session = getSession(request)
-  if (!session) {
-    return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
-  }
-
   const { shareId } = await params
+  const poolShareId = request.nextUrl.searchParams.get('pool')
 
   // Get the draft pod
   const pod = await queryRow(
@@ -27,14 +24,43 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     return NextResponse.json({ error: 'Draft not found' }, { status: 404 })
   }
 
-  // Find the user's player record in this draft
+  // Determine whose report to show
+  let targetUserId: string | null = null
+  let isOwner = false
+
+  if (poolShareId) {
+    // Viewing a specific player's shared report
+    const targetPool = await queryRow(
+      `SELECT cp.user_id, cp.report_public
+       FROM card_pools cp
+       WHERE cp.share_id = $1 AND cp.pod_id = $2`,
+      [poolShareId, pod.id]
+    )
+    if (!targetPool) {
+      return NextResponse.json({ error: 'Report not found' }, { status: 404 })
+    }
+    isOwner = session?.id === targetPool.user_id
+    if (!isOwner && !targetPool.report_public) {
+      return NextResponse.json({ error: 'This report is private' }, { status: 403 })
+    }
+    targetUserId = targetPool.user_id
+  } else {
+    // No pool param — show logged-in user's own report
+    if (!session) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+    }
+    targetUserId = session.id
+    isOwner = true
+  }
+
+  // Find the target player's record in this draft
   const myPlayer = await queryRow(
     `SELECT pp.id, pp.seat_number, pp.user_id, pp.drafted_leaders, pp.drafted_cards
      FROM pod_players pp WHERE pp.pod_id = $1 AND pp.user_id = $2`,
-    [pod.id, session.id]
+    [pod.id, targetUserId]
   )
   if (!myPlayer) {
-    return NextResponse.json({ error: 'You are not a participant in this draft' }, { status: 403 })
+    return NextResponse.json({ error: 'Player not found in this draft' }, { status: 404 })
   }
 
   // Get all players for seating display
@@ -116,7 +142,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     }
   }
 
-  // Get user's pool (for Pool + Deck tabs)
+  // Get target user's pool (for Pool + Deck tabs)
   const pool = await queryRow(
     `SELECT cp.id, cp.share_id, cp.cards, cp.packs, cp.deck_builder_state,
             cp.report_public, cp.pool_type, cp.created_at, cp.notes
@@ -124,7 +150,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
      WHERE cp.pod_id = $1 AND cp.user_id = $2
      ORDER BY cp.created_at DESC
      LIMIT 1`,
-    [pod.id, session.id]
+    [pod.id, targetUserId]
   )
 
   return NextResponse.json({
@@ -143,6 +169,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     },
     players,
     mySeat: myPlayer.seat_number,
+    isOwner,
     picks,
     pool: pool ? {
       shareId: pool.share_id,

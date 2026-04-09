@@ -89,12 +89,16 @@ export default function DraftReportPage({ params }: PageProps) {
   const [savingNotes, setSavingNotes] = useState(false)
   const [showMdHelp, setShowMdHelp] = useState(false)
 
+  // Get pool query param from URL
+  const poolParam = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('pool') : null
+
   useEffect(() => {
     if (!shareId) return
     async function fetchReport() {
       try {
         setLoading(true)
-        const res = await fetch(`/api/draft/${shareId}/report`, { credentials: 'include' })
+        const poolQuery = poolParam ? `?pool=${poolParam}` : ''
+        const res = await fetch(`/api/draft/${shareId}/report${poolQuery}`, { credentials: 'include' })
         if (!res.ok) {
           const err = await res.json().catch(() => ({ error: 'Failed to load report' }))
           setError(err.error || 'Failed to load report')
@@ -134,7 +138,9 @@ export default function DraftReportPage({ params }: PageProps) {
   }
 
   const handleCopyLink = async () => {
-    const url = `${window.location.origin}/draft/${shareId}/report#${activeTab}`
+    const poolId = data?.pool?.shareId
+    const poolQuery = poolId ? `?pool=${poolId}` : ''
+    const url = `${window.location.origin}/draft/${shareId}/report${poolQuery}#${activeTab}`
     await navigator.clipboard.writeText(url)
     setMessage('Report link copied!')
     setTimeout(() => setMessage(null), 3000)
@@ -185,7 +191,7 @@ export default function DraftReportPage({ params }: PageProps) {
     )
   }
 
-  if (isPatron === false) {
+  if (isPatron === false && !poolParam) {
     return (
       <div className="draft-report-page page-background-with-art">
         <div className="draft-report-content">
@@ -200,7 +206,7 @@ export default function DraftReportPage({ params }: PageProps) {
   }
 
   const { draft, players, picks, pool } = data
-  const isOwner = user && data.mySeat != null
+  const isOwner = data.isOwner ?? (user && data.mySeat != null)
   const completedDate = draft.completedAt
     ? new Date(draft.completedAt).toLocaleDateString('en-US', {
         weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
@@ -267,25 +273,27 @@ export default function DraftReportPage({ params }: PageProps) {
             </div>
           </div>
           <div className="draft-report-header-actions">
-            <Button
-              variant={reportPublic ? 'primary' : 'danger'}
-              onClick={handleToggleVisibility}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                {reportPublic ? (
-                  <>
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
-                  </>
-                ) : (
-                  <>
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                  </>
-                )}
-              </svg>
-              <span>{reportPublic ? 'Public' : 'Private'}</span>
-            </Button>
+            {isOwner && (
+              <Button
+                variant={reportPublic ? 'primary' : 'danger'}
+                onClick={handleToggleVisibility}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  {reportPublic ? (
+                    <>
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+                    </>
+                  ) : (
+                    <>
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </>
+                  )}
+                </svg>
+                <span>{reportPublic ? 'Public' : 'Private'}</span>
+              </Button>
+            )}
             <Button variant="secondary" onClick={handleCopyLink}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
