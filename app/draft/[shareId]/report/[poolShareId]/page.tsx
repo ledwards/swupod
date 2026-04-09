@@ -189,7 +189,7 @@ export default function DraftReportPage({ params }: PageProps) {
                 <p>{error || 'This report could not be loaded.'}</p>
               </>
             )}
-            <Button variant="back" onClick={() => router.push('/draft')}>Back to Drafts</Button>
+            <Button variant="back" onClick={() => router.push('/')}>Back Home</Button>
           </div>
         </div>
       </div>
@@ -203,7 +203,7 @@ export default function DraftReportPage({ params }: PageProps) {
           <div className="draft-report-error">
             <h2>Friends of the Pod</h2>
             <p>Draft Reports are available exclusively for Friends of the Pod.</p>
-            <Button variant="back" onClick={() => router.push('/draft')}>Back to Drafts</Button>
+            <Button variant="back" onClick={() => router.push('/')}>Back Home</Button>
           </div>
         </div>
       </div>
