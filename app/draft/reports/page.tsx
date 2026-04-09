@@ -117,6 +117,7 @@ export default function DraftReportsPage() {
                 key={report.draftShareId}
                 href={`/draft/${report.draftShareId}/report`}
                 className="draft-reports-item"
+                style={{ '--base-color': getBaseColor(report.baseAspects) } as React.CSSProperties}
                 onClick={(e) => {
                   e.preventDefault()
                   router.push(`/draft/${report.draftShareId}/report`)

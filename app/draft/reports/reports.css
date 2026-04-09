@@ -46,9 +46,21 @@
 }
 
 .draft-reports-item:hover {
-  border-color: rgba(255, 215, 0, 0.4);
-  background: rgba(255, 215, 0, 0.05);
+  border-color: var(--base-color, rgba(255, 215, 0, 0.4));
+  background: rgba(255, 255, 255, 0.03);
   transform: translateY(-1px);
+}
+
+.draft-reports-item:hover .draft-reports-item-name {
+  color: var(--base-color, rgba(255, 215, 0, 0.9));
+}
+
+/* Override global a:hover purple color */
+a.draft-reports-item,
+a.draft-reports-item:visited,
+a.draft-reports-item:hover,
+a.draft-reports-item:active {
+  color: white;
 }
 
 .draft-reports-item-leader {

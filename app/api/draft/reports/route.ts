@@ -41,14 +41,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const deckState = row.deckBuilderState
       ? (typeof row.deckBuilderState === 'string' ? JSON.parse(row.deckBuilderState) : row.deckBuilderState)
       : null
-    if (deckState?.activeBase) {
-      const cards = row.poolCards
-        ? (typeof row.poolCards === 'string' ? JSON.parse(row.poolCards) : row.poolCards)
-        : []
-      const baseCard = cards.find(c => (c.instanceId || c.id) === deckState.activeBase)
-      if (baseCard) {
-        baseName = baseCard.name || null
-        baseAspects = baseCard.aspects || null
+    if (deckState?.activeBase && deckState?.cardPositions) {
+      const basePos = deckState.cardPositions[deckState.activeBase]
+      if (basePos?.card) {
+        baseName = basePos.card.name || null
+        baseAspects = basePos.card.aspects || null
       }
     }
 
