@@ -37,12 +37,6 @@ export default function DraftReportIndexPage({ params }: PageProps) {
         }
         const indexData = await res.json()
         setData(indexData)
-
-        // If viewer is a participant with a pool, redirect to their report
-        if (indexData.myPoolShareId) {
-          router.replace(`/draft/${shareId}/report/${indexData.myPoolShareId}`)
-          return
-        }
       } catch {
         setError('Failed to load')
       } finally {
