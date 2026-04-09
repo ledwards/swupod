@@ -196,20 +196,6 @@ export default function DraftReportPage({ params }: PageProps) {
     )
   }
 
-  if (isPatron === false && isOwner) {
-    return (
-      <div className="draft-report-page page-background-with-art">
-        <div className="draft-report-content">
-          <div className="draft-report-error">
-            <h2>Friends of the Pod</h2>
-            <p>Draft Reports are available exclusively for Friends of the Pod.</p>
-            <Button variant="back" onClick={() => router.push('/')}>Back Home</Button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   const { draft, players, picks, pool } = data
   const isOwner = data.isOwner ?? (user && data.mySeat != null)
   const completedDate = draft.completedAt
