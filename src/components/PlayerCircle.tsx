@@ -455,8 +455,8 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
           </div>
         ) : (
           <div style={{
-            width: `${504 * 1.5}px`,
-            height: `${360 * 1.5}px`,
+            width: `${scaledFrontWidth}px`,
+            height: `${scaledFrontHeight}px`,
             overflow: 'hidden',
             borderRadius: '24px',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.8)',

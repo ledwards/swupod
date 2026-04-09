@@ -2,19 +2,9 @@
 
 ## 04.08.2026
 
-### 🤖 Bot Drafting Improvements
+### 🤖 Bot AI Strategy Improvements
 - **Neutral leader alignment fix**: Bots with neutral leaders (Tobias Beckett, Saw Gerrera, DJ) no longer pick Heroism/Villainy cards they can't play. Previously these cards had zero alignment penalty with neutral leaders.
 - **Turn-1 play saturation**: Bots stop hoarding 1-cost cards once they have enough. A bot with 8 one-drops now deprioritizes picking more, making early-game cards less likely to dry up in the draft.
-
-### ✨ Draft Report Improvements
-- **Chosen base in seating**: Each player's chosen base now shows below their active leader in the seating chart, color-coded by aspect.
-- **Hover preview on bases**: Mouseover a base name to see the full card image, same as leaders.
-- **Unchosen leaders dimmed**: Drafted-but-not-playing leaders shown at 50% opacity for clearer visual hierarchy.
-- **Public/Private button color-coded**: Green when public, red when private.
-
-### 🐛 Bug Fixes
-- **Draft log "Still deckbuilding..."**: Bot deck links now show correctly in draft logs instead of always displaying "Still deckbuilding..." even after bots had built their decks.
-- **"Picking..." text removed from report**: The seating chart no longer shows stale "Picking..." status on the draft report page.
 
 ## 04.07.2026
 
