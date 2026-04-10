@@ -12,6 +12,7 @@ interface DraftSettings {
   timerEnabled?: boolean
   timerSeconds?: number
   isPublic?: boolean
+  competitive?: boolean
   settings?: {
     draftMode?: 'chaos' | 'standard'
     chaosSets?: string[]
