@@ -384,6 +384,15 @@ async function advancePackDraftAfterPicks(
         console.error('[BOT_DECK] Error building bot decks:', err)
       )
 
+      // Set deck build deadline for competitive pods
+      if (podForBots?.competitive) {
+        const deckLockAt = new Date(Date.now() + 20 * 60 * 1000).toISOString()
+        await query(
+          `UPDATE pods SET deck_lock_at = $2 WHERE id = $1`,
+          [podId, deckLockAt]
+        )
+      }
+
       return
     }
 
@@ -623,6 +632,15 @@ export async function checkAndAdvancePackDraft(
       buildBotDecks(podId, podForBots?.set_code || draftState.setCode || '', botSettings).catch(err =>
         console.error('[BOT_DECK] Error building bot decks:', err)
       )
+
+      // Set deck build deadline for competitive pods
+      if (podForBots?.competitive) {
+        const deckLockAt = new Date(Date.now() + 20 * 60 * 1000).toISOString()
+        await query(
+          `UPDATE pods SET deck_lock_at = $2 WHERE id = $1`,
+          [podId, deckLockAt]
+        )
+      }
 
       return true
     }

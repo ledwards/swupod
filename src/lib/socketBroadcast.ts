@@ -191,6 +191,11 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
     // Add matchmaking data for competitive pods in matchmaking phase
     const podDraftState = typeof pod.draft_state === 'string' ? JSON.parse(pod.draft_state) : pod.draft_state || {}
 
+    // Always include deck build deadline for competitive pods (covers complete and matchmaking phases)
+    if (pod.competitive && pod.deck_lock_at) {
+      broadcastPayload.deckBuildDeadline = pod.deck_lock_at
+    }
+
     if (podDraftState.phase === 'matchmaking' && pod.competitive) {
       const rounds = await queryRows(
         `SELECT id, round_number, status FROM practice_rounds WHERE pod_id = $1 ORDER BY round_number`,

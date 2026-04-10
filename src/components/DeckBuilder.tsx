@@ -123,9 +123,10 @@ interface DeckBuilderProps {
   poolOwnerUsername?: string | null
   poolOwnerId?: string | null
   draftShareId?: string | null
+  deckBuildDeadline?: string | null
 }
 
-function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareId = null, poolCreatedAt = null, poolType = 'sealed', poolName: initialPoolName = null, poolOwnerUsername = null, poolOwnerId = null, draftShareId = null }: DeckBuilderProps) {
+function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareId = null, poolCreatedAt = null, poolType = 'sealed', poolName: initialPoolName = null, poolOwnerUsername = null, poolOwnerId = null, draftShareId = null, deckBuildDeadline = null }: DeckBuilderProps) {
   const { user, isAuthenticated, signIn, isPatron } = useAuth()
   const isOwner = user && poolOwnerId && user.id === poolOwnerId
   const isDraftMode = poolType === 'draft'
@@ -2011,6 +2012,7 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
           draftShareId={draftShareId}
           isLoading={isLoading}
           isPatron={isPatron}
+          deckBuildDeadline={deckBuildDeadline}
         />
 
       {/* Selected Leader/Base and Deck/Sideboard Info - Sticky Bar */}

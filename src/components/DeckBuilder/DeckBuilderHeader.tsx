@@ -12,6 +12,7 @@
 import EditableTitle from '../EditableTitle'
 import Button from '../Button'
 import DraftReportButton from '../DraftReportButton'
+import CountdownTimer from '../CountdownTimer'
 import { savePool } from '../../utils/poolApi'
 import type { CardPosition } from './AspectPenaltyToggle'
 import type { MessageType } from './DeleteDeckSection'
@@ -40,6 +41,7 @@ export interface DeckBuilderHeaderProps {
   draftShareId?: string | null
   isLoading?: boolean
   isPatron?: boolean
+  deckBuildDeadline?: string | null
 }
 
 export function DeckBuilderHeader({
@@ -65,6 +67,7 @@ export function DeckBuilderHeader({
   draftShareId,
   isLoading,
   isPatron,
+  deckBuildDeadline,
 }: DeckBuilderHeaderProps) {
   // Calculate deck legality for Play button
   const deckCardCount = Object.values(cardPositions)
@@ -156,6 +159,27 @@ export function DeckBuilderHeader({
         </h1>
         <p className="deck-builder-pool-type">{isDraftMode ? 'Draft Pool' : 'Sealed Pool'}</p>
       </div>
+
+      {deckBuildDeadline && (
+        <div className="deck-build-timer" style={{
+          display: 'flex', alignItems: 'center', gap: '8px',
+          color: 'rgba(255, 215, 0, 0.9)', fontWeight: 600
+        }}>
+          <span>Build Timer:</span>
+          <CountdownTimer
+            totalSeconds={Math.max(0, Math.floor((new Date(deckBuildDeadline).getTime() - Date.now()) / 1000))}
+            startedAt={new Date(new Date(deckBuildDeadline).getTime() - 20 * 60 * 1000).toISOString()}
+            active={true}
+            label=""
+            warningThreshold={300}
+            onExpire={() => {
+              if (typeof window !== 'undefined') {
+                window.location.href = `/pool/${shareId}/deck/play`
+              }
+            }}
+          />
+        </div>
+      )}
 
       {!isLoading && <div className={`header-buttons ${isInfoBarSticky ? 'hidden' : ''}`}>
         {/* Clone button first for non-owners */}

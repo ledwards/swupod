@@ -178,6 +178,20 @@ export default function DeckBuilderPage({ params }: PageProps) {
   const draftShareId = pool?.draftShareId || null
   const isOwner = user && pool?.owner && user.id === (pool.owner.id || pool.userId)
 
+  const [deckBuildDeadline, setDeckBuildDeadline] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!draftShareId) return
+    fetch(`/api/draft/${draftShareId}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data?.deckBuildDeadline) {
+          setDeckBuildDeadline(data.deckBuildDeadline)
+        }
+      })
+      .catch(() => {})
+  }, [draftShareId])
+
   return (
     <div className={draftShareId ? 'page-with-chat' : ''}>
       <div className={draftShareId ? 'page-content' : ''}>
@@ -195,6 +209,7 @@ export default function DeckBuilderPage({ params }: PageProps) {
             poolOwnerUsername={pool?.owner?.username}
             poolOwnerId={pool?.owner?.id || pool?.userId}
             draftShareId={draftShareId}
+            deckBuildDeadline={deckBuildDeadline}
           />
         </div>
       </div>
