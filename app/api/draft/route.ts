@@ -26,8 +26,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       settings = {}
     } = body
 
+    const competitive = body.competitive === true
+
     // Default to public unless explicitly set to false
     const podIsPublic = isPublic !== undefined ? isPublic === true : (settings.isPublic !== undefined ? settings.isPublic === true : true)
+
+    if (competitive) {
+      const user = await queryRow('SELECT is_patron FROM users WHERE id = $1', [session.id])
+      if (!user?.is_patron) {
+        return jsonResponse({ error: 'Friends of the Pod required to create Competitive Practice' }, 403)
+      }
+    }
+
+    const effectiveMaxPlayers = competitive ? 8 : maxPlayers
 
     // Get set name from config
     // For chaos draft, use "Chaos Draft (LAW x6)" or "Chaos Draft (SOR x2, LAW x4)"
@@ -97,17 +108,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             state_version,
             box_packs,
             shuffled_packs,
-            is_public
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+            is_public,
+            competitive
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
           RETURNING id, share_id, created_at`,
           [
             shareId,
             session.id,
             setCode,
             setName,
-            `${setName} Draft`,
+            competitive ? `${setName} Competitive Practice` : `${setName} Draft`,
             'waiting',
-            maxPlayers,
+            effectiveMaxPlayers,
             1, // Host counts as first player
             false, // Round timer off by default
             60, // Round timer duration default 60s
@@ -118,7 +130,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             1,
             JSON.stringify(boxPacks),
             false,
-            podIsPublic
+            podIsPublic,
+            competitive
           ]
         )
         break
@@ -173,7 +186,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Post to Discord LFG channel if public
     if (podIsPublic) {
       postPodCreated(
-        { id: pod.id, share_id: shareId, set_code: setCode, set_name: setName, name: `${setName} Draft`, max_players: maxPlayers, current_players: 1, pod_type: 'draft' },
+        { id: pod.id, share_id: shareId, set_code: setCode, set_name: setName, name: competitive ? `${setName} Competitive Practice` : `${setName} Draft`, max_players: effectiveMaxPlayers, current_players: 1, pod_type: 'draft' },
         session.username
       ).catch(err => {
         console.error('Error posting draft to Discord:', err)
