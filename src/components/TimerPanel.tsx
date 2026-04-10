@@ -207,7 +207,7 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
       </div>
 
       {/* Host timer controls — modify timers during active draft */}
-      {isHost && onUpdateTimerSettings && !compact && (
+      {isHost && onUpdateTimerSettings && !compact && !draft?.competitive && (
         <div className="timer-host-controls">
           <div className="timer-host-row">
             <label>

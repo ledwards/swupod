@@ -404,10 +404,17 @@ function PackDraftPhase({
                 <span className="info-label">Cards:</span>
                 <span className="info-value">{draftedCards.length}/{(draft?.packSize || 14) * totalPacks}</span>
               </span>
-              <Button variant="secondary" size="sm" className="review-button" onClick={() => setShowReviewModal(true)}>
-                <ReviewIcon />
-                <span>Your Cards</span>
-              </Button>
+              {!draft?.competitive && (
+                <Button variant="secondary" size="sm" className="review-button" onClick={() => setShowReviewModal(true)}>
+                  <ReviewIcon />
+                  <span>Your Cards</span>
+                </Button>
+              )}
+              {draft?.competitive && (
+                <span className="competitive-card-count" style={{ fontSize: '0.85rem', opacity: 0.7 }}>
+                  {draftedCards?.length || 0} cards drafted
+                </span>
+              )}
             </div>
           </div>
 
