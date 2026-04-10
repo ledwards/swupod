@@ -25,6 +25,7 @@ interface DraftPod {
   pick_started_at: string | null
   paused: boolean
   paused_duration_seconds: number
+  competitive: boolean
 }
 
 interface DraftPlayer {
@@ -56,7 +57,7 @@ export async function checkAndEnforceTimeout(podId: string): Promise<boolean> {
   const pod = await queryRow(
     `SELECT id, share_id, status, draft_state, state_version,
             timed, timer_enabled, timer_seconds, pick_timeout_seconds,
-            pick_started_at, paused, paused_duration_seconds
+            pick_started_at, paused, paused_duration_seconds, competitive
      FROM pods WHERE id = $1`,
     [podId]
   )
@@ -79,8 +80,8 @@ export async function checkAndEnforceTimeout(podId: string): Promise<boolean> {
   const roundTimeoutSeconds = pod.pick_timeout_seconds || 120
   const lastPlayerTimeoutSeconds = pod.timer_seconds || 30
 
-  // If neither timer is enabled, nothing to enforce
-  if (!isRoundTimerEnabled && !isLastPlayerTimerEnabled) {
+  // If neither timer is enabled (and not competitive), nothing to enforce
+  if (!pod.competitive && !isRoundTimerEnabled && !isLastPlayerTimerEnabled) {
     return false
   }
 
@@ -101,30 +102,59 @@ export async function checkAndEnforceTimeout(podId: string): Promise<boolean> {
   const now = Date.now()
   // Subtract any accumulated paused time from elapsed calculation
   const pausedDurationMs = (pod.paused_duration_seconds || 0) * 1000
-  const elapsed = now - pickStartedAt - pausedDurationMs
 
-  // Check if either timer has expired
-  const isLastPlayer = players.length === 1
-
-  // Round timer uses elapsed time since pick started
-  const roundTimerExpired = isRoundTimerEnabled && elapsed >= roundTimeoutSeconds * 1000
-
-  // Last player timer uses the time since they became the last player
-  // This is stored in draft_state.lastPlayerStartedAt when bots finish picking
+  // Parse draft state early — needed by both competitive and normal timer paths
   const draftState: DraftState = typeof pod.draft_state === 'string'
     ? JSON.parse(pod.draft_state)
     : pod.draft_state || {}
 
-  let lastPlayerTimerExpired = false
-  if (isLastPlayerTimerEnabled && isLastPlayer && draftState.lastPlayerStartedAt) {
-    const lastPlayerStartedAt = new Date(draftState.lastPlayerStartedAt).getTime()
-    const lastPlayerElapsed = now - lastPlayerStartedAt
-    lastPlayerTimerExpired = lastPlayerElapsed >= lastPlayerTimeoutSeconds * 1000
-  }
+  const phase = draftState.phase
 
-  if (!roundTimerExpired && !lastPlayerTimerExpired) {
-    // Neither timeout reached yet
-    return false
+  if (pod.competitive) {
+    // For competitive pods, use Appendix C per-card timers instead of round/last-player timers
+    const { getCompetitivePickTimeout, getLeaderPickTimeout } = await import('@/src/services/matchmaking/timers')
+
+    let timeoutSeconds: number
+    if (phase === 'leader_draft') {
+      const leaders = typeof players[0].leaders === 'string'
+        ? JSON.parse(players[0].leaders) : players[0].leaders || []
+      timeoutSeconds = getLeaderPickTimeout(leaders.length)
+    } else {
+      const pack = typeof players[0].current_pack === 'string'
+        ? JSON.parse(players[0].current_pack) : players[0].current_pack || []
+      timeoutSeconds = getCompetitivePickTimeout(pack.length)
+    }
+
+    if (timeoutSeconds > 0) {
+      const elapsed = now - pickStartedAt - pausedDurationMs
+      if (elapsed < timeoutSeconds * 1000) {
+        return false  // Timer hasn't expired yet
+      }
+    }
+    // timeoutSeconds === 0 means auto-pick (1 card remaining) — fall through to force picks
+  } else {
+    // Normal (non-competitive) timer logic
+    const elapsed = now - pickStartedAt - pausedDurationMs
+
+    // Check if either timer has expired
+    const isLastPlayer = players.length === 1
+
+    // Round timer uses elapsed time since pick started
+    const roundTimerExpired = isRoundTimerEnabled && elapsed >= roundTimeoutSeconds * 1000
+
+    // Last player timer uses the time since they became the last player
+    // This is stored in draft_state.lastPlayerStartedAt when bots finish picking
+    let lastPlayerTimerExpired = false
+    if (isLastPlayerTimerEnabled && isLastPlayer && draftState.lastPlayerStartedAt) {
+      const lastPlayerStartedAt = new Date(draftState.lastPlayerStartedAt).getTime()
+      const lastPlayerElapsed = now - lastPlayerStartedAt
+      lastPlayerTimerExpired = lastPlayerElapsed >= lastPlayerTimeoutSeconds * 1000
+    }
+
+    if (!roundTimerExpired && !lastPlayerTimerExpired) {
+      // Neither timeout reached yet
+      return false
+    }
   }
 
   // Try to acquire lock using atomic update
@@ -143,8 +173,6 @@ export async function checkAndEnforceTimeout(podId: string): Promise<boolean> {
     // Another process already handled this timeout or state changed
     return false
   }
-
-  const phase = draftState.phase
 
   // Force selections for each player who hasn't selected
   // Uses topPlayer bot strategy for smart picks instead of random

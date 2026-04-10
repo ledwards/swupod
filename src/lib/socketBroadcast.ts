@@ -32,6 +32,7 @@ interface Pod {
   paused: boolean
   paused_at: string | null
   paused_duration_seconds: number
+  competitive: boolean
 }
 
 interface DraftPlayer {
@@ -85,6 +86,7 @@ interface BroadcastState {
   paused: boolean
   pausedAt: string | null
   pausedDurationSeconds: number
+  competitive: boolean
 }
 
 /**
@@ -103,7 +105,7 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
       `SELECT dp.id, dp.share_id, dp.status, dp.state_version, dp.draft_state,
               dp.host_id, dp.timed, dp.timer_enabled, dp.timer_seconds, dp.pick_timeout_seconds,
               dp.started_at, dp.completed_at, dp.pick_started_at,
-              dp.paused, dp.paused_at, dp.paused_duration_seconds
+              dp.paused, dp.paused_at, dp.paused_duration_seconds, dp.competitive
        FROM pods dp WHERE dp.share_id = $1`,
       [shareId]
     ) as Pod | null
@@ -177,6 +179,7 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
       paused: pod.paused === true,
       pausedAt: pod.paused_at,
       pausedDurationSeconds: pod.paused_duration_seconds || 0,
+      competitive: pod.competitive === true,
     }
     io.to(`draft:${shareId}`).emit('state', broadcastPayload)
   } catch (err) {
