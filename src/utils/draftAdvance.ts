@@ -19,6 +19,7 @@ interface DraftState {
   pickInPack?: number
   setCode?: string
   lastPlayerStartedAt?: string
+  reviewUntil?: string
 }
 
 interface DraftPod {
@@ -29,6 +30,7 @@ interface DraftPod {
   state_version: number
   settings?: string | Record<string, unknown>
   all_packs?: string | unknown[]
+  competitive?: boolean
 }
 
 interface DraftPlayer {
@@ -397,9 +399,15 @@ async function advancePackDraftAfterPicks(
     }
 
     // Move to next pack
-    draftState.packNumber = packNumber + 1
+    const newPackNumber = packNumber + 1
+    draftState.packNumber = newPackNumber
     draftState.pickInPack = 1
     delete draftState.lastPlayerStartedAt // Clear last player timer for new pack
+
+    // Add review period for competitive pods between packs
+    if (pod.competitive && newPackNumber <= totalPacks) {
+      draftState.reviewUntil = new Date(Date.now() + 30 * 1000).toISOString()
+    }
 
     // Fetch all_packs only when we need to start a new pack
     // (not loaded in most queries to save memory)
@@ -646,9 +654,15 @@ export async function checkAndAdvancePackDraft(
     }
 
     // Move to next pack
-    draftState.packNumber = packNumber + 1
+    const newPackNumber = packNumber + 1
+    draftState.packNumber = newPackNumber
     draftState.pickInPack = 1
     delete draftState.lastPlayerStartedAt // Clear last player timer for new pack
+
+    // Add review period for competitive pods between packs
+    if (pod.competitive && newPackNumber <= totalPacks) {
+      draftState.reviewUntil = new Date(Date.now() + 30 * 1000).toISOString()
+    }
 
     // Fetch all_packs only when moving to next pack
     const podWithPacks = await queryRow(

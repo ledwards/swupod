@@ -44,6 +44,7 @@ interface DraftState {
   setCode?: string
   packNumber?: number
   pickInPack?: number
+  reviewUntil?: string
 }
 
 /**
@@ -109,6 +110,14 @@ export async function checkAndEnforceTimeout(podId: string): Promise<boolean> {
     : pod.draft_state || {}
 
   const phase = draftState.phase
+
+  // Don't enforce timeouts during the inter-pack review period
+  if (pod.competitive && draftState.reviewUntil) {
+    const reviewUntil = new Date(draftState.reviewUntil).getTime()
+    if (Date.now() < reviewUntil) {
+      return false  // In review period, no timeout
+    }
+  }
 
   if (pod.competitive) {
     // For competitive pods, use Appendix C per-card timers instead of round/last-player timers

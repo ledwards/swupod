@@ -6,6 +6,7 @@ import PlayerCircle from './PlayerCircle'
 import DraftableCard from './DraftableCard'
 import TimerPanel from './TimerPanel'
 import DraftReviewModal from './DraftReviewModal'
+import CountdownTimer from './CountdownTimer'
 import Button from './Button'
 import { getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
 import './PackDraftPhase.css'
@@ -56,12 +57,14 @@ interface MyPlayer extends Player {
 interface DraftState {
   packNumber?: number
   pickInPack?: number
+  reviewUntil?: string
   [key: string]: unknown
 }
 
 interface Draft {
   maxPlayers?: number
   packSize?: number
+  competitive?: boolean
   [key: string]: unknown
 }
 
@@ -107,6 +110,7 @@ function PackDraftPhase({
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
   const [showPassing, setShowPassing] = useState(false)
   const [lastPackSize, setLastPackSize] = useState(0)
+  const [, forceUpdate] = useState(0)
   const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const passingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const passingFromPackRef = useRef<string | null>(null) // Track the first card ID when we started passing
@@ -120,6 +124,17 @@ function PackDraftPhase({
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [isFullscreen])
+
+  // Force re-render when review period ends
+  useEffect(() => {
+    if (draftState?.reviewUntil) {
+      const remaining = new Date(draftState.reviewUntil).getTime() - Date.now()
+      if (remaining > 0) {
+        const timer = setTimeout(() => forceUpdate(n => n + 1), remaining + 100)
+        return () => clearTimeout(timer)
+      }
+    }
+  }, [draftState?.reviewUntil])
 
   const handleLeaderNameMouseEnter = (e: React.MouseEvent, leader: Leader) => {
     // Disable hover preview on mobile
@@ -341,6 +356,53 @@ function PackDraftPhase({
     localStorage.removeItem(storageKey)
     setSelectedCardId(null)
     onSelect(null)
+  }
+
+  // Inter-pack review period for competitive drafts
+  const isReviewPeriod = draft?.competitive &&
+    draftState?.reviewUntil &&
+    new Date(draftState.reviewUntil).getTime() > Date.now()
+
+  const reviewStartedAt = isReviewPeriod
+    ? new Date(new Date(draftState!.reviewUntil!).getTime() - 30 * 1000).toISOString()
+    : null
+
+  if (isReviewPeriod) {
+    return (
+      <div className="pack-draft-phase">
+        <div className="review-period" style={{ textAlign: 'center', padding: '32px' }}>
+          <h3 style={{ color: 'rgba(255, 215, 0, 0.9)', marginBottom: '8px' }}>Review Your Cards</h3>
+          <p style={{ marginBottom: '16px', opacity: 0.8 }}>Next pack starts in:</p>
+          <CountdownTimer
+            totalSeconds={30}
+            startedAt={reviewStartedAt}
+            active={true}
+            label=""
+            warningThreshold={10}
+          />
+          <div
+            className="review-cards"
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '8px',
+              justifyContent: 'center',
+              marginTop: '24px',
+            }}
+          >
+            {draftedCards.map(card => (
+              <div key={card.instanceId || card.id} style={{ flexShrink: 0 }}>
+                <img
+                  src={card.imageUrl}
+                  alt={card.name || card.title || 'Card'}
+                  style={{ width: '80px', borderRadius: '4px', display: 'block' }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
