@@ -49,6 +49,10 @@ interface Draft {
   paused: boolean;
   pausedAt: string | null;
   pausedDurationSeconds: number;
+  matchmakingStatus?: string;
+  currentRound?: number;
+  deckBuildDeadline?: string | null;
+  rounds?: unknown[];
   [key: string]: unknown;
 }
 
@@ -68,6 +72,10 @@ interface SocketStateData {
   paused: boolean;
   pausedAt: string | null;
   pausedDurationSeconds: number;
+  matchmakingStatus?: string;
+  currentRound?: number;
+  deckBuildDeadline?: string | null;
+  rounds?: unknown[];
 }
 
 /** Options for useDraftSocket hook */
@@ -188,6 +196,10 @@ export function useDraftSocket(
           paused: data.paused,
           pausedAt: data.pausedAt,
           pausedDurationSeconds: data.pausedDurationSeconds,
+          matchmakingStatus: data.matchmakingStatus,
+          currentRound: data.currentRound,
+          deckBuildDeadline: data.deckBuildDeadline,
+          rounds: data.rounds,
         } : null)
 
         // Fetch user-specific data via HTTP (uses auth cookie)

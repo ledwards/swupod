@@ -33,6 +33,7 @@ interface Pod {
   paused_at: string | null
   paused_duration_seconds: number
   competitive: boolean
+  deck_lock_at: string | null
 }
 
 interface DraftPlayer {
@@ -87,6 +88,10 @@ interface BroadcastState {
   pausedAt: string | null
   pausedDurationSeconds: number
   competitive: boolean
+  matchmakingStatus?: string
+  currentRound?: number
+  deckBuildDeadline?: string | null
+  rounds?: unknown[]
 }
 
 /**
@@ -105,7 +110,8 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
       `SELECT dp.id, dp.share_id, dp.status, dp.state_version, dp.draft_state,
               dp.host_id, dp.timed, dp.timer_enabled, dp.timer_seconds, dp.pick_timeout_seconds,
               dp.started_at, dp.completed_at, dp.pick_started_at,
-              dp.paused, dp.paused_at, dp.paused_duration_seconds, dp.competitive
+              dp.paused, dp.paused_at, dp.paused_duration_seconds, dp.competitive,
+              dp.deck_lock_at
        FROM pods dp WHERE dp.share_id = $1`,
       [shareId]
     ) as Pod | null
@@ -181,6 +187,57 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
       pausedDurationSeconds: pod.paused_duration_seconds || 0,
       competitive: pod.competitive === true,
     }
+
+    // Add matchmaking data for competitive pods in matchmaking phase
+    const podDraftState = typeof pod.draft_state === 'string' ? JSON.parse(pod.draft_state) : pod.draft_state || {}
+
+    if (podDraftState.phase === 'matchmaking' && pod.competitive) {
+      const rounds = await queryRows(
+        `SELECT id, round_number, status FROM practice_rounds WHERE pod_id = $1 ORDER BY round_number`,
+        [pod.id]
+      )
+
+      const roundsWithMatches = []
+      for (const round of rounds) {
+        const matches = await queryRows(
+          `SELECT pm.id, pm.player1_id, pm.player2_id, pm.is_bye,
+                  pm.game1_result, pm.game2_result, pm.game3_result,
+                  pm.player1_submitted, pm.player2_submitted,
+                  pm.final_confirmed, pm.match_winner, pm.pod_owner_override,
+                  u1.username as p1_username, u1.avatar_url as p1_avatar,
+                  u2.username as p2_username, u2.avatar_url as p2_avatar
+           FROM practice_matches pm
+           LEFT JOIN users u1 ON pm.player1_id = u1.id
+           LEFT JOIN users u2 ON pm.player2_id = u2.id
+           WHERE pm.round_id = $1 ORDER BY pm.created_at`,
+          [round.id]
+        )
+        roundsWithMatches.push({
+          roundNumber: round.round_number,
+          status: round.status,
+          matches: matches.map(m => ({
+            id: m.id,
+            player1: m.player1_id ? { id: m.player1_id, username: m.p1_username, avatarUrl: m.p1_avatar } : null,
+            player2: m.player2_id ? { id: m.player2_id, username: m.p2_username, avatarUrl: m.p2_avatar } : null,
+            isBye: m.is_bye,
+            game1Result: m.game1_result,
+            game2Result: m.game2_result,
+            game3Result: m.game3_result,
+            player1Submitted: m.player1_submitted,
+            player2Submitted: m.player2_submitted,
+            finalConfirmed: m.final_confirmed,
+            matchWinner: m.match_winner,
+            podOwnerOverride: m.pod_owner_override,
+          })),
+        })
+      }
+
+      broadcastPayload.matchmakingStatus = podDraftState.matchmakingStatus || 'active'
+      broadcastPayload.currentRound = podDraftState.currentRound || 1
+      broadcastPayload.deckBuildDeadline = pod.deck_lock_at
+      broadcastPayload.rounds = roundsWithMatches
+    }
+
     io.to(`draft:${shareId}`).emit('state', broadcastPayload)
   } catch (err) {
     console.error('Error broadcasting draft state:', err)
