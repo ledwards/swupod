@@ -1377,3 +1377,12 @@ a.discord-login-button:active {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+/* Competitive draft visual theme */
+.competitive .draft-header {
+  border-color: rgba(255, 215, 0, 0.3);
+}
+
+.competitive .player-circle-container {
+  border-color: rgba(255, 215, 0, 0.3);
+}

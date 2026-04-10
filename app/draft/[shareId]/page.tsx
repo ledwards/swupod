@@ -504,7 +504,7 @@ export default function DraftRoomPage({ params }: PageProps) {
   } : {}
 
   return (
-    <div className="page-with-chat">
+    <div className={`page-with-chat${draft?.competitive ? ' competitive' : ''}`}>
       <div className="page-content">
         <div className="sealed-pod">
           {packArtUrl && (
@@ -524,6 +524,22 @@ export default function DraftRoomPage({ params }: PageProps) {
                         }}
                         maxLength={100}
                       />
+                      {draft?.competitive && (
+                        <span style={{
+                          display: 'inline-block',
+                          padding: '2px 8px',
+                          fontSize: '0.7rem',
+                          fontWeight: 700,
+                          letterSpacing: '0.08em',
+                          color: 'rgba(255, 215, 0, 0.9)',
+                          border: '1px solid rgba(255, 215, 0, 0.4)',
+                          borderRadius: '4px',
+                          marginLeft: '8px',
+                          verticalAlign: 'middle',
+                        }}>
+                          COMPETITIVE
+                        </span>
+                      )}
                     </h1>
                   </div>
                   {status === 'active' && draftState?.phase === 'leader_draft' && (
@@ -644,7 +660,7 @@ export default function DraftRoomPage({ params }: PageProps) {
         </Modal.Actions>
       </Modal>
 
-      {!draft?.settings?.isSolo && <ChatPanel shareId={shareId} isHost={isHost} isPublic={draft?.isPublic} onMakePublic={() => handleSettingsChange({ isPublic: true })} defaultOpen={false} />}
+      {!draft?.settings?.isSolo && <ChatPanel shareId={shareId} isHost={isHost} isPublic={draft?.isPublic} onMakePublic={() => handleSettingsChange({ isPublic: true })} defaultOpen={false} competitive={draft?.competitive} draftStatus={status} />}
     </div>
   )
 }

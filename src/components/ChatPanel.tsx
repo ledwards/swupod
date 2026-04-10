@@ -16,6 +16,8 @@ interface ChatPanelProps {
   onMakePublic?: () => void
   isHost?: boolean
   isPublic?: boolean
+  competitive?: boolean
+  draftStatus?: string
 }
 
 /**
@@ -23,7 +25,7 @@ interface ChatPanelProps {
  * 1. Pod chat (shareId) — syncs with a pod's Discord thread
  * 2. Lobby chat (lobbyType) — mirrors #draft-now or #sealed-now Discord channel
  */
-export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = true, onMakePublic, isHost = false, isPublic: isPublicProp }: ChatPanelProps) {
+export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = true, onMakePublic, isHost = false, isPublic: isPublicProp, competitive = false, draftStatus }: ChatPanelProps) {
   const { user } = useAuth()
   const [isMobile, setIsMobile] = useState(false)
   const [isOpen, setIsOpen] = useState(() => {
@@ -48,6 +50,7 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
 
   const isLobbyMode = !!lobbyType
   const isPodMode = !!shareId && !isLobbyMode
+  const chatDisabled = competitive && draftStatus === 'active'
 
   // Pod chat hook (only active when shareId is provided and not in lobby mode)
   const podChat = useChat(
@@ -213,6 +216,7 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
               showJoinDiscord={isAuthenticated && isGuildMember === false}
               dismissedJoinNotice={dismissedJoinNotice}
               setDismissedJoinNotice={setDismissedJoinNotice}
+              chatDisabled={chatDisabled}
             />
             </div>
           </div>
@@ -280,6 +284,7 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
             showJoinDiscord={isAuthenticated && isGuildMember === false}
             dismissedJoinNotice={dismissedJoinNotice}
             setDismissedJoinNotice={setDismissedJoinNotice}
+            chatDisabled={chatDisabled}
           />
         </>
       )}
@@ -311,6 +316,7 @@ function ChatContent({
   showJoinDiscord = false,
   dismissedJoinNotice = false,
   setDismissedJoinNotice,
+  chatDisabled = false,
 }: {
   messages: ChatMessage[]
   loading: boolean
@@ -334,6 +340,7 @@ function ChatContent({
   showJoinDiscord?: boolean
   dismissedJoinNotice?: boolean
   setDismissedJoinNotice?: (v: boolean) => void
+  chatDisabled?: boolean
 }) {
   return (
     <>
@@ -392,7 +399,11 @@ function ChatContent({
         <div ref={messagesEndRef} />
       </div>
       <div className="chat-input-area">
-        {needsAuth ? (
+        {chatDisabled ? (
+          <div style={{ padding: '12px', textAlign: 'center', opacity: 0.5, fontSize: '0.85rem' }}>
+            Chat is disabled during competitive drafts
+          </div>
+        ) : needsAuth ? (
           <Button
             variant="discord"
             onClick={() => {
