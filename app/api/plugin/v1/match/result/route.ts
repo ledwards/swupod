@@ -45,6 +45,64 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       [winDelta, lossDelta, drawDelta, matchId, poolShareId]
     )
 
+    // If this pool belongs to a competitive pod, update the practice match too
+    const poolWithPod = await queryRow(
+      `SELECT cp.user_id, p.id as pod_id, p.share_id as pod_share_id, p.competitive
+       FROM card_pools cp
+       JOIN pods p ON cp.pod_id = p.id
+       WHERE cp.share_id = $1`,
+      [poolShareId]
+    )
+
+    if (poolWithPod?.competitive) {
+      const activeRound = await queryRow(
+        `SELECT id FROM practice_rounds WHERE pod_id = $1 AND status = 'active' ORDER BY round_number DESC LIMIT 1`,
+        [poolWithPod.pod_id]
+      )
+
+      if (activeRound) {
+        const practiceMatch = await queryRow(
+          `SELECT id, player1_id, player2_id FROM practice_matches
+           WHERE round_id = $1 AND final_confirmed = false AND is_bye = false
+             AND (player1_id = $2 OR player2_id = $2)`,
+          [activeRound.id, poolWithPod.user_id]
+        )
+
+        if (practiceMatch) {
+          const isPlayer1 = practiceMatch.player1_id === poolWithPod.user_id
+          // Map win/loss/draw to player1/player2 perspective
+          const gameResult = isPlayer1
+            ? (result === 'win' ? 'player1' : result === 'loss' ? 'player2' : 'draw')
+            : (result === 'win' ? 'player2' : result === 'loss' ? 'player1' : 'draw')
+
+          // Fill in next empty game slot
+          const currentMatch = await queryRow(`SELECT * FROM practice_matches WHERE id = $1`, [practiceMatch.id])
+          let gameCol = 'game1_result'
+          if (currentMatch.game1_result) gameCol = 'game2_result'
+          if (currentMatch.game1_result && currentMatch.game2_result) gameCol = 'game3_result'
+
+          await query(
+            `UPDATE practice_matches SET ${gameCol} = $2, wayfinder_match_id = $3 WHERE id = $1`,
+            [practiceMatch.id, gameResult, matchId]
+          )
+
+          // Check if match is now decidable
+          const updatedMatch = await queryRow(`SELECT * FROM practice_matches WHERE id = $1`, [practiceMatch.id])
+          const { deriveMatchWinner } = await import('@/src/services/matchmaking/results')
+          const winner = deriveMatchWinner(updatedMatch.game1_result, updatedMatch.game2_result, updatedMatch.game3_result)
+
+          if (winner) {
+            await query(
+              `UPDATE practice_matches SET final_confirmed = true, match_winner = $2, player1_submitted = true, player2_submitted = true WHERE id = $1`,
+              [practiceMatch.id, winner]
+            )
+            const { checkAndAdvanceRound } = await import('@/src/services/matchmaking/advancement')
+            await checkAndAdvanceRound(poolWithPod.pod_id, poolWithPod.pod_share_id)
+          }
+        }
+      }
+    }
+
     return jsonResponse({ ok: true })
   } catch (error) {
     if (error instanceof Error && (error.message === 'Unauthorized' || error.message === 'Service key not configured')) {
