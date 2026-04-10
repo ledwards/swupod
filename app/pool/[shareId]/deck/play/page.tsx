@@ -21,6 +21,9 @@ import Button from '../../../../../src/components/Button'
 import DraftReportButton from '../../../../../src/components/DraftReportButton'
 import PlayInstructions from '../../../../../src/components/PlayInstructions'
 import ChatPanel from '../../../../../src/components/ChatPanel'
+import MatchmakingPanel from '../../../../../src/components/MatchmakingPanel'
+import ResultReportModal from '../../../../../src/components/ResultReportModal'
+import { useDraftSocket } from '../../../../../src/hooks/useDraftSocket'
 import '../../../../../src/App.css'
 import '../../../../../src/components/ChatPanel.css'
 import './play.css'
@@ -146,6 +149,40 @@ export default function PlayPage({ params }: PageProps) {
     turnOnePlays: number
     totalCards: number
   } | null>(null)
+
+  // Competitive practice mode state
+  const [reportingMatchId, setReportingMatchId] = useState<string | null>(null)
+  const [overridingMatchId, setOverridingMatchId] = useState<string | null>(null)
+
+  // Draft socket for competitive mode — enabled only for draft pools
+  const draftShareId = pool?.draftShareId || null
+  const {
+    draft: competitiveDraft,
+    isHost: isCompetitiveHost,
+    players: draftPlayers,
+  } = useDraftSocket(draftShareId, { enabled: !!draftShareId && pool?.poolType === 'draft' })
+
+  const isCompetitive = competitiveDraft?.competitive === true
+  const competitiveRounds = (competitiveDraft?.rounds || []) as {
+    roundNumber: number
+    status: string
+    matches: {
+      id: string
+      player1: { id: string; username: string; avatarUrl?: string } | null
+      player2: { id: string; username: string; avatarUrl?: string } | null
+      isBye: boolean
+      game1Result: string | null
+      game2Result: string | null
+      game3Result: string | null
+      player1Submitted: boolean
+      player2Submitted: boolean
+      finalConfirmed: boolean
+      matchWinner: string | null
+      podOwnerOverride: boolean
+    }[]
+  }[]
+  const competitiveCurrentRound = competitiveDraft?.currentRound || 1
+  const matchmakingStatus = competitiveDraft?.matchmakingStatus || 'deck_building'
 
   // Detect Wayfinder extension via DOM marker (content scripts share the DOM
   // but NOT the page's window — so we check for a <meta name="wayfinder-installed"> tag)
@@ -1524,6 +1561,116 @@ export default function PlayPage({ params }: PageProps) {
     setPracticeHand({ cards: hand, probAtLeastOne, avgTurnOnePlays, turnOnePlays, totalCards })
   }
 
+  // Competitive practice mode handlers
+  const handleReportResult = async (matchId: string, game1: string, game2: string, game3: string | null) => {
+    if (!draftShareId) return
+    try {
+      const res = await fetch(`/api/draft/${draftShareId}/match/${matchId}/report`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ game1, game2, game3 }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setMessage(data.error || 'Failed to report result')
+        setMessageType('error')
+        setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      }
+    } catch {
+      setMessage('Failed to report result')
+      setMessageType('error')
+      setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+    }
+    setReportingMatchId(null)
+  }
+
+  const handleOverrideResult = async (matchId: string, game1: string, game2: string, game3: string | null) => {
+    if (!draftShareId) return
+    try {
+      const res = await fetch(`/api/draft/${draftShareId}/match/${matchId}/override`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ game1, game2, game3 }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setMessage(data.error || 'Failed to override result')
+        setMessageType('error')
+        setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      }
+    } catch {
+      setMessage('Failed to override result')
+      setMessageType('error')
+      setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+    }
+    setOverridingMatchId(null)
+  }
+
+  const handleBootPlayer = async (userId: string) => {
+    if (!draftShareId) return
+    if (!confirm('Are you sure you want to boot this player? Their active matches will be forfeited.')) return
+    try {
+      const res = await fetch(`/api/draft/${draftShareId}/boot/${userId}`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setMessage(data.error || 'Failed to boot player')
+        setMessageType('error')
+        setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      }
+    } catch {
+      setMessage('Failed to boot player')
+      setMessageType('error')
+      setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+    }
+  }
+
+  const handleAssignBye = async (targetUserId: string) => {
+    if (!draftShareId) return
+    try {
+      const res = await fetch(`/api/draft/${draftShareId}/assign-bye`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ targetUserId }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setMessage(data.error || 'Failed to reassign bye')
+        setMessageType('error')
+        setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      }
+    } catch {
+      setMessage('Failed to reassign bye')
+      setMessageType('error')
+      setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+    }
+  }
+
+  const handleStartMatches = async () => {
+    if (!draftShareId) return
+    try {
+      const res = await fetch(`/api/draft/${draftShareId}/start-matches`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setMessage(data.error || 'Failed to start matches')
+        setMessageType('error')
+        setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      }
+    } catch {
+      setMessage('Failed to start matches')
+      setMessageType('error')
+      setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+    }
+  }
+
   const handleToggleView = async () => {
     if (showingPool) {
       setShowingPool(false)
@@ -1764,6 +1911,22 @@ export default function PlayPage({ params }: PageProps) {
           wayfinderDetected={wayfinderDetected}
         />
 
+        {isCompetitive && user && (
+          <MatchmakingPanel
+            rounds={competitiveRounds}
+            currentRound={competitiveCurrentRound}
+            matchmakingStatus={matchmakingStatus}
+            currentUserId={user.id}
+            isHost={isCompetitiveHost}
+            players={draftPlayers.map(p => ({ id: (p as any).odId || '', username: p.username || 'Unknown' }))}
+            onReport={(matchId) => setReportingMatchId(matchId)}
+            onOverride={(matchId) => setOverridingMatchId(matchId)}
+            onBoot={handleBootPlayer}
+            onAssignBye={handleAssignBye}
+            onStartMatches={handleStartMatches}
+          />
+        )}
+
       </div>
 
       {deckImageModal && (
@@ -1847,6 +2010,37 @@ export default function PlayPage({ params }: PageProps) {
           </Button>
         </Modal.Actions>
       </Modal>
+
+      {reportingMatchId && (() => {
+        const allMatches = competitiveRounds.flatMap(r => r.matches)
+        const match = allMatches.find(m => m.id === reportingMatchId)
+        if (!match) return null
+        return (
+          <ResultReportModal
+            matchId={reportingMatchId}
+            player1Name={match.player1?.username || '???'}
+            player2Name={match.player2?.username || '???'}
+            onSubmit={handleReportResult}
+            onClose={() => setReportingMatchId(null)}
+          />
+        )
+      })()}
+
+      {overridingMatchId && (() => {
+        const allMatches = competitiveRounds.flatMap(r => r.matches)
+        const match = allMatches.find(m => m.id === overridingMatchId)
+        if (!match) return null
+        return (
+          <ResultReportModal
+            matchId={overridingMatchId}
+            player1Name={match.player1?.username || '???'}
+            player2Name={match.player2?.username || '???'}
+            isOverride
+            onSubmit={handleOverrideResult}
+            onClose={() => setOverridingMatchId(null)}
+          />
+        )
+      })()}
     </div>
     </div>
     <ChatPanel shareId={pool?.draftShareId} defaultOpen={false} />

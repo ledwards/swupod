@@ -1,0 +1,192 @@
+/* MatchmakingPanel styles */
+
+.matchmaking-panel {
+  margin-top: 2rem;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 1.5rem;
+}
+
+.matchmaking-panel-header {
+  margin-bottom: 1rem;
+}
+
+.matchmaking-panel-label {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 1.5px;
+  color: rgba(255, 215, 0, 0.8);
+  text-transform: uppercase;
+}
+
+/* Current match callout */
+.matchmaking-my-match {
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.matchmaking-my-match strong {
+  color: rgba(255, 215, 0, 0.95);
+}
+
+/* Host controls */
+.matchmaking-host-controls {
+  margin-bottom: 1rem;
+}
+
+/* Tabs */
+.matchmaking-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.matchmaking-tab {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .matchmaking-tab:hover {
+    color: rgba(255, 255, 255, 0.8);
+  }
+}
+
+.matchmaking-tab--active {
+  color: rgba(255, 215, 0, 0.9);
+  border-bottom-color: rgba(255, 215, 0, 0.8);
+}
+
+/* Tab content */
+.matchmaking-tab-content {
+  min-height: 100px;
+}
+
+.matchmaking-empty {
+  font-family: 'Barlow', sans-serif;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  padding: 2rem 0;
+}
+
+/* Matches grid */
+.matchmaking-matches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.75rem;
+}
+
+/* Standings */
+.matchmaking-standings-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.matchmaking-standing-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  font-family: 'Barlow', sans-serif;
+}
+
+.matchmaking-standing-row--mine {
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.matchmaking-standing-rank {
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  min-width: 28px;
+}
+
+.matchmaking-standing-name {
+  flex: 1;
+  font-weight: 600;
+  color: white;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.matchmaking-standing-record {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Bye control */
+.matchmaking-bye-control {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.matchmaking-bye-label {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  flex-shrink: 0;
+}
+
+.matchmaking-bye-select {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  cursor: pointer;
+}
+
+.matchmaking-bye-select option {
+  background: #1a1a1a;
+  color: white;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .matchmaking-panel {
+    padding: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .matchmaking-matches-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .matchmaking-bye-control {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+}
