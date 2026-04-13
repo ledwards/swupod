@@ -31,7 +31,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Default to public unless explicitly set to false
     const podIsPublic = isPublic !== undefined ? isPublic === true : (settings.isPublic !== undefined ? settings.isPublic === true : true)
 
-    if (competitive) {
+    if (competitive && !session.is_admin) {
       const user = await queryRow('SELECT is_patron FROM users WHERE id = $1', [session.id])
       if (!user?.is_patron) {
         return jsonResponse({ error: 'Friends of the Pod required to create Competitive Practice' }, 403)

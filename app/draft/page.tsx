@@ -37,9 +37,10 @@ interface DropConfirmState {
 
 export default function DraftLandingPage() {
   const router = useRouter()
-  const { user, isAuthenticated, loading: authLoading } = useAuth()
+  const { user, isAuthenticated, isPatron, loading: authLoading } = useAuth()
   const [error, setError] = useState<string | null>(null)
   const [wasRemoved, setWasRemoved] = useState(false)
+  const [competitive, setCompetitive] = useState(false)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -93,7 +94,7 @@ export default function DraftLandingPage() {
   }, [isAuthenticated, user])
 
   const handleCreateDraft = () => {
-    router.push('/draft/new')
+    router.push(competitive ? '/draft/new?competitive=1' : '/draft/new')
   }
 
   const handleLogin = () => {
@@ -182,13 +183,34 @@ export default function DraftLandingPage() {
             <h2>Create New Draft</h2>
             <p>Start a new draft pod and invite your friends</p>
             {isAuthenticated ? (
-              <button
-                className="primary-button create-draft-button"
-                onClick={handleCreateDraft}
-                disabled={authLoading}
-              >
-                Create Draft
-              </button>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <button
+                  className="primary-button create-draft-button"
+                  onClick={handleCreateDraft}
+                  disabled={authLoading}
+                >
+                  Create Draft
+                </button>
+                {isPatron && (
+                  <button
+                    className={`setting-lock ${competitive ? 'setting-lock-open' : 'setting-lock-closed'}`}
+                    onClick={() => setCompetitive(!competitive)}
+                    title={competitive ? 'Competitive Practice — Appendix C timers, BO3 matchmaking' : 'Standard Draft'}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/>
+                      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/>
+                      <path d="M4 22h16"/>
+                      <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22"/>
+                      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22"/>
+                      <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+                    </svg>
+                    <span style={competitive ? { color: 'rgba(255, 215, 0, 0.9)' } : undefined}>
+                      {competitive ? 'Competitive' : 'Standard'}
+                    </span>
+                  </button>
+                )}
+              </div>
             ) : (
               <>
                 <p className="auth-note">Draft requires login to track players in multiplayer</p>
