@@ -85,13 +85,31 @@ export function buildCardLookupMaps(allCards: RawCard[]): {
   const cardMap = new Map<string, RawCard>()
   const normalCardMap = new Map<string, RawCard>()
 
+  // In SWU, Leaders/Bases occupy cardIds that Hyperspace variants of OTHER cards
+  // ALSO use (e.g. SOR-007 = Grand Moff Tarkin Leader AND Admiral Motti Hyperspace Unit).
+  // The CMS `id` is always unique per variant, so that key is safe. But cardId/normalized
+  // keys collide, and last-writer-wins would make the Hyperspace non-Leader mask the
+  // Leader. Normal variants must win cardId/normalized lookups.
+  const setCardIdKey = (key: string, card: RawCard) => {
+    const existing = cardMap.get(key)
+    // Empty slot: always take it
+    if (!existing) {
+      cardMap.set(key, card)
+      return
+    }
+    // Normal beats non-Normal; never let a non-Normal overwrite a Normal
+    if (card.variantType === 'Normal' && existing.variantType !== 'Normal') {
+      cardMap.set(key, card)
+    }
+  }
+
   // First pass: index all cards and find Normal variants
   for (const card of allCards) {
     cardMap.set(card.id, card)
     if (card.cardId) {
       const normalized = normalizeCardId(card.cardId)
-      if (normalized) cardMap.set(normalized, card)
-      cardMap.set(card.cardId, card)
+      if (normalized) setCardIdKey(normalized, card)
+      setCardIdKey(card.cardId, card)
     }
     if (card.variantType === 'Normal') {
       const key = cardIdentityKey(card)

@@ -14,6 +14,7 @@
 ### 🐛 Bug Fixes
 - **Fixed competitive toggle on draft creation**: The Competitive Practice toggle was always disabled due to checking the wrong property for patron status. Now correctly reads patron status from the auth context.
 - **Moved competitive toggle**: The competitive toggle now appears on the draft landing page next to "Create Draft" instead of on the set picker page, making it more discoverable.
+- **Fixed wrong leaders appearing in archetype stats**: 24 Leader slots (including Grand Moff Tarkin, Yoda, Darth Vader, Boba Fett, and Moff Gideon) were being overwritten by Organized Play promo variants that share the same cardId. Card lookup now correctly prefers the Normal variant, so leaders display correctly in stats views and external platforms like Wayfinder.
 
 ## 04.08.2026
 
