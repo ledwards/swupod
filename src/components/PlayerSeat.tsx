@@ -12,6 +12,7 @@ const CrownIcon = () => (
 )
 
 interface Player {
+  id?: string
   username?: string
   avatarUrl?: string
   pickStatus?: string
@@ -75,7 +76,13 @@ function PlayerSeat({
   const showRemove = isHostViewing && onRemove && !isCurrentUser && !!player
 
   return (
-    <div className={`player-seat ${isCurrentUser ? 'current-user' : ''}`} data-testid={`player-seat-${seatNumber}`} data-seat-number={seatNumber} data-player-id={player?.id || ''} data-username={player?.username || ''}>
+    <div
+      className={`player-seat ${isCurrentUser ? 'current-user' : ''}`}
+      data-testid={`player-seat-${seatNumber}`}
+      data-seat-number={seatNumber}
+      {...(player?.id ? { 'data-player-id': player.id } : {})}
+      {...(player?.username ? { 'data-username': player.username } : {})}
+    >
       <div
         className="seat-avatar"
         style={isPatron
