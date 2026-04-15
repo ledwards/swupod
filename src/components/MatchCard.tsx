@@ -21,6 +21,7 @@ interface MatchData {
   finalConfirmed: boolean
   matchWinner: string | null
   podOwnerOverride: boolean
+  wayfinderMatchId?: string | null
 }
 
 interface MatchCardProps {
@@ -57,7 +58,17 @@ export function MatchCard({ match, currentUserId, isHost, onReport, onOverride, 
   const canOverride = isHost && !match.isBye
 
   return (
-    <div className={`match-card${isMyMatch ? ' match-card--mine' : ''}${match.finalConfirmed ? ' match-card--confirmed' : ''}`}>
+    <div
+      className={`match-card${isMyMatch ? ' match-card--mine' : ''}${match.finalConfirmed ? ' match-card--confirmed' : ''}`}
+      data-testid={`match-card-${match.id}`}
+      data-match-id={match.id}
+      data-match-status={status}
+      data-final-confirmed={match.finalConfirmed ? 'true' : 'false'}
+      data-match-winner={match.matchWinner || ''}
+      data-is-bye={match.isBye ? 'true' : 'false'}
+      data-player1-id={match.player1?.id || ''}
+      data-player2-id={match.player2?.id || ''}
+    >
       <div className="match-card-players">
         <div className={`match-card-player${match.matchWinner === 'player1' ? ' match-card-player--winner' : ''}`}>
           <span className="match-card-player-name">{match.player1?.username || '???'}</span>
@@ -111,11 +122,23 @@ export function MatchCard({ match, currentUserId, isHost, onReport, onOverride, 
           {status}
           {match.podOwnerOverride && ' (Override)'}
         </span>
+        {match.wayfinderMatchId && (
+          <a
+            href={`${process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin.wayfinder.news'}/matches/${match.wayfinderMatchId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="match-card-wayfinder-link"
+          >
+            View Match ↗
+          </a>
+        )}
         <div className="match-card-actions">
           {canReport && (
-            <Button variant="primary" size="sm" onClick={() => onReport(match.id)}>
-              Report Result
-            </Button>
+            <span data-testid={`match-report-button-${match.id}`}>
+              <Button variant="primary" size="sm" onClick={() => onReport(match.id)}>
+                Report Result
+              </Button>
+            </span>
           )}
           {canOverride && (
             <Button variant="secondary" size="sm" onClick={() => onOverride(match.id)}>
