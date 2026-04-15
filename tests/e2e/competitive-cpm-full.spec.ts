@@ -125,9 +125,75 @@ test.describe('8-player CPM full UI flow', () => {
   })
 
   test('8-player CPM: create → draft → build decks → 3 rounds of BO3 → final standings', async () => {
-    // Phases will be filled in by subsequent tasks.
-    // For now, just sanity-check the harness.
-    expect(pages.length).toBe(NUM_PLAYERS)
-    expect(users.length).toBe(NUM_PLAYERS)
+    // ── Phase 2: Draft creation and join ────────────────────────────────────
+    console.log('\n--- PHASE 2: Draft creation and join ---')
+
+    // Player 1 (host, admin) navigates to /draft and toggles Competitive
+    await pages[0].goto(`${BASE_URL}/draft`)
+    await pages[0].waitForLoadState('networkidle')
+
+    // Toggle Competitive (only visible to patrons/admins)
+    const competitiveToggle = pages[0].locator('button.setting-lock', { hasText: 'Standard' })
+    await expect(competitiveToggle).toBeVisible({ timeout: 10000 })
+    await competitiveToggle.click()
+    await expect(pages[0].locator('button.setting-lock', { hasText: 'Competitive' })).toBeVisible()
+    console.log('  ✓ Host toggled Competitive on /draft')
+
+    // Click Create Draft
+    await pages[0].click('.create-draft-button, button:has-text("Create Draft")')
+
+    // SetSelection page should now appear
+    await pages[0].waitForSelector('.set-selection', { timeout: 15000 })
+
+    // Pick the first set card (may be in .latest-sets-row or .sets-grid)
+    await pages[0].locator('.set-card').first().click()
+
+    // Wait for redirect to /draft/[shareId]
+    await pages[0].waitForFunction(() => {
+      const url = window.location.pathname
+      return url.startsWith('/draft/') && !url.includes('/draft/new')
+    }, { timeout: 30000 })
+
+    shareId = pages[0].url().split('/draft/')[1]?.split('?')[0] || null
+    expect(shareId).not.toBeNull()
+    console.log(`  ✓ Competitive draft created: ${shareId}`)
+
+    // Confirm the COMPETITIVE badge is visible on the host's page
+    await expect(pages[0].locator('text=COMPETITIVE').first()).toBeVisible({ timeout: 10000 })
+
+    // Players 2–8 join via share URL
+    for (let i = 1; i < NUM_PLAYERS; i++) {
+      await pages[i].goto(`${BASE_URL}/draft/${shareId}`)
+      await pages[i].waitForSelector('.draft-room, .draft-lobby', { timeout: 15000 })
+      console.log(`  ✓ Player ${i + 1} navigated`)
+    }
+
+    // Wait for all 8 to be present (poll the host's player count)
+    let attempts = 0
+    while (attempts < 120) {
+      const playerCountText = await pages[0].locator('.player-count').textContent().catch(() => '') || ''
+      const match = playerCountText.match(/(\d+)\s*\/\s*(\d+)/)
+      if (match && parseInt(match[1]) >= NUM_PLAYERS) {
+        console.log(`  ✓ All ${NUM_PLAYERS} players joined`)
+        break
+      }
+      await pages[0].waitForTimeout(500)
+      attempts++
+    }
+    expect(attempts).toBeLessThan(120)
+
+    // Capture seat → page-index map from the host's lobby DOM
+    // Each filled seat has data-seat-number + data-username, and the page
+    // index for a user is the index in `users` whose username matches.
+    for (let i = 0; i < NUM_PLAYERS; i++) {
+      const username = users[i].user.username
+      const seatEl = pages[0].locator(`[data-username="${username}"]`).first()
+      const seatNumberStr = await seatEl.getAttribute('data-seat-number')
+      if (!seatNumberStr) throw new Error(`No seat number found for user ${username}`)
+      const seatNumber = parseInt(seatNumberStr)
+      seatToPageIdx.set(seatNumber, i)
+      console.log(`    Seat ${seatNumber} → ${username} (page ${i})`)
+    }
+    expect(seatToPageIdx.size).toBe(NUM_PLAYERS)
   })
 })
