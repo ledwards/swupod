@@ -3,6 +3,10 @@ import { useState, useEffect } from 'react'
 import Modal from './Modal'
 import Button from './Button'
 import './ResultReportModal.css'
+import { countWins, isDecided, needsGame3 } from './ResultReportModal.helpers'
+
+// Re-export pure helpers for unit tests and external consumers.
+export { countWins, isDecided, needsGame3 }
 
 interface ResultReportModalProps {
   matchId: string
@@ -11,27 +15,6 @@ interface ResultReportModalProps {
   isOverride?: boolean
   onSubmit: (matchId: string, game1: string, game2: string, game3: string | null) => void
   onClose: () => void
-}
-
-function countWins(games: (string | null)[], player: string): number {
-  return games.filter(g => g === player).length
-}
-
-function isDecided(game1: string | null, game2: string | null, game3: string | null): boolean {
-  const games = [game1, game2, game3]
-  const p1Wins = countWins(games, 'player1')
-  const p2Wins = countWins(games, 'player2')
-  return p1Wins >= 2 || p2Wins >= 2
-}
-
-function needsGame3(game1: string | null, game2: string | null): boolean {
-  if (!game1 || !game2) return false
-  // If someone already has 2 wins after 2 games, no game 3 needed
-  const p1Wins = countWins([game1, game2], 'player1')
-  const p2Wins = countWins([game1, game2], 'player2')
-  if (p1Wins >= 2 || p2Wins >= 2) return false
-  // Otherwise game 3 is needed (split, draws, etc.)
-  return true
 }
 
 export function ResultReportModal({ matchId, player1Name, player2Name, isOverride, onSubmit, onClose }: ResultReportModalProps) {
