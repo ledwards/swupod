@@ -685,8 +685,11 @@ test.describe('8-player CPM full UI flow', () => {
       }
     }
 
-    // Track all pairings across rounds for no-rematch verification
+    // Track all pairings across rounds for no-rematch verification.
+    // Capture each match's winner during the round (while host's tab is on it)
+    // so Phase 6 doesn't have to navigate back through tabs to read winners.
     const allPairings: UIPairing[][] = []
+    const matchWinners = new Map<string, string>() // matchId → 'player1' | 'player2' | 'draw'
 
     for (let roundNum = 1; roundNum <= 3; roundNum++) {
       console.log(`\n  === Round ${roundNum} ===`)
@@ -785,6 +788,7 @@ test.describe('8-player CPM full UI flow', () => {
 
         const winnerAttr = await pages[0].locator(`[data-testid="match-card-${pairing.matchId}"]`).getAttribute('data-match-winner')
         expect(winnerAttr).toBe(outcome)
+        matchWinners.set(pairing.matchId, winnerAttr || '')
       }
 
       console.log(`    ✓ Round ${roundNum} all matches reported and confirmed`)
@@ -815,5 +819,93 @@ test.describe('8-player CPM full UI flow', () => {
         console.log('    ✓ Matchmaking complete after round 3')
       }
     }
+
+    // ── Phase 6: Final standings ─────────────────────────────────────────
+    console.log('\n--- PHASE 6: Final standings ---')
+
+    // Compute expected W/L/D per player from the winners we captured live during
+    // each round (host's tab was on that round, so cards were visible). We do
+    // this here rather than re-reading match-card attributes because by Phase 6
+    // the host's tab has auto-switched to Results — match cards aren't visible
+    // and getAttribute would hang.
+    const expected: Record<string, { wins: number; losses: number; draws: number }> = {}
+    for (const u of users) expected[u.user.id] = { wins: 0, losses: 0, draws: 0 }
+    for (const round of allPairings) {
+      for (const p of round) {
+        if (p.isBye) {
+          expected[p.player1Id].wins += 1
+          continue
+        }
+        const winner = matchWinners.get(p.matchId) || ''
+        if (winner === 'player1') {
+          expected[p.player1Id].wins += 1
+          expected[p.player2Id].losses += 1
+        } else if (winner === 'player2') {
+          expected[p.player2Id].wins += 1
+          expected[p.player1Id].losses += 1
+        } else if (winner === 'draw') {
+          expected[p.player1Id].draws += 1
+          expected[p.player2Id].draws += 1
+        }
+      }
+    }
+
+    console.log('  Expected standings (from recorded match winners):')
+    for (const u of users) {
+      const e = expected[u.user.id]
+      console.log(`    ${u.user.username}: ${e.wins}W-${e.losses}L-${e.draws}D`)
+    }
+
+    // Each page clicks the Results tab and the DOM rows are read/verified.
+    for (let i = 0; i < NUM_PLAYERS; i++) {
+      await pages[i].locator('[data-testid="matchmaking-tab-results"]').click().catch(() => null)
+      // With reload fallback if the Results tab doesn't render rows
+      try {
+        await pages[i].waitForSelector('[data-testid^="standing-row-"]', { timeout: 10000 })
+      } catch {
+        console.log(`    P${i + 1} Results tab empty; reloading`)
+        await pages[i].reload({ waitUntil: 'domcontentloaded', timeout: 30000 })
+        await pages[i].waitForSelector('[data-testid="matchmaking-panel"]', { timeout: 20000 })
+        await pages[i].locator('[data-testid="matchmaking-tab-results"]').click()
+        await pages[i].waitForSelector('[data-testid^="standing-row-"]', { timeout: 15000 })
+      }
+
+      const rows = await pages[i].locator('[data-testid^="standing-row-"]').all()
+      expect(rows.length, `P${i + 1} should see ${NUM_PLAYERS} standings rows`).toBe(NUM_PLAYERS)
+
+      const observed: Record<string, { wins: number; losses: number; draws: number; rank: number }> = {}
+      for (const row of rows) {
+        const playerId = (await row.getAttribute('data-player-id')) || ''
+        const rank = parseInt((await row.getAttribute('data-rank')) || '0')
+        const wins = parseInt((await row.getAttribute('data-wins')) || '0')
+        const losses = parseInt((await row.getAttribute('data-losses')) || '0')
+        const draws = parseInt((await row.getAttribute('data-draws')) || '0')
+        observed[playerId] = { wins, losses, draws, rank }
+      }
+
+      for (const u of users) {
+        const obs = observed[u.user.id]
+        const exp = expected[u.user.id]
+        expect(obs, `P${i + 1}: ${u.user.username} should appear in standings`).toBeDefined()
+        expect(obs.wins, `P${i + 1}: ${u.user.username} wins`).toBe(exp.wins)
+        expect(obs.losses, `P${i + 1}: ${u.user.username} losses`).toBe(exp.losses)
+        expect(obs.draws, `P${i + 1}: ${u.user.username} draws`).toBe(exp.draws)
+      }
+
+      const ranks = Object.values(observed).map((o) => o.rank).sort((a, b) => a - b)
+      expect(ranks).toEqual([1, 2, 3, 4, 5, 6, 7, 8])
+
+      const sorted = Object.values(observed).sort((a, b) => a.rank - b.rank)
+      for (let r = 0; r < sorted.length - 1; r++) {
+        expect(sorted[r].wins,
+          `P${i + 1}: rank ${r + 1} wins should be >= rank ${r + 2} wins`)
+          .toBeGreaterThanOrEqual(sorted[r + 1].wins)
+      }
+    }
+
+    console.log('  ✓ All 8 pages show consistent 8-player standings')
+    console.log('\n' + '='.repeat(60))
+    console.log('✅ 8-PLAYER CPM E2E TEST PASSED')
+    console.log('='.repeat(60) + '\n')
   })
 })

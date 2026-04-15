@@ -74,29 +74,53 @@ function shuffle<T>(arr: T[]): T[] {
   return result
 }
 
-function pairGroup(group: PairingPlayer[], previouslyPaired: Set<string>): { pairings: Pairing[], leftover: PairingPlayer | null } {
+function pairGroupGreedy(group: PairingPlayer[]): { pairings: Pairing[], leftover: PairingPlayer | null, rematches: number } {
   const pairings: Pairing[] = []
   const available = [...group]
+  let rematches = 0
 
   while (available.length >= 2) {
     const player = available.shift()!
-    // Find first available opponent who hasn't been paired with player
     const opponentIdx = available.findIndex(p => !player.opponents.includes(p.id) && !p.opponents.includes(player.id))
 
     if (opponentIdx !== -1) {
       const opponent = available.splice(opponentIdx, 1)[0]!
       pairings.push({ player1Id: player.id, player2Id: opponent.id, isBye: false })
-      previouslyPaired.add(`${player.id}:${opponent.id}`)
     } else {
-      // No valid opponent found (rematch unavoidable) — pair with first available
+      // No valid opponent found (rematch unavoidable in this ordering)
       const opponent = available.shift()!
       pairings.push({ player1Id: player.id, player2Id: opponent.id, isBye: false })
-      previouslyPaired.add(`${player.id}:${opponent.id}`)
+      rematches += 1
     }
   }
 
   const leftover = available.length === 1 ? (available[0] ?? null) : null
-  return { pairings, leftover }
+  return { pairings, leftover, rematches }
+}
+
+function pairGroup(group: PairingPlayer[], previouslyPaired: Set<string>): { pairings: Pairing[], leftover: PairingPlayer | null } {
+  // Greedy pairing on a shuffled group can produce rematches even when a
+  // non-greedy ordering would avoid them. Try multiple shuffles and keep the
+  // best (fewest rematches). Cap attempts so this stays O(N) for sane sizes.
+  let best: { pairings: Pairing[], leftover: PairingPlayer | null, rematches: number } | null = null
+  const maxAttempts = group.length <= 8 ? 50 : 10
+  for (let i = 0; i < maxAttempts; i++) {
+    const candidate = pairGroupGreedy(i === 0 ? group : shuffle(group))
+    if (!best || candidate.rematches < best.rematches) {
+      best = candidate
+      if (best.rematches === 0) break  // perfect — done
+    }
+  }
+
+  if (!best) {
+    return { pairings: [], leftover: null }
+  }
+
+  for (const pairing of best.pairings) {
+    previouslyPaired.add(`${pairing.player1Id}:${pairing.player2Id}`)
+  }
+
+  return { pairings: best.pairings, leftover: best.leftover }
 }
 
 export function pairSwiss(players: PairingPlayer[]): Pairing[] {
