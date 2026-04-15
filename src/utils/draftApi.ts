@@ -231,15 +231,9 @@ export async function selectCard(shareId: string, cardId: string | null): Promis
   try {
     return await httpClient.post<SelectResult>(`/draft/${shareId}/select`, { cardId })
   } catch (error) {
-    // 409 (state changed) AND 400 "not available" both mean the client's UI
-    // is showing stale state — caller should refresh to re-sync with the server.
-    if (error instanceof HttpError) {
-      if (error.status === 409) {
-        return { stateChanged: true, message: error.message }
-      }
-      if (error.status === 400 && /not available/i.test(error.message || '')) {
-        return { stateChanged: true, message: error.message }
-      }
+    // Return special object for 409 (state changed) - caller should refresh
+    if (error instanceof HttpError && error.status === 409) {
+      return { stateChanged: true, message: error.message }
     }
     console.error('Failed to select card:', error)
     throw error

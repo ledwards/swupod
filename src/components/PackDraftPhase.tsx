@@ -114,6 +114,10 @@ function PackDraftPhase({
   const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const passingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const passingFromPackRef = useRef<string | null>(null) // Track the first card ID when we started passing
+  // Always-fresh ref to currentPack so the click-time validation in
+  // handleCardClick can't be fooled by a stale closure when a click fires
+  // on a DOM element rendered before the latest state update arrived.
+  const currentPackRef = useRef<Card[]>([])
 
   // Exit fullscreen on Escape
   useEffect(() => {
@@ -159,6 +163,7 @@ function PackDraftPhase({
   }
 
   const currentPack = myPlayer?.currentPack || []
+  currentPackRef.current = currentPack
   const draftedCards = myPlayer?.draftedCards || []
   const draftedLeaders = myPlayer?.draftedLeaders || []
   const totalPacks = draftState?.totalPacks || draft?.settings?.chaosSets?.length || 3
@@ -326,9 +331,12 @@ function PackDraftPhase({
 
     const cardId = card.instanceId || card.id
 
-    // Validate card is still in current pack before selecting
-    // This prevents race conditions where pack changed between render and click
-    const cardStillInPack = currentPack.some(c => (c.instanceId || c.id) === cardId)
+    // Validate the card is still in the LATEST current pack (via ref, not
+    // closure). The closure's `currentPack` could be stale if this click
+    // handler was attached during a previous render and a new pack has
+    // since arrived via socket.
+    const freshPack = currentPackRef.current
+    const cardStillInPack = freshPack.some(c => (c.instanceId || c.id) === cardId)
     if (!cardStillInPack && selectedCardId !== cardId) {
       console.warn('Card no longer in pack, ignoring click')
       return
