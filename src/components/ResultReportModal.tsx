@@ -3,10 +3,7 @@ import { useState, useEffect } from 'react'
 import Modal from './Modal'
 import Button from './Button'
 import './ResultReportModal.css'
-import { countWins, isDecided, needsGame3 } from './ResultReportModal.helpers'
-
-// Re-export pure helpers for unit tests and external consumers.
-export { countWins, isDecided, needsGame3 }
+import { isDecided, needsGame3 } from '@/src/services/matchmaking/results'
 
 interface ResultReportModalProps {
   matchId: string
