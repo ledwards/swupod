@@ -124,6 +124,111 @@ test.describe('8-player CPM full UI flow', () => {
     }
   })
 
+  async function waitForAllPlayersReady(
+    selector: string,
+    threshold = 0.9,
+    advancedSelector?: string,
+    timeoutMs = 30000
+  ): Promise<void> {
+    const target = Math.ceil(NUM_PLAYERS * threshold)
+
+    const pollOnce = async (): Promise<number[]> => {
+      return Promise.all(
+        pages.map(async (page) => {
+          // A page that has already redirected to a pool (draft complete) counts
+          // as "ready" — no point waiting for pack-grid cards on a redirected page.
+          if (/\/(draft_pool|pool)\//.test(page.url())) return 1
+          const has = await page.locator(selector).count().catch(() => 0)
+          if (has > 0) return 1
+          if (advancedSelector) {
+            const advanced = await page.locator(advancedSelector).count().catch(() => 0)
+            if (advanced > 0) return 1
+          }
+          return 0
+        })
+      )
+    }
+
+    const waitFor = async (ms: number): Promise<boolean> => {
+      const maxAttempts = Math.floor(ms / 500)
+      for (let attempts = 0; attempts < maxAttempts; attempts++) {
+        const counts = await pollOnce()
+        if (counts.filter((c) => c > 0).length >= target) return true
+        await pages[0].waitForTimeout(500)
+      }
+      return false
+    }
+
+    // First wait
+    if (await waitFor(timeoutMs)) return
+
+    // Recovery: reload any desync'd pages, then wait again
+    const counts = await pollOnce()
+    const desyncIdx: number[] = []
+    for (let i = 0; i < NUM_PLAYERS; i++) {
+      if (counts[i] === 0) desyncIdx.push(i)
+    }
+    if (desyncIdx.length > 0 && desyncIdx.length < NUM_PLAYERS) {
+      console.log(`\n  ⚠ ${desyncIdx.length} page(s) desync'd — reloading P${desyncIdx.map(i => i + 1).join(', P')}`)
+      await Promise.all(desyncIdx.map((i) =>
+        pages[i].reload({ waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => null)
+      ))
+      if (await waitFor(30000)) {
+        console.log(`  ✓ recovered after reload`)
+        return
+      }
+    }
+
+    // Give up — dump per-page state
+    console.log(`\n  ⚠ waitForAllPlayersReady timeout after reload: ${selector} (threshold ${target}/${NUM_PLAYERS})`)
+    for (let i = 0; i < NUM_PLAYERS; i++) {
+      const has = await pages[i].locator(selector).count().catch(() => 0)
+      const advanced = advancedSelector ? await pages[i].locator(advancedSelector).count().catch(() => 0) : 0
+      const url = pages[i].url()
+      const visibleHeaders = await pages[i].locator('h1, h2, h3, .draft-round-info').allTextContents().catch(() => [])
+      console.log(`    P${i + 1}: url=${url.replace('http://localhost:3000', '')} ${selector}=${has} ${advancedSelector || '(no alt)'}=${advanced} headers=${JSON.stringify(visibleHeaders.slice(0, 3))}`)
+    }
+    throw new Error(`Timeout waiting for ${selector} on at least ${target}/${NUM_PLAYERS} pages`)
+  }
+
+  /**
+   * Click a card for each of the 8 players. Success signals (any one of):
+   *  - A card appears with `.selected` class (pick landed on UI)
+   *  - The grid is gone entirely (pack advanced)
+   * Retries with a different card index up to `maxAttempts` to dodge
+   * "Card not available" errors at pack/leader boundaries.
+   */
+  async function selectCardForAllPlayers(gridSelector: string, maxAttempts = 3): Promise<void> {
+    await Promise.all(
+      pages.map(async (page) => {
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+          try {
+            // Already picked?
+            const alreadySelected = await page.locator(`${gridSelector} .draftable-card.selected`).count().catch(() => 0)
+            if (alreadySelected > 0) return
+
+            // Grid empty? pack likely passed
+            const candidates = await page.locator(`${gridSelector} .draftable-card:not(.dimmed):not(.selected)`).all()
+            if (candidates.length === 0) return
+
+            const pickIdx = attempt % candidates.length
+            await candidates[pickIdx].click({ timeout: 3000 }).catch(() => null)
+            await page.waitForTimeout(400)
+
+            // Success signal: selected card present OR grid gone
+            const selectedAfter = await page.locator(`${gridSelector} .draftable-card.selected`).count().catch(() => 0)
+            if (selectedAfter > 0) return
+            const anyCards = await page.locator(`${gridSelector} .draftable-card`).count().catch(() => 0)
+            if (anyCards === 0) return
+            // Otherwise retry with a different index
+          } catch {
+            // Transient — try again
+          }
+        }
+      })
+    )
+  }
+
   test('8-player CPM: create → draft → build decks → 3 rounds of BO3 → final standings', async () => {
     // ── Phase 2: Draft creation and join ────────────────────────────────────
     console.log('\n--- PHASE 2: Draft creation and join ---')
@@ -182,12 +287,19 @@ test.describe('8-player CPM full UI flow', () => {
     }
     expect(attempts).toBeLessThan(120)
 
-    // Capture seat → page-index map from the host's lobby DOM
-    // Each filled seat has data-seat-number + data-username, and the page
-    // index for a user is the index in `users` whose username matches.
+    // Capture seat → page-index map from the host's lobby DOM.
+    // Wait for all 8 data-username attributes to be visible first (socket lag
+    // can mean player-count says 8/8 before every seat's DOM is rendered).
+    await expect(async () => {
+      const renderedUsernames = await pages[0].locator('[data-username]').count()
+      expect(renderedUsernames).toBeGreaterThanOrEqual(NUM_PLAYERS)
+    }).toPass({ timeout: 30000 })
+
     for (let i = 0; i < NUM_PLAYERS; i++) {
       const username = users[i].user.username
+      // Wait for this specific seat element to be attached (quick retry loop)
       const seatEl = pages[0].locator(`[data-username="${username}"]`).first()
+      await expect(seatEl).toHaveAttribute('data-seat-number', /\d+/, { timeout: 15000 })
       const seatNumberStr = await seatEl.getAttribute('data-seat-number')
       if (!seatNumberStr) throw new Error(`No seat number found for user ${username}`)
       const seatNumber = parseInt(seatNumberStr)
@@ -195,5 +307,197 @@ test.describe('8-player CPM full UI flow', () => {
       console.log(`    Seat ${seatNumber} → ${username} (page ${i})`)
     }
     expect(seatToPageIdx.size).toBe(NUM_PLAYERS)
+
+    // ── Phase 3: Competitive draft (leader + 3 packs, UI clicks) ────────────
+    console.log('\n--- PHASE 3: Competitive draft ---')
+
+    // Host clicks Start Draft
+    const startButton = pages[0].locator('button:has-text("Start Draft")')
+    await expect(startButton).toBeEnabled({ timeout: 15000 })
+    await startButton.click()
+    await pages[0].waitForSelector('.leader-draft-phase', { timeout: 30000 })
+    console.log('  ✓ Draft started — leader draft phase')
+
+    // Leader draft: 3 rounds
+    for (let round = 1; round <= 3; round++) {
+      console.log(`  Leader round ${round}/3:`)
+      await waitForAllPlayersReady('.leaders-grid .draftable-card', 0.9, '.pack-draft-phase')
+      await selectCardForAllPlayers('.leaders-grid')
+
+      if (round < 3) {
+        // Wait briefly for the server to broadcast the next round's leaders to all pages
+        await pages[0].waitForTimeout(2000)
+      }
+    }
+
+    // Pack draft phase
+    await Promise.race([
+      pages[0].waitForSelector('.pack-draft-phase', { timeout: 60000 }),
+      pages[0].waitForSelector('.review-period', { timeout: 60000 }),
+    ])
+    console.log('  ✓ Pack draft phase reached')
+
+    for (let pack = 1; pack <= 3; pack++) {
+      console.log(`  Pack ${pack}/3:`)
+
+      // If we're in the inter-pack review period, assert and wait it out.
+      // The pick loop's waitForAllPlayersReady will handle the transition to
+      // the next pack — no need for a redundant single-page selector wait.
+      if (pack > 1) {
+        const reviewVisible = await pages[0].locator('.review-period').count().catch(() => 0)
+        if (reviewVisible > 0) {
+          await expect(pages[0].locator('.review-period h3', { hasText: 'Review Your Cards' }))
+            .toBeVisible({ timeout: 5000 })
+          console.log(`    ✓ Inter-pack review period visible before pack ${pack}`)
+          // Wait up to 45s for the review to end (30s window + server/client buffer)
+          await pages[0].waitForSelector('.review-period', { state: 'detached', timeout: 45000 })
+            .catch(() => null)
+        } else {
+          console.log(`    (review period already ended before pack ${pack})`)
+        }
+      }
+
+      for (let pick = 1; pick <= 14; pick++) {
+        process.stdout.write(`    Pick ${pick}/14...`)
+
+        // Early-exit: if the draft is already complete (a majority of pages
+        // redirected to /draft_pool/ or /pool/), break — the remaining pages
+        // will be picked up by the final redirect wait below.
+        const urls = pages.map((p) => p.url())
+        const redirectedCount = urls.filter((u) => /\/(draft_pool|pool)\//.test(u)).length
+        if (redirectedCount >= Math.ceil(NUM_PLAYERS * 0.5)) {
+          console.log(` (draft complete — ${redirectedCount}/${NUM_PLAYERS} redirected, exiting pick loop)`)
+          // Break out of both the pick loop and the pack loop
+          pack = 3
+          break
+        }
+
+        // Require REAL pack-grid cards on 8/8 pages before attempting a pick.
+        // Do NOT accept `.review-period` here — being in review means no actual
+        // pick is possible yet; we'd loop through 14 "picks" with zero real clicks.
+        await waitForAllPlayersReady('.pack-grid .draftable-card', 1.0, undefined, 90000)
+
+        // Snapshot each page's current card count before clicking so we can
+        // verify the pick actually registered (server accepted).
+        const beforeCounts = await Promise.all(
+          pages.map((p) => p.locator('.pack-grid .draftable-card').count().catch(() => 0))
+        )
+
+        await selectCardForAllPlayers('.pack-grid')
+
+        if (!(pack === 3 && pick === 14)) {
+          // Wait for pack to rotate: each page should either have fewer cards
+          // than before (their current pack decreased), or the pack fully gone
+          // (advanced to next pack), or review-period showing (between-packs).
+          let attempts = 0
+          while (attempts < 240) {
+            const advanced = await Promise.all(
+              pages.map(async (p, idx) => {
+                const count = await p.locator('.pack-grid .draftable-card').count().catch(() => 0)
+                const inReview = await p.locator('.review-period').count().catch(() => 0)
+                // Pack rotated if count < beforeCounts[idx] (cards reduced after our pick)
+                // OR if pack visually refreshed (count != beforeCounts[idx], e.g. new pack)
+                // OR we moved to review period
+                return count !== beforeCounts[idx] || inReview > 0
+              })
+            )
+            if (advanced.filter(Boolean).length >= NUM_PLAYERS * 0.875) break
+            await pages[0].waitForTimeout(500)
+            attempts++
+          }
+        } else {
+          // Final pick of final pack — wait for ALL 8 packs to be empty server-side
+          // by polling the UI: no pack-grid cards on any page (draft transitioning to complete).
+          let attempts = 0
+          while (attempts < 60) {
+            const stillHasPack = await Promise.all(
+              pages.map((p) => p.locator('.pack-grid .draftable-card').count().catch(() => 0))
+            )
+            if (stillHasPack.every((c) => c === 0)) break
+            await pages[0].waitForTimeout(500)
+            attempts++
+          }
+        }
+        console.log(' ✓')
+      }
+
+      console.log(`  ✓ Pack ${pack} complete`)
+    }
+
+    // Wait for draft to finish — host page should redirect to /draft_pool/[poolShareId]
+    // (competitive drafts redirect to /draft_pool/, sealed to /pool/ — accept either).
+    console.log('  Waiting for draft completion / pool redirect on all 8 pages...')
+    const redirectResults = await Promise.all(
+      pages.map(async (page, idx) => {
+        try {
+          await page.waitForURL(/\/(draft_pool|pool)\/[^/?#]+/, { timeout: 180000 })
+          const url = page.url()
+          const match = url.match(/\/(?:draft_pool|pool)\/([^/?#]+)/)
+          const poolShareId = match ? match[1] : null
+          return { idx, poolShareId, url, error: null }
+        } catch (err: any) {
+          return { idx, poolShareId: null, url: page.url(), error: err?.message || String(err) }
+        }
+      })
+    )
+
+    // Log redirect results per player
+    for (const r of redirectResults) {
+      if (r.poolShareId) {
+        poolShareIds[r.idx] = r.poolShareId
+        console.log(`    P${r.idx + 1} pool: ${r.poolShareId}`)
+      } else {
+        console.log(`    P${r.idx + 1} DID NOT REDIRECT — url=${r.url} error=${r.error}`)
+      }
+    }
+
+    // Diagnostic screenshots + DB state dump for any players that didn't redirect
+    const failedPlayers = redirectResults.filter((r) => !r.poolShareId)
+    if (failedPlayers.length > 0) {
+      console.log(`\n  ⚠ ${failedPlayers.length} player(s) failed to redirect — collecting diagnostics`)
+
+      // Dump DB state for this draft BEFORE cleanup fires so we can see what's stuck
+      try {
+        const pg = await import('pg')
+        const dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL
+        const db = new pg.default.Pool({ connectionString: dbUrl })
+        const pod = await db.query(
+          `SELECT share_id, status, draft_state, completed_at, competitive FROM pods WHERE share_id = $1`,
+          [shareId]
+        )
+        if (pod.rows[0]) {
+          const p = pod.rows[0]
+          console.log(`    [DB] pod.status=${p.status} competitive=${p.competitive} completed_at=${p.completed_at}`)
+          console.log(`    [DB] draft_state.phase=${p.draft_state?.phase} packNumber=${p.draft_state?.packNumber} pickInPack=${p.draft_state?.pickInPack}`)
+          console.log(`    [DB] draft_state.reviewUntil=${p.draft_state?.reviewUntil}`)
+        }
+        const players = await db.query(
+          `SELECT seat_number, is_bot, jsonb_array_length(current_pack) as cards_in_pack
+           FROM pod_players WHERE pod_id = (SELECT id FROM pods WHERE share_id = $1)
+           ORDER BY seat_number`,
+          [shareId]
+        )
+        console.log(`    [DB] Per-player current_pack size:`)
+        for (const row of players.rows) {
+          console.log(`         seat ${row.seat_number} (bot=${row.is_bot}): ${row.cards_in_pack} cards remaining`)
+        }
+        await db.end()
+      } catch (err: any) {
+        console.log(`    [DB dump error] ${err?.message || err}`)
+      }
+
+      for (const r of failedPlayers) {
+        const screenshotPath = `/tmp/cpm-phase3-failure-p${r.idx + 1}.png`
+        await pages[r.idx].screenshot({ path: screenshotPath, fullPage: true }).catch(() => null)
+        const bodyText = await pages[r.idx].locator('body').innerText().catch(() => '(could not read)')
+        console.log(`    P${r.idx + 1} screenshot: ${screenshotPath}`)
+        console.log(`    P${r.idx + 1} body text (first 300 chars): ${bodyText.slice(0, 300).replace(/\n/g, ' | ')}`)
+      }
+    }
+
+    // Assert all 8 redirected
+    for (let i = 0; i < NUM_PLAYERS; i++) {
+      expect(poolShareIds[i], `P${i + 1} should have a pool share id`).not.toBeNull()
+    }
   })
 })
