@@ -209,6 +209,7 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
                   pm.game1_result, pm.game2_result, pm.game3_result,
                   pm.player1_submitted, pm.player2_submitted,
                   pm.final_confirmed, pm.match_winner, pm.pod_owner_override,
+                  pm.wayfinder_match_id,
                   u1.username as p1_username, u1.avatar_url as p1_avatar,
                   u2.username as p2_username, u2.avatar_url as p2_avatar
            FROM practice_matches pm
@@ -233,6 +234,7 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
             finalConfirmed: m.final_confirmed,
             matchWinner: m.match_winner,
             podOwnerOverride: m.pod_owner_override,
+            wayfinderMatchId: m.wayfinder_match_id || null,
           })),
         })
       }

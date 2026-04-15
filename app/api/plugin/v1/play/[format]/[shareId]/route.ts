@@ -29,9 +29,11 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     }
 
     const row = await queryRow(
-      `SELECT ${tableConfig.setCodeCol} as set_code
-       FROM ${tableConfig.table}
-       WHERE ${tableConfig.shareIdCol} = $1`,
+      `SELECT t.${tableConfig.setCodeCol} as set_code,
+              COALESCE(p.competitive, false) as competitive
+       FROM ${tableConfig.table} t
+       LEFT JOIN pods p ON t.pod_id = p.id
+       WHERE t.${tableConfig.shareIdCol} = $1`,
       [shareId]
     )
 
@@ -50,6 +52,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       format,
       isLatestSet: primarySetCode === latestSetCode,
       cardPool: primarySetCode === latestSetCode ? 'Current' : 'Unlimited',
+      competitive: row.competitive === true,
     })
   } catch (error) {
     return handleApiError(error)

@@ -149,6 +149,21 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
+.match-card-wayfinder-link {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem;
+  color: #93c5fd;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .match-card-wayfinder-link:hover {
+    color: #bfdbfe;
+    text-decoration: underline;
+  }
+}
+
 .match-card-actions {
   display: flex;
   gap: 0.5rem;

@@ -179,6 +179,7 @@ export default function PlayPage({ params }: PageProps) {
       finalConfirmed: boolean
       matchWinner: string | null
       podOwnerOverride: boolean
+      wayfinderMatchId?: string | null
     }[]
   }[]
   const competitiveCurrentRound = competitiveDraft?.currentRound || 1
