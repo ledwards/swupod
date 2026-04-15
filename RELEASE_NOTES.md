@@ -3,13 +3,14 @@
 ## 04.13.2026
 
 ### ✨ Competitive Practice Mode (Friends of the Pod)
-- **New Competitive Practice drafts**: Friends of the Pod can create competitive drafts with official Appendix C pick timers, no chat during drafting, no card review between picks, and a 30-second inter-pack review period.
-- **Swiss matchmaking**: After deck building, the host starts 3 rounds of BO3 Swiss-paired matches. Round 1 uses opposite-seat pairings, rounds 2-3 use Swiss pairings with Opponent Match Win % tiebreakers.
-- **Game-by-game result reporting**: Players report each game of their BO3 match individually. Results auto-confirm when both players submit matching results. Wayfinder plugin results are auto-ingested.
+(still in beta testing, be patient while we get this feature working perfectly)
+- **New Competitive Practice Mode drafts**: Friends of the Pod can create Competitive Practice Mode drafts with official tournament pick timers, no chat during drafting, no card review between picks, and a 30-second inter-pack review period.
 - **20-minute deck build timer**: A countdown timer enforces the competitive deck building time limit.
+- **Full 3 Rounds of Swiss matchmaking**: After deck building, the host starts 3 rounds of BO3 Swiss-paired matches. Round 1 uses opposite-seat pairings, rounds 2-3 use Swiss pairings with Opponent Match Win % tiebreakers.
+- **Game-by-game result reporting**: Players report each game of their BO3 match individually. Results auto-confirm when both players submit matching results. Wayfinder plugin results are auto-ingested.
 - **Matchmaking panel**: The play page shows round tabs, match cards with player pairings, and a standings view with W-L-D records after all rounds complete.
 - **Pod owner controls**: The host can override match results, boot players (forfeiting their active matches), and reassign byes.
-- **Gold competitive theme**: Competitive drafts have a distinctive gold visual treatment on match cards and UI elements.
+- **Gold competitive theme**: Competitive drafts have a distinctive gold visual treatment on UI elements.
 
 ### 🐛 Bug Fixes
 - **Fixed competitive toggle on draft creation**: The Competitive Practice toggle was always disabled due to checking the wrong property for patron status. Now correctly reads patron status from the auth context.

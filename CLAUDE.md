@@ -86,7 +86,7 @@ Domain-specific rules are in `.claude/rules/`:
 
 **Plans go in `/plans/`.** When complete, move to `/docs/`.
 
-Current: `TOURNAMENT_MODE_PLAN.md`, `CASUAL_MODE_PLAN.md`, `TYPESCRIPT_MIGRATION_PLAN.md`, `REFACTORING_PLAN.md`, `STYLEGUIDE_PLAN.md`
+Current: `CASUAL_MODE_PLAN.md`, `TYPESCRIPT_MIGRATION_PLAN.md`, `REFACTORING_PLAN.md`, `STYLEGUIDE_PLAN.md`
 
 ## Important Notes
 
