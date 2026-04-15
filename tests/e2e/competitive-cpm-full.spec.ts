@@ -499,5 +499,81 @@ test.describe('8-player CPM full UI flow', () => {
     for (let i = 0; i < NUM_PLAYERS; i++) {
       expect(poolShareIds[i], `P${i + 1} should have a pool share id`).not.toBeNull()
     }
+
+    // ── Phase 4: Navigate to play page + host starts round 1 ─────────────
+    console.log('\n--- PHASE 4: Deck building + start matchmaking ---')
+
+    // Each player navigates to their play page. Per the CPM spec, navigating
+    // to the play page signals "deck submitted" for round-1 start gating.
+    for (let i = 0; i < NUM_PLAYERS; i++) {
+      const playUrl = `${BASE_URL}/pool/${poolShareIds[i]}/deck/play`
+      await pages[i].goto(playUrl)
+      await pages[i].waitForLoadState('networkidle')
+      console.log(`    P${i + 1} → ${playUrl.replace(BASE_URL, '')}`)
+    }
+
+    // Wait for MatchmakingPanel to render on the host's page
+    await pages[0].waitForSelector('[data-testid="matchmaking-panel"]', { timeout: 30000 })
+
+    // Pre-start status should be 'deck_building' (no rounds yet)
+    const initialStatus = await pages[0]
+      .locator('[data-testid="matchmaking-panel"]')
+      .getAttribute('data-matchmaking-status')
+    expect(initialStatus).toBe('deck_building')
+    console.log('  ✓ All 8 on play page; matchmakingStatus=deck_building')
+
+    // Host clicks Start Round 1
+    await pages[0].waitForSelector('[data-testid="start-matches-button-container"]', { timeout: 15000 })
+    await pages[0].locator('[data-testid="start-matches-button-container"] button').click()
+    console.log('  ✓ Host clicked Start Round 1')
+
+    // Give the server a moment to process, then dump pod state for diagnostics
+    await pages[0].waitForTimeout(3000)
+    try {
+      const pg = await import('pg')
+      const dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL
+      const db = new pg.default.Pool({ connectionString: dbUrl })
+      const pod = await db.query(
+        `SELECT status, draft_state, competitive FROM pods WHERE share_id = $1`,
+        [shareId]
+      )
+      if (pod.rows[0]) {
+        const p = pod.rows[0]
+        console.log(`    [DB post-start] status=${p.status} competitive=${p.competitive} phase=${p.draft_state?.phase} matchmakingStatus=${p.draft_state?.matchmakingStatus} currentRound=${p.draft_state?.currentRound}`)
+      }
+      const rounds = await db.query(
+        `SELECT round_number, status FROM practice_rounds WHERE pod_id = (SELECT id FROM pods WHERE share_id = $1) ORDER BY round_number`,
+        [shareId]
+      )
+      console.log(`    [DB post-start] practice_rounds: ${JSON.stringify(rounds.rows)}`)
+      await db.end()
+    } catch (err: any) {
+      console.log(`    [DB post-start dump error] ${err?.message || err}`)
+    }
+
+    // Wait for matchmakingStatus to flip to 'active' on every page.
+    // If a page's UI hasn't caught up after the first pass, reload it and retry.
+    for (let i = 0; i < NUM_PLAYERS; i++) {
+      try {
+        await expect(async () => {
+          const status = await pages[i]
+            .locator('[data-testid="matchmaking-panel"]')
+            .getAttribute('data-matchmaking-status')
+          expect(status).toBe('active')
+        }).toPass({ timeout: 15000 })
+      } catch {
+        // UI didn't update via socket — reload the page to force re-fetch
+        console.log(`    P${i + 1} matchmakingStatus not active after 15s; reloading`)
+        await pages[i].reload({ waitUntil: 'domcontentloaded', timeout: 30000 })
+        await pages[i].waitForSelector('[data-testid="matchmaking-panel"]', { timeout: 20000 })
+        await expect(async () => {
+          const status = await pages[i]
+            .locator('[data-testid="matchmaking-panel"]')
+            .getAttribute('data-matchmaking-status')
+          expect(status).toBe('active')
+        }).toPass({ timeout: 15000 })
+      }
+    }
+    console.log('  ✓ matchmakingStatus=active on all 8 pages — Round 1 started')
   })
 })
