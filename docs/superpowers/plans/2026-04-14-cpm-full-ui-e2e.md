@@ -20,7 +20,8 @@
 | `src/components/PlayerSeat.tsx` | Add `data-testid="player-seat-${seatNumber}"` for stable seat lookup | Modify |
 | `src/components/MatchCard.tsx` | Add `data-testid="match-card-${match.id}"` and `data-match-status="..."` for stable match lookup and status assertion | Modify |
 | `src/components/MatchmakingPanel.tsx` | Add `data-testid="matchmaking-panel"`, `data-matchmaking-status="..."`, and `data-current-round="..."` so tests can read overall matchmaking state without scraping CSS | Modify |
-| `src/components/ResultReportModal.tsx` | Add `data-testid="result-report-modal"` and `data-game-row="game1\|game2\|game3"` on rows so each game's three buttons are addressable | Modify |
+| `src/components/ResultReportModal.tsx` | (a) Fix `isDecided` so match-level draws (1-1-1, 0-0-0, 1-0-2-draws, etc.) are submittable. (b) Export `countWins` / `isDecided` / `needsGame3` for unit testing. (c) Add `data-testid` markers for stable game-row addressing. | Modify |
+| `src/components/ResultReportModal.test.ts` | Unit tests for `isDecided` / `needsGame3` covering match-level draws and existing 2-0/2-1 cases | Create |
 | `tests/e2e/competitive-cpm-full.spec.ts` | The new test file | Create |
 
 The `data-testid` additions are tiny, non-functional, and serve the stability of every UI test that follows — not just this one. They are part of this plan's scope.
@@ -474,7 +475,202 @@ deterministically by data-testid."
 
 ---
 
-## Task 6: Create the test file scaffold
+## Task 6: Fix `ResultReportModal` to allow match-level draws (TDD)
+
+**Files:**
+- Modify: `src/components/ResultReportModal.tsx`
+- Create: `src/components/ResultReportModal.test.ts`
+
+**Why:** Per the user, draw match outcomes ARE legal in Star Wars: Unlimited (1-1-1, 0-0-0, 1-0-2-with-draws, etc.). The current modal logic in `ResultReportModal.tsx:20-25` defines `isDecided` as `p1Wins >= 2 || p2Wins >= 2`, which means a match cannot be submitted unless someone wins 2 games. This blocks all match-level draws and is wrong. The fix: a match is "decided" when someone has 2 game wins OR all 3 games have been recorded (with the 3-game outcome being a draw if no one has 2 wins, matching `src/services/matchmaking/results.ts:51` `deriveMatchWinner`).
+
+The backend already handles draw match outcomes correctly (`deriveMatchWinner` returns `'draw'` when 3 games are filled and no one has 2 wins). This task only fixes the UI gate.
+
+- [ ] **Step 1: Write the failing tests**
+
+Create `src/components/ResultReportModal.test.ts`:
+
+```typescript
+// @ts-nocheck
+/**
+ * ResultReportModal logic tests.
+ *
+ * Tests the pure helpers that govern when the Submit button is enabled.
+ * Per SWU rules, match outcomes can be:
+ *  - Player 1 wins (>= 2 game wins for player 1)
+ *  - Player 2 wins (>= 2 game wins for player 2)
+ *  - Draw (3 games played and neither player has 2 wins — includes 1-1-1,
+ *    0-0-0 all-draws, 1-0-2-with-draws, etc.)
+ */
+import { describe, it } from 'node:test'
+import assert from 'node:assert'
+import { isDecided, needsGame3, countWins } from './ResultReportModal'
+
+describe('ResultReportModal isDecided', () => {
+  describe('decided by 2-game sweep', () => {
+    it('returns true for 2-0 player1', () => {
+      assert.strictEqual(isDecided('player1', 'player1', null), true)
+    })
+    it('returns true for 2-0 player2', () => {
+      assert.strictEqual(isDecided('player2', 'player2', null), true)
+    })
+  })
+
+  describe('decided by 2-1 split', () => {
+    it('returns true for player1 2-1 (loss-win-win)', () => {
+      assert.strictEqual(isDecided('player2', 'player1', 'player1'), true)
+    })
+    it('returns true for player2 2-1 (win-loss-loss)', () => {
+      assert.strictEqual(isDecided('player1', 'player2', 'player2'), true)
+    })
+    it('returns true for player1 2-1 with a per-game draw (draw-win-win)', () => {
+      assert.strictEqual(isDecided('draw', 'player1', 'player1'), true)
+    })
+  })
+
+  describe('decided by match-level draw (3 games, no 2-win)', () => {
+    it('returns true for 1-1-1 (player1, player2, draw)', () => {
+      // Per spec: this is a valid match draw — both players win one, one game drawn
+      assert.strictEqual(isDecided('player1', 'player2', 'draw'), true)
+    })
+    it('returns true for 1-1-1 (player2, player1, draw)', () => {
+      assert.strictEqual(isDecided('player2', 'player1', 'draw'), true)
+    })
+    it('returns true for 0-0-0 all-draws', () => {
+      assert.strictEqual(isDecided('draw', 'draw', 'draw'), true)
+    })
+    it('returns true for 1-0-2-draws (player1 has 1 win, two draws)', () => {
+      assert.strictEqual(isDecided('player1', 'draw', 'draw'), true)
+    })
+    it('returns true for 0-1-2-draws (player2 has 1 win, two draws)', () => {
+      assert.strictEqual(isDecided('draw', 'player2', 'draw'), true)
+    })
+  })
+
+  describe('not decided', () => {
+    it('returns false when only 1 game filled', () => {
+      assert.strictEqual(isDecided('player1', null, null), false)
+    })
+    it('returns false when game1+game2 are split and game3 is missing', () => {
+      // 1-1-_: not yet decided, must play game 3
+      assert.strictEqual(isDecided('player1', 'player2', null), false)
+    })
+    it('returns false when game1+game2 are draws and game3 is missing', () => {
+      // 0-0-_: not yet decided, must play game 3
+      assert.strictEqual(isDecided('draw', 'draw', null), false)
+    })
+    it('returns false when no games are filled', () => {
+      assert.strictEqual(isDecided(null, null, null), false)
+    })
+  })
+})
+
+describe('ResultReportModal needsGame3', () => {
+  it('returns false when game1 is missing', () => {
+    assert.strictEqual(needsGame3(null, 'player1'), false)
+  })
+  it('returns false when game2 is missing', () => {
+    assert.strictEqual(needsGame3('player1', null), false)
+  })
+  it('returns false when someone won 2-0', () => {
+    assert.strictEqual(needsGame3('player1', 'player1'), false)
+    assert.strictEqual(needsGame3('player2', 'player2'), false)
+  })
+  it('returns true on 1-1 split', () => {
+    assert.strictEqual(needsGame3('player1', 'player2'), true)
+    assert.strictEqual(needsGame3('player2', 'player1'), true)
+  })
+  it('returns true on draw-win (no 2-win yet)', () => {
+    assert.strictEqual(needsGame3('draw', 'player1'), true)
+    assert.strictEqual(needsGame3('player2', 'draw'), true)
+  })
+  it('returns true on 0-0 (both draws)', () => {
+    assert.strictEqual(needsGame3('draw', 'draw'), true)
+  })
+})
+
+describe('ResultReportModal countWins', () => {
+  it('counts player1 wins ignoring null and draw', () => {
+    assert.strictEqual(countWins(['player1', 'draw', null], 'player1'), 1)
+    assert.strictEqual(countWins(['player1', 'player1', 'draw'], 'player1'), 2)
+  })
+  it('counts player2 wins ignoring null and draw', () => {
+    assert.strictEqual(countWins(['player2', 'draw', 'player2'], 'player2'), 2)
+  })
+})
+```
+
+- [ ] **Step 2: Run the tests, confirm they fail to import (helpers not yet exported)**
+
+Run: `node --test src/components/ResultReportModal.test.ts`
+
+Expected: FAIL with import error or `isDecided is not a function` — the helpers aren't exported from `ResultReportModal.tsx` yet.
+
+- [ ] **Step 3: Export the helpers and fix `isDecided` to allow match-level draws**
+
+In `src/components/ResultReportModal.tsx`, modify the three helper functions (around lines 16-35):
+
+```typescript
+export function countWins(games: (string | null)[], player: string): number {
+  return games.filter(g => g === player).length
+}
+
+export function isDecided(game1: string | null, game2: string | null, game3: string | null): boolean {
+  // Need at least 2 games filled to consider the match decided.
+  if (!game1 || !game2) return false
+  const games = [game1, game2, game3]
+  const p1Wins = countWins(games, 'player1')
+  const p2Wins = countWins(games, 'player2')
+  // Someone won the match (>= 2 game wins).
+  if (p1Wins >= 2 || p2Wins >= 2) return true
+  // No one has 2 wins. Match is a draw IFF all 3 games are recorded.
+  // (Mirrors deriveMatchWinner in src/services/matchmaking/results.ts:51 —
+  // 3 games filled with no 2-win = match-level draw.)
+  return game3 !== null
+}
+
+export function needsGame3(game1: string | null, game2: string | null): boolean {
+  if (!game1 || !game2) return false
+  const p1Wins = countWins([game1, game2], 'player1')
+  const p2Wins = countWins([game1, game2], 'player2')
+  // If someone already has 2 wins after 2 games, no game 3 needed.
+  if (p1Wins >= 2 || p2Wins >= 2) return false
+  // Otherwise game 3 is needed (split, draws, or 0-0).
+  return true
+}
+```
+
+Note: `isDecided` previously rejected 1-1-1 because `p1Wins >= 2 || p2Wins >= 2` was the only path to true. Adding the `game3 !== null` fallback covers the match-level draw case while preserving every existing 2-0 / 2-1 outcome (those still pass via the wins check).
+
+- [ ] **Step 4: Run the tests, confirm they pass**
+
+Run: `node --test src/components/ResultReportModal.test.ts`
+
+Expected: all tests pass (every `describe` group, including the new "decided by match-level draw" group).
+
+- [ ] **Step 5: Sanity-check the existing modal still type-checks**
+
+Run: `npx tsc --noEmit -p tsconfig.json 2>&1 | grep -E "ResultReportModal" | head`
+
+Expected: no errors. The `export` keywords don't break the existing `ResultReportModal` component which uses these helpers internally.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add src/components/ResultReportModal.tsx src/components/ResultReportModal.test.ts
+git commit -m "fix: allow match-level draws in ResultReportModal Submit gate
+
+Per SWU rules, draw match outcomes (1-1-1, 0-0-0, 1-0-2-with-draws, etc.)
+are legal — the backend already handles them via deriveMatchWinner in
+src/services/matchmaking/results.ts. The modal's isDecided was too
+strict, requiring a 2-game win before Submit could fire. Now it returns
+true when someone has 2 wins OR all 3 games are recorded.
+
+Helpers exported and unit-tested; no existing 2-0/2-1 paths affected."
+```
+
+---
+
+## Task 7: Create the test file scaffold
 
 **Files:**
 - Create: `tests/e2e/competitive-cpm-full.spec.ts`
@@ -644,7 +840,7 @@ follow-up commits."
 
 ---
 
-## Task 7: Phase 2 — Draft creation and join (UI-driven)
+## Task 8: Phase 2 — Draft creation and join (UI-driven)
 
 **Files:**
 - Modify: `tests/e2e/competitive-cpm-full.spec.ts` (test body)
@@ -748,7 +944,7 @@ share URL. Seat→page map populated from data-seat-number attributes."
 
 ---
 
-## Task 8: Phase 3 — Competitive draft (UI-driven)
+## Task 9: Phase 3 — Competitive draft (UI-driven)
 
 **Files:**
 - Modify: `tests/e2e/competitive-cpm-full.spec.ts`
@@ -915,7 +1111,7 @@ period is asserted visible. Test waits for redirect to pool URL."
 
 ---
 
-## Task 9: Phase 4 — Deck building + Start Round 1 (UI-driven)
+## Task 10: Phase 4 — Deck building + Start Round 1 (UI-driven)
 
 **Files:**
 - Modify: `tests/e2e/competitive-cpm-full.spec.ts`
@@ -977,7 +1173,7 @@ Start Round 1, all 8 observe matchmaking flip to active."
 
 ---
 
-## Task 10: Phase 5 — Round-by-round reporting (UI-driven, mutual confirmation)
+## Task 11: Phase 5 — Round-by-round reporting (UI-driven, mutual confirmation)
 
 **Files:**
 - Modify: `tests/e2e/competitive-cpm-full.spec.ts`
@@ -990,38 +1186,66 @@ Add inside the `describe` block, near the other helpers:
 
 ```typescript
 type GameOutcome = 'player1' | 'player2' | 'draw'
-type MatchOutcome = 'player1' | 'player2'  // No match-level draws — see note below
+type MatchOutcome = 'player1' | 'player2' | 'draw'
 type Pattern = (GameOutcome | null)[]  // length 2 or 3
 
-// NOTE: match-level draws (1-1-1) are intentionally excluded from this test.
-// `ResultReportModal.canSubmit` requires `isDecided()` to be true, which means
-// someone must have >= 2 game wins. A 1-1-1 draw has neither player at 2 wins
-// and the Submit button stays disabled — there is no UI path to submit a
-// match-level draw via mutual confirmation today. Per-game draws ARE valid
-// as long as one player still reaches 2 game wins (e.g. draw-p1-p1).
-//
-// If the modal later supports submitting 1-1-1 draws, add 'draw' back to
-// MatchOutcome and the corresponding pattern branch here.
+// Match outcome distribution: 45% p1 win, 45% p2 win, 10% match-level draw.
+// Match-level draws are submittable thanks to the modal fix in Task 6.
+// Per `deriveMatchWinner` (src/services/matchmaking/results.ts:51), a match
+// is a draw IFF all 3 games are recorded and neither player has 2 wins.
+function pick<T>(rng: () => number, arr: T[]): T {
+  return arr[Math.floor(rng() * arr.length)]
+}
+
 function chooseGamePattern(rng: () => number): { outcome: MatchOutcome; pattern: Pattern } {
-  // 50% p1, 50% p2
-  const outcome: MatchOutcome = rng() < 0.5 ? 'player1' : 'player2'
+  const r = rng()
+  let outcome: MatchOutcome
+  if (r < 0.45) outcome = 'player1'
+  else if (r < 0.90) outcome = 'player2'
+  else outcome = 'draw'
+
+  if (outcome === 'draw') {
+    // Match-level draw: 3 games recorded, neither player has 2 wins.
+    // Pick uniformly among representative draw patterns:
+    //   1-1-1 (p1, p2, draw permutations)
+    //   0-0-0 (all draws)
+    //   1-0-2-with-draws (one player wins 1, two draws)
+    const patterns: Pattern[] = [
+      // 1-1-1 patterns (draw shows up in any of the 3 slots)
+      ['player1', 'player2', 'draw'],
+      ['player1', 'draw', 'player2'],
+      ['draw', 'player1', 'player2'],
+      ['player2', 'player1', 'draw'],
+      ['player2', 'draw', 'player1'],
+      ['draw', 'player2', 'player1'],
+      // 0-0-0 all-draws
+      ['draw', 'draw', 'draw'],
+      // 1-0-2-with-draws (p1 has 1, p2 has 0, two draws)
+      ['player1', 'draw', 'draw'],
+      ['draw', 'player1', 'draw'],
+      ['draw', 'draw', 'player1'],
+      // 0-1-2-with-draws (p2 has 1, p1 has 0, two draws)
+      ['player2', 'draw', 'draw'],
+      ['draw', 'player2', 'draw'],
+      ['draw', 'draw', 'player2'],
+    ]
+    return { outcome, pattern: pick(rng, patterns) }
+  }
+
+  // Decisive outcome (p1 or p2 wins): 60% 2-0, 30% 2-1 clean, 10% 2-1 with one per-game draw
   const winner = outcome
   const loser: GameOutcome = winner === 'player1' ? 'player2' : 'player1'
-
-  // 60% 2-0, 30% 2-1 (no per-game draws), 10% 2-1 with a per-game draw
-  const r = rng()
-  if (r < 0.6) {
-    // 2-0
+  const r2 = rng()
+  if (r2 < 0.6) {
     return { outcome, pattern: [winner, winner] }
   }
-  if (r < 0.9) {
-    // 2-1, no draws
+  if (r2 < 0.9) {
     const orders: Pattern[] = [
       [loser, winner, winner],
       [winner, loser, winner],
       [winner, winner, loser],
     ]
-    return { outcome, pattern: orders[Math.floor(rng() * orders.length)] }
+    return { outcome, pattern: pick(rng, orders) }
   }
   // 2-1 with a per-game draw — winner still gets 2 game wins
   const orders: Pattern[] = [
@@ -1029,7 +1253,7 @@ function chooseGamePattern(rng: () => number): { outcome: MatchOutcome; pattern:
     [winner, 'draw', winner],
     [winner, winner, 'draw'],
   ]
-  return { outcome, pattern: orders[Math.floor(rng() * orders.length)] }
+  return { outcome, pattern: pick(rng, orders) }
 }
 
 interface UIPairing {
@@ -1241,7 +1465,7 @@ rematches in rounds 2-3, and auto-advance after each round."
 
 ---
 
-## Task 11: Phase 6 — Final standings assertion (UI-driven)
+## Task 12: Phase 6 — Final standings assertion (UI-driven)
 
 **Files:**
 - Modify: `tests/e2e/competitive-cpm-full.spec.ts`
@@ -1344,7 +1568,7 @@ recorded match winners, ranks are 1..8 unique and sorted by wins desc."
 
 ---
 
-## Task 12: Final cleanup — re-run, verify CI signal, build check
+## Task 13: Final cleanup — re-run, verify CI signal, build check
 
 **Files:**
 - None new
@@ -1393,11 +1617,12 @@ If steps 1–4 surfaced fixes, commit them now with a focused message. Otherwise
 
 **Spec coverage:** Each requirement from `2026-04-14-cpm-full-ui-e2e-design.md` has a task:
 - Setup (8 users, 8 contexts) → Tasks 1, 6
-- Draft creation + join → Task 7
-- Competitive draft picks + inter-pack review → Task 8
-- Deck building + Start Round 1 → Task 9
-- 3 rounds of mutual reporting + pairing assertions + auto-advance → Task 10
-- Final standings → Task 11
+- Draft creation + join → Task 8
+- Competitive draft picks + inter-pack review → Task 9
+- Deck building + Start Round 1 → Task 10
+- 3 rounds of mutual reporting + pairing assertions + auto-advance → Task 11
+- Final standings → Task 12
+- ResultReportModal draw-submission fix → Task 6
 - `data-testid` additions to make UI scrape-free → Tasks 2–5
 
 **Placeholder scan:** No "TBD" / "TODO" / "fill in later" left in the plan.
