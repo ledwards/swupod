@@ -61,7 +61,7 @@ function PlayerSeat({
 
   if (isEmpty) {
     return (
-      <div className="player-seat empty">
+      <div className="player-seat empty" data-testid={`player-seat-${seatNumber}`} data-seat-number={seatNumber}>
         <div className="seat-avatar empty-avatar">
           <span>{seatNumber}</span>
         </div>
@@ -75,7 +75,7 @@ function PlayerSeat({
   const showRemove = isHostViewing && onRemove && !isCurrentUser && !!player
 
   return (
-    <div className={`player-seat ${isCurrentUser ? 'current-user' : ''}`}>
+    <div className={`player-seat ${isCurrentUser ? 'current-user' : ''}`} data-testid={`player-seat-${seatNumber}`} data-seat-number={seatNumber} data-player-id={player?.id || ''} data-username={player?.username || ''}>
       <div
         className="seat-avatar"
         style={isPatron
