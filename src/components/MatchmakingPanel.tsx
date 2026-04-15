@@ -23,6 +23,7 @@ interface MatchData {
   finalConfirmed: boolean
   matchWinner: string | null
   podOwnerOverride: boolean
+  wayfinderMatchId?: string | null
 }
 
 interface Round {
@@ -141,7 +142,13 @@ export function MatchmakingPanel({
   const hasActiveRound = activeRound && activeRound.status === 'active'
 
   return (
-    <div className="matchmaking-panel">
+    <div
+      className="matchmaking-panel"
+      data-testid="matchmaking-panel"
+      data-matchmaking-status={matchmakingStatus}
+      data-current-round={currentRound}
+      data-active-tab={activeTab}
+    >
       <div className="matchmaking-panel-header">
         <span className="matchmaking-panel-label">COMPETITIVE PRACTICE</span>
       </div>
@@ -166,7 +173,7 @@ export function MatchmakingPanel({
 
       {/* Pod owner: start matches */}
       {showStartButton && (
-        <div className="matchmaking-host-controls">
+        <div className="matchmaking-host-controls" data-testid="start-matches-button-container">
           <Button variant="primary" glowColor="yellow" onClick={onStartMatches}>
             Start Round 1
           </Button>
@@ -180,6 +187,7 @@ export function MatchmakingPanel({
             key={tab.key}
             className={`matchmaking-tab${activeTab === tab.key ? ' matchmaking-tab--active' : ''}`}
             onClick={() => setActiveTab(tab.key)}
+            data-testid={`matchmaking-tab-${tab.key}`}
           >
             {tab.label}
           </button>
@@ -195,7 +203,16 @@ export function MatchmakingPanel({
             ) : (
               <ol className="matchmaking-standings-list">
                 {standings.map((player, i) => (
-                  <li key={player.id} className={`matchmaking-standing-row${player.id === currentUserId ? ' matchmaking-standing-row--mine' : ''}`}>
+                  <li
+                    key={player.id}
+                    className={`matchmaking-standing-row${player.id === currentUserId ? ' matchmaking-standing-row--mine' : ''}`}
+                    data-testid={`standing-row-${i + 1}`}
+                    data-player-id={player.id}
+                    data-rank={i + 1}
+                    data-wins={player.wins}
+                    data-losses={player.losses}
+                    data-draws={player.draws}
+                  >
                     <span className="matchmaking-standing-rank">{i + 1}.</span>
                     <span className="matchmaking-standing-name">{player.username}</span>
                     <span className="matchmaking-standing-record">
