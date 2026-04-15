@@ -575,5 +575,245 @@ test.describe('8-player CPM full UI flow', () => {
       }
     }
     console.log('  ✓ matchmakingStatus=active on all 8 pages — Round 1 started')
+
+    // ── Phase 5: Three rounds of matchmaking ────────────────────────────
+    console.log('\n--- PHASE 5: Three rounds of matchmaking ---')
+
+    type GameOutcome = 'player1' | 'player2' | 'draw'
+    type MatchOutcome = 'player1' | 'player2' | 'draw'
+    type Pattern = (GameOutcome | null)[]
+
+    const pickRng = <T,>(arr: T[]): T => arr[Math.floor(rng() * arr.length)]
+
+    function chooseGamePattern(): { outcome: MatchOutcome; pattern: Pattern } {
+      const r = rng()
+      let outcome: MatchOutcome
+      if (r < 0.45) outcome = 'player1'
+      else if (r < 0.90) outcome = 'player2'
+      else outcome = 'draw'
+
+      if (outcome === 'draw') {
+        const patterns: Pattern[] = [
+          ['player1', 'player2', 'draw'], ['player1', 'draw', 'player2'],
+          ['draw', 'player1', 'player2'], ['player2', 'player1', 'draw'],
+          ['player2', 'draw', 'player1'], ['draw', 'player2', 'player1'],
+          ['draw', 'draw', 'draw'],
+          ['player1', 'draw', 'draw'], ['draw', 'player1', 'draw'], ['draw', 'draw', 'player1'],
+          ['player2', 'draw', 'draw'], ['draw', 'player2', 'draw'], ['draw', 'draw', 'player2'],
+        ]
+        return { outcome, pattern: pickRng(patterns) }
+      }
+      const winner = outcome
+      const loser: GameOutcome = winner === 'player1' ? 'player2' : 'player1'
+      const r2 = rng()
+      if (r2 < 0.6) return { outcome, pattern: [winner, winner] }
+      // 2-1 patterns: the modal only shows game 3 when games 1+2 don't decide
+      // the match (i.e., neither player has 2 wins after 2 games). That rules
+      // out [winner, winner, *] — those are 2-0 with a phantom third game.
+      if (r2 < 0.9) {
+        return { outcome, pattern: pickRng<Pattern>([
+          [loser, winner, winner], [winner, loser, winner],
+        ]) }
+      }
+      return { outcome, pattern: pickRng<Pattern>([
+        ['draw', winner, winner], [winner, 'draw', winner],
+      ]) }
+    }
+
+    interface UIPairing {
+      matchId: string
+      player1Id: string
+      player2Id: string
+      player1Username: string
+      player2Username: string
+      isBye: boolean
+    }
+
+    const readPairingsFromPage = async (page: Page): Promise<UIPairing[]> => {
+      const cards = await page.locator('[data-testid^="match-card-"]').all()
+      const out: UIPairing[] = []
+      for (const card of cards) {
+        const matchId = await card.getAttribute('data-match-id') || ''
+        const isBye = (await card.getAttribute('data-is-bye')) === 'true'
+        const p1Id = await card.getAttribute('data-player1-id') || ''
+        const p2Id = await card.getAttribute('data-player2-id') || ''
+        const names = await card.locator('.match-card-player-name').allTextContents()
+        out.push({
+          matchId, player1Id: p1Id, player2Id: p2Id,
+          player1Username: names[0] || '', player2Username: names[1] || '',
+          isBye,
+        })
+      }
+      return out
+    }
+
+    const reportResultViaUI = async (page: Page, matchId: string, pattern: Pattern): Promise<void> => {
+      // If the Report button isn't visible, reload — the page may be stale
+      const btnSelector = `[data-testid="match-report-button-${matchId}"]`
+      const isVisible = await page.locator(btnSelector).isVisible().catch(() => false)
+      if (!isVisible) {
+        await page.reload({ waitUntil: 'domcontentloaded', timeout: 30000 })
+        await page.waitForSelector('[data-testid="matchmaking-panel"]', { timeout: 20000 })
+      }
+      await page.locator(`${btnSelector} button`).click({ timeout: 10000 })
+      await page.waitForSelector('[data-testid="result-report-modal"]', { timeout: 10000 })
+      if (pattern[0]) await page.locator(`[data-testid="game-game1-${pattern[0]}"]`).click()
+      if (pattern[1]) await page.locator(`[data-testid="game-game2-${pattern[1]}"]`).click()
+      if (pattern[2]) {
+        await page.waitForSelector('[data-testid="game-row-game3"]', { timeout: 5000 })
+        await page.locator(`[data-testid="game-game3-${pattern[2]}"]`).click()
+      }
+      await page.locator('[data-testid="result-report-submit"] button').click()
+      await page.waitForSelector('[data-testid="result-report-modal"]', { state: 'detached', timeout: 10000 })
+    }
+
+    // Wait for a page to show a specific current-round, reloading if socket didn't update
+    const waitForCurrentRound = async (page: Page, expected: number, label: string): Promise<void> => {
+      try {
+        await expect(async () => {
+          const cur = await page.locator('[data-testid="matchmaking-panel"]').getAttribute('data-current-round')
+          expect(parseInt(cur || '0')).toBe(expected)
+        }).toPass({ timeout: 15000 })
+      } catch {
+        console.log(`    ${label} not on round ${expected} after 15s; reloading`)
+        await page.reload({ waitUntil: 'domcontentloaded', timeout: 30000 })
+        await page.waitForSelector('[data-testid="matchmaking-panel"]', { timeout: 20000 })
+        await expect(async () => {
+          const cur = await page.locator('[data-testid="matchmaking-panel"]').getAttribute('data-current-round')
+          expect(parseInt(cur || '0')).toBe(expected)
+        }).toPass({ timeout: 15000 })
+      }
+    }
+
+    // Track all pairings across rounds for no-rematch verification
+    const allPairings: UIPairing[][] = []
+
+    for (let roundNum = 1; roundNum <= 3; roundNum++) {
+      console.log(`\n  === Round ${roundNum} ===`)
+
+      // Wait for host to show correct current-round with reload fallback
+      await waitForCurrentRound(pages[0], roundNum, 'host')
+
+      // Click this round's tab on each page (match cards may only render on active tab)
+      for (let i = 0; i < NUM_PLAYERS; i++) {
+        await waitForCurrentRound(pages[i], roundNum, `P${i + 1}`)
+        await pages[i].locator(`[data-testid="matchmaking-tab-round-${roundNum}"]`).click().catch(() => null)
+        await pages[i].waitForSelector('[data-testid^="match-card-"]', { timeout: 20000 })
+      }
+
+      // Read pairings from the host
+      const pairings = await readPairingsFromPage(pages[0])
+      allPairings.push(pairings)
+      console.log(`    Round ${roundNum} pairings:`)
+      for (const p of pairings) {
+        console.log(p.isBye ? `      ${p.player1Username}: BYE` : `      ${p.player1Username} vs ${p.player2Username}`)
+      }
+
+      // Round 1: opposite-seat assertion (1v5, 2v6, 3v7, 4v8)
+      if (roundNum === 1) {
+        for (const [seatA, seatB] of [[1, 5], [2, 6], [3, 7], [4, 8]]) {
+          const userA = users[seatToPageIdx.get(seatA)!]
+          const userB = users[seatToPageIdx.get(seatB)!]
+          const found = pairings.some((p) =>
+            (p.player1Id === userA.user.id && p.player2Id === userB.user.id) ||
+            (p.player1Id === userB.user.id && p.player2Id === userA.user.id)
+          )
+          expect(found, `Round 1 should pair seat ${seatA} with seat ${seatB}`).toBe(true)
+        }
+        console.log('    ✓ Round 1 opposite-seat pairing verified')
+      }
+
+      // Rounds 2, 3: no-rematch assertion
+      if (roundNum > 1) {
+        const priorOpps = new Map<string, Set<string>>()
+        for (const prior of allPairings.slice(0, roundNum - 1)) {
+          for (const p of prior) {
+            if (p.isBye) continue
+            if (!priorOpps.has(p.player1Id)) priorOpps.set(p.player1Id, new Set())
+            if (!priorOpps.has(p.player2Id)) priorOpps.set(p.player2Id, new Set())
+            priorOpps.get(p.player1Id)!.add(p.player2Id)
+            priorOpps.get(p.player2Id)!.add(p.player1Id)
+          }
+        }
+        for (const p of pairings) {
+          if (p.isBye) continue
+          const aPrior = priorOpps.get(p.player1Id) || new Set()
+          expect(aPrior.has(p.player2Id),
+            `Round ${roundNum} rematch: ${p.player1Username} already played ${p.player2Username}`).toBe(false)
+        }
+        console.log(`    ✓ Round ${roundNum} no-rematch verified`)
+      }
+
+      // Report each non-bye match via mutual confirmation
+      for (const pairing of pairings) {
+        if (pairing.isBye) {
+          console.log(`      (bye) ${pairing.player1Username}`)
+          continue
+        }
+        const { outcome, pattern } = chooseGamePattern()
+        console.log(`      ${pairing.player1Username} vs ${pairing.player2Username}: [${pattern.join(',')}] → ${outcome}`)
+
+        const p1Idx = users.findIndex((u) => u.user.id === pairing.player1Id)
+        const p2Idx = users.findIndex((u) => u.user.id === pairing.player2Id)
+        expect(p1Idx).toBeGreaterThanOrEqual(0)
+        expect(p2Idx).toBeGreaterThanOrEqual(0)
+
+        // Both players must be on this round's tab
+        for (const idx of [p1Idx, p2Idx]) {
+          await pages[idx].locator(`[data-testid="matchmaking-tab-round-${roundNum}"]`).click().catch(() => null)
+        }
+
+        await reportResultViaUI(pages[p1Idx], pairing.matchId, pattern)
+        await reportResultViaUI(pages[p2Idx], pairing.matchId, pattern)
+
+        // Confirm match is finalized on host (with reload fallback)
+        try {
+          await expect(async () => {
+            const confirmed = await pages[0].locator(`[data-testid="match-card-${pairing.matchId}"]`).getAttribute('data-final-confirmed')
+            expect(confirmed).toBe('true')
+          }).toPass({ timeout: 15000 })
+        } catch {
+          console.log(`      host didn't see match confirm; reloading host`)
+          await pages[0].reload({ waitUntil: 'domcontentloaded', timeout: 30000 })
+          await pages[0].waitForSelector('[data-testid="matchmaking-panel"]', { timeout: 20000 })
+          await pages[0].locator(`[data-testid="matchmaking-tab-round-${roundNum}"]`).click().catch(() => null)
+          await expect(async () => {
+            const confirmed = await pages[0].locator(`[data-testid="match-card-${pairing.matchId}"]`).getAttribute('data-final-confirmed')
+            expect(confirmed).toBe('true')
+          }).toPass({ timeout: 15000 })
+        }
+
+        const winnerAttr = await pages[0].locator(`[data-testid="match-card-${pairing.matchId}"]`).getAttribute('data-match-winner')
+        expect(winnerAttr).toBe(outcome)
+      }
+
+      console.log(`    ✓ Round ${roundNum} all matches reported and confirmed`)
+
+      // Auto-advance check
+      if (roundNum < 3) {
+        for (let i = 0; i < NUM_PLAYERS; i++) {
+          await waitForCurrentRound(pages[i], roundNum + 1, `P${i + 1}`)
+        }
+        console.log(`    ✓ Auto-advanced to round ${roundNum + 1}`)
+      } else {
+        for (let i = 0; i < NUM_PLAYERS; i++) {
+          try {
+            await expect(async () => {
+              const status = await pages[i].locator('[data-testid="matchmaking-panel"]').getAttribute('data-matchmaking-status')
+              expect(status).toBe('complete')
+            }).toPass({ timeout: 15000 })
+          } catch {
+            console.log(`    P${i + 1} not complete after R3; reloading`)
+            await pages[i].reload({ waitUntil: 'domcontentloaded', timeout: 30000 })
+            await pages[i].waitForSelector('[data-testid="matchmaking-panel"]', { timeout: 20000 })
+            await expect(async () => {
+              const status = await pages[i].locator('[data-testid="matchmaking-panel"]').getAttribute('data-matchmaking-status')
+              expect(status).toBe('complete')
+            }).toPass({ timeout: 15000 })
+          }
+        }
+        console.log('    ✓ Matchmaking complete after round 3')
+      }
+    }
   })
 })
