@@ -69,9 +69,10 @@ export function ResultReportModal({ matchId, player1Name, player2Name, isOverrid
   return (
     <Modal isOpen onClose={onClose} title={title} showCloseButton>
       <Modal.Body>
-        <div className="result-report-games">
+        <div className="result-report-games" data-testid="result-report-modal">
           <GameRow
             label="Game 1"
+            gameKey="game1"
             player1Name={player1Name}
             player2Name={player2Name}
             value={game1}
@@ -79,6 +80,7 @@ export function ResultReportModal({ matchId, player1Name, player2Name, isOverrid
           />
           <GameRow
             label="Game 2"
+            gameKey="game2"
             player1Name={player1Name}
             player2Name={player2Name}
             value={game2}
@@ -87,6 +89,7 @@ export function ResultReportModal({ matchId, player1Name, player2Name, isOverrid
           {showGame3 && (
             <GameRow
               label="Game 3"
+              gameKey="game3"
               player1Name={player1Name}
               player2Name={player2Name}
               value={game3}
@@ -102,27 +105,31 @@ export function ResultReportModal({ matchId, player1Name, player2Name, isOverrid
       </Modal.Body>
       <Modal.Actions>
         <Button variant="secondary" onClick={onClose}>Cancel</Button>
-        <Button variant="primary" onClick={handleSubmit} disabled={!canSubmit}>Submit</Button>
+        <span data-testid="result-report-submit">
+          <Button variant="primary" onClick={handleSubmit} disabled={!canSubmit}>Submit</Button>
+        </span>
       </Modal.Actions>
     </Modal>
   )
 }
 
-function GameRow({ label, player1Name, player2Name, value, onChange }: {
+function GameRow({ label, gameKey, player1Name, player2Name, value, onChange }: {
   label: string
+  gameKey: 'game1' | 'game2' | 'game3'
   player1Name: string
   player2Name: string
   value: string | null
   onChange: (v: string) => void
 }) {
   return (
-    <div className="result-report-row">
+    <div className="result-report-row" data-testid={`game-row-${gameKey}`} data-game-key={gameKey}>
       <span className="result-report-label">{label}</span>
       <div className="result-report-buttons">
         <button
           className={`result-report-btn${value === 'player1' ? ' result-report-btn--selected' : ''}`}
           onClick={() => onChange('player1')}
           type="button"
+          data-testid={`game-${gameKey}-player1`}
         >
           {player1Name}
         </button>
@@ -130,6 +137,7 @@ function GameRow({ label, player1Name, player2Name, value, onChange }: {
           className={`result-report-btn result-report-btn--draw${value === 'draw' ? ' result-report-btn--selected' : ''}`}
           onClick={() => onChange('draw')}
           type="button"
+          data-testid={`game-${gameKey}-draw`}
         >
           Draw
         </button>
@@ -137,6 +145,7 @@ function GameRow({ label, player1Name, player2Name, value, onChange }: {
           className={`result-report-btn${value === 'player2' ? ' result-report-btn--selected' : ''}`}
           onClick={() => onChange('player2')}
           type="button"
+          data-testid={`game-${gameKey}-player2`}
         >
           {player2Name}
         </button>
