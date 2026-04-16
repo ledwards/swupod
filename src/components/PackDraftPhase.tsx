@@ -8,6 +8,8 @@ import TimerPanel from './TimerPanel'
 import DraftReviewModal from './DraftReviewModal'
 import CountdownTimer from './CountdownTimer'
 import Button from './Button'
+import { CardPreview } from './DeckBuilder/CardPreview'
+import useCardPreview from '../hooks/useCardPreview'
 import { getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
 import './PackDraftPhase.css'
 
@@ -107,6 +109,16 @@ function PackDraftPhase({
   const [showReviewModal, setShowReviewModal] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [hoveredLeaderPreview, setHoveredLeaderPreview] = useState<HoveredLeaderPreview | null>(null)
+  const {
+    hoveredCardPreview: reviewHoveredCard,
+    handleCardMouseEnter: reviewHandleMouseEnter,
+    handleCardMouseLeave: reviewHandleMouseLeave,
+    handlePreviewMouseEnter: reviewHandlePreviewMouseEnter,
+    handlePreviewMouseLeave: reviewHandlePreviewMouseLeave,
+    handleCardTouchStart: reviewHandleTouchStart,
+    handleCardTouchEnd: reviewHandleTouchEnd,
+    dismissPreview: reviewDismissPreview,
+  } = useCardPreview()
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
   const [showPassing, setShowPassing] = useState(false)
   const [lastPackSize, setLastPackSize] = useState(0)
@@ -399,7 +411,14 @@ function PackDraftPhase({
             }}
           >
             {draftedCards.map(card => (
-              <div key={card.instanceId || card.id} style={{ flexShrink: 0 }}>
+              <div
+                key={card.instanceId || card.id}
+                style={{ flexShrink: 0, cursor: 'zoom-in' }}
+                onMouseEnter={(e) => reviewHandleMouseEnter(card, e)}
+                onMouseLeave={reviewHandleMouseLeave}
+                onTouchStart={() => reviewHandleTouchStart(card)}
+                onTouchEnd={reviewHandleTouchEnd}
+              >
                 <img
                   src={card.imageUrl}
                   alt={card.name || card.title || 'Card'}
@@ -409,6 +428,17 @@ function PackDraftPhase({
             ))}
           </div>
         </div>
+        {reviewHoveredCard && (
+          <CardPreview
+            card={reviewHoveredCard.card}
+            x={reviewHoveredCard.x}
+            y={reviewHoveredCard.y}
+            isMobile={reviewHoveredCard.isMobile}
+            onMouseEnter={reviewHandlePreviewMouseEnter}
+            onMouseLeave={reviewHandlePreviewMouseLeave}
+            onDismiss={reviewDismissPreview}
+          />
+        )}
       </div>
     )
   }

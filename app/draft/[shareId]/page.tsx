@@ -15,6 +15,7 @@ import Button from '../../../src/components/Button'
 import Modal from '../../../src/components/Modal'
 import EditableTitle from '../../../src/components/EditableTitle'
 import ChatPanel from '../../../src/components/ChatPanel'
+import CompetitivePracticeRules from '../../../src/components/CompetitivePracticeRules'
 import '../../../src/App.css'
 import '../draft.css'
 import '../../../src/components/SealedPod.css'
@@ -54,6 +55,8 @@ export default function DraftRoomPage({ params }: PageProps) {
   const [hasLeft, setHasLeft] = useState(false)
   const [removeConfirmPlayer, setRemoveConfirmPlayer] = useState<{ id: string, username: string } | null>(null)
   const [isRemoving, setIsRemoving] = useState(false)
+  const [showRulesModal, setShowRulesModal] = useState(false)
+  const [nowTick, setNowTick] = useState(() => Date.now())
 
   // Get shareId from params
   useEffect(() => {
@@ -77,6 +80,21 @@ export default function DraftRoomPage({ params }: PageProps) {
 
   const isFormatsDraft = draft?.settings?.draftMode === 'chaos'
   const backPath = isFormatsDraft ? '/formats' : '/draft'
+
+  // Re-evaluate the review window once per second so UI that depends on
+  // review-period state (e.g. hiding the host's Cancel Draft button) updates
+  // without waiting for a draftState change.
+  useEffect(() => {
+    if (status !== 'active' || !draft?.competitive) return
+    const id = setInterval(() => setNowTick(Date.now()), 1000)
+    return () => clearInterval(id)
+  }, [status, draft?.competitive])
+
+  const isReviewPeriod = !!(
+    draft?.competitive &&
+    draftState?.reviewUntil &&
+    new Date(draftState.reviewUntil).getTime() > nowTick
+  )
 
   // Detect when current user is kicked (was a player, now isn't, still in waiting)
   const wasPlayerRef = useRef(false)
@@ -526,20 +544,51 @@ export default function DraftRoomPage({ params }: PageProps) {
                         maxLength={100}
                       />
                       {draft?.competitive && (
-                        <span style={{
-                          display: 'inline-block',
-                          padding: '2px 8px',
-                          fontSize: '0.7rem',
-                          fontWeight: 700,
-                          letterSpacing: '0.08em',
-                          color: 'rgba(255, 215, 0, 0.9)',
-                          border: '1px solid rgba(255, 215, 0, 0.4)',
-                          borderRadius: '4px',
-                          marginLeft: '8px',
-                          verticalAlign: 'middle',
-                        }}>
-                          COMPETITIVE
-                        </span>
+                        <>
+                          <span style={{
+                            display: 'inline-block',
+                            padding: '2px 8px',
+                            fontSize: '0.7rem',
+                            fontWeight: 700,
+                            letterSpacing: '0.08em',
+                            color: 'rgba(255, 215, 0, 0.9)',
+                            border: '1px solid rgba(255, 215, 0, 0.4)',
+                            borderRadius: '4px',
+                            marginLeft: '8px',
+                            verticalAlign: 'middle',
+                          }}>
+                            COMPETITIVE
+                          </span>
+                          {status === 'active' && (
+                            <button
+                              type="button"
+                              aria-label="Competitive Practice rules"
+                              title="Competitive Practice rules"
+                              onClick={() => setShowRulesModal(true)}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '22px',
+                                height: '22px',
+                                marginLeft: '6px',
+                                padding: 0,
+                                border: '1px solid rgba(255, 215, 0, 0.4)',
+                                borderRadius: '50%',
+                                background: 'transparent',
+                                color: 'rgba(255, 215, 0, 0.9)',
+                                cursor: 'pointer',
+                                verticalAlign: 'middle',
+                              }}
+                            >
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="16" x2="12" y2="12"/>
+                                <line x1="12" y1="8" x2="12.01" y2="8"/>
+                              </svg>
+                            </button>
+                          )}
+                        </>
                       )}
                     </h1>
                   </div>
@@ -559,8 +608,10 @@ export default function DraftRoomPage({ params }: PageProps) {
                 </div>
               </div>
 
-              {/* Cancel Draft Button - bottom center during active phases (host only) */}
-              {isHost && status === 'active' && (
+              {/* Cancel Draft Button - bottom center during active phases (host only).
+                  Hidden during the 30s between-pack review period so it doesn't
+                  dominate the "Review Your Cards" screen. */}
+              {isHost && status === 'active' && !isReviewPeriod && (
                 <div className="draft-cancel-section">
                   <button
                     className="draft-cancel-button"
@@ -640,6 +691,20 @@ export default function DraftRoomPage({ params }: PageProps) {
           </div>
         )}
       </div>
+
+      {/* Competitive Practice Rules Modal */}
+      <Modal
+        isOpen={showRulesModal}
+        onClose={() => setShowRulesModal(false)}
+        title="Competitive Practice Rules"
+      >
+        <Modal.Body>
+          <CompetitivePracticeRules showTitle={false} />
+        </Modal.Body>
+        <Modal.Actions>
+          <Button variant="secondary" onClick={() => setShowRulesModal(false)}>Close</Button>
+        </Modal.Actions>
+      </Modal>
 
       {/* Remove Player Confirmation Modal */}
       <Modal

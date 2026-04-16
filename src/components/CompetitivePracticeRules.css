@@ -1,0 +1,89 @@
+.cpm-rules {
+  font-family: 'Barlow', sans-serif;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.5;
+}
+
+.cpm-rules-title {
+  margin: 0 0 8px 0;
+  color: #FFD95A;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.cpm-rules-intro {
+  margin: 0 0 16px 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.cpm-rules-section {
+  margin-bottom: 16px;
+}
+
+.cpm-rules-section:last-child {
+  margin-bottom: 0;
+}
+
+.cpm-rules-section h4 {
+  margin: 0 0 6px 0;
+  color: #FFD95A;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.cpm-rules-section ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.9rem;
+}
+
+.cpm-rules-section li {
+  margin-bottom: 4px;
+}
+
+.cpm-rules-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.cpm-rules-table th,
+.cpm-rules-table td {
+  padding: 4px 8px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+}
+
+.cpm-rules-table th {
+  color: rgba(255, 215, 0, 0.85);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.cpm-rules-table td:last-child {
+  color: rgba(255, 255, 255, 0.95);
+  font-variant-numeric: tabular-nums;
+}
+
+.cpm-rules-note {
+  margin: 6px 0 0 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+/* Lobby container — boxed panel with gold accent */
+.cpm-rules-panel {
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  border-radius: 8px;
+  background: rgba(15, 15, 20, 0.6);
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}

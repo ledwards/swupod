@@ -5,6 +5,7 @@ import { useState } from 'react'
 import PlayerCircle from './PlayerCircle'
 import HostControls from './HostControls'
 import Button from './Button'
+import CompetitivePracticeRules from './CompetitivePracticeRules'
 import './DraftLobby.css'
 
 const CopyIcon = () => (
@@ -114,6 +115,12 @@ function DraftLobby({
         </div>
 
         <div className="controls-section">
+          {draft?.competitive && (
+            <div className="cpm-rules-panel">
+              <CompetitivePracticeRules />
+            </div>
+          )}
+
           {isHost && (
             <HostControls
               draft={draft}
