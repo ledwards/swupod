@@ -1384,26 +1384,46 @@ a.discord-login-button:active {
 /* Draft landing: Standard + Competitive button row */
 .draft-mode-buttons {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .draft-competitive-info-wrapper {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .draft-competitive-button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  border-color: rgba(255, 215, 0, 0.7) !important;
+  color: #FFD95A;
 }
 
 .draft-competitive-button svg {
   flex-shrink: 0;
+}
+
+.draft-competitive-button:hover:not(:disabled) {
+  border-color: rgba(255, 215, 0, 1) !important;
+  box-shadow: 0 6px 16px rgba(255, 215, 0, 0.5) !important;
+  color: #FFE173;
+}
+
+.draft-competitive-button:disabled {
+  border-color: rgba(255, 215, 0, 0.25) !important;
+  color: rgba(255, 215, 0, 0.4);
+}
+
+@media (max-width: 560px) {
+  .draft-mode-buttons .primary-button {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+  }
 }
 
 .draft-competitive-info-icon {
