@@ -362,6 +362,7 @@ export default function SealedPodPage({ params }: PageProps) {
               onRenamePod={(name) => handleSettingsChange({ name })}
               starting={starting}
               error={error || syncError}
+              isAdmin={user?.is_admin === true}
             />
           </div>
         </div>

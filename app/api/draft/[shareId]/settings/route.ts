@@ -117,6 +117,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext): Pro
           current_players: pod.current_players,
           pod_type: pod.pod_type || 'draft',
           is_public: true,
+          competitive: pod.competitive === true,
         }
         postPodCreated(podInfo, hostUsername).catch(err => {
           console.error('[Draft Settings] Error creating Discord thread:', err)
@@ -133,6 +134,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext): Pro
           current_players: pod.current_players,
           pod_type: pod.pod_type || 'draft',
           is_public: false,
+          competitive: pod.competitive === true,
         }
         deletePodMessage(podInfo).catch(err => {
           console.error('[Draft Settings] Error deleting Discord thread:', err)
@@ -166,6 +168,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext): Pro
         current_players: pod.current_players,
         pod_type: pod.pod_type || 'draft',
         is_public: true,
+        competitive: pod.competitive === true,
       }
       updatePodDiscord(updatedPodInfo, hostUsername2, playerNames, pod.name).catch(err => {
         console.error('[Draft Settings] Error updating Discord:', err)

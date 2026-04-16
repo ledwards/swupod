@@ -85,6 +85,7 @@ export interface HostControlsProps {
   shareId?: string
   showCancelButton?: boolean
   onSwitchToSolo?: () => void
+  isAdmin?: boolean
 }
 
 function HostControls({
@@ -104,15 +105,18 @@ function HostControls({
   shareId,
   showCancelButton = true,
   onSwitchToSolo,
+  isAdmin = false,
 }: HostControlsProps) {
   const router = useRouter()
   const [copied, setCopied] = useState(false)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [isCancelling, setIsCancelling] = useState(false)
-  // Solo mode (entered from Solo button) allows 1 human + bots; pod mode needs 2+ humans
+  // Solo mode (entered from Solo button) allows 1 human + bots; pod mode needs 2+ humans.
+  // Admins bypass the 2-human requirement for testing/facilitation.
   const isSoloDraft = draft?.settings?.isSolo === true
-  const canStart = playerCount >= 2 && (humanPlayerCount >= 2 || isSoloDraft)
-  const needsMoreHumans = playerCount >= 2 && humanPlayerCount < 2 && !isSoloDraft
+  const canStart = playerCount >= 2 && (humanPlayerCount >= 2 || isSoloDraft || isAdmin)
+  const needsMoreHumans = playerCount >= 2 && humanPlayerCount < 2 && !isSoloDraft && !isAdmin
+  const adminOverrideActive = isAdmin && playerCount >= 2 && humanPlayerCount < 2 && !isSoloDraft
   const canAddBot = playerCount < (draft?.maxPlayers || 8)
   const isRoundTimerEnabled = draft?.timed === true
   const isLastPlayerTimerEnabled = draft?.timerEnabled !== false
@@ -365,6 +369,12 @@ function HostControls({
                 to draft against bots.
               </p>
             )}
+          </div>
+        )}
+
+        {adminOverrideActive && (
+          <div className="min-players-note">
+            <p>Admin override: you can start with fewer than 2 humans.</p>
           </div>
         )}
 

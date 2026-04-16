@@ -441,6 +441,7 @@ export default function DraftRoomPage({ params }: PageProps) {
           addingBot={addingBot}
           error={error}
           shareId={shareId}
+          isAdmin={user?.is_admin === true}
         />
       )
     }

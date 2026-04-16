@@ -110,7 +110,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       ]).then(([hostRow, updatedPlayers]) => {
         const hostName = hostRow?.username || 'Host'
         updatePodEmbed(
-          { ...pod, current_players: pod.current_players + 1 },
+          { ...pod, current_players: pod.current_players + 1, competitive: pod.competitive === true },
           hostName,
           updatedPlayers.map((p: { username: string }) => p.username)
         ).catch(err => {

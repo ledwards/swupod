@@ -308,7 +308,7 @@ export async function DELETE(request: NextRequest, { params }: RouteContext): Pr
     // Auto-decide: delete message entirely if <2 humans (not a real multiplayer pod),
     // otherwise mark as cancelled with red ❌ for history
     const humanCount = players.filter((p: { is_bot: boolean }) => !p.is_bot).length
-    const podInfo = { id: pod.id, share_id: pod.share_id, set_code: pod.set_code, set_name: pod.set_name, name: pod.name, max_players: pod.max_players, current_players: pod.current_players, pod_type: pod.pod_type || 'draft' }
+    const podInfo = { id: pod.id, share_id: pod.share_id, set_code: pod.set_code, set_name: pod.set_name, name: pod.name, max_players: pod.max_players, current_players: pod.current_players, pod_type: pod.pod_type || 'draft', competitive: pod.competitive === true }
 
     if (humanCount < 2) {
       // Not a real multiplayer pod — delete the Discord message entirely

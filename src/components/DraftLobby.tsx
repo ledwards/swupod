@@ -47,6 +47,7 @@ interface DraftLobbyProps {
   addingBot: boolean
   error: string | null
   shareId: string
+  isAdmin?: boolean
 }
 
 function DraftLobby({
@@ -68,6 +69,7 @@ function DraftLobby({
   addingBot,
   error,
   shareId,
+  isAdmin,
 }: DraftLobbyProps) {
   const maxPlayers = draft?.maxPlayers || 8
   const isFull = players.length >= maxPlayers
@@ -129,6 +131,7 @@ function DraftLobby({
               isFull={isFull}
               shareId={shareId}
               onSwitchToSolo={onSwitchToSolo}
+              isAdmin={isAdmin}
             />
           )}
 

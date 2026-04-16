@@ -61,10 +61,11 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
     // Check for chaos draft settings
     const settings = pod.settings || {}
 
-    // Pod mode needs 2+ humans; solo mode (entered from Solo button) allows 1 human + bots
+    // Pod mode needs 2+ humans; solo mode (entered from Solo button) allows 1 human + bots.
+    // Admins can bypass the 2-human requirement for testing/facilitation.
     const humanCount = players.filter(p => !p.is_bot).length
     const isSoloDraft = settings.isSolo === true
-    if (humanCount < 2 && !isSoloDraft) {
+    if (humanCount < 2 && !isSoloDraft && !session.is_admin) {
       return errorResponse('Pod mode requires at least 2 human players', 400)
     }
     const chaosSets = settings.draftMode === 'chaos' && settings.chaosSets
@@ -199,7 +200,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       ).then(async (namedPlayers) => {
         const hostUser = await queryRow('SELECT username FROM users WHERE id = $1', [pod.host_id])
         markPodStarted(
-          { ...pod, current_players: players.length },
+          { ...pod, current_players: players.length, competitive: pod.competitive === true },
           hostUser?.username || 'Host',
           namedPlayers.map(p => p.username)
         ).catch(() => {})

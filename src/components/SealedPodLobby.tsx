@@ -61,6 +61,7 @@ interface SealedPodLobbyProps {
   onRenamePod?: (name: string) => void
   starting: boolean
   error: string | null
+  isAdmin?: boolean
 }
 
 export default function SealedPodLobby({
@@ -83,6 +84,7 @@ export default function SealedPodLobby({
   onRenamePod,
   starting,
   error,
+  isAdmin = false,
 }: SealedPodLobbyProps) {
   const [copied, setCopied] = useState(false)
 
@@ -97,7 +99,8 @@ export default function SealedPodLobby({
     }
   }
 
-  const canStart = isHost && players.length >= 2
+  // Admins can bypass the 2-player minimum for testing/facilitation.
+  const canStart = isHost && (players.length >= 2 || (isAdmin && players.length >= 1))
 
   return (
     <div className="sealed-pod-lobby">
@@ -239,8 +242,11 @@ export default function SealedPodLobby({
         )}
       </div>
 
-      {isHost && players.length < 2 && (
+      {isHost && players.length < 2 && !isAdmin && (
         <p className="sealed-pod-hint">Need at least 2 players to start</p>
+      )}
+      {isHost && players.length < 2 && isAdmin && (
+        <p className="sealed-pod-hint">Admin override: you can start with fewer than 2 players.</p>
       )}
     </div>
   )

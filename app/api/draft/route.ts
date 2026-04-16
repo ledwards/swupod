@@ -186,7 +186,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Post to Discord LFG channel if public
     if (podIsPublic) {
       postPodCreated(
-        { id: pod.id, share_id: shareId, set_code: setCode, set_name: setName, name: competitive ? `${setName} Competitive Practice` : `${setName} Draft`, max_players: effectiveMaxPlayers, current_players: 1, pod_type: 'draft' },
+        { id: pod.id, share_id: shareId, set_code: setCode, set_name: setName, name: competitive ? `${setName} Competitive Practice` : `${setName} Draft`, max_players: effectiveMaxPlayers, current_players: 1, pod_type: 'draft', competitive },
         session.username
       ).catch(err => {
         console.error('Error posting draft to Discord:', err)

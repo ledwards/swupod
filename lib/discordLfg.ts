@@ -23,7 +23,10 @@ interface PodInfo {
   current_players: number
   pod_type?: string
   is_public?: boolean
+  competitive?: boolean
 }
+
+const COMPETITIVE_GOLD = 0xFFD700
 
 interface DiscordIds {
   messageId: string
@@ -51,7 +54,8 @@ async function discordFetch(path: string, options: RequestInit = {}): Promise<Re
 
 function buildPodEmbed(pod: PodInfo, hostUsername: string, playerNames: string[]): Record<string, unknown> {
   const podType = pod.pod_type === 'sealed' ? 'Sealed' : 'Draft'
-  const emoji = pod.pod_type === 'sealed' ? '🐳' : '🐋'
+  const isCompetitive = pod.competitive === true
+  const emoji = isCompetitive ? '🏆' : (pod.pod_type === 'sealed' ? '🐳' : '🐋')
   const joinUrl = pod.pod_type === 'sealed'
     ? `${APP_URL}/sealed/${pod.share_id}`
     : `${APP_URL}/draft/${pod.share_id}`
@@ -63,24 +67,31 @@ function buildPodEmbed(pod: PodInfo, hostUsername: string, playerNames: string[]
     playerLines.push(otherPlayers.join(', '))
   }
 
+  const descriptionLines: string[] = []
+  if (isCompetitive) {
+    descriptionLines.push('✨ **Competitive Practice Mode** ✨', '*Best of 3 · Swiss matchmaking · Competitive timers*', '')
+  }
+  descriptionLines.push(
+    `**Set:** ${pod.set_name} (${pod.set_code})`,
+    `**Seats:** ${pod.current_players}/${pod.max_players}`,
+    '',
+    ...playerLines,
+    '',
+    `👉 **[Join ${podType}](${joinUrl})**`,
+  )
+
   return {
     title: `${emoji} ${pod.name || `${pod.set_name} ${podType}`}`,
-    description: [
-      `**Set:** ${pod.set_name} (${pod.set_code})`,
-      `**Seats:** ${pod.current_players}/${pod.max_players}`,
-      '',
-      ...playerLines,
-      '',
-      `👉 **[Join ${podType}](${joinUrl})**`,
-    ].join('\n'),
-    color: 0x2ECC71, // Green
+    description: descriptionLines.join('\n'),
+    color: isCompetitive ? COMPETITIVE_GOLD : 0x2ECC71,
     timestamp: new Date().toISOString(),
   }
 }
 
 function buildStartedEmbed(pod: PodInfo, hostUsername: string, playerNames: string[]): Record<string, unknown> {
   const podType = pod.pod_type === 'sealed' ? 'Sealed' : 'Draft'
-  const emoji = pod.pod_type === 'sealed' ? '🐳' : '🐋'
+  const isCompetitive = pod.competitive === true
+  const emoji = isCompetitive ? '🏆' : (pod.pod_type === 'sealed' ? '🐳' : '🐋')
 
   // Build player list: crown on its own line, other players on next line
   const otherPlayers = playerNames.filter(n => n !== hostUsername)
@@ -89,23 +100,30 @@ function buildStartedEmbed(pod: PodInfo, hostUsername: string, playerNames: stri
     playerLines.push(otherPlayers.join(', '))
   }
 
+  const descriptionLines: string[] = []
+  if (isCompetitive) {
+    descriptionLines.push('✨ **Competitive Practice Mode** ✨', '*Best of 3 · Swiss matchmaking · Competitive timers*', '')
+  }
+  descriptionLines.push(
+    `**Set:** ${pod.set_name} (${pod.set_code})`,
+    `**Seats:** ${pod.current_players}/${pod.max_players}`,
+    '',
+    ...playerLines,
+    '',
+    isCompetitive ? `🏆 **Underway — May the best drafter win!**` : `🚀 **Started!**`,
+  )
+
   return {
     title: `${emoji} ${pod.name || `${pod.set_name} ${podType}`}`,
-    description: [
-      `**Set:** ${pod.set_name} (${pod.set_code})`,
-      `**Seats:** ${pod.current_players}/${pod.max_players}`,
-      '',
-      ...playerLines,
-      '',
-      `🚀 **Started!**`,
-    ].join('\n'),
-    color: 0x3498DB, // Blue
+    description: descriptionLines.join('\n'),
+    color: isCompetitive ? COMPETITIVE_GOLD : 0x3498DB,
     timestamp: new Date().toISOString(),
   }
 }
 
 function buildCancelledEmbed(pod: PodInfo, hostUsername: string, playerNames: string[]): Record<string, unknown> {
   const podType = pod.pod_type === 'sealed' ? 'Sealed' : 'Draft'
+  const isCompetitive = pod.competitive === true
 
   // Build player list: crown on its own line, other players on next line
   const otherPlayers = playerNames.filter(n => n !== hostUsername)
@@ -114,16 +132,22 @@ function buildCancelledEmbed(pod: PodInfo, hostUsername: string, playerNames: st
     playerLines.push(otherPlayers.join(', '))
   }
 
+  const descriptionLines: string[] = []
+  if (isCompetitive) {
+    descriptionLines.push('✨ **Competitive Practice Mode** ✨', '')
+  }
+  descriptionLines.push(
+    `**Set:** ${pod.set_name} (${pod.set_code})`,
+    `**Seats:** ${pod.current_players}/${pod.max_players}`,
+    '',
+    ...playerLines,
+    '',
+    `❌ **Cancelled**`,
+  )
+
   return {
     title: `❌ ~~${pod.name || `${pod.set_name} ${podType}`}~~`,
-    description: [
-      `**Set:** ${pod.set_name} (${pod.set_code})`,
-      `**Seats:** ${pod.current_players}/${pod.max_players}`,
-      '',
-      ...playerLines,
-      '',
-      `❌ **Cancelled**`,
-    ].join('\n'),
+    description: descriptionLines.join('\n'),
     color: 0xE74C3C, // Red
     timestamp: new Date().toISOString(),
   }
@@ -204,10 +228,13 @@ export async function postPodCreated(
     }
 
     // 4. Post initial system message in thread
+    const welcomeContent = pod.competitive
+      ? `🏆 **Competitive Practice Mode** — pod chat for **${threadName}**. Best of 3, Swiss matchmaking. May the Force be with you!`
+      : `💬 Pod chat for **${threadName}**. Messages here sync with the web app!`
     await discordFetch(`/channels/${threadId}/messages`, {
       method: 'POST',
       body: JSON.stringify({
-        content: `💬 Pod chat for **${threadName}**. Messages here sync with the web app!`,
+        content: welcomeContent,
       }),
     }).catch(() => {}) // Non-critical
 
@@ -332,10 +359,13 @@ export async function markPodStarted(
     if (podRow.discord_thread_id) {
       const podType = pod.pod_type === 'sealed' ? 'Sealed' : 'Draft'
       const podLabel = pod.name || `${pod.set_name} ${podType}`
+      const startContent = pod.competitive
+        ? `🏆 **${podLabel}** (Competitive Practice · Best of 3) has started! May the best drafter win!`
+        : `🚀 **${podLabel}** has started! Good luck everyone!`
       await discordFetch(`/channels/${podRow.discord_thread_id}/messages`, {
         method: 'POST',
         body: JSON.stringify({
-          content: `🚀 **${podLabel}** has started! Good luck everyone!`,
+          content: startContent,
         }),
       })
     }

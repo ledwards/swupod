@@ -47,7 +47,8 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       [pod.id]
     )
 
-    if (players.length < 2) {
+    // Admins can bypass the 2-player minimum for testing/facilitation.
+    if (players.length < 2 && !session.is_admin) {
       return errorResponse('Need at least 2 players to start', 400)
     }
 
