@@ -2,13 +2,6 @@
 
 ## 04.15.2026
 
-### ✨ Competitive Practice Mode Improvements
-- **Match-level draws are now reportable**: The result reporting modal now lets you submit 1-1-1, 0-0-0, and other match outcomes where neither player has 2 game wins. Previously the Submit button stayed disabled for these legal SWU outcomes.
-- **Matchmaking state loads correctly on refresh**: If you arrive at your play page after Round 1 has started (or any round transition), you now see the correct round and matches immediately instead of being stuck on "deck building".
-- **Swiss pairings no longer produce rematches when avoidable**: The pairing algorithm now retries with multiple shuffles to find a rematch-free assignment within each win group. With 8 players over 3 rounds, you should never see a repeat opponent.
-
-## 04.13.2026
-
 ### ✨ Competitive Practice Mode (Friends of the Pod)
 (still in beta testing, be patient while we get this feature working perfectly)
 - **New Competitive Practice Mode drafts**: Friends of the Pod can create Competitive Practice Mode drafts with official tournament pick timers, no chat during drafting, no card review between picks, and a 30-second inter-pack review period.
