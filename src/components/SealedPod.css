@@ -218,7 +218,7 @@
   font-size: 1.2rem;
   font-weight: 600;
   transition: all 0.3s ease;
-  margin-top: 1.5rem;
+  margin: 1.5rem 0.75rem 0;
 }
 
 .build-deck-button:hover {
@@ -234,7 +234,7 @@
 }
 
 .draft-log-button {
-  margin-top: 0.75rem;
+  margin: 1.5rem 0.75rem 0;
 }
 
 .instruction {
