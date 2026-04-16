@@ -40,7 +40,7 @@ export default function DraftLandingPage() {
   const { user, isAuthenticated, isPatron, loading: authLoading } = useAuth()
   const [error, setError] = useState<string | null>(null)
   const [wasRemoved, setWasRemoved] = useState(false)
-  const [competitive, setCompetitive] = useState(false)
+  const [competitiveInfoOpen, setCompetitiveInfoOpen] = useState(false)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -48,6 +48,18 @@ export default function DraftLandingPage() {
       setWasRemoved(true)
     }
   }, [])
+
+  useEffect(() => {
+    if (!competitiveInfoOpen) return
+    const close = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      if (!target.closest('.draft-competitive-info-wrapper')) {
+        setCompetitiveInfoOpen(false)
+      }
+    }
+    document.addEventListener('click', close)
+    return () => document.removeEventListener('click', close)
+  }, [competitiveInfoOpen])
   const [history, setHistory] = useState<DraftPod[]>([])
   const [historyLoading, setHistoryLoading] = useState(false)
   const publicPods = usePublicPodsSocket()
@@ -93,8 +105,12 @@ export default function DraftLandingPage() {
     fetchHistory()
   }, [isAuthenticated, user])
 
-  const handleCreateDraft = () => {
-    router.push(competitive ? '/draft/new?competitive=1' : '/draft/new')
+  const handleCreateStandard = () => {
+    router.push('/draft/new')
+  }
+
+  const handleCreateCompetitive = () => {
+    router.push('/draft/new?competitive=1')
   }
 
   const handleLogin = () => {
@@ -183,21 +199,22 @@ export default function DraftLandingPage() {
             <h2>Create New Draft</h2>
             <p>Start a new draft pod and invite your friends</p>
             {isAuthenticated ? (
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <div className="draft-mode-buttons">
                 <button
                   className="primary-button create-draft-button"
-                  onClick={handleCreateDraft}
+                  onClick={handleCreateStandard}
                   disabled={authLoading}
                 >
-                  Create Draft
+                  Standard Draft
                 </button>
-                {isPatron && (
+                <div className="draft-competitive-info-wrapper">
                   <button
-                    className={`setting-lock ${competitive ? 'setting-lock-open' : 'setting-lock-closed'}`}
-                    onClick={() => setCompetitive(!competitive)}
-                    title={competitive ? 'Competitive Practice — Appendix C timers, BO3 matchmaking' : 'Standard Draft'}
+                    className="primary-button create-draft-button draft-competitive-button"
+                    onClick={handleCreateCompetitive}
+                    disabled={authLoading || !isPatron}
+                    title={isPatron ? 'Competitive Practice — Appendix C timers, BO3 matchmaking' : 'Friends of the Pod only'}
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                       <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/>
                       <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/>
                       <path d="M4 22h16"/>
@@ -205,11 +222,43 @@ export default function DraftLandingPage() {
                       <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22"/>
                       <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
                     </svg>
-                    <span style={competitive ? { color: 'rgba(255, 215, 0, 0.9)' } : undefined}>
-                      {competitive ? 'Competitive' : 'Standard'}
-                    </span>
+                    <span>Competitive Draft</span>
                   </button>
-                )}
+                  <span
+                    className="draft-competitive-info-icon"
+                    role="button"
+                    tabIndex={0}
+                    aria-label="About Competitive Draft"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setCompetitiveInfoOpen((v) => !v)
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        setCompetitiveInfoOpen((v) => !v)
+                      }
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <line x1="12" y1="16" x2="12" y2="12"/>
+                      <line x1="12" y1="8" x2="12.01" y2="8"/>
+                    </svg>
+                  </span>
+                  {competitiveInfoOpen && (
+                    <div className="draft-competitive-info-popover" role="dialog">
+                      <p>
+                        Competitive Draft uses Appendix C pick timers and pairs players into best-of-three matches between rounds — practice like it&apos;s a real event.
+                      </p>
+                      {!isPatron && (
+                        <p>
+                          Requires <a href="https://patreon.com/ProtectthePod" target="_blank" rel="noopener noreferrer">Friend of the Pod</a>.
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
               <>

@@ -145,8 +145,8 @@ export default function NewDraftPage() {
     <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
       {lockButton}
       {competitive && (
-        <span className="setting-lock setting-lock-open" style={{ cursor: 'default' }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <span className="setting-lock setting-lock-competitive" style={{ cursor: 'default' }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/>
             <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/>
             <path d="M4 22h16"/>
@@ -154,7 +154,7 @@ export default function NewDraftPage() {
             <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22"/>
             <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
           </svg>
-          <span style={{ color: 'rgba(255, 215, 0, 0.9)' }}>Competitive</span>
+          <span>Competitive</span>
         </span>
       )}
     </div>

@@ -1365,6 +1365,100 @@ a.discord-login-button:active {
   color: #F44336;
 }
 
+.set-selection-header .setting-lock-competitive {
+  background: linear-gradient(180deg, rgba(255, 215, 0, 0.28) 0%, rgba(191, 149, 12, 0.32) 100%);
+  border: 1px solid rgba(255, 215, 0, 0.7);
+  color: #FFE27A;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 235, 150, 0.5),
+    0 0 0 1px rgba(120, 85, 0, 0.35),
+    0 2px 8px rgba(255, 215, 0, 0.15);
+}
+
+.set-selection-header .setting-lock-competitive svg {
+  color: #FFE27A;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.4));
+}
+
+/* Draft landing: Standard + Competitive button row */
+.draft-mode-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.draft-competitive-info-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.draft-competitive-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.draft-competitive-button svg {
+  flex-shrink: 0;
+}
+
+.draft-competitive-info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+  user-select: none;
+}
+
+.draft-competitive-info-icon:hover,
+.draft-competitive-info-icon:focus-visible {
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+
+.draft-competitive-info-popover {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 20;
+  width: min(280px, 90vw);
+  padding: 12px 14px;
+  background: rgba(15, 15, 20, 0.98);
+  border: 1px solid rgba(255, 215, 0, 0.5);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.draft-competitive-info-popover p {
+  margin: 0 0 8px 0;
+}
+
+.draft-competitive-info-popover p:last-child {
+  margin-bottom: 0;
+}
+
+.draft-competitive-info-popover a,
+.draft-competitive-info-popover a:visited,
+.draft-competitive-info-popover a:hover,
+.draft-competitive-info-popover a:active {
+  color: #FFD95A;
+  text-decoration: underline;
+}
+
 /* Skeleton loading styles */
 .skeleton-box {
   background: linear-gradient(90deg, rgba(40, 40, 45, 1) 0%, rgba(60, 60, 65, 1) 50%, rgba(40, 40, 45, 1) 100%);
