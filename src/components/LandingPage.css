@@ -219,8 +219,8 @@ a.discord-cta:active {
   background-position: right 25%;
 }
 
-.mode-button-deckbuilder .mode-button-art {
-  background-position: calc(100% + 90px) 25%;
+.mode-button.mode-button-deckbuilder .mode-button-art {
+  background-position: calc(100% + 33px) 25%;
 }
 
 /* Leader unit art: shifted right to hide aspect icon */
