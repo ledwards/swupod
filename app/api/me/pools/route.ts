@@ -57,12 +57,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         let leaderName = null
         let baseName = null
         let mainDeckCount = 0
+        let isInfinitePool = false
+        let sessionId = null
         if (pool.deck_builder_state) {
           try {
             const state = typeof pool.deck_builder_state === 'string'
               ? JSON.parse(pool.deck_builder_state)
               : pool.deck_builder_state
             if (state.poolName) poolNameFromState = state.poolName
+            isInfinitePool = state.isInfinitePool === true
+            sessionId = state.sessionId || null
             if (state.activeLeader && state.cardPositions) {
               const leaderCard = state.cardPositions[state.activeLeader]?.card
               if (leaderCard) leaderName = leaderCard.name || leaderCard.title
@@ -84,7 +88,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         let name = poolNameFromState || pool.name
         if (!name) {
           const pType = pool.pool_type || 'sealed'
-          const formatType = pType === 'draft' ? 'Draft' :
+          const formatType = isInfinitePool ? 'Limited' : pType === 'draft' ? 'Draft' :
             pType === 'rotisserie' ? 'Rotisserie Draft' : 'Sealed'
           const setCode = pool.set_code || ''
           const setCodes = setCode.includes(',') ? setCode.split(',').map((s) => s.trim()) : [setCode]
@@ -103,6 +107,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           poolType: pool.pool_type || 'sealed',
           name,
           cardCount: parseInt(pool.card_count, 10),
+          isInfinitePool,
+          sessionId,
           leaderName,
           baseName,
           mainDeckCount,

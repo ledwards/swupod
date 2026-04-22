@@ -172,7 +172,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     let name = deckBuilderState?.poolName || pool.name
     if (!name) {
       const poolType = pool.pool_type || 'sealed'
-      const formatType = poolType === 'draft' ? 'Draft' :
+      const formatType = deckBuilderState?.isInfinitePool ? 'Limited' : poolType === 'draft' ? 'Draft' :
         poolType === 'rotisserie' ? 'Rotisserie Draft' : 'Sealed'
       const setCode = pool.set_code || ''
       const setCodes = setCode.includes(',') ? setCode.split(',').map((s: string) => s.trim()) : [setCode]

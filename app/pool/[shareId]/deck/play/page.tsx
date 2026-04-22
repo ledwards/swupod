@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import { useState, useEffect, useRef, use } from 'react'
+import { useState, useEffect, useRef, use, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { loadPool, updatePool, claimPool } from '../../../../../src/utils/poolApi'
 import { getPackArtUrl } from '../../../../../src/utils/packArt'
@@ -142,6 +142,7 @@ export default function PlayPage({ params }: PageProps) {
   })
   const [baseCardMap, setBaseCardMap] = useState<Map<string, string> | null>(null)
   const [claiming, setClaiming] = useState(false)
+  const deckBuilderState = useMemo(() => jsonParse(pool?.deckBuilderState, {}), [pool?.deckBuilderState])
   const [practiceHand, setPracticeHand] = useState<{
     cards: CardType[]
     probAtLeastOne: number
@@ -269,6 +270,8 @@ export default function PlayPage({ params }: PageProps) {
   // Auto-claim anonymous pool when user logs in
   useEffect(() => {
     if (!user || !pool || !shareId) return
+    const deckBuilderState = jsonParse(pool.deckBuilderState, {})
+    if (deckBuilderState?.isInfinitePool) return
     // Only claim if pool is anonymous (no owner)
     if (pool.owner !== null) return
 
@@ -907,19 +910,19 @@ export default function PlayPage({ params }: PageProps) {
       ctx.font = 'bold 70px Barlow'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'top'
-      const displayName = state.poolName || pool.name || `${pool.setCode} ${pool.poolType === 'draft' ? 'Draft' : 'Sealed'}`
+      const displayName = state.poolName || pool.name || (isInfinitePool ? `${pool.setCode} Limited Deckbuilder` : `${pool.setCode} ${pool.poolType === 'draft' ? 'Draft' : 'Sealed'}`)
       ctx.fillText(displayName, width / 2, currentY)
       currentY += titleHeight
 
       // Draw subtitle (H2) - Sealed Deck or Draft Deck, smaller and grey, tight to title
-      const poolTypeLabel = pool.poolType === 'draft' ? 'Draft Deck' : 'Sealed Deck'
+      const poolTypeLabel = isInfinitePool ? 'Limited Deckbuilder' : pool.poolType === 'draft' ? 'Draft Deck' : 'Sealed Deck'
       ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
       ctx.font = '600 45px Barlow'
       ctx.fillText(poolTypeLabel, width / 2, currentY - 20)
       currentY += subtitleHeight
 
       // Draw "by [discord handle]" line
-      const ownerName = pool.owner?.username || pool.owner?.name || 'Unknown'
+      const ownerName = pool.owner?.username || pool.owner?.name || 'Protect the Pod'
       ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
       ctx.font = '40px Barlow'
       ctx.fillText(`by ${ownerName}`, width / 2, currentY - 20)
@@ -1338,7 +1341,7 @@ export default function PlayPage({ params }: PageProps) {
       let currentY = padding
 
       // Title
-      const displayName = state.poolName || pool.name || `${pool.setCode} ${pool.poolType === 'draft' ? 'Draft' : 'Sealed'}`
+      const displayName = state.poolName || pool.name || (isInfinitePool ? `${pool.setCode} Limited Deckbuilder` : `${pool.setCode} ${pool.poolType === 'draft' ? 'Draft' : 'Sealed'}`)
       ctx.fillStyle = 'white'
       ctx.font = 'bold 70px Barlow'
       ctx.textAlign = 'center'
@@ -1347,14 +1350,14 @@ export default function PlayPage({ params }: PageProps) {
       currentY += titleHeight
 
       // Subtitle
-      const poolTypeLabel = pool.poolType === 'draft' ? 'Draft Pool' : 'Sealed Pool'
+      const poolTypeLabel = isInfinitePool ? 'Limited Deckbuilder' : pool.poolType === 'draft' ? 'Draft Pool' : 'Sealed Pool'
       ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
       ctx.font = '600 45px Barlow'
       ctx.fillText(poolTypeLabel, width / 2, currentY - 20)
       currentY += subtitleHeight
 
       // By line
-      const ownerName = pool.owner?.username || pool.owner?.name || 'Unknown'
+      const ownerName = pool.owner?.username || pool.owner?.name || 'Protect the Pod'
       ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
       ctx.font = '40px Barlow'
       ctx.fillText(`by ${ownerName}`, width / 2, currentY - 20)
@@ -1753,16 +1756,23 @@ export default function PlayPage({ params }: PageProps) {
 
   const packArtUrl = pool?.setCode ? getPackArtUrl(pool.setCode) : null
   const setConfig = pool?.setCode ? getSetConfig(pool.setCode) : null
+  const isInfinitePool = deckBuilderState?.isInfinitePool === true
   const isOwner = user && pool?.owner?.id === user.id
-  const poolTypeLabel = pool?.poolType === 'draft' ? 'Draft Pool' : pool?.poolType === 'sealed_pod' ? 'Sealed Pod Pool' : 'Sealed Pool'
+  const canEditDeck = Boolean(isInfinitePool || isOwner)
+  const poolTypeLabel = isInfinitePool
+    ? 'Limited Deckbuilder'
+    : pool?.poolType === 'draft'
+      ? 'Draft Pool'
+      : pool?.poolType === 'sealed_pod'
+        ? 'Sealed Pod Pool'
+        : 'Sealed Pool'
 
   // Get pool name from deckBuilderState first, then fall back to pool.name
   const getPoolName = () => {
-    if (pool?.deckBuilderState) {
-      const state = jsonParse(pool.deckBuilderState)
-      if (state?.poolName) return state.poolName
-    }
-    return pool?.name || `${setConfig?.setName || pool?.setCode} Deck`
+    if (deckBuilderState?.poolName) return deckBuilderState.poolName
+    if (pool?.name) return pool.name
+    if (isInfinitePool) return `${setConfig?.setName || pool?.setCode} Limited Deckbuilder`
+    return `${setConfig?.setName || pool?.setCode} Deck`
   }
   const poolName = getPoolName()
 
@@ -1770,9 +1780,7 @@ export default function PlayPage({ params }: PageProps) {
     if (!shareId) return
     if (newName && newName.length > 80) return
     try {
-      // Get current deckBuilderState and update poolName in it
-      const currentState = jsonParse(pool?.deckBuilderState, {})
-      const updatedState = { ...currentState, poolName: newName }
+      const updatedState = { ...deckBuilderState, poolName: newName }
 
       await updatePool(shareId, { deckBuilderState: updatedState })
       setPool(prev => ({
@@ -1798,8 +1806,15 @@ export default function PlayPage({ params }: PageProps) {
       )}
 
       <div className="play-content">
-        {isOwner && (
-          <button className="edit-deck-top" onClick={() => router.push(`/pool/${shareId}/deck`)}>
+        {canEditDeck && (
+          <button
+            className="edit-deck-top"
+            onClick={() => router.push(
+              isInfinitePool
+                ? `/deckbuilder/build?set=${encodeURIComponent(pool?.setCode || '')}&session=${encodeURIComponent(deckBuilderState?.sessionId || shareId || '')}&playShareId=${encodeURIComponent(shareId || '')}`
+                : `/pool/${shareId}/deck`
+            )}
+          >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
@@ -1811,7 +1826,7 @@ export default function PlayPage({ params }: PageProps) {
           <EditableTitle
             value={poolName}
             onSave={handleRenamePool}
-            isEditable={isOwner}
+            isEditable={canEditDeck}
             placeholder="Untitled Deck"
             className="play-title"
           />
@@ -1833,7 +1848,7 @@ export default function PlayPage({ params }: PageProps) {
             </svg>
             Practice Hand
           </button>
-          {isOwner && user && (
+          {!isInfinitePool && isOwner && user && (
             <div className="post-to-discord-wrapper">
               <button
                 className={`play-action-button${postedToDiscord ? ' posted' : ''}`}
@@ -1866,7 +1881,7 @@ export default function PlayPage({ params }: PageProps) {
         </div>
 
         {/* Login banner for logged-out users viewing anonymous (unowned) pools */}
-        {!user && !pool?.owner && (
+        {!isInfinitePool && !user && !pool?.owner && (
           <div className="login-banner">
             <div className="login-banner-content">
               <div className="login-banner-icon">
@@ -1899,7 +1914,7 @@ export default function PlayPage({ params }: PageProps) {
           opponentName={firstOpponent?.username}
           hasBye={hasBye}
           isSoloDraft={isSoloDraft}
-          onCopyLink={copyDeckLink}
+          onCopyLink={isInfinitePool ? undefined : copyDeckLink}
           onCopyJson={copyToClipboard}
           onDownload={downloadJSON}
           onDeckImage={exportDeckImage}
@@ -1907,7 +1922,7 @@ export default function PlayPage({ params }: PageProps) {
           message={message}
           messageType={messageType}
           showActions={true}
-          isOwner={!pool?.owner || !!isOwner}
+          isOwner={isInfinitePool ? true : (!pool?.owner || !!isOwner)}
           ownerName={pool?.owner?.username || pool?.owner?.name || null}
           wayfinderDetected={wayfinderDetected}
         />
@@ -1973,13 +1988,15 @@ export default function PlayPage({ params }: PageProps) {
               >
                 Download Image
               </button>
-              <button
-                className="deck-image-modal-toggle"
-                onClick={handleToggleView}
-                disabled={loadingPool}
-              >
-                {loadingPool ? 'Loading...' : showingPool ? 'Show Deck' : 'Show Entire Pool'}
-              </button>
+              {!isInfinitePool && (
+                <button
+                  className="deck-image-modal-toggle"
+                  onClick={handleToggleView}
+                  disabled={loadingPool}
+                >
+                  {loadingPool ? 'Loading...' : showingPool ? 'Show Deck' : 'Show Entire Pool'}
+                </button>
+              )}
             </div>
           </div>
         </div>

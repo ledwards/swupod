@@ -105,8 +105,8 @@ export default function EditableTitle({
     <div className={`editable-title ${isEditable ? 'hoverable' : ''} ${className}`}>
       <span
         className={`editable-title-text ${onTitleClick ? 'clickable' : ''}`}
-        onClick={onTitleClick}
-        style={onTitleClick ? { cursor: 'pointer' } : undefined}
+        onClick={onTitleClick || (isEditable ? handleStartEdit : undefined)}
+        style={(onTitleClick || isEditable) ? { cursor: 'pointer' } : undefined}
       >
         {value || placeholder}
       </span>

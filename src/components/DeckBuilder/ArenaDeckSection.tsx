@@ -67,8 +67,8 @@ export function ArenaDeckSection({
     cardPositions,
     leaderCard,
     baseCard,
-    showAspectPenalties,
-    setShowAspectPenalties,
+    showDeckAspectPenalties,
+    setShowDeckAspectPenalties,
     hoveredCard,
     selectedCards,
     toggleCardSection,
@@ -90,12 +90,12 @@ export function ArenaDeckSection({
   // Calculate effective cost for a card
   const getEffectiveCost = useCallback((card: CardData): number => {
     const baseCost = card.cost ?? 0
-    if (!showAspectPenalties || !leaderCard || !baseCard) {
+    if (!showDeckAspectPenalties || !leaderCard || !baseCard) {
       return baseCost
     }
     const penalty = calculateAspectPenalty(card, leaderCard, baseCard)
     return baseCost + penalty
-  }, [showAspectPenalties, leaderCard, baseCard])
+  }, [showDeckAspectPenalties, leaderCard, baseCard])
 
   // Get cost bucket for a card
   const getCostBucket = useCallback((card: CardData): string => {
@@ -376,12 +376,12 @@ export function ArenaDeckSection({
 
           <div className="arena-utility-separator" />
           <button
-            className={`arena-utility-button toggle ${hasLeaderAndBase ? (showAspectPenalties ? 'active' : '') : 'disabled-red'}`}
-            onClick={() => hasLeaderAndBase && setShowAspectPenalties(!showAspectPenalties)}
+            className={`arena-utility-button toggle ${hasLeaderAndBase ? (showDeckAspectPenalties ? 'active' : '') : 'disabled-red'}`}
+            onClick={() => hasLeaderAndBase && setShowDeckAspectPenalties(!showDeckAspectPenalties)}
             title={hasLeaderAndBase ? "Toggle aspect penalty display" : "Select leader and base to enable penalties"}
             disabled={!hasLeaderAndBase}
           >
-            {showAspectPenalties ? (
+            {showDeckAspectPenalties ? (
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                 <circle cx="12" cy="12" r="3" />
@@ -427,7 +427,7 @@ export function ArenaDeckSection({
                   <div className="arena-stack-label">Unit ({unitsQty})</div>
                   <ArenaCardStack
                     cards={units}
-                    showPenalty={showAspectPenalties}
+                    showPenalty={showDeckAspectPenalties}
                     leaderCard={leaderCard}
                     baseCard={baseCard}
                     calculatePenalty={calculatePenalty}
@@ -447,7 +447,7 @@ export function ArenaDeckSection({
                   <div className="arena-stack-label">Non-Unit ({nonUnitsQty})</div>
                   <ArenaCardStack
                     cards={nonUnits}
-                    showPenalty={showAspectPenalties}
+                    showPenalty={showDeckAspectPenalties}
                     leaderCard={leaderCard}
                     baseCard={baseCard}
                     calculatePenalty={calculatePenalty}

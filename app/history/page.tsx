@@ -23,6 +23,8 @@ interface SealedPool {
   createdAt: string
   poolType?: string
   hidden?: boolean
+  isInfinitePool?: boolean
+  sessionId?: string | null
 }
 
 interface FormatPool {
@@ -37,6 +39,8 @@ interface FormatPool {
   mainDeckCount?: number
   createdAt: string
   hidden?: boolean
+  isInfinitePool?: boolean
+  sessionId?: string | null
 }
 
 interface DraftPod {
@@ -319,7 +323,7 @@ export default function HistoryPage() {
 
   // Merged arrays for Solo/Multiplayer tabs
   const soloItems = [
-    ...sealedPools.map(p => ({ ...p, format: 'Sealed', itemType: 'sealed' })),
+    ...sealedPools.map(p => ({ ...p, format: p.isInfinitePool ? 'Limited' : 'Sealed', itemType: 'sealed' })),
     ...formatPools.map(p => ({ ...p, format: FORMAT_POOL_TYPE_NAMES[p.poolType] || p.poolType, itemType: 'formats' })),
   ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
   const visibleSoloItems = soloItems.filter(p => !p.hidden)
@@ -342,6 +346,15 @@ export default function HistoryPage() {
   const getFormatPoolUrl = (pool: FormatPool) => {
     const baseRoute = FORMAT_POOL_TYPE_ROUTES[pool.poolType] || '/pool'
     return `${baseRoute}/${pool.shareId}`
+  }
+
+  const getLimitedDeckbuilderEditUrl = (item: SealedPool) => {
+    const params = new URLSearchParams({
+      set: item.setCode,
+      session: item.sessionId || item.shareId,
+      playShareId: item.shareId,
+    })
+    return `/deckbuilder/build?${params.toString()}`
   }
 
   if (authLoading || loading) {
@@ -450,7 +463,12 @@ export default function HistoryPage() {
                       <tbody>
                         {visibleSoloItems.map((item) => {
                           const isFormat = item.itemType === 'formats'
-                          const viewUrl = isFormat ? getFormatPoolUrl(item) + '/deck' : `/pool/${item.shareId}/deck`
+                          const isLimitedDeck = !isFormat && item.isInfinitePool
+                          const viewUrl = isFormat
+                            ? getFormatPoolUrl(item) + '/deck'
+                            : isLimitedDeck
+                              ? getLimitedDeckbuilderEditUrl(item)
+                              : `/pool/${item.shareId}/deck`
                           const playUrl = isFormat ? getFormatPoolUrl(item) + '/deck/play' : `/pool/${item.shareId}/deck/play`
                           const handleRename = isFormat
                             ? (newName) => handleRenameFormat(item.shareId, newName)
@@ -464,7 +482,7 @@ export default function HistoryPage() {
                                   onSave={handleRename}
                                   onTitleClick={() => window.location.href = viewUrl}
                                   isEditable={true}
-                                  placeholder="Untitled Pool"
+                                  placeholder={item.isInfinitePool ? 'Custom Limited Deck' : 'Untitled Pool'}
                                   className="history-editable-title"
                                 />
                               </td>
@@ -536,7 +554,12 @@ export default function HistoryPage() {
                           <tbody>
                             {hiddenSoloItems.map((item) => {
                               const isFormat = item.itemType === 'formats'
-                              const viewUrl = isFormat ? getFormatPoolUrl(item) + '/deck' : `/pool/${item.shareId}/deck`
+                              const isLimitedDeck = !isFormat && item.isInfinitePool
+                              const viewUrl = isFormat
+                                ? getFormatPoolUrl(item) + '/deck'
+                                : isLimitedDeck
+                                  ? getLimitedDeckbuilderEditUrl(item)
+                                  : `/pool/${item.shareId}/deck`
                               const playUrl = isFormat ? getFormatPoolUrl(item) + '/deck/play' : `/pool/${item.shareId}/deck/play`
                               const handleRename = isFormat
                                 ? (newName) => handleRenameFormat(item.shareId, newName)
@@ -550,7 +573,7 @@ export default function HistoryPage() {
                                       onSave={handleRename}
                                       onTitleClick={() => window.location.href = viewUrl}
                                       isEditable={true}
-                                      placeholder="Untitled Pool"
+                                      placeholder={item.isInfinitePool ? 'Custom Limited Deck' : 'Untitled Pool'}
                                       className="history-editable-title"
                                     />
                                   </td>

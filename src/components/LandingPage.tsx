@@ -12,10 +12,11 @@ import './LandingPage.css'
 
 // Card art for mode buttons (hover reveal)
 const MODE_ART = {
-  sealedSolo: 'https://cdn.starwarsunlimited.com//card_07020301_EN_Han_Solo_5c873340ad.png',
-  draftSolo: 'https://cdn.starwarsunlimited.com//card_SWH_01_460_Han_Solo_HYP_130f92cbd3.png',
+  sealedSolo: 'https://cdn.starwarsunlimited.com//card_SWH_01_465_Cunning_HYP_9c76fc00ac.png',
+  draftSolo: 'https://cdn.starwarsunlimited.com//card_07020301_EN_Han_Solo_5c873340ad.png',
   sealedLive: 'https://cdn.starwarsunlimited.com//card_04020336_EN_Close_the_Shield_Gate_54e600004d.png',
-  draftLive: 'https://cdn.starwarsunlimited.com//card_SWH_01_465_Cunning_HYP_9c76fc00ac.png',
+  draftLive: 'https://cdn.starwarsunlimited.com//card_07020493_EN_The_Master_Codebreaker_fb7127ab41.png',
+  deckbuilder: 'https://cdn.starwarsunlimited.com//card_04030998_EN_Grand_Admiral_Thrawn_Leader_Unit_eba4967d61.png',
 }
 
 interface ActiveDraft {
@@ -197,7 +198,7 @@ function LandingPage() {
                   <span className="mode-button-subtitle">Build a deck from 6 packs</span>
                 </div>
               </button>
-              <button className="mode-button art-unit" onClick={() => router.push('/draft/solo')}>
+              <button className="mode-button art-event" onClick={() => router.push('/draft/solo')}>
                 <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.sealedSolo}")` }} />
                 <div className="mode-button-content">
                   <span className="mode-button-title">Draft</span>
@@ -229,7 +230,7 @@ function LandingPage() {
                   )}
                 </div>
               </button>
-              <button className="mode-button art-event" onClick={() => router.push('/draft')}>
+              <button className="mode-button art-unit" onClick={() => router.push('/draft')}>
                 <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.draftLive}")` }} />
                 <div className="mode-button-content">
                   <span className="mode-button-title">Draft</span>
@@ -251,6 +252,15 @@ function LandingPage() {
               </button>
             </div>
           </div>
+        </div>
+        <div className="mode-full-width-row">
+          <button className="mode-button mode-button-wide art-unit mode-button-deckbuilder" onClick={() => router.push('/deckbuilder')}>
+            <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.deckbuilder}")` }} />
+            <div className="mode-button-content">
+              <span className="mode-button-title">Limited Deckbuilder</span>
+              <span className="mode-button-subtitle">Infinite copies of every card in a set</span>
+            </div>
+          </button>
         </div>
       </div>
       <div className="landing-disclaimer">

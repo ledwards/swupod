@@ -42,8 +42,14 @@ export function ArenaView({
     setHoveredCard,
     poolSortOption,
     deckSortOption,
-    setShowAspectPenalties,
+    setShowDeckAspectPenalties,
+    setShowPoolAspectPenalties,
   } = useDeckBuilder()
+
+  const enableAspectPenalties = useCallback(() => {
+    setShowDeckAspectPenalties(true)
+    setShowPoolAspectPenalties(true)
+  }, [setShowDeckAspectPenalties, setShowPoolAspectPenalties])
 
   // Calculate pool and deck card counts for section headers
   const poolCardCount = useMemo(() => {
@@ -126,7 +132,7 @@ export function ArenaView({
             onCardTouchEnd={onCardTouchEnd}
             poolSortOption={poolSortOption}
             deckSortOption={deckSortOption}
-            setShowAspectPenalties={setShowAspectPenalties}
+            setShowAspectPenalties={enableAspectPenalties}
             isLoading={isLoading}
             onAddStarterLeaders={onAddStarterLeaders}
             hasStarterLeaders={hasStarterLeaders}
@@ -136,6 +142,7 @@ export function ArenaView({
 
       {/* Pool Section - collapsible, wrapped in card-block */}
       <CollapsibleSectionHeader
+        id="arena-pool-header"
         title={isLoading ? 'Pool' : `Pool (${poolCardCount})`}
         expanded={poolExpanded}
         onToggle={() => setPoolExpanded(!poolExpanded)}
@@ -164,6 +171,7 @@ export function ArenaView({
 
       {/* Deck Section - collapsible, wrapped in card-block */}
       <CollapsibleSectionHeader
+        id="arena-deck-header"
         title={isLoading ? 'Deck' : `Deck (${deckCardCount})`}
         expanded={deckExpanded}
         onToggle={() => setDeckExpanded(!deckExpanded)}

@@ -209,6 +209,8 @@ export function StickyInfoBar({
 
   const leaderCard = activeLeader && cardPositions[activeLeader]?.card
   const baseCard = activeBase && cardPositions[activeBase]?.card
+  const deckAnchorSelector = viewMode === 'arena' ? '#arena-deck-header' : viewMode === 'list' ? '#deck-list-header' : '#deck-header'
+  const poolAnchorSelector = viewMode === 'arena' ? '#arena-pool-header' : viewMode === 'list' ? '#pool-list-header' : '#pool-header'
 
   return (
     <div className={`deck-info-bar ${isInfoBarSticky ? 'sticky' : ''}`} ref={infoBarRef}>
@@ -282,7 +284,7 @@ export function StickyInfoBar({
           onClick={() => {
             const wasCollapsed = !deckExpanded
             if (wasCollapsed) setDeckExpanded(true)
-            scrollToElement('#deck-header', wasCollapsed)
+            scrollToElement(deckAnchorSelector, wasCollapsed)
           }}
           style={{ cursor: 'pointer' }}
         >
@@ -298,7 +300,7 @@ export function StickyInfoBar({
           onClick={() => {
             const wasCollapsed = !sideboardExpanded
             if (wasCollapsed) setSideboardExpanded(true)
-            scrollToElement('#pool-header', wasCollapsed)
+            scrollToElement(poolAnchorSelector, wasCollapsed)
           }}
           style={{ cursor: 'pointer' }}
         >

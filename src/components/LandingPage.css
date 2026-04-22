@@ -136,6 +136,12 @@ a.discord-cta:active {
   width: 100%;
 }
 
+.mode-full-width-row {
+  width: 100%;
+  max-width: 960px;
+  margin-top: 0.75rem;
+}
+
 .mode-section {
   flex: 1;
   min-width: 0;
@@ -178,6 +184,19 @@ a.discord-cta:active {
   overflow: hidden;
 }
 
+.mode-button-wide {
+  min-width: 100%;
+}
+
+.mode-button-wide .mode-button-art {
+  left: 65%;
+  right: 0;
+}
+
+.mode-button-wide .mode-button-art::after {
+  background: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 25%, rgba(0, 0, 0, 0.7) 45%, rgba(0, 0, 0, 0.2) 70%, rgba(0, 0, 0, 0) 90%);
+}
+
 /* Card art background - hidden by default, revealed on hover */
 .mode-button-art {
   position: absolute;
@@ -198,6 +217,10 @@ a.discord-cta:active {
 .mode-button.art-unit .mode-button-art {
   background-size: auto 250%;
   background-position: right 25%;
+}
+
+.mode-button-deckbuilder .mode-button-art {
+  background-position: calc(100% + 90px) 25%;
 }
 
 /* Leader unit art: shifted right to hide aspect icon */
@@ -423,6 +446,11 @@ a.discord-cta:active {
     flex-direction: column;
     gap: 1.5rem;
     max-width: 100%;
+  }
+
+  .mode-full-width-row {
+    max-width: 100%;
+    margin-top: 1rem;
   }
 
   .mode-button {

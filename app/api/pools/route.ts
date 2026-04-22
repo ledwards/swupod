@@ -13,7 +13,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const body = await parseBody(request)
     validateRequired(body, ['setCode', 'cards'])
 
-    const { setCode, cards, packs, deckBuilderState, isPublic = true, shareId: clientShareId, poolType = 'sealed', boxPacks, packIndices } = body
+    const {
+      setCode,
+      cards,
+      packs,
+      deckBuilderState,
+      isPublic = true,
+      shareId: clientShareId,
+      poolType = 'sealed',
+      boxPacks,
+      packIndices,
+      hidden = false,
+      name: requestedName,
+    } = body
 
     // Get set name from config
     const setConfig = getSetConfig(setCode)
@@ -54,13 +66,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     while (attempts < maxAttempts) {
       try {
         // Calculate default name
-        const defaultName = generatePoolName(poolType, setCode)
+        const defaultName = requestedName || generatePoolName(poolType, setCode)
 
         // Try to insert with current shareId
         try {
           result = await query(
-            `INSERT INTO card_pools (user_id, share_id, set_code, set_name, pool_type, name, cards, packs, deck_builder_state, is_public, box_packs, pack_indices, shuffled_packs)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+            `INSERT INTO card_pools (user_id, share_id, set_code, set_name, pool_type, name, cards, packs, deck_builder_state, is_public, hidden, box_packs, pack_indices, shuffled_packs)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
              RETURNING id, share_id, created_at`,
             [
               userId,
@@ -73,6 +85,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
               packs ? JSON.stringify(packs) : null,
               deckBuilderState ? JSON.stringify(deckBuilderState) : null,
               isPublic,
+              hidden,
               boxPacks ? JSON.stringify(boxPacks) : null,
               packIndices || null,
               false, // shuffled_packs starts as false
@@ -85,8 +98,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           if (error.message.includes('name')) {
             try {
               result = await query(
-                `INSERT INTO card_pools (user_id, share_id, set_code, set_name, pool_type, cards, packs, deck_builder_state, is_public)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                `INSERT INTO card_pools (user_id, share_id, set_code, set_name, pool_type, cards, packs, deck_builder_state, is_public, hidden)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
                  RETURNING id, share_id, created_at`,
                 [
                   userId,
@@ -98,6 +111,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                   packs ? JSON.stringify(packs) : null,
                   deckBuilderState ? JSON.stringify(deckBuilderState) : null,
                   isPublic,
+                  hidden,
                 ]
               )
               // Success - break out of retry loop
@@ -106,8 +120,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
               // If set_name or pool_type columns don't exist, use fallback query
               if (innerError.message.includes('set_name') || innerError.message.includes('pool_type')) {
                 result = await query(
-                  `INSERT INTO card_pools (user_id, share_id, set_code, cards, packs, deck_builder_state, is_public)
-                   VALUES ($1, $2, $3, $4, $5, $6, $7)
+                  `INSERT INTO card_pools (user_id, share_id, set_code, cards, packs, deck_builder_state, is_public, hidden)
+                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                    RETURNING id, share_id, created_at`,
                   [
                     userId,
@@ -117,6 +131,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                     packs ? JSON.stringify(packs) : null,
                     deckBuilderState ? JSON.stringify(deckBuilderState) : null,
                     isPublic,
+                    hidden,
                   ]
                 )
                 // Success - break out of retry loop
@@ -128,8 +143,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           // If set_name or pool_type columns don't exist, use fallback query
           else if (error.message.includes('set_name') || error.message.includes('pool_type')) {
             result = await query(
-              `INSERT INTO card_pools (user_id, share_id, set_code, cards, packs, deck_builder_state, is_public)
-               VALUES ($1, $2, $3, $4, $5, $6, $7)
+              `INSERT INTO card_pools (user_id, share_id, set_code, cards, packs, deck_builder_state, is_public, hidden)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                RETURNING id, share_id, created_at`,
               [
                 userId,
@@ -139,6 +154,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                 packs ? JSON.stringify(packs) : null,
                 deckBuilderState ? JSON.stringify(deckBuilderState) : null,
                 isPublic,
+                hidden,
               ]
             )
             // Success - break out of retry loop

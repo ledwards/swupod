@@ -132,14 +132,14 @@ export function LeaderBaseSelector({
       .filter(([_, position]) => position.section === 'leaders-bases' && position.visible && position.card.isBase)
       .map(([cardId, position]) => ({ cardId, position }))
       .sort((a, b) => {
-        // Sort by rarity (rare first)
+        // Sort by rarity (common first)
         const aRarity = a.position.card.rarity as string | undefined
         const bRarity = b.position.card.rarity as string | undefined
         const aIsRare = aRarity === 'Rare' || aRarity === 'Legendary' || aRarity === 'Special'
         const bIsRare = bRarity === 'Rare' || bRarity === 'Legendary' || bRarity === 'Special'
 
-        if (aIsRare && !bIsRare) return -1
-        if (!aIsRare && bIsRare) return 1
+        if (aIsRare && !bIsRare) return 1
+        if (!aIsRare && bIsRare) return -1
 
         // Then by aspect
         const keyA = getAspectKey(a.position.card as CardData)

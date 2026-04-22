@@ -71,6 +71,8 @@ export function AspectFilterModal({
   const activeBase = activeBaseProp ?? contextValue?.activeBase
   const filterAspectsExpanded = filterAspectsExpandedProp ?? contextValue?.filterAspectsExpanded ?? {}
   const onFilterAspectsExpandedChange = onFilterAspectsExpandedChangeProp ?? contextValue?.setFilterAspectsExpanded
+  const moveCardsToDeck = contextValue?.moveCardsToDeck
+  const moveCardsToPool = contextValue?.moveCardsToPool
 
   if (!isOpen) return null
 
@@ -111,6 +113,10 @@ export function AspectFilterModal({
 
   // Move cards to deck
   const moveToDeck = (cardIds: string[]) => {
+    if (moveCardsToDeck) {
+      moveCardsToDeck(cardIds)
+      return
+    }
     onMoveCards?.(prev => {
       const updated = { ...prev }
       cardIds.forEach(cardId => {
@@ -122,6 +128,10 @@ export function AspectFilterModal({
 
   // Move cards to pool
   const moveToPool = (cardIds: string[]) => {
+    if (moveCardsToPool) {
+      moveCardsToPool(cardIds)
+      return
+    }
     onMoveCards?.(prev => {
       const updated = { ...prev }
       cardIds.forEach(cardId => {

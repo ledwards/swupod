@@ -39,6 +39,8 @@ export function BulkMoveButtons({
 
   const cardPositions = cardPositionsProp ?? contextValue?.cardPositions ?? {}
   const setCardPositions = setCardPositionsProp ?? contextValue?.setCardPositions
+  const moveCardsToDeck = contextValue?.moveCardsToDeck
+  const moveCardsToPool = contextValue?.moveCardsToPool
   const deckCardCount = Object.values(cardPositions)
     .filter(pos => pos.section === 'deck' && pos.visible && !pos.card.isBase && !pos.card.isLeader && pos.enabled !== false).length
   const poolCardCount = Object.values(cardPositions)
@@ -50,6 +52,10 @@ export function BulkMoveButtons({
     e.stopPropagation()
     const poolCards = Object.entries(cardPositions)
       .filter(([_, position]) => (position.section === 'sideboard' || position.enabled === false) && position.visible && !position.card.isBase && !position.card.isLeader)
+    if (moveCardsToDeck) {
+      moveCardsToDeck(poolCards.map(([cardId]) => cardId))
+      return
+    }
     setCardPositions?.(prev => {
       const updated = { ...prev }
       poolCards.forEach(([cardId]) => {
@@ -63,6 +69,10 @@ export function BulkMoveButtons({
     e.stopPropagation()
     const deckCards = Object.entries(cardPositions)
       .filter(([_, position]) => position.section === 'deck' && position.visible && !position.card.isBase && !position.card.isLeader && position.enabled !== false)
+    if (moveCardsToPool) {
+      moveCardsToPool(deckCards.map(([cardId]) => cardId))
+      return
+    }
     setCardPositions?.(prev => {
       const updated = { ...prev }
       deckCards.forEach(([cardId]) => {

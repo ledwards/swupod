@@ -131,6 +131,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         let leaderName = null
         let baseName = null
         let mainDeckCount = 0
+        let isInfinitePool = false
+        let sessionId = null
         if (pool.deck_builder_state) {
           try {
             const state = typeof pool.deck_builder_state === 'string'
@@ -140,6 +142,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
             if (state.poolName) {
               poolNameFromState = state.poolName
             }
+            isInfinitePool = state.isInfinitePool === true
+            sessionId = state.sessionId || null
             // activeLeader/activeBase are cardId strings, actual card data is in cardPositions
             if (state.activeLeader && state.cardPositions) {
               const leaderCard = state.cardPositions[state.activeLeader]?.card
@@ -168,7 +172,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         let name = poolNameFromState || pool.name
         if (!name) {
           const poolType = pool.pool_type || 'sealed'
-          const formatType = poolType === 'draft' ? 'Draft' :
+          const formatType = isInfinitePool ? 'Limited' : poolType === 'draft' ? 'Draft' :
             poolType === 'rotisserie' ? 'Rotisserie Draft' : 'Sealed'
           const setCode = pool.set_code || ''
           const setCodes = setCode.includes(',') ? setCode.split(',').map((s: string) => s.trim()) : [setCode]
@@ -188,6 +192,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
           poolType: pool.pool_type || 'sealed',
           name: name,
           hidden: pool.hidden === true,
+          isInfinitePool,
+          sessionId,
           createdAt: pool.created_at,
           updatedAt: pool.updated_at,
           isPublic: pool.is_public,

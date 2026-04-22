@@ -30,6 +30,8 @@ interface PoolData {
   shareId?: string
   boxPacks?: Pack[]
   packIndices?: number[]
+  hidden?: boolean
+  name?: string | null
 }
 
 interface SavedPool extends PoolData {

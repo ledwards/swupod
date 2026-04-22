@@ -12,6 +12,8 @@ import { getRarityColor } from '../../utils/aspectColors'
 import { ListTableHeader } from './ListTableHeader'
 import type { TableSortMap } from './ListTableHeader'
 import type { SortOption } from './SortControls'
+import { AspectPenaltyToggle } from './AspectPenaltyToggle'
+import { useDeckBuilder } from '../../contexts/DeckBuilderContext'
 
 interface CardData {
   name?: string
@@ -58,6 +60,7 @@ export interface PoolListSectionProps {
   setCardPositions: (fn: (prev: Record<string, CardPositionData>) => Record<string, CardPositionData>) => void
   deckSortOption: SortOption
   isDraftMode: boolean
+  isInfiniteMode?: boolean
   tableSort: TableSortMap
   handleTableSort: (sectionId: string, field: string) => void
   defaultSort: (a: CardData, b: CardData) => number
@@ -81,6 +84,7 @@ export function PoolListSection({
   setCardPositions,
   deckSortOption,
   isDraftMode,
+  isInfiniteMode = false,
   tableSort,
   handleTableSort,
   defaultSort,
@@ -98,6 +102,22 @@ export function PoolListSection({
   onCardHover,
   onCardLeave,
 }: PoolListSectionProps) {
+  let contextValue: ReturnType<typeof useDeckBuilder> | null = null
+  try {
+    contextValue = useDeckBuilder()
+  } catch {
+    contextValue = null
+  }
+
+  const moveCardToDeck = contextValue?.moveCardToDeck
+  const moveCardToPool = contextValue?.moveCardToPool
+  const moveCardsToDeck = contextValue?.moveCardsToDeck
+  const moveCardsToPool = contextValue?.moveCardsToPool
+  const showDeckAspectPenalties = contextValue?.showDeckAspectPenalties ?? contextValue?.showAspectPenalties ?? false
+  const setShowDeckAspectPenalties = contextValue?.setShowDeckAspectPenalties ?? contextValue?.setShowAspectPenalties
+  const showPoolAspectPenalties = contextValue?.showPoolAspectPenalties ?? false
+  const setShowPoolAspectPenalties = contextValue?.setShowPoolAspectPenalties
+
   const deckCardPositions: CardWithData[] = Object.entries(cardPositions)
     .filter(([_, pos]) => pos.section === 'deck' && pos.visible && !pos.card.isBase && !pos.card.isLeader && pos.enabled !== false)
     .map(([cardId, pos]) => ({ cardId, card: pos.card }))
@@ -116,6 +136,10 @@ export function PoolListSection({
             type="checkbox"
             checked={true}
             onChange={() => {
+              if (moveCardToPool) {
+                moveCardToPool(cardId)
+                return
+              }
               setCardPositions(prev => ({
                 ...prev,
                 [cardId]: { ...prev[cardId], section: 'sideboard', enabled: false }
@@ -225,6 +249,14 @@ export function PoolListSection({
                   checkboxChecked={allEnabled}
                   onCheckboxChange={(e: ChangeEvent<HTMLInputElement>) => {
                     const shouldEnable = e.target.checked
+                    if (shouldEnable && moveCardsToDeck) {
+                      moveCardsToDeck(sortedCards.map(({ cardId }) => cardId))
+                      return
+                    }
+                    if (!shouldEnable && moveCardsToPool) {
+                      moveCardsToPool(sortedCards.map(({ cardId }) => cardId))
+                      return
+                    }
                     setCardPositions(prev => {
                       const updated = { ...prev }
                       sortedCards.forEach(({ cardId }) => {
@@ -326,6 +358,27 @@ export function PoolListSection({
                   checkboxChecked={allEnabled}
                   onCheckboxChange={(e: ChangeEvent<HTMLInputElement>) => {
                     const shouldEnable = e.target.checked
+                    if (shouldEnable && moveCardsToDeck) {
+                      if (sortedCards.length === 0) {
+                        const matchingCardIds = Object.entries(cardPositions)
+                          .filter(([_, position]) =>
+                            (position.section === 'sideboard' || position.enabled === false) &&
+                            position.visible &&
+                            !position.card.isBase &&
+                            !position.card.isLeader &&
+                            getAspectCombinationKey(position.card) === aspectKey
+                          )
+                          .map(([cardId]) => cardId)
+                        moveCardsToDeck(matchingCardIds)
+                      } else {
+                        moveCardsToDeck(sortedCards.map(({ cardId }) => cardId))
+                      }
+                      return
+                    }
+                    if (!shouldEnable && moveCardsToPool) {
+                      moveCardsToPool(sortedCards.map(({ cardId }) => cardId))
+                      return
+                    }
                     setCardPositions(prev => {
                       const updated = { ...prev }
 
@@ -390,6 +443,14 @@ export function PoolListSection({
 
     const handleSideboardCheckbox = (e: ChangeEvent<HTMLInputElement>) => {
       const shouldEnable = e.target.checked
+      if (shouldEnable && moveCardsToDeck) {
+        moveCardsToDeck(sideboardCardPositions.map(({ cardId }) => cardId))
+        return
+      }
+      if (!shouldEnable && moveCardsToPool) {
+        moveCardsToPool(sideboardCardPositions.map(({ cardId }) => cardId))
+        return
+      }
       setCardPositions(prev => {
         const updated = { ...prev }
         sideboardCardPositions.forEach(({ cardId }) => {
@@ -429,6 +490,10 @@ export function PoolListSection({
                     type="checkbox"
                     checked={false}
                     onChange={() => {
+                      if (moveCardToDeck) {
+                        moveCardToDeck(cardId)
+                        return
+                      }
                       setCardPositions(prev => ({
                         ...prev,
                         [cardId]: { ...prev[cardId], section: 'deck', enabled: true, x: 0, y: 0 }
@@ -465,17 +530,27 @@ export function PoolListSection({
 
       {/* Deck Section */}
       <div className="pool-subsection">
-        <h3 className="pool-subsection-title" style={{ userSelect: 'none' }}>
+        <h3 id="deck-list-header" className="pool-subsection-title" style={{ userSelect: 'none' }}>
           Deck ({deckCardPositions.length})
         </h3>
+        <AspectPenaltyToggle
+          sortOption={deckSortOption}
+          showAspectPenalties={showDeckAspectPenalties}
+          setShowAspectPenalties={setShowDeckAspectPenalties}
+        />
         {renderDeckContent()}
       </div>
 
       {/* Sideboard Section */}
       <div className="pool-subsection">
-        <h3 className="pool-subsection-title" style={{ userSelect: 'none' }}>
-          {isDraftMode ? 'Card Pool' : 'Sideboard'} ({sideboardCardPositions.length})
+        <h3 id="pool-list-header" className="pool-subsection-title" style={{ userSelect: 'none' }}>
+          {isInfiniteMode ? 'Pool' : isDraftMode ? 'Card Pool' : 'Sideboard'} ({sideboardCardPositions.length})
         </h3>
+        <AspectPenaltyToggle
+          sortOption={deckSortOption}
+          showAspectPenalties={showPoolAspectPenalties}
+          setShowAspectPenalties={setShowPoolAspectPenalties}
+        />
         {renderSideboardContent()}
       </div>
     </div>

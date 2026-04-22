@@ -28,6 +28,7 @@ interface CardPosition {
 
 export interface SelectionListSectionProps {
   title: string
+  headerId?: string
   sectionId: string
   radioName: string
   positions: CardPosition[]
@@ -48,6 +49,7 @@ export interface SelectionListSectionProps {
 
 export function SelectionListSection({
   title,
+  headerId,
   sectionId,
   radioName,
   positions,
@@ -77,6 +79,7 @@ export function SelectionListSection({
   return (
     <div className="list-section">
       <h2
+        id={headerId}
         className="list-section-title"
         onClick={onToggleExpanded}
         style={{ cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center' }}

@@ -69,7 +69,8 @@ export function PoolSection({
     setPoolSortOption,
     leaderCard,
     baseCard,
-    showAspectPenalties,
+    showPoolAspectPenalties,
+    setShowPoolAspectPenalties,
     moveCardsToDeck,
     moveCardsToPool,
   } = useDeckBuilder()
@@ -112,7 +113,7 @@ export function PoolSection({
                 <CardGrid
                   groups={groupedCards}
                   renderCardStack={renderCardStack}
-                  renderCard={createCardRenderer(leaderCard, baseCard)}
+                  renderCard={createCardRenderer(leaderCard, baseCard, { showAspectPenalties: showPoolAspectPenalties })}
                 />
               </div>
             </div>
@@ -123,7 +124,7 @@ export function PoolSection({
 
     // Grouped view
     const getGroupKey = createGetGroupKey(poolSortOption, {
-      showAspectPenalties,
+      showAspectPenalties: showPoolAspectPenalties,
       leaderCard,
       baseCard,
       calculateAspectPenalty,
@@ -200,7 +201,7 @@ export function PoolSection({
                 <CardGrid
                   groups={groupedByName}
                   renderCardStack={renderCardStack}
-                  renderCard={createCardRenderer(leaderCard, baseCard)}
+                  renderCard={createCardRenderer(leaderCard, baseCard, { showAspectPenalties: showPoolAspectPenalties })}
                 />
               </div>}
             </div>
@@ -224,6 +225,8 @@ export function PoolSection({
         onFilterToggle={() => { setPoolFilterOpen(!poolFilterOpen); setDeckFilterOpen(false); }}
         onFilterClose={() => setPoolFilterOpen(false)}
         onFilterAspectsExpandedChange={setFilterAspectsExpanded}
+        showAspectPenalties={showPoolAspectPenalties}
+        setShowAspectPenalties={setShowPoolAspectPenalties}
       />
       {renderPoolContent()}
     </div>

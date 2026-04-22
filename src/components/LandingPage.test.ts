@@ -3,6 +3,18 @@ import { describe, it } from 'node:test'
 import assert from 'node:assert'
 
 describe('LandingPage', () => {
+  describe('Limited Deckbuilder mode', () => {
+    it('routes the homepage CTA to /deckbuilder', () => {
+      let navigatedTo: string | null = null
+      const handleLimitedDeckbuilderClick = () => {
+        navigatedTo = '/deckbuilder'
+      }
+
+      handleLimitedDeckbuilderClick()
+      assert.strictEqual(navigatedTo, '/deckbuilder')
+    })
+  })
+
   describe('Other Formats button visibility', () => {
     it('should hide Other Formats button when user is not logged in', () => {
       const user = null

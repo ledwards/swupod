@@ -15,7 +15,7 @@ import {
   getAspectSortKey,
   compareByAspectTypeCostName,
 } from '../services/cards/cardSorting'
-import { savePool, updatePool } from '../utils/poolApi'
+import { deletePool, savePool, updatePool } from '../utils/poolApi'
 import { getPackArtUrl } from '../utils/packArt'
 import {
   getClonedDeckBuilderState,
@@ -123,10 +123,11 @@ interface DeckBuilderProps {
   onStateChange?: (state: unknown) => void
   mode?: 'standard' | 'infinite'
   localStorageKey?: string | null
+  sessionId?: string | null
   onRequestPlay?: (deckBuilderState: Record<string, unknown>) => Promise<string> | string
   shareId?: string | null
   poolCreatedAt?: string | null
-  poolType?: 'sealed' | 'draft'
+  poolType?: 'sealed' | 'draft' | string
   poolName?: string | null
   poolOwnerUsername?: string | null
   poolOwnerId?: string | null
@@ -142,6 +143,7 @@ function DeckBuilder({
   onStateChange,
   mode = 'standard',
   localStorageKey = null,
+  sessionId = null,
   onRequestPlay,
   shareId = null,
   poolCreatedAt = null,
@@ -156,8 +158,10 @@ function DeckBuilder({
   const isInfiniteMode = mode === 'infinite'
   const storageLookupKey = shareId || localStorageKey || null
   const uiStorageKey = storageLookupKey ? `deckBuilderUI_${storageLookupKey}` : null
+  const currentSessionId = sessionId || (savedState ? jsonParse(savedState)?.sessionId : null) || null
   const isOwner = isInfiniteMode ? true : Boolean(user && poolOwnerId && user.id === poolOwnerId)
   const isDraftMode = poolType === 'draft'
+  const isDraftStyleMode = poolType === 'draft' || poolType === 'chaos_draft' || poolType === 'rotisserie'
 
   // Get pool name from saved state if available, otherwise use initial prop
   const getInitialPoolName = () => {
@@ -182,16 +186,16 @@ function DeckBuilder({
   useEffect(() => {
     if (savedState) {
       const state = jsonParse(savedState)
-      if (state?.poolName && state.poolName !== currentPoolName) {
+      if (state?.poolName) {
         setCurrentPoolName(state.poolName)
       }
-      if (state?.playShareId && state.playShareId !== playShareId) {
+      if (state?.playShareId) {
         setPlayShareId(state.playShareId)
       }
     } else if (!currentPoolName && initialPoolName) {
       setCurrentPoolName(initialPoolName)
     }
-  }, [savedState, initialPoolName, currentPoolName, playShareId])
+  }, [savedState, initialPoolName])
 
   // Extract and store the original base name (format part only) on initial load
   // Strips any existing leader/base suffix like "(Jabba the Hutt Green)" and trailing dates
@@ -206,12 +210,24 @@ function DeckBuilder({
   }, [initialPoolName, originalBaseName])
 
   const handleRenamePool = (newName: string) => {
-    if (!shareId) return
     if (newName && newName.length > 80) return // Enforced by EditableTitle, but guard here too
-    setCurrentPoolName(newName)
+    setCurrentPoolName(newName || null)
     setUserHasRenamedPool(true) // User manually changed the name
     // Save is triggered automatically via useEffect when currentPoolName changes
   }
+
+  const sortBaseCardsCommonFirst = useCallback((a: CardType, b: CardType) => {
+    const aIsCommon = a.rarity === 'Common'
+    const bIsCommon = b.rarity === 'Common'
+    if (aIsCommon && !bIsCommon) return -1
+    if (!aIsCommon && bIsCommon) return 1
+
+    const keyA = getAspectKeyUtil(a)
+    const keyB = getAspectKeyUtil(b)
+    if (keyA !== keyB) return keyA.localeCompare(keyB)
+    return compareByAspectTypeCostName(a, b)
+  }, [])
+
   // Helper function to format card type for display
   const getFormattedType = useCallback((card: CardType) => {
     if (card.type === 'Unit') {
@@ -281,7 +297,13 @@ function DeckBuilder({
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [messageType, setMessageType] = useState<'error' | 'success' | null>(null) // 'error' or 'success'
   const [isInfoBarSticky, setIsInfoBarSticky] = useState(false)
-  const [showAspectPenalties, setShowAspectPenalties] = useState(false)
+  const [showDeckAspectPenalties, setShowDeckAspectPenalties] = useState(false)
+  const [showPoolAspectPenalties, setShowPoolAspectPenalties] = useState(false)
+
+  const enableAspectPenaltiesForBothSections = useCallback(() => {
+    setShowDeckAspectPenalties(true)
+    setShowPoolAspectPenalties(true)
+  }, [])
 
   const createInfiniteCloneId = useCallback((sourceCardId: string) => (
     `${sourceCardId}__clone__${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
@@ -310,6 +332,7 @@ function DeckBuilder({
         x: 0,
         y: 0,
         zIndex: 1,
+        isInfiniteSource: false,
         isInfiniteDeckCopy: true,
         sourceCardId: sourcePosition.sourceCardId || sourceCardId,
       }
@@ -488,7 +511,7 @@ function DeckBuilder({
     setActiveBase,
     poolSortOption,
     deckSortOption,
-    setShowAspectPenalties,
+    setShowAspectPenalties: enableAspectPenaltiesForBothSections,
     setHoveredCard,
     canvasRef,
   })
@@ -744,7 +767,7 @@ function DeckBuilder({
     // Get effective cost including aspect penalty
     const getEffectiveCost = (card: CardType) => {
       const baseCost = card.cost || 0
-      const penalty = (showAspectPenalties && leaderCard && baseCard) ? calculateAspectPenalty(card, leaderCard, baseCard) : 0
+      const penalty = (showDeckAspectPenalties && leaderCard && baseCard) ? calculateAspectPenalty(card, leaderCard, baseCard) : 0
       return baseCost + penalty
     }
 
@@ -760,7 +783,7 @@ function DeckBuilder({
       return allCards.sort((a, b) => getEffectiveCost(a) - getEffectiveCost(b))
     }
     return allCards
-  }, [cardPositions, deckSortOption, getAspectKey, getDefaultAspectSortKey, showAspectPenalties, leaderCard, baseCard])
+  }, [cardPositions, deckSortOption, getAspectKey, getDefaultAspectSortKey, showDeckAspectPenalties, leaderCard, baseCard])
 
   // Helper to filter and map deck cards
   const getDeckCards = useCallback(() => {
@@ -831,7 +854,10 @@ function DeckBuilder({
   }), [toggleCardSection, handleCardMouseEnter, handleCardMouseLeave, handleCardTouchStart, handleCardTouchEnd])
 
   // Factory for card render callbacks used in renderCardStack
-  const createCardRenderer = useCallback((leaderCardRef: CardType | null, baseCardRef: CardType | null, { showDisabled = false } = {}) => {
+  const createCardRenderer = useCallback((leaderCardRef: CardType | null, baseCardRef: CardType | null, {
+    showDisabled = false,
+    showAspectPenalties = false,
+  } = {}) => {
     return (cardEntry: { cardId: string; position: CardPosition }, stackIndex: number | null, isStacked: boolean) => {
       const { cardId, position } = cardEntry
       const card = position.card
@@ -857,7 +883,7 @@ function DeckBuilder({
         />
       )
     }
-  }, [selectedCards, hoveredCard, showAspectPenalties, getCardEventHandlers])
+  }, [selectedCards, hoveredCard, getCardEventHandlers])
 
   // Restore saved state on mount
   useEffect(() => {
@@ -908,8 +934,14 @@ function DeckBuilder({
               }
             }
 
+            if (isInfiniteMode && pos.isInfiniteDeckCopy) {
+              section = 'deck'
+              enabled = true
+            }
+
             positionsWithEnabled[id] = {
               ...pos,
+              isInfiniteSource: pos.isInfiniteDeckCopy ? false : pos.isInfiniteSource,
               section,
               enabled
             }
@@ -1031,8 +1063,15 @@ function DeckBuilder({
         if (state.poolGroupsExpanded) {
           setPoolGroupsExpanded(state.poolGroupsExpanded)
         }
-        if (state.showAspectPenalties !== undefined) {
-          setShowAspectPenalties(state.showAspectPenalties)
+        if (state.showDeckAspectPenalties !== undefined) {
+          setShowDeckAspectPenalties(state.showDeckAspectPenalties)
+        } else if (state.showAspectPenalties !== undefined) {
+          setShowDeckAspectPenalties(state.showAspectPenalties)
+        }
+        if (state.showPoolAspectPenalties !== undefined) {
+          setShowPoolAspectPenalties(state.showPoolAspectPenalties)
+        } else if (state.showAspectPenalties !== undefined) {
+          setShowPoolAspectPenalties(state.showAspectPenalties)
         }
       } catch (e) {
         console.error('Failed to restore deck builder state:', e)
@@ -1106,8 +1145,15 @@ function DeckBuilder({
         if (state.poolGroupsExpanded) {
           setPoolGroupsExpanded(state.poolGroupsExpanded)
         }
-        if (state.showAspectPenalties !== undefined) {
-          setShowAspectPenalties(state.showAspectPenalties)
+        if (state.showDeckAspectPenalties !== undefined) {
+          setShowDeckAspectPenalties(state.showDeckAspectPenalties)
+        } else if (state.showAspectPenalties !== undefined) {
+          setShowDeckAspectPenalties(state.showAspectPenalties)
+        }
+        if (state.showPoolAspectPenalties !== undefined) {
+          setShowPoolAspectPenalties(state.showPoolAspectPenalties)
+        } else if (state.showAspectPenalties !== undefined) {
+          setShowPoolAspectPenalties(state.showAspectPenalties)
         }
         if (state.tableSort) {
           setTableSort(state.tableSort)
@@ -1247,8 +1293,8 @@ function DeckBuilder({
         return (a.name || '').localeCompare(b.name || '')
       })
 
-      // Combine rare bases (first) and common bases (second)
-      const allBases = [...uniqueRareBases, ...uniqueCommonBases]
+      // Combine common bases first, then rare bases
+      const allBases = [...uniqueCommonBases, ...uniqueRareBases]
 
       // Combine leaders and bases into one section
       const leadersAndBases = [...poolLeaders, ...allBases]
@@ -1508,6 +1554,10 @@ function DeckBuilder({
     }
   }, [hasStarterLeaders, removeStarterLeaders, addStarterLeaders])
 
+  const starterLeadersToggleHandler = !isInfiniteMode && !isDraftStyleMode && starterLeadersAvailable.length > 0
+    ? toggleStarterLeaders
+    : undefined
+
   const buildDeckStateSnapshot = useCallback((includeUiState = false) => {
     const deckCardIds = Object.entries(cardPositions)
       .filter(([_, pos]) => pos.section === 'deck')
@@ -1526,7 +1576,8 @@ function DeckBuilder({
       activeBase,
       deckCardIds,
       sideboardCardIds,
-      poolName: currentPoolName
+      poolName: currentPoolName,
+      sessionId: currentSessionId,
     }
 
     if (isInfiniteMode) {
@@ -1557,7 +1608,9 @@ function DeckBuilder({
       sideboardCostSectionsExpanded,
       deckGroupsExpanded,
       poolGroupsExpanded,
-      showAspectPenalties,
+      showAspectPenalties: showDeckAspectPenalties || showPoolAspectPenalties,
+      showDeckAspectPenalties,
+      showPoolAspectPenalties,
       tableSort,
       arenaFilters,
       arenaSearchQuery,
@@ -1570,6 +1623,7 @@ function DeckBuilder({
     activeLeader,
     activeBase,
     currentPoolName,
+    currentSessionId,
     isInfiniteMode,
     playShareId,
     viewMode,
@@ -1589,7 +1643,8 @@ function DeckBuilder({
     sideboardCostSectionsExpanded,
     deckGroupsExpanded,
     poolGroupsExpanded,
-    showAspectPenalties,
+    showDeckAspectPenalties,
+    showPoolAspectPenalties,
     tableSort,
     arenaFilters,
     arenaSearchQuery,
@@ -1643,6 +1698,19 @@ function DeckBuilder({
           return
         }
 
+        if (isInfiniteMode && pos.isInfiniteDeckCopy) {
+          if (pos.section !== 'deck' || pos.enabled !== true) {
+            updated[cardId] = {
+              ...pos,
+              isInfiniteSource: false,
+              section: 'deck',
+              enabled: true
+            }
+            hasChanges = true
+          }
+          return
+        }
+
         if (isInfiniteMode && pos.isInfiniteSource) {
           if (pos.section !== 'sideboard' || pos.enabled !== false) {
             updated[cardId] = {
@@ -1652,12 +1720,6 @@ function DeckBuilder({
             }
             hasChanges = true
           }
-          return
-        }
-
-        if (isInfiniteMode && pos.isInfiniteDeckCopy && pos.section !== 'deck') {
-          toRemove.push(cardId)
-          hasChanges = true
           return
         }
 
@@ -1866,14 +1928,14 @@ function DeckBuilder({
       // Get leader and base for penalty calculation
       const leaderCardSort = activeLeader && updated[activeLeader] ? updated[activeLeader].card : null
       const baseCardSort = activeBase && updated[activeBase] ? updated[activeBase].card : null
-      const getEffectiveCost = (card: CardType) => {
+      const getEffectiveCost = (card: CardType, includeAspectPenalties: boolean) => {
         const baseCost = card.cost || 0
-        const penalty = (showAspectPenalties && leaderCardSort && baseCardSort) ? calculateAspectPenalty(card, leaderCardSort, baseCardSort) : 0
+        const penalty = (includeAspectPenalties && leaderCardSort && baseCardSort) ? calculateAspectPenalty(card, leaderCardSort, baseCardSort) : 0
         return baseCost + penalty
       }
-      const sortCards = (cards: CardType[], sortOpt: string) => {
+      const sortCards = (cards: CardType[], sortOpt: string, includeAspectPenalties: boolean) => {
         if (sortOpt === 'cost') {
-          return [...cards].sort((a, b) => getEffectiveCost(a) - getEffectiveCost(b))
+          return [...cards].sort((a, b) => getEffectiveCost(a, includeAspectPenalties) - getEffectiveCost(b, includeAspectPenalties))
         } else if (sortOpt === 'aspect') {
           // Sort by aspect key directly
           return [...cards].sort((a, b) => {
@@ -1886,18 +1948,18 @@ function DeckBuilder({
             const aOrder = getTypeStringOrder(a.type || '')
             const bOrder = getTypeStringOrder(b.type || '')
             if (aOrder !== bOrder) return aOrder - bOrder
-            return getEffectiveCost(a) - getEffectiveCost(b)
+            return getEffectiveCost(a, includeAspectPenalties) - getEffectiveCost(b, includeAspectPenalties)
           })
         }
         return cards
       }
 
       // Helper function to position cards in a section
-      const positionCards = (cardIds: string[], startY: number, sectionName: string, sortOpt: string) => {
+      const positionCards = (cardIds: string[], startY: number, sectionName: string, sortOpt: string, includeAspectPenalties: boolean) => {
         if (cardIds.length === 0) return startY
 
         const cards = cardIds.map(id => updated[id]?.card).filter(Boolean) as CardType[]
-        const sortedCards = sortCards(cards, sortOpt)
+        const sortedCards = sortCards(cards, sortOpt, includeAspectPenalties)
         const sortedCardIds = sortedCards.map(card => {
           return cardIds.find(id => {
             const c = updated[id]?.card
@@ -1915,7 +1977,7 @@ function DeckBuilder({
             const card = updated[cardId]?.card
             if (!card) return
           const baseCost = card.cost || 0
-          const penalty = (showAspectPenalties && leaderCard && baseCard) ? calculateAspectPenalty(card, leaderCard, baseCard) : 0
+          const penalty = (includeAspectPenalties && leaderCard && baseCard) ? calculateAspectPenalty(card, leaderCard, baseCard) : 0
           const cost = baseCost + penalty
           if (!costGroups[cost]) costGroups[cost] = []
             costGroups[cost].push(cardId)
@@ -1988,10 +2050,10 @@ function DeckBuilder({
       }
 
       // Position deck cards using deckSortOption
-      const deckEndY = positionCards(sortedDeckIds, deckY, 'deck', deckSortOption)
+      const deckEndY = positionCards(sortedDeckIds, deckY, 'deck', deckSortOption, showDeckAspectPenalties)
 
       // Position sideboard cards using poolSortOption
-      const sideboardEndY = positionCards(sortedSideboardIds, sideboardY, 'sideboard', poolSortOption)
+      const sideboardEndY = positionCards(sortedSideboardIds, sideboardY, 'sideboard', poolSortOption, showPoolAspectPenalties)
 
       // Update section bounds and canvas height
       const newDeckBounds = { ...deckBounds, maxY: deckEndY }
@@ -2011,7 +2073,7 @@ function DeckBuilder({
     })
     // Note: sectionBounds intentionally excluded - this effect writes to it, including it would cause infinite loop
     // Note: cardMatchesFilters excluded - it depends on cardPositions which this effect writes to
-  }, [deckSortOption, poolSortOption, getAspectKey, showAspectPenalties, activeLeader, activeBase])
+  }, [deckSortOption, poolSortOption, getAspectKey, showDeckAspectPenalties, showPoolAspectPenalties, activeLeader, activeBase])
 
 
   // Mark the last block in each row to expand
@@ -2146,6 +2208,20 @@ function DeckBuilder({
   // Loading state - show skeletons while view mode initializes or cards load
   const isLoading = !viewModeInitialized || cards.length === 0
 
+  const handleDeleteLimitedDeck = useCallback(async () => {
+    if (playShareId) {
+      await deletePool(playShareId)
+    }
+
+    if (localStorageKey) {
+      localStorage.removeItem(localStorageKey)
+    }
+    if (uiStorageKey) {
+      localStorage.removeItem(uiStorageKey)
+    }
+    window.location.href = '/'
+  }, [playShareId, localStorageKey, uiStorageKey])
+
   const handlePlay = useCallback(async () => {
     if (isInfiniteMode && onRequestPlay) {
       try {
@@ -2264,8 +2340,12 @@ function DeckBuilder({
     poolFilterOpen,
     setPoolFilterOpen,
     // UI preferences
-    showAspectPenalties,
-    setShowAspectPenalties,
+    showAspectPenalties: showDeckAspectPenalties,
+    setShowAspectPenalties: setShowDeckAspectPenalties,
+    showDeckAspectPenalties,
+    setShowDeckAspectPenalties,
+    showPoolAspectPenalties,
+    setShowPoolAspectPenalties,
     viewMode,
     setViewMode,
     poolSortOption,
@@ -2286,7 +2366,7 @@ function DeckBuilder({
   }), [
     cardPositions, isInfiniteMode, activeLeader, activeBase, leaderCard, baseCard,
     selectedCards, hoveredCard, filterAspectsExpanded, deckFilterOpen,
-    poolFilterOpen, showAspectPenalties, viewMode, poolSortOption,
+    poolFilterOpen, showDeckAspectPenalties, showPoolAspectPenalties, viewMode, poolSortOption,
     deckSortOption, arenaFilters, arenaSearchQuery,
     moveCardToDeck, moveCardToPool, toggleCardSection, moveCardsToDeck, moveCardsToPool,
   ])
@@ -2395,7 +2475,7 @@ function DeckBuilder({
               onCardTouchStart={handleCardTouchStart}
               onCardTouchEnd={handleCardTouchEnd}
               isLoading={isLoading}
-              onAddStarterLeaders={starterLeadersAvailable.length > 0 ? toggleStarterLeaders : undefined}
+              onAddStarterLeaders={starterLeadersToggleHandler}
               hasStarterLeaders={hasStarterLeaders}
             />
           )}
@@ -2542,6 +2622,7 @@ function DeckBuilder({
               {/* Leaders Section */}
               <SelectionListSection
                 title="Leaders"
+                headerId="leaders-list-header"
                 sectionId="leaders"
                 radioName="leader-selection"
                 positions={Object.entries(cardPositions)
@@ -2551,7 +2632,7 @@ function DeckBuilder({
                 onSelect={(cardId) => {
                   setActiveLeader(cardId)
                   if (cardId && (poolSortOption === 'cost' || deckSortOption === 'cost')) {
-                    setShowAspectPenalties(true)
+                    enableAspectPenaltiesForBothSections()
                   }
                 }}
                 tableSort={tableSort}
@@ -2569,23 +2650,25 @@ function DeckBuilder({
                   setHoveredCard(null)
                   handleCardMouseLeave()
                 }}
-                onAddStarterLeaders={starterLeadersAvailable.length > 0 ? toggleStarterLeaders : undefined}
+                onAddStarterLeaders={starterLeadersToggleHandler}
                 hasStarterLeaders={hasStarterLeaders}
               />
 
           {/* Bases Section */}
           <SelectionListSection
             title="Bases"
+            headerId="bases-list-header"
             sectionId="bases"
             radioName="base-selection"
             positions={Object.entries(cardPositions)
               .filter(([_, pos]) => pos.section === 'leaders-bases' && pos.visible && pos.card.isBase)
+              .sort(([, a], [, b]) => sortBaseCardsCommonFirst(a.card, b.card))
               .map(([cardId, pos]) => ({ cardId, card: pos.card }))}
             selectedId={activeBase}
             onSelect={setActiveBase}
             tableSort={tableSort}
             onSort={handleTableSort}
-            defaultSort={defaultSort}
+            defaultSort={sortBaseCardsCommonFirst}
             sortTableData={sortTableData}
             expanded={basesExpanded}
             onToggleExpanded={() => setBasesExpanded(!basesExpanded)}
@@ -2606,6 +2689,7 @@ function DeckBuilder({
             setCardPositions={setCardPositions}
             deckSortOption={deckSortOption}
             isDraftMode={isDraftMode}
+            isInfiniteMode={isInfiniteMode}
             tableSort={tableSort}
             handleTableSort={handleTableSort}
             defaultSort={defaultSort}
@@ -2642,7 +2726,7 @@ function DeckBuilder({
           onCardTouchStart={handleCardTouchStart}
           onCardTouchEnd={handleCardTouchEnd}
           isLoading={isLoading}
-          onAddStarterLeaders={starterLeadersAvailable.length > 0 ? toggleStarterLeaders : undefined}
+          onAddStarterLeaders={starterLeadersToggleHandler}
           hasStarterLeaders={hasStarterLeaders}
         />
       )}
@@ -2676,6 +2760,12 @@ function DeckBuilder({
         isOwner={isOwner}
         setErrorMessage={setErrorMessage}
         setMessageType={setMessageType}
+        onDelete={isInfiniteMode ? handleDeleteLimitedDeck : undefined}
+        deleteLabel={isInfiniteMode ? 'Delete Limited Deck' : 'Delete Deck'}
+        confirmTitle={isInfiniteMode ? 'Delete Limited Deck?' : 'Delete Deck?'}
+        confirmBody={isInfiniteMode
+          ? 'Are you sure you want to delete this Limited Deckbuilder deck? This will remove this session and return you to the homepage.'
+          : 'Are you sure you want to delete this deck? This action cannot be undone.'}
       />
       </div>
     </div>

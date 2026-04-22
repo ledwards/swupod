@@ -71,7 +71,8 @@ export function DeckSection({
     setDeckSortOption,
     leaderCard,
     baseCard,
-    showAspectPenalties,
+    showDeckAspectPenalties,
+    setShowDeckAspectPenalties,
     moveCardsToDeck,
     moveCardsToPool,
   } = useDeckBuilder()
@@ -112,7 +113,7 @@ export function DeckSection({
             <CardGrid
               groups={groupedCards}
               renderCardStack={renderCardStack}
-              renderCard={createCardRenderer(leaderCard, baseCard, { showDisabled: true })}
+              renderCard={createCardRenderer(leaderCard, baseCard, { showDisabled: true, showAspectPenalties: showDeckAspectPenalties })}
             />
           </div>
         </div>
@@ -121,7 +122,7 @@ export function DeckSection({
 
     // Grouped view
     const getGroupKey = createGetGroupKey(deckSortOption, {
-      showAspectPenalties,
+      showAspectPenalties: showDeckAspectPenalties,
       leaderCard,
       baseCard,
       calculateAspectPenalty,
@@ -198,7 +199,7 @@ export function DeckSection({
                 <CardGrid
                   groups={groupedByName}
                   renderCardStack={renderCardStack}
-                  renderCard={createCardRenderer(leaderCard, baseCard, { showDisabled: true })}
+                  renderCard={createCardRenderer(leaderCard, baseCard, { showDisabled: true, showAspectPenalties: showDeckAspectPenalties })}
                 />
               </div>}
             </div>
@@ -222,6 +223,8 @@ export function DeckSection({
         onFilterToggle={() => { setDeckFilterOpen(!deckFilterOpen); setPoolFilterOpen(false); }}
         onFilterClose={() => setDeckFilterOpen(false)}
         onFilterAspectsExpandedChange={setFilterAspectsExpanded}
+        showAspectPenalties={showDeckAspectPenalties}
+        setShowAspectPenalties={setShowDeckAspectPenalties}
       />
       {deckExpanded && (
         <div className="blocks-deck-row" ref={deckBlocksRowRef}>

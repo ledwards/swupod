@@ -6,15 +6,17 @@
  */
 
 export interface CollapsibleSectionHeaderProps {
+  id?: string
   title: string
   expanded: boolean
   onToggle: () => void
   className?: string
 }
 
-export function CollapsibleSectionHeader({ title, expanded, onToggle, className = '' }: CollapsibleSectionHeaderProps) {
+export function CollapsibleSectionHeader({ id, title, expanded, onToggle, className = '' }: CollapsibleSectionHeaderProps) {
   return (
     <div
+      id={id}
       className={`collapsible-section-header ${className}`}
       style={{
         display: 'flex',
