@@ -27,6 +27,9 @@ BaseStrategy (abstract class)
 2. **Y — Mental Leader Pick** — The turn at which the bot decides which leader to play. Before Y, the bot stays flexible.
 3. **X — Mental Base Pick** — The turn at which the bot decides its base color. After X, no more off-aspect picks.
 
+Those draft-time commitments are persisted on `pod_players` as `committed_leader` and `committed_base_color`.
+Post-draft deck building reuses that stored plan instead of re-picking a lane from the final pool.
+
 ## Strategy Assignment
 
 - **7 bots (solo mode)**: One of each strategy (1-7), including Nemesis.
@@ -79,3 +82,4 @@ In LAW, bots may splash 3-5 off-aspect "bombs" if:
 | `src/bots/data/draftStats.ts` | Segmented popularity queries |
 | `src/utils/botLogic.ts` | Bot pick execution + strategy wiring |
 | `src/utils/botDeckBuilder.ts` | Post-draft deck building |
+| `migrations/058_add_bot_commitment.sql` | Persists bot leader/base commitment |

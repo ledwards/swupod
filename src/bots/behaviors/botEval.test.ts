@@ -26,7 +26,7 @@ import { createStrategy } from './index'
 import { ALL_MIXINS, type MixinModifier } from './mixins'
 import { generateDraftPacks, getPassDirection, getNextSeat } from '../../utils/draftLogic'
 import { getCardsBySet } from '../../utils/cardData'
-import { scoreBaseForLeader, getBaseNewColor, selectBestBase } from '../../utils/botDeckBuilder'
+import { scoreBaseForLeader, getBaseNewColor, selectBestBase, selectBaseForColor } from '../../utils/botDeckBuilder'
 
 const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning']
 const ALIGNMENT_ASPECTS = ['Heroism', 'Villainy']
@@ -47,6 +47,8 @@ interface DraftResult {
   mixinName: string
   draftedLeaders: any[]
   draftedCards: any[]
+  committedLeader: any | null
+  committedBaseColor: string | null
 }
 
 interface DeckResult {
@@ -166,6 +168,8 @@ function runFullDraft(
     mixinName: config.mixin?.name || 'none',
     draftedLeaders: draftedLeaders[i],
     draftedCards: draftedCards[i],
+    committedLeader: strategies[i].committedLeader,
+    committedBaseColor: strategies[i].committedBaseColor,
   }))
 }
 
@@ -177,7 +181,7 @@ function buildDeck(result: DraftResult, setCode: string): DeckResult {
   const strategy = createStrategy(result.strategyName,
     ALL_MIXINS.find(m => m.name === result.mixinName) || null)
 
-  const selectedLeader = strategy.selectLeader(result.draftedLeaders, {
+  const selectedLeader = result.committedLeader || strategy.selectLeader(result.draftedLeaders, {
     setCode,
     draftedCards: result.draftedCards,
   })
@@ -192,9 +196,11 @@ function buildDeck(result: DraftResult, setCode: string): DeckResult {
   const validBases = commonBases.filter(base =>
     scoreBaseForLeader(leaderAspects, base.aspects || []) > 0
   )
-  const selectedBase = validBases.length > 0
-    ? selectBestBase(result.draftedCards, selectedLeader, setCode)
-    : commonBases[0]
+  const selectedBase = result.committedBaseColor
+    ? selectBaseForColor(result.draftedCards, selectedLeader, setCode, result.committedBaseColor)
+    : validBases.length > 0
+      ? selectBestBase(result.draftedCards, selectedLeader, setCode)
+      : commonBases[0]
 
   assert.ok(selectedBase, `${result.strategyName}: must select a base`)
 
@@ -203,7 +209,7 @@ function buildDeck(result: DraftResult, setCode: string): DeckResult {
 
   // Set committed state for scoring
   strategy.committedLeader = selectedLeader
-  strategy.committedBaseColor = getBaseNewColor(selectedLeader, selectedBase)
+  strategy.committedBaseColor = result.committedBaseColor || getBaseNewColor(selectedLeader, selectedBase)
 
   // Score all cards (including opposing alignment — allow 0-1 through)
   const leaderAlignment = leaderAspects.find(a => a === 'Heroism' || a === 'Villainy')

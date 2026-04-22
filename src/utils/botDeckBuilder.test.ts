@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import { scoreBaseForLeader, getBaseNewColor } from './botDeckBuilder'
+import { scoreBaseForLeader, getBaseNewColor, resolveCommittedLeader, selectBaseForColor } from './botDeckBuilder'
 
 /**
  * Bot Deck Builder Tests
@@ -76,6 +76,52 @@ describe('Bot Deck Builder', () => {
         getBaseNewColor({ aspects: ['Vigilance', 'Command', 'Heroism'] }, { aspects: ['Vigilance'] }),
         null
       )
+    })
+  })
+
+  describe('resolveCommittedLeader', () => {
+    it('returns the matching drafted leader for a persisted commitment', () => {
+      const draftedLeaders = [
+        { id: 'leader-1', name: 'Sabine Wren', aspects: ['Aggression', 'Heroism'], isLeader: true },
+        { id: 'leader-2', name: 'Cassian Andor', aspects: ['Command', 'Heroism'], isLeader: true },
+      ]
+
+      const resolvedLeader = resolveCommittedLeader(
+        draftedLeaders,
+        JSON.stringify({ id: 'leader-2', name: 'Cassian Andor', aspects: ['Command', 'Heroism'] })
+      )
+
+      assert.strictEqual(resolvedLeader, draftedLeaders[1])
+    })
+
+    it('returns null for stale committed leaders not in the pool', () => {
+      const draftedLeaders = [
+        { id: 'leader-1', name: 'Sabine Wren', aspects: ['Aggression', 'Heroism'], isLeader: true },
+      ]
+
+      const resolvedLeader = resolveCommittedLeader(
+        draftedLeaders,
+        JSON.stringify({ id: 'missing-leader', name: 'Darth Vader', aspects: ['Command', 'Villainy'] })
+      )
+
+      assert.strictEqual(resolvedLeader, null)
+    })
+  })
+
+  describe('selectBaseForColor', () => {
+    it('honors the committed base color when choosing a base', () => {
+      const leader = { name: 'Sabine Wren', aspects: ['Aggression', 'Heroism'] }
+      const draftedCards = [
+        { name: 'Sneaky Attack', aspects: ['Cunning', 'Heroism'] },
+        { name: 'Trick Play', aspects: ['Cunning'] },
+        { name: 'Open Fire', aspects: ['Aggression', 'Heroism'] },
+      ]
+
+      const selectedBase = selectBaseForColor(draftedCards, leader, 'LAW', 'Cunning')
+      const baseColors = (selectedBase.aspects || []).filter((aspect: string) => COLOR_ASPECTS.includes(aspect))
+
+      assert.ok(baseColors.includes('Cunning'),
+        `Committed Cunning plan should produce a Cunning base, got ${selectedBase.name} [${baseColors.join(', ')}]`)
     })
   })
 

@@ -9,6 +9,7 @@
 import { query, queryRow, queryRows } from '@/lib/db'
 import { processAllStagedPicks } from './draftAdvance'
 import { getBehavior, assignStrategies, createStrategy } from '@/src/bots/behaviors/index'
+import { ALL_MIXINS } from '@/src/bots/behaviors/mixins'
 import { broadcastDraftState } from '@/src/lib/socketBroadcast'
 import { jsonParse } from './json'
 import { getDraftStats, hasEnoughData } from '@/src/bots/data/draftStats'
@@ -42,6 +43,10 @@ interface BotPlayer {
   user_id: string | null
   pick_status: string
   is_bot: boolean
+  strategy_name?: string | null
+  mixin_name?: string | null
+  committed_leader?: string | RawCard[] | RawCard | null
+  committed_base_color?: string | null
   leaders: string | RawCard[]
   drafted_leaders: string | RawCard[]
   drafted_cards: string | RawCard[]
@@ -129,17 +134,17 @@ async function makeBotPick(botId: string, draftState: DraftState): Promise<boole
  * @param podId - Pod ID (for strategy assignment)
  * @returns Behavior instance
  */
-function getBotBehavior(botId: string, podId?: string): BehaviorInstance {
-  if (!botBehaviors.has(botId)) {
+function getBotBehavior(bot: BotPlayer, podId?: string): BehaviorInstance {
+  if (!botBehaviors.has(bot.id)) {
     // Check if we need to do bulk strategy assignment
     if (podId && !podStrategyAssigned.has(podId)) {
       // Will be assigned by assignPodStrategies — for now, create a default
-      botBehaviors.set(botId, createStrategy())
+      botBehaviors.set(bot.id, createStrategy())
     } else {
-      botBehaviors.set(botId, createStrategy())
+      botBehaviors.set(bot.id, buildBehaviorFromBot(bot))
     }
   }
-  return botBehaviors.get(botId)!
+  return botBehaviors.get(bot.id)!
 }
 
 /** Track which pods have had strategies assigned */
@@ -153,11 +158,22 @@ async function assignPodStrategies(podId: string): Promise<void> {
   if (podStrategyAssigned.has(podId)) return
 
   const botPlayers = await queryRows(
-    `SELECT id, is_bot FROM pod_players WHERE pod_id = $1 AND is_bot = true`,
+    `SELECT id, is_bot, strategy_name, mixin_name, committed_leader, committed_base_color
+     FROM pod_players
+     WHERE pod_id = $1 AND is_bot = true`,
     [podId]
   )
 
   if (botPlayers.length === 0) return
+
+  const allBotsAlreadyAssigned = botPlayers.every(b => typeof b.strategy_name === 'string' && b.strategy_name.length > 0)
+  if (allBotsAlreadyAssigned) {
+    for (const bot of botPlayers as BotPlayer[]) {
+      botBehaviors.set(bot.id, buildBehaviorFromBot(bot))
+    }
+    podStrategyAssigned.add(podId)
+    return
+  }
 
   // Determine if solo mode
   const humanPlayers = await queryRows(
@@ -179,6 +195,41 @@ async function assignPodStrategies(podId: string): Promise<void> {
   }
 
   podStrategyAssigned.add(podId)
+}
+
+function buildBehaviorFromBot(bot: BotPlayer): BehaviorInstance {
+  const mixinObj = bot.mixin_name
+    ? ALL_MIXINS.find(m => m.name === bot.mixin_name) || null
+    : null
+
+  const behavior = createStrategy(bot.strategy_name || undefined, mixinObj)
+  hydrateBehaviorCommitment(behavior, bot)
+  return behavior
+}
+
+function hydrateBehaviorCommitment(behavior: BehaviorInstance, bot: BotPlayer): void {
+  const committedLeader = jsonParse<RawCard>(bot.committed_leader as RawCard | string | null, null)
+  if (committedLeader) {
+    behavior.committedLeader = committedLeader
+  }
+
+  if (typeof bot.committed_base_color === 'string' && bot.committed_base_color.length > 0) {
+    behavior.committedBaseColor = bot.committed_base_color
+  }
+}
+
+async function persistBehaviorCommitment(botId: string, behavior: BehaviorInstance): Promise<void> {
+  await query(
+    `UPDATE pod_players
+     SET committed_leader = $1,
+         committed_base_color = $2
+     WHERE id = $3`,
+    [
+      behavior.committedLeader ? JSON.stringify(behavior.committedLeader) : null,
+      behavior.committedBaseColor || null,
+      botId,
+    ]
+  )
 }
 
 /**
@@ -232,7 +283,7 @@ async function makeBotLeaderPick(bot: BotPlayer, draftState: DraftState): Promis
   const draftedLeaders = jsonParse<RawCard[]>(bot.drafted_leaders, []) as RawCard[]
 
   // Use behavior to select leader
-  const behavior = getBotBehavior(bot.id)
+  const behavior = getBotBehavior(bot)
   const setCode = draftState.setCode || leaders[0]?.set || 'SOR'
   let draftStats: SetDraftStats | null = null
   try {
@@ -252,6 +303,8 @@ async function makeBotLeaderPick(bot: BotPlayer, draftState: DraftState): Promis
     console.error('[BOT] Bot', bot.id, 'behavior returned no leader!')
     return false
   }
+
+  await persistBehaviorCommitment(bot.id, behavior)
 
   const cardId = (pickedLeader as RawCard & { instanceId?: string }).instanceId || pickedLeader.id
 
@@ -316,7 +369,7 @@ async function makeBotCardPick(bot: BotPlayer, draftState: DraftState): Promise<
   const draftedLeaders = jsonParse<RawCard[]>(bot.drafted_leaders, []) as RawCard[]
 
   // Use behavior to select card
-  const behavior = getBotBehavior(bot.id)
+  const behavior = getBotBehavior(bot)
   const setCode = draftState.setCode || currentPack[0]?.set || 'SOR'
   let draftStats: SetDraftStats | null = null
   try {
@@ -342,6 +395,8 @@ async function makeBotCardPick(bot: BotPlayer, draftState: DraftState): Promise<
     console.error('[BOT] Bot', bot.id, 'behavior returned no card!')
     return false
   }
+
+  await persistBehaviorCommitment(bot.id, behavior)
 
   const cardId = (pickedCard as RawCard & { instanceId?: string }).instanceId || pickedCard.id
 

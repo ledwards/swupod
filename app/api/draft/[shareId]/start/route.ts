@@ -138,7 +138,9 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
          SET leaders = $1,
              current_pack = $2,
              pick_status = 'picking',
-             drafted_leaders = '[]'
+             drafted_leaders = '[]',
+             committed_leader = NULL,
+             committed_base_color = NULL
          WHERE id = $3`,
         [
           JSON.stringify(playerLeaders),

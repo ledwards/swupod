@@ -14,6 +14,7 @@ import { ALL_MIXINS } from '@/src/bots/behaviors/mixins'
 import { STRATEGY_DISPLAY_NAMES, STRATEGY_DESCRIPTIONS, MIXIN_DISPLAY_NAMES, MIXIN_DESCRIPTIONS } from '@/src/bots/behaviors/strategyDescriptions'
 import { postBotDeckSummaries } from '@/lib/discordLfg'
 import { getCardsBySet } from '@/src/utils/cardData'
+import { jsonParse } from '@/src/utils/json'
 import { broadcastPodState } from '@/src/lib/socketBroadcast'
 import { nanoid } from 'nanoid'
 
@@ -164,20 +165,24 @@ async function buildSingleBotDeck(
     ? ALL_MIXINS.find(m => m.name === bot.mixin_name) || null
     : null
   const strategy = createStrategy(bot.strategy_name as string || undefined, mixinObj)
-  const selectedLeader = strategy.selectLeader(draftedLeaders, {
+  const committedLeader = resolveCommittedLeader(draftedLeaders, bot.committed_leader)
+  const selectedLeader = committedLeader || strategy.selectLeader(draftedLeaders, {
     setCode,
     draftedCards,
   })
 
   if (!selectedLeader) return null
 
-  // 2. Select best common base
-  const selectedBase = selectBestBase(draftedCards, selectedLeader, setCode)
+  // 2. Use the draft-time base plan when it exists; older rows fall back gracefully.
+  const committedBaseColor = getCommittedBaseColor(bot.committed_base_color)
+  const selectedBase = committedBaseColor
+    ? selectBaseForColor(draftedCards, selectedLeader, setCode, committedBaseColor)
+    : selectBestBase(draftedCards, selectedLeader, setCode)
 
   // 3. Score and sort all drafted cards using the strategy's scoring
-  // Simulate a committed state so cards are scored in-color
+  // Simulate the committed draft state so cards are scored in-lane.
   strategy.committedLeader = selectedLeader
-  strategy.committedBaseColor = getBaseNewColor(selectedLeader, selectedBase)
+  strategy.committedBaseColor = committedBaseColor || getBaseNewColor(selectedLeader, selectedBase)
 
   // Filter and score cards for deck building
   const leaderAspects = (selectedLeader.aspects as string[]) || []
@@ -487,6 +492,72 @@ export function selectBestBase(
     return scoreBaseForLeader(leaderAspects, baseAspects) > 0
   })
 
+  const pool = validBases.length > 0 ? validBases : commonBases
+  return pickBestBaseForPool(pool, draftedCards, selectedLeader)
+}
+
+/**
+ * Select the best base for a previously committed base color.
+ * Falls back to generic selection if the persisted color is invalid or unavailable.
+ */
+export function selectBaseForColor(
+  draftedCards: Record<string, unknown>[],
+  selectedLeader: Record<string, unknown>,
+  setCode: string,
+  committedBaseColor: string
+): Record<string, unknown> {
+  const allSetCards = getCardsBySet(setCode)
+  const commonBases = allSetCards.filter(
+    c => c.isBase && c.rarity === 'Common' && c.variantType === 'Normal'
+  )
+
+  const colorMatchedBases = commonBases.filter(base => {
+    const baseColors = ((base.aspects || []) as string[]).filter(a => COLOR_ASPECTS.includes(a))
+    return baseColors.includes(committedBaseColor)
+  })
+
+  const leaderAspects = (selectedLeader.aspects as string[]) || []
+  const validBases = colorMatchedBases.filter(base => {
+    const baseAspects = (base.aspects || []) as string[]
+    return scoreBaseForLeader(leaderAspects, baseAspects) > 0
+  })
+
+  const pool = validBases.length > 0 ? validBases : colorMatchedBases
+  if (pool.length === 0) {
+    return selectBestBase(draftedCards, selectedLeader, setCode)
+  }
+
+  return pickBestBaseForPool(pool, draftedCards, selectedLeader)
+}
+
+/**
+ * Resolve a persisted committed leader back onto the drafted leader objects.
+ * Returns null for legacy rows or stale data that doesn't belong to this pool.
+ */
+export function resolveCommittedLeader(
+  draftedLeaders: Record<string, unknown>[],
+  committedLeaderValue: unknown
+): Record<string, unknown> | null {
+  const committedLeader = jsonParse<Record<string, unknown>>(committedLeaderValue as Record<string, unknown> | string | null, null)
+  if (!committedLeader) return null
+  return draftedLeaders.find(leader => matchCard(leader, committedLeader)) || null
+}
+
+function getCommittedBaseColor(committedBaseColorValue: unknown): string | null {
+  if (typeof committedBaseColorValue !== 'string') return null
+  return COLOR_ASPECTS.includes(committedBaseColorValue) ? committedBaseColorValue : null
+}
+
+function pickBestBaseForPool(
+  basePool: Record<string, unknown>[],
+  draftedCards: Record<string, unknown>[],
+  selectedLeader: Record<string, unknown>
+): Record<string, unknown> {
+  if (basePool.length === 0) {
+    return { id: 'unknown-base', name: 'Unknown Base', isBase: true }
+  }
+
+  const leaderAspects = (selectedLeader.aspects as string[]) || []
   const leaderAlignment = leaderAspects.find(a => a === 'Heroism' || a === 'Villainy')
   const opposingAlignment = leaderAlignment === 'Villainy'
     ? 'Heroism'
@@ -515,8 +586,7 @@ export function selectBestBase(
     return score
   }
 
-  const pool = validBases.length > 0 ? validBases : commonBases
-  return [...pool].sort((a, b) => scoreBase(b) - scoreBase(a))[0] || pool[0]!
+  return [...basePool].sort((a, b) => scoreBase(b) - scoreBase(a))[0] || basePool[0]!
 }
 
 /**
