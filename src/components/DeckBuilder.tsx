@@ -15,8 +15,13 @@ import {
   getAspectSortKey,
   compareByAspectTypeCostName,
 } from '../services/cards/cardSorting'
-import { updatePool } from '../utils/poolApi'
+import { savePool, updatePool } from '../utils/poolApi'
 import { getPackArtUrl } from '../utils/packArt'
+import {
+  getClonedDeckBuilderState,
+  getClonePoolName,
+  shouldCloneSharedPoolForPlay,
+} from '../utils/deckBuilderSharing'
 import Card from './Card'
 import { CardPreview } from './DeckBuilder/CardPreview'
 import { LeaderBaseSelector } from './DeckBuilder/LeaderBaseSelector'
@@ -116,6 +121,9 @@ interface DeckBuilderProps {
   onBack?: () => void
   savedState?: string | null
   onStateChange?: (state: unknown) => void
+  mode?: 'standard' | 'infinite'
+  localStorageKey?: string | null
+  onRequestPlay?: (deckBuilderState: Record<string, unknown>) => Promise<string> | string
   shareId?: string | null
   poolCreatedAt?: string | null
   poolType?: 'sealed' | 'draft'
@@ -126,9 +134,29 @@ interface DeckBuilderProps {
   deckBuildDeadline?: string | null
 }
 
-function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareId = null, poolCreatedAt = null, poolType = 'sealed', poolName: initialPoolName = null, poolOwnerUsername = null, poolOwnerId = null, draftShareId = null, deckBuildDeadline = null }: DeckBuilderProps) {
+function DeckBuilder({
+  cards,
+  setCode,
+  onBack,
+  savedState,
+  onStateChange,
+  mode = 'standard',
+  localStorageKey = null,
+  onRequestPlay,
+  shareId = null,
+  poolCreatedAt = null,
+  poolType = 'sealed',
+  poolName: initialPoolName = null,
+  poolOwnerUsername = null,
+  poolOwnerId = null,
+  draftShareId = null,
+  deckBuildDeadline = null
+}: DeckBuilderProps) {
   const { user, isAuthenticated, signIn, isPatron } = useAuth()
-  const isOwner = user && poolOwnerId && user.id === poolOwnerId
+  const isInfiniteMode = mode === 'infinite'
+  const storageLookupKey = shareId || localStorageKey || null
+  const uiStorageKey = storageLookupKey ? `deckBuilderUI_${storageLookupKey}` : null
+  const isOwner = isInfiniteMode ? true : Boolean(user && poolOwnerId && user.id === poolOwnerId)
   const isDraftMode = poolType === 'draft'
 
   // Get pool name from saved state if available, otherwise use initial prop
@@ -141,6 +169,11 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
   }
   const [currentPoolName, setCurrentPoolName] = useState(getInitialPoolName)
   const [userHasRenamedPool, setUserHasRenamedPool] = useState(false)
+  const [playShareId, setPlayShareId] = useState<string | null>(() => {
+    if (!savedState) return null
+    const state = jsonParse(savedState)
+    return state?.playShareId || null
+  })
   // Store the original base name (without leader/base suffix) for auto-naming
   const [originalBaseName, setOriginalBaseName] = useState<string | null>(null)
 
@@ -152,10 +185,13 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
       if (state?.poolName && state.poolName !== currentPoolName) {
         setCurrentPoolName(state.poolName)
       }
+      if (state?.playShareId && state.playShareId !== playShareId) {
+        setPlayShareId(state.playShareId)
+      }
     } else if (!currentPoolName && initialPoolName) {
       setCurrentPoolName(initialPoolName)
     }
-  }, [savedState, initialPoolName])
+  }, [savedState, initialPoolName, currentPoolName, playShareId])
 
   // Extract and store the original base name (format part only) on initial load
   // Strips any existing leader/base suffix like "(Jabba the Hutt Green)" and trailing dates
@@ -247,13 +283,71 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
   const [isInfoBarSticky, setIsInfoBarSticky] = useState(false)
   const [showAspectPenalties, setShowAspectPenalties] = useState(false)
 
+  const createInfiniteCloneId = useCallback((sourceCardId: string) => (
+    `${sourceCardId}__clone__${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+  ), [])
+
+  const addInfiniteCardCopies = useCallback((prev: Record<string, CardPosition>, sourceCardIds: string[]) => {
+    const updated = { ...prev }
+    let changed = false
+
+    sourceCardIds.forEach((sourceCardId) => {
+      const sourcePosition = prev[sourceCardId]
+      if (!sourcePosition || sourcePosition.card.isBase || sourcePosition.card.isLeader) return
+
+      if (sourcePosition.isInfiniteDeckCopy) {
+        updated[sourceCardId] = { ...sourcePosition, section: 'deck', enabled: true, x: 0, y: 0 }
+        changed = true
+        return
+      }
+
+      const cloneId = createInfiniteCloneId(sourceCardId)
+      updated[cloneId] = {
+        ...sourcePosition,
+        section: 'deck',
+        enabled: true,
+        visible: true,
+        x: 0,
+        y: 0,
+        zIndex: 1,
+        isInfiniteDeckCopy: true,
+        sourceCardId: sourcePosition.sourceCardId || sourceCardId,
+      }
+      changed = true
+    })
+
+    return changed ? updated : prev
+  }, [createInfiniteCloneId])
+
+  const removeInfiniteDeckCards = useCallback((prev: Record<string, CardPosition>, cardIds: string[]) => {
+    const updated = { ...prev }
+    let changed = false
+
+    cardIds.forEach((cardId) => {
+      if (!updated[cardId]) return
+
+      if (updated[cardId].isInfiniteDeckCopy) {
+        delete updated[cardId]
+        changed = true
+        return
+      }
+
+      if (!updated[cardId].isInfiniteSource) {
+        updated[cardId] = { ...updated[cardId], section: 'sideboard', enabled: false, x: 0, y: 0 }
+        changed = true
+      }
+    })
+
+    return changed ? updated : prev
+  }, [])
+
   // Set default view mode to 'arena' on desktop after hydration (before localStorage restore)
   useEffect(() => {
     if (viewModeInitialized) return
     // Check if there's a saved viewMode in localStorage
-    if (shareId) {
+    if (uiStorageKey) {
       try {
-        const uiState = localStorage.getItem(`deckBuilderUI_${shareId}`)
+        const uiState = localStorage.getItem(uiStorageKey)
         if (uiState) {
           const state = JSON.parse(uiState)
           if (state.viewMode) {
@@ -271,7 +365,7 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
       setViewMode('arena')
     }
     setViewModeInitialized(true)
-  }, [shareId, viewModeInitialized])
+  }, [uiStorageKey, viewModeInitialized])
 
   // Track deck builder opened and view mode changes
   useEffect(() => {
@@ -425,6 +519,17 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
   const toggleCardSection = useCallback((cardId: string) => {
     setHoveredCard(null)
     setCardPositions(prev => {
+      if (isInfiniteMode) {
+        const position = prev[cardId]
+        if (!position) return prev
+
+        if (position.section === 'deck' || position.isInfiniteDeckCopy) {
+          return removeInfiniteDeckCards(prev, [cardId])
+        }
+
+        return addInfiniteCardCopies(prev, [cardId])
+      }
+
       const newSection = prev[cardId].section === 'deck' ? 'sideboard' : 'deck'
       const newEnabled = newSection === 'deck'
       return {
@@ -438,28 +543,64 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
         }
       }
     })
-  }, [])
+  }, [addInfiniteCardCopies, isInfiniteMode, removeInfiniteDeckCards])
+
+  const moveCardToDeck = useCallback((cardId: string) => {
+    setCardPositions(prev => {
+      if (isInfiniteMode) {
+        return addInfiniteCardCopies(prev, [cardId])
+      }
+
+      if (!prev[cardId]) return prev
+      return {
+        ...prev,
+        [cardId]: { ...prev[cardId], section: 'deck', enabled: true, x: 0, y: 0 }
+      }
+    })
+  }, [addInfiniteCardCopies, isInfiniteMode])
+
+  const moveCardToPool = useCallback((cardId: string) => {
+    setCardPositions(prev => {
+      if (isInfiniteMode) {
+        return removeInfiniteDeckCards(prev, [cardId])
+      }
+
+      if (!prev[cardId]) return prev
+      return {
+        ...prev,
+        [cardId]: { ...prev[cardId], section: 'sideboard', enabled: false, x: 0, y: 0 }
+      }
+    })
+  }, [isInfiniteMode, removeInfiniteDeckCards])
 
   // Bulk move helpers for +All/-All buttons
   const moveCardsToDeck = useCallback((cardIds: string[]) => {
     setCardPositions(prev => {
+      if (isInfiniteMode) {
+        return addInfiniteCardCopies(prev, cardIds)
+      }
+
       const updated = { ...prev }
       cardIds.forEach(cardId => {
         updated[cardId] = { ...updated[cardId], section: 'deck', enabled: true }
       })
       return updated
     })
-  }, [])
+  }, [addInfiniteCardCopies, isInfiniteMode])
 
   const moveCardsToPool = useCallback((cardIds: string[]) => {
     setCardPositions(prev => {
+      if (isInfiniteMode) {
+        return removeInfiniteDeckCards(prev, cardIds)
+      }
+
       const updated = { ...prev }
       cardIds.forEach(cardId => {
         updated[cardId] = { ...updated[cardId], section: 'sideboard', enabled: false }
       })
       return updated
     })
-  }, [])
+  }, [isInfiniteMode, removeInfiniteDeckCards])
 
   // Cleanup modal hover timeout
   useEffect(() => {
@@ -728,9 +869,9 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
         // Check localStorage for more recent deck/sideboard state (backup for debounced database save)
         let localDeckCardIds: Set<string> | null = null
         let localSideboardCardIds: Set<string> | null = null
-        if (shareId) {
+        if (uiStorageKey) {
           try {
-            const uiState = localStorage.getItem(`deckBuilderUI_${shareId}`)
+            const uiState = localStorage.getItem(uiStorageKey)
             if (uiState) {
               const localState = JSON.parse(uiState)
               // Use localStorage deck/sideboard state if it exists (it's saved immediately, unlike database)
@@ -855,6 +996,9 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
         if (state.activeBase) {
           setActiveBase(state.activeBase)
         }
+        if (state.playShareId) {
+          setPlayShareId(state.playShareId)
+        }
 
         // Restore UI state (outside cardPositions check)
         if (state.viewMode) {
@@ -894,14 +1038,14 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
         console.error('Failed to restore deck builder state:', e)
       }
     }
-  }, [savedState, cards, shareId])
+  }, [savedState, cards, uiStorageKey])
 
   // Restore UI state from localStorage
   useEffect(() => {
-    if (!shareId) return
+    if (!uiStorageKey) return
 
     try {
-      const uiState = localStorage.getItem(`deckBuilderUI_${shareId}`)
+      const uiState = localStorage.getItem(uiStorageKey)
       if (uiState) {
         const state = JSON.parse(uiState)
 
@@ -982,11 +1126,14 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
         if (state.activeBase) {
           setActiveBase(state.activeBase)
         }
+        if (state.playShareId) {
+          setPlayShareId(state.playShareId)
+        }
       }
     } catch (e) {
       console.error('Failed to restore UI state:', e)
     }
-  }, [shareId])
+  }, [uiStorageKey])
 
   // Detect when deck-info-bar becomes sticky
   useEffect(() => {
@@ -1154,7 +1301,8 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
             section: 'sideboard', // All cards start in Pool section
             visible: true,
             enabled: false, // Start disabled (in Pool, not Deck)
-            zIndex: 1
+            zIndex: 1,
+            isInfiniteSource: isInfiniteMode,
           }
         })
         const mainRows = Math.ceil(poolCards.length / cardsPerRow)
@@ -1175,7 +1323,7 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
       setSectionLabels(labels)
       setSectionBounds(bounds)
     }
-  }, [cards, allSetCards, savedState])
+  }, [cards, allSetCards, savedState, isInfiniteMode])
 
   // Add common bases when allSetCards loads (even if cardPositions already exist)
   useEffect(() => {
@@ -1360,70 +1508,116 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
     }
   }, [hasStarterLeaders, removeStarterLeaders, addStarterLeaders])
 
+  const buildDeckStateSnapshot = useCallback((includeUiState = false) => {
+    const deckCardIds = Object.entries(cardPositions)
+      .filter(([_, pos]) => pos.section === 'deck')
+      .map(([cardId]) => cardId)
+
+    const sideboardCardIds = Object.entries(cardPositions)
+      .filter(([_, pos]) => pos.section === 'sideboard')
+      .map(([cardId]) => cardId)
+
+    const baseState: Record<string, unknown> = {
+      cardPositions: Object.keys(cardPositions).length > 0 ? cardPositions : {},
+      sectionLabels,
+      sectionBounds,
+      canvasHeight,
+      activeLeader,
+      activeBase,
+      deckCardIds,
+      sideboardCardIds,
+      poolName: currentPoolName
+    }
+
+    if (isInfiniteMode) {
+      baseState.isInfinitePool = true
+      baseState.playShareId = playShareId
+    }
+
+    if (!includeUiState) {
+      return baseState
+    }
+
+    return {
+      ...baseState,
+      viewMode,
+      aspectFilters,
+      inAspectFilter,
+      outAspectFilter,
+      poolSortOption,
+      deckSortOption,
+      leadersBasesExpanded,
+      leadersExpanded,
+      basesExpanded,
+      deckExpanded,
+      sideboardExpanded,
+      deckAspectSectionsExpanded,
+      sideboardAspectSectionsExpanded,
+      deckCostSectionsExpanded,
+      sideboardCostSectionsExpanded,
+      deckGroupsExpanded,
+      poolGroupsExpanded,
+      showAspectPenalties,
+      tableSort,
+      arenaFilters,
+      arenaSearchQuery,
+    }
+  }, [
+    cardPositions,
+    sectionLabels,
+    sectionBounds,
+    canvasHeight,
+    activeLeader,
+    activeBase,
+    currentPoolName,
+    isInfiniteMode,
+    playShareId,
+    viewMode,
+    aspectFilters,
+    inAspectFilter,
+    outAspectFilter,
+    poolSortOption,
+    deckSortOption,
+    leadersBasesExpanded,
+    leadersExpanded,
+    basesExpanded,
+    deckExpanded,
+    sideboardExpanded,
+    deckAspectSectionsExpanded,
+    sideboardAspectSectionsExpanded,
+    deckCostSectionsExpanded,
+    sideboardCostSectionsExpanded,
+    deckGroupsExpanded,
+    poolGroupsExpanded,
+    showAspectPenalties,
+    tableSort,
+    arenaFilters,
+    arenaSearchQuery,
+  ])
+
+  const cloneDeckBuilderState = useMemo(
+    () => getClonedDeckBuilderState(buildDeckStateSnapshot(false), savedState),
+    [buildDeckStateSnapshot, savedState]
+  )
+
   // Save deck builder state to localStorage whenever it changes
   useEffect(() => {
-    // Only save if we have a shareId to key the state by
-    if (!shareId) return
+    if (!shareId && !localStorageKey) return
 
     // Save state if we have card positions OR if leader/base selection changes
     if (Object.keys(cardPositions).length > 0 || activeLeader || activeBase) {
-      // Determine which cards are in deck vs sideboard
-      const deckCardIds = Object.entries(cardPositions)
-        .filter(([_, pos]) => pos.section === 'deck')
-        .map(([cardId, _]) => cardId)
-
-      const sideboardCardIds = Object.entries(cardPositions)
-        .filter(([_, pos]) => pos.section === 'sideboard')
-        .map(([cardId, _]) => cardId)
-
-      // Deck state for database
-      const deckStateToSave = {
-        cardPositions: Object.keys(cardPositions).length > 0 ? cardPositions : {},
-        sectionLabels,
-        sectionBounds,
-        canvasHeight,
-        activeLeader,
-        activeBase,
-        deckCardIds,
-        sideboardCardIds,
-        poolName: currentPoolName
-      }
-
-      // UI state for localStorage only
+      const deckStateToSave = buildDeckStateSnapshot(false)
       const uiStateToSave = {
-        viewMode,
-        aspectFilters,
-        inAspectFilter,
-        outAspectFilter,
-        poolSortOption,
-        deckSortOption,
-        leadersBasesExpanded,
-        leadersExpanded,
-        basesExpanded,
-        deckExpanded,
-        sideboardExpanded,
-        deckAspectSectionsExpanded,
-        sideboardAspectSectionsExpanded,
-        deckCostSectionsExpanded,
-        sideboardCostSectionsExpanded,
-        deckGroupsExpanded,
-        poolGroupsExpanded,
-        showAspectPenalties,
-        tableSort,
-        arenaFilters,
-        arenaSearchQuery,
-        // Also save active leader/base to localStorage as backup (database save is debounced)
-        activeLeader,
-        activeBase,
-        // Save deck/sideboard card IDs to localStorage as backup (database save is debounced)
-        deckCardIds,
-        sideboardCardIds,
+        ...buildDeckStateSnapshot(true),
         lastSavedAt: Date.now()
       }
 
-      // Save UI state to localStorage keyed by pool shareId
-      if (shareId) {
-        localStorage.setItem(`deckBuilderUI_${shareId}`, JSON.stringify(uiStateToSave))
+      if (uiStorageKey) {
+        localStorage.setItem(uiStorageKey, JSON.stringify(uiStateToSave))
+      }
+
+      if (localStorageKey) {
+        localStorage.setItem(localStorageKey, JSON.stringify(uiStateToSave))
       }
 
       // Save deck state to database via callback
@@ -1431,7 +1625,7 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
         onStateChange(deckStateToSave)
       }
     }
-  }, [shareId, cardPositions, sectionLabels, sectionBounds, canvasHeight, activeLeader, activeBase, viewMode, aspectFilters, inAspectFilter, outAspectFilter, poolSortOption, deckSortOption, leadersBasesExpanded, leadersExpanded, basesExpanded, deckExpanded, sideboardExpanded, deckAspectSectionsExpanded, sideboardAspectSectionsExpanded, deckCostSectionsExpanded, sideboardCostSectionsExpanded, deckGroupsExpanded, poolGroupsExpanded, showAspectPenalties, tableSort, arenaFilters, arenaSearchQuery, onStateChange, currentPoolName])
+  }, [shareId, localStorageKey, uiStorageKey, cardPositions, activeLeader, activeBase, onStateChange, buildDeckStateSnapshot])
 
   // Cleanup: Remove any bases/leaders from deck/sideboard sections and move cards based on enabled state
   useEffect(() => {
@@ -1444,6 +1638,24 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
         const pos = updated[cardId]
         // Remove bases and leaders from deck/sideboard sections
         if ((pos.section === 'deck' || pos.section === 'sideboard') && (pos.card.isBase || pos.card.isLeader)) {
+          toRemove.push(cardId)
+          hasChanges = true
+          return
+        }
+
+        if (isInfiniteMode && pos.isInfiniteSource) {
+          if (pos.section !== 'sideboard' || pos.enabled !== false) {
+            updated[cardId] = {
+              ...pos,
+              section: 'sideboard',
+              enabled: false
+            }
+            hasChanges = true
+          }
+          return
+        }
+
+        if (isInfiniteMode && pos.isInfiniteDeckCopy && pos.section !== 'deck') {
           toRemove.push(cardId)
           hasChanges = true
           return
@@ -1482,7 +1694,7 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
       // Only return new object if something changed, otherwise keep same reference
       return hasChanges ? updated : prev
     })
-  }, [aspectFilters])
+  }, [aspectFilters, isInfiniteMode])
 
   // Sync aspect filter checkboxes with actual deck state
   // If all cards of an aspect are in sideboard, checkbox should be OFF
@@ -1934,11 +2146,104 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
   // Loading state - show skeletons while view mode initializes or cards load
   const isLoading = !viewModeInitialized || cards.length === 0
 
+  const handlePlay = useCallback(async () => {
+    if (isInfiniteMode && onRequestPlay) {
+      try {
+        setErrorMessage('Preparing play...')
+        setMessageType('success')
+
+        const deckBuilderState = buildDeckStateSnapshot(false)
+        const nextShareId = await onRequestPlay(deckBuilderState)
+
+        if (!nextShareId) {
+          throw new Error('Failed to create play pool')
+        }
+
+        const updatedState = {
+          ...buildDeckStateSnapshot(true),
+          playShareId: nextShareId,
+          isInfinitePool: true,
+        }
+
+        setPlayShareId(nextShareId)
+        if (localStorageKey) {
+          localStorage.setItem(localStorageKey, JSON.stringify(updatedState))
+        }
+        if (uiStorageKey) {
+          localStorage.setItem(uiStorageKey, JSON.stringify({ ...updatedState, lastSavedAt: Date.now() }))
+        }
+
+        window.location.href = `/pool/${nextShareId}/deck/play`
+      } catch (err) {
+        console.error('Failed to open play mode:', err)
+        setErrorMessage(err instanceof Error ? err.message : 'Failed to open play mode')
+        setMessageType('error')
+        setTimeout(() => {
+          setErrorMessage(null)
+          setMessageType(null)
+        }, 3000)
+      }
+      return
+    }
+
+    if (shouldCloneSharedPoolForPlay({ isInfiniteMode, isOwner, shareId, draftShareId })) {
+      try {
+        setErrorMessage('Creating your own copy...')
+        setMessageType('success')
+
+        const clonedPool = await savePool({
+          setCode,
+          cards,
+          packs: null,
+          deckBuilderState: cloneDeckBuilderState,
+          poolType,
+          name: getClonePoolName(currentPoolName),
+          isPublic: false,
+        })
+
+        window.location.href = `/pool/${clonedPool.shareId}/deck/play`
+      } catch (err) {
+        console.error('Failed to create personal copy for play:', err)
+        setErrorMessage(err instanceof Error ? err.message : 'Failed to create personal copy')
+        setMessageType('error')
+        setTimeout(() => {
+          setErrorMessage(null)
+          setMessageType(null)
+        }, 3000)
+      }
+      return
+    }
+
+    if (isDraftMode && draftShareId) {
+      window.location.href = `/draft/${draftShareId}/pod`
+    } else if (!isDraftMode && draftShareId) {
+      window.location.href = `/sealed/${draftShareId}/pod`
+    } else if (shareId) {
+      window.location.href = `/pool/${shareId}/deck/play`
+    }
+  }, [
+    isInfiniteMode,
+    onRequestPlay,
+    buildDeckStateSnapshot,
+    isOwner,
+    localStorageKey,
+    uiStorageKey,
+    isDraftMode,
+    draftShareId,
+    shareId,
+    setCode,
+    cards,
+    cloneDeckBuilderState,
+    poolType,
+    currentPoolName,
+  ])
+
   // Context value for child components
   const contextValue = useMemo(() => ({
     // Core state
     cardPositions,
     setCardPositions,
+    isInfiniteMode,
     activeLeader,
     setActiveLeader,
     activeBase,
@@ -1973,15 +2278,17 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
     arenaSearchQuery,
     setArenaSearchQuery,
     // Actions
+    moveCardToDeck,
+    moveCardToPool,
     toggleCardSection,
     moveCardsToDeck,
     moveCardsToPool,
   }), [
-    cardPositions, activeLeader, activeBase, leaderCard, baseCard,
+    cardPositions, isInfiniteMode, activeLeader, activeBase, leaderCard, baseCard,
     selectedCards, hoveredCard, filterAspectsExpanded, deckFilterOpen,
     poolFilterOpen, showAspectPenalties, viewMode, poolSortOption,
     deckSortOption, arenaFilters, arenaSearchQuery,
-    toggleCardSection, moveCardsToDeck, moveCardsToPool,
+    moveCardToDeck, moveCardToPool, toggleCardSection, moveCardsToDeck, moveCardsToPool,
   ])
 
   return (
@@ -1994,6 +2301,7 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
           onRenamePool={handleRenamePool}
           isOwner={isOwner}
           isDraftMode={isDraftMode}
+          isInfiniteMode={isInfiniteMode}
           isInfoBarSticky={isInfoBarSticky}
           isAuthenticated={isAuthenticated}
           signIn={signIn}
@@ -2003,7 +2311,7 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
           activeBase={activeBase}
           setCode={setCode}
           cards={cards}
-          savedState={savedState}
+          savedState={cloneDeckBuilderState}
           poolType={poolType}
           errorMessage={errorMessage}
           setErrorMessage={setErrorMessage}
@@ -2013,6 +2321,7 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
           isLoading={isLoading}
           isPatron={isPatron}
           deckBuildDeadline={deckBuildDeadline}
+          onPlay={handlePlay}
         />
 
       {/* Selected Leader/Base and Deck/Sideboard Info - Sticky Bar */}
@@ -2035,6 +2344,7 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
         onCardTouchStart={handleCardTouchStart}
         onCardTouchEnd={handleCardTouchEnd}
         isDraftMode={isDraftMode}
+        isInfiniteMode={isInfiniteMode}
         isOwner={isOwner}
         isAuthenticated={isAuthenticated}
         signIn={signIn}
@@ -2044,13 +2354,14 @@ function DeckBuilder({ cards, setCode, onBack, savedState, onStateChange, shareI
         setMessageType={setMessageType}
         setCode={setCode}
         cards={cards}
-        savedState={savedState}
+        savedState={cloneDeckBuilderState}
         poolType={poolType}
         currentPoolName={currentPoolName}
         viewMode={viewMode}
         setViewMode={setViewMode}
         showNavTooltip={showNavTooltip}
         hideTooltip={hideTooltip}
+        onPlay={handlePlay}
       />
 
       {/* View mode toggle - hidden when sticky (shown in nav bar instead) */}

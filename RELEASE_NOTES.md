@@ -11,6 +11,7 @@
 ### 🐛 Bug Fixes
 - **Fixed SWUDB export failures for some legacy decks**: A bounded set of older deck builder saves had card objects missing `cardId`, which could prevent Hyperspace cards from downgrading to their regular versions during export. A production data backfill repaired these saved decks so exports work again without adding permanent compatibility code.
 - **Fixed legacy Hyperspace exports**: Affected legacy decks now correctly convert Hyperspace cards down to their regular versions when exporting to SWUDB.
+- **Shared pools now preserve each person's own build**: When you open someone else's shared sealed pool and build from it, Clone and Ready to Play now use your current deck state instead of snapping back to the pool creator's saved build.
 
 ## 04.15.2026
 

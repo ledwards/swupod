@@ -23,6 +23,7 @@ export interface DeckBuilderHeaderProps {
   onRenamePool: (name: string) => void
   isOwner: boolean
   isDraftMode: boolean
+  isInfiniteMode?: boolean
   isInfoBarSticky: boolean
   isAuthenticated: boolean
   signIn: () => void
@@ -42,6 +43,7 @@ export interface DeckBuilderHeaderProps {
   isLoading?: boolean
   isPatron?: boolean
   deckBuildDeadline?: string | null
+  onPlay?: () => void
 }
 
 export function DeckBuilderHeader({
@@ -49,6 +51,7 @@ export function DeckBuilderHeader({
   onRenamePool,
   isOwner,
   isDraftMode,
+  isInfiniteMode = false,
   isInfoBarSticky,
   isAuthenticated,
   signIn,
@@ -68,11 +71,13 @@ export function DeckBuilderHeader({
   isLoading,
   isPatron,
   deckBuildDeadline,
+  onPlay,
 }: DeckBuilderHeaderProps) {
   // Calculate deck legality for Play button
   const deckCardCount = Object.values(cardPositions)
     .filter(pos => pos.section === 'deck' && pos.visible && !pos.card.isBase && !pos.card.isLeader && pos.enabled !== false).length
   const isDeckLegal = activeLeader && activeBase && deckCardCount >= 30
+  const canUsePlayAction = Boolean(onPlay || shareId)
 
   // Handle clone pool action
   const handleClonePool = async () => {
@@ -134,15 +139,8 @@ export function DeckBuilderHeader({
 
   // Handle navigate to play
   const handlePlay = () => {
-    if (isDeckLegal) {
-      if (isDraftMode && draftShareId) {
-        window.location.href = `/draft/${draftShareId}/pod`
-      } else if (!isDraftMode && draftShareId) {
-        // Sealed pod — redirect to sealed pod page
-        window.location.href = `/sealed/${draftShareId}/pod`
-      } else {
-        window.location.href = `/pool/${shareId}/deck/play`
-      }
+    if (isDeckLegal && onPlay) {
+      onPlay()
     }
   }
 
@@ -157,7 +155,7 @@ export function DeckBuilderHeader({
             placeholder="Deck Builder"
           />
         </h1>
-        <p className="deck-builder-pool-type">{isDraftMode ? 'Draft Pool' : 'Sealed Pool'}</p>
+        <p className="deck-builder-pool-type">{isInfiniteMode ? 'Limited Deckbuilder' : isDraftMode ? 'Draft Pool' : 'Sealed Pool'}</p>
       </div>
 
       {deckBuildDeadline && (
@@ -173,7 +171,7 @@ export function DeckBuilderHeader({
             label=""
             warningThreshold={300}
             onExpire={() => {
-              if (typeof window !== 'undefined') {
+              if (typeof window !== 'undefined' && shareId) {
                 window.location.href = `/pool/${shareId}/deck/play`
               }
             }}
@@ -183,7 +181,7 @@ export function DeckBuilderHeader({
 
       {!isLoading && <div className={`header-buttons ${isInfoBarSticky ? 'hidden' : ''}`}>
         {/* Clone button first for non-owners */}
-        {!isOwner && (
+        {!isInfiniteMode && !isOwner && (
           <Button
             variant="secondary"
             className="export-button"
@@ -198,7 +196,7 @@ export function DeckBuilderHeader({
         )}
 
         {/* Play button */}
-        {shareId && (
+        {canUsePlayAction && (
           <Button
             variant="primary"
             className={`export-button ready-to-play-button ${!isDeckLegal ? 'disabled' : ''}`}
@@ -213,7 +211,7 @@ export function DeckBuilderHeader({
         )}
 
         {/* Clone button between Play and Share for owners */}
-        {isOwner && (
+        {!isInfiniteMode && isOwner && (
           <Button
             variant="secondary"
             className="export-button"
@@ -228,7 +226,7 @@ export function DeckBuilderHeader({
         )}
 
         {/* Share button */}
-        {shareId && (
+        {!isInfiniteMode && shareId && (
           <Button
             variant="secondary"
             className="export-button"

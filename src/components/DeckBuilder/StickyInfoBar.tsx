@@ -52,6 +52,7 @@ export interface StickyInfoBarProps {
   onCardMouseEnter: (card: CardPosition['card'], e: MouseEvent | TouchEvent) => void
   onCardMouseLeave: () => void
   isDraftMode: boolean
+  isInfiniteMode?: boolean
   isOwner: boolean
   isAuthenticated: boolean
   signIn: () => void
@@ -69,6 +70,7 @@ export interface StickyInfoBarProps {
   setViewMode: (mode: ViewMode) => void
   showNavTooltip: (text: string, e: MouseEvent, position?: 'left' | 'below') => void
   hideTooltip: () => void
+  onPlay?: () => void
 }
 
 export function StickyInfoBar({
@@ -88,6 +90,7 @@ export function StickyInfoBar({
   onCardMouseEnter,
   onCardMouseLeave,
   isDraftMode,
+  isInfiniteMode = false,
   isOwner,
   isAuthenticated,
   signIn,
@@ -104,6 +107,7 @@ export function StickyInfoBar({
   setViewMode,
   showNavTooltip,
   hideTooltip,
+  onPlay,
 }: StickyInfoBarProps) {
   const longPressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -113,6 +117,7 @@ export function StickyInfoBar({
   const poolCardCount = Object.values(cardPositions)
     .filter(pos => (pos.section === 'sideboard' || pos.enabled === false) && pos.visible && !pos.card.isBase && !pos.card.isLeader).length
   const isDeckLegal = activeLeader && activeBase && deckCardCount >= 30
+  const canUsePlayAction = Boolean(onPlay || shareId)
 
   // Get deck count color
   const getDeckCountColor = () => {
@@ -181,14 +186,8 @@ export function StickyInfoBar({
 
   // Handle play navigation
   const handlePlay = () => {
-    if (isDeckLegal) {
-      if (isDraftMode && draftShareId) {
-        window.location.href = `/draft/${draftShareId}/pod`
-      } else if (!isDraftMode && draftShareId) {
-        window.location.href = `/sealed/${draftShareId}/pod`
-      } else {
-        window.location.href = `/pool/${shareId}/deck/play`
-      }
+    if (isDeckLegal && onPlay) {
+      onPlay()
     }
   }
 
@@ -303,7 +302,7 @@ export function StickyInfoBar({
           }}
           style={{ cursor: 'pointer' }}
         >
-          <span className="section-link-label">{isDraftMode ? 'Card Pool' : 'Sideboard'}</span>{' '}
+          <span className="section-link-label">{isInfiniteMode ? 'Pool' : isDraftMode ? 'Card Pool' : 'Sideboard'}</span>{' '}
           <span className="section-link-count">({poolCardCount})</span>
         </span>
 
@@ -331,7 +330,7 @@ export function StickyInfoBar({
             />
           </div>
           {/* Clone button for non-owners */}
-          {!isOwner && (
+          {!isInfiniteMode && !isOwner && (
             <Button variant="icon" className="export-button-icon" onClick={handleClone}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -342,7 +341,7 @@ export function StickyInfoBar({
           )}
 
           {/* Play button */}
-          {shareId && (
+          {canUsePlayAction && (
             <Button
               variant="icon"
               className={`export-button-icon ready-to-play-icon ${!isDeckLegal ? 'disabled' : ''}`}
@@ -357,7 +356,7 @@ export function StickyInfoBar({
           )}
 
           {/* Clone button for owners */}
-          {isOwner && (
+          {!isInfiniteMode && isOwner && (
             <Button variant="icon" className="export-button-icon" onClick={handleClone}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -368,7 +367,7 @@ export function StickyInfoBar({
           )}
 
           {/* Share button */}
-          {shareId && (
+          {!isInfiniteMode && shareId && (
             <Button variant="icon" className="export-button-icon" onClick={handleShare}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
