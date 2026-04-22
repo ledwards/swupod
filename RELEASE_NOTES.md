@@ -2,6 +2,12 @@
 
 ## 04.22.2026
 
+### 🃏 Pack Generation
+- **Major printer-faithful collation improvements**: Pack generation has been refined to follow physical printing methods more closely, with broader use of belt-driven upgrades, better seam-aware spacing, and collation-first handling across standard packs and LAW slot behavior.
+
+### 🤖 AI Players
+- **Bots now build the deck they actually drafted toward**: During draft, bots persist their committed leader and planned base color as they form a lane. Post-draft deck building now reuses that exact commitment instead of re-deriving a new leader/base from the final pool.
+
 ### 🐛 Bug Fixes
 - **Fixed SWUDB export failures for some legacy decks**: A bounded set of older deck builder saves had card objects missing `cardId`, which could prevent Hyperspace cards from downgrading to their regular versions during export. A production data backfill repaired these saved decks so exports work again without adding permanent compatibility code.
 - **Fixed legacy Hyperspace exports**: Affected legacy decks now correctly convert Hyperspace cards down to their regular versions when exporting to SWUDB.
