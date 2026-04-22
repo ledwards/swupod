@@ -181,8 +181,11 @@ Seam-aware behavior is tested in `src/qa/seamAwareBelt.test.js`:
 
 ### Within-Pack Deduplication
 
-- After drawing 9 commons, the pack is checked for duplicates
-- Any duplicate commons are replaced with fresh draws from the appropriate belt
+There is no post-pack deduplication pass.
+
+- We do not inspect a finished pack and replace cards after the fact
+- If two cards should not appear together, that constraint belongs in the belt layout or upgrade-budget logic
+- This is the core printer metaphor: prevention comes from sheet/belt spacing, not cleanup after random generation
 
 ## Color Proximity Rules
 
@@ -212,10 +215,10 @@ total count.
 
 When a hyperspace upgrade occurs on a common slot:
 1. The upgrade happens at the designated slot (Block 0: slot 6, Block A: slot 4)
-2. We find the hyperspace variant of the card already in that slot
-3. We do NOT pull from a separate hyperspace belt
+2. The slot is replaced with the next card from `HyperspaceCommonBelt`
+3. The pack is not re-written afterward
 
-This ensures the upgrade is a variant of a card that was "supposed to be there" rather than introducing a random card.
+This keeps upgrades printer-faithful: the slot budget comes from `HyperspaceUpgradeBelt`, while the upgraded card itself comes from its own print-like variant belt.
 
 ## Regenerating Belt Assignments
 

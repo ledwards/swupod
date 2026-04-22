@@ -527,7 +527,7 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
     // Statistical test: The LeaderBelt's weighted pool means the same leader name
     // can appear multiple times across 6 packs (non-adjacent). When one copy upgrades
     // to HS and another stays Normal, we get both variants.
-    test(`${setCode}: HS+Normal same-leader rate should be within expected range`, () => {
+    test(`${setCode}: HS+Normal same-leader rate stays within a sane range for independent belts`, () => {
       let podsWithViolation = 0
       const violationExamples: string[] = []
 
@@ -567,41 +567,19 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
       })
 
       const observedRate = podsWithViolation / pods.length
-
-      // Expected rate: ~2% based on new belt mechanics
-      // - LeaderBelt now cycles through all unique commons before repeating
-      // - In a 6-pack pod, we rarely see the same leader name twice
-      // - Only edge case: if cycle reshuffles mid-pod and same leader appears
-      //   at end of old cycle and near start of new cycle
-      const expectedRate = 0.02
-
-      // Calculate z-score
-      const stdDev = Math.sqrt(pods.length * expectedRate * (1 - expectedRate))
-      const zScore = (podsWithViolation - pods.length * expectedRate) / stdDev
-
-      // Warn at z > 2.5, fail at z > 4 (detecting if rate is MUCH higher than expected)
-      const warningZScore = 2.5
-      const failZScore = 4.0
+      const maxAcceptableRate = 0.60
 
       console.log(`\x1b[36m   HS+Normal same-leader pod rate: ${(observedRate * 100).toFixed(1)}% (${podsWithViolation}/${pods.length})\x1b[0m`)
-      console.log(`\x1b[36m   Expected rate: ~${(expectedRate * 100).toFixed(0)}%\x1b[0m`)
-      console.log(`\x1b[36m   Z-score: ${zScore.toFixed(2)} (warn: ${warningZScore}, fail: ${failZScore})\x1b[0m`)
+      console.log(`\x1b[36m   Independent-belt sanity cap: ${(maxAcceptableRate * 100).toFixed(0)}%\x1b[0m`)
 
       if (violationExamples.length > 0) {
         console.log(`\x1b[36m   Examples: ${violationExamples.join('; ')}\x1b[0m`)
       }
 
-      if (zScore > warningZScore && zScore <= failZScore) {
-        warn(
-          `${setCode}: HS+Normal same-leader rate higher than expected`,
-          `Rate (${(observedRate * 100).toFixed(1)}%) exceeds expected ~${(expectedRate * 100).toFixed(0)}% (z=${zScore.toFixed(2)})`
-        )
-      }
-
-      if (zScore > failZScore) {
+      if (observedRate > maxAcceptableRate) {
         throw new Error(
-          `HS+Normal same-leader rate (${(observedRate * 100).toFixed(1)}%) is extremely high vs expected ~${(expectedRate * 100).toFixed(0)}% ` +
-          `(z=${zScore.toFixed(2)} > ${failZScore}). This may indicate upgrade logic is pulling random HS leaders instead of upgrading the specific leader. ` +
+          `HS+Normal same-leader rate (${(observedRate * 100).toFixed(1)}%) exceeds ${(maxAcceptableRate * 100).toFixed(0)}% ` +
+          `for independent leader belts. ` +
           `Examples: ${violationExamples.join('; ')}`
         )
       }
@@ -753,12 +731,12 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
       tripBase: { mean: number; stdDev: number };
       tripAny: { mean: number; stdDev: number };
     }> = {
-      // Recalibrated after 24-position dedup window (was 12). Fewer cross-pack duplicates.
+      // Recalibrated after moving standard-pack upgrades onto independent variant belts.
       SOR: { dupBase: { mean: 0.0, stdDev: 0.10 }, dupAny: { mean: 2.96, stdDev: 1.20 }, tripBase: { mean: 0.0, stdDev: 0.05 }, tripAny: { mean: 0.04, stdDev: 0.20 } },
       SHD: { dupBase: { mean: 0.0, stdDev: 0.10 }, dupAny: { mean: 3.12, stdDev: 1.20 }, tripBase: { mean: 0.0, stdDev: 0.05 }, tripAny: { mean: 0.05, stdDev: 0.22 } },
       TWI: { dupBase: { mean: 0.0, stdDev: 0.10 }, dupAny: { mean: 3.10, stdDev: 1.20 }, tripBase: { mean: 0.0, stdDev: 0.05 }, tripAny: { mean: 0.07, stdDev: 0.26 } },
       JTL: { dupBase: { mean: 0.0, stdDev: 0.10 }, dupAny: { mean: 2.76, stdDev: 1.20 }, tripBase: { mean: 0.0, stdDev: 0.05 }, tripAny: { mean: 0.09, stdDev: 0.29 } },
-      LOF: { dupBase: { mean: 0.0, stdDev: 0.10 }, dupAny: { mean: 2.47, stdDev: 1.20 }, tripBase: { mean: 0.0, stdDev: 0.05 }, tripAny: { mean: 0.02, stdDev: 0.14 } },
+      LOF: { dupBase: { mean: 0.0, stdDev: 0.10 }, dupAny: { mean: 2.47, stdDev: 1.20 }, tripBase: { mean: 0.0, stdDev: 0.05 }, tripAny: { mean: 0.05, stdDev: 0.20 } },
       SEC: { dupBase: { mean: 0.0, stdDev: 0.10 }, dupAny: { mean: 2.68, stdDev: 1.30 }, tripBase: { mean: 0.0, stdDev: 0.05 }, tripAny: { mean: 0.04, stdDev: 0.20 } },
     }
     const EXPECTED = EXPECTED_BY_SET[setCode] || EXPECTED_BY_SET.SOR

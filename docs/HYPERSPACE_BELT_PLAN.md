@@ -81,7 +81,7 @@ With cycle size 60:
 - P(≥1 HS) = 40/60 = **66.7%** ✓ (target: ~2/3)
 
 Note: μ set to 0.833 (below theoretical max of 0.861) to provide margin for
-variant-lookup failures (`findHyperspaceVariant` returning null), which add noise.
+real variance from independent variant-belt draws, which add noise.
 
 ### Slot Distribution Within the Cycle
 

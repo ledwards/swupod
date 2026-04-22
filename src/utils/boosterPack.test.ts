@@ -451,6 +451,34 @@ async function runTests(): Promise<void> {
       `Found duplicates in ${packsWithDuplicates} out of 100 packs. Examples: ${duplicateExamples.join('; ')}`)
   })
 
+  test('normal common belts do not need a post-pack dedupe pass', () => {
+    const sets = ['SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'SEC']
+
+    sets.forEach((setCode) => {
+      clearBeltCache()
+
+      for (let packNum = 0; packNum < 1000; packNum++) {
+        const pack = generateBoosterPack(getCachedCards(setCode), setCode)
+        const normalCommons = pack.cards.filter((c: Card) =>
+          c.rarity === 'Common' &&
+          !c.isLeader &&
+          !c.isBase &&
+          !c.isFoil &&
+          !c.isHyperspace
+        )
+
+        const seenNames = new Set<string>()
+        for (const card of normalCommons) {
+          assert(
+            !seenNames.has(card.name),
+            `${setCode} pack ${packNum + 1} repeated normal common "${card.name}" without any pack-level dedupe`
+          )
+          seenNames.add(card.name)
+        }
+      }
+    })
+  })
+
   test('belt cache returns same belt instance for same key', () => {
     clearBeltCache()
 
@@ -807,19 +835,10 @@ async function runTests(): Promise<void> {
     // Just ensure the test completes without error
   })
 
-  test('sealed pod HS+Normal same-leader rate should be within expected range', () => {
-    // Statistical test: The LeaderBelt's weighted pool (commons 5x) means the same
-    // leader name can appear multiple times across 6 packs (non-adjacent).
-    // When one copy upgrades to HS and another stays Normal, we get both variants.
-    //
-    // This test calculates the expected rate based on:
-    // 1. P(duplicate leader names in 6-pack pod) - depends on belt weights
-    // 2. P(one upgrades, other doesn't | duplicates) = 1 - (5/6)^k - (1/6)^k for k copies
-    //
-    // Expected rate estimate:
-    // - With ~12 unique leader names and weighted draws, P(at least one duplicate) ≈ 60-70%
-    // - For 2 copies of same leader, P(HS+Normal) = 1 - (5/6)^2 - (1/6)^2 ≈ 28%
-    // - Combined estimate: ~20-25% of pods will have at least one HS+Normal pair
+  test('sealed pod HS+Normal same-leader rate stays within a sane range for independent belts', () => {
+    // Printer-faithful behavior: leader upgrades pull from an independent HS leader belt.
+    // That means HS+Normal same-name pairs are allowed, but the rate should still stay
+    // comfortably below "nearly every pod" territory.
     clearBeltCache()
 
     const podCount = 100
@@ -864,37 +883,19 @@ async function runTests(): Promise<void> {
     }
 
     const observedRate = podsWithViolation / podCount
-
-    // Expected rate: ~2% based on new belt mechanics
-    // - LeaderBelt now cycles through all unique commons before repeating
-    // - In a 6-pack pod, we rarely see the same leader name twice
-    // - Only edge case: if cycle reshuffles mid-pod
-    const expectedRate = 0.02
-
-    // Calculate z-score
-    const stdDev = Math.sqrt(podCount * expectedRate * (1 - expectedRate))
-    const zScore = (podsWithViolation - podCount * expectedRate) / stdDev
-
-    // Warn at z > 2.5, fail at z > 4 (detecting if rate is MUCH higher than expected)
-    const warningZScore = 2.5
-    const failZScore = 4.0
+    const maxAcceptableRate = 0.60
 
     console.log(`\x1b[36m   HS+Normal same-leader pod rate: ${(observedRate * 100).toFixed(1)}% (${podsWithViolation}/${podCount})\x1b[0m`)
-    console.log(`\x1b[36m   Expected rate: ~${(expectedRate * 100).toFixed(0)}%\x1b[0m`)
-    console.log(`\x1b[36m   Z-score: ${zScore.toFixed(2)} (warn: ${warningZScore}, fail: ${failZScore})\x1b[0m`)
+    console.log(`\x1b[36m   Independent-belt sanity cap: ${(maxAcceptableRate * 100).toFixed(0)}%\x1b[0m`)
 
     if (violationExamples.length > 0) {
       console.log(`\x1b[36m   Examples: ${violationExamples.join('; ')}\x1b[0m`)
     }
 
-    if (zScore > warningZScore && zScore <= failZScore) {
-      console.log(`\x1b[33m   ⚠️  WARNING: Rate higher than expected (may indicate a bug)\x1b[0m`)
-    }
-
     assert(
-      zScore <= failZScore,
-      `HS+Normal same-leader rate (${(observedRate * 100).toFixed(1)}%) is extremely high vs expected ~${(expectedRate * 100).toFixed(0)}% ` +
-      `(z=${zScore.toFixed(2)} > ${failZScore}). This may indicate upgrade logic is pulling random HS leaders instead of upgrading the specific leader. ` +
+      observedRate <= maxAcceptableRate,
+      `HS+Normal same-leader rate (${(observedRate * 100).toFixed(1)}%) exceeds ${(maxAcceptableRate * 100).toFixed(0)}% ` +
+      `for independent leader belts. ` +
       `Examples: ${violationExamples.join('; ')}`
     )
   })

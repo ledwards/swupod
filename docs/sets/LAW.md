@@ -251,5 +251,5 @@ See **[LAW_TBD.md](LAW_TBD.md)** for all temporary placeholders, estimated rates
 - `src/belts/CommonUpgradeBelt.ts` - 48-pack cycle for common slot HS upgrades
 - `src/belts/HyperfoilBelt.ts` - HSF belt (with Normal variant fallback for LAW)
 - `src/utils/packConstants.ts` - `SET_7_PLUS_CONSTANTS`
-- `src/utils/boosterPack.ts` - `usesLawPackRules()`, `findHyperspaceVariant()` (with LAW fallback)
+- `src/utils/boosterPack.ts` - `usesLawPackRules()`, LAW pack assembly, and upgrade pass
 - `src/qa/hyperspaceDistribution.test.ts` - LAW HS distribution QA tests

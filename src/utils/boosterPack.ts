@@ -118,32 +118,6 @@ function weightedRaritySelect(weights: Record<string, number>): string {
 }
 
 /**
- * Pick a random Hyperspace card of a specific rarity from the set.
- * Falls back to Normal variant if no HS variant exists.
- */
-function randomHyperspaceCardOfRarity(setCode: SetCode | string, rarity: string): RawCard | null {
-  const cards = getCachedCards(setCode);
-  let pool = cards.filter(c =>
-    c.variantType === 'Hyperspace' &&
-    c.rarity === rarity &&
-    !c.isLeader &&
-    !c.isBase
-  );
-  // Fallback to Normal if no HS variants
-  if (pool.length === 0) {
-    pool = cards.filter(c =>
-      c.variantType === 'Normal' &&
-      c.rarity === rarity &&
-      !c.isLeader &&
-      !c.isBase
-    );
-  }
-  if (pool.length === 0) return null;
-  const card = pool[Math.floor(Math.random() * pool.length)]!;
-  return { ...card, isHyperspace: true };
-}
-
-/**
  * Check if a set uses LAW+ pack rules (Set 7 onwards)
  * - Foil slot is always Hyperspace Foil
  * - Guaranteed Hyperspace common in every pack
@@ -152,56 +126,6 @@ function randomHyperspaceCardOfRarity(setCode: SetCode | string, rarity: string)
 function usesLawPackRules(setCode: SetCode | string): boolean {
   const config = getSetConfig(setCode) as SetConfig | null;
   return config?.packRules?.foilSlotIsHyperspaceFoil === true;
-}
-
-/**
- * Find the Hyperspace variant of a specific card
- * Returns the HS version if found, null otherwise
- */
-function findHyperspaceVariant(card: RawCard | null, setCode: SetCode | string): RawCard | null {
-  if (!card || !card.name) return null;
-
-  const allCards = getCachedCards(setCode);
-
-  // Find a card with the same name but Hyperspace variantType
-  // Must also match type to avoid Leader/Unit confusion (e.g., "Leia Organa" exists as both)
-  const hsVariant = allCards.find(c =>
-    c.name === card.name &&
-    c.variantType === 'Hyperspace' &&
-    c.rarity === card.rarity && // Same rarity (Common leaders stay Common, etc.)
-    c.type === card.type // Same type to avoid Leader/Unit confusion
-  );
-
-  if (hsVariant) {
-    return { ...hsVariant, isHyperspace: true };
-  }
-
-  // Fallback: if no Hyperspace variant exists in the card data,
-  // return the original card marked as Hyperspace.
-  // This ensures upgrades always succeed even if card data is incomplete.
-  return { ...card, variantType: 'Hyperspace', isHyperspace: true };
-}
-
-/**
- * Find the Showcase variant of a specific card
- * Returns the Showcase version if found, null otherwise
- */
-function findShowcaseVariant(card: RawCard | null, setCode: SetCode | string): RawCard | null {
-  if (!card || !card.name) return null;
-
-  const allCards = getCachedCards(setCode);
-
-  // Must also match type to avoid Leader/Unit confusion
-  const showcaseVariant = allCards.find(c =>
-    c.name === card.name &&
-    c.variantType === 'Showcase' &&
-    c.type === card.type
-  );
-
-  if (showcaseVariant) {
-    return { ...showcaseVariant, isShowcase: true };
-  }
-  return null;
 }
 
 // === BELT GETTERS ===
@@ -443,44 +367,35 @@ function applyUpgradePass(pack: Pack, setCode: SetCode | string): Pack {
     !c.isFoil && !c.isLeader && !c.isBase
   );
 
-  // Find common indices (Common rarity, not leaders/bases)
-  const commonIndices: number[] = [];
-  pack.cards.forEach((c, i) => {
-    if (c.rarity === 'Common' && !c.isLeader && !c.isBase && !c.isFoil) {
-      commonIndices.push(i);
-    }
-  });
-
   // Get HS upgrade plan from belt (sets 1-6) or null (LAW+)
   const hsBelt = getHyperspaceUpgradeBelt(setCode);
   const hsPlan: UpgradePlan | null = hsBelt ? hsBelt.next() : null;
 
   // 1. Leader upgrades
   // Showcase takes precedence (independent coin flip — too rare to affect variance)
-  // HS upgrade is belt-driven for sets 1-6, coin-flip for LAW+
+  // Variant upgrades always replace the slot with a fresh draw from the relevant belt.
   if (leaderIndex >= 0) {
-    const currentLeader = pack.cards[leaderIndex];
-    if (currentLeader && probs.leaderToShowcase && shouldUpgrade(probs.leaderToShowcase)) {
-      const upgraded = findShowcaseVariant(currentLeader, setCode);
+    if (probs.leaderToShowcase && shouldUpgrade(probs.leaderToShowcase)) {
+      const showcaseBelt = getShowcaseLeaderBelt(setCode);
+      const upgraded = showcaseBelt.next();
       if (upgraded) pack.cards[leaderIndex] = upgraded;
-    } else if (currentLeader) {
+    } else {
       const shouldUpgradeLeader = hsPlan ? hsPlan.leader : (probs.leaderToHyperspace && shouldUpgrade(probs.leaderToHyperspace));
       if (shouldUpgradeLeader) {
-        const upgraded = findHyperspaceVariant(currentLeader, setCode);
+        const hsLeaderBelt = getHyperspaceLeaderBelt(setCode);
+        const upgraded = hsLeaderBelt.next();
         if (upgraded) pack.cards[leaderIndex] = upgraded;
       }
     }
   }
 
-  // 2. Base upgrade - find HS version of THIS base
+  // 2. Base upgrade - replace with a fresh draw from the HS base belt
   if (baseIndex >= 0) {
     const shouldUpgradeBase = hsPlan ? hsPlan.base : (probs.baseToHyperspace && shouldUpgrade(probs.baseToHyperspace));
     if (shouldUpgradeBase) {
-      const currentBase = pack.cards[baseIndex];
-      if (currentBase) {
-        const upgraded = findHyperspaceVariant(currentBase, setCode);
-        if (upgraded) pack.cards[baseIndex] = upgraded;
-      }
+      const hsBaseBelt = getHyperspaceBaseBelt(setCode);
+      const upgraded = hsBaseBelt.next();
+      if (upgraded) pack.cards[baseIndex] = upgraded;
     }
   }
 
@@ -498,30 +413,26 @@ function applyUpgradePass(pack: Pack, setCode: SetCode | string): Pack {
     }
   }
 
-  // 5. First UC upgrade to Hyperspace UC - find HS version of THIS uncommon
+  // 5. First UC upgrade to Hyperspace UC - fresh draw from HS UC belt
   // IMPORTANT: Apply UC->HS_UC upgrades BEFORE UC->HS_R/L to avoid index corruption
   const firstUCIndex = uncommonIndices[0];
   if (firstUCIndex !== undefined) {
     const shouldUpgradeUC1 = hsPlan ? hsPlan.uc1 : (probs.firstUCToHyperspaceUC && shouldUpgrade(probs.firstUCToHyperspaceUC));
     if (shouldUpgradeUC1) {
-      const currentUC = pack.cards[firstUCIndex];
-      if (currentUC) {
-        const upgraded = findHyperspaceVariant(currentUC, setCode);
-        if (upgraded) pack.cards[firstUCIndex] = upgraded;
-      }
+      const hsUCBelt = getHyperspaceUncommonBelt(setCode);
+      const upgraded = hsUCBelt.next();
+      if (upgraded) pack.cards[firstUCIndex] = upgraded;
     }
   }
 
-  // 6. Second UC upgrade to Hyperspace UC - find HS version of THIS uncommon
+  // 6. Second UC upgrade to Hyperspace UC - fresh draw from HS UC belt
   const secondUCIndex = uncommonIndices[1];
   if (secondUCIndex !== undefined) {
     const shouldUpgradeUC2 = hsPlan ? hsPlan.uc2 : (probs.secondUCToHyperspaceUC && shouldUpgrade(probs.secondUCToHyperspaceUC));
     if (shouldUpgradeUC2) {
-      const currentUC = pack.cards[secondUCIndex];
-      if (currentUC) {
-        const upgraded = findHyperspaceVariant(currentUC, setCode);
-        if (upgraded) pack.cards[secondUCIndex] = upgraded;
-      }
+      const hsUCBelt = getHyperspaceUncommonBelt(setCode);
+      const upgraded = hsUCBelt.next();
+      if (upgraded) pack.cards[secondUCIndex] = upgraded;
     }
   }
 
@@ -562,9 +473,19 @@ function applyUpgradePass(pack: Pack, setCode: SetCode | string): Pack {
             const upgraded = hsUCBelt.next();
             if (upgraded) pack.cards[thirdUCIndex] = upgraded;
           } else {
-            // Pick a random HS card of the exact rarity selected by weights
-            const upgraded = randomHyperspaceCardOfRarity(setCode, rarity);
-            if (upgraded) pack.cards[thirdUCIndex] = upgraded;
+            // Pick a random HS card of the exact rarity selected by weights.
+            // LAW+/ASH still use weighted rarity selection for this path.
+            const upgraded = getCachedCards(setCode)
+              .filter(c =>
+                c.variantType === 'Hyperspace' &&
+                c.rarity === rarity &&
+                !c.isLeader &&
+                !c.isBase
+              );
+            const drawn = upgraded.length > 0
+              ? { ...upgraded[Math.floor(Math.random() * upgraded.length)]!, isHyperspace: true }
+              : null;
+            if (drawn) pack.cards[thirdUCIndex] = drawn;
           }
         } else {
           // Sets without weights — use R/L belt directly
@@ -576,7 +497,7 @@ function applyUpgradePass(pack: Pack, setCode: SetCode | string): Pack {
     }
   }
 
-  // 8. Common upgrade - find HS version of the card in the specific hyperspace slot
+  // 8. Common upgrade - replace designated slot with a fresh draw from HS common belt
   // LAW+: Slot 5 is already HS from dedicated HyperspaceCommonBelt (no upgrade needed here).
   // Other sets: use belt plan or probability to upgrade the common at the hyperspace slot.
   const block = getBlockForSet(setCode);
@@ -590,7 +511,8 @@ function applyUpgradePass(pack: Pack, setCode: SetCode | string): Pack {
       if (hyperspaceIndex < pack.cards.length) {
         const currentCommon = pack.cards[hyperspaceIndex];
         if (currentCommon && currentCommon.rarity === 'Common' && !currentCommon.isLeader && !currentCommon.isBase) {
-          const upgraded = findHyperspaceVariant(currentCommon, setCode);
+          const hsCommonBelt = getHyperspaceCommonBelt(setCode);
+          const upgraded = hsCommonBelt.next();
           if (upgraded) pack.cards[hyperspaceIndex] = upgraded;
         }
       }
@@ -713,54 +635,6 @@ export function generateBoosterPack(_cards: RawCard[], setCode: SetCode | string
     }
   }
 
-  // Dedup commons - belt cycling can rarely produce duplicates
-  // Replace any duplicate commons with fresh cards from the appropriate belt
-  const commonNames = new Set<string>();
-  for (let i = 2; i < 11; i++) { // Commons are at indices 2-10 (after leader/base)
-    const card = packCards[i];
-    if (!card) continue;
-
-    // Skip dedup for Block B slot 5 (index 6) — it's from HyperspaceCommonBelt
-    // and won't duplicate with normal commons (different variant)
-    const slot = i - 1; // Convert index to slot (1-indexed)
-
-    if (commonNames.has(card.name)) {
-      // Duplicate found - get a replacement from the belt this slot came from
-      let replacementBelt: Belt;
-      if (block === 0) {
-        replacementBelt = (slot <= 6) ? commonBeltA : commonBeltB;
-      } else if (block === 'A') {
-        if (slot <= 4) {
-          replacementBelt = commonBeltA;
-        } else if (slot === 5) {
-          replacementBelt = currentStartWithA ? commonBeltA : commonBeltB;
-        } else {
-          replacementBelt = commonBeltB;
-        }
-      } else {
-        // Block B (LAW+): slot 5 is HS common belt (skipped above in name check),
-        // slots 1-4 are Belt A, slots 6-9 are Belt B
-        if (slot <= 4) {
-          replacementBelt = commonBeltA;
-        } else {
-          replacementBelt = commonBeltB;
-        }
-      }
-
-      // Try to find a non-duplicate replacement
-      for (let attempt = 0; attempt < 10; attempt++) {
-        const replacement = replacementBelt.next();
-        if (replacement && !commonNames.has(replacement.name)) {
-          packCards[i] = replacement;
-          commonNames.add(replacement.name);
-          break;
-        }
-      }
-    } else {
-      commonNames.add(card.name);
-    }
-  }
-
   // Generate foil card from belt
   const foilCard = foilBelt.next();
 
@@ -873,4 +747,3 @@ export function generateSealedBox(_cards: RawCard[], setCode: SetCode | string, 
   }
   return packs;
 }
-

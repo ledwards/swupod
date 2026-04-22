@@ -67,14 +67,14 @@ Leader and base HS never co-occur in the same pack.
 
 | Upgrade | Description | Mechanism | Effective Rate |
 |---------|-------------|-----------|---------------|
-| Leader → Showcase | Find showcase variant of same leader | Independent coin flip | 1/288 |
-| Leader → Hyperspace | Find HS variant of same leader | HyperspaceUpgradeBelt | 1/6 |
-| Base → Hyperspace | Find HS variant of same base | HyperspaceUpgradeBelt | 1/6 |
+| Leader → Showcase | Replace slot with fresh Showcase leader draw | ShowcaseLeaderBelt | 1/288 |
+| Leader → Hyperspace | Replace slot with fresh HS leader draw | HyperspaceLeaderBelt + HyperspaceUpgradeBelt | 1/6 |
+| Base → Hyperspace | Replace slot with fresh HS base draw | HyperspaceBaseBelt + HyperspaceUpgradeBelt | 1/6 |
 | Foil → Hyperfoil | Draw random HS foil | Independent coin flip | 1/50 |
-| UC1 → HS Uncommon | Find HS variant of 1st uncommon | HyperspaceUpgradeBelt | 1/15 |
-| UC2 → HS Uncommon | Find HS variant of 2nd uncommon | HyperspaceUpgradeBelt | 1/30 |
+| UC1 → HS Uncommon | Replace slot with fresh HS uncommon draw | HyperspaceUncommonBelt + HyperspaceUpgradeBelt | 1/15 |
+| UC2 → HS Uncommon | Replace slot with fresh HS uncommon draw | HyperspaceUncommonBelt + HyperspaceUpgradeBelt | 1/30 |
 | UC3 → HS Rare/Legendary | Draw random HS R/L | HyperspaceUpgradeBelt | 1/7.5 |
-| Common → Hyperspace | Find HS variant of common in slot | HyperspaceUpgradeBelt | 1/5 |
+| Common → Hyperspace | Replace designated common slot with fresh HS common draw | HyperspaceCommonBelt + HyperspaceUpgradeBelt | 1/5 |
 
 **NOTE:** The rare slot NEVER upgrades to Hyperspace. HS rares/legendaries only appear via UC3 upgrade.
 
@@ -86,11 +86,11 @@ The common hyperspace upgrade works differently from other upgrades:
    - Block 0: Slot 6
    - Block A: Slot 4
 
-2. **Variant of Existing Card**: We find the hyperspace variant of the card that's already in that slot, NOT a random hyperspace card
+2. **Fresh Belt Pull**: The slot is replaced with the next card from `HyperspaceCommonBelt`
 
-3. **No Belt Pull**: We don't pull from a hyperspace common belt
+3. **No Post-Hoc Cleanup**: We do not inspect the finished pack and "fix" duplicates afterward
 
-This ensures the hyperspace card is a variant of something that was "supposed to be there" based on the belt system.
+This keeps upgrades printer-faithful: the upgrade slot is budgeted by the upgrade belt, and the upgraded card itself comes from its own variant belt.
 
 ## Aspect Coverage
 
@@ -154,7 +154,7 @@ Key behaviors:
 
 Pack generation constants are in:
 ```
-src/utils/packConstants.js
+src/utils/packConstants.ts
 ```
 
 Set-specific configurations are in:
@@ -165,12 +165,13 @@ src/utils/setConfigs/
 ## Testing
 
 Pack tests are in:
-- `src/utils/boosterPack.test.js` - Unit tests
-- `src/qa/packGeneration.test.js` - Statistical QA tests
+- `src/utils/boosterPack.test.ts` - Unit tests
+- `src/qa/packGeneration.test.ts` - Statistical QA tests
 
 Key test scenarios:
 - All packs have exactly 16 cards
 - No duplicate base treatment cards within a pack
+- Normal common belts do not need a post-pack dedupe pass
 - Aspect coverage validation
 - Hyperspace upgrade rates
 - Card variety distribution
@@ -188,14 +189,14 @@ Key test scenarios:
 
 1. **Small Belt**: If belt is smaller than dedup window, cards may appear closer together
 2. **Missing Cards**: If a card name in assignments doesn't match the database, it's skipped with a warning
-3. **Aspect Coverage**: Rare cases where all cards of an aspect are already in the pack - skip the fix rather than create duplicates
+3. **No Pack-Level Dedupe**: If a duplicate can happen, the fix must be in belt construction or slot budgeting, not by rewriting the finished pack
 
 ## File Locations
 
 | File | Purpose |
 |------|---------|
-| `src/utils/boosterPack.js` | Main pack generation logic |
-| `src/utils/packConstants.js` | Pack structure constants |
-| `src/belts/CommonBelt.js` | Common belt implementation |
-| `src/belts/data/commonBeltAssignments.js` | Static belt assignments |
+| `src/utils/boosterPack.ts` | Main pack generation logic |
+| `src/utils/packConstants.ts` | Pack structure constants |
+| `src/belts/CommonBelt.ts` | Common belt implementation |
+| `src/belts/data/commonBeltAssignments.ts` | Static belt assignments |
 | `scripts/writeBeltAssignments.cjs` | Regenerate belt assignments |

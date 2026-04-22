@@ -503,8 +503,8 @@ export interface HSBeltConfig {
  *
  * σ = 0.687, Z(2) = 1.70, Z(3) = 3.16
  *
- * Extra margin in μ accounts for variant-lookup failures
- * (findHyperspaceVariant returns null), which add noise above theoretical σ.
+ * Extra margin in μ accounts for real belt variance from independent
+ * variant-belt draws, which add noise above theoretical σ.
  */
 export const HS_BELT_CONFIGS: Record<string, HSBeltConfig> = {
   // NOTE: Rare slot NEVER upgrades to HS. HS rares only appear via UC3 upgrade.
