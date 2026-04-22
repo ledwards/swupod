@@ -128,8 +128,69 @@ export abstract class BaseStrategy {
         })
       : leaders
 
+    const draftedCards = context.draftedCards || []
+    if (draftedCards.length > 0 && (eligible.length > 1 ? eligible : leaders).length > 1) {
+      const rankedByPool = this.rankLeadersForPool(
+        eligible.length > 0 ? eligible : leaders,
+        draftedCards,
+        context.draftStats || null
+      )
+      return rankedByPool[0] ?? null
+    }
+
     const ranked = this.rankLeaders(eligible.length > 0 ? eligible : leaders, context)
     return ranked[0] ?? null
+  }
+
+  rankLeadersForPool(
+    leaders: RawCard[],
+    draftedCards: RawCard[],
+    stats: SetDraftStats | null
+  ): RawCard[] {
+    const leaderPopularity = this.getLeaderPopularity(stats)
+
+    const scoreLeader = (leader: RawCard): number => {
+      const leaderColors = this._getLeaderColors(leader)
+      const leaderAlignment = this._getLeaderAlignment(leader)
+      const opposingAlignment = leaderAlignment === 'Villainy'
+        ? 'Heroism'
+        : leaderAlignment === 'Heroism'
+          ? 'Villainy'
+          : null
+
+      const candidateBaseColors = [null, ...COLOR_ASPECTS.filter(color => !leaderColors.includes(color))]
+      let bestPoolScore = -Infinity
+
+      for (const baseColor of candidateBaseColors) {
+        let poolScore = 0
+
+        for (const card of draftedCards) {
+          if (card.isLeader || card.isBase) continue
+
+          const cardAspects = card.aspects || []
+          const colorMatches = cardAspects.filter(aspect =>
+            leaderColors.includes(aspect) || (baseColor ? aspect === baseColor : false)
+          ).length
+
+          if (colorMatches > 0) {
+            poolScore += 14 * colorMatches
+          } else if (cardAspects.length === 0) {
+            poolScore += 2
+          }
+
+          if (opposingAlignment && cardAspects.includes(opposingAlignment)) {
+            poolScore -= 10
+          }
+        }
+
+        bestPoolScore = Math.max(bestPoolScore, poolScore)
+      }
+
+      const popularity = leaderPopularity?.get(leader.name || '')?.timesPicked || 0
+      return bestPoolScore + Math.min(popularity / 10, 3)
+    }
+
+    return [...leaders].sort((a, b) => scoreLeader(b) - scoreLeader(a))
   }
 
   /** Get the alignment (Heroism/Villainy) from already-drafted leaders, if consistent */

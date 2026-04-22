@@ -164,12 +164,15 @@ async function buildSingleBotDeck(
     ? ALL_MIXINS.find(m => m.name === bot.mixin_name) || null
     : null
   const strategy = createStrategy(bot.strategy_name as string || undefined, mixinObj)
-  const selectedLeader = strategy.selectLeader(draftedLeaders, { setCode })
+  const selectedLeader = strategy.selectLeader(draftedLeaders, {
+    setCode,
+    draftedCards,
+  })
 
   if (!selectedLeader) return null
 
   // 2. Select best common base
-  const selectedBase = selectBestBase(draftedLeaders, selectedLeader, setCode)
+  const selectedBase = selectBestBase(draftedCards, selectedLeader, setCode)
 
   // 3. Score and sort all drafted cards using the strategy's scoring
   // Simulate a committed state so cards are scored in-color
@@ -461,8 +464,8 @@ export function scoreBaseForLeader(
  * Select the best common base for the bot's leader.
  * Picks a random base whose color is NOT one of the leader's colors.
  */
-function selectBestBase(
-  draftedLeaders: Record<string, unknown>[],
+export function selectBestBase(
+  draftedCards: Record<string, unknown>[],
   selectedLeader: Record<string, unknown>,
   setCode: string
 ): Record<string, unknown> {
@@ -484,9 +487,36 @@ function selectBestBase(
     return scoreBaseForLeader(leaderAspects, baseAspects) > 0
   })
 
-  // Pick a random valid base, or fall back to any common base
+  const leaderAlignment = leaderAspects.find(a => a === 'Heroism' || a === 'Villainy')
+  const opposingAlignment = leaderAlignment === 'Villainy'
+    ? 'Heroism'
+    : leaderAlignment === 'Heroism'
+      ? 'Villainy'
+      : null
+
+  const scoreBase = (base: Record<string, unknown>): number => {
+    const baseColor = getBaseNewColor(selectedLeader, base)
+    if (!baseColor) return -Infinity
+
+    let score = 0
+    for (const card of draftedCards) {
+      if (card.isLeader || card.isBase) continue
+
+      const cardAspects = (card.aspects as string[]) || []
+      if (cardAspects.includes(baseColor)) {
+        score += cardAspects.includes(leaderAlignment as string) ? 4 : 3
+      }
+
+      if (opposingAlignment && cardAspects.includes(opposingAlignment)) {
+        score -= 2
+      }
+    }
+
+    return score
+  }
+
   const pool = validBases.length > 0 ? validBases : commonBases
-  return pool[Math.floor(Math.random() * pool.length)]
+  return [...pool].sort((a, b) => scoreBase(b) - scoreBase(a))[0] || pool[0]!
 }
 
 /**

@@ -43,7 +43,8 @@ import type { SetCode } from '../types'
 import { COMMON_BELT_ASSIGNMENTS, getBlockForSet, assignCardToBelt } from './data/commonBeltAssignments'
 
 // Type for belt ID
-type BeltId = 'A' | 'B'
+export type BeltId = 'A' | 'B'
+type BeltVariant = 'Normal' | 'Hyperspace'
 
 // Type for segment configuration
 interface SegmentConfig {
@@ -83,8 +84,8 @@ function getSegmentConfig(setCode: SetCode | string, beltId: BeltId): SegmentCon
         requiredAspects: [YELLOW]
       }
     }
-  } else {
-    // Block A (and future blocks)
+  } else if (block === 'A') {
+    // Block A
     if (beltId === 'A') {
       return {
         drawSize: 4,  // Draw 4 cards per pack from Belt A
@@ -94,6 +95,19 @@ function getSegmentConfig(setCode: SetCode | string, beltId: BeltId): SegmentCon
       return {
         drawSize: 4,  // Draw 4 cards per pack from Belt B
         requiredAspects: [RED, YELLOW]
+      }
+    }
+  } else {
+    // Block B (LAW+)
+    if (beltId === 'A') {
+      return {
+        drawSize: 4,
+        requiredAspects: [BLUE, RED]
+      }
+    } else {
+      return {
+        drawSize: 4,
+        requiredAspects: [GREEN, YELLOW]
       }
     }
   }
@@ -118,6 +132,10 @@ function shuffle<T>(arr: T[]): T[] {
 function getPrimaryAspect(card: RawCard): string | null {
   const aspects = card.aspects || []
   return aspects.length > 0 ? aspects[0]! : null
+}
+
+function cardHasAspect(card: RawCard, aspect: string): boolean {
+  return (card.aspects || []).includes(aspect)
 }
 
 /**
@@ -265,6 +283,315 @@ function buildInterleavedSequence(cards: RawCard[], lastAspect: string | null): 
   return result
 }
 
+function segmentHasRequiredAspects(cards: RawCard[], requiredAspects: string[]): boolean {
+  return requiredAspects.every(aspect => cards.some(card => cardHasAspect(card, aspect)))
+}
+
+function shuffleCopy<T>(arr: T[]): T[] {
+  return shuffle([...arr])
+}
+
+function buildAspectTargetPositions(cards: RawCard[]): Map<string | null, number[]> {
+  const groups = new Map<string | null, number>()
+  for (const card of cards) {
+    const aspect = getPrimaryAspect(card)
+    groups.set(aspect, (groups.get(aspect) || 0) + 1)
+  }
+
+  const targets = new Map<string | null, number[]>()
+  const total = cards.length
+  for (const [aspect, count] of groups) {
+    const positions: number[] = []
+    for (let i = 0; i < count; i++) {
+      positions.push(Math.round(((i + 0.5) * total) / count - 0.5))
+    }
+    targets.set(aspect, positions)
+  }
+
+  return targets
+}
+
+function getPatternTarget(
+  requiredAspects: string[],
+  drawSize: number,
+  absolutePos: number
+): string | null {
+  const phase = absolutePos % drawSize
+  return phase < requiredAspects.length ? requiredAspects[phase]! : null
+}
+
+function sortChunkCandidates(
+  candidates: RawCard[],
+  localSegment: RawCard[],
+  requiredAspects: string[],
+  prevAspect: string | null,
+  targetAspect: string | null
+): RawCard[] {
+  const seenAspects = new Set(localSegment.flatMap(card => card.aspects || []))
+
+  return [...candidates].sort((a, b) => {
+    const aPrimary = getPrimaryAspect(a)
+    const bPrimary = getPrimaryAspect(b)
+    const aMatchesTarget = targetAspect && cardHasAspect(a, targetAspect) ? 1 : 0
+    const bMatchesTarget = targetAspect && cardHasAspect(b, targetAspect) ? 1 : 0
+    if (aMatchesTarget !== bMatchesTarget) return bMatchesTarget - aMatchesTarget
+
+    const aHelps = requiredAspects.some(aspect => !seenAspects.has(aspect) && cardHasAspect(a, aspect)) ? 1 : 0
+    const bHelps = requiredAspects.some(aspect => !seenAspects.has(aspect) && cardHasAspect(b, aspect)) ? 1 : 0
+    if (aHelps !== bHelps) return bHelps - aHelps
+
+    const aAdjPenalty = aPrimary && aPrimary === prevAspect ? 1 : 0
+    const bAdjPenalty = bPrimary && bPrimary === prevAspect ? 1 : 0
+    if (aAdjPenalty !== bAdjPenalty) return aAdjPenalty - bAdjPenalty
+
+    const aPrimaryNeeded = aPrimary && requiredAspects.includes(aPrimary) ? 1 : 0
+    const bPrimaryNeeded = bPrimary && requiredAspects.includes(bPrimary) ? 1 : 0
+    if (aPrimaryNeeded !== bPrimaryNeeded) return bPrimaryNeeded - aPrimaryNeeded
+
+    return Math.random() - 0.5
+  })
+}
+
+function canStillCompleteSegment(
+  segmentCards: RawCard[],
+  remaining: RawCard[],
+  requiredAspects: string[],
+  slotsLeft: number,
+  segmentEndPos: number,
+  cardMinPositions: Map<string, number>
+): boolean {
+  const missing = requiredAspects.filter(aspect =>
+    !segmentCards.some(card => cardHasAspect(card, aspect))
+  )
+
+  if (missing.length > slotsLeft) return false
+  if (missing.length === 0) return true
+
+  const futureEligible = remaining.filter(card =>
+    (cardMinPositions.get(card.id) || 0) < segmentEndPos
+  )
+
+  return missing.every(aspect =>
+    futureEligible.some(card => cardHasAspect(card, aspect))
+  )
+}
+
+function hasEnoughCoverageForFutureSegments(
+  remainingCards: RawCard[],
+  requiredAspects: string[],
+  futureFullSegments: number
+): boolean {
+  if (futureFullSegments <= 0) return true
+
+  return requiredAspects.every(aspect => {
+    const count = remainingCards.filter(card => cardHasAspect(card, aspect)).length
+    return count >= futureFullSegments
+  })
+}
+
+function countFuturePatternNeeds(
+  totalLength: number,
+  nextPos: number,
+  startPhase: number,
+  drawSize: number,
+  requiredAspects: string[]
+): Map<string, number> {
+  const needs = new Map<string, number>()
+  requiredAspects.forEach(aspect => needs.set(aspect, 0))
+
+  for (let pos = nextPos; pos < totalLength; pos++) {
+    const target = getPatternTarget(requiredAspects, drawSize, startPhase + pos)
+    if (target) {
+      needs.set(target, (needs.get(target) || 0) + 1)
+    }
+  }
+
+  return needs
+}
+
+function hasEnoughCardsForFuturePatternNeeds(
+  remainingCards: RawCard[],
+  needs: Map<string, number>
+): boolean {
+  for (const [aspect, needed] of needs) {
+    const available = remainingCards.filter(card => cardHasAspect(card, aspect)).length
+    if (available < needed) {
+      return false
+    }
+  }
+
+  return true
+}
+
+function buildSegmentChunk(
+  prefixCards: RawCard[],
+  availableCards: RawCard[],
+  chunkSize: number,
+  requiredAspects: string[],
+  startPos: number,
+  cardMinPositions: Map<string, number>,
+  prevAspect: string | null,
+  futureFullSegments: number,
+  startPhase: number,
+  drawSize: number,
+  totalLength: number
+): RawCard[] | null {
+  const segmentEndPos = startPos + chunkSize
+
+  function backtrack(
+    localSegment: RawCard[],
+    remainingCards: RawCard[],
+    currentPrevAspect: string | null
+  ): RawCard[] | null {
+    if (localSegment.length === chunkSize) {
+      const fullSegment = [...prefixCards, ...localSegment]
+      return segmentHasRequiredAspects(fullSegment, requiredAspects) ? localSegment : null
+    }
+
+    const currentPos = startPos + localSegment.length
+    const eligible = remainingCards.filter(card => (cardMinPositions.get(card.id) || 0) <= currentPos)
+    let pool = eligible.length > 0 ? eligible : remainingCards
+    const targetAspect = getPatternTarget(requiredAspects, drawSize, startPhase + currentPos)
+    if (
+      targetAspect &&
+      !pool.some(card => cardHasAspect(card, targetAspect)) &&
+      remainingCards.some(card => cardHasAspect(card, targetAspect))
+    ) {
+      pool = remainingCards
+    }
+    const ordered = sortChunkCandidates(
+      pool,
+      [...prefixCards, ...localSegment],
+      requiredAspects,
+      currentPrevAspect,
+      targetAspect
+    )
+
+    for (const candidate of ordered) {
+      const candidatePrimary = getPrimaryAspect(candidate)
+      const hasNonAdjacentAlternative = ordered.some(other => getPrimaryAspect(other) !== currentPrevAspect)
+      if (candidatePrimary && currentPrevAspect === candidatePrimary && hasNonAdjacentAlternative) {
+        continue
+      }
+
+      if (targetAspect && !cardHasAspect(candidate, targetAspect)) {
+        continue
+      }
+
+      const nextRemaining = remainingCards.filter(card => card.id !== candidate.id)
+      const nextSegment = [...prefixCards, ...localSegment, candidate]
+      const slotsLeft = chunkSize - (localSegment.length + 1)
+
+      if (!canStillCompleteSegment(nextSegment, nextRemaining, requiredAspects, slotsLeft, segmentEndPos, cardMinPositions)) {
+        continue
+      }
+
+      if (!hasEnoughCoverageForFutureSegments(nextRemaining, requiredAspects, futureFullSegments)) {
+        continue
+      }
+
+      const futureNeeds = countFuturePatternNeeds(
+        totalLength,
+        currentPos + 1,
+        startPhase,
+        drawSize,
+        requiredAspects
+      )
+      if (!hasEnoughCardsForFuturePatternNeeds(nextRemaining, futureNeeds)) {
+        continue
+      }
+
+      const built = backtrack([...localSegment, candidate], nextRemaining, candidatePrimary)
+      if (built) return built
+    }
+
+    return null
+  }
+
+  return backtrack([], availableCards, prevAspect)
+}
+function buildLooseTail(
+  cards: RawCard[],
+  startPos: number,
+  cardMinPositions: Map<string, number>,
+  prevAspect: string | null,
+  startPhase: number,
+  requiredAspects: string[],
+  drawSize: number,
+  totalLength: number
+): RawCard[] {
+  const remaining = [...cards]
+  const result: RawCard[] = []
+  let currentPrevAspect = prevAspect
+
+  while (remaining.length > 0) {
+    const currentPos = startPos + result.length
+    const eligible = remaining.filter(card => (cardMinPositions.get(card.id) || 0) <= currentPos)
+    let pool = eligible.length > 0 ? eligible : remaining
+    const targetAspect = getPatternTarget(requiredAspects, drawSize, startPhase + currentPos)
+    if (
+      targetAspect &&
+      !pool.some(card => cardHasAspect(card, targetAspect)) &&
+      remaining.some(card => cardHasAspect(card, targetAspect))
+    ) {
+      pool = remaining
+    }
+    const ordered = shuffleCopy(pool).sort((a, b) => {
+      const aMatchesTarget = targetAspect && cardHasAspect(a, targetAspect) ? 1 : 0
+      const bMatchesTarget = targetAspect && cardHasAspect(b, targetAspect) ? 1 : 0
+      if (aMatchesTarget !== bMatchesTarget) return bMatchesTarget - aMatchesTarget
+
+      const aSame = getPrimaryAspect(a) && getPrimaryAspect(a) === currentPrevAspect ? 1 : 0
+      const bSame = getPrimaryAspect(b) && getPrimaryAspect(b) === currentPrevAspect ? 1 : 0
+      return aSame - bSame
+    })
+    let chosen: RawCard | null = null
+    for (const card of ordered) {
+      const nextRemaining = remaining.filter(c => c.id !== card.id)
+      const futureNeeds = countFuturePatternNeeds(
+        totalLength,
+        currentPos + 1,
+        startPhase,
+        drawSize,
+        requiredAspects
+      )
+      if (!hasEnoughCardsForFuturePatternNeeds(nextRemaining, futureNeeds)) {
+        continue
+      }
+      chosen = card
+      break
+    }
+    const card = chosen || ordered[0]!
+    result.push(card)
+    currentPrevAspect = getPrimaryAspect(card)
+    const index = remaining.findIndex(c => c.id === card.id)
+    remaining.splice(index, 1)
+  }
+
+  return result
+}
+
+function slidingWindowsHaveRequiredAspects(
+  boot: RawCard[],
+  seamCards: RawCard[],
+  drawSize: number,
+  requiredAspects: string[]
+): boolean {
+  const seamPrefix = seamCards.slice(-(drawSize - 1))
+  const combined = [...seamPrefix, ...boot]
+  const firstNewIndex = seamPrefix.length
+
+  for (let start = 0; start + drawSize <= combined.length; start++) {
+    if (start + drawSize <= firstNewIndex) continue
+    const window = combined.slice(start, start + drawSize)
+    if (!segmentHasRequiredAspects(window, requiredAspects)) {
+      return false
+    }
+  }
+
+  return true
+}
+
 /**
  * Build a constrained boot with all cards from the belt.
  *
@@ -285,59 +612,196 @@ function buildConstrainedBoot(
   drawSize: number,
   requiredAspects: string[],
   cardMinPositions: Map<string, number>,
-  lastAspect: string | null
+  lastAspect: string | null,
+  seamCards: RawCard[],
+  startPhase: number
 ): RawCard[] {
   if (cards.length === 0) return []
 
-  const beltSize = cards.length
+  const seamPrefix = seamCards.slice(-(drawSize - 1))
+  const aspectTargets = buildAspectTargetPositions(cards)
 
-  // Find the highest minPosition to determine where early zone ends
-  let maxMinPos = 0
-  for (const [, minPos] of cardMinPositions) {
-    if (minPos > maxMinPos) maxMinPos = minPos
+  function getUrgentAspects(result: RawCard[]): Set<string> {
+    const combined = [...seamPrefix, ...result]
+    const currentIndex = combined.length
+    const urgent = new Set<string>()
+
+    for (let start = Math.max(0, currentIndex - drawSize + 1); start <= currentIndex; start++) {
+      const end = start + drawSize - 1
+      if (end < seamPrefix.length || end >= seamPrefix.length + cards.length) continue
+
+      const windowCards = combined.slice(start, Math.min(currentIndex, end + 1))
+      const missing = requiredAspects.filter(aspect =>
+        !windowCards.some(card => cardHasAspect(card, aspect))
+      )
+      const slotsLeft = end - currentIndex + 1
+      if (slotsLeft > 0 && missing.length >= slotsLeft) {
+        missing.forEach(aspect => urgent.add(aspect))
+      }
+    }
+
+    return urgent
   }
 
-  // Split cards into early-eligible and late-only
-  const earlyCards: RawCard[] = []
-  const lateCards: RawCard[] = []
-  for (const card of cards) {
-    const minPos = cardMinPositions.get(card.id) || 0
-    if (minPos === 0) {
-      earlyCards.push(card)
-    } else {
-      lateCards.push(card)
+  function canCoverMissingAspects(
+    missing: string[],
+    eligibleCards: RawCard[],
+    slotsLeft: number
+  ): boolean {
+    if (missing.length === 0) return true
+    if (slotsLeft <= 0) return false
+
+    const uniqueMissing = [...new Set(missing)]
+    const candidates = eligibleCards.filter(card =>
+      uniqueMissing.some(aspect => cardHasAspect(card, aspect))
+    )
+
+    function backtrack(index: number, covered: Set<string>, picksLeft: number): boolean {
+      if (uniqueMissing.every(aspect => covered.has(aspect))) return true
+      if (picksLeft === 0 || index >= candidates.length) return false
+
+      for (let i = index; i < candidates.length; i++) {
+        const nextCovered = new Set(covered)
+        for (const aspect of uniqueMissing) {
+          if (cardHasAspect(candidates[i]!, aspect)) {
+            nextCovered.add(aspect)
+          }
+        }
+        if (backtrack(i + 1, nextCovered, picksLeft - 1)) {
+          return true
+        }
+      }
+
+      return false
+    }
+
+    return backtrack(0, new Set<string>(), slotsLeft)
+  }
+
+  function windowsRemainFeasible(result: RawCard[], remainingCards: RawCard[]): boolean {
+    const combined = [...seamPrefix, ...result]
+
+    for (let start = 0; start < combined.length; start++) {
+      const end = start + drawSize - 1
+      if (end < seamPrefix.length || end >= seamPrefix.length + cards.length) continue
+
+      const windowCards = combined.slice(start, Math.min(combined.length, end + 1))
+      const missing = requiredAspects.filter(aspect =>
+        !windowCards.some(card => cardHasAspect(card, aspect))
+      )
+      const slotsLeft = Math.max(0, end - combined.length + 1)
+
+      if (missing.length === 0) continue
+      if (slotsLeft === 0) return false
+
+      const lastBootPos = end - seamPrefix.length
+      const eligibleFutureCards = remainingCards.filter(card =>
+        (cardMinPositions.get(card.id) || 0) <= lastBootPos
+      )
+
+      if (!canCoverMissingAspects(missing, eligibleFutureCards, slotsLeft)) {
+        return false
+      }
+    }
+
+    return true
+  }
+
+  function buildByWindows(remainingCards: RawCard[], prevAspect: string | null): RawCard[] | null {
+    const remaining = [...remainingCards]
+    const result: RawCard[] = []
+    let currentPrevAspect = prevAspect
+    const aspectUsage = new Map<string | null, number>()
+
+    for (let pos = 0; pos < cards.length; pos++) {
+      const eligible = remaining.filter(card => (cardMinPositions.get(card.id) || 0) <= pos)
+      if (eligible.length === 0) {
+        return null
+      }
+
+      const pool = eligible
+      const urgentAspects = getUrgentAspects(result)
+
+      const ordered = [...pool].sort((a, b) => {
+        const aPrimary = getPrimaryAspect(a)
+        const bPrimary = getPrimaryAspect(b)
+        const aUrgent = [...urgentAspects].filter(aspect => cardHasAspect(a, aspect)).length
+        const bUrgent = [...urgentAspects].filter(aspect => cardHasAspect(b, aspect)).length
+        if (aUrgent !== bUrgent) return bUrgent - aUrgent
+
+        const aSame = aPrimary && aPrimary === currentPrevAspect ? 1 : 0
+        const bSame = bPrimary && bPrimary === currentPrevAspect ? 1 : 0
+        if (aSame !== bSame) return aSame - bSame
+
+        const aTargetList = aspectTargets.get(aPrimary) || []
+        const bTargetList = aspectTargets.get(bPrimary) || []
+        const aTargetIndex = aspectUsage.get(aPrimary) || 0
+        const bTargetIndex = aspectUsage.get(bPrimary) || 0
+        const aOverdue = (pos - (aTargetList[aTargetIndex] ?? pos)) * ((aTargetList.length + 1) / cards.length)
+        const bOverdue = (pos - (bTargetList[bTargetIndex] ?? pos)) * ((bTargetList.length + 1) / cards.length)
+        if (aOverdue !== bOverdue) return bOverdue - aOverdue
+
+        const aRequiredCount = requiredAspects.filter(aspect => cardHasAspect(a, aspect)).length
+        const bRequiredCount = requiredAspects.filter(aspect => cardHasAspect(b, aspect)).length
+        if (aRequiredCount !== bRequiredCount) return bRequiredCount - aRequiredCount
+
+        return Math.random() - 0.5
+      })
+
+      let chosen: RawCard | null = null
+      const hasAspectAlternative = ordered.some(candidate => getPrimaryAspect(candidate) !== currentPrevAspect)
+      for (const candidate of ordered) {
+        const candidatePrimary = getPrimaryAspect(candidate)
+        if (
+          candidatePrimary &&
+          candidatePrimary === currentPrevAspect &&
+          hasAspectAlternative
+        ) {
+          continue
+        }
+
+        const nextRemaining = remaining.filter(card => card.id !== candidate.id)
+        if (!windowsRemainFeasible([...result, candidate], nextRemaining)) {
+          continue
+        }
+
+        chosen = candidate
+        break
+      }
+
+      if (!chosen) {
+        return null
+      }
+
+      result.push(chosen)
+      currentPrevAspect = getPrimaryAspect(chosen)
+      aspectUsage.set(currentPrevAspect, (aspectUsage.get(currentPrevAspect) || 0) + 1)
+      const index = remaining.findIndex(card => card.id === chosen.id)
+      remaining.splice(index, 1)
+    }
+
+    return result
+  }
+
+  for (let attempt = 0; attempt < 2000; attempt++) {
+    const result = buildByWindows(shuffleCopy(cards), lastAspect)
+    if (!result) continue
+    if (slidingWindowsHaveRequiredAspects(result, seamCards, drawSize, requiredAspects)) {
+      return result
     }
   }
 
-  // Build early zone: only early-eligible cards, interleaved by aspect
-  const earlySequence = buildInterleavedSequence(earlyCards, lastAspect)
-
-  // Take just enough early cards to fill before the first late card can appear
-  // The early zone size = maxMinPos (all positions before any late card is allowed)
-  const earlyZoneSize = Math.min(maxMinPos, earlySequence.length)
-  const result = earlySequence.slice(0, earlyZoneSize)
-
-  // Remaining cards = unused early cards + all late cards
-  const usedEarlyIds = new Set(result.map(c => c.id))
-  const remainingCards = [
-    ...earlyCards.filter(c => !usedEarlyIds.has(c.id)),
-    ...lateCards
-  ]
-
-  // Build the remaining zone: interleave all remaining cards
-  const prevAspect = result.length > 0
-    ? getPrimaryAspect(result[result.length - 1]!)
-    : lastAspect
-  const lateSequence = buildInterleavedSequence(remainingCards, prevAspect)
-  result.push(...lateSequence)
-
-  return result
+  return buildInterleavedSequence(cards, lastAspect)
 }
 
 /**
  * Get common cards for a specific belt from static assignments or auto-assignment
  */
-export function getBeltCards(setCode: SetCode | string, beltId: BeltId): RawCard[] {
+export function getBeltCards(
+  setCode: SetCode | string,
+  beltId: BeltId,
+  variantType: BeltVariant = 'Normal'
+): RawCard[] {
   const cards = getCachedCards(setCode)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const assignments = (COMMON_BELT_ASSIGNMENTS as Record<string, any>)[setCode]
@@ -347,9 +811,9 @@ export function getBeltCards(setCode: SetCode | string, beltId: BeltId): RawCard
     return []
   }
 
-  // Filter to normal variant commons (non-leader, non-base)
+  // Filter to commons of the requested variant (non-leader, non-base)
   const allCommons = cards.filter(c =>
-    c.variantType === 'Normal' &&
+    c.variantType === variantType &&
     c.rarity === 'Common' &&
     c.type !== 'Leader' &&
     c.type !== 'Base'
@@ -390,6 +854,7 @@ export function getBeltCards(setCode: SetCode | string, beltId: BeltId): RawCard
 export class CommonBelt {
   setCode: SetCode
   beltId: BeltId
+  variantType: BeltVariant
   hopper: RawCard[]
   beltCards: RawCard[]
   segmentConfig: SegmentConfig
@@ -398,13 +863,18 @@ export class CommonBelt {
   DEDUP_WINDOW: number
   totalDraws: number
 
-  constructor(setCode: SetCode | string, beltId: BeltId) {
+  constructor(
+    setCode: SetCode | string,
+    beltId: BeltId,
+    variantType: BeltVariant = 'Normal'
+  ) {
     this.setCode = setCode as SetCode
     this.beltId = beltId
+    this.variantType = variantType
     this.hopper = []
 
     // Get cards assigned to this belt
-    this.beltCards = getBeltCards(setCode, beltId)
+    this.beltCards = getBeltCards(setCode, beltId, variantType)
 
     // Get segment configuration for constrained boot building
     this.segmentConfig = getSegmentConfig(setCode, beltId)
@@ -490,7 +960,9 @@ export class CommonBelt {
       drawSize,
       requiredAspects,
       cardMinPositions,
-      lastAspect
+      lastAspect,
+      seamCards,
+      (this.totalDraws + seamCards.length) % drawSize
     )
 
     this.hopper.push(...boot)
@@ -517,6 +989,9 @@ export class CommonBelt {
         this.recentServed.shift()
       }
       this.lastServedAspect = getPrimaryAspect(card)
+      if (this.variantType === 'Hyperspace') {
+        return { ...card, isHyperspace: true }
+      }
       return { ...card }
     }
 
@@ -528,7 +1003,11 @@ export class CommonBelt {
    */
   peek(count = 1): RawCard[] {
     this._fillIfNeeded()
-    return this.hopper.slice(0, count).map(c => ({ ...c }))
+    return this.hopper.slice(0, count).map(c =>
+      this.variantType === 'Hyperspace'
+        ? { ...c, isHyperspace: true }
+        : { ...c }
+    )
   }
 
   /**

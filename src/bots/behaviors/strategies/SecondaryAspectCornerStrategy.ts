@@ -32,10 +32,19 @@ export class SecondaryAspectCornerStrategy extends BaseStrategy {
     if (!alignment) return 0
 
     const cardAspects = card.aspects || []
+    const leaderColors = this._getLeaderColors(this.committedLeader)
+    const matchesLeaderColor = cardAspects.some(a => leaderColors.includes(a))
+    const matchesBaseColor = this.committedBaseColor
+      ? cardAspects.includes(this.committedBaseColor)
+      : false
 
-    // Strong bonus for matching alignment
+    // Same-alignment cards are best when they also stay inside the leader/base lane.
+    // Otherwise this strategy over-drafts aligned off-color cards that never make the deck.
     if (cardAspects.includes(alignment)) {
-      return 25  // Heavily prioritize same-alignment cards
+      if (matchesLeaderColor) return 25
+      if (matchesBaseColor) return 18
+      if (!this.committedBaseColor) return 8
+      return -12
     }
 
     // Cards with the WRONG alignment are very bad

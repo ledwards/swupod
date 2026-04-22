@@ -9,6 +9,7 @@
 
 import { HyperspaceUncommonBelt } from './HyperspaceUncommonBelt'
 import { HyperspaceCommonBelt } from './HyperspaceCommonBelt'
+import { HyperspaceCommonLaneBelt } from './HyperspaceCommonLaneBelt'
 import { HyperspaceBaseBelt } from './HyperspaceBaseBelt'
 import { HyperspaceLeaderBelt } from './HyperspaceLeaderBelt'
 import { HyperspaceRareLegendaryBelt } from './HyperspaceRareLegendaryBelt'
@@ -105,6 +106,31 @@ async function runTests(): Promise<void> {
     while (belt.size > poolSize) belt.next(); belt.next()
     belt.next()
     assert(belt.size >= poolSize, 'Hopper should refill')
+  })
+
+  test('HyperspaceCommonLane: SOR Belt A preserves B/G/R across 6-card windows', () => {
+    const belt = new HyperspaceCommonLaneBelt('SOR', 'A')
+    const cards = Array.from({ length: 24 }, () => belt.next())
+
+    for (let start = 0; start <= cards.length - 6; start++) {
+      const window = cards.slice(start, start + 6)
+      const aspects = window.flatMap(card => card?.aspects || [])
+      assert(aspects.includes('Vigilance'), `Window ${start} missing Vigilance`)
+      assert(aspects.includes('Command'), `Window ${start} missing Command`)
+      assert(aspects.includes('Aggression'), `Window ${start} missing Aggression`)
+    }
+  })
+
+  test('HyperspaceCommonLane: JTL Belt A preserves B/G across 4-card windows', () => {
+    const belt = new HyperspaceCommonLaneBelt('JTL', 'A')
+    const cards = Array.from({ length: 20 }, () => belt.next())
+
+    for (let start = 0; start <= cards.length - 4; start++) {
+      const window = cards.slice(start, start + 4)
+      const aspects = window.flatMap(card => card?.aspects || [])
+      assert(aspects.includes('Vigilance'), `Window ${start} missing Vigilance`)
+      assert(aspects.includes('Command'), `Window ${start} missing Command`)
+    }
   })
 
   console.log('')

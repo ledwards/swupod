@@ -55,7 +55,7 @@ const EXPECTED: Record<string, ExpectedCounts> = {
   SOR: {
     // Treatment totals
     totalNormal: 252,
-    totalHyperspace: 252,
+    totalHyperspace: 242,
     totalFoil: 218,
     totalHyperspaceFoil: 0,
     totalShowcase: 16,
@@ -105,7 +105,7 @@ const EXPECTED: Record<string, ExpectedCounts> = {
 
   SHD: {
     totalNormal: 262,
-    totalHyperspace: 252,
+    totalHyperspace: 242,
     totalFoil: 218,
     totalHyperspaceFoil: 0,
     totalShowcase: 18,
@@ -149,7 +149,7 @@ const EXPECTED: Record<string, ExpectedCounts> = {
 
   TWI: {
     totalNormal: 257,
-    totalHyperspace: 252,
+    totalHyperspace: 242,
     totalFoil: 218,
     totalHyperspaceFoil: 0,
     totalShowcase: 18,

@@ -5,15 +5,27 @@ import assert from 'node:assert'
 describe('useIsMobile', () => {
   let originalWindow: typeof globalThis.window | undefined
   let originalNavigator: typeof globalThis.navigator | undefined
+  let originalNavigatorDescriptor: PropertyDescriptor | undefined
 
   beforeEach(() => {
     originalWindow = (global as any).window
     originalNavigator = (global as any).navigator
+    originalNavigatorDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'navigator')
   })
 
   afterEach(() => {
     ;(global as any).window = originalWindow
-    ;(global as any).navigator = originalNavigator
+    if (originalNavigatorDescriptor) {
+      Object.defineProperty(globalThis, 'navigator', originalNavigatorDescriptor)
+    } else if (originalNavigator === undefined) {
+      delete (global as any).navigator
+    } else {
+      Object.defineProperty(globalThis, 'navigator', {
+        configurable: true,
+        writable: true,
+        value: originalNavigator,
+      })
+    }
   })
 
   describe('isMobileDevice (non-hook)', () => {

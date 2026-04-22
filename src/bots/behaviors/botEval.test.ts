@@ -26,7 +26,7 @@ import { createStrategy } from './index'
 import { ALL_MIXINS, type MixinModifier } from './mixins'
 import { generateDraftPacks, getPassDirection, getNextSeat } from '../../utils/draftLogic'
 import { getCardsBySet } from '../../utils/cardData'
-import { scoreBaseForLeader, getBaseNewColor } from '../../utils/botDeckBuilder'
+import { scoreBaseForLeader, getBaseNewColor, selectBestBase } from '../../utils/botDeckBuilder'
 
 const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning']
 const ALIGNMENT_ASPECTS = ['Heroism', 'Villainy']
@@ -177,7 +177,10 @@ function buildDeck(result: DraftResult, setCode: string): DeckResult {
   const strategy = createStrategy(result.strategyName,
     ALL_MIXINS.find(m => m.name === result.mixinName) || null)
 
-  const selectedLeader = strategy.selectLeader(result.draftedLeaders, { setCode })
+  const selectedLeader = strategy.selectLeader(result.draftedLeaders, {
+    setCode,
+    draftedCards: result.draftedCards,
+  })
   assert.ok(selectedLeader, `${result.strategyName}: must select a leader`)
 
   // Select base
@@ -190,8 +193,8 @@ function buildDeck(result: DraftResult, setCode: string): DeckResult {
     scoreBaseForLeader(leaderAspects, base.aspects || []) > 0
   )
   const selectedBase = validBases.length > 0
-    ? validBases[Math.floor(Math.random() * validBases.length)]
-    : commonBases[Math.floor(Math.random() * commonBases.length)]
+    ? selectBestBase(result.draftedCards, selectedLeader, setCode)
+    : commonBases[0]
 
   assert.ok(selectedBase, `${result.strategyName}: must select a base`)
 
@@ -240,6 +243,10 @@ function buildDeck(result: DraftResult, setCode: string): DeckResult {
     } else {
       sideboard.push(card)
     }
+  }
+
+  while (deck.length < DECK_SIZE && sideboard.length > 0) {
+    deck.push(sideboard.shift()!)
   }
 
   return { leader: selectedLeader, base: selectedBase, deck, sideboard, inAspectColors }
@@ -347,14 +354,14 @@ describe('Bot Draft Evaluation (real cards, real packs)', () => {
       }
     })
 
-    it('SPEC: mixed-alignment leaders are acceptable (alignment locks at Y, not leader draft)', () => {
+    it('SPEC: mixed-alignment and neutral leaders are acceptable (alignment locks at Y, not leader draft)', () => {
       // Leaders are drafted pre-Y — it's OK to pick both alignments.
-      // What matters is the COMMITTED leader drives card selection after Y.
-      // Just verify leaders were drafted and the committed leader has an alignment.
+      // LAW also has neutral two-color leaders. What matters is the committed
+      // leader is a real color lane the bot can build around.
       for (const { draft, deck } of allDeckResults) {
-        const leaderAlignment = (deck.leader.aspects || []).find((a: string) => ALIGNMENT_ASPECTS.includes(a))
-        assert.ok(leaderAlignment,
-          `${draft.strategyName}/${draft.mixinName}: committed leader ${deck.leader.name} has no alignment`)
+        const leaderColors = (deck.leader.aspects || []).filter((a: string) => COLOR_ASPECTS.includes(a))
+        assert.ok(leaderColors.length >= 1,
+          `${draft.strategyName}/${draft.mixinName}: committed leader ${deck.leader.name} has no color aspect`)
       }
     })
   })
@@ -415,22 +422,21 @@ describe('Bot Draft Evaluation (real cards, real packs)', () => {
   // === STRATEGY-SPECIFIC EVALS ===
 
   describe('Strategy adherence', () => {
-    it('SPEC: committed leader colors match at least 40% of drafted cards', () => {
+    it('SPEC: committed lane colors match at least 40% of drafted cards', () => {
       // In 8-player drafts, forced late picks mean ~30-40% off-color is normal.
-      // 40% match rate = ~17 cards matching leader colors, enough for a deck core.
+      // Evaluate the full committed lane after X: leader colors plus chosen base color.
       for (const { draft, deck } of allDeckResults) {
-        const leaderColors = (deck.leader.aspects || []).filter((a: string) => COLOR_ASPECTS.includes(a))
         const nonLeaderCards = draft.draftedCards.filter(c => !c.isLeader && !c.isBase)
 
         const matchingCards = nonLeaderCards.filter(c => {
           const colors = (c.aspects || []).filter((a: string) => COLOR_ASPECTS.includes(a))
-          return colors.length === 0 || colors.some((a: string) => leaderColors.includes(a))
+          return colors.length === 0 || colors.some((a: string) => deck.inAspectColors.includes(a))
         })
 
         const matchRatio = matchingCards.length / nonLeaderCards.length
         assert.ok(matchRatio >= 0.4,
           `${draft.strategyName}/${draft.mixinName}: only ${(matchRatio * 100).toFixed(0)}% of pool ` +
-          `matches leader colors ${leaderColors.join(',')} (need ≥40%)`)
+          `matches lane colors ${deck.inAspectColors.join(',')} (need ≥40%)`)
       }
     })
 

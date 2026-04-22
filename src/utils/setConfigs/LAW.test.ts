@@ -171,12 +171,12 @@ describe('SET_CONFIGS registry', () => {
     assert.strictEqual(config.setCode, 'LAW')
   })
 
-  it('should have 7 sets registered', () => {
+  it('should have 8 sets registered', () => {
     const setCodes = Object.keys(SET_CONFIGS)
-    assert.strictEqual(setCodes.length, 7)
+    assert.strictEqual(setCodes.length, 8)
     assert.deepStrictEqual(
       setCodes.sort(),
-      ['JTL', 'LAW', 'LOF', 'SEC', 'SHD', 'SOR', 'TWI'].sort()
+      ['ASH', 'JTL', 'LAW', 'LOF', 'SEC', 'SHD', 'SOR', 'TWI'].sort()
     )
   })
 })

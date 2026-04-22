@@ -44,9 +44,12 @@ import { HyperspaceLeaderBelt } from '../belts/HyperspaceLeaderBelt';
 import { HyperspaceBaseBelt } from '../belts/HyperspaceBaseBelt';
 import { HyperspaceUncommonBelt } from '../belts/HyperspaceUncommonBelt';
 import { HyperspaceCommonBelt } from '../belts/HyperspaceCommonBelt';
+import { HyperspaceCommonLaneBelt } from '../belts/HyperspaceCommonLaneBelt';
 import { HyperspaceRareLegendaryBelt } from '../belts/HyperspaceRareLegendaryBelt';
+import { HyperspaceSingleRarityBelt } from '../belts/HyperspaceSingleRarityBelt';
 import { HyperspaceUpgradeBelt, type UpgradePlan } from '../belts/HyperspaceUpgradeBelt';
 import { CommonUpgradeBelt, type CommonUpgradeSlot } from '../belts/CommonUpgradeBelt';
+import { Set7PlusUc3OutcomeBelt, type Set7PlusUc3Outcome } from '../belts/Set7PlusUc3OutcomeBelt';
 import { getSetConfig } from './setConfigs/index';
 import { getCachedCards } from './cardCache';
 
@@ -115,6 +118,24 @@ function weightedRaritySelect(weights: Record<string, number>): string {
     if (roll <= 0) return rarity;
   }
   return entries[entries.length - 1][0];
+}
+
+function findHyperspaceVariant(card: RawCard | null, setCode: SetCode | string): RawCard | null {
+  if (!card || !card.name) return null;
+
+  const allCards = getCachedCards(setCode);
+  const hsVariant = allCards.find(c =>
+    c.name === card.name &&
+    c.variantType === 'Hyperspace' &&
+    c.rarity === card.rarity &&
+    c.type === card.type
+  );
+
+  if (hsVariant) {
+    return { ...hsVariant, isHyperspace: true };
+  }
+
+  return { ...card, variantType: 'Hyperspace', isHyperspace: true };
 }
 
 /**
@@ -266,10 +287,26 @@ export function getHyperspaceCommonBelt(setCode: SetCode | string): Belt {
   return beltCache.get(key)!;
 }
 
+function getHyperspaceCommonLaneBelt(setCode: SetCode | string, beltId: 'A' | 'B'): Belt {
+  const key = `hyperspace-common-${beltId.toLowerCase()}-${setCode}`;
+  if (!beltCache.has(key)) {
+    beltCache.set(key, new HyperspaceCommonLaneBelt(setCode, beltId));
+  }
+  return beltCache.get(key)!;
+}
+
 function getHyperspaceRareLegendaryBelt(setCode: SetCode | string): Belt {
   const key = `hyperspace-rarelegendary-${setCode}`;
   if (!beltCache.has(key)) {
     beltCache.set(key, new HyperspaceRareLegendaryBelt(setCode));
+  }
+  return beltCache.get(key)!;
+}
+
+function getHyperspaceSingleRarityBelt(setCode: SetCode | string, rarity: string): Belt {
+  const key = `hyperspace-${rarity.toLowerCase()}-${setCode}`;
+  if (!beltCache.has(key)) {
+    beltCache.set(key, new HyperspaceSingleRarityBelt(setCode, rarity));
   }
   return beltCache.get(key)!;
 }
@@ -318,6 +355,15 @@ function getCommonUpgradeBelt(setCode: SetCode | string): CommonUpgradeBelt | nu
     beltCache.set(key, new CommonUpgradeBelt());
   }
   return beltCache.get(key) as CommonUpgradeBelt;
+}
+
+function getSet7PlusUc3OutcomeBelt(setCode: SetCode | string): Set7PlusUc3OutcomeBelt | null {
+  if (!usesLawPackRules(setCode)) return null;
+  const key = `set7plus-uc3-${setCode}`;
+  if (!beltCache.has(key)) {
+    beltCache.set(key, new Set7PlusUc3OutcomeBelt());
+  }
+  return beltCache.get(key) as Set7PlusUc3OutcomeBelt;
 }
 
 /**
@@ -445,24 +491,32 @@ function applyUpgradePass(pack: Pack, setCode: SetCode | string): Pack {
   // Belts are independent and do not have knowledge of each other — just like a real printer.
   const thirdUCIndex = uncommonIndices[2];
   if (thirdUCIndex !== undefined) {
-    let uc3Upgraded = false;
+    if (usesLawPackRules(setCode)) {
+      const uc3OutcomeBelt = getSet7PlusUc3OutcomeBelt(setCode);
+      const outcome: Set7PlusUc3Outcome = uc3OutcomeBelt ? uc3OutcomeBelt.next() : 'none';
 
-    // a) UC3 → Prestige (LAW+ only, checked first)
-    if (probs.uc3ToPrestige && shouldUpgrade(probs.uc3ToPrestige)) {
-      const prestigeBelt = getPrestigeBelt(setCode);
-      if (prestigeBelt) {
-        const prestige = (prestigeBelt as CarbonitePrestigeBelt).nextTier1();
-        if (prestige) {
-          pack.cards[thirdUCIndex] = prestige;
-          uc3Upgraded = true;
-        }
+      if (outcome === 'prestige') {
+        const prestigeBelt = getPrestigeBelt(setCode);
+        const prestige = prestigeBelt ? (prestigeBelt as CarbonitePrestigeBelt).nextTier1() : null;
+        if (prestige) pack.cards[thirdUCIndex] = prestige;
+      } else if (outcome === 'hsUncommon') {
+        const hsUCBelt = getHyperspaceUncommonBelt(setCode);
+        const upgraded = hsUCBelt.next();
+        if (upgraded) pack.cards[thirdUCIndex] = upgraded;
+      } else if (outcome === 'hsRare') {
+        const hsRareBelt = getHyperspaceSingleRarityBelt(setCode, 'Rare');
+        const upgraded = hsRareBelt.next();
+        if (upgraded) pack.cards[thirdUCIndex] = upgraded;
+      } else if (outcome === 'hsSpecial') {
+        const hsSpecialBelt = getHyperspaceSingleRarityBelt(setCode, 'Special');
+        const upgraded = hsSpecialBelt.next();
+        if (upgraded) pack.cards[thirdUCIndex] = upgraded;
+      } else if (outcome === 'hsLegendary') {
+        const hsLegendaryBelt = getHyperspaceSingleRarityBelt(setCode, 'Legendary');
+        const upgraded = hsLegendaryBelt.next();
+        if (upgraded) pack.cards[thirdUCIndex] = upgraded;
       }
-    }
-
-    // b) UC3 → HS upgrade (fallback if prestige didn't trigger)
-    // LAW+: weighted rarity selection (UC 60%, R 30%, S 7.5%, L 2.5%)
-    // Sets 1-6: always R/L via HyperspaceRareLegendaryBelt
-    if (!uc3Upgraded) {
+    } else {
       const shouldUpgradeUC3 = hsPlan ? hsPlan.uc3 : (probs.thirdUCToHyperspaceRL && shouldUpgrade(probs.thirdUCToHyperspaceRL));
       if (shouldUpgradeUC3) {
         const uc3Weights = config?.rarityWeights?.ucSlot3Upgraded;
@@ -472,20 +526,10 @@ function applyUpgradePass(pack: Pack, setCode: SetCode | string): Pack {
             const hsUCBelt = getHyperspaceUncommonBelt(setCode);
             const upgraded = hsUCBelt.next();
             if (upgraded) pack.cards[thirdUCIndex] = upgraded;
-          } else {
-            // Pick a random HS card of the exact rarity selected by weights.
-            // LAW+/ASH still use weighted rarity selection for this path.
-            const upgraded = getCachedCards(setCode)
-              .filter(c =>
-                c.variantType === 'Hyperspace' &&
-                c.rarity === rarity &&
-                !c.isLeader &&
-                !c.isBase
-              );
-            const drawn = upgraded.length > 0
-              ? { ...upgraded[Math.floor(Math.random() * upgraded.length)]!, isHyperspace: true }
-              : null;
-            if (drawn) pack.cards[thirdUCIndex] = drawn;
+          } else if (rarity === 'Rare' || rarity === 'Legendary' || rarity === 'Special') {
+            const hsRarityBelt = getHyperspaceSingleRarityBelt(setCode, rarity);
+            const upgraded = hsRarityBelt.next();
+            if (upgraded) pack.cards[thirdUCIndex] = upgraded;
           }
         } else {
           // Sets without weights — use R/L belt directly
@@ -509,14 +553,13 @@ function applyUpgradePass(pack: Pack, setCode: SetCode | string): Pack {
     if (shouldUpgradeCommon) {
       const hyperspaceIndex = 1 + blockConfig.hyperspaceSlot;
       if (hyperspaceIndex < pack.cards.length) {
-        const currentCommon = pack.cards[hyperspaceIndex];
-        if (currentCommon && currentCommon.rarity === 'Common' && !currentCommon.isLeader && !currentCommon.isBase) {
-          const hsCommonBelt = getHyperspaceCommonBelt(setCode);
-          const upgraded = hsCommonBelt.next();
+      const currentCommon = pack.cards[hyperspaceIndex];
+      if (currentCommon && currentCommon.rarity === 'Common' && !currentCommon.isLeader && !currentCommon.isBase) {
+          const upgraded = findHyperspaceVariant(currentCommon, setCode);
           if (upgraded) pack.cards[hyperspaceIndex] = upgraded;
-        }
       }
     }
+  }
   }
   // LAW+ (Block B): no common upgrade — slot 5 is already HS from dedicated belt
 
@@ -624,7 +667,7 @@ export function generateBoosterPack(_cards: RawCard[], setCode: SetCode | string
   if (commonUpgradeBelt) {
     const upgradeSlot = commonUpgradeBelt.next();
     if (upgradeSlot !== 'none') {
-      const hsCommonBelt = getHyperspaceCommonBelt(setCode);
+      const hsCommonBelt = getHyperspaceCommonLaneBelt(setCode, upgradeSlot === 'beltA' ? 'A' : 'B');
       const hsCommon = hsCommonBelt.next();
       if (hsCommon) {
         // Pack indices: 0=leader, 1=base, 2-5=Belt A slots 1-4, 6=HS common, 7-10=Belt B slots 6-9
