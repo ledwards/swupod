@@ -1,5 +1,11 @@
 # Release Notes
 
+## 04.22.2026
+
+### 🐛 Bug Fixes
+- **Fixed SWUDB export failures for some legacy decks**: A bounded set of older deck builder saves had card objects missing `cardId`, which could prevent Hyperspace cards from downgrading to their regular versions during export. A production data backfill repaired these saved decks so exports work again without adding permanent compatibility code.
+- **Fixed legacy Hyperspace exports**: Affected legacy decks now correctly convert Hyperspace cards down to their regular versions when exporting to SWUDB.
+
 ## 04.15.2026
 
 ### ✨ Competitive Practice Mode (Friends of the Pod)
