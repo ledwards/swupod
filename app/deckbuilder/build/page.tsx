@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import DeckBuilder from '../../../src/components/DeckBuilder'
 import { fetchSetCards } from '../../../src/utils/api'
@@ -27,7 +27,7 @@ function getLocalStorageKey(setCode: string, sessionId: string): string {
   return `${LOCAL_STORAGE_PREFIX}${setCode}:${sessionId}`
 }
 
-export default function DeckbuilderBuildPage() {
+function DeckbuilderBuildPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const setCode = searchParams.get('set')
@@ -280,5 +280,13 @@ export default function DeckbuilderBuildPage() {
         poolName={DEFAULT_POOL_NAME}
       />
     </div>
+  )
+}
+
+export default function DeckbuilderBuildPage() {
+  return (
+    <Suspense fallback={<div className="app"><div className="loading">Loading…</div></div>}>
+      <DeckbuilderBuildPageContent />
+    </Suspense>
   )
 }
