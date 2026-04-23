@@ -842,6 +842,7 @@
   justify-content: start;
 }
 
+
 /* Card stack container for identical cards */
 .card-stack {
   position: relative;
@@ -2344,4 +2345,100 @@
     width: calc(50% - 0.2rem);
     max-width: calc(50% - 0.2rem);
   }
+}
+
+/* ==========================================================================
+   Card Density Toggle (Pool / Deck section headers)
+   ========================================================================== */
+
+.card-density-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+}
+
+.card-density-toggle-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 22px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.55);
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-density-toggle-button:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+.card-density-toggle-button.active {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+
+.card-density-toggle-preview {
+  display: block;
+  width: 14px;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.card-density-toggle-button--small .card-density-toggle-preview {
+  height: 3px;
+}
+
+.card-density-toggle-button--medium .card-density-toggle-preview {
+  height: 7px;
+}
+
+.card-density-toggle-button--large .card-density-toggle-preview {
+  height: 14px;
+}
+
+/* ==========================================================================
+   Card density wrappers — used in the arena pool grid to crop cards
+   to a shorter top portion at their natural grid-cell width.
+   Card aspect ratio is 2.5:3.5 (width:height) = 1:1.4
+   ========================================================================== */
+
+.card-density-wrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Medium: top ~25% of the card (aspect 2.5 : 0.875) */
+.card-density-wrapper--medium {
+  aspect-ratio: 2.5 / 0.875;
+}
+
+/* Small: top ~12.5% of the card (aspect 2.5 : 0.44) */
+.card-density-wrapper--small {
+  aspect-ratio: 2.5 / 0.44;
+}
+
+/* Card inside the wrapper: natural aspect pinned to top, width = wrapper width */
+.card-density-wrapper .resizable-card,
+.card-density-wrapper .canvas-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 2.5 / 3.5;
+  max-width: 100%;
 }

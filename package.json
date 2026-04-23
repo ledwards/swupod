@@ -9,6 +9,7 @@
     "prebuild": "npx tsx scripts/fetchCards.ts || echo '⚠️  Card fetch failed, using existing data'; date > migrations/.buildstamp",
     "build": "next build",
     "postbuild": "npx tsx scripts/postbuild.ts",
+    "release-notes:update": "npx tsx scripts/updateReleaseNotes.ts",
     "start": "NODE_ENV=production npx tsx server.ts",
     "lint": "eslint .",
     "fetch-cards": "npx tsx scripts/fetchCards.ts",

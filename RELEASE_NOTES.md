@@ -1,6 +1,25 @@
 # Release Notes
 
+## 04.23.2026
+
+### ✨ Limited Deckbuilder
+- **New Limited Deckbuilder mode**: The homepage now includes a Limited Deckbuilder mode with set selection and an infinite-pool builder. Pick any set and build from unlimited copies of its legal limited cards, with all leaders plus common and rare bases available.
+- **Ready to Play support for Limited Deckbuilder**: Limited Deckbuilder decks now flow cleanly into the play page, preserve their local session when you return to edit, and appear in history under Solo with format `Limited`.
+
+### 🎮 UI Improvements
+- **Homepage mode art refresh**: Solo Sealed, Solo Draft, Live Draft, and Limited Deckbuilder now use updated button art treatments, including a tuned Thrawn crop on the Limited Deckbuilder CTA.
+- **Separate aspect penalty toggles**: Pool and Deck now each control their own aspect-penalty visibility instead of sharing a single toggle.
+
+### 🐛 Bug Fixes
+- **Fixed Limited Deckbuilder deck restore bugs**: Returning from Ready to Play no longer dumps infinite-pool deck copies back into the pool or clears the deck.
+- **Fixed Limited Deckbuilder deck naming**: Editing a Limited Deckbuilder title now saves correctly on Enter instead of snapping back to the old name.
+- **Removed starter leaders from unsupported modes**: The `Starter Leaders` control no longer appears in Limited Deckbuilder or draft-style deck builders where it doesn't make sense.
+
 ## 04.22.2026
+
+### 🎮 Deck Builder (Arena view)
+- **Card density toggle on Pool and Deck**: Arena view Pool and Deck accordions now have S / M / L density buttons on the right-hand side. Large shows full-size cards, Medium shows the top ~25% of each card (enough to see the aspect icon) in a vertical list, and Small shows the current stacked/fanned tops. Cards keep their natural width across all three sizes. Playmat view is unaffected — density is an Arena-only control.
+- **Removed duplicate Pool eye icon**: The second eye icon in the Arena Pool header row (pool aspect-penalty toggle) was redundant and has been removed. Aspect-penalty visibility for the Pool is still controlled from the Deck section's toggle.
 
 ### 🃏 Pack Generation
 - **Major printer-faithful collation improvements**: Pack generation has been refined to follow physical printing methods more closely, with broader use of belt-driven upgrades, better seam-aware spacing, and collation-first handling across standard packs and LAW slot behavior.
@@ -640,7 +659,7 @@ Additionally, we've got a Discord now: [https://discord.gg/u6fkdDzWqF](https://d
 ## How to Update Release Notes
 
 1. Each deploy/push gets its **own date section**, even if there are multiple on the same day. Add it at the top (above the previous section). Do NOT edit a previous section to add new items — always create a new section.
-2. Use US date format (MM.DD.YYYY). If there are multiple sections for the same date, that's fine — each is a separate release.
+2. Use US date format (MM.DD.YYYY). If there are multiple sections for the same date, use `Part 2`, `Part 3`, etc. to distinguish separate releases from that day.
 3. Use emoji categories:
    - 🎉 New Features
    - 🐞 Bug Fixes
@@ -656,5 +675,8 @@ Additionally, we've got a Discord now: [https://discord.gg/u6fkdDzWqF](https://d
    - 🎮 Game Modes/Gameplay
    - ❤️ Support the Pod
 4. Keep entries concise and user-friendly
+5. Prefer `npm run release-notes:update -- --input <file>` (or pipe markdown into the script). It compares local `RELEASE_NOTES.md` against `origin/main` / `origin/master` and:
+   - reuses today's latest unpushed local section if one already exists
+   - creates `Part 2`, `Part 3`, etc. once there is already a pushed release section for today
 
 Run `node scripts/postbuild.js` to update the release notes on website.

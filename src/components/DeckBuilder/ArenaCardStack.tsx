@@ -36,6 +36,7 @@ export interface ArenaCardStackProps {
   onCardTouchEnd?: () => void
   hoveredCard?: string | null
   selectedCards?: Set<string>
+  density?: 'small' | 'medium' | 'large'
 }
 
 export function ArenaCardStack({
@@ -49,13 +50,14 @@ export function ArenaCardStack({
   onCardTouchEnd,
   hoveredCard,
   selectedCards = new Set(),
+  density = 'small',
 }: ArenaCardStackProps) {
   if (!cards || cards.length === 0) {
     return null
   }
 
   return (
-    <div className="arena-card-stack">
+    <div className={`arena-card-stack arena-card-stack--${density}`}>
       <div className="arena-card-stack-inner">
         {cards.map((entry, index) => {
           const { cardId, cardIds, position, quantity = 1 } = entry
@@ -71,7 +73,7 @@ export function ArenaCardStack({
           return (
             <div
               key={cardId}
-              className={`arena-stacked-card ${hasQuantity ? 'has-quantity' : ''} ${isLast ? 'is-last' : ''}`}
+              className={`arena-stacked-card arena-stacked-card--${density} ${hasQuantity ? 'has-quantity' : ''} ${isLast ? 'is-last' : ''}`}
             >
               <ResizableCard
                 card={card}

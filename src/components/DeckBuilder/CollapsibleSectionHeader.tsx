@@ -5,15 +5,18 @@
  * A header that toggles section expansion with arrow indicator.
  */
 
+import type { ReactNode } from 'react'
+
 export interface CollapsibleSectionHeaderProps {
   id?: string
   title: string
   expanded: boolean
   onToggle: () => void
   className?: string
+  rightContent?: ReactNode
 }
 
-export function CollapsibleSectionHeader({ id, title, expanded, onToggle, className = '' }: CollapsibleSectionHeaderProps) {
+export function CollapsibleSectionHeader({ id, title, expanded, onToggle, className = '', rightContent }: CollapsibleSectionHeaderProps) {
   return (
     <div
       id={id}
@@ -21,14 +24,10 @@ export function CollapsibleSectionHeader({ id, title, expanded, onToggle, classN
       style={{
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'space-between',
         gap: '0.5rem',
         marginTop: '1.5rem',
         marginBottom: '0.75rem',
-        fontSize: '1.2rem',
-        fontWeight: 600,
-        color: 'rgba(255, 255, 255, 0.9)',
-        textTransform: 'uppercase',
-        letterSpacing: '1px',
         paddingBottom: '0.25rem',
         borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
         cursor: 'pointer',
@@ -36,8 +35,26 @@ export function CollapsibleSectionHeader({ id, title, expanded, onToggle, classN
       }}
       onClick={onToggle}
     >
-      <span>{expanded ? '▼' : '▶'}</span>
-      <span>{title}</span>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          fontSize: '1.2rem',
+          fontWeight: 600,
+          color: 'rgba(255, 255, 255, 0.9)',
+          textTransform: 'uppercase',
+          letterSpacing: '1px'
+        }}
+      >
+        <span>{expanded ? '▼' : '▶'}</span>
+        <span>{title}</span>
+      </div>
+      {rightContent && (
+        <div onClick={(e) => e.stopPropagation()}>
+          {rightContent}
+        </div>
+      )}
     </div>
   )
 }

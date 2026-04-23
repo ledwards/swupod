@@ -291,18 +291,18 @@ function DeckBuilder({
   const [sideboardCostSectionsExpanded, setSideboardCostSectionsExpanded] = useState<Record<string, boolean>>({}) // Track expanded cost sections for sideboard
   const [arenaFilters, setArenaFilters] = useState<Record<string, boolean>>({}) // Arena view aspect filters (empty = all active)
   const [arenaSearchQuery, setArenaSearchQuery] = useState('') // Arena view search query
+  const [poolCardDensity, setPoolCardDensity] = useState<'small' | 'medium' | 'large'>('large') // Pool card density (arena+playmat)
+  const [deckCardDensity, setDeckCardDensity] = useState<'small' | 'medium' | 'large'>('small') // Deck card density (arena+playmat)
   const deckBlocksRowRef = useRef<HTMLDivElement>(null)
   const [activeLeader, setActiveLeader] = useState<string | null>(null)
   const [activeBase, setActiveBase] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [messageType, setMessageType] = useState<'error' | 'success' | null>(null) // 'error' or 'success'
   const [isInfoBarSticky, setIsInfoBarSticky] = useState(false)
-  const [showDeckAspectPenalties, setShowDeckAspectPenalties] = useState(false)
-  const [showPoolAspectPenalties, setShowPoolAspectPenalties] = useState(false)
+  const [showAspectPenalties, setShowAspectPenalties] = useState(false)
 
   const enableAspectPenaltiesForBothSections = useCallback(() => {
-    setShowDeckAspectPenalties(true)
-    setShowPoolAspectPenalties(true)
+    setShowAspectPenalties(true)
   }, [])
 
   const createInfiniteCloneId = useCallback((sourceCardId: string) => (
@@ -767,7 +767,7 @@ function DeckBuilder({
     // Get effective cost including aspect penalty
     const getEffectiveCost = (card: CardType) => {
       const baseCost = card.cost || 0
-      const penalty = (showDeckAspectPenalties && leaderCard && baseCard) ? calculateAspectPenalty(card, leaderCard, baseCard) : 0
+      const penalty = (showAspectPenalties && leaderCard && baseCard) ? calculateAspectPenalty(card, leaderCard, baseCard) : 0
       return baseCost + penalty
     }
 
@@ -783,7 +783,7 @@ function DeckBuilder({
       return allCards.sort((a, b) => getEffectiveCost(a) - getEffectiveCost(b))
     }
     return allCards
-  }, [cardPositions, deckSortOption, getAspectKey, getDefaultAspectSortKey, showDeckAspectPenalties, leaderCard, baseCard])
+  }, [cardPositions, deckSortOption, getAspectKey, getDefaultAspectSortKey, showAspectPenalties, leaderCard, baseCard])
 
   // Helper to filter and map deck cards
   const getDeckCards = useCallback(() => {
@@ -1063,15 +1063,12 @@ function DeckBuilder({
         if (state.poolGroupsExpanded) {
           setPoolGroupsExpanded(state.poolGroupsExpanded)
         }
-        if (state.showDeckAspectPenalties !== undefined) {
-          setShowDeckAspectPenalties(state.showDeckAspectPenalties)
-        } else if (state.showAspectPenalties !== undefined) {
-          setShowDeckAspectPenalties(state.showAspectPenalties)
-        }
-        if (state.showPoolAspectPenalties !== undefined) {
-          setShowPoolAspectPenalties(state.showPoolAspectPenalties)
-        } else if (state.showAspectPenalties !== undefined) {
-          setShowPoolAspectPenalties(state.showAspectPenalties)
+        if (state.showAspectPenalties !== undefined) {
+          setShowAspectPenalties(state.showAspectPenalties)
+        } else if (state.showDeckAspectPenalties !== undefined) {
+          setShowAspectPenalties(state.showDeckAspectPenalties)
+        } else if (state.showPoolAspectPenalties !== undefined) {
+          setShowAspectPenalties(state.showPoolAspectPenalties)
         }
       } catch (e) {
         console.error('Failed to restore deck builder state:', e)
@@ -1145,15 +1142,12 @@ function DeckBuilder({
         if (state.poolGroupsExpanded) {
           setPoolGroupsExpanded(state.poolGroupsExpanded)
         }
-        if (state.showDeckAspectPenalties !== undefined) {
-          setShowDeckAspectPenalties(state.showDeckAspectPenalties)
-        } else if (state.showAspectPenalties !== undefined) {
-          setShowDeckAspectPenalties(state.showAspectPenalties)
-        }
-        if (state.showPoolAspectPenalties !== undefined) {
-          setShowPoolAspectPenalties(state.showPoolAspectPenalties)
-        } else if (state.showAspectPenalties !== undefined) {
-          setShowPoolAspectPenalties(state.showAspectPenalties)
+        if (state.showAspectPenalties !== undefined) {
+          setShowAspectPenalties(state.showAspectPenalties)
+        } else if (state.showDeckAspectPenalties !== undefined) {
+          setShowAspectPenalties(state.showDeckAspectPenalties)
+        } else if (state.showPoolAspectPenalties !== undefined) {
+          setShowAspectPenalties(state.showPoolAspectPenalties)
         }
         if (state.tableSort) {
           setTableSort(state.tableSort)
@@ -1608,9 +1602,9 @@ function DeckBuilder({
       sideboardCostSectionsExpanded,
       deckGroupsExpanded,
       poolGroupsExpanded,
-      showAspectPenalties: showDeckAspectPenalties || showPoolAspectPenalties,
-      showDeckAspectPenalties,
-      showPoolAspectPenalties,
+      showAspectPenalties,
+      showDeckAspectPenalties: showAspectPenalties,
+      showPoolAspectPenalties: showAspectPenalties,
       tableSort,
       arenaFilters,
       arenaSearchQuery,
@@ -1643,8 +1637,7 @@ function DeckBuilder({
     sideboardCostSectionsExpanded,
     deckGroupsExpanded,
     poolGroupsExpanded,
-    showDeckAspectPenalties,
-    showPoolAspectPenalties,
+    showAspectPenalties,
     tableSort,
     arenaFilters,
     arenaSearchQuery,
@@ -2050,10 +2043,10 @@ function DeckBuilder({
       }
 
       // Position deck cards using deckSortOption
-      const deckEndY = positionCards(sortedDeckIds, deckY, 'deck', deckSortOption, showDeckAspectPenalties)
+      const deckEndY = positionCards(sortedDeckIds, deckY, 'deck', deckSortOption, showAspectPenalties)
 
       // Position sideboard cards using poolSortOption
-      const sideboardEndY = positionCards(sortedSideboardIds, sideboardY, 'sideboard', poolSortOption, showPoolAspectPenalties)
+      const sideboardEndY = positionCards(sortedSideboardIds, sideboardY, 'sideboard', poolSortOption, showAspectPenalties)
 
       // Update section bounds and canvas height
       const newDeckBounds = { ...deckBounds, maxY: deckEndY }
@@ -2073,7 +2066,7 @@ function DeckBuilder({
     })
     // Note: sectionBounds intentionally excluded - this effect writes to it, including it would cause infinite loop
     // Note: cardMatchesFilters excluded - it depends on cardPositions which this effect writes to
-  }, [deckSortOption, poolSortOption, getAspectKey, showDeckAspectPenalties, showPoolAspectPenalties, activeLeader, activeBase])
+  }, [deckSortOption, poolSortOption, getAspectKey, showAspectPenalties, activeLeader, activeBase])
 
 
   // Mark the last block in each row to expand
@@ -2340,12 +2333,12 @@ function DeckBuilder({
     poolFilterOpen,
     setPoolFilterOpen,
     // UI preferences
-    showAspectPenalties: showDeckAspectPenalties,
-    setShowAspectPenalties: setShowDeckAspectPenalties,
-    showDeckAspectPenalties,
-    setShowDeckAspectPenalties,
-    showPoolAspectPenalties,
-    setShowPoolAspectPenalties,
+    showAspectPenalties,
+    setShowAspectPenalties,
+    showDeckAspectPenalties: showAspectPenalties,
+    setShowDeckAspectPenalties: setShowAspectPenalties,
+    showPoolAspectPenalties: showAspectPenalties,
+    setShowPoolAspectPenalties: setShowAspectPenalties,
     viewMode,
     setViewMode,
     poolSortOption,
@@ -2357,6 +2350,11 @@ function DeckBuilder({
     setArenaFilters,
     arenaSearchQuery,
     setArenaSearchQuery,
+    // Card density (applies to arena + playmat)
+    poolCardDensity,
+    setPoolCardDensity,
+    deckCardDensity,
+    setDeckCardDensity,
     // Actions
     moveCardToDeck,
     moveCardToPool,
@@ -2366,8 +2364,9 @@ function DeckBuilder({
   }), [
     cardPositions, isInfiniteMode, activeLeader, activeBase, leaderCard, baseCard,
     selectedCards, hoveredCard, filterAspectsExpanded, deckFilterOpen,
-    poolFilterOpen, showDeckAspectPenalties, showPoolAspectPenalties, viewMode, poolSortOption,
+    poolFilterOpen, showAspectPenalties, viewMode, poolSortOption,
     deckSortOption, arenaFilters, arenaSearchQuery,
+    poolCardDensity, deckCardDensity,
     moveCardToDeck, moveCardToPool, toggleCardSection, moveCardsToDeck, moveCardsToPool,
   ])
 

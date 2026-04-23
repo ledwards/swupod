@@ -734,6 +734,15 @@
   gap: 4px;
 }
 
+/* Tighter gaps for cropped cards so rows of strips stay visually connected. */
+.arena-pool-grid--medium {
+  row-gap: 6px;
+}
+
+.arena-pool-grid--small {
+  row-gap: 2px;
+}
+
 /* ==========================================================================
    Arena Deck Section (Bottom Half)
    ========================================================================== */
@@ -829,6 +838,55 @@
 
 .arena-stacked-card .resizable-card {
   width: 100%;
+}
+
+/* ==========================================================================
+   Density variants for arena card stacks (deck cost columns)
+   - small: current fanned/stacked look (defaults above)
+   - medium: top ~25% of each card visible, NO overlap
+   - large: full cards, NO overlap
+   ========================================================================== */
+
+/* MEDIUM: crop each card to top ~25%, gap between cards */
+.arena-stacked-card--medium,
+.arena-stacked-card--medium.has-quantity,
+.arena-stacked-card--medium.is-last {
+  margin-bottom: 4px;
+  aspect-ratio: 2.5 / 0.875;
+  overflow: hidden;
+}
+
+.arena-stacked-card--medium.is-last {
+  margin-bottom: 0;
+}
+
+.arena-stacked-card--medium .resizable-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 2.5 / 3.5;
+}
+
+/* Medium quantity badge sits inside the cropped area, top-right */
+.arena-stacked-card--medium .arena-quantity-badge {
+  top: 4px;
+  right: 4px;
+}
+
+/* LARGE: full cards, vertical list, gap between cards */
+.arena-stacked-card--large,
+.arena-stacked-card--large.has-quantity {
+  margin-bottom: 6px;
+}
+
+.arena-stacked-card--large.is-last {
+  margin-bottom: 0;
+}
+
+.arena-stacked-card--large .arena-quantity-badge {
+  top: 6px;
+  right: 6px;
 }
 
 /* Quantity badge - positioned in the gap area on the right */

@@ -15,6 +15,7 @@ import { useDeckBuilder } from '../../contexts/DeckBuilderContext'
 import { ArenaPoolSection } from './ArenaPoolSection'
 import { ArenaDeckSection } from './ArenaDeckSection'
 import { CollapsibleSectionHeader } from './CollapsibleSectionHeader'
+import { CardDensityToggle } from './CardDensityToggle'
 import { LeaderBaseSelector } from './LeaderBaseSelector'
 import type { CardData } from '../Card'
 
@@ -44,6 +45,10 @@ export function ArenaView({
     deckSortOption,
     setShowDeckAspectPenalties,
     setShowPoolAspectPenalties,
+    poolCardDensity,
+    setPoolCardDensity,
+    deckCardDensity,
+    setDeckCardDensity,
   } = useDeckBuilder()
 
   const enableAspectPenalties = useCallback(() => {
@@ -146,6 +151,12 @@ export function ArenaView({
         title={isLoading ? 'Pool' : `Pool (${poolCardCount})`}
         expanded={poolExpanded}
         onToggle={() => setPoolExpanded(!poolExpanded)}
+        rightContent={
+          <CardDensityToggle
+            value={poolCardDensity}
+            onChange={setPoolCardDensity}
+          />
+        }
       />
       {poolExpanded && (
         <div className="card-block arena-pool-block">
@@ -175,6 +186,12 @@ export function ArenaView({
         title={isLoading ? 'Deck' : `Deck (${deckCardCount})`}
         expanded={deckExpanded}
         onToggle={() => setDeckExpanded(!deckExpanded)}
+        rightContent={
+          <CardDensityToggle
+            value={deckCardDensity}
+            onChange={setDeckCardDensity}
+          />
+        }
       />
       {deckExpanded && (
         <div className="card-block arena-deck-block">

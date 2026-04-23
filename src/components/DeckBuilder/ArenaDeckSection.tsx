@@ -72,6 +72,7 @@ export function ArenaDeckSection({
     hoveredCard,
     selectedCards,
     toggleCardSection,
+    deckCardDensity,
   } = useDeckBuilder()
 
   // Get deck cards (not leaders/bases)
@@ -438,6 +439,7 @@ export function ArenaDeckSection({
                     onCardTouchEnd={onCardTouchEnd}
                     hoveredCard={hoveredCard}
                     selectedCards={selectedCards}
+                    density={deckCardDensity}
                   />
                 </>
               )}
@@ -458,6 +460,7 @@ export function ArenaDeckSection({
                     onCardTouchEnd={onCardTouchEnd}
                     hoveredCard={hoveredCard}
                     selectedCards={selectedCards}
+                    density={deckCardDensity}
                   />
                 </div>
               )}
