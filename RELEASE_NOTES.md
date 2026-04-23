@@ -3,17 +3,14 @@
 ## 04.23.2026
 
 ### ✨ Limited Deckbuilder
-- **New Limited Deckbuilder mode**: The homepage now includes a Limited Deckbuilder mode with set selection and an infinite-pool builder. Pick any set and build from unlimited copies of its legal limited cards, with all leaders plus common and rare bases available.
-- **Ready to Play support for Limited Deckbuilder**: Limited Deckbuilder decks now flow cleanly into the play page, preserve their local session when you return to edit, and appear in history under Solo with format `Limited`.
+- **New Limited Deckbuilder mode**: "@BobbySapphire mode" The homepage now includes a Limited Deckbuilder mode with set selection and an infinite-pool builder. Pick any set and build from unlimited copies of its legal limited cards, with all leaders plus common and rare bases available.
+- 
 
 ### 🎮 UI Improvements
-- **Homepage mode art refresh**: Solo Sealed, Solo Draft, Live Draft, and Limited Deckbuilder now use updated button art treatments, including a tuned Thrawn crop on the Limited Deckbuilder CTA.
-- **Separate aspect penalty toggles**: Pool and Deck now each control their own aspect-penalty visibility instead of sharing a single toggle.
+- **Homepage mode art refresh**: Solo Sealed, Solo Draft, Live Draft, and Limited Deckbuilder now use updated button art treatments.
 
 ### 🐛 Bug Fixes
-- **Fixed Limited Deckbuilder deck restore bugs**: Returning from Ready to Play no longer dumps infinite-pool deck copies back into the pool or clears the deck.
-- **Fixed Limited Deckbuilder deck naming**: Editing a Limited Deckbuilder title now saves correctly on Enter instead of snapping back to the old name.
-- **Removed starter leaders from unsupported modes**: The `Starter Leaders` control no longer appears in Limited Deckbuilder or draft-style deck builders where it doesn't make sense.
+- **Removed starter leaders from unsupported modes**: The `Starter Leaders` control no longer appears in Draft Mode deckbuilders where it doesn't make sense.
 
 ## 04.22.2026
 

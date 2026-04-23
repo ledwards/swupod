@@ -1036,6 +1036,12 @@ function DeckBuilder({
         if (state.viewMode) {
           setViewMode(state.viewMode)
         }
+        if (state.poolCardDensity) {
+          setPoolCardDensity(state.poolCardDensity)
+        }
+        if (state.deckCardDensity) {
+          setDeckCardDensity(state.deckCardDensity)
+        }
         if (state.leadersBasesExpanded !== undefined) {
           setLeadersBasesExpanded(state.leadersBasesExpanded)
         }
@@ -1087,6 +1093,12 @@ function DeckBuilder({
 
         if (state.viewMode) {
           setViewMode(state.viewMode)
+        }
+        if (state.poolCardDensity) {
+          setPoolCardDensity(state.poolCardDensity)
+        }
+        if (state.deckCardDensity) {
+          setDeckCardDensity(state.deckCardDensity)
         }
         if (state.aspectFilters) {
           // Merge with defaults to ensure all keys exist (prevents uncontrolled->controlled warning)
@@ -1591,6 +1603,8 @@ function DeckBuilder({
       outAspectFilter,
       poolSortOption,
       deckSortOption,
+      poolCardDensity,
+      deckCardDensity,
       leadersBasesExpanded,
       leadersExpanded,
       basesExpanded,
@@ -1626,6 +1640,8 @@ function DeckBuilder({
     outAspectFilter,
     poolSortOption,
     deckSortOption,
+    poolCardDensity,
+    deckCardDensity,
     leadersBasesExpanded,
     leadersExpanded,
     basesExpanded,
