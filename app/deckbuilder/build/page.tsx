@@ -7,6 +7,7 @@ import DeckBuilder from '../../../src/components/DeckBuilder'
 import { fetchSetCards } from '../../../src/utils/api'
 import { getCachedCards, initializeCardCache, isCacheInitialized } from '../../../src/utils/cardCache'
 import { getBaseSetCode } from '../../../src/utils/carboniteConstants'
+import { safeLocalStorageSetItem } from '../../../src/utils/deckBuilderLocalState'
 import { parseDeckBuilderState } from '../../../src/utils/deckBuilderState'
 import { buildInfiniteDeckbuilderPool } from '../../../src/utils/infiniteDeckbuilder'
 import { loadPool, savePool, updatePool } from '../../../src/utils/poolApi'
@@ -97,7 +98,7 @@ export default function DeckbuilderBuildPage() {
                 sessionId: stateFromPool?.sessionId || storageSessionId,
               })
               setCurrentPlayShareId(stateFromPool?.playShareId || playShareId || null)
-              localStorage.setItem(localStorageKey, nextSavedState)
+              safeLocalStorageSetItem(localStorageKey, nextSavedState)
             }
           } catch (poolError) {
             console.warn('Failed to load existing Limited Deckbuilder pool:', poolError)
@@ -111,7 +112,7 @@ export default function DeckbuilderBuildPage() {
             sessionId: storageSessionId,
           })
           setCurrentPlayShareId(playShareId || null)
-          localStorage.setItem(localStorageKey, nextSavedState)
+          safeLocalStorageSetItem(localStorageKey, nextSavedState)
         } else {
           const parsedState = parseDeckBuilderState(nextSavedState)
           const normalizedState = {
@@ -122,7 +123,7 @@ export default function DeckbuilderBuildPage() {
           }
           setCurrentPlayShareId(normalizedState.playShareId || null)
           nextSavedState = JSON.stringify(normalizedState)
-          localStorage.setItem(localStorageKey, nextSavedState)
+          safeLocalStorageSetItem(localStorageKey, nextSavedState)
         }
 
         setSavedState(nextSavedState)

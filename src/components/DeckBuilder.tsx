@@ -9,6 +9,7 @@ import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 import { fetchSetCards } from '../utils/api'
 import { getBaseSetCode } from '../utils/carboniteConstants'
 import { parseDeckBuilderState } from '../utils/deckBuilderState'
+import { buildDeckBuilderUiStorageState, safeLocalStorageSetItem } from '../utils/deckBuilderLocalState'
 import { useAuth } from '../contexts/AuthContext'
 import { jsonParse } from '../utils/json'
 import { calculateAspectPenalty } from '../services/cards/aspectPenalties'
@@ -1666,16 +1667,16 @@ function DeckBuilder({
     if (Object.keys(cardPositions).length > 0 || activeLeader || activeBase) {
       const deckStateToSave = buildDeckStateSnapshot(false)
       const uiStateToSave = {
-        ...buildDeckStateSnapshot(true),
+        ...buildDeckBuilderUiStorageState(buildDeckStateSnapshot(true)),
         lastSavedAt: Date.now()
       }
 
       if (uiStorageKey) {
-        localStorage.setItem(uiStorageKey, JSON.stringify(uiStateToSave))
+        safeLocalStorageSetItem(uiStorageKey, JSON.stringify(uiStateToSave))
       }
 
       if (localStorageKey) {
-        localStorage.setItem(localStorageKey, JSON.stringify(uiStateToSave))
+        safeLocalStorageSetItem(localStorageKey, JSON.stringify(deckStateToSave))
       }
 
       // Save deck state to database via callback
@@ -2243,13 +2244,21 @@ function DeckBuilder({
           playShareId: nextShareId,
           isInfinitePool: true,
         }
+        const updatedDeckState = {
+          ...buildDeckStateSnapshot(false),
+          playShareId: nextShareId,
+          isInfinitePool: true,
+        }
 
         setPlayShareId(nextShareId)
         if (localStorageKey) {
-          localStorage.setItem(localStorageKey, JSON.stringify(updatedState))
+          safeLocalStorageSetItem(localStorageKey, JSON.stringify(updatedDeckState))
         }
         if (uiStorageKey) {
-          localStorage.setItem(uiStorageKey, JSON.stringify({ ...updatedState, lastSavedAt: Date.now() }))
+          safeLocalStorageSetItem(uiStorageKey, JSON.stringify({
+            ...buildDeckBuilderUiStorageState(updatedState),
+            lastSavedAt: Date.now()
+          }))
         }
 
         window.location.href = `/pool/${nextShareId}/deck/play`
