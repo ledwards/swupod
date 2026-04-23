@@ -7,6 +7,7 @@ import DeckBuilder from '../../../src/components/DeckBuilder'
 import { fetchSetCards } from '../../../src/utils/api'
 import { getCachedCards, initializeCardCache, isCacheInitialized } from '../../../src/utils/cardCache'
 import { getBaseSetCode } from '../../../src/utils/carboniteConstants'
+import { parseDeckBuilderState } from '../../../src/utils/deckBuilderState'
 import { buildInfiniteDeckbuilderPool } from '../../../src/utils/infiniteDeckbuilder'
 import { loadPool, savePool, updatePool } from '../../../src/utils/poolApi'
 import '../../../src/App.css'
@@ -88,9 +89,7 @@ export default function DeckbuilderBuildPage() {
           try {
             const existingPool = await loadPool(playShareId)
             if (existingPool?.deckBuilderState) {
-              const stateFromPool = typeof existingPool.deckBuilderState === 'string'
-                ? JSON.parse(existingPool.deckBuilderState)
-                : existingPool.deckBuilderState
+              const stateFromPool = parseDeckBuilderState(existingPool.deckBuilderState)
               nextSavedState = JSON.stringify({
                 ...stateFromPool,
                 poolName: stateFromPool?.poolName || DEFAULT_POOL_NAME,
@@ -114,7 +113,7 @@ export default function DeckbuilderBuildPage() {
           setCurrentPlayShareId(playShareId || null)
           localStorage.setItem(localStorageKey, nextSavedState)
         } else {
-          const parsedState = JSON.parse(nextSavedState)
+          const parsedState = parseDeckBuilderState(nextSavedState)
           const normalizedState = {
             ...parsedState,
             poolName: parsedState?.poolName || DEFAULT_POOL_NAME,

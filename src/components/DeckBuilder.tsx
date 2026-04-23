@@ -8,6 +8,7 @@ import { buildBaseCardMap as buildBaseCardMapUtil, getBaseCardId as getBaseCardI
 import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 import { fetchSetCards } from '../utils/api'
 import { getBaseSetCode } from '../utils/carboniteConstants'
+import { parseDeckBuilderState } from '../utils/deckBuilderState'
 import { useAuth } from '../contexts/AuthContext'
 import { jsonParse } from '../utils/json'
 import { calculateAspectPenalty } from '../services/cards/aspectPenalties'
@@ -158,25 +159,21 @@ function DeckBuilder({
   const isInfiniteMode = mode === 'infinite'
   const storageLookupKey = shareId || localStorageKey || null
   const uiStorageKey = storageLookupKey ? `deckBuilderUI_${storageLookupKey}` : null
-  const currentSessionId = sessionId || (savedState ? jsonParse(savedState)?.sessionId : null) || null
+  const parsedSavedState = useMemo(() => parseDeckBuilderState(savedState), [savedState])
+  const currentSessionId = sessionId || parsedSavedState.sessionId || null
   const isOwner = isInfiniteMode ? true : Boolean(user && poolOwnerId && user.id === poolOwnerId)
   const isDraftMode = poolType === 'draft'
   const isDraftStyleMode = poolType === 'draft' || poolType === 'chaos_draft' || poolType === 'rotisserie'
 
   // Get pool name from saved state if available, otherwise use initial prop
   const getInitialPoolName = () => {
-    if (savedState) {
-      const state = jsonParse(savedState)
-      if (state?.poolName) return state.poolName
-    }
+    if (parsedSavedState?.poolName) return parsedSavedState.poolName
     return initialPoolName
   }
   const [currentPoolName, setCurrentPoolName] = useState(getInitialPoolName)
   const [userHasRenamedPool, setUserHasRenamedPool] = useState(false)
   const [playShareId, setPlayShareId] = useState<string | null>(() => {
-    if (!savedState) return null
-    const state = jsonParse(savedState)
-    return state?.playShareId || null
+    return parsedSavedState?.playShareId || null
   })
   // Store the original base name (without leader/base suffix) for auto-naming
   const [originalBaseName, setOriginalBaseName] = useState<string | null>(null)
@@ -184,18 +181,15 @@ function DeckBuilder({
   // Sync pool name from savedState when it changes (e.g., after pool data reloads)
   // This ensures we pick up changes made elsewhere (like the play page)
   useEffect(() => {
-    if (savedState) {
-      const state = jsonParse(savedState)
-      if (state?.poolName) {
-        setCurrentPoolName(state.poolName)
-      }
-      if (state?.playShareId) {
-        setPlayShareId(state.playShareId)
-      }
+    if (parsedSavedState?.poolName) {
+      setCurrentPoolName(parsedSavedState.poolName)
+    }
+    if (parsedSavedState?.playShareId) {
+      setPlayShareId(parsedSavedState.playShareId)
     } else if (!currentPoolName && initialPoolName) {
       setCurrentPoolName(initialPoolName)
     }
-  }, [savedState, initialPoolName])
+  }, [parsedSavedState, initialPoolName])
 
   // Extract and store the original base name (format part only) on initial load
   // Strips any existing leader/base suffix like "(Jabba the Hutt Green)" and trailing dates
@@ -1234,7 +1228,7 @@ function DeckBuilder({
   useEffect(() => {
     // Don't initialize if we have saved state with card positions to restore
     if (savedState) {
-      const state = jsonParse(savedState)
+      const state = parsedSavedState
       if (state.cardPositions && Object.keys(state.cardPositions).length > 0) {
         return
       }
@@ -1375,7 +1369,7 @@ function DeckBuilder({
       setSectionLabels(labels)
       setSectionBounds(bounds)
     }
-  }, [cards, allSetCards, savedState, isInfiniteMode])
+  }, [cards, allSetCards, savedState, isInfiniteMode, parsedSavedState])
 
   // Add common bases when allSetCards loads (even if cardPositions already exist)
   useEffect(() => {
