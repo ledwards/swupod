@@ -843,17 +843,18 @@
 /* ==========================================================================
    Density variants for arena card stacks (deck cost columns)
    - small: current fanned/stacked look (defaults above)
-   - medium: top ~25% of each card visible, NO overlap
+   - medium: top ~32% of each card visible, NO overlap
    - large: full cards, NO overlap
    ========================================================================== */
 
-/* MEDIUM: crop each card to top ~25%, gap between cards */
+/* MEDIUM: crop each card to top ~32%, gap between cards */
 .arena-stacked-card--medium,
 .arena-stacked-card--medium.has-quantity,
 .arena-stacked-card--medium.is-last {
   margin-bottom: 4px;
-  aspect-ratio: 2.5 / 0.875;
+  aspect-ratio: 2.5 / 1.15;
   overflow: hidden;
+  border-radius: 0 0 11px 11px;
 }
 
 .arena-stacked-card--medium.is-last {

@@ -2422,9 +2422,10 @@
   box-sizing: border-box;
 }
 
-/* Medium: top ~25% of the card (aspect 2.5 : 0.875) */
+/* Medium: top ~32% of the card (aspect 2.5 : 1.15) */
 .card-density-wrapper--medium {
-  aspect-ratio: 2.5 / 0.875;
+  aspect-ratio: 2.5 / 1.15;
+  border-radius: 0 0 11px 11px;
 }
 
 /* Small: top ~12.5% of the card (aspect 2.5 : 0.44) */
