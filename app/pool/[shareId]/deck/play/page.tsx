@@ -9,6 +9,7 @@ import { getSetConfig } from '../../../../../src/utils/setConfigs'
 import { useAuth } from '../../../../../src/contexts/AuthContext'
 import EditableTitle from '../../../../../src/components/EditableTitle'
 import { getCachedCards, initializeCardCache } from '../../../../../src/utils/cardCache'
+import { getAllCards } from '../../../../../src/utils/cardData'
 import { getBaseSetCode } from '../../../../../src/utils/carboniteConstants'
 import { buildBaseCardMap, getBaseCardId } from '../../../../../src/utils/variantDowngrade'
 import { jsonParse } from '../../../../../src/utils/json'
@@ -807,8 +808,12 @@ export default function PlayPage({ params }: PageProps) {
         ctx.closePath()
       }
 
+      // Build lookup to resolve cards saved with null imageUrl (art wasn't published when pool was created)
+      const cardById = new Map(getAllCards().map(c => [c.id, c]))
+
       // Helper to draw card with multiple CORS proxy fallbacks and border radius
       const drawCard = async (card, x, y, w, h, borderRadius = cardBorderRadius) => {
+        if (!card?.imageUrl && card?.id) card = { ...card, ...(cardById.get(card.id) || {}) }
         if (!card?.imageUrl) {
           ctx.save()
           roundedClip(x, y, w, h, borderRadius)
@@ -1245,8 +1250,12 @@ export default function PlayPage({ params }: PageProps) {
         ctx.closePath()
       }
 
+      // Build lookup to resolve cards saved with null imageUrl (art wasn't published when pool was created)
+      const cardById = new Map(getAllCards().map(c => [c.id, c]))
+
       // Helper to draw card - SAME as deck image (uses CORS proxy)
       const drawCard = async (card: CardType, x: number, y: number, w: number, h: number, borderRadius = cardBorderRadius, grayscale = false) => {
+        if (!card?.imageUrl && card?.id) card = { ...card, ...(cardById.get(card.id) || {}) }
         if (!card?.imageUrl) {
           ctx.save()
           roundedClip(x, y, w, h, borderRadius)
