@@ -119,17 +119,17 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           SELECT
             bd.card_pool_id AS pool_id,
             CASE
-              WHEN position('-' in e->>'cardId') > 0 THEN
-                split_part(e->>'cardId', '-', 1) || '_' || lpad(split_part(e->>'cardId', '-', 2), 3, '0')
-              WHEN position('_' in e->>'cardId') > 0 THEN
-                split_part(e->>'cardId', '_', 1) || '_' || lpad(split_part(e->>'cardId', '_', 2), 3, '0')
-              ELSE e->>'cardId'
+              WHEN position('-' in COALESCE(e->>'id', e->>'cardId')) > 0 THEN
+                split_part(COALESCE(e->>'id', e->>'cardId'), '-', 1) || '_' || lpad(split_part(COALESCE(e->>'id', e->>'cardId'), '-', 2), 3, '0')
+              WHEN position('_' in COALESCE(e->>'id', e->>'cardId')) > 0 THEN
+                split_part(COALESCE(e->>'id', e->>'cardId'), '_', 1) || '_' || lpad(split_part(COALESCE(e->>'id', e->>'cardId'), '_', 2), 3, '0')
+              ELSE COALESCE(e->>'id', e->>'cardId')
             END AS norm_id,
             COALESCE((e->>'count')::int, 1) AS copy_count
           FROM pool_ids pi
           JOIN built_decks bd ON bd.card_pool_id = pi.pool_id,
           LATERAL jsonb_array_elements(bd.deck) AS e
-          WHERE e->>'cardId' IS NOT NULL
+          WHERE COALESCE(e->>'id', e->>'cardId') IS NOT NULL
         )
         SELECT
           pc.norm_id,
