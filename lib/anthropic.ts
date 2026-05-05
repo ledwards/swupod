@@ -188,23 +188,28 @@ export async function extractPoolFromImages(
       : 'Extract the registration sheet data. Detect the set from the header.',
   })
 
-  const response = await client.messages.create({
-    model: MODEL,
-    max_tokens: MAX_TOKENS,
-    // Frozen system prompt with prompt-cache breakpoint — repeated extractions
-    // benefit from cache reads on the system + schema portion.
-    system: [
-      {
-        type: 'text',
-        text: SYSTEM_PROMPT,
-        cache_control: { type: 'ephemeral' },
+  // Streaming required: SDK rejects non-streaming requests that may take >10 min,
+  // which fires above ~16K max_tokens. .finalMessage() resolves with the same
+  // Message shape we'd get back from messages.create.
+  const response = await client.messages
+    .stream({
+      model: MODEL,
+      max_tokens: MAX_TOKENS,
+      // Frozen system prompt with prompt-cache breakpoint — repeated extractions
+      // benefit from cache reads on the system + schema portion.
+      system: [
+        {
+          type: 'text',
+          text: SYSTEM_PROMPT,
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
+      output_config: {
+        format: { type: 'json_schema', schema: RESPONSE_SCHEMA },
       },
-    ],
-    output_config: {
-      format: { type: 'json_schema', schema: RESPONSE_SCHEMA },
-    },
-    messages: [{ role: 'user', content: userContent }],
-  })
+      messages: [{ role: 'user', content: userContent }],
+    })
+    .finalMessage()
 
   // Surface truncation explicitly — far more useful than a generic JSON parse error.
   if (response.stop_reason === 'max_tokens') {
