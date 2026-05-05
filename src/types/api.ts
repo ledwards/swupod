@@ -44,7 +44,7 @@ export interface CreatePoolRequest {
   deckBuilderState?: unknown;
   isPublic?: boolean;
   shareId?: string;
-  poolType?: 'sealed' | 'draft';
+  poolType?: 'sealed' | 'draft' | 'imported';
 }
 
 export interface CreatePoolResponse {

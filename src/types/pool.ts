@@ -8,7 +8,7 @@ import type { BoosterPack } from './pack';
 
 // === POOL TYPES ===
 
-export type PoolType = 'sealed' | 'draft';
+export type PoolType = 'sealed' | 'draft' | 'imported';
 
 /**
  * Card pool - a sealed or draft pool

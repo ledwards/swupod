@@ -50,6 +50,7 @@
     "test:e2e:report": "npx playwright show-report"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.93.0",
     "cookie": "^1.1.1",
     "dotenv": "^17.2.3",
     "html2canvas": "^1.4.1",
