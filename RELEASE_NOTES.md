@@ -1,5 +1,14 @@
 # Release Notes
 
+## 05.05.2026
+
+### 🆕 Import Pool (SPIKE — Friends of the Pod)
+- **New Import Pool flow**: Upload up to 2 photos of your registered competitive sealed pool sheet. Claude vision extracts the event header, leader/base selections, and the full 96-card pool. Resolve any extraction issues in an aspect-grouped wizard, then land in the existing sealed deckbuilder with your deck pre-marked.
+- New homepage button "Import Pool" sits next to Limited Deckbuilder on the bottom row, with Death Star Plans card art.
+- Wizard is mobile-friendly: camera capture on mobile, file picker on desktop.
+- Gated to Friends of the Pod (`is_patron`); admins bypass.
+- Imported pools persist with `pool_type='imported'` and round-trip through the existing deckbuilder/sharing pipeline.
+
 ## 04.23.2026
 
 ### ✨ Limited Deckbuilder

@@ -17,6 +17,7 @@ const MODE_ART = {
   sealedLive: 'https://cdn.starwarsunlimited.com//card_04020336_EN_Close_the_Shield_Gate_54e600004d.png',
   draftLive: 'https://cdn.starwarsunlimited.com//card_07020493_EN_The_Master_Codebreaker_fb7127ab41.png',
   deckbuilder: 'https://cdn.starwarsunlimited.com//card_04030998_EN_Grand_Admiral_Thrawn_Leader_Unit_eba4967d61.png',
+  importPool: 'https://cdn.starwarsunlimited.com//card_04010260_EN_Death_Star_Plans_a019b81e05.png',
 }
 
 interface ActiveDraft {
@@ -253,12 +254,19 @@ function LandingPage() {
             </div>
           </div>
         </div>
-        <div className="mode-full-width-row">
-          <button className="mode-button mode-button-wide art-unit mode-button-deckbuilder" onClick={() => router.push('/deckbuilder')}>
+        <div className="mode-full-width-row mode-bottom-row">
+          <button className="mode-button art-unit mode-button-deckbuilder" onClick={() => router.push('/deckbuilder')}>
             <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.deckbuilder}")` }} />
             <div className="mode-button-content">
               <span className="mode-button-title">Limited Deckbuilder</span>
               <span className="mode-button-subtitle">Infinite copies of every card in a set</span>
+            </div>
+          </button>
+          <button className="mode-button art-event mode-button-import-pool" onClick={() => router.push('/import-pool')}>
+            <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.importPool}")` }} />
+            <div className="mode-button-content">
+              <span className="mode-button-title">Import Pool</span>
+              <span className="mode-button-subtitle">From your registered sealed sheet</span>
             </div>
           </button>
         </div>
