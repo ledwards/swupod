@@ -17,7 +17,7 @@ const MODE_ART = {
   sealedLive: 'https://cdn.starwarsunlimited.com//card_04020336_EN_Close_the_Shield_Gate_54e600004d.png',
   draftLive: 'https://cdn.starwarsunlimited.com//card_07020493_EN_The_Master_Codebreaker_fb7127ab41.png',
   deckbuilder: 'https://cdn.starwarsunlimited.com//card_04030998_EN_Grand_Admiral_Thrawn_Leader_Unit_eba4967d61.png',
-  importPool: 'https://cdn.starwarsunlimited.com//card_04010260_EN_Death_Star_Plans_a019b81e05.png',
+  importPool: 'https://cdn.starwarsunlimited.com//card_04020522_EN_Death_Star_Plans_c573838ad4.png',
 }
 
 interface ActiveDraft {
