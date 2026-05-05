@@ -263,7 +263,7 @@ function LandingPage() {
                   <span className="mode-button-subtitle">Infinite copies of every card in a set</span>
                 </div>
               </button>
-              <button className="mode-button art-event" onClick={() => router.push('/import-pool')}>
+              <button className="mode-button art-unit" onClick={() => router.push('/import-pool')}>
                 <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.importPool}")` }} />
                 <div className="mode-button-content">
                   <span className="mode-button-title">Import Pool</span>
