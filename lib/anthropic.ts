@@ -12,8 +12,10 @@
 import Anthropic from '@anthropic-ai/sdk'
 
 const MODEL = 'claude-opus-4-7'
-// Cap output budget — vision parses are bounded; 16K is plenty for ~80 rows.
-const MAX_TOKENS = 16000
+// Vision parses can produce 80-100 JSON rows. 32K leaves comfortable headroom
+// (Opus 4.7 supports up to 128K). Stays under the SDK's non-streaming HTTP
+// timeout window. If responses still truncate, the route surfaces stop_reason.
+const MAX_TOKENS = 32000
 
 let _client: Anthropic | null = null
 
@@ -204,17 +206,34 @@ export async function extractPoolFromImages(
     messages: [{ role: 'user', content: userContent }],
   })
 
+  // Surface truncation explicitly — far more useful than a generic JSON parse error.
+  if (response.stop_reason === 'max_tokens') {
+    throw new Error(
+      `Anthropic response truncated at max_tokens (${MAX_TOKENS}). ` +
+      `Response had ${response.usage.output_tokens} output tokens. ` +
+      `Increase MAX_TOKENS in lib/anthropic.ts or split the sheet across separate calls.`,
+    )
+  }
+  if (response.stop_reason === 'refusal') {
+    throw new Error('Anthropic refused to process the image (safety filter).')
+  }
+
   // Pull text blocks (the SDK guarantees at least one for json_schema responses).
   const textBlock = response.content.find((b: any) => b.type === 'text')
   if (!textBlock || textBlock.type !== 'text') {
-    throw new Error('Anthropic response contained no text content')
+    throw new Error(
+      `Anthropic response contained no text content (stop_reason: ${response.stop_reason})`,
+    )
   }
 
   let parsed: unknown
   try {
     parsed = JSON.parse(textBlock.text)
   } catch (err) {
-    throw new Error(`Anthropic response is not valid JSON: ${(err as Error).message}`)
+    throw new Error(
+      `Anthropic response is not valid JSON (stop_reason: ${response.stop_reason}, ` +
+      `output_tokens: ${response.usage.output_tokens}): ${(err as Error).message}`,
+    )
   }
 
   // Defense in depth — schema validation in the route handler is the trust
