@@ -348,18 +348,20 @@ export function useImportPool() {
         }),
       })
       const payload = await response.json()
+      // jsonResponse wraps body as { success, data, message }; unwrap to get error/code
+      const body = payload.data ?? payload
       if (!response.ok) {
         dispatch({
           type: 'EXTRACTION_FAILURE',
           error: {
-            code: payload.code || 'EXTRACTION_FAILED',
-            message: payload.error || 'Extraction failed',
-            details: payload,
+            code: body?.code || 'EXTRACTION_FAILED',
+            message: body?.error || payload.message || 'Extraction failed',
+            details: body,
           },
         })
         return
       }
-      dispatch({ type: 'EXTRACTION_SUCCESS', response: payload as ExtractResponse })
+      dispatch({ type: 'EXTRACTION_SUCCESS', response: body as ExtractResponse })
     } catch (err) {
       dispatch({
         type: 'EXTRACTION_FAILURE',
@@ -417,18 +419,22 @@ export function useImportPool() {
         }),
       })
       const payload = await response.json()
+      const body = payload.data ?? payload
       if (!response.ok) {
         dispatch({
           type: 'SUBMIT_FAILURE',
           error: {
-            code: payload.code || payload.error || 'SUBMIT_FAILED',
-            message: typeof payload.error === 'string' ? payload.error : 'Failed to create pool',
-            details: payload.details,
+            code: body?.code || body?.error || 'SUBMIT_FAILED',
+            message:
+              (typeof body?.error === 'string' ? body.error : null) ||
+              payload.message ||
+              'Failed to create pool',
+            details: body?.details,
           },
         })
         return
       }
-      dispatch({ type: 'SUBMIT_SUCCESS', shareId: payload.shareId })
+      dispatch({ type: 'SUBMIT_SUCCESS', shareId: body.shareId })
     } catch (err) {
       dispatch({
         type: 'SUBMIT_FAILURE',
