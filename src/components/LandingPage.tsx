@@ -253,22 +253,25 @@ function LandingPage() {
               </button>
             </div>
           </div>
-        </div>
-        <div className="mode-full-width-row mode-bottom-row">
-          <button className="mode-button art-unit mode-button-deckbuilder" onClick={() => router.push('/deckbuilder')}>
-            <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.deckbuilder}")` }} />
-            <div className="mode-button-content">
-              <span className="mode-button-title">Limited Deckbuilder</span>
-              <span className="mode-button-subtitle">Infinite copies of every card in a set</span>
+          <div className="mode-section">
+            <h3 className="mode-section-header">Deckbuilder</h3>
+            <div className="mode-column">
+              <button className="mode-button art-unit mode-button-deckbuilder" onClick={() => router.push('/deckbuilder')}>
+                <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.deckbuilder}")` }} />
+                <div className="mode-button-content">
+                  <span className="mode-button-title">Limited</span>
+                  <span className="mode-button-subtitle">Infinite copies of every card in a set</span>
+                </div>
+              </button>
+              <button className="mode-button art-event" onClick={() => router.push('/import-pool')}>
+                <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.importPool}")` }} />
+                <div className="mode-button-content">
+                  <span className="mode-button-title">Import Pool</span>
+                  <span className="mode-button-subtitle">From your registered sealed sheet</span>
+                </div>
+              </button>
             </div>
-          </button>
-          <button className="mode-button art-event mode-button-import-pool" onClick={() => router.push('/import-pool')}>
-            <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.importPool}")` }} />
-            <div className="mode-button-content">
-              <span className="mode-button-title">Import Pool</span>
-              <span className="mode-button-subtitle">From your registered sealed sheet</span>
-            </div>
-          </button>
+          </div>
         </div>
       </div>
       <div className="landing-disclaimer">
