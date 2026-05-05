@@ -199,7 +199,7 @@ export async function extractPoolFromImages(
       },
     ],
     output_config: {
-      format: { type: 'json_schema', schema: RESPONSE_SCHEMA, name: 'pool_extraction' },
+      format: { type: 'json_schema', schema: RESPONSE_SCHEMA },
     },
     messages: [{ role: 'user', content: userContent }],
   })
