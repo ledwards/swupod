@@ -33,7 +33,10 @@ const MAX_TOTAL_BYTES = 10 * 1024 * 1024 // 10MB combined
 const VALID_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
 const VALID_TYPES = new Set(['Leader', 'Base', 'Unit', 'Event', 'Upgrade'])
 const MAX_QTY = 6
-const MAX_ROWS = 200 // generous upper bound for a 96-card sheet
+// LAW has ~257 cards across all rarities; sheets list every set card with the
+// player marking poolQty on the ~80 they actually own. 500 is safe across all
+// known sets (largest is LAW; SOR has ~250).
+const MAX_ROWS = 500
 
 interface ExtractRequestBody {
   images?: Array<{ data: string; mediaType: string }>
