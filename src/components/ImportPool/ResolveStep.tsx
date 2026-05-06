@@ -49,6 +49,17 @@ export default function ResolveStep({ importPool }: Props) {
           Review the cards we extracted from your sheet. Fix any unmatched cards, wrong matches,
           or bad quantities. Pool must total 96 cards (1 leader + 1 base + 14 other × 6).
         </p>
+        {state.warnings.length > 0 && (
+          <div className="import-pool-warnings" role="alert">
+            <strong>Heads up — some rows needed cleanup during extraction:</strong>
+            <ul>
+              {state.warnings.map((w, i) => (
+                <li key={i}>{w}</li>
+              ))}
+            </ul>
+            <small>Fix anything that doesn't look right below before continuing.</small>
+          </div>
+        )}
         <RunningTotals validation={validation} state={state} />
       </header>
 

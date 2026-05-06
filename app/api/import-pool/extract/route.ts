@@ -106,7 +106,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     // 4. Call Claude.
-    let raw: RawExtractResponse
+    let raw: any
     try {
       raw = await extractPoolFromImages(
         body.images.map((img) => ({ data: img.data, mediaType: img.mediaType as any })),
@@ -132,14 +132,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       )
     }
 
-    // 5. Validate response shape strictly (prompt-injection mitigation).
-    const shapeError = validateRawResponse(raw)
-    if (shapeError) {
+    // 5. Sanitize response. Per-row issues become warnings (carried to the
+    //    Resolve step) rather than blocking. Only structural failures abort.
+    const sanitizationResult = sanitizeRawResponse(raw)
+    if ('fatal' in sanitizationResult) {
       return jsonResponse(
-        { error: shapeError, code: 'EXTRACTION_INVALID_SCHEMA' },
+        { error: sanitizationResult.fatal, code: 'EXTRACTION_INVALID_SCHEMA' },
         502,
       )
     }
+    const { sanitized, warnings: extractWarnings } = sanitizationResult
+    raw = sanitized as RawExtractResponse
 
     // 6. Resolve setCode. Either manualSetCode (validated against getAllSetCodes()) or
     //    auto-detect from the header by fuzzy-matching set name to setConfigs.
@@ -193,6 +196,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         leader: raw.header.leader,
         base: raw.header.base,
       },
+      warnings: extractWarnings,
       rows: matched.map((m) => ({
         extracted: m.extracted,
         matched: m.matched
@@ -229,45 +233,75 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
 // === Helpers ===
 
-function validateRawResponse(raw: any): string | null {
-  if (!raw || typeof raw !== 'object') return 'Response is not an object'
-  if (!raw.header || typeof raw.header !== 'object') return 'Response missing header'
-  if (!Array.isArray(raw.rows)) return 'Response missing rows array'
-  if (raw.rows.length > MAX_ROWS) return `Too many rows (${raw.rows.length} > ${MAX_ROWS})`
+type SanitizationResult =
+  | { fatal: string }
+  | { sanitized: { header: any; rows: any[] }; warnings: string[] }
 
-  for (let i = 0; i < raw.rows.length; i++) {
-    const row = raw.rows[i]
-    if (!row || typeof row !== 'object') return `rows[${i}] is not an object`
-    if (typeof row.name !== 'string' || row.name.length === 0) {
-      return `rows[${i}] has invalid name`
+/**
+ * Permissive shape sanitizer. Per-row issues become warnings (carried to the
+ * Resolve step) rather than blocking the whole extraction. Only structural
+ * failures (no header, no rows array) are fatal.
+ *
+ * Still preserves prompt-injection bounds — qty values are clamped, unknown
+ * types and missing names are dropped, oversize row arrays are truncated.
+ */
+function sanitizeRawResponse(raw: any): SanitizationResult {
+  if (!raw || typeof raw !== 'object') return { fatal: 'Response is not an object' }
+  if (!raw.header || typeof raw.header !== 'object') return { fatal: 'Response missing header' }
+  if (!Array.isArray(raw.rows)) return { fatal: 'Response missing rows array' }
+
+  const warnings: string[] = []
+  let droppedNoName = 0
+  let droppedBadType = 0
+  let droppedBadStructure = 0
+  let clampedQty = 0
+
+  let rowsToProcess: any[] = raw.rows
+  if (raw.rows.length > MAX_ROWS) {
+    warnings.push(`${raw.rows.length - MAX_ROWS} rows beyond the ${MAX_ROWS} limit were dropped`)
+    rowsToProcess = raw.rows.slice(0, MAX_ROWS)
+  }
+
+  const sanitizedRows: any[] = []
+  for (const row of rowsToProcess) {
+    if (!row || typeof row !== 'object') {
+      droppedBadStructure++
+      continue
+    }
+    if (typeof row.name !== 'string' || row.name.trim().length === 0) {
+      droppedNoName++
+      continue
     }
     if (!VALID_TYPES.has(row.type)) {
-      return `rows[${i}] has invalid type "${row.type}"`
+      droppedBadType++
+      continue
     }
-    if (row.subtitle !== null && typeof row.subtitle !== 'string') {
-      return `rows[${i}] has invalid subtitle`
-    }
-    if (
-      typeof row.poolQty !== 'number' ||
-      !Number.isInteger(row.poolQty) ||
-      row.poolQty < 0 ||
-      row.poolQty > MAX_QTY
-    ) {
-      return `rows[${i}] poolQty out of bounds (0-${MAX_QTY})`
-    }
-    if (
-      typeof row.deckQty !== 'number' ||
-      !Number.isInteger(row.deckQty) ||
-      row.deckQty < 0 ||
-      row.deckQty > MAX_QTY
-    ) {
-      return `rows[${i}] deckQty out of bounds (0-${MAX_QTY})`
-    }
-    if (row.deckQty > row.poolQty) {
-      return `rows[${i}] deckQty (${row.deckQty}) > poolQty (${row.poolQty})`
-    }
+
+    let poolQty = Number.isInteger(row.poolQty) ? row.poolQty : 0
+    let deckQty = Number.isInteger(row.deckQty) ? row.deckQty : 0
+    const origPool = poolQty
+    const origDeck = deckQty
+
+    poolQty = Math.max(0, Math.min(MAX_QTY, poolQty))
+    deckQty = Math.max(0, Math.min(MAX_QTY, deckQty))
+    if (deckQty > poolQty) deckQty = poolQty
+
+    if (origPool !== poolQty || origDeck !== deckQty) clampedQty++
+
+    sanitizedRows.push({
+      ...row,
+      poolQty,
+      deckQty,
+      subtitle: typeof row.subtitle === 'string' ? row.subtitle : null,
+    })
   }
-  return null
+
+  if (droppedNoName > 0) warnings.push(`${droppedNoName} row${droppedNoName === 1 ? '' : 's'} with missing card names dropped`)
+  if (droppedBadType > 0) warnings.push(`${droppedBadType} row${droppedBadType === 1 ? '' : 's'} with unrecognized card types dropped`)
+  if (droppedBadStructure > 0) warnings.push(`${droppedBadStructure} malformed row${droppedBadStructure === 1 ? '' : 's'} dropped`)
+  if (clampedQty > 0) warnings.push(`${clampedQty} row${clampedQty === 1 ? '' : 's'} had quantities clamped to the 0-${MAX_QTY} range`)
+
+  return { sanitized: { header: raw.header, rows: sanitizedRows }, warnings }
 }
 
 function resolveSetCodeFromName(setName: string | null): string | null {

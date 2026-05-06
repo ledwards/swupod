@@ -519,6 +519,31 @@
   font-size: 14px;
 }
 
+.import-pool-warnings {
+  margin: 12px 0;
+  padding: 12px;
+  background: rgba(255, 200, 0, 0.1);
+  border: 1px solid rgba(255, 200, 0, 0.45);
+  border-radius: 4px;
+  font-size: 14px;
+  color: rgba(255, 230, 150, 0.95);
+}
+
+.import-pool-warnings ul {
+  margin: 6px 0 6px 20px;
+  padding: 0;
+}
+
+.import-pool-warnings li {
+  margin: 2px 0;
+}
+
+.import-pool-warnings small {
+  display: block;
+  margin-top: 4px;
+  color: rgba(255, 230, 150, 0.7);
+}
+
 .import-pool-error ul {
   margin: 6px 0 0;
   padding-left: 20px;

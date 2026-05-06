@@ -58,6 +58,8 @@ export interface ExtractedHeader {
 export interface ExtractResponse {
   header: ExtractedHeader
   rows: MatchedRow[]
+  /** Non-blocking warnings from the sanitization pass (e.g. clamped qty, dropped rows) */
+  warnings?: string[]
 }
 
 /** A row as the user edits it in the Resolve step */
@@ -96,6 +98,7 @@ interface ImportPoolState {
   activeBaseId: string | null
   title: string
   shareId: string | null
+  warnings: string[]
   error: { code: string; message: string; details?: any } | null
 }
 
@@ -108,6 +111,7 @@ const INITIAL_STATE: ImportPoolState = {
   activeBaseId: null,
   title: '',
   shareId: null,
+  warnings: [],
   error: null,
 }
 
@@ -138,7 +142,7 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
         // Adding/removing images during/after extraction discards prior extraction
         // per scope: re-upload triggers a fresh CV pass.
         ...(state.extraction
-          ? { extraction: null, resolvedRows: [], activeLeaderId: null, activeBaseId: null, title: '' }
+          ? { extraction: null, resolvedRows: [], activeLeaderId: null, activeBaseId: null, title: '', warnings: [] }
           : {}),
         phase: 'uploading',
         images: [...state.images, action.image],
@@ -149,7 +153,7 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
       return {
         ...state,
         ...(state.extraction
-          ? { extraction: null, resolvedRows: [], activeLeaderId: null, activeBaseId: null, title: '' }
+          ? { extraction: null, resolvedRows: [], activeLeaderId: null, activeBaseId: null, title: '', warnings: [] }
           : {}),
         phase: images.length === 0 ? 'idle' : 'uploading',
         images,
@@ -210,6 +214,7 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
         activeLeaderId,
         activeBaseId,
         title,
+        warnings: action.response.warnings || [],
         error: null,
       }
     }
