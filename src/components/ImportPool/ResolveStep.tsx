@@ -89,9 +89,7 @@ export default function ResolveStep({ importPool }: Props) {
 
     // Issue pager is for resolving INDIVIDUAL data points (rows the user
     // can fix by picking, retyping a qty, or verifying against the source
-    // photo). Sum-level totals like "Pool=71/96" don't belong here — they
-    // already render in the running-totals strip and there's no specific
-    // row to land on. Per-row issues + section-level under/over flags only.
+    // photo). Section gaps and per-row issues only.
 
     // Section gaps from the route's typical-range check.
     for (const gap of state.sectionGaps) {
@@ -102,10 +100,14 @@ export default function ResolveStep({ importPool }: Props) {
       })
     }
 
-    // Per-row issues. We separate "matcher problems" (poolQty>0 only — these
-    // need a card pick) from "qty-read problems" (independent of poolQty —
-    // includes uncertain BLANKS, which is the whole point: rows Claude
-    // wrote off as 0/0 but isn't sure about may be cards the user has).
+    // When pool is short, MEDIUM-confidence blanks become anomalies — these
+    // are the most likely "Claude wrote this off as 0 but isn't certain"
+    // candidates for the missing cards. Without this branch, an
+    // overconfident model that returns zero LOW reads (all M/H) gives the
+    // user no rows to verify even when the totals say 21 cards are missing.
+    const poolShort = validation.poolCount < validation.poolTarget
+    const surfaceMediumBlanks = poolShort
+
     for (const row of state.resolvedRows) {
       const cardName = row.card?.name || row.extracted.name || 'Unrecognized'
       const id = `ip-row-${row.key}`
@@ -145,9 +147,26 @@ export default function ResolveStep({ importPool }: Props) {
         list.push({ kind: 'row', targetId: id, label: note })
         continue
       }
+
+      // Pool-short fallback: surface medium-confidence blanks. Skip
+      // leaders/bases (their typical state is poolQty=0) — those don't
+      // help the user find missing cards.
+      if (
+        surfaceMediumBlanks &&
+        row.poolQty === 0 &&
+        poolConf === 'medium' &&
+        row.extracted.type !== 'Leader' &&
+        row.extracted.type !== 'Base'
+      ) {
+        list.push({
+          kind: 'row',
+          targetId: id,
+          label: `Possibly missed: ${cardName} (pool count is short — verify against source)`,
+        })
+      }
     }
     return list
-  }, [state.resolvedRows, state.sectionGaps])
+  }, [state.resolvedRows, state.sectionGaps, validation.poolCount, validation.poolTarget])
 
   const anomalyKeys = anomalies.map((a) => a.targetId)
 

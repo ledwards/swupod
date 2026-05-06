@@ -404,6 +404,12 @@ const RESPONSE_SCHEMA = {
     },
     sections: {
       type: 'array',
+      // Minimum 5 forces the model to actually populate this — multiple
+      // earlier runs returned null/empty even with rule 9 + the final
+      // checklist demanding it. The structured-output engine rejects
+      // responses that violate minItems, so this turns "Claude ignored the
+      // bounds rule" into a hard failure rather than silent zero.
+      minItems: 5,
       items: {
         type: 'object',
         additionalProperties: false,
