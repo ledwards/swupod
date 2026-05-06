@@ -76,6 +76,8 @@ export function AspectFilterModal({
   const setInAspectFilter = contextValue?.setInAspectFilter
   const outAspectFilter = contextValue?.outAspectFilter ?? true
   const setOutAspectFilter = contextValue?.setOutAspectFilter
+  const filteredCardDisplay = contextValue?.filteredCardDisplay ?? 'fade'
+  const setFilteredCardDisplay = contextValue?.setFilteredCardDisplay
 
   const isDeckMode = mode === 'deck'
 
@@ -313,6 +315,17 @@ export function AspectFilterModal({
         {renderInOutAspectFilters()}
         {renderColorAspectFilters()}
         {renderFlatAspectFilters()}
+        <div style={{ marginTop: '0.75rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Filtered cards:</span>
+          <button
+            style={{ padding: '2px 8px', fontSize: '0.75rem', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.3)', background: filteredCardDisplay !== 'hide' ? 'rgba(255,255,255,0.15)' : 'transparent', color: 'white', cursor: 'pointer' }}
+            onClick={() => setFilteredCardDisplay?.('fade')}
+          >Fade</button>
+          <button
+            style={{ padding: '2px 8px', fontSize: '0.75rem', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.3)', background: filteredCardDisplay === 'hide' ? 'rgba(255,255,255,0.15)' : 'transparent', color: 'white', cursor: 'pointer' }}
+            onClick={() => setFilteredCardDisplay?.('hide')}
+          >Hide</button>
+        </div>
       </div>
     </>
   )

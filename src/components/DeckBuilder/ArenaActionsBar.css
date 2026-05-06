@@ -90,6 +90,30 @@
   background: rgba(210, 160, 0, 0.25);
 }
 
+/* White/neutral — view controls (aspect penalties toggle) */
+.arena-action-btn--white {
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.arena-action-btn--white:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: white;
+  box-shadow: 0 4px 14px rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.arena-action-btn--white.active {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+}
+
+.arena-action-btn--white.active:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+}
+
 /* Separator between bulk-move group and aspect-penalties */
 .arena-actions-separator {
   width: 1px;

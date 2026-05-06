@@ -141,20 +141,23 @@ export function ArenaActionsBar({ mode = 'pool' }: ArenaActionsBarProps) {
     </button>
   )
 
+  const swapBtn = (
+    <button
+      key="swap"
+      className="arena-action-btn arena-action-btn--yellow"
+      onClick={handleSwap}
+      disabled={poolCardIds.length === 0 && deckCardIds.length === 0}
+      title="Swap all cards between pool and deck"
+    >
+      ↔ Swap
+    </button>
+  )
+
   return (
     <div className="arena-actions-bar">
       <span className="arena-actions-label">ACTIONS:</span>
 
-      {mode === 'pool' ? <>{addAllBtn}{removeAllBtn}</> : <>{removeAllBtn}{addAllBtn}</>}
-
-      <button
-        className="arena-action-btn arena-action-btn--yellow"
-        onClick={handleSwap}
-        disabled={poolCardIds.length === 0 && deckCardIds.length === 0}
-        title="Swap all cards between pool and deck"
-      >
-        ↔ Swap
-      </button>
+      {mode === 'pool' ? <>{addAllBtn}{swapBtn}{removeAllBtn}</> : <>{removeAllBtn}{swapBtn}{addAllBtn}</>}
 
       <button
         className="arena-action-btn arena-action-btn--green"
