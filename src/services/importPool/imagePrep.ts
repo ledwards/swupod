@@ -51,10 +51,12 @@ export async function resizeImage(
   }
 
   const merged = { ...DEFAULT_OPTS, ...opts }
-  const previewUrl = URL.createObjectURL(file)
+  // Temp blob URL just for the resize step; we replace with a data URL so the
+  // returned previewUrl is self-contained and survives localStorage persistence.
+  const tempUrl = URL.createObjectURL(file)
 
   try {
-    const img = await loadImage(previewUrl)
+    const img = await loadImage(tempUrl)
     const { width, height } = scaleToFit(img.width, img.height, merged.maxWidth, merged.maxHeight)
 
     const canvas = document.createElement('canvas')
@@ -74,11 +76,10 @@ export async function resizeImage(
       width,
       height,
       sizeBytes,
-      previewUrl,
+      previewUrl: dataUrl, // self-contained — survives serialization
     }
-  } catch (err) {
-    URL.revokeObjectURL(previewUrl)
-    throw err
+  } finally {
+    URL.revokeObjectURL(tempUrl)
   }
 }
 

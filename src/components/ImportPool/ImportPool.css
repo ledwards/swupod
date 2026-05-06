@@ -44,9 +44,17 @@
   margin-bottom: 24px;
 }
 
+.import-pool-header__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
 .import-pool-header h1 {
   font-size: 28px;
-  margin: 0 0 12px;
+  margin: 0;
 }
 
 .import-pool-steps {

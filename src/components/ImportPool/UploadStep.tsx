@@ -38,8 +38,7 @@ export default function UploadStep({ importPool }: Props) {
       <h2>Upload your registration sheet</h2>
       <p className="import-pool-help">
         Take a clear, well-lit photo of your registered competitive sealed pool sheet.
-        You can upload up to 2 photos if it spans multiple pages. Your photos are sent to
-        Anthropic's Claude vision API for OCR and are <strong>not stored</strong> on our servers.
+        Up to 2 photos if it spans multiple pages.
       </p>
 
       <div className="import-pool-image-grid">

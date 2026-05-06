@@ -13,8 +13,10 @@
  * See docs/plans/2026-05-05-001-feat-import-pool-spike-plan.md U6.
  */
 
-import { useReducer, useCallback, useMemo } from 'react'
+import { useReducer, useCallback, useMemo, useEffect, useRef } from 'react'
 import { resizeImage, type ProcessedImage } from '../services/importPool/imagePrep'
+
+const STORAGE_KEY = 'import-pool-wizard-v1'
 
 // === Types ===
 
@@ -133,6 +135,7 @@ type Action =
   | { type: 'SUBMIT_SUCCESS'; shareId: string }
   | { type: 'SUBMIT_FAILURE'; error: ImportPoolState['error'] }
   | { type: 'RESET' }
+  | { type: 'RESTORE'; state: Partial<ImportPoolState> }
 
 function reducer(state: ImportPoolState, action: Action): ImportPoolState {
   switch (action.type) {
@@ -260,9 +263,20 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
     case 'SUBMIT_FAILURE':
       return { ...state, phase: 'confirming', error: action.error }
     case 'RESET':
-      // Revoke any preview URLs to avoid leaks
+      // previewUrls are now data URLs (no-op revoke), but keep the call for safety
       state.images.forEach((img) => URL.revokeObjectURL(img.previewUrl))
       return INITIAL_STATE
+    case 'RESTORE': {
+      // Transient phases ('extracting', 'submitting') had a pending API call
+      // that didn't survive the refresh. Park them at their resting phase so
+      // the UI isn't stuck on a spinner.
+      const restored = { ...INITIAL_STATE, ...action.state, error: null, shareId: null }
+      if (restored.phase === 'extracting') restored.phase = 'uploading'
+      if (restored.phase === 'submitting') restored.phase = 'confirming'
+      if (restored.phase === 'error') restored.phase = restored.images.length > 0 ? 'uploading' : 'idle'
+      if (restored.phase === 'done') restored.phase = 'idle' // shouldn't happen — clearPersisted runs on 'done'
+      return restored
+    }
     default:
       return state
   }
@@ -316,10 +330,86 @@ function deriveValidation(state: ImportPoolState): Validation {
   }
 }
 
+// === Persistence ===
+//
+// Wizard state survives page refresh via localStorage. Set after first mount
+// (not as a useReducer lazy init) to avoid SSR hydration mismatch. previewUrl
+// is a data URL so the images survive serialization without any blob handling.
+
+function persistedShape(state: ImportPoolState) {
+  return {
+    phase: state.phase,
+    images: state.images,
+    extraction: state.extraction,
+    resolvedRows: state.resolvedRows,
+    activeLeaderId: state.activeLeaderId,
+    activeBaseId: state.activeBaseId,
+    title: state.title,
+    warnings: state.warnings,
+  }
+}
+
+function loadPersisted(): Partial<ImportPoolState> | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return null
+    return JSON.parse(raw)
+  } catch {
+    return null
+  }
+}
+
+function clearPersisted() {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.removeItem(STORAGE_KEY)
+  } catch {
+    // ignore
+  }
+}
+
+function savePersisted(state: ImportPoolState) {
+  if (typeof window === 'undefined') return
+  // Don't persist terminal or empty states
+  if (state.phase === 'done') {
+    clearPersisted()
+    return
+  }
+  if (state.phase === 'idle' && state.images.length === 0) {
+    clearPersisted()
+    return
+  }
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(persistedShape(state)))
+  } catch (err) {
+    // Most likely quota exceeded with large base64 images. Non-fatal — the
+    // wizard still works in-session, just won't survive refresh.
+    console.warn('Import Pool: failed to persist wizard state', err)
+  }
+}
+
 // === Hook ===
 
 export function useImportPool() {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE)
+  const restoredRef = useRef(false)
+
+  // Restore on first mount (after hydration). Skips if no persisted state.
+  useEffect(() => {
+    if (restoredRef.current) return
+    restoredRef.current = true
+    const persisted = loadPersisted()
+    if (persisted && (persisted.images?.length || persisted.extraction)) {
+      dispatch({ type: 'RESTORE', state: persisted })
+    }
+  }, [])
+
+  // Persist on every state change (after restore has run).
+  useEffect(() => {
+    if (!restoredRef.current) return
+    savePersisted(state)
+  }, [state])
 
   const validation = useMemo(() => deriveValidation(state), [state])
 
@@ -448,7 +538,10 @@ export function useImportPool() {
     }
   }, [state])
 
-  const reset = useCallback(() => dispatch({ type: 'RESET' }), [])
+  const reset = useCallback(() => {
+    clearPersisted()
+    dispatch({ type: 'RESET' })
+  }, [])
 
   return {
     state,
