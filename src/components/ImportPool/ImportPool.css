@@ -116,19 +116,38 @@
   margin-bottom: 12px;
 }
 
+/* Header actions cluster — Re-extract + Cancel Import sit side by side */
+.import-pool-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .import-pool-header h1 {
   font-size: 28px;
   margin: 0;
 }
 
+/* Step bar sticks to the top of the viewport so the user always knows
+ * where they are in the Upload → Review → Confirm flow while scrolling
+ * a long Resolve table. Sits ABOVE the .ip-sticky-stack toolbar (which
+ * is offset top: 56px to clear this). */
 .import-pool-steps {
   display: flex;
   gap: 8px;
   list-style: none;
-  padding: 0;
+  padding: 6px 0;
   margin: 0;
   font-size: 14px;
   color: rgba(255, 255, 255, 0.6);
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 101; /* above .ip-sticky-stack (z-index 100) */
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .import-pool-steps li {
@@ -243,20 +262,29 @@
 }
 
 /* Sticky toolbar — mirrors the deckbuilder's deck-info-bar pattern */
+/* Sticky group: toolbar + anomaly detail strip move together while scrolling.
+ * Lives below the sticky wizard step bar — top offset accounts for the steps
+ * row so neither overlaps. */
+.ip-sticky-stack {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 56px; /* clears .import-pool-steps when sticky */
+  z-index: 100;
+  margin: 0 -8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .ip-toolbar {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 10px 14px;
-  margin: 0 -8px 12px;
   background: rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 6px;
   flex-wrap: wrap;
-  position: -webkit-sticky;
-  position: sticky;
-  top: 8px;
-  z-index: 100;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   transition: background 0.2s ease, border-color 0.2s ease;
@@ -269,16 +297,18 @@
   flex-wrap: wrap;
 }
 
-/* Error pager — nav between needs-attention rows */
+/* Error pager — nav between needs-attention rows. Uses the brand "interactive
+ * blue" so it reads as nav UI, not as a warning state (warnings on rows stay
+ * yellow). */
 .ip-error-pager {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 4px 8px;
-  background: rgba(255, 217, 102, 0.12);
-  border: 1px solid rgba(255, 217, 102, 0.55);
+  background: rgba(33, 150, 243, 0.12);
+  border: 1px solid rgba(33, 150, 243, 0.55);
   border-radius: 4px;
-  color: #ffd966;
+  color: #6cb6ff;
   font-size: 11px;
   font-variant-numeric: tabular-nums;
 }
@@ -295,9 +325,9 @@
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 217, 102, 0.5);
+  border: 1px solid rgba(33, 150, 243, 0.5);
   border-radius: 3px;
-  color: #ffd966;
+  color: #6cb6ff;
   font-size: 13px;
   cursor: pointer;
   font-family: inherit;
@@ -305,8 +335,8 @@
 
 @media (hover: hover) and (pointer: fine) {
   .ip-error-pager__btn:hover {
-    background: rgba(255, 217, 102, 0.25);
-    border-color: rgba(255, 217, 102, 1);
+    background: rgba(33, 150, 243, 0.25);
+    border-color: rgba(33, 150, 243, 1);
   }
 }
 
@@ -322,19 +352,24 @@
   animation: ip-row-flash 1.4s ease-in-out;
 }
 
-/* Detail line shown under the toolbar when an anomaly is selected */
+/* Detail line shown under the toolbar when an anomaly is selected. Joined
+ * to the toolbar via the .ip-sticky-stack wrapper so it stays visible while
+ * scrolling. Uses the same interactive-blue tone as the pager. Blurred
+ * background so rows scrolling underneath read as background, not bleed. */
 .ip-anomaly-detail {
-  margin: 0 0 12px;
+  margin: 0;
   padding: 8px 12px;
-  background: rgba(255, 217, 102, 0.08);
-  border: 1px solid rgba(255, 217, 102, 0.4);
-  border-radius: 4px;
+  background: rgba(20, 50, 90, 0.85);
+  border: 1px solid rgba(33, 150, 243, 0.45);
+  border-radius: 6px;
   font-size: 13px;
-  color: rgba(255, 230, 150, 0.95);
+  color: rgba(220, 235, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .ip-anomaly-detail strong {
-  color: #ffd966;
+  color: #6cb6ff;
   margin-right: 4px;
 }
 
@@ -549,6 +584,12 @@
 
 .import-pool-totals .totals-bad {
   color: #ff8888;
+}
+
+/* Legal but over the minimum — e.g. deck > 30 cards. Not an error, but worth
+ * flagging so the user notices they're carrying extra weight. */
+.import-pool-totals .totals-warn {
+  color: #ffd966;
 }
 
 /* === Resolve step: registration-sheet-style table === */

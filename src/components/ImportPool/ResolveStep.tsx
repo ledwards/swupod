@@ -85,7 +85,11 @@ export default function ResolveStep({ importPool }: Props) {
         label: gap.message,
       })
     }
-    // Per-row issues
+    // Per-row issues. Only surface things the USER needs to verify or fix —
+    // never a "medium" extractConfidence on its own (Claude marks most rows
+    // medium, so it floods the pager and makes Next button cycle through
+    // every row). Low extractConfidence stays in: that's "I really couldn't
+    // read this, please look".
     for (const row of state.resolvedRows) {
       const cardName = row.card?.name || row.extracted.name || 'Unrecognized'
       if (!row.card) {
@@ -98,8 +102,6 @@ export default function ResolveStep({ importPool }: Props) {
         list.push({ kind: 'row', targetId: `ip-row-${row.key}`, label: `Bad qty: ${cardName} deck>${row.poolQty}` })
       } else if (row.extracted.extractConfidence === 'low') {
         list.push({ kind: 'row', targetId: `ip-row-${row.key}`, label: `Low-confidence read: ${cardName}` })
-      } else if (row.extracted.extractConfidence === 'medium' && row.poolQty > 0) {
-        list.push({ kind: 'row', targetId: `ip-row-${row.key}`, label: `Medium-confidence read: ${cardName}` })
       }
     }
     return list
@@ -148,6 +150,7 @@ export default function ResolveStep({ importPool }: Props) {
         )}
       </header>
 
+      <div className="ip-sticky-stack">
       <div className="ip-toolbar">
         <RunningTotals validation={validation} />
         <div className="ip-toolbar__group">
@@ -243,6 +246,7 @@ export default function ResolveStep({ importPool }: Props) {
           <strong>Issue {anomalyIndex + 1}:</strong> {currentAnomalyLabel}
         </div>
       )}
+      </div>{/* /.ip-sticky-stack */}
 
       {state.viewMode === 'grid' ? (
         <GridView
@@ -414,13 +418,20 @@ export default function ResolveStep({ importPool }: Props) {
 // === Sub-components ===
 
 function RunningTotals({ validation }: { validation: any }) {
-  const deckOk = validation.deckCount >= validation.deckTarget
+  // Deck count: <30 is red (illegal), ==30 is green (legal min), >30 is
+  // yellow (legal but unusual — over-deckbuilding).
+  const deckClass =
+    validation.deckCount < validation.deckTarget
+      ? 'totals-bad'
+      : validation.deckCount > validation.deckTarget
+        ? 'totals-warn'
+        : 'totals-ok'
   return (
     <div className="import-pool-totals">
       <span className={validation.poolCount === validation.poolTarget ? 'totals-ok' : 'totals-bad'}>
         Pool: {validation.poolCount} / {validation.poolTarget}
       </span>
-      <span className={deckOk ? 'totals-ok' : 'totals-bad'}>
+      <span className={deckClass}>
         Deck: {validation.deckCount} / {validation.deckTarget}
       </span>
       <span className={validation.hasLeader ? 'totals-ok' : 'totals-bad'}>
