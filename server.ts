@@ -1,6 +1,14 @@
 // @ts-nocheck
 // Custom server for Next.js with Socket.io - v2
-import 'dotenv/config'
+//
+// override: true so values in .env (and .env.local for local dev) win over
+// any pre-existing shell env. Without this, an empty ANTHROPIC_API_KEY=""
+// in the shell will prevent dotenv from loading the real value, leaving the
+// process running with a blank key. Production (Railway) doesn't ship a
+// .env file, so override has no effect there.
+import dotenv from 'dotenv'
+dotenv.config({ path: '.env.local', override: true })
+dotenv.config({ override: true })
 import { createServer, IncomingMessage, ServerResponse } from 'http'
 import { spawn } from 'child_process'
 import next from 'next'
