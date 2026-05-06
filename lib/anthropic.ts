@@ -68,28 +68,53 @@ export interface RawExtractResponse {
 // breakpoint.
 const SYSTEM_PROMPT = `You are an expert at parsing competitive sealed-deck registration sheets for the Star Wars: Unlimited TCG.
 
-You will receive one or two photographs of a registration sheet. Each sheet has:
-- A header with: set name, event name, event date, player name, selected leader, selected base
-- Rows of cards grouped by aspect (Vigilance, Command, Aggression, Cunning, Villainy, Heroism, Neutral)
-- For each row: card name, card type (Leader/Base/Unit/Event/Upgrade), optional subtitle, "in pool" quantity, "in deck" quantity
+You will receive one or two photographs of a registration sheet. The sheet lists EVERY card in the set (250+ rows). Most rows are blank — the player has only filled in marks for the cards they actually own.
 
-A complete pool always totals exactly 96 cards: 6 leaders + 6 bases + 84 other cards.
-The user's selected leader and base are 1 each of those 6 (the rest are unused alternates).
-The active leader and base are typically marked with "in deck" = 1 on their rows.
-Other cards have "in pool" = N (1 to 6) and "in deck" between 0 and N (capped at 4 typically per game rules).
+The sheet has:
+- A header: set name, event name, event date, player name, selected leader, selected base
+- A LEADER section (lists all ~18 leaders in the set)
+- A BASE section (lists all ~12 bases in the set)
+- Aspect-grouped sections (Vigilance, Command, Aggression, Cunning, Villainy, Heroism, Multicolor, No Aspect) listing all non-leader/non-base cards
+- Each row has columns: PLAYED | TOTAL | NO. # (card number) | card name + subtitle
 
-IMPORTANT EXTRACTION RULES:
-- Extract every card row visible on the sheet, in order.
-- For card type, use exactly one of: "Leader", "Base", "Unit", "Event", "Upgrade".
-- For card subtitle: include if visible (e.g. "Audacious Smuggler" for Han Solo Leader); use null if absent.
-- Quantities must be integers from 0 to 6.
-- "deckQty" must never exceed "poolQty" for a given row.
-- For aspectGroup, use the section header the row appears under (e.g. "Vigilance", "Command/Heroism", "Neutral").
-- If a quantity number is unreadable, use 0 and rely on the resolution UI to fix it.
-- If a card name is unreadable, use the literal string "?" and rely on the resolution UI.
-- Never invent cards that aren't on the sheet.
+CRITICAL READING RULES — these are where extraction goes wrong if you're not careful:
 
-Return strict JSON conforming to the response schema. Do not include any prose, markdown, or explanation outside the JSON.`
+1. **Most rows are EMPTY.** A registration sheet pre-prints every card in the set. The player only marks the rows for cards they own. Rows with NO marks in BOTH the PLAYED and TOTAL columns are poolQty=0 AND deckQty=0. Do NOT fill in 1 because the row exists — only fill in qty when you can SEE a mark.
+
+2. **Counting marks.**
+   - An empty cell, dot, dash, or "—" = 0
+   - A single tally mark, slash, check, or filled dot = 1
+   - Two tally marks "||" or a "2" = 2
+   - Three tally marks or "3" = 3
+   - And so on (up to 6 for poolQty, 4 typically for deckQty per card)
+   - If you can see a mark but can't tell the count, use 1 and let the user verify
+
+3. **Leaders and bases.**
+   - A typical sealed pool gives the player 6 leaders (one per pack) out of ~18 in the set, and 6 bases out of ~12.
+   - Most leader/base rows on the sheet should be poolQty=0.
+   - Exactly ONE leader and ONE base will have deckQty=1 (the active selection).
+   - The other 5 leaders and 5 bases have poolQty=1 but deckQty=0 (in the pool, not selected).
+   - 12 leader rows and 6 base rows will be poolQty=0, deckQty=0.
+
+4. **Other cards (Units / Events / Upgrades).**
+   - The player owns ~80 unique cards across these aspects.
+   - poolQty = how many copies the player owns (1 to 6, sum across all rows = 84).
+   - deckQty = how many of those copies are in the main deck (0 to poolQty, sum = ~50).
+   - Rows for cards the player doesn't own should be poolQty=0, deckQty=0.
+
+5. **Total invariant.** Sum of poolQty across ALL rows must equal exactly 96 (6 leaders + 6 bases + 84 other). If your totals don't add up, re-check rows you marked qty>0 — you likely added marks where there are none.
+
+6. **For each row, return:**
+   - "name": the printed card name (e.g. "Han Solo")
+   - "type": exactly one of "Leader" / "Base" / "Unit" / "Event" / "Upgrade"
+   - "subtitle": the printed subtitle (e.g. "Audacious Smuggler") or null if no subtitle is printed
+   - "poolQty": integer 0-6 from the TOTAL column
+   - "deckQty": integer 0-6 from the PLAYED column (must not exceed poolQty)
+   - "aspectGroup": the section header the row appears under (e.g. "Vigilance", "Command", "Aggression Vigilance", "Multicolor", "No Aspect")
+
+7. **Names you can't read.** If a card name is unreadable, use the literal string "?". Never invent cards.
+
+Return strict JSON conforming to the response schema. Do not include any prose, markdown, or explanation outside the JSON. The user will verify the result against the source sheet, so accuracy on what's NOT marked matters as much as accuracy on what IS marked.`
 
 // === JSON schema for structured output ===
 const RESPONSE_SCHEMA = {

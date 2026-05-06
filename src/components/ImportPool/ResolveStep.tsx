@@ -144,6 +144,8 @@ export default function ResolveStep({ importPool }: Props) {
                     {group.displayName}
                   </span>
                   <span className="ip-section__count">
+                    {group.rows.reduce((s, r) => s + r.deckQty, 0)}
+                    {' / '}
                     {group.rows.reduce((s, r) => s + r.poolQty, 0)} cards
                   </span>
                 </div>
@@ -328,7 +330,7 @@ function RowItem({
       </td>
       <td className="ip-cell-no">{cardNumber || '—'}</td>
       <td
-        className="ip-cell-name"
+        className={`ip-cell-name ${needsAttention ? 'ip-cell-name--attention' : ''}`}
         style={
           row.card?.imageUrl
             ? ({ ['--card-art' as any]: `url("${row.card.imageUrl}")` } as React.CSSProperties)
@@ -337,7 +339,30 @@ function RowItem({
       >
         <button type="button" className="ip-cell-name__btn" onClick={onPickCard}>
           <span className="ip-row__name-text">
-            <strong>{row.card?.name || row.extracted.name || 'Unrecognized'}</strong>
+            <strong className={needsAttention ? 'ip-row__name--attention' : ''}>
+              {row.card?.name || row.extracted.name || 'Unrecognized'}
+              {needsAttention && hasSourceImage && (
+                <span
+                  className="ip-row__source-inline"
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onViewSource()
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      onViewSource()
+                    }
+                  }}
+                  title="Compare against your source sheet"
+                >
+                  📷
+                </span>
+              )}
+            </strong>
             {row.card?.subtitle && <em>{row.card.subtitle}</em>}
             {!row.card?.subtitle && row.confidence === 'ambiguous' && row.candidates.length > 0 && (
               <em className="ip-row__hint">{row.candidates.length} candidates — tap to choose</em>
@@ -347,27 +372,6 @@ function RowItem({
             )}
             {isUnresolved && <em className="ip-row__hint">tap to pick a card</em>}
           </span>
-          {needsAttention && hasSourceImage && (
-            <span
-              className="ip-row__source-btn"
-              role="button"
-              tabIndex={0}
-              onClick={(e) => {
-                e.stopPropagation()
-                onViewSource()
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  onViewSource()
-                }
-              }}
-              title="Compare against your source sheet"
-            >
-              📷
-            </span>
-          )}
         </button>
       </td>
     </tr>
@@ -398,7 +402,9 @@ function QtyCell({
       >
         −
       </button>
-      <span className="ip-qty__value">{value}</span>
+      <span className={`ip-qty__value ${value === 0 ? 'ip-qty__value--zero' : ''}`}>
+        {value}
+      </span>
       <button
         type="button"
         className="ip-qty__btn"

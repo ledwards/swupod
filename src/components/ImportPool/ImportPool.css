@@ -438,35 +438,44 @@
   color: #ff9e6e;
 }
 
-/* Camera icon shortcut to source-image modal on needs-attention rows */
-.ip-row__source-btn {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 24px;
-  height: 24px;
+/* Yellow tint on the NAME cell when the row needs attention (fuzzy/ambiguous/unmatched).
+   Highlights the value-in-question rather than just adding a side border. */
+.ip-cell-name--attention {
+  background: rgba(255, 217, 102, 0.10);
+}
+
+.ip-row__name--attention {
+  color: #ffd966;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ip-row--unresolved .ip-row__name--attention {
+  color: #ff9e6e;
+}
+
+/* Camera icon — inline next to the name text, not absolute-right */
+.ip-row__source-inline {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 217, 102, 0.5);
-  border-radius: 4px;
-  font-size: 13px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  background: rgba(255, 217, 102, 0.15);
+  border: 1px solid rgba(255, 217, 102, 0.55);
+  border-radius: 3px;
+  font-size: 11px;
   cursor: pointer;
-  z-index: 3;
   user-select: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .ip-row__source-btn:hover {
-    background: rgba(255, 217, 102, 0.2);
+  .ip-row__source-inline:hover {
+    background: rgba(255, 217, 102, 0.3);
     border-color: rgba(255, 217, 102, 1);
   }
-}
-
-.ip-cell-name__btn {
-  position: relative; /* anchor the source-btn */
 }
 
 /* Qty controls */
@@ -512,6 +521,12 @@
   font-weight: 700;
   font-size: 12px;
   font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.ip-qty__value--zero {
+  color: rgba(255, 255, 255, 0.25);
+  font-weight: 400;
 }
 
 .ip-row__qty-static {
