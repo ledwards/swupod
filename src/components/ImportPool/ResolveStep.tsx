@@ -69,35 +69,45 @@ export default function ResolveStep({ importPool }: Props) {
               {group.rows.reduce((s, r) => s + r.poolQty, 0)} cards
             </span>
           </div>
-          <div className="ip-table">
-            <div className="ip-table__head">
-              <span className="col-played">PLAYED</span>
-              <span className="col-total">TOTAL</span>
-              <span className="col-no">NO</span>
-              <span className="col-name">NAME</span>
-            </div>
-            {group.rows.map((row) => (
-              <RowItem
-                key={row.key}
-                row={row}
-                isActiveLeader={!!row.card && state.activeLeaderId === row.card.id}
-                isActiveBase={!!row.card && state.activeBaseId === row.card.id}
-                onIncPool={() => setRowQty(row.key, 'poolQty', row.poolQty + 1)}
-                onDecPool={() => setRowQty(row.key, 'poolQty', row.poolQty - 1)}
-                onIncDeck={() => setRowQty(row.key, 'deckQty', row.deckQty + 1)}
-                onDecDeck={() => setRowQty(row.key, 'deckQty', row.deckQty - 1)}
-                onToggleLeader={() => row.card && setActiveLeader(row.card.id)}
-                onToggleBase={() => row.card && setActiveBase(row.card.id)}
-                onPickCard={() =>
-                  setPickerFor({
-                    rowKey: row.key,
-                    candidates: row.candidates,
-                    typeFilter: row.extracted.type,
-                  })
-                }
-              />
-            ))}
-          </div>
+          <table className="ip-table">
+            <colgroup>
+              <col className="ip-col-played" />
+              <col className="ip-col-total" />
+              <col className="ip-col-no" />
+              <col className="ip-col-name" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>PLAYED</th>
+                <th>TOTAL</th>
+                <th>NO</th>
+                <th>NAME</th>
+              </tr>
+            </thead>
+            <tbody>
+              {group.rows.map((row) => (
+                <RowItem
+                  key={row.key}
+                  row={row}
+                  isActiveLeader={!!row.card && state.activeLeaderId === row.card.id}
+                  isActiveBase={!!row.card && state.activeBaseId === row.card.id}
+                  onIncPool={() => setRowQty(row.key, 'poolQty', row.poolQty + 1)}
+                  onDecPool={() => setRowQty(row.key, 'poolQty', row.poolQty - 1)}
+                  onIncDeck={() => setRowQty(row.key, 'deckQty', row.deckQty + 1)}
+                  onDecDeck={() => setRowQty(row.key, 'deckQty', row.deckQty - 1)}
+                  onToggleLeader={() => row.card && setActiveLeader(row.card.id)}
+                  onToggleBase={() => row.card && setActiveBase(row.card.id)}
+                  onPickCard={() =>
+                    setPickerFor({
+                      rowKey: row.key,
+                      candidates: row.candidates,
+                      typeFilter: row.extracted.type,
+                    })
+                  }
+                />
+              ))}
+            </tbody>
+          </table>
         </div>
       ))}
 
@@ -196,15 +206,8 @@ function RowItem({
     .join(' ')
 
   return (
-    <div
-      className={rowClasses}
-      style={
-        row.card?.imageUrl
-          ? ({ ['--card-art' as any]: `url("${row.card.imageUrl}")` } as React.CSSProperties)
-          : undefined
-      }
-    >
-      <div className="col-played">
+    <tr className={rowClasses}>
+      <td className="ip-cell-played">
         {isLeader ? (
           <button
             type="button"
@@ -232,8 +235,8 @@ function RowItem({
             disableDec={row.deckQty === 0}
           />
         )}
-      </div>
-      <div className="col-total">
+      </td>
+      <td className="ip-cell-total">
         {isLeader || isBase ? (
           <span className="ip-row__qty-static">{row.poolQty}</span>
         ) : (
@@ -245,22 +248,31 @@ function RowItem({
             disableDec={row.poolQty === 0}
           />
         )}
-      </div>
-      <div className="col-no">{cardNumber || '—'}</div>
-      <button type="button" className="col-name" onClick={onPickCard}>
-        <span className="ip-row__name-text">
-          <strong>{row.card?.name || row.extracted.name || 'Unrecognized'}</strong>
-          {row.card?.subtitle && <em>{row.card.subtitle}</em>}
-          {!row.card?.subtitle && row.confidence === 'ambiguous' && row.candidates.length > 0 && (
-            <em className="ip-row__hint">{row.candidates.length} candidates — tap to choose</em>
-          )}
-          {row.confidence === 'fuzzy' && (
-            <em className="ip-row__hint">fuzzy match — tap to verify</em>
-          )}
-          {isUnresolved && <em className="ip-row__hint">tap to pick a card</em>}
-        </span>
-      </button>
-    </div>
+      </td>
+      <td className="ip-cell-no">{cardNumber || '—'}</td>
+      <td
+        className="ip-cell-name"
+        style={
+          row.card?.imageUrl
+            ? ({ ['--card-art' as any]: `url("${row.card.imageUrl}")` } as React.CSSProperties)
+            : undefined
+        }
+      >
+        <button type="button" className="ip-cell-name__btn" onClick={onPickCard}>
+          <span className="ip-row__name-text">
+            <strong>{row.card?.name || row.extracted.name || 'Unrecognized'}</strong>
+            {row.card?.subtitle && <em>{row.card.subtitle}</em>}
+            {!row.card?.subtitle && row.confidence === 'ambiguous' && row.candidates.length > 0 && (
+              <em className="ip-row__hint">{row.candidates.length} candidates — tap to choose</em>
+            )}
+            {row.confidence === 'fuzzy' && (
+              <em className="ip-row__hint">fuzzy match — tap to verify</em>
+            )}
+            {isUnresolved && <em className="ip-row__hint">tap to pick a card</em>}
+          </span>
+        </button>
+      </td>
+    </tr>
   )
 }
 

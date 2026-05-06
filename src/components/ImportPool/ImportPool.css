@@ -202,7 +202,6 @@
   align-items: baseline;
   padding: 4px 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.25);
-  margin-bottom: 0;
 }
 
 .ip-section__title {
@@ -218,118 +217,92 @@
 }
 
 .ip-table {
-  display: flex;
-  flex-direction: column;
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-top: none;
-  border-radius: 0 0 4px 4px;
-  overflow: hidden;
-}
-
-.ip-table__head,
-.ip-row {
-  display: grid;
-  grid-template-columns: 64px 64px 32px 1fr;
-  align-items: center;
   font-size: 12px;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 
-.ip-table__head {
-  padding: 4px 8px;
+.ip-col-played { width: 72px; }
+.ip-col-total  { width: 72px; }
+.ip-col-no     { width: 36px; }
+/* ip-col-name implicitly takes remaining space */
+
+.ip-table thead th {
   background: rgba(0, 0, 0, 0.6);
   color: rgba(255, 255, 255, 0.55);
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.6px;
   text-transform: uppercase;
+  padding: 4px 6px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.ip-table__head > * {
+.ip-table thead th:last-child {
   text-align: left;
+  padding-left: 10px;
 }
 
 .ip-row {
-  position: relative;
   height: 40px;
-  padding: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  isolation: isolate;
 }
 
-/* Zebra stripes — subtle */
-.ip-row:nth-child(odd) {
-  background: rgba(255, 255, 255, 0.025);
-}
-.ip-row:nth-child(even) {
-  background: rgba(0, 0, 0, 0.35);
-}
+/* Zebra stripes */
+.ip-row:nth-child(odd)  { background: rgba(255, 255, 255, 0.025); }
+.ip-row:nth-child(even) { background: rgba(0, 0, 0, 0.35); }
 
-/* Card art as a full-bleed background on the NAME column.
-   The art lives inside col-name (declared further down) to avoid leaking
-   under the qty controls. */
-
-.ip-row--unresolved {
-  border-left: 2px solid rgba(255, 200, 0, 0.7);
+.ip-row--unresolved td:first-child {
+  box-shadow: inset 2px 0 0 rgba(255, 200, 0, 0.7);
 }
 
 .ip-row--active {
   background: rgba(0, 255, 0, 0.08) !important;
-  border-left: 2px solid #5fff5f;
+}
+.ip-row--active td:first-child {
+  box-shadow: inset 2px 0 0 #5fff5f;
 }
 
-.ip-row--fuzzy::after,
-.ip-row--ambiguous::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: rgba(33, 150, 243, 0.6);
-  z-index: 2;
+.ip-row--fuzzy td:first-child,
+.ip-row--ambiguous td:first-child {
+  box-shadow: inset 2px 0 0 rgba(33, 150, 243, 0.6);
 }
 
-/* Columns */
-.col-played {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 6px;
+.ip-table td {
+  padding: 0;
+  vertical-align: middle;
 }
 
-.col-total {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 6px;
+.ip-cell-played,
+.ip-cell-total {
+  text-align: center;
+}
+
+.ip-cell-total {
   border-left: 1px solid rgba(255, 255, 255, 0.05);
   border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.col-no {
+.ip-cell-no {
   font-size: 11px;
   font-variant-numeric: tabular-nums;
   color: rgba(255, 255, 255, 0.55);
   text-align: right;
-  padding-right: 6px;
+  padding-right: 8px !important;
 }
 
-.col-name {
+/* NAME cell — card art as full-bleed background, gradient mask for readability */
+.ip-cell-name {
   position: relative;
-  padding: 4px 10px;
-  background: none;
-  border: none;
-  color: white;
-  text-align: left;
-  cursor: pointer;
   overflow: hidden;
-  height: 100%;
-  font-family: inherit;
+  isolation: isolate;
 }
 
-/* Card art layer — full bleed, faded behind text */
-.col-name::before {
+.ip-cell-name::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -341,8 +314,7 @@
   z-index: 0;
 }
 
-/* Gradient mask so the text stays readable */
-.col-name::after {
+.ip-cell-name::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -356,9 +328,22 @@
   z-index: 1;
 }
 
-.ip-row__name-text {
+.ip-cell-name__btn {
   position: relative;
   z-index: 2;
+  display: block;
+  width: 100%;
+  height: 40px;
+  padding: 4px 10px;
+  background: none;
+  border: none;
+  color: white;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.ip-row__name-text {
   display: flex;
   flex-direction: column;
   gap: 1px;
@@ -760,16 +745,12 @@
   .import-pool-image-card--add {
     height: 200px;
   }
-  /* Tighten table on mobile — reduce qty column widths */
-  .ip-table__head,
-  .ip-row {
-    grid-template-columns: 56px 56px 28px 1fr;
-    font-size: 11px;
-  }
-  .ip-row {
-    height: 38px;
-  }
-  .ip-row__name-text strong {
-    font-size: 12px;
-  }
+  /* Tighten table on mobile — narrower qty/no columns, smaller text */
+  .ip-col-played { width: 60px; }
+  .ip-col-total  { width: 60px; }
+  .ip-col-no     { width: 28px; }
+  .ip-table { font-size: 11px; }
+  .ip-row { height: 38px; }
+  .ip-cell-name__btn { height: 38px; }
+  .ip-row__name-text strong { font-size: 12px; }
 }
