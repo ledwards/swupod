@@ -662,6 +662,59 @@ function primarySection(card: { aspects?: string[] }): {
   return { key: 'no-aspect', displayName: 'NEUTRAL', aspects: [] }
 }
 
+/** Same idea as primarySection() but driven by the raw aspectGroup STRING that
+ *  Claude attaches to each extracted row — used for unmatched rows where we
+ *  don't have a card object to inspect. Returns null when the string is empty
+ *  or unparseable, so the caller falls back to the UNRECOGNIZED bucket.
+ *
+ *  Examples Claude actually returns:
+ *    "Vigilance"            → vigilance section
+ *    "Vigilance Heroism"    → vigilance section (single game side + player side)
+ *    "Aggression Vigilance" → multicolor section (two game sides)
+ *    "Multicolor"           → multicolor section (explicit)
+ *    "No Aspect" / "Neutral"→ no-aspect section
+ */
+function primarySectionFromAspectGroup(aspectGroup: string | null | undefined): {
+  key: string
+  displayName: string
+  aspects: string[]
+} | null {
+  if (!aspectGroup) return null
+  const tokens = aspectGroup
+    .toLowerCase()
+    .split(/\s+/)
+    .map((t) => t.trim())
+    .filter(Boolean)
+  if (tokens.length === 0) return null
+
+  const gameSides: string[] = []
+  const playerSides: string[] = []
+  for (const t of tokens) {
+    const cap = t.charAt(0).toUpperCase() + t.slice(1)
+    if (GAME_SIDES.has(cap)) gameSides.push(cap)
+    else if (PLAYER_SIDES.has(cap)) playerSides.push(cap)
+  }
+
+  if (tokens.includes('multicolor') || gameSides.length >= 2) {
+    return {
+      key: 'multicolor',
+      displayName: 'MULTICOLOR',
+      aspects: gameSides.length > 0 ? gameSides : [],
+    }
+  }
+  if (gameSides.length === 1) {
+    return { key: gameSides[0].toLowerCase(), displayName: gameSides[0].toUpperCase(), aspects: [gameSides[0]] }
+  }
+  if (playerSides.length === 1) {
+    return { key: playerSides[0].toLowerCase(), displayName: playerSides[0].toUpperCase(), aspects: [playerSides[0]] }
+  }
+  // "No Aspect" / "Neutral" / unrecognized variants
+  if (tokens.some((t) => t === 'no' || t === 'neutral' || t === 'aspect')) {
+    return { key: 'no-aspect', displayName: 'NEUTRAL', aspects: [] }
+  }
+  return null
+}
+
 /**
  * Group rows for display:
  *   1. Leaders first, Bases second
@@ -691,6 +744,7 @@ function groupRows(rows: ResolvedRow[], viewFilter: 'all' | 'pool' | 'deck'): Se
   const unresolved: ResolvedRow[] = []
 
   for (const row of visible) {
+    // Matched rows: route by the matched card's aspects.
     if (row.card?.isLeader) {
       leaders.push(row)
       continue
@@ -699,21 +753,48 @@ function groupRows(rows: ResolvedRow[], viewFilter: 'all' | 'pool' | 'deck'): Se
       bases.push(row)
       continue
     }
-    if (!row.card) {
-      unresolved.push(row)
+    if (row.card) {
+      const meta = primarySection(row.card)
+      const subKey = getAspectCombinationKey({
+        aspects: row.card.aspects,
+        type: row.card.type,
+      })
+      if (!primaryMap.has(meta.key)) {
+        primaryMap.set(meta.key, { meta, subs: new Map() })
+      }
+      const entry = primaryMap.get(meta.key)!
+      if (!entry.subs.has(subKey)) entry.subs.set(subKey, [])
+      entry.subs.get(subKey)!.push(row)
       continue
     }
-    const meta = primarySection(row.card)
-    const subKey = getAspectCombinationKey({
-      aspects: row.card.aspects,
-      type: row.card.type,
-    })
-    if (!primaryMap.has(meta.key)) {
-      primaryMap.set(meta.key, { meta, subs: new Map() })
+
+    // Unmatched rows: place them where Claude's aspectGroup says they belong
+    // so the user can scan unfamiliar text alongside the matched cards in
+    // the same section. Leaders/bases route by extracted type even without a
+    // matched card.
+    if (row.extracted.type === 'Leader') {
+      leaders.push(row)
+      continue
     }
-    const entry = primaryMap.get(meta.key)!
-    if (!entry.subs.has(subKey)) entry.subs.set(subKey, [])
-    entry.subs.get(subKey)!.push(row)
+    if (row.extracted.type === 'Base') {
+      bases.push(row)
+      continue
+    }
+    const meta = primarySectionFromAspectGroup(row.extracted.aspectGroup)
+    if (meta) {
+      if (!primaryMap.has(meta.key)) {
+        primaryMap.set(meta.key, { meta, subs: new Map() })
+      }
+      const entry = primaryMap.get(meta.key)!
+      // Keep unmatched rows in their own subkey within the section so they
+      // sort below the matched sub-aspect groups (compareSubKeys puts
+      // single-aspect first, then doubles, then this — see score()).
+      const subKey = '_unresolved'
+      if (!entry.subs.has(subKey)) entry.subs.set(subKey, [])
+      entry.subs.get(subKey)!.push(row)
+      continue
+    }
+    unresolved.push(row)
   }
 
   const result: SectionGroup[] = []
@@ -743,12 +824,13 @@ function groupRows(rows: ResolvedRow[], viewFilter: 'all' | 'pool' | 'deck'): Se
   for (const primaryKey of sortedPrimaries) {
     const { meta, subs } = primaryMap.get(primaryKey)!
     const allRows = [...subs.values()].flat()
-    // Sub-group order: pure single-aspect first, then doubles by partner's canonical order
+    // Sub-group order: pure single-aspect first, then doubles, _unresolved last
     const subKeys = [...subs.keys()].sort((a, b) => compareSubKeys(a, b, primaryKey))
     const subGroups: SubGroup[] = subKeys.map((subKey) => ({
       key: subKey,
-      displayName: getAspectCombinationDisplayName(subKey),
-      aspects: aspectsFromKey(subKey),
+      displayName:
+        subKey === '_unresolved' ? 'UNRECOGNIZED' : getAspectCombinationDisplayName(subKey),
+      aspects: subKey === '_unresolved' ? [] : aspectsFromKey(subKey),
       rows: subs.get(subKey)!,
     }))
     result.push({
@@ -924,9 +1006,11 @@ function GridView({
   )
 }
 
-/** Order sub-groups within a primary section: pure single first, then doubles. */
+/** Order sub-groups within a primary section: pure single first, then doubles,
+ *  then the synthetic "_unresolved" bucket last. */
 function compareSubKeys(a: string, b: string, primaryKey: string): number {
   const score = (k: string): number => {
+    if (k === '_unresolved') return 1_000_000 // always last
     const parts = k.split('_')
     if (parts.length === 1) return 0 // pure single-aspect first
     // Doubles: order by the OTHER aspect (not the primary)

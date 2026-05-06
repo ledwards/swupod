@@ -105,6 +105,44 @@ describe('matchExtractedRows', () => {
     })
   })
 
+  describe('comma-combined name fallback', () => {
+    // Claude Vision sometimes returns name="Han Solo, Audacious Smuggler", subtitle=null
+    // — combining the two fields. Matcher splits on ", " and re-tries.
+    it('splits "Name, Subtitle" combined name when subtitle is null and matches both halves', () => {
+      const result = matchExtractedRows({
+        rows: [{ name: 'Han Solo, Audacious Smuggler', type: 'Leader', subtitle: null, poolQty: 1, deckQty: 1 }],
+        cards: fixtureCards.filter(c => c.set === 'LAW'),
+      })
+
+      assert.equal(result[0].confidence, 'high')
+      assert.equal(result[0].matched?.id, 'uuid-han-leader')
+    })
+
+    it('does not false-match when the comma-split subtitle does not exist on any candidate', () => {
+      const result = matchExtractedRows({
+        rows: [{ name: 'Han Solo, Some Made Up Subtitle', type: 'Unit', subtitle: null, poolQty: 1, deckQty: 0 }],
+        cards: fixtureCards.filter(c => c.set === 'LAW'),
+      })
+
+      // Two Han Solo Units exist with real subtitles; neither matches the made-up one,
+      // so the matcher should surface them as ambiguous candidates rather than fuzzy-match
+      // back to a single arbitrary one.
+      assert.equal(result[0].confidence, 'ambiguous')
+      assert.equal(result[0].matched, null)
+      assert.equal(result[0].candidates.length, 2)
+    })
+
+    it('leaves the row alone when subtitle is provided (no comma-split needed)', () => {
+      const result = matchExtractedRows({
+        rows: [{ name: 'Han Solo', type: 'Leader', subtitle: 'Audacious Smuggler', poolQty: 1, deckQty: 1 }],
+        cards: fixtureCards.filter(c => c.set === 'LAW'),
+      })
+
+      assert.equal(result[0].confidence, 'exact')
+      assert.equal(result[0].matched?.id, 'uuid-han-leader')
+    })
+  })
+
   describe('fuzzy: typos within Levenshtein distance 2', () => {
     it('matches "Sabaac Dealer" → "Sabacc Dealer" with confidence "fuzzy"', () => {
       const result = matchExtractedRows({

@@ -90,6 +90,39 @@ function matchSingleRow(
     }
   }
 
+  // 2b. Comma-combined name fallback. Claude sometimes returns
+  //     name="Han Solo, I Got a Really Good Feeling", subtitle=null
+  //     instead of separating them — especially for leaders. Split on the
+  //     first ", " and re-try the exact / name+type match.
+  if (!row.subtitle && nameLower.includes(', ')) {
+    const idx = nameLower.indexOf(', ')
+    const namePart = nameLower.slice(0, idx).trim()
+    const subPart = nameLower.slice(idx + 2).trim()
+    const splitCandidates = byNameTypeLower.get(`${namePart}|${typeLower}`) || []
+    // Try exact subtitle match first — that's the high-confidence path.
+    for (const candidate of splitCandidates) {
+      const candidateSubtitle = (candidate.subtitle || '').toLowerCase()
+      if (candidateSubtitle === subPart) {
+        return { extracted: row, matched: candidate, candidates: [], confidence: 'high' }
+      }
+    }
+    // No exact subtitle match, but the NAME half matched at least one card.
+    // Surface as ambiguous (single hit) or with candidates (multiple hits) so
+    // the user can pick — better than dropping to unmatched and forcing them
+    // to start from scratch in the picker.
+    if (splitCandidates.length === 1) {
+      return { extracted: row, matched: splitCandidates[0], candidates: [], confidence: 'fuzzy' }
+    }
+    if (splitCandidates.length > 1) {
+      return {
+        extracted: row,
+        matched: null,
+        candidates: splitCandidates,
+        confidence: 'ambiguous',
+      }
+    }
+  }
+
   // 3. Fuzzy match on name within set, tie-broken by type
   const fuzzyCandidates: { card: RawCard; distance: number; typeMatches: boolean }[] = []
   for (const card of normalCards) {

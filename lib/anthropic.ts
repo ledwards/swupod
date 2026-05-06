@@ -112,9 +112,9 @@ CRITICAL READING RULES — these are where extraction goes wrong if you're not c
 5a. **Equal attention to every photo.** If two photos are provided, the second photo has just as many marked rows as the first. Common failure mode: thoroughly extracting the LEADER/BASE/VIGILANCE/COMMAND sections on photo 1 but rushing through the AGGRESSION/CUNNING/MULTICOLOR/HEROISM/VILLAINY/NO ASPECT sections on photo 2. Process every section on every photo with equal care.
 
 6. **For each row, return:**
-   - "name": the printed card name (e.g. "Han Solo")
+   - "name": the printed card name ONLY (e.g. "Han Solo"). NEVER combine with subtitle. NEVER include a comma. If the printed text is "Han Solo, I Got a Really Good Feeling", that's name="Han Solo" and subtitle="I Got a Really Good Feeling" — TWO separate fields. Returning name="Han Solo, I Got a Really Good Feeling" with subtitle=null is wrong. The card list above shows each card on its own line as "Name, Subtitle" — when you find one, split it back into the two JSON fields.
    - "type": exactly one of "Leader" / "Base" / "Unit" / "Event" / "Upgrade"
-   - "subtitle": the printed subtitle (e.g. "Audacious Smuggler") or null if no subtitle is printed
+   - "subtitle": the printed subtitle ONLY (e.g. "Audacious Smuggler"), or null if there is no subtitle printed below the name. Never put the name in this field.
    - "poolQty": integer 0-6 from the TOTAL column
    - "deckQty": integer 0-6 from the PLAYED column (must not exceed poolQty)
    - "aspectGroup": the section header the row appears under (e.g. "Vigilance", "Command", "Aggression Vigilance", "Multicolor", "No Aspect")
