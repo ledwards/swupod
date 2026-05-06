@@ -102,8 +102,8 @@ interface ImportPoolState {
   title: string
   shareId: string | null
   warnings: string[]
-  /** When true, hide rows with poolQty=0 (show only the player's actual pool) */
-  showOnlyPool: boolean
+  /** Row visibility filter: all sheet rows / only pool (poolQty>0) / only deck (deckQty>0) */
+  viewFilter: 'all' | 'pool' | 'deck'
   /** Resolve-step rendering mode */
   viewMode: 'table' | 'grid'
   error: { code: string; message: string; details?: any } | null
@@ -119,7 +119,7 @@ const INITIAL_STATE: ImportPoolState = {
   title: '',
   shareId: null,
   warnings: [],
-  showOnlyPool: true,
+  viewFilter: 'pool',
   viewMode: 'table',
   error: null,
 }
@@ -143,7 +143,7 @@ type Action =
   | { type: 'SUBMIT_FAILURE'; error: ImportPoolState['error'] }
   | { type: 'RESET' }
   | { type: 'RESTORE'; state: Partial<ImportPoolState> }
-  | { type: 'TOGGLE_SHOW_ONLY_POOL' }
+  | { type: 'SET_VIEW_FILTER'; filter: 'all' | 'pool' | 'deck' }
   | { type: 'SET_VIEW_MODE'; mode: 'table' | 'grid' }
 
 function reducer(state: ImportPoolState, action: Action): ImportPoolState {
@@ -271,8 +271,8 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
       return { ...state, phase: 'done', shareId: action.shareId }
     case 'SUBMIT_FAILURE':
       return { ...state, phase: 'confirming', error: action.error }
-    case 'TOGGLE_SHOW_ONLY_POOL':
-      return { ...state, showOnlyPool: !state.showOnlyPool }
+    case 'SET_VIEW_FILTER':
+      return { ...state, viewFilter: action.filter }
     case 'SET_VIEW_MODE':
       return { ...state, viewMode: action.mode }
     case 'RESET':
@@ -387,7 +387,7 @@ interface SlimPersisted {
   activeLeaderId: string | null
   activeBaseId: string | null
   title: string
-  showOnlyPool: boolean
+  viewFilter: 'all' | 'pool' | 'deck'
   viewMode: 'table' | 'grid'
 }
 
@@ -410,7 +410,7 @@ function persistedShape(state: ImportPoolState): SlimPersisted {
     activeLeaderId: state.activeLeaderId,
     activeBaseId: state.activeBaseId,
     title: state.title,
-    showOnlyPool: state.showOnlyPool,
+    viewFilter: state.viewFilter,
     viewMode: state.viewMode,
   }
 }
@@ -469,7 +469,7 @@ function hydrate(slim: SlimPersisted): Partial<ImportPoolState> {
     activeBaseId: slim.activeBaseId,
     title: slim.title || '',
     warnings: slim.warnings || [],
-    showOnlyPool: slim.showOnlyPool ?? true,
+    viewFilter: slim.viewFilter ?? 'pool',
     viewMode: slim.viewMode ?? 'table',
   }
 }
@@ -729,8 +729,8 @@ export function useImportPool() {
     dispatch({ type: 'RESET' })
   }, [])
 
-  const toggleShowOnlyPool = useCallback(() => {
-    dispatch({ type: 'TOGGLE_SHOW_ONLY_POOL' })
+  const setViewFilter = useCallback((filter: 'all' | 'pool' | 'deck') => {
+    dispatch({ type: 'SET_VIEW_FILTER', filter })
   }, [])
 
   const setViewMode = useCallback((mode: 'table' | 'grid') => {
@@ -752,7 +752,7 @@ export function useImportPool() {
     goBack,
     submit,
     reset,
-    toggleShowOnlyPool,
+    setViewFilter,
     setViewMode,
   }
 }

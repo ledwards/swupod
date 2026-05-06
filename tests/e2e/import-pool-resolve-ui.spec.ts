@@ -212,7 +212,7 @@ test.describe('Import Pool — Resolve UI', () => {
     await page.click('button:has-text("Extract Pool")')
 
     // Step 2 — Resolve
-    await page.waitForSelector('h2:has-text("Resolve extraction")', { timeout: 10000 })
+    await page.waitForSelector('h2:has-text("Review Pool Registration")', { timeout: 10000 })
     await expect(page.locator('table.ip-table').first()).toBeVisible()
 
     // Wait a beat so all card images load before screenshot
@@ -235,7 +235,8 @@ test.describe('Import Pool — Resolve UI', () => {
     expect(rowCount).toBeLessThan(120)
 
     // Toggle "show all rows" and re-count
-    await page.click('button.ip-icon-btn:has-text("Pool only")')
+    // Click the "All" filter button in the segmented row-filter group
+    await page.click('button.ip-view-toggle__btn:has-text("All")')
     await page.waitForTimeout(200)
     const allRowCount = await page.locator('tbody tr.ip-row').count()
     console.log(`  Rendered row count (all): ${allRowCount}`)
@@ -281,7 +282,7 @@ test.describe('Import Pool — Resolve UI', () => {
 
     const visibleH2 = await page.locator('h2').first().innerText()
     console.log(`  Post-reload H2: "${visibleH2}"`)
-    expect(visibleH2).toContain('Resolve')
+    expect(visibleH2).toContain('Review')
 
     const postReloadRows = await page.locator('tbody tr.ip-row').count()
     console.log(`  Post-reload row count: ${postReloadRows}`)

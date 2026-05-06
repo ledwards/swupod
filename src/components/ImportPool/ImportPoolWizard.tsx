@@ -45,7 +45,7 @@ export default function ImportPoolWizard() {
         </div>
         <ol className="import-pool-steps">
           <li className={isActive('upload', state.phase) ? 'active' : ''}>1 · Upload</li>
-          <li className={isActive('resolve', state.phase) ? 'active' : ''}>2 · Resolve</li>
+          <li className={isActive('resolve', state.phase) ? 'active' : ''}>2 · Review</li>
           <li className={isActive('confirm', state.phase) ? 'active' : ''}>3 · Confirm</li>
         </ol>
       </header>

@@ -178,6 +178,84 @@
   flex-wrap: wrap;
 }
 
+/* Sticky toolbar — mirrors the deckbuilder's deck-info-bar pattern */
+.ip-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  margin: 0 -8px 12px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  flex-wrap: wrap;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 8px;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.ip-toolbar__group {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Error pager — nav between needs-attention rows */
+.ip-error-pager {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: rgba(255, 217, 102, 0.12);
+  border: 1px solid rgba(255, 217, 102, 0.55);
+  border-radius: 4px;
+  color: #ffd966;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ip-error-pager__label {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ip-error-pager__btn {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 217, 102, 0.5);
+  border-radius: 3px;
+  color: #ffd966;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ip-error-pager__btn:hover {
+    background: rgba(255, 217, 102, 0.25);
+    border-color: rgba(255, 217, 102, 1);
+  }
+}
+
+/* Flash effect when scrolling to a row via the pager */
+@keyframes ip-row-flash {
+  0%, 100% { background-color: inherit; }
+  20%, 70% { background-color: rgba(255, 217, 102, 0.35); }
+}
+.ip-row--flash,
+.ip-tile.ip-row--flash {
+  animation: ip-row-flash 1.4s ease-in-out;
+}
+
 .import-pool-totals {
   display: flex;
   flex-wrap: wrap;

@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Button from '../Button'
 import { AspectIcon } from '../AspectIcon'
 import CardPickerModal from './CardPickerModal'
@@ -45,7 +45,7 @@ export default function ResolveStep({ importPool }: Props) {
     setActiveBase,
     goBack,
     goToConfirm,
-    toggleShowOnlyPool,
+    setViewFilter,
     setViewMode,
   } = importPool
 
@@ -62,22 +62,48 @@ export default function ResolveStep({ importPool }: Props) {
   const setCode = state.extraction?.header.setCode || ''
 
   const grouped = useMemo(
-    () => groupRows(state.resolvedRows, state.showOnlyPool),
-    [state.resolvedRows, state.showOnlyPool],
+    () => groupRows(state.resolvedRows, state.viewFilter),
+    [state.resolvedRows, state.viewFilter],
   )
 
-  const totalShown = grouped.reduce((sum, g) => sum + g.rows.length, 0)
-  const hiddenZero = state.resolvedRows.length - totalShown
+  // Build the list of "anomaly" row keys for the error pager: unresolved,
+  // ambiguous, fuzzy matches, plus any row with deckQty>poolQty.
+  const anomalyKeys = useMemo(() => {
+    const keys: string[] = []
+    for (const row of state.resolvedRows) {
+      if (!row.card) keys.push(row.key)
+      else if (row.confidence === 'fuzzy' || row.confidence === 'ambiguous') keys.push(row.key)
+      else if (row.deckQty > row.poolQty) keys.push(row.key)
+    }
+    return keys
+  }, [state.resolvedRows])
+
+  const [anomalyIndex, setAnomalyIndex] = useState(0)
+  // Keep index in bounds when the anomaly list changes
+  useEffect(() => {
+    if (anomalyIndex >= anomalyKeys.length && anomalyKeys.length > 0) setAnomalyIndex(0)
+  }, [anomalyKeys, anomalyIndex])
+
+  const goToAnomaly = useCallback(
+    (delta: number) => {
+      if (anomalyKeys.length === 0) return
+      const next = (anomalyIndex + delta + anomalyKeys.length) % anomalyKeys.length
+      setAnomalyIndex(next)
+      const key = anomalyKeys[next]
+      const el = document.getElementById(`ip-row-${key}`)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        el.classList.add('ip-row--flash')
+        setTimeout(() => el.classList.remove('ip-row--flash'), 1400)
+      }
+    },
+    [anomalyKeys, anomalyIndex],
+  )
 
   return (
     <section className="import-pool-step import-pool-step--resolve">
       <header className="import-pool-resolve-header">
-        <h2>Resolve extraction</h2>
-        <p className="import-pool-help">
-          Review the cards extracted from your sheet. Click a leader or base
-          row's <span className="ip-star-glyph">☆</span> to set it as active. Pool must
-          total 96 cards (1 leader + 1 base + 14 other × 6).
-        </p>
+        <h2>Review Pool Registration</h2>
         {state.warnings.length > 0 && (
           <div className="import-pool-warnings" role="alert">
             <strong>Heads up — some rows needed cleanup during extraction:</strong>
@@ -89,54 +115,98 @@ export default function ResolveStep({ importPool }: Props) {
             <small>Fix anything that doesn't look right below before continuing.</small>
           </div>
         )}
-        <div className="import-pool-totals-row">
-          <RunningTotals validation={validation} />
-          <div className="ip-totals-toolbar">
-            <div className="ip-view-toggle" role="group" aria-label="View mode">
-              <button
-                type="button"
-                className={`ip-view-toggle__btn ${state.viewMode === 'table' ? 'ip-view-toggle__btn--active' : ''}`}
-                onClick={() => setViewMode('table')}
-                title="Table view"
-                aria-pressed={state.viewMode === 'table'}
-              >
-                <span aria-hidden="true">≡</span>
-              </button>
-              <button
-                type="button"
-                className={`ip-view-toggle__btn ${state.viewMode === 'grid' ? 'ip-view-toggle__btn--active' : ''}`}
-                onClick={() => setViewMode('grid')}
-                title="Grid view"
-                aria-pressed={state.viewMode === 'grid'}
-              >
-                <span aria-hidden="true">▦</span>
-              </button>
-            </div>
-            {state.images.length > 0 && (
-              <button
-                type="button"
-                className="ip-icon-btn"
-                onClick={() => setSourceModalOpen(true)}
-                title="View source sheet"
-              >
-                <span aria-hidden="true">🔍</span>
-                <span className="ip-icon-btn__label">Source</span>
-              </button>
-            )}
+      </header>
+
+      <div className="ip-toolbar">
+        <RunningTotals validation={validation} />
+        <div className="ip-toolbar__group">
+          <div className="ip-view-toggle" role="group" aria-label="View mode">
             <button
               type="button"
-              className={`ip-icon-btn ${state.showOnlyPool ? 'ip-icon-btn--active' : ''}`}
-              onClick={toggleShowOnlyPool}
-              title={state.showOnlyPool ? 'Showing only your pool — click to show all sheet rows' : 'Showing all sheet rows — click to show only your pool'}
+              className={`ip-view-toggle__btn ${state.viewMode === 'table' ? 'ip-view-toggle__btn--active' : ''}`}
+              onClick={() => setViewMode('table')}
+              title="Table view"
+              aria-pressed={state.viewMode === 'table'}
             >
-              <span aria-hidden="true">{state.showOnlyPool ? '👁' : '👁‍🗨'}</span>
-              <span className="ip-icon-btn__label">
-                {state.showOnlyPool ? `Pool only (${hiddenZero} hidden)` : 'All rows'}
-              </span>
+              <span aria-hidden="true">≡</span>
+            </button>
+            <button
+              type="button"
+              className={`ip-view-toggle__btn ${state.viewMode === 'grid' ? 'ip-view-toggle__btn--active' : ''}`}
+              onClick={() => setViewMode('grid')}
+              title="Grid view"
+              aria-pressed={state.viewMode === 'grid'}
+            >
+              <span aria-hidden="true">▦</span>
             </button>
           </div>
+          <div className="ip-view-toggle" role="group" aria-label="Row filter">
+            <button
+              type="button"
+              className={`ip-view-toggle__btn ${state.viewFilter === 'all' ? 'ip-view-toggle__btn--active' : ''}`}
+              onClick={() => setViewFilter('all')}
+              title="Show all sheet rows"
+              aria-pressed={state.viewFilter === 'all'}
+            >
+              All
+            </button>
+            <button
+              type="button"
+              className={`ip-view-toggle__btn ${state.viewFilter === 'pool' ? 'ip-view-toggle__btn--active' : ''}`}
+              onClick={() => setViewFilter('pool')}
+              title="Show only your pool"
+              aria-pressed={state.viewFilter === 'pool'}
+            >
+              Pool
+            </button>
+            <button
+              type="button"
+              className={`ip-view-toggle__btn ${state.viewFilter === 'deck' ? 'ip-view-toggle__btn--active' : ''}`}
+              onClick={() => setViewFilter('deck')}
+              title="Show only your deck"
+              aria-pressed={state.viewFilter === 'deck'}
+            >
+              Deck
+            </button>
+          </div>
+          {anomalyKeys.length > 0 && (
+            <div className="ip-error-pager" role="group" aria-label="Issue navigator">
+              <button
+                type="button"
+                className="ip-error-pager__btn"
+                onClick={() => goToAnomaly(-1)}
+                title="Previous issue"
+                aria-label="Previous issue"
+              >
+                ←
+              </button>
+              <span className="ip-error-pager__label">
+                Issue {anomalyKeys.length === 0 ? 0 : anomalyIndex + 1}/{anomalyKeys.length}
+              </span>
+              <button
+                type="button"
+                className="ip-error-pager__btn"
+                onClick={() => goToAnomaly(1)}
+                title="Next issue"
+                aria-label="Next issue"
+              >
+                →
+              </button>
+            </div>
+          )}
+          {state.images.length > 0 && (
+            <button
+              type="button"
+              className="ip-icon-btn"
+              onClick={() => setSourceModalOpen(true)}
+              title="View source sheet"
+            >
+              <span aria-hidden="true">🔍</span>
+              <span className="ip-icon-btn__label">Source</span>
+            </button>
+          )}
         </div>
-      </header>
+      </div>
 
       {state.viewMode === 'grid' ? (
         <GridView
@@ -378,7 +448,7 @@ function RowItem({
     .join(' ')
 
   return (
-    <tr className={rowClasses}>
+    <tr className={rowClasses} id={`ip-row-${row.key}`}>
       <td className="ip-cell-played">
         {isLeader ? (
           <button
@@ -559,10 +629,18 @@ function primarySection(card: { aspects?: string[] }): {
  *   2. Then primary-aspect sections (matching the registration sheet's headers)
  *      with sub-groups inside for each unique aspect combination
  *
- * `showOnlyPool` filters out rows with poolQty=0.
+ * `viewFilter` controls visibility:
+ *   - 'all'  → every row from the sheet
+ *   - 'pool' → only rows with poolQty>0 (default; the player's actual pool)
+ *   - 'deck' → only rows with deckQty>0 (just the marked-deck cards)
  */
-function groupRows(rows: ResolvedRow[], showOnlyPool: boolean): SectionGroup[] {
-  const visible = showOnlyPool ? rows.filter((r) => r.poolQty > 0) : rows
+function groupRows(rows: ResolvedRow[], viewFilter: 'all' | 'pool' | 'deck'): SectionGroup[] {
+  const visible =
+    viewFilter === 'all'
+      ? rows
+      : viewFilter === 'deck'
+        ? rows.filter((r) => r.deckQty > 0)
+        : rows.filter((r) => r.poolQty > 0)
 
   const leaders: ResolvedRow[] = []
   const bases: ResolvedRow[] = []
@@ -693,6 +771,7 @@ function GridView({
     return (
       <div
         key={row.key}
+        id={`ip-row-${row.key}`}
         className={`ip-tile ${isActive ? 'ip-tile--active' : ''} ${needsAttention ? 'ip-tile--attention' : ''} ${isUnresolved ? 'ip-tile--unresolved' : ''}`}
       >
         <button
