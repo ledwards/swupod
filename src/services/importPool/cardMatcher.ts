@@ -18,8 +18,10 @@ export interface ExtractedRow {
   subtitle: string | null
   poolQty: number
   deckQty: number
-  /** Claude's per-row vision confidence (added by lib/anthropic). Optional for older callers. */
-  extractConfidence?: 'high' | 'medium' | 'low'
+  /** Confidence in the TOTAL column (pool qty) handwritten read. Optional for legacy callers. */
+  poolQtyConfidence?: 'high' | 'medium' | 'low'
+  /** Confidence in the PLAYED column (deck qty) handwritten read. Optional for legacy callers. */
+  deckQtyConfidence?: 'high' | 'medium' | 'low'
 }
 
 export type MatchConfidence = 'exact' | 'high' | 'ambiguous' | 'fuzzy' | 'unmatched'

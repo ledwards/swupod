@@ -27,8 +27,10 @@ export interface ExtractedRow {
   subtitle: string | null
   poolQty: number
   deckQty: number
-  /** Per-row vision confidence reported by Claude (high/medium/low) */
-  extractConfidence?: 'high' | 'medium' | 'low'
+  /** Confidence in the TOTAL column (pool qty) handwritten read. */
+  poolQtyConfidence?: 'high' | 'medium' | 'low'
+  /** Confidence in the PLAYED column (deck qty) handwritten read. */
+  deckQtyConfidence?: 'high' | 'medium' | 'low'
 }
 
 export interface SectionGap {

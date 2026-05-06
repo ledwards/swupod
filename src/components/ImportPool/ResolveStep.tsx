@@ -77,7 +77,7 @@ export default function ResolveStep({ importPool }: Props) {
 
   const anomalies = useMemo<Anomaly[]>(() => {
     const list: Anomaly[] = []
-    // Section gaps first — large-scale issues
+    // Section gaps first — large-scale issues.
     for (const gap of state.sectionGaps) {
       list.push({
         kind: 'section',
@@ -85,24 +85,51 @@ export default function ResolveStep({ importPool }: Props) {
         label: gap.message,
       })
     }
-    // Per-row issues. Only surface rows the user actually has — poolQty>0.
-    // Rows with poolQty=0 are also hidden by the default Pool filter, so
-    // navigating to them lands on a hidden DOM node (arrows feel broken).
-    // Drop "medium" extractConfidence entirely — Claude marks most rows
-    // medium and it floods the pager.
+    // Per-row issues. We separate "matcher problems" (poolQty>0 only — these
+    // need a card pick) from "qty-read problems" (independent of poolQty —
+    // includes uncertain BLANKS, which is the whole point: rows Claude
+    // wrote off as 0/0 but isn't sure about may be cards the user has).
     for (const row of state.resolvedRows) {
-      if (row.poolQty <= 0) continue
       const cardName = row.card?.name || row.extracted.name || 'Unrecognized'
-      if (!row.card) {
-        list.push({ kind: 'row', targetId: `ip-row-${row.key}`, label: `Unmatched: ${cardName}` })
-      } else if (row.confidence === 'ambiguous') {
-        list.push({ kind: 'row', targetId: `ip-row-${row.key}`, label: `Ambiguous match: ${cardName}` })
-      } else if (row.confidence === 'fuzzy') {
-        list.push({ kind: 'row', targetId: `ip-row-${row.key}`, label: `Fuzzy match: ${cardName}` })
-      } else if (row.deckQty > row.poolQty) {
-        list.push({ kind: 'row', targetId: `ip-row-${row.key}`, label: `Bad qty: ${cardName} deck>${row.poolQty}` })
-      } else if (row.extracted.extractConfidence === 'low') {
-        list.push({ kind: 'row', targetId: `ip-row-${row.key}`, label: `Low-confidence read: ${cardName}` })
+      const id = `ip-row-${row.key}`
+      const poolConf = row.extracted.poolQtyConfidence
+      const deckConf = row.extracted.deckQtyConfidence
+
+      // Matcher problems only matter when the user actually has the card.
+      if (row.poolQty > 0) {
+        if (!row.card) {
+          list.push({ kind: 'row', targetId: id, label: `Unmatched: ${cardName}` })
+          continue
+        }
+        if (row.confidence === 'ambiguous') {
+          list.push({ kind: 'row', targetId: id, label: `Ambiguous match: ${cardName}` })
+          continue
+        }
+        if (row.confidence === 'fuzzy') {
+          list.push({ kind: 'row', targetId: id, label: `Fuzzy match: ${cardName}` })
+          continue
+        }
+        if (row.deckQty > row.poolQty) {
+          list.push({ kind: 'row', targetId: id, label: `Bad qty: ${cardName} deck>${row.poolQty}` })
+          continue
+        }
+      }
+
+      // Qty-read problems: surface low-confidence reads in either column.
+      // Uncertain blanks are the priority — those are the missing cards.
+      if (poolConf === 'low') {
+        const note = row.poolQty === 0
+          ? `Uncertain blank (pool): ${cardName}`
+          : `Uncertain pool=${row.poolQty}: ${cardName}`
+        list.push({ kind: 'row', targetId: id, label: note })
+        continue
+      }
+      if (deckConf === 'low') {
+        const note = row.deckQty === 0
+          ? `Uncertain blank (deck): ${cardName}`
+          : `Uncertain deck=${row.deckQty}: ${cardName}`
+        list.push({ kind: 'row', targetId: id, label: note })
+        continue
       }
     }
     return list
@@ -625,20 +652,38 @@ function RowItem({
 }
 
 function ConfidenceBadge({ row }: { row: ResolvedRow }) {
-  const pct = rowConfidencePct(row)
-  const tier = confidenceTier(pct)
-  // Surface what's driving each piece of the score so the user can decide
-  // which deck inclusions to drop with full context.
-  const matcherLabel = row.confidence === 'unmatched' ? 'unmatched' : row.confidence
-  const extractLabel = row.extracted.extractConfidence || 'unknown'
-  const title = `Confidence ${pct}% — match: ${matcherLabel}, vision: ${extractLabel}`
+  // Two separate confidences: how sure Claude is about its read of the deck
+  // (PLAYED) column and the pool (TOTAL) column for THIS row. Display order
+  // matches the table column order: deck / pool.
+  //
+  // Color tier is driven by the WORSE of the two — if Claude is confident
+  // about pool but unsure about deck, the badge should still draw the eye.
+  const deckLevel = row.extracted.deckQtyConfidence
+  const poolLevel = row.extracted.poolQtyConfidence
+  const deckPct = qtyConfPct(deckLevel)
+  const poolPct = qtyConfPct(poolLevel)
+  const tier = confidenceTier(Math.min(deckPct, poolPct))
+
+  // Annotate "0 but uncertain" specifically — these are likely cards the
+  // player owns that Claude wrote off as blank. The user wants to catch
+  // those in particular.
+  const uncertainBlankPool = row.poolQty === 0 && poolLevel === 'low'
+  const uncertainBlankDeck = row.deckQty === 0 && deckLevel === 'low'
+  const titleParts = [
+    `Deck (PLAYED column) read: ${deckPct}% (${deckLevel ?? 'unknown'})`,
+    `Pool (TOTAL column) read: ${poolPct}% (${poolLevel ?? 'unknown'})`,
+  ]
+  if (uncertainBlankPool) titleParts.push('⚠️ Pool=0 but uncertain — verify against the source')
+  if (uncertainBlankDeck) titleParts.push('⚠️ Deck=0 but uncertain — verify against the source')
+  const title = titleParts.join('\n')
+
   return (
     <span
       className={`ip-row__confidence ip-row__confidence--${tier}`}
       title={title}
       aria-label={title}
     >
-      {pct}%
+      {deckPct}/{poolPct}%
     </span>
   )
 }
@@ -716,36 +761,22 @@ const PLAYER_SIDES = new Set(['Heroism', 'Villainy'])
 // consistent regardless of which card happened to land first.
 const MULTICOLOR_HEADER_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning', 'Heroism', 'Villainy']
 
-/** Combined confidence score (0–100) for a row, blending matcher confidence
- *  (60%) with Claude's per-row vision confidence (40%). Surfaced as a small
- *  badge on every row so the user can manually scan deck inclusions and
- *  decide which to drop when the OCR over-counts.
- *
- *  Score breakdown:
- *    matcher: exact 60 / high 50 / fuzzy 30 / ambiguous 20 / unmatched 0
- *    extract: high 40  / medium 25 / low 10  / undefined 25 (assume medium)
- */
-function rowConfidencePct(row: ResolvedRow): number {
-  let m = 0
-  if (row.confidence === 'exact') m = 60
-  else if (row.confidence === 'high') m = 50
-  else if (row.confidence === 'fuzzy') m = 30
-  else if (row.confidence === 'ambiguous') m = 20
-
-  let e = 0
-  const ec = row.extracted.extractConfidence
-  if (ec === 'high') e = 40
-  else if (ec === 'medium') e = 25
-  else if (ec === 'low') e = 10
-  else e = 25
-
-  return m + e
+/** Per-column confidence as a 0–100 % so it can render as a numeric badge.
+ *  These map Claude's enum reads of the two qty columns (PLAYED for deck,
+ *  TOTAL for pool). Card-name OCR is grounded against the closed card list
+ *  and isn't shown — what we care about is the player's handwriting in the
+ *  qty columns, since under/over-counts there are the actual failure mode. */
+function qtyConfPct(level: 'high' | 'medium' | 'low' | undefined): number {
+  if (level === 'high') return 95
+  if (level === 'medium') return 65
+  if (level === 'low') return 30
+  return 65 // missing → assume medium so the badge still reads
 }
 
 /** Tier the confidence % into a color bucket so the badge can read at a glance. */
 function confidenceTier(pct: number): 'high' | 'medium' | 'low' | 'bad' {
   if (pct >= 85) return 'high'
-  if (pct >= 65) return 'medium'
+  if (pct >= 60) return 'medium'
   if (pct >= 40) return 'low'
   return 'bad'
 }

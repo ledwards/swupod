@@ -47,7 +47,10 @@ export interface ExtractedRow {
   poolQty: number
   deckQty: number
   aspectGroup: string | null
-  extractConfidence: 'high' | 'medium' | 'low'
+  /** Confidence in the TOTAL column (pool qty) handwritten read. */
+  poolQtyConfidence: 'high' | 'medium' | 'low'
+  /** Confidence in the PLAYED column (deck qty) handwritten read. */
+  deckQtyConfidence: 'high' | 'medium' | 'low'
 }
 
 export interface ExtractedHeader {
@@ -129,11 +132,17 @@ CRITICAL READING RULES — these are where extraction goes wrong if you're not c
 
 7. **Names you can't read.** If a card name is unreadable, use the literal string "?". Never invent cards.
 
-8. **Per-row confidence.** For every row, attach an "extractConfidence" field with one of three values: "high", "medium", or "low":
-   - "high" — the mark (or absence of mark) is unambiguous; you are certain about both poolQty and deckQty.
-   - "medium" — you can see something but the count is unclear (one tally vs two? a smudge that might be a mark?), or part of the row is occluded.
-   - "low" — the row is partially or wholly illegible due to handwriting, lighting, glare, or angle. The user should verify against the source image.
-   Use "high" liberally for blank rows (poolQty=0, deckQty=0) — empty cells are easy to be confident about. Use "medium"/"low" honestly when you're guessing. The user uses this signal to know which rows to manually verify.
+8. **Per-COLUMN qty confidence — read each handwritten number SEPARATELY.** For every row, attach TWO confidence fields, one for each qty column:
+   - "poolQtyConfidence": confidence in your read of the TOTAL column (the pool count). "high" / "medium" / "low".
+   - "deckQtyConfidence": confidence in your read of the PLAYED column (the deck count). "high" / "medium" / "low".
+
+   These are about HANDWRITING legibility ONLY — not about the card name. The card name is grounded against a closed card list (see KNOWN CARD LISTS above) so its OCR is reliable; what matters is whether you can read the player's pencil/pen marks in the two qty columns.
+
+   - Use "high" when you are CERTAIN of the value. A clearly empty cell is HIGH (you're sure it's blank). A single sharp tally mark is HIGH (you're sure it's "1"). Two clean tallies is HIGH for "2".
+   - Use "medium" when you can see something but the exact value is unclear (one tally vs two? smudge that might be a mark? mark partially occluded by the column ruler?).
+   - Use "low" when the column is genuinely hard to read for this row: faded marks, ambiguous between blank and a faint mark, eraser smudges, glare, the photo is blurry there. Includes the case "I THINK this is blank but I can't quite tell" — that's a low-confidence 0.
+
+   The user uses these two confidences to know which numbers to manually verify against the source photo. Be honest: if a "blank" cell is actually a low-confidence guess, mark it low — the user wants to catch cards they own that you missed.
 
 Return strict JSON conforming to the response schema. Do not include any prose, markdown, or explanation outside the JSON. The user will verify the result against the source sheet, so accuracy on what's NOT marked matters as much as accuracy on what IS marked.`
 
@@ -300,12 +309,22 @@ const RESPONSE_SCHEMA = {
           poolQty: { type: 'integer' },
           deckQty: { type: 'integer' },
           aspectGroup: { type: ['string', 'null'] },
-          extractConfidence: {
-            type: 'string',
-            enum: ['high', 'medium', 'low'],
-          },
+          // Per-column handwriting-read confidence. Card-name OCR is grounded
+          // against the closed card list, so the only thing left to verify
+          // is the player's marks in the two qty columns.
+          poolQtyConfidence: { type: 'string', enum: ['high', 'medium', 'low'] },
+          deckQtyConfidence: { type: 'string', enum: ['high', 'medium', 'low'] },
         },
-        required: ['name', 'type', 'subtitle', 'poolQty', 'deckQty', 'aspectGroup', 'extractConfidence'],
+        required: [
+          'name',
+          'type',
+          'subtitle',
+          'poolQty',
+          'deckQty',
+          'aspectGroup',
+          'poolQtyConfidence',
+          'deckQtyConfidence',
+        ],
       },
     },
   },

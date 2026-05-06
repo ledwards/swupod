@@ -210,7 +210,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         subtitle: r.subtitle,
         poolQty: r.poolQty,
         deckQty: r.deckQty,
-        extractConfidence: r.extractConfidence,
+        poolQtyConfidence: r.poolQtyConfidence,
+        deckQtyConfidence: r.deckQtyConfidence,
       })),
       cards,
     })
