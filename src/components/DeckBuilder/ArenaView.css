@@ -253,6 +253,15 @@
   width: 100%;
 }
 
+/* Wrapper that collapses gap between the two controls rows (VIEW + ACTIONS). */
+.arena-controls-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
 /* Section controls row — same composition as Playmat SectionHeader controls row.
    Forces inline (no wrap) so all controls live on one line. */
 .arena-section-controls {
@@ -260,13 +269,10 @@
   align-items: center;
   flex-wrap: nowrap;
   gap: 0.5rem;
-  /* Padding gives box-shadows room to render; negative margins compensate so
-     external spacing stays the same. overflow-x:auto alone clips shadows. */
+  /* Padding gives box-shadows room to render; negative margins compensate.
+     overflow-x:auto alone clips shadows. */
   padding: 8px;
-  margin-top: calc(0.25rem - 8px);
-  margin-bottom: calc(0.5rem - 8px);
-  margin-left: -8px;
-  margin-right: -8px;
+  margin: -8px;
   overflow-x: auto;
 }
 

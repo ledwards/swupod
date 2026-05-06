@@ -131,20 +131,23 @@ export function ArenaView({
     onDensityChange: (density: 'small' | 'medium' | 'large') => void,
   ) => (
     <>
-      <div className="arena-controls-row arena-section-controls">
-        <SortControls value={sortValue} onChange={onSortChange} />
-        <FilterWithModal
-          isOpen={filterOpen}
-          onToggle={() => setFilterOpen(!filterOpen)}
-          onClose={() => setFilterOpen(false)}
-          mode={mode}
-          onFilterAspectsExpandedChange={setFilterAspectsExpanded}
-          cardCount={cardCount}
-        />
-        <CardDensityToggle value={densityValue} onChange={onDensityChange} />
-      </div>
-      <div className="arena-controls-row arena-section-controls">
-        <ArenaActionsBar mode={mode} />
+      <div className="arena-controls-rows">
+        <div className="arena-controls-row arena-section-controls">
+          <span className="arena-actions-label">VIEW:</span>
+          <SortControls value={sortValue} onChange={onSortChange} />
+          <FilterWithModal
+            isOpen={filterOpen}
+            onToggle={() => setFilterOpen(!filterOpen)}
+            onClose={() => setFilterOpen(false)}
+            mode={mode}
+            onFilterAspectsExpandedChange={setFilterAspectsExpanded}
+            cardCount={cardCount}
+          />
+          <CardDensityToggle value={densityValue} onChange={onDensityChange} />
+        </div>
+        <div className="arena-controls-row arena-section-controls">
+          <ArenaActionsBar mode={mode} />
+        </div>
       </div>
     </>
   )
