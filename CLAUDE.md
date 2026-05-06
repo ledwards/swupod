@@ -4,6 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## CRITICAL: READ STYLE GUIDE BEFORE ANY UI WORK
+
+**Before touching any component, CSS, or UI code, READ THESE FIRST:**
+
+1. `docs/STYLE_GUIDE.md` — design tokens, layout patterns, existing component usage
+2. `.claude/rules/ui-components.md` — Button/Card/Modal rules, icon spacing, CSS patterns
+
+**Do not write a single line of UI code until you have read both files.**
+
+---
+
 ## CRITICAL: NEVER PUSH WITHOUT PERMISSION
 
 **NEVER run `git push` unless the user explicitly says "push".**
