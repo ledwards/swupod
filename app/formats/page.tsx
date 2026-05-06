@@ -17,6 +17,7 @@ interface FormatMode {
   cardArt?: string
   artType?: 'event' | 'unit' // event = bottom 50%, unit = 10% from top
   glowColor?: 'red' | 'purple' // default is green
+  path?: string // override default /formats/{id} routing
 }
 
 interface FormatPool {
@@ -55,12 +56,22 @@ const FORMAT_MODES: FormatMode[] = [
   },
   {
     id: 'chaos-draft',
-    name: 'Chaos Draft',
-    description: 'Draft with packs from 3 different sets',
+    name: 'Solo Chaos Draft',
+    description: 'Draft against bots with packs from any sets',
     access: 'open',
     cardArt: CARD_ART.misterBones,
     artType: 'unit',
     glowColor: 'red',
+  },
+  {
+    id: 'chaos-draft-live',
+    name: 'Live Chaos Draft',
+    description: 'Draft with friends with packs from any sets',
+    access: 'open',
+    cardArt: CARD_ART.misterBones,
+    artType: 'unit',
+    glowColor: 'red',
+    path: '/draft/chaos',
   },
   {
     id: 'pack-wars',
@@ -147,7 +158,7 @@ export default function OtherFormatsPage() {
   const handleModeSelect = (mode: FormatMode) => {
     if (mode.access === 'coming-soon' && !hasBetaAccess) return
     if (mode.access === 'beta' && !hasBetaAccess) return
-    router.push(`/formats/${mode.id}`)
+    router.push(mode.path ?? `/formats/${mode.id}`)
   }
 
   const handleDeletePool = async () => {
