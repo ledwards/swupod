@@ -128,17 +128,46 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         body.images.map((img) => ({ data: img.data, mediaType: img.mediaType as any })),
         body.manualSetCode ? { setHint: body.manualSetCode } : {},
       )
-      // Log final extraction summary so we can see what each row got mapped to
+      // Log final extraction summary so we can see what each row got mapped to.
+      // Format: "Name:pool/deck[poolConf/deckConf]" where conf is H|M|L|?.
+      const confChar = (c: string | undefined): string =>
+        c === 'high' ? 'H' : c === 'medium' ? 'M' : c === 'low' ? 'L' : '?'
+      const fmt = (r: any) =>
+        `${r.name}:${r.poolQty}/${r.deckQty}[${confChar(r.poolQtyConfidence)}/${confChar(r.deckQtyConfidence)}]`
+
       const ldrs = raw.rows.filter((r: any) => r.type === 'Leader' && r.poolQty > 0)
       const bs = raw.rows.filter((r: any) => r.type === 'Base' && r.poolQty > 0)
       const others = raw.rows.filter((r: any) => r.type !== 'Leader' && r.type !== 'Base' && r.poolQty > 0)
       const sumPool = raw.rows.reduce((s: number, r: any) => s + (Number(r.poolQty) || 0), 0)
       const sumDeck = raw.rows.reduce((s: number, r: any) => s + (Number(r.deckQty) || 0), 0)
+
+      // Confidence histogram across ALL rows (pool>0 AND blanks) so we can see
+      // both kinds of failures: low conf on a marked row (count is uncertain)
+      // and low conf on a blank (Claude isn't sure it's empty — possible
+      // missed card).
+      const histo = (key: 'poolQtyConfidence' | 'deckQtyConfidence') => {
+        const c = { H: 0, M: 0, L: 0, '?': 0 }
+        for (const r of raw.rows) c[confChar(r[key]) as keyof typeof c]++
+        return `H=${c.H} M=${c.M} L=${c.L} ?=${c['?']}`
+      }
       logAttempt(`final: setCode=${raw.header?.setCode || '?'} sumPool=${sumPool} sumDeck=${sumDeck}`)
       logAttempt(`final: leaders(pool>0)=${ldrs.length} bases(pool>0)=${bs.length} other-rows(pool>0)=${others.length}`)
-      logAttempt(`leaders: ${ldrs.map((r: any) => `${r.name}:${r.poolQty}/${r.deckQty}`).join(', ')}`)
-      logAttempt(`bases: ${bs.map((r: any) => `${r.name}:${r.poolQty}/${r.deckQty}`).join(', ')}`)
-      logAttempt(`others: ${others.map((r: any) => `${r.name}:${r.poolQty}/${r.deckQty}`).join(', ')}`)
+      logAttempt(`final: poolConf ${histo('poolQtyConfidence')}`)
+      logAttempt(`final: deckConf ${histo('deckQtyConfidence')}`)
+
+      // Surface the rows the user is supposed to verify: any row where Claude
+      // marked LOW confidence on either column. These are our debugging gold
+      // — if we're missing cards, they should show up here.
+      const lowConfRows = raw.rows.filter(
+        (r: any) => r.poolQtyConfidence === 'low' || r.deckQtyConfidence === 'low',
+      )
+      if (lowConfRows.length > 0) {
+        logAttempt(`low-conf rows (${lowConfRows.length}): ${lowConfRows.map(fmt).join(', ')}`)
+      }
+
+      logAttempt(`leaders: ${ldrs.map(fmt).join(', ')}`)
+      logAttempt(`bases: ${bs.map(fmt).join(', ')}`)
+      logAttempt(`others: ${others.map(fmt).join(', ')}`)
     } catch (err) {
       logAttempt(`THROWN: ${(err as Error).message}`)
       console.error('Anthropic extraction failed:', err)
