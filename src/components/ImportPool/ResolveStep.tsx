@@ -47,6 +47,7 @@ export default function ResolveStep({ importPool }: Props) {
     goToConfirm,
     setViewFilter,
     setViewMode,
+    autoTrimDeck,
   } = importPool
 
   const [pickerFor, setPickerFor] = useState<{
@@ -85,12 +86,13 @@ export default function ResolveStep({ importPool }: Props) {
         label: gap.message,
       })
     }
-    // Per-row issues. Only surface things the USER needs to verify or fix —
-    // never a "medium" extractConfidence on its own (Claude marks most rows
-    // medium, so it floods the pager and makes Next button cycle through
-    // every row). Low extractConfidence stays in: that's "I really couldn't
-    // read this, please look".
+    // Per-row issues. Only surface rows the user actually has — poolQty>0.
+    // Rows with poolQty=0 are also hidden by the default Pool filter, so
+    // navigating to them lands on a hidden DOM node (arrows feel broken).
+    // Drop "medium" extractConfidence entirely — Claude marks most rows
+    // medium and it floods the pager.
     for (const row of state.resolvedRows) {
+      if (row.poolQty <= 0) continue
       const cardName = row.card?.name || row.extracted.name || 'Unrecognized'
       if (!row.card) {
         list.push({ kind: 'row', targetId: `ip-row-${row.key}`, label: `Unmatched: ${cardName}` })
@@ -121,14 +123,31 @@ export default function ResolveStep({ importPool }: Props) {
       const next = (anomalyIndex + delta + anomalies.length) % anomalies.length
       setAnomalyIndex(next)
       const targetId = anomalies[next].targetId
-      const el = document.getElementById(targetId)
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+
+      // If the target isn't in the DOM (rows are hidden by Pool/Deck filter),
+      // flip to All so the row renders, then scroll on the next paint.
+      const scrollTo = (el: HTMLElement) => {
+        // block:'start' lands the row at the top of the visible area;
+        // scroll-margin-top in CSS pushes it just below the sticky bars.
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
         el.classList.add('ip-row--flash')
         setTimeout(() => el.classList.remove('ip-row--flash'), 1400)
       }
+
+      const el = document.getElementById(targetId)
+      if (el) {
+        scrollTo(el)
+        return
+      }
+      if (state.viewFilter !== 'all') {
+        setViewFilter('all')
+        requestAnimationFrame(() => {
+          const retried = document.getElementById(targetId)
+          if (retried) scrollTo(retried)
+        })
+      }
     },
-    [anomalies, anomalyIndex],
+    [anomalies, anomalyIndex, state.viewFilter, setViewFilter],
   )
 
   const currentAnomalyLabel = anomalies[anomalyIndex]?.label || ''
@@ -152,7 +171,7 @@ export default function ResolveStep({ importPool }: Props) {
 
       <div className="ip-sticky-stack">
       <div className="ip-toolbar">
-        <RunningTotals validation={validation} />
+        <RunningTotals validation={validation} onAutoTrim={autoTrimDeck} />
         <div className="ip-toolbar__group">
           <div className="ip-toggle-group" role="group" aria-label="View mode">
             <Button
@@ -263,6 +282,7 @@ export default function ResolveStep({ importPool }: Props) {
           grouped={grouped}
           activeLeaderId={state.activeLeaderId}
           activeBaseId={state.activeBaseId}
+          hasSourceImages={state.images.length > 0}
           setRowQty={setRowQty}
           setActiveLeader={setActiveLeader}
           setActiveBase={setActiveBase}
@@ -273,6 +293,7 @@ export default function ResolveStep({ importPool }: Props) {
               typeFilter: row.extracted.type,
             })
           }
+          openSource={() => setSourceModalOpen(true)}
           cardPreview={cardPreview}
         />
       ) : (
@@ -335,6 +356,20 @@ export default function ResolveStep({ importPool }: Props) {
                         </span>
                       )}
                       {group.displayName}
+                      {state.images.length > 0 && (
+                        <button
+                          type="button"
+                          className="ip-section__source-btn"
+                          onClick={() => setSourceModalOpen(true)}
+                          title="View source sheet"
+                          aria-label={`View source sheet for ${group.displayName}`}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="11" cy="11" r="7"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                          </svg>
+                        </button>
+                      )}
                     </span>
                     <span className="ip-section__count">
                       {group.rows.reduce((s, r) => s + r.deckQty, 0)}
@@ -427,13 +462,22 @@ export default function ResolveStep({ importPool }: Props) {
 
 // === Sub-components ===
 
-function RunningTotals({ validation }: { validation: any }) {
+function RunningTotals({
+  validation,
+  onAutoTrim,
+}: {
+  validation: any
+  onAutoTrim: () => void
+}) {
   // Deck count: <30 is red (illegal), ==30 is green (legal min), >30 is
-  // yellow (legal but unusual — over-deckbuilding).
+  // yellow (legal but unusual — over-deckbuilding). When over, we surface
+  // an inline auto-trim affordance: drop the lowest-confidence deck rows
+  // until the count hits 30.
+  const deckOver = validation.deckCount > validation.deckTarget
   const deckClass =
     validation.deckCount < validation.deckTarget
       ? 'totals-bad'
-      : validation.deckCount > validation.deckTarget
+      : deckOver
         ? 'totals-warn'
         : 'totals-ok'
   return (
@@ -444,6 +488,16 @@ function RunningTotals({ validation }: { validation: any }) {
       <span className={deckClass}>
         Deck: {validation.deckCount} / {validation.deckTarget}
       </span>
+      {deckOver && (
+        <Button
+          variant="secondary"
+          size="xs"
+          onClick={onAutoTrim}
+          title={`Drop the ${validation.deckCount - validation.deckTarget} lowest-confidence deck inclusions to land at ${validation.deckTarget}`}
+        >
+          Auto-trim to {validation.deckTarget}
+        </Button>
+      )}
       <span className={validation.hasLeader ? 'totals-ok' : 'totals-bad'}>
         Leader: {validation.hasLeader ? '✓' : '✗'}
       </span>
@@ -655,6 +709,12 @@ interface SectionGroup {
 const GAME_SIDES = new Set(['Vigilance', 'Command', 'Aggression', 'Cunning'])
 const PLAYER_SIDES = new Set(['Heroism', 'Villainy'])
 
+// Multicolor section icons: all 4 game sides + both player sides, in canonical
+// order. Used for both matched (primarySection) and unmatched
+// (primarySectionFromAspectGroup) routings, so the section header is
+// consistent regardless of which card happened to land first.
+const MULTICOLOR_HEADER_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning', 'Heroism', 'Villainy']
+
 /** A card's "primary section" — matches the headers on a real registration sheet:
  *  VIGILANCE / COMMAND / AGGRESSION / CUNNING / HEROISM / VILLAINY / MULTICOLOR / NO ASPECT.
  */
@@ -667,9 +727,11 @@ function primarySection(card: { aspects?: string[] }): {
   const gameSides = aspects.filter((a) => GAME_SIDES.has(a))
   const playerSides = aspects.filter((a) => PLAYER_SIDES.has(a))
 
-  // Two game-side aspects (e.g. Aggression+Command) → MULTICOLOR
+  // Two game-side aspects (e.g. Aggression+Command) → MULTICOLOR. The
+  // section header shows ALL aspects (multicolor is the umbrella for any
+  // multi-aspect combo) rather than just whichever pair this card has.
   if (gameSides.length >= 2) {
-    return { key: 'multicolor', displayName: 'MULTICOLOR', aspects: gameSides }
+    return { key: 'multicolor', displayName: 'MULTICOLOR', aspects: MULTICOLOR_HEADER_ASPECTS }
   }
   // One game-side aspect (with or without a player side) → that game-side section
   if (gameSides.length === 1) {
@@ -717,11 +779,7 @@ function primarySectionFromAspectGroup(aspectGroup: string | null | undefined): 
   }
 
   if (tokens.includes('multicolor') || gameSides.length >= 2) {
-    return {
-      key: 'multicolor',
-      displayName: 'MULTICOLOR',
-      aspects: gameSides.length > 0 ? gameSides : [],
-    }
+    return { key: 'multicolor', displayName: 'MULTICOLOR', aspects: MULTICOLOR_HEADER_ASPECTS }
   }
   if (gameSides.length === 1) {
     return { key: gameSides[0].toLowerCase(), displayName: gameSides[0].toUpperCase(), aspects: [gameSides[0]] }
@@ -886,19 +944,23 @@ function GridView({
   grouped,
   activeLeaderId,
   activeBaseId,
+  hasSourceImages,
   setRowQty,
   setActiveLeader,
   setActiveBase,
   openPicker,
+  openSource,
   cardPreview,
 }: {
   grouped: SectionGroup[]
   activeLeaderId: string | null
   activeBaseId: string | null
+  hasSourceImages: boolean
   setRowQty: (key: string, field: 'poolQty' | 'deckQty', value: number) => void
   setActiveLeader: (id: string) => void
   setActiveBase: (id: string) => void
   openPicker: (row: ResolvedRow) => void
+  openSource: () => void
   cardPreview: ReturnType<typeof useCardPreview>
 }) {
   const renderTile = (row: ResolvedRow) => {
@@ -990,6 +1052,20 @@ function GridView({
                 </span>
               )}
               {group.displayName}
+              {hasSourceImages && (
+                <button
+                  type="button"
+                  className="ip-section__source-btn"
+                  onClick={openSource}
+                  title="View source sheet"
+                  aria-label={`View source sheet for ${group.displayName}`}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </button>
+              )}
             </span>
             <span className="ip-section__count">
               {group.rows.reduce((s, r) => s + r.deckQty, 0)}

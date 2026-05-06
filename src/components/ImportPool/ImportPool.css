@@ -104,10 +104,6 @@
   padding: 16px;
 }
 
-.import-pool-header {
-  margin-bottom: 24px;
-}
-
 .import-pool-header__top {
   display: flex;
   justify-content: space-between;
@@ -138,14 +134,14 @@
   gap: 8px;
   list-style: none;
   padding: 6px 0;
-  margin: 0;
+  margin: 0 0 12px;
   font-size: 14px;
   color: rgba(255, 255, 255, 0.6);
   position: -webkit-sticky;
   position: sticky;
   top: 0;
   z-index: 101; /* above .ip-sticky-stack (z-index 100) */
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -350,6 +346,17 @@
 .ip-section-row.ip-row--flash > td,
 .ip-grid-section.ip-row--flash {
   animation: ip-row-flash 1.4s ease-in-out;
+}
+
+/* When the issue pager scrolls to a row or a section, push the target down
+ * far enough that the sticky step bar + sticky toolbar don't obscure it.
+ * Total sticky height: ~38px (steps) + ~88px (toolbar + anomaly detail) + a
+ * little breathing room. */
+.ip-row,
+.ip-section-row,
+.ip-tile,
+.ip-grid-section {
+  scroll-margin-top: 140px;
 }
 
 /* Detail line shown under the toolbar when an anomaly is selected. Joined
@@ -644,6 +651,34 @@
   display: inline-flex;
   align-items: center;
   gap: 3px;
+}
+
+/* Section-level magnifier button — opens the source-image modal so the user
+ * can compare what Claude read against the original photo. (Today this opens
+ * the full image; per-aspect cropped fragments require Claude to return
+ * bounding boxes per section, which is a separate iteration.) */
+.ip-section__source-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  padding: 0;
+  width: 22px;
+  height: 22px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ip-section__source-btn:hover {
+    color: white;
+    border-color: rgba(33, 150, 243, 0.7);
+    background: rgba(33, 150, 243, 0.15);
+  }
 }
 
 .ip-section__count {

@@ -44,37 +44,39 @@ export default function ImportPoolWizard() {
 
   return (
     <div className="import-pool-wizard">
-      <header className="import-pool-header">
-        <div className="import-pool-header__top">
-          <h1>Import Pool</h1>
-          <div className="import-pool-header__actions">
-            {canReExtract && (
-              <Button variant="secondary" size="sm" onClick={handleReExtract} title="Re-run extraction on the uploaded images">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="23 4 23 10 17 10"></polyline>
-                  <polyline points="1 20 1 14 7 14"></polyline>
-                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-                </svg>
-                Re-extract
-              </Button>
-            )}
-            {hasWork && (
-              <Button variant="danger" size="sm" onClick={handleStartOver}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="3 6 5 6 21 6"></polyline>
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                </svg>
-                Cancel Import
-              </Button>
-            )}
-          </div>
+      <div className="import-pool-header__top">
+        <h1>Import Pool</h1>
+        <div className="import-pool-header__actions">
+          {canReExtract && (
+            <Button variant="secondary" size="sm" onClick={handleReExtract} title="Re-run extraction on the uploaded images">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              Re-extract
+            </Button>
+          )}
+          {hasWork && (
+            <Button variant="danger" size="sm" onClick={handleStartOver}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              Cancel Import
+            </Button>
+          )}
         </div>
-        <ol className="import-pool-steps">
-          <li className={isActive('upload', state.phase) ? 'active' : ''}>1 · Upload</li>
-          <li className={isActive('resolve', state.phase) ? 'active' : ''}>2 · Review</li>
-          <li className={isActive('confirm', state.phase) ? 'active' : ''}>3 · Confirm</li>
-        </ol>
-      </header>
+      </div>
+      {/* Steps bar lives at the wizard root (not inside the header) so its
+          position:sticky parent is the full wizard column rather than a
+          ~60px header block — otherwise the steps stop sticking the moment
+          the header itself scrolls past. */}
+      <ol className="import-pool-steps">
+        <li className={isActive('upload', state.phase) ? 'active' : ''}>1 · Upload</li>
+        <li className={isActive('resolve', state.phase) ? 'active' : ''}>2 · Review</li>
+        <li className={isActive('confirm', state.phase) ? 'active' : ''}>3 · Confirm</li>
+      </ol>
 
       {(state.phase === 'idle' ||
         state.phase === 'uploading' ||

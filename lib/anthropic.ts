@@ -111,6 +111,14 @@ CRITICAL READING RULES — these are where extraction goes wrong if you're not c
 
 5a. **Equal attention to every photo.** If two photos are provided, the second photo has just as many marked rows as the first. Common failure mode: thoroughly extracting the LEADER/BASE/VIGILANCE/COMMAND sections on photo 1 but rushing through the AGGRESSION/CUNNING/MULTICOLOR/HEROISM/VILLAINY/NO ASPECT sections on photo 2. Process every section on every photo with equal care.
 
+5b. **Typical section sizes — calibration.** A sealed pool has roughly these per-section ranges. If your output for a section falls below the low end you've MISSED rows; sweep it again before responding.
+    - Vigilance / Command / Aggression / Cunning: 5–18 marked cards each
+    - Heroism (alone) / Villainy (alone): 1–8 each
+    - **MULTICOLOR (cards with TWO game-side aspects, e.g. Vigilance+Command): 8–30 — typically the LARGEST single section in the pool.** This section is the #1 place extractions go wrong, because it spans many rows on the sheet and is easy to under-scan. If your MULTICOLOR count is under 8, go back and re-count.
+    - No Aspect / Neutral: 1–8
+
+5c. **Deck total calibration.** The PLAYED column marks the cards in the player's competitive deck. Sealed decks start at 30 cards (the minimum), and most players don't run above 32 — the bulk of the pool stays in the side. Including the active leader (deckQty=1) and active base (deckQty=1), the sum of deckQty across ALL rows should be approximately 30–35. If your sum exceeds 36, you've OVER-counted deck inclusions — re-verify the PLAYED column marks (a row with a TOTAL mark but NO PLAYED mark is poolQty>0, deckQty=0).
+
 6. **For each row, return:**
    - "name": the printed card name ONLY (e.g. "Han Solo"). NEVER combine with subtitle. NEVER include a comma. If the printed text is "Han Solo, I Got a Really Good Feeling", that's name="Han Solo" and subtitle="I Got a Really Good Feeling" — TWO separate fields. Returning name="Han Solo, I Got a Really Good Feeling" with subtitle=null is wrong. The card list above shows each card on its own line as "Name, Subtitle" — when you find one, split it back into the two JSON fields.
    - "type": exactly one of "Leader" / "Base" / "Unit" / "Event" / "Upgrade"
