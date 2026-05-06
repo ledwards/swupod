@@ -250,6 +250,34 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // error pager.
     const sectionGaps = computeSectionGaps(raw)
 
+    // Sanitize Claude's section bounds: drop anything malformed, clamp coords
+    // to [0, 1] so a stray 1.05 doesn't break clipping math on the client.
+    const VALID_SECTION_NAMES = new Set([
+      'Leaders', 'Bases', 'Vigilance', 'Command', 'Aggression', 'Cunning',
+      'Heroism', 'Villainy', 'Multicolor', 'NoAspect',
+    ])
+    const sections = Array.isArray(raw.sections)
+      ? raw.sections
+          .filter((s: any) =>
+            s &&
+            VALID_SECTION_NAMES.has(s.name) &&
+            Number.isInteger(s.photoIndex) &&
+            s.photoIndex >= 0 &&
+            s.photoIndex < body.images.length &&
+            ['x0', 'y0', 'x1', 'y1'].every((k) => Number.isFinite(s[k])),
+          )
+          .map((s: any) => ({
+            name: s.name,
+            photoIndex: s.photoIndex,
+            x0: Math.max(0, Math.min(1, s.x0)),
+            y0: Math.max(0, Math.min(1, s.y0)),
+            x1: Math.max(0, Math.min(1, s.x1)),
+            y1: Math.max(0, Math.min(1, s.y1)),
+          }))
+          .filter((s: any) => s.x1 > s.x0 && s.y1 > s.y0)
+      : []
+    logAttempt(`final: sections=${sections.length} (${sections.map((s: any) => `${s.name}/p${s.photoIndex}`).join(', ')})`)
+
     return jsonResponse({
       header: {
         setCode,
@@ -262,6 +290,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       },
       warnings: extractWarnings,
       sectionGaps,
+      sections,
       rows: matched.map((m) => ({
         extracted: m.extracted,
         matched: m.matched

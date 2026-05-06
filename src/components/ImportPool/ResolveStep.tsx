@@ -55,7 +55,16 @@ export default function ResolveStep({ importPool }: Props) {
     typeFilter?: string
   } | null>(null)
 
+  // Two pieces of source-modal state:
+  //   - open: is the modal visible at all?
+  //   - section: when set, the modal opens cropped to this section name; null
+  //     means "show the full sheet" (the toolbar Source button).
   const [sourceModalOpen, setSourceModalOpen] = useState(false)
+  const [sourceModalSection, setSourceModalSection] = useState<string | null>(null)
+  const openSourceFor = useCallback((section: string | null) => {
+    setSourceModalSection(section)
+    setSourceModalOpen(true)
+  }, [])
 
   const cardPreview = useCardPreview()
 
@@ -287,7 +296,7 @@ export default function ResolveStep({ importPool }: Props) {
             <button
               type="button"
               className="ip-icon-btn"
-              onClick={() => setSourceModalOpen(true)}
+              onClick={() => openSourceFor(null)}
               title="View source sheet"
             >
               <span aria-hidden="true">🔍</span>
@@ -319,7 +328,7 @@ export default function ResolveStep({ importPool }: Props) {
               typeFilter: row.extracted.type,
             })
           }
-          openSource={() => setSourceModalOpen(true)}
+          openSource={(sectionName) => openSourceFor(sectionName ?? null)}
           cardPreview={cardPreview}
         />
       ) : (
@@ -386,8 +395,10 @@ export default function ResolveStep({ importPool }: Props) {
                         <button
                           type="button"
                           className="ip-section__source-btn"
-                          onClick={() => setSourceModalOpen(true)}
-                          title="View source sheet"
+                          onClick={() =>
+                            openSourceFor(SECTION_NAME_BY_GROUP_KEY[group.key] || null)
+                          }
+                          title={`View source — ${group.displayName} section`}
                           aria-label={`View source sheet for ${group.displayName}`}
                         >
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -469,7 +480,12 @@ export default function ResolveStep({ importPool }: Props) {
       {sourceModalOpen && state.images.length > 0 && (
         <SourceImageModal
           images={state.images}
-          onClose={() => setSourceModalOpen(false)}
+          onClose={() => {
+            setSourceModalOpen(false)
+            setSourceModalSection(null)
+          }}
+          sectionFilter={sourceModalSection}
+          sectionBounds={state.sectionBounds}
         />
       )}
 
@@ -761,6 +777,23 @@ const PLAYER_SIDES = new Set(['Heroism', 'Villainy'])
 // consistent regardless of which card happened to land first.
 const MULTICOLOR_HEADER_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning', 'Heroism', 'Villainy']
 
+/** Map from groupRows() primary-section keys to the section names Claude
+ *  uses in its bounding-box response. Stays out-of-band so the
+ *  hyphen/case-insensitive split-from-key doesn't have to round-trip
+ *  through string transforms. */
+const SECTION_NAME_BY_GROUP_KEY: Record<string, string> = {
+  leaders: 'Leaders',
+  bases: 'Bases',
+  vigilance: 'Vigilance',
+  command: 'Command',
+  aggression: 'Aggression',
+  cunning: 'Cunning',
+  heroism: 'Heroism',
+  villainy: 'Villainy',
+  multicolor: 'Multicolor',
+  'no-aspect': 'NoAspect',
+}
+
 /** Per-column confidence as a 0–100 % so it can render as a numeric badge.
  *  These map Claude's enum reads of the two qty columns (PLAYED for deck,
  *  TOTAL for pool). Card-name OCR is grounded against the closed card list
@@ -1027,7 +1060,7 @@ function GridView({
   setActiveLeader: (id: string) => void
   setActiveBase: (id: string) => void
   openPicker: (row: ResolvedRow) => void
-  openSource: () => void
+  openSource: (sectionName: string | null) => void
   cardPreview: ReturnType<typeof useCardPreview>
 }) {
   const renderTile = (row: ResolvedRow) => {
@@ -1124,8 +1157,10 @@ function GridView({
                 <button
                   type="button"
                   className="ip-section__source-btn"
-                  onClick={openSource}
-                  title="View source sheet"
+                  onClick={() =>
+                    openSource(SECTION_NAME_BY_GROUP_KEY[group.key] || null)
+                  }
+                  title={`View source — ${group.displayName} section`}
                   aria-label={`View source sheet for ${group.displayName}`}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

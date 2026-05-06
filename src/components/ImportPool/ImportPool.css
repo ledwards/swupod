@@ -1466,6 +1466,49 @@
   width: 200%;
 }
 
+/* Section-cropped view: one or more cropped photo regions stacked. The
+ * .ip-source-crop__viewport uses CSS aspect-ratio + an absolutely-positioned
+ * <img> to clip to the section's normalized bounds — see CroppedView in
+ * SourceImageModal for the math. */
+.ip-source-modal__crops {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  align-items: stretch;
+}
+
+.ip-source-crop {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.ip-source-crop__caption {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ip-source-crop__viewport {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.ip-source-modal__hint {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: rgba(255, 217, 102, 0.85);
+  background: rgba(255, 217, 102, 0.1);
+  border-top: 1px solid rgba(255, 217, 102, 0.3);
+}
+
 /* Mobile */
 @media (max-width: 768px) {
   .import-pool-step {

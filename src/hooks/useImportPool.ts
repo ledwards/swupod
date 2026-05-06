@@ -41,6 +41,28 @@ export interface SectionGap {
   message: string
 }
 
+/** Normalized [0,1] bounding box for a section on one photo. Used by the
+ *  source-image modal to crop to a specific aspect section so the user can
+ *  verify Claude's read against the right slice of the sheet. */
+export interface SectionBounds {
+  name:
+    | 'Leaders'
+    | 'Bases'
+    | 'Vigilance'
+    | 'Command'
+    | 'Aggression'
+    | 'Cunning'
+    | 'Heroism'
+    | 'Villainy'
+    | 'Multicolor'
+    | 'NoAspect'
+  photoIndex: number
+  x0: number
+  y0: number
+  x1: number
+  y1: number
+}
+
 export interface MatchedCard {
   id: string
   cardId: string
@@ -77,6 +99,8 @@ export interface ExtractResponse {
   warnings?: string[]
   /** Section-level gap warnings (e.g. AGGRESSION has 3 cards, expected 5-18) */
   sectionGaps?: SectionGap[]
+  /** Per-photo bounding boxes for each visible aspect section */
+  sections?: SectionBounds[]
 }
 
 /** A row as the user edits it in the Resolve step */
@@ -117,6 +141,9 @@ interface ImportPoolState {
   shareId: string | null
   warnings: string[]
   sectionGaps: SectionGap[]
+  /** Per-photo bounds for each section, used to crop the source image
+   *  to a single aspect when the user clicks the per-section magnifier. */
+  sectionBounds: SectionBounds[]
   /** Row visibility filter: all sheet rows / only pool (poolQty>0) / only deck (deckQty>0) */
   viewFilter: 'all' | 'pool' | 'deck'
   /** Resolve-step rendering mode */
@@ -135,6 +162,7 @@ const INITIAL_STATE: ImportPoolState = {
   shareId: null,
   warnings: [],
   sectionGaps: [],
+  sectionBounds: [],
   viewFilter: 'pool',
   viewMode: 'table',
   error: null,
@@ -245,6 +273,7 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
         title,
         warnings: action.response.warnings || [],
         sectionGaps: action.response.sectionGaps || [],
+        sectionBounds: action.response.sections || [],
         error: null,
       }
     }

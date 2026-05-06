@@ -62,9 +62,41 @@ export interface ExtractedHeader {
   base: { name: string | null; subtitle: string | null }
 }
 
+export type SectionName =
+  | 'Leaders'
+  | 'Bases'
+  | 'Vigilance'
+  | 'Command'
+  | 'Aggression'
+  | 'Cunning'
+  | 'Heroism'
+  | 'Villainy'
+  | 'Multicolor'
+  | 'NoAspect'
+
+/** Normalized [0,1] bounding box for a section's rows on one photo. The UI
+ *  uses these to crop the source photo to just that section so the user can
+ *  verify Claude's read against only the relevant slice — and downstream
+ *  refinement passes use them to send Claude a tightly-cropped image with
+ *  no other distractions. */
+export interface SectionBounds {
+  name: SectionName
+  /** 0 for the first uploaded photo, 1 for the second */
+  photoIndex: number
+  /** Top-left x in [0, 1] (fraction of photo width) */
+  x0: number
+  /** Top-left y in [0, 1] (fraction of photo height) */
+  y0: number
+  /** Bottom-right x in [0, 1] */
+  x1: number
+  /** Bottom-right y in [0, 1] */
+  y1: number
+}
+
 export interface RawExtractResponse {
   header: ExtractedHeader
   rows: ExtractedRow[]
+  sections: SectionBounds[]
 }
 
 // === System prompt (stable — prompt-cached) ===
@@ -131,6 +163,13 @@ CRITICAL READING RULES — these are where extraction goes wrong if you're not c
    - "aspectGroup": the section header the row appears under (e.g. "Vigilance", "Command", "Aggression Vigilance", "Multicolor", "No Aspect")
 
 7. **Names you can't read.** If a card name is unreadable, use the literal string "?". Never invent cards.
+
+9. **Section bounding boxes.** Return a "sections" array describing where each section appears in the uploaded photos. For every section that's visible on any photo (Leaders, Bases, Vigilance, Command, Aggression, Cunning, Heroism, Villainy, Multicolor, NoAspect), return:
+   - "name": exactly one of the values above (use "NoAspect" for the No Aspect / Neutral / gray section)
+   - "photoIndex": 0 for the first uploaded photo, 1 for the second
+   - "x0", "y0": top-left corner of the section as [0, 1] fractions of the photo (0,0 = top-left of the photo)
+   - "x1", "y1": bottom-right corner as [0, 1] fractions
+   The bounding box should include the section header AND every row beneath it through the last row of the section. Be conservative: slightly over-include (a few pixels of slack on each side) rather than crop a row in half. If a section appears on both photos (e.g. continued from photo 1 to photo 2), return one entry per photo. The UI uses these bounds to crop and zoom into individual sections so the user can verify reads against the source — your bounds need to be tight enough to be useful but loose enough to not chop content.
 
 8. **Per-COLUMN qty confidence — read each handwritten number SEPARATELY.** For every row, attach TWO confidence fields, one for each qty column:
    - "poolQtyConfidence": confidence in your read of the TOTAL column (the pool count). "high" / "medium" / "low".
@@ -327,8 +366,38 @@ const RESPONSE_SCHEMA = {
         ],
       },
     },
+    sections: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          name: {
+            type: 'string',
+            enum: [
+              'Leaders',
+              'Bases',
+              'Vigilance',
+              'Command',
+              'Aggression',
+              'Cunning',
+              'Heroism',
+              'Villainy',
+              'Multicolor',
+              'NoAspect',
+            ],
+          },
+          photoIndex: { type: 'integer' },
+          x0: { type: 'number' },
+          y0: { type: 'number' },
+          x1: { type: 'number' },
+          y1: { type: 'number' },
+        },
+        required: ['name', 'photoIndex', 'x0', 'y0', 'x1', 'y1'],
+      },
+    },
   },
-  required: ['header', 'rows'],
+  required: ['header', 'rows', 'sections'],
 }
 
 // Typical per-primary-section card-count ranges for an 84-non-leader/base sealed pool.
