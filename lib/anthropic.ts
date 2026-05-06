@@ -10,6 +10,8 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk'
+import { getCachedCards, initializeCardCache } from '../src/utils/cardCache'
+import { getLatestReleasedSetCode } from '../src/utils/setConfigs/latest'
 
 const MODEL = 'claude-opus-4-7'
 // Vision parses can produce 80-100 JSON rows. 32K leaves comfortable headroom
@@ -68,6 +70,8 @@ export interface RawExtractResponse {
 // breakpoint.
 const SYSTEM_PROMPT = `You are an expert at parsing competitive sealed-deck registration sheets for the Star Wars: Unlimited TCG.
 
+A separate system block immediately following this one provides a KNOWN CARD LIST for the set — every card name, subtitle, type, and aspect combination. Treat that list as your closed vocabulary. Every card name you return MUST come from that list. When OCR is ambiguous between two similar names, pick the one in the list. When two cards in the list share a name, use the subtitle to disambiguate.
+
 You will receive one or two photographs of a registration sheet. The sheet lists EVERY card in the set (250+ rows). Most rows are blank — the player has only filled in marks for the cards they actually own.
 
 The sheet has:
@@ -115,6 +119,104 @@ CRITICAL READING RULES — these are where extraction goes wrong if you're not c
 7. **Names you can't read.** If a card name is unreadable, use the literal string "?". Never invent cards.
 
 Return strict JSON conforming to the response schema. Do not include any prose, markdown, or explanation outside the JSON. The user will verify the result against the source sheet, so accuracy on what's NOT marked matters as much as accuracy on what IS marked.`
+
+// === Set card list grounding ===
+//
+// Passes the full Normal-variant card list for the relevant set as a second
+// system block. Claude treats it as a closed vocabulary — vastly improves
+// accuracy on partial-name reads and disambiguates same-name cards by
+// subtitle. Cached per-set with cache_control:ephemeral so the ~5K token
+// payload is paid once per 5-minute window per set.
+
+interface CardListEntry {
+  cardId: string
+  name: string
+  subtitle: string | null
+  type: string
+  aspects: string[]
+  isLeader?: boolean
+  isBase?: boolean
+}
+
+function buildSetCardListContext(setCode: string): string {
+  // initializeCardCache is sync (cards.json is bundled), but the API is Promise-shaped.
+  initializeCardCache().catch(() => {})
+  const cards = getCachedCards(setCode).filter((c: any) => c.variantType === 'Normal')
+
+  if (cards.length === 0) {
+    return `=== KNOWN CARD LIST FOR SET ${setCode} ===\n(No cached card data — match what you see on the sheet best you can.)`
+  }
+
+  const leaders = cards.filter((c: any) => c.isLeader)
+  const bases = cards.filter((c: any) => c.isBase)
+  const others = cards.filter((c: any) => !c.isLeader && !c.isBase)
+
+  const num = (cardId: string) => {
+    const m = cardId.match(/[-_](\d+)$/)
+    return m ? parseInt(m[1], 10) : 0
+  }
+  const fmt = (c: CardListEntry, includeType: boolean) => {
+    const n = num(c.cardId)
+    const sub = c.subtitle ? `, ${c.subtitle}` : ''
+    const aspectStr = c.aspects && c.aspects.length > 0 ? `[${c.aspects.join('+')}]` : ''
+    const typeStr = includeType ? ` (${c.type})` : ''
+    return `  ${n}. ${c.name}${sub}${aspectStr ? ' ' + aspectStr : ''}${typeStr}`
+  }
+
+  let out = `=== KNOWN CARD LIST FOR SET ${setCode} ===\n`
+  out +=
+    `This is the COMPLETE list of cards in this set. Every card name on the sheet ` +
+    `MUST match a name from this list (handle OCR errors by picking the closest match). ` +
+    `When two cards share a name (e.g. multiple "Han Solo" entries), use the subtitle to disambiguate. ` +
+    `If you can't read a card name on the sheet, return "?" rather than guessing.\n\n`
+
+  out += `LEADERS (${leaders.length}):\n`
+  for (const c of leaders.sort((a: any, b: any) => num(a.cardId) - num(b.cardId))) {
+    out += fmt(c, false) + '\n'
+  }
+
+  out += `\nBASES (${bases.length}):\n`
+  for (const c of bases.sort((a: any, b: any) => num(a.cardId) - num(b.cardId))) {
+    out += fmt(c, false) + '\n'
+  }
+
+  // Group "others" by primary aspect combination to mirror the registration sheet's organization.
+  const byAspect = new Map<string, CardListEntry[]>()
+  for (const c of others) {
+    const key = ((c.aspects || []) as string[]).slice().sort().join('+') || 'NO ASPECT'
+    if (!byAspect.has(key)) byAspect.set(key, [])
+    byAspect.get(key)!.push(c)
+  }
+  // Stable section order
+  const aspectOrder = [
+    'Vigilance',
+    'Command',
+    'Aggression',
+    'Cunning',
+    'Heroism',
+    'Villainy',
+    'NO ASPECT',
+  ]
+  const sortedKeys = [...byAspect.keys()].sort((a, b) => {
+    const aIsSingle = !a.includes('+')
+    const bIsSingle = !b.includes('+')
+    if (aIsSingle !== bIsSingle) return aIsSingle ? -1 : 1
+    if (aIsSingle) {
+      return aspectOrder.indexOf(a) - aspectOrder.indexOf(b)
+    }
+    return a.localeCompare(b)
+  })
+
+  for (const key of sortedKeys) {
+    const cs = byAspect.get(key)!
+    out += `\n${key.toUpperCase()} (${cs.length}):\n`
+    for (const c of cs.sort((a: any, b: any) => num(a.cardId) - num(b.cardId))) {
+      out += fmt(c, true) + '\n'
+    }
+  }
+
+  return out
+}
 
 // === JSON schema for structured output ===
 const RESPONSE_SCHEMA = {
@@ -199,6 +301,13 @@ export async function extractPoolFromImages(
 
   const client = getClient()
 
+  // Default to the latest released set when no hint provided. Most players
+  // are uploading sheets for the current set; passing the wrong set's card
+  // list still works (Claude reads what's on the sheet) but loses the
+  // grounding benefit, so we want the most-likely-correct list as default.
+  const groundingSetCode = opts.setHint || getLatestReleasedSetCode()
+  const cardListContext = buildSetCardListContext(groundingSetCode)
+
   const userContent: Anthropic.MessageParam['content'] = []
   for (const image of images) {
     userContent.push({
@@ -209,23 +318,31 @@ export async function extractPoolFromImages(
   userContent.push({
     type: 'text',
     text: opts.setHint
-      ? `Extract the registration sheet data. The user has indicated this sheet is for set "${opts.setHint}".`
-      : 'Extract the registration sheet data. Detect the set from the header.',
+      ? `Extract the registration sheet data. The user has indicated this sheet is for set "${opts.setHint}". Use the KNOWN CARD LIST above as your closed vocabulary.`
+      : `Extract the registration sheet data. Detect the set from the header. The KNOWN CARD LIST above is for set "${groundingSetCode}" — if the sheet header indicates a different set, still use the names from the list when they match what you see, and report the detected set name in the header.`,
   })
 
   // Streaming required: SDK rejects non-streaming requests that may take >10 min,
   // which fires above ~16K max_tokens. .finalMessage() resolves with the same
   // Message shape we'd get back from messages.create.
+  //
+  // Two cached system blocks:
+  //  1. SYSTEM_PROMPT — frozen extraction rules; cached once across all sets
+  //  2. cardListContext — closed vocabulary for the chosen set; cached per-set
+  // Anthropic's 4-breakpoint limit lets us stack both with ephemeral caching.
   const response = await client.messages
     .stream({
       model: MODEL,
       max_tokens: MAX_TOKENS,
-      // Frozen system prompt with prompt-cache breakpoint — repeated extractions
-      // benefit from cache reads on the system + schema portion.
       system: [
         {
           type: 'text',
           text: SYSTEM_PROMPT,
+          cache_control: { type: 'ephemeral' },
+        },
+        {
+          type: 'text',
+          text: cardListContext,
           cache_control: { type: 'ephemeral' },
         },
       ],
