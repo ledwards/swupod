@@ -129,6 +129,8 @@ export function ArenaView({
     cardCount: number,
     filterOpen: boolean,
     setFilterOpen: (v: boolean) => void,
+    densityValue: 'small' | 'medium' | 'large',
+    onDensityChange: (density: 'small' | 'medium' | 'large') => void,
   ) => (
     <div className="arena-controls-row arena-section-controls">
       <SortControls value={sortValue} onChange={onSortChange} />
@@ -141,6 +143,7 @@ export function ArenaView({
         cardCount={cardCount}
       />
       <AspectPenaltyToggle sortOption={sortValue} />
+      <CardDensityToggle value={densityValue} onChange={onDensityChange} />
       <BulkMoveButtons mode={mode} />
     </div>
   )
@@ -187,12 +190,6 @@ export function ArenaView({
         title={isLoading ? 'Pool' : `Pool (${poolCardCount})`}
         expanded={poolExpanded}
         onToggle={() => setPoolExpanded(!poolExpanded)}
-        rightContent={
-          <CardDensityToggle
-            value={poolCardDensity}
-            onChange={setPoolCardDensity}
-          />
-        }
       />
       {!isLoading && renderControlsRow(
         'pool',
@@ -201,6 +198,8 @@ export function ArenaView({
         poolCardCount,
         poolFilterOpen,
         setPoolFilterOpen,
+        poolCardDensity,
+        setPoolCardDensity,
       )}
       {poolExpanded && (
         <div className="card-block arena-pool-block">
@@ -230,12 +229,6 @@ export function ArenaView({
         title={isLoading ? 'Deck' : `Deck (${deckCardCount})`}
         expanded={deckExpanded}
         onToggle={() => setDeckExpanded(!deckExpanded)}
-        rightContent={
-          <CardDensityToggle
-            value={deckCardDensity}
-            onChange={setDeckCardDensity}
-          />
-        }
       />
       {!isLoading && renderControlsRow(
         'deck',
@@ -244,6 +237,8 @@ export function ArenaView({
         deckCardCount,
         deckFilterOpen,
         setDeckFilterOpen,
+        deckCardDensity,
+        setDeckCardDensity,
       )}
       {deckExpanded && (
         <div className="card-block arena-deck-block">
