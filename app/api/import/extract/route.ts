@@ -1,6 +1,6 @@
 // @ts-nocheck
 /**
- * POST /api/import-pool/extract
+ * POST /api/import/extract
  *
  * Accepts up to 2 base64-encoded images of a competitive sealed registration
  * sheet. Calls Claude vision via lib/anthropic.ts, validates the response
@@ -24,9 +24,9 @@ import { getSetConfig, getAllSetCodes } from '@/src/utils/setConfigs/index'
 import { appendFileSync } from 'fs'
 
 // Local-dev observability for the self-correcting loop. Each attempt's
-// invariant violations get appended to /tmp/import-pool-attempts.log so we
+// invariant violations get appended to /tmp/import-attempts.log so we
 // can tail it during prompt-tuning iteration.
-const ATTEMPT_LOG = '/tmp/import-pool-attempts.log'
+const ATTEMPT_LOG = '/tmp/import-attempts.log'
 function logAttempt(line: string) {
   try {
     appendFileSync(ATTEMPT_LOG, `[${new Date().toISOString()}] ${line}\n`, 'utf8')

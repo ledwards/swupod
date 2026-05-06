@@ -7,7 +7,71 @@
   font-family: 'Barlow', sans-serif;
 }
 
-.import-pool-loading,
+/* Skeleton loader — shown while auth state resolves so the page never
+   flashes a 'Loading…' string. Matches the project's skeleton shimmer pattern. */
+.ip-skeleton {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.ip-skeleton > * {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ip-skeleton > *::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: ip-skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes ip-skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.ip-skeleton__title {
+  height: 36px;
+  width: 220px;
+  margin: 16px 0 20px;
+}
+
+.ip-skeleton__steps {
+  height: 44px;
+  margin-bottom: 20px;
+}
+
+.ip-skeleton__toolbar {
+  height: 56px;
+  margin-bottom: 12px;
+}
+
+.ip-skeleton__table {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: transparent;
+}
+
+.ip-skeleton__table::after {
+  display: none;
+}
+
+.ip-skeleton__row {
+  height: 40px;
+}
+
 .import-pool-auth-prompt {
   max-width: 600px;
   margin: 60px auto;

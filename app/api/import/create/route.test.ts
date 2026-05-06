@@ -1,18 +1,18 @@
 // @ts-nocheck
 /**
- * Contract tests for POST /api/import-pool/create.
+ * Contract tests for POST /api/import/create.
  *
  * The trust-boundary endpoint that re-validates client-edited resolved rows,
  * re-checks the patron gate, and INSERTs the pool. End-to-end exercise lives
  * in tests/e2e/import-pool.spec.ts.
  *
- * Run: node --import tsx/esm app/api/import-pool/create/route.test.ts
+ * Run: node --import tsx/esm app/api/import/create/route.test.ts
  */
 
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 
-describe('POST /api/import-pool/create — contract', () => {
+describe('POST /api/import/create — contract', () => {
   describe('auth (regression guard for security finding)', () => {
     it('returns 401 when no session', () => {
       // Closes the patron-gate-bypass: the wizard never POSTs to /api/pools

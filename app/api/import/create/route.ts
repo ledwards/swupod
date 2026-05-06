@@ -1,6 +1,6 @@
 // @ts-nocheck
 /**
- * POST /api/import-pool/create
+ * POST /api/import/create
  *
  * Trust-boundary endpoint that takes the wizard's resolved selections,
  * re-runs server-side validation + assembly, re-checks the patron gate,

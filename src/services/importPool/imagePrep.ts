@@ -3,7 +3,7 @@
  * Client-side image preprocessing for the Import Pool wizard (U5).
  *
  * Browser-only. Uses <canvas> + URL.createObjectURL + Image to downsample
- * camera photos before posting them to /api/import-pool/extract. Mobile
+ * camera photos before posting them to /api/import/extract. Mobile
  * photos are commonly 5-10MB; downsampling to ~2048px wide cuts payload
  * ~5x without hurting CV legibility.
  *

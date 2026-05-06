@@ -6,8 +6,8 @@
  * Phases: idle → uploading → extracting → resolving → confirming → submitting
  *         → done | error
  *
- * The hook coordinates image upload, extraction (POST /api/import-pool/extract),
- * row edits, and submission (POST /api/import-pool/create). Validation runs
+ * The hook coordinates image upload, extraction (POST /api/import/extract),
+ * row edits, and submission (POST /api/import/create). Validation runs
  * continuously as a derived selector.
  *
  * See docs/plans/2026-05-05-001-feat-import-pool-spike-plan.md U6.
@@ -635,7 +635,7 @@ export function useImportPool() {
     if (state.images.length === 0) return
     dispatch({ type: 'EXTRACTION_START' })
     try {
-      const response = await fetch('/api/import-pool/extract', {
+      const response = await fetch('/api/import/extract', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -696,7 +696,7 @@ export function useImportPool() {
     if (!state.extraction || !state.activeLeaderId || !state.activeBaseId) return
     dispatch({ type: 'SUBMIT_START' })
     try {
-      const response = await fetch('/api/import-pool/create', {
+      const response = await fetch('/api/import/create', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

@@ -19,14 +19,23 @@ export default function ImportPoolPage() {
   }, [])
 
   const handleLogin = () => {
-    const returnUrl = encodeURIComponent('/import-pool')
+    const returnUrl = encodeURIComponent('/import')
     window.location.href = `/api/auth/signin/discord?return_to=${returnUrl}`
   }
 
   if (authLoading) {
     return (
       <div className="import-pool-page">
-        <div className="import-pool-loading">Loading…</div>
+        <div className="ip-skeleton">
+          <div className="ip-skeleton__title" />
+          <div className="ip-skeleton__steps" />
+          <div className="ip-skeleton__toolbar" />
+          <div className="ip-skeleton__table">
+            {Array.from({ length: 10 }).map((_, i) => (
+              <div key={i} className="ip-skeleton__row" />
+            ))}
+          </div>
+        </div>
       </div>
     )
   }

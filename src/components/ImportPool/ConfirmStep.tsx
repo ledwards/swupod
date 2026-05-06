@@ -13,7 +13,7 @@ interface Props {
  * ConfirmStep — Step 3 of the Import Pool wizard (U9).
  *
  * Shows the auto-composed title (editable) + roster summary, then POSTs to
- * /api/import-pool/create. Redirect happens in the parent wizard via
+ * /api/import/create. Redirect happens in the parent wizard via
  * the `done` phase + shareId.
  */
 export default function ConfirmStep({ importPool }: Props) {

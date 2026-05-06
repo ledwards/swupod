@@ -2,7 +2,7 @@
 /**
  * Import Pool — Resolve step UI iteration harness.
  *
- * Mocks /api/import-pool/extract with realistic LAW data so we can drive the
+ * Mocks /api/import/extract with realistic LAW data so we can drive the
  * wizard through Upload → Resolve without burning Anthropic API calls and
  * iterate on the table layout. Saves a screenshot to /tmp/import-pool-resolve.png
  * after every run.
@@ -185,7 +185,7 @@ test.describe('Import Pool — Resolve UI', () => {
     const mockResponse = buildMockExtractResponse()
 
     // Intercept extract calls — return the LAW fixture immediately
-    await page.route('**/api/import-pool/extract', async (route) => {
+    await page.route('**/api/import/extract', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -194,7 +194,7 @@ test.describe('Import Pool — Resolve UI', () => {
     })
 
     // Clear any persisted state from prior runs
-    await page.goto(`${BASE_URL}/import-pool`)
+    await page.goto(`${BASE_URL}/import`)
     await page.evaluate(() => localStorage.removeItem('import-pool-wizard-v1'))
     await page.reload()
 

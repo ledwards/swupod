@@ -15,7 +15,7 @@ import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
  *   - Full happy-path: upload → mock Anthropic 200 → resolve → confirm → land on
  *     /pool/[shareId]/deck. Requires synthetic registration-sheet fixture image
  *     (gitignored under tests/fixtures/import-pool/) and Playwright route mock
- *     for POST /api/import-pool/extract.
+ *     for POST /api/import/extract.
  *   - Edge case: ambiguous row → user picks → Continue enables.
  *   - Edge case: pool != 96 → Continue disabled with tooltip.
  */
@@ -75,21 +75,21 @@ test.describe('Import Pool', () => {
     }
   })
 
-  test('clicking Import Pool navigates to /import-pool', async () => {
+  test('clicking Import Pool navigates to /import', async () => {
     const { context, page } = await newPageAs(null)
     try {
       await page.goto(BASE_URL)
       await page.getByText('Import Pool', { exact: true }).click()
-      await expect(page).toHaveURL(/\/import-pool/, { timeout: 10000 })
+      await expect(page).toHaveURL(/\/import/, { timeout: 10000 })
     } finally {
       await context.close()
     }
   })
 
-  test('logged-out users see the auth prompt on /import-pool', async () => {
+  test('logged-out users see the auth prompt on /import', async () => {
     const { context, page } = await newPageAs(null)
     try {
-      await page.goto(`${BASE_URL}/import-pool`)
+      await page.goto(`${BASE_URL}/import`)
       await expect(page.getByText('Sign in with Discord')).toBeVisible({ timeout: 10000 })
       await expect(page.getByText('Friends of the Pod')).toBeVisible()
     } finally {
@@ -103,7 +103,7 @@ test.describe('Import Pool', () => {
     try {
       // Patron gate is enforced at the API level. Logged-in non-patron sees
       // the wizard but extraction will return 403.
-      const response = await page.request.post(`${BASE_URL}/api/import-pool/extract`, {
+      const response = await page.request.post(`${BASE_URL}/api/import/extract`, {
         data: {
           images: [
             {
@@ -125,11 +125,11 @@ test.describe('Import Pool', () => {
   test('non-patron logged-in users get 403 from create route (gate-bypass guard)', async () => {
     // This is the regression guard for the security finding. The wizard never
     // POSTs to /api/pools directly; the only persistence path for imported
-    // pools is /api/import-pool/create, which re-checks is_patron.
+    // pools is /api/import/create, which re-checks is_patron.
     const user = await createTestUser('NonPatronGateTester', TEST_ID)
     const { context, page } = await newPageAs(user)
     try {
-      const response = await page.request.post(`${BASE_URL}/api/import-pool/create`, {
+      const response = await page.request.post(`${BASE_URL}/api/import/create`, {
         data: {
           setCode: 'LAW',
           resolvedRows: [],
@@ -150,7 +150,7 @@ test.describe('Import Pool', () => {
     const user = await createTestUser('AdminTester', TEST_ID, { isAdmin: true })
     const { context, page } = await newPageAs(user)
     try {
-      await page.goto(`${BASE_URL}/import-pool`)
+      await page.goto(`${BASE_URL}/import`)
       // Should see the upload step, not the auth prompt
       await expect(page.getByText('Upload your registration sheet')).toBeVisible({ timeout: 10000 })
       await expect(page.getByText('Add photo')).toBeVisible()

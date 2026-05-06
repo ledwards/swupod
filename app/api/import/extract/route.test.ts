@@ -1,19 +1,19 @@
 // @ts-nocheck
 /**
- * Contract tests for POST /api/import-pool/extract.
+ * Contract tests for POST /api/import/extract.
  *
  * These tests document the expected response shapes and status codes for each
  * branch of the route. End-to-end exercise lives in tests/e2e/import-pool.spec.ts
  * (U11) where Playwright drives the wizard and mocks the Anthropic call at the
  * network layer.
  *
- * Run: node --import tsx/esm app/api/import-pool/extract/route.test.ts
+ * Run: node --import tsx/esm app/api/import/extract/route.test.ts
  */
 
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 
-describe('POST /api/import-pool/extract — contract', () => {
+describe('POST /api/import/extract — contract', () => {
   describe('auth', () => {
     it('returns 401 UNAUTHORIZED when no session cookie is present', () => {
       const expected = { status: 401, body: { error: 'Unauthorized', code: 'UNAUTHORIZED' } }
