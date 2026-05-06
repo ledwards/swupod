@@ -1565,6 +1565,18 @@
   border-top: 1px solid rgba(255, 217, 102, 0.3);
 }
 
+/* Shown in the modal when state.images is empty (e.g. localStorage quota
+ * dropped images on a refresh). Clicking the magnifier always opens the
+ * modal so the user knows the click registered; this is what they see. */
+.ip-source-modal__empty {
+  padding: 32px 24px;
+  max-width: 460px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 /* Mobile */
 @media (max-width: 768px) {
   .import-pool-step {

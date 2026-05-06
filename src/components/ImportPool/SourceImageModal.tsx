@@ -126,7 +126,15 @@ export default function SourceImageModal({
         </header>
 
         <div className={`ip-source-modal__viewport ${zoomed && !cropping ? 'is-zoomed' : ''}`}>
-          {cropping ? (
+          {images.length === 0 ? (
+            <div className="ip-source-modal__empty">
+              <p>
+                Source images aren&apos;t loaded for this session. They were dropped from
+                local storage to save space — re-upload them to see the original sheet
+                here.
+              </p>
+            </div>
+          ) : cropping ? (
             <div className="ip-source-modal__crops">
               {sectionEntries.map((b, i) => {
                 const photo = images[b.photoIndex]

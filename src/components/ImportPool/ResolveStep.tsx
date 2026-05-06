@@ -310,10 +310,12 @@ export default function ResolveStep({ importPool }: Props) {
             type="button"
             className="ip-icon-btn"
             onClick={() => openSourceFor(null)}
-            title={state.images.length > 0 ? 'View source sheet' : 'Source images dropped — re-upload to see them'}
-            disabled={state.images.length === 0}
+            title={state.images.length > 0 ? 'View source sheet' : 'Source images aren’t loaded — re-upload to see them'}
           >
-            <span aria-hidden="true">🔍</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <path d="M21 21l-4.35-4.35" />
+            </svg>
             <span className="ip-icon-btn__label">Source</span>
           </button>
         </div>
@@ -412,13 +414,12 @@ export default function ResolveStep({ importPool }: Props) {
                         }
                         title={state.images.length > 0
                           ? `View source — ${group.displayName} section`
-                          : 'Source images dropped — re-upload to see them'}
+                          : 'Source images aren’t loaded — re-upload to see them'}
                         aria-label={`View source sheet for ${group.displayName}`}
-                        disabled={state.images.length === 0}
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="11" cy="11" r="7"></circle>
-                          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                          <circle cx="11" cy="11" r="8" />
+                          <path d="M21 21l-4.35-4.35" />
                         </svg>
                       </button>
                     </span>
@@ -491,7 +492,7 @@ export default function ResolveStep({ importPool }: Props) {
         />
       )}
 
-      {sourceModalOpen && state.images.length > 0 && (
+      {sourceModalOpen && (
         <SourceImageModal
           images={state.images}
           onClose={() => {
@@ -1190,13 +1191,12 @@ function GridView({
                 }
                 title={hasSourceImages
                   ? `View source — ${group.displayName} section`
-                  : 'Source images dropped — re-upload to see them'}
+                  : 'Source images aren’t loaded — re-upload to see them'}
                 aria-label={`View source sheet for ${group.displayName}`}
-                disabled={!hasSourceImages}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="7"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="M21 21l-4.35-4.35" />
                 </svg>
               </button>
             </span>

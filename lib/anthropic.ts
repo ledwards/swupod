@@ -183,7 +183,43 @@ CRITICAL READING RULES — these are where extraction goes wrong if you're not c
    - "x1", "y1": bottom-right corner as [0, 1] fractions
    The bounding box must include the section header AND every row beneath it through the last row of the section. Be conservative: slightly over-include (1–2% of slack on each side) rather than crop a row in half. If a section spans both photos (e.g. Multicolor continues from photo 1 onto photo 2), return one entry per photo. Typical entry counts: 8–10 entries on a single-photo upload, 12–18 entries on a two-photo upload. If you return zero sections you have failed this requirement.
 
-Return strict JSON conforming to the response schema. Do not include any prose, markdown, or explanation outside the JSON. The user will verify the result against the source sheet, so accuracy on what's NOT marked matters as much as accuracy on what IS marked.`
+================================================================
+FINAL CHECKLIST — verify ALL of these before returning your JSON.
+This list is the difference between a usable response and one we
+have to reject. Every item is a hard requirement.
+
+(A) **sections array is non-empty.** It must contain one entry per
+    visible section per photo (Leaders + Bases + each aspect section
+    that's visible). On a single-photo sheet that's typically 8–10
+    entries. On a two-photo sheet it's 12–18 entries. ZERO
+    is a failure — go re-read rule 9.
+
+(B) **Sum of poolQty across all rows equals 96.** Compute the sum.
+    If it's less than 96, you've missed marks — sweep the dense
+    sections (Vigilance, Command, Aggression, Cunning, Multicolor)
+    one more time. The Multicolor section especially is where pool
+    under-counts originate — typical sealed pools have 8–30 cards
+    in Multicolor, not 6.
+
+(C) **Sum of deckQty across all rows is between 30 and 35.** This
+    is the player's competitive deck, which by sealed rules is at
+    least 30 cards and most players don't run more than 32. If your
+    deck total is above 36, you've over-counted PLAYED-column marks
+    — recheck the rows where you put deckQty>0; many rows have a
+    TOTAL mark but no PLAYED mark and should be deckQty=0.
+
+(D) **Exactly 6 leaders with poolQty=1, exactly 1 with deckQty=1.**
+    Same for bases. The other 12 leader rows and 6 base rows all
+    have poolQty=0 and deckQty=0.
+
+(E) **Names are split from subtitles.** No commas in the "name"
+    field. "Han Solo, Audacious Smuggler" → name="Han Solo",
+    subtitle="Audacious Smuggler".
+
+If ANY of A–E fails, fix it before returning. Return strict JSON
+only — no prose, no markdown, no explanation outside the JSON.
+The user will verify against the source sheet so accuracy on what's
+NOT marked matters as much as accuracy on what IS.`
 
 // === Set card list grounding ===
 //
