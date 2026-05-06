@@ -164,13 +164,6 @@ CRITICAL READING RULES — these are where extraction goes wrong if you're not c
 
 7. **Names you can't read.** If a card name is unreadable, use the literal string "?". Never invent cards.
 
-9. **Section bounding boxes.** Return a "sections" array describing where each section appears in the uploaded photos. For every section that's visible on any photo (Leaders, Bases, Vigilance, Command, Aggression, Cunning, Heroism, Villainy, Multicolor, NoAspect), return:
-   - "name": exactly one of the values above (use "NoAspect" for the No Aspect / Neutral / gray section)
-   - "photoIndex": 0 for the first uploaded photo, 1 for the second
-   - "x0", "y0": top-left corner of the section as [0, 1] fractions of the photo (0,0 = top-left of the photo)
-   - "x1", "y1": bottom-right corner as [0, 1] fractions
-   The bounding box should include the section header AND every row beneath it through the last row of the section. Be conservative: slightly over-include (a few pixels of slack on each side) rather than crop a row in half. If a section appears on both photos (e.g. continued from photo 1 to photo 2), return one entry per photo. The UI uses these bounds to crop and zoom into individual sections so the user can verify reads against the source — your bounds need to be tight enough to be useful but loose enough to not chop content.
-
 8. **Per-COLUMN qty confidence — read each handwritten number SEPARATELY.** For every row, attach TWO confidence fields, one for each qty column:
    - "poolQtyConfidence": confidence in your read of the TOTAL column (the pool count). "high" / "medium" / "low".
    - "deckQtyConfidence": confidence in your read of the PLAYED column (the deck count). "high" / "medium" / "low".
@@ -182,6 +175,13 @@ CRITICAL READING RULES — these are where extraction goes wrong if you're not c
    - Use "low" when the column is genuinely hard to read for this row: faded marks, ambiguous between blank and a faint mark, eraser smudges, glare, the photo is blurry there. Includes the case "I THINK this is blank but I can't quite tell" — that's a low-confidence 0.
 
    The user uses these two confidences to know which numbers to manually verify against the source photo. Be honest: if a "blank" cell is actually a low-confidence guess, mark it low — the user wants to catch cards they own that you missed.
+
+9. **Section bounding boxes — REQUIRED, not optional.** Return a non-empty "sections" array describing where each visible section's rows appear on each photo. The UI USES these bounds to crop the source photo to one section at a time so the player can verify your read; without bounds the feature breaks. For every section that's visible on any photo (Leaders, Bases, Vigilance, Command, Aggression, Cunning, Heroism, Villainy, Multicolor, NoAspect), return one entry PER PHOTO it appears on:
+   - "name": exactly one of the values above (use "NoAspect" for the No Aspect / Neutral / gray section)
+   - "photoIndex": 0 for the first uploaded photo, 1 for the second
+   - "x0", "y0": top-left corner as [0, 1] fractions of the photo (0,0 = top-left of the photo). NOT pixels — fractions.
+   - "x1", "y1": bottom-right corner as [0, 1] fractions
+   The bounding box must include the section header AND every row beneath it through the last row of the section. Be conservative: slightly over-include (1–2% of slack on each side) rather than crop a row in half. If a section spans both photos (e.g. Multicolor continues from photo 1 onto photo 2), return one entry per photo. Typical entry counts: 8–10 entries on a single-photo upload, 12–18 entries on a two-photo upload. If you return zero sections you have failed this requirement.
 
 Return strict JSON conforming to the response schema. Do not include any prose, markdown, or explanation outside the JSON. The user will verify the result against the source sheet, so accuracy on what's NOT marked matters as much as accuracy on what IS marked.`
 

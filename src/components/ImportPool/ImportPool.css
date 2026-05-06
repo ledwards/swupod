@@ -360,6 +360,24 @@
   }
 }
 
+.ip-error-pager__btn:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+/* "No issues" state — same find/replace shape but green so the user knows
+ * we're checking and nothing's flagged. Pager is always present for
+ * predictability. */
+.ip-error-pager--clean {
+  background: rgba(120, 200, 120, 0.08);
+  border-color: rgba(120, 200, 120, 0.4);
+  color: rgba(120, 200, 120, 0.85);
+}
+.ip-error-pager--clean .ip-error-pager__btn {
+  border-color: rgba(120, 200, 120, 0.4);
+  color: rgba(120, 200, 120, 0.85);
+}
+
 /* Flash effect when scrolling to a row via the pager */
 @keyframes ip-row-flash {
   0%, 100% { background-color: inherit; }
@@ -586,38 +604,67 @@
   }
 }
 
-/* Per-row qty-read confidence — shown on every row. Format is "deck/pool%"
- * (PLAYED column read / TOTAL column read). No chrome — just colored text
- * that fades into the row when high (the boring case) and pops when low
- * (the rows the user needs to verify). */
-.ip-row__confidence {
-  display: inline-flex;
-  align-items: center;
-  margin-left: auto;
-  font-size: 11px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.3px;
-  flex-shrink: 0;
+/* Per-cell confidence tinting. Replaces the standalone "X/Y%" badge — we
+ * tint the actual cell (PLAYED, TOTAL, NAME) so the user reads confidence
+ * directly off the data instead of off a separate widget. Three tiers:
+ *   high   → faded green (sinks into the row; this is the boring case)
+ *   medium → yellow tint (glance)
+ *   low    → red tint (verify this — Claude was unsure about this number)
+ * Uses background tint + a subtle inner shadow so the cell still reads as a
+ * cell, not as a button or a fill. The card name cell uses currentColor for
+ * the text alongside the tint so the heading itself shifts. */
+.ip-cell-tier--high {
+  background: rgba(120, 200, 120, 0.06);
+}
+.ip-cell-tier--medium {
+  background: rgba(255, 217, 102, 0.12);
+}
+.ip-cell-tier--low {
+  background: rgba(255, 122, 122, 0.18);
 }
 
-/* High = faded green — confident reads should sink into the row, not draw
- * the eye. Medium = yellow — worth a glance. Low = red — verify this. */
-.ip-row__confidence--high   { color: rgba(120, 200, 120, 0.55); }
-.ip-row__confidence--medium { color: #ffd966; }
-.ip-row__confidence--low    { color: #ff7a7a; }
+/* Tint the card-name TEXT to match — same color story applied to the title
+ * itself so a low-confidence row leaps out at a glance. */
+.ip-cell-name.ip-cell-tier--high .ip-row__name-text strong {
+  color: rgba(255, 255, 255, 0.95);
+}
+.ip-cell-name.ip-cell-tier--medium .ip-row__name-text strong {
+  color: #ffd966;
+}
+.ip-cell-name.ip-cell-tier--low .ip-row__name-text strong {
+  color: #ff7a7a;
+}
 
-/* Grid-view tile overlay: card image needs a tiny dark backplate so the
- * text remains legible against varied artwork. Otherwise no chrome. */
-.ip-tile__image .ip-row__confidence {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  margin: 0;
-  padding: 1px 5px;
-  font-size: 9px;
-  background: rgba(0, 0, 0, 0.75);
-  border-radius: 3px;
+/* Click-to-toggle qty cell for leader/base PLAYED. Replaces the old star
+ * button — number stays visible (0 or 1), single click flips active state.
+ * The "active" tier styling comes from the row's existing .ip-row--active
+ * highlight; this just makes the number bold + slightly brighter. */
+.ip-row__qty-toggle {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: inherit;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 12px;
+  min-width: 36px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.ip-row__qty-toggle--active {
+  border-color: rgba(0, 255, 0, 0.6);
+  background: rgba(0, 255, 0, 0.12);
+  color: white;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ip-row__qty-toggle:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
 }
 
 .import-pool-totals .totals-ok {

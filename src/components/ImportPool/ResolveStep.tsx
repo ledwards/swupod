@@ -86,7 +86,30 @@ export default function ResolveStep({ importPool }: Props) {
 
   const anomalies = useMemo<Anomaly[]>(() => {
     const list: Anomaly[] = []
-    // Section gaps first — large-scale issues.
+
+    // Sum-level totals. These ALWAYS fire when the pool or deck totals are
+    // off — they're the highest-signal issues the user wants to land on
+    // first when they open the wizard. Target the toolbar so the
+    // RunningTotals strip flashes.
+    if (validation.poolCount !== validation.poolTarget) {
+      const diff = validation.poolTarget - validation.poolCount
+      const dir = diff > 0 ? `missing ${diff}` : `over by ${-diff}`
+      list.push({
+        kind: 'section',
+        targetId: 'ip-running-totals',
+        label: `Pool total: ${validation.poolCount}/${validation.poolTarget} (${dir})`,
+      })
+    }
+    // Deck >35 is the "OCR over-counted PLAYED marks" signal.
+    if (validation.deckCount > 35) {
+      list.push({
+        kind: 'section',
+        targetId: 'ip-running-totals',
+        label: `Deck total: ${validation.deckCount} cards — typical sealed deck is 30–32; verify PLAYED marks`,
+      })
+    }
+
+    // Section gaps from the route's typical-range check.
     for (const gap of state.sectionGaps) {
       list.push({
         kind: 'section',
@@ -94,6 +117,7 @@ export default function ResolveStep({ importPool }: Props) {
         label: gap.message,
       })
     }
+
     // Per-row issues. We separate "matcher problems" (poolQty>0 only — these
     // need a card pick) from "qty-read problems" (independent of poolQty —
     // includes uncertain BLANKS, which is the whole point: rows Claude
@@ -104,7 +128,6 @@ export default function ResolveStep({ importPool }: Props) {
       const poolConf = row.extracted.poolQtyConfidence
       const deckConf = row.extracted.deckQtyConfidence
 
-      // Matcher problems only matter when the user actually has the card.
       if (row.poolQty > 0) {
         if (!row.card) {
           list.push({ kind: 'row', targetId: id, label: `Unmatched: ${cardName}` })
@@ -124,8 +147,6 @@ export default function ResolveStep({ importPool }: Props) {
         }
       }
 
-      // Qty-read problems: surface low-confidence reads in either column.
-      // Uncertain blanks are the priority — those are the missing cards.
       if (poolConf === 'low') {
         const note = row.poolQty === 0
           ? `Uncertain blank (pool): ${cardName}`
@@ -142,7 +163,7 @@ export default function ResolveStep({ importPool }: Props) {
       }
     }
     return list
-  }, [state.resolvedRows, state.sectionGaps])
+  }, [state.resolvedRows, state.sectionGaps, validation.poolCount, validation.poolTarget, validation.deckCount])
 
   const anomalyKeys = anomalies.map((a) => a.targetId)
 
@@ -218,7 +239,7 @@ export default function ResolveStep({ importPool }: Props) {
               title="Table view"
               aria-pressed={state.viewMode === 'table'}
             >
-              <span aria-hidden="true">≡</span>
+              <ViewToggleListIcon />
             </Button>
             <Button
               variant="toggle"
@@ -229,7 +250,7 @@ export default function ResolveStep({ importPool }: Props) {
               title="Grid view"
               aria-pressed={state.viewMode === 'grid'}
             >
-              <span aria-hidden="true">▦</span>
+              <ViewToggleGridIcon />
             </Button>
           </div>
           <div className="ip-toggle-group" role="group" aria-label="Row filter">
@@ -267,31 +288,40 @@ export default function ResolveStep({ importPool }: Props) {
               Deck
             </Button>
           </div>
-          {anomalies.length > 0 && (
-            <div className="ip-error-pager" role="group" aria-label="Issue navigator">
-              <button
-                type="button"
-                className="ip-error-pager__btn"
-                onClick={() => goToAnomaly(-1)}
-                title="Previous issue"
-                aria-label="Previous issue"
-              >
-                ←
-              </button>
-              <span className="ip-error-pager__label" title={currentAnomalyLabel}>
-                Issue {anomalyIndex + 1}/{anomalies.length}
-              </span>
-              <button
-                type="button"
-                className="ip-error-pager__btn"
-                onClick={() => goToAnomaly(1)}
-                title="Next issue"
-                aria-label="Next issue"
-              >
-                →
-              </button>
-            </div>
-          )}
+          {/* Issue pager always renders so the user knows we're checking;
+              when there are no anomalies it shows "0 issues" with the arrows
+              disabled. find/replace UI pattern. */}
+          <div
+            className={`ip-error-pager ${anomalies.length === 0 ? 'ip-error-pager--clean' : ''}`}
+            role="group"
+            aria-label="Issue navigator"
+          >
+            <button
+              type="button"
+              className="ip-error-pager__btn"
+              onClick={() => goToAnomaly(-1)}
+              title="Previous issue"
+              aria-label="Previous issue"
+              disabled={anomalies.length === 0}
+            >
+              ←
+            </button>
+            <span className="ip-error-pager__label" title={currentAnomalyLabel}>
+              {anomalies.length === 0
+                ? 'No issues'
+                : `Issue ${anomalyIndex + 1}/${anomalies.length}`}
+            </span>
+            <button
+              type="button"
+              className="ip-error-pager__btn"
+              onClick={() => goToAnomaly(1)}
+              title="Next issue"
+              aria-label="Next issue"
+              disabled={anomalies.length === 0}
+            >
+              →
+            </button>
+          </div>
           {state.images.length > 0 && (
             <button
               type="button"
@@ -515,7 +545,7 @@ function RunningTotals({ validation }: { validation: any }) {
         ? 'totals-warn'
         : 'totals-ok'
   return (
-    <div className="import-pool-totals">
+    <div className="import-pool-totals" id="ip-running-totals">
       <span className={validation.poolCount === validation.poolTarget ? 'totals-ok' : 'totals-bad'}>
         Pool: {validation.poolCount} / {validation.poolTarget}
       </span>
@@ -575,6 +605,15 @@ function RowItem({
   const needsAttention = isUnresolved || row.confidence === 'fuzzy' || row.confidence === 'ambiguous'
   const cardNumber = extractCardNumber(row.card?.cardId)
 
+  // Per-cell color tier based on the corresponding column's read confidence.
+  // Cell background tint replaces the old standalone confidence-percent badge.
+  const deckTier = confidenceTierForRow(row, 'deck')
+  const poolTier = confidenceTierForRow(row, 'pool')
+  // Card name is tinted by the WORSE of the two so a single bad column still
+  // draws the eye to the row.
+  const nameTier = worseTier(deckTier, poolTier)
+  const titleHint = `Deck (PLAYED) read: ${row.extracted.deckQtyConfidence ?? 'unknown'} · Pool (TOTAL) read: ${row.extracted.poolQtyConfidence ?? 'unknown'}`
+
   const rowClasses = [
     'ip-row',
     isUnresolved && 'ip-row--unresolved',
@@ -585,26 +624,26 @@ function RowItem({
     .filter(Boolean)
     .join(' ')
 
+  // Click-to-toggle for leader/base PLAYED cell: flips between deckQty=0 and
+  // deckQty=1 via the existing setActive handlers (which take care of
+  // unsetting any other active leader/base).
+  const handleLeaderBaseToggle = isLeader
+    ? onToggleLeader
+    : isBase
+      ? onToggleBase
+      : undefined
+
   return (
     <tr className={rowClasses} id={`ip-row-${row.key}`}>
-      <td className="ip-cell-played">
-        {isLeader ? (
+      <td className={`ip-cell-played ip-cell-tier--${deckTier}`} title={titleHint}>
+        {isLeader || isBase ? (
           <button
             type="button"
-            className={`ip-star ${isActiveLeader ? 'ip-star--active' : ''}`}
-            onClick={onToggleLeader}
-            title={isActiveLeader ? 'Active leader' : 'Set as active leader'}
+            className={`ip-row__qty-toggle ${isActive ? 'ip-row__qty-toggle--active' : ''}`}
+            onClick={handleLeaderBaseToggle}
+            title={isActive ? 'Active selection' : `Set as active ${isLeader ? 'leader' : 'base'}`}
           >
-            {isActiveLeader ? '★' : '☆'}
-          </button>
-        ) : isBase ? (
-          <button
-            type="button"
-            className={`ip-star ${isActiveBase ? 'ip-star--active' : ''}`}
-            onClick={onToggleBase}
-            title={isActiveBase ? 'Active base' : 'Set as active base'}
-          >
-            {isActiveBase ? '★' : '☆'}
+            {row.deckQty}
           </button>
         ) : (
           <QtyCell
@@ -616,7 +655,7 @@ function RowItem({
           />
         )}
       </td>
-      <td className="ip-cell-total">
+      <td className={`ip-cell-total ip-cell-tier--${poolTier}`} title={titleHint}>
         {isLeader || isBase ? (
           <span className="ip-row__qty-static">{row.poolQty}</span>
         ) : (
@@ -631,12 +670,13 @@ function RowItem({
       </td>
       <td className="ip-cell-no">{cardNumber || '—'}</td>
       <td
-        className={`ip-cell-name ${needsAttention ? 'ip-cell-name--attention' : ''}`}
+        className={`ip-cell-name ip-cell-tier--${nameTier} ${needsAttention ? 'ip-cell-name--attention' : ''}`}
         style={
           row.card?.imageUrl
             ? ({ ['--card-art' as any]: `url("${row.card.imageUrl}")` } as React.CSSProperties)
             : undefined
         }
+        title={titleHint}
       >
         <button
           type="button"
@@ -660,47 +700,53 @@ function RowItem({
             )}
             {isUnresolved && <em className="ip-row__hint">tap to pick a card</em>}
           </span>
-          <ConfidenceBadge row={row} />
         </button>
       </td>
     </tr>
   )
 }
 
-function ConfidenceBadge({ row }: { row: ResolvedRow }) {
-  // Two separate confidences: how sure Claude is about its read of the deck
-  // (PLAYED) column and the pool (TOTAL) column for THIS row. Display order
-  // matches the table column order: deck / pool.
-  //
-  // Color tier is driven by the WORSE of the two — if Claude is confident
-  // about pool but unsure about deck, the badge should still draw the eye.
-  const deckLevel = row.extracted.deckQtyConfidence
-  const poolLevel = row.extracted.poolQtyConfidence
-  const deckPct = qtyConfPct(deckLevel)
-  const poolPct = qtyConfPct(poolLevel)
-  const tier = confidenceTier(Math.min(deckPct, poolPct))
+/** Per-cell confidence tier helper. Returns the same enum as
+ *  confidenceTier() — high (faded green) / medium (yellow) / low (red) —
+ *  for whichever column we're tinting. */
+function confidenceTierForRow(row: ResolvedRow, column: 'deck' | 'pool'): 'high' | 'medium' | 'low' {
+  const level =
+    column === 'deck' ? row.extracted.deckQtyConfidence : row.extracted.poolQtyConfidence
+  return confidenceTier(qtyConfPct(level))
+}
 
-  // Annotate "0 but uncertain" specifically — these are likely cards the
-  // player owns that Claude wrote off as blank. The user wants to catch
-  // those in particular.
-  const uncertainBlankPool = row.poolQty === 0 && poolLevel === 'low'
-  const uncertainBlankDeck = row.deckQty === 0 && deckLevel === 'low'
-  const titleParts = [
-    `Deck (PLAYED column) read: ${deckPct}% (${deckLevel ?? 'unknown'})`,
-    `Pool (TOTAL column) read: ${poolPct}% (${poolLevel ?? 'unknown'})`,
-  ]
-  if (uncertainBlankPool) titleParts.push('⚠️ Pool=0 but uncertain — verify against the source')
-  if (uncertainBlankDeck) titleParts.push('⚠️ Deck=0 but uncertain — verify against the source')
-  const title = titleParts.join('\n')
+/** When tinting the card name we use the WORSE tier across the two columns
+ *  so a single low-confidence read still surfaces. */
+function worseTier(
+  a: 'high' | 'medium' | 'low',
+  b: 'high' | 'medium' | 'low',
+): 'high' | 'medium' | 'low' {
+  const order = { high: 0, medium: 1, low: 2 }
+  return order[a] > order[b] ? a : b
+}
 
+/* View-mode toggle icons — same shapes the deckbuilder uses in
+ * src/components/DeckBuilder/ViewModeToggle.tsx so the Import Pool toolbar
+ * reads as the same UI pattern. */
+function ViewToggleGridIcon() {
   return (
-    <span
-      className={`ip-row__confidence ip-row__confidence--${tier}`}
-      title={title}
-      aria-label={title}
-    >
-      {deckPct}/{poolPct}%
-    </span>
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 2H8V8H2V2Z" stroke="currentColor" strokeWidth="2" fill="none" />
+      <path d="M12 2H18V8H12V2Z" stroke="currentColor" strokeWidth="2" fill="none" />
+      <path d="M2 12H8V18H2V12Z" stroke="currentColor" strokeWidth="2" fill="none" />
+      <path d="M12 12H18V18H12V12Z" stroke="currentColor" strokeWidth="2" fill="none" />
+    </svg>
+  )
+}
+
+function ViewToggleListIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="3" width="16" height="2" fill="currentColor" />
+      <rect x="2" y="7" width="16" height="2" fill="currentColor" />
+      <rect x="2" y="11" width="16" height="2" fill="currentColor" />
+      <rect x="2" y="15" width="16" height="2" fill="currentColor" />
+    </svg>
   )
 }
 
@@ -1094,7 +1140,6 @@ function GridView({
             <span className="ip-tile__placeholder">?</span>
           )}
           {row.poolQty > 1 && <span className="ip-tile__count">×{row.poolQty}</span>}
-          <ConfidenceBadge row={row} />
         </button>
         <div className="ip-tile__controls">
           {isLeader || isBase ? (

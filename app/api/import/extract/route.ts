@@ -256,6 +256,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       'Leaders', 'Bases', 'Vigilance', 'Command', 'Aggression', 'Cunning',
       'Heroism', 'Villainy', 'Multicolor', 'NoAspect',
     ])
+    // Log raw payload first so we can tell whether Claude returned an empty
+    // array OR something the sanitizer dropped (wrong field names, out-of-range
+    // photoIndex, NaN coords, etc.) — different failure modes need different
+    // prompt fixes.
+    const rawSectionsCount = Array.isArray(raw.sections) ? raw.sections.length : -1
+    logAttempt(`raw sections from Claude: count=${rawSectionsCount} ${JSON.stringify(raw.sections ?? null).slice(0, 600)}`)
     const sections = Array.isArray(raw.sections)
       ? raw.sections
           .filter((s: any) =>
@@ -276,7 +282,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           }))
           .filter((s: any) => s.x1 > s.x0 && s.y1 > s.y0)
       : []
+    if (rawSectionsCount > 0 && sections.length < rawSectionsCount) {
+      logAttempt(`sections sanitizer dropped ${rawSectionsCount - sections.length} of ${rawSectionsCount} entries`)
+    }
     logAttempt(`final: sections=${sections.length} (${sections.map((s: any) => `${s.name}/p${s.photoIndex}`).join(', ')})`)
+    if (sectionGaps.length > 0) {
+      logAttempt(`final: sectionGaps=${sectionGaps.length} ${sectionGaps.map((g: any) => `${g.section}:${g.count}`).join(', ')}`)
+    }
 
     return jsonResponse({
       header: {
