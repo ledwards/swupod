@@ -3,7 +3,9 @@
 
 import { useMemo, useState } from 'react'
 import Button from '../Button'
+import { AspectIcon } from '../AspectIcon'
 import CardPickerModal from './CardPickerModal'
+import SourceImageModal from './SourceImageModal'
 import {
   getAspectCombinationKey,
   getAspectCombinationDisplayName,
@@ -14,18 +16,35 @@ interface Props {
   importPool: ReturnType<typeof useImportPool>
 }
 
+const ASPECT_NAMES = ['Vigilance', 'Command', 'Aggression', 'Cunning', 'Heroism', 'Villainy'] as const
+
 /**
- * ResolveStep — Step 2 of the Import Pool wizard (U8).
+ * ResolveStep — Step 2 of the Import Pool wizard.
  *
- * Registration-sheet-style table layout. Card art is a full-bleed background
- * on the NAME column; rows are 2 lines tall; columns mirror physical sheets:
- *   PLAYED (deck qty) | TOTAL (pool qty) | NO (card #) | NAME
+ * Sections rendered in order:
+ *   1. Leaders (all sheet leaders, even unselected ones)
+ *   2. Bases (all sheet bases)
+ *   3. Aspect groups for everything else, ordered by aspect priority
  *
- * Leaders/bases are toggled active by clicking the star in the PLAYED column.
+ * Default view: "show only my pool" — rows with poolQty=0 are hidden.
+ * Eye toggle in the totals strip flips to "show all rows".
+ *
+ * Needs-attention rows (fuzzy / ambiguous / unmatched) get a small image
+ * icon that opens the source-sheet image so the user can verify against
+ * the original.
  */
 export default function ResolveStep({ importPool }: Props) {
-  const { state, validation, setRowQty, replaceRowCard, setActiveLeader, setActiveBase, goBack, goToConfirm } =
-    importPool
+  const {
+    state,
+    validation,
+    setRowQty,
+    replaceRowCard,
+    setActiveLeader,
+    setActiveBase,
+    goBack,
+    goToConfirm,
+    toggleShowOnlyPool,
+  } = importPool
 
   const [pickerFor, setPickerFor] = useState<{
     rowKey: string
@@ -33,10 +52,17 @@ export default function ResolveStep({ importPool }: Props) {
     typeFilter?: string
   } | null>(null)
 
+  const [sourceModalOpen, setSourceModalOpen] = useState(false)
+
   const setCode = state.extraction?.header.setCode || ''
 
-  // Group resolved rows by aspect combination, mirroring the registration sheet layout.
-  const grouped = useMemo(() => groupByAspect(state.resolvedRows), [state.resolvedRows])
+  const grouped = useMemo(
+    () => groupRows(state.resolvedRows, state.showOnlyPool),
+    [state.resolvedRows, state.showOnlyPool],
+  )
+
+  const totalShown = grouped.reduce((sum, g) => sum + g.rows.length, 0)
+  const hiddenZero = state.resolvedRows.length - totalShown
 
   return (
     <section className="import-pool-step import-pool-step--resolve">
@@ -58,7 +84,33 @@ export default function ResolveStep({ importPool }: Props) {
             <small>Fix anything that doesn't look right below before continuing.</small>
           </div>
         )}
-        <RunningTotals validation={validation} />
+        <div className="import-pool-totals-row">
+          <RunningTotals validation={validation} />
+          <div className="ip-totals-toolbar">
+            {state.images.length > 0 && (
+              <button
+                type="button"
+                className="ip-icon-btn"
+                onClick={() => setSourceModalOpen(true)}
+                title="View source sheet"
+              >
+                <span aria-hidden="true">🔍</span>
+                <span className="ip-icon-btn__label">Source</span>
+              </button>
+            )}
+            <button
+              type="button"
+              className={`ip-icon-btn ${state.showOnlyPool ? 'ip-icon-btn--active' : ''}`}
+              onClick={toggleShowOnlyPool}
+              title={state.showOnlyPool ? 'Showing only your pool — click to show all sheet rows' : 'Showing all sheet rows — click to show only your pool'}
+            >
+              <span aria-hidden="true">{state.showOnlyPool ? '👁' : '👁‍🗨'}</span>
+              <span className="ip-icon-btn__label">
+                {state.showOnlyPool ? `Pool only (${hiddenZero} hidden)` : 'All rows'}
+              </span>
+            </button>
+          </div>
+        </div>
       </header>
 
       <table className="ip-table">
@@ -81,7 +133,16 @@ export default function ResolveStep({ importPool }: Props) {
             <tr className="ip-section-row">
               <td colSpan={4}>
                 <div className="ip-section-bar">
-                  <span className="ip-section__title">{group.displayName}</span>
+                  <span className="ip-section__title">
+                    {group.aspects.length > 0 && (
+                      <span className="ip-section__icons">
+                        {group.aspects.map((a) => (
+                          <AspectIcon key={a} aspect={a} size="sm" />
+                        ))}
+                      </span>
+                    )}
+                    {group.displayName}
+                  </span>
                   <span className="ip-section__count">
                     {group.rows.reduce((s, r) => s + r.poolQty, 0)} cards
                   </span>
@@ -94,6 +155,7 @@ export default function ResolveStep({ importPool }: Props) {
                 row={row}
                 isActiveLeader={!!row.card && state.activeLeaderId === row.card.id}
                 isActiveBase={!!row.card && state.activeBaseId === row.card.id}
+                hasSourceImage={state.images.length > 0}
                 onIncPool={() => setRowQty(row.key, 'poolQty', row.poolQty + 1)}
                 onDecPool={() => setRowQty(row.key, 'poolQty', row.poolQty - 1)}
                 onIncDeck={() => setRowQty(row.key, 'deckQty', row.deckQty + 1)}
@@ -107,6 +169,7 @@ export default function ResolveStep({ importPool }: Props) {
                     typeFilter: row.extracted.type,
                   })
                 }
+                onViewSource={() => setSourceModalOpen(true)}
               />
             ))}
           </tbody>
@@ -140,6 +203,13 @@ export default function ResolveStep({ importPool }: Props) {
           onClose={() => setPickerFor(null)}
         />
       )}
+
+      {sourceModalOpen && state.images.length > 0 && (
+        <SourceImageModal
+          images={state.images}
+          onClose={() => setSourceModalOpen(false)}
+        />
+      )}
     </section>
   )
 }
@@ -170,6 +240,7 @@ interface RowItemProps {
   row: ResolvedRow
   isActiveLeader: boolean
   isActiveBase: boolean
+  hasSourceImage: boolean
   onIncPool: () => void
   onDecPool: () => void
   onIncDeck: () => void
@@ -177,12 +248,14 @@ interface RowItemProps {
   onToggleLeader: () => void
   onToggleBase: () => void
   onPickCard: () => void
+  onViewSource: () => void
 }
 
 function RowItem({
   row,
   isActiveLeader,
   isActiveBase,
+  hasSourceImage,
   onIncPool,
   onDecPool,
   onIncDeck,
@@ -190,11 +263,13 @@ function RowItem({
   onToggleLeader,
   onToggleBase,
   onPickCard,
+  onViewSource,
 }: RowItemProps) {
   const isLeader = !!row.card?.isLeader
   const isBase = !!row.card?.isBase
   const isActive = isActiveLeader || isActiveBase
   const isUnresolved = !row.card
+  const needsAttention = isUnresolved || row.confidence === 'fuzzy' || row.confidence === 'ambiguous'
   const cardNumber = extractCardNumber(row.card?.cardId)
 
   const rowClasses = [
@@ -272,6 +347,27 @@ function RowItem({
             )}
             {isUnresolved && <em className="ip-row__hint">tap to pick a card</em>}
           </span>
+          {needsAttention && hasSourceImage && (
+            <span
+              className="ip-row__source-btn"
+              role="button"
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation()
+                onViewSource()
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  onViewSource()
+                }
+              }}
+              title="Compare against your source sheet"
+            >
+              📷
+            </span>
+          )}
         </button>
       </td>
     </tr>
@@ -320,16 +416,42 @@ function QtyCell({
 
 function extractCardNumber(cardId: string | undefined): string {
   if (!cardId) return ''
-  // "LAW-085" → "85"
   const match = cardId.match(/[-_](\d+)$/)
   if (!match) return ''
   return parseInt(match[1], 10).toString()
 }
 
-function groupByAspect(rows: ResolvedRow[]): Array<{ key: string; displayName: string; rows: ResolvedRow[] }> {
-  const groups = new Map<string, ResolvedRow[]>()
+interface SectionGroup {
+  key: string
+  displayName: string
+  aspects: string[]
+  rows: ResolvedRow[]
+}
 
-  for (const row of rows) {
+/**
+ * Group resolved rows for display:
+ *   1. "Leaders" section first
+ *   2. "Bases" section second
+ *   3. Aspect groups for everything else
+ *
+ * `showOnlyPool` filters out rows with poolQty=0.
+ */
+function groupRows(rows: ResolvedRow[], showOnlyPool: boolean): SectionGroup[] {
+  const visible = showOnlyPool ? rows.filter((r) => r.poolQty > 0) : rows
+
+  const leaders: ResolvedRow[] = []
+  const bases: ResolvedRow[] = []
+  const aspectMap = new Map<string, ResolvedRow[]>()
+
+  for (const row of visible) {
+    if (row.card?.isLeader) {
+      leaders.push(row)
+      continue
+    }
+    if (row.card?.isBase) {
+      bases.push(row)
+      continue
+    }
     let key = 'unresolved'
     if (row.card) {
       key = getAspectCombinationKey({
@@ -337,13 +459,53 @@ function groupByAspect(rows: ResolvedRow[]): Array<{ key: string; displayName: s
         type: row.card.type,
       })
     }
-    if (!groups.has(key)) groups.set(key, [])
-    groups.get(key)!.push(row)
+    if (!aspectMap.has(key)) aspectMap.set(key, [])
+    aspectMap.get(key)!.push(row)
   }
 
-  return [...groups.entries()].map(([key, rs]) => ({
-    key,
-    displayName: key === 'unresolved' ? 'Unrecognized' : getAspectCombinationDisplayName(key),
-    rows: rs,
-  }))
+  const result: SectionGroup[] = []
+
+  if (leaders.length > 0) {
+    result.push({ key: 'leaders', displayName: 'Leaders', aspects: [], rows: leaders })
+  }
+  if (bases.length > 0) {
+    result.push({ key: 'bases', displayName: 'Bases', aspects: [], rows: bases })
+  }
+
+  // Sort aspect groups by aspect priority (Vigilance > Command > Aggression > Cunning, then Heroism/Villainy, then doubles, then Neutral)
+  const aspectKeys = [...aspectMap.keys()]
+  aspectKeys.sort(compareAspectKeys)
+  for (const key of aspectKeys) {
+    const aspects = aspectsFromKey(key)
+    const displayName = key === 'unresolved' ? 'Unrecognized' : getAspectCombinationDisplayName(key)
+    result.push({ key, displayName, aspects, rows: aspectMap.get(key)! })
+  }
+
+  return result
+}
+
+function aspectsFromKey(key: string): string[] {
+  if (key === 'unresolved' || key === 'neutral') return []
+  return key
+    .split('_')
+    .map((a) => a.charAt(0).toUpperCase() + a.slice(1))
+    .filter((a) => (ASPECT_NAMES as readonly string[]).includes(a))
+}
+
+function compareAspectKeys(a: string, b: string): number {
+  // Priority: single aspects (in canonical order) → double-primary → double-mixed → neutral → unresolved
+  const order = (k: string): number => {
+    if (k === 'unresolved') return 1000
+    if (k === 'neutral') return 500
+    const parts = k.split('_')
+    if (parts.length === 1) {
+      const idx = ASPECT_NAMES.findIndex((a) => a.toLowerCase() === parts[0])
+      return idx >= 0 ? idx : 100
+    }
+    // Double aspect — sort after singles
+    const primary = ASPECT_NAMES.findIndex((a) => a.toLowerCase() === parts[0])
+    const secondary = ASPECT_NAMES.findIndex((a) => a.toLowerCase() === parts[1])
+    return 200 + (primary >= 0 ? primary : 50) * 10 + (secondary >= 0 ? secondary : 50)
+  }
+  return order(a) - order(b)
 }

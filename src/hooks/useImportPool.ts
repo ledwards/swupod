@@ -101,6 +101,8 @@ interface ImportPoolState {
   title: string
   shareId: string | null
   warnings: string[]
+  /** When true, hide rows with poolQty=0 (show only the player's actual pool) */
+  showOnlyPool: boolean
   error: { code: string; message: string; details?: any } | null
 }
 
@@ -114,6 +116,7 @@ const INITIAL_STATE: ImportPoolState = {
   title: '',
   shareId: null,
   warnings: [],
+  showOnlyPool: true,
   error: null,
 }
 
@@ -136,6 +139,7 @@ type Action =
   | { type: 'SUBMIT_FAILURE'; error: ImportPoolState['error'] }
   | { type: 'RESET' }
   | { type: 'RESTORE'; state: Partial<ImportPoolState> }
+  | { type: 'TOGGLE_SHOW_ONLY_POOL' }
 
 function reducer(state: ImportPoolState, action: Action): ImportPoolState {
   switch (action.type) {
@@ -262,6 +266,8 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
       return { ...state, phase: 'done', shareId: action.shareId }
     case 'SUBMIT_FAILURE':
       return { ...state, phase: 'confirming', error: action.error }
+    case 'TOGGLE_SHOW_ONLY_POOL':
+      return { ...state, showOnlyPool: !state.showOnlyPool }
     case 'RESET':
       // previewUrls are now data URLs (no-op revoke), but keep the call for safety
       state.images.forEach((img) => URL.revokeObjectURL(img.previewUrl))
@@ -553,6 +559,10 @@ export function useImportPool() {
     dispatch({ type: 'RESET' })
   }, [])
 
+  const toggleShowOnlyPool = useCallback(() => {
+    dispatch({ type: 'TOGGLE_SHOW_ONLY_POOL' })
+  }, [])
+
   return {
     state,
     validation,
@@ -568,5 +578,6 @@ export function useImportPool() {
     goBack,
     submit,
     reset,
+    toggleShowOnlyPool,
   }
 }

@@ -227,13 +227,37 @@ test.describe('Import Pool — Resolve UI', () => {
     await page.screenshot({ path: firstScreen, fullPage: false })
     console.log(`  First screen: ${firstScreen}\n`)
 
-    // Sanity checks on the rendered DOM
+    // Sanity checks. Default view hides poolQty=0 rows ("show only my pool"),
+    // so we should see ~70-90 rows: 6 leaders + 6 bases + ~70 unique others.
     const rowCount = await page.locator('tbody tr.ip-row').count()
-    console.log(`  Rendered row count: ${rowCount}`)
-    expect(rowCount).toBeGreaterThan(200) // ~264 LAW cards
+    console.log(`  Rendered row count (pool-only): ${rowCount}`)
+    expect(rowCount).toBeGreaterThan(50)
+    expect(rowCount).toBeLessThan(120)
+
+    // Toggle "show all rows" and re-count
+    await page.click('button.ip-icon-btn:has-text("Pool only")')
+    await page.waitForTimeout(200)
+    const allRowCount = await page.locator('tbody tr.ip-row').count()
+    console.log(`  Rendered row count (all): ${allRowCount}`)
+    expect(allRowCount).toBeGreaterThan(200)
 
     const sectionCount = await page.locator('.ip-section').count()
     console.log(`  Aspect sections: ${sectionCount}`)
     expect(sectionCount).toBeGreaterThan(5)
+
+    // Confirm the FIRST section is "Leaders"
+    const firstSectionTitle = await page
+      .locator('.ip-section .ip-section__title')
+      .first()
+      .innerText()
+    console.log(`  First section: "${firstSectionTitle.trim()}"`)
+    expect(firstSectionTitle.trim().toLowerCase()).toBe('leaders')
+
+    const secondSectionTitle = await page
+      .locator('.ip-section .ip-section__title')
+      .nth(1)
+      .innerText()
+    console.log(`  Second section: "${secondSectionTitle.trim()}"`)
+    expect(secondSectionTitle.trim().toLowerCase()).toBe('bases')
   })
 })

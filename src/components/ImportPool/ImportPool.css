@@ -171,6 +171,13 @@
   margin-bottom: 16px;
 }
 
+.import-pool-totals-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .import-pool-totals {
   display: flex;
   flex-wrap: wrap;
@@ -180,6 +187,52 @@
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ip-totals-toolbar {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.ip-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ip-icon-btn--active {
+  background: rgba(255, 217, 102, 0.12);
+  border-color: rgba(255, 217, 102, 0.5);
+  color: #ffd966;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ip-icon-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.45);
+  }
+}
+
+.ip-icon-btn__label {
+  font-size: 11px;
+}
+
+@media (max-width: 768px) {
+  .ip-icon-btn__label {
+    display: none;
+  }
 }
 
 .import-pool-totals .totals-ok {
@@ -223,6 +276,15 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: rgba(255, 255, 255, 0.95);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ip-section__icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
 }
 
 .ip-section__count {
@@ -369,7 +431,42 @@
 .ip-row__hint {
   font-style: italic;
   font-size: 10px;
-  color: #87cefa;
+  color: #ffd966;
+}
+
+.ip-row--unresolved .ip-row__hint {
+  color: #ff9e6e;
+}
+
+/* Camera icon shortcut to source-image modal on needs-attention rows */
+.ip-row__source-btn {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 217, 102, 0.5);
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  z-index: 3;
+  user-select: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ip-row__source-btn:hover {
+    background: rgba(255, 217, 102, 0.2);
+    border-color: rgba(255, 217, 102, 1);
+  }
+}
+
+.ip-cell-name__btn {
+  position: relative; /* anchor the source-btn */
 }
 
 /* Qty controls */
@@ -733,6 +830,95 @@
   text-align: center;
   padding: 32px;
   color: rgba(255, 255, 255, 0.6);
+}
+
+/* Source-image modal (compare extraction against the original sheet) */
+.ip-source-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 8px;
+}
+
+.ip-source-modal {
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  width: 100%;
+  max-width: 1100px;
+  height: 95vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.ip-source-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  flex: 0 0 auto;
+}
+
+.ip-source-modal__header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.ip-source-modal__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ip-source-modal__tabs {
+  display: inline-flex;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ip-source-modal__tab {
+  padding: 4px 10px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.ip-source-modal__tab--active {
+  background: rgba(255, 217, 102, 0.15);
+  color: #ffd966;
+}
+
+.ip-source-modal__viewport {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 12px;
+  background: #000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.ip-source-modal__img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.ip-source-modal__viewport.is-zoomed .ip-source-modal__img {
+  max-width: none;
+  width: 200%;
 }
 
 /* Mobile */
