@@ -6,6 +6,8 @@ import Button from '../Button'
 import { AspectIcon } from '../AspectIcon'
 import CardPickerModal from './CardPickerModal'
 import SourceImageModal from './SourceImageModal'
+import { CardPreview } from '../DeckBuilder/CardPreview'
+import { useCardPreview } from '../../hooks/useCardPreview'
 import {
   getAspectCombinationKey,
   getAspectCombinationDisplayName,
@@ -53,6 +55,8 @@ export default function ResolveStep({ importPool }: Props) {
   } | null>(null)
 
   const [sourceModalOpen, setSourceModalOpen] = useState(false)
+
+  const cardPreview = useCardPreview()
 
   const setCode = state.extraction?.header.setCode || ''
 
@@ -128,54 +132,85 @@ export default function ResolveStep({ importPool }: Props) {
             <th>NAME</th>
           </tr>
         </thead>
-        {grouped.map((group) => (
-          <tbody key={group.key} className="ip-section">
-            <tr className="ip-section-row">
-              <td colSpan={4}>
-                <div className="ip-section-bar">
-                  <span className="ip-section__title">
-                    {group.aspects.length > 0 && (
-                      <span className="ip-section__icons">
-                        {group.aspects.map((a) => (
-                          <AspectIcon key={a} aspect={a} size="sm" />
-                        ))}
-                      </span>
-                    )}
-                    {group.displayName}
-                  </span>
-                  <span className="ip-section__count">
-                    {group.rows.reduce((s, r) => s + r.deckQty, 0)}
-                    {' / '}
-                    {group.rows.reduce((s, r) => s + r.poolQty, 0)} cards
-                  </span>
-                </div>
-              </td>
-            </tr>
-            {group.rows.map((row) => (
-              <RowItem
-                key={row.key}
-                row={row}
-                isActiveLeader={!!row.card && state.activeLeaderId === row.card.id}
-                isActiveBase={!!row.card && state.activeBaseId === row.card.id}
-                hasSourceImage={state.images.length > 0}
-                onIncPool={() => setRowQty(row.key, 'poolQty', row.poolQty + 1)}
-                onDecPool={() => setRowQty(row.key, 'poolQty', row.poolQty - 1)}
-                onIncDeck={() => setRowQty(row.key, 'deckQty', row.deckQty + 1)}
-                onDecDeck={() => setRowQty(row.key, 'deckQty', row.deckQty - 1)}
-                onToggleLeader={() => row.card && setActiveLeader(row.card.id)}
-                onToggleBase={() => row.card && setActiveBase(row.card.id)}
-                onPickCard={() =>
-                  setPickerFor({
-                    rowKey: row.key,
-                    candidates: row.candidates,
-                    typeFilter: row.extracted.type,
-                  })
-                }
-                onViewSource={() => setSourceModalOpen(true)}
-              />
-            ))}
-          </tbody>
-        ))}
+        {grouped.map((group) => {
+          const renderRow = (row: ResolvedRow) => (
+            <RowItem
+              key={row.key}
+              row={row}
+              isActiveLeader={!!row.card && state.activeLeaderId === row.card.id}
+              isActiveBase={!!row.card && state.activeBaseId === row.card.id}
+              onIncPool={() => setRowQty(row.key, 'poolQty', row.poolQty + 1)}
+              onDecPool={() => setRowQty(row.key, 'poolQty', row.poolQty - 1)}
+              onIncDeck={() => setRowQty(row.key, 'deckQty', row.deckQty + 1)}
+              onDecDeck={() => setRowQty(row.key, 'deckQty', row.deckQty - 1)}
+              onToggleLeader={() => row.card && setActiveLeader(row.card.id)}
+              onToggleBase={() => row.card && setActiveBase(row.card.id)}
+              onPickCard={() =>
+                setPickerFor({
+                  rowKey: row.key,
+                  candidates: row.candidates,
+                  typeFilter: row.extracted.type,
+                })
+              }
+              onCardMouseEnter={cardPreview.handleCardMouseEnter}
+              onCardMouseLeave={cardPreview.handleCardMouseLeave}
+              onCardTouchStart={cardPreview.handleCardTouchStart}
+              onCardTouchEnd={cardPreview.handleCardTouchEnd}
+            />
+          )
+
+          return (
+            <tbody key={group.key} className="ip-section">
+              <tr className="ip-section-row">
+                <td colSpan={4}>
+                  <div className="ip-section-bar">
+                    <span className="ip-section__title">
+                      {group.aspects.length > 0 && (
+                        <span className="ip-section__icons">
+                          {group.aspects.map((a) => (
+                            <AspectIcon key={a} aspect={a} size="sm" />
+                          ))}
+                        </span>
+                      )}
+                      {group.displayName}
+                    </span>
+                    <span className="ip-section__count">
+                      {group.rows.reduce((s, r) => s + r.deckQty, 0)}
+                      {' / '}
+                      {group.rows.reduce((s, r) => s + r.poolQty, 0)} cards
+                    </span>
+                  </div>
+                </td>
+              </tr>
+              {group.subGroups
+                ? group.subGroups.flatMap((sub) => [
+                    <tr key={`sub-${sub.key}`} className="ip-subsection-row">
+                      <td colSpan={4}>
+                        <div className="ip-subsection-bar">
+                          <span className="ip-subsection__title">
+                            {sub.aspects.length > 0 && (
+                              <span className="ip-section__icons">
+                                {sub.aspects.map((a) => (
+                                  <AspectIcon key={a} aspect={a} size="xs" />
+                                ))}
+                              </span>
+                            )}
+                            {sub.displayName}
+                          </span>
+                          <span className="ip-subsection__count">
+                            {sub.rows.reduce((s, r) => s + r.deckQty, 0)}
+                            {' / '}
+                            {sub.rows.reduce((s, r) => s + r.poolQty, 0)}
+                          </span>
+                        </div>
+                      </td>
+                    </tr>,
+                    ...sub.rows.map(renderRow),
+                  ])
+                : group.rows.map(renderRow)}
+            </tbody>
+          )
+        })}
       </table>
 
       <div className="import-pool-actions">
@@ -213,6 +248,16 @@ export default function ResolveStep({ importPool }: Props) {
           onClose={() => setSourceModalOpen(false)}
         />
       )}
+
+      {cardPreview.hoveredCardPreview && (
+        <CardPreview
+          card={cardPreview.hoveredCardPreview.card}
+          x={cardPreview.hoveredCardPreview.x}
+          y={cardPreview.hoveredCardPreview.y}
+          isMobile={cardPreview.hoveredCardPreview.isMobile}
+          onDismiss={cardPreview.dismissPreview}
+        />
+      )}
     </section>
   )
 }
@@ -243,7 +288,6 @@ interface RowItemProps {
   row: ResolvedRow
   isActiveLeader: boolean
   isActiveBase: boolean
-  hasSourceImage: boolean
   onIncPool: () => void
   onDecPool: () => void
   onIncDeck: () => void
@@ -251,14 +295,16 @@ interface RowItemProps {
   onToggleLeader: () => void
   onToggleBase: () => void
   onPickCard: () => void
-  onViewSource: () => void
+  onCardMouseEnter: (card: any, e: any) => void
+  onCardMouseLeave: () => void
+  onCardTouchStart: (card: any) => void
+  onCardTouchEnd: () => void
 }
 
 function RowItem({
   row,
   isActiveLeader,
   isActiveBase,
-  hasSourceImage,
   onIncPool,
   onDecPool,
   onIncDeck,
@@ -266,7 +312,10 @@ function RowItem({
   onToggleLeader,
   onToggleBase,
   onPickCard,
-  onViewSource,
+  onCardMouseEnter,
+  onCardMouseLeave,
+  onCardTouchStart,
+  onCardTouchEnd,
 }: RowItemProps) {
   const isLeader = !!row.card?.isLeader
   const isBase = !!row.card?.isBase
@@ -338,31 +387,18 @@ function RowItem({
             : undefined
         }
       >
-        <button type="button" className="ip-cell-name__btn" onClick={onPickCard}>
+        <button
+          type="button"
+          className="ip-cell-name__btn"
+          onClick={onPickCard}
+          onMouseEnter={(e) => row.card && onCardMouseEnter(row.card, e)}
+          onMouseLeave={onCardMouseLeave}
+          onTouchStart={() => row.card && onCardTouchStart(row.card)}
+          onTouchEnd={onCardTouchEnd}
+        >
           <span className="ip-row__name-text">
             <strong className={needsAttention ? 'ip-row__name--attention' : ''}>
               {row.card?.name || row.extracted.name || 'Unrecognized'}
-              {needsAttention && hasSourceImage && (
-                <span
-                  className="ip-row__source-inline"
-                  role="button"
-                  tabIndex={0}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onViewSource()
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      onViewSource()
-                    }
-                  }}
-                  title="Compare against your source sheet"
-                >
-                  📷
-                </span>
-              )}
             </strong>
             {row.card?.subtitle && <em>{row.card.subtitle}</em>}
             {!row.card?.subtitle && row.confidence === 'ambiguous' && row.candidates.length > 0 && (
@@ -428,18 +464,57 @@ function extractCardNumber(cardId: string | undefined): string {
   return parseInt(match[1], 10).toString()
 }
 
-interface SectionGroup {
+interface SubGroup {
   key: string
   displayName: string
   aspects: string[]
   rows: ResolvedRow[]
 }
 
+interface SectionGroup {
+  key: string
+  displayName: string
+  aspects: string[] // icons for the section header
+  rows: ResolvedRow[] // flattened (for total count)
+  subGroups?: SubGroup[] // when present, render nested sub-headers within
+}
+
+const GAME_SIDES = new Set(['Vigilance', 'Command', 'Aggression', 'Cunning'])
+const PLAYER_SIDES = new Set(['Heroism', 'Villainy'])
+
+/** A card's "primary section" — matches the headers on a real registration sheet:
+ *  VIGILANCE / COMMAND / AGGRESSION / CUNNING / HEROISM / VILLAINY / MULTICOLOR / NO ASPECT.
+ */
+function primarySection(card: { aspects?: string[] }): {
+  key: string
+  displayName: string
+  aspects: string[]
+} {
+  const aspects = card.aspects || []
+  const gameSides = aspects.filter((a) => GAME_SIDES.has(a))
+  const playerSides = aspects.filter((a) => PLAYER_SIDES.has(a))
+
+  // Two game-side aspects (e.g. Aggression+Command) → MULTICOLOR
+  if (gameSides.length >= 2) {
+    return { key: 'multicolor', displayName: 'MULTICOLOR', aspects: gameSides }
+  }
+  // One game-side aspect (with or without a player side) → that game-side section
+  if (gameSides.length === 1) {
+    return { key: gameSides[0].toLowerCase(), displayName: gameSides[0].toUpperCase(), aspects: [gameSides[0]] }
+  }
+  // No game-side, only player side(s) → that player section
+  if (playerSides.length === 1) {
+    return { key: playerSides[0].toLowerCase(), displayName: playerSides[0].toUpperCase(), aspects: [playerSides[0]] }
+  }
+  // No aspects at all
+  return { key: 'no-aspect', displayName: 'NO ASPECT', aspects: [] }
+}
+
 /**
- * Group resolved rows for display:
- *   1. "Leaders" section first
- *   2. "Bases" section second
- *   3. Aspect groups for everything else
+ * Group rows for display:
+ *   1. Leaders first, Bases second
+ *   2. Then primary-aspect sections (matching the registration sheet's headers)
+ *      with sub-groups inside for each unique aspect combination
  *
  * `showOnlyPool` filters out rows with poolQty=0.
  */
@@ -448,7 +523,12 @@ function groupRows(rows: ResolvedRow[], showOnlyPool: boolean): SectionGroup[] {
 
   const leaders: ResolvedRow[] = []
   const bases: ResolvedRow[] = []
-  const aspectMap = new Map<string, ResolvedRow[]>()
+  // primaryKey → { meta, subKey → rows }
+  const primaryMap = new Map<
+    string,
+    { meta: ReturnType<typeof primarySection>; subs: Map<string, ResolvedRow[]> }
+  >()
+  const unresolved: ResolvedRow[] = []
 
   for (const row of visible) {
     if (row.card?.isLeader) {
@@ -459,33 +539,70 @@ function groupRows(rows: ResolvedRow[], showOnlyPool: boolean): SectionGroup[] {
       bases.push(row)
       continue
     }
-    let key = 'unresolved'
-    if (row.card) {
-      key = getAspectCombinationKey({
-        aspects: row.card.aspects,
-        type: row.card.type,
-      })
+    if (!row.card) {
+      unresolved.push(row)
+      continue
     }
-    if (!aspectMap.has(key)) aspectMap.set(key, [])
-    aspectMap.get(key)!.push(row)
+    const meta = primarySection(row.card)
+    const subKey = getAspectCombinationKey({
+      aspects: row.card.aspects,
+      type: row.card.type,
+    })
+    if (!primaryMap.has(meta.key)) {
+      primaryMap.set(meta.key, { meta, subs: new Map() })
+    }
+    const entry = primaryMap.get(meta.key)!
+    if (!entry.subs.has(subKey)) entry.subs.set(subKey, [])
+    entry.subs.get(subKey)!.push(row)
   }
 
   const result: SectionGroup[] = []
 
   if (leaders.length > 0) {
-    result.push({ key: 'leaders', displayName: 'Leaders', aspects: [], rows: leaders })
+    result.push({ key: 'leaders', displayName: 'LEADERS', aspects: [], rows: leaders })
   }
   if (bases.length > 0) {
-    result.push({ key: 'bases', displayName: 'Bases', aspects: [], rows: bases })
+    result.push({ key: 'bases', displayName: 'BASES', aspects: [], rows: bases })
   }
 
-  // Sort aspect groups by aspect priority (Vigilance > Command > Aggression > Cunning, then Heroism/Villainy, then doubles, then Neutral)
-  const aspectKeys = [...aspectMap.keys()]
-  aspectKeys.sort(compareAspectKeys)
-  for (const key of aspectKeys) {
-    const aspects = aspectsFromKey(key)
-    const displayName = key === 'unresolved' ? 'Unrecognized' : getAspectCombinationDisplayName(key)
-    result.push({ key, displayName, aspects, rows: aspectMap.get(key)! })
+  // Section order — mirror a real LAW registration sheet
+  const PRIMARY_ORDER = [
+    'vigilance',
+    'command',
+    'aggression',
+    'cunning',
+    'heroism',
+    'villainy',
+    'multicolor',
+    'no-aspect',
+  ]
+  const sortedPrimaries = [...primaryMap.keys()].sort(
+    (a, b) => PRIMARY_ORDER.indexOf(a) - PRIMARY_ORDER.indexOf(b),
+  )
+
+  for (const primaryKey of sortedPrimaries) {
+    const { meta, subs } = primaryMap.get(primaryKey)!
+    const allRows = [...subs.values()].flat()
+    // Sub-group order: pure single-aspect first, then doubles by partner's canonical order
+    const subKeys = [...subs.keys()].sort((a, b) => compareSubKeys(a, b, primaryKey))
+    const subGroups: SubGroup[] = subKeys.map((subKey) => ({
+      key: subKey,
+      displayName: getAspectCombinationDisplayName(subKey),
+      aspects: aspectsFromKey(subKey),
+      rows: subs.get(subKey)!,
+    }))
+    result.push({
+      key: primaryKey,
+      displayName: meta.displayName,
+      aspects: meta.aspects,
+      rows: allRows,
+      // Only show sub-groups if there are 2+ sub-aspect variants in the section
+      subGroups: subGroups.length > 1 ? subGroups : undefined,
+    })
+  }
+
+  if (unresolved.length > 0) {
+    result.push({ key: 'unresolved', displayName: 'UNRECOGNIZED', aspects: [], rows: unresolved })
   }
 
   return result
@@ -499,20 +616,17 @@ function aspectsFromKey(key: string): string[] {
     .filter((a) => (ASPECT_NAMES as readonly string[]).includes(a))
 }
 
-function compareAspectKeys(a: string, b: string): number {
-  // Priority: single aspects (in canonical order) → double-primary → double-mixed → neutral → unresolved
-  const order = (k: string): number => {
-    if (k === 'unresolved') return 1000
-    if (k === 'neutral') return 500
+/** Order sub-groups within a primary section: pure single first, then doubles. */
+function compareSubKeys(a: string, b: string, primaryKey: string): number {
+  const score = (k: string): number => {
     const parts = k.split('_')
-    if (parts.length === 1) {
-      const idx = ASPECT_NAMES.findIndex((a) => a.toLowerCase() === parts[0])
-      return idx >= 0 ? idx : 100
-    }
-    // Double aspect — sort after singles
-    const primary = ASPECT_NAMES.findIndex((a) => a.toLowerCase() === parts[0])
-    const secondary = ASPECT_NAMES.findIndex((a) => a.toLowerCase() === parts[1])
-    return 200 + (primary >= 0 ? primary : 50) * 10 + (secondary >= 0 ? secondary : 50)
+    if (parts.length === 1) return 0 // pure single-aspect first
+    // Doubles: order by the OTHER aspect (not the primary)
+    const otherIdx = parts.findIndex((p) => p !== primaryKey)
+    const other = parts[otherIdx]
+    const orderMap = ['vigilance', 'command', 'aggression', 'cunning', 'heroism', 'villainy']
+    const idx = orderMap.indexOf(other)
+    return 100 + (idx >= 0 ? idx : 50)
   }
-  return order(a) - order(b)
+  return score(a) - score(b)
 }

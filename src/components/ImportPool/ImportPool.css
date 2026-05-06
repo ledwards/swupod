@@ -271,6 +271,38 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Sub-section divider — within an aspect group, splits by combination
+   (e.g. inside VIGILANCE: "Vigilance only", "Vigilance Heroism", etc.) */
+.ip-subsection-row td {
+  padding: 0;
+  border: none;
+}
+
+.ip-subsection-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 3px 10px 3px 18px;
+  font-size: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ip-subsection__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.ip-subsection__count {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
 .ip-section__title {
   font-weight: 700;
   text-transform: uppercase;
