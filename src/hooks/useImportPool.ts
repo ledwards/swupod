@@ -371,15 +371,17 @@ function clearPersisted() {
 
 function savePersisted(state: ImportPoolState) {
   if (typeof window === 'undefined') return
-  // Don't persist terminal or empty states
-  if (state.phase === 'done') {
-    clearPersisted()
+
+  // Critical: never clear localStorage from this path. On mount, this effect
+  // fires with state === INITIAL_STATE (the pending RESTORE dispatch hasn't
+  // applied yet) — a clear here would wipe valid persisted data before
+  // restoration completes. Clearing only happens on explicit reset() or
+  // after successful submit.
+  if (state.phase === 'done') return
+  if (state.phase === 'idle' && state.images.length === 0 && state.extraction === null) {
     return
   }
-  if (state.phase === 'idle' && state.images.length === 0) {
-    clearPersisted()
-    return
-  }
+
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(persistedShape(state)))
   } catch (err) {
@@ -408,7 +410,11 @@ export function useImportPool() {
   // Persist on every state change (after restore has run).
   useEffect(() => {
     if (!restoredRef.current) return
-    savePersisted(state)
+    if (state.phase === 'done') {
+      clearPersisted()
+    } else {
+      savePersisted(state)
+    }
   }, [state])
 
   const validation = useMemo(() => deriveValidation(state), [state])
