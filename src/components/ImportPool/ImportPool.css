@@ -235,6 +235,154 @@
   }
 }
 
+/* Table/grid view toggle — segmented control style */
+.ip-view-toggle {
+  display: inline-flex;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.ip-view-toggle__btn {
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.ip-view-toggle__btn--active {
+  background: rgba(255, 217, 102, 0.18);
+  color: #ffd966;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ip-view-toggle__btn:not(.ip-view-toggle__btn--active):hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+/* === Grid view === */
+.ip-grid-root {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.ip-grid-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.ip-grid-subsection {
+  margin-top: 4px;
+}
+
+.ip-tile-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 6px 4px;
+}
+
+.ip-tile {
+  display: flex;
+  flex-direction: column;
+  width: 110px;
+  gap: 4px;
+}
+
+.ip-tile--active {
+  outline: 2px solid #5fff5f;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.ip-tile--attention .ip-tile__image {
+  box-shadow: 0 0 0 2px #ffd966;
+}
+
+.ip-tile--unresolved .ip-tile__image {
+  box-shadow: 0 0 0 2px #ff9e6e;
+}
+
+.ip-tile__image {
+  position: relative;
+  display: block;
+  padding: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 5 / 7;
+  width: 100%;
+}
+
+.ip-tile__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ip-tile__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 200, 0, 0.15);
+  color: rgba(255, 200, 0, 0.85);
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.ip-tile__count {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.ip-tile__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.ip-tile__qty-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 768px) {
+  .ip-tile {
+    width: 80px;
+  }
+  .ip-tile__count {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
+}
+
 .import-pool-totals .totals-ok {
   color: #5fff5f;
 }
@@ -394,42 +542,11 @@
   padding-right: 8px !important;
 }
 
-/* NAME cell — card art as full-bleed background, gradient mask for readability */
 .ip-cell-name {
   position: relative;
-  overflow: hidden;
-  isolation: isolate;
-}
-
-.ip-cell-name::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: var(--card-art, none);
-  background-size: auto 220%;
-  background-repeat: no-repeat;
-  background-position: right 22%;
-  opacity: 0.55;
-  z-index: 0;
-}
-
-.ip-cell-name::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to right,
-    rgba(0, 0, 0, 0.95) 0%,
-    rgba(0, 0, 0, 0.75) 40%,
-    rgba(0, 0, 0, 0.4) 75%,
-    rgba(0, 0, 0, 0.15) 100%
-  );
-  z-index: 1;
 }
 
 .ip-cell-name__btn {
-  position: relative;
-  z-index: 2;
   display: block;
   width: 100%;
   height: 40px;

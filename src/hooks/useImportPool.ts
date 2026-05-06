@@ -104,6 +104,8 @@ interface ImportPoolState {
   warnings: string[]
   /** When true, hide rows with poolQty=0 (show only the player's actual pool) */
   showOnlyPool: boolean
+  /** Resolve-step rendering mode */
+  viewMode: 'table' | 'grid'
   error: { code: string; message: string; details?: any } | null
 }
 
@@ -118,6 +120,7 @@ const INITIAL_STATE: ImportPoolState = {
   shareId: null,
   warnings: [],
   showOnlyPool: true,
+  viewMode: 'table',
   error: null,
 }
 
@@ -141,6 +144,7 @@ type Action =
   | { type: 'RESET' }
   | { type: 'RESTORE'; state: Partial<ImportPoolState> }
   | { type: 'TOGGLE_SHOW_ONLY_POOL' }
+  | { type: 'SET_VIEW_MODE'; mode: 'table' | 'grid' }
 
 function reducer(state: ImportPoolState, action: Action): ImportPoolState {
   switch (action.type) {
@@ -269,6 +273,8 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
       return { ...state, phase: 'confirming', error: action.error }
     case 'TOGGLE_SHOW_ONLY_POOL':
       return { ...state, showOnlyPool: !state.showOnlyPool }
+    case 'SET_VIEW_MODE':
+      return { ...state, viewMode: action.mode }
     case 'RESET':
       // previewUrls are now data URLs (no-op revoke), but keep the call for safety
       state.images.forEach((img) => URL.revokeObjectURL(img.previewUrl))
@@ -382,6 +388,7 @@ interface SlimPersisted {
   activeBaseId: string | null
   title: string
   showOnlyPool: boolean
+  viewMode: 'table' | 'grid'
 }
 
 function persistedShape(state: ImportPoolState): SlimPersisted {
@@ -404,6 +411,7 @@ function persistedShape(state: ImportPoolState): SlimPersisted {
     activeBaseId: state.activeBaseId,
     title: state.title,
     showOnlyPool: state.showOnlyPool,
+    viewMode: state.viewMode,
   }
 }
 
@@ -462,6 +470,7 @@ function hydrate(slim: SlimPersisted): Partial<ImportPoolState> {
     title: slim.title || '',
     warnings: slim.warnings || [],
     showOnlyPool: slim.showOnlyPool ?? true,
+    viewMode: slim.viewMode ?? 'table',
   }
 }
 
@@ -724,6 +733,10 @@ export function useImportPool() {
     dispatch({ type: 'TOGGLE_SHOW_ONLY_POOL' })
   }, [])
 
+  const setViewMode = useCallback((mode: 'table' | 'grid') => {
+    dispatch({ type: 'SET_VIEW_MODE', mode })
+  }, [])
+
   return {
     state,
     validation,
@@ -740,5 +753,6 @@ export function useImportPool() {
     submit,
     reset,
     toggleShowOnlyPool,
+    setViewMode,
   }
 }

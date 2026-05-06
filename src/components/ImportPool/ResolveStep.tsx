@@ -46,6 +46,7 @@ export default function ResolveStep({ importPool }: Props) {
     goBack,
     goToConfirm,
     toggleShowOnlyPool,
+    setViewMode,
   } = importPool
 
   const [pickerFor, setPickerFor] = useState<{
@@ -91,6 +92,26 @@ export default function ResolveStep({ importPool }: Props) {
         <div className="import-pool-totals-row">
           <RunningTotals validation={validation} />
           <div className="ip-totals-toolbar">
+            <div className="ip-view-toggle" role="group" aria-label="View mode">
+              <button
+                type="button"
+                className={`ip-view-toggle__btn ${state.viewMode === 'table' ? 'ip-view-toggle__btn--active' : ''}`}
+                onClick={() => setViewMode('table')}
+                title="Table view"
+                aria-pressed={state.viewMode === 'table'}
+              >
+                <span aria-hidden="true">≡</span>
+              </button>
+              <button
+                type="button"
+                className={`ip-view-toggle__btn ${state.viewMode === 'grid' ? 'ip-view-toggle__btn--active' : ''}`}
+                onClick={() => setViewMode('grid')}
+                title="Grid view"
+                aria-pressed={state.viewMode === 'grid'}
+              >
+                <span aria-hidden="true">▦</span>
+              </button>
+            </div>
             {state.images.length > 0 && (
               <button
                 type="button"
@@ -117,6 +138,24 @@ export default function ResolveStep({ importPool }: Props) {
         </div>
       </header>
 
+      {state.viewMode === 'grid' ? (
+        <GridView
+          grouped={grouped}
+          activeLeaderId={state.activeLeaderId}
+          activeBaseId={state.activeBaseId}
+          setRowQty={setRowQty}
+          setActiveLeader={setActiveLeader}
+          setActiveBase={setActiveBase}
+          openPicker={(row) =>
+            setPickerFor({
+              rowKey: row.key,
+              candidates: row.candidates,
+              typeFilter: row.extracted.type,
+            })
+          }
+          cardPreview={cardPreview}
+        />
+      ) : (
       <table className="ip-table">
         <colgroup>
           <col className="ip-col-played" />
@@ -212,6 +251,7 @@ export default function ResolveStep({ importPool }: Props) {
           )
         })}
       </table>
+      )}
 
       <div className="import-pool-actions">
         <Button variant="back" onClick={goBack}>
@@ -617,6 +657,149 @@ function aspectsFromKey(key: string): string[] {
     .split('_')
     .map((a) => a.charAt(0).toUpperCase() + a.slice(1))
     .filter((a) => (ASPECT_NAMES as readonly string[]).includes(a))
+}
+
+/** GridView — alternative rendering of the resolved rows as image-card tiles
+ *  organized by aspect section. Hover preview is wired through the same
+ *  cardPreview hook the table view uses. */
+function GridView({
+  grouped,
+  activeLeaderId,
+  activeBaseId,
+  setRowQty,
+  setActiveLeader,
+  setActiveBase,
+  openPicker,
+  cardPreview,
+}: {
+  grouped: SectionGroup[]
+  activeLeaderId: string | null
+  activeBaseId: string | null
+  setRowQty: (key: string, field: 'poolQty' | 'deckQty', value: number) => void
+  setActiveLeader: (id: string) => void
+  setActiveBase: (id: string) => void
+  openPicker: (row: ResolvedRow) => void
+  cardPreview: ReturnType<typeof useCardPreview>
+}) {
+  const renderTile = (row: ResolvedRow) => {
+    const isLeader = !!row.card?.isLeader
+    const isBase = !!row.card?.isBase
+    const isActiveLeader = !!row.card && activeLeaderId === row.card.id
+    const isActiveBase = !!row.card && activeBaseId === row.card.id
+    const isActive = isActiveLeader || isActiveBase
+    const isUnresolved = !row.card
+    const needsAttention = isUnresolved || row.confidence === 'fuzzy' || row.confidence === 'ambiguous'
+
+    return (
+      <div
+        key={row.key}
+        className={`ip-tile ${isActive ? 'ip-tile--active' : ''} ${needsAttention ? 'ip-tile--attention' : ''} ${isUnresolved ? 'ip-tile--unresolved' : ''}`}
+      >
+        <button
+          type="button"
+          className="ip-tile__image"
+          onClick={() => openPicker(row)}
+          onMouseEnter={(e) => row.card && cardPreview.handleCardMouseEnter(row.card, e)}
+          onMouseLeave={cardPreview.handleCardMouseLeave}
+          onTouchStart={() => row.card && cardPreview.handleCardTouchStart(row.card)}
+          onTouchEnd={cardPreview.handleCardTouchEnd}
+          title={row.card?.name || 'Unrecognized'}
+        >
+          {row.card?.imageUrl ? (
+            <img src={row.card.imageUrl} alt={row.card.name} loading="lazy" />
+          ) : (
+            <span className="ip-tile__placeholder">?</span>
+          )}
+          {row.poolQty > 1 && <span className="ip-tile__count">×{row.poolQty}</span>}
+        </button>
+        <div className="ip-tile__controls">
+          {isLeader || isBase ? (
+            <button
+              type="button"
+              className={`ip-star ${isActiveLeader || isActiveBase ? 'ip-star--active' : ''}`}
+              onClick={() => (isLeader ? row.card && setActiveLeader(row.card.id) : row.card && setActiveBase(row.card.id))}
+              title={isActive ? 'Active selection' : isLeader ? 'Set as active leader' : 'Set as active base'}
+            >
+              {isActive ? '★' : '☆'}
+            </button>
+          ) : (
+            <>
+              <span className="ip-tile__qty-label">Deck</span>
+              <button
+                type="button"
+                className="ip-qty__btn"
+                onClick={() => setRowQty(row.key, 'deckQty', row.deckQty - 1)}
+                disabled={row.deckQty === 0}
+              >
+                −
+              </button>
+              <span className={`ip-qty__value ${row.deckQty === 0 ? 'ip-qty__value--zero' : ''}`}>
+                {row.deckQty}
+              </span>
+              <button
+                type="button"
+                className="ip-qty__btn"
+                onClick={() => setRowQty(row.key, 'deckQty', row.deckQty + 1)}
+                disabled={row.deckQty >= row.poolQty || row.deckQty >= 6}
+              >
+                +
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="ip-grid-root">
+      {grouped.map((group) => (
+        <div key={group.key} className="ip-grid-section">
+          <div className="ip-section-bar">
+            <span className="ip-section__title">
+              {group.aspects.length > 0 && (
+                <span className="ip-section__icons">
+                  {group.aspects.map((a) => (
+                    <AspectIcon key={a} aspect={a} size="sm" />
+                  ))}
+                </span>
+              )}
+              {group.displayName}
+            </span>
+            <span className="ip-section__count">
+              {group.rows.reduce((s, r) => s + r.deckQty, 0)}
+              {' / '}
+              {group.rows.reduce((s, r) => s + r.poolQty, 0)} cards
+            </span>
+          </div>
+          {group.subGroups
+            ? group.subGroups.map((sub) => (
+                <div key={sub.key} className="ip-grid-subsection">
+                  <div className="ip-subsection-bar">
+                    <span className="ip-subsection__title">
+                      {sub.aspects.length > 0 && (
+                        <span className="ip-section__icons">
+                          {sub.aspects.map((a) => (
+                            <AspectIcon key={a} aspect={a} size="xs" />
+                          ))}
+                        </span>
+                      )}
+                      {sub.displayName}
+                    </span>
+                    <span className="ip-subsection__count">
+                      {sub.rows.reduce((s, r) => s + r.deckQty, 0)}
+                      {' / '}
+                      {sub.rows.reduce((s, r) => s + r.poolQty, 0)}
+                    </span>
+                  </div>
+                  <div className="ip-tile-row">{sub.rows.map(renderTile)}</div>
+                </div>
+              ))
+            : <div className="ip-tile-row">{group.rows.map(renderTile)}</div>}
+        </div>
+      ))}
+    </div>
+  )
 }
 
 /** Order sub-groups within a primary section: pure single first, then doubles. */
