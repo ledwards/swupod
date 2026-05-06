@@ -291,11 +291,106 @@ const RESPONSE_SCHEMA = {
   required: ['header', 'rows'],
 }
 
+// === Validation against known-good invariants for self-correcting loop ===
+
+const POOL_TOTAL = 96
+const LEADER_POOL = 6
+const LEADER_DECK = 1
+const BASE_POOL = 6
+const BASE_DECK = 1
+
+function validateExtraction(parsed: any): string[] {
+  const issues: string[] = []
+  if (!parsed?.rows || !Array.isArray(parsed.rows)) {
+    issues.push('Response missing rows array.')
+    return issues
+  }
+
+  const rows: any[] = parsed.rows
+  const sumPool = rows.reduce((s, r) => s + (Number(r.poolQty) || 0), 0)
+  const sumDeck = rows.reduce((s, r) => s + (Number(r.deckQty) || 0), 0)
+
+  if (sumPool !== POOL_TOTAL) {
+    const dir = sumPool < POOL_TOTAL ? 'too few — you missed marks' : 'too many — you added marks where there are none'
+    issues.push(
+      `Pool total = ${sumPool}; expected exactly ${POOL_TOTAL} (6 leaders + 6 bases + 84 other cards). That's ${dir}.`,
+    )
+  }
+
+  const leaderPoolRows = rows.filter((r) => r.type === 'Leader' && Number(r.poolQty) > 0)
+  const leaderDeckRows = rows.filter((r) => r.type === 'Leader' && Number(r.deckQty) > 0)
+  if (leaderPoolRows.length !== LEADER_POOL) {
+    issues.push(
+      `Found ${leaderPoolRows.length} leader(s) with poolQty>0; expected exactly ${LEADER_POOL} (one per pack from the player's 6 packs).`,
+    )
+  }
+  if (leaderDeckRows.length !== LEADER_DECK) {
+    issues.push(
+      `Found ${leaderDeckRows.length} leader(s) with deckQty>0; expected exactly ${LEADER_DECK} (the active leader).`,
+    )
+  }
+
+  const basePoolRows = rows.filter((r) => r.type === 'Base' && Number(r.poolQty) > 0)
+  const baseDeckRows = rows.filter((r) => r.type === 'Base' && Number(r.deckQty) > 0)
+  if (basePoolRows.length !== BASE_POOL) {
+    issues.push(
+      `Found ${basePoolRows.length} base(s) with poolQty>0; expected exactly ${BASE_POOL} (one per pack).`,
+    )
+  }
+  if (baseDeckRows.length !== BASE_DECK) {
+    issues.push(
+      `Found ${baseDeckRows.length} base(s) with deckQty>0; expected exactly ${BASE_DECK} (the active base).`,
+    )
+  }
+
+  for (const row of rows) {
+    const pool = Number(row.poolQty) || 0
+    const deck = Number(row.deckQty) || 0
+    if (deck > pool) {
+      issues.push(
+        `Row "${row.name}" has deckQty=${deck} but poolQty=${pool}. deckQty must never exceed poolQty.`,
+      )
+    }
+    if (pool > 6 || deck > 6) {
+      issues.push(
+        `Row "${row.name}" has out-of-bounds quantities (pool=${pool}, deck=${deck}). Max is 6.`,
+      )
+    }
+  }
+
+  // Cap the issue list to keep the correction message focused
+  if (issues.length > 12) {
+    return [...issues.slice(0, 12), `…and ${issues.length - 12} more issues.`]
+  }
+  return issues
+}
+
+function buildCorrectionMessage(issues: string[], attempt: number): string {
+  return [
+    `Your extraction has the following problems (attempt ${attempt}):`,
+    '',
+    ...issues.map((i, idx) => `${idx + 1}. ${i}`),
+    '',
+    'Re-scan the photograph(s) carefully and return the COMPLETE corrected extraction in the same JSON shape.',
+    'Pay special attention to:',
+    '- Leader/Base sections: most rows should be poolQty=0; only ~6 each should have poolQty=1.',
+    "- The PLAYED column: only 1 leader and 1 base have deckQty=1 (the player's active picks for the game).",
+    '- Sum of all poolQty values across every row MUST equal 96.',
+    '- A blank/empty cell is poolQty=0 (no copies). Do NOT mark 1 for empty rows.',
+    '',
+    'Return JSON only.',
+  ].join('\n')
+}
+
 // === Public API ===
 
 interface ExtractOptions {
   /** Optional set hint surfaced to the model (e.g., "LAW") if the user explicitly picked one */
   setHint?: string
+  /** Maximum self-correction iterations (default 3 — initial + 2 retries on invariant violations) */
+  maxAttempts?: number
+  /** Optional progress callback fired after each attempt */
+  onAttempt?: (attempt: number, issues: string[]) => void
 }
 
 /**
@@ -348,66 +443,92 @@ export async function extractPoolFromImages(
   // ~2x cache write cost on first call, but reads are ~10x cheaper than the
   // base input price for the entire 1-hour window. With many extractions
   // per hour (admin/patron pool), this dominates the simple no-cache path.
-  const response = await client.messages
-    .stream({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      system: [
-        {
-          type: 'text',
-          text: SYSTEM_PROMPT,
-          cache_control: { type: 'ephemeral', ttl: '1h' },
-        },
-        {
-          type: 'text',
-          text: cardListContext,
-          cache_control: { type: 'ephemeral', ttl: '1h' },
-        },
-      ],
-      output_config: {
-        format: { type: 'json_schema', schema: RESPONSE_SCHEMA },
-      },
-      messages: [{ role: 'user', content: userContent }],
+  const systemBlocks = [
+    {
+      type: 'text' as const,
+      text: SYSTEM_PROMPT,
+      cache_control: { type: 'ephemeral' as const, ttl: '1h' as const },
+    },
+    {
+      type: 'text' as const,
+      text: cardListContext,
+      cache_control: { type: 'ephemeral' as const, ttl: '1h' as const },
+    },
+  ]
+  const outputConfig = {
+    format: { type: 'json_schema' as const, schema: RESPONSE_SCHEMA },
+  }
+
+  // Self-correcting loop. The invariants we check (pool=96, exactly 6 leaders /
+  // 6 bases / 1 active leader / 1 active base, deckQty<=poolQty<=6) are all
+  // ground truth from the SWU sealed format spec — if Claude's extraction
+  // violates them, it's wrong. Feed the discrepancies back and ask for a
+  // corrected full re-extraction, up to maxAttempts (default 3 = initial + 2 retries).
+  const messages: Anthropic.MessageParam[] = [{ role: 'user', content: userContent }]
+  const maxAttempts = opts.maxAttempts ?? 3
+  let response: Anthropic.Message | null = null
+  let parsedFinal: RawExtractResponse | null = null
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    response = await client.messages
+      .stream({
+        model: MODEL,
+        max_tokens: MAX_TOKENS,
+        system: systemBlocks,
+        output_config: outputConfig,
+        messages,
+      })
+      .finalMessage()
+
+    if (response.stop_reason === 'max_tokens') {
+      throw new Error(
+        `Anthropic response truncated at max_tokens (${MAX_TOKENS}). ` +
+          `Output had ${response.usage.output_tokens} tokens. ` +
+          `Increase MAX_TOKENS in lib/anthropic.ts or split the sheet across separate calls.`,
+      )
+    }
+    if (response.stop_reason === 'refusal') {
+      throw new Error('Anthropic refused to process the image (safety filter).')
+    }
+
+    const textBlock = response.content.find((b: any) => b.type === 'text')
+    if (!textBlock || (textBlock as any).type !== 'text') {
+      throw new Error(
+        `Anthropic response contained no text content (stop_reason: ${response.stop_reason})`,
+      )
+    }
+
+    let parsed: any
+    try {
+      parsed = JSON.parse((textBlock as any).text)
+    } catch (err) {
+      throw new Error(
+        `Anthropic response is not valid JSON (attempt ${attempt}, output_tokens: ${response.usage.output_tokens}): ${(err as Error).message}`,
+      )
+    }
+    if (!parsed || typeof parsed !== 'object' || !('header' in parsed) || !('rows' in parsed)) {
+      throw new Error('Anthropic response missing required header/rows fields')
+    }
+
+    parsedFinal = parsed as RawExtractResponse
+    const issues = validateExtraction(parsed)
+    opts.onAttempt?.(attempt, issues)
+
+    if (issues.length === 0) break
+    if (attempt === maxAttempts) break
+
+    // Append the assistant's response, then a user message with the issues.
+    messages.push({ role: 'assistant', content: response.content })
+    messages.push({
+      role: 'user',
+      content: [{ type: 'text', text: buildCorrectionMessage(issues, attempt) }],
     })
-    .finalMessage()
-
-  // Surface truncation explicitly — far more useful than a generic JSON parse error.
-  if (response.stop_reason === 'max_tokens') {
-    throw new Error(
-      `Anthropic response truncated at max_tokens (${MAX_TOKENS}). ` +
-      `Response had ${response.usage.output_tokens} output tokens. ` +
-      `Increase MAX_TOKENS in lib/anthropic.ts or split the sheet across separate calls.`,
-    )
-  }
-  if (response.stop_reason === 'refusal') {
-    throw new Error('Anthropic refused to process the image (safety filter).')
   }
 
-  // Pull text blocks (the SDK guarantees at least one for json_schema responses).
-  const textBlock = response.content.find((b: any) => b.type === 'text')
-  if (!textBlock || textBlock.type !== 'text') {
-    throw new Error(
-      `Anthropic response contained no text content (stop_reason: ${response.stop_reason})`,
-    )
+  if (!parsedFinal) {
+    throw new Error('Extraction returned no parseable response after all attempts')
   }
-
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(textBlock.text)
-  } catch (err) {
-    throw new Error(
-      `Anthropic response is not valid JSON (stop_reason: ${response.stop_reason}, ` +
-      `output_tokens: ${response.usage.output_tokens}): ${(err as Error).message}`,
-    )
-  }
-
-  // Defense in depth — schema validation in the route handler is the trust
-  // boundary, but a bad shape here is unrecoverable so surface early.
-  if (!parsed || typeof parsed !== 'object' || !('header' in parsed) || !('rows' in parsed)) {
-    throw new Error('Anthropic response missing required header/rows fields')
-  }
-
-  return parsed as RawExtractResponse
+  return parsedFinal
 }
 
 /** Re-export for callers that want to type-narrow against SDK errors. */

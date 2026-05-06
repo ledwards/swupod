@@ -105,12 +105,24 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       )
     }
 
-    // 4. Call Claude.
+    // 4. Call Claude. Self-correcting loop runs internally — checks invariants
+    //    after each attempt and re-prompts with discrepancies for up to 3 attempts.
     let raw: any
     try {
       raw = await extractPoolFromImages(
         body.images.map((img) => ({ data: img.data, mediaType: img.mediaType as any })),
-        body.manualSetCode ? { setHint: body.manualSetCode } : {},
+        {
+          ...(body.manualSetCode ? { setHint: body.manualSetCode } : {}),
+          onAttempt: (attempt, issues) => {
+            if (issues.length === 0) {
+              console.log(`[import-pool/extract] attempt ${attempt}: clean (no invariant violations)`)
+            } else {
+              console.log(
+                `[import-pool/extract] attempt ${attempt}: ${issues.length} invariant violations — ${issues[0]}`,
+              )
+            }
+          },
+        },
       )
     } catch (err) {
       console.error('Anthropic extraction failed:', err)
