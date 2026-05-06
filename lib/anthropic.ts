@@ -399,14 +399,27 @@ export interface SectionGap {
   message: string
 }
 
-export function computeSectionGaps(parsed: any): SectionGap[] {
+export function computeSectionGaps(parsed: any, setCode?: string): SectionGap[] {
   if (!parsed?.rows || !Array.isArray(parsed.rows)) return []
   const nonLBRows = parsed.rows.filter(
     (r: any) => r.type !== 'Leader' && r.type !== 'Base' && Number(r.poolQty) > 0,
   )
+  // Build a name+type → aspects lookup from cached card data so we can classify
+  // each row even though Claude's response schema doesn't include aspects.
+  const code = setCode || parsed?.header?.setCode || getLatestReleasedSetCode()
+  const cards = (getCachedCards(code) || []).filter((c: any) => c.variantType === 'Normal')
+  const aspectsByKey = new Map<string, string[]>()
+  for (const c of cards) {
+    aspectsByKey.set(`${c.name}|${c.type}`.toLowerCase(), c.aspects || [])
+  }
+  const lookupAspects = (row: any): string[] => {
+    if (Array.isArray(row.aspects)) return row.aspects
+    return aspectsByKey.get(`${row.name}|${row.type}`.toLowerCase()) || []
+  }
+
   const counts: Record<string, number> = {}
   for (const r of nonLBRows) {
-    const aspects: string[] = Array.isArray(r.aspects) ? r.aspects : []
+    const aspects = lookupAspects(r)
     for (const range of SECTION_TYPICAL_RANGES) {
       if (range.matcher(aspects)) {
         counts[range.key] = (counts[range.key] || 0) + 1
@@ -439,34 +452,8 @@ export function computeSectionGaps(parsed: any): SectionGap[] {
 }
 
 function diagnoseSectionGaps(parsed: any): string[] {
-  if (!parsed?.rows || !Array.isArray(parsed.rows)) return []
-  const nonLBRows = parsed.rows.filter((r: any) =>
-    r.type !== 'Leader' && r.type !== 'Base' && Number(r.poolQty) > 0,
-  )
-  const counts: Record<string, number> = {}
-  for (const r of nonLBRows) {
-    const aspects: string[] = Array.isArray(r.aspects) ? r.aspects : []
-    for (const range of SECTION_TYPICAL_RANGES) {
-      if (range.matcher(aspects)) {
-        counts[range.key] = (counts[range.key] || 0) + 1
-        break
-      }
-    }
-  }
-  const findings: string[] = []
-  for (const range of SECTION_TYPICAL_RANGES) {
-    const c = counts[range.key] || 0
-    if (c < range.low) {
-      findings.push(
-        `${range.key} section has only ${c} card(s) with poolQty>0. Typical sealed pool has ${range.low}-${range.high}. Re-scan this section.`,
-      )
-    } else if (c > range.high) {
-      findings.push(
-        `${range.key} section has ${c} cards with poolQty>0. Typical sealed pool has ${range.low}-${range.high}. You may have added phantom marks.`,
-      )
-    }
-  }
-  return findings
+  // Reuse the structured section-gap computation for the correction message.
+  return computeSectionGaps(parsed).map((g) => g.message)
 }
 
 function buildCorrectionMessage(issues: string[], parsed: any, attempt: number): string {
@@ -651,7 +638,181 @@ export async function extractPoolFromImages(
   if (!parsedFinal) {
     throw new Error('Extraction returned no parseable response after all attempts')
   }
+
+  // === Stage 3: Per-section refinement ===
+  //
+  // After the self-correcting loop converges (or runs out of attempts),
+  // identify still-under-populated sections and ask Claude to focus on each
+  // one in a separate follow-up call. Each refinement call gets the same
+  // cached system+image prefix (so subsequent calls within the same hour are
+  // fast cache hits) but a narrowed prompt that asks ONLY about that section's
+  // rows. The model can give each section full attention without trying to
+  // hold the whole 250-row sheet in working memory at once.
+  const finalGaps = computeSectionGaps(parsedFinal)
+  const underPopulated = finalGaps.filter((g) => g.count < g.expectedLow)
+  if (underPopulated.length === 0) return parsedFinal
+
+  for (const gap of underPopulated) {
+    try {
+      const refined = await refineSection(client, systemBlocks, userContent, gap, parsedFinal)
+      if (refined) {
+        parsedFinal = mergeSectionRefinement(parsedFinal, gap.section, refined)
+        opts.onAttempt?.(maxAttempts + underPopulated.indexOf(gap) + 1, [
+          `refined ${gap.section}: was ${gap.count}, now ${refined.length}`,
+        ])
+      }
+    } catch (err) {
+      // Refinement is best-effort; if it fails, we just keep the original extraction.
+      opts.onAttempt?.(maxAttempts + 1, [`refinement of ${gap.section} failed: ${(err as Error).message}`])
+    }
+  }
   return parsedFinal
+}
+
+/** Refinement schema — focused on one section's rows only. */
+const SECTION_REFINEMENT_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    rows: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          name: { type: 'string' },
+          type: { type: 'string', enum: ['Unit', 'Event', 'Upgrade'] },
+          subtitle: { type: ['string', 'null'] },
+          poolQty: { type: 'integer' },
+          deckQty: { type: 'integer' },
+          aspects: {
+            type: 'array',
+            items: { type: 'string' },
+          },
+          extractConfidence: {
+            type: 'string',
+            enum: ['high', 'medium', 'low'],
+          },
+        },
+        required: ['name', 'type', 'subtitle', 'poolQty', 'deckQty', 'aspects', 'extractConfidence'],
+      },
+    },
+  },
+  required: ['rows'],
+}
+
+async function refineSection(
+  client: Anthropic,
+  systemBlocks: any[],
+  imageContent: any[],
+  gap: SectionGap,
+  current: any,
+): Promise<any[] | null> {
+  const sectionInstructions = sectionFocusInstructions(gap.section)
+  // Show Claude what it returned for this section so it knows what to add
+  const currentRowsInSection = current.rows
+    .filter((r: any) => belongsToSection(r, gap.section) && Number(r.poolQty) > 0)
+    .map((r: any) => `  - ${r.name}${r.subtitle ? ', ' + r.subtitle : ''} (poolQty=${r.poolQty}, deckQty=${r.deckQty})`)
+    .join('\n')
+
+  const focusedPrompt = [
+    `Focus ONLY on the ${gap.section} section of the registration sheet.`,
+    `Your previous extraction for this section had ${gap.count} cards marked, but a typical sealed pool has ${gap.expectedLow}-${gap.expectedHigh} cards in this section.`,
+    `That means you missed cards. Re-scan this section CAREFULLY and find every row with marks.`,
+    '',
+    sectionInstructions,
+    '',
+    'Cards you previously found in this section:',
+    currentRowsInSection || '  (none)',
+    '',
+    'Return JSON with the COMPLETE list of cards in this section that have poolQty > 0 (including the ones you previously found, plus any you missed). Match every card name against the KNOWN CARD LIST. Return JSON only, no prose.',
+  ].join('\n')
+
+  const messages: Anthropic.MessageParam[] = [
+    { role: 'user', content: [...imageContent, { type: 'text', text: focusedPrompt }] },
+  ]
+
+  const response = await client.messages
+    .stream({
+      model: MODEL,
+      max_tokens: 8000,
+      system: systemBlocks,
+      output_config: {
+        format: { type: 'json_schema' as const, schema: SECTION_REFINEMENT_SCHEMA },
+      },
+      messages,
+    })
+    .finalMessage()
+
+  const textBlock = response.content.find((b: any) => b.type === 'text')
+  if (!textBlock || (textBlock as any).type !== 'text') return null
+  try {
+    const parsed = JSON.parse((textBlock as any).text)
+    if (!Array.isArray(parsed.rows)) return null
+    return parsed.rows
+  } catch {
+    return null
+  }
+}
+
+/** Generate a section-specific focus instruction for the refinement prompt. */
+function sectionFocusInstructions(section: string): string {
+  const map: Record<string, string> = {
+    Vigilance: 'The VIGILANCE (BLUE) section. Cards with the Vigilance aspect (and possibly one of Heroism/Villainy).',
+    Command: 'The COMMAND (GREEN) section. Cards with the Command aspect.',
+    Aggression: 'The AGGRESSION (RED) section. Cards with the Aggression aspect.',
+    Cunning: 'The CUNNING (YELLOW) section. Cards with the Cunning aspect.',
+    Heroism: 'The HEROISM (WHITE) section. Cards with ONLY the Heroism aspect (no Vigilance/Command/Aggression/Cunning).',
+    Villainy: 'The VILLAINY (BLACK) section. Cards with ONLY the Villainy aspect.',
+    Multicolor:
+      'The MULTICOLOR section. Cards with TWO game-side aspects (e.g. Vigilance+Command, Aggression+Cunning).',
+    Neutral: 'The NO ASPECT (GRAY) section. Cards with no aspect symbols.',
+  }
+  return map[section] || `The ${section} section.`
+}
+
+/** Decide if an existing row belongs to a given primary section. */
+function belongsToSection(row: any, section: string): boolean {
+  const aspects: string[] = Array.isArray(row.aspects) ? row.aspects : []
+  const game = aspects.filter((a) => ['Vigilance', 'Command', 'Aggression', 'Cunning'].includes(a))
+  const player = aspects.filter((a) => ['Heroism', 'Villainy'].includes(a))
+  if (section === 'Multicolor') return game.length >= 2
+  if (section === 'Neutral') return aspects.length === 0
+  if (section === 'Heroism') return aspects.length === 1 && aspects[0] === 'Heroism'
+  if (section === 'Villainy') return aspects.length === 1 && aspects[0] === 'Villainy'
+  // Single game-side aspect sections
+  if (['Vigilance', 'Command', 'Aggression', 'Cunning'].includes(section)) {
+    return game.length === 1 && game[0] === section
+  }
+  return false
+}
+
+/** Merge refined section rows back into the full extraction.
+ *  Drops the existing rows in this section and replaces with the refined list. */
+function mergeSectionRefinement(extraction: any, section: string, refinedRows: any[]): any {
+  // Keep all rows that don't belong to this section
+  const keep = (extraction.rows || []).filter(
+    (r: any) =>
+      r.type === 'Leader' ||
+      r.type === 'Base' ||
+      Number(r.poolQty) === 0 ||
+      !belongsToSection(r, section),
+  )
+  // Add the refined rows from this section
+  const refinedFormatted = refinedRows.map((r) => ({
+    name: r.name,
+    type: r.type,
+    subtitle: r.subtitle ?? null,
+    poolQty: Number(r.poolQty) || 0,
+    deckQty: Number(r.deckQty) || 0,
+    aspectGroup: section,
+    aspects: r.aspects || [],
+    extractConfidence: r.extractConfidence || 'medium',
+  }))
+  return {
+    ...extraction,
+    rows: [...keep, ...refinedFormatted],
+  }
 }
 
 /** Re-export for callers that want to type-narrow against SDK errors. */
