@@ -61,55 +61,57 @@ export default function ResolveStep({ importPool }: Props) {
         <RunningTotals validation={validation} />
       </header>
 
-      {grouped.map((group) => (
-        <div key={group.key} className="ip-section">
-          <div className="ip-section__header">
-            <span className="ip-section__title">{group.displayName}</span>
-            <span className="ip-section__count">
-              {group.rows.reduce((s, r) => s + r.poolQty, 0)} cards
-            </span>
-          </div>
-          <table className="ip-table">
-            <colgroup>
-              <col className="ip-col-played" />
-              <col className="ip-col-total" />
-              <col className="ip-col-no" />
-              <col className="ip-col-name" />
-            </colgroup>
-            <thead>
-              <tr>
-                <th>PLAYED</th>
-                <th>TOTAL</th>
-                <th>NO</th>
-                <th>NAME</th>
-              </tr>
-            </thead>
-            <tbody>
-              {group.rows.map((row) => (
-                <RowItem
-                  key={row.key}
-                  row={row}
-                  isActiveLeader={!!row.card && state.activeLeaderId === row.card.id}
-                  isActiveBase={!!row.card && state.activeBaseId === row.card.id}
-                  onIncPool={() => setRowQty(row.key, 'poolQty', row.poolQty + 1)}
-                  onDecPool={() => setRowQty(row.key, 'poolQty', row.poolQty - 1)}
-                  onIncDeck={() => setRowQty(row.key, 'deckQty', row.deckQty + 1)}
-                  onDecDeck={() => setRowQty(row.key, 'deckQty', row.deckQty - 1)}
-                  onToggleLeader={() => row.card && setActiveLeader(row.card.id)}
-                  onToggleBase={() => row.card && setActiveBase(row.card.id)}
-                  onPickCard={() =>
-                    setPickerFor({
-                      rowKey: row.key,
-                      candidates: row.candidates,
-                      typeFilter: row.extracted.type,
-                    })
-                  }
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ))}
+      <table className="ip-table">
+        <colgroup>
+          <col className="ip-col-played" />
+          <col className="ip-col-total" />
+          <col className="ip-col-no" />
+          <col className="ip-col-name" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>PLAYED</th>
+            <th>TOTAL</th>
+            <th>NO</th>
+            <th>NAME</th>
+          </tr>
+        </thead>
+        {grouped.map((group) => (
+          <tbody key={group.key} className="ip-section">
+            <tr className="ip-section-row">
+              <td colSpan={4}>
+                <div className="ip-section-bar">
+                  <span className="ip-section__title">{group.displayName}</span>
+                  <span className="ip-section__count">
+                    {group.rows.reduce((s, r) => s + r.poolQty, 0)} cards
+                  </span>
+                </div>
+              </td>
+            </tr>
+            {group.rows.map((row) => (
+              <RowItem
+                key={row.key}
+                row={row}
+                isActiveLeader={!!row.card && state.activeLeaderId === row.card.id}
+                isActiveBase={!!row.card && state.activeBaseId === row.card.id}
+                onIncPool={() => setRowQty(row.key, 'poolQty', row.poolQty + 1)}
+                onDecPool={() => setRowQty(row.key, 'poolQty', row.poolQty - 1)}
+                onIncDeck={() => setRowQty(row.key, 'deckQty', row.deckQty + 1)}
+                onDecDeck={() => setRowQty(row.key, 'deckQty', row.deckQty - 1)}
+                onToggleLeader={() => row.card && setActiveLeader(row.card.id)}
+                onToggleBase={() => row.card && setActiveBase(row.card.id)}
+                onPickCard={() =>
+                  setPickerFor({
+                    rowKey: row.key,
+                    candidates: row.candidates,
+                    typeFilter: row.extracted.type,
+                  })
+                }
+              />
+            ))}
+          </tbody>
+        ))}
+      </table>
 
       <div className="import-pool-actions">
         <Button variant="back" onClick={goBack}>

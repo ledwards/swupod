@@ -192,38 +192,42 @@
 
 /* === Resolve step: registration-sheet-style table === */
 
-.ip-section {
-  margin-bottom: 18px;
-}
-
-.ip-section__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding: 4px 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
-}
-
-.ip-section__title {
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.ip-section__count {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.55);
-}
-
 .ip-table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-top: none;
   font-size: 12px;
   line-height: 1.2;
+}
+
+/* Section divider rows live inside <tbody>; the column header is shown once at the top */
+.ip-section-row td {
+  padding: 0;
+  border: none;
+}
+
+.ip-section-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 6px 10px;
+  font-size: 11px;
+  background: linear-gradient(to right, rgba(40, 40, 40, 0.95), rgba(20, 20, 20, 0.95));
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ip-section__title {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.ip-section__count {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .ip-col-played { width: 72px; }
