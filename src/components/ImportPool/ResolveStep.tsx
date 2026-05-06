@@ -47,7 +47,6 @@ export default function ResolveStep({ importPool }: Props) {
     goToConfirm,
     setViewFilter,
     setViewMode,
-    autoTrimDeck,
   } = importPool
 
   const [pickerFor, setPickerFor] = useState<{
@@ -171,7 +170,7 @@ export default function ResolveStep({ importPool }: Props) {
 
       <div className="ip-sticky-stack">
       <div className="ip-toolbar">
-        <RunningTotals validation={validation} onAutoTrim={autoTrimDeck} />
+        <RunningTotals validation={validation} />
         <div className="ip-toolbar__group">
           <div className="ip-toggle-group" role="group" aria-label="View mode">
             <Button
@@ -413,7 +412,7 @@ export default function ResolveStep({ importPool }: Props) {
 
       <div className="import-pool-actions">
         <Button variant="back" onClick={goBack}>
-          ← Re-upload
+          Back
         </Button>
         <div className="import-pool-actions-spacer" />
         <Button variant="primary" onClick={goToConfirm} disabled={!validation.valid}>
@@ -462,22 +461,14 @@ export default function ResolveStep({ importPool }: Props) {
 
 // === Sub-components ===
 
-function RunningTotals({
-  validation,
-  onAutoTrim,
-}: {
-  validation: any
-  onAutoTrim: () => void
-}) {
+function RunningTotals({ validation }: { validation: any }) {
   // Deck count: <30 is red (illegal), ==30 is green (legal min), >30 is
-  // yellow (legal but unusual — over-deckbuilding). When over, we surface
-  // an inline auto-trim affordance: drop the lowest-confidence deck rows
-  // until the count hits 30.
-  const deckOver = validation.deckCount > validation.deckTarget
+  // yellow (legal but unusual — over-deckbuilding). User scans per-row
+  // confidence % to decide which deck inclusions to drop.
   const deckClass =
     validation.deckCount < validation.deckTarget
       ? 'totals-bad'
-      : deckOver
+      : validation.deckCount > validation.deckTarget
         ? 'totals-warn'
         : 'totals-ok'
   return (
@@ -488,16 +479,6 @@ function RunningTotals({
       <span className={deckClass}>
         Deck: {validation.deckCount} / {validation.deckTarget}
       </span>
-      {deckOver && (
-        <Button
-          variant="secondary"
-          size="xs"
-          onClick={onAutoTrim}
-          title={`Drop the ${validation.deckCount - validation.deckTarget} lowest-confidence deck inclusions to land at ${validation.deckTarget}`}
-        >
-          Auto-trim to {validation.deckTarget}
-        </Button>
-      )}
       <span className={validation.hasLeader ? 'totals-ok' : 'totals-bad'}>
         Leader: {validation.hasLeader ? '✓' : '✗'}
       </span>
@@ -636,9 +617,29 @@ function RowItem({
             )}
             {isUnresolved && <em className="ip-row__hint">tap to pick a card</em>}
           </span>
+          <ConfidenceBadge row={row} />
         </button>
       </td>
     </tr>
+  )
+}
+
+function ConfidenceBadge({ row }: { row: ResolvedRow }) {
+  const pct = rowConfidencePct(row)
+  const tier = confidenceTier(pct)
+  // Surface what's driving each piece of the score so the user can decide
+  // which deck inclusions to drop with full context.
+  const matcherLabel = row.confidence === 'unmatched' ? 'unmatched' : row.confidence
+  const extractLabel = row.extracted.extractConfidence || 'unknown'
+  const title = `Confidence ${pct}% — match: ${matcherLabel}, vision: ${extractLabel}`
+  return (
+    <span
+      className={`ip-row__confidence ip-row__confidence--${tier}`}
+      title={title}
+      aria-label={title}
+    >
+      {pct}%
+    </span>
   )
 }
 
@@ -714,6 +715,40 @@ const PLAYER_SIDES = new Set(['Heroism', 'Villainy'])
 // (primarySectionFromAspectGroup) routings, so the section header is
 // consistent regardless of which card happened to land first.
 const MULTICOLOR_HEADER_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning', 'Heroism', 'Villainy']
+
+/** Combined confidence score (0–100) for a row, blending matcher confidence
+ *  (60%) with Claude's per-row vision confidence (40%). Surfaced as a small
+ *  badge on every row so the user can manually scan deck inclusions and
+ *  decide which to drop when the OCR over-counts.
+ *
+ *  Score breakdown:
+ *    matcher: exact 60 / high 50 / fuzzy 30 / ambiguous 20 / unmatched 0
+ *    extract: high 40  / medium 25 / low 10  / undefined 25 (assume medium)
+ */
+function rowConfidencePct(row: ResolvedRow): number {
+  let m = 0
+  if (row.confidence === 'exact') m = 60
+  else if (row.confidence === 'high') m = 50
+  else if (row.confidence === 'fuzzy') m = 30
+  else if (row.confidence === 'ambiguous') m = 20
+
+  let e = 0
+  const ec = row.extracted.extractConfidence
+  if (ec === 'high') e = 40
+  else if (ec === 'medium') e = 25
+  else if (ec === 'low') e = 10
+  else e = 25
+
+  return m + e
+}
+
+/** Tier the confidence % into a color bucket so the badge can read at a glance. */
+function confidenceTier(pct: number): 'high' | 'medium' | 'low' | 'bad' {
+  if (pct >= 85) return 'high'
+  if (pct >= 65) return 'medium'
+  if (pct >= 40) return 'low'
+  return 'bad'
+}
 
 /** A card's "primary section" — matches the headers on a real registration sheet:
  *  VIGILANCE / COMMAND / AGGRESSION / CUNNING / HEROISM / VILLAINY / MULTICOLOR / NO ASPECT.
@@ -994,6 +1029,7 @@ function GridView({
             <span className="ip-tile__placeholder">?</span>
           )}
           {row.poolQty > 1 && <span className="ip-tile__count">×{row.poolQty}</span>}
+          <ConfidenceBadge row={row} />
         </button>
         <div className="ip-tile__controls">
           {isLeader || isBase ? (

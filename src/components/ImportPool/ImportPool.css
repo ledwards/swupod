@@ -150,9 +150,11 @@
   flex: 1;
   padding: 8px 12px;
   background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 4px;
   text-align: center;
+  /* Default state = future/disabled step. Muted, clearly inactive. */
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .import-pool-steps li.active {
@@ -160,6 +162,28 @@
   border-color: rgba(0, 255, 0, 0.5);
   color: white;
   font-weight: 700;
+}
+
+/* Clickable past-step (e.g. Step 1 when the user is on Resolve/Confirm).
+ * White text + brighter border so it reads as something you CAN tap, not
+ * a greyed-out disabled state. */
+.import-pool-steps li.clickable {
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.95);
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.55);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .import-pool-steps li.clickable:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.75);
+  }
+}
+
+.import-pool-steps li.clickable:focus-visible {
+  outline: 2px solid rgba(33, 150, 243, 0.7);
+  outline-offset: 2px;
 }
 
 .import-pool-step {
@@ -562,6 +586,41 @@
   }
 }
 
+/* Per-row confidence badge — shown on every row in both table and grid views.
+ * Combines matcher confidence (60%) with Claude vision confidence (40%) into
+ * a single 0–100 score. User scans these to decide which deck inclusions to
+ * drop when the OCR over-counts. */
+.ip-row__confidence {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  border-radius: 10px;
+  border: 1px solid currentColor;
+  background: rgba(0, 0, 0, 0.4);
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+.ip-row__confidence--high   { color: #5fff5f; }
+.ip-row__confidence--medium { color: #6cb6ff; }
+.ip-row__confidence--low    { color: #ffd966; }
+.ip-row__confidence--bad    { color: #ff8888; }
+
+/* Grid-view tile variant: positioned as an overlay on the card image. Top-
+ * left so it doesn't collide with the bottom-right .ip-tile__count qty badge. */
+.ip-tile__image .ip-row__confidence {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  margin: 0;
+  background: rgba(0, 0, 0, 0.75);
+}
+
 .import-pool-totals .totals-ok {
   color: #5fff5f;
 }
@@ -760,7 +819,9 @@
 }
 
 .ip-cell-name__btn {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
   height: 40px;
   padding: 4px 10px;
@@ -770,6 +831,13 @@
   text-align: left;
   cursor: pointer;
   font-family: inherit;
+}
+
+/* Name text grows to fill available space; the confidence badge sits on the
+ * right via its own margin-left:auto. */
+.ip-cell-name__btn .ip-row__name-text {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .ip-row__name-text {

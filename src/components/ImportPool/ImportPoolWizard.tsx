@@ -18,7 +18,7 @@ import ConfirmStep from './ConfirmStep'
 export default function ImportPoolWizard() {
   const router = useRouter()
   const importPool = useImportPool()
-  const { state, reset, runExtraction } = importPool
+  const { state, reset, runExtraction, goToUpload } = importPool
 
   // On submission success, redirect to the existing sealed deckbuilder route.
   useEffect(() => {
@@ -29,6 +29,10 @@ export default function ImportPoolWizard() {
 
   const hasWork = state.images.length > 0 || state.extraction !== null
   const canReExtract = state.images.length > 0 && state.phase !== 'extracting' && state.phase !== 'submitting'
+  // Re-upload jumps from a later phase back to Upload. Only meaningful when
+  // we ARE on a later phase — and is destructive enough to warrant a confirm
+  // since the user can replace photos and lose extraction edits.
+  const canReUpload = ['resolving', 'confirming'].includes(state.phase)
   const handleStartOver = () => {
     if (confirm('Cancel this import? All uploaded images and imported data will be discarded.')) reset()
   }
@@ -41,12 +45,31 @@ export default function ImportPoolWizard() {
       runExtraction()
     }
   }
+  const handleReUpload = () => {
+    if (
+      confirm(
+        'Go back to the Upload step? Your uploaded images stay; replacing or re-extracting will discard any manual edits.',
+      )
+    ) {
+      goToUpload()
+    }
+  }
 
   return (
     <div className="import-pool-wizard">
       <div className="import-pool-header__top">
         <h1>Import Pool</h1>
         <div className="import-pool-header__actions">
+          {canReUpload && (
+            <Button variant="secondary" size="sm" onClick={handleReUpload} title="Go back to the Upload step">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              Re-upload
+            </Button>
+          )}
           {canReExtract && (
             <Button variant="secondary" size="sm" onClick={handleReExtract} title="Re-run extraction on the uploaded images">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -71,11 +94,18 @@ export default function ImportPoolWizard() {
       {/* Steps bar lives at the wizard root (not inside the header) so its
           position:sticky parent is the full wizard column rather than a
           ~60px header block — otherwise the steps stop sticking the moment
-          the header itself scrolls past. */}
+          the header itself scrolls past.
+          Step 1 is clickable on later phases (same destination as the
+          Re-upload button above, with the same confirm). */}
       <ol className="import-pool-steps">
-        <li className={isActive('upload', state.phase) ? 'active' : ''}>1 · Upload</li>
-        <li className={isActive('resolve', state.phase) ? 'active' : ''}>2 · Review</li>
-        <li className={isActive('confirm', state.phase) ? 'active' : ''}>3 · Confirm</li>
+        <Step
+          label="1 · Upload"
+          isActiveStep={isActive('upload', state.phase)}
+          isClickable={canReUpload}
+          onClick={handleReUpload}
+        />
+        <Step label="2 · Review" isActiveStep={isActive('resolve', state.phase)} />
+        <Step label="3 · Confirm" isActiveStep={isActive('confirm', state.phase)} />
       </ol>
 
       {(state.phase === 'idle' ||
@@ -90,6 +120,41 @@ export default function ImportPoolWizard() {
       )}
     </div>
   )
+}
+
+interface StepProps {
+  label: string
+  isActiveStep: boolean
+  isClickable?: boolean
+  onClick?: () => void
+}
+
+function Step({ label, isActiveStep, isClickable = false, onClick }: StepProps) {
+  const cls = [
+    isActiveStep ? 'active' : '',
+    isClickable && !isActiveStep ? 'clickable' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+  if (isClickable && !isActiveStep && onClick) {
+    return (
+      <li
+        className={cls}
+        role="button"
+        tabIndex={0}
+        onClick={onClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            onClick()
+          }
+        }}
+      >
+        {label}
+      </li>
+    )
+  }
+  return <li className={cls}>{label}</li>
 }
 
 function isActive(stepKey: 'upload' | 'resolve' | 'confirm', phase: string): boolean {

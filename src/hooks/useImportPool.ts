@@ -146,6 +146,7 @@ type Action =
   | { type: 'EXTRACTION_FAILURE'; error: ImportPoolState['error'] }
   | { type: 'GO_TO_RESOLVE' }
   | { type: 'GO_TO_CONFIRM' }
+  | { type: 'GO_TO_UPLOAD' }
   | { type: 'GO_BACK' }
   | { type: 'SET_ROW_QTY'; key: string; field: 'poolQty' | 'deckQty'; value: number }
   | { type: 'REPLACE_ROW_CARD'; key: string; card: MatchedCard }
@@ -159,7 +160,6 @@ type Action =
   | { type: 'RESTORE'; state: Partial<ImportPoolState> }
   | { type: 'SET_VIEW_FILTER'; filter: 'all' | 'pool' | 'deck' }
   | { type: 'SET_VIEW_MODE'; mode: 'table' | 'grid' }
-  | { type: 'AUTO_TRIM_DECK'; target: number }
 
 function reducer(state: ImportPoolState, action: Action): ImportPoolState {
   switch (action.type) {
@@ -252,6 +252,12 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
       return { ...state, phase: 'resolving', error: null }
     case 'GO_TO_CONFIRM':
       return { ...state, phase: 'confirming', error: null }
+    case 'GO_TO_UPLOAD':
+      // Direct jump to the Upload step from any later phase. Used by the
+      // wizard-level Re-upload button and the clickable Step 1 indicator.
+      // Images/extraction are preserved; user can replace photos or just
+      // re-extract from the same set.
+      return { ...state, phase: 'uploading', error: null }
     case 'GO_BACK':
       // Resolve → Upload, Confirm → Resolve
       if (state.phase === 'confirming') return { ...state, phase: 'resolving' }
@@ -291,8 +297,6 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
       return { ...state, viewFilter: action.filter }
     case 'SET_VIEW_MODE':
       return { ...state, viewMode: action.mode }
-    case 'AUTO_TRIM_DECK':
-      return { ...state, resolvedRows: trimDeckToTarget(state.resolvedRows, action.target) }
     case 'RESET':
       // previewUrls are now data URLs (no-op revoke), but keep the call for safety
       state.images.forEach((img) => URL.revokeObjectURL(img.previewUrl))
@@ -311,64 +315,6 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
     default:
       return state
   }
-}
-
-// === Auto-trim ===
-//
-// When the OCR over-counts deck inclusions (e.g. deck=38/30), the user can
-// click "Auto-trim". We rank rows by how confident we are that they really
-// belong in the deck, then drop deckQty from the lowest-confidence rows
-// (one copy at a time) until the deck total hits the target.
-//
-// Score combines:
-//   - matcher confidence (exact → high → fuzzy → ambiguous → unmatched)
-//   - extract confidence  (high  → medium → low → undefined)
-// Higher score = keep first, lower score = drop first. Leaders/bases are
-// excluded from trimming since their deckQty is the active selection.
-function rowKeepScore(r: ResolvedRow): number {
-  const match = r.confidence
-  const extract = r.extracted.extractConfidence
-  let s = 0
-  if (match === 'exact') s += 8
-  else if (match === 'high') s += 6
-  else if (match === 'fuzzy') s += 3
-  else if (match === 'ambiguous') s += 2
-  // unmatched → 0
-  if (extract === 'high') s += 4
-  else if (extract === 'medium') s += 2
-  else if (extract === 'low') s += 0
-  else s += 3 // undefined treated as medium-ish
-  return s
-}
-
-function trimDeckToTarget(rows: ResolvedRow[], target: number): ResolvedRow[] {
-  const total = rows.reduce((sum, r) => sum + r.deckQty, 0)
-  let toRemove = total - target
-  if (toRemove <= 0) return rows
-
-  // Sort eligible rows worst-first. Stable sort by mapping to indexed entries.
-  const eligible = rows
-    .map((r, i) => ({ r, i }))
-    .filter(({ r }) => r.deckQty > 0 && !r.card?.isLeader && !r.card?.isBase)
-    .sort((a, b) => rowKeepScore(a.r) - rowKeepScore(b.r))
-
-  const next = rows.map((r) => ({ ...r }))
-  // Multi-pass: drop one copy at a time from worst row until quota met. This
-  // distributes pain across many low-confidence rows rather than zeroing
-  // out a single 4-of.
-  while (toRemove > 0) {
-    let didRemove = false
-    for (const { i } of eligible) {
-      if (toRemove <= 0) break
-      if (next[i].deckQty > 0) {
-        next[i] = { ...next[i], deckQty: next[i].deckQty - 1 }
-        toRemove -= 1
-        didRemove = true
-      }
-    }
-    if (!didRemove) break // safety net — shouldn't fire
-  }
-  return next
 }
 
 // === Validation (derived) ===
@@ -752,6 +698,7 @@ export function useImportPool() {
   }, [validation.valid])
 
   const goBack = useCallback(() => dispatch({ type: 'GO_BACK' }), [])
+  const goToUpload = useCallback(() => dispatch({ type: 'GO_TO_UPLOAD' }), [])
 
   const submit = useCallback(async () => {
     if (!state.extraction || !state.activeLeaderId || !state.activeBaseId) return
@@ -813,10 +760,6 @@ export function useImportPool() {
     dispatch({ type: 'SET_VIEW_MODE', mode })
   }, [])
 
-  const autoTrimDeck = useCallback(() => {
-    dispatch({ type: 'AUTO_TRIM_DECK', target: DECK_TARGET })
-  }, [])
-
   return {
     state,
     validation,
@@ -830,10 +773,10 @@ export function useImportPool() {
     setTitle,
     goToConfirm,
     goBack,
+    goToUpload,
     submit,
     reset,
     setViewFilter,
     setViewMode,
-    autoTrimDeck,
   }
 }
