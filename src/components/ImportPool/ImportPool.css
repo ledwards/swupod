@@ -586,39 +586,38 @@
   }
 }
 
-/* Per-row confidence badge — shown on every row in both table and grid views.
- * Combines matcher confidence (60%) with Claude vision confidence (40%) into
- * a single 0–100 score. User scans these to decide which deck inclusions to
- * drop when the OCR over-counts. */
+/* Per-row qty-read confidence — shown on every row. Format is "deck/pool%"
+ * (PLAYED column read / TOTAL column read). No chrome — just colored text
+ * that fades into the row when high (the boring case) and pops when low
+ * (the rows the user needs to verify). */
 .ip-row__confidence {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   margin-left: auto;
-  padding: 2px 8px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  border-radius: 10px;
-  border: 1px solid currentColor;
-  background: rgba(0, 0, 0, 0.4);
   letter-spacing: 0.3px;
   flex-shrink: 0;
 }
 
-.ip-row__confidence--high   { color: #5fff5f; }
-.ip-row__confidence--medium { color: #6cb6ff; }
-.ip-row__confidence--low    { color: #ffd966; }
-.ip-row__confidence--bad    { color: #ff8888; }
+/* High = faded green — confident reads should sink into the row, not draw
+ * the eye. Medium = yellow — worth a glance. Low = red — verify this. */
+.ip-row__confidence--high   { color: rgba(120, 200, 120, 0.55); }
+.ip-row__confidence--medium { color: #ffd966; }
+.ip-row__confidence--low    { color: #ff7a7a; }
 
-/* Grid-view tile variant: positioned as an overlay on the card image. Top-
- * left so it doesn't collide with the bottom-right .ip-tile__count qty badge. */
+/* Grid-view tile overlay: card image needs a tiny dark backplate so the
+ * text remains legible against varied artwork. Otherwise no chrome. */
 .ip-tile__image .ip-row__confidence {
   position: absolute;
-  top: 6px;
-  left: 6px;
+  top: 4px;
+  left: 4px;
   margin: 0;
+  padding: 1px 5px;
+  font-size: 9px;
   background: rgba(0, 0, 0, 0.75);
+  border-radius: 3px;
 }
 
 .import-pool-totals .totals-ok {

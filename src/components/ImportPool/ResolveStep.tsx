@@ -773,12 +773,13 @@ function qtyConfPct(level: 'high' | 'medium' | 'low' | undefined): number {
   return 65 // missing → assume medium so the badge still reads
 }
 
-/** Tier the confidence % into a color bucket so the badge can read at a glance. */
-function confidenceTier(pct: number): 'high' | 'medium' | 'low' | 'bad' {
+/** Three-tier color bucket. High is the boring case (matches expectation),
+ *  so it renders as faded green that sinks into the row. Medium is yellow.
+ *  Low is red — these are the rows the user actually needs to verify. */
+function confidenceTier(pct: number): 'high' | 'medium' | 'low' {
   if (pct >= 85) return 'high'
-  if (pct >= 60) return 'medium'
-  if (pct >= 40) return 'low'
-  return 'bad'
+  if (pct >= 50) return 'medium'
+  return 'low'
 }
 
 /** A card's "primary section" — matches the headers on a real registration sheet:
