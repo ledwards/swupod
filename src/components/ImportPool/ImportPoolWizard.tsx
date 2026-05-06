@@ -29,7 +29,7 @@ export default function ImportPoolWizard() {
 
   const hasWork = state.images.length > 0 || state.extraction !== null
   const handleStartOver = () => {
-    if (confirm('Clear all uploaded images and extracted data?')) reset()
+    if (confirm('Cancel this import? All uploaded images and imported data will be discarded.')) reset()
   }
 
   return (
@@ -39,7 +39,7 @@ export default function ImportPoolWizard() {
           <h1>Import Pool</h1>
           {hasWork && (
             <Button variant="secondary" size="xs" onClick={handleStartOver}>
-              Start over
+              Cancel Import
             </Button>
           )}
         </div>

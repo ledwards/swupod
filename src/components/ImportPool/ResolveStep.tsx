@@ -137,7 +137,7 @@ export default function ResolveStep({ importPool }: Props) {
         <h2>Review Pool Registration</h2>
         {state.warnings.length > 0 && (
           <div className="import-pool-warnings" role="alert">
-            <strong>Heads up — some rows needed cleanup during extraction:</strong>
+            <strong>Heads up — some rows needed cleanup during import:</strong>
             <ul>
               {state.warnings.map((w, i) => (
                 <li key={i}>{w}</li>

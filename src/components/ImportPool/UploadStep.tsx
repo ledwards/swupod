@@ -89,7 +89,7 @@ export default function UploadStep({ importPool }: Props) {
           onClick={runExtraction}
           disabled={state.images.length === 0 || isExtracting}
         >
-          {isExtracting ? 'Reading sheet…' : 'Extract Pool'}
+          {isExtracting ? 'Importing…' : 'Import Pool'}
         </Button>
       </div>
     </section>

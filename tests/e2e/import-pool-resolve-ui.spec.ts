@@ -208,8 +208,8 @@ test.describe('Import Pool — Resolve UI', () => {
     })
 
     // Wait for image processing then click Extract
-    await page.waitForSelector('button:has-text("Extract Pool"):not([disabled])', { timeout: 5000 })
-    await page.click('button:has-text("Extract Pool")')
+    await page.waitForSelector('button:has-text("Import Pool"):not([disabled])', { timeout: 5000 })
+    await page.click('button:has-text("Import Pool")')
 
     // Step 2 — Resolve
     await page.waitForSelector('h2:has-text("Review Pool Registration")', { timeout: 10000 })

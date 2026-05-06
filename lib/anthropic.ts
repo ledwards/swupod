@@ -121,7 +121,7 @@ CRITICAL READING RULES — these are where extraction goes wrong if you're not c
 
 7. **Names you can't read.** If a card name is unreadable, use the literal string "?". Never invent cards.
 
-8. **Per-row confidence.** For every row, attach `extractConfidence` ∈ {"high", "medium", "low"}:
+8. **Per-row confidence.** For every row, attach an "extractConfidence" field with one of three values: "high", "medium", or "low":
    - "high" — the mark (or absence of mark) is unambiguous; you are certain about both poolQty and deckQty.
    - "medium" — you can see something but the count is unclear (one tally vs two? a smudge that might be a mark?), or part of the row is occluded.
    - "low" — the row is partially or wholly illegible due to handwriting, lighting, glare, or angle. The user should verify against the source image.

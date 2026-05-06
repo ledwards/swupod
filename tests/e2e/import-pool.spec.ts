@@ -154,7 +154,7 @@ test.describe('Import Pool', () => {
       // Should see the upload step, not the auth prompt
       await expect(page.getByText('Upload your registration sheet')).toBeVisible({ timeout: 10000 })
       await expect(page.getByText('Add photo')).toBeVisible()
-      await expect(page.getByRole('button', { name: 'Extract Pool' })).toBeVisible()
+      await expect(page.getByRole('button', { name: 'Import Pool' })).toBeVisible()
     } finally {
       await context.close()
     }
