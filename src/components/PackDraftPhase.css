@@ -3,6 +3,11 @@
   margin: 0 auto;
 }
 
+.pack-draft-phase .timer-bar-placeholder {
+  height: 0;
+  margin-bottom: 0;
+}
+
 .pack-draft-phase .timer-bar {
   background: #1e1e1e;
   border: 2px solid #333;
@@ -77,21 +82,23 @@
 .draft-info-header {
   background: #1e1e1e;
   border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 15px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 8px;
+  align-items: center;
 }
 
 .my-leaders-info {
   display: flex;
-  flex-direction: row;
-  gap: 12px;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
   overflow: visible;
   min-height: 0;
   height: auto;
+  width: 100%;
 }
 
 .leaders-label-group {
@@ -102,8 +109,9 @@
 
 .draft-progress-info {
   display: flex;
-  gap: 20px;
+  gap: 12px;
   align-items: center;
+  justify-content: center;
 }
 
 .draft-progress-info .progress-item {
@@ -152,14 +160,15 @@
 .leader-thumbnails {
   display: flex;
   gap: 8px;
-  align-items: flex-start;
-  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
   overflow: visible;
   height: auto;
+  flex-wrap: wrap;
 }
 
 .leader-thumbnail {
-  width: 25%;
+  width: 160px;
   height: auto;
   border-radius: 6px;
   cursor: pointer;
@@ -262,10 +271,10 @@
 }
 
 .pack-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 120px);
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
-  justify-content: start;
+  justify-content: center;
 }
 
 .no-cards {
@@ -380,11 +389,14 @@
     font-size: 0.85rem;
   }
 
-  /* Pack grid - 2 cards per row, cards closer together with equal margins */
+  /* Pack grid - centered flex on mobile */
   .pack-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.4rem;
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
+    gap: 0.4rem;
+    width: 100%;
+    margin: 0;
     padding: 0 0.25rem;
   }
 
@@ -409,8 +421,12 @@
   }
 
   .pack-grid {
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 0.4rem;
+    width: 100%;
+    margin: 0;
   }
 
   .draft-progress {
@@ -497,22 +513,33 @@
 .pack-set-bar {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border: 1px solid;
+  gap: 8px;
+  padding: 5px 14px;
+  border: 1.5px solid;
   border-radius: 6px;
-  margin-bottom: 8px;
+  margin: 0 auto 10px;
+  width: fit-content;
+  font-family: 'Barlow', sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
+  letter-spacing: 0.02em;
   color: white;
 }
 
 .pack-set-name {
-  opacity: 0.9;
+  opacity: 0.85;
+}
+
+.pack-set-separator {
+  opacity: 0.4;
 }
 
 .pack-set-code {
-  opacity: 0.6;
+  font-family: 'Courier New', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  opacity: 1;
 }
 
 /* Passing message */

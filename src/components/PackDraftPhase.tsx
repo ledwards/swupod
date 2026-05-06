@@ -537,20 +537,20 @@ function PackDraftPhase({
             )}
           </Button>
 
-          {draft?.settings?.draftMode === 'chaos' && (() => {
-            const chaosSets = draft?.settings?.chaosSets
-            const setCode = chaosSets?.[packNumber - 1]
-            const config = setCode ? getSetConfig(setCode) : null
-            const color = config?.color || '#9B59B6'
-            return (
-              <div className="pack-set-bar" style={{ background: `${color}22`, borderColor: `${color}88` }}>
-                <span className="pack-set-name">{config?.setName || setCode}</span>
-                <span className="pack-set-code">({setCode})</span>
-              </div>
-            )
-          })()}
-
           <div className="current-pack">
+            {draft?.settings?.draftMode === 'chaos' && (() => {
+              const chaosSets = draft?.settings?.chaosSets
+              const setCode = chaosSets?.[packNumber - 1]
+              const config = setCode ? getSetConfig(setCode) : null
+              const color = config?.color || '#9B59B6'
+              return (
+                <div className="pack-set-bar" style={{ background: `${color}18`, borderColor: color }}>
+                  <span className="pack-set-name">{config?.setName || setCode}</span>
+                  <span className="pack-set-separator">·</span>
+                  <span className="pack-set-code">{setCode}</span>
+                </div>
+              )
+            })()}
             {/* Show skeleton cards when waiting for next pack */}
             {showPassing && (lastPackSize > 0 || currentPack.length > 0) ? (
               <div className="pack-grid">
