@@ -17,8 +17,11 @@ interface Props {
 /**
  * ResolveStep — Step 2 of the Import Pool wizard (U8).
  *
- * Aspect-grouped review. Lets the user fix unrecognized cards, wrong matches,
- * and quantities. Continue is disabled until validation is clean.
+ * Registration-sheet-style table layout. Card art is a full-bleed background
+ * on the NAME column; rows are 2 lines tall; columns mirror physical sheets:
+ *   PLAYED (deck qty) | TOTAL (pool qty) | NO (card #) | NAME
+ *
+ * Leaders/bases are toggled active by clicking the star in the PLAYED column.
  */
 export default function ResolveStep({ importPool }: Props) {
   const { state, validation, setRowQty, replaceRowCard, setActiveLeader, setActiveBase, goBack, goToConfirm } =
@@ -35,19 +38,14 @@ export default function ResolveStep({ importPool }: Props) {
   // Group resolved rows by aspect combination, mirroring the registration sheet layout.
   const grouped = useMemo(() => groupByAspect(state.resolvedRows), [state.resolvedRows])
 
-  const leaderRows = state.resolvedRows.filter((r) => r.card?.isLeader)
-  const baseRows = state.resolvedRows.filter((r) => r.card?.isBase)
-  const otherGroups = grouped.filter(
-    (g) => g.rows.some((r) => !r.card?.isLeader && !r.card?.isBase) || g.key === 'unresolved',
-  )
-
   return (
     <section className="import-pool-step import-pool-step--resolve">
       <header className="import-pool-resolve-header">
         <h2>Resolve extraction</h2>
         <p className="import-pool-help">
-          Review the cards we extracted from your sheet. Fix any unmatched cards, wrong matches,
-          or bad quantities. Pool must total 96 cards (1 leader + 1 base + 14 other × 6).
+          Review the cards extracted from your sheet. Click a leader or base
+          row's <span className="ip-star-glyph">☆</span> to set it as active. Pool must
+          total 96 cards (1 leader + 1 base + 14 other × 6).
         </p>
         {state.warnings.length > 0 && (
           <div className="import-pool-warnings" role="alert">
@@ -60,78 +58,36 @@ export default function ResolveStep({ importPool }: Props) {
             <small>Fix anything that doesn't look right below before continuing.</small>
           </div>
         )}
-        <RunningTotals validation={validation} state={state} />
+        <RunningTotals validation={validation} />
       </header>
 
-      {/* Leaders */}
-      <div className="import-pool-resolve-section">
-        <h3>Choose your leader</h3>
-        <div className="import-pool-leaders-grid">
-          {leaderRows.map((row) => (
-            <button
-              key={row.key}
-              type="button"
-              onClick={() => row.card && setActiveLeader(row.card.id)}
-              className={`import-pool-leader-pick ${
-                row.card && state.activeLeaderId === row.card.id ? 'active' : ''
-              }`}
-            >
-              {row.card?.imageUrl && <img src={row.card.imageUrl} alt={row.card.name} />}
-              <span>
-                {row.card?.name || '?'}
-                {row.card?.subtitle && <em> · {row.card.subtitle}</em>}
-              </span>
-            </button>
-          ))}
-          {leaderRows.length === 0 && (
-            <p className="import-pool-empty-hint">
-              No leaders extracted yet. Add leader rows below or upload a clearer photo.
-            </p>
-          )}
-        </div>
-      </div>
-
-      {/* Bases */}
-      <div className="import-pool-resolve-section">
-        <h3>Choose your base</h3>
-        <div className="import-pool-leaders-grid">
-          {baseRows.map((row) => (
-            <button
-              key={row.key}
-              type="button"
-              onClick={() => row.card && setActiveBase(row.card.id)}
-              className={`import-pool-leader-pick ${
-                row.card && state.activeBaseId === row.card.id ? 'active' : ''
-              }`}
-            >
-              {row.card?.imageUrl && <img src={row.card.imageUrl} alt={row.card.name} />}
-              <span>{row.card?.name || '?'}</span>
-            </button>
-          ))}
-          {baseRows.length === 0 && (
-            <p className="import-pool-empty-hint">No bases extracted yet.</p>
-          )}
-        </div>
-      </div>
-
-      {/* Aspect-grouped rows */}
-      {otherGroups.map((group) => (
-        <div key={group.key} className="import-pool-resolve-section">
-          <h3 className="import-pool-aspect-header">
-            {group.displayName}{' '}
-            <span className="import-pool-aspect-count">
-              {group.rows.reduce((sum, r) => sum + r.poolQty, 0)} cards
+      {grouped.map((group) => (
+        <div key={group.key} className="ip-section">
+          <div className="ip-section__header">
+            <span className="ip-section__title">{group.displayName}</span>
+            <span className="ip-section__count">
+              {group.rows.reduce((s, r) => s + r.poolQty, 0)} cards
             </span>
-          </h3>
-          <ul className="import-pool-row-list">
+          </div>
+          <div className="ip-table">
+            <div className="ip-table__head">
+              <span className="col-played">PLAYED</span>
+              <span className="col-total">TOTAL</span>
+              <span className="col-no">NO</span>
+              <span className="col-name">NAME</span>
+            </div>
             {group.rows.map((row) => (
               <RowItem
                 key={row.key}
                 row={row}
+                isActiveLeader={!!row.card && state.activeLeaderId === row.card.id}
+                isActiveBase={!!row.card && state.activeBaseId === row.card.id}
                 onIncPool={() => setRowQty(row.key, 'poolQty', row.poolQty + 1)}
                 onDecPool={() => setRowQty(row.key, 'poolQty', row.poolQty - 1)}
                 onIncDeck={() => setRowQty(row.key, 'deckQty', row.deckQty + 1)}
                 onDecDeck={() => setRowQty(row.key, 'deckQty', row.deckQty - 1)}
+                onToggleLeader={() => row.card && setActiveLeader(row.card.id)}
+                onToggleBase={() => row.card && setActiveBase(row.card.id)}
                 onPickCard={() =>
                   setPickerFor({
                     rowKey: row.key,
@@ -141,7 +97,7 @@ export default function ResolveStep({ importPool }: Props) {
                 }
               />
             ))}
-          </ul>
+          </div>
         </div>
       ))}
 
@@ -178,7 +134,7 @@ export default function ResolveStep({ importPool }: Props) {
 
 // === Sub-components ===
 
-function RunningTotals({ validation, state }: { validation: any; state: any }) {
+function RunningTotals({ validation }: { validation: any }) {
   return (
     <div className="import-pool-totals">
       <span className={validation.poolCount === 96 ? 'totals-ok' : 'totals-bad'}>
@@ -198,75 +154,163 @@ function RunningTotals({ validation, state }: { validation: any; state: any }) {
   )
 }
 
-function RowItem({
-  row,
-  onIncPool,
-  onDecPool,
-  onIncDeck,
-  onDecDeck,
-  onPickCard,
-}: {
+interface RowItemProps {
   row: ResolvedRow
+  isActiveLeader: boolean
+  isActiveBase: boolean
   onIncPool: () => void
   onDecPool: () => void
   onIncDeck: () => void
   onDecDeck: () => void
+  onToggleLeader: () => void
+  onToggleBase: () => void
   onPickCard: () => void
-}) {
+}
+
+function RowItem({
+  row,
+  isActiveLeader,
+  isActiveBase,
+  onIncPool,
+  onDecPool,
+  onIncDeck,
+  onDecDeck,
+  onToggleLeader,
+  onToggleBase,
+  onPickCard,
+}: RowItemProps) {
+  const isLeader = !!row.card?.isLeader
+  const isBase = !!row.card?.isBase
+  const isActive = isActiveLeader || isActiveBase
   const isUnresolved = !row.card
-  const isAmbiguous = row.confidence === 'ambiguous' && row.candidates.length > 0
+  const cardNumber = extractCardNumber(row.card?.cardId)
+
+  const rowClasses = [
+    'ip-row',
+    isUnresolved && 'ip-row--unresolved',
+    isActive && 'ip-row--active',
+    row.confidence === 'fuzzy' && 'ip-row--fuzzy',
+    row.confidence === 'ambiguous' && 'ip-row--ambiguous',
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
-    <li className={`import-pool-row ${isUnresolved ? 'row-unresolved' : ''}`}>
-      <button type="button" onClick={onPickCard} className="import-pool-row__card">
-        {row.card?.imageUrl ? (
-          <img src={row.card.imageUrl} alt={row.card.name} loading="lazy" />
+    <div
+      className={rowClasses}
+      style={
+        row.card?.imageUrl
+          ? ({ ['--card-art' as any]: `url("${row.card.imageUrl}")` } as React.CSSProperties)
+          : undefined
+      }
+    >
+      <div className="col-played">
+        {isLeader ? (
+          <button
+            type="button"
+            className={`ip-star ${isActiveLeader ? 'ip-star--active' : ''}`}
+            onClick={onToggleLeader}
+            title={isActiveLeader ? 'Active leader' : 'Set as active leader'}
+          >
+            {isActiveLeader ? '★' : '☆'}
+          </button>
+        ) : isBase ? (
+          <button
+            type="button"
+            className={`ip-star ${isActiveBase ? 'ip-star--active' : ''}`}
+            onClick={onToggleBase}
+            title={isActiveBase ? 'Active base' : 'Set as active base'}
+          >
+            {isActiveBase ? '★' : '☆'}
+          </button>
         ) : (
-          <span className="import-pool-row__placeholder">?</span>
+          <QtyCell
+            value={row.deckQty}
+            onInc={onIncDeck}
+            onDec={onDecDeck}
+            disableInc={row.deckQty >= row.poolQty || row.deckQty >= 6}
+            disableDec={row.deckQty === 0}
+          />
         )}
-        <span className="import-pool-row__name">
+      </div>
+      <div className="col-total">
+        {isLeader || isBase ? (
+          <span className="ip-row__qty-static">{row.poolQty}</span>
+        ) : (
+          <QtyCell
+            value={row.poolQty}
+            onInc={onIncPool}
+            onDec={onDecPool}
+            disableInc={row.poolQty >= 6}
+            disableDec={row.poolQty === 0}
+          />
+        )}
+      </div>
+      <div className="col-no">{cardNumber || '—'}</div>
+      <button type="button" className="col-name" onClick={onPickCard}>
+        <span className="ip-row__name-text">
           <strong>{row.card?.name || row.extracted.name || 'Unrecognized'}</strong>
-          {row.card?.subtitle && <em> · {row.card.subtitle}</em>}
-          {isAmbiguous && (
-            <small className="import-pool-row__chip">{row.candidates.length} candidates</small>
+          {row.card?.subtitle && <em>{row.card.subtitle}</em>}
+          {!row.card?.subtitle && row.confidence === 'ambiguous' && row.candidates.length > 0 && (
+            <em className="ip-row__hint">{row.candidates.length} candidates — tap to choose</em>
           )}
           {row.confidence === 'fuzzy' && (
-            <small className="import-pool-row__chip import-pool-row__chip--warn">fuzzy match</small>
+            <em className="ip-row__hint">fuzzy match — tap to verify</em>
           )}
+          {isUnresolved && <em className="ip-row__hint">tap to pick a card</em>}
         </span>
       </button>
+    </div>
+  )
+}
 
-      <div className="import-pool-row__qty-group">
-        <span className="import-pool-row__qty-label">Pool</span>
-        <Button variant="icon" size="xs" onClick={onDecPool} disabled={row.poolQty === 0}>
-          −
-        </Button>
-        <span className="import-pool-row__qty">{row.poolQty}</span>
-        <Button variant="icon" size="xs" onClick={onIncPool} disabled={row.poolQty >= 6}>
-          +
-        </Button>
-      </div>
-
-      <div className="import-pool-row__qty-group">
-        <span className="import-pool-row__qty-label">Deck</span>
-        <Button variant="icon" size="xs" onClick={onDecDeck} disabled={row.deckQty === 0}>
-          −
-        </Button>
-        <span className="import-pool-row__qty">{row.deckQty}</span>
-        <Button
-          variant="icon"
-          size="xs"
-          onClick={onIncDeck}
-          disabled={row.deckQty >= row.poolQty || row.deckQty >= 6}
-        >
-          +
-        </Button>
-      </div>
-    </li>
+function QtyCell({
+  value,
+  onInc,
+  onDec,
+  disableInc,
+  disableDec,
+}: {
+  value: number
+  onInc: () => void
+  onDec: () => void
+  disableInc: boolean
+  disableDec: boolean
+}) {
+  return (
+    <div className="ip-qty">
+      <button
+        type="button"
+        className="ip-qty__btn"
+        onClick={onDec}
+        disabled={disableDec}
+        aria-label="decrease"
+      >
+        −
+      </button>
+      <span className="ip-qty__value">{value}</span>
+      <button
+        type="button"
+        className="ip-qty__btn"
+        onClick={onInc}
+        disabled={disableInc}
+        aria-label="increase"
+      >
+        +
+      </button>
+    </div>
   )
 }
 
 // === Helpers ===
+
+function extractCardNumber(cardId: string | undefined): string {
+  if (!cardId) return ''
+  // "LAW-085" → "85"
+  const match = cardId.match(/[-_](\d+)$/)
+  if (!match) return ''
+  return parseInt(match[1], 10).toString()
+}
 
 function groupByAspect(rows: ResolvedRow[]): Array<{ key: string; displayName: string; rows: ResolvedRow[] }> {
   const groups = new Map<string, ResolvedRow[]>()
