@@ -21,6 +21,19 @@ import { extractPoolFromImages, type RawExtractResponse } from '@/lib/anthropic'
 import { matchExtractedRows } from '@/src/services/importPool/cardMatcher'
 import { getCachedCards, initializeCardCache } from '@/src/utils/cardCache'
 import { getSetConfig, getAllSetCodes } from '@/src/utils/setConfigs/index'
+import { appendFileSync } from 'fs'
+
+// Local-dev observability for the self-correcting loop. Each attempt's
+// invariant violations get appended to /tmp/import-pool-attempts.log so we
+// can tail it during prompt-tuning iteration.
+const ATTEMPT_LOG = '/tmp/import-pool-attempts.log'
+function logAttempt(line: string) {
+  try {
+    appendFileSync(ATTEMPT_LOG, `[${new Date().toISOString()}] ${line}\n`, 'utf8')
+  } catch {
+    // ignore — file logging is best-effort
+  }
+}
 
 // Cap upload payload at the platform layer. The handler still rejects >2 images
 // and oversized payloads, but the platform-level limit is what protects memory
@@ -107,6 +120,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     // 4. Call Claude. Self-correcting loop runs internally — checks invariants
     //    after each attempt and re-prompts with discrepancies for up to 3 attempts.
+    logAttempt(`=== EXTRACTION REQUEST (user=${session.id}) ===`)
     let raw: any
     try {
       raw = await extractPoolFromImages(
@@ -115,16 +129,31 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           ...(body.manualSetCode ? { setHint: body.manualSetCode } : {}),
           onAttempt: (attempt, issues) => {
             if (issues.length === 0) {
-              console.log(`[import-pool/extract] attempt ${attempt}: clean (no invariant violations)`)
+              const msg = `attempt ${attempt}: CLEAN (no invariant violations)`
+              console.log(`[import-pool/extract] ${msg}`)
+              logAttempt(msg)
             } else {
-              console.log(
-                `[import-pool/extract] attempt ${attempt}: ${issues.length} invariant violations — ${issues[0]}`,
-              )
+              const msg = `attempt ${attempt}: ${issues.length} invariant violations`
+              console.log(`[import-pool/extract] ${msg}`)
+              logAttempt(msg)
+              for (const issue of issues) logAttempt(`  - ${issue}`)
             }
           },
         },
       )
+      // Log final extraction summary so we can see what each row got mapped to
+      const ldrs = raw.rows.filter((r: any) => r.type === 'Leader' && r.poolQty > 0)
+      const bs = raw.rows.filter((r: any) => r.type === 'Base' && r.poolQty > 0)
+      const others = raw.rows.filter((r: any) => r.type !== 'Leader' && r.type !== 'Base' && r.poolQty > 0)
+      const sumPool = raw.rows.reduce((s: number, r: any) => s + (Number(r.poolQty) || 0), 0)
+      const sumDeck = raw.rows.reduce((s: number, r: any) => s + (Number(r.deckQty) || 0), 0)
+      logAttempt(`final: setCode=${raw.header?.setCode || '?'} sumPool=${sumPool} sumDeck=${sumDeck}`)
+      logAttempt(`final: leaders(pool>0)=${ldrs.length} bases(pool>0)=${bs.length} other-rows(pool>0)=${others.length}`)
+      logAttempt(`leaders: ${ldrs.map((r: any) => `${r.name}:${r.poolQty}/${r.deckQty}`).join(', ')}`)
+      logAttempt(`bases: ${bs.map((r: any) => `${r.name}:${r.poolQty}/${r.deckQty}`).join(', ')}`)
+      logAttempt(`others: ${others.map((r: any) => `${r.name}:${r.poolQty}/${r.deckQty}`).join(', ')}`)
     } catch (err) {
+      logAttempt(`THROWN: ${(err as Error).message}`)
       console.error('Anthropic extraction failed:', err)
       const message = err instanceof Error ? err.message : 'Unknown extraction error'
       // Distinguish JSON-shape failures from upstream API failures
