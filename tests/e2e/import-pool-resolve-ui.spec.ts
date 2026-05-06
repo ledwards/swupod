@@ -259,5 +259,32 @@ test.describe('Import Pool — Resolve UI', () => {
       .innerText()
     console.log(`  Second section: "${secondSectionTitle.trim()}"`)
     expect(secondSectionTitle.trim().toLowerCase()).toBe('bases')
+
+    // === Persistence test: reload mid-Resolve must keep us on Resolve ===
+    // Inspect what we wrote to localStorage
+    const storedRaw = await page.evaluate(() => localStorage.getItem('import-pool-wizard-v1'))
+    console.log(`  localStorage size: ${storedRaw?.length || 0} chars`)
+    const storedPhase = await page.evaluate(() => {
+      const raw = localStorage.getItem('import-pool-wizard-v1')
+      if (!raw) return null
+      try { return JSON.parse(raw).phase } catch { return 'parse-error' }
+    })
+    console.log(`  localStorage phase: ${storedPhase}`)
+    expect(storedPhase).toBe('resolving')
+
+    // Reload the page
+    await page.reload()
+
+    // After reload: should still be on Resolve step (not Upload)
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(500)
+
+    const visibleH2 = await page.locator('h2').first().innerText()
+    console.log(`  Post-reload H2: "${visibleH2}"`)
+    expect(visibleH2).toContain('Resolve')
+
+    const postReloadRows = await page.locator('tbody tr.ip-row').count()
+    console.log(`  Post-reload row count: ${postReloadRows}`)
+    expect(postReloadRows).toBeGreaterThan(50)
   })
 })

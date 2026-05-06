@@ -353,6 +353,7 @@ function persistedShape(state: ImportPoolState) {
     activeBaseId: state.activeBaseId,
     title: state.title,
     warnings: state.warnings,
+    showOnlyPool: state.showOnlyPool,
   }
 }
 
@@ -372,9 +373,20 @@ function savePersisted(state: ImportPoolState) {
     return
   }
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(persistedShape(state)))
+    const serialized = JSON.stringify(persistedShape(state))
+    localStorage.setItem(STORAGE_KEY, serialized)
   } catch (err) {
-    console.warn('Import Pool: failed to persist wizard state', err)
+    // Most likely QuotaExceededError. Try a slim variant with images stripped
+    // so at least the extraction + UI state survives a refresh.
+    console.warn('[ImportPool] full persist failed, trying slim variant', err)
+    try {
+      const slim = persistedShape(state)
+      slim.images = [] // drop the ~1MB of base64 images
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(slim))
+      console.info('[ImportPool] slim persist succeeded (images dropped)')
+    } catch (slimErr) {
+      console.error('[ImportPool] slim persist also failed — wizard will not survive refresh', slimErr)
+    }
   }
 }
 
@@ -383,16 +395,23 @@ function lazyInit(): ImportPoolState {
   let raw: string | null = null
   try {
     raw = localStorage.getItem(STORAGE_KEY)
-  } catch {
+  } catch (err) {
+    console.warn('[ImportPool] localStorage.getItem threw — starting fresh', err)
     return INITIAL_STATE
   }
-  if (!raw) return INITIAL_STATE
+  if (!raw) {
+    console.info('[ImportPool] no persisted state — starting fresh')
+    return INITIAL_STATE
+  }
+  console.info(`[ImportPool] loading persisted state (${raw.length} chars)`)
   let persisted: any
   try {
     persisted = JSON.parse(raw)
-  } catch {
+  } catch (err) {
+    console.warn('[ImportPool] persisted state is malformed JSON — starting fresh', err)
     return INITIAL_STATE
   }
+  console.info(`[ImportPool] persisted phase=${persisted.phase}, images=${persisted.images?.length || 0}, hasExtraction=${!!persisted.extraction}`)
   // Park transient phases at their resting phase so a refresh mid-API-call
   // doesn't leave the UI stuck on a spinner.
   let phase = persisted.phase as Phase
