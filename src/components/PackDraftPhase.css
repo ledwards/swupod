@@ -493,6 +493,28 @@
   }
 }
 
+/* Chaos set label bar */
+.pack-set-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 1px solid;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+}
+
+.pack-set-name {
+  opacity: 0.9;
+}
+
+.pack-set-code {
+  opacity: 0.6;
+}
+
 /* Passing message */
 .passing-message {
   text-align: center;

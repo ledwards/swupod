@@ -157,6 +157,11 @@
   }
 }
 
+.leader-set-code {
+  opacity: 0.55;
+  font-size: 0.75em;
+}
+
 .leader-info-item .leader-aspects {
   display: flex;
   align-items: center;

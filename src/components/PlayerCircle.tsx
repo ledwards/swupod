@@ -12,6 +12,7 @@ interface Leader {
   id?: string
   instanceId?: string
   name: string
+  set?: string
   aspects?: string[]
   imageUrl?: string
   backImageUrl?: string
@@ -222,7 +223,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
                 onMouseEnter={() => handleLeaderMouseEnter(chosenLeader)}
                 onMouseLeave={handleLeaderMouseLeave}
               >
-                {chosenLeader.name}
+                {chosenLeader.name}{chosenLeader.set && draft?.settings?.draftMode === 'chaos' && <span className="leader-set-code"> ({chosenLeader.set})</span>}
               </span>
               {renderAspectIcons(chosenLeader.aspects)}
             </div>
@@ -250,7 +251,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
                 onMouseEnter={() => handleLeaderMouseEnter(leader)}
                 onMouseLeave={handleLeaderMouseLeave}
               >
-                {leader.name}
+                {leader.name}{leader.set && draft?.settings?.draftMode === 'chaos' && <span className="leader-set-code"> ({leader.set})</span>}
               </span>
               {renderAspectIcons(leader.aspects)}
             </div>
@@ -308,7 +309,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
                     onMouseEnter={() => handleLeaderMouseEnter(leader)}
                     onMouseLeave={handleLeaderMouseLeave}
                   >
-                    {leader.name}
+                    {leader.name}{leader.set && draft?.settings?.draftMode === 'chaos' && <span className="leader-set-code"> ({leader.set})</span>}
                   </span>
                   {renderAspectIcons(leader.aspects)}
                 </div>
@@ -328,7 +329,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
                     onMouseEnter={() => handleLeaderMouseEnter(leader)}
                     onMouseLeave={handleLeaderMouseLeave}
                   >
-                    {leader.name}
+                    {leader.name}{leader.set && draft?.settings?.draftMode === 'chaos' && <span className="leader-set-code"> ({leader.set})</span>}
                   </span>
                   {renderAspectIcons(leader.aspects)}
                 </div>

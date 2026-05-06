@@ -6,6 +6,7 @@ import PlayerCircle from './PlayerCircle'
 import DraftableCard from './DraftableCard'
 import TimerPanel from './TimerPanel'
 import { getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
+import { getSetConfig } from '../utils/setConfigs'
 import './LeaderDraftPhase.css'
 
 interface Leader {
@@ -274,6 +275,19 @@ function LeaderDraftPhase({
                 ))}
             </div>
           </div>
+
+          {draft?.settings?.draftMode === 'chaos' && (() => {
+            const chaosSets = draft?.settings?.chaosSets
+            const setCode = chaosSets?.[round - 1]
+            const config = setCode ? getSetConfig(setCode) : null
+            const color = config?.color || '#9B59B6'
+            return (
+              <div className="pack-set-bar" style={{ background: `${color}22`, borderColor: `${color}88` }}>
+                <span className="pack-set-name">{config?.setName || setCode}</span>
+                <span className="pack-set-code">({setCode})</span>
+              </div>
+            )
+          })()}
 
           <div className="available-leaders">
             <h3>
