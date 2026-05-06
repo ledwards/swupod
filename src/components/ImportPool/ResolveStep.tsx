@@ -87,27 +87,11 @@ export default function ResolveStep({ importPool }: Props) {
   const anomalies = useMemo<Anomaly[]>(() => {
     const list: Anomaly[] = []
 
-    // Sum-level totals. These ALWAYS fire when the pool or deck totals are
-    // off — they're the highest-signal issues the user wants to land on
-    // first when they open the wizard. Target the toolbar so the
-    // RunningTotals strip flashes.
-    if (validation.poolCount !== validation.poolTarget) {
-      const diff = validation.poolTarget - validation.poolCount
-      const dir = diff > 0 ? `missing ${diff}` : `over by ${-diff}`
-      list.push({
-        kind: 'section',
-        targetId: 'ip-running-totals',
-        label: `Pool total: ${validation.poolCount}/${validation.poolTarget} (${dir})`,
-      })
-    }
-    // Deck >35 is the "OCR over-counted PLAYED marks" signal.
-    if (validation.deckCount > 35) {
-      list.push({
-        kind: 'section',
-        targetId: 'ip-running-totals',
-        label: `Deck total: ${validation.deckCount} cards — typical sealed deck is 30–32; verify PLAYED marks`,
-      })
-    }
+    // Issue pager is for resolving INDIVIDUAL data points (rows the user
+    // can fix by picking, retyping a qty, or verifying against the source
+    // photo). Sum-level totals like "Pool=71/96" don't belong here — they
+    // already render in the running-totals strip and there's no specific
+    // row to land on. Per-row issues + section-level under/over flags only.
 
     // Section gaps from the route's typical-range check.
     for (const gap of state.sectionGaps) {
@@ -163,7 +147,7 @@ export default function ResolveStep({ importPool }: Props) {
       }
     }
     return list
-  }, [state.resolvedRows, state.sectionGaps, validation.poolCount, validation.poolTarget, validation.deckCount])
+  }, [state.resolvedRows, state.sectionGaps])
 
   const anomalyKeys = anomalies.map((a) => a.targetId)
 
@@ -322,17 +306,16 @@ export default function ResolveStep({ importPool }: Props) {
               →
             </button>
           </div>
-          {state.images.length > 0 && (
-            <button
-              type="button"
-              className="ip-icon-btn"
-              onClick={() => openSourceFor(null)}
-              title="View source sheet"
-            >
-              <span aria-hidden="true">🔍</span>
-              <span className="ip-icon-btn__label">Source</span>
-            </button>
-          )}
+          <button
+            type="button"
+            className="ip-icon-btn"
+            onClick={() => openSourceFor(null)}
+            title={state.images.length > 0 ? 'View source sheet' : 'Source images dropped — re-upload to see them'}
+            disabled={state.images.length === 0}
+          >
+            <span aria-hidden="true">🔍</span>
+            <span className="ip-icon-btn__label">Source</span>
+          </button>
         </div>
       </div>
       {anomalies.length > 0 && currentAnomalyLabel && (
@@ -421,22 +404,23 @@ export default function ResolveStep({ importPool }: Props) {
                         </span>
                       )}
                       {group.displayName}
-                      {state.images.length > 0 && (
-                        <button
-                          type="button"
-                          className="ip-section__source-btn"
-                          onClick={() =>
-                            openSourceFor(SECTION_NAME_BY_GROUP_KEY[group.key] || null)
-                          }
-                          title={`View source — ${group.displayName} section`}
-                          aria-label={`View source sheet for ${group.displayName}`}
-                        >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="11" cy="11" r="7"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                          </svg>
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        className="ip-section__source-btn"
+                        onClick={() =>
+                          openSourceFor(SECTION_NAME_BY_GROUP_KEY[group.key] || null)
+                        }
+                        title={state.images.length > 0
+                          ? `View source — ${group.displayName} section`
+                          : 'Source images dropped — re-upload to see them'}
+                        aria-label={`View source sheet for ${group.displayName}`}
+                        disabled={state.images.length === 0}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="11" cy="11" r="7"></circle>
+                          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                      </button>
                     </span>
                     <span className="ip-section__count">
                       {group.rows.reduce((s, r) => s + r.deckQty, 0)}
@@ -1198,22 +1182,23 @@ function GridView({
                 </span>
               )}
               {group.displayName}
-              {hasSourceImages && (
-                <button
-                  type="button"
-                  className="ip-section__source-btn"
-                  onClick={() =>
-                    openSource(SECTION_NAME_BY_GROUP_KEY[group.key] || null)
-                  }
-                  title={`View source — ${group.displayName} section`}
-                  aria-label={`View source sheet for ${group.displayName}`}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="11" cy="11" r="7"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                  </svg>
-                </button>
-              )}
+              <button
+                type="button"
+                className="ip-section__source-btn"
+                onClick={() =>
+                  openSource(SECTION_NAME_BY_GROUP_KEY[group.key] || null)
+                }
+                title={hasSourceImages
+                  ? `View source — ${group.displayName} section`
+                  : 'Source images dropped — re-upload to see them'}
+                aria-label={`View source sheet for ${group.displayName}`}
+                disabled={!hasSourceImages}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="7"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </button>
             </span>
             <span className="ip-section__count">
               {group.rows.reduce((s, r) => s + r.deckQty, 0)}

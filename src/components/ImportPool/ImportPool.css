@@ -112,17 +112,23 @@
   margin-bottom: 12px;
 }
 
-/* Header actions cluster — Re-upload + Re-import + Cancel Import sit side by side */
+/* h1 matches the format pages' page-header sizing (Chaos Sealed, Pack Wars,
+ * Pack Blitz all use 2.5rem white). The Import Pool wizard sits in this
+ * same family of /formats/* and /import/ pages — same product, same look. */
+.import-pool-header__top h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  margin: 0;
+  line-height: 1.1;
+}
+
+/* Header actions cluster — Re-import + Cancel Import sit side by side */
 .import-pool-header__actions {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-}
-
-.import-pool-header h1 {
-  font-size: 28px;
-  margin: 0;
 }
 
 /* Step bar sticks to the top of the viewport so the user always knows
@@ -1001,9 +1007,12 @@
   color: rgba(255, 255, 255, 0.95);
 }
 
+/* Zero values stay legible — the cell still has a confidence tint behind it
+ * (we want the user to see the tint EVEN on 0/blank cells), so the number
+ * itself just shifts to a slightly muted weight rather than fading out. */
 .ip-qty__value--zero {
-  color: rgba(255, 255, 255, 0.25);
-  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
 }
 
 .ip-row__qty-static {

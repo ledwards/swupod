@@ -313,9 +313,30 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
         ),
       }
     case 'SET_ACTIVE_LEADER':
-      return { ...state, activeLeaderId: action.cardId }
+      // Setting an active leader sets that row's deckQty=1 and forces all
+      // other leader rows back to deckQty=0 — exactly one leader is active
+      // at a time. Without this the PLAYED-column number for a clicked
+      // leader wouldn't change visibly (only activeLeaderId does), which
+      // looks like the click did nothing.
+      return {
+        ...state,
+        activeLeaderId: action.cardId,
+        resolvedRows: state.resolvedRows.map((r) =>
+          r.card?.isLeader
+            ? { ...r, deckQty: r.card.id === action.cardId ? 1 : 0 }
+            : r,
+        ),
+      }
     case 'SET_ACTIVE_BASE':
-      return { ...state, activeBaseId: action.cardId }
+      return {
+        ...state,
+        activeBaseId: action.cardId,
+        resolvedRows: state.resolvedRows.map((r) =>
+          r.card?.isBase
+            ? { ...r, deckQty: r.card.id === action.cardId ? 1 : 0 }
+            : r,
+        ),
+      }
     case 'SET_TITLE':
       return { ...state, title: action.title.slice(0, 80) }
     case 'SUBMIT_START':

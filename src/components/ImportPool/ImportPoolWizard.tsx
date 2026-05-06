@@ -29,10 +29,10 @@ export default function ImportPoolWizard() {
 
   const hasWork = state.images.length > 0 || state.extraction !== null
   const canReImport = state.images.length > 0 && state.phase !== 'extracting' && state.phase !== 'submitting'
-  // Re-upload jumps from a later phase back to Upload. Only meaningful when
-  // we ARE on a later phase — and is destructive enough to warrant a confirm
-  // since the user can replace photos and lose import edits.
-  const canReUpload = ['resolving', 'confirming'].includes(state.phase)
+  // Step 1 in the wizard step bar is clickable on later phases — that's the
+  // back-to-upload affordance. The Re-upload header button was redundant
+  // with that and got pulled.
+  const canGoBackToUpload = ['resolving', 'confirming'].includes(state.phase)
   const handleStartOver = () => {
     if (confirm('Cancel this import? All uploaded images and imported data will be discarded.')) reset()
   }
@@ -45,7 +45,7 @@ export default function ImportPoolWizard() {
       runExtraction()
     }
   }
-  const handleReUpload = () => {
+  const handleGoToUpload = () => {
     if (
       confirm(
         'Go back to the Upload step? Your uploaded images stay; replacing or re-importing will discard any manual edits.',
@@ -60,16 +60,6 @@ export default function ImportPoolWizard() {
       <div className="import-pool-header__top">
         <h1>Import Pool</h1>
         <div className="import-pool-header__actions">
-          {canReUpload && (
-            <Button variant="secondary" size="sm" onClick={handleReUpload} title="Go back to the Upload step">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="17 8 12 3 7 8"></polyline>
-                <line x1="12" y1="3" x2="12" y2="15"></line>
-              </svg>
-              Re-upload
-            </Button>
-          )}
           {canReImport && (
             <Button variant="secondary" size="sm" onClick={handleReImport} title="Re-import from the uploaded images">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -101,8 +91,8 @@ export default function ImportPoolWizard() {
         <Step
           label="1 · Upload"
           isActiveStep={isActive('upload', state.phase)}
-          isClickable={canReUpload}
-          onClick={handleReUpload}
+          isClickable={canGoBackToUpload}
+          onClick={handleGoToUpload}
         />
         <Step label="2 · Review" isActiveStep={isActive('resolve', state.phase)} />
         <Step label="3 · Confirm" isActiveStep={isActive('confirm', state.phase)} />
