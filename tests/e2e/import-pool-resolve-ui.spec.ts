@@ -236,7 +236,7 @@ test.describe('Import Pool — Resolve UI', () => {
 
     // Toggle "show all rows" and re-count
     // Click the "All" filter button in the segmented row-filter group
-    await page.click('button.ip-view-toggle__btn:has-text("All")')
+    await page.click('.ip-toggle-group button:has-text("All")')
     await page.waitForTimeout(200)
     const allRowCount = await page.locator('tbody tr.ip-row').count()
     console.log(`  Rendered row count (all): ${allRowCount}`)

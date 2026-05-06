@@ -297,18 +297,18 @@
   flex-wrap: wrap;
 }
 
-/* Error pager — nav between needs-attention rows. Uses the brand "interactive
- * blue" so it reads as nav UI, not as a warning state (warnings on rows stay
- * yellow). */
+/* Error pager — nav between needs-attention rows. Yellow because it IS a
+ * warning-state widget — stepping through real issues. Same yellow as the
+ * row attention markers and the row-flash animation. */
 .ip-error-pager {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 4px 8px;
-  background: rgba(33, 150, 243, 0.12);
-  border: 1px solid rgba(33, 150, 243, 0.55);
+  background: rgba(255, 217, 102, 0.12);
+  border: 1px solid rgba(255, 217, 102, 0.55);
   border-radius: 4px;
-  color: #6cb6ff;
+  color: #ffd966;
   font-size: 11px;
   font-variant-numeric: tabular-nums;
 }
@@ -325,9 +325,9 @@
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(33, 150, 243, 0.5);
+  border: 1px solid rgba(255, 217, 102, 0.5);
   border-radius: 3px;
-  color: #6cb6ff;
+  color: #ffd966;
   font-size: 13px;
   cursor: pointer;
   font-family: inherit;
@@ -335,8 +335,8 @@
 
 @media (hover: hover) and (pointer: fine) {
   .ip-error-pager__btn:hover {
-    background: rgba(33, 150, 243, 0.25);
-    border-color: rgba(33, 150, 243, 1);
+    background: rgba(255, 217, 102, 0.25);
+    border-color: rgba(255, 217, 102, 1);
   }
 }
 
@@ -354,22 +354,22 @@
 
 /* Detail line shown under the toolbar when an anomaly is selected. Joined
  * to the toolbar via the .ip-sticky-stack wrapper so it stays visible while
- * scrolling. Uses the same interactive-blue tone as the pager. Blurred
- * background so rows scrolling underneath read as background, not bleed. */
+ * scrolling. Yellow tone, matching the pager — issues are warnings.
+ * Dark blurred backdrop so scrolling rows underneath read as background. */
 .ip-anomaly-detail {
   margin: 0;
   padding: 8px 12px;
-  background: rgba(20, 50, 90, 0.85);
-  border: 1px solid rgba(33, 150, 243, 0.45);
+  background: rgba(60, 50, 20, 0.88);
+  border: 1px solid rgba(255, 217, 102, 0.45);
   border-radius: 6px;
   font-size: 13px;
-  color: rgba(220, 235, 255, 0.95);
+  color: rgba(255, 230, 150, 0.95);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
 
 .ip-anomaly-detail strong {
-  color: #6cb6ff;
+  color: #ffd966;
   margin-right: 4px;
 }
 
@@ -430,36 +430,13 @@
   }
 }
 
-/* Table/grid view toggle — segmented control style */
-.ip-view-toggle {
+/* Toggle group — clusters Button variant="toggle" instances tightly so they
+ * read as a segmented control. The buttons themselves come from
+ * src/components/Button.tsx; this just lays them out. */
+.ip-toggle-group {
   display: inline-flex;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.45);
-}
-
-.ip-view-toggle__btn {
-  padding: 6px 10px;
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 16px;
-  line-height: 1;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.ip-view-toggle__btn--active {
-  background: rgba(255, 217, 102, 0.18);
-  color: #ffd966;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .ip-view-toggle__btn:not(.ip-view-toggle__btn--active):hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: rgba(255, 255, 255, 0.9);
-  }
+  align-items: stretch;
+  gap: 4px;
 }
 
 /* === Grid view === */

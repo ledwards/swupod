@@ -154,54 +154,64 @@ export default function ResolveStep({ importPool }: Props) {
       <div className="ip-toolbar">
         <RunningTotals validation={validation} />
         <div className="ip-toolbar__group">
-          <div className="ip-view-toggle" role="group" aria-label="View mode">
-            <button
-              type="button"
-              className={`ip-view-toggle__btn ${state.viewMode === 'table' ? 'ip-view-toggle__btn--active' : ''}`}
+          <div className="ip-toggle-group" role="group" aria-label="View mode">
+            <Button
+              variant="toggle"
+              glowColor="blue"
+              size="sm"
+              active={state.viewMode === 'table'}
               onClick={() => setViewMode('table')}
               title="Table view"
               aria-pressed={state.viewMode === 'table'}
             >
               <span aria-hidden="true">≡</span>
-            </button>
-            <button
-              type="button"
-              className={`ip-view-toggle__btn ${state.viewMode === 'grid' ? 'ip-view-toggle__btn--active' : ''}`}
+            </Button>
+            <Button
+              variant="toggle"
+              glowColor="blue"
+              size="sm"
+              active={state.viewMode === 'grid'}
               onClick={() => setViewMode('grid')}
               title="Grid view"
               aria-pressed={state.viewMode === 'grid'}
             >
               <span aria-hidden="true">▦</span>
-            </button>
+            </Button>
           </div>
-          <div className="ip-view-toggle" role="group" aria-label="Row filter">
-            <button
-              type="button"
-              className={`ip-view-toggle__btn ${state.viewFilter === 'all' ? 'ip-view-toggle__btn--active' : ''}`}
+          <div className="ip-toggle-group" role="group" aria-label="Row filter">
+            <Button
+              variant="toggle"
+              glowColor="blue"
+              size="sm"
+              active={state.viewFilter === 'all'}
               onClick={() => setViewFilter('all')}
               title="Show all sheet rows"
               aria-pressed={state.viewFilter === 'all'}
             >
               All
-            </button>
-            <button
-              type="button"
-              className={`ip-view-toggle__btn ${state.viewFilter === 'pool' ? 'ip-view-toggle__btn--active' : ''}`}
+            </Button>
+            <Button
+              variant="toggle"
+              glowColor="blue"
+              size="sm"
+              active={state.viewFilter === 'pool'}
               onClick={() => setViewFilter('pool')}
               title="Show only your pool"
               aria-pressed={state.viewFilter === 'pool'}
             >
               Pool
-            </button>
-            <button
-              type="button"
-              className={`ip-view-toggle__btn ${state.viewFilter === 'deck' ? 'ip-view-toggle__btn--active' : ''}`}
+            </Button>
+            <Button
+              variant="toggle"
+              glowColor="blue"
+              size="sm"
+              active={state.viewFilter === 'deck'}
               onClick={() => setViewFilter('deck')}
               title="Show only your deck"
               aria-pressed={state.viewFilter === 'deck'}
             >
               Deck
-            </button>
+            </Button>
           </div>
           {anomalies.length > 0 && (
             <div className="ip-error-pager" role="group" aria-label="Issue navigator">
