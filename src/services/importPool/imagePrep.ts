@@ -34,10 +34,14 @@ interface ResizeOptions {
   quality?: number
 }
 
+// 2576 is Opus 4.7's high-res vision ceiling — anything larger gets downsampled
+// server-side and wastes upload bandwidth. Anything smaller throws away detail
+// the model could have used to read tiny tally marks. JPEG quality 0.9 to keep
+// the marks crisp on the upper-end resolution.
 const DEFAULT_OPTS: Required<ResizeOptions> = {
-  maxWidth: 2048,
-  maxHeight: 2048,
-  quality: 0.85,
+  maxWidth: 2576,
+  maxHeight: 2576,
+  quality: 0.9,
 }
 
 export async function resizeImage(

@@ -106,7 +106,9 @@ CRITICAL READING RULES — these are where extraction goes wrong if you're not c
    - deckQty = how many of those copies are in the main deck (0 to poolQty, sum = ~50).
    - Rows for cards the player doesn't own should be poolQty=0, deckQty=0.
 
-5. **Total invariant.** Sum of poolQty across ALL rows must equal exactly 96 (6 leaders + 6 bases + 84 other). If your totals don't add up, re-check rows you marked qty>0 — you likely added marks where there are none.
+5. **Total invariant.** Sum of poolQty across ALL rows must equal exactly 96 (6 leaders + 6 bases + 84 other). Before responding, mentally tally your output and verify it sums to 96. If too few, re-scan dense sections you may have skipped — the AGGRESSION, CUNNING, MULTICOLOR, HEROISM, VILLAINY, and NO ASPECT sections often appear on the second photo and are easy to under-count. If too many, you've added phantom marks — empty cells are poolQty=0, do NOT mark 1 for empty rows.
+
+5a. **Equal attention to every photo.** If two photos are provided, the second photo has just as many marked rows as the first. Common failure mode: thoroughly extracting the LEADER/BASE/VIGILANCE/COMMAND sections on photo 1 but rushing through the AGGRESSION/CUNNING/MULTICOLOR/HEROISM/VILLAINY/NO ASPECT sections on photo 2. Process every section on every photo with equal care.
 
 6. **For each row, return:**
    - "name": the printed card name (e.g. "Han Solo")
@@ -365,21 +367,76 @@ function validateExtraction(parsed: any): string[] {
   return issues
 }
 
-function buildCorrectionMessage(issues: string[], attempt: number): string {
-  return [
+// Typical per-primary-section card-count ranges for an 84-non-leader/base sealed pool.
+// If a section's row count falls below the low end, we flag it as likely under-extracted.
+const SECTION_TYPICAL_RANGES: Array<{ key: string; matcher: (a: string[]) => boolean; low: number; high: number }> = [
+  { key: 'Vigilance', matcher: (a) => a.includes('Vigilance') && !a.some((x) => ['Command', 'Aggression', 'Cunning'].includes(x)), low: 5, high: 18 },
+  { key: 'Command', matcher: (a) => a.includes('Command') && !a.some((x) => ['Vigilance', 'Aggression', 'Cunning'].includes(x)), low: 5, high: 18 },
+  { key: 'Aggression', matcher: (a) => a.includes('Aggression') && !a.some((x) => ['Vigilance', 'Command', 'Cunning'].includes(x)), low: 5, high: 18 },
+  { key: 'Cunning', matcher: (a) => a.includes('Cunning') && !a.some((x) => ['Vigilance', 'Command', 'Aggression'].includes(x)), low: 5, high: 18 },
+  { key: 'Heroism (only)', matcher: (a) => a.length === 1 && a[0] === 'Heroism', low: 1, high: 8 },
+  { key: 'Villainy (only)', matcher: (a) => a.length === 1 && a[0] === 'Villainy', low: 1, high: 8 },
+  { key: 'Multicolor', matcher: (a) => a.filter((x) => ['Vigilance', 'Command', 'Aggression', 'Cunning'].includes(x)).length >= 2, low: 8, high: 30 },
+  { key: 'Neutral', matcher: (a) => a.length === 0, low: 1, high: 8 },
+]
+
+function diagnoseSectionGaps(parsed: any): string[] {
+  if (!parsed?.rows || !Array.isArray(parsed.rows)) return []
+  const nonLBRows = parsed.rows.filter((r: any) =>
+    r.type !== 'Leader' && r.type !== 'Base' && Number(r.poolQty) > 0,
+  )
+  const counts: Record<string, number> = {}
+  for (const r of nonLBRows) {
+    const aspects: string[] = Array.isArray(r.aspects) ? r.aspects : []
+    for (const range of SECTION_TYPICAL_RANGES) {
+      if (range.matcher(aspects)) {
+        counts[range.key] = (counts[range.key] || 0) + 1
+        break
+      }
+    }
+  }
+  const findings: string[] = []
+  for (const range of SECTION_TYPICAL_RANGES) {
+    const c = counts[range.key] || 0
+    if (c < range.low) {
+      findings.push(
+        `${range.key} section has only ${c} card(s) with poolQty>0. Typical sealed pool has ${range.low}-${range.high}. Re-scan this section.`,
+      )
+    } else if (c > range.high) {
+      findings.push(
+        `${range.key} section has ${c} cards with poolQty>0. Typical sealed pool has ${range.low}-${range.high}. You may have added phantom marks.`,
+      )
+    }
+  }
+  return findings
+}
+
+function buildCorrectionMessage(issues: string[], parsed: any, attempt: number): string {
+  const lines = [
     `Your extraction has the following problems (attempt ${attempt}):`,
     '',
     ...issues.map((i, idx) => `${idx + 1}. ${i}`),
+  ]
+
+  const sectionGaps = diagnoseSectionGaps(parsed)
+  if (sectionGaps.length > 0) {
+    lines.push('')
+    lines.push('Specific sections that look wrong:')
+    lines.push(...sectionGaps.map((g) => `  • ${g}`))
+  }
+
+  lines.push(
     '',
     'Re-scan the photograph(s) carefully and return the COMPLETE corrected extraction in the same JSON shape.',
-    'Pay special attention to:',
-    '- Leader/Base sections: most rows should be poolQty=0; only ~6 each should have poolQty=1.',
-    "- The PLAYED column: only 1 leader and 1 base have deckQty=1 (the player's active picks for the game).",
-    '- Sum of all poolQty values across every row MUST equal 96.',
-    '- A blank/empty cell is poolQty=0 (no copies). Do NOT mark 1 for empty rows.',
+    'CRITICAL guidance for this retry:',
+    '- Process EACH image with EQUAL attention. If you uploaded 2 photos, do not give the second photo less scrutiny than the first. Sections like AGGRESSION, CUNNING, MULTICOLOR, HEROISM, VILLAINY, NO ASPECT often appear on the second photo and need just as careful counting as VIGILANCE/COMMAND on the first.',
+    '- Sum of all poolQty values across every row MUST equal 96. If your previous totals oscillated between too-few and too-many, ANCHOR on the rows you are most CONFIDENT about, then carefully sweep dense sections you may have skipped or rushed.',
+    '- A blank/empty cell is poolQty=0. Marks (slashes, tallies, dots) indicate qty>0 — count them precisely.',
+    '- The MULTICOLOR section is typically the largest with 15-30 marked cards.',
     '',
     'Return JSON only.',
-  ].join('\n')
+  )
+  return lines.join('\n')
 }
 
 // === Public API ===
@@ -420,11 +477,19 @@ export async function extractPoolFromImages(
   // set picked upfront" failure mode anymore.
   const cardListContext = buildAllSetsCardListContext()
 
+  // Cache the image bytes — without this, every retry re-uploads the full
+  // ~20K-token vision payload. ttl='1h' so the cache survives across the
+  // multi-attempt loop and even across nearby user requests on the same images.
   const userContent: Anthropic.MessageParam['content'] = []
-  for (const image of images) {
+  for (let i = 0; i < images.length; i++) {
+    const image = images[i]
+    const isLast = i === images.length - 1
     userContent.push({
       type: 'image',
       source: { type: 'base64', media_type: image.mediaType, data: image.data },
+      // Mark cache point only on the last image so we don't blow the
+      // 4-breakpoint limit (we already have 2 on system + this 1 = 3).
+      ...(isLast ? { cache_control: { type: 'ephemeral' as const, ttl: '1h' as const } } : {}),
     })
   }
   userContent.push({
@@ -521,7 +586,7 @@ export async function extractPoolFromImages(
     messages.push({ role: 'assistant', content: response.content })
     messages.push({
       role: 'user',
-      content: [{ type: 'text', text: buildCorrectionMessage(issues, attempt) }],
+      content: [{ type: 'text', text: buildCorrectionMessage(issues, parsed, attempt) }],
     })
   }
 
