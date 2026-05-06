@@ -13,7 +13,7 @@ interface Props {
  * UploadStep — Step 1 of the Import Pool wizard (U7).
  *
  * Mobile-first. <input capture="environment"> opens the camera on mobile and
- * the file picker on desktop. Up to 2 images. "Extract Pool" runs CV.
+ * the file picker on desktop. Up to 2 images. "Import Pool" runs CV.
  */
 export default function UploadStep({ importPool }: Props) {
   const { state, addImage, removeImage, runExtraction } = importPool
@@ -76,7 +76,7 @@ export default function UploadStep({ importPool }: Props) {
 
       {error && (
         <div className="import-pool-error" role="alert">
-          <strong>Couldn't extract:</strong> {error.message}
+          <strong>Couldn't import:</strong> {error.message}
           {error.code === 'SET_DETECTION_FAILED' && (
             <span> The set name on the sheet didn't match a known set. Manual set picker coming in a future update.</span>
           )}

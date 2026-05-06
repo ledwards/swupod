@@ -112,7 +112,7 @@
   margin-bottom: 12px;
 }
 
-/* Header actions cluster — Re-extract + Cancel Import sit side by side */
+/* Header actions cluster — Re-upload + Re-import + Cancel Import sit side by side */
 .import-pool-header__actions {
   display: flex;
   align-items: center;
@@ -1377,7 +1377,7 @@
   }
 }
 
-/* Source-image modal (compare extraction against the original sheet) */
+/* Source-image modal (compare the import against the original sheet) */
 .ip-source-overlay {
   position: fixed;
   inset: 0;

@@ -17,7 +17,7 @@ interface Props {
 
 /**
  * SourceImageModal — view the original sheet images at full size so the user
- * can verify Claude's extraction against the source.
+ * can verify the import against the source.
  *
  * Pinch-to-zoom on touch devices works natively. On desktop, scroll-wheel +
  * cmd/ctrl zooms via the browser; we also add a tap-to-zoom toggle that
