@@ -133,6 +133,8 @@ export function ArenaView({
     onDensityChange: (density: 'small' | 'medium' | 'large') => void,
   ) => (
     <div className="arena-controls-row arena-section-controls">
+      <ArenaActionsBar mode={mode} />
+      <span className="arena-actions-separator" />
       <span className="arena-actions-label">VIEW:</span>
       <button
         className={`arena-action-btn arena-action-btn--white${showAspectPenalties ? ' active' : ''}`}
@@ -161,8 +163,6 @@ export function ArenaView({
         cardCount={cardCount}
       />
       <CardDensityToggle value={densityValue} onChange={onDensityChange} />
-      <span className="arena-actions-separator" />
-      <ArenaActionsBar mode={mode} />
     </div>
   )
 
