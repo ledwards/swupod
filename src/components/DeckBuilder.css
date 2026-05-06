@@ -1289,6 +1289,10 @@
   overflow: hidden;
 }
 
+.list-table tr.filtered-out {
+  opacity: 0.35;
+}
+
 .list-table thead {
   background: rgba(0, 0, 0, 0.8);
 }

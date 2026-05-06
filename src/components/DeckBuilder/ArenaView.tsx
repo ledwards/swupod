@@ -3,10 +3,9 @@
  * ArenaView Component
  *
  * Main arena view mode for the deckbuilder.
- * Split screen layout:
- * - Top: Leader/Base selector with collapsible sections
- * - Middle: Pool section with filters and grid
- * - Bottom: Deck section with cost columns
+ * Pool and Deck headers expose the same toolbar composition as the Playmat (grid) view:
+ * SortControls + Filter button + AspectPenaltyToggle + BulkMoveButtons,
+ * placed in a row below the section title.
  */
 
 import { useState, useCallback, useMemo, type MouseEvent } from 'react'
@@ -17,6 +16,10 @@ import { ArenaDeckSection } from './ArenaDeckSection'
 import { CollapsibleSectionHeader } from './CollapsibleSectionHeader'
 import { CardDensityToggle } from './CardDensityToggle'
 import { LeaderBaseSelector } from './LeaderBaseSelector'
+import { SortControls, type SortOption } from './SortControls'
+import { FilterWithModal } from './FilterWithModal'
+import { AspectPenaltyToggle } from './AspectPenaltyToggle'
+import { BulkMoveButtons } from './BulkMoveButtons'
 import type { CardData } from '../Card'
 
 export interface ArenaViewProps {
@@ -49,6 +52,15 @@ export function ArenaView({
     setPoolCardDensity,
     deckCardDensity,
     setDeckCardDensity,
+    arenaPoolSortOption,
+    setArenaPoolSortOption,
+    arenaDeckSortOption,
+    setArenaDeckSortOption,
+    poolFilterOpen,
+    setPoolFilterOpen,
+    deckFilterOpen,
+    setDeckFilterOpen,
+    setFilterAspectsExpanded,
   } = useDeckBuilder()
 
   const enableAspectPenalties = useCallback(() => {
@@ -109,6 +121,30 @@ export function ArenaView({
     onCardTouchEnd?.()
   }, [onCardTouchEnd])
 
+  // Toolbar row shared by pool and deck (mirrors playmat SectionHeader controls row)
+  const renderControlsRow = (
+    mode: 'pool' | 'deck',
+    sortValue: SortOption,
+    onSortChange: (value: SortOption) => void,
+    cardCount: number,
+    filterOpen: boolean,
+    setFilterOpen: (v: boolean) => void,
+  ) => (
+    <div className="arena-controls-row arena-section-controls">
+      <SortControls value={sortValue} onChange={onSortChange} />
+      <FilterWithModal
+        isOpen={filterOpen}
+        onToggle={() => setFilterOpen(!filterOpen)}
+        onClose={() => setFilterOpen(false)}
+        mode={mode}
+        onFilterAspectsExpandedChange={setFilterAspectsExpanded}
+        cardCount={cardCount}
+      />
+      <AspectPenaltyToggle sortOption={sortValue} />
+      <BulkMoveButtons mode={mode} />
+    </div>
+  )
+
   return (
     <div className="arena-view">
       {/* Small screen message */}
@@ -145,7 +181,7 @@ export function ArenaView({
         )}
       </div>
 
-      {/* Pool Section - collapsible, wrapped in card-block */}
+      {/* Pool Section */}
       <CollapsibleSectionHeader
         id="arena-pool-header"
         title={isLoading ? 'Pool' : `Pool (${poolCardCount})`}
@@ -158,6 +194,14 @@ export function ArenaView({
           />
         }
       />
+      {!isLoading && renderControlsRow(
+        'pool',
+        arenaPoolSortOption as SortOption,
+        setArenaPoolSortOption,
+        poolCardCount,
+        poolFilterOpen,
+        setPoolFilterOpen,
+      )}
       {poolExpanded && (
         <div className="card-block arena-pool-block">
           <div className="card-block-content">
@@ -180,7 +224,7 @@ export function ArenaView({
         </div>
       )}
 
-      {/* Deck Section - collapsible, wrapped in card-block */}
+      {/* Deck Section */}
       <CollapsibleSectionHeader
         id="arena-deck-header"
         title={isLoading ? 'Deck' : `Deck (${deckCardCount})`}
@@ -193,6 +237,14 @@ export function ArenaView({
           />
         }
       />
+      {!isLoading && renderControlsRow(
+        'deck',
+        arenaDeckSortOption as SortOption,
+        setArenaDeckSortOption,
+        deckCardCount,
+        deckFilterOpen,
+        setDeckFilterOpen,
+      )}
       {deckExpanded && (
         <div className="card-block arena-deck-block">
           <div className="card-block-content">

@@ -58,9 +58,11 @@ export function AspectPenaltyToggle({
   const cardPositions = cardPositionsProp ?? contextValue?.cardPositions ?? {}
   const showAspectPenalties = showAspectPenaltiesProp ?? contextValue?.showAspectPenalties ?? false
   const setShowAspectPenalties = setShowAspectPenaltiesProp ?? contextValue?.setShowAspectPenalties
-  // Only show when sorted by cost
+
+  // Aspect penalties only meaningful when sorting by cost.
+  // Render an invisible placeholder otherwise so the row layout stays the same in Pool & Deck.
   if (sortOption !== 'cost') {
-    return null
+    return <div aria-hidden="true" style={{ visibility: 'hidden', flex: '1 1 auto' }} />
   }
 
   // When leader and base are selected, show the toggle

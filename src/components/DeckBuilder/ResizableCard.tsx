@@ -25,6 +25,7 @@ export interface ResizableCardProps {
   active?: boolean
   inactive?: boolean
   disabled?: boolean
+  filteredOut?: boolean
   showPenalty?: boolean
   penaltyAmount?: number
   onClick?: (e: MouseEvent<HTMLDivElement>) => void
@@ -47,6 +48,7 @@ export function ResizableCard({
   active = false,
   inactive = false,
   disabled = false,
+  filteredOut = false,
   showPenalty = false,
   penaltyAmount = 0,
   onClick,
@@ -103,6 +105,7 @@ export function ResizableCard({
     active && card.isBase && 'active-base',
     inactive && 'inactive',
     disabled && 'disabled',
+    filteredOut && 'filtered-out',
     noHoverScale && 'no-hover-scale',
     className,
   ].filter(Boolean).join(' ')

@@ -151,6 +151,15 @@
   filter: grayscale(100%);
 }
 
+/* Filtered-out cards: greyed and dimmed but still clickable */
+.canvas-card.filtered-out {
+  opacity: 0.35;
+}
+.canvas-card.filtered-out .card-image,
+.canvas-card.filtered-out .card-placeholder {
+  filter: grayscale(100%);
+}
+
 /* ==========================================================================
    Card variant styles (foil, hyperspace, showcase)
    ========================================================================== */

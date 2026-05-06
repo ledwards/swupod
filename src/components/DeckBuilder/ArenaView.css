@@ -117,6 +117,15 @@
   filter: grayscale(100%);
 }
 
+/* Filtered-out cards: dimmed and greyed but still clickable */
+.resizable-card.filtered-out {
+  opacity: 0.35;
+}
+.resizable-card.filtered-out .card-image,
+.resizable-card.filtered-out .card-placeholder {
+  filter: grayscale(100%);
+}
+
 /* Inactive state - for non-selected leaders/bases in arena mode */
 .resizable-card.inactive .card-image {
   filter: grayscale(100%);
@@ -242,6 +251,22 @@
 .arena-pool-block,
 .arena-deck-block {
   width: 100%;
+}
+
+/* Section controls row — same composition as Playmat SectionHeader controls row.
+   Forces inline (no wrap) so all controls live on one line. */
+.arena-section-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+  overflow-x: auto;
+}
+
+.arena-section-controls > * {
+  flex-shrink: 0;
 }
 
 /* ==========================================================================
@@ -741,6 +766,71 @@
 
 .arena-pool-grid--small {
   row-gap: 2px;
+}
+
+/* Aspect-mode columns: each major column is split into 2 sub-columns (Units / Non-Units). */
+.arena-aspect-column .arena-cost-header {
+  flex-wrap: wrap;
+}
+
+.arena-multi-aspect-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.arena-aspect-column-split {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.arena-aspect-subcolumn {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.arena-subcolumn-label {
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.75);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 2px;
+  margin-bottom: 6px;
+}
+
+/* Cap card width within each sub-column so cards stay near cost-mode size. */
+.arena-aspect-subcolumn .arena-card-stack {
+  max-width: 110px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Pool grouped blocks (aspect/type modes) */
+.arena-pool-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.arena-pool-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+.arena-pool-group-header {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  background: rgb(30, 30, 30);
+  border-radius: 4px;
 }
 
 /* ==========================================================================

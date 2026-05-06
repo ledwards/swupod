@@ -117,6 +117,8 @@ export function PoolListSection({
   const setShowDeckAspectPenalties = contextValue?.setShowDeckAspectPenalties ?? contextValue?.setShowAspectPenalties
   const showPoolAspectPenalties = contextValue?.showPoolAspectPenalties ?? false
   const setShowPoolAspectPenalties = contextValue?.setShowPoolAspectPenalties
+  const cardMatchesFilters = contextValue?.cardMatchesFilters
+  const isCardFilteredOut = (card: CardData) => cardMatchesFilters ? !cardMatchesFilters(card) : false
 
   const deckCardPositions: CardWithData[] = Object.entries(cardPositions)
     .filter(([_, pos]) => pos.section === 'deck' && pos.visible && !pos.card.isBase && !pos.card.isLeader && pos.enabled !== false)
@@ -129,8 +131,9 @@ export function PoolListSection({
   // Render card row for deck table
   const renderDeckCardRow = (cardId: string, card: CardData, idx: number, keyPrefix: string) => {
     const aspectSymbols = getAspectIcons(card)
+    const filteredOut = isCardFilteredOut(card)
     return (
-      <tr key={`${keyPrefix}-${cardId}-${idx}`}>
+      <tr key={`${keyPrefix}-${cardId}-${idx}`} className={filteredOut ? 'filtered-out' : undefined}>
         <td>
           <input
             type="checkbox"
@@ -479,9 +482,11 @@ export function PoolListSection({
         <tbody>
           {sortedSideboard.map(({ cardId, card }, idx) => {
             const aspectSymbols = getAspectIcons(card)
+            const filteredOut = isCardFilteredOut(card)
             return (
               <tr
                 key={`sideboard-${cardId}-${idx}`}
+                className={filteredOut ? 'filtered-out' : undefined}
                 onMouseEnter={(e) => onCardHover(cardId, card, e)}
                 onMouseLeave={onCardLeave}
               >

@@ -45,7 +45,7 @@ export function DeckBuilderProvider({
   // UI preferences
   const [showAspectPenalties, setShowAspectPenalties] = useState(false)
   const [viewMode, setViewMode] = useState('arena') // 'grid', 'list', or 'arena'
-  const [poolSortOption, setPoolSortOption] = useState('aspect')
+  const [poolSortOption, setPoolSortOption] = useState('cost')
   const [deckSortOption, setDeckSortOption] = useState('cost')
 
   // Derived values

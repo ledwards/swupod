@@ -2,19 +2,15 @@
 /**
  * AspectFilterModal Component
  *
- * Modal for filtering cards by aspect. Can operate in "deck" or "pool" mode.
- * In deck mode, it shows which cards are in the deck.
- * In pool mode, it shows which cards are in the pool (sideboard).
+ * Visibility filter — checkboxes mark which aspect combos are SHOWN.
+ * Filtered-out cards stay in their section but render greyed out.
+ * Does NOT move cards.
  *
- * Can be used with props or with DeckBuilderContext:
- *   // With props:
- *   <AspectFilterModal isOpen={true} cardPositions={...} onMoveCards={...} />
- *
- *   // With context (inside DeckBuilderProvider):
- *   <AspectFilterModal isOpen={true} mode="deck" />
+ * Filter keys are exact aspect-combo keys: 'Vigilance' (mono), 'Vigilance|Villainy', etc.
+ * 'Neutral' for no-aspect cards.
  */
 
-import type { MouseEvent } from 'react'
+import { useMemo, type MouseEvent } from 'react'
 import Button from '../Button'
 import AspectIcon from '../AspectIcon'
 import { calculateAspectPenalty } from '../../services/cards/aspectPenalties'
@@ -25,7 +21,14 @@ import type { BulkMoveMode } from './BulkMoveButtons'
 type AspectSize = 'small' | 'medium' | 'large'
 type IconSize = 'sm' | 'md' | 'lg'
 
-// Helper to get aspect symbol - wraps AspectIcon for inline display
+const NEUTRAL_KEY = 'Neutral'
+
+// Combo key from a card's aspects: sorted, joined with '|'. No aspects → 'Neutral'.
+const comboKeyFor = (aspects: string[] | undefined): string => {
+  if (!aspects || aspects.length === 0) return NEUTRAL_KEY
+  return [...aspects].sort().join('|')
+}
+
 const getAspectSymbol = (aspect: string, size: AspectSize = 'medium') => {
   const sizeMap: Record<AspectSize, IconSize> = { 'small': 'sm', 'medium': 'md', 'large': 'lg' }
   return <AspectIcon aspect={aspect} size={sizeMap[size] || 'md'} />
@@ -36,7 +39,6 @@ export interface AspectFilterModalProps {
   onClose?: () => void
   mode?: BulkMoveMode
   cardPositions?: Record<string, CardPosition>
-  onMoveCards?: (fn: (prev: Record<string, CardPosition>) => Record<string, CardPosition>) => void
   activeLeader?: string | null
   activeBase?: string | null
   filterAspectsExpanded?: Record<string, boolean>
@@ -49,108 +51,78 @@ export function AspectFilterModal({
   onClose,
   mode = 'deck',
   cardPositions: cardPositionsProp,
-  onMoveCards: onMoveCardsProp,
   activeLeader: activeLeaderProp,
   activeBase: activeBaseProp,
   filterAspectsExpanded: filterAspectsExpandedProp,
   onFilterAspectsExpandedChange: onFilterAspectsExpandedChangeProp,
   cardCount: cardCountProp,
 }: AspectFilterModalProps) {
-  // Try to get values from context, fall back to props
   let contextValue: ReturnType<typeof useDeckBuilder> | null = null
   try {
     contextValue = useDeckBuilder()
   } catch {
-    // Not inside a provider, use props only
+    // Not inside a provider
   }
 
-  // Use props if provided, otherwise use context
   const cardPositions = cardPositionsProp ?? contextValue?.cardPositions ?? {}
-  const onMoveCards = onMoveCardsProp ?? contextValue?.setCardPositions
   const activeLeader = activeLeaderProp ?? contextValue?.activeLeader
   const activeBase = activeBaseProp ?? contextValue?.activeBase
   const filterAspectsExpanded = filterAspectsExpandedProp ?? contextValue?.filterAspectsExpanded ?? {}
   const onFilterAspectsExpandedChange = onFilterAspectsExpandedChangeProp ?? contextValue?.setFilterAspectsExpanded
-  const moveCardsToDeck = contextValue?.moveCardsToDeck
-  const moveCardsToPool = contextValue?.moveCardsToPool
 
-  if (!isOpen) return null
+  const aspectFilters = contextValue?.aspectFilters ?? {}
+  const setAspectFilters = contextValue?.setAspectFilters
+  const inAspectFilter = contextValue?.inAspectFilter ?? true
+  const setInAspectFilter = contextValue?.setInAspectFilter
+  const outAspectFilter = contextValue?.outAspectFilter ?? true
+  const setOutAspectFilter = contextValue?.setOutAspectFilter
 
   const isDeckMode = mode === 'deck'
 
-  // Calculate card count if not provided
-  const calculatedDeckCount = Object.values(cardPositions).filter(pos =>
-    pos.section === 'deck' && pos.visible && !pos.card?.isBase && !pos.card?.isLeader && pos.enabled !== false
-  ).length
-  const calculatedPoolCount = Object.values(cardPositions).filter(pos =>
-    (pos.section === 'sideboard' || pos.enabled === false) && pos.visible && !pos.card?.isBase && !pos.card?.isLeader
-  ).length
-  // Both modes now show deck count since checked = in deck for both
-  const cardCount = cardCountProp ?? calculatedDeckCount
+  // Cards in this section (always recompute; cheap)
+  const sectionCards = useMemo(() => {
+    return Object.values(cardPositions).filter(pos => {
+      if (!pos.visible || pos.card?.isBase || pos.card?.isLeader) return false
+      const inDeck = pos.section === 'deck' && pos.enabled !== false
+      const inPool = pos.section === 'sideboard' || pos.enabled === false
+      return isDeckMode ? inDeck : inPool
+    })
+  }, [cardPositions, isDeckMode])
 
-  const title = isDeckMode ? `Keep in Deck (${cardCount})` : `Move to Deck (${cardCount})`
+  // Counts per combo key in this section
+  const countByCombo = useMemo(() => {
+    const counts: Record<string, number> = {}
+    sectionCards.forEach(pos => {
+      const k = comboKeyFor(pos.card.aspects as string[] | undefined)
+      counts[k] = (counts[k] || 0) + 1
+    })
+    return counts
+  }, [sectionCards])
 
-  // Get leader and base cards
+  if (!isOpen) return null
+
+  const cardCount = cardCountProp ?? sectionCards.length
+  const title = `Show in ${isDeckMode ? 'Deck' : 'Pool'} (${cardCount})`
+
   const leaderCard = activeLeader && cardPositions[activeLeader]?.card
   const baseCard = activeBase && cardPositions[activeBase]?.card
 
-  type CardEntry = [string, CardPosition]
-  type FilterFn = (pos: CardPosition) => boolean
+  // Default visibility: undefined → true. Only false hides.
+  const isComboVisible = (key: string): boolean => aspectFilters[key] !== false
 
-  // Helper to get cards in deck section
-  const getDeckCards = (filterFn: FilterFn = () => true): CardEntry[] => {
-    return Object.entries(cardPositions).filter(([_, pos]) =>
-      pos.section === 'deck' && pos.visible && !pos.card.isBase && !pos.card.isLeader && pos.enabled !== false && filterFn(pos)
-    )
+  const setComboVisible = (key: string, visible: boolean) => {
+    setAspectFilters?.(prev => ({ ...prev, [key]: visible }))
   }
 
-  // Helper to get cards in pool section
-  const getPoolCards = (filterFn: FilterFn = () => true): CardEntry[] => {
-    return Object.entries(cardPositions).filter(([_, pos]) =>
-      (pos.section === 'sideboard' || pos.enabled === false) && pos.visible && !pos.card.isBase && !pos.card.isLeader && filterFn(pos)
-    )
-  }
-
-  // Move cards to deck
-  const moveToDeck = (cardIds: string[]) => {
-    if (moveCardsToDeck) {
-      moveCardsToDeck(cardIds)
-      return
-    }
-    onMoveCards?.(prev => {
-      const updated = { ...prev }
-      cardIds.forEach(cardId => {
-        updated[cardId] = { ...updated[cardId], section: 'deck', enabled: true }
-      })
-      return updated
+  const setMultipleComboVisible = (keys: string[], visible: boolean) => {
+    setAspectFilters?.(prev => {
+      const next = { ...prev }
+      keys.forEach(k => { next[k] = visible })
+      return next
     })
   }
 
-  // Move cards to pool
-  const moveToPool = (cardIds: string[]) => {
-    if (moveCardsToPool) {
-      moveCardsToPool(cardIds)
-      return
-    }
-    onMoveCards?.(prev => {
-      const updated = { ...prev }
-      cardIds.forEach(cardId => {
-        updated[cardId] = { ...updated[cardId], section: 'sideboard', enabled: false }
-      })
-      return updated
-    })
-  }
-
-  // Get cards for aspect combo
-  const getCardsForAspectCombo = (aspects: string[]) => {
-    const sortedKey = [...aspects].sort().join('|')
-    return {
-      deck: getDeckCards(pos => [...(pos.card.aspects as string[] || [])].sort().join('|') === sortedKey),
-      pool: getPoolCards(pos => [...(pos.card.aspects as string[] || [])].sort().join('|') === sortedKey)
-    }
-  }
-
-  // Render In/Out Aspect filters
+  // ---- Render In/Out Aspect filters ----
   const renderInOutAspectFilters = () => {
     if (!activeLeader || !activeBase || !leaderCard || !baseCard) return null
 
@@ -158,151 +130,118 @@ export function AspectFilterModal({
     const allAspects = ['Vigilance', 'Command', 'Aggression', 'Cunning', 'Villainy', 'Heroism']
     const outAspects = allAspects.filter(a => !myAspects.includes(a))
 
-    const inAspectDeckCards = getDeckCards(pos => calculateAspectPenalty(pos.card, leaderCard, baseCard) === 0)
-    const inAspectPoolCards = getPoolCards(pos => calculateAspectPenalty(pos.card, leaderCard, baseCard) === 0)
-    const inAspectTotal = inAspectDeckCards.length + inAspectPoolCards.length
-
-    const outAspectDeckCards = getDeckCards(pos => calculateAspectPenalty(pos.card, leaderCard, baseCard) > 0)
-    const outAspectPoolCards = getPoolCards(pos => calculateAspectPenalty(pos.card, leaderCard, baseCard) > 0)
-    const outAspectTotal = outAspectDeckCards.length + outAspectPoolCards.length
-
-    // Both deck and pool modes now work the same: checked = in deck
-    const inAspectAllChecked = inAspectTotal > 0 && inAspectDeckCards.length === inAspectTotal
-    const outAspectAllChecked = outAspectTotal > 0 && outAspectDeckCards.length === outAspectTotal
-
-    const handleInAspectToggle = () => {
-      if (inAspectAllChecked) {
-        moveToPool(inAspectDeckCards.map(([id]) => id))
-      } else {
-        moveToDeck(inAspectPoolCards.map(([id]) => id))
-      }
-    }
-
-    const handleOutAspectToggle = () => {
-      if (outAspectAllChecked) {
-        moveToPool(outAspectDeckCards.map(([id]) => id))
-      } else {
-        moveToDeck(outAspectPoolCards.map(([id]) => id))
-      }
-    }
+    const inAspectCount = sectionCards.filter(pos => calculateAspectPenalty(pos.card, leaderCard, baseCard) === 0).length
+    const outAspectCount = sectionCards.filter(pos => calculateAspectPenalty(pos.card, leaderCard, baseCard) > 0).length
 
     return (
       <div style={{ marginBottom: '0.5rem', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
         <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.2rem', cursor: 'pointer', color: 'white', fontSize: '0.8rem' }}>
           <input
             type="checkbox"
-            checked={inAspectAllChecked}
-            onChange={handleInAspectToggle}
+            checked={inAspectFilter}
+            onChange={(e) => setInAspectFilter?.(e.target.checked)}
             style={{ width: '14px', height: '14px' }}
           />
           <span style={{ textTransform: 'uppercase' }}>In Aspect</span>
           <span style={{ display: 'flex', gap: '2px' }}>{myAspects.map((a, i) => <span key={i}>{getAspectSymbol(a, 'small')}</span>)}</span>
-          <span style={{ marginLeft: 'auto', opacity: 0.6, fontSize: '0.75rem' }}>
-            {inAspectDeckCards.length}/{inAspectTotal}
-          </span>
+          <span style={{ marginLeft: 'auto', opacity: 0.6, fontSize: '0.75rem' }}>{inAspectCount}</span>
         </label>
-        {outAspects.length > 0 && outAspectTotal > 0 && (
+        {outAspects.length > 0 && outAspectCount > 0 && (
           <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.2rem', cursor: 'pointer', color: 'white', fontSize: '0.8rem' }}>
             <input
               type="checkbox"
-              checked={outAspectAllChecked}
-              onChange={handleOutAspectToggle}
+              checked={outAspectFilter}
+              onChange={(e) => setOutAspectFilter?.(e.target.checked)}
               style={{ width: '14px', height: '14px' }}
             />
             <span style={{ textTransform: 'uppercase' }}>Out of Aspect</span>
             <span style={{ display: 'flex', gap: '2px' }}>{outAspects.map((a, i) => <span key={i}>{getAspectSymbol(a, 'small')}</span>)}</span>
-            <span style={{ marginLeft: 'auto', opacity: 0.6, fontSize: '0.75rem' }}>
-              {outAspectDeckCards.length}/{outAspectTotal}
-            </span>
+            <span style={{ marginLeft: 'auto', opacity: 0.6, fontSize: '0.75rem' }}>{outAspectCount}</span>
           </label>
         )}
       </div>
     )
   }
 
-  // Render hierarchical aspect filters for color aspects
+  // ---- Render hierarchical aspect filters for color aspects ----
   const renderColorAspectFilters = () => {
     return ['Vigilance', 'Command', 'Aggression', 'Cunning'].map(aspect => {
+      // Standard sub-groups (sorted aspects in keys)
       const subGroups = [
-        { key: `${aspect}|Villainy`, label: `${aspect} + Villainy`, aspects: [aspect, 'Villainy'] },
-        { key: `${aspect}|Heroism`, label: `${aspect} + Heroism`, aspects: [aspect, 'Heroism'] },
-        { key: `${aspect}|${aspect}`, label: `Double ${aspect}`, aspects: [aspect, aspect] },
-        { key: aspect, label: `${aspect} (mono)`, aspects: [aspect] }
+        { key: [aspect, 'Villainy'].sort().join('|'), label: `${aspect} + Villainy`, aspects: [aspect, 'Villainy'] },
+        { key: [aspect, 'Heroism'].sort().join('|'), label: `${aspect} + Heroism`, aspects: [aspect, 'Heroism'] },
+        { key: [aspect, aspect].sort().join('|'), label: `Double ${aspect}`, aspects: [aspect, aspect] },
+        { key: aspect, label: `${aspect} (mono)`, aspects: [aspect] },
       ]
 
-      let parentDeckCount = 0, parentPoolCount = 0, parentTotalCount = 0
-      const validSubGroups = subGroups.map(sg => {
-        const cards = getCardsForAspectCombo(sg.aspects)
-        const total = cards.deck.length + cards.pool.length
-        parentDeckCount += cards.deck.length
-        parentPoolCount += cards.pool.length
-        parentTotalCount += total
-        return { ...sg, cards, total, deckCount: cards.deck.length, poolCount: cards.pool.length }
-      }).filter(sg => sg.total > 0)
+      // Find any other combos in section that include this primary aspect
+      const otherCombos = Object.keys(countByCombo)
+        .filter(k => k.split('|').includes(aspect) && !subGroups.some(sg => sg.key === k))
+        .map(k => ({ key: k, label: k.replace(/\|/g, ' + '), aspects: k.split('|') }))
 
-      if (parentTotalCount === 0) return null
+      const allSubGroups = [...subGroups, ...otherCombos]
+        .map(sg => ({ ...sg, count: countByCombo[sg.key] || 0 }))
+        .filter(sg => sg.count > 0)
 
-      // Both modes now work the same: checked = in deck
-      const displayCount = parentDeckCount
-      const parentAllChecked = parentDeckCount === parentTotalCount
-      const parentNoneChecked = parentDeckCount === 0
+      const parentTotal = allSubGroups.reduce((s, sg) => s + sg.count, 0)
+      if (parentTotal === 0) return null
+
+      const visibleSubGroups = allSubGroups.filter(sg => isComboVisible(sg.key))
+      const allVisible = visibleSubGroups.length === allSubGroups.length
+      const noneVisible = visibleSubGroups.length === 0
       const isExpanded = filterAspectsExpanded[aspect] || false
 
-      const handleParentToggle = () => {
-        if (parentAllChecked) {
-          const cardIds = validSubGroups.flatMap(sg => sg.cards.deck.map(([id]) => id))
-          moveToPool(cardIds)
-        } else {
-          const cardIds = validSubGroups.flatMap(sg => sg.cards.pool.map(([id]) => id))
-          moveToDeck(cardIds)
-        }
+      const handleParentToggle = (e) => {
+        const next = !allVisible // if all visible, hide all; otherwise show all
+        setMultipleComboVisible(allSubGroups.map(sg => sg.key), next)
+      }
+
+      const handleExpandToggle = (e: MouseEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        onFilterAspectsExpandedChange?.(prev => ({ ...prev, [aspect]: !isExpanded }))
       }
 
       return (
         <div key={aspect} style={{ marginBottom: '0.25rem' }}>
-          <div
-            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.2rem', color: 'white', fontSize: '0.85rem', cursor: 'pointer', userSelect: 'none' }}
-            onClick={() => onFilterAspectsExpandedChange?.(prev => ({ ...prev, [aspect]: !isExpanded }))}
-          >
-            <span style={{ fontSize: '0.7rem', width: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.2rem', color: 'white', fontSize: '0.85rem', userSelect: 'none' }}>
+            <button
+              type="button"
+              onClick={handleExpandToggle}
+              aria-label={isExpanded ? 'Collapse' : 'Expand'}
+              style={{ width: '14px', height: '14px', padding: 0, background: 'transparent', border: 'none', color: 'inherit', cursor: 'pointer', fontSize: '0.7rem' }}
+            >
               {isExpanded ? '▼' : '▶'}
-            </span>
-            <input
-              type="checkbox"
-              checked={parentAllChecked}
-              ref={el => { if (el) el.indeterminate = !parentAllChecked && !parentNoneChecked }}
-              onClick={(e) => e.stopPropagation()}
-              onChange={handleParentToggle}
-              style={{ width: '14px', height: '14px' }}
-            />
-            {getAspectSymbol(aspect, 'small')}
-            <span style={{ textTransform: 'uppercase' }}>{aspect}</span>
-            <span style={{ marginLeft: 'auto', opacity: 0.6, fontSize: '0.75rem' }}>{displayCount}/{parentTotalCount}</span>
+            </button>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', flex: 1 }}>
+              <input
+                type="checkbox"
+                checked={allVisible}
+                ref={el => { if (el) el.indeterminate = !allVisible && !noneVisible }}
+                onChange={handleParentToggle}
+                style={{ width: '14px', height: '14px' }}
+              />
+              {getAspectSymbol(aspect, 'small')}
+              <span style={{ textTransform: 'uppercase' }}>{aspect}</span>
+              <span style={{ marginLeft: 'auto', opacity: 0.6, fontSize: '0.75rem' }}>{parentTotal}</span>
+            </label>
           </div>
-          {isExpanded && validSubGroups.map(sg => {
-            // Both modes now work the same: checked = in deck
-            const sgDisplayCount = sg.deckCount
-            const sgAllChecked = sg.deckCount === sg.total
-
-            const handleSubGroupToggle = () => {
-              if (sgAllChecked) {
-                moveToPool(sg.cards.deck.map(([id]) => id))
-              } else {
-                moveToDeck(sg.cards.pool.map(([id]) => id))
-              }
-            }
-
+          {isExpanded && allSubGroups.map(sg => {
+            const sgVisible = isComboVisible(sg.key)
             return (
-              <label key={sg.key} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.15rem 0.2rem 0.15rem 1.75rem', cursor: 'pointer', color: 'rgba(255,255,255,0.7)', fontSize: '0.75rem' }}>
+              <label
+                key={sg.key}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.15rem 0.2rem 0.15rem 1.75rem', cursor: 'pointer', color: 'rgba(255,255,255,0.7)', fontSize: '0.75rem' }}
+              >
                 <input
                   type="checkbox"
-                  checked={sgAllChecked}
-                  onChange={handleSubGroupToggle}
+                  checked={sgVisible}
+                  onChange={(e) => setComboVisible(sg.key, e.target.checked)}
                   style={{ width: '12px', height: '12px' }}
                 />
                 <span style={{ display: 'flex', gap: '1px' }}>{sg.aspects.map((a, i) => <span key={i}>{getAspectSymbol(a, 'small')}</span>)}</span>
                 <span style={{ textTransform: 'uppercase' }}>{sg.label}</span>
-                <span style={{ marginLeft: 'auto', opacity: 0.6, fontSize: '0.7rem' }}>{sgDisplayCount}/{sg.total}</span>
+                <span style={{ marginLeft: 'auto', opacity: 0.6, fontSize: '0.7rem' }}>{sg.count}</span>
               </label>
             )
           })}
@@ -311,60 +250,28 @@ export function AspectFilterModal({
     })
   }
 
-  // Render flat aspect filters for Villainy, Heroism, Neutral
+  // ---- Render flat aspect filters for Villainy, Heroism, Neutral ----
   const renderFlatAspectFilters = () => {
     return ['Villainy', 'Heroism', 'Neutral'].map(aspect => {
-      const getCardsForFlatAspect = () => {
-        if (aspect === 'Neutral') {
-          return {
-            deck: getDeckCards(pos => !pos.card.aspects || (pos.card.aspects as string[]).length === 0),
-            pool: getPoolCards(pos => !pos.card.aspects || (pos.card.aspects as string[]).length === 0)
-          }
-        }
-        return {
-          deck: getDeckCards(pos => {
-            const aspects = (pos.card.aspects as string[]) || []
-            return aspects.length > 0 && aspects.every(a => a === aspect)
-          }),
-          pool: getPoolCards(pos => {
-            const aspects = (pos.card.aspects as string[]) || []
-            return aspects.length > 0 && aspects.every(a => a === aspect)
-          })
-        }
-      }
+      const filterKey = aspect === 'Neutral' ? NEUTRAL_KEY : aspect
+      const count = countByCombo[filterKey] || 0
+      if (count === 0 && aspect !== 'Neutral') return null
 
-      const cards = getCardsForFlatAspect()
-      const deckCount = cards.deck.length
-      const poolCount = cards.pool.length
-      const totalCount = deckCount + poolCount
-
-      if (totalCount === 0 && aspect !== 'Neutral') return null
-
-      // Both modes now work the same: checked = in deck
-      const displayCount = deckCount
-      const allChecked = totalCount > 0 && deckCount === totalCount
-
-      const handleToggle = () => {
-        if (allChecked) {
-          moveToPool(cards.deck.map(([id]) => id))
-        } else {
-          moveToDeck(cards.pool.map(([id]) => id))
-        }
-      }
+      const isVisible = isComboVisible(filterKey)
 
       return (
         <div key={aspect} style={{ marginBottom: '0.25rem' }}>
           <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.2rem', color: 'white', fontSize: '0.85rem', cursor: 'pointer', userSelect: 'none' }}>
-            <span style={{ fontSize: '0.7rem', width: '12px' }}></span>
+            <span style={{ fontSize: '0.7rem', width: '14px' }}></span>
             <input
               type="checkbox"
-              checked={allChecked}
-              onChange={handleToggle}
+              checked={isVisible}
+              onChange={(e) => setComboVisible(filterKey, e.target.checked)}
               style={{ width: '14px', height: '14px' }}
             />
             {aspect !== 'Neutral' && getAspectSymbol(aspect, 'small')}
             <span style={{ textTransform: 'uppercase' }}>{aspect}</span>
-            <span style={{ marginLeft: 'auto', opacity: 0.6, fontSize: '0.75rem' }}>{displayCount}/{totalCount}</span>
+            <span style={{ marginLeft: 'auto', opacity: 0.6, fontSize: '0.75rem' }}>{count}</span>
           </label>
         </div>
       )
@@ -373,12 +280,10 @@ export function AspectFilterModal({
 
   return (
     <>
-      {/* Backdrop */}
       <div
         style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1999, background: 'rgba(0,0,0,0.5)' }}
         onClick={onClose}
       />
-      {/* Modal */}
       <div
         className="filter-modal"
         style={{
@@ -401,19 +306,12 @@ export function AspectFilterModal({
         }}
         onClick={(e: MouseEvent) => e.stopPropagation()}
       >
-        {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: '0.5rem' }}>
           <span style={{ color: 'white', fontSize: '1rem', fontWeight: 'bold', textTransform: 'uppercase' }}>{title}</span>
           <Button variant="icon" size="sm" onClick={onClose}>×</Button>
         </div>
-
-        {/* In/Out Aspect Filters */}
         {renderInOutAspectFilters()}
-
-        {/* Color Aspect Filters */}
         {renderColorAspectFilters()}
-
-        {/* Flat Aspect Filters */}
         {renderFlatAspectFilters()}
       </div>
     </>

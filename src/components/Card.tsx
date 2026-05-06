@@ -28,6 +28,7 @@ export interface CardProps {
   hovered?: boolean
   active?: boolean
   disabled?: boolean
+  filteredOut?: boolean
   stacked?: boolean
   stackIndex?: number
   showPenalty?: boolean
@@ -59,6 +60,7 @@ export function Card({
   hovered = false,
   active = false,
   disabled = false,
+  filteredOut = false,
   stacked = false,
   stackIndex = 0,
   showPenalty = false,
@@ -86,6 +88,7 @@ export function Card({
     active && card.isLeader && 'active-leader',
     active && card.isBase && 'active-base',
     disabled && 'disabled',
+    filteredOut && 'filtered-out',
     stacked && 'stacked',
     className,
   ].filter(Boolean).join(' ')

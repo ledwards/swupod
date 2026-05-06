@@ -37,6 +37,7 @@ export interface ArenaCardStackProps {
   hoveredCard?: string | null
   selectedCards?: Set<string>
   density?: 'small' | 'medium' | 'large'
+  isFilteredOut?: (card: CardData) => boolean
 }
 
 export function ArenaCardStack({
@@ -51,6 +52,7 @@ export function ArenaCardStack({
   hoveredCard,
   selectedCards = new Set(),
   density = 'small',
+  isFilteredOut,
 }: ArenaCardStackProps) {
   if (!cards || cards.length === 0) {
     return null
@@ -69,6 +71,7 @@ export function ArenaCardStack({
           const penalty = showPenalty && calculatePenalty ? calculatePenalty(card) : 0
           const hasQuantity = quantity > 1
           const isLast = index === cards.length - 1
+          const filteredOut = isFilteredOut ? isFilteredOut(card) : false
 
           return (
             <div
@@ -79,6 +82,7 @@ export function ArenaCardStack({
                 card={card}
                 selected={isSelected}
                 hovered={isHovered}
+                filteredOut={filteredOut}
                 showPenalty={showPenalty && penalty > 0}
                 penaltyAmount={penalty}
                 noHoverScale={true}

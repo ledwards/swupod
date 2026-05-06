@@ -266,8 +266,8 @@ function DeckBuilder({
   })
   const [inAspectFilter, setInAspectFilter] = useState(poolType !== 'draft')
   const [outAspectFilter, setOutAspectFilter] = useState(poolType !== 'draft')
-  const [poolSortOption, setPoolSortOption] = useState('aspect') // Controls Pool grouping
-  const [deckSortOption, setDeckSortOption] = useState('cost') // Controls Deck sorting and grouping (default = flat container, others = grouped blocks)
+  const [poolSortOption, setPoolSortOption] = useState('cost')
+  const [deckSortOption, setDeckSortOption] = useState('cost')
   const [deckGroupsExpanded, setDeckGroupsExpanded] = useState<Record<string, boolean>>({}) // Track expanded state of deck group blocks
   const [deckFilterOpen, setDeckFilterOpen] = useState(false) // Filter modal for Deck section
   const [poolFilterOpen, setPoolFilterOpen] = useState(false) // Filter modal for Pool section
@@ -286,6 +286,8 @@ function DeckBuilder({
   const [sideboardCostSectionsExpanded, setSideboardCostSectionsExpanded] = useState<Record<string, boolean>>({}) // Track expanded cost sections for sideboard
   const [arenaFilters, setArenaFilters] = useState<Record<string, boolean>>({}) // Arena view aspect filters (empty = all active)
   const [arenaSearchQuery, setArenaSearchQuery] = useState('') // Arena view search query
+  const [arenaPoolSortOption, setArenaPoolSortOption] = useState<'default' | 'aspect' | 'cost' | 'type'>('cost') // Arena view pool grouping (independent of grid view's poolSortOption)
+  const [arenaDeckSortOption, setArenaDeckSortOption] = useState<'default' | 'aspect' | 'cost' | 'type'>('cost') // Arena view deck grouping
   const [poolCardDensity, setPoolCardDensity] = useState<'small' | 'medium' | 'large'>('large') // Pool card density (arena+playmat)
   const [deckCardDensity, setDeckCardDensity] = useState<'small' | 'medium' | 'large'>('small') // Deck card density (arena+playmat)
   const deckBlocksRowRef = useRef<HTMLDivElement>(null)
@@ -665,28 +667,18 @@ function DeckBuilder({
     }
   }, [setCode])
 
-  // Check if card matches aspect filters (used for export, not for display filtering)
+  // Check if card passes the visibility filter.
+  // aspectFilters[comboKey] === false hides the card; default is visible.
   const cardMatchesFilters = useCallback((card: CardType) => {
     const cardAspects = card.aspects || []
-    // If card has no aspects, check "No Aspect" filter
-    if (cardAspects.length === 0) {
-      if (!(aspectFilters[NO_ASPECT_LABEL] || false)) return false
-    } else {
-      // Card must have at least one aspect that's checked
-      if (!cardAspects.some(aspect => aspectFilters[aspect])) return false
-    }
+    const comboKey = cardAspects.length === 0 ? 'Neutral' : [...cardAspects].sort().join('|')
+    if (aspectFilters[comboKey] === false) return false
 
-    // Check in/out aspect filters (only when both leader and base are selected)
     if (leaderCard && baseCard) {
       const penalty = calculateAspectPenalty(card, leaderCard, baseCard)
       const isInAspect = penalty === 0
-      const isOutOfAspect = penalty > 0
-
-      // If neither filter is checked, nothing passes
       if (!inAspectFilter && !outAspectFilter) return false
-      // If only in-aspect is checked, out-of-aspect cards fail
-      if (inAspectFilter && !outAspectFilter && isOutOfAspect) return false
-      // If only out-of-aspect is checked, in-aspect cards fail
+      if (inAspectFilter && !outAspectFilter && !isInAspect) return false
       if (!inAspectFilter && outAspectFilter && isInAspect) return false
     }
 
@@ -859,6 +851,7 @@ function DeckBuilder({
       const isSelected = selectedCards.has(cardId)
       const isHovered = hoveredCard === cardId
       const isDisabled = showDisabled && !position.enabled
+      const filteredOut = !cardMatchesFilters(card)
       const penalty = showAspectPenalties && leaderCardRef && baseCardRef
         ? calculateAspectPenalty(card, leaderCardRef, baseCardRef)
         : 0
@@ -870,6 +863,7 @@ function DeckBuilder({
           selected={isSelected}
           hovered={isHovered}
           disabled={isDisabled}
+          filteredOut={filteredOut}
           stacked={isStacked}
           stackIndex={stackIndex}
           showPenalty={showAspectPenalties && leaderCardRef && baseCardRef}
@@ -878,7 +872,7 @@ function DeckBuilder({
         />
       )
     }
-  }, [selectedCards, hoveredCard, getCardEventHandlers])
+  }, [selectedCards, hoveredCard, getCardEventHandlers, cardMatchesFilters])
 
   // Restore saved state on mount
   useEffect(() => {
@@ -1002,17 +996,11 @@ function DeckBuilder({
             [NO_ASPECT_LABEL]: true
           }
           setAspectFilters({ ...defaultAspectFilters, ...(state.aspectFilters || {}) })
-          // Restore sort options with backward compatibility
-          if (state.poolSortOption) {
-            setPoolSortOption(state.poolSortOption)
-          } else if (state.sortOption) {
-            setPoolSortOption(state.sortOption)
-          }
-          if (state.deckSortOption) {
-            setDeckSortOption(state.deckSortOption)
-          } else if (state.sortOption) {
-            setDeckSortOption(state.sortOption)
-          }
+          // Restore sort options separately
+          if (state.poolSortOption) setPoolSortOption(state.poolSortOption)
+          else if (state.sortOption) setPoolSortOption(state.sortOption)
+          if (state.deckSortOption) setDeckSortOption(state.deckSortOption)
+          else if (state.sortOption) setDeckSortOption(state.sortOption)
 
         }
 
@@ -1105,17 +1093,10 @@ function DeckBuilder({
         if (state.outAspectFilter !== undefined) {
           setOutAspectFilter(state.outAspectFilter)
         }
-        // Restore sort options with backward compatibility
-        if (state.poolSortOption) {
-          setPoolSortOption(state.poolSortOption)
-        } else if (state.sortOption) {
-          setPoolSortOption(state.sortOption)
-        }
-        if (state.deckSortOption) {
-          setDeckSortOption(state.deckSortOption)
-        } else if (state.sortOption) {
-          setDeckSortOption(state.sortOption)
-        }
+        if (state.poolSortOption) setPoolSortOption(state.poolSortOption)
+        else if (state.sortOption) setPoolSortOption(state.sortOption)
+        if (state.deckSortOption) setDeckSortOption(state.deckSortOption)
+        else if (state.sortOption) setDeckSortOption(state.sortOption)
         if (state.leadersBasesExpanded !== undefined) {
           setLeadersBasesExpanded(state.leadersBasesExpanded)
         }
@@ -1165,6 +1146,12 @@ function DeckBuilder({
         }
         if (state.arenaSearchQuery) {
           setArenaSearchQuery(state.arenaSearchQuery)
+        }
+        if (state.arenaPoolSortOption) {
+          setArenaPoolSortOption(state.arenaPoolSortOption)
+        }
+        if (state.arenaDeckSortOption) {
+          setArenaDeckSortOption(state.arenaDeckSortOption)
         }
         // Restore active leader/base from localStorage (backup for debounced database save)
         if (state.activeLeader) {
@@ -1617,6 +1604,8 @@ function DeckBuilder({
       tableSort,
       arenaFilters,
       arenaSearchQuery,
+      arenaPoolSortOption,
+    arenaDeckSortOption,
     }
   }, [
     cardPositions,
@@ -1652,6 +1641,8 @@ function DeckBuilder({
     tableSort,
     arenaFilters,
     arenaSearchQuery,
+    arenaPoolSortOption,
+    arenaDeckSortOption,
   ])
 
   const cloneDeckBuilderState = useMemo(
@@ -1760,90 +1751,11 @@ function DeckBuilder({
       // Only return new object if something changed, otherwise keep same reference
       return hasChanges ? updated : prev
     })
-  }, [aspectFilters, isInfiniteMode])
+  }, [isInfiniteMode])
 
-  // Sync aspect filter checkboxes with actual deck state
-  // If all cards of an aspect are in sideboard, checkbox should be OFF
-  // If all cards of an aspect are in deck, checkbox should be ON
-  useEffect(() => {
-    // Get all pool cards (not leaders/bases)
-    const poolCards = Object.values(cardPositions).filter(
-      pos => !pos.card.isLeader && !pos.card.isBase &&
-             pos.card.type !== 'Leader' && pos.card.type !== 'Base' &&
-             (pos.section === 'deck' || pos.section === 'sideboard')
-    )
-
-    // Allow running even if poolCards is empty to uncheck all filters when deck is empty
-
-    const newAspectFilters = { ...aspectFilters }
-    let hasAspectChanges = false
-
-    // Check each aspect
-    ;[...ASPECTS, NO_ASPECT_LABEL].forEach(aspect => {
-      // Get cards matching this aspect
-      const aspectCards = poolCards.filter(pos => {
-        const cardAspects = pos.card.aspects || []
-        if (aspect === NO_ASPECT_LABEL) {
-          return cardAspects.length === 0
-        }
-        return cardAspects.includes(aspect)
-      })
-
-      // If no cards of this aspect exist in pool, uncheck the filter
-      if (aspectCards.length === 0) {
-        if (aspectFilters[aspect]) {
-          newAspectFilters[aspect] = false
-          hasAspectChanges = true
-        }
-        return
-      }
-
-      const inDeckCount = aspectCards.filter(pos => pos.section === 'deck').length
-      const totalCount = aspectCards.length
-
-      // If ALL cards of this aspect are in deck, checkbox should be ON
-      if (inDeckCount === totalCount && !aspectFilters[aspect]) {
-        newAspectFilters[aspect] = true
-        hasAspectChanges = true
-      }
-      // If ALL cards of this aspect are in sideboard, checkbox should be OFF
-      else if (inDeckCount === 0 && aspectFilters[aspect]) {
-        newAspectFilters[aspect] = false
-        hasAspectChanges = true
-      }
-    })
-
-    if (hasAspectChanges) {
-      setAspectFilters(newAspectFilters)
-    }
-
-    // Sync in/out aspect filters (only when leader and base are selected)
-    if (leaderCard && baseCard) {
-      // Categorize cards by in/out of aspect
-      const inAspectCards = poolCards.filter(pos => calculateAspectPenalty(pos.card, leaderCard, baseCard) === 0)
-      const outAspectCards = poolCards.filter(pos => calculateAspectPenalty(pos.card, leaderCard, baseCard) > 0)
-
-      // Sync in-aspect filter
-      if (inAspectCards.length > 0) {
-        const inAspectInDeck = inAspectCards.filter(pos => pos.section === 'deck').length
-        if (inAspectInDeck === inAspectCards.length && !inAspectFilter) {
-          setInAspectFilter(true)
-        } else if (inAspectInDeck === 0 && inAspectFilter) {
-          setInAspectFilter(false)
-        }
-      }
-
-      // Sync out-of-aspect filter
-      if (outAspectCards.length > 0) {
-        const outAspectInDeck = outAspectCards.filter(pos => pos.section === 'deck').length
-        if (outAspectInDeck === outAspectCards.length && !outAspectFilter) {
-          setOutAspectFilter(true)
-        } else if (outAspectInDeck === 0 && outAspectFilter) {
-          setOutAspectFilter(false)
-        }
-      }
-    }
-  }, [cardPositions, leaderCard, baseCard]) // Only depend on these to avoid infinite loops
+  // Filter state is now pure visibility (no side effects on card positions).
+  // The previous sync effect that moved cards between deck/sideboard based on filter state
+  // has been removed; cards stay where the user puts them, filtering only changes rendering.
 
   // Determine pool/deck order once on initial load (draft mode only)
   // If pool has more cards, show it first; otherwise show deck first
@@ -2351,6 +2263,14 @@ function DeckBuilder({
     setDeckFilterOpen,
     poolFilterOpen,
     setPoolFilterOpen,
+    // Filter visibility state (for grey-out, not card movement)
+    aspectFilters,
+    setAspectFilters,
+    inAspectFilter,
+    setInAspectFilter,
+    outAspectFilter,
+    setOutAspectFilter,
+    cardMatchesFilters,
     // UI preferences
     showAspectPenalties,
     setShowAspectPenalties,
@@ -2369,6 +2289,10 @@ function DeckBuilder({
     setArenaFilters,
     arenaSearchQuery,
     setArenaSearchQuery,
+    arenaPoolSortOption,
+    setArenaPoolSortOption,
+    arenaDeckSortOption,
+    setArenaDeckSortOption,
     // Card density (applies to arena + playmat)
     poolCardDensity,
     setPoolCardDensity,
@@ -2384,7 +2308,9 @@ function DeckBuilder({
     cardPositions, isInfiniteMode, activeLeader, activeBase, leaderCard, baseCard,
     selectedCards, hoveredCard, filterAspectsExpanded, deckFilterOpen,
     poolFilterOpen, showAspectPenalties, viewMode, poolSortOption,
-    deckSortOption, arenaFilters, arenaSearchQuery,
+    deckSortOption, arenaFilters, arenaSearchQuery, arenaPoolSortOption,
+    arenaDeckSortOption,
+    aspectFilters, inAspectFilter, outAspectFilter, cardMatchesFilters,
     poolCardDensity, deckCardDensity,
     moveCardToDeck, moveCardToPool, toggleCardSection, moveCardsToDeck, moveCardsToPool,
   ])

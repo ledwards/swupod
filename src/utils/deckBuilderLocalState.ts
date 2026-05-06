@@ -30,6 +30,8 @@ export function buildDeckBuilderUiStorageState(state: Record<string, unknown>): 
     tableSort,
     arenaFilters,
     arenaSearchQuery,
+    arenaPoolSortOption,
+    arenaDeckSortOption,
     sessionId,
     poolName,
   } = state
@@ -65,6 +67,8 @@ export function buildDeckBuilderUiStorageState(state: Record<string, unknown>): 
     tableSort,
     arenaFilters,
     arenaSearchQuery,
+    arenaPoolSortOption,
+    arenaDeckSortOption,
     sessionId,
     poolName,
   }
