@@ -201,6 +201,7 @@ export default function ResolveStep({ importPool }: Props) {
           setCode={setCode}
           candidates={pickerFor.candidates}
           typeFilter={pickerFor.typeFilter}
+          sourceImages={state.images}
           onPick={(card) => replaceRowCard(pickerFor.rowKey, card)}
           onClose={() => setPickerFor(null)}
         />

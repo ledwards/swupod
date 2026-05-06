@@ -15,6 +15,7 @@
 
 import { useReducer, useCallback, useMemo, useEffect } from 'react'
 import { resizeImage, type ProcessedImage } from '../services/importPool/imagePrep'
+import { getCachedCards } from '../utils/cardCache'
 
 const STORAGE_KEY = 'import-pool-wizard-v1'
 
@@ -343,17 +344,113 @@ function deriveValidation(state: ImportPoolState): Validation {
 // already has the restored state — no race between dispatch and save effect.
 // previewUrl is a data URL so images survive serialization without blob handling.
 
-function persistedShape(state: ImportPoolState) {
+/**
+ * Slim persistence shape — embedded card objects (with imageUrl, aspects,
+ * etc.) are dropped; we persist only IDs. On load, full card data is
+ * reconstructed from getCachedCards(setCode). Cuts persist size from
+ * ~1.5MB to ~1.2MB (most of which is now just the base64 images).
+ */
+interface SlimRow {
+  key: string
+  cardId: string | null
+  extracted: ResolvedRow['extracted']
+  candidateIds: string[]
+  poolQty: number
+  deckQty: number
+  confidence: ResolvedRow['confidence']
+}
+
+interface SlimPersisted {
+  phase: Phase
+  images: ProcessedImage[]
+  setCode: string | null
+  header: ExtractedHeader | null
+  rows: SlimRow[]
+  warnings: string[]
+  activeLeaderId: string | null
+  activeBaseId: string | null
+  title: string
+  showOnlyPool: boolean
+}
+
+function persistedShape(state: ImportPoolState): SlimPersisted {
   return {
     phase: state.phase,
     images: state.images,
-    extraction: state.extraction,
-    resolvedRows: state.resolvedRows,
+    setCode: state.extraction?.header.setCode || null,
+    header: state.extraction?.header || null,
+    rows: state.resolvedRows.map((r) => ({
+      key: r.key,
+      cardId: r.card?.id || null,
+      extracted: r.extracted,
+      candidateIds: r.candidates.map((c) => c.id),
+      poolQty: r.poolQty,
+      deckQty: r.deckQty,
+      confidence: r.confidence,
+    })),
+    warnings: state.warnings,
     activeLeaderId: state.activeLeaderId,
     activeBaseId: state.activeBaseId,
     title: state.title,
-    warnings: state.warnings,
     showOnlyPool: state.showOnlyPool,
+  }
+}
+
+/** Look up a card by its CMS uuid in the cached set data, returning the
+ *  MatchedCard projection (without bloat we don't store). */
+function lookupCardById(setCode: string, cardId: string): MatchedCard | null {
+  if (typeof window === 'undefined') return null
+  const all = getCachedCards(setCode) || []
+  const found = all.find((c: any) => c.id === cardId)
+  if (!found) return null
+  return {
+    id: found.id,
+    cardId: found.cardId,
+    name: found.name,
+    subtitle: found.subtitle,
+    type: found.type,
+    aspects: found.aspects || [],
+    imageUrl: found.imageUrl,
+    isLeader: !!found.isLeader,
+    isBase: !!found.isBase,
+  }
+}
+
+/** Rehydrate slim-persisted shape into the full ImportPoolState shape.
+ *  Looks up full card data from the cached card list to avoid persisting it. */
+function hydrate(slim: SlimPersisted): Partial<ImportPoolState> {
+  const setCode = slim.setCode || ''
+  const lookup = (id: string | null): MatchedCard | null =>
+    id && setCode ? lookupCardById(setCode, id) : null
+
+  const resolvedRows: ResolvedRow[] = (slim.rows || []).map((sr) => ({
+    key: sr.key,
+    card: lookup(sr.cardId),
+    extracted: sr.extracted,
+    candidates: (sr.candidateIds || []).map((id) => lookup(id)).filter((c): c is MatchedCard => !!c),
+    poolQty: sr.poolQty,
+    deckQty: sr.deckQty,
+    confidence: sr.confidence,
+  }))
+
+  const extraction: ExtractResponse | null = slim.header
+    ? {
+        header: slim.header,
+        rows: [],
+        warnings: slim.warnings,
+      }
+    : null
+
+  return {
+    phase: slim.phase,
+    images: slim.images || [],
+    extraction,
+    resolvedRows,
+    activeLeaderId: slim.activeLeaderId,
+    activeBaseId: slim.activeBaseId,
+    title: slim.title || '',
+    warnings: slim.warnings || [],
+    showOnlyPool: slim.showOnlyPool ?? true,
   }
 }
 
@@ -372,21 +469,46 @@ function savePersisted(state: ImportPoolState) {
   if (state.phase === 'idle' && state.images.length === 0 && state.extraction === null) {
     return
   }
+
+  const slim = persistedShape(state)
+
+  // First attempt: full payload (images + state)
   try {
-    const serialized = JSON.stringify(persistedShape(state))
-    localStorage.setItem(STORAGE_KEY, serialized)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(slim))
+    return
   } catch (err) {
-    // Most likely QuotaExceededError. Try a slim variant with images stripped
-    // so at least the extraction + UI state survives a refresh.
-    console.warn('[ImportPool] full persist failed, trying slim variant', err)
-    try {
-      const slim = persistedShape(state)
-      slim.images = [] // drop the ~1MB of base64 images
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(slim))
-      console.info('[ImportPool] slim persist succeeded (images dropped)')
-    } catch (slimErr) {
-      console.error('[ImportPool] slim persist also failed — wizard will not survive refresh', slimErr)
+    console.warn('[ImportPool] full persist failed, dropping images', err)
+  }
+
+  // Fallback 1: drop images (~1MB savings)
+  try {
+    const noImages = { ...slim, images: [] as ProcessedImage[] }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(noImages))
+    console.info('[ImportPool] persisted without images')
+    return
+  } catch (err) {
+    console.warn('[ImportPool] no-images persist failed, dropping warnings + extraction header', err)
+  }
+
+  // Fallback 2: drop everything except phase + setCode + rows
+  try {
+    const minimal: Partial<SlimPersisted> = {
+      phase: slim.phase,
+      images: [],
+      setCode: slim.setCode,
+      header: null,
+      rows: slim.rows,
+      warnings: [],
+      activeLeaderId: slim.activeLeaderId,
+      activeBaseId: slim.activeBaseId,
+      title: slim.title,
+      showOnlyPool: slim.showOnlyPool,
     }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(minimal))
+    console.info('[ImportPool] persisted minimal state (no images, no extraction header)')
+    return
+  } catch (err) {
+    console.error('[ImportPool] minimal persist failed — refresh will lose state', err)
   }
 }
 
@@ -404,27 +526,29 @@ function lazyInit(): ImportPoolState {
     return INITIAL_STATE
   }
   console.info(`[ImportPool] loading persisted state (${raw.length} chars)`)
-  let persisted: any
+  let persisted: SlimPersisted
   try {
     persisted = JSON.parse(raw)
   } catch (err) {
     console.warn('[ImportPool] persisted state is malformed JSON — starting fresh', err)
     return INITIAL_STATE
   }
-  console.info(`[ImportPool] persisted phase=${persisted.phase}, images=${persisted.images?.length || 0}, hasExtraction=${!!persisted.extraction}`)
+  console.info(`[ImportPool] persisted phase=${persisted.phase}, images=${persisted.images?.length || 0}, rows=${persisted.rows?.length || 0}`)
+  // Hydrate slim shape back to full ImportPoolState by looking up cards from cache
+  const hydrated = hydrate(persisted)
   // Park transient phases at their resting phase so a refresh mid-API-call
   // doesn't leave the UI stuck on a spinner.
-  let phase = persisted.phase as Phase
+  let phase = (hydrated.phase || persisted.phase) as Phase
   if (phase === 'extracting') phase = 'uploading'
   else if (phase === 'submitting') phase = 'confirming'
-  else if (phase === 'error') phase = persisted.images?.length > 0 ? 'uploading' : 'idle'
+  else if (phase === 'error') phase = (persisted.images?.length || 0) > 0 ? 'uploading' : 'idle'
   else if (phase === 'done') phase = 'idle'
   if (!['idle', 'uploading', 'resolving', 'confirming'].includes(phase)) {
     phase = 'idle'
   }
   return {
     ...INITIAL_STATE,
-    ...persisted,
+    ...hydrated,
     phase,
     error: null,
     shareId: null,
@@ -438,11 +562,18 @@ export function useImportPool() {
 
   // Persist on every state change. No "have I restored yet" guard needed —
   // lazy init already populated state on the very first render.
+  // Outer try/catch is belt-and-suspenders: savePersisted has its own
+  // fallback chain, but if anything ever throws unexpectedly here it must
+  // not propagate to the React error boundary.
   useEffect(() => {
-    if (state.phase === 'done') {
-      clearPersisted()
-    } else {
-      savePersisted(state)
+    try {
+      if (state.phase === 'done') {
+        clearPersisted()
+      } else {
+        savePersisted(state)
+      }
+    } catch (err) {
+      console.error('[ImportPool] persistence effect threw', err)
     }
   }, [state])
 
