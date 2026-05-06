@@ -46,6 +46,8 @@ export function ArenaView({
     deckSortOption,
     setShowDeckAspectPenalties,
     setShowPoolAspectPenalties,
+    showAspectPenalties,
+    setShowAspectPenalties,
     poolCardDensity,
     setPoolCardDensity,
     deckCardDensity,
@@ -59,6 +61,8 @@ export function ArenaView({
     deckFilterOpen,
     setDeckFilterOpen,
     setFilterAspectsExpanded,
+    filteredCardDisplay,
+    setFilteredCardDisplay,
   } = useDeckBuilder()
 
   const enableAspectPenalties = useCallback(() => {
@@ -119,6 +123,19 @@ export function ArenaView({
     onCardTouchEnd?.()
   }, [onCardTouchEnd])
 
+  const FadeHideToggle = () => (
+    <div className="arena-fade-hide-toggle" onClick={e => e.stopPropagation()}>
+      <button
+        className={`arena-fade-hide-btn${filteredCardDisplay !== 'hide' ? ' active' : ''}`}
+        onClick={() => setFilteredCardDisplay('fade')}
+      >Fade</button>
+      <button
+        className={`arena-fade-hide-btn${filteredCardDisplay === 'hide' ? ' active' : ''}`}
+        onClick={() => setFilteredCardDisplay('hide')}
+      >Hide</button>
+    </div>
+  )
+
   // Toolbar row shared by pool and deck
   const renderControlsRow = (
     mode: 'pool' | 'deck',
@@ -130,26 +147,41 @@ export function ArenaView({
     densityValue: 'small' | 'medium' | 'large',
     onDensityChange: (density: 'small' | 'medium' | 'large') => void,
   ) => (
-    <>
-      <div className="arena-controls-rows">
-        <div className="arena-controls-row arena-section-controls">
-          <span className="arena-actions-label">VIEW:</span>
-          <SortControls value={sortValue} onChange={onSortChange} />
-          <FilterWithModal
-            isOpen={filterOpen}
-            onToggle={() => setFilterOpen(!filterOpen)}
-            onClose={() => setFilterOpen(false)}
-            mode={mode}
-            onFilterAspectsExpandedChange={setFilterAspectsExpanded}
-            cardCount={cardCount}
-          />
-          <CardDensityToggle value={densityValue} onChange={onDensityChange} />
-        </div>
-        <div className="arena-controls-row arena-section-controls">
-          <ArenaActionsBar mode={mode} />
-        </div>
+    <div className="arena-controls-rows">
+      <div className="arena-controls-row arena-section-controls">
+        <span className="arena-actions-label">VIEW:</span>
+        <SortControls value={sortValue} onChange={onSortChange} />
+        <FilterWithModal
+          isOpen={filterOpen}
+          onToggle={() => setFilterOpen(!filterOpen)}
+          onClose={() => setFilterOpen(false)}
+          mode={mode}
+          onFilterAspectsExpandedChange={setFilterAspectsExpanded}
+          cardCount={cardCount}
+        />
+        <button
+          className={`arena-action-btn arena-action-btn--yellow${showAspectPenalties ? ' active' : ''}`}
+          onClick={e => { e.stopPropagation(); setShowAspectPenalties?.(!showAspectPenalties) }}
+          title={showAspectPenalties ? 'Hide aspect penalties' : 'Show aspect penalties'}
+        >
+          {showAspectPenalties ? (
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" />
+            </svg>
+          ) : (
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" />
+              <line x1="1" y1="1" x2="23" y2="23" />
+            </svg>
+          )}
+          Aspect Penalties
+        </button>
+        <CardDensityToggle value={densityValue} onChange={onDensityChange} />
       </div>
-    </>
+      <div className="arena-controls-row arena-section-controls">
+        <ArenaActionsBar mode={mode} />
+      </div>
+    </div>
   )
 
   return (
@@ -194,6 +226,7 @@ export function ArenaView({
         title={isLoading ? 'Pool' : `Pool (${poolCardCount})`}
         expanded={poolExpanded}
         onToggle={() => setPoolExpanded(!poolExpanded)}
+        rightContent={<FadeHideToggle />}
       />
       {!isLoading && renderControlsRow(
         'pool',
@@ -233,6 +266,7 @@ export function ArenaView({
         title={isLoading ? 'Deck' : `Deck (${deckCardCount})`}
         expanded={deckExpanded}
         onToggle={() => setDeckExpanded(!deckExpanded)}
+        rightContent={<FadeHideToggle />}
       />
       {!isLoading && renderControlsRow(
         'deck',

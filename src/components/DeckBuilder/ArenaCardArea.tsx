@@ -127,7 +127,21 @@ export function ArenaCardArea({
     selectedCards,
     toggleCardSection,
     cardMatchesFilters,
+    filteredCardDisplay,
   } = useDeckBuilder()
+
+  // In 'hide' mode, strip out filtered cards before any rendering so they
+  // take no space. In 'fade' mode (default), pass isFilteredOut to each card.
+  const effectiveCards = useMemo(() => {
+    if (filteredCardDisplay === 'hide' && cardMatchesFilters) {
+      return cards.filter(({ position }) => cardMatchesFilters(position.card))
+    }
+    return cards
+  }, [cards, filteredCardDisplay, cardMatchesFilters])
+
+  const isFilteredOutFn = filteredCardDisplay !== 'hide' && cardMatchesFilters
+    ? (c: CardData) => !cardMatchesFilters(c)
+    : undefined
 
   // Effective cost (with optional aspect penalty)
   const getEffectiveCost = useCallback((card: CardData): number => {
@@ -153,7 +167,7 @@ export function ArenaCardArea({
     const tempBuckets: Record<string, { units: ArenaCardAreaCardEntry[]; nonUnits: ArenaCardAreaCardEntry[] }> = {}
     COST_BUCKETS.forEach(b => { tempBuckets[b] = { units: [], nonUnits: [] } })
 
-    cards.forEach(entry => {
+    effectiveCards.forEach(entry => {
       const bucket = getCostBucket(entry.position.card)
       if (!tempBuckets[bucket]) return
       if (isUnit(entry.position.card)) tempBuckets[bucket].units.push(entry)
@@ -192,11 +206,11 @@ export function ArenaCardArea({
       buckets[b].nonUnits = groupByName(tempBuckets[b].nonUnits)
     })
     return buckets
-  }, [cards, getCostBucket])
+  }, [effectiveCards, getCostBucket])
 
   // Default-mode flat sort
   const sortedFlatCards = useMemo(() => {
-    return [...cards].sort((a, b) => {
+    return [...effectiveCards].sort((a, b) => {
       const A = a.position.card, B = b.position.card
       const ka = getAspectSortKey(A), kb = getAspectSortKey(B)
       const cmp = ka.localeCompare(kb)
@@ -207,7 +221,7 @@ export function ArenaCardArea({
       if (cA !== cB) return cA - cB
       return (A.name || '').localeCompare(B.name || '')
     })
-  }, [cards])
+  }, [effectiveCards])
 
   // Aspect/type-mode grouped blocks
   const groupedBlocks = useMemo(() => {
@@ -220,7 +234,7 @@ export function ArenaCardArea({
       getAspectKey: getAspectKeyUtil,
     })
     const groups: Record<string, ArenaCardAreaCardEntry[]> = {}
-    cards.forEach(e => {
+    effectiveCards.forEach(e => {
       const key = getGroupKey(e.position.card)
       if (!groups[key]) groups[key] = []
       groups[key].push(e)
@@ -229,7 +243,7 @@ export function ArenaCardArea({
     Object.keys(groups).forEach(key => groups[key].sort(cardSortFn))
     const sortedKeys = sortGroupKeys(Object.keys(groups), sortOption, '8+')
     return { groups, sortedKeys }
-  }, [cards, sortOption, showAspectPenalties, leaderCard, baseCard])
+  }, [effectiveCards, sortOption, showAspectPenalties, leaderCard, baseCard])
 
   const calculatePenalty = useCallback((card: CardData): number => {
     if (!leaderCard || !baseCard) return 0
@@ -249,7 +263,7 @@ export function ArenaCardArea({
     const isSelected = selectedCards.has(cardId)
     const isHovered = hoveredCard === cardId
     const penalty = showAspectPenalties ? calculatePenalty(card) : 0
-    const filteredOut = cardMatchesFilters ? !cardMatchesFilters(card) : false
+    const filteredOut = isFilteredOutFn ? isFilteredOutFn(card) : false
 
     const cardElement = (
       <ResizableCard
@@ -287,7 +301,7 @@ export function ArenaCardArea({
         const nonUnitsQty = nonUnits.reduce((s, e) => s + (e.quantity || 1), 0)
         const totalCount = unitsQty + nonUnitsQty
         const hasZero = bucket === '1' && [...units, ...nonUnits].some(e => (e.position.card.cost ?? 0) === 0)
-        const isFilteredOut = cardMatchesFilters ? (c: CardData) => !cardMatchesFilters(c) : undefined
+        const isFilteredOut = isFilteredOutFn
         return (
           <div key={bucket} className="arena-cost-column">
             <div className="arena-cost-header">
@@ -353,13 +367,13 @@ export function ArenaCardArea({
   // Group cards by sorted aspect-combo key (used by aspect-columns rendering)
   const cardsByCombo = useMemo(() => {
     const map = new Map<string, ArenaCardAreaCardEntry[]>()
-    cards.forEach(entry => {
+    effectiveCards.forEach(entry => {
       const key = comboKeyFor(entry.position.card.aspects as string[] | undefined)
       if (!map.has(key)) map.set(key, [])
       map.get(key)!.push(entry)
     })
     return map
-  }, [cards])
+  }, [effectiveCards])
 
   // Group entries by name → quantity-aware GroupedCardEntry, sorted by cost/aspect/name
   const groupByNameSorted = useCallback((entries: ArenaCardAreaCardEntry[]): GroupedCardEntry[] => {
@@ -392,7 +406,7 @@ export function ArenaCardArea({
   // Aspect mode — same visual structure as cost mode (.arena-cost-columns):
   // one column per major aspect with sub-sections stacked vertically inside.
   const renderAspectColumns = () => {
-    const isFilteredOut = cardMatchesFilters ? (c: CardData) => !cardMatchesFilters(c) : undefined
+    const isFilteredOut = isFilteredOutFn
 
     const renderSubSection = (label: string, comboKey: string) => {
       const all = cardsByCombo.get(comboKey) || []
@@ -536,7 +550,7 @@ export function ArenaCardArea({
     </div>
   )
 
-  if (cards.length === 0) {
+  if (effectiveCards.length === 0) {
     return <div className="arena-empty-pool">{emptyMessage}</div>
   }
   if (sortOption === 'cost') return renderCostColumns()

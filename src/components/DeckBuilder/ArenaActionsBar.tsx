@@ -46,8 +46,6 @@ export function ArenaActionsBar({ mode = 'pool' }: ArenaActionsBarProps) {
     moveCardsToPool,
     leaderCard,
     baseCard,
-    showAspectPenalties,
-    setShowAspectPenalties,
   } = useDeckBuilder()
 
   const poolCardIds = useMemo(
@@ -176,16 +174,6 @@ export function ArenaActionsBar({ mode = 'pool' }: ArenaActionsBarProps) {
         ⊖ Out of Aspect
       </button>
 
-      <span className="arena-actions-separator" />
-
-      <button
-        className={`arena-action-btn arena-action-btn--yellow${showAspectPenalties ? ' active' : ''}`}
-        onClick={handleTogglePenalties}
-        title={showAspectPenalties ? 'Hide aspect penalties' : 'Show aspect penalties'}
-      >
-        {showAspectPenalties ? <EyeOpenIcon /> : <EyeSlashIcon />}
-        Aspect Penalties
-      </button>
     </div>
   )
 }

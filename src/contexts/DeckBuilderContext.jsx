@@ -47,6 +47,7 @@ export function DeckBuilderProvider({
   const [viewMode, setViewMode] = useState('arena') // 'grid', 'list', or 'arena'
   const [poolSortOption, setPoolSortOption] = useState('cost')
   const [deckSortOption, setDeckSortOption] = useState('cost')
+  const [filteredCardDisplay, setFilteredCardDisplay] = useState('fade') // 'fade' | 'hide'
 
   // Derived values
   const leaderCard = useMemo(() => {
@@ -193,6 +194,8 @@ export function DeckBuilderProvider({
     setPoolSortOption,
     deckSortOption,
     setDeckSortOption,
+    filteredCardDisplay,
+    setFilteredCardDisplay,
 
     // Actions
     moveCardToDeck,
@@ -222,6 +225,7 @@ export function DeckBuilderProvider({
     viewMode,
     poolSortOption,
     deckSortOption,
+    filteredCardDisplay,
     moveCardToDeck,
     moveCardToPool,
     moveCardsToDeck,
