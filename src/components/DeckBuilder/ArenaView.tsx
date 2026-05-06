@@ -3,9 +3,8 @@
  * ArenaView Component
  *
  * Main arena view mode for the deckbuilder.
- * Pool and Deck headers expose the same toolbar composition as the Playmat (grid) view:
- * SortControls + Filter button + AspectPenaltyToggle + BulkMoveButtons,
- * placed in a row below the section title.
+ * Pool and Deck headers expose a controls row (sort + filter + density) and
+ * a unified ArenaActionsBar (bulk-move + aspect-penalty toggle).
  */
 
 import { useState, useCallback, useMemo, type MouseEvent } from 'react'
@@ -18,8 +17,7 @@ import { CardDensityToggle } from './CardDensityToggle'
 import { LeaderBaseSelector } from './LeaderBaseSelector'
 import { SortControls, type SortOption } from './SortControls'
 import { FilterWithModal } from './FilterWithModal'
-import { AspectPenaltyToggle } from './AspectPenaltyToggle'
-import { BulkMoveButtons } from './BulkMoveButtons'
+import { ArenaActionsBar } from './ArenaActionsBar'
 import type { CardData } from '../Card'
 
 export interface ArenaViewProps {
@@ -121,7 +119,7 @@ export function ArenaView({
     onCardTouchEnd?.()
   }, [onCardTouchEnd])
 
-  // Toolbar row shared by pool and deck (mirrors playmat SectionHeader controls row)
+  // Toolbar row shared by pool and deck
   const renderControlsRow = (
     mode: 'pool' | 'deck',
     sortValue: SortOption,
@@ -132,20 +130,23 @@ export function ArenaView({
     densityValue: 'small' | 'medium' | 'large',
     onDensityChange: (density: 'small' | 'medium' | 'large') => void,
   ) => (
-    <div className="arena-controls-row arena-section-controls">
-      <SortControls value={sortValue} onChange={onSortChange} />
-      <FilterWithModal
-        isOpen={filterOpen}
-        onToggle={() => setFilterOpen(!filterOpen)}
-        onClose={() => setFilterOpen(false)}
-        mode={mode}
-        onFilterAspectsExpandedChange={setFilterAspectsExpanded}
-        cardCount={cardCount}
-      />
-      <AspectPenaltyToggle sortOption={sortValue} />
-      <CardDensityToggle value={densityValue} onChange={onDensityChange} />
-      <BulkMoveButtons mode={mode} />
-    </div>
+    <>
+      <div className="arena-controls-row arena-section-controls">
+        <SortControls value={sortValue} onChange={onSortChange} />
+        <FilterWithModal
+          isOpen={filterOpen}
+          onToggle={() => setFilterOpen(!filterOpen)}
+          onClose={() => setFilterOpen(false)}
+          mode={mode}
+          onFilterAspectsExpandedChange={setFilterAspectsExpanded}
+          cardCount={cardCount}
+        />
+        <CardDensityToggle value={densityValue} onChange={onDensityChange} />
+      </div>
+      <div className="arena-controls-row arena-section-controls">
+        <ArenaActionsBar mode={mode} />
+      </div>
+    </>
   )
 
   return (

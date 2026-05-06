@@ -260,8 +260,13 @@
   align-items: center;
   flex-wrap: nowrap;
   gap: 0.5rem;
-  margin-top: 0.25rem;
-  margin-bottom: 0.5rem;
+  /* Padding gives box-shadows room to render; negative margins compensate so
+     external spacing stays the same. overflow-x:auto alone clips shadows. */
+  padding: 8px;
+  margin-top: calc(0.25rem - 8px);
+  margin-bottom: calc(0.5rem - 8px);
+  margin-left: -8px;
+  margin-right: -8px;
   overflow-x: auto;
 }
 
