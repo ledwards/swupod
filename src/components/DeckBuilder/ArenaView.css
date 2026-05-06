@@ -768,42 +768,23 @@
   row-gap: 2px;
 }
 
-/* Aspect-mode columns: each major column is split into 2 sub-columns (Units / Non-Units). */
+/* Aspect-mode columns: same vertical structure as cost-mode columns. Cap card
+   width so cards stay near the size of cost-mode cards (aspect mode has 6
+   columns vs cost mode's 8, so columns are wider). */
 .arena-aspect-column .arena-cost-header {
   flex-wrap: wrap;
+}
+
+.arena-aspect-column .arena-card-stack {
+  max-width: 130px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .arena-multi-aspect-icons {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-}
-
-.arena-aspect-column-split {
-  display: flex;
-  flex-direction: row;
-  gap: 4px;
-  align-items: flex-start;
-}
-
-.arena-aspect-subcolumn {
-  flex: 1 1 0;
-  min-width: 0;
-}
-
-.arena-subcolumn-label {
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.75);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-  padding-bottom: 2px;
-  margin-bottom: 6px;
-}
-
-/* Cap card width within each sub-column so cards stay near cost-mode size. */
-.arena-aspect-subcolumn .arena-card-stack {
-  max-width: 110px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 /* Pool grouped blocks (aspect/type modes) */

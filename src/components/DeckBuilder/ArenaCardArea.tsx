@@ -389,22 +389,18 @@ export function ArenaCardArea({
     return result
   }, [])
 
-  // Aspect mode — same visual structure as cost mode (.arena-cost-columns), but
-  // each major column (Vigilance / Command / Aggression / Cunning / Neutral / Multi)
-  // is internally split into two sub-columns: Units (left) and Non-Units (right).
+  // Aspect mode — same visual structure as cost mode (.arena-cost-columns):
+  // one column per major aspect with sub-sections stacked vertically inside.
   const renderAspectColumns = () => {
     const isFilteredOut = cardMatchesFilters ? (c: CardData) => !cardMatchesFilters(c) : undefined
 
-    const isUnit = (e: ArenaCardAreaCardEntry) => e.position.card.type === 'Unit'
-
-    const renderSubSection = (label: string, comboKey: string, unitFilter: 'unit' | 'nonUnit') => {
+    const renderSubSection = (label: string, comboKey: string) => {
       const all = cardsByCombo.get(comboKey) || []
-      const filtered = all.filter(e => unitFilter === 'unit' ? isUnit(e) : !isUnit(e))
-      if (filtered.length === 0) return null
-      const grouped = groupByNameSorted(filtered)
+      if (all.length === 0) return null
+      const grouped = groupByNameSorted(all)
       const totalQty = grouped.reduce((s, e) => s + (e.quantity || 1), 0)
       return (
-        <div key={`${comboKey}-${unitFilter}`}>
+        <div key={comboKey}>
           <div className="arena-stack-label">{label} ({totalQty})</div>
           <ArenaCardStack
             cards={grouped}
@@ -426,23 +422,6 @@ export function ArenaCardArea({
       )
     }
 
-    const renderUnitNonUnitSplit = (subs: Array<{ comboKey: string; label: string }>) => {
-      const unitCount = subs.reduce((s, sub) => s + (cardsByCombo.get(sub.comboKey) || []).filter(isUnit).length, 0)
-      const nonUnitCount = subs.reduce((s, sub) => s + (cardsByCombo.get(sub.comboKey) || []).filter(e => !isUnit(e)).length, 0)
-      return (
-        <div className="arena-aspect-column-split">
-          <div className="arena-aspect-subcolumn">
-            <div className="arena-stack-label arena-subcolumn-label">Unit{unitCount ? ` (${unitCount})` : ''}</div>
-            {subs.map(s => renderSubSection(s.label, s.comboKey, 'unit'))}
-          </div>
-          <div className="arena-aspect-subcolumn">
-            <div className="arena-stack-label arena-subcolumn-label">Non-Unit{nonUnitCount ? ` (${nonUnitCount})` : ''}</div>
-            {subs.map(s => renderSubSection(s.label, s.comboKey, 'nonUnit'))}
-          </div>
-        </div>
-      )
-    }
-
     const ICON_PX = 22 // 20% smaller than the 28px used in cost-mode headers
 
     const renderPrimaryColumn = (primary: string) => {
@@ -459,7 +438,7 @@ export function ArenaCardArea({
             <img src={`/icons/${primary.toLowerCase()}.png`} alt={primary} style={{ width: ICON_PX, height: ICON_PX }} />
             {totalQty > 0 && <span className="cost-count" style={{ marginLeft: 4 }}>({totalQty})</span>}
           </div>
-          {renderUnitNonUnitSplit(subs)}
+          {subs.map(s => renderSubSection(s.label, s.comboKey))}
         </div>
       )
     }
@@ -478,7 +457,7 @@ export function ArenaCardArea({
             <span style={{ fontSize: '0.75rem', textTransform: 'uppercase' }}>Neutral</span>
             {totalQty > 0 && <span className="cost-count" style={{ marginLeft: 6 }}>({totalQty})</span>}
           </div>
-          {renderUnitNonUnitSplit(subs)}
+          {subs.map(s => renderSubSection(s.label, s.comboKey))}
         </div>
       )
     }
@@ -506,7 +485,7 @@ export function ArenaCardArea({
             </span>
             {totalQty > 0 && <span className="cost-count" style={{ marginLeft: 6 }}>({totalQty})</span>}
           </div>
-          {renderUnitNonUnitSplit(subs)}
+          {subs.map(s => renderSubSection(s.label, s.comboKey))}
         </div>
       )
     }
