@@ -902,8 +902,8 @@
 .view-mode-toggle-container {
   position: fixed;
   top: 20px;
-  right: 70px; /* 20px (avatar right margin) + 40px (avatar width) + 10px gap */
-  z-index: 10000;
+  right: 84px; /* 20px (avatar right margin) + 40px (avatar width) + 24px gap */
+  z-index: 1100;
 }
 
 .view-mode-toggle-group {
@@ -1681,7 +1681,7 @@
   /* View mode toggle - positioned next to avatar on mobile */
   .view-mode-toggle-container {
     top: 15px;
-    right: 60px;
+    right: 72px; /* 15px (avatar right margin) + 36px (avatar width) + 21px gap */
   }
 
   .view-mode-toggle-button {
