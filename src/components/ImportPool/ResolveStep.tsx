@@ -265,12 +265,15 @@ export default function ResolveStep({ importPool }: Props) {
 // === Sub-components ===
 
 function RunningTotals({ validation }: { validation: any }) {
+  const deckOk = validation.deckCount >= validation.deckTarget
   return (
     <div className="import-pool-totals">
-      <span className={validation.poolCount === 96 ? 'totals-ok' : 'totals-bad'}>
-        Pool: {validation.poolCount} / 96
+      <span className={validation.poolCount === validation.poolTarget ? 'totals-ok' : 'totals-bad'}>
+        Pool: {validation.poolCount} / {validation.poolTarget}
       </span>
-      <span>Deck: {validation.deckCount}</span>
+      <span className={deckOk ? 'totals-ok' : 'totals-bad'}>
+        Deck: {validation.deckCount} / {validation.deckTarget}
+      </span>
       <span className={validation.hasLeader ? 'totals-ok' : 'totals-bad'}>
         Leader: {validation.hasLeader ? '✓' : '✗'}
       </span>
@@ -507,7 +510,7 @@ function primarySection(card: { aspects?: string[] }): {
     return { key: playerSides[0].toLowerCase(), displayName: playerSides[0].toUpperCase(), aspects: [playerSides[0]] }
   }
   // No aspects at all
-  return { key: 'no-aspect', displayName: 'NO ASPECT', aspects: [] }
+  return { key: 'no-aspect', displayName: 'NEUTRAL', aspects: [] }
 }
 
 /**

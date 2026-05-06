@@ -294,12 +294,18 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
 export interface Validation {
   valid: boolean
   poolCount: number
+  poolTarget: number
   deckCount: number
+  /** Minimum legal deck size for sealed (sets the target for the X/30 readout) */
+  deckTarget: number
   hasLeader: boolean
   hasBase: boolean
   unresolvedCount: number
   errors: string[]
 }
+
+const POOL_TARGET = 96
+const DECK_TARGET = 30
 
 function deriveValidation(state: ImportPoolState): Validation {
   const errors: string[] = []
@@ -319,7 +325,10 @@ function deriveValidation(state: ImportPoolState): Validation {
     }
   }
 
-  if (poolCount !== 96) errors.push(`Pool must total 96 cards (currently ${poolCount})`)
+  if (poolCount !== POOL_TARGET)
+    errors.push(`Pool must total ${POOL_TARGET} cards (currently ${poolCount})`)
+  if (deckCount < DECK_TARGET)
+    errors.push(`Deck must include at least ${DECK_TARGET} cards (currently ${deckCount})`)
   const hasLeader = !!state.activeLeaderId
   const hasBase = !!state.activeBaseId
   if (!hasLeader) errors.push('Select an active leader')
@@ -329,7 +338,9 @@ function deriveValidation(state: ImportPoolState): Validation {
   return {
     valid: errors.length === 0,
     poolCount,
+    poolTarget: POOL_TARGET,
     deckCount,
+    deckTarget: DECK_TARGET,
     hasLeader,
     hasBase,
     unresolvedCount,
