@@ -17,7 +17,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
 import { queryRow } from '@/lib/db'
 import { jsonResponse, parseBody, handleApiError } from '@/lib/utils'
-import { extractPoolFromImages, type RawExtractResponse } from '@/lib/anthropic'
+import { extractPoolFromImages, computeSectionGaps, type RawExtractResponse } from '@/lib/anthropic'
 import { matchExtractedRows } from '@/src/services/importPool/cardMatcher'
 import { getCachedCards, initializeCardCache } from '@/src/utils/cardCache'
 import { getSetConfig, getAllSetCodes } from '@/src/utils/setConfigs/index'
@@ -223,9 +223,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         subtitle: r.subtitle,
         poolQty: r.poolQty,
         deckQty: r.deckQty,
+        extractConfidence: r.extractConfidence,
       })),
       cards,
     })
+
+    // Compute final section gaps (under/over-populated sections vs typical
+    // sealed-pool ranges) so the client can surface them as anomalies in the
+    // error pager.
+    const sectionGaps = computeSectionGaps(raw)
 
     return jsonResponse({
       header: {
@@ -238,6 +244,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         base: raw.header.base,
       },
       warnings: extractWarnings,
+      sectionGaps,
       rows: matched.map((m) => ({
         extracted: m.extracted,
         matched: m.matched

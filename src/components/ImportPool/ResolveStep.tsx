@@ -66,17 +66,46 @@ export default function ResolveStep({ importPool }: Props) {
     [state.resolvedRows, state.viewFilter],
   )
 
-  // Build the list of "anomaly" row keys for the error pager: unresolved,
-  // ambiguous, fuzzy matches, plus any row with deckQty>poolQty.
-  const anomalyKeys = useMemo(() => {
-    const keys: string[] = []
-    for (const row of state.resolvedRows) {
-      if (!row.card) keys.push(row.key)
-      else if (row.confidence === 'fuzzy' || row.confidence === 'ambiguous') keys.push(row.key)
-      else if (row.deckQty > row.poolQty) keys.push(row.key)
+  // Build the list of "anomalies" — things the user should manually verify.
+  // Three classes:
+  //   1. Section-level gaps (under/over-populated vs typical sealed pool)
+  //   2. Per-row Claude vision confidence: medium/low
+  //   3. Per-row matcher confidence: unresolved, fuzzy, ambiguous, deckQty>poolQty
+  type Anomaly =
+    | { kind: 'section'; targetId: string; label: string }
+    | { kind: 'row'; targetId: string; label: string }
+
+  const anomalies = useMemo<Anomaly[]>(() => {
+    const list: Anomaly[] = []
+    // Section gaps first — large-scale issues
+    for (const gap of state.sectionGaps) {
+      list.push({
+        kind: 'section',
+        targetId: `ip-section-${gap.section.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+        label: gap.message,
+      })
     }
-    return keys
-  }, [state.resolvedRows])
+    // Per-row issues
+    for (const row of state.resolvedRows) {
+      const cardName = row.card?.name || row.extracted.name || 'Unrecognized'
+      if (!row.card) {
+        list.push({ kind: 'row', targetId: `ip-row-${row.key}`, label: `Unmatched: ${cardName}` })
+      } else if (row.confidence === 'ambiguous') {
+        list.push({ kind: 'row', targetId: `ip-row-${row.key}`, label: `Ambiguous match: ${cardName}` })
+      } else if (row.confidence === 'fuzzy') {
+        list.push({ kind: 'row', targetId: `ip-row-${row.key}`, label: `Fuzzy match: ${cardName}` })
+      } else if (row.deckQty > row.poolQty) {
+        list.push({ kind: 'row', targetId: `ip-row-${row.key}`, label: `Bad qty: ${cardName} deck>${row.poolQty}` })
+      } else if (row.extracted.extractConfidence === 'low') {
+        list.push({ kind: 'row', targetId: `ip-row-${row.key}`, label: `Low-confidence read: ${cardName}` })
+      } else if (row.extracted.extractConfidence === 'medium' && row.poolQty > 0) {
+        list.push({ kind: 'row', targetId: `ip-row-${row.key}`, label: `Medium-confidence read: ${cardName}` })
+      }
+    }
+    return list
+  }, [state.resolvedRows, state.sectionGaps])
+
+  const anomalyKeys = anomalies.map((a) => a.targetId)
 
   const [anomalyIndex, setAnomalyIndex] = useState(0)
   // Keep index in bounds when the anomaly list changes
@@ -86,19 +115,21 @@ export default function ResolveStep({ importPool }: Props) {
 
   const goToAnomaly = useCallback(
     (delta: number) => {
-      if (anomalyKeys.length === 0) return
-      const next = (anomalyIndex + delta + anomalyKeys.length) % anomalyKeys.length
+      if (anomalies.length === 0) return
+      const next = (anomalyIndex + delta + anomalies.length) % anomalies.length
       setAnomalyIndex(next)
-      const key = anomalyKeys[next]
-      const el = document.getElementById(`ip-row-${key}`)
+      const targetId = anomalies[next].targetId
+      const el = document.getElementById(targetId)
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' })
         el.classList.add('ip-row--flash')
         setTimeout(() => el.classList.remove('ip-row--flash'), 1400)
       }
     },
-    [anomalyKeys, anomalyIndex],
+    [anomalies, anomalyIndex],
   )
+
+  const currentAnomalyLabel = anomalies[anomalyIndex]?.label || ''
 
   return (
     <section className="import-pool-step import-pool-step--resolve">
@@ -169,7 +200,7 @@ export default function ResolveStep({ importPool }: Props) {
               Deck
             </button>
           </div>
-          {anomalyKeys.length > 0 && (
+          {anomalies.length > 0 && (
             <div className="ip-error-pager" role="group" aria-label="Issue navigator">
               <button
                 type="button"
@@ -180,8 +211,8 @@ export default function ResolveStep({ importPool }: Props) {
               >
                 ←
               </button>
-              <span className="ip-error-pager__label">
-                Issue {anomalyKeys.length === 0 ? 0 : anomalyIndex + 1}/{anomalyKeys.length}
+              <span className="ip-error-pager__label" title={currentAnomalyLabel}>
+                Issue {anomalyIndex + 1}/{anomalies.length}
               </span>
               <button
                 type="button"
@@ -207,6 +238,11 @@ export default function ResolveStep({ importPool }: Props) {
           )}
         </div>
       </div>
+      {anomalies.length > 0 && currentAnomalyLabel && (
+        <div className="ip-anomaly-detail">
+          <strong>Issue {anomalyIndex + 1}:</strong> {currentAnomalyLabel}
+        </div>
+      )}
 
       {state.viewMode === 'grid' ? (
         <GridView
@@ -270,7 +306,10 @@ export default function ResolveStep({ importPool }: Props) {
 
           return (
             <tbody key={group.key} className="ip-section">
-              <tr className="ip-section-row">
+              <tr
+                className="ip-section-row"
+                id={`ip-section-${group.displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+              >
                 <td colSpan={4}>
                   <div className="ip-section-bar">
                     <span className="ip-section__title">
@@ -833,7 +872,11 @@ function GridView({
   return (
     <div className="ip-grid-root">
       {grouped.map((group) => (
-        <div key={group.key} className="ip-grid-section">
+        <div
+          key={group.key}
+          className="ip-grid-section"
+          id={`ip-section-${group.displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+        >
           <div className="ip-section-bar">
             <span className="ip-section__title">
               {group.aspects.length > 0 && (

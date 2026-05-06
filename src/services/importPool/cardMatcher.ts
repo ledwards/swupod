@@ -18,6 +18,8 @@ export interface ExtractedRow {
   subtitle: string | null
   poolQty: number
   deckQty: number
+  /** Claude's per-row vision confidence (added by lib/anthropic). Optional for older callers. */
+  extractConfidence?: 'high' | 'medium' | 'low'
 }
 
 export type MatchConfidence = 'exact' | 'high' | 'ambiguous' | 'fuzzy' | 'unmatched'

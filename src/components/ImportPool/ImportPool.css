@@ -252,8 +252,26 @@
   20%, 70% { background-color: rgba(255, 217, 102, 0.35); }
 }
 .ip-row--flash,
-.ip-tile.ip-row--flash {
+.ip-tile.ip-row--flash,
+.ip-section-row.ip-row--flash > td,
+.ip-grid-section.ip-row--flash {
   animation: ip-row-flash 1.4s ease-in-out;
+}
+
+/* Detail line shown under the toolbar when an anomaly is selected */
+.ip-anomaly-detail {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  background: rgba(255, 217, 102, 0.08);
+  border: 1px solid rgba(255, 217, 102, 0.4);
+  border-radius: 4px;
+  font-size: 13px;
+  color: rgba(255, 230, 150, 0.95);
+}
+
+.ip-anomaly-detail strong {
+  color: #ffd966;
+  margin-right: 4px;
 }
 
 .import-pool-totals {

@@ -27,6 +27,16 @@ export interface ExtractedRow {
   subtitle: string | null
   poolQty: number
   deckQty: number
+  /** Per-row vision confidence reported by Claude (high/medium/low) */
+  extractConfidence?: 'high' | 'medium' | 'low'
+}
+
+export interface SectionGap {
+  section: string
+  count: number
+  expectedLow: number
+  expectedHigh: number
+  message: string
 }
 
 export interface MatchedCard {
@@ -63,6 +73,8 @@ export interface ExtractResponse {
   rows: MatchedRow[]
   /** Non-blocking warnings from the sanitization pass (e.g. clamped qty, dropped rows) */
   warnings?: string[]
+  /** Section-level gap warnings (e.g. AGGRESSION has 3 cards, expected 5-18) */
+  sectionGaps?: SectionGap[]
 }
 
 /** A row as the user edits it in the Resolve step */
@@ -102,6 +114,7 @@ interface ImportPoolState {
   title: string
   shareId: string | null
   warnings: string[]
+  sectionGaps: SectionGap[]
   /** Row visibility filter: all sheet rows / only pool (poolQty>0) / only deck (deckQty>0) */
   viewFilter: 'all' | 'pool' | 'deck'
   /** Resolve-step rendering mode */
@@ -119,6 +132,7 @@ const INITIAL_STATE: ImportPoolState = {
   title: '',
   shareId: null,
   warnings: [],
+  sectionGaps: [],
   viewFilter: 'pool',
   viewMode: 'table',
   error: null,
@@ -227,6 +241,7 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
         activeBaseId,
         title,
         warnings: action.response.warnings || [],
+        sectionGaps: action.response.sectionGaps || [],
         error: null,
       }
     }

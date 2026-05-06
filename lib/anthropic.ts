@@ -47,6 +47,7 @@ export interface ExtractedRow {
   poolQty: number
   deckQty: number
   aspectGroup: string | null
+  extractConfidence: 'high' | 'medium' | 'low'
 }
 
 export interface ExtractedHeader {
@@ -119,6 +120,12 @@ CRITICAL READING RULES — these are where extraction goes wrong if you're not c
    - "aspectGroup": the section header the row appears under (e.g. "Vigilance", "Command", "Aggression Vigilance", "Multicolor", "No Aspect")
 
 7. **Names you can't read.** If a card name is unreadable, use the literal string "?". Never invent cards.
+
+8. **Per-row confidence.** For every row, attach `extractConfidence` ∈ {"high", "medium", "low"}:
+   - "high" — the mark (or absence of mark) is unambiguous; you are certain about both poolQty and deckQty.
+   - "medium" — you can see something but the count is unclear (one tally vs two? a smudge that might be a mark?), or part of the row is occluded.
+   - "low" — the row is partially or wholly illegible due to handwriting, lighting, glare, or angle. The user should verify against the source image.
+   Use "high" liberally for blank rows (poolQty=0, deckQty=0) — empty cells are easy to be confident about. Use "medium"/"low" honestly when you're guessing. The user uses this signal to know which rows to manually verify.
 
 Return strict JSON conforming to the response schema. Do not include any prose, markdown, or explanation outside the JSON. The user will verify the result against the source sheet, so accuracy on what's NOT marked matters as much as accuracy on what IS marked.`
 
@@ -285,8 +292,12 @@ const RESPONSE_SCHEMA = {
           poolQty: { type: 'integer' },
           deckQty: { type: 'integer' },
           aspectGroup: { type: ['string', 'null'] },
+          extractConfidence: {
+            type: 'string',
+            enum: ['high', 'medium', 'low'],
+          },
         },
-        required: ['name', 'type', 'subtitle', 'poolQty', 'deckQty', 'aspectGroup'],
+        required: ['name', 'type', 'subtitle', 'poolQty', 'deckQty', 'aspectGroup', 'extractConfidence'],
       },
     },
   },
@@ -374,11 +385,58 @@ const SECTION_TYPICAL_RANGES: Array<{ key: string; matcher: (a: string[]) => boo
   { key: 'Command', matcher: (a) => a.includes('Command') && !a.some((x) => ['Vigilance', 'Aggression', 'Cunning'].includes(x)), low: 5, high: 18 },
   { key: 'Aggression', matcher: (a) => a.includes('Aggression') && !a.some((x) => ['Vigilance', 'Command', 'Cunning'].includes(x)), low: 5, high: 18 },
   { key: 'Cunning', matcher: (a) => a.includes('Cunning') && !a.some((x) => ['Vigilance', 'Command', 'Aggression'].includes(x)), low: 5, high: 18 },
-  { key: 'Heroism (only)', matcher: (a) => a.length === 1 && a[0] === 'Heroism', low: 1, high: 8 },
-  { key: 'Villainy (only)', matcher: (a) => a.length === 1 && a[0] === 'Villainy', low: 1, high: 8 },
+  { key: 'Heroism', matcher: (a) => a.length === 1 && a[0] === 'Heroism', low: 1, high: 8 },
+  { key: 'Villainy', matcher: (a) => a.length === 1 && a[0] === 'Villainy', low: 1, high: 8 },
   { key: 'Multicolor', matcher: (a) => a.filter((x) => ['Vigilance', 'Command', 'Aggression', 'Cunning'].includes(x)).length >= 2, low: 8, high: 30 },
   { key: 'Neutral', matcher: (a) => a.length === 0, low: 1, high: 8 },
 ]
+
+export interface SectionGap {
+  section: string
+  count: number
+  expectedLow: number
+  expectedHigh: number
+  message: string
+}
+
+export function computeSectionGaps(parsed: any): SectionGap[] {
+  if (!parsed?.rows || !Array.isArray(parsed.rows)) return []
+  const nonLBRows = parsed.rows.filter(
+    (r: any) => r.type !== 'Leader' && r.type !== 'Base' && Number(r.poolQty) > 0,
+  )
+  const counts: Record<string, number> = {}
+  for (const r of nonLBRows) {
+    const aspects: string[] = Array.isArray(r.aspects) ? r.aspects : []
+    for (const range of SECTION_TYPICAL_RANGES) {
+      if (range.matcher(aspects)) {
+        counts[range.key] = (counts[range.key] || 0) + 1
+        break
+      }
+    }
+  }
+  const gaps: SectionGap[] = []
+  for (const range of SECTION_TYPICAL_RANGES) {
+    const c = counts[range.key] || 0
+    if (c < range.low) {
+      gaps.push({
+        section: range.key,
+        count: c,
+        expectedLow: range.low,
+        expectedHigh: range.high,
+        message: `${range.key} section has only ${c} card${c === 1 ? '' : 's'} marked. Typical sealed pool has ${range.low}-${range.high}.`,
+      })
+    } else if (c > range.high) {
+      gaps.push({
+        section: range.key,
+        count: c,
+        expectedLow: range.low,
+        expectedHigh: range.high,
+        message: `${range.key} section has ${c} cards marked. Typical sealed pool has ${range.low}-${range.high} — possible phantom marks.`,
+      })
+    }
+  }
+  return gaps
+}
 
 function diagnoseSectionGaps(parsed: any): string[] {
   if (!parsed?.rows || !Array.isArray(parsed.rows)) return []
