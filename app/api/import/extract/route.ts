@@ -23,9 +23,9 @@ import { getCachedCards, initializeCardCache } from '@/src/utils/cardCache'
 import { getSetConfig, getAllSetCodes } from '@/src/utils/setConfigs/index'
 import { appendFileSync } from 'fs'
 
-// Local-dev observability for the self-correcting loop. Each attempt's
-// invariant violations get appended to /tmp/import-attempts.log so we
-// can tail it during prompt-tuning iteration.
+// Local-dev observability for prompt-tuning iteration. Each request appends
+// its summary to /tmp/import-attempts.log so we can tail it while iterating
+// on the prompt or the matcher.
 const ATTEMPT_LOG = '/tmp/import-attempts.log'
 function logAttempt(line: string) {
   try {
@@ -118,28 +118,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       )
     }
 
-    // 4. Call Claude. Self-correcting loop runs internally — checks invariants
-    //    after each attempt and re-prompts with discrepancies for up to 3 attempts.
+    // 4. Call Claude. Single-shot extraction — runtime self-correction was
+    //    pulled out in favour of collaborative prompt iteration (see
+    //    lib/anthropic.ts comment).
     logAttempt(`=== EXTRACTION REQUEST (user=${session.id}) ===`)
     let raw: any
     try {
       raw = await extractPoolFromImages(
         body.images.map((img) => ({ data: img.data, mediaType: img.mediaType as any })),
-        {
-          ...(body.manualSetCode ? { setHint: body.manualSetCode } : {}),
-          onAttempt: (attempt, issues) => {
-            if (issues.length === 0) {
-              const msg = `attempt ${attempt}: CLEAN (no invariant violations)`
-              console.log(`[import-pool/extract] ${msg}`)
-              logAttempt(msg)
-            } else {
-              const msg = `attempt ${attempt}: ${issues.length} invariant violations`
-              console.log(`[import-pool/extract] ${msg}`)
-              logAttempt(msg)
-              for (const issue of issues) logAttempt(`  - ${issue}`)
-            }
-          },
-        },
+        body.manualSetCode ? { setHint: body.manualSetCode } : {},
       )
       // Log final extraction summary so we can see what each row got mapped to
       const ldrs = raw.rows.filter((r: any) => r.type === 'Leader' && r.poolQty > 0)

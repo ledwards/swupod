@@ -304,80 +304,6 @@ const RESPONSE_SCHEMA = {
   required: ['header', 'rows'],
 }
 
-// === Validation against known-good invariants for self-correcting loop ===
-
-const POOL_TOTAL = 96
-const LEADER_POOL = 6
-const LEADER_DECK = 1
-const BASE_POOL = 6
-const BASE_DECK = 1
-
-function validateExtraction(parsed: any): string[] {
-  const issues: string[] = []
-  if (!parsed?.rows || !Array.isArray(parsed.rows)) {
-    issues.push('Response missing rows array.')
-    return issues
-  }
-
-  const rows: any[] = parsed.rows
-  const sumPool = rows.reduce((s, r) => s + (Number(r.poolQty) || 0), 0)
-  const sumDeck = rows.reduce((s, r) => s + (Number(r.deckQty) || 0), 0)
-
-  if (sumPool !== POOL_TOTAL) {
-    const dir = sumPool < POOL_TOTAL ? 'too few — you missed marks' : 'too many — you added marks where there are none'
-    issues.push(
-      `Pool total = ${sumPool}; expected exactly ${POOL_TOTAL} (6 leaders + 6 bases + 84 other cards). That's ${dir}.`,
-    )
-  }
-
-  const leaderPoolRows = rows.filter((r) => r.type === 'Leader' && Number(r.poolQty) > 0)
-  const leaderDeckRows = rows.filter((r) => r.type === 'Leader' && Number(r.deckQty) > 0)
-  if (leaderPoolRows.length !== LEADER_POOL) {
-    issues.push(
-      `Found ${leaderPoolRows.length} leader(s) with poolQty>0; expected exactly ${LEADER_POOL} (one per pack from the player's 6 packs).`,
-    )
-  }
-  if (leaderDeckRows.length !== LEADER_DECK) {
-    issues.push(
-      `Found ${leaderDeckRows.length} leader(s) with deckQty>0; expected exactly ${LEADER_DECK} (the active leader).`,
-    )
-  }
-
-  const basePoolRows = rows.filter((r) => r.type === 'Base' && Number(r.poolQty) > 0)
-  const baseDeckRows = rows.filter((r) => r.type === 'Base' && Number(r.deckQty) > 0)
-  if (basePoolRows.length !== BASE_POOL) {
-    issues.push(
-      `Found ${basePoolRows.length} base(s) with poolQty>0; expected exactly ${BASE_POOL} (one per pack).`,
-    )
-  }
-  if (baseDeckRows.length !== BASE_DECK) {
-    issues.push(
-      `Found ${baseDeckRows.length} base(s) with deckQty>0; expected exactly ${BASE_DECK} (the active base).`,
-    )
-  }
-
-  for (const row of rows) {
-    const pool = Number(row.poolQty) || 0
-    const deck = Number(row.deckQty) || 0
-    if (deck > pool) {
-      issues.push(
-        `Row "${row.name}" has deckQty=${deck} but poolQty=${pool}. deckQty must never exceed poolQty.`,
-      )
-    }
-    if (pool > 6 || deck > 6) {
-      issues.push(
-        `Row "${row.name}" has out-of-bounds quantities (pool=${pool}, deck=${deck}). Max is 6.`,
-      )
-    }
-  }
-
-  // Cap the issue list to keep the correction message focused
-  if (issues.length > 12) {
-    return [...issues.slice(0, 12), `…and ${issues.length - 12} more issues.`]
-  }
-  return issues
-}
-
 // Typical per-primary-section card-count ranges for an 84-non-leader/base sealed pool.
 // If a section's row count falls below the low end, we flag it as likely under-extracted.
 const SECTION_TYPICAL_RANGES: Array<{ key: string; matcher: (a: string[]) => boolean; low: number; high: number }> = [
@@ -451,48 +377,11 @@ export function computeSectionGaps(parsed: any, setCode?: string): SectionGap[] 
   return gaps
 }
 
-function diagnoseSectionGaps(parsed: any): string[] {
-  // Reuse the structured section-gap computation for the correction message.
-  return computeSectionGaps(parsed).map((g) => g.message)
-}
-
-function buildCorrectionMessage(issues: string[], parsed: any, attempt: number): string {
-  const lines = [
-    `Your extraction has the following problems (attempt ${attempt}):`,
-    '',
-    ...issues.map((i, idx) => `${idx + 1}. ${i}`),
-  ]
-
-  const sectionGaps = diagnoseSectionGaps(parsed)
-  if (sectionGaps.length > 0) {
-    lines.push('')
-    lines.push('Specific sections that look wrong:')
-    lines.push(...sectionGaps.map((g) => `  • ${g}`))
-  }
-
-  lines.push(
-    '',
-    'Re-scan the photograph(s) carefully and return the COMPLETE corrected extraction in the same JSON shape.',
-    'CRITICAL guidance for this retry:',
-    '- Process EACH image with EQUAL attention. If you uploaded 2 photos, do not give the second photo less scrutiny than the first. Sections like AGGRESSION, CUNNING, MULTICOLOR, HEROISM, VILLAINY, NO ASPECT often appear on the second photo and need just as careful counting as VIGILANCE/COMMAND on the first.',
-    '- Sum of all poolQty values across every row MUST equal 96. If your previous totals oscillated between too-few and too-many, ANCHOR on the rows you are most CONFIDENT about, then carefully sweep dense sections you may have skipped or rushed.',
-    '- A blank/empty cell is poolQty=0. Marks (slashes, tallies, dots) indicate qty>0 — count them precisely.',
-    '- The MULTICOLOR section is typically the largest with 15-30 marked cards.',
-    '',
-    'Return JSON only.',
-  )
-  return lines.join('\n')
-}
-
 // === Public API ===
 
 interface ExtractOptions {
   /** Optional set hint surfaced to the model (e.g., "LAW") if the user explicitly picked one */
   setHint?: string
-  /** Maximum self-correction iterations (default 3 — initial + 2 retries on invariant violations) */
-  maxAttempts?: number
-  /** Optional progress callback fired after each attempt */
-  onAttempt?: (attempt: number, issues: string[]) => void
 }
 
 /**
@@ -522,9 +411,10 @@ export async function extractPoolFromImages(
   // set picked upfront" failure mode anymore.
   const cardListContext = buildAllSetsCardListContext()
 
-  // Cache the image bytes — without this, every retry re-uploads the full
-  // ~20K-token vision payload. ttl='1h' so the cache survives across the
-  // multi-attempt loop and even across nearby user requests on the same images.
+  // Cache the image bytes with ttl='1h' so subsequent extractions of the
+  // same images within the hour hit the cache (cheaper, faster). Useful
+  // when iterating on prompt or matcher changes against the same source
+  // photos.
   const userContent: Anthropic.MessageParam['content'] = []
   for (let i = 0; i < images.length; i++) {
     const image = images[i]
@@ -569,250 +459,52 @@ export async function extractPoolFromImages(
     format: { type: 'json_schema' as const, schema: RESPONSE_SCHEMA },
   }
 
-  // Self-correcting loop. The invariants we check (pool=96, exactly 6 leaders /
-  // 6 bases / 1 active leader / 1 active base, deckQty<=poolQty<=6) are all
-  // ground truth from the SWU sealed format spec — if Claude's extraction
-  // violates them, it's wrong. Feed the discrepancies back and ask for a
-  // corrected full re-extraction, up to maxAttempts (default 3 = initial + 2 retries).
-  const messages: Anthropic.MessageParam[] = [{ role: 'user', content: userContent }]
-  const maxAttempts = opts.maxAttempts ?? 3
-  let response: Anthropic.Message | null = null
-  let parsedFinal: RawExtractResponse | null = null
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    response = await client.messages
-      .stream({
-        model: MODEL,
-        max_tokens: MAX_TOKENS,
-        system: systemBlocks,
-        output_config: outputConfig,
-        messages,
-      })
-      .finalMessage()
-
-    if (response.stop_reason === 'max_tokens') {
-      throw new Error(
-        `Anthropic response truncated at max_tokens (${MAX_TOKENS}). ` +
-          `Output had ${response.usage.output_tokens} tokens. ` +
-          `Increase MAX_TOKENS in lib/anthropic.ts or split the sheet across separate calls.`,
-      )
-    }
-    if (response.stop_reason === 'refusal') {
-      throw new Error('Anthropic refused to process the image (safety filter).')
-    }
-
-    const textBlock = response.content.find((b: any) => b.type === 'text')
-    if (!textBlock || (textBlock as any).type !== 'text') {
-      throw new Error(
-        `Anthropic response contained no text content (stop_reason: ${response.stop_reason})`,
-      )
-    }
-
-    let parsed: any
-    try {
-      parsed = JSON.parse((textBlock as any).text)
-    } catch (err) {
-      throw new Error(
-        `Anthropic response is not valid JSON (attempt ${attempt}, output_tokens: ${response.usage.output_tokens}): ${(err as Error).message}`,
-      )
-    }
-    if (!parsed || typeof parsed !== 'object' || !('header' in parsed) || !('rows' in parsed)) {
-      throw new Error('Anthropic response missing required header/rows fields')
-    }
-
-    parsedFinal = parsed as RawExtractResponse
-    const issues = validateExtraction(parsed)
-    opts.onAttempt?.(attempt, issues)
-
-    if (issues.length === 0) break
-    if (attempt === maxAttempts) break
-
-    // Append the assistant's response, then a user message with the issues.
-    messages.push({ role: 'assistant', content: response.content })
-    messages.push({
-      role: 'user',
-      content: [{ type: 'text', text: buildCorrectionMessage(issues, parsed, attempt) }],
-    })
-  }
-
-  if (!parsedFinal) {
-    throw new Error('Extraction returned no parseable response after all attempts')
-  }
-
-  // === Stage 3: Per-section refinement ===
-  //
-  // After the self-correcting loop converges (or runs out of attempts),
-  // identify still-under-populated sections and ask Claude to focus on each
-  // one in a separate follow-up call. Each refinement call gets the same
-  // cached system+image prefix (so subsequent calls within the same hour are
-  // fast cache hits) but a narrowed prompt that asks ONLY about that section's
-  // rows. The model can give each section full attention without trying to
-  // hold the whole 250-row sheet in working memory at once.
-  const finalGaps = computeSectionGaps(parsedFinal)
-  const underPopulated = finalGaps.filter((g) => g.count < g.expectedLow)
-  if (underPopulated.length === 0) return parsedFinal
-
-  for (const gap of underPopulated) {
-    try {
-      const refined = await refineSection(client, systemBlocks, userContent, gap, parsedFinal)
-      if (refined) {
-        parsedFinal = mergeSectionRefinement(parsedFinal, gap.section, refined)
-        opts.onAttempt?.(maxAttempts + underPopulated.indexOf(gap) + 1, [
-          `refined ${gap.section}: was ${gap.count}, now ${refined.length}`,
-        ])
-      }
-    } catch (err) {
-      // Refinement is best-effort; if it fails, we just keep the original extraction.
-      opts.onAttempt?.(maxAttempts + 1, [`refinement of ${gap.section} failed: ${(err as Error).message}`])
-    }
-  }
-  return parsedFinal
-}
-
-/** Refinement schema — focused on one section's rows only. */
-const SECTION_REFINEMENT_SCHEMA = {
-  type: 'object',
-  additionalProperties: false,
-  properties: {
-    rows: {
-      type: 'array',
-      items: {
-        type: 'object',
-        additionalProperties: false,
-        properties: {
-          name: { type: 'string' },
-          type: { type: 'string', enum: ['Unit', 'Event', 'Upgrade'] },
-          subtitle: { type: ['string', 'null'] },
-          poolQty: { type: 'integer' },
-          deckQty: { type: 'integer' },
-          aspects: {
-            type: 'array',
-            items: { type: 'string' },
-          },
-          extractConfidence: {
-            type: 'string',
-            enum: ['high', 'medium', 'low'],
-          },
-        },
-        required: ['name', 'type', 'subtitle', 'poolQty', 'deckQty', 'aspects', 'extractConfidence'],
-      },
-    },
-  },
-  required: ['rows'],
-}
-
-async function refineSection(
-  client: Anthropic,
-  systemBlocks: any[],
-  imageContent: any[],
-  gap: SectionGap,
-  current: any,
-): Promise<any[] | null> {
-  const sectionInstructions = sectionFocusInstructions(gap.section)
-  // Show Claude what it returned for this section so it knows what to add
-  const currentRowsInSection = current.rows
-    .filter((r: any) => belongsToSection(r, gap.section) && Number(r.poolQty) > 0)
-    .map((r: any) => `  - ${r.name}${r.subtitle ? ', ' + r.subtitle : ''} (poolQty=${r.poolQty}, deckQty=${r.deckQty})`)
-    .join('\n')
-
-  const focusedPrompt = [
-    `Focus ONLY on the ${gap.section} section of the registration sheet.`,
-    `Your previous extraction for this section had ${gap.count} cards marked, but a typical sealed pool has ${gap.expectedLow}-${gap.expectedHigh} cards in this section.`,
-    `That means you missed cards. Re-scan this section CAREFULLY and find every row with marks.`,
-    '',
-    sectionInstructions,
-    '',
-    'Cards you previously found in this section:',
-    currentRowsInSection || '  (none)',
-    '',
-    'Return JSON with the COMPLETE list of cards in this section that have poolQty > 0 (including the ones you previously found, plus any you missed). Match every card name against the KNOWN CARD LIST. Return JSON only, no prose.',
-  ].join('\n')
-
-  const messages: Anthropic.MessageParam[] = [
-    { role: 'user', content: [...imageContent, { type: 'text', text: focusedPrompt }] },
-  ]
-
+  // Single-shot extraction. Earlier versions had a runtime self-correcting
+  // loop and per-section refinement passes — both pulled out. Tuning the
+  // prompt is something we iterate on collaboratively (assistant observes
+  // the log, proposes prompt/code changes), not something the route does
+  // at runtime. Keeps the call cheap, fast, and easy to reason about.
   const response = await client.messages
     .stream({
       model: MODEL,
-      max_tokens: 8000,
+      max_tokens: MAX_TOKENS,
       system: systemBlocks,
-      output_config: {
-        format: { type: 'json_schema' as const, schema: SECTION_REFINEMENT_SCHEMA },
-      },
-      messages,
+      output_config: outputConfig,
+      messages: [{ role: 'user', content: userContent }],
     })
     .finalMessage()
 
+  if (response.stop_reason === 'max_tokens') {
+    throw new Error(
+      `Anthropic response truncated at max_tokens (${MAX_TOKENS}). ` +
+        `Output had ${response.usage.output_tokens} tokens. ` +
+        `Increase MAX_TOKENS in lib/anthropic.ts or split the sheet across separate calls.`,
+    )
+  }
+  if (response.stop_reason === 'refusal') {
+    throw new Error('Anthropic refused to process the image (safety filter).')
+  }
+
   const textBlock = response.content.find((b: any) => b.type === 'text')
-  if (!textBlock || (textBlock as any).type !== 'text') return null
+  if (!textBlock || (textBlock as any).type !== 'text') {
+    throw new Error(
+      `Anthropic response contained no text content (stop_reason: ${response.stop_reason})`,
+    )
+  }
+
+  let parsed: any
   try {
-    const parsed = JSON.parse((textBlock as any).text)
-    if (!Array.isArray(parsed.rows)) return null
-    return parsed.rows
-  } catch {
-    return null
+    parsed = JSON.parse((textBlock as any).text)
+  } catch (err) {
+    throw new Error(
+      `Anthropic response is not valid JSON (output_tokens: ${response.usage.output_tokens}): ${(err as Error).message}`,
+    )
   }
-}
+  if (!parsed || typeof parsed !== 'object' || !('header' in parsed) || !('rows' in parsed)) {
+    throw new Error('Anthropic response missing required header/rows fields')
+  }
 
-/** Generate a section-specific focus instruction for the refinement prompt. */
-function sectionFocusInstructions(section: string): string {
-  const map: Record<string, string> = {
-    Vigilance: 'The VIGILANCE (BLUE) section. Cards with the Vigilance aspect (and possibly one of Heroism/Villainy).',
-    Command: 'The COMMAND (GREEN) section. Cards with the Command aspect.',
-    Aggression: 'The AGGRESSION (RED) section. Cards with the Aggression aspect.',
-    Cunning: 'The CUNNING (YELLOW) section. Cards with the Cunning aspect.',
-    Heroism: 'The HEROISM (WHITE) section. Cards with ONLY the Heroism aspect (no Vigilance/Command/Aggression/Cunning).',
-    Villainy: 'The VILLAINY (BLACK) section. Cards with ONLY the Villainy aspect.',
-    Multicolor:
-      'The MULTICOLOR section. Cards with TWO game-side aspects (e.g. Vigilance+Command, Aggression+Cunning).',
-    Neutral: 'The NO ASPECT (GRAY) section. Cards with no aspect symbols.',
-  }
-  return map[section] || `The ${section} section.`
-}
-
-/** Decide if an existing row belongs to a given primary section. */
-function belongsToSection(row: any, section: string): boolean {
-  const aspects: string[] = Array.isArray(row.aspects) ? row.aspects : []
-  const game = aspects.filter((a) => ['Vigilance', 'Command', 'Aggression', 'Cunning'].includes(a))
-  const player = aspects.filter((a) => ['Heroism', 'Villainy'].includes(a))
-  if (section === 'Multicolor') return game.length >= 2
-  if (section === 'Neutral') return aspects.length === 0
-  if (section === 'Heroism') return aspects.length === 1 && aspects[0] === 'Heroism'
-  if (section === 'Villainy') return aspects.length === 1 && aspects[0] === 'Villainy'
-  // Single game-side aspect sections
-  if (['Vigilance', 'Command', 'Aggression', 'Cunning'].includes(section)) {
-    return game.length === 1 && game[0] === section
-  }
-  return false
-}
-
-/** Merge refined section rows back into the full extraction.
- *  Drops the existing rows in this section and replaces with the refined list. */
-function mergeSectionRefinement(extraction: any, section: string, refinedRows: any[]): any {
-  // Keep all rows that don't belong to this section
-  const keep = (extraction.rows || []).filter(
-    (r: any) =>
-      r.type === 'Leader' ||
-      r.type === 'Base' ||
-      Number(r.poolQty) === 0 ||
-      !belongsToSection(r, section),
-  )
-  // Add the refined rows from this section
-  const refinedFormatted = refinedRows.map((r) => ({
-    name: r.name,
-    type: r.type,
-    subtitle: r.subtitle ?? null,
-    poolQty: Number(r.poolQty) || 0,
-    deckQty: Number(r.deckQty) || 0,
-    aspectGroup: section,
-    aspects: r.aspects || [],
-    extractConfidence: r.extractConfidence || 'medium',
-  }))
-  return {
-    ...extraction,
-    rows: [...keep, ...refinedFormatted],
-  }
+  return parsed as RawExtractResponse
 }
 
 /** Re-export for callers that want to type-narrow against SDK errors. */
