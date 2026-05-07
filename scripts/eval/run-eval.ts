@@ -84,6 +84,8 @@ interface FixtureScore {
   bestIteration?: number
   elapsedSec?: number
   perIterCounts?: Array<{ iter: number; pool: number; deck: number; leaders: number; bases: number }>
+  iterationFailures?: string[]
+  sectionsCount?: number
   fpExamples?: Array<{ name: string; subtitle: string | null; poolQty: number; deckQty: number }>
   fnExamples?: Array<{ name: string; subtitle: string | null; poolQty: number; deckQty: number }>
 }
@@ -143,8 +145,25 @@ async function evalFixture(name: string): Promise<FixtureScore> {
   }
   const elapsedSec = (Date.now() - start) / 1000
 
-  const bestIter = result.iterations[result.bestIteration - 1]
   const modelMarked = result.result.rows.filter((r: any) => Number(r.poolQty) > 0)
+  // Build invariant snapshot from the AGGREGATE rows. The new Phase 1+2
+  // architecture stores per-table data in iterations[]; the aggregate is
+  // in result.rows.
+  const aggPoolSum = modelMarked.reduce((s: number, r: any) => s + Number(r.poolQty), 0)
+  const aggDeckSum = modelMarked.reduce((s: number, r: any) => s + Number(r.deckQty), 0)
+  const aggLeaders = modelMarked
+    .filter((r: any) => r.type === 'Leader')
+    .reduce((s: number, r: any) => s + Number(r.poolQty), 0)
+  const aggBases = modelMarked
+    .filter((r: any) => r.type === 'Base')
+    .reduce((s: number, r: any) => s + Number(r.poolQty), 0)
+  const bestIter = {
+    passing: result.converged,
+    poolSum: aggPoolSum,
+    deckSum: aggDeckSum,
+    leaderCount: aggLeaders,
+    baseCount: aggBases,
+  }
 
   // Score: match by name+type key, ignore subtitle for matching (subtitles
   // diverge between extractor and human).
@@ -230,6 +249,8 @@ async function evalFixture(name: string): Promise<FixtureScore> {
       leaders: it.leaderCount,
       bases: it.baseCount,
     })),
+    iterationFailures: result.iterations.flatMap((it: any) => it.failures || []),
+    sectionsCount: result.result.sections?.length,
     fpExamples,
     fnExamples,
   }
@@ -256,6 +277,13 @@ function reportFixture(s: FixtureScore) {
     `iterations: ${s.iterations} (best=${s.bestIteration}, converged=${s.converged}, elapsed=${s.elapsedSec!.toFixed(1)}s)`,
   )
   console.log(`per-iter: ${s.perIterCounts!.map((p) => `i${p.iter}:${p.pool}/${p.deck}`).join('  ')}`)
+  if (s.iterationFailures && s.iterationFailures.length > 0) {
+    console.log(`per-iter detail:`)
+    for (const f of s.iterationFailures) console.log(`  ${f}`)
+  }
+  if (s.sectionsCount != null) {
+    console.log(`sections returned by phase 1: ${s.sectionsCount}`)
+  }
   if ((s.falsePositives ?? 0) > 0) {
     console.log(`FP examples (model said yes, truth says no):`)
     for (const e of s.fpExamples!) {

@@ -23,6 +23,16 @@ import {
   type ExtractionInvariantStatus,
 } from '../src/services/importPool/invariants'
 import { preprocessImageForExtraction } from '../src/services/importPool/preprocessImage'
+import {
+  TABLE_NAMES,
+  groupCardsByTable,
+  cardNumberOf,
+  type TableName,
+} from '../src/services/importPool/tableGrouping'
+import {
+  cropForTable,
+  extractTableFromCrop,
+} from '../src/services/importPool/sectionExtraction'
 
 const MODEL = 'claude-opus-4-7'
 // Vision parses can produce 80-100 JSON rows. 32K leaves comfortable headroom
@@ -731,28 +741,199 @@ function buildUserContent(
   return content
 }
 
+// === Phase 1: header + section bounds ===
+//
+// One small Claude call to identify the per-table bounding boxes and the
+// header. Output is tiny (< 1KB) so this is fast (~30-60s) compared to a
+// full extraction. The bounds feed Phase 2's per-table calls.
+
+const PHASE1_SYSTEM_PROMPT = `You're looking at one or two photos of a sealed-deck registration sheet for Star Wars: Unlimited.
+
+Your ONLY job: identify the header info and bounding boxes for each visible aspect TABLE on the sheet. Do NOT extract row-by-row card data — that's a separate pass.
+
+The sheet is laid out as a series of tables, one per aspect:
+- "Leaders" — at top of photo 1
+- "Bases" — usually under Leaders on photo 1
+- "Vigilance" / "Command" / "Aggression" / "Cunning" — single main-aspect tables
+- "Heroism" / "Villainy" — single secondary-aspect tables (may not appear in every set)
+- "Multicolor" — cards with 2+ main aspects
+- "NoAspect" — cards with no aspects at all
+
+Each table has a column header (PLAYED | TOTAL | NO. # | name). Within tables there may be sub-section headers shown only as icons; you do NOT need to identify those — return ONE bounding box for the entire table.
+
+For each visible table, return:
+- name: one of the values listed above
+- photoIndex: 0 for first photo, 1 for second
+- x0, y0: top-left corner as fractions [0,1] of photo dimensions (NOT pixels)
+- x1, y1: bottom-right corner as fractions [0,1]
+- The bbox MUST include the column header AND every row through the last row of the table
+- Slight over-include (1-2% slack) is preferred over clipping
+
+Header info:
+- setName (e.g. "A Lawless Time")
+- eventName, eventDate, playerName (handwritten in the top form)
+- leader: { name, subtitle } if a leader is checked/marked
+- base: { name, subtitle } if a base is checked/marked
+
+Return strict JSON. Do NOT include row data.`
+
+const PHASE1_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    header: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        setName: { type: ['string', 'null'] },
+        eventName: { type: ['string', 'null'] },
+        eventDate: { type: ['string', 'null'] },
+        playerName: { type: ['string', 'null'] },
+        leader: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            name: { type: ['string', 'null'] },
+            subtitle: { type: ['string', 'null'] },
+          },
+          required: ['name', 'subtitle'],
+        },
+        base: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            name: { type: ['string', 'null'] },
+            subtitle: { type: ['string', 'null'] },
+          },
+          required: ['name', 'subtitle'],
+        },
+      },
+      required: ['setName', 'eventName', 'eventDate', 'playerName', 'leader', 'base'],
+    },
+    sections: {
+      type: 'array',
+      minItems: 1,
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          name: {
+            type: 'string',
+            enum: [
+              'Leaders',
+              'Bases',
+              'Vigilance',
+              'Command',
+              'Aggression',
+              'Cunning',
+              'Heroism',
+              'Villainy',
+              'Multicolor',
+              'NoAspect',
+            ],
+          },
+          photoIndex: { type: 'integer' },
+          x0: { type: 'number' },
+          y0: { type: 'number' },
+          x1: { type: 'number' },
+          y1: { type: 'number' },
+        },
+        required: ['name', 'photoIndex', 'x0', 'y0', 'x1', 'y1'],
+      },
+    },
+  },
+  required: ['header', 'sections'],
+}
+
+async function runPhase1(
+  client: Anthropic,
+  images: ImageInput[],
+  setHint?: string,
+): Promise<{ header: ExtractedHeader; sections: SectionBounds[]; usage: any }> {
+  const userContent: Anthropic.MessageParam['content'] = []
+  for (let i = 0; i < images.length; i++) {
+    const img = images[i]
+    const isLast = i === images.length - 1
+    userContent.push({
+      type: 'image',
+      source: { type: 'base64', media_type: img.mediaType, data: img.data },
+      ...(isLast ? { cache_control: { type: 'ephemeral' as const, ttl: '1h' as const } } : {}),
+    })
+  }
+  userContent.push({
+    type: 'text',
+    text: setHint
+      ? `Identify the header (set, event, player, leader, base) and the bounding box of each visible aspect table. Set is "${setHint}".`
+      : `Identify the header (set, event, player, leader, base) and the bounding box of each visible aspect table.`,
+  })
+
+  let response: any
+  let attempt = 0
+  while (true) {
+    try {
+      response = await client.messages
+        .stream({
+          model: MODEL,
+          max_tokens: 2000,
+          system: PHASE1_SYSTEM_PROMPT,
+          output_config: { format: { type: 'json_schema' as const, schema: PHASE1_SCHEMA } },
+          messages: [{ role: 'user', content: userContent }],
+        })
+        .finalMessage()
+      break
+    } catch (err) {
+      attempt++
+      const msg = (err as Error)?.message || ''
+      const isTransient = /terminated|socket|ECONNRESET|ETIMEDOUT|timeout/.test(msg)
+      if (!isTransient || attempt >= 3) throw err
+      await new Promise((r) => setTimeout(r, 2000 * attempt))
+    }
+  }
+
+  if (response.stop_reason === 'max_tokens') {
+    throw new Error(`Phase 1 max_tokens hit (output=${response.usage.output_tokens})`)
+  }
+  if (response.stop_reason === 'refusal') {
+    throw new Error('Phase 1 refusal')
+  }
+
+  const textBlock = response.content.find((b: any) => b.type === 'text') as any
+  if (!textBlock) throw new Error('Phase 1: no text block')
+  let parsed: any
+  try {
+    parsed = JSON.parse(textBlock.text)
+  } catch (err) {
+    throw new Error(`Phase 1: invalid JSON: ${(err as Error).message}`)
+  }
+  return { header: parsed.header, sections: parsed.sections || [], usage: response.usage }
+}
+
 /**
  * Extract pool data from one or two registration-sheet images.
  *
- * Runs a goal-oriented refine loop: pass 1 is a normal extraction; if the
- * result fails the structural invariants (pool sum 96, deck sum 30-35,
- * 6 leader-poolQty, 6 base-poolQty, no subset violations), the next pass
- * receives a recap of what was identified plus the gap, and Claude tries
- * again. Up to `maxIterations` total passes (default 4).
+ * Two-phase architecture:
  *
- * Cache strategy: system blocks (frozen extraction rules + bundled card
- * list) and the images themselves are cached with ttl='1h'. Each refine
- * pass only sends the new gap-description text fresh, so iterations 2+
- * are dramatically cheaper than iteration 1.
+ *   Phase 1 (one cheap call): identify the header + per-table bounding
+ *   boxes. Output is tiny so this is fast.
  *
- * On non-convergence, returns the iteration with the smallest invariant
- * distance — the resolve UI handles the residual gap.
+ *   Phase 2 (10 parallel cheap calls): for each table on the sheet, crop
+ *   the image to the table's bounding box and send Claude:
+ *     - the crop
+ *     - a CLOSED list of cards in this table by printed card number
+ *   Claude maps marks → card numbers (no name OCR, no set-wide vocab).
+ *   Hallucinations are sharply reduced because Claude can only return
+ *   card numbers from the list it was given.
+ *
+ *   Aggregate: combine all per-table results into the final rows[].
+ *
+ * Each Phase 2 call is small (one cropped image, ~30 known cards in the
+ * vocab, ~50-row JSON response) so total time is ~2-3 minutes vs. the
+ * old ~25-30 min eight-iteration refine loop.
  *
  * Throws on:
  * - Missing ANTHROPIC_API_KEY env var
- * - Empty images array
- * - Persistent upstream failure (after SDK retries; surfaces as Anthropic.APIError)
- * - Malformed JSON response from the model
+ * - Empty images array (too few or too many)
+ * - Persistent upstream failure (after retries)
  */
 export async function extractPoolFromImages(
   images: ImageInput[],
@@ -766,15 +947,14 @@ export async function extractPoolFromImages(
   }
 
   // Server-side preprocessing (sharp): resize cap, normalise histogram,
-  // contrast multiply, sharpen. The wizard's browser canvas only resizes
-  // for upload size; this does the contrast/sharpen work that makes faint
-  // tally marks legible to Claude. Done once per call (not per iteration)
-  // since the bytes don't change across the refine loop.
-  const preprocessed: ImageInput[] = []
+  // contrast multiply, sharpen. Done once up front; the bytes feed both
+  // Phase 1 (full photo) and Phase 2 (cropped per table).
+  const preprocessedBuffers: Buffer[] = []
   for (const img of images) {
     try {
-      const buf = await preprocessImageForExtraction(Buffer.from(img.data, 'base64'))
-      preprocessed.push({ data: buf.toString('base64'), mediaType: 'image/jpeg' })
+      preprocessedBuffers.push(
+        await preprocessImageForExtraction(Buffer.from(img.data, 'base64')),
+      )
     } catch (err) {
       throw new Error(
         `Image preprocessing failed: ${(err as Error).message}. ` +
@@ -783,156 +963,144 @@ export async function extractPoolFromImages(
       )
     }
   }
+  const preprocessedInputs: ImageInput[] = preprocessedBuffers.map((buf) => ({
+    data: buf.toString('base64'),
+    mediaType: 'image/jpeg',
+  }))
+
+  // Resolve setCode from hint or fall back to latest released set. The
+  // route handler will reconcile this against the header's setName, but
+  // for table grouping we need a setCode locally.
+  await initializeCardCache().catch(() => {})
+  const setCode = opts.setHint || getLatestReleasedSetCode()
+  const allCards = (getCachedCards(setCode) || []).filter((c: any) => c.variantType === 'Normal')
+  const tableGroups = groupCardsByTable(allCards)
 
   const client = getClient()
-  const cardListContext = buildAllSetsCardListContext()
 
-  const systemBlocks = [
-    {
-      type: 'text' as const,
-      text: SYSTEM_PROMPT,
-      cache_control: { type: 'ephemeral' as const, ttl: '1h' as const },
-    },
-    {
-      type: 'text' as const,
-      text: cardListContext,
-      cache_control: { type: 'ephemeral' as const, ttl: '1h' as const },
-    },
-  ]
-  const outputConfig = {
-    format: { type: 'json_schema' as const, schema: RESPONSE_SCHEMA },
+  // Phase 1: header + section bounds
+  const phase1Start = Date.now()
+  let phase1: { header: ExtractedHeader; sections: SectionBounds[]; usage: any }
+  try {
+    phase1 = await runPhase1(client, preprocessedInputs, opts.setHint)
+  } catch (err) {
+    throw new Error(`Phase 1 failed: ${(err as Error).message}`)
   }
+  const phase1Elapsed = Date.now() - phase1Start
 
-  const maxIterations = Math.max(1, Math.min(10, opts.maxIterations ?? 8))
-  const iterations: ExtractIterationLog[] = []
-  const resultsByIteration: RawExtractResponse[] = []
-  let lastResult: RawExtractResponse | null = null
-  let lastStatus: ExtractionInvariantStatus | null = null
+  // Phase 2: per-table parallel extraction. For tables Phase 1 didn't
+  // bound, fall back to extracting from photo 0 in full — Claude still
+  // gets the closed vocab, just sees more visual area.
+  const phase2Start = Date.now()
+  type TableJobResult = {
+    tableName: TableName
+    rows: any[]
+    outputTokens: number
+    fellBack: boolean
+  }
+  const tableJobs: Promise<TableJobResult>[] = TABLE_NAMES.map(async (tableName) => {
+    const tableCards = tableGroups.get(tableName) || []
+    if (tableCards.length === 0) {
+      return { tableName, rows: [], outputTokens: 0, fellBack: false }
+    }
 
-  for (let i = 0; i < maxIterations; i++) {
-    const userText =
-      lastResult && lastStatus
-        ? buildRefineUserText(lastResult, lastStatus, opts.setHint)
-        : buildInitialUserText(opts.setHint)
-    const userContent = buildUserContent(preprocessed, userText)
-
-    // Manual retry for `AnthropicError: terminated` and similar mid-stream
-    // socket failures. The SDK's built-in maxRetries doesn't always classify
-    // these as retryable. Up to 3 attempts per iteration.
-    let response: any
-    let attempt = 0
-    while (true) {
+    const sectionBounds = phase1.sections.find((s: any) => s.name === tableName)
+    let cropBuf: Buffer
+    let fellBack = false
+    if (
+      sectionBounds &&
+      sectionBounds.photoIndex >= 0 &&
+      sectionBounds.photoIndex < preprocessedBuffers.length
+    ) {
       try {
-        response = await client.messages
-          .stream({
-            model: MODEL,
-            max_tokens: MAX_TOKENS,
-            system: systemBlocks,
-            output_config: outputConfig,
-            messages: [{ role: 'user', content: userContent }],
-          })
-          .finalMessage()
-        break
-      } catch (err) {
-        attempt++
-        const msg = (err as Error)?.message || ''
-        const isTransient =
-          msg.includes('terminated') ||
-          msg.includes('socket') ||
-          msg.includes('ECONNRESET') ||
-          msg.includes('ETIMEDOUT') ||
-          msg.includes('timeout')
-        if (!isTransient || attempt >= 3) throw err
-        // Brief backoff before retry
-        await new Promise((r) => setTimeout(r, 2000 * attempt))
+        cropBuf = await cropForTable(preprocessedBuffers[sectionBounds.photoIndex], sectionBounds)
+      } catch {
+        cropBuf = preprocessedBuffers[0]
+        fellBack = true
       }
+    } else {
+      cropBuf = preprocessedBuffers[0]
+      fellBack = true
     }
 
-    if (response.stop_reason === 'max_tokens') {
-      throw new Error(
-        `Anthropic response truncated at max_tokens (${MAX_TOKENS}) on pass ${i + 1}. ` +
-          `Output had ${response.usage.output_tokens} tokens.`,
-      )
-    }
-    if (response.stop_reason === 'refusal') {
-      throw new Error('Anthropic refused to process the image (safety filter).')
-    }
+    const result = await extractTableFromCrop(client, cropBuf, tableName, tableCards, setCode)
+    return { tableName, rows: result.rows, outputTokens: result.outputTokens, fellBack }
+  })
+  const tableResults = await Promise.all(tableJobs)
+  const phase2Elapsed = Date.now() - phase2Start
 
-    const textBlock = response.content.find((b: any) => b.type === 'text')
-    if (!textBlock || (textBlock as any).type !== 'text') {
-      throw new Error(
-        `Anthropic response contained no text content on pass ${i + 1} (stop_reason: ${response.stop_reason})`,
-      )
-    }
+  // Aggregate: convert table results to ExtractedRow[] using the cardCache
+  // for name/subtitle/aspects. Card number → card lookup.
+  const cardByNumber = new Map<number, any>()
+  for (const c of allCards) cardByNumber.set(cardNumberOf(c.cardId), c)
 
-    let parsed: any
-    try {
-      parsed = JSON.parse((textBlock as any).text)
-    } catch (err) {
-      throw new Error(
-        `Anthropic response is not valid JSON on pass ${i + 1} (output_tokens: ${response.usage.output_tokens}): ${(err as Error).message}`,
-      )
+  const allRows: ExtractedRow[] = []
+  let droppedUnknownNumbers = 0
+  for (const tr of tableResults) {
+    for (const r of tr.rows) {
+      const card = cardByNumber.get(r.cardNumber)
+      if (!card) {
+        droppedUnknownNumbers++
+        continue
+      }
+      allRows.push({
+        name: card.name,
+        type: card.type,
+        subtitle: card.subtitle,
+        poolQty: r.poolQty,
+        deckQty: r.deckQty,
+        aspectGroup: card.aspects?.join(' ') || null,
+        poolQtyConfidence: r.poolQtyConfidence,
+        deckQtyConfidence: r.deckQtyConfidence,
+      } as any)
     }
-    if (!parsed || typeof parsed !== 'object' || !('header' in parsed) || !('rows' in parsed)) {
-      throw new Error(`Anthropic response missing required header/rows fields on pass ${i + 1}`)
-    }
+  }
 
-    const status = checkInvariants(parsed.rows)
-    iterations.push({
+  // Per-table iteration log entries (one per table) so the route handler's
+  // per-iter logging surfaces table-by-table progress and the eval harness
+  // can see which table over/under-counted.
+  const iterations: ExtractIterationLog[] = tableResults.map((tr, i) => {
+    const marked = tr.rows.filter((r: any) => Number(r.poolQty) > 0)
+    const poolSum = marked.reduce((s: number, r: any) => s + Number(r.poolQty), 0)
+    const deckSum = marked.reduce((s: number, r: any) => s + Number(r.deckQty), 0)
+    const subsetViolations = marked.filter((r: any) => Number(r.deckQty) > Number(r.poolQty)).length
+    const tableLabel = `${tr.tableName}${tr.fellBack ? '*' : ''}`
+    return {
       iteration: i + 1,
-      poolSum: status.poolSum,
-      deckSum: status.deckSum,
-      leaderCount: status.leaderCount,
-      baseCount: status.baseCount,
-      subsetViolations: status.subsetViolations,
-      passing: status.passing,
-      failures: status.failures,
-      outputTokens: response.usage.output_tokens,
-      cacheReadTokens: (response.usage as any).cache_read_input_tokens || 0,
-      cacheCreationTokens: (response.usage as any).cache_creation_input_tokens || 0,
-    })
-    resultsByIteration.push(parsed as RawExtractResponse)
-
-    lastResult = parsed
-    lastStatus = status
-
-    if (status.passing) {
-      return {
-        result: parsed as RawExtractResponse,
-        iterations,
-        converged: true,
-        bestIteration: i + 1,
-      }
+      poolSum,
+      deckSum,
+      leaderCount: tr.tableName === 'Leaders' ? poolSum : 0,
+      baseCount: tr.tableName === 'Bases' ? poolSum : 0,
+      subsetViolations,
+      passing: false,
+      failures: [`table=${tableLabel} marked=${marked.length}/${tableGroups.get(tr.tableName)?.length || 0}`],
+      outputTokens: tr.outputTokens,
+      cacheReadTokens: 0,
+      cacheCreationTokens: 0,
     }
-  }
+  })
 
-  // Did not converge after maxIterations. Pick the iteration with the
-  // smallest invariant distance — the resolve UI handles the residual gap.
-  let bestIdx = 0
-  let bestDist = Infinity
-  for (let i = 0; i < iterations.length; i++) {
-    const it = iterations[i]
-    const dist = invariantDistance({
-      passing: it.passing,
-      poolSum: it.poolSum,
-      deckSum: it.deckSum,
-      leaderCount: it.leaderCount,
-      baseCount: it.baseCount,
-      subsetViolations: it.subsetViolations,
-      unreadableCount: 0,
-      failures: it.failures,
-    })
-    if (dist < bestDist) {
-      bestDist = dist
-      bestIdx = i
-    }
-  }
+  // Final invariant check on aggregated result
+  const status = checkInvariants(allRows)
+
+  const result: RawExtractResponse = {
+    header: phase1.header,
+    rows: allRows,
+    sections: phase1.sections,
+  } as RawExtractResponse
+
+  // Touch unused vars so TS doesn't complain in the @ts-nocheck file (these
+  // are useful for future logging/telemetry from the route handler)
+  void phase1Elapsed
+  void phase2Elapsed
+  void droppedUnknownNumbers
+  void invariantDistance
 
   return {
-    result: resultsByIteration[bestIdx],
+    result,
     iterations,
-    converged: false,
-    bestIteration: bestIdx + 1,
+    converged: status.passing,
+    bestIteration: 1,
   }
 }
 
