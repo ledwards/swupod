@@ -12,6 +12,16 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { getCachedCards, initializeCardCache } from '../src/utils/cardCache'
 import { getLatestReleasedSetCode } from '../src/utils/setConfigs/latest'
+import {
+  checkInvariants,
+  invariantDistance,
+  POOL_TARGET,
+  DECK_MIN,
+  DECK_MAX,
+  LEADER_TARGET,
+  BASE_TARGET,
+  type ExtractionInvariantStatus,
+} from '../src/services/importPool/invariants'
 
 const MODEL = 'claude-opus-4-7'
 // Vision parses can produce 80-100 JSON rows. 32K leaves comfortable headroom
@@ -531,10 +541,163 @@ export function computeSectionGaps(parsed: any, setCode?: string): SectionGap[] 
 interface ExtractOptions {
   /** Optional set hint surfaced to the model (e.g., "LAW") if the user explicitly picked one */
   setHint?: string
+  /** Cap on refine iterations. Default 4 — average API roundtrip is ~15s, so 4 keeps us under the 60s route timeout. */
+  maxIterations?: number
+}
+
+export interface ExtractIterationLog {
+  iteration: number
+  poolSum: number
+  deckSum: number
+  leaderCount: number
+  baseCount: number
+  subsetViolations: number
+  passing: boolean
+  failures: string[]
+  outputTokens: number
+  cacheReadTokens: number
+  cacheCreationTokens: number
+}
+
+export interface ExtractResult {
+  result: RawExtractResponse
+  iterations: ExtractIterationLog[]
+  converged: boolean
+  /** 1-indexed pass whose `result` was returned. When `converged`, this is the
+   *  passing iteration; otherwise it's the iteration with the smallest
+   *  invariant distance. */
+  bestIteration: number
+}
+
+function buildInitialUserText(setHint: string | undefined): string {
+  return setHint
+    ? `Extract the registration sheet data. The user indicated this sheet is for set "${setHint}" — confirm against the sheet header and use that set's section of the KNOWN CARD LISTS above.`
+    : `Extract the registration sheet data. Read the set name from the sheet header (e.g. "A Lawless Time" → set LAW), then use only that set's section of the KNOWN CARD LISTS above as your closed vocabulary. Report the detected setCode in the response header.`
+}
+
+/**
+ * Build the user message text for a refine pass. Tells Claude what it
+ * already identified, what's wrong, and where to look — without piling
+ * extra rules onto the system prompt.
+ */
+function buildRefineUserText(
+  prevResult: RawExtractResponse,
+  prevStatus: ExtractionInvariantStatus,
+  setHint: string | undefined,
+): string {
+  // Group prevResult's marked rows by section for compact recap.
+  const markedRows = prevResult.rows.filter((r: any) => (Number(r.poolQty) || 0) > 0)
+  const bySection = new Map<string, any[]>()
+  for (const r of markedRows) {
+    const key =
+      r.type === 'Leader'
+        ? 'Leaders'
+        : r.type === 'Base'
+          ? 'Bases'
+          : (r as any).aspectGroup || 'Unspecified'
+    if (!bySection.has(key)) bySection.set(key, [])
+    bySection.get(key)!.push(r)
+  }
+
+  let out = 'Your previous extraction did not match expected sealed-pool invariants.\n\n'
+  out += 'WHAT YOU IDENTIFIED (rows with poolQty>0):\n\n'
+  for (const [section, rs] of bySection.entries()) {
+    out += `${section.toUpperCase()} (${rs.length} marked):\n`
+    for (const r of rs) {
+      const sub = r.subtitle ? ` (${r.subtitle})` : ''
+      out += `- ${r.name}${sub} — pool=${r.poolQty}, deck=${r.deckQty}\n`
+    }
+    out += '\n'
+  }
+
+  out += 'INVARIANT CHECK:\n'
+  out += `- Pool sum: ${prevStatus.poolSum} (expected ${POOL_TARGET})${
+    prevStatus.poolSum === POOL_TARGET ? ' OK' : ` — gap of ${POOL_TARGET - prevStatus.poolSum}`
+  }\n`
+  out += `- Deck sum: ${prevStatus.deckSum}${
+    prevStatus.deckSum >= DECK_MIN && prevStatus.deckSum <= DECK_MAX
+      ? ' OK'
+      : ` (expected ${DECK_MIN}-${DECK_MAX})`
+  }\n`
+  out += `- Leader poolQty total: ${prevStatus.leaderCount}${
+    prevStatus.leaderCount === LEADER_TARGET ? ' OK' : ` (expected ${LEADER_TARGET})`
+  }\n`
+  out += `- Base poolQty total: ${prevStatus.baseCount}${
+    prevStatus.baseCount === BASE_TARGET ? ' OK' : ` (expected ${BASE_TARGET})`
+  }\n`
+  if (prevStatus.subsetViolations > 0) {
+    out += `- ${prevStatus.subsetViolations} row(s) have deckQty > poolQty (impossible — deck is a subset of pool)\n`
+  }
+  out += '\n'
+
+  // Section gap analysis — flag any aspect section that's outside its typical
+  // range so Claude knows where to look.
+  const setCode = setHint || prevResult.header?.setName || undefined
+  const gaps = computeSectionGaps(prevResult, setCode as any)
+  const lowGaps = gaps.filter((g: any) => g.count < g.expectedLow)
+  if (lowGaps.length > 0) {
+    out += 'LIKELY MISSED LOCATIONS:\n'
+    for (const g of lowGaps) {
+      out += `- ${g.section} has only ${g.count} marked card${g.count === 1 ? '' : 's'} but typical sealed pools have ${g.expectedLow}-${g.expectedHigh}. RE-SCAN this section.`
+      if (g.section === 'Multicolor') {
+        out += ' Walk each sub-aspect pair: Vigilance+Command, Vigilance+Aggression, Vigilance+Cunning, Command+Aggression, Command+Cunning, Aggression+Cunning, plus Heroism/Villainy variants of each.'
+      }
+      out += '\n'
+    }
+    out += '\n'
+  }
+
+  if (prevStatus.poolSum < POOL_TARGET) {
+    out += `INSTRUCTIONS:\nRe-examine BOTH photos. You missed ${POOL_TARGET - prevStatus.poolSum} marked row(s). Return a CORRECTED COMPLETE extraction in the same JSON schema. Keep the rows you already identified above; ADD the missing rows. Pool sum must equal exactly ${POOL_TARGET}.\n`
+  } else if (prevStatus.poolSum > POOL_TARGET) {
+    out += `INSTRUCTIONS:\nRe-examine the photos. You over-counted by ${prevStatus.poolSum - POOL_TARGET}. Return a CORRECTED COMPLETE extraction. Pool sum must equal exactly ${POOL_TARGET}.\n`
+  } else {
+    out += `INSTRUCTIONS:\nReturn a CORRECTED COMPLETE extraction fixing the issues above. Maintain the JSON schema.\n`
+  }
+
+  return out
+}
+
+/**
+ * Build the user-turn content (images + text) for a single API call.
+ * Same images go in every call so prompt cache hits across iterations.
+ */
+function buildUserContent(
+  images: ImageInput[],
+  text: string,
+): Anthropic.MessageParam['content'] {
+  const content: Anthropic.MessageParam['content'] = []
+  for (let i = 0; i < images.length; i++) {
+    const image = images[i]
+    const isLast = i === images.length - 1
+    content.push({
+      type: 'image',
+      source: { type: 'base64', media_type: image.mediaType, data: image.data },
+      // Mark cache point only on the last image — system has 2 cache points,
+      // adding 1 here = 3 of the 4 allowed breakpoints.
+      ...(isLast ? { cache_control: { type: 'ephemeral' as const, ttl: '1h' as const } } : {}),
+    })
+  }
+  content.push({ type: 'text', text })
+  return content
 }
 
 /**
  * Extract pool data from one or two registration-sheet images.
+ *
+ * Runs a goal-oriented refine loop: pass 1 is a normal extraction; if the
+ * result fails the structural invariants (pool sum 96, deck sum 30-35,
+ * 6 leader-poolQty, 6 base-poolQty, no subset violations), the next pass
+ * receives a recap of what was identified plus the gap, and Claude tries
+ * again. Up to `maxIterations` total passes (default 4).
+ *
+ * Cache strategy: system blocks (frozen extraction rules + bundled card
+ * list) and the images themselves are cached with ttl='1h'. Each refine
+ * pass only sends the new gap-description text fresh, so iterations 2+
+ * are dramatically cheaper than iteration 1.
+ *
+ * On non-convergence, returns the iteration with the smallest invariant
+ * distance — the resolve UI handles the residual gap.
  *
  * Throws on:
  * - Missing ANTHROPIC_API_KEY env var
@@ -545,7 +708,7 @@ interface ExtractOptions {
 export async function extractPoolFromImages(
   images: ImageInput[],
   opts: ExtractOptions = {},
-): Promise<RawExtractResponse> {
+): Promise<ExtractResult> {
   if (images.length === 0) {
     throw new Error('extractPoolFromImages requires at least 1 image')
   }
@@ -554,44 +717,8 @@ export async function extractPoolFromImages(
   }
 
   const client = getClient()
-
-  // The card list block contains EVERY released set's cards — Claude detects
-  // the set from the sheet header and uses the matching section. No "wrong
-  // set picked upfront" failure mode anymore.
   const cardListContext = buildAllSetsCardListContext()
 
-  // Cache the image bytes with ttl='1h' so subsequent extractions of the
-  // same images within the hour hit the cache (cheaper, faster). Useful
-  // when iterating on prompt or matcher changes against the same source
-  // photos.
-  const userContent: Anthropic.MessageParam['content'] = []
-  for (let i = 0; i < images.length; i++) {
-    const image = images[i]
-    const isLast = i === images.length - 1
-    userContent.push({
-      type: 'image',
-      source: { type: 'base64', media_type: image.mediaType, data: image.data },
-      // Mark cache point only on the last image so we don't blow the
-      // 4-breakpoint limit (we already have 2 on system + this 1 = 3).
-      ...(isLast ? { cache_control: { type: 'ephemeral' as const, ttl: '1h' as const } } : {}),
-    })
-  }
-  userContent.push({
-    type: 'text',
-    text: opts.setHint
-      ? `Extract the registration sheet data. The user indicated this sheet is for set "${opts.setHint}" — confirm against the sheet header and use that set's section of the KNOWN CARD LISTS above.`
-      : `Extract the registration sheet data. Read the set name from the sheet header (e.g. "A Lawless Time" → set LAW), then use only that set's section of the KNOWN CARD LISTS above as your closed vocabulary. Report the detected setCode in the response header.`,
-  })
-
-  // Streaming required: SDK rejects non-streaming requests that may take >10 min,
-  // which fires above ~16K max_tokens.
-  //
-  // Both system blocks cached with ttl: '1h' since their content is static —
-  // SYSTEM_PROMPT is the frozen extraction-rules text, and the all-sets card
-  // list is bundled card data that only changes when a new set ships. Pays
-  // ~2x cache write cost on first call, but reads are ~10x cheaper than the
-  // base input price for the entire 1-hour window. With many extractions
-  // per hour (admin/patron pool), this dominates the simple no-cache path.
   const systemBlocks = [
     {
       type: 'text' as const,
@@ -608,52 +735,115 @@ export async function extractPoolFromImages(
     format: { type: 'json_schema' as const, schema: RESPONSE_SCHEMA },
   }
 
-  // Single-shot extraction. Earlier versions had a runtime self-correcting
-  // loop and per-section refinement passes — both pulled out. Tuning the
-  // prompt is something we iterate on collaboratively (assistant observes
-  // the log, proposes prompt/code changes), not something the route does
-  // at runtime. Keeps the call cheap, fast, and easy to reason about.
-  const response = await client.messages
-    .stream({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      system: systemBlocks,
-      output_config: outputConfig,
-      messages: [{ role: 'user', content: userContent }],
+  const maxIterations = Math.max(1, Math.min(10, opts.maxIterations ?? 4))
+  const iterations: ExtractIterationLog[] = []
+  const resultsByIteration: RawExtractResponse[] = []
+  let lastResult: RawExtractResponse | null = null
+  let lastStatus: ExtractionInvariantStatus | null = null
+
+  for (let i = 0; i < maxIterations; i++) {
+    const userText =
+      lastResult && lastStatus
+        ? buildRefineUserText(lastResult, lastStatus, opts.setHint)
+        : buildInitialUserText(opts.setHint)
+    const userContent = buildUserContent(images, userText)
+
+    const response = await client.messages
+      .stream({
+        model: MODEL,
+        max_tokens: MAX_TOKENS,
+        system: systemBlocks,
+        output_config: outputConfig,
+        messages: [{ role: 'user', content: userContent }],
+      })
+      .finalMessage()
+
+    if (response.stop_reason === 'max_tokens') {
+      throw new Error(
+        `Anthropic response truncated at max_tokens (${MAX_TOKENS}) on pass ${i + 1}. ` +
+          `Output had ${response.usage.output_tokens} tokens.`,
+      )
+    }
+    if (response.stop_reason === 'refusal') {
+      throw new Error('Anthropic refused to process the image (safety filter).')
+    }
+
+    const textBlock = response.content.find((b: any) => b.type === 'text')
+    if (!textBlock || (textBlock as any).type !== 'text') {
+      throw new Error(
+        `Anthropic response contained no text content on pass ${i + 1} (stop_reason: ${response.stop_reason})`,
+      )
+    }
+
+    let parsed: any
+    try {
+      parsed = JSON.parse((textBlock as any).text)
+    } catch (err) {
+      throw new Error(
+        `Anthropic response is not valid JSON on pass ${i + 1} (output_tokens: ${response.usage.output_tokens}): ${(err as Error).message}`,
+      )
+    }
+    if (!parsed || typeof parsed !== 'object' || !('header' in parsed) || !('rows' in parsed)) {
+      throw new Error(`Anthropic response missing required header/rows fields on pass ${i + 1}`)
+    }
+
+    const status = checkInvariants(parsed.rows)
+    iterations.push({
+      iteration: i + 1,
+      poolSum: status.poolSum,
+      deckSum: status.deckSum,
+      leaderCount: status.leaderCount,
+      baseCount: status.baseCount,
+      subsetViolations: status.subsetViolations,
+      passing: status.passing,
+      failures: status.failures,
+      outputTokens: response.usage.output_tokens,
+      cacheReadTokens: (response.usage as any).cache_read_input_tokens || 0,
+      cacheCreationTokens: (response.usage as any).cache_creation_input_tokens || 0,
     })
-    .finalMessage()
+    resultsByIteration.push(parsed as RawExtractResponse)
 
-  if (response.stop_reason === 'max_tokens') {
-    throw new Error(
-      `Anthropic response truncated at max_tokens (${MAX_TOKENS}). ` +
-        `Output had ${response.usage.output_tokens} tokens. ` +
-        `Increase MAX_TOKENS in lib/anthropic.ts or split the sheet across separate calls.`,
-    )
-  }
-  if (response.stop_reason === 'refusal') {
-    throw new Error('Anthropic refused to process the image (safety filter).')
-  }
+    lastResult = parsed
+    lastStatus = status
 
-  const textBlock = response.content.find((b: any) => b.type === 'text')
-  if (!textBlock || (textBlock as any).type !== 'text') {
-    throw new Error(
-      `Anthropic response contained no text content (stop_reason: ${response.stop_reason})`,
-    )
+    if (status.passing) {
+      return {
+        result: parsed as RawExtractResponse,
+        iterations,
+        converged: true,
+        bestIteration: i + 1,
+      }
+    }
   }
 
-  let parsed: any
-  try {
-    parsed = JSON.parse((textBlock as any).text)
-  } catch (err) {
-    throw new Error(
-      `Anthropic response is not valid JSON (output_tokens: ${response.usage.output_tokens}): ${(err as Error).message}`,
-    )
-  }
-  if (!parsed || typeof parsed !== 'object' || !('header' in parsed) || !('rows' in parsed)) {
-    throw new Error('Anthropic response missing required header/rows fields')
+  // Did not converge after maxIterations. Pick the iteration with the
+  // smallest invariant distance — the resolve UI handles the residual gap.
+  let bestIdx = 0
+  let bestDist = Infinity
+  for (let i = 0; i < iterations.length; i++) {
+    const it = iterations[i]
+    const dist = invariantDistance({
+      passing: it.passing,
+      poolSum: it.poolSum,
+      deckSum: it.deckSum,
+      leaderCount: it.leaderCount,
+      baseCount: it.baseCount,
+      subsetViolations: it.subsetViolations,
+      unreadableCount: 0,
+      failures: it.failures,
+    })
+    if (dist < bestDist) {
+      bestDist = dist
+      bestIdx = i
+    }
   }
 
-  return parsed as RawExtractResponse
+  return {
+    result: resultsByIteration[bestIdx],
+    iterations,
+    converged: false,
+    bestIteration: bestIdx + 1,
+  }
 }
 
 /** Re-export for callers that want to type-narrow against SDK errors. */

@@ -118,15 +118,40 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       )
     }
 
-    // 4. Call Claude. Single-shot extraction — runtime self-correction was
-    //    pulled out in favour of collaborative prompt iteration (see
-    //    lib/anthropic.ts comment).
+    // 4. Call Claude. Multi-pass refine loop — extractPoolFromImages keeps
+    //    re-calling Claude with a gap description until structural invariants
+    //    pass (poolSum=96, deckSum 30-35, 6 leaders, 6 bases, deck⊆pool) or
+    //    a max-iterations cap (default 4) is hit. On non-convergence the
+    //    closest-by-distance iteration is returned and the resolve UI
+    //    handles the residual gap.
     logAttempt(`=== EXTRACTION REQUEST (user=${session.id}) ===`)
     let raw: any
+    let extractIterations: any[] = []
+    let converged = false
+    let bestIteration = 0
     try {
-      raw = await extractPoolFromImages(
+      const extractResult = await extractPoolFromImages(
         body.images.map((img) => ({ data: img.data, mediaType: img.mediaType as any })),
         body.manualSetCode ? { setHint: body.manualSetCode } : {},
+      )
+      raw = extractResult.result
+      extractIterations = extractResult.iterations
+      converged = extractResult.converged
+      bestIteration = extractResult.bestIteration
+
+      // Per-iteration log line: one line per pass with the invariant counts.
+      // Comparing iteration N to iteration N-1 tells us whether refine prompts
+      // are actually moving the needle, or whether tweaks are no-ops.
+      for (const it of extractIterations) {
+        logAttempt(
+          `iter ${it.iteration}: pool=${it.poolSum}/96 deck=${it.deckSum} leaders=${it.leaderCount}/6 bases=${it.baseCount}/6 subset=${it.subsetViolations} passing=${it.passing} cache(r/w)=${it.cacheReadTokens}/${it.cacheCreationTokens} out=${it.outputTokens}`,
+        )
+        if (!it.passing && it.failures.length > 0) {
+          logAttempt(`iter ${it.iteration} failures: ${it.failures.join(' | ')}`)
+        }
+      }
+      logAttempt(
+        `loop: converged=${converged} bestIteration=${bestIteration} totalIterations=${extractIterations.length}`,
       )
       // Log final extraction summary so we can see what each row got mapped to.
       // Format: "Name:pool/deck[poolConf/deckConf]" where conf is H|M|L|?.
@@ -303,6 +328,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       warnings: extractWarnings,
       sectionGaps,
       sections,
+      iterations: extractIterations,
+      converged,
+      bestIteration,
       rows: matched.map((m) => ({
         extracted: m.extracted,
         matched: m.matched
