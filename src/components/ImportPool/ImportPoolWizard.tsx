@@ -28,7 +28,10 @@ export default function ImportPoolWizard() {
   }, [state.phase, state.shareId, router])
 
   const hasWork = state.images.length > 0 || state.extraction !== null
-  const canReImport = state.images.length > 0 && state.phase !== 'extracting' && state.phase !== 'submitting'
+  // Re-import only makes sense on Step 2 (Resolve). On Step 1 (Upload) the
+  // user already has the "Import Pool" / "Importing…" CTA. On Step 3
+  // (Confirm) the work is essentially done.
+  const canReImport = state.phase === 'resolving' && state.images.length > 0
   // Step 1 in the wizard step bar is clickable on later phases — that's the
   // back-to-upload affordance. The Re-upload header button was redundant
   // with that and got pulled.
