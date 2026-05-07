@@ -117,6 +117,11 @@ The sheet has:
 - Aspect-grouped sections (Vigilance, Command, Aggression, Cunning, Villainy, Heroism, Multicolor, No Aspect) listing all non-leader/non-base cards
 - Each row has columns: PLAYED | TOTAL | NO. # (card number) | card name + subtitle
 
+PROCEDURE — work in this order:
+  STEP 1: Locate section headers on each photo (LEADERS / BASES / VIGILANCE / COMMAND / AGGRESSION / CUNNING / HEROISM / VILLAINY / MULTICOLOR / NO ASPECT). Output the "sections" array with a bounding box for each visible section on each photo (rule 9 details the schema). Commit to bounds BEFORE you start counting marks — this enforces a macro-level scan first.
+  STEP 2: For each section located in step 1, count the marked rows. Especially: walk MULTICOLOR by sub-aspect pair (Vigilance+Command, Vigilance+Aggression, Vigilance+Cunning, Command+Aggression, Command+Cunning, Aggression+Cunning, plus the Heroism/Villainy variants of each). MULTICOLOR is consistently under-counted because it has the most sub-groups and spans many rows.
+  STEP 3: For every printed row in the set, output one entry in "rows". Mark poolQty/deckQty from the player's marks. Most rows will be 0/0 (player doesn't own them). Sum verifications happen in the FINAL CHECKLIST below.
+
 CRITICAL READING RULES — these are where extraction goes wrong if you're not careful:
 
 1. **Most rows are EMPTY.** A registration sheet pre-prints every card in the set. The player only marks the rows for cards they own. Rows with NO marks in BOTH the PLAYED and TOTAL columns are poolQty=0 AND deckQty=0. Do NOT fill in 1 because the row exists — only fill in qty when you can SEE a mark.
@@ -339,6 +344,12 @@ function buildAllSetsCardListContext(): string {
 }
 
 // === JSON schema for structured output ===
+//
+// Field order matters: structured-output models generate keys in the order
+// they appear in `properties`. We put `sections` BEFORE `rows` so Claude
+// commits to bounding boxes while it's still scanning the photo at a
+// macro level — earlier runs put sections last and Claude routinely
+// returned an empty array because by then it was "done."
 const RESPONSE_SCHEMA = {
   type: 'object',
   additionalProperties: false,
@@ -371,36 +382,6 @@ const RESPONSE_SCHEMA = {
         },
       },
       required: ['setName', 'eventName', 'eventDate', 'playerName', 'leader', 'base'],
-    },
-    rows: {
-      type: 'array',
-      items: {
-        type: 'object',
-        additionalProperties: false,
-        properties: {
-          name: { type: 'string' },
-          type: { type: 'string', enum: ['Leader', 'Base', 'Unit', 'Event', 'Upgrade'] },
-          subtitle: { type: ['string', 'null'] },
-          poolQty: { type: 'integer' },
-          deckQty: { type: 'integer' },
-          aspectGroup: { type: ['string', 'null'] },
-          // Per-column handwriting-read confidence. Card-name OCR is grounded
-          // against the closed card list, so the only thing left to verify
-          // is the player's marks in the two qty columns.
-          poolQtyConfidence: { type: 'string', enum: ['high', 'medium', 'low'] },
-          deckQtyConfidence: { type: 'string', enum: ['high', 'medium', 'low'] },
-        },
-        required: [
-          'name',
-          'type',
-          'subtitle',
-          'poolQty',
-          'deckQty',
-          'aspectGroup',
-          'poolQtyConfidence',
-          'deckQtyConfidence',
-        ],
-      },
     },
     sections: {
       type: 'array',
@@ -438,8 +419,38 @@ const RESPONSE_SCHEMA = {
         required: ['name', 'photoIndex', 'x0', 'y0', 'x1', 'y1'],
       },
     },
+    rows: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          name: { type: 'string' },
+          type: { type: 'string', enum: ['Leader', 'Base', 'Unit', 'Event', 'Upgrade'] },
+          subtitle: { type: ['string', 'null'] },
+          poolQty: { type: 'integer' },
+          deckQty: { type: 'integer' },
+          aspectGroup: { type: ['string', 'null'] },
+          // Per-column handwriting-read confidence. Card-name OCR is grounded
+          // against the closed card list, so the only thing left to verify
+          // is the player's marks in the two qty columns.
+          poolQtyConfidence: { type: 'string', enum: ['high', 'medium', 'low'] },
+          deckQtyConfidence: { type: 'string', enum: ['high', 'medium', 'low'] },
+        },
+        required: [
+          'name',
+          'type',
+          'subtitle',
+          'poolQty',
+          'deckQty',
+          'aspectGroup',
+          'poolQtyConfidence',
+          'deckQtyConfidence',
+        ],
+      },
+    },
   },
-  required: ['header', 'rows', 'sections'],
+  required: ['header', 'sections', 'rows'],
 }
 
 // Typical per-primary-section card-count ranges for an 84-non-leader/base sealed pool.

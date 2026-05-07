@@ -86,12 +86,14 @@ export default function ResolveStep({ importPool }: Props) {
 
   const anomalies = useMemo<Anomaly[]>(() => {
     const list: Anomaly[] = []
+    const seenRowKey = new Set<string>()
+    const pushRow = (row: ResolvedRow, label: string) => {
+      if (seenRowKey.has(row.key)) return
+      seenRowKey.add(row.key)
+      list.push({ kind: 'row', targetId: `ip-row-${row.key}`, label })
+    }
 
-    // Issue pager is for resolving INDIVIDUAL data points (rows the user
-    // can fix by picking, retyping a qty, or verifying against the source
-    // photo). Section gaps and per-row issues only.
-
-    // Section gaps from the route's typical-range check.
+    // 1) Section-level gaps (Multicolor under-count, etc.) come first.
     for (const gap of state.sectionGaps) {
       list.push({
         kind: 'section',
@@ -100,73 +102,103 @@ export default function ResolveStep({ importPool }: Props) {
       })
     }
 
-    // When pool is short, MEDIUM-confidence blanks become anomalies — these
-    // are the most likely "Claude wrote this off as 0 but isn't certain"
-    // candidates for the missing cards. Without this branch, an
-    // overconfident model that returns zero LOW reads (all M/H) gives the
-    // user no rows to verify even when the totals say 21 cards are missing.
-    const poolShort = validation.poolCount < validation.poolTarget
-    const surfaceMediumBlanks = poolShort
-
+    // 2) Per-row matcher problems for rows the user actually has.
     for (const row of state.resolvedRows) {
+      if (row.poolQty <= 0) continue
       const cardName = row.card?.name || row.extracted.name || 'Unrecognized'
-      const id = `ip-row-${row.key}`
-      const poolConf = row.extracted.poolQtyConfidence
-      const deckConf = row.extracted.deckQtyConfidence
-
-      if (row.poolQty > 0) {
-        if (!row.card) {
-          list.push({ kind: 'row', targetId: id, label: `Unmatched: ${cardName}` })
-          continue
-        }
-        if (row.confidence === 'ambiguous') {
-          list.push({ kind: 'row', targetId: id, label: `Ambiguous match: ${cardName}` })
-          continue
-        }
-        if (row.confidence === 'fuzzy') {
-          list.push({ kind: 'row', targetId: id, label: `Fuzzy match: ${cardName}` })
-          continue
-        }
-        if (row.deckQty > row.poolQty) {
-          list.push({ kind: 'row', targetId: id, label: `Bad qty: ${cardName} deck>${row.poolQty}` })
-          continue
-        }
-      }
-
-      if (poolConf === 'low') {
-        const note = row.poolQty === 0
-          ? `Uncertain blank (pool): ${cardName}`
-          : `Uncertain pool=${row.poolQty}: ${cardName}`
-        list.push({ kind: 'row', targetId: id, label: note })
+      if (!row.card) {
+        pushRow(row, `Unmatched: ${cardName}`)
         continue
       }
-      if (deckConf === 'low') {
-        const note = row.deckQty === 0
-          ? `Uncertain blank (deck): ${cardName}`
-          : `Uncertain deck=${row.deckQty}: ${cardName}`
-        list.push({ kind: 'row', targetId: id, label: note })
+      if (row.confidence === 'ambiguous') {
+        pushRow(row, `Ambiguous match: ${cardName}`)
         continue
       }
-
-      // Pool-short fallback: surface medium-confidence blanks. Skip
-      // leaders/bases (their typical state is poolQty=0) — those don't
-      // help the user find missing cards.
-      if (
-        surfaceMediumBlanks &&
-        row.poolQty === 0 &&
-        poolConf === 'medium' &&
-        row.extracted.type !== 'Leader' &&
-        row.extracted.type !== 'Base'
-      ) {
-        list.push({
-          kind: 'row',
-          targetId: id,
-          label: `Possibly missed: ${cardName} (pool count is short — verify against source)`,
-        })
+      if (row.confidence === 'fuzzy') {
+        pushRow(row, `Fuzzy match: ${cardName}`)
+        continue
+      }
+      if (row.deckQty > row.poolQty) {
+        pushRow(row, `Bad qty: ${cardName} deck>${row.poolQty}`)
+        continue
       }
     }
+
+    // 3) ALL low-confidence reads, regardless of qty.
+    for (const row of state.resolvedRows) {
+      const cardName = row.card?.name || row.extracted.name || 'Unrecognized'
+      if (row.extracted.poolQtyConfidence === 'low') {
+        pushRow(
+          row,
+          row.poolQty === 0
+            ? `Uncertain blank (pool): ${cardName}`
+            : `Uncertain pool=${row.poolQty}: ${cardName}`,
+        )
+      }
+      if (row.extracted.deckQtyConfidence === 'low') {
+        pushRow(
+          row,
+          row.deckQty === 0
+            ? `Uncertain blank (deck): ${cardName}`
+            : `Uncertain deck=${row.deckQty}: ${cardName}`,
+        )
+      }
+    }
+
+    // 4) When pool is SHORT by N cards, surface the N most-suspicious
+    //    poolQty=0 rows so the user has a focused list of candidates to
+    //    verify against the source. "Most-suspicious" = lowest pool
+    //    confidence first (low → medium). Skip leaders/bases (their
+    //    typical state IS poolQty=0). This is the answer to "Pool: 80/96
+    //    means 16 issues" — every missing card maps to one entry here.
+    const poolShort = validation.poolCount < validation.poolTarget
+    if (poolShort) {
+      const poolDelta = validation.poolTarget - validation.poolCount
+      const candidates = state.resolvedRows
+        .filter(
+          (r) =>
+            !seenRowKey.has(r.key) &&
+            r.poolQty === 0 &&
+            r.extracted.type !== 'Leader' &&
+            r.extracted.type !== 'Base',
+        )
+        .map((r) => ({ r, score: confScore(r.extracted.poolQtyConfidence) }))
+        // Lowest confidence first, then by extracted name for stability.
+        .sort((a, b) => a.score - b.score || a.r.extracted.name.localeCompare(b.r.extracted.name))
+        .slice(0, poolDelta)
+      for (const { r } of candidates) {
+        const cardName = r.card?.name || r.extracted.name || 'Unrecognized'
+        pushRow(r, `Possibly missed: ${cardName}`)
+      }
+    }
+
+    // 5) When deck is OVER target, surface the N most-suspicious deck
+    //    inclusions (deckQty>0 rows with the LOWEST deck confidence). The
+    //    user clicks through to verify each against the source and bumps
+    //    deckQty down if Claude over-counted. Skip leaders/bases (active
+    //    selection is exactly one of each, deckQty=1 is by definition).
+    const deckOver = validation.deckCount > validation.deckTarget
+    if (deckOver) {
+      const deckDelta = validation.deckCount - validation.deckTarget
+      const candidates = state.resolvedRows
+        .filter(
+          (r) =>
+            !seenRowKey.has(r.key) &&
+            r.deckQty > 0 &&
+            r.extracted.type !== 'Leader' &&
+            r.extracted.type !== 'Base',
+        )
+        .map((r) => ({ r, score: confScore(r.extracted.deckQtyConfidence) }))
+        .sort((a, b) => a.score - b.score || a.r.extracted.name.localeCompare(b.r.extracted.name))
+        .slice(0, deckDelta)
+      for (const { r } of candidates) {
+        const cardName = r.card?.name || r.extracted.name || 'Unrecognized'
+        pushRow(r, `Possibly mis-counted in deck: ${cardName} (deck=${r.deckQty})`)
+      }
+    }
+
     return list
-  }, [state.resolvedRows, state.sectionGaps, validation.poolCount, validation.poolTarget])
+  }, [state.resolvedRows, state.sectionGaps, validation.poolCount, validation.poolTarget, validation.deckCount, validation.deckTarget])
 
   const anomalyKeys = anomalies.map((a) => a.targetId)
 
@@ -842,6 +874,15 @@ const SECTION_NAME_BY_GROUP_KEY: Record<string, string> = {
   villainy: 'Villainy',
   multicolor: 'Multicolor',
   'no-aspect': 'NoAspect',
+}
+
+/** Numeric score for sorting confidence enums "lowest first". Used by the
+ *  anomaly-list builder to rank suspicious rows when pool/deck totals don't
+ *  add up — least confident reads bubble to the top. */
+function confScore(level: 'high' | 'medium' | 'low' | undefined): number {
+  if (level === 'low') return 0
+  if (level === 'medium') return 1
+  return 2 // high or undefined → least suspicious
 }
 
 /** Per-column confidence as a 0–100 % so it can render as a numeric badge.
