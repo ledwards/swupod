@@ -1,0 +1,657 @@
+{
+  "fixtureName": "sq-tom-law",
+  "setCode": "LAW",
+  "expectedTotals": {
+    "pool": 96,
+    "deck": 32,
+    "leaders": 6,
+    "bases": 6
+  },
+  "_note": "STARTER from model converged output (8 iter, all invariants passed). DECK SUM IS 35 in this starter — actual deck is 32 per user. Edit before treating as ground truth: verify each row against /tmp/sheet1.jpg + /tmp/sheet2.jpg, drop 3 over-marked deck inclusions, fix any qty mistakes, remove _note when done.",
+  "rows": [
+    {
+      "name": "Jyn Erso",
+      "subtitle": "Time to Fight",
+      "type": "Leader",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Vel Sartha",
+      "subtitle": "Aldhani Insurgent",
+      "type": "Leader",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Boba Fett",
+      "subtitle": "Krayt's Claw Commander",
+      "type": "Leader",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Hera Syndulla",
+      "subtitle": "Not Fighting Alone",
+      "type": "Leader",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Darth Vader",
+      "subtitle": "Unstoppable",
+      "type": "Leader",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Han Solo",
+      "subtitle": "I Got a Really Good Feeling",
+      "type": "Leader",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Great Pit of Carkoon",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Imperial Command Complex",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Stygeon Spire",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Canto Bight",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Citadel Research Center",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Partisan Hideout",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Vandor Range Troopers",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Cinta Kaz",
+      "subtitle": "Stone Cold and Fearless",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Defiant Scrapper",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Lando Calrissian",
+      "subtitle": "Eyes Open",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Alkenzi Patroller",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Droid Laser Turret",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 2,
+      "deckQty": 0
+    },
+    {
+      "name": "Kill Switch",
+      "subtitle": null,
+      "type": "Upgrade",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Lost and Forgotten",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Mastery",
+      "subtitle": null,
+      "type": "Upgrade",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Rodian Bondsman",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Syndicate Security",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Veiled Strength",
+      "subtitle": null,
+      "type": "Upgrade",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Vigilant Scouts",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Watchful",
+      "subtitle": null,
+      "type": "Upgrade",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Liberated Wookiee",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Massassi Group Marines",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Beach Patrol AT-ACT",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "C-3PO",
+      "subtitle": "Translation Protocol",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Combat Exercise",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 2,
+      "deckQty": 1
+    },
+    {
+      "name": "Common Cause",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Expendable Mercenary",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Getaway Freighter",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 2,
+      "deckQty": 1
+    },
+    {
+      "name": "Haymaker",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Putting a Team Together",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Target Tagger",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "BT-1",
+      "subtitle": "Blastomech",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "B-Wing Skirmisher",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Commence the Festivities",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Daring Delve",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Doctor Aphra",
+      "subtitle": "Digging For Answers",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Dogged Pursuers",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Every Day, More Lies",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Ohnaka Gang Bandits",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Overcharged Transport",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Relentless Hunters",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Shifty Suspects",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Hold For Questioning",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Artful Pickpocket",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Wookiee Guerilla",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Kage Elite",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 2,
+      "deckQty": 0
+    },
+    {
+      "name": "Milodon Rider",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Windfall",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Black Sun Cabalist",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Fire Across the Galaxy",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Stalwart Fleet Trooper",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Bank Job Fugitives",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Hidden Hand Supplier",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Kessel Hulk",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Seasoned Tracker",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Chewbacca",
+      "subtitle": "Mighty Rescuer",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "IG-88",
+      "subtitle": "Programmed to Kill",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Baze Malbus",
+      "subtitle": "Good Luck",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Chirrut Îmwe",
+      "subtitle": "I Don't Need Luck",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Zeb Orellios",
+      "subtitle": "Spectre Four",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Beilert Valance",
+      "subtitle": "Target: Vader",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Bith Brute",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Chio Fain",
+      "subtitle": "Four-Armed Slicer",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Honnah",
+      "subtitle": "OINK! SQUEE!",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "The Mandalorian",
+      "subtitle": "Let's See the Puck",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Dengar",
+      "subtitle": "Take Your Shot",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Maul",
+      "subtitle": "Master of the Shadow Collective",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Defiant Hammerhead",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "L3-37",
+      "subtitle": "Radical Instigator",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Jyn Erso",
+      "subtitle": "Take the Next Chance",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Millennium Falcon",
+      "subtitle": "Dodging Patrols",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "The Ghost",
+      "subtitle": "Home of the Spectres",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "The Max Rebo Band",
+      "subtitle": "Jatz-Wailers",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Sabine Wren",
+      "subtitle": "Spectre Five",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Sullustan Sapper",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Urrr'k",
+      "subtitle": "Elite Sharpshooter",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Anakin Skywalker",
+      "subtitle": "Prescient Podracer",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Finn",
+      "subtitle": "Looking Closer",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Hondo Ohnaka",
+      "subtitle": "Plays By His Own Rules",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Rhydonium Detonation",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Rio Durant",
+      "subtitle": "Beckett's Right Hands",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Toydarian Technician",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Two-Faced Troig",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Val",
+      "subtitle": "It's Been a Ride, Babe",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Mid Rim Sharpshooter (extra mark)",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Cartel Heavy Fighter (extra)",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    }
+  ]
+}

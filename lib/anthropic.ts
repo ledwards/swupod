@@ -22,6 +22,7 @@ import {
   BASE_TARGET,
   type ExtractionInvariantStatus,
 } from '../src/services/importPool/invariants'
+import { preprocessImageForExtraction } from '../src/services/importPool/preprocessImage'
 
 const MODEL = 'claude-opus-4-7'
 // Vision parses can produce 80-100 JSON rows. 32K leaves comfortable headroom
@@ -764,6 +765,25 @@ export async function extractPoolFromImages(
     throw new Error('extractPoolFromImages supports at most 2 images')
   }
 
+  // Server-side preprocessing (sharp): resize cap, normalise histogram,
+  // contrast multiply, sharpen. The wizard's browser canvas only resizes
+  // for upload size; this does the contrast/sharpen work that makes faint
+  // tally marks legible to Claude. Done once per call (not per iteration)
+  // since the bytes don't change across the refine loop.
+  const preprocessed: ImageInput[] = []
+  for (const img of images) {
+    try {
+      const buf = await preprocessImageForExtraction(Buffer.from(img.data, 'base64'))
+      preprocessed.push({ data: buf.toString('base64'), mediaType: 'image/jpeg' })
+    } catch (err) {
+      throw new Error(
+        `Image preprocessing failed: ${(err as Error).message}. ` +
+          `Possible causes: corrupt JPEG, unsupported format. ` +
+          `Original mediaType: ${img.mediaType}.`,
+      )
+    }
+  }
+
   const client = getClient()
   const cardListContext = buildAllSetsCardListContext()
 
@@ -794,7 +814,7 @@ export async function extractPoolFromImages(
       lastResult && lastStatus
         ? buildRefineUserText(lastResult, lastStatus, opts.setHint)
         : buildInitialUserText(opts.setHint)
-    const userContent = buildUserContent(images, userText)
+    const userContent = buildUserContent(preprocessed, userText)
 
     // Manual retry for `AnthropicError: terminated` and similar mid-stream
     // socket failures. The SDK's built-in maxRetries doesn't always classify

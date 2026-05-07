@@ -1,0 +1,7 @@
+{
+  "fixtureName": "sq-lee-law",
+  "setCode": "LAW",
+  "expectedTotals": { "pool": 96, "deck": 32, "leaders": 6, "bases": 6 },
+  "_note": "PLACEHOLDER. Drop photo1.jpg + photo2.jpg into this directory, then run `npx tsx scripts/iter-import.ts` against them to generate a starter, copy the marked rows into `rows` here, manually correct against the photos, remove _note.",
+  "rows": []
+}

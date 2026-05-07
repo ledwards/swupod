@@ -69,3 +69,9 @@ migrations/.buildstamp
 
 # Import Pool: synthetic-only fixtures; never commit real player photos (per memory rule)
 tests/fixtures/import-pool/
+scripts/eval/results/*.json
+
+# Import Pool eval: photos contain real player names + SWU IDs, kept local only
+scripts/eval/fixtures/*/photo*.jpg
+scripts/eval/fixtures/*/photo*.jpeg
+scripts/eval/fixtures/*/photo*.png
