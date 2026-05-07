@@ -86,6 +86,14 @@ interface FixtureScore {
   perIterCounts?: Array<{ iter: number; pool: number; deck: number; leaders: number; bases: number }>
   iterationFailures?: string[]
   sectionsCount?: number
+  tableBreakdown?: Array<{
+    table: string
+    poolSum: number
+    deckSum: number
+    rowsMarked: number
+    rowsInDeck: number
+    rowsTotal: number
+  }>
   fpExamples?: Array<{ name: string; subtitle: string | null; poolQty: number; deckQty: number }>
   fnExamples?: Array<{ name: string; subtitle: string | null; poolQty: number; deckQty: number }>
 }
@@ -251,6 +259,16 @@ async function evalFixture(name: string): Promise<FixtureScore> {
     })),
     iterationFailures: result.iterations.flatMap((it: any) => it.failures || []),
     sectionsCount: result.result.sections?.length,
+    tableBreakdown: result.iterations
+      .filter((it: any) => it.tableName)
+      .map((it: any) => ({
+        table: it.tableName,
+        poolSum: it.poolSum,
+        deckSum: it.deckSum,
+        rowsMarked: it.tableMarkedRows ?? 0,
+        rowsInDeck: it.tableDeckRows ?? 0,
+        rowsTotal: it.tableTotalCards ?? 0,
+      })),
     fpExamples,
     fnExamples,
   }
@@ -276,10 +294,19 @@ function reportFixture(s: FixtureScore) {
   console.log(
     `iterations: ${s.iterations} (best=${s.bestIteration}, converged=${s.converged}, elapsed=${s.elapsedSec!.toFixed(1)}s)`,
   )
-  console.log(`per-iter: ${s.perIterCounts!.map((p) => `i${p.iter}:${p.pool}/${p.deck}`).join('  ')}`)
-  if (s.iterationFailures && s.iterationFailures.length > 0) {
-    console.log(`per-iter detail:`)
-    for (const f of s.iterationFailures) console.log(`  ${f}`)
+  if (s.tableBreakdown && s.tableBreakdown.length > 0) {
+    console.log(`table breakdown:`)
+    console.log(`  ${'table'.padEnd(13)} ${'pool sum'.padStart(8)}  ${'deck sum'.padStart(8)}  rows-marked  rows-in-deck`)
+    let totPool = 0
+    let totDeck = 0
+    for (const t of s.tableBreakdown) {
+      totPool += t.poolSum
+      totDeck += t.deckSum
+      console.log(
+        `  ${t.table.padEnd(13)} ${String(t.poolSum).padStart(8)}  ${String(t.deckSum).padStart(8)}  ${(t.rowsMarked + '/' + t.rowsTotal).padStart(11)}  ${(t.rowsInDeck + '/' + t.rowsTotal).padStart(12)}`,
+      )
+    }
+    console.log(`  ${'TOTALS'.padEnd(13)} ${String(totPool).padStart(8)}  ${String(totDeck).padStart(8)}  (target pool=96, deck=30-35)`)
   }
   if (s.sectionsCount != null) {
     console.log(`sections returned by phase 1: ${s.sectionsCount}`)

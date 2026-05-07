@@ -79,15 +79,73 @@ export async function cropForTable(
   return await sharp(imageBuffer).extract({ left, top, width, height }).jpeg({ quality: 95 }).toBuffer()
 }
 
+/**
+ * Crop an ORIGINAL (un-preprocessed) photo to a table's bbox at native
+ * resolution, then apply the contrast pipeline to JUST that crop.
+ *
+ * Why this matters: the full-photo preprocessing path resizes to a 2576px
+ * ceiling first, which downsamples large iPhone photos (4032×3024)
+ * before the crop happens — column-pixel density drops by ~40%. Cropping
+ * first preserves native resolution where it counts (inside the table).
+ *
+ * Per-crop normalise also gets a tighter dynamic range than whole-photo
+ * normalise, so faint pencil marks within a section get stronger boost.
+ */
+export async function cropOriginalAndPreprocess(
+  originalBuffer: Buffer,
+  bounds: { x0: number; y0: number; x1: number; y1: number },
+): Promise<Buffer> {
+  const meta = await sharp(originalBuffer).metadata()
+  const w = meta.width || 0
+  const h = meta.height || 0
+  if (w === 0 || h === 0) throw new Error('cropOriginalAndPreprocess: image has zero dimension')
+  const padX = w * 0.02
+  const padY = h * 0.02
+  const left = Math.max(0, Math.floor(bounds.x0 * w - padX))
+  const top = Math.max(0, Math.floor(bounds.y0 * h - padY))
+  const right = Math.min(w, Math.ceil(bounds.x1 * w + padX))
+  const bottom = Math.min(h, Math.ceil(bounds.y1 * h + padY))
+  const width = right - left
+  const height = bottom - top
+  if (width <= 0 || height <= 0) {
+    throw new Error(
+      `cropOriginalAndPreprocess: invalid bounds ${JSON.stringify({ left, top, width, height, w, h, bounds })}`,
+    )
+  }
+  // Cap at 2576 only AFTER cropping — most crops are well under this anyway.
+  return await sharp(originalBuffer)
+    .extract({ left, top, width, height })
+    .resize({ width: 2576, height: 2576, fit: 'inside', withoutEnlargement: true })
+    .normalise()
+    .linear(1.3, -30)
+    .sharpen({ sigma: 1.0 })
+    .jpeg({ quality: 95 })
+    .toBuffer()
+}
+
 function cardNumberOf(cardId: string): number {
   const m = (cardId || '').match(/[-_](\d+)$/)
   return m ? parseInt(m[1], 10) : 0
+}
+
+export interface TableExtractionHint {
+  /** When set, the prompt tells the model the SUM of poolQty across all
+   *  rows in this table MUST equal this value. Used for Leaders/Bases
+   *  which are always exactly 6 in a sealed pool. */
+  expectedPoolSum?: number
+  /** Same for deckQty. Leaders/Bases always have exactly 1 in deck. */
+  expectedDeckSum?: number
+  /** When set, includes a recap of the previous attempt and the gap.
+   *  Used by the refine pass on Leaders/Bases when the first call missed
+   *  the count. */
+  previousAttempt?: { rows: any[]; gap: string }
 }
 
 function buildTableSystemPrompt(
   tableName: TableName,
   setCode: string,
   tableCards: any[],
+  hint?: TableExtractionHint,
 ): string {
   const cardListLines = tableCards
     .map((c) => {
@@ -98,10 +156,63 @@ function buildTableSystemPrompt(
     })
     .join('\n')
 
+  let constraintSection = ''
+  if (hint?.expectedPoolSum != null || hint?.expectedDeckSum != null) {
+    constraintSection += '\nSTRUCTURAL CONSTRAINT — these counts are FIXED for this table by the rules of sealed:\n'
+    if (hint.expectedPoolSum != null) {
+      constraintSection += `- The SUM of poolQty across all ${tableCards.length} rows in this table MUST equal exactly ${hint.expectedPoolSum}.\n`
+      constraintSection += `  Most rows are blank (poolQty=0). The remaining ${hint.expectedPoolSum} have poolQty>0; usually each is poolQty=1, but a row can be poolQty=2 if the player drew the same ${tableName === 'Leaders' ? 'leader' : tableName === 'Bases' ? 'base' : 'card'} from two different packs.\n`
+    }
+    if (hint.expectedDeckSum != null) {
+      constraintSection += `- The SUM of deckQty across all rows MUST equal exactly ${hint.expectedDeckSum}.\n`
+      if (hint.expectedDeckSum === 1) {
+        constraintSection += `  Exactly 1 row has deckQty=1 (the player's active selection); all others have deckQty=0.\n`
+      }
+    }
+    constraintSection += `\nBefore returning, verify the sum constraint(s). If your sum is wrong, re-examine the cells you marked — pick the rows with the clearest marks. NEVER return a sum that doesn't match the constraint.\n`
+  }
+
+  let refineRecap = ''
+  if (hint?.previousAttempt) {
+    const marked = hint.previousAttempt.rows.filter((r: any) => r.poolQty > 0)
+    refineRecap += `\nPREVIOUS ATTEMPT (this is your second pass on this table):\n`
+    refineRecap += `You previously marked these ${marked.length} cards as poolQty>0:\n`
+    for (const r of marked) {
+      refineRecap += `- card ${r.cardNumber}: pool=${r.poolQty} deck=${r.deckQty} (conf ${r.poolQtyConfidence}/${r.deckQtyConfidence})\n`
+    }
+    refineRecap += `\nGap: ${hint.previousAttempt.gap}\n`
+    refineRecap += `Look at the crop again with fresh eyes and produce a corrected response. The constraint above MUST be satisfied.\n`
+  }
+
   return `You're parsing a CROPPED view of one table from a Star Wars: Unlimited sealed-deck registration sheet.
 
 Set: ${setCode}
 Table: ${tableName}
+
+==================================================
+STEP 0 — column anchoring. DO THIS FIRST, BEFORE ANY EXTRACTION.
+==================================================
+
+The crop has a header row at the top with FOUR labels left-to-right:
+  "PLAYED"  |  "TOTAL"  |  "NO. #"  |  (card name)
+
+The first two columns are very narrow (each ~5% of the crop width). Their order is FIXED on every sealed sheet:
+  - PLAYED is ALWAYS the leftmost narrow column. Marks here = deckQty.
+  - TOTAL is ALWAYS immediately to the right of PLAYED. Marks here = poolQty.
+  - NO. # is the column with printed card numbers (174, 175, 176…).
+  - card name is the rightmost wide column.
+
+For every row in the crop, do this:
+  1. Find the printed card number in the NO. # column.
+  2. Look immediately to the LEFT of that number — that cell is the TOTAL cell. Is there a tally / digit? That's your poolQty for this row.
+  3. Look one cell FURTHER LEFT — that cell is the PLAYED cell. Is there a tally / digit? That's your deckQty.
+
+So scanning right-to-left from the card number: number → TOTAL → PLAYED.
+DO NOT scan left-to-right and assume the first mark you see is PLAYED. The columns are too narrow to align that way reliably — anchor on the printed CARD NUMBER on the right, then walk leftward.
+
+Common error to avoid: returning every mark as deckQty. If you see a mark in only ONE of the two narrow columns, it is far more often the TOTAL column (poolQty) — players mark TOTAL for every card they own, but only mark PLAYED for the subset they put in their deck. So if a row has exactly one visible mark, your default should be poolQty=1 deckQty=0 unless you can clearly see the mark is in the leftmost column (PLAYED).
+
+==================================================
 
 The table contains exactly these ${tableCards.length} cards (ordered by their printed card number, which matches the "NO. #" column on the sheet):
 
@@ -130,7 +241,7 @@ CRITICAL — confidence is about handwriting legibility, not about the card name
 
 When uncertain between "blank" and "faint mark", prefer poolQty=0 with confidence="medium". Over-marking is worse than under-marking — the user's resolve UI will catch low-conf cells.
 
-Return ALL ${tableCards.length} cards (most will have poolQty=0). Strict JSON, no prose.`
+Return ALL ${tableCards.length} cards (most will have poolQty=0). Strict JSON, no prose.${constraintSection}${refineRecap}`
 }
 
 export async function extractTableFromCrop(
@@ -139,13 +250,22 @@ export async function extractTableFromCrop(
   tableName: TableName,
   tableCards: any[],
   setCode: string,
+  hint?: TableExtractionHint,
 ): Promise<{ rows: TableExtractionRow[]; outputTokens: number }> {
   if (tableCards.length === 0) {
     return { rows: [], outputTokens: 0 }
   }
 
-  const systemPrompt = buildTableSystemPrompt(tableName, setCode, tableCards)
-  const userText = `Look at the crop and return one entry per card listed in the system prompt — exactly ${tableCards.length} entries. Most will be poolQty=0.`
+  const systemPrompt = buildTableSystemPrompt(tableName, setCode, tableCards, hint)
+  const userText = `Look at the crop and return one entry per card listed in the system prompt — exactly ${tableCards.length} entries. Most will be poolQty=0.${
+    hint?.expectedPoolSum != null
+      ? ` Sum of poolQty MUST equal ${hint.expectedPoolSum}.`
+      : ''
+  }${
+    hint?.expectedDeckSum != null
+      ? ` Sum of deckQty MUST equal ${hint.expectedDeckSum}.`
+      : ''
+  }`
 
   // Manual retry on transient socket termination — same handling the main
   // loop uses.

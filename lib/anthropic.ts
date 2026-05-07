@@ -31,6 +31,7 @@ import {
 } from '../src/services/importPool/tableGrouping'
 import {
   cropForTable,
+  cropOriginalAndPreprocess,
   extractTableFromCrop,
 } from '../src/services/importPool/sectionExtraction'
 
@@ -576,6 +577,14 @@ export interface ExtractIterationLog {
   outputTokens: number
   cacheReadTokens: number
   cacheCreationTokens: number
+  /** Per-table architecture only: name of the table this iteration ran on. */
+  tableName?: string
+  /** Per-table architecture only: total cards in the table's closed vocab. */
+  tableTotalCards?: number
+  /** Per-table architecture only: count of rows with poolQty>0 (vs poolSum which sums quantities). */
+  tableMarkedRows?: number
+  /** Per-table architecture only: count of rows with deckQty>0. */
+  tableDeckRows?: number
 }
 
 export interface ExtractResult {
@@ -946,20 +955,22 @@ export async function extractPoolFromImages(
     throw new Error('extractPoolFromImages supports at most 2 images')
   }
 
-  // Server-side preprocessing (sharp): resize cap, normalise histogram,
-  // contrast multiply, sharpen. Done once up front; the bytes feed both
-  // Phase 1 (full photo) and Phase 2 (cropped per table).
+  // Two parallel buffer arrays:
+  //  - originalBuffers: the raw upload bytes, used by Phase 2 so each table
+  //    crop is taken at NATIVE photo resolution (column pixel density is
+  //    preserved on large phone photos).
+  //  - preprocessedBuffers: full-photo contrast-enhanced bytes, used by
+  //    Phase 1 (header + bounds) where we want the model to see the whole
+  //    sheet legibly.
+  const originalBuffers: Buffer[] = images.map((img) => Buffer.from(img.data, 'base64'))
   const preprocessedBuffers: Buffer[] = []
-  for (const img of images) {
+  for (const buf of originalBuffers) {
     try {
-      preprocessedBuffers.push(
-        await preprocessImageForExtraction(Buffer.from(img.data, 'base64')),
-      )
+      preprocessedBuffers.push(await preprocessImageForExtraction(buf))
     } catch (err) {
       throw new Error(
         `Image preprocessing failed: ${(err as Error).message}. ` +
-          `Possible causes: corrupt JPEG, unsupported format. ` +
-          `Original mediaType: ${img.mediaType}.`,
+          `Possible causes: corrupt JPEG, unsupported format.`,
       )
     }
   }
@@ -991,17 +1002,24 @@ export async function extractPoolFromImages(
   // Phase 2: per-table parallel extraction. For tables Phase 1 didn't
   // bound, fall back to extracting from photo 0 in full — Claude still
   // gets the closed vocab, just sees more visual area.
+  //
+  // Leaders/Bases get a STRUCTURAL CONSTRAINT hint up front: a sealed pool
+  // always has exactly 6 leaders + 6 bases (poolQty sum) and exactly 1
+  // active leader + 1 active base (deckQty sum). The model is told this
+  // before its first attempt; if it still misses, a refine pass below
+  // re-runs that table with feedback.
   const phase2Start = Date.now()
   type TableJobResult = {
     tableName: TableName
     rows: any[]
     outputTokens: number
     fellBack: boolean
+    cropBuf: Buffer
   }
   const tableJobs: Promise<TableJobResult>[] = TABLE_NAMES.map(async (tableName) => {
     const tableCards = tableGroups.get(tableName) || []
     if (tableCards.length === 0) {
-      return { tableName, rows: [], outputTokens: 0, fellBack: false }
+      return { tableName, rows: [], outputTokens: 0, fellBack: false, cropBuf: preprocessedBuffers[0] }
     }
 
     const sectionBounds = phase1.sections.find((s: any) => s.name === tableName)
@@ -1010,10 +1028,16 @@ export async function extractPoolFromImages(
     if (
       sectionBounds &&
       sectionBounds.photoIndex >= 0 &&
-      sectionBounds.photoIndex < preprocessedBuffers.length
+      sectionBounds.photoIndex < originalBuffers.length
     ) {
       try {
-        cropBuf = await cropForTable(preprocessedBuffers[sectionBounds.photoIndex], sectionBounds)
+        // Crop ORIGINAL at native resolution, THEN apply the contrast
+        // pipeline to just the section. Better column-pixel density and
+        // tighter per-section dynamic range than crop-of-preprocessed.
+        cropBuf = await cropOriginalAndPreprocess(
+          originalBuffers[sectionBounds.photoIndex],
+          sectionBounds,
+        )
       } catch {
         cropBuf = preprocessedBuffers[0]
         fellBack = true
@@ -1023,10 +1047,49 @@ export async function extractPoolFromImages(
       fellBack = true
     }
 
-    const result = await extractTableFromCrop(client, cropBuf, tableName, tableCards, setCode)
-    return { tableName, rows: result.rows, outputTokens: result.outputTokens, fellBack }
+    const hint =
+      tableName === 'Leaders' || tableName === 'Bases'
+        ? { expectedPoolSum: 6, expectedDeckSum: 1 }
+        : undefined
+
+    const result = await extractTableFromCrop(client, cropBuf, tableName, tableCards, setCode, hint)
+    return { tableName, rows: result.rows, outputTokens: result.outputTokens, fellBack, cropBuf }
   })
   const tableResults = await Promise.all(tableJobs)
+
+  // Refine pass for Leaders/Bases if their structural constraints are off.
+  // These tables have FIXED counts (pool sum 6, deck sum 1) so we can
+  // detect and re-extract with feedback. Done sequentially because there
+  // are at most 2 of them and they're cheap.
+  for (const tableName of ['Leaders', 'Bases'] as const) {
+    const tr = tableResults.find((t) => t.tableName === tableName)
+    if (!tr || tr.rows.length === 0) continue
+    const tableCards = tableGroups.get(tableName) || []
+    const poolSum = tr.rows.reduce((s: number, r: any) => s + Number(r.poolQty || 0), 0)
+    const deckSum = tr.rows.reduce((s: number, r: any) => s + Number(r.deckQty || 0), 0)
+    if (poolSum === 6 && deckSum === 1) continue
+
+    const gapParts: string[] = []
+    if (poolSum !== 6) gapParts.push(`poolQty sum was ${poolSum}, must be 6 (gap: ${6 - poolSum})`)
+    if (deckSum !== 1) gapParts.push(`deckQty sum was ${deckSum}, must be 1 (gap: ${1 - deckSum})`)
+
+    const refineHint = {
+      expectedPoolSum: 6,
+      expectedDeckSum: 1,
+      previousAttempt: { rows: tr.rows, gap: gapParts.join('; ') },
+    }
+    const refineResult = await extractTableFromCrop(
+      client,
+      tr.cropBuf,
+      tableName,
+      tableCards,
+      setCode,
+      refineHint,
+    )
+    tr.rows = refineResult.rows
+    tr.outputTokens += refineResult.outputTokens
+  }
+
   const phase2Elapsed = Date.now() - phase2Start
 
   // Aggregate: convert table results to ExtractedRow[] using the cardCache
@@ -1060,10 +1123,15 @@ export async function extractPoolFromImages(
   // per-iter logging surfaces table-by-table progress and the eval harness
   // can see which table over/under-counted.
   const iterations: ExtractIterationLog[] = tableResults.map((tr, i) => {
-    const marked = tr.rows.filter((r: any) => Number(r.poolQty) > 0)
-    const poolSum = marked.reduce((s: number, r: any) => s + Number(r.poolQty), 0)
-    const deckSum = marked.reduce((s: number, r: any) => s + Number(r.deckQty), 0)
-    const subsetViolations = marked.filter((r: any) => Number(r.deckQty) > Number(r.poolQty)).length
+    const allRowsThisTable = tr.rows
+    const markedPool = allRowsThisTable.filter((r: any) => Number(r.poolQty) > 0)
+    const markedDeck = allRowsThisTable.filter((r: any) => Number(r.deckQty) > 0)
+    const poolSum = allRowsThisTable.reduce((s: number, r: any) => s + Number(r.poolQty || 0), 0)
+    const deckSum = allRowsThisTable.reduce((s: number, r: any) => s + Number(r.deckQty || 0), 0)
+    const subsetViolations = allRowsThisTable.filter(
+      (r: any) => Number(r.deckQty || 0) > Number(r.poolQty || 0),
+    ).length
+    const tableTotal = tableGroups.get(tr.tableName)?.length || 0
     const tableLabel = `${tr.tableName}${tr.fellBack ? '*' : ''}`
     return {
       iteration: i + 1,
@@ -1073,10 +1141,16 @@ export async function extractPoolFromImages(
       baseCount: tr.tableName === 'Bases' ? poolSum : 0,
       subsetViolations,
       passing: false,
-      failures: [`table=${tableLabel} marked=${marked.length}/${tableGroups.get(tr.tableName)?.length || 0}`],
+      failures: [
+        `table=${tableLabel} pool=${poolSum} deck=${deckSum} (${markedPool.length}/${tableTotal} rows marked, ${markedDeck.length}/${tableTotal} in deck)`,
+      ],
       outputTokens: tr.outputTokens,
       cacheReadTokens: 0,
       cacheCreationTokens: 0,
+      tableName: tr.tableName,
+      tableTotalCards: tableTotal,
+      tableMarkedRows: markedPool.length,
+      tableDeckRows: markedDeck.length,
     }
   })
 
