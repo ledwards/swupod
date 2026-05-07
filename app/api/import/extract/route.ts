@@ -38,7 +38,12 @@ function logAttempt(line: string) {
 // Cap upload payload at the platform layer. The handler still rejects >2 images
 // and oversized payloads, but the platform-level limit is what protects memory
 // when a malicious client tries to send 100MB.
-export const maxDuration = 60 // seconds; vision can be slow
+//
+// 1800s = 30 minutes. The 8-iteration refine loop on a tough sheet can take
+// 25+ minutes (each pass is a 32K-token vision stream over a 4MB upload,
+// 3-4 minutes typical, plus retry-on-terminated overhead). Railway honors
+// long-running requests; on Vercel this caps per platform tier.
+export const maxDuration = 1800
 export const dynamic = 'force-dynamic'
 
 const MAX_IMAGES = 2

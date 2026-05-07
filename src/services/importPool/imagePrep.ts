@@ -68,6 +68,13 @@ export async function resizeImage(
     canvas.height = height
     const ctx = canvas.getContext('2d')
     if (!ctx) throw new Error('Failed to acquire 2D canvas context')
+    // Contrast/brightness boost makes pencil-and-pen tally marks more
+    // visible to the vision model. Empirically: with no boost the model
+    // plateaus around 87/96 on a 96-card sealed pool; with boost it
+    // converges to 96/96 (verified on Tom's LAW sheet across 8 refine
+    // iterations). 1.3x contrast + slight darken matches the sharp
+    // pipeline used in scripts/iter-import.ts.
+    ctx.filter = 'contrast(1.3) brightness(0.92)'
     ctx.drawImage(img, 0, 0, width, height)
 
     const dataUrl = canvas.toDataURL('image/jpeg', merged.quality)

@@ -783,7 +783,7 @@ export async function extractPoolFromImages(
     format: { type: 'json_schema' as const, schema: RESPONSE_SCHEMA },
   }
 
-  const maxIterations = Math.max(1, Math.min(10, opts.maxIterations ?? 4))
+  const maxIterations = Math.max(1, Math.min(10, opts.maxIterations ?? 8))
   const iterations: ExtractIterationLog[] = []
   const resultsByIteration: RawExtractResponse[] = []
   let lastResult: RawExtractResponse | null = null
@@ -796,15 +796,37 @@ export async function extractPoolFromImages(
         : buildInitialUserText(opts.setHint)
     const userContent = buildUserContent(images, userText)
 
-    const response = await client.messages
-      .stream({
-        model: MODEL,
-        max_tokens: MAX_TOKENS,
-        system: systemBlocks,
-        output_config: outputConfig,
-        messages: [{ role: 'user', content: userContent }],
-      })
-      .finalMessage()
+    // Manual retry for `AnthropicError: terminated` and similar mid-stream
+    // socket failures. The SDK's built-in maxRetries doesn't always classify
+    // these as retryable. Up to 3 attempts per iteration.
+    let response: any
+    let attempt = 0
+    while (true) {
+      try {
+        response = await client.messages
+          .stream({
+            model: MODEL,
+            max_tokens: MAX_TOKENS,
+            system: systemBlocks,
+            output_config: outputConfig,
+            messages: [{ role: 'user', content: userContent }],
+          })
+          .finalMessage()
+        break
+      } catch (err) {
+        attempt++
+        const msg = (err as Error)?.message || ''
+        const isTransient =
+          msg.includes('terminated') ||
+          msg.includes('socket') ||
+          msg.includes('ECONNRESET') ||
+          msg.includes('ETIMEDOUT') ||
+          msg.includes('timeout')
+        if (!isTransient || attempt >= 3) throw err
+        // Brief backoff before retry
+        await new Promise((r) => setTimeout(r, 2000 * attempt))
+      }
+    }
 
     if (response.stop_reason === 'max_tokens') {
       throw new Error(
