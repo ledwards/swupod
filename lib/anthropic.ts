@@ -36,7 +36,15 @@ function getClient(): Anthropic {
     if (!process.env.ANTHROPIC_API_KEY) {
       throw new Error('ANTHROPIC_API_KEY environment variable is not set')
     }
-    _client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+    _client = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY,
+      // Long vision streams over high-latency networks intermittently terminate
+      // with `SocketError: other side closed`. Bump retries from default 2.
+      maxRetries: 5,
+      // Default is 10 minutes for streaming; long card-list grounding + 32K
+      // output occasionally pushes near that. Generous ceiling.
+      timeout: 15 * 60 * 1000,
+    })
   }
   return _client
 }
@@ -647,13 +655,53 @@ function buildRefineUserText(
     out += '\n'
   }
 
+  // Targeted instructions per axis. Critical: do NOT tell Claude to "fix
+  // everything" if only one axis is wrong — empirically that causes Claude
+  // to perturb the correct axis (e.g. pool fix triggers deck inflation).
+  const instructions: string[] = []
+  const deckInRange = prevStatus.deckSum >= DECK_MIN && prevStatus.deckSum <= DECK_MAX
+
   if (prevStatus.poolSum < POOL_TARGET) {
-    out += `INSTRUCTIONS:\nRe-examine BOTH photos. You missed ${POOL_TARGET - prevStatus.poolSum} marked row(s). Return a CORRECTED COMPLETE extraction in the same JSON schema. Keep the rows you already identified above; ADD the missing rows. Pool sum must equal exactly ${POOL_TARGET}.\n`
+    instructions.push(
+      `Pool: re-examine BOTH photos and find the ${POOL_TARGET - prevStatus.poolSum} missing marked row(s). The TOTAL column tells you poolQty. Keep the rows you already identified; ADD the missing ones. Pool sum MUST equal exactly ${POOL_TARGET}.`,
+    )
   } else if (prevStatus.poolSum > POOL_TARGET) {
-    out += `INSTRUCTIONS:\nRe-examine the photos. You over-counted by ${prevStatus.poolSum - POOL_TARGET}. Return a CORRECTED COMPLETE extraction. Pool sum must equal exactly ${POOL_TARGET}.\n`
-  } else {
-    out += `INSTRUCTIONS:\nReturn a CORRECTED COMPLETE extraction fixing the issues above. Maintain the JSON schema.\n`
+    instructions.push(
+      `Pool: you over-counted by ${prevStatus.poolSum - POOL_TARGET}. Re-check rows where you set poolQty>0 and remove phantom marks. Pool sum MUST equal exactly ${POOL_TARGET}.`,
+    )
   }
+
+  if (deckInRange) {
+    instructions.push(
+      `Deck: your deck count of ${prevStatus.deckSum} is already in the valid 30-35 range — DO NOT change it. Keep deckQty values exactly as you had them on every row you already identified. New rows you add for the pool fix should generally have deckQty=0 (those were missed because they're side cards, not in the deck).`,
+    )
+  } else if (prevStatus.deckSum > DECK_MAX) {
+    instructions.push(
+      `Deck: you over-counted PLAYED-column marks (deck sum ${prevStatus.deckSum}, max ${DECK_MAX}). Re-check every row where deckQty>0. A row with a TOTAL mark but no PLAYED mark is deckQty=0 — they only PLAYED a subset of their pool.`,
+    )
+  } else if (prevStatus.deckSum < DECK_MIN) {
+    instructions.push(
+      `Deck: deck sum ${prevStatus.deckSum} is below the minimum ${DECK_MIN}. Re-scan the PLAYED column on rows that have a TOTAL mark — you missed PLAYED marks.`,
+    )
+  }
+
+  if (prevStatus.leaderCount !== LEADER_TARGET || prevStatus.baseCount !== BASE_TARGET) {
+    instructions.push(
+      `Leader/Base: a sealed pool has EXACTLY 6 leaders (poolQty sum) and 6 bases. Re-scan those sections.`,
+    )
+  }
+
+  if (prevStatus.subsetViolations > 0) {
+    instructions.push(
+      `Subset rule: deckQty must be ≤ poolQty on every row. Fix the ${prevStatus.subsetViolations} violation(s).`,
+    )
+  }
+
+  out += `INSTRUCTIONS:\n`
+  for (const inst of instructions) {
+    out += `- ${inst}\n`
+  }
+  out += `\nReturn a CORRECTED COMPLETE extraction in the same JSON schema. Maintain field-by-field continuity with what you had right; only change what's listed above.\n`
 
   return out
 }
