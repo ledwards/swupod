@@ -15,6 +15,7 @@
 
 import { useReducer, useCallback, useMemo, useEffect } from 'react'
 import { resizeImage, type ProcessedImage } from '../services/importPool/imagePrep'
+import { saveImages as idbSaveImages, loadImages as idbLoadImages, clearImages as idbClearImages } from '../services/importPool/imageStore'
 import { getCachedCards } from '../utils/cardCache'
 
 const STORAGE_KEY = 'import-pool-wizard-v1'
@@ -190,6 +191,7 @@ type Action =
   | { type: 'RESTORE'; state: Partial<ImportPoolState> }
   | { type: 'SET_VIEW_FILTER'; filter: 'all' | 'pool' | 'deck' }
   | { type: 'SET_VIEW_MODE'; mode: 'table' | 'grid' }
+  | { type: 'HYDRATE_IMAGES'; images: ProcessedImage[] }
 
 function reducer(state: ImportPoolState, action: Action): ImportPoolState {
   switch (action.type) {
@@ -349,6 +351,12 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
       return { ...state, viewFilter: action.filter }
     case 'SET_VIEW_MODE':
       return { ...state, viewMode: action.mode }
+    case 'HYDRATE_IMAGES':
+      // Async hydration after mount — only if state.images is empty (i.e.,
+      // they were dropped from a prior session). Don't clobber freshly
+      // uploaded images.
+      if (state.images.length > 0) return state
+      return { ...state, images: action.images }
     case 'RESET':
       // previewUrls are now data URLs (no-op revoke), but keep the call for safety
       state.images.forEach((img) => URL.revokeObjectURL(img.previewUrl))
@@ -468,7 +476,11 @@ interface SlimPersisted {
 function persistedShape(state: ImportPoolState): SlimPersisted {
   return {
     phase: state.phase,
-    images: state.images,
+    // Images are persisted to IndexedDB by saveImagesToIdb(), NOT to
+    // localStorage — they're 1–2MB each and used to fill localStorage's
+    // 5–10MB quota, which forced a fallback that dropped them entirely.
+    // Always empty here.
+    images: [],
     setCode: state.extraction?.header.setCode || null,
     header: state.extraction?.header || null,
     rows: state.resolvedRows.map((r) => ({
@@ -555,6 +567,8 @@ function clearPersisted() {
   } catch {
     // ignore
   }
+  // Fire-and-forget — IndexedDB clear is async but we don't block on it
+  idbClearImages().catch(() => {})
 }
 
 function savePersisted(state: ImportPoolState) {
@@ -566,44 +580,39 @@ function savePersisted(state: ImportPoolState) {
 
   const slim = persistedShape(state)
 
-  // First attempt: full payload (images + state)
+  // localStorage carries everything BUT images. With the heavy payload
+  // gone, the slim shape is well under 1MB and quota fallbacks shouldn't
+  // be needed, but we keep the catch as a safety net (warnings + header
+  // stripped).
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(slim))
-    return
   } catch (err) {
-    console.warn('[ImportPool] full persist failed, dropping images', err)
-  }
-
-  // Fallback 1: drop images (~1MB savings)
-  try {
-    const noImages = { ...slim, images: [] as ProcessedImage[] }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(noImages))
-    console.info('[ImportPool] persisted without images')
-    return
-  } catch (err) {
-    console.warn('[ImportPool] no-images persist failed, dropping warnings + extraction header', err)
-  }
-
-  // Fallback 2: drop everything except phase + setCode + rows
-  try {
-    const minimal: Partial<SlimPersisted> = {
-      phase: slim.phase,
-      images: [],
-      setCode: slim.setCode,
-      header: null,
-      rows: slim.rows,
-      warnings: [],
-      activeLeaderId: slim.activeLeaderId,
-      activeBaseId: slim.activeBaseId,
-      title: slim.title,
-      showOnlyPool: slim.showOnlyPool,
+    console.warn('[ImportPool] persist failed, dropping warnings + extraction header', err)
+    try {
+      const minimal: Partial<SlimPersisted> = {
+        phase: slim.phase,
+        images: [],
+        setCode: slim.setCode,
+        header: null,
+        rows: slim.rows,
+        warnings: [],
+        activeLeaderId: slim.activeLeaderId,
+        activeBaseId: slim.activeBaseId,
+        title: slim.title,
+        viewFilter: slim.viewFilter,
+        viewMode: slim.viewMode,
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(minimal))
+    } catch (err2) {
+      console.error('[ImportPool] minimal persist also failed', err2)
     }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(minimal))
-    console.info('[ImportPool] persisted minimal state (no images, no extraction header)')
-    return
-  } catch (err) {
-    console.error('[ImportPool] minimal persist failed — refresh will lose state', err)
   }
+
+  // Images go to IndexedDB (way more space, asynchronous). We don't
+  // await — fire and forget. Read path is async too.
+  idbSaveImages(state.images).catch((err) => {
+    console.warn('[ImportPool] IDB image save failed', err)
+  })
 }
 
 function lazyInit(): ImportPoolState {
@@ -670,6 +679,26 @@ export function useImportPool() {
       console.error('[ImportPool] persistence effect threw', err)
     }
   }, [state])
+
+  // On mount only: async-load the persisted images from IndexedDB. lazyInit
+  // already gave us all the non-image state synchronously, so the wizard
+  // renders immediately; images stream in once the IDB read returns. The
+  // HYDRATE_IMAGES reducer is a no-op if state.images already has entries
+  // (e.g. user uploaded before hydration completed).
+  useEffect(() => {
+    let cancelled = false
+    idbLoadImages()
+      .then((images) => {
+        if (cancelled || images.length === 0) return
+        dispatch({ type: 'HYDRATE_IMAGES', images })
+      })
+      .catch(() => {
+        // Best-effort — failures here just mean the user has to re-upload.
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const validation = useMemo(() => deriveValidation(state), [state])
 
