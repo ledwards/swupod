@@ -204,7 +204,12 @@ export default function NewPoolPage() {
   }, [pool?.boxPacks, pool?.setCode])
 
   // Show pack opening animation
-  if (showAnimation && setCode) {
+  // Gate on packImageUrls being populated so the first paint already has
+  // the correct set art. If we render with an empty array, getPackImage()
+  // falls back to /pack-images/default-pack.png, which 404s, fires onError,
+  // and imperatively hides the <img> — leaving the dark fallback rectangles
+  // even after the right URLs land in a later render.
+  if (showAnimation && setCode && packImageUrls.length > 0) {
     return (
       <PackOpeningAnimation
         packCount={6}
