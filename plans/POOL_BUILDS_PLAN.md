@@ -101,9 +101,8 @@ The "Clone" label is also confusing: users expect "clone" to mean copy, not "bui
 
 ### Deferred to Implementation
 
-- Whether to add a `UNIQUE(parent_pool_id, user_id)` constraint on `card_pools` — risky given nullable user_id and anonymous pools; runtime check is simpler for now. **Known race**: two rapid clicks from the same authenticated user can bypass the runtime check and create duplicate child pools before either request sees the other. Acceptable tradeoff — duplicates only manifest on double-click and the dedup path catches it on the next request.
+- Whether to add a `UNIQUE(parent_pool_id, user_id)` constraint on `card_pools` — risky given nullable user_id and anonymous pools; runtime check is simpler for now
 - Whether the comparison view API should join `built_decks` to get finalized leader/base (more reliable) vs `deck_builder_state` (always available but less structured)
-- **Known limitation — anonymous duplicate builds**: an anonymous user opening the same pool in multiple tabs will create multiple child pools, all labeled `"{pool} (Build)"`, indistinguishable in the comparison view. Acceptable: anonymous users are the minority and deduplication requires stable identity.
 
 ---
 
