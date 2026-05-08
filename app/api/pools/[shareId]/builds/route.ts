@@ -42,6 +42,15 @@ interface RouteContext {
   params: Promise<{ shareId: string }>
 }
 
+function leaderShortName(name: string | null | undefined): string | null {
+  if (!name) return null
+  // SWU community refers to leaders by the first token of the card name
+  // ("Lando Calrissian" → "Lando", "Vel Sartha" → "Vel"). This is wrong for
+  // a few cases ("Mon Mothma" → "Mothma" in chatter) but matches archetype
+  // nicknames returned by swuapi for the majority of leaders.
+  return name.split(/\s+/)[0] || name
+}
+
 function extractBuildInfo(deckBuilderState: unknown) {
   const state = jsonParse(deckBuilderState) || {}
   const positions = state.cardPositions || {}
@@ -54,6 +63,7 @@ function extractBuildInfo(deckBuilderState: unknown) {
   ).length
   return {
     leaderName: leaderCard?.name || null,
+    leaderShortName: leaderShortName(leaderCard?.name),
     leaderAspects: leaderCard?.aspects || [],
     leaderUuid: resolveUuid(leaderCard, 'leader'),
     baseName: baseCard?.name || null,
@@ -88,8 +98,11 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     const { shareId } = await params
 
     const root = await queryRow(
-      `SELECT id, share_id, user_id, name, deck_builder_state, is_public
-       FROM card_pools WHERE share_id = $1`,
+      `SELECT cp.id, cp.share_id, cp.user_id, cp.name, cp.deck_builder_state, cp.is_public,
+              u.username AS owner_username
+       FROM card_pools cp
+       LEFT JOIN users u ON cp.user_id = u.id
+       WHERE cp.share_id = $1`,
       [shareId]
     )
 
@@ -108,7 +121,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     )
 
     const rawEntries = [
-      { shareId: root.share_id, builderName: null, isOriginal: true, ...extractBuildInfo(root.deck_builder_state) },
+      { shareId: root.share_id, builderName: root.owner_username || null, isOriginal: true, ...extractBuildInfo(root.deck_builder_state) },
       ...children.rows.map(b => ({
         shareId: b.share_id,
         builderName: b.builder_name || null,

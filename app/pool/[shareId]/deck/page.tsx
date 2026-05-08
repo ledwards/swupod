@@ -8,6 +8,7 @@ import ChatPanel from '../../../../src/components/ChatPanel'
 import { loadPool, updatePool } from '../../../../src/utils/poolApi'
 import { usePoolBuildsSocket } from '../../../../src/hooks/usePoolBuildsSocket'
 import { useAuth } from '../../../../src/contexts/AuthContext'
+import { useTrackPoolView } from '../../../../src/hooks/useTrackPoolView'
 import '../../../../src/App.css'
 import '../../../../src/components/ChatPanel.css'
 
@@ -61,6 +62,8 @@ export default function DeckBuilderPage({ params }: PageProps) {
   useEffect(() => {
     setShareId(resolvedParams.shareId)
   }, [resolvedParams])
+
+  useTrackPoolView(shareId)
 
   useEffect(() => {
     async function fetchPool() {

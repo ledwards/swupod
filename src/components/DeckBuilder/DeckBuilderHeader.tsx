@@ -256,6 +256,7 @@ export function DeckBuilderHeader({
           isOwner={isOwner}
           activeShareId={shareId || null}
           onCreateBuild={handleBuildFromPool}
+          onCopyShare={shareId ? handleCopyShareUrl : undefined}
         />
       )}
 

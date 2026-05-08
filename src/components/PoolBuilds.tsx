@@ -9,6 +9,7 @@ interface Build {
   builderName: string | null
   isOriginal: boolean
   leaderName: string | null
+  leaderShortName?: string | null
   leaderAspects?: string[]
   baseName: string | null
   baseAspects?: string[]
@@ -22,6 +23,7 @@ interface PoolBuildsProps {
   isOwner?: boolean
   activeShareId?: string | null  // shareId of the build currently being viewed
   onCreateBuild?: () => void
+  onCopyShare?: () => void
 }
 
 const VISIBLE_LIMIT = 6
@@ -48,14 +50,16 @@ function splitArchetypeName(label: string): { leader: string; base: string } {
 }
 
 function BuildCard({ build, rootShareId, isActive }: { build: Build; rootShareId: string; isActive: boolean }) {
-  const builder = build.isOriginal ? 'Original' : (build.builderName || 'Anonymous')
+  const builder = build.isOriginal
+    ? `${build.builderName || 'Anonymous'} (Original)`
+    : (build.builderName || 'Anonymous')
   const hasLeaderAspects = (build.leaderAspects?.length ?? 0) > 0
   const hasBaseAspects = (build.baseAspects?.length ?? 0) > 0
   const leaderStyle = hasLeaderAspects ? { color: getAspectColor({ aspects: build.leaderAspects }) } : undefined
   const baseStyle = hasBaseAspects ? { color: getAspectColor({ aspects: build.baseAspects }) } : undefined
   const rawLabel = build.archetypeNickname
     ? stripFormat(build.archetypeNickname)
-    : (build.leaderName || 'No leader')
+    : (build.leaderShortName || build.leaderName || 'No leader')
   const { leader, base } = splitArchetypeName(rawLabel)
   const href = build.isOriginal
     ? `/pool/${rootShareId}/deck`
@@ -74,7 +78,7 @@ function BuildCard({ build, rootShareId, isActive }: { build: Build; rootShareId
   )
 }
 
-export default function PoolBuilds({ shareId, currentUserId, isOwner = false, activeShareId = null, onCreateBuild }: PoolBuildsProps) {
+export default function PoolBuilds({ shareId, currentUserId, isOwner = false, activeShareId = null, onCreateBuild, onCopyShare }: PoolBuildsProps) {
   const [builds, setBuilds] = useState<Build[]>([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
@@ -112,6 +116,20 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
     <div className="pool-builds">
       <p className="pool-builds-label">Decks with this Pool:</p>
       <div className="pool-builds-list">
+        {onCopyShare && (
+          <button
+            type="button"
+            className="pool-build-card pool-build-share"
+            onClick={onCopyShare}
+            title="Copy share URL"
+            aria-label="Copy share URL"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+            </svg>
+          </button>
+        )}
         {visible.map(b => <BuildCard key={b.shareId} build={b} rootShareId={shareId} isActive={b.shareId === activeShareId} />)}
         {overflow.length > 0 && (
           <button className="pool-build-card pool-build-more" onClick={() => setModalOpen(true)}>
