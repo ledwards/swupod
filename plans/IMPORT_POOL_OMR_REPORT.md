@@ -270,18 +270,64 @@ plans/
 └── IMPORT_POOL_OMR_REPORT.md  (this file — final)
 ```
 
-## What was NOT done (out of scope this session)
+## Production wiring (DONE in commit 6b32bfe)
 
-- `nixpacks.toml` for Railway deploy
-- Wire whole-table Opus into `lib/anthropic.ts` production code
-- Per-cell ML classifier (insufficient labeled data)
+- ✅ **`nixpacks.toml`** updated for Railway: `python311` + pip + libgl1
+  + libglib2.0-0 in setup; pip-install opencv-python-headless==4.10,
+  numpy==1.26, Pillow==10; `PYTHON_BINARY=python3` env var.
+- ✅ **`scripts/omr/extract_for_node.py`** — Python sidecar that returns
+  JSON (table crops as base64 + bounds) for Node consumption.
+- ✅ **`src/services/importPool/omrExtraction.ts`** — TypeScript wrapper
+  that spawns the sidecar via child_process and the per-table whole-
+  table Claude call.
+- ✅ **`lib/anthropic.ts:extractPoolFromImagesWholeTable`** — new export
+  with the same signature as `extractPoolFromImages`, using Phase 1
+  (shared) + sidecar + per-table whole-table calls.
+- ✅ **`app/api/import/extract/route.ts`** — route handler with
+  `IMPORT_POOL_USE_WHOLE_TABLE=1` (default on) feature flag and
+  automatic fallback to legacy on Python sidecar errors.
+- ✅ **`src/services/importPool/omrExtraction.test.ts`** — smoke tests:
+  10 tables detected on sq-tom-law, bounds + image_b64 sensible.
+- ✅ **`scripts/test-omr-integration.ts`** — live integration test
+  showing 98.7% per-cell accuracy on sq-tom-law end-to-end.
+
+### Spike: correction-as-success classification
+
+Per the user's success criterion, correctly flagging a corrected cell
+as "unclear" (sending it to the issues UI for human review) counts as
+success even if the predicted count differs from the post-correction
+truth.
+
+Tested two approaches in `scripts/omr/whole_table_with_corrections.py`
+and `scripts/omr/two_pass_corrections.py`:
+
+| Approach | Strict | With unclear-credit |
+|---|---|---|
+| Single combined prompt | 94.4% | 95.3% |
+| Two parallel calls (count + corrections) | 94.8% | 96.0% |
+
+The two-parallel-calls approach (`two_pass_corrections.py`) flags ~20
+correction cells per fixture across 3 fixtures. About 9 of those would
+be wrong in strict eval but get full credit when surfaced for human
+review. Production cost +$0.30/import for the second call.
+
+The PRODUCTION wiring uses the SINGLE-CALL combined approach — Opus
+returns counts AND unclear flags in one call. Cells flagged unclear
+get `confidence: 'low'` in the response, which the resolve UI surfaces
+to the user.
+
+### Out of scope this session
+
+- Per-cell ML classifier (insufficient labeled data — needs ≥50
+  labeled photos)
 - Hand-annotated per-fixture ROI templates (defeats automation)
 
 ## Final recommendation
 
-**Ship whole-table Opus 4.7 single-pass.** Replace
-`sectionExtraction.ts` / `lib/anthropic.ts:runPhase2` with the new
-architecture.
+**Whole-table Opus 4.7 single-pass is now PRODUCTION-WIRED** behind a
+feature flag (`IMPORT_POOL_USE_WHOLE_TABLE=1`, on by default). The
+legacy multi-sample path is preserved for rollback. Automatic fallback
+to legacy if the Python sidecar fails.
 
 Expected production metrics vs current:
 - 97.0-97.4% per-cell accuracy (up from ~83-84%)
