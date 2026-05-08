@@ -429,6 +429,37 @@
   margin-right: 4px;
 }
 
+/* Inline magnifying-glass button beside the anomaly label — opens the source
+ * image cropped to the section the issue lives in. */
+.ip-anomaly-source-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-left: 8px;
+  vertical-align: middle;
+  padding: 0;
+  background: rgba(255, 217, 102, 0.12);
+  color: #ffd966;
+  border: 1px solid rgba(255, 217, 102, 0.45);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ip-anomaly-source-btn:hover {
+    background: rgba(255, 217, 102, 0.25);
+    border-color: rgba(255, 217, 102, 0.7);
+  }
+}
+
+.ip-anomaly-source-btn:focus-visible {
+  outline: 2px solid rgba(255, 217, 102, 0.7);
+  outline-offset: 1px;
+}
+
 .import-pool-totals {
   display: flex;
   flex-wrap: nowrap;

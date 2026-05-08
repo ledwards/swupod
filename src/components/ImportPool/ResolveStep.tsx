@@ -80,9 +80,13 @@ export default function ResolveStep({ importPool }: Props) {
   //   1. Section-level gaps (under/over-populated vs typical sealed pool)
   //   2. Per-row Claude vision confidence: medium/low
   //   3. Per-row matcher confidence: unresolved, fuzzy, ambiguous, deckQty>poolQty
+  //
+  // Each anomaly carries the section name so the issue navigator's
+  // eyeglass button can open the source-image modal cropped to that
+  // section.
   type Anomaly =
-    | { kind: 'section'; targetId: string; label: string }
-    | { kind: 'row'; targetId: string; label: string }
+    | { kind: 'section'; targetId: string; label: string; sectionName: string | null }
+    | { kind: 'row'; targetId: string; label: string; sectionName: string | null }
 
   const anomalies = useMemo<Anomaly[]>(() => {
     const list: Anomaly[] = []
@@ -90,7 +94,12 @@ export default function ResolveStep({ importPool }: Props) {
     const pushRow = (row: ResolvedRow, label: string) => {
       if (seenRowKey.has(row.key)) return
       seenRowKey.add(row.key)
-      list.push({ kind: 'row', targetId: `ip-row-${row.key}`, label })
+      list.push({
+        kind: 'row',
+        targetId: `ip-row-${row.key}`,
+        label,
+        sectionName: sectionNameForRow(row),
+      })
     }
 
     // 1) Section-level gaps (Multicolor under-count, etc.) come first.
@@ -99,6 +108,7 @@ export default function ResolveStep({ importPool }: Props) {
         kind: 'section',
         targetId: `ip-section-${gap.section.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
         label: gap.message,
+        sectionName: gap.section,
       })
     }
 
@@ -128,20 +138,10 @@ export default function ResolveStep({ importPool }: Props) {
     for (const row of state.resolvedRows) {
       const cardName = row.card?.name || row.extracted.name || 'Unrecognized'
       if (row.extracted.poolQtyConfidence === 'low') {
-        pushRow(
-          row,
-          row.poolQty === 0
-            ? `Uncertain blank (pool): ${cardName}`
-            : `Uncertain pool=${row.poolQty}: ${cardName}`,
-        )
+        pushRow(row, `Uncertain pool count: ${cardName} (read as ${row.poolQty})`)
       }
       if (row.extracted.deckQtyConfidence === 'low') {
-        pushRow(
-          row,
-          row.deckQty === 0
-            ? `Uncertain blank (deck): ${cardName}`
-            : `Uncertain deck=${row.deckQty}: ${cardName}`,
-        )
+        pushRow(row, `Uncertain deck count: ${cardName} (read as ${row.deckQty})`)
       }
     }
 
@@ -168,7 +168,7 @@ export default function ResolveStep({ importPool }: Props) {
         .slice(0, poolDelta)
       for (const { r } of candidates) {
         const cardName = r.card?.name || r.extracted.name || 'Unrecognized'
-        pushRow(r, `Possibly missed: ${cardName}`)
+        pushRow(r, `Uncertain pool count: ${cardName} (read as 0)`)
       }
     }
 
@@ -193,7 +193,7 @@ export default function ResolveStep({ importPool }: Props) {
         .slice(0, deckDelta)
       for (const { r } of candidates) {
         const cardName = r.card?.name || r.extracted.name || 'Unrecognized'
-        pushRow(r, `Possibly mis-counted in deck: ${cardName} (deck=${r.deckQty})`)
+        pushRow(r, `Uncertain deck count: ${cardName} (read as ${r.deckQty})`)
       }
     }
 
@@ -374,6 +374,21 @@ export default function ResolveStep({ importPool }: Props) {
       {anomalies.length > 0 && currentAnomalyLabel && (
         <div className="ip-anomaly-detail">
           <strong>Issue {anomalyIndex + 1}:</strong> {currentAnomalyLabel}
+          {state.images.length > 0 && (
+            <button
+              type="button"
+              className="ip-anomaly-source-btn"
+              onClick={() => openSourceFor(anomalies[anomalyIndex]?.sectionName ?? null)}
+              title="View this section in the source image"
+              aria-label="View this section in the source image"
+            >
+              {/* Inline magnifying-glass SVG — no icon-font dep */}
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="7" cy="7" r="5" />
+                <line x1="11" y1="11" x2="14" y2="14" />
+              </svg>
+            </button>
+          )}
         </div>
       )}
       </div>{/* /.ip-sticky-stack */}
@@ -874,6 +889,32 @@ const SECTION_NAME_BY_GROUP_KEY: Record<string, string> = {
   villainy: 'Villainy',
   multicolor: 'Multicolor',
   'no-aspect': 'NoAspect',
+}
+
+const MAIN_ASPECTS = new Set(['Vigilance', 'Command', 'Aggression', 'Cunning'])
+const SECONDARY_ASPECTS = new Set(['Heroism', 'Villainy'])
+
+/** Map a row to the section name (matching SECTION_NAME_BY_GROUP_KEY values)
+ *  the source-image modal can crop to. Returns null if we can't identify
+ *  the section (e.g. unmatched row with no card data) — the eyeglass then
+ *  opens the full sheet. */
+function sectionNameForRow(row: ResolvedRow): string | null {
+  const card = row.card
+  if (!card) {
+    // Best-effort fallback from the extracted type alone.
+    if (row.extracted.type === 'Leader') return 'Leaders'
+    if (row.extracted.type === 'Base') return 'Bases'
+    return null
+  }
+  if (card.isLeader) return 'Leaders'
+  if (card.isBase) return 'Bases'
+  const aspects: string[] = card.aspects || []
+  const mains = aspects.filter((a) => MAIN_ASPECTS.has(a))
+  const secs = aspects.filter((a) => SECONDARY_ASPECTS.has(a))
+  if (mains.length >= 2) return 'Multicolor'
+  if (mains.length === 1) return mains[0]
+  if (secs.length >= 1) return secs[0]
+  return 'NoAspect'
 }
 
 /** Numeric score for sorting confidence enums "lowest first". Used by the
