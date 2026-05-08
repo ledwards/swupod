@@ -6,6 +6,7 @@ import SealedPod from '../../../src/components/SealedPod'
 import PoolBuilds from '../../../src/components/PoolBuilds'
 import { loadPool } from '../../../src/utils/poolApi'
 import { useAuth } from '../../../src/contexts/AuthContext'
+import { useTrackPoolView } from '../../../src/hooks/useTrackPoolView'
 import '../../../src/App.css'
 
 interface CardType {
@@ -59,6 +60,8 @@ export default function DraftPoolPage({ params }: PageProps) {
   useEffect(() => {
     setShareId(resolvedParams.shareId)
   }, [resolvedParams])
+
+  useTrackPoolView(shareId)
 
   useEffect(() => {
     let cancelled = false

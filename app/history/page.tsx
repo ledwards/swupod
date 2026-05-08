@@ -92,12 +92,23 @@ interface DropConfirmState {
   shareId: string
 }
 
+interface SharedPool {
+  shareId: string
+  name?: string | null
+  setCode?: string | null
+  poolType?: string | null
+  ownerUsername?: string | null
+  viewedAt: string
+  createdAt: string
+}
+
 export default function HistoryPage() {
   const { user, loading: authLoading } = useAuth()
-  const [activeTab, setActiveTab] = useState<'solo' | 'multiplayer'>('solo')
+  const [activeTab, setActiveTab] = useState<'solo' | 'multiplayer' | 'shared'>('solo')
   const [sealedPools, setSealedPools] = useState<SealedPool[]>([])
   const [draftPods, setDraftPods] = useState<DraftPod[]>([])
   const [formatPools, setFormatPools] = useState<FormatPool[]>([])
+  const [sharedPools, setSharedPools] = useState<SharedPool[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<DeleteConfirmState | null>(null)
@@ -118,14 +129,15 @@ export default function HistoryPage() {
     if (user) {
       setLoading(true)
 
-      // Fetch user pools, drafts, sealed pods, and other format pools
+      // Fetch user pools, drafts, sealed pods, format pools, and shared pools
       Promise.all([
         fetchUserPools(user.id),
         fetch('/api/draft/history', { credentials: 'include' }).then(r => r.json()),
         fetch('/api/formats/history', { credentials: 'include' }).then(r => r.json()),
         fetch('/api/sealed/history', { credentials: 'include' }).then(r => r.json()),
+        fetch('/api/pools/shared', { credentials: 'include' }).then(r => r.ok ? r.json() : { data: { pools: [] } }),
       ])
-        .then(([poolsData, draftData, formatsData, sealedData]) => {
+        .then(([poolsData, draftData, formatsData, sealedData, sharedData]) => {
           // Handle sealed pools (filter out draft pools and other format pool types)
           const formatPoolTypes = ['chaos_sealed', 'pack_wars', 'pack_blitz', 'chaos_draft', 'rotisserie']
           if (poolsData && Array.isArray(poolsData)) {
@@ -163,6 +175,10 @@ export default function HistoryPage() {
           } else {
             setMultiSealedPods([])
           }
+
+          // Handle shared pools (pools the user has viewed but doesn't own)
+          const shared = sharedData?.data?.pools || sharedData?.pools || []
+          setSharedPools(shared)
         })
         .catch(err => {
           console.error('Failed to fetch history:', err)
@@ -436,6 +452,12 @@ export default function HistoryPage() {
             onClick={() => setActiveTab('multiplayer')}
           >
             Multiplayer
+          </button>
+          <button
+            className={`history-tab ${activeTab === 'shared' ? 'active' : ''}`}
+            onClick={() => setActiveTab('shared')}
+          >
+            Shared
           </button>
         </div>
 
@@ -855,6 +877,58 @@ export default function HistoryPage() {
                   </div>
                 )}
               </>
+            )}
+          </>
+        )}
+
+        {activeTab === 'shared' && (
+          <>
+            {sharedPools.length === 0 ? (
+              <div className="history-empty">
+                <p>No shared pools yet. When you visit someone else's pool, it'll show up here.</p>
+              </div>
+            ) : (
+              <div className="history-table-container">
+                <table className="history-table">
+                  <thead>
+                    <tr>
+                      <th>Title</th>
+                      <th>Format</th>
+                      <th>Owner</th>
+                      <th>Last Viewed</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sharedPools.map((pool) => {
+                      const fmt = pool.poolType === 'draft' ? 'Draft' : 'Sealed'
+                      const viewUrl = `/pool/${pool.shareId}/deck`
+                      return (
+                        <tr key={pool.shareId}>
+                          <td>
+                            <a
+                              href={viewUrl}
+                              className="history-shared-title"
+                              onClick={(e) => { e.preventDefault(); window.location.href = viewUrl }}
+                              style={{ color: 'white', textDecoration: 'none' }}
+                            >
+                              {pool.name || `${(pool.setCode || '').toUpperCase()} ${fmt} Pool`}
+                            </a>
+                          </td>
+                          <td style={{ color: 'white', fontWeight: '600' }}>{fmt}</td>
+                          <td style={{ color: 'rgba(255, 255, 255, 0.8)' }}>{pool.ownerUsername || 'Anonymous'}</td>
+                          <td>{formatDate(pool.viewedAt)}</td>
+                          <td className="history-actions-cell">
+                            <div className="actions-wrapper">
+                              <button className="history-view-button" onClick={() => window.location.href = viewUrl}>View</button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
             )}
           </>
         )}
