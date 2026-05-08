@@ -129,18 +129,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     // 4. Call Claude.
-    //    `IMPORT_POOL_USE_WHOLE_TABLE=1` (default true unless explicitly
-    //    disabled) selects the OMR + per-table whole-table architecture
-    //    (~97% per-cell accuracy, $0.55-0.69/import, ~12s wall time).
-    //    Setting `IMPORT_POOL_USE_WHOLE_TABLE=0` falls back to the legacy
-    //    multi-sample sub-aspect refine loop (~84%, $1-2, 1-3 min).
+    //    Primary path: whole-table OMR + per-table Opus calls
+    //    (~97% per-cell accuracy, $0.55-0.69/import, ~12-45s wall time).
+    //    On Python-sidecar/Claude failure, automatic fallback to the
+    //    legacy multi-sample sub-aspect refine loop. The fallback exists
+    //    purely for Python install / OS / API outage edge cases — not
+    //    as a quality knob. If quality regresses we revert via git.
     //    See plans/IMPORT_POOL_OMR_REPORT.md for full eval data.
-    //
-    //    On whole-table failure (Python sidecar error, etc.), automatic
-    //    fallback to the legacy path so a single Python issue doesn't
-    //    take down the import feature.
-    const useWholeTable = process.env.IMPORT_POOL_USE_WHOLE_TABLE !== '0'
-    logAttempt(`=== EXTRACTION REQUEST (user=${session.id}, mode=${useWholeTable ? 'whole-table' : 'legacy-multi-sample'}) ===`)
+    logAttempt(`=== EXTRACTION REQUEST (user=${session.id}) ===`)
     let raw: any
     let extractIterations: any[] = []
     let converged = false
@@ -149,18 +145,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       const imagesIn = body.images.map((img) => ({ data: img.data, mediaType: img.mediaType as any }))
       const opts = body.manualSetCode ? { setHint: body.manualSetCode } : {}
       let extractResult
-      if (useWholeTable) {
-        try {
-          extractResult = await extractPoolFromImagesWholeTable(imagesIn, opts)
-        } catch (wtErr) {
-          logAttempt(`whole-table failed, falling back to legacy: ${(wtErr as Error).message}`)
-          console.warn(
-            '[import/extract] whole-table extraction failed, falling back to legacy multi-sample:',
-            (wtErr as Error).message,
-          )
-          extractResult = await extractPoolFromImages(imagesIn, opts)
-        }
-      } else {
+      try {
+        extractResult = await extractPoolFromImagesWholeTable(imagesIn, opts)
+      } catch (wtErr) {
+        logAttempt(`whole-table failed, falling back to legacy: ${(wtErr as Error).message}`)
+        console.warn(
+          '[import/extract] whole-table extraction failed, falling back to legacy multi-sample:',
+          (wtErr as Error).message,
+        )
         extractResult = await extractPoolFromImages(imagesIn, opts)
       }
       raw = extractResult.result
