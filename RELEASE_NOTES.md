@@ -2,28 +2,13 @@
 
 ## 05.08.2026
 
-### 🆕 Pool Builds — shared pool, multiple decks per pool
-- **Build with someone's pool**: When viewing a shared sealed or draft pool, every signed-in visitor now sees a "Decks with this Pool" row with a `+` chip to spin up their own deck from that pool. Each build is its own pool — your edits don't affect anyone else's.
-- **Per-build URLs**: Builds nest under the parent pool — e.g. `/pool/<parent>/deck/<build>`. The original/canonical deck stays at `/pool/<parent>/deck`.
-- **Compact build chips**: Each chip shows the archetype nickname colored by base aspect (e.g. "Mothma Blue" in blue, "Pryce Green" in green) plus "by <builder>". The chip for the build you're currently viewing is highlighted.
-- **Archetype names from swuapi**: Nicknames are resolved live via `swuapi /archetypes/resolve` so you see the canonical name (e.g. "Mothma Blue") instead of the raw leader name.
-- **Dedup on rebuild**: If you've already built from a shared pool, clicking `+` again opens your existing build instead of creating a duplicate.
-- **Privacy cascades**: Toggling visibility on the parent pool cascades to all builds. Builds can't change their own visibility.
+### ✨ Multiple builds per pool
+- **Build multiple decks with a pool**: Hit the + on any pool to create multiple builds with that pool. Want to try different builds with the same pool? Now you can!
+- **Build together!**: Share your pool with friends and they can also try builds with your pool!
+- **Play games with any deck in a pool**: Every pool has multiple decks. Select one and hit Play to try it out on Karabast or TTS.
 
-### 🎨 Deckbuilder header polish
-- Vertical spacing across the header is normalized to a clean rem scale — equal 2rem gaps between each section transition (subtitle → buttons, chips → nav bar, nav bar → leaders & bases).
-
-### 🚧 Behind the beta flag
-- **Import Pool**: The Import Pool button on the homepage is now hidden completely unless you're a beta tester or admin.
-
-## 05.05.2026
-
-### 🆕 Import Pool (SPIKE — Friends of the Pod)
-- **New Import Pool flow**: Upload up to 2 photos of your registered competitive sealed pool sheet. Claude vision extracts the event header, leader/base selections, and the full 96-card pool. Resolve any extraction issues in an aspect-grouped wizard, then land in the existing sealed deckbuilder with your deck pre-marked.
-- New homepage button "Import Pool" sits next to Limited Deckbuilder on the bottom row, with Death Star Plans card art.
-- Wizard is mobile-friendly: camera capture on mobile, file picker on desktop.
-- Gated to Friends of the Pod (`is_patron`); admins bypass.
-- Imported pools persist with `pool_type='imported'` and round-trip through the existing deckbuilder/sharing pipeline.
+### ❤️ Friends of the Pod \[BETA\]
+- **Import Pool**: Experimental feature: Take a photo of your decklist registration to import it as a pool and deck.
 
 ## 04.23.2026
 
