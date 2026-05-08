@@ -302,6 +302,19 @@
   overflow: hidden;
 }
 
+/* Group: inline status text + share button. Status sits to the LEFT of the icon. */
+.share-button-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.share-button-group .inline-status {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: nowrap;
+}
+
 .export-button {
   background: transparent;
   border: none;

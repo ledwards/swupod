@@ -9,6 +9,7 @@
  * - Status messages
  */
 
+import { useState } from 'react'
 import EditableTitle from '../EditableTitle'
 import Button from '../Button'
 import DraftReportButton from '../DraftReportButton'
@@ -86,7 +87,11 @@ export function DeckBuilderHeader({
   const isDeckLegal = activeLeader && activeBase && deckCardCount >= 30
   const canUsePlayAction = Boolean(onPlay || shareId)
 
-  // Handle build from pool action (non-owners only)
+  // Inline status messages — anchored to their respective controls.
+  const [shareMessage, setShareMessage] = useState<string | null>(null)
+  const [buildMessage, setBuildMessage] = useState<string | null>(null)
+
+  // Handle build from pool action — always creates a new build (no dedup).
   const handleBuildFromPool = async () => {
     if (!isAuthenticated) {
       signIn()
@@ -94,8 +99,7 @@ export function DeckBuilderHeader({
     }
 
     try {
-      setErrorMessage('Setting up your build...')
-      setMessageType('info')
+      setBuildMessage('Setting up your build…')
 
       const parentId = rootShareId || shareId
       const builtPool = await savePool({
@@ -107,27 +111,18 @@ export function DeckBuilderHeader({
         name: null,
         isPublic: false,
         parentPoolId: parentId,
+        forceNew: true,
       })
 
-      if (builtPool.alreadyExists) {
-        setErrorMessage('Opening your existing build...')
-        setMessageType('success')
-      } else {
-        setErrorMessage('Build created! Redirecting...')
-        setMessageType('success')
-      }
+      setBuildMessage('Build created! Redirecting…')
 
       setTimeout(() => {
         window.location.href = `/pool/${parentId}/deck/${builtPool.shareId}`
       }, 1000)
     } catch (err) {
       console.error('Failed to create build:', err)
-      setErrorMessage('Failed to create build')
-      setMessageType('error')
-      setTimeout(() => {
-        setErrorMessage(null)
-        setMessageType(null)
-      }, 3000)
+      setBuildMessage('Failed to create build')
+      setTimeout(() => setBuildMessage(null), 3000)
     }
   }
 
@@ -135,19 +130,11 @@ export function DeckBuilderHeader({
   const handleCopyShareUrl = async () => {
     try {
       await navigator.clipboard.writeText(`${window.location.origin}/pool/${shareId}`)
-      setErrorMessage('Share URL copied to clipboard!')
-      setMessageType('success')
-      setTimeout(() => {
-        setErrorMessage(null)
-        setMessageType(null)
-      }, 3000)
+      setShareMessage('Copied!')
+      setTimeout(() => setShareMessage(null), 2500)
     } catch (err) {
-      setErrorMessage('Failed to copy to clipboard')
-      setMessageType('error')
-      setTimeout(() => {
-        setErrorMessage(null)
-        setMessageType(null)
-      }, 3000)
+      setShareMessage('Failed to copy')
+      setTimeout(() => setShareMessage(null), 3000)
     }
   }
 
@@ -210,19 +197,22 @@ export function DeckBuilderHeader({
         )}
 
 
-        {/* Share button */}
+        {/* Share button + inline status (status sits LEFT of the icon) */}
         {!isInfiniteMode && shareId && (
-          <Button
-            variant="secondary"
-            className="export-button"
-            onClick={handleCopyShareUrl}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-            </svg>
-            <span>Copy Share URL</span>
-          </Button>
+          <span className="share-button-group">
+            {shareMessage && <span className="inline-status">{shareMessage}</span>}
+            <Button
+              variant="secondary"
+              className="export-button"
+              onClick={handleCopyShareUrl}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+              <span>Copy Share URL</span>
+            </Button>
+          </span>
         )}
 
         {/* Draft Log button */}
@@ -256,6 +246,7 @@ export function DeckBuilderHeader({
           isOwner={isOwner}
           activeShareId={shareId || null}
           onCreateBuild={handleBuildFromPool}
+          createBuildMessage={buildMessage}
           onCopyShare={shareId ? handleCopyShareUrl : undefined}
         />
       )}

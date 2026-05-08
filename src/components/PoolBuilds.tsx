@@ -23,6 +23,7 @@ interface PoolBuildsProps {
   isOwner?: boolean
   activeShareId?: string | null  // shareId of the build currently being viewed
   onCreateBuild?: () => void
+  createBuildMessage?: string | null
   onCopyShare?: () => void
 }
 
@@ -78,7 +79,7 @@ function BuildCard({ build, rootShareId, isActive }: { build: Build; rootShareId
   )
 }
 
-export default function PoolBuilds({ shareId, currentUserId, isOwner = false, activeShareId = null, onCreateBuild, onCopyShare }: PoolBuildsProps) {
+export default function PoolBuilds({ shareId, currentUserId, isOwner = false, activeShareId = null, onCreateBuild, createBuildMessage = null, onCopyShare }: PoolBuildsProps) {
   const [builds, setBuilds] = useState<Build[]>([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
@@ -150,6 +151,9 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
           </button>
+        )}
+        {createBuildMessage && (
+          <span className="pool-build-status">{createBuildMessage}</span>
         )}
       </div>
 

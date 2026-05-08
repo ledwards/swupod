@@ -34,6 +34,7 @@ interface PoolData {
   name?: string | null
   poolType?: string
   parentPoolId?: string | null
+  forceNew?: boolean
 }
 
 interface SavedPool extends PoolData {

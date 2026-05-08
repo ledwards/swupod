@@ -100,6 +100,16 @@
   }
 }
 
+/* Inline status text shown to the right of the + chip after a build action. */
+.pool-build-status {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin-left: 0.5rem;
+  white-space: nowrap;
+}
+
 /* Modal grid */
 .pool-builds-modal-grid {
   display: flex;

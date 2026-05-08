@@ -26,6 +26,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       hidden = false,
       name: requestedName,
       parentPoolId: parentShareId,
+      forceNew = false,
     } = body
 
     // Get set name from config
@@ -58,8 +59,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       parentPoolDbId = parent.rows[0].id
       isPublic = parent.rows[0].is_public
 
-      // Dedup: authenticated user who already has a build for this pool
-      if (userId) {
+      // Dedup: authenticated user who already has a build for this pool.
+      // Skip when forceNew is set (e.g. + chip click — user explicitly wants a new build).
+      if (userId && !forceNew) {
         const existing = await query(
           'SELECT share_id FROM card_pools WHERE parent_pool_id = $1 AND user_id = $2 LIMIT 1',
           [parentPoolDbId, userId]
