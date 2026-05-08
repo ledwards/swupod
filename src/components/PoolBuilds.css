@@ -12,27 +12,6 @@
   margin: 0 0 0.5rem;
 }
 
-.pool-build-add {
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-size: 1.5rem;
-  line-height: 1;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.7);
-  width: 36px;
-  align-self: stretch;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .pool-build-add:hover {
-    color: white;
-  }
-}
-
 .pool-builds-empty {
   color: rgba(255, 255, 255, 0.4);
   font-size: 0.875rem;
@@ -88,6 +67,10 @@
   font-weight: 700;
   text-shadow: 0 0 1px rgba(0, 0, 0, 0.6);
   white-space: nowrap;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 .pool-build-meta {
@@ -97,8 +80,28 @@
 }
 
 .pool-build-more .pool-build-leader {
+  background: none;
   color: rgba(255, 255, 255, 0.6);
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.6);
   font-weight: 600;
+}
+
+/* + button — declared LAST so its rules win the cascade against .pool-build-card */
+.pool-build-add {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  align-self: stretch;
+  padding: 0;
+  box-sizing: border-box;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pool-build-add:hover {
+    color: white;
+  }
 }
 
 /* Modal grid */
