@@ -114,11 +114,9 @@ export default function SourceImageModal({
                 {showFullSheet ? 'Crop' : 'Full sheet'}
               </Button>
             )}
-            {!cropping && (
-              <Button variant="secondary" size="xs" onClick={() => setZoomed((z) => !z)}>
-                {zoomed ? 'Fit' : 'Zoom'}
-              </Button>
-            )}
+            <Button variant="secondary" size="xs" onClick={() => setZoomed((z) => !z)}>
+              {zoomed ? 'Fit' : 'Zoom'}
+            </Button>
             <Button variant="icon" size="sm" onClick={onClose} aria-label="Close">
               ×
             </Button>

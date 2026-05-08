@@ -149,6 +149,10 @@ interface ImportPoolState {
   viewFilter: 'all' | 'pool' | 'deck'
   /** Resolve-step rendering mode */
   viewMode: 'table' | 'grid'
+  /** Anomaly keys the user has acknowledged via "mark as correct". Reset
+   *  on every fresh extraction. Each anomaly carries a deterministic key
+   *  (e.g. lowConf:pool:row-3) so dismissals stay tied to their source. */
+  dismissedAnomalyKeys: string[]
   error: { code: string; message: string; details?: any } | null
 }
 
@@ -166,6 +170,7 @@ const INITIAL_STATE: ImportPoolState = {
   sectionBounds: [],
   viewFilter: 'pool',
   viewMode: 'table',
+  dismissedAnomalyKeys: [],
   error: null,
 }
 
@@ -191,6 +196,7 @@ type Action =
   | { type: 'RESTORE'; state: Partial<ImportPoolState> }
   | { type: 'SET_VIEW_FILTER'; filter: 'all' | 'pool' | 'deck' }
   | { type: 'SET_VIEW_MODE'; mode: 'table' | 'grid' }
+  | { type: 'DISMISS_ANOMALY'; anomalyKey: string }
   | { type: 'HYDRATE_IMAGES'; images: ProcessedImage[] }
 
 function reducer(state: ImportPoolState, action: Action): ImportPoolState {
@@ -201,7 +207,7 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
         // Adding/removing images during/after extraction discards prior extraction
         // per scope: re-upload triggers a fresh CV pass.
         ...(state.extraction
-          ? { extraction: null, resolvedRows: [], activeLeaderId: null, activeBaseId: null, title: '', warnings: [] }
+          ? { extraction: null, resolvedRows: [], activeLeaderId: null, activeBaseId: null, title: '', warnings: [], dismissedAnomalyKeys: [] }
           : {}),
         phase: 'uploading',
         images: [...state.images, action.image],
@@ -212,7 +218,7 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
       return {
         ...state,
         ...(state.extraction
-          ? { extraction: null, resolvedRows: [], activeLeaderId: null, activeBaseId: null, title: '', warnings: [] }
+          ? { extraction: null, resolvedRows: [], activeLeaderId: null, activeBaseId: null, title: '', warnings: [], dismissedAnomalyKeys: [] }
           : {}),
         phase: images.length === 0 ? 'idle' : 'uploading',
         images,
@@ -291,6 +297,9 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
         warnings: action.response.warnings || [],
         sectionGaps: action.response.sectionGaps || [],
         sectionBounds: action.response.sections || [],
+        // Fresh extraction means fresh anomalies — any prior "mark as
+        // correct" dismissals were tied to the old data and can't carry over.
+        dismissedAnomalyKeys: [],
         error: null,
       }
     }
@@ -366,6 +375,10 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
       return { ...state, viewFilter: action.filter }
     case 'SET_VIEW_MODE':
       return { ...state, viewMode: action.mode }
+    case 'DISMISS_ANOMALY':
+      // Idempotent — adding the same key twice is a no-op.
+      if (state.dismissedAnomalyKeys.includes(action.anomalyKey)) return state
+      return { ...state, dismissedAnomalyKeys: [...state.dismissedAnomalyKeys, action.anomalyKey] }
     case 'HYDRATE_IMAGES':
       // Async hydration after mount — only if state.images is empty (i.e.,
       // they were dropped from a prior session). Don't clobber freshly
@@ -486,6 +499,8 @@ interface SlimPersisted {
   title: string
   viewFilter: 'all' | 'pool' | 'deck'
   viewMode: 'table' | 'grid'
+  /** Optional for back-compat with state persisted before this field existed. */
+  dismissedAnomalyKeys?: string[]
 }
 
 function persistedShape(state: ImportPoolState): SlimPersisted {
@@ -513,6 +528,7 @@ function persistedShape(state: ImportPoolState): SlimPersisted {
     title: state.title,
     viewFilter: state.viewFilter,
     viewMode: state.viewMode,
+    dismissedAnomalyKeys: state.dismissedAnomalyKeys,
   }
 }
 
@@ -572,6 +588,7 @@ function hydrate(slim: SlimPersisted): Partial<ImportPoolState> {
     warnings: slim.warnings || [],
     viewFilter: slim.viewFilter ?? 'pool',
     viewMode: slim.viewMode ?? 'table',
+    dismissedAnomalyKeys: slim.dismissedAnomalyKeys ?? [],
   }
 }
 
@@ -623,6 +640,7 @@ function savePersisted(state: ImportPoolState) {
         title: slim.title,
         viewFilter: slim.viewFilter,
         viewMode: slim.viewMode,
+        dismissedAnomalyKeys: slim.dismissedAnomalyKeys,
       }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(minimal))
     } catch {
@@ -866,6 +884,10 @@ export function useImportPool() {
     dispatch({ type: 'SET_VIEW_MODE', mode })
   }, [])
 
+  const dismissAnomaly = useCallback((anomalyKey: string) => {
+    dispatch({ type: 'DISMISS_ANOMALY', anomalyKey })
+  }, [])
+
   return {
     state,
     validation,
@@ -884,5 +906,6 @@ export function useImportPool() {
     reset,
     setViewFilter,
     setViewMode,
+    dismissAnomaly,
   }
 }

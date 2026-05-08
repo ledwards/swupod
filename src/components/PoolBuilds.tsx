@@ -1,9 +1,12 @@
 // @ts-nocheck
 import { useState, useEffect } from 'react'
 import Modal from './Modal'
-import Button from './Button'
 import { getAspectColor } from '../utils/aspectColors'
 import './PoolBuilds.css'
+// Shared delete-confirm visual — red title, red filled button. Same rules
+// the History page has used for a long time; importing the canonical file
+// keeps every confirm modal in sync without re-stating the CSS per page.
+import '../styles/confirmModal.css'
 
 interface Build {
   shareId: string
@@ -317,41 +320,54 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
         </Modal.Body>
       </Modal>
 
-      <Modal
-        isOpen={pendingDelete !== null}
-        onClose={() => { if (!isDeleting) { setPendingDelete(null); setDeleteError(null) } }}
-        title={pendingDelete?.isOriginal && !reparentCandidate ? 'Delete entire pool?' : 'Delete this deck?'}
-        variant="danger"
-      >
-        <Modal.Body>
-          {pendingDelete?.isOriginal && reparentCandidate ? (
-            <p>
-              Deleting the original deck. Your build{' '}
-              <strong>
-                {reparentCandidate.archetypeNickname
-                  ? stripFormat(reparentCandidate.archetypeNickname)
-                  : (reparentCandidate.leaderShortName || reparentCandidate.leaderName || 'next deck')}
-              </strong>{' '}
-              will become the new original for this pool.
-            </p>
-          ) : pendingDelete?.isOriginal ? (
-            <p>
-              This is your last deck for this pool. Deleting it will delete the entire pool and every build inside it. This action cannot be undone.
-            </p>
-          ) : (
-            <p>Delete this deck? The pool and other builds are not affected.</p>
-          )}
-          {deleteError && <p style={{ color: '#E74C3C', marginTop: '0.5rem' }}>{deleteError}</p>}
-        </Modal.Body>
-        <Modal.Actions>
-          <Button variant="secondary" onClick={() => { setPendingDelete(null); setDeleteError(null) }} disabled={isDeleting}>
-            Cancel
-          </Button>
-          <Button variant="danger" onClick={handleConfirmDelete} disabled={isDeleting}>
-            {isDeleting ? 'Deleting…' : 'Delete'}
-          </Button>
-        </Modal.Actions>
-      </Modal>
+      {pendingDelete && (
+        <div
+          className="delete-confirm-overlay"
+          onClick={() => { if (!isDeleting) { setPendingDelete(null); setDeleteError(null) } }}
+        >
+          <div className="delete-confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <h2>
+              {pendingDelete.isOriginal && !reparentCandidate ? 'Delete entire pool?' : 'Delete this deck?'}
+            </h2>
+            {pendingDelete.isOriginal && reparentCandidate ? (
+              <p>
+                Deleting the original deck. Your build{' '}
+                <strong>
+                  {reparentCandidate.archetypeNickname
+                    ? stripFormat(reparentCandidate.archetypeNickname)
+                    : (reparentCandidate.leaderShortName || reparentCandidate.leaderName || 'next deck')}
+                </strong>{' '}
+                will become the new original for this pool.
+              </p>
+            ) : pendingDelete.isOriginal ? (
+              <p>
+                This is your last deck for this pool. Deleting it will delete the entire pool and every build inside it. This action cannot be undone.
+              </p>
+            ) : (
+              <p>Delete this deck? The pool and other builds are not affected.</p>
+            )}
+            {deleteError && <p style={{ color: '#E74C3C' }}>{deleteError}</p>}
+            <div className="delete-confirm-buttons">
+              <button
+                type="button"
+                className="delete-confirm-cancel"
+                onClick={() => { setPendingDelete(null); setDeleteError(null) }}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="delete-confirm-delete"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Deleting…' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

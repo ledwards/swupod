@@ -1,0 +1,106 @@
+/**
+ * Shared Confirm-Modal Styles
+ *
+ * Canonical delete/confirm modal used across the site (History, PoolBuilds,
+ * etc.). Red title, red filled "Delete" button, neutral Cancel — the at-rest
+ * visual itself reads as destructive without needing a hover state.
+ *
+ * To use, render the structure below and import this file:
+ *
+ *   <div className="delete-confirm-overlay" onClick={onCancel}>
+ *     <div className="delete-confirm-modal" onClick={(e) => e.stopPropagation()}>
+ *       <h2>Delete X?</h2>
+ *       <p>Are you sure?</p>
+ *       <div className="delete-confirm-buttons">
+ *         <button className="delete-confirm-cancel" onClick={onCancel}>Cancel</button>
+ *         <button className="delete-confirm-delete" onClick={onConfirm}>Delete</button>
+ *       </div>
+ *     </div>
+ *   </div>
+ *
+ * Rules mirror the original definitions in app/history/History.css. Kept in
+ * sync intentionally so any page importing this file gets the identical look.
+ */
+
+.delete-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.delete-confirm-modal {
+  background: rgba(20, 20, 25, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 400px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.delete-confirm-modal h2 {
+  margin: 0 0 1rem 0;
+  color: rgba(255, 100, 100, 1);
+  font-size: 1.5rem;
+}
+
+.delete-confirm-modal p {
+  margin: 0 0 1.5rem 0;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}
+
+.delete-confirm-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.delete-confirm-cancel {
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 8px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-confirm-cancel:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.delete-confirm-delete {
+  padding: 0.75rem 1.5rem;
+  background: rgba(200, 0, 0, 0.8);
+  border: 2px solid rgba(255, 0, 0, 0.8);
+  color: white;
+  border-radius: 8px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-confirm-delete:hover:not(:disabled) {
+  background: rgba(255, 0, 0, 0.9);
+  box-shadow: 0 0 16px rgba(255, 0, 0, 0.6);
+}
+
+.delete-confirm-cancel:disabled,
+.delete-confirm-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

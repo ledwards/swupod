@@ -1,0 +1,2658 @@
+{
+  "rows": [
+    {
+      "name": "Black Sun Cabalist",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Callous Bounty Hunter",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Night Wind Assailants",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Fett's Firespray",
+      "type": "Unit",
+      "subtitle": "In Pursuit",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Alliance Outpost",
+      "type": "Base",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Daimyo's Palace",
+      "type": "Base",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Coaxium Mine",
+      "type": "Base",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Aldhani Garrison",
+      "type": "Base",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Great Pit of Carkoon",
+      "type": "Base",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Imperial Command Complex",
+      "type": "Base",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Contested Caverns",
+      "type": "Base",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Shipbreaking Yard",
+      "type": "Base",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Stygeon Spire",
+      "type": "Base",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Canto Bight",
+      "type": "Base",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Citadel Research Center",
+      "type": "Base",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Partisan Hideout",
+      "type": "Base",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Alliance X-Wing",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Stalwart Fleet Trooper",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Circuit Challenger",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Fire Across the Galaxy",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Saw Gerrera",
+      "type": "Leader",
+      "subtitle": "Bring Down the Empire",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Tobias Beckett",
+      "type": "Leader",
+      "subtitle": "People are Predictable",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Agent Kallus",
+      "type": "Leader",
+      "subtitle": "Reconsider Your Allegiance",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Villainy",
+      "poolQtyConfidence": "low",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Aurra Sing",
+      "type": "Leader",
+      "subtitle": "Assassin",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Jyn Erso",
+      "type": "Leader",
+      "subtitle": "Time to Fight",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Vel Sartha",
+      "type": "Leader",
+      "subtitle": "Aldhani Insurgent",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Boba Fett",
+      "type": "Leader",
+      "subtitle": "Krayt's Claw Commander",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Director Krennic",
+      "type": "Leader",
+      "subtitle": "Amidst My Achievement",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Command Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Hera Syndulla",
+      "type": "Leader",
+      "subtitle": "Not Fighting Alone",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Command Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Leia Organa",
+      "type": "Leader",
+      "subtitle": "Someone Who Loves You",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Darth Vader",
+      "type": "Leader",
+      "subtitle": "Unstoppable",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Sebulba",
+      "type": "Leader",
+      "subtitle": "Especially Dangerous Dug",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Chewbacca",
+      "type": "Leader",
+      "subtitle": "Hero of Kessel",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Enfys Nest",
+      "type": "Leader",
+      "subtitle": "Until We Can Go No Higher",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Jabba the Hutt",
+      "type": "Leader",
+      "subtitle": "Crime Boss",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "The Client",
+      "type": "Leader",
+      "subtitle": "Please Lower Your Blaster",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Han Solo",
+      "type": "Leader",
+      "subtitle": "I Got a Really Good Feeling",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Lando Calrissian",
+      "type": "Leader",
+      "subtitle": "Full Sabacc",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Hidden Hand Supplier",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": null,
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Criminal Contact",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": null,
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Cartel Heavy Fighter",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 2,
+      "deckQty": 0,
+      "aspectGroup": null,
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Seasoned Tracker",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": null,
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Street Gang Recruiter",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": null,
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Bank Job Fugitives",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": null,
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Kessel Hulk",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": null,
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "From a Certain Point of View",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": null,
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Imperial Door Technician",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Vandor Range Troopers",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Governor's Shuttle",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "IGV-55 Listener",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Lawbringer",
+      "type": "Unit",
+      "subtitle": "Shadow Over Lothal",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Choke on Aspirations",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Display Piece",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Bodhi Rook",
+      "type": "Unit",
+      "subtitle": "Creating a Diversion",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Cinta Kaz",
+      "type": "Unit",
+      "subtitle": "Stone Cold and Fearless",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Defiant Scrapper",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Swoop Bike Marauder",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Lando Calrissian",
+      "type": "Unit",
+      "subtitle": "Eyes Open",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Tantive IV",
+      "type": "Unit",
+      "subtitle": "Carrying Hope",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Phoenix Squadron Fighters",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Leia's Disguise",
+      "type": "Upgrade",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Boonta Eve Flagbearer",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Shield Drive Outfitter",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Alkenzi Patroller",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Rickety Quadjumper",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Rodian Bondsman",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 2,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Conveyex Security Captain",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Droid Laser Turret",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Rogue One",
+      "type": "Unit",
+      "subtitle": "At Any Cost",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Vigilant Scouts",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Canto Bight Security",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Shielded Hauler",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Syndicate Security",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Industrious Team",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Watchful",
+      "type": "Upgrade",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Adventurer Sniper Rifle",
+      "type": "Upgrade",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Kill Switch",
+      "type": "Upgrade",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Veiled Strength",
+      "type": "Upgrade",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Mastery",
+      "type": "Upgrade",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Betrayed Trust",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Incapacitate",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "The Tree Remembers",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Lost and Forgotten",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Storm Raider",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "BT-1",
+      "type": "Unit",
+      "subtitle": "Blastomech",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "0-0-0",
+      "type": "Unit",
+      "subtitle": "Translation and Torture",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Prototype TIE Advanced",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Sebulba's Podracer",
+      "type": "Unit",
+      "subtitle": "Taking the Lead",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Son-tuul Berserkers",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Persecutor",
+      "type": "Unit",
+      "subtitle": "Fire Over Scarif",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Fear and Dead Men",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Inspired Recruit",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Cloud-Rider Veteran",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Weazel",
+      "type": "Unit",
+      "subtitle": "Fighting Back",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "B-Wing Skirmisher",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Aerie",
+      "type": "Unit",
+      "subtitle": "Cloud-Rider Dropship",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Ben Solo",
+      "type": "Unit",
+      "subtitle": "Facing the Light",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Enfys Nest's Helmet",
+      "type": "Upgrade",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "“Staccato Lightning” Repeater",
+      "type": "Upgrade",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Savareen Survivor",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Cavern Angels X-Wing",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Haxion Aggressor",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Arvel Skeen",
+      "type": "Unit",
+      "subtitle": "Win and Walk Away",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Bracca Shipbreaker",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 2,
+      "deckQty": 1,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Mid Rim Sharpshooter",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Doctor Aphra",
+      "type": "Unit",
+      "subtitle": "Digging For Answers",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Overcharged Transport",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 3,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Relentless Hunters",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Shifty Suspects",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Dogged Pursuers",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Ohnaka Gang Bandits",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Salvaged Blaster",
+      "type": "Upgrade",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Thermal Detonator",
+      "type": "Upgrade",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Commence the Festivities",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Daring Delve",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Every Day, More Lies",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Flash the Vents",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "That's a Rock",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Attack From All Sides",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Collateral Damage",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Bib Fortuna",
+      "type": "Unit",
+      "subtitle": "Die Wanna Wanga?",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Pirate Snub Fighter",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Syndicate Spice Runner",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Ruthless Duo",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Command Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Undercity Hunting Team",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Command Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Admiral Motti",
+      "type": "Unit",
+      "subtitle": "Chain of Command",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Intimidator",
+      "type": "Unit",
+      "subtitle": "Citadel Overwatch",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Targeted For Removal",
+      "type": "Upgrade",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Command Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Scarif Lieutenant",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Liberated Wookiee",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Phantom",
+      "type": "Unit",
+      "subtitle": "Spectre Shuttle",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "R2-D2",
+      "type": "Unit",
+      "subtitle": "Part of the Plan",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Massassi Group Marines",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Jaunty Light Freighter",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Command Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Smuggler's YT-2400",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Command Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Rey",
+      "type": "Unit",
+      "subtitle": "Skywalker",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Fulcrum",
+      "type": "Upgrade",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Profiteering Hunter",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "C-3PO",
+      "type": "Unit",
+      "subtitle": "Translation Protocol",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Follower of the Code",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Partisan Infantry",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Getaway Freighter",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Hunter For Hire",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Target Tagger",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Khetanna",
+      "type": "Unit",
+      "subtitle": "Upon the Dune Sea",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Expendable Mercenary",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Hidden Hunters",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Partisan U-Wing",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Beach Patrol AT-ACT",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "The Sarlacc of Carkoon",
+      "type": "Unit",
+      "subtitle": "Horror of the Dune Sea",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Mercenary Fleet",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Combat Exercise",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Putting a Team Together",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Common Cause",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Haymaker",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Payroll Heist",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Double-Cross",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Stockpile",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Nihil Stormsower",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Salacious Crumb",
+      "type": "Unit",
+      "subtitle": "Cackling Companion",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Black Sun Patroller",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Malakili",
+      "type": "Unit",
+      "subtitle": "Keeper of the Menagerie",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Cutthroat Podracer",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Boba Fett",
+      "type": "Unit",
+      "subtitle": "For a Price",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Vermillion",
+      "type": "Unit",
+      "subtitle": "Qi'ra's Auction House",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Jabba's Rancor",
+      "type": "Unit",
+      "subtitle": "Snack Time!",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Hold For Questioning",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Artful Pickpocket",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Anakin's Podracer",
+      "type": "Unit",
+      "subtitle": "So Wizard!",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Wookiee Guerilla",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Lieutenant Gorn",
+      "type": "Unit",
+      "subtitle": "I Deserve Worse",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Rebel Blockade Runner",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Rose Tico",
+      "type": "Unit",
+      "subtitle": "Now It's Worth It",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Liberty",
+      "type": "Unit",
+      "subtitle": "Draw Their Fire!",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Han's Golden Dice",
+      "type": "Upgrade",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Secret Battle of Pretend",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Rookie Rocket-jumper",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Canyon Frontrunner",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "The Master Codebreaker",
+      "type": "Unit",
+      "subtitle": "High Stakes",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Ohnaka Gang Starhopper",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Weequay Pirate",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Champion's KT9 Podracer",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Galen Erso",
+      "type": "Unit",
+      "subtitle": "Destroying His Creation",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Kage Elite",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Lady Proxima",
+      "type": "Unit",
+      "subtitle": "Where's the Money?",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Bix Caleen",
+      "type": "Unit",
+      "subtitle": "Selling Scrap",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Qui-Gon Jinn",
+      "type": "Unit",
+      "subtitle": "Influencing Chance",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Scavenging Sandcrawler",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Guild Ambush Team",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Milodon Rider",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "The Blade Wing",
+      "type": "Unit",
+      "subtitle": "The Secret of Shantipole",
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Improvise",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Transmission Jamming",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Unmarked Credits",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Salvaged Materials",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "The Axe Forgets",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Backed by the Hutts",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Windfall",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Bossk",
+      "type": "Unit",
+      "subtitle": "Join Our Merry Band",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Command Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Cad Bane",
+      "type": "Unit",
+      "subtitle": "Now It's My Turn",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Command Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Hound's Tooth",
+      "type": "Unit",
+      "subtitle": "Hunters' Approach",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Command Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Chewbacca",
+      "type": "Unit",
+      "subtitle": "Mighty Rescuer",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Command Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Ezra Bridger",
+      "type": "Unit",
+      "subtitle": "Spectre Six",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Command Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Obi-Wan Kenobi",
+      "type": "Unit",
+      "subtitle": "Protector of Felucia",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Command Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Han Solo",
+      "type": "Unit",
+      "subtitle": "Hibernation Sick",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Lepi Lookout",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Vigilance Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Latts Razzi",
+      "type": "Unit",
+      "subtitle": "Deadly Whipmaster",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Taramyn Barcona",
+      "type": "Unit",
+      "subtitle": "Eyes Front!",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Nothing Left to Fear",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Command",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "IG-88",
+      "type": "Unit",
+      "subtitle": "Programmed to Kill",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Aggression Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Shadow Cloaking",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Aggression Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Single Reactor Ignition",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Aggression Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Zeb Orellios",
+      "type": "Unit",
+      "subtitle": "Spectre Four",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Aggression Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Chirrut Îmwe",
+      "type": "Unit",
+      "subtitle": "I Don't Need Luck",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Aggression Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Baze Malbus",
+      "type": "Unit",
+      "subtitle": "Good Luck",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Aggression Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Chio Fain",
+      "type": "Unit",
+      "subtitle": "Four-Armed Slicer",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "low"
+    },
+    {
+      "name": "Bith Brute",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Vigilance Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Honnah",
+      "type": "Unit",
+      "subtitle": "OINK! SQUEE!",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Beilert Valance",
+      "type": "Unit",
+      "subtitle": "Target: Vader",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "The Mandalorian",
+      "type": "Unit",
+      "subtitle": "Let's See the Puck",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Vigilance Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Dengar",
+      "type": "Unit",
+      "subtitle": "Take Your Shot",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Aggression Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Maul",
+      "type": "Unit",
+      "subtitle": "Master of the Shadow Collective",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Aggression Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Chopper",
+      "type": "Unit",
+      "subtitle": "Spectre Three",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Aggression Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Cassian Andor",
+      "type": "Unit",
+      "subtitle": "Everything For the Rebellion",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Aggression Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Benthic “Two Tubes”",
+      "type": "Unit",
+      "subtitle": "The War Has Just Begun",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Command Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Honor-Bound Partisan",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Command Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Highsinger",
+      "type": "Unit",
+      "subtitle": "Deadly Droid",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Command Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Quarren Contractor",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Asajj Ventress",
+      "type": "Unit",
+      "subtitle": "Reluctant Hunter",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Defiant Hammerhead",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "L3-37",
+      "type": "Unit",
+      "subtitle": "Radical Instigator",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Aggression",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Zuckuss",
+      "type": "Unit",
+      "subtitle": "Dangerous",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Cunning Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "4-LOM",
+      "type": "Unit",
+      "subtitle": "Devious",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Cunning Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Tear This Ship Apart",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Cunning Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Jyn Erso",
+      "type": "Unit",
+      "subtitle": "Take the Next Chance",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Cunning Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Millennium Falcon",
+      "type": "Unit",
+      "subtitle": "Dodging Patrols",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Command Cunning Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "The Ghost",
+      "type": "Unit",
+      "subtitle": "Home of the Spectres",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Cunning Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Devaronian Doorbuster",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Command Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "The Max Rebo Band",
+      "type": "Unit",
+      "subtitle": "Jatz-Wailers",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Max Rebo",
+      "type": "Unit",
+      "subtitle": "Encore!",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Patient Hunter",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Maz Kanata",
+      "type": "Unit",
+      "subtitle": "Where's My Boyfriend?",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Command Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Interrogation Droid",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Cunning Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Vult Skerris's Defender",
+      "type": "Unit",
+      "subtitle": "Secret Project",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Cunning Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Shadow of Stygeon Prime",
+      "type": "Upgrade",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Cunning Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Sabine Wren",
+      "type": "Unit",
+      "subtitle": "Spectre Five",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Cunning Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "K-2SO",
+      "type": "Unit",
+      "subtitle": "Locking the Vault",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Cunning Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Luke Skywalker",
+      "type": "Unit",
+      "subtitle": "Profit or Be Destroyed",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Cunning Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Sullustan Sapper",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Urrr'k",
+      "type": "Unit",
+      "subtitle": "Elite Sharpshooter",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Broken Horn",
+      "type": "Unit",
+      "subtitle": "Vizago's Pride",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Krrsantan",
+      "type": "Unit",
+      "subtitle": "Hit and Run",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "You Hold This",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Aggression Cunning",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "The Stranger",
+      "type": "Unit",
+      "subtitle": "No Survivors",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Vigilance Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Jango Fett",
+      "type": "Unit",
+      "subtitle": "Wily Mercenary",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Vigilance Villainy",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Anakin Skywalker",
+      "type": "Unit",
+      "subtitle": "Prescient Podracer",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Vigilance Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Kanan Jarrus",
+      "type": "Unit",
+      "subtitle": "Spectre One",
+      "poolQty": 1,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Vigilance Heroism",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Toydarian Technician",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Cunning Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Val",
+      "type": "Unit",
+      "subtitle": "It's Been a Ride, Babe",
+      "poolQty": 1,
+      "deckQty": 1,
+      "aspectGroup": "Cunning Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Two-Faced Troig",
+      "type": "Unit",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Rio Durant",
+      "type": "Unit",
+      "subtitle": "Beckett's Right Hands",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Hondo Ohnaka",
+      "type": "Unit",
+      "subtitle": "Plays By His Own Rules",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Finn",
+      "type": "Unit",
+      "subtitle": "Looking Closer",
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    },
+    {
+      "name": "Rhydonium Detonation",
+      "type": "Event",
+      "subtitle": null,
+      "poolQty": 0,
+      "deckQty": 0,
+      "aspectGroup": "Cunning Vigilance",
+      "poolQtyConfidence": "high",
+      "deckQtyConfidence": "high"
+    }
+  ],
+  "header": {
+    "setName": "LAW",
+    "eventName": "Practice for PQ",
+    "eventDate": "5/3/26",
+    "playerName": "Lee Edwards",
+    "leader": {
+      "name": "Agent Kallus",
+      "subtitle": "Reconsider Your Allegiance"
+    },
+    "base": {
+      "name": null,
+      "subtitle": null
+    }
+  }
+}

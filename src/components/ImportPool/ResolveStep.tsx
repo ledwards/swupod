@@ -13,6 +13,7 @@ import {
   getAspectCombinationDisplayName,
 } from '../../utils/aspectCombinations'
 import type { useImportPool, ResolvedRow, MatchedCard } from '../../hooks/useImportPool'
+import { buildAnomalies, type Anomaly as BuiltAnomaly } from '../../services/importPool/buildAnomalies'
 
 interface Props {
   importPool: ReturnType<typeof useImportPool>
@@ -47,6 +48,7 @@ export default function ResolveStep({ importPool }: Props) {
     goToConfirm,
     setViewFilter,
     setViewMode,
+    dismissAnomaly,
   } = importPool
 
   const [pickerFor, setPickerFor] = useState<{
@@ -75,130 +77,38 @@ export default function ResolveStep({ importPool }: Props) {
     [state.resolvedRows, state.viewFilter],
   )
 
-  // Build the list of "anomalies" — things the user should manually verify.
-  // Three classes:
-  //   1. Section-level gaps (under/over-populated vs typical sealed pool)
-  //   2. Per-row Claude vision confidence: medium/low
-  //   3. Per-row matcher confidence: unresolved, fuzzy, ambiguous, deckQty>poolQty
-  //
-  // Each anomaly carries the section name so the issue navigator's
-  // eyeglass button can open the source-image modal cropped to that
-  // section.
-  type Anomaly =
-    | { kind: 'section'; targetId: string; label: string; sectionName: string | null }
-    | { kind: 'row'; targetId: string; label: string; sectionName: string | null }
+  // Anomaly building is delegated to the pure service module so the
+  // production wizard and the eval harness use the SAME logic — no drift.
+  // See src/services/importPool/buildAnomalies.ts for the rules.
+  type Anomaly = BuiltAnomaly
 
-  const anomalies = useMemo<Anomaly[]>(() => {
-    const list: Anomaly[] = []
-    const seenRowKey = new Set<string>()
-    const pushRow = (row: ResolvedRow, label: string) => {
-      if (seenRowKey.has(row.key)) return
-      seenRowKey.add(row.key)
-      list.push({
-        kind: 'row',
-        targetId: `ip-row-${row.key}`,
-        label,
-        sectionName: sectionNameForRow(row),
-      })
-    }
+  const allAnomalies = useMemo<Anomaly[]>(
+    () =>
+      buildAnomalies({
+        resolvedRows: state.resolvedRows as any,
+        sectionGaps: state.sectionGaps,
+        poolCount: validation.poolCount,
+        poolTarget: validation.poolTarget,
+        deckCount: validation.deckCount,
+        deckTarget: validation.deckTarget,
+      }),
+    [
+      state.resolvedRows,
+      state.sectionGaps,
+      validation.poolCount,
+      validation.poolTarget,
+      validation.deckCount,
+      validation.deckTarget,
+    ],
+  )
 
-    // 1) Section-level gaps (Multicolor under-count, etc.) come first.
-    for (const gap of state.sectionGaps) {
-      list.push({
-        kind: 'section',
-        targetId: `ip-section-${gap.section.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-        label: gap.message,
-        sectionName: gap.section,
-      })
-    }
-
-    // 2) Per-row matcher problems for rows the user actually has.
-    for (const row of state.resolvedRows) {
-      if (row.poolQty <= 0) continue
-      const cardName = row.card?.name || row.extracted.name || 'Unrecognized'
-      if (!row.card) {
-        pushRow(row, `Unmatched: ${cardName}`)
-        continue
-      }
-      if (row.confidence === 'ambiguous') {
-        pushRow(row, `Ambiguous match: ${cardName}`)
-        continue
-      }
-      if (row.confidence === 'fuzzy') {
-        pushRow(row, `Fuzzy match: ${cardName}`)
-        continue
-      }
-      if (row.deckQty > row.poolQty) {
-        pushRow(row, `Bad qty: ${cardName} deck>${row.poolQty}`)
-        continue
-      }
-    }
-
-    // 3) ALL low-confidence reads, regardless of qty.
-    for (const row of state.resolvedRows) {
-      const cardName = row.card?.name || row.extracted.name || 'Unrecognized'
-      if (row.extracted.poolQtyConfidence === 'low') {
-        pushRow(row, `Uncertain pool count: ${cardName} (read as ${row.poolQty})`)
-      }
-      if (row.extracted.deckQtyConfidence === 'low') {
-        pushRow(row, `Uncertain deck count: ${cardName} (read as ${row.deckQty})`)
-      }
-    }
-
-    // 4) When pool is SHORT by N cards, surface the N most-suspicious
-    //    poolQty=0 rows so the user has a focused list of candidates to
-    //    verify against the source. "Most-suspicious" = lowest pool
-    //    confidence first (low → medium). Skip leaders/bases (their
-    //    typical state IS poolQty=0). This is the answer to "Pool: 80/96
-    //    means 16 issues" — every missing card maps to one entry here.
-    const poolShort = validation.poolCount < validation.poolTarget
-    if (poolShort) {
-      const poolDelta = validation.poolTarget - validation.poolCount
-      const candidates = state.resolvedRows
-        .filter(
-          (r) =>
-            !seenRowKey.has(r.key) &&
-            r.poolQty === 0 &&
-            r.extracted.type !== 'Leader' &&
-            r.extracted.type !== 'Base',
-        )
-        .map((r) => ({ r, score: confScore(r.extracted.poolQtyConfidence) }))
-        // Lowest confidence first, then by extracted name for stability.
-        .sort((a, b) => a.score - b.score || a.r.extracted.name.localeCompare(b.r.extracted.name))
-        .slice(0, poolDelta)
-      for (const { r } of candidates) {
-        const cardName = r.card?.name || r.extracted.name || 'Unrecognized'
-        pushRow(r, `Uncertain pool count: ${cardName} (read as 0)`)
-      }
-    }
-
-    // 5) When deck is OVER target, surface the N most-suspicious deck
-    //    inclusions (deckQty>0 rows with the LOWEST deck confidence). The
-    //    user clicks through to verify each against the source and bumps
-    //    deckQty down if Claude over-counted. Skip leaders/bases (active
-    //    selection is exactly one of each, deckQty=1 is by definition).
-    const deckOver = validation.deckCount > validation.deckTarget
-    if (deckOver) {
-      const deckDelta = validation.deckCount - validation.deckTarget
-      const candidates = state.resolvedRows
-        .filter(
-          (r) =>
-            !seenRowKey.has(r.key) &&
-            r.deckQty > 0 &&
-            r.extracted.type !== 'Leader' &&
-            r.extracted.type !== 'Base',
-        )
-        .map((r) => ({ r, score: confScore(r.extracted.deckQtyConfidence) }))
-        .sort((a, b) => a.score - b.score || a.r.extracted.name.localeCompare(b.r.extracted.name))
-        .slice(0, deckDelta)
-      for (const { r } of candidates) {
-        const cardName = r.card?.name || r.extracted.name || 'Unrecognized'
-        pushRow(r, `Uncertain deck count: ${cardName} (read as ${r.deckQty})`)
-      }
-    }
-
-    return list
-  }, [state.resolvedRows, state.sectionGaps, validation.poolCount, validation.poolTarget, validation.deckCount, validation.deckTarget])
+  // Filter out anomalies the user has dismissed via "Mark as correct".
+  // Dismissal keys are reset on every fresh extraction, so this set is
+  // always scoped to the current run.
+  const anomalies = useMemo<Anomaly[]>(
+    () => allAnomalies.filter((a) => !state.dismissedAnomalyKeys.includes(a.key)),
+    [allAnomalies, state.dismissedAnomalyKeys],
+  )
 
   const anomalyKeys = anomalies.map((a) => a.targetId)
 
@@ -208,15 +118,12 @@ export default function ResolveStep({ importPool }: Props) {
     if (anomalyIndex >= anomalyKeys.length && anomalyKeys.length > 0) setAnomalyIndex(0)
   }, [anomalyKeys, anomalyIndex])
 
-  const goToAnomaly = useCallback(
-    (delta: number) => {
-      if (anomalies.length === 0) return
-      const next = (anomalyIndex + delta + anomalies.length) % anomalies.length
-      setAnomalyIndex(next)
-      const targetId = anomalies[next].targetId
-
-      // If the target isn't in the DOM (rows are hidden by Pool/Deck filter),
-      // flip to All so the row renders, then scroll on the next paint.
+  // Scroll to a DOM target by id, with a momentary flash highlight. If the
+  // row is currently hidden by the Pool/Deck filter, flip to All first so
+  // the row exists in the DOM, then scroll on the next paint. Shared by
+  // the issue pager (prev/next) and the explicit "Jump to row" button.
+  const scrollToTargetId = useCallback(
+    (targetId: string) => {
       const scrollTo = (el: HTMLElement) => {
         // block:'start' lands the row at the top of the visible area;
         // scroll-margin-top in CSS pushes it just below the sticky bars.
@@ -224,7 +131,6 @@ export default function ResolveStep({ importPool }: Props) {
         el.classList.add('ip-row--flash')
         setTimeout(() => el.classList.remove('ip-row--flash'), 1400)
       }
-
       const el = document.getElementById(targetId)
       if (el) {
         scrollTo(el)
@@ -238,8 +144,35 @@ export default function ResolveStep({ importPool }: Props) {
         })
       }
     },
-    [anomalies, anomalyIndex, state.viewFilter, setViewFilter],
+    [state.viewFilter, setViewFilter],
   )
+
+  const goToAnomaly = useCallback(
+    (delta: number) => {
+      if (anomalies.length === 0) return
+      const next = (anomalyIndex + delta + anomalies.length) % anomalies.length
+      setAnomalyIndex(next)
+      scrollToTargetId(anomalies[next].targetId)
+    },
+    [anomalies, anomalyIndex, scrollToTargetId],
+  )
+
+  // "Jump to row" button on the issue detail strip — scrolls to the
+  // currently-shown anomaly's row without changing the index.
+  const jumpToCurrentAnomaly = useCallback(() => {
+    const targetId = anomalies[anomalyIndex]?.targetId
+    if (targetId) scrollToTargetId(targetId)
+  }, [anomalies, anomalyIndex, scrollToTargetId])
+
+  // "Mark as correct" — dismiss the current anomaly. The hook's reducer
+  // appends to dismissedAnomalyKeys, the filtered `anomalies` memo
+  // re-derives, and the index-bounds effect (above) snaps the pager onto
+  // the next available issue. Persisted via the slim shape so a refresh
+  // doesn't re-show what the user already verified.
+  const dismissCurrentAnomaly = useCallback(() => {
+    const key = anomalies[anomalyIndex]?.key
+    if (key) dismissAnomaly(key)
+  }, [anomalies, anomalyIndex, dismissAnomaly])
 
   const currentAnomalyLabel = anomalies[anomalyIndex]?.label || ''
 
@@ -374,6 +307,35 @@ export default function ResolveStep({ importPool }: Props) {
       {anomalies.length > 0 && currentAnomalyLabel && (
         <div className="ip-anomaly-detail">
           <strong>Issue {anomalyIndex + 1}:</strong> {currentAnomalyLabel}
+          {/* Jump-to-row arrow — scrolls the table to the affected row.
+              The pager arrows (prev/next) already do this on traversal;
+              this button gives the same affordance an explicit click target. */}
+          <button
+            type="button"
+            className="ip-anomaly-source-btn"
+            onClick={jumpToCurrentAnomaly}
+            title="Jump to row in the table"
+            aria-label="Jump to row in the table"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <line x1="2" y1="8" x2="13" y2="8" />
+              <polyline points="9 4 13 8 9 12" />
+            </svg>
+          </button>
+          {/* Mark-as-correct — dismisses this anomaly. The user has reviewed
+              the row and confirmed the value is right; we don't need to keep
+              warning about it. Dismissals persist until re-extraction. */}
+          <button
+            type="button"
+            className="ip-anomaly-source-btn"
+            onClick={dismissCurrentAnomaly}
+            title="Mark as correct (dismiss this issue)"
+            aria-label="Mark as correct"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="3 8.5 6.5 12 13 4" />
+            </svg>
+          </button>
           {state.images.length > 0 && (
             <button
               type="button"
