@@ -167,13 +167,6 @@ export function DeckBuilderHeader({
           />
         </h1>
         <p className="deck-builder-pool-type">{isInfiniteMode ? 'Limited Deckbuilder' : isDraftMode ? 'Draft Pool' : 'Sealed Pool'}</p>
-        {rootShareId && (
-          <PoolBuilds
-            shareId={rootShareId}
-            currentUserId={currentUserId}
-            isOwner={isOwner}
-          />
-        )}
       </div>
 
       {deckBuildDeadline && (
@@ -267,6 +260,14 @@ export function DeckBuilderHeader({
           <DraftReportButton draftShareId={draftShareId} />
         )}
       </div>}
+
+      {rootShareId && (
+        <PoolBuilds
+          shareId={rootShareId}
+          currentUserId={currentUserId}
+          isOwner={isOwner}
+        />
+      )}
 
       {errorMessage && (
         <div className="error-message" style={{

@@ -1,5 +1,15 @@
 .pool-builds {
   margin: 0.5rem 0 1rem;
+  text-align: left;
+}
+
+.pool-builds-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 0.4rem;
 }
 
 .pool-builds-empty {
@@ -11,6 +21,7 @@
 .pool-builds-list {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-start;
   gap: 6px;
 }
 

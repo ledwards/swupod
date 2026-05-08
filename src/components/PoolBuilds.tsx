@@ -12,6 +12,7 @@ interface Build {
   leaderAspects?: string[]
   baseName: string | null
   baseAspects?: string[]
+  archetypeNickname?: string | null
   deckCardCount: number
 }
 
@@ -23,9 +24,16 @@ interface PoolBuildsProps {
 
 const VISIBLE_LIMIT = 6
 
+function stripFormat(nickname: string): string {
+  return nickname.replace(/\s*\(Limited\)\s*$/i, '').replace(/\s*\(Premiere\)\s*$/i, '').trim()
+}
+
 function BuildCard({ build, rootShareId }: { build: Build; rootShareId: string }) {
   const builder = build.isOriginal ? 'Original' : (build.builderName || 'Anonymous')
   const leaderColor = getAspectColor({ aspects: build.leaderAspects })
+  const label = build.archetypeNickname
+    ? stripFormat(build.archetypeNickname)
+    : (build.leaderName || 'No leader')
   const href = build.isOriginal
     ? `/pool/${rootShareId}/deck`
     : `/pool/${rootShareId}/deck/${build.shareId}`
@@ -33,7 +41,7 @@ function BuildCard({ build, rootShareId }: { build: Build; rootShareId: string }
   return (
     <a href={href} className="pool-build-card">
       <span className="pool-build-leader" style={{ color: leaderColor }}>
-        {build.leaderName || 'No leader'}
+        {label}
       </span>
       <span className="pool-build-meta">
         ({build.deckCardCount} cards) by {builder}
@@ -66,6 +74,7 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false }: 
 
   return (
     <div className="pool-builds">
+      <p className="pool-builds-label">Decks with this Pool:</p>
       {!childBuilds.length && isOwner ? (
         <p className="pool-builds-empty">No other builds yet — share this pool to let others build from it.</p>
       ) : (
