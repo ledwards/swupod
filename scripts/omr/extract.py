@@ -184,13 +184,27 @@ def identify_page_1_tables(rects: list[dict]) -> dict[str, dict]:
 def identify_page_2_tables(rects: list[dict]) -> dict[str, dict]:
     """Identify page 2 tables.
 
-    Page 2 layout (canonical):
-      Top row: AGGRESSION (left), CUNNING (center), MULTICOLOR (right)
-      Middle/bottom: VILLAINY, NoAspect, HEROISM (left/center, smaller)
+    Page 2 printed layout (canonical 1700x2200):
+      Top half:
+        - AGGRESSION (top-left, tall)
+        - CUNNING (top-center, tall)
+        - MULTICOLOR (right side, very tall, full height)
+      Bottom half:
+        - VILLAINY (left, wider-than-tall)
+        - HEROISM (left-bottom, wider-than-tall)
+        - NoAspect (center-bottom, wider-than-tall)
 
-    Strategy: the very-tall (aspect < 0.4) rect on the right is MULTICOLOR.
-    The 2 next-largest tall rects are AGGRESSION (left) + CUNNING (center).
-    Remaining smaller tables are identified by y-position.
+    Strategy:
+      1. MULTICOLOR = the very-tall (aspect < 0.45) rect with rightmost x.
+      2. AGGRESSION + CUNNING = the 2 next-largest tall rects (aspect 0.4-0.8),
+         in top half (y < 1100). Sort by x: leftmost = AGGRESSION, rightmost = CUNNING.
+      3. Small tables (aspect > 1.0):
+         - Filter to those NOT inside the bounds of a big table (avoid catching
+           sub-aspect sections inside CUNNING/AGGRESSION).
+         - Filter by y position: only those in bottom half (y > 1000).
+         - VILLAINY = bottom-half left
+         - HEROISM = bottom-half left, lower
+         - NoAspect = bottom-half center
     """
     out: dict[str, dict] = {}
     if not rects:
@@ -198,35 +212,67 @@ def identify_page_2_tables(rects: list[dict]) -> dict[str, dict]:
     # Tallest rect = MULTICOLOR
     multicolor_candidates = [r for r in rects if r["aspect"] < 0.45]
     if multicolor_candidates:
-        # Pick the rightmost very-tall rect
         multi = max(multicolor_candidates, key=lambda r: r["x"])
         out["Multicolor"] = multi
-    # Among non-MULTICOLOR rects with aspect 0.4-0.8 (tall but not extreme),
-    # the 2 largest are AGGRESSION + CUNNING. AGGRESSION is leftmost.
-    used_areas = {(r["x"], r["y"]) for r in [out.get("Multicolor")] if r}
-    medium = [r for r in rects if 0.4 < r["aspect"] < 0.8 and (r["x"], r["y"]) not in used_areas]
+    used_ids = {id(out.get("Multicolor"))} if out.get("Multicolor") else set()
+    medium = [r for r in rects if id(r) not in used_ids and 0.4 < r["aspect"] < 0.8]
     medium = sorted(medium, key=lambda r: -r["area"])[:2]
     if len(medium) >= 2:
         medium.sort(key=lambda r: r["x"])
         out["Aggression"] = medium[0]
         out["Cunning"] = medium[1]
     elif len(medium) == 1:
-        # Only one detected — fall back: leftmost is AGGRESSION
         out["Aggression"] = medium[0]
-    # Smaller tables (aspect > 1.0 wide-ish or aspect 0.8-1.5 squarish)
-    # by y-position: VILLAINY top-left, HEROISM bottom-left, NoAspect center.
+
+    # Build a "big table" mask so small tables INSIDE big tables get excluded.
+    big_bounds = []
+    for tn in ("Multicolor", "Aggression", "Cunning"):
+        if tn in out:
+            t = out[tn]
+            big_bounds.append((t["x"], t["y"], t["x"] + t["w"], t["y"] + t["h"]))
+
+    def inside_big(r):
+        # If a small rect is entirely inside one of the big table's bounds,
+        # skip it (it's a sub-aspect partition inside CUNNING/etc).
+        rx, ry = r["x"] + r["w"] / 2, r["y"] + r["h"] / 2
+        for (bx0, by0, bx1, by1) in big_bounds:
+            if bx0 <= rx <= bx1 and by0 <= ry <= by1:
+                return True
+        return False
+
+    # Anchor small-table y thresholds by the bottoms of the detected
+    # large tables. AGGRESSION's bottom anchors left-side small tables;
+    # CUNNING's bottom anchors center small tables.
+    cw, ch = canonical_size_for_page(2)
+    aggro_bottom = (out["Aggression"]["y"] + out["Aggression"]["h"]) if "Aggression" in out else int(ch * 0.45)
+    cunning_bottom = (out["Cunning"]["y"] + out["Cunning"]["h"]) if "Cunning" in out else int(ch * 0.45)
+
     used_ids = {id(v) for v in out.values()}
-    small = [r for r in rects if id(r) not in used_ids and r["aspect"] > 0.8]
-    # Identify by relative position (left vs center, top vs bottom)
-    cw, _ = canonical_size_for_page(2)
-    small_left = sorted([r for r in small if r["x"] < cw * 0.4], key=lambda r: r["y"])
-    small_center = sorted([r for r in small if cw * 0.4 <= r["x"] < cw * 0.7], key=lambda r: r["y"])
-    if small_left:
-        out["Villainy"] = small_left[0]  # top-left small
-        if len(small_left) > 1:
-            out["Heroism"] = small_left[-1]  # bottom-left small
-    if small_center:
-        out["NoAspect"] = small_center[0]
+    small = [
+        r for r in rects
+        if id(r) not in used_ids
+        and r["aspect"] > 0.8
+        and not inside_big(r)
+    ]
+
+    # VILLAINY + HEROISM: small wider tables below AGGRESSION on the left.
+    small_left_below = sorted(
+        [r for r in small if r["x"] < cw * 0.40 and r["y"] >= aggro_bottom - 30],
+        key=lambda r: r["y"],
+    )
+    if small_left_below:
+        out["Villainy"] = small_left_below[0]
+        if len(small_left_below) > 1:
+            out["Heroism"] = small_left_below[-1]
+
+    used_ids = {id(v) for v in out.values()}
+    # NoAspect: small wider table below CUNNING in center.
+    small_center_below = sorted(
+        [r for r in small if id(r) not in used_ids and cw * 0.25 <= r["x"] < cw * 0.75 and r["y"] >= cunning_bottom - 30],
+        key=lambda r: r["y"],
+    )
+    if small_center_below:
+        out["NoAspect"] = small_center_below[0]
     return out
 
 
