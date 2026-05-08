@@ -1,5 +1,21 @@
 # Release Notes
 
+## 05.08.2026
+
+### 🆕 Pool Builds — shared pool, multiple decks per pool
+- **Build with someone's pool**: When viewing a shared sealed or draft pool, every signed-in visitor now sees a "Decks with this Pool" row with a `+` chip to spin up their own deck from that pool. Each build is its own pool — your edits don't affect anyone else's.
+- **Per-build URLs**: Builds nest under the parent pool — e.g. `/pool/<parent>/deck/<build>`. The original/canonical deck stays at `/pool/<parent>/deck`.
+- **Compact build chips**: Each chip shows the archetype nickname colored by base aspect (e.g. "Mothma Blue" in blue, "Pryce Green" in green) plus "by <builder>". The chip for the build you're currently viewing is highlighted.
+- **Archetype names from swuapi**: Nicknames are resolved live via `swuapi /archetypes/resolve` so you see the canonical name (e.g. "Mothma Blue") instead of the raw leader name.
+- **Dedup on rebuild**: If you've already built from a shared pool, clicking `+` again opens your existing build instead of creating a duplicate.
+- **Privacy cascades**: Toggling visibility on the parent pool cascades to all builds. Builds can't change their own visibility.
+
+### 🎨 Deckbuilder header polish
+- Vertical spacing across the header is normalized to a clean rem scale — equal 2rem gaps between each section transition (subtitle → buttons, chips → nav bar, nav bar → leaders & bases).
+
+### 🚧 Behind the beta flag
+- **Import Pool**: The Import Pool button on the homepage is now hidden completely unless you're a beta tester or admin.
+
 ## 05.05.2026
 
 ### 🆕 Import Pool (SPIKE — Friends of the Pod)

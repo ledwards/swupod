@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '../contexts/AuthContext'
 import { usePresence } from '../hooks/usePresence'
 import { usePublicPodsSocket } from '../hooks/usePublicPodsSocket'
+import { formatPoolLabel } from '../utils/poolDisplayName'
 import ReleaseNotes from './ReleaseNotes'
 import Button from './Button'
 import './LandingPage.css'
@@ -164,7 +165,7 @@ function LandingPage() {
         )}
         {activeDraft && (
           <div className="active-draft-banner">
-            <span>Live Pod: {activeDraft.draftName || activeDraft.setName || ''} Draft{activeDraft.createdAt ? ` ${new Date(activeDraft.createdAt).toLocaleDateString()}` : ''}</span>
+            <span>Live Pod: {activeDraft.draftName || formatPoolLabel(activeDraft.setName ?? activeDraft.setCode, 'draft')}{activeDraft.createdAt ? ` ${new Date(activeDraft.createdAt).toLocaleDateString()}` : ''}</span>
             <Button
               variant="primary"
               size="sm"
@@ -263,13 +264,15 @@ function LandingPage() {
                   <span className="mode-button-subtitle">Infinite copies of every card in a set</span>
                 </div>
               </button>
-              <button className="mode-button art-unit" onClick={() => router.push('/import')}>
-                <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.importPool}")` }} />
-                <div className="mode-button-content">
-                  <span className="mode-button-title">Import Pool</span>
-                  <span className="mode-button-subtitle">From your registered sealed sheet</span>
-                </div>
-              </button>
+              {hasBetaAccess && (
+                <button className="mode-button art-unit" onClick={() => router.push('/import')}>
+                  <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.importPool}")` }} />
+                  <div className="mode-button-content">
+                    <span className="mode-button-title">Import Pool</span>
+                    <span className="mode-button-subtitle">From your registered sealed sheet</span>
+                  </div>
+                </button>
+              )}
             </div>
           </div>
         </div>
