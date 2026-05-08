@@ -43,8 +43,8 @@ export const TABLE_NAMES: TableName[] = [
   'NoAspect',
 ]
 
-const MAIN_ASPECTS = new Set(['Vigilance', 'Command', 'Aggression', 'Cunning'])
-const SECONDARY_ASPECTS = new Set(['Heroism', 'Villainy'])
+export const MAIN_ASPECTS = new Set(['Vigilance', 'Command', 'Aggression', 'Cunning'])
+export const SECONDARY_ASPECTS = new Set(['Heroism', 'Villainy'])
 
 export function getCardTable(card: any): TableName | null {
   if (!card) return null
@@ -75,4 +75,71 @@ export function groupCardsByTable(cards: any[]): Map<TableName, any[]> {
     list.sort((a, b) => cardNumberOf(a.cardId) - cardNumberOf(b.cardId))
   }
   return result
+}
+
+/**
+ * Sub-group key WITHIN a table. Used for sub-aspect splitting so each
+ * extraction call has a smaller, more focused vocabulary.
+ *
+ * Single-aspect tables (Vigilance, Command, Aggression, Cunning):
+ *   - "<Aspect>+Heroism" — the Heroism sub-section of the table
+ *   - "<Aspect>+Villainy" — the Villainy sub-section
+ *   - "<Aspect>" — the alone sub-section
+ *
+ * Multicolor: split by PRIMARY PAIR (V+C, V+A, V+Cu, C+A, C+Cu, A+Cu).
+ * Three-aspect cards (e.g. V+C+H) are grouped under their two main
+ * aspects' pair — so V+C+H goes under V+C.
+ *
+ * Leaders / Bases / Heroism / Villainy / NoAspect: not split — return
+ * the table name itself.
+ */
+export function getCardSubGroup(card: any): string {
+  const table = getCardTable(card)
+  if (!table) return 'Unknown'
+  if (table === 'Leaders' || table === 'Bases' || table === 'NoAspect') return table
+  if (table === 'Heroism' || table === 'Villainy') return table
+
+  const aspects: string[] = card.aspects || []
+  const mains = aspects.filter((a) => MAIN_ASPECTS.has(a)).sort()
+  const secs = aspects.filter((a) => SECONDARY_ASPECTS.has(a))
+
+  if (table === 'Multicolor') {
+    // Primary pair from the two mains
+    return `Multicolor:${mains.join('+')}`
+  }
+  // Single-aspect table — split by secondary
+  if (secs.includes('Heroism')) return `${table}+Heroism`
+  if (secs.includes('Villainy')) return `${table}+Villainy`
+  return table
+}
+
+/**
+ * Group cards by sub-group key. Return entries are ordered so that, for
+ * a given table, sub-groups appear in a stable order driven by the lowest
+ * card number in each.
+ */
+export function groupCardsBySubGroup(cards: any[]): Array<{ subGroup: string; table: TableName; cards: any[] }> {
+  const buckets = new Map<string, any[]>()
+  for (const c of cards) {
+    const sg = getCardSubGroup(c)
+    if (!buckets.has(sg)) buckets.set(sg, [])
+    buckets.get(sg)!.push(c)
+  }
+  const rows = [...buckets.entries()].map(([sg, list]) => {
+    list.sort((a, b) => cardNumberOf(a.cardId) - cardNumberOf(b.cardId))
+    return {
+      subGroup: sg,
+      table: getCardTable(list[0]) as TableName,
+      cards: list,
+      minNumber: cardNumberOf(list[0].cardId),
+    }
+  })
+  // Order by table (canonical TABLE_NAMES order), then by minNumber within table
+  rows.sort((a, b) => {
+    const ta = TABLE_NAMES.indexOf(a.table)
+    const tb = TABLE_NAMES.indexOf(b.table)
+    if (ta !== tb) return ta - tb
+    return a.minNumber - b.minNumber
+  })
+  return rows.map(({ subGroup, table, cards }) => ({ subGroup, table, cards }))
 }

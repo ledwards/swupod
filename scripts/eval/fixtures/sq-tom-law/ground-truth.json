@@ -7,21 +7,13 @@
     "leaders": 6,
     "bases": 6
   },
-  "_note": "STARTER from model converged output (8 iter, all invariants passed). DECK SUM IS 35 in this starter — actual deck is 32 per user. Edit before treating as ground truth: verify each row against /tmp/sheet1.jpg + /tmp/sheet2.jpg, drop 3 over-marked deck inclusions, fix any qty mistakes, remove _note when done.",
   "rows": [
-    {
-      "name": "Jyn Erso",
-      "subtitle": "Time to Fight",
-      "type": "Leader",
-      "poolQty": 1,
-      "deckQty": 0
-    },
     {
       "name": "Vel Sartha",
       "subtitle": "Aldhani Insurgent",
       "type": "Leader",
       "poolQty": 1,
-      "deckQty": 0
+      "deckQty": 1
     },
     {
       "name": "Boba Fett",
@@ -49,10 +41,24 @@
       "subtitle": "I Got a Really Good Feeling",
       "type": "Leader",
       "poolQty": 1,
-      "deckQty": 1
+      "deckQty": 0
     },
     {
-      "name": "Great Pit of Carkoon",
+      "name": "Lando Calrissian",
+      "subtitle": "Full Sabacc",
+      "type": "Leader",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Coaxium Mine",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Daimyo's Palace",
       "subtitle": null,
       "type": "Base",
       "poolQty": 1,
@@ -74,13 +80,6 @@
     },
     {
       "name": "Canto Bight",
-      "subtitle": null,
-      "type": "Base",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Citadel Research Center",
       "subtitle": null,
       "type": "Base",
       "poolQty": 1,
@@ -126,13 +125,20 @@
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
-      "deckQty": 0
+      "deckQty": 1
     },
     {
       "name": "Droid Laser Turret",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 2,
+      "deckQty": 2
+    },
+    {
+      "name": "Incapacitate",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
       "deckQty": 0
     },
     {
@@ -147,14 +153,14 @@
       "subtitle": null,
       "type": "Event",
       "poolQty": 1,
-      "deckQty": 0
+      "deckQty": 1
     },
     {
       "name": "Mastery",
       "subtitle": null,
       "type": "Upgrade",
       "poolQty": 1,
-      "deckQty": 0
+      "deckQty": 1
     },
     {
       "name": "Rodian Bondsman",
@@ -182,10 +188,17 @@
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
-      "deckQty": 0
+      "deckQty": 1
     },
     {
       "name": "Watchful",
+      "subtitle": null,
+      "type": "Upgrade",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Targeted For Removal",
       "subtitle": null,
       "type": "Upgrade",
       "poolQty": 1,
@@ -224,7 +237,7 @@
       "subtitle": null,
       "type": "Event",
       "poolQty": 2,
-      "deckQty": 1
+      "deckQty": 0
     },
     {
       "name": "Common Cause",
@@ -245,7 +258,7 @@
       "subtitle": null,
       "type": "Unit",
       "poolQty": 2,
-      "deckQty": 1
+      "deckQty": 0
     },
     {
       "name": "Haymaker",
@@ -255,11 +268,25 @@
       "deckQty": 1
     },
     {
+      "name": "Khetanna",
+      "subtitle": "Upon the Dune Sea",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
       "name": "Putting a Team Together",
       "subtitle": null,
       "type": "Event",
       "poolQty": 1,
-      "deckQty": 1
+      "deckQty": 0
+    },
+    {
+      "name": "Stockpile",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
     },
     {
       "name": "Target Tagger",
@@ -273,42 +300,56 @@
       "subtitle": "Blastomech",
       "type": "Unit",
       "poolQty": 1,
-      "deckQty": 1
+      "deckQty": 0
+    },
+    {
+      "name": "Sebulba's Podracer",
+      "subtitle": "Taking the Lead",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Storm Raider",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
     },
     {
       "name": "B-Wing Skirmisher",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
-      "deckQty": 1
+      "deckQty": 0
+    },
+    {
+      "name": "Cavern Angels X-Wing",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
     },
     {
       "name": "Commence the Festivities",
       "subtitle": null,
       "type": "Event",
       "poolQty": 1,
-      "deckQty": 1
+      "deckQty": 0
     },
     {
       "name": "Daring Delve",
       "subtitle": null,
       "type": "Event",
       "poolQty": 1,
-      "deckQty": 1
-    },
-    {
-      "name": "Doctor Aphra",
-      "subtitle": "Digging For Answers",
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 1
+      "deckQty": 0
     },
     {
       "name": "Dogged Pursuers",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
-      "deckQty": 1
+      "deckQty": 0
     },
     {
       "name": "Every Day, More Lies",
@@ -318,11 +359,18 @@
       "deckQty": 0
     },
     {
+      "name": "Haxion Aggressor",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
       "name": "Ohnaka Gang Bandits",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
-      "deckQty": 1
+      "deckQty": 0
     },
     {
       "name": "Overcharged Transport",
@@ -339,7 +387,14 @@
       "deckQty": 0
     },
     {
-      "name": "Shifty Suspects",
+      "name": "Savareen Survivor",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Cutthroat Podracer",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
@@ -360,17 +415,45 @@
       "deckQty": 1
     },
     {
+      "name": "Rebel Blockade Runner",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
       "name": "Wookiee Guerilla",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
-      "deckQty": 1
+      "deckQty": 0
+    },
+    {
+      "name": "Backed by the Hutts",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Champion's KT9 Podracer",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
     },
     {
       "name": "Kage Elite",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 2,
+      "deckQty": 0
+    },
+    {
+      "name": "Lady Proxima",
+      "subtitle": "Where's the Money?",
+      "type": "Unit",
+      "poolQty": 1,
       "deckQty": 0
     },
     {
@@ -381,16 +464,23 @@
       "deckQty": 1
     },
     {
-      "name": "Windfall",
+      "name": "Scavenging Sandcrawler",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Unmarked Credits",
       "subtitle": null,
       "type": "Event",
       "poolQty": 1,
       "deckQty": 0
     },
     {
-      "name": "Black Sun Cabalist",
+      "name": "Windfall",
       "subtitle": null,
-      "type": "Unit",
+      "type": "Event",
       "poolQty": 1,
       "deckQty": 0
     },
@@ -409,28 +499,7 @@
       "deckQty": 1
     },
     {
-      "name": "Bank Job Fugitives",
-      "subtitle": null,
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 1
-    },
-    {
-      "name": "Hidden Hand Supplier",
-      "subtitle": null,
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Kessel Hulk",
-      "subtitle": null,
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Seasoned Tracker",
+      "name": "Black Sun Cabalist",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
@@ -439,27 +508,6 @@
     {
       "name": "Chewbacca",
       "subtitle": "Mighty Rescuer",
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 1
-    },
-    {
-      "name": "IG-88",
-      "subtitle": "Programmed to Kill",
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Baze Malbus",
-      "subtitle": "Good Luck",
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 1
-    },
-    {
-      "name": "Chirrut Îmwe",
-      "subtitle": "I Don't Need Luck",
       "type": "Unit",
       "poolQty": 1,
       "deckQty": 1
@@ -479,71 +527,22 @@
       "deckQty": 0
     },
     {
-      "name": "Bith Brute",
-      "subtitle": null,
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
       "name": "Chio Fain",
       "subtitle": "Four-Armed Slicer",
       "type": "Unit",
       "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Honnah",
-      "subtitle": "OINK! SQUEE!",
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "The Mandalorian",
-      "subtitle": "Let's See the Puck",
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Dengar",
-      "subtitle": "Take Your Shot",
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Maul",
-      "subtitle": "Master of the Shadow Collective",
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Defiant Hammerhead",
-      "subtitle": null,
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
+      "deckQty": 1
     },
     {
       "name": "L3-37",
       "subtitle": "Radical Instigator",
       "type": "Unit",
       "poolQty": 1,
-      "deckQty": 1
-    },
-    {
-      "name": "Jyn Erso",
-      "subtitle": "Take the Next Chance",
-      "type": "Unit",
-      "poolQty": 1,
       "deckQty": 0
     },
     {
-      "name": "Millennium Falcon",
-      "subtitle": "Dodging Patrols",
+      "name": "Quarren Contractor",
+      "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
       "deckQty": 0
@@ -556,8 +555,22 @@
       "deckQty": 0
     },
     {
+      "name": "Devaronian Doorbuster",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
       "name": "The Max Rebo Band",
       "subtitle": "Jatz-Wailers",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Interrogation Droid",
+      "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
       "deckQty": 0
@@ -570,8 +583,8 @@
       "deckQty": 0
     },
     {
-      "name": "Sullustan Sapper",
-      "subtitle": null,
+      "name": "Broken Horn",
+      "subtitle": "Vizago's Pride",
       "type": "Unit",
       "poolQty": 1,
       "deckQty": 0
@@ -591,63 +604,49 @@
       "deckQty": 1
     },
     {
-      "name": "Finn",
-      "subtitle": "Looking Closer",
+      "name": "Kanan Jarrus",
+      "subtitle": "Spectre One",
       "type": "Unit",
       "poolQty": 1,
-      "deckQty": 0
+      "deckQty": 1
     },
     {
-      "name": "Hondo Ohnaka",
-      "subtitle": "Plays By His Own Rules",
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Rhydonium Detonation",
+      "name": "Bank Job Fugitives",
       "subtitle": null,
-      "type": "Event",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Rio Durant",
-      "subtitle": "Beckett's Right Hands",
       "type": "Unit",
       "poolQty": 1,
-      "deckQty": 0
+      "deckQty": 1
     },
     {
-      "name": "Toydarian Technician",
+      "name": "Cartel Heavy Fighter",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
       "deckQty": 0
     },
     {
-      "name": "Two-Faced Troig",
+      "name": "Hidden Hand Supplier",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Kessel Hulk",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Seasoned Tracker",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
       "deckQty": 0
     },
     {
-      "name": "Val",
-      "subtitle": "It's Been a Ride, Babe",
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Mid Rim Sharpshooter (extra mark)",
-      "subtitle": null,
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Cartel Heavy Fighter (extra)",
+      "name": "Street Gang Recruiter",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,

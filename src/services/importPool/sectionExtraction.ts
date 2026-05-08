@@ -156,6 +156,22 @@ function buildTableSystemPrompt(
     })
     .join('\n')
 
+  // Stronger nudges for tables where the model has historically failed:
+  //   - Bases: model sometimes reads pool=2 on a base; truth is almost always 1
+  //   - Heroism / Villainy / NoAspect: small (≤8 cards) tables where model
+  //     has bailed and returned 0 marked rows even when there were marks
+  let tableSpecific = ''
+  if (tableName === 'Bases') {
+    tableSpecific +=
+      '\nTABLE-SPECIFIC: Bases are almost always poolQty=1 if marked. A base at poolQty=2 is RARE (would require the player to have drawn the same base from two different packs). Default to poolQty=1 for any marked base unless you can clearly see TWO distinct tally marks.\n'
+  }
+  if (tableCards.length <= 8) {
+    tableSpecific +=
+      '\nTABLE-SPECIFIC: this is a SMALL table (only ' +
+      tableCards.length +
+      ' cards). Do NOT bail with all blanks just because the table is short. Scan EVERY row carefully — many small sub-sections still contain 1-3 marked rows. Returning all-zeros for a small table when marks exist is the most common failure mode here.\n'
+  }
+
   let constraintSection = ''
   if (hint?.expectedPoolSum != null || hint?.expectedDeckSum != null) {
     constraintSection += '\nSTRUCTURAL CONSTRAINT — these counts are FIXED for this table by the rules of sealed:\n'
@@ -241,7 +257,7 @@ CRITICAL — confidence is about handwriting legibility, not about the card name
 
 When uncertain between "blank" and "faint mark", prefer poolQty=0 with confidence="medium". Over-marking is worse than under-marking — the user's resolve UI will catch low-conf cells.
 
-Return ALL ${tableCards.length} cards (most will have poolQty=0). Strict JSON, no prose.${constraintSection}${refineRecap}`
+Return ALL ${tableCards.length} cards (most will have poolQty=0). Strict JSON, no prose.${tableSpecific}${constraintSection}${refineRecap}`
 }
 
 export async function extractTableFromCrop(
@@ -337,4 +353,112 @@ export async function extractTableFromCrop(
     )
   }
   return { rows: parsed.rows || [], outputTokens: response.usage.output_tokens }
+}
+
+/**
+ * Run extractTableFromCrop N times in parallel and vote per card.
+ *
+ * Variance is real — the same crop + same prompt produces different
+ * counts across runs. Voting smooths it out: for each card, we take
+ * the most-common (poolQty, deckQty) across samples. Ties prefer 0
+ * (conservative — under-counting is recoverable in the resolve UI;
+ * over-counting requires the user to delete rows).
+ *
+ * Returned confidences reflect the agreement: "high" if all N samples
+ * agreed; "medium" if the majority agreed; "low" if no majority.
+ *
+ * If N=1, this is exactly equivalent to extractTableFromCrop.
+ */
+export async function extractTableMultiSample(
+  client: Anthropic,
+  cropBuffer: Buffer,
+  tableName: TableName,
+  tableCards: any[],
+  setCode: string,
+  samples: number,
+  hint?: TableExtractionHint,
+): Promise<{ rows: TableExtractionRow[]; outputTokens: number; samplesRun: number }> {
+  const n = Math.max(1, Math.min(5, samples))
+  if (tableCards.length === 0) {
+    return { rows: [], outputTokens: 0, samplesRun: 0 }
+  }
+  if (n === 1) {
+    const r = await extractTableFromCrop(client, cropBuffer, tableName, tableCards, setCode, hint)
+    return { ...r, samplesRun: 1 }
+  }
+
+  const sampleResults = await Promise.all(
+    Array.from({ length: n }).map(() =>
+      extractTableFromCrop(client, cropBuffer, tableName, tableCards, setCode, hint).catch(
+        (err) => {
+          console.warn(`[multi-sample] ${tableName}: sample failed: ${(err as Error).message}`)
+          return null
+        },
+      ),
+    ),
+  )
+  const goodResults = sampleResults.filter((r): r is { rows: TableExtractionRow[]; outputTokens: number } => !!r)
+  if (goodResults.length === 0) {
+    throw new Error(`extractTableMultiSample(${tableName}): all ${n} samples failed`)
+  }
+
+  // Vote per card: collect (pool, deck) tuples per cardNumber across samples,
+  // pick the most common; tie → prefer (0, 0). For mixed pool/deck observations
+  // on a card, vote independently then clamp deck ≤ pool.
+  type VoteCounts = { pool: Map<number, number>; deck: Map<number, number> }
+  const votes = new Map<number, VoteCounts>()
+  for (const card of tableCards) {
+    const num = (card.cardId.match(/[-_](\d+)$/) || [])[1]
+    if (num != null) {
+      votes.set(parseInt(num, 10), { pool: new Map(), deck: new Map() })
+    }
+  }
+  for (const result of goodResults) {
+    for (const row of result.rows) {
+      const v = votes.get(row.cardNumber)
+      if (!v) continue
+      v.pool.set(row.poolQty, (v.pool.get(row.poolQty) || 0) + 1)
+      v.deck.set(row.deckQty, (v.deck.get(row.deckQty) || 0) + 1)
+    }
+  }
+
+  function pickMode(m: Map<number, number>, totalSamples: number): { value: number; agreement: number } {
+    if (m.size === 0) return { value: 0, agreement: 0 }
+    let bestValue = 0
+    let bestCount = 0
+    // Iterate in ascending value order so ties prefer the lower (more conservative) value.
+    const sortedKeys = [...m.keys()].sort((a, b) => a - b)
+    for (const v of sortedKeys) {
+      const c = m.get(v)!
+      if (c > bestCount) {
+        bestValue = v
+        bestCount = c
+      }
+    }
+    return { value: bestValue, agreement: bestCount / totalSamples }
+  }
+
+  const totalSamples = goodResults.length
+  const finalRows: TableExtractionRow[] = []
+  for (const card of tableCards) {
+    const num = parseInt((card.cardId.match(/[-_](\d+)$/) || [])[1] || '0', 10)
+    const v = votes.get(num)!
+    const poolPick = pickMode(v.pool, totalSamples)
+    const deckPick = pickMode(v.deck, totalSamples)
+    let pool = poolPick.value
+    let deck = deckPick.value
+    if (deck > pool) deck = pool // structural enforcement
+    const conf = (a: number): 'high' | 'medium' | 'low' =>
+      a >= 0.99 ? 'high' : a >= 0.5 ? 'medium' : 'low'
+    finalRows.push({
+      cardNumber: num,
+      poolQty: pool,
+      deckQty: deck,
+      poolQtyConfidence: conf(poolPick.agreement),
+      deckQtyConfidence: conf(deckPick.agreement),
+    })
+  }
+
+  const totalOutput = goodResults.reduce((s, r) => s + r.outputTokens, 0)
+  return { rows: finalRows, outputTokens: totalOutput, samplesRun: totalSamples }
 }

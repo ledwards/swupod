@@ -26,6 +26,7 @@ import { preprocessImageForExtraction } from '../src/services/importPool/preproc
 import {
   TABLE_NAMES,
   groupCardsByTable,
+  groupCardsBySubGroup,
   cardNumberOf,
   type TableName,
 } from '../src/services/importPool/tableGrouping'
@@ -33,6 +34,7 @@ import {
   cropForTable,
   cropOriginalAndPreprocess,
   extractTableFromCrop,
+  extractTableMultiSample,
 } from '../src/services/importPool/sectionExtraction'
 
 const MODEL = 'claude-opus-4-7'
@@ -999,98 +1001,142 @@ export async function extractPoolFromImages(
   }
   const phase1Elapsed = Date.now() - phase1Start
 
-  // Phase 2: per-table parallel extraction. For tables Phase 1 didn't
-  // bound, fall back to extracting from photo 0 in full — Claude still
-  // gets the closed vocab, just sees more visual area.
+  // Phase 2: per-SUB-GROUP parallel extraction with multi-sample voting.
   //
-  // Leaders/Bases get a STRUCTURAL CONSTRAINT hint up front: a sealed pool
-  // always has exactly 6 leaders + 6 bases (poolQty sum) and exactly 1
-  // active leader + 1 active base (deckQty sum). The model is told this
-  // before its first attempt; if it still misses, a refine pass below
-  // re-runs that table with feedback.
+  // Per table, cards are split by sub-aspect (e.g. Vigilance table → three
+  // sub-groups: V+Heroism, V+Villainy, V-alone; Multicolor → six pair
+  // sub-groups). Each sub-group is a separate call with a smaller closed
+  // vocab — better focus, less hallucination on long lists.
+  //
+  // Each sub-group runs N=3 samples in parallel; we vote per card. This
+  // smooths the run-to-run variance that single-sample extraction has
+  // shown.
+  //
+  // Leaders/Bases get a STRUCTURAL CONSTRAINT hint up front: a sealed
+  // pool always has exactly 6 leaders + 6 bases and exactly 1 active
+  // each. If the voted result is off, a refine pass re-runs.
+  const SAMPLES_PER_SUBGROUP = 3
   const phase2Start = Date.now()
-  type TableJobResult = {
-    tableName: TableName
-    rows: any[]
-    outputTokens: number
-    fellBack: boolean
-    cropBuf: Buffer
-  }
-  const tableJobs: Promise<TableJobResult>[] = TABLE_NAMES.map(async (tableName) => {
-    const tableCards = tableGroups.get(tableName) || []
-    if (tableCards.length === 0) {
-      return { tableName, rows: [], outputTokens: 0, fellBack: false, cropBuf: preprocessedBuffers[0] }
-    }
 
+  // Crop each TABLE once; sub-groups within a table reuse the crop.
+  const tableCrops = new Map<TableName, { cropBuf: Buffer; fellBack: boolean }>()
+  for (const tableName of TABLE_NAMES) {
     const sectionBounds = phase1.sections.find((s: any) => s.name === tableName)
-    let cropBuf: Buffer
-    let fellBack = false
     if (
       sectionBounds &&
       sectionBounds.photoIndex >= 0 &&
       sectionBounds.photoIndex < originalBuffers.length
     ) {
       try {
-        // Crop ORIGINAL at native resolution, THEN apply the contrast
-        // pipeline to just the section. Better column-pixel density and
-        // tighter per-section dynamic range than crop-of-preprocessed.
-        cropBuf = await cropOriginalAndPreprocess(
+        const cropBuf = await cropOriginalAndPreprocess(
           originalBuffers[sectionBounds.photoIndex],
           sectionBounds,
         )
+        tableCrops.set(tableName, { cropBuf, fellBack: false })
       } catch {
-        cropBuf = preprocessedBuffers[0]
-        fellBack = true
+        tableCrops.set(tableName, { cropBuf: preprocessedBuffers[0], fellBack: true })
       }
     } else {
-      cropBuf = preprocessedBuffers[0]
-      fellBack = true
+      tableCrops.set(tableName, { cropBuf: preprocessedBuffers[0], fellBack: true })
     }
+  }
 
-    const hint =
-      tableName === 'Leaders' || tableName === 'Bases'
-        ? { expectedPoolSum: 6, expectedDeckSum: 1 }
-        : undefined
+  // Build sub-group jobs across all tables.
+  const subGroups = groupCardsBySubGroup(allCards)
 
-    const result = await extractTableFromCrop(client, cropBuf, tableName, tableCards, setCode, hint)
-    return { tableName, rows: result.rows, outputTokens: result.outputTokens, fellBack, cropBuf }
+  type SubGroupJobResult = {
+    subGroup: string
+    tableName: TableName
+    rows: any[]
+    outputTokens: number
+    fellBack: boolean
+    cardCount: number
+    samplesRun: number
+  }
+
+  const jobs: Promise<SubGroupJobResult>[] = subGroups.map(async ({ subGroup, table, cards: sgCards }) => {
+    const tableEntry = tableCrops.get(table)!
+    const isLeadersOrBases = table === 'Leaders' || table === 'Bases'
+    const hint = isLeadersOrBases ? { expectedPoolSum: 6, expectedDeckSum: 1 } : undefined
+
+    const result = await extractTableMultiSample(
+      client,
+      tableEntry.cropBuf,
+      table,
+      sgCards,
+      setCode,
+      SAMPLES_PER_SUBGROUP,
+      hint,
+    )
+    return {
+      subGroup,
+      tableName: table,
+      rows: result.rows,
+      outputTokens: result.outputTokens,
+      fellBack: tableEntry.fellBack,
+      cardCount: sgCards.length,
+      samplesRun: result.samplesRun,
+    }
   })
-  const tableResults = await Promise.all(tableJobs)
+  const sgResults = await Promise.all(jobs)
 
-  // Refine pass for Leaders/Bases if their structural constraints are off.
-  // These tables have FIXED counts (pool sum 6, deck sum 1) so we can
-  // detect and re-extract with feedback. Done sequentially because there
-  // are at most 2 of them and they're cheap.
+  // Aggregate by table for invariant checks and reporting.
+  const byTable = new Map<TableName, SubGroupJobResult[]>()
+  for (const r of sgResults) {
+    if (!byTable.has(r.tableName)) byTable.set(r.tableName, [])
+    byTable.get(r.tableName)!.push(r)
+  }
+
+  // Refine pass for Leaders/Bases if voted result violates the 6/1 rule.
+  // Only one sub-group per table here, so this is straightforward.
   for (const tableName of ['Leaders', 'Bases'] as const) {
-    const tr = tableResults.find((t) => t.tableName === tableName)
-    if (!tr || tr.rows.length === 0) continue
-    const tableCards = tableGroups.get(tableName) || []
-    const poolSum = tr.rows.reduce((s: number, r: any) => s + Number(r.poolQty || 0), 0)
-    const deckSum = tr.rows.reduce((s: number, r: any) => s + Number(r.deckQty || 0), 0)
+    const sgs = byTable.get(tableName) || []
+    if (sgs.length !== 1) continue
+    const sg = sgs[0]
+    const poolSum = sg.rows.reduce((s: number, r: any) => s + Number(r.poolQty || 0), 0)
+    const deckSum = sg.rows.reduce((s: number, r: any) => s + Number(r.deckQty || 0), 0)
     if (poolSum === 6 && deckSum === 1) continue
 
     const gapParts: string[] = []
-    if (poolSum !== 6) gapParts.push(`poolQty sum was ${poolSum}, must be 6 (gap: ${6 - poolSum})`)
-    if (deckSum !== 1) gapParts.push(`deckQty sum was ${deckSum}, must be 1 (gap: ${1 - deckSum})`)
+    if (poolSum !== 6) gapParts.push(`poolQty sum was ${poolSum}, must be 6`)
+    if (deckSum !== 1) gapParts.push(`deckQty sum was ${deckSum}, must be 1`)
 
     const refineHint = {
       expectedPoolSum: 6,
       expectedDeckSum: 1,
-      previousAttempt: { rows: tr.rows, gap: gapParts.join('; ') },
+      previousAttempt: { rows: sg.rows, gap: gapParts.join('; ') },
     }
+    const tableEntry = tableCrops.get(tableName)!
+    const tableCards = tableGroups.get(tableName) || []
     const refineResult = await extractTableFromCrop(
       client,
-      tr.cropBuf,
+      tableEntry.cropBuf,
       tableName,
       tableCards,
       setCode,
       refineHint,
     )
-    tr.rows = refineResult.rows
-    tr.outputTokens += refineResult.outputTokens
+    sg.rows = refineResult.rows
+    sg.outputTokens += refineResult.outputTokens
   }
 
   const phase2Elapsed = Date.now() - phase2Start
+
+  // Build the equivalent of the old tableResults shape so the rest of the
+  // function (aggregation, iteration log, return) doesn't need to change.
+  type TableJobResult = {
+    tableName: TableName
+    rows: any[]
+    outputTokens: number
+    fellBack: boolean
+  }
+  const tableResults: TableJobResult[] = TABLE_NAMES.map((tableName) => {
+    const sgs = byTable.get(tableName) || []
+    const allRows = sgs.flatMap((s) => s.rows)
+    const totalOutput = sgs.reduce((s, r) => s + r.outputTokens, 0)
+    const fellBack = sgs.some((s) => s.fellBack)
+    return { tableName, rows: allRows, outputTokens: totalOutput, fellBack }
+  })
 
   // Aggregate: convert table results to ExtractedRow[] using the cardCache
   // for name/subtitle/aspects. Card number → card lookup.
