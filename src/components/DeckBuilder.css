@@ -136,7 +136,7 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 0;
-  margin-bottom: 0.75rem;
+  margin-bottom: 2rem;
   padding: 1rem;
   background: rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -559,7 +559,7 @@
 
 /* Leaders & Bases Section - Flex Container */
 .leaders-bases-section {
-  margin: 0.25rem;
+  margin: 0;
   padding: 1rem;
   background: rgba(0, 0, 0, 0.6);
   border: 2px solid rgba(255, 255, 255, 0.2);
