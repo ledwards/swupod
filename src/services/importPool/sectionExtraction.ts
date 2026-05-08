@@ -176,7 +176,9 @@ function buildTableSystemPrompt(
   let tableSpecific = ''
   if (tableName === 'Bases') {
     tableSpecific +=
-      '\nTABLE-SPECIFIC: Bases are almost always poolQty=1 if marked. A base at poolQty=2 is RARE (would require the player to have drawn the same base from two different packs). Default to poolQty=1 for any marked base unless you can clearly see TWO distinct tally marks.\n'
+      '\nTABLE-SPECIFIC: Bases.\n' +
+      '  - Each base is almost always poolQty=1 if marked. A base at poolQty=2 is RARE — default to 1 unless you can clearly see TWO distinct tally marks.\n' +
+      '  - A sealed pool has 6 COMMON bases (one per pack) PLUS 0 or more RARE bases (rare slot in some packs). Total marked bases can be 6, 7, 8, or more — DO NOT artificially constrain to exactly 6. Mark every base where you see a tally; the total is whatever it is.\n'
   }
   if (tableCards.length <= 8) {
     tableSpecific +=

@@ -1057,9 +1057,15 @@ export async function extractPoolFromImages(
 
   const jobs: Promise<SubGroupJobResult>[] = subGroups.map(async ({ subGroup, table, cards: sgCards }) => {
     const tableEntry = tableCrops.get(table)!
-    const isLeadersOrBases = table === 'Leaders' || table === 'Bases'
-    const hint = isLeadersOrBases ? { expectedPoolSum: 6, expectedDeckSum: 1 } : undefined
-
+    // Hint per table: Leaders has a fixed sum of 6 (one per pack, no rare
+    // tier). Bases has ≥6 (6 commons + variable rare bases) so we do NOT
+    // give it a hard sum hint; the prompt's table-specific block tells
+    // it to count freely. Note also that deckQty for active leader/base
+    // can be 0 (sheet incomplete) or 1 — so we don't pin that either at
+    // the first-pass hint level; the structural refine pass below
+    // enforces the more nuanced rule.
+    const hint =
+      table === 'Leaders' ? { expectedPoolSum: 6 } : undefined
     const samplesForThis = samplesFor(sgCards.length)
     const result = await extractTableMultiSample(
       client,
@@ -1104,8 +1110,10 @@ export async function extractPoolFromImages(
     const sgCards = (groupCardsBySubGroup(allCards).find(
       (g) => g.subGroup === sg.subGroup,
     )?.cards || [])
-    const isLeadersOrBases = sg.tableName === 'Leaders' || sg.tableName === 'Bases'
-    const baseHint = isLeadersOrBases ? { expectedPoolSum: 6, expectedDeckSum: 1 } : {}
+    // Same hint shape as the first pass — Leaders gets a sum constraint,
+    // Bases gets a free count.
+    const baseHint =
+      sg.tableName === 'Leaders' ? { expectedPoolSum: 6 } : {}
     try {
       const second = await extractTableMultiSample(
         client,
@@ -1126,25 +1134,37 @@ export async function extractPoolFromImages(
     }
   }
 
-  // Refine pass for Leaders/Bases if voted result violates the 6/1 rule.
-  // Only one sub-group per table here, so this is straightforward.
+  // Structural refine pass for Leaders/Bases.
+  //
+  // Leaders: poolSum MUST equal 6 (no rare leaders). deckSum should be
+  // 0 or 1 (player picks one — or none if sheet incomplete).
+  //
+  // Bases: poolSum MUST be ≥ 6 (6 commons + 0 or more rare bases).
+  // deckSum should be 0 or 1.
+  //
+  // If voted result violates these, run one targeted refine call.
   for (const tableName of ['Leaders', 'Bases'] as const) {
     const sgs = byTable.get(tableName) || []
     if (sgs.length !== 1) continue
     const sg = sgs[0]
     const poolSum = sg.rows.reduce((s: number, r: any) => s + Number(r.poolQty || 0), 0)
     const deckSum = sg.rows.reduce((s: number, r: any) => s + Number(r.deckQty || 0), 0)
-    if (poolSum === 6 && deckSum === 1) continue
 
     const gapParts: string[] = []
-    if (poolSum !== 6) gapParts.push(`poolQty sum was ${poolSum}, must be 6`)
-    if (deckSum !== 1) gapParts.push(`deckQty sum was ${deckSum}, must be 1`)
-
-    const refineHint = {
-      expectedPoolSum: 6,
-      expectedDeckSum: 1,
-      previousAttempt: { rows: sg.rows, gap: gapParts.join('; ') },
+    if (tableName === 'Leaders') {
+      if (poolSum !== 6) gapParts.push(`poolQty sum was ${poolSum}, must be 6`)
+      if (deckSum > 1) gapParts.push(`deckQty sum was ${deckSum}, must be 0 or 1`)
+    } else {
+      // Bases: only complain if UNDER 6
+      if (poolSum < 6) gapParts.push(`poolQty sum was ${poolSum}, must be ≥6`)
+      if (deckSum > 1) gapParts.push(`deckQty sum was ${deckSum}, must be 0 or 1`)
     }
+    if (gapParts.length === 0) continue
+
+    const refineHint =
+      tableName === 'Leaders'
+        ? { expectedPoolSum: 6, previousAttempt: { rows: sg.rows, gap: gapParts.join('; ') } }
+        : { previousAttempt: { rows: sg.rows, gap: gapParts.join('; ') } }
     const tableEntry = tableCrops.get(tableName)!
     const tableCards = tableGroups.get(tableName) || []
     const refineResult = await extractTableFromCrop(

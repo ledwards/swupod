@@ -116,13 +116,15 @@ async function main() {
     }
   }
 
-  // Sanity warnings (don't block — user has the final say)
+  // Sanity warnings (don't block — user has the final say). Structural
+  // rules: pool=96 hard, leader pool=6 exact, base pool ≥6 (6 commons +
+  // rare bases), leader/base deck 0 or 1 (player may skip selection).
   const warns: string[] = []
   if (poolSum !== 96) warns.push(`poolSum=${poolSum} (expected 96)`)
   if (leaderPool !== 6) warns.push(`leaderPool=${leaderPool} (expected 6)`)
-  if (leaderDeck !== 1) warns.push(`leaderDeck=${leaderDeck} (expected 1)`)
-  if (basePool !== 6) warns.push(`basePool=${basePool} (expected 6)`)
-  if (baseDeck !== 1) warns.push(`baseDeck=${baseDeck} (expected 1)`)
+  if (leaderDeck > 1) warns.push(`leaderDeck=${leaderDeck} (expected 0 or 1)`)
+  if (basePool < 6) warns.push(`basePool=${basePool} (expected ≥6, 6 commons + rare bases)`)
+  if (baseDeck > 1) warns.push(`baseDeck=${baseDeck} (expected 0 or 1)`)
 
   const out = {
     fixtureName: FIXTURE,

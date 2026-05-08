@@ -2,26 +2,30 @@
 /**
  * Sealed-pool extraction invariants.
  *
- * The user-visible goal of an Import Pool extraction is hitting four
- * structural totals that any legal sealed pool must satisfy:
+ * The user-visible goal of an Import Pool extraction is hitting structural
+ * totals that any legal sealed pool must satisfy:
  *
  *   - sum(poolQty) === 96             (6 packs × 16 cards)
- *   - 30 ≤ sum(deckQty) ≤ 35          (30-card minimum, ~32 typical with leader+base)
+ *   - 30 ≤ sum(deckQty) ≤ 35          (30-card minimum, ~32 typical when leader+base picked)
  *   - sum(leader poolQty) === 6       (one leader per pack)
- *   - sum(base poolQty) === 6         (one base per pack)
+ *   - sum(base poolQty) ≥ 6           (six commons; rare bases add to this)
+ *   - 0 ≤ sum(leader deckQty) ≤ 1     (player picks one — or none if sheet incomplete)
+ *   - 0 ≤ sum(base deckQty)   ≤ 1
  *   - deckQty ≤ poolQty per row       (deck is a subset of pool)
  *
- * These are auto-checkable without per-card ground truth. The runtime
- * extraction loop uses `checkInvariants` as the convergence test; when
- * it fails, `describeGap` produces the user-message text fed back into
- * the next refine pass.
+ * Note on bases: SOR-LAW packs include 6 common bases plus optionally one
+ * or more rare bases (rare-base slot is per-pack random), so a sealed
+ * pool can have 6, 7, or more bases marked. We enforce ≥6 (under-count
+ * is a real issue) but treat extra bases as legitimate.
  */
 
 export const POOL_TARGET = 96
 export const DECK_MIN = 30
 export const DECK_MAX = 35
-export const LEADER_TARGET = 6
-export const BASE_TARGET = 6
+export const LEADER_TARGET = 6 // exact
+export const BASE_MIN = 6 // ≥ 6 (rare-base slots can push this higher)
+/** @deprecated alias for BASE_MIN; kept for backwards compatibility. */
+export const BASE_TARGET = BASE_MIN
 
 export interface ExtractionInvariantStatus {
   passing: boolean
@@ -70,8 +74,8 @@ export function checkInvariants(rows: InvariantInputRow[]): ExtractionInvariantS
   if (leaderCount !== LEADER_TARGET) {
     failures.push(`leaderCount=${leaderCount}, expected ${LEADER_TARGET}`)
   }
-  if (baseCount !== BASE_TARGET) {
-    failures.push(`baseCount=${baseCount}, expected ${BASE_TARGET}`)
+  if (baseCount < BASE_MIN) {
+    failures.push(`baseCount=${baseCount}, expected ≥${BASE_MIN} (6 commons + 0 or more rare bases)`)
   }
   if (subsetViolations > 0) {
     failures.push(`${subsetViolations} rows with deckQty > poolQty`)
@@ -100,7 +104,10 @@ export function invariantDistance(s: ExtractionInvariantStatus): number {
   if (s.deckSum < DECK_MIN) d += (DECK_MIN - s.deckSum) * 1
   if (s.deckSum > DECK_MAX) d += (s.deckSum - DECK_MAX) * 1
   d += Math.abs(s.leaderCount - LEADER_TARGET) * 2
-  d += Math.abs(s.baseCount - BASE_TARGET) * 2
+  // Base distance: only counts when UNDER the minimum. Rare-base slots
+  // legitimately push baseCount above 6, so 7 or 8 is not a "distance"
+  // away from correct.
+  if (s.baseCount < BASE_MIN) d += (BASE_MIN - s.baseCount) * 2
   d += s.subsetViolations * 5
   return d
 }

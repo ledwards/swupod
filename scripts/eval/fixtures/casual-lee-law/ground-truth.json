@@ -3,22 +3,28 @@
   "setCode": "LAW",
   "expectedTotals": {
     "pool": 96,
-    "deck": 32,
+    "deck": 30,
     "leaders": 6,
     "bases": 6
   },
-  "_note": "STARTER from model run (2026-05-08T02:18:42.673Z). poolSum=94 deckSum=25. VERIFY against photos: walk each table, drop hallucinated rows, add missed rows, fix qty mistakes. Remove _note when done.",
   "rows": [
     {
       "name": "Tobias Beckett",
       "subtitle": "People are Predictable",
       "type": "Leader",
       "poolQty": 1,
-      "deckQty": 1
+      "deckQty": 0
     },
     {
-      "name": "Agent Kallus",
-      "subtitle": "Reconsider Your Allegiance",
+      "name": "Aurra Sing",
+      "subtitle": "Assassin",
+      "type": "Leader",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Director Krennic",
+      "subtitle": "Amidst My Achievement",
       "type": "Leader",
       "poolQty": 1,
       "deckQty": 0
@@ -45,20 +51,6 @@
       "deckQty": 0
     },
     {
-      "name": "Lando Calrissian",
-      "subtitle": "Full Sabacc",
-      "type": "Leader",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Daimyo's Palace",
-      "subtitle": null,
-      "type": "Base",
-      "poolQty": 1,
-      "deckQty": 1
-    },
-    {
       "name": "Coaxium Mine",
       "subtitle": null,
       "type": "Base",
@@ -66,7 +58,7 @@
       "deckQty": 0
     },
     {
-      "name": "Aldhani Garrison",
+      "name": "Daimyo's Palace",
       "subtitle": null,
       "type": "Base",
       "poolQty": 1,
@@ -94,9 +86,16 @@
       "deckQty": 0
     },
     {
-      "name": "Vandor Range Troopers",
+      "name": "Canto Bight",
       "subtitle": null,
-      "type": "Unit",
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Partisan Hideout",
+      "subtitle": null,
+      "type": "Base",
       "poolQty": 1,
       "deckQty": 0
     },
@@ -108,11 +107,25 @@
       "deckQty": 0
     },
     {
+      "name": "Vandor Range Troopers",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
       "name": "Cinta Kaz",
       "subtitle": "Stone Cold and Fearless",
       "type": "Unit",
       "poolQty": 1,
       "deckQty": 0
+    },
+    {
+      "name": "Alkenzi Patroller",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
     },
     {
       "name": "Boonta Eve Flagbearer",
@@ -122,7 +135,35 @@
       "deckQty": 0
     },
     {
-      "name": "Alkenzi Patroller",
+      "name": "Droid Laser Turret",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Kill Switch",
+      "subtitle": null,
+      "type": "Upgrade",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Lost and Forgotten",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Mastery",
+      "subtitle": null,
+      "type": "Upgrade",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Rickety Quadjumper",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
@@ -136,53 +177,25 @@
       "deckQty": 0
     },
     {
-      "name": "Droid Laser Turret",
-      "subtitle": null,
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Vigilant Scouts",
-      "subtitle": null,
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
       "name": "Syndicate Security",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Kill Switch",
-      "subtitle": null,
-      "type": "Upgrade",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Mastery",
-      "subtitle": null,
-      "type": "Upgrade",
-      "poolQty": 1,
-      "deckQty": 0
+      "deckQty": 1
     },
     {
       "name": "The Tree Remembers",
       "subtitle": null,
       "type": "Event",
       "poolQty": 1,
-      "deckQty": 0
+      "deckQty": 1
     },
     {
-      "name": "Lost and Forgotten",
+      "name": "Vigilant Scouts",
       "subtitle": null,
-      "type": "Event",
+      "type": "Unit",
       "poolQty": 1,
-      "deckQty": 0
+      "deckQty": 1
     },
     {
       "name": "Ruthless Duo",
@@ -192,16 +205,16 @@
       "deckQty": 0
     },
     {
-      "name": "Undercity Hunting Team",
+      "name": "Targeted For Removal",
       "subtitle": null,
-      "type": "Unit",
+      "type": "Upgrade",
       "poolQty": 1,
       "deckQty": 0
     },
     {
-      "name": "Targeted For Removal",
+      "name": "Undercity Hunting Team",
       "subtitle": null,
-      "type": "Upgrade",
+      "type": "Unit",
       "poolQty": 1,
       "deckQty": 0
     },
@@ -220,14 +233,14 @@
       "deckQty": 0
     },
     {
-      "name": "Follower of the Code",
+      "name": "Expendable Mercenary",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
-      "deckQty": 1
+      "deckQty": 0
     },
     {
-      "name": "Partisan Infantry",
+      "name": "Follower of the Code",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
@@ -241,7 +254,14 @@
       "deckQty": 1
     },
     {
-      "name": "Target Tagger",
+      "name": "Haymaker",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Hidden Hunters",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
@@ -255,14 +275,14 @@
       "deckQty": 0
     },
     {
-      "name": "Expendable Mercenary",
+      "name": "Mercenary Fleet",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
-      "deckQty": 0
+      "deckQty": 1
     },
     {
-      "name": "Hidden Hunters",
+      "name": "Partisan Infantry",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
@@ -276,25 +296,11 @@
       "deckQty": 0
     },
     {
-      "name": "Mercenary Fleet",
+      "name": "Target Tagger",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
       "deckQty": 1
-    },
-    {
-      "name": "Haymaker",
-      "subtitle": null,
-      "type": "Event",
-      "poolQty": 1,
-      "deckQty": 1
-    },
-    {
-      "name": "B-Wing Skirmisher",
-      "subtitle": null,
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
     },
     {
       "name": "Aerie",
@@ -304,7 +310,7 @@
       "deckQty": 0
     },
     {
-      "name": "Cavern Angels X-Wing",
+      "name": "B-Wing Skirmisher",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
@@ -318,35 +324,7 @@
       "deckQty": 0
     },
     {
-      "name": "Mid Rim Sharpshooter",
-      "subtitle": null,
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Relentless Hunters",
-      "subtitle": null,
-      "type": "Unit",
-      "poolQty": 3,
-      "deckQty": 0
-    },
-    {
-      "name": "Shifty Suspects",
-      "subtitle": null,
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Dogged Pursuers",
-      "subtitle": null,
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Ohnaka Gang Bandits",
+      "name": "Cavern Angels X-Wing",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
@@ -358,6 +336,13 @@
       "type": "Event",
       "poolQty": 1,
       "deckQty": 1
+    },
+    {
+      "name": "Dogged Pursuers",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
     },
     {
       "name": "Every Day, More Lies",
@@ -374,16 +359,44 @@
       "deckQty": 1
     },
     {
-      "name": "That's a Rock",
+      "name": "Haxion Aggressor",
       "subtitle": null,
-      "type": "Event",
+      "type": "Unit",
       "poolQty": 1,
       "deckQty": 0
     },
     {
-      "name": "Nihil Stormsower",
+      "name": "Mid Rim Sharpshooter",
       "subtitle": null,
       "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Ohnaka Gang Bandits",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Overcharged Transport",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 3,
+      "deckQty": 0
+    },
+    {
+      "name": "Shifty Suspects",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "That's a Rock",
+      "subtitle": null,
+      "type": "Event",
       "poolQty": 1,
       "deckQty": 0
     },
@@ -395,7 +408,7 @@
       "deckQty": 0
     },
     {
-      "name": "Wookiee Guerilla",
+      "name": "Nihil Stormsower",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
@@ -409,11 +422,11 @@
       "deckQty": 0
     },
     {
-      "name": "Rookie Rocket-jumper",
+      "name": "Wookiee Guerilla",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
-      "deckQty": 1
+      "deckQty": 0
     },
     {
       "name": "Canyon Frontrunner",
@@ -430,29 +443,8 @@
       "deckQty": 1
     },
     {
-      "name": "Scavenging Sandcrawler",
-      "subtitle": null,
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
       "name": "Guild Ambush Team",
       "subtitle": null,
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 1
-    },
-    {
-      "name": "Milodon Rider",
-      "subtitle": null,
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 1
-    },
-    {
-      "name": "The Blade Wing",
-      "subtitle": "The Secret of Shantipole",
       "type": "Unit",
       "poolQty": 1,
       "deckQty": 1
@@ -463,6 +455,34 @@
       "type": "Event",
       "poolQty": 1,
       "deckQty": 0
+    },
+    {
+      "name": "Milodon Rider",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Rookie Rocket-jumper",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Scavenging Sandcrawler",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "The Blade Wing",
+      "subtitle": "The Secret of Shantipole",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
     },
     {
       "name": "Transmission Jamming",
@@ -507,13 +527,6 @@
       "deckQty": 0
     },
     {
-      "name": "Chio Fain",
-      "subtitle": "Four-Armed Slicer",
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 1
-    },
-    {
       "name": "Bith Brute",
       "subtitle": null,
       "type": "Unit",
@@ -521,8 +534,15 @@
       "deckQty": 1
     },
     {
-      "name": "Honnah",
-      "subtitle": "OINK! SQUEE!",
+      "name": "Chio Fain",
+      "subtitle": "Four-Armed Slicer",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "The Mandalorian",
+      "subtitle": "Let's See the Puck",
       "type": "Unit",
       "poolQty": 1,
       "deckQty": 0
@@ -535,15 +555,15 @@
       "deckQty": 0
     },
     {
-      "name": "Honor-Bound Partisan",
-      "subtitle": null,
+      "name": "Highsinger",
+      "subtitle": "Deadly Droid",
       "type": "Unit",
       "poolQty": 1,
       "deckQty": 0
     },
     {
-      "name": "Highsinger",
-      "subtitle": "Deadly Droid",
+      "name": "Honor-Bound Partisan",
+      "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
       "deckQty": 0
@@ -591,7 +611,14 @@
       "deckQty": 1
     },
     {
-      "name": "Two-Faced Troig",
+      "name": "Cartel Heavy Fighter",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 2,
+      "deckQty": 0
+    },
+    {
+      "name": "Criminal Contact",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
@@ -605,28 +632,14 @@
       "deckQty": 0
     },
     {
-      "name": "Criminal Contact",
-      "subtitle": null,
-      "type": "Unit",
-      "poolQty": 1,
-      "deckQty": 0
-    },
-    {
-      "name": "Cartel Heavy Fighter",
-      "subtitle": null,
-      "type": "Unit",
-      "poolQty": 2,
-      "deckQty": 0
-    },
-    {
-      "name": "Seasoned Tracker",
+      "name": "Kessel Hulk",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
       "deckQty": 1
     },
     {
-      "name": "Kessel Hulk",
+      "name": "Seasoned Tracker",
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
