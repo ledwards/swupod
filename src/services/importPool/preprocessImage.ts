@@ -58,13 +58,13 @@ export async function preprocessImageForExtraction(buffer: Buffer): Promise<Buff
     // Cap dimension — Anthropic downsamples above this anyway, so saving
     // bytes here costs nothing.
     .resize({ width: MAX_DIM, height: MAX_DIM, fit: 'inside', withoutEnlargement: true })
-    // Normalise: stretch the histogram so darkest pixel maps to 0 and
-    // brightest to 255. Compensates for under-exposed phone photos.
-    .normalise()
-    // Linear (1.3, -30): contrast multiply with negative offset. Makes
-    // dark marks darker against a bright sheet.
-    .linear(1.3, -30)
     // Sharpen sigma=1.0: edge-enhance to make tally marks pop.
+    //
+    // No normalise() / linear() here. Earlier I had .normalise().linear(1.3,-30)
+    // in this pipeline, but on photos with uneven brightness (sheet edge in
+    // shadow, lighting gradient), normalise() stretches the histogram against
+    // the dark area and faint pencil marks get mapped to nearly-white. Pure
+    // sharpen is robust across both well-lit and high-resolution casual photos.
     .sharpen({ sigma: 1.0 })
     .jpeg({ quality: 95 })
     .toBuffer()

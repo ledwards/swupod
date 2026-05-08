@@ -122,11 +122,11 @@ export async function cropOriginalAndPreprocess(
     )
   }
   // Cap at 2576 only AFTER cropping — most crops are well under this anyway.
+  // No normalise()/linear() — see preprocessImage.ts for why (uneven crop
+  // brightness causes normalise to stretch faint marks toward white).
   return await sharp(rotated)
     .extract({ left, top, width, height })
     .resize({ width: 2576, height: 2576, fit: 'inside', withoutEnlargement: true })
-    .normalise()
-    .linear(1.3, -30)
     .sharpen({ sigma: 1.0 })
     .jpeg({ quality: 95 })
     .toBuffer()
