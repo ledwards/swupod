@@ -1,26 +1,8 @@
 // @ts-nocheck
 import { useState, useEffect } from 'react'
 import Modal from './Modal'
-import { ASPECT_COLORS, NO_ASPECT_COLOR } from '../utils/aspectColors'
+import { getAspectColor } from '../utils/aspectColors'
 import './PoolBuilds.css'
-
-const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning'] as const
-
-function gradientForAspects(aspects?: string[]): string {
-  const list = aspects || []
-  const colors: string[] = []
-  for (const a of list) {
-    if ((COLOR_ASPECTS as readonly string[]).includes(a)) {
-      colors.push((ASPECT_COLORS as Record<string, string>)[a] || NO_ASPECT_COLOR)
-    }
-  }
-  // Append alignment as a color stop too — Heroism = white, Villainy = dark
-  if (list.includes('Heroism')) colors.push((ASPECT_COLORS as Record<string, string>).Heroism)
-  if (list.includes('Villainy')) colors.push((ASPECT_COLORS as Record<string, string>).Villainy)
-  if (colors.length === 0) return NO_ASPECT_COLOR
-  if (colors.length === 1) return colors[0]
-  return `linear-gradient(90deg, ${colors.join(', ')})`
-}
 
 interface Build {
   shareId: string
@@ -50,11 +32,7 @@ function stripFormat(nickname: string): string {
 
 function BuildCard({ build, rootShareId, isActive }: { build: Build; rootShareId: string; isActive: boolean }) {
   const builder = build.isOriginal ? 'Original' : (build.builderName || 'Anonymous')
-  const gradient = gradientForAspects(build.leaderAspects)
-  const isGradient = gradient.startsWith('linear-gradient')
-  const leaderStyle = isGradient
-    ? { background: gradient } as React.CSSProperties
-    : { background: gradient } as React.CSSProperties
+  const leaderColor = getAspectColor({ aspects: build.leaderAspects })
   const label = build.archetypeNickname
     ? stripFormat(build.archetypeNickname)
     : (build.leaderName || 'No leader')
@@ -64,7 +42,7 @@ function BuildCard({ build, rootShareId, isActive }: { build: Build; rootShareId
 
   return (
     <a href={href} className={`pool-build-card ${isActive ? 'pool-build-card-active' : ''}`}>
-      <span className="pool-build-leader" style={leaderStyle}>
+      <span className="pool-build-leader" style={{ color: leaderColor }}>
         {label}
       </span>
       <span className="pool-build-meta">
