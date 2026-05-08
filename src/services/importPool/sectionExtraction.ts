@@ -20,6 +20,7 @@
 import type Anthropic from '@anthropic-ai/sdk'
 import sharp from 'sharp'
 import type { TableName } from './tableGrouping'
+import { autoOrientToPortrait } from './preprocessImage'
 
 const MODEL = 'claude-opus-4-7'
 const MAX_TOKENS = 6000 // ~50 cards × 100 bytes JSON ≈ 5KB output
@@ -59,7 +60,10 @@ export async function cropForTable(
   imageBuffer: Buffer,
   bounds: { x0: number; y0: number; x1: number; y1: number },
 ): Promise<Buffer> {
-  const meta = await sharp(imageBuffer).metadata()
+  // Apply auto-orientation (EXIF + landscape→portrait fallback) first.
+  // Phase 1's bbox coords are relative to the oriented image.
+  const rotated = await autoOrientToPortrait(imageBuffer)
+  const meta = await sharp(rotated).metadata()
   const w = meta.width || 0
   const h = meta.height || 0
   if (w === 0 || h === 0) throw new Error('cropForTable: image has zero dimension')
@@ -76,7 +80,7 @@ export async function cropForTable(
       `cropForTable: invalid bounds ${JSON.stringify({ left, top, width, height, w, h, bounds })}`,
     )
   }
-  return await sharp(imageBuffer).extract({ left, top, width, height }).jpeg({ quality: 95 }).toBuffer()
+  return await sharp(rotated).extract({ left, top, width, height }).jpeg({ quality: 95 }).toBuffer()
 }
 
 /**
@@ -95,7 +99,12 @@ export async function cropOriginalAndPreprocess(
   originalBuffer: Buffer,
   bounds: { x0: number; y0: number; x1: number; y1: number },
 ): Promise<Buffer> {
-  const meta = await sharp(originalBuffer).metadata()
+  // Apply auto-orientation BEFORE measuring or cropping. Phase 1 sees
+  // the oriented image (via preprocessImageForExtraction which calls
+  // autoOrientToPortrait); the bbox coords are relative to that, so the
+  // crop must operate on the same orientation.
+  const rotated = await autoOrientToPortrait(originalBuffer)
+  const meta = await sharp(rotated).metadata()
   const w = meta.width || 0
   const h = meta.height || 0
   if (w === 0 || h === 0) throw new Error('cropOriginalAndPreprocess: image has zero dimension')
@@ -113,7 +122,7 @@ export async function cropOriginalAndPreprocess(
     )
   }
   // Cap at 2576 only AFTER cropping — most crops are well under this anyway.
-  return await sharp(originalBuffer)
+  return await sharp(rotated)
     .extract({ left, top, width, height })
     .resize({ width: 2576, height: 2576, fit: 'inside', withoutEnlargement: true })
     .normalise()
