@@ -3,36 +3,23 @@
 import { queryRow, query } from '@/lib/db'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { jsonParse } from '@/src/utils/json'
-import { getAllCards } from '@/src/utils/cardData'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {
   params: Promise<{ shareId: string }>
 }
 
-function buildCardIndex() {
-  const map = new Map<string, string>()
-  for (const card of getAllCards()) {
-    if (card.id) map.set(card.id, card.name)
-  }
-  return map
-}
-
-function extractBuildInfo(deckBuilderState: unknown, cardIndex: Map<string, string>) {
+function extractBuildInfo(deckBuilderState: unknown) {
   const state = jsonParse(deckBuilderState) || {}
-  const leaderId = state.activeLeader || null
-  const baseId = state.activeBase || null
   const positions = state.cardPositions || {}
+  const leaderKey = state.activeLeader || null
+  const baseKey = state.activeBase || null
+  const leaderName = leaderKey ? (positions[leaderKey]?.card?.name || null) : null
+  const baseName = baseKey ? (positions[baseKey]?.card?.name || null) : null
   const deckCardCount = Object.values(positions).filter(
     (pos: any) => pos.section === 'deck' && pos.visible !== false && !pos.card?.isBase && !pos.card?.isLeader
   ).length
-  return {
-    activeLeader: leaderId,
-    activeBase: baseId,
-    leaderName: leaderId ? (cardIndex.get(leaderId) || null) : null,
-    baseName: baseId ? (cardIndex.get(baseId) || null) : null,
-    deckCardCount,
-  }
+  return { leaderName, baseName, deckCardCount }
 }
 
 export async function GET(request: NextRequest, { params }: RouteContext): Promise<NextResponse> {
@@ -59,20 +46,18 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       [root.id]
     )
 
-    const cardIndex = buildCardIndex()
-
     const rootEntry = {
       shareId: root.share_id,
       builderName: null,
       isOriginal: true,
-      ...extractBuildInfo(root.deck_builder_state, cardIndex),
+      ...extractBuildInfo(root.deck_builder_state),
     }
 
     const buildEntries = children.rows.map(b => ({
       shareId: b.share_id,
       builderName: b.builder_name || null,
       isOriginal: false,
-      ...extractBuildInfo(b.deck_builder_state, cardIndex),
+      ...extractBuildInfo(b.deck_builder_state),
     }))
 
     return jsonResponse({ builds: [rootEntry, ...buildEntries] })
