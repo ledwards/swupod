@@ -29,6 +29,7 @@ import {
   resolveArchetypeUuid,
   fetchArchetypeNickname,
   getCanonicalPoolSubtitle,
+  fetchUserBuild,
 } from '../utils/deckBuilderSharing'
 import { getAllCards } from '../utils/cardData'
 import Card from './Card'
@@ -322,7 +323,14 @@ function DeckBuilder({
   const [showAspectPenalties, setShowAspectPenalties] = useState(false)
   const [lockModalOpen, setLockModalOpen] = useState(false)
   const [forkInProgress, setForkInProgress] = useState(false)
-  const lockInitializedRef = useRef(false)
+  // Lock-fire gating: hydration of saved state can flush multiple setCardPositions /
+  // setActiveLeader / setActiveBase calls back-to-back, each re-running the
+  // save/lock effect. Only treat changes as user edits after a short settle window.
+  const lockReadyRef = useRef(false)
+  useEffect(() => {
+    const t = setTimeout(() => { lockReadyRef.current = true }, 1500)
+    return () => clearTimeout(t)
+  }, [])
 
   const enableAspectPenaltiesForBothSections = useCallback(() => {
     setShowAspectPenalties(true)
@@ -1690,9 +1698,10 @@ function DeckBuilder({
       }
 
       // Save deck state to database via callback.
-      // First fire is the initial-load reconciliation; skip lock-check on that one.
-      if (!lockInitializedRef.current) {
-        lockInitializedRef.current = true
+      // During the initial settle window we treat every fire as hydration —
+      // owners save their loaded state through, non-owners are silently ignored.
+      // After the window, any change for a non-owner pops the lock modal.
+      if (!lockReadyRef.current) {
         if (onStateChange && isOwner) onStateChange(deckStateToSave)
         return
       }
