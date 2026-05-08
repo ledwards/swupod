@@ -7,6 +7,7 @@ import './PoolBuilds.css'
 interface Build {
   shareId: string
   builderName: string | null
+  builderUserId?: string | null
   isOriginal: boolean
   leaderName: string | null
   leaderShortName?: string | null
@@ -15,6 +16,48 @@ interface Build {
   baseAspects?: string[]
   archetypeNickname?: string | null
   deckCardCount: number
+  createdAt?: string | null
+}
+
+// Group builds by author for the "All Builds" modal.
+// Returns an array of { key, label, builds[] } in display order:
+//   1) The original (parent) entry — labeled "Original (owner)"
+//   2) Each unique builder, ordered by their most-recent build's createdAt desc
+//   3) Anonymous (builderUserId == null) lumped at the end
+function groupBuildsByAuthor(builds: Build[]): Array<{ key: string; label: string; builds: Build[] }> {
+  const original = builds.find(b => b.isOriginal) || null
+  const children = builds.filter(b => !b.isOriginal)
+
+  const groupMap = new Map<string, { key: string; label: string; builds: Build[]; latest: string }>()
+  for (const b of children) {
+    const key = b.builderUserId || `anon:${b.builderName || 'Anonymous'}`
+    const label = b.builderName || 'Anonymous'
+    const existing = groupMap.get(key)
+    const ts = b.createdAt || ''
+    if (existing) {
+      existing.builds.push(b)
+      if (ts > existing.latest) existing.latest = ts
+    } else {
+      groupMap.set(key, { key, label, builds: [b], latest: ts })
+    }
+  }
+  const groups = Array.from(groupMap.values())
+  // Anonymous (no builderUserId) go last; otherwise sort by most-recent-build desc.
+  groups.sort((a, b) => {
+    const aAnon = a.key.startsWith('anon:')
+    const bAnon = b.key.startsWith('anon:')
+    if (aAnon !== bAnon) return aAnon ? 1 : -1
+    if (a.latest === b.latest) return 0
+    return a.latest < b.latest ? 1 : -1
+  })
+
+  const ordered: Array<{ key: string; label: string; builds: Build[] }> = []
+  if (original) {
+    const ownerLabel = original.builderName ? `Original (${original.builderName})` : 'Original'
+    ordered.push({ key: 'original', label: ownerLabel, builds: [original] })
+  }
+  for (const g of groups) ordered.push({ key: g.key, label: g.label, builds: g.builds })
+  return ordered
 }
 
 interface PoolBuildsProps {
@@ -159,8 +202,17 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="All Builds" showCloseButton>
         <Modal.Body>
-          <div className="pool-builds-modal-grid">
-            {builds.map(b => <BuildCard key={b.shareId} build={b} rootShareId={shareId} isActive={b.shareId === activeShareId} />)}
+          <div className="pool-builds-modal-sections">
+            {groupBuildsByAuthor(builds).map(group => (
+              <section key={group.key} className="pool-builds-modal-section">
+                <h3 className="pool-builds-modal-section-label">{group.label}</h3>
+                <div className="pool-builds-modal-grid">
+                  {group.builds.map(b => (
+                    <BuildCard key={b.shareId} build={b} rootShareId={shareId} isActive={b.shareId === activeShareId} />
+                  ))}
+                </div>
+              </section>
+            ))}
           </div>
         </Modal.Body>
       </Modal>

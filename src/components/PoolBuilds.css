@@ -110,12 +110,33 @@
   white-space: nowrap;
 }
 
-/* Modal grid */
+/* Modal: stacked sections, one per author. The grid wraps just that author's chips. */
+.pool-builds-modal-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.pool-builds-modal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pool-builds-modal-section-label {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
 .pool-builds-modal-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  max-height: 60vh;
-  overflow-y: auto;
-  padding-right: 4px;
 }
