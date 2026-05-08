@@ -25,7 +25,11 @@ async function run() {
   )
   const elapsed = Date.now() - t0
 
-  console.log(`\nWall: ${elapsed}ms`)
+  console.log(`\nSections: ${r.result.sections.length}`)
+  for (const s of r.result.sections.slice(0, 3)) {
+    console.log(`  ${(s as any).name} photo=${(s as any).photoIndex} (${(s as any).x0.toFixed(3)},${(s as any).y0.toFixed(3)})→(${(s as any).x1.toFixed(3)},${(s as any).y1.toFixed(3)})`)
+  }
+  console.log(`Wall: ${elapsed}ms`)
   const poolSum = r.result.rows.reduce((s: number, x: any) => s + x.poolQty, 0)
   const deckSum = r.result.rows.reduce((s: number, x: any) => s + x.deckQty, 0)
   console.log(`Pool sum: ${poolSum}/96  Deck sum: ${deckSum} (target 30-35)`)

@@ -595,14 +595,21 @@ function savePersisted(state: ImportPoolState) {
 
   const slim = persistedShape(state)
 
-  // localStorage carries everything BUT images. With the heavy payload
-  // gone, the slim shape is well under 1MB and quota fallbacks shouldn't
-  // be needed, but we keep the catch as a safety net (warnings + header
-  // stripped).
+  // localStorage carries everything BUT images. Under normal conditions
+  // slim is ~50-200KB. Quota errors here usually mean the localStorage
+  // origin is full from other apps/tabs, so we degrade gracefully:
+  // try slim → try minimal → silently skip. Persistence is best-effort;
+  // wizard works fine without it (user just can't refresh mid-flow).
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(slim))
   } catch (err) {
-    console.warn('[ImportPool] persist failed, dropping warnings + extraction header', err)
+    // Try removing our own key first in case stale data is the cause,
+    // then retry with the minimal shape.
+    try {
+      localStorage.removeItem(STORAGE_KEY)
+    } catch {
+      // ignore
+    }
     try {
       const minimal: Partial<SlimPersisted> = {
         phase: slim.phase,
@@ -618,8 +625,11 @@ function savePersisted(state: ImportPoolState) {
         viewMode: slim.viewMode,
       }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(minimal))
-    } catch (err2) {
-      console.error('[ImportPool] minimal persist also failed', err2)
+    } catch {
+      // Quota exhausted even for minimal. Skip persistence this tick —
+      // the wizard still works without it. Log once at info level so
+      // it's discoverable but doesn't spam the console as red errors.
+      console.info('[ImportPool] localStorage quota exhausted; persist skipped this tick')
     }
   }
 

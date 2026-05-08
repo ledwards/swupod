@@ -1463,6 +1463,20 @@ export async function extractPoolFromImagesWholeTable(
     for (const w of sidecar.warnings) console.warn(`[omr-sidecar] ${w}`)
   }
 
+  // Build per-section bounds in the ORIGINAL photo's coordinate system,
+  // so the resolve UI's source-image modal can crop to a section. The
+  // sidecar already gave us normalized [0,1] AABBs from inverse-projecting
+  // each detected table's canonical-space bounds through the warp
+  // matrix.
+  const omrSections: SectionBounds[] = sidecar.tables.map((t) => ({
+    name: t.name as SectionName,
+    photoIndex: t.photo_index,
+    x0: t.bounds_original.x0,
+    y0: t.bounds_original.y0,
+    x1: t.bounds_original.x1,
+    y1: t.bounds_original.y1,
+  }))
+
   // Run per-table Claude calls in parallel (concurrency-limited).
   const concurrency = 8
   const tableResults: Array<{
@@ -1561,10 +1575,15 @@ export async function extractPoolFromImagesWholeTable(
   // Final invariant check on aggregated result
   const status = checkInvariants(allRows)
 
+  // Use OMR-derived sections (precise, table-by-table) as the primary
+  // source. Fall back to Phase 1's Claude-derived sections only if OMR
+  // didn't produce any (e.g. fiducials weren't detected on a photo).
+  const sectionsForResponse = omrSections.length > 0 ? omrSections : phase1.sections
+
   const result: RawExtractResponse = {
     header: phase1.header,
     rows: allRows,
-    sections: phase1.sections,
+    sections: sectionsForResponse,
   } as RawExtractResponse
 
   void phase1Elapsed

@@ -44,8 +44,13 @@ export interface SidecarTable {
   page: 1 | 2
   photo_index: number
   image_b64: string
-  bounds: { x: number; y: number; w: number; h: number }
+  bounds_canonical: { x: number; y: number; w: number; h: number }
   canonical_size: [number, number]
+  /** NORMALIZED [0,1] AABB of this table in the ORIGINAL photo (post
+   *  auto-orient). Lets the front-end crop the user's original upload
+   *  to just this section without re-warping. */
+  bounds_original: { x0: number; y0: number; x1: number; y1: number }
+  original_size: [number, number]
 }
 
 interface SidecarResponse {

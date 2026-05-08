@@ -37,9 +37,16 @@ test('runOmrSidecar bounds + image_b64 are sensible', async () => {
   const result = await runOmrSidecar([photo1])
   assert.ok(result.tables.length >= 4, 'page 1 should have at least 4 tables')
   for (const t of result.tables) {
-    assert.ok(t.bounds.w > 0 && t.bounds.h > 0, `bounds positive for ${t.name}`)
+    assert.ok(t.bounds_canonical.w > 0 && t.bounds_canonical.h > 0, `canonical bounds positive for ${t.name}`)
     assert.ok(t.image_b64.length > 1000, `non-trivial image_b64 for ${t.name}`)
     assert.ok(t.canonical_size[0] > 0 && t.canonical_size[1] > 0, `canonical_size set for ${t.name}`)
     assert.ok(t.page === 1 || t.page === 2, `page is 1 or 2 for ${t.name}`)
+    // bounds_original normalized [0,1]
+    const bo = t.bounds_original
+    assert.ok(bo.x0 >= 0 && bo.x0 <= 1, `bounds_original.x0 in [0,1] for ${t.name}`)
+    assert.ok(bo.x1 > bo.x0 && bo.x1 <= 1, `bounds_original.x1 > x0 and <= 1 for ${t.name}`)
+    assert.ok(bo.y0 >= 0 && bo.y0 <= 1, `bounds_original.y0 in [0,1] for ${t.name}`)
+    assert.ok(bo.y1 > bo.y0 && bo.y1 <= 1, `bounds_original.y1 > y0 and <= 1 for ${t.name}`)
+    assert.ok(t.original_size[0] > 0 && t.original_size[1] > 0, `original_size set for ${t.name}`)
   }
 })

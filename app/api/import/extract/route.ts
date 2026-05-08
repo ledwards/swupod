@@ -456,10 +456,10 @@ function sanitizeRawResponse(raw: any): SanitizationResult {
     })
   }
 
-  if (droppedNoName > 0) warnings.push(`${droppedNoName} row${droppedNoName === 1 ? '' : 's'} with missing card names dropped`)
-  if (droppedBadType > 0) warnings.push(`${droppedBadType} row${droppedBadType === 1 ? '' : 's'} with unrecognized card types dropped`)
-  if (droppedBadStructure > 0) warnings.push(`${droppedBadStructure} malformed row${droppedBadStructure === 1 ? '' : 's'} dropped`)
-  if (clampedQty > 0) warnings.push(`${clampedQty} row${clampedQty === 1 ? '' : 's'} had quantities clamped to the 0-${MAX_QTY} range`)
+  if (droppedNoName > 0) warnings.push(`Skipped ${droppedNoName} row${droppedNoName === 1 ? '' : 's'} the model couldn't read a card name for. Verify the source photo if your pool count looks short.`)
+  if (droppedBadType > 0) warnings.push(`Skipped ${droppedBadType} row${droppedBadType === 1 ? '' : 's'} where the card type wasn't recognized.`)
+  if (droppedBadStructure > 0) warnings.push(`Skipped ${droppedBadStructure} malformed row${droppedBadStructure === 1 ? '' : 's'} the model returned in an unexpected shape.`)
+  if (clampedQty > 0) warnings.push(`The model returned an out-of-range count (above ${MAX_QTY}) on ${clampedQty} row${clampedQty === 1 ? '' : 's'}; capped at ${MAX_QTY}. Likely a misread — double-check those rows.`)
 
   return { sanitized: { header: raw.header, rows: sanitizedRows }, warnings }
 }
