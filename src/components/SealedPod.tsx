@@ -6,6 +6,7 @@ import { fetchSetCards } from '../utils/api'
 import { getBaseSetCode } from '../utils/carboniteConstants'
 import { generateSealedPod } from '../utils/boosterPack'
 import { savePool, updatePool } from '../utils/poolApi'
+import { getDefaultPoolName, getCanonicalPoolSubtitle } from '../utils/deckBuilderSharing'
 import { useAuth } from '../contexts/AuthContext'
 import { getSetConfig } from '../utils/setConfigs'
 import { getPackArtUrl } from '../utils/packArt'
@@ -61,6 +62,7 @@ export interface SealedPodProps {
   poolOwnerId?: string | null
   poolOwnerUsername?: string | null
   draftShareId?: string | null
+  isDefaultName?: boolean
 }
 
 // Helper function to get set name from set code
@@ -75,7 +77,7 @@ function getSetColor(setCode: string) {
   return config?.color || '#ffffff'
 }
 
-function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPacks = null, shareId = null, poolType = 'sealed', setName = null, poolName: initialPoolName = null, createdAt = null, isLoading = false, poolOwnerId = null, poolOwnerUsername = null, draftShareId = null }: SealedPodProps) {
+function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPacks = null, shareId = null, poolType = 'sealed', setName = null, poolName: initialPoolName = null, createdAt = null, isLoading = false, poolOwnerId = null, poolOwnerUsername = null, draftShareId = null, isDefaultName = false }: SealedPodProps) {
   const { user, isPatron } = useAuth()
   const [cards, setCards] = useState<Card[]>([])
   const [packs, setPacks] = useState<Pack[]>([])
@@ -239,12 +241,20 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
     try {
       setSaving(true)
       const allCards = generatedPacks.flatMap(pack => pack.cards)
+      const defaultName = getDefaultPoolName({
+        ownerName: user.username,
+        setCode,
+        poolType: 'sealed',
+        createdAt: new Date(),
+      })
       const poolData = {
         setCode,
         cards: allCards,
         packs: generatedPacks,
         poolType: 'sealed',
         isPublic: false,
+        name: defaultName,
+        deckBuilderState: { poolName: defaultName, isDefaultName: true },
       }
 
       const saved = await savePool(poolData)
@@ -370,20 +380,9 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
             placeholder={poolType === 'draft' ? 'Draft Pool' : 'Sealed Pool'}
           />
         </h1>
-        {poolOwnerUsername && (
-          <p className="pool-owner-byline">by {poolOwnerUsername}</p>
-        )}
-        {createdAt && (
-          <p className="pool-date">
-            {new Date(createdAt).toLocaleString('en-US', {
-              weekday: 'short',
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-              hour: 'numeric',
-              minute: '2-digit',
-              hour12: true
-            })}
+        {!isDefaultName && (
+          <p className="pool-owner-byline">
+            {getCanonicalPoolSubtitle({ ownerName: poolOwnerUsername, setCode, poolType, createdAt })}
           </p>
         )}
         {saving && <p className="saving-indicator"></p>}

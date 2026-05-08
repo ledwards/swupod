@@ -5,6 +5,11 @@ import {
   getBuildName,
   getBuildDeckBuilderState,
   shouldBuildFromSharedPool,
+  formatPoolDate,
+  stripArchetypeSetAndFormat,
+  getDefaultPoolName,
+  getDefaultBuildName,
+  getCanonicalPoolSubtitle,
 } from './deckBuilderSharing'
 
 describe('deckBuilderSharing', () => {
@@ -92,6 +97,75 @@ describe('deckBuilderSharing', () => {
       const fallbackState = { activeLeader: 'leader-1' }
       assert.deepStrictEqual(getBuildDeckBuilderState(null, fallbackState), fallbackState)
       assert.deepStrictEqual(getBuildDeckBuilderState({}, fallbackState), fallbackState)
+    })
+  })
+
+  describe('formatPoolDate', () => {
+    it('formats Date as MM.DD.YY', () => {
+      assert.strictEqual(formatPoolDate(new Date(2026, 4, 28)), '05.28.26')
+    })
+    it('returns empty string for nullish input', () => {
+      assert.strictEqual(formatPoolDate(null), '')
+      assert.strictEqual(formatPoolDate(undefined), '')
+    })
+  })
+
+  describe('stripArchetypeSetAndFormat', () => {
+    it('strips trailing (Limited)/(Premiere)', () => {
+      assert.strictEqual(stripArchetypeSetAndFormat('Mothma Blue (Limited)'), 'Mothma Blue')
+      assert.strictEqual(stripArchetypeSetAndFormat('Pryce Green (Premiere)'), 'Pryce Green')
+    })
+    it('strips embedded (SET) tokens like (LAW) or (SOR)', () => {
+      assert.strictEqual(stripArchetypeSetAndFormat('Han Solo (SOR) - Yellow 30'), 'Han Solo - Yellow 30')
+      assert.strictEqual(stripArchetypeSetAndFormat('Saw Splash Blue (LAW) (Limited)'), 'Saw Splash Blue')
+    })
+  })
+
+  describe('getDefaultPoolName', () => {
+    it('formats as "{owner}\'s {SET} {Sealed|Draft} Pool {date}"', () => {
+      assert.strictEqual(
+        getDefaultPoolName({ ownerName: 'terronk', setCode: 'LAW', poolType: 'sealed', createdAt: new Date(2026, 4, 28) }),
+        "terronk's LAW Sealed Pool 05.28.26"
+      )
+      assert.strictEqual(
+        getDefaultPoolName({ ownerName: 'terronk', setCode: 'SOR', poolType: 'draft', createdAt: new Date(2026, 4, 28) }),
+        "terronk's SOR Draft Pool 05.28.26"
+      )
+    })
+    it('omits owner part when ownerName is missing', () => {
+      assert.strictEqual(
+        getDefaultPoolName({ ownerName: null, setCode: 'LAW', poolType: 'sealed', createdAt: new Date(2026, 4, 28) }),
+        'LAW Sealed Pool 05.28.26'
+      )
+    })
+  })
+
+  describe('getDefaultBuildName', () => {
+    it('formats as "{archetype} ({SET}) {Format} {date}"', () => {
+      assert.strictEqual(
+        getDefaultBuildName({
+          archetypeNickname: 'Saw Splash Blue (Limited)',
+          setCode: 'LAW',
+          poolType: 'sealed',
+          createdAt: new Date(2026, 4, 28),
+        }),
+        'Saw Splash Blue (LAW) Sealed 05.28.26'
+      )
+    })
+    it('falls back to legacy {parent} – {user}\'s Build when no archetype', () => {
+      assert.strictEqual(
+        getDefaultBuildName({ parentName: 'SOR Sealed', displayName: 'Lee' }),
+        "SOR Sealed – Lee's Build"
+      )
+    })
+  })
+
+  describe('getCanonicalPoolSubtitle', () => {
+    it('produces "{SET} {Format} by {owner} {date}"', () => {
+      assert.strictEqual(
+        getCanonicalPoolSubtitle({ ownerName: 'terronk', setCode: 'LAW', poolType: 'sealed', createdAt: new Date(2026, 4, 28) }),
+        'LAW Sealed by terronk 05.28.26'
+      )
     })
   })
 })

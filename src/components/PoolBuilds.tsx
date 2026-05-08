@@ -27,7 +27,12 @@ interface PoolBuildsProps {
 const VISIBLE_LIMIT = 6
 
 function stripFormat(nickname: string): string {
-  return nickname.replace(/\s*\(Limited\)\s*$/i, '').replace(/\s*\(Premiere\)\s*$/i, '').trim()
+  // Drop trailing "(Limited)" / "(Premiere)" format and any embedded "(SET)" tokens like "(LAW)"/"(SOR)"
+  return nickname
+    .replace(/\s*\((?:Limited|Premiere)\)\s*$/i, '')
+    .replace(/\s*\([A-Z]{2,4}\)\s*/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 // Archetype nicknames follow "Leader Color" or "Leader Splash Color" convention

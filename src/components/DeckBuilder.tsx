@@ -23,7 +23,14 @@ import {
   getBuildDeckBuilderState,
   getBuildName,
   shouldBuildFromSharedPool,
+  getDefaultPoolName,
+  getDefaultBuildName,
+  ensureArchetypeIndexes,
+  resolveArchetypeUuid,
+  fetchArchetypeNickname,
+  getCanonicalPoolSubtitle,
 } from '../utils/deckBuilderSharing'
+import { getAllCards } from '../utils/cardData'
 import Card from './Card'
 import { CardPreview } from './DeckBuilder/CardPreview'
 import { LeaderBaseSelector } from './DeckBuilder/LeaderBaseSelector'
@@ -178,7 +185,17 @@ function DeckBuilder({
     return initialPoolName
   }
   const [currentPoolName, setCurrentPoolName] = useState(getInitialPoolName)
-  const [userHasRenamedPool, setUserHasRenamedPool] = useState(false)
+  // isDefaultName === true means the name is still the auto-generated default — auto-rename is allowed.
+  // Legacy pools without the field default to false (treat as custom to avoid clobbering).
+  const [isDefaultName, setIsDefaultName] = useState<boolean>(() => {
+    return parsedSavedState?.isDefaultName === true
+  })
+  const canonicalSubtitle = getCanonicalPoolSubtitle({
+    ownerName: poolOwnerUsername,
+    setCode,
+    poolType,
+    createdAt: poolCreatedAt,
+  })
   const [playShareId, setPlayShareId] = useState<string | null>(() => {
     return parsedSavedState?.playShareId || null
   })
@@ -213,7 +230,7 @@ function DeckBuilder({
   const handleRenamePool = (newName: string) => {
     if (newName && newName.length > 80) return // Enforced by EditableTitle, but guard here too
     setCurrentPoolName(newName || null)
-    setUserHasRenamedPool(true) // User manually changed the name
+    setIsDefaultName(false) // User manually edited the name → no longer default
     // Save is triggered automatically via useEffect when currentPoolName changes
   }
 
@@ -443,45 +460,37 @@ function DeckBuilder({
     return aspectColorMap[aspect] || ''
   }
 
-  // Function to update pool name when leader or base changes
-  // Appends "(Leader BaseColor)" to the original base name
+  // Function to update pool/build name when leader or base changes.
+  // Format: "{archetype} ({SET}) {Sealed|Draft} {MM.DD.YY}" — only fires while
+  // the name is still the auto-generated default (isDefaultName === true).
   const updatePoolName = useCallback(async (leaderCard: CardType | null, baseCard: CardType | null) => {
-    if (!shareId || !originalBaseName || !isOwner) return
-    if (userHasRenamedPool) return // Don't auto-update if user manually renamed
-
-    // Only proceed if we have a leader
+    if (!shareId || !isOwner) return
+    if (!isDefaultName) return // user has customized; don't clobber
     if (!leaderCard) return
 
     try {
-      const leaderName = leaderCard.name || ''
+      ensureArchetypeIndexes(getAllCards() as any)
+      const leaderUuid = resolveArchetypeUuid(leaderCard as any, 'leader')
+      const baseUuid = baseCard ? resolveArchetypeUuid(baseCard as any, 'base') : null
+      const nickname = await fetchArchetypeNickname(leaderUuid, baseUuid)
 
-      // For base: if common, use aspect color name; if rare, use base name
-      // If no base, leave it blank
-      let baseDisplay = ''
-      if (baseCard) {
-        if (baseCard.rarity === 'Common') {
-          const aspects = baseCard.aspects || []
-          if (aspects.length > 0) {
-            baseDisplay = getAspectColorName(aspects[0] as string)
-          }
-        } else {
-          // Rare or other rarities: use the base name
-          baseDisplay = baseCard.name || ''
-        }
-      }
-
-      // Format: {Prefix} ({Leader} {BaseColor})
-      const suffix = baseDisplay ? `${leaderName} ${baseDisplay}` : leaderName
-      let name = `${originalBaseName} (${suffix})`
+      const newName = getDefaultBuildName({
+        archetypeNickname: nickname,
+        setCode,
+        poolType,
+        createdAt: poolCreatedAt || new Date(),
+      })
+      if (!newName) return
+      let name = newName
       if (name.length > 80) name = name.slice(0, 80)
 
       setCurrentPoolName(name)
+      // Persist name + isDefaultName: true so future leader/base changes keep auto-renaming.
       await updatePool(shareId, { name })
     } catch (err) {
       console.error('Failed to update pool name:', err)
-      // Don't show error to user - this is a background operation
     }
-  }, [shareId, originalBaseName, userHasRenamedPool])
+  }, [shareId, isDefaultName, isOwner, setCode, poolType, poolCreatedAt])
 
   // Update pool name when leader or base changes
   useEffect(() => {
@@ -1574,6 +1583,7 @@ function DeckBuilder({
       deckCardIds,
       sideboardCardIds,
       poolName: currentPoolName,
+      isDefaultName,
       sessionId: currentSessionId,
     }
 
@@ -2407,6 +2417,7 @@ function DeckBuilder({
           onPlay={handlePlay}
           rootShareId={rootShareId}
           currentUserId={currentUserId}
+          subtitleOverride={!isDefaultName ? canonicalSubtitle : null}
         />
 
       {/* Selected Leader/Base and Deck/Sideboard Info - Sticky Bar */}

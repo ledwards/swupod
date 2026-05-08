@@ -47,6 +47,7 @@ export interface DeckBuilderHeaderProps {
   onPlay?: () => void
   rootShareId?: string | null
   currentUserId?: string | null
+  subtitleOverride?: string | null
 }
 
 export function DeckBuilderHeader({
@@ -77,6 +78,7 @@ export function DeckBuilderHeader({
   onPlay,
   rootShareId = null,
   currentUserId = null,
+  subtitleOverride = null,
 }: DeckBuilderHeaderProps) {
   // Calculate deck legality for Play button
   const deckCardCount = Object.values(cardPositions)
@@ -167,7 +169,7 @@ export function DeckBuilderHeader({
             placeholder="Deck Builder"
           />
         </h1>
-        <p className="deck-builder-pool-type">{isInfiniteMode ? 'Limited Deckbuilder' : isDraftMode ? 'Draft Pool' : 'Sealed Pool'}</p>
+        <p className="deck-builder-pool-type">{subtitleOverride || (isInfiniteMode ? 'Limited Deckbuilder' : isDraftMode ? 'Draft Pool' : 'Sealed Pool')}</p>
       </div>
 
       {deckBuildDeadline && (

@@ -200,6 +200,13 @@ export default function DraftPoolPage({ params }: PageProps) {
     }
     return pool?.name || null
   }
+  const getIsDefaultName = (): boolean => {
+    if (!pool?.deckBuilderState) return false
+    const state = typeof pool.deckBuilderState === 'string'
+      ? JSON.parse(pool.deckBuilderState)
+      : pool.deckBuilderState
+    return state?.isDefaultName === true
+  }
 
   const isOwner = Boolean(user && pool && (user.id === pool.owner?.id || user.id === pool.userId))
   const rootShareId = pool?.parentShareId || pool?.shareId
@@ -223,6 +230,7 @@ export default function DraftPoolPage({ params }: PageProps) {
         poolOwnerId={pool?.owner?.id || pool?.userId}
         poolOwnerUsername={pool?.owner?.username || null}
         draftShareId={pool?.draftShareId || null}
+        isDefaultName={getIsDefaultName()}
       />
       {!loading && rootShareId && (
         <PoolBuilds
