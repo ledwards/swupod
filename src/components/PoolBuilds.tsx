@@ -204,7 +204,10 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
         <Modal.Body>
           <div className="pool-builds-modal-sections">
             {groupBuildsByAuthor(builds).map(group => (
-              <section key={group.key} className="pool-builds-modal-section">
+              <section
+                key={group.key}
+                className={`pool-builds-modal-section${group.key === 'original' ? ' pool-builds-modal-section--original' : ''}`}
+              >
                 <h3 className="pool-builds-modal-section-label">{group.label}</h3>
                 <div className="pool-builds-modal-grid">
                   {group.builds.map(b => (

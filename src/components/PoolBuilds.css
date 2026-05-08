@@ -140,3 +140,12 @@
   flex-wrap: wrap;
   gap: 6px;
 }
+
+/* Original section: the single chip spans the full row width and centers its
+   own contents. Other authors keep the natural inline-flex chip width. */
+.pool-builds-modal-section--original .pool-build-card {
+  width: 100%;
+  box-sizing: border-box;
+  align-items: center;
+  text-align: center;
+}
