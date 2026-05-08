@@ -27,11 +27,20 @@ interface Pod {
   isActive?: boolean
 }
 
+// Total items in the Recent Activity section (active pod + pools + History button)
+const RECENT_ACTIVITY_TOTAL = 5
+
+interface RecentItem {
+  url: string
+  label: string
+  kind: 'pod' | 'pool'
+}
+
 export default function AuthWidget() {
   const { user, loading, signOut, isPatron } = useAuth()
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [latestLivePod, setLatestLivePod] = useState<{ url: string; label: string } | null>(null)
-  const [latestSoloPod, setLatestSoloPod] = useState<{ url: string; label: string } | null>(null)
+  const [activePod, setActivePod] = useState<RecentItem | null>(null)
+  const [recentPools, setRecentPools] = useState<RecentItem[]>([])
   const [hasShowcases, setHasShowcases] = useState(false)
   const [loadingData, setLoadingData] = useState(false)
   const drawerRef = useRef<HTMLDivElement>(null)
@@ -72,61 +81,48 @@ export default function AuthWidget() {
       Promise.all([
         fetchUserPools(user.id),
         fetch('/api/draft/history', { credentials: 'include' }).then(r => r.json()),
-        fetch('/api/sealed/history', { credentials: 'include' }).then(r => r.json()),
         fetch(`/api/users/${user.id}/showcase-leaders?limit=1`).then(r => r.ok ? r.json() : { total: 0 })
       ])
-        .then(([poolsData, draftData, sealedHistoryData, showcaseData]) => {
+        .then(([poolsData, draftData, showcaseData]) => {
           const showcaseTotal = showcaseData?.data?.total || showcaseData?.total || 0
           setHasShowcases(showcaseTotal > 0)
 
-          // Latest Solo Pod: most recent non-draft user pool
-          const soloPools = (poolsData || [])
-            .filter((p: SealedPool) => p.poolType !== 'draft')
-            .sort((a: SealedPool, b: SealedPool) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-          if (soloPools[0]) {
-            setLatestSoloPod({
-              url: `/pool/${soloPools[0].shareId}/deck`,
-              label: soloPools[0].name || 'Solo Pool',
-            })
-          } else {
-            setLatestSoloPod(null)
-          }
-
-          // Latest Live Pod: most recent draft or multiplayer sealed pod
+          // Active draft pod = a pod the user is in that is NOT yet complete.
+          // Show only one (the most recent). Links to the live draft page.
           const allDrafts = draftData?.data?.pods || draftData?.pods || []
-          const allSealedPods = sealedHistoryData?.data?.pods || sealedHistoryData?.pods || []
-
-          const liveCandidates: { url: string; label: string; date: Date }[] = []
-
           const sortedDrafts = [...allDrafts].sort((a: Pod, b: Pod) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           )
-          if (sortedDrafts[0]) {
-            const d = sortedDrafts[0]
-            const url = d.status === 'complete' && d.poolShareId
-              ? `/pool/${d.poolShareId}/deck`
-              : `/draft/${d.shareId}`
-            liveCandidates.push({ url, label: formatPoolLabel(d.setCode, 'draft'), date: new Date(d.createdAt) })
+          const running = sortedDrafts.find((d: Pod) => d.status !== 'complete') || null
+          if (running) {
+            setActivePod({
+              kind: 'pod',
+              url: `/draft/${running.shareId}`,
+              label: formatPoolLabel(running.setCode, 'draft'),
+            })
+          } else {
+            setActivePod(null)
           }
 
-          const sortedSealed = [...allSealedPods].sort((a: any, b: any) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          )
-          if (sortedSealed[0]) {
-            const s = sortedSealed[0]
-            const url = s.poolShareId
-              ? `/pool/${s.poolShareId}/deck`
-              : `/sealed/${s.shareId}`
-            liveCandidates.push({ url, label: formatPoolLabel(s.setCode, 'sealed'), date: new Date(s.createdAt) })
-          }
-
-          liveCandidates.sort((a, b) => b.date.getTime() - a.date.getTime())
-          setLatestLivePod(liveCandidates[0] || null)
+          // Recent pools = the user's own pools, most-recent first. Excludes pool that's
+          // still attached to the active draft (avoids duplication).
+          const activePoolShareId = running?.poolShareId
+          const remainingSlots = RECENT_ACTIVITY_TOTAL - 1 /* History button */ - (running ? 1 : 0)
+          const recents = (poolsData || [])
+            .filter((p: SealedPool) => !activePoolShareId || p.shareId !== activePoolShareId)
+            .sort((a: SealedPool, b: SealedPool) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            .slice(0, Math.max(0, remainingSlots))
+            .map((p: SealedPool) => ({
+              kind: 'pool' as const,
+              url: `/pool/${p.shareId}/deck`,
+              label: p.name || formatPoolLabel(undefined, p.poolType === 'draft' ? 'draft' : 'sealed'),
+            }))
+          setRecentPools(recents)
         })
         .catch(err => {
           console.error('Failed to fetch user data:', err)
-          setLatestLivePod(null)
-          setLatestSoloPod(null)
+          setActivePod(null)
+          setRecentPools([])
         })
         .finally(() => {
           setLoadingData(false)
@@ -240,6 +236,68 @@ export default function AuthWidget() {
             </div>
 
             <div className="auth-widget-drawer-menu">
+              <div className="auth-widget-drawer-section-label">Recent Activity</div>
+
+              {loadingData && (
+                <>
+                  <div className="auth-widget-drawer-menu-item auth-widget-skeleton-item">
+                    <div className="skeleton-icon"></div>
+                    <div className="skeleton-text"></div>
+                  </div>
+                  <div className="auth-widget-drawer-menu-item auth-widget-skeleton-item">
+                    <div className="skeleton-icon"></div>
+                    <div className="skeleton-text"></div>
+                  </div>
+                </>
+              )}
+
+              {!loadingData && activePod && (
+                <a
+                  href={activePod.url}
+                  className="auth-widget-drawer-menu-item auth-widget-drawer-pool-item"
+                  onClick={() => setDrawerOpen(false)}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
+                  </svg>
+                  <span>{activePod.label}</span>
+                </a>
+              )}
+
+              {!loadingData && recentPools.map((p) => (
+                <a
+                  key={p.url}
+                  href={p.url}
+                  className="auth-widget-drawer-menu-item auth-widget-drawer-pool-item"
+                  onClick={() => setDrawerOpen(false)}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="2" y="3" width="14" height="18" rx="2"></rect>
+                    <rect x="8" y="1" width="14" height="18" rx="2"></rect>
+                  </svg>
+                  <span>{p.label}</span>
+                </a>
+              ))}
+
+              <a
+                href="/history"
+                className="auth-widget-drawer-menu-item"
+                onClick={(e: MouseEvent<HTMLAnchorElement>) => {
+                  e.preventDefault()
+                  router.push('/history')
+                  setDrawerOpen(false)
+                }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                History
+              </a>
+
+              <div className="auth-widget-drawer-divider"></div>
+
               {!isHomepage && (
                 <a
                   href="/"
@@ -257,123 +315,6 @@ export default function AuthWidget() {
                   Home
                 </a>
               )}
-
-              {(loadingData || latestLivePod || latestSoloPod) && (
-                <div className="auth-widget-drawer-section-label">Recent Pods & Solo Pools</div>
-              )}
-
-              {loadingData && (
-                <>
-                  <div className="auth-widget-drawer-menu-item auth-widget-skeleton-item">
-                    <div className="skeleton-icon"></div>
-                    <div className="skeleton-text"></div>
-                  </div>
-                  <div className="auth-widget-drawer-menu-item auth-widget-skeleton-item">
-                    <div className="skeleton-icon"></div>
-                    <div className="skeleton-text"></div>
-                  </div>
-                </>
-              )}
-
-              {!loadingData && latestLivePod && (
-                <a
-                  href={latestLivePod.url}
-                  className="auth-widget-drawer-menu-item auth-widget-drawer-pool-item"
-                  onClick={() => setDrawerOpen(false)}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
-                  </svg>
-                  <span>{latestLivePod.label}</span>
-                </a>
-              )}
-
-              {!loadingData && latestSoloPod && (
-                <a
-                  href={latestSoloPod.url}
-                  className="auth-widget-drawer-menu-item auth-widget-drawer-pool-item"
-                  onClick={() => setDrawerOpen(false)}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="2" y="3" width="14" height="18" rx="2"></rect>
-                    <rect x="8" y="1" width="14" height="18" rx="2"></rect>
-                  </svg>
-                  <span>{latestSoloPod.label}</span>
-                </a>
-              )}
-
-              <div className="auth-widget-drawer-section-label">Solo Play</div>
-              <a
-                href="/sealed"
-                className="auth-widget-drawer-menu-item"
-                onClick={(e: MouseEvent<HTMLAnchorElement>) => {
-                  e.preventDefault()
-                  router.push('/sealed')
-                  setDrawerOpen(false)
-                }}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-                Sealed
-              </a>
-              <a
-                href="/draft/solo"
-                className="auth-widget-drawer-menu-item"
-                onClick={(e: MouseEvent<HTMLAnchorElement>) => {
-                  e.preventDefault()
-                  router.push('/draft/solo')
-                  setDrawerOpen(false)
-                }}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M2 13c0-4 3.5-7 8-7s7 3 7 6c0 2.5-2 4.5-5 5.5H8C4.5 17 2 15.5 2 13zm5 0a1 1 0 100-2 1 1 0 000 2z"/>
-                  <path d="M17 12c1-2 3-3.5 5-4-1 2-1 4 0 6-2-1-4-1.5-5-2z"/>
-                </svg>
-                Draft
-              </a>
-
-              <div className="auth-widget-drawer-section-label">Live Pod</div>
-              <a
-                href="/sealed/pod"
-                className="auth-widget-drawer-menu-item"
-                onClick={(e: MouseEvent<HTMLAnchorElement>) => {
-                  e.preventDefault()
-                  router.push('/sealed/pod')
-                  setDrawerOpen(false)
-                }}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="9" cy="7" r="3"></circle>
-                  <path d="M9 12a5 5 0 0 0-5 5v1h10v-1a5 5 0 0 0-5-5z"></path>
-                  <circle cx="17" cy="7" r="3"></circle>
-                  <path d="M21 18v-1a4 4 0 0 0-3-3.87"></path>
-                </svg>
-                Sealed Pod
-              </a>
-              <a
-                href="/draft"
-                className="auth-widget-drawer-menu-item"
-                onClick={(e: MouseEvent<HTMLAnchorElement>) => {
-                  e.preventDefault()
-                  router.push('/draft')
-                  setDrawerOpen(false)
-                }}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <g opacity="0.5">
-                    <path d="M4 10c0-2.5 2-4.5 5-4.5s4.5 2 4.5 3.8c0 1.6-1.2 2.8-3.2 3.5H7.5C5.5 12.5 4 11.5 4 10zm3.3-.2a.6.6 0 100-1.2.6.6 0 000 1.2z"/>
-                    <path d="M13.5 8.5c.6-1.2 1.8-2 3-2.5-.6 1.2-.6 2.5 0 3.8-1.2-.6-2.4-.9-3-1.3z"/>
-                  </g>
-                  <path d="M6 14.5c0-2.8 2.3-5 5.5-5s5 2.2 5 4.2c0 1.8-1.4 3.2-3.6 4H10C7.8 17.3 6 16.3 6 14.5zm3.7-.2a.7.7 0 100-1.4.7.7 0 000 1.4z"/>
-                  <path d="M16.5 13c.7-1.3 2-2.3 3.5-2.8-.7 1.4-.7 2.8 0 4.2-1.4-.7-2.8-1-3.5-1.4z"/>
-                </svg>
-                Draft Pod
-              </a>
-
-              <div className="auth-widget-drawer-divider"></div>
 
               {isPatron && (
                 <a
@@ -413,22 +354,6 @@ export default function AuthWidget() {
                   Showcases
                 </a>
               )}
-
-              <a
-                href="/history"
-                className="auth-widget-drawer-menu-item"
-                onClick={(e: MouseEvent<HTMLAnchorElement>) => {
-                  e.preventDefault()
-                  router.push('/history')
-                  setDrawerOpen(false)
-                }}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <polyline points="12 6 12 12 16 14"></polyline>
-                </svg>
-                History
-              </a>
 
               <a
                 href="/support-the-pod"
