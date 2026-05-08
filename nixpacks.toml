@@ -1,7 +1,14 @@
 provider = "node"
 
 [phases.setup]
-nixPkgs = ["nodejs_22"]
+nixPkgs = [
+  "nodejs_22",
+  # Python 3.11 + pip for the OMR sidecar (scripts/omr/extract_for_node.py).
+  # Used by the Import Pool whole-table extraction architecture; see
+  # plans/IMPORT_POOL_OMR_REPORT.md.
+  "python311",
+  "python311Packages.pip",
+]
 aptPkgs = [
   "libnss3",
   "libatk1.0-0",
@@ -18,13 +25,29 @@ aptPkgs = [
   "libcairo2",
   "libasound2",
   "libatspi2.0-0",
+  # libGL needed by opencv-python-headless. Other CV deps are bundled
+  # in the wheel.
+  "libgl1",
+  "libglib2.0-0",
 ]
 
 [phases.install]
-cmds = ["npm ci", "npx playwright-core install chromium"]
+cmds = [
+  "npm ci",
+  "npx playwright-core install chromium",
+  # OMR sidecar deps. -headless variant skips the Qt/GTK GUI deps that
+  # aren't needed on a server. Pinning major versions only; pip will
+  # take latest compatible patch.
+  "pip3 install --break-system-packages opencv-python-headless==4.10.* numpy==1.26.* Pillow==10.*",
+]
 
 [phases.build]
 cmds = ["npm run build"]
 
 [start]
 cmd = "npm start"
+
+[variables]
+# Set the Python binary path so child_process.spawn finds it on Railway.
+# The OMR sidecar uses this to run scripts/omr/extract_for_node.py.
+PYTHON_BINARY = "python3"

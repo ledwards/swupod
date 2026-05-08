@@ -37,6 +37,10 @@ import {
   extractTableFromCrop,
   extractTableMultiSample,
 } from '../src/services/importPool/sectionExtraction'
+import {
+  classifyTableWithClaude,
+  runOmrSidecar,
+} from '../src/services/importPool/omrExtraction'
 
 const MODEL = 'claude-opus-4-7'
 // Vision parses can produce 80-100 JSON rows. 32K leaves comfortable headroom
@@ -1382,6 +1386,187 @@ export async function extractPoolFromImages(
 
   // Touch unused vars so TS doesn't complain in the @ts-nocheck file (these
   // are useful for future logging/telemetry from the route handler)
+  void phase1Elapsed
+  void phase2Elapsed
+  void droppedUnknownNumbers
+  void invariantDistance
+
+  return {
+    result,
+    iterations,
+    converged: status.passing,
+    bestIteration: 1,
+  }
+}
+
+/**
+ * Whole-table extraction using OMR table detection + per-table Claude calls.
+ *
+ * This is the OPUS-WHOLE-TABLE architecture from
+ * `plans/IMPORT_POOL_OMR_REPORT.md`: replaces the multi-sample sub-aspect
+ * voting loop with a single Claude Opus 4.7 call per detected table.
+ *
+ * Pipeline:
+ *   1. Phase 1 (header + section bounds) — same as before.
+ *   2. OMR sidecar: spawn `scripts/omr/extract_for_node.py` to detect
+ *      tables on each photo. Returns one cropped image per table.
+ *   3. Per-table Claude call: closed-vocabulary whole-table classification.
+ *   4. Aggregate ExtractedRow[] (same shape as before).
+ *
+ * Validated to ~97% per-cell accuracy at ~$0.55-0.69/import on 3 LAW
+ * fixtures. About 13 pp better than the prior multi-sample architecture
+ * (~83-84%) at half the cost and ~10x faster.
+ */
+export async function extractPoolFromImagesWholeTable(
+  images: ImageInput[],
+  opts: ExtractOptions = {},
+): Promise<ExtractResult> {
+  if (images.length === 0) {
+    throw new Error('extractPoolFromImagesWholeTable requires at least 1 image')
+  }
+  if (images.length > 2) {
+    throw new Error('extractPoolFromImagesWholeTable supports at most 2 images')
+  }
+
+  const originalBuffers: Buffer[] = images.map((img) => Buffer.from(img.data, 'base64'))
+  const preprocessedBuffers: Buffer[] = []
+  for (const buf of originalBuffers) {
+    preprocessedBuffers.push(await preprocessImageForExtraction(buf))
+  }
+  const preprocessedInputs: ImageInput[] = preprocessedBuffers.map((buf) => ({
+    data: buf.toString('base64'),
+    mediaType: 'image/jpeg',
+  }))
+
+  // Resolve setCode and card list (same as legacy path).
+  await initializeCardCache().catch(() => {})
+  const setCode = opts.setHint || getLatestReleasedSetCode()
+  const allCards = (getCachedCards(setCode) || []).filter((c: any) => c.variantType === 'Normal')
+  const tableGroups = groupCardsByTable(allCards)
+
+  const client = getClient()
+
+  // Phase 1: header + section bounds (kept from legacy path).
+  const phase1Start = Date.now()
+  let phase1: { header: ExtractedHeader; sections: SectionBounds[]; usage: any }
+  try {
+    phase1 = await runPhase1(client, preprocessedInputs, opts.setHint)
+  } catch (err) {
+    throw new Error(`Phase 1 failed: ${(err as Error).message}`)
+  }
+  const phase1Elapsed = Date.now() - phase1Start
+
+  // Phase 2: OMR sidecar (Python) + per-table whole-table Claude calls.
+  const phase2Start = Date.now()
+  const sidecar = await runOmrSidecar(originalBuffers)
+  if (sidecar.warnings.length > 0) {
+    for (const w of sidecar.warnings) console.warn(`[omr-sidecar] ${w}`)
+  }
+
+  // Run per-table Claude calls in parallel (concurrency-limited).
+  const concurrency = 8
+  const tableResults: Array<{
+    tableName: TableName
+    rows: Array<{ cardNumber: number; poolQty: number; deckQty: number; poolUnclear: boolean; deckUnclear: boolean }>
+    error: string | null
+  }> = []
+  const queue = [...sidecar.tables]
+  await Promise.all(
+    Array.from({ length: concurrency }, async () => {
+      while (queue.length > 0) {
+        const t = queue.shift()
+        if (!t) break
+        const cards = (tableGroups.get(t.name as TableName) || []) as any[]
+        if (cards.length === 0) continue
+        try {
+          const rows = await classifyTableWithClaude(client, t.name as TableName, cards, t.image_b64)
+          tableResults.push({ tableName: t.name as TableName, rows, error: null })
+        } catch (err) {
+          tableResults.push({
+            tableName: t.name as TableName,
+            rows: [],
+            error: (err as Error).message,
+          })
+          console.warn(`[whole-table] ${t.name} failed: ${(err as Error).message}`)
+        }
+      }
+    }),
+  )
+  const phase2Elapsed = Date.now() - phase2Start
+
+  // Aggregate per-table rows into ExtractedRow[] (using cardCache for
+  // name/subtitle/aspects). Card number → card lookup.
+  const cardByNumber = new Map<number, any>()
+  for (const c of allCards) cardByNumber.set(cardNumberOf(c.cardId), c)
+
+  const allRows: ExtractedRow[] = []
+  let droppedUnknownNumbers = 0
+  for (const tr of tableResults) {
+    for (const r of tr.rows) {
+      const card = cardByNumber.get(r.cardNumber)
+      if (!card) {
+        droppedUnknownNumbers++
+        continue
+      }
+      // Map "unclear" flags → 'low' confidence so the resolve UI surfaces
+      // these cells for human review (existing behavior preserved).
+      const poolConf = r.poolUnclear ? 'low' : 'high'
+      const deckConf = r.deckUnclear ? 'low' : 'high'
+      allRows.push({
+        name: card.name,
+        type: card.type,
+        subtitle: card.subtitle,
+        poolQty: r.poolQty,
+        deckQty: r.deckQty,
+        aspectGroup: card.aspects?.join(' ') || null,
+        poolQtyConfidence: poolConf,
+        deckQtyConfidence: deckConf,
+      } as any)
+    }
+  }
+
+  // Per-table iteration log entries.
+  const iterations: ExtractIterationLog[] = tableResults.map((tr, i) => {
+    const markedPool = tr.rows.filter((r: any) => Number(r.poolQty) > 0)
+    const markedDeck = tr.rows.filter((r: any) => Number(r.deckQty) > 0)
+    const poolSum = tr.rows.reduce((s: number, r: any) => s + Number(r.poolQty || 0), 0)
+    const deckSum = tr.rows.reduce((s: number, r: any) => s + Number(r.deckQty || 0), 0)
+    const subsetViolations = tr.rows.filter(
+      (r: any) => Number(r.deckQty || 0) > Number(r.poolQty || 0),
+    ).length
+    const tableTotal = tableGroups.get(tr.tableName)?.length || 0
+    return {
+      iteration: i + 1,
+      poolSum,
+      deckSum,
+      leaderCount: tr.tableName === 'Leaders' ? poolSum : 0,
+      baseCount: tr.tableName === 'Bases' ? poolSum : 0,
+      subsetViolations,
+      passing: false,
+      failures: tr.error
+        ? [`table=${tr.tableName} ERROR: ${tr.error}`]
+        : [
+            `table=${tr.tableName} pool=${poolSum} deck=${deckSum} (${markedPool.length}/${tableTotal} rows marked, ${markedDeck.length}/${tableTotal} in deck)`,
+          ],
+      outputTokens: 0,
+      cacheReadTokens: 0,
+      cacheCreationTokens: 0,
+      tableName: tr.tableName,
+      tableTotalCards: tableTotal,
+      tableMarkedRows: markedPool.length,
+      tableDeckRows: markedDeck.length,
+    }
+  })
+
+  // Final invariant check on aggregated result
+  const status = checkInvariants(allRows)
+
+  const result: RawExtractResponse = {
+    header: phase1.header,
+    rows: allRows,
+    sections: phase1.sections,
+  } as RawExtractResponse
+
   void phase1Elapsed
   void phase2Elapsed
   void droppedUnknownNumbers

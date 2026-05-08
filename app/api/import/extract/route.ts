@@ -17,7 +17,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
 import { queryRow } from '@/lib/db'
 import { jsonResponse, parseBody, handleApiError } from '@/lib/utils'
-import { extractPoolFromImages, computeSectionGaps, type RawExtractResponse } from '@/lib/anthropic'
+import {
+  extractPoolFromImages,
+  extractPoolFromImagesWholeTable,
+  computeSectionGaps,
+  type RawExtractResponse,
+} from '@/lib/anthropic'
 import { matchExtractedRows } from '@/src/services/importPool/cardMatcher'
 import { getCachedCards, initializeCardCache } from '@/src/utils/cardCache'
 import { getSetConfig, getAllSetCodes } from '@/src/utils/setConfigs/index'
@@ -123,22 +128,41 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       )
     }
 
-    // 4. Call Claude. Multi-pass refine loop — extractPoolFromImages keeps
-    //    re-calling Claude with a gap description until structural invariants
-    //    pass (poolSum=96, deckSum 30-35, 6 leaders, 6 bases, deck⊆pool) or
-    //    a max-iterations cap (default 4) is hit. On non-convergence the
-    //    closest-by-distance iteration is returned and the resolve UI
-    //    handles the residual gap.
-    logAttempt(`=== EXTRACTION REQUEST (user=${session.id}) ===`)
+    // 4. Call Claude.
+    //    `IMPORT_POOL_USE_WHOLE_TABLE=1` (default true unless explicitly
+    //    disabled) selects the OMR + per-table whole-table architecture
+    //    (~97% per-cell accuracy, $0.55-0.69/import, ~12s wall time).
+    //    Setting `IMPORT_POOL_USE_WHOLE_TABLE=0` falls back to the legacy
+    //    multi-sample sub-aspect refine loop (~84%, $1-2, 1-3 min).
+    //    See plans/IMPORT_POOL_OMR_REPORT.md for full eval data.
+    //
+    //    On whole-table failure (Python sidecar error, etc.), automatic
+    //    fallback to the legacy path so a single Python issue doesn't
+    //    take down the import feature.
+    const useWholeTable = process.env.IMPORT_POOL_USE_WHOLE_TABLE !== '0'
+    logAttempt(`=== EXTRACTION REQUEST (user=${session.id}, mode=${useWholeTable ? 'whole-table' : 'legacy-multi-sample'}) ===`)
     let raw: any
     let extractIterations: any[] = []
     let converged = false
     let bestIteration = 0
     try {
-      const extractResult = await extractPoolFromImages(
-        body.images.map((img) => ({ data: img.data, mediaType: img.mediaType as any })),
-        body.manualSetCode ? { setHint: body.manualSetCode } : {},
-      )
+      const imagesIn = body.images.map((img) => ({ data: img.data, mediaType: img.mediaType as any }))
+      const opts = body.manualSetCode ? { setHint: body.manualSetCode } : {}
+      let extractResult
+      if (useWholeTable) {
+        try {
+          extractResult = await extractPoolFromImagesWholeTable(imagesIn, opts)
+        } catch (wtErr) {
+          logAttempt(`whole-table failed, falling back to legacy: ${(wtErr as Error).message}`)
+          console.warn(
+            '[import/extract] whole-table extraction failed, falling back to legacy multi-sample:',
+            (wtErr as Error).message,
+          )
+          extractResult = await extractPoolFromImages(imagesIn, opts)
+        }
+      } else {
+        extractResult = await extractPoolFromImages(imagesIn, opts)
+      }
       raw = extractResult.result
       extractIterations = extractResult.iterations
       converged = extractResult.converged
