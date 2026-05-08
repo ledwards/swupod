@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useState, useEffect } from 'react'
 import Modal from './Modal'
+import Button from './Button'
 import { getAspectColor } from '../utils/aspectColors'
 import './PoolBuilds.css'
 
@@ -93,7 +94,19 @@ function splitArchetypeName(label: string): { leader: string; base: string } {
   return { leader: label.slice(0, lastSpace), base: label.slice(lastSpace + 1) }
 }
 
-function BuildCard({ build, rootShareId, isActive }: { build: Build; rootShareId: string; isActive: boolean }) {
+function BuildCard({
+  build,
+  rootShareId,
+  isActive,
+  currentUserId,
+  onRequestDelete,
+}: {
+  build: Build
+  rootShareId: string
+  isActive: boolean
+  currentUserId?: string | null
+  onRequestDelete?: (build: Build) => void
+}) {
   const builder = build.isOriginal
     ? `${build.builderName || 'Anonymous'} (Original)`
     : (build.builderName || 'Anonymous')
@@ -108,6 +121,7 @@ function BuildCard({ build, rootShareId, isActive }: { build: Build; rootShareId
   const href = build.isOriginal
     ? `/pool/${rootShareId}/deck`
     : `/pool/${rootShareId}/deck/${build.shareId}`
+  const ownsThis = Boolean(currentUserId && build.builderUserId && build.builderUserId === currentUserId)
 
   return (
     <a href={href} className={`pool-build-card ${isActive ? 'pool-build-card-active' : ''}`}>
@@ -118,6 +132,22 @@ function BuildCard({ build, rootShareId, isActive }: { build: Build; rootShareId
       <span className="pool-build-meta">
         by {builder}
       </span>
+      {ownsThis && onRequestDelete && (
+        <button
+          type="button"
+          className="pool-build-trash"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onRequestDelete(build) }}
+          title="Delete this deck"
+          aria-label="Delete this deck"
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+          </svg>
+        </button>
+      )}
     </a>
   )
 }
@@ -126,6 +156,57 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
   const [builds, setBuilds] = useState<Build[]>([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
+  const [pendingDelete, setPendingDelete] = useState<Build | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+
+  // For an isOriginal target, find the next-best build owned by the same user
+  // to promote to root. We pick the oldest sibling by createdAt — the user's
+  // first non-original deck. Returns null if they have no other owned builds.
+  const findReparentTarget = (target: Build): Build | null => {
+    if (!target.isOriginal || !currentUserId) return null
+    return builds
+      .filter(b => !b.isOriginal && b.builderUserId === currentUserId)
+      .sort((a, b) => (a.createdAt || '') < (b.createdAt || '') ? -1 : 1)[0] || null
+  }
+  const reparentCandidate = pendingDelete ? findReparentTarget(pendingDelete) : null
+
+  const handleConfirmDelete = async () => {
+    if (!pendingDelete) return
+    setIsDeleting(true)
+    setDeleteError(null)
+    try {
+      let url = `/api/pools/${pendingDelete.shareId}`
+      if (pendingDelete.isOriginal && reparentCandidate) {
+        url += `?reparent_to=${encodeURIComponent(reparentCandidate.shareId)}`
+      }
+      const res = await fetch(url, { method: 'DELETE', credentials: 'include' })
+      if (!res.ok) throw new Error(`Delete failed (${res.status})`)
+      const data = await res.json().catch(() => null)
+      if (pendingDelete.isOriginal) {
+        if (reparentCandidate) {
+          // Reparented — the new root takes over the URL.
+          window.location.href = `/pool/${reparentCandidate.shareId}/deck`
+        } else {
+          // Whole pool was deleted.
+          window.location.href = '/history'
+        }
+        return
+      }
+      // Non-root build deleted — if we were viewing it, jump back to root.
+      if (activeShareId === pendingDelete.shareId) {
+        window.location.href = `/pool/${shareId}/deck`
+        return
+      }
+      setPendingDelete(null)
+      setIsDeleting(false)
+      window.dispatchEvent(new CustomEvent('wf:builds-changed', { detail: { rootShareId: shareId } }))
+    } catch (err) {
+      console.error('Delete failed:', err)
+      setDeleteError(err instanceof Error ? err.message : 'Delete failed')
+      setIsDeleting(false)
+    }
+  }
 
   useEffect(() => {
     if (!shareId) return
@@ -158,7 +239,7 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
 
   return (
     <div className="pool-builds">
-      <p className="pool-builds-label">Decks with this Pool:</p>
+      <p className="pool-builds-label">Decks from this Pool:</p>
       <div className="pool-builds-list">
         {onCopyShare && (
           <button
@@ -174,7 +255,16 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
             </svg>
           </button>
         )}
-        {visible.map(b => <BuildCard key={b.shareId} build={b} rootShareId={shareId} isActive={b.shareId === activeShareId} />)}
+        {visible.map(b => (
+          <BuildCard
+            key={b.shareId}
+            build={b}
+            rootShareId={shareId}
+            isActive={b.shareId === activeShareId}
+            currentUserId={currentUserId}
+            onRequestDelete={setPendingDelete}
+          />
+        ))}
         {overflow.length > 0 && (
           <button className="pool-build-card pool-build-more" onClick={() => setModalOpen(true)}>
             <span className="pool-build-leader">+{overflow.length} more</span>
@@ -211,13 +301,56 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
                 <h3 className="pool-builds-modal-section-label">{group.label}</h3>
                 <div className="pool-builds-modal-grid">
                   {group.builds.map(b => (
-                    <BuildCard key={b.shareId} build={b} rootShareId={shareId} isActive={b.shareId === activeShareId} />
+                    <BuildCard
+                      key={b.shareId}
+                      build={b}
+                      rootShareId={shareId}
+                      isActive={b.shareId === activeShareId}
+                      currentUserId={currentUserId}
+                      onRequestDelete={setPendingDelete}
+                    />
                   ))}
                 </div>
               </section>
             ))}
           </div>
         </Modal.Body>
+      </Modal>
+
+      <Modal
+        isOpen={pendingDelete !== null}
+        onClose={() => { if (!isDeleting) { setPendingDelete(null); setDeleteError(null) } }}
+        title={pendingDelete?.isOriginal && !reparentCandidate ? 'Delete entire pool?' : 'Delete this deck?'}
+        variant="danger"
+      >
+        <Modal.Body>
+          {pendingDelete?.isOriginal && reparentCandidate ? (
+            <p>
+              Deleting the original deck. Your build{' '}
+              <strong>
+                {reparentCandidate.archetypeNickname
+                  ? stripFormat(reparentCandidate.archetypeNickname)
+                  : (reparentCandidate.leaderShortName || reparentCandidate.leaderName || 'next deck')}
+              </strong>{' '}
+              will become the new original for this pool.
+            </p>
+          ) : pendingDelete?.isOriginal ? (
+            <p>
+              This is your last deck for this pool. Deleting it will delete the entire pool and every build inside it. This action cannot be undone.
+            </p>
+          ) : (
+            <p>Delete this deck? The pool and other builds are not affected.</p>
+          )}
+          {deleteError && <p style={{ color: '#E74C3C', marginTop: '0.5rem' }}>{deleteError}</p>}
+        </Modal.Body>
+        <Modal.Actions>
+          <Button variant="secondary" onClick={() => { setPendingDelete(null); setDeleteError(null) }} disabled={isDeleting}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleConfirmDelete} disabled={isDeleting}>
+            {isDeleting ? 'Deleting…' : 'Delete'}
+          </Button>
+        </Modal.Actions>
       </Modal>
     </div>
   )

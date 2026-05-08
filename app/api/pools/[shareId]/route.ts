@@ -353,10 +353,10 @@ export async function DELETE(request: NextRequest, { params }: RouteContext): Pr
   try {
     const { shareId } = await params
     const session = requireAuth(request)
+    const reparentTo = new URL(request.url).searchParams.get('reparent_to')
 
-    // Check ownership - only select needed columns (avoid loading large JSONB)
     const pool = await queryRow(
-      'SELECT id, user_id FROM card_pools WHERE share_id = $1',
+      'SELECT id, user_id, parent_pool_id FROM card_pools WHERE share_id = $1',
       [shareId]
     )
 
@@ -368,7 +368,32 @@ export async function DELETE(request: NextRequest, { params }: RouteContext): Pr
       return errorResponse('Unauthorized', 403)
     }
 
-    // Delete pool
+    // Reparent flow: caller is deleting a ROOT pool but wants to promote one of
+    // their child builds to become the new root, preserving the pool's other
+    // builds. Used by the per-deck trash UI when the owner has other builds.
+    if (reparentTo && pool.parent_pool_id === null) {
+      const target = await queryRow(
+        'SELECT id, user_id, parent_pool_id FROM card_pools WHERE share_id = $1',
+        [reparentTo]
+      )
+      if (!target) return errorResponse('Reparent target not found', 404)
+      if (target.user_id !== session.id) return errorResponse('Unauthorized', 403)
+      if (target.parent_pool_id !== pool.id) {
+        return errorResponse('Reparent target must be a child of the pool being deleted', 400)
+      }
+      await query('UPDATE card_pools SET parent_pool_id = NULL WHERE id = $1', [target.id])
+      await query(
+        'UPDATE card_pools SET parent_pool_id = $1 WHERE parent_pool_id = $2 AND id != $1',
+        [target.id, pool.id]
+      )
+      await query('DELETE FROM card_pools WHERE id = $1', [pool.id])
+      return jsonResponse({ message: 'Pool root reassigned and old root deleted', newRootShareId: reparentTo })
+    }
+
+    // Root pool delete cascades to all child builds. Build delete is row-only.
+    if (pool.parent_pool_id === null) {
+      await query('DELETE FROM card_pools WHERE parent_pool_id = $1', [pool.id])
+    }
     await query('DELETE FROM card_pools WHERE share_id = $1', [shareId])
 
     return jsonResponse({ message: 'Pool deleted successfully' })

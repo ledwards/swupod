@@ -110,6 +110,45 @@
   white-space: nowrap;
 }
 
+/* Hover-only trash chip on owned build cards. The parent .pool-build-card is
+ * relatively positioned via the existing rule, so this can sit in the corner. */
+.pool-build-card {
+  position: relative;
+}
+.pool-build-trash {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s, color 0.1s;
+}
+@media (hover: hover) and (pointer: fine) {
+  .pool-build-card:hover .pool-build-trash {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .pool-build-trash:hover {
+    color: #E74C3C;
+  }
+}
+@media (hover: none) {
+  .pool-build-trash {
+    opacity: 0.6;
+    pointer-events: auto;
+  }
+}
+
 /* Modal: stacked sections, one per author. The grid wraps just that author's chips. */
 .pool-builds-modal-sections {
   display: flex;

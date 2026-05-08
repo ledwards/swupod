@@ -114,6 +114,7 @@
   align-items: center;
 }
 
+
 /* Make edit button not affect centering */
 .deck-builder-header-title-container .editable-title {
   position: relative;

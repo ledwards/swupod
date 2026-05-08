@@ -2794,15 +2794,18 @@ function DeckBuilder({
 
       <DeleteDeckSection
         shareId={shareId}
-        isOwner={isOwner}
+        // Only render the bottom delete button when we're viewing the root pool
+        // (not a child build) AND the current user owns it. Server-side DELETE
+        // also enforces ownership, so direct API hits from non-owners get 403.
+        isOwner={isOwner && (!rootShareId || rootShareId === shareId)}
         setErrorMessage={setErrorMessage}
         setMessageType={setMessageType}
         onDelete={isInfiniteMode ? handleDeleteLimitedDeck : undefined}
-        deleteLabel={isInfiniteMode ? 'Delete Limited Deck' : 'Delete Deck'}
-        confirmTitle={isInfiniteMode ? 'Delete Limited Deck?' : 'Delete Deck?'}
+        deleteLabel={isInfiniteMode ? 'Delete Limited Deck' : 'Delete Pool'}
+        confirmTitle={isInfiniteMode ? 'Delete Limited Deck?' : 'Delete Pool?'}
         confirmBody={isInfiniteMode
           ? 'Are you sure you want to delete this Limited Deckbuilder deck? This will remove this session and return you to the homepage.'
-          : 'Are you sure you want to delete this deck? This action cannot be undone.'}
+          : 'This will permanently delete the pool and every build inside it. This action cannot be undone.'}
       />
 
       <Modal
