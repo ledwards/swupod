@@ -268,7 +268,7 @@ def main():
     fix_dir = REPO / "scripts" / "eval" / "fixtures" / fixture
     with open(fix_dir / "ground-truth.json") as f:
         gt = json.load(f)
-    truth = {row["name"]: (row["poolQty"], row["deckQty"]) for row in gt["rows"]}
+    truth = {(row["name"], row.get("subtitle") or ""): (row["poolQty"], row["deckQty"]) for row in gt["rows"]}
 
     cells_to_ask: list[CellAsk] = []
     cell_meta: dict[str, dict] = {}
@@ -284,7 +284,7 @@ def main():
         for c in result["cells"]:
             if table_filter and c["table"] != table_filter:
                 continue
-            t_pool, t_deck = truth.get(c["name"], (0, 0))
+            t_pool, t_deck = truth.get((c["name"], c.get("subtitle") or ""), (0, 0))
             played_crop = crop_cell(warped, c["roi"]["played"])
             total_crop = crop_cell(warped, c["roi"]["total"])
             played_id = f"{c['cardId']}/PLAYED"

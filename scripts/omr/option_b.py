@@ -114,7 +114,7 @@ def evaluate_fixture(fixture: str, threshold: int = 100, save_debug: bool = Fals
     fix_dir = REPO / "scripts" / "eval" / "fixtures" / fixture
     with open(fix_dir / "ground-truth.json") as f:
         gt = json.load(f)
-    truth = {row["name"]: (row["poolQty"], row["deckQty"]) for row in gt["rows"]}
+    truth = {(row["name"], row.get("subtitle") or ""): (row["poolQty"], row["deckQty"]) for row in gt["rows"]}
     cards_by_t = load_law_cards()
 
     correct_pool = correct_deck = total = 0
@@ -166,7 +166,7 @@ def evaluate_fixture(fixture: str, threshold: int = 100, save_debug: bool = Fals
                 deck_pred, _ = cell_classify(played_cell, threshold=threshold)
                 pool_pred, _ = cell_classify(total_cell, threshold=threshold)
 
-                t_pool, t_deck = truth.get(c["name"], (0, 0))
+                t_pool, t_deck = truth.get((c["name"], c.get("subtitle") or ""), (0, 0))
                 correct_pool += int(pool_pred == t_pool)
                 correct_deck += int(deck_pred == t_deck)
                 total += 1

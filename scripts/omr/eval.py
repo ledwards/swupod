@@ -21,7 +21,7 @@ def eval_fixture(name: str) -> dict:
     fix_dir = REPO / "scripts" / "eval" / "fixtures" / name
     with open(fix_dir / "ground-truth.json") as f:
         gt = json.load(f)
-    truth = {row["name"]: (row["poolQty"], row["deckQty"]) for row in gt["rows"]}
+    truth = {(row["name"], row.get("subtitle") or ""): (row["poolQty"], row["deckQty"]) for row in gt["rows"]}
 
     all_cells = []
     for page_num in (1, 2):
@@ -36,7 +36,7 @@ def eval_fixture(name: str) -> dict:
     pool_correct = pool_wrong = 0
     deck_correct = deck_wrong = 0
     for c in all_cells:
-        t = truth.get(c["name"], (0, 0))
+        t = truth.get((c["name"], c.get("subtitle") or ""), (0, 0))
         if c["poolQty"] == t[0]:
             pool_correct += 1
         else:
