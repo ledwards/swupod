@@ -34,7 +34,6 @@ interface PoolData {
   name?: string | null
   poolType?: string
   parentPoolId?: string | null
-  forceNew?: boolean
 }
 
 interface SavedPool extends PoolData {
@@ -42,7 +41,6 @@ interface SavedPool extends PoolData {
   shareUrl: string
   hasBox?: boolean
   shuffledPacks?: boolean
-  alreadyExists?: boolean
   parentShareId?: string | null
   buildCount?: number
 }

@@ -26,7 +26,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       hidden = false,
       name: requestedName,
       parentPoolId: parentShareId,
-      forceNew = false,
     } = body
 
     // Get set name from config
@@ -58,18 +57,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       }
       parentPoolDbId = parent.rows[0].id
       isPublic = parent.rows[0].is_public
-
-      // Dedup: authenticated user who already has a build for this pool.
-      // Skip when forceNew is set (e.g. + chip click — user explicitly wants a new build).
-      if (userId && !forceNew) {
-        const existing = await query(
-          'SELECT share_id FROM card_pools WHERE parent_pool_id = $1 AND user_id = $2 LIMIT 1',
-          [parentPoolDbId, userId]
-        )
-        if (existing.rows.length) {
-          return jsonResponse({ shareId: existing.rows[0].share_id, alreadyExists: true }, 200)
-        }
-      }
+      // Note: no dedup. Multiple builds per (user, parent pool) is by design.
     }
 
     // Use client-provided shareId if available, otherwise generate one
@@ -82,14 +70,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       shareId = generateShareId(8)
     }
 
-    // Helper function to generate default pool name
+    // Helper function to generate default pool name.
+    // Format: "{setCodeDisplay} {Sealed|Draft|...} {MM.DD.YY}"
+    // Matches getDefaultBuildName() format once a leader is picked, so the
+    // date stays consistent across the auto-rename → user-edit lifecycle.
     const generatePoolName = (poolType: string, setCode: string) => {
       const formatType = poolType === 'draft' ? 'Draft' :
         poolType === 'rotisserie' ? 'Rotisserie Draft' : 'Sealed'
-      // Handle comma-separated set codes (for multi-set pools)
       const setCodes = setCode.includes(',') ? setCode.split(',').map(s => s.trim()) : [setCode]
       const setCodeDisplay = formatSetCodeRange(setCodes)
-      return `${setCodeDisplay} ${formatType}`
+      const now = new Date()
+      const mm = String(now.getMonth() + 1).padStart(2, '0')
+      const dd = String(now.getDate()).padStart(2, '0')
+      const yy = String(now.getFullYear()).slice(-2)
+      return `${setCodeDisplay} ${formatType} ${mm}.${dd}.${yy}`
     }
 
     // Insert pool with retry logic to handle unique constraint violations
