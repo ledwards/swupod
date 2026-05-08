@@ -52,7 +52,12 @@ export const maxDuration = 1800
 export const dynamic = 'force-dynamic'
 
 const MAX_IMAGES = 2
-const MAX_TOTAL_BYTES = 10 * 1024 * 1024 // 10MB combined
+// Client uploads originals (no re-encoding) for OMR/Claude fidelity.
+// 24MP iPhone JPEGs are ~7-10MB each; allow 30MB combined to fit two of
+// them with headroom. The server's `preprocessImageForExtraction` then
+// sharp-downsamples to 2576px before sending to Claude — so this is upload
+// budget only, not memory.
+const MAX_TOTAL_BYTES = 30 * 1024 * 1024 // 30MB combined
 const VALID_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
 const VALID_TYPES = new Set(['Leader', 'Base', 'Unit', 'Event', 'Upgrade'])
 const MAX_QTY = 6
