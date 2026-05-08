@@ -241,6 +241,11 @@ For every row in the crop, do this:
 So scanning right-to-left from the card number: number → TOTAL → PLAYED.
 DO NOT scan left-to-right and assume the first mark you see is PLAYED. The columns are too narrow to align that way reliably — anchor on the printed CARD NUMBER on the right, then walk leftward.
 
+ROW-ANCHOR VERIFICATION (CRITICAL — prevents off-by-one errors):
+When you see a mark in the TOTAL or PLAYED column, BEFORE you assign it to a card number, verify the mark is on THE SAME ROW as a printed number. Trace a horizontal line from the mark to the NO. # column on the right and confirm the printed number sitting on that exact horizontal row. The cardNumber you return MUST be the number on the SAME PHYSICAL ROW as the mark — not the row above, not the row below.
+
+Off-by-one errors are a known failure mode here: the mark for "Boba Fett" (row 7) gets assigned to "Director Krennic" (row 8) because the rows are tightly packed and the model's eye drifts down by one. Counter this by: (a) if you see a mark, identify the row; (b) trace right to the printed number; (c) only THEN return that cardNumber. Do this for every mark.
+
 Common error to avoid: returning every mark as deckQty. If you see a mark in only ONE of the two narrow columns, it is far more often the TOTAL column (poolQty) — players mark TOTAL for every card they own, but only mark PLAYED for the subset they put in their deck. So if a row has exactly one visible mark, your default should be poolQty=1 deckQty=0 unless you can clearly see the mark is in the leftmost column (PLAYED).
 
 ==================================================
@@ -374,6 +379,14 @@ export async function extractTableFromCrop(
   return { rows: parsed.rows || [], outputTokens: response.usage.output_tokens }
 }
 
+export interface MultiSampleVoteCount {
+  /** card number → number of samples that returned poolQty>0 for this card */
+  poolMarkedCount: Map<number, number>
+  /** card number → number of samples that returned deckQty>0 for this card */
+  deckMarkedCount: Map<number, number>
+  totalSamples: number
+}
+
 /**
  * Run extractTableFromCrop N times in parallel and vote per card.
  *
@@ -396,14 +409,34 @@ export async function extractTableMultiSample(
   setCode: string,
   samples: number,
   hint?: TableExtractionHint,
-): Promise<{ rows: TableExtractionRow[]; outputTokens: number; samplesRun: number }> {
-  const n = Math.max(1, Math.min(5, samples))
+): Promise<{
+  rows: TableExtractionRow[]
+  outputTokens: number
+  samplesRun: number
+  voteCount: MultiSampleVoteCount
+}> {
+  const n = Math.max(1, Math.min(11, samples))
   if (tableCards.length === 0) {
-    return { rows: [], outputTokens: 0, samplesRun: 0 }
+    return {
+      rows: [],
+      outputTokens: 0,
+      samplesRun: 0,
+      voteCount: { poolMarkedCount: new Map(), deckMarkedCount: new Map(), totalSamples: 0 },
+    }
   }
   if (n === 1) {
     const r = await extractTableFromCrop(client, cropBuffer, tableName, tableCards, setCode, hint)
-    return { ...r, samplesRun: 1 }
+    const poolMarkedCount = new Map<number, number>()
+    const deckMarkedCount = new Map<number, number>()
+    for (const row of r.rows) {
+      if (row.poolQty > 0) poolMarkedCount.set(row.cardNumber, 1)
+      if (row.deckQty > 0) deckMarkedCount.set(row.cardNumber, 1)
+    }
+    return {
+      ...r,
+      samplesRun: 1,
+      voteCount: { poolMarkedCount, deckMarkedCount, totalSamples: 1 },
+    }
   }
 
   const sampleResults = await Promise.all(
@@ -459,6 +492,9 @@ export async function extractTableMultiSample(
 
   const totalSamples = goodResults.length
   const finalRows: TableExtractionRow[] = []
+  const poolMarkedCount = new Map<number, number>()
+  const deckMarkedCount = new Map<number, number>()
+
   for (const card of tableCards) {
     const num = parseInt((card.cardId.match(/[-_](\d+)$/) || [])[1] || '0', 10)
     const v = votes.get(num)!
@@ -476,8 +512,21 @@ export async function extractTableMultiSample(
       poolQtyConfidence: conf(poolPick.agreement),
       deckQtyConfidence: conf(deckPick.agreement),
     })
+    // Track raw vote counts (any sample with >0 counts as 1 vote) for
+    // top-N post-processing on Leaders/Bases by the orchestrator.
+    let pVotes = 0
+    for (const [val, cnt] of v.pool) if (val > 0) pVotes += cnt
+    if (pVotes > 0) poolMarkedCount.set(num, pVotes)
+    let dVotes = 0
+    for (const [val, cnt] of v.deck) if (val > 0) dVotes += cnt
+    if (dVotes > 0) deckMarkedCount.set(num, dVotes)
   }
 
   const totalOutput = goodResults.reduce((s, r) => s + r.outputTokens, 0)
-  return { rows: finalRows, outputTokens: totalOutput, samplesRun: totalSamples }
+  return {
+    rows: finalRows,
+    outputTokens: totalOutput,
+    samplesRun: totalSamples,
+    voteCount: { poolMarkedCount, deckMarkedCount, totalSamples },
+  }
 }

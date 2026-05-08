@@ -25,6 +25,7 @@ import {
 import { preprocessImageForExtraction } from '../src/services/importPool/preprocessImage'
 import {
   TABLE_NAMES,
+  SUB_GROUP_KEYS,
   groupCardsByTable,
   groupCardsBySubGroup,
   cardNumberOf,
@@ -760,33 +761,50 @@ function buildUserContent(
 
 const PHASE1_SYSTEM_PROMPT = `You're looking at one or two photos of a sealed-deck registration sheet for Star Wars: Unlimited.
 
-Your ONLY job: identify the header info and bounding boxes for each visible aspect TABLE on the sheet. Do NOT extract row-by-row card data — that's a separate pass.
+Your ONLY job: identify the header info and bounding boxes for each visible TABLE on the sheet AND each SUB-SECTION within those tables. Do NOT extract row-by-row card data — that's a separate pass.
 
-The sheet is laid out as a series of tables, one per aspect:
-- "Leaders" — at top of photo 1
-- "Bases" — usually under Leaders on photo 1
-- "Vigilance" / "Command" / "Aggression" / "Cunning" — single main-aspect tables
-- "Heroism" / "Villainy" — single secondary-aspect tables (may not appear in every set)
-- "Multicolor" — cards with 2+ main aspects
-- "NoAspect" — cards with no aspects at all
+LAYOUT: The sheet is laid out as a series of TABLES, one per aspect (Leaders, Bases, Vigilance, Command, Aggression, Cunning, Heroism, Villainy, Multicolor, NoAspect). Each table has a column header (PLAYED | TOTAL | NO. # | name).
 
-Each table has a column header (PLAYED | TOTAL | NO. # | name). Within tables there may be sub-section headers shown only as icons; you do NOT need to identify those — return ONE bounding box for the entire table.
+Within each main-aspect table (Vigilance / Command / Aggression / Cunning), the rows are divided into SUB-SECTIONS by tiny icon dividers. The sub-sections within a Vigilance table are typically:
+  - Vigilance + Villainy (cards with both Vigilance and Villainy aspects)
+  - Vigilance + Heroism (cards with both Vigilance and Heroism)
+  - Vigilance alone (cards with only the Vigilance aspect)
 
+Same pattern for Command/Aggression/Cunning.
+
+The MULTICOLOR table is divided into sub-sections by main-aspect PAIR (Vigilance+Command, Vigilance+Aggression, Vigilance+Cunning, Command+Aggression, Command+Cunning, Aggression+Cunning). Cards with three aspects (e.g. Vigilance+Command+Heroism) belong in their two-main-aspect pair (V+C in that example).
+
+Leaders / Bases / Heroism / Villainy / NoAspect tables have NO sub-sections.
+
+PART 1 — return TABLE-LEVEL bboxes (in "sections" array):
 For each visible table, return:
-- name: one of the values listed above
-- photoIndex: 0 for first photo, 1 for second
-- x0, y0: top-left corner as fractions [0,1] of photo dimensions (NOT pixels)
-- x1, y1: bottom-right corner as fractions [0,1]
-- The bbox MUST include the column header AND every row through the last row of the table
-- Slight over-include (1-2% slack) is preferred over clipping
+- name: one of "Leaders", "Bases", "Vigilance", "Command", "Aggression", "Cunning", "Heroism", "Villainy", "Multicolor", "NoAspect"
+- photoIndex (0 or 1)
+- x0, y0, x1, y1 as fractions [0,1]
+- Include the column header AND all rows through the last row of the table.
+
+PART 2 — return SUB-SECTION bboxes (in "subSections" array):
+For each sub-section visible on the sheet (typically 3 per main-aspect table, 1 per simpler table, 6 for multicolor), return:
+- key: one of the sub-section keys listed below
+- photoIndex (0 or 1)
+- x0, y0, x1, y1 as fractions [0,1]
+- Include only the rows of that specific sub-section. Do NOT include rows from sibling sub-sections.
+
+Allowed sub-section keys:
+  Leaders, Bases, Heroism, Villainy, NoAspect (each table is one sub-section)
+  Vigilance, Vigilance+Heroism, Vigilance+Villainy
+  Command, Command+Heroism, Command+Villainy
+  Aggression, Aggression+Heroism, Aggression+Villainy
+  Cunning, Cunning+Heroism, Cunning+Villainy
+  Multicolor:Command+Vigilance, Multicolor:Aggression+Vigilance, Multicolor:Cunning+Vigilance
+  Multicolor:Aggression+Command, Multicolor:Command+Cunning, Multicolor:Aggression+Cunning
 
 Header info:
-- setName (e.g. "A Lawless Time")
-- eventName, eventDate, playerName (handwritten in the top form)
-- leader: { name, subtitle } if a leader is checked/marked
-- base: { name, subtitle } if a base is checked/marked
+- setName, eventName, eventDate, playerName
+- leader: { name, subtitle } if marked
+- base: { name, subtitle } if marked
 
-Return strict JSON. Do NOT include row data.`
+Return strict JSON. NO row data.`
 
 const PHASE1_SCHEMA = {
   type: 'object',
@@ -852,15 +870,49 @@ const PHASE1_SCHEMA = {
         required: ['name', 'photoIndex', 'x0', 'y0', 'x1', 'y1'],
       },
     },
+    subSections: {
+      type: 'array',
+      minItems: 1,
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          key: {
+            type: 'string',
+            enum: SUB_GROUP_KEYS,
+          },
+          photoIndex: { type: 'integer' },
+          x0: { type: 'number' },
+          y0: { type: 'number' },
+          x1: { type: 'number' },
+          y1: { type: 'number' },
+        },
+        required: ['key', 'photoIndex', 'x0', 'y0', 'x1', 'y1'],
+      },
+    },
   },
-  required: ['header', 'sections'],
+  required: ['header', 'sections', 'subSections'],
+}
+
+interface SubSectionBounds {
+  key: string
+  photoIndex: number
+  x0: number
+  y0: number
+  x1: number
+  y1: number
 }
 
 async function runPhase1(
   client: Anthropic,
   images: ImageInput[],
   setHint?: string,
-): Promise<{ header: ExtractedHeader; sections: SectionBounds[]; usage: any }> {
+): Promise<{
+  header: ExtractedHeader
+  sections: SectionBounds[]
+  subSections: SubSectionBounds[]
+  usage: any
+}> {
   const userContent: Anthropic.MessageParam['content'] = []
   for (let i = 0; i < images.length; i++) {
     const img = images[i]
@@ -916,7 +968,12 @@ async function runPhase1(
   } catch (err) {
     throw new Error(`Phase 1: invalid JSON: ${(err as Error).message}`)
   }
-  return { header: parsed.header, sections: parsed.sections || [], usage: response.usage }
+  return {
+    header: parsed.header,
+    sections: parsed.sections || [],
+    subSections: parsed.subSections || [],
+    usage: response.usage,
+  }
 }
 
 /**
@@ -1016,10 +1073,18 @@ export async function extractPoolFromImages(
   // Leaders/Bases get a STRUCTURAL CONSTRAINT hint up front: a sealed
   // pool always has exactly 6 leaders + 6 bases and exactly 1 active
   // each. If the voted result is off, a refine pass re-runs.
-  const samplesFor = (cardCount: number) => (cardCount <= 15 ? 5 : 3)
+  // Sample count tiers. More samples on small / structurally-important
+  // tables where each card matters and cost is low. Larger sub-groups
+  // (>15 cards) keep moderate samples to bound total cost.
+  const samplesFor = (cardCount: number, tableName: string): number => {
+    if (tableName === 'Leaders' || tableName === 'Bases') return 9
+    if (cardCount <= 15) return 7
+    return 5
+  }
   const phase2Start = Date.now()
 
-  // Crop each TABLE once; sub-groups within a table reuse the crop.
+  // Crop each TABLE once (used as fallback for sub-groups Phase 1 didn't
+  // bound at the sub-section level).
   const tableCrops = new Map<TableName, { cropBuf: Buffer; fellBack: boolean }>()
   for (const tableName of TABLE_NAMES) {
     const sectionBounds = phase1.sections.find((s: any) => s.name === tableName)
@@ -1042,6 +1107,36 @@ export async function extractPoolFromImages(
     }
   }
 
+  // Per-sub-section crops: a tighter crop for each sub-group, isolating
+  // just the rows belonging to that sub-aspect. CRITICAL: each sub-section
+  // crop is extended UPWARD to include the parent table's column header
+  // (the "PLAYED TOTAL NO.# name" row). Without that header, the per-table
+  // prompt's column-anchoring logic ("scan right-to-left from the printed
+  // card number, TOTAL is one cell left, PLAYED is two cells left") falls
+  // apart because the crop has no labels to anchor on.
+  //
+  // Sub-group key → table mapping:
+  //   "Vigilance+Heroism" / "Vigilance+Villainy" / "Vigilance" → Vigilance table
+  //   "Multicolor:Aggression+Vigilance" → Multicolor table (etc.)
+  //   "Leaders" / "Bases" / "Heroism" / "Villainy" / "NoAspect" → themselves
+  function tableForSubGroup(key: string): TableName | null {
+    if ((TABLE_NAMES as string[]).includes(key)) return key as TableName
+    if (key.startsWith('Multicolor:')) return 'Multicolor'
+    if (key.startsWith('Vigilance')) return 'Vigilance'
+    if (key.startsWith('Command')) return 'Command'
+    if (key.startsWith('Aggression')) return 'Aggression'
+    if (key.startsWith('Cunning')) return 'Cunning'
+    return null
+  }
+
+  // Sub-section crops disabled — multiple attempts regressed accuracy
+  // because Phase 1's sub-section bbox identification is unreliable on
+  // lower-resolution photos and the tighter crops drop column-header
+  // context. Phase 1 still RETURNS subSections (kept in the schema for
+  // future iteration / diagnostics), but Phase 2 always uses the
+  // table-level crop.
+  const subSectionCrops = new Map<string, Buffer>()
+
   // Build sub-group jobs across all tables.
   const subGroups = groupCardsBySubGroup(allCards)
 
@@ -1053,10 +1148,26 @@ export async function extractPoolFromImages(
     fellBack: boolean
     cardCount: number
     samplesRun: number
+    voteCount?: {
+      poolMarkedCount: Map<number, number>
+      deckMarkedCount: Map<number, number>
+      totalSamples: number
+    }
   }
 
   const jobs: Promise<SubGroupJobResult>[] = subGroups.map(async ({ subGroup, table, cards: sgCards }) => {
-    const tableEntry = tableCrops.get(table)!
+    // Prefer the sub-section-specific crop from Phase 1 if available;
+    // fall back to the table-level crop, then full photo.
+    let cropBuf: Buffer
+    let fellBack = false
+    const subCrop = subSectionCrops.get(subGroup)
+    if (subCrop) {
+      cropBuf = subCrop
+    } else {
+      const tableEntry = tableCrops.get(table)!
+      cropBuf = tableEntry.cropBuf
+      fellBack = tableEntry.fellBack
+    }
     // Hint per table: Leaders has a fixed sum of 6 (one per pack, no rare
     // tier). Bases has ≥6 (6 commons + variable rare bases) so we do NOT
     // give it a hard sum hint; the prompt's table-specific block tells
@@ -1066,10 +1177,10 @@ export async function extractPoolFromImages(
     // enforces the more nuanced rule.
     const hint =
       table === 'Leaders' ? { expectedPoolSum: 6 } : undefined
-    const samplesForThis = samplesFor(sgCards.length)
+    const samplesForThis = samplesFor(sgCards.length, table)
     const result = await extractTableMultiSample(
       client,
-      tableEntry.cropBuf,
+      cropBuf,
       table,
       sgCards,
       setCode,
@@ -1081,9 +1192,10 @@ export async function extractPoolFromImages(
       tableName: table,
       rows: result.rows,
       outputTokens: result.outputTokens,
-      fellBack: tableEntry.fellBack,
+      fellBack,
       cardCount: sgCards.length,
       samplesRun: result.samplesRun,
+      voteCount: result.voteCount,
     }
   })
   const sgResults = await Promise.all(jobs)

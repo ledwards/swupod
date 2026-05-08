@@ -43,6 +43,41 @@ export const TABLE_NAMES: TableName[] = [
   'NoAspect',
 ]
 
+/**
+ * Every sub-group key Phase 1 can return as a sub-section bbox. Phase 1's
+ * schema enum uses this list. Mirrors the keys getCardSubGroup() emits.
+ */
+export const SUB_GROUP_KEYS: string[] = [
+  // Singleton sub-groups (the entire table is one sub-group)
+  'Leaders',
+  'Bases',
+  'Heroism',
+  'Villainy',
+  'NoAspect',
+
+  // Single-main-aspect tables, split by secondary
+  'Vigilance',
+  'Vigilance+Heroism',
+  'Vigilance+Villainy',
+  'Command',
+  'Command+Heroism',
+  'Command+Villainy',
+  'Aggression',
+  'Aggression+Heroism',
+  'Aggression+Villainy',
+  'Cunning',
+  'Cunning+Heroism',
+  'Cunning+Villainy',
+
+  // Multicolor — split by primary main-aspect pair
+  'Multicolor:Command+Vigilance',
+  'Multicolor:Aggression+Vigilance',
+  'Multicolor:Cunning+Vigilance',
+  'Multicolor:Aggression+Command',
+  'Multicolor:Command+Cunning',
+  'Multicolor:Aggression+Cunning',
+]
+
 export const MAIN_ASPECTS = new Set(['Vigilance', 'Command', 'Aggression', 'Cunning'])
 export const SECONDARY_ASPECTS = new Set(['Heroism', 'Villainy'])
 
