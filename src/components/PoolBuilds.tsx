@@ -13,21 +13,24 @@ interface Build {
 }
 
 interface PoolBuildsProps {
-  shareId: string
+  shareId: string  // root pool shareId
   currentUserId?: string | null
   isOwner?: boolean
 }
 
 const VISIBLE_LIMIT = 5
 
-function BuildCard({ build }: { build: Build }) {
+function BuildCard({ build, rootShareId }: { build: Build; rootShareId: string }) {
   const leader = build.leaderName || 'No leader'
   const base = build.baseName || 'No base'
   const builder = build.isOriginal ? 'Original' : (build.builderName || 'Anonymous')
   const count = build.deckCardCount
+  const href = build.isOriginal
+    ? `/pool/${rootShareId}/deck`
+    : `/pool/${rootShareId}/deck/${build.shareId}`
 
   return (
-    <a href={`/pool/${build.shareId}/deck`} className="pool-build-card">
+    <a href={href} className="pool-build-card">
       <span className="pool-build-deck">
         {leader}, {base}
       </span>
@@ -67,7 +70,7 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false }: 
         <p className="pool-builds-empty">No other builds yet — share this pool to let others build from it.</p>
       ) : (
         <div className="pool-builds-list">
-          {visible.map(b => <BuildCard key={b.shareId} build={b} />)}
+          {visible.map(b => <BuildCard key={b.shareId} build={b} rootShareId={shareId} />)}
           {overflow.length > 0 && (
             <button className="pool-build-card pool-build-more" onClick={() => setModalOpen(true)}>
               <span className="pool-build-deck">+{overflow.length} more</span>
@@ -80,7 +83,7 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false }: 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="All Builds" showCloseButton>
         <Modal.Body>
           <div className="pool-builds-modal-grid">
-            {builds.map(b => <BuildCard key={b.shareId} build={b} />)}
+            {builds.map(b => <BuildCard key={b.shareId} build={b} rootShareId={shareId} />)}
           </div>
         </Modal.Body>
       </Modal>

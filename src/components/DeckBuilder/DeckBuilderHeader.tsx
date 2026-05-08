@@ -110,7 +110,7 @@ export function DeckBuilderHeader({
       }
 
       setTimeout(() => {
-        window.location.href = `/pool/${builtPool.shareId}/deck`
+        window.location.href = `/pool/${shareId}/deck/${builtPool.shareId}`
       }, 1000)
     } catch (err) {
       console.error('Failed to create build:', err)
