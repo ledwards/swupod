@@ -32,6 +32,8 @@ interface PoolData {
   packIndices?: number[]
   hidden?: boolean
   name?: string | null
+  poolType?: string
+  parentPoolId?: string | null
 }
 
 interface SavedPool extends PoolData {
@@ -39,6 +41,9 @@ interface SavedPool extends PoolData {
   shareUrl: string
   hasBox?: boolean
   shuffledPacks?: boolean
+  alreadyExists?: boolean
+  parentShareId?: string | null
+  buildCount?: number
 }
 
 interface RandomizeResult {

@@ -18,13 +18,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       cards,
       packs,
       deckBuilderState,
-      isPublic = true,
+      isPublic: requestedIsPublic = true,
       shareId: clientShareId,
       poolType = 'sealed',
       boxPacks,
       packIndices,
       hidden = false,
       name: requestedName,
+      parentPoolId: parentShareId,
     } = body
 
     // Get set name from config
@@ -38,6 +39,35 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       userId = session.id
     } catch {
       // Anonymous pool - allowed
+    }
+
+    // Handle parent pool (build creation)
+    let parentPoolDbId = null
+    let isPublic = requestedIsPublic
+    if (parentShareId) {
+      const parent = await query(
+        'SELECT id, parent_pool_id, is_public FROM card_pools WHERE share_id = $1',
+        [parentShareId]
+      )
+      if (!parent.rows.length) {
+        return jsonResponse({ error: 'Parent pool not found' }, 404)
+      }
+      if (parent.rows[0].parent_pool_id !== null) {
+        return jsonResponse({ error: 'Cannot create a build from another build' }, 400)
+      }
+      parentPoolDbId = parent.rows[0].id
+      isPublic = parent.rows[0].is_public
+
+      // Dedup: authenticated user who already has a build for this pool
+      if (userId) {
+        const existing = await query(
+          'SELECT share_id FROM card_pools WHERE parent_pool_id = $1 AND user_id = $2 LIMIT 1',
+          [parentPoolDbId, userId]
+        )
+        if (existing.rows.length) {
+          return jsonResponse({ shareId: existing.rows[0].share_id, alreadyExists: true }, 200)
+        }
+      }
     }
 
     // Use client-provided shareId if available, otherwise generate one
@@ -71,8 +101,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         // Try to insert with current shareId
         try {
           result = await query(
-            `INSERT INTO card_pools (user_id, share_id, set_code, set_name, pool_type, name, cards, packs, deck_builder_state, is_public, hidden, box_packs, pack_indices, shuffled_packs)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+            `INSERT INTO card_pools (user_id, share_id, set_code, set_name, pool_type, name, cards, packs, deck_builder_state, is_public, hidden, box_packs, pack_indices, shuffled_packs, parent_pool_id)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
              RETURNING id, share_id, created_at`,
             [
               userId,
@@ -89,6 +119,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
               boxPacks ? JSON.stringify(boxPacks) : null,
               packIndices || null,
               false, // shuffled_packs starts as false
+              parentPoolDbId,
             ]
           )
           // Success - break out of retry loop

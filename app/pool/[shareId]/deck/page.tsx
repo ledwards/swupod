@@ -38,6 +38,8 @@ interface PoolData {
   owner?: PoolOwner
   userId?: string
   draftShareId?: string
+  parentShareId?: string | null
+  buildCount?: number
 }
 
 interface PageProps {
@@ -192,10 +194,22 @@ export default function DeckBuilderPage({ params }: PageProps) {
       .catch(() => {})
   }, [draftShareId])
 
+  const parentShareId = pool?.parentShareId || null
+  const buildCount = pool?.buildCount ?? 0
+  const parentPoolType = pool?.poolType === 'draft' ? 'draft_pool' : 'sealed_pool'
+
   return (
     <div className={draftShareId ? 'page-with-chat' : ''}>
       <div className={draftShareId ? 'page-content' : ''}>
         <div className="app">
+          {parentShareId && (
+            <div className="pool-build-banner">
+              Part of a group build &mdash;{' '}
+              <a href={`/${parentPoolType}/${parentShareId}`}>
+                See all {buildCount + 1} builds
+              </a>
+            </div>
+          )}
           <DeckBuilder
             cards={allCards}
             setCode={setCode}

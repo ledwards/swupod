@@ -42,12 +42,16 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
           cp.losses,
           cp.draws,
           cp.wayfinder_match_ids,
+          cp.parent_pool_id,
           dp.share_id as draft_share_id,
           u.id as owner_id,
-          u.username as owner_username
+          u.username as owner_username,
+          pp.share_id as parent_share_id,
+          (SELECT COUNT(*) FROM card_pools WHERE parent_pool_id = cp.id) as build_count
          FROM card_pools cp
          LEFT JOIN users u ON cp.user_id = u.id
          LEFT JOIN pods dp ON cp.pod_id = dp.id
+         LEFT JOIN card_pools pp ON cp.parent_pool_id = pp.id
          WHERE cp.share_id = $1`,
         [shareId]
       )
@@ -200,6 +204,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       losses: pool.losses ?? 0,
       draws: pool.draws ?? 0,
       wayfinderMatchIds: pool.wayfinder_match_ids ?? [],
+      parentShareId: pool.parent_share_id || null,
+      buildCount: parseInt(pool.build_count || '0', 10),
       owner: pool.owner_id
         ? {
             id: pool.owner_id,
@@ -219,7 +225,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext): Promi
 
     // Check ownership - only select needed columns (avoid loading large JSONB)
     const pool = await queryRow(
-      'SELECT id, user_id, deck_builder_state FROM card_pools WHERE share_id = $1',
+      'SELECT id, user_id, deck_builder_state, parent_pool_id FROM card_pools WHERE share_id = $1',
       [shareId]
     )
 
@@ -266,6 +272,9 @@ export async function PUT(request: NextRequest, { params }: RouteContext): Promi
     }
 
     if (body.isPublic !== undefined) {
+      if (pool.parent_pool_id !== null) {
+        return errorResponse('Cannot change visibility of a build — change it on the parent pool', 403)
+      }
       updates.push(`is_public = $${paramIndex++}`)
       values.push(body.isPublic)
     }
@@ -294,6 +303,14 @@ export async function PUT(request: NextRequest, { params }: RouteContext): Promi
        RETURNING *`,
       values
     )
+
+    // Cascade visibility change to all child builds
+    if (body.isPublic !== undefined) {
+      await query(
+        'UPDATE card_pools SET is_public = $1 WHERE parent_pool_id = $2',
+        [body.isPublic, pool.id]
+      )
+    }
 
     return jsonResponse({
       id: result.rows[0].id,

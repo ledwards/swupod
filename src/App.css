@@ -187,3 +187,23 @@
     text-align: center;
   }
 }
+
+.pool-build-banner {
+  background: rgba(0, 80, 200, 0.15);
+  border-bottom: 1px solid rgba(0, 120, 255, 0.3);
+  padding: 0.6rem 1.5rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.pool-build-banner a {
+  color: rgba(100, 180, 255, 0.9);
+  text-decoration: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pool-build-banner a:hover {
+    color: rgba(100, 180, 255, 1);
+    text-decoration: underline;
+  }
+}

@@ -2,16 +2,16 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import {
-  getClonePoolName,
-  getClonedDeckBuilderState,
-  shouldCloneSharedPoolForPlay,
+  getBuildName,
+  getBuildDeckBuilderState,
+  shouldBuildFromSharedPool,
 } from './deckBuilderSharing'
 
 describe('deckBuilderSharing', () => {
-  describe('shouldCloneSharedPoolForPlay', () => {
-    it('clones for a non-owner opening a shared sealed pool', () => {
+  describe('shouldBuildFromSharedPool', () => {
+    it('builds for a non-owner opening a shared sealed pool', () => {
       assert.strictEqual(
-        shouldCloneSharedPoolForPlay({
+        shouldBuildFromSharedPool({
           isOwner: false,
           shareId: 'pool-123',
           draftShareId: null,
@@ -20,9 +20,9 @@ describe('deckBuilderSharing', () => {
       )
     })
 
-    it('does not clone for the pool owner', () => {
+    it('does not build for the pool owner', () => {
       assert.strictEqual(
-        shouldCloneSharedPoolForPlay({
+        shouldBuildFromSharedPool({
           isOwner: true,
           shareId: 'pool-123',
           draftShareId: null,
@@ -31,9 +31,9 @@ describe('deckBuilderSharing', () => {
       )
     })
 
-    it('does not clone for pod flows that already have their own destination', () => {
+    it('does not build for pod flows that already have their own destination', () => {
       assert.strictEqual(
-        shouldCloneSharedPoolForPlay({
+        shouldBuildFromSharedPool({
           isOwner: false,
           shareId: 'pool-123',
           draftShareId: 'draft-456',
@@ -42,9 +42,9 @@ describe('deckBuilderSharing', () => {
       )
     })
 
-    it('does not clone in infinite mode', () => {
+    it('does not build in infinite mode', () => {
       assert.strictEqual(
-        shouldCloneSharedPoolForPlay({
+        shouldBuildFromSharedPool({
           isInfiniteMode: true,
           isOwner: false,
           shareId: 'pool-123',
@@ -54,17 +54,21 @@ describe('deckBuilderSharing', () => {
     })
   })
 
-  describe('getClonePoolName', () => {
-    it('appends copy suffix when a name exists', () => {
-      assert.strictEqual(getClonePoolName('SOR Sealed'), 'SOR Sealed (Copy)')
+  describe('getBuildName', () => {
+    it('appends builder name with em dash separator', () => {
+      assert.strictEqual(getBuildName('SOR Sealed', 'Lee Edwards'), 'SOR Sealed – Lee Edwards\'s Build')
     })
 
-    it('returns null when there is no name', () => {
-      assert.strictEqual(getClonePoolName(null), null)
+    it('uses anonymous fallback when display name is null', () => {
+      assert.strictEqual(getBuildName('SOR Sealed', null), 'SOR Sealed (Build)')
+    })
+
+    it('returns null when there is no parent name', () => {
+      assert.strictEqual(getBuildName(null, 'Lee Edwards'), null)
     })
   })
 
-  describe('getClonedDeckBuilderState', () => {
+  describe('getBuildDeckBuilderState', () => {
     it('prefers the current in-memory deck state over stale saved state', () => {
       const currentState = {
         activeLeader: 'leader-2',
@@ -81,13 +85,13 @@ describe('deckBuilderSharing', () => {
         },
       }
 
-      assert.deepStrictEqual(getClonedDeckBuilderState(currentState, fallbackState), currentState)
+      assert.deepStrictEqual(getBuildDeckBuilderState(currentState, fallbackState), currentState)
     })
 
     it('falls back when there is no usable current state', () => {
       const fallbackState = { activeLeader: 'leader-1' }
-      assert.deepStrictEqual(getClonedDeckBuilderState(null, fallbackState), fallbackState)
-      assert.deepStrictEqual(getClonedDeckBuilderState({}, fallbackState), fallbackState)
+      assert.deepStrictEqual(getBuildDeckBuilderState(null, fallbackState), fallbackState)
+      assert.deepStrictEqual(getBuildDeckBuilderState({}, fallbackState), fallbackState)
     })
   })
 })

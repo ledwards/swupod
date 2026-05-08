@@ -5,7 +5,7 @@ export interface SharedPoolPlayOptions {
   draftShareId?: string | null
 }
 
-export function shouldCloneSharedPoolForPlay({
+export function shouldBuildFromSharedPool({
   isInfiniteMode = false,
   isOwner = false,
   shareId = null,
@@ -14,11 +14,12 @@ export function shouldCloneSharedPoolForPlay({
   return Boolean(!isInfiniteMode && !isOwner && shareId && !draftShareId)
 }
 
-export function getClonePoolName(poolName?: string | null): string | null {
-  return poolName ? `${poolName} (Copy)` : null
+export function getBuildName(parentName: string | null | undefined, displayName: string | null | undefined): string | null {
+  if (!parentName) return null
+  return displayName ? `${parentName} – ${displayName}'s Build` : `${parentName} (Build)`
 }
 
-export function getClonedDeckBuilderState(currentState: unknown, fallbackState: unknown): unknown {
+export function getBuildDeckBuilderState(currentState: unknown, fallbackState: unknown): unknown {
   if (!currentState || typeof currentState !== 'object') {
     return fallbackState
   }

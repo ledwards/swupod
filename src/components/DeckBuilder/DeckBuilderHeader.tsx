@@ -79,36 +79,42 @@ export function DeckBuilderHeader({
   const isDeckLegal = activeLeader && activeBase && deckCardCount >= 30
   const canUsePlayAction = Boolean(onPlay || shareId)
 
-  // Handle clone pool action
-  const handleClonePool = async () => {
+  // Handle build from pool action (non-owners only)
+  const handleBuildFromPool = async () => {
     if (!isAuthenticated) {
       signIn()
       return
     }
 
     try {
-      setErrorMessage('Cloning pool...')
+      setErrorMessage('Setting up your build...')
       setMessageType('info')
 
-      const clonedPool = await savePool({
+      const builtPool = await savePool({
         setCode: setCode,
         cards: cards,
         packs: null,
         deckBuilderState: savedState,
         poolType: poolType,
-        name: currentPoolName ? `${currentPoolName} (Copy)` : null,
-        isPublic: false
+        name: null,
+        isPublic: false,
+        parentPoolId: shareId,
       })
 
-      setErrorMessage('Pool cloned! Redirecting...')
-      setMessageType('success')
+      if (builtPool.alreadyExists) {
+        setErrorMessage('Opening your existing build...')
+        setMessageType('success')
+      } else {
+        setErrorMessage('Build created! Redirecting...')
+        setMessageType('success')
+      }
 
       setTimeout(() => {
-        window.location.href = `/pool/${clonedPool.shareId}/deck`
+        window.location.href = `/pool/${builtPool.shareId}/deck`
       }, 1000)
     } catch (err) {
-      console.error('Failed to clone pool:', err)
-      setErrorMessage('Failed to clone pool')
+      console.error('Failed to create build:', err)
+      setErrorMessage('Failed to create build')
       setMessageType('error')
       setTimeout(() => {
         setErrorMessage(null)
@@ -180,18 +186,18 @@ export function DeckBuilderHeader({
       )}
 
       {!isLoading && <div className={`header-buttons ${isInfoBarSticky ? 'hidden' : ''}`}>
-        {/* Clone button first for non-owners */}
+        {/* Build with This Pool button for non-owners */}
         {!isInfiniteMode && !isOwner && (
           <Button
             variant="secondary"
             className="export-button"
-            onClick={handleClonePool}
+            onClick={handleBuildFromPool}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
             </svg>
-            <span>Clone</span>
+            <span>Build with This Pool</span>
           </Button>
         )}
 
@@ -210,20 +216,6 @@ export function DeckBuilderHeader({
           </Button>
         )}
 
-        {/* Clone button between Play and Share for owners */}
-        {!isInfiniteMode && isOwner && (
-          <Button
-            variant="secondary"
-            className="export-button"
-            onClick={handleClonePool}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-            <span>Clone</span>
-          </Button>
-        )}
 
         {/* Share button */}
         {!isInfiniteMode && shareId && (

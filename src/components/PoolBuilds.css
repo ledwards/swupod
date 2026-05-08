@@ -1,0 +1,83 @@
+.pool-builds {
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.pool-builds-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 1rem;
+}
+
+.pool-builds-empty {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+}
+
+.pool-builds-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pool-build-card {
+  display: block;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  width: 220px;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.85);
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pool-build-card:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+    color: rgba(255, 255, 255, 0.85);
+  }
+}
+
+.pool-build-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.pool-build-builder {
+  font-weight: 600;
+  font-size: 0.95rem;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pool-build-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: rgba(255, 215, 0, 0.2);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  color: rgba(255, 215, 0, 0.9);
+  padding: 1px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.pool-build-detail {
+  display: flex;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 0.3rem;
+}
+
+.pool-build-label {
+  color: rgba(255, 255, 255, 0.4);
+  min-width: 44px;
+}

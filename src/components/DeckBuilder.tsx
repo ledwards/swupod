@@ -20,9 +20,9 @@ import {
 import { deletePool, savePool, updatePool } from '../utils/poolApi'
 import { getPackArtUrl } from '../utils/packArt'
 import {
-  getClonedDeckBuilderState,
-  getClonePoolName,
-  shouldCloneSharedPoolForPlay,
+  getBuildDeckBuilderState,
+  getBuildName,
+  shouldBuildFromSharedPool,
 } from '../utils/deckBuilderSharing'
 import Card from './Card'
 import { CardPreview } from './DeckBuilder/CardPreview'
@@ -1645,8 +1645,8 @@ function DeckBuilder({
     arenaDeckSortOption,
   ])
 
-  const cloneDeckBuilderState = useMemo(
-    () => getClonedDeckBuilderState(buildDeckStateSnapshot(false), savedState),
+  const buildDeckBuilderState = useMemo(
+    () => getBuildDeckBuilderState(buildDeckStateSnapshot(false), savedState),
     [buildDeckStateSnapshot, savedState]
   )
 
@@ -2186,25 +2186,26 @@ function DeckBuilder({
       return
     }
 
-    if (shouldCloneSharedPoolForPlay({ isInfiniteMode, isOwner, shareId, draftShareId })) {
+    if (shouldBuildFromSharedPool({ isInfiniteMode, isOwner, shareId, draftShareId })) {
       try {
-        setErrorMessage('Creating your own copy...')
+        setErrorMessage('Setting up your build...')
         setMessageType('success')
 
-        const clonedPool = await savePool({
+        const builtPool = await savePool({
           setCode,
           cards,
           packs: null,
-          deckBuilderState: cloneDeckBuilderState,
+          deckBuilderState: buildDeckBuilderState,
           poolType,
-          name: getClonePoolName(currentPoolName),
+          name: getBuildName(currentPoolName, null),
           isPublic: false,
+          parentPoolId: shareId,
         })
 
-        window.location.href = `/pool/${clonedPool.shareId}/deck/play`
+        window.location.href = `/pool/${builtPool.shareId}/deck/play`
       } catch (err) {
-        console.error('Failed to create personal copy for play:', err)
-        setErrorMessage(err instanceof Error ? err.message : 'Failed to create personal copy')
+        console.error('Failed to create build for play:', err)
+        setErrorMessage(err instanceof Error ? err.message : 'Failed to create build')
         setMessageType('error')
         setTimeout(() => {
           setErrorMessage(null)
@@ -2233,7 +2234,7 @@ function DeckBuilder({
     shareId,
     setCode,
     cards,
-    cloneDeckBuilderState,
+    buildDeckBuilderState,
     poolType,
     currentPoolName,
   ])
@@ -2335,7 +2336,7 @@ function DeckBuilder({
           activeBase={activeBase}
           setCode={setCode}
           cards={cards}
-          savedState={cloneDeckBuilderState}
+          savedState={buildDeckBuilderState}
           poolType={poolType}
           errorMessage={errorMessage}
           setErrorMessage={setErrorMessage}
@@ -2378,7 +2379,7 @@ function DeckBuilder({
         setMessageType={setMessageType}
         setCode={setCode}
         cards={cards}
-        savedState={cloneDeckBuilderState}
+        savedState={buildDeckBuilderState}
         poolType={poolType}
         currentPoolName={currentPoolName}
         viewMode={viewMode}

@@ -3,7 +3,9 @@
 
 import { useState, useEffect, use } from 'react'
 import SealedPod from '../../../src/components/SealedPod'
+import PoolBuilds from '../../../src/components/PoolBuilds'
 import { loadPool } from '../../../src/utils/poolApi'
+import { useAuth } from '../../../src/contexts/AuthContext'
 import '../../../src/App.css'
 
 interface CardType {
@@ -38,6 +40,8 @@ interface PoolData {
   owner?: PoolOwner
   userId?: string
   draftShareId?: string
+  parentShareId?: string | null
+  buildCount?: number
 }
 
 interface PageProps {
@@ -46,6 +50,7 @@ interface PageProps {
 
 export default function DraftPoolPage({ params }: PageProps) {
   const resolvedParams = use(params)
+  const { user } = useAuth()
   const [pool, setPool] = useState<PoolData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -196,8 +201,18 @@ export default function DraftPoolPage({ params }: PageProps) {
     return pool?.name || null
   }
 
+  const isOwner = Boolean(user && pool && (user.id === pool.owner?.id || user.id === pool.userId))
+  const rootShareId = pool?.parentShareId || pool?.shareId
+  const isChildBuild = Boolean(pool?.parentShareId)
+
   return (
     <div className="app">
+      {isChildBuild && pool?.parentShareId && (
+        <div className="pool-build-banner">
+          Part of a group build &mdash;{' '}
+          <a href={`/draft_pool/${pool.parentShareId}`}>See all builds</a>
+        </div>
+      )}
       <SealedPod
         setCode={pool?.setCode}
         setName={pool?.setName}
@@ -214,6 +229,13 @@ export default function DraftPoolPage({ params }: PageProps) {
         poolOwnerId={pool?.owner?.id || pool?.userId}
         draftShareId={pool?.draftShareId || null}
       />
+      {!loading && rootShareId && (
+        <PoolBuilds
+          shareId={rootShareId}
+          currentUserId={user?.id || null}
+          isOwner={isOwner && !isChildBuild}
+        />
+      )}
     </div>
   )
 }
