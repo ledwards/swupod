@@ -134,6 +134,11 @@
   transition: opacity 0.1s, color 0.1s;
 }
 @media (hover: hover) and (pointer: fine) {
+  /* Expand the card's right padding on hover so the trash chip has its own
+   * gutter and doesn't overlap the leader/meta text. Width grows by ~22 px. */
+  .pool-build-card--owned:hover {
+    padding-right: 26px;
+  }
   .pool-build-card:hover .pool-build-trash {
     opacity: 1;
     pointer-events: auto;
@@ -143,6 +148,10 @@
   }
 }
 @media (hover: none) {
+  /* On touch devices the trash is always visible — keep the gutter permanently. */
+  .pool-build-card--owned {
+    padding-right: 26px;
+  }
   .pool-build-trash {
     opacity: 0.6;
     pointer-events: auto;

@@ -124,7 +124,7 @@ function BuildCard({
   const ownsThis = Boolean(currentUserId && build.builderUserId && build.builderUserId === currentUserId)
 
   return (
-    <a href={href} className={`pool-build-card ${isActive ? 'pool-build-card-active' : ''}`}>
+    <a href={href} className={`pool-build-card ${isActive ? 'pool-build-card-active' : ''} ${ownsThis && onRequestDelete ? 'pool-build-card--owned' : ''}`}>
       <span className="pool-build-leader">
         <span style={leaderStyle}>{leader}</span>
         {base && <> <span style={baseStyle}>{base}</span></>}
