@@ -252,6 +252,21 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
         if (baseRow?.card) activeBaseId = baseRow.card.id
       }
 
+      // Fallback: if the header didn't yield an active leader/base (Phase 1
+      // missed the printed header field, or the name didn't match a card),
+      // infer from per-cell extraction. The card with deckQty=1 in the
+      // Leader/Base table IS the active selection. Without this fallback,
+      // users with a faint/unreadable header field see a phantom "Leader: ✗"
+      // even though the right row is marked deck=1.
+      if (!activeLeaderId) {
+        const markedLeader = resolvedRows.find((r) => r.card?.isLeader && r.deckQty >= 1)
+        if (markedLeader?.card) activeLeaderId = markedLeader.card.id
+      }
+      if (!activeBaseId) {
+        const markedBase = resolvedRows.find((r) => r.card?.isBase && r.deckQty >= 1)
+        if (markedBase?.card) activeBaseId = markedBase.card.id
+      }
+
       // Auto-compose default title.
       const titleParts: string[] = []
       if (header.eventName) titleParts.push(header.eventName)
