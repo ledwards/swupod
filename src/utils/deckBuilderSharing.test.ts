@@ -142,7 +142,7 @@ describe('deckBuilderSharing', () => {
   })
 
   describe('getDefaultBuildName', () => {
-    it('formats as "{archetype} ({SET}) {Format} {date}"', () => {
+    it('formats as "{archetype} ({SET}) {Format} Pool {date}"', () => {
       assert.strictEqual(
         getDefaultBuildName({
           archetypeNickname: 'Saw Splash Blue (Limited)',
@@ -150,7 +150,7 @@ describe('deckBuilderSharing', () => {
           poolType: 'sealed',
           createdAt: new Date(2026, 4, 28),
         }),
-        'Saw Splash Blue (LAW) Sealed 05.28.26'
+        'Saw Splash Blue (LAW) Sealed Pool 05.28.26'
       )
     })
     it('falls back to legacy {parent} – {user}\'s Build when no archetype', () => {

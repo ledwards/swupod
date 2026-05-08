@@ -83,7 +83,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       const mm = String(now.getMonth() + 1).padStart(2, '0')
       const dd = String(now.getDate()).padStart(2, '0')
       const yy = String(now.getFullYear()).slice(-2)
-      return `${setCodeDisplay} ${formatType} ${mm}.${dd}.${yy}`
+      return `${setCodeDisplay} ${formatType} Pool ${mm}.${dd}.${yy}`
     }
 
     // Insert pool with retry logic to handle unique constraint violations

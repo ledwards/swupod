@@ -179,7 +179,7 @@ export function getDefaultBuildName({
     const date = formatPoolDate(createdAt)
     const setPart = set ? ` (${set})` : ''
     const datePart = date ? ` ${date}` : ''
-    return `${archetype}${setPart} ${fmt}${datePart}`.trim()
+    return `${archetype}${setPart} ${fmt} Pool${datePart}`.trim()
   }
   return getBuildName(parentName, displayName)
 }
