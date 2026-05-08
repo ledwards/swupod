@@ -202,6 +202,13 @@ export default function DeckBuilderPage({ params }: PageProps) {
     <div className={draftShareId ? 'page-with-chat' : ''}>
       <div className={draftShareId ? 'page-content' : ''}>
         <div className="app">
+          {!loading && rootShareId && (
+            <PoolBuilds
+              shareId={rootShareId}
+              currentUserId={user?.id || null}
+              isOwner={isOwner && !isChildBuild}
+            />
+          )}
           <DeckBuilder
             cards={allCards}
             setCode={setCode}
@@ -217,13 +224,6 @@ export default function DeckBuilderPage({ params }: PageProps) {
             draftShareId={draftShareId}
             deckBuildDeadline={deckBuildDeadline}
           />
-          {!loading && rootShareId && (
-            <PoolBuilds
-              shareId={rootShareId}
-              currentUserId={user?.id || null}
-              isOwner={isOwner && !isChildBuild}
-            />
-          )}
         </div>
       </div>
       {draftShareId && <ChatPanel shareId={draftShareId} defaultOpen={false} />}
