@@ -44,7 +44,7 @@ function BuildCard({ build, rootShareId }: { build: Build; rootShareId: string }
         {label}
       </span>
       <span className="pool-build-meta">
-        ({build.deckCardCount} cards) by {builder}
+        by {builder}
       </span>
     </a>
   )

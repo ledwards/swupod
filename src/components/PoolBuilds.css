@@ -1,6 +1,6 @@
 .pool-builds {
   margin: 0.5rem 0 1rem;
-  text-align: left;
+  text-align: center;
 }
 
 .pool-builds-label {
@@ -21,7 +21,7 @@
 .pool-builds-list {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 6px;
 }
 
