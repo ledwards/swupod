@@ -156,13 +156,6 @@ export default function BuildDeckPage({ params }: PageProps) {
     <div className={draftShareId ? 'page-with-chat' : ''}>
       <div className={draftShareId ? 'page-content' : ''}>
         <div className="app">
-          {!loading && (
-            <PoolBuilds
-              shareId={rootShareId}
-              currentUserId={user?.id || null}
-              isOwner={false}
-            />
-          )}
           <DeckBuilder
             cards={allCards}
             setCode={pool?.setCode || null}
@@ -176,6 +169,8 @@ export default function BuildDeckPage({ params }: PageProps) {
             poolOwnerUsername={pool?.owner?.username}
             poolOwnerId={pool?.owner?.id || pool?.userId}
             draftShareId={draftShareId}
+            rootShareId={rootShareId}
+            currentUserId={user?.id || null}
           />
         </div>
       </div>

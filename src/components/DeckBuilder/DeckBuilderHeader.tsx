@@ -13,6 +13,7 @@ import EditableTitle from '../EditableTitle'
 import Button from '../Button'
 import DraftReportButton from '../DraftReportButton'
 import CountdownTimer from '../CountdownTimer'
+import PoolBuilds from '../PoolBuilds'
 import { savePool } from '../../utils/poolApi'
 import type { CardPosition } from './AspectPenaltyToggle'
 import type { MessageType } from './DeleteDeckSection'
@@ -44,6 +45,8 @@ export interface DeckBuilderHeaderProps {
   isPatron?: boolean
   deckBuildDeadline?: string | null
   onPlay?: () => void
+  rootShareId?: string | null
+  currentUserId?: string | null
 }
 
 export function DeckBuilderHeader({
@@ -72,6 +75,8 @@ export function DeckBuilderHeader({
   isPatron,
   deckBuildDeadline,
   onPlay,
+  rootShareId = null,
+  currentUserId = null,
 }: DeckBuilderHeaderProps) {
   // Calculate deck legality for Play button
   const deckCardCount = Object.values(cardPositions)
@@ -162,6 +167,13 @@ export function DeckBuilderHeader({
           />
         </h1>
         <p className="deck-builder-pool-type">{isInfiniteMode ? 'Limited Deckbuilder' : isDraftMode ? 'Draft Pool' : 'Sealed Pool'}</p>
+        {rootShareId && (
+          <PoolBuilds
+            shareId={rootShareId}
+            currentUserId={currentUserId}
+            isOwner={isOwner}
+          />
+        )}
       </div>
 
       {deckBuildDeadline && (

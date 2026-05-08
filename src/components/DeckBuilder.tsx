@@ -135,6 +135,8 @@ interface DeckBuilderProps {
   poolOwnerId?: string | null
   draftShareId?: string | null
   deckBuildDeadline?: string | null
+  rootShareId?: string | null
+  currentUserId?: string | null
 }
 
 function DeckBuilder({
@@ -154,7 +156,9 @@ function DeckBuilder({
   poolOwnerUsername = null,
   poolOwnerId = null,
   draftShareId = null,
-  deckBuildDeadline = null
+  deckBuildDeadline = null,
+  rootShareId = null,
+  currentUserId = null
 }: DeckBuilderProps) {
   const { user, isAuthenticated, signIn, isPatron } = useAuth()
   const isInfiniteMode = mode === 'infinite'
@@ -2347,6 +2351,8 @@ function DeckBuilder({
           isPatron={isPatron}
           deckBuildDeadline={deckBuildDeadline}
           onPlay={handlePlay}
+          rootShareId={rootShareId}
+          currentUserId={currentUserId}
         />
 
       {/* Selected Leader/Base and Deck/Sideboard Info - Sticky Bar */}

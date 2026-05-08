@@ -1,45 +1,36 @@
 .pool-builds {
-  padding: 1.5rem 2rem 2rem;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.pool-builds-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.6);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin: 0 0 0.75rem;
+  margin: 0.5rem 0 1rem;
 }
 
 .pool-builds-empty {
   color: rgba(255, 255, 255, 0.4);
   font-size: 0.875rem;
+  margin: 0;
 }
 
 .pool-builds-list {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .pool-build-card {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 4px 10px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
+  border-radius: 4px;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  width: 100%;
-  text-align: left;
   font-family: inherit;
   font-size: inherit;
+  text-align: left;
   transition: background 0.1s, border-color 0.1s;
+  line-height: 1.2;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -49,28 +40,29 @@
   }
 }
 
-.pool-build-deck {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
-  flex-shrink: 0;
+.pool-build-leader {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
 }
 
 .pool-build-meta {
-  font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
 }
 
-.pool-build-more .pool-build-deck {
-  color: rgba(255, 255, 255, 0.5);
-  font-weight: 400;
+.pool-build-more .pool-build-leader {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
 }
 
 /* Modal grid */
 .pool-builds-modal-grid {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-wrap: wrap;
+  gap: 6px;
   max-height: 60vh;
   overflow-y: auto;
   padding-right: 4px;

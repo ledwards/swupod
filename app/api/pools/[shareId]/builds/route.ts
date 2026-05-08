@@ -14,12 +14,18 @@ function extractBuildInfo(deckBuilderState: unknown) {
   const positions = state.cardPositions || {}
   const leaderKey = state.activeLeader || null
   const baseKey = state.activeBase || null
-  const leaderName = leaderKey ? (positions[leaderKey]?.card?.name || null) : null
-  const baseName = baseKey ? (positions[baseKey]?.card?.name || null) : null
+  const leaderCard = leaderKey ? positions[leaderKey]?.card : null
+  const baseCard = baseKey ? positions[baseKey]?.card : null
   const deckCardCount = Object.values(positions).filter(
     (pos: any) => pos.section === 'deck' && pos.visible !== false && !pos.card?.isBase && !pos.card?.isLeader
   ).length
-  return { leaderName, baseName, deckCardCount }
+  return {
+    leaderName: leaderCard?.name || null,
+    leaderAspects: leaderCard?.aspects || [],
+    baseName: baseCard?.name || null,
+    baseAspects: baseCard?.aspects || [],
+    deckCardCount,
+  }
 }
 
 export async function GET(request: NextRequest, { params }: RouteContext): Promise<NextResponse> {

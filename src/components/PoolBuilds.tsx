@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useState, useEffect } from 'react'
 import Modal from './Modal'
+import { getAspectColor } from '../utils/aspectColors'
 import './PoolBuilds.css'
 
 interface Build {
@@ -8,7 +9,9 @@ interface Build {
   builderName: string | null
   isOriginal: boolean
   leaderName: string | null
+  leaderAspects?: string[]
   baseName: string | null
+  baseAspects?: string[]
   deckCardCount: number
 }
 
@@ -18,24 +21,22 @@ interface PoolBuildsProps {
   isOwner?: boolean
 }
 
-const VISIBLE_LIMIT = 5
+const VISIBLE_LIMIT = 6
 
 function BuildCard({ build, rootShareId }: { build: Build; rootShareId: string }) {
-  const leader = build.leaderName || 'No leader'
-  const base = build.baseName || 'No base'
   const builder = build.isOriginal ? 'Original' : (build.builderName || 'Anonymous')
-  const count = build.deckCardCount
+  const leaderColor = getAspectColor({ aspects: build.leaderAspects })
   const href = build.isOriginal
     ? `/pool/${rootShareId}/deck`
     : `/pool/${rootShareId}/deck/${build.shareId}`
 
   return (
     <a href={href} className="pool-build-card">
-      <span className="pool-build-deck">
-        {leader}, {base}
+      <span className="pool-build-leader" style={{ color: leaderColor }}>
+        {build.leaderName || 'No leader'}
       </span>
       <span className="pool-build-meta">
-        by {builder}{count > 0 ? ` (${count} cards)` : ''}
+        ({build.deckCardCount} cards) by {builder}
       </span>
     </a>
   )
@@ -65,7 +66,6 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false }: 
 
   return (
     <div className="pool-builds">
-      <h2 className="pool-builds-title">Builds</h2>
       {!childBuilds.length && isOwner ? (
         <p className="pool-builds-empty">No other builds yet — share this pool to let others build from it.</p>
       ) : (
@@ -73,8 +73,8 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false }: 
           {visible.map(b => <BuildCard key={b.shareId} build={b} rootShareId={shareId} />)}
           {overflow.length > 0 && (
             <button className="pool-build-card pool-build-more" onClick={() => setModalOpen(true)}>
-              <span className="pool-build-deck">+{overflow.length} more</span>
-              <span className="pool-build-meta">View all {builds.length} builds</span>
+              <span className="pool-build-leader">+{overflow.length} more</span>
+              <span className="pool-build-meta">View all {builds.length}</span>
             </button>
           )}
         </div>
