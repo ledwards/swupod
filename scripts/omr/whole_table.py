@@ -122,6 +122,10 @@ The TOP of the table has a HEADER ROW with the literal text "PLAYED  TOTAL  NO. 
 2. DO NOT count the printed card number as a mark in TOTAL.
 3. Process every row even if many are 0/0 (most rows ARE 0/0).
 
+# HARD INVARIANT (CRITICAL)
+
+For ANY row: PLAYED ≤ TOTAL. The deck (PLAYED) is a subset of the player's pool (TOTAL). If you read PLAYED=1 and TOTAL=0 you have SWAPPED them — re-check carefully which column is leftmost. The leftmost column with marks is PLAYED.
+
 # OUTPUT
 
 You will be given the list of card numbers expected in this table. Output ONE JSON object with the exact form:
@@ -242,7 +246,11 @@ def evaluate_fixture(fixture: str, model: str = MODEL_SONNET, save_crops: bool =
     fix_dir = REPO / "scripts" / "eval" / "fixtures" / fixture
     with open(fix_dir / "ground-truth.json") as f:
         gt = json.load(f)
-    truth = {row["name"]: (row["poolQty"], row["deckQty"]) for row in gt["rows"]}
+    # Use (name, subtitle) as the truth key — LAW has 5 duplicate-name
+    # cards (Boba Fett, Chewbacca, Jyn Erso, Lando, Han Solo), each
+    # appearing as both Leader and Unit. Keying by name alone collapses
+    # them and breaks the metric.
+    truth = {(row["name"], row.get("subtitle") or ""): (row["poolQty"], row["deckQty"]) for row in gt["rows"]}
 
     cards_by_t = load_law_cards()
     table_jobs = []
@@ -289,7 +297,7 @@ def evaluate_fixture(fixture: str, model: str = MODEL_SONNET, save_crops: bool =
         for card in r.cards_in_table:
             n = int(card["number"])
             pool_pred, deck_pred = r.parsed.get(n, (0, 0))
-            t_pool, t_deck = truth.get(card["name"], (0, 0))
+            t_pool, t_deck = truth.get((card["name"], card.get("subtitle") or ""), (0, 0))
             correct_pool += int(pool_pred == t_pool)
             correct_deck += int(deck_pred == t_deck)
             total += 1
