@@ -545,6 +545,19 @@ export default function ResolveStep({ importPool }: Props) {
           }}
           sectionFilter={sourceModalSection}
           sectionBounds={state.sectionBounds}
+          // Side-by-side editing: filter resolvedRows down to the targeted
+          // section so the modal's right-pane table mirrors what's on the
+          // left source image.
+          rowsForSection={
+            sourceModalSection
+              ? state.resolvedRows.filter((r) => sectionNameForRow(r) === sourceModalSection)
+              : undefined
+          }
+          setRowQty={setRowQty}
+          setActiveLeader={setActiveLeader}
+          setActiveBase={setActiveBase}
+          activeLeaderId={state.activeLeaderId}
+          activeBaseId={state.activeBaseId}
         />
       )}
 

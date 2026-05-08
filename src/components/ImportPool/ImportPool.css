@@ -1591,8 +1591,21 @@
   color: #ffd966;
 }
 
-.ip-source-modal__viewport {
+/* Modal body: holds the viewport (image) and optionally the side-by-side
+ * editable table for the focused section. */
+.ip-source-modal__body {
   flex: 1 1 auto;
+  display: flex;
+  flex-direction: row;
+  min-height: 0;
+}
+
+.ip-source-modal__body--split {
+  /* Split mode: left half image, right half table. */
+}
+
+.ip-source-modal__viewport {
+  flex: 1 1 50%;
   /* Default: clip to viewport — image is sized to fit, no scrolling. */
   overflow: hidden;
   padding: 12px;
@@ -1601,6 +1614,132 @@
   align-items: center;
   justify-content: center;
   min-height: 0;
+  min-width: 0;
+}
+
+/* Right-pane table for side-by-side editing. */
+.ip-source-modal__pane {
+  flex: 1 1 50%;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  padding: 8px 12px;
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+  background: #0a0a0a;
+}
+
+.ip-source-modal__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.ip-source-modal__table thead th {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  padding: 6px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  position: sticky;
+  top: 0;
+  background: #0a0a0a;
+}
+
+.ip-source-modal__table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.ip-source-modal__col-played { width: 70px; }
+.ip-source-modal__col-total  { width: 70px; }
+.ip-source-modal__col-name   { width: auto; }
+
+.ip-source-modal__cell {
+  padding: 4px 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  vertical-align: middle;
+}
+
+.ip-source-modal__cell--qty {
+  text-align: center;
+}
+
+.ip-source-modal__cell--name strong {
+  font-weight: 600;
+}
+
+.ip-source-modal__cell--name em {
+  color: rgba(255, 255, 255, 0.65);
+  font-style: normal;
+  margin-left: 4px;
+  font-size: 11px;
+}
+
+.ip-source-modal__qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ip-source-modal__qty-btn {
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ip-source-modal__qty-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ip-source-modal__qty-btn:not(:disabled):hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.ip-source-modal__qty-value {
+  display: inline-block;
+  min-width: 14px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.ip-source-modal__qty-value--zero {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.ip-source-modal__qty-static {
+  font-weight: 600;
+}
+
+.ip-source-modal__qty-toggle {
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: inherit;
+}
+
+.ip-source-modal__qty-toggle--active {
+  background: rgba(0, 255, 0, 0.15);
+  border-color: rgba(0, 255, 0, 0.7);
 }
 
 /* Zoomed mode flips back to scrollable so the user can pan around. */
@@ -1635,11 +1774,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  align-items: center;
-  /* Fill the modal viewport so children can size by % height */
-  height: 100%;
   width: 100%;
-  min-height: 0;
+  align-items: center;
 }
 
 .ip-source-crop {
@@ -1647,11 +1783,11 @@
   flex-direction: column;
   gap: 4px;
   align-items: center;
-  /* Each crop shares the available height when there are multiple
-   * (multi-page sections). Single crop = takes all the height. */
-  flex: 1 1 0;
-  min-height: 0;
-  max-width: 100%;
+  width: 100%;
+  /* Cap each crop at the available modal-body height. Browsers maintain
+   * aspect-ratio by reducing width when max-height clamps height — so a
+   * tall section ends up tall-but-narrow, fully visible without scroll. */
+  max-height: calc(95vh - 110px);
 }
 
 .ip-source-crop__caption {
@@ -1662,15 +1798,15 @@
   flex: 0 0 auto;
 }
 
-/* Default: crop fills the available height, width derives from aspect-ratio.
- * Capped at parent width so very wide sections don't overflow horizontally. */
 .ip-source-crop__viewport {
   position: relative;
-  height: 100%;
-  width: auto;
+  /* aspect-ratio set inline by SourceImageModal */
+  width: 100%;
   max-width: 100%;
-  min-height: 0;
-  flex: 1 1 0;
+  /* Same height cap as the wrapper minus the caption — keeps tall sections
+   * visible in one screen. The browser maintains aspect-ratio by reducing
+   * width if needed. */
+  max-height: calc(95vh - 130px);
   overflow: hidden;
   background: #111;
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -1678,10 +1814,9 @@
   cursor: zoom-in;
 }
 
-/* Zoomed: crops grow horizontally and the modal viewport scrolls. */
 .ip-source-modal__viewport.is-zoomed .ip-source-crop__viewport {
   cursor: zoom-out;
-  height: auto;
+  max-height: none;
   width: 200%;
   max-width: none;
 }

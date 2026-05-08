@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Button from '../Button'
 import type { ProcessedImage } from '../../services/importPool/imagePrep'
-import type { SectionBounds } from '../../hooks/useImportPool'
+import type { SectionBounds, ResolvedRow } from '../../hooks/useImportPool'
 
 interface Props {
   images: ProcessedImage[]
@@ -13,6 +13,17 @@ interface Props {
    *  photos that contain it. User can toggle back to the full sheet. */
   sectionFilter?: string | null
   sectionBounds?: SectionBounds[]
+  /** Side-by-side editing: when these are provided AND sectionFilter is set
+   *  AND we're in cropping mode, the modal renders the section's image on
+   *  the left and an editable table for the same section on the right.
+   *  Edits write through to wizard state via the same callbacks the main
+   *  Step-2 page uses, so closing the modal preserves the changes. */
+  rowsForSection?: ResolvedRow[]
+  setRowQty?: (key: string, field: 'poolQty' | 'deckQty', value: number) => void
+  setActiveLeader?: (cardId: string) => void
+  setActiveBase?: (cardId: string) => void
+  activeLeaderId?: string | null
+  activeBaseId?: string | null
 }
 
 /**
@@ -32,6 +43,12 @@ export default function SourceImageModal({
   onClose,
   sectionFilter = null,
   sectionBounds = [],
+  rowsForSection,
+  setRowQty,
+  setActiveLeader,
+  setActiveBase,
+  activeLeaderId,
+  activeBaseId,
 }: Props) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [zoomed, setZoomed] = useState(false)
@@ -123,47 +140,62 @@ export default function SourceImageModal({
           </div>
         </header>
 
-        <div
-          className={`ip-source-modal__viewport ${zoomed ? 'is-zoomed' : ''}`}
-          onClick={() => setZoomed((z) => !z)}
-        >
-          {images.length === 0 ? (
-            <div className="ip-source-modal__empty">
-              <p>
-                Source images aren&apos;t loaded for this session. They were dropped from
-                local storage to save space — re-upload them to see the original sheet
-                here.
-              </p>
-            </div>
-          ) : cropping ? (
-            <div className="ip-source-modal__crops">
-              {sectionEntries.map((b, i) => {
-                const photo = images[b.photoIndex]
-                if (!photo) return null
-                return (
-                  <CroppedView
-                    key={`${b.name}-${b.photoIndex}-${i}`}
-                    src={photo.previewUrl}
-                    naturalWidth={photo.width}
-                    naturalHeight={photo.height}
-                    bounds={b}
-                    captionLabel={
-                      sectionEntries.length > 1
-                        ? `Page ${b.photoIndex + 1} of ${images.length}`
-                        : null
-                    }
-                  />
-                )
-              })}
-            </div>
-          ) : (
-            active && (
-              <img
-                src={active.previewUrl}
-                alt={`Source sheet ${activeIndex + 1}`}
-                className="ip-source-modal__img"
-              />
-            )
+        <div className={`ip-source-modal__body ${cropping && rowsForSection ? 'ip-source-modal__body--split' : ''}`}>
+          <div
+            className={`ip-source-modal__viewport ${zoomed ? 'is-zoomed' : ''}`}
+            onClick={() => setZoomed((z) => !z)}
+          >
+            {images.length === 0 ? (
+              <div className="ip-source-modal__empty">
+                <p>
+                  Source images aren&apos;t loaded for this session. They were dropped from
+                  local storage to save space — re-upload them to see the original sheet
+                  here.
+                </p>
+              </div>
+            ) : cropping ? (
+              <div className="ip-source-modal__crops">
+                {sectionEntries.map((b, i) => {
+                  const photo = images[b.photoIndex]
+                  if (!photo) return null
+                  return (
+                    <CroppedView
+                      key={`${b.name}-${b.photoIndex}-${i}`}
+                      src={photo.previewUrl}
+                      naturalWidth={photo.width}
+                      naturalHeight={photo.height}
+                      bounds={b}
+                      captionLabel={
+                        sectionEntries.length > 1
+                          ? `Page ${b.photoIndex + 1} of ${images.length}`
+                          : null
+                      }
+                    />
+                  )
+                })}
+              </div>
+            ) : (
+              active && (
+                <img
+                  src={active.previewUrl}
+                  alt={`Source sheet ${activeIndex + 1}`}
+                  className="ip-source-modal__img"
+                />
+              )
+            )}
+          </div>
+          {/* Side-by-side editable table for the focused section. Same data,
+              same edit path as the main Step-2 page — changes here are saved
+              to wizard state in real time. */}
+          {cropping && rowsForSection && setRowQty && (
+            <SideBySideTable
+              rows={rowsForSection}
+              setRowQty={setRowQty}
+              setActiveLeader={setActiveLeader}
+              setActiveBase={setActiveBase}
+              activeLeaderId={activeLeaderId ?? null}
+              activeBaseId={activeBaseId ?? null}
+            />
           )}
         </div>
         {cropping && !haveCrop && (
@@ -172,6 +204,138 @@ export default function SourceImageModal({
           </div>
         )}
       </div>
+    </div>
+  )
+}
+
+/**
+ * SideBySideTable — minimal editable table rendered alongside the cropped
+ * source image. Each row gets PLAYED (deck) and TOTAL (pool) +/- buttons
+ * exactly like the main Step-2 table, plus active leader/base toggles.
+ *
+ * Data flows through the same setRowQty / setActiveLeader / setActiveBase
+ * callbacks the main page uses, so closing the modal preserves edits.
+ *
+ * Sort order: alphabetical by card name — matches the printed sheet on
+ * the left so eye-tracking lines up.
+ */
+function SideBySideTable({
+  rows,
+  setRowQty,
+  setActiveLeader,
+  setActiveBase,
+  activeLeaderId,
+  activeBaseId,
+}: {
+  rows: ResolvedRow[]
+  setRowQty: (key: string, field: 'poolQty' | 'deckQty', value: number) => void
+  setActiveLeader?: (cardId: string) => void
+  setActiveBase?: (cardId: string) => void
+  activeLeaderId: string | null
+  activeBaseId: string | null
+}) {
+  const sortedRows = useMemo(
+    () =>
+      [...rows].sort((a, b) =>
+        (a.card?.name || a.extracted.name || '').localeCompare(
+          b.card?.name || b.extracted.name || '',
+        ),
+      ),
+    [rows],
+  )
+
+  return (
+    <div className="ip-source-modal__pane">
+      <table className="ip-source-modal__table">
+        <colgroup>
+          <col className="ip-source-modal__col-played" />
+          <col className="ip-source-modal__col-total" />
+          <col className="ip-source-modal__col-name" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>PLAYED</th>
+            <th>TOTAL</th>
+            <th>NAME</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedRows.map((row) => {
+            const isLeader = !!row.card?.isLeader
+            const isBase = !!row.card?.isBase
+            const isActiveLeader = !!row.card && row.card.id === activeLeaderId
+            const isActiveBase = !!row.card && row.card.id === activeBaseId
+            const isActive = isActiveLeader || isActiveBase
+            return (
+              <tr key={row.key} className="ip-source-modal__row">
+                <td className="ip-source-modal__cell ip-source-modal__cell--qty">
+                  {isLeader || isBase ? (
+                    <button
+                      type="button"
+                      className={`ip-source-modal__qty-toggle ${isActive ? 'ip-source-modal__qty-toggle--active' : ''}`}
+                      onClick={() => {
+                        if (!row.card) return
+                        if (isLeader && setActiveLeader) setActiveLeader(row.card.id)
+                        else if (isBase && setActiveBase) setActiveBase(row.card.id)
+                      }}
+                      title={isActive ? 'Active selection' : `Set as active ${isLeader ? 'leader' : 'base'}`}
+                    >
+                      {row.deckQty}
+                    </button>
+                  ) : (
+                    <QtyControls
+                      value={row.deckQty}
+                      onInc={() => setRowQty(row.key, 'deckQty', row.deckQty + 1)}
+                      onDec={() => setRowQty(row.key, 'deckQty', row.deckQty - 1)}
+                      disableInc={row.deckQty >= row.poolQty || row.deckQty >= 6}
+                      disableDec={row.deckQty <= 0}
+                    />
+                  )}
+                </td>
+                <td className="ip-source-modal__cell ip-source-modal__cell--qty">
+                  {isLeader || isBase ? (
+                    <span className="ip-source-modal__qty-static">{row.poolQty}</span>
+                  ) : (
+                    <QtyControls
+                      value={row.poolQty}
+                      onInc={() => setRowQty(row.key, 'poolQty', row.poolQty + 1)}
+                      onDec={() => setRowQty(row.key, 'poolQty', row.poolQty - 1)}
+                      disableInc={row.poolQty >= 6}
+                      disableDec={row.poolQty <= 0}
+                    />
+                  )}
+                </td>
+                <td className="ip-source-modal__cell ip-source-modal__cell--name">
+                  <strong>{row.card?.name || row.extracted.name || 'Unrecognized'}</strong>
+                  {row.card?.subtitle && <em> — {row.card.subtitle}</em>}
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+function QtyControls({
+  value,
+  onInc,
+  onDec,
+  disableInc,
+  disableDec,
+}: {
+  value: number
+  onInc: () => void
+  onDec: () => void
+  disableInc: boolean
+  disableDec: boolean
+}) {
+  return (
+    <div className="ip-source-modal__qty">
+      <button type="button" className="ip-source-modal__qty-btn" onClick={onDec} disabled={disableDec} aria-label="decrease">−</button>
+      <span className={`ip-source-modal__qty-value ${value === 0 ? 'ip-source-modal__qty-value--zero' : ''}`}>{value}</span>
+      <button type="button" className="ip-source-modal__qty-btn" onClick={onInc} disabled={disableInc} aria-label="increase">+</button>
     </div>
   )
 }
