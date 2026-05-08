@@ -58,7 +58,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     } catch (error) {
       // If columns don't exist, use fallback query
       if (error.message.includes('name') || error.message.includes('set_name') || error.message.includes('pool_type') ||
-          error.message.includes('wins') || error.message.includes('losses') || error.message.includes('draws') || error.message.includes('wayfinder')) {
+          error.message.includes('wins') || error.message.includes('losses') || error.message.includes('draws') || error.message.includes('wayfinder') ||
+          error.message.includes('parent_pool_id')) {
         try {
           pool = await queryRow(
             `SELECT
