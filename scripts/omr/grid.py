@@ -46,14 +46,12 @@ def extract_grid(table_bgr: np.ndarray) -> GridLines:
       5. Marks = binary AND NOT (grid OR text)
     """
     gray = cv2.cvtColor(table_bgr, cv2.COLOR_BGR2GRAY)
-    # Denoise: median blur removes scattered JPEG noise without blurring
-    # crisp grid lines or marks.
+    # Light denoise via median blur (3x3) — removes JPEG noise without
+    # eroding 1-2px grid lines like morph-open would.
     gray = cv2.medianBlur(gray, 3)
-    # Otsu threshold — adapts to per-table brightness.
+    # Otsu threshold — adapts to per-table brightness. Keep raw binary
+    # (no morph denoising) for grid-line detection so thin lines survive.
     _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-    # Remove single-pixel noise: morph open with a 2x2 kernel.
-    denoise_k = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
-    binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, denoise_k)
     h_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (50, 1))
     h_lines = cv2.morphologyEx(binary, cv2.MORPH_OPEN, h_kernel)
     # Vertical lines: column dividers are broken at horizontal crossings,
@@ -67,30 +65,42 @@ def extract_grid(table_bgr: np.ndarray) -> GridLines:
     grid = cv2.bitwise_or(h_lines, v_lines)
     dilate_k = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
     grid = cv2.dilate(grid, dilate_k)
-    marks = cv2.bitwise_and(binary, cv2.bitwise_not(grid))
+    # Marks-only: clean noise via 2x2 open (marks are thicker than 2px,
+    # so they survive; isolated noise pixels don't).
+    binary_clean = cv2.morphologyEx(binary, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2)))
+    marks = cv2.bitwise_and(binary_clean, cv2.bitwise_not(grid))
 
-    # Find row-divider peaks from h_lines profile.
+    # Find row-divider peaks from h_lines profile. Use a low threshold
+    # (0.2) and proper peak-finding so we don't miss faint lines.
     rd = h_lines.sum(axis=1) / 255.0 / h_lines.shape[1]
-    line_ys = []
+    line_ys: list[int] = []
     in_band = False
     band_start = 0
+    THRESH = 0.2
     for i, d in enumerate(rd):
-        if d >= 0.4:
+        if d >= THRESH:
             if not in_band:
                 in_band = True
                 band_start = i
         else:
             if in_band:
                 in_band = False
-                if 1 <= i - band_start <= 10:
-                    line_ys.append((band_start + i - 1) // 2)
+                # Pick the y position with MAX density within the band
+                # (the line's strongest pixel row).
+                end = i - 1
+                if end - band_start <= 18:
+                    sub = rd[band_start:end + 1]
+                    peak_offset = int(np.argmax(sub))
+                    line_ys.append(band_start + peak_offset)
                 else:
-                    # Thick band = title bar (filled colored bar). Use bottom.
-                    line_ys.append(i - 1)
+                    # Thick band = title bar — use bottom edge.
+                    line_ys.append(end)
     if in_band:
         end = len(rd) - 1
-        if end - band_start <= 10:
-            line_ys.append((band_start + end) // 2)
+        if end - band_start <= 18:
+            sub = rd[band_start:end + 1]
+            peak_offset = int(np.argmax(sub))
+            line_ys.append(band_start + peak_offset)
         else:
             line_ys.append(end)
     return GridLines(h_lines=line_ys, binary=binary, grid_mask=grid, marks_only=marks)
@@ -101,14 +111,12 @@ def derive_row_positions(h_lines: list[int], num_cards: int) -> list[tuple[int, 
     precise (top, bottom) y bounds for each data row.
 
     Strategy:
-      1. Find the FIRST big gap among consecutive h-lines (= column
-         header span). The line ABOVE this gap is the column header
-         bottom = TOP OF ROW 1.
-      2. Find consistent row spacing from the smallest gaps after that.
-      3. If we have num_cards+1 lines after row 1 top, use them directly.
-      4. Otherwise, extrapolate using the dominant row spacing.
-
-    Returns None if we can't get a confident grid.
+      1. Compute pairwise diffs.
+      2. Find the dominant ROW SPACING by clustering diffs in 18-50px
+         range (real row heights) and picking the most common bin.
+      3. Anchor row 1 top at the LAST h-line before a "data run" of
+         consecutive row-spacing diffs.
+      4. Extrapolate row positions using dominant_h.
     """
     if len(h_lines) < 4:
         return None
@@ -117,23 +125,63 @@ def derive_row_positions(h_lines: list[int], num_cards: int) -> list[tuple[int, 
     if not diffs:
         return None
 
-    # Dominant row spacing = MEDIAN of small diffs (excludes the big
-    # column-header span and post-table padding).
-    sorted_diffs = sorted(diffs)
-    # Use the median of the SMALLEST half of diffs (the row-divider gaps).
-    half = max(3, len(sorted_diffs) // 2)
-    dominant_h = float(np.median(sorted_diffs[:half]))
+    # Filter to PLAUSIBLE ROW SPACING values (15-60 px in canonical).
+    # Below 15 = duplicate detections within one band; above 60 = the
+    # column-header gap or skipped rows.
+    plausible = [d for d in diffs if 15 <= d <= 60]
+    if not plausible:
+        return None
+    # Most common cluster: bin by 4px increments, pick mode bin's mean.
+    from collections import Counter
+    binned = Counter(d // 4 for d in plausible)
+    mode_bin, _ = binned.most_common(1)[0]
+    in_mode = [d for d in plausible if d // 4 == mode_bin]
+    dominant_h = float(np.mean(in_mode))
 
-    # Top of row 1 = first h-line that's followed by a "row-spacing" diff.
-    # I.e., the line immediately AFTER the column-header gap.
-    row1_top_idx = 0
+    # Anchor on the LONGEST CONSECUTIVE RUN of row-spacing diffs. This
+    # is the run of well-detected row dividers in the data area.
+    # Backward-extrapolate from the last line in this run to find
+    # row 1's top.
+    in_run = False
+    runs: list[tuple[int, int]] = []  # (start_diff_idx, end_diff_idx)
+    run_start = 0
     for i, d in enumerate(diffs):
-        if 0.7 * dominant_h <= d <= 1.3 * dominant_h:
-            row1_top_idx = i
-            break
-    row1_top = sorted_lines[row1_top_idx]
-    # Bottom of row N = row1_top + N * dominant_h
-    rows = []
+        is_row_diff = 0.85 * dominant_h <= d <= 1.15 * dominant_h
+        if is_row_diff:
+            if not in_run:
+                in_run = True
+                run_start = i
+        else:
+            if in_run:
+                in_run = False
+                runs.append((run_start, i - 1))
+    if in_run:
+        runs.append((run_start, len(diffs) - 1))
+    if not runs:
+        return None
+    # Longest run = the "data area"
+    longest = max(runs, key=lambda r: r[1] - r[0])
+    # The line AT diff_idx longest[1] + 1 is the LAST line in the run.
+    # That line is at sorted_lines[longest[1] + 1].
+    last_in_run = sorted_lines[longest[1] + 1]
+    # Step back: the line at sorted_lines[longest[0]] is the FIRST in the run.
+    first_in_run = sorted_lines[longest[0]]
+    # Number of rows COVERED by this run = (longest[1] - longest[0] + 1) gaps
+    # i.e. that many ROW BOUNDARIES → represents that many rows ending at last_in_run.
+    n_rows_in_run = longest[1] - longest[0] + 1
+    # The last line in this run is the bottom of the last covered row.
+    # We need row 1 top such that:
+    #   row N top = row 1 top + (N-1) * dominant_h
+    #   last covered row bottom = row 1 top + last_row_idx_covered * dominant_h
+    # We know last covered row bottom = last_in_run, but we don't know
+    # last_row_idx_covered. Constraint: last covered row index ≤ num_cards.
+    # Heuristic: the LAST line in our detection is closest to the
+    # bottom of the last data row (row num_cards). So:
+    #   row num_cards bottom ≈ last_in_run
+    #   row 1 top = last_in_run - num_cards * dominant_h
+    row1_top = last_in_run - num_cards * dominant_h
+
+    rows: list[tuple[int, int]] = []
     for i in range(num_cards):
         top = row1_top + i * dominant_h
         bot = row1_top + (i + 1) * dominant_h
