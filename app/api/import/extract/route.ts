@@ -395,7 +395,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
 type SanitizationResult =
   | { fatal: string }
-  | { sanitized: { header: any; rows: any[] }; warnings: string[] }
+  | { sanitized: { header: any; rows: any[]; sections: any[] }; warnings: string[] }
 
 /**
  * Permissive shape sanitizer. Per-row issues become warnings (carried to the
@@ -461,7 +461,16 @@ function sanitizeRawResponse(raw: any): SanitizationResult {
   if (droppedBadStructure > 0) warnings.push(`Skipped ${droppedBadStructure} malformed row${droppedBadStructure === 1 ? '' : 's'} the model returned in an unexpected shape.`)
   if (clampedQty > 0) warnings.push(`The model returned an out-of-range count (above ${MAX_QTY}) on ${clampedQty} row${clampedQty === 1 ? '' : 's'}; capped at ${MAX_QTY}. Likely a misread — double-check those rows.`)
 
-  return { sanitized: { header: raw.header, rows: sanitizedRows }, warnings }
+  // Pass `sections` through untouched — the route handler runs its own
+  // section-coords sanitizer (VALID_SECTION_NAMES, photoIndex bounds,
+  // x0/y0/x1/y1 numeric checks) at line 316. Without this passthrough,
+  // OMR-derived section bounds get stripped by this row-focused sanitizer
+  // and the resolve UI's "view this section" button falls through to
+  // showing the full sheet.
+  return {
+    sanitized: { header: raw.header, rows: sanitizedRows, sections: raw.sections || [] },
+    warnings,
+  }
 }
 
 function resolveSetCodeFromName(setName: string | null): string | null {
