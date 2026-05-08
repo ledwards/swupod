@@ -123,7 +123,10 @@ export default function SourceImageModal({
           </div>
         </header>
 
-        <div className={`ip-source-modal__viewport ${zoomed && !cropping ? 'is-zoomed' : ''}`}>
+        <div
+          className={`ip-source-modal__viewport ${zoomed ? 'is-zoomed' : ''}`}
+          onClick={() => setZoomed((z) => !z)}
+        >
           {images.length === 0 ? (
             <div className="ip-source-modal__empty">
               <p>

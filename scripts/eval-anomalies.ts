@@ -92,6 +92,7 @@ function buildResolvedRows(extRows: any[], lawByKey: Map<string, any>): AnomalyI
     const cat = lawByKey.get(key)
     const card = cat ? {
       id: cat.id,
+      cardId: cat.cardId,
       name: cat.name,
       subtitle: cat.subtitle || null,
       isLeader: !!cat.isLeader,

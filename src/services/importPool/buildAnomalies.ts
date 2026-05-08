@@ -26,7 +26,18 @@ export type Anomaly = {
 
 export interface AnomalyInputRow {
   key: string
-  card: { id: string; name: string; subtitle: string | null; isLeader: boolean; isBase: boolean; aspects?: string[] } | null
+  card: {
+    id: string
+    /** Printed card identifier, e.g. "LAW-134". Used for within-section
+     *  ranking so candidate picks match the source-sheet order instead of
+     *  alphabetically defaulting to "0-0-0" / "4-LOM" noise. */
+    cardId?: string
+    name: string
+    subtitle: string | null
+    isLeader: boolean
+    isBase: boolean
+    aspects?: string[]
+  } | null
   extracted: {
     name: string
     type: string
@@ -72,6 +83,17 @@ function confScore(level: 'high' | 'medium' | 'low' | undefined): number {
   if (level === 'low') return 0
   if (level === 'medium') return 1
   return 2
+}
+
+/** Numeric card number from a printed cardId like "LAW-134" → 134. Used as
+ *  the within-section tie-breaker for heuristic candidate picks. Card
+ *  number ascending mirrors the order on the printed sheet, which the user
+ *  can scan against alongside the source image. Falls back to a large
+ *  sentinel so cardless rows sort last. */
+function cardNumOf(row: AnomalyInputRow): number {
+  const id = row.card?.cardId || ''
+  const m = id.match(/(\d+)$/)
+  return m ? parseInt(m[1], 10) : 999999
 }
 
 export function buildAnomalies(input: AnomalyInput): Anomaly[] {
@@ -416,7 +438,7 @@ function surfacePoolShortCandidates(args: {
           sectionForRow(r) === section,
       )
       .map((r) => ({ r, score: confScore(r.extracted.poolQtyConfidence) }))
-      .sort((a, b) => a.score - b.score || a.r.extracted.name.localeCompare(b.r.extracted.name))
+      .sort((a, b) => a.score - b.score || cardNumOf(a.r) - cardNumOf(b.r))
       .map((x) => x.r)
     sectionCandidatePools.set(section, inSec)
   }
@@ -446,7 +468,7 @@ function surfacePoolShortCandidates(args: {
     const fallback = resolvedRows
       .filter((r) => !seenRowKey.has(r.key) && r.poolQty === 0 && r.extracted.type !== 'Leader' && r.extracted.type !== 'Base')
       .map((r) => ({ r, score: confScore(r.extracted.poolQtyConfidence) }))
-      .sort((a, b) => a.score - b.score || a.r.extracted.name.localeCompare(b.r.extracted.name))[0]
+      .sort((a, b) => a.score - b.score || cardNumOf(a.r) - cardNumOf(b.r))[0]
     if (!fallback) break
     const r = fallback.r
     const cardName = r.card?.name || r.extracted.name || 'Unrecognized'
@@ -480,7 +502,7 @@ function surfacePoolPhantomCandidates(args: {
           sectionForRow(r) === section,
       )
       .map((r) => ({ r, score: confScore(r.extracted.poolQtyConfidence) }))
-      .sort((a, b) => a.score - b.score || a.r.extracted.name.localeCompare(b.r.extracted.name))
+      .sort((a, b) => a.score - b.score || cardNumOf(a.r) - cardNumOf(b.r))
       .map((x) => x.r)
     sectionCandidatePools.set(section, inSec)
   }
@@ -512,7 +534,7 @@ function surfaceDeckOverCandidates(args: {
   const candidates = resolvedRows
     .filter((r) => !seenRowKey.has(r.key) && r.deckQty > 0 && r.extracted.type !== 'Leader' && r.extracted.type !== 'Base')
     .map((r) => ({ r, score: confScore(r.extracted.deckQtyConfidence) }))
-    .sort((a, b) => a.score - b.score || a.r.extracted.name.localeCompare(b.r.extracted.name))
+    .sort((a, b) => a.score - b.score || cardNumOf(a.r) - cardNumOf(b.r))
     .slice(0, deckDelta)
   for (const { r } of candidates) {
     const cardName = r.card?.name || r.extracted.name || 'Unrecognized'
@@ -541,7 +563,7 @@ function surfaceDeckShortCandidates(args: {
         r.extracted.type !== 'Base',
     )
     .map((r) => ({ r, score: confScore(r.extracted.deckQtyConfidence) }))
-    .sort((a, b) => a.score - b.score || a.r.extracted.name.localeCompare(b.r.extracted.name))
+    .sort((a, b) => a.score - b.score || cardNumOf(a.r) - cardNumOf(b.r))
     .slice(0, deckShortDelta)
   for (const { r } of candidates) {
     const cardName = r.card?.name || r.extracted.name || 'Unrecognized'

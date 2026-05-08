@@ -395,16 +395,19 @@
   color: rgba(120, 200, 120, 0.85);
 }
 
-/* Flash effect when scrolling to a row via the pager */
+/* Flash effect when scrolling to a row via the pager. Fade in quickly,
+ * hold briefly, fade out — visible but not slow. */
 @keyframes ip-row-flash {
-  0%, 100% { background-color: inherit; }
-  20%, 70% { background-color: rgba(255, 217, 102, 0.35); }
+  0% { background-color: rgba(255, 217, 102, 0); }
+  15% { background-color: rgba(255, 217, 102, 0.55); }
+  60% { background-color: rgba(255, 217, 102, 0.55); }
+  100% { background-color: rgba(255, 217, 102, 0); }
 }
 .ip-row--flash,
 .ip-tile.ip-row--flash,
 .ip-section-row.ip-row--flash > td,
 .ip-grid-section.ip-row--flash {
-  animation: ip-row-flash 1.4s ease-in-out;
+  animation: ip-row-flash 900ms ease-in-out;
 }
 
 /* When the issue pager scrolls to a row or a section, push the target down
@@ -415,7 +418,7 @@
 .ip-section-row,
 .ip-tile,
 .ip-grid-section {
-  scroll-margin-top: 140px;
+  scroll-margin-top: 165px;
 }
 
 /* Detail line shown under the toolbar when an anomaly is selected. Joined
@@ -1261,6 +1264,51 @@
   color: rgba(255, 230, 150, 0.7);
 }
 
+.import-pool-warnings--ok {
+  background: rgba(0, 200, 100, 0.08);
+  border-color: rgba(0, 200, 100, 0.4);
+  color: rgba(180, 240, 200, 0.95);
+}
+
+.import-pool-warnings__lead {
+  margin: 6px 0 8px;
+  color: rgba(255, 230, 150, 0.75);
+  font-size: 13px;
+}
+
+/* Interactive bulleted issue list — replaces the old pager-only flow.
+ * Each item carries its own jump-to-row, mark-as-correct, and (optional)
+ * view-source buttons. The active item gets a brighter background. */
+.import-pool-issues {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.import-pool-issues__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 217, 102, 0.2);
+  border-radius: 6px;
+}
+
+.import-pool-issues__item--active {
+  background: rgba(255, 217, 102, 0.12);
+  border-color: rgba(255, 217, 102, 0.55);
+}
+
+.import-pool-issues__label {
+  flex: 1 1 auto;
+  font-size: 13px;
+  color: rgba(255, 240, 200, 0.95);
+}
+
 .import-pool-error ul {
   margin: 6px 0 0;
   padding-left: 20px;
@@ -1545,25 +1593,38 @@
 
 .ip-source-modal__viewport {
   flex: 1 1 auto;
-  overflow: auto;
+  /* Default: clip to viewport — image is sized to fit, no scrolling. */
+  overflow: hidden;
   padding: 12px;
   background: #000;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
+  min-height: 0;
+}
+
+/* Zoomed mode flips back to scrollable so the user can pan around. */
+.ip-source-modal__viewport.is-zoomed {
+  overflow: auto;
+  align-items: flex-start;
 }
 
 .ip-source-modal__img {
   max-width: 100%;
+  max-height: 100%;
   height: auto;
+  width: auto;
   display: block;
   user-select: none;
   -webkit-user-drag: none;
+  cursor: zoom-in;
 }
 
 .ip-source-modal__viewport.is-zoomed .ip-source-modal__img {
   max-width: none;
+  max-height: none;
   width: 200%;
+  cursor: zoom-out;
 }
 
 /* Section-cropped view: one or more cropped photo regions stacked. The
@@ -1573,16 +1634,24 @@
 .ip-source-modal__crops {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  align-items: center;
+  /* Fill the modal viewport so children can size by % height */
+  height: 100%;
   width: 100%;
-  align-items: stretch;
+  min-height: 0;
 }
 
 .ip-source-crop {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  width: 100%;
+  align-items: center;
+  /* Each crop shares the available height when there are multiple
+   * (multi-page sections). Single crop = takes all the height. */
+  flex: 1 1 0;
+  min-height: 0;
+  max-width: 100%;
 }
 
 .ip-source-crop__caption {
@@ -1590,15 +1659,31 @@
   color: rgba(255, 255, 255, 0.6);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  flex: 0 0 auto;
 }
 
+/* Default: crop fills the available height, width derives from aspect-ratio.
+ * Capped at parent width so very wide sections don't overflow horizontally. */
 .ip-source-crop__viewport {
   position: relative;
-  width: 100%;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  min-height: 0;
+  flex: 1 1 0;
   overflow: hidden;
   background: #111;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 4px;
+  cursor: zoom-in;
+}
+
+/* Zoomed: crops grow horizontally and the modal viewport scrolls. */
+.ip-source-modal__viewport.is-zoomed .ip-source-crop__viewport {
+  cursor: zoom-out;
+  height: auto;
+  width: 200%;
+  max-width: none;
 }
 
 .ip-source-modal__hint {

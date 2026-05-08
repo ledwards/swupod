@@ -129,7 +129,7 @@ export default function ResolveStep({ importPool }: Props) {
         // scroll-margin-top in CSS pushes it just below the sticky bars.
         el.scrollIntoView({ behavior: 'smooth', block: 'start' })
         el.classList.add('ip-row--flash')
-        setTimeout(() => el.classList.remove('ip-row--flash'), 1400)
+        setTimeout(() => el.classList.remove('ip-row--flash'), 900)
       }
       const el = document.getElementById(targetId)
       if (el) {
@@ -180,17 +180,33 @@ export default function ResolveStep({ importPool }: Props) {
     <section className="import-pool-step import-pool-step--resolve">
       <header className="import-pool-resolve-header">
         <h2>Review Pool Registration</h2>
-        {state.warnings.length > 0 && (
-          <div className="import-pool-warnings" role="alert">
-            <strong>The extraction had some issues:</strong>
-            <ul>
-              {state.warnings.map((w, i) => (
-                <li key={i}>{w}</li>
-              ))}
-            </ul>
-            <small>Verify your pool below before continuing.</small>
-          </div>
-        )}
+        <ImportSummaryAndIssues
+          poolCount={validation.poolCount}
+          poolTarget={validation.poolTarget}
+          deckCount={validation.deckCount}
+          deckTarget={validation.deckTarget}
+          anomalies={anomalies}
+          activeKey={anomalies[anomalyIndex]?.key ?? null}
+          onJump={(targetId) => scrollToTargetId(targetId)}
+          onDismiss={(key, idx) => {
+            // Auto-advance: dismiss this anomaly, then jump to the next remaining one.
+            dismissAnomaly(key)
+            // After dismissal the index shifts. The most natural next is the same
+            // index in the new (filtered) list. Done in a microtask so the
+            // dismissal has settled.
+            requestAnimationFrame(() => {
+              const remaining = anomalies.filter((a) => a.key !== key)
+              const nextIdx = Math.min(idx, Math.max(0, remaining.length - 1))
+              const next = remaining[nextIdx]
+              if (next) {
+                setAnomalyIndex(nextIdx)
+                scrollToTargetId(next.targetId)
+              }
+            })
+          }}
+          onView={(sectionName) => openSourceFor(sectionName)}
+          imagesAvailable={state.images.length > 0}
+        />
       </header>
 
       <div className="ip-sticky-stack">
@@ -546,6 +562,115 @@ export default function ResolveStep({ importPool }: Props) {
 }
 
 // === Sub-components ===
+
+/**
+ * ImportSummaryAndIssues — gap banner + interactive bulleted issue list.
+ *
+ * Replaces the old "extraction had warnings" panel. Shows a short status
+ * sentence ("Import is missing 4 cards in pool and over by 2 in deck.") and
+ * lists every surfaced anomaly with inline action buttons:
+ *   - jump-to-row arrow (scrolls the table)
+ *   - mark-as-correct ✓ (dismisses; auto-advances to next issue)
+ *   - eyeglass (when source images are available, opens crop view)
+ */
+function ImportSummaryAndIssues({
+  poolCount,
+  poolTarget,
+  deckCount,
+  deckTarget,
+  anomalies,
+  activeKey,
+  onJump,
+  onDismiss,
+  onView,
+  imagesAvailable,
+}: {
+  poolCount: number
+  poolTarget: number
+  deckCount: number
+  deckTarget: number
+  anomalies: Array<{ key: string; kind: string; targetId: string; label: string; sectionName: string | null }>
+  activeKey: string | null
+  onJump: (targetId: string) => void
+  onDismiss: (key: string, idx: number) => void
+  onView: (sectionName: string | null) => void
+  imagesAvailable: boolean
+}) {
+  // Plain-English status: "missing N", "over by N", or "correct".
+  const summary = (count: number, target: number, noun: 'cards in pool' | 'cards in deck') => {
+    if (count === target) return `correct in ${noun.replace('cards in ', '')}`
+    if (count < target) return `missing ${target - count} ${noun}`
+    return `over by ${count - target} ${noun}`
+  }
+  const headLine =
+    poolCount === poolTarget && deckCount === deckTarget
+      ? 'Pool and deck counts match. Verify the issues below.'
+      : `Import is ${summary(poolCount, poolTarget, 'cards in pool')} and ${summary(deckCount, deckTarget, 'cards in deck')}.`
+
+  if (anomalies.length === 0) {
+    // Both totals could match AND the panel be silent — nothing to verify.
+    return (
+      <div className="import-pool-warnings import-pool-warnings--ok" role="status">
+        <strong>{headLine}</strong>
+        <small>No issues to verify.</small>
+      </div>
+    )
+  }
+
+  return (
+    <div className="import-pool-warnings" role="alert">
+      <strong>{headLine}</strong>
+      <p className="import-pool-warnings__lead">Please review the following potential issues:</p>
+      <ul className="import-pool-issues">
+        {anomalies.map((a, idx) => (
+          <li
+            key={a.key}
+            className={`import-pool-issues__item ${activeKey === a.key ? 'import-pool-issues__item--active' : ''}`}
+          >
+            <button
+              type="button"
+              className="ip-anomaly-source-btn"
+              onClick={() => onJump(a.targetId)}
+              title="Jump to row in the table"
+              aria-label="Jump to row"
+            >
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <line x1="2" y1="8" x2="13" y2="8" />
+                <polyline points="9 4 13 8 9 12" />
+              </svg>
+            </button>
+            <span className="import-pool-issues__label">{a.label}</span>
+            <button
+              type="button"
+              className="ip-anomaly-source-btn"
+              onClick={() => onDismiss(a.key, idx)}
+              title="Mark as correct"
+              aria-label="Mark as correct"
+            >
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polyline points="3 8.5 6.5 12 13 4" />
+              </svg>
+            </button>
+            {imagesAvailable && (
+              <button
+                type="button"
+                className="ip-anomaly-source-btn"
+                onClick={() => onView(a.sectionName)}
+                title="View this section in the source image"
+                aria-label="View source"
+              >
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="7" cy="7" r="5" />
+                  <line x1="11" y1="11" x2="14" y2="14" />
+                </svg>
+              </button>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
 
 function RunningTotals({ validation }: { validation: any }) {
   // Deck count: <30 is red (illegal), ==30 is green (legal min), >30 is
@@ -1072,11 +1197,14 @@ function groupRows(rows: ResolvedRow[], viewFilter: 'all' | 'pool' | 'deck'): Se
 
   const result: SectionGroup[] = []
 
+  // Alphabetical leaders/bases too — same reason as below.
+  const byName = (a: ResolvedRow, b: ResolvedRow) =>
+    (a.card?.name || a.extracted.name || '').localeCompare(b.card?.name || b.extracted.name || '')
   if (leaders.length > 0) {
-    result.push({ key: 'leaders', displayName: 'LEADERS', aspects: [], rows: leaders })
+    result.push({ key: 'leaders', displayName: 'LEADERS', aspects: [], rows: [...leaders].sort(byName) })
   }
   if (bases.length > 0) {
-    result.push({ key: 'bases', displayName: 'BASES', aspects: [], rows: bases })
+    result.push({ key: 'bases', displayName: 'BASES', aspects: [], rows: [...bases].sort(byName) })
   }
 
   // Section order — mirror a real LAW registration sheet
@@ -1099,12 +1227,19 @@ function groupRows(rows: ResolvedRow[], viewFilter: 'all' | 'pool' | 'deck'): Se
     const allRows = [...subs.values()].flat()
     // Sub-group order: pure single-aspect first, then doubles, _unresolved last
     const subKeys = [...subs.keys()].sort((a, b) => compareSubKeys(a, b, primaryKey))
+    // Within each sub-group, rows go in the same alphabetical order the
+    // physical sheet uses — so scanning the table side-by-side with the
+    // photo lines up. Card-number sort would not (the sheet sorts by name).
     const subGroups: SubGroup[] = subKeys.map((subKey) => ({
       key: subKey,
       displayName:
         subKey === '_unresolved' ? 'UNRECOGNIZED' : getAspectCombinationDisplayName(subKey),
       aspects: subKey === '_unresolved' ? [] : aspectsFromKey(subKey),
-      rows: subs.get(subKey)!,
+      rows: [...subs.get(subKey)!].sort((a, b) => {
+        const an = a.card?.name || a.extracted.name || ''
+        const bn = b.card?.name || b.extracted.name || ''
+        return an.localeCompare(bn)
+      }),
     }))
     result.push({
       key: primaryKey,
