@@ -32,7 +32,8 @@ function stripFormat(nickname: string): string {
 
 function BuildCard({ build, rootShareId, isActive }: { build: Build; rootShareId: string; isActive: boolean }) {
   const builder = build.isOriginal ? 'Original' : (build.builderName || 'Anonymous')
-  const leaderColor = getAspectColor({ aspects: build.leaderAspects })
+  // Archetype names follow "Leader Color" convention where Color = the BASE's aspect (e.g. "Mothma Blue" = Vigilance base)
+  const labelColor = getAspectColor({ aspects: build.baseAspects })
   const label = build.archetypeNickname
     ? stripFormat(build.archetypeNickname)
     : (build.leaderName || 'No leader')
@@ -42,7 +43,7 @@ function BuildCard({ build, rootShareId, isActive }: { build: Build; rootShareId
 
   return (
     <a href={href} className={`pool-build-card ${isActive ? 'pool-build-card-active' : ''}`}>
-      <span className="pool-build-leader" style={{ color: leaderColor }}>
+      <span className="pool-build-leader" style={{ color: labelColor }}>
         {label}
       </span>
       <span className="pool-build-meta">
