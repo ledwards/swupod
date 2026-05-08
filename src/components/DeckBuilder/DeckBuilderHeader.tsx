@@ -266,6 +266,7 @@ export function DeckBuilderHeader({
           shareId={rootShareId}
           currentUserId={currentUserId}
           isOwner={isOwner}
+          activeShareId={shareId || null}
         />
       )}
 

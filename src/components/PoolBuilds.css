@@ -51,6 +51,17 @@
   }
 }
 
+.pool-build-card-active {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.5);
+  cursor: default;
+}
+
+.pool-build-card-active:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
 .pool-build-leader {
   font-size: 0.85rem;
   font-weight: 700;
