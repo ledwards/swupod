@@ -16,7 +16,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     requireServiceKey(request)
 
     const body = await request.json()
-    const { poolShareId, result, matchId, gameNumber } = body
+    const { poolShareId, result, matchId, gameNumber, replayUrl } = body
 
     if (!poolShareId || !result || !matchId) {
       return errorResponse('poolShareId, result, and matchId are required', 400)
@@ -87,10 +87,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         if (currentMatch.game1_result && currentMatch.game2_result) gameCol = 'game3_result'
       }
 
-      // Update the game slot and wayfinder_match_id
+      // Update the game slot, wayfinder_match_id, and replay URL
       await query(
-        `UPDATE practice_matches SET ${gameCol} = $2, wayfinder_match_id = $3 WHERE id = $1`,
-        [practiceMatch.id, gameResult, matchId]
+        `UPDATE practice_matches SET ${gameCol} = $2, wayfinder_match_id = $3, wayfinder_replay_url = COALESCE($4, wayfinder_replay_url) WHERE id = $1`,
+        [practiceMatch.id, gameResult, matchId, replayUrl ?? null]
       )
 
       // Check if match is now decidable
