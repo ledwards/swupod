@@ -6,6 +6,7 @@ import DeckBuilder from '../../../../../src/components/DeckBuilder'
 import PoolBuilds from '../../../../../src/components/PoolBuilds'
 import ChatPanel from '../../../../../src/components/ChatPanel'
 import { loadPool, updatePool } from '../../../../../src/utils/poolApi'
+import { usePoolBuildsSocket } from '../../../../../src/hooks/usePoolBuildsSocket'
 import { useAuth } from '../../../../../src/contexts/AuthContext'
 import '../../../../../src/App.css'
 import '../../../../../src/components/ChatPanel.css'
@@ -59,6 +60,8 @@ export default function BuildDeckPage({ params }: PageProps) {
   const rootShareId = resolvedParams.shareId
   const buildId = resolvedParams.buildId
 
+  usePoolBuildsSocket(rootShareId)
+
   useEffect(() => {
     async function fetchPool() {
       if (!buildId) return
@@ -102,12 +105,13 @@ export default function BuildDeckPage({ params }: PageProps) {
       if (pool?.shareId && pendingStateRef.current) {
         try {
           await updatePool(pool.shareId, { deckBuilderState: pendingStateRef.current })
+          window.dispatchEvent(new CustomEvent('wf:builds-changed', { detail: { rootShareId } }))
         } catch (err) {
           console.error('Failed to save deck builder state:', err)
         }
       }
     }, 2000)
-  }, [pool])
+  }, [pool, rootShareId])
 
   useEffect(() => {
     return () => {

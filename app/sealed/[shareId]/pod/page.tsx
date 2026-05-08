@@ -13,6 +13,7 @@ import { getCachedCards, initializeCardCache } from '../../../../src/utils/cardC
 import { getBaseSetCode } from '../../../../src/utils/carboniteConstants'
 import { buildBaseCardMap, getBaseCardId } from '../../../../src/utils/variantDowngrade'
 import { calculateAspectPenalty } from '../../../../src/services/cards/aspectPenalties'
+import { formatPoolLabel } from '../../../../src/utils/poolDisplayName'
 import Button from '../../../../src/components/Button'
 import CardWithPreview from '../../../../src/components/CardWithPreview'
 import ChatPanel from '../../../../src/components/ChatPanel'
@@ -263,7 +264,7 @@ export default function SealedPodPlayPage({ params }: PageProps) {
       }
     })
 
-    const poolName = state.poolName || myPool.name || `${myPool.setCode} Sealed`
+    const poolName = state.poolName || myPool.name || formatPoolLabel(myPool.setCode, 'sealed')
 
     return {
       metadata: {
@@ -414,7 +415,7 @@ export default function SealedPodPlayPage({ params }: PageProps) {
 
       let currentY = padding
       ctx.fillStyle = 'white'; ctx.font = 'bold 70px Barlow'; ctx.textAlign = 'center'; ctx.textBaseline = 'top'
-      const displayName = state.poolName || myPool.name || `${myPool.setCode} Sealed`
+      const displayName = state.poolName || myPool.name || formatPoolLabel(myPool.setCode, 'sealed')
       ctx.fillText(displayName, width / 2, currentY)
       currentY += titleHeight
       ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'; ctx.font = '600 45px Barlow'

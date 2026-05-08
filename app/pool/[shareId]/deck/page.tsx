@@ -6,6 +6,7 @@ import DeckBuilder from '../../../../src/components/DeckBuilder'
 import PoolBuilds from '../../../../src/components/PoolBuilds'
 import ChatPanel from '../../../../src/components/ChatPanel'
 import { loadPool, updatePool } from '../../../../src/utils/poolApi'
+import { usePoolBuildsSocket } from '../../../../src/hooks/usePoolBuildsSocket'
 import { useAuth } from '../../../../src/contexts/AuthContext'
 import '../../../../src/App.css'
 import '../../../../src/components/ChatPanel.css'
@@ -113,6 +114,8 @@ export default function DeckBuilderPage({ params }: PageProps) {
       if (pool && pool.shareId && pendingStateRef.current) {
         try {
           await updatePool(pool.shareId, { deckBuilderState: pendingStateRef.current })
+          const root = pool.parentShareId || pool.shareId
+          window.dispatchEvent(new CustomEvent('wf:builds-changed', { detail: { rootShareId: root } }))
         } catch (err) {
           console.error('Failed to save deck builder state:', err)
         }
@@ -197,6 +200,8 @@ export default function DeckBuilderPage({ params }: PageProps) {
 
   const rootShareId = pool?.parentShareId || pool?.shareId || null
   const isChildBuild = Boolean(pool?.parentShareId)
+
+  usePoolBuildsSocket(rootShareId)
 
   return (
     <div className={draftShareId ? 'page-with-chat' : ''}>

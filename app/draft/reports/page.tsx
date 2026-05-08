@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
 import Button from '../../../src/components/Button'
+import { formatPoolLabel } from '../../../src/utils/poolDisplayName'
 import '../../../src/App.css'
 import '../../../src/styles/backgrounds.css'
 import './reports.css'
@@ -133,7 +134,7 @@ export default function DraftReportsPage() {
                 </div>
                 <div className="draft-reports-item-info">
                   <div className="draft-reports-item-name">
-                    {report.name || `${report.setName} Draft`}
+                    {report.name || formatPoolLabel(report.setName, 'draft')}
                   </div>
                   <div className="draft-reports-item-meta">
                     {report.completedAt

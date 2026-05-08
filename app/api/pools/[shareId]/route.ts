@@ -318,6 +318,27 @@ export async function PUT(request: NextRequest, { params }: RouteContext): Promi
       )
     }
 
+    // Notify connected clients viewing this pool tree that builds may have changed.
+    // Anyone subscribed to pool-builds:<rootShareId> will re-fetch /api/pools/:rootShareId/builds.
+    if (deckBuilderStateToSave !== undefined) {
+      try {
+        let rootShareId = result.rows[0].share_id
+        if (pool.parent_pool_id) {
+          const parent = await queryRow(
+            'SELECT share_id FROM card_pools WHERE id = $1',
+            [pool.parent_pool_id]
+          )
+          if (parent?.share_id) rootShareId = parent.share_id
+        }
+        const io = (global as { io?: { to(room: string): { emit(event: string): void } } }).io
+        if (io && rootShareId) {
+          io.to(`pool-builds:${rootShareId}`).emit('pool-builds-update')
+        }
+      } catch (broadcastErr) {
+        console.warn('[pool PUT] failed to broadcast pool-builds-update', broadcastErr)
+      }
+    }
+
     return jsonResponse({
       id: result.rows[0].id,
       shareId: result.rows[0].share_id,

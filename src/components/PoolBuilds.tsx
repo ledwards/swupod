@@ -30,21 +30,37 @@ function stripFormat(nickname: string): string {
   return nickname.replace(/\s*\(Limited\)\s*$/i, '').replace(/\s*\(Premiere\)\s*$/i, '').trim()
 }
 
+// Archetype nicknames follow "Leader Color" or "Leader Splash Color" convention
+// where Color = the BASE's aspect (e.g. "Mothma Blue", "Sebulba Splash Yellow").
+// Split into leader portion (colored by leader aspects) and base portion
+// (colored by base aspects).
+function splitArchetypeName(label: string): { leader: string; base: string } {
+  const splashMatch = label.match(/^(.+?)\s+(Splash\s+\S+)$/i)
+  if (splashMatch) return { leader: splashMatch[1], base: splashMatch[2] }
+  const lastSpace = label.lastIndexOf(' ')
+  if (lastSpace < 0) return { leader: label, base: '' }
+  return { leader: label.slice(0, lastSpace), base: label.slice(lastSpace + 1) }
+}
+
 function BuildCard({ build, rootShareId, isActive }: { build: Build; rootShareId: string; isActive: boolean }) {
   const builder = build.isOriginal ? 'Original' : (build.builderName || 'Anonymous')
-  // Archetype names follow "Leader Color" convention where Color = the BASE's aspect (e.g. "Mothma Blue" = Vigilance base)
-  const labelColor = getAspectColor({ aspects: build.baseAspects })
-  const label = build.archetypeNickname
+  const hasLeaderAspects = (build.leaderAspects?.length ?? 0) > 0
+  const hasBaseAspects = (build.baseAspects?.length ?? 0) > 0
+  const leaderStyle = hasLeaderAspects ? { color: getAspectColor({ aspects: build.leaderAspects }) } : undefined
+  const baseStyle = hasBaseAspects ? { color: getAspectColor({ aspects: build.baseAspects }) } : undefined
+  const rawLabel = build.archetypeNickname
     ? stripFormat(build.archetypeNickname)
     : (build.leaderName || 'No leader')
+  const { leader, base } = splitArchetypeName(rawLabel)
   const href = build.isOriginal
     ? `/pool/${rootShareId}/deck`
     : `/pool/${rootShareId}/deck/${build.shareId}`
 
   return (
     <a href={href} className={`pool-build-card ${isActive ? 'pool-build-card-active' : ''}`}>
-      <span className="pool-build-leader" style={{ color: labelColor }}>
-        {label}
+      <span className="pool-build-leader">
+        <span style={leaderStyle}>{leader}</span>
+        {base && <> <span style={baseStyle}>{base}</span></>}
       </span>
       <span className="pool-build-meta">
         by {builder}
@@ -60,11 +76,25 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
 
   useEffect(() => {
     if (!shareId) return
-    fetch(`/api/pools/${shareId}/builds`)
-      .then(res => res.ok ? res.json() : null)
-      .then(data => { if (data?.data?.builds) setBuilds(data.data.builds) })
-      .catch(() => {})
-      .finally(() => setLoading(false))
+    let cancelled = false
+    const refetch = () => {
+      fetch(`/api/pools/${shareId}/builds`)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => { if (!cancelled && data?.data?.builds) setBuilds(data.data.builds) })
+        .catch(() => {})
+        .finally(() => { if (!cancelled) setLoading(false) })
+    }
+    refetch()
+    // Re-fetch when any deck state in this pool tree is saved.
+    const onChanged = (e: Event) => {
+      const detail = (e as CustomEvent<{ rootShareId?: string }>).detail
+      if (!detail?.rootShareId || detail.rootShareId === shareId) refetch()
+    }
+    window.addEventListener('wf:builds-changed', onChanged)
+    return () => {
+      cancelled = true
+      window.removeEventListener('wf:builds-changed', onChanged)
+    }
   }, [shareId])
 
   if (loading) return null

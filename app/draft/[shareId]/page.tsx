@@ -7,6 +7,7 @@ import { useAuth } from '../../../src/contexts/AuthContext'
 import { useDraftSocket } from '../../../src/hooks/useDraftSocket'
 import { usePresence } from '../../../src/hooks/usePresence'
 import { joinDraft, leaveDraft, startDraft, randomizeSeats, randomizePacks, makePick, selectCard, updateSettings, togglePause, dropFromDraft } from '../../../src/utils/draftApi'
+import { formatPoolLabel } from '../../../src/utils/poolDisplayName'
 import DraftLobby from '../../../src/components/DraftLobby'
 import LeaderDraftPhase from '../../../src/components/LeaderDraftPhase'
 import PackDraftPhase from '../../../src/components/PackDraftPhase'
@@ -536,7 +537,7 @@ export default function DraftRoomPage({ params }: PageProps) {
                   <div className="draft-title-row">
                     <h1>
                       <EditableTitle
-                        value={draft.name || `${draft.setName || draft.setCode} Draft`}
+                        value={draft.name || formatPoolLabel(draft.setName ?? draft.setCode, 'draft')}
                         isEditable={isHost && status === 'waiting'}
                         onSave={(newName) => {
                           if (newName) handleSettingsChange({ name: newName })

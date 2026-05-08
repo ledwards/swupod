@@ -36,6 +36,8 @@ import { SelectionListSection } from './DeckBuilder/SelectionListSection'
 import { PoolListSection } from './DeckBuilder/PoolListSection'
 import { Tooltip } from './DeckBuilder/Tooltip'
 import { DeckImageModal } from './DeckBuilder/DeckImageModal'
+import Modal from './Modal'
+import Button from './Button'
 import { DeleteDeckSection } from './DeckBuilder/DeleteDeckSection'
 import { ViewModeToggle, type ViewMode } from './DeckBuilder/ViewModeToggle'
 import { ArenaView } from './DeckBuilder/ArenaView'
@@ -301,6 +303,9 @@ function DeckBuilder({
   const [messageType, setMessageType] = useState<'error' | 'success' | null>(null) // 'error' or 'success'
   const [isInfoBarSticky, setIsInfoBarSticky] = useState(false)
   const [showAspectPenalties, setShowAspectPenalties] = useState(false)
+  const [lockModalOpen, setLockModalOpen] = useState(false)
+  const [forkInProgress, setForkInProgress] = useState(false)
+  const lockInitializedRef = useRef(false)
 
   const enableAspectPenaltiesForBothSections = useCallback(() => {
     setShowAspectPenalties(true)
@@ -1674,12 +1679,25 @@ function DeckBuilder({
         safeLocalStorageSetItem(localStorageKey, JSON.stringify(deckStateToSave))
       }
 
-      // Save deck state to database via callback
+      // Save deck state to database via callback.
+      // First fire is the initial-load reconciliation; skip lock-check on that one.
+      if (!lockInitializedRef.current) {
+        lockInitializedRef.current = true
+        if (onStateChange && isOwner) onStateChange(deckStateToSave)
+        return
+      }
+      // Non-owner attempting to edit a locked deck → show the fork modal.
+      // Only show for pools that actually have an owner (so we have someone to lock to)
+      // and for pool-mode (not sealed-pod live drafts which use other auth).
+      if (!isOwner && poolOwnerId) {
+        setLockModalOpen(true)
+        return
+      }
       if (onStateChange) {
         onStateChange(deckStateToSave)
       }
     }
-  }, [shareId, localStorageKey, uiStorageKey, cardPositions, activeLeader, activeBase, onStateChange, buildDeckStateSnapshot])
+  }, [shareId, localStorageKey, uiStorageKey, cardPositions, activeLeader, activeBase, onStateChange, buildDeckStateSnapshot, isOwner, poolOwnerId])
 
   // Cleanup: Remove any bases/leaders from deck/sideboard sections and move cards based on enabled state
   useEffect(() => {
@@ -2243,6 +2261,42 @@ function DeckBuilder({
     currentPoolName,
   ])
 
+  // Fork the current pool into a new child build owned by the current user.
+  // Triggered from the lock modal when a non-owner attempts to edit.
+  const handleStartNewBuildFromLock = useCallback(async () => {
+    if (forkInProgress) return
+    if (!isAuthenticated) {
+      setLockModalOpen(false)
+      signIn()
+      return
+    }
+    setForkInProgress(true)
+    try {
+      const parentId = rootShareId || shareId
+      const builtPool = await savePool({
+        setCode,
+        cards,
+        packs: null,
+        deckBuilderState: buildDeckBuilderState,
+        poolType,
+        name: null,
+        isPublic: false,
+        parentPoolId: parentId,
+      })
+      window.location.href = `/pool/${parentId}/deck/${builtPool.shareId}`
+    } catch (err) {
+      console.error('Failed to start new build from locked deck:', err)
+      setErrorMessage(err instanceof Error ? err.message : 'Failed to create build')
+      setMessageType('error')
+      setForkInProgress(false)
+      setLockModalOpen(false)
+      setTimeout(() => {
+        setErrorMessage(null)
+        setMessageType(null)
+      }, 3000)
+    }
+  }, [forkInProgress, isAuthenticated, signIn, rootShareId, shareId, setCode, cards, buildDeckBuilderState, poolType])
+
   // Context value for child components
   const contextValue = useMemo(() => ({
     // Core state
@@ -2388,6 +2442,7 @@ function DeckBuilder({
         savedState={buildDeckBuilderState}
         poolType={poolType}
         currentPoolName={currentPoolName}
+        builderLabel={(rootShareId && shareId && shareId !== rootShareId) ? (poolOwnerUsername || 'Anonymous') : 'Original'}
         viewMode={viewMode}
         setViewMode={setViewMode}
         showNavTooltip={showNavTooltip}
@@ -2718,6 +2773,29 @@ function DeckBuilder({
           ? 'Are you sure you want to delete this Limited Deckbuilder deck? This will remove this session and return you to the homepage.'
           : 'Are you sure you want to delete this deck? This action cannot be undone.'}
       />
+
+      <Modal
+        isOpen={lockModalOpen}
+        onClose={() => setLockModalOpen(false)}
+        title="Locked deck"
+        showCloseButton
+      >
+        <Modal.Body>
+          <p>
+            This deck is editable only by{' '}
+            <strong>{poolOwnerUsername || 'the owner'}</strong>.
+          </p>
+          <p>Start a new deck with this Pool?</p>
+        </Modal.Body>
+        <Modal.Actions>
+          <Button variant="secondary" onClick={() => setLockModalOpen(false)} disabled={forkInProgress}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleStartNewBuildFromLock} disabled={forkInProgress}>
+            {forkInProgress ? 'Creating…' : 'Start New Deck'}
+          </Button>
+        </Modal.Actions>
+      </Modal>
       </div>
     </div>
     </DeckBuilderContext.Provider>

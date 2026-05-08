@@ -7,6 +7,7 @@
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { getBaseCardId as getBaseCardIdRaw, buildBaseCardMap } from '../utils/variantDowngrade'
+import { formatPoolLabel } from '../utils/poolDisplayName'
 import { trackEvent, AnalyticsEvents } from './useAnalytics'
 
 // === TYPES ===
@@ -180,7 +181,7 @@ export function useDeckExport({
     setMessageType(null)
     const deckData = buildDeckData()
 
-    const poolDisplayName = currentPoolName || `${setCode} ${isDraftMode ? 'Draft' : 'Sealed'}`
+    const poolDisplayName = currentPoolName || formatPoolLabel(setCode, isDraftMode ? 'draft' : 'sealed')
     const exportData: ExportData = {
       metadata: {
         name: `[PTP] ${poolDisplayName}`.slice(0, 80),
@@ -230,7 +231,7 @@ export function useDeckExport({
     setMessageType(null)
     const deckData = buildDeckData()
 
-    const poolDisplayName = currentPoolName || `${setCode} ${isDraftMode ? 'Draft' : 'Sealed'}`
+    const poolDisplayName = currentPoolName || formatPoolLabel(setCode, isDraftMode ? 'draft' : 'sealed')
     const exportData: ExportData = {
       metadata: {
         name: `[PTP] ${poolDisplayName}`.slice(0, 80),
@@ -558,7 +559,7 @@ export function useDeckExport({
       hours = hours ? hours : 12
       const timeStr = `${month}/${day} ${hours}:${minutes} ${ampm}`
 
-      const displayName = currentPoolName || `${setCode} ${poolType === 'draft' ? 'Draft' : 'Sealed'}`
+      const displayName = currentPoolName || formatPoolLabel(setCode, poolType === 'draft' ? 'draft' : 'sealed')
 
       // Draw pool name
       ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
@@ -940,7 +941,7 @@ export function useDeckExport({
       hours = hours ? hours : 12
       const timeStr = `${month}/${day} ${hours}:${minutes} ${ampm}`
 
-      const displayName = currentPoolName || `${setCode} ${poolType === 'draft' ? 'Draft' : 'Sealed'}`
+      const displayName = currentPoolName || formatPoolLabel(setCode, poolType === 'draft' ? 'draft' : 'sealed')
 
       ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
       ctx.font = 'bold 24px Arial'

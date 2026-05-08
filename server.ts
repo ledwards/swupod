@@ -307,6 +307,21 @@ app.prepare().then(() => {
       socket.leave('public-pods')
     })
 
+    // Pool builds room: clients viewing /pool/:rootShareId/deck or /...deck/:buildId
+    // join `pool-builds:${rootShareId}` to receive builds-changed pings whenever
+    // any user (themselves OR another client) saves changes to the pool tree.
+    socket.on('join-pool-builds', (rootShareId: string) => {
+      if (typeof rootShareId === 'string' && rootShareId) {
+        socket.join(`pool-builds:${rootShareId}`)
+      }
+    })
+
+    socket.on('leave-pool-builds', (rootShareId: string) => {
+      if (typeof rootShareId === 'string' && rootShareId) {
+        socket.leave(`pool-builds:${rootShareId}`)
+      }
+    })
+
     socket.on('disconnect', () => {
       const userId = (socket as any)._presenceUserId as string | undefined
       if (userId && presenceMap.has(userId)) {

@@ -222,6 +222,14 @@
   font-size: 0.75rem;
 }
 
+.sticky-builder-label {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+  font-weight: 400;
+  margin-left: 0.75rem;
+  white-space: nowrap;
+}
+
 /* Inline layout: subtitle appears inline */
 .selected-card-container.inline-layout .selected-card-subtitle {
   margin-top: 0;

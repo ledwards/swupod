@@ -8,6 +8,7 @@
 
 import { useState, type MouseEvent } from 'react'
 import Button from '../Button'
+import { formatPoolLabel } from '../../utils/poolDisplayName'
 
 export type PoolType = 'draft' | 'sealed'
 
@@ -72,7 +73,7 @@ export function DeckImageModal({ imageUrl, onClose, poolName, setCode, poolType,
     hours = hours ? hours : 12
     const timeStr = `${month}${day}_${hours}${minutes}${ampm}`
 
-    const displayName = poolName || `${setCode} ${poolType === 'draft' ? 'Draft' : 'Sealed'}`
+    const displayName = poolName || formatPoolLabel(setCode, poolType === 'draft' ? 'draft' : 'sealed')
     // Sanitize filename - remove invalid characters
     const sanitizedName = displayName.replace(/[^a-z0-9]/gi, '_').toLowerCase()
     const prefix = poolType === 'draft' ? 'ptp_draft' : 'ptp_sealed'

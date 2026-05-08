@@ -65,6 +65,7 @@ export interface StickyInfoBarProps {
   savedState: unknown
   poolType: PoolType
   currentPoolName?: string
+  builderLabel?: string | null
   // View mode toggle props
   viewMode: ViewMode
   setViewMode: (mode: ViewMode) => void
@@ -103,6 +104,7 @@ export function StickyInfoBar({
   savedState,
   poolType,
   currentPoolName,
+  builderLabel,
   viewMode,
   setViewMode,
   showNavTooltip,
@@ -275,6 +277,10 @@ export function StickyInfoBar({
             <span className="selected-card-name">(Select a Base)</span>
           )}
         </div>
+
+        {isInfoBarSticky && builderLabel && (
+          <span className="sticky-builder-label">by {builderLabel}</span>
+        )}
       </div>
 
       <div className="deck-counts-info">

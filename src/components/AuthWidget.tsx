@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react'
 import type { MouseEvent } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { fetchUserPools } from '../utils/poolApi'
+import { formatPoolLabel } from '../utils/poolDisplayName'
 import { useRouter, usePathname } from 'next/navigation'
 import UserAvatar from './UserAvatar'
 import './AuthWidget.css'
@@ -105,7 +106,7 @@ export default function AuthWidget() {
             const url = d.status === 'complete' && d.poolShareId
               ? `/pool/${d.poolShareId}/deck`
               : `/draft/${d.shareId}`
-            liveCandidates.push({ url, label: `${d.setCode} Draft`, date: new Date(d.createdAt) })
+            liveCandidates.push({ url, label: formatPoolLabel(d.setCode, 'draft'), date: new Date(d.createdAt) })
           }
 
           const sortedSealed = [...allSealedPods].sort((a: any, b: any) =>
@@ -116,7 +117,7 @@ export default function AuthWidget() {
             const url = s.poolShareId
               ? `/pool/${s.poolShareId}/deck`
               : `/sealed/${s.shareId}`
-            liveCandidates.push({ url, label: `${s.setCode} Sealed`, date: new Date(s.createdAt) })
+            liveCandidates.push({ url, label: formatPoolLabel(s.setCode, 'sealed'), date: new Date(s.createdAt) })
           }
 
           liveCandidates.sort((a, b) => b.date.getTime() - a.date.getTime())

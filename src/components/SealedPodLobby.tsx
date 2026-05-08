@@ -4,6 +4,7 @@
 import { useState } from 'react'
 import Button from './Button'
 import EditableTitle from './EditableTitle'
+import { formatPoolLabel } from '../utils/poolDisplayName'
 import './SealedPodLobby.css'
 
 const CopyIcon = () => (
@@ -106,7 +107,7 @@ export default function SealedPodLobby({
     <div className="sealed-pod-lobby">
       <h1>
         <EditableTitle
-          value={podName || `${setName} Sealed`}
+          value={podName || formatPoolLabel(setName, 'sealed')}
           isEditable={isHost && !!onRenamePod}
           onSave={(newName) => {
             if (newName && onRenamePod) {
