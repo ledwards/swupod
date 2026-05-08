@@ -47,7 +47,12 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
           u.id as owner_id,
           u.username as owner_username,
           pp.share_id as parent_share_id,
-          (SELECT COUNT(*) FROM card_pools WHERE parent_pool_id = cp.id) as build_count
+          CASE
+            WHEN cp.parent_pool_id IS NULL THEN
+              (SELECT COUNT(*) FROM card_pools WHERE parent_pool_id = cp.id)
+            ELSE
+              (SELECT COUNT(*) + 1 FROM card_pools WHERE parent_pool_id = cp.parent_pool_id)
+          END as build_count
          FROM card_pools cp
          LEFT JOIN users u ON cp.user_id = u.id
          LEFT JOIN pods dp ON cp.pod_id = dp.id

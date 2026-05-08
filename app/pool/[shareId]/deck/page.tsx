@@ -206,7 +206,7 @@ export default function DeckBuilderPage({ params }: PageProps) {
             <div className="pool-build-banner">
               Part of a group build &mdash;{' '}
               <a href={`/${parentPoolType}/${parentShareId}`}>
-                See all {buildCount + 1} builds
+                See all {buildCount} builds
               </a>
             </div>
           )}
