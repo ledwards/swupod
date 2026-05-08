@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useRef, useCallback, use } from 'react'
 import DeckBuilder from '../../../../src/components/DeckBuilder'
+import PoolBuilds from '../../../../src/components/PoolBuilds'
 import ChatPanel from '../../../../src/components/ChatPanel'
 import { loadPool, updatePool } from '../../../../src/utils/poolApi'
 import { useAuth } from '../../../../src/contexts/AuthContext'
@@ -194,22 +195,13 @@ export default function DeckBuilderPage({ params }: PageProps) {
       .catch(() => {})
   }, [draftShareId])
 
-  const parentShareId = pool?.parentShareId || null
-  const buildCount = pool?.buildCount ?? 0
-  const parentPoolType = pool?.poolType === 'draft' ? 'draft_pool' : 'sealed_pool'
+  const rootShareId = pool?.parentShareId || pool?.shareId || null
+  const isChildBuild = Boolean(pool?.parentShareId)
 
   return (
     <div className={draftShareId ? 'page-with-chat' : ''}>
       <div className={draftShareId ? 'page-content' : ''}>
         <div className="app">
-          {parentShareId && (
-            <div className="pool-build-banner">
-              Part of a group build &mdash;{' '}
-              <a href={`/${parentPoolType}/${parentShareId}`}>
-                See all {buildCount} builds
-              </a>
-            </div>
-          )}
           <DeckBuilder
             cards={allCards}
             setCode={setCode}
@@ -225,6 +217,13 @@ export default function DeckBuilderPage({ params }: PageProps) {
             draftShareId={draftShareId}
             deckBuildDeadline={deckBuildDeadline}
           />
+          {!loading && rootShareId && (
+            <PoolBuilds
+              shareId={rootShareId}
+              currentUserId={user?.id || null}
+              isOwner={isOwner && !isChildBuild}
+            />
+          )}
         </div>
       </div>
       {draftShareId && <ChatPanel shareId={draftShareId} defaultOpen={false} />}

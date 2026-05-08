@@ -47,7 +47,7 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false }: 
     if (!shareId) return
     fetch(`/api/pools/${shareId}/builds`)
       .then(res => res.ok ? res.json() : null)
-      .then(data => { if (data?.builds) setBuilds(data.builds) })
+      .then(data => { if (data?.data?.builds) setBuilds(data.data.builds) })
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [shareId])

@@ -207,12 +207,6 @@ export default function DraftPoolPage({ params }: PageProps) {
 
   return (
     <div className="app">
-      {isChildBuild && pool?.parentShareId && (
-        <div className="pool-build-banner">
-          Part of a group build &mdash;{' '}
-          <a href={`/draft_pool/${pool.parentShareId}`}>See all builds</a>
-        </div>
-      )}
       <SealedPod
         setCode={pool?.setCode}
         setName={pool?.setName}
