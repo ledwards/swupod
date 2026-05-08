@@ -1008,14 +1008,15 @@ export async function extractPoolFromImages(
   // sub-groups). Each sub-group is a separate call with a smaller closed
   // vocab — better focus, less hallucination on long lists.
   //
-  // Each sub-group runs N=3 samples in parallel; we vote per card. This
-  // smooths the run-to-run variance that single-sample extraction has
-  // shown.
+  // Sample count is adaptive: small sub-groups (≤15 cards) get 5 samples
+  // (variance is more visible there and runs are cheap because the vocab
+  // is small); larger sub-groups get 3 samples to keep total cost in
+  // check.
   //
   // Leaders/Bases get a STRUCTURAL CONSTRAINT hint up front: a sealed
   // pool always has exactly 6 leaders + 6 bases and exactly 1 active
   // each. If the voted result is off, a refine pass re-runs.
-  const SAMPLES_PER_SUBGROUP = 3
+  const samplesFor = (cardCount: number) => (cardCount <= 15 ? 5 : 3)
   const phase2Start = Date.now()
 
   // Crop each TABLE once; sub-groups within a table reuse the crop.
@@ -1059,13 +1060,14 @@ export async function extractPoolFromImages(
     const isLeadersOrBases = table === 'Leaders' || table === 'Bases'
     const hint = isLeadersOrBases ? { expectedPoolSum: 6, expectedDeckSum: 1 } : undefined
 
+    const samplesForThis = samplesFor(sgCards.length)
     const result = await extractTableMultiSample(
       client,
       tableEntry.cropBuf,
       table,
       sgCards,
       setCode,
-      SAMPLES_PER_SUBGROUP,
+      samplesForThis,
       hint,
     )
     return {
@@ -1085,6 +1087,43 @@ export async function extractPoolFromImages(
   for (const r of sgResults) {
     if (!byTable.has(r.tableName)) byTable.set(r.tableName, [])
     byTable.get(r.tableName)!.push(r)
+  }
+
+  // Second-chance pass for small sub-groups that voted 0 marked rows.
+  // 5 samples all coming back blank is strong evidence — but on small
+  // tables (Heroism, Villainy, sub-aspect splits) it can also indicate
+  // Claude is bailing rather than scanning. Re-run those with an explicit
+  // "look harder" hint and 3 more samples; if the new run finds any
+  // marks, replace the original.
+  for (const sg of sgResults) {
+    if (sg.cardCount > 15) continue
+    const hasMarks = sg.rows.some((r: any) => Number(r.poolQty || 0) > 0)
+    if (hasMarks) continue
+
+    const tableEntry = tableCrops.get(sg.tableName)!
+    const sgCards = (groupCardsBySubGroup(allCards).find(
+      (g) => g.subGroup === sg.subGroup,
+    )?.cards || [])
+    const isLeadersOrBases = sg.tableName === 'Leaders' || sg.tableName === 'Bases'
+    const baseHint = isLeadersOrBases ? { expectedPoolSum: 6, expectedDeckSum: 1 } : {}
+    try {
+      const second = await extractTableMultiSample(
+        client,
+        tableEntry.cropBuf,
+        sg.tableName,
+        sgCards,
+        setCode,
+        3,
+        { ...baseHint, lookHarder: true },
+      )
+      const secondHasMarks = second.rows.some((r: any) => Number(r.poolQty || 0) > 0)
+      if (secondHasMarks) {
+        sg.rows = second.rows
+        sg.outputTokens += second.outputTokens
+      }
+    } catch (err) {
+      console.warn(`[second-chance] ${sg.tableName}/${sg.subGroup}: ${(err as Error).message}`)
+    }
   }
 
   // Refine pass for Leaders/Bases if voted result violates the 6/1 rule.

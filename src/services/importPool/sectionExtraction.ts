@@ -63,8 +63,8 @@ export async function cropForTable(
   const w = meta.width || 0
   const h = meta.height || 0
   if (w === 0 || h === 0) throw new Error('cropForTable: image has zero dimension')
-  const padX = w * 0.02
-  const padY = h * 0.02
+  const padX = w * 0.04
+  const padY = h * 0.04
   const left = Math.max(0, Math.floor(bounds.x0 * w - padX))
   const top = Math.max(0, Math.floor(bounds.y0 * h - padY))
   const right = Math.min(w, Math.ceil(bounds.x1 * w + padX))
@@ -99,8 +99,8 @@ export async function cropOriginalAndPreprocess(
   const w = meta.width || 0
   const h = meta.height || 0
   if (w === 0 || h === 0) throw new Error('cropOriginalAndPreprocess: image has zero dimension')
-  const padX = w * 0.02
-  const padY = h * 0.02
+  const padX = w * 0.04
+  const padY = h * 0.04
   const left = Math.max(0, Math.floor(bounds.x0 * w - padX))
   const top = Math.max(0, Math.floor(bounds.y0 * h - padY))
   const right = Math.min(w, Math.ceil(bounds.x1 * w + padX))
@@ -139,6 +139,10 @@ export interface TableExtractionHint {
    *  Used by the refine pass on Leaders/Bases when the first call missed
    *  the count. */
   previousAttempt?: { rows: any[]; gap: string }
+  /** When true, an extra prompt section warns that a prior extraction
+   *  came back all-blank and asks for a careful re-examination. Used by
+   *  the second-chance pass on sub-groups that voted 0 marked rows. */
+  lookHarder?: boolean
 }
 
 function buildTableSystemPrompt(
@@ -257,7 +261,11 @@ CRITICAL — confidence is about handwriting legibility, not about the card name
 
 When uncertain between "blank" and "faint mark", prefer poolQty=0 with confidence="medium". Over-marking is worse than under-marking — the user's resolve UI will catch low-conf cells.
 
-Return ALL ${tableCards.length} cards (most will have poolQty=0). Strict JSON, no prose.${tableSpecific}${constraintSection}${refineRecap}`
+Return ALL ${tableCards.length} cards (most will have poolQty=0). Strict JSON, no prose.${tableSpecific}${constraintSection}${refineRecap}${
+    hint?.lookHarder
+      ? '\n\nLOOK-HARDER PASS: a previous attempt returned 0 marked rows for this sub-group, but small marks (especially in narrow PLAYED/TOTAL columns) are easy to miss on a first scan. Re-examine EVERY row carefully, especially looking for faint pencil tallies. Most non-empty sub-groups have at least 1 marked card. If after careful re-examination you still see no marks, return all-zeros — but please look one more time before doing so.\n'
+      : ''
+  }`
 }
 
 export async function extractTableFromCrop(
