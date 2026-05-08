@@ -12,6 +12,23 @@
   margin: 0 0 0.5rem;
 }
 
+.pool-build-add {
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  line-height: 1;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  /* Match height of regular chips by using their padding/font sizing */
+  min-width: 36px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pool-build-add:hover {
+    color: white;
+  }
+}
+
 .pool-builds-empty {
   color: rgba(255, 255, 255, 0.4);
   font-size: 0.875rem;

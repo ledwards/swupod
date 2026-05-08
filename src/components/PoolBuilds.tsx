@@ -21,6 +21,7 @@ interface PoolBuildsProps {
   currentUserId?: string | null
   isOwner?: boolean
   activeShareId?: string | null  // shareId of the build currently being viewed
+  onCreateBuild?: () => void
 }
 
 const VISIBLE_LIMIT = 6
@@ -51,7 +52,7 @@ function BuildCard({ build, rootShareId, isActive }: { build: Build; rootShareId
   )
 }
 
-export default function PoolBuilds({ shareId, currentUserId, isOwner = false, activeShareId = null }: PoolBuildsProps) {
+export default function PoolBuilds({ shareId, currentUserId, isOwner = false, activeShareId = null, onCreateBuild }: PoolBuildsProps) {
   const [builds, setBuilds] = useState<Build[]>([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
@@ -66,9 +67,7 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
   }, [shareId])
 
   if (loading) return null
-
-  const childBuilds = builds.filter(b => !b.isOriginal)
-  if (!childBuilds.length && !isOwner) return null
+  if (!builds.length) return null
 
   const visible = builds.slice(0, VISIBLE_LIMIT)
   const overflow = builds.slice(VISIBLE_LIMIT)
@@ -76,19 +75,26 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
   return (
     <div className="pool-builds">
       <p className="pool-builds-label">Decks with this Pool:</p>
-      {!childBuilds.length && isOwner ? (
-        <p className="pool-builds-empty">No other builds yet — share this pool to let others build from it.</p>
-      ) : (
-        <div className="pool-builds-list">
-          {visible.map(b => <BuildCard key={b.shareId} build={b} rootShareId={shareId} isActive={b.shareId === activeShareId} />)}
-          {overflow.length > 0 && (
-            <button className="pool-build-card pool-build-more" onClick={() => setModalOpen(true)}>
-              <span className="pool-build-leader">+{overflow.length} more</span>
-              <span className="pool-build-meta">View all {builds.length}</span>
-            </button>
-          )}
-        </div>
-      )}
+      <div className="pool-builds-list">
+        {visible.map(b => <BuildCard key={b.shareId} build={b} rootShareId={shareId} isActive={b.shareId === activeShareId} />)}
+        {overflow.length > 0 && (
+          <button className="pool-build-card pool-build-more" onClick={() => setModalOpen(true)}>
+            <span className="pool-build-leader">+{overflow.length} more</span>
+            <span className="pool-build-meta">View all {builds.length}</span>
+          </button>
+        )}
+        {onCreateBuild && (
+          <button
+            type="button"
+            className="pool-build-card pool-build-add"
+            onClick={onCreateBuild}
+            title="Create your build from this pool"
+            aria-label="Create your build from this pool"
+          >
+            +
+          </button>
+        )}
+      </div>
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="All Builds" showCloseButton>
         <Modal.Body>

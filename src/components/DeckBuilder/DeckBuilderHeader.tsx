@@ -95,6 +95,7 @@ export function DeckBuilderHeader({
       setErrorMessage('Setting up your build...')
       setMessageType('info')
 
+      const parentId = rootShareId || shareId
       const builtPool = await savePool({
         setCode: setCode,
         cards: cards,
@@ -103,7 +104,7 @@ export function DeckBuilderHeader({
         poolType: poolType,
         name: null,
         isPublic: false,
-        parentPoolId: shareId,
+        parentPoolId: parentId,
       })
 
       if (builtPool.alreadyExists) {
@@ -115,7 +116,7 @@ export function DeckBuilderHeader({
       }
 
       setTimeout(() => {
-        window.location.href = `/pool/${shareId}/deck/${builtPool.shareId}`
+        window.location.href = `/pool/${parentId}/deck/${builtPool.shareId}`
       }, 1000)
     } catch (err) {
       console.error('Failed to create build:', err)
@@ -191,21 +192,6 @@ export function DeckBuilderHeader({
       )}
 
       {!isLoading && <div className={`header-buttons ${isInfoBarSticky ? 'hidden' : ''}`}>
-        {/* Build with This Pool button for non-owners */}
-        {!isInfiniteMode && !isOwner && (
-          <Button
-            variant="secondary"
-            className="export-button"
-            onClick={handleBuildFromPool}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-            <span>Build with This Pool</span>
-          </Button>
-        )}
-
         {/* Play button */}
         {canUsePlayAction && (
           <Button
@@ -267,6 +253,7 @@ export function DeckBuilderHeader({
           currentUserId={currentUserId}
           isOwner={isOwner}
           activeShareId={shareId || null}
+          onCreateBuild={handleBuildFromPool}
         />
       )}
 
