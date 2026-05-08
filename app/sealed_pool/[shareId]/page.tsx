@@ -191,6 +191,7 @@ export default function SealedPoolPage({ params }: PageProps) {
         shareId={pool?.shareId}
         isLoading={loading}
         poolOwnerId={pool?.owner?.id || pool?.userId}
+        poolOwnerUsername={pool?.owner?.username || null}
       />
       {!loading && rootShareId && (
         <PoolBuilds

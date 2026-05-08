@@ -3,17 +3,35 @@
 import { queryRow, query } from '@/lib/db'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { jsonParse } from '@/src/utils/json'
+import { getAllCards } from '@/src/utils/cardData'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {
   params: Promise<{ shareId: string }>
 }
 
-function extractLeaderBase(deckBuilderState: unknown) {
+function buildCardIndex() {
+  const map = new Map<string, string>()
+  for (const card of getAllCards()) {
+    if (card.id) map.set(card.id, card.name)
+  }
+  return map
+}
+
+function extractBuildInfo(deckBuilderState: unknown, cardIndex: Map<string, string>) {
   const state = jsonParse(deckBuilderState) || {}
+  const leaderId = state.activeLeader || null
+  const baseId = state.activeBase || null
+  const positions = state.cardPositions || {}
+  const deckCardCount = Object.values(positions).filter(
+    (pos: any) => pos.section === 'deck' && pos.visible !== false && !pos.card?.isBase && !pos.card?.isLeader
+  ).length
   return {
-    activeLeader: state.activeLeader || null,
-    activeBase: state.activeBase || null,
+    activeLeader: leaderId,
+    activeBase: baseId,
+    leaderName: leaderId ? (cardIndex.get(leaderId) || null) : null,
+    baseName: baseId ? (cardIndex.get(baseId) || null) : null,
+    deckCardCount,
   }
 }
 
@@ -41,18 +59,20 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       [root.id]
     )
 
+    const cardIndex = buildCardIndex()
+
     const rootEntry = {
       shareId: root.share_id,
       builderName: null,
       isOriginal: true,
-      ...extractLeaderBase(root.deck_builder_state),
+      ...extractBuildInfo(root.deck_builder_state, cardIndex),
     }
 
     const buildEntries = children.rows.map(b => ({
       shareId: b.share_id,
       builderName: b.builder_name || null,
       isOriginal: false,
-      ...extractLeaderBase(b.deck_builder_state),
+      ...extractBuildInfo(b.deck_builder_state, cardIndex),
     }))
 
     return jsonResponse({ builds: [rootEntry, ...buildEntries] })

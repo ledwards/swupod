@@ -127,6 +127,12 @@
   margin-bottom: 2rem;
 }
 
+.pool-owner-byline {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+  margin: 0.15rem 0 0;
+}
+
 .pool-date {
   color: rgba(255, 255, 255, 0.6);
   font-size: 1rem;

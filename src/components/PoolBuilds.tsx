@@ -1,13 +1,15 @@
 // @ts-nocheck
 import { useState, useEffect } from 'react'
+import Modal from './Modal'
 import './PoolBuilds.css'
 
 interface Build {
   shareId: string
   builderName: string | null
   isOriginal: boolean
-  activeLeader: string | null
-  activeBase: string | null
+  leaderName: string | null
+  baseName: string | null
+  deckCardCount: number
 }
 
 interface PoolBuildsProps {
@@ -16,17 +18,36 @@ interface PoolBuildsProps {
   isOwner?: boolean
 }
 
+const VISIBLE_LIMIT = 5
+
+function BuildCard({ build }: { build: Build }) {
+  const leader = build.leaderName || 'No leader'
+  const base = build.baseName || 'No base'
+  const builder = build.isOriginal ? 'Original' : (build.builderName || 'Anonymous')
+  const count = build.deckCardCount
+
+  return (
+    <a href={`/pool/${build.shareId}/deck`} className="pool-build-card">
+      <span className="pool-build-deck">
+        {leader}, {base}
+      </span>
+      <span className="pool-build-meta">
+        by {builder}{count > 0 ? ` (${count} cards)` : ''}
+      </span>
+    </a>
+  )
+}
+
 export default function PoolBuilds({ shareId, currentUserId, isOwner = false }: PoolBuildsProps) {
   const [builds, setBuilds] = useState<Build[]>([])
   const [loading, setLoading] = useState(true)
+  const [modalOpen, setModalOpen] = useState(false)
 
   useEffect(() => {
     if (!shareId) return
     fetch(`/api/pools/${shareId}/builds`)
       .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        if (data?.builds) setBuilds(data.builds)
-      })
+      .then(data => { if (data?.builds) setBuilds(data.builds) })
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [shareId])
@@ -34,43 +55,35 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false }: 
   if (loading) return null
 
   const childBuilds = builds.filter(b => !b.isOriginal)
-  const hasOtherBuilds = childBuilds.length > 0
+  if (!childBuilds.length && !isOwner) return null
 
-  if (!hasOtherBuilds && !isOwner) return null
+  const visible = builds.slice(0, VISIBLE_LIMIT)
+  const overflow = builds.slice(VISIBLE_LIMIT)
 
   return (
     <div className="pool-builds">
       <h2 className="pool-builds-title">Builds</h2>
-      {!hasOtherBuilds && isOwner ? (
+      {!childBuilds.length && isOwner ? (
         <p className="pool-builds-empty">No other builds yet — share this pool to let others build from it.</p>
       ) : (
-        <div className="pool-builds-grid">
-          {builds.map(build => (
-            <a
-              key={build.shareId}
-              href={`/pool/${build.shareId}/deck`}
-              className="pool-build-card"
-            >
-              <div className="pool-build-card-header">
-                <span className="pool-build-builder">
-                  {build.isOriginal ? 'Original Build' : (build.builderName || 'Anonymous')}
-                </span>
-                {build.isOriginal && (
-                  <span className="pool-build-badge">Original</span>
-                )}
-              </div>
-              <div className="pool-build-detail">
-                <span className="pool-build-label">Leader:</span>
-                <span>{build.activeLeader || 'Not selected'}</span>
-              </div>
-              <div className="pool-build-detail">
-                <span className="pool-build-label">Base:</span>
-                <span>{build.activeBase || 'Not selected'}</span>
-              </div>
-            </a>
-          ))}
+        <div className="pool-builds-list">
+          {visible.map(b => <BuildCard key={b.shareId} build={b} />)}
+          {overflow.length > 0 && (
+            <button className="pool-build-card pool-build-more" onClick={() => setModalOpen(true)}>
+              <span className="pool-build-deck">+{overflow.length} more</span>
+              <span className="pool-build-meta">View all {builds.length} builds</span>
+            </button>
+          )}
         </div>
       )}
+
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="All Builds" showCloseButton>
+        <Modal.Body>
+          <div className="pool-builds-modal-grid">
+            {builds.map(b => <BuildCard key={b.shareId} build={b} />)}
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   )
 }

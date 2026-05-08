@@ -59,6 +59,7 @@ export interface SealedPodProps {
   createdAt?: string | null
   isLoading?: boolean
   poolOwnerId?: string | null
+  poolOwnerUsername?: string | null
   draftShareId?: string | null
 }
 
@@ -74,7 +75,7 @@ function getSetColor(setCode: string) {
   return config?.color || '#ffffff'
 }
 
-function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPacks = null, shareId = null, poolType = 'sealed', setName = null, poolName: initialPoolName = null, createdAt = null, isLoading = false, poolOwnerId = null, draftShareId = null }: SealedPodProps) {
+function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPacks = null, shareId = null, poolType = 'sealed', setName = null, poolName: initialPoolName = null, createdAt = null, isLoading = false, poolOwnerId = null, poolOwnerUsername = null, draftShareId = null }: SealedPodProps) {
   const { user, isPatron } = useAuth()
   const [cards, setCards] = useState<Card[]>([])
   const [packs, setPacks] = useState<Pack[]>([])
@@ -369,6 +370,9 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
             placeholder={poolType === 'draft' ? 'Draft Pool' : 'Sealed Pool'}
           />
         </h1>
+        {poolOwnerUsername && (
+          <p className="pool-owner-byline">by {poolOwnerUsername}</p>
+        )}
         {createdAt && (
           <p className="pool-date">
             {new Date(createdAt).toLocaleString('en-US', {
