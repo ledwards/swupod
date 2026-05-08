@@ -2232,6 +2232,16 @@ function DeckBuilder({
         setErrorMessage('Setting up your build...')
         setMessageType('success')
 
+        // Idempotent reuse: the server doesn't dedup, but the auto-build-on-Play
+        // path should not mint a new build on every Play tap. Look up any
+        // existing non-original build owned by this user under the same parent.
+        // If found, navigate to its play URL; otherwise create a fresh one.
+        const existing = await fetchUserBuild(shareId, currentUserId || null)
+        if (existing?.shareId) {
+          window.location.href = `/pool/${existing.shareId}/deck/play`
+          return
+        }
+
         const builtPool = await savePool({
           setCode,
           cards,
@@ -2278,6 +2288,7 @@ function DeckBuilder({
     buildDeckBuilderState,
     poolType,
     currentPoolName,
+    currentUserId,
   ])
 
   // Fork the current pool into a new child build owned by the current user.

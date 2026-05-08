@@ -121,11 +121,20 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     )
 
     const rawEntries = [
-      { shareId: root.share_id, builderName: root.owner_username || null, isOriginal: true, ...extractBuildInfo(root.deck_builder_state) },
+      {
+        shareId: root.share_id,
+        builderName: root.owner_username || null,
+        builderUserId: root.user_id || null,
+        isOriginal: true,
+        createdAt: null,
+        ...extractBuildInfo(root.deck_builder_state),
+      },
       ...children.rows.map(b => ({
         shareId: b.share_id,
         builderName: b.builder_name || null,
+        builderUserId: b.user_id || null,
         isOriginal: false,
+        createdAt: b.created_at,
         ...extractBuildInfo(b.deck_builder_state),
       })),
     ]

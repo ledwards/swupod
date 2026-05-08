@@ -34,6 +34,72 @@ export function getBuildDeckBuilderState(currentState: unknown, fallbackState: u
   return hasDeckState ? currentState : fallbackState
 }
 
+// === Find existing build (replaces server-side dedup) ==================
+//
+// We don't dedup on the server — multiple builds per (user, parent) are by design.
+// But the auto-build-on-Play path should still be idempotent: a non-owner who
+// hits "Ready to Play" repeatedly shouldn't accumulate one new build per click.
+//
+// Solution: before creating a build, ask `/api/pools/:rootShareId/builds`,
+// look for any non-original build owned by the current user, and reuse it
+// (most recent first). The + chip explicitly does NOT call this — it always
+// creates new.
+
+export interface BuildEntry {
+  shareId: string
+  builderUserId?: string | null
+  isOriginal?: boolean
+  createdAt?: string | null
+}
+
+/**
+ * Pure: given a builds list and a user id, return the most-recently-created
+ * non-original build owned by that user. Returns null if none.
+ *
+ * Skips:
+ *   - the root entry (`isOriginal: true`) — that's the parent pool, not a build
+ *   - entries belonging to other users
+ *   - anonymous entries (builderUserId is null) when currentUserId is set
+ *
+ * Returns null when currentUserId is null/empty (anonymous users can't have a
+ * known existing build).
+ */
+export function findUserBuild<T extends BuildEntry>(
+  builds: T[] | null | undefined,
+  currentUserId: string | null | undefined,
+): T | null {
+  if (!builds || !builds.length) return null
+  if (!currentUserId) return null
+  const mine = builds.filter(b => !b.isOriginal && b.builderUserId === currentUserId)
+  if (!mine.length) return null
+  // Most recent first. createdAt is ISO; lexical comparison is fine.
+  mine.sort((a, b) => {
+    const ta = a.createdAt || ''
+    const tb = b.createdAt || ''
+    if (ta === tb) return 0
+    return ta < tb ? 1 : -1
+  })
+  return mine[0] ?? null
+}
+
+// Fetches the builds list and returns the user's existing build if any.
+// Returns null on network error too — caller should fall back to creating new.
+export async function fetchUserBuild(
+  rootShareId: string,
+  currentUserId: string | null | undefined,
+): Promise<BuildEntry | null> {
+  if (!rootShareId || !currentUserId) return null
+  try {
+    const res = await fetch(`/api/pools/${rootShareId}/builds`, { credentials: 'include' })
+    if (!res.ok) return null
+    const data = await res.json()
+    const builds: BuildEntry[] = data?.data?.builds || []
+    return findUserBuild(builds, currentUserId)
+  } catch {
+    return null
+  }
+}
+
 // === Default-name generation ===========================================
 //
 // Pools and builds get an auto-generated name when they are created.

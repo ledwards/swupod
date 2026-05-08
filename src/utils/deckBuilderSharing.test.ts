@@ -10,6 +10,7 @@ import {
   getDefaultPoolName,
   getDefaultBuildName,
   getCanonicalPoolSubtitle,
+  findUserBuild,
 } from './deckBuilderSharing'
 
 describe('deckBuilderSharing', () => {
@@ -166,6 +167,71 @@ describe('deckBuilderSharing', () => {
         getCanonicalPoolSubtitle({ ownerName: 'terronk', setCode: 'LAW', poolType: 'sealed', createdAt: new Date(2026, 4, 28) }),
         'LAW Sealed by terronk 05.28.26'
       )
+    })
+  })
+
+  describe('findUserBuild — replaces server-side dedup', () => {
+    const builds = [
+      // Root pool (the parent). Must be ignored by find logic.
+      { shareId: 'root1', builderUserId: 'terronk', isOriginal: true, createdAt: '2026-05-01T00:00:00Z' },
+      // terronk has TWO builds — most recent wins.
+      { shareId: 'buildA', builderUserId: 'terronk', isOriginal: false, createdAt: '2026-05-02T00:00:00Z' },
+      { shareId: 'buildB', builderUserId: 'terronk', isOriginal: false, createdAt: '2026-05-04T12:00:00Z' },
+      // Another user's build — should be ignored.
+      { shareId: 'buildC', builderUserId: 'someone-else', isOriginal: false, createdAt: '2026-05-05T00:00:00Z' },
+      // Anonymous build — should be ignored even when currentUserId is set.
+      { shareId: 'buildD', builderUserId: null, isOriginal: false, createdAt: '2026-05-06T00:00:00Z' },
+    ]
+
+    it('returns the most-recently-created non-original build owned by the current user', () => {
+      const result = findUserBuild(builds, 'terronk')
+      assert.strictEqual(result?.shareId, 'buildB')
+    })
+
+    it('returns null when the user has no builds for this pool', () => {
+      assert.strictEqual(findUserBuild(builds, 'no-such-user'), null)
+    })
+
+    it('returns null for anonymous (null) currentUserId — anon users always create new', () => {
+      assert.strictEqual(findUserBuild(builds, null), null)
+      assert.strictEqual(findUserBuild(builds, undefined), null)
+      assert.strictEqual(findUserBuild(builds, ''), null)
+    })
+
+    it('skips the root pool even when its builderUserId matches the current user', () => {
+      // The root entry has isOriginal: true; matching it would be wrong (the user
+      // would re-Play the original deck instead of their own build).
+      const onlyRoot = [
+        { shareId: 'root1', builderUserId: 'terronk', isOriginal: true, createdAt: '2026-05-01T00:00:00Z' },
+      ]
+      assert.strictEqual(findUserBuild(onlyRoot, 'terronk'), null)
+    })
+
+    it('returns null for empty/missing builds list', () => {
+      assert.strictEqual(findUserBuild([], 'terronk'), null)
+      assert.strictEqual(findUserBuild(null, 'terronk'), null)
+      assert.strictEqual(findUserBuild(undefined, 'terronk'), null)
+    })
+
+    it('handles builds with missing createdAt — returns one of the matching ones', () => {
+      const noTimestamps = [
+        { shareId: 'a', builderUserId: 'u', isOriginal: false },
+        { shareId: 'b', builderUserId: 'u', isOriginal: false },
+      ]
+      const result = findUserBuild(noTimestamps, 'u')
+      assert.ok(result?.shareId === 'a' || result?.shareId === 'b')
+    })
+
+    it('ignores other users when one user has many builds', () => {
+      // Same user with many builds; another user with a more recent build —
+      // we should still get terronk's most-recent, not the other user's.
+      const mixed = [
+        { shareId: 'mine1', builderUserId: 'terronk', isOriginal: false, createdAt: '2026-05-01T00:00:00Z' },
+        { shareId: 'mine2', builderUserId: 'terronk', isOriginal: false, createdAt: '2026-05-02T00:00:00Z' },
+        { shareId: 'theirs', builderUserId: 'other', isOriginal: false, createdAt: '2026-12-31T00:00:00Z' },
+      ]
+      const result = findUserBuild(mixed, 'terronk')
+      assert.strictEqual(result?.shareId, 'mine2')
     })
   })
 })
