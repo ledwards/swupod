@@ -1805,6 +1805,45 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
+/* Wrapper around each tab so we can stack the (deck | pool) totals label
+ * underneath the icon button. */
+.ip-section-tab-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.ip-section-tab__totals {
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.3px;
+}
+
+/* Wrapper around the panel so the banner can stack above it without
+ * affecting the panel's flex-row layout. */
+.ip-section-panel-wrap {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Section-level anomaly banner — replaces the per-row yellow tint for
+ * section-wide concerns ("Multicolor: 12 in pool, verify each row"). */
+.ip-section-panel__banner {
+  margin: 0;
+  padding: 8px 12px;
+  background: rgba(60, 50, 20, 0.85);
+  border: 1px solid rgba(255, 217, 102, 0.5);
+  border-radius: 6px;
+  font-size: 13px;
+  color: rgba(255, 230, 150, 0.95);
+}
+
 /* Section pager: tall arrows flanking the side-by-side panel. No fixed
  * panel height — image becomes sticky as the user scrolls past its top
  * (so it follows the table down without internal scroll containers).
@@ -1857,8 +1896,6 @@
   background: rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 6px;
-  /* No overflow:hidden — sticky requires the parent to participate in
-   * normal flow. Children below define their own clipping. */
   min-height: 0;
 }
 

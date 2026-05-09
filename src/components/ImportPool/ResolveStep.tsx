@@ -196,30 +196,33 @@ export default function ResolveStep({ importPool }: Props) {
     [state.resolvedRows, activeSection],
   )
 
-  // Issue rows for yellow-highlighting + per-tab counts.
-  // Section-level anomalies ("verify Multicolor section") propagate to
-  // EVERY row in that section, since we can't pinpoint which row is the
-  // miss/phantom — user has to verify each. Without this, sections that
-  // only fire section-level anomalies show no yellow rows at all.
+  // Issue rows for yellow-highlighting — ONLY actual row-level anomalies.
+  // Section-level concerns (e.g. "verify Multicolor section") surface as a
+  // banner above that section's panel instead — propagating to every row
+  // in the section makes the whole table yellow and useless.
   const issueRowKeys = useMemo(() => {
     const set = new Set<string>()
-    const flaggedSections = new Set<string>()
     for (const a of anomalies) {
       if (a.kind === 'row') {
         const m = a.targetId.match(/^ip-row-(.+)$/)
         if (m) set.add(m[1])
-      } else if (a.kind === 'section' && a.sectionName) {
-        flaggedSections.add(a.sectionName)
-      }
-    }
-    if (flaggedSections.size > 0) {
-      for (const r of state.resolvedRows) {
-        const sec = sectionNameForRow(r)
-        if (sec && flaggedSections.has(sec)) set.add(r.key)
       }
     }
     return set
-  }, [anomalies, state.resolvedRows])
+  }, [anomalies])
+
+  // Section-level anomalies grouped by section name — surfaced as a banner
+  // on the active section tab's panel.
+  const sectionAnomaliesByName = useMemo(() => {
+    const map = new Map<string, string[]>()
+    for (const a of anomalies) {
+      if (a.kind === 'section' && a.sectionName) {
+        if (!map.has(a.sectionName)) map.set(a.sectionName, [])
+        map.get(a.sectionName)!.push(a.label)
+      }
+    }
+    return map
+  }, [anomalies])
 
   const issueCountsBySection = useMemo(() => {
     const counts: Record<string, number> = {}
@@ -230,6 +233,20 @@ export default function ResolveStep({ importPool }: Props) {
     }
     return counts
   }, [sectionTabs, state.resolvedRows, issueRowKeys])
+
+  // Per-tab (deck | pool) sub-totals — surfaced under each tab icon to
+  // help debug section-by-section without leaving Step 2.
+  const totalsBySection = useMemo(() => {
+    const totals: Record<string, { deck: number; pool: number }> = {}
+    for (const tab of sectionTabs) {
+      const inSec = state.resolvedRows.filter((r) => tab.matches(r))
+      totals[tab.key] = {
+        deck: inSec.reduce((s, r) => s + r.deckQty, 0),
+        pool: inSec.reduce((s, r) => s + r.poolQty, 0),
+      }
+    }
+    return totals
+  }, [sectionTabs, state.resolvedRows])
 
   return (
     <section className="import-pool-step import-pool-step--resolve">
@@ -247,6 +264,7 @@ export default function ResolveStep({ importPool }: Props) {
         activeKey={activeSectionKey}
         onSelect={setActiveSectionKey}
         issueCounts={issueCountsBySection}
+        totals={totalsBySection}
       />
 
       <div className="ip-section-pager">
@@ -274,6 +292,9 @@ export default function ResolveStep({ importPool }: Props) {
           activeLeaderId={state.activeLeaderId}
           activeBaseId={state.activeBaseId}
           issueRowKeys={issueRowKeys}
+          // Section-level anomalies show as a banner above the panel
+          // (instead of yellow-tinting every row in the section).
+          sectionBannerLines={sectionAnomaliesByName.get(activeSection.boundsName) || []}
           // Leaders/Bases tabs collapse to a single sub-group — no header rows.
           hideSubGroups={activeSection.key === 'leaders' || activeSection.key === 'bases'}
           // Inline ✓ on flagged rows: dismiss every row-anomaly that points at
@@ -429,29 +450,34 @@ function SectionTabs({
   activeKey,
   onSelect,
   issueCounts,
+  totals,
 }: {
   tabs: SectionTab[]
   activeKey: string
   onSelect: (key: string) => void
   issueCounts: Record<string, number>
+  totals: Record<string, { deck: number; pool: number }>
 }) {
   return (
     <div className="ip-section-tabs" role="tablist">
       {tabs.map((tab) => {
         const issues = issueCounts[tab.key] || 0
+        const t = totals[tab.key] || { deck: 0, pool: 0 }
         return (
-          <button
-            key={tab.key}
-            type="button"
-            role="tab"
-            aria-selected={tab.key === activeKey}
-            className={`ip-section-tab ${tab.key === activeKey ? 'ip-section-tab--active' : ''} ${issues > 0 ? 'ip-section-tab--has-issues' : ''}`}
-            onClick={() => onSelect(tab.key)}
-            title={`${tab.label}${issues > 0 ? ` — ${issues} flagged` : ''}`}
-          >
-            {tab.iconNode()}
-            {issues > 0 && <span className="ip-section-tab__badge">{issues}</span>}
-          </button>
+          <div key={tab.key} className="ip-section-tab-wrap">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab.key === activeKey}
+              className={`ip-section-tab ${tab.key === activeKey ? 'ip-section-tab--active' : ''} ${issues > 0 ? 'ip-section-tab--has-issues' : ''}`}
+              onClick={() => onSelect(tab.key)}
+              title={`${tab.label} — ${t.deck} in deck / ${t.pool} in pool${issues > 0 ? ` · ${issues} flagged` : ''}`}
+            >
+              {tab.iconNode()}
+              {issues > 0 && <span className="ip-section-tab__badge">{issues}</span>}
+            </button>
+            <span className="ip-section-tab__totals">{t.deck} | {t.pool}</span>
+          </div>
         )
       })}
     </div>
@@ -471,6 +497,7 @@ function SectionPanel({
   issueRowKeys,
   hideSubGroups,
   onDismissRow,
+  sectionBannerLines = [],
 }: {
   activeSection: SectionTab
   rows: ResolvedRow[]
@@ -484,6 +511,7 @@ function SectionPanel({
   issueRowKeys: Set<string>
   hideSubGroups?: boolean
   onDismissRow?: (rowKey: string) => void
+  sectionBannerLines?: string[]
 }) {
   // Bounds for THIS section across photos (could be 1-2).
   const boundsForSection = useMemo(
@@ -492,7 +520,15 @@ function SectionPanel({
   )
 
   return (
-    <div className="ip-section-panel">
+    <div className="ip-section-panel-wrap">
+      {sectionBannerLines.length > 0 && (
+        <div className="ip-section-panel__banner">
+          {sectionBannerLines.map((line, i) => (
+            <div key={i}>{line}</div>
+          ))}
+        </div>
+      )}
+      <div className="ip-section-panel">
       <div className="ip-section-panel__image">
         {images.length === 0 ? (
           <div className="ip-section-panel__empty">
@@ -539,6 +575,7 @@ function SectionPanel({
             onDismissRow={onDismissRow}
           />
         )}
+      </div>
       </div>
     </div>
   )
