@@ -81,24 +81,21 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // so the wizard's previewUrl rendered nothing for Chrome users; (2) the
     // server's section-bounds (returned by Claude after seeing the converted
     // JPEG) wouldn't line up with the original-HEIC dimensions if the
-    // browser somehow rotated the HEIC differently from sharp's .rotate().
+    // browser auto-rotated the HEIC differently from how the server did.
     // Storing the JPEG ensures client preview and server analysis see byte-
-    // identical images. Try sharp first (libvips with libheif on macOS),
-    // fall back to heic-convert (its own bundled decoder) for Linux/Railway.
+    // identical images.
+    //
+    // Use heic-convert at quality 0.85 specifically. A/B test against
+    // sq-lee-law ground truth (scripts/test-heic-paths.ts) showed
+    // heic-convert@0.85 produces the BEST extraction (8 pool errors / 17
+    // deck errors / 2 phantoms vs sharp@100's 9/22/7). Counter-intuitive
+    // but consistent: the lossy compression acts as a noise floor that
+    // suppresses Claude's over-reading of faint pencil tally marks. Higher
+    // quality = more confident reads = more phantoms.
     if (file.type === 'image/heic' || file.type === 'image/heif') {
-      let converted: Buffer | null = null
-      try {
-        const sharp = (await import('sharp')).default
-        converted = await sharp(buffer).rotate().jpeg({ quality: 100 }).toBuffer()
-      } catch {
-        // sharp's libvips lacks HEVC decoder on Linux; fall through.
-      }
-      if (!converted) {
-        const convert = (await import('heic-convert')).default
-        const arrayBuffer = await convert({ buffer, format: 'JPEG', quality: 1 })
-        converted = Buffer.from(arrayBuffer)
-      }
-      buffer = converted
+      const convert = (await import('heic-convert')).default
+      const arrayBuffer = await convert({ buffer, format: 'JPEG', quality: 0.85 })
+      buffer = Buffer.from(arrayBuffer)
       storedType = 'image/jpeg'
       storedExt = 'jpg'
     }

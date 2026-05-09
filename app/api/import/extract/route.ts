@@ -125,33 +125,23 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         const { buffer, contentType } = await fetchPhoto(key)
         let outBuffer = buffer
         let outType: ExtractRequestBody['images'][0]['mediaType'] = contentType as any
-        // HEIC/HEIF — convert to JPEG. Try sharp first (works on macOS dev
-        // where libvips ships with libheif), fall back to heic-convert
-        // (libheif-js, ships its own decoder) on Railway/Linux where sharp's
-        // libvips lacks the HEVC decoder.
+        // HEIC/HEIF — convert to JPEG. Only hit on legacy uploads that are
+        // still stored as HEIC; new uploads convert at upload-photo time.
         //
-        // Both paths now use quality=1.0/100 (was 0.85 on heic-convert) —
-        // the lower quality was visibly hurting per-cell OMR accuracy on
-        // faint pencil tally marks. preprocessImageForExtraction will resize
-        // and re-encode at 95 anyway, so any extra MB here is short-lived.
+        // heic-convert at quality 0.85 produced the best extraction in A/B
+        // testing (scripts/test-heic-paths.ts) — counter-intuitively better
+        // than sharp@100 because the lossy compression suppresses phantom
+        // tally-mark reads. We use the heic-convert package (libheif-js,
+        // ships its own HEVC decoder) because sharp's libvips on Railway
+        // doesn't include HEVC decoding.
         if (contentType === 'image/heic' || contentType === 'image/heif') {
-          let converted: Buffer | null = null
-          try {
-            const sharp = (await import('sharp')).default
-            converted = await sharp(buffer).rotate().jpeg({ quality: 100 }).toBuffer()
-          } catch (sharpErr) {
-            logAttempt(`sharp HEIC decode failed (${(sharpErr as Error).message}), trying heic-convert`)
-          }
-          if (!converted) {
-            const convert = (await import('heic-convert')).default
-            const arrayBuffer = await convert({
-              buffer,
-              format: 'JPEG',
-              quality: 1,
-            })
-            converted = Buffer.from(arrayBuffer)
-          }
-          outBuffer = converted
+          const convert = (await import('heic-convert')).default
+          const arrayBuffer = await convert({
+            buffer,
+            format: 'JPEG',
+            quality: 0.85,
+          })
+          outBuffer = Buffer.from(arrayBuffer)
           outType = 'image/jpeg'
         } else if (!VALID_MIMES.has(contentType)) {
           return jsonResponse(
