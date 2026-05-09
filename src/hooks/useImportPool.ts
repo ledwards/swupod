@@ -847,8 +847,13 @@ export function useImportPool() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           setCode: state.extraction.header.setCode,
+          // Only send rows that are actually in the pool (poolQty >= 1).
+          // The wizard tracks every card in the catalog (~264 rows) so the
+          // user can bump qty up on misses, but those non-pool rows aren't
+          // part of what gets created. The API caps at 200; without this
+          // filter we exceed it on every set.
           resolvedRows: state.resolvedRows
-            .filter((r) => r.card)
+            .filter((r) => r.card && r.poolQty >= 1)
             .map((r) => ({
               cardId: r.card!.id,
               poolQty: r.poolQty,
