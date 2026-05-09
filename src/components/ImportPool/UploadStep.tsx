@@ -22,9 +22,12 @@ export default function UploadStep({ importPool }: Props) {
   const isExtracting = state.phase === 'extracting'
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
+    // Take at most 2 files from the picker, but always process them — the
+    // reducer caps state.images at 2 by evicting the oldest, so a new
+    // upload is never silently dropped (which used to happen when IDB
+    // hydration filled the grid with stale photos before the user picked).
+    const files = Array.from(e.target.files || []).slice(0, 2)
     for (const file of files) {
-      if (state.images.length >= 2) break
       await addImage(file)
     }
     // Reset input so the same file can be picked again after removal
@@ -42,19 +45,33 @@ export default function UploadStep({ importPool }: Props) {
       </p>
 
       <div className="import-pool-image-grid">
-        {state.images.map((img, i) => (
-          <figure key={img.previewUrl} className="import-pool-image-card">
-            <img src={img.previewUrl} alt={`Sheet ${i + 1}`} />
-            <figcaption>
-              <span>
-                {img.width}×{img.height} · {Math.round(img.sizeBytes / 1024)} KB
-              </span>
-              <Button variant="danger" size="xs" onClick={() => removeImage(i)} disabled={isExtracting}>
-                Remove
-              </Button>
-            </figcaption>
-          </figure>
-        ))}
+        {state.images.map((img, i) => {
+          // Flag a thumbnail as a duplicate if its byte size matches another
+          // loaded thumbnail. iPhone HEIC bytes are unique per capture, so
+          // identical sizes = same source file (the photo picker reused it).
+          const isDuplicateOfOther = state.images.some(
+            (other, j) => j !== i && other.sizeBytes === img.sizeBytes,
+          )
+          return (
+            <figure key={img.previewUrl} className="import-pool-image-card">
+              <img src={img.previewUrl} alt={`Sheet ${i + 1}`} />
+              <figcaption>
+                <span title={img.fileName || ''}>
+                  {img.fileName ? `${img.fileName} · ` : ''}
+                  {img.width}×{img.height} · {Math.round(img.sizeBytes / 1024)} KB
+                </span>
+                {isDuplicateOfOther && (
+                  <span style={{ color: '#f88', fontSize: '0.85em' }}>
+                    Same file as another slot — pick a different photo.
+                  </span>
+                )}
+                <Button variant="danger" size="xs" onClick={() => removeImage(i)} disabled={isExtracting}>
+                  Remove
+                </Button>
+              </figcaption>
+            </figure>
+          )
+        })}
 
         {state.images.length < 2 && (
           <label className="import-pool-image-card import-pool-image-card--add">

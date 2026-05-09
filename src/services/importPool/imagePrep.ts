@@ -45,6 +45,11 @@ export interface ProcessedImage {
    *  /api/import/extract will fetch the photo by key instead of via the
    *  inline base64 image array — sidestepping Next.js's ~10MB JSON cap. */
   photoKey?: string
+  /** Original filename from the file picker (e.g. "IMG_4521.heic"). Surfaced
+   *  in the upload UI so a user can tell at a glance whether the picker handed
+   *  back the same file twice — iPhone HEICs have unique IMG_NNNN names per
+   *  capture, so two thumbnails with the same name = same photo. */
+  fileName?: string
 }
 
 interface ResizeOptions {
@@ -98,6 +103,7 @@ export async function resizeImage(
     height,
     sizeBytes: file.size,
     previewUrl,
+    fileName: file.name,
   }
 }
 

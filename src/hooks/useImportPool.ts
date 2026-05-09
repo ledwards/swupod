@@ -211,7 +211,15 @@ type Action =
 
 function reducer(state: ImportPoolState, action: Action): ImportPoolState {
   switch (action.type) {
-    case 'ADD_IMAGE':
+    case 'ADD_IMAGE': {
+      // Cap at 2 photos. If we're already at the cap when a new file
+      // arrives, drop the OLDEST and keep the new one rather than dropping
+      // the new one silently — the user explicitly picked this file, so
+      // their intent is "use this." The previous behavior (silent drop in
+      // UploadStep + reducer accepting whatever it got) caused the bug
+      // where IDB-hydrated leftover photos blocked fresh uploads.
+      const next = [...state.images, action.image]
+      const capped = next.length > 2 ? next.slice(next.length - 2) : next
       return {
         ...state,
         // Adding/removing images during/after extraction discards prior extraction
@@ -220,9 +228,10 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
           ? { extraction: null, resolvedRows: [], activeLeaderId: null, activeBaseId: null, title: '', warnings: [], dismissedAnomalyKeys: [] }
           : {}),
         phase: 'uploading',
-        images: [...state.images, action.image],
+        images: capped,
         error: null,
       }
+    }
     case 'REMOVE_IMAGE': {
       const images = state.images.filter((_, i) => i !== action.index)
       return {
@@ -753,8 +762,24 @@ export function useImportPool() {
   // renders immediately; images stream in once the IDB read returns. The
   // HYDRATE_IMAGES reducer is a no-op if state.images already has entries
   // (e.g. user uploaded before hydration completed).
+  //
+  // Fresh-start guard: if lazyInit returned the empty INITIAL_STATE (no
+  // localStorage session), then any images still sitting in IDB are
+  // leftovers from a prior wizard run that completed or was abandoned.
+  // Hydrating them into a fresh wizard meant the user saw "previous"
+  // thumbnails AND any new upload could be silently dropped because
+  // UploadStep.handleFileChange's `state.images.length >= 2` check would
+  // hit on the hydrated leftovers. Clear instead of hydrate.
   useEffect(() => {
     let cancelled = false
+    const isFreshStart =
+      state.phase === 'idle' && state.images.length === 0 && state.extraction === null
+    if (isFreshStart) {
+      idbClearImages().catch(() => {})
+      return () => {
+        cancelled = true
+      }
+    }
     idbLoadImages()
       .then((images) => {
         if (cancelled || images.length === 0) return
