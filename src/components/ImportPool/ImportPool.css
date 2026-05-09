@@ -1174,13 +1174,9 @@
   max-width: 320px;
 }
 
-/* Landscape orientation — crop the portrait card art to a wide rectangle
- * so leader and base read as banners rather than skinny portraits. */
 .import-pool-summary-leader-base img {
   width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  object-position: center 30%;
+  height: auto;
   border-radius: 6px;
 }
 
@@ -1229,6 +1225,17 @@
   margin-top: 16px;
 }
 
+/* Match the small uppercase label styling of the stats dt
+ * (DECK, SIDEBOARD, TOTAL POOL). */
+.import-pool-summary-aspects h4 {
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
 .import-pool-summary-aspects ul {
   display: flex;
   gap: 12px;
@@ -1237,6 +1244,10 @@
   padding: 0;
   margin: 4px 0 0;
   font-size: 13px;
+}
+
+.import-pool-summary-aspects ul strong {
+  font-weight: 700;
 }
 
 /* Actions */

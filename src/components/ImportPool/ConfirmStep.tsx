@@ -120,7 +120,7 @@ export default function ConfirmStep({ importPool }: Props) {
                   .sort((a, b) => rank(a[0]) - rank(b[0]))
                   .map(([aspect, count]) => (
                     <li key={aspect}>
-                      {aspect}: {count}
+                      <strong>{aspect}</strong>: {count}
                     </li>
                   ))
               })()}
