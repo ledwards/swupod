@@ -266,26 +266,10 @@ export function buildAnomalies(input: AnomalyInput): Anomaly[] {
     surfacePoolPhantomCandidates({ list, resolvedRows, seenRowKey, poolOverDelta, pushRow })
   }
 
-  // === HIGH-RECALL "always include the wrong stuff" mode ===
-  //
-  // For each section that has any cards in the pool, surface a section
-  // anomaly that says "verify rows in here." Guarantees the user is forced
-  // to look at every section where errors could hide. Trade: more false
-  // alarms, but no missed errors.
-  for (const range of [...SECTION_RANGES, { key: 'Leaders' }, { key: 'Bases' }] as any[]) {
-    const inSec = resolvedRows.filter((r) => r.card && sectionForRow(r) === range.key)
-    const poolInSec = inSec.reduce((s, r) => s + r.poolQty, 0)
-    const deckInSec = inSec.reduce((s, r) => s + r.deckQty, 0)
-    if (poolInSec >= 1 || deckInSec >= 1) {
-      list.push({
-        key: `verifySection:${range.key}`,
-        kind: 'section',
-        targetId: `ip-section-${range.key.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-        label: `Verify ${range.key}: ${poolInSec} in pool, ${deckInSec} in deck`,
-        sectionName: range.key,
-      })
-    }
-  }
+  // (Backstop "verify every populated section" anomaly removed — it was
+  // firing on sections that already pass every signal, including a
+  // healthy Leaders 6/1. The specific heuristics below cover the cases
+  // where there's an actual reason to doubt the data.)
 
   // === HEURISTIC: per-section pool-count anomalies ===
   //
