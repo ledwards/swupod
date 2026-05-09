@@ -245,7 +245,7 @@ export default function ResolveStep({ importPool }: Props) {
           aria-label="Previous section"
           title="Previous section"
         >
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
@@ -261,6 +261,17 @@ export default function ResolveStep({ importPool }: Props) {
           activeLeaderId={state.activeLeaderId}
           activeBaseId={state.activeBaseId}
           issueRowKeys={issueRowKeys}
+          // Leaders/Bases tabs collapse to a single sub-group — no header rows.
+          hideSubGroups={activeSection.key === 'leaders' || activeSection.key === 'bases'}
+          // Inline ✓ on flagged rows: dismiss every row-anomaly that points at
+          // this row, so the yellow tint goes away.
+          onDismissRow={(rowKey) => {
+            for (const a of anomalies) {
+              if (a.kind === 'row' && a.targetId === `ip-row-${rowKey}`) {
+                dismissAnomaly(a.key)
+              }
+            }
+          }}
         />
 
         <button
@@ -271,7 +282,7 @@ export default function ResolveStep({ importPool }: Props) {
           aria-label="Next section"
           title="Next section"
         >
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </button>
@@ -355,21 +366,48 @@ function buildSectionTabs(): SectionTab[] {
     iconNode: () => <AspectIcon aspect={label} size="md" />,
   })
 
-  const letterIcon = (letter: string, color: string) => () => (
-    <span className="ip-section-tab__letter" style={{ background: color }}>{letter}</span>
+  // Inline SVG icons for the non-aspect tabs.
+  const HumanIcon = () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <circle cx="12" cy="6" r="3.2" />
+      <path d="M5.5 21c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5z" />
+    </svg>
+  )
+  const HomeIcon = () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 3 3 11h2v9h5v-6h4v6h5v-9h2z" />
+    </svg>
+  )
+  const HexagonIcon = ({ fill }: { fill: string }) => (
+    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+      <polygon points="12,2 21,7 21,17 12,22 3,17 3,7" fill={fill} stroke="rgba(255,255,255,0.4)" strokeWidth="0.7" />
+    </svg>
+  )
+  const RainbowHexagon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+      <defs>
+        <linearGradient id="rainbow-hex-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ff4d4d" />
+          <stop offset="33%" stopColor="#ffcc33" />
+          <stop offset="66%" stopColor="#33cc66" />
+          <stop offset="100%" stopColor="#3366ff" />
+        </linearGradient>
+      </defs>
+      <polygon points="12,2 21,7 21,17 12,22 3,17 3,7" fill="url(#rainbow-hex-grad)" stroke="rgba(255,255,255,0.4)" strokeWidth="0.7" />
+    </svg>
   )
 
   return [
-    { key: 'leaders', label: 'Leaders', boundsName: 'Leaders', matches: isLeader, iconNode: letterIcon('L', '#7a4f00') },
-    { key: 'bases', label: 'Bases', boundsName: 'Bases', matches: isBase, iconNode: letterIcon('B', '#3a5f8a') },
+    { key: 'leaders', label: 'Leaders', boundsName: 'Leaders', matches: isLeader, iconNode: () => <HumanIcon /> },
+    { key: 'bases', label: 'Bases', boundsName: 'Bases', matches: isBase, iconNode: () => <HomeIcon /> },
     aspectTab('vigilance', 'Vigilance'),
     aspectTab('command', 'Command'),
     aspectTab('aggression', 'Aggression'),
     aspectTab('cunning', 'Cunning'),
     aspectTab('villainy', 'Villainy'),
     aspectTab('heroism', 'Heroism'),
-    { key: 'neutral', label: 'Neutral', boundsName: 'NoAspect', matches: isNeutral, iconNode: letterIcon('N', '#555') },
-    { key: 'multicolor', label: 'Multicolor', boundsName: 'Multicolor', matches: isMulticolor, iconNode: letterIcon('M', 'linear-gradient(45deg,#a33,#3a3,#33a)') },
+    { key: 'neutral', label: 'Neutral', boundsName: 'NoAspect', matches: isNeutral, iconNode: () => <HexagonIcon fill="#666" /> },
+    { key: 'multicolor', label: 'Multicolor', boundsName: 'Multicolor', matches: isMulticolor, iconNode: () => <RainbowHexagon /> },
   ]
 }
 
@@ -418,6 +456,8 @@ function SectionPanel({
   activeLeaderId,
   activeBaseId,
   issueRowKeys,
+  hideSubGroups,
+  onDismissRow,
 }: {
   activeSection: SectionTab
   rows: ResolvedRow[]
@@ -429,6 +469,8 @@ function SectionPanel({
   activeLeaderId: string | null
   activeBaseId: string | null
   issueRowKeys: Set<string>
+  hideSubGroups?: boolean
+  onDismissRow?: (rowKey: string) => void
 }) {
   // Bounds for THIS section across photos (could be 1-2).
   const boundsForSection = useMemo(
@@ -480,6 +522,8 @@ function SectionPanel({
             activeLeaderId={activeLeaderId}
             activeBaseId={activeBaseId}
             issueRowKeys={issueRowKeys}
+            hideSubGroups={hideSubGroups}
+            onDismissRow={onDismissRow}
           />
         )}
       </div>

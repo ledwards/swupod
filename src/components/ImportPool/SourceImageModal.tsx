@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Button from '../Button'
+import { AspectIcon } from '../AspectIcon'
 import type { ProcessedImage } from '../../services/importPool/imagePrep'
 import type { SectionBounds, ResolvedRow } from '../../hooks/useImportPool'
 
@@ -233,18 +234,51 @@ function subKeyForRow(row: ResolvedRow): string {
 }
 
 function compareSubKeysForSection(a: string, b: string, primary: string): number {
-  // Pure single aspect first, then secondary-aspect doubles (Heroism / Villainy)
-  // by canonical order, then any other doubles. Mirrors the printed sheet
-  // sub-sections so side-by-side scanning lines up.
-  const score = (k: string): number => {
+  // Order matches the printed sheet's sub-sections.
+  //
+  // For a primary-aspect section (e.g. Vigilance):
+  //   1. X + Villainy
+  //   2. X + Heroism
+  //   3. X + X (double-pip if exists)
+  //   4. X + (other main, by canonical V/C/A/U)
+  //   5. X (pure single, alone) — last
+  //
+  // For Multicolor (no single primary): sort by canonical priority of the
+  // lead-aspect, then by the follow-aspect. So V-pairs first (VC, VA, VU),
+  // then C-pairs (CA, CU), then A-pairs (AU).
+  const MAIN_ORDER = ['vigilance', 'command', 'aggression', 'cunning']
+  const ALL_ORDER = [...MAIN_ORDER, 'heroism', 'villainy']
+  const lowerPrimary = primary ? primary.toLowerCase() : ''
+
+  const scoreSection = (k: string): number => {
     if (k === '_unresolved') return 1_000_000
     const parts = k.split('_').filter(Boolean)
-    if (parts.length === 1) return 0 // pure first
-    const other = parts.find((p) => p.toLowerCase() !== primary.toLowerCase())
-    if (!other) return 50
-    const idx = ASPECT_RANK.findIndex((a) => a.toLowerCase() === other)
-    return 100 + (idx >= 0 ? idx : 50)
+    if (parts.length === 1) return 999_900 // pure last
+    const others = parts.filter((p) => p !== lowerPrimary)
+    if (others.length === 0) return 30 // double-pip (X + X)
+    const other = others[0]
+    if (other === 'villainy') return 10
+    if (other === 'heroism') return 20
+    const mainIdx = MAIN_ORDER.indexOf(other)
+    return 40 + (mainIdx >= 0 ? mainIdx : 9)
   }
+
+  const scoreMulticolor = (k: string): number => {
+    if (k === '_unresolved') return 1_000_000
+    const parts = k.split('_').filter(Boolean)
+    if (parts.length === 1) return 999_900
+    // Canonical: pick the lead aspect = lowest canonical index, follow = next.
+    const indexes = parts
+      .map((p) => ALL_ORDER.indexOf(p))
+      .filter((i) => i >= 0)
+      .sort((a, b) => a - b)
+    if (indexes.length === 0) return 999
+    const lead = indexes[0]
+    const follow = indexes[1] ?? lead
+    return lead * 100 + follow
+  }
+
+  const score = primary ? scoreSection : scoreMulticolor
   return score(a) - score(b)
 }
 
@@ -256,6 +290,8 @@ export function SideBySideTable({
   activeLeaderId,
   activeBaseId,
   issueRowKeys,
+  hideSubGroups,
+  onDismissRow,
 }: {
   rows: ResolvedRow[]
   setRowQty: (key: string, field: 'poolQty' | 'deckQty', value: number) => void
@@ -265,10 +301,23 @@ export function SideBySideTable({
   activeBaseId: string | null
   /** Row keys flagged by the anomaly logic — get a yellow row tint. */
   issueRowKeys?: Set<string>
+  /** Skip sub-section dividers (used for Leaders/Bases tabs where every row
+   *  is the same conceptual type). */
+  hideSubGroups?: boolean
+  /** Called when the user clicks ✓ on a flagged row — dismisses associated
+   *  anomalies. Without this, no checkmark renders. */
+  onDismissRow?: (rowKey: string) => void
 }) {
   // Determine the section's primary aspect from any row that has one.
-  // (All rows passed in already share a section.)
+  // (All rows passed in already share a section.) For Multicolor sections —
+  // where every row has 2+ main aspects — we return empty so the sub-key
+  // sort falls into the canonical-pair ordering instead.
   const primary = useMemo(() => {
+    const allMulti = rows.length > 0 && rows.every((r) => {
+      const mains = (r.card?.aspects || []).filter((a) => MAIN_SET.has(a))
+      return mains.length >= 2
+    })
+    if (allMulti) return ''
     for (const r of rows) {
       const aspects = r.card?.aspects || []
       const main = aspects.find((a) => MAIN_SET.has(a))
@@ -312,10 +361,16 @@ export function SideBySideTable({
         </thead>
         <tbody>
           {subGroups.flatMap((group, gi) => {
-            const dividerRow = gi > 0
+            // Sub-section header: aspect icons of this group's combination.
+            // Skipped entirely when hideSubGroups (Leaders/Bases tabs) or when
+            // there's only one sub-group (no point in a header).
+            const showHeader = !hideSubGroups && subGroups.length > 1
+            const dividerRow = showHeader
               ? [
-                  <tr key={`sub-${group.key}`} className="ip-source-modal__sub-divider">
-                    <td colSpan={3}></td>
+                  <tr key={`sub-${group.key}`} className="ip-source-modal__sub-header">
+                    <td colSpan={3}>
+                      <SubGroupHeader subKey={group.key} />
+                    </td>
                   </tr>,
                 ]
               : []
@@ -353,21 +408,35 @@ export function SideBySideTable({
                     )}
                   </td>
                   <td className="ip-source-modal__cell ip-source-modal__cell--qty">
-                    {isLeader || isBase ? (
-                      <span className="ip-source-modal__qty-static">{row.poolQty}</span>
-                    ) : (
-                      <QtyControls
-                        value={row.poolQty}
-                        onInc={() => setRowQty(row.key, 'poolQty', row.poolQty + 1)}
-                        onDec={() => setRowQty(row.key, 'poolQty', row.poolQty - 1)}
-                        disableInc={row.poolQty >= 6}
-                        disableDec={row.poolQty <= 0}
-                      />
-                    )}
+                    {/* All cards (incl. leaders/bases) get +/- on TOTAL.
+                        Active leader/base selection lives on the PLAYED column
+                        as a single-click toggle. */}
+                    <QtyControls
+                      value={row.poolQty}
+                      onInc={() => setRowQty(row.key, 'poolQty', row.poolQty + 1)}
+                      onDec={() => setRowQty(row.key, 'poolQty', row.poolQty - 1)}
+                      disableInc={row.poolQty >= 6}
+                      disableDec={row.poolQty <= 0}
+                    />
                   </td>
                   <td className="ip-source-modal__cell ip-source-modal__cell--name">
-                    <strong>{row.card?.name || row.extracted.name || 'Unrecognized'}</strong>
-                    {row.card?.subtitle && <em> — {row.card.subtitle}</em>}
+                    <span className="ip-source-modal__name">
+                      <strong>{row.card?.name || row.extracted.name || 'Unrecognized'}</strong>
+                      {row.card?.subtitle && <em>{row.card.subtitle}</em>}
+                    </span>
+                    {flagged && onDismissRow && (
+                      <button
+                        type="button"
+                        className="ip-source-modal__row-confirm"
+                        onClick={() => onDismissRow(row.key)}
+                        title="Mark as correct (dismiss the issue)"
+                        aria-label="Mark as correct"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <polyline points="3 8.5 6.5 12 13 4" />
+                        </svg>
+                      </button>
+                    )}
                   </td>
                 </tr>
               )
@@ -377,6 +446,24 @@ export function SideBySideTable({
         </tbody>
       </table>
     </div>
+  )
+}
+
+/** Render a sub-group header showing the aspect icons of that combination.
+ *  e.g. for sub-key "vigilance_villainy" → renders V + Villainy icons. */
+function SubGroupHeader({ subKey }: { subKey: string }) {
+  if (subKey === '_unresolved') {
+    return <span className="ip-source-modal__sub-header-label">UNRECOGNIZED</span>
+  }
+  const aspects = subKey.split('_').filter(Boolean).map((a) => a.charAt(0).toUpperCase() + a.slice(1))
+  return (
+    <span className="ip-source-modal__sub-header-label">
+      {aspects.map((a, i) => (
+        <span key={`${a}-${i}`} className="ip-source-modal__sub-header-icon">
+          <AspectIcon aspect={a} size="sm" />
+        </span>
+      ))}
+    </span>
   )
 }
 

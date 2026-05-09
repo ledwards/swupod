@@ -1674,6 +1674,70 @@
   color: #ffe699;
 }
 
+/* Sub-section header rows: aspect icons that mirror the printed sheet's
+ * sub-aspect bands. Replaces the simple thin divider. */
+.ip-source-modal__sub-header td {
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.ip-source-modal__sub-header-label {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.ip-source-modal__sub-header-icon {
+  display: inline-flex;
+}
+
+/* Name cell: card name + subtitle, no dash separator (typography handles it).
+ * Subtitle gets dimmed + smaller. */
+.ip-source-modal__name {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0;
+  line-height: 1.2;
+}
+.ip-source-modal__name strong {
+  font-weight: 600;
+}
+.ip-source-modal__name em {
+  font-style: normal;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+}
+.ip-source-modal__cell--name {
+  position: relative;
+}
+
+/* Inline ✓ button on flagged rows — confirms the read is correct,
+ * dismisses the anomaly, removes the yellow tint. */
+.ip-source-modal__row-confirm {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 217, 102, 0.18);
+  color: #ffd966;
+  border: 1px solid rgba(255, 217, 102, 0.55);
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+}
+@media (hover: hover) and (pointer: fine) {
+  .ip-source-modal__row-confirm:hover {
+    background: rgba(0, 200, 100, 0.25);
+    border-color: rgba(0, 220, 120, 0.7);
+    color: #b8ffb8;
+  }
+}
+
 /* === Step-2 tabbed section pager === */
 
 .ip-section-tabs {
@@ -1753,21 +1817,36 @@
   align-items: stretch;
   gap: 8px;
   margin: 0 0 16px;
-  min-height: 60vh;
+  min-height: 70vh;
+}
+
+/* Desktop: lock both panes to the same fixed-vh height so the table on the
+ * right scrolls inside a container exactly as tall as the image on the left.
+ * Mobile keeps natural flow per Lee's directive. */
+@media (min-width: 769px) {
+  .ip-section-panel {
+    height: 70vh;
+    max-height: 70vh;
+  }
+  .ip-section-panel__image,
+  .ip-section-panel__table {
+    height: 100%;
+    max-height: 100%;
+  }
 }
 
 .ip-section-pager__arrow {
   flex: 0 0 auto;
-  width: 48px;
+  width: 60px;
   background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 6px;
-  color: white;
+  color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 120ms ease, border-color 120ms ease;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
