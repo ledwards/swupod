@@ -24,18 +24,29 @@
 
 import { mkdirSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import { randomBytes } from 'crypto'
+import { createHash } from 'crypto'
 import { isR2Configured, r2Put, r2BucketName } from './r2'
 
 const LOCAL_ROOT = '/tmp/eval-captures'
 const R2_PREFIX = 'eval-captures'
 
-/** Generate a short, sortable session id: <isoSeconds>-<rand>. */
-export function newSessionId(userId?: string | number): string {
-  const now = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19) // 2026-05-08T15-30-12
-  const rand = randomBytes(3).toString('hex')
-  const u = userId ? String(userId).slice(0, 8) : 'anon'
-  return `${now}_${u}_${rand}`
+/**
+ * Deterministic session id derived from user id + photo content. Same user
+ * uploading the same photos produces the same id, so re-uploads OVERWRITE
+ * rather than create new directories. Idempotent by design.
+ *
+ * Format: `<userId>_<photo-hash-prefix>` (12-char prefix is plenty to avoid
+ * collisions across a single user's history).
+ */
+export function deriveSessionId(
+  userId: string | number,
+  photos: Array<{ data: string }>,
+): string {
+  const u = String(userId).slice(0, 12).replace(/[^a-zA-Z0-9_-]/g, '_')
+  const h = createHash('sha256')
+  for (const p of photos) h.update(p.data)
+  const photoHash = h.digest('hex').slice(0, 12)
+  return `${u}_${photoHash}`
 }
 
 async function putObject(sessionId: string, name: string, body: Buffer | string, contentType: string) {

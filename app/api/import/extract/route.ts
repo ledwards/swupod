@@ -27,7 +27,7 @@ import { matchExtractedRows } from '@/src/services/importPool/cardMatcher'
 import { getCachedCards, initializeCardCache } from '@/src/utils/cardCache'
 import { getSetConfig, getAllSetCodes } from '@/src/utils/setConfigs/index'
 import { appendFileSync } from 'fs'
-import { newSessionId, saveExtractCapture } from '@/lib/evalCapture'
+import { deriveSessionId, saveExtractCapture } from '@/lib/evalCapture'
 
 // Local-dev observability for prompt-tuning iteration. Each request appends
 // its summary to /tmp/import-attempts.log so we can tail it while iterating
@@ -343,9 +343,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     // Eval data capture: dump the photos + the post-sanitize extraction
-    // alongside a fresh sessionId so /api/import/create can pair the user's
-    // final corrections in the same directory.
-    const sessionId = newSessionId(session.id)
+    // alongside a deterministic sessionId (userId + photo-content hash) so
+    // re-uploads of the same photo OVERWRITE in R2 rather than fan out into
+    // duplicate directories. /api/import/create writes ground-truth.json
+    // into the same directory.
+    const sessionId = deriveSessionId(session.id, body.images)
     saveExtractCapture(
       sessionId,
       body.images.map((img) => ({ data: img.data, mediaType: img.mediaType })),
