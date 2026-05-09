@@ -304,36 +304,11 @@ export function buildAnomalies(input: AnomalyInput): Anomaly[] {
     }
   }
 
-  // === HEURISTIC B: section deck-balance anomaly ===
-  //
-  // When extraction fails on a whole section's deck column (Opus skipped
-  // the column for that section's bounding box), the section ends up with
-  // poolQty>=1 cards that all have deckQty=0. Fingerprint: section's
-  // pool >= 5 with deck cards 0–1.
-  //
-  // GATE: only fires when the total deck count is short (extraction
-  // missed deck marks somewhere). A clean deck total of 30+ means the
-  // section having pool 13 / deck 0 is just "user didn't include any
-  // Aggression in their deck" — nothing to flag.
-  const deckOffShort = deckCount < deckTarget
-  if (deckOffShort) {
-    for (const range of SECTION_RANGES) {
-      const inSec = resolvedRows.filter(
-        (r) => r.card && !r.card.isLeader && !r.card.isBase && sectionForRow(r) === range.key,
-      )
-      const poolInSec = inSec.reduce((s, r) => s + r.poolQty, 0)
-      const deckInSec = inSec.reduce((s, r) => s + r.deckQty, 0)
-      if (poolInSec >= 5 && deckInSec <= 1) {
-        list.push({
-          key: `sectionDeckImbalance:${range.key}`,
-          kind: 'section',
-          targetId: `ip-section-${range.key.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-          label: `${range.key}: ${poolInSec} cards in pool but ${deckInSec} marked played — verify deck column for this section`,
-          sectionName: range.key,
-        })
-      }
-    }
-  }
+  // (Removed sectionDeckImbalance heuristic — it false-flagged any
+  //  section a user legitimately didn't draft into their deck. Without
+  //  external truth, "pool >= 5 with deck <= 1" can't distinguish
+  //  "extraction missed all the PLAYED marks" from "user picked
+  //  nothing from this aspect." Both look identical.)
 
   // Deck-side, both directions:
   //   - deck OVER → some pool=1 deck=1 row was wrongly marked played
