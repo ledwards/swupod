@@ -1132,6 +1132,28 @@
 
 .import-pool-summary {
   margin-bottom: 16px;
+  /* Center every block inside the summary — leader/base, deck/sideboard
+   * counts, aspect breakdown — so the confirm screen reads as one
+   * centered card rather than left-justified columns. */
+  text-align: center;
+}
+
+.import-pool-summary-stats {
+  justify-content: center;
+}
+
+.import-pool-summary-aspects {
+  margin-top: 16px;
+}
+
+.import-pool-summary-aspects ul {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  justify-content: center;
 }
 
 .import-pool-summary-leader-base {

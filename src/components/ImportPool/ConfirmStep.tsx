@@ -108,13 +108,22 @@ export default function ConfirmStep({ importPool }: Props) {
           <div className="import-pool-summary-aspects">
             <h4>Deck aspect breakdown</h4>
             <ul>
-              {Object.entries(summary.aspectBreakdown)
-                .sort((a, b) => b[1] - a[1])
-                .map(([aspect, count]) => (
-                  <li key={aspect}>
-                    {aspect}: {count}
-                  </li>
-                ))}
+              {(() => {
+                // Canonical aspect order with Multicolor at the end and
+                // Neutral after the player aspects.
+                const ORDER = ['Vigilance', 'Command', 'Aggression', 'Cunning', 'Heroism', 'Villainy', 'Neutral', 'Multicolor']
+                const rank = (a: string) => {
+                  const i = ORDER.indexOf(a)
+                  return i === -1 ? ORDER.length : i
+                }
+                return Object.entries(summary.aspectBreakdown)
+                  .sort((a, b) => rank(a[0]) - rank(b[0]))
+                  .map(([aspect, count]) => (
+                    <li key={aspect}>
+                      {aspect}: {count}
+                    </li>
+                  ))
+              })()}
             </ul>
           </div>
         )}

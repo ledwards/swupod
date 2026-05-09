@@ -522,8 +522,16 @@ export function CroppedView({
   bounds: SectionBounds
   captionLabel: string | null
 }) {
-  const dx = Math.max(0.001, bounds.x1 - bounds.x0)
-  const dy = Math.max(0.001, bounds.y1 - bounds.y0)
+  // Pad the bounds by 3% on each side so the PLAYED column (always at the
+  // far left of every section) doesn't get clipped when Opus returns
+  // bounds that hug the visible content too tightly.
+  const PAD = 0.03
+  const x0 = Math.max(0, bounds.x0 - PAD)
+  const y0 = Math.max(0, bounds.y0 - PAD * 0.4)
+  const x1 = Math.min(1, bounds.x1 + PAD * 0.5)
+  const y1 = Math.min(1, bounds.y1 + PAD * 0.4)
+  const dx = Math.max(0.001, x1 - x0)
+  const dy = Math.max(0.001, y1 - y0)
   // Section's own aspect ratio = (cropped width in px) / (cropped height in px)
   const sectionAspect = (dx * naturalWidth) / (dy * naturalHeight)
 
@@ -541,8 +549,8 @@ export function CroppedView({
             position: 'absolute',
             // Position the image so the section's top-left lands at
             // container (0, 0) and the section's width fills the container.
-            left: `${(-bounds.x0 * 100) / dx}%`,
-            top: `${(-bounds.y0 * 100) / dy}%`,
+            left: `${(-x0 * 100) / dx}%`,
+            top: `${(-y0 * 100) / dy}%`,
             width: `${100 / dx}%`,
             height: 'auto',
             maxWidth: 'none',
