@@ -27,6 +27,7 @@ import { matchExtractedRows } from '@/src/services/importPool/cardMatcher'
 import { getCachedCards, initializeCardCache } from '@/src/utils/cardCache'
 import { getSetConfig, getAllSetCodes } from '@/src/utils/setConfigs/index'
 import { appendFileSync } from 'fs'
+import { newSessionId, saveExtractCapture } from '@/lib/evalCapture'
 
 // Local-dev observability for prompt-tuning iteration. Each request appends
 // its summary to /tmp/import-attempts.log so we can tail it while iterating
@@ -341,7 +342,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       logAttempt(`final: sectionGaps=${sectionGaps.length} ${sectionGaps.map((g: any) => `${g.section}:${g.count}`).join(', ')}`)
     }
 
+    // Eval data capture: dump the photos + the post-sanitize extraction
+    // alongside a fresh sessionId so /api/import/create can pair the user's
+    // final corrections in the same directory.
+    const sessionId = newSessionId(session.id)
+    saveExtractCapture(
+      sessionId,
+      body.images.map((img) => ({ data: img.data, mediaType: img.mediaType })),
+      { header: raw.header, rows: raw.rows, sections, sectionGaps },
+    )
+
     return jsonResponse({
+      sessionId,
       header: {
         setCode,
         setName: getSetConfig(setCode)?.setName || raw.header.setName,

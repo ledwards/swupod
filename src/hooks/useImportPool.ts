@@ -102,6 +102,9 @@ export interface ExtractResponse {
   sectionGaps?: SectionGap[]
   /** Per-photo bounding boxes for each visible aspect section */
   sections?: SectionBounds[]
+  /** Eval-capture session id — included in the create request so server
+   *  can pair photos with user-corrected ground truth in /tmp/eval-captures. */
+  sessionId?: string
 }
 
 /** A row as the user edits it in the Resolve step */
@@ -154,6 +157,10 @@ interface ImportPoolState {
    *  on every fresh extraction. Each anomaly carries a deterministic key
    *  (e.g. lowConf:pool:row-3) so dismissals stay tied to their source. */
   dismissedAnomalyKeys: string[]
+  /** Eval-capture session id from the most recent extract response.
+   *  Threaded into the create request so the server pairs photos with
+   *  user-corrected ground truth in /tmp/eval-captures/<sessionId>/. */
+  sessionId: string | null
   error: { code: string; message: string; details?: any } | null
 }
 
@@ -173,6 +180,7 @@ const INITIAL_STATE: ImportPoolState = {
   viewFilter: 'pool',
   viewMode: 'table',
   dismissedAnomalyKeys: [],
+  sessionId: null,
   error: null,
 }
 
@@ -300,6 +308,7 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
         // Fresh extraction means fresh anomalies — any prior "mark as
         // correct" dismissals were tied to the old data and can't carry over.
         dismissedAnomalyKeys: [],
+        sessionId: action.response.sessionId || null,
         error: null,
       }
     }
@@ -510,6 +519,7 @@ interface SlimPersisted {
    *  Step 2 would lose section anomalies and the source-image crop bounds. */
   sectionGaps?: SectionGap[]
   sectionBounds?: SectionBounds[]
+  sessionId?: string | null
 }
 
 function persistedShape(state: ImportPoolState): SlimPersisted {
@@ -540,6 +550,7 @@ function persistedShape(state: ImportPoolState): SlimPersisted {
     dismissedAnomalyKeys: state.dismissedAnomalyKeys,
     sectionGaps: state.sectionGaps,
     sectionBounds: state.sectionBounds,
+    sessionId: state.sessionId,
   }
 }
 
@@ -602,6 +613,7 @@ function hydrate(slim: SlimPersisted): Partial<ImportPoolState> {
     dismissedAnomalyKeys: slim.dismissedAnomalyKeys ?? [],
     sectionGaps: slim.sectionGaps ?? [],
     sectionBounds: slim.sectionBounds ?? [],
+    sessionId: slim.sessionId ?? null,
   }
 }
 
@@ -863,6 +875,10 @@ export function useImportPool() {
           activeBaseId: state.activeBaseId,
           title: state.title,
           isDefaultName: state.isTitleDefault,
+          // Eval pairing — server uses this to drop the user's final
+          // corrections into the same /tmp/eval-captures/<sessionId>/ dir
+          // that the extract route wrote photos into.
+          sessionId: state.sessionId,
         }),
       })
       const payload = await response.json()

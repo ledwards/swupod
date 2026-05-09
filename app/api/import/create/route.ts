@@ -19,6 +19,7 @@ import { buildPool, type ResolvedRow } from '@/src/services/importPool/buildPool
 import { getCachedCards, initializeCardCache } from '@/src/utils/cardCache'
 import { getSetConfig, getAllSetCodes } from '@/src/utils/setConfigs/index'
 import type { RawCard } from '@/src/utils/cardData'
+import { saveCreateCapture } from '@/lib/evalCapture'
 
 export const dynamic = 'force-dynamic'
 
@@ -27,6 +28,10 @@ const MAX_ROWS = 200
 
 interface CreateRequestBody {
   setCode?: string
+  /** Eval pairing — if provided, the user's final-corrected rows get
+   *  written to /tmp/eval-captures/<sessionId>/ground-truth.json next to
+   *  the photos the extract route saved earlier. */
+  sessionId?: string
   resolvedRows?: Array<{
     cardId?: string  // The card.id (UUID) — we re-resolve to RawCard server-side
     poolQty?: number
@@ -35,6 +40,7 @@ interface CreateRequestBody {
   activeLeaderId?: string
   activeBaseId?: string
   title?: string
+  isDefaultName?: boolean
   isPublic?: boolean
 }
 
@@ -155,6 +161,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       activeBaseId: body.activeBaseId!,
       setCode: body.setCode!,
       poolName: title,
+      isDefaultName: body.isDefaultName === true,
     })
 
     if (result.validationErrors.length > 0) {
@@ -213,6 +220,34 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     if (!inserted) {
       throw new Error('Failed to generate unique share ID after multiple attempts')
+    }
+
+    // Eval data capture: write the user's final-corrected rows to the same
+    // /tmp/eval-captures/<sessionId>/ directory the extract route used for
+    // the photos. Lets us turn real submissions into golden fixtures.
+    if (body.sessionId && typeof body.sessionId === 'string') {
+      const truthRows = resolvedRows.map((r) => {
+        const card = cardById.get(r.cardId)
+        return {
+          name: card?.name || '',
+          subtitle: card?.subtitle || null,
+          type: card?.type || 'Unit',
+          poolQty: r.poolQty,
+          deckQty: r.deckQty,
+        }
+      })
+      saveCreateCapture(body.sessionId, {
+        meta: {
+          setCode: body.setCode,
+          shareId: inserted.share_id,
+          title: title,
+          activeLeaderId: body.activeLeaderId,
+          activeBaseId: body.activeBaseId,
+          createdAt: inserted.created_at,
+          userId: session.id,
+        },
+        rows: truthRows,
+      })
     }
 
     const APP_URL = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
