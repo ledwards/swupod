@@ -25,7 +25,7 @@
 import { mkdirSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { randomBytes } from 'crypto'
-import { isR2Configured, r2Put, R2_BUCKET_NAME } from './r2'
+import { isR2Configured, r2Put, r2BucketName } from './r2'
 
 const LOCAL_ROOT = '/tmp/eval-captures'
 const R2_PREFIX = 'eval-captures'
@@ -95,5 +95,5 @@ export async function saveCreateCapture(
 
 /** Where captures live, for log messages / docs. */
 export function captureBackend(): string {
-  return isR2Configured() ? `R2://${R2_BUCKET_NAME}/${R2_PREFIX}` : LOCAL_ROOT
+  return isR2Configured() ? `R2://${r2BucketName()}/${R2_PREFIX}` : LOCAL_ROOT
 }
