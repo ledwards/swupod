@@ -132,10 +132,9 @@
   flex-wrap: wrap;
 }
 
-/* Step bar sticks to the top of the viewport so the user always knows
- * where they are in the Upload → Review → Confirm flow while scrolling
- * a long Resolve table. Sits ABOVE the .ip-sticky-stack toolbar (which
- * is offset top: 56px to clear this). */
+/* Step bar — non-sticky now. The only thing that follows the user as
+ * they scroll inside Step 2 is the section image (sticky on its own pane).
+ * Wizard chrome stays in normal flow. */
 .import-pool-steps {
   display: flex;
   gap: 8px;
@@ -144,13 +143,8 @@
   margin: 0 0 12px;
   font-size: 14px;
   color: rgba(255, 255, 255, 0.6);
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  z-index: 101; /* above .ip-sticky-stack (z-index 100) */
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
 }
 
 .import-pool-steps li {
@@ -1811,28 +1805,14 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
-/* Section pager: tall arrows on either side of the side-by-side panel. */
+/* Section pager: tall arrows flanking the side-by-side panel. No fixed
+ * panel height — image becomes sticky as the user scrolls past its top
+ * (so it follows the table down without internal scroll containers). */
 .ip-section-pager {
   display: flex;
-  align-items: stretch;
+  align-items: flex-start;
   gap: 8px;
   margin: 0 0 16px;
-  min-height: 70vh;
-}
-
-/* Desktop: lock both panes to the same fixed-vh height so the table on the
- * right scrolls inside a container exactly as tall as the image on the left.
- * Mobile keeps natural flow per Lee's directive. */
-@media (min-width: 769px) {
-  .ip-section-panel {
-    height: 70vh;
-    max-height: 70vh;
-  }
-  .ip-section-panel__image,
-  .ip-section-panel__table {
-    height: 100%;
-    max-height: 100%;
-  }
 }
 
 .ip-section-pager__arrow {
@@ -1865,15 +1845,25 @@
   flex: 1 1 auto;
   display: flex;
   gap: 8px;
+  align-items: flex-start;
   background: rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 6px;
-  overflow: hidden;
+  /* No overflow:hidden — sticky requires the parent to participate in
+   * normal flow. Children below define their own clipping. */
   min-height: 0;
 }
 
+/* Image pane: sticks to the top of the viewport once the user scrolls
+ * past it. Capped at viewport height so a tall section never spills off
+ * screen — image scrolls inside this container (rare edge case) while the
+ * container itself stays anchored to the viewport. */
 .ip-section-panel__image {
   flex: 1 1 50%;
+  position: sticky;
+  top: 8px;
+  align-self: flex-start;
+  max-height: calc(100vh - 16px);
   overflow-y: auto;
   overflow-x: hidden;
   padding: 12px;
@@ -1882,6 +1872,7 @@
   align-items: flex-start;
   justify-content: center;
   min-width: 0;
+  border-radius: 6px;
 }
 
 .ip-section-panel__crops {
@@ -1892,12 +1883,26 @@
   align-items: center;
 }
 
+/* Table pane: grows naturally with content. The page itself scrolls; the
+ * sticky image stays put. No nested scroll containers anymore. */
 .ip-section-panel__table {
   flex: 1 1 50%;
   min-width: 0;
-  overflow: auto;
   padding: 8px 12px;
   background: #0a0a0a;
+  border-radius: 6px;
+}
+
+/* Override SideBySideTable's modal-context overflow when it's rendered inline
+ * inside the section-pager. The inline page uses sticky-image + page scroll
+ * — no nested scroll wrapper. */
+.ip-section-panel__table .ip-source-modal__pane {
+  overflow: visible;
+  border-left: none;
+  background: transparent;
+  padding: 0;
+  height: auto;
+  max-height: none;
 }
 
 .ip-section-panel__empty {

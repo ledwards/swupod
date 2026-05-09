@@ -11,7 +11,7 @@ import '../../src/styles/backgrounds.css'
 import '../../src/components/ImportPool/ImportPool.css'
 
 export default function ImportPoolPage() {
-  const { user, isAuthenticated, loading: authLoading } = useAuth()
+  const { user, isAuthenticated, isPatron, loading: authLoading } = useAuth()
 
   useEffect(() => {
     initializeCardCache().catch((error) => {
@@ -48,11 +48,31 @@ export default function ImportPoolPage() {
           <h1>Import Pool</h1>
           <p>Upload a photo of your registered competitive sealed pool sheet to bring it into the deckbuilder.</p>
           <p className="import-pool-auth-note">
-            Sign in with Discord to continue. This feature is available to <strong>Friends of the Pod</strong>.
+            Sign in with Discord to continue. This feature is available to{' '}
+            <a href="/support-the-pod">Friends of the Pod</a>.
           </p>
           <Button variant="discord" onClick={handleLogin}>
             Sign in with Discord
           </Button>
+        </div>
+      </div>
+    )
+  }
+
+  // Authenticated but not a patron — point them at the support page where
+  // they can read about every Friends-of-the-Pod feature (including this one).
+  if (isPatron === false) {
+    return (
+      <div className="import-pool-page page-background">
+        <div className="import-pool-auth-prompt">
+          <h1>Import Pool</h1>
+          <p>Upload a photo of your registered competitive sealed pool sheet to bring it into the deckbuilder.</p>
+          <p className="import-pool-auth-note">
+            This feature is available to <strong>Friends of the Pod</strong>.
+          </p>
+          <a href="/support-the-pod" style={{ textDecoration: 'none' }}>
+            <Button variant="primary">Become a Friend of the Pod</Button>
+          </a>
         </div>
       </div>
     )
