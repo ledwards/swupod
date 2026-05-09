@@ -54,6 +54,15 @@ const SIDEBOARD_COLUMNS = [
   { field: 'rarity', label: 'Rarity' },
 ]
 
+// Fixed aspect order used for grouping in list/table view (deck + sideboard).
+const ASPECT_ORDER = [
+  'vigilance_villainy', 'vigilance_heroism', 'vigilance_vigilance', 'vigilance',
+  'command_villainy', 'command_heroism', 'command_command', 'command',
+  'aggression_villainy', 'aggression_heroism', 'aggression_aggression', 'aggression',
+  'cunning_villainy', 'cunning_heroism', 'cunning_cunning', 'cunning',
+  'villainy', 'heroism', 'villainy_heroism', 'neutral'
+]
+
 export interface PoolListSectionProps {
   cardPositions: Record<string, CardPositionData>
   setCardPositions: (fn: (prev: Record<string, CardPositionData>) => Record<string, CardPositionData>) => void
@@ -74,6 +83,8 @@ export interface PoolListSectionProps {
   setDeckCostSectionsExpanded: (fn: (prev: Record<string | number, boolean>) => Record<string | number, boolean>) => void
   deckAspectSectionsExpanded: Record<string, boolean>
   setDeckAspectSectionsExpanded: (fn: (prev: Record<string, boolean>) => Record<string, boolean>) => void
+  sideboardAspectSectionsExpanded: Record<string, boolean>
+  setSideboardAspectSectionsExpanded: (fn: (prev: Record<string, boolean>) => Record<string, boolean>) => void
   onCardHover: (cardId: string, card: CardData, e: MouseEvent) => void
   onCardLeave: () => void
 }
@@ -98,6 +109,8 @@ export function PoolListSection({
   setDeckCostSectionsExpanded,
   deckAspectSectionsExpanded,
   setDeckAspectSectionsExpanded,
+  sideboardAspectSectionsExpanded,
+  setSideboardAspectSectionsExpanded,
   onCardHover,
   onCardLeave,
 }: PoolListSectionProps) {
@@ -173,94 +186,118 @@ export function PoolListSection({
     )
   }
 
-  // Render deck content based on sort option
+  // Render deck content: always group by aspect; sort within each group by cost then name.
   const renderDeckContent = () => {
     if (deckCardPositions.length === 0) return null
 
-    if (deckSortOption === 'cost') {
-      // Group by cost segments: 1, 2, 3, 4, 5, 6, 7, 8+
-      const costSegments: (number | string)[] = [1, 2, 3, 4, 5, 6, 7, '8+']
-      const groupedByCost: Record<string | number, CardWithData[]> = {}
+    // Initialize all aspect combinations
+    const groupedByAspect: Record<string, CardWithData[]> = {}
+    ASPECT_ORDER.forEach(key => {
+      groupedByAspect[key] = []
+    })
 
-      // Initialize all cost segments (even if empty)
-      costSegments.forEach(segment => {
-        groupedByCost[segment] = []
+    // Group cards by aspect combination
+    deckCardPositions.forEach(({ cardId, card }) => {
+      const aspectKey = getAspectCombinationKey(card)
+      if (!groupedByAspect[aspectKey]) {
+        groupedByAspect[aspectKey] = []
+      }
+      groupedByAspect[aspectKey].push({ cardId, card })
+    })
+
+    // Filter to show segments that have cards or sideboard cards
+    const sortedAspectKeys = ASPECT_ORDER.filter(aspectKey => {
+      const cards = groupedByAspect[aspectKey] || []
+      const hasSideboardCards = sideboardCardPositions.some(({ card }) =>
+        getAspectCombinationKey(card) === aspectKey
+      )
+      return cards.length > 0 || hasSideboardCards
+    })
+
+    return sortedAspectKeys.map((aspectKey) => {
+      const cards = groupedByAspect[aspectKey] || []
+      const isExpanded = deckAspectSectionsExpanded[aspectKey] !== false
+
+      // Sort cards within this aspect combination
+      const sectionId = `deck-aspect-${aspectKey}`
+      const sectionSort = tableSort[sectionId] || { field: null, direction: 'asc' as const }
+      const sortedCards = [...cards].sort((a, b) => {
+        if (sectionSort.field) {
+          return sortTableData(a.card, b.card, sectionSort.field, sectionSort.direction)
+        }
+        return defaultSort(a.card, b.card)
       })
 
-      // Group cards by cost segment
-      deckCardPositions.forEach(({ cardId, card }) => {
-        const cost = card.cost
-        let segment: number | string
-        if (cost === null || cost === undefined || cost === 0) {
-          segment = 1
-        } else if (cost >= 8) {
-          segment = '8+'
-        } else if (cost >= 1 && cost <= 7) {
-          segment = cost
-        } else {
-          segment = 1
-        }
-        if (!groupedByCost[segment]) {
-          groupedByCost[segment] = []
-        }
-        groupedByCost[segment].push({ cardId, card })
+      // Check if all cards in this segment are enabled
+      const allEnabled = sortedCards.length > 0 && sortedCards.every(({ cardId }) => {
+        const position = cardPositions[cardId]
+        return position && position.section === 'deck' && position.enabled !== false
       })
 
-      // Render cost segments
-      return costSegments.map((costSegment) => {
-        const cards = groupedByCost[costSegment] || []
-        const isExpanded = deckCostSectionsExpanded[costSegment] !== false
-
-        // Sort cards within this cost segment
-        const sectionId = `deck-cost-${costSegment}`
-        const sectionSort = tableSort[sectionId] || { field: null, direction: 'asc' as const }
-        const sortedCards = [...cards].sort((a, b) => {
-          if (sectionSort.field) {
-            return sortTableData(a.card, b.card, sectionSort.field, sectionSort.direction)
-          }
-          const keyA = getDefaultAspectSortKey(a.card)
-          const keyB = getDefaultAspectSortKey(b.card)
-          if (keyA !== keyB) return keyA.localeCompare(keyB)
-          return defaultSort(a.card, b.card)
-        })
-
-        // Check if all cards in this segment are enabled
-        const allEnabled = sortedCards.length > 0 && sortedCards.every(({ cardId }) => {
-          const position = cardPositions[cardId]
-          return position && position.section === 'deck' && position.enabled !== false
-        })
-
-        return (
-          <div key={`cost-${costSegment}`} className="deck-aspect-subsection">
-            <h4
-              className="pool-subsection-title"
-              onClick={() => setDeckCostSectionsExpanded(prev => ({ ...prev, [costSegment]: !isExpanded }))}
-              style={{ cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-            >
-              <span>{isExpanded ? '▼' : '▶'}</span>
-              <CostIcon cost={costSegment} size={32} />
-              <span>({cards.length})</span>
-            </h4>
-            <div className={`list-section-content-wrapper ${isExpanded ? '' : 'collapsed'}`}>
-              <table className="list-table">
-                <ListTableHeader
-                  sectionId={sectionId}
-                  tableSort={tableSort}
-                  onSort={handleTableSort}
-                  columns={DECK_COLUMNS}
-                  checkboxChecked={allEnabled}
-                  onCheckboxChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    const shouldEnable = e.target.checked
-                    if (shouldEnable && moveCardsToDeck) {
+      return (
+        <div key={aspectKey} className="deck-aspect-subsection">
+          <h4
+            className="pool-subsection-title"
+            onClick={() => setDeckAspectSectionsExpanded(prev => ({ ...prev, [aspectKey]: !isExpanded }))}
+            style={{ cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          >
+            <span>{isExpanded ? '▼' : '▶'}</span>
+            {getAspectCombinationIcons(aspectKey)}
+            <span style={{ textTransform: 'uppercase' }}>{getAspectCombinationDisplayName(aspectKey)}</span>
+            <span>({cards.length})</span>
+          </h4>
+          <div className={`list-section-content-wrapper ${isExpanded ? '' : 'collapsed'}`}>
+            <table className="list-table">
+              <ListTableHeader
+                sectionId={sectionId}
+                tableSort={tableSort}
+                onSort={handleTableSort}
+                columns={DECK_COLUMNS}
+                checkboxChecked={allEnabled}
+                onCheckboxChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  const shouldEnable = e.target.checked
+                  if (shouldEnable && moveCardsToDeck) {
+                    if (sortedCards.length === 0) {
+                      const matchingCardIds = Object.entries(cardPositions)
+                        .filter(([_, position]) =>
+                          (position.section === 'sideboard' || position.enabled === false) &&
+                          position.visible &&
+                          !position.card.isBase &&
+                          !position.card.isLeader &&
+                          getAspectCombinationKey(position.card) === aspectKey
+                        )
+                        .map(([cardId]) => cardId)
+                      moveCardsToDeck(matchingCardIds)
+                    } else {
                       moveCardsToDeck(sortedCards.map(({ cardId }) => cardId))
-                      return
                     }
-                    if (!shouldEnable && moveCardsToPool) {
-                      moveCardsToPool(sortedCards.map(({ cardId }) => cardId))
-                      return
-                    }
-                    setCardPositions(prev => {
-                      const updated = { ...prev }
+                    return
+                  }
+                  if (!shouldEnable && moveCardsToPool) {
+                    moveCardsToPool(sortedCards.map(({ cardId }) => cardId))
+                    return
+                  }
+                  setCardPositions(prev => {
+                    const updated = { ...prev }
+
+                    // If section is empty and we're enabling, restore all cards from sideboard
+                    if (sortedCards.length === 0 && shouldEnable) {
+                      Object.entries(prev).forEach(([cardId, position]) => {
+                        if ((position.section === 'sideboard' || position.enabled === false) &&
+                            position.visible &&
+                            !position.card.isBase &&
+                            !position.card.isLeader &&
+                            getAspectCombinationKey(position.card) === aspectKey) {
+                          updated[cardId] = {
+                            ...position,
+                            section: 'deck',
+                            enabled: true,
+                            x: 0,
+                            y: 0
+                          }
+                        }
+                      })
+                    } else {
                       sortedCards.forEach(({ cardId }) => {
                         updated[cardId] = {
                           ...prev[cardId],
@@ -270,260 +307,151 @@ export function PoolListSection({
                           y: 0
                         }
                       })
-                      return updated
-                    })
-                  }}
-                />
-                <tbody>
-                  {sortedCards.map(({ cardId, card }, idx) =>
-                    renderDeckCardRow(cardId, card, idx, `deck-cost-${costSegment}`)
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )
-      })
-    } else {
-      // Aspect sort
-      const aspectOrder = [
-        'vigilance_villainy', 'vigilance_heroism', 'vigilance_vigilance', 'vigilance',
-        'command_villainy', 'command_heroism', 'command_command', 'command',
-        'aggression_villainy', 'aggression_heroism', 'aggression_aggression', 'aggression',
-        'cunning_villainy', 'cunning_heroism', 'cunning_cunning', 'cunning',
-        'villainy', 'heroism', 'villainy_heroism', 'neutral'
-      ]
-
-      // Initialize all aspect combinations
-      const groupedByAspect: Record<string, CardWithData[]> = {}
-      aspectOrder.forEach(key => {
-        groupedByAspect[key] = []
-      })
-
-      // Group cards by aspect combination
-      deckCardPositions.forEach(({ cardId, card }) => {
-        const aspectKey = getAspectCombinationKey(card)
-        if (!groupedByAspect[aspectKey]) {
-          groupedByAspect[aspectKey] = []
-        }
-        groupedByAspect[aspectKey].push({ cardId, card })
-      })
-
-      // Filter to show segments that have cards or sideboard cards
-      const sortedAspectKeys = aspectOrder.filter(aspectKey => {
-        const cards = groupedByAspect[aspectKey] || []
-        const hasSideboardCards = sideboardCardPositions.some(({ card }) =>
-          getAspectCombinationKey(card) === aspectKey
-        )
-        return cards.length > 0 || hasSideboardCards
-      })
-
-      return sortedAspectKeys.map((aspectKey) => {
-        const cards = groupedByAspect[aspectKey] || []
-        const isExpanded = deckAspectSectionsExpanded[aspectKey] !== false
-
-        // Sort cards within this aspect combination
-        const sectionId = `deck-aspect-${aspectKey}`
-        const sectionSort = tableSort[sectionId] || { field: null, direction: 'asc' as const }
-        const sortedCards = [...cards].sort((a, b) => {
-          if (sectionSort.field) {
-            return sortTableData(a.card, b.card, sectionSort.field, sectionSort.direction)
-          }
-          return defaultSort(a.card, b.card)
-        })
-
-        // Check if all cards in this segment are enabled
-        const allEnabled = sortedCards.length > 0 && sortedCards.every(({ cardId }) => {
-          const position = cardPositions[cardId]
-          return position && position.section === 'deck' && position.enabled !== false
-        })
-
-        return (
-          <div key={aspectKey} className="deck-aspect-subsection">
-            <h4
-              className="pool-subsection-title"
-              onClick={() => setDeckAspectSectionsExpanded(prev => ({ ...prev, [aspectKey]: !isExpanded }))}
-              style={{ cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-            >
-              <span>{isExpanded ? '▼' : '▶'}</span>
-              {getAspectCombinationIcons(aspectKey)}
-              <span style={{ textTransform: 'uppercase' }}>{getAspectCombinationDisplayName(aspectKey)}</span>
-              <span>({cards.length})</span>
-            </h4>
-            <div className={`list-section-content-wrapper ${isExpanded ? '' : 'collapsed'}`}>
-              <table className="list-table">
-                <ListTableHeader
-                  sectionId={sectionId}
-                  tableSort={tableSort}
-                  onSort={handleTableSort}
-                  columns={DECK_COLUMNS}
-                  checkboxChecked={allEnabled}
-                  onCheckboxChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    const shouldEnable = e.target.checked
-                    if (shouldEnable && moveCardsToDeck) {
-                      if (sortedCards.length === 0) {
-                        const matchingCardIds = Object.entries(cardPositions)
-                          .filter(([_, position]) =>
-                            (position.section === 'sideboard' || position.enabled === false) &&
-                            position.visible &&
-                            !position.card.isBase &&
-                            !position.card.isLeader &&
-                            getAspectCombinationKey(position.card) === aspectKey
-                          )
-                          .map(([cardId]) => cardId)
-                        moveCardsToDeck(matchingCardIds)
-                      } else {
-                        moveCardsToDeck(sortedCards.map(({ cardId }) => cardId))
-                      }
-                      return
                     }
-                    if (!shouldEnable && moveCardsToPool) {
-                      moveCardsToPool(sortedCards.map(({ cardId }) => cardId))
-                      return
-                    }
-                    setCardPositions(prev => {
-                      const updated = { ...prev }
 
-                      // If section is empty and we're enabling, restore all cards from sideboard
-                      if (sortedCards.length === 0 && shouldEnable) {
-                        Object.entries(prev).forEach(([cardId, position]) => {
-                          if ((position.section === 'sideboard' || position.enabled === false) &&
-                              position.visible &&
-                              !position.card.isBase &&
-                              !position.card.isLeader &&
-                              getAspectCombinationKey(position.card) === aspectKey) {
-                            updated[cardId] = {
-                              ...position,
-                              section: 'deck',
-                              enabled: true,
-                              x: 0,
-                              y: 0
-                            }
-                          }
-                        })
-                      } else {
-                        sortedCards.forEach(({ cardId }) => {
-                          updated[cardId] = {
-                            ...prev[cardId],
-                            section: shouldEnable ? 'deck' : 'sideboard',
-                            enabled: shouldEnable,
-                            x: 0,
-                            y: 0
-                          }
-                        })
-                      }
-
-                      return updated
-                    })
-                  }}
-                />
-                <tbody>
-                  {sortedCards.map(({ cardId, card }, idx) =>
-                    renderDeckCardRow(cardId, card, idx, `deck-${aspectKey}`)
-                  )}
-                </tbody>
-              </table>
-            </div>
+                    return updated
+                  })
+                }}
+              />
+              <tbody>
+                {sortedCards.map(({ cardId, card }, idx) =>
+                  renderDeckCardRow(cardId, card, idx, `deck-${aspectKey}`)
+                )}
+              </tbody>
+            </table>
           </div>
-        )
-      })
-    }
+        </div>
+      )
+    })
   }
 
-  // Render sideboard content
+  // Render a single sideboard card row (checkbox unchecked → moves card to deck on toggle).
+  const renderSideboardCardRow = (cardId: string, card: CardData, idx: number, keyPrefix: string) => {
+    const aspectSymbols = getAspectIcons(card)
+    const filteredOut = isCardFilteredOut(card)
+    return (
+      <tr
+        key={`${keyPrefix}-${cardId}-${idx}`}
+        className={filteredOut ? 'filtered-out' : undefined}
+      >
+        <td>
+          <input
+            type="checkbox"
+            checked={false}
+            onChange={() => {
+              if (moveCardToDeck) {
+                moveCardToDeck(cardId)
+                return
+              }
+              setCardPositions(prev => ({
+                ...prev,
+                [cardId]: { ...prev[cardId], section: 'deck', enabled: true, x: 0, y: 0 }
+              }))
+            }}
+          />
+        </td>
+        <td onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}>
+          <div className="card-name-cell">
+            <div className="card-name-main" style={{ cursor: 'pointer' }}>
+              {card.name || 'Unknown'}
+            </div>
+            {card.subtitle && !card.isBase && (
+              <div className="card-name-subtitle">{card.subtitle}</div>
+            )}
+          </div>
+        </td>
+        <td className="cost-cell" onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}><CostIcon cost={card.cost} size={28} /></td>
+        <td className="aspects-cell" onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}>
+          {aspectSymbols && aspectSymbols.length > 0 ? aspectSymbols : <span>Neutral</span>}
+        </td>
+        <td style={{ color: getRarityColor(card.rarity) }} onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}>{card.rarity || 'Unknown'}</td>
+      </tr>
+    )
+  }
+
+  // Render sideboard content: always group by aspect; sort within each group by cost then name.
   const renderSideboardContent = () => {
-    const sectionId = 'sideboard'
-    const sectionSort = tableSort[sectionId] || { field: null, direction: 'asc' as const }
-    const sortedSideboard = [...sideboardCardPositions].sort((a, b) => {
-      if (!sectionSort.field) {
-        return defaultSort(a.card, b.card)
-      }
-      return sortTableData(a.card, b.card, sectionSort.field, sectionSort.direction)
+    if (sideboardCardPositions.length === 0) return null
+
+    // Initialize all aspect combinations
+    const groupedByAspect: Record<string, CardWithData[]> = {}
+    ASPECT_ORDER.forEach(key => {
+      groupedByAspect[key] = []
     })
 
-    if (sortedSideboard.length === 0) return null
+    // Group sideboard cards by aspect combination
+    sideboardCardPositions.forEach(({ cardId, card }) => {
+      const aspectKey = getAspectCombinationKey(card)
+      if (!groupedByAspect[aspectKey]) {
+        groupedByAspect[aspectKey] = []
+      }
+      groupedByAspect[aspectKey].push({ cardId, card })
+    })
 
-    const handleSideboardCheckbox = (e: ChangeEvent<HTMLInputElement>) => {
-      const shouldEnable = e.target.checked
-      if (shouldEnable && moveCardsToDeck) {
-        moveCardsToDeck(sideboardCardPositions.map(({ cardId }) => cardId))
-        return
-      }
-      if (!shouldEnable && moveCardsToPool) {
-        moveCardsToPool(sideboardCardPositions.map(({ cardId }) => cardId))
-        return
-      }
-      setCardPositions(prev => {
-        const updated = { ...prev }
-        sideboardCardPositions.forEach(({ cardId }) => {
-          updated[cardId] = {
-            ...prev[cardId],
-            section: shouldEnable ? 'deck' : 'sideboard',
-            enabled: shouldEnable,
-            x: 0,
-            y: 0
-          }
-        })
-        return updated
+    // Only render aspect groups that contain sideboard cards
+    const sortedAspectKeys = ASPECT_ORDER.filter(aspectKey => (groupedByAspect[aspectKey] || []).length > 0)
+
+    return sortedAspectKeys.map((aspectKey) => {
+      const cards = groupedByAspect[aspectKey] || []
+      const isExpanded = sideboardAspectSectionsExpanded[aspectKey] !== false
+
+      const sectionId = `sideboard-aspect-${aspectKey}`
+      const sectionSort = tableSort[sectionId] || { field: null, direction: 'asc' as const }
+      const sortedCards = [...cards].sort((a, b) => {
+        if (sectionSort.field) {
+          return sortTableData(a.card, b.card, sectionSort.field, sectionSort.direction)
+        }
+        return defaultSort(a.card, b.card)
       })
-    }
 
-    return (
-      <table className="list-table">
-        <ListTableHeader
-          sectionId="sideboard"
-          tableSort={tableSort}
-          onSort={handleTableSort}
-          columns={SIDEBOARD_COLUMNS}
-          checkboxChecked={false}
-          onCheckboxChange={handleSideboardCheckbox}
-        />
-        <tbody>
-          {sortedSideboard.map(({ cardId, card }, idx) => {
-            const aspectSymbols = getAspectIcons(card)
-            const filteredOut = isCardFilteredOut(card)
-            return (
-              <tr
-                key={`sideboard-${cardId}-${idx}`}
-                className={filteredOut ? 'filtered-out' : undefined}
-              >
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={false}
-                    onChange={() => {
-                      if (moveCardToDeck) {
-                        moveCardToDeck(cardId)
-                        return
-                      }
-                      setCardPositions(prev => ({
-                        ...prev,
-                        [cardId]: { ...prev[cardId], section: 'deck', enabled: true, x: 0, y: 0 }
-                      }))
-                    }}
-                  />
-                </td>
-                <td onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}>
-                  <div className="card-name-cell">
-                    <div className="card-name-main" style={{ cursor: 'pointer' }}>
-                      {card.name || 'Unknown'}
-                    </div>
-                    {card.subtitle && !card.isBase && (
-                      <div className="card-name-subtitle">{card.subtitle}</div>
-                    )}
-                  </div>
-                </td>
-                <td className="cost-cell" onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}><CostIcon cost={card.cost} size={28} /></td>
-                <td className="aspects-cell" onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}>
-                  {aspectSymbols && aspectSymbols.length > 0 ? aspectSymbols : <span>Neutral</span>}
-                </td>
-                <td style={{ color: getRarityColor(card.rarity) }} onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}>{card.rarity || 'Unknown'}</td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
-    )
+      const handleHeaderCheckbox = (e: ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.checked) return
+        const ids = sortedCards.map(({ cardId }) => cardId)
+        if (moveCardsToDeck) {
+          moveCardsToDeck(ids)
+          return
+        }
+        setCardPositions(prev => {
+          const updated = { ...prev }
+          ids.forEach(cardId => {
+            updated[cardId] = { ...prev[cardId], section: 'deck', enabled: true, x: 0, y: 0 }
+          })
+          return updated
+        })
+      }
+
+      return (
+        <div key={aspectKey} className="deck-aspect-subsection">
+          <h4
+            className="pool-subsection-title"
+            onClick={() => setSideboardAspectSectionsExpanded(prev => ({ ...prev, [aspectKey]: !isExpanded }))}
+            style={{ cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          >
+            <span>{isExpanded ? '▼' : '▶'}</span>
+            {getAspectCombinationIcons(aspectKey)}
+            <span style={{ textTransform: 'uppercase' }}>{getAspectCombinationDisplayName(aspectKey)}</span>
+            <span>({cards.length})</span>
+          </h4>
+          <div className={`list-section-content-wrapper ${isExpanded ? '' : 'collapsed'}`}>
+            <table className="list-table">
+              <ListTableHeader
+                sectionId={sectionId}
+                tableSort={tableSort}
+                onSort={handleTableSort}
+                columns={SIDEBOARD_COLUMNS}
+                checkboxChecked={false}
+                onCheckboxChange={handleHeaderCheckbox}
+              />
+              <tbody>
+                {sortedCards.map(({ cardId, card }, idx) =>
+                  renderSideboardCardRow(cardId, card, idx, `sideboard-${aspectKey}`)
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )
+    })
   }
 
   return (

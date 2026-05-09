@@ -2747,6 +2747,8 @@ function DeckBuilder({
             setDeckCostSectionsExpanded={setDeckCostSectionsExpanded}
             deckAspectSectionsExpanded={deckAspectSectionsExpanded}
             setDeckAspectSectionsExpanded={setDeckAspectSectionsExpanded}
+            sideboardAspectSectionsExpanded={sideboardAspectSectionsExpanded}
+            setSideboardAspectSectionsExpanded={setSideboardAspectSectionsExpanded}
             onCardHover={(cardId, card, e) => {
               setHoveredCard(cardId)
               handleCardMouseEnter(card, e)
