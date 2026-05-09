@@ -12,7 +12,6 @@ import { getRarityColor } from '../../utils/aspectColors'
 import { ListTableHeader } from './ListTableHeader'
 import type { TableSortMap } from './ListTableHeader'
 import type { SortOption } from './SortControls'
-import { AspectPenaltyToggle } from './AspectPenaltyToggle'
 import { useDeckBuilder } from '../../contexts/DeckBuilderContext'
 
 interface CardData {
@@ -165,7 +164,7 @@ export function PoolListSection({
           </div>
         </td>
         <td>{getFormattedType(card)}</td>
-        <td><CostIcon cost={card.cost} size={39} /></td>
+        <td className="cost-cell"><CostIcon cost={card.cost} size={28} /></td>
         <td className="aspects-cell">
           {aspectSymbols && aspectSymbols.length > 0 ? aspectSymbols : <span>Neutral</span>}
         </td>
@@ -487,8 +486,6 @@ export function PoolListSection({
               <tr
                 key={`sideboard-${cardId}-${idx}`}
                 className={filteredOut ? 'filtered-out' : undefined}
-                onMouseEnter={(e) => onCardHover(cardId, card, e)}
-                onMouseLeave={onCardLeave}
               >
                 <td>
                   <input
@@ -506,7 +503,7 @@ export function PoolListSection({
                     }}
                   />
                 </td>
-                <td>
+                <td onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}>
                   <div className="card-name-cell">
                     <div className="card-name-main" style={{ cursor: 'pointer' }}>
                       {card.name || 'Unknown'}
@@ -516,11 +513,11 @@ export function PoolListSection({
                     )}
                   </div>
                 </td>
-                <td><CostIcon cost={card.cost} size={39} /></td>
-                <td className="aspects-cell">
+                <td className="cost-cell" onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}><CostIcon cost={card.cost} size={28} /></td>
+                <td className="aspects-cell" onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}>
                   {aspectSymbols && aspectSymbols.length > 0 ? aspectSymbols : <span>Neutral</span>}
                 </td>
-                <td style={{ color: getRarityColor(card.rarity) }}>{card.rarity || 'Unknown'}</td>
+                <td style={{ color: getRarityColor(card.rarity) }} onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}>{card.rarity || 'Unknown'}</td>
               </tr>
             )
           })}
@@ -538,11 +535,6 @@ export function PoolListSection({
         <h3 id="deck-list-header" className="pool-subsection-title" style={{ userSelect: 'none' }}>
           Deck ({deckCardPositions.length})
         </h3>
-        <AspectPenaltyToggle
-          sortOption={deckSortOption}
-          showAspectPenalties={showDeckAspectPenalties}
-          setShowAspectPenalties={setShowDeckAspectPenalties}
-        />
         {renderDeckContent()}
       </div>
 
@@ -551,11 +543,6 @@ export function PoolListSection({
         <h3 id="pool-list-header" className="pool-subsection-title" style={{ userSelect: 'none' }}>
           {isInfiniteMode ? 'Pool' : isDraftMode ? 'Card Pool' : 'Sideboard'} ({sideboardCardPositions.length})
         </h3>
-        <AspectPenaltyToggle
-          sortOption={deckSortOption}
-          showAspectPenalties={showPoolAspectPenalties}
-          setShowAspectPenalties={setShowPoolAspectPenalties}
-        />
         {renderSideboardContent()}
       </div>
     </div>

@@ -16,6 +16,7 @@ import { calculateAspectPenalty } from '../services/cards/aspectPenalties'
 import {
   getAspectSortKey,
   compareByAspectTypeCostName,
+  compareByCostName,
 } from '../services/cards/cardSorting'
 import { deletePool, savePool, updatePool } from '../utils/poolApi'
 import { getPackArtUrl } from '../utils/packArt'
@@ -77,10 +78,12 @@ const getAspectSymbol = (aspect: string, size = 'medium') => {
 // Build aspect icons for table cells
 const getAspectIcons = (card: CardType) => {
   if (!card.aspects || card.aspects.length === 0) return null
-  return card.aspects.map((aspect, i) => {
+  const icons = card.aspects.map((aspect, i) => {
     const symbol = getAspectSymbol(aspect, 'large')
     return symbol ? <span key={i} className="aspect-symbol-wrapper">{symbol}</span> : null
   }).filter(Boolean)
+  if (icons.length === 0) return null
+  return [<span key="aspects-group" className="aspects-group">{icons}</span>]
 }
 
 const ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning', 'Villainy', 'Heroism']
@@ -2092,9 +2095,12 @@ function DeckBuilder({
     })
   }
 
-  // Default sort function: aspect combinations, then type, then cost
-  // Use imported compareByAspectTypeCostName from cardSorting service
-  const defaultSort = compareByAspectTypeCostName
+  // Default sort for table view: group by aspect, then cost, then name (no type step).
+  const defaultSort = (a: CardType, b: CardType) => {
+    const aspectCmp = getAspectSortKey(a).localeCompare(getAspectSortKey(b))
+    if (aspectCmp !== 0) return aspectCmp
+    return compareByCostName(a, b)
+  }
 
   const sortTableData = (a: CardType, b: CardType, field: string, direction: 'asc' | 'desc') => {
     let aVal: string | number, bVal: string | number

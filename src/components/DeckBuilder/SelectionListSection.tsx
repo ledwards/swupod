@@ -118,11 +118,7 @@ export function SelectionListSection({
               const aspectSymbols = getAspectIcons(card)
               const isSelected = selectedId === cardId
               return (
-                <tr
-                  key={`${sectionId}-${cardId}-${idx}`}
-                  onMouseEnter={(e) => onCardHover(cardId, card, e)}
-                  onMouseLeave={onCardLeave}
-                >
+                <tr key={`${sectionId}-${cardId}-${idx}`}>
                   <td>
                     <input
                       type="radio"
@@ -137,7 +133,7 @@ export function SelectionListSection({
                       }}
                     />
                   </td>
-                  <td>
+                  <td onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}>
                     <div className="card-name-cell">
                       <div
                         className="card-name-main"
@@ -150,13 +146,13 @@ export function SelectionListSection({
                       )}
                     </div>
                   </td>
-                  <td>
-                    <CostIcon cost={card.cost} size={39} />
+                  <td className="cost-cell" onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}>
+                    <CostIcon cost={card.cost} size={28} />
                   </td>
-                  <td className="aspects-cell">
+                  <td className="aspects-cell" onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}>
                     {aspectSymbols && aspectSymbols.length > 0 ? aspectSymbols : <span>Neutral</span>}
                   </td>
-                  <td style={{ color: getRarityColor(card.rarity) }}>{card.rarity || 'Unknown'}</td>
+                  <td style={{ color: getRarityColor(card.rarity) }} onMouseEnter={(e) => onCardHover(cardId, card, e)} onMouseLeave={onCardLeave}>{card.rarity || 'Unknown'}</td>
                 </tr>
               )
             })}

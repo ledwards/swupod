@@ -30,7 +30,7 @@ const SIZE_MAP: Record<IconSize, number> = {
   'sm': 16,
   'md': 18,
   'lg': 24,
-  'xl': 39  // Match cost icon size
+  'xl': 28
 }
 
 export interface AspectIconProps {
@@ -61,6 +61,7 @@ export function AspectIcon({
       style={{
         width: `${iconSize}px`,
         height: `${iconSize}px`,
+        verticalAlign: 'middle',
         ...style
       }}
     />

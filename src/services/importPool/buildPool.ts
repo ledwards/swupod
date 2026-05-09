@@ -42,12 +42,15 @@ interface BuildPoolInput {
   activeBaseId: string    // The card.id (UUID) of the chosen base
   setCode: string
   poolName: string
+  isDefaultName?: boolean
 }
+
 
 interface BuildPoolOutput {
   cards: RawCard[]
   deckBuilderState: {
     poolName: string
+    isDefaultName: boolean
     cardPositions: Record<string, {
       card: RawCard
       section: 'deck' | 'sideboard' | 'leaders-bases'
@@ -73,6 +76,7 @@ export function buildPool({
   activeBaseId,
   setCode,
   poolName,
+  isDefaultName = false,
 }: BuildPoolInput): BuildPoolOutput {
   const validationErrors: ValidationError[] = []
 
@@ -206,6 +210,7 @@ export function buildPool({
     cards,
     deckBuilderState: {
       poolName,
+      isDefaultName,
       cardPositions,
       activeLeader: activeLeaderKey,
       activeBase: activeBaseKey,
