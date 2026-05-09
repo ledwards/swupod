@@ -337,13 +337,6 @@ export function SideBySideTable({
   }, [rows])
 
   const subGroups = useMemo(() => {
-    const groups = new Map<string, ResolvedRow[]>()
-    for (const r of rows) {
-      const k = subKeyForRow(r)
-      if (!groups.has(k)) groups.set(k, [])
-      groups.get(k)!.push(r)
-    }
-    const sortedKeys = [...groups.keys()].sort((a, b) => compareSubKeysForSection(a, b, primary))
     const cardNumOf = (r: ResolvedRow) => {
       const m = (r.card?.cardId || '').match(/(\d+)$/)
       return m ? parseInt(m[1], 10) : 999999
@@ -354,11 +347,26 @@ export function SideBySideTable({
         : [...rs].sort((a, b) =>
             (a.card?.name || a.extracted.name || '').localeCompare(b.card?.name || b.extracted.name || ''),
           )
+    // hideSubGroups (Leaders/Bases tabs) means the printed sheet lists every
+    // row in one continuous block — no aspect sub-sections. Skip the
+    // aspect-keyed grouping entirely so the rendered order matches the sheet
+    // (Leaders 1–18 in pure card-number order, not 1, 5, 17 (X+Villainy)
+    // then 2, 8 (X+Heroism) then …).
+    if (hideSubGroups) {
+      return [{ key: 'all', rows: sortRows(rows) }]
+    }
+    const groups = new Map<string, ResolvedRow[]>()
+    for (const r of rows) {
+      const k = subKeyForRow(r)
+      if (!groups.has(k)) groups.set(k, [])
+      groups.get(k)!.push(r)
+    }
+    const sortedKeys = [...groups.keys()].sort((a, b) => compareSubKeysForSection(a, b, primary))
     return sortedKeys.map((key) => ({
       key,
       rows: sortRows(groups.get(key)!),
     }))
-  }, [rows, primary, sortBy])
+  }, [rows, primary, sortBy, hideSubGroups])
 
   return (
     <div className="ip-source-modal__pane">
