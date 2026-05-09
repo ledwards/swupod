@@ -7,6 +7,9 @@
 - **Build together!**: Share your pool with friends and they can also try builds with your pool!
 - **Play games with any deck in a pool**: Every pool has multiple decks. Select one and hit Play to try it out on Karabast or TTS.
 
+### 🎮 Deck Builder (Arena view)
+- **More settings for Pool and Deck** Both Pool and Deck have even more filter, sort, group, and view settings in Arena view. Everyone has a favorite way to organize their cards during deckbuilding, and now you can do it all.
+
 ### ❤️ Friends of the Pod \[BETA\]
 - **Import Pool**: Experimental feature: Take a photo of your decklist registration to import it as a pool and deck.
 
