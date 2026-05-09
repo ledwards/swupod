@@ -68,7 +68,12 @@ const MAX_QTY = 6
 const MAX_ROWS = 500
 
 interface ExtractRequestBody {
+  /** Legacy: inline base64 images. Subject to Next.js's ~10MB JSON cap. */
   images?: Array<{ data: string; mediaType: string }>
+  /** Preferred: photoKeys returned by /api/import/upload-photo. The server
+   *  fetches each key from R2 (or /tmp), runs HEIC→JPEG conversion if
+   *  needed, then proceeds with the existing pipeline. */
+  photoKeys?: string[]
   manualSetCode?: string
 }
 
@@ -94,44 +99,85 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     // 3. Parse + validate body.
     const body = (await parseBody(request)) as ExtractRequestBody
-    if (!body || !Array.isArray(body.images) || body.images.length === 0) {
+    const usingKeys = Array.isArray(body?.photoKeys) && body.photoKeys.length > 0
+    const usingImages = Array.isArray(body?.images) && body.images.length > 0
+    if (!body || (!usingKeys && !usingImages)) {
       return jsonResponse(
-        { error: 'Request must include at least 1 image', code: 'INVALID_REQUEST' },
-        400,
-      )
-    }
-    if (body.images.length > MAX_IMAGES) {
-      return jsonResponse(
-        { error: `Up to ${MAX_IMAGES} images supported per request`, code: 'TOO_MANY_IMAGES' },
+        { error: 'Request must include at least 1 image (via photoKeys or images)', code: 'INVALID_REQUEST' },
         400,
       )
     }
 
-    let totalBytes = 0
-    for (const img of body.images) {
-      if (!img || typeof img.data !== 'string' || typeof img.mediaType !== 'string') {
+    // Resolve to a single common shape: array of {data, mediaType} where
+    // mediaType is JPEG/PNG/WEBP/GIF (HEIC has been converted server-side).
+    let imagesIn: Array<{ data: string; mediaType: 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif' }>
+    if (usingKeys) {
+      if (body.photoKeys!.length > MAX_IMAGES) {
         return jsonResponse(
-          { error: 'Each image must have { data, mediaType }', code: 'INVALID_IMAGE_SHAPE' },
+          { error: `Up to ${MAX_IMAGES} images supported per request`, code: 'TOO_MANY_IMAGES' },
           400,
         )
       }
-      if (!VALID_MIMES.has(img.mediaType)) {
+      const { fetchPhoto } = await import('@/lib/photoStorage')
+      const sharp = (await import('sharp')).default
+      imagesIn = []
+      let totalBytes = 0
+      for (const key of body.photoKeys!) {
+        const { buffer, contentType } = await fetchPhoto(key)
+        let outBuffer = buffer
+        let outType: ExtractRequestBody['images'][0]['mediaType'] = contentType as any
+        // HEIC/HEIF — convert to JPEG via sharp (libvips + libheif).
+        if (contentType === 'image/heic' || contentType === 'image/heif') {
+          outBuffer = await sharp(buffer).jpeg({ quality: 85 }).toBuffer()
+          outType = 'image/jpeg'
+        } else if (!VALID_MIMES.has(contentType)) {
+          return jsonResponse(
+            { error: `Unsupported stored type "${contentType}"`, code: 'UNSUPPORTED_MIME' },
+            400,
+          )
+        }
+        totalBytes += outBuffer.length
+        imagesIn.push({ data: outBuffer.toString('base64'), mediaType: outType as any })
+      }
+      if (totalBytes > MAX_TOTAL_BYTES) {
         return jsonResponse(
-          {
-            error: `Unsupported image type "${img.mediaType}". Allowed: ${[...VALID_MIMES].join(', ')}`,
-            code: 'UNSUPPORTED_MIME',
-          },
+          { error: `Total image payload exceeds ${MAX_TOTAL_BYTES} bytes`, code: 'PAYLOAD_TOO_LARGE' },
+          413,
+        )
+      }
+    } else {
+      if (body.images!.length > MAX_IMAGES) {
+        return jsonResponse(
+          { error: `Up to ${MAX_IMAGES} images supported per request`, code: 'TOO_MANY_IMAGES' },
           400,
         )
       }
-      // Approx bytes: base64 → 3/4. We don't decode here; this is a defensive bound.
-      totalBytes += Math.ceil((img.data.length * 3) / 4)
-    }
-    if (totalBytes > MAX_TOTAL_BYTES) {
-      return jsonResponse(
-        { error: `Total image payload exceeds ${MAX_TOTAL_BYTES} bytes`, code: 'PAYLOAD_TOO_LARGE' },
-        413,
-      )
+      let totalBytes = 0
+      for (const img of body.images!) {
+        if (!img || typeof img.data !== 'string' || typeof img.mediaType !== 'string') {
+          return jsonResponse(
+            { error: 'Each image must have { data, mediaType }', code: 'INVALID_IMAGE_SHAPE' },
+            400,
+          )
+        }
+        if (!VALID_MIMES.has(img.mediaType)) {
+          return jsonResponse(
+            {
+              error: `Unsupported image type "${img.mediaType}". Allowed: ${[...VALID_MIMES].join(', ')}`,
+              code: 'UNSUPPORTED_MIME',
+            },
+            400,
+          )
+        }
+        totalBytes += Math.ceil((img.data.length * 3) / 4)
+      }
+      if (totalBytes > MAX_TOTAL_BYTES) {
+        return jsonResponse(
+          { error: `Total image payload exceeds ${MAX_TOTAL_BYTES} bytes`, code: 'PAYLOAD_TOO_LARGE' },
+          413,
+        )
+      }
+      imagesIn = body.images!.map((img) => ({ data: img.data, mediaType: img.mediaType as any }))
     }
 
     // 4. Call Claude.
@@ -148,7 +194,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     let converged = false
     let bestIteration = 0
     try {
-      const imagesIn = body.images.map((img) => ({ data: img.data, mediaType: img.mediaType as any }))
+      // imagesIn was resolved above (from body.photoKeys via R2 fetch +
+      // HEIC convert, or from body.images directly). HEIC has already been
+      // converted to JPEG by this point.
       const opts = body.manualSetCode ? { setHint: body.manualSetCode } : {}
       let extractResult
       try {
@@ -321,7 +369,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             VALID_SECTION_NAMES.has(s.name) &&
             Number.isInteger(s.photoIndex) &&
             s.photoIndex >= 0 &&
-            s.photoIndex < body.images.length &&
+            s.photoIndex < imagesIn.length &&
             ['x0', 'y0', 'x1', 'y1'].every((k) => Number.isFinite(s[k])),
           )
           .map((s: any) => ({
@@ -347,10 +395,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // re-uploads of the same photo OVERWRITE in R2 rather than fan out into
     // duplicate directories. /api/import/create writes ground-truth.json
     // into the same directory.
-    const sessionId = deriveSessionId(session.id, body.images)
+    // imagesIn is the post-resolve, post-HEIC-convert image set used for
+    // extraction. Use it for both sessionId hashing and the eval capture.
+    const sessionId = deriveSessionId(session.id, imagesIn)
     saveExtractCapture(
       sessionId,
-      body.images.map((img) => ({ data: img.data, mediaType: img.mediaType })),
+      imagesIn.map((img) => ({ data: img.data, mediaType: img.mediaType })),
       { header: raw.header, rows: raw.rows, sections, sectionGaps },
     )
 

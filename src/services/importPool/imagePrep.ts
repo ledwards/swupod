@@ -27,10 +27,12 @@ const HEIC_MIMES = new Set(['image/heic', 'image/heif'])
 const HEIC_EXT = /\.(heic|heif)$/i
 
 export interface ProcessedImage {
-  /** Base64 string of the ORIGINAL file bytes (no data URL prefix) */
+  /** Base64 string of the ORIGINAL file bytes (no data URL prefix). Kept
+   *  for legacy fallback to the inline-images extract path; the preferred
+   *  path is photoKey via the upload-photo endpoint. */
   data: string
   /** MIME type — preserves the original */
-  mediaType: 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif'
+  mediaType: 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif' | 'image/heic' | 'image/heif'
   /** Image width in pixels (for UI display) */
   width: number
   /** Image height in pixels (for UI display) */
@@ -39,6 +41,10 @@ export interface ProcessedImage {
   sizeBytes: number
   /** Object URL for in-browser preview (caller must revokeObjectURL on cleanup) */
   previewUrl: string
+  /** R2 (or /tmp) key returned by /api/import/upload-photo. When present,
+   *  /api/import/extract will fetch the photo by key instead of via the
+   *  inline base64 image array — sidestepping Next.js's ~10MB JSON cap. */
+  photoKey?: string
 }
 
 interface ResizeOptions {
@@ -52,22 +58,14 @@ export async function resizeImage(
   file: File,
   _opts: ResizeOptions = {},
 ): Promise<ProcessedImage> {
-  // HEIC handling: iPhone's default photo format. Browser-side canvas
-  // can't decode HEIC for our preview pipeline, AND Claude expects
-  // JPEG/PNG/WEBP/GIF. Convert client-side via heic2any (lazy-loaded
-  // ~600KB chunk only when an HEIC file is actually picked).
-  if (HEIC_MIMES.has(file.type) || HEIC_EXT.test(file.name)) {
-    const heic2any = (await import('heic2any')).default
-    // 0.82 quality keeps OMR fidelity (handwritten marks read fine) while
-    // shaving ~30% off the JPEG size vs 0.92. Important because heic2any's
-    // output JPEGs at high quality balloon vs the original HEIC and were
-    // pushing combined uploads past server-side limits.
-    const converted = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.82 })
-    const blob = Array.isArray(converted) ? converted[0] : (converted as Blob)
-    file = new File([blob], file.name.replace(HEIC_EXT, '.jpg'), { type: 'image/jpeg' })
-  }
+  // HEIC files: pass through to the server, which converts via sharp +
+  // libheif (handles more variants than client-side heic2any, which was
+  // throwing ERR_LIBHEIF format not supported on some iPhone HEIFs).
+  // For preview rendering: HEIC can't render in <img>, so we strip the
+  // preview later (UI handles the fallback).
+  const isHeic = HEIC_MIMES.has(file.type) || HEIC_EXT.test(file.name)
 
-  if (!VALID_MIMES.has(file.type)) {
+  if (!isHeic && !VALID_MIMES.has(file.type)) {
     throw new Error(
       `Unsupported file type "${file.type}". Allowed: ${[...VALID_MIMES, ...HEIC_MIMES].join(', ')}`,
     )

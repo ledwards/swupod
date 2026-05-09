@@ -772,7 +772,28 @@ export function useImportPool() {
 
   const addImage = useCallback(async (file: File) => {
     try {
+      // 1. Read bytes + dimensions client-side for the preview thumbnail.
       const processed = await resizeImage(file)
+
+      // 2. Upload immediately to the server so /api/import/extract can
+      //    reference it by key instead of base64'ing it back over JSON
+      //    (Next.js's request.json() truncates at 10MB; two iPhone
+      //    photos always overflow). Multipart on this single-photo
+      //    endpoint sidesteps the JSON limit entirely.
+      const form = new FormData()
+      form.append('photo', file, file.name)
+      const upRes = await fetch('/api/import/upload-photo', {
+        method: 'POST',
+        credentials: 'include',
+        body: form,
+      })
+      const upPayload = await upRes.json()
+      const upBody = upPayload.data ?? upPayload
+      if (!upRes.ok) {
+        throw new Error(upBody?.error || upPayload.message || 'Photo upload failed')
+      }
+      processed.photoKey = upBody.key
+
       dispatch({ type: 'ADD_IMAGE', image: processed })
     } catch (err) {
       dispatch({
@@ -791,13 +812,19 @@ export function useImportPool() {
     if (state.images.length === 0) return
     dispatch({ type: 'EXTRACTION_START' })
     try {
+      // Prefer photoKeys (R2/server-stored) when every image has one —
+      // bypasses the 10MB JSON body limit. Fall back to inline images for
+      // older sessions whose uploads predate the upload-photo endpoint.
+      const allHaveKeys = state.images.length > 0 && state.images.every((img) => !!img.photoKey)
       const response = await fetch('/api/import/extract', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          images: state.images.map((img) => ({ data: img.data, mediaType: img.mediaType })),
-        }),
+        body: JSON.stringify(
+          allHaveKeys
+            ? { photoKeys: state.images.map((img) => img.photoKey) }
+            : { images: state.images.map((img) => ({ data: img.data, mediaType: img.mediaType })) },
+        ),
       })
       const payload = await response.json()
       // jsonResponse wraps body as { success, data, message }; unwrap to get error/code
