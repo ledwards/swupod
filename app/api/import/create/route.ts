@@ -226,16 +226,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // /tmp/eval-captures/<sessionId>/ directory the extract route used for
     // the photos. Lets us turn real submissions into golden fixtures.
     if (body.sessionId && typeof body.sessionId === 'string') {
-      const truthRows = resolvedRows.map((r) => {
-        const card = cardById.get(r.cardId)
-        return {
-          name: card?.name || '',
-          subtitle: card?.subtitle || null,
-          type: card?.type || 'Unit',
-          poolQty: r.poolQty,
-          deckQty: r.deckQty,
-        }
-      })
+      // resolvedRows here is the SERVER-resolved shape: { card, poolQty,
+      // deckQty } where card is a RawCard. Earlier this code was reading
+      // r.cardId (which doesn't exist on this shape) and producing empty
+      // truth rows.
+      const truthRows = resolvedRows.map((r) => ({
+        name: r.card.name,
+        subtitle: r.card.subtitle || null,
+        type: r.card.type,
+        poolQty: r.poolQty,
+        deckQty: r.deckQty,
+      }))
       saveCreateCapture(body.sessionId, {
         meta: {
           setCode: body.setCode,
