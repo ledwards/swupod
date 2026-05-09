@@ -273,32 +273,34 @@ export function buildAnomalies(input: AnomalyInput): Anomaly[] {
 
   // === HEURISTIC: per-section pool-count anomalies ===
   //
-  // Fire whenever a section's pool count is outside the tightened typical
-  // range, even if the total pool count is exactly at target. The
-  // canceling-mask case (e.g. casual-lee-law where Aggression −3 and
-  // Multicolor +1 net to 0) is invisible to total-pool checks; per-section
-  // sums are the only way to catch it.
-  for (const range of SECTION_RANGES) {
-    const inSec = resolvedRows.filter(
-      (r) => r.card && !r.card.isLeader && !r.card.isBase && sectionForRow(r) === range.key,
-    )
-    const poolInSec = inSec.reduce((s, r) => s + r.poolQty, 0)
-    if (poolInSec < range.low) {
-      list.push({
-        key: `sectionPoolShort:${range.key}`,
-        kind: 'section',
-        targetId: `ip-section-${range.key.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-        label: `${range.key}: ${poolInSec} cards in pool — typical sealed pool has ${range.low}-${range.high}. Possibly missed marks.`,
-        sectionName: range.key,
-      })
-    } else if (poolInSec > range.high) {
-      list.push({
-        key: `sectionPoolOver:${range.key}`,
-        kind: 'section',
-        targetId: `ip-section-${range.key.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-        label: `${range.key}: ${poolInSec} cards in pool — typical sealed pool has ${range.low}-${range.high}. Possibly extra marks.`,
-        sectionName: range.key,
-      })
+  // Fire ONLY when the total pool count is off — extraction missed or
+  // fabricated cards somewhere, and the section count is also abnormal.
+  // A clean total (96/96) means we have no reason to doubt section sums
+  // even if they're at the low end of the typical range.
+  const poolOffTotal = poolCount !== poolTarget
+  if (poolOffTotal) {
+    for (const range of SECTION_RANGES) {
+      const inSec = resolvedRows.filter(
+        (r) => r.card && !r.card.isLeader && !r.card.isBase && sectionForRow(r) === range.key,
+      )
+      const poolInSec = inSec.reduce((s, r) => s + r.poolQty, 0)
+      if (poolInSec < range.low) {
+        list.push({
+          key: `sectionPoolShort:${range.key}`,
+          kind: 'section',
+          targetId: `ip-section-${range.key.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+          label: `${range.key}: ${poolInSec} cards in pool — typical sealed pool has ${range.low}-${range.high}. Possibly missed marks.`,
+          sectionName: range.key,
+        })
+      } else if (poolInSec > range.high) {
+        list.push({
+          key: `sectionPoolOver:${range.key}`,
+          kind: 'section',
+          targetId: `ip-section-${range.key.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+          label: `${range.key}: ${poolInSec} cards in pool — typical sealed pool has ${range.low}-${range.high}. Possibly extra marks.`,
+          sectionName: range.key,
+        })
+      }
     }
   }
 
@@ -306,29 +308,30 @@ export function buildAnomalies(input: AnomalyInput): Anomaly[] {
   //
   // When extraction fails on a whole section's deck column (Opus skipped
   // the column for that section's bounding box), the section ends up with
-  // poolQty>=1 cards that all have deckQty=0. The structural fingerprint
-  // is: section's pool >= 5 cards, but deck cards in that section is 0–1.
+  // poolQty>=1 cards that all have deckQty=0. Fingerprint: section's
+  // pool >= 5 with deck cards 0–1.
   //
-  // For the data we measured: sq-lee-law Aggression had 18 pool / 1 deck
-  // and sq-lee-law Cunning had 16 pool / 0 deck — clearly columnar failure
-  // affecting ~10 wrong_deck rows in each section. A single section-level
-  // anomaly here points the user at an entire affected section; catching
-  // any wrong_deck in that section then becomes a matter of ALL of those
-  // rows now being attributed to the section flag.
-  for (const range of SECTION_RANGES) {
-    const inSec = resolvedRows.filter(
-      (r) => r.card && !r.card.isLeader && !r.card.isBase && sectionForRow(r) === range.key,
-    )
-    const poolInSec = inSec.reduce((s, r) => s + r.poolQty, 0)
-    const deckInSec = inSec.reduce((s, r) => s + r.deckQty, 0)
-    if (poolInSec >= 5 && deckInSec <= 1) {
-      list.push({
-        key: `sectionDeckImbalance:${range.key}`,
-        kind: 'section',
-        targetId: `ip-section-${range.key.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-        label: `${range.key}: ${poolInSec} cards in pool but ${deckInSec} marked played — verify deck column for this section`,
-        sectionName: range.key,
-      })
+  // GATE: only fires when the total deck count is short (extraction
+  // missed deck marks somewhere). A clean deck total of 30+ means the
+  // section having pool 13 / deck 0 is just "user didn't include any
+  // Aggression in their deck" — nothing to flag.
+  const deckOffShort = deckCount < deckTarget
+  if (deckOffShort) {
+    for (const range of SECTION_RANGES) {
+      const inSec = resolvedRows.filter(
+        (r) => r.card && !r.card.isLeader && !r.card.isBase && sectionForRow(r) === range.key,
+      )
+      const poolInSec = inSec.reduce((s, r) => s + r.poolQty, 0)
+      const deckInSec = inSec.reduce((s, r) => s + r.deckQty, 0)
+      if (poolInSec >= 5 && deckInSec <= 1) {
+        list.push({
+          key: `sectionDeckImbalance:${range.key}`,
+          kind: 'section',
+          targetId: `ip-section-${range.key.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+          label: `${range.key}: ${poolInSec} cards in pool but ${deckInSec} marked played — verify deck column for this section`,
+          sectionName: range.key,
+        })
+      }
     }
   }
 
