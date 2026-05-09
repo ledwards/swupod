@@ -295,6 +295,7 @@ export function SideBySideTable({
   issueRowKeys,
   hideSubGroups,
   onDismissRow,
+  sortBy = 'name',
 }: {
   rows: ResolvedRow[]
   setRowQty: (key: string, field: 'poolQty' | 'deckQty', value: number) => void
@@ -310,6 +311,10 @@ export function SideBySideTable({
   /** Called when the user clicks ✓ on a flagged row — dismisses associated
    *  anomalies. Without this, no checkmark renders. */
   onDismissRow?: (rowKey: string) => void
+  /** Within-group row sort. Default 'name' matches most printed sheets;
+   *  Leaders specifically uses 'cardNumber' because that section's sheet
+   *  template lists by number. */
+  sortBy?: 'name' | 'cardNumber'
 }) {
   // Determine the section's primary aspect from any row that has one.
   // (All rows passed in already share a section.) For Multicolor sections —
@@ -339,13 +344,21 @@ export function SideBySideTable({
       groups.get(k)!.push(r)
     }
     const sortedKeys = [...groups.keys()].sort((a, b) => compareSubKeysForSection(a, b, primary))
+    const cardNumOf = (r: ResolvedRow) => {
+      const m = (r.card?.cardId || '').match(/(\d+)$/)
+      return m ? parseInt(m[1], 10) : 999999
+    }
+    const sortRows = (rs: ResolvedRow[]) =>
+      sortBy === 'cardNumber'
+        ? [...rs].sort((a, b) => cardNumOf(a) - cardNumOf(b))
+        : [...rs].sort((a, b) =>
+            (a.card?.name || a.extracted.name || '').localeCompare(b.card?.name || b.extracted.name || ''),
+          )
     return sortedKeys.map((key) => ({
       key,
-      rows: groups.get(key)!.sort((a, b) =>
-        (a.card?.name || a.extracted.name || '').localeCompare(b.card?.name || b.extracted.name || ''),
-      ),
+      rows: sortRows(groups.get(key)!),
     }))
-  }, [rows, primary])
+  }, [rows, primary, sortBy])
 
   return (
     <div className="ip-source-modal__pane">
@@ -357,8 +370,8 @@ export function SideBySideTable({
         </colgroup>
         <thead>
           <tr>
-            <th>PLAYED</th>
-            <th>TOTAL</th>
+            <th>PLAYED ({rows.reduce((s, r) => s + r.deckQty, 0)})</th>
+            <th>TOTAL ({rows.reduce((s, r) => s + r.poolQty, 0)})</th>
             <th>NAME</th>
           </tr>
         </thead>

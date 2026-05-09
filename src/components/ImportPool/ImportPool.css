@@ -1812,17 +1812,20 @@
 
 .ip-section-tab__badge {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  padding: 0;
   background: rgba(255, 217, 102, 0.95);
   color: #1a1a00;
   font-size: 10px;
   font-weight: 700;
-  line-height: 16px;
-  border-radius: 8px;
+  line-height: 1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 

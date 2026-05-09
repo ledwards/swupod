@@ -573,6 +573,9 @@ function SectionPanel({
             issueRowKeys={issueRowKeys}
             hideSubGroups={hideSubGroups}
             onDismissRow={onDismissRow}
+            // Leaders sheet template lists by card number; everywhere else
+            // sorts alphabetically (matches what's printed).
+            sortBy={activeSection.key === 'leaders' ? 'cardNumber' : 'name'}
           />
         )}
       </div>
