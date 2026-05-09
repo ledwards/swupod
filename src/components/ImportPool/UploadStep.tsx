@@ -61,7 +61,7 @@ export default function UploadStep({ importPool }: Props) {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif"
+              accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif"
               capture="environment"
               multiple={state.images.length === 0}
               onChange={handleFileChange}

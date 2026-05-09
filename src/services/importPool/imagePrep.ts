@@ -20,6 +20,11 @@
  */
 
 const VALID_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+// iPhone's "High Efficiency" capture format. Browser canvas can't decode
+// HEIC natively (Safari included for non-image-tag use), so we convert to
+// JPEG client-side via heic2any (lazy-loaded only when needed).
+const HEIC_MIMES = new Set(['image/heic', 'image/heif'])
+const HEIC_EXT = /\.(heic|heif)$/i
 
 export interface ProcessedImage {
   /** Base64 string of the ORIGINAL file bytes (no data URL prefix) */
@@ -47,9 +52,20 @@ export async function resizeImage(
   file: File,
   _opts: ResizeOptions = {},
 ): Promise<ProcessedImage> {
+  // HEIC handling: iPhone's default photo format. Browser-side canvas
+  // can't decode HEIC for our preview pipeline, AND Claude expects
+  // JPEG/PNG/WEBP/GIF. Convert client-side via heic2any (lazy-loaded
+  // ~600KB chunk only when an HEIC file is actually picked).
+  if (HEIC_MIMES.has(file.type) || HEIC_EXT.test(file.name)) {
+    const heic2any = (await import('heic2any')).default
+    const converted = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.92 })
+    const blob = Array.isArray(converted) ? converted[0] : (converted as Blob)
+    file = new File([blob], file.name.replace(HEIC_EXT, '.jpg'), { type: 'image/jpeg' })
+  }
+
   if (!VALID_MIMES.has(file.type)) {
     throw new Error(
-      `Unsupported file type "${file.type}". Allowed: ${[...VALID_MIMES].join(', ')}`,
+      `Unsupported file type "${file.type}". Allowed: ${[...VALID_MIMES, ...HEIC_MIMES].join(', ')}`,
     )
   }
 
