@@ -96,8 +96,13 @@ export async function parseBody<T = Record<string, unknown>>(request: Request): 
   try {
     // Next.js Request already has .json() method
     return await request.json() as T
-  } catch {
-    throw new Error('Invalid JSON body')
+  } catch (err) {
+    // Surface the underlying reason so failures aren't always opaque.
+    // Common causes: body truncated by upstream proxy (413), body never
+    // sent, or genuine syntax error.
+    const cl = request.headers?.get?.('content-length') || 'unknown'
+    const detail = err instanceof Error ? err.message : String(err)
+    throw new Error(`Invalid JSON body (content-length=${cl}, parser: ${detail})`)
   }
 }
 

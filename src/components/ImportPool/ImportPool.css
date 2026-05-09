@@ -103,6 +103,12 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 16px;
+  /* Constrain text selection so highlights don't bleed past the wizard
+   * column. `isolation` creates a new stacking context; `contain: layout`
+   * tells the browser this subtree's box decisions don't affect outside
+   * elements, which also clips selection rectangles to it. */
+  isolation: isolate;
+  contain: layout;
 }
 
 .import-pool-header__top {

@@ -58,7 +58,11 @@ export async function resizeImage(
   // ~600KB chunk only when an HEIC file is actually picked).
   if (HEIC_MIMES.has(file.type) || HEIC_EXT.test(file.name)) {
     const heic2any = (await import('heic2any')).default
-    const converted = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.92 })
+    // 0.82 quality keeps OMR fidelity (handwritten marks read fine) while
+    // shaving ~30% off the JPEG size vs 0.92. Important because heic2any's
+    // output JPEGs at high quality balloon vs the original HEIC and were
+    // pushing combined uploads past server-side limits.
+    const converted = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.82 })
     const blob = Array.isArray(converted) ? converted[0] : (converted as Blob)
     file = new File([blob], file.name.replace(HEIC_EXT, '.jpg'), { type: 'image/jpeg' })
   }
