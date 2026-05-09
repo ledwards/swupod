@@ -570,6 +570,16 @@ interface ExtractOptions {
   setHint?: string
   /** Cap on refine iterations. Default 4 — average API roundtrip is ~15s, so 4 keeps us under the 60s route timeout. */
   maxIterations?: number
+  /** Test/eval-only: when true, skip preprocessImageForExtraction and use the
+   *  caller-provided buffers as-is. Lets the eval harness apply parametric
+   *  conversion+resize+sharpen pipelines and feed already-prepared bytes.
+   *  Production code should never set this. */
+  skipPreprocess?: boolean
+  /** Test/eval-only: override what the OMR sidecar sees. Production passes
+   *  the same `originalBuffers` to the sidecar that came from the caller,
+   *  but the eval harness wants to vary sidecar input independently from
+   *  Phase 1 input to isolate which preprocessing helps which step. */
+  sidecarBuffers?: Buffer[]
 }
 
 export interface ExtractIterationLog {
@@ -1431,7 +1441,7 @@ export async function extractPoolFromImagesWholeTable(
   const originalBuffers: Buffer[] = images.map((img) => Buffer.from(img.data, 'base64'))
   const preprocessedBuffers: Buffer[] = []
   for (const buf of originalBuffers) {
-    preprocessedBuffers.push(await preprocessImageForExtraction(buf))
+    preprocessedBuffers.push(opts.skipPreprocess ? buf : await preprocessImageForExtraction(buf))
   }
   const preprocessedInputs: ImageInput[] = preprocessedBuffers.map((buf) => ({
     data: buf.toString('base64'),
@@ -1458,7 +1468,7 @@ export async function extractPoolFromImagesWholeTable(
 
   // Phase 2: OMR sidecar (Python) + per-table whole-table Claude calls.
   const phase2Start = Date.now()
-  const sidecar = await runOmrSidecar(originalBuffers)
+  const sidecar = await runOmrSidecar(opts.sidecarBuffers || originalBuffers)
   if (sidecar.warnings.length > 0) {
     for (const w of sidecar.warnings) console.warn(`[omr-sidecar] ${w}`)
   }
