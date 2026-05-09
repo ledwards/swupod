@@ -72,15 +72,53 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       )
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer())
-    const ext = (file.type.split('/')[1] || 'bin').replace(/\W/g, '')
-    const key = `import-uploads/${session.id}/${Date.now()}-${randomBytes(4).toString('hex')}.${ext}`
-    await uploadPhoto(key, buffer, file.type)
+    let buffer = Buffer.from(await file.arrayBuffer())
+    let storedType = file.type
+    let storedExt = (file.type.split('/')[1] || 'bin').replace(/\W/g, '')
+
+    // HEIC/HEIF — convert to JPEG immediately on upload, store the JPEG.
+    // Two reasons: (1) browsers other than Safari can't display HEIC inline,
+    // so the wizard's previewUrl rendered nothing for Chrome users; (2) the
+    // server's section-bounds (returned by Claude after seeing the converted
+    // JPEG) wouldn't line up with the original-HEIC dimensions if the
+    // browser somehow rotated the HEIC differently from sharp's .rotate().
+    // Storing the JPEG ensures client preview and server analysis see byte-
+    // identical images. Try sharp first (libvips with libheif on macOS),
+    // fall back to heic-convert (its own bundled decoder) for Linux/Railway.
+    if (file.type === 'image/heic' || file.type === 'image/heif') {
+      let converted: Buffer | null = null
+      try {
+        const sharp = (await import('sharp')).default
+        converted = await sharp(buffer).rotate().jpeg({ quality: 100 }).toBuffer()
+      } catch {
+        // sharp's libvips lacks HEVC decoder on Linux; fall through.
+      }
+      if (!converted) {
+        const convert = (await import('heic-convert')).default
+        const arrayBuffer = await convert({ buffer, format: 'JPEG', quality: 1 })
+        converted = Buffer.from(arrayBuffer)
+      }
+      buffer = converted
+      storedType = 'image/jpeg'
+      storedExt = 'jpg'
+    }
+
+    const key = `import-uploads/${session.id}/${Date.now()}-${randomBytes(4).toString('hex')}.${storedExt}`
+    await uploadPhoto(key, buffer, storedType)
+
+    // For HEIC uploads, also return the converted JPEG bytes as a data URL
+    // so the wizard's <img> previews work in any browser without needing a
+    // second round-trip to fetch from R2/tmp.
+    const previewDataUrl =
+      file.type === 'image/heic' || file.type === 'image/heif'
+        ? `data:${storedType};base64,${buffer.toString('base64')}`
+        : null
 
     return jsonResponse({
       key,
-      mediaType: file.type,
-      sizeBytes: file.size,
+      mediaType: storedType,
+      sizeBytes: buffer.length,
+      previewDataUrl,
     })
   } catch (error) {
     return handleApiError(error as Error)

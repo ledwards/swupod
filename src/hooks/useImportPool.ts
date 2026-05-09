@@ -819,6 +819,17 @@ export function useImportPool() {
       }
       processed.photoKey = upBody.key
 
+      // For HEIC uploads the server converts to JPEG and returns the converted
+      // bytes — replace the (unrenderable in Chrome) HEIC previewUrl with the
+      // JPEG one so the thumbnail and source-image modal both render. This
+      // also means the source-modal's natural width/height match what the
+      // server sent to Claude, so section bounds line up correctly.
+      if (upBody.previewDataUrl && typeof upBody.previewDataUrl === 'string') {
+        processed.previewUrl = upBody.previewDataUrl
+        processed.mediaType = (upBody.mediaType || processed.mediaType) as ProcessedImage['mediaType']
+        processed.sizeBytes = upBody.sizeBytes ?? processed.sizeBytes
+      }
+
       dispatch({ type: 'ADD_IMAGE', image: processed })
     } catch (err) {
       dispatch({
