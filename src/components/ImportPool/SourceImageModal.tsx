@@ -216,9 +216,38 @@ export default function SourceImageModal({
  * Data flows through the same setRowQty / setActiveLeader / setActiveBase
  * callbacks the main page uses, so closing the modal preserves edits.
  *
- * Sort order: alphabetical by card name — matches the printed sheet on
- * the left so eye-tracking lines up.
+ * Order matches the printed sheet:
+ *   - Group rows by aspect-combination (sub-section)
+ *   - Sub-sections in canonical order (pure first, then secondary-aspect
+ *     doubles by V, C, A, U, H, V order)
+ *   - Within each sub-section, alphabetical by card name
  */
+const MAIN_SET = new Set(['Vigilance', 'Command', 'Aggression', 'Cunning'])
+const SECONDARY_SET = new Set(['Heroism', 'Villainy'])
+const ASPECT_RANK = ['Vigilance', 'Command', 'Aggression', 'Cunning', 'Heroism', 'Villainy']
+
+function subKeyForRow(row: ResolvedRow): string {
+  const aspects: string[] = (row.card?.aspects || []).slice().sort((a, b) => ASPECT_RANK.indexOf(a) - ASPECT_RANK.indexOf(b))
+  if (aspects.length === 0) return 'neutral'
+  return aspects.join('_').toLowerCase()
+}
+
+function compareSubKeysForSection(a: string, b: string, primary: string): number {
+  // Pure single aspect first, then secondary-aspect doubles (Heroism / Villainy)
+  // by canonical order, then any other doubles. Mirrors the printed sheet
+  // sub-sections so side-by-side scanning lines up.
+  const score = (k: string): number => {
+    if (k === '_unresolved') return 1_000_000
+    const parts = k.split('_').filter(Boolean)
+    if (parts.length === 1) return 0 // pure first
+    const other = parts.find((p) => p.toLowerCase() !== primary.toLowerCase())
+    if (!other) return 50
+    const idx = ASPECT_RANK.findIndex((a) => a.toLowerCase() === other)
+    return 100 + (idx >= 0 ? idx : 50)
+  }
+  return score(a) - score(b)
+}
+
 function SideBySideTable({
   rows,
   setRowQty,
@@ -234,15 +263,34 @@ function SideBySideTable({
   activeLeaderId: string | null
   activeBaseId: string | null
 }) {
-  const sortedRows = useMemo(
-    () =>
-      [...rows].sort((a, b) =>
-        (a.card?.name || a.extracted.name || '').localeCompare(
-          b.card?.name || b.extracted.name || '',
-        ),
+  // Determine the section's primary aspect from any row that has one.
+  // (All rows passed in already share a section.)
+  const primary = useMemo(() => {
+    for (const r of rows) {
+      const aspects = r.card?.aspects || []
+      const main = aspects.find((a) => MAIN_SET.has(a))
+      if (main) return main
+      const sec = aspects.find((a) => SECONDARY_SET.has(a))
+      if (sec) return sec
+    }
+    return ''
+  }, [rows])
+
+  const subGroups = useMemo(() => {
+    const groups = new Map<string, ResolvedRow[]>()
+    for (const r of rows) {
+      const k = subKeyForRow(r)
+      if (!groups.has(k)) groups.set(k, [])
+      groups.get(k)!.push(r)
+    }
+    const sortedKeys = [...groups.keys()].sort((a, b) => compareSubKeysForSection(a, b, primary))
+    return sortedKeys.map((key) => ({
+      key,
+      rows: groups.get(key)!.sort((a, b) =>
+        (a.card?.name || a.extracted.name || '').localeCompare(b.card?.name || b.extracted.name || ''),
       ),
-    [rows],
-  )
+    }))
+  }, [rows, primary])
 
   return (
     <div className="ip-source-modal__pane">
@@ -260,57 +308,67 @@ function SideBySideTable({
           </tr>
         </thead>
         <tbody>
-          {sortedRows.map((row) => {
-            const isLeader = !!row.card?.isLeader
-            const isBase = !!row.card?.isBase
-            const isActiveLeader = !!row.card && row.card.id === activeLeaderId
-            const isActiveBase = !!row.card && row.card.id === activeBaseId
-            const isActive = isActiveLeader || isActiveBase
-            return (
-              <tr key={row.key} className="ip-source-modal__row">
-                <td className="ip-source-modal__cell ip-source-modal__cell--qty">
-                  {isLeader || isBase ? (
-                    <button
-                      type="button"
-                      className={`ip-source-modal__qty-toggle ${isActive ? 'ip-source-modal__qty-toggle--active' : ''}`}
-                      onClick={() => {
-                        if (!row.card) return
-                        if (isLeader && setActiveLeader) setActiveLeader(row.card.id)
-                        else if (isBase && setActiveBase) setActiveBase(row.card.id)
-                      }}
-                      title={isActive ? 'Active selection' : `Set as active ${isLeader ? 'leader' : 'base'}`}
-                    >
-                      {row.deckQty}
-                    </button>
-                  ) : (
-                    <QtyControls
-                      value={row.deckQty}
-                      onInc={() => setRowQty(row.key, 'deckQty', row.deckQty + 1)}
-                      onDec={() => setRowQty(row.key, 'deckQty', row.deckQty - 1)}
-                      disableInc={row.deckQty >= row.poolQty || row.deckQty >= 6}
-                      disableDec={row.deckQty <= 0}
-                    />
-                  )}
-                </td>
-                <td className="ip-source-modal__cell ip-source-modal__cell--qty">
-                  {isLeader || isBase ? (
-                    <span className="ip-source-modal__qty-static">{row.poolQty}</span>
-                  ) : (
-                    <QtyControls
-                      value={row.poolQty}
-                      onInc={() => setRowQty(row.key, 'poolQty', row.poolQty + 1)}
-                      onDec={() => setRowQty(row.key, 'poolQty', row.poolQty - 1)}
-                      disableInc={row.poolQty >= 6}
-                      disableDec={row.poolQty <= 0}
-                    />
-                  )}
-                </td>
-                <td className="ip-source-modal__cell ip-source-modal__cell--name">
-                  <strong>{row.card?.name || row.extracted.name || 'Unrecognized'}</strong>
-                  {row.card?.subtitle && <em> — {row.card.subtitle}</em>}
-                </td>
-              </tr>
-            )
+          {subGroups.flatMap((group, gi) => {
+            const dividerRow = gi > 0
+              ? [
+                  <tr key={`sub-${group.key}`} className="ip-source-modal__sub-divider">
+                    <td colSpan={3}></td>
+                  </tr>,
+                ]
+              : []
+            const dataRows = group.rows.map((row) => {
+              const isLeader = !!row.card?.isLeader
+              const isBase = !!row.card?.isBase
+              const isActiveLeader = !!row.card && row.card.id === activeLeaderId
+              const isActiveBase = !!row.card && row.card.id === activeBaseId
+              const isActive = isActiveLeader || isActiveBase
+              return (
+                <tr key={row.key} className="ip-source-modal__row">
+                  <td className="ip-source-modal__cell ip-source-modal__cell--qty">
+                    {isLeader || isBase ? (
+                      <button
+                        type="button"
+                        className={`ip-source-modal__qty-toggle ${isActive ? 'ip-source-modal__qty-toggle--active' : ''}`}
+                        onClick={() => {
+                          if (!row.card) return
+                          if (isLeader && setActiveLeader) setActiveLeader(row.card.id)
+                          else if (isBase && setActiveBase) setActiveBase(row.card.id)
+                        }}
+                        title={isActive ? 'Active selection' : `Set as active ${isLeader ? 'leader' : 'base'}`}
+                      >
+                        {row.deckQty}
+                      </button>
+                    ) : (
+                      <QtyControls
+                        value={row.deckQty}
+                        onInc={() => setRowQty(row.key, 'deckQty', row.deckQty + 1)}
+                        onDec={() => setRowQty(row.key, 'deckQty', row.deckQty - 1)}
+                        disableInc={row.deckQty >= row.poolQty || row.deckQty >= 6}
+                        disableDec={row.deckQty <= 0}
+                      />
+                    )}
+                  </td>
+                  <td className="ip-source-modal__cell ip-source-modal__cell--qty">
+                    {isLeader || isBase ? (
+                      <span className="ip-source-modal__qty-static">{row.poolQty}</span>
+                    ) : (
+                      <QtyControls
+                        value={row.poolQty}
+                        onInc={() => setRowQty(row.key, 'poolQty', row.poolQty + 1)}
+                        onDec={() => setRowQty(row.key, 'poolQty', row.poolQty - 1)}
+                        disableInc={row.poolQty >= 6}
+                        disableDec={row.poolQty <= 0}
+                      />
+                    )}
+                  </td>
+                  <td className="ip-source-modal__cell ip-source-modal__cell--name">
+                    <strong>{row.card?.name || row.extracted.name || 'Unrecognized'}</strong>
+                    {row.card?.subtitle && <em> — {row.card.subtitle}</em>}
+                  </td>
+                </tr>
+              )
+            })
+            return [...dividerRow, ...dataRows]
           })}
         </tbody>
       </table>

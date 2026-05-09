@@ -1606,12 +1606,15 @@
 
 .ip-source-modal__viewport {
   flex: 1 1 50%;
-  /* Default: clip to viewport — image is sized to fit, no scrolling. */
-  overflow: hidden;
+  /* Image takes natural aspect-ratio height; pane scrolls vertically.
+   * Lee accepted "scrollable OR fit-to-window" — scrollable is the
+   * reliable option that actually renders. */
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 12px;
   background: #000;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   min-height: 0;
   min-width: 0;
@@ -1651,6 +1654,16 @@
 
 .ip-source-modal__table tbody tr:nth-child(even) {
   background: rgba(255, 255, 255, 0.02);
+}
+
+/* Sub-aspect group divider — mirrors the section sub-bands on the printed
+ * sheet so the modal table reads as the same visual grouping. */
+.ip-source-modal__sub-divider td {
+  height: 8px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .ip-source-modal__col-played { width: 70px; }
@@ -1775,9 +1788,7 @@
   flex-direction: column;
   gap: 8px;
   width: 100%;
-  height: 100%;
   align-items: center;
-  justify-content: center;
 }
 
 .ip-source-crop {
@@ -1785,12 +1796,7 @@
   flex-direction: column;
   gap: 4px;
   align-items: center;
-  /* Each crop fills the viewport height so its aspect-ratio'd inner box
-   * derives width from height. With multiple crops (multi-page sections)
-   * they share the height equally via flex 1 1 0. */
-  flex: 1 1 0;
-  min-height: 0;
-  max-width: 100%;
+  width: 100%;
 }
 
 .ip-source-crop__caption {
@@ -1801,16 +1807,12 @@
   flex: 0 0 auto;
 }
 
-/* Default mode (not zoomed): box height = available flex slot, width =
- * height * aspect. Browser computes width from aspect-ratio when only
- * height is constrained. Capped at max-width so a wide section doesn't
- * overflow horizontally. */
+/* Width fills the pane; height derived from inline aspect-ratio. Tall
+ * sections produce tall boxes that scroll within the pane. */
 .ip-source-crop__viewport {
   position: relative;
   /* aspect-ratio set inline by SourceImageModal */
-  flex: 1 1 0;
-  min-height: 0;
-  width: auto;
+  width: 100%;
   max-width: 100%;
   overflow: hidden;
   background: #111;
@@ -1819,24 +1821,10 @@
   cursor: zoom-in;
 }
 
-/* Zoomed mode: full width, scrollable vertically — for a closer look. */
-.ip-source-modal__viewport.is-zoomed {
-  overflow-y: auto;
-  align-items: flex-start;
-}
-.ip-source-modal__viewport.is-zoomed .ip-source-modal__crops {
-  height: auto;
-  justify-content: flex-start;
-}
-.ip-source-modal__viewport.is-zoomed .ip-source-crop {
-  flex: 0 0 auto;
-}
 .ip-source-modal__viewport.is-zoomed .ip-source-crop__viewport {
-  flex: 0 0 auto;
   cursor: zoom-out;
-  height: auto;
-  width: 100%;
-  max-width: 100%;
+  width: 200%;
+  max-width: none;
 }
 
 .ip-source-modal__hint {

@@ -501,6 +501,10 @@ interface SlimPersisted {
   viewMode: 'table' | 'grid'
   /** Optional for back-compat with state persisted before this field existed. */
   dismissedAnomalyKeys?: string[]
+  /** Section-level state from the extraction. Without these, refreshing on
+   *  Step 2 would lose section anomalies and the source-image crop bounds. */
+  sectionGaps?: SectionGap[]
+  sectionBounds?: SectionBounds[]
 }
 
 function persistedShape(state: ImportPoolState): SlimPersisted {
@@ -529,6 +533,8 @@ function persistedShape(state: ImportPoolState): SlimPersisted {
     viewFilter: state.viewFilter,
     viewMode: state.viewMode,
     dismissedAnomalyKeys: state.dismissedAnomalyKeys,
+    sectionGaps: state.sectionGaps,
+    sectionBounds: state.sectionBounds,
   }
 }
 
@@ -589,6 +595,8 @@ function hydrate(slim: SlimPersisted): Partial<ImportPoolState> {
     viewFilter: slim.viewFilter ?? 'pool',
     viewMode: slim.viewMode ?? 'table',
     dismissedAnomalyKeys: slim.dismissedAnomalyKeys ?? [],
+    sectionGaps: slim.sectionGaps ?? [],
+    sectionBounds: slim.sectionBounds ?? [],
   }
 }
 
