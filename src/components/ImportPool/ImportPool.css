@@ -1666,6 +1666,169 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 }
 
+/* Issue row highlight — yellow tint for rows flagged by anomaly logic. */
+.ip-source-modal__row--flagged {
+  background: rgba(255, 217, 102, 0.12) !important;
+}
+.ip-source-modal__row--flagged .ip-source-modal__cell--name strong {
+  color: #ffe699;
+}
+
+/* === Step-2 tabbed section pager === */
+
+.ip-section-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 8px 0;
+  margin: 12px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ip-section-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ip-section-tab:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.ip-section-tab--active {
+  background: rgba(33, 150, 243, 0.2);
+  border-color: rgba(33, 150, 243, 0.7);
+  box-shadow: 0 0 0 1px rgba(33, 150, 243, 0.4);
+}
+
+.ip-section-tab--has-issues {
+  border-color: rgba(255, 217, 102, 0.6);
+}
+
+.ip-section-tab__letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: white;
+  background-clip: padding-box;
+}
+
+.ip-section-tab__badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background: rgba(255, 217, 102, 0.95);
+  color: #1a1a00;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Section pager: tall arrows on either side of the side-by-side panel. */
+.ip-section-pager {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  margin: 0 0 16px;
+  min-height: 60vh;
+}
+
+.ip-section-pager__arrow {
+  flex: 0 0 auto;
+  width: 48px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ip-section-pager__arrow:not(:disabled):hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.ip-section-pager__arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.ip-section-panel {
+  flex: 1 1 auto;
+  display: flex;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.ip-section-panel__image {
+  flex: 1 1 50%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px;
+  background: #000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 0;
+}
+
+.ip-section-panel__crops {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  align-items: center;
+}
+
+.ip-section-panel__table {
+  flex: 1 1 50%;
+  min-width: 0;
+  overflow: auto;
+  padding: 8px 12px;
+  background: #0a0a0a;
+}
+
+.ip-section-panel__empty {
+  padding: 20px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  text-align: center;
+}
+
 .ip-source-modal__col-played { width: 70px; }
 .ip-source-modal__col-total  { width: 70px; }
 .ip-source-modal__col-name   { width: auto; }

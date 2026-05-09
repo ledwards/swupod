@@ -248,13 +248,14 @@ function compareSubKeysForSection(a: string, b: string, primary: string): number
   return score(a) - score(b)
 }
 
-function SideBySideTable({
+export function SideBySideTable({
   rows,
   setRowQty,
   setActiveLeader,
   setActiveBase,
   activeLeaderId,
   activeBaseId,
+  issueRowKeys,
 }: {
   rows: ResolvedRow[]
   setRowQty: (key: string, field: 'poolQty' | 'deckQty', value: number) => void
@@ -262,6 +263,8 @@ function SideBySideTable({
   setActiveBase?: (cardId: string) => void
   activeLeaderId: string | null
   activeBaseId: string | null
+  /** Row keys flagged by the anomaly logic — get a yellow row tint. */
+  issueRowKeys?: Set<string>
 }) {
   // Determine the section's primary aspect from any row that has one.
   // (All rows passed in already share a section.)
@@ -322,8 +325,9 @@ function SideBySideTable({
               const isActiveLeader = !!row.card && row.card.id === activeLeaderId
               const isActiveBase = !!row.card && row.card.id === activeBaseId
               const isActive = isActiveLeader || isActiveBase
+              const flagged = issueRowKeys?.has(row.key)
               return (
-                <tr key={row.key} className="ip-source-modal__row">
+                <tr key={row.key} className={`ip-source-modal__row ${flagged ? 'ip-source-modal__row--flagged' : ''}`}>
                   <td className="ip-source-modal__cell ip-source-modal__cell--qty">
                     {isLeader || isBase ? (
                       <button
@@ -402,7 +406,7 @@ function QtyControls({
  *  fixed-aspect-ratio container clipping a positioned <img> rather than a
  *  canvas crop so the original photo's natural resolution is preserved (no
  *  re-encoding) and so the browser handles decoding/scaling. */
-function CroppedView({
+export function CroppedView({
   src,
   naturalWidth,
   naturalHeight,

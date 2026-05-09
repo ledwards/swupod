@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Button from '../Button'
 import { AspectIcon } from '../AspectIcon'
 import CardPickerModal from './CardPickerModal'
-import SourceImageModal from './SourceImageModal'
+import { SideBySideTable, CroppedView } from './SourceImageModal'
 import { CardPreview } from '../DeckBuilder/CardPreview'
 import { useCardPreview } from '../../hooks/useCardPreview'
 import {
@@ -176,354 +176,112 @@ export default function ResolveStep({ importPool }: Props) {
 
   const currentAnomalyLabel = anomalies[anomalyIndex]?.label || ''
 
+  // Build the SECTION_TABS list — 10 tabs in canonical sheet order.
+  // Each tab carries a label, an icon renderer, a row-predicate, and the
+  // bounds-name to match against state.sectionBounds for the image crop.
+  const sectionTabs = useMemo(() => buildSectionTabs(), [])
+
+  // Active tab state — defaults to first (Leaders) on mount.
+  const [activeSectionKey, setActiveSectionKey] = useState<string>(sectionTabs[0].key)
+  const activeIdx = sectionTabs.findIndex((t) => t.key === activeSectionKey)
+  const activeSection = sectionTabs[activeIdx >= 0 ? activeIdx : 0]
+  const prevSectionKey = activeIdx > 0 ? sectionTabs[activeIdx - 1].key : null
+  const nextSectionKey = activeIdx >= 0 && activeIdx < sectionTabs.length - 1
+    ? sectionTabs[activeIdx + 1].key : null
+
+  // Rows for the active section (alphabetical by name; SideBySideTable
+  // handles sub-grouping inside).
+  const activeRows = useMemo(
+    () => state.resolvedRows.filter((r) => activeSection.matches(r)),
+    [state.resolvedRows, activeSection],
+  )
+
+  // Issue rows for yellow-highlighting + per-tab counts.
+  const issueRowKeys = useMemo(() => {
+    const set = new Set<string>()
+    for (const a of anomalies) {
+      if (a.kind === 'row') {
+        const m = a.targetId.match(/^ip-row-(.+)$/)
+        if (m) set.add(m[1])
+      }
+    }
+    return set
+  }, [anomalies])
+
+  const issueCountsBySection = useMemo(() => {
+    const counts: Record<string, number> = {}
+    for (const tab of sectionTabs) {
+      counts[tab.key] = state.resolvedRows.filter(
+        (r) => tab.matches(r) && issueRowKeys.has(r.key),
+      ).length
+    }
+    return counts
+  }, [sectionTabs, state.resolvedRows, issueRowKeys])
+
   return (
     <section className="import-pool-step import-pool-step--resolve">
       <header className="import-pool-resolve-header">
         <h2>Review Pool Registration</h2>
-        <ImportSummaryAndIssues
-          poolCount={validation.poolCount}
-          poolTarget={validation.poolTarget}
-          deckCount={validation.deckCount}
-          deckTarget={validation.deckTarget}
-          anomalies={anomalies}
-          activeKey={anomalies[anomalyIndex]?.key ?? null}
-          onJump={(targetId) => scrollToTargetId(targetId)}
-          onDismiss={(key, idx) => {
-            // Auto-advance: dismiss this anomaly, then jump to the next remaining one.
-            dismissAnomaly(key)
-            // After dismissal the index shifts. The most natural next is the same
-            // index in the new (filtered) list. Done in a microtask so the
-            // dismissal has settled.
-            requestAnimationFrame(() => {
-              const remaining = anomalies.filter((a) => a.key !== key)
-              const nextIdx = Math.min(idx, Math.max(0, remaining.length - 1))
-              const next = remaining[nextIdx]
-              if (next) {
-                setAnomalyIndex(nextIdx)
-                scrollToTargetId(next.targetId)
-              }
-            })
-          }}
-          onView={(sectionName) => openSourceFor(sectionName)}
-          imagesAvailable={state.images.length > 0}
-        />
+        <RunningTotals validation={validation} />
+        <p className="import-pool-help">
+          Page through each section. Compare your printed sheet on the left against
+          the imported data on the right. Yellow rows are flagged — review carefully.
+        </p>
       </header>
 
-      <div className="ip-sticky-stack">
-      <div className="ip-toolbar">
-        <RunningTotals validation={validation} />
-        <div className="ip-toolbar__group">
-          <div className="ip-toggle-group" role="group" aria-label="View mode">
-            <Button
-              variant="toggle"
-              glowColor="blue"
-              size="sm"
-              active={state.viewMode === 'table'}
-              onClick={() => setViewMode('table')}
-              title="Table view"
-              aria-pressed={state.viewMode === 'table'}
-            >
-              <ViewToggleListIcon />
-            </Button>
-            <Button
-              variant="toggle"
-              glowColor="blue"
-              size="sm"
-              active={state.viewMode === 'grid'}
-              onClick={() => setViewMode('grid')}
-              title="Grid view"
-              aria-pressed={state.viewMode === 'grid'}
-            >
-              <ViewToggleGridIcon />
-            </Button>
-          </div>
-          <div className="ip-toggle-group" role="group" aria-label="Row filter">
-            <Button
-              variant="toggle"
-              glowColor="blue"
-              size="sm"
-              active={state.viewFilter === 'all'}
-              onClick={() => setViewFilter('all')}
-              title="Show all sheet rows"
-              aria-pressed={state.viewFilter === 'all'}
-            >
-              All
-            </Button>
-            <Button
-              variant="toggle"
-              glowColor="blue"
-              size="sm"
-              active={state.viewFilter === 'pool'}
-              onClick={() => setViewFilter('pool')}
-              title="Show only your pool"
-              aria-pressed={state.viewFilter === 'pool'}
-            >
-              Pool
-            </Button>
-            <Button
-              variant="toggle"
-              glowColor="blue"
-              size="sm"
-              active={state.viewFilter === 'deck'}
-              onClick={() => setViewFilter('deck')}
-              title="Show only your deck"
-              aria-pressed={state.viewFilter === 'deck'}
-            >
-              Deck
-            </Button>
-          </div>
-          {/* Issue pager always renders so the user knows we're checking;
-              when there are no anomalies it shows "0 issues" with the arrows
-              disabled. find/replace UI pattern. */}
-          <div
-            className={`ip-error-pager ${anomalies.length === 0 ? 'ip-error-pager--clean' : ''}`}
-            role="group"
-            aria-label="Issue navigator"
-          >
-            <button
-              type="button"
-              className="ip-error-pager__btn"
-              onClick={() => goToAnomaly(-1)}
-              title="Previous issue"
-              aria-label="Previous issue"
-              disabled={anomalies.length === 0}
-            >
-              ←
-            </button>
-            <span className="ip-error-pager__label" title={currentAnomalyLabel}>
-              {anomalies.length === 0
-                ? 'No issues'
-                : `Issue ${anomalyIndex + 1}/${anomalies.length}`}
-            </span>
-            <button
-              type="button"
-              className="ip-error-pager__btn"
-              onClick={() => goToAnomaly(1)}
-              title="Next issue"
-              aria-label="Next issue"
-              disabled={anomalies.length === 0}
-            >
-              →
-            </button>
-          </div>
-          <button
-            type="button"
-            className="ip-icon-btn"
-            onClick={() => openSourceFor(null)}
-            title={state.images.length > 0 ? 'View source sheet' : 'Source images aren’t loaded — re-upload to see them'}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <path d="M21 21l-4.35-4.35" />
-            </svg>
-            <span className="ip-icon-btn__label">Source</span>
-          </button>
-        </div>
-      </div>
-      {anomalies.length > 0 && currentAnomalyLabel && (
-        <div className="ip-anomaly-detail">
-          <strong>Issue {anomalyIndex + 1}:</strong> {currentAnomalyLabel}
-          {/* Jump-to-row arrow — scrolls the table to the affected row.
-              The pager arrows (prev/next) already do this on traversal;
-              this button gives the same affordance an explicit click target. */}
-          <button
-            type="button"
-            className="ip-anomaly-source-btn"
-            onClick={jumpToCurrentAnomaly}
-            title="Jump to row in the table"
-            aria-label="Jump to row in the table"
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <line x1="2" y1="8" x2="13" y2="8" />
-              <polyline points="9 4 13 8 9 12" />
-            </svg>
-          </button>
-          {/* Mark-as-correct — dismisses this anomaly. The user has reviewed
-              the row and confirmed the value is right; we don't need to keep
-              warning about it. Dismissals persist until re-extraction. */}
-          <button
-            type="button"
-            className="ip-anomaly-source-btn"
-            onClick={dismissCurrentAnomaly}
-            title="Mark as correct (dismiss this issue)"
-            aria-label="Mark as correct"
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <polyline points="3 8.5 6.5 12 13 4" />
-            </svg>
-          </button>
-          {state.images.length > 0 && (
-            <button
-              type="button"
-              className="ip-anomaly-source-btn"
-              onClick={() => openSourceFor(anomalies[anomalyIndex]?.sectionName ?? null)}
-              title="View this section in the source image"
-              aria-label="View this section in the source image"
-            >
-              {/* Inline magnifying-glass SVG — no icon-font dep */}
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <circle cx="7" cy="7" r="5" />
-                <line x1="11" y1="11" x2="14" y2="14" />
-              </svg>
-            </button>
-          )}
-        </div>
-      )}
-      </div>{/* /.ip-sticky-stack */}
+      <SectionTabs
+        tabs={sectionTabs}
+        activeKey={activeSectionKey}
+        onSelect={setActiveSectionKey}
+        issueCounts={issueCountsBySection}
+      />
 
-      {state.viewMode === 'grid' ? (
-        <GridView
-          grouped={grouped}
-          activeLeaderId={state.activeLeaderId}
-          activeBaseId={state.activeBaseId}
-          hasSourceImages={state.images.length > 0}
+      <div className="ip-section-pager">
+        <button
+          type="button"
+          className="ip-section-pager__arrow ip-section-pager__arrow--prev"
+          onClick={() => prevSectionKey && setActiveSectionKey(prevSectionKey)}
+          disabled={!prevSectionKey}
+          aria-label="Previous section"
+          title="Previous section"
+        >
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+
+        <SectionPanel
+          activeSection={activeSection}
+          rows={activeRows}
+          images={state.images}
+          sectionBounds={state.sectionBounds}
           setRowQty={setRowQty}
           setActiveLeader={setActiveLeader}
           setActiveBase={setActiveBase}
-          openPicker={(row) =>
-            setPickerFor({
-              rowKey: row.key,
-              candidates: row.candidates,
-              typeFilter: row.extracted.type,
-            })
-          }
-          openSource={(sectionName) => openSourceFor(sectionName ?? null)}
-          cardPreview={cardPreview}
+          activeLeaderId={state.activeLeaderId}
+          activeBaseId={state.activeBaseId}
+          issueRowKeys={issueRowKeys}
         />
-      ) : (
-      <table className="ip-table">
-        <colgroup>
-          <col className="ip-col-played" />
-          <col className="ip-col-total" />
-          <col className="ip-col-no" />
-          <col className="ip-col-name" />
-        </colgroup>
-        <thead>
-          <tr>
-            <th>PLAYED</th>
-            <th>TOTAL</th>
-            <th>NO</th>
-            <th>NAME</th>
-          </tr>
-        </thead>
-        {grouped.map((group) => {
-          const renderRow = (row: ResolvedRow) => (
-            <RowItem
-              key={row.key}
-              row={row}
-              isActiveLeader={!!row.card && state.activeLeaderId === row.card.id}
-              isActiveBase={!!row.card && state.activeBaseId === row.card.id}
-              onIncPool={() => setRowQty(row.key, 'poolQty', row.poolQty + 1)}
-              onDecPool={() => setRowQty(row.key, 'poolQty', row.poolQty - 1)}
-              onIncDeck={() => setRowQty(row.key, 'deckQty', row.deckQty + 1)}
-              onDecDeck={() => setRowQty(row.key, 'deckQty', row.deckQty - 1)}
-              onToggleLeader={() => row.card && setActiveLeader(row.card.id)}
-              onToggleBase={() => row.card && setActiveBase(row.card.id)}
-              onPickCard={() =>
-                setPickerFor({
-                  rowKey: row.key,
-                  candidates: row.candidates,
-                  typeFilter: row.extracted.type,
-                })
-              }
-              onCardMouseEnter={cardPreview.handleCardMouseEnter}
-              onCardMouseLeave={cardPreview.handleCardMouseLeave}
-              onCardTouchStart={cardPreview.handleCardTouchStart}
-              onCardTouchEnd={cardPreview.handleCardTouchEnd}
-            />
-          )
 
-          return (
-            <tbody key={group.key} className="ip-section">
-              <tr
-                className="ip-section-row"
-                id={`ip-section-${group.displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
-              >
-                <td colSpan={4}>
-                  <div className="ip-section-bar">
-                    <span className="ip-section__title">
-                      {group.aspects.length > 0 && (
-                        <span className="ip-section__icons">
-                          {group.aspects.map((a) => (
-                            <AspectIcon key={a} aspect={a} size="sm" />
-                          ))}
-                        </span>
-                      )}
-                      {group.displayName}
-                      <button
-                        type="button"
-                        className="ip-section__source-btn"
-                        onClick={() =>
-                          openSourceFor(SECTION_NAME_BY_GROUP_KEY[group.key] || null)
-                        }
-                        title={state.images.length > 0
-                          ? `View source — ${group.displayName} section`
-                          : 'Source images aren’t loaded — re-upload to see them'}
-                        aria-label={`View source sheet for ${group.displayName}`}
-                      >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="11" cy="11" r="8" />
-                          <path d="M21 21l-4.35-4.35" />
-                        </svg>
-                      </button>
-                    </span>
-                    <span className="ip-section__count">
-                      {group.rows.reduce((s, r) => s + r.deckQty, 0)}
-                      {' / '}
-                      {group.rows.reduce((s, r) => s + r.poolQty, 0)} cards
-                    </span>
-                  </div>
-                </td>
-              </tr>
-              {group.subGroups
-                ? group.subGroups.flatMap((sub) => [
-                    <tr key={`sub-${sub.key}`} className="ip-subsection-row">
-                      <td colSpan={4}>
-                        <div className="ip-subsection-bar">
-                          <span className="ip-subsection__title">
-                            {sub.aspects.length > 0 && (
-                              <span className="ip-section__icons">
-                                {sub.aspects.map((a) => (
-                                  <AspectIcon key={a} aspect={a} size="xs" />
-                                ))}
-                              </span>
-                            )}
-                            {sub.displayName}
-                          </span>
-                          <span className="ip-subsection__count">
-                            {sub.rows.reduce((s, r) => s + r.deckQty, 0)}
-                            {' / '}
-                            {sub.rows.reduce((s, r) => s + r.poolQty, 0)}
-                          </span>
-                        </div>
-                      </td>
-                    </tr>,
-                    ...sub.rows.map(renderRow),
-                  ])
-                : group.rows.map(renderRow)}
-            </tbody>
-          )
-        })}
-      </table>
-      )}
-
-      <div className="import-pool-actions">
-        <Button variant="back" onClick={goBack}>
-          Back
-        </Button>
-        <div className="import-pool-actions-spacer" />
-        <Button variant="primary" onClick={goToConfirm} disabled={!validation.valid}>
-          Continue →
-        </Button>
+        <button
+          type="button"
+          className="ip-section-pager__arrow ip-section-pager__arrow--next"
+          onClick={() => nextSectionKey && setActiveSectionKey(nextSectionKey)}
+          disabled={!nextSectionKey}
+          aria-label="Next section"
+          title="Next section"
+        >
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
       </div>
 
-      {!validation.valid && (
-        <ul className="import-pool-validation-errors">
-          {validation.errors.map((err, i) => (
-            <li key={i}>{err}</li>
-          ))}
-        </ul>
-      )}
+      <div className="import-pool-actions">
+        <Button variant="back" onClick={goBack}>← Previous</Button>
+        <div className="import-pool-actions-spacer" />
+        <Button variant="primary" onClick={goToConfirm}>Done →</Button>
+      </div>
 
       {pickerFor && (
         <CardPickerModal
@@ -533,31 +291,6 @@ export default function ResolveStep({ importPool }: Props) {
           sourceImages={state.images}
           onPick={(card) => replaceRowCard(pickerFor.rowKey, card)}
           onClose={() => setPickerFor(null)}
-        />
-      )}
-
-      {sourceModalOpen && (
-        <SourceImageModal
-          images={state.images}
-          onClose={() => {
-            setSourceModalOpen(false)
-            setSourceModalSection(null)
-          }}
-          sectionFilter={sourceModalSection}
-          sectionBounds={state.sectionBounds}
-          // Side-by-side editing: filter resolvedRows down to the targeted
-          // section so the modal's right-pane table mirrors what's on the
-          // left source image.
-          rowsForSection={
-            sourceModalSection
-              ? state.resolvedRows.filter((r) => sectionNameForRow(r) === sourceModalSection)
-              : undefined
-          }
-          setRowQty={setRowQty}
-          setActiveLeader={setActiveLeader}
-          setActiveBase={setActiveBase}
-          activeLeaderId={state.activeLeaderId}
-          activeBaseId={state.activeBaseId}
         />
       )}
 
@@ -571,6 +304,186 @@ export default function ResolveStep({ importPool }: Props) {
         />
       )}
     </section>
+  )
+}
+
+// === Section tabs / panel ===
+
+interface SectionTab {
+  key: string
+  label: string
+  boundsName: string
+  matches: (row: ResolvedRow) => boolean
+  iconNode: () => React.ReactNode
+}
+
+function buildSectionTabs(): SectionTab[] {
+  const isLeader = (r: ResolvedRow) => !!r.card?.isLeader || r.extracted.type === 'Leader'
+  const isBase = (r: ResolvedRow) => !!r.card?.isBase || r.extracted.type === 'Base'
+  const aspectsOf = (r: ResolvedRow): string[] => r.card?.aspects || []
+  const MAIN_SET = new Set(['Vigilance', 'Command', 'Aggression', 'Cunning'])
+  const SEC_SET = new Set(['Heroism', 'Villainy'])
+
+  const isAspectMatch = (target: string) => (r: ResolvedRow) => {
+    if (isLeader(r) || isBase(r)) return false
+    const aspects = aspectsOf(r)
+    const mains = aspects.filter((a) => MAIN_SET.has(a))
+    const secs = aspects.filter((a) => SEC_SET.has(a))
+    if (mains.length >= 2) return false // multicolor
+    if (mains.length === 1) return mains[0] === target
+    if (secs.length >= 1) return secs[0] === target
+    return false
+  }
+
+  const isMulticolor = (r: ResolvedRow) => {
+    if (isLeader(r) || isBase(r)) return false
+    const mains = aspectsOf(r).filter((a) => MAIN_SET.has(a))
+    return mains.length >= 2
+  }
+
+  const isNeutral = (r: ResolvedRow) => {
+    if (isLeader(r) || isBase(r)) return false
+    const aspects = aspectsOf(r)
+    return aspects.length === 0
+  }
+
+  const aspectTab = (key: string, label: string): SectionTab => ({
+    key,
+    label,
+    boundsName: label,
+    matches: isAspectMatch(label),
+    iconNode: () => <AspectIcon aspect={label} size="md" />,
+  })
+
+  const letterIcon = (letter: string, color: string) => () => (
+    <span className="ip-section-tab__letter" style={{ background: color }}>{letter}</span>
+  )
+
+  return [
+    { key: 'leaders', label: 'Leaders', boundsName: 'Leaders', matches: isLeader, iconNode: letterIcon('L', '#7a4f00') },
+    { key: 'bases', label: 'Bases', boundsName: 'Bases', matches: isBase, iconNode: letterIcon('B', '#3a5f8a') },
+    aspectTab('vigilance', 'Vigilance'),
+    aspectTab('command', 'Command'),
+    aspectTab('aggression', 'Aggression'),
+    aspectTab('cunning', 'Cunning'),
+    aspectTab('villainy', 'Villainy'),
+    aspectTab('heroism', 'Heroism'),
+    { key: 'neutral', label: 'Neutral', boundsName: 'NoAspect', matches: isNeutral, iconNode: letterIcon('N', '#555') },
+    { key: 'multicolor', label: 'Multicolor', boundsName: 'Multicolor', matches: isMulticolor, iconNode: letterIcon('M', 'linear-gradient(45deg,#a33,#3a3,#33a)') },
+  ]
+}
+
+function SectionTabs({
+  tabs,
+  activeKey,
+  onSelect,
+  issueCounts,
+}: {
+  tabs: SectionTab[]
+  activeKey: string
+  onSelect: (key: string) => void
+  issueCounts: Record<string, number>
+}) {
+  return (
+    <div className="ip-section-tabs" role="tablist">
+      {tabs.map((tab) => {
+        const issues = issueCounts[tab.key] || 0
+        return (
+          <button
+            key={tab.key}
+            type="button"
+            role="tab"
+            aria-selected={tab.key === activeKey}
+            className={`ip-section-tab ${tab.key === activeKey ? 'ip-section-tab--active' : ''} ${issues > 0 ? 'ip-section-tab--has-issues' : ''}`}
+            onClick={() => onSelect(tab.key)}
+            title={`${tab.label}${issues > 0 ? ` — ${issues} flagged` : ''}`}
+          >
+            {tab.iconNode()}
+            {issues > 0 && <span className="ip-section-tab__badge">{issues}</span>}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+function SectionPanel({
+  activeSection,
+  rows,
+  images,
+  sectionBounds,
+  setRowQty,
+  setActiveLeader,
+  setActiveBase,
+  activeLeaderId,
+  activeBaseId,
+  issueRowKeys,
+}: {
+  activeSection: SectionTab
+  rows: ResolvedRow[]
+  images: any[]
+  sectionBounds: any[]
+  setRowQty: any
+  setActiveLeader: any
+  setActiveBase: any
+  activeLeaderId: string | null
+  activeBaseId: string | null
+  issueRowKeys: Set<string>
+}) {
+  // Bounds for THIS section across photos (could be 1-2).
+  const boundsForSection = useMemo(
+    () => sectionBounds.filter((b) => b.name === activeSection.boundsName).sort((a, b) => a.photoIndex - b.photoIndex),
+    [sectionBounds, activeSection.boundsName],
+  )
+
+  return (
+    <div className="ip-section-panel">
+      <div className="ip-section-panel__image">
+        {images.length === 0 ? (
+          <div className="ip-section-panel__empty">
+            Source images aren't loaded for this session. Re-upload to see the original sheet here.
+          </div>
+        ) : boundsForSection.length === 0 ? (
+          <div className="ip-section-panel__empty">
+            We don't have crop bounds for {activeSection.label}. Showing the table only.
+          </div>
+        ) : (
+          <div className="ip-section-panel__crops">
+            {boundsForSection.map((b, i) => {
+              const photo = images[b.photoIndex]
+              if (!photo) return null
+              return (
+                <CroppedView
+                  key={`${b.name}-${b.photoIndex}-${i}`}
+                  src={photo.previewUrl}
+                  naturalWidth={photo.width}
+                  naturalHeight={photo.height}
+                  bounds={b}
+                  captionLabel={boundsForSection.length > 1 ? `Page ${b.photoIndex + 1}` : null}
+                />
+              )
+            })}
+          </div>
+        )}
+      </div>
+      <div className="ip-section-panel__table">
+        {rows.length === 0 ? (
+          <div className="ip-section-panel__empty">
+            No cards in {activeSection.label}.
+          </div>
+        ) : (
+          <SideBySideTable
+            rows={rows}
+            setRowQty={setRowQty}
+            setActiveLeader={setActiveLeader}
+            setActiveBase={setActiveBase}
+            activeLeaderId={activeLeaderId}
+            activeBaseId={activeBaseId}
+            issueRowKeys={issueRowKeys}
+          />
+        )}
+      </div>
+    </div>
   )
 }
 
