@@ -197,16 +197,29 @@ export default function ResolveStep({ importPool }: Props) {
   )
 
   // Issue rows for yellow-highlighting + per-tab counts.
+  // Section-level anomalies ("verify Multicolor section") propagate to
+  // EVERY row in that section, since we can't pinpoint which row is the
+  // miss/phantom — user has to verify each. Without this, sections that
+  // only fire section-level anomalies show no yellow rows at all.
   const issueRowKeys = useMemo(() => {
     const set = new Set<string>()
+    const flaggedSections = new Set<string>()
     for (const a of anomalies) {
       if (a.kind === 'row') {
         const m = a.targetId.match(/^ip-row-(.+)$/)
         if (m) set.add(m[1])
+      } else if (a.kind === 'section' && a.sectionName) {
+        flaggedSections.add(a.sectionName)
+      }
+    }
+    if (flaggedSections.size > 0) {
+      for (const r of state.resolvedRows) {
+        const sec = sectionNameForRow(r)
+        if (sec && flaggedSections.has(sec)) set.add(r.key)
       }
     }
     return set
-  }, [anomalies])
+  }, [anomalies, state.resolvedRows])
 
   const issueCountsBySection = useMemo(() => {
     const counts: Record<string, number> = {}

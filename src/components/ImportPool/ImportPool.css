@@ -1807,7 +1807,9 @@
 
 /* Section pager: tall arrows flanking the side-by-side panel. No fixed
  * panel height — image becomes sticky as the user scrolls past its top
- * (so it follows the table down without internal scroll containers). */
+ * (so it follows the table down without internal scroll containers).
+ * Arrows are sticky to the viewport too — they stay full-height as the
+ * user scrolls through long sections, like carousel chevrons. */
 .ip-section-pager {
   display: flex;
   align-items: flex-start;
@@ -1818,6 +1820,12 @@
 .ip-section-pager__arrow {
   flex: 0 0 auto;
   width: 60px;
+  /* Full viewport height + sticky so the arrow stays alongside the panel
+   * no matter how far the user has scrolled. Carousel-style. */
+  position: sticky;
+  top: 8px;
+  align-self: flex-start;
+  height: calc(100vh - 16px);
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 6px;

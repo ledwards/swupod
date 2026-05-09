@@ -228,7 +228,11 @@ const SECONDARY_SET = new Set(['Heroism', 'Villainy'])
 const ASPECT_RANK = ['Vigilance', 'Command', 'Aggression', 'Cunning', 'Heroism', 'Villainy']
 
 function subKeyForRow(row: ResolvedRow): string {
-  const aspects: string[] = (row.card?.aspects || []).slice().sort((a, b) => ASPECT_RANK.indexOf(a) - ASPECT_RANK.indexOf(b))
+  // PRESERVE catalog aspect order — major/minor distinction matters.
+  // ["Cunning", "Vigilance"] (U-major) and ["Vigilance", "Cunning"] (V-major)
+  // are different cards on the printed sheet and live in different
+  // sub-sections. Sorting alphabetically would collapse them.
+  const aspects: string[] = (row.card?.aspects || []).slice()
   if (aspects.length === 0) return 'neutral'
   return aspects.join('_').toLowerCase()
 }
@@ -267,15 +271,14 @@ function compareSubKeysForSection(a: string, b: string, primary: string): number
     if (k === '_unresolved') return 1_000_000
     const parts = k.split('_').filter(Boolean)
     if (parts.length === 1) return 999_900
-    // Canonical: pick the lead aspect = lowest canonical index, follow = next.
-    const indexes = parts
-      .map((p) => ALL_ORDER.indexOf(p))
-      .filter((i) => i >= 0)
-      .sort((a, b) => a - b)
-    if (indexes.length === 0) return 999
-    const lead = indexes[0]
-    const follow = indexes[1] ?? lead
-    return lead * 100 + follow
+    // Lead = FIRST aspect from catalog (the major-cost aspect). Follow =
+    // second aspect. Without sorting, "vigilance_cunning" (V-major) and
+    // "cunning_vigilance" (U-major) sort distinctly: V-majors first
+    // (lead=0), U-majors later (lead=3). Mirrors the printed sheet.
+    const lead = ALL_ORDER.indexOf(parts[0])
+    const follow = parts[1] ? ALL_ORDER.indexOf(parts[1]) : -1
+    if (lead < 0) return 999
+    return lead * 100 + (follow >= 0 ? follow : 99)
   }
 
   const score = primary ? scoreSection : scoreMulticolor
