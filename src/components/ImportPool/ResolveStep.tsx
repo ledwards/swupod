@@ -265,6 +265,7 @@ export default function ResolveStep({ importPool }: Props) {
         onSelect={setActiveSectionKey}
         issueCounts={issueCountsBySection}
         totals={totalsBySection}
+        onOpenFullSheet={() => openSourceFor(null)}
       />
 
       <div className="ip-section-pager">
@@ -451,12 +452,16 @@ function SectionTabs({
   onSelect,
   issueCounts,
   totals,
+  onOpenFullSheet,
 }: {
   tabs: SectionTab[]
   activeKey: string
   onSelect: (key: string) => void
   issueCounts: Record<string, number>
   totals: Record<string, { deck: number; pool: number }>
+  /** Render a magnifier button after the last section tab; click opens the
+   *  source-image modal in full-sheet mode (uncropped photo 1 + photo 2). */
+  onOpenFullSheet?: () => void
 }) {
   return (
     <div className="ip-section-tabs" role="tablist">
@@ -480,6 +485,23 @@ function SectionTabs({
           </div>
         )
       })}
+      {onOpenFullSheet && (
+        <div className="ip-section-tab-wrap">
+          <button
+            type="button"
+            className="ip-section-tab"
+            onClick={onOpenFullSheet}
+            title="View full source sheet (both photos)"
+            aria-label="View full source sheet"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="7" />
+              <line x1="21" y1="21" x2="16.5" y2="16.5" />
+            </svg>
+          </button>
+          <span className="ip-section-tab__totals">&nbsp;</span>
+        </div>
+      )}
     </div>
   )
 }

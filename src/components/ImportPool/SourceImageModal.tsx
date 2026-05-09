@@ -257,7 +257,16 @@ function compareSubKeysForSection(a: string, b: string, primary: string): number
   const scoreSection = (k: string): number => {
     if (k === '_unresolved') return 1_000_000
     const parts = k.split('_').filter(Boolean)
-    if (parts.length === 1) return 999_900 // pure last
+    if (parts.length === 1) {
+      // Pure single. For the Bases section (where every row is single-aspect),
+      // this is the only branch hit and ordering single aspects in canonical
+      // V-C-A-U-H-V order matches the printed sheet's color blocks (blue,
+      // green, red, yellow, then heroism/villainy). For aspect sections like
+      // Vigilance, only one pure-single entry can land here so the offset is
+      // harmless.
+      const idx = ALL_ORDER.indexOf(parts[0])
+      return 999_900 + (idx >= 0 ? idx : 99)
+    }
     const others = parts.filter((p) => p !== lowerPrimary)
     if (others.length === 0) return 30 // double-pip (X + X)
     const other = others[0]
@@ -347,14 +356,16 @@ export function SideBySideTable({
         : [...rs].sort((a, b) =>
             (a.card?.name || a.extracted.name || '').localeCompare(b.card?.name || b.extracted.name || ''),
           )
-    // hideSubGroups (Leaders/Bases tabs) means the printed sheet lists every
-    // row in one continuous block — no aspect sub-sections. Skip the
-    // aspect-keyed grouping entirely so the rendered order matches the sheet
-    // (Leaders 1–18 in pure card-number order, not 1, 5, 17 (X+Villainy)
-    // then 2, 8 (X+Heroism) then …).
-    if (hideSubGroups) {
+    // sortBy='cardNumber' (Leaders tab): the sheet lists 1–18 in continuous
+    // card-number order, no aspect sub-sections. Skip the aspect-keyed
+    // grouping entirely.
+    if (sortBy === 'cardNumber') {
       return [{ key: 'all', rows: sortRows(rows) }]
     }
+    // Otherwise (including hideSubGroups Bases tab and full multi-aspect
+    // sections), group by aspect-key. compareSubKeysForSection orders single
+    // aspects in canonical V-C-A-U-H-V — for Bases that's blue/green/red/
+    // yellow/white/black, matching the printed sheet.
     const groups = new Map<string, ResolvedRow[]>()
     for (const r of rows) {
       const k = subKeyForRow(r)
