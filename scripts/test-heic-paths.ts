@@ -22,9 +22,10 @@ import * as dotenv from 'dotenv'
 dotenv.config({ path: './.env' })
 dotenv.config({ path: './.env.local', override: true })
 
-const FIXTURE = 'sq-lee-law'
-const HEIC1 = '/Users/lee/Downloads/IMG_3187.HEIC'
-const HEIC2 = '/Users/lee/Downloads/IMG_3188.HEIC'
+// Args: <fixture> <heic1> <heic2>  (defaults: sq-lee-law / IMG_3187 / IMG_3188)
+const FIXTURE = process.argv[2] || 'sq-lee-law'
+const HEIC1 = process.argv[3] || '/Users/lee/Downloads/IMG_3187.HEIC'
+const HEIC2 = process.argv[4] || '/Users/lee/Downloads/IMG_3188.HEIC'
 
 interface ExtractedRow {
   name: string
@@ -107,11 +108,17 @@ async function run() {
   const truthRows: ExtractedRow[] = truth.rows
   console.log(`Ground truth: ${truthRows.length} rows`)
 
-  // A. JPG baseline (cached)
-  const cached = JSON.parse(fs.readFileSync(`./scripts/eval/extractions/${FIXTURE}.json`, 'utf8'))
-  const a = diffAgainstTruth(cached.rows, truthRows)
-  console.log(`\n=== A: JPG baseline (cached) ===`)
-  console.log(JSON.stringify(a, null, 2))
+  // A. JPG baseline (cached) — only if there is one
+  let a: ReturnType<typeof diffAgainstTruth> | null = null
+  const cachedPath = `./scripts/eval/extractions/${FIXTURE}.json`
+  if (fs.existsSync(cachedPath)) {
+    const cached = JSON.parse(fs.readFileSync(cachedPath, 'utf8'))
+    a = diffAgainstTruth(cached.rows, truthRows)
+    console.log(`\n=== A: JPG baseline (cached) ===`)
+    console.log(JSON.stringify(a, null, 2))
+  } else {
+    console.log(`\n=== A: JPG baseline — no cached extraction at ${cachedPath}, skipping ===`)
+  }
 
   // Read HEICs
   const heic1 = fs.readFileSync(HEIC1)
@@ -137,24 +144,25 @@ async function run() {
   console.log(JSON.stringify(c, null, 2))
 
   // Summary
-  console.log(`\n=========== SUMMARY (sq-lee-law) ===========`)
+  console.log(`\n=========== SUMMARY (${FIXTURE}) ===========`)
   console.log(`             pool sum  deck sum  pool errors  deck errors  missed  phantoms`)
-  for (const [label, d] of [
-    ['A. JPG baseline      ', a],
-    ['B. HEIC old (0.85)   ', b],
-    ['C. HEIC new (sharp@100)', c],
-  ] as const) {
+  const rows: Array<readonly [string, ReturnType<typeof diffAgainstTruth>]> = []
+  if (a) rows.push(['A. JPG baseline      ', a] as const)
+  rows.push(['B. HEIC old (0.85)   ', b] as const)
+  rows.push(['C. HEIC new (sharp@100)', c] as const)
+  for (const [label, d] of rows) {
     console.log(
       `${label} ${String(d.sumPool).padStart(8)}  ${String(d.sumDeck).padStart(8)}  ${String(d.poolErrors).padStart(11)}  ${String(d.deckErrors).padStart(11)}  ${String(d.missed).padStart(6)}  ${String(d.phantom).padStart(8)}`,
     )
   }
-  console.log(`Truth pool sum: 96, Truth deck sum: ${truthRows.reduce((s, r) => s + r.deckQty, 0)}`)
+  console.log(`Truth pool sum: ${truthRows.reduce((s, r) => s + r.poolQty, 0)}, Truth deck sum: ${truthRows.reduce((s, r) => s + r.deckQty, 0)}`)
 
   // Save extractions for later inspection
-  fs.mkdirSync('./scripts/eval/heic-ab', { recursive: true })
-  fs.writeFileSync('./scripts/eval/heic-ab/old.json', JSON.stringify({ rows: oldRows }, null, 2))
-  fs.writeFileSync('./scripts/eval/heic-ab/new.json', JSON.stringify({ rows: newRows }, null, 2))
-  console.log(`\nSaved B and C extraction outputs under scripts/eval/heic-ab/`)
+  const outDir = `./scripts/eval/heic-ab/${FIXTURE}`
+  fs.mkdirSync(outDir, { recursive: true })
+  fs.writeFileSync(`${outDir}/old.json`, JSON.stringify({ rows: oldRows }, null, 2))
+  fs.writeFileSync(`${outDir}/new.json`, JSON.stringify({ rows: newRows }, null, 2))
+  console.log(`\nSaved B and C extraction outputs under ${outDir}/`)
 }
 
 run().catch((err) => {
