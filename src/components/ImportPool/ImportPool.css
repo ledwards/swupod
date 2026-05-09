@@ -1775,7 +1775,9 @@
   flex-direction: column;
   gap: 8px;
   width: 100%;
+  height: 100%;
   align-items: center;
+  justify-content: center;
 }
 
 .ip-source-crop {
@@ -1783,11 +1785,12 @@
   flex-direction: column;
   gap: 4px;
   align-items: center;
-  width: 100%;
-  /* Cap each crop at the available modal-body height. Browsers maintain
-   * aspect-ratio by reducing width when max-height clamps height — so a
-   * tall section ends up tall-but-narrow, fully visible without scroll. */
-  max-height: calc(95vh - 110px);
+  /* Each crop fills the viewport height so its aspect-ratio'd inner box
+   * derives width from height. With multiple crops (multi-page sections)
+   * they share the height equally via flex 1 1 0. */
+  flex: 1 1 0;
+  min-height: 0;
+  max-width: 100%;
 }
 
 .ip-source-crop__caption {
@@ -1798,15 +1801,17 @@
   flex: 0 0 auto;
 }
 
+/* Default mode (not zoomed): box height = available flex slot, width =
+ * height * aspect. Browser computes width from aspect-ratio when only
+ * height is constrained. Capped at max-width so a wide section doesn't
+ * overflow horizontally. */
 .ip-source-crop__viewport {
   position: relative;
   /* aspect-ratio set inline by SourceImageModal */
-  width: 100%;
+  flex: 1 1 0;
+  min-height: 0;
+  width: auto;
   max-width: 100%;
-  /* Same height cap as the wrapper minus the caption — keeps tall sections
-   * visible in one screen. The browser maintains aspect-ratio by reducing
-   * width if needed. */
-  max-height: calc(95vh - 130px);
   overflow: hidden;
   background: #111;
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -1814,11 +1819,24 @@
   cursor: zoom-in;
 }
 
+/* Zoomed mode: full width, scrollable vertically — for a closer look. */
+.ip-source-modal__viewport.is-zoomed {
+  overflow-y: auto;
+  align-items: flex-start;
+}
+.ip-source-modal__viewport.is-zoomed .ip-source-modal__crops {
+  height: auto;
+  justify-content: flex-start;
+}
+.ip-source-modal__viewport.is-zoomed .ip-source-crop {
+  flex: 0 0 auto;
+}
 .ip-source-modal__viewport.is-zoomed .ip-source-crop__viewport {
+  flex: 0 0 auto;
   cursor: zoom-out;
-  max-height: none;
-  width: 200%;
-  max-width: none;
+  height: auto;
+  width: 100%;
+  max-width: 100%;
 }
 
 .ip-source-modal__hint {
