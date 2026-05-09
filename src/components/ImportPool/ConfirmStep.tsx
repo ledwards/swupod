@@ -28,12 +28,20 @@ export default function ConfirmStep({ importPool }: Props) {
     const aspectBreakdown: Record<string, number> = {}
     let deckCount = 0
     let sideboardCount = 0
+    const MAIN = new Set(['Vigilance', 'Command', 'Aggression', 'Cunning'])
     for (const row of state.resolvedRows) {
       if (!row.card || row.card.isLeader || row.card.isBase) continue
       deckCount += row.deckQty
       sideboardCount += row.poolQty - row.deckQty
-      const primary = row.card.aspects?.[0] || 'Neutral'
-      aspectBreakdown[primary] = (aspectBreakdown[primary] || 0) + row.deckQty
+      // Multi-main cards bucket as "Multicolor" instead of falling under
+      // the first aspect alphabetically.
+      const aspects = row.card.aspects || []
+      const mains = aspects.filter((a) => MAIN.has(a))
+      const bucket =
+        mains.length >= 2
+          ? 'Multicolor'
+          : aspects[0] || 'Neutral'
+      aspectBreakdown[bucket] = (aspectBreakdown[bucket] || 0) + row.deckQty
     }
     return { leader: leaderRow?.card, base: baseRow?.card, aspectBreakdown, deckCount, sideboardCount }
   }, [state])

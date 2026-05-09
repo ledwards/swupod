@@ -1119,8 +1119,9 @@
 
 .import-pool-summary-leader-base {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
+  justify-content: center;
   margin-bottom: 16px;
 }
 
@@ -1130,15 +1131,18 @@
   align-items: center;
   gap: 6px;
   margin: 0;
-  flex: 1 1 140px;
-  max-width: 200px;
+  flex: 0 1 280px;
+  max-width: 320px;
 }
 
+/* Landscape orientation — crop the portrait card art to a wide rectangle
+ * so leader and base read as banners rather than skinny portraits. */
 .import-pool-summary-leader-base img {
   width: 100%;
-  aspect-ratio: 5/7;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
-  border-radius: 4px;
+  object-position: center 30%;
+  border-radius: 6px;
 }
 
 .import-pool-summary-leader-base figcaption {

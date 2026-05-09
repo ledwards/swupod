@@ -139,6 +139,7 @@ interface ImportPoolState {
   activeLeaderId: string | null
   activeBaseId: string | null
   title: string
+  isTitleDefault: boolean
   shareId: string | null
   warnings: string[]
   sectionGaps: SectionGap[]
@@ -164,6 +165,7 @@ const INITIAL_STATE: ImportPoolState = {
   activeLeaderId: null,
   activeBaseId: null,
   title: '',
+  isTitleDefault: true,
   shareId: null,
   warnings: [],
   sectionGaps: [],
@@ -273,18 +275,15 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
         if (markedBase?.card) activeBaseId = markedBase.card.id
       }
 
-      // Auto-compose default title.
-      const titleParts: string[] = []
-      if (header.eventName) titleParts.push(header.eventName)
-      if (header.eventDate) titleParts.push(header.eventDate)
-      if (header.playerName) titleParts.push(header.playerName)
-      if (header.leader.name) {
-        const lb = header.base.name
-          ? `${header.leader.name} / ${header.base.name}`
-          : header.leader.name
-        titleParts.push(lb)
-      }
-      const title = titleParts.join(' · ').slice(0, 80)
+      // Auto-compose default title:
+      //   No event name:  "{Player}'s {SET} Sealed Pool"
+      //   With event:     "{Player}'s {Event Name} Sealed Pool {Date?}"
+      // Falls back gracefully when player name is missing.
+      const player = header.playerName || 'Imported'
+      const set = header.setCode || 'Sealed'
+      const ev = header.eventName ? `${header.eventName} ` : `${set} `
+      const date = header.eventDate ? ` ${header.eventDate}` : ''
+      const title = `${player}'s ${ev}Sealed Pool${date}`.replace(/\s+/g, ' ').trim().slice(0, 80)
 
       return {
         ...state,
@@ -294,6 +293,7 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
         activeLeaderId,
         activeBaseId,
         title,
+        isTitleDefault: true,
         warnings: action.response.warnings || [],
         sectionGaps: action.response.sectionGaps || [],
         sectionBounds: action.response.sections || [],
@@ -364,7 +364,7 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
         ),
       }
     case 'SET_TITLE':
-      return { ...state, title: action.title.slice(0, 80) }
+      return { ...state, title: action.title.slice(0, 80), isTitleDefault: false }
     case 'SUBMIT_START':
       return { ...state, phase: 'submitting', error: null }
     case 'SUBMIT_SUCCESS':
@@ -435,7 +435,12 @@ function deriveValidation(state: ImportPoolState): Validation {
       continue
     }
     poolCount += row.poolQty
-    deckCount += row.deckQty
+    // Deck count excludes leader + base — those are separate from the
+    // 30+ deck per SWU rules. Step 2 and Step 3 should agree on this
+    // number ("Deck 29/30" means 29 actual non-LB deck cards).
+    if (!row.card.isLeader && !row.card.isBase) {
+      deckCount += row.deckQty
+    }
     if (row.deckQty > row.poolQty) {
       errors.push(`${row.card.name}: deck quantity exceeds pool quantity`)
     }
@@ -852,6 +857,7 @@ export function useImportPool() {
           activeLeaderId: state.activeLeaderId,
           activeBaseId: state.activeBaseId,
           title: state.title,
+          isDefaultName: state.isTitleDefault,
         }),
       })
       const payload = await response.json()
