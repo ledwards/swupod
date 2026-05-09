@@ -119,16 +119,26 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         )
       }
       const { fetchPhoto } = await import('@/lib/photoStorage')
-      const sharp = (await import('sharp')).default
       imagesIn = []
       let totalBytes = 0
       for (const key of body.photoKeys!) {
         const { buffer, contentType } = await fetchPhoto(key)
         let outBuffer = buffer
         let outType: ExtractRequestBody['images'][0]['mediaType'] = contentType as any
-        // HEIC/HEIF — convert to JPEG via sharp (libvips + libheif).
+        // HEIC/HEIF — convert to JPEG. We use the heic-convert package
+        // (libheif-js under the hood) instead of sharp because sharp's
+        // bundled libvips on Railway/Linux ships without the HEVC
+        // decoder, surfacing as "heif: Error while loading plugin:
+        // Support for this compression format has not been built in"
+        // on iPhone HEIC files. heic-convert ships its own decoder.
         if (contentType === 'image/heic' || contentType === 'image/heif') {
-          outBuffer = await sharp(buffer).jpeg({ quality: 85 }).toBuffer()
+          const convert = (await import('heic-convert')).default
+          const arrayBuffer = await convert({
+            buffer,
+            format: 'JPEG',
+            quality: 0.85,
+          })
+          outBuffer = Buffer.from(arrayBuffer)
           outType = 'image/jpeg'
         } else if (!VALID_MIMES.has(contentType)) {
           return jsonResponse(

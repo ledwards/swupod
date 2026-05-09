@@ -5,6 +5,17 @@
   padding: 16px;
   color: white;
   font-family: 'Barlow', sans-serif;
+  /* Selection rectangles were extending past the wizard column to the
+   * full viewport. Forcing block context + isolation at the page root
+   * clips them to actual content bounds. */
+  isolation: isolate;
+}
+
+.import-pool-page * {
+  /* Defensive: ensure no descendant escapes selection bounds via
+   * implicit width-100vw flex math. text-align stays left so highlights
+   * draw against the actual glyph extents. */
+  text-align: inherit;
 }
 
 /* Skeleton loader — shown while auth state resolves so the page never
