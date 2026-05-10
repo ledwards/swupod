@@ -7,15 +7,15 @@ nixPkgs = [
   # Used by the Import Pool whole-table extraction architecture; see
   # plans/IMPORT_POOL_OMR_REPORT.md.
   #
-  # Use the python311Packages.X variants (nix-built) instead of
-  # pip-installing wheels because nix-built Python doesn't search
-  # /usr/lib for shared libs — pip-installed numpy fails to find
-  # libz.so.1 even when zlib1g is present in apt. The nix-built
-  # numpy/opencv/pillow have proper RPATHs and just work.
-  "python311",
-  "python311Packages.numpy",
-  "python311Packages.opencv4",
-  "python311Packages.pillow",
+  # withPackages composes a single Python interpreter whose sys.path
+  # includes numpy + opencv4 + pillow. Listing them as separate
+  # python311Packages.X entries doesn't work — the python3 in PATH
+  # doesn't pick up packages from sibling store paths, and `import
+  # numpy` fails with ModuleNotFoundError.
+  #
+  # Pip wheels were tried first and rejected because nix-built Python
+  # doesn't search /usr/lib for shared libs (libz.so.1 missing).
+  "(python311.withPackages (ps: with ps; [ numpy opencv4 pillow ]))",
 ]
 aptPkgs = [
   "libnss3",
