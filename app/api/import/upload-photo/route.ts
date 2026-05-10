@@ -100,6 +100,30 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       storedExt = 'jpg'
     }
 
+    // Bake-in any EXIF orientation and strip the EXIF tag before storing.
+    // Why: heic-convert outputs JPEG with the source's pixel buffer + may
+    // preserve an orientation tag. iPhone JPEGs straight from camera also
+    // carry orientation. If the stored file has an orientation tag,
+    // browsers will auto-rotate when rendering it but server-side OMR may
+    // see it pre- or post-rotation depending on whose code applies the
+    // rotation. That mismatch produces section bounds in one coordinate
+    // space and a rendered <img> in another → the cropped section image
+    // points at the wrong region of the photo.
+    //
+    // sharp.rotate() with no arg applies EXIF orientation. .withMetadata({})
+    // (or default) DROPS the EXIF block on output, so the resulting bytes
+    // have no rotation hint at all. After this, both client preview and
+    // server OMR see the same canonical pixel orientation.
+    try {
+      const sharp = (await import('sharp')).default
+      buffer = await sharp(buffer).rotate().jpeg({ quality: 95, mozjpeg: false }).toBuffer()
+      // After sharp.jpeg(), the buffer is always JPEG regardless of input.
+      storedType = 'image/jpeg'
+      storedExt = 'jpg'
+    } catch (err) {
+      console.warn('[upload-photo] sharp rotate failed, storing un-canonicalized:', err)
+    }
+
     // Read final-pixel dimensions so we can return them. Without this, the
     // client's processed.width/height is whatever loadImage() reported on the
     // ORIGINAL HEIC — which is 0×0 in Chrome (can't render HEIC). The
