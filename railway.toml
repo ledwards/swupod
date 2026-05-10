@@ -1,3 +1,13 @@
+[build]
+# Force Railway to use the nixpacks builder, not its newer Railpack/mise
+# default. Required because the Import Pool whole-table extraction relies
+# on a Python OMR sidecar (scripts/omr/extract_for_node.py); only nixpacks
+# honors our nixpacks.toml which lists `python311` in nixPkgs. Without
+# this, the prod container has no python3, the sidecar can't spawn, and
+# extract silently falls back to the legacy multi-sample path which
+# produces wrong section bounds — broken section crops in Step 2.
+builder = "NIXPACKS"
+
 [deploy]
 releaseCommand = "node scripts/migrate.js prod --yes"
 startCommand = "npm start"
