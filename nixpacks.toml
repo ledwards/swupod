@@ -33,6 +33,11 @@ aptPkgs = [
   # in the wheel.
   "libgl1",
   "libglib2.0-0",
+  # zlib (libz.so.1) — numpy's C extension links against it. Without it
+  # `import numpy` fails with "libz.so.1: cannot open shared object file"
+  # which cascades into cv2 / PIL import failures and the OMR sidecar
+  # exits 1.
+  "zlib1g",
 ]
 
 [phases.install]
