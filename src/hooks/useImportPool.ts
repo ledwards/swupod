@@ -1043,7 +1043,7 @@ export function useImportPool() {
   /** Re-extract a single section's cells via /api/import/re-extract-section.
    *  Resolves with `{ rowsReplaced, elapsedMs }` on success. The caller can
    *  use these for toast messaging. Throws on failure. */
-  const reExtractSection = useCallback(
+  const reImportSection = useCallback(
     async (sectionName: string): Promise<{ rowsReplaced: number; elapsedMs: number }> => {
       if (!state.extraction) throw new Error('No extraction in progress')
       const photoKeys = state.images.map((img) => img.photoKey).filter((k): k is string => !!k)
@@ -1097,6 +1097,6 @@ export function useImportPool() {
     setViewFilter,
     setViewMode,
     dismissAnomaly,
-    reExtractSection,
+    reImportSection,
   }
 }

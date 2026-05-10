@@ -1901,22 +1901,22 @@
   color: rgba(255, 230, 150, 0.95);
 }
 
-/* Re-extract bar: button + post-action status text. Sits above the
+/* Re-import bar: button + post-action status text. Sits above the
  * side-by-side panel, below any banner. */
-.ip-section-panel__re-extract {
+.ip-section-panel__re-import {
   display: flex;
   align-items: center;
   gap: 12px;
   margin: 6px 0;
   flex-wrap: wrap;
 }
-.ip-section-panel__re-extract-status {
+.ip-section-panel__re-import-status {
   font-size: 12px;
 }
-.ip-section-panel__re-extract-status--success {
+.ip-section-panel__re-import-status--success {
   color: rgba(150, 230, 150, 0.95);
 }
-.ip-section-panel__re-extract-status--error {
+.ip-section-panel__re-import-status--error {
   color: rgba(255, 150, 150, 0.95);
 }
 

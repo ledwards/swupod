@@ -49,7 +49,7 @@ export default function ResolveStep({ importPool }: Props) {
     setViewFilter,
     setViewMode,
     dismissAnomaly,
-    reExtractSection,
+    reImportSection,
   } = importPool
 
   const [pickerFor, setPickerFor] = useState<{
@@ -308,7 +308,7 @@ export default function ResolveStep({ importPool }: Props) {
               }
             }
           }}
-          onReExtract={reExtractSection}
+          onReImport={reImportSection}
         />
 
         <button
@@ -522,7 +522,7 @@ function SectionPanel({
   hideSubGroups,
   onDismissRow,
   sectionBannerLines = [],
-  onReExtract,
+  onReImport,
 }: {
   activeSection: SectionTab
   rows: ResolvedRow[]
@@ -537,18 +537,18 @@ function SectionPanel({
   hideSubGroups?: boolean
   onDismissRow?: (rowKey: string) => void
   sectionBannerLines?: string[]
-  /** Re-extract callback. Receives the section's `boundsName` (e.g.
+  /** Re-import callback. Receives the section's `boundsName` (e.g.
    *  "Aggression"), runs the focused per-section Claude call server-side,
    *  and resolves with `{ rowsReplaced, elapsedMs }`. The parent dispatches
    *  REPLACE_SECTION_ROWS so we don't have to thread state in here. */
-  onReExtract?: (boundsName: string) => Promise<{ rowsReplaced: number; elapsedMs: number }>
+  onReImport?: (boundsName: string) => Promise<{ rowsReplaced: number; elapsedMs: number }>
 }) {
   // Bounds for THIS section across photos (could be 1-2).
   const boundsForSection = useMemo(
     () => sectionBounds.filter((b) => b.name === activeSection.boundsName).sort((a, b) => a.photoIndex - b.photoIndex),
     [sectionBounds, activeSection.boundsName],
   )
-  const [reExtractStatus, setReExtractStatus] = useState<
+  const [reImportStatus, setReImportStatus] = useState<
     | { kind: 'idle' }
     | { kind: 'loading' }
     | { kind: 'success'; rowsReplaced: number; elapsedMs: number }
@@ -556,23 +556,23 @@ function SectionPanel({
   >({ kind: 'idle' })
   // Reset feedback when the user navigates to a different section.
   useEffect(() => {
-    setReExtractStatus({ kind: 'idle' })
+    setReImportStatus({ kind: 'idle' })
   }, [activeSection.key])
-  const handleReExtract = useCallback(async () => {
-    if (!onReExtract) return
-    if (reExtractStatus.kind === 'loading') return
+  const handleReImport = useCallback(async () => {
+    if (!onReImport) return
+    if (reImportStatus.kind === 'loading') return
     const ok = window.confirm(
-      `Re-extract the ${activeSection.label} section? Costs ~$0.05 and takes ~10-20s. Current cell counts in this section will be replaced with the new reads.`,
+      `Re-import the ${activeSection.label} section? Costs ~$0.05 and takes ~10-20s. Current cell counts in this section will be replaced with the new reads.`,
     )
     if (!ok) return
-    setReExtractStatus({ kind: 'loading' })
+    setReImportStatus({ kind: 'loading' })
     try {
-      const r = await onReExtract(activeSection.boundsName)
-      setReExtractStatus({ kind: 'success', rowsReplaced: r.rowsReplaced, elapsedMs: r.elapsedMs })
+      const r = await onReImport(activeSection.boundsName)
+      setReImportStatus({ kind: 'success', rowsReplaced: r.rowsReplaced, elapsedMs: r.elapsedMs })
     } catch (err) {
-      setReExtractStatus({ kind: 'error', message: (err as Error).message })
+      setReImportStatus({ kind: 'error', message: (err as Error).message })
     }
-  }, [activeSection.label, activeSection.boundsName, onReExtract, reExtractStatus.kind])
+  }, [activeSection.label, activeSection.boundsName, onReImport, reImportStatus.kind])
 
   return (
     <div className="ip-section-panel-wrap">
@@ -583,17 +583,17 @@ function SectionPanel({
           ))}
         </div>
       )}
-      {onReExtract && (
-        <div className="ip-section-panel__re-extract">
+      {onReImport && (
+        <div className="ip-section-panel__re-import">
           <Button
             variant="secondary"
             size="sm"
-            onClick={handleReExtract}
-            disabled={reExtractStatus.kind === 'loading' || images.length === 0}
+            onClick={handleReImport}
+            disabled={reImportStatus.kind === 'loading' || images.length === 0}
             title={
               images.length === 0
-                ? 'Source photos missing — re-upload to enable re-extract'
-                : `Re-run extraction for ${activeSection.label} only`
+                ? 'Source photos missing — re-upload to enable re-import'
+                : `Re-import ${activeSection.label} only`
             }
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -601,16 +601,16 @@ function SectionPanel({
               <polyline points="1 20 1 14 7 14"></polyline>
               <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
             </svg>
-            {reExtractStatus.kind === 'loading' ? `Re-extracting ${activeSection.label}…` : `Re-extract ${activeSection.label}`}
+            {reImportStatus.kind === 'loading' ? `Re-importing ${activeSection.label}…` : `Re-import ${activeSection.label}`}
           </Button>
-          {reExtractStatus.kind === 'success' && (
-            <span className="ip-section-panel__re-extract-status ip-section-panel__re-extract-status--success">
-              Updated {reExtractStatus.rowsReplaced} cells in {(reExtractStatus.elapsedMs / 1000).toFixed(1)}s.
+          {reImportStatus.kind === 'success' && (
+            <span className="ip-section-panel__re-import-status ip-section-panel__re-import-status--success">
+              Updated {reImportStatus.rowsReplaced} cells in {(reImportStatus.elapsedMs / 1000).toFixed(1)}s.
             </span>
           )}
-          {reExtractStatus.kind === 'error' && (
-            <span className="ip-section-panel__re-extract-status ip-section-panel__re-extract-status--error">
-              Re-extract failed: {reExtractStatus.message}
+          {reImportStatus.kind === 'error' && (
+            <span className="ip-section-panel__re-import-status ip-section-panel__re-import-status--error">
+              Re-import failed: {reImportStatus.message}
             </span>
           )}
         </div>
