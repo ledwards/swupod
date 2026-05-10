@@ -878,10 +878,22 @@ export function useImportPool() {
       // JPEG one so the thumbnail and source-image modal both render. This
       // also means the source-modal's natural width/height match what the
       // server sent to Claude, so section bounds line up correctly.
+      //
+      // Dimensions (width/height): client-side resizeImage couldn't measure
+      // a HEIC in Chrome (loadImage returns 0×0 since HEIC isn't a renderable
+      // <img> source). Use the server's authoritative dimensions instead —
+      // CroppedView's crop math is built against these, so a stale 0 here
+      // causes the section image to render from the wrong region of the photo.
       if (upBody.previewDataUrl && typeof upBody.previewDataUrl === 'string') {
         processed.previewUrl = upBody.previewDataUrl
         processed.mediaType = (upBody.mediaType || processed.mediaType) as ProcessedImage['mediaType']
         processed.sizeBytes = upBody.sizeBytes ?? processed.sizeBytes
+      }
+      if (typeof upBody.width === 'number' && upBody.width > 0) {
+        processed.width = upBody.width
+      }
+      if (typeof upBody.height === 'number' && upBody.height > 0) {
+        processed.height = upBody.height
       }
 
       dispatch({ type: 'ADD_IMAGE', image: processed })

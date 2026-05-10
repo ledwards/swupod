@@ -109,12 +109,42 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Run OMR sidecar to get the section's cropped table image. Cheap (~3-5s,
     // local Python). We re-run instead of caching the original sidecar output
     // because that output is in-memory only on the original extract call.
-    const sidecar = await runOmrSidecar(buffers)
+    let sidecar
+    try {
+      sidecar = await runOmrSidecar(buffers)
+    } catch (err) {
+      const msg = (err as Error).message || ''
+      console.error('[re-import-section] sidecar failed:', err)
+      // Translate the most common technical errors into something a user can
+      // actually act on.
+      if (msg.includes('ENOENT') || msg.includes('No Python 3 interpreter')) {
+        return jsonResponse(
+          {
+            error: 'Re-import is temporarily unavailable. Please try again in a minute, or refresh and re-upload the source photos.',
+            code: 'SIDECAR_UNAVAILABLE',
+          },
+          503,
+        )
+      }
+      if (msg.includes('timed out')) {
+        return jsonResponse(
+          { error: 'Re-import timed out. Try again, or refresh and re-upload.', code: 'SIDECAR_TIMEOUT' },
+          504,
+        )
+      }
+      return jsonResponse(
+        {
+          error: 'Re-import failed processing the photos. Try again, or refresh and re-upload.',
+          code: 'SIDECAR_FAILED',
+        },
+        500,
+      )
+    }
     const tableMatch = sidecar.tables.find((t) => t.name === sectionName)
     if (!tableMatch) {
       return jsonResponse(
         {
-          error: `Section "${sectionName}" not detected in the photos. Try re-uploading the source photos.`,
+          error: `Couldn't find ${sectionName} in the photos. Try refreshing and re-uploading the source.`,
           code: 'SECTION_NOT_DETECTED',
         },
         422,

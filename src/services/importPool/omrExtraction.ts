@@ -58,9 +58,38 @@ interface SidecarResponse {
   warnings: string[]
 }
 
-const PYTHON_BINARY = process.env.PYTHON_BINARY || 'python3'
 const SIDECAR_SCRIPT = path.join(process.cwd(), 'scripts', 'omr', 'extract_for_node.py')
 const SIDECAR_TIMEOUT_MS = Number(process.env.OMR_SIDECAR_TIMEOUT_MS || 60_000)
+
+// Resolve a usable python interpreter once at module load. Try the explicit
+// PYTHON_BINARY env var first, then common names. Caches the resolved path so
+// every spawn doesn't re-search. Throws if nothing's installed — caller is
+// expected to translate that into a user-facing error.
+let _resolvedPython: string | null = null
+let _resolvedPythonError: string | null = null
+function resolvePythonBinary(): string {
+  if (_resolvedPython) return _resolvedPython
+  if (_resolvedPythonError) throw new Error(_resolvedPythonError)
+  const candidates: string[] = []
+  if (process.env.PYTHON_BINARY) candidates.push(process.env.PYTHON_BINARY)
+  candidates.push('python3', 'python3.11', 'python3.10', 'python', '/usr/bin/python3', '/usr/local/bin/python3')
+  // Use spawnSync to test each — `which` is too platform-specific.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { spawnSync } = require('child_process') as typeof import('child_process')
+  for (const cmd of candidates) {
+    try {
+      const r = spawnSync(cmd, ['--version'], { stdio: 'ignore' })
+      if (r.status === 0) {
+        _resolvedPython = cmd
+        return cmd
+      }
+    } catch {
+      // ENOENT / other — try next candidate
+    }
+  }
+  _resolvedPythonError = `No Python 3 interpreter found (tried: ${candidates.join(', ')}). PATH=${process.env.PATH || ''}`
+  throw new Error(_resolvedPythonError)
+}
 
 /**
  * Run the Python OMR sidecar on a list of in-memory image buffers.
@@ -77,8 +106,9 @@ export async function runOmrSidecar(images: Buffer[]): Promise<SidecarResponse> 
       await fs.promises.writeFile(p, images[i])
       paths.push(p)
     }
+    const pythonBin = resolvePythonBinary()
     return await new Promise<SidecarResponse>((resolve, reject) => {
-      const proc = spawn(PYTHON_BINARY, [SIDECAR_SCRIPT, ...paths], {
+      const proc = spawn(pythonBin, [SIDECAR_SCRIPT, ...paths], {
         cwd: process.cwd(),
         env: process.env,
       })

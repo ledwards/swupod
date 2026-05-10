@@ -100,6 +100,23 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       storedExt = 'jpg'
     }
 
+    // Read final-pixel dimensions so we can return them. Without this, the
+    // client's processed.width/height is whatever loadImage() reported on the
+    // ORIGINAL HEIC — which is 0×0 in Chrome (can't render HEIC). The
+    // CroppedView component relies on naturalWidth/Height for crop-math; bad
+    // dimensions = the section image renders against the wrong coordinate
+    // space and shows content from elsewhere on the sheet.
+    let dimWidth: number | null = null
+    let dimHeight: number | null = null
+    try {
+      const sharp = (await import('sharp')).default
+      const meta = await sharp(buffer).metadata()
+      dimWidth = meta.width || null
+      dimHeight = meta.height || null
+    } catch {
+      // Best-effort — client falls back to its own measurement if missing.
+    }
+
     const key = `import-uploads/${session.id}/${Date.now()}-${randomBytes(4).toString('hex')}.${storedExt}`
     await uploadPhoto(key, buffer, storedType)
 
@@ -116,6 +133,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       mediaType: storedType,
       sizeBytes: buffer.length,
       previewDataUrl,
+      width: dimWidth,
+      height: dimHeight,
     })
   } catch (error) {
     return handleApiError(error as Error)
