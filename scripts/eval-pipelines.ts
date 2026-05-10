@@ -374,10 +374,17 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error('Error:', err)
-  process.exit(1)
-})
+// Auto-run main() ONLY when invoked as the entry script. Without this guard,
+// any other script that just `import`s this file (for the exports below) ends
+// up triggering all the API calls. Painful and expensive lesson.
+const isEntryPoint =
+  process.argv[1] && process.argv[1].endsWith('eval-pipelines.ts')
+if (isEntryPoint) {
+  main().catch((err) => {
+    console.error('Error:', err)
+    process.exit(1)
+  })
+}
 
 // Make the exports available so other variants of this file can import
 export { Pipeline, FIXTURES, TRUTH_FOR, runPipelineOnFixture, runPipeline, appendLog, baselinePipeline, MAX_DIM, decodeHeicViaConvert, autoOrientToPortrait, diffAgainstTruth }
