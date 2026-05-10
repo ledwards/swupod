@@ -212,13 +212,23 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       // converted to JPEG by this point.
       const opts = body.manualSetCode ? { setHint: body.manualSetCode } : {}
       let extractResult
+      let usedLegacyFallback = false
+      let wholeTableErr: Error | null = null
       try {
         extractResult = await extractPoolFromImagesWholeTable(imagesIn, opts)
       } catch (wtErr) {
-        logAttempt(`whole-table failed, falling back to legacy: ${(wtErr as Error).message}`)
-        console.warn(
-          '[import/extract] whole-table extraction failed, falling back to legacy multi-sample:',
-          (wtErr as Error).message,
+        wholeTableErr = wtErr as Error
+        usedLegacyFallback = true
+        logAttempt(`!!! WHOLE-TABLE FAILED, FALLING BACK TO LEGACY (degrades section bounds): ${wholeTableErr.message}`)
+        // console.error not warn — this is a real degradation, not a soft
+        // notice. Section bounds in the response will be Phase 1 / Claude-
+        // derived (less precise) instead of OMR-sidecar-derived (precise),
+        // which produces wrong Step 2 crops in the wizard.
+        console.error(
+          '[import/extract] WHOLE-TABLE FAILED — falling back to legacy multi-sample. ' +
+            'Section bounds will be imprecise; Step 2 crops will not align. ' +
+            'Common cause: Python OMR sidecar can\'t spawn (no python3 in PATH on this container).',
+          wholeTableErr.message,
         )
         extractResult = await extractPoolFromImages(imagesIn, opts)
       }
@@ -428,7 +438,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         leader: raw.header.leader,
         base: raw.header.base,
       },
-      warnings: extractWarnings,
+      warnings: usedLegacyFallback
+        ? [
+            ...extractWarnings,
+            'Section detection ran in degraded mode — the source-image crops in Step 2 may not align precisely with each section. Tally counts are still extracted; verify cell-by-cell.',
+          ]
+        : extractWarnings,
       sectionGaps,
       sections,
       iterations: extractIterations,
