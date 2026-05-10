@@ -124,33 +124,37 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       console.warn('[upload-photo] sharp rotate failed, storing un-canonicalized:', err)
     }
 
-    // Read final-pixel dimensions so we can return them. Without this, the
-    // client's processed.width/height is whatever loadImage() reported on the
-    // ORIGINAL HEIC — which is 0×0 in Chrome (can't render HEIC). The
-    // CroppedView component relies on naturalWidth/Height for crop-math; bad
-    // dimensions = the section image renders against the wrong coordinate
-    // space and shows content from elsewhere on the sheet.
+    // Read final-pixel dimensions and generate a small preview for the browser.
+    // dimWidth/Height: CroppedView relies on these for crop math — without them
+    // the section image renders against the wrong coordinate space. Chrome
+    // reports 0×0 for HEIC <img>, so we read from the server-side buffer.
     let dimWidth: number | null = null
     let dimHeight: number | null = null
+    // For HEIC uploads, generate a small downscaled preview for the browser UI.
+    // The full-quality bytes are stored to R2/tmp below — returning the full
+    // buffer as base64 (~20MB per image) in the JSON response caused OOM on
+    // concurrent large HEIC uploads and took the server down. A 1200px/q70
+    // thumbnail is ~150-300KB — 100× smaller and plenty for the wizard preview.
+    let previewDataUrl: string | null = null
     try {
       const sharp = (await import('sharp')).default
       const meta = await sharp(buffer).metadata()
       dimWidth = meta.width || null
       dimHeight = meta.height || null
-    } catch {
+      if (file.type === 'image/heic' || file.type === 'image/heif') {
+        const previewBuffer = await sharp(buffer)
+          .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
+          .jpeg({ quality: 70 })
+          .toBuffer()
+        previewDataUrl = `data:image/jpeg;base64,${previewBuffer.toString('base64')}`
+      }
+    } catch (err) {
+      console.warn('[upload-photo] metadata/preview generation failed:', err)
       // Best-effort — client falls back to its own measurement if missing.
     }
 
     const key = `import-uploads/${session.id}/${Date.now()}-${randomBytes(4).toString('hex')}.${storedExt}`
     await uploadPhoto(key, buffer, storedType)
-
-    // For HEIC uploads, also return the converted JPEG bytes as a data URL
-    // so the wizard's <img> previews work in any browser without needing a
-    // second round-trip to fetch from R2/tmp.
-    const previewDataUrl =
-      file.type === 'image/heic' || file.type === 'image/heif'
-        ? `data:${storedType};base64,${buffer.toString('base64')}`
-        : null
 
     return jsonResponse({
       key,
