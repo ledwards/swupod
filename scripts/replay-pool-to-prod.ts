@@ -2,37 +2,23 @@
 /**
  * Replay a verified local pool to production.
  *
- * Reads a local /tmp/eval-captures/<sessionId>/ground-truth.json (the file
- * the wizard saves on Create Pool), maps its rows to cardIds via the
- * bundled cards.json, and POSTs the same payload to prod's
- * /api/import/create. Lets Lee mess with a known-good local pool on
- * production without re-uploading photos and re-extracting (which Opus
- * variance would muddy).
+ * Reads /tmp/eval-captures/<sessionId>/ground-truth.json (saved when the
+ * wizard's Create Pool succeeds), looks each row up in the bundled
+ * cards.json, runs buildPool() to assemble the pool/deck shapes, and
+ * INSERTs directly into the card_pools table on the prod DB.
  *
- * Usage:
- *   PROD_COOKIE='ptp_session=...; otherCookie=...' \
- *     npx tsx scripts/replay-pool-to-prod.ts <sessionId> [prodHost]
+ * Bypasses the HTTP API entirely (no cookie needed). Run via Railway so
+ * POSTGRES_URL points at prod:
  *
- * Get PROD_COOKIE: open protectthepod.com in browser, devtools → Application
- * → Cookies, copy the whole "Cookie" header value.
+ *   railway run -e production \
+ *     npx tsx scripts/replay-pool-to-prod.ts <sessionId> [user_id]
  *
- * prodHost defaults to https://protectthepod.com.
+ * user_id defaults to the userId stored in the ground-truth's meta — i.e.
+ * the same person who created it locally. Override only if you want the
+ * pool to land under a different user (e.g. for testing).
  */
 import * as fs from 'fs'
 import * as path from 'path'
-
-const PROD_COOKIE = process.env.PROD_COOKIE || ''
-if (!PROD_COOKIE) {
-  console.error('PROD_COOKIE env var required. See script header.')
-  process.exit(1)
-}
-
-const sessionId = process.argv[2]
-const prodHost = process.argv[3] || 'https://protectthepod.com'
-if (!sessionId) {
-  console.error('Usage: PROD_COOKIE=... npx tsx scripts/replay-pool-to-prod.ts <sessionId> [prodHost]')
-  process.exit(1)
-}
 
 interface TruthRow {
   name: string
@@ -48,11 +34,19 @@ interface TruthFile {
     activeLeaderId: string
     activeBaseId: string
     title: string
+    userId?: string
   }
   rows: TruthRow[]
 }
 
 async function main() {
+  const sessionId = process.argv[2]
+  const userIdOverride = process.argv[3]
+  if (!sessionId) {
+    console.error('Usage: railway run -e production npx tsx scripts/replay-pool-to-prod.ts <sessionId> [user_id]')
+    process.exit(1)
+  }
+
   const truthPath = `/tmp/eval-captures/${sessionId}/ground-truth.json`
   if (!fs.existsSync(truthPath)) {
     console.error(`ground-truth.json not found at ${truthPath}`)
@@ -60,75 +54,130 @@ async function main() {
   }
   const truth: TruthFile = JSON.parse(fs.readFileSync(truthPath, 'utf8'))
   const setCode = truth.meta.setCode
-  console.log(`Loaded truth: ${truth.rows.length} rows, set=${setCode}`)
+  const userId = userIdOverride || truth.meta.userId
+  if (!userId) {
+    console.error('No user_id available — pass as 2nd arg or ensure ground-truth.json meta has userId')
+    process.exit(1)
+  }
+  console.log(`Loaded truth: ${truth.rows.length} rows, set=${setCode}, user=${userId}`)
 
-  // Load bundled cards.json and build name+subtitle → id index for the set
+  // Verify we're on prod (POSTGRES_URL must be set; print host for safety)
+  const dbUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL
+  if (!dbUrl) {
+    console.error('No POSTGRES_URL/DATABASE_URL — wrap with `railway run -e production` to inject prod creds')
+    process.exit(1)
+  }
+  const dbHost = (() => {
+    try { return new URL(dbUrl).hostname } catch { return '<unparseable>' }
+  })()
+  console.log(`DB host: ${dbHost}`)
+
+  // Lookup cards via the bundled cards.json
   const cardsPath = path.join(process.cwd(), 'src', 'data', 'cards.json')
-  const cards = JSON.parse(fs.readFileSync(cardsPath, 'utf8'))
-  const setCards = (cards.cards || []).filter(
+  const cardsFile = JSON.parse(fs.readFileSync(cardsPath, 'utf8'))
+  const setCards = (cardsFile.cards || []).filter(
     (c: any) => c.set === setCode && c.variantType === 'Normal',
   )
-  const lookup = new Map<string, any>()
+  const lookupByNameSubtitle = new Map<string, any>()
   for (const c of setCards) {
     const k = `${(c.name || '').toLowerCase()}|${(c.subtitle || '').toLowerCase()}`
-    lookup.set(k, c)
+    lookupByNameSubtitle.set(k, c)
   }
-  console.log(`Loaded ${setCards.length} ${setCode} cards from cards.json`)
 
-  const resolvedRows: Array<{ cardId: string; poolQty: number; deckQty: number }> = []
+  const resolvedRows: Array<{ card: any; poolQty: number; deckQty: number }> = []
   const unmatched: TruthRow[] = []
   for (const r of truth.rows) {
     if (r.poolQty < 1) continue
     const k = `${r.name.toLowerCase()}|${(r.subtitle || '').toLowerCase()}`
-    const card = lookup.get(k)
+    const card = lookupByNameSubtitle.get(k)
     if (!card) {
       unmatched.push(r)
       continue
     }
-    resolvedRows.push({ cardId: card.id, poolQty: r.poolQty, deckQty: r.deckQty })
+    resolvedRows.push({ card, poolQty: r.poolQty, deckQty: r.deckQty })
   }
   if (unmatched.length > 0) {
     console.warn(`WARNING: ${unmatched.length} rows did not match cards.json:`)
     unmatched.forEach((r) => console.warn(`  - ${r.name}${r.subtitle ? ' / ' + r.subtitle : ''}`))
+    process.exit(1)
   }
+  console.log(`Resolved ${resolvedRows.length} rows`)
 
-  const payload = {
-    setCode,
+  // Build the pool/deck shape
+  const { buildPool } = await import('../src/services/importPool/buildPool')
+  const built = buildPool({
     resolvedRows,
     activeLeaderId: truth.meta.activeLeaderId,
     activeBaseId: truth.meta.activeBaseId,
-    title: truth.meta.title,
+    setCode,
+    poolName: truth.meta.title,
     isDefaultName: false,
-    sessionId, // server uses this for eval-capture pairing
+  })
+  if (built.validationErrors.length > 0) {
+    console.error('buildPool validation errors:')
+    for (const e of built.validationErrors) console.error(`  - [${e.code}] ${e.message}`)
+    process.exit(1)
   }
 
-  console.log(`POSTing ${resolvedRows.length} rows to ${prodHost}/api/import/create ...`)
-  const res = await fetch(`${prodHost}/api/import/create`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Cookie: PROD_COOKIE,
-    },
-    body: JSON.stringify(payload),
-  })
-  const body = await res.text()
-  if (!res.ok) {
-    console.error(`HTTP ${res.status}: ${body.slice(0, 1000)}`)
+  // Resolve set name
+  const { getSetConfig } = await import('../src/utils/setConfigs/index')
+  const setConfig = getSetConfig(setCode)
+  const setName = setConfig?.setName || setCode
+
+  // INSERT into card_pools (mirroring app/api/import/create/route.ts)
+  const { query } = await import('../lib/db')
+  const { generateShareId } = await import('../lib/utils')
+
+  let shareId = generateShareId(8)
+  let attempts = 0
+  let inserted: any = null
+  while (attempts < 10) {
+    try {
+      const result = await query(
+        `INSERT INTO card_pools (
+           user_id, share_id, set_code, set_name, pool_type, name,
+           cards, packs, deck_builder_state, is_public, hidden
+         )
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+         RETURNING id, share_id, created_at`,
+        [
+          userId,
+          shareId,
+          setCode,
+          setName,
+          'imported',
+          truth.meta.title,
+          JSON.stringify(built.cards),
+          null,
+          JSON.stringify(built.deckBuilderState),
+          false,
+          false,
+        ],
+      )
+      inserted = result.rows[0]
+      break
+    } catch (err: any) {
+      if (err?.code === '23505' || (err?.message || '').includes('duplicate key')) {
+        shareId = generateShareId(8)
+        attempts++
+        continue
+      }
+      throw err
+    }
+  }
+
+  if (!inserted) {
+    console.error('Failed to insert after 10 share-id collisions')
     process.exit(1)
   }
-  let parsed: any
-  try {
-    parsed = JSON.parse(body)
-  } catch {
-    console.error('Response not JSON:', body.slice(0, 500))
-    process.exit(1)
-  }
-  const data = parsed.data ?? parsed
-  console.log('SUCCESS')
-  console.log('  shareId:', data.shareId)
-  if (data.shareId) {
-    console.log(`  URL: ${prodHost}/pool/${data.shareId}/deck`)
-  }
+
+  const APP_URL = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://protectthepod.com'
+  console.log(`\nSUCCESS`)
+  console.log(`  shareId:  ${inserted.share_id}`)
+  console.log(`  URL:      ${APP_URL}/pool/${inserted.share_id}/deck`)
+  console.log(`  poolId:   ${inserted.id}`)
+  console.log(`  user:     ${userId}`)
+  process.exit(0)
 }
 
 main().catch((err) => {
