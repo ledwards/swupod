@@ -2017,7 +2017,14 @@
 
 .ip-source-modal__col-played { width: 70px; }
 .ip-source-modal__col-total  { width: 70px; }
+.ip-source-modal__col-num    { width: 40px; }
 .ip-source-modal__col-name   { width: auto; }
+.ip-source-modal__cell--num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.5);
+  padding-right: 8px;
+}
 
 .ip-source-modal__cell {
   padding: 4px 6px;

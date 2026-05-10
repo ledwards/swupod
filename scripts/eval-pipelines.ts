@@ -28,21 +28,25 @@ const FIXTURES: FixtureSpec[] = [
   { name: 'sq-tom-law', files: ['photo1.jpg', 'photo2.jpg'] },
   { name: 'sq-lee-law', files: ['photo1.jpg', 'photo2.jpg'] },
   { name: 'casual-lee-law', files: ['photo1.jpg', 'photo2.jpg'] },
+  { name: 'sfpq-lee-law', files: ['photo1.jpg', 'photo2.jpg'] },
   // HEIC pairs Lee dropped at /Users/lee/Downloads. The pool/truth is the
   // same as casual-lee-law / sq-lee-law respectively — different formats
   // exercise the HEIC conversion path.
   { name: 'sq-lee-law-heic', files: ['/Users/lee/Downloads/IMG_3187.HEIC', '/Users/lee/Downloads/IMG_3188.HEIC'], isHeic: true },
   { name: 'local-lee-law', files: ['/Users/lee/Downloads/IMG_3209.HEIC', '/Users/lee/Downloads/IMG_3210.HEIC'], isHeic: true },
+  { name: 'sfpq-lee-law-heic', files: ['/Users/lee/Downloads/IMG_3239.HEIC', '/Users/lee/Downloads/IMG_3240.HEIC'], isHeic: true },
 ]
 
-// Map fixture → which fixture's ground-truth.json to use. Two HEIC fixtures
+// Map fixture → which fixture's ground-truth.json to use. HEIC fixtures
 // share truth with their JPG counterparts (same pool, same handwriting).
 const TRUTH_FOR: Record<string, string> = {
   'sq-tom-law': 'sq-tom-law',
   'sq-lee-law': 'sq-lee-law',
   'casual-lee-law': 'casual-lee-law',
+  'sfpq-lee-law': 'sfpq-lee-law',
   'sq-lee-law-heic': 'sq-lee-law',
   'local-lee-law': 'local-lee-law', // already a copy of casual-lee-law's
+  'sfpq-lee-law-heic': 'sfpq-lee-law',
 }
 
 // === Pipelines ===

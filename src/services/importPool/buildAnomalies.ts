@@ -128,17 +128,23 @@ export function buildAnomalies(input: AnomalyInput): Anomaly[] {
   // Sealed pool always has exactly 6 leaders (one per booster) and 6-7 bases,
   // with exactly 1 active of each (deckQty=1). Surfacing as kind='section'
   // so any wrong row in those sections gets the section catch.
+  //
+  // Count by quantity SUM, not row count: a base with poolQty=2 is two cards,
+  // not one. A 6-base pool can show as "5 distinct rows" if the player
+  // doubled up on one base — counting rows would falsely flag that as wrong.
   const leaderRowsInPool = resolvedRows.filter((r) => r.card?.isLeader && r.poolQty >= 1)
   const activeLeaderRows = resolvedRows.filter((r) => r.card?.isLeader && r.deckQty >= 1)
   const baseRowsInPool = resolvedRows.filter((r) => r.card?.isBase && r.poolQty >= 1)
   const activeBaseRows = resolvedRows.filter((r) => r.card?.isBase && r.deckQty >= 1)
+  const leaderPoolQty = leaderRowsInPool.reduce((s, r) => s + r.poolQty, 0)
+  const basePoolQty = baseRowsInPool.reduce((s, r) => s + r.poolQty, 0)
 
-  if (leaderRowsInPool.length !== 6) {
+  if (leaderPoolQty !== 6) {
     list.push({
       key: 'leadersCount',
       kind: 'section',
       targetId: `ip-section-leaders`,
-      label: `Leaders: ${leaderRowsInPool.length} marked in pool — sealed pool always has exactly 6. Verify.`,
+      label: `Leaders: ${leaderPoolQty} marked in pool — sealed pool always has exactly 6. Verify.`,
       sectionName: 'Leaders',
     })
   }
@@ -155,12 +161,12 @@ export function buildAnomalies(input: AnomalyInput): Anomaly[] {
     })
     for (const r of activeLeaderRows) seenRowKey.add(r.key)
   }
-  if (baseRowsInPool.length < 6 || baseRowsInPool.length > 7) {
+  if (basePoolQty < 6 || basePoolQty > 7) {
     list.push({
       key: 'basesCount',
       kind: 'section',
       targetId: `ip-section-bases`,
-      label: `Bases: ${baseRowsInPool.length} marked in pool — typical sealed pool has 6-7. Verify.`,
+      label: `Bases: ${basePoolQty} marked in pool — typical sealed pool has 6-7. Verify.`,
       sectionName: 'Bases',
     })
   }

@@ -385,12 +385,14 @@ export function SideBySideTable({
         <colgroup>
           <col className="ip-source-modal__col-played" />
           <col className="ip-source-modal__col-total" />
+          <col className="ip-source-modal__col-num" />
           <col className="ip-source-modal__col-name" />
         </colgroup>
         <thead>
           <tr>
             <th>PLAYED ({rows.reduce((s, r) => s + r.deckQty, 0)})</th>
             <th>TOTAL ({rows.reduce((s, r) => s + r.poolQty, 0)})</th>
+            <th>#</th>
             <th>NAME</th>
           </tr>
         </thead>
@@ -403,7 +405,7 @@ export function SideBySideTable({
             const dividerRow = showHeader
               ? [
                   <tr key={`sub-${group.key}`} className="ip-source-modal__sub-header">
-                    <td colSpan={3}>
+                    <td colSpan={4}>
                       <SubGroupHeader subKey={group.key} />
                     </td>
                   </tr>,
@@ -453,6 +455,12 @@ export function SideBySideTable({
                       disableInc={row.poolQty >= 6}
                       disableDec={row.poolQty <= 0}
                     />
+                  </td>
+                  <td className="ip-source-modal__cell ip-source-modal__cell--num">
+                    {(() => {
+                      const m = (row.card?.cardId || '').match(/(\d+)$/)
+                      return m ? parseInt(m[1], 10) : ''
+                    })()}
                   </td>
                   <td className="ip-source-modal__cell ip-source-modal__cell--name">
                     <span className="ip-source-modal__name">
