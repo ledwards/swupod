@@ -196,6 +196,20 @@ type Action =
   | { type: 'GO_BACK' }
   | { type: 'SET_ROW_QTY'; key: string; field: 'poolQty' | 'deckQty'; value: number }
   | { type: 'REPLACE_ROW_CARD'; key: string; card: MatchedCard }
+  | {
+      type: 'REPLACE_SECTION_ROWS'
+      /** Map of cardId → new poolQty + deckQty + confidences. The reducer
+       *  walks resolvedRows and replaces matching rows in place; rows in
+       *  the section that aren't in the map (i.e. this re-extract didn't
+       *  see them) are NOT touched. */
+      updates: Array<{
+        cardId: string
+        poolQty: number
+        deckQty: number
+        poolQtyConfidence?: 'high' | 'medium' | 'low'
+        deckQtyConfidence?: 'high' | 'medium' | 'low'
+      }>
+    }
   | { type: 'SET_ACTIVE_LEADER'; cardId: string }
   | { type: 'SET_ACTIVE_BASE'; cardId: string }
   | { type: 'SET_TITLE'; title: string }
@@ -356,6 +370,46 @@ function reducer(state: ImportPoolState, action: Action): ImportPoolState {
           r.key === action.key ? { ...r, card: action.card, candidates: [], confidence: 'exact' } : r,
         ),
       }
+    case 'REPLACE_SECTION_ROWS': {
+      // Targeted re-extract: replace poolQty/deckQty/confidences for every
+      // row whose card.id is in the updates map. Don't touch other rows.
+      // Also clear any "mark as correct" dismissals tied to rows that just
+      // changed — the user's prior verdict was on the old extraction value.
+      const byCardId = new Map<string, (typeof action.updates)[number]>()
+      for (const u of action.updates) byCardId.set(u.cardId, u)
+      const touchedKeys = new Set<string>()
+      const resolvedRows = state.resolvedRows.map((r) => {
+        const u = r.card ? byCardId.get(r.card.id) : null
+        if (!u) return r
+        touchedKeys.add(r.key)
+        const poolQty = Math.max(0, Math.min(6, u.poolQty))
+        let deckQty = Math.max(0, Math.min(6, u.deckQty))
+        if (deckQty > poolQty) deckQty = poolQty
+        const next = {
+          ...r,
+          poolQty,
+          deckQty,
+          extracted: {
+            ...r.extracted,
+            poolQty,
+            deckQty,
+            poolQtyConfidence: u.poolQtyConfidence || r.extracted.poolQtyConfidence,
+            deckQtyConfidence: u.deckQtyConfidence || r.extracted.deckQtyConfidence,
+          },
+        }
+        return next
+      })
+      // Drop dismissed-anomaly keys whose row got replaced — keep only
+      // dismissals on rows we didn't touch.
+      const dismissedAnomalyKeys = state.dismissedAnomalyKeys.filter((k) => {
+        // Anomaly keys typically embed the row key (e.g. "lowConf:pool:row-3")
+        for (const tk of touchedKeys) {
+          if (k.includes(tk)) return false
+        }
+        return true
+      })
+      return { ...state, resolvedRows, dismissedAnomalyKeys }
+    }
     case 'SET_ACTIVE_LEADER':
       // Setting an active leader sets that row's deckQty=1 and forces all
       // other leader rows back to deckQty=0 — exactly one leader is active
@@ -986,6 +1040,44 @@ export function useImportPool() {
     dispatch({ type: 'DISMISS_ANOMALY', anomalyKey })
   }, [])
 
+  /** Re-extract a single section's cells via /api/import/re-extract-section.
+   *  Resolves with `{ rowsReplaced, elapsedMs }` on success. The caller can
+   *  use these for toast messaging. Throws on failure. */
+  const reExtractSection = useCallback(
+    async (sectionName: string): Promise<{ rowsReplaced: number; elapsedMs: number }> => {
+      if (!state.extraction) throw new Error('No extraction in progress')
+      const photoKeys = state.images.map((img) => img.photoKey).filter((k): k is string => !!k)
+      if (photoKeys.length === 0) {
+        throw new Error('Source photos missing — cannot re-extract')
+      }
+      const res = await fetch('/api/import/re-extract-section', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          photoKeys,
+          sectionName,
+          setCode: state.extraction.header.setCode,
+        }),
+      })
+      const payload = await res.json()
+      const body = payload.data ?? payload
+      if (!res.ok) {
+        throw new Error(body?.error || payload.message || 'Re-extract failed')
+      }
+      const updates = (body.rows || []) as Array<{
+        cardId: string
+        poolQty: number
+        deckQty: number
+        poolQtyConfidence?: 'high' | 'medium' | 'low'
+        deckQtyConfidence?: 'high' | 'medium' | 'low'
+      }>
+      dispatch({ type: 'REPLACE_SECTION_ROWS', updates })
+      return { rowsReplaced: updates.length, elapsedMs: body.elapsedMs || 0 }
+    },
+    [state.extraction, state.images],
+  )
+
   return {
     state,
     validation,
@@ -1005,5 +1097,6 @@ export function useImportPool() {
     setViewFilter,
     setViewMode,
     dismissAnomaly,
+    reExtractSection,
   }
 }
