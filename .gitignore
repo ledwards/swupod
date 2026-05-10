@@ -78,3 +78,4 @@ scripts/eval/fixtures/*/photo*.png
 scripts/eval/heic-ab/
 scripts/eval/pipeline-runs/
 scripts/omr/__pycache__/
+tests/e2e/crop-verify-screenshots/
