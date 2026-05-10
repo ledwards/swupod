@@ -28,9 +28,21 @@ export default function ConfirmStep({ importPool }: Props) {
     const aspectBreakdown: Record<string, number> = {}
     let deckCount = 0
     let sideboardCount = 0
+    let extraLeaders = 0
+    let extraBases = 0
     const MAIN = new Set(['Vigilance', 'Command', 'Aggression', 'Cunning'])
     for (const row of state.resolvedRows) {
-      if (!row.card || row.card.isLeader || row.card.isBase) continue
+      if (!row.card) continue
+      if (row.card.isLeader) {
+        // All leaders in the pool count toward Extra Leaders so that
+        // Deck + Sideboard + Extra Leaders + Extra Bases = Total Pool.
+        extraLeaders += row.poolQty
+        continue
+      }
+      if (row.card.isBase) {
+        extraBases += row.poolQty
+        continue
+      }
       deckCount += row.deckQty
       sideboardCount += row.poolQty - row.deckQty
       // Multi-main cards bucket as "Multicolor" instead of falling under
@@ -43,7 +55,15 @@ export default function ConfirmStep({ importPool }: Props) {
           : aspects[0] || 'Neutral'
       aspectBreakdown[bucket] = (aspectBreakdown[bucket] || 0) + row.deckQty
     }
-    return { leader: leaderRow?.card, base: baseRow?.card, aspectBreakdown, deckCount, sideboardCount }
+    return {
+      leader: leaderRow?.card,
+      base: baseRow?.card,
+      aspectBreakdown,
+      deckCount,
+      sideboardCount,
+      extraLeaders,
+      extraBases,
+    }
   }, [state])
 
   return (
@@ -99,6 +119,14 @@ export default function ConfirmStep({ importPool }: Props) {
             <dd>{summary.sideboardCount} cards</dd>
           </div>
           <div>
+            <dt>Extra Leaders</dt>
+            <dd>{summary.extraLeaders} cards</dd>
+          </div>
+          <div>
+            <dt>Extra Bases</dt>
+            <dd>{summary.extraBases} cards</dd>
+          </div>
+          <div>
             <dt>Total pool</dt>
             <dd>{validation.poolCount} cards</dd>
           </div>
@@ -107,7 +135,7 @@ export default function ConfirmStep({ importPool }: Props) {
         {Object.keys(summary.aspectBreakdown).length > 0 && (
           <div className="import-pool-summary-aspects">
             <h4>Deck aspect breakdown</h4>
-            <ul>
+            <dl className="import-pool-summary-stats">
               {(() => {
                 // Canonical aspect order with Multicolor at the end and
                 // Neutral after the player aspects.
@@ -119,12 +147,13 @@ export default function ConfirmStep({ importPool }: Props) {
                 return Object.entries(summary.aspectBreakdown)
                   .sort((a, b) => rank(a[0]) - rank(b[0]))
                   .map(([aspect, count]) => (
-                    <li key={aspect}>
-                      <strong>{aspect}</strong>: {count}
-                    </li>
+                    <div key={aspect}>
+                      <dt>{aspect}</dt>
+                      <dd>{count}</dd>
+                    </div>
                   ))
               })()}
-            </ul>
+            </dl>
           </div>
         )}
       </div>

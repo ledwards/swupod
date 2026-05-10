@@ -1142,20 +1142,6 @@
   justify-content: center;
 }
 
-.import-pool-summary-aspects {
-  margin-top: 16px;
-}
-
-.import-pool-summary-aspects ul {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 6px 16px;
-  list-style: none;
-  padding: 0;
-  margin: 8px 0 0;
-  justify-content: center;
-}
-
 .import-pool-summary-leader-base {
   display: flex;
   gap: 16px;
@@ -1236,18 +1222,11 @@
   margin: 0;
 }
 
-.import-pool-summary-aspects ul {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  list-style: none;
-  padding: 0;
-  margin: 4px 0 0;
-  font-size: 13px;
-}
-
-.import-pool-summary-aspects ul strong {
-  font-weight: 700;
+/* Aspect breakdown reuses the .import-pool-summary-stats dl layout so each
+ * aspect renders with the small uppercase label on top and the count
+ * below — matching DECK / SIDEBOARD / TOTAL POOL above it. */
+.import-pool-summary-aspects .import-pool-summary-stats {
+  margin-top: 4px;
 }
 
 /* Actions */
