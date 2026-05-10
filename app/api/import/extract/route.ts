@@ -206,13 +206,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     let extractIterations: any[] = []
     let converged = false
     let bestIteration = 0
+    let usedLegacyFallback = false
     try {
       // imagesIn was resolved above (from body.photoKeys via R2 fetch +
       // HEIC convert, or from body.images directly). HEIC has already been
       // converted to JPEG by this point.
       const opts = body.manualSetCode ? { setHint: body.manualSetCode } : {}
       let extractResult
-      let usedLegacyFallback = false
       let wholeTableErr: Error | null = null
       try {
         extractResult = await extractPoolFromImagesWholeTable(imagesIn, opts)
