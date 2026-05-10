@@ -23,7 +23,11 @@ aptPkgs = [
   "libgbm1",
   "libpango-1.0-0",
   "libcairo2",
-  "libasound2",
+  # libasound2 was renamed libasound2t64 in Ubuntu noble (24.04). Older
+  # nixpacks images had libasound2 as a real package; current ones don't.
+  # The t64 variant is API-compatible and what other Playwright/headless
+  # image lists use today.
+  "libasound2t64",
   "libatspi2.0-0",
   # libGL needed by opencv-python-headless. Other CV deps are bundled
   # in the wheel.
