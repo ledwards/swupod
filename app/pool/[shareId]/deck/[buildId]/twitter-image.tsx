@@ -1,6 +1,8 @@
 /**
  * Twitter card image for /pool/[shareId]/deck/[buildId].
  * Mirrors opengraph-image.tsx for the same route.
+ *
+ * v2: letterbox + deck-only.
  */
 
 import { respondWithDeckImage } from '@/lib/og/poolDeckImage'

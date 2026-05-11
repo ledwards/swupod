@@ -1,7 +1,9 @@
 /**
  * OG image for /pool/[shareId]/deck/[buildId] — the build is itself a
  * card_pools row whose share_id == buildId, so we just generate the
- * deck image for the buildId.
+ * deck image for the buildId. Letterboxed 1200×630 in the helper.
+ *
+ * v2: letterbox + deck-only.
  */
 
 import { respondWithDeckImage } from '@/lib/og/poolDeckImage'

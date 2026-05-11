@@ -1,6 +1,9 @@
 /**
  * OG image for /pool/[shareId]/deck — renders the deck image (leader,
- * base, deck, sideboard) via the swuapi.com /deck-image endpoint.
+ * base, deck) via the swuapi.com /deck-image endpoint, letterboxed
+ * into a 1200×630 canvas in the helper.
+ *
+ * v2: letterbox + deck-only.
  */
 
 import { respondWithDeckImage } from '@/lib/og/poolDeckImage'

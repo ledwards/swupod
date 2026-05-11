@@ -2,6 +2,8 @@
  * Twitter card image for /pool/[shareId]/deck — same renderer as
  * opengraph-image.tsx. Twitter clients prefer twitter:image over
  * og:image, so we have to set both.
+ *
+ * v2: letterbox + deck-only.
  */
 
 import { respondWithDeckImage } from '@/lib/og/poolDeckImage'
