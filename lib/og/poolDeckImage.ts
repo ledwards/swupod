@@ -135,7 +135,7 @@ export async function generateDeckImageForShareId(
   const appUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://protectthepod.com'
   const poolUrl = `${appUrl}/pool/${shareId}/deck`
 
-  const buffer = await generateDeckImage({
+  const rawBuffer = await generateDeckImage({
     leader: toCardInfo(leader),
     base: toCardInfo(base),
     deckCards: deckCards.map(toCardInfo),
@@ -143,7 +143,27 @@ export async function generateDeckImageForShareId(
     subtitle: pool.set_name || pool.set_code || undefined,
     poolUrl,
   })
-  if (!buffer) return null
+  if (!rawBuffer) return null
+
+  // swuapi returns ~1572×1338 (close to square). The OG meta declares
+  // 1200×630 (Twitter/Discord-friendly 1.91:1). If we serve the raw
+  // PNG at its natural aspect, Discord stretches it horizontally to
+  // match the declared dims — cards look squished. Fix: letterbox into
+  // a 1200×630 canvas with `fit: 'contain'` + a dark background. No
+  // stretching, just empty padding where the source doesn't fill.
+  let buffer = rawBuffer
+  try {
+    const sharp = (await import('sharp')).default
+    buffer = await sharp(rawBuffer)
+      .resize(OG_WIDTH, OG_HEIGHT, {
+        fit: 'contain',
+        background: { r: 13, g: 17, b: 23, alpha: 1 }, // matches site dark bg
+      })
+      .png()
+      .toBuffer()
+  } catch (err) {
+    console.warn('[og/poolDeckImage] sharp letterbox failed, serving raw bytes:', err)
+  }
 
   // stripPositionKey is currently unused outside but kept exported-by-implication
   // for future use if we need to look up by UUID instead of full position key.
@@ -151,6 +171,9 @@ export async function generateDeckImageForShareId(
 
   return { buffer, pool }
 }
+
+const OG_WIDTH = 1200
+const OG_HEIGHT = 630
 
 export async function respondWithDeckImage(shareId: string): Promise<Response> {
   const result = await generateDeckImageForShareId(shareId)
