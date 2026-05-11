@@ -121,13 +121,15 @@ export async function generateDeckImageForShareId(
     return null
   }
 
+  // Deck-only for the OG share image — sideboard makes the composition
+  // too tall for a 1.91:1-ish share preview and pushes the deck image
+  // off the visible area in Discord/Twitter cards. Sideboard still
+  // shows up everywhere else (in-app deckbuilder, bot summaries).
   const deckCards: CardLike[] = []
-  const sideboardCards: CardLike[] = []
   for (const k of Object.keys(positions)) {
     const p = positions[k]
     if (!p?.card || p.card.isLeader || p.card.isBase) continue
     if (p.section === 'deck') deckCards.push(p.card)
-    else if (p.section === 'sideboard') sideboardCards.push(p.card)
   }
 
   const appUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://protectthepod.com'
@@ -137,7 +139,6 @@ export async function generateDeckImageForShareId(
     leader: toCardInfo(leader),
     base: toCardInfo(base),
     deckCards: deckCards.map(toCardInfo),
-    sideboardCards: sideboardCards.length > 0 ? sideboardCards.map(toCardInfo) : undefined,
     title: pool.name || 'Imported Pool',
     subtitle: pool.set_name || pool.set_code || undefined,
     poolUrl,
