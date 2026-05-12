@@ -17,6 +17,7 @@ const MODE_ART = {
   draftSolo: 'https://cdn.starwarsunlimited.com//card_07020301_EN_Han_Solo_5c873340ad.png',
   sealedLive: 'https://cdn.starwarsunlimited.com//card_04020336_EN_Close_the_Shield_Gate_54e600004d.png',
   draftLive: 'https://cdn.starwarsunlimited.com//card_07020493_EN_The_Master_Codebreaker_fb7127ab41.png',
+  history: 'https://cdn.starwarsunlimited.com//card_05020502_EN_Darth_Revan_s_Lightsabers_d4bd32215b.png',
   deckbuilder: 'https://cdn.starwarsunlimited.com//card_04030998_EN_Grand_Admiral_Thrawn_Leader_Unit_eba4967d61.png',
   importPool: 'https://cdn.starwarsunlimited.com//card_04020522_EN_Death_Star_Plans_c573838ad4.png',
 }
@@ -257,6 +258,15 @@ function LandingPage() {
           <div className="mode-section">
             <h3 className="mode-section-header">Deckbuilder</h3>
             <div className="mode-column">
+              {user && (
+                <button className="mode-button art-unit" onClick={() => router.push('/history')}>
+                  <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.history}")` }} />
+                  <div className="mode-button-content">
+                    <span className="mode-button-title">History</span>
+                    <span className="mode-button-subtitle">Your past pools and decks</span>
+                  </div>
+                </button>
+              )}
               <button className="mode-button art-unit mode-button-deckbuilder" onClick={() => router.push('/deckbuilder')}>
                 <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.deckbuilder}")` }} />
                 <div className="mode-button-content">

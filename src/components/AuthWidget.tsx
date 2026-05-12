@@ -11,10 +11,15 @@ import UserAvatar from './UserAvatar'
 import './AuthWidget.css'
 
 interface SealedPool {
+  id: string
   shareId: string
   name?: string
+  setCode?: string
   createdAt: string
+  updatedAt?: string
   poolType?: string
+  parentPoolId?: string | null
+  leaderName?: string | null
 }
 
 interface Pod {
@@ -104,18 +109,29 @@ export default function AuthWidget() {
             setActivePod(null)
           }
 
-          // Recent pools = the user's own pools, most-recent first. Excludes pool that's
-          // still attached to the active draft (avoids duplication).
+          // Recent pools: group the user's pools by root (parentPoolId || id) so multiple
+          // builds of the same pool collapse into one entry. The display label is the
+          // most recently selected deck's leader — letting the user tell pools apart
+          // by the deck they last worked on, instead of "Sealed / Sealed / Sealed".
           const activePoolShareId = running?.poolShareId
           const remainingSlots = RECENT_ACTIVITY_TOTAL - 1 /* History button */ - (running ? 1 : 0)
-          const recents = (poolsData || [])
+          const pools: SealedPool[] = (poolsData || [])
             .filter((p: SealedPool) => !activePoolShareId || p.shareId !== activePoolShareId)
-            .sort((a: SealedPool, b: SealedPool) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          const groups = new Map<string, SealedPool>()
+          for (const p of pools) {
+            const rootKey = p.parentPoolId || p.id
+            const existing = groups.get(rootKey)
+            const pickedAt = new Date(p.updatedAt || p.createdAt).getTime()
+            const existingAt = existing ? new Date(existing.updatedAt || existing.createdAt).getTime() : -Infinity
+            if (pickedAt > existingAt) groups.set(rootKey, p)
+          }
+          const recents = Array.from(groups.values())
+            .sort((a, b) => new Date(b.updatedAt || b.createdAt).getTime() - new Date(a.updatedAt || a.createdAt).getTime())
             .slice(0, Math.max(0, remainingSlots))
-            .map((p: SealedPool) => ({
+            .map((p) => ({
               kind: 'pool' as const,
               url: `/pool/${p.shareId}/deck`,
-              label: p.name || formatPoolLabel(undefined, p.poolType === 'draft' ? 'draft' : 'sealed'),
+              label: p.leaderName || p.name || formatPoolLabel(p.setCode, p.poolType === 'draft' ? 'draft' : 'sealed'),
             }))
           setRecentPools(recents)
         })

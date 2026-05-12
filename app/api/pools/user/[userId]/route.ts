@@ -38,6 +38,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
           updated_at,
           is_public,
           deck_builder_state,
+          parent_pool_id,
           CASE
             WHEN jsonb_typeof(cards) = 'array' THEN jsonb_array_length(cards)
             ELSE 0
@@ -50,8 +51,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       )
     } catch (error) {
       console.error('Error fetching pools:', error)
-      // Fallback if name, set_name or pool_type columns don't exist
-      if (error.message.includes('name') || error.message.includes('set_name') || error.message.includes('pool_type')) {
+      // Fallback if name, set_name, pool_type, or parent_pool_id columns don't exist
+      if (error.message.includes('name') || error.message.includes('set_name') || error.message.includes('pool_type') || error.message.includes('parent_pool_id')) {
         try {
           pools = await queryRows(
             `SELECT
@@ -196,6 +197,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
           sessionId,
           createdAt: pool.created_at,
           updatedAt: pool.updated_at,
+          parentPoolId: pool.parent_pool_id || null,
           isPublic: pool.is_public,
           cardCount: parseInt(pool.card_count, 10),
           leaderName,

@@ -1,5 +1,11 @@
 # Release Notes
 
+## 05.11.2026
+
+### 🎮 UI Improvements
+- **History card on the homepage**: The Deckbuilder column now leads with a History card so you can jump straight to your past pools and decks.
+- **Smarter recent activity dropdown**: The user menu's recent list now groups by pool, so multiple builds of the same pool collapse into one entry. Each entry shows the leader of the deck you most recently worked on, making it easy to tell pools apart at a glance.
+
 ## 05.08.2026
 
 ### ✨ Multiple builds per pool
