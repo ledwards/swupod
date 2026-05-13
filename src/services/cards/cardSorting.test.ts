@@ -109,6 +109,40 @@ describe('cardSorting', () => {
       })
     })
 
+    describe('multi-primary order-independence (LAW Finn bug)', () => {
+      // The SWU API returns the same multi-primary card with differently-ordered
+      // aspect arrays across variants. LAW Finn (Vigilance + Cunning):
+      //   Normal #95   -> ["Cunning","Vigilance"]
+      //   Hyperspace   -> ["Vigilance","Cunning"]
+      // Both variants must bucket together; the sort key must not depend on
+      // the input array order.
+      it('FIXED: produces same key regardless of multi-primary aspect order', () => {
+        const cunningFirst = getAspectSortKey({ aspects: ['Cunning', 'Vigilance'] })
+        const vigilanceFirst = getAspectSortKey({ aspects: ['Vigilance', 'Cunning'] })
+        assert.strictEqual(cunningFirst, vigilanceFirst,
+          'LAW Finn Normal and Hyperspace must produce the same sort key')
+      })
+
+      it('FIXED: LAW Finn variants bucket together by lowest-priority primary (Vigilance)', () => {
+        const finnNormal = getAspectSortKey({ aspects: ['Cunning', 'Vigilance'] })
+        const finnHyper = getAspectSortKey({ aspects: ['Vigilance', 'Cunning'] })
+        // Both should fall into the Vigilance bucket (priority 1), not Cunning (priority 4)
+        assert.ok(finnNormal.startsWith('1_00_'),
+          `LAW Finn Normal should bucket as Vigilance multi-primary, got "${finnNormal}"`)
+        assert.ok(finnHyper.startsWith('1_00_'),
+          `LAW Finn Hyperspace should bucket as Vigilance multi-primary, got "${finnHyper}"`)
+      })
+
+      it('FIXED: multi-primary key is canonical regardless of API order', () => {
+        // Three primaries (e.g. Vigilance + Command + Aggression) — order should not matter
+        const a = getAspectSortKey({ aspects: ['Aggression', 'Vigilance', 'Command'] })
+        const b = getAspectSortKey({ aspects: ['Vigilance', 'Command', 'Aggression'] })
+        const c = getAspectSortKey({ aspects: ['Command', 'Aggression', 'Vigilance'] })
+        assert.strictEqual(a, b, 'multi-primary key should be permutation-invariant')
+        assert.strictEqual(b, c, 'multi-primary key should be permutation-invariant')
+      })
+    })
+
     describe('no aspect cards', () => {
       it('returns neutral key for empty aspects', () => {
         const card = { aspects: [] }

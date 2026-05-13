@@ -52,7 +52,13 @@ export function getAspectSortKey(card: RawCard): string {
   const hasVillainy = aspects.includes('Villainy')
   const hasHeroism = aspects.includes('Heroism')
   const primaries = aspects.filter(a => PRIMARY_ASPECTS.includes(a))
-  const uniquePrimaries = [...new Set(primaries)]
+  // Sort uniquePrimaries by game priority so the bucket prefix is independent of
+  // the source array order. The SWU API returns the same multi-primary card with
+  // differently-ordered aspect arrays across variants (e.g. LAW Finn Normal is
+  // ["Cunning","Vigilance"] but Hyperspace is ["Vigilance","Cunning"]).
+  const uniquePrimaries = [...new Set(primaries)].sort(
+    (a, b) => (ASPECT_PRIORITY[a] || 99) - (ASPECT_PRIORITY[b] || 99)
+  )
   const primaryAspect = uniquePrimaries[0]
 
   // Sort aspects by game priority order for key suffix

@@ -1,5 +1,10 @@
 # Release Notes
 
+## 05.12.2026
+
+### 🐛 Bug Fixes
+- **Fixed multi-aspect card sorting (LAW Finn and similar)**: Dual-primary cards like LAW Finn (Vigilance + Cunning) were bucketing into different aspect columns depending on the variant — the Normal copy sorted into the Cunning region while the Hyperspace copies sorted into the Vigilance region. The aspect sort key now ignores the source aspect order, so all variants of a multi-primary card always group together. Thanks to Bastian Winkelhaus for the report.
+
 ## 05.11.2026
 
 ### 🎮 UI Improvements
