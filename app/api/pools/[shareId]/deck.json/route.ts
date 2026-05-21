@@ -29,15 +29,28 @@ interface ExportData {
   sideboard: DeckEntry[]
 }
 
+// CORS headers — external tools (Karabast, SWUDB) need these on every response,
+// including error paths (404/400/500). The redirect from http://www.protectthepod.com
+// happens at Railway's edge layer and cannot carry these headers — callers should
+// fetch https://www.protectthepod.com directly.
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+function withCors(response: Response): Response {
+  for (const [key, value] of Object.entries(CORS_HEADERS)) {
+    response.headers.set(key, value)
+  }
+  return response
+}
+
 // Handle CORS preflight requests so external tools (Karabast, SWUDB) can fetch deck JSON
 export async function OPTIONS() {
   return new NextResponse(null, {
     status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    },
+    headers: CORS_HEADERS,
   })
 }
 
@@ -59,14 +72,14 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     )
 
     if (!pool) {
-      return errorResponse('Pool not found', 404)
+      return withCors(errorResponse('Pool not found', 404))
     }
 
     const deckBuilderState: DeckBuilderState = jsonParse(pool.deck_builder_state, {})
 
     // Check if deck has been built (has activeLeader or activeBase)
     if (!deckBuilderState.activeLeader && !deckBuilderState.activeBase) {
-      return errorResponse('No deck has been built for this pool yet', 400)
+      return withCors(errorResponse('No deck has been built for this pool yet', 400))
     }
 
     const setCode = pool.set_code || ''
@@ -105,10 +118,10 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       headers: {
         'Content-Type': 'application/json',
         'Cache-Control': 'no-cache',
-        'Access-Control-Allow-Origin': '*',
+        ...CORS_HEADERS,
       },
     })
   } catch (error) {
-    return handleApiError(error)
+    return withCors(handleApiError(error))
   }
 }
