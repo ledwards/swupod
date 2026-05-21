@@ -79,3 +79,8 @@ scripts/eval/heic-ab/
 scripts/eval/pipeline-runs/
 scripts/omr/__pycache__/
 tests/e2e/crop-verify-screenshots/
+
+# DNS snapshots from scripts/dns-snapshot.sh (transient, for migration diffs)
+dns-snapshot-*.txt
+dns-squarespace.txt
+dns-cloudflare.txt
