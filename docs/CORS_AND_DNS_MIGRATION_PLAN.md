@@ -1,8 +1,23 @@
-# CORS Fix + DNS Migration Plan
+# CORS Fix + DNS Migration
 
-**Status:** in progress
+**Status:** ✅ complete (2026-05-22)
 **Started:** 2026-05-21
 **Trigger:** Veld (Karabast) reported that `protectthepod.com` doesn't return CORS headers on all responses, blocking their migration to a new CORS-required architecture.
+
+## What shipped
+
+1. **CORS on every response path** — commit `afd75ef`. The 404/400/500 paths in `app/api/pools/[shareId]/deck.json/route.ts` now include `Access-Control-Allow-Origin: *` along with the success path. Verified live in production.
+2. **HSTS header on `www`** — `next.config.js` adds `Strict-Transport-Security: max-age=63072000` to all responses. Mitigates http:// downgrade for repeat visitors.
+3. **Apex on Railway** — `protectthepod.com` is now a Railway custom domain on the `swupod` service (port 8080), served directly with a Let's Encrypt cert. No more Squarespace redirect chain.
+4. **Apex → www redirect in Next.js** — `next.config.js` 301s `protectthepod.com/*` to `https://www.protectthepod.com/*`. www stays canonical.
+5. **DNS moved from Squarespace to Cloudflare** — Squarespace remains the registrar, but DNS is now hosted at Cloudflare for CNAME-at-apex (flattening) support. Fourthwall/Zendesk/SendGrid records for the swag store all preserved byte-identical.
+
+## Gotchas hit during execution (for future migrations)
+
+- **Cloudflare's "Add a Site" auto-scan missed 15 records.** Specifically, anything under `support.swag.protectthepod.com` (Zendesk + SendGrid + Fourthwall infra) — CF's discovery couldn't enumerate deep subdomains. Had to import via BIND zone file. **Always diff against an authoritative snapshot before cutting nameservers.** The `scripts/dns-snapshot.sh` tool saved us here.
+- **Railway domain was on another project.** `protectthepod.com` had been added by accident to a different Railway project (`wayfinder`) months ago. Re-adding to `swupod` silently failed because Railway only allows one project per hostname. Result: apex traffic hit Railway's edge but got a 502 fallback. Fix: remove from the other project first.
+- **Cloudflare's Railway "Connect" OAuth integration defaults to Proxied (orange cloud).** That makes Cloudflare proxy traffic to the origin, which (a) means Railway can't verify the CNAME target on lookup (it sees Cloudflare proxy IPs instead of Railway's edge), and (b) puts cache/edge config outside of Railway's control. Toggle to DNS only (gray cloud) for direct Railway serving.
+- **HTTPS apex via Squarespace redirects to `http://www.`, not `https://`.** Confirmed via curl. Not a typo on our side — Squarespace's apex forwarding feature only supports HTTP targets. Browsers without cached HSTS hit plain HTTP for that hop. The Cloudflare migration eliminates this entirely.
 
 ---
 
