@@ -17,6 +17,25 @@ const nextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
+  // Strict-Transport-Security: tells browsers to always use HTTPS for this host.
+  // Mitigates the http:// downgrade for users who've visited before (browser
+  // auto-upgrades cached HSTS hosts on subsequent visits, including when
+  // following redirects that name an http:// Location).
+  // Not including `includeSubDomains` because the apex isn't on Railway yet;
+  // not including `preload` because we haven't committed to the HSTS preload list.
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000',
+          },
+        ],
+      },
+    ]
+  },
   // Enable static exports if needed, or remove for SSR
   // output: 'export',
 }
