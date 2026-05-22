@@ -314734,13 +314734,280 @@
       "prestigeTier": "serialized",
       "imageUrl": "https://cdn.starwarsunlimited.com//card_06371145_EN_Chairman_Papanoida_Carb_C_Gold_232451a1d2.png",
       "backImageUrl": null
+    },
+    {
+      "id": "019e2550-c1eb-7e42-a06b-b9e1e707887c",
+      "cardId": "LAW-787",
+      "name": "Highsinger",
+      "subtitle": "Deadly Droid",
+      "set": "LAW",
+      "number": "787",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Aggression"
+      ],
+      "traits": [
+        "Underworld",
+        "Droid",
+        "Bounty Hunter"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 3,
+      "power": 4,
+      "hp": 2,
+      "frontText": null,
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Vincent Dutrait",
+      "unique": false,
+      "doubleSided": false,
+      "variantType": "Standard Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "tier1",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_07060787_EN_Highsinger_Carb_A_9bdf285c21.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019e2550-c1ff-7288-adcf-7f82b42eb6b2",
+      "cardId": "LAW-788",
+      "name": "Hound's Tooth",
+      "subtitle": "Hunters' Approach",
+      "set": "LAW",
+      "number": "788",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Vigilance",
+        "Command",
+        "Villainy"
+      ],
+      "traits": [
+        "Underworld",
+        "Vehicle",
+        "Transport"
+      ],
+      "arenas": [
+        "Space"
+      ],
+      "cost": 7,
+      "power": 4,
+      "hp": 8,
+      "frontText": null,
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Vincent Dutrait",
+      "unique": false,
+      "doubleSided": false,
+      "variantType": "Standard Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "tier1",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_07060788_EN_Hounds_Tooth_Carb_A_4084c4c8a1.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019e2550-c205-78cc-a4fc-f4a5601f7610",
+      "cardId": "LAW-826",
+      "name": "Highsinger",
+      "subtitle": "Deadly Droid",
+      "set": "LAW",
+      "number": "826",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Aggression"
+      ],
+      "traits": [
+        "Underworld",
+        "Droid",
+        "Bounty Hunter"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 3,
+      "power": 4,
+      "hp": 2,
+      "frontText": null,
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Vincent Dutrait",
+      "unique": false,
+      "doubleSided": false,
+      "variantType": "Foil Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "tier2",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_07330826_EN_Highsinger_Carb_B_87b54a25e5.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019e2550-c20c-7087-b77e-5c81ea1007aa",
+      "cardId": "LAW-827",
+      "name": "Hound's Tooth",
+      "subtitle": "Hunters' Approach",
+      "set": "LAW",
+      "number": "827",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Vigilance",
+        "Command",
+        "Villainy"
+      ],
+      "traits": [
+        "Underworld",
+        "Vehicle",
+        "Transport"
+      ],
+      "arenas": [
+        "Space"
+      ],
+      "cost": 7,
+      "power": 4,
+      "hp": 8,
+      "frontText": null,
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Vincent Dutrait",
+      "unique": false,
+      "doubleSided": false,
+      "variantType": "Foil Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "tier2",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_07330827_EN_Hounds_Tooth_Carb_B_76f5f6e188.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019e2550-c215-7355-bbb6-279409fdf9dd",
+      "cardId": "LAW-865",
+      "name": "Highsinger",
+      "subtitle": "Deadly Droid",
+      "set": "LAW",
+      "number": "865",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Aggression"
+      ],
+      "traits": [
+        "Underworld",
+        "Droid",
+        "Bounty Hunter"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 3,
+      "power": 4,
+      "hp": 2,
+      "frontText": null,
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Vincent Dutrait",
+      "unique": false,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_07340865_EN_Highsinger_Carb_C_a8906fcf01.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019e2550-c21b-7200-bd2e-a5cdddc68f7d",
+      "cardId": "LAW-866",
+      "name": "Hound's Tooth",
+      "subtitle": "Hunters' Approach",
+      "set": "LAW",
+      "number": "866",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Vigilance",
+        "Command",
+        "Villainy"
+      ],
+      "traits": [
+        "Underworld",
+        "Vehicle",
+        "Transport"
+      ],
+      "arenas": [
+        "Space"
+      ],
+      "cost": 7,
+      "power": 4,
+      "hp": 8,
+      "frontText": null,
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Vincent Dutrait",
+      "unique": false,
+      "doubleSided": false,
+      "variantType": "Serialized Prestige",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": true,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": true,
+      "prestigeTier": "serialized",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_07340866_EN_Hounds_Tooth_Carb_C_9df57c0972.png",
+      "backImageUrl": null
     }
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-05-13",
+    "lastUpdated": "2026-05-22",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
-    "totalCards": 7377,
+    "totalCards": 7383,
     "sets": [
       {
         "code": "SOR",
@@ -314775,7 +315042,7 @@
       {
         "code": "LAW",
         "name": "A Lawless Time",
-        "cardCount": 907
+        "cardCount": 913
       },
       {
         "code": "ASH",
