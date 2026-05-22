@@ -14,7 +14,8 @@ This directory contains detailed documentation for each Star Wars: Unlimited set
 | [Jump to Lightspeed](JTL.md) | JTL | A | 2025-03-14 | Released |
 | [Legends of the Force](LOF.md) | LOF | A | 2025-07-11 | Released |
 | [Secrets of Power](SEC.md) | SEC | A | 2025-11-07 | Released |
-| [A Lawless Time](LAW.md) | LAW | B | 2026-03-13 | Pre-Release |
+| [A Lawless Time](LAW.md) | LAW | B | 2026-03-13 | Released |
+| [Ashes of the Empire](ASH.md) | ASH | B | 2026-07-17 | Partially Spoiled |
 
 ## Block Definitions
 
@@ -33,7 +34,7 @@ This directory contains detailed documentation for each Star Wars: Unlimited set
 - 5:1 rare-to-legendary ratio
 - Special rarity cards appear in packs
 
-### Block B (Sets 7+: LAW)
+### Block B (Sets 7+: LAW, ASH)
 - Same belt structure as Block A (50/50 split)
 - Slot 5 is GUARANTEED Hyperspace common
 - Foil slot is ALWAYS Hyperspace Foil (no regular foils)

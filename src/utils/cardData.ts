@@ -78,6 +78,17 @@ export function getCardsBySet(setCode: SetCode | string): RawCard[] {
 }
 
 /**
+ * Check whether a set has any real cards in the local data.
+ * Carbonite variants (`-CB` suffix) share their base set's cards.
+ * @param setCode - The set code (e.g., 'ASH', 'LAW-CB')
+ * @returns true if at least one card exists for the set
+ */
+export function hasCardsForSet(setCode: SetCode | string): boolean {
+  const baseCode = String(setCode).replace(/-CB$/, '');
+  return getCardsBySet(baseCode).length > 0;
+}
+
+/**
  * Get all cards
  * @returns All cards in the database
  */

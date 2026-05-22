@@ -1,7 +1,7 @@
 // @ts-nocheck
 // API utilities for fetching card/set data
 
-import { getCardsBySet } from './cardData'
+import { getCardsBySet, hasCardsForSet } from './cardData'
 import { getPackArtUrl } from './packArt'
 import type { RawCard } from './cardData'
 
@@ -59,6 +59,8 @@ export async function fetchSets({ includeBeta = false, includeCarbonite = false 
     { code: 'SEC-CB', name: 'Secrets of Power Carbonite Edition', prereleaseDate: '2025-10-31', releaseDate: '2025-11-07', carbonite: true },
     { code: 'LAW', name: 'A Lawless Time', prereleaseDate: '2026-03-06', releaseDate: '2026-03-13' },
     { code: 'LAW-CB', name: 'A Lawless Time Carbonite Edition', prereleaseDate: '2026-03-06', releaseDate: '2026-03-13', carbonite: true },
+    { code: 'ASH', name: 'Ashes of the Empire', prereleaseDate: '2026-07-10', releaseDate: '2026-07-17' },
+    { code: 'ASH-CB', name: 'Ashes of the Empire Carbonite Edition', prereleaseDate: '2026-07-10', releaseDate: '2026-07-17', carbonite: true },
   ]
 
   // Filter out beta (pre-prereleaseDate) sets unless explicitly requested
@@ -69,6 +71,9 @@ export async function fetchSets({ includeBeta = false, includeCarbonite = false 
   if (!includeCarbonite) {
     filteredSets = filteredSets.filter((set) => !set.carbonite)
   }
+  // Always hide sets that have no real card data yet, even when other gates would
+  // otherwise let them through (e.g. includeBeta: true on a freshly scaffolded set).
+  filteredSets = filteredSets.filter((set) => hasCardsForSet(set.code))
 
   return filteredSets.map((set) => ({
     ...set,

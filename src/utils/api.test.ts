@@ -32,6 +32,24 @@ describe('fetchSets', () => {
         assert.ok(set.prereleaseDate, `${set.code} should have prereleaseDate`)
       }
     })
+
+    it('should hide ASH by default (beta gate)', async () => {
+      const sets = await fetchSets()
+      assert.ok(!sets.find(s => s.code === 'ASH'), 'ASH should not be visible by default')
+    })
+
+    it('should still hide ASH with includeBeta:true while card data is empty', async () => {
+      // Card-count gate: a set with zero real cards never displays, even when
+      // the beta date gate would let it through.
+      const sets = await fetchSets({ includeBeta: true })
+      assert.ok(!sets.find(s => s.code === 'ASH'), 'ASH should remain hidden until cards exist')
+    })
+
+    it('should still hide ASH-CB with includeBeta+includeCarbonite while cards are empty', async () => {
+      const sets = await fetchSets({ includeBeta: true, includeCarbonite: true })
+      assert.ok(!sets.find(s => s.code === 'ASH'), 'ASH should remain hidden until cards exist')
+      assert.ok(!sets.find(s => s.code === 'ASH-CB'), 'ASH-CB should remain hidden until cards exist')
+    })
   })
 
   describe('set data structure', () => {

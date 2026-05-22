@@ -1,5 +1,11 @@
 # Release Notes
 
+## 05.22.2026
+
+### 🦾 Infrastructure
+- **Groundwork for Ashes of the Empire (Set 8)**: ASH is now scaffolded behind the scenes — set config, expansion art, pack art, and Block B belt rules are all in place, mirroring LAW. The set will stay hidden from selectors until real spoilers start landing.
+- **When you'll see ASH**: Friends of the Pod in the beta program will see ASH in set pickers as soon as the first cards are on FFG's card search database. Everyone else gets it starting on the prerelease date (July 10, 2026).
+
 ## 05.12.2026
 
 ### 🐛 Bug Fixes
