@@ -8,14 +8,19 @@ import './DraftableCard.css'
 
 interface CardData {
   id: string
+  cardId?: string
   name: string
   imageUrl?: string
   backImageUrl?: string
   rarity?: string
+  type?: string
+  aspects?: string[]
+  placeholderBucketLabel?: string
   isFoil?: boolean
   isLeader?: boolean
   isBase?: boolean
   variantType?: string
+  isPlaceholder?: boolean
 }
 
 interface CardPreview {
@@ -132,10 +137,14 @@ function DraftableCard({
     setHoveredCardPreview(null)
   }
 
+  const placeholderTitle = card.name || card.placeholderBucketLabel || 'Unknown ASH card'
+  const placeholderType = card.type && card.type !== 'Unknown' ? card.type : null
+  const placeholderDetails = [placeholderType, ...(card.aspects || [])].filter(Boolean).join(' · ')
+
   return (
     <>
       <div
-        className={`draftable-card ${disabled ? 'disabled' : ''} ${selected ? 'selected' : ''} ${dimmed ? 'dimmed' : ''} ${card.isFoil ? 'foil' : ''} ${card.variantType === 'Hyperspace' ? 'hyperspace' : ''} ${card.isLeader ? 'leader' : ''} ${card.isBase ? 'base' : ''}`}
+        className={`draftable-card ${disabled ? 'disabled' : ''} ${selected ? 'selected' : ''} ${dimmed ? 'dimmed' : ''} ${card.isFoil ? 'foil' : ''} ${card.variantType === 'Hyperspace' ? 'hyperspace' : ''} ${card.isLeader ? 'leader' : ''} ${card.isBase ? 'base' : ''} ${card.isPlaceholder ? 'placeholder-card' : ''}`}
         onClick={handleClick}
         onContextMenu={handleRightClick}
         onMouseEnter={handleMouseEnter}
@@ -189,7 +198,9 @@ function DraftableCard({
             />
           ) : (
             <div className="card-placeholder">
-              <div className="placeholder-name">{card.name}</div>
+              {card.isPlaceholder && <div className="placeholder-badge">Unknown</div>}
+              <div className="placeholder-name">{placeholderTitle}</div>
+              {card.isPlaceholder && <div className="placeholder-details">{placeholderDetails}</div>}
               <div className="placeholder-rarity">{card.rarity}</div>
             </div>
           )}

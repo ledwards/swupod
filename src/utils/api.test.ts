@@ -3,17 +3,19 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import { fetchSets } from './api'
+import { hasRealCardsForSet } from './cardData'
 
 describe('fetchSets', () => {
   describe('set filtering', () => {
-    it('should return all 7 sets by default', async () => {
+    it('should return released non-beta sets by default', async () => {
       const sets = await fetchSets()
       const setCodes = sets.map(s => s.code)
 
       assert.ok(setCodes.includes('LAW'), 'LAW should be included')
       assert.ok(setCodes.includes('SOR'), 'SOR should be included')
       assert.ok(setCodes.includes('SEC'), 'SEC should be included')
-      assert.strictEqual(sets.length, 7, 'Should have 7 sets')
+      assert.ok(sets.length >= 7, 'Should have at least the first 7 sets')
+      assert.ok(!setCodes.includes('ASH'), 'ASH should stay hidden by default while it is beta')
     })
 
     it('should include LAW with prereleaseDate', async () => {
@@ -30,6 +32,17 @@ describe('fetchSets', () => {
 
       for (const set of sets) {
         assert.ok(set.prereleaseDate, `${set.code} should have prereleaseDate`)
+      }
+    })
+
+    it('should only include ASH for beta users after at least one real ASH card is synced', async () => {
+      const sets = await fetchSets({ includeBeta: true })
+      const setCodes = sets.map(s => s.code)
+
+      if (hasRealCardsForSet('ASH')) {
+        assert.ok(setCodes.includes('ASH'), 'ASH should be visible to beta users after spoiler sync')
+      } else {
+        assert.ok(!setCodes.includes('ASH'), 'ASH should stay hidden until a real ASH card is synced')
       }
     })
   })

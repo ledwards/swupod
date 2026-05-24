@@ -153,6 +153,38 @@ async function runTests(): Promise<void> {
     )
   })
 
+  test('ASH placeholder catalog can produce complete LAW-style packs', () => {
+    const ashCards = getCachedCards('ASH')
+    if (ashCards.length === 0) {
+      console.log('\x1b[33m   Skipping: ASH placeholder catalog is not generated\x1b[0m')
+      return
+    }
+
+    clearBeltCache()
+    const pack = generateBoosterPack(ashCards, 'ASH')
+    assertEqual(pack.cards.length, 16, 'ASH pack should contain 16 cards')
+    assertEqual(pack.cards.filter((c: Card) => c.isLeader).length, 1, 'ASH pack should contain exactly 1 leader')
+    assertEqual(pack.cards.filter((c: Card) => c.isBase).length, 1, 'ASH pack should contain exactly 1 base')
+    assertEqual(
+      pack.cards.filter((c: Card) => c.rarity === 'Common' && !c.isLeader && !c.isBase && !c.isFoil).length,
+      9,
+      'ASH pack should contain 9 common cards'
+    )
+    assertEqual(
+      pack.cards.filter((c: Card) => c.isFoil && c.isHyperspace).length,
+      1,
+      'ASH pack should contain 1 hyperspace foil slot'
+    )
+    assert(
+      pack.cards.filter((c: Card) => c.isPlaceholder).every((c: Card) => !c.number && !c.cardId),
+      'ASH placeholders should not carry collector numbers'
+    )
+    assert(
+      pack.cards.filter((c: Card) => c.isPlaceholder && !c.isLeader && !c.isBase).every((c: Card) => c.type === 'Unknown'),
+      'ASH main-deck placeholders should not invent card type'
+    )
+  })
+
   test('leaders do not appear in rare/legendary slot', () => {
     clearBeltCache()
     // Test many packs to ensure leaders never appear in wrong slot

@@ -7,6 +7,7 @@
  */
 
 export interface PreviewCard {
+  cardId?: string
   name?: string
   imageUrl?: string
   backImageUrl?: string
@@ -15,6 +16,10 @@ export interface PreviewCard {
   isFoil?: boolean
   isShowcase?: boolean
   rarity?: string
+  type?: string
+  aspects?: string[]
+  placeholderBucketLabel?: string
+  isPlaceholder?: boolean
 }
 
 export interface CardPreviewProps {
@@ -25,6 +30,15 @@ export interface CardPreviewProps {
   onMouseEnter?: () => void
   onMouseLeave?: () => void
   onDismiss?: () => void
+}
+
+function placeholderTitle(card: PreviewCard): string {
+  return card.name || card.placeholderBucketLabel || 'Unknown ASH card'
+}
+
+function placeholderDetails(card: PreviewCard): string {
+  const type = card.type && card.type !== 'Unknown' ? card.type : null
+  return [type, ...(card.aspects || [])].filter(Boolean).join(' · ')
 }
 
 // Helper to get rarity color for placeholder cards
@@ -131,9 +145,11 @@ export function CardPreview({
               padding: '1rem',
               color: 'white',
             }}>
+              {card.isPlaceholder && <div style={{ fontSize: '0.8rem', letterSpacing: 0, textTransform: 'uppercase', color: '#f7c873', marginBottom: '0.5rem' }}>Unknown</div>}
               <div style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>
-                {card.name || 'Card'}
+                {placeholderTitle(card)}
               </div>
+              {card.isPlaceholder && <div style={{ fontSize: '0.95rem', color: '#d7d7d7', marginBottom: '0.5rem' }}>{placeholderDetails(card)}</div>}
               <div style={{ color: getRarityColor(card.rarity) }}>
                 {card.rarity}
               </div>
@@ -210,9 +226,11 @@ export function CardPreview({
                 padding: '1rem',
                 color: 'white',
               }}>
+                {card.isPlaceholder && <div style={{ fontSize: '0.8rem', letterSpacing: 0, textTransform: 'uppercase', color: '#f7c873', marginBottom: '0.5rem' }}>Unknown</div>}
                 <div style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>
-                  {card.name || 'Card'} - Front
+                  {placeholderTitle(card)} - Front
                 </div>
+                {card.isPlaceholder && <div style={{ fontSize: '0.95rem', color: '#d7d7d7', marginBottom: '0.5rem' }}>{placeholderDetails(card)}</div>}
                 <div style={{ color: getRarityColor(card.rarity) }}>
                   {card.rarity}
                 </div>
@@ -255,9 +273,11 @@ export function CardPreview({
                 padding: '1rem',
                 color: 'white',
               }}>
+                {card.isPlaceholder && <div style={{ fontSize: '0.8rem', letterSpacing: 0, textTransform: 'uppercase', color: '#f7c873', marginBottom: '0.5rem' }}>Unknown</div>}
                 <div style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>
-                  {card.name || 'Card'} - Back
+                  {placeholderTitle(card)} - Back
                 </div>
+                {card.isPlaceholder && <div style={{ fontSize: '0.95rem', color: '#d7d7d7', marginBottom: '0.5rem' }}>{placeholderDetails(card)}</div>}
                 <div style={{ color: getRarityColor(card.rarity) }}>
                   {card.rarity}
                 </div>
@@ -302,9 +322,11 @@ export function CardPreview({
               padding: '1rem',
               color: 'white',
             }}>
+              {card.isPlaceholder && <div style={{ fontSize: '0.8rem', letterSpacing: 0, textTransform: 'uppercase', color: '#f7c873', marginBottom: '0.5rem' }}>Unknown</div>}
               <div style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>
-                {card.name || 'Card'}
+                {placeholderTitle(card)}
               </div>
+              {card.isPlaceholder && <div style={{ fontSize: '0.95rem', color: '#d7d7d7', marginBottom: '0.5rem' }}>{placeholderDetails(card)}</div>}
               <div style={{ color: getRarityColor(card.rarity) }}>
                 {card.rarity}
               </div>

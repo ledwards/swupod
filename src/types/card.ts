@@ -5,11 +5,11 @@
 
 // === ENUMS & UNIONS ===
 
-export type SetCode = 'SOR' | 'SHD' | 'TWI' | 'JTL' | 'LOF' | 'SEC' | 'LAW';
+export type SetCode = 'SOR' | 'SHD' | 'TWI' | 'JTL' | 'LOF' | 'SEC' | 'LAW' | 'ASH';
 
 export type Rarity = 'Common' | 'Uncommon' | 'Rare' | 'Legendary' | 'Special';
 
-export type CardType = 'Leader' | 'Base' | 'Unit' | 'Event' | 'Upgrade';
+export type CardType = 'Leader' | 'Base' | 'Unit' | 'Event' | 'Upgrade' | 'Unknown';
 
 export type Aspect = 'Vigilance' | 'Command' | 'Aggression' | 'Cunning' | 'Villainy' | 'Heroism';
 
@@ -73,6 +73,21 @@ export interface Card {
   // Pricing (optional)
   marketPrice: number | null;
   lowPrice: number | null;
+
+  // Spoiler-season placeholders
+  isPlaceholder?: boolean;
+  spoilerStatus?: 'placeholder' | 'spoiled';
+  sourceId?: string | null;
+  placeholderVersion?: string;
+  placeholderKind?: 'bucket-slot';
+  placeholderGroup?: 'leader' | 'base' | 'main';
+  placeholderBucketId?: string;
+  placeholderBucketLabel?: string;
+  placeholderSlotIndex?: number;
+  placeholderTargetCount?: number;
+  placeholderRemainingCount?: number;
+  placeholderConfidence?: string;
+  inferredFields?: string[];
 }
 
 /**

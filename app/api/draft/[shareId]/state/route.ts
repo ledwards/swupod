@@ -6,6 +6,7 @@ import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { checkAndEnforceTimeout } from '@/src/utils/draftTimeout'
 import { processBotTurns } from '@/src/utils/botLogic'
 import { jsonParse } from '@/src/utils/json'
+import { resolveCatalogCards } from '@/src/services/cards/cardCatalogResolver'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {
@@ -116,8 +117,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
 
     // Format players
     const formattedPlayers = players.map(p => {
-      const draftedLeaders = jsonParse(p.drafted_leaders, [])
-      const leadersPack = jsonParse(p.leaders, [])
+      const draftedLeaders = resolveCatalogCards(jsonParse(p.drafted_leaders, []))
+      const leadersPack = resolveCatalogCards(jsonParse(p.leaders, []))
 
       return {
         id: p.id,
@@ -156,10 +157,10 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
           seatNumber: player.seat_number,
           pickStatus: player.pick_status,
           selectedCardId: player.selected_card_id || null,
-          currentPack: jsonParse(player.current_pack),
-          draftedCards: jsonParse(player.drafted_cards, []),
-          leaders: jsonParse(player.leaders, []),
-          draftedLeaders: jsonParse(player.drafted_leaders, []),
+          currentPack: resolveCatalogCards(jsonParse(player.current_pack)),
+          draftedCards: resolveCatalogCards(jsonParse(player.drafted_cards, [])),
+          leaders: resolveCatalogCards(jsonParse(player.leaders, [])),
+          draftedLeaders: resolveCatalogCards(jsonParse(player.drafted_leaders, [])),
         }
       }
     }

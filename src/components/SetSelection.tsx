@@ -44,7 +44,8 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
       'LOF': 5, // Legends of the Force
       'SEC': 6, // Secrets of Power
       'LAW': 7, // A Lawless Time
-      // Future sets will be 8, 9, 10, etc.
+      'ASH': 8, // Ashes of the Empire
+      // Future sets will be 9, 10, etc.
     }
     return setCodeMap[setCode] || 999 // Unknown sets go to end
   }
@@ -191,6 +192,13 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
                 </div>
                 <div className="set-info">
                   <h3>{set.name}</h3>
+                  <a
+                    href={`/sets/${set.code}`}
+                    className="set-catalog-link"
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    Catalog
+                  </a>
                 </div>
               </div>
             )
@@ -226,6 +234,13 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
               </div>
               <div className="set-info">
                 <h3>{set.name}</h3>
+                <a
+                  href={`/sets/${set.code}`}
+                  className="set-catalog-link"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  Catalog
+                </a>
               </div>
             </div>
           )

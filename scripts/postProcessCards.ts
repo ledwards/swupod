@@ -15,6 +15,7 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { cardFixes, batchFixes, customTransforms } from './cardFixes.ts'
+import { applyAshMetadata, mergeAshPlaceholderCatalog } from '../src/services/cards/ashPlaceholderCatalog.ts'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -268,6 +269,24 @@ function main(): void {
   const customFixes = applyCustomTransforms(cards)
   allFixes.push(...customFixes)
 
+  console.log('\nMerging ASH placeholder catalog...')
+  const ashMerge = mergeAshPlaceholderCatalog(cards)
+  cards.length = 0
+  cards.push(...ashMerge.cards)
+  console.log(
+    `  ✓ ASH catalog: ${ashMerge.metadata.realCardCount} real, ` +
+    `${ashMerge.metadata.placeholderCardCount} placeholders, ` +
+    `${ashMerge.metadata.spoiledNormalCount} spoiled normal`
+  )
+  if (ashMerge.metadata.status !== 'valid') {
+    console.warn(
+      `  ⚠ ASH placeholder bucket contradictions: ` +
+      ashMerge.metadata.contradictions.map(item =>
+        `${item.bucketId} target=${item.targetCount} real=${item.realCount}`
+      ).join(', ')
+    )
+  }
+
   // Generate report
   const report = generateReport(allFixes)
   fs.writeFileSync(REPORT_FILE, JSON.stringify(report, null, 2))
@@ -276,9 +295,10 @@ function main(): void {
   if (metadata) {
     metadata.fixesApplied = allFixes.length
   }
+  const outputMetadata = applyAshMetadata(metadata, ashMerge.metadata)
 
   // Save processed data
-  saveCardData(OUTPUT_FILE, cards, metadata)
+  saveCardData(OUTPUT_FILE, cards, outputMetadata)
 
   // Summary
   console.log('\n' + '='.repeat(50))

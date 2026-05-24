@@ -13,7 +13,7 @@ const cardCache = new Map<SetCode, RawCard[]>();
 let cacheInitialized = false;
 
 // All supported set codes
-const ALL_SETS: SetCode[] = ['SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'SEC', 'LAW'];
+const ALL_SETS: SetCode[] = ['SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'SEC', 'LAW', 'ASH'];
 
 /** Cache statistics structure */
 interface CacheStats {

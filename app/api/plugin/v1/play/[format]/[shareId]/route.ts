@@ -7,6 +7,8 @@
 import { queryRow } from '@/lib/db'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { getLatestReleasedSetCode } from '@/src/utils/setConfigs/latest'
+import { jsonParse } from '@/src/utils/json'
+import { containsPlaceholderCards, describePlaceholderCards } from '@/src/services/cards/cardCatalogResolver'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {
@@ -30,6 +32,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
 
     const row = await queryRow(
       `SELECT t.${tableConfig.setCodeCol} as set_code,
+              t.cards,
+              t.deck_builder_state,
               COALESCE(p.competitive, false) as competitive
        FROM ${tableConfig.table} t
        LEFT JOIN pods p ON t.pod_id = p.id
@@ -39,6 +43,17 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
 
     if (!row) {
       return errorResponse('Not found', 404)
+    }
+
+    const cards = jsonParse(row.cards, [])
+    const deckBuilderState = jsonParse(row.deck_builder_state, {})
+    const placeholderSource = deckBuilderState && Object.keys(deckBuilderState).length > 0 ? deckBuilderState : cards
+    if (containsPlaceholderCards(placeholderSource)) {
+      const examples = describePlaceholderCards(placeholderSource)
+      return errorResponse(
+        `This pool contains ASH spoiler placeholders and cannot be sent to play integrations yet${examples ? `: ${examples}` : ''}.`,
+        400
+      )
     }
 
     const setCode = row.set_code as string

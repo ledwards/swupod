@@ -228,13 +228,16 @@
 }
 
 .set-info {
-  padding: 1rem 1.5rem;
+  padding: 0.85rem 1.5rem;
   background: #2a2a2a;
-  height: 80px;
-  min-height: 80px;
-  max-height: 80px;
+  height: 88px;
+  min-height: 88px;
+  max-height: 88px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.35rem;
   border-radius: 0 0 8px 8px;
   flex-shrink: 0;
 }
@@ -245,6 +248,21 @@
   font-weight: 800; /* Barlow ExtraBold */
   color: #ffffff;
   line-height: 1.2;
+}
+
+.set-catalog-link {
+  color: rgba(247, 200, 115, 0.9);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.set-catalog-link:hover,
+.set-catalog-link:focus-visible {
+  color: #ffffff;
+  outline: none;
 }
 
 .loading,

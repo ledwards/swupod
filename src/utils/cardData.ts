@@ -50,6 +50,19 @@ interface RawCard {
   backImageUrl: string | null;
   marketPrice: number | null;
   lowPrice: number | null;
+  isPlaceholder?: boolean;
+  spoilerStatus?: 'placeholder' | 'spoiled';
+  sourceId?: string | null;
+  placeholderVersion?: string;
+  placeholderKind?: 'bucket-slot';
+  placeholderGroup?: 'leader' | 'base' | 'main';
+  placeholderBucketId?: string;
+  placeholderBucketLabel?: string;
+  placeholderSlotIndex?: number;
+  placeholderTargetCount?: number;
+  placeholderRemainingCount?: number;
+  placeholderConfidence?: string;
+  inferredFields?: string[];
 }
 
 /** Processed card data structure */
@@ -91,6 +104,27 @@ export function getAllCards(): RawCard[] {
  */
 export function getCardMetadata(): ProcessedCardData['metadata'] {
   return processedData.metadata || {};
+}
+
+/**
+ * Get metadata for a specific set from cards.json.
+ */
+export function getSetMetadata(setCode: SetCode | string): Record<string, unknown> | null {
+  const metadata = getCardMetadata()
+  const sets = Array.isArray(metadata?.sets) ? metadata.sets : []
+  return (sets as Array<Record<string, unknown>>).find((set) => set.code === setCode) || null
+}
+
+/**
+ * Check whether a set has at least one real, non-placeholder card in the catalog.
+ */
+export function hasRealCardsForSet(setCode: SetCode | string): boolean {
+  const setMetadata = getSetMetadata(setCode)
+  if (setMetadata) {
+    return Number(setMetadata.realCardCount ?? setMetadata.cardCount ?? 0) > 0
+  }
+
+  return getCardsBySet(setCode).some(card => card.isPlaceholder !== true)
 }
 
 /**
