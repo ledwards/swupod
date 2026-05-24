@@ -6,6 +6,7 @@ import { queryRow, query } from '@/lib/db'
 import { requireAuth } from '@/lib/auth'
 import { jsonResponse, errorResponse, parseBody, handleApiError, formatSetCodeRange } from '@/lib/utils'
 import { jsonParse } from '@/src/utils/json'
+import { resolveCatalogCards } from '@/src/services/cards/cardCatalogResolver'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {
@@ -135,7 +136,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
 
     // Parse JSON fields from database
     let cards = jsonParse(pool.cards)
-    const packs = jsonParse(pool.packs)
+    let packs = jsonParse(pool.packs)
     let deckBuilderState = jsonParse(pool.deck_builder_state)
 
     // Handle rotisserie pools - extract user's picked cards
@@ -177,6 +178,10 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         cards = []
       }
     }
+
+    cards = resolveCatalogCards(cards)
+    packs = resolveCatalogCards(packs)
+    deckBuilderState = resolveCatalogCards(deckBuilderState)
 
     // Generate name: prefer deckBuilderState.poolName, then pool.name column, then generate default
     let name = deckBuilderState?.poolName || pool.name

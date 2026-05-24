@@ -5,6 +5,7 @@ import { requireAuth } from '@/lib/auth'
 import { generateShareId } from '@/lib/utils'
 import { jsonResponse, parseBody, validateRequired, handleApiError } from '@/lib/utils'
 import { getSetConfig } from '@/src/utils/setConfigs/index'
+import { getUnavailableSetReason } from '@/src/utils/setAvailability'
 import { broadcastPublicPodsUpdate } from '@/src/lib/socketBroadcast'
 import { postPodCreated } from '@/lib/discordLfg'
 import { NextRequest, NextResponse } from 'next/server'
@@ -16,6 +17,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     validateRequired(body, ['setCode'])
 
     const { setCode, isPublic } = body
+    const unavailableReason = getUnavailableSetReason(setCode, session)
+    if (unavailableReason) {
+      return jsonResponse({ error: unavailableReason }, 403)
+    }
+
     // Default to public unless explicitly set to false
     const podIsPublic = isPublic !== undefined ? isPublic === true : true
 

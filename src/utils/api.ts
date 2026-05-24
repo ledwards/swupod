@@ -1,7 +1,7 @@
 // @ts-nocheck
 // API utilities for fetching card/set data
 
-import { getCardsBySet, hasCardsForSet } from './cardData'
+import { getCardsBySet, hasCardsForSet, hasRealCardsForSet } from './cardData'
 import { getPackArtUrl } from './packArt'
 import type { RawCard } from './cardData'
 
@@ -37,6 +37,14 @@ interface FetchSetsOptions {
   includeCarbonite?: boolean
 }
 
+export function isSetVisibleInCatalog(set: { code: string }): boolean {
+  const baseCode = set.code.replace('-CB', '')
+  if (baseCode === 'ASH') {
+    return hasRealCardsForSet('ASH')
+  }
+  return true
+}
+
 /**
  * Fetch all sets
  * Returns array of set objects with code, name, and imageUrl
@@ -63,16 +71,17 @@ export async function fetchSets({ includeBeta = false, includeCarbonite = false 
     { code: 'ASH-CB', name: 'Ashes of the Empire Carbonite Edition', prereleaseDate: '2026-07-10', releaseDate: '2026-07-17', carbonite: true },
   ]
 
+  let filteredSets = knownSets.filter(isSetVisibleInCatalog)
+
   // Filter out beta (pre-prereleaseDate) sets unless explicitly requested
-  let filteredSets = knownSets
   if (!includeBeta) {
     filteredSets = filteredSets.filter((set) => !isSetBeta(set))
   }
   if (!includeCarbonite) {
     filteredSets = filteredSets.filter((set) => !set.carbonite)
   }
-  // Always hide sets that have no real card data yet, even when other gates would
-  // otherwise let them through (e.g. includeBeta: true on a freshly scaffolded set).
+  // Always hide sets that have no card data yet, even when other gates would
+  // otherwise let them through. ASH has a stricter real-card gate above.
   filteredSets = filteredSets.filter((set) => hasCardsForSet(set.code))
 
   return filteredSets.map((set) => ({

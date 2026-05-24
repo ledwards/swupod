@@ -26,7 +26,7 @@ export function getSetNumber(setCode: string): number {
   const setCodeMap: Record<string, number> = {
     'SOR': 1, 'SHD': 2, 'TWI': 3,
     'JTL': 4, 'LOF': 5, 'SEC': 6,
-    'LAW': 7,
+    'LAW': 7, 'ASH': 8,
   }
   return setCodeMap[base] || 999
 }

@@ -1,10 +1,11 @@
 // @ts-nocheck
 // POST /api/pools - Create a new card pool
 import { query } from '@/lib/db'
-import { requireAuth } from '@/lib/auth'
+import { getSession, requireAuth } from '@/lib/auth'
 import { generateShareId, formatSetCodeRange } from '@/lib/utils'
 import { jsonResponse, parseBody, validateRequired, handleApiError } from '@/lib/utils'
 import { getSetConfig } from '@/src/utils/setConfigs/index'
+import { getUnavailableSetReason } from '@/src/utils/setAvailability'
 import { trackBulkGenerations, PACK_SLOT_TYPES } from '@/src/utils/trackGeneration'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -28,18 +29,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       parentPoolId: parentShareId,
     } = body
 
+    const session = getSession(request)
+    const unavailableReason = getUnavailableSetReason(setCode, session)
+    if (unavailableReason) {
+      return jsonResponse({ error: unavailableReason }, 403)
+    }
+
     // Get set name from config
     const setConfig = getSetConfig(setCode)
     const setName = setConfig?.setName || setCode
 
     // Get user session (optional - allow anonymous pools)
-    let userId = null
-    try {
-      const session = requireAuth(request)
-      userId = session.id
-    } catch {
-      // Anonymous pool - allowed
-    }
+    const userId = session?.id || null
 
     // Handle parent pool (build creation)
     let parentPoolDbId = null

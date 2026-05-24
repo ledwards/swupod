@@ -9,6 +9,7 @@ import { checkAndEnforceTimeout } from '@/src/utils/draftTimeout'
 import { markPodCancelled, deletePodMessage } from '@/lib/discordLfg'
 import { broadcastDraftState, broadcastSystemChatMessage } from '@/src/lib/socketBroadcast'
 import { jsonParse } from '@/src/utils/json'
+import { resolveCatalogCards } from '@/src/services/cards/cardCatalogResolver'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {
@@ -94,8 +95,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
 
     // Format players for response
     const formattedPlayers = players.map(p => {
-      const draftedLeaders = jsonParse(p.drafted_leaders, [])
-      const leadersPack = jsonParse(p.leaders, [])
+      const draftedLeaders = resolveCatalogCards(jsonParse(p.drafted_leaders, []))
+      const leadersPack = resolveCatalogCards(jsonParse(p.leaders, []))
 
       return {
         id: p.id,
@@ -107,7 +108,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         isBot: p.is_bot === true,
         // Only include pack info for current user
         currentPack: session && p.user_id === session.id
-          ? jsonParse(p.current_pack)
+          ? resolveCatalogCards(jsonParse(p.current_pack))
           : null,
         currentPackSize: jsonParse(p.current_pack, []).length,
         // During leader draft, show each player's leader pack to all (visible at the table)
@@ -213,10 +214,10 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         seatNumber: myPlayer.seat_number,
         pickStatus: myPlayer.pick_status,
         selectedCardId: myPlayer.selected_card_id || null,
-        currentPack: jsonParse(myPlayer.current_pack),
-        draftedCards: jsonParse(myPlayer.drafted_cards, []),
-        leaders: jsonParse(myPlayer.leaders, []),
-        draftedLeaders: jsonParse(myPlayer.drafted_leaders, []),
+        currentPack: resolveCatalogCards(jsonParse(myPlayer.current_pack)),
+        draftedCards: resolveCatalogCards(jsonParse(myPlayer.drafted_cards, [])),
+        leaders: resolveCatalogCards(jsonParse(myPlayer.leaders, [])),
+        draftedLeaders: resolveCatalogCards(jsonParse(myPlayer.drafted_leaders, [])),
       } : null,
       startedAt: pod.started_at,
       completedAt: pod.completed_at,

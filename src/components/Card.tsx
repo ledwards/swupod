@@ -12,14 +12,19 @@ import type { CSSProperties, ReactNode, MouseEvent, TouchEvent } from 'react'
 
 export interface CardData {
   id: string
+  cardId?: string
   name?: string
   imageUrl?: string
   rarity?: string
+  type?: string
+  aspects?: string[]
+  placeholderBucketLabel?: string
   isLeader?: boolean
   isBase?: boolean
   isFoil?: boolean
   isHyperspace?: boolean
   isShowcase?: boolean
+  isPlaceholder?: boolean
 }
 
 export interface CardProps {
@@ -41,6 +46,16 @@ export interface CardProps {
   className?: string
   style?: CSSProperties
   children?: ReactNode
+}
+
+function placeholderTitle(card: CardData): string {
+  return card.name || card.placeholderBucketLabel || 'Unknown ASH card'
+}
+
+function placeholderDetails(card: CardData): string {
+  const type = card.type && card.type !== 'Unknown' ? card.type : null
+  const details = [type, ...(card.aspects || [])].filter(Boolean)
+  return details.join(' · ')
 }
 
 // Helper to get rarity color for placeholder cards
@@ -83,6 +98,7 @@ export function Card({
     card.isFoil && 'foil',
     card.isHyperspace && 'hyperspace',
     card.isShowcase && 'showcase',
+    card.isPlaceholder && 'placeholder-card',
     selected && 'selected',
     hovered && 'hovered',
     active && card.isLeader && 'active-leader',
@@ -123,7 +139,11 @@ export function Card({
         />
       ) : (
         <div className="card-placeholder">
-          <div className="card-name">{card.name || 'Card'}</div>
+          {card.isPlaceholder && <div className="card-placeholder-badge">Unknown</div>}
+          <div className="card-name">{placeholderTitle(card)}</div>
+          {card.isPlaceholder && (
+            <div className="card-placeholder-details">{placeholderDetails(card)}</div>
+          )}
           <div className="card-rarity" style={{ color: getRarityColor(card.rarity) }}>
             {card.rarity}
           </div>

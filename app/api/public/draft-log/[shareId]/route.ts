@@ -97,14 +97,14 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         number: card?.cardId || pick.card_id,
         title: card?.name || pick.card_name,
         subtitle: card?.subtitle || null,
-        rarity: pick.rarity,
-        type: pick.card_type,
+        rarity: card?.rarity || pick.rarity,
+        type: card?.type || pick.card_type,
         aspects: card?.aspects || [],
         cost: card?.cost ?? null,
         treatment: determineTreatment(card, pick.variant_type),
       }
 
-      if (pick.is_leader) {
+      if (card?.isLeader || pick.is_leader) {
         leaderPicks.push({
           ...base,
           leaderRound: pick.leader_round,

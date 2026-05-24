@@ -5,6 +5,7 @@ import { requireAuth } from '@/lib/auth'
 import { generateShareId } from '@/lib/utils'
 import { jsonResponse, parseBody, validateRequired, handleApiError } from '@/lib/utils'
 import { getSetConfig } from '@/src/utils/setConfigs/index'
+import { getUnavailableSetReason } from '@/src/utils/setAvailability'
 import { initializeCardCache } from '@/src/utils/cardCache'
 import { generateSealedBox, clearBeltCache } from '@/src/utils/boosterPack'
 import { broadcastPublicPodsUpdate } from '@/src/lib/socketBroadcast'
@@ -27,6 +28,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     } = body
 
     const competitive = body.competitive === true
+    const requestedSetCodes = settings.draftMode === 'chaos' && settings.chaosSets
+      ? settings.chaosSets
+      : [setCode]
+    for (const requestedSetCode of requestedSetCodes) {
+      const unavailableReason = getUnavailableSetReason(requestedSetCode, session)
+      if (unavailableReason) {
+        return jsonResponse({ error: unavailableReason }, 403)
+      }
+    }
 
     // Default to public unless explicitly set to false
     const podIsPublic = isPublic !== undefined ? isPublic === true : (settings.isPublic !== undefined ? settings.isPublic === true : true)

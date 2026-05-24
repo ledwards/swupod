@@ -15,7 +15,7 @@ This directory contains detailed documentation for each Star Wars: Unlimited set
 | [Legends of the Force](LOF.md) | LOF | A | 2025-07-11 | Released |
 | [Secrets of Power](SEC.md) | SEC | A | 2025-11-07 | Released |
 | [A Lawless Time](LAW.md) | LAW | B | 2026-03-13 | Released |
-| [Ashes of the Empire](ASH.md) | ASH | B | 2026-07-17 | Partially Spoiled |
+| [Ashes of the Empire](ASH.md) | ASH | B | 2026-07-17 | Spoiler Beta |
 
 ## Block Definitions
 
@@ -35,12 +35,12 @@ This directory contains detailed documentation for each Star Wars: Unlimited set
 - Special rarity cards appear in packs
 
 ### Block B (Sets 7+: LAW, ASH)
-- Same belt structure as Block A (50/50 split)
+- LAW-style two common belts with a roughly 50/50 split: Belt A fills slots 1-4, Belt B fills slots 6-9
 - Slot 5 is GUARANTEED Hyperspace common
 - Foil slot is ALWAYS Hyperspace Foil (no regular foils)
 - Prestige cards can appear in standard packs (~1 in 18)
 - Triple-aspect cards (double primary aspect)
-- **Rare bases in base slot** (~1/6 rate) instead of rare slot
+- Rare bases stay in the rare slot unless a future set config opts into base-slot rares
 
 ## Pack Structure (All Sets)
 

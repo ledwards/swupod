@@ -40,13 +40,14 @@ Cards have TWO different ID fields that serve different purposes:
 
 | Field | Example | Purpose |
 |-------|---------|---------|
-| `id` | `"42080"` | **Internal ID** - Used as lookup key in the app's card cache. Required for image lookups, data enrichment, etc. This is an internal implementation detail. |
+| `id` | `"42080"` or `"ash-slot:normal:main:rare:vigilance:001"` | **Internal ID** - Used as lookup key in the app's card cache. Required for image lookups, data enrichment, etc. ASH spoiler-season placeholders use synthetic bucket-slot IDs until real cards are spoiled. |
 | `cardId` | `"SEC-1029"` | **External/Display ID** - The canonical card identifier matching printed cards and external systems (SWUDB). Used for deck exports (formatted as `SEC_029` for SWUDB). |
 
 **Why two IDs?**
 - The `id` field is a stable internal key used for fast lookups in our card cache
 - The `cardId` field matches how cards are identified externally (SWUDB, printed cards)
 - When exporting decks, we use `cardId` converted to SWUDB format (underscore, zero-padded)
+- For ASH during spoiler season, unresolved placeholders do not have collector numbers. Real ASH cards keep their SWUAPI identity once spoiled.
 
 **Database storage:**
 - `card_generations.card_id` stores the **internal `id`** for image lookups
@@ -56,9 +57,9 @@ Cards have TWO different ID fields that serve different purposes:
 ### Required Fields
 
 - **id** (string): Internal unique identifier (e.g., "42080", "1479")
-- **cardId** (string): External display identifier (e.g., "SEC-1029", "SOR-001")
+- **cardId** (string): External display identifier (e.g., "SEC-1029", "SOR-001"). ASH placeholders may have `null` because they do not represent printed collector-number cards yet.
 - **name** (string): The card's name
-- **set** (string): Set code - one of: `SOR`, `SHD`, `TWI`, `JTL`, `LOF`, `SEC`, `LAW`
+- **set** (string): Set code - one of: `SOR`, `SHD`, `TWI`, `JTL`, `LOF`, `SEC`, `LAW`, `ASH`
 - **rarity** (string): One of: `Common`, `Uncommon`, `Rare`, `Legendary`, `Special`
 - **type** (string): Card type - `Leader`, `Base`, `Unit`, `Event`, `Upgrade`, etc.
 - **isLeader** (boolean): `true` if this is a leader card
@@ -74,6 +75,14 @@ Cards have TWO different ID fields that serve different purposes:
 - **power** (number): Power value (for units)
 - **health** (number): Health value (for units)
 - **traits** (array of strings): Card traits (e.g., `["Jedi", "Rebel"]`)
+- **isPlaceholder** (boolean): `true` for spoiler-season placeholder cards
+- **spoilerStatus** (string): `placeholder` or `spoiled`
+- **placeholderKind** (string): `bucket-slot` for ASH spoiler placeholders
+- **placeholderGroup** (string): `leader`, `base`, or `main`
+- **placeholderBucketId** (string): Stable synthetic bucket ID used for resolution
+- **placeholderBucketLabel** (string): Human-readable bucket label such as `Rare Vigilance`
+- **placeholderSlotIndex** (number): Index within the bucket's remaining unknown slots
+- **inferredFields** (array of strings): Fields inferred for placeholders
 
 ## Set Codes
 
@@ -83,6 +92,8 @@ Cards have TWO different ID fields that serve different purposes:
 - **JTL**: Jump to Lightspeed
 - **LOF**: Legends of the Force
 - **SEC**: Secrets of Power
+- **LAW**: A Lawless Time
+- **ASH**: Ashes of the Empire
 
 ## Rarity Values
 
@@ -181,12 +192,42 @@ Cards have TWO different ID fields that serve different purposes:
 }
 ```
 
+### ASH Placeholder Card
+```json
+{
+  "id": "ash-slot:normal:main:rare:vigilance:001",
+  "cardId": null,
+  "name": "Unknown ASH Rare Vigilance Slot 1",
+  "set": "ASH",
+  "number": null,
+  "rarity": "Rare",
+  "type": "Unknown",
+  "aspects": ["Vigilance"],
+  "cost": null,
+  "power": null,
+  "hp": null,
+  "variantType": "Normal",
+  "imageUrl": null,
+  "isPlaceholder": true,
+  "spoilerStatus": "placeholder",
+  "placeholderVersion": "2026-05-20-sec-shaped-law-multicolor-v2",
+  "placeholderKind": "bucket-slot",
+  "placeholderGroup": "main",
+  "placeholderBucketId": "ash-slot:normal:main:rare:vigilance",
+  "placeholderBucketLabel": "Rare Vigilance",
+  "placeholderSlotIndex": 1,
+  "inferredFields": ["rarity", "aspects", "variantType"]
+}
+```
+
 ## Populating the Data
 
-To populate `cards.json`, you can:
+To populate `cards.json`, run:
 
-1. **Manual Entry**: Add cards manually following the structure above
-2. **API Integration**: Create a script to fetch cards from swudb.com API
-3. **Import from CSV/Excel**: Convert existing card databases to JSON format
+```bash
+npm run fetch-cards
+```
+
+This fetches real cards from SWUAPI into `cards.raw.json`, then post-processes them into `cards.json`. During ASH spoiler season, post-processing also merges the placeholder catalog.
 
 The app will automatically use cards from this file when generating booster packs.

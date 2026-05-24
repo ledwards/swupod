@@ -3,17 +3,19 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import { fetchSets } from './api'
+import { hasRealCardsForSet } from './cardData'
 
 describe('fetchSets', () => {
   describe('set filtering', () => {
-    it('should return all 7 sets by default', async () => {
+    it('should return released non-beta sets by default', async () => {
       const sets = await fetchSets()
       const setCodes = sets.map(s => s.code)
 
       assert.ok(setCodes.includes('LAW'), 'LAW should be included')
       assert.ok(setCodes.includes('SOR'), 'SOR should be included')
       assert.ok(setCodes.includes('SEC'), 'SEC should be included')
-      assert.strictEqual(sets.length, 7, 'Should have 7 sets')
+      assert.ok(sets.length >= 7, 'Should have at least the first 7 sets')
+      assert.ok(!setCodes.includes('ASH'), 'ASH should stay hidden by default while it is beta')
     })
 
     it('should include LAW with prereleaseDate', async () => {
@@ -38,17 +40,26 @@ describe('fetchSets', () => {
       assert.ok(!sets.find(s => s.code === 'ASH'), 'ASH should not be visible by default')
     })
 
-    it('should still hide ASH with includeBeta:true while card data is empty', async () => {
-      // Card-count gate: a set with zero real cards never displays, even when
-      // the beta date gate would let it through.
+    it('should only include ASH for beta users after at least one real ASH card is synced', async () => {
       const sets = await fetchSets({ includeBeta: true })
-      assert.ok(!sets.find(s => s.code === 'ASH'), 'ASH should remain hidden until cards exist')
+      const setCodes = sets.map(s => s.code)
+
+      if (hasRealCardsForSet('ASH')) {
+        assert.ok(setCodes.includes('ASH'), 'ASH should be visible to beta users after spoiler sync')
+      } else {
+        assert.ok(!setCodes.includes('ASH'), 'ASH should stay hidden until a real ASH card is synced')
+      }
     })
 
-    it('should still hide ASH-CB with includeBeta+includeCarbonite while cards are empty', async () => {
+    it('should only include ASH carbonite after at least one real ASH card is synced', async () => {
       const sets = await fetchSets({ includeBeta: true, includeCarbonite: true })
-      assert.ok(!sets.find(s => s.code === 'ASH'), 'ASH should remain hidden until cards exist')
-      assert.ok(!sets.find(s => s.code === 'ASH-CB'), 'ASH-CB should remain hidden until cards exist')
+      const setCodes = sets.map(s => s.code)
+
+      if (hasRealCardsForSet('ASH')) {
+        assert.ok(setCodes.includes('ASH-CB'), 'ASH-CB should be visible when ASH has real card data')
+      } else {
+        assert.ok(!setCodes.includes('ASH-CB'), 'ASH-CB should remain hidden until a real ASH card is synced')
+      }
     })
   })
 

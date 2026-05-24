@@ -11,6 +11,7 @@ import { queryRow } from '@/lib/db'
 import { errorResponse, handleApiError, formatSetCodeRange } from '@/lib/utils'
 import { buildDeckFromState, DeckBuilderState, DeckEntry } from '@/lib/deckBuilder'
 import { jsonParse } from '@/src/utils/json'
+import { containsPlaceholderCards, describePlaceholderCards } from '@/src/services/cards/cardCatalogResolver'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {
@@ -80,6 +81,14 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     // Check if deck has been built (has activeLeader or activeBase)
     if (!deckBuilderState.activeLeader && !deckBuilderState.activeBase) {
       return withCors(errorResponse('No deck has been built for this pool yet', 400))
+    }
+
+    if (containsPlaceholderCards(deckBuilderState)) {
+      const examples = describePlaceholderCards(deckBuilderState)
+      return errorResponse(
+        `This deck contains ASH spoiler placeholders and cannot be exported yet${examples ? `: ${examples}` : ''}.`,
+        400
+      )
     }
 
     const setCode = pool.set_code || ''

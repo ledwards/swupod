@@ -150,9 +150,29 @@
   border-radius: 6px;
 }
 
+.draftable-card.placeholder-card .card-placeholder {
+  background: linear-gradient(135deg, #181818 0%, #2f2a21 100%);
+  border: 1px solid rgba(247, 200, 115, 0.35);
+}
+
+.placeholder-badge {
+  font-size: 0.62rem;
+  color: #f7c873;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
 .placeholder-name {
   font-size: 0.8rem;
   color: white;
+  margin-bottom: 5px;
+}
+
+.placeholder-details {
+  font-size: 0.65rem;
+  line-height: 1.2;
+  color: #d7d7d7;
   margin-bottom: 5px;
 }
 

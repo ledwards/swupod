@@ -99,6 +99,7 @@ export function ResizableCard({
     card.isFoil && 'foil',
     card.isHyperspace && 'hyperspace',
     card.isShowcase && 'showcase',
+    card.isPlaceholder && 'placeholder-card',
     selected && !noRainbowBorder && 'selected',
     hovered && 'hovered',
     active && card.isLeader && 'active-leader',
@@ -142,7 +143,11 @@ export function ResizableCard({
         />
       ) : (
         <div className="card-placeholder" style={imageStyle}>
-          <div className="card-name">{card.name || 'Card'}</div>
+          {card.isPlaceholder && <div className="card-placeholder-badge">Unknown</div>}
+          <div className="card-name">{card.name || card.placeholderBucketLabel || 'Card'}</div>
+          {card.isPlaceholder && (
+            <div className="card-placeholder-details">{[card.type && card.type !== 'Unknown' ? card.type : null, ...(card.aspects || [])].filter(Boolean).join(' · ')}</div>
+          )}
           <div className="card-rarity">{card.rarity}</div>
         </div>
       )}
