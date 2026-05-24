@@ -252,6 +252,24 @@ export default function AuthWidget() {
             </div>
 
             <div className="auth-widget-drawer-menu">
+              {!isHomepage && (
+                <a
+                  href="/"
+                  className="auth-widget-drawer-menu-item"
+                  onClick={(e: MouseEvent<HTMLAnchorElement>) => {
+                    e.preventDefault()
+                    router.push('/')
+                    setDrawerOpen(false)
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                  </svg>
+                  Home
+                </a>
+              )}
+
               <div className="auth-widget-drawer-section-label">Recent Activity</div>
 
               {loadingData && (
@@ -311,26 +329,6 @@ export default function AuthWidget() {
                 </svg>
                 History
               </a>
-
-              <div className="auth-widget-drawer-divider"></div>
-
-              {!isHomepage && (
-                <a
-                  href="/"
-                  className="auth-widget-drawer-menu-item"
-                  onClick={(e: MouseEvent<HTMLAnchorElement>) => {
-                    e.preventDefault()
-                    router.push('/')
-                    setDrawerOpen(false)
-                  }}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                  </svg>
-                  Home
-                </a>
-              )}
 
               {isPatron && (
                 <a

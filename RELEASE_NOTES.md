@@ -1,5 +1,10 @@
 # Release Notes
 
+## 05.24.2026
+
+### 🐛 Bug Fixes
+- **Home is back at the top of the user dropdown**: The Home shortcut has been restored to its old first-item placement in the account menu so you can quickly jump back from anywhere in the app.
+
 ## 05.22.2026
 
 ### 🦾 Infrastructure
