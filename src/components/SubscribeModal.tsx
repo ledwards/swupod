@@ -1,9 +1,11 @@
 // @ts-nocheck
+import { useEffect } from 'react'
 import './SubscribeModal.css'
 import { Modal } from './Modal'
 import Button from './Button'
 import { formatMembershipPrice, PATREON_URL } from '../utils/membership'
 import { getSetConfig } from '../utils/setConfigs/index'
+import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 
 /**
  * SubscribeModal — single reusable modal that powers every sub-conversion
@@ -47,11 +49,24 @@ export function SubscribeModal({
   setCode,
   ctaUrl = PATREON_URL,
   ctaLabel = DEFAULT_CTA_LABEL,
-  // surface is reserved for U7 analytics wiring; not used in render yet.
-  surface: _surface,
+  surface,
 }: SubscribeModalProps) {
   const setName = setCode ? getSetConfig(setCode.replace('-CB', ''))?.setName ?? setCode : null
   const priceLabel = formatMembershipPrice()
+
+  // U7 — emit subscribe-cta-shown when the modal first opens for a given
+  // (surface, setCode) pair. The PostHog hook silently no-ops when
+  // NEXT_PUBLIC_POSTHOG_KEY isn't configured.
+  useEffect(() => {
+    if (!isOpen || !surface) return
+    trackEvent(AnalyticsEvents.SUBSCRIBE_CTA_SHOWN, { surface, setCode: setCode ?? null })
+  }, [isOpen, surface, setCode])
+
+  const handleCtaClick = () => {
+    if (surface) {
+      trackEvent(AnalyticsEvents.SUBSCRIBE_CTA_CLICKED, { surface, setCode: setCode ?? null, ctaUrl })
+    }
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} showCloseButton className="subscribe-modal">
@@ -86,6 +101,7 @@ export function SubscribeModal({
           target={ctaUrl.startsWith('http') ? '_blank' : undefined}
           rel={ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
           className="btn btn--primary btn--md subscribe-modal-cta"
+          onClick={handleCtaClick}
         >
           {ctaLabel}
         </a>

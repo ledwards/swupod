@@ -73,4 +73,9 @@ export const AnalyticsEvents = {
   USER_SIGNED_IN: 'user_signed_in',
   USER_SIGNED_OUT: 'user_signed_out',
   BETA_ENROLLED: 'beta_enrolled',
+
+  // Membership conversion (U7 — 2026 price-raise experiment)
+  // Payload: { surface: 'setPreview' | 'homepageBanner' | 'lockInBanner' | 'podBanner', setCode?: string }
+  SUBSCRIBE_CTA_SHOWN: 'subscribe_cta_shown',
+  SUBSCRIBE_CTA_CLICKED: 'subscribe_cta_clicked',
 } as const

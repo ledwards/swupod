@@ -11,6 +11,7 @@ import {
   getTeaserUserState,
   shouldPeekUnreleased,
 } from './setSelectionTeaser'
+import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 
 interface SetData {
   code: string
@@ -137,6 +138,19 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
       setSets(sortedSets)
     }
   }, [rawSets, isVertical])
+
+  // U7 — track teaser exposure once per render cycle when a Coming Soon
+  // teaser is visible to the current user. Captures "non-sub saw the
+  // teaser" independently of whether they click it.
+  const teaserSetCode = latestSets.find((s: SetData) => s.comingSoon)?.code
+  useEffect(() => {
+    if (teaserSetCode) {
+      trackEvent(AnalyticsEvents.SUBSCRIBE_CTA_SHOWN, {
+        surface: 'setPreview',
+        setCode: teaserSetCode,
+      })
+    }
+  }, [teaserSetCode])
 
   if (loading) {
     return (

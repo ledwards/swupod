@@ -11,6 +11,7 @@ import {
 } from '../utils/membership'
 import { getSetConfig } from '../utils/setConfigs/index'
 import { shouldShowPodBanner } from './subscribePodBannerGate'
+import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 
 /**
  * SubscribePodBanner — soft sub-marketing banner shown to non-patrons (and to
@@ -92,6 +93,11 @@ export function SubscribePodBanner({ podSetCode }: SubscribePodBannerProps) {
   useEffect(() => {
     if (decision.show) {
       markSessionSeen(baseSetCode)
+      // U7 — track that the banner was shown.
+      trackEvent(AnalyticsEvents.SUBSCRIBE_CTA_SHOWN, {
+        surface: 'podBanner',
+        setCode: baseSetCode ?? null,
+      })
     }
   }, [decision.show, baseSetCode])
 
@@ -113,7 +119,16 @@ export function SubscribePodBanner({ podSetCode }: SubscribePodBannerProps) {
     ? `This pod uses ${setName}. Your membership unlocks early access — enroll in beta to get it.`
     : `This pod uses ${setName}. Get your own early access — Become a Member · ${priceLabel}`
 
-  const handleSubscribeClick = () => setModalOpen(true)
+  const handleSubscribeClick = () => {
+    // U7 — track the banner CTA click (distinct from the modal's
+    // own click event, which fires when the user hits Patreon).
+    trackEvent(AnalyticsEvents.SUBSCRIBE_CTA_CLICKED, {
+      surface: 'podBanner',
+      setCode: baseSetCode ?? null,
+      step: 'banner_to_modal',
+    })
+    setModalOpen(true)
+  }
   const handleDismiss = () => setDismissed(true)
   const handleModalClose = () => setModalOpen(false)
 

@@ -19,6 +19,7 @@ import {
   promoDismissalKey,
   type PromoVariant,
 } from './landingPagePromo'
+import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 import ReleaseNotes from './ReleaseNotes'
 import Button from './Button'
 import SubscribeModal from './SubscribeModal'
@@ -166,6 +167,25 @@ function LandingPage() {
 
   const setName = upcomingSet?.setName ?? upcomingSet?.setCode ?? null
   const setCode = upcomingSet?.setCode ?? null
+
+  // U7 — track which banner variant the user actually saw. Fires once per
+  // variant per session; downstream PostHog event already captures the user
+  // identity, time, and current_url.
+  useEffect(() => {
+    if (promoVariant === 'none') return
+    const surface =
+      promoVariant === 'lockIn'
+        ? 'lockInBanner'
+        : promoVariant === 'patronActivation'
+          ? null // not a conversion event — already a patron
+          : 'homepageBanner'
+    if (!surface) return
+    trackEvent(AnalyticsEvents.SUBSCRIBE_CTA_SHOWN, {
+      surface,
+      setCode,
+      variant: promoVariant,
+    })
+  }, [promoVariant, setCode])
 
   const handleDismissLockIn = () => {
     const lockKey = lockInDismissalKey(LOCK_IN_WINDOW_END_DATE)
