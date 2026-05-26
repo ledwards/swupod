@@ -67,11 +67,11 @@ async function main(): Promise<void> {
       }
       await mod.run(client)
     } else {
+      // Pass the entire file to pg's simple query protocol, which supports
+      // multi-statement SQL natively. Do NOT split on ';' — that breaks any
+      // statement whose comments or string literals contain a semicolon.
       const sql = readFileSync(migrationPath, 'utf-8')
-      const statements = sql.split(';').map(s => s.trim()).filter(s => s.length > 0)
-      for (const stmt of statements) {
-        await client.query(stmt)
-      }
+      await client.query(sql)
     }
 
     // Mark applied only after the migration body finishes without throwing
