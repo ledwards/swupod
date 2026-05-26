@@ -1,5 +1,6 @@
 // @ts-nocheck
 import './About.css'
+import { PATREON_URL } from '../utils/membership'
 
 export interface AboutProps {
   onBack?: () => void
@@ -11,7 +12,7 @@ function About({ onBack }: AboutProps) {
       <div className="about-content">
         <section className="support-section">
           <a
-            href="https://patreon.com/ProtectthePod"
+            href={PATREON_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="patreon-logo-link"
@@ -39,7 +40,7 @@ function About({ onBack }: AboutProps) {
             <li><strong>Support the Pod</strong> — Earn the eternal gratitude of the community for being a supporter of the pod!</li>
           </ul>
           <a
-            href="https://patreon.com/ProtectthePod"
+            href={PATREON_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="patreon-cta"

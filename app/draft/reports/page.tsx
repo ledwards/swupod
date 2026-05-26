@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
 import Button from '../../../src/components/Button'
 import { formatPoolLabel } from '../../../src/utils/poolDisplayName'
+import { PATREON_URL } from '../../../src/utils/membership'
 import '../../../src/App.css'
 import '../../../src/styles/backgrounds.css'
 import './reports.css'
@@ -86,7 +87,7 @@ export default function DraftReportsPage() {
             <h2>Friends of the Pod</h2>
             <p>Draft Reports are a premium feature for Friends of the Pod. Review your draft history with detailed pick-by-pick logs, deck breakdowns, and personal notes.</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center', marginTop: '1rem' }}>
-              <a href="https://www.patreon.com/c/ProtectthePod" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+              <a href={PATREON_URL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                 <Button variant="primary">Become a Friend of the Pod</Button>
               </a>
               <Button variant="back" onClick={() => router.push('/draft')}>Back to Drafts</Button>

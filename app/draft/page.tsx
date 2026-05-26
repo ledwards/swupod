@@ -7,6 +7,7 @@ import { useAuth } from '../../src/contexts/AuthContext'
 import { usePublicPodsSocket } from '../../src/hooks/usePublicPodsSocket'
 import { dropFromDraft } from '../../src/utils/draftApi'
 import { ChatPanel } from '../../src/components/ChatPanel'
+import { PATREON_URL } from '../../src/utils/membership'
 import '../../src/App.css'
 import '../../src/components/LandingPage.css'
 import './draft.css'
@@ -255,7 +256,7 @@ export default function DraftLandingPage() {
                       </p>
                       {!isPatron && (
                         <p>
-                          Requires <a href="https://patreon.com/ProtectthePod" target="_blank" rel="noopener noreferrer">Friend of the Pod</a>.
+                          Requires <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">Friend of the Pod</a>.
                         </p>
                       )}
                     </div>

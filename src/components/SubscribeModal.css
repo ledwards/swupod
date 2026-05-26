@@ -1,0 +1,94 @@
+/**
+ * SubscribeModal styles — sub-conversion CTA used across set picker,
+ * homepage banner, and pod banner. Builds on Modal/Button design tokens.
+ */
+
+.modal-content.subscribe-modal {
+  max-width: 540px;
+}
+
+.subscribe-modal-headline {
+  margin: 0 0 1rem;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  color: white;
+}
+
+.subscribe-modal-subhead {
+  margin: 0 0 1.25rem;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.subscribe-modal-benefits {
+  list-style: disc;
+  margin: 0 0 1.25rem;
+  padding-left: 1.25rem;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.subscribe-modal-benefits li {
+  margin-bottom: 0.5rem;
+}
+
+.subscribe-modal-benefits li:last-child {
+  margin-bottom: 0;
+}
+
+.subscribe-modal-price {
+  margin: 1rem 0 0.75rem;
+  font-size: 1rem;
+  color: white;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  border-left: 3px solid rgb(0, 200, 0);
+}
+
+.subscribe-modal-price strong {
+  font-weight: 700;
+  color: white;
+}
+
+.subscribe-modal-footer-note {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+.subscribe-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+  flex-wrap: wrap;
+}
+
+/* Primary CTA as anchor — defensive overrides so global a:hover
+   (purple Vite default) never wins. Button.css already covers a.btn but
+   we restate explicitly for the SubscribeModal CTA per rules/ui-components.md
+   "Every Discord-styled link/button MUST override". */
+a.subscribe-modal-cta,
+a.subscribe-modal-cta:visited,
+a.subscribe-modal-cta:hover,
+a.subscribe-modal-cta:active {
+  color: white;
+  text-decoration: none;
+}
+
+/* Mobile: stack actions */
+@media (max-width: 480px) {
+  .subscribe-modal-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  .subscribe-modal-actions > * {
+    width: 100%;
+  }
+}

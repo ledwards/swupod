@@ -9,6 +9,7 @@ import Button from '@/src/components/Button'
 import { AspectIcon, ASPECTS } from '@/src/components/AspectIcon'
 import { LeaderCharts, CardCharts } from './StatsCharts'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
+import { PATREON_URL } from '@/src/utils/membership'
 import './stats.css'
 
 const tournamentPlayerCount = tournamentUserIds.length
@@ -539,7 +540,7 @@ export default function StatsPage() {
                   <p className="stats-patron-cta-desc">Support Protect the Pod to see stats from top tournament competitors.</p>
                 </div>
               </div>
-              <a href="https://www.patreon.com/ProtectthePod" target="_blank" rel="noopener noreferrer">
+              <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">
                 <Button variant="primary">Support Protect the Pod</Button>
               </a>
             </div>

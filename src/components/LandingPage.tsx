@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { usePresence } from '../hooks/usePresence'
 import { usePublicPodsSocket } from '../hooks/usePublicPodsSocket'
 import { formatPoolLabel } from '../utils/poolDisplayName'
+import { PATREON_URL } from '../utils/membership'
 import ReleaseNotes from './ReleaseNotes'
 import Button from './Button'
 import './LandingPage.css'
@@ -297,7 +298,7 @@ function LandingPage() {
           <span className="footer-separator">·</span>
           <a href="https://github.com/ledwards/swupod" target="_blank" rel="noopener noreferrer">GitHub</a>
           <span className="footer-separator">·</span>
-          <a href="https://patreon.com/ProtectthePod" target="_blank" rel="noopener noreferrer">Patreon</a>
+          <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">Patreon</a>
           <span className="footer-separator">·</span>
           <a href="https://swag.protectthepod.com" target="_blank" rel="noopener noreferrer">Swag</a>
           <span className="footer-separator">·</span>

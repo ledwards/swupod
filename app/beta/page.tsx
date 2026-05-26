@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import { useAuth } from '@/src/contexts/AuthContext'
 import Button from '@/src/components/Button'
 import { useRouter } from 'next/navigation'
+import { PATREON_URL } from '@/src/utils/membership'
 import './page.css'
 
 export default function BetaPage() {
@@ -80,7 +81,7 @@ export default function BetaPage() {
                 <>
                   <p>Beta access is available to Patreon supporters.</p>
                   <a
-                    href="https://www.patreon.com/protectthepod"
+                    href={PATREON_URL}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
