@@ -229,7 +229,6 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
           </div>
           <div className="set-info">
             <h3>{set.name}</h3>
-            <span className="set-card-coming-soon-note">Members get early access</span>
           </div>
         </div>
       )
@@ -262,13 +261,6 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
         </div>
         <div className="set-info">
           <h3>{set.name}</h3>
-          <a
-            href={`/sets/${set.code}`}
-            className="set-catalog-link"
-            onClick={(event) => event.stopPropagation()}
-          >
-            Catalog
-          </a>
         </div>
       </div>
     )

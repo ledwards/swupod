@@ -250,21 +250,6 @@
   line-height: 1.2;
 }
 
-.set-catalog-link {
-  color: rgba(247, 200, 115, 0.9);
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.set-catalog-link:hover,
-.set-catalog-link:focus-visible {
-  color: #ffffff;
-  outline: none;
-}
-
 .loading,
 .error {
   text-align: center;
@@ -319,7 +304,9 @@
 }
 
 .set-card--coming-soon::before {
-  /* Replace the rainbow gradient with a calmer blue glow */
+  /* Replace the rainbow gradient with a calmer blue glow. Match the base
+     .set-card::before opacity (0 until hover) so the card has the same
+     visual dimensions as released-set cards (no always-on blue strip). */
   background: linear-gradient(
     45deg,
     rgba(33, 150, 243, 0.85),
@@ -327,7 +314,6 @@
     rgba(33, 150, 243, 0.85)
   ) !important;
   background-size: 400% 400% !important;
-  opacity: 0.4 !important;
   animation: none !important;
 }
 
