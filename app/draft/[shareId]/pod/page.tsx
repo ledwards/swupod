@@ -20,6 +20,7 @@ import ChatPanel from '../../../../src/components/ChatPanel'
 import EditableTitle from '../../../../src/components/EditableTitle'
 import Modal from '../../../../src/components/Modal'
 import PlayInstructions from '../../../../src/components/PlayInstructions'
+import SubscribePodBanner from '../../../../src/components/SubscribePodBanner'
 import '../../../../src/App.css'
 import './pod.css'
 import '../../../../src/components/ChatPanel.css'
@@ -731,6 +732,8 @@ export default function PodPage({ params }: PageProps) {
           />
           <p className="pod-pool-type">Draft Pod</p>
         </div>
+
+        <SubscribePodBanner podSetCode={draft?.setCode || myPool?.setCode} />
 
         <div className="practice-hand-button-container">
           <button className="pod-action-button" onClick={() => drawPracticeHand()} disabled={!myPoolShareId || !myPool}>
