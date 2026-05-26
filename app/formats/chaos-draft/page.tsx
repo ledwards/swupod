@@ -10,6 +10,10 @@ import { getPackImageUrl } from '@/src/utils/packArt'
 import { trackEvent, AnalyticsEvents } from '@/src/hooks/useAnalytics'
 import Button from '@/src/components/Button'
 import PackSelector from '@/src/components/PackSelector'
+import {
+  getTeaserUserState,
+  shouldPeekUnreleased,
+} from '@/src/components/setSelectionTeaser'
 import './page.css'
 
 interface SetData {
@@ -21,7 +25,7 @@ interface SetData {
 
 export default function ChaosDraftPage() {
   const router = useRouter()
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, isPatron } = useAuth()
   const [sets, setSets] = useState<SetData[]>([])
   const [selectedSets, setSelectedSets] = useState<string[]>(() => {
     if (typeof window === 'undefined') return []
@@ -37,11 +41,17 @@ export default function ChaosDraftPage() {
 
   const hasBetaAccess = user?.is_beta_tester || user?.is_admin
 
+  const teaserState = getTeaserUserState(isPatron, user?.is_beta_tester, user?.is_admin)
+  const peekUnreleased = shouldPeekUnreleased(teaserState)
+  const peekVariant: 'patreon' | 'beta' | false =
+    teaserState === 'patronNoBeta' ? 'beta' : teaserState === 'nonSub' ? 'patreon' : false
+
   useEffect(() => {
+    if (teaserState === 'loading') return
     const loadSets = async () => {
       try {
         setLoading(true)
-        const setsData = await fetchSets({ includeBeta: hasBetaAccess, includeCarbonite: true })
+        const setsData = await fetchSets({ includeBeta: hasBetaAccess, includeCarbonite: true, peekUnreleased })
         setSets(setsData)
       } catch (err) {
         setError('Failed to load sets')
@@ -50,7 +60,7 @@ export default function ChaosDraftPage() {
       }
     }
     loadSets()
-  }, [hasBetaAccess])
+  }, [hasBetaAccess, peekUnreleased, teaserState])
 
   useEffect(() => {
     localStorage.setItem('chaos-draft-count', String(packCount))
@@ -156,6 +166,7 @@ export default function ChaosDraftPage() {
           maxSelections={packCount}
           showQuantityControls={true}
           title={`Select ${packCount} Packs (${selectedSets.length}/${packCount})`}
+          peekUnreleased={peekVariant}
         />
 
         <div className="chaos-draft-section selected-sets-order">

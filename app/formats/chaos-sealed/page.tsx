@@ -10,6 +10,10 @@ import { trackEvent, AnalyticsEvents } from '@/src/hooks/useAnalytics'
 import Button from '@/src/components/Button'
 import PackSelector from '@/src/components/PackSelector'
 import PackOpeningAnimation from '@/src/components/PackOpeningAnimation'
+import {
+  getTeaserUserState,
+  shouldPeekUnreleased,
+} from '@/src/components/setSelectionTeaser'
 import './page.css'
 
 interface SetData {
@@ -27,7 +31,7 @@ interface GeneratedPool {
 
 export default function ChaosSealedPage() {
   const router = useRouter()
-  const { user } = useAuth()
+  const { user, isPatron } = useAuth()
   const [sets, setSets] = useState<SetData[]>([])
   const [selectedSets, setSelectedSets] = useState<string[]>(() => {
     if (typeof window === 'undefined') return []
@@ -45,11 +49,17 @@ export default function ChaosSealedPage() {
 
   const hasBetaAccess = user?.is_beta_tester || user?.is_admin
 
+  const teaserState = getTeaserUserState(isPatron, user?.is_beta_tester, user?.is_admin)
+  const peekUnreleased = shouldPeekUnreleased(teaserState)
+  const peekVariant: 'patreon' | 'beta' | false =
+    teaserState === 'patronNoBeta' ? 'beta' : teaserState === 'nonSub' ? 'patreon' : false
+
   useEffect(() => {
+    if (teaserState === 'loading') return
     const loadSets = async () => {
       try {
         setLoading(true)
-        const setsData = await fetchSets({ includeBeta: hasBetaAccess, includeCarbonite: true })
+        const setsData = await fetchSets({ includeBeta: hasBetaAccess, includeCarbonite: true, peekUnreleased })
         setSets(setsData)
       } catch (err) {
         setError('Failed to load sets')
@@ -58,7 +68,7 @@ export default function ChaosSealedPage() {
       }
     }
     loadSets()
-  }, [hasBetaAccess])
+  }, [hasBetaAccess, peekUnreleased, teaserState])
 
   useEffect(() => {
     localStorage.setItem('chaos-sealed-count', String(packCount))
@@ -204,6 +214,7 @@ export default function ChaosSealedPage() {
           maxSelections={packCount}
           showQuantityControls={true}
           title={`Select ${packCount} Packs (${selectedSets.length}/${packCount})`}
+          peekUnreleased={peekVariant}
         />
 
         <div className="chaos-sealed-section selected-sets-order">

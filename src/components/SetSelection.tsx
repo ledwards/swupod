@@ -5,6 +5,12 @@ import './SetSelection.css'
 import { fetchSets, isSetBeta, isSetPrerelease } from '../utils/api'
 import { useAuth } from '../contexts/AuthContext'
 import Button from './Button'
+import SubscribeModal from './SubscribeModal'
+import {
+  buildTeaserModalCopy,
+  getTeaserUserState,
+  shouldPeekUnreleased,
+} from './setSelectionTeaser'
 
 interface SetData {
   code: string
@@ -12,6 +18,7 @@ interface SetData {
   imageUrl?: string
   prereleaseDate?: string
   releaseDate?: string
+  comingSoon?: boolean
 }
 
 export interface SetSelectionProps {
@@ -22,7 +29,7 @@ export interface SetSelectionProps {
 }
 
 function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelectionProps) {
-  const { user } = useAuth()
+  const { user, isPatron } = useAuth()
   const [sets, setSets] = useState<SetData[]>([])
   const [latestSets, setLatestSets] = useState<SetData[]>([])
   const [loading, setLoading] = useState(true)
@@ -33,6 +40,15 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
 
   // Check if user has beta access (beta tester or admin)
   const hasBetaAccess = user?.is_beta_tester || user?.is_admin
+
+  // Three-state user model for the "Coming Soon" teaser. See
+  // src/components/setSelectionTeaser.ts for the SPEC.
+  const teaserState = getTeaserUserState(isPatron, user?.is_beta_tester, user?.is_admin)
+  const peekUnreleased = shouldPeekUnreleased(teaserState)
+
+  // Modal state for the teaser card click
+  const [teaserModalOpen, setTeaserModalOpen] = useState(false)
+  const [teaserModalSet, setTeaserModalSet] = useState<SetData | null>(null)
 
   // Map set codes to their set numbers for sorting
   const getSetNumber = (setCode: string): number => {
@@ -92,10 +108,15 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
   const [rawSets, setRawSets] = useState<SetData[]>([])
 
   useEffect(() => {
+    // Wait for patron status to resolve before fetching. Without this guard
+    // we'd briefly fetch without peekUnreleased and then re-fetch with it,
+    // flashing the teaser in/out of view.
+    if (teaserState === 'loading') return
+
     const loadSets = async () => {
       try {
         setLoading(true)
-        const setsData = await fetchSets({ includeBeta: hasBetaAccess })
+        const setsData = await fetchSets({ includeBeta: hasBetaAccess, peekUnreleased })
         const regular = setsData.filter((set: SetData) => getSetNumber(set.code) < 7)
         const latest = setsData.filter((set: SetData) => getSetNumber(set.code) >= 7)
         setRawSets(regular)
@@ -107,7 +128,7 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
       }
     }
     loadSets()
-  }, [hasBetaAccess])
+  }, [hasBetaAccess, peekUnreleased, teaserState])
 
   // Sort sets whenever rawSets or isVertical changes
   useEffect(() => {
@@ -156,6 +177,89 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
     }
   }
 
+  const handleTeaserClick = (set: SetData) => {
+    setTeaserModalSet(set)
+    setTeaserModalOpen(true)
+  }
+
+  const renderSetCard = (set: SetData) => {
+    if (set.comingSoon) {
+      // "Coming Soon" teaser: lock icon, no Catalog link, click opens modal.
+      return (
+        <div
+          key={set.code}
+          className="set-card set-card--coming-soon"
+          role="button"
+          tabIndex={0}
+          onClick={() => handleTeaserClick(set)}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleTeaserClick(set) }}
+          aria-label={`${set.name} — Coming Soon. Subscribe for early access.`}
+        >
+          <div className="coming-soon-badge">
+            <LockIcon />
+            <span>Coming Soon</span>
+          </div>
+          <div className="set-image-container">
+            {set.imageUrl && !failedImages.has(set.code) && (
+              <img
+                src={set.imageUrl}
+                alt={`${set.name} booster pack`}
+                className="set-image"
+                onError={(e) => handleImageError(set.code, e)}
+              />
+            )}
+            <div className="set-image-placeholder" style={{ display: (!set.imageUrl || failedImages.has(set.code)) ? 'flex' : 'none' }}>
+              <div className="placeholder-text">{set.name}</div>
+              <div className="placeholder-code">{set.code}</div>
+            </div>
+          </div>
+          <div className="set-info">
+            <h3>{set.name}</h3>
+            <span className="set-card-coming-soon-note">Members get early access</span>
+          </div>
+        </div>
+      )
+    }
+
+    const beta = isSetBeta(set)
+    const prerelease = isSetPrerelease(set)
+    const badgeText = beta ? 'Beta' : prerelease ? 'Pre-Release' : null
+    const cardClass = beta ? 'set-card--beta' : prerelease ? 'set-card--prerelease' : ''
+    return (
+      <div
+        key={set.code}
+        className={`set-card ${cardClass}`}
+        onClick={() => onSetSelect(set.code)}
+      >
+        {badgeText && <div className="beta-badge">{badgeText}</div>}
+        <div className="set-image-container">
+          {set.imageUrl && !failedImages.has(set.code) && (
+            <img
+              src={set.imageUrl}
+              alt={`${set.name} booster pack`}
+              className="set-image"
+              onError={(e) => handleImageError(set.code, e)}
+            />
+          )}
+          <div className="set-image-placeholder" style={{ display: (!set.imageUrl || failedImages.has(set.code)) ? 'flex' : 'none' }}>
+            <div className="placeholder-text">{set.name}</div>
+            <div className="placeholder-code">{set.code}</div>
+          </div>
+        </div>
+        <div className="set-info">
+          <h3>{set.name}</h3>
+          <a
+            href={`/sets/${set.code}`}
+            className="set-catalog-link"
+            onClick={(event) => event.stopPropagation()}
+          >
+            Catalog
+          </a>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="set-selection">
       <div className="set-selection-header">
@@ -164,89 +268,31 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
       </div>
       {latestSets.length > 0 && (
         <div className="latest-sets-row">
-          {latestSets.map((set) => {
-            const beta = isSetBeta(set)
-            const prerelease = isSetPrerelease(set)
-            const badgeText = beta ? 'Beta' : prerelease ? 'Pre-Release' : null
-            const cardClass = beta ? 'set-card--beta' : prerelease ? 'set-card--prerelease' : ''
-            return (
-              <div
-                key={set.code}
-                className={`set-card ${cardClass}`}
-                onClick={() => onSetSelect(set.code)}
-              >
-                {badgeText && <div className="beta-badge">{badgeText}</div>}
-                <div className="set-image-container">
-                  {set.imageUrl && !failedImages.has(set.code) && (
-                    <img
-                      src={set.imageUrl}
-                      alt={`${set.name} booster pack`}
-                      className="set-image"
-                      onError={(e) => handleImageError(set.code, e)}
-                    />
-                  )}
-                  <div className="set-image-placeholder" style={{ display: (!set.imageUrl || failedImages.has(set.code)) ? 'flex' : 'none' }}>
-                    <div className="placeholder-text">{set.name}</div>
-                    <div className="placeholder-code">{set.code}</div>
-                  </div>
-                </div>
-                <div className="set-info">
-                  <h3>{set.name}</h3>
-                  <a
-                    href={`/sets/${set.code}`}
-                    className="set-catalog-link"
-                    onClick={(event) => event.stopPropagation()}
-                  >
-                    Catalog
-                  </a>
-                </div>
-              </div>
-            )
-          })}
+          {latestSets.map(renderSetCard)}
         </div>
       )}
       <div className="sets-grid">
-        {sets.map((set) => {
-          const beta = isSetBeta(set)
-          const prerelease = isSetPrerelease(set)
-          const badgeText = beta ? 'Beta' : prerelease ? 'Pre-Release' : null
-          const cardClass = beta ? 'set-card--beta' : prerelease ? 'set-card--prerelease' : ''
-          return (
-            <div
-              key={set.code}
-              className={`set-card ${cardClass}`}
-              onClick={() => onSetSelect(set.code)}
-            >
-              {badgeText && <div className="beta-badge">{badgeText}</div>}
-              <div className="set-image-container">
-                {set.imageUrl && !failedImages.has(set.code) && (
-                  <img
-                    src={set.imageUrl}
-                    alt={`${set.name} booster pack`}
-                    className="set-image"
-                    onError={(e) => handleImageError(set.code, e)}
-                  />
-                )}
-                <div className="set-image-placeholder" style={{ display: (!set.imageUrl || failedImages.has(set.code)) ? 'flex' : 'none' }}>
-                  <div className="placeholder-text">{set.name}</div>
-                  <div className="placeholder-code">{set.code}</div>
-                </div>
-              </div>
-              <div className="set-info">
-                <h3>{set.name}</h3>
-                <a
-                  href={`/sets/${set.code}`}
-                  className="set-catalog-link"
-                  onClick={(event) => event.stopPropagation()}
-                >
-                  Catalog
-                </a>
-              </div>
-            </div>
-          )
-        })}
+        {sets.map(renderSetCard)}
       </div>
+      <SubscribeModal
+        isOpen={teaserModalOpen}
+        onClose={() => setTeaserModalOpen(false)}
+        {...buildTeaserModalCopy(teaserState, teaserModalSet?.name ?? '')}
+        setCode={teaserModalSet?.code}
+        surface="setPreview"
+      />
     </div>
+  )
+}
+
+// Small inline lock icon (line art). Stays here so the teaser card stays
+// self-contained without pulling in an icon library.
+function LockIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
   )
 }
 

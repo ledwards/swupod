@@ -14,12 +14,21 @@ import { getSetConfig } from '@/src/utils/setConfigs/index'
 import { fetchSets, isSetBeta, isSetPrerelease } from '@/src/utils/api'
 import { getPackArtUrl } from '@/src/utils/packArt'
 import { getSingleAspectColor } from '@/src/utils/aspectColors'
+import SubscribeModal from '@/src/components/SubscribeModal'
+import {
+  buildTeaserModalCopy,
+  getTeaserUserState,
+  shouldPeekUnreleased,
+} from '@/src/components/setSelectionTeaser'
 
 interface SetData {
   code: string
   name: string
   imageUrl?: string
   beta?: boolean
+  comingSoon?: boolean
+  prereleaseDate?: string
+  releaseDate?: string
 }
 
 // Normal (base treatment) card counts per set
@@ -300,7 +309,7 @@ export default function RotisseriePlayPage() {
   const params = useParams()
   const router = useRouter()
   const shareId = params.shareId as string
-  const { user } = useAuth()
+  const { user, isPatron } = useAuth()
   const {
     hoveredCardPreview,
     handleCardMouseEnter,
@@ -352,6 +361,18 @@ export default function RotisseriePlayPage() {
   const lastPickCountRef = useRef<number>(0)
 
   const hasBetaAccess = user?.is_beta_tester || user?.is_admin
+
+  // Three-state user model for the "Coming Soon" teaser. Note: even when the
+  // user is the host of this draft, a non-sub host cannot select an
+  // unreleased set — clicking the teaser opens SubscribeModal instead of
+  // toggling the set on. This is intentional: the host has set-selection
+  // power but the set itself is gated.
+  const teaserState = getTeaserUserState(isPatron, user?.is_beta_tester, user?.is_admin)
+  const peekUnreleased = shouldPeekUnreleased(teaserState)
+
+  // SubscribeModal state for teaser clicks in the inline picker
+  const [teaserModalOpen, setTeaserModalOpen] = useState(false)
+  const [teaserModalSet, setTeaserModalSet] = useState<SetData | null>(null)
 
   // Track scroll position for sticky button visibility
   useEffect(() => {
@@ -415,16 +436,17 @@ export default function RotisseriePlayPage() {
 
   // Fetch available sets
   useEffect(() => {
+    if (teaserState === 'loading') return
     const loadSets = async () => {
       try {
-        const setsData = await fetchSets({ includeBeta: hasBetaAccess })
+        const setsData = await fetchSets({ includeBeta: hasBetaAccess, peekUnreleased })
         setAvailableSets(sortSetsChronologically(setsData))
       } catch (err) {
         console.error('Failed to load sets:', err)
       }
     }
     loadSets()
-  }, [hasBetaAccess])
+  }, [hasBetaAccess, peekUnreleased, teaserState])
 
   // Redirect if deleted (host cancelled or draft was deleted)
   useEffect(() => {
@@ -1017,6 +1039,57 @@ export default function RotisseriePlayPage() {
             <h3>Select Sets {!isHost && <span className="host-only-note">(host only)</span>}</h3>
             <div className="sets-grid">
               {availableSets.map((set) => {
+                // "Coming Soon" teaser variant — opens SubscribeModal on
+                // click regardless of host status. A non-sub host can't pick
+                // an unreleased set without subscribing first.
+                if (set.comingSoon) {
+                  const packArtUrl = set.imageUrl || getPackArtUrl(set.code)
+                  const setColor = getSetColor(set.code)
+                  return (
+                    <div
+                      key={set.code}
+                      className="set-card set-card--coming-soon"
+                      onClick={() => {
+                        setTeaserModalSet(set)
+                        setTeaserModalOpen(true)
+                      }}
+                      style={{ '--set-color': setColor } as React.CSSProperties}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          setTeaserModalSet(set)
+                          setTeaserModalOpen(true)
+                        }
+                      }}
+                      aria-label={`${set.name} — Coming Soon. Subscribe for early access.`}
+                    >
+                      <div className="coming-soon-badge">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        <span>Soon</span>
+                      </div>
+                      <div className="set-image-container">
+                        <img
+                          src={packArtUrl}
+                          alt={`${set.name} booster pack`}
+                          className="set-image"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement
+                            target.style.display = 'none'
+                          }}
+                        />
+                      </div>
+                      <div className="set-info">
+                        <h4>{set.code}</h4>
+                        <span className="set-card-count">Soon</span>
+                      </div>
+                    </div>
+                  )
+                }
+
                 const isSelected = (data.setCodes || []).includes(set.code)
                 const packArtUrl = set.imageUrl || getPackArtUrl(set.code)
                 const setColor = getSetColor(set.code)
@@ -1052,6 +1125,13 @@ export default function RotisseriePlayPage() {
               <p className="no-sets-warning">Select at least one set to start the draft</p>
             )}
           </div>
+          <SubscribeModal
+            isOpen={teaserModalOpen}
+            onClose={() => setTeaserModalOpen(false)}
+            {...buildTeaserModalCopy(teaserState, teaserModalSet?.name ?? '')}
+            setCode={teaserModalSet?.code}
+            surface="setPreview"
+          />
 
           <div className="lobby-columns">
             <div className="lobby-left">

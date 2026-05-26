@@ -3,6 +3,7 @@
 
 import { getCardsBySet, hasCardsForSet, hasRealCardsForSet } from './cardData'
 import { getPackArtUrl } from './packArt'
+import { getUpcomingSetForPeek } from './membership'
 import type { RawCard } from './cardData'
 
 interface SetInfo {
@@ -12,6 +13,13 @@ interface SetInfo {
   releaseDate: string
   carbonite?: boolean
   imageUrl: string | null
+  /**
+   * Marker for the "Coming Soon" teaser card injected by peekUnreleased.
+   * Set when the set is sourced from src/utils/setConfigs/ via
+   * getUpcomingSetForPeek() rather than from knownSets. Consumers render
+   * this as a non-selectable teaser that opens SubscribeModal on click.
+   */
+  comingSoon?: boolean
 }
 
 /**
@@ -35,6 +43,14 @@ export function isSetPrerelease(set: { prereleaseDate?: string; releaseDate?: st
 interface FetchSetsOptions {
   includeBeta?: boolean
   includeCarbonite?: boolean
+  /**
+   * Append a single "Coming Soon" teaser for the next unreleased set,
+   * sourced from src/utils/setConfigs/ (bypasses isSetVisibleInCatalog's
+   * hasRealCardsForSet gate). The injected entry has comingSoon: true so
+   * the picker UI can render it as a non-selectable teaser. Skipped when
+   * getUpcomingSetForPeek() returns null (no upcoming set configured).
+   */
+  peekUnreleased?: boolean
 }
 
 export function isSetVisibleInCatalog(set: { code: string }): boolean {
@@ -51,8 +67,18 @@ export function isSetVisibleInCatalog(set: { code: string }): boolean {
  * @param options - Options
  * @param options.includeBeta - Include beta sets (default: false)
  * @param options.includeCarbonite - Include Carbonite pack entries (default: false)
+ * @param options.peekUnreleased - Append a "Coming Soon" teaser for the
+ *   next unreleased set from src/utils/setConfigs/ (default: false). The
+ *   appended entry has comingSoon: true so callers can render it as a
+ *   non-selectable teaser that opens SubscribeModal on click. Skipped if
+ *   getUpcomingSetForPeek() returns null. Skipped if the upcoming set is
+ *   already present (subs/beta-testers don't see a duplicate ASH).
  */
-export async function fetchSets({ includeBeta = false, includeCarbonite = false }: FetchSetsOptions = {}): Promise<SetInfo[]> {
+export async function fetchSets({
+  includeBeta = false,
+  includeCarbonite = false,
+  peekUnreleased = false,
+}: FetchSetsOptions = {}): Promise<SetInfo[]> {
   // Use hardcoded set data for the expansion sets
   // External API calls fail due to CORS, so we use local data
   const knownSets = [
@@ -84,10 +110,32 @@ export async function fetchSets({ includeBeta = false, includeCarbonite = false 
   // otherwise let them through. ASH has a stricter real-card gate above.
   filteredSets = filteredSets.filter((set) => hasCardsForSet(set.code))
 
-  return filteredSets.map((set) => ({
+  const mapped: SetInfo[] = filteredSets.map((set) => ({
     ...set,
     imageUrl: getPackArtUrl(set.code),
   }))
+
+  // Append the "Coming Soon" teaser for the next unreleased set, sourced
+  // from src/utils/setConfigs/ (not knownSets). This bypasses the
+  // isSetVisibleInCatalog hasRealCardsForSet gate that would otherwise drop
+  // ASH today. The teaser is appended only when the upcoming set isn't
+  // already present in the catalog (so subs / beta-testers don't see a
+  // duplicate ASH card).
+  if (peekUnreleased) {
+    const upcoming = getUpcomingSetForPeek()
+    if (upcoming && !mapped.some((s) => s.code === upcoming.setCode)) {
+      mapped.push({
+        code: upcoming.setCode,
+        name: upcoming.setName,
+        prereleaseDate: upcoming.prereleaseDate,
+        releaseDate: upcoming.releaseDate,
+        imageUrl: getPackArtUrl(upcoming.setCode),
+        comingSoon: true,
+      })
+    }
+  }
+
+  return mapped
 }
 
 /**

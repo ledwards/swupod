@@ -609,6 +609,51 @@
   text-transform: uppercase;
 }
 
+/* "Coming Soon" teaser variant for the rotisserie inline picker */
+.set-card.set-card--coming-soon {
+  cursor: pointer;
+  opacity: 0.78;
+  border-color: rgba(33, 150, 243, 0.5);
+}
+
+.set-card.set-card--coming-soon .set-image {
+  filter: grayscale(40%) brightness(0.7);
+  transition: filter 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .set-card.set-card--coming-soon:hover {
+    opacity: 1;
+    border-color: rgba(33, 150, 243, 0.9);
+    transform: translateY(-2px);
+  }
+  .set-card.set-card--coming-soon:hover .set-image {
+    filter: none;
+  }
+}
+
+.set-card .coming-soon-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: linear-gradient(135deg, rgb(33, 150, 243) 0%, rgb(100, 181, 246) 100%);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 2px 4px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* icon + text spacing per feedback_button_icon_spacing */
+  box-shadow: 0 2px 6px rgba(33, 150, 243, 0.45);
+}
+
+.set-card .coming-soon-badge svg {
+  display: block;
+}
+
 .set-image-container {
   width: 100%;
   aspect-ratio: 0.7;

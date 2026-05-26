@@ -11,11 +11,14 @@
  * Displays packs in a grid that fits 6 per row on desktop, 3 on mobile.
  */
 
+import { useState } from 'react'
 import { getPackImageUrl } from '@/src/utils/packArt'
 import { getSetConfig } from '@/src/utils/setConfigs'
 import { isSetBeta, isSetPrerelease } from '@/src/utils/api'
 import { getBaseCode, sortSetsForDisplay } from '@/src/utils/packSelectorSort'
 import type { SetData } from '@/src/utils/packSelectorSort'
+import SubscribeModal from './SubscribeModal'
+import { buildTeaserModalCopy } from './setSelectionTeaser'
 import './PackSelector.css'
 
 // Get set color from config
@@ -36,6 +39,15 @@ export interface PackSelectorProps {
   /** Whether to show +/- buttons for multi-select */
   showQuantityControls?: boolean
   title?: string
+  /**
+   * When the parent passes a sets list that includes a comingSoon entry
+   * (via fetchSets({ peekUnreleased: true })), set this to control which
+   * SubscribeModal CTA fires on teaser click:
+   *   undefined or 'patreon' -> Patreon URL CTA (anon/non-sub)
+   *   'beta' -> /beta CTA (patron-without-beta state)
+   * The set comingSoon flag is honored regardless; this only controls CTA copy.
+   */
+  peekUnreleased?: 'patreon' | 'beta' | false
 }
 
 export function PackSelector({
@@ -47,8 +59,12 @@ export function PackSelector({
   maxSelections = 1,
   showQuantityControls = false,
   title = 'Select a Set',
+  peekUnreleased = false,
 }: PackSelectorProps) {
   const isMultiSelect = maxSelections > 1
+  const [teaserModalOpen, setTeaserModalOpen] = useState(false)
+  const [teaserModalSet, setTeaserModalSet] = useState<SetData | null>(null)
+  const isPatronNoBeta = peekUnreleased === 'beta'
 
   // Count how many times each set is selected (for multi-select)
   const getSetCount = (setCode: string) => {
@@ -91,7 +107,43 @@ export function PackSelector({
 
   const sortedSets = sortSetsForDisplay(sets)
 
+  const handleTeaserClick = (set: SetData) => {
+    setTeaserModalSet(set)
+    setTeaserModalOpen(true)
+  }
+
   const renderSetButton = (set: SetData) => {
+    // "Coming Soon" teaser variant for unreleased sets injected by peekUnreleased.
+    if (set.comingSoon) {
+      const setColor = getSetColor(set.code)
+      const packImageUrl = getPackImageUrl(set.code)
+      return (
+        <div
+          key={set.code}
+          role="button"
+          tabIndex={0}
+          className="pack-selector-button pack-selector-button--coming-soon"
+          onClick={() => handleTeaserClick(set)}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleTeaserClick(set) }}
+          aria-label={`${set.name} — Coming Soon. Subscribe for early access.`}
+          style={{
+            '--set-color': setColor,
+          } as React.CSSProperties}
+        >
+          <div className="pack-selector-image">
+            <img src={packImageUrl} alt={set.name} />
+          </div>
+          <div className="pack-selector-content">
+            <span className="pack-selector-name">{set.name}</span>
+          </div>
+          <span className="pack-selector-coming-soon-badge">
+            <LockIconSm />
+            <span>Coming Soon</span>
+          </span>
+        </div>
+      )
+    }
+
     const isSelected = isMultiSelect ? getSetCount(set.code) > 0 : selectedSet === set.code
     const count = getSetCount(set.code)
     const setColor = getSetColor(set.code)
@@ -154,7 +206,27 @@ export function PackSelector({
           {sortedSets.carbonite.map(renderSetButton)}
         </div>
       )}
+      <SubscribeModal
+        isOpen={teaserModalOpen}
+        onClose={() => setTeaserModalOpen(false)}
+        {...buildTeaserModalCopy(
+          isPatronNoBeta ? 'patronNoBeta' : 'nonSub',
+          teaserModalSet?.name ?? '',
+        )}
+        setCode={teaserModalSet?.code}
+        surface="setPreview"
+      />
     </div>
+  )
+}
+
+// Small inline lock icon — local so PackSelector stays self-contained.
+function LockIconSm() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
   )
 }
 

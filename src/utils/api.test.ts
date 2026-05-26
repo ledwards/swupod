@@ -94,6 +94,48 @@ describe('fetchSets', () => {
       }
     })
   })
+
+  describe('peekUnreleased option (U3)', () => {
+    it('SPEC: appends the next unreleased set as a comingSoon teaser when peekUnreleased=true', async () => {
+      // Today (2026-05-26) ASH is unreleased. fetchSets() filters ASH out
+      // via isSetVisibleInCatalog (hasRealCardsForSet gate), so the only
+      // path it can appear is the setConfigs-sourced peek injection.
+      const sets = await fetchSets({ peekUnreleased: true })
+      const ash = sets.find(s => s.code === 'ASH')
+      assert.ok(ash, 'ASH teaser should be appended by peekUnreleased')
+      assert.strictEqual(ash.comingSoon, true, 'appended ASH should carry comingSoon: true')
+      assert.strictEqual(ash.name, 'Ashes of the Empire')
+      assert.ok(ash.imageUrl, 'ASH teaser should have an imageUrl (from getPackArtUrl)')
+    })
+
+    it('SPEC: does NOT append a teaser when peekUnreleased is omitted', async () => {
+      const sets = await fetchSets()
+      assert.ok(!sets.some(s => s.comingSoon), 'no teaser should appear without peekUnreleased')
+    })
+
+    it('SPEC: does NOT append a teaser when peekUnreleased is false', async () => {
+      const sets = await fetchSets({ peekUnreleased: false })
+      assert.ok(!sets.some(s => s.comingSoon), 'no teaser should appear when peekUnreleased=false')
+    })
+
+    it('SPEC: does NOT duplicate the upcoming set when it is already in the catalog', async () => {
+      // When includeBeta=true and ASH has real cards synced, ASH appears
+      // through the normal catalog path. The peek injection must skip it
+      // rather than rendering ASH twice.
+      const sets = await fetchSets({ includeBeta: true, peekUnreleased: true })
+      const ashEntries = sets.filter(s => s.code === 'ASH')
+      assert.ok(ashEntries.length <= 1, `ASH should appear at most once, got ${ashEntries.length}`)
+    })
+
+    it('SPEC: teaser entry surfaces prereleaseDate and releaseDate from setConfigs', async () => {
+      const sets = await fetchSets({ peekUnreleased: true })
+      const ash = sets.find(s => s.code === 'ASH' && s.comingSoon)
+      if (ash) {
+        assert.strictEqual(ash.prereleaseDate, '2026-07-10')
+        assert.strictEqual(ash.releaseDate, '2026-07-17')
+      }
+    })
+  })
 })
 
 // Run tests

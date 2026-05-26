@@ -13,6 +13,12 @@ export interface SetData {
   prereleaseDate?: string
   releaseDate?: string
   carbonite?: boolean
+  /**
+   * Marker for the "Coming Soon" teaser injected by
+   * fetchSets({ peekUnreleased: true }). Renderers should show a
+   * non-selectable teaser that opens SubscribeModal on click.
+   */
+  comingSoon?: boolean
 }
 
 /** Strip -CB suffix to get the base set code */

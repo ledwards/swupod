@@ -294,3 +294,83 @@
     font-size: 1.25rem;
   }
 }
+
+/* ---------------------------------------------------------------------------
+ * "Coming Soon" teaser card (sub-conversion surface)
+ *
+ * Rendered when fetchSets({ peekUnreleased: true }) appends a SetConfig-sourced
+ * set the user can't yet play (non-sub or patron-without-beta). Click opens
+ * SubscribeModal instead of selecting the set.
+ *
+ * Visually dimmed + lock icon. Blue "Coming Soon" badge distinguishes from
+ * orange Beta and gold Pre-Release badges. Hover styles are wrapped in the
+ * mobile guard per .claude/rules/mobile.md.
+ * ------------------------------------------------------------------------- */
+.set-card--coming-soon {
+  cursor: pointer;
+  opacity: 0.78;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.set-card--coming-soon .set-image,
+.set-card--coming-soon .set-image-placeholder {
+  filter: grayscale(40%) brightness(0.7);
+  transition: filter 0.3s ease;
+}
+
+.set-card--coming-soon::before {
+  /* Replace the rainbow gradient with a calmer blue glow */
+  background: linear-gradient(
+    45deg,
+    rgba(33, 150, 243, 0.85),
+    rgba(100, 181, 246, 0.85),
+    rgba(33, 150, 243, 0.85)
+  ) !important;
+  background-size: 400% 400% !important;
+  opacity: 0.4 !important;
+  animation: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .set-card--coming-soon:hover {
+    opacity: 1;
+  }
+  .set-card--coming-soon:hover::before {
+    opacity: 1 !important;
+  }
+  .set-card--coming-soon:hover .set-image,
+  .set-card--coming-soon:hover .set-image-placeholder {
+    filter: none;
+  }
+}
+
+.set-card--coming-soon .coming-soon-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: linear-gradient(135deg, rgb(33, 150, 243) 0%, rgb(100, 181, 246) 100%);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  z-index: 10;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.45);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* icon + text spacing per feedback_button_icon_spacing */
+}
+
+.set-card--coming-soon .coming-soon-badge svg {
+  display: block;
+}
+
+.set-card-coming-soon-note {
+  color: rgba(100, 181, 246, 0.95);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
