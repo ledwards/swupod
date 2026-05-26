@@ -12,6 +12,7 @@
 
 import { SET_CONFIGS, getSetConfig } from './setConfigs/index'
 import type { SetConfig } from './setConfigs/index'
+import { hasRealCardsForSet } from './cardData'
 
 // ---------- Pricing constants ----------
 
@@ -61,9 +62,11 @@ export function formatMembershipPrice(): string {
 }
 
 /**
- * Returns true when the given set has not yet been released — used by the
- * pod-marketing banner (U6) and as the unified upcoming-set predicate
- * across all three conversion surfaces.
+ * Returns true when the given set has not yet been released AND at least
+ * one real (non-placeholder) card has been synced. Gated on real-card
+ * existence so the conversion surfaces (set-picker teaser, homepage
+ * banner, pod banner) all silently turn off until ASH's first real card
+ * lands — and light up automatically the moment it does.
  *
  * Accepts either a set code (string) or a SetConfig object. Unknown set
  * codes return false.
@@ -74,17 +77,21 @@ export function isSetUpcoming(setCodeOrConfig: string | SetConfig | null | undef
     ? getSetConfig(setCodeOrConfig.replace('-CB', ''))
     : setCodeOrConfig
   if (!config?.releaseDate) return false
-  return new Date().toISOString() < new Date(config.releaseDate + 'T00:00:00Z').toISOString()
+  const beforeRelease = new Date().toISOString() < new Date(config.releaseDate + 'T00:00:00Z').toISOString()
+  if (!beforeRelease) return false
+  return hasRealCardsForSet(config.setCode)
 }
 
 /**
  * Pick the next unreleased set for the set-picker "Coming Soon" teaser.
  *
- * Sources from src/utils/setConfigs/ (not src/utils/api.ts's knownSets) so
- * the teaser bypasses isSetVisibleInCatalog's hasRealCardsForSet gate.
+ * Sources from src/utils/setConfigs/ (not src/utils/api.ts's knownSets).
+ * Gated on `hasRealCardsForSet` so the teaser only appears once at least
+ * one real card has been synced — aligns the marketing surface with
+ * actual content availability. Returns null until then.
+ *
  * Returns the set with the smallest prereleaseDate strictly greater than
- * now, excluding Carbonite sibling codes. Returns null when nothing is
- * upcoming.
+ * now, excluding Carbonite sibling codes.
  */
 export function getUpcomingSetForPeek(now: Date = new Date()): SetConfig | null {
   const nowIso = now.toISOString()
@@ -95,6 +102,7 @@ export function getUpcomingSetForPeek(now: Date = new Date()): SetConfig | null 
     if (!config.prereleaseDate) continue
     const pre = new Date(config.prereleaseDate + 'T00:00:00Z').toISOString()
     if (pre <= nowIso) continue
+    if (!hasRealCardsForSet(config.setCode)) continue
     if (!best || pre < new Date(best.prereleaseDate + 'T00:00:00Z').toISOString()) {
       best = config
     }
@@ -125,6 +133,7 @@ export function getUpcomingSetForPromo(now: Date = new Date()): SetConfig | null
     if (release <= nowIso) continue
     const preMs = new Date(config.prereleaseDate + 'T00:00:00Z').getTime()
     if (preMs - now.getTime() > windowMs) continue
+    if (!hasRealCardsForSet(config.setCode)) continue
     if (!best || release < new Date(best.releaseDate + 'T00:00:00Z').toISOString()) {
       best = config
     }

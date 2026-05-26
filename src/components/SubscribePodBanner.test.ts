@@ -18,11 +18,16 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import { shouldShowPodBanner } from './subscribePodBannerGate'
+import { hasRealCardsForSet } from '../utils/cardData'
 
-// ASH is upcoming as of 2026-05-26 (prerelease 2026-07-10, release 2026-07-17).
-// SOR released 2024-03-08. These are stable, real-data anchors.
+// ASH is upcoming as of 2026-05-26 (prerelease 2026-07-10, release 2026-07-17),
+// BUT isSetUpcoming is gated on hasRealCardsForSet — so until the first real
+// ASH card lands, the predicate treats ASH as not-upcoming. The tests below
+// branch on hasRealCardsForSet so they stay green through the spoiler-sync
+// lifecycle (today: gate closed; after first card: gate open).
 const UPCOMING_SET = 'ASH'
 const RELEASED_SET = 'SOR'
+const ASH_REAL_CARDS_SYNCED = hasRealCardsForSet('ASH')
 
 describe('shouldShowPodBanner — loading state', () => {
   it('SPEC: isPatron === null returns show:false (no flash on resolution)', () => {
@@ -37,14 +42,18 @@ describe('shouldShowPodBanner — loading state', () => {
 })
 
 describe('shouldShowPodBanner — non-sub joining unreleased-set pod', () => {
-  it('SPEC: non-sub on upcoming-set pod renders subscribe variant', () => {
+  it('SPEC: non-sub on upcoming-set pod renders subscribe variant (only after first real card)', () => {
     const result = shouldShowPodBanner({
       isPatron: false,
       isBetaTester: false,
       setCode: UPCOMING_SET,
       sessionDismissed: false,
     })
-    assert.deepStrictEqual(result, { show: true, variant: 'subscribe' })
+    if (ASH_REAL_CARDS_SYNCED) {
+      assert.deepStrictEqual(result, { show: true, variant: 'subscribe' })
+    } else {
+      assert.deepStrictEqual(result, { show: false })
+    }
   })
 
   it('SPEC: non-sub on RELEASED-set pod renders nothing', () => {
@@ -71,14 +80,18 @@ describe('shouldShowPodBanner — patron-with-beta', () => {
 })
 
 describe('shouldShowPodBanner — patron-without-beta', () => {
-  it('SPEC: patron without beta enrollment renders softer "activate" variant', () => {
+  it('SPEC: patron without beta enrollment renders softer "activate" variant (only after first real card)', () => {
     const result = shouldShowPodBanner({
       isPatron: true,
       isBetaTester: false,
       setCode: UPCOMING_SET,
       sessionDismissed: false,
     })
-    assert.deepStrictEqual(result, { show: true, variant: 'activate' })
+    if (ASH_REAL_CARDS_SYNCED) {
+      assert.deepStrictEqual(result, { show: true, variant: 'activate' })
+    } else {
+      assert.deepStrictEqual(result, { show: false })
+    }
   })
 
   it('SPEC: patron without beta on RELEASED-set renders nothing', () => {
@@ -151,14 +164,18 @@ describe('shouldShowPodBanner — Carbonite siblings', () => {
   // predicate receives the already-stripped code. We document this with a
   // direct call using 'ASH' (the post-strip form) and confirm the component
   // surface contract by exercising isSetUpcoming with -CB in membership tests.
-  it('SPEC: predicate receives the post-strip ASH and renders subscribe variant', () => {
+  it('SPEC: predicate receives the post-strip ASH and renders subscribe variant (only after first real card)', () => {
     const result = shouldShowPodBanner({
       isPatron: false,
       isBetaTester: false,
       setCode: 'ASH',
       sessionDismissed: false,
     })
-    assert.deepStrictEqual(result, { show: true, variant: 'subscribe' })
+    if (ASH_REAL_CARDS_SYNCED) {
+      assert.deepStrictEqual(result, { show: true, variant: 'subscribe' })
+    } else {
+      assert.deepStrictEqual(result, { show: false })
+    }
   })
 })
 

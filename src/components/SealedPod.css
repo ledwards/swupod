@@ -589,11 +589,33 @@
   padding: 1rem;
   background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
   text-align: center;
+  gap: 0.35rem;
+}
+
+/* Spoiler-placeholder treatment: gold accent so users can tell at a glance
+   that this card is a placeholder (real card art not yet synced), distinct
+   from "missing image" on a known card. Mirrors DraftableCard.css. */
+.card-item.placeholder-card .card-placeholder {
+  background: linear-gradient(135deg, #181818 0%, #2f2a21 100%);
+  border: 1px solid rgba(247, 200, 115, 0.35);
+}
+
+.placeholder-badge {
+  font-size: 0.62rem;
+  color: #f7c873;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.placeholder-details {
+  font-size: 0.65rem;
+  line-height: 1.2;
+  color: #d7d7d7;
 }
 
 .card-name {
   font-size: 0.85rem;
-  margin-bottom: 0.5rem;
   color: white;
   font-weight: 600;
 }

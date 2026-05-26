@@ -40,25 +40,28 @@ describe('fetchSets', () => {
       assert.ok(!sets.find(s => s.code === 'ASH'), 'ASH should not be visible by default')
     })
 
-    it('should only include ASH for beta users after at least one real ASH card is synced', async () => {
+    it('SPEC: ASH visible to beta users only after at least one real card is synced', async () => {
+      // Gate: hasRealCardsForSet('ASH'). Until a single real ASH card
+      // lands, all sub-conversion surfaces (picker teaser, homepage
+      // banner, pod banner) stay dark. The instant the first real card
+      // is synced, beta users get ASH as a normal beta-badged card and
+      // non-subs get the Coming Soon teaser.
       const sets = await fetchSets({ includeBeta: true })
       const setCodes = sets.map(s => s.code)
-
       if (hasRealCardsForSet('ASH')) {
-        assert.ok(setCodes.includes('ASH'), 'ASH should be visible to beta users after spoiler sync')
+        assert.ok(setCodes.includes('ASH'), 'ASH should be visible after spoiler sync')
       } else {
-        assert.ok(!setCodes.includes('ASH'), 'ASH should stay hidden until a real ASH card is synced')
+        assert.ok(!setCodes.includes('ASH'), 'ASH should stay hidden until first real card lands')
       }
     })
 
-    it('should only include ASH carbonite after at least one real ASH card is synced', async () => {
+    it('SPEC: ASH-CB visible to beta users only after at least one real card is synced', async () => {
       const sets = await fetchSets({ includeBeta: true, includeCarbonite: true })
       const setCodes = sets.map(s => s.code)
-
       if (hasRealCardsForSet('ASH')) {
-        assert.ok(setCodes.includes('ASH-CB'), 'ASH-CB should be visible when ASH has real card data')
+        assert.ok(setCodes.includes('ASH-CB'), 'ASH-CB should be visible after spoiler sync')
       } else {
-        assert.ok(!setCodes.includes('ASH-CB'), 'ASH-CB should remain hidden until a real ASH card is synced')
+        assert.ok(!setCodes.includes('ASH-CB'), 'ASH-CB should stay hidden until first real card lands')
       }
     })
   })
@@ -96,16 +99,19 @@ describe('fetchSets', () => {
   })
 
   describe('peekUnreleased option (U3)', () => {
-    it('SPEC: appends the next unreleased set as a comingSoon teaser when peekUnreleased=true', async () => {
-      // Today (2026-05-26) ASH is unreleased. fetchSets() filters ASH out
-      // via isSetVisibleInCatalog (hasRealCardsForSet gate), so the only
-      // path it can appear is the setConfigs-sourced peek injection.
+    it('SPEC: appends the next unreleased set as a comingSoon teaser ONLY after first real card lands', async () => {
+      // Gate: hasRealCardsForSet. Today (0 real ASH cards) peekUnreleased
+      // returns nothing. After spoiler sync, ASH appears as a teaser.
       const sets = await fetchSets({ peekUnreleased: true })
       const ash = sets.find(s => s.code === 'ASH')
-      assert.ok(ash, 'ASH teaser should be appended by peekUnreleased')
-      assert.strictEqual(ash.comingSoon, true, 'appended ASH should carry comingSoon: true')
-      assert.strictEqual(ash.name, 'Ashes of the Empire')
-      assert.ok(ash.imageUrl, 'ASH teaser should have an imageUrl (from getPackArtUrl)')
+      if (hasRealCardsForSet('ASH')) {
+        assert.ok(ash, 'ASH teaser should appear after spoiler sync')
+        assert.strictEqual(ash.comingSoon, true, 'appended ASH should carry comingSoon: true')
+        assert.strictEqual(ash.name, 'Ashes of the Empire')
+        assert.ok(ash.imageUrl, 'ASH teaser should have an imageUrl (from getPackArtUrl)')
+      } else {
+        assert.ok(!ash, 'ASH teaser should stay hidden until first real card lands')
+      }
     })
 
     it('SPEC: does NOT append a teaser when peekUnreleased is omitted', async () => {
@@ -119,8 +125,8 @@ describe('fetchSets', () => {
     })
 
     it('SPEC: does NOT duplicate the upcoming set when it is already in the catalog', async () => {
-      // When includeBeta=true and ASH has real cards synced, ASH appears
-      // through the normal catalog path. The peek injection must skip it
+      // When ASH has real cards AND includeBeta=true, ASH appears once
+      // through the normal catalog path. The peek injection skips it
       // rather than rendering ASH twice.
       const sets = await fetchSets({ includeBeta: true, peekUnreleased: true })
       const ashEntries = sets.filter(s => s.code === 'ASH')

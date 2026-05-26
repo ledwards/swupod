@@ -428,7 +428,7 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
               {pack.cards.map((card, cardIndex) => (
                 <div
                   key={cardIndex}
-                  className={`card-item ${card.isLeader || card.type === 'Leader' ? 'leader' : ''} ${card.isBase || card.type === 'Base' ? 'base' : ''} ${card.isFoil ? 'foil' : ''} ${card.isHyperspace ? 'hyperspace' : ''} ${card.isShowcase ? 'showcase' : ''}`}
+                  className={`card-item ${card.isLeader || card.type === 'Leader' ? 'leader' : ''} ${card.isBase || card.type === 'Base' ? 'base' : ''} ${card.isFoil ? 'foil' : ''} ${card.isHyperspace ? 'hyperspace' : ''} ${card.isShowcase ? 'showcase' : ''} ${card.isPlaceholder ? 'placeholder-card' : ''}`}
 
                   onMouseEnter={(e) => {
                     // DISABLE enlarged preview on mobile/touch devices
@@ -517,7 +517,22 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
                     />
                   ) : (
                     <div className="card-placeholder">
-                      <div className="card-name">{card.name || 'Card'}</div>
+                      {card.isPlaceholder && (
+                        <div className="placeholder-badge">Unknown</div>
+                      )}
+                      <div className="card-name">
+                        {card.name || card.placeholderBucketLabel || 'Card'}
+                      </div>
+                      {card.isPlaceholder && (
+                        <div className="placeholder-details">
+                          {[
+                            card.type && card.type !== 'Unknown' ? card.type : null,
+                            ...(card.aspects || []),
+                          ]
+                            .filter(Boolean)
+                            .join(' · ')}
+                        </div>
+                      )}
                       <div className="card-rarity" style={{ color: getRarityColor(card.rarity) }}>
                         {card.rarity}
                       </div>
