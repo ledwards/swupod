@@ -6,12 +6,23 @@ const CAMPAIGN_ID = process.env['PATREON_CAMPAIGN_ID']
 
 const PATREON_API_BASE = 'https://www.patreon.com/api/oauth2/v2'
 
-interface PatreonMember {
+export interface PatreonMember {
   patreonUserId: string
   fullName: string | null
   email: string | null
   patronStatus: string | null
   discordUserId: string | null
+  /**
+   * Currently-entitled pledge amount in cents. Null when Patreon doesn't return
+   * a value (free trial mid-flow, etc.). Source of truth for the per-patron
+   * snapshot used by the grandfathering audit trail.
+   */
+  pledgeAmountCents: number | null
+  /**
+   * ISO 8601 timestamp of when this patron's pledge relationship started.
+   * Used to identify pre-raise (legacy) supporters for dispute resolution.
+   */
+  pledgeStartedAt: string | null
 }
 
 /**
@@ -29,7 +40,10 @@ export async function fetchAllPatrons(): Promise<PatreonMember[]> {
   do {
     const url = new URL(`${PATREON_API_BASE}/campaigns/${CAMPAIGN_ID}/members`)
     url.searchParams.set('include', 'user')
-    url.searchParams.set('fields[member]', 'full_name,email,patron_status')
+    url.searchParams.set(
+      'fields[member]',
+      'full_name,email,patron_status,currently_entitled_amount_cents,pledge_relationship_start',
+    )
     url.searchParams.set('fields[user]', 'social_connections')
     url.searchParams.set('page[count]', '100')
     if (cursor) {
@@ -64,12 +78,19 @@ export async function fetchAllPatrons(): Promise<PatreonMember[]> {
     if (Array.isArray(data.data)) {
       for (const member of data.data) {
         const userId = member.relationships?.user?.data?.id
+        const rawPledgeCents = member.attributes?.currently_entitled_amount_cents
+        const pledgeAmountCents =
+          typeof rawPledgeCents === 'number' && Number.isFinite(rawPledgeCents) ? rawPledgeCents : null
+        const rawPledgeStart = member.attributes?.pledge_relationship_start
+        const pledgeStartedAt = typeof rawPledgeStart === 'string' && rawPledgeStart.length > 0 ? rawPledgeStart : null
         members.push({
           patreonUserId: userId || member.id,
           fullName: member.attributes?.full_name || null,
           email: member.attributes?.email || null,
           patronStatus: member.attributes?.patron_status || null,
           discordUserId: userId ? (userSocials.get(userId) || null) : null,
+          pledgeAmountCents,
+          pledgeStartedAt,
         })
       }
     }
