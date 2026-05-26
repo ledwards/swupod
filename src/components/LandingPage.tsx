@@ -1,15 +1,27 @@
 // @ts-nocheck
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../contexts/AuthContext'
 import { usePresence } from '../hooks/usePresence'
 import { usePublicPodsSocket } from '../hooks/usePublicPodsSocket'
 import { formatPoolLabel } from '../utils/poolDisplayName'
-import { PATREON_URL } from '../utils/membership'
+import {
+  PATREON_URL,
+  getUpcomingSetForPromo,
+  isWithinLockInWindow,
+  LOCK_IN_WINDOW_END_DATE,
+} from '../utils/membership'
+import {
+  selectHomepagePromoVariant,
+  lockInDismissalKey,
+  promoDismissalKey,
+  type PromoVariant,
+} from './landingPagePromo'
 import ReleaseNotes from './ReleaseNotes'
 import Button from './Button'
+import SubscribeModal from './SubscribeModal'
 import './LandingPage.css'
 
 // Card art for mode buttons (hover reveal)
@@ -40,10 +52,28 @@ interface ActiveSealedPod {
 }
 
 function LandingPage() {
-  const { user, loading, signIn } = useAuth()
+  const { user, loading, signIn, isPatron } = useAuth()
   const hasBetaAccess = user?.is_beta_tester || user?.is_admin
   const router = useRouter()
   const [wasRemoved, setWasRemoved] = useState(false)
+
+  // Homepage promo banner state (U5)
+  const upcomingSet = useMemo(() => getUpcomingSetForPromo(), [])
+  const [lockInDismissed, setLockInDismissed] = useState(false)
+  const [promoDismissed, setPromoDismissed] = useState(false)
+  const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(false)
+
+  // Read dismissal flags from localStorage on mount (client-only — avoid SSR mismatch).
+  useEffect(() => {
+    const lockKey = lockInDismissalKey(LOCK_IN_WINDOW_END_DATE)
+    if (lockKey && typeof window !== 'undefined' && localStorage.getItem(lockKey)) {
+      setLockInDismissed(true)
+    }
+    const promoKey = promoDismissalKey(upcomingSet?.setCode)
+    if (promoKey && typeof window !== 'undefined' && localStorage.getItem(promoKey)) {
+      setPromoDismissed(true)
+    }
+  }, [upcomingSet?.setCode])
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -123,8 +153,162 @@ function LandingPage() {
     checkActiveSealedPods()
   }, [user, loading])
 
+  const hasActiveDraft = Boolean(activeDraft || activeSealedPod)
+  const promoVariant: PromoVariant = selectHomepagePromoVariant({
+    hasActiveDraft,
+    withinLockInWindow: isWithinLockInWindow(),
+    upcomingSet,
+    isPatron,
+    isBetaTester: Boolean(user?.is_beta_tester),
+    lockInDismissed,
+    promoDismissedForSet: promoDismissed,
+  })
+
+  const setName = upcomingSet?.setName ?? upcomingSet?.setCode ?? null
+  const setCode = upcomingSet?.setCode ?? null
+
+  const handleDismissLockIn = () => {
+    const lockKey = lockInDismissalKey(LOCK_IN_WINDOW_END_DATE)
+    if (lockKey && typeof window !== 'undefined') {
+      try { localStorage.setItem(lockKey, '1') } catch { /* localStorage disabled */ }
+    }
+    setLockInDismissed(true)
+  }
+
+  const handleDismissPromo = () => {
+    const promoKey = promoDismissalKey(setCode)
+    if (promoKey && typeof window !== 'undefined') {
+      try { localStorage.setItem(promoKey, '1') } catch { /* localStorage disabled */ }
+    }
+    setPromoDismissed(true)
+  }
+
+  // Compute modal headline + CTA overrides per variant. Patron activation does
+  // NOT use the modal (CTA goes straight to /draft/new).
+  let modalHeadline = ''
+  let modalCtaUrl: string | undefined = undefined
+  let modalCtaLabel: string | undefined = undefined
+  let modalSurface: 'homepageBanner' | 'lockInBanner' | undefined = undefined
+  if (promoVariant === 'lockIn') {
+    modalHeadline = 'Lock in the old rate before the raise'
+    modalSurface = 'lockInBanner'
+  } else if (promoVariant === 'nonSubConversion' && setName) {
+    modalHeadline = `Be the first to draft ${setName}`
+    modalSurface = 'homepageBanner'
+  } else if (promoVariant === 'patronNoBeta' && setName) {
+    modalHeadline = `Be the first to draft ${setName}`
+    modalCtaUrl = '/beta'
+    modalCtaLabel = 'Enroll in Beta'
+    modalSurface = 'homepageBanner'
+  }
+
   return (
     <div className="landing-page">
+      {promoVariant === 'lockIn' && LOCK_IN_WINDOW_END_DATE && (
+        <div className="lock-in-banner" role="region" aria-label="Lock in the current membership price">
+          <span className="lock-in-banner-copy">
+            Lock in $5/month before {LOCK_IN_WINDOW_END_DATE} — price rises to $9.
+          </span>
+          <Button
+            variant="primary"
+            size="sm"
+            className="lock-in-banner-cta"
+            onClick={() => setIsSubscribeModalOpen(true)}
+          >
+            Lock In
+          </Button>
+          <Button
+            variant="icon"
+            size="sm"
+            className="lock-in-banner-dismiss"
+            aria-label="Dismiss banner"
+            onClick={handleDismissLockIn}
+          >
+            ×
+          </Button>
+        </div>
+      )}
+      {promoVariant === 'nonSubConversion' && setName && (
+        <div className="next-set-promo-banner" role="region" aria-label={`Early access to ${setName}`}>
+          <span className="next-set-promo-banner-copy">
+            Get early access to {setName} — Become a member · $9/month.
+          </span>
+          <Button
+            variant="primary"
+            size="sm"
+            className="next-set-promo-banner-cta"
+            onClick={() => setIsSubscribeModalOpen(true)}
+          >
+            Become a Member
+          </Button>
+          <Button
+            variant="icon"
+            size="sm"
+            className="next-set-promo-banner-dismiss"
+            aria-label="Dismiss banner"
+            onClick={handleDismissPromo}
+          >
+            ×
+          </Button>
+        </div>
+      )}
+      {promoVariant === 'patronNoBeta' && setName && (
+        <div className="next-set-promo-banner" role="region" aria-label={`Early access to ${setName}`}>
+          <span className="next-set-promo-banner-copy">
+            Get early access to {setName} — Enroll in beta.
+          </span>
+          <Button
+            variant="primary"
+            size="sm"
+            className="next-set-promo-banner-cta"
+            onClick={() => setIsSubscribeModalOpen(true)}
+          >
+            Enroll in Beta
+          </Button>
+          <Button
+            variant="icon"
+            size="sm"
+            className="next-set-promo-banner-dismiss"
+            aria-label="Dismiss banner"
+            onClick={handleDismissPromo}
+          >
+            ×
+          </Button>
+        </div>
+      )}
+      {promoVariant === 'patronActivation' && setName && (
+        <div className="next-set-promo-banner next-set-promo-banner--patron" role="region" aria-label={`${setName} early access live`}>
+          <span className="next-set-promo-banner-copy">
+            Your early access to {setName} is live — try a draft.
+          </span>
+          <Button
+            variant="primary"
+            size="sm"
+            className="next-set-promo-banner-cta"
+            onClick={() => router.push('/draft/new')}
+          >
+            Try a Draft
+          </Button>
+          <Button
+            variant="icon"
+            size="sm"
+            className="next-set-promo-banner-dismiss"
+            aria-label="Dismiss banner"
+            onClick={handleDismissPromo}
+          >
+            ×
+          </Button>
+        </div>
+      )}
+      <SubscribeModal
+        isOpen={isSubscribeModalOpen}
+        onClose={() => setIsSubscribeModalOpen(false)}
+        headline={modalHeadline}
+        setCode={modalSurface === 'homepageBanner' ? setCode ?? undefined : undefined}
+        ctaUrl={modalCtaUrl}
+        ctaLabel={modalCtaLabel}
+        surface={modalSurface}
+      />
       <ReleaseNotes />
       {wasRemoved && (
         <div className="removed-banner">You were removed from the pod by the host.</div>
