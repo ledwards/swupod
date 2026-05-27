@@ -1,9 +1,9 @@
 // @ts-nocheck
 // API utilities for fetching card/set data
 
-import { getCardsBySet, hasCardsForSet, hasRealCardsForSet } from './cardData'
+import { getCardsBySet, hasCardsForSet } from './cardData'
 import { getPackArtUrl } from './packArt'
-import { getUpcomingSetForPeek } from './membership'
+import { getUpcomingSetForPeek, hasUpcomingSetSpoilers } from './membership'
 import type { RawCard } from './cardData'
 
 interface SetInfo {
@@ -56,7 +56,7 @@ interface FetchSetsOptions {
 export function isSetVisibleInCatalog(set: { code: string }): boolean {
   const baseCode = set.code.replace('-CB', '')
   if (baseCode === 'ASH') {
-    return hasRealCardsForSet('ASH')
+    return hasUpcomingSetSpoilers('ASH')
   }
   return true
 }

@@ -167,6 +167,10 @@ function LandingPage() {
 
   const setName = upcomingSet?.setName ?? upcomingSet?.setCode ?? null
   const setCode = upcomingSet?.setCode ?? null
+  const setColor = upcomingSet?.color ?? null
+  // Accent style applied to the banner: thick left border in the set's
+  // color so each upcoming set has its own visual identity.
+  const promoBannerStyle = setColor ? { borderLeftColor: setColor } : undefined
 
   // U7 — track which banner variant the user actually saw. Fires once per
   // variant per session; downstream PostHog event already captures the user
@@ -249,17 +253,29 @@ function LandingPage() {
         </div>
       )}
       {promoVariant === 'nonSubConversion' && setName && (
-        <div className="next-set-promo-banner" role="region" aria-label={`Early access to ${setName}`}>
+        <div
+          className="next-set-promo-banner"
+          role="region"
+          aria-label={`Early access to ${setName}`}
+          style={promoBannerStyle}
+        >
           <span className="next-set-promo-banner-copy">
-            Get early access to {setName} — Become a member · $9/month.
+            Get early access to {setName}.
           </span>
           <Button
             variant="primary"
             size="sm"
             className="next-set-promo-banner-cta"
-            onClick={() => setIsSubscribeModalOpen(true)}
+            onClick={() => {
+              trackEvent(AnalyticsEvents.SUBSCRIBE_CTA_CLICKED, {
+                surface: 'homepageBanner',
+                setCode,
+                ctaUrl: '/support-the-pod',
+              })
+              router.push('/support-the-pod')
+            }}
           >
-            Become a Member
+            Support the Pod
           </Button>
           <Button
             variant="icon"
@@ -273,7 +289,12 @@ function LandingPage() {
         </div>
       )}
       {promoVariant === 'patronNoBeta' && setName && (
-        <div className="next-set-promo-banner" role="region" aria-label={`Early access to ${setName}`}>
+        <div
+          className="next-set-promo-banner"
+          role="region"
+          aria-label={`Early access to ${setName}`}
+          style={promoBannerStyle}
+        >
           <span className="next-set-promo-banner-copy">
             Get early access to {setName} — Enroll in beta.
           </span>
@@ -297,7 +318,12 @@ function LandingPage() {
         </div>
       )}
       {promoVariant === 'patronActivation' && setName && (
-        <div className="next-set-promo-banner next-set-promo-banner--patron" role="region" aria-label={`${setName} early access live`}>
+        <div
+          className="next-set-promo-banner next-set-promo-banner--patron"
+          role="region"
+          aria-label={`${setName} early access live`}
+          style={promoBannerStyle}
+        >
           <span className="next-set-promo-banner-copy">
             Your early access to {setName} is live — try a draft.
           </span>

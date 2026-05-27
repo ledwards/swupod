@@ -62,6 +62,17 @@ export function formatMembershipPrice(): string {
 }
 
 /**
+ * Single gate for whether upcoming-set surfaces (set-picker teaser, homepage
+ * promo banner, pod banner, catalog visibility) should be visible. Hits live
+ * data — returns true once at least one real card has been synced for the
+ * set, false until then. Centralized so it's one stub point for dev preview
+ * or tests instead of four scattered call sites.
+ */
+export function hasUpcomingSetSpoilers(setCode: string): boolean {
+  return hasRealCardsForSet(setCode)
+}
+
+/**
  * Returns true when the given set has not yet been released AND at least
  * one real (non-placeholder) card has been synced. Gated on real-card
  * existence so the conversion surfaces (set-picker teaser, homepage
@@ -79,7 +90,7 @@ export function isSetUpcoming(setCodeOrConfig: string | SetConfig | null | undef
   if (!config?.releaseDate) return false
   const beforeRelease = new Date().toISOString() < new Date(config.releaseDate + 'T00:00:00Z').toISOString()
   if (!beforeRelease) return false
-  return hasRealCardsForSet(config.setCode)
+  return hasUpcomingSetSpoilers(config.setCode)
 }
 
 /**
@@ -102,7 +113,7 @@ export function getUpcomingSetForPeek(now: Date = new Date()): SetConfig | null 
     if (!config.prereleaseDate) continue
     const pre = new Date(config.prereleaseDate + 'T00:00:00Z').toISOString()
     if (pre <= nowIso) continue
-    if (!hasRealCardsForSet(config.setCode)) continue
+    if (!hasUpcomingSetSpoilers(config.setCode)) continue
     if (!best || pre < new Date(best.prereleaseDate + 'T00:00:00Z').toISOString()) {
       best = config
     }
@@ -133,7 +144,7 @@ export function getUpcomingSetForPromo(now: Date = new Date()): SetConfig | null
     if (release <= nowIso) continue
     const preMs = new Date(config.prereleaseDate + 'T00:00:00Z').getTime()
     if (preMs - now.getTime() > windowMs) continue
-    if (!hasRealCardsForSet(config.setCode)) continue
+    if (!hasUpcomingSetSpoilers(config.setCode)) continue
     if (!best || release < new Date(best.releaseDate + 'T00:00:00Z').toISOString()) {
       best = config
     }

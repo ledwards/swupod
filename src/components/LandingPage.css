@@ -140,8 +140,11 @@ a.discord-cta:active {
   flex-wrap: wrap;
   gap: 12px;
   padding: 12px 20px;
-  background: rgba(33, 150, 243, 0.18);
-  border: 1px solid rgba(33, 150, 243, 0.55);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  /* Thick left accent — color is set via inline style from upcomingSet.color
+     (e.g., ASH = #8B0000). Fallback to blue when no setColor is available. */
+  border-left: 6px solid rgba(33, 150, 243, 0.85);
   border-radius: 8px;
   margin: 0.75rem auto 0;
   max-width: 1100px;
@@ -150,7 +153,7 @@ a.discord-cta:active {
 }
 
 .next-set-promo-banner-copy {
-  color: #cfe6ff;
+  color: rgba(255, 255, 255, 0.92);
   font-size: 1rem;
   font-family: 'Barlow', sans-serif;
 }
@@ -159,19 +162,42 @@ a.discord-cta:active {
   flex-shrink: 0;
 }
 
-.next-set-promo-banner-dismiss {
+/* Subtle dismiss — push to far right, transparent, no border, low-opacity glyph.
+   Overrides .btn--icon defaults from Button.css. */
+.next-set-promo-banner-dismiss.btn--icon,
+.lock-in-banner-dismiss.btn--icon {
   flex-shrink: 0;
-  margin-left: 4px;
+  margin-left: auto;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 1rem;
+  line-height: 1;
 }
 
-/* Patron activation: green-accent modifier to signal "your access is live". */
+@media (hover: hover) and (pointer: fine) {
+  .next-set-promo-banner-dismiss.btn--icon:hover:not(:disabled),
+  .lock-in-banner-dismiss.btn--icon:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: rgba(255, 255, 255, 0.85);
+    transform: none;
+  }
+}
+
+/* Patron activation: same shape as the conversion banner but lighter so
+   the "your access is live" tone reads differently. The left-border still
+   picks up the set's color via inline style. */
 .next-set-promo-banner--patron {
-  background: rgba(76, 175, 80, 0.18);
-  border-color: rgba(76, 175, 80, 0.55);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .next-set-promo-banner--patron .next-set-promo-banner-copy {
-  color: #c8ecca;
+  color: rgba(255, 255, 255, 0.88);
 }
 
 /* ---------- U5: Transient lock-in window banner ---------- */
@@ -212,11 +238,7 @@ a.discord-cta:active {
 
 @media (hover: hover) and (pointer: fine) {
   .next-set-promo-banner:hover {
-    border-color: rgba(33, 150, 243, 0.85);
-  }
-
-  .next-set-promo-banner--patron:hover {
-    border-color: rgba(76, 175, 80, 0.85);
+    border-color: rgba(255, 255, 255, 0.32);
   }
 
   .lock-in-banner:hover {
