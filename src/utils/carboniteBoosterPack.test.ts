@@ -296,13 +296,99 @@ async function runTests(): Promise<void> {
   })
 
   // ======================
+  // ASH tests — LAW+ shape via setNumber >= 7
+  // (Set 8, placeholder catalog; inherits LAW pack rules verbatim)
+  // ======================
+  console.log('')
+  console.log('\x1b[1m\x1b[35mASH+ Carbonite (LAW-shaped)\x1b[0m')
+
+  test('ASH-CB: pack has 16 cards', () => {
+    clearCarboniteBeltCache()
+    const pack = generateCarboniteBoosterPack('ASH-CB')
+    assertEqual(pack.cards.length, 16, `Expected 16 cards, got ${pack.cards.length}`)
+  })
+
+  test('ASH-CB: leader is Hyperspace or Showcase', () => {
+    clearCarboniteBeltCache()
+    const pack = generateCarboniteBoosterPack('ASH-CB')
+    const leader = pack.cards[0]
+    assert(leader.isLeader, 'First card should be a leader')
+    assert(
+      leader.isHyperspace || leader.isShowcase,
+      `Leader should be HS or Showcase`
+    )
+  })
+
+  test('ASH-CB: slot 1 is Prestige (proves LAW+ routing)', () => {
+    clearCarboniteBeltCache()
+    const pack = generateCarboniteBoosterPack('ASH-CB')
+    const prestige = pack.cards[1]
+    const prestigeVariants = ['Standard Prestige', 'Foil Prestige', 'Serialized Prestige']
+    assert(prestigeVariants.includes(prestige.variantType), `Slot 1 should be Prestige, got ${prestige.variantType}`)
+    assert(prestige.isPrestige === true, 'Slot 1 should have isPrestige flag')
+  })
+
+  test('ASH-CB: slots 2-5 are Common HS (fixed)', () => {
+    clearCarboniteBeltCache()
+    for (let p = 0; p < 10; p++) {
+      const pack = generateCarboniteBoosterPack('ASH-CB')
+      for (let i = 2; i <= 5; i++) {
+        assert(pack.cards[i].isHyperspace === true, `Pack ${p}, slot ${i} should be hyperspace`)
+        assert(!pack.cards[i].isFoil, `Pack ${p}, slot ${i} should NOT be foil`)
+        assertEqual(pack.cards[i].rarity, 'Common',
+          `Pack ${p}, slot ${i}: should be Common, got ${pack.cards[i].rarity}`)
+      }
+    }
+  })
+
+  test('ASH-CB: slot 9 is R/S/L HS (top slot)', () => {
+    clearCarboniteBeltCache()
+    for (let p = 0; p < 20; p++) {
+      const pack = generateCarboniteBoosterPack('ASH-CB')
+      const card = pack.cards[9]
+      assert(card.isHyperspace === true, `Pack ${p}: slot 9 should be hyperspace`)
+      assert(!card.isFoil, `Pack ${p}: slot 9 should NOT be foil`)
+      assert(
+        card.rarity === 'Rare' || card.rarity === 'Legendary' || card.rarity === 'Special',
+        `Pack ${p}: slot 9 should be R/S/L, got ${card.rarity}`
+      )
+    }
+  })
+
+  test('ASH-CB: slots 14-15 are Common HSF (fixed)', () => {
+    clearCarboniteBeltCache()
+    for (let p = 0; p < 10; p++) {
+      const pack = generateCarboniteBoosterPack('ASH-CB')
+      for (let i = 14; i <= 15; i++) {
+        assert(pack.cards[i].isFoil === true, `Pack ${p}, slot ${i} should be foil`)
+        assert(pack.cards[i].isHyperspace === true, `Pack ${p}, slot ${i} should be hyperspace`)
+        assertEqual(pack.cards[i].rarity, 'Common',
+          `Pack ${p}, slot ${i}: should be Common, got ${pack.cards[i].rarity}`)
+      }
+    }
+  })
+
+  test('ASH-CB: no Normal-only cards (every card has a variant flag)', () => {
+    clearCarboniteBeltCache()
+    for (let i = 0; i < 10; i++) {
+      const pack = generateCarboniteBoosterPack('ASH-CB')
+      for (const card of pack.cards) {
+        assert(
+          card.isFoil || card.isHyperspace || card.isShowcase || card.isPrestige,
+          `ASH-CB should have no Normal-only cards, found "${card.name}" with no variant flag`
+        )
+      }
+    }
+  })
+
+  // ======================
   // All sets tests
   // ======================
   console.log('')
   console.log('\x1b[1m\x1b[35mAll Supported Sets\x1b[0m')
 
   test('all supported sets produce 16-card packs', () => {
-    for (const setCode of ['JTL-CB', 'LOF-CB', 'SEC-CB', 'LAW-CB']) {
+    for (const setCode of ['JTL-CB', 'LOF-CB', 'SEC-CB', 'LAW-CB', 'ASH-CB']) {
       clearCarboniteBeltCache()
       const pack = generateCarboniteBoosterPack(setCode)
       assertEqual(pack.cards.length, 16, `${setCode} should have 16 cards, got ${pack.cards.length}`)
@@ -310,7 +396,7 @@ async function runTests(): Promise<void> {
   })
 
   test('all packs have exactly 1 Prestige card', () => {
-    for (const setCode of ['JTL-CB', 'LOF-CB', 'SEC-CB', 'LAW-CB']) {
+    for (const setCode of ['JTL-CB', 'LOF-CB', 'SEC-CB', 'LAW-CB', 'ASH-CB']) {
       clearCarboniteBeltCache()
       for (let i = 0; i < 5; i++) {
         const pack = generateCarboniteBoosterPack(setCode)

@@ -3,10 +3,11 @@
  * Carbonite Booster Pack Constants
  *
  * Carbonite packs are premium packs where every card is a variant
- * (foil, hyperspace, prestige, or showcase). Available for Sets 4-7.
+ * (foil, hyperspace, prestige, or showcase). Available for Sets 4-8.
  *
  * Pack structure differs between pre-LAW and LAW+ sets because
- * LAW eliminated traditional foils entirely.
+ * LAW eliminated traditional foils entirely. ASH (Set 8) inherits
+ * LAW's pack rules verbatim until FFG announces changes.
  */
 
 /**
@@ -21,7 +22,7 @@
  * [13]    R/L Hyperspace x 1 (from CarboniteSlotBelt, weighted 70/20/10)
  * [14-15] Hyperspace Foil x 2 (from HyperfoilBelt)
  *
- * LAW+ Carbonite (LAW) — 16 cards:
+ * LAW+ Carbonite (LAW, ASH) — 16 cards:
  * [0]     Leader — always Hyperspace (showcase upgrade ~1/48)
  * [1]     Prestige (synthesized from R/L pool)
  * [2-5]   HS Common x 4 (fixed Common, from CarboniteSlotBelt)
@@ -33,7 +34,7 @@
 
 export const CARBONITE_CONSTANTS = {
   // Which sets support Carbonite packs
-  supportedSets: ['JTL', 'LOF', 'SEC', 'LAW'] as const,
+  supportedSets: ['JTL', 'LOF', 'SEC', 'LAW', 'ASH'] as const,
 
   // Showcase leader upgrade rates (independent coin flip)
   showcaseRate: {

@@ -54,6 +54,7 @@ const PACK_IMAGE_URLS: Record<string, string> = {
   'LOF-CB': '/pack-images/lof-cb-pack.png',
   'SEC-CB': '/pack-images/sec-cb-pack.png',
   'LAW-CB': '/pack-images/law-cb-pack.png',
+  'ASH-CB': '/expansion-art/ash.png',
 }
 
 /**
@@ -72,6 +73,7 @@ const PACK_IMAGE_VARIANTS: Record<string, string[]> = {
   'LOF-CB': ['/pack-images/lof-cb-pack.png'],
   'SEC-CB': ['/pack-images/sec-cb-pack.png'],
   'LAW-CB': ['/pack-images/law-cb-pack.png'],
+  'ASH-CB': ['/expansion-art/ash.png'],
 }
 
 /**
