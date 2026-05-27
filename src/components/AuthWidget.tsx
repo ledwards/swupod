@@ -330,7 +330,7 @@ export default function AuthWidget() {
                 History
               </a>
 
-              <div className="auth-widget-drawer-section-label">Navigate</div>
+              <div className="auth-widget-drawer-section-label">Perks</div>
 
               {hasShowcases && (
                 <a

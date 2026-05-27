@@ -331,9 +331,9 @@ function LandingPage() {
             variant="primary"
             size="sm"
             className="next-set-promo-banner-cta"
-            onClick={() => router.push('/support-the-pod')}
+            onClick={() => router.push('/draft/new')}
           >
-            Perks
+            Try a Draft
           </Button>
           <Button
             variant="icon"
