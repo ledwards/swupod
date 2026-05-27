@@ -350711,7 +350711,7 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-05-22",
+    "lastUpdated": "2026-05-27",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
     "totalCards": 8005,
     "sets": [
@@ -350778,8 +350778,8 @@
       "spoiledNormalCount": 0,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-05-24T17:42:57.707Z"
+      "generatedAt": "2026-05-27T02:41:58.914Z"
     },
-    "lastProcessed": "2026-05-24"
+    "lastProcessed": "2026-05-27"
   }
 }
