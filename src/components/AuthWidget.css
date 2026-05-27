@@ -362,11 +362,13 @@ a.auth-widget-login-circle:active {
   white-space: nowrap;
 }
 
-.auth-widget-draft-reports-item {
+.auth-widget-draft-reports-item,
+.auth-widget-support-the-pod-item {
   color: rgba(255, 215, 0, 0.9) !important;
 }
 
-.auth-widget-draft-reports-item:hover {
+.auth-widget-draft-reports-item:hover,
+.auth-widget-support-the-pod-item:hover {
   color: rgba(255, 215, 0, 1) !important;
 }
 
