@@ -40,7 +40,27 @@ export interface SubscribeModalProps {
   surface?: 'setPreview' | 'homepageBanner' | 'lockInBanner' | 'podBanner'
 }
 
-const DEFAULT_CTA_LABEL = 'Become a Member'
+const DEFAULT_CTA_LABEL = 'Become a Friend of the Pod'
+
+/** Format an ISO date string ("2026-07-17") as "July 17, 2026". */
+function formatLongDate(iso: string | null | undefined): string | null {
+  if (!iso) return null
+  // Parse as UTC to avoid timezone slippage at midnight.
+  const d = new Date(iso + 'T00:00:00Z')
+  if (Number.isNaN(d.getTime())) return null
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
+}
+
+/** Subtract 7 days from a YYYY-MM-DD release date. Pre-release is always
+ *  derived as release - 7 days per product spec, even if setConfig has a
+ *  separately-listed prereleaseDate. */
+function computePrereleaseFromRelease(releaseDateIso: string | null | undefined): string | null {
+  if (!releaseDateIso) return null
+  const release = new Date(releaseDateIso + 'T00:00:00Z')
+  if (Number.isNaN(release.getTime())) return null
+  release.setUTCDate(release.getUTCDate() - 7)
+  return release.toISOString().slice(0, 10)
+}
 
 export function SubscribeModal({
   isOpen,
@@ -51,8 +71,11 @@ export function SubscribeModal({
   ctaLabel = DEFAULT_CTA_LABEL,
   surface,
 }: SubscribeModalProps) {
-  const setName = setCode ? getSetConfig(setCode.replace('-CB', ''))?.setName ?? setCode : null
-  const priceLabel = formatMembershipPrice()
+  const config = setCode ? getSetConfig(setCode.replace('-CB', '')) : null
+  const setName = config?.setName ?? setCode ?? null
+  const setColor = config?.color || null
+  const releaseDateLabel = formatLongDate(config?.releaseDate)
+  const prereleaseDateLabel = formatLongDate(computePrereleaseFromRelease(config?.releaseDate))
 
   // U7 — emit subscribe-cta-shown when the modal first opens for a given
   // (surface, setCode) pair. The PostHog hook silently no-ops when
@@ -79,15 +102,39 @@ export function SubscribeModal({
           </p>
         )}
 
+        {(prereleaseDateLabel || releaseDateLabel) && (
+          <p
+            className="subscribe-modal-date-info"
+            style={setColor ? { borderLeftColor: setColor } : undefined}
+          >
+            {prereleaseDateLabel && (
+              <>
+                <strong>Pre-Release Date:</strong> {prereleaseDateLabel}
+              </>
+            )}
+            {prereleaseDateLabel && releaseDateLabel && (
+              <span className="subscribe-modal-date-divider"> | </span>
+            )}
+            {releaseDateLabel && (
+              <>
+                <strong>Release Date:</strong> {releaseDateLabel}
+              </>
+            )}
+          </p>
+        )}
+
         <ul className="subscribe-modal-benefits">
-          <li>Early access to upcoming sets — draft and seal weeks before public release.</li>
-          <li>"Friend of the Pod" role and supporter badge in our Discord.</li>
-          <li>Vote on community polls — direction of new features and monthly themed events.</li>
-          <li>Your handle in the supporter credits on <code>/support-the-pod</code>.</li>
+          <li><strong>Draft Reports</strong> — Review your draft history with detailed pick-by-pick logs, deck breakdowns, and personal notes</li>
+          <li><strong>Import Pool</strong> — Photograph your competitive sealed registration sheet and import the pool straight into the deckbuilder</li>
+          <li><strong>Professional Stats</strong> — Access draft and sealed data across top limited players</li>
+          <li><strong>Beta Access</strong> — Access early features and pre-release sets by becoming an exclusive beta tester</li>
+          <li><strong>Discord Access</strong> — Join the supporters-only Discord channel with the dev team</li>
+          <li><strong>Avatar Flair</strong> — Special avatar treatment so everyone knows you're a supporter</li>
+          <li><strong>Support the Pod</strong> — Earn the eternal gratitude of the community for being a supporter of the pod!</li>
         </ul>
 
-        <p className="subscribe-modal-price">
-          <strong>{priceLabel}</strong>. Existing members continue at their original rate — we never auto-raise.
+        <p className="subscribe-modal-pod-note">
+          <strong>Note:</strong> You can still join a draft pod started by someone who is a Friend of the Pod!
         </p>
 
         <p className="subscribe-modal-footer-note">
@@ -105,9 +152,13 @@ export function SubscribeModal({
         >
           {ctaLabel}
         </a>
-        <Button variant="secondary" onClick={onClose}>
+        <button
+          type="button"
+          className="subscribe-modal-dismiss-link"
+          onClick={onClose}
+        >
           Not now
-        </Button>
+        </button>
       </Modal.Actions>
     </Modal>
   )

@@ -40,18 +40,36 @@
   margin-bottom: 0;
 }
 
-.subscribe-modal-price {
-  margin: 1rem 0 0.75rem;
-  font-size: 1rem;
-  color: white;
-  padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.08);
+/* Pre-Release / Release Date line — left-border accent inherits the
+   upcoming set's color via inline style (e.g., ASH = #8B0000). */
+.subscribe-modal-date-info {
+  margin: 0.75rem 0 0.5rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.92);
+  padding: 0.6rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 6px;
-  border-left: 3px solid rgb(0, 200, 0);
+  border-left: 3px solid rgba(255, 255, 255, 0.4); /* fallback if no setColor */
 }
 
-.subscribe-modal-price strong {
+.subscribe-modal-date-info strong {
   font-weight: 700;
+  color: white;
+}
+
+.subscribe-modal-date-divider {
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 0.25rem;
+}
+
+.subscribe-modal-pod-note {
+  margin: 1rem 0 0.5rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.subscribe-modal-pod-note strong {
   color: white;
 }
 
@@ -60,6 +78,25 @@
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.6);
   font-style: italic;
+}
+
+/* "Not now" dismiss styled as a subtle link, not a button. */
+.subscribe-modal-dismiss-link {
+  background: none;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .subscribe-modal-dismiss-link:hover {
+    color: white;
+  }
 }
 
 .subscribe-modal-actions {
