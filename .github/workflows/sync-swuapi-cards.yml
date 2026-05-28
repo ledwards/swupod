@@ -98,15 +98,26 @@ jobs:
             encoding: 'utf8',
             maxBuffer: 50 * 1024 * 1024,
           })
+          const normalizeRaw = (json) => {
+            const data = JSON.parse(json)
+            if (data.metadata) {
+              delete data.metadata.lastUpdated
+            }
+            return JSON.stringify(data)
+          }
           const normalizeCards = (json) => {
             const data = JSON.parse(json)
             if (data.metadata) {
+              delete data.metadata.lastUpdated
               delete data.metadata.lastProcessed
+              if (data.metadata.ashPlaceholderCatalog) {
+                delete data.metadata.ashPlaceholderCatalog.generatedAt
+              }
             }
             return JSON.stringify(data)
           }
 
-          const rawChanged = fs.readFileSync(rawPath, 'utf8') !== headFile(rawPath)
+          const rawChanged = normalizeRaw(fs.readFileSync(rawPath, 'utf8')) !== normalizeRaw(headFile(rawPath))
           const cardsChanged = normalizeCards(fs.readFileSync(cardsPath, 'utf8')) !== normalizeCards(headFile(cardsPath))
           console.log(rawChanged || cardsChanged ? 'true' : 'false')
           NODE
