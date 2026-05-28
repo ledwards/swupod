@@ -87,12 +87,37 @@ jobs:
       - name: Check for generated data changes
         id: changes
         run: |
-          if git diff --quiet -- src/data/cards.json src/data/cards.raw.json src/data/card-fixes-report.json; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "No generated card data changes."
+          changed="$(node <<'NODE'
+          const fs = require('fs')
+          const { execFileSync } = require('child_process')
+
+          const rawPath = 'src/data/cards.raw.json'
+          const cardsPath = 'src/data/cards.json'
+
+          const headFile = (path) => execFileSync('git', ['show', `HEAD:${path}`], {
+            encoding: 'utf8',
+            maxBuffer: 50 * 1024 * 1024,
+          })
+          const normalizeCards = (json) => {
+            const data = JSON.parse(json)
+            if (data.metadata) {
+              delete data.metadata.lastProcessed
+            }
+            return JSON.stringify(data)
+          }
+
+          const rawChanged = fs.readFileSync(rawPath, 'utf8') !== headFile(rawPath)
+          const cardsChanged = normalizeCards(fs.readFileSync(cardsPath, 'utf8')) !== normalizeCards(headFile(cardsPath))
+          console.log(rawChanged || cardsChanged ? 'true' : 'false')
+          NODE
+          )"
+
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+
+          if [ "$changed" = "false" ]; then
+            echo "No generated card data changes beyond lastProcessed."
           else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            git diff --stat -- src/data/cards.json src/data/cards.raw.json src/data/card-fixes-report.json
+            git diff --stat -- src/data/cards.json src/data/cards.raw.json
           fi
 
       - name: Commit updated card data
@@ -100,7 +125,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/data/cards.json src/data/cards.raw.json src/data/card-fixes-report.json
+          git add src/data/cards.json src/data/cards.raw.json
           git commit -m "chore(cards): sync from swuapi"
           git push origin HEAD:${GITHUB_REF_NAME}
 
