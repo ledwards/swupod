@@ -49,12 +49,12 @@ const PACK_IMAGE_URLS: Record<string, string> = {
   LOF: '/pack-images/lof-pack-1.png',
   SEC: '/pack-images/sec-pack-1.png',
   LAW: '/pack-images/law-pack-1.png',
-  ASH: '/expansion-art/ash.png',
+  ASH: '/pack-images/ash-pack-1.png',
   'JTL-CB': '/pack-images/jtl-cb-pack.png',
   'LOF-CB': '/pack-images/lof-cb-pack.png',
   'SEC-CB': '/pack-images/sec-cb-pack.png',
   'LAW-CB': '/pack-images/law-cb-pack.png',
-  'ASH-CB': '/expansion-art/ash.png',
+  'ASH-CB': '/pack-images/ash-cb-pack.png',
 }
 
 /**
@@ -68,12 +68,12 @@ const PACK_IMAGE_VARIANTS: Record<string, string[]> = {
   LOF: ['/pack-images/lof-pack-1.png', '/pack-images/lof-pack-2.png', '/pack-images/lof-pack-3.png'],
   SEC: ['/pack-images/sec-pack-1.png', '/pack-images/sec-pack-2.png', '/pack-images/sec-pack-3.png'],
   LAW: ['/pack-images/law-pack-1.png', '/pack-images/law-pack-2.png', '/pack-images/law-pack-3.png'],
-  ASH: ['/expansion-art/ash.png'],
+  ASH: ['/pack-images/ash-pack-1.png', '/pack-images/ash-pack-2.png', '/pack-images/ash-pack-3.png'],
   'JTL-CB': ['/pack-images/jtl-cb-pack.png'],
   'LOF-CB': ['/pack-images/lof-cb-pack.png'],
   'SEC-CB': ['/pack-images/sec-cb-pack.png'],
   'LAW-CB': ['/pack-images/law-cb-pack.png'],
-  'ASH-CB': ['/expansion-art/ash.png'],
+  'ASH-CB': ['/pack-images/ash-cb-pack.png'],
 }
 
 /**
