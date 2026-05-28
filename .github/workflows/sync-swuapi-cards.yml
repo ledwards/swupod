@@ -1,0 +1,118 @@
+name: Sync SWUAPI Cards
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Hourly during spoiler season. The job exits without a commit when
+    # SWUAPI has no card-data changes.
+    - cron: "17 * * * *"
+
+concurrency:
+  group: sync-swuapi-cards
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: Fetch, validate, and commit card data
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Capture current card summary
+        id: before
+        run: |
+          node <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs = require('fs')
+          const data = JSON.parse(fs.readFileSync('src/data/cards.json', 'utf8'))
+          const ash = (data.metadata?.sets || []).find((set) => set.code === 'ASH') || {}
+          console.log(`total=${data.metadata?.totalCards || data.cards?.length || 0}`)
+          console.log(`ash_real=${ash.realCardCount || 0}`)
+          console.log(`ash_placeholders=${ash.placeholderCardCount || 0}`)
+          console.log(`last_processed=${data.metadata?.lastProcessed || 'unknown'}`)
+          NODE
+
+      - name: Fetch latest cards from SWUAPI
+        env:
+          SWUAPI_API_KEY: ${{ secrets.SWUAPI_API_KEY }}
+        run: npm run fetch-cards
+
+      - name: Validate card data
+        run: |
+          npm run test:data
+          npx tsx src/services/cards/ashPlaceholderCatalog.test.ts
+
+      - name: Capture updated card summary
+        id: after
+        run: |
+          node <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs = require('fs')
+          const data = JSON.parse(fs.readFileSync('src/data/cards.json', 'utf8'))
+          const ash = (data.metadata?.sets || []).find((set) => set.code === 'ASH') || {}
+          console.log(`total=${data.metadata?.totalCards || data.cards?.length || 0}`)
+          console.log(`ash_real=${ash.realCardCount || 0}`)
+          console.log(`ash_placeholders=${ash.placeholderCardCount || 0}`)
+          console.log(`last_processed=${data.metadata?.lastProcessed || 'unknown'}`)
+          NODE
+
+      - name: Summarize sync
+        run: |
+          {
+            echo "## SWUAPI card sync"
+            echo
+            echo "| Metric | Before | After |"
+            echo "| --- | ---: | ---: |"
+            echo "| Total cards | ${{ steps.before.outputs.total }} | ${{ steps.after.outputs.total }} |"
+            echo "| ASH real cards | ${{ steps.before.outputs.ash_real }} | ${{ steps.after.outputs.ash_real }} |"
+            echo "| ASH placeholders | ${{ steps.before.outputs.ash_placeholders }} | ${{ steps.after.outputs.ash_placeholders }} |"
+            echo "| Last processed | ${{ steps.before.outputs.last_processed }} | ${{ steps.after.outputs.last_processed }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Check for generated data changes
+        id: changes
+        run: |
+          if git diff --quiet -- src/data/cards.json src/data/cards.raw.json src/data/card-fixes-report.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No generated card data changes."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git diff --stat -- src/data/cards.json src/data/cards.raw.json src/data/card-fixes-report.json
+          fi
+
+      - name: Commit updated card data
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/data/cards.json src/data/cards.raw.json src/data/card-fixes-report.json
+          git commit -m "chore(cards): sync from swuapi"
+          git push origin HEAD:${GITHUB_REF_NAME}
+
+      - name: Notify Discord on failure
+        if: failure()
+        env:
+          DISCORD_ALERT_WEBHOOK_URL: ${{ secrets.DISCORD_ALERT_WEBHOOK_URL }}
+        run: |
+          if [ -z "$DISCORD_ALERT_WEBHOOK_URL" ]; then
+            echo "No DISCORD_ALERT_WEBHOOK_URL secret configured; skipping alert."
+            exit 0
+          fi
+          curl -fsS -X POST "$DISCORD_ALERT_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "{\"content\":\"SWUAPI card sync failed for ${GITHUB_REPOSITORY}. Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}"
