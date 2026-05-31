@@ -293,6 +293,15 @@
   margin-bottom: 0.45rem;
 }
 
+/* Aspect-icon variant of the placeholder details — small gap between
+   consecutive icons, vertically centered with the type word. */
+.canvas-card .card-placeholder-details .card-placeholder-aspect-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  vertical-align: middle;
+}
+
 .canvas-card .card-rarity {
   font-size: 0.75rem;
   font-weight: 600;

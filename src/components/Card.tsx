@@ -9,6 +9,7 @@
 
 import './Card.css'
 import type { CSSProperties, ReactNode, MouseEvent, TouchEvent } from 'react'
+import { AspectIcon } from './AspectIcon'
 
 export interface CardData {
   id: string
@@ -38,6 +39,8 @@ export interface CardProps {
   stackIndex?: number
   showPenalty?: boolean
   penaltyAmount?: number
+  /** When true, render placeholder aspect names as icons instead of words. */
+  aspectsAsIcons?: boolean
   onClick?: (e: MouseEvent<HTMLDivElement>) => void
   onMouseEnter?: (e: MouseEvent<HTMLDivElement>) => void
   onMouseLeave?: (e: MouseEvent<HTMLDivElement>) => void
@@ -56,6 +59,30 @@ function placeholderDetails(card: CardData): string {
   const type = card.type && card.type !== 'Unknown' ? card.type : null
   const details = [type, ...(card.aspects || [])].filter(Boolean)
   return details.join(' · ')
+}
+
+// Same shape as `placeholderDetails` but renders aspect names as icons.
+// Used when the caller opts in via the `aspectsAsIcons` prop — keeps the type
+// word ("Leader", "Base") and replaces just the aspect text with icons.
+function placeholderDetailsWithIcons(card: CardData): ReactNode {
+  const type = card.type && card.type !== 'Unknown' ? card.type : null
+  const aspects = card.aspects || []
+
+  if (!type && aspects.length === 0) return null
+
+  return (
+    <>
+      {type && <span>{type}</span>}
+      {type && aspects.length > 0 && <span aria-hidden="true">{' · '}</span>}
+      {aspects.length > 0 && (
+        <span className="card-placeholder-aspect-icons">
+          {aspects.map((aspect, i) => (
+            <AspectIcon key={`${aspect}-${i}`} aspect={aspect} size="xs" />
+          ))}
+        </span>
+      )}
+    </>
+  )
 }
 
 // Helper to get rarity color for placeholder cards
@@ -80,6 +107,7 @@ export function Card({
   stackIndex = 0,
   showPenalty = false,
   penaltyAmount = 0,
+  aspectsAsIcons = false,
   onClick,
   onMouseEnter,
   onMouseLeave,
@@ -142,7 +170,9 @@ export function Card({
           {card.isPlaceholder && <div className="card-placeholder-badge">Unknown</div>}
           <div className="card-name">{placeholderTitle(card)}</div>
           {card.isPlaceholder && (
-            <div className="card-placeholder-details">{placeholderDetails(card)}</div>
+            <div className="card-placeholder-details">
+              {aspectsAsIcons ? placeholderDetailsWithIcons(card) : placeholderDetails(card)}
+            </div>
           )}
           <div className="card-rarity" style={{ color: getRarityColor(card.rarity) }}>
             {card.rarity}

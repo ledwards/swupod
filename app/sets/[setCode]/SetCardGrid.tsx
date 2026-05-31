@@ -124,7 +124,7 @@ export default function SetCardGrid({
           card.imageUrl ? (
             <CardWithPreview key={card.id} card={card} />
           ) : (
-            <Card key={card.id} card={card} />
+            <Card key={card.id} card={card} aspectsAsIcons />
           ),
         )}
       </section>
