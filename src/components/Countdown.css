@@ -1,0 +1,75 @@
+/**
+ * Countdown — 4-cell readout (days / hours / minutes / seconds) used by
+ * the homepage upcoming-set promo banner. Keeps the layout tight so it
+ * can sit inline inside a single-line banner on desktop and wrap onto
+ * its own row on narrow viewports without losing rhythm.
+ */
+
+.countdown {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: 'Barlow', sans-serif;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.countdown-cell {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 2.5em;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.countdown-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.countdown-label {
+  margin-top: 3px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.countdown-sep {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+  align-self: center;
+  /* Lift the colon to optically align with the digit baseline rather
+     than the label baseline below it. */
+  transform: translateY(-6px);
+}
+
+.countdown--expired .countdown-value {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+@media (max-width: 640px) {
+  .countdown {
+    gap: 4px;
+  }
+
+  .countdown-cell {
+    min-width: 2.2em;
+    padding: 3px 6px;
+  }
+
+  .countdown-value {
+    font-size: 1.15rem;
+  }
+
+  .countdown-label {
+    font-size: 0.6rem;
+  }
+}

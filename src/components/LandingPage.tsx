@@ -2,7 +2,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '../contexts/AuthContext'
 import { usePresence } from '../hooks/usePresence'
 import { usePublicPodsSocket } from '../hooks/usePublicPodsSocket'
@@ -23,6 +23,9 @@ import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 import ReleaseNotes from './ReleaseNotes'
 import Button from './Button'
 import SubscribeModal from './SubscribeModal'
+import Countdown from './Countdown'
+import { getSetConfig } from '../utils/setConfigs/index'
+import { getCardsBySet } from '../utils/cardData'
 import './LandingPage.css'
 
 // Convert a #RRGGBB hex string to an rgba() string with the given alpha.
@@ -33,6 +36,23 @@ function hexToRgba(hex: string, alpha: number): string {
   const g = parseInt(clean.slice(2, 4), 16)
   const b = parseInt(clean.slice(4, 6), 16)
   return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
+
+// Construct a Date representing local-midnight of an ISO date string ('YYYY-MM-DD').
+// Using `new Date('YYYY-MM-DDT00:00:00')` (no Z, no offset) is the standard way to
+// get local midnight; we parse the parts explicitly to avoid any parser ambiguity.
+function localMidnight(isoDate: string): Date {
+  const [y, m, d] = isoDate.split('-').map(Number)
+  return new Date(y, (m || 1) - 1, d || 1, 0, 0, 0, 0)
+}
+
+// Normal-variant spoiler progress for a set, counted off the live cards.json.
+// We deliberately count Normal-only — users intuit "X of Y cards spoiled" at the
+// gameplay level, not the cardCount=776 figure (which doubles up by treatment).
+function getNormalSpoilerProgress(setCode: string): { spoiled: number; total: number } {
+  const cards = getCardsBySet(setCode).filter(c => (c.variantType || 'Normal') === 'Normal')
+  const spoiled = cards.filter(c => !c.isPlaceholder).length
+  return { spoiled, total: cards.length }
 }
 
 // Card art for mode buttons (hover reveal)
@@ -66,10 +86,21 @@ function LandingPage() {
   const { user, loading, signIn, isPatron } = useAuth()
   const hasBetaAccess = user?.is_beta_tester || user?.is_admin
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [wasRemoved, setWasRemoved] = useState(false)
 
-  // Homepage promo banner state (U5)
-  const upcomingSet = useMemo(() => getUpcomingSetForPromo(), [])
+  // Homepage promo banner state (U5). `?previewPromo=ASH` (or any setCode)
+  // forces the banner for that set to render even when we're outside the
+  // 4-week pre-prerelease window — used for design review / dogfooding
+  // before the natural window opens.
+  const previewPromoSetCode = (searchParams?.get('previewPromo') || '').toUpperCase() || null
+  const upcomingSet = useMemo(() => {
+    if (previewPromoSetCode) {
+      const previewed = getSetConfig(previewPromoSetCode)
+      if (previewed) return previewed
+    }
+    return getUpcomingSetForPromo()
+  }, [previewPromoSetCode])
   const [lockInDismissed, setLockInDismissed] = useState(false)
   const [promoDismissed, setPromoDismissed] = useState(false)
   const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(false)
@@ -165,19 +196,39 @@ function LandingPage() {
   }, [user, loading])
 
   const hasActiveDraft = Boolean(activeDraft || activeSealedPod)
+  // While previewing, treat the visitor as an anonymous non-patron with no
+  // active draft and a clean dismissal slate so the conversion banner always
+  // resolves — otherwise the variant selector would still pick patronNoBeta
+  // or short-circuit on hasActiveDraft based on real session state.
+  const isPreviewing = Boolean(previewPromoSetCode)
   const promoVariant: PromoVariant = selectHomepagePromoVariant({
-    hasActiveDraft,
-    withinLockInWindow: isWithinLockInWindow(),
+    hasActiveDraft: isPreviewing ? false : hasActiveDraft,
+    withinLockInWindow: isPreviewing ? false : isWithinLockInWindow(),
     upcomingSet,
-    isPatron,
-    isBetaTester: Boolean(user?.is_beta_tester),
+    isPatron: isPreviewing ? false : isPatron,
+    isBetaTester: isPreviewing ? false : Boolean(user?.is_beta_tester),
     lockInDismissed,
-    promoDismissedForSet: promoDismissed,
+    promoDismissedForSet: isPreviewing ? false : promoDismissed,
   })
 
   const setName = upcomingSet?.setName ?? upcomingSet?.setCode ?? null
   const setCode = upcomingSet?.setCode ?? null
   const setColor = upcomingSet?.color ?? null
+  const prereleaseDate = upcomingSet?.prereleaseDate ?? null
+  // Local-midnight Date for the countdown target. Memoized so the Date
+  // identity is stable across renders (the countdown effect re-subscribes
+  // when targetDate.getTime() changes).
+  const prereleaseLocalMidnight = useMemo(
+    () => (prereleaseDate ? localMidnight(prereleaseDate) : null),
+    [prereleaseDate],
+  )
+  // Spoiler progress for the upcoming set, Normal variant only (user-facing
+  // gameplay count, not the doubled variant inventory). Recomputed when the
+  // set changes — cards.json itself is module-scope, so re-reads are cheap.
+  const spoilerProgress = useMemo(
+    () => (setCode ? getNormalSpoilerProgress(setCode) : { spoiled: 0, total: 0 }),
+    [setCode],
+  )
   // Theme the whole banner with the upcoming set's color: faint tinted
   // background + matching border + stronger left accent. Each upcoming set
   // gets its own visual identity instead of a generic neutral chrome.
@@ -271,29 +322,50 @@ function LandingPage() {
       )}
       {promoVariant === 'nonSubConversion' && setName && (
         <div
-          className="next-set-promo-banner"
+          className="next-set-promo-banner next-set-promo-banner--feature"
           role="region"
           aria-label={`Early access to ${setName}`}
           style={promoBannerStyle}
         >
-          <span className="next-set-promo-banner-copy">
-            Get early access to {setName}.
-          </span>
-          <Button
-            variant="primary"
-            size="sm"
-            className="next-set-promo-banner-cta"
-            onClick={() => {
-              trackEvent(AnalyticsEvents.SUBSCRIBE_CTA_CLICKED, {
-                surface: 'homepageBanner',
-                setCode,
-                ctaUrl: '/support-the-pod',
-              })
-              router.push('/support-the-pod')
-            }}
-          >
-            Support the Pod
-          </Button>
+          <div className="next-set-promo-banner-stack">
+            <div className="next-set-promo-banner-headline">
+              Are you ready for {setName}?
+            </div>
+            {prereleaseLocalMidnight && (
+              <Countdown targetDate={prereleaseLocalMidnight} />
+            )}
+            <div className="next-set-promo-banner-meta">
+              <span className="next-set-promo-banner-meta-count">
+                {spoilerProgress.spoiled.toLocaleString()} / {spoilerProgress.total.toLocaleString()}
+              </span>
+              {' '}
+              {setCode ? (
+                <a
+                  className="next-set-promo-banner-meta-link"
+                  href={`/sets/${setCode}`}
+                >
+                  cards spoiled
+                </a>
+              ) : (
+                <span>cards spoiled</span>
+              )}
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              className="next-set-promo-banner-cta"
+              onClick={() => {
+                trackEvent(AnalyticsEvents.SUBSCRIBE_CTA_CLICKED, {
+                  surface: 'homepageBanner',
+                  setCode,
+                  ctaUrl: '/support-the-pod',
+                })
+                router.push('/support-the-pod')
+              }}
+            >
+              Support the Pod
+            </Button>
+          </div>
           <Button
             variant="icon"
             size="sm"

@@ -40,7 +40,7 @@ export const BETA_ENROLL_URL = '/beta'
  * window opens the homepage banner still shows; it disappears only when
  * releaseDate <= now.
  */
-export const PROMO_BANNER_WEEKS_BEFORE_PRERELEASE = 6
+export const PROMO_BANNER_WEEKS_BEFORE_PRERELEASE = 4
 
 /**
  * Lock-in-window banner end date (ISO 8601 UTC string). Set by U1 scheduling

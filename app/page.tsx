@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import '../src/App.css'
 import LandingPage from '../src/components/LandingPage'
 import TermsOfService from '../src/components/TermsOfService'
@@ -64,7 +64,9 @@ export default function Home() {
   return (
     <div className="app">
       {view === 'landing' && (
-        <LandingPage />
+        <Suspense fallback={null}>
+          <LandingPage />
+        </Suspense>
       )}
       {view === 'terms-of-service' && (
         <TermsOfService onBack={handleBack} />

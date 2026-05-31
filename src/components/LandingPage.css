@@ -166,6 +166,70 @@ a.discord-cta:active {
   flex-shrink: 0;
 }
 
+/* Feature variant: taller multi-row banner used by the nonSubConversion
+   surface — headline + countdown + spoiler-progress line + CTA, all stacked
+   and centered. The dismiss button keeps its absolute top-right position
+   from the base banner so the stack centers without offset. */
+.next-set-promo-banner--feature {
+  padding: 18px 48px 18px 24px;
+}
+
+.next-set-promo-banner-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.next-set-promo-banner-headline {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.96);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.next-set-promo-banner-meta {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.next-set-promo-banner-meta-count {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.next-set-promo-banner-meta-link {
+  color: rgba(255, 255, 255, 0.92);
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.4);
+  text-underline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .next-set-promo-banner-meta-link:hover {
+    color: #fff;
+    text-decoration-color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+@media (max-width: 640px) {
+  .next-set-promo-banner--feature {
+    padding: 14px 40px 14px 14px;
+  }
+
+  .next-set-promo-banner-headline {
+    font-size: 1.15rem;
+  }
+
+  .next-set-promo-banner-meta {
+    font-size: 0.85rem;
+  }
+}
+
 /* Subtle dismiss — absolutely positioned so it can sit at the far right
    without breaking horizontal centering of the copy + CTA. Transparent,
    no border, low-opacity glyph. Overrides .btn--icon defaults from Button.css. */
