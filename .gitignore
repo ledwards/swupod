@@ -17,6 +17,9 @@ dist-ssr
 .next/
 out
 
+# Scratch screenshots / artifacts dropped by agents (chrome-devtools etc.)
+.tmp/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
