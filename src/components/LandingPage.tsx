@@ -25,6 +25,16 @@ import Button from './Button'
 import SubscribeModal from './SubscribeModal'
 import './LandingPage.css'
 
+// Convert a #RRGGBB hex string to an rgba() string with the given alpha.
+// Used to tint the homepage promo banner with the upcoming set's color.
+function hexToRgba(hex: string, alpha: number): string {
+  const clean = hex.replace('#', '')
+  const r = parseInt(clean.slice(0, 2), 16)
+  const g = parseInt(clean.slice(2, 4), 16)
+  const b = parseInt(clean.slice(4, 6), 16)
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
+
 // Card art for mode buttons (hover reveal)
 const MODE_ART = {
   sealedSolo: 'https://cdn.starwarsunlimited.com//card_SWH_01_465_Cunning_HYP_9c76fc00ac.png',
@@ -168,9 +178,16 @@ function LandingPage() {
   const setName = upcomingSet?.setName ?? upcomingSet?.setCode ?? null
   const setCode = upcomingSet?.setCode ?? null
   const setColor = upcomingSet?.color ?? null
-  // Accent style applied to the banner: thick left border in the set's
-  // color so each upcoming set has its own visual identity.
-  const promoBannerStyle = setColor ? { borderLeftColor: setColor } : undefined
+  // Theme the whole banner with the upcoming set's color: faint tinted
+  // background + matching border + stronger left accent. Each upcoming set
+  // gets its own visual identity instead of a generic neutral chrome.
+  const promoBannerStyle = setColor
+    ? {
+        background: hexToRgba(setColor, 0.14),
+        borderColor: hexToRgba(setColor, 0.45),
+        borderLeftColor: setColor,
+      }
+    : undefined
 
   // U7 — track which banner variant the user actually saw. Fires once per
   // variant per session; downstream PostHog event already captures the user

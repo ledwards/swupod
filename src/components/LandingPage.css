@@ -134,12 +134,16 @@ a.discord-cta:active {
    guard per .claude/rules/mobile.md. */
 
 .next-set-promo-banner {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
   flex-wrap: wrap;
   gap: 12px;
-  padding: 12px 20px;
+  /* Extra right padding leaves room for the absolutely-positioned dismiss
+     button so it doesn't crowd the centered copy/CTA. */
+  padding: 12px 44px 12px 20px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.18);
   /* Thick left accent — color is set via inline style from upcomingSet.color
@@ -162,9 +166,26 @@ a.discord-cta:active {
   flex-shrink: 0;
 }
 
-/* Subtle dismiss — push to far right, transparent, no border, low-opacity glyph.
-   Overrides .btn--icon defaults from Button.css. */
-.next-set-promo-banner-dismiss.btn--icon,
+/* Subtle dismiss — absolutely positioned so it can sit at the far right
+   without breaking horizontal centering of the copy + CTA. Transparent,
+   no border, low-opacity glyph. Overrides .btn--icon defaults from Button.css. */
+.next-set-promo-banner-dismiss.btn--icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 1rem;
+  line-height: 1;
+}
+
 .lock-in-banner-dismiss.btn--icon {
   flex-shrink: 0;
   margin-left: auto;
@@ -180,7 +201,15 @@ a.discord-cta:active {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .next-set-promo-banner-dismiss.btn--icon:hover:not(:disabled),
+  /* Keep the existing color treatment; preserve the translateY(-50%) so the
+     absolutely-positioned X stays vertically centered while hovering. */
+  .next-set-promo-banner-dismiss.btn--icon:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: rgba(255, 255, 255, 0.85);
+    transform: translateY(-50%);
+  }
+
   .lock-in-banner-dismiss.btn--icon:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.08);
     border: none;
@@ -247,7 +276,13 @@ a.discord-cta:active {
 }
 
 @media (max-width: 640px) {
-  .next-set-promo-banner,
+  .next-set-promo-banner {
+    /* Reserve room on the right for the absolutely-positioned dismiss button
+       so it doesn't overlap the centered copy when it wraps. */
+    padding: 10px 36px 10px 12px;
+    font-size: 0.9rem;
+  }
+
   .lock-in-banner {
     padding: 10px 12px;
     font-size: 0.9rem;
