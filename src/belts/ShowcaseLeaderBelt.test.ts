@@ -133,6 +133,13 @@ async function runTests(): Promise<void> {
     assert(diffPercent > 50, `At least 50% of positions should differ, got ${diffPercent.toFixed(1)}%`)
   })
 
+  test('Fallback: falls back to Normal leaders for pre-release sets without Showcase variants (ASH)', () => {
+    const belt = new ShowcaseLeaderBelt('ASH')
+    assert(belt.fillingPool.length > 0, 'Filling pool should be non-empty via Normal fallback')
+    assert(belt.commonLeaders.length > 0, 'commonLeaders re-split after fallback')
+    assert(belt.rareLeaders.length > 0, 'rareLeaders re-split after fallback')
+  })
+
   console.log('')
   console.log('\x1b[35m' + '='.repeat(40) + '\x1b[0m')
   console.log(`\x1b[32m✅ Tests passed: ${passed}\x1b[0m`)

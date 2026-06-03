@@ -812,12 +812,26 @@ export function getBeltCards(
   }
 
   // Filter to commons of the requested variant (non-leader, non-base)
-  const allCommons = cards.filter(c =>
+  let allCommons = cards.filter(c =>
     c.variantType === variantType &&
     c.rarity === 'Common' &&
     c.type !== 'Leader' &&
     c.type !== 'Base'
   )
+
+  // Pre-release fallback: if the requested variant has no cards (e.g. a
+  // pre-release set without Hyperspace variants on Strapi yet), use Normal
+  // commons as stand-ins. CommonBelt's next() still stamps isHyperspace=true
+  // when variantType==='Hyperspace', so slot semantics are preserved.
+  // Auto-heals: when the variant lands the primary filter wins.
+  if (allCommons.length === 0 && variantType !== 'Normal') {
+    allCommons = cards.filter(c =>
+      c.variantType === 'Normal' &&
+      c.rarity === 'Common' &&
+      c.type !== 'Leader' &&
+      c.type !== 'Base'
+    )
+  }
 
   // If autoAssign is enabled, use aspect-based assignment
   if (assignments.autoAssign) {

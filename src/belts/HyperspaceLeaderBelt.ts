@@ -58,6 +58,15 @@ export class HyperspaceLeaderBelt {
       (c.rarity === 'Common' || c.rarity === 'Rare')
     )
 
+    // Pre-release fallback: see HyperspaceCommonBelt for the pattern.
+    if (this.fillingPool.length === 0) {
+      this.fillingPool = cards.filter(c =>
+        c.isLeader &&
+        c.variantType === 'Normal' &&
+        (c.rarity === 'Common' || c.rarity === 'Rare')
+      )
+    }
+
     this.commonLeaders = this.fillingPool.filter(c => c.rarity === 'Common')
     this.rareLeaders = this.fillingPool.filter(c => c.rarity === 'Rare')
 

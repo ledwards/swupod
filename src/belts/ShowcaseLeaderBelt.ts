@@ -70,6 +70,18 @@ export class ShowcaseLeaderBelt {
       (c.rarity === 'Common' || c.rarity === 'Rare' || (includeSpecial && c.rarity === 'Special'))
     )
 
+    // Pre-release fallback: if Showcase leader variants aren't published yet
+    // (Strapi hasn't released them), use Normal leaders as stand-ins. next()
+    // still stamps isShowcase=true to preserve slot semantics. Auto-heals
+    // when Showcase variants land in cards.json.
+    if (this.fillingPool.length === 0) {
+      this.fillingPool = cards.filter(c =>
+        c.isLeader &&
+        c.variantType === 'Normal' &&
+        (c.rarity === 'Common' || c.rarity === 'Rare' || (includeSpecial && c.rarity === 'Special'))
+      )
+    }
+
     // Separate into common and rare leaders
     this.commonLeaders = this.fillingPool.filter(c => c.rarity === 'Common')
     this.rareLeaders = this.fillingPool.filter(c => c.rarity === 'Rare' || c.rarity === 'Special')

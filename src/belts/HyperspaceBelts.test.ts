@@ -289,6 +289,52 @@ async function runTests(): Promise<void> {
   })
 
   console.log('')
+  console.log('Pre-release fallback (set with no HS variants yet)')
+  console.log('\x1b[35m' + '='.repeat(40) + '\x1b[0m')
+
+  // ASH ships with Normal-only spoiler data at pre-release. The Hyperspace
+  // belts must fall back to Normal cards so pack generation still works.
+
+  test('Fallback: HyperspaceCommonBelt falls back to Normal commons for ASH', () => {
+    const belt = new HyperspaceCommonBelt('ASH')
+    assert(belt.fillingPool.length > 0, 'Filling pool should be non-empty via Normal fallback')
+    const card = belt.next()
+    assert(card !== null, 'next() should return a card')
+    assert(card.isHyperspace === true, 'Slot semantics preserved — isHyperspace stamped')
+    assert(card.rarity === 'Common', 'Should be a common')
+  })
+
+  test('Fallback: HyperspaceUncommonBelt falls back to Normal uncommons for ASH', () => {
+    const belt = new HyperspaceUncommonBelt('ASH')
+    assert(belt.fillingPool.length > 0, 'Filling pool should be non-empty via Normal fallback')
+    const card = belt.next()
+    assert(card !== null, 'next() should return a card')
+    assert(card.isHyperspace === true, 'isHyperspace stamped')
+    assert(card.rarity === 'Uncommon', 'Should be an uncommon')
+  })
+
+  test('Fallback: HyperspaceBaseBelt falls back to Normal common bases for ASH', () => {
+    const belt = new HyperspaceBaseBelt('ASH')
+    assert(belt.fillingPool.length > 0, 'Filling pool should be non-empty via Normal fallback')
+    const card = belt.next()
+    assert(card !== null, 'next() should return a card')
+    assert(card.isHyperspace === true, 'isHyperspace stamped')
+    assert(card.isBase === true, 'Should be a base')
+  })
+
+  test('Fallback: HyperspaceLeaderBelt falls back to Normal leaders for ASH (commonLeaders + rareLeaders re-split)', () => {
+    const belt = new HyperspaceLeaderBelt('ASH')
+    assert(belt.fillingPool.length > 0, 'Filling pool should be non-empty via Normal fallback')
+    assert(belt.commonLeaders.length > 0, 'commonLeaders re-split after fallback')
+    assert(belt.rareLeaders.length > 0, 'rareLeaders re-split after fallback')
+  })
+
+  test('Fallback: HyperspaceCommonLaneBelt (via CommonBelt getBeltCards) falls back to Normal for ASH', () => {
+    const belt = new HyperspaceCommonLaneBelt('ASH', 'A')
+    assert(belt.beltCards.length > 0, 'beltCards should be non-empty via Normal fallback in getBeltCards')
+  })
+
+  console.log('')
   console.log('\x1b[35m' + '='.repeat(40) + '\x1b[0m')
   console.log(`\x1b[32m✅ Tests passed: ${passed}\x1b[0m`)
   if (failed > 0) {

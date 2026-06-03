@@ -57,6 +57,15 @@ export class HyperspaceBaseBelt {
       c.rarity === 'Common'
     )
 
+    // Pre-release fallback: see HyperspaceCommonBelt for the pattern.
+    if (this.fillingPool.length === 0) {
+      this.fillingPool = cards.filter(c =>
+        c.isBase &&
+        c.variantType === 'Normal' &&
+        c.rarity === 'Common'
+      )
+    }
+
     this._fillIfNeeded()
   }
 

@@ -55,6 +55,19 @@ export class HyperspaceCommonBelt {
       !c.isBase
     )
 
+    // Pre-release fallback: if no Hyperspace variants exist for this set yet
+    // (Strapi hasn't published them), use Normal commons as stand-ins. next()
+    // still stamps isHyperspace=true so the slot semantics are preserved.
+    // Auto-heals: when HS variants land in cards.json the filter above wins.
+    if (this.fillingPool.length === 0) {
+      this.fillingPool = cards.filter(c =>
+        c.variantType === 'Normal' &&
+        c.rarity === 'Common' &&
+        !c.isLeader &&
+        !c.isBase
+      )
+    }
+
     this._fillIfNeeded()
   }
 
