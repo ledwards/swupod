@@ -85,7 +85,7 @@ describe('SetSelection — "Coming Soon" teaser logic (U3)', () => {
       const copy = buildTeaserModalCopy('nonSub', SET_NAME)
       assert.strictEqual(copy.headline, 'Get early access to Ashes of the Empire')
       assert.strictEqual(copy.ctaUrl, PATREON_URL)
-      assert.strictEqual(copy.ctaLabel, 'Become a Member')
+      assert.strictEqual(copy.ctaLabel, 'Become a Friend of the Pod')
     })
 
     it('SPEC: patron-no-beta gets "Enroll in beta to play {setName}" + /beta CTA', () => {

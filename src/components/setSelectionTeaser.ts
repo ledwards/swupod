@@ -88,6 +88,6 @@ export function buildTeaserModalCopy(
   return {
     headline: `Get early access to ${setName}`,
     ctaUrl: PATREON_URL,
-    ctaLabel: 'Become a Member',
+    ctaLabel: 'Become a Friend of the Pod',
   }
 }

@@ -5,7 +5,6 @@ import Button from './Button'
 import { SubscribeModal } from './SubscribeModal'
 import { useAuth } from '../contexts/AuthContext'
 import {
-  formatMembershipPrice,
   BETA_ENROLL_URL,
   PATREON_URL,
 } from '../utils/membership'
@@ -105,7 +104,6 @@ export function SubscribePodBanner({ podSetCode }: SubscribePodBannerProps) {
 
   const setConfig = baseSetCode ? getSetConfig(baseSetCode) : null
   const setName = setConfig?.setName || baseSetCode || 'this set'
-  const priceLabel = formatMembershipPrice()
 
   const isActivateVariant = decision.variant === 'activate'
 
@@ -117,7 +115,7 @@ export function SubscribePodBanner({ podSetCode }: SubscribePodBannerProps) {
 
   const bannerCopy = isActivateVariant
     ? `This pod uses ${setName}. Your membership unlocks early access — enroll in beta to get it.`
-    : `This pod uses ${setName}. Get your own early access — Become a Member · ${priceLabel}`
+    : `This pod uses ${setName}. Get your own early access — start a free trial.`
 
   const handleSubscribeClick = () => {
     // U7 — track the banner CTA click (distinct from the modal's

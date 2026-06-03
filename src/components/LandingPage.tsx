@@ -102,7 +102,7 @@ function LandingPage() {
     return getUpcomingSetForPromo()
   }, [previewPromoSetCode])
   const [lockInDismissed, setLockInDismissed] = useState(false)
-  const [promoDismissed, setPromoDismissed] = useState(false)
+  const [dismissedVariantsForSet, setDismissedVariantsForSet] = useState<Partial<Record<PromoVariant, boolean>>>({})
   const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(false)
 
   // Read dismissal flags from localStorage on mount (client-only — avoid SSR mismatch).
@@ -111,10 +111,16 @@ function LandingPage() {
     if (lockKey && typeof window !== 'undefined' && localStorage.getItem(lockKey)) {
       setLockInDismissed(true)
     }
-    const promoKey = promoDismissalKey(upcomingSet?.setCode)
-    if (promoKey && typeof window !== 'undefined' && localStorage.getItem(promoKey)) {
-      setPromoDismissed(true)
+    if (typeof window === 'undefined' || !upcomingSet?.setCode) {
+      setDismissedVariantsForSet({})
+      return
     }
+    const next: Partial<Record<PromoVariant, boolean>> = {}
+    for (const variant of ['nonSubConversion', 'patronNoBeta', 'patronActivation'] as const) {
+      const key = promoDismissalKey(upcomingSet.setCode, variant)
+      if (key && localStorage.getItem(key)) next[variant] = true
+    }
+    setDismissedVariantsForSet(next)
   }, [upcomingSet?.setCode])
 
   useEffect(() => {
@@ -208,7 +214,7 @@ function LandingPage() {
     isPatron: isPreviewing ? false : isPatron,
     isBetaTester: isPreviewing ? false : Boolean(user?.is_beta_tester),
     lockInDismissed,
-    promoDismissedForSet: isPreviewing ? false : promoDismissed,
+    dismissedVariantsForSet: isPreviewing ? {} : dismissedVariantsForSet,
   })
 
   const setName = upcomingSet?.setName ?? upcomingSet?.setCode ?? null
@@ -267,12 +273,12 @@ function LandingPage() {
     setLockInDismissed(true)
   }
 
-  const handleDismissPromo = () => {
-    const promoKey = promoDismissalKey(setCode)
+  const handleDismissPromo = (variant: PromoVariant) => {
+    const promoKey = promoDismissalKey(setCode, variant)
     if (promoKey && typeof window !== 'undefined') {
       try { localStorage.setItem(promoKey, '1') } catch { /* localStorage disabled */ }
     }
-    setPromoDismissed(true)
+    setDismissedVariantsForSet(prev => ({ ...prev, [variant]: true }))
   }
 
   // Compute modal headline + CTA overrides per variant. Patron activation does
@@ -324,46 +330,35 @@ function LandingPage() {
         <div
           className="next-set-promo-banner next-set-promo-banner--feature"
           role="region"
-          aria-label={`Early access to ${setName}`}
+          aria-label={`${setName} is in beta`}
           style={promoBannerStyle}
         >
           <div className="next-set-promo-banner-stack">
             <div className="next-set-promo-banner-headline">
-              Are you ready for {setName}?
-            </div>
-            {prereleaseLocalMidnight && (
-              <Countdown targetDate={prereleaseLocalMidnight} />
-            )}
-            <div className="next-set-promo-banner-meta">
-              <span className="next-set-promo-banner-meta-count">
-                {spoilerProgress.spoiled.toLocaleString()} / {spoilerProgress.total.toLocaleString()}
+              {setName} is in beta
+              {' · '}
+              <span className="next-set-promo-banner-headline-count">
+                {spoilerProgress.spoiled.toLocaleString()} / {spoilerProgress.total.toLocaleString()} cards
               </span>
-              {' '}
-              {setCode ? (
-                <a
-                  className="next-set-promo-banner-meta-link"
-                  href={`/sets/${setCode}`}
-                >
-                  cards spoiled
-                </a>
-              ) : (
-                <span>cards spoiled</span>
-              )}
+            </div>
+            <div className="next-set-promo-banner-subhead">
+              Generally available on pre-release date. Or join your Beta friend&apos;s {setCode} pod!
             </div>
             <Button
               variant="primary"
               size="sm"
               className="next-set-promo-banner-cta"
               onClick={() => {
+                const url = 'https://www.patreon.com/cw/ProtectthePod'
                 trackEvent(AnalyticsEvents.SUBSCRIBE_CTA_CLICKED, {
                   surface: 'homepageBanner',
                   setCode,
-                  ctaUrl: '/support-the-pod',
+                  ctaUrl: url,
                 })
-                router.push('/support-the-pod')
+                window.open(url, '_blank', 'noopener,noreferrer')
               }}
             >
-              Support the Pod
+              Become a Friend of the Pod
             </Button>
           </div>
           <Button
@@ -371,7 +366,7 @@ function LandingPage() {
             size="sm"
             className="next-set-promo-banner-dismiss"
             aria-label="Dismiss banner"
-            onClick={handleDismissPromo}
+            onClick={() => handleDismissPromo('nonSubConversion')}
           >
             ×
           </Button>
@@ -400,7 +395,7 @@ function LandingPage() {
             size="sm"
             className="next-set-promo-banner-dismiss"
             aria-label="Dismiss banner"
-            onClick={handleDismissPromo}
+            onClick={() => handleDismissPromo('patronNoBeta')}
           >
             ×
           </Button>
@@ -410,11 +405,11 @@ function LandingPage() {
         <div
           className="next-set-promo-banner next-set-promo-banner--patron"
           role="region"
-          aria-label={`${setName} early access live`}
+          aria-label={`You are enrolled in the ${setName} beta`}
           style={promoBannerStyle}
         >
           <span className="next-set-promo-banner-copy">
-            Your early access to {setName} is live — try a draft.
+            You&apos;re enrolled in beta — start drafting {setName} now.
           </span>
           <Button
             variant="primary"
@@ -429,7 +424,7 @@ function LandingPage() {
             size="sm"
             className="next-set-promo-banner-dismiss"
             aria-label="Dismiss banner"
-            onClick={handleDismissPromo}
+            onClick={() => handleDismissPromo('patronActivation')}
           >
             ×
           </Button>

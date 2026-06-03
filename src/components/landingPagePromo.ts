@@ -40,8 +40,13 @@ export interface PromoVariantInput {
   isBetaTester: boolean
   /** True for the lock-in dismissal localStorage key (set after dismiss). */
   lockInDismissed: boolean
-  /** True for the conversion/activation banner dismissal localStorage key. */
-  promoDismissedForSet: boolean
+  /**
+   * Per-variant dismissal flags keyed by setCode. A dismissal hides only the
+   * variant the user actually closed: a logged-out user dismissing the
+   * conversion banner does NOT also dismiss the patron-no-beta or activation
+   * banners they might see after upgrading.
+   */
+  dismissedVariantsForSet: Partial<Record<PromoVariant, boolean>>
 }
 
 export function selectHomepagePromoVariant(input: PromoVariantInput): PromoVariant {
@@ -62,13 +67,22 @@ export function selectHomepagePromoVariant(input: PromoVariantInput): PromoVaria
 
   // Priorities 3–5 all require an upcoming set.
   if (!input.upcomingSet) return 'none'
-  if (input.promoDismissedForSet) return 'none'
 
-  if (input.isPatron === false) return 'nonSubConversion'
+  let target: PromoVariant
+  if (input.isPatron === false) {
+    target = 'nonSubConversion'
+  } else if (input.isBetaTester) {
+    // isPatron === true from here on.
+    target = 'patronActivation'
+  } else {
+    target = 'patronNoBeta'
+  }
 
-  // isPatron === true from here on.
-  if (input.isBetaTester) return 'patronActivation'
-  return 'patronNoBeta'
+  // Per-variant dismissal is the final hide gate. A user can dismiss one
+  // variant and later see another (e.g., dismiss conversion → become patron →
+  // see patron-no-beta).
+  if (input.dismissedVariantsForSet[target]) return 'none'
+  return target
 }
 
 export function lockInDismissalKey(lockInEndDate: string | null): string | null {
@@ -76,7 +90,11 @@ export function lockInDismissalKey(lockInEndDate: string | null): string | null 
   return `dismissed-lockin-${lockInEndDate}`
 }
 
-export function promoDismissalKey(setCode: string | null | undefined): string | null {
+export function promoDismissalKey(
+  setCode: string | null | undefined,
+  variant: PromoVariant | null | undefined,
+): string | null {
   if (!setCode) return null
-  return `dismissed-promo-${setCode}`
+  if (!variant || variant === 'none' || variant === 'lockIn') return null
+  return `dismissed-promo-${setCode}-${variant}`
 }

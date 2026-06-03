@@ -99,7 +99,7 @@ describe('LandingPage', () => {
       isPatron: false as boolean | null,
       isBetaTester: false,
       lockInDismissed: false,
-      promoDismissedForSet: false,
+      dismissedVariantsForSet: {} as Partial<Record<'nonSubConversion' | 'patronNoBeta' | 'patronActivation' | 'lockIn' | 'none', boolean>>,
     }
 
     it('renders the lock-in variant when the lock-in window is active and the user is anon/non-sub', () => {
@@ -215,12 +215,47 @@ describe('LandingPage', () => {
       assert.strictEqual(variant, 'none')
     })
 
-    it('dismissing the conversion banner hides it for the current set', () => {
+    it('dismissing the conversion variant hides only that variant for the current set', () => {
       const variant = selectHomepagePromoVariant({
         ...base,
         upcomingSet: ASH,
         isPatron: false,
-        promoDismissedForSet: true,
+        dismissedVariantsForSet: { nonSubConversion: true },
+      })
+      assert.strictEqual(variant, 'none')
+    })
+
+    it('dismissing the conversion variant does not hide the patron-no-beta variant after upgrade', () => {
+      // Same user dismisses conversion banner, then becomes a patron.
+      // patronNoBeta is a separate variant and should still render.
+      const variant = selectHomepagePromoVariant({
+        ...base,
+        upcomingSet: ASH,
+        isPatron: true,
+        isBetaTester: false,
+        dismissedVariantsForSet: { nonSubConversion: true },
+      })
+      assert.strictEqual(variant, 'patronNoBeta')
+    })
+
+    it('dismissing the patron-no-beta variant does not hide the activation variant after beta enroll', () => {
+      const variant = selectHomepagePromoVariant({
+        ...base,
+        upcomingSet: ASH,
+        isPatron: true,
+        isBetaTester: true,
+        dismissedVariantsForSet: { patronNoBeta: true },
+      })
+      assert.strictEqual(variant, 'patronActivation')
+    })
+
+    it('dismissing the patron-activation variant hides it for the current set', () => {
+      const variant = selectHomepagePromoVariant({
+        ...base,
+        upcomingSet: ASH,
+        isPatron: true,
+        isBetaTester: true,
+        dismissedVariantsForSet: { patronActivation: true },
       })
       assert.strictEqual(variant, 'none')
     })
@@ -251,12 +286,29 @@ describe('LandingPage', () => {
     })
 
     it('promoDismissalKey is null when no set is upcoming', () => {
-      assert.strictEqual(promoDismissalKey(null), null)
-      assert.strictEqual(promoDismissalKey(undefined), null)
+      assert.strictEqual(promoDismissalKey(null, 'nonSubConversion'), null)
+      assert.strictEqual(promoDismissalKey(undefined, 'nonSubConversion'), null)
     })
 
-    it('promoDismissalKey is namespaced by setCode so the next set re-shows the banner', () => {
-      assert.strictEqual(promoDismissalKey('ASH'), 'dismissed-promo-ASH')
+    it('promoDismissalKey is null for variants that have no per-set dismissal', () => {
+      assert.strictEqual(promoDismissalKey('ASH', 'none'), null)
+      assert.strictEqual(promoDismissalKey('ASH', 'lockIn'), null)
+      assert.strictEqual(promoDismissalKey('ASH', null), null)
+    })
+
+    it('promoDismissalKey is namespaced by setCode AND variant so each variant dismisses independently and forever', () => {
+      assert.strictEqual(
+        promoDismissalKey('ASH', 'nonSubConversion'),
+        'dismissed-promo-ASH-nonSubConversion',
+      )
+      assert.strictEqual(
+        promoDismissalKey('ASH', 'patronNoBeta'),
+        'dismissed-promo-ASH-patronNoBeta',
+      )
+      assert.strictEqual(
+        promoDismissalKey('ASH', 'patronActivation'),
+        'dismissed-promo-ASH-patronActivation',
+      )
     })
   })
 })

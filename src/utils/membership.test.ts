@@ -37,8 +37,8 @@ describe('Pricing constants', () => {
     assert.strictEqual(BETA_ENROLL_URL, '/beta')
   })
 
-  it('SPEC: promo banner trigger window is 4 weeks before prerelease', () => {
-    assert.strictEqual(PROMO_BANNER_WEEKS_BEFORE_PRERELEASE, 4)
+  it('SPEC: promo banner trigger window is 8 weeks before prerelease', () => {
+    assert.strictEqual(PROMO_BANNER_WEEKS_BEFORE_PRERELEASE, 8)
   })
 })
 
@@ -124,8 +124,8 @@ describe('getUpcomingSetForPeek', () => {
 })
 
 describe('getUpcomingSetForPromo', () => {
-  it('SPEC: surfaces ASH within 4 weeks of prerelease only after first real card lands', () => {
-    // 2026-06-20 → ~3 weeks before ASH prerelease (2026-07-10), inside 4-week window.
+  it('SPEC: surfaces ASH within 8 weeks of prerelease only after first real card lands', () => {
+    // 2026-06-20 → ~3 weeks before ASH prerelease (2026-07-10), inside 8-week window.
     const promo = getUpcomingSetForPromo(new Date('2026-06-20T00:00:00Z'))
     if (hasRealCardsForSet('ASH')) {
       assert.ok(promo, 'should find a promo-eligible set once spoilers exist')
@@ -136,8 +136,8 @@ describe('getUpcomingSetForPromo', () => {
   })
 
   it('SPEC: returns null when no set is within the promo window', () => {
-    // 2026-05-30 → ASH prerelease is ~6 weeks out (outside 4-week window).
-    const promo = getUpcomingSetForPromo(new Date('2026-05-30T00:00:00Z'))
+    // 2026-05-01 → ASH prerelease is ~10 weeks out (outside 8-week window).
+    const promo = getUpcomingSetForPromo(new Date('2026-05-01T00:00:00Z'))
     assert.strictEqual(promo, null)
   })
 

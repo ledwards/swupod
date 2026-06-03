@@ -166,67 +166,60 @@ a.discord-cta:active {
   flex-shrink: 0;
 }
 
-/* Feature variant: taller multi-row banner used by the nonSubConversion
-   surface — headline + countdown + spoiler-progress line + CTA, all stacked
-   and centered. The dismiss button keeps its absolute top-right position
-   from the base banner so the stack centers without offset. */
+/* Feature variant: compact multi-row banner used by the nonSubConversion
+   surface — headline + subhead + CTA, stacked and centered. The dismiss
+   button keeps its absolute top-right position from the base banner so the
+   stack centers without offset. */
 .next-set-promo-banner--feature {
-  padding: 18px 48px 18px 24px;
+  padding: 10px 40px 10px 16px;
 }
 
 .next-set-promo-banner-stack {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
   width: 100%;
 }
 
 .next-set-promo-banner-headline {
-  font-size: 1.4rem;
+  font-size: 1rem;
   font-weight: 700;
   letter-spacing: 0.01em;
   color: rgba(255, 255, 255, 0.96);
   text-align: center;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
-.next-set-promo-banner-meta {
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.82);
-}
-
-.next-set-promo-banner-meta-count {
-  font-weight: 700;
+.next-set-promo-banner-headline-count {
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
-  color: rgba(255, 255, 255, 0.96);
+  color: rgba(255, 255, 255, 0.78);
 }
 
-.next-set-promo-banner-meta-link {
-  color: rgba(255, 255, 255, 0.92);
-  text-decoration: underline;
-  text-decoration-color: rgba(255, 255, 255, 0.4);
-  text-underline-offset: 3px;
+.next-set-promo-banner-subhead {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Barlow', sans-serif;
+  line-height: 1.3;
+  text-align: center;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .next-set-promo-banner-meta-link:hover {
-    color: #fff;
-    text-decoration-color: rgba(255, 255, 255, 0.9);
-  }
+.next-set-promo-banner--feature .next-set-promo-banner-cta {
+  margin-top: 4px;
 }
 
 @media (max-width: 640px) {
   .next-set-promo-banner--feature {
-    padding: 14px 40px 14px 14px;
+    padding: 8px 36px 8px 12px;
   }
 
   .next-set-promo-banner-headline {
-    font-size: 1.15rem;
+    font-size: 0.92rem;
   }
 
-  .next-set-promo-banner-meta {
-    font-size: 0.85rem;
+  .next-set-promo-banner-subhead {
+    font-size: 0.76rem;
   }
 }
 
