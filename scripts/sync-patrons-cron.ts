@@ -25,14 +25,51 @@
 import 'dotenv/config'
 import { fetchActivePatronsWithDiscord } from '../lib/patreon'
 import { isPatron, addPatronRole, isGuildMember } from '../lib/discord'
+import { query } from '../lib/db'
 
 interface CronResult {
   total: number
   alreadyHadRole: number
   roleAdded: number
   notInServer: number
+  pendingRecorded: number
   failed: number
   mismatches: Array<{ discordId: string; name: string | null; reason: string; action: string }>
+}
+
+/**
+ * Upsert a patreon_pending row with reason='not_in_guild' for a stranded
+ * patron the cron found. The /api/auth/patron-status endpoint reads this
+ * on session-load and surfaces a "Join the Pod Discord server" message
+ * instead of the wrong "subscribe to Patreon" CTA (Layer 1).
+ *
+ * Best-effort: silently skips when DATABASE_URL is unavailable (e.g.,
+ * local runs without env). The script's primary job is Discord role
+ * sync; pending-row recording is a follow-up surface that fails closed.
+ */
+async function recordNotInGuildPending(
+  email: string | null,
+  name: string | null,
+): Promise<boolean> {
+  if (!email) return false
+  try {
+    await query(
+      `INSERT INTO patreon_pending (email, patreon_name, event, patron_status, reason, created_at)
+       VALUES ($1, $2, 'sync-patrons-cron', 'active_patron', 'not_in_guild', NOW())
+       ON CONFLICT (email) DO UPDATE SET
+         patreon_name = EXCLUDED.patreon_name,
+         event = EXCLUDED.event,
+         patron_status = EXCLUDED.patron_status,
+         reason = 'not_in_guild',
+         created_at = NOW()`,
+      [email, name]
+    )
+    return true
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn('sync-patrons-cron: could not record not_in_guild pending', { email, error: String(err) })
+    return false
+  }
 }
 
 interface RunOptions {
@@ -50,6 +87,7 @@ export async function runSyncPatronsCron(options: RunOptions = {}): Promise<Cron
     alreadyHadRole: 0,
     roleAdded: 0,
     notInServer: 0,
+    pendingRecorded: 0,
     failed: 0,
     mismatches: [],
   }
@@ -67,11 +105,17 @@ export async function runSyncPatronsCron(options: RunOptions = {}): Promise<Cron
     const inServer = await isGuildMember(discordId)
     if (!inServer) {
       result.notInServer++
+      // Record a pending row so /api/auth/patron-status can surface the
+      // "join the Pod Discord server" message to this patron on their next
+      // session load. Without this, the cron knows about the problem but
+      // the patron only sees a generic "subscribe to Patreon" CTA.
+      const recorded = dryRun ? false : await recordNotInGuildPending(patron.email, patron.fullName)
+      if (recorded) result.pendingRecorded++
       result.mismatches.push({
         discordId,
         name: patron.fullName,
         reason: 'active_patron_not_in_discord_guild',
-        action: 'manual_followup_needed',
+        action: recorded ? 'pending_row_recorded' : 'manual_followup_needed',
       })
       continue
     }
@@ -111,13 +155,16 @@ export async function runSyncPatronsCron(options: RunOptions = {}): Promise<Cron
 
 /**
  * Decide whether the run is alert-worthy. An alert fires when any
- * mismatch was found that the cron couldn't auto-heal (or when heal is
- * off). Auto-healed mismatches do NOT trigger an alert by themselves —
- * the cron's job is to silently absorb webhook gaps; the alert is for
- * cases that need human attention.
+ * mismatch was found that the cron couldn't either auto-heal (assigned
+ * the role) or auto-handle (recorded a pending row so patron-status
+ * surfaces the right next-step to the user on session load). Cases that
+ * fail both — heal_failed, manual_followup_needed — still need human
+ * attention.
  */
 export function shouldAlert(result: CronResult): boolean {
-  return result.mismatches.some((m) => m.action !== 'auto_healed')
+  return result.mismatches.some(
+    (m) => m.action !== 'auto_healed' && m.action !== 'pending_row_recorded'
+  )
 }
 
 function emitAlertLine(result: CronResult): void {
@@ -159,6 +206,7 @@ if (isCli) {
       alreadyHadRole: result.alreadyHadRole,
       roleAdded: result.roleAdded,
       notInServer: result.notInServer,
+      pendingRecorded: result.pendingRecorded,
       failed: result.failed,
       dryRun,
       heal,

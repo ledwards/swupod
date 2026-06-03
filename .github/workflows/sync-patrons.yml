@@ -38,6 +38,10 @@ jobs:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           DISCORD_GUILD_ID: ${{ secrets.DISCORD_GUILD_ID }}
           DISCORD_FRIEND_OF_THE_POD_ROLE_ID: ${{ secrets.DISCORD_FRIEND_OF_THE_POD_ROLE_ID }}
+          # Needed for recordNotInGuildPending — writes patreon_pending rows
+          # so /api/auth/patron-status can surface the "join Discord server"
+          # message to stranded patrons on session-load (Layer 1).
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           set -o pipefail
           npm run sync-patrons:cron 2>&1 | tee sync-output.log

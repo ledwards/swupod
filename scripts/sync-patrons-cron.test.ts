@@ -39,13 +39,36 @@ describe('shouldAlert', () => {
     )
   })
 
-  it('SPEC: active patron not in Discord guild → alert (needs manual follow-up)', () => {
+  it('SPEC: active patron not in Discord guild + pending row recorded → no alert (Layer 1 handles it)', () => {
+    // When the cron writes a patreon_pending row for an active-but-not-in-guild
+    // patron, patron-status surfaces the "join the Pod Discord server" message
+    // to the user on next session-load. No human intervention required.
     assert.strictEqual(
       shouldAlert({
         total: 5,
         alreadyHadRole: 3,
         roleAdded: 1,
         notInServer: 1,
+        pendingRecorded: 1,
+        failed: 0,
+        mismatches: [
+          { discordId: 'd1', name: 'Bob', reason: 'active_patron_not_in_discord_guild', action: 'pending_row_recorded' },
+        ],
+      }),
+      false,
+    )
+  })
+
+  it('SPEC: active patron not in Discord guild + no email to record → alert (manual followup)', () => {
+    // recordNotInGuildPending requires an email; when Patreon doesn't return
+    // one, the cron falls through to manual_followup_needed and alerts.
+    assert.strictEqual(
+      shouldAlert({
+        total: 5,
+        alreadyHadRole: 3,
+        roleAdded: 1,
+        notInServer: 1,
+        pendingRecorded: 0,
         failed: 0,
         mismatches: [
           { discordId: 'd1', name: 'Bob', reason: 'active_patron_not_in_discord_guild', action: 'manual_followup_needed' },
