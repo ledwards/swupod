@@ -96,11 +96,7 @@ export default function SetCardGrid({
 
   return (
     <main className="set-catalog-page">
-      <SetPagePromoBanner
-        setCode={setCode}
-        spoiledNormalCount={spoiledNormalCount}
-        totalNormalCount={totalNormalCount}
-      />
+      <SetPagePromoBanner setCode={setCode} />
       <header className="set-catalog-header">
         <a className="set-catalog-back" href="/">← Home</a>
         <h1 className="set-catalog-title">{setName}</h1>

@@ -5,16 +5,13 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { getSetConfig } from '../utils/setConfigs/index'
 import { isSetUpcoming } from '../utils/membership'
-import { promoDismissalKey, type PromoVariant } from './landingPagePromo'
-import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
+import { promoDismissalKey } from './landingPagePromo'
 import Button from './Button'
 import SubscribeModal from './SubscribeModal'
 import './LandingPage.css'
 
 interface Props {
   setCode: string
-  spoiledNormalCount: number
-  totalNormalCount: number
 }
 
 // Mirrors LandingPage.hexToRgba — kept local so we don't drag the whole
@@ -28,42 +25,35 @@ function hexToRgba(hex: string, alpha: number): string {
 }
 
 /**
- * Conversion banner for the set catalog page. Shows on /sets/{code} while the
- * set is unreleased and at least one real card is synced, to users who are
- * NOT in beta (logged out, non-patron, or patron-without-beta).
+ * Set-page beta enrollment banner. Renders on /sets/{code} for one audience
+ * only: patrons who have not yet enrolled in beta. Logged-out visitors,
+ * non-patrons, beta testers, and admins all see nothing.
  *
- * Shares localStorage dismissal keys with the homepage banner, so dismissing
- * on either surface carries across. patronActivation is intentionally absent
- * — beta testers don't need a "you're in beta" prompt while browsing the set.
+ * Shares the localStorage dismissal key with the homepage patron-no-beta
+ * banner, so a dismissal on either surface carries across.
  */
-export default function SetPagePromoBanner({ setCode, spoiledNormalCount, totalNormalCount }: Props) {
+export default function SetPagePromoBanner({ setCode }: Props) {
   const { user, isPatron } = useAuth()
   const isBetaTester = Boolean(user?.is_beta_tester) || Boolean(user?.is_admin)
 
-  const [dismissed, setDismissed] = useState<Partial<Record<PromoVariant, boolean>>>({})
+  const [dismissed, setDismissed] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const next: Partial<Record<PromoVariant, boolean>> = {}
-    for (const v of ['nonSubConversion', 'patronNoBeta'] as const) {
-      const key = promoDismissalKey(setCode, v)
-      if (key && localStorage.getItem(key)) next[v] = true
-    }
-    setDismissed(next)
+    const key = promoDismissalKey(setCode, 'patronNoBeta')
+    if (key && localStorage.getItem(key)) setDismissed(true)
   }, [setCode])
 
   if (!isSetUpcoming(setCode)) return null
-  if (isPatron === null) return null
-  if (isPatron === true && isBetaTester) return null
+  if (isPatron !== true) return null
+  if (isBetaTester) return null
+  if (dismissed) return null
 
   const setConfig = getSetConfig(setCode.replace('-CB', ''))
   if (!setConfig) return null
   const setName = setConfig.setName
   const setColor = setConfig.color
-
-  const variant: PromoVariant = isPatron === false ? 'nonSubConversion' : 'patronNoBeta'
-  if (dismissed[variant]) return null
 
   const promoBannerStyle = setColor
     ? {
@@ -73,63 +63,12 @@ export default function SetPagePromoBanner({ setCode, spoiledNormalCount, totalN
       }
     : undefined
 
-  const handleDismiss = (v: PromoVariant) => {
-    const key = promoDismissalKey(setCode, v)
+  const handleDismiss = () => {
+    const key = promoDismissalKey(setCode, 'patronNoBeta')
     if (key && typeof window !== 'undefined') {
       try { localStorage.setItem(key, '1') } catch { /* localStorage disabled */ }
     }
-    setDismissed(prev => ({ ...prev, [v]: true }))
-  }
-
-  if (variant === 'nonSubConversion') {
-    return (
-      <div
-        className="next-set-promo-banner next-set-promo-banner--feature"
-        role="region"
-        aria-label={`${setName} is in beta`}
-        style={promoBannerStyle}
-      >
-        <div className="next-set-promo-banner-stack">
-          <div className="next-set-promo-banner-text">
-            <div className="next-set-promo-banner-headline">
-              {setName} is in beta
-              {' · '}
-              <span className="next-set-promo-banner-headline-count">
-                {spoiledNormalCount.toLocaleString()} / {totalNormalCount.toLocaleString()} cards
-              </span>
-            </div>
-            <div className="next-set-promo-banner-subhead">
-              Generally available on pre-release date. Or join your Beta friend&apos;s {setCode} pod!
-            </div>
-          </div>
-          <Button
-            variant="primary"
-            size="sm"
-            className="next-set-promo-banner-cta"
-            onClick={() => {
-              const url = 'https://www.patreon.com/cw/ProtectthePod'
-              trackEvent(AnalyticsEvents.SUBSCRIBE_CTA_CLICKED, {
-                surface: 'setCatalog',
-                setCode,
-                ctaUrl: url,
-              })
-              window.open(url, '_blank', 'noopener,noreferrer')
-            }}
-          >
-            Become a Friend of the Pod
-          </Button>
-        </div>
-        <Button
-          variant="icon"
-          size="sm"
-          className="next-set-promo-banner-dismiss"
-          aria-label="Dismiss banner"
-          onClick={() => handleDismiss('nonSubConversion')}
-        >
-          ×
-        </Button>
-      </div>
-    )
+    setDismissed(true)
   }
 
   return (
@@ -156,7 +95,7 @@ export default function SetPagePromoBanner({ setCode, spoiledNormalCount, totalN
           size="sm"
           className="next-set-promo-banner-dismiss"
           aria-label="Dismiss banner"
-          onClick={() => handleDismiss('patronNoBeta')}
+          onClick={handleDismiss}
         >
           ×
         </Button>
