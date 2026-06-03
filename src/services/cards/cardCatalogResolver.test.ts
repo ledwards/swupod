@@ -111,6 +111,134 @@ describe('card catalog resolver', () => {
     assert.equal(resolved.isPlaceholder, true)
   })
 
+  it('resolves Hyperspace placeholder leaders to Normal real cards when HS variants are not yet published', () => {
+    // Pre-release case: ASH ships fully Normal-spoiled but HS leader variants
+    // are still missing from the catalog. Old pools stored Hyperspace leader
+    // placeholders; the resolver must hydrate them via the Normal bucket while
+    // preserving the Hyperspace treatment flags so the slot still renders HS.
+    const hyperspaceBucketId = 'ash-slot:hyperspace:leader:common:command-heroism'
+    const hyperspaceLeaderPlaceholder = {
+      id: `${hyperspaceBucketId}:001`,
+      cardId: null,
+      number: null,
+      name: 'Unknown ASH Hyperspace Common Leader Command+Heroism Slot 1',
+      set: 'ASH',
+      rarity: 'Common',
+      type: 'Leader',
+      aspects: ['Command', 'Heroism'],
+      variantType: 'Hyperspace',
+      isLeader: true,
+      isHyperspace: true,
+      isFoil: false,
+      isPlaceholder: true,
+      placeholderKind: 'bucket-slot',
+      placeholderGroup: 'leader',
+      placeholderBucketId: hyperspaceBucketId,
+      placeholderBucketLabel: 'Common Leader Command+Heroism',
+      placeholderSlotIndex: 1,
+    }
+    const normalRealLeader = {
+      id: 'ahsoka-uuid',
+      cardId: 'ASH-001',
+      number: '1',
+      name: 'Ahsoka Tano',
+      set: 'ASH',
+      rarity: 'Common',
+      type: 'Leader',
+      aspects: ['Command', 'Heroism'],
+      variantType: 'Normal',
+      imageUrl: 'https://example.test/ahsoka.png',
+      isLeader: true,
+      isPlaceholder: false,
+      spoilerStatus: 'spoiled',
+    }
+    const lookup = new Map([[normalRealLeader.id, normalRealLeader]])
+
+    const resolved = resolveStoredCard(hyperspaceLeaderPlaceholder, lookup)
+
+    assert.equal(resolved.name, 'Ahsoka Tano')
+    assert.equal(resolved.isPlaceholder, false)
+    assert.equal(resolved.imageUrl, 'https://example.test/ahsoka.png')
+    // Hyperspace slot semantics preserved from the stored placeholder
+    assert.equal(resolved.variantType, 'Hyperspace')
+    assert.equal(resolved.isHyperspace, true)
+  })
+
+  it('resolves Hyperspace Foil placeholders to Normal real cards and preserves foil treatment', () => {
+    const hsfBucketId = 'ash-slot:hyperspace-foil:main:rare:vigilance'
+    const hsfPlaceholder = {
+      id: `${hsfBucketId}:001`,
+      cardId: null,
+      number: null,
+      name: 'Unknown ASH Hyperspace Foil Rare Vigilance Slot 1',
+      set: 'ASH',
+      rarity: 'Rare',
+      type: 'Unknown',
+      aspects: ['Vigilance'],
+      variantType: 'Hyperspace Foil',
+      isHyperspace: true,
+      isFoil: true,
+      isPlaceholder: true,
+      placeholderKind: 'bucket-slot',
+      placeholderGroup: 'main',
+      placeholderBucketId: hsfBucketId,
+      placeholderBucketLabel: 'Rare Vigilance',
+      placeholderSlotIndex: 1,
+    }
+    const lookup = new Map([[real.id, real]])
+
+    const resolved = resolveStoredCard(hsfPlaceholder, lookup)
+
+    assert.equal(resolved.name, 'Spoiled Card')
+    assert.equal(resolved.isPlaceholder, false)
+    assert.equal(resolved.variantType, 'Hyperspace Foil')
+    assert.equal(resolved.isHyperspace, true)
+    assert.equal(resolved.isFoil, true)
+  })
+
+  it('keeps Hyperspace placeholders unresolved when no Normal-variant card exists in the same bucket either', () => {
+    // Placeholder catalog over-predicted a Rare Vigilance+Heroism leader, but
+    // no such real card exists. Without a Normal-bucket match either, the
+    // resolver must leave the placeholder in place rather than substitute the
+    // wrong card.
+    const phantomBucketId = 'ash-slot:hyperspace:leader:rare:vigilance-heroism'
+    const phantomPlaceholder = {
+      id: `${phantomBucketId}:001`,
+      cardId: null,
+      number: null,
+      name: 'Unknown ASH Hyperspace Rare Leader Vigilance+Heroism Slot 1',
+      set: 'ASH',
+      rarity: 'Rare',
+      type: 'Leader',
+      aspects: ['Vigilance', 'Heroism'],
+      variantType: 'Hyperspace',
+      isLeader: true,
+      isHyperspace: true,
+      isPlaceholder: true,
+      placeholderKind: 'bucket-slot',
+      placeholderGroup: 'leader',
+      placeholderBucketId: phantomBucketId,
+      placeholderBucketLabel: 'Rare Leader Vigilance+Heroism',
+      placeholderSlotIndex: 1,
+    }
+    // Only Common Vigilance+Heroism real leader exists — not Rare.
+    const commonVHLeader = {
+      ...real,
+      id: 'sabine-uuid',
+      name: 'Sabine Wren',
+      rarity: 'Common',
+      type: 'Leader',
+      aspects: ['Vigilance', 'Heroism'],
+      isLeader: true,
+    }
+    const lookup = new Map([[commonVHLeader.id, commonVHLeader]])
+
+    const resolved = resolveStoredCard(phantomPlaceholder, lookup)
+
+    assert.equal(resolved.isPlaceholder, true)
+    assert.equal(resolved.name, 'Unknown ASH Hyperspace Rare Leader Vigilance+Heroism Slot 1')
+  })
+
   it('preserves synthesized pack treatment flags while hydrating card data', () => {
     const lookup = new Map([[real.id, real]])
     const resolved = resolveStoredCard({

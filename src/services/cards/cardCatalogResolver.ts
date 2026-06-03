@@ -10,7 +10,7 @@
 
 import { getAllCards, type RawCard } from '../../utils/cardData'
 import { buildCardLookupMaps, normalizeCardId } from '../../utils/cardNormalization'
-import { ASH_SET_CODE, getAshCardBucketId } from './ashPlaceholderCatalog'
+import { ASH_SET_CODE, getAshBucketId, getAshCardBucketId } from './ashPlaceholderCatalog'
 
 const INSTANCE_FIELDS = [
   'instanceId',
@@ -104,11 +104,32 @@ function resolveAshBucketPlaceholder(card: Record<string, any>, lookup: Map<stri
     return currentPlaceholders.find(c => c.placeholderSlotIndex === slotIndex) || null
   }
 
-  const realCandidates = sortRealAshCards(catalogCards.filter(c =>
+  let realCandidates = sortRealAshCards(catalogCards.filter(c =>
     c.set === ASH_SET_CODE &&
     c.isPlaceholder !== true &&
     getAshCardBucketId(c) === bucketId
   ))
+
+  // Pre-release fallback: when a stored placeholder targets a Hyperspace /
+  // Hyperspace Foil bucket but those variants haven't shipped yet, fall back
+  // to the equivalent Normal-variant bucket. resolveStoredCard re-stamps the
+  // stored treatment flags (variantType / isHyperspace / isFoil) onto the
+  // resolved card, so the slot still renders as Hyperspace using Normal art.
+  // Mirrors the HyperspaceLeaderBelt / HyperspaceCommonBelt fallback pattern.
+  if (realCandidates.length === 0 && card.variantType && card.variantType !== 'Normal') {
+    const normalBucketId = getAshBucketId({
+      group: card.placeholderGroup,
+      rarity: card.rarity,
+      aspects: card.aspects,
+      variantType: 'Normal',
+    })
+    realCandidates = sortRealAshCards(catalogCards.filter(c =>
+      c.set === ASH_SET_CODE &&
+      c.isPlaceholder !== true &&
+      getAshCardBucketId(c) === normalBucketId
+    ))
+  }
+
   const resolvedIndex = slotIndex - remainingPlaceholderCount - 1
   return realCandidates[resolvedIndex] || null
 }
