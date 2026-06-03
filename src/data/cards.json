@@ -320833,7 +320833,7 @@
         "placeholderStatus": "valid"
       }
     ],
-    "fixesApplied": 0,
+    "fixesApplied": 2,
     "ashPlaceholderCatalog": {
       "version": "2026-05-20-sec-shaped-law-multicolor-v2",
       "expectedNormalSlots": 264,
@@ -320850,7 +320850,7 @@
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-06-03T20:13:32.760Z"
+      "generatedAt": "2026-06-03T20:24:08.151Z"
     },
     "lastProcessed": "2026-06-03"
   }
