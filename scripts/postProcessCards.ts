@@ -278,14 +278,6 @@ function main(): void {
     `${ashMerge.metadata.placeholderCardCount} placeholders, ` +
     `${ashMerge.metadata.spoiledNormalCount} spoiled normal`
   )
-  if (ashMerge.metadata.status !== 'valid') {
-    console.warn(
-      `  ⚠ ASH placeholder bucket contradictions: ` +
-      ashMerge.metadata.contradictions.map(item =>
-        `${item.bucketId} target=${item.targetCount} real=${item.realCount}`
-      ).join(', ')
-    )
-  }
 
   // Generate report
   const report = generateReport(allFixes)

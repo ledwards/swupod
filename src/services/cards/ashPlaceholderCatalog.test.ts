@@ -109,7 +109,34 @@ describe('ASH bucket placeholder catalog', () => {
     assert.equal(cards.find(card => card.id === 'swuapi-real-uuid')?.isPlaceholder, false)
   })
 
-  it('surfaces contradictions when a bucket is overfull', () => {
+  it('emits zero placeholders once the set hits 100% Normal-variant spoiler coverage', () => {
+    // Build a synthetic real-card list with exactly ASH_EXPECTED_NORMAL_SLOTS
+    // Normal cards — we don't care about bucket alignment, just total coverage.
+    const fullySpoiled = Array.from({ length: ASH_EXPECTED_NORMAL_SLOTS }, (_, index) => ({
+      id: `real-${index}`,
+      cardId: `ASH-${index}`,
+      number: String(index),
+      name: `Real ${index}`,
+      set: 'ASH',
+      rarity: 'Common',
+      type: 'Unit',
+      aspects: ['Vigilance'],
+      variantType: 'Normal',
+    }))
+
+    const { cards, metadata } = mergeAshPlaceholderCatalog(fullySpoiled)
+    const ashCards = ashOnly(cards)
+
+    assert.equal(metadata.placeholderCardCount, 0)
+    assert.equal(count(ashCards, card => card.isPlaceholder === true), 0)
+    assert.equal(metadata.realCardCount, ASH_EXPECTED_NORMAL_SLOTS)
+    assert.equal(metadata.spoiledNormalCount, ASH_EXPECTED_NORMAL_SLOTS)
+  })
+
+  it('accepts overfull buckets silently — real cards always win over the placeholder target', () => {
+    // The Rare Vigilance bucket targets 4. We feed 5 real cards. The merger
+    // must NOT flag this as an error: the placeholder catalog is a best-effort
+    // prediction; the real card list is the source of truth.
     const overfull = Array.from({ length: 5 }, (_, index) => ({
       id: `real-${index}`,
       cardId: `ASH-${100 + index}`,
@@ -122,9 +149,25 @@ describe('ASH bucket placeholder catalog', () => {
       variantType: 'Normal',
     }))
 
-    const { metadata } = mergeAshPlaceholderCatalog(overfull)
-    assert.equal(metadata.status, 'invalid')
-    assert(metadata.contradictions.some(item => item.realCount === 5 && item.targetCount === 4))
+    const { cards, metadata } = mergeAshPlaceholderCatalog(overfull)
+    assert.equal(metadata.status, 'valid')
+    assert.deepEqual(metadata.contradictions, [])
+    const bucketId = getAshBucketId({
+      group: 'main',
+      rarity: 'Rare',
+      aspects: ['Vigilance'],
+      variantType: 'Normal',
+    })
+    // No placeholders emitted for the overflowing bucket.
+    const placeholdersInBucket = ashOnly(cards).filter(
+      card => card.placeholderBucketId === bucketId && card.isPlaceholder === true,
+    )
+    assert.equal(placeholdersInBucket.length, 0)
+    // All 5 real cards survive untouched.
+    const realInBucket = ashOnly(cards).filter(
+      card => card.placeholderBucketId !== bucketId && card.isPlaceholder !== true && card.rarity === 'Rare',
+    )
+    assert.equal(realInBucket.length, 5)
   })
 
   it('is idempotent against the current generated card catalog', () => {

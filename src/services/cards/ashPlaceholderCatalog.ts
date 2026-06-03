@@ -407,22 +407,28 @@ export function mergeAshPlaceholderCatalog(
     realByBucket.get(bucketId)!.push(card)
   }
 
+  // Once the Normal variant of the set is fully spoiled (real Normal count
+  // reaches the expected slot total), drop ALL placeholders — Normal, Hyperspace,
+  // Hyperspace Foil. The catalog's job is to fill in the unknowns; when nothing
+  // is unknown anymore, the catalog should disappear entirely.
+  const realNormalCount = realAshCards.filter(
+    card => (card.variantType || 'Normal') === 'Normal',
+  ).length
+  const isFullySpoiled = realNormalCount >= ASH_EXPECTED_NORMAL_SLOTS
+
   const placeholders: AshCatalogCard[] = []
-  const contradictions: AshBucketContradiction[] = []
 
-  for (const target of targets) {
-    const realCount = realByBucket.get(target.bucketId)?.length || 0
-    if (realCount > target.count) {
-      contradictions.push({
-        bucketId: target.bucketId,
-        targetCount: target.count,
-        realCount,
-      })
-    }
-
-    const placeholderCount = Math.max(0, target.count - realCount)
-    for (let slotIndex = 1; slotIndex <= placeholderCount; slotIndex++) {
-      placeholders.push(createPlaceholderCard(target, slotIndex, placeholderCount))
+  // Overfull buckets (realCount > target.count) are accepted silently. The
+  // placeholder catalog is a best-effort prediction of set composition; the
+  // real card list always wins. We simply emit zero placeholders for the
+  // overflowing bucket and move on — no contradiction, no error status.
+  if (!isFullySpoiled) {
+    for (const target of targets) {
+      const realCount = realByBucket.get(target.bucketId)?.length || 0
+      const placeholderCount = Math.max(0, target.count - realCount)
+      for (let slotIndex = 1; slotIndex <= placeholderCount; slotIndex++) {
+        placeholders.push(createPlaceholderCard(target, slotIndex, placeholderCount))
+      }
     }
   }
 
@@ -438,8 +444,8 @@ export function mergeAshPlaceholderCatalog(
     realCardCount: ashCards.filter(card => card.isPlaceholder !== true).length,
     placeholderCardCount: ashCards.filter(card => card.isPlaceholder === true).length,
     spoiledNormalCount: ashCards.filter(card => card.variantType === 'Normal' && card.isPlaceholder !== true).length,
-    status: contradictions.length === 0 ? 'valid' : 'invalid',
-    contradictions,
+    status: 'valid',
+    contradictions: [],
     generatedAt: now.toISOString(),
   }
 
