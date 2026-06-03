@@ -3,7 +3,6 @@ import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import {
   selectHomepagePromoVariant,
-  lockInDismissalKey,
   promoDismissalKey,
 } from './landingPagePromo'
 
@@ -89,50 +88,15 @@ describe('LandingPage', () => {
     })
   })
 
-  // U5: homepage promo banner variant selection.
-  // SPEC: see docs/plans/2026-05-26-001-feat-patreon-pricing-and-sub-gating-plan.md
-  describe('Promo banner variant selection (U5)', () => {
+  // Homepage promo banner variant selection.
+  describe('Promo banner variant selection', () => {
     const base = {
       hasActiveDraft: false,
-      withinLockInWindow: false,
       upcomingSet: null,
       isPatron: false as boolean | null,
       isBetaTester: false,
-      lockInDismissed: false,
-      dismissedVariantsForSet: {} as Partial<Record<'nonSubConversion' | 'patronNoBeta' | 'patronActivation' | 'lockIn' | 'none', boolean>>,
+      dismissedVariantsForSet: {} as Partial<Record<'nonSubConversion' | 'patronNoBeta' | 'patronActivation' | 'none', boolean>>,
     }
-
-    it('renders the lock-in variant when the lock-in window is active and the user is anon/non-sub', () => {
-      const variant = selectHomepagePromoVariant({
-        ...base,
-        withinLockInWindow: true,
-        isPatron: false,
-      })
-      assert.strictEqual(variant, 'lockIn')
-    })
-
-    it('hides the lock-in variant from subs (subs never see lock-in pitch)', () => {
-      const variant = selectHomepagePromoVariant({
-        ...base,
-        withinLockInWindow: true,
-        upcomingSet: ASH,
-        isPatron: true,
-        isBetaTester: true,
-      })
-      // Subs do not see lock-in; falls through to set-based variant.
-      assert.strictEqual(variant, 'patronActivation')
-    })
-
-    it('sub with no upcoming set: no banner during lock-in window', () => {
-      const variant = selectHomepagePromoVariant({
-        ...base,
-        withinLockInWindow: true,
-        upcomingSet: null,
-        isPatron: true,
-        isBetaTester: true,
-      })
-      assert.strictEqual(variant, 'none')
-    })
 
     it('renders the non-sub conversion variant when an upcoming set is in window and user is non-sub', () => {
       const variant = selectHomepagePromoVariant({
@@ -176,32 +140,8 @@ describe('LandingPage', () => {
       const variant = selectHomepagePromoVariant({
         ...base,
         hasActiveDraft: true,
-        withinLockInWindow: true, // also true — active pod still wins
         upcomingSet: ASH,
         isPatron: false,
-      })
-      assert.strictEqual(variant, 'none')
-    })
-
-    it('dismissing the lock-in banner falls through to the conversion variant when a set is upcoming', () => {
-      const variant = selectHomepagePromoVariant({
-        ...base,
-        withinLockInWindow: true,
-        upcomingSet: ASH,
-        isPatron: false,
-        lockInDismissed: true,
-      })
-      // Lock-in dismissed → falls through; non-sub + upcoming set → conversion.
-      assert.strictEqual(variant, 'nonSubConversion')
-    })
-
-    it('dismissing the lock-in banner with no upcoming set hides the banner entirely', () => {
-      const variant = selectHomepagePromoVariant({
-        ...base,
-        withinLockInWindow: true,
-        upcomingSet: null,
-        isPatron: false,
-        lockInDismissed: true,
       })
       assert.strictEqual(variant, 'none')
     })
@@ -273,18 +213,7 @@ describe('LandingPage', () => {
     })
   })
 
-  describe('Dismissal localStorage keys (U5)', () => {
-    it('lockInDismissalKey is null when no lock-in window is configured', () => {
-      assert.strictEqual(lockInDismissalKey(null), null)
-    })
-
-    it('lockInDismissalKey is namespaced by the lock-in window end date so a new window re-shows the banner', () => {
-      assert.strictEqual(
-        lockInDismissalKey('2026-06-15'),
-        'dismissed-lockin-2026-06-15',
-      )
-    })
-
+  describe('Dismissal localStorage keys', () => {
     it('promoDismissalKey is null when no set is upcoming', () => {
       assert.strictEqual(promoDismissalKey(null, 'nonSubConversion'), null)
       assert.strictEqual(promoDismissalKey(undefined, 'nonSubConversion'), null)
@@ -292,7 +221,6 @@ describe('LandingPage', () => {
 
     it('promoDismissalKey is null for variants that have no per-set dismissal', () => {
       assert.strictEqual(promoDismissalKey('ASH', 'none'), null)
-      assert.strictEqual(promoDismissalKey('ASH', 'lockIn'), null)
       assert.strictEqual(promoDismissalKey('ASH', null), null)
     })
 

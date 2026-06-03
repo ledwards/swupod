@@ -42,13 +42,6 @@ export const BETA_ENROLL_URL = '/beta'
  */
 export const PROMO_BANNER_WEEKS_BEFORE_PRERELEASE = 8
 
-/**
- * Lock-in-window banner end date (ISO 8601 UTC string). Set by U1 scheduling
- * to enable the transient lock-in banner during the 5–7 days before the price
- * raise effective date. Null = no active lock-in window (banner hidden).
- */
-export const LOCK_IN_WINDOW_END_DATE: string | null = null
-
 // ---------- Helpers ----------
 
 /**
@@ -152,12 +145,3 @@ export function getUpcomingSetForPromo(now: Date = new Date()): SetConfig | null
   return best
 }
 
-/**
- * Returns true when "now" falls before the lock-in window end date.
- * Used by U5's lock-in banner variant to show "Lock in $5/month before
- * {date}" during the announcement window.
- */
-export function isWithinLockInWindow(now: Date = new Date()): boolean {
-  if (!LOCK_IN_WINDOW_END_DATE) return false
-  return now.toISOString() < LOCK_IN_WINDOW_END_DATE
-}

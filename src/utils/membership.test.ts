@@ -17,7 +17,6 @@ import {
   isSetUpcoming,
   getUpcomingSetForPeek,
   getUpcomingSetForPromo,
-  isWithinLockInWindow,
 } from './membership.ts'
 
 describe('Pricing constants', () => {
@@ -156,11 +155,3 @@ describe('getUpcomingSetForPromo', () => {
   })
 })
 
-describe('isWithinLockInWindow', () => {
-  it('SPEC: returns false when LOCK_IN_WINDOW_END_DATE is unset (no active window)', () => {
-    assert.strictEqual(isWithinLockInWindow(), false)
-  })
-
-  // Note: the active-window branch requires LOCK_IN_WINDOW_END_DATE to be
-  // set; verify manually after U1 scheduling sets it.
-})

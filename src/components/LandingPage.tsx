@@ -10,12 +10,9 @@ import { formatPoolLabel } from '../utils/poolDisplayName'
 import {
   PATREON_URL,
   getUpcomingSetForPromo,
-  isWithinLockInWindow,
-  LOCK_IN_WINDOW_END_DATE,
 } from '../utils/membership'
 import {
   selectHomepagePromoVariant,
-  lockInDismissalKey,
   promoDismissalKey,
   type PromoVariant,
 } from './landingPagePromo'
@@ -101,16 +98,11 @@ function LandingPage() {
     }
     return getUpcomingSetForPromo()
   }, [previewPromoSetCode])
-  const [lockInDismissed, setLockInDismissed] = useState(false)
   const [dismissedVariantsForSet, setDismissedVariantsForSet] = useState<Partial<Record<PromoVariant, boolean>>>({})
   const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(false)
 
   // Read dismissal flags from localStorage on mount (client-only — avoid SSR mismatch).
   useEffect(() => {
-    const lockKey = lockInDismissalKey(LOCK_IN_WINDOW_END_DATE)
-    if (lockKey && typeof window !== 'undefined' && localStorage.getItem(lockKey)) {
-      setLockInDismissed(true)
-    }
     if (typeof window === 'undefined' || !upcomingSet?.setCode) {
       setDismissedVariantsForSet({})
       return
@@ -209,11 +201,9 @@ function LandingPage() {
   const isPreviewing = Boolean(previewPromoSetCode)
   const promoVariant: PromoVariant = selectHomepagePromoVariant({
     hasActiveDraft: isPreviewing ? false : hasActiveDraft,
-    withinLockInWindow: isPreviewing ? false : isWithinLockInWindow(),
     upcomingSet,
     isPatron: isPreviewing ? false : isPatron,
     isBetaTester: isPreviewing ? false : Boolean(user?.is_beta_tester),
-    lockInDismissed,
     dismissedVariantsForSet: isPreviewing ? {} : dismissedVariantsForSet,
   })
 
@@ -252,11 +242,9 @@ function LandingPage() {
   useEffect(() => {
     if (promoVariant === 'none') return
     const surface =
-      promoVariant === 'lockIn'
-        ? 'lockInBanner'
-        : promoVariant === 'patronActivation'
-          ? null // not a conversion event — already a patron
-          : 'homepageBanner'
+      promoVariant === 'patronActivation'
+        ? null // not a conversion event — already a patron
+        : 'homepageBanner'
     if (!surface) return
     trackEvent(AnalyticsEvents.SUBSCRIBE_CTA_SHOWN, {
       surface,
@@ -264,14 +252,6 @@ function LandingPage() {
       variant: promoVariant,
     })
   }, [promoVariant, setCode])
-
-  const handleDismissLockIn = () => {
-    const lockKey = lockInDismissalKey(LOCK_IN_WINDOW_END_DATE)
-    if (lockKey && typeof window !== 'undefined') {
-      try { localStorage.setItem(lockKey, '1') } catch { /* localStorage disabled */ }
-    }
-    setLockInDismissed(true)
-  }
 
   const handleDismissPromo = (variant: PromoVariant) => {
     const promoKey = promoDismissalKey(setCode, variant)
@@ -286,11 +266,8 @@ function LandingPage() {
   let modalHeadline = ''
   let modalCtaUrl: string | undefined = undefined
   let modalCtaLabel: string | undefined = undefined
-  let modalSurface: 'homepageBanner' | 'lockInBanner' | undefined = undefined
-  if (promoVariant === 'lockIn') {
-    modalHeadline = 'Lock in the old rate before the raise'
-    modalSurface = 'lockInBanner'
-  } else if (promoVariant === 'nonSubConversion' && setName) {
+  let modalSurface: 'homepageBanner' | undefined = undefined
+  if (promoVariant === 'nonSubConversion' && setName) {
     modalHeadline = `Be the first to draft ${setName}`
     modalSurface = 'homepageBanner'
   } else if (promoVariant === 'patronNoBeta' && setName) {
@@ -302,30 +279,6 @@ function LandingPage() {
 
   return (
     <div className="landing-page">
-      {promoVariant === 'lockIn' && LOCK_IN_WINDOW_END_DATE && (
-        <div className="lock-in-banner" role="region" aria-label="Lock in the current membership price">
-          <span className="lock-in-banner-copy">
-            Lock in $5/month before {LOCK_IN_WINDOW_END_DATE} — price rises to $9.
-          </span>
-          <Button
-            variant="primary"
-            size="sm"
-            className="lock-in-banner-cta"
-            onClick={() => setIsSubscribeModalOpen(true)}
-          >
-            Lock In
-          </Button>
-          <Button
-            variant="icon"
-            size="sm"
-            className="lock-in-banner-dismiss"
-            aria-label="Dismiss banner"
-            onClick={handleDismissLockIn}
-          >
-            ×
-          </Button>
-        </div>
-      )}
       {promoVariant === 'nonSubConversion' && setName && (
         <div
           className="next-set-promo-banner next-set-promo-banner--feature"
@@ -334,15 +287,17 @@ function LandingPage() {
           style={promoBannerStyle}
         >
           <div className="next-set-promo-banner-stack">
-            <div className="next-set-promo-banner-headline">
-              {setName} is in beta
-              {' · '}
-              <span className="next-set-promo-banner-headline-count">
-                {spoilerProgress.spoiled.toLocaleString()} / {spoilerProgress.total.toLocaleString()} cards
-              </span>
-            </div>
-            <div className="next-set-promo-banner-subhead">
-              Generally available on pre-release date. Or join your Beta friend&apos;s {setCode} pod!
+            <div className="next-set-promo-banner-text">
+              <div className="next-set-promo-banner-headline">
+                {setName} is in beta
+                {' · '}
+                <span className="next-set-promo-banner-headline-count">
+                  {spoilerProgress.spoiled.toLocaleString()} / {spoilerProgress.total.toLocaleString()} cards
+                </span>
+              </div>
+              <div className="next-set-promo-banner-subhead">
+                Generally available on pre-release date. Or join your Beta friend&apos;s {setCode} pod!
+              </div>
             </div>
             <Button
               variant="primary"

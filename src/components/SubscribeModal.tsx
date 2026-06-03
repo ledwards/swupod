@@ -37,7 +37,7 @@ export interface SubscribeModalProps {
    * Optional analytics surface tag. Wired in U7; for now it's a no-op
    * placeholder so call sites can land their surface attribution.
    */
-  surface?: 'setPreview' | 'homepageBanner' | 'lockInBanner' | 'podBanner'
+  surface?: 'setPreview' | 'homepageBanner' | 'podBanner'
 }
 
 const DEFAULT_CTA_LABEL = 'Become a Friend of the Pod'
