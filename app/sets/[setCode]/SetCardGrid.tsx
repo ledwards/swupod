@@ -4,6 +4,7 @@
 import { useMemo } from 'react'
 import Card from '@/src/components/Card'
 import CardWithPreview from '@/src/components/CardWithPreview'
+import SetPagePromoBanner from '@/src/components/SetPagePromoBanner'
 import { getAspectSortKey, getTypeOrder } from '@/src/services/cards/cardSorting'
 import './set-catalog.css'
 
@@ -95,6 +96,11 @@ export default function SetCardGrid({
 
   return (
     <main className="set-catalog-page">
+      <SetPagePromoBanner
+        setCode={setCode}
+        spoiledNormalCount={spoiledNormalCount}
+        totalNormalCount={totalNormalCount}
+      />
       <header className="set-catalog-header">
         <a className="set-catalog-back" href="/">← Home</a>
         <h1 className="set-catalog-title">{setName}</h1>
