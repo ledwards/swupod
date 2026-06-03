@@ -135,6 +135,9 @@ export async function POST(request: NextRequest) {
           [patreonEmail]
         )
         console.log('Patreon webhook: is_patron email-match revoke', { patreonEmail, event, rowCount: (res as any)?.rowCount })
+        // Clear stale pending rows so the patron-status auto-enable path
+        // doesn't accidentally re-grant a churned patron on their next sign-in.
+        try { await query('DELETE FROM patreon_pending WHERE LOWER(email) = LOWER($1)', [patreonEmail]) } catch { /* ignore */ }
       }
     } catch (err) {
       console.error('Patreon webhook: is_patron email-match update failed', { patreonEmail, event, error: err })

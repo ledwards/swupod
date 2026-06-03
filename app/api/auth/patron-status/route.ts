@@ -68,15 +68,39 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }
     }
 
-    // If not a patron, surface a pending message if one exists.
+    // If not a patron, check patreon_pending. A recent row is proof that
+    // Patreon confirmed this email as a patron — sufficient evidence to
+    // auto-enable without requiring the user to fix their Discord chain.
+    // The cron sync keeps patreon_pending clean (stale rows for churned
+    // patrons get deleted), so a surviving row is trustworthy within the
+    // recency window. Falls through to the message path if the row is
+    // older than the window (likely stale).
     let pendingMessage: string | null = null
+    const PENDING_AUTO_ENABLE_DAYS = 180
     if (!patron && user?.email) {
       try {
         const pending = await queryRow(
-          'SELECT reason FROM patreon_pending WHERE email = $1',
+          'SELECT reason, created_at FROM patreon_pending WHERE email = $1',
           [user.email]
         )
         if (pending) {
+          const createdAt = pending.created_at as Date | string | null
+          const ageMs = createdAt ? Date.now() - new Date(createdAt).getTime() : Infinity
+          const withinWindow = ageMs <= PENDING_AUTO_ENABLE_DAYS * 24 * 60 * 60 * 1000
+          if (withinWindow) {
+            // Auto-enable: flip the DB flag and clear the pending row.
+            try {
+              await query('UPDATE users SET is_patron = TRUE WHERE id = $1', [session.id])
+              await query('DELETE FROM patreon_pending WHERE email = $1', [user.email])
+              return NextResponse.json({
+                success: true,
+                data: { isPatron: true },
+              })
+            } catch {
+              // DB write failed — fall through to message path so the user
+              // at least sees instructions instead of a silent no-patron state.
+            }
+          }
           pendingMessage = pendingMessageForReason((pending.reason as string | null) || null)
         }
       } catch {

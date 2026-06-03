@@ -23,7 +23,7 @@
 // detected drift (drift is the expected state when we want an alert).
 
 import 'dotenv/config'
-import { fetchActivePatronsWithDiscord } from '../lib/patreon'
+import { fetchAllPatrons } from '../lib/patreon'
 import { isPatron, addPatronRole, isGuildMember } from '../lib/discord'
 import { query } from '../lib/db'
 
@@ -33,8 +33,53 @@ interface CronResult {
   roleAdded: number
   notInServer: number
   pendingRecorded: number
+  /** users.is_patron flipped FALSE→TRUE via Patreon-email match this run. */
+  dbPatronsEnabled: number
+  /** patreon_pending rows cleared because the email now resolves to a is_patron=TRUE user. */
+  pendingRowsCleared: number
   failed: number
   mismatches: Array<{ discordId: string; name: string | null; reason: string; action: string }>
+}
+
+/**
+ * Sync users.is_patron with Patreon's active-patron list (email match).
+ * Catches the slice of stranded patrons whose webhook fired before the
+ * email-match path shipped, or whose webhook silently failed. Idempotent
+ * — only flips rows that need flipping. Does NOT auto-downgrade is_patron
+ * to FALSE; churn is webhook-driven so we don't race the live event.
+ *
+ * Then DELETEs patreon_pending rows for any email that now resolves to
+ * a is_patron=TRUE swupod user — they no longer need the "fix your chain"
+ * message. Pending rows for emails without a matching swupod user (e.g.,
+ * patrons who haven't signed in yet) are left in place so patron-status
+ * can auto-enable them on first sign-in.
+ */
+async function backfillIsPatronByEmail(emails: string[]): Promise<{ enabled: number; cleared: number }> {
+  if (emails.length === 0) return { enabled: 0, cleared: 0 }
+  try {
+    const upgrade = await query(
+      `UPDATE users SET is_patron = TRUE
+       WHERE LOWER(email) = ANY($1::text[])
+         AND is_patron = FALSE
+       RETURNING id`,
+      [emails]
+    )
+    const enabled = (upgrade as any)?.rowCount ?? 0
+
+    const cleanup = await query(
+      `DELETE FROM patreon_pending
+       WHERE LOWER(email) IN (
+         SELECT LOWER(email) FROM users WHERE is_patron = TRUE
+       )`,
+      []
+    )
+    const cleared = (cleanup as any)?.rowCount ?? 0
+
+    return { enabled, cleared }
+  } catch (err) {
+    console.warn('sync-patrons-cron: backfillIsPatronByEmail failed', { error: String(err) })
+    return { enabled: 0, cleared: 0 }
+  }
 }
 
 /**
@@ -80,7 +125,17 @@ interface RunOptions {
 export async function runSyncPatronsCron(options: RunOptions = {}): Promise<CronResult> {
   const { dryRun = false, heal = true } = options
 
-  const patrons = await fetchActivePatronsWithDiscord()
+  // Pull ALL members so we can email-match patrons regardless of whether
+  // they've linked Discord on Patreon. The Discord-role loop below filters
+  // further to active-with-discord; the email-match backfill uses the
+  // broader active-status set.
+  const allMembers = await fetchAllPatrons()
+  const activeStatuses = new Set(['active_patron', 'pay_upfront'])
+  const activeMembers = allMembers.filter((m) => activeStatuses.has(m.patronStatus || ''))
+  const patrons = activeMembers.filter((m) => !!m.discordUserId)
+  const activeEmails = Array.from(
+    new Set(activeMembers.map((m) => m.email?.toLowerCase()).filter((e): e is string => !!e))
+  )
 
   const result: CronResult = {
     total: patrons.length,
@@ -88,13 +143,24 @@ export async function runSyncPatronsCron(options: RunOptions = {}): Promise<Cron
     roleAdded: 0,
     notInServer: 0,
     pendingRecorded: 0,
+    dbPatronsEnabled: 0,
+    pendingRowsCleared: 0,
     failed: 0,
     mismatches: [],
   }
 
+  // DB sync first — catches stranded patrons whose chain broke and clears
+  // their pending row so the cron doesn't re-mark them as not_in_guild
+  // below if the Discord side also fires.
+  if (!dryRun) {
+    const dbSync = await backfillIsPatronByEmail(activeEmails)
+    result.dbPatronsEnabled = dbSync.enabled
+    result.pendingRowsCleared = dbSync.cleared
+  }
+
   for (const patron of patrons) {
     const discordId = patron.discordUserId
-    if (!discordId) continue // fetchActivePatronsWithDiscord filters these, defensive
+    if (!discordId) continue // belt-and-suspenders; we already filtered above
 
     const hasRole = await isPatron(discordId)
     if (hasRole) {
@@ -207,6 +273,8 @@ if (isCli) {
       roleAdded: result.roleAdded,
       notInServer: result.notInServer,
       pendingRecorded: result.pendingRecorded,
+      dbPatronsEnabled: result.dbPatronsEnabled,
+      pendingRowsCleared: result.pendingRowsCleared,
       failed: result.failed,
       dryRun,
       heal,
