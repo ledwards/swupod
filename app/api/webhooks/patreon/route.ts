@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
-import { addPatronRole, removePatronRole } from '@/lib/discord'
+import { addPatronRole, removePatronRole, isGuildMember } from '@/lib/discord'
 import { query } from '@/lib/db'
 import { lookupDiscordIdByEmail } from '@/lib/patreon'
 
@@ -32,6 +32,43 @@ function extractPatreonEmail(body: any): string | null {
 
 function extractPatreonName(body: any): string | null {
   return body?.data?.attributes?.full_name || null
+}
+
+/**
+ * When addPatronRole fails for a patron whose Discord ID we DO have,
+ * the most common cause is "user not in the guild." Confirm by hitting
+ * isGuildMember and, if so, record a 'not_in_guild' pending row so the
+ * /api/auth/patron-status endpoint can surface the right message —
+ * "join the Pod Discord server" — instead of the (wrong) "link Discord
+ * on Patreon" message. Pending rows are cleared on the next successful
+ * role assignment (cron auto-heal, next webhook event, or admin sync).
+ */
+async function recordPendingIfNotInGuild(
+  discordId: string,
+  patreonEmail: string | null,
+  patreonName: string | null,
+  event: string | null,
+  patronStatus: string | null,
+): Promise<void> {
+  if (!patreonEmail) return
+  try {
+    const inServer = await isGuildMember(discordId)
+    if (inServer) return // some other failure cause; don't pitch the wrong fix
+    await query(
+      `INSERT INTO patreon_pending (email, patreon_name, event, patron_status, reason, created_at)
+       VALUES ($1, $2, $3, $4, 'not_in_guild', NOW())
+       ON CONFLICT (email) DO UPDATE SET
+         patreon_name = EXCLUDED.patreon_name,
+         event = EXCLUDED.event,
+         patron_status = EXCLUDED.patron_status,
+         reason = 'not_in_guild',
+         created_at = NOW()`,
+      [patreonEmail, patreonName, event, patronStatus]
+    )
+    console.log('Patreon webhook: recorded not_in_guild pending', { patreonEmail, discordId })
+  } catch (err) {
+    console.warn('Patreon webhook: could not record not_in_guild pending', { error: err })
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -117,12 +154,13 @@ export async function POST(request: NextRequest) {
     if (patreonEmail && (event === 'members:pledge:create' || event === 'members:create')) {
       try {
         await query(
-          `INSERT INTO patreon_pending (email, patreon_name, event, patron_status, created_at)
-           VALUES ($1, $2, $3, $4, NOW())
+          `INSERT INTO patreon_pending (email, patreon_name, event, patron_status, reason, created_at)
+           VALUES ($1, $2, $3, $4, 'no_discord_linked', NOW())
            ON CONFLICT (email) DO UPDATE SET
              patreon_name = EXCLUDED.patreon_name,
              event = EXCLUDED.event,
              patron_status = EXCLUDED.patron_status,
+             reason = 'no_discord_linked',
              created_at = NOW()`,
           [patreonEmail, patreonName, event, patronStatus]
         )
@@ -145,9 +183,10 @@ export async function POST(request: NextRequest) {
       // Always add role on create — free trial users should get immediate access
       const success = await addPatronRole(discordId)
       console.log('Patreon webhook: addPatronRole result', { discordId, success, event, patronStatus })
-      // Clean up pending record if role was added successfully
       if (success && patreonEmail) {
         try { await query('DELETE FROM patreon_pending WHERE email = $1', [patreonEmail]) } catch { /* ignore */ }
+      } else if (!success) {
+        await recordPendingIfNotInGuild(discordId, patreonEmail, patreonName, event, patronStatus)
       }
     } else if (event === 'members:pledge:delete' || event === 'members:delete' ||
                ((event === 'members:pledge:update' || event === 'members:update') && !isActiveMember)) {
@@ -160,6 +199,11 @@ export async function POST(request: NextRequest) {
     } else if ((event === 'members:pledge:update' || event === 'members:update') && isActiveMember) {
       const success = await addPatronRole(discordId)
       console.log('Patreon webhook: addPatronRole result (update)', { discordId, success, event })
+      if (success && patreonEmail) {
+        try { await query('DELETE FROM patreon_pending WHERE email = $1', [patreonEmail]) } catch { /* ignore */ }
+      } else if (!success) {
+        await recordPendingIfNotInGuild(discordId, patreonEmail, patreonName, event, patronStatus)
+      }
     } else {
       console.log('Patreon webhook: unhandled event/status combo', { event, patronStatus, discordId })
     }

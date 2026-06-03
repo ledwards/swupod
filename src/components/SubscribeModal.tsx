@@ -128,7 +128,7 @@ export function SubscribeModal({
           <li><strong>Import Pool</strong> — Photograph your competitive sealed registration sheet and import the pool straight into the deckbuilder</li>
           <li><strong>Professional Stats</strong> — Access draft and sealed data across top limited players</li>
           <li><strong>Beta Access</strong> — Access early features and pre-release sets by becoming an exclusive beta tester</li>
-          <li><strong>Discord Access</strong> — Join the supporters-only Discord channel with the dev team</li>
+          <li><strong>Discord Access</strong> — Link Discord on Patreon and join the Pod server for your Friend of the Pod role and supporter-only channels</li>
           <li><strong>Avatar Flair</strong> — Special avatar treatment so everyone knows you're a supporter</li>
           <li><strong>Support the Pod</strong> — Earn the eternal gratitude of the community for being a supporter of the pod!</li>
         </ul>
@@ -139,6 +139,25 @@ export function SubscribeModal({
 
         <p className="subscribe-modal-footer-note">
           Already subscribed? Your access activates within minutes — refresh this page after subscribing.
+        </p>
+        <p className="subscribe-modal-discord-tip">
+          <strong>Tip:</strong> Use the same email on Patreon as on this site. If they differ,{' '}
+          <a
+            href="https://www.patreon.com/settings/apps"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            link Discord on Patreon
+          </a>{' '}
+          and join our{' '}
+          <a
+            href={process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/u6fkdDzWqF'}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Discord server
+          </a>{' '}
+          so your supporter role syncs automatically.
         </p>
       </Modal.Body>
 

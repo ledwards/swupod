@@ -80,6 +80,29 @@
   font-style: italic;
 }
 
+.subscribe-modal-discord-tip {
+  margin: 0.75rem 0 0;
+  padding: 0.75rem 1rem;
+  background: rgba(88, 101, 242, 0.08);
+  border-left: 3px solid rgba(88, 101, 242, 0.6);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.subscribe-modal-discord-tip strong {
+  color: white;
+}
+
+a:where(.subscribe-modal-discord-tip a),
+a:where(.subscribe-modal-discord-tip a):visited,
+a:where(.subscribe-modal-discord-tip a):hover,
+a:where(.subscribe-modal-discord-tip a):active {
+  color: #cdd2f5;
+  text-decoration: underline;
+}
+
 /* "Not now" dismiss styled as a subtle link, not a button. */
 .subscribe-modal-dismiss-link {
   background: none;
