@@ -1,0 +1,82 @@
+name: Sync Patrons (Patreon → Discord reconciliation)
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly, Sunday 03:00 UTC. Catches drift between Patreon and the
+    # "Friend of the Pod" Discord role that the real-time webhook missed.
+    - cron: "0 3 * * 0"
+
+concurrency:
+  group: sync-patrons
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Reconcile active patrons with Discord guild role
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run sync-patrons cron
+        id: sync
+        env:
+          PATREON_CREATOR_ACCESS_TOKEN: ${{ secrets.PATREON_CREATOR_ACCESS_TOKEN }}
+          PATREON_CAMPAIGN_ID: ${{ secrets.PATREON_CAMPAIGN_ID }}
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_GUILD_ID: ${{ secrets.DISCORD_GUILD_ID }}
+          DISCORD_FRIEND_OF_THE_POD_ROLE_ID: ${{ secrets.DISCORD_FRIEND_OF_THE_POD_ROLE_ID }}
+        run: |
+          set -o pipefail
+          npm run sync-patrons:cron 2>&1 | tee sync-output.log
+          if grep -q '\[ALERT-PATREON-SYNC\]' sync-output.log; then
+            echo "alert=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "alert=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Summarize run
+        if: always()
+        run: |
+          {
+            echo "## Patron sync"
+            echo
+            if [ "${{ steps.sync.outputs.alert }}" = "true" ]; then
+              echo "ALERT-PATREON-SYNC fired — drift detected that the cron could not auto-heal."
+            else
+              echo "No unhealed drift detected."
+            fi
+            echo
+            echo '```'
+            grep -E 'sync-patrons-cron complete|\[ALERT-PATREON-SYNC\]' sync-output.log || tail -n 20 sync-output.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Notify Discord on failure or alert
+        if: failure() || steps.sync.outputs.alert == 'true'
+        env:
+          DISCORD_ALERT_WEBHOOK_URL: ${{ secrets.DISCORD_ALERT_WEBHOOK_URL }}
+        run: |
+          if [ -z "$DISCORD_ALERT_WEBHOOK_URL" ]; then
+            echo "No DISCORD_ALERT_WEBHOOK_URL secret configured; skipping alert."
+            exit 0
+          fi
+          REASON="failed"
+          if [ "${{ steps.sync.outputs.alert }}" = "true" ]; then
+            REASON="detected unhealed Patreon/Discord drift"
+          fi
+          curl -fsS -X POST "$DISCORD_ALERT_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "{\"content\":\"Patron sync ${REASON} for ${GITHUB_REPOSITORY}. Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}"
