@@ -196,11 +196,11 @@ describe('card catalog resolver', () => {
     assert.equal(resolved.isFoil, true)
   })
 
-  it('keeps Hyperspace placeholders unresolved when no Normal-variant card exists in the same bucket either', () => {
+  it('rescues phantom-bucket Hyperspace placeholders to any same-group same-rarity real card', () => {
     // Placeholder catalog over-predicted a Rare Vigilance+Heroism leader, but
-    // no such real card exists. Without a Normal-bucket match either, the
-    // resolver must leave the placeholder in place rather than substitute the
-    // wrong card.
+    // no such real card exists. Reality wins — the resolver must substitute
+    // any real Rare leader (preserving group + rarity) so the slot doesn't
+    // render as "Unknown ASH …". Treatment flags (Hyperspace) are preserved.
     const phantomBucketId = 'ash-slot:hyperspace:leader:rare:vigilance-heroism'
     const phantomPlaceholder = {
       id: `${phantomBucketId}:001`,
@@ -221,22 +221,141 @@ describe('card catalog resolver', () => {
       placeholderBucketLabel: 'Rare Leader Vigilance+Heroism',
       placeholderSlotIndex: 1,
     }
-    // Only Common Vigilance+Heroism real leader exists — not Rare.
-    const commonVHLeader = {
+    // No Rare V+H leader exists, but a Rare V+V real leader does.
+    const rareLeader = {
       ...real,
-      id: 'sabine-uuid',
-      name: 'Sabine Wren',
-      rarity: 'Common',
+      id: 'thrawn-uuid',
+      name: 'Grand Admiral Thrawn',
+      rarity: 'Rare',
       type: 'Leader',
-      aspects: ['Vigilance', 'Heroism'],
+      aspects: ['Vigilance', 'Villainy'],
       isLeader: true,
     }
-    const lookup = new Map([[commonVHLeader.id, commonVHLeader]])
+    const lookup = new Map([[rareLeader.id, rareLeader]])
 
     const resolved = resolveStoredCard(phantomPlaceholder, lookup)
 
-    assert.equal(resolved.isPlaceholder, true)
-    assert.equal(resolved.name, 'Unknown ASH Hyperspace Rare Leader Vigilance+Heroism Slot 1')
+    assert.equal(resolved.isPlaceholder, false)
+    assert.equal(resolved.name, 'Grand Admiral Thrawn')
+    assert.equal(resolved.rarity, 'Rare')
+    assert.equal(resolved.variantType, 'Hyperspace')
+    assert.equal(resolved.isHyperspace, true)
+  })
+
+  it('rescues phantom placeholders to any same-group card when no same-rarity exists either', () => {
+    // Final safety net: same group only (any rarity, any aspects). This
+    // covers cases where the catalog's rarity prediction was also wrong for
+    // the entire group — should still resolve to a real card rather than
+    // leave a visible placeholder.
+    const phantomBucketId = 'ash-slot:hyperspace:base:rare:vigilance'
+    const phantomBasePlaceholder = {
+      id: `${phantomBucketId}:001`,
+      cardId: null,
+      number: null,
+      name: 'Unknown ASH Hyperspace Rare Base Vigilance Slot 1',
+      set: 'ASH',
+      rarity: 'Rare',
+      type: 'Base',
+      aspects: ['Vigilance'],
+      variantType: 'Hyperspace',
+      isBase: true,
+      isHyperspace: true,
+      isPlaceholder: true,
+      placeholderKind: 'bucket-slot',
+      placeholderGroup: 'base',
+      placeholderBucketId: phantomBucketId,
+      placeholderSlotIndex: 1,
+    }
+    // Only Common bases exist — no Rare base anywhere.
+    const commonBase = {
+      ...real,
+      id: 'base-uuid',
+      name: 'Tatooine',
+      rarity: 'Common',
+      type: 'Base',
+      aspects: ['Vigilance'],
+      isBase: true,
+    }
+    const lookup = new Map([[commonBase.id, commonBase]])
+
+    const resolved = resolveStoredCard(phantomBasePlaceholder, lookup)
+
+    assert.equal(resolved.isPlaceholder, false)
+    assert.equal(resolved.name, 'Tatooine')
+    assert.equal(resolved.type, 'Base')
+    assert.equal(resolved.variantType, 'Hyperspace')
+  })
+
+  it('picks different rescue cards for different phantom buckets (deterministic but bucket-distinct)', () => {
+    // Two different phantom Rare leader buckets should resolve to two
+    // different real Rare leaders — not both collapse onto realCandidates[0].
+    const rareLeaderA = {
+      ...real,
+      id: 'rare-a',
+      number: '10',
+      name: 'Rare Leader A',
+      rarity: 'Rare',
+      type: 'Leader',
+      aspects: ['Vigilance', 'Villainy'],
+      isLeader: true,
+    }
+    const rareLeaderB = {
+      ...real,
+      id: 'rare-b',
+      number: '20',
+      name: 'Rare Leader B',
+      rarity: 'Rare',
+      type: 'Leader',
+      aspects: ['Command', 'Heroism'],
+      isLeader: true,
+    }
+    const rareLeaderC = {
+      ...real,
+      id: 'rare-c',
+      number: '30',
+      name: 'Rare Leader C',
+      rarity: 'Rare',
+      type: 'Leader',
+      aspects: ['Aggression', 'Heroism'],
+      isLeader: true,
+    }
+    const lookup = new Map([
+      [rareLeaderA.id, rareLeaderA],
+      [rareLeaderB.id, rareLeaderB],
+      [rareLeaderC.id, rareLeaderC],
+    ])
+
+    const makePhantom = (bucketSlug: string) => ({
+      id: `ash-slot:hyperspace:leader:rare:${bucketSlug}:001`,
+      cardId: null,
+      name: `Unknown ASH Hyperspace Rare Leader ${bucketSlug} Slot 1`,
+      set: 'ASH',
+      rarity: 'Rare',
+      type: 'Leader',
+      aspects: ['Vigilance', 'Heroism'],
+      variantType: 'Hyperspace',
+      isLeader: true,
+      isHyperspace: true,
+      isPlaceholder: true,
+      placeholderGroup: 'leader',
+      placeholderBucketId: `ash-slot:hyperspace:leader:rare:${bucketSlug}`,
+      placeholderSlotIndex: 1,
+    })
+
+    const resolvedA = resolveStoredCard(makePhantom('vigilance-heroism'), lookup)
+    const resolvedB = resolveStoredCard(makePhantom('command-aggression'), lookup)
+    const resolvedC = resolveStoredCard(makePhantom('vigilance-cunning'), lookup)
+
+    // All three should resolve to real cards.
+    assert.equal(resolvedA.isPlaceholder, false)
+    assert.equal(resolvedB.isPlaceholder, false)
+    assert.equal(resolvedC.isPlaceholder, false)
+    // Same input → same output (determinism)
+    const resolvedAgain = resolveStoredCard(makePhantom('vigilance-heroism'), lookup)
+    assert.equal(resolvedA.name, resolvedAgain.name)
+    // Different buckets shouldn't all collapse onto the same card.
+    const distinct = new Set([resolvedA.name, resolvedB.name, resolvedC.name])
+    assert.ok(distinct.size >= 2, `Expected ≥2 distinct rescues, got: ${[...distinct].join(', ')}`)
   })
 
   it('preserves synthesized pack treatment flags while hydrating card data', () => {

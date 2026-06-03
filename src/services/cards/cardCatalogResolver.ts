@@ -86,6 +86,23 @@ function sortRealAshCards(cards: RawCard[]): RawCard[] {
   })
 }
 
+function getAshCardGroup(card: Record<string, any>): 'leader' | 'base' | 'main' {
+  if (card.isLeader || card.type === 'Leader') return 'leader'
+  if (card.isBase || card.type === 'Base') return 'base'
+  return 'main'
+}
+
+// Deterministic 32-bit string hash. Used to pick a stable but bucket-distinct
+// rescue card so different phantom placeholder buckets don't all collapse onto
+// realCandidates[0].
+function bucketHash(s: string): number {
+  let hash = 0
+  for (let i = 0; i < s.length; i++) {
+    hash = ((hash << 5) - hash + s.charCodeAt(i)) | 0
+  }
+  return Math.abs(hash)
+}
+
 function resolveAshBucketPlaceholder(card: Record<string, any>, lookup: Map<string, RawCard>): RawCard | null {
   if (card.set !== ASH_SET_CODE || card.isPlaceholder !== true) return null
   const bucketId = card.placeholderBucketId || getAshCardBucketId(card)
@@ -131,7 +148,39 @@ function resolveAshBucketPlaceholder(card: Record<string, any>, lookup: Map<stri
   }
 
   const resolvedIndex = slotIndex - remainingPlaceholderCount - 1
-  return realCandidates[resolvedIndex] || null
+  if (resolvedIndex < realCandidates.length && realCandidates[resolvedIndex]) {
+    return realCandidates[resolvedIndex]
+  }
+
+  // Phantom-bucket rescue: the placeholder catalog over-predicted this
+  // group/rarity/aspects combo (e.g. a Rare Vigilance+Heroism leader that
+  // the real spoiler never delivered, or extra slots beyond what reality
+  // contains). Rather than leaving the slot rendering as "Unknown ASH …",
+  // substitute any real card that satisfies the slot's structural contract:
+  //   - same group (leader / base / main deck)
+  //   - same rarity (preferred)
+  //   - if no same-rarity exists for that group, fall through to any rarity
+  // Use a hash of (bucketId + slotIndex) for selection so different phantom
+  // buckets pick different cards instead of all collapsing onto the first
+  // candidate. resolveStoredCard still re-stamps stored treatment flags, so
+  // the slot still renders as Hyperspace / Hyperspace Foil if it was stored
+  // that way. Reality wins — even when the prediction was wrong.
+  const targetGroup = card.placeholderGroup || getAshCardGroup(card)
+  let rescueCandidates = sortRealAshCards(catalogCards.filter(c => {
+    if (c.set !== ASH_SET_CODE || c.isPlaceholder === true) return false
+    if ((c.variantType || 'Normal') !== 'Normal') return false
+    return getAshCardGroup(c) === targetGroup && c.rarity === card.rarity
+  }))
+  if (rescueCandidates.length === 0) {
+    rescueCandidates = sortRealAshCards(catalogCards.filter(c => {
+      if (c.set !== ASH_SET_CODE || c.isPlaceholder === true) return false
+      if ((c.variantType || 'Normal') !== 'Normal') return false
+      return getAshCardGroup(c) === targetGroup
+    }))
+  }
+
+  if (rescueCandidates.length === 0) return null
+  return rescueCandidates[bucketHash(`${bucketId}:${slotIndex}`) % rescueCandidates.length]
 }
 
 export function resolveStoredCard(card: Record<string, any>, lookup: Map<string, RawCard> = getLookup()): Record<string, any> {
