@@ -67,6 +67,43 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // Treat free trial users the same as active patrons.
+  const isActiveMember = patronStatus === 'active_patron' || patronStatus === 'pay_upfront'
+
+  // Option B: email-match patron flag. Runs independently of Discord so a
+  // patron whose Patreon email matches their swupod email gets recognized
+  // even without Discord linking or guild membership. Discord role
+  // assignment below is still attempted in parallel for community
+  // recognition + as a fallback path in patron-status when emails mismatch.
+  const grantsPatron =
+    event === 'members:pledge:create' ||
+    event === 'members:create' ||
+    ((event === 'members:pledge:update' || event === 'members:update') && isActiveMember)
+  const revokesPatron =
+    event === 'members:pledge:delete' ||
+    event === 'members:delete' ||
+    ((event === 'members:pledge:update' || event === 'members:update') && !isActiveMember)
+
+  if (patreonEmail && (grantsPatron || revokesPatron)) {
+    try {
+      if (grantsPatron) {
+        const res = await query(
+          'UPDATE users SET is_patron = TRUE WHERE LOWER(email) = LOWER($1)',
+          [patreonEmail]
+        )
+        console.log('Patreon webhook: is_patron email-match grant', { patreonEmail, event, rowCount: (res as any)?.rowCount })
+      } else {
+        const res = await query(
+          'UPDATE users SET is_patron = FALSE, is_beta_tester = FALSE WHERE LOWER(email) = LOWER($1)',
+          [patreonEmail]
+        )
+        console.log('Patreon webhook: is_patron email-match revoke', { patreonEmail, event, rowCount: (res as any)?.rowCount })
+      }
+    } catch (err) {
+      console.error('Patreon webhook: is_patron email-match update failed', { patreonEmail, event, error: err })
+    }
+  }
+
   if (!discordId) {
     console.warn('Patreon webhook: no Discord connection found (payload + API lookup failed)', {
       event,
@@ -100,9 +137,6 @@ export async function POST(request: NextRequest) {
   }
 
   console.log('Patreon webhook received:', { event, patronStatus, discordId, patreonEmail, patreonName })
-
-  // Treat free trial users the same as active patrons — they should get the role immediately
-  const isActiveMember = patronStatus === 'active_patron' || patronStatus === 'pay_upfront'
 
   try {
     if (event === 'members:pledge:create' || event === 'members:create') {

@@ -1,18 +1,25 @@
 // @ts-nocheck
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '@/src/contexts/AuthContext'
 import Button from '@/src/components/Button'
 import { useRouter } from 'next/navigation'
 import { PATREON_URL } from '@/src/utils/membership'
 import './page.css'
 
+const DISCORD_INVITE_URL =
+  process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/u6fkdDzWqF'
+
 export default function BetaPage() {
   const { user, loading, signIn, enrollBeta, isPatron, patronMessage } = useAuth()
   const router = useRouter()
 
   const hasBetaAccess = user?.is_beta_tester || user?.is_admin
+  // null = not yet checked, true/false = resolved. Defaults to true (i.e.,
+  // assume member) so the Discord CTA only renders after we have a negative
+  // confirmation — avoids a "join Discord" flash for actual members.
+  const [isDiscordMember, setIsDiscordMember] = useState<boolean | null>(null)
 
   // Force login if not authenticated
   useEffect(() => {
@@ -20,6 +27,23 @@ export default function BetaPage() {
       signIn()
     }
   }, [loading, user, signIn])
+
+  // Check Discord guild membership for the post-enrollment CTA. Only meaningful
+  // when the user already has beta access (the success branch); skip otherwise.
+  useEffect(() => {
+    if (!user || !hasBetaAccess) {
+      setIsDiscordMember(null)
+      return
+    }
+    fetch('/api/auth/discord-member', { credentials: 'include' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.data) setIsDiscordMember(Boolean(data.data.isMember))
+      })
+      .catch(() => {
+        // Network/API failure — leave null so we don't pitch Discord on a flaky read.
+      })
+  }, [user?.id, hasBetaAccess])
 
   const handleJoinBeta = async () => {
     const success = await enrollBeta()
@@ -58,10 +82,32 @@ export default function BetaPage() {
 
         <div className="beta-actions">
           {hasBetaAccess && (
-            <div className="beta-success">
-              <span className="checkmark">✓</span>
-              <span>You have beta access</span>
-            </div>
+            <>
+              <div className="beta-success">
+                <span className="checkmark">✓</span>
+                <span>You have beta access</span>
+              </div>
+
+              {isDiscordMember === false && (
+                <div className="beta-discord-cta">
+                  <p className="beta-discord-cta-copy">
+                    One more thing — join the Pod Discord to connect with other
+                    supporters, vote on community polls, and get your Friend of
+                    the Pod role.
+                  </p>
+                  <a
+                    href={DISCORD_INVITE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="beta-discord-cta-link"
+                  >
+                    <Button variant="primary" size="lg">
+                      Join the Discord
+                    </Button>
+                  </a>
+                </div>
+              )}
+            </>
           )}
 
           {!hasBetaAccess && (user?.is_admin || isPatron === true) && (

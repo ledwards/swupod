@@ -10,18 +10,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const session = requireAuth(request)
 
-    // Fetch discord_id for patron check and role assignment
+    // Fetch discord_id for role assignment + is_patron for the fast-path check.
     const userRow = await queryRow(
-      'SELECT discord_id FROM users WHERE id = $1',
+      'SELECT discord_id, is_patron FROM users WHERE id = $1',
       [session.id]
     )
     const discordId = userRow?.discord_id as string | undefined
+    const dbPatron = userRow?.is_patron === true
 
     // Admins bypass patron check
     if (!session.is_admin) {
-      const patron = discordId
-        ? await isPatron(discordId)
-        : false
+      // Option B fast path: webhook already set is_patron via email match.
+      // Fallback: live Discord role check for email-mismatch / legacy patrons.
+      const patron = dbPatron || (discordId ? await isPatron(discordId) : false)
 
       if (!patron) {
         return NextResponse.json(
