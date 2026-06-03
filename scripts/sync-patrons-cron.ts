@@ -37,6 +37,8 @@ interface CronResult {
   dbPatronsEnabled: number
   /** patreon_pending rows cleared because the email now resolves to a is_patron=TRUE user. */
   pendingRowsCleared: number
+  /** Stale patreon_pending rows deleted because the email is no longer an active Patreon patron. */
+  pendingStaleDeleted: number
   failed: number
   mismatches: Array<{ discordId: string; name: string | null; reason: string; action: string }>
 }
@@ -54,8 +56,10 @@ interface CronResult {
  * patrons who haven't signed in yet) are left in place so patron-status
  * can auto-enable them on first sign-in.
  */
-async function backfillIsPatronByEmail(emails: string[]): Promise<{ enabled: number; cleared: number }> {
-  if (emails.length === 0) return { enabled: 0, cleared: 0 }
+async function backfillIsPatronByEmail(
+  emails: string[],
+): Promise<{ enabled: number; cleared: number; staleDeleted: number }> {
+  if (emails.length === 0) return { enabled: 0, cleared: 0, staleDeleted: 0 }
   try {
     const upgrade = await query(
       `UPDATE users SET is_patron = TRUE
@@ -75,10 +79,20 @@ async function backfillIsPatronByEmail(emails: string[]): Promise<{ enabled: num
     )
     const cleared = (cleanup as any)?.rowCount ?? 0
 
-    return { enabled, cleared }
+    // Stale cleanup: DELETE patreon_pending rows whose email is no longer
+    // an active patron on Patreon. Without this, the patron-status
+    // auto-enable path (180-day window) could wrongly grant access to a
+    // churned patron whose legacy pending row never got cleared.
+    const stale = await query(
+      `DELETE FROM patreon_pending WHERE NOT (LOWER(email) = ANY($1::text[]))`,
+      [emails]
+    )
+    const staleDeleted = (stale as any)?.rowCount ?? 0
+
+    return { enabled, cleared, staleDeleted }
   } catch (err) {
     console.warn('sync-patrons-cron: backfillIsPatronByEmail failed', { error: String(err) })
-    return { enabled: 0, cleared: 0 }
+    return { enabled: 0, cleared: 0, staleDeleted: 0 }
   }
 }
 
@@ -145,6 +159,7 @@ export async function runSyncPatronsCron(options: RunOptions = {}): Promise<Cron
     pendingRecorded: 0,
     dbPatronsEnabled: 0,
     pendingRowsCleared: 0,
+    pendingStaleDeleted: 0,
     failed: 0,
     mismatches: [],
   }
@@ -156,6 +171,7 @@ export async function runSyncPatronsCron(options: RunOptions = {}): Promise<Cron
     const dbSync = await backfillIsPatronByEmail(activeEmails)
     result.dbPatronsEnabled = dbSync.enabled
     result.pendingRowsCleared = dbSync.cleared
+    result.pendingStaleDeleted = dbSync.staleDeleted
   }
 
   for (const patron of patrons) {
@@ -275,6 +291,7 @@ if (isCli) {
       pendingRecorded: result.pendingRecorded,
       dbPatronsEnabled: result.dbPatronsEnabled,
       pendingRowsCleared: result.pendingRowsCleared,
+      pendingStaleDeleted: result.pendingStaleDeleted,
       failed: result.failed,
       dryRun,
       heal,
