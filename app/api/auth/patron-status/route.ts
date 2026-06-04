@@ -69,19 +69,26 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     // If not a patron, check patreon_pending. A recent row is proof that
-    // Patreon confirmed this email as a patron — sufficient evidence to
+    // Patreon confirmed this user as a patron — sufficient evidence to
     // auto-enable without requiring the user to fix their Discord chain.
     // The cron sync keeps patreon_pending clean (stale rows for churned
     // patrons get deleted), so a surviving row is trustworthy within the
     // recency window. Falls through to the message path if the row is
     // older than the window (likely stale).
+    //
+    // Lookup is email OR discord_id — covers the email-mismatch case
+    // (Patreon email ≠ swupod email) where email-only would miss a paying
+    // patron who linked Discord on Patreon but isn't in our guild.
     let pendingMessage: string | null = null
     const PENDING_AUTO_ENABLE_DAYS = 180
-    if (!patron && user?.email) {
+    if (!patron && (user?.email || user?.discord_id)) {
       try {
         const pending = await queryRow(
-          'SELECT reason, created_at FROM patreon_pending WHERE email = $1',
-          [user.email]
+          `SELECT email AS pending_email, reason, created_at FROM patreon_pending
+           WHERE ($1::text IS NOT NULL AND email = $1)
+              OR ($2::text IS NOT NULL AND discord_id = $2)
+           ORDER BY created_at DESC LIMIT 1`,
+          [user?.email || null, user?.discord_id || null]
         )
         if (pending) {
           const createdAt = pending.created_at as Date | string | null
@@ -91,7 +98,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             // Auto-enable: flip the DB flag and clear the pending row.
             try {
               await query('UPDATE users SET is_patron = TRUE WHERE id = $1', [session.id])
-              await query('DELETE FROM patreon_pending WHERE email = $1', [user.email])
+              await query('DELETE FROM patreon_pending WHERE email = $1', [pending.pending_email])
               return NextResponse.json({
                 success: true,
                 data: { isPatron: true },

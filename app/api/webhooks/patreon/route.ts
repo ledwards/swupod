@@ -55,15 +55,16 @@ async function recordPendingIfNotInGuild(
     const inServer = await isGuildMember(discordId)
     if (inServer) return // some other failure cause; don't pitch the wrong fix
     await query(
-      `INSERT INTO patreon_pending (email, patreon_name, event, patron_status, reason, created_at)
-       VALUES ($1, $2, $3, $4, 'not_in_guild', NOW())
+      `INSERT INTO patreon_pending (email, patreon_name, event, patron_status, reason, discord_id, created_at)
+       VALUES ($1, $2, $3, $4, 'not_in_guild', $5, NOW())
        ON CONFLICT (email) DO UPDATE SET
          patreon_name = EXCLUDED.patreon_name,
          event = EXCLUDED.event,
          patron_status = EXCLUDED.patron_status,
          reason = 'not_in_guild',
+         discord_id = EXCLUDED.discord_id,
          created_at = NOW()`,
-      [patreonEmail, patreonName, event, patronStatus]
+      [patreonEmail, patreonName, event, patronStatus, discordId]
     )
     console.log('Patreon webhook: recorded not_in_guild pending', { patreonEmail, discordId })
   } catch (err) {
@@ -195,8 +196,12 @@ export async function POST(request: NextRequest) {
                ((event === 'members:pledge:update' || event === 'members:update') && !isActiveMember)) {
       const success = await removePatronRole(discordId)
       console.log('Patreon webhook: removePatronRole result', { discordId, success, event })
+      // Discord-id-based revoke covers the email-mismatch case (patron's
+      // Patreon email ≠ swupod email): the email-match revoke above can't
+      // find them, but Discord ID does. Without this, a churned mismatched
+      // patron would retain is_patron=TRUE.
       await query(
-        'UPDATE users SET is_beta_tester = FALSE WHERE discord_id = $1',
+        'UPDATE users SET is_patron = FALSE, is_beta_tester = FALSE WHERE discord_id = $1',
         [discordId]
       )
     } else if ((event === 'members:pledge:update' || event === 'members:update') && isActiveMember) {
