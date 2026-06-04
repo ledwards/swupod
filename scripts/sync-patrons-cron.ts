@@ -35,6 +35,9 @@ interface CronResult {
   pendingRecorded: number
   /** users.is_patron flipped FALSE→TRUE via Patreon-email match this run. */
   dbPatronsEnabled: number
+  /** users.is_patron flipped FALSE→TRUE via Patreon-Discord-ID match this run. Catches
+   *  the email-mismatch case where Patreon email ≠ swupod email but Discord IDs match. */
+  dbPatronsEnabledByDiscord: number
   /** patreon_pending rows cleared because the email now resolves to a is_patron=TRUE user. */
   pendingRowsCleared: number
   /** Stale patreon_pending rows deleted because the email is no longer an active Patreon patron. */
@@ -97,6 +100,34 @@ async function backfillIsPatronByEmail(
 }
 
 /**
+ * Sibling to backfillIsPatronByEmail — catches patrons whose Patreon email
+ * doesn't match their swupod email but whose Patreon-linked Discord ID
+ * matches users.discord_id. Without this, a patron who signed up swupod
+ * via Discord OAuth (so we have their discord_id) but uses a different
+ * email on Patreon stays is_patron=FALSE until they happen to visit /beta
+ * and trigger the patron-status Discord-role-check backfill. Real cases
+ * observed 2026-06-03: chrialli, eyelenz.
+ *
+ * Idempotent. Does NOT downgrade. Returns rowCount of newly-enabled users.
+ */
+async function backfillIsPatronByDiscordId(discordIds: string[]): Promise<number> {
+  if (discordIds.length === 0) return 0
+  try {
+    const upgrade = await query(
+      `UPDATE users SET is_patron = TRUE
+       WHERE discord_id = ANY($1::text[])
+         AND is_patron = FALSE
+       RETURNING id`,
+      [discordIds]
+    )
+    return (upgrade as any)?.rowCount ?? 0
+  } catch (err) {
+    console.warn('sync-patrons-cron: backfillIsPatronByDiscordId failed', { error: String(err) })
+    return 0
+  }
+}
+
+/**
  * Upsert a patreon_pending row with reason='not_in_guild' for a stranded
  * patron the cron found. The /api/auth/patron-status endpoint reads this
  * on session-load and surfaces a "Join the Pod Discord server" message
@@ -153,6 +184,10 @@ export async function runSyncPatronsCron(options: RunOptions = {}): Promise<Cron
     new Set(activeMembers.map((m) => m.email?.toLowerCase()).filter((e): e is string => !!e))
   )
 
+  const activeDiscordIds = Array.from(
+    new Set(patrons.map((m) => m.discordUserId).filter((d): d is string => !!d))
+  )
+
   const result: CronResult = {
     total: patrons.length,
     alreadyHadRole: 0,
@@ -160,6 +195,7 @@ export async function runSyncPatronsCron(options: RunOptions = {}): Promise<Cron
     notInServer: 0,
     pendingRecorded: 0,
     dbPatronsEnabled: 0,
+    dbPatronsEnabledByDiscord: 0,
     pendingRowsCleared: 0,
     pendingStaleDeleted: 0,
     failed: 0,
@@ -174,6 +210,9 @@ export async function runSyncPatronsCron(options: RunOptions = {}): Promise<Cron
     result.dbPatronsEnabled = dbSync.enabled
     result.pendingRowsCleared = dbSync.cleared
     result.pendingStaleDeleted = dbSync.staleDeleted
+    // Discord-ID backfill runs AFTER email backfill — catches the
+    // email-mismatch slice that the email pass missed.
+    result.dbPatronsEnabledByDiscord = await backfillIsPatronByDiscordId(activeDiscordIds)
   }
 
   for (const patron of patrons) {
@@ -292,6 +331,7 @@ if (isCli) {
       notInServer: result.notInServer,
       pendingRecorded: result.pendingRecorded,
       dbPatronsEnabled: result.dbPatronsEnabled,
+      dbPatronsEnabledByDiscord: result.dbPatronsEnabledByDiscord,
       pendingRowsCleared: result.pendingRowsCleared,
       pendingStaleDeleted: result.pendingStaleDeleted,
       failed: result.failed,
