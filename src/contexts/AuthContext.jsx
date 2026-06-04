@@ -1,17 +1,23 @@
 'use client'
 
 // Authentication context for React
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useRef } from 'react'
 import { getSession, signInWithDiscord, signOut as apiSignOut, enrollBeta as apiEnrollBeta, refreshSession as apiRefreshSession, checkPatronStatus as apiCheckPatronStatus } from '../utils/auth'
 import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 
 const AuthContext = createContext(null)
+
+const BETA_WELCOME_STORAGE_PREFIX = 'betaWelcomeShown:'
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [isPatron, setIsPatron] = useState(null) // null = loading, true/false = resolved
   const [patronMessage, setPatronMessage] = useState(null) // Message for pending Patreon users
+  const [showBetaWelcome, setShowBetaWelcome] = useState(false)
+  // Tracks the user id we've already auto-enrolled this session so the effect
+  // can't loop if enrollment fails (e.g. patron-status flicker, server error).
+  const autoEnrollAttemptedRef = useRef(null)
 
   useEffect(() => {
     // Load session on mount
@@ -99,11 +105,56 @@ export function AuthProvider({ children }) {
     const updatedUser = await apiEnrollBeta()
     if (updatedUser) {
       setUser(updatedUser)
-      trackEvent(AnalyticsEvents.BETA_ENROLLED)
+      trackEvent(AnalyticsEvents.BETA_ENROLLED, { source: 'manual' })
+      maybeShowBetaWelcome(updatedUser.id)
       return true
     }
     return false
   }
+
+  function maybeShowBetaWelcome(userId) {
+    if (typeof window === 'undefined' || !userId) return
+    try {
+      if (!window.localStorage.getItem(BETA_WELCOME_STORAGE_PREFIX + userId)) {
+        setShowBetaWelcome(true)
+      }
+    } catch {
+      // localStorage can throw in private-browsing / quota scenarios — fall back
+      // to showing the toast once per page load rather than swallowing the moment.
+      setShowBetaWelcome(true)
+    }
+  }
+
+  function dismissBetaWelcome() {
+    if (typeof window !== 'undefined' && user?.id) {
+      try {
+        window.localStorage.setItem(BETA_WELCOME_STORAGE_PREFIX + user.id, '1')
+      } catch {}
+    }
+    setShowBetaWelcome(false)
+  }
+
+  // Auto-enroll patrons in the beta. Patrons paid for early access; we shouldn't
+  // make them hunt for a separate /beta page to click a button.
+  useEffect(() => {
+    if (!user) {
+      autoEnrollAttemptedRef.current = null
+      return
+    }
+    if (isPatron !== true) return
+    if (user.is_beta_tester || user.is_admin) return
+    if (autoEnrollAttemptedRef.current === user.id) return
+
+    autoEnrollAttemptedRef.current = user.id
+
+    apiEnrollBeta().then((updatedUser) => {
+      if (updatedUser) {
+        setUser(updatedUser)
+        trackEvent(AnalyticsEvents.BETA_ENROLLED, { source: 'auto_patron' })
+        maybeShowBetaWelcome(updatedUser.id)
+      }
+    })
+  }, [user, isPatron])
 
   async function refreshSession() {
     const updatedUser = await apiRefreshSession()
@@ -124,6 +175,8 @@ export function AuthProvider({ children }) {
     enrollBeta,
     refreshSession,
     isAuthenticated: !!user,
+    showBetaWelcome,
+    dismissBetaWelcome,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
