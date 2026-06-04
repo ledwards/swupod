@@ -85,13 +85,18 @@ function stripFormat(nickname: string): string {
     .trim()
 }
 
-// Archetype nicknames follow "Leader Color" or "Leader Splash Color" convention
-// where Color = the BASE's aspect (e.g. "Mothma Blue", "Sebulba Splash Yellow").
+// Archetype nicknames follow "Leader Color", "Leader Splash Color", or
+// "Leader Color HP" convention where Color = the BASE's aspect
+// (e.g. "Mothma Blue", "Sebulba Splash Yellow", "Cad Yellow 30").
 // Split into leader portion (colored by leader aspects) and base portion
-// (colored by base aspects).
+// (colored by base aspects). The base portion always includes the color word.
 function splitArchetypeName(label: string): { leader: string; base: string } {
+  const splashHpMatch = label.match(/^(.+?)\s+(Splash\s+\S+\s+\d+)$/i)
+  if (splashHpMatch) return { leader: splashHpMatch[1], base: splashHpMatch[2] }
   const splashMatch = label.match(/^(.+?)\s+(Splash\s+\S+)$/i)
   if (splashMatch) return { leader: splashMatch[1], base: splashMatch[2] }
+  const colorHpMatch = label.match(/^(.+?)\s+(\S+\s+\d+)$/)
+  if (colorHpMatch) return { leader: colorHpMatch[1], base: colorHpMatch[2] }
   const lastSpace = label.lastIndexOf(' ')
   if (lastSpace < 0) return { leader: label, base: '' }
   return { leader: label.slice(0, lastSpace), base: label.slice(lastSpace + 1) }

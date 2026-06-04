@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '../contexts/AuthContext'
 import { usePresence } from '../hooks/usePresence'
@@ -80,7 +80,7 @@ interface ActiveSealedPod {
 }
 
 function LandingPage() {
-  const { user, loading, signIn, isPatron } = useAuth()
+  const { user, loading, signIn, isPatron, refreshSession } = useAuth()
   const hasBetaAccess = user?.is_beta_tester || user?.is_admin
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -199,13 +199,30 @@ function LandingPage() {
   // resolves — otherwise the variant selector would still pick patronNoBeta
   // or short-circuit on hasActiveDraft based on real session state.
   const isPreviewing = Boolean(previewPromoSetCode)
-  const promoVariant: PromoVariant = selectHomepagePromoVariant({
-    hasActiveDraft: isPreviewing ? false : hasActiveDraft,
-    upcomingSet,
-    isPatron: isPreviewing ? false : isPatron,
-    isBetaTester: isPreviewing ? false : Boolean(user?.is_beta_tester),
-    dismissedVariantsForSet: isPreviewing ? {} : dismissedVariantsForSet,
-  })
+  // Admins are not the target audience for any homepage promo banner —
+  // they're already at the end of the funnel. Suppress unconditionally
+  // unless they're previewing variants from /admin (future tool surface).
+  const promoVariant: PromoVariant =
+    !isPreviewing && user?.is_admin
+      ? 'none'
+      : selectHomepagePromoVariant({
+          hasActiveDraft: isPreviewing ? false : hasActiveDraft,
+          upcomingSet,
+          isPatron: isPreviewing ? false : isPatron,
+          isBetaTester: isPreviewing ? false : Boolean(hasBetaAccess),
+          dismissedVariantsForSet: isPreviewing ? {} : dismissedVariantsForSet,
+        })
+
+  // JWT staleness self-heal: if the variant resolves to patronNoBeta but the
+  // user's flags might be stale (granted beta in another tab/session, JWT
+  // hasn't caught up), refresh the session once. Mirrors SetPagePromoBanner.
+  const refreshAttemptedRef = useRef(false)
+  useEffect(() => {
+    if (refreshAttemptedRef.current) return
+    if (promoVariant !== 'patronNoBeta') return
+    refreshAttemptedRef.current = true
+    refreshSession().catch(() => { /* ignore — banner already visible, refresh is best-effort */ })
+  }, [promoVariant, refreshSession])
 
   const setName = upcomingSet?.setName ?? upcomingSet?.setCode ?? null
   const setCode = upcomingSet?.setCode ?? null

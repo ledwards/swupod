@@ -13,12 +13,14 @@
 import { AuthProvider } from '../src/contexts/AuthContext'
 import { PostHogProvider } from '../src/contexts/PostHogProvider'
 import AuthWidget from '../src/components/AuthWidget'
+import BetaWelcomeToast from '../src/components/BetaWelcomeToast'
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
       <PostHogProvider>
         <AuthWidget />
+        <BetaWelcomeToast />
         {children}
       </PostHogProvider>
     </AuthProvider>

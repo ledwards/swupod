@@ -7,6 +7,41 @@ const FRIEND_ROLE_ID = process.env['DISCORD_FRIEND_OF_THE_POD_ROLE_ID']
 const BETA_TESTER_ROLE_ID = process.env['DISCORD_BETA_TESTER_ROLE_ID']
 
 /**
+ * Fetch with respect for Discord 429 rate limits. Retries up to 3 times,
+ * sleeping for the `Retry-After` header (or x-ratelimit-reset-after, or
+ * a 1s fallback). After exhausting retries returns the last 429 response
+ * so callers' existing `!response.ok` paths keep working.
+ *
+ * Why: without this, a 429 burst during the weekly sync-patrons-cron run
+ * makes isPatron / isGuildMember return false for legitimate patrons —
+ * the cron then writes bogus `not_in_guild` patreon_pending rows that
+ * show users the wrong "join the Pod Discord server" message.
+ */
+async function fetchWithRetry(url: string, init: RequestInit, label: string): Promise<Response> {
+  const MAX_RETRIES = 3
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    const response = await fetch(url, init)
+    if (response.status !== 429) return response
+    if (attempt === MAX_RETRIES) {
+      console.warn(`${label}: persistent 429 after ${MAX_RETRIES} retries, giving up`)
+      return response
+    }
+    const retryAfter =
+      response.headers.get('retry-after') ||
+      response.headers.get('x-ratelimit-reset-after') ||
+      '1'
+    const retryAfterSec = parseFloat(retryAfter)
+    const sleepMs = Math.max(
+      500,
+      Math.min(Number.isFinite(retryAfterSec) ? retryAfterSec * 1000 : 1000, 5000)
+    )
+    console.warn(`${label}: 429 rate limited, sleeping ${sleepMs}ms (attempt ${attempt + 1}/${MAX_RETRIES})`)
+    await new Promise((r) => setTimeout(r, sleepMs))
+  }
+  throw new Error('fetchWithRetry: unreachable')
+}
+
+/**
  * Check if a Discord user has the "Friend of the Pod" role in the server.
  * Returns false gracefully if env vars are not configured, user is not
  * in the server, or the Discord API is unavailable.
@@ -17,13 +52,14 @@ export async function isPatron(discordId: string): Promise<boolean> {
   }
 
   try {
-    const response = await fetch(
+    const response = await fetchWithRetry(
       `https://discord.com/api/v10/guilds/${GUILD_ID}/members/${discordId}`,
       {
         headers: {
           Authorization: `Bot ${BOT_TOKEN}`,
         },
-      }
+      },
+      'isPatron'
     )
 
     if (!response.ok) {
@@ -50,13 +86,14 @@ export async function isGuildMember(discordId: string): Promise<boolean> {
   }
 
   try {
-    const response = await fetch(
+    const response = await fetchWithRetry(
       `https://discord.com/api/v10/guilds/${GUILD_ID}/members/${discordId}`,
       {
         headers: {
           Authorization: `Bot ${BOT_TOKEN}`,
         },
-      }
+      },
+      'isGuildMember'
     )
 
     if (!response.ok) {
@@ -82,14 +119,15 @@ export async function addRole(discordId: string, roleId: string): Promise<boolea
   }
 
   try {
-    const response = await fetch(
+    const response = await fetchWithRetry(
       `https://discord.com/api/v10/guilds/${GUILD_ID}/members/${discordId}/roles/${roleId}`,
       {
         method: 'PUT',
         headers: {
           Authorization: `Bot ${BOT_TOKEN}`,
         },
-      }
+      },
+      'addRole'
     )
 
     if (!response.ok && response.status !== 204) {
@@ -115,14 +153,15 @@ export async function removeRole(discordId: string, roleId: string): Promise<boo
   }
 
   try {
-    const response = await fetch(
+    const response = await fetchWithRetry(
       `https://discord.com/api/v10/guilds/${GUILD_ID}/members/${discordId}/roles/${roleId}`,
       {
         method: 'DELETE',
         headers: {
           Authorization: `Bot ${BOT_TOKEN}`,
         },
-      }
+      },
+      'removeRole'
     )
 
     if (!response.ok && response.status !== 204) {

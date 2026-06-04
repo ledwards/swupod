@@ -28,6 +28,16 @@ export default function BetaPage() {
     }
   }, [loading, user, signIn])
 
+  // Beta access is now automatic for patrons (auto-enrolled in AuthContext), so
+  // /beta is no longer a destination — anyone landing here who already has
+  // access (admin, manually-enrolled tester, or freshly auto-enrolled patron)
+  // gets bounced to /sealed.
+  useEffect(() => {
+    if (hasBetaAccess) {
+      router.replace('/sealed')
+    }
+  }, [hasBetaAccess, router])
+
   // Check Discord guild membership for the post-enrollment CTA. Only meaningful
   // when the user already has beta access (the success branch); skip otherwise.
   useEffect(() => {

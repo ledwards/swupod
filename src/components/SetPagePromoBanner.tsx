@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { getSetConfig } from '../utils/setConfigs/index'
 import { isSetUpcoming } from '../utils/membership'
@@ -33,11 +33,16 @@ function hexToRgba(hex: string, alpha: number): string {
  * banner, so a dismissal on either surface carries across.
  */
 export default function SetPagePromoBanner({ setCode }: Props) {
-  const { user, isPatron } = useAuth()
+  const { user, isPatron, refreshSession } = useAuth()
   const isBetaTester = Boolean(user?.is_beta_tester) || Boolean(user?.is_admin)
 
   const [dismissed, setDismissed] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
+  // Guards against showing the banner to someone whose JWT cookie is stale —
+  // e.g., they were granted beta access in another tab/session and the cookie
+  // hasn't caught up. We re-query the DB once before rendering.
+  const [sessionVerified, setSessionVerified] = useState(false)
+  const refreshAttempted = useRef(false)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -45,9 +50,18 @@ export default function SetPagePromoBanner({ setCode }: Props) {
     if (key && localStorage.getItem(key)) setDismissed(true)
   }, [setCode])
 
+  useEffect(() => {
+    if (refreshAttempted.current) return
+    if (isPatron !== true) return
+    if (isBetaTester) return
+    refreshAttempted.current = true
+    refreshSession().finally(() => setSessionVerified(true))
+  }, [isPatron, isBetaTester, refreshSession])
+
   if (!isSetUpcoming(setCode)) return null
   if (isPatron !== true) return null
   if (isBetaTester) return null
+  if (!sessionVerified) return null
   if (dismissed) return null
 
   const setConfig = getSetConfig(setCode.replace('-CB', ''))
