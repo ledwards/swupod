@@ -109,19 +109,21 @@ async function backfillIsPatronByEmail(
 async function recordNotInGuildPending(
   email: string | null,
   name: string | null,
+  discordId: string | null,
 ): Promise<boolean> {
   if (!email) return false
   try {
     await query(
-      `INSERT INTO patreon_pending (email, patreon_name, event, patron_status, reason, created_at)
-       VALUES ($1, $2, 'sync-patrons-cron', 'active_patron', 'not_in_guild', NOW())
+      `INSERT INTO patreon_pending (email, patreon_name, event, patron_status, reason, discord_id, created_at)
+       VALUES ($1, $2, 'sync-patrons-cron', 'active_patron', 'not_in_guild', $3, NOW())
        ON CONFLICT (email) DO UPDATE SET
          patreon_name = EXCLUDED.patreon_name,
          event = EXCLUDED.event,
          patron_status = EXCLUDED.patron_status,
          reason = 'not_in_guild',
+         discord_id = EXCLUDED.discord_id,
          created_at = NOW()`,
-      [email, name]
+      [email, name, discordId]
     )
     return true
   } catch (err) {
@@ -191,7 +193,7 @@ export async function runSyncPatronsCron(options: RunOptions = {}): Promise<Cron
       // "join the Pod Discord server" message to this patron on their next
       // session load. Without this, the cron knows about the problem but
       // the patron only sees a generic "subscribe to Patreon" CTA.
-      const recorded = dryRun ? false : await recordNotInGuildPending(patron.email, patron.fullName)
+      const recorded = dryRun ? false : await recordNotInGuildPending(patron.email, patron.fullName, discordId)
       if (recorded) result.pendingRecorded++
       result.mismatches.push({
         discordId,
