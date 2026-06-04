@@ -199,16 +199,19 @@ function LandingPage() {
   // resolves — otherwise the variant selector would still pick patronNoBeta
   // or short-circuit on hasActiveDraft based on real session state.
   const isPreviewing = Boolean(previewPromoSetCode)
-  const promoVariant: PromoVariant = selectHomepagePromoVariant({
-    hasActiveDraft: isPreviewing ? false : hasActiveDraft,
-    upcomingSet,
-    isPatron: isPreviewing ? false : isPatron,
-    // Treat admins as effective beta testers — parity with SetPagePromoBanner
-    // so admins don't see the patron-no-beta banner on the homepage when they
-    // don't see it on /sets/{code}.
-    isBetaTester: isPreviewing ? false : Boolean(hasBetaAccess),
-    dismissedVariantsForSet: isPreviewing ? {} : dismissedVariantsForSet,
-  })
+  // Admins are not the target audience for any homepage promo banner —
+  // they're already at the end of the funnel. Suppress unconditionally
+  // unless they're previewing variants from /admin (future tool surface).
+  const promoVariant: PromoVariant =
+    !isPreviewing && user?.is_admin
+      ? 'none'
+      : selectHomepagePromoVariant({
+          hasActiveDraft: isPreviewing ? false : hasActiveDraft,
+          upcomingSet,
+          isPatron: isPreviewing ? false : isPatron,
+          isBetaTester: isPreviewing ? false : Boolean(hasBetaAccess),
+          dismissedVariantsForSet: isPreviewing ? {} : dismissedVariantsForSet,
+        })
 
   // JWT staleness self-heal: if the variant resolves to patronNoBeta but the
   // user's flags might be stale (granted beta in another tab/session, JWT
