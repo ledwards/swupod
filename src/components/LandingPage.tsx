@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '../contexts/AuthContext'
 import { usePresence } from '../hooks/usePresence'
@@ -80,7 +80,7 @@ interface ActiveSealedPod {
 }
 
 function LandingPage() {
-  const { user, loading, signIn, isPatron } = useAuth()
+  const { user, loading, signIn, isPatron, refreshSession } = useAuth()
   const hasBetaAccess = user?.is_beta_tester || user?.is_admin
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -203,9 +203,23 @@ function LandingPage() {
     hasActiveDraft: isPreviewing ? false : hasActiveDraft,
     upcomingSet,
     isPatron: isPreviewing ? false : isPatron,
-    isBetaTester: isPreviewing ? false : Boolean(user?.is_beta_tester),
+    // Treat admins as effective beta testers — parity with SetPagePromoBanner
+    // so admins don't see the patron-no-beta banner on the homepage when they
+    // don't see it on /sets/{code}.
+    isBetaTester: isPreviewing ? false : Boolean(hasBetaAccess),
     dismissedVariantsForSet: isPreviewing ? {} : dismissedVariantsForSet,
   })
+
+  // JWT staleness self-heal: if the variant resolves to patronNoBeta but the
+  // user's flags might be stale (granted beta in another tab/session, JWT
+  // hasn't caught up), refresh the session once. Mirrors SetPagePromoBanner.
+  const refreshAttemptedRef = useRef(false)
+  useEffect(() => {
+    if (refreshAttemptedRef.current) return
+    if (promoVariant !== 'patronNoBeta') return
+    refreshAttemptedRef.current = true
+    refreshSession().catch(() => { /* ignore — banner already visible, refresh is best-effort */ })
+  }, [promoVariant, refreshSession])
 
   const setName = upcomingSet?.setName ?? upcomingSet?.setCode ?? null
   const setCode = upcomingSet?.setCode ?? null
