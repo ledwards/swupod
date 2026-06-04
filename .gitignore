@@ -90,3 +90,4 @@ dns-cloudflare.txt
 
 # BIND zone files generated for one-off Cloudflare imports
 *.zone
+.gstack/
