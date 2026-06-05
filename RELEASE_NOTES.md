@@ -1,5 +1,13 @@
 # Release Notes
 
+## 06.04.2026
+
+### 🔥 Ashes of the Empire — Early Access Beta
+- **ASH is live for Friends of the Pod**: The first Ashes of the Empire cards have landed in Early Access Beta. Build ASH pools, run sealed and drafts, and start exploring Set 8 weeks before general availability.
+- **Try Friends of the Pod free for one week**: Want in on ASH Early Access? [Join the Pod](https://patreon.com/ProtectthePod) — your first week is free, so you can try it with no commitment.
+- **Mark your calendar**: ASH hits general availability on the **prerelease date, July 10, 2026**, with full release on **July 17, 2026**.
+- **Free ASH pods for everyone**: Any ASH draft pod started by an Early Access Beta user is open to all players — non-patrons can join, draft, and play ASH for free.
+
 ## 05.24.2026
 
 ### 🐛 Bug Fixes
