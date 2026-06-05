@@ -63,7 +63,9 @@ function markSessionSeen(setCode: string | null | undefined): void {
 
 export function SubscribePodBanner({ podSetCode }: SubscribePodBannerProps) {
   const { isPatron, user } = useAuth()
-  const isBetaTester = Boolean(user?.is_beta_tester)
+  // Admins are treated as effective beta — they're already past the funnel.
+  // Matches SetPagePromoBanner.tsx and LandingPage's homepage promo gating.
+  const isBetaTester = Boolean(user?.is_beta_tester) || Boolean(user?.is_admin)
   const [modalOpen, setModalOpen] = useState(false)
   const [dismissed, setDismissed] = useState(false)
 
