@@ -21,6 +21,7 @@ import './AdminGrantPanel.css'
 type Flag = 'is_patron' | 'is_beta_tester'
 
 interface SuggestedUser {
+  kind?: 'user'
   id: string
   discord_id: string
   username: string
