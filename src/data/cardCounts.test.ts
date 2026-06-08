@@ -345,9 +345,21 @@ function test(name: string, fn: () => void): void {
   }
 }
 
-function assertEqual(actual: number, expected: number, message?: string): void {
-  if (actual !== expected) {
-    throw new Error(message || `Expected ${expected}, got ${actual}`)
+// The values in EXPECTED are MINIMUMS, not exact counts.
+//
+// Why: SWUAPI variant counts only grow over time. Anniversary printings, judge
+// promos, and new treatments of existing cards keep landing in older sets, so a
+// "Total Hyperspace = 242" snapshot from 2026-05 will read 244+ a month later
+// without anything being broken. The upstream swuapi pipeline-dag also
+// occasionally races with this workflow (`:17 * * * *` vs `:15`/`:30 * * * *`),
+// exposing transient mid-run states that read higher than the canonical count.
+//
+// Treating each hardcoded number as a floor stays robust to both cases. A
+// regression (actual < expected) — cards lost or mis-classified during import —
+// still fails the test, which is the signal we actually care about.
+function assertAtLeast(actual: number, expected: number, message?: string): void {
+  if (actual < expected) {
+    throw new Error(message || `Expected at least ${expected}, got ${actual}`)
   }
 }
 
@@ -390,122 +402,122 @@ async function runTests(): Promise<void> {
     const draftable = normal.filter(isDraftable)
 
     // Treatment totals
-    test(`${setCode}: Total Normal = ${expected.totalNormal}`, () => {
-      assertEqual(normal.length, expected.totalNormal)
+    test(`${setCode}: Total Normal >= ${expected.totalNormal}`, () => {
+      assertAtLeast(normal.length, expected.totalNormal)
     })
-    test(`${setCode}: Total Hyperspace = ${expected.totalHyperspace}`, () => {
-      assertEqual(cards.filter((c: any) => c.variantType === 'Hyperspace').length, expected.totalHyperspace)
+    test(`${setCode}: Total Hyperspace >= ${expected.totalHyperspace}`, () => {
+      assertAtLeast(cards.filter((c: any) => c.variantType === 'Hyperspace').length, expected.totalHyperspace)
     })
-    test(`${setCode}: Total Foil = ${expected.totalFoil}`, () => {
-      assertEqual(cards.filter((c: any) => c.variantType === 'Foil').length, expected.totalFoil)
+    test(`${setCode}: Total Foil >= ${expected.totalFoil}`, () => {
+      assertAtLeast(cards.filter((c: any) => c.variantType === 'Foil').length, expected.totalFoil)
     })
-    test(`${setCode}: Total Showcase = ${expected.totalShowcase}`, () => {
-      assertEqual(cards.filter((c: any) => c.variantType === 'Showcase').length, expected.totalShowcase)
+    test(`${setCode}: Total Showcase >= ${expected.totalShowcase}`, () => {
+      assertAtLeast(cards.filter((c: any) => c.variantType === 'Showcase').length, expected.totalShowcase)
     })
 
     // Rarity counts (excluding Leaders and Bases)
-    test(`${setCode}: Commons (excl L/B) = ${expected.commons}`, () => {
-      assertEqual(draftable.filter((c: any) => c.rarity === 'Common').length, expected.commons)
+    test(`${setCode}: Commons (excl L/B) >= ${expected.commons}`, () => {
+      assertAtLeast(draftable.filter((c: any) => c.rarity === 'Common').length, expected.commons)
     })
-    test(`${setCode}: Uncommons (excl L/B) = ${expected.uncommons}`, () => {
-      assertEqual(draftable.filter((c: any) => c.rarity === 'Uncommon').length, expected.uncommons)
+    test(`${setCode}: Uncommons (excl L/B) >= ${expected.uncommons}`, () => {
+      assertAtLeast(draftable.filter((c: any) => c.rarity === 'Uncommon').length, expected.uncommons)
     })
-    test(`${setCode}: Rares (excl L/B) = ${expected.rares}`, () => {
-      assertEqual(draftable.filter((c: any) => c.rarity === 'Rare').length, expected.rares)
+    test(`${setCode}: Rares (excl L/B) >= ${expected.rares}`, () => {
+      assertAtLeast(draftable.filter((c: any) => c.rarity === 'Rare').length, expected.rares)
     })
-    test(`${setCode}: Legendaries (excl L/B) = ${expected.legendaries}`, () => {
-      assertEqual(draftable.filter((c: any) => c.rarity === 'Legendary').length, expected.legendaries)
+    test(`${setCode}: Legendaries (excl L/B) >= ${expected.legendaries}`, () => {
+      assertAtLeast(draftable.filter((c: any) => c.rarity === 'Legendary').length, expected.legendaries)
     })
 
     // Leader counts
     const leaders = normal.filter((c: any) => c.type === 'Leader')
-    test(`${setCode}: Total Leaders = ${expected.totalLeaders}`, () => {
-      assertEqual(leaders.length, expected.totalLeaders)
+    test(`${setCode}: Total Leaders >= ${expected.totalLeaders}`, () => {
+      assertAtLeast(leaders.length, expected.totalLeaders)
     })
-    test(`${setCode}: Common Leaders = ${expected.commonLeaders}`, () => {
-      assertEqual(leaders.filter((c: any) => c.rarity === 'Common').length, expected.commonLeaders)
+    test(`${setCode}: Common Leaders >= ${expected.commonLeaders}`, () => {
+      assertAtLeast(leaders.filter((c: any) => c.rarity === 'Common').length, expected.commonLeaders)
     })
-    test(`${setCode}: Rare Leaders = ${expected.rareLeaders}`, () => {
-      assertEqual(leaders.filter((c: any) => c.rarity === 'Rare').length, expected.rareLeaders)
+    test(`${setCode}: Rare Leaders >= ${expected.rareLeaders}`, () => {
+      assertAtLeast(leaders.filter((c: any) => c.rarity === 'Rare').length, expected.rareLeaders)
     })
 
     // Base counts
     const bases = normal.filter((c: any) => c.type === 'Base')
-    test(`${setCode}: Total Bases = ${expected.totalBases}`, () => {
-      assertEqual(bases.length, expected.totalBases)
+    test(`${setCode}: Total Bases >= ${expected.totalBases}`, () => {
+      assertAtLeast(bases.length, expected.totalBases)
     })
-    test(`${setCode}: Common Bases = ${expected.commonBases}`, () => {
-      assertEqual(bases.filter((c: any) => c.rarity === 'Common').length, expected.commonBases)
+    test(`${setCode}: Common Bases >= ${expected.commonBases}`, () => {
+      assertAtLeast(bases.filter((c: any) => c.rarity === 'Common').length, expected.commonBases)
     })
-    test(`${setCode}: Rare Bases = ${expected.rareBases}`, () => {
-      assertEqual(bases.filter((c: any) => c.rarity === 'Rare').length, expected.rareBases)
+    test(`${setCode}: Rare Bases >= ${expected.rareBases}`, () => {
+      assertAtLeast(bases.filter((c: any) => c.rarity === 'Rare').length, expected.rareBases)
     })
 
     // Card type counts (Normal treatment)
     const units = normal.filter((c: any) => c.type === 'Unit')
-    test(`${setCode}: Units = ${expected.units}`, () => {
-      assertEqual(units.length, expected.units)
+    test(`${setCode}: Units >= ${expected.units}`, () => {
+      assertAtLeast(units.length, expected.units)
     })
-    test(`${setCode}: Ground Units = ${expected.groundUnits}`, () => {
-      assertEqual(units.filter((c: any) => c.arenas && c.arenas.includes('Ground')).length, expected.groundUnits)
+    test(`${setCode}: Ground Units >= ${expected.groundUnits}`, () => {
+      assertAtLeast(units.filter((c: any) => c.arenas && c.arenas.includes('Ground')).length, expected.groundUnits)
     })
-    test(`${setCode}: Space Units = ${expected.spaceUnits}`, () => {
-      assertEqual(units.filter((c: any) => c.arenas && c.arenas.includes('Space')).length, expected.spaceUnits)
+    test(`${setCode}: Space Units >= ${expected.spaceUnits}`, () => {
+      assertAtLeast(units.filter((c: any) => c.arenas && c.arenas.includes('Space')).length, expected.spaceUnits)
     })
-    test(`${setCode}: Upgrades = ${expected.upgrades}`, () => {
-      assertEqual(normal.filter((c: any) => c.type === 'Upgrade').length, expected.upgrades)
+    test(`${setCode}: Upgrades >= ${expected.upgrades}`, () => {
+      assertAtLeast(normal.filter((c: any) => c.type === 'Upgrade').length, expected.upgrades)
     })
-    test(`${setCode}: Events = ${expected.events}`, () => {
-      assertEqual(normal.filter((c: any) => c.type === 'Event').length, expected.events)
+    test(`${setCode}: Events >= ${expected.events}`, () => {
+      assertAtLeast(normal.filter((c: any) => c.type === 'Event').length, expected.events)
     })
 
     // Single aspect counts (Normal, draftable cards only)
-    test(`${setCode}: Vigilance (single) = ${expected.vigilanceSingle}`, () => {
-      assertEqual(draftable.filter((c: any) => hasSingleAspect(c, 'Vigilance')).length, expected.vigilanceSingle)
+    test(`${setCode}: Vigilance (single) >= ${expected.vigilanceSingle}`, () => {
+      assertAtLeast(draftable.filter((c: any) => hasSingleAspect(c, 'Vigilance')).length, expected.vigilanceSingle)
     })
-    test(`${setCode}: Command (single) = ${expected.commandSingle}`, () => {
-      assertEqual(draftable.filter((c: any) => hasSingleAspect(c, 'Command')).length, expected.commandSingle)
+    test(`${setCode}: Command (single) >= ${expected.commandSingle}`, () => {
+      assertAtLeast(draftable.filter((c: any) => hasSingleAspect(c, 'Command')).length, expected.commandSingle)
     })
-    test(`${setCode}: Aggression (single) = ${expected.aggressionSingle}`, () => {
-      assertEqual(draftable.filter((c: any) => hasSingleAspect(c, 'Aggression')).length, expected.aggressionSingle)
+    test(`${setCode}: Aggression (single) >= ${expected.aggressionSingle}`, () => {
+      assertAtLeast(draftable.filter((c: any) => hasSingleAspect(c, 'Aggression')).length, expected.aggressionSingle)
     })
-    test(`${setCode}: Cunning (single) = ${expected.cunningSingle}`, () => {
-      assertEqual(draftable.filter((c: any) => hasSingleAspect(c, 'Cunning')).length, expected.cunningSingle)
+    test(`${setCode}: Cunning (single) >= ${expected.cunningSingle}`, () => {
+      assertAtLeast(draftable.filter((c: any) => hasSingleAspect(c, 'Cunning')).length, expected.cunningSingle)
     })
-    test(`${setCode}: Heroism (single) = ${expected.heroismSingle}`, () => {
-      assertEqual(draftable.filter((c: any) => hasSingleAspect(c, 'Heroism')).length, expected.heroismSingle)
+    test(`${setCode}: Heroism (single) >= ${expected.heroismSingle}`, () => {
+      assertAtLeast(draftable.filter((c: any) => hasSingleAspect(c, 'Heroism')).length, expected.heroismSingle)
     })
-    test(`${setCode}: Villainy (single) = ${expected.villainySingle}`, () => {
-      assertEqual(draftable.filter((c: any) => hasSingleAspect(c, 'Villainy')).length, expected.villainySingle)
+    test(`${setCode}: Villainy (single) >= ${expected.villainySingle}`, () => {
+      assertAtLeast(draftable.filter((c: any) => hasSingleAspect(c, 'Villainy')).length, expected.villainySingle)
     })
-    test(`${setCode}: Neutral = ${expected.neutral}`, () => {
-      assertEqual(draftable.filter(isNeutral).length, expected.neutral)
+    test(`${setCode}: Neutral >= ${expected.neutral}`, () => {
+      assertAtLeast(draftable.filter(isNeutral).length, expected.neutral)
     })
 
     // Dual aspect counts (Normal, draftable cards only)
-    test(`${setCode}: Vigilance/Villainy = ${expected.vigilanceVillainy}`, () => {
-      assertEqual(draftable.filter((c: any) => hasDualAspect(c, 'Vigilance', 'Villainy')).length, expected.vigilanceVillainy)
+    test(`${setCode}: Vigilance/Villainy >= ${expected.vigilanceVillainy}`, () => {
+      assertAtLeast(draftable.filter((c: any) => hasDualAspect(c, 'Vigilance', 'Villainy')).length, expected.vigilanceVillainy)
     })
-    test(`${setCode}: Vigilance/Heroism = ${expected.vigilanceHeroism}`, () => {
-      assertEqual(draftable.filter((c: any) => hasDualAspect(c, 'Vigilance', 'Heroism')).length, expected.vigilanceHeroism)
+    test(`${setCode}: Vigilance/Heroism >= ${expected.vigilanceHeroism}`, () => {
+      assertAtLeast(draftable.filter((c: any) => hasDualAspect(c, 'Vigilance', 'Heroism')).length, expected.vigilanceHeroism)
     })
-    test(`${setCode}: Command/Villainy = ${expected.commandVillainy}`, () => {
-      assertEqual(draftable.filter((c: any) => hasDualAspect(c, 'Command', 'Villainy')).length, expected.commandVillainy)
+    test(`${setCode}: Command/Villainy >= ${expected.commandVillainy}`, () => {
+      assertAtLeast(draftable.filter((c: any) => hasDualAspect(c, 'Command', 'Villainy')).length, expected.commandVillainy)
     })
-    test(`${setCode}: Command/Heroism = ${expected.commandHeroism}`, () => {
-      assertEqual(draftable.filter((c: any) => hasDualAspect(c, 'Command', 'Heroism')).length, expected.commandHeroism)
+    test(`${setCode}: Command/Heroism >= ${expected.commandHeroism}`, () => {
+      assertAtLeast(draftable.filter((c: any) => hasDualAspect(c, 'Command', 'Heroism')).length, expected.commandHeroism)
     })
-    test(`${setCode}: Aggression/Villainy = ${expected.aggressionVillainy}`, () => {
-      assertEqual(draftable.filter((c: any) => hasDualAspect(c, 'Aggression', 'Villainy')).length, expected.aggressionVillainy)
+    test(`${setCode}: Aggression/Villainy >= ${expected.aggressionVillainy}`, () => {
+      assertAtLeast(draftable.filter((c: any) => hasDualAspect(c, 'Aggression', 'Villainy')).length, expected.aggressionVillainy)
     })
-    test(`${setCode}: Aggression/Heroism = ${expected.aggressionHeroism}`, () => {
-      assertEqual(draftable.filter((c: any) => hasDualAspect(c, 'Aggression', 'Heroism')).length, expected.aggressionHeroism)
+    test(`${setCode}: Aggression/Heroism >= ${expected.aggressionHeroism}`, () => {
+      assertAtLeast(draftable.filter((c: any) => hasDualAspect(c, 'Aggression', 'Heroism')).length, expected.aggressionHeroism)
     })
-    test(`${setCode}: Cunning/Villainy = ${expected.cunningVillainy}`, () => {
-      assertEqual(draftable.filter((c: any) => hasDualAspect(c, 'Cunning', 'Villainy')).length, expected.cunningVillainy)
+    test(`${setCode}: Cunning/Villainy >= ${expected.cunningVillainy}`, () => {
+      assertAtLeast(draftable.filter((c: any) => hasDualAspect(c, 'Cunning', 'Villainy')).length, expected.cunningVillainy)
     })
-    test(`${setCode}: Cunning/Heroism = ${expected.cunningHeroism}`, () => {
-      assertEqual(draftable.filter((c: any) => hasDualAspect(c, 'Cunning', 'Heroism')).length, expected.cunningHeroism)
+    test(`${setCode}: Cunning/Heroism >= ${expected.cunningHeroism}`, () => {
+      assertAtLeast(draftable.filter((c: any) => hasDualAspect(c, 'Cunning', 'Heroism')).length, expected.cunningHeroism)
     })
   }
 
