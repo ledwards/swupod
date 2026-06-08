@@ -134,3 +134,82 @@ export async function lookupDiscordIdByEmail(email: string): Promise<string | nu
     return null
   }
 }
+
+// --- Active-patron cache --------------------------------------------------
+//
+// Why: the on-demand patron-status check (app/api/auth/patron-status) needs
+// to ask "is this Discord ID currently an active patron on Patreon?" on
+// every cache-cold call. Without a cache, every non-patron page load would
+// trigger a full paginated /members fetch. The 5-min TTL is short enough
+// that a freshly-subscribed patron sees their access within minutes (the
+// webhook handles the same-email synchronous case; this is the fallback
+// for the email-mismatch + Discord-linked-after-subscribe slice), and long
+// enough that we don't hammer Patreon during a traffic spike.
+//
+// Singleflight (inflightFetch) prevents N concurrent cache-cold requests
+// from each triggering their own paginated fetch.
+
+const ACTIVE_PATRON_CACHE_TTL_MS = 5 * 60 * 1000
+const ACTIVE_PATRON_STATUSES = new Set(['active_patron', 'pay_upfront'])
+
+let cachedActivePatrons: { data: PatreonMember[]; expiresAt: number } | null = null
+let inflightActivePatronFetch: Promise<PatreonMember[]> | null = null
+
+/**
+ * Returns the list of active patrons (active_patron + pay_upfront), cached
+ * in process for ACTIVE_PATRON_CACHE_TTL_MS. Concurrent cache-cold calls
+ * share a single in-flight fetch. Failures are NOT cached — the next call
+ * retries.
+ */
+export async function getCachedActivePatrons(): Promise<PatreonMember[]> {
+  if (cachedActivePatrons && cachedActivePatrons.expiresAt > Date.now()) {
+    return cachedActivePatrons.data
+  }
+  if (inflightActivePatronFetch) return inflightActivePatronFetch
+
+  inflightActivePatronFetch = (async () => {
+    try {
+      const all = await fetchAllPatrons()
+      const active = all.filter((m) => ACTIVE_PATRON_STATUSES.has(m.patronStatus || ''))
+      cachedActivePatrons = { data: active, expiresAt: Date.now() + ACTIVE_PATRON_CACHE_TTL_MS }
+      return active
+    } finally {
+      inflightActivePatronFetch = null
+    }
+  })()
+
+  return inflightActivePatronFetch
+}
+
+/**
+ * On-demand lookup: is `discordId` currently an active patron on Patreon?
+ * Backs the patron-status real-time check that closes the
+ * "user-linked-Discord-after-subscribe" gap (Patreon fires no webhook for
+ * that event, so without this lookup the user waits up to a week for the
+ * Sunday cron to discover them).
+ *
+ * Returns the matching member, or null on miss / API failure. Failures
+ * degrade silently so the caller falls through to the existing
+ * patreon_pending message path instead of throwing.
+ */
+export async function findActivePatronByDiscordId(
+  discordId: string,
+): Promise<PatreonMember | null> {
+  if (!discordId) return null
+  try {
+    const patrons = await getCachedActivePatrons()
+    return patrons.find((p) => p.discordUserId === discordId) || null
+  } catch (err) {
+    console.warn('findActivePatronByDiscordId: failed', { discordId, error: String(err) })
+    return null
+  }
+}
+
+/**
+ * Test-only: clear the cache so a unit test can assert on cache miss behavior.
+ * Not part of the public API contract.
+ */
+export function __resetActivePatronCacheForTests(): void {
+  cachedActivePatrons = null
+  inflightActivePatronFetch = null
+}

@@ -11,7 +11,12 @@ import assert from 'node:assert'
 process.env['PATREON_CREATOR_ACCESS_TOKEN'] = 'test-token'
 process.env['PATREON_CAMPAIGN_ID'] = 'test-campaign'
 
-const { fetchAllPatrons } = await import('./patreon.ts')
+const {
+  fetchAllPatrons,
+  findActivePatronByDiscordId,
+  getCachedActivePatrons,
+  __resetActivePatronCacheForTests,
+} = await import('./patreon.ts')
 
 // Helper: stub global fetch with a deterministic response.
 function stubFetch(response) {
@@ -147,6 +152,134 @@ describe('lib/patreon — fetchAllPatrons', () => {
         const members = await fetchAllPatrons()
         assert.strictEqual(members[0].pledgeAmountCents, null, 'non-numeric pledge amount → null')
         assert.strictEqual(members[0].pledgeStartedAt, null, 'empty pledge start string → null')
+      } finally {
+        stub.restore()
+      }
+    })
+  })
+
+  describe('active-patron cache (SPEC: on-demand patron-status lookup must not hammer Patreon)', () => {
+    function makeMember({ id, discord, status }) {
+      return {
+        id: `member-${id}`,
+        attributes: {
+          full_name: `Patron ${id}`,
+          email: `${id}@example.com`,
+          patron_status: status,
+        },
+        relationships: { user: { data: { id: `user-${id}` } } },
+      }
+    }
+    function makeUser({ id, discord }) {
+      return {
+        type: 'user',
+        id: `user-${id}`,
+        attributes: discord ? { social_connections: { discord: { user_id: discord } } } : {},
+      }
+    }
+
+    it('NEW CODE: findActivePatronByDiscordId returns matching active patron', async () => {
+      __resetActivePatronCacheForTests()
+      const stub = stubFetch({
+        data: [
+          makeMember({ id: 'a', status: 'active_patron' }),
+          makeMember({ id: 'b', status: 'active_patron' }),
+        ],
+        included: [
+          makeUser({ id: 'a', discord: 'discord-a' }),
+          makeUser({ id: 'b', discord: 'discord-b' }),
+        ],
+        meta: {},
+      })
+      try {
+        const match = await findActivePatronByDiscordId('discord-b')
+        assert.ok(match, 'expected a match for discord-b')
+        assert.strictEqual(match.discordUserId, 'discord-b')
+        assert.strictEqual(match.email, 'b@example.com')
+      } finally {
+        stub.restore()
+      }
+    })
+
+    it('NEW CODE: findActivePatronByDiscordId returns null when Discord id is unknown', async () => {
+      __resetActivePatronCacheForTests()
+      const stub = stubFetch({
+        data: [makeMember({ id: 'a', status: 'active_patron' })],
+        included: [makeUser({ id: 'a', discord: 'discord-a' })],
+        meta: {},
+      })
+      try {
+        const match = await findActivePatronByDiscordId('discord-not-a-patron')
+        assert.strictEqual(match, null)
+      } finally {
+        stub.restore()
+      }
+    })
+
+    it('NEW CODE: cache is reused within TTL — second lookup makes zero extra fetch calls', async () => {
+      __resetActivePatronCacheForTests()
+      const stub = stubFetch({
+        data: [makeMember({ id: 'a', status: 'active_patron' })],
+        included: [makeUser({ id: 'a', discord: 'discord-a' })],
+        meta: {},
+      })
+      try {
+        await findActivePatronByDiscordId('discord-a')
+        const callsAfterFirst = stub.calls.length
+        await findActivePatronByDiscordId('discord-a')
+        await findActivePatronByDiscordId('discord-other')
+        assert.strictEqual(
+          stub.calls.length,
+          callsAfterFirst,
+          'cache hit must not make additional fetch calls',
+        )
+      } finally {
+        stub.restore()
+      }
+    })
+
+    it('NEW CODE: cache excludes non-active patron statuses (declined, etc.)', async () => {
+      __resetActivePatronCacheForTests()
+      const stub = stubFetch({
+        data: [
+          makeMember({ id: 'a', status: 'active_patron' }),
+          makeMember({ id: 'b', status: 'declined_patron' }),
+          makeMember({ id: 'c', status: 'former_patron' }),
+        ],
+        included: [
+          makeUser({ id: 'a', discord: 'discord-a' }),
+          makeUser({ id: 'b', discord: 'discord-b' }),
+          makeUser({ id: 'c', discord: 'discord-c' }),
+        ],
+        meta: {},
+      })
+      try {
+        const patrons = await getCachedActivePatrons()
+        const ids = patrons.map((p) => p.discordUserId).sort()
+        assert.deepStrictEqual(ids, ['discord-a'], 'only active_patron should remain')
+        // SPEC: a former patron must not resolve as active via the on-demand lookup
+        const formerLookup = await findActivePatronByDiscordId('discord-c')
+        assert.strictEqual(formerLookup, null, 'former_patron must not resolve as active')
+      } finally {
+        stub.restore()
+      }
+    })
+
+    it('NEW CODE: singleflight — concurrent cache-cold calls share one fetch', async () => {
+      __resetActivePatronCacheForTests()
+      const stub = stubFetch({
+        data: [makeMember({ id: 'a', status: 'active_patron' })],
+        included: [makeUser({ id: 'a', discord: 'discord-a' })],
+        meta: {},
+      })
+      try {
+        const [r1, r2, r3] = await Promise.all([
+          findActivePatronByDiscordId('discord-a'),
+          findActivePatronByDiscordId('discord-a'),
+          findActivePatronByDiscordId('discord-a'),
+        ])
+        assert.strictEqual(stub.calls.length, 1, 'concurrent calls must coalesce to ONE fetch')
+        assert.ok(r1 && r2 && r3, 'all three callers receive the result')
       } finally {
         stub.restore()
       }

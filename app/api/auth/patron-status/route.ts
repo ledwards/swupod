@@ -3,7 +3,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import { query, queryRow } from '@/lib/db'
-import { isPatron } from '@/lib/discord'
+import { isPatron, addPatronRole, addBetaTesterRole } from '@/lib/discord'
+import { findActivePatronByDiscordId } from '@/lib/patreon'
 import { handleApiError } from '@/lib/utils'
 
 const DISCORD_INVITE_URL =
@@ -51,13 +52,19 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // Fallback: Discord role check. Covers (a) legacy patrons whose webhook
     // fired before is_patron existed, and (b) email-mismatch — Patreon email
     // ≠ swupod email — where the Discord chain is the only signal we have.
+    //
+    // Also flips is_beta_tester to TRUE — patron status implies beta access
+    // ("no extra steps"); we do not require a separate /beta enrollment click.
     let patron = false
     if (user?.discord_id) {
       patron = await isPatron(user.discord_id as string)
       if (patron) {
         // Backfill the DB flag so the next call hits the fast path.
         try {
-          await query('UPDATE users SET is_patron = TRUE WHERE id = $1', [session.id])
+          await query(
+            'UPDATE users SET is_patron = TRUE, is_beta_tester = TRUE WHERE id = $1',
+            [session.id]
+          )
         } catch {
           // Non-fatal — Discord answer is authoritative; backfill is a perf opt.
         }
@@ -65,6 +72,60 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         if (user.email) {
           try { await query('DELETE FROM patreon_pending WHERE email = $1', [user.email]) } catch { /* ignore */ }
         }
+      }
+    }
+
+    // On-demand Patreon API lookup — closes the gap where a user subscribed
+    // first and linked Discord on Patreon afterwards. Patreon fires NO
+    // webhook for "Discord connection added," so without this lookup the
+    // user has no recovery path until the Sunday sync-patrons-cron run.
+    //
+    // We hit this branch only when the Discord role check above returned
+    // false. That covers two cases:
+    //   1. Brand-new patron whose webhook fired without a Discord id (Patreon
+    //      payloads omit social_connections by default) and our
+    //      lookupDiscordIdByEmail fallback ALSO didn't find one because the
+    //      user hadn't linked Discord on Patreon at webhook time.
+    //   2. Same as #1 but with a Patreon-email ≠ swupod-email mismatch, so
+    //      the webhook's email-match grant didn't fire either.
+    //
+    // If the Patreon API confirms this user IS an active patron via their
+    // Discord id, we flip is_patron + is_beta_tester and proactively add
+    // both Discord roles. The patreon-side lookup is cached for 5 min
+    // (lib/patreon.getCachedActivePatrons), so the cost amortizes across
+    // all stranded-patron checks in that window.
+    if (!patron && user?.discord_id) {
+      const match = await findActivePatronByDiscordId(user.discord_id as string)
+      if (match) {
+        patron = true
+        try {
+          await query(
+            'UPDATE users SET is_patron = TRUE, is_beta_tester = TRUE WHERE id = $1',
+            [session.id]
+          )
+        } catch {
+          // Non-fatal — Patreon answer is authoritative; the flag will be
+          // re-attempted on the next call.
+        }
+        // Self-heal: clear pending rows that match either side (the row
+        // could have been written with Patreon email, swupod email, or NULL
+        // discord_id; clean them all up so patron-status doesn't keep
+        // surfacing a "fix your chain" message after we've resolved it).
+        try {
+          await query(
+            `DELETE FROM patreon_pending
+             WHERE ($1::text IS NOT NULL AND email = $1)
+                OR ($2::text IS NOT NULL AND email = $2)
+                OR ($3::text IS NOT NULL AND discord_id = $3)`,
+            [user?.email || null, match.email || null, user?.discord_id || null]
+          )
+        } catch { /* ignore */ }
+        // Best-effort: push the Discord roles forward so this user shows up
+        // correctly in the Pod server immediately, not next cron run.
+        // Both calls swallow their own errors; we don't care about ordering
+        // and don't block the response on Discord API latency.
+        void addPatronRole(user.discord_id as string).catch(() => {})
+        void addBetaTesterRole(user.discord_id as string).catch(() => {})
       }
     }
 
@@ -95,9 +156,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           const ageMs = createdAt ? Date.now() - new Date(createdAt).getTime() : Infinity
           const withinWindow = ageMs <= PENDING_AUTO_ENABLE_DAYS * 24 * 60 * 60 * 1000
           if (withinWindow) {
-            // Auto-enable: flip the DB flag and clear the pending row.
+            // Auto-enable: flip both flags (patron implies beta — "no extra
+            // steps") and clear the pending row.
             try {
-              await query('UPDATE users SET is_patron = TRUE WHERE id = $1', [session.id])
+              await query(
+                'UPDATE users SET is_patron = TRUE, is_beta_tester = TRUE WHERE id = $1',
+                [session.id]
+              )
               await query('DELETE FROM patreon_pending WHERE email = $1', [pending.pending_email])
               return NextResponse.json({
                 success: true,

@@ -24,7 +24,7 @@
 
 import 'dotenv/config'
 import { fetchAllPatrons } from '../lib/patreon'
-import { isPatron, addPatronRole, isGuildMember } from '../lib/discord'
+import { isPatron, addPatronRole, addBetaTesterRole, isGuildMember } from '../lib/discord'
 import { query } from '../lib/db'
 
 interface CronResult {
@@ -64,10 +64,14 @@ async function backfillIsPatronByEmail(
 ): Promise<{ enabled: number; cleared: number; staleDeleted: number }> {
   if (emails.length === 0) return { enabled: 0, cleared: 0, staleDeleted: 0 }
   try {
+    // Grant patron AND beta — patron status implies beta access in this
+    // system (no separate /beta enrollment step). The WHERE clause matches
+    // any row that needs either flag flipped, so existing patrons missing
+    // is_beta_tester also get healed by this pass.
     const upgrade = await query(
-      `UPDATE users SET is_patron = TRUE
+      `UPDATE users SET is_patron = TRUE, is_beta_tester = TRUE
        WHERE LOWER(email) = ANY($1::text[])
-         AND is_patron = FALSE
+         AND (is_patron = FALSE OR is_beta_tester = FALSE)
        RETURNING id`,
       [emails]
     )
@@ -113,10 +117,13 @@ async function backfillIsPatronByEmail(
 async function backfillIsPatronByDiscordId(discordIds: string[]): Promise<number> {
   if (discordIds.length === 0) return 0
   try {
+    // Grant patron AND beta — patron status implies beta access (no separate
+    // /beta enrollment step). The condition matches rows where either flag
+    // needs flipping so existing patrons missing beta also get healed.
     const upgrade = await query(
-      `UPDATE users SET is_patron = TRUE
+      `UPDATE users SET is_patron = TRUE, is_beta_tester = TRUE
        WHERE discord_id = ANY($1::text[])
-         AND is_patron = FALSE
+         AND (is_patron = FALSE OR is_beta_tester = FALSE)
        RETURNING id`,
       [discordIds]
     )
@@ -213,6 +220,19 @@ export async function runSyncPatronsCron(options: RunOptions = {}): Promise<Cron
     // Discord-ID backfill runs AFTER email backfill — catches the
     // email-mismatch slice that the email pass missed.
     result.dbPatronsEnabledByDiscord = await backfillIsPatronByDiscordId(activeDiscordIds)
+    // Universal sweep: patron implies beta. Catches any row where the two
+    // flags got out of sync — pre-rule legacy patrons, manual SQL fixes,
+    // historical webhook runs that set is_patron without is_beta_tester.
+    // Idempotent and effectively free when no rows need flipping.
+    try {
+      await query(
+        `UPDATE users SET is_beta_tester = TRUE
+         WHERE is_patron = TRUE AND is_beta_tester = FALSE`
+      )
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn('sync-patrons-cron: patron→beta sweep failed', { error: String(err) })
+    }
   }
 
   for (const patron of patrons) {
@@ -247,6 +267,11 @@ export async function runSyncPatronsCron(options: RunOptions = {}): Promise<Cron
     if (heal && !dryRun) {
       const success = await addPatronRole(discordId)
       if (success) {
+        // Push the beta Discord role at the same time — patron implies beta.
+        // Best-effort; the BETA role may not be configured, and we don't
+        // count failures here against the result (the DB flag is what
+        // actually gates access).
+        await addBetaTesterRole(discordId).catch(() => false)
         result.roleAdded++
         result.mismatches.push({
           discordId,

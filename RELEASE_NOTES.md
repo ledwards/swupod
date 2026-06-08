@@ -1,5 +1,11 @@
 # Release Notes
 
+## 06.07.2026
+
+### 🐛 Bug Fixes
+- **Friend of the Pod access works the moment you subscribe**: If you subscribed on Patreon and then linked your Discord account, the site used to leave you stuck waiting up to a week for a background sync. Now it asks Patreon directly on your next page load — you're in immediately.
+- **Beta access is now truly automatic for patrons**: Subscribing to Patreon now grants ASH Early Access Beta in one step. No need to visit `/beta` or click an extra button — your patron status is your beta access. Existing patrons missing the beta flag are auto-healed on the next site visit.
+
 ## 06.04.2026
 
 ### 🔥 Ashes of the Empire — Early Access Beta

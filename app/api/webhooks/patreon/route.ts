@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
-import { addPatronRole, removePatronRole, isGuildMember } from '@/lib/discord'
+import { addPatronRole, removePatronRole, isGuildMember, addBetaTesterRole } from '@/lib/discord'
 import { query } from '@/lib/db'
 import { lookupDiscordIdByEmail } from '@/lib/patreon'
 
@@ -125,11 +125,14 @@ export async function POST(request: NextRequest) {
   if (patreonEmail && (grantsPatron || revokesPatron)) {
     try {
       if (grantsPatron) {
+        // Grant patron AND beta in one shot — patron status implies beta
+        // access (no separate /beta enrollment step). Symmetric with the
+        // revoke branch below which already clears both.
         const res = await query(
-          'UPDATE users SET is_patron = TRUE WHERE LOWER(email) = LOWER($1)',
+          'UPDATE users SET is_patron = TRUE, is_beta_tester = TRUE WHERE LOWER(email) = LOWER($1)',
           [patreonEmail]
         )
-        console.log('Patreon webhook: is_patron email-match grant', { patreonEmail, event, rowCount: (res as any)?.rowCount })
+        console.log('Patreon webhook: is_patron+is_beta_tester email-match grant', { patreonEmail, event, rowCount: (res as any)?.rowCount })
       } else {
         const res = await query(
           'UPDATE users SET is_patron = FALSE, is_beta_tester = FALSE WHERE LOWER(email) = LOWER($1)',
@@ -187,6 +190,12 @@ export async function POST(request: NextRequest) {
       // Always add role on create — free trial users should get immediate access
       const success = await addPatronRole(discordId)
       console.log('Patreon webhook: addPatronRole result', { discordId, success, event, patronStatus })
+      if (success) {
+        // Patron = beta. Push the beta Discord role at the same time so the
+        // user shows up correctly in the Pod server without any extra step.
+        // Best-effort: BETA role may not be configured; we don't block on it.
+        void addBetaTesterRole(discordId).catch(() => {})
+      }
       if (success && patreonEmail) {
         try { await query('DELETE FROM patreon_pending WHERE email = $1', [patreonEmail]) } catch { /* ignore */ }
       } else if (!success) {
@@ -207,6 +216,9 @@ export async function POST(request: NextRequest) {
     } else if ((event === 'members:pledge:update' || event === 'members:update') && isActiveMember) {
       const success = await addPatronRole(discordId)
       console.log('Patreon webhook: addPatronRole result (update)', { discordId, success, event })
+      if (success) {
+        void addBetaTesterRole(discordId).catch(() => {})
+      }
       if (success && patreonEmail) {
         try { await query('DELETE FROM patreon_pending WHERE email = $1', [patreonEmail]) } catch { /* ignore */ }
       } else if (!success) {
