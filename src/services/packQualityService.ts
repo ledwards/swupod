@@ -14,6 +14,11 @@ import {
   HS_BELT_CONFIGS,
   type PackConstants,
 } from '@/src/utils/packConstants'
+import {
+  calculateZScore,
+  calculateConfidenceInterval,
+  categorizePackQualityStatus,
+} from '@/src/utils/stats'
 
 // === Types ===
 
@@ -151,56 +156,13 @@ function getSetName(setCode: string): string {
   return names[setCode] || setCode
 }
 
-/**
- * Calculate Z-score for a proportion
- */
-function calculateZScore(observed: number, expected: number, n: number, p: number): number {
-  if (n === 0 || p === 0 || p === 1) return 0
-  const standardError = Math.sqrt(n * p * (1 - p))
-  if (standardError === 0) return 0
-  return (observed - expected) / standardError
-}
-
-/**
- * Calculate Wilson score confidence interval for a proportion
- */
-function calculateConfidenceInterval(
-  successes: number,
-  total: number,
-  confidence: number = 0.95
-): { low: number; high: number } {
-  if (total === 0) return { low: 0, high: 0 }
-
-  // Z-score for confidence level (1.96 for 95%)
-  const z = confidence === 0.95 ? 1.96 : confidence === 0.99 ? 2.576 : 1.96
-  const p = successes / total
-  const n = total
-
-  // Wilson score interval
-  const denominator = 1 + (z * z) / n
-  const center = (p + (z * z) / (2 * n)) / denominator
-  const margin = (z * Math.sqrt((p * (1 - p) + (z * z) / (4 * n)) / n)) / denominator
-
-  return {
-    low: Math.max(0, center - margin),
-    high: Math.min(1, center + margin),
-  }
-}
-
-/**
- * Categorize statistical significance
- */
-function categorizeStatus(
-  zScore: number,
-  sampleSize: number,
-  minSampleSize: number = 50
-): MetricResult['status'] {
-  if (sampleSize < minSampleSize) return 'insufficient_data'
-  const absZ = Math.abs(zScore)
-  if (absZ < 1.5) return 'expected'
-  if (absZ < 2.0) return 'slight_variance'
-  return 'outlier'
-}
+// Statistical primitives (calculateZScore, calculateConfidenceInterval, and
+// the regime classifier) were extracted to `@/src/utils/stats` so that the
+// personal luck analyzer (`luckVerdict`) can share one implementation. The
+// re-exported aliases below preserve the existing function names used by
+// `buildMetricResult` without changing behavior. See `src/utils/stats.ts` for
+// the implementations and inline derivation notes.
+const categorizeStatus = categorizePackQualityStatus
 
 /**
  * Format rate as human-readable string
