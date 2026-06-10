@@ -227,3 +227,60 @@ export async function trackBulkGenerations(records: TrackingRecord[]): Promise<v
     console.error('Failed to track bulk generations:', error)
   }
 }
+
+/**
+ * Attribute one drafted card to its picker in `card_generations.user_id`.
+ *
+ * Background: draft packs are inserted at start-time with user_id = null
+ * (we don't know who'll pick what at generation). Migration 067 backfills
+ * historical data; this function is the write-path that keeps new picks
+ * correctly attributed going forward, so the U6 "kept" scope query for
+ * drafts is `user_id = $authUser` instead of "join through pod_players".
+ *
+ * Implementation: claim a single matching NULL-attributed row by id-in-
+ * subquery + LIMIT 1, ordered (pack_index, id) for determinism. The
+ * `user_id IS NULL` guard makes this safe under concurrent picks of the
+ * same card_id in the same pod (e.g., two players each pick one of two
+ * available copies) — each call grabs one row, the next call grabs the
+ * next still-NULL row.
+ *
+ * Fire-and-forget: errors are logged but never thrown. A failure here
+ * costs accurate per-user stats for one card; it must not block a pick.
+ *
+ * No-ops when userId is falsy. The two pick-route call sites pass
+ * `session.id` (human pick) and `player.user_id` (staged pick which
+ * iterates both humans and bots). Bots have a non-null user_id in
+ * pod_players today, so they'd be attributed by the staged path; that
+ * is acceptable — stats endpoints filter by the authenticated reader's
+ * user_id, so unattributed bot rows never bleed into a human's "kept"
+ * count. The userId-falsy guard is defensive against future callers
+ * that pass null explicitly.
+ */
+export async function attributePickedCard(params: {
+  podId: string
+  cardId: string
+  userId: string | null
+}): Promise<void> {
+  const { podId, cardId, userId } = params
+  if (!userId || !podId || !cardId) return
+  try {
+    await query(
+      `UPDATE card_generations
+         SET user_id = $1
+       WHERE id = (
+         SELECT id FROM card_generations
+          WHERE source_type = 'draft'
+            AND source_id = $2
+            AND card_id = $3
+            AND user_id IS NULL
+          ORDER BY pack_index NULLS LAST, id
+          LIMIT 1
+       )`,
+      [userId, podId, cardId]
+    )
+  } catch (error) {
+    console.error('[attributePickedCard] failed to attribute', {
+      podId, cardId, userId, error: (error as Error).message,
+    })
+  }
+}

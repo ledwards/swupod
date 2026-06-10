@@ -9,6 +9,7 @@
 import { query, queryRow, queryRows } from '@/lib/db'
 import { getPassDirection, getLeaderPassDirection, getNextSeat } from './draftLogic'
 import { buildBotDecks } from './botDeckBuilder'
+import { attributePickedCard } from './trackGeneration'
 import type { RawCard } from './cardData'
 
 interface DraftState {
@@ -188,6 +189,16 @@ export async function processAllStagedPicks(
         } catch (err) {
           console.error('[DRAFT_PICKS] Error recording leader pick:', err)
         }
+
+        // Attribute leader to picker in card_generations for the U6 "kept"
+        // scope. Bots have user_id rows in `users`, so they'll be attributed
+        // too — stats endpoints filter by the authenticated reader's user_id
+        // so this never leaks into a human's "kept" count. Fire-and-forget.
+        attributePickedCard({
+          podId,
+          cardId: pickedLeader.id,
+          userId: player.user_id,
+        }).catch(() => {})
       }
     }
 
@@ -253,6 +264,14 @@ export async function processAllStagedPicks(
         } catch (err) {
           console.error('[DRAFT_PICKS] Error recording card pick:', err)
         }
+
+        // Attribute card to picker in card_generations for the U6 "kept"
+        // scope. Same bot semantics as the leader-pick branch above.
+        attributePickedCard({
+          podId,
+          cardId: pickedCard.id,
+          userId: player.user_id,
+        }).catch(() => {})
       }
     }
 

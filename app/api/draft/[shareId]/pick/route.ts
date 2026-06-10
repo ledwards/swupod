@@ -6,6 +6,7 @@ import { jsonResponse, errorResponse, parseBody, handleApiError } from '@/lib/ut
 import { checkAndAdvanceLeaderDraft, checkAndAdvancePackDraft } from '@/src/utils/draftAdvance'
 import { processBotTurns } from '@/src/utils/botLogic'
 import { broadcastDraftState } from '@/src/lib/socketBroadcast'
+import { attributePickedCard } from '@/src/utils/trackGeneration'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {
@@ -131,6 +132,16 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
         console.error('[DRAFT_PICKS] Error recording leader pick:', err)
       }
 
+      // Attribute this leader to the picker in card_generations so the
+      // U6 "kept" scope (Your Stats) sees it. Fire-and-forget; failures
+      // here don't block the pick. Picks have `card.id` not `instanceId`
+      // as the card_generations key.
+      attributePickedCard({
+        podId: pod.id,
+        cardId: pickedLeader.id,
+        userId: session.id,
+      }).catch(() => {})
+
       // Check if all players have picked and advance
       await checkAndAdvanceLeaderDraft(pod.id, draftState, pod)
 
@@ -192,6 +203,15 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       } catch (err) {
         console.error('[DRAFT_PICKS] Error recording card pick:', err)
       }
+
+      // Attribute this picked card to the picker in card_generations so
+      // the U6 "kept" scope (Your Stats) sees it. Fire-and-forget; a
+      // failure here costs one row of attribution, not the pick itself.
+      attributePickedCard({
+        podId: pod.id,
+        cardId: pickedCard.id,
+        userId: session.id,
+      }).catch(() => {})
 
       // Check if all players have picked and advance
       await checkAndAdvancePackDraft(pod.id, draftState, pod)
