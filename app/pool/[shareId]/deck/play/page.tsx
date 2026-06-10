@@ -212,6 +212,22 @@ export default function PlayPage({ params }: PageProps) {
     setShareId(resolvedParams.shareId)
   }, [resolvedParams])
 
+  // Fire-and-forget personal-stats instrumentation. Logged-in users only —
+  // anonymous visits are not tracked (the endpoint returns 401 anyway, but
+  // skipping the POST keeps the network panel quiet for signed-out users).
+  // Errors are swallowed; the row landing is what matters, not the HTTP
+  // response. Runs once per shareId per logged-in user, but the endpoint
+  // is idempotent via UPSERT so a stray re-mount during HMR is harmless.
+  useEffect(() => {
+    if (!user || !resolvedParams?.shareId) return
+    fetch('/api/me/play-visit', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ shareId: resolvedParams.shareId }),
+    }).catch(() => {})
+  }, [user, resolvedParams?.shareId])
+
   useEffect(() => {
     if (!shareId) return
 

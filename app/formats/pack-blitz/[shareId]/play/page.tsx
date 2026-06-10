@@ -6,6 +6,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Card from '@/src/components/Card'
 import Button from '@/src/components/Button'
 import { getPackArtUrl } from '@/src/utils/packArt'
+import { useAuth } from '@/src/contexts/AuthContext'
 import './play.css'
 
 function WldBadge({
@@ -63,6 +64,7 @@ export default function PackBlitzPlayPage() {
   const params = useParams()
   const router = useRouter()
   const shareId = params.shareId as string
+  const { user } = useAuth()
 
   const [poolData, setPoolData] = useState<PoolData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -109,6 +111,19 @@ export default function PackBlitzPlayPage() {
 
     loadPool()
   }, [shareId])
+
+  // Fire-and-forget personal-stats instrumentation. Logged-in users only —
+  // anonymous visits are not tracked. Errors are swallowed; the row landing
+  // is what matters. The endpoint is idempotent via UPSERT.
+  useEffect(() => {
+    if (!user || !shareId) return
+    fetch('/api/me/play-visit', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ shareId }),
+    }).catch(() => {})
+  }, [user, shareId])
 
   const getDeckData = () => {
     if (!poolData || selectedLeader === null || selectedBase === null) return null
