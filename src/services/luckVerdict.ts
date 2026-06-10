@@ -93,11 +93,6 @@ type CopyContext = {
 
 type CopyFn = (ctx: CopyContext) => string
 
-function pct(value: number, digits: number = 0): string {
-  if (!Number.isFinite(value)) return '0%'
-  return `${(value * 100).toFixed(digits)}%`
-}
-
 function relativePct(observed: number, expected: number): string {
   if (expected <= 0) return 'many times'
   const ratio = observed / expected

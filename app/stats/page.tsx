@@ -10,6 +10,7 @@ import { AspectIcon, ASPECTS } from '@/src/components/AspectIcon'
 import { LeaderCharts, CardCharts } from './StatsCharts'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
 import { PATREON_URL } from '@/src/utils/membership'
+import YourStats from '@/src/components/YourStats'
 import './stats.css'
 
 const tournamentPlayerCount = tournamentUserIds.length
@@ -415,7 +416,11 @@ export default function StatsPage() {
     window.location.hash = tab
   }
 
-  const tabs = ['LAW', 'SEC', 'LOF', 'JTL', 'TWI', 'SHD', 'SOR']
+  // 'you' is the personal stats tab (U8). Placed at the end so it does NOT
+  // change the default landing tab for logged-in or logged-out users — both
+  // continue to land on LAW. The You tab is reachable via the tab strip or
+  // the #you hash anchor.
+  const tabs = ['LAW', 'SEC', 'LOF', 'JTL', 'TWI', 'SHD', 'SOR', 'you']
 
   const setColors: Record<string, string> = {
     'SOR': '#CC0000',
@@ -514,7 +519,7 @@ export default function StatsPage() {
         {tabs.map(tab => (
           <button
             key={tab}
-            className={`stats-tab ${activeTab === tab ? 'active' : ''}`}
+            className={`stats-tab ${activeTab === tab ? 'active' : ''} ${tab === 'you' ? 'stats-tab-you' : ''}`}
             onClick={() => handleTabChange(tab)}
             style={setColors[tab] ? {
               '--set-color': setColors[tab],
@@ -524,43 +529,52 @@ export default function StatsPage() {
               } : {})
             } : {}}
           >
-            {tab}
+            {tab === 'you' ? 'You' : tab}
           </button>
         ))}
       </div>
 
       <div className="stats-content">
-        {isBlurred && isPatron !== null && (
-          <div className="stats-patron-cta">
-            <div className="stats-patron-cta-content">
-              <div className="stats-patron-cta-text">
-                <span className="stats-patron-cta-icon">🔒</span>
-                <div>
-                  <h3 className="stats-patron-cta-heading">Unlock <span style={{ color: '#CE93D8' }}>Tournament</span> and Top Player Stats</h3>
-                  <p className="stats-patron-cta-desc">Support Protect the Pod to see stats from top tournament competitors.</p>
+        {activeTab === 'you' ? (
+          /* U8: Personal stats — bypasses the Patreon gate entirely.
+             Personal data is free for any logged-in user (R2). The set-tabs'
+             Tournament/Top blur CTA below does not render in this branch. */
+          <YourStats since={startDate} until={endDate} />
+        ) : (
+          <>
+            {isBlurred && isPatron !== null && (
+              <div className="stats-patron-cta">
+                <div className="stats-patron-cta-content">
+                  <div className="stats-patron-cta-text">
+                    <span className="stats-patron-cta-icon">🔒</span>
+                    <div>
+                      <h3 className="stats-patron-cta-heading">Unlock <span style={{ color: '#CE93D8' }}>Tournament</span> and Top Player Stats</h3>
+                      <p className="stats-patron-cta-desc">Support Protect the Pod to see stats from top tournament competitors.</p>
+                    </div>
+                  </div>
+                  <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">
+                    <Button variant="primary">Support Protect the Pod</Button>
+                  </a>
                 </div>
               </div>
-              <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">
-                <Button variant="primary">Support Protect the Pod</Button>
-              </a>
-            </div>
-          </div>
+            )}
+            <SetStatsTab
+              setCode={activeTab}
+              includeBots={includeBots}
+              includeHumans={includeHumans}
+              startDate={startDate}
+              endDate={endDate}
+              user={user}
+              showYou={showYou}
+              showAll={showAll}
+              showTop={showTop}
+              showTournament={showTournament}
+              legendProps={legendProps}
+              isBlurred={isBlurred}
+              canSeeFullStats={canSeeFullStats}
+            />
+          </>
         )}
-        <SetStatsTab
-          setCode={activeTab}
-          includeBots={includeBots}
-          includeHumans={includeHumans}
-          startDate={startDate}
-          endDate={endDate}
-          user={user}
-          showYou={showYou}
-          showAll={showAll}
-          showTop={showTop}
-          showTournament={showTournament}
-          legendProps={legendProps}
-          isBlurred={isBlurred}
-          canSeeFullStats={canSeeFullStats}
-        />
       </div>
     </div>
   )
