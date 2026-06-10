@@ -197,7 +197,12 @@ function pValueFor(observed: number, expected: number, n: number, p: number): nu
   if (expected <= 0) {
     return observed === 0 ? 1 : 0
   }
-  if (expected < 10) {
+  // Poisson for small expected (rare-event tails the normal approx underestimates)
+  // OR when the per-trial rate p > 1 — color-aspect dimensions accumulate
+  // multiple matches per pack (9 commons/pack × ~25% Vigilance share ≈ 2.25/pack),
+  // so the binomial variance n*p*(1-p) becomes negative. Count data is naturally
+  // Poisson-distributed; we use it whenever the binomial model doesn't apply.
+  if (expected < 10 || p > 1) {
     return poissonTwoSidedPValue(observed, expected)
   }
   const z = calculateZScore(observed, expected, n, p)
@@ -278,7 +283,18 @@ export function verdict(input: LuckVerdictInput): LuckVerdict {
   // through the Poisson approximation; otherwise normal.
   const p = n > 0 ? expected / n : 0
   const pValue = pValueFor(observed, expected, n, p)
-  const ci = calculateConfidenceInterval(observed, n)
+  // Wilson CI assumes p ∈ [0, 1] (success/trial). For color-aspect data where
+  // multiple matches per pack push observed > n, Wilson produces NaN bounds.
+  // Use a Poisson-normal CI on the rate directly: rate = observed/n ± 1.96 ·
+  // sqrt(observed)/n. No [0, 1] clamp — rates > 1 are meaningful here.
+  const ci =
+    p > 1
+      ? (() => {
+          const rate = n > 0 ? observed / n : 0
+          const se = n > 0 ? Math.sqrt(observed) / n : 0
+          return { low: Math.max(0, rate - 1.96 * se), high: rate + 1.96 * se }
+        })()
+      : calculateConfidenceInterval(observed, n)
 
   // --- Regime selection ---
   // Two-sided p < 0.05 is the conventional cutoff for "unusual." This matches

@@ -318,3 +318,45 @@ describe('verdict — aspect with no label still produces non-empty copy', () =>
     assert.match(r.copy, /aspect/i)
   })
 })
+
+// ---------------------------------------------------------------------------
+// verdict — high-rate aspect: per-pack expected > 1 (color aspect over many packs)
+// The binomial model assumes per-trial rate p ∈ [0, 1]; for color aspects where
+// ~2.25 cards per pack match Vigilance, p > 1 and the binomial variance breaks.
+// Verdict should fall through to Poisson and produce sensible results.
+// ---------------------------------------------------------------------------
+describe('verdict — high per-pack rate (p > 1) uses Poisson fallback', () => {
+  it('aspect: observed near expected returns normal at p > 1', () => {
+    // 200 packs × 2.25 expected V per pack = 450 expected, observed 450.
+    // Binomial would give p = 450/200 = 2.25 and SE = sqrt(200 * 2.25 * -1.25) = NaN.
+    // Poisson handles this cleanly: lambda=450, observed=450 → p ≈ 1.
+    const r = verdict({ observed: 450, expected: 450, n: 200, dimension: 'aspect' })
+    assert.strictEqual(r.regime, 'normal', 'should be normal at observed=expected')
+    assert.ok(r.pValue > 0.9, `expected p≈1, got ${r.pValue}`)
+    assert.ok(r.copy.length > 0)
+  })
+
+  it('aspect: observed meaningfully above expected returns unusual at p > 1', () => {
+    // 200 packs × 2.25 = 450 expected V; observed 540 (1.2× expected).
+    // Poisson: lambda=450, observed=540, ~4.2σ → p well under 0.05.
+    const r = verdict({ observed: 540, expected: 450, n: 200, dimension: 'aspect' })
+    assert.strictEqual(r.regime, 'unusual', 'should be unusual at 1.2× expected with this n')
+    assert.ok(r.pValue < 0.05, `expected p < 0.05, got ${r.pValue}`)
+    assert.match(r.copy, /above|more/i)
+  })
+
+  it('aspect: observed meaningfully below expected returns unusual at p > 1', () => {
+    // Observed 360 vs expected 450 (0.8× expected). Poisson tail p < 0.05.
+    const r = verdict({ observed: 360, expected: 450, n: 200, dimension: 'aspect' })
+    assert.strictEqual(r.regime, 'unusual', 'should be unusual at 0.8× expected with this n')
+    assert.ok(r.pValue < 0.05, `expected p < 0.05, got ${r.pValue}`)
+    assert.match(r.copy, /below|fewer/i)
+  })
+
+  it('aspect: pValue is finite (not NaN) even at high p_per_trial', () => {
+    // Regression guard against the binomial divide-by-zero / NaN path.
+    const r = verdict({ observed: 100, expected: 135, n: 60, dimension: 'aspect' })
+    assert.ok(Number.isFinite(r.pValue), `pValue must be finite, got ${r.pValue}`)
+    assert.ok(Number.isFinite(r.ci.low) && Number.isFinite(r.ci.high), 'CI bounds must be finite')
+  })
+})
