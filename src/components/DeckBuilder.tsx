@@ -1484,25 +1484,32 @@ function DeckBuilder({
   // Check if starter leaders are available and not already in pool
   const starterLeadersAvailable = useMemo(() => {
     if (!allSetCards.length || !setCode) return []
-    // Find Special rarity Hyperspace leaders from the current set
-    return allSetCards.filter(c =>
-      c.rarity === 'Special' &&
-      c.type === 'Leader' &&
-      c.variantType === 'Hyperspace' &&
-      c.set === setCode
-    )
+    // Starter-deck leaders are the (usually 2) Special-rarity leaders per set.
+    // They aren't in booster packs, so the "+ Starter Leaders" button injects
+    // them on demand. Each is printed in several variants; pick ONE canonical
+    // copy per leader, preferring Hyperspace, then Normal, then Showcase.
+    // Sets without a Hyperspace printing (e.g. ASH, SOR, SHD, TWI) resolve to a
+    // Normal/Showcase copy, so the button works for every set rather than only
+    // the ones that happen to have Hyperspace starter-leader data.
+    const variantRank = { Hyperspace: 0, Normal: 1, Showcase: 2 }
+    const bestByName = new Map()
+    for (const c of allSetCards) {
+      if (c.rarity !== 'Special' || c.type !== 'Leader' || c.set !== setCode) continue
+      const existing = bestByName.get(c.name)
+      const rank = variantRank[c.variantType] ?? 99
+      if (!existing || rank < (variantRank[existing.variantType] ?? 99)) {
+        bestByName.set(c.name, c)
+      }
+    }
+    return Array.from(bestByName.values())
   }, [allSetCards, setCode])
 
   const hasStarterLeaders = useMemo(() => {
-    // Check if any starter leaders are already in cardPositions
-    return starterLeadersAvailable.some(starterLeader =>
-      Object.values(cardPositions).some(
-        pos => pos.card.type === 'Leader' &&
-               pos.card.rarity === 'Special' &&
-               pos.card.variantType === 'Hyperspace'
-      )
-    )
-  }, [starterLeadersAvailable, cardPositions])
+    // Starter leaders are injected under deterministic `leader-starter-*` keys
+    // (see addStarterLeaders / removeStarterLeaders). Detect by that key prefix
+    // so the toggle works regardless of which variant was injected.
+    return Object.keys(cardPositions).some(key => key.startsWith('leader-starter-'))
+  }, [cardPositions])
 
   // Function to add starter leaders to the pool
   const addStarterLeaders = useCallback(() => {

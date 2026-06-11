@@ -93,7 +93,7 @@ export function SelectionListSection({
               e.stopPropagation()
               onAddStarterLeaders()
             }}
-            title={hasStarterLeaders ? "Remove starter deck leaders" : "Add the Hyperspace versions of this set's starter deck leaders"}
+            title={hasStarterLeaders ? "Remove starter deck leaders" : "Add this set's starter deck leaders"}
           >
             {hasStarterLeaders ? '- Starter Leaders' : '+ Starter Leaders'}
           </button>

@@ -1,5 +1,10 @@
 # Release Notes
 
+## 06.11.2026
+
+### 🔥 Ashes of the Empire
+- **Starter leaders in the deck builder**: ASH's starter-deck leaders — Luke Skywalker and Emperor Palpatine — can now be added to your pool while deckbuilding with the **+ Starter Leaders** control.
+
 ## 06.07.2026
 
 ### 🐛 Bug Fixes
