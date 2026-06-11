@@ -28,7 +28,7 @@
  */
 
 import type Anthropic from '@anthropic-ai/sdk'
-import { spawn } from 'child_process'
+import { spawn, spawnSync } from 'child_process'
 import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
@@ -74,8 +74,6 @@ function resolvePythonBinary(): string {
   if (process.env.PYTHON_BINARY) candidates.push(process.env.PYTHON_BINARY)
   candidates.push('python3', 'python3.11', 'python3.10', 'python', '/usr/bin/python3', '/usr/local/bin/python3')
   // Use spawnSync to test each — `which` is too platform-specific.
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { spawnSync } = require('child_process') as typeof import('child_process')
   for (const cmd of candidates) {
     try {
       const r = spawnSync(cmd, ['--version'], { stdio: 'ignore' })
