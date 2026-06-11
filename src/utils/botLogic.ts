@@ -6,7 +6,7 @@
  * Uses pluggable behavior system for pick decisions.
  */
 
-import { query, queryRow, queryRows } from '@/lib/db'
+import { query, queryRow, queryRows, withAdvisoryLock } from '@/lib/db'
 import { processAllStagedPicks } from './draftAdvance'
 import { getBehavior, assignStrategies, createStrategy } from '@/src/bots/behaviors/index'
 import { ALL_MIXINS } from '@/src/bots/behaviors/mixins'
@@ -446,25 +446,81 @@ async function makeBotCardPick(bot: BotPlayer, draftState: DraftState): Promise<
 /**
  * Process bot picks and advance state in a loop until human input is needed
  * Call this after a human makes a pick
- * Uses atomic database update to prevent concurrent execution
+ *
+ * Single-flight per pod via a session-level advisory lock (try-lock — if
+ * another process is already running the bot loop for this pod, we skip).
+ * The lock lives on a dedicated connection and auto-releases if the process
+ * crashes, so there is no stale-timestamp expiry to tune. Pick processing
+ * itself (processAllStagedPicks) is independently serialized by the pod's
+ * transaction-scoped advisory lock.
  */
 export async function processBotTurns(podId: string): Promise<void> {
-  let iterations = 0
-  const maxIterations = 100 // Safety limit
+  const ran = await withAdvisoryLock(`bot-turns:${podId}`, async () => {
+    let iterations = 0
+    const maxIterations = 100 // Safety limit
 
-  // Try to acquire processing lock using atomic update
-  // Only one process can set bot_processing_since when it's NULL or stale (> 30s old)
-  const lockResult = await query(
-    `UPDATE pods
-     SET bot_processing_since = NOW()
-     WHERE id = $1
-       AND status = 'active'
-       AND (bot_processing_since IS NULL OR bot_processing_since < NOW() - INTERVAL '30 seconds')
-     RETURNING id, share_id`,
-    [podId]
-  )
+    try {
+      while (iterations < maxIterations) {
+        iterations++
 
-  if (lockResult.rowCount === 0) {
+        // Get current state with fresh data (exclude all_packs to save memory)
+        const pod = await queryRow(
+          `SELECT id, share_id, status, draft_state, state_version
+           FROM pods WHERE id = $1`,
+          [podId]
+        )
+        if (!pod || pod.status !== 'active') {
+          break
+        }
+
+        // Note: We still process bot turns while paused - pause only affects timers, not turn advancement
+        // This allows the draft to continue if all players have selected while paused
+
+        // Check if all players have selected (using new staged pick system)
+        const players = await queryRows(
+          'SELECT pick_status, is_bot, selected_card_id FROM pod_players WHERE pod_id = $1',
+          [podId]
+        )
+
+        const allSelected = players.every(p => p.pick_status === 'selected' && p.selected_card_id)
+
+        if (allSelected) {
+          // Process all staged picks and advance (transactional + advisory-locked)
+          await processAllStagedPicks(podId)
+
+          // After advancing, trigger bot picks if any bots need to pick
+          const botsMadePicks = await triggerBotPicks(podId)
+          if (!botsMadePicks) {
+            // No bots picked, check if humans need to pick
+            const updatedPlayers = await queryRows(
+              'SELECT pick_status, is_bot FROM pod_players WHERE pod_id = $1',
+              [podId]
+            )
+            const humansNeedToPick = updatedPlayers.some(p => !p.is_bot && p.pick_status === 'picking')
+            if (humansNeedToPick) break // Wait for human input
+          }
+        } else {
+          // Not all selected yet - trigger bot picks
+          const botsMadePicks = await triggerBotPicks(podId)
+          if (!botsMadePicks) break // No bots to pick, wait for humans
+        }
+      }
+    } finally {
+      // Always broadcast state update after bot processing
+      // This ensures clients get the latest state even if no picks were made
+      try {
+        const podForBroadcast = await queryRow('SELECT share_id FROM pods WHERE id = $1', [podId])
+        if (podForBroadcast?.share_id) {
+          await broadcastDraftState(podForBroadcast.share_id)
+        }
+      } catch (err) {
+        console.error('Error broadcasting after bot turns:', err)
+      }
+    }
+    return true
+  })
+
+  if (ran === null) {
     // Another process is handling bots - but still broadcast current state
     // in case the other process finished and we missed the broadcast
     const pod = await queryRow('SELECT share_id FROM pods WHERE id = $1', [podId])
@@ -472,80 +528,6 @@ export async function processBotTurns(podId: string): Promise<void> {
       broadcastDraftState(pod.share_id).catch(err => {
         console.error('Error broadcasting after lock fail:', err)
       })
-    }
-    return
-  }
-
-  try {
-    while (iterations < maxIterations) {
-      iterations++
-
-      // Refresh the lock timestamp to prevent timeout
-      await query(
-        `UPDATE pods SET bot_processing_since = NOW() WHERE id = $1`,
-        [podId]
-      )
-
-      // Get current state with fresh data (exclude all_packs to save memory)
-      const pod = await queryRow(
-        `SELECT id, share_id, status, draft_state, state_version
-         FROM pods WHERE id = $1`,
-        [podId]
-      )
-      if (!pod || pod.status !== 'active') {
-        break
-      }
-
-      // Note: We still process bot turns while paused - pause only affects timers, not turn advancement
-      // This allows the draft to continue if all players have selected while paused
-
-      const draftState = jsonParse<DraftState>(pod.draft_state, {}) as DraftState
-
-      // Check if all players have selected (using new staged pick system)
-      const players = await queryRows(
-        'SELECT pick_status, is_bot, selected_card_id FROM pod_players WHERE pod_id = $1',
-        [podId]
-      )
-
-      const allSelected = players.every(p => p.pick_status === 'selected' && p.selected_card_id)
-
-      if (allSelected) {
-        // Process all staged picks and advance
-        await processAllStagedPicks(podId, draftState, pod as unknown as Record<string, unknown>)
-
-        // After advancing, trigger bot picks if any bots need to pick
-        const botsMadePicks = await triggerBotPicks(podId)
-        if (!botsMadePicks) {
-          // No bots picked, check if humans need to pick
-          const updatedPlayers = await queryRows(
-            'SELECT pick_status, is_bot FROM pod_players WHERE pod_id = $1',
-            [podId]
-          )
-          const humansNeedToPick = updatedPlayers.some(p => !p.is_bot && p.pick_status === 'picking')
-          if (humansNeedToPick) break // Wait for human input
-        }
-      } else {
-        // Not all selected yet - trigger bot picks
-        const botsMadePicks = await triggerBotPicks(podId)
-        if (!botsMadePicks) break // No bots to pick, wait for humans
-      }
-    }
-  } finally {
-    // Always release the lock
-    await query(
-      `UPDATE pods SET bot_processing_since = NULL WHERE id = $1`,
-      [podId]
-    )
-
-    // Always broadcast state update after bot processing
-    // This ensures clients get the latest state even if no picks were made
-    try {
-      const podForBroadcast = await queryRow('SELECT share_id FROM pods WHERE id = $1', [podId])
-      if (podForBroadcast?.share_id) {
-        await broadcastDraftState(podForBroadcast.share_id)
-      }
-    } catch (err) {
-      console.error('Error broadcasting after bot turns:', err)
     }
   }
 }

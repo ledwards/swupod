@@ -100,7 +100,7 @@ Fixing the transaction primitive, the auth boundaries, and the gates fixes the w
   - **Test scenarios (node:test, against the dev DB like existing API tests):** (a) two writes inside `withTransaction` with a thrown error between them → neither row persists; (b) `FOR UPDATE` inside `withTransaction` blocks a second concurrent `withTransaction` on the same row until commit (assert ordering via timestamps); (c) connection released on both success and failure (pool count returns to idle); (d) nested usage rejected or documented (no savepoint support — assert it throws or document single-level).
   - **Verification:** `npm run test` green; new db tests pass against `wayfinder`-style local postgres (whatever POSTGRES_URL dev DB the suite already uses).
 
-- [ ] U2. **Atomic draft advancement with `pg_advisory_xact_lock`**
+- [x] U2. **Atomic draft advancement with `pg_advisory_xact_lock`**
   - **Goal:** Exactly-once pick processing; crash-mid-advance leaves the draft in the pre-advance state, not half-advanced.
   - **Requirements:** F1.
   - **Dependencies:** U1.

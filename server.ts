@@ -10,6 +10,7 @@ import next from 'next'
 import { Server } from 'socket.io'
 import { query, queryRow, queryRows } from './lib/db.js'
 import { broadcastPublicPodsUpdate } from './src/lib/socketBroadcast.js'
+import { deleteAbandonedPodRecords } from './src/utils/podCleanup.js'
 import { postUserMessageForPod, postLobbyMessage, deletePodMessage } from './lib/discordLfg.js'
 
 declare global {
@@ -134,10 +135,8 @@ app.prepare().then(() => {
             pod_type: pod.pod_type as string,
             is_public: pod.is_public as boolean,
           })
-          // Delete card_pools, pod_players, then the pod
-          await query('DELETE FROM card_pools WHERE pod_id = $1', [pod.id])
-          await query('DELETE FROM pod_players WHERE pod_id = $1', [pod.id])
-          await query('DELETE FROM pods WHERE id = $1', [pod.id])
+          // Delete card_pools, pod_players, then the pod — atomically
+          await deleteAbandonedPodRecords(pod.id as string)
           console.log(`[Cleanup] Deleted abandoned pod ${pod.share_id}`)
         } catch (err) {
           console.error(`[Cleanup] Failed to delete pod ${pod.share_id}:`, err)

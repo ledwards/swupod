@@ -194,7 +194,8 @@ export async function checkAndEnforceTimeout(podId: string): Promise<boolean> {
   }
 
   // Process all staged picks (including forced ones) and advance
-  await processAllStagedPicks(podId, draftState, pod as unknown as Record<string, unknown>)
+  // (transactional + advisory-locked; re-reads fresh pod state internally)
+  await processAllStagedPicks(podId)
 
   // Trigger bot turns for the next round
   processBotTurns(podId).catch(err => {
