@@ -90,6 +90,13 @@ Run migrations:
 npm run migrate:dev
 ```
 
+**Startup migrations are fail-fast in production.** When `NODE_ENV=production`,
+a failed (or unverifiable) startup migration exits the process non-zero so the
+deploy stops instead of serving traffic against a stale schema. Break-glass
+escape hatch: set `ALLOW_STALE_SCHEMA=1` to boot anyway when a migration is
+wedged but the running schema is known-good. Dev keeps the lenient
+warn-and-continue behavior. (See `lib/migrationPolicy.ts`.)
+
 ### Development
 
 ```bash

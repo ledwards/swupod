@@ -13,6 +13,7 @@ import { broadcastPublicPodsUpdate } from './src/lib/socketBroadcast.js'
 import { deleteAbandonedPodRecords } from './src/utils/podCleanup.js'
 import { buildAllowedOrigins, makeAllowRequest, setupSocketServer } from './src/lib/socketServer.js'
 import { postUserMessageForPod, postLobbyMessage, deletePodMessage } from './lib/discordLfg.js'
+import { shouldFailFastOnMigrationFailure } from './lib/migrationPolicy.js'
 
 declare global {
   var io: Server | undefined
@@ -23,10 +24,18 @@ const port = process.env.PORT || 3000
 
 console.log('🚀 Starting custom server.ts with Socket.io support')
 
-// Run migrations at startup (for Railway where build-time DB access doesn't work)
+// Run migrations at startup (for Railway where build-time DB access doesn't work).
+// U7: in production a migration failure stops the boot (process exits non-zero
+// so Railway restarts/rolls back) instead of serving traffic against a stale
+// schema. Break-glass: ALLOW_STALE_SCHEMA=1. Dev keeps warn-and-continue.
 async function runMigrations(): Promise<void> {
   const dbUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL
   if (!dbUrl) {
+    if (shouldFailFastOnMigrationFailure()) {
+      console.error('❌ No database URL set in production — refusing to start.')
+      console.error('   Set ALLOW_STALE_SCHEMA=1 to boot anyway (break-glass only).')
+      process.exit(1)
+    }
     console.log('⚠️  No database URL set, skipping migrations')
     return
   }
@@ -42,6 +51,10 @@ async function runMigrations(): Promise<void> {
     migrate.on('close', (code) => {
       if (code === 0) {
         console.log('✅ Migrations completed')
+      } else if (shouldFailFastOnMigrationFailure()) {
+        console.error(`❌ Migration process exited with code ${code} in production — refusing to start.`)
+        console.error('   Set ALLOW_STALE_SCHEMA=1 to boot anyway (break-glass only).')
+        process.exit(code ?? 1)
       } else {
         console.log('⚠️  Migration process exited with code', code)
       }
@@ -50,6 +63,10 @@ async function runMigrations(): Promise<void> {
 
     migrate.on('error', (err) => {
       console.error('Migration error:', err)
+      if (shouldFailFastOnMigrationFailure()) {
+        console.error('❌ Could not spawn the migration process in production — refusing to start.')
+        process.exit(1)
+      }
       resolve()
     })
   })

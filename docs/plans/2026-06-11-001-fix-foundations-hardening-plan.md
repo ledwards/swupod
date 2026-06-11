@@ -156,7 +156,7 @@ Fixing the transaction primitive, the auth boundaries, and the gates fixes the w
   - **Test scenarios:** ratchet script unit tests — count==baseline passes, +1 fails naming the file, -1 fails demanding baseline update; `tsc --noEmit` green in CI.
   - **Verification:** CI runs both checks; intentionally adding `@ts-nocheck` to a scratch file fails the ratchet locally.
 
-- [ ] U7. **Startup migrations fail-fast in production**
+- [x] U7. **Startup migrations fail-fast in production**
   - **Goal:** Prod never serves traffic against a knowingly-stale schema; failures stop the deploy (Railway restarts/rolls back) instead of being logged and ignored.
   - **Requirements:** F6.
   - **Dependencies:** none.

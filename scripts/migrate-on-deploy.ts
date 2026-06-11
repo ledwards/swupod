@@ -13,6 +13,7 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import { spawn } from 'child_process'
 import pg from 'pg'
+import { shouldFailFastOnMigrationFailure } from '../lib/migrationPolicy'
 
 const { Client } = pg
 
@@ -177,8 +178,15 @@ async function main(): Promise<void> {
   }
   console.log('────────────────────────────────────────\n')
 
-  // Always exit 0 so the server can start. Individual failures are logged
-  // above but must not block the app from booting.
+  // U7: production never serves traffic against a knowingly-stale schema.
+  // Any migration failure exits non-zero in production so the deploy stops
+  // (Railway restarts/rolls back). Break-glass: ALLOW_STALE_SCHEMA=1.
+  // Dev/preview keep the lenient warn-and-boot behavior.
+  if (failures.length > 0 && shouldFailFastOnMigrationFailure()) {
+    console.error('❌ Migration failure in production — refusing to start with a stale schema.')
+    console.error('   Set ALLOW_STALE_SCHEMA=1 to boot anyway (break-glass only).')
+    process.exit(1)
+  }
   process.exit(0)
 }
 
@@ -196,7 +204,14 @@ if (process.env.POSTGRES_URL) {
   main().catch(err => {
     console.error('❌ Orchestrator failed:', err.message || err)
     if (err.stack) console.error(err.stack)
-    // Even orchestrator-level failures should not block the app from booting.
+    // U7: orchestrator-level failures (can't connect, can't read the
+    // tracking table, ...) also fail fast in production — the schema state
+    // is unknown, which is as bad as known-stale. Dev stays lenient.
+    if (shouldFailFastOnMigrationFailure()) {
+      console.error('❌ Cannot verify schema state in production — refusing to start.')
+      console.error('   Set ALLOW_STALE_SCHEMA=1 to boot anyway (break-glass only).')
+      process.exit(1)
+    }
     process.exit(0)
   })
 } else {
