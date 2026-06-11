@@ -1,7 +1,7 @@
 ---
 title: Foundations hardening — transactions, socket/JWT auth, client bundle, type ratchet
 type: fix
-status: active
+status: done
 date: 2026-06-11
 ---
 
@@ -202,3 +202,10 @@ Fixing the transaction primitive, the auth boundaries, and the gates fixes the w
 - Repo facts: 567 `@ts-nocheck` files; `src/data/cards.json` = 7,992,150 B; `src/data/cards.raw.json` = 8,128,087 B (scripts-only); 124 unit test files (node:test via `tsx --test`); 30 Playwright specs in `tests/e2e/`.
 - Related plans: `plans/TYPESCRIPT_MIGRATION_PLAN.md` (long-arc typing); `plans/REFACTORING_PLAN.md` (DeckBuilder); wayfinder `docs/plans/2026-06-11-002-megaplan-cross-repo-audit-remediation-plan.md` (card-fix upstreaming / set-metadata consolidation); `docs/plans/2026-06-03-001-feat-admin-grant-page-plan.md` (admin-grant surface relevant to U4's auth_version bumps).
 - External patterns: node-postgres pooled-transaction recipe; PostgreSQL transaction-scoped advisory locks (`pg_advisory_xact_lock`); Socket.io middleware auth via handshake cookies; session-version JWT invalidation; double-submit-cookie OAuth state.
+
+---
+
+**Status note (2026-06-11, wayfinder audit megaplan G1/G2 sweep):** all 8 units executed and
+committed 2026-06-11 — U1 `ce3e3b9`, U2 `becaa26`, U3 `980752f`, U4 `53842a7`, U5 `2e8f793`,
+U6 `ba4f1a5`, U7 `1217b57`, U8 `993829b`. Marked `status: done` the same day the work shipped —
+per the megaplan rule that every plan touched by a commit gets its status updated in the same pass.
