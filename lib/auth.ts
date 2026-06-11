@@ -1,8 +1,22 @@
-// @ts-nocheck
 // Authentication utilities
 import jwt from 'jsonwebtoken'
+import { queryRow } from './db'
 
-const JWT_SECRET = process.env['JWT_SECRET'] || process.env['NEXTAUTH_SECRET'] || 'change-me-in-production'
+// Secret hard-fail (U4, foundations hardening): production must never run on
+// the development fallback secret — anyone who reads the source could mint
+// admin tokens. Throwing at module init stops the boot (same fail-fast
+// philosophy as the startup-migration gate).
+const configuredSecret = process.env['JWT_SECRET'] || process.env['NEXTAUTH_SECRET']
+if (!configuredSecret && process.env['NODE_ENV'] === 'production') {
+  throw new Error(
+    'FATAL: JWT_SECRET (or NEXTAUTH_SECRET) must be set in production. ' +
+    'Refusing to start with the development fallback secret.'
+  )
+}
+if (!configuredSecret) {
+  console.warn('⚠️  JWT_SECRET not set — using the DEVELOPMENT fallback secret. Never deploy like this.')
+}
+const JWT_SECRET: string = configuredSecret || 'change-me-in-production'
 const COOKIE_NAME = 'swupod_session'
 
 export interface User {
@@ -12,6 +26,8 @@ export interface User {
   avatar_url?: string | null
   is_admin?: boolean
   is_beta_tester?: boolean
+  /** users.auth_version — bumped on privilege grant/revoke to invalidate stale tokens */
+  auth_version?: number
 }
 
 export interface Session {
@@ -21,6 +37,8 @@ export interface Session {
   avatar_url?: string | null
   is_admin: boolean
   is_beta_tester: boolean
+  /** Token-version claim; privileged gates compare it to users.auth_version */
+  auth_version?: number
   iat?: number
   exp?: number
 }
@@ -54,6 +72,7 @@ export function createToken(user: User): string {
       avatar_url: user.avatar_url,
       is_admin: user.is_admin || false,
       is_beta_tester: user.is_beta_tester || false,
+      auth_version: typeof user.auth_version === 'number' ? user.auth_version : 1,
     },
     JWT_SECRET,
     { expiresIn: '30d' }
@@ -194,16 +213,39 @@ export function requireAuth(request: Request): Session {
 }
 
 /**
+ * Privilege-freshness check for the privileged gates only (U4).
+ *
+ * Compares the token's auth_version claim to users.auth_version (one indexed
+ * PK lookup). Grant/revoke paths bump the column, so a stale 30-day token
+ * loses its privileges immediately instead of at expiry. Tokens without the
+ * claim (minted before U4) fail CLOSED here — but stay valid for ordinary
+ * requireAuth, which deliberately makes no DB call. POST /api/auth/refresh
+ * is the recovery path after a 401.
+ *
+ * @throws Error('Unauthorized') when the claim is missing or stale
+ */
+async function assertPrivilegeFresh(session: Session): Promise<void> {
+  if (typeof session.auth_version !== 'number') {
+    throw new Error('Unauthorized')
+  }
+  const row = await queryRow('SELECT auth_version FROM users WHERE id = $1', [session.id])
+  if (!row || Number(row.auth_version) !== session.auth_version) {
+    throw new Error('Unauthorized')
+  }
+}
+
+/**
  * Require beta tester or admin access
  * @param request - HTTP request
  * @returns Session object
- * @throws Error if not beta tester or admin
+ * @throws Error if not beta tester or admin, or if the token's privileges are stale
  */
-export function requireBetaAccess(request: Request): Session {
+export async function requireBetaAccess(request: Request): Promise<Session> {
   const session = requireAuth(request)
   if (!session.is_beta_tester && !session.is_admin) {
     throw new Error('Beta access required')
   }
+  await assertPrivilegeFresh(session)
   return session
 }
 
@@ -211,14 +253,26 @@ export function requireBetaAccess(request: Request): Session {
  * Require admin access
  * @param request - HTTP request
  * @returns Session object
- * @throws Error if not admin
+ * @throws Error if not admin, or if the token's privileges are stale
  */
-export function requireAdmin(request: Request): Session {
+export async function requireAdmin(request: Request): Promise<Session> {
   const session = requireAuth(request)
   if (!session.is_admin) {
     throw new Error('Admin access required')
   }
+  await assertPrivilegeFresh(session)
   return session
+}
+
+/**
+ * Sanitize an OAuth returnTo target so the post-login redirect can only land
+ * on this app: a single leading slash (no protocol-relative `//host`, no
+ * absolute URLs). Anything else collapses to '/'.
+ */
+export function sanitizeReturnTo(returnTo: unknown): string {
+  if (typeof returnTo !== 'string') return '/'
+  if (!/^\/(?!\/)/.test(returnTo)) return '/'
+  return returnTo
 }
 
 /**

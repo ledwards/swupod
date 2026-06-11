@@ -80,7 +80,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
 export async function POST(request: NextRequest, { params }: RouteContext): Promise<NextResponse> {
   try {
     const { shareId } = await params
-    const session = requireBetaAccess(request)
+    const session = await requireBetaAccess(request)
     const body = await parseBody(request)
     const { action } = body
 

@@ -126,7 +126,7 @@ Fixing the transaction primitive, the auth boundaries, and the gates fixes the w
   - **Test scenarios:** unauthenticated socket can `presence:subscribe` + `join-draft` but `chat:send` is dropped; authenticated socket's chat message carries the JWT username even when the payload claims another name (impersonation test); `presence:join` with a forged userId counts under the real userId; cross-origin handshake (wrong Origin header) rejected; existing draft E2E (which exercises sockets) stays green.
   - **Verification:** Playwright multiplayer draft spec green; manual: two browsers, confirm presence count and chat identity; confirm Discord relay shows server-derived name.
 
-- [ ] U4. **JWT & OAuth hardening**
+- [x] U4. **JWT & OAuth hardening**
   - **Goal:** No deployable fallback secret; privilege revocation takes effect without waiting 30 days; OAuth callback CSRF-proof; returnTo open-redirect closed.
   - **Requirements:** F2.
   - **Dependencies:** none (parallel-safe); U3 consumes the same `verifyToken`, so land U4's secret change first if sequencing matters.

@@ -24,9 +24,12 @@ const pool = new Pool({
 
 async function makeAdmin(identifier: string, isDiscordId: boolean = false): Promise<void> {
   try {
+    // auth_version bump invalidates the user's existing tokens at the
+    // privileged gates immediately (they re-auth via /api/auth/refresh),
+    // instead of stale 30-day tokens coexisting with the new privileges.
     const query = isDiscordId
-      ? 'UPDATE users SET is_admin = TRUE WHERE discord_id = $1 RETURNING id, email, username, discord_id, is_admin'
-      : 'UPDATE users SET is_admin = TRUE WHERE email = $1 RETURNING id, email, username, discord_id, is_admin'
+      ? 'UPDATE users SET is_admin = TRUE, auth_version = auth_version + 1 WHERE discord_id = $1 RETURNING id, email, username, discord_id, is_admin, auth_version'
+      : 'UPDATE users SET is_admin = TRUE, auth_version = auth_version + 1 WHERE email = $1 RETURNING id, email, username, discord_id, is_admin, auth_version'
 
     const result = await pool.query(query, [identifier])
 

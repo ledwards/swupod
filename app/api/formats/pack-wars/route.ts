@@ -12,7 +12,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     // Require beta access for other formats
-    const session = requireBetaAccess(request)
+    const session = await requireBetaAccess(request)
     const userId = session.id
 
     const body = await parseBody(request)

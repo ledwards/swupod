@@ -17,9 +17,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       }, { status: 401 })
     }
 
-    // Get fresh user data from database
+    // Get fresh user data from database (auth_version included so the
+    // reissued token passes the privileged gates' freshness check)
     const user = await queryRow(
-      `SELECT id, email, username, avatar_url, is_admin, is_beta_tester
+      `SELECT id, email, username, avatar_url, is_admin, is_beta_tester, auth_version
        FROM users WHERE id = $1`,
       [session.id]
     )

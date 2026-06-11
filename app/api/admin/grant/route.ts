@@ -83,9 +83,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Idempotent upsert. Mirrors app/api/draft/[shareId]/dev/add-bots/route.ts.
     // The ${safeFlag} interpolation is safe because safeFlag is the value
     // re-extracted from ALLOWED_FLAGS, not the raw input.
+    // auth_version bump on the update path invalidates the target user's
+    // existing tokens at the privileged gates (privilege-freshness, U4).
     await query(
       `INSERT INTO users (discord_id, username, ${safeFlag}) VALUES ($1, $2, TRUE)
-       ON CONFLICT (discord_id) DO UPDATE SET ${safeFlag} = TRUE`,
+       ON CONFLICT (discord_id) DO UPDATE SET ${safeFlag} = TRUE, auth_version = users.auth_version + 1`,
       [discordId, username ?? discordId]
     )
 

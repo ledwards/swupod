@@ -1,7 +1,8 @@
 // @ts-nocheck
 // GET /api/auth/callback/discord - Discord OAuth callback
 import { queryRow, query } from '@/lib/db'
-import { setSession } from '@/lib/auth'
+import { setSession, sanitizeReturnTo } from '@/lib/auth'
+import { OAUTH_STATE_COOKIE } from '../../signin/discord/route'
 import { NextRequest, NextResponse } from 'next/server'
 
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID
@@ -31,12 +32,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const state = searchParams.get('state')
     const error = searchParams.get('error')
 
-    // Decode state to get return_to URL
+    // Decode state to get the CSRF nonce and return_to URL. returnTo is
+    // attacker-influenced (it round-trips through Discord), so it is
+    // sanitized to an app-local path (open-redirect hardening, U4).
     let returnTo = '/'
+    let stateNonce: string | null = null
     if (state) {
       try {
         const stateData = JSON.parse(Buffer.from(state, 'base64').toString())
-        returnTo = stateData.returnTo || '/'
+        returnTo = sanitizeReturnTo(stateData.returnTo || '/')
+        stateNonce = typeof stateData.nonce === 'string' ? stateData.nonce : null
       } catch (e) {
         console.error('Failed to decode state:', e)
       }
@@ -52,6 +57,20 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         data: null,
         message: 'Missing authorization code',
       }, { status: 400 })
+    }
+
+    // CSRF check (double-submit cookie, U4): the nonce embedded in state must
+    // match the httpOnly cookie set by the signin route. Verified BEFORE any
+    // token exchange — a forged or replayed callback never reaches Discord.
+    const cookieNonce = request.cookies.get(OAUTH_STATE_COOKIE)?.value || null
+    if (!stateNonce || !cookieNonce || stateNonce !== cookieNonce) {
+      console.error('Discord OAuth state verification failed', {
+        hasStateNonce: !!stateNonce,
+        hasCookieNonce: !!cookieNonce,
+      })
+      const response = NextResponse.redirect(`${APP_URL}/?error=invalid_oauth_state`)
+      response.cookies.delete(OAUTH_STATE_COOKIE)
+      return response
     }
 
     // Exchange code for access token
@@ -132,9 +151,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       user = result.rows[0] || user
     }
 
-    // Create session and redirect to return_to
+    // Create session and redirect to return_to. The state cookie is single-use:
+    // cleared here so a replayed callback fails the CSRF check.
     const separator = returnTo.includes('?') ? '&' : '?'
     const response = NextResponse.redirect(`${APP_URL}${returnTo}${separator}auth=success`)
+    response.cookies.delete(OAUTH_STATE_COOKIE)
     return setSession(response, user!)
   } catch (error) {
     console.error('Discord OAuth error:', error)
@@ -145,7 +166,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     if (state) {
       try {
         const stateData = JSON.parse(Buffer.from(state, 'base64').toString())
-        returnTo = stateData.returnTo || '/'
+        returnTo = sanitizeReturnTo(stateData.returnTo || '/')
       } catch (e) {
         // ignore decode errors
       }

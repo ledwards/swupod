@@ -10,7 +10,7 @@ import { isPatron, addPatronRole, isGuildMember } from '@/lib/discord'
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    requireAdmin(request)
+    await requireAdmin(request)
 
     const patrons = await fetchActivePatronsWithDiscord()
 

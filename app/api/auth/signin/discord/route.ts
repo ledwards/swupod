@@ -1,7 +1,10 @@
-// @ts-nocheck
 // GET /api/auth/signin/discord - Initiate Discord OAuth flow
+import { randomBytes } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
-import { getSession } from '@/lib/auth'
+import { getSession, sanitizeReturnTo } from '@/lib/auth'
+
+export const OAUTH_STATE_COOKIE = 'swupod_oauth_state'
+const OAUTH_STATE_MAX_AGE_SECONDS = 10 * 60 // 10 minutes
 
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID
 const APP_URL = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
@@ -16,9 +19,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }, { status: 500 })
     }
 
-    // Get return_to parameter from query string
+    // Get return_to parameter from query string. Sanitized to an app-local
+    // path — protocol-relative (`//evil.com`) and absolute URLs collapse to
+    // '/' (open-redirect hardening, U4).
     const { searchParams } = new URL(request.url)
-    const returnTo = searchParams.get('return_to') || '/'
+    const returnTo = sanitizeReturnTo(searchParams.get('return_to') || '/')
 
     // Check if user already has a valid session
     const session = getSession(request)
@@ -27,10 +32,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       return NextResponse.redirect(`${APP_URL}${returnTo}?auth=already_logged_in`)
     }
 
-    // Generate state for CSRF protection and encode return_to in it
+    // CSRF protection (double-submit cookie, U4): a crypto-random nonce is
+    // stored in a short-lived httpOnly cookie AND embedded in the OAuth
+    // state. The callback requires both to match before any token exchange.
+    const nonce = randomBytes(16).toString('hex')
     const stateData = {
-      random: Math.random().toString(36).substring(2, 15),
-      returnTo: returnTo
+      nonce,
+      returnTo,
     }
     const state = Buffer.from(JSON.stringify(stateData)).toString('base64')
 
@@ -44,8 +52,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // Add prompt=consent to force re-authorization, or remove it to allow auto-approval
     // If user has already authorized, Discord will auto-approve if prompt is not set
 
-    // Redirect to Discord OAuth
-    return NextResponse.redirect(discordAuthUrl.toString())
+    // Redirect to Discord OAuth, carrying the state cookie
+    const response = NextResponse.redirect(discordAuthUrl.toString())
+    response.cookies.set(OAUTH_STATE_COOKIE, nonce, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: OAUTH_STATE_MAX_AGE_SECONDS,
+    })
+    return response
   } catch (error) {
     console.error('Discord signin error:', error)
     return NextResponse.json({
