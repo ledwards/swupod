@@ -166,7 +166,7 @@ Fixing the transaction primitive, the auth boundaries, and the gates fixes the w
   - **Test scenarios:** unit-test the decision function (extract `shouldFailFast(exitCode, env)` so it's testable without spawning): prod+failure+no-hatch → fail, prod+failure+hatch → continue, dev+failure → continue; manual: run with a deliberately broken migration locally with NODE_ENV=production → process exits non-zero.
   - **Verification:** Railway deploy of a known-good build boots normally; the decision-function tests pin the matrix.
 
-- [ ] U8. **Small perf/robustness cleanups: draft-GET N+1 + rate-limit IP trust**
+- [x] U8. **Small perf/robustness cleanups: draft-GET N+1 + rate-limit IP trust**
   - **Goal:** Remove the per-round query loop from the 2 s-polled draft GET; rate limiter keys on the real client IP behind Railway's proxy.
   - **Requirements:** F7, F8.
   - **Dependencies:** none.

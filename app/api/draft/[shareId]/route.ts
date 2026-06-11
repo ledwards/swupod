@@ -10,6 +10,7 @@ import { markPodCancelled, deletePodMessage } from '@/lib/discordLfg'
 import { broadcastDraftState, broadcastSystemChatMessage } from '@/src/lib/socketBroadcast'
 import { jsonParse } from '@/src/utils/json'
 import { resolveCatalogCards } from '@/src/services/cards/cardCatalogResolver'
+import { fetchRoundsWithMatches } from '@/src/utils/matchmakingRounds'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {
@@ -140,47 +141,9 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     if (pod.competitive === true && draftState?.phase === 'matchmaking') {
       matchmakingStatus = draftState.matchmakingStatus || 'active'
       currentRound = draftState.currentRound || 1
-      const { queryRows } = await import('@/lib/db')
-      const rounds = await queryRows(
-        `SELECT id, round_number, status FROM practice_rounds WHERE pod_id = $1 ORDER BY round_number`,
-        [pod.id]
-      )
-      roundsWithMatches = []
-      for (const round of rounds as Array<{ id: string; round_number: number; status: string }>) {
-        const matches = await queryRows(
-          `SELECT pm.id, pm.player1_id, pm.player2_id, pm.is_bye,
-                  pm.game1_result, pm.game2_result, pm.game3_result,
-                  pm.player1_submitted, pm.player2_submitted,
-                  pm.final_confirmed, pm.match_winner, pm.pod_owner_override,
-                  pm.wayfinder_match_id,
-                  u1.username as p1_username, u1.avatar_url as p1_avatar,
-                  u2.username as p2_username, u2.avatar_url as p2_avatar
-           FROM practice_matches pm
-           LEFT JOIN users u1 ON pm.player1_id = u1.id
-           LEFT JOIN users u2 ON pm.player2_id = u2.id
-           WHERE pm.round_id = $1 ORDER BY pm.created_at`,
-          [round.id]
-        )
-        roundsWithMatches.push({
-          roundNumber: round.round_number,
-          status: round.status,
-          matches: (matches as any[]).map(m => ({
-            id: m.id,
-            player1: m.player1_id ? { id: m.player1_id, username: m.p1_username, avatarUrl: m.p1_avatar } : null,
-            player2: m.player2_id ? { id: m.player2_id, username: m.p2_username, avatarUrl: m.p2_avatar } : null,
-            isBye: m.is_bye,
-            game1Result: m.game1_result,
-            game2Result: m.game2_result,
-            game3Result: m.game3_result,
-            player1Submitted: m.player1_submitted,
-            player2Submitted: m.player2_submitted,
-            finalConfirmed: m.final_confirmed,
-            matchWinner: m.match_winner,
-            podOwnerOverride: m.pod_owner_override,
-            wayfinderMatchId: m.wayfinder_match_id || null,
-          })),
-        })
-      }
+      // Single query for all rounds + matches (U8) — this endpoint is polled
+      // every 2 s, so the old per-round loop was an N+1 on the hot path.
+      roundsWithMatches = await fetchRoundsWithMatches(pod.id)
     }
 
     return jsonResponse({
