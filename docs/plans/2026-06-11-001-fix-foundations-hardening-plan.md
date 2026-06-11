@@ -146,7 +146,7 @@ Fixing the transaction primitive, the auth boundaries, and the gates fixes the w
   - **Test scenarios:** unit test the API route (set filter, unknown set → 404/empty, fixed fields present e.g. a known card's corrected flag); Playwright: landing page and play page render cards (covers loader integration); bundle script self-test: run against current build → passes; simulate violation (temp import) → fails.
   - **Verification:** `next build` route table shows the affected routes' first-load JS dropped by multiple MB (record before/after numbers in the PR); CI bundle check green; landing + play pages visually verified.
 
-- [ ] U6. **`@ts-nocheck` ratchet + typecheck the security-bearing layers**
+- [x] U6. **`@ts-nocheck` ratchet + typecheck the security-bearing layers**
   - **Goal:** TypeScript debt can only shrink; `lib/` and `app/api/` actually typecheck.
   - **Requirements:** F5.
   - **Dependencies:** U1-U4 (those units remove `@ts-nocheck` from the files they touch — land the ratchet after, so the baseline starts low).

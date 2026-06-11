@@ -1,4 +1,3 @@
-// @ts-nocheck
 // GET /api/auth/session - Get current session
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'

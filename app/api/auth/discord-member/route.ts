@@ -1,4 +1,3 @@
-// @ts-nocheck
 // GET /api/auth/discord-member - Check if current user is in the PtP Discord server
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
@@ -6,7 +5,7 @@ import { queryRow } from '@/lib/db'
 import { isGuildMember } from '@/lib/discord'
 import { handleApiError } from '@/lib/utils'
 
-export async function GET(request: NextRequest): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<Response> {
   try {
     const session = requireAuth(request)
 

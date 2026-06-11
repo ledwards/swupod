@@ -21,6 +21,11 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      # Typecheck (U6): tsc only checks files without @ts-nocheck, so this
+      # gets stricter as headers come off — never weaker.
+      - run: npm run typecheck
+      # Monotonic @ts-nocheck ratchet (U6): the count can only go down.
+      - run: npm run check:ts-ratchet
       # DB-backed suites (lib/db.test.ts, draft-advance concurrency, auth
       # privilege-freshness) skip loudly when no local test DB is reachable.
       - run: npm run test

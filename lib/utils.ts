@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Utility functions
 import { customAlphabet } from 'nanoid'
 
@@ -58,11 +57,15 @@ export function errorResponse(message: string, status: number = 400): Response {
 
 /**
  * Handle API route errors
- * @param error - Error object
+ * @param error - Error object (accepts unknown — catch blocks surface unknown)
  * @returns Error response
  */
-export function handleApiError(error: Error): Response {
+export function handleApiError(error: unknown): Response {
   console.error('API Error:', error)
+
+  if (!(error instanceof Error)) {
+    return errorResponse('Internal server error', 500)
+  }
 
   if (error.message === 'Unauthorized') {
     return errorResponse('Authentication required', 401)
@@ -133,7 +136,7 @@ const SET_ORDER: Record<string, number> = {
  */
 export function formatSetCodeRange(setCodes: string[]): string {
   if (setCodes.length === 0) return ''
-  if (setCodes.length === 1) return setCodes[0]
+  if (setCodes.length === 1) return setCodes[0] ?? ''
 
   // Sort by set order
   const sorted = [...setCodes].sort((a, b) => (SET_ORDER[a] || 99) - (SET_ORDER[b] || 99))
@@ -141,8 +144,8 @@ export function formatSetCodeRange(setCodes: string[]): string {
   // Check if all consecutive
   let allConsecutive = true
   for (let i = 1; i < sorted.length; i++) {
-    const prevOrder = SET_ORDER[sorted[i - 1]] || 99
-    const currOrder = SET_ORDER[sorted[i]] || 99
+    const prevOrder = SET_ORDER[sorted[i - 1] ?? ''] || 99
+    const currOrder = SET_ORDER[sorted[i] ?? ''] || 99
     if (currOrder !== prevOrder + 1) {
       allConsecutive = false
       break

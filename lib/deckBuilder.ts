@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { buildBaseCardMap, getBaseCardId } from '@/src/utils/variantDowngrade'
 
 interface Card {
@@ -10,6 +9,13 @@ interface Card {
   isLeader?: boolean
   isBase?: boolean
   set?: string
+}
+
+// getBaseCardId declares RawCard but only reads identity fields
+// (name/type/subtitle) — our partial Card shape carries what it needs.
+type CardForBaseId = Parameters<typeof getBaseCardId>[0]
+function asBaseIdCard(card: Card): CardForBaseId {
+  return card as unknown as CardForBaseId
 }
 
 interface CardPosition {
@@ -86,7 +92,7 @@ export function buildDeckFromState(
   // Count cards by base ID
   const deckCounts = new Map<string, number>()
   deckCards.forEach(card => {
-    const id = getBaseCardId(card, baseCardMap)
+    const id = getBaseCardId(asBaseIdCard(card), baseCardMap)
     if (id) {
       deckCounts.set(id, (deckCounts.get(id) || 0) + 1)
     }
@@ -94,15 +100,15 @@ export function buildDeckFromState(
 
   const sideboardCounts = new Map<string, number>()
   sideboardCards.forEach(card => {
-    const id = getBaseCardId(card, baseCardMap)
+    const id = getBaseCardId(asBaseIdCard(card), baseCardMap)
     if (id) {
       sideboardCounts.set(id, (sideboardCounts.get(id) || 0) + 1)
     }
   })
 
   return {
-    leader: leaderCard ? { id: getBaseCardId(leaderCard, baseCardMap) || '', count: 1 } : null,
-    base: baseCard ? { id: getBaseCardId(baseCard, baseCardMap) || '', count: 1 } : null,
+    leader: leaderCard ? { id: getBaseCardId(asBaseIdCard(leaderCard), baseCardMap) || '', count: 1 } : null,
+    base: baseCard ? { id: getBaseCardId(asBaseIdCard(baseCard), baseCardMap) || '', count: 1 } : null,
     deck: Array.from(deckCounts.entries()).map(([id, count]) => ({ id, count })),
     sideboard: Array.from(sideboardCounts.entries()).map(([id, count]) => ({ id, count })),
   }

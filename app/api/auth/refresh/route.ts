@@ -1,11 +1,10 @@
-// @ts-nocheck
 // POST /api/auth/refresh - Refresh the current session
 import { NextRequest, NextResponse } from 'next/server'
-import { getSession, setSession } from '@/lib/auth'
+import { getSession, setSession, type User } from '@/lib/auth'
 import { queryRow } from '@/lib/db'
 import { handleApiError } from '@/lib/utils'
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
+export async function POST(request: NextRequest): Promise<Response> {
   try {
     const session = getSession(request)
 
@@ -48,7 +47,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       },
     })
 
-    return setSession(response, user)
+    // queryRow returns an untyped row; the SELECT above pins the User fields
+    return setSession(response, user as unknown as User)
   } catch (error) {
     return handleApiError(error)
   }

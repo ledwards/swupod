@@ -1,11 +1,10 @@
-// @ts-nocheck
 // GET /api/auth/token - Get Bearer token for API usage
 // Requires cookie session (must be logged in via browser)
 import { getSession, createToken } from '@/lib/auth'
 import { jsonResponse, handleApiError } from '@/lib/utils'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 
-export async function GET(request: NextRequest): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<Response> {
   try {
     const session = getSession(request)
     if (!session) {
@@ -16,9 +15,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       id: session.id,
       email: session.email,
       username: session.username,
-      avatar_url: session.avatar_url,
+      avatar_url: session.avatar_url ?? null,
       is_admin: session.is_admin,
       is_beta_tester: session.is_beta_tester,
+      // Carry the privilege-freshness claim forward (U4) — never upgrade it
+      ...(typeof session.auth_version === 'number' ? { auth_version: session.auth_version } : {}),
     })
 
     return jsonResponse({

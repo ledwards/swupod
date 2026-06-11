@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Side-effect module that loads .env files BEFORE any other module reads
  * process.env at import time.

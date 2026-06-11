@@ -1,4 +1,3 @@
-// @ts-nocheck
 // GET /api/auth/patron-status - Check if current user is a Patreon patron
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
@@ -18,7 +17,7 @@ function pendingMessageForReason(reason: string | null): string {
   return "We received your Patreon subscription but couldn't find your Discord connection on Patreon. Go to patreon.com/settings/apps and link your Discord account, then try again."
 }
 
-export async function GET(request: NextRequest): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<Response> {
   try {
     const session = requireAuth(request)
 

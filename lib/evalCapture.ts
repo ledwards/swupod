@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Eval data capture — pair the photos a user uploaded with the data they
  * confirmed at Step 3. Lets us turn real submissions into golden fixtures

@@ -1,4 +1,3 @@
-// @ts-nocheck
 // POST /api/draft/:shareId/select - Stage a selection (not a final pick)
 // Selection is stored temporarily until all players have selected
 // When all have selected, picks are processed automatically
@@ -9,19 +8,19 @@ import { processAllStagedPicks } from '@/src/utils/draftAdvance'
 import { processBotTurns } from '@/src/utils/botLogic'
 import { checkAndEnforceTimeout } from '@/src/utils/draftTimeout'
 import { broadcastDraftState } from '@/src/lib/socketBroadcast'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 
 interface RouteContext {
   params: Promise<{ shareId: string }>
 }
 
-export async function POST(request: NextRequest, { params }: RouteContext): Promise<NextResponse> {
+export async function POST(request: NextRequest, { params }: RouteContext): Promise<Response> {
   try {
     const { shareId } = await params
     const session = requireAuth(request)
     const body = await parseBody(request)
 
-    const { cardId } = body // cardId can be null to unselect
+    const cardId = (body as { cardId?: string | null }).cardId ?? null // null to unselect
 
     // Get draft pod (exclude all_packs to save memory)
     const pod = await queryRow(
@@ -40,7 +39,8 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
 
     // Check and enforce timeouts before validating selection
     // This ensures we're working with current state (leaders/packs may have rotated)
-    const timeoutEnforced = await checkAndEnforceTimeout(pod.id)
+    const podId = pod.id as string
+    const timeoutEnforced = await checkAndEnforceTimeout(podId)
     if (timeoutEnforced) {
       // State changed - broadcast update and return error so client can refresh
       broadcastDraftState(shareId).catch(err => {
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
     // Get current player
     const player = await queryRow(
       'SELECT * FROM pod_players WHERE pod_id = $1 AND user_id = $2',
-      [pod.id, session.id]
+      [podId, session.id]
     )
 
     if (!player) {
@@ -71,7 +71,8 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
           ? JSON.parse(player.leaders)
           : player.leaders || []
 
-        const leaderExists = leaders.some(l =>
+        type CardRef = { instanceId?: string; id?: string; name?: string }
+        const leaderExists = (leaders as CardRef[]).some(l =>
           (l.instanceId && l.instanceId === cardId) || (!l.instanceId && l.id === cardId)
         )
         if (!leaderExists) {
@@ -79,7 +80,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
           console.error('[SELECT] Leader not available:', {
             cardId,
             leadersCount: leaders.length,
-            leaderIds: leaders.slice(0, 5).map(l => ({ id: l.id, instanceId: l.instanceId, name: l.name })),
+            leaderIds: (leaders as CardRef[]).slice(0, 5).map(l => ({ id: l.id, instanceId: l.instanceId, name: l.name })),
             playerId: player.id,
             pickStatus: player.pick_status,
             rawLeaders: typeof player.leaders === 'string' ? 'string' : 'object'
@@ -91,7 +92,8 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
           ? JSON.parse(player.current_pack)
           : player.current_pack || []
 
-        const cardExists = currentPack.some(c =>
+        type PackCardRef = { instanceId?: string; id?: string }
+        const cardExists = (currentPack as PackCardRef[]).some(c =>
           (c.instanceId && c.instanceId === cardId) || (!c.instanceId && c.id === cardId)
         )
         if (!cardExists) {
@@ -112,7 +114,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
     // Increment state version so other clients see the update
     await query(
       'UPDATE pods SET state_version = state_version + 1 WHERE id = $1',
-      [pod.id]
+      [podId]
     )
 
     // Broadcast state update immediately so clients see the selection
@@ -127,7 +129,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
     // waits and then no-ops — no retry loop or soft lock needed.
     if (cardId) {
       try {
-        const processed = await processAllStagedPicks(pod.id)
+        const processed = await processAllStagedPicks(podId)
         if (processed) {
           // Broadcast after picks processed so clients see the advanced state
           await broadcastDraftState(shareId)
@@ -138,7 +140,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
 
       // Trigger bot processing for drafts with bots
       // Don't await - let it run in background so response is fast
-      processBotTurns(pod.id).catch(err => {
+      processBotTurns(podId).catch(err => {
         console.error('Error processing bot turns:', err)
       })
     }
