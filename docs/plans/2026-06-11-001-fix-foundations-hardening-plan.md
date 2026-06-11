@@ -116,7 +116,7 @@ Fixing the transaction primitive, the auth boundaries, and the gates fixes the w
     - *E2E:* existing `tests/e2e/multiplayer-draft.spec.ts` must stay green (the behavioral contract).
   - **Verification:** concurrency tests pass repeatedly (`for i in 1..20` loop locally — flake = bug); `npm run test:e2e -- --grep "draft"` green.
 
-- [ ] U3. **Socket.io authentication + CORS lockdown**
+- [x] U3. **Socket.io authentication + CORS lockdown**
   - **Goal:** Socket identity derived server-side; no cross-origin socket access; chat impersonation (relayed into Discord) impossible.
   - **Requirements:** F3.
   - **Dependencies:** U1 not required; can proceed in parallel with U2. Uses existing `verifyToken` from lib/auth.ts.

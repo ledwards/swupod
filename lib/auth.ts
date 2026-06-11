@@ -99,6 +99,20 @@ export function getSession(request: Request): Session | null {
 }
 
 /**
+ * Get session from a raw Cookie header value (e.g. a Socket.io handshake).
+ * Same verification path as getSession — one definition of identity.
+ * @param cookieHeader - Raw Cookie header string (or null/undefined)
+ * @returns Session object or null
+ */
+export function getSessionFromCookieHeader(cookieHeader: string | null | undefined): Session | null {
+  if (!cookieHeader) return null
+  const cookies = parseCookies(cookieHeader)
+  const token = cookies[COOKIE_NAME]
+  if (!token) return null
+  return verifyToken(token)
+}
+
+/**
  * Set session cookie in response
  * @param response - HTTP response object (NextResponse)
  * @param user - User object
