@@ -3,7 +3,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Button from '../Button'
-import { getCachedCards } from '../../utils/cardCache'
+import { getCachedCards, initializeCardCache, isCacheInitialized } from '../../utils/cardCache'
 import type { MatchedCard } from '../../hooks/useImportPool'
 import type { ProcessedImage } from '../../services/importPool/imagePrep'
 
@@ -39,6 +39,18 @@ export default function CardPickerModal({
   const [query, setQuery] = useState('')
   const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [imageZoomed, setImageZoomed] = useState(true) // default zoom IN since the picker is meant for verification
+  // Card cache initialization is async (fetched from /api/cards) — re-render
+  // once it lands so the full-set list isn't permanently empty on cold mounts.
+  const [cacheReady, setCacheReady] = useState(isCacheInitialized())
+
+  useEffect(() => {
+    if (cacheReady) return
+    let cancelled = false
+    initializeCardCache()
+      .then(() => { if (!cancelled) setCacheReady(true) })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [cacheReady])
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -72,7 +84,8 @@ export default function CardPickerModal({
         isLeader: !!c.isLeader,
         isBase: !!c.isBase,
       }))
-  }, [setCode, candidates, typeFilter])
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- cacheReady re-runs the cold-cache read
+  }, [setCode, candidates, typeFilter, cacheReady])
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()

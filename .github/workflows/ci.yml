@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # DB-backed suites (lib/db.test.ts, draft-advance concurrency, auth
+      # privilege-freshness) skip loudly when no local test DB is reachable.
+      - run: npm run test
+
+  bundle-guard:
+    name: Build + bundle-size guard (U5)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # Plain `next build` — npm run build's prebuild card fetch is skipped
+      # in CI (cards.json is committed and synced by sync-swuapi-cards.yml).
+      - run: npx next build
+        env:
+          JWT_SECRET: ci-build-only-secret
+      - run: npm run check:bundle-size

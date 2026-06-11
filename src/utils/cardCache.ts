@@ -1,10 +1,35 @@
 // @ts-nocheck
 /**
- * Card cache utility - preloads all cards for fast access
+ * Card cache utility - preloads all cards for fast access.
+ *
+ * Backed by GET /api/cards via the memoized client loader (U5, foundations
+ * hardening) — this module used to statically import src/utils/cardData,
+ * which embedded the ~8 MB cards.json in every client bundle that touched it
+ * (including the home page). Initialization is now a real async fetch;
+ * callers that `await initializeCardCache()` (or check `isCacheInitialized()`)
+ * before reading keep their exact behavior. Cold synchronous reads return []
+ * and warm the cache in the background.
  */
 
 import type { SetCode } from '../types';
-import { getAllCards, getCardsBySet, type RawCard } from './cardData';
+import type { RawCard } from './cardData';
+
+/**
+ * Environment-forked data source. Both imports are dynamic so neither lands
+ * in the eager module graph:
+ * - Server: the local corrected dataset (src/utils/cardData) — synchronous
+ *   data, no fetch. The bundler dead-code-eliminates this branch from client
+ *   bundles (typeof window inlining), keeping cards.json out of them.
+ * - Client: GET /api/cards via the memoized loader.
+ */
+async function loadCardSource(): Promise<RawCard[]> {
+  if (typeof window === 'undefined') {
+    const { getAllCards } = await import('./cardData');
+    return getAllCards();
+  }
+  const { loadAllCards } = await import('./cardDataClient');
+  return loadAllCards();
+}
 
 // Cache for all cards organized by set
 const cardCache = new Map<SetCode, RawCard[]>();
@@ -12,8 +37,8 @@ const cardCache = new Map<SetCode, RawCard[]>();
 // Flag to track if cache is initialized
 let cacheInitialized = false;
 
-// All supported set codes
-const ALL_SETS: SetCode[] = ['SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'SEC', 'LAW', 'ASH'];
+// In-flight initialization (deduped across callers)
+let initPromise: Promise<void> | null = null;
 
 /** Cache statistics structure */
 interface CacheStats {
@@ -23,43 +48,52 @@ interface CacheStats {
 }
 
 /**
- * Initialize the card cache by loading all cards
- * This should be called on app startup
- * Since card data is loaded synchronously from JSON, this is instant
+ * Initialize the card cache by loading all cards from /api/cards.
+ * This should be called on app startup. Idempotent and deduped.
  */
 export function initializeCardCache(): Promise<void> {
   if (cacheInitialized) {
     return Promise.resolve();
   }
+  if (initPromise) {
+    return initPromise;
+  }
 
-  try {
-    // Trigger loading of all cards
-    getAllCards();
-
-    // Organize cards by set
-    ALL_SETS.forEach(setCode => {
-      const setCards = getCardsBySet(setCode);
-      cardCache.set(setCode, setCards);
+  initPromise = loadCardSource()
+    .then((cards) => {
+      cardCache.clear();
+      for (const card of cards) {
+        const setCode = card.set as SetCode;
+        const existing = cardCache.get(setCode);
+        if (existing) {
+          existing.push(card);
+        } else {
+          cardCache.set(setCode, [card]);
+        }
+      }
+      cacheInitialized = true;
+    })
+    .catch((error) => {
+      console.error('Failed to initialize card cache:', error);
+      initPromise = null; // allow retry on next call
+      throw error;
     });
 
-    cacheInitialized = true;
-    // Return resolved promise immediately since data is already loaded
-    return Promise.resolve();
-  } catch (error) {
-    console.error('Failed to initialize card cache:', error);
-    return Promise.reject(error);
-  }
+  return initPromise;
 }
 
 /**
- * Get cards for a specific set from cache
- * Auto-initializes on first access so callers never get empty results
+ * Get cards for a specific set from cache.
+ * Cold reads return [] and kick off initialization in the background —
+ * check `isCacheInitialized()` or await `initializeCardCache()` first when
+ * an empty result matters.
  * @param setCode - The set code
  * @returns Array of cards from that set
  */
 export function getCachedCards(setCode: SetCode | string): RawCard[] {
   if (!cacheInitialized) {
-    initializeCardCache();
+    initializeCardCache().catch(() => {});
+    return [];
   }
   return cardCache.get(setCode as SetCode) || [];
 }
@@ -89,4 +123,12 @@ export function getCacheStats(): CacheStats {
   });
 
   return stats;
+}
+
+// Server-side: warm the cache eagerly at module load so legacy synchronous
+// getCachedCards callers (belts during pack generation) find it populated —
+// the historical implementation initialized synchronously from cards.json.
+// All HTTP entry points additionally `await initializeCardCache()` first.
+if (typeof window === 'undefined') {
+  initializeCardCache().catch(() => {});
 }

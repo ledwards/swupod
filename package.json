@@ -21,6 +21,7 @@
     "make-admin": "npx tsx scripts/makeAdmin.ts",
     "sync-patrons:cron": "npx tsx scripts/sync-patrons-cron.ts",
     "snapshot-patrons": "npx tsx scripts/snapshot-patrons.ts",
+    "check:bundle-size": "npx tsx scripts/check-bundle-size.ts",
     "test": "npx tsx --test $(find src lib app scripts -name '*.test.ts' -not -path '*/qa/*' -not -path '*/node_modules/*' -not -name 'botEval.test.ts' | sort)",
     "test:eval": "npx tsx src/bots/behaviors/botEval.test.ts",
     "test:json": "npx tsx scripts/run-tests-json.ts",

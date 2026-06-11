@@ -136,7 +136,7 @@ Fixing the transaction primitive, the auth boundaries, and the gates fixes the w
   - **Test scenarios (extend lib/auth.test.ts + app/api/auth tests, node:test):** prod-mode module load without secret throws; admin token minted at version 1 fails `requireAdmin` after version bump, then succeeds after `/api/auth/refresh`; token without `auth_version` claim rejected by privileged gates, accepted by `requireAuth`; callback with mismatched/missing state cookie → redirect with error, no token exchange attempted (mock fetch and assert not called); `returnTo: "//evil.com"` and `"https://evil.com"` both normalize to `/`.
   - **Verification:** `npm run test:auth` green; manual OAuth round-trip in dev.
 
-- [ ] U5. **Card data out of the client bundle + bundle budget guard**
+- [x] U5. **Card data out of the client bundle + bundle budget guard**
   - **Goal:** Client bundles no longer embed the 8 MB cards.json; regression structurally blocked.
   - **Requirements:** F4.
   - **Dependencies:** none.

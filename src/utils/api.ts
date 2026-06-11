@@ -1,7 +1,11 @@
 // @ts-nocheck
 // API utilities for fetching card/set data
 
-import { getCardsBySet, hasCardsForSet } from './cardData'
+// Summary + fetch-based card access (NOT cardData) — api.ts is imported by
+// most client pages; a cardData import here would drag the 8 MB cards.json
+// into their bundles (U5, foundations hardening).
+import { hasCardsForSet } from './cardSummary'
+import { loadCardsBySet } from './cardDataClient'
 import { getPackArtUrl } from './packArt'
 import { getUpcomingSetForPeek, hasUpcomingSetSpoilers } from './membership'
 import type { RawCard } from './cardData'
@@ -141,19 +145,21 @@ export async function fetchSets({
 /**
  * Fetch all cards for a specific set
  * Returns array of card objects with imageUrl, rarity, type, etc.
+ *
+ * Served by GET /api/cards (corrected data, long-lived cache headers) via the
+ * memoized client loader — the static cards.json import this used to rely on
+ * pulled the whole card database into every consumer's bundle.
  */
 export async function fetchSetCards(setCode: string): Promise<RawCard[]> {
-  // Load from local card data file
-  // External API calls fail due to CORS, so we use local data
   try {
-    const localCards = getCardsBySet(setCode)
-    if (localCards.length > 0) {
-      return localCards
+    const cards = await loadCardsBySet(setCode)
+    if (cards.length > 0) {
+      return cards
     }
   } catch (error) {
-    console.warn('Failed to load local card data', error)
+    console.warn('Failed to load card data from /api/cards', error)
   }
 
-  console.warn(`Unable to fetch card data for set ${setCode}. Card data file may need to be populated.`)
+  console.warn(`Unable to fetch card data for set ${setCode}. Card data may need to be populated.`)
   return []
 }

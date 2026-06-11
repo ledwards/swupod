@@ -13,6 +13,7 @@
 
 import fs from 'fs'
 import path from 'path'
+import { execSync } from 'child_process'
 import { fileURLToPath } from 'url'
 import { cardFixes, batchFixes, customTransforms } from './cardFixes.ts'
 import { applyAshMetadata, mergeAshPlaceholderCatalog } from '../src/services/cards/ashPlaceholderCatalog.ts'
@@ -291,6 +292,17 @@ function main(): void {
 
   // Save processed data
   saveCardData(OUTPUT_FILE, cards, outputMetadata)
+
+  // Regenerate the tiny per-set summary (src/data/cardSummary.json) from the
+  // just-written corrected data. Client membership/spoiler gates import the
+  // summary instead of cards.json (U5 — keeps the 8 MB dataset out of client
+  // bundles). Spawned as a child so it imports the FRESH cards.json rather
+  // than any module-cached copy.
+  console.log('\nRegenerating card summary...')
+  execSync('npx tsx scripts/generateCardSummary.ts', {
+    cwd: path.join(__dirname, '..'),
+    stdio: 'inherit',
+  })
 
   // Summary
   console.log('\n' + '='.repeat(50))

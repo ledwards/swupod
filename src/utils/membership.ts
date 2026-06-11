@@ -12,7 +12,10 @@
 
 import { SET_CONFIGS, getSetConfig } from './setConfigs/index'
 import type { SetConfig } from './setConfigs/index'
-import { hasRealCardsForSet } from './cardData'
+// Summary-backed (NOT cardData) — membership is imported by many client
+// components; a cardData import here would drag the 8 MB cards.json into
+// nearly every client bundle (U5, foundations hardening).
+import { hasRealCardsForSet } from './cardSummary'
 
 // ---------- Pricing constants ----------
 

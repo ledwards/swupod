@@ -22,7 +22,9 @@ import Button from './Button'
 import SubscribeModal from './SubscribeModal'
 import Countdown from './Countdown'
 import { getSetConfig } from '../utils/setConfigs/index'
-import { getCardsBySet } from '../utils/cardData'
+// Summary-backed (NOT cardData) — this is a 'use client' component; a
+// cardData import would embed the 8 MB cards.json in the landing bundle (U5).
+import { getNormalSpoilerProgress } from '../utils/cardSummary'
 import './LandingPage.css'
 
 // Convert a #RRGGBB hex string to an rgba() string with the given alpha.
@@ -43,14 +45,10 @@ function localMidnight(isoDate: string): Date {
   return new Date(y, (m || 1) - 1, d || 1, 0, 0, 0, 0)
 }
 
-// Normal-variant spoiler progress for a set, counted off the live cards.json.
-// We deliberately count Normal-only — users intuit "X of Y cards spoiled" at the
-// gameplay level, not the cardCount=776 figure (which doubles up by treatment).
-function getNormalSpoilerProgress(setCode: string): { spoiled: number; total: number } {
-  const cards = getCardsBySet(setCode).filter(c => (c.variantType || 'Normal') === 'Normal')
-  const spoiled = cards.filter(c => !c.isPlaceholder).length
-  return { spoiled, total: cards.length }
-}
+// Normal-variant spoiler progress now comes from src/utils/cardSummary
+// (generated from the same corrected card data) — we deliberately count
+// Normal-only: users intuit "X of Y cards spoiled" at the gameplay level,
+// not the cardCount=776 figure (which doubles up by treatment).
 
 // Card art for mode buttons (hover reveal)
 const MODE_ART = {
@@ -236,8 +234,8 @@ function LandingPage() {
     [prereleaseDate],
   )
   // Spoiler progress for the upcoming set, Normal variant only (user-facing
-  // gameplay count, not the doubled variant inventory). Recomputed when the
-  // set changes — cards.json itself is module-scope, so re-reads are cheap.
+  // gameplay count, not the doubled variant inventory). Read from the tiny
+  // generated card summary — no card-database import in this client bundle.
   const spoilerProgress = useMemo(
     () => (setCode ? getNormalSpoilerProgress(setCode) : { spoiled: 0, total: 0 }),
     [setCode],
