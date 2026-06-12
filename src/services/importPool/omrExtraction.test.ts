@@ -13,10 +13,18 @@ import * as path from 'path'
 import { runOmrSidecar } from './omrExtraction'
 
 const FIXTURES_DIR = path.join(process.cwd(), 'scripts', 'eval', 'fixtures')
+const SQ_TOM_LAW_DIR = path.join(FIXTURES_DIR, 'sq-tom-law')
+const SQ_TOM_LAW_PHOTO1 = path.join(SQ_TOM_LAW_DIR, 'photo1.jpg')
+const SQ_TOM_LAW_PHOTO2 = path.join(SQ_TOM_LAW_DIR, 'photo2.jpg')
+const hasSqTomLawPhoto1 = fs.existsSync(SQ_TOM_LAW_PHOTO1)
+const hasSqTomLawPhotos = hasSqTomLawPhoto1 && fs.existsSync(SQ_TOM_LAW_PHOTO2)
+const sqTomLawPhotosSkipReason = 'sq-tom-law raw photos are local-only real-player fixtures'
 
-test('runOmrSidecar returns 10 tables for sq-tom-law', async () => {
-  const photo1 = fs.readFileSync(path.join(FIXTURES_DIR, 'sq-tom-law', 'photo1.jpg'))
-  const photo2 = fs.readFileSync(path.join(FIXTURES_DIR, 'sq-tom-law', 'photo2.jpg'))
+test('runOmrSidecar returns 10 tables for sq-tom-law', {
+  skip: hasSqTomLawPhotos ? false : `${sqTomLawPhotosSkipReason}; add photo1.jpg and photo2.jpg to run`,
+}, async () => {
+  const photo1 = fs.readFileSync(SQ_TOM_LAW_PHOTO1)
+  const photo2 = fs.readFileSync(SQ_TOM_LAW_PHOTO2)
   const result = await runOmrSidecar([photo1, photo2])
   assert.equal(result.warnings.length, 0, 'no warnings')
   assert.equal(result.tables.length, 10, 'expected 10 tables (4 page-1 + 6 page-2)')
@@ -32,8 +40,10 @@ test('runOmrSidecar returns 10 tables for sq-tom-law', async () => {
   }
 })
 
-test('runOmrSidecar bounds + image_b64 are sensible', async () => {
-  const photo1 = fs.readFileSync(path.join(FIXTURES_DIR, 'sq-tom-law', 'photo1.jpg'))
+test('runOmrSidecar bounds + image_b64 are sensible', {
+  skip: hasSqTomLawPhoto1 ? false : `${sqTomLawPhotosSkipReason}; add photo1.jpg to run`,
+}, async () => {
+  const photo1 = fs.readFileSync(SQ_TOM_LAW_PHOTO1)
   const result = await runOmrSidecar([photo1])
   assert.ok(result.tables.length >= 4, 'page 1 should have at least 4 tables')
   for (const t of result.tables) {

@@ -28,13 +28,6 @@ const { Pool } = pg
 const args = process.argv.slice(2)
 const isDryRun = args.includes('--dry-run')
 
-const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL
-
-if (!connectionString) {
-  console.error('Error: No database connection string found (DATABASE_URL or POSTGRES_URL)')
-  process.exit(1)
-}
-
 interface SnapshotRow {
   patron_id: string
   discord_id: string | null
@@ -146,6 +139,13 @@ export const __test = { UPSERT_SQL, ACTIVE_STATUSES }
 // CLI entry: only runs when invoked directly, not when imported by tests.
 const isCli = import.meta.url === `file://${process.argv[1]}`
 if (isCli) {
+  const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL
+
+  if (!connectionString) {
+    console.error('Error: No database connection string found (DATABASE_URL or POSTGRES_URL)')
+    process.exit(1)
+  }
+
   const pool = new Pool({
     connectionString,
     ssl: connectionString.includes('sslmode=require') || connectionString.includes('sslmode=verify')
