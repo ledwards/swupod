@@ -4,7 +4,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSession, sanitizeReturnTo } from '@/lib/auth'
 
 export const OAUTH_STATE_COOKIE = 'swupod_oauth_state'
-const OAUTH_STATE_MAX_AGE_SECONDS = 10 * 60 // 10 minutes
+// 30 minutes: a FIRST-TIME user's Discord leg routinely exceeds 10 minutes —
+// account login + 2FA + reading the consent screen (sometimes creating a
+// Discord account entirely). When the state cookie expired mid-flow, the
+// callback rejected an otherwise-valid login (2026-06-11 incident; a one-shot
+// retry now also mitigates this, but the lifetime should fit the real flow).
+const OAUTH_STATE_MAX_AGE_SECONDS = 30 * 60
 
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID
 const APP_URL = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
