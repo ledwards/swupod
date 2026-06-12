@@ -5,6 +5,8 @@ import { requireAuth } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { broadcastDraftState, broadcastSystemChatMessage } from '@/src/lib/socketBroadcast'
 import { postPlayerJoined, updatePodEmbed } from '@/lib/discordLfg'
+import { captureLimitedServerEvent } from '@/lib/posthog'
+import { LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {
@@ -15,6 +17,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
   try {
     const { shareId } = await params
     const session = requireAuth(request)
+    const body = await request.json().catch(() => ({}))
 
     // Get draft pod
     const pod = await queryRow(
@@ -50,7 +53,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
 
     // Find next available seat
     const players = await queryRows(
-      'SELECT seat_number FROM pod_players WHERE pod_id = $1 ORDER BY seat_number',
+      'SELECT seat_number, is_bot FROM pod_players WHERE pod_id = $1 ORDER BY seat_number',
       [pod.id]
     )
 
@@ -122,6 +125,25 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
     } else if (pod.is_public && !pod.discord_thread_id) {
       console.warn('[Draft Join] Pod is public but has no discord_thread_id — postPodCreated may have failed')
     }
+
+    const existingHumanPlayers = players.filter((p: { is_bot?: boolean }) => !p.is_bot).length
+    const existingBotPlayers = players.filter((p: { is_bot?: boolean }) => p.is_bot).length
+    const settings = typeof pod.settings === 'string' ? JSON.parse(pod.settings) : pod.settings || {}
+    captureLimitedServerEvent(
+      LimitedAnalyticsEvents.LIMITED_POD_JOINED,
+      session.id,
+      {
+        format: 'draft',
+        mode: settings.isSolo === true ? 'solo' : 'group',
+        setCode: pod.set_code,
+        join_source: body.joinSource || body.join_source || (pod.is_public ? 'public_pod' : 'private_invite'),
+        current_players: pod.current_players + 1,
+        human_players: existingHumanPlayers + 1,
+        bot_players: existingBotPlayers,
+        podShareId: shareId,
+        flowId: body.flowId || body.flow_id || null,
+      }
+    )
 
     return jsonResponse({
       message: 'Joined draft',

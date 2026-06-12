@@ -170,6 +170,7 @@ export default function NewPoolPage() {
         shareId: pool.shareId,
         boxPacks: pool.boxPacks,
         packIndices: pool.packIndices,
+        flowId: new URLSearchParams(window.location.search).get('flowId'),
       }).then((saved) => {
         // Server should use the same shareId, but handle mismatch just in case
         if (saved && saved.shareId && saved.shareId !== pool.shareId) {

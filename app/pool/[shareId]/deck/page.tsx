@@ -188,21 +188,31 @@ export default function DeckBuilderPage({ params }: PageProps) {
   const isOwner = user && pool?.owner && user.id === (pool.owner.id || pool.userId)
 
   const [deckBuildDeadline, setDeckBuildDeadline] = useState<string | null>(null)
+  const [draftLimitedMode, setDraftLimitedMode] = useState<'solo' | 'group' | null>(null)
 
   useEffect(() => {
-    if (!draftShareId) return
+    if (!draftShareId || pool?.poolType !== 'draft') {
+      setDraftLimitedMode(null)
+      return
+    }
     fetch(`/api/draft/${draftShareId}`)
       .then(res => res.ok ? res.json() : null)
       .then(data => {
         if (data?.deckBuildDeadline) {
           setDeckBuildDeadline(data.deckBuildDeadline)
         }
+        setDraftLimitedMode(data?.settings?.isSolo === true ? 'solo' : 'group')
       })
       .catch(() => {})
-  }, [draftShareId])
+  }, [draftShareId, pool?.poolType])
 
   const rootShareId = pool?.parentShareId || pool?.shareId || null
   const isChildBuild = Boolean(pool?.parentShareId)
+  const limitedMode = pool?.poolType === 'draft' && draftShareId
+    ? draftLimitedMode
+    : draftShareId
+      ? 'group'
+      : 'solo'
 
   usePoolBuildsSocket(rootShareId)
 
@@ -226,6 +236,7 @@ export default function DeckBuilderPage({ params }: PageProps) {
             deckBuildDeadline={deckBuildDeadline}
             rootShareId={rootShareId}
             currentUserId={user?.id || null}
+            limitedMode={limitedMode}
           />
         </div>
       </div>

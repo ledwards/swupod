@@ -5,6 +5,9 @@ import { queryRow, query } from '@/lib/db'
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { deriveMatchWinner } from '@/src/services/matchmaking/results'
 import { checkAndAdvanceRound } from '@/src/services/matchmaking/advancement'
+import { jsonParse } from '@/src/utils/json'
+import { captureLimitedServerEvent } from '@/lib/posthog'
+import { LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
 
 export async function POST(
   request: NextRequest,
@@ -27,7 +30,7 @@ export async function POST(
 
     // Get the match and verify user is a participant
     const match = await queryRow(
-      `SELECT pm.*, pr.pod_id, p.share_id as pod_share_id
+      `SELECT pm.*, pr.pod_id, pr.round_number, p.share_id as pod_share_id, p.set_code, p.settings
        FROM practice_matches pm
        JOIN practice_rounds pr ON pm.round_id = pr.id
        JOIN pods p ON pr.pod_id = p.id
@@ -64,6 +67,7 @@ export async function POST(
 
     // Refetch to check if both submitted
     const updated = await queryRow(`SELECT * FROM practice_matches WHERE id = $1`, [matchId])
+    let finalConfirmed = false
 
     if (updated.player1_submitted && updated.player2_submitted) {
       // Both submitted — auto-confirm with derived winner
@@ -73,9 +77,27 @@ export async function POST(
           `UPDATE practice_matches SET final_confirmed = true, match_winner = $2 WHERE id = $1`,
           [matchId, winner]
         )
+        finalConfirmed = true
         await checkAndAdvanceRound(match.pod_id, shareId)
       }
     }
+
+    const podSettings = jsonParse(match.settings, {})
+    captureLimitedServerEvent(
+      LimitedAnalyticsEvents.LIMITED_MATCH_RESULT_REPORTED,
+      session.id,
+      {
+        format: 'draft',
+        mode: podSettings?.isSolo === true ? 'solo' : 'group',
+        setCode: match.set_code,
+        round_number: match.round_number,
+        matchId,
+        podShareId: match.pod_share_id,
+        result_source: 'player_report',
+        both_players_submitted: Boolean(updated.player1_submitted && updated.player2_submitted),
+        final_confirmed: finalConfirmed || Boolean(updated.final_confirmed),
+      }
+    )
 
     return jsonResponse({ ok: true })
   } catch (error) {

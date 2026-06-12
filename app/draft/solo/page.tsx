@@ -7,6 +7,7 @@ import { useAuth } from '../../../src/contexts/AuthContext'
 import { createDraft } from '../../../src/utils/draftApi'
 import { initializeCardCache } from '../../../src/utils/cardCache'
 import { trackEvent, AnalyticsEvents } from '../../../src/hooks/useAnalytics'
+import { getOrCreateLimitedFlowId, LimitedAnalyticsEvents } from '../../../src/analytics/limitedEvents'
 import SetSelection from '../../../src/components/SetSelection'
 import '../../../src/App.css'
 import '../draft.css'
@@ -35,10 +36,19 @@ export default function SoloDraftPage() {
 
     setCreating(true)
     setError(null)
+    const flowId = getOrCreateLimitedFlowId('draft:solo')
+    trackEvent(LimitedAnalyticsEvents.LIMITED_FLOW_STARTED, {
+      format: 'draft',
+      mode: 'solo',
+      surface: 'solo_draft_set_selection',
+      source_route: '/draft/solo',
+      flow_id: flowId,
+      set_code: setCode,
+    })
 
     try {
       // Create draft
-      const result = await createDraft(setCode, { isPublic: false, settings: { isSolo: true } })
+      const result = await createDraft(setCode, { isPublic: false, flowId, settings: { isSolo: true } })
       trackEvent(AnalyticsEvents.DRAFT_CREATED, { set_code: setCode, solo: true })
 
       // Auto-add 7 bots

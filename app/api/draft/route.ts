@@ -10,6 +10,8 @@ import { initializeCardCache } from '@/src/utils/cardCache'
 import { generateSealedBox, clearBeltCache } from '@/src/utils/boosterPack'
 import { broadcastPublicPodsUpdate } from '@/src/lib/socketBroadcast'
 import { postPodCreated } from '@/lib/discordLfg'
+import { captureLimitedServerEvent } from '@/lib/posthog'
+import { LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -24,6 +26,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       timerEnabled = false,
       timerSeconds = 30,
       isPublic,
+      flowId = null,
       settings = {}
     } = body
 
@@ -202,6 +205,24 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         console.error('Error posting draft to Discord:', err)
       })
     }
+
+    captureLimitedServerEvent(
+      LimitedAnalyticsEvents.LIMITED_POD_CREATED,
+      session.id,
+      {
+        format: 'draft',
+        mode: settings.isSolo === true ? 'solo' : 'group',
+        setCode,
+        is_public: podIsPublic,
+        competitive,
+        max_players: effectiveMaxPlayers,
+        current_players: 1,
+        human_players: 1,
+        bot_players: 0,
+        podShareId: shareId,
+        flowId,
+      }
+    )
 
     return jsonResponse({
       id: pod.id,

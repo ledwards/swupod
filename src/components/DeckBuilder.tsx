@@ -6,6 +6,7 @@ import { getCachedCards, isCacheInitialized, initializeCardCache } from '../util
 import { deduplicateCommonBases } from '../utils/baseDedup'
 import { buildBaseCardMap as buildBaseCardMapUtil, getBaseCardId as getBaseCardIdUtil } from '../utils/variantDowngrade'
 import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
+import { buildLimitedContext, LimitedAnalyticsEvents } from '../analytics/limitedEvents'
 import { fetchSetCards } from '../utils/api'
 import { getBaseSetCode } from '../utils/carboniteConstants'
 import { parseDeckBuilderState } from '../utils/deckBuilderState'
@@ -150,6 +151,7 @@ interface DeckBuilderProps {
   deckBuildDeadline?: string | null
   rootShareId?: string | null
   currentUserId?: string | null
+  limitedMode?: 'solo' | 'group' | null
 }
 
 function DeckBuilder({
@@ -171,7 +173,8 @@ function DeckBuilder({
   draftShareId = null,
   deckBuildDeadline = null,
   rootShareId = null,
-  currentUserId = null
+  currentUserId = null,
+  limitedMode = null
 }: DeckBuilderProps) {
   const { user, isAuthenticated, signIn, isPatron } = useAuth()
   const isInfiniteMode = mode === 'infinite'
@@ -424,17 +427,40 @@ function DeckBuilder({
     setViewModeInitialized(true)
   }, [uiStorageKey, viewModeInitialized])
 
+  const deckBuilderOpenedTrackedRef = useRef(false)
+  const limitedDeckBuilderOpenedTrackedRef = useRef(false)
+
   // Track deck builder opened and view mode changes
   useEffect(() => {
-    if (viewModeInitialized) {
+    if (!viewModeInitialized) return
+
+    if (!deckBuilderOpenedTrackedRef.current) {
+      deckBuilderOpenedTrackedRef.current = true
       trackEvent(AnalyticsEvents.DECK_BUILDER_OPENED, {
         set_code: setCode,
         pool_type: poolType,
         view_mode: viewMode,
       })
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewModeInitialized]) // Only track on initial load
+
+    const limitedFormat = poolType === 'draft' ? 'draft' : (poolType === 'sealed' || poolType === 'sealed_pod') ? 'sealed' : null
+    if (!limitedDeckBuilderOpenedTrackedRef.current && limitedFormat && !(poolType === 'draft' && draftShareId && !limitedMode)) {
+      limitedDeckBuilderOpenedTrackedRef.current = true
+      trackEvent(LimitedAnalyticsEvents.LIMITED_DECK_BUILDER_OPENED, {
+        ...buildLimitedContext({
+          format: limitedFormat,
+          mode: limitedMode,
+          setCode,
+          poolShareId: shareId,
+          podShareId: draftShareId,
+          routeTemplate: '/pool/[shareId]/deck',
+        }),
+        view_mode: viewMode,
+        is_owner: isOwner,
+        is_child_build: Boolean(rootShareId && shareId && rootShareId !== shareId),
+      })
+    }
+  }, [viewModeInitialized, setCode, poolType, viewMode, draftShareId, limitedMode, shareId, isOwner, rootShareId])
 
   // Track view mode changes (after initial load)
   const prevViewMode = useRef(viewMode)

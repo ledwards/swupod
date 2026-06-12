@@ -7,6 +7,8 @@ import { useAuth } from '../../../src/contexts/AuthContext'
 import { initializeCardCache } from '../../../src/utils/cardCache'
 import SetSelection from '../../../src/components/SetSelection'
 import Button from '../../../src/components/Button'
+import { trackEvent } from '../../../src/hooks/useAnalytics'
+import { getOrCreateLimitedFlowId, LimitedAnalyticsEvents } from '../../../src/analytics/limitedEvents'
 import '../../../src/App.css'
 import '../../draft/draft.css'
 
@@ -44,13 +46,23 @@ export default function NewSealedPodPage() {
     if (creating) return
     setCreating(true)
     setError(null)
+    const flowId = getOrCreateLimitedFlowId('sealed:group')
+    trackEvent(LimitedAnalyticsEvents.LIMITED_FLOW_STARTED, {
+      format: 'sealed',
+      mode: 'group',
+      surface: 'group_sealed_set_selection',
+      source_route: '/sealed/new',
+      flow_id: flowId,
+      set_code: setCode,
+      is_public: isPublic,
+    })
 
     try {
       const response = await fetch('/api/sealed', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ setCode, isPublic }),
+        body: JSON.stringify({ setCode, isPublic, flowId }),
       })
 
       if (!response.ok) {

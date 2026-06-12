@@ -10,6 +10,8 @@ import { trackBulkGenerations, PACK_SLOT_TYPES } from '@/src/utils/trackGenerati
 import { broadcastDraftState, broadcastSystemChatMessage } from '@/src/lib/socketBroadcast'
 import { markPodStarted } from '@/lib/discordLfg'
 import { jsonParse } from '@/src/utils/json'
+import { captureLimitedServerEvent } from '@/lib/posthog'
+import { LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {
@@ -208,6 +210,20 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
         ).catch(() => {})
       }).catch(() => {})
     }
+
+    captureLimitedServerEvent(
+      LimitedAnalyticsEvents.LIMITED_POD_STARTED,
+      session.id,
+      {
+        format: 'draft',
+        mode: isSoloDraft ? 'solo' : 'group',
+        setCode: pod.set_code,
+        human_players: humanCount,
+        bot_players: players.length - humanCount,
+        current_players: players.length,
+        podShareId: shareId,
+      }
+    )
 
     // console.log('[START] Returning success response')
     return jsonResponse({

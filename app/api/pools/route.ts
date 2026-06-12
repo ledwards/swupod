@@ -7,6 +7,8 @@ import { jsonResponse, parseBody, validateRequired, handleApiError } from '@/lib
 import { getSetConfig } from '@/src/utils/setConfigs/index'
 import { getUnavailableSetReason } from '@/src/utils/setAvailability'
 import { trackBulkGenerations, PACK_SLOT_TYPES } from '@/src/utils/trackGeneration'
+import { captureLimitedServerEvent } from '@/lib/posthog'
+import { hashAnalyticsId, LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -260,6 +262,24 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       trackBulkGenerations(trackingRecords).catch(err => {
         console.error('Failed to track sealed pool generations:', err)
       })
+    }
+
+    const isCoreLimitedPool = (poolType === 'sealed' || poolType === 'draft')
+      && !parentPoolDbId
+      && deckBuilderState?.isInfinitePool !== true
+    if (isCoreLimitedPool) {
+      captureLimitedServerEvent(
+        LimitedAnalyticsEvents.LIMITED_POOL_CREATED,
+        userId || hashAnalyticsId(shareId),
+        {
+          format: poolType === 'draft' ? 'draft' : 'sealed',
+          mode: 'solo',
+          setCode,
+          pack_count: Array.isArray(packs) ? packs.length : null,
+          poolShareId: shareId,
+          flowId: body.flowId || body.flow_id || null,
+        }
+      )
     }
 
     return jsonResponse({

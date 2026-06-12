@@ -27,6 +27,13 @@ import ChatPanel from '../../../../../src/components/ChatPanel'
 import MatchmakingPanel from '../../../../../src/components/MatchmakingPanel'
 import ResultReportModal from '../../../../../src/components/ResultReportModal'
 import { useDraftSocket } from '../../../../../src/hooks/useDraftSocket'
+import { trackEvent } from '../../../../../src/hooks/useAnalytics'
+import {
+  buildLimitedContext,
+  getOrCreateLimitedFlowId,
+  LimitedAnalyticsEvents,
+  LimitedPlayActions,
+} from '../../../../../src/analytics/limitedEvents'
 import '../../../../../src/App.css'
 import '../../../../../src/components/ChatPanel.css'
 import './play.css'
@@ -131,6 +138,7 @@ export default function PlayPage({ params }: PageProps) {
   const [firstOpponent, setFirstOpponent] = useState<Player | null>(null)
   const [hasBye, setHasBye] = useState(false)
   const [isSoloDraft, setIsSoloDraft] = useState(false)
+  const [opponentChecked, setOpponentChecked] = useState(false)
   const [deckImageModal, setDeckImageModal] = useState<string | null>(null)
   const [generatingImage, setGeneratingImage] = useState(false)
   const [poolImageUrl, setPoolImageUrl] = useState<string | null>(null)
@@ -153,6 +161,7 @@ export default function PlayPage({ params }: PageProps) {
     turnOnePlays: number
     totalCards: number
   } | null>(null)
+  const playPageTrackedRef = useRef<string | null>(null)
 
   // Competitive practice mode state
   const [reportingMatchId, setReportingMatchId] = useState<string | null>(null)
@@ -188,6 +197,52 @@ export default function PlayPage({ params }: PageProps) {
   }[]
   const competitiveCurrentRound = competitiveDraft?.currentRound || 1
   const matchmakingStatus = competitiveDraft?.matchmakingStatus || 'deck_building'
+
+  const getLimitedFormat = () => pool?.poolType === 'draft' ? 'draft' : 'sealed'
+  const getLimitedMode = () => {
+    if (deckBuilderState?.isInfinitePool === true) return 'solo'
+    if (pool?.poolType === 'draft') return isSoloDraft ? 'solo' : 'group'
+    if (pool?.poolType === 'sealed_pod') return 'group'
+    return pool?.draftShareId ? 'group' : 'solo'
+  }
+  const getDeckCounts = () => {
+    const deckData = getDeckData()
+    return {
+      deck_size: deckData?.deck?.reduce((sum: number, c: { count: number }) => sum + c.count, 0) || 0,
+      sideboard_size: deckData?.sideboard?.reduce((sum: number, c: { count: number }) => sum + c.count, 0) || 0,
+      deck_ready: !!(deckData?.leader && deckData?.base),
+    }
+  }
+  const getLimitedAnalyticsContext = () => {
+    const format = getLimitedFormat()
+    const mode = getLimitedMode()
+    return {
+      format,
+      mode,
+      setCode: pool?.setCode,
+      shareId,
+      poolShareId: shareId,
+      draftShareId: pool?.draftShareId,
+      flowId: getOrCreateLimitedFlowId(`${format}:${mode}`),
+      routeTemplate: '/pool/[shareId]/deck/play',
+    }
+  }
+  const trackLimitedPlayAction = (action: string, properties: Record<string, unknown> = {}) => {
+    const sanitized = { ...properties }
+    for (const key of ['shareId', 'poolShareId', 'podShareId', 'draftShareId', 'matchId']) {
+      delete sanitized[key]
+    }
+    trackEvent(LimitedAnalyticsEvents.LIMITED_PLAY_ACTION_USED, {
+      ...buildLimitedContext({
+        ...getLimitedAnalyticsContext(),
+        ...properties,
+      }),
+      action,
+      success: properties.success ?? true,
+      target: properties.target ?? null,
+      ...sanitized,
+    })
+  }
 
   // Detect Wayfinder extension via DOM marker (content scripts share the DOM
   // but NOT the page's window — so we check for a <meta name="wayfinder-installed"> tag)
@@ -236,6 +291,7 @@ export default function PlayPage({ params }: PageProps) {
     async function fetchPool() {
       try {
         setLoading(true)
+        setOpponentChecked(false)
         const poolData = await loadPool(shareId)
         setPool(poolData)
         setError(null)
@@ -246,12 +302,13 @@ export default function PlayPage({ params }: PageProps) {
         // For draft pools, fetch opponent info
         if (poolData.poolType === 'draft' && poolData.draftShareId) {
           fetchOpponent(poolData.draftShareId)
+        } else if (poolData.poolType === 'sealed_pod' && poolData.draftShareId) {
+          fetchSealedPodOpponent(poolData.draftShareId)
+        } else {
+          setOpponentChecked(true)
         }
 
         // For sealed pod pools, fetch opponent info from sealed pod API
-        if (poolData.poolType === 'sealed_pod' && poolData.draftShareId) {
-          fetchSealedPodOpponent(poolData.draftShareId)
-        }
       } catch (err) {
         console.error('Failed to load pool:', err)
         setError(err instanceof Error ? err.message : 'Failed to load pool')
@@ -327,6 +384,10 @@ export default function PlayPage({ params }: PageProps) {
       const draft = data.data || data
 
       if (draft.status !== 'complete') return
+      if (draft.settings?.isSolo === true) {
+        setIsSoloDraft(true)
+        return
+      }
 
       const players = draft.players || []
       const myPlayer = players.find((p: Player) => p.id === user?.id)
@@ -360,6 +421,8 @@ export default function PlayPage({ params }: PageProps) {
       }
     } catch (err) {
       console.error('Failed to fetch opponent:', err)
+    } finally {
+      setOpponentChecked(true)
     }
   }
 
@@ -401,8 +464,28 @@ export default function PlayPage({ params }: PageProps) {
       }
     } catch (err) {
       console.error('Failed to fetch sealed pod opponent:', err)
+    } finally {
+      setOpponentChecked(true)
     }
   }
+
+  useEffect(() => {
+    if (!pool || !shareId || !opponentChecked) return
+    const trackingKey = shareId
+    if (playPageTrackedRef.current === trackingKey) return
+
+    const deckCounts = getDeckCounts()
+    trackEvent(LimitedAnalyticsEvents.LIMITED_PLAY_PAGE_VIEWED, {
+      ...buildLimitedContext(getLimitedAnalyticsContext()),
+      user_role: pool.owner?.id && user?.id === pool.owner.id ? 'owner' : user ? 'viewer' : 'anonymous',
+      is_owner: !!(pool.owner?.id && user?.id === pool.owner.id),
+      has_opponent: !!firstOpponent,
+      has_bye: hasBye,
+      wayfinder_detected: wayfinderDetected,
+      ...deckCounts,
+    })
+    playPageTrackedRef.current = trackingKey
+  }, [pool, shareId, opponentChecked, firstOpponent, hasBye, wayfinderDetected, user?.id, isSoloDraft])
 
   const getDeckData = () => {
     if (!pool?.deckBuilderState) return null
@@ -471,10 +554,15 @@ export default function PlayPage({ params }: PageProps) {
   const copyDeckLink = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href)
+      trackLimitedPlayAction(LimitedPlayActions.COPY_DECK_LINK, { target: 'clipboard' })
       setMessage('Deck link copied!')
       setMessageType('success')
       setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
     } catch (err) {
+      trackLimitedPlayAction(LimitedPlayActions.COPY_DECK_LINK, {
+        target: 'clipboard',
+        success: false,
+      })
       setMessage('Failed to copy link')
       setMessageType('error')
       setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
@@ -499,10 +587,19 @@ export default function PlayPage({ params }: PageProps) {
 
     try {
       await navigator.clipboard.writeText(JSON.stringify(deckData, null, 2))
+      trackLimitedPlayAction(LimitedPlayActions.COPY_DECK_JSON, {
+        target: 'clipboard',
+        ...getDeckCounts(),
+      })
       setMessage('Deck JSON copied to clipboard!')
       setMessageType('success')
       setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
     } catch (err) {
+      trackLimitedPlayAction(LimitedPlayActions.COPY_DECK_JSON, {
+        target: 'clipboard',
+        success: false,
+        ...getDeckCounts(),
+      })
       setMessage('Failed to copy to clipboard')
       setMessageType('error')
       setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
@@ -535,6 +632,10 @@ export default function PlayPage({ params }: PageProps) {
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
+    trackLimitedPlayAction(LimitedPlayActions.DOWNLOAD_DECK_JSON, {
+      target: 'file',
+      ...getDeckCounts(),
+    })
   }
 
   const postToDiscord = async () => {
@@ -548,14 +649,25 @@ export default function PlayPage({ params }: PageProps) {
       if (res.ok) {
         setPostedToDiscord(true)
         if (shareId) localStorage.setItem(`postedToDiscord_${shareId}`, 'true')
+        trackLimitedPlayAction(LimitedPlayActions.POST_TO_DISCORD, { target: 'discord' })
         setMessage('Deck posted to Discord!')
         setMessageType('success')
       } else {
         const data = await res.json().catch(() => ({}))
+        trackLimitedPlayAction(LimitedPlayActions.POST_TO_DISCORD, {
+          target: 'discord',
+          success: false,
+          failure_reason: data.error || 'http_error',
+        })
         setMessage(data.error || 'Failed to post to Discord')
         setMessageType('error')
       }
     } catch {
+      trackLimitedPlayAction(LimitedPlayActions.POST_TO_DISCORD, {
+        target: 'discord',
+        success: false,
+        failure_reason: 'network_error',
+      })
       setMessage('Failed to post to Discord')
       setMessageType('error')
     } finally {
@@ -568,6 +680,11 @@ export default function PlayPage({ params }: PageProps) {
     console.log('Pool exists:', !!pool)
     console.log('DeckBuilderState exists:', !!pool?.deckBuilderState)
     if (!pool?.deckBuilderState) {
+      trackLimitedPlayAction(LimitedPlayActions.GENERATE_DECK_IMAGE, {
+        target: 'image',
+        success: false,
+        failure_reason: 'missing_deck_data',
+      })
       setMessage('No deck data found. Please build your deck first.')
       setMessageType('error')
       setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
@@ -588,6 +705,11 @@ export default function PlayPage({ params }: PageProps) {
       const { cardPositions, activeLeader, activeBase } = state
       if (!cardPositions || !activeLeader || !activeBase) {
         console.log('Missing required state:', { hasPositions: !!cardPositions, hasLeader: !!activeLeader, hasBase: !!activeBase })
+        trackLimitedPlayAction(LimitedPlayActions.GENERATE_DECK_IMAGE, {
+          target: 'image',
+          success: false,
+          failure_reason: 'missing_leader_or_base',
+        })
         setMessage('Please select a leader and base first.')
         setMessageType('error')
         setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
@@ -1013,6 +1135,18 @@ export default function PlayPage({ params }: PageProps) {
       console.log('=== Drawing complete, creating blob ===')
       canvas.toBlob((blob) => {
         console.log('=== Blob created:', blob?.size, 'bytes ===')
+        trackLimitedPlayAction(LimitedPlayActions.GENERATE_DECK_IMAGE, {
+          target: 'image',
+          success: !!blob,
+          ...getDeckCounts(),
+        })
+        if (!blob) {
+          setMessage('Failed to generate image')
+          setMessageType('error')
+          setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+          setGeneratingImage(false)
+          return
+        }
         const url = URL.createObjectURL(blob)
         console.log('=== Blob URL created:', url, '===')
         setDeckImageModal(url)
@@ -1021,6 +1155,11 @@ export default function PlayPage({ params }: PageProps) {
 
     } catch (error) {
       console.error('Error generating deck image:', error)
+      trackLimitedPlayAction(LimitedPlayActions.GENERATE_DECK_IMAGE, {
+        target: 'image',
+        success: false,
+        failure_reason: 'generation_error',
+      })
       setMessage('Failed to generate image')
       setMessageType('error')
       setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
@@ -1590,6 +1729,12 @@ export default function PlayPage({ params }: PageProps) {
     }
 
     setPracticeHand({ cards: hand, probAtLeastOne, avgTurnOnePlays, turnOnePlays, totalCards })
+    trackLimitedPlayAction(LimitedPlayActions.PRACTICE_HAND_DRAW, {
+      target: 'practice_hand',
+      deck_size: totalCards,
+      turn_one_plays: turnOnePlays,
+      success: true,
+    })
   }
 
   // Competitive practice mode handlers
@@ -1604,11 +1749,31 @@ export default function PlayPage({ params }: PageProps) {
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
+        trackLimitedPlayAction(LimitedPlayActions.MATCH_RESULT_SUBMIT, {
+          target: 'match_result',
+          success: false,
+          matchId,
+          result_source: 'player_report',
+          failure_reason: data.error || 'http_error',
+        })
         setMessage(data.error || 'Failed to report result')
         setMessageType('error')
         setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      } else {
+        trackLimitedPlayAction(LimitedPlayActions.MATCH_RESULT_SUBMIT, {
+          target: 'match_result',
+          matchId,
+          result_source: 'player_report',
+        })
       }
     } catch {
+      trackLimitedPlayAction(LimitedPlayActions.MATCH_RESULT_SUBMIT, {
+        target: 'match_result',
+        success: false,
+        matchId,
+        result_source: 'player_report',
+        failure_reason: 'network_error',
+      })
       setMessage('Failed to report result')
       setMessageType('error')
       setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
@@ -1627,11 +1792,31 @@ export default function PlayPage({ params }: PageProps) {
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
+        trackLimitedPlayAction(LimitedPlayActions.MATCH_RESULT_SUBMIT, {
+          target: 'match_result',
+          success: false,
+          matchId,
+          result_source: 'host_override',
+          failure_reason: data.error || 'http_error',
+        })
         setMessage(data.error || 'Failed to override result')
         setMessageType('error')
         setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      } else {
+        trackLimitedPlayAction(LimitedPlayActions.MATCH_RESULT_SUBMIT, {
+          target: 'match_result',
+          matchId,
+          result_source: 'host_override',
+        })
       }
     } catch {
+      trackLimitedPlayAction(LimitedPlayActions.MATCH_RESULT_SUBMIT, {
+        target: 'match_result',
+        success: false,
+        matchId,
+        result_source: 'host_override',
+        failure_reason: 'network_error',
+      })
       setMessage('Failed to override result')
       setMessageType('error')
       setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
@@ -1713,8 +1898,18 @@ export default function PlayPage({ params }: PageProps) {
         const url = await exportPoolImage()
         setLoadingPool(false)
         if (url) {
+          trackLimitedPlayAction(LimitedPlayActions.GENERATE_POOL_IMAGE, {
+            target: 'image',
+            success: true,
+            ...getDeckCounts(),
+          })
           setPoolImageUrl(url)
           setShowingPool(true)
+        } else {
+          trackLimitedPlayAction(LimitedPlayActions.GENERATE_POOL_IMAGE, {
+            target: 'image',
+            success: false,
+          })
         }
       }
     }
@@ -1952,6 +2147,7 @@ export default function PlayPage({ params }: PageProps) {
           isOwner={isInfinitePool ? true : (!pool?.owner || !!isOwner)}
           ownerName={pool?.owner?.username || pool?.owner?.name || null}
           wayfinderDetected={wayfinderDetected}
+          analyticsContext={getLimitedAnalyticsContext()}
         />
 
         {isCompetitive && user && (
@@ -1962,8 +2158,22 @@ export default function PlayPage({ params }: PageProps) {
             currentUserId={user.id}
             isHost={isCompetitiveHost}
             players={draftPlayers.map(p => ({ id: (p as any).odId || '', username: p.username || 'Unknown' }))}
-            onReport={(matchId) => setReportingMatchId(matchId)}
-            onOverride={(matchId) => setOverridingMatchId(matchId)}
+            onReport={(matchId) => {
+              trackLimitedPlayAction(LimitedPlayActions.MATCH_REPORT_OPEN, {
+                target: 'match_result',
+                matchId,
+                result_source: 'player_report',
+              })
+              setReportingMatchId(matchId)
+            }}
+            onOverride={(matchId) => {
+              trackLimitedPlayAction(LimitedPlayActions.MATCH_REPORT_OPEN, {
+                target: 'match_result',
+                matchId,
+                result_source: 'host_override',
+              })
+              setOverridingMatchId(matchId)
+            }}
             onBoot={handleBootPlayer}
             onAssignBye={handleAssignBye}
             onStartMatches={handleStartMatches}
@@ -2088,7 +2298,7 @@ export default function PlayPage({ params }: PageProps) {
       })()}
     </div>
     </div>
-    <ChatPanel shareId={pool?.draftShareId} defaultOpen={false} />
+    <ChatPanel shareId={pool?.draftShareId} defaultOpen={false} analyticsContext={getLimitedAnalyticsContext()} />
     </div>
   )
 }

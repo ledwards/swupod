@@ -6,6 +6,8 @@ import PlayerCircle from './PlayerCircle'
 import HostControls from './HostControls'
 import Button from './Button'
 import CompetitivePracticeRules from './CompetitivePracticeRules'
+import { trackEvent } from '../hooks/useAnalytics'
+import { buildLimitedContext, LimitedAnalyticsEvents } from '../analytics/limitedEvents'
 import './DraftLobby.css'
 
 const CopyIcon = () => (
@@ -80,6 +82,19 @@ function DraftLobby({
     const url = `${window.location.origin}/draft/${shareId}`
     try {
       await navigator.clipboard.writeText(url)
+      trackEvent(LimitedAnalyticsEvents.LIMITED_POD_INVITE_COPIED, {
+        ...buildLimitedContext({
+          format: 'draft',
+          mode: draft?.settings?.isSolo === true ? 'solo' : 'group',
+          setCode: draft?.setCode,
+          podShareId: shareId,
+          sourceRoute: '/draft/[shareId]',
+        }),
+        is_public: draft?.isPublic === true,
+        current_players: players.length,
+        human_players: players.filter(p => !p.isBot).length,
+        bot_players: players.filter(p => p.isBot).length,
+      })
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {

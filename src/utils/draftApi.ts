@@ -13,9 +13,11 @@ interface DraftSettings {
   timerSeconds?: number
   isPublic?: boolean
   competitive?: boolean
+  flowId?: string | null
   settings?: {
     draftMode?: 'chaos' | 'standard'
     chaosSets?: string[]
+    isSolo?: boolean
   }
 }
 

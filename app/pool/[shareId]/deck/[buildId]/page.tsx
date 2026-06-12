@@ -57,6 +57,7 @@ export default function BuildDeckPage({ params }: PageProps) {
   const [error, setError] = useState<string | null>(null)
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const pendingStateRef = useRef<Record<string, unknown> | null>(null)
+  const [draftLimitedMode, setDraftLimitedMode] = useState<'solo' | 'group' | null>(null)
 
   const rootShareId = resolvedParams.shareId
   const buildId = resolvedParams.buildId
@@ -158,6 +159,25 @@ export default function BuildDeckPage({ params }: PageProps) {
 
   const draftShareId = pool?.draftShareId || null
   const isOwner = Boolean(user && pool && user.id === (pool.owner?.id || pool.userId))
+  const limitedMode = pool?.poolType === 'draft' && draftShareId
+    ? draftLimitedMode
+    : draftShareId
+      ? 'group'
+      : 'solo'
+
+  useEffect(() => {
+    if (!draftShareId || pool?.poolType !== 'draft') {
+      setDraftLimitedMode(null)
+      return
+    }
+
+    fetch(`/api/draft/${draftShareId}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        setDraftLimitedMode(data?.settings?.isSolo === true ? 'solo' : 'group')
+      })
+      .catch(() => {})
+  }, [draftShareId, pool?.poolType])
 
   return (
     <div className={draftShareId ? 'page-with-chat' : ''}>
@@ -178,6 +198,7 @@ export default function BuildDeckPage({ params }: PageProps) {
             draftShareId={draftShareId}
             rootShareId={rootShareId}
             currentUserId={user?.id || null}
+            limitedMode={limitedMode}
           />
         </div>
       </div>

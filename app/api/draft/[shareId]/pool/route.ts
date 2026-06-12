@@ -3,6 +3,8 @@
 import { query, queryRow } from '@/lib/db'
 import { requireAuth } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError, formatSetCodeRange } from '@/lib/utils'
+import { captureLimitedServerEvent } from '@/lib/posthog'
+import { LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
 import { nanoid } from 'nanoid'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -126,6 +128,19 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         JSON.stringify(formattedPacks),
         pod.id
       ]
+    )
+
+    captureLimitedServerEvent(
+      LimitedAnalyticsEvents.LIMITED_POOL_CREATED,
+      session.id,
+      {
+        format: 'draft',
+        mode: settings.isSolo === true ? 'solo' : 'group',
+        setCode: poolSetCode,
+        pack_count: formattedPacks.length,
+        poolShareId,
+        podShareId: shareId,
+      }
     )
 
     return jsonResponse({

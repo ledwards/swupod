@@ -3,6 +3,8 @@
 
 import { useState, useEffect } from 'react'
 import { getLatestReleasedSetCode } from '../utils/setConfigs/latest'
+import { trackEvent } from '../hooks/useAnalytics'
+import { buildLimitedContext, LimitedAnalyticsEvents, LimitedPlayActions } from '../analytics/limitedEvents'
 import './PlayInstructions.css'
 
 const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/u6fkdDzWqF'
@@ -27,6 +29,7 @@ interface PlayInstructionsProps {
   isOwner?: boolean
   ownerName?: string | null
   wayfinderDetected?: boolean
+  analyticsContext?: Record<string, unknown>
 }
 
 export default function PlayInstructions({
@@ -47,6 +50,7 @@ export default function PlayInstructions({
   isOwner = true,
   ownerName = null,
   wayfinderDetected = false,
+  analyticsContext = {},
 }: PlayInstructionsProps) {
   const inPod = poolType === 'draft' || poolType === 'sealed_pod'
   const viewingOthersDeck = !isOwner && ownerName
@@ -59,6 +63,23 @@ export default function PlayInstructions({
   const [joinError, setJoinError] = useState<string | null>(null)
   const [cardPool, setCardPool] = useState(cardPoolName)
   const [wayfinderIconUrl, setWayfinderIconUrl] = useState<string | null>(null)
+
+  function trackPlayAction(action: string, extra: Record<string, unknown> = {}) {
+    trackEvent(LimitedAnalyticsEvents.LIMITED_PLAY_ACTION_USED, {
+      ...buildLimitedContext({
+        format: poolType,
+        poolType,
+        setCode,
+        shareId,
+        routeTemplate: '/pool/[shareId]/deck/play',
+        ...analyticsContext,
+      }),
+      action,
+      success: extra.success ?? true,
+      target: extra.target ?? null,
+      ...extra,
+    })
+  }
 
   // Read icon URL from extension's meta tag
   useEffect(() => {
@@ -94,12 +115,23 @@ export default function PlayInstructions({
       format: poolType === 'sealed_pod' ? 'pool' : poolType === 'draft' ? 'pool' : poolType,
       cardPool,
     }, '*')
+    trackPlayAction(
+      privacy === 'private'
+        ? LimitedPlayActions.WAYFINDER_CREATE_PRIVATE_LOBBY
+        : LimitedPlayActions.WAYFINDER_CREATE_PUBLIC_LOBBY,
+      { target: 'wayfinder', card_pool: cardPool }
+    )
   }
 
   function dispatchJoinPrivate() {
     const url = joinUrl.trim()
     if (!PRIVATE_LOBBY_PATTERN.test(url)) {
       setJoinError('Not a valid Karabast private lobby URL')
+      trackPlayAction(LimitedPlayActions.WAYFINDER_JOIN_PRIVATE_LOBBY, {
+        target: 'wayfinder',
+        success: false,
+        failure_reason: 'invalid_private_lobby_url',
+      })
       return
     }
     setJoinError(null)
@@ -111,6 +143,10 @@ export default function PlayInstructions({
       format: poolType === 'sealed_pod' ? 'pool' : poolType === 'draft' ? 'pool' : poolType,
       cardPool,
     }, '*')
+    trackPlayAction(LimitedPlayActions.WAYFINDER_JOIN_PRIVATE_LOBBY, {
+      target: 'wayfinder',
+      card_pool: cardPool,
+    })
   }
 
   // -- Manual steps (existing content, extracted for reuse) --
@@ -137,7 +173,7 @@ export default function PlayInstructions({
             <span className="step-number">3</span>
             <div className="step-content">
               <h3>Play on Karabast</h3>
-              <p>Go to <a href="https://karabast.net" target="_blank" rel="noopener noreferrer">karabast.net</a> and paste your deck link or JSON. Create a lobby with <strong>Format: Limited</strong> and <strong>Card Pool: {cardPoolName}</strong>.</p>
+              <p>Go to <a href="https://karabast.net" target="_blank" rel="noopener noreferrer" onClick={() => trackPlayAction(LimitedPlayActions.OPEN_KARABAST, { target: 'karabast' })}>karabast.net</a> and paste your deck link or JSON. Create a lobby with <strong>Format: Limited</strong> and <strong>Card Pool: {cardPoolName}</strong>.</p>
             </div>
           </div>
         </>
@@ -169,7 +205,7 @@ export default function PlayInstructions({
                 </button>
               )}
             </h3>
-            <p>Copy your deck link for <a href="https://karabast.net" target="_blank" rel="noopener noreferrer">Karabast</a>, or copy the deck JSON for <a href="https://swudb.com" target="_blank" rel="noopener noreferrer">SWUDB</a>.</p>
+            <p>Copy your deck link for <a href="https://karabast.net" target="_blank" rel="noopener noreferrer" onClick={() => trackPlayAction(LimitedPlayActions.OPEN_KARABAST, { target: 'karabast' })}>Karabast</a>, or copy the deck JSON for <a href="https://swudb.com" target="_blank" rel="noopener noreferrer">SWUDB</a>.</p>
           </div>
         </div>
 
@@ -178,9 +214,9 @@ export default function PlayInstructions({
           <div className="step-content">
             <h3>Play on Karabast</h3>
             {inPod ? (
-              <p>Create a <strong>Private Lobby</strong> on <a href="https://karabast.net" target="_blank" rel="noopener noreferrer">karabast.net</a> with <strong>Format: Limited</strong> and <strong>Card Pool: {cardPoolName}</strong>. Paste your deck link or JSON as your decklist and share the lobby link with your opponent.</p>
+              <p>Create a <strong>Private Lobby</strong> on <a href="https://karabast.net" target="_blank" rel="noopener noreferrer" onClick={() => trackPlayAction(LimitedPlayActions.OPEN_KARABAST, { target: 'karabast' })}>karabast.net</a> with <strong>Format: Limited</strong> and <strong>Card Pool: {cardPoolName}</strong>. Paste your deck link or JSON as your decklist and share the lobby link with your opponent.</p>
             ) : (
-              <p>Go to <a href="https://karabast.net" target="_blank" rel="noopener noreferrer">karabast.net</a> and paste your deck link or JSON. Create a <strong>Public Lobby</strong> with <strong>Format: Limited</strong> and <strong>Card Pool: {cardPoolName}</strong> to find a match, join an existing <strong>Limited Lobby</strong>, or make a <strong>Private Lobby</strong> and share the link with a friend from the <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">Protect the Pod Discord</a>.</p>
+              <p>Go to <a href="https://karabast.net" target="_blank" rel="noopener noreferrer" onClick={() => trackPlayAction(LimitedPlayActions.OPEN_KARABAST, { target: 'karabast' })}>karabast.net</a> and paste your deck link or JSON. Create a <strong>Public Lobby</strong> with <strong>Format: Limited</strong> and <strong>Card Pool: {cardPoolName}</strong> to find a match, join an existing <strong>Limited Lobby</strong>, or make a <strong>Private Lobby</strong> and share the link with a friend from the <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">Protect the Pod Discord</a>.</p>
             )}
           </div>
         </div>
@@ -227,7 +263,13 @@ export default function PlayInstructions({
           <button
             className="wayfinder-btn"
             disabled={lobbyCount === 0}
-            onClick={() => window.open('https://karabast.net', '_blank')}
+            onClick={() => {
+              trackPlayAction(LimitedPlayActions.WAYFINDER_JOIN_PUBLIC_GAME, {
+                target: 'wayfinder',
+                lobby_count: lobbyCount,
+              })
+              window.open('https://karabast.net', '_blank')
+            }}
           >
             🎮 Join Public Game ({lobbyCount} Public Limited Lobb{lobbyCount === 1 ? 'y' : 'ies'})
           </button>

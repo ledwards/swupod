@@ -5,6 +5,8 @@ import { useState } from 'react'
 import Button from './Button'
 import EditableTitle from './EditableTitle'
 import { formatPoolLabel } from '../utils/poolDisplayName'
+import { trackEvent } from '../hooks/useAnalytics'
+import { buildLimitedContext, LimitedAnalyticsEvents } from '../analytics/limitedEvents'
 import './SealedPodLobby.css'
 
 const CopyIcon = () => (
@@ -93,6 +95,18 @@ export default function SealedPodLobby({
     const url = `${window.location.origin}/sealed/${shareId}`
     try {
       await navigator.clipboard.writeText(url)
+      trackEvent(LimitedAnalyticsEvents.LIMITED_POD_INVITE_COPIED, {
+        ...buildLimitedContext({
+          format: 'sealed',
+          mode: 'group',
+          podShareId: shareId,
+          sourceRoute: '/sealed/[shareId]',
+        }),
+        is_public: isPublic === true,
+        current_players: players.length,
+        human_players: players.length,
+        bot_players: 0,
+      })
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {

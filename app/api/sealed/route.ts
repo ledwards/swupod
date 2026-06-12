@@ -8,6 +8,8 @@ import { getSetConfig } from '@/src/utils/setConfigs/index'
 import { getUnavailableSetReason } from '@/src/utils/setAvailability'
 import { broadcastPublicPodsUpdate } from '@/src/lib/socketBroadcast'
 import { postPodCreated } from '@/lib/discordLfg'
+import { captureLimitedServerEvent } from '@/lib/posthog'
+import { LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -16,7 +18,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const body = await parseBody(request)
     validateRequired(body, ['setCode'])
 
-    const { setCode, isPublic } = body
+    const { setCode, isPublic, flowId = null } = body
     const unavailableReason = getUnavailableSetReason(setCode, session)
     if (unavailableReason) {
       return jsonResponse({ error: unavailableReason }, 403)
@@ -131,6 +133,23 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         console.error('Error posting sealed pod to Discord:', err)
       })
     }
+
+    captureLimitedServerEvent(
+      LimitedAnalyticsEvents.LIMITED_POD_CREATED,
+      session.id,
+      {
+        format: 'sealed',
+        mode: 'group',
+        setCode,
+        is_public: podIsPublic,
+        max_players: Math.min(16, Math.max(2, body.maxPlayers || 8)),
+        current_players: 1,
+        human_players: 1,
+        bot_players: 0,
+        podShareId: shareId,
+        flowId,
+      }
+    )
 
     return jsonResponse({
       id: pod.id,

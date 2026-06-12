@@ -9,6 +9,8 @@ import { initializeCardCache } from '@/src/utils/cardCache'
 import { computeRandomPairings } from '@/src/utils/podPairings'
 import { broadcastSealedPodState, broadcastPublicPodsUpdate, broadcastSystemChatMessage } from '@/src/lib/socketBroadcast'
 import { markPodStarted } from '@/lib/discordLfg'
+import { captureLimitedServerEvent } from '@/lib/posthog'
+import { LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {
@@ -103,6 +105,19 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
           pod.id
         ]
       )
+
+      captureLimitedServerEvent(
+        LimitedAnalyticsEvents.LIMITED_POOL_CREATED,
+        player.user_id,
+        {
+          format: 'sealed',
+          mode: 'group',
+          setCode: pod.set_code,
+          pack_count: 6,
+          poolShareId,
+          podShareId: shareId,
+        }
+      )
     }
 
     // Store pairings in settings and mark complete
@@ -145,6 +160,40 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
         players.map(p => p.username)
       ).catch(() => {})
     }
+
+    const humanCount = players.filter(p => !p.is_bot).length
+    const botCount = players.length - humanCount
+    const durationSeconds = pod.created_at
+      ? Math.max(0, Math.round((Date.now() - new Date(pod.created_at).getTime()) / 1000))
+      : null
+
+    captureLimitedServerEvent(
+      LimitedAnalyticsEvents.LIMITED_POD_STARTED,
+      session.id,
+      {
+        format: 'sealed',
+        mode: 'group',
+        setCode: pod.set_code,
+        human_players: humanCount,
+        bot_players: botCount,
+        current_players: players.length,
+        podShareId: shareId,
+      }
+    )
+    captureLimitedServerEvent(
+      LimitedAnalyticsEvents.LIMITED_POD_COMPLETED,
+      session.id,
+      {
+        format: 'sealed',
+        mode: 'group',
+        setCode: pod.set_code,
+        duration_seconds: durationSeconds,
+        human_players: humanCount,
+        bot_players: botCount,
+        current_players: players.length,
+        podShareId: shareId,
+      }
+    )
 
     return jsonResponse({ message: 'Sealed pod started', status: 'complete' })
   } catch (error) {

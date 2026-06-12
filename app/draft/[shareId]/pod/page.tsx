@@ -14,6 +14,8 @@ import { getBaseSetCode } from '../../../../src/utils/carboniteConstants'
 import { buildBaseCardMap, getBaseCardId } from '../../../../src/utils/variantDowngrade'
 import { calculateAspectPenalty } from '../../../../src/services/cards/aspectPenalties'
 import { formatPoolLabel } from '../../../../src/utils/poolDisplayName'
+import { trackEvent } from '../../../../src/hooks/useAnalytics'
+import { buildLimitedContext, LimitedAnalyticsEvents, LimitedPlayActions } from '../../../../src/analytics/limitedEvents'
 import Button from '../../../../src/components/Button'
 import CardWithPreview from '../../../../src/components/CardWithPreview'
 import ChatPanel from '../../../../src/components/ChatPanel'
@@ -83,6 +85,7 @@ export default function PodPage({ params }: PageProps) {
 
   const [isDiscordMember, setIsDiscordMember] = useState<boolean | null>(null)
   const botBuildTriggered = useRef(false)
+  const playPageTrackedRef = useRef<string | null>(null)
   const shuffleSoundRef = useRef(null)
 
   // Check if user has already joined Discord
@@ -130,6 +133,33 @@ export default function PodPage({ params }: PageProps) {
     shuffleSoundRef.current.volume = 0.5
     shuffleSoundRef.current.load()
   }, [])
+
+  useEffect(() => {
+    if (!podData?.myPoolShareId || playPageTrackedRef.current === podData.myPoolShareId) return
+    playPageTrackedRef.current = podData.myPoolShareId
+
+    const currentPlayers = podData.players?.length || 0
+    const humanPlayers = podData.players?.filter(player => !player.isBot).length || 0
+    const isSoloDraft = podData.draft?.settings?.isSolo === true
+
+    trackEvent(LimitedAnalyticsEvents.LIMITED_PLAY_PAGE_VIEWED, {
+      ...buildLimitedContext({
+        format: 'draft',
+        mode: isSoloDraft ? 'solo' : 'group',
+        setCode: podData.draft?.setCode || myPool?.setCode,
+        poolShareId: podData.myPoolShareId,
+        podShareId: shareId,
+        routeTemplate: '/draft/[shareId]/pod',
+      }),
+      user_role: podData.isHost ? 'host' : 'player',
+      is_owner: true,
+      has_opponent: Boolean(podData.myOpponent),
+      has_bye: Boolean(podData.myBye),
+      current_players: currentPlayers,
+      human_players: humanPlayers,
+      bot_players: currentPlayers - humanPlayers,
+    })
+  }, [podData, shareId, myPool?.setCode])
 
   if (loading) {
     return (
@@ -179,6 +209,17 @@ export default function PodPage({ params }: PageProps) {
   // Build player ID -> poolShareId lookup for owner view links
   const playerPoolMap = new Map(players.map(p => [p.id, p.poolShareId]))
 
+  const getLimitedAnalyticsContext = () => ({
+    format: 'draft',
+    mode: isSolo ? 'solo' : 'group',
+    setCode: draft?.setCode || myPool?.setCode,
+    poolShareId: myPoolShareId,
+    podShareId: shareId,
+    routeTemplate: '/draft/[shareId]/pod',
+    has_opponent: Boolean(myOpponent),
+    has_bye: Boolean(myBye),
+  })
+
   const handleEditDeck = () => {
     if (myPoolShareId) {
       router.push(`/pool/${myPoolShareId}/deck`)
@@ -199,7 +240,13 @@ export default function PodPage({ params }: PageProps) {
       setMessage('Deck link copied!')
       setMessageType('success')
       setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      trackPodPlayAction(LimitedPlayActions.COPY_DECK_LINK, { target: 'clipboard' })
     } catch {
+      trackPodPlayAction(LimitedPlayActions.COPY_DECK_LINK, {
+        target: 'clipboard',
+        success: false,
+        failure_reason: 'clipboard_write_failed',
+      })
       // fallback: do nothing
     }
   }
@@ -260,12 +307,42 @@ export default function PodPage({ params }: PageProps) {
     }
   }
 
+  const getDeckCounts = (deckData = getDeckData()) => ({
+    deck_size: deckData?.deck?.reduce((sum, card) => sum + Number(card.count || 0), 0) ?? null,
+    sideboard_size: deckData?.sideboard?.reduce((sum, card) => sum + Number(card.count || 0), 0) ?? null,
+    deck_ready: Boolean(deckData?.leader && deckData?.base),
+  })
+
+  const trackPodPlayAction = (action: string, properties: Record<string, unknown> = {}) => {
+    const sanitized = { ...properties }
+    for (const key of ['shareId', 'poolShareId', 'podShareId', 'draftShareId', 'matchId']) {
+      delete sanitized[key]
+    }
+
+    trackEvent(LimitedAnalyticsEvents.LIMITED_PLAY_ACTION_USED, {
+      ...buildLimitedContext({
+        ...getLimitedAnalyticsContext(),
+        ...properties,
+      }),
+      action,
+      success: sanitized.success ?? true,
+      target: sanitized.target ?? null,
+      ...sanitized,
+    })
+  }
+
   const copyToClipboard = async () => {
     const deckData = getDeckData()
     if (!deckData) {
       setMessage('No deck data found. Please build your deck first.')
       setMessageType('error')
       setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      trackPodPlayAction(LimitedPlayActions.COPY_DECK_JSON, {
+        target: 'clipboard',
+        success: false,
+        failure_reason: 'missing_deck_data',
+        ...getDeckCounts(deckData),
+      })
       return
     }
     try {
@@ -273,10 +350,20 @@ export default function PodPage({ params }: PageProps) {
       setMessage('Deck JSON copied to clipboard!')
       setMessageType('success')
       setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      trackPodPlayAction(LimitedPlayActions.COPY_DECK_JSON, {
+        target: 'clipboard',
+        ...getDeckCounts(deckData),
+      })
     } catch {
       setMessage('Failed to copy to clipboard')
       setMessageType('error')
       setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      trackPodPlayAction(LimitedPlayActions.COPY_DECK_JSON, {
+        target: 'clipboard',
+        success: false,
+        failure_reason: 'clipboard_write_failed',
+        ...getDeckCounts(deckData),
+      })
     }
   }
 
@@ -286,6 +373,12 @@ export default function PodPage({ params }: PageProps) {
       setMessage('No deck data found. Please build your deck first.')
       setMessageType('error')
       setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      trackPodPlayAction(LimitedPlayActions.DOWNLOAD_DECK_JSON, {
+        target: 'download',
+        success: false,
+        failure_reason: 'missing_deck_data',
+        ...getDeckCounts(deckData),
+      })
       return
     }
     const jsonString = JSON.stringify(deckData, null, 2)
@@ -298,16 +391,32 @@ export default function PodPage({ params }: PageProps) {
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
+    trackPodPlayAction(LimitedPlayActions.DOWNLOAD_DECK_JSON, {
+      target: 'download',
+      ...getDeckCounts(deckData),
+    })
   }
 
   const exportOwnDeckImage = async () => {
-    if (!myPool?.deckBuilderState) return
+    if (!myPool?.deckBuilderState) {
+      trackPodPlayAction(LimitedPlayActions.GENERATE_DECK_IMAGE, {
+        target: 'deck_image',
+        success: false,
+        failure_reason: 'missing_deck_builder_state',
+      })
+      return
+    }
     setGeneratingImage(true)
     try {
       const state = jsonParse(myPool.deckBuilderState)
       const { cardPositions, activeLeader, activeBase } = state
       if (!cardPositions || !activeLeader || !activeBase) {
         setGeneratingImage(false)
+        trackPodPlayAction(LimitedPlayActions.GENERATE_DECK_IMAGE, {
+          target: 'deck_image',
+          success: false,
+          failure_reason: 'missing_deck_data',
+        })
         return
       }
 
@@ -431,21 +540,53 @@ export default function PodPage({ params }: PageProps) {
       ctx.fillText(`https://www.protectthepod.com/pool/${myPoolShareId}/deck`, width / 2, footerY + 80)
 
       canvas.toBlob((blob) => {
+        if (!blob) {
+          setGeneratingImage(false)
+          trackPodPlayAction(LimitedPlayActions.GENERATE_DECK_IMAGE, {
+            target: 'deck_image',
+            success: false,
+            failure_reason: 'canvas_blob_failed',
+          })
+          return
+        }
         const url = URL.createObjectURL(blob)
         setViewingDeckImage(url)
         setGeneratingImage(false)
+        trackPodPlayAction(LimitedPlayActions.GENERATE_DECK_IMAGE, {
+          target: 'deck_image',
+          deck_size: deckCards.length,
+        })
       }, 'image/png')
     } catch (err) {
       console.error('[POD] Error generating own deck image:', err)
       setGeneratingImage(false)
+      trackPodPlayAction(LimitedPlayActions.GENERATE_DECK_IMAGE, {
+        target: 'deck_image',
+        success: false,
+        failure_reason: 'generation_failed',
+      })
     }
   }
 
   const drawPracticeHand = (playSound = false) => {
-    if (!myPool?.deckBuilderState) return
+    if (!myPool?.deckBuilderState) {
+      trackPodPlayAction(LimitedPlayActions.PRACTICE_HAND_DRAW, {
+        target: 'practice_hand',
+        success: false,
+        failure_reason: 'missing_deck_builder_state',
+      })
+      return
+    }
     const state = jsonParse(myPool.deckBuilderState)
     const { cardPositions, activeLeader, activeBase } = state
-    if (!cardPositions) return
+    if (!cardPositions) {
+      trackPodPlayAction(LimitedPlayActions.PRACTICE_HAND_DRAW, {
+        target: 'practice_hand',
+        success: false,
+        failure_reason: 'missing_card_positions',
+      })
+      return
+    }
 
     const leaderCard = activeLeader ? cardPositions[activeLeader]?.card : null
     const baseCard = activeBase ? cardPositions[activeBase]?.card : null
@@ -496,6 +637,11 @@ export default function PodPage({ params }: PageProps) {
     }
 
     setPracticeHand({ cards: hand, probAtLeastOne, avgTurnOnePlays, turnOnePlays, totalCards })
+    trackPodPlayAction(LimitedPlayActions.PRACTICE_HAND_DRAW, {
+      target: 'practice_hand',
+      deck_size: totalCards,
+      turn_one_plays: turnOnePlays,
+    })
   }
 
   const viewPlayerDeck = async (playerId: string) => {
@@ -768,6 +914,7 @@ export default function PodPage({ params }: PageProps) {
               onCopyLink={copyDeckUrl}
               showActions={false}
               wayfinderDetected={wayfinderDetected}
+              analyticsContext={getLimitedAnalyticsContext()}
             />
 
             <div className="pod-actions">
@@ -881,6 +1028,7 @@ export default function PodPage({ params }: PageProps) {
           onCopyLink={copyDeckUrl}
           showActions={false}
           wayfinderDetected={wayfinderDetected}
+          analyticsContext={getLimitedAnalyticsContext()}
         />}
 
         {/* Action buttons (non-solo — solo shows them above) */}
@@ -996,7 +1144,7 @@ export default function PodPage({ params }: PageProps) {
         )}
       </div>
       </div>
-      {!isSolo && <ChatPanel shareId={shareId} />}
+      {!isSolo && <ChatPanel shareId={shareId} analyticsContext={getLimitedAnalyticsContext()} />}
     </div>
   )
 }

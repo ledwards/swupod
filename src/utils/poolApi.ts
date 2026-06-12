@@ -34,6 +34,7 @@ interface PoolData {
   name?: string | null
   poolType?: string
   parentPoolId?: string | null
+  flowId?: string | null
 }
 
 interface SavedPool extends PoolData {

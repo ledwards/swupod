@@ -5,6 +5,8 @@ import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { useChat, type ChatMessage } from '../hooks/useChat'
 import { useLobbyChat } from '../hooks/useLobbyChat'
 import { useAuth } from '../contexts/AuthContext'
+import { trackEvent } from '../hooks/useAnalytics'
+import { buildLimitedContext, LimitedAnalyticsEvents, LimitedPlayActions } from '../analytics/limitedEvents'
 import Button from './Button'
 import './ChatPanel.css'
 
@@ -18,6 +20,7 @@ interface ChatPanelProps {
   isPublic?: boolean
   competitive?: boolean
   draftStatus?: string
+  analyticsContext?: Record<string, unknown>
 }
 
 /**
@@ -25,7 +28,7 @@ interface ChatPanelProps {
  * 1. Pod chat (shareId) — syncs with a pod's Discord thread
  * 2. Lobby chat (lobbyType) — mirrors #draft-now or #sealed-now Discord channel
  */
-export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = true, onMakePublic, isHost = false, isPublic: isPublicProp, competitive = false, draftStatus }: ChatPanelProps) {
+export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = true, onMakePublic, isHost = false, isPublic: isPublicProp, competitive = false, draftStatus, analyticsContext = {} }: ChatPanelProps) {
   const { user } = useAuth()
   const [isMobile, setIsMobile] = useState(false)
   const [isOpen, setIsOpen] = useState(() => {
@@ -78,6 +81,22 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
     ? (lobbyType === 'sealed' ? '#sealed-now' : '#draft-now')
     : `Pod Chat (${isPublic ? 'public' : 'private'})`
 
+  const trackChatAction = useCallback((action: string, extra: Record<string, unknown> = {}) => {
+    if (!analyticsContext || Object.keys(analyticsContext).length === 0) return
+    trackEvent(LimitedAnalyticsEvents.LIMITED_PLAY_ACTION_USED, {
+      ...buildLimitedContext({
+        podShareId: shareId,
+        format: lobbyType,
+        routeTemplate: isLobbyMode ? `/${lobbyType}` : null,
+        ...analyticsContext,
+      }),
+      action,
+      target: isLobbyMode ? `${lobbyType}_lobby_chat` : 'pod_chat',
+      success: extra.success ?? true,
+      ...extra,
+    })
+  }, [analyticsContext, isLobbyMode, lobbyType, shareId])
+
   // Detect mobile + auto-open lobby chat on desktop (only if user hasn't explicitly toggled)
   useEffect(() => {
     const check = () => {
@@ -127,9 +146,10 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
     sessionStorage.setItem('chatUserToggled', 'true')
     sessionStorage.setItem('chatPanelOpen', 'true')
     markRead()
+    trackChatAction(LimitedPlayActions.CHAT_OPEN)
     // Focus input after animation
     setTimeout(() => inputRef.current?.focus(), 300)
-  }, [markRead])
+  }, [markRead, trackChatAction])
 
   const handleClose = useCallback(() => {
     setIsOpen(false)
@@ -141,9 +161,12 @@ export function ChatPanel({ shareId, lobbyType, enabled = true, defaultOpen = tr
     const text = inputText.trim()
     if (!text) return
     sendMessage(text)
+    trackChatAction(LimitedPlayActions.CHAT_SEND, {
+      message_length_bucket: text.length < 50 ? 'short' : text.length < 200 ? 'medium' : 'long',
+    })
     setInputText('')
     inputRef.current?.focus()
-  }, [inputText, sendMessage])
+  }, [inputText, sendMessage, trackChatAction])
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {

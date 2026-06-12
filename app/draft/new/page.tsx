@@ -7,6 +7,7 @@ import { useAuth } from '../../../src/contexts/AuthContext'
 import { createDraft } from '../../../src/utils/draftApi'
 import { initializeCardCache } from '../../../src/utils/cardCache'
 import { trackEvent, AnalyticsEvents } from '../../../src/hooks/useAnalytics'
+import { getOrCreateLimitedFlowId, LimitedAnalyticsEvents } from '../../../src/analytics/limitedEvents'
 import SetSelection from '../../../src/components/SetSelection'
 import Button from '../../../src/components/Button'
 import '../../../src/App.css'
@@ -56,9 +57,20 @@ export default function NewDraftPage() {
 
     setCreating(true)
     setError(null)
+    const flowId = getOrCreateLimitedFlowId('draft:group')
+    trackEvent(LimitedAnalyticsEvents.LIMITED_FLOW_STARTED, {
+      format: 'draft',
+      mode: 'group',
+      surface: 'group_draft_set_selection',
+      source_route: '/draft/new',
+      flow_id: flowId,
+      set_code: setCode,
+      is_public: isPublic,
+      competitive,
+    })
 
     try {
-      const result = await createDraft(setCode, { isPublic, competitive })
+      const result = await createDraft(setCode, { isPublic, competitive, flowId })
       trackEvent(AnalyticsEvents.DRAFT_CREATED, { set_code: setCode })
       router.push(`/draft/${result.shareId}`)
     } catch (err) {

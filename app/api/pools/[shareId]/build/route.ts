@@ -12,6 +12,8 @@ import { buildDeckFromState, DeckBuilderState } from '@/lib/deckBuilder'
 import { jsonParse } from '@/src/utils/json'
 import { getSession } from '@/lib/auth'
 import { broadcastPodState } from '@/src/lib/socketBroadcast'
+import { captureLimitedServerEvent } from '@/lib/posthog'
+import { hashAnalyticsId, LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
 import { NextRequest } from 'next/server'
 
 interface RouteContext {
@@ -52,6 +54,14 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
     const session = getSession(request)
     const userId = session?.userId || pool.user_id || null
 
+    const pod = pool.pod_id
+      ? await queryRow(
+        `SELECT share_id, settings FROM pods WHERE id = $1`,
+        [pool.pod_id]
+      )
+      : null
+    const podSettings = jsonParse(pod?.settings, {})
+
     // Upsert into built_decks
     await query(
       `INSERT INTO built_decks (card_pool_id, user_id, set_code, pool_type, leader, base, deck, sideboard)
@@ -75,15 +85,25 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
       ]
     )
 
-    // If this pool belongs to a draft or sealed pod, broadcast readiness update to pod page
-    if (pool.pod_id) {
-      const draft = await queryRow(
-        `SELECT dp.share_id FROM pods dp WHERE dp.id = $1`,
-        [pool.pod_id]
-      )
-      if (draft) {
-        broadcastPodState(draft.share_id).catch(() => {})
+    captureLimitedServerEvent(
+      LimitedAnalyticsEvents.LIMITED_DECK_BUILT,
+      userId || hashAnalyticsId(shareId),
+      {
+        format: pool.pool_type === 'draft' ? 'draft' : 'sealed',
+        mode: pool.pod_id ? (podSettings?.isSolo === true ? 'solo' : 'group') : 'solo',
+        setCode,
+        deck_size: deckData.deck?.reduce((sum: number, c: { count: number }) => sum + c.count, 0) || 0,
+        sideboard_size: deckData.sideboard?.reduce((sum: number, c: { count: number }) => sum + c.count, 0) || 0,
+        has_leader: !!deckData.leader,
+        has_base: !!deckData.base,
+        poolShareId: shareId,
+        podShareId: pod?.share_id || null,
       }
+    )
+
+    // If this pool belongs to a draft or sealed pod, broadcast readiness update to pod page
+    if (pod?.share_id) {
+      broadcastPodState(pod.share_id).catch(() => {})
     }
 
     return jsonResponse({ success: true })

@@ -20,6 +20,8 @@
  */
 
 import { withTransaction, type TxClient } from '@/lib/db'
+import { captureLimitedServerEvent } from '@/lib/posthog'
+import { LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
 import { getPassDirection, getLeaderPassDirection, getNextSeat } from './draftLogic'
 import { buildBotDecks } from './botDeckBuilder'
 import { attributePickedCard } from './trackGeneration'
@@ -460,7 +462,7 @@ async function advancePackDraftAfterPicks(
       )
 
       const podForBots = await tx.queryRow(
-        'SELECT id, settings, set_code, competitive FROM pods WHERE id = $1',
+        'SELECT id, share_id, host_id, settings, set_code, competitive, started_at, created_at FROM pods WHERE id = $1',
         [podId]
       )
       const botSettings = typeof podForBots?.settings === 'string' ? JSON.parse(podForBots.settings) : podForBots?.settings || {}
@@ -481,6 +483,28 @@ async function advancePackDraftAfterPicks(
           [podId, deckLockAt]
         )
       }
+
+      const humanCount = players.filter(p => !p.is_bot).length
+      const botCount = players.length - humanCount
+      const durationSeconds = podForBots?.started_at
+        ? Math.max(0, Math.round((Date.now() - new Date(podForBots.started_at).getTime()) / 1000))
+        : null
+      postCommitEffects.push(() => {
+        captureLimitedServerEvent(
+          LimitedAnalyticsEvents.LIMITED_POD_COMPLETED,
+          podForBots?.host_id,
+          {
+            format: 'draft',
+            mode: botSettings.isSolo === true ? 'solo' : 'group',
+            setCode: podForBots?.set_code || draftState.setCode || '',
+            duration_seconds: durationSeconds,
+            human_players: humanCount,
+            bot_players: botCount,
+            current_players: players.length,
+            podShareId: podForBots?.share_id,
+          }
+        )
+      })
 
       return
     }

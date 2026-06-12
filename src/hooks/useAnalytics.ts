@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { posthog } from '../contexts/PostHogProvider'
+import { LimitedAnalyticsEvents } from '../analytics/limitedEvents'
 
 /**
  * Analytics event tracking hook.
@@ -78,4 +79,7 @@ export const AnalyticsEvents = {
   // Payload: { surface: 'setPreview' | 'homepageBanner' | 'podBanner', setCode?: string }
   SUBSCRIBE_CTA_SHOWN: 'subscribe_cta_shown',
   SUBSCRIBE_CTA_CLICKED: 'subscribe_cta_clicked',
+
+  // Limited matchmaking-density instrumentation
+  ...LimitedAnalyticsEvents,
 } as const
