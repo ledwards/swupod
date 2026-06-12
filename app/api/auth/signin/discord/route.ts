@@ -24,6 +24,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // '/' (open-redirect hardening, U4).
     const { searchParams } = new URL(request.url)
     const returnTo = sanitizeReturnTo(searchParams.get('return_to') || '/')
+    const oauthRetry = searchParams.get('oauth_retry') === '1' ? 1 : 0
 
     // Check if user already has a valid session
     const session = getSession(request)
@@ -39,6 +40,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const stateData = {
       nonce,
       returnTo,
+      retry: oauthRetry,
     }
     const state = Buffer.from(JSON.stringify(stateData)).toString('base64')
 

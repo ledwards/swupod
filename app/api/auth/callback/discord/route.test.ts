@@ -58,8 +58,19 @@ describe('GET /api/auth/callback/discord — OAuth state verification', () => {
     assert.ok(response.headers.get('location').startsWith(`${APP_URL}/?error=invalid_oauth_state`))
   })
 
-  it('rejects when the state cookie is missing entirely', async () => {
+  it('restarts OAuth once when the state cookie is missing entirely', async () => {
     const state = encodeState({ nonce: 'state-nonce', returnTo: '/' })
+    const response = await GET(callbackRequest({ state }))
+
+    assert.strictEqual(fetchCalls.length, 0)
+    const location = response.headers.get('location')
+    assert.ok(location.startsWith(`${APP_URL}/api/auth/signin/discord?`), `got: ${location}`)
+    assert.ok(location.includes('return_to=%2F'), `got: ${location}`)
+    assert.ok(location.includes('oauth_retry=1'), `got: ${location}`)
+  })
+
+  it('rejects if the restarted OAuth callback is still missing the state cookie', async () => {
+    const state = encodeState({ nonce: 'state-nonce', returnTo: '/', retry: 1 })
     const response = await GET(callbackRequest({ state }))
 
     assert.strictEqual(fetchCalls.length, 0)

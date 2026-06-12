@@ -37,11 +37,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // sanitized to an app-local path (open-redirect hardening, U4).
     let returnTo = '/'
     let stateNonce: string | null = null
+    let stateRetry = 0
     if (state) {
       try {
         const stateData = JSON.parse(Buffer.from(state, 'base64').toString())
         returnTo = sanitizeReturnTo(stateData.returnTo || '/')
         stateNonce = typeof stateData.nonce === 'string' ? stateData.nonce : null
+        stateRetry = stateData.retry === 1 ? 1 : 0
       } catch (e) {
         console.error('Failed to decode state:', e)
       }
@@ -63,10 +65,21 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // match the httpOnly cookie set by the signin route. Verified BEFORE any
     // token exchange — a forged or replayed callback never reaches Discord.
     const cookieNonce = request.cookies.get(OAUTH_STATE_COOKIE)?.value || null
+    if (stateNonce && !cookieNonce && stateRetry < 1) {
+      console.warn('Discord OAuth state cookie missing; restarting OAuth once', {
+        returnTo,
+      })
+      const retryUrl = new URL(`${APP_URL}/api/auth/signin/discord`)
+      retryUrl.searchParams.set('return_to', returnTo)
+      retryUrl.searchParams.set('oauth_retry', '1')
+      return NextResponse.redirect(retryUrl.toString())
+    }
+
     if (!stateNonce || !cookieNonce || stateNonce !== cookieNonce) {
       console.error('Discord OAuth state verification failed', {
         hasStateNonce: !!stateNonce,
         hasCookieNonce: !!cookieNonce,
+        retry: stateRetry,
       })
       const response = NextResponse.redirect(`${APP_URL}/?error=invalid_oauth_state`)
       response.cookies.delete(OAUTH_STATE_COOKIE)
