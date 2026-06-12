@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Shared analytics vocabulary for limited matchmaking-density instrumentation.
  *

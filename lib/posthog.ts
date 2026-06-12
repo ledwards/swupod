@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { buildLimitedContext } from '@/src/analytics/limitedEvents'
 
 function posthogKey() {
