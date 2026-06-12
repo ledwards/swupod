@@ -1,11 +1,20 @@
 // @ts-nocheck
 // Script to fetch all cards from swuapi.com API and populate cards.json
 // Automatically runs post-processing to apply fixes
+//
+// CONTRACT PINNING (megaplan F4): every fetched /export/cards row is
+// validated against the pinned swuapi contract (contract/swuapi-contract.json,
+// generated upstream from zod schemas — swuapi plan 2026-06-11-001 U1) BEFORE
+// anything is written. An upstream shape change fails this script loudly and
+// the prebuild falls back to the existing cards.json instead of silently
+// shipping a broken one. Refresh the pin by copying the artifact from a
+// swuapi checkout.
 
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { execSync } from 'child_process'
+import { loadPinnedContract, validateRows, checkConsumedFields } from './contractValidation'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -133,6 +142,64 @@ async function fetchAll(entity: string): Promise<ApiCard[]> {
   return results
 }
 
+// Every ApiCard field this script reads (transformCard + the set filter).
+// checkConsumedFields() asserts each one is declared by the pinned contract,
+// so an upstream rename of a field we depend on fails HERE, not as silently
+// missing data in cards.json.
+const CONSUMED_FIELDS = [
+  'uuid', 'collector_number', 'set_code', 'card_number', 'name', 'subtitle',
+  'rarity', 'type', 'aspects', 'traits', 'arena', 'cost', 'power', 'hp',
+  'text', 'back_text', 'epic_action', 'keywords', 'artist', 'is_unique',
+  'variant_type', 'is_leader', 'is_base', 'front_image_url', 'back_image_url',
+]
+
+// PRE-EXISTING BUG, catalogued — filed as a separate fix decision in
+// wayfinder's megaplan (docs/plans/2026-06-11-002, I-B notes) because fixing
+// it changes gameplay-relevant data (card uniqueness affects deck building)
+// and requires regenerating cards.json:
+// /export/cards rows are raw snake_case (front_text, unique_flag); the
+// display aliases (text, is_unique/isUnique) exist ONLY on GET /cards. This
+// script has always read the alias names, so every card in cards.json ships
+// frontText: null and unique: false. Until the fix decision lands, these two
+// fields WARN loudly instead of failing the build.
+const KNOWN_CONTRACT_GAPS = {
+  text: 'use front_text — alias only exists on GET /cards, not /export/cards (frontText is null for all 7,503 cards)',
+  is_unique: 'use unique_flag — alias only exists on GET /cards, not /export/cards (unique is false for all 7,503 cards)',
+}
+
+/**
+ * Validate fetched rows against the pinned swuapi contract. Throws (failing
+ * the fetch BEFORE any file is written) on structural drift.
+ */
+function validateAgainstContract(apiCards: ApiCard[]): void {
+  const contract = loadPinnedContract()
+  const endpoint = contract.endpoints['GET /export/cards']
+  if (!endpoint?.row) {
+    throw new Error('Pinned contract has no GET /export/cards row schema — refresh contract/swuapi-contract.json from a swuapi checkout.')
+  }
+
+  const { missing, gapWarnings } = checkConsumedFields(CONSUMED_FIELDS, endpoint.row, KNOWN_CONTRACT_GAPS)
+  for (const warning of gapWarnings) {
+    console.error(`⚠️  ${warning}`)
+  }
+  if (missing.length > 0) {
+    throw new Error(
+      `Pinned swuapi contract no longer declares fields this script consumes: ${missing.join(', ')}. ` +
+      'Upstream made a breaking change (or the pin is stale) — reconcile fetchCards.ts with the refreshed contract before fetching.'
+    )
+  }
+
+  const errors = validateRows(apiCards, endpoint.row)
+  if (errors.length > 0) {
+    throw new Error(
+      `Fetched /export/cards rows violate the pinned swuapi contract (v${contract.contractVersion}):\n` +
+      errors.map(e => `  ${e}`).join('\n') +
+      '\nRefusing to write cards.json from drifted data. If swuapi changed shape deliberately, refresh contract/swuapi-contract.json and reconcile this script.'
+    )
+  }
+  console.log(`✓ ${apiCards.length} rows validated against pinned swuapi contract v${contract.contractVersion}`)
+}
+
 /**
  * Transform API card data to our card schema
  */
@@ -228,6 +295,10 @@ async function main(): Promise<void> {
   }
 
   console.log(`\n✓ Fetched ${apiCards.length} total cards from API`)
+
+  // Contract gate: structural drift in the upstream response fails here,
+  // before any file is touched (prebuild then keeps the existing cards.json).
+  validateAgainstContract(apiCards)
 
   // Filter to only our desired sets and transform
   const allCards = apiCards
