@@ -8,6 +8,7 @@ import { queryRow } from '@/lib/db'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { getLatestReleasedSetCode } from '@/src/utils/setConfigs/latest'
 import { jsonParse } from '@/src/utils/json'
+import { KARABAST_PUBLIC_LOBBY_NAME } from '@/src/utils/karabastLobby'
 import { containsPlaceholderCards, describePlaceholderCards } from '@/src/services/cards/cardCatalogResolver'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -68,6 +69,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       isLatestSet: primarySetCode === latestSetCode,
       cardPool: primarySetCode === latestSetCode ? 'Current' : 'Unlimited',
       competitive: row.competitive === true,
+      lobbyName: KARABAST_PUBLIC_LOBBY_NAME,
     })
   } catch (error) {
     return handleApiError(error)

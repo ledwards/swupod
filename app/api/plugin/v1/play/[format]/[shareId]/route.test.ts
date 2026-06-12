@@ -2,6 +2,7 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import { getLatestReleasedSetCode } from '../../../../../../../src/utils/setConfigs/latest.js'
+import { KARABAST_PUBLIC_LOBBY_NAME } from '../../../../../../../src/utils/karabastLobby.js'
 
 describe('getLatestReleasedSetCode', () => {
   it('returns LAW — the highest setNumber (7) among all released sets', () => {
@@ -10,5 +11,11 @@ describe('getLatestReleasedSetCode', () => {
     const expectedLatestSet = 'LAW'
     const code = getLatestReleasedSetCode()
     assert.equal(code, expectedLatestSet)
+  })
+})
+
+describe('Karabast public lobby name', () => {
+  it('brands public Karabast lobbies with protectthepod.com', () => {
+    assert.equal(KARABAST_PUBLIC_LOBBY_NAME, 'Limited Draft through protectthepod.com')
   })
 })

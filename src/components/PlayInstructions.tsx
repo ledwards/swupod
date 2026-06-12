@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { getLatestReleasedSetCode } from '../utils/setConfigs/latest'
 import { trackEvent } from '../hooks/useAnalytics'
 import { buildLimitedContext, LimitedAnalyticsEvents, LimitedPlayActions } from '../analytics/limitedEvents'
+import { KARABAST_PUBLIC_LOBBY_NAME } from '../utils/karabastLobby'
 import './PlayInstructions.css'
 
 const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/u6fkdDzWqF'
@@ -62,6 +63,7 @@ export default function PlayInstructions({
   const [joinUrl, setJoinUrl] = useState('')
   const [joinError, setJoinError] = useState<string | null>(null)
   const [cardPool, setCardPool] = useState(cardPoolName)
+  const [lobbyName, setLobbyName] = useState(KARABAST_PUBLIC_LOBBY_NAME)
   const [wayfinderIconUrl, setWayfinderIconUrl] = useState<string | null>(null)
 
   function trackPlayAction(action: string, extra: Record<string, unknown> = {}) {
@@ -97,6 +99,7 @@ export default function PlayInstructions({
         setLobbyCount(e.data.count)
       } else if (e.data?.type === 'wayfinder:metadata') {
         if (e.data.cardPool) setCardPool(e.data.cardPool)
+        if (e.data.lobbyName) setLobbyName(e.data.lobbyName)
       }
     }
 
@@ -114,6 +117,7 @@ export default function PlayInstructions({
       shareId,
       format: poolType === 'sealed_pod' ? 'pool' : poolType === 'draft' ? 'pool' : poolType,
       cardPool,
+      lobbyName,
     }, '*')
     trackPlayAction(
       privacy === 'private'
