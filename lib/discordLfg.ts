@@ -12,6 +12,7 @@ const DRAFTBOTS_CHANNEL_ID = process.env['DISCORD_DRAFTBOTS_CHANNEL_ID']
 const POOL_DISCUSSION_CHANNEL_ID = process.env['DISCORD_POOL_DISCUSSION_CHANNEL_ID']
 const APP_URL = process.env['APP_URL'] || process.env['NEXT_PUBLIC_APP_URL'] || 'http://localhost:3000'
 const DISCORD_API = 'https://discord.com/api/v10'
+export const POD_SOURCE_HOST = 'protectthepod.com'
 
 interface PodInfo {
   id: string
@@ -41,6 +42,10 @@ function getChannelId(podType: string): string | undefined {
   return podType === 'sealed' ? SEALED_NOW_CHANNEL_ID : DRAFT_NOW_CHANNEL_ID
 }
 
+export function buildPodSourceDescription(podType: string): string {
+  return `*${podType} through ${POD_SOURCE_HOST}*`
+}
+
 async function discordFetch(path: string, options: RequestInit = {}): Promise<Response> {
   return fetch(`${DISCORD_API}${path}`, {
     ...options,
@@ -52,7 +57,7 @@ async function discordFetch(path: string, options: RequestInit = {}): Promise<Re
   })
 }
 
-function buildPodEmbed(pod: PodInfo, hostUsername: string, playerNames: string[]): Record<string, unknown> {
+export function buildPodEmbed(pod: PodInfo, hostUsername: string, playerNames: string[]): Record<string, unknown> {
   const podType = pod.pod_type === 'sealed' ? 'Sealed' : 'Draft'
   const isCompetitive = pod.competitive === true
   const emoji = isCompetitive ? '🏆' : (pod.pod_type === 'sealed' ? '🐳' : '🐋')
@@ -77,6 +82,8 @@ function buildPodEmbed(pod: PodInfo, hostUsername: string, playerNames: string[]
     '',
     ...playerLines,
     '',
+    buildPodSourceDescription(podType),
+    '',
     `👉 **[Join ${podType}](${joinUrl})**`,
   )
 
@@ -88,7 +95,7 @@ function buildPodEmbed(pod: PodInfo, hostUsername: string, playerNames: string[]
   }
 }
 
-function buildStartedEmbed(pod: PodInfo, hostUsername: string, playerNames: string[]): Record<string, unknown> {
+export function buildStartedEmbed(pod: PodInfo, hostUsername: string, playerNames: string[]): Record<string, unknown> {
   const podType = pod.pod_type === 'sealed' ? 'Sealed' : 'Draft'
   const isCompetitive = pod.competitive === true
   const emoji = isCompetitive ? '🏆' : (pod.pod_type === 'sealed' ? '🐳' : '🐋')
@@ -110,6 +117,8 @@ function buildStartedEmbed(pod: PodInfo, hostUsername: string, playerNames: stri
     '',
     ...playerLines,
     '',
+    buildPodSourceDescription(podType),
+    '',
     isCompetitive ? `🏆 **Underway — May the best drafter win!**` : `🚀 **Started!**`,
   )
 
@@ -121,7 +130,7 @@ function buildStartedEmbed(pod: PodInfo, hostUsername: string, playerNames: stri
   }
 }
 
-function buildCancelledEmbed(pod: PodInfo, hostUsername: string, playerNames: string[]): Record<string, unknown> {
+export function buildCancelledEmbed(pod: PodInfo, hostUsername: string, playerNames: string[]): Record<string, unknown> {
   const podType = pod.pod_type === 'sealed' ? 'Sealed' : 'Draft'
   const isCompetitive = pod.competitive === true
 
@@ -141,6 +150,8 @@ function buildCancelledEmbed(pod: PodInfo, hostUsername: string, playerNames: st
     `**Seats:** ${pod.current_players}/${pod.max_players}`,
     '',
     ...playerLines,
+    '',
+    buildPodSourceDescription(podType),
     '',
     `❌ **Cancelled**`,
   )
