@@ -52,12 +52,12 @@ interface ApiCard {
   cost?: number
   power?: number
   hp?: number
-  text?: string
+  front_text?: string
   back_text?: string
   epic_action?: string
   keywords?: string[]
   artist?: string
-  is_unique?: boolean
+  unique_flag?: boolean
   variant_type?: string
   is_leader?: boolean
   is_base?: boolean
@@ -149,23 +149,9 @@ async function fetchAll(entity: string): Promise<ApiCard[]> {
 const CONSUMED_FIELDS = [
   'uuid', 'collector_number', 'set_code', 'card_number', 'name', 'subtitle',
   'rarity', 'type', 'aspects', 'traits', 'arena', 'cost', 'power', 'hp',
-  'text', 'back_text', 'epic_action', 'keywords', 'artist', 'is_unique',
+  'front_text', 'back_text', 'epic_action', 'keywords', 'artist', 'unique_flag',
   'variant_type', 'is_leader', 'is_base', 'front_image_url', 'back_image_url',
 ]
-
-// PRE-EXISTING BUG, catalogued — filed as a separate fix decision in
-// wayfinder's megaplan (docs/plans/2026-06-11-002, I-B notes) because fixing
-// it changes gameplay-relevant data (card uniqueness affects deck building)
-// and requires regenerating cards.json:
-// /export/cards rows are raw snake_case (front_text, unique_flag); the
-// display aliases (text, is_unique/isUnique) exist ONLY on GET /cards. This
-// script has always read the alias names, so every card in cards.json ships
-// frontText: null and unique: false. Until the fix decision lands, these two
-// fields WARN loudly instead of failing the build.
-const KNOWN_CONTRACT_GAPS = {
-  text: 'use front_text — alias only exists on GET /cards, not /export/cards (frontText is null for all 7,503 cards)',
-  is_unique: 'use unique_flag — alias only exists on GET /cards, not /export/cards (unique is false for all 7,503 cards)',
-}
 
 /**
  * Validate fetched rows against the pinned swuapi contract. Throws (failing
@@ -178,10 +164,7 @@ function validateAgainstContract(apiCards: ApiCard[]): void {
     throw new Error('Pinned contract has no GET /export/cards row schema — refresh contract/swuapi-contract.json from a swuapi checkout.')
   }
 
-  const { missing, gapWarnings } = checkConsumedFields(CONSUMED_FIELDS, endpoint.row, KNOWN_CONTRACT_GAPS)
-  for (const warning of gapWarnings) {
-    console.error(`⚠️  ${warning}`)
-  }
+  const { missing } = checkConsumedFields(CONSUMED_FIELDS, endpoint.row)
   if (missing.length > 0) {
     throw new Error(
       `Pinned swuapi contract no longer declares fields this script consumes: ${missing.join(', ')}. ` +
@@ -258,12 +241,12 @@ function transformCard(apiCard: ApiCard): TransformedCard {
     cost: apiCard.cost !== null && apiCard.cost !== undefined ? parseInt(String(apiCard.cost)) : null,
     power: apiCard.power !== null && apiCard.power !== undefined ? parseInt(String(apiCard.power)) : null,
     hp: apiCard.hp !== null && apiCard.hp !== undefined ? parseInt(String(apiCard.hp)) : null,
-    frontText: apiCard.text || null,
+    frontText: apiCard.front_text || null,
     backText: apiCard.back_text || null,
     epicAction: apiCard.epic_action || null,
     keywords: apiCard.keywords || [],
     artist: apiCard.artist || null,
-    unique: apiCard.is_unique || false,
+    unique: apiCard.unique_flag || false,
     doubleSided: !!(apiCard.back_image_url),
     variantType,
     marketPrice: null, // Not available in swuapi.com
