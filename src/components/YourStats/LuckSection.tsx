@@ -13,20 +13,20 @@
  *   - Empty state (packsCracked === 0): friendly "open a sealed pool or
  *     join a draft" with links to /sealed and /draft.
  *
- * Set list mirrors app/stats/page.tsx so the You tab stays in sync.
+ * Set list comes from src/utils/statsSetTabs so the global stats tabs and
+ * the You tab stay in sync, including beta-accessible sets.
  */
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Button from '@/src/components/Button'
 import { LuckPanel } from './LuckPanel'
 import { StreaksPanel } from './StreaksPanel'
+import { DEFAULT_STATS_SET_TAB, getStatsSetTabs } from '@/src/utils/statsSetTabs'
 
-// Mirror tabs from app/stats/page.tsx. Defaulting to LAW is pragmatic;
-// the brainstorm says "most recent set with activity" but a cheap fetch
-// would be a second roundtrip. LAW is the current released set.
-const SET_TABS = ['LAW', 'SEC', 'LOF', 'JTL', 'TWI', 'SHD', 'SOR'] as const
-const DEFAULT_SET = 'LAW'
+// Defaulting to LAW is pragmatic; the brainstorm says "most recent set with
+// activity" but a cheap fetch would be a second roundtrip.
+const DEFAULT_SET = DEFAULT_STATS_SET_TAB
 
 type Scope = 'opened' | 'kept'
 const SCOPE_LABEL: Record<Scope, string> = {
@@ -59,9 +59,14 @@ export interface LuckSectionProps {
    * Optional initial set (used by tests). Defaults to LAW.
    */
   initialSet?: string
+  /**
+   * Include beta-only set tabs before prerelease. The parent derives this from
+   * the authenticated user's beta/admin access.
+   */
+  includeBetaSets?: boolean
 }
 
-export function LuckSection({ since, until, fetchImpl, initialSet }: LuckSectionProps) {
+export function LuckSection({ since, until, fetchImpl, initialSet, includeBetaSets = false }: LuckSectionProps) {
   const [setCode, setSetCode] = useState<string>(initialSet || DEFAULT_SET)
   const [scope, setScope] = useState<Scope>('opened')
   const [state, setState] = useState<FetchState>({
@@ -70,6 +75,12 @@ export function LuckSection({ since, until, fetchImpl, initialSet }: LuckSection
     error: false,
     data: null,
   })
+  const setTabs = useMemo(() => getStatsSetTabs(includeBetaSets), [includeBetaSets])
+
+  useEffect(() => {
+    if (setTabs.includes(setCode)) return
+    setSetCode(DEFAULT_SET)
+  }, [setCode, setTabs])
 
   useEffect(() => {
     let cancelled = false
@@ -131,7 +142,7 @@ export function LuckSection({ since, until, fetchImpl, initialSet }: LuckSection
             role="radiogroup"
             aria-labelledby="your-stats-set-label"
           >
-            {SET_TABS.map((s) => (
+            {setTabs.map((s) => (
               <Button
                 key={s}
                 variant="toggle"
@@ -154,7 +165,7 @@ export function LuckSection({ since, until, fetchImpl, initialSet }: LuckSection
             onChange={(e) => setSetCode(e.target.value)}
             data-testid="set-select-mobile"
           >
-            {SET_TABS.map((s) => (
+            {setTabs.map((s) => (
               <option key={s} value={s}>
                 {s}
               </option>

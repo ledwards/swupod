@@ -217,7 +217,14 @@ describe('<LuckSection />', () => {
   })
 
   it('defaults setCode to LAW (pragmatic v1 default)', () => {
-    assert.match(LUCK_SECTION_CODE, /DEFAULT_SET\s*=\s*['"]LAW['"]/)
+    assert.match(LUCK_SECTION_CODE, /DEFAULT_STATS_SET_TAB/)
+    assert.match(LUCK_SECTION_CODE, /DEFAULT_SET\s*=\s*DEFAULT_STATS_SET_TAB/)
+  })
+
+  it('uses the shared stats set tabs so beta sets stay aligned with /stats', () => {
+    assert.match(LUCK_SECTION_CODE, /getStatsSetTabs/)
+    assert.match(LUCK_SECTION_CODE, /includeBetaSets\s*=\s*false/)
+    assert.match(INDEX_CODE, /includeBetaSets=\{Boolean\(user\?\.is_beta_tester\s*\|\|\s*user\?\.is_admin\)\}/)
   })
 
   it('uses Button variant="toggle" with glowColor="blue" for the scope toggle', () => {

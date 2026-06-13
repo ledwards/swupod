@@ -53,7 +53,11 @@ export function YourStats({ since, until }: YourStatsProps) {
   return (
     <div className="your-stats" data-testid="your-stats">
       <ActivityDashboard since={since} until={until} />
-      <LuckSection since={since} until={until} />
+      <LuckSection
+        since={since}
+        until={until}
+        includeBetaSets={Boolean(user?.is_beta_tester || user?.is_admin)}
+      />
     </div>
   )
 }

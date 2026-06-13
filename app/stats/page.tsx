@@ -11,6 +11,12 @@ import { LeaderCharts, CardCharts } from './StatsCharts'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
 import { PATREON_URL } from '@/src/utils/membership'
 import YourStats from '@/src/components/YourStats'
+import {
+  DEFAULT_STATS_SET_TAB,
+  getStatsTabs,
+  PERSONAL_STATS_TAB,
+  STATS_SET_COLORS,
+} from '@/src/utils/statsSetTabs'
 import './stats.css'
 
 const tournamentPlayerCount = tournamentUserIds.length
@@ -375,7 +381,7 @@ function AspectsCell({ aspects }: { aspects: string[] }) {
 }
 
 export default function StatsPage() {
-  const [activeTab, setActiveTab] = useState('LAW')
+  const [activeTab, setActiveTab] = useState(DEFAULT_STATS_SET_TAB)
   const [includeBots, setIncludeBots] = useState(false)
   const [includeHumans, setIncludeHumans] = useState(true)
   const [showYou, setShowYou] = useState(true)
@@ -387,8 +393,10 @@ export default function StatsPage() {
   const [endDate, setEndDate] = useState(todayStr())
   const [editingStart, setEditingStart] = useState(false)
   const [editingEnd, setEditingEnd] = useState(false)
-  const { user, isPatron } = useAuth()
+  const { user, isPatron, loading: authLoading } = useAuth()
   const canSeeFullStats = isPatron === true || user?.is_admin
+  const hasBetaSetAccess = Boolean(user?.is_beta_tester || user?.is_admin)
+  const tabs = useMemo(() => getStatsTabs(hasBetaSetAccess), [hasBetaSetAccess])
 
   useEffect(() => {
     fetch('/api/stats/top-player-count')
@@ -399,38 +407,35 @@ export default function StatsPage() {
 
   useEffect(() => {
     const hash = window.location.hash.slice(1)
-    if (hash) setActiveTab(hash)
-  }, [])
+    if (hash && tabs.includes(hash)) setActiveTab(hash)
+  }, [tabs])
 
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.slice(1)
-      if (hash) setActiveTab(hash)
+      if (hash && tabs.includes(hash)) setActiveTab(hash)
     }
     window.addEventListener('hashchange', handleHashChange)
     return () => window.removeEventListener('hashchange', handleHashChange)
-  }, [])
+  }, [tabs])
+
+  useEffect(() => {
+    if (authLoading || tabs.includes(activeTab)) return
+    const fallbackTab = tabs.includes(DEFAULT_STATS_SET_TAB) ? DEFAULT_STATS_SET_TAB : tabs[0]
+    setActiveTab(fallbackTab)
+    if (window.location.hash.slice(1) === activeTab) {
+      window.location.hash = fallbackTab
+    }
+  }, [activeTab, authLoading, tabs])
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab)
     window.location.hash = tab
   }
 
-  // 'you' is the personal stats tab (U8). Placed at the end so it does NOT
-  // change the default landing tab for logged-in or logged-out users — both
-  // continue to land on LAW. The You tab is reachable via the tab strip or
-  // the #you hash anchor.
-  const tabs = ['LAW', 'SEC', 'LOF', 'JTL', 'TWI', 'SHD', 'SOR', 'you']
-
-  const setColors: Record<string, string> = {
-    'SOR': '#CC0000',
-    'SHD': '#6B21A8',
-    'TWI': '#0891B2',
-    'JTL': '#EA580C',
-    'LOF': '#16A34A',
-    'SEC': '#7C3AED',
-    'LAW': '#D93600'
-  }
+  // The personal stats tab (U8) stays last so it does not change the default
+  // landing tab. Beta set tabs are included for beta/admin users before
+  // prerelease, then become public automatically once the set is no longer beta.
 
   const isBlurred = !canSeeFullStats
 
@@ -519,23 +524,23 @@ export default function StatsPage() {
         {tabs.map(tab => (
           <button
             key={tab}
-            className={`stats-tab ${activeTab === tab ? 'active' : ''} ${tab === 'you' ? 'stats-tab-you' : ''}`}
+            className={`stats-tab ${activeTab === tab ? 'active' : ''} ${tab === PERSONAL_STATS_TAB ? 'stats-tab-you' : ''}`}
             onClick={() => handleTabChange(tab)}
-            style={setColors[tab] ? {
-              '--set-color': setColors[tab],
+            style={STATS_SET_COLORS[tab] ? {
+              '--set-color': STATS_SET_COLORS[tab],
               ...(activeTab === tab ? {
-                backgroundColor: setColors[tab],
-                borderBottomColor: setColors[tab]
+                backgroundColor: STATS_SET_COLORS[tab],
+                borderBottomColor: STATS_SET_COLORS[tab]
               } : {})
             } : {}}
           >
-            {tab === 'you' ? 'You' : tab}
+            {tab === PERSONAL_STATS_TAB ? 'You' : tab}
           </button>
         ))}
       </div>
 
       <div className="stats-content">
-        {activeTab === 'you' ? (
+        {activeTab === PERSONAL_STATS_TAB ? (
           /* U8: Personal stats — bypasses the Patreon gate entirely.
              Personal data is free for any logged-in user (R2). The set-tabs'
              Tournament/Top blur CTA below does not render in this branch. */
