@@ -795,6 +795,7 @@ export async function postBotDeckSummaries(
         title: bot.leaderName,
         subtitle: `${bot.botName}\n${bot.strategyDisplayName} + ${bot.mixinDisplayName}`,
         poolUrl: bot.poolUrl,
+        layout: 'limited',
       }).catch(err => {
         console.error('[Discord Bots] Deck image generation failed:', err)
         return null
@@ -928,6 +929,7 @@ export async function postDeckToDiscord(opts: {
       title: opts.leaderName,
       subtitle: `by ${opts.username}`,
       poolUrl,
+      layout: 'limited',
     }).catch(err => {
       console.error('[Discord Deck] Deck image generation failed:', err)
       return null

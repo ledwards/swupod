@@ -22,6 +22,8 @@ interface CardInfo {
   variantType?: string | undefined
 }
 
+type DeckImageLayout = 'default' | 'limited'
+
 interface DeckImageOptions {
   leader: CardInfo
   base: CardInfo
@@ -30,6 +32,7 @@ interface DeckImageOptions {
   title?: string | undefined
   subtitle?: string | undefined
   poolUrl?: string | undefined
+  layout?: DeckImageLayout | undefined
 }
 
 /**
@@ -84,6 +87,9 @@ export async function generateDeckImage(opts: DeckImageOptions): Promise<Buffer 
 
     if (opts.poolUrl) {
       body.branding = { url: opts.poolUrl }
+    }
+    if (opts.layout) {
+      body.layout = opts.layout
     }
 
     const res = await fetch(`${SWUAPI_URL}/deck-image`, {

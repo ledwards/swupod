@@ -142,6 +142,7 @@ export async function generateDeckImageForShareId(
     title: pool.name || 'Imported Pool',
     subtitle: pool.set_name || pool.set_code || undefined,
     poolUrl,
+    layout: 'limited',
   })
   if (!rawBuffer) return null
 
