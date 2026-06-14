@@ -126,7 +126,7 @@ function StatsCell({ you, all, top, tournament, format, className, showYou, show
       )}
       {showTournament && (
         <div className="stats-row-tournament">
-          <span className="stats-row-label">Tournament:</span> {isBlurred ? <span className="stats-blur-value">---</span> : (<>{tournament != null ? f(tournament) : '—'}{renderDelta(tournament, 'tournament')}</>)}
+          <span className="stats-row-label">Competitive:</span> {isBlurred ? <span className="stats-blur-value">---</span> : (<>{tournament != null ? f(tournament) : '—'}{renderDelta(tournament, 'tournament')}</>)}
         </div>
       )}
       {showTop && (
@@ -180,8 +180,8 @@ function StatsLegend({ user, showYou, showAll, showTop, showTournament, onToggle
       <div className="stats-legend-group">
         <label className={`stats-legend-toggle stats-legend-tournament ${isBlurred ? 'stats-legend-locked' : ''}`}>
           <input type="checkbox" checked={showTournament} onChange={onToggleTournament} disabled={isBlurred} />
-          Tournament Players {isBlurred && '🔒'}
-          <span className="stats-filter-info" title="App users who have competed in melee.gg tournaments">
+          Competitive Players {isBlurred && '🔒'}
+          <span className="stats-filter-info" title="App users who have competed in melee.gg events">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10"/>
               <line x1="12" y1="16" x2="12" y2="12"/>
@@ -195,7 +195,7 @@ function StatsLegend({ user, showYou, showAll, showTop, showTournament, onToggle
         <label className={`stats-legend-toggle stats-legend-top ${isBlurred ? 'stats-legend-locked' : ''}`}>
           <input type="checkbox" checked={showTop} onChange={onToggleTop} disabled={isBlurred} />
           Top Players {isBlurred && '🔒'}
-          <span className="stats-filter-info" title="Top performing tournament players">
+          <span className="stats-filter-info" title="Top performing competitive players">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10"/>
               <line x1="12" y1="16" x2="12" y2="12"/>
@@ -553,8 +553,8 @@ export default function StatsPage() {
                   <div className="stats-patron-cta-text">
                     <span className="stats-patron-cta-icon">🔒</span>
                     <div>
-                      <h3 className="stats-patron-cta-heading">Unlock <span style={{ color: '#CE93D8' }}>Tournament</span> and Top Player Stats</h3>
-                      <p className="stats-patron-cta-desc">Support Protect the Pod to see stats from top tournament competitors.</p>
+                      <h3 className="stats-patron-cta-heading">Unlock <span style={{ color: '#CE93D8' }}>Competitive</span> and Top Player Stats</h3>
+                      <p className="stats-patron-cta-desc">Support Protect the Pod to see stats from top competitive players.</p>
                     </div>
                   </div>
                   <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">
@@ -727,12 +727,12 @@ function SkeletonTableRows({ columns, rows = 8 }: { columns: string[], rows?: nu
 }
 
 function SkeletonChartGrid() {
-  const labels = ['You', 'All Players', 'Tournament Players', 'Top Players']
+  const labels = ['You', 'All Players', 'Competitive Players', 'Top Players']
   return (
     <div className="stats-chart-grid">
       {labels.map(label => (
         <div key={label} className="stats-chart-panel">
-          <h4 className="stats-chart-panel-label" style={{ color: label === 'You' ? '#64B5F6' : label.startsWith('Tournament') ? '#CE93D8' : label.startsWith('Top') ? '#FFB74D' : 'rgba(255,255,255,0.9)' }}>{label}</h4>
+          <h4 className="stats-chart-panel-label" style={{ color: label === 'You' ? '#64B5F6' : label.startsWith('Competitive') ? '#CE93D8' : label.startsWith('Top') ? '#FFB74D' : 'rgba(255,255,255,0.9)' }}>{label}</h4>
           <div className="skeleton-line" style={{ height: '180px', borderRadius: '6px' }} />
         </div>
       ))}

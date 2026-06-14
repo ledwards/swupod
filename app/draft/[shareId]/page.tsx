@@ -70,6 +70,8 @@ export default function DraftRoomPage({ params }: PageProps) {
     loading,
     error: syncError,
     deleted,
+    connected,
+    reconnect,
     refresh,
     isHost,
     isPlayer,
@@ -78,6 +80,58 @@ export default function DraftRoomPage({ params }: PageProps) {
     draftState,
     status,
   } = useDraftSocket(shareId, { enabled: !!shareId && isAuthenticated })
+
+  // Track whether the realtime socket has ever connected, so we only warn about
+  // a *drop* (not the brief gap during initial connect). Without this, a silent
+  // disconnect mid-draft looks identical to "waiting on others" — the worst
+  // moment for invisible failure.
+  const hasConnectedRef = useRef(false)
+  useEffect(() => {
+    if (connected) hasConnectedRef.current = true
+  }, [connected])
+  const showReconnecting = hasConnectedRef.current && !connected && status === 'active'
+
+  // Persistent "Reconnecting…" pill for an active draft whose socket has dropped.
+  // amber = caution per the design system; aria-live announces it to AT.
+  const connectionBanner = showReconnecting ? (
+    <div
+      role="status"
+      aria-live="assertive"
+      style={{
+        position: 'fixed',
+        top: '12px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 9500,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.75rem',
+        background: 'rgba(0, 0, 0, 0.85)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+        border: '1px solid rgba(255, 193, 7, 0.7)',
+        borderRadius: '8px',
+        padding: '0.5rem 0.5rem 0.5rem 0.85rem',
+        color: '#FFC107',
+        fontWeight: 600,
+        fontSize: '0.9rem',
+        boxShadow: '0 6px 16px rgba(0, 0, 0, 0.5)',
+      }}
+    >
+      <span
+        aria-hidden="true"
+        style={{
+          width: '8px',
+          height: '8px',
+          borderRadius: '50%',
+          background: '#FFC107',
+          flexShrink: 0,
+        }}
+      />
+      Reconnecting…
+      <Button variant="interactive" size="sm" onClick={reconnect}>Retry</Button>
+    </div>
+  ) : null
 
   const isFormatsDraft = draft?.settings?.draftMode === 'chaos'
   const backPath = isFormatsDraft ? '/formats' : '/draft'
@@ -470,39 +524,45 @@ export default function DraftRoomPage({ params }: PageProps) {
 
       if (phase === 'leader_draft') {
         return (
-          <LeaderDraftPhase
-            draft={draft}
-            players={players}
-            myPlayer={myPlayer}
-            draftState={draftState}
-            onSelect={handleSelect}
-            loading={selecting}
-            error={error}
-            isHost={isHost}
-            onTogglePause={handleTogglePause}
-            onUpdateTimerSettings={handleSettingsChange}
-            shareId={shareId}
-            onTimerExpire={refresh}
-          />
+          <>
+            {connectionBanner}
+            <LeaderDraftPhase
+              draft={draft}
+              players={players}
+              myPlayer={myPlayer}
+              draftState={draftState}
+              onSelect={handleSelect}
+              loading={selecting}
+              error={error}
+              isHost={isHost}
+              onTogglePause={handleTogglePause}
+              onUpdateTimerSettings={handleSettingsChange}
+              shareId={shareId}
+              onTimerExpire={refresh}
+            />
+          </>
         )
       }
 
       if (phase === 'pack_draft') {
         return (
-          <PackDraftPhase
-            draft={draft}
-            players={players}
-            myPlayer={myPlayer}
-            draftState={draftState}
-            onSelect={handleSelect}
-            loading={selecting}
-            error={error}
-            isHost={isHost}
-            onTogglePause={handleTogglePause}
-            onUpdateTimerSettings={handleSettingsChange}
-            shareId={shareId}
-            onTimerExpire={refresh}
-          />
+          <>
+            {connectionBanner}
+            <PackDraftPhase
+              draft={draft}
+              players={players}
+              myPlayer={myPlayer}
+              draftState={draftState}
+              onSelect={handleSelect}
+              loading={selecting}
+              error={error}
+              isHost={isHost}
+              onTogglePause={handleTogglePause}
+              onUpdateTimerSettings={handleSettingsChange}
+              shareId={shareId}
+              onTimerExpire={refresh}
+            />
+          </>
         )
       }
     }

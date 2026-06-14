@@ -396,7 +396,7 @@ export function LeaderCharts({ allData, tournamentData, topData, youData, valueK
       <ChartPanel label="All Players" color={PANEL_COLORS.all}>
         <LeaderPieChart leaders={allData || []} valueKey={valueKey} />
       </ChartPanel>
-      <ChartPanel label="Tournament Players" color={PANEL_COLORS.tournament} blurred={!canSeeFullStats}>
+      <ChartPanel label="Competitive Players" color={PANEL_COLORS.tournament} blurred={!canSeeFullStats}>
         <LeaderPieChart leaders={tournamentData || []} valueKey={valueKey} />
       </ChartPanel>
       <ChartPanel label="Top Players" color={PANEL_COLORS.top} blurred={!canSeeFullStats}>
@@ -427,7 +427,7 @@ export function CardCharts({ allData, tournamentData, topData, youData, valueKey
       <ChartPanel label="All Players" color={PANEL_COLORS.all}>
         <TopCardsBarChart cards={allData || []} valueKey={valueKey} formatValue={formatValue} onCardHover={onCardHover} onCardLeave={onCardLeave} />
       </ChartPanel>
-      <ChartPanel label="Tournament Players" color={PANEL_COLORS.tournament} blurred={!canSeeFullStats}>
+      <ChartPanel label="Competitive Players" color={PANEL_COLORS.tournament} blurred={!canSeeFullStats}>
         <TopCardsBarChart cards={tournamentData || []} valueKey={valueKey} formatValue={formatValue} onCardHover={onCardHover} onCardLeave={onCardLeave} />
       </ChartPanel>
       <ChartPanel label="Top Players" color={PANEL_COLORS.top} blurred={!canSeeFullStats}>

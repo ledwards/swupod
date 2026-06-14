@@ -77,6 +77,16 @@ function DraftableCard({
     onClick?.(card)
   }
 
+  // Keyboard operability: the card is the core pick affordance, so it must be
+  // selectable without a mouse. Enter/Space activate it like a native button.
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (disabled) return
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      onClick?.(card)
+    }
+  }
+
   const handleRightClick = (e: MouseEvent) => {
     e.preventDefault()
     onRightClick?.(e, card)
@@ -146,9 +156,15 @@ function DraftableCard({
       <div
         className={`draftable-card ${disabled ? 'disabled' : ''} ${selected ? 'selected' : ''} ${dimmed ? 'dimmed' : ''} ${card.isFoil ? 'foil' : ''} ${card.variantType === 'Hyperspace' ? 'hyperspace' : ''} ${card.isLeader ? 'leader' : ''} ${card.isBase ? 'base' : ''} ${card.isPlaceholder ? 'placeholder-card' : ''}`}
         onClick={handleClick}
+        onKeyDown={handleKeyDown}
         onContextMenu={handleRightClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        role="button"
+        tabIndex={disabled ? -1 : 0}
+        aria-pressed={selected}
+        aria-disabled={disabled || undefined}
+        aria-label={card.name}
       >
         {/* Rainbow background - only when selected */}
         {selected && (

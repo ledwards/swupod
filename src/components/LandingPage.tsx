@@ -243,11 +243,12 @@ function LandingPage() {
   // Theme the whole banner with the upcoming set's color: faint tinted
   // background + matching border + stronger left accent. Each upcoming set
   // gets its own visual identity instead of a generic neutral chrome.
+  // Per DESIGN.md (Light-Not-Paint + no side-stripes): the banner rests on the
+  // neutral translucent surface from CSS; the set color shows only as a subtle,
+  // uniform tinted border — not a saturated fill or a thick left stripe.
   const promoBannerStyle = setColor
     ? {
-        background: hexToRgba(setColor, 0.14),
-        borderColor: hexToRgba(setColor, 0.45),
-        borderLeftColor: setColor,
+        borderColor: hexToRgba(setColor, 0.5),
       }
     : undefined
 
