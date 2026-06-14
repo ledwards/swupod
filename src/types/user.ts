@@ -93,11 +93,18 @@ export interface Session {
 export interface AuthContextValue {
   user: User | null;
   loading: boolean;
+  isPatron: boolean | null;
+  patronMessage: string | null;
   isAuthenticated: boolean;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
   enrollBeta: () => Promise<boolean>;
   refreshSession: () => Promise<boolean>;
+  refreshPatronStatus: () => Promise<{
+    isPatron: boolean;
+    pendingPatreon?: boolean;
+    message?: string;
+  }>;
 }
 
 // === AUTH HELPERS ===

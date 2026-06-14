@@ -140,8 +140,8 @@ export async function lookupDiscordIdByEmail(email: string): Promise<string | nu
 // Why: the on-demand patron-status check (app/api/auth/patron-status) needs
 // to ask "is this Discord ID currently an active patron on Patreon?" on
 // every cache-cold call. Without a cache, every non-patron page load would
-// trigger a full paginated /members fetch. The 5-min TTL is short enough
-// that a freshly-subscribed patron sees their access within minutes (the
+// trigger a full paginated /members fetch. The 5-sec TTL is short enough
+// that a freshly-subscribed patron sees their access quickly (the
 // webhook handles the same-email synchronous case; this is the fallback
 // for the email-mismatch + Discord-linked-after-subscribe slice), and long
 // enough that we don't hammer Patreon during a traffic spike.
@@ -149,7 +149,7 @@ export async function lookupDiscordIdByEmail(email: string): Promise<string | nu
 // Singleflight (inflightFetch) prevents N concurrent cache-cold requests
 // from each triggering their own paginated fetch.
 
-const ACTIVE_PATRON_CACHE_TTL_MS = 5 * 60 * 1000
+const ACTIVE_PATRON_CACHE_TTL_MS = 5 * 1000
 const ACTIVE_PATRON_STATUSES = new Set(['active_patron', 'pay_upfront'])
 
 let cachedActivePatrons: { data: PatreonMember[]; expiresAt: number } | null = null

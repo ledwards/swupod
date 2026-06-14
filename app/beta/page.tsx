@@ -12,7 +12,7 @@ const DISCORD_INVITE_URL =
   process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/u6fkdDzWqF'
 
 export default function BetaPage() {
-  const { user, loading, signIn, enrollBeta, isPatron, patronMessage } = useAuth()
+  const { user, loading, signIn, enrollBeta, isPatron, patronMessage, refreshPatronStatus } = useAuth()
   const router = useRouter()
 
   const hasBetaAccess = user?.is_beta_tester || user?.is_admin
@@ -20,6 +20,7 @@ export default function BetaPage() {
   // assume member) so the Discord CTA only renders after we have a negative
   // confirmation — avoids a "join Discord" flash for actual members.
   const [isDiscordMember, setIsDiscordMember] = useState<boolean | null>(null)
+  const [connectionStatus, setConnectionStatus] = useState<'idle' | 'connecting' | 'connected' | 'notFound'>('idle')
 
   // Force login if not authenticated
   useEffect(() => {
@@ -34,9 +35,11 @@ export default function BetaPage() {
   // gets bounced to /sealed.
   useEffect(() => {
     if (hasBetaAccess) {
-      router.replace('/sealed')
+      const cameFromManualConnection = connectionStatus === 'connecting' || connectionStatus === 'connected'
+      const timer = window.setTimeout(() => router.replace('/sealed'), cameFromManualConnection ? 2000 : 0)
+      return () => window.clearTimeout(timer)
     }
-  }, [hasBetaAccess, router])
+  }, [connectionStatus, hasBetaAccess, router])
 
   // Check Discord guild membership for the post-enrollment CTA. Only meaningful
   // when the user already has beta access (the success branch); skip otherwise.
@@ -59,6 +62,16 @@ export default function BetaPage() {
     const success = await enrollBeta()
     if (success) {
       router.push('/sealed')
+    }
+  }
+
+  const handleCheckConnection = async () => {
+    setConnectionStatus('connecting')
+    try {
+      const result = await refreshPatronStatus()
+      setConnectionStatus(result.isPatron ? 'connected' : 'notFound')
+    } catch {
+      setConnectionStatus('notFound')
     }
   }
 
@@ -97,6 +110,12 @@ export default function BetaPage() {
                 <span className="checkmark">✓</span>
                 <span>You have beta access</span>
               </div>
+              {connectionStatus === 'connected' && (
+                <div className="beta-connect-status beta-connect-status--success" role="status" aria-live="polite">
+                  <span className="checkmark">✓</span>
+                  <span>Connected! Access unlocked.</span>
+                </div>
+              )}
 
               {isDiscordMember === false && (
                 <div className="beta-discord-cta">
@@ -131,7 +150,42 @@ export default function BetaPage() {
               {patronMessage ? (
                 <>
                   <p className="beta-patron-warning">{patronMessage}</p>
-                  <p>After linking, refresh this page to get access.</p>
+                  <p>After linking Discord on Patreon, check the connection here.</p>
+                  <div className="beta-connect-actions">
+                    <a
+                      href="https://www.patreon.com/settings/apps"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="beta-connect-link"
+                    >
+                      Open Patreon connections
+                    </a>
+                    <Button
+                      variant="interactive"
+                      size="md"
+                      onClick={handleCheckConnection}
+                      disabled={connectionStatus === 'connecting'}
+                    >
+                      {connectionStatus === 'connecting' ? 'Checking...' : 'Check connection'}
+                    </Button>
+                  </div>
+                  {connectionStatus === 'connecting' && (
+                    <div className="beta-connect-status" role="status" aria-live="polite">
+                      <span className="beta-connect-spinner" aria-hidden="true" />
+                      <span>Connecting your account...</span>
+                    </div>
+                  )}
+                  {connectionStatus === 'connected' && (
+                    <div className="beta-connect-status beta-connect-status--success" role="status" aria-live="polite">
+                      <span className="checkmark">✓</span>
+                      <span>Connected! Access unlocked.</span>
+                    </div>
+                  )}
+                  {connectionStatus === 'notFound' && (
+                    <div className="beta-connect-status beta-connect-status--warning" role="status" aria-live="polite">
+                      <span>Still waiting on Patreon. Give it a few seconds, then check again.</span>
+                    </div>
+                  )}
                 </>
               ) : (
                 <>

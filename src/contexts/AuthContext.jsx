@@ -61,10 +61,7 @@ export function AuthProvider({ children }) {
       const wasLoggedOut = !user
       setUser(session)
       if (session) {
-        apiCheckPatronStatus().then(result => {
-          setIsPatron(result.isPatron)
-          setPatronMessage(result.message || null)
-        })
+        refreshPatronStatus()
         // Track sign in if this is a new session (user wasn't logged in before)
         if (wasLoggedOut) {
           trackEvent(AnalyticsEvents.USER_SIGNED_IN, {
@@ -112,6 +109,19 @@ export function AuthProvider({ children }) {
     return false
   }
 
+  async function refreshPatronStatus() {
+    const result = await apiCheckPatronStatus()
+    if (result.isPatron) {
+      const updatedUser = await apiRefreshSession()
+      if (updatedUser) {
+        setUser(updatedUser)
+      }
+    }
+    setIsPatron(result.isPatron)
+    setPatronMessage(result.message || null)
+    return result
+  }
+
   function maybeShowBetaWelcome(userId) {
     if (typeof window === 'undefined' || !userId) return
     try {
@@ -129,7 +139,9 @@ export function AuthProvider({ children }) {
     if (typeof window !== 'undefined' && user?.id) {
       try {
         window.localStorage.setItem(BETA_WELCOME_STORAGE_PREFIX + user.id, '1')
-      } catch {}
+      } catch {
+        // Ignore storage failures; dismissal still applies for this render.
+      }
     }
     setShowBetaWelcome(false)
   }
@@ -174,6 +186,7 @@ export function AuthProvider({ children }) {
     signOut,
     enrollBeta,
     refreshSession,
+    refreshPatronStatus,
     isAuthenticated: !!user,
     showBetaWelcome,
     dismissBetaWelcome,
@@ -182,6 +195,7 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) {

@@ -39,6 +39,27 @@ function stubFetch(response) {
   }
 }
 
+function stubFetchSequence(responses) {
+  const calls = []
+  const originalFetch = globalThis.fetch
+  globalThis.fetch = async (url, init) => {
+    const response = responses[Math.min(calls.length, responses.length - 1)]
+    calls.push({ url: String(url), init })
+    return {
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify(response),
+      json: async () => response,
+    }
+  }
+  return {
+    calls,
+    restore: () => {
+      globalThis.fetch = originalFetch
+    },
+  }
+}
+
 describe('lib/patreon — fetchAllPatrons', () => {
   describe('field selection (SPEC: U0 widens fields[member])', () => {
     it('requests currently_entitled_amount_cents and pledge_relationship_start in fields[member]', async () => {
@@ -234,6 +255,45 @@ describe('lib/patreon — fetchAllPatrons', () => {
           'cache hit must not make additional fetch calls',
         )
       } finally {
+        stub.restore()
+      }
+    })
+
+    it('NEW CODE: cache expires after 5 seconds so newly linked Discord recovers quickly', async () => {
+      __resetActivePatronCacheForTests()
+      const originalNow = Date.now
+      let now = 1_700_000_000_000
+      Date.now = () => now
+      const stub = stubFetchSequence([
+        {
+          data: [makeMember({ id: 'a', status: 'active_patron' })],
+          included: [makeUser({ id: 'a', discord: 'discord-a' })],
+          meta: {},
+        },
+        {
+          data: [
+            makeMember({ id: 'a', status: 'active_patron' }),
+            makeMember({ id: 'b', status: 'active_patron' }),
+          ],
+          included: [
+            makeUser({ id: 'a', discord: 'discord-a' }),
+            makeUser({ id: 'b', discord: 'discord-b' }),
+          ],
+          meta: {},
+        },
+      ])
+      try {
+        assert.strictEqual(await findActivePatronByDiscordId('discord-b'), null)
+        now += 4_999
+        assert.strictEqual(await findActivePatronByDiscordId('discord-b'), null)
+        assert.strictEqual(stub.calls.length, 1, 'cache must still be warm before 5 seconds')
+        now += 2
+        const match = await findActivePatronByDiscordId('discord-b')
+        assert.ok(match, 'expected a fresh fetch after the short TTL')
+        assert.strictEqual(match.discordUserId, 'discord-b')
+        assert.strictEqual(stub.calls.length, 2, 'cache expiry should trigger exactly one fresh fetch')
+      } finally {
+        Date.now = originalNow
         stub.restore()
       }
     })

@@ -2,6 +2,7 @@
 // Tests for frontend authentication utilities
 import { describe, it, mock, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert'
+import { readFileSync } from 'node:fs'
 
 // Mock global fetch for testing
 const originalFetch = globalThis.fetch
@@ -259,6 +260,20 @@ describe('AuthContext integration', () => {
       user = updatedUser
 
       assert.strictEqual(user.is_beta_tester, true)
+    })
+
+    it('AuthProvider refreshes the session after patron status resolves true', () => {
+      const source = readFileSync(new URL('../contexts/AuthContext.jsx', import.meta.url), 'utf8')
+      assert.match(
+        source,
+        /async function refreshPatronStatus\(\) \{[\s\S]*apiCheckPatronStatus\(\)[\s\S]*if \(result\.isPatron\) \{[\s\S]*apiRefreshSession\(\)[\s\S]*setIsPatron\(result\.isPatron\)/,
+        'patron-status can update DB flags; AuthProvider must refresh the JWT before beta-gated routes run',
+      )
+    })
+
+    it('AuthProvider exposes refreshPatronStatus for the manual Patreon connect flow', () => {
+      const source = readFileSync(new URL('../contexts/AuthContext.jsx', import.meta.url), 'utf8')
+      assert.match(source, /refreshPatronStatus,/, 'manual connect UI needs to re-run patron detection without a page reload')
     })
   })
 })

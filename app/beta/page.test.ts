@@ -1,6 +1,7 @@
 // Tests for /beta page component logic
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
+import { readFileSync } from 'node:fs'
 
 describe('/beta page', () => {
   describe('User states', () => {
@@ -89,6 +90,17 @@ describe('/beta page', () => {
       const showLoading = loading
 
       assert.strictEqual(showLoading, false)
+    })
+  })
+
+  describe('Patreon connection check flow', () => {
+    it('renders connecting and connected status copy for pending patrons', () => {
+      const source = readFileSync(new URL('./page.tsx', import.meta.url), 'utf8')
+
+      assert.match(source, /Connecting your account\.\.\./)
+      assert.match(source, /Connected! Access unlocked\./)
+      assert.match(source, /refreshPatronStatus/)
+      assert.match(source, /cameFromManualConnection/)
     })
   })
 

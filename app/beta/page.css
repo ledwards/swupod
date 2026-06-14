@@ -127,6 +127,70 @@ a.beta-discord-cta-link:active {
   font-size: 0.9rem !important;
 }
 
+.beta-connect-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.beta-connect-link,
+.beta-connect-link:visited {
+  color: #90caf9;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.beta-connect-link:hover,
+.beta-connect-link:active {
+  color: #bbdefb;
+}
+
+.beta-connect-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  background: rgba(33, 150, 243, 0.1);
+  border: 1px solid rgba(33, 150, 243, 0.35);
+  border-radius: 8px;
+  color: #d8ecff;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.beta-connect-status--success {
+  background: rgba(0, 255, 0, 0.1);
+  border-color: rgba(0, 255, 0, 0.3);
+  color: #4ade80;
+}
+
+.beta-connect-status--warning {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+}
+
+.beta-connect-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(216, 236, 255, 0.35);
+  border-top-color: #d8ecff;
+  border-radius: 50%;
+  animation: beta-connect-spin 0.8s linear infinite;
+  flex: 0 0 auto;
+}
+
+@keyframes beta-connect-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .beta-footer {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 24px;
