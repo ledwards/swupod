@@ -11,3 +11,12 @@ builder = "NIXPACKS"
 [deploy]
 releaseCommand = "node scripts/migrate.js prod --yes"
 startCommand = "npm start"
+# Zero-downtime deploys. Without a healthcheck, Railway cuts traffic over to
+# the new container the moment the process starts — but `npx tsx server.ts`
+# transpiles at boot and the server needs a few seconds before it actually
+# serves. Requests landing in that gap (e.g. a full-page navigation) get
+# Railway's "Application failed to respond" page instead of a response.
+# Pointing at /api/health (which also verifies the DB connection) makes
+# Railway keep the old container live until the new one is genuinely ready.
+healthcheckPath = "/api/health"
+healthcheckTimeout = 300
