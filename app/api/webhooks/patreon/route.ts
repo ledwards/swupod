@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { addPatronRole, removePatronRole, isGuildMember, addBetaTesterRole } from '@/lib/discord'
-import { query } from '@/lib/db'
+import { query, queryRow } from '@/lib/db'
 import { lookupDiscordIdByEmail } from '@/lib/patreon'
+import {
+  DISCORD_ID_BY_EMAIL_SQL,
+  discordIdFromUserRow,
+  getPatreonEntitlementAction,
+  isActivePatreonMember,
+  siteEntitlementUpdateSql,
+} from './patreonEntitlements'
 
 const WEBHOOK_SECRET = process.env['PATREON_WEBHOOK_SECRET']
 
@@ -95,6 +102,16 @@ export async function POST(request: NextRequest) {
   const patreonEmail = extractPatreonEmail(body)
   const patreonName = extractPatreonName(body)
 
+  // Treat free trial users the same as active patrons.
+  const isActiveMember = isActivePatreonMember(patronStatus)
+
+  // Option B: email-match patron flag. Runs independently of Discord so a
+  // patron whose Patreon email matches their swupod email gets recognized
+  // even without Discord linking or guild membership. Discord role
+  // assignment below is still attempted in parallel for community
+  // recognition + as a fallback path in patron-status when emails mismatch.
+  const entitlementAction = getPatreonEntitlementAction(event, patronStatus)
+
   // Patreon webhooks don't include social_connections by default.
   // If Discord ID isn't in the payload, look it up via the Patreon API.
   if (!discordId && patreonEmail) {
@@ -105,40 +122,36 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Treat free trial users the same as active patrons.
-  const isActiveMember = patronStatus === 'active_patron' || patronStatus === 'pay_upfront'
-
-  // Option B: email-match patron flag. Runs independently of Discord so a
-  // patron whose Patreon email matches their swupod email gets recognized
-  // even without Discord linking or guild membership. Discord role
-  // assignment below is still attempted in parallel for community
-  // recognition + as a fallback path in patron-status when emails mismatch.
-  const grantsPatron =
-    event === 'members:pledge:create' ||
-    event === 'members:create' ||
-    ((event === 'members:pledge:update' || event === 'members:update') && isActiveMember)
-  const revokesPatron =
-    event === 'members:pledge:delete' ||
-    event === 'members:delete' ||
-    ((event === 'members:pledge:update' || event === 'members:update') && !isActiveMember)
-
-  if (patreonEmail && (grantsPatron || revokesPatron)) {
+  // On revoke, Patreon may no longer return social_connections for the
+  // member. Fall back to our user row so Discord role removal can still run.
+  if (!discordId && patreonEmail && entitlementAction === 'revoke') {
     try {
-      if (grantsPatron) {
+      discordId = discordIdFromUserRow(await queryRow(DISCORD_ID_BY_EMAIL_SQL, [patreonEmail]))
+      if (discordId) {
+        console.log('Patreon webhook: found Discord ID via user email fallback', { discordId, patreonEmail })
+      }
+    } catch (err) {
+      console.warn('Patreon webhook: Discord ID email fallback failed', { patreonEmail, error: err })
+    }
+  }
+
+  if (patreonEmail && entitlementAction) {
+    try {
+      if (entitlementAction === 'grant') {
         // Grant patron AND beta in one shot — patron status implies beta
         // access (no separate /beta enrollment step). Symmetric with the
         // revoke branch below which already clears both.
         const res = await query(
-          'UPDATE users SET is_patron = TRUE, is_beta_tester = TRUE WHERE LOWER(email) = LOWER($1)',
+          siteEntitlementUpdateSql('grant', 'email'),
           [patreonEmail]
         )
         console.log('Patreon webhook: is_patron+is_beta_tester email-match grant', { patreonEmail, event, rowCount: (res as any)?.rowCount })
       } else {
         const res = await query(
-          'UPDATE users SET is_patron = FALSE, is_beta_tester = FALSE WHERE LOWER(email) = LOWER($1)',
+          siteEntitlementUpdateSql('revoke', 'email'),
           [patreonEmail]
         )
-        console.log('Patreon webhook: is_patron email-match revoke', { patreonEmail, event, rowCount: (res as any)?.rowCount })
+        console.log('Patreon webhook: is_patron+is_beta_tester email-match revoke', { patreonEmail, event, rowCount: (res as any)?.rowCount })
         // Clear stale pending rows so the patron-status auto-enable path
         // doesn't accidentally re-grant a churned patron on their next sign-in.
         try { await query('DELETE FROM patreon_pending WHERE LOWER(email) = LOWER($1)', [patreonEmail]) } catch { /* ignore */ }
@@ -201,8 +214,7 @@ export async function POST(request: NextRequest) {
       } else if (!success) {
         await recordPendingIfNotInGuild(discordId, patreonEmail, patreonName, event, patronStatus)
       }
-    } else if (event === 'members:pledge:delete' || event === 'members:delete' ||
-               ((event === 'members:pledge:update' || event === 'members:update') && !isActiveMember)) {
+    } else if (entitlementAction === 'revoke') {
       const success = await removePatronRole(discordId)
       console.log('Patreon webhook: removePatronRole result', { discordId, success, event })
       // Discord-id-based revoke covers the email-mismatch case (patron's
@@ -210,7 +222,7 @@ export async function POST(request: NextRequest) {
       // find them, but Discord ID does. Without this, a churned mismatched
       // patron would retain is_patron=TRUE.
       await query(
-        'UPDATE users SET is_patron = FALSE, is_beta_tester = FALSE WHERE discord_id = $1',
+        siteEntitlementUpdateSql('revoke', 'discordId'),
         [discordId]
       )
     } else if ((event === 'members:pledge:update' || event === 'members:update') && isActiveMember) {
