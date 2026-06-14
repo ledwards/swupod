@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-13T00:00:00Z",
+  "title": "Design System: Protect the Pod",
+  "extensions": {
+    "colorMeta": {
+      "bg-void": { "role": "neutral", "displayName": "Void", "canonical": "hsl(0 0% 4%)", "tonalRamp": ["#000000", "#0a0a0a", "#141414", "#1f1f1f", "#2b2b2b", "#3a3a3a", "#4c4d51", "#6b6c70", "#9a9ba0"] },
+      "ink": { "role": "neutral", "displayName": "Holo White", "canonical": "#FFFFFF", "tonalRamp": ["#4d4d4d", "#666666", "#808080", "#999999", "#b3b3b3", "#cccccc", "#e0e0e0", "#f0f0f0", "#ffffff"] },
+      "glow-primary": { "role": "primary", "displayName": "Go Green", "canonical": "rgba(0,255,0,0.8)", "tonalRamp": ["#003300", "#005500", "#007700", "#009900", "#00bb00", "#00dd00", "#00ff00", "#5cff5c", "#a3ffa3"] },
+      "glow-danger": { "role": "tertiary", "displayName": "Danger Red", "canonical": "rgba(255,0,0,0.8)", "tonalRamp": ["#330000", "#550000", "#770000", "#990000", "#bb0000", "#dd0000", "#ff0000", "#ff5c5c", "#ffa3a3"] },
+      "glow-interactive": { "role": "secondary", "displayName": "Interactive Blue", "canonical": "rgba(33,150,243,0.8)", "tonalRamp": ["#0a2740", "#0f3a5e", "#134e7c", "#176199", "#1b78c2", "#2196f3", "#4dabf5", "#7cc3f8", "#aed8fb"] },
+      "discord": { "role": "tertiary", "displayName": "Discord Blurple", "canonical": "#5865F2", "tonalRamp": ["#1d2059", "#272c78", "#323896", "#3d45b5", "#4752c4", "#5865f2", "#7c86f5", "#a1a8f8", "#c5cafb"] },
+      "aspect-cunning": { "role": "tertiary", "displayName": "Cunning Yellow", "canonical": "#F1C40F", "tonalRamp": ["#4d3f05", "#6b5707", "#8a700a", "#a8880c", "#c7a10e", "#f1c40f", "#f4d142", "#f7de75", "#fbeba8"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Page h1 titles — ExtraBold (800), poster-like, tight 1.1 leading." },
+      "headline": { "displayName": "Headline", "purpose": "Section and modal-scale h2/h3 — ExtraBold (800)." },
+      "title": { "displayName": "Title", "purpose": "Modal titles and prominent labels — Semibold (600)." },
+      "body": { "displayName": "Body", "purpose": "Prose and descriptions — Regular (400), 65–75ch max." },
+      "label": { "displayName": "Label", "purpose": "Button and control text — Semibold (600)." }
+    },
+    "shadows": [
+      { "name": "interaction-glow", "value": "0 6px 16px rgba(0,255,0,0.6)", "purpose": "Colored bloom on hover, in the control's semantic hue (green/red/blue). Primary depth cue, paired with a -2px lift." },
+      { "name": "modal-lift", "value": "0 8px 32px rgba(0,0,0,0.5)", "purpose": "The one ambient drop shadow — seats modals above the dimmed table." },
+      { "name": "text-glow", "value": "0 0 8px rgba(0,255,0,0.5)", "purpose": "Hover affordance for text-only actions (green Add, red Remove)." }
+    ],
+    "motion": [
+      { "name": "transition-standard", "value": "all 0.2s ease", "purpose": "Default for button and interactive state changes." },
+      { "name": "transition-border", "value": "border-color 0.3s ease", "purpose": "Border-color shifts on focus/hover." },
+      { "name": "hover-lift", "value": "translateY(-2px)", "purpose": "The universal lift on interaction; pairs with interaction-glow." },
+      { "name": "foil-shimmer", "value": "6s linear infinite", "purpose": "Soft blurred rainbow wave on foil cards — the canonical foil treatment." },
+      { "name": "skeleton-shimmer", "value": "1.5s ease-in-out infinite", "purpose": "Loading placeholders that match final layout." },
+      { "name": "rainbow-border", "value": "3s linear infinite", "purpose": "Reserved for special showcase emphasis only." }
+    ],
+    "breakpoints": [
+      { "name": "min", "value": "320px" },
+      { "name": "mobile", "value": "768px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Confirm / continue / save. Flat dark at rest; green glow + lift on hover.",
+      "html": "<button class=\"ds-btn-primary\">Continue</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-family: 'Barlow', system-ui, sans-serif; font-weight: 600; color: #fff; background: rgba(0,0,0,0.7); border: 2px solid rgba(255,255,255,0.4); border-radius: 6px; padding: 0.75rem 1.5rem; cursor: pointer; transition: all 0.2s ease; } .ds-btn-primary:hover { background: rgba(0,0,0,0.85); border-color: rgba(0,255,0,0.8); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,255,0,0.6); } .ds-btn-primary:focus-visible { outline: 2px solid rgba(0,255,0,0.8); outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Neutral baseline — Cancel and general actions.",
+      "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-family: 'Barlow', system-ui, sans-serif; font-weight: 600; color: #fff; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; padding: 0.75rem 1.5rem; cursor: pointer; transition: all 0.2s ease; } .ds-btn-secondary:hover { background: rgba(0,0,0,0.85); border-color: rgba(255,255,255,0.5); transform: translateY(-2px); } .ds-btn-secondary:focus-visible { outline: 2px solid rgba(255,255,255,0.6); outline-offset: 2px; }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Destructive / back navigation. Red glow on hover.",
+      "html": "<button class=\"ds-btn-danger\">Delete</button>",
+      "css": ".ds-btn-danger { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-family: 'Barlow', system-ui, sans-serif; font-weight: 600; color: #fff; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; padding: 0.75rem 1.5rem; cursor: pointer; transition: all 0.2s ease; } .ds-btn-danger:hover { background: rgba(0,0,0,0.85); border-color: rgba(255,0,0,0.8); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(255,0,0,0.6); }"
+    },
+    {
+      "name": "Toggle Button",
+      "kind": "button",
+      "refersTo": "button-toggle",
+      "description": "Segmented / filter option with an active state.",
+      "html": "<button class=\"ds-btn-toggle ds-btn-toggle--active\">Sort by Name</button>",
+      "css": ".ds-btn-toggle { font-family: 'Barlow', system-ui, sans-serif; font-size: 0.85rem; color: rgba(255,255,255,0.7); background: transparent; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 0.4rem 0.8rem; cursor: pointer; transition: all 0.2s ease; } .ds-btn-toggle:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.4); color: #fff; } .ds-btn-toggle--active { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.5); color: #fff; }"
+    },
+    {
+      "name": "Discord Button",
+      "kind": "button",
+      "refersTo": "button-discord",
+      "description": "External auth handshake — the only solid-fill resting button.",
+      "html": "<button class=\"ds-btn-discord\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.5a18.3 18.3 0 0 1 4.3 1.3 16.3 16.3 0 0 0-13 0 18.3 18.3 0 0 1 4.3-1.3L10.6 3A19.8 19.8 0 0 0 5.7 4.4 20.6 20.6 0 0 0 2 18.6a19.9 19.9 0 0 0 6 3l.7-1.2a13 13 0 0 1-2-1c.2-.1.3-.2.5-.3a14.2 14.2 0 0 0 12 0l.5.3a13 13 0 0 1-2 1l.7 1.2a19.9 19.9 0 0 0 6-3 20.6 20.6 0 0 0-3.7-14.2ZM9 15.3c-1 0-1.7-.9-1.7-2s.8-2 1.7-2 1.8.9 1.7 2-.7 2-1.7 2Zm6 0c-1 0-1.7-.9-1.7-2s.8-2 1.7-2 1.8.9 1.7 2-.7 2-1.7 2Z\"/></svg>Login with Discord</button>",
+      "css": ".ds-btn-discord { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-family: 'Barlow', system-ui, sans-serif; font-weight: 600; color: #fff; background: #5865F2; border: none; border-radius: 8px; padding: 0.75rem 1.5rem; cursor: pointer; transition: all 0.2s ease; } .ds-btn-discord:hover { background: #4752C4; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }"
+    },
+    {
+      "name": "Card Box",
+      "kind": "card",
+      "refersTo": "card-box",
+      "description": "Translucent glass panel for grouped content (Leaders, Your Deck).",
+      "html": "<section class=\"ds-card-box\"><h3 class=\"ds-card-box__title\">Your Deck (28 cards)</h3><p class=\"ds-card-box__body\">Drag cards here to build your deck.</p></section>",
+      "css": ".ds-card-box { background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 1rem 1.5rem 1.5rem; text-align: center; color: #fff; } .ds-card-box__title { font-family: 'Barlow', system-ui, sans-serif; font-size: 1rem; font-weight: 600; color: #fff; margin: 0 0 0.75rem 0; } .ds-card-box__body { font-family: 'Barlow', system-ui, sans-serif; font-weight: 400; color: rgba(255,255,255,0.8); margin: 0; }"
+    },
+    {
+      "name": "Modal",
+      "kind": "custom",
+      "refersTo": "modal-content",
+      "description": "Opaque lifted dialog over a blurred dark scrim — the one floating surface.",
+      "html": "<div class=\"ds-modal\"><h2 class=\"ds-modal__title\">Confirm Action</h2><p class=\"ds-modal__body\">Are you sure you want to proceed?</p><div class=\"ds-modal__actions\"><button class=\"ds-modal__cancel\">Cancel</button><button class=\"ds-modal__confirm\">Confirm</button></div></div>",
+      "css": ".ds-modal { background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); border: 2px solid rgba(255,255,255,0.3); border-radius: 12px; padding: 2rem; max-width: 500px; color: #fff; box-shadow: 0 8px 32px rgba(0,0,0,0.5); font-family: 'Barlow', system-ui, sans-serif; } .ds-modal__title { font-size: 1.5rem; font-weight: 600; margin: 0 0 1rem 0; } .ds-modal__body { color: rgba(255,255,255,0.8); line-height: 1.6; margin: 0 0 1.5rem 0; } .ds-modal__actions { display: flex; gap: 1rem; justify-content: flex-end; } .ds-modal__cancel { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 8px; padding: 0.75rem 1.5rem; font: inherit; font-weight: 600; cursor: pointer; transition: all 0.2s ease; } .ds-modal__cancel:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); } .ds-modal__confirm { background: rgba(0,100,0,0.3); border: 2px solid rgba(0,255,0,0.6); color: #fff; border-radius: 8px; padding: 0.75rem 1.5rem; font: inherit; font-weight: 600; cursor: pointer; transition: all 0.2s ease; } .ds-modal__confirm:hover { background: rgba(0,100,0,0.5); border-color: rgba(0,255,0,0.8); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,255,0,0.3); }"
+    },
+    {
+      "name": "Tab (Folder Pattern)",
+      "kind": "nav",
+      "refersTo": "button-toggle",
+      "description": "Tabs that sit on the content folder — rounded top, flat overlapping bottom.",
+      "html": "<div class=\"ds-tabs\"><button class=\"ds-tab ds-tab--active\">Sealed</button><button class=\"ds-tab\">Draft</button></div><div class=\"ds-tab-content\">Pool contents…</div>",
+      "css": ".ds-tabs { display: flex; gap: 0.25rem; position: relative; z-index: 1; } .ds-tab { font-family: 'Barlow', system-ui, sans-serif; font-weight: 600; color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.3); border-bottom-color: transparent; border-radius: 8px 8px 0 0; padding: 0.5rem 1.25rem; margin-bottom: -1px; cursor: pointer; } .ds-tab--active { background: rgba(0,0,0,0.5); color: #fff; border-bottom-color: rgba(0,0,0,0.5); } .ds-tab-content { border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.5); border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; padding: 1.5rem; color: rgba(255,255,255,0.8); font-family: 'Barlow', system-ui, sans-serif; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Holotable",
+    "overview": "Protect the Pod is a dark room lit by a glowing tabletop. Surfaces rest in near-black (#0A0A0A) over a faint textured starfield; nothing announces itself until you reach for it. Color is treated as light, not paint — a control sits quiet and translucent at rest, then a colored glow and a small lift bloom the instant you hover or focus it. That single move (flat dark → glow on interaction) is the whole personality: cinematic where it counts, calm everywhere else. It reads unmistakably Star Wars-adjacent without ever imitating official Fantasy Flight / Disney branding. Density is purposeful, not maximal — the cards and the act of playing come first; data supports from the edges and never buries the table. One typeface (Barlow) carries everything so the system stays coherent across the simulator, deck builder, and dashboards.",
+    "keyCharacteristics": [
+      "Near-black canvas; color enters only as interactive light (glow + lift).",
+      "One family, Barlow, from ExtraBold display to 400-weight body.",
+      "Spectacle is a budget — spent on the pack-crack, withheld from routine surfaces.",
+      "Semantic glow vocabulary: green = go, red = destructive, blue = interactive.",
+      "SWU aspect colors are domain data, never decoration."
+    ],
+    "rules": [
+      { "name": "The Light-Not-Paint Rule", "body": "Saturated color is emitted by controls on interaction (hover/focus border + glow), never used as a resting fill on a button or panel. If an accent is sitting still and colored, make it a glow.", "section": "colors" },
+      { "name": "The Aspect-Is-Data Rule", "body": "The six aspect colors are reserved for representing SWU card aspects and set identity. Never borrow them for generic UI accents, and never rely on aspect color alone — pair with icon, pip, or label.", "section": "colors" },
+      { "name": "The One-Family Rule", "body": "Barlow carries the entire interface. Do not introduce a second typeface for display flavor — escalate weight (→ 800) or size instead.", "section": "typography" },
+      { "name": "The Title-Case Rule", "body": "Headers read 'Leaders' and 'Your Deck', never 'LEADERS'. Pure white text, no top margin, counts in parens.", "section": "typography" },
+      { "name": "The Flat-At-Rest Rule", "body": "No element carries a colored shadow or lift until the user interacts with it. If a button glows while idle, the spectacle budget is being spent in the wrong place.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep surfaces flat and translucent at rest; let colored glow + a -2px lift appear only on hover/focus.",
+      "Do use the Button component for every button, and match glow to intent: green = confirm, red = destructive/back, blue = interactive.",
+      "Do keep one typeface (Barlow); escalate to weight 800 or larger size for emphasis instead of adding a display font.",
+      "Do write section headers in Title Case with counts in parens, pure white, no top margin.",
+      "Do give every icon+text element an explicit gap: 0.5rem.",
+      "Do reserve aspect colors for SWU card/aspect/set data, and always pair them with icon/label.",
+      "Do load with layout-matched skeletons, and honor prefers-reduced-motion with a crossfade/instant fallback.",
+      "Do spend spectacle on the pack-crack; keep deck builder, history, and settings quiet."
+    ],
+    "donts": [
+      "Don't ship the light, flat, gray-on-white SaaS dashboard look. This is a game tool, not a B2B analytics app. No light mode.",
+      "Don't drown the table in spreadsheet density — data must support the cards, never bury them.",
+      "Don't imitate official Fantasy Flight / Disney Star Wars: Unlimited branding. Stay distinctly fan-made.",
+      "Don't go childish or cartoonish — no toy-like styling or gratuitous, always-on animation.",
+      "Don't use a saturated accent as a resting fill (Discord Blurple is the single sanctioned exception).",
+      "Don't reuse Discord Blurple, aspect colors, or amber/gold for generic UI accents.",
+      "Don't use ALL-CAPS section headers, gray-on-black body text below 0.7 alpha, or border-left/right color stripes.",
+      "Don't restore the residual Vite scaffolding in src/index.css (the #646cff link color and the prefers-color-scheme: light block). The app is dark-only."
+    ]
+  }
+}
