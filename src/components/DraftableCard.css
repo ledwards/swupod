@@ -28,6 +28,8 @@
 
 .draftable-card.selected {
   z-index: 100;
+  /* Holotable selection: green glow + ring (replaces the old rainbow border). */
+  box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.85), 0 6px 18px rgba(0, 255, 0, 0.5);
 }
 
 

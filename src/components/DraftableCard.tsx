@@ -166,39 +166,17 @@ function DraftableCard({
         aria-disabled={disabled || undefined}
         aria-label={card.name}
       >
-        {/* Rainbow background - only when selected */}
-        {selected && (
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            borderRadius: '10px',
-            background: 'linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000)',
-            backgroundSize: '400% 400%',
-            animation: 'rainbow-border 2s linear infinite',
-          }} />
-        )}
-        {/* Card image - when selected, make it smaller so rainbow peeks out */}
+        {/* Card image. Selection is shown via the green glow on .selected (CSS),
+            matching the holotable system — not the old always-on rainbow border
+            (reserved for showcase emphasis only, per DESIGN.md). */}
         <div
           className={card.isFoil ? 'foil-content' : ''}
-          style={selected ? {
-          position: 'absolute',
-          top: '1px',
-          left: '1px',
-          right: '1px',
-          bottom: '1px',
-          borderRadius: 0,
-          overflow: 'hidden',
-          filter: 'none',
-          opacity: 1,
-        } : {
-          width: '100%',
-          height: '100%',
-          borderRadius: 0,
-          overflow: 'hidden',
-        }}>
+          style={{
+            width: '100%',
+            height: '100%',
+            borderRadius: 0,
+            overflow: 'hidden',
+          }}>
           {card.imageUrl && !imageError ? (
             <img
               src={card.imageUrl}
@@ -209,7 +187,6 @@ function DraftableCard({
                 height: '100%',
                 objectFit: 'cover',
                 display: 'block',
-                ...(selected ? { filter: 'none', opacity: 1 } : {})
               }}
             />
           ) : (

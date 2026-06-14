@@ -32,9 +32,11 @@ The single highest-leverage fix; unblocks draft + deck builder and Sam/Alex at o
 - [x] **Landing promo resting fill removed** — no more saturated `hexToRgba(setColor,0.14)` bg; set color now a subtle uniform border (Light-Not-Paint).
 - [x] **Bounce easing fixed** — showcases.css flip → ease-out `cubic-bezier(0.22,1,0.36,1)` (detector 1 → 0).
 - [x] **Stats ALL-CAPS removed** — `.stat-label`, `.qa-summary-label`, `.metric-stat-label`, `.stats-chart-panel-label` lose `text-transform`/`letter-spacing` (+ contrast bumped to 0.72).
-- [ ] Remaining ALL-CAPS: sealed badges (SetSelection.css, PackOpeningAnimation.css), deck-builder `AspectFilterModal` + "ACTIONS:".
-- [ ] Kill remaining saturated resting fills: blue toggle-active fill (DeckBuilder.css:961), green modal-confirm (folds into Batch 3 modal consolidation).
-- [ ] Global `prefers-reduced-motion` guard + crossfade fallbacks; replace the always-on draft rainbow-border with the standard green-glow selection.
+- [x] **Global `prefers-reduced-motion` guard** added to `src/index.css` (animations collapse, transitions near-instant).
+- [x] **Draft rainbow-border replaced** — `DraftableCard` selection is now the holotable green glow/ring (CSS), no more always-on infinite rainbow animation. Keyframe kept for showcase emphasis only.
+- [x] **Blue toggle-active fill fixed** — `.view-mode-toggle-button.active` → white-0.15 fill / white text (Light-Not-Paint, matches DESIGN.md toggle vocabulary).
+- [ ] Remaining ALL-CAPS: sealed badges (SetSelection.css, PackOpeningAnimation.css), deck-builder `AspectFilterModal` + "ACTIONS:" (need JSX case check).
+- [ ] Green modal-confirm resting fill — folds into Batch 3 modal consolidation.
 
 ## Batch 5 — Error/empty states + mobile (P1/P2)
 - [ ] Human error/empty states: sealed no-data + pool-not-found, history per-widget degrade (no whole-page blank, no raw `err.message`).
