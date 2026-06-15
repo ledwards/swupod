@@ -10,6 +10,7 @@ This directory contains planning documents for features that have **not yet been
 | [TYPESCRIPT_MIGRATION_PLAN.md](./TYPESCRIPT_MIGRATION_PLAN.md) | Type system spec and incremental TS migration strategy |
 | [REFACTORING_PLAN.md](./REFACTORING_PLAN.md) | Large-scale architectural refactoring (partially complete) |
 | [STYLEGUIDE_PLAN.md](./STYLEGUIDE_PLAN.md) | Interactive living style guide page at `/styleguide` |
+| [VITE_SCAFFOLDING_CLEANUP.md](./VITE_SCAFFOLDING_CLEANUP.md) | Remove leftover Vite starter defaults in `src/index.css` (purple links, light-mode block) that fight the dark-only identity |
 
 ---
 
