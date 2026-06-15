@@ -20,6 +20,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const tournamentOnly = url.searchParams.get('tournamentOnly') === 'true'
     const topPlayersOnly = url.searchParams.get('topPlayersOnly') === 'true'
     const userId = url.searchParams.get('userId') || null
+    // "Logged-in players" segment: picks made by a signed-in (registered) drafter.
+    const loggedInOnly = url.searchParams.get('loggedInOnly') === 'true'
+    const loggedInFilter = loggedInOnly ? `AND dp.user_id IS NOT NULL` : ''
 
     // Build card lookup maps — all variants merge to same card via name|type key
     // See src/utils/cardNormalization.ts for the canonical normalization pattern
@@ -109,7 +112,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         AND pod.status = 'complete'
         ${botFilter}
         ${tournamentFilter}
-
+        ${loggedInFilter}
         ${userFilter}`,
       queryParams
     )

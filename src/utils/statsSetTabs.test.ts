@@ -4,8 +4,6 @@ import assert from 'node:assert/strict'
 import {
   DEFAULT_STATS_SET_TAB,
   getStatsSetTabs,
-  getStatsTabs,
-  PERSONAL_STATS_TAB,
   STATS_SET_COLORS,
 } from './statsSetTabs'
 import { getSetConfig, isBeta } from './setConfigs/index'
@@ -32,10 +30,10 @@ describe('stats set tabs', () => {
     }
   })
 
-  it('keeps the personal You tab after every set tab', () => {
-    const tabs = getStatsTabs(true)
-    assert.strictEqual(tabs.at(-1), PERSONAL_STATS_TAB)
-    assert.ok(tabs.indexOf('ASH') < tabs.indexOf(PERSONAL_STATS_TAB))
+  it('returns only set tabs; personal stats live on /me', () => {
+    const tabs = getStatsSetTabs(true)
+    assert.ok(!tabs.includes('you'))
+    assert.ok(tabs.includes('ASH'))
   })
 
   it('provides a tab color for ASH', () => {

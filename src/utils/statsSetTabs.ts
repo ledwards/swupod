@@ -1,7 +1,6 @@
 // @ts-nocheck
 import { getSetConfig, isBeta } from './setConfigs/index'
 
-export const PERSONAL_STATS_TAB = 'you'
 export const DEFAULT_STATS_SET_TAB = 'LAW'
 
 export const STATS_SET_ORDER = [
@@ -33,8 +32,4 @@ function isBetaSet(setCode: string): boolean {
 
 export function getStatsSetTabs(includeBetaSets = false): string[] {
   return STATS_SET_ORDER.filter((setCode) => includeBetaSets || !isBetaSet(setCode))
-}
-
-export function getStatsTabs(includeBetaSets = false): string[] {
-  return [...getStatsSetTabs(includeBetaSets), PERSONAL_STATS_TAB]
 }

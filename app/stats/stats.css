@@ -283,10 +283,8 @@
 }
 
 .stat-label {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.72);
   font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .stat-value {
@@ -707,10 +705,8 @@
 }
 
 .qa-summary-label {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.72);
   font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .qa-test-list {
@@ -748,11 +744,11 @@
 }
 
 .qa-test-item.qa-test-passed {
-  border-left: 4px solid #27AE60;
+  border: 1px solid rgba(39, 174, 96, 0.45);
 }
 
 .qa-test-item.qa-test-failed {
-  border-left: 4px solid #E74C3C;
+  border: 1px solid rgba(231, 76, 60, 0.45);
 }
 
 .qa-test-header {
@@ -806,7 +802,7 @@
   margin-top: 0.75rem;
   padding: 0.75rem;
   background: rgba(231, 76, 60, 0.1);
-  border-left: 3px solid #E74C3C;
+  border: 1px solid rgba(231, 76, 60, 0.4);
   color: #ffcccc;
   font-family: monospace;
   font-size: 0.85rem;
@@ -847,23 +843,23 @@
 
 .pack-metric-card.metric-ok,
 .pack-metric-card.metric-expected {
-  border-left: 4px solid #27AE60;
+  border-color: rgba(39, 174, 96, 0.55);
   background: rgba(39, 174, 96, 0.08);
 }
 
 .pack-metric-card.metric-error,
 .pack-metric-card.metric-extreme {
-  border-left: 4px solid #E74C3C;
+  border-color: rgba(231, 76, 60, 0.55);
   background: rgba(231, 76, 60, 0.08);
 }
 
 .pack-metric-card.metric-outlier {
-  border-left: 4px solid #F39C12;
+  border-color: rgba(243, 156, 18, 0.55);
   background: rgba(243, 156, 18, 0.08);
 }
 
 .pack-metric-card.metric-info {
-  border-left: 4px solid #2196F3;
+  border-color: rgba(33, 150, 243, 0.55);
   background: rgba(33, 150, 243, 0.08);
 }
 
@@ -908,10 +904,12 @@
 }
 
 .metric-value {
-  font-size: 2rem;
+  /* Demoted from the 2rem "hero metric" size — these are supporting QA figures,
+     not a dashboard headline. */
+  font-size: 1.4rem;
   font-weight: 700;
   color: #fff;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
 }
 
 .metric-expected {
@@ -972,8 +970,7 @@
 
 .metric-stat-label {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
-  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .sample-tag {
@@ -1537,7 +1534,7 @@
 }
 
 .stats-row-all {
-  color: #64B5F6;
+  color: #4DB6AC;
   font-size: 0.8rem;
 }
 
@@ -1597,11 +1594,11 @@
 }
 
 .stats-legend-all {
-  color: #64B5F6;
+  color: #4DB6AC;
 }
 
 .stats-legend-all input[type="checkbox"] {
-  accent-color: #64B5F6;
+  accent-color: #4DB6AC;
 }
 
 .stats-legend-top {
@@ -1773,9 +1770,10 @@
   margin-bottom: 1.5rem;
   padding: 1.25rem;
   background: rgba(0, 0, 0, 0.4);
-  border: 2px solid;
-  border-image: linear-gradient(135deg, #F5A623, #D4831A, #F5A623) 1;
-  border-radius: 0;
+  /* Clean amber border at the system radius (no border-image gradient / squared
+     corners, which broke the 12px radius language). */
+  border: 1px solid rgba(245, 166, 35, 0.55);
+  border-radius: 12px;
 }
 
 .stats-patron-cta-content {
@@ -1847,8 +1845,6 @@
   font-size: 0.95rem;
   font-weight: 700;
   margin: 0 0 0.75rem 0;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .stats-chart-placeholder {

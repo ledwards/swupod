@@ -19,6 +19,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const tournamentOnly = url.searchParams.get('tournamentOnly') === 'true'
     const topPlayersOnly = url.searchParams.get('topPlayersOnly') === 'true'
     const userId = url.searchParams.get('userId') || null
+    // Restrict to decks built by a signed-in (registered) player. Anonymous
+    // builds have a NULL user_id; this is the "logged-in players" segment.
+    const loggedInOnly = url.searchParams.get('loggedInOnly') === 'true'
+    const loggedInFilter = loggedInOnly ? `AND bd.user_id IS NOT NULL` : ''
 
     // Build card lookup maps — all variants merge to same card via name|type key
     // See src/utils/cardNormalization.ts for the canonical normalization pattern
@@ -70,7 +74,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
          ${poolTypeFilter}
          ${botFilter}
          ${tournamentFilter}
-
+         ${loggedInFilter}
          ${userFilter}`,
       queryParams
     )
@@ -85,7 +89,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
          ${poolTypeFilter}
          ${botFilter}
          ${tournamentFilter}
-
+         ${loggedInFilter}
          ${userFilter}`,
       queryParams
     )
