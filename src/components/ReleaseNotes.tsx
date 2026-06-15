@@ -14,8 +14,20 @@ function ReleaseNotes() {
   useEffect(() => {
     // Add cache-busting query parameter to always fetch fresh content
     fetch(`/RELEASE_NOTES.md?v=${Date.now()}`)
-      .then(response => response.text())
+      .then(response => {
+        // public/RELEASE_NOTES.md is generated at build time, so it can be
+        // missing in local dev. Without this guard, response.text() returns the
+        // 404/500 error page HTML and it gets rendered as the notes. Hide the
+        // panel quietly rather than throwing (a throw trips the dev error overlay).
+        if (!response.ok) {
+          setIsVisible(false)
+          setLoading(false)
+          return null
+        }
+        return response.text()
+      })
       .then(text => {
+        if (text === null) return
         // Remove "How to Update Release Notes" section and the HR above it
         const howToIndex = text.indexOf('## How to Update Release Notes')
         let contentToDisplay = howToIndex !== -1 ? text.substring(0, howToIndex).replace(/\n---\s*\n*$/, '') : text
@@ -26,7 +38,10 @@ function ReleaseNotes() {
         setLoading(false)
       })
       .catch(err => {
-        console.error('Failed to load release notes:', err)
+        // Network failure — hide the panel. Use console.warn (not error) so a
+        // non-critical fetch doesn't trip the dev error overlay.
+        console.warn('Release notes failed to load:', err)
+        setIsVisible(false)
         setLoading(false)
       })
   }, [])

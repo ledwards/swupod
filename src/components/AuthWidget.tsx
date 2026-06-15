@@ -371,6 +371,30 @@ export default function AuthWidget() {
                 </a>
               )}
 
+              {isPatron && (
+                <a
+                  href="/import"
+                  className="auth-widget-drawer-menu-item auth-widget-import-pool-item"
+                  onClick={(e: MouseEvent<HTMLAnchorElement>) => {
+                    e.preventDefault()
+                    router.push('/import')
+                    setDrawerOpen(false)
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,215,0,0.9)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <path d="M8 13h8"></path>
+                    <path d="M8 17h5"></path>
+                    <path d="M9 6h2"></path>
+                  </svg>
+                  <span className="auth-widget-menu-text">
+                    <span className="auth-widget-menu-title">Import Pool</span>
+                    <span className="auth-widget-menu-subtitle">Scan a sealed registration sheet</span>
+                  </span>
+                </a>
+              )}
+
               <a
                 href="/support-the-pod"
                 className="auth-widget-drawer-menu-item auth-widget-support-the-pod-item"

@@ -1,5 +1,13 @@
 # Release Notes
 
+## 06.15.2026
+
+### 🧭 Wayfinder Companion
+- **Record your games automatically**: Install the **Wayfinder Companion** browser extension and Protect the Pod can carry your pool straight into Karabast, then tie every game you play back to that pool — wins, losses, and replays you can rewatch.
+- **A new My Stats page**: Visit **My Stats** to see your win rate, format and set performance, and full game history, all linked to the pools you built. Your luck and pull data live here too.
+- **Study your pools and your play**: Because games connect back to the exact pool you drafted or opened, you can finally see which of your pools and decks actually win — and learn from the replays.
+- **Chrome now, more browsers soon**: The Companion is live for Chrome, Brave, and Edge today, with Safari and Firefox on the way.
+
 ## 06.11.2026
 
 ### 🔥 Ashes of the Empire

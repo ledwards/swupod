@@ -1,10 +1,17 @@
 // Tests for LandingPage component logic
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
 import {
   selectHomepagePromoVariant,
   promoDismissalKey,
 } from './landingPagePromo'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+const LANDING_PAGE_SRC = readFileSync(join(__dirname, 'LandingPage.tsx'), 'utf8')
 
 // Minimal SetConfig stand-in for variant tests. Only setCode/setName are
 // consumed by the variant selector + the banner rendering logic. Spec-first:
@@ -21,6 +28,20 @@ describe('LandingPage', () => {
 
       handleLimitedDeckbuilderClick()
       assert.strictEqual(navigatedTo, '/deckbuilder')
+    })
+  })
+
+  describe('Deckbuilder utility tile', () => {
+    it('replaces the general Import Pool tile with View Stats to /me', () => {
+      assert.ok(LANDING_PAGE_SRC.includes('View Stats'))
+      assert.ok(LANDING_PAGE_SRC.includes("router.push('/me')"))
+      assert.ok(!LANDING_PAGE_SRC.includes("router.push('/import')"))
+    })
+
+    it('uses non-ASH hyperspace art for the View Stats tile', () => {
+      assert.ok(LANDING_PAGE_SRC.includes('MODE_ART.stats'))
+      assert.ok(LANDING_PAGE_SRC.includes('SWH_01_493_AT_ST_HYP'))
+      assert.ok(!LANDING_PAGE_SRC.includes('Death_Star_Plans'))
     })
   })
 
