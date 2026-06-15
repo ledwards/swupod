@@ -88,6 +88,9 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
   const [hoveredCardPreview, setHoveredCardPreview] = useState<HoveredCardPreview | null>(null)
   const [savedShareId, setSavedShareId] = useState<string | null>(shareId)
   const [saving, setSaving] = useState(false)
+  const [copied, setCopied] = useState(false)
+  // Tap-to-zoom on touch devices, where the hover preview is intentionally off.
+  const [mobilePreviewCard, setMobilePreviewCard] = useState<Card | null>(null)
   const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [tooltip, setTooltip] = useState<Tooltip>({ show: false, text: '', x: 0, y: 0 })
   const tooltipTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -104,6 +107,13 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
       console.error('Failed to rename pool:', err)
     }
   }
+
+  // The shareId prop arrives asynchronously on the view flow (the pool loads
+  // after mount), so sync it into savedShareId once it's known — otherwise
+  // Copy Link (and other shareId-gated UI) never appears on a shared pool.
+  useEffect(() => {
+    if (shareId) setSavedShareId(shareId)
+  }, [shareId])
 
   useEffect(() => {
     // Skip loading cards if we have initialPacks (pool data from URL)
@@ -333,24 +343,11 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
         )}
         <div className="sealed-pod-content">
           <div className="error">
-            <h2>No Card Data Available</h2>
-            <p>{error || `No cards found for set ${setCode}.`}</p>
-            <p>To use this app, you need to populate <code>src/data/cards.json</code> with card data.</p>
-            <p>Each card should have the following structure:</p>
-            <pre style={{ textAlign: 'left', background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '8px', overflow: 'auto' }}>
-{`{
-  "id": "unique-card-id",
-  "name": "Card Name",
-  "set": "SOR",
-  "rarity": "Common",
-  "type": "Unit",
-  "aspects": ["Villainy", "Command"],
-  "cost": 3,
-  "isLeader": false,
-  "isBase": false,
-  "imageUrl": "https://..."
-}`}
-            </pre>
+            <h2>This set isn&apos;t available yet</h2>
+            <p>
+              {error
+                || `We don't have card data for ${setCode ? `the ${setCode} set` : 'this set'} yet. Try another set, or check back soon.`}
+            </p>
           </div>
           <Button variant="back" onClick={onBack}>Go Back</Button>
         </div>
@@ -362,6 +359,20 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
     // Navigate to /pools/new?set=SETCODE to generate a new pool
     if (setCode) {
       window.location.href = `/pools/new?set=${setCode}`
+    }
+  }
+
+  // Copy the shareable pool URL. The solo pool's whole value prop is a sharable
+  // link, so surface it directly instead of making users copy the address bar.
+  const handleCopyLink = async () => {
+    if (!savedShareId) return
+    const url = `${window.location.origin}/pool/${savedShareId}`
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Clipboard can be blocked (permissions / insecure context); leave state as-is.
     }
   }
 
@@ -380,11 +391,9 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
             placeholder={poolType === 'draft' ? 'Draft Pool' : 'Sealed Pool'}
           />
         </h1>
-        {!isDefaultName && (
-          <p className="pool-owner-byline">
-            {getCanonicalPoolSubtitle({ ownerName: poolOwnerUsername, setCode, poolType, createdAt })}
-          </p>
-        )}
+        <p className="pool-owner-byline">
+          {getCanonicalPoolSubtitle({ ownerName: poolOwnerUsername, setCode, poolType, createdAt })}
+        </p>
         {saving && <p className="saving-indicator"></p>}
         {packs.length > 0 && (
           <Button
@@ -401,6 +410,19 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
             }}
           >
             Build Deck
+          </Button>
+        )}
+        {savedShareId && (
+          <Button
+            variant="interactive"
+            className="copy-pool-link-button"
+            onClick={handleCopyLink}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            {copied ? 'Copied!' : 'Copy Link'}
           </Button>
         )}
         {draftShareId && (
@@ -508,6 +530,14 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
                     }
                     setHoveredCardPreview(null)
                   }}
+                  onClick={() => {
+                    // Touch devices get tap-to-zoom (hover preview is disabled there),
+                    // so a card can still be inspected on the primary device.
+                    const isTouch = window.innerWidth <= 768 || 'ontouchstart' in window || navigator.maxTouchPoints > 0
+                    if (isTouch && card.imageUrl) {
+                      setMobilePreviewCard(card)
+                    }
+                  }}
                 >
                   {card.imageUrl ? (
                     <img
@@ -549,6 +579,41 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
       </div>
 
 
+
+      {/* Mobile tap-to-zoom: full-screen centered card, tap anywhere to dismiss */}
+      {mobilePreviewCard && (
+        <div
+          className="mobile-card-preview-overlay"
+          onClick={() => setMobilePreviewCard(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${mobilePreviewCard.name || 'Card'} enlarged`}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 10000,
+            background: 'rgba(0, 0, 0, 0.85)',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem',
+          }}
+        >
+          <img
+            src={mobilePreviewCard.imageUrl}
+            alt={mobilePreviewCard.name || 'Card'}
+            style={{
+              maxWidth: '92vw',
+              maxHeight: '85vh',
+              objectFit: 'contain',
+              borderRadius: '12px',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
+            }}
+          />
+        </div>
+      )}
 
       {/* Enlarged card preview (3x size) */}
       {hoveredCardPreview && (() => {

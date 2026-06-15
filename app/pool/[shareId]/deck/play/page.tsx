@@ -154,6 +154,14 @@ export default function PlayPage({ params }: PageProps) {
   const [baseCardMap, setBaseCardMap] = useState<Map<string, string> | null>(null)
   const [claiming, setClaiming] = useState(false)
   const deckBuilderState = useMemo(() => jsonParse(pool?.deckBuilderState, {}), [pool?.deckBuilderState])
+  // Deck (archetype) name — the deck builder doesn't plumb a name onto this page,
+  // so derive it from the deck's active leader card. Shown under the pool name.
+  const deckArchetypeName = useMemo(() => {
+    const lead = deckBuilderState?.cardPositions?.[deckBuilderState?.activeLeader]?.card
+    return lead?.name || null
+  }, [deckBuilderState])
+  // The play box has two tabs: Play (the existing wayfinder/manual instructions)
+  // and Record (your game history, or a prompt to install the plugin).
   const [practiceHand, setPracticeHand] = useState<{
     cards: CardType[]
     probAtLeastOne: number
@@ -2052,6 +2060,7 @@ export default function PlayPage({ params }: PageProps) {
             placeholder="Untitled Deck"
             className="play-title"
           />
+          {deckArchetypeName && <p className="play-deck-name">{deckArchetypeName}</p>}
           <p className="play-pool-type">{poolTypeLabel}</p>
           <WldBadge
             wins={pool.wins ?? 0}
@@ -2149,6 +2158,36 @@ export default function PlayPage({ params }: PageProps) {
           wayfinderDetected={wayfinderDetected}
           analyticsContext={getLimitedAnalyticsContext()}
         />
+
+        {/* History — the pool's recorded games (Wayfinder-tracked). Only once
+            the Companion is present; the install pitch lives in PlayInstructions. */}
+        {wayfinderDetected && (
+          <div className="play-history-panel">
+            <span className="play-history-label">History</span>
+            {((pool?.wins ?? 0) + (pool?.losses ?? 0) + (pool?.draws ?? 0) > 0 || (pool?.wayfinderMatchIds?.length ?? 0) > 0) ? (
+              <div className="play-record-summary">
+                <WldBadge
+                  wins={pool?.wins ?? 0}
+                  losses={pool?.losses ?? 0}
+                  draws={pool?.draws ?? 0}
+                  matchIds={pool?.wayfinderMatchIds ?? []}
+                />
+                <a
+                  className="play-record-link"
+                  href={`${process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin.wayfinder.news'}/matches`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View your matches on Wayfinder
+                </a>
+              </div>
+            ) : (
+              <p className="play-record-blurb">
+                You&apos;re all set — play some games to start your record.
+              </p>
+            )}
+          </div>
+        )}
 
         {isCompetitive && user && (
           <MatchmakingPanel

@@ -6,11 +6,18 @@ import { getLatestReleasedSetCode } from '../utils/setConfigs/latest'
 import { trackEvent } from '../hooks/useAnalytics'
 import { buildLimitedContext, LimitedAnalyticsEvents, LimitedPlayActions } from '../analytics/limitedEvents'
 import { KARABAST_PUBLIC_LOBBY_NAME } from '../utils/karabastLobby'
+import WayfinderStoreButtons, { WayfinderCompanionLockup } from './WayfinderStoreButtons'
 import './PlayInstructions.css'
 
 const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/u6fkdDzWqF'
 
 const PRIVATE_LOBBY_PATTERN = /^https:\/\/karabast\.net\/\?lobbyId=[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+const WAYFINDER_VALUE_PROPS = [
+  'Seamlessly join the Karabast queue with your pool',
+  'Collect play data for your stats page tied to your pool',
+  'Record and rewatch your replays',
+] as const
 
 interface PlayInstructionsProps {
   shareId: string | null
@@ -153,6 +160,62 @@ export default function PlayInstructions({
     })
   }
 
+  function trackInstallClick(browser: 'chrome' | 'safari' | 'firefox') {
+    trackPlayAction(LimitedPlayActions.WAYFINDER_INSTALL_CTA, {
+      target: browser === 'chrome' ? 'chrome_web_store' : `${browser}_store_pending`,
+      browser,
+      installed: wayfinderDetected,
+    })
+  }
+
+  function renderValueProps() {
+    return (
+      <ul className="wayfinder-promo-list">
+        {WAYFINDER_VALUE_PROPS.map((value) => (
+          <li key={value}>
+            <span className="wayfinder-promo-check" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </span>
+            <span>{value}</span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  function renderCompanionInstallPanel() {
+    return (
+      <section className="wayfinder-promo-panel" aria-label="Wayfinder Companion">
+        <div className="wayfinder-promo-copy">
+          <WayfinderCompanionLockup className="wayfinder-promo-lockup" />
+          <h3>Play on Karabast and collect data automatically</h3>
+          <p>
+            Install the Companion before you queue and Protect the Pod can carry
+            your pool into Karabast, then connect the games back to your stats
+            and replays.
+          </p>
+          {renderValueProps()}
+        </div>
+
+        <WayfinderStoreButtons onChromeClick={() => trackInstallClick('chrome')} />
+      </section>
+    )
+  }
+
+  function renderCompanionReadyPanel() {
+    return (
+      <div className="wayfinder-ready-panel">
+        <div>
+          <div className="wayfinder-promo-kicker">Companion connected</div>
+          <h3>Queue with your pool, then review the replay</h3>
+        </div>
+        {renderValueProps()}
+      </div>
+    )
+  }
+
   // -- Manual steps (existing content, extracted for reuse) --
 
   function renderManualSteps() {
@@ -257,6 +320,8 @@ export default function PlayInstructions({
   function renderWayfinderTab() {
     return (
       <div className="wayfinder-tab">
+        {renderCompanionReadyPanel()}
+
         <div className="wayfinder-section">
           <button className="wayfinder-btn" onClick={() => dispatchCreateLobby('private')}>
             🔒 Create Private Lobby
@@ -345,9 +410,21 @@ export default function PlayInstructions({
           )}
         </>
       ) : (
-        <div className="play-steps">
-          {renderManualSteps()}
-        </div>
+        <>
+          {!wayfinderDetected && (
+            <>
+              {renderCompanionInstallPanel()}
+              <div className="play-mode-divider"><span>OR</span></div>
+              <div className="play-manual-header">
+                <div className="wayfinder-promo-kicker">Manual setup</div>
+                <h3>Play it yourself on Karabast</h3>
+              </div>
+            </>
+          )}
+          <div className="play-steps">
+            {renderManualSteps()}
+          </div>
+        </>
       )}
 
       {/* Action buttons */}

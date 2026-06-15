@@ -129,12 +129,55 @@
   display: inline-flex;
 }
 
+.play-deck-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0.1rem 0 0.25rem 0;
+}
+
 .play-pool-type {
   font-size: 1.3rem;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.6);
   margin: 0 0 1rem 0;
   letter-spacing: 0.05em;
+}
+
+/* History — recorded games for this pool, below the play instructions */
+.play-history-panel {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.play-history-label {
+  display: block;
+  margin-bottom: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.play-record-blurb {
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 1rem 0;
+}
+
+.play-record-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.play-record-link {
+  color: #2196f3;
+  font-weight: 600;
 }
 
 .practice-hand-button-container {
