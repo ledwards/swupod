@@ -28,6 +28,14 @@ a.btn:active {
   text-decoration: none;
 }
 
+/* Keyboard focus ring (interactive-blue glow per DESIGN.md). The base button
+   reset in index.css strips the native outline; restore a visible one for
+   keyboard users without showing it on mouse click (:focus-visible). */
+.btn:focus-visible {
+  outline: 2px solid rgba(33, 150, 243, 0.9);
+  outline-offset: 2px;
+}
+
 .btn:disabled,
 .btn--disabled {
   opacity: 0.5;

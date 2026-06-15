@@ -309,14 +309,14 @@ export function AspectFilterModal({
         onClick={(e: MouseEvent) => e.stopPropagation()}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: '0.5rem' }}>
-          <span style={{ color: 'white', fontSize: '1rem', fontWeight: 'bold', textTransform: 'uppercase' }}>{title}</span>
+          <span style={{ color: 'white', fontSize: '1rem', fontWeight: 'bold' }}>{title}</span>
           <Button variant="icon" size="sm" onClick={onClose}>×</Button>
         </div>
         {renderInOutAspectFilters()}
         {renderColorAspectFilters()}
         {renderFlatAspectFilters()}
         <div style={{ marginTop: '0.75rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Filtered cards:</span>
+          <span style={{ color: 'rgba(255,255,255,0.72)', fontSize: '0.75rem' }}>Filtered cards:</span>
           <button
             style={{ padding: '2px 8px', fontSize: '0.75rem', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.3)', background: filteredCardDisplay !== 'hide' ? 'rgba(255,255,255,0.15)' : 'transparent', color: 'white', cursor: 'pointer' }}
             onClick={() => setFilteredCardDisplay?.('fade')}

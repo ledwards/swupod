@@ -99,3 +99,18 @@ button:focus-visible {
     --mobile-content-top: 3rem;
   }
 }
+
+/* Reduced motion: honor the OS preference globally. Animations collapse to an
+   instant state and transitions become near-instant, so the pack-open, foil
+   shimmer, skeleton, and glow-lift effects don't move for users who opt out.
+   (PackOpeningAnimation keeps its own crossfade fallback on top of this.) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

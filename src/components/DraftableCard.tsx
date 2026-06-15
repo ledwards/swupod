@@ -52,6 +52,7 @@ function DraftableCard({
 }: DraftableCardProps) {
   const [imageError, setImageError] = useState(false)
   const [hoveredCardPreview, setHoveredCardPreview] = useState<CardPreview | null>(null)
+  const [mobileZoom, setMobileZoom] = useState(false)
   const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [mounted, setMounted] = useState(false)
 
@@ -74,7 +75,63 @@ function DraftableCard({
 
   const handleClick = () => {
     if (disabled) return
+    // If a long-press just opened the zoom, swallow this click so the same
+    // gesture doesn't also pick the card.
+    if (longPressFiredRef.current) {
+      longPressFiredRef.current = false
+      return
+    }
     onClick?.(card)
+  }
+
+  // Long-press to inspect on touch devices: press and hold (~450ms) zooms the
+  // card; a quick tap still picks it. Movement (a scroll) cancels the press, so
+  // you can't accidentally zoom while scrolling the pack — and the click guard
+  // above means a zoom never doubles as a pick.
+  const LONG_PRESS_MS = 450
+  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const longPressFiredRef = useRef(false)
+  const touchStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
+
+  const clearLongPress = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current)
+      longPressTimerRef.current = null
+    }
+  }
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (disabled || !card.imageUrl) return
+    longPressFiredRef.current = false
+    const t = e.touches[0]
+    touchStartRef.current = { x: t.clientX, y: t.clientY }
+    clearLongPress()
+    longPressTimerRef.current = setTimeout(() => {
+      longPressFiredRef.current = true
+      setMobileZoom(true)
+    }, LONG_PRESS_MS)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const t = e.touches[0]
+    if (Math.abs(t.clientX - touchStartRef.current.x) > 10 ||
+        Math.abs(t.clientY - touchStartRef.current.y) > 10) {
+      clearLongPress()
+    }
+  }
+
+  const handleTouchEnd = () => {
+    clearLongPress()
+  }
+
+  // Keyboard operability: the card is the core pick affordance, so it must be
+  // selectable without a mouse. Enter/Space activate it like a native button.
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (disabled) return
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      onClick?.(card)
+    }
   }
 
   const handleRightClick = (e: MouseEvent) => {
@@ -146,43 +203,31 @@ function DraftableCard({
       <div
         className={`draftable-card ${disabled ? 'disabled' : ''} ${selected ? 'selected' : ''} ${dimmed ? 'dimmed' : ''} ${card.isFoil ? 'foil' : ''} ${card.variantType === 'Hyperspace' ? 'hyperspace' : ''} ${card.isLeader ? 'leader' : ''} ${card.isBase ? 'base' : ''} ${card.isPlaceholder ? 'placeholder-card' : ''}`}
         onClick={handleClick}
+        onKeyDown={handleKeyDown}
         onContextMenu={handleRightClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+        role="button"
+        tabIndex={disabled ? -1 : 0}
+        aria-pressed={selected}
+        aria-disabled={disabled || undefined}
+        aria-label={card.name}
       >
-        {/* Rainbow background - only when selected */}
-        {selected && (
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            borderRadius: '10px',
-            background: 'linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000)',
-            backgroundSize: '400% 400%',
-            animation: 'rainbow-border 2s linear infinite',
-          }} />
-        )}
-        {/* Card image - when selected, make it smaller so rainbow peeks out */}
+        {/* Card image. Selection is shown via the green glow on .selected (CSS),
+            matching the holotable system — not the old always-on rainbow border
+            (reserved for showcase emphasis only, per DESIGN.md). */}
         <div
           className={card.isFoil ? 'foil-content' : ''}
-          style={selected ? {
-          position: 'absolute',
-          top: '1px',
-          left: '1px',
-          right: '1px',
-          bottom: '1px',
-          borderRadius: 0,
-          overflow: 'hidden',
-          filter: 'none',
-          opacity: 1,
-        } : {
-          width: '100%',
-          height: '100%',
-          borderRadius: 0,
-          overflow: 'hidden',
-        }}>
+          style={{
+            width: '100%',
+            height: '100%',
+            borderRadius: 0,
+            overflow: 'hidden',
+          }}>
           {card.imageUrl && !imageError ? (
             <img
               src={card.imageUrl}
@@ -193,7 +238,6 @@ function DraftableCard({
                 height: '100%',
                 objectFit: 'cover',
                 display: 'block',
-                ...(selected ? { filter: 'none', opacity: 1 } : {})
               }}
             />
           ) : (
@@ -206,6 +250,41 @@ function DraftableCard({
           )}
         </div>
       </div>
+
+      {mounted && mobileZoom && card.imageUrl && createPortal(
+        <div
+          className="draftable-card-zoom-overlay"
+          onClick={() => setMobileZoom(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${card.name || 'Card'} enlarged`}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            background: 'rgba(0, 0, 0, 0.85)',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem',
+          }}
+        >
+          <img
+            src={card.imageUrl}
+            alt={card.name}
+            style={{
+              maxWidth: '92vw',
+              maxHeight: '85vh',
+              objectFit: 'contain',
+              borderRadius: '12px',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
+            }}
+          />
+        </div>,
+        document.body
+      )}
 
       {mounted && hoveredCardPreview && createPortal(
         (() => {

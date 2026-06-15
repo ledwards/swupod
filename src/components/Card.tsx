@@ -148,13 +148,32 @@ export function Card({
     ...style
   }
 
+  // Keyboard operability: when the card is a real control (has an onClick),
+  // expose it as a button so keyboard/AT users can select it. Enter/Space
+  // activate it, matching native button behavior.
+  const interactive = typeof onClick === 'function' && !disabled
+  const handleKeyDown = interactive
+    ? (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onClick(e)
+        }
+      }
+    : undefined
+
   return (
     <div
       className={classes}
       style={cardStyle}
       onClick={onClick}
+      onKeyDown={handleKeyDown}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      role={interactive ? 'button' : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      aria-pressed={interactive ? selected : undefined}
+      aria-disabled={disabled || undefined}
+      aria-label={interactive ? (card.name || 'Card') : undefined}
       data-card-id={card.id}
       {...rest}
     >
