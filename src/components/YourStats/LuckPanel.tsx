@@ -30,6 +30,8 @@ interface VerdictEntry {
 interface RarityPanelData {
   observed: Record<string, number>
   expected: Record<string, number>
+  platformActual?: Record<string, number>
+  platformPacksCracked?: number
   perRarity: Record<string, VerdictEntry>
   headlineRegime: 'insufficient' | 'normal' | 'unusual'
   headlineCopy: string
@@ -39,6 +41,8 @@ interface RarityPanelData {
 interface AspectPanelData {
   observed: Record<string, number>
   expected: Record<string, number>
+  platformActual?: Record<string, number>
+  platformPacksCracked?: number
   perAspect: Record<string, VerdictEntry>
   headlineRegime: 'insufficient' | 'normal' | 'unusual'
   headlineCopy: string
@@ -92,8 +96,9 @@ function ShowMathTable({
       <thead>
         <tr>
           <th>{dimension === 'rarity' ? 'Rarity' : 'Aspect'}</th>
-          <th>Observed</th>
-          <th>Expected</th>
+          <th>You</th>
+          <th>Platform</th>
+          <th>Theoretical</th>
           <th>95% CI</th>
           {showRegimeCol && <th>Verdict</th>}
         </tr>
@@ -109,6 +114,7 @@ function ShowMathTable({
             <tr key={label}>
               <td>{label}</td>
               <td className="your-stats-math-num">{formatNum(perBucket[label]?.['observed'] ?? 0, 0)}</td>
+              <td className="your-stats-math-num">{formatNum(perBucket[label]?.['platformActual'] ?? 0, 1)}</td>
               <td className="your-stats-math-num">{formatNum(perBucket[label]?.['expected'] ?? 0, 1)}</td>
               <td className="your-stats-math-num">{formatCI(v.ci)}</td>
               {showRegimeCol && (
@@ -151,6 +157,7 @@ export function LuckPanel({ dimension, data, packsCracked, title }: LuckPanelPro
         copy: '',
       }),
       observed: Number(data.observed?.[label] || 0),
+      platformActual: Number(data.platformActual?.[label] || 0),
       expected: Number(data.expected?.[label] || 0),
     }
   }
@@ -180,6 +187,8 @@ export function LuckPanel({ dimension, data, packsCracked, title }: LuckPanelPro
         data={{
           observed: data.observed,
           expected: data.expected,
+          platformActual: data.platformActual,
+          platformPacksCracked: data.platformPacksCracked,
           headlineLabel: data.headlineLabel,
           headlineCopy,
           headlineRegime: data.headlineRegime,

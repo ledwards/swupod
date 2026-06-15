@@ -52,6 +52,13 @@ describe('/api/me/* auth enforcement', () => {
     assert.strictEqual(response.status, 401)
   })
 
+  it('GET /api/me/pool-history returns 401 without auth', async () => {
+    const { GET } = await import('./pool-history/route.ts')
+    const request = makeRequest('/api/me/pool-history')
+    const response = await GET(request)
+    assert.strictEqual(response.status, 401)
+  })
+
   it('GET /api/me/pools/:shareId returns 401 without auth', async () => {
     const { GET } = await import('./pools/[shareId]/route.ts')
     const request = makeRequest('/api/me/pools/abc123')

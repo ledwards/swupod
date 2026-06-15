@@ -316,6 +316,8 @@ export function buildRarityPanel(
   observed: Record<ExpectedRarity, number>,
   expected: Record<ExpectedRarity, number>,
   packsCracked: number,
+  platformActual: Record<ExpectedRarity, number> = emptyRarity(),
+  platformPacksCracked = 0,
 ) {
   const perRarity: Record<ExpectedRarity, LuckVerdict> = {} as Record<
     ExpectedRarity,
@@ -337,6 +339,8 @@ export function buildRarityPanel(
   return {
     observed,
     expected,
+    platformActual,
+    platformPacksCracked,
     perRarity,
     headlineRegime: headline.regime,
     headlineCopy: headline.copy,
@@ -352,6 +356,8 @@ export function buildAspectPanel(
   observed: Record<AspectCategory, number>,
   expected: Record<AspectCategory, number>,
   packsCracked: number,
+  platformActual: Record<AspectCategory, number> = emptyAspect(),
+  platformPacksCracked = 0,
 ) {
   const perAspect: Record<AspectCategory, LuckVerdict> = {} as Record<
     AspectCategory,
@@ -373,6 +379,8 @@ export function buildAspectPanel(
   return {
     observed,
     expected,
+    platformActual,
+    platformPacksCracked,
     perAspect,
     headlineRegime: headline.regime,
     headlineCopy: headline.copy,
@@ -476,6 +484,20 @@ export function buildEmptyResponse(setCode: string, scope: Scope) {
   }
 }
 
+function scaleActualsToPlayerPacks<T extends string>(
+  actual: Record<T, number>,
+  sourcePacks: number,
+  targetPacks: number,
+  labels: readonly T[],
+): Record<T, number> {
+  const out: Record<string, number> = {}
+  const scale = sourcePacks > 0 ? targetPacks / sourcePacks : 0
+  for (const label of labels) {
+    out[label] = Number(actual[label] || 0) * scale
+  }
+  return out as Record<T, number>
+}
+
 // ---------------------------------------------------------------------------
 // Card-name lookup
 // ---------------------------------------------------------------------------
@@ -517,6 +539,15 @@ const KEPT_SQL = `
     AND set_code = $2
     AND generated_at >= $3
     AND generated_at < ($4::date + interval '1 day')
+`
+
+const PLATFORM_KEPT_SQL = `
+  SELECT card_id, rarity, aspects, pack_index, source_id, source_type
+  FROM card_generations
+  WHERE user_id IS NOT NULL
+    AND set_code = $1
+    AND generated_at >= $2
+    AND generated_at < ($3::date + interval '1 day')
 `
 
 // ---------------------------------------------------------------------------
@@ -571,6 +602,14 @@ const OPENED_DRAFT_SQL = `
       (p.settings->>'draftMode' = 'chaos'
         AND pp.seat_number = (cg.pack_index::int % 8) + 1)
     )
+`
+
+const PLATFORM_OPENED_SQL = `
+  SELECT card_id, rarity, aspects, pack_index, source_id, source_type
+  FROM card_generations
+  WHERE set_code = $1
+    AND generated_at >= $2
+    AND generated_at < ($3::date + interval '1 day')
 `
 
 // ---------------------------------------------------------------------------
@@ -660,16 +699,38 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
     const expectedTotal = scaleExpected(perPack, observed.packsCracked)
 
+    const platformRows = (await queryRows(
+      scope === 'kept' ? PLATFORM_KEPT_SQL : PLATFORM_OPENED_SQL,
+      [setCode, since, until],
+    )) as unknown as GenerationRow[]
+    const platformObserved = aggregateObserved(platformRows)
+    const platformRarityForPlayerPacks = scaleActualsToPlayerPacks(
+      platformObserved.rarity,
+      platformObserved.packsCracked,
+      observed.packsCracked,
+      RARITIES,
+    )
+    const platformAspectForPlayerPacks = scaleActualsToPlayerPacks(
+      platformObserved.aspect,
+      platformObserved.packsCracked,
+      observed.packsCracked,
+      ASPECT_CATEGORIES,
+    )
+
     // --- panels ---
     const rarityPanel = buildRarityPanel(
       observed.rarity,
       expectedTotal.rarity,
       observed.packsCracked,
+      platformRarityForPlayerPacks,
+      platformObserved.packsCracked,
     )
     const aspectPanel = buildAspectPanel(
       observed.aspect,
       expectedTotal.aspect,
       observed.packsCracked,
+      platformAspectForPlayerPacks,
+      platformObserved.packsCracked,
     )
 
     // --- streaks ---

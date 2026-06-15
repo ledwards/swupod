@@ -275,6 +275,20 @@ describe('buildRarityPanel', () => {
     )
   })
 
+  it('includes platform actuals normalized to the player pack count', () => {
+    const out = buildRarityPanel(
+      { Common: 20, Uncommon: 8, Rare: 2, Legendary: 1 },
+      { Common: 21, Uncommon: 7, Rare: 2.5, Legendary: 0.5 },
+      10,
+      { Common: 19.5, Uncommon: 8.2, Rare: 2.1, Legendary: 0.4 },
+      500,
+    )
+
+    assert.strictEqual(out.platformActual.Common, 19.5)
+    assert.strictEqual(out.platformActual.Legendary, 0.4)
+    assert.strictEqual(out.platformPacksCracked, 500)
+  })
+
   it('returns insufficient regime when packsCracked is below MIN_PACKS_RARITY', () => {
     // n=10 << MIN_PACKS_RARITY (120 per stats.ts).
     const out = buildRarityPanel(
@@ -298,6 +312,20 @@ describe('buildAspectPanel', () => {
       Object.keys(out.perAspect).sort(),
       ['Aggression', 'Command', 'Cunning', 'Multicolor', 'Neutral', 'Vigilance'],
     )
+  })
+
+  it('includes platform actuals normalized to the player pack count', () => {
+    const out = buildAspectPanel(
+      { Vigilance: 20, Command: 18, Aggression: 17, Cunning: 16, Neutral: 8, Multicolor: 2 },
+      { Vigilance: 19, Command: 19, Aggression: 19, Cunning: 19, Neutral: 8, Multicolor: 1 },
+      10,
+      { Vigilance: 20.5, Command: 18.5, Aggression: 17.5, Cunning: 16.5, Neutral: 8.5, Multicolor: 1.5 },
+      800,
+    )
+
+    assert.strictEqual(out.platformActual.Vigilance, 20.5)
+    assert.strictEqual(out.platformActual.Multicolor, 1.5)
+    assert.strictEqual(out.platformPacksCracked, 800)
   })
 
   it('picks the most-surprising aspect as the headline driver', () => {
@@ -691,6 +719,30 @@ describe('SQL semantics (spec asserted against route source)', () => {
         /KEPT_SQL[\s\S]*?generated_at >= \$3[\s\S]*?generated_at < \(\$4::date \+ interval '1 day'\)/,
         'kept query uses half-open date filter',
       )
+    })
+  })
+
+  describe('platform actuals', () => {
+    it('queries platform kept pulls with the same set and half-open date filters', () => {
+      assert.match(
+        ROUTE_SRC,
+        /PLATFORM_KEPT_SQL[\s\S]*?user_id IS NOT NULL[\s\S]*?set_code = \$1[\s\S]*?generated_at >= \$2[\s\S]*?generated_at < \(\$3::date \+ interval '1 day'\)/,
+      )
+    })
+
+    it('queries platform opened pulls independently from the current user', () => {
+      assert.match(
+        ROUTE_SRC,
+        /PLATFORM_OPENED_SQL[\s\S]*?FROM card_generations[\s\S]*?WHERE set_code = \$1[\s\S]*?generated_at >= \$2[\s\S]*?generated_at < \(\$3::date \+ interval '1 day'\)/,
+      )
+    })
+
+    it('scales platform actuals down to the current player pack count before panel construction', () => {
+      assert.match(ROUTE_SRC, /function scaleActualsToPlayerPacks/)
+      assert.match(ROUTE_SRC, /targetPacks \/ sourcePacks/)
+      assert.match(ROUTE_SRC, /platformRarityForPlayerPacks[\s\S]*?buildRarityPanel/)
+      assert.match(ROUTE_SRC, /platformAspectForPlayerPacks[\s\S]*?buildAspectPanel/)
+      assert.match(ROUTE_SRC, /platformObserved\.packsCracked/)
     })
   })
 

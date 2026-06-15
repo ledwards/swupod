@@ -1,0 +1,221 @@
+/* ============================================================================
+ * WayfinderStoreButtons — branded browser-extension cards + "Powered by
+ * Wayfinder" badge. Co-located with the component and shared by the play page
+ * (PlayInstructions) and the /me page (YourStats). Self-contained: do not
+ * re-declare these classes in consumer stylesheets.
+ * ========================================================================== */
+
+.wf-store {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  min-width: 0;
+  font-family: 'Barlow', sans-serif;
+}
+
+.wf-store-grid {
+  display: grid;
+  /* auto-fit so the cards wrap instead of being clipped in narrow containers
+     (e.g. the Meta tab rail) — fixes the cutoff in R8. */
+  grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 640px;
+}
+
+.wf-store--stack .wf-store-grid {
+  grid-template-columns: 1fr;
+  max-width: 320px;
+}
+
+/* ----- Browser card -------------------------------------------------------- */
+
+.wf-browser-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 66px;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  background:
+    radial-gradient(120% 120% at 0% 0%, var(--wf-tint, rgba(255, 255, 255, 0.07)), transparent 60%),
+    rgba(0, 0, 0, 0.42);
+  color: #fff;
+  text-align: left;
+  text-decoration: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 26px rgba(0, 0, 0, 0.28);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+a.wf-browser-card,
+a.wf-browser-card:visited,
+a.wf-browser-card:hover,
+a.wf-browser-card:active {
+  color: #fff;
+  text-decoration: none;
+}
+
+.wf-browser-card--chrome { --wf-tint: rgba(66, 133, 244, 0.22); --wf-glow: rgba(66, 133, 244, 0.4); }
+.wf-browser-card--safari { --wf-tint: rgba(30, 144, 255, 0.2); --wf-glow: rgba(25, 211, 255, 0.34); }
+.wf-browser-card--firefox { --wf-tint: rgba(255, 95, 31, 0.18); --wf-glow: rgba(255, 122, 24, 0.34); }
+
+.wf-browser-card.is-live {
+  border-color: rgba(255, 255, 255, 0.26);
+  cursor: pointer;
+}
+
+.wf-browser-card.is-soon {
+  opacity: 0.82;
+  cursor: default;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .wf-browser-card.is-live:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 14px 30px var(--wf-glow, rgba(0, 0, 0, 0.4));
+  }
+}
+
+.wf-browser-card.is-live:focus-visible {
+  outline: 2px solid #90caf9;
+  outline-offset: 2px;
+}
+
+.wf-browser-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wf-browser-logo svg,
+.wf-browser-logo img {
+  width: 36px;
+  height: 36px;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.4));
+}
+
+.is-soon .wf-browser-logo img {
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.4)) saturate(0.92);
+}
+
+.wf-browser-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.wf-browser-name {
+  color: #fff;
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.wf-browser-sub {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wf-browser-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.32rem 0.55rem 0.32rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #0b1220;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.wf-browser-cta svg {
+  width: 13px;
+  height: 13px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .wf-browser-card.is-live:hover .wf-browser-cta {
+    background: #fff;
+  }
+}
+
+.wf-browser-flag {
+  padding: 0.2rem 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.32);
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ============================================================================
+ * Wayfinder Companion lockup — compass mark + "wayfinder companion" wordmark.
+ * Real brand assets (public/branding). Sits above install headings.
+ * ========================================================================== */
+
+.wf-lockup,
+.wf-lockup:visited,
+.wf-lockup:hover,
+.wf-lockup:active {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  opacity: 0.95;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.wf-lockup-mark {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  filter: drop-shadow(0 2px 8px rgba(142, 214, 255, 0.25));
+}
+
+.wf-lockup-wordmark {
+  height: 20px;
+  width: auto;
+  /* The wordmark ships in a light blue-grey; keep it crisp on the dark surface. */
+  opacity: 0.92;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .wf-lockup:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+}
+
+.wf-lockup:focus-visible {
+  outline: 2px solid #BED9F4;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ----- Narrow screens ------------------------------------------------------ */
+
+@media (max-width: 560px) {
+  .wf-store-grid {
+    grid-template-columns: 1fr;
+    max-width: 340px;
+  }
+}

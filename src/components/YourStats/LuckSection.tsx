@@ -91,7 +91,10 @@ export function LuckSection({ since, until, fetchImpl, initialSet, includeBetaSe
       refetching: prev.data !== null,
       error: false,
     }))
-    const params = new URLSearchParams({ setCode, scope, since, until })
+    // Luck is scoped by SET, all-time — NOT by the page's era window. Threading
+    // the era since/until here made any narrow Range (or the forward-looking
+    // ASH era) report "no packs opened" even when the user had opened plenty.
+    const params = new URLSearchParams({ setCode, scope })
     const f = fetchImpl || fetch
     f(`/api/stats/me/luck?${params.toString()}`, { credentials: 'include' })
       .then((r) => {
@@ -112,7 +115,7 @@ export function LuckSection({ since, until, fetchImpl, initialSet, includeBetaSe
     return () => {
       cancelled = true
     }
-  }, [setCode, scope, since, until, fetchImpl])
+  }, [setCode, scope, fetchImpl])
 
   const headerSuffix = state.refetching ? ' · Updating…' : ''
 

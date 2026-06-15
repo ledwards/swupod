@@ -1,33 +1,35 @@
 // @ts-nocheck
 /**
- * LoggedOutCTA — anonymous-visitor view of the "You" tab.
+ * LoggedOutCTA — anonymous-visitor view of /me.
  *
  * Per plan U7 and R14: explanation paragraph + Sign in with Discord link.
  * Renders NO sample or placeholder personal data — anonymous users get
  * nothing but the explanation, by design.
  *
- * Sign-in URL: /api/auth/signin/discord?return_to=/stats#you so the user
- * lands back on the You tab after OAuth.
+ * Sign-in URL lands back on the personal stats page after OAuth.
  */
 'use client'
 
-import Button from '@/src/components/Button'
+import WayfinderStoreButtons, { WayfinderCompanionLockup } from '@/src/components/WayfinderStoreButtons'
 
-const SIGN_IN_URL = '/api/auth/signin/discord?return_to=/stats#you'
+const SIGN_IN_URL = '/api/auth/signin/discord?return_to=/me'
 
 export function LoggedOutCTA() {
   return (
     <div className="your-stats-logged-out" data-testid="your-stats-logged-out">
-      <h2 className="your-stats-logged-out-title">Your Stats</h2>
+      <WayfinderCompanionLockup className="your-stats-logged-out-lockup" />
+      <h2 className="your-stats-logged-out-title">Unlock Play Data</h2>
       <p className="your-stats-logged-out-body">
-        See your own draft and sealed activity, your luck across rarity and aspect
-        distributions, and which cards you pull more — or less — than expected.
+        Wayfinder Companion is the best way to improve your Limited game: queue
+        with your pool, collect play stats tied to that pool, and rewatch your
+        replays after the match.
       </p>
       <p className="your-stats-logged-out-body">
-        Sign in with Discord to view your personal stats. We never show your data
-        to anyone else.
+        Install the Chrome extension, then sign in with Discord so your captured
+        games can land on your personal stats page.
       </p>
       <div className="your-stats-logged-out-actions">
+        <WayfinderStoreButtons orientation="inline" />
         <a
           href={SIGN_IN_URL}
           className="btn btn--discord btn--md your-stats-logged-out-link"
