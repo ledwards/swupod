@@ -35,7 +35,7 @@
 .wf-browser-card {
   position: relative;
   display: grid;
-  grid-template-columns: 38px minmax(0, 1fr) auto;
+  grid-template-columns: 38px minmax(0, 1fr);
   align-items: center;
   gap: 0.7rem;
   min-height: 66px;
@@ -123,44 +123,20 @@ a.wf-browser-card:active {
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  line-height: 1.1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.15;
 }
 
-.wf-browser-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-  padding: 0.32rem 0.55rem 0.32rem 0.6rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.95);
-  color: #0b1220;
-  font-size: 0.76rem;
-  font-weight: 800;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-}
-
-.wf-browser-cta svg {
-  width: 13px;
-  height: 13px;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .wf-browser-card.is-live:hover .wf-browser-cta {
-    background: #fff;
-  }
-}
-
+/* "Soon" badge — pinned to the card's upper-right so it never crowds line 2. */
 .wf-browser-flag {
-  padding: 0.2rem 0.5rem;
+  position: absolute;
+  top: 0.45rem;
+  right: 0.5rem;
+  padding: 0.16rem 0.42rem;
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.32);
+  background: rgba(0, 0, 0, 0.45);
   color: rgba(255, 255, 255, 0.62);
-  font-size: 0.64rem;
+  font-size: 0.58rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;

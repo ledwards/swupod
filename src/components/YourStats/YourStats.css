@@ -107,9 +107,39 @@
 
 .me-hero-toolbar {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   flex-wrap: wrap;
   gap: 0.75rem;
+}
+
+/* Icon-only download — text shows on hover via the native title tooltip. */
+.me-export-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  padding: 0;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--ys-border);
+  color: var(--ys-text-2);
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .me-export-btn:hover {
+    color: #fff;
+    border-color: var(--ys-accent-bright);
+    background: var(--ys-accent-dim);
+  }
+}
+
+.me-export-btn:focus-visible {
+  outline: 2px solid var(--ys-accent-bright);
+  outline-offset: 2px;
 }
 
 /* Date range (markup/classes from stats.css) — lay it out cleanly in the hero. */
@@ -898,6 +928,84 @@
 .your-stats-watch-btn:focus-visible {
   outline: 2px solid var(--ys-accent-bright);
   outline-offset: 2px;
+}
+
+/* Accordion: row is a button; clicking expands a detail panel */
+.your-stats-replay-row {
+  cursor: pointer;
+}
+
+.your-stats-replay-row:focus-visible {
+  outline: 2px solid var(--ys-accent-bright);
+  outline-offset: 2px;
+}
+
+.your-stats-replay-caret {
+  flex: 0 0 auto;
+  display: inline-flex;
+  color: var(--ys-text-3);
+  transition: transform 180ms ease;
+}
+
+.your-stats-replay-caret.is-open {
+  transform: rotate(180deg);
+}
+
+.your-stats-replay-item.is-expanded .your-stats-replay-row {
+  border-color: var(--ys-border-bright);
+  background: #0e131d;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.your-stats-replay-detail {
+  border: 1px solid var(--ys-border-bright);
+  border-top: none;
+  border-radius: 0 0 var(--ys-radius-sm) var(--ys-radius-sm);
+  background: rgba(0, 0, 0, 0.32);
+  padding: 0.9rem 1rem 1rem;
+  animation: ys-fade 220ms ease-out both;
+}
+
+.your-stats-replay-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.7rem 1.1rem;
+  margin-bottom: 0.9rem;
+}
+
+.your-stats-replay-detail-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.your-stats-replay-detail-field small {
+  color: var(--ys-text-3);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.your-stats-replay-detail-field strong {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.your-stats-replay-detail-games {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.your-stats-replay-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 /* Tight rows wrap on narrow screens */

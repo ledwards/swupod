@@ -29,15 +29,6 @@ function BrowserIcon({ browser }: { browser: BrowserName }) {
   )
 }
 
-/** Small "+" plus glyph for the live (installable) card CTA. */
-function PlusGlyph() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
-      <path d="M12 5v14M5 12h14" />
-    </svg>
-  )
-}
-
 // Parallel info hierarchy (R5): every card's subtitle is the *platform* it runs
 // on — one consistent axis, no mixing "Brave · Edge" (browsers) with "macOS"
 // (OS) with "Desktop" (form factor).
@@ -85,6 +76,7 @@ export function WayfinderStoreButtons({
           const className = `wf-browser-card wf-browser-card--${b.browser} ${isLive ? 'is-live' : 'is-soon'}`
           const inner = (
             <>
+              {!isLive && <span className="wf-browser-flag">Soon</span>}
               <span className="wf-browser-logo">
                 <BrowserIcon browser={b.browser} />
               </span>
@@ -92,13 +84,6 @@ export function WayfinderStoreButtons({
                 <strong className="wf-browser-name">{b.name}</strong>
                 <small className="wf-browser-sub">{b.sub}</small>
               </span>
-              {isLive ? (
-                <span className="wf-browser-cta">
-                  Add<PlusGlyph />
-                </span>
-              ) : (
-                <span className="wf-browser-flag">Soon</span>
-              )}
             </>
           )
 

@@ -71,12 +71,6 @@ const RELATIONSHIP_FILTERS: Array<{ value: 'all' | 'owned' | 'built-on' | 'share
   { value: 'shared', label: 'Shared', title: 'Shared pools you’ve viewed' },
 ]
 
-const RELATIONSHIP_EYEBROW: Record<PoolHistoryItem['relationship'], string> = {
-  owned: 'Your pool',
-  'built-on': 'Your build on another pool',
-  shared: 'Shared pool',
-}
-
 function SearchIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -132,7 +126,7 @@ function PoolBuildCard({
         {build.leaderImageUrl ? (
           <img src={build.leaderImageUrl} alt="" loading="lazy" />
         ) : (
-          <span className="your-stats-pool-build-art-fallback">{leader.charAt(0)}</span>
+          <span className="your-stats-pool-build-art-fallback">{build.leaderName ? build.leaderName.charAt(0) : '·'}</span>
         )}
       </div>
       {!build.isMine && (
@@ -156,14 +150,11 @@ function PoolBuildCard({
           <span>{recordLine(build)}</span>
           {build.capturedMatches > 0 && <span>{build.capturedMatches.toLocaleString()} captures</span>}
         </div>
-        <div className="your-stats-pool-build-tags">
-          {build.isOriginal && <span>Original pool</span>}
-          {build.isMine ? (
-            <span>Your decklist</span>
-          ) : (
+        {!build.isMine && (
+          <div className="your-stats-pool-build-tags">
             <span className="your-stats-pool-build-byline">by {build.builder.username || 'another player'}</span>
-          )}
-        </div>
+          </div>
+        )}
         <div className="your-stats-replay-actions">
           <a className="btn btn--interactive btn--sm your-stats-pool-action" href={build.links.deck}>Open</a>
           <a className="btn btn--secondary btn--sm your-stats-pool-action" href={build.links.play}>Play</a>
@@ -346,7 +337,6 @@ export function PoolHistoryDashboard({ fetchImpl }: { fetchImpl?: typeof fetch }
             <article key={pool.shareId} className={`your-stats-pool-group your-stats-pool-group--${pool.relationship}`}>
               <header className="your-stats-pool-group-header">
                 <div>
-                  <span className="your-stats-pool-eyebrow">{RELATIONSHIP_EYEBROW[pool.relationship]}</span>
                   <h3>{pool.name}</h3>
                   <p>
                     {pool.setCode || 'SWU'} · {pool.cardCount.toLocaleString()} cards · {formatDate(pool.updatedAt || pool.createdAt)}

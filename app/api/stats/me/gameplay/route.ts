@@ -710,34 +710,41 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       params
     ) as { replays_recorded?: string | number | null } | null
 
+    // DISTINCT ON (pm.id): a user can own several pools that share a pod_id
+    // (multiple builds of one draft pool), and the card_pools join fans out one
+    // match into N rows. Collapse to one row per match so the history isn't
+    // double-counted (R5). Pick the most recently updated matching pool.
     const replayRows = await queryRows(
-      `SELECT
-         pm.id AS match_id,
-         pm.wayfinder_match_id,
-         pm.wayfinder_replay_url,
-         pm.created_at,
-         pm.match_winner,
-         pm.game1_result,
-         pm.game2_result,
-         pm.game3_result,
-         pm.player1_id,
-         pm.player2_id,
-         CASE WHEN pm.player1_id = $1 THEN u2.username ELSE u1.username END AS opponent_username,
-         CASE WHEN pm.player1_id = $1 THEN u2.avatar_url ELSE u1.avatar_url END AS opponent_avatar_url,
-         cp.share_id AS pool_share_id,
-         cp.name AS pool_name,
-         cp.set_code,
-         cp.pool_type,
-         cp.deck_builder_state
-       FROM practice_matches pm
-       LEFT JOIN users u1 ON u1.id = pm.player1_id
-       LEFT JOIN users u2 ON u2.id = pm.player2_id
-       LEFT JOIN card_pools cp ON cp.pod_id = pm.pod_id AND cp.user_id = $1
-       WHERE (pm.player1_id = $1 OR pm.player2_id = $1)
-         AND pm.wayfinder_replay_url IS NOT NULL
-         AND pm.created_at >= $2
-         AND pm.created_at < ($3::date + interval '1 day')
-       ORDER BY pm.created_at DESC
+      `SELECT * FROM (
+         SELECT DISTINCT ON (pm.id)
+           pm.id AS match_id,
+           pm.wayfinder_match_id,
+           pm.wayfinder_replay_url,
+           pm.created_at,
+           pm.match_winner,
+           pm.game1_result,
+           pm.game2_result,
+           pm.game3_result,
+           pm.player1_id,
+           pm.player2_id,
+           CASE WHEN pm.player1_id = $1 THEN u2.username ELSE u1.username END AS opponent_username,
+           CASE WHEN pm.player1_id = $1 THEN u2.avatar_url ELSE u1.avatar_url END AS opponent_avatar_url,
+           cp.share_id AS pool_share_id,
+           cp.name AS pool_name,
+           cp.set_code,
+           cp.pool_type,
+           cp.deck_builder_state
+         FROM practice_matches pm
+         LEFT JOIN users u1 ON u1.id = pm.player1_id
+         LEFT JOIN users u2 ON u2.id = pm.player2_id
+         LEFT JOIN card_pools cp ON cp.pod_id = pm.pod_id AND cp.user_id = $1
+         WHERE (pm.player1_id = $1 OR pm.player2_id = $1)
+           AND pm.wayfinder_replay_url IS NOT NULL
+           AND pm.created_at >= $2
+           AND pm.created_at < ($3::date + interval '1 day')
+         ORDER BY pm.id, cp.updated_at DESC NULLS LAST
+       ) deduped
+       ORDER BY created_at DESC
        LIMIT 50`,
       params
     ) as RawReplayRow[]

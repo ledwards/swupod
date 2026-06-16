@@ -13,6 +13,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Button from '@/src/components/Button'
 import WayfinderStoreButtons from '@/src/components/WayfinderStoreButtons'
+import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import { getStatsSetTabs, DEFAULT_STATS_SET_TAB } from '@/src/utils/statsSetTabs'
 import { getAspectColor } from '@/src/utils/aspectColors'
 
@@ -114,6 +115,9 @@ function MetaSection({
 /** Win-rate section: gated behind the Companion because WR needs captured games. */
 function WinRateGate({ leaders }: { leaders: MetaEntry[] }) {
   // Render the leader list with placeholder bars, then blur + overlay the CTA.
+  // When the Companion is already installed (R10), don't pitch the install —
+  // the user just needs to play captured games for win rates to populate.
+  const { detected } = useWayfinderDetection()
   const teaser = leaders.slice(0, 6)
   return (
     <section className="your-stats-meta-card your-stats-meta-card--gated">
@@ -149,9 +153,18 @@ function WinRateGate({ leaders }: { leaders: MetaEntry[] }) {
               <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
           </span>
-          <h4>Give data to get data</h4>
-          <p>Win rates come from games captured through the Wayfinder Companion. Install it, play your pool on Karabast, and leader win rates unlock here.</p>
-          <WayfinderStoreButtons orientation="inline" />
+          {detected ? (
+            <>
+              <h4>Play to see your win rates</h4>
+              <p>The Companion is connected. Queue your pools on Karabast and your win rate by leader fills in here.</p>
+            </>
+          ) : (
+            <>
+              <h4>Give data to get data</h4>
+              <p>Win rates come from games captured through the Wayfinder Companion. Install it, play your pool on Karabast, and leader win rates unlock here.</p>
+              <WayfinderStoreButtons orientation="inline" />
+            </>
+          )}
         </div>
       </div>
     </section>
