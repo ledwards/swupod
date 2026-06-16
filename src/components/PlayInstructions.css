@@ -486,6 +486,65 @@
   line-height: 1.2;
 }
 
+/* Casual manual flow: setup bullets + numbered "3 ways to play" + Karabast CTA. */
+.play-manual-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.play-manual-bullets,
+.play-manual-ways-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.play-manual-bullets { list-style: disc; }
+.play-manual-ways-list { list-style: decimal; }
+
+.play-manual-bullets strong,
+.play-manual-ways-list strong {
+  color: #fff;
+}
+
+.play-manual-ways-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: #fff;
+  font-weight: 700;
+}
+
+.play-karabast-cta,
+.play-karabast-cta:visited,
+.play-karabast-cta:hover,
+.play-karabast-cta:active {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  align-self: flex-start;
+  padding: 0.6rem 1.15rem;
+  border-radius: 8px;
+  background: #4ade80;
+  color: #04130a;
+  font-weight: 800;
+  text-decoration: none;
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .play-karabast-cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 18px rgba(74, 222, 128, 0.5);
+  }
+}
+
 .wayfinder-join-label {
   color: rgba(255, 255, 255, 0.6);
   font-size: 0.85rem;

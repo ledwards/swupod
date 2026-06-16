@@ -14,9 +14,9 @@ const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https:
 const PRIVATE_LOBBY_PATTERN = /^https:\/\/karabast\.net\/\?lobbyId=[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 const WAYFINDER_VALUE_PROPS = [
-  'Seamlessly join the Karabast queue with your pool',
-  'Collect play data for your stats page tied to your pool',
-  'Record and rewatch your replays',
+  'Automagically join the Karabast queue',
+  'Collect play data for your pool',
+  'Record, share, and rewatch your replays',
 ] as const
 
 interface PlayInstructionsProps {
@@ -190,11 +190,10 @@ export default function PlayInstructions({
       <section className="wayfinder-promo-panel" aria-label="Wayfinder Companion">
         <div className="wayfinder-promo-copy">
           <WayfinderCompanionLockup className="wayfinder-promo-lockup" />
-          <h3>Play on Karabast and collect data automatically</h3>
+          <h3>Play on Karabast with Protect the Pod</h3>
           <p>
-            Install the Companion before you queue and Protect the Pod can carry
-            your pool into Karabast, then connect the games back to your stats
-            and replays.
+            Install the Companion before you queue and Protect the Pod can
+            connect your pool back to your stats and replays.
           </p>
           {renderValueProps()}
         </div>
@@ -243,48 +242,44 @@ export default function PlayInstructions({
       )
     }
 
-    return (
-      <>
-        <div className="play-step">
-          <span className="step-number">1</span>
-          <div className="step-content">
-            <h3>Copy Your Deck:
-              {onCopyLink && (
-                <button className="step-copy-button" onClick={onCopyLink} title="Copy deck link">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                  </svg>
-                  Link
-                </button>
-              )}
-              {onCopyJson && (
-                <button className="step-copy-button" onClick={onCopyJson} title="Copy deck JSON">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                  </svg>
-                  JSON
-                </button>
-              )}
-            </h3>
-            <p>Copy your deck link for <a href="https://karabast.net" target="_blank" rel="noopener noreferrer" onClick={() => trackPlayAction(LimitedPlayActions.OPEN_KARABAST, { target: 'karabast' })}>Karabast</a>, or copy the deck JSON for <a href="https://swudb.com" target="_blank" rel="noopener noreferrer">SWUDB</a>.</p>
+    if (inPod) {
+      return (
+        <>
+          <div className="play-step">
+            <span className="step-number">1</span>
+            <div className="step-content">
+              <h3>Copy Your Deck:
+                {onCopyLink && (
+                  <button className="step-copy-button" onClick={onCopyLink} title="Copy deck link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                    </svg>
+                    Link
+                  </button>
+                )}
+                {onCopyJson && (
+                  <button className="step-copy-button" onClick={onCopyJson} title="Copy deck JSON">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    JSON
+                  </button>
+                )}
+              </h3>
+              <p>Copy your deck link for <a href="https://karabast.net" target="_blank" rel="noopener noreferrer" onClick={() => trackPlayAction(LimitedPlayActions.OPEN_KARABAST, { target: 'karabast' })}>Karabast</a>, or copy the deck JSON for <a href="https://swudb.com" target="_blank" rel="noopener noreferrer">SWUDB</a>.</p>
+            </div>
           </div>
-        </div>
 
-        <div className="play-step">
-          <span className="step-number">2</span>
-          <div className="step-content">
-            <h3>Play on Karabast</h3>
-            {inPod ? (
+          <div className="play-step">
+            <span className="step-number">2</span>
+            <div className="step-content">
+              <h3>Play on Karabast</h3>
               <p>Create a <strong>Private Lobby</strong> on <a href="https://karabast.net" target="_blank" rel="noopener noreferrer" onClick={() => trackPlayAction(LimitedPlayActions.OPEN_KARABAST, { target: 'karabast' })}>karabast.net</a> with <strong>Format: Limited</strong> and <strong>Card Pool: {cardPoolName}</strong>. Paste your deck link or JSON as your decklist and share the lobby link with your opponent.</p>
-            ) : (
-              <p>Go to <a href="https://karabast.net" target="_blank" rel="noopener noreferrer" onClick={() => trackPlayAction(LimitedPlayActions.OPEN_KARABAST, { target: 'karabast' })}>karabast.net</a> and paste your deck link or JSON. Create a <strong>Public Lobby</strong> with <strong>Format: Limited</strong> and <strong>Card Pool: {cardPoolName}</strong> to find a match, join an existing <strong>Limited Lobby</strong>, or make a <strong>Private Lobby</strong> and share the link with a friend from the <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">Protect the Pod Discord</a>.</p>
-            )}
+            </div>
           </div>
-        </div>
 
-        {inPod && (
           <div className="play-step">
             <span className="step-number">3</span>
             <div className="step-content">
@@ -306,8 +301,40 @@ export default function PlayInstructions({
               )}
             </div>
           </div>
-        )}
-      </>
+        </>
+      )
+    }
+
+    return (
+      <div className="play-manual-flow">
+        <ul className="play-manual-bullets">
+          <li>Go to <a href="https://karabast.net" target="_blank" rel="noopener noreferrer" onClick={() => trackPlayAction(LimitedPlayActions.OPEN_KARABAST, { target: 'karabast' })}>karabast.net</a></li>
+          <li>Paste your deck link or JSON</li>
+          <li>Create a <strong>Public Lobby</strong> with <strong>Format: Limited</strong> and <strong>Card Pool: {cardPoolName}</strong></li>
+        </ul>
+
+        <div className="play-manual-ways">
+          <span className="play-manual-ways-label">3 ways to play:</span>
+          <ol className="play-manual-ways-list">
+            <li>Find a match</li>
+            <li>Join an existing <strong>Limited Lobby</strong></li>
+            <li>Make a <strong>Private Lobby</strong> and share the link with a friend from the <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">Protect the Pod Discord</a></li>
+          </ol>
+        </div>
+
+        <a
+          className="play-karabast-cta"
+          href="https://karabast.net"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackPlayAction(LimitedPlayActions.OPEN_KARABAST, { target: 'karabast' })}
+        >
+          Karabast
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </a>
+      </div>
     )
   }
 
