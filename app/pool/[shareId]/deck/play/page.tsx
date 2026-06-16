@@ -158,8 +158,11 @@ export default function PlayPage({ params }: PageProps) {
   // Deck (archetype) name — the deck builder doesn't plumb a name onto this page,
   // so derive it from the deck's active leader card. Shown under the pool name.
   const deckArchetypeName = useMemo(() => {
-    const lead = deckBuilderState?.cardPositions?.[deckBuilderState?.activeLeader]?.card
-    return lead?.name || null
+    const positions = deckBuilderState?.cardPositions
+    const leaderName = positions?.[deckBuilderState?.activeLeader]?.card?.name || null
+    const baseName = positions?.[deckBuilderState?.activeBase]?.card?.name || null
+    if (leaderName && baseName) return `${leaderName} / ${baseName}`
+    return leaderName || baseName || null
   }, [deckBuilderState])
   // The play box has two tabs: Play (the existing wayfinder/manual instructions)
   // and Record (your game history, or a prompt to install the plugin).

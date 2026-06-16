@@ -7,6 +7,7 @@ import { trackEvent } from '../hooks/useAnalytics'
 import { buildLimitedContext, LimitedAnalyticsEvents, LimitedPlayActions } from '../analytics/limitedEvents'
 import { KARABAST_PUBLIC_LOBBY_NAME } from '../utils/karabastLobby'
 import WayfinderStoreButtons, { WayfinderCompanionLockup } from './WayfinderStoreButtons'
+import Button from './Button'
 import './PlayInstructions.css'
 
 const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/u6fkdDzWqF'
@@ -322,18 +323,19 @@ export default function PlayInstructions({
           </ol>
         </div>
 
-        <a
+        <Button
+          variant="primary"
           className="play-karabast-cta"
-          href="https://karabast.net"
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => trackPlayAction(LimitedPlayActions.OPEN_KARABAST, { target: 'karabast' })}
+          onClick={() => {
+            trackPlayAction(LimitedPlayActions.OPEN_KARABAST, { target: 'karabast' })
+            window.open('https://karabast.net', '_blank', 'noopener,noreferrer')
+          }}
         >
           Karabast
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M5 12h14M13 6l6 6-6 6" />
           </svg>
-        </a>
+        </Button>
       </div>
     )
   }

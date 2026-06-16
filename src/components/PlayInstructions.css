@@ -106,13 +106,17 @@
   color: #4ade80;
 }
 
+/* Detected state: a small green box hugging just the logo (not a big panel
+   around the whole column like the no-plugin install promo). */
 .wayfinder-ready-panel {
-  display: flex;
-  justify-content: center;
-  padding: 0.85rem 1rem;
-  background: rgba(74, 222, 128, 0.08);
-  border: 1px solid rgba(74, 222, 128, 0.25);
-  border-radius: 8px;
+  display: inline-flex;
+  align-self: center;
+  width: fit-content;
+  margin: 0 auto 0.25rem;
+  padding: 0.45rem 0.85rem;
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.4);
+  border-radius: 10px;
 }
 
 .wayfinder-ready-lockup {
@@ -520,29 +524,10 @@
   font-weight: 700;
 }
 
-.play-karabast-cta,
-.play-karabast-cta:visited,
-.play-karabast-cta:hover,
-.play-karabast-cta:active {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
+/* The Button component supplies the green "go" CTA style; we only nudge layout. */
+.play-karabast-cta {
   align-self: flex-start;
-  padding: 0.6rem 1.15rem;
-  border-radius: 8px;
-  background: #4ade80;
-  color: #04130a;
-  font-weight: 800;
-  text-decoration: none;
-  transition: box-shadow 0.18s ease, transform 0.18s ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .play-karabast-cta:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 0 18px rgba(74, 222, 128, 0.5);
-  }
+  gap: 0.4rem;
 }
 
 .wayfinder-join-label {
