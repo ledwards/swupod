@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import './WayfinderStoreButtons.css'
 
 export const WAYFINDER_CHROME_WEB_STORE_URL = 'https://chromewebstore.google.com/detail/wayfinder-companion/econclbajpendbppldcnpngjfddcogfh'
@@ -29,20 +30,40 @@ function BrowserIcon({ browser }: { browser: BrowserName }) {
   )
 }
 
-// Parallel info hierarchy (R5): every card's subtitle is the *platform* it runs
-// on — one consistent axis, no mixing "Brave · Edge" (browsers) with "macOS"
-// (OS) with "Desktop" (form factor).
-const BROWSERS: Array<{
+interface BrowserCard {
   browser: BrowserName
   name: string
   sub: string
   status: 'live' | 'soon'
   cta: string
-}> = [
+}
+
+// Desktop: the browser extension. Subtitle is the platform (one consistent axis).
+const DESKTOP_BROWSERS: BrowserCard[] = [
   { browser: 'chrome', name: 'Chrome', sub: 'Windows · macOS · Linux', status: 'live', cta: 'Add to Chrome' },
   { browser: 'safari', name: 'Safari', sub: 'macOS', status: 'soon', cta: 'Add to Safari' },
   { browser: 'firefox', name: 'Firefox', sub: 'Windows · macOS · Linux', status: 'soon', cta: 'Add to Firefox' },
 ]
+
+// Mobile: the companion's mobile builds. Per Wayfinder, iOS Safari and Chrome
+// on mobile are not public yet, so both are "Soon".
+const MOBILE_BROWSERS: BrowserCard[] = [
+  { browser: 'safari', name: 'Safari', sub: 'iOS', status: 'soon', cta: 'Get on iOS' },
+  { browser: 'chrome', name: 'Chrome', sub: 'Android', status: 'soon', cta: 'Get on Android' },
+]
+
+/** Coarse pointer / narrow viewport = treat as a phone/tablet. */
+function useIsMobile(): boolean {
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 640px), (pointer: coarse)')
+    const update = () => setIsMobile(mq.matches)
+    update()
+    mq.addEventListener?.('change', update)
+    return () => mq.removeEventListener?.('change', update)
+  }, [])
+  return isMobile
+}
 
 /**
  * WayfinderCompanionLockup — the compass mark + "wayfinder companion" wordmark,
@@ -68,10 +89,13 @@ export function WayfinderStoreButtons({
   orientation = 'inline',
   onChromeClick,
 }: WayfinderStoreButtonsProps) {
+  const isMobile = useIsMobile()
+  const cards = isMobile ? MOBILE_BROWSERS : DESKTOP_BROWSERS
+  const alsoOn = isMobile ? 'desktop' : 'iOS and Android'
   return (
     <div className={`wf-store wf-store--${orientation}`}>
-      <div className="wf-store-grid" aria-label="Companion browser availability">
-        {BROWSERS.map((b) => {
+      <div className="wf-store-grid" aria-label="Companion availability">
+        {cards.map((b) => {
           const isLive = b.status === 'live'
           const className = `wf-browser-card wf-browser-card--${b.browser} ${isLive ? 'is-live' : 'is-soon'}`
           const inner = (
@@ -107,14 +131,15 @@ export function WayfinderStoreButtons({
               key={b.browser}
               className={className}
               role="img"
-              aria-label={`${b.name} extension — awaiting approval`}
-              title={`${b.name} companion is awaiting store approval`}
+              aria-label={`${b.name} — coming soon`}
+              title={`${b.name} companion is coming soon`}
             >
               {inner}
             </span>
           )
         })}
       </div>
+      <p className="wf-store-also">Also available on {alsoOn}</p>
     </div>
   )
 }

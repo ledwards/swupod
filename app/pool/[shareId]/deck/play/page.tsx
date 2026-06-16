@@ -256,6 +256,14 @@ export default function PlayPage({ params }: PageProps) {
   // but NOT the page's window — so we check for a <meta name="wayfinder-installed"> tag)
   const [wayfinderDetected, setWayfinderDetected] = useState(false)
   useEffect(() => {
+    // Dev/QA override: the extension only injects on the real domain, so it
+    // can't be detected on localhost. ?wayfinder=1 (or =0) forces the state so
+    // the "Play with Wayfinder" flow can be tested locally.
+    const params = new URLSearchParams(window.location.search)
+    const forced = params.get('wayfinder')
+    if (forced === '1' || forced === 'true') { setWayfinderDetected(true); return }
+    if (forced === '0' || forced === 'false') { setWayfinderDetected(false); return }
+
     if (document.querySelector('meta[name="wayfinder-installed"]')) {
       setWayfinderDetected(true)
       return
