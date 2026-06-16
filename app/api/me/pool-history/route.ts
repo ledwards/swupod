@@ -80,9 +80,14 @@ function titleCaseFormat(format: string): string {
   }
 }
 
+// A pool is not a game — never surface a match-style stored name ("X vs Y").
+function looksLikeMatch(name: string | null | undefined): boolean {
+  return !!name && /\bvs\.?\b/i.test(name)
+}
+
 function fallbackPoolName(row: any, preview: DeckPreview): string {
-  if (preview.poolName) return preview.poolName
-  if (row.name) return row.name
+  if (preview.poolName && !looksLikeMatch(preview.poolName)) return preview.poolName
+  if (row.name && !looksLikeMatch(row.name)) return row.name
 
   const setCode = row.set_code || ''
   const setCodes = setCode.includes(',') ? setCode.split(',').map((s: string) => s.trim()) : [setCode]

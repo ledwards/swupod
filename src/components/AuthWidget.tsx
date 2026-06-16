@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react'
 import type { MouseEvent } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { fetchUserPools } from '../utils/poolApi'
-import { formatPoolLabel } from '../utils/poolDisplayName'
+import { formatPoolLabel, cleanPoolName } from '../utils/poolDisplayName'
 import { useRouter, usePathname } from 'next/navigation'
 import UserAvatar from './UserAvatar'
 import './AuthWidget.css'
@@ -131,7 +131,7 @@ export default function AuthWidget() {
             .map((p) => ({
               kind: 'pool' as const,
               url: `/pool/${p.shareId}/deck`,
-              label: p.leaderName || p.name || formatPoolLabel(p.setCode, p.poolType === 'draft' ? 'draft' : 'sealed'),
+              label: p.leaderName || cleanPoolName(p.name, p.setCode, p.poolType === 'draft' ? 'draft' : 'sealed'),
             }))
           setRecentPools(recents)
         })
