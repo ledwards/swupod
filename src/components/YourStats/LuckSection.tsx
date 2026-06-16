@@ -131,6 +131,7 @@ export function LuckSection({ since, until, fetchImpl, initialSet, includeBetaSe
         <h3 className="your-stats-section-heading">
           Luck{headerSuffix}
         </h3>
+        <p className="your-stats-luck-intro">Think you&apos;re lucky or unlucky? Check here to find out.</p>
       </div>
 
       {/* Set selector: button row on desktop, native select on mobile.

@@ -279,6 +279,22 @@ export default function AuthWidget() {
                 </a>
               )}
 
+              <a
+                href="/me"
+                className="auth-widget-drawer-menu-item"
+                onClick={(e: MouseEvent<HTMLAnchorElement>) => {
+                  e.preventDefault()
+                  router.push('/me')
+                  setDrawerOpen(false)
+                }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 3v18h18" />
+                  <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" />
+                </svg>
+                My Stats
+              </a>
+
               <div className="auth-widget-drawer-section-label">Recent Activity</div>
 
               {loadingData && (

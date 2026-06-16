@@ -60,8 +60,25 @@
 
 .me-hero-avatar {
   flex: 0 0 auto;
+  margin-right: 0.6rem;
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12), 0 8px 22px rgba(0, 0, 0, 0.4);
   border-radius: 999px;
+}
+
+/* No-deck pool card: just the "Build Deck" CTA, centered. */
+.your-stats-pool-build--empty {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+}
+
+.your-stats-pool-build--empty .your-stats-replay-content {
+  position: static;
+  padding: 0;
+  max-width: none;
+  min-height: 0;
 }
 
 .me-hero-avatar--anon {
@@ -1696,8 +1713,16 @@ a.your-stats-logged-out-link:active {
 
 .your-stats-luck-section-header {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
   justify-content: space-between;
+}
+
+.your-stats-luck-intro {
+  margin: 0;
+  color: var(--ys-text-2);
+  font-size: 0.92rem;
 }
 
 .your-stats-luck-controls {

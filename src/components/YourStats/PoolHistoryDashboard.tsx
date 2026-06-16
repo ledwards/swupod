@@ -64,12 +64,17 @@ interface FetchState {
   pools: PoolHistoryItem[]
 }
 
-const RELATIONSHIP_FILTERS: Array<{ value: 'all' | 'owned' | 'built-on' | 'shared'; label: string; title: string }> = [
+type PoolFilter = 'all' | 'with-decks' | 'no-decks' | 'friends'
+
+const RELATIONSHIP_FILTERS: Array<{ value: PoolFilter; label: string; title: string }> = [
   { value: 'all', label: 'All', title: 'All pools' },
-  { value: 'owned', label: 'Owned', title: 'Pools you own' },
-  { value: 'built-on', label: 'Built', title: 'Your builds on other players’ pools' },
-  { value: 'shared', label: 'Shared', title: 'Shared pools you’ve viewed' },
+  { value: 'with-decks', label: 'With decks built', title: 'Pools with at least one deck built' },
+  { value: 'no-decks', label: 'No decks built', title: 'Pools with no deck yet' },
+  { value: 'friends', label: 'Friends', title: 'Pools that involve other players' },
 ]
+
+const poolHasDeck = (pool: PoolHistoryItem): boolean =>
+  pool.builds.some((b) => b.leaderName || b.baseName)
 
 function SearchIcon() {
   return (
@@ -107,6 +112,24 @@ function absoluteUrl(path: string): string {
   return new URL(path, window.location.origin).toString()
 }
 
+function LinkIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+    </svg>
+  )
+}
+
+function CopyIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  )
+}
+
 function PoolBuildCard({
   build,
   copiedKey,
@@ -118,8 +141,21 @@ function PoolBuildCard({
 }) {
   const deckUrl = absoluteUrl(build.links.deck)
   const jsonUrl = absoluteUrl(build.links.json)
-  const leader = build.leaderName || comboLine(build)
+  const hasDeck = Boolean(build.leaderName || build.baseName)
   const style = build.baseColor ? ({ ['--row-tint' as any]: build.baseColor }) : undefined
+
+  // A pool with no deck built yet: just an invitation to build one.
+  if (!hasDeck) {
+    return (
+      <div className="your-stats-pool-build your-stats-pool-build--empty">
+        <div className="your-stats-replay-content">
+          <a className="btn btn--primary btn--sm your-stats-pool-action" href={build.links.deck}>Build Deck</a>
+        </div>
+      </div>
+    )
+  }
+
+  const leader = build.leaderName || comboLine(build)
   return (
     <div className="your-stats-pool-build" style={style}>
       <div className="your-stats-pool-build-art" aria-hidden="true">
@@ -156,21 +192,23 @@ function PoolBuildCard({
           </div>
         )}
         <div className="your-stats-replay-actions">
-          <a className="btn btn--interactive btn--sm your-stats-pool-action" href={build.links.deck}>Open</a>
+          <a className="btn btn--interactive btn--sm your-stats-pool-action" href={build.links.deck}>Edit</a>
           <a className="btn btn--secondary btn--sm your-stats-pool-action" href={build.links.play}>Play</a>
           <Button
             variant="secondary"
             size="sm"
+            title="Copy deck link"
             onClick={() => copyValue(`url-${build.shareId}`, deckUrl)}
           >
-            {copiedKey === `url-${build.shareId}` ? 'Copied URL' : 'Copy URL'}
+            {copiedKey === `url-${build.shareId}` ? 'Copied' : <LinkIcon />}
           </Button>
           <Button
             variant="secondary"
             size="sm"
+            title="Copy deck JSON"
             onClick={() => copyValue(`json-${build.shareId}`, jsonUrl)}
           >
-            {copiedKey === `json-${build.shareId}` ? 'Copied JSON' : 'Copy JSON'}
+            {copiedKey === `json-${build.shareId}` ? 'Copied' : <CopyIcon />}
           </Button>
         </div>
       </div>
@@ -181,7 +219,7 @@ function PoolBuildCard({
 export function PoolHistoryDashboard({ fetchImpl }: { fetchImpl?: typeof fetch }) {
   const [state, setState] = useState<FetchState>({ loading: true, error: false, pools: [] })
   const [query, setQuery] = useState('')
-  const [relationshipFilter, setRelationshipFilter] = useState<'all' | 'owned' | 'built-on' | 'shared'>('all')
+  const [relationshipFilter, setRelationshipFilter] = useState<PoolFilter>('all')
   const [sortBy, setSortBy] = useState<'recent' | 'leader' | 'owner' | 'builds'>('recent')
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
 
@@ -230,7 +268,12 @@ export function PoolHistoryDashboard({ fetchImpl }: { fetchImpl?: typeof fetch }
     }
 
     return state.pools
-      .filter((pool) => relationshipFilter === 'all' || pool.relationship === relationshipFilter)
+      .filter((pool) => {
+        if (relationshipFilter === 'with-decks') return poolHasDeck(pool)
+        if (relationshipFilter === 'no-decks') return !poolHasDeck(pool)
+        if (relationshipFilter === 'friends') return pool.relationship !== 'owned' || pool.builds.some((b) => !b.isMine)
+        return true
+      })
       .filter(matchesSearch)
       .sort((a, b) => {
         if (sortBy === 'leader') {
