@@ -50,38 +50,51 @@ function dbIdentity(url: string): string {
   }
 }
 
-async function tableColumns(pool: pg.Pool, table: string): Promise<string[]> {
+interface ColInfo {
+  names: Set<string>
+  /** Columns whose type is json/jsonb — values must be JSON.stringify'd, even arrays. */
+  jsonCols: Set<string>
+}
+
+async function tableColumns(pool: pg.Pool, table: string): Promise<ColInfo> {
   const { rows } = await pool.query(
-    `SELECT column_name FROM information_schema.columns
+    `SELECT column_name, data_type FROM information_schema.columns
      WHERE table_schema = 'public' AND table_name = $1
      ORDER BY ordinal_position`,
     [table]
   )
-  return rows.map((r: any) => r.column_name)
+  const names = new Set<string>()
+  const jsonCols = new Set<string>()
+  for (const r of rows as any[]) {
+    names.add(r.column_name)
+    if (r.data_type === 'json' || r.data_type === 'jsonb') jsonCols.add(r.column_name)
+  }
+  return { names, jsonCols }
 }
 
 /**
  * Insert rows into the target table, intersecting each row's keys with the
  * target's actual columns (so a column that only exists in prod is dropped).
  * ON CONFLICT (id) DO NOTHING keeps it idempotent and non-destructive.
+ *
+ * json/jsonb columns are re-stringified (pg returns them parsed); native array
+ * columns (text[]/uuid[]) are left as JS arrays so pg serialises them correctly.
  */
 async function insertRows(
   target: pg.Pool,
   table: string,
   rows: any[],
-  targetCols: Set<string>
+  colInfo: ColInfo
 ): Promise<number> {
   let inserted = 0
   for (const row of rows) {
-    const cols = Object.keys(row).filter((c) => targetCols.has(c))
+    const cols = Object.keys(row).filter((c) => colInfo.names.has(c))
     if (cols.length === 0) continue
     const placeholders = cols.map((_, i) => `$${i + 1}`).join(', ')
     const values = cols.map((c) => {
       const v = row[c]
-      // pg returns json/jsonb as parsed objects; re-stringify for insert.
-      return v !== null && typeof v === 'object' && !(v instanceof Date) && !Array.isArray(v)
-        ? JSON.stringify(v)
-        : v
+      if (v !== null && colInfo.jsonCols.has(c) && typeof v === 'object') return JSON.stringify(v)
+      return v
     })
     try {
       const res = await target.query(
@@ -227,7 +240,7 @@ async function main() {
     ]
 
     // card_pools first (parent-first) since other tables FK to it.
-    const poolCols = new Set(await tableColumns(target, 'card_pools'))
+    const poolCols = await tableColumns(target, 'card_pools')
     const insertedPoolIds = new Set<string>()
     let remaining = [...pools]
     let progress = true
@@ -261,7 +274,7 @@ async function main() {
         counts[table] = 0
         continue
       }
-      const cols = new Set(await tableColumns(target, table))
+      const cols = await tableColumns(target, table)
       counts[table] = await insertRows(target, table, rows, cols)
     }
 
