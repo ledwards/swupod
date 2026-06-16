@@ -26,6 +26,7 @@ import PlayInstructions from '../../../../../src/components/PlayInstructions'
 import ChatPanel from '../../../../../src/components/ChatPanel'
 import MatchmakingPanel from '../../../../../src/components/MatchmakingPanel'
 import ResultReportModal from '../../../../../src/components/ResultReportModal'
+import { useWayfinderDetection } from '../../../../../src/hooks/useWayfinderDetection'
 import { useDraftSocket } from '../../../../../src/hooks/useDraftSocket'
 import { trackEvent } from '../../../../../src/hooks/useAnalytics'
 import {
@@ -252,34 +253,9 @@ export default function PlayPage({ params }: PageProps) {
     })
   }
 
-  // Detect Wayfinder extension via DOM marker (content scripts share the DOM
-  // but NOT the page's window — so we check for a <meta name="wayfinder-installed"> tag)
-  const [wayfinderDetected, setWayfinderDetected] = useState(false)
-  useEffect(() => {
-    // Dev/QA override: the extension only injects on the real domain, so it
-    // can't be detected on localhost. ?wayfinder=1 (or =0) forces the state so
-    // the "Play with Wayfinder" flow can be tested locally.
-    const params = new URLSearchParams(window.location.search)
-    const forced = params.get('wayfinder')
-    if (forced === '1' || forced === 'true') { setWayfinderDetected(true); return }
-    if (forced === '0' || forced === 'false') { setWayfinderDetected(false); return }
-
-    if (document.querySelector('meta[name="wayfinder-installed"]')) {
-      setWayfinderDetected(true)
-      return
-    }
-    // Extension content script may load after React mount — listen for its event
-    const onInstalled = () => setWayfinderDetected(true)
-    document.addEventListener('wayfinder:installed', onInstalled)
-    // Also poll briefly in case the event fired before this listener was registered
-    const timer = setTimeout(() => {
-      if (document.querySelector('meta[name="wayfinder-installed"]')) setWayfinderDetected(true)
-    }, 1000)
-    return () => {
-      document.removeEventListener('wayfinder:installed', onInstalled)
-      clearTimeout(timer)
-    }
-  }, [])
+  // Detect the Wayfinder extension via the centralized hook (meta tag + event +
+  // postMessage, with a localStorage bridge and the ?wayfinder=1/0 QA override).
+  const { detected: wayfinderDetected } = useWayfinderDetection()
 
   useEffect(() => {
     setShareId(resolvedParams.shareId)

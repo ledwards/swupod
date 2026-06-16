@@ -5,7 +5,8 @@ import { useState, useEffect, useRef } from 'react'
 import type { MouseEvent } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { fetchUserPools } from '../utils/poolApi'
-import { formatPoolLabel, cleanPoolName } from '../utils/poolDisplayName'
+import { formatPoolLabel } from '../utils/poolDisplayName'
+import { poolDisplayName } from '../utils/archetypeName'
 import { useRouter, usePathname } from 'next/navigation'
 import UserAvatar from './UserAvatar'
 import './AuthWidget.css'
@@ -131,7 +132,15 @@ export default function AuthWidget() {
             .map((p) => ({
               kind: 'pool' as const,
               url: `/pool/${p.shareId}/deck`,
-              label: p.leaderName || cleanPoolName(p.name, p.setCode, p.poolType === 'draft' ? 'draft' : 'sealed'),
+              // Canonical pool name: archetype + date when there's a deck, else
+              // SET + format + date. The recent-pools list only carries the
+              // leader (no base), so the archetype is the leader name here.
+              label: poolDisplayName({
+                archetypeShort: p.leaderName,
+                setCode: p.setCode,
+                poolType: p.poolType,
+                date: p.createdAt,
+              }),
             }))
           setRecentPools(recents)
         })

@@ -5,11 +5,15 @@ import { requireAuth } from '@/lib/auth'
 import { jsonResponse, handleApiError, formatSetCodeRange } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
 import { getAspectColor } from '@/src/utils/aspectColors'
+import { archetypeShortName, poolDisplayName } from '@/src/utils/archetypeName'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface DeckPreview {
   leaderName: string | null
+  leaderShortName: string | null
   baseName: string | null
+  baseAspects: string[]
+  baseHp: number | null
   leaderImageUrl: string | null
   baseImageUrl: string | null
   baseColor: string | null
@@ -46,9 +50,13 @@ function extractDeckPreview(raw: unknown): DeckPreview {
     !pos?.card?.isBase
   ).length
 
+  const leaderName = cardName(leaderCard)
   return {
-    leaderName: cardName(leaderCard),
+    leaderName,
+    leaderShortName: leaderName ? leaderName.split(/[\s,]/)[0] || null : null,
     baseName: cardName(baseCard),
+    baseAspects: Array.isArray(baseCard?.aspects) ? baseCard.aspects : [],
+    baseHp: typeof baseCard?.hp === 'number' ? baseCard.hp : null,
     leaderImageUrl: leaderCard?.imageUrl || leaderCard?.artUrl || null,
     baseImageUrl: baseCard?.imageUrl || baseCard?.artUrl || null,
     baseColor: baseCard ? getAspectColor(baseCard) : null,
@@ -209,7 +217,21 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     const pools = rootRows.map((row: any) => {
       const rootPreview = extractDeckPreview(row.deck_builder_state)
-      const rootName = fallbackPoolName(row, rootPreview)
+      // Canonical pool name: "{Archetype} {MM.DD.YYYY}" when there's a deck,
+      // else "{SET} {Draft|Sealed} {MM.DD.YYYY}" (R-pool-naming). Uses the local
+      // archetype fallback (leader + base color + HP) — no per-pool resolver call.
+      const rootArchetype = archetypeShortName({
+        leaderShortName: rootPreview.leaderShortName,
+        leaderName: rootPreview.leaderName,
+        baseAspects: rootPreview.baseAspects,
+        baseHp: rootPreview.baseHp,
+      })
+      const rootName = poolDisplayName({
+        archetypeShort: rootArchetype,
+        setCode: row.set_code,
+        poolType: row.pool_type,
+        date: row.created_at,
+      })
       const isOwned = row.owner_id === session.id
       const relationship = isOwned
         ? 'owned'

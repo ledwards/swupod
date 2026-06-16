@@ -68,6 +68,7 @@ function extractBuildInfo(deckBuilderState: unknown) {
     leaderUuid: resolveUuid(leaderCard, 'leader'),
     baseName: baseCard?.name || null,
     baseAspects: baseCard?.aspects || [],
+    baseHp: baseCard?.hp ?? null,
     baseUuid: resolveUuid(baseCard, 'base'),
     deckCardCount,
   }

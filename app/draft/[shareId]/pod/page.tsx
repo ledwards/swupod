@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { getPackArtUrl } from '../../../../src/utils/packArt'
 import { useAuth } from '../../../../src/contexts/AuthContext'
 import { usePodSocket } from '../../../../src/hooks/usePodSocket'
+import { useWayfinderDetection } from '../../../../src/hooks/useWayfinderDetection'
 import { loadPool } from '../../../../src/utils/poolApi'
 import { jsonParse } from '../../../../src/utils/json'
 import { defaultSort } from '../../../../src/services/cards/cardSorting'
@@ -65,23 +66,8 @@ export default function PodPage({ params }: PageProps) {
     totalCards: number
   } | null>(null)
 
-  // Detect Wayfinder extension via DOM marker
-  const [wayfinderDetected, setWayfinderDetected] = useState(false)
-  useEffect(() => {
-    if (document.querySelector('meta[name="wayfinder-installed"]')) {
-      setWayfinderDetected(true)
-      return
-    }
-    const onInstalled = () => setWayfinderDetected(true)
-    document.addEventListener('wayfinder:installed', onInstalled)
-    const timer = setTimeout(() => {
-      if (document.querySelector('meta[name="wayfinder-installed"]')) setWayfinderDetected(true)
-    }, 1000)
-    return () => {
-      document.removeEventListener('wayfinder:installed', onInstalled)
-      clearTimeout(timer)
-    }
-  }, [])
+  // Detect the Wayfinder extension via the centralized hook.
+  const { detected: wayfinderDetected } = useWayfinderDetection()
 
   const [isDiscordMember, setIsDiscordMember] = useState<boolean | null>(null)
   const botBuildTriggered = useRef(false)

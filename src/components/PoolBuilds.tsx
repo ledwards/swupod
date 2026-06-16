@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import Modal from './Modal'
 import ConfirmModal from './ConfirmModal'
 import { getAspectColor } from '../utils/aspectColors'
+import { archetypeShortName } from '../utils/archetypeName'
 import './PoolBuilds.css'
 // Shared delete-confirm visual — red title, red filled button. Same rules
 // the History page has used for a long time; importing the canonical file
@@ -18,6 +19,7 @@ interface Build {
   leaderAspects?: string[]
   baseName: string | null
   baseAspects?: string[]
+  baseHp?: number | null
   archetypeNickname?: string | null
   deckCardCount: number
   createdAt?: string | null
@@ -122,9 +124,15 @@ function BuildCard({
   const hasBaseAspects = (build.baseAspects?.length ?? 0) > 0
   const leaderStyle = hasLeaderAspects ? { color: getAspectColor({ aspects: build.leaderAspects }) } : undefined
   const baseStyle = hasBaseAspects ? { color: getAspectColor({ aspects: build.baseAspects }) } : undefined
-  const rawLabel = build.archetypeNickname
-    ? stripFormat(build.archetypeNickname)
-    : (build.leaderShortName || build.leaderName || 'No leader')
+  // Resolved archetype nickname when present; otherwise a "Leader Color HP"
+  // fallback built from the deck so it never collapses to a bare "Ahsoka".
+  const rawLabel = archetypeShortName({
+    archetypeNickname: build.archetypeNickname,
+    leaderShortName: build.leaderShortName,
+    leaderName: build.leaderName,
+    baseAspects: build.baseAspects,
+    baseHp: build.baseHp,
+  }) || 'No leader'
   const { leader, base } = splitArchetypeName(rawLabel)
   const href = build.isOriginal
     ? `/pool/${rootShareId}/deck`
