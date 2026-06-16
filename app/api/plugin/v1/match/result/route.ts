@@ -16,7 +16,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     requireServiceKey(request)
 
     const body = await request.json()
-    const { poolShareId, result, matchId, gameNumber, replayUrl } = body
+    const {
+      poolShareId, result, matchId, gameNumber, replayUrl,
+      // Optional captured deck identities (Wayfinder Companion ≥ identity build).
+      // "player*" is the reporting player's deck; "opponent*" is the other side.
+      // See docs/WAYFINDER_PLUGIN_MATCH_IDENTITY.md.
+      playerLeader, playerLeaderImage, playerBase, playerBaseImage, playerArchetype,
+      opponentLeader, opponentLeaderImage, opponentBase, opponentBaseImage, opponentArchetype,
+    } = body
 
     if (!poolShareId || !result || !matchId) {
       return errorResponse('poolShareId, result, and matchId are required', 400)
@@ -87,10 +94,38 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         if (currentMatch.game1_result && currentMatch.game2_result) gameCol = 'game3_result'
       }
 
-      // Update the game slot, wayfinder_match_id, and replay URL
+      // Map the reporter's deck (player*) and the opponent's deck (opponent*)
+      // onto the player1/player2 identity columns for this match. COALESCE so a
+      // later game's call never blanks an identity captured on an earlier one.
+      const p1 = isPlayer1
+        ? { leader: playerLeader, leaderImage: playerLeaderImage, base: playerBase, baseImage: playerBaseImage, archetype: playerArchetype }
+        : { leader: opponentLeader, leaderImage: opponentLeaderImage, base: opponentBase, baseImage: opponentBaseImage, archetype: opponentArchetype }
+      const p2 = isPlayer1
+        ? { leader: opponentLeader, leaderImage: opponentLeaderImage, base: opponentBase, baseImage: opponentBaseImage, archetype: opponentArchetype }
+        : { leader: playerLeader, leaderImage: playerLeaderImage, base: playerBase, baseImage: playerBaseImage, archetype: playerArchetype }
+
+      // Update the game slot, wayfinder_match_id, replay URL, and deck identities
       await query(
-        `UPDATE practice_matches SET ${gameCol} = $2, wayfinder_match_id = $3, wayfinder_replay_url = COALESCE($4, wayfinder_replay_url) WHERE id = $1`,
-        [practiceMatch.id, gameResult, matchId, replayUrl ?? null]
+        `UPDATE practice_matches SET
+           ${gameCol} = $2,
+           wayfinder_match_id = $3,
+           wayfinder_replay_url = COALESCE($4, wayfinder_replay_url),
+           player1_leader = COALESCE($5, player1_leader),
+           player1_leader_image = COALESCE($6, player1_leader_image),
+           player1_base = COALESCE($7, player1_base),
+           player1_base_image = COALESCE($8, player1_base_image),
+           player1_archetype = COALESCE($9, player1_archetype),
+           player2_leader = COALESCE($10, player2_leader),
+           player2_leader_image = COALESCE($11, player2_leader_image),
+           player2_base = COALESCE($12, player2_base),
+           player2_base_image = COALESCE($13, player2_base_image),
+           player2_archetype = COALESCE($14, player2_archetype)
+         WHERE id = $1`,
+        [
+          practiceMatch.id, gameResult, matchId, replayUrl ?? null,
+          p1.leader ?? null, p1.leaderImage ?? null, p1.base ?? null, p1.baseImage ?? null, p1.archetype ?? null,
+          p2.leader ?? null, p2.leaderImage ?? null, p2.base ?? null, p2.baseImage ?? null, p2.archetype ?? null,
+        ]
       )
 
       // Check if match is now decidable

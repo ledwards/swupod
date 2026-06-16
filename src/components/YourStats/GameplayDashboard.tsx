@@ -61,6 +61,10 @@ interface GameplayReplay {
   opponent: {
     username: string | null
     avatarUrl: string | null
+    leaderName: string | null
+    leaderImageUrl: string | null
+    baseName: string | null
+    archetype: string | null
   }
   pool: {
     shareId: string | null
@@ -74,6 +78,7 @@ interface GameplayReplay {
   leaderImageUrl: string | null
   baseImageUrl: string | null
   baseColor: string | null
+  archetype: string | null
   deckCardCount: number
 }
 
@@ -130,13 +135,6 @@ function replayDate(value: string | null): string {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return 'Unknown date'
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
-
-function comboLine(replay: GameplayReplay): string {
-  if (replay.leaderName && replay.baseName) return `${replay.leaderName} / ${replay.baseName}`
-  if (replay.leaderName) return replay.leaderName
-  if (replay.baseName) return replay.baseName
-  return replay.pool.name
 }
 
 function resultLabel(result: GameplayReplay['result']): string {
@@ -294,7 +292,10 @@ function ReplayGamePips({ results }: { results: Array<'W' | 'L' | 'D'> }) {
 }
 
 function ReplayRow({ replay, expanded, onToggle }: { replay: GameplayReplay; expanded: boolean; onToggle: () => void }) {
-  const leader = replay.leaderName || comboLine(replay)
+  // Left side of the matchup is the player's leader — never the pool name (that
+  // produced nonsense titles like "LAW Limited vs gonefishin" when leaderName
+  // was missing). Fall back to the base, then a neutral "Your deck".
+  const leader = replay.leaderName || replay.baseName || 'Your deck'
   const opp = replay.opponent.username || 'Opponent'
   const style = replay.baseColor ? ({ ['--row-tint' as any]: replay.baseColor }) : undefined
   const fullMatchUrl = replay.wayfinderMatchId
@@ -330,14 +331,23 @@ function ReplayRow({ replay, expanded, onToggle }: { replay: GameplayReplay; exp
           <span className="your-stats-replay-leader">{leader}</span>
           <span className="your-stats-replay-vs">vs</span>
           <span className="your-stats-replay-opp">
-            <UserAvatar
-              size={20}
-              src={replay.opponent.avatarUrl}
-              alt={opp}
-              fallback={opp.charAt(0).toUpperCase()}
-              placeholderClassName="your-stats-owner-avatar-placeholder"
-            />
-            <span className="your-stats-replay-opp-name">{opp}</span>
+            {replay.opponent.leaderImageUrl ? (
+              <span className="your-stats-replay-opp-art" aria-hidden="true">
+                <img src={replay.opponent.leaderImageUrl} alt="" loading="lazy" />
+              </span>
+            ) : (
+              <UserAvatar
+                size={20}
+                src={replay.opponent.avatarUrl}
+                alt={opp}
+                fallback={opp.charAt(0).toUpperCase()}
+                placeholderClassName="your-stats-owner-avatar-placeholder"
+              />
+            )}
+            <span className="your-stats-replay-opp-name">
+              {replay.opponent.leaderName || opp}
+              {replay.opponent.leaderName && <small className="your-stats-replay-opp-sub">{opp}</small>}
+            </span>
           </span>
         </div>
 
@@ -377,12 +387,16 @@ function ReplayRow({ replay, expanded, onToggle }: { replay: GameplayReplay; exp
               </div>
             )}
             <div className="your-stats-replay-detail-field">
-              <small>Deck</small>
-              <strong>{leader}{replay.baseName ? ` / ${replay.baseName}` : ''}</strong>
+              <small>Your deck</small>
+              <strong>{leader}{replay.baseName ? ` / ${replay.baseName}` : ''}{replay.archetype ? ` · ${replay.archetype}` : ''}</strong>
             </div>
             <div className="your-stats-replay-detail-field">
               <small>Opponent</small>
-              <strong>{opp}</strong>
+              <strong>
+                {opp}
+                {replay.opponent.leaderName ? ` · ${replay.opponent.leaderName}${replay.opponent.baseName ? ` / ${replay.opponent.baseName}` : ''}` : ''}
+                {replay.opponent.archetype ? ` · ${replay.opponent.archetype}` : ''}
+              </strong>
             </div>
             <div className="your-stats-replay-detail-field">
               <small>Pool</small>

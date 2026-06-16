@@ -19,6 +19,7 @@
     "migrate:prod": "npx tsx scripts/migrate.ts prod",
     "migrate:status": "npx tsx scripts/migrate.ts dev status && npx tsx scripts/migrate.ts prod status",
     "make-admin": "npx tsx scripts/makeAdmin.ts",
+    "copy-user-to-dev": "npx tsx scripts/copyUserToDev.ts",
     "sync-patrons:cron": "npx tsx scripts/sync-patrons-cron.ts",
     "snapshot-patrons": "npx tsx scripts/snapshot-patrons.ts",
     "check:bundle-size": "npx tsx scripts/check-bundle-size.ts",

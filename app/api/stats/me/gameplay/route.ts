@@ -48,6 +48,11 @@ interface RawReplayRow {
   player2_id?: string | null
   opponent_username?: string | null
   opponent_avatar_url?: string | null
+  opponent_leader?: string | null
+  opponent_leader_image?: string | null
+  opponent_base?: string | null
+  opponent_archetype?: string | null
+  my_archetype?: string | null
   pool_share_id?: string | null
   pool_name?: string | null
   set_code?: string | null
@@ -108,6 +113,10 @@ export interface GameplayReplay {
   opponent: {
     username: string | null
     avatarUrl: string | null
+    leaderName: string | null
+    leaderImageUrl: string | null
+    baseName: string | null
+    archetype: string | null
   }
   pool: {
     shareId: string | null
@@ -120,6 +129,7 @@ export interface GameplayReplay {
   baseName: string | null
   leaderImageUrl: string | null
   baseImageUrl: string | null
+  archetype: string | null
   deckCardCount: number
 }
 
@@ -375,6 +385,10 @@ export function buildTerronkDevGameplayFixture(poolRows: DevFixturePoolRow[]): G
     opponent: {
       username: index % 2 === 0 ? 'Karabast Opponent' : 'Wayfinder Rival',
       avatarUrl: null,
+      leaderName: index % 2 === 0 ? 'Boba Fett' : 'Darth Vader',
+      leaderImageUrl: null,
+      baseName: index % 2 === 0 ? 'Tarkintown' : 'Command Center',
+      archetype: index % 2 === 0 ? 'Boba Aggro' : 'Vader Control',
     },
     pool: {
       shareId: pool.shareId,
@@ -387,6 +401,7 @@ export function buildTerronkDevGameplayFixture(poolRows: DevFixturePoolRow[]): G
     baseName: pool.baseName,
     leaderImageUrl: pool.leaderImageUrl,
     baseImageUrl: pool.baseImageUrl,
+    archetype: null,
     deckCardCount: pool.deckCardCount,
   }))
 
@@ -569,6 +584,10 @@ export function buildGameplayResponse(
         opponent: {
           username: row.opponent_username || null,
           avatarUrl: row.opponent_avatar_url || null,
+          leaderName: row.opponent_leader || null,
+          leaderImageUrl: row.opponent_leader_image || null,
+          baseName: row.opponent_base || null,
+          archetype: row.opponent_archetype || null,
         },
         pool: {
           shareId: row.pool_share_id || null,
@@ -578,6 +597,7 @@ export function buildGameplayResponse(
           formatLabel: formatLabel(format),
         },
         ...deckPreview,
+        archetype: row.my_archetype || null,
       }
     }).filter((replay) => replay.replayUrl),
   }
@@ -729,6 +749,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
            pm.player2_id,
            CASE WHEN pm.player1_id = $1 THEN u2.username ELSE u1.username END AS opponent_username,
            CASE WHEN pm.player1_id = $1 THEN u2.avatar_url ELSE u1.avatar_url END AS opponent_avatar_url,
+           CASE WHEN pm.player1_id = $1 THEN pm.player2_leader ELSE pm.player1_leader END AS opponent_leader,
+           CASE WHEN pm.player1_id = $1 THEN pm.player2_leader_image ELSE pm.player1_leader_image END AS opponent_leader_image,
+           CASE WHEN pm.player1_id = $1 THEN pm.player2_base ELSE pm.player1_base END AS opponent_base,
+           CASE WHEN pm.player1_id = $1 THEN pm.player2_archetype ELSE pm.player1_archetype END AS opponent_archetype,
+           CASE WHEN pm.player1_id = $1 THEN pm.player1_archetype ELSE pm.player2_archetype END AS my_archetype,
            cp.share_id AS pool_share_id,
            cp.name AS pool_name,
            cp.set_code,
