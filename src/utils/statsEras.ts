@@ -102,10 +102,20 @@ export function getEras(today: string = todayStr()): Era[] {
   return eras
 }
 
-/** The era containing `today`, or the most recent started era. */
+/**
+ * The era containing `today`, else the most recent era that has already begun.
+ * Never a purely-future era (e.g. the upcoming ASH set before its window opens)
+ * — defaulting /me to a future window would show "no captured games / 0 packs".
+ * `eras` is newest-first.
+ */
 export function getCurrentEra(eras: Era[], today: string = todayStr()): Era | null {
   if (eras.length === 0) return null
-  return eras.find((e) => e.start <= today && today < e.end) || eras[0] || null
+  return (
+    eras.find((e) => e.start <= today && today < e.end) ||
+    eras.find((e) => e.start <= today) ||
+    eras[eras.length - 1] ||
+    null
+  )
 }
 
 /**

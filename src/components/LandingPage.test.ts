@@ -32,16 +32,15 @@ describe('LandingPage', () => {
   })
 
   describe('Deckbuilder utility tile', () => {
-    it('replaces the general Import Pool tile with View Stats to /me', () => {
-      assert.ok(LANDING_PAGE_SRC.includes('View Stats'))
+    it('shows a My Stats tile that routes to /me (replacing the Import Pool tile)', () => {
+      assert.ok(LANDING_PAGE_SRC.includes('My Stats'))
       assert.ok(LANDING_PAGE_SRC.includes("router.push('/me')"))
+      // Import Pool moved to the account dropdown — not a homepage tile anymore.
       assert.ok(!LANDING_PAGE_SRC.includes("router.push('/import')"))
     })
 
-    it('uses non-ASH hyperspace art for the View Stats tile', () => {
-      assert.ok(LANDING_PAGE_SRC.includes('MODE_ART.stats'))
-      assert.ok(LANDING_PAGE_SRC.includes('SWH_01_493_AT_ST_HYP'))
-      assert.ok(!LANDING_PAGE_SRC.includes('Death_Star_Plans'))
+    it('reuses the Import Pool art for the My Stats tile (per the same-image request)', () => {
+      assert.ok(LANDING_PAGE_SRC.includes('MODE_ART.importPool'))
     })
   })
 
