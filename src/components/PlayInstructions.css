@@ -399,6 +399,56 @@
   padding: 0.25rem 0;
 }
 
+/* Automatic (plugin) and manual, side by side. */
+.play-split {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+.play-split-col {
+  min-width: 0;
+}
+
+/* Vertical OR rule between the two columns. */
+.play-split-or {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.play-split-or::before,
+.play-split-or::after {
+  content: '';
+  flex: 1;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.play-split-or span {
+  padding: 0.5rem 0;
+}
+
+@media (max-width: 760px) {
+  .play-split {
+    grid-template-columns: 1fr;
+  }
+  .play-split-or {
+    flex-direction: row;
+    margin: 0.25rem 0;
+  }
+  .play-split-or::before,
+  .play-split-or::after {
+    width: auto;
+    height: 1px;
+  }
+}
+
 /* "OR" rule between the automatic (Companion) and manual setup areas. */
 .play-mode-divider {
   display: flex;

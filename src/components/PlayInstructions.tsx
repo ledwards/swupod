@@ -383,48 +383,33 @@ export default function PlayInstructions({
         </div>
       )}
 
-      {wayfinderDetected && isOwner ? (
-        <>
-          <div className="play-tabs">
-            <button
-              className={`play-tab${activeTab === 'wayfinder' ? ' active' : ''}`}
-              onClick={() => setActiveTab('wayfinder')}
-            >
-              {wayfinderIconUrl && <img src={wayfinderIconUrl} alt="" width="16" height="16" className="play-tab-icon" />}
-              Play with Wayfinder
-            </button>
-            <button
-              className={`play-tab${activeTab === 'manual' ? ' active' : ''}`}
-              onClick={() => setActiveTab('manual')}
-            >
-              Manual
-            </button>
+      {viewingOthersDeck ? (
+        <div className="play-steps">
+          {renderManualSteps()}
+        </div>
+      ) : (
+        // Automatic (Companion) and manual, side by side — no oppressive
+        // stacking. The plugin column is the autojoin flow when the Companion
+        // is installed, or the install promo when it isn't.
+        <div className="play-split">
+          <div className="play-split-col play-split-plugin">
+            {wayfinderDetected && isOwner
+              ? renderWayfinderTab()
+              : renderCompanionInstallPanel()}
           </div>
 
-          {activeTab === 'wayfinder' ? (
-            renderWayfinderTab()
-          ) : (
+          <div className="play-split-or" aria-hidden="true"><span>OR</span></div>
+
+          <div className="play-split-col play-split-manual">
+            <div className="play-manual-header">
+              <div className="wayfinder-promo-kicker">Manual</div>
+              <h3>Play it yourself on Karabast</h3>
+            </div>
             <div className="play-steps">
               {renderManualSteps()}
             </div>
-          )}
-        </>
-      ) : (
-        <>
-          {!wayfinderDetected && (
-            <>
-              {renderCompanionInstallPanel()}
-              <div className="play-mode-divider"><span>OR</span></div>
-              <div className="play-manual-header">
-                <div className="wayfinder-promo-kicker">Manual setup</div>
-                <h3>Play it yourself on Karabast</h3>
-              </div>
-            </>
-          )}
-          <div className="play-steps">
-            {renderManualSteps()}
           </div>
-        </>
+        </div>
       )}
 
       {/* Action buttons */}

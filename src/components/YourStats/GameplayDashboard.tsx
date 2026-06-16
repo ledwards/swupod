@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import WayfinderStoreButtons, { WayfinderCompanionLockup, WAYFINDER_NEWS_URL } from '@/src/components/WayfinderStoreButtons'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
-import UserAvatar from '@/src/components/UserAvatar'
+import { useAuth } from '@/src/contexts/AuthContext'
 
 function PlayGlyph() {
   return (
@@ -291,12 +291,27 @@ function ReplayGamePips({ results }: { results: Array<'W' | 'L' | 'D'> }) {
   )
 }
 
-function ReplayRow({ replay, expanded, onToggle }: { replay: GameplayReplay; expanded: boolean; onToggle: () => void }) {
-  // Left side of the matchup is the player's leader — never the pool name (that
-  // produced nonsense titles like "LAW Limited vs gonefishin" when leaderName
-  // was missing). Fall back to the base, then a neutral "Your deck".
-  const leader = replay.leaderName || replay.baseName || 'Your deck'
+function CardPlaceholder() {
+  // Neutral card silhouette for when no leader art is available — never a letter.
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+      <rect x="4" y="3" width="16" height="18" rx="2.5" />
+      <path d="M8 8.5h8M8 12h8M8 15.5h5" opacity="0.55" />
+    </svg>
+  )
+}
+
+function LeaderThumb({ url }: { url: string | null | undefined }) {
+  return (
+    <span className="your-stats-side-art" aria-hidden="true">
+      {url ? <img src={url} alt="" loading="lazy" /> : <CardPlaceholder />}
+    </span>
+  )
+}
+
+function ReplayRow({ replay, myName, expanded, onToggle }: { replay: GameplayReplay; myName: string; expanded: boolean; onToggle: () => void }) {
   const opp = replay.opponent.username || 'Opponent'
+  const leader = replay.leaderName || replay.baseName || null // for the expanded detail
   const style = replay.baseColor ? ({ ['--row-tint' as any]: replay.baseColor }) : undefined
   const fullMatchUrl = replay.wayfinderMatchId
     ? `${WAYFINDER_NEWS_URL}/matches/${replay.wayfinderMatchId}`
@@ -319,35 +334,16 @@ function ReplayRow({ replay, expanded, onToggle }: { replay: GameplayReplay; exp
           {resultLetter(replay.result)}
         </span>
 
-        <span className="your-stats-replay-art" aria-hidden="true">
-          {replay.leaderImageUrl ? (
-            <img src={replay.leaderImageUrl} alt="" loading="lazy" />
-          ) : (
-            <span className="your-stats-replay-art-fallback">{leader.charAt(0)}</span>
-          )}
-        </span>
-
+        {/* You (leader image + your name) vs Opponent (leader image + their name). */}
         <div className="your-stats-replay-matchup">
-          <span className="your-stats-replay-leader">{leader}</span>
+          <span className="your-stats-replay-side">
+            <LeaderThumb url={replay.leaderImageUrl} />
+            <span className="your-stats-replay-side-name">{myName}</span>
+          </span>
           <span className="your-stats-replay-vs">vs</span>
-          <span className="your-stats-replay-opp">
-            {replay.opponent.leaderImageUrl ? (
-              <span className="your-stats-replay-opp-art" aria-hidden="true">
-                <img src={replay.opponent.leaderImageUrl} alt="" loading="lazy" />
-              </span>
-            ) : (
-              <UserAvatar
-                size={20}
-                src={replay.opponent.avatarUrl}
-                alt={opp}
-                fallback={opp.charAt(0).toUpperCase()}
-                placeholderClassName="your-stats-owner-avatar-placeholder"
-              />
-            )}
-            <span className="your-stats-replay-opp-name">
-              {replay.opponent.leaderName || opp}
-              {replay.opponent.leaderName && <small className="your-stats-replay-opp-sub">{opp}</small>}
-            </span>
+          <span className="your-stats-replay-side">
+            <LeaderThumb url={replay.opponent.leaderImageUrl} />
+            <span className="your-stats-replay-side-name">{opp}</span>
           </span>
         </div>
 
@@ -388,7 +384,7 @@ function ReplayRow({ replay, expanded, onToggle }: { replay: GameplayReplay; exp
             )}
             <div className="your-stats-replay-detail-field">
               <small>Your deck</small>
-              <strong>{leader}{replay.baseName ? ` / ${replay.baseName}` : ''}{replay.archetype ? ` · ${replay.archetype}` : ''}</strong>
+              <strong>{leader || 'Your deck'}{replay.baseName ? ` / ${replay.baseName}` : ''}{replay.archetype ? ` · ${replay.archetype}` : ''}</strong>
             </div>
             <div className="your-stats-replay-detail-field">
               <small>Opponent</small>
@@ -428,7 +424,7 @@ function ReplayRow({ replay, expanded, onToggle }: { replay: GameplayReplay; exp
   )
 }
 
-function ReplayExplorer({ replays }: { replays: GameplayReplay[] }) {
+function ReplayExplorer({ replays, myName }: { replays: GameplayReplay[]; myName: string }) {
   const [search, setSearch] = useState('')
   const [format, setFormat] = useState('all')
   const [result, setResult] = useState('all')
@@ -529,6 +525,7 @@ function ReplayExplorer({ replays }: { replays: GameplayReplay[] }) {
             <ReplayRow
               key={replay.id}
               replay={replay}
+              myName={myName}
               expanded={expandedId === replay.id}
               onToggle={() => setExpandedId((cur) => (cur === replay.id ? null : replay.id))}
             />
@@ -540,6 +537,8 @@ function ReplayExplorer({ replays }: { replays: GameplayReplay[] }) {
 }
 
 export function GameplayDashboard({ since, until, fetchImpl }: GameplayDashboardProps) {
+  const { user } = useAuth() as { user: { username?: string | null } | null }
+  const myName = user?.username || 'You'
   const [state, setState] = useState<FetchState>({ loading: true, error: false, data: null })
 
   useEffect(() => {
@@ -627,6 +626,8 @@ export function GameplayDashboard({ since, until, fetchImpl }: GameplayDashboard
 
   return (
     <section className="your-stats-gameplay" data-testid="gameplay-dashboard">
+      <CompanionCTA hasData={hasData} />
+
       {/* Performance first: KPIs, win rate, and format/set splits sit ABOVE the
           long per-game history list (R13). Replay-Linked Pools removed. */}
       <div className="your-stats-gameplay-kpi-grid">
@@ -671,9 +672,7 @@ export function GameplayDashboard({ since, until, fetchImpl }: GameplayDashboard
         </div>
       </div>
 
-      {replays.length > 0 && <ReplayExplorer replays={replays} />}
-
-      <CompanionCTA hasData={hasData} />
+      {replays.length > 0 && <ReplayExplorer replays={replays} myName={myName} />}
     </section>
   )
 }

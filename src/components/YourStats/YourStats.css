@@ -898,6 +898,50 @@
   font-weight: 500;
 }
 
+/* Two-sided matchup: [leader image] name  vs  [leader image] name */
+.your-stats-replay-side {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.your-stats-side-art {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--row-tint, #1a2233);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.your-stats-side-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 16%;
+}
+
+.your-stats-side-art svg {
+  width: 16px;
+  height: 16px;
+}
+
+.your-stats-replay-side-name {
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
 .your-stats-replay-when {
   flex: 0 0 auto;
   color: var(--ys-text-3);
