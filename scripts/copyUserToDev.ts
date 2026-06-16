@@ -226,20 +226,23 @@ async function main() {
     ])
     const refUsers = await fetchRows(source, `SELECT * FROM users WHERE id = ANY($1)`, [refUserIds])
 
-    // 4. Insert into dev in FK-safe order. card_pools is inserted parent-first
-    //    (loop) to satisfy its self-referencing parent_pool_id FK.
-    const order: Array<[string, any[]]> = [
-      ['users', refUsers],
-      ['pods', pods],
-      ['pod_players', podPlayers],
-      ['card_generations', cardGenerations],
-      ['built_decks', builtDecks],
-      ['deck_play_visits', deckPlayVisits],
-      ['practice_matches', practiceMatches],
-      ['pool_views', poolViews],
-    ]
+    // 4. Insert into dev in FK-safe order:
+    //    users → pods → card_pools → (everything that FKs into those).
+    //    card_pools FKs to pods (draft_pod_id) AND to itself (parent_pool_id),
+    //    so pods go first and pools are inserted parent-first.
+    const counts: Record<string, number> = {}
 
-    // card_pools first (parent-first) since other tables FK to it.
+    const insertTable = async (table: string, rows: any[]) => {
+      if (rows.length === 0) { counts[table] = 0; return }
+      const cols = await tableColumns(target, table)
+      counts[table] = await insertRows(target, table, rows, cols)
+    }
+
+    // users + pods first (card_pools and the rest FK into them).
+    await insertTable('users', refUsers)
+    await insertTable('pods', pods)
+
+    // card_pools parent-first (self-referencing parent_pool_id).
     const poolCols = await tableColumns(target, 'card_pools')
     const insertedPoolIds = new Set<string>()
     let remaining = [...pools]
@@ -261,22 +264,17 @@ async function main() {
       remaining = next
     }
     if (remaining.length) {
-      // Parents live outside this set; insert anyway (FK may point at an
-      // already-present row) so we don't silently drop them.
       poolInserted += await insertRows(target, 'card_pools', remaining, poolCols)
     }
+    counts.card_pools = poolInserted
 
-    // users must go before pods/etc.
-    const counts: Record<string, number> = { card_pools: poolInserted }
-    // Re-order so users is first.
-    for (const [table, rows] of order) {
-      if (rows.length === 0) {
-        counts[table] = 0
-        continue
-      }
-      const cols = await tableColumns(target, table)
-      counts[table] = await insertRows(target, table, rows, cols)
-    }
+    // Everything that FKs into users / pods / card_pools.
+    await insertTable('pod_players', podPlayers)
+    await insertTable('card_generations', cardGenerations)
+    await insertTable('built_decks', builtDecks)
+    await insertTable('deck_play_visits', deckPlayVisits)
+    await insertTable('practice_matches', practiceMatches)
+    await insertTable('pool_views', poolViews)
 
     console.log('\n✅ Done. Inserted (new rows; existing skipped):')
     console.log(`   users:            ${counts.users}/${refUsers.length}`)
