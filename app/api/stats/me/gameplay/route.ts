@@ -517,6 +517,62 @@ function shouldUseTerronkDevFixture(
   return realMatches === 0 && formatRows.length === 0
 }
 
+interface RawCasualRow {
+  id?: string | null
+  wayfinder_match_id?: string | null
+  wayfinder_replay_url?: string | null
+  result?: string | null
+  game1_result?: string | null
+  game2_result?: string | null
+  game3_result?: string | null
+  opponent_name?: string | null
+  player_archetype?: string | null
+  opponent_leader?: string | null
+  opponent_leader_image?: string | null
+  opponent_base?: string | null
+  opponent_archetype?: string | null
+  played_at?: string | Date | null
+  pool_share_id?: string | null
+  pool_name?: string | null
+  set_code?: string | null
+  pool_type?: string | null
+  deck_builder_state?: unknown
+}
+
+/** Map a casual_matches row (already user-perspective) to the replay shape. */
+function mapCasualReplay(row: RawCasualRow): GameplayReplay {
+  const format = row.pool_type || 'sealed'
+  const deckPreview = extractDeckPreview(row.deck_builder_state)
+  const replayUrl = row.wayfinder_replay_url || ''
+  const result = (row.result === 'win' || row.result === 'loss' || row.result === 'draw') ? row.result : 'pending'
+  return {
+    id: row.id || row.wayfinder_match_id || replayUrl,
+    wayfinderMatchId: row.wayfinder_match_id || null,
+    replayUrl,
+    playedAt: formatTimestamp(row.played_at),
+    result,
+    gameResults: [row.game1_result, row.game2_result, row.game3_result]
+      .filter((g): g is 'W' | 'L' | 'D' => g === 'W' || g === 'L' || g === 'D'),
+    opponent: {
+      username: row.opponent_name || null,
+      avatarUrl: null,
+      leaderName: row.opponent_leader || null,
+      leaderImageUrl: row.opponent_leader_image || null,
+      baseName: row.opponent_base || null,
+      archetype: row.opponent_archetype || null,
+    },
+    pool: {
+      shareId: row.pool_share_id || null,
+      name: row.pool_name || `${row.set_code || 'SWU'} ${formatLabel(format)}`,
+      setCode: row.set_code || 'UNK',
+      format,
+      formatLabel: formatLabel(format),
+    },
+    ...deckPreview,
+    archetype: row.player_archetype || null,
+  }
+}
+
 export function buildGameplayResponse(
   summaryRow: RawRecordRow | null,
   formatRows: RawBreakdownRow[],
@@ -525,7 +581,8 @@ export function buildGameplayResponse(
   replayRow: { replays_recorded?: string | number | null } | null,
   replayRows: RawReplayRow[] = [],
   currentUserId = '',
-  leaderPoolRows: RawLeaderPoolRow[] = []
+  leaderPoolRows: RawLeaderPoolRow[] = [],
+  casualRows: RawCasualRow[] = []
 ): GameplayResponse {
   const summary = buildBreakdown(summaryRow || {}, 'all', 'All Play')
   const decksPlayed = toInt(summaryRow?.decks_played)
@@ -568,38 +625,46 @@ export function buildGameplayResponse(
         updatedAt: formatTimestamp(row.updated_at),
       }
     }).filter((pool) => pool.shareId),
-    replays: replayRows.map((row) => {
-      const format = row.pool_type || 'sealed'
-      const deckPreview = extractDeckPreview(row.deck_builder_state)
-      const replayUrl = row.wayfinder_replay_url || ''
-      return {
-        id: row.match_id || row.wayfinder_match_id || replayUrl,
-        wayfinderMatchId: row.wayfinder_match_id || null,
-        replayUrl,
-        playedAt: formatTimestamp(row.created_at),
-        result: resultFromPerspective(row, currentUserId),
-        gameResults: [row.game1_result, row.game2_result, row.game3_result]
-          .map((game) => gameResultFromPerspective(game, row, currentUserId))
-          .filter(Boolean) as Array<'W' | 'L' | 'D'>,
-        opponent: {
-          username: row.opponent_username || null,
-          avatarUrl: row.opponent_avatar_url || null,
-          leaderName: row.opponent_leader || null,
-          leaderImageUrl: row.opponent_leader_image || null,
-          baseName: row.opponent_base || null,
-          archetype: row.opponent_archetype || null,
-        },
-        pool: {
-          shareId: row.pool_share_id || null,
-          name: row.pool_name || `${row.set_code || 'SWU'} ${formatLabel(format)}`,
-          setCode: row.set_code || 'UNK',
-          format,
-          formatLabel: formatLabel(format),
-        },
-        ...deckPreview,
-        archetype: row.my_archetype || null,
-      }
-    }).filter((replay) => replay.replayUrl),
+    replays: [
+      ...replayRows.map((row): GameplayReplay => {
+        const format = row.pool_type || 'sealed'
+        const deckPreview = extractDeckPreview(row.deck_builder_state)
+        const replayUrl = row.wayfinder_replay_url || ''
+        return {
+          id: row.match_id || row.wayfinder_match_id || replayUrl,
+          wayfinderMatchId: row.wayfinder_match_id || null,
+          replayUrl,
+          playedAt: formatTimestamp(row.created_at),
+          result: resultFromPerspective(row, currentUserId),
+          gameResults: [row.game1_result, row.game2_result, row.game3_result]
+            .map((game) => gameResultFromPerspective(game, row, currentUserId))
+            .filter(Boolean) as Array<'W' | 'L' | 'D'>,
+          opponent: {
+            username: row.opponent_username || null,
+            avatarUrl: row.opponent_avatar_url || null,
+            leaderName: row.opponent_leader || null,
+            leaderImageUrl: row.opponent_leader_image || null,
+            baseName: row.opponent_base || null,
+            archetype: row.opponent_archetype || null,
+          },
+          pool: {
+            shareId: row.pool_share_id || null,
+            name: row.pool_name || `${row.set_code || 'SWU'} ${formatLabel(format)}`,
+            setCode: row.set_code || 'UNK',
+            format,
+            formatLabel: formatLabel(format),
+          },
+          ...deckPreview,
+          archetype: row.my_archetype || null,
+        }
+      }),
+      // Casual (non-competitive) games come from casual_matches, already
+      // user-perspective, and interleave by date with competitive replays.
+      ...casualRows.map(mapCasualReplay),
+    ]
+      .filter((replay) => replay.replayUrl)
+      .sort((a, b) => new Date(b.playedAt || 0).getTime() - new Date(a.playedAt || 0).getTime())
+      .slice(0, 50),
   }
 }
 
@@ -774,6 +839,39 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       params
     ) as RawReplayRow[]
 
+    // Casual (non-competitive) games — logged to casual_matches by the plugin.
+    const casualRows = await queryRows(
+      `SELECT
+         cm.id,
+         cm.wayfinder_match_id,
+         cm.wayfinder_replay_url,
+         cm.result,
+         cm.game1_result,
+         cm.game2_result,
+         cm.game3_result,
+         cm.opponent_name,
+         cm.player_archetype,
+         cm.opponent_leader,
+         cm.opponent_leader_image,
+         cm.opponent_base,
+         cm.opponent_archetype,
+         cm.played_at,
+         cp.share_id AS pool_share_id,
+         cp.name AS pool_name,
+         cp.set_code,
+         cp.pool_type,
+         cp.deck_builder_state
+       FROM casual_matches cm
+       LEFT JOIN card_pools cp ON cp.id = cm.card_pool_id
+       WHERE cm.user_id = $1
+         AND cm.wayfinder_replay_url IS NOT NULL
+         AND cm.played_at >= $2
+         AND cm.played_at < ($3::date + interval '1 day')
+       ORDER BY cm.played_at DESC
+       LIMIT 50`,
+      params
+    ) as RawCasualRow[]
+
     if (shouldUseTerronkDevFixture(session.username, summaryRow, formatRows, replayRow)) {
       const devFixturePoolRows = await queryRows(
         `SELECT
@@ -805,7 +903,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       replayRow,
       replayRows,
       session.id,
-      leaderPoolRows
+      leaderPoolRows,
+      casualRows
     ))
     response.headers.set('Cache-Control', 'private, max-age=60')
     response.headers.set('Vary', 'Cookie')

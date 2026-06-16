@@ -241,6 +241,43 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
          WHERE share_id = $5`,
         [winDelta, lossDelta, drawDelta, matchId, poolShareId]
       )
+
+      // Also log the match so it appears in the personal gameplay history
+      // (casual games have no practice_matches row). Idempotent per
+      // (user, match) so a re-report updates rather than duplicates.
+      const owner = await queryRow('SELECT user_id FROM card_pools WHERE share_id = $1', [poolShareId])
+      if (owner?.user_id) {
+        await query(
+          `INSERT INTO casual_matches (
+             user_id, card_pool_id, wayfinder_match_id, wayfinder_replay_url, result,
+             opponent_name,
+             player_leader, player_leader_image, player_base, player_archetype,
+             opponent_leader, opponent_leader_image, opponent_base, opponent_archetype
+           )
+           SELECT $1, cp.id, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
+           FROM card_pools cp WHERE cp.share_id = $14
+           ON CONFLICT (user_id, wayfinder_match_id) WHERE wayfinder_match_id IS NOT NULL
+           DO UPDATE SET
+             wayfinder_replay_url = COALESCE(EXCLUDED.wayfinder_replay_url, casual_matches.wayfinder_replay_url),
+             result = EXCLUDED.result,
+             opponent_name = COALESCE(EXCLUDED.opponent_name, casual_matches.opponent_name),
+             player_leader = COALESCE(EXCLUDED.player_leader, casual_matches.player_leader),
+             player_leader_image = COALESCE(EXCLUDED.player_leader_image, casual_matches.player_leader_image),
+             player_base = COALESCE(EXCLUDED.player_base, casual_matches.player_base),
+             player_archetype = COALESCE(EXCLUDED.player_archetype, casual_matches.player_archetype),
+             opponent_leader = COALESCE(EXCLUDED.opponent_leader, casual_matches.opponent_leader),
+             opponent_leader_image = COALESCE(EXCLUDED.opponent_leader_image, casual_matches.opponent_leader_image),
+             opponent_base = COALESCE(EXCLUDED.opponent_base, casual_matches.opponent_base),
+             opponent_archetype = COALESCE(EXCLUDED.opponent_archetype, casual_matches.opponent_archetype)`,
+          [
+            owner.user_id, matchId, replayUrl ?? null, result,
+            body.opponentName ?? null,
+            playerLeader ?? null, playerLeaderImage ?? null, playerBase ?? null, playerArchetype ?? null,
+            opponentLeader ?? null, opponentLeaderImage ?? null, opponentBase ?? null, opponentArchetype ?? null,
+            poolShareId,
+          ]
+        )
+      }
     }
 
     return jsonResponse({ ok: true })
