@@ -81,8 +81,14 @@ a.wf-browser-card:active {
 }
 
 .wf-browser-card.is-soon {
-  opacity: 0.82;
-  cursor: default;
+  opacity: 0.65;
+  cursor: not-allowed;
+  filter: grayscale(0.75);
+  padding-top: 1.2rem;
+}
+
+.is-soon .wf-browser-name {
+  color: rgba(255, 255, 255, 0.65);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -144,19 +150,20 @@ a.wf-browser-card:active {
   line-height: 1.15;
 }
 
-/* "Soon" badge — pinned to the card's upper-right so it never crowds line 2. */
+/* "Coming soon" — pinned across the top of a disabled browser card. */
 .wf-browser-flag {
   position: absolute;
-  top: 0.45rem;
-  right: 0.5rem;
-  padding: 0.16rem 0.42rem;
+  top: 0.3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.12rem 0.5rem;
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.45);
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 0.58rem;
+  background: rgba(0, 0, 0, 0.55);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.54rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   white-space: nowrap;
 }

@@ -100,7 +100,7 @@ export function WayfinderStoreButtons({
           const className = `wf-browser-card wf-browser-card--${b.browser} ${isLive ? 'is-live' : 'is-soon'}`
           const inner = (
             <>
-              {!isLive && <span className="wf-browser-flag">Soon</span>}
+              {!isLive && <span className="wf-browser-flag">Coming soon</span>}
               <span className="wf-browser-logo">
                 <BrowserIcon browser={b.browser} />
               </span>

@@ -207,11 +207,7 @@ export default function PlayInstructions({
   function renderCompanionReadyPanel() {
     return (
       <div className="wayfinder-ready-panel">
-        <div>
-          <div className="wayfinder-promo-kicker">Companion connected</div>
-          <h3>Queue with your pool, then review the replay</h3>
-        </div>
-        {renderValueProps()}
+        <WayfinderCompanionLockup className="wayfinder-ready-lockup" />
       </div>
     )
   }
@@ -340,7 +336,7 @@ export default function PlayInstructions({
               window.open('https://karabast.net', '_blank')
             }}
           >
-            🎮 Join Public Game ({lobbyCount} Public Limited Lobb{lobbyCount === 1 ? 'y' : 'ies'})
+            🎮 Join Public Game ({lobbyCount} in progress)
           </button>
         </div>
 

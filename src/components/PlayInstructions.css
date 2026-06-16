@@ -30,11 +30,14 @@
 }
 
 .wayfinder-promo-panel {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
-  gap: 1.25rem;
-  align-items: stretch;
-  margin: 0 0 1.5rem;
+  /* Stack: copy on top, the browser buttons below — fits the narrow split column
+     instead of crushing the copy into a tiny side column. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  margin: 0;
   padding: 1.25rem;
   background:
     linear-gradient(135deg, rgba(37, 99, 235, 0.18), rgba(74, 222, 128, 0.1)),
@@ -104,13 +107,16 @@
 }
 
 .wayfinder-ready-panel {
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: 1rem;
-  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  padding: 0.85rem 1rem;
   background: rgba(74, 222, 128, 0.08);
   border: 1px solid rgba(74, 222, 128, 0.25);
   border-radius: 8px;
+}
+
+.wayfinder-ready-lockup {
+  justify-content: center;
 }
 
 .play-steps {
