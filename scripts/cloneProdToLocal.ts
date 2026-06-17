@@ -14,7 +14,7 @@
 // Requires pg_dump and psql on PATH (same as scripts/clone-prod-to-dev.sh).
 
 import { parse } from 'dotenv'
-import { readFileSync, existsSync, mkdirSync } from 'fs'
+import { readFileSync, existsSync, mkdirSync, openSync } from 'fs'
 import { spawnSync } from 'child_process'
 import { createInterface } from 'readline'
 import { fileURLToPath } from 'url'
@@ -30,6 +30,23 @@ function readEnvFile(name: string): Record<string, string> {
 function redact(url: string): string {
   return url.replace(/:\/\/([^:]+):[^@]+@/, '://$1:***@')
 }
+
+// pg_dump/psql aren't always on PATH (Homebrew keg-only, Postgres.app). Resolve
+// a bin dir: PG_BIN env wins, else the first known location that has pg_dump.
+function pgBinDir(): string {
+  if (process.env.PG_BIN && existsSync(join(process.env.PG_BIN, 'pg_dump'))) return process.env.PG_BIN
+  const candidates = [
+    '/opt/homebrew/opt/postgresql@18/bin',
+    '/opt/homebrew/opt/postgresql/bin',
+    '/opt/homebrew/opt/libpq/bin',
+    '/usr/local/bin',
+    '/usr/bin',
+  ]
+  for (const d of candidates) if (existsSync(join(d, 'pg_dump'))) return d
+  return '' // fall back to bare name on PATH
+}
+const PG = pgBinDir()
+const bin = (name: string) => (PG ? join(PG, name) : name)
 
 async function confirm(question: string): Promise<boolean> {
   const rl = createInterface({ input: process.stdin, output: process.stdout })
@@ -64,22 +81,23 @@ async function main() {
   const run = (cmd: string, args: string[], outFile?: string) => {
     console.log(`\n$ ${cmd} ${args.map((a) => (a.includes('@') ? redact(a) : a)).join(' ')}`)
     const r = spawnSync(cmd, args, {
-      stdio: outFile ? ['inherit', require('fs').openSync(outFile, 'w'), 'inherit'] : 'inherit',
+      stdio: outFile ? ['inherit', openSync(outFile, 'w'), 'inherit'] : 'inherit',
       encoding: 'utf8',
     })
     if (r.status !== 0) throw new Error(`${cmd} exited ${r.status}`)
   }
 
+  console.log(`\n(using pg tools: ${PG || 'PATH'})`)
   console.log('\n💾 Backing up local dev DB…')
-  run('pg_dump', ['--no-owner', '--no-acl', LOCAL], backupFile)
+  run(bin('pg_dump'), ['--no-owner', '--no-acl', LOCAL], backupFile)
   console.log(`   saved ${backupFile}`)
 
   console.log('\n📥 Dumping production…')
-  run('pg_dump', ['--no-owner', '--no-acl', PROD], dumpFile)
+  run(bin('pg_dump'), ['--no-owner', '--no-acl', PROD], dumpFile)
 
   console.log('\n📤 Restoring into local dev (drops & recreates public schema)…')
-  run('psql', [LOCAL, '-v', 'ON_ERROR_STOP=0', '-c', 'DROP SCHEMA public CASCADE; CREATE SCHEMA public;'])
-  run('psql', [LOCAL, '-v', 'ON_ERROR_STOP=0', '-f', dumpFile])
+  run(bin('psql'), [LOCAL, '-v', 'ON_ERROR_STOP=0', '-c', 'DROP SCHEMA public CASCADE; CREATE SCHEMA public;'])
+  run(bin('psql'), [LOCAL, '-v', 'ON_ERROR_STOP=0', '-f', dumpFile])
 
   console.log('\n✅ Local dev DB now mirrors production.')
   console.log(`   Restore the old local DB later with:`)
