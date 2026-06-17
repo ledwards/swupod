@@ -3,6 +3,12 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import './qa.css'
+import { STATS_SET_ORDER, STATS_SET_COLORS } from '@/src/utils/statsSetTabs'
+import duplicateStats from '@/src/data/duplicateStats.json'
+
+// Client-side caches so switching tabs doesn't refetch the same (DB-heavy) data.
+const genCache = new Map<string, Stats>()
+const qualityCache = new Map<string, QualityData>()
 
 interface Treatment {
   isApplicable?: boolean
@@ -119,7 +125,7 @@ const STATS_START_DATE = process.env.NEXT_PUBLIC_STATS_START_DATE || '2026-02-12
 const fmt = (n: number) => n.toLocaleString()
 
 export default function QAPage() {
-  const [activeTab, setActiveTab] = useState('Reference')
+  const [activeTab, setActiveTab] = useState(STATS_SET_ORDER[0]) // latest set (ASH)
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -155,11 +161,16 @@ export default function QAPage() {
       return
     }
 
+    const cached = genCache.get(activeTab)
+    if (cached) { setStats(cached); setLoading(false); return }
+
     setLoading(true)
     fetch(`/api/stats/generations?setCode=${activeTab}&since=${STATS_START_DATE}`)
       .then(res => res.json())
       .then(response => {
-        setStats(response.data || response)
+        const data = response.data || response
+        genCache.set(activeTab, data)
+        setStats(data)
         setLoading(false)
       })
       .catch(err => {
@@ -168,17 +179,9 @@ export default function QAPage() {
       })
   }, [activeTab])
 
-  const tabs = ['Reference', 'Overall', 'SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'SEC', 'LAW']
-
-  const setColors: Record<string, string> = {
-    'SOR': '#CC0000',
-    'SHD': '#6B21A8',
-    'TWI': '#0891B2',
-    'JTL': '#EA580C',
-    'LOF': '#16A34A',
-    'SEC': '#7C3AED',
-    'LAW': '#D93600'
-  }
+  // Reference + Overall first, then every set newest-first (includes pre-release sets like ASH)
+  const tabs = ['Reference', 'Overall', ...STATS_SET_ORDER]
+  const setColors: Record<string, string> = STATS_SET_COLORS
 
   return (
     <div className="qa-page">
@@ -253,11 +256,14 @@ function QASetTab({ stats, setCode }: QASetTabProps) {
   const [qualityLoading, setQualityLoading] = useState(true)
 
   useEffect(() => {
+    const cached = qualityCache.get(setCode)
+    if (cached) { setQualityData(cached); setQualityLoading(false); return }
     setQualityLoading(true)
     fetch(`/api/public/pack-quality?setCode=${setCode}&since=${STATS_START_DATE}`)
       .then(r => r.json())
       .then(result => {
         if (result.data) {
+          qualityCache.set(setCode, result.data)
           setQualityData(result.data)
         }
       })
@@ -316,6 +322,12 @@ function QASetTab({ stats, setCode }: QASetTabProps) {
           Quality
         </button>
         <button
+          className={`stats-subtab ${subTab === 'duplicates' ? 'active' : ''}`}
+          onClick={() => setSubTab('duplicates')}
+        >
+          Duplicates
+        </button>
+        <button
           className={`stats-subtab ${subTab === 'packs' ? 'active' : ''}`}
           onClick={() => setSubTab('packs')}
         >
@@ -325,6 +337,8 @@ function QASetTab({ stats, setCode }: QASetTabProps) {
 
       {subTab === 'quality' ? (
         <QualitySubTab data={qualityData} loading={qualityLoading} />
+      ) : subTab === 'duplicates' ? (
+        <DuplicatesSubTab setCode={setCode} />
       ) : (
         <PacksSubTab setCode={setCode} />
       )}
@@ -880,69 +894,104 @@ function QualitySubTab({ data, loading }: QualitySubTabProps) {
         </div>
       </div>
 
-      {data.duplicateMetrics && (
+      {/* Duplicate stats moved to the dedicated "Duplicates" sub-tab (variant-neutral,
+          from duplicateStats.json). The old cardId-based "any treatment" counts here
+          undercounted normal-vs-hyperspace collisions and were removed. */}
+
+      <p style={{ color: '#555', fontSize: '12px', marginTop: '20px' }}>
+        Data generated: {new Date(data.generatedAt).toLocaleString()}
+      </p>
+    </div>
+  )
+}
+
+// === Duplicates Sub-Tab (variant-neutral, from precomputed duplicateStats.json) ===
+
+const DUP_VERDICT: Record<string, { t: string; c: string }> = {
+  consistent: { t: '✓ matches simulation', c: '#16A34A' },
+  'minor-drift': { t: '≈ minor drift', c: '#CA8A04' },
+  investigate: { t: '⚑ investigate', c: '#DC2626' },
+  sparse: { t: 'sparse data', c: '#9aa' },
+  'no-data': { t: 'no data yet', c: '#9aa' },
+}
+
+function DuplicatesSubTab({ setCode }: { setCode: string }) {
+  const s = (duplicateStats as any).sets?.[setCode]
+  if (!s) return <div className="stats-empty"><p>No duplicate data for {setCode} yet.</p></div>
+  const a = s.sealed6, ac = s.actual?.nonShuffled || {}, sh = s.sealedShuffled, nv = s.naive || {}
+  const v = DUP_VERDICT[ac.verdict as string] || DUP_VERDICT['no-data']
+  const f2 = (x: number) => (x ?? 0).toFixed(2)
+  const td = { padding: '8px' }
+  const tdr = { padding: '8px', textAlign: 'right' as const }
+  return (
+    <div className="qa-duplicates">
+      <h3>Duplicate cards per pool — variant-neutral</h3>
+      <p style={{ color: '#888', fontSize: '14px', marginBottom: '16px' }}>
+        A foil / hyperspace / prestige printing counts as the same card as its normal version.
+      </p>
+
+      <h4 style={{ color: '#aaa' }}>Estimates (6-pack sealed pool)</h4>
+      <table className="quality-table" style={{ width: '100%', maxWidth: 620, marginBottom: '24px', borderCollapse: 'collapse' }}>
+        <thead><tr style={{ borderBottom: '1px solid #333' }}>
+          <th style={td}>Estimate</th><th style={tdr}>Duplicates / pool</th><th style={td}> </th>
+        </tr></thead>
+        <tbody>
+          <tr style={{ borderBottom: '1px solid #222' }}>
+            <td style={td}>Actual <span style={{ color: '#888' }}>opened pools{ac.n ? ` · n=${ac.n.toLocaleString()}` : ''}</span></td>
+            <td style={tdr}>{ac.n >= 1 && ac.mean != null ? f2(ac.mean) : '—'}</td>
+            <td style={td}><span style={{ color: v.c, border: `1px solid ${v.c}`, borderRadius: 999, padding: '1px 8px', fontSize: 12 }}>{v.t}</span></td>
+          </tr>
+          <tr style={{ borderBottom: '1px solid #222' }}><td style={td}>Simulated <span style={{ color: '#888' }}>live generator</span></td><td style={tdr}>{f2(a.mean)}</td><td /></tr>
+          <tr style={{ borderBottom: '1px solid #222' }}><td style={td}>Theoretical <span style={{ color: '#888' }}>variant-collision model</span></td><td style={tdr}>{f2(a.theoryMean)}</td><td /></tr>
+          <tr style={{ borderBottom: '1px solid #222', color: '#999' }}><td style={td}>Naive random trials <span style={{ color: '#777' }}>with de-duplication</span></td><td style={tdr}>{nv.dedup != null ? f2(nv.dedup) : '—'}</td><td /></tr>
+          <tr style={{ color: '#999' }}><td style={td}>Naive random trials <span style={{ color: '#777' }}>without collation logic</span></td><td style={tdr}>{nv.noDedup != null ? f2(nv.noDedup) : f2(a.naiveMean)}</td><td /></tr>
+        </tbody>
+      </table>
+
+      <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+        <div style={{ flex: '1 1 280px' }}>
+          <h4 style={{ color: '#aaa' }}>Where duplicates land</h4>
+          <table className="quality-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead><tr style={{ borderBottom: '1px solid #333' }}><th style={td}>Card type</th><th style={tdr}>Dups / pool</th><th style={tdr}>Pool</th></tr></thead>
+            <tbody>
+              {['Leader', 'Base', 'Common', 'Uncommon', 'Rare', 'Legendary', 'Special'].filter(c => (a.byCat?.[c] || 0) > 0.001 || (s.poolSizes?.[c] || 0) > 0).map(c => (
+                <tr key={c} style={{ borderBottom: '1px solid #222' }}><td style={td}>{c}</td><td style={tdr}>{f2(a.byCat?.[c] || 0)}</td><td style={{ ...tdr, color: '#777' }}>{s.poolSizes?.[c] || 0}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div style={{ flex: '1 1 280px' }}>
+          <h4 style={{ color: '#aaa' }}>What pairing causes each duplicate</h4>
+          <table className="quality-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead><tr style={{ borderBottom: '1px solid #333' }}><th style={td}>Pairing</th><th style={tdr}>Per pool</th></tr></thead>
+            <tbody>
+              {Object.entries(a.pair || {}).filter(([, x]: any) => x > 0.01).map(([k, x]: any) => (
+                <tr key={k} style={{ borderBottom: '1px solid #222' }}><td style={td}>{k}</td><td style={tdr}>{f2(x)}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {sh && (
         <>
-          <h3>Duplicate & Triplicate Distribution</h3>
-          {[
-            { label: 'Sealed (Unshuffled)', desc: '6 consecutive packs per pool', group: data.duplicateMetrics.sealedUnshuffled },
-            { label: 'Sealed (Shuffled)', desc: '6 random packs per pool', group: data.duplicateMetrics.sealedShuffled },
-            { label: 'Draft (Unshuffled)', desc: '3 consecutive packs per player', group: data.duplicateMetrics.draftUnshuffled },
-            { label: 'Draft (Shuffled)', desc: '3 random packs per player', group: data.duplicateMetrics.draftShuffled },
-          ].map(({ label, desc, group }) => (
-            <div key={label}>
-              <h4 style={{ color: '#aaa', marginBottom: '4px' }}>{label}</h4>
-              <p style={{ color: '#888', fontSize: '14px', marginBottom: '12px' }}>
-                {desc}, excluding leaders and bases. {fmt(group.sampleSize)} {label.startsWith('Sealed') ? 'pools' : 'player-packs'} sampled.
-              </p>
-              <table className="quality-table" style={{ width: '100%', marginBottom: '20px', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr style={{ borderBottom: '1px solid #333' }}>
-                    <th style={{ textAlign: 'left', padding: '8px' }}>Metric</th>
-                    <th style={{ textAlign: 'right', padding: '8px' }}>Observed</th>
-                    <th style={{ textAlign: 'right', padding: '8px' }}>Expected</th>
-                    <th style={{ textAlign: 'right', padding: '8px' }}>Z-Score</th>
-                    <th style={{ textAlign: 'right', padding: '8px' }}>Sample</th>
-                    <th style={{ textAlign: 'center', padding: '8px' }}>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    { metric_label: 'Duplicates (Base Treatment)', metric: group.baseTreatmentDuplicates, precision: 2 },
-                    { metric_label: 'Duplicates (Any Treatment)', metric: group.anyTreatmentDuplicates, precision: 2 },
-                    { metric_label: 'Triplicates (Base Treatment)', metric: group.baseTreatmentTriplicates, precision: 3 },
-                    { metric_label: 'Triplicates (Any Treatment)', metric: group.anyTreatmentTriplicates, precision: 3 },
-                  ].map(({ metric_label, metric, precision }) => (
-                    <tr key={metric_label} style={{ borderBottom: '1px solid #222' }}>
-                      <td style={{ padding: '8px' }}>{metric_label}</td>
-                      <td style={{ textAlign: 'right', padding: '8px' }}>
-                        {metric.observedMean.toFixed(precision)} &plusmn; {metric.observedStdDev.toFixed(precision)}
-                      </td>
-                      <td style={{ textAlign: 'right', padding: '8px' }}>
-                        {metric.expectedMean.toFixed(precision)} &plusmn; {metric.expectedStdDev.toFixed(precision)}
-                      </td>
-                      <td style={{ textAlign: 'right', padding: '8px', fontFamily: 'monospace' }}>
-                        {metric.zScore >= 0 ? '+' : ''}{metric.zScore.toFixed(2)}
-                      </td>
-                      <td style={{ textAlign: 'right', padding: '8px' }}>{fmt(metric.sampleSize)}</td>
-                      <td style={{ textAlign: 'center', padding: '8px' }}>
-                        {getStatusBadge(metric.status)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ))}
-          <p style={{ color: '#666', fontSize: '12px', marginTop: '-10px', marginBottom: '30px' }}>
-            <strong>Base Treatment:</strong> Only Normal variant cards (no foil/hyperspace/showcase) — same base card appearing multiple times.<br/>
-            <strong>Any Treatment:</strong> Exact card ID matches — includes foil/hyperspace variants as distinct.<br/>
-            <strong>Z-Score:</strong> How many standard deviations from expected. |Z| &lt; 2 is normal, |Z| &gt; 3 indicates an issue.
+          <h4 style={{ color: '#aaa', marginTop: '24px' }}>Effect of shuffling packs</h4>
+          <table className="quality-table" style={{ width: '100%', maxWidth: 460, borderCollapse: 'collapse' }}>
+            <tbody>
+              <tr style={{ borderBottom: '1px solid #222' }}><td style={td}>Not shuffled <span style={{ color: '#888' }}>6 consecutive packs</span></td><td style={tdr}>{f2(a.mean)} <span style={{ color: '#777' }}>σ {f2(a.sd)}</span></td></tr>
+              <tr><td style={td}>Shuffled <span style={{ color: '#888' }}>6 packs spread across the box</span></td><td style={tdr}>{f2(sh.mean)} <span style={{ color: '#777' }}>σ {f2(sh.sd)}</span></td></tr>
+            </tbody>
+          </table>
+          <p style={{ color: '#666', fontSize: '12px', marginTop: '8px' }}>
+            Shuffling pulls 6 packs from across the 24-pack box, outside each belt&apos;s dedup window — duplicates rise ~{(sh.mean / a.mean).toFixed(1)}&times;.
           </p>
         </>
       )}
 
       <p style={{ color: '#555', fontSize: '12px', marginTop: '20px' }}>
-        Data generated: {new Date(data.generatedAt).toLocaleString()}
+        Variant-neutral (by card name). Naive = random draws ignoring belt collation; even with per-pack
+        de-duplication it stays high because most duplicates are cross-pack.{' '}
+        {(duplicateStats as any).generatedAt ? `Generated ${(duplicateStats as any).generatedAt}.` : ''}
       </p>
     </div>
   )

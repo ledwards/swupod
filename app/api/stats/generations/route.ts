@@ -372,7 +372,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       cardCacheVariantCounts[vt] = (cardCacheVariantCounts[vt] || 0) + 1
     })
 
-    return jsonResponse({
+    const response = jsonResponse({
       setCode,
       totalPacks,
       totalPools,
@@ -393,6 +393,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         unmatchedSamples: unmatchedCards.slice(0, 10)
       }
     })
+    // This aggregate is expensive (heavy DB scan) and changes slowly — cache it so
+    // reloads/CDN don't re-run the query. See QA-page caching note in the dup-rate research doc.
+    response.headers.set('Cache-Control', 'public, s-maxage=900, stale-while-revalidate=3600')
+    return response
   } catch (error) {
     console.error('Error fetching generation stats:', error)
     return handleApiError(error)

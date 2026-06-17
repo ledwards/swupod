@@ -60,7 +60,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // Get pack quality data
     const data = await getPackQualityData(normalizedSetCode, since)
 
-    return jsonResponse(data)
+    // Heavy aggregate (many DB queries) that changes slowly — cache so reloads/CDN
+    // don't recompute it on every QA-page visit.
+    const response = jsonResponse(data)
+    response.headers.set('Cache-Control', 'public, s-maxage=900, stale-while-revalidate=3600')
+    return response
   } catch (error) {
     console.error('Error fetching pack quality data:', error)
     return handleApiError(error)

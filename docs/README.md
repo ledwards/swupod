@@ -14,7 +14,7 @@
 - **[DATA_FORMATS.md](./DATA_FORMATS.md)** - Canonical pack/card data structures
 
 ## Research
-- **[research/duplicate-rate-analysis.md](./research/duplicate-rate-analysis.md)** - Duplicate cards per pool, per set: theory vs. actual (powers the `/duplicate-rates` page)
+- **[research/duplicate-rate-analysis.md](./research/duplicate-rate-analysis.md)** - Duplicate cards per pool, per set: theory vs. actual (powers the Duplicates tab on `/qa`)
 - **[research/swudraftsim-pack-fidelity-research.md](./research/swudraftsim-pack-fidelity-research.md)** - Pack-fidelity comparison vs. SWUDraftSim
 
 ## Per-Set Documentation

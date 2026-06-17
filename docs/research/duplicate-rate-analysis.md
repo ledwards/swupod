@@ -3,7 +3,7 @@
 **Date:** 2026-06-17
 **Author:** generated analysis (`src/qa/duplicateAnalysis.ts`)
 **Data artifact:** [`src/data/duplicateStats.json`](../../src/data/duplicateStats.json)
-**Live page:** `/duplicate-rates`
+**Live page:** `/qa` → **Duplicates** tab (per set)
 
 ---
 
