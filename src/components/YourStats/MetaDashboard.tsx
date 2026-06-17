@@ -111,8 +111,13 @@ function MetaSection({
 }
 
 export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, lockSet = false, includeBetaSets = false, fetchImpl }: MetaDashboardProps) {
-  const setTabs = useMemo(() => getStatsSetTabs(includeBetaSets), [includeBetaSets])
-  const [activeSet, setActiveSet] = useState<string>(setTabs.includes(setCode) ? setCode : DEFAULT_STATS_SET_TAB)
+  // When locked by the page filter, always FOLLOW that set (incl. an upcoming/
+  // beta set like ASH) — never fall back to a different default. The internal
+  // selector only renders when unlocked, so its tab list still hides beta sets.
+  const setTabs = useMemo(() => getStatsSetTabs(includeBetaSets || lockSet), [includeBetaSets, lockSet])
+  const [activeSet, setActiveSet] = useState<string>(
+    lockSet ? setCode : (setTabs.includes(setCode) ? setCode : DEFAULT_STATS_SET_TAB),
+  )
   const [state, setState] = useState({
     loading: true,
     error: false,
@@ -127,10 +132,12 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
   // outright (no blur gate). Empty until they have recorded games.
   const [winRates, setWinRates] = useState<Array<{ leaderName: string; winRate: number; matches: number; leaderImageUrl: string | null; baseColor: string | null }>>([])
 
-  // Follow the era's set when it changes (unless the user picked one explicitly is fine to override here).
+  // Follow the page's set. When locked, follow unconditionally (incl. ASH);
+  // when unlocked, only adopt sets that exist as tabs.
   useEffect(() => {
+    if (lockSet) { setActiveSet(setCode); return }
     if (setTabs.includes(setCode)) setActiveSet(setCode)
-  }, [setCode, setTabs])
+  }, [setCode, setTabs, lockSet])
 
   useEffect(() => {
     let cancelled = false
@@ -259,28 +266,28 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
           <div className="your-stats-meta-grid">
             <MetaSection
               eyebrow="Deckbuilding"
-              title="Most-played leaders"
+              title="Most popular leaders"
               subtitle="Share of built decks that chose each leader."
               entries={state.played}
               loading={state.loading}
             />
             <MetaSection
               eyebrow="Drafting"
-              title="Most-drafted leaders"
+              title="Most picked leaders"
               subtitle="How often each leader is taken first in the draft."
               entries={state.drafted}
               loading={state.loading}
             />
             <MetaSection
               eyebrow="Deckbuilding"
-              title="Least-played leaders"
+              title="Least popular leaders"
               subtitle="The leaders the field almost never builds."
               entries={leastOf(state.played)}
               loading={state.loading}
             />
             <MetaSection
               eyebrow="Drafting"
-              title="Least-drafted leaders"
+              title="Least picked leaders"
               subtitle="The leaders most often passed in the draft."
               entries={leastOf(state.drafted)}
               loading={state.loading}
@@ -289,33 +296,33 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
 
           <div className="your-stats-meta-subhead">
             <span className="your-stats-eyebrow">By card</span>
-            <h3>Individual cards, not just leaders</h3>
+            <h3>Individual cards</h3>
           </div>
           <div className="your-stats-meta-grid">
             <MetaSection
               eyebrow="Deckbuilding"
-              title="Most-played cards"
+              title="Most popular cards"
               subtitle="Share of built decks that run each card."
               entries={topOf(state.playedCards)}
               loading={state.loading}
             />
             <MetaSection
               eyebrow="Drafting"
-              title="Most-drafted cards"
+              title="Most picked cards"
               subtitle="How often each card is taken first when seen."
               entries={topOf(state.draftedCards)}
               loading={state.loading}
             />
             <MetaSection
               eyebrow="Deckbuilding"
-              title="Least-played cards"
+              title="Least popular cards"
               subtitle="Cards that almost never make a deck."
               entries={leastOf(state.playedCards)}
               loading={state.loading}
             />
             <MetaSection
               eyebrow="Drafting"
-              title="Least-drafted cards"
+              title="Least picked cards"
               subtitle="Cards most often left in the pack."
               entries={leastOf(state.draftedCards)}
               loading={state.loading}

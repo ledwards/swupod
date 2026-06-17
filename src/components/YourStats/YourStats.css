@@ -1272,8 +1272,9 @@
   position: absolute;
   top: 0;
   /* Hyperspace unit-side art on the right, ~half the previous width to leave
-     room for a single row of action buttons. */
-  right: 0;
+     room for a single row of action buttons. Pushed 60px further right to
+     re-center the leader's art within the visible crop. */
+  right: -60px;
   height: 100%;
   width: 32%;
   object-fit: cover;
