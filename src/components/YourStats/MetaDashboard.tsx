@@ -182,6 +182,8 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
     leadersPopSealed: [] as MetaEntry[],
     leadersPopDraft: [] as MetaEntry[],
     leadersPicked: [] as MetaEntry[],
+    archSealed: [] as MetaEntry[],
+    archDraft: [] as MetaEntry[],
     cardsPopSealed: [] as MetaEntry[],
     cardsPopDraft: [] as MetaEntry[],
     cardsPicked: [] as MetaEntry[],
@@ -259,15 +261,23 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
       getJson(f, `/api/stats/deck-inclusion?${base}&poolType=sealed`),
       getJson(f, `/api/stats/deck-inclusion?${base}&poolType=draft`),
       getJson(f, `/api/stats/draft-picks?${base}`),
+      getJson(f, `/api/stats/archetype-selection?${base}&poolType=sealed`),
+      getJson(f, `/api/stats/archetype-selection?${base}&poolType=draft`),
     ])
-      .then(([leadSealed, leadDraft, leadPicked, cardSealed, cardDraft, cardPicked]) => {
+      .then(([leadSealed, leadDraft, leadPicked, cardSealed, cardDraft, cardPicked, archSealed, archDraft]) => {
         if (cancelled) return
+        const archEntry = (a: any): MetaEntry => ({
+          name: a.cardName, value: Number(a.selectionRate || 0), loggedIn: null,
+          aspects: a.aspects || [], imageUrl: a.imageUrl || null,
+        })
         setState({
           loading: false,
           error: false,
           leadersPopSealed: (leadSealed.leaders || []).map(leaderEntry),
           leadersPopDraft: (leadDraft.leaders || []).map(leaderEntry),
           leadersPicked: pickedEntries(leadPicked.cards),
+          archSealed: (archSealed.archetypes || []).map(archEntry),
+          archDraft: (archDraft.archetypes || []).map(archEntry),
           cardsPopSealed: (cardSealed.cards || []).map(cardInclusionEntry),
           cardsPopDraft: (cardDraft.cards || []).map(cardInclusionEntry),
           cardsPicked: pickedEntries(cardPicked.cards),
@@ -354,6 +364,29 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
               title="Least picked leaders"
               subtitle="The leaders most often passed in the draft."
               entries={leastOf(state.leadersPicked)}
+              loading={state.loading}
+            />
+          </div>
+
+          <div className="your-stats-meta-subhead">
+            <span className="your-stats-eyebrow">By archetype</span>
+            <h3>Archetypes</h3>
+          </div>
+          <div className="your-stats-meta-grid">
+            <SplitMetricSection
+              eyebrow="Deckbuilding"
+              title="Most popular archetypes"
+              subtitle="Share of built decks on each leader + base archetype."
+              sealed={topOf(state.archSealed)}
+              draft={topOf(state.archDraft)}
+              loading={state.loading}
+            />
+            <SplitMetricSection
+              eyebrow="Deckbuilding"
+              title="Least popular archetypes"
+              subtitle="The leader + base pairings the field almost never builds."
+              sealed={leastOf(state.archSealed)}
+              draft={leastOf(state.archDraft)}
               loading={state.loading}
             />
           </div>

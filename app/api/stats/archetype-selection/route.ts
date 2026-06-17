@@ -1,0 +1,93 @@
+// @ts-nocheck
+// GET /api/stats/archetype-selection - prevalence of leader+base ARCHETYPES in
+// built decks. Mirrors leader-selection but groups by the (leader, base) combo
+// and names it via archetypeShortName (swuapi nickname when present, else the
+// canonical "Leader Color HP" fallback — never a hand-rolled "Leader / Base"
+// slash). poolType=sealed|draft splits the field.
+import { queryRows } from '@/lib/db'
+import { jsonResponse, handleApiError } from '@/lib/utils'
+import { getAllCards } from '@/src/utils/cardData'
+import { buildCardLookupMaps } from '@/src/utils/cardNormalization'
+import { archetypeShortName } from '@/src/utils/archetypeName'
+import { NextRequest, NextResponse } from 'next/server'
+
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  try {
+    const url = new URL(request.url)
+    const setCode = url.searchParams.get('setCode') || 'SOR'
+    const since = url.searchParams.get('since') || '2020-01-01'
+    const until = url.searchParams.get('until') || '2099-12-31'
+    const poolType = url.searchParams.get('poolType') || null
+
+    const { cardMap } = buildCardLookupMaps(getAllCards())
+
+    const poolTypeFilter = poolType ? `AND bd.pool_type = $4` : ''
+    const queryParams: string[] = poolType ? [setCode, since, until, poolType] : [setCode, since, until]
+
+    const rows = await queryRows(
+      `SELECT bd.leader, bd.base
+       FROM built_decks bd
+       WHERE bd.set_code = $1 AND bd.built_at >= $2 AND bd.built_at < ($3::date + interval '1 day')
+         ${poolTypeFilter}`,
+      queryParams,
+    )
+
+    // Aggregate by archetype identity (leader + base color + base HP).
+    const stats = new Map<string, {
+      count: number
+      name: string
+      leaderName: string
+      aspects: string[]
+      leaderImageUrl: string | null
+      leaderBackImageUrl: string | null
+    }>()
+    let totalDecks = 0
+
+    for (const row of rows) {
+      const leader = row.leader
+      const base = row.base
+      if (!leader) continue
+      const leaderData = cardMap.get(leader.id || leader.cardId || '')
+      if (leaderData && leaderData.type !== 'Leader') continue
+      const baseData = base ? cardMap.get(base.id || base.cardId || '') : null
+
+      const leaderName = leaderData?.name || leader.name || leader.cardName || 'Unknown'
+      const baseAspects = baseData?.aspects || base?.aspects || []
+      const baseHp = baseData?.hp ?? base?.hp ?? null
+      const name = archetypeShortName({ leaderName, baseAspects, baseHp })
+      if (!name) continue
+
+      totalDecks++
+      if (!stats.has(name)) {
+        stats.set(name, {
+          count: 0,
+          name,
+          leaderName,
+          // Aspect color for the bar comes from the leader's aspects.
+          aspects: leaderData?.aspects || leader.aspects || [],
+          leaderImageUrl: leaderData?.imageUrl || null,
+          leaderBackImageUrl: leaderData?.backImageUrl || null,
+        })
+      }
+      stats.get(name)!.count++
+    }
+
+    const archetypes = Array.from(stats.values())
+      .map((s) => ({
+        cardName: s.name,
+        leaderName: s.leaderName,
+        timesSelected: s.count,
+        selectionRate: totalDecks > 0 ? Math.round((s.count / totalDecks) * 1000) / 10 : 0,
+        aspects: s.aspects,
+        imageUrl: s.leaderImageUrl,
+        backImageUrl: s.leaderBackImageUrl,
+      }))
+      .sort((a, b) => b.timesSelected - a.timesSelected)
+
+    const response = jsonResponse({ setCode, totalDecks, archetypes })
+    response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
+    return response
+  } catch (error) {
+    return handleApiError(error)
+  }
+}
