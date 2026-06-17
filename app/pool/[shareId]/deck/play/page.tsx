@@ -2065,47 +2065,6 @@ export default function PlayPage({ params }: PageProps) {
           />
         </div>
 
-        <div className="practice-hand-button-container">
-          <button className="play-action-button" onClick={drawPracticeHand}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <g transform="rotate(-15 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
-              <g transform="rotate(0 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
-              <g transform="rotate(15 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
-            </svg>
-            Practice Hand
-          </button>
-          {!isInfinitePool && isOwner && user && (
-            <div className="post-to-discord-wrapper">
-              <button
-                className={`play-action-button${postedToDiscord ? ' posted' : ''}`}
-                onClick={postToDiscord}
-                disabled={postingToDiscord || postedToDiscord}
-              >
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
-                {postedToDiscord ? 'Posted!' : postingToDiscord ? 'Posting...' : 'Post to Discord'}
-              </button>
-              <span className="post-to-discord-help" data-tooltip="Share your deck to the Protect the Pod Discord for feedback and discussion. Makes your pool public.">i</span>
-            </div>
-          )}
-          {pool?.draftShareId && pool?.poolType === 'draft' && (
-            <button className="play-action-button" onClick={() => router.push(`/draft/${pool.draftShareId}/log`)}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
-              </svg>
-              Draft Log
-            </button>
-          )}
-          {pool?.draftShareId && pool?.poolType === 'draft' && isPatron && isOwner && (
-            <DraftReportButton draftShareId={pool.draftShareId} variant="play" />
-          )}
-        </div>
-
         {/* Login banner for logged-out users viewing anonymous (unowned) pools */}
         {!isInfinitePool && !user && !pool?.owner && (
           <div className="login-banner">
@@ -2155,6 +2114,49 @@ export default function PlayPage({ params }: PageProps) {
           autoLobbyIntent={autoLobbyIntent}
           analyticsContext={getLimitedAnalyticsContext()}
         />
+
+        {/* Practice Hand / Post to Discord / Draft actions — below the
+            "Deck Complete" box, not above it. */}
+        <div className="practice-hand-button-container">
+          <button className="play-action-button" onClick={drawPracticeHand}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <g transform="rotate(-15 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
+              <g transform="rotate(0 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
+              <g transform="rotate(15 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
+            </svg>
+            Practice Hand
+          </button>
+          {!isInfinitePool && isOwner && user && (
+            <div className="post-to-discord-wrapper">
+              <button
+                className={`play-action-button${postedToDiscord ? ' posted' : ''}`}
+                onClick={postToDiscord}
+                disabled={postingToDiscord || postedToDiscord}
+              >
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                {postedToDiscord ? 'Posted!' : postingToDiscord ? 'Posting...' : 'Post to Discord'}
+              </button>
+              <span className="post-to-discord-help" data-tooltip="Share your deck to the Protect the Pod Discord for feedback and discussion. Makes your pool public.">i</span>
+            </div>
+          )}
+          {pool?.draftShareId && pool?.poolType === 'draft' && (
+            <button className="play-action-button" onClick={() => router.push(`/draft/${pool.draftShareId}/log`)}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              Draft Log
+            </button>
+          )}
+          {pool?.draftShareId && pool?.poolType === 'draft' && isPatron && isOwner && (
+            <DraftReportButton draftShareId={pool.draftShareId} variant="play" />
+          )}
+        </div>
 
         {/* History — the pool's recorded games (Wayfinder-tracked). Only once
             the Companion is present; the install pitch lives in PlayInstructions. */}

@@ -59,7 +59,7 @@
 .play-content {
   position: relative;
   z-index: 1;
-  max-width: 800px;
+  max-width: 920px;
   margin: 0 auto;
   padding-top: 1rem;
 }
