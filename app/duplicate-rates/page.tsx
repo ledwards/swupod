@@ -56,6 +56,24 @@ function verdictText(ac: any): string {
   return `Actual (n=${ac.n}) is ${pct}% ${dir} the simulation (z=${ac.z}). Larger than normal variance — worth checking whether these pools predate the current generator or point to a generation bug.`
 }
 
+// At-a-glance health glyph for the headline cards, driven by how well the live
+// generator's simulated number matches actual opened pools for this set.
+const STATUS: Record<string, { g: string; c: string; t: string }> = {
+  consistent: { g: '✓', c: '#16A34A', t: 'matches actual opened pools' },
+  'minor-drift': { g: '⚠', c: '#CA8A04', t: 'minor drift from actual opened pools' },
+  investigate: { g: '⚑', c: '#DC2626', t: 'differs from actual opened pools — investigate' },
+  sparse: { g: '–', c: '#9aa', t: 'too few opened pools to validate yet' },
+  'no-data': { g: '–', c: '#9aa', t: 'no opened pools recorded yet' },
+}
+function StatusIcon({ v, title }: { v: string; title?: string }) {
+  const m = STATUS[v] || STATUS['no-data']
+  return (
+    <span className="dup-status" style={{ color: m.c, borderColor: m.c }} title={title || m.t} aria-label={m.t}>
+      {m.g}
+    </span>
+  )
+}
+
 function SetDupView({ code }: { code: string }) {
   const s = (duplicateStats as any).sets?.[code]
   const color = STATS_SET_COLORS[code] || '#888'
@@ -75,12 +93,17 @@ function SetDupView({ code }: { code: string }) {
       {/* Headline numbers */}
       <div className="dup-headline">
         <div className="dup-stat-card">
+          <StatusIcon v={ac.verdict || 'no-data'} title={verdictText(ac)} />
           <div className="dup-stat-label">Sealed — 6-pack pool</div>
           <div className="dup-stat-value" style={{ color }}>{fmt2(a.mean)}</div>
           <div className="dup-stat-sub">duplicate cards / pool</div>
           <div className="dup-ci">95% CI [{fmt2(a.ci95[0])}, {fmt2(a.ci95[1])}]</div>
         </div>
         <div className="dup-stat-card">
+          <StatusIcon
+            v={ac.verdict || 'no-data'}
+            title={`Simulated. The generator is ${(STATUS[ac.verdict] || STATUS['no-data']).t} (validated via sealed pools).`}
+          />
           <div className="dup-stat-label">Draft — 3-pack pool</div>
           <div className="dup-stat-value" style={{ color }}>{fmt2(d.mean)}</div>
           <div className="dup-stat-sub">duplicate cards / pool</div>
@@ -107,7 +130,7 @@ function SetDupView({ code }: { code: string }) {
             <span className="dup-compare-val">{ac.n >= 1 && ac.mean != null ? fmt2(ac.mean) : '—'}</span>
           </div>
           <div className="dup-compare-row dup-compare-muted">
-            <span className="dup-compare-label">Naive birthday <span className="dup-tag">ignores belt collation</span></span>
+            <span className="dup-compare-label">Naive random trials <span className="dup-tag">without collation logic</span></span>
             <span className="dup-compare-val">{fmt2(a.naiveMean)}</span>
           </div>
         </div>
