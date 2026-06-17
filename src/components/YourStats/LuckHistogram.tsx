@@ -60,8 +60,8 @@ export interface CardHit {
 }
 
 // A consistent, aspect-independent color for delta text so it reads the same
-// over any bar color (per the brief: "a consistent contrast color like black").
-const DELTA_INK = '#0b0b0c'
+// regardless of the card's aspect — light, for the dark readout.
+const DELTA_INK = '#ffd66b'
 
 function barBackground(aspects: string[]): string {
   const colors = (aspects || [])
@@ -159,21 +159,32 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
         {cardHits.map((hit) => {
           // sqrt scale: keeps single pulls visible even when one card spikes,
           // and stays readable whether you've opened 10 packs or 1000.
-          const heightPct = hit.count > 0 ? Math.max(8, (Math.sqrt(hit.count) / Math.sqrt(maxCount)) * 100) : 2
+          const scale = (v: number) => (v > 0 ? (Math.sqrt(v) / Math.sqrt(maxCount)) * 100 : 0)
+          const heightPct = hit.count > 0 ? Math.max(8, scale(hit.count)) : 0
+          const expPct = Math.min(100, scale(hit.expected))
           const dimmed = needle.length > 0 && !hit.name.toLowerCase().includes(needle)
           const isActive = active?.cardId === hit.cardId
+          // The whole column (full height) is the hover/click target, so even a
+          // zero-count card can be inspected.
           return (
             <button
               key={hit.cardId}
               type="button"
-              className={`your-stats-luck-bar${dimmed ? ' your-stats-luck-bar--dim' : ''}${isActive ? ' your-stats-luck-bar--active' : ''}${hit.count === 0 ? ' your-stats-luck-bar--empty' : ''}`}
-              style={{ height: `${heightPct}%`, background: hit.count > 0 ? barBackground(hit.aspects) : undefined }}
+              className={`your-stats-luck-bar-col${dimmed ? ' your-stats-luck-bar--dim' : ''}${isActive ? ' your-stats-luck-bar--active' : ''}`}
               onMouseEnter={() => setHovered(hit)}
               onFocus={() => setHovered(hit)}
               onClick={() => setPinned((cur) => (cur?.cardId === hit.cardId ? null : hit))}
-              aria-label={`${hit.name}, number ${hit.number}, pulled ${hit.count} times`}
-              title={`${hit.name} — ${hit.count}×`}
-            />
+              aria-label={`${hit.name}, number ${hit.number}, pulled ${hit.count} times, expected ${hit.expected.toFixed(1)}`}
+              title={`${hit.name} — ${hit.count}× (exp ${hit.expected.toFixed(1)})`}
+            >
+              <span
+                className={`your-stats-luck-bar${hit.count === 0 ? ' your-stats-luck-bar--empty' : ''}`}
+                style={{ height: `${heightPct}%`, background: hit.count > 0 ? barBackground(hit.aspects) : undefined }}
+              />
+              {hit.expected > 0 && (
+                <span className="your-stats-luck-bar-expected" style={{ bottom: `${expPct}%` }} />
+              )}
+            </button>
           )
         })}
       </div>
@@ -208,27 +219,28 @@ function pct(n: number): string {
 }
 
 export function DuplicateRateWidget({ data }: { data: DuplicatesData }) {
-  const luckier = data.actualRate <= data.expectedRate
+  const total = Math.round(data.actualTotal)
+  const dupes = Math.round(data.actualCount)
+  const unique = Math.max(0, total - dupes)
+  const copiesPerCard = unique > 0 ? total / unique : 0
   return (
     <div className="your-stats-luck-widget">
       <h4>Duplicates</h4>
       <div className="your-stats-luck-widget-figures">
         <div>
-          <span className="your-stats-luck-widget-num">{pct(data.actualRate)}</span>
-          <span className="your-stats-luck-widget-cap">your repeat rate</span>
+          <span className="your-stats-luck-widget-num">{copiesPerCard ? copiesPerCard.toFixed(2) : '—'}×</span>
+          <span className="your-stats-luck-widget-cap">copies per card</span>
         </div>
-        <span className="your-stats-luck-widget-vs">vs</span>
         <div>
-          <span className="your-stats-luck-widget-num your-stats-luck-widget-num--exp">{pct(data.expectedRate)}</span>
-          <span className="your-stats-luck-widget-cap">expected</span>
+          <span className="your-stats-luck-widget-num your-stats-luck-widget-num--exp">{unique.toLocaleString()}/{total.toLocaleString()}</span>
+          <span className="your-stats-luck-widget-cap">unique of opened</span>
         </div>
       </div>
       <p className="your-stats-luck-widget-copy">
-        Most people expect every card to be different. They aren&apos;t — with a fixed set,
-        repeats are guaranteed. You&apos;ve seen <strong>{Math.round(data.actualCount).toLocaleString()}</strong> repeat
-        {Math.round(data.actualCount) === 1 ? '' : 's'}; the math predicts about{' '}
-        <strong>{Math.round(data.expectedCount).toLocaleString()}</strong>.{' '}
-        {luckier ? 'Slightly fewer repeats than average.' : 'A few more repeats than average — normal swing.'}
+        You&apos;ve opened <strong>{total.toLocaleString()}</strong> cards — <strong>{unique.toLocaleString()}</strong> different
+        ones, so <strong>{dupes.toLocaleString()}</strong> were repeats. Duplicates are normal: with a fixed set,
+        the more you open the more copies you stack up.
+        <span className="your-stats-luck-widget-note"> A precise, set-aware expected baseline is in progress.</span>
       </p>
     </div>
   )

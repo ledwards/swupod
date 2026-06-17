@@ -112,8 +112,8 @@ describe('<YourStats /> — index.tsx', () => {
     // Pools/Activity get the raw filter ('all' or a code); Luck/Meta get a
     // concrete set so per-set views always have something to render.
     assert.match(INDEX_CODE, /<PoolHistoryDashboard setFilter=\{setCode\}/)
-    assert.match(INDEX_CODE, /<LuckSection[\s\S]*?lockedSetCode=\{concreteSet\}/)
-    assert.match(INDEX_CODE, /<MetaDashboard[\s\S]*?lockSet/)
+    assert.match(INDEX_CODE, /<LuckSection[\s\S]*?lockedSetCode=\{isAllSets \? undefined : setCode\}/)
+    assert.match(INDEX_CODE, /<MetaDashboard[\s\S]*?lockSet=\{!isAllSets\}/)
     assert.match(INDEX_CODE, /<ActivityDashboard[\s\S]*?setCode=\{setCode\}/)
     assert.match(INDEX_CODE, /<GameplayDashboard[\s\S]*?setCode=\{setCode\}/)
   })

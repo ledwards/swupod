@@ -4,6 +4,13 @@ import { useEffect, useMemo, useState } from 'react'
 import UserAvatar from '@/src/components/UserAvatar'
 import { getPackArtUrl } from '@/src/utils/packArt'
 import { deletePool } from '@/src/utils/poolApi'
+import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
+
+// The real Companion mark (vendored brand asset) — reliable, unlike the
+// extension-provided icon URL which can 404 from a page context.
+function WayfinderMark() {
+  return <img src="/branding/wayfinder_logo.svg" alt="" width={16} height={16} className="your-stats-wf-icon" aria-hidden="true" />
+}
 
 interface PoolBuild {
   shareId: string
@@ -70,8 +77,8 @@ type PoolFilter = 'all' | 'with-decks' | 'no-decks' | 'friends'
 
 const RELATIONSHIP_FILTERS: Array<{ value: PoolFilter; label: string; title: string }> = [
   { value: 'all', label: 'All', title: 'All pools' },
-  { value: 'with-decks', label: 'With decks built', title: 'Pools with at least one deck built' },
-  { value: 'no-decks', label: 'No decks built', title: 'Pools with no deck yet' },
+  { value: 'with-decks', label: 'Decks', title: 'Pools with at least one deck built' },
+  { value: 'no-decks', label: 'To be built', title: 'Pools with no deck yet' },
   { value: 'friends', label: 'Friends', title: 'Pools that involve other players' },
 ]
 
@@ -152,6 +159,7 @@ function PoolBuildCard({
   onDeletePool,
   deleteArmed,
   onArmDelete,
+  wayfinderDetected,
 }: {
   build: PoolBuild
   setCode: string | null
@@ -161,6 +169,7 @@ function PoolBuildCard({
   onDeletePool: (shareId: string) => void
   deleteArmed: boolean
   onArmDelete: (shareId: string | null) => void
+  wayfinderDetected: boolean
 }) {
   const deckUrl = absoluteUrl(build.links.deck)
   const jsonUrl = absoluteUrl(build.links.json)
@@ -261,12 +270,31 @@ function PoolBuildCard({
             {copiedKey === `json-${build.shareId}` ? 'Copied' : <CopyIcon />}
           </button>
         </div>
+        {wayfinderDetected && (
+          <div className="your-stats-replay-actions your-stats-pool-actions-row your-stats-pool-lobby-actions">
+            <a
+              className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-action--play your-stats-pool-lobby-btn"
+              href={`${build.links.play}?lobby=private`}
+              title="Open a private Karabast lobby with this deck"
+            >
+              <WayfinderMark /><span>Private Lobby</span>
+            </a>
+            <a
+              className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-action--play your-stats-pool-lobby-btn"
+              href={`${build.links.play}?lobby=public`}
+              title="Open a public Karabast lobby with this deck"
+            >
+              <WayfinderMark /><span>Public Lobby</span>
+            </a>
+          </div>
+        )}
       </div>
     </div>
   )
 }
 
 export function PoolHistoryDashboard({ fetchImpl, setFilter = 'all' }: { fetchImpl?: typeof fetch; setFilter?: string }) {
+  const { detected: wayfinderDetected } = useWayfinderDetection()
   const [state, setState] = useState<FetchState>({ loading: true, error: false, pools: [] })
   const [query, setQuery] = useState('')
   const [armedDelete, setArmedDelete] = useState<string | null>(null)
@@ -477,6 +505,7 @@ export function PoolHistoryDashboard({ fetchImpl, setFilter = 'all' }: { fetchIm
                     onDeletePool={handleDeletePool}
                     deleteArmed={armedDelete === pool.shareId}
                     onArmDelete={setArmedDelete}
+                    wayfinderDetected={wayfinderDetected}
                   />
                 ))}
               </div>

@@ -170,7 +170,9 @@ export function YourStats({ since, until, setCode = 'all', filterLabel }: YourSt
           </div>
         ) : activeTab === 'luck' ? (
           <div id="your-stats-luck-panel" role="tabpanel">
-            <LuckSection since={since} until={until} lockedSetCode={concreteSet} includeBetaSets={Boolean(user?.is_beta_tester || user?.is_admin)} />
+            {/* Luck is inherently per-set. With a specific set chosen globally we
+                lock to it (no repeated selector); with "All" we let the user pick. */}
+            <LuckSection since={since} until={until} lockedSetCode={isAllSets ? undefined : setCode} includeBetaSets={Boolean(user?.is_beta_tester || user?.is_admin)} />
           </div>
         ) : activeTab === 'pools' ? (
           <div id="your-stats-pools-panel" role="tabpanel">
@@ -178,7 +180,7 @@ export function YourStats({ since, until, setCode = 'all', filterLabel }: YourSt
           </div>
         ) : (
           <div id="your-stats-meta-panel" role="tabpanel">
-            <MetaDashboard since={since} until={until} setCode={concreteSet} lockSet includeBetaSets={Boolean(user?.is_beta_tester || user?.is_admin)} />
+            <MetaDashboard since={since} until={until} setCode={concreteSet} lockSet={!isAllSets} includeBetaSets={Boolean(user?.is_beta_tester || user?.is_admin)} />
           </div>
         )}
       </div>

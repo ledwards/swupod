@@ -9,24 +9,30 @@ import { archetypeShortName, poolDisplayName } from '@/src/utils/archetypeName'
 import { getAllCards } from '@/src/utils/cardData'
 import { NextRequest, NextResponse } from 'next/server'
 
-// Hyperspace leader art lookup. Pool cards want the full-bleed Hyperspace
-// version of the leader regardless of which variant the user happened to save,
-// so we resolve by collector id (cardId) to the Hyperspace variant's art.
-let hyperspaceByCardId: Map<string, string> | null = null
+// Hyperspace leader art lookup. The Hyperspace printing of a leader has its OWN
+// collector number (e.g. Tobias Beckett is LAW-002 normal but LAW-266
+// hyperspace), so it does NOT share cardId with the normal leader — it shares
+// the name + set. Resolve by set::name to the Hyperspace variant's full-bleed
+// unit-side art (landscape), falling back to its front art.
+let hyperspaceByName: Map<string, string> | null = null
+function hsKey(setCode: any, name: any): string {
+  return `${String(setCode || '').toUpperCase()}::${String(name || '').trim().toLowerCase()}`
+}
 function getHyperspaceLeaderArt(card: any): string | null {
   if (!card) return null
-  if (!hyperspaceByCardId) {
-    hyperspaceByCardId = new Map<string, string>()
+  if (!hyperspaceByName) {
+    hyperspaceByName = new Map<string, string>()
     for (const c of getAllCards()) {
+      const isLeader = c.isLeader || c.type === 'Leader'
       const isHs = c.isHyperspace || (typeof c.variantType === 'string' && c.variantType.includes('Hyperspace'))
-      if (!isHs || !c.cardId) continue
-      // Prefer the unit-side (landscape) Hyperspace art; fall back to the front.
+      if (!isLeader || !isHs || !c.name) continue
+      // Unit-side (landscape) Hyperspace art reads best as a card background.
       const art = c.backImageUrl || c.imageUrl
-      if (art && !hyperspaceByCardId.has(c.cardId)) hyperspaceByCardId.set(c.cardId, art)
+      const key = hsKey(c.set, c.name)
+      if (art && !hyperspaceByName.has(key)) hyperspaceByName.set(key, art)
     }
   }
-  const key = card.cardId || card.id
-  return (key && hyperspaceByCardId.get(key)) || null
+  return hyperspaceByName.get(hsKey(card.set, card.name)) || null
 }
 
 interface DeckPreview {

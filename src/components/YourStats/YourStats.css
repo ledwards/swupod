@@ -2581,66 +2581,111 @@ a.your-stats-logged-out-link:active {
   color: var(--ys-text-2, rgba(255, 255, 255, 0.6));
 }
 
+/* On-brand search: compact, dark, not a huge full-width input. */
 .your-stats-luck-hist-search {
   flex: 0 0 auto;
 }
 
 .your-stats-luck-hist-search input {
-  min-width: 180px;
+  width: 200px;
+  max-width: 48vw;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.85rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  color: #fff;
 }
 
-/* The bar field: thin per-card bars, baseline-aligned, scroll on small screens. */
+.your-stats-luck-hist-search input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.your-stats-luck-hist-search input:focus {
+  outline: none;
+  border-color: rgba(96, 165, 250, 0.6);
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.25);
+}
+
+/* The bar field: one full-height column per card (so even zero-count cards are
+   hoverable), each with the actual bar at the bottom and an expected marker. */
 .your-stats-luck-hist-bars {
   display: flex;
-  align-items: flex-end;
+  align-items: stretch;
   gap: 1px;
-  height: 168px;
+  height: 180px;
+  margin-top: 0.4rem;
   padding: 2px 0;
   overflow-x: auto;
   overflow-y: hidden;
 }
 
-.your-stats-luck-bar {
+.your-stats-luck-bar-col {
+  position: relative;
   flex: 1 1 auto;
-  min-width: 3px;
-  align-self: flex-end;
+  min-width: 4px;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
   border: 0;
-  border-radius: 2px 2px 0 0;
+  background: transparent;
   padding: 0;
   cursor: pointer;
+}
+
+.your-stats-luck-bar {
+  display: block;
+  width: 100%;
+  border-radius: 2px 2px 0 0;
   opacity: 0.92;
-  transition: opacity 140ms ease, transform 140ms ease, outline-color 140ms ease;
-  outline: 2px solid transparent;
-  outline-offset: 1px;
+  transition: opacity 140ms ease;
 }
 
 .your-stats-luck-bar--empty {
-  background: rgba(255, 255, 255, 0.12);
-  cursor: default;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Expected level marker — a contrasting line across the column so the gap
+   between reality and expected is visible at a glance. */
+.your-stats-luck-bar-expected {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
 }
 
 .your-stats-luck-bar--dim {
-  opacity: 0.16;
+  opacity: 0.18;
+}
+
+.your-stats-luck-bar--active .your-stats-luck-bar {
+  opacity: 1;
 }
 
 .your-stats-luck-bar--active {
-  opacity: 1;
-  outline-color: #fff;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .your-stats-luck-bar:hover {
+  .your-stats-luck-bar-col:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .your-stats-luck-bar-col:hover .your-stats-luck-bar {
     opacity: 1;
-    transform: scaleY(1.02);
   }
 }
 
-/* Readout under the chart — hover OR tap drives this (mobile-safe). */
+/* Readout under the chart — hover OR tap drives this (mobile-safe). Dark,
+   on-theme card, not a white box. */
 .your-stats-luck-readout {
   margin-top: 0.9rem;
   min-height: 58px;
-  background: #f4f4f6;
-  color: #0b0b0c;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.92);
   border-radius: 10px;
   padding: 0.7rem 0.85rem;
 }
@@ -2648,7 +2693,7 @@ a.your-stats-logged-out-link:active {
 .your-stats-luck-readout--empty {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
   color: var(--ys-text-2, rgba(255, 255, 255, 0.55));
   font-size: 0.85rem;
 }
@@ -2684,6 +2729,11 @@ a.your-stats-logged-out-link:active {
   color: var(--ys-text-2, rgba(255, 255, 255, 0.6));
 }
 
+.your-stats-luck-widget-note {
+  color: rgba(255, 255, 255, 0.45);
+  font-style: italic;
+}
+
 /* Activity empty state when the user HAS activity, just not in this filter. */
 .your-stats-activity-filter-empty {
   padding: 0.9rem 1rem;
@@ -2699,7 +2749,7 @@ a.your-stats-logged-out-link:active {
 }
 
 .your-stats-luck-readout-num {
-  color: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 0.82rem;
   font-weight: 600;
 }
@@ -2720,11 +2770,11 @@ a.your-stats-logged-out-link:active {
 .your-stats-luck-readout-context {
   margin: 0.35rem 0 0;
   font-size: 0.82rem;
-  color: rgba(0, 0, 0, 0.72);
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .your-stats-luck-readout-packs {
-  color: rgba(0, 0, 0, 0.45);
+  color: rgba(255, 255, 255, 0.45);
 }
 
 /* Duplicate + showcase widgets */
