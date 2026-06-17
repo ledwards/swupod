@@ -17,9 +17,9 @@ export default function MePage() {
   }
 
   const eras = useMemo(() => getEras(), [])
-  // Global Set filter — 'all' (default) or a specific set code. Drives every
-  // tab on the page, the way Wayfinder's set filter does.
-  const [setFilter, setSetFilter] = useState<string>('all')
+  // Global Set filter — drives every tab. Defaults to the LATEST set, including
+  // the upcoming/unreleased one (eras are newest-first, so eras[0] is e.g. ASH).
+  const [setFilter, setSetFilter] = useState<string>(() => getEras()[0]?.setCode || 'all')
   // 'all' = whole era; otherwise an index into the era's weeks.
   const [weekKey, setWeekKey] = useState<'all' | number>('all')
 

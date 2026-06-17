@@ -248,6 +248,12 @@ async function main() {
 
     const poolViews = await fetchRows(source, `SELECT * FROM pool_views WHERE user_id = $1`, [userId])
 
+    // Draft picks for the Meta "Most/Least-drafted" widgets — every pick made in
+    // any pod the user drafted (all seats, so the aggregate is realistic).
+    const draftPicks = podIds.length
+      ? await fetchRows(source, `SELECT * FROM draft_picks WHERE pod_id = ANY($1)`, [podIds])
+      : []
+
     // 3. Collect every referenced user (hosts, opponents, co-drafters) so the
     //    FK targets exist in dev, then fetch their full rows.
     const refUserIds = uniq([
@@ -310,6 +316,7 @@ async function main() {
     await insertTable('deck_play_visits', deckPlayVisits)
     await insertTable('practice_matches', practiceMatches)
     await insertTable('pool_views', poolViews)
+    await insertTable('draft_picks', draftPicks)
 
     console.log('\n✅ Done. Inserted (new rows; existing skipped):')
     console.log(`   users:            ${counts.users}/${refUsers.length}`)
@@ -321,6 +328,7 @@ async function main() {
     console.log(`   deck_play_visits: ${counts.deck_play_visits}/${deckPlayVisits.length}`)
     console.log(`   practice_matches: ${counts.practice_matches}/${practiceMatches.length}`)
     console.log(`   pool_views:       ${counts.pool_views}/${poolViews.length}`)
+    console.log(`   draft_picks:      ${counts.draft_picks ?? 0}/${draftPicks.length}`)
     console.log(`\n   Open /me as ${user.username || identifier} in dev to verify.\n`)
   } catch (err: any) {
     console.error('Copy failed:', err.message)

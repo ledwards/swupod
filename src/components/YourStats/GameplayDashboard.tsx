@@ -315,20 +315,20 @@ function ReplayRow({ replay, myName }: { replay: GameplayReplay; myName: string 
   const opp = replay.opponent.username || 'Opponent'
   const style = replay.baseColor ? ({ ['--row-tint' as any]: replay.baseColor }) : undefined
 
-  // No expand — there's no extra info. The whole card opens the replay.
+  // Same treatment as the pool/deck cards: your Hyperspace leader art as the
+  // card background, the match info over it. No expand — the card opens the replay.
   return (
     <a
-      className={`your-stats-replay-card your-stats-replay-row--${replay.result}`}
+      className={`your-stats-pool-build your-stats-replay-card your-stats-replay-row--${replay.result}`}
       style={style}
       href={replay.replayUrl}
       target="_blank"
       rel="noopener noreferrer"
     >
-      <span className="your-stats-replay-flank your-stats-replay-flank--mine" aria-hidden="true">
+      <div className="your-stats-pool-build-art" aria-hidden="true">
         {replay.leaderImageUrl ? <img src={replay.leaderImageUrl} alt="" loading="lazy" /> : <CardPlaceholder />}
-      </span>
-
-      <div className="your-stats-replay-center">
+      </div>
+      <div className="your-stats-replay-content">
         <div className="your-stats-replay-center-top">
           <span className={`your-stats-replay-chip your-stats-replay-chip--${replay.result}`} title={resultLabel(replay.result)}>
             {resultLetter(replay.result)}
@@ -339,6 +339,12 @@ function ReplayRow({ replay, myName }: { replay: GameplayReplay; myName: string 
             <strong>{opp}</strong>
           </span>
         </div>
+        <div className="your-stats-replay-oppline">
+          <span className="your-stats-replay-opp-thumb" aria-hidden="true">
+            {replay.opponent.leaderImageUrl ? <img src={replay.opponent.leaderImageUrl} alt="" loading="lazy" /> : <CardPlaceholder />}
+          </span>
+          <span>{replay.opponent.leaderName || 'Unknown leader'}</span>
+        </div>
         <div className="your-stats-replay-center-sub">
           <span>{replay.pool.setCode} · {replayDate(replay.playedAt)}</span>
           <ReplayGamePips results={replay.gameResults} />
@@ -347,10 +353,6 @@ function ReplayRow({ replay, myName }: { replay: GameplayReplay; myName: string 
           <PlayGlyph />Watch
         </span>
       </div>
-
-      <span className="your-stats-replay-flank your-stats-replay-flank--opp" aria-hidden="true">
-        {replay.opponent.leaderImageUrl ? <img src={replay.opponent.leaderImageUrl} alt="" loading="lazy" /> : <CardPlaceholder />}
-      </span>
     </a>
   )
 }

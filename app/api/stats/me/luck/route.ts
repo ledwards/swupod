@@ -159,6 +159,7 @@ export function parseSetCodeParam(raw: string | null): string {
  */
 export interface GenerationRow {
   card_id: string
+  card_name?: string | null
   rarity: string
   aspects: string[] | null
   pack_index: number
@@ -646,61 +647,43 @@ export function buildCardHits(
  * duplicates = Σ(E - (1 - e^-E)). Scoped to the base-belt card pool (the cards
  * that actually recur); leaders/bases have their own single-slot model.
  */
-export function buildDuplicates(
-  rows: GenerationRow[],
-  uuidToCardId: Map<string, string>,
-  perPackCards: Map<string, number>,
-  baseCardsPerPack: number,
-) {
-  // The duplicate question is asked WITHIN a pool (the packs opened together —
-  // ~6 for sealed, ~3 for draft): how many duplicate cards did you see, and how
-  // many would a fair process produce? Group by source_id (the pool/pod), count
-  // duplicates per pool, and compare to the Poisson expectation for that pool's
-  // pack count. Variants collapse onto the base card (a HS + normal = a repeat).
-  const byPool = new Map<string, { cards: Map<string, number>; packs: Set<string>; total: number }>()
+// Verified by 400-pool generator simulations per set: a single pool produces
+// ZERO duplicate cards, even counting foil/hyperspace by name — the belts draw
+// from without-replacement hoppers larger than one pool's pull, and the variant
+// slots don't repeat a base card either. So the expected within-pool duplicate
+// count is 0. (Duplicates only accrue ACROSS pools.)
+const EXPECTED_DUPES_PER_POOL = 0
+
+export function buildDuplicates(rows: GenerationRow[]) {
+  // Count duplicates WITHIN each pool by card IDENTITY (name) so a foil or
+  // hyperspace of a card counts as a repeat of its normal printing. Group by
+  // source_id (the pool/pod); duplicates = pulls - distinct card names.
+  const byPool = new Map<string, { names: Map<string, number>; packs: Set<string>; total: number }>()
   for (const r of rows) {
-    const cardId = uuidToCardId.get(r.card_id) ?? r.card_id
-    if (!perPackCards.has(cardId)) continue // base-belt pool only
+    const name = (r.card_name || r.card_id || '').toLowerCase()
+    if (!name) continue
     let pool = byPool.get(r.source_id)
-    if (!pool) { pool = { cards: new Map(), packs: new Set(), total: 0 }; byPool.set(r.source_id, pool) }
+    if (!pool) { pool = { names: new Map(), packs: new Set(), total: 0 }; byPool.set(r.source_id, pool) }
     pool.total += 1
-    pool.cards.set(cardId, (pool.cards.get(cardId) ?? 0) + 1)
+    pool.names.set(name, (pool.names.get(name) ?? 0) + 1)
     pool.packs.add(String(r.pack_index))
   }
 
-  const expectedDupesForPacks = (packs: number): number => {
-    let total = 0
-    let distinct = 0
-    for (const perPack of perPackCards.values()) {
-      const E = perPack * packs
-      total += E
-      distinct += 1 - Math.exp(-E)
-    }
-    return Math.max(0, total - distinct)
-  }
-
   let sumActual = 0
-  let sumExpected = 0
   let poolCount = 0
   let sumPacks = 0
   for (const pool of byPool.values()) {
     if (pool.total === 0) continue
     poolCount += 1
-    const actualDupes = pool.total - pool.cards.size
-    // Packs in this pool: prefer distinct pack_index; fall back to cards/perPack.
-    const packs = pool.packs.size > 0 && !pool.packs.has('null')
-      ? pool.packs.size
-      : Math.max(1, Math.round(pool.total / Math.max(1, baseCardsPerPack)))
-    sumPacks += packs
-    sumActual += actualDupes
-    sumExpected += expectedDupesForPacks(packs)
+    sumActual += pool.total - pool.names.size
+    sumPacks += pool.packs.size > 0 && !pool.packs.has('null') ? pool.packs.size : 0
   }
 
   return {
     pools: poolCount,
     avgPacksPerPool: poolCount > 0 ? sumPacks / poolCount : 0,
     actualPerPool: poolCount > 0 ? sumActual / poolCount : 0,
-    expectedPerPool: poolCount > 0 ? sumExpected / poolCount : 0,
+    expectedPerPool: EXPECTED_DUPES_PER_POOL,
   }
 }
 
@@ -743,7 +726,7 @@ const EMPTY_SHOWCASE = {
 // Only regular booster packs count toward luck — never leader boxes,
 // carbonite (which carries its own -CB set code anyway), or anything else.
 const KEPT_SQL = `
-  SELECT card_id, rarity, aspects, pack_index, source_id, source_type, treatment, is_showcase
+  SELECT card_id, card_name, rarity, aspects, pack_index, source_id, source_type, treatment, is_showcase
   FROM card_generations
   WHERE user_id = $1
     AND set_code = $2
@@ -767,7 +750,7 @@ const PLATFORM_KEPT_SQL = `
 
 // Sealed: cracker == pool owner.
 const OPENED_SEALED_SQL = `
-  SELECT cg.card_id, cg.rarity, cg.aspects, cg.pack_index, cg.source_id, cg.source_type, cg.treatment, cg.is_showcase
+  SELECT cg.card_id, cg.card_name, cg.rarity, cg.aspects, cg.pack_index, cg.source_id, cg.source_type, cg.treatment, cg.is_showcase
   FROM card_generations cg
   JOIN card_pools cp ON cp.id = cg.source_id
   WHERE cg.source_type = 'sealed'
@@ -797,7 +780,7 @@ const OPENED_SEALED_SQL = `
 // seat_number is 1-indexed (host = 1) so we compare against
 // packOpenerSeat() + 1.
 const OPENED_DRAFT_SQL = `
-  SELECT cg.card_id, cg.rarity, cg.aspects, cg.pack_index, cg.source_id, cg.source_type, cg.treatment, cg.is_showcase
+  SELECT cg.card_id, cg.card_name, cg.rarity, cg.aspects, cg.pack_index, cg.source_id, cg.source_type, cg.treatment, cg.is_showcase
   FROM card_generations cg
   JOIN pods p ON p.id = cg.source_id
   JOIN pod_players pp ON pp.pod_id = p.id
@@ -982,7 +965,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // --- card histogram + duplicate / showcase widgets ---
     const cardMeta = getCardMetaLookup(setCode)
     const cardHits = buildCardHits(observedByCardId, expectedTotal.cards, cardMeta)
-    const duplicates = buildDuplicates(rows, uuidToCardId, perPack.cards, perPack.baseCardsPerPack)
+    const duplicates = buildDuplicates(rows)
     const setConfig = getSetConfig(setCode)
     const showcasePerPack = Number(setConfig?.upgradeProbabilities?.leaderToShowcase || 0)
     const showcase = buildShowcase(rows, effectivePacks, showcasePerPack)

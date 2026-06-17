@@ -80,28 +80,20 @@ describe('buildCardHits', () => {
 })
 
 describe('buildDuplicates', () => {
-  it('counts duplicates per pool, invariant of variant (HS Vader == normal Vader)', () => {
-    const perPackCards = new Map([['SET-001', 0.5], ['SET-002', 0.5]])
-    // DB rows store catalog UUIDs; uuidToCardId collapses variants onto cardId.
-    const uuidToCardId = new Map([
-      ['uuid-normal-1', 'SET-001'],
-      ['uuid-hyperspace-1', 'SET-001'], // a Hyperspace variant of the same card
-      ['uuid-normal-2', 'SET-002'],
-    ])
-    // One pool (source poolA): 3 pulls resolve to SET-001 (one HS) + 1 SET-002.
+  it('counts within-pool duplicates by card NAME (foil/HS = repeat of normal); expected is 0', () => {
+    // One pool: a normal Vader + a Hyperspace Vader (same name) + one other card.
     const rows = [
-      { card_id: 'uuid-normal-1', treatment: 'base', source_id: 'poolA', pack_index: 0 },
-      { card_id: 'uuid-normal-1', treatment: 'base', source_id: 'poolA', pack_index: 1 },
-      { card_id: 'uuid-hyperspace-1', treatment: 'hyperspace', source_id: 'poolA', pack_index: 2 },
-      { card_id: 'uuid-normal-2', treatment: 'base', source_id: 'poolA', pack_index: 3 },
+      { card_name: 'Vader', card_id: 'uuid-normal-1', source_id: 'poolA', pack_index: 0 },
+      { card_name: 'Vader', card_id: 'uuid-hyperspace-1', source_id: 'poolA', pack_index: 1 },
+      { card_name: 'Luke', card_id: 'uuid-normal-2', source_id: 'poolA', pack_index: 2 },
     ] as any
-    const dup = buildDuplicates(rows, uuidToCardId, perPackCards, 2)
-    // SPEC: 1 pool; duplicates = totalPulls - distinct cardIds = 4 - 2 = 2 (the
-    // HS Vader is a repeat of the normal Vader).
+    const dup = buildDuplicates(rows)
+    // SPEC: 1 pool; duplicates = pulls - distinct names = 3 - 2 = 1 (the HS Vader
+    // is a repeat of the normal Vader).
     assert.equal(dup.pools, 1)
-    assert.equal(dup.actualPerPool, 2)
-    assert.equal(dup.avgPacksPerPool, 4) // 4 distinct pack_index values
-    assert.ok(dup.expectedPerPool >= 0)
+    assert.equal(dup.actualPerPool, 1)
+    // SPEC: the generator produces no duplicates within a pool — expected is 0.
+    assert.equal(dup.expectedPerPool, 0)
   })
 })
 

@@ -62,9 +62,6 @@ function MetricBars({ entries, max }: { entries: MetaEntry[]; max: number }) {
               <span className="your-stats-meta-bar-name">{e.name}</span>
               <span className="your-stats-meta-bar-value" style={{ color }}>
                 {pct(e.value)}
-                {e.loggedIn != null && (
-                  <small className="your-stats-meta-loggedin" title="Logged-in players">({pct(e.loggedIn)})</small>
-                )}
               </span>
             </div>
             <div className="your-stats-meta-bar-track">
@@ -98,7 +95,6 @@ function MetaSection({
           <span className="your-stats-eyebrow">{eyebrow}</span>
           <h3>{title}</h3>
         </div>
-        <span className="your-stats-meta-legend">all <em>(logged-in)</em></span>
       </header>
       <p className="your-stats-meta-subtitle">{subtitle}</p>
       {loading ? (

@@ -21,7 +21,8 @@ function ensureIndex(): Map<string, string> {
     const isLeader = c.isLeader || c.type === 'Leader'
     const isHs = c.isHyperspace || (typeof c.variantType === 'string' && c.variantType.includes('Hyperspace'))
     if (!isLeader || !isHs || !c.name) continue
-    const art = c.imageUrl || c.backImageUrl
+    // Unit-side (back) Hyperspace art — the landscape deployed-unit version.
+    const art = c.backImageUrl || c.imageUrl
     const key = hsKey(c.set, c.name)
     if (art && !map.has(key)) map.set(key, art)
   }

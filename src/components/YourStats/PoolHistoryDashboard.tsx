@@ -254,6 +254,7 @@ function PoolBuildCard({
             <span className="your-stats-pool-build-byline">by {build.builder.username || 'another player'}</span>
           </div>
         )}
+        {/* All actions on ONE line. */}
         <div className="your-stats-replay-actions your-stats-pool-actions-row">
           <a className="btn btn--interactive btn--sm your-stats-pool-action your-stats-pool-action--glow" href={build.links.deck}>Edit</a>
           <a className="btn btn--primary btn--sm your-stats-pool-action your-stats-pool-action--play" href={build.links.play}>Play</a>
@@ -273,25 +274,25 @@ function PoolBuildCard({
           >
             {copiedKey === `json-${build.shareId}` ? 'Copied' : <CopyIcon />}
           </button>
+          {wayfinderDetected && (
+            <>
+              <a
+                className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-action--play your-stats-pool-lobby-btn"
+                href={`${build.links.play}?lobby=private`}
+                title="Open a private Karabast lobby with this deck"
+              >
+                <PlayMark /><span>Private</span>
+              </a>
+              <a
+                className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-action--play your-stats-pool-lobby-btn"
+                href={`${build.links.play}?lobby=public`}
+                title="Open a public Karabast lobby with this deck"
+              >
+                <PlayMark /><span>Public</span>
+              </a>
+            </>
+          )}
         </div>
-        {wayfinderDetected && (
-          <div className="your-stats-replay-actions your-stats-pool-actions-row your-stats-pool-lobby-actions">
-            <a
-              className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-action--play your-stats-pool-lobby-btn"
-              href={`${build.links.play}?lobby=private`}
-              title="Open a private Karabast lobby with this deck"
-            >
-              <PlayMark /><span>Private</span>
-            </a>
-            <a
-              className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-action--play your-stats-pool-lobby-btn"
-              href={`${build.links.play}?lobby=public`}
-              title="Open a public Karabast lobby with this deck"
-            >
-              <PlayMark /><span>Public</span>
-            </a>
-          </div>
-        )}
       </div>
     </div>
   )

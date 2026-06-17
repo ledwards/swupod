@@ -296,28 +296,26 @@ function pct(n: number): string {
 
 export function DuplicateRateWidget({ data }: { data: DuplicatesData }) {
   const actual = data.actualPerPool
-  const expected = data.expectedPerPool
-  const packs = Math.round(data.avgPacksPerPool)
   return (
     <div className="your-stats-luck-widget">
       <h4>Duplicates per pool</h4>
       <div className="your-stats-luck-widget-figures">
         <div>
-          <span className="your-stats-luck-widget-num">{actual.toFixed(1)}</span>
+          <span className="your-stats-luck-widget-num">{actual.toFixed(2)}</span>
           <span className="your-stats-luck-widget-cap">you saw</span>
         </div>
         <span className="your-stats-luck-widget-vs">vs</span>
         <div>
-          <span className="your-stats-luck-widget-num your-stats-luck-widget-num--exp">{expected.toFixed(1)}</span>
+          <span className="your-stats-luck-widget-num your-stats-luck-widget-num--exp">0</span>
           <span className="your-stats-luck-widget-cap">expected</span>
         </div>
       </div>
       <p className="your-stats-luck-widget-copy">
-        Within one pool ({packs || '~6'} packs opened), you saw on average{' '}
-        <strong>{actual.toFixed(1)}</strong> duplicate card{actual.toFixed(1) === '1.0' ? '' : 's'} — the math expects about{' '}
-        <strong>{expected.toFixed(1)}</strong>. Duplicates within a single pool are normal:
-        a handful of repeats across 6 packs is exactly what a fair process produces.
-        {data.pools > 0 && <span className="your-stats-luck-widget-note"> Averaged over {data.pools.toLocaleString()} pool{data.pools === 1 ? '' : 's'}.</span>}
+        A single pool gives you <strong>no duplicate cards</strong> — including foils and
+        hyperspace. Each rarity is drawn from a shuffled hopper without replacement, and one
+        pool never empties it, so you can&apos;t pull the same card twice (you saw {actual.toFixed(2)}/pool).
+        Duplicates only build up <em>across</em> pools.
+        {data.pools > 0 && <span className="your-stats-luck-widget-note"> Across {data.pools.toLocaleString()} pool{data.pools === 1 ? '' : 's'}.</span>}
       </p>
     </div>
   )
