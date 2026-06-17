@@ -2943,3 +2943,129 @@ a.your-stats-logged-out-link:active {
   color: var(--ys-text-2, rgba(255, 255, 255, 0.55));
   font-variant-numeric: tabular-nums;
 }
+
+/* ===========================================================================
+   Replay matchup card — your leader art on the left, opponent's on the right,
+   result + names + Watch down the middle. Reads like a deck card, not a log row.
+   =========================================================================== */
+.your-stats-replay-card {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-height: 84px;
+  overflow: hidden;
+  background: var(--ys-surface, rgba(10, 14, 22, 0.85));
+  border: 1px solid var(--ys-border, rgba(255, 255, 255, 0.1));
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.your-stats-replay-card:focus-visible {
+  outline: 2px solid var(--ys-accent-bright, #60a5fa);
+  outline-offset: 2px;
+}
+
+/* Result tint down the whole card edge. */
+.your-stats-replay-card.your-stats-replay-row--win { border-left: 3px solid #34d399; }
+.your-stats-replay-card.your-stats-replay-row--loss { border-left: 3px solid #f87171; }
+.your-stats-replay-card.your-stats-replay-row--draw { border-left: 3px solid #fbbf24; }
+.your-stats-replay-card.your-stats-replay-row--pending { border-left: 3px solid rgba(255,255,255,0.3); }
+
+.your-stats-replay-flank {
+  position: relative;
+  flex: 0 0 27%;
+  max-width: 180px;
+  overflow: hidden;
+}
+
+.your-stats-replay-flank img {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 150%;
+  object-fit: cover;
+  object-position: center 22%;
+}
+
+/* Mine fades toward the center from the left; opponent mirrors it. */
+.your-stats-replay-flank--mine img {
+  left: 0;
+  -webkit-mask-image: linear-gradient(to right, #000 35%, transparent 100%);
+  mask-image: linear-gradient(to right, #000 35%, transparent 100%);
+}
+
+.your-stats-replay-flank--opp img {
+  right: 0;
+  -webkit-mask-image: linear-gradient(to left, #000 35%, transparent 100%);
+  mask-image: linear-gradient(to left, #000 35%, transparent 100%);
+}
+
+.your-stats-replay-flank .your-stats-card-placeholder,
+.your-stats-replay-flank svg {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  opacity: 0.25;
+}
+
+.your-stats-replay-center {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.6rem 0.5rem;
+  text-align: center;
+}
+
+.your-stats-replay-center-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.your-stats-replay-names {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 0.92rem;
+}
+
+.your-stats-replay-names strong {
+  max-width: 38%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.your-stats-replay-names .your-stats-replay-vs {
+  color: var(--ys-text-3, rgba(255, 255, 255, 0.45));
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.your-stats-replay-center-sub {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  font-size: 0.78rem;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.6));
+}
+
+.your-stats-replay-watch-inline {
+  align-self: center;
+}
+
+.your-stats-replay-card .your-stats-replay-caret {
+  position: relative;
+  z-index: 1;
+  align-self: center;
+  margin-right: 0.5rem;
+}

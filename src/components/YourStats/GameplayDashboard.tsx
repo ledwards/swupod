@@ -305,13 +305,6 @@ function CardPlaceholder() {
   )
 }
 
-function LeaderThumb({ url }: { url: string | null | undefined }) {
-  return (
-    <span className="your-stats-side-art" aria-hidden="true">
-      {url ? <img src={url} alt="" loading="lazy" /> : <CardPlaceholder />}
-    </span>
-  )
-}
 
 function ReplayRow({ replay, myName, expanded, onToggle }: { replay: GameplayReplay; myName: string; expanded: boolean; onToggle: () => void }) {
   const opp = replay.opponent.username || 'Opponent'
@@ -323,8 +316,10 @@ function ReplayRow({ replay, myName, expanded, onToggle }: { replay: GameplayRep
 
   return (
     <div className={`your-stats-replay-item${expanded ? ' is-expanded' : ''}`}>
+      {/* Matchup card: your leader art on the left, opponent's on the right,
+          the result + names + actions down the middle — like a deck card. */}
       <div
-        className={`your-stats-replay-row your-stats-replay-row--${replay.result}`}
+        className={`your-stats-replay-card your-stats-replay-row--${replay.result}`}
         style={style}
         role="button"
         tabIndex={0}
@@ -334,34 +329,40 @@ function ReplayRow({ replay, myName, expanded, onToggle }: { replay: GameplayRep
           if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle() }
         }}
       >
-        <span className={`your-stats-replay-chip your-stats-replay-chip--${replay.result}`} title={resultLabel(replay.result)}>
-          {resultLetter(replay.result)}
+        <span className="your-stats-replay-flank your-stats-replay-flank--mine" aria-hidden="true">
+          {replay.leaderImageUrl ? <img src={replay.leaderImageUrl} alt="" loading="lazy" /> : <CardPlaceholder />}
         </span>
 
-        {/* You (leader image + your name) vs Opponent (leader image + their name). */}
-        <div className="your-stats-replay-matchup">
-          <span className="your-stats-replay-side">
-            <LeaderThumb url={replay.leaderImageUrl} />
-            <span className="your-stats-replay-side-name">{myName}</span>
-          </span>
-          <span className="your-stats-replay-vs">vs</span>
-          <span className="your-stats-replay-side">
-            <LeaderThumb url={replay.opponent.leaderImageUrl} />
-            <span className="your-stats-replay-side-name">{opp}</span>
-          </span>
+        <div className="your-stats-replay-center">
+          <div className="your-stats-replay-center-top">
+            <span className={`your-stats-replay-chip your-stats-replay-chip--${replay.result}`} title={resultLabel(replay.result)}>
+              {resultLetter(replay.result)}
+            </span>
+            <span className="your-stats-replay-names">
+              <strong>{myName}</strong>
+              <span className="your-stats-replay-vs">vs</span>
+              <strong>{opp}</strong>
+            </span>
+          </div>
+          <div className="your-stats-replay-center-sub">
+            <span>{replay.pool.setCode} · {replayDate(replay.playedAt)}</span>
+            <ReplayGamePips results={replay.gameResults} />
+          </div>
+          <a
+            className="your-stats-watch-btn your-stats-replay-watch-inline"
+            href={replay.replayUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <PlayGlyph />Watch
+          </a>
         </div>
 
-        <span className="your-stats-replay-when">{replay.pool.setCode} · {replayDate(replay.playedAt)}</span>
-        <ReplayGamePips results={replay.gameResults} />
-        <a
-          className="your-stats-watch-btn"
-          href={replay.replayUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <PlayGlyph />Watch
-        </a>
+        <span className="your-stats-replay-flank your-stats-replay-flank--opp" aria-hidden="true">
+          {replay.opponent.leaderImageUrl ? <img src={replay.opponent.leaderImageUrl} alt="" loading="lazy" /> : <CardPlaceholder />}
+        </span>
+
         <span className={`your-stats-replay-caret${expanded ? ' is-open' : ''}`} aria-hidden="true">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="6 9 12 15 18 9" />
