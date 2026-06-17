@@ -79,6 +79,11 @@ import {
 } from '@/src/services/luckVerdict'
 import { getAllCards } from '@/src/utils/cardData'
 import { getSetConfig } from '@/src/utils/setConfigs'
+// Per-set duplicate-rate model (see docs/research/duplicate-rate-analysis.md and
+// the /duplicate-rates page). The definitive expected-duplicates-per-pool: a
+// sealed 6-pack pool runs ~4–6.7 duplicates, NOT zero — every pull of a card you
+// already opened (almost always its foil/hyperspace printing) is a duplicate.
+import duplicateStats from '@/src/data/duplicateStats.json'
 
 const DEFAULT_SINCE = '2020-01-01'
 const DEFAULT_UNTIL = '2099-12-31'
@@ -636,54 +641,84 @@ export function buildCardHits(
 }
 
 /**
- * Duplicate-rate widget. Counts duplicates by BASE CARD IDENTITY, invariant of
- * variant type — a Hyperspace Vader and a normal Vader are the same card, so
- * the second is a repeat. Rows are collapsed from the catalog UUID to the
- * card's collector id (cardId) via `uuidToCardId`, then any pull beyond the
- * first of a given cardId is a duplicate.
- *
- * Expected duplicates use the Poisson "expected repeats" identity: for each
- * card with expected count E, P(seen at least once) = 1 - e^-E, so expected
- * duplicates = Σ(E - (1 - e^-E)). Scoped to the base-belt card pool (the cards
- * that actually recur); leaders/bases have their own single-slot model.
+ * Per-pool duplicate identity = card NAME + SUBTITLE, collapsing every variant
+ * (foil / hyperspace / showcase / prestige) onto one gameplay card — the metric
+ * the duplicate-rate analysis uses. NEVER key on cardId: LAW gives each variant
+ * printing its own cardId, so a cardId key misses normal-vs-hyperspace
+ * collisions and under-reports (LAW would read ~0 instead of ~6.7).
  */
-// Verified by 400-pool generator simulations per set: a single pool produces
-// ZERO duplicate cards, even counting foil/hyperspace by name — the belts draw
-// from without-replacement hoppers larger than one pool's pull, and the variant
-// slots don't repeat a base card either. So the expected within-pool duplicate
-// count is 0. (Duplicates only accrue ACROSS pools.)
-const EXPECTED_DUPES_PER_POOL = 0
+const dupIdentityCache = new Map<string, Map<string, string>>()
+function getDupIdentity(setCode: string): (row: GenerationRow) => string {
+  let map = dupIdentityCache.get(setCode)
+  if (!map) {
+    map = new Map<string, string>()
+    for (const c of getAllCards()) {
+      if (c.set !== setCode || !c.id) continue
+      const key = `${(c.name || '').trim()}|${(c.subtitle || '').trim()}`.toLowerCase()
+      if (!map.has(c.id)) map.set(c.id, key)
+    }
+    dupIdentityCache.set(setCode, map)
+  }
+  const m = map
+  return (row) => m.get(row.card_id) || (row.card_name || '').toLowerCase()
+}
 
-export function buildDuplicates(rows: GenerationRow[]) {
-  // Count duplicates WITHIN each pool by card IDENTITY (name) so a foil or
-  // hyperspace of a card counts as a repeat of its normal printing. Group by
-  // source_id (the pool/pod); duplicates = pulls - distinct card names.
-  const byPool = new Map<string, { names: Map<string, number>; packs: Set<string>; total: number }>()
+/**
+ * Duplicate-rate widget. Counts duplicates WITHIN each pool by gameplay identity
+ * (name+subtitle) so a card's foil/hyperspace printing counts as a repeat of the
+ * normal. Expected is NOT zero: per docs/research/duplicate-rate-analysis.md the
+ * belt drops same-printing repeats to ~0, but variant slots collide with a card
+ * already in the pool — ~4 per sealed pool (SOR–SEC), ~6.7 for LAW/ASH. We pull
+ * the per-set expected (sealed-6 vs draft-3, chosen per pool by pack count) from
+ * the precomputed duplicateStats.json so the user's actual is judged against the
+ * real model, not a placeholder.
+ */
+function dupModel(setCode: string): { sealed: any; draft: any } | null {
+  const s = (duplicateStats as any).sets?.[setCode]
+  return s ? { sealed: s.sealed6, draft: s.draft3 } : null
+}
+
+export function buildDuplicates(rows: GenerationRow[], setCode: string, identityOf?: (row: GenerationRow) => string) {
+  const idOf = identityOf || ((r: GenerationRow) => (r.card_name || r.card_id || '').toLowerCase())
+  const byPool = new Map<string, { ids: Map<string, number>; packs: Set<string>; total: number }>()
   for (const r of rows) {
-    const name = (r.card_name || r.card_id || '').toLowerCase()
-    if (!name) continue
+    const id = idOf(r)
+    if (!id) continue
     let pool = byPool.get(r.source_id)
-    if (!pool) { pool = { names: new Map(), packs: new Set(), total: 0 }; byPool.set(r.source_id, pool) }
+    if (!pool) { pool = { ids: new Map(), packs: new Set(), total: 0 }; byPool.set(r.source_id, pool) }
     pool.total += 1
-    pool.names.set(name, (pool.names.get(name) ?? 0) + 1)
-    pool.packs.add(String(r.pack_index))
+    pool.ids.set(id, (pool.ids.get(id) ?? 0) + 1)
+    if (r.pack_index != null && String(r.pack_index) !== 'null') pool.packs.add(String(r.pack_index))
   }
 
+  const model = dupModel(setCode)
   let sumActual = 0
   let poolCount = 0
   let sumPacks = 0
+  let expSum = 0
+  let expVar = 0
   for (const pool of byPool.values()) {
     if (pool.total === 0) continue
     poolCount += 1
-    sumActual += pool.total - pool.names.size
-    sumPacks += pool.packs.size > 0 && !pool.packs.has('null') ? pool.packs.size : 0
+    sumActual += pool.total - pool.ids.size
+    const packs = pool.packs.size > 0 ? pool.packs.size : Math.max(1, Math.round(pool.total / 16))
+    sumPacks += packs
+    if (model) {
+      // ≥5 packs ⇒ a sealed 6-pack pool; otherwise a draft-sized pool.
+      const m = packs >= 5 ? model.sealed : model.draft
+      expSum += Number(m?.mean || 0)
+      expVar += Math.pow(Number(m?.sd || 0), 2)
+    }
   }
 
   return {
     pools: poolCount,
     avgPacksPerPool: poolCount > 0 ? sumPacks / poolCount : 0,
     actualPerPool: poolCount > 0 ? sumActual / poolCount : 0,
-    expectedPerPool: EXPECTED_DUPES_PER_POOL,
+    expectedPerPool: poolCount > 0 && model ? expSum / poolCount : 0,
+    // SE of the model's expected mean across the user's pools (for the z-test).
+    expectedSd: poolCount > 0 && model ? Math.sqrt(expVar) / poolCount : 0,
+    hasModel: !!model,
   }
 }
 
@@ -711,6 +746,8 @@ const EMPTY_DUPLICATES = {
   avgPacksPerPool: 0,
   actualPerPool: 0,
   expectedPerPool: 0,
+  expectedSd: 0,
+  hasModel: false,
 }
 const EMPTY_SHOWCASE = {
   actualCount: 0,
@@ -965,7 +1002,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // --- card histogram + duplicate / showcase widgets ---
     const cardMeta = getCardMetaLookup(setCode)
     const cardHits = buildCardHits(observedByCardId, expectedTotal.cards, cardMeta)
-    const duplicates = buildDuplicates(rows)
+    const duplicates = buildDuplicates(rows, setCode, getDupIdentity(setCode))
     const setConfig = getSetConfig(setCode)
     const showcasePerPack = Number(setConfig?.upgradeProbabilities?.leaderToShowcase || 0)
     const showcase = buildShowcase(rows, effectivePacks, showcasePerPack)

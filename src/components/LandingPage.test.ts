@@ -39,8 +39,10 @@ describe('LandingPage', () => {
       assert.ok(!LANDING_PAGE_SRC.includes("router.push('/import')"))
     })
 
-    it('reuses the Import Pool art for the My Stats tile (per the same-image request)', () => {
-      assert.ok(LANDING_PAGE_SRC.includes('MODE_ART.importPool'))
+    it('uses R2-D2 (JTL) hyperspace unit art for the My Stats tile', () => {
+      assert.ok(LANDING_PAGE_SRC.includes('MODE_ART.myStats'))
+      // JTL-507 — the hyperspace printing of the R2-D2 unit.
+      assert.ok(LANDING_PAGE_SRC.includes('card_04020507_EN_R2_D2_19d6f25cf9.png'))
     })
   })
 

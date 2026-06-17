@@ -80,19 +80,44 @@ describe('buildCardHits', () => {
 })
 
 describe('buildDuplicates', () => {
-  it('counts within-pool duplicates by card NAME (foil/HS = repeat of normal); expected is 0', () => {
+  it('counts within-pool duplicates by identity (foil/HS = repeat of normal)', () => {
     // One pool: a normal Vader + a Hyperspace Vader (same name) + one other card.
     const rows = [
       { card_name: 'Vader', card_id: 'uuid-normal-1', source_id: 'poolA', pack_index: 0 },
       { card_name: 'Vader', card_id: 'uuid-hyperspace-1', source_id: 'poolA', pack_index: 1 },
       { card_name: 'Luke', card_id: 'uuid-normal-2', source_id: 'poolA', pack_index: 2 },
     ] as any
-    const dup = buildDuplicates(rows)
-    // SPEC: 1 pool; duplicates = pulls - distinct names = 3 - 2 = 1 (the HS Vader
-    // is a repeat of the normal Vader).
+    const dup = buildDuplicates(rows, 'SOR')
+    // SPEC: 1 pool; duplicates = pulls - distinct identities = 3 - 2 = 1 (the HS
+    // Vader is a repeat of the normal Vader).
     assert.equal(dup.pools, 1)
     assert.equal(dup.actualPerPool, 1)
-    // SPEC: the generator produces no duplicates within a pool — expected is 0.
+  })
+
+  it('expected duplicates come from the per-set model and are NOT zero', () => {
+    // SPEC: per docs/research/duplicate-rate-analysis.md every sealed pool carries
+    // ~4–6.7 duplicates from variant collisions; the placeholder "0" was wrong.
+    const rows = [
+      { card_name: 'A', card_id: 'u1', source_id: 'p', pack_index: 0 },
+      { card_name: 'B', card_id: 'u2', source_id: 'p', pack_index: 1 },
+    ] as any
+    const dup = buildDuplicates(rows, 'SOR')
+    assert.equal(dup.hasModel, true)
+    assert.ok(dup.expectedPerPool > 0, 'expected duplicates are non-zero')
+  })
+
+  it('a sealed-sized pool expects more duplicates than a draft-sized pool', () => {
+    const mk = (packs: number) =>
+      Array.from({ length: packs }, (_, i) => ({ card_name: `C${i}`, card_id: `u${i}`, source_id: 'p', pack_index: i })) as any
+    // SPEC: sealed 6-pack pools collide more than draft 3-pack pools (variant load).
+    const draft = buildDuplicates(mk(3), 'SOR')
+    const sealed = buildDuplicates(mk(6), 'SOR')
+    assert.ok(sealed.expectedPerPool > draft.expectedPerPool)
+  })
+
+  it('unknown set → no model, expected 0', () => {
+    const dup = buildDuplicates([{ card_name: 'X', card_id: 'u', source_id: 'p', pack_index: 0 }] as any, 'ZZZ')
+    assert.equal(dup.hasModel, false)
     assert.equal(dup.expectedPerPool, 0)
   })
 })

@@ -60,6 +60,8 @@ const MODE_ART = {
   history: 'https://cdn.starwarsunlimited.com//card_05020502_EN_Darth_Revan_s_Lightsabers_d4bd32215b.png',
   deckbuilder: 'https://cdn.starwarsunlimited.com//card_04030998_EN_Grand_Admiral_Thrawn_Leader_Unit_eba4967d61.png',
   stats: 'https://cdn.starwarsunlimited.com//card_SWH_01_493_AT_ST_HYP_ff73b562a5.png',
+  // My Stats tile: R2-D2 (JTL) hyperspace unit art.
+  myStats: 'https://cdn.starwarsunlimited.com//card_04020507_EN_R2_D2_19d6f25cf9.png',
 }
 
 interface ActiveDraft {
@@ -562,7 +564,7 @@ function LandingPage() {
                 </button>
               )}
               <button className="mode-button art-unit" onClick={() => router.push('/me')}>
-                <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.importPool}")` }} />
+                <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.myStats}")` }} />
                 <div className="mode-button-content">
                   <span className="mode-button-title">My Stats</span>
                   <span className="mode-button-subtitle">Your performance and history</span>

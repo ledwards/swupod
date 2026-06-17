@@ -303,6 +303,10 @@ export interface DuplicatesData {
   avgPacksPerPool: number
   actualPerPool: number
   expectedPerPool: number
+  /** SE of the model's expected mean across the user's pools (for the z-test). */
+  expectedSd?: number
+  /** False when this set has no precomputed duplicate model yet. */
+  hasModel?: boolean
 }
 
 export interface ShowcaseData {
@@ -318,26 +322,42 @@ function pct(n: number): string {
 
 export function DuplicateRateWidget({ data }: { data: DuplicatesData }) {
   const actual = data.actualPerPool
+  const expected = data.expectedPerPool
+  const sd = data.expectedSd || 0
+  const z = sd > 0 ? (actual - expected) / sd : null
+  const poolWord = data.avgPacksPerPool > 0 && data.avgPacksPerPool < 4 ? 'draft pool' : 'pool'
+
+  // Stat verdict, in the same σ language as the histogram readout.
+  const verdict = (() => {
+    if (!data.hasModel || data.pools === 0 || z == null) return null
+    const a = Math.abs(z).toFixed(1)
+    if (Math.abs(z) <= 2) return `${a}σ from expected — a normal run.`
+    return z > 0
+      ? `${a}σ above expected — your pools ran duplicate-heavy.`
+      : `${a}σ below expected — unusually clean pools.`
+  })()
+
   return (
     <div className="your-stats-luck-widget">
       <h4>Duplicates per pool</h4>
       <div className="your-stats-luck-widget-figures">
         <div>
-          <span className="your-stats-luck-widget-num">{actual.toFixed(2)}</span>
+          <span className="your-stats-luck-widget-num">{actual.toFixed(1)}</span>
           <span className="your-stats-luck-widget-cap">you saw</span>
         </div>
         <span className="your-stats-luck-widget-vs">vs</span>
         <div>
-          <span className="your-stats-luck-widget-num your-stats-luck-widget-num--exp">0</span>
+          <span className="your-stats-luck-widget-num your-stats-luck-widget-num--exp">{data.hasModel ? expected.toFixed(1) : '—'}</span>
           <span className="your-stats-luck-widget-cap">expected</span>
         </div>
       </div>
       <p className="your-stats-luck-widget-copy">
-        A single pool gives you <strong>no duplicate cards</strong> — including foils and
-        hyperspace. Each rarity is drawn from a shuffled hopper without replacement, and one
-        pool never empties it, so you can&apos;t pull the same card twice (you saw {actual.toFixed(2)}/pool).
-        Duplicates only build up <em>across</em> pools.
-        {data.pools > 0 && <span className="your-stats-luck-widget-note"> Across {data.pools.toLocaleString()} pool{data.pools === 1 ? '' : 's'}.</span>}
+        A duplicate is the same card twice — a foil or hyperspace printing counts as a repeat of
+        the normal. The belt almost never repeats a plain printing, so nearly every duplicate is a
+        variant colliding with a card already in your {poolWord}.
+        {data.hasModel && <> This set runs about <strong>{expected.toFixed(1)}</strong> per pool.</>}
+        {verdict && <span className="your-stats-luck-widget-note"> {verdict}</span>}
+        {data.pools > 0 && <span className="your-stats-luck-widget-note"> Across {data.pools.toLocaleString()} {poolWord}{data.pools === 1 ? '' : 's'}.</span>}
       </p>
     </div>
   )
