@@ -244,6 +244,29 @@ JSON. Good cadence: re-run on each set release (for Simulated/Theoretical) and o
 weekly) to refresh Actual as pools accumulate. For Actual to reflect production, run it where
 `DATABASE_URL` points at prod (e.g. a Railway cron/one-off); locally it falls back to `.env.local`.
 
+## QA-page performance & caching
+
+The QA set views read two DB-heavy endpoints: `/api/stats/generations` (~10 full
+aggregations over 2.3M `card_generations` rows — **~60s on large sets like LAW**) and
+`/api/public/pack-quality` (37+ queries). This is **not** a missing index — an index on
+`(set_code, generated_at)` exists, but for a large set the filter matches more than half
+the table, so Postgres correctly picks a sequential scan. The cost is simply many full
+aggregations per request, and the inputs (a few set codes, one start date) change slowly.
+
+Mitigations (implemented):
+- **In-process cache** (`lib/statCache`, 30-min TTL) wrapping both endpoints. Railway runs
+  one long-lived container, so only the first request per key per TTL computes; every other
+  user gets it instantly.
+- **`npm run qa-warm`** (`scripts/warmQaCache.ts`) pre-warms every set's caches — run on a
+  ~25-min schedule so no real user hits a cold computation. New sets are auto-included.
+- **HTTP `Cache-Control`** (`s-maxage` + `stale-while-revalidate`) for browser/CDN reuse.
+- **Client-side cache** on the QA page so set/sub-tab switches don't refetch.
+- The **Duplicates tab** is served entirely from precomputed `duplicateStats.json` (no DB) —
+  instant regardless.
+
+To eliminate the live computation entirely, the next step is to precompute the
+generations/quality aggregates to static JSON on a schedule, exactly like `duplicateStats.json`.
+
 ## Key findings
 
 1. **The belt works.** Same-printing duplicates are ~0 per pool; the naive birthday model

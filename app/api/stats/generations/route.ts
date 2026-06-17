@@ -2,15 +2,27 @@
 // GET /api/stats/generations - Get card generation statistics
 import { queryRows } from '@/lib/db'
 import { jsonResponse, handleApiError } from '@/lib/utils'
+import { statCacheGet, statCacheSet } from '@/lib/statCache'
 import { analyzeCardStats, getSetReferenceData } from '@/src/utils/statsCalculations'
 import { getAllCards } from '@/src/utils/cardData'
 import { NextRequest, NextResponse } from 'next/server'
+
+const CACHE_CONTROL = 'public, s-maxage=900, stale-while-revalidate=3600'
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const url = new URL(request.url)
     const setCode = url.searchParams.get('setCode') || 'SOR'
     const since = url.searchParams.get('since') || '2020-01-01'
+
+    // Served from a shared in-process cache when warm (~10 full scans over 2.3M rows otherwise).
+    const cacheKey = `generations:${setCode}:${since}`
+    const cachedPayload = statCacheGet(cacheKey)
+    if (cachedPayload) {
+      const r = jsonResponse(cachedPayload)
+      r.headers.set('Cache-Control', CACHE_CONTROL)
+      return r
+    }
 
     // Get all cards
     const allCards = getAllCards()
@@ -372,7 +384,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       cardCacheVariantCounts[vt] = (cardCacheVariantCounts[vt] || 0) + 1
     })
 
-    const response = jsonResponse({
+    const payload = {
       setCode,
       totalPacks,
       totalPools,
@@ -392,10 +404,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         unmatchedCardsCount: unmatchedCards.length,
         unmatchedSamples: unmatchedCards.slice(0, 10)
       }
-    })
-    // This aggregate is expensive (heavy DB scan) and changes slowly — cache it so
-    // reloads/CDN don't re-run the query. See QA-page caching note in the dup-rate research doc.
-    response.headers.set('Cache-Control', 'public, s-maxage=900, stale-while-revalidate=3600')
+    }
+    // Expensive (~10 full scans over 2.3M rows) and changes slowly — cache the result
+    // so only the first request per TTL pays the cost. See the QA caching note in the
+    // duplicate-rate research doc; keep warm with `npm run qa-warm`.
+    statCacheSet(cacheKey, payload)
+    const response = jsonResponse(payload)
+    response.headers.set('Cache-Control', CACHE_CONTROL)
     return response
   } catch (error) {
     console.error('Error fetching generation stats:', error)

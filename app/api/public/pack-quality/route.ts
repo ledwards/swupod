@@ -11,6 +11,7 @@
  */
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
+import { statCacheGet, statCacheSet } from '@/lib/statCache'
 import { getPackQualityData, getAvailableSets } from '@/src/services/packQualityService'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -57,11 +58,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }, 400)
     }
 
-    // Get pack quality data
-    const data = await getPackQualityData(normalizedSetCode, since)
-
-    // Heavy aggregate (many DB queries) that changes slowly — cache so reloads/CDN
-    // don't recompute it on every QA-page visit.
+    // Heavy aggregate (37+ DB queries) that changes slowly — served from a shared
+    // in-process cache when warm; only the first request per TTL recomputes it.
+    const cacheKey = `pack-quality:${normalizedSetCode}:${since}`
+    let data = statCacheGet(cacheKey)
+    if (!data) {
+      data = await getPackQualityData(normalizedSetCode, since)
+      statCacheSet(cacheKey, data)
+    }
     const response = jsonResponse(data)
     response.headers.set('Cache-Control', 'public, s-maxage=900, stale-while-revalidate=3600')
     return response
