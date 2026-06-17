@@ -4,8 +4,7 @@ import { useMemo, useState } from 'react'
 import { useAuth } from '@/src/contexts/AuthContext'
 import UserAvatar from '@/src/components/UserAvatar'
 import YourStats from '@/src/components/YourStats'
-import { getEras, getCurrentEra, getWeeks, todayStr } from '@/src/utils/statsEras'
-import { DEFAULT_STATS_SET_TAB } from '@/src/utils/statsSetTabs'
+import { getEras, getWeeks, todayStr } from '@/src/utils/statsEras'
 import '../stats/stats.css'
 
 // Tracking floor — kept for the activity "tracking started" line and as a fallback.
@@ -18,11 +17,16 @@ export default function MePage() {
   }
 
   const eras = useMemo(() => getEras(), [])
-  const [eraCode, setEraCode] = useState<string>(() => getCurrentEra(eras)?.setCode || DEFAULT_STATS_SET_TAB)
+  // Global Set filter — 'all' (default) or a specific set code. Drives every
+  // tab on the page, the way Wayfinder's set filter does.
+  const [setFilter, setSetFilter] = useState<string>('all')
   // 'all' = whole era; otherwise an index into the era's weeks.
   const [weekKey, setWeekKey] = useState<'all' | number>('all')
 
-  const era = useMemo(() => eras.find((e) => e.setCode === eraCode) || eras[0] || null, [eras, eraCode])
+  const era = useMemo(
+    () => (setFilter === 'all' ? null : eras.find((e) => e.setCode === setFilter) || null),
+    [eras, setFilter],
+  )
   const weeks = useMemo(() => (era ? getWeeks(era) : []), [era])
 
   const { startDate, endDate } = useMemo(() => {
@@ -31,6 +35,12 @@ export default function MePage() {
     const w = weeks[weekKey]
     return w ? { startDate: w.start, endDate: w.end } : { startDate: era.start, endDate: era.end }
   }, [era, weekKey, weeks])
+
+  const filterLabel = useMemo(() => {
+    const setPart = setFilter === 'all' ? 'All sets' : setFilter
+    if (!era || weekKey === 'all') return setPart
+    return `${setPart} · ${weeks[weekKey]?.label || ''}`.trim()
+  }, [setFilter, era, weekKey, weeks])
 
   // Eyebrow is the page identity ("My Stats"); the H1 is the person. Signed out,
   // fall back to a benefit-framed title so we don't stutter "My Stats / My Stats".
@@ -67,31 +77,34 @@ export default function MePage() {
         <div className="me-hero-toolbar">
           <div className="stats-date-range me-range">
             <label className="me-range-field">
-              <span>Era</span>
+              <span>Set</span>
               <select
-                value={eraCode}
+                value={setFilter}
                 onChange={(e) => {
-                  setEraCode(e.target.value)
+                  setSetFilter(e.target.value)
                   setWeekKey('all')
                 }}
               >
+                <option value="all">All sets</option>
                 {eras.map((e) => (
-                  <option key={e.setCode} value={e.setCode}>{e.label}</option>
+                  <option key={e.setCode} value={e.setCode}>{e.setCode}</option>
                 ))}
               </select>
             </label>
-            <label className="me-range-field">
-              <span>Range</span>
-              <select
-                value={String(weekKey)}
-                onChange={(e) => setWeekKey(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-              >
-                <option value="all">Whole era</option>
-                {weeks.map((w, i) => (
-                  <option key={w.start} value={i}>{w.label}</option>
-                ))}
-              </select>
-            </label>
+            {era && (
+              <label className="me-range-field">
+                <span>Range</span>
+                <select
+                  value={String(weekKey)}
+                  onChange={(e) => setWeekKey(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+                >
+                  <option value="all">Whole era</option>
+                  {weeks.map((w, i) => (
+                    <option key={w.start} value={i}>{w.label}</option>
+                  ))}
+                </select>
+              </label>
+            )}
           </div>
           {user && (
             <button
@@ -112,7 +125,7 @@ export default function MePage() {
         </div>
       </header>
 
-      <YourStats since={startDate} until={endDate} setCode={eraCode} />
+      <YourStats since={startDate} until={endDate} setCode={setFilter} filterLabel={filterLabel} />
     </div>
   )
 }

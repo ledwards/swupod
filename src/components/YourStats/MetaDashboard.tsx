@@ -21,6 +21,9 @@ export interface MetaDashboardProps {
   since: string
   until: string
   setCode?: string
+  /** When true, the set comes from the page-level global Set filter, so this
+   *  dashboard shows no set selector of its own (the filter isn't repeated). */
+  lockSet?: boolean
   includeBetaSets?: boolean
   fetchImpl?: typeof fetch
 }
@@ -171,7 +174,7 @@ function WinRateGate({ leaders }: { leaders: MetaEntry[] }) {
   )
 }
 
-export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, includeBetaSets = false, fetchImpl }: MetaDashboardProps) {
+export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, lockSet = false, includeBetaSets = false, fetchImpl }: MetaDashboardProps) {
   const setTabs = useMemo(() => getStatsSetTabs(includeBetaSets), [includeBetaSets])
   const [activeSet, setActiveSet] = useState<string>(setTabs.includes(setCode) ? setCode : DEFAULT_STATS_SET_TAB)
   const [state, setState] = useState({ loading: true, error: false, played: [] as MetaEntry[], drafted: [] as MetaEntry[] })
@@ -237,22 +240,24 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, i
           <span className="your-stats-eyebrow">Limited Meta</span>
           <h3>What the field is drafting &amp; playing</h3>
         </div>
-        <div className="your-stats-luck-set-buttons" role="radiogroup" aria-label="Meta set">
-          {setTabs.map((s) => (
-            <Button
-              key={s}
-              variant="toggle"
-              size="sm"
-              glowColor="blue"
-              active={activeSet === s}
-              onClick={() => setActiveSet(s)}
-              role="radio"
-              aria-checked={activeSet === s}
-            >
-              {s}
-            </Button>
-          ))}
-        </div>
+        {!lockSet && (
+          <div className="your-stats-luck-set-buttons" role="radiogroup" aria-label="Meta set">
+            {setTabs.map((s) => (
+              <Button
+                key={s}
+                variant="toggle"
+                size="sm"
+                glowColor="blue"
+                active={activeSet === s}
+                onClick={() => setActiveSet(s)}
+                role="radio"
+                aria-checked={activeSet === s}
+              >
+                {s}
+              </Button>
+            ))}
+          </div>
+        )}
       </div>
 
       {state.error ? (

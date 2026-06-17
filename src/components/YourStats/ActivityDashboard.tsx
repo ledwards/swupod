@@ -32,11 +32,27 @@ export interface ActivitySummary {
 export interface ActivityDashboardProps {
   since: string
   until: string
+  /** Active set filter ('all' or a set code) — forwarded to the summary API. */
+  setCode?: string
+  /** Human label for the current filter, e.g. "LAW · Whole era". */
+  filterLabel?: string
   /**
    * Test seam — if provided, used in place of window.fetch. Lets tests
    * inject deterministic responses without monkeypatching globals.
    */
   fetchImpl?: typeof fetch
+}
+
+function summaryHasActivity(d: ActivitySummary | null): boolean {
+  if (!d) return false
+  return (
+    Number(d.packsCracked || 0) +
+      Number(d.poolsOpened || 0) +
+      Number(d.draftsJoined || 0) +
+      Number(d.decksBuilt || 0) +
+      Number(d.decksPlayed || 0) >
+    0
+  )
 }
 
 interface FetchState {
@@ -85,13 +101,36 @@ const COUNTER_KEYS: Array<{ key: keyof ActivitySummary; label: string; testId: s
   { key: 'decksPlayed', label: 'Made it to play', testId: 'counter-decks-played' },
 ]
 
-export function ActivityDashboard({ since, until, fetchImpl }: ActivityDashboardProps) {
+export function ActivityDashboard({ since, until, setCode, filterLabel, fetchImpl }: ActivityDashboardProps) {
   const [state, setState] = useState<FetchState>({ loading: true, error: false, data: null })
+  // Whether the user has ANY activity all-time (across every set / date). Drives
+  // the empty state: a true first-timer gets the Companion pitch; someone who
+  // simply has nothing in the current filter gets a "no data here" line instead.
+  const [hasLifetime, setHasLifetime] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    const f = fetchImpl || fetch
+    f('/api/stats/me/summary?since=2020-01-01&until=2099-12-31', { credentials: 'include' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((body) => {
+        if (cancelled) return
+        const d = body && body.data ? body.data : body
+        setHasLifetime(summaryHasActivity(d))
+      })
+      .catch(() => {
+        if (!cancelled) setHasLifetime(null)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [fetchImpl])
 
   useEffect(() => {
     let cancelled = false
     setState((prev) => ({ ...prev, loading: true, error: false }))
     const params = new URLSearchParams({ since, until })
+    if (setCode && setCode !== 'all') params.set('setCode', setCode)
     const f = fetchImpl || fetch
     f(`/api/stats/me/summary?${params.toString()}`, { credentials: 'include' })
       .then((r) => {
@@ -115,7 +154,7 @@ export function ActivityDashboard({ since, until, fetchImpl }: ActivityDashboard
     return () => {
       cancelled = true
     }
-  }, [since, until, fetchImpl])
+  }, [since, until, setCode, fetchImpl])
 
   const showTrackingLine = isBeforeCutoff(since)
 
@@ -166,6 +205,24 @@ export function ActivityDashboard({ since, until, fetchImpl }: ActivityDashboard
     data.draftsJoined === 0 &&
     data.decksBuilt === 0 &&
     data.decksPlayed === 0
+
+  // Empty state. Two cases:
+  //  - The user has activity somewhere, just not in this set/date filter →
+  //    a quiet "nothing here" line, NOT the install pitch.
+  //  - A genuine first-timer (no activity all-time) → the Companion CTA.
+  if (allZero && hasLifetime === true) {
+    return (
+      <section className="your-stats-activity" data-testid="activity-dashboard" aria-label="Your activity">
+        <h3 className="your-stats-section-heading">Activity</h3>
+        <div className="your-stats-activity-filter-empty" data-testid="activity-filter-empty">
+          <p>No activity{filterLabel ? <> for <strong>{filterLabel}</strong></> : ' for this filter'}. Try a different set or date range.</p>
+        </div>
+        {showTrackingLine && (
+          <p className="your-stats-tracking-line">Tracking started {STATS_START_DATE}.</p>
+        )}
+      </section>
+    )
+  }
 
   // First-use empty state: one friendly line, not five zeros.
   if (allZero) {

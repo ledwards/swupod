@@ -61,13 +61,19 @@ export interface YourStatsProps {
   since: string
   /** End of the date range (YYYY-MM-DD). */
   until: string
-  /** The era's set code (drives the Meta tab's set context). */
+  /** Global Set filter: 'all' or a set code. Drives every tab. */
   setCode?: string
+  /** Human label for the active filter (set + range), for empty states. */
+  filterLabel?: string
 }
 
-export function YourStats({ since, until, setCode = DEFAULT_STATS_SET_TAB }: YourStatsProps) {
+export function YourStats({ since, until, setCode = 'all', filterLabel }: YourStatsProps) {
   const { user, loading } = useAuth()
   const [activeTab, setActiveTab] = useState<PersonalStatsTab>('gameplay')
+  // Tabs that need a concrete set (Luck, Meta) fall back to the latest set when
+  // the global filter is "all". Pools/Gameplay/Activity treat 'all' as no filter.
+  const isAllSets = !setCode || setCode === 'all'
+  const concreteSet = isAllSets ? DEFAULT_STATS_SET_TAB : setCode
 
   if (loading) {
     return (
@@ -81,9 +87,10 @@ export function YourStats({ since, until, setCode = DEFAULT_STATS_SET_TAB }: You
     )
   }
 
-  // Upcoming set (e.g. ASH) selected by a signed-in user without early access:
-  // pitch Friend of the Pod instead of empty dashboards (R7).
-  const setCfg = getSetConfig(setCode)
+  // Upcoming set (e.g. ASH) explicitly selected by a signed-in user without
+  // early access: pitch Friend of the Pod instead of empty dashboards (R7).
+  // Skipped when the filter is "all" — that's a normal browse, not a set pick.
+  const setCfg = isAllSets ? null : getSetConfig(setCode)
   const isUpcomingSet = setCfg ? isBeta(setCfg) : false
   const hasEarlyAccess = Boolean(user?.is_beta_tester || user?.is_admin)
   if (user && isUpcomingSet && !hasEarlyAccess) {
@@ -99,7 +106,7 @@ export function YourStats({ since, until, setCode = DEFAULT_STATS_SET_TAB }: You
       {/* Activity overview — glance-level counters, always visible when signed in. */}
       {user && (
         <div className="your-stats-overview">
-          <ActivityDashboard since={since} until={until} />
+          <ActivityDashboard since={since} until={until} setCode={setCode} filterLabel={filterLabel} />
         </div>
       )}
 
@@ -163,15 +170,15 @@ export function YourStats({ since, until, setCode = DEFAULT_STATS_SET_TAB }: You
           </div>
         ) : activeTab === 'luck' ? (
           <div id="your-stats-luck-panel" role="tabpanel">
-            <LuckSection since={since} until={until} includeBetaSets={Boolean(user?.is_beta_tester || user?.is_admin)} />
+            <LuckSection since={since} until={until} lockedSetCode={concreteSet} includeBetaSets={Boolean(user?.is_beta_tester || user?.is_admin)} />
           </div>
         ) : activeTab === 'pools' ? (
           <div id="your-stats-pools-panel" role="tabpanel">
-            <PoolHistoryDashboard />
+            <PoolHistoryDashboard setFilter={setCode} />
           </div>
         ) : (
           <div id="your-stats-meta-panel" role="tabpanel">
-            <MetaDashboard since={since} until={until} setCode={setCode} includeBetaSets={Boolean(user?.is_beta_tester || user?.is_admin)} />
+            <MetaDashboard since={since} until={until} setCode={concreteSet} lockSet includeBetaSets={Boolean(user?.is_beta_tester || user?.is_admin)} />
           </div>
         )}
       </div>

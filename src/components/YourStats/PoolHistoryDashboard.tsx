@@ -266,7 +266,7 @@ function PoolBuildCard({
   )
 }
 
-export function PoolHistoryDashboard({ fetchImpl }: { fetchImpl?: typeof fetch }) {
+export function PoolHistoryDashboard({ fetchImpl, setFilter = 'all' }: { fetchImpl?: typeof fetch; setFilter?: string }) {
   const [state, setState] = useState<FetchState>({ loading: true, error: false, pools: [] })
   const [query, setQuery] = useState('')
   const [armedDelete, setArmedDelete] = useState<string | null>(null)
@@ -320,6 +320,13 @@ export function PoolHistoryDashboard({ fetchImpl }: { fetchImpl?: typeof fetch }
 
     return state.pools
       .filter((pool) => {
+        // Global Set filter (from the page) — 'all' shows every set.
+        if (setFilter && setFilter !== 'all') {
+          return String(pool.setCode || '').split(',').map((s) => s.trim()).includes(setFilter)
+        }
+        return true
+      })
+      .filter((pool) => {
         if (relationshipFilter === 'with-decks') return poolHasDeck(pool)
         if (relationshipFilter === 'no-decks') return !poolHasDeck(pool)
         if (relationshipFilter === 'friends') return pool.relationship !== 'owned' || pool.builds.some((b) => !b.isMine)
@@ -340,7 +347,7 @@ export function PoolHistoryDashboard({ fetchImpl }: { fetchImpl?: typeof fetch }
         }
         return new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime()
       })
-  }, [query, relationshipFilter, sortBy, state.pools])
+  }, [query, relationshipFilter, sortBy, setFilter, state.pools])
 
   async function copyValue(key: string, value: string) {
     await navigator.clipboard.writeText(value)

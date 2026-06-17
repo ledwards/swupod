@@ -105,7 +105,16 @@ describe('<YourStats /> — index.tsx', () => {
     assert.match(INDEX_CODE, /<ActivityDashboard\s/)
     assert.match(INDEX_CODE, /your-stats-overview/)
     assert.match(INDEX_CODE, /<LuckSection\s/)
-    assert.match(INDEX_CODE, /<PoolHistoryDashboard\s*\/>/)
+    assert.match(INDEX_CODE, /<PoolHistoryDashboard\s/)
+  })
+
+  it('threads the global Set filter into every tab', () => {
+    // Pools/Activity get the raw filter ('all' or a code); Luck/Meta get a
+    // concrete set so per-set views always have something to render.
+    assert.match(INDEX_CODE, /<PoolHistoryDashboard setFilter=\{setCode\}/)
+    assert.match(INDEX_CODE, /<LuckSection[\s\S]*?lockedSetCode=\{concreteSet\}/)
+    assert.match(INDEX_CODE, /<MetaDashboard[\s\S]*?lockSet/)
+    assert.match(INDEX_CODE, /<ActivityDashboard[\s\S]*?setCode=\{setCode\}/)
   })
 
   it('threads since/until props down to GameplayDashboard, ActivityDashboard, and LuckSection', () => {

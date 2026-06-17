@@ -221,10 +221,15 @@
   display: flex;
   gap: 0.4rem;
   overflow-x: auto;
-  position: relative;
-  z-index: 1;
+  /* Sticky tab nav — follows you down the page like the deck builder toolbar. */
+  position: sticky;
+  top: 0;
+  z-index: 20;
   margin-bottom: 0.75rem;
-  padding: 0 0.1rem;
+  padding: 0.5rem 0.1rem;
+  background: rgba(12, 13, 16, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .your-stats-tab {
@@ -2677,6 +2682,20 @@ a.your-stats-logged-out-link:active {
   margin: -0.3rem 0 0.7rem;
   font-size: 0.8rem;
   color: var(--ys-text-2, rgba(255, 255, 255, 0.6));
+}
+
+/* Activity empty state when the user HAS activity, just not in this filter. */
+.your-stats-activity-filter-empty {
+  padding: 0.9rem 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.65));
+  font-size: 0.9rem;
+}
+
+.your-stats-activity-filter-empty p {
+  margin: 0;
 }
 
 .your-stats-luck-readout-num {
