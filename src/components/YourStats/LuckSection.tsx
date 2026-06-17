@@ -20,7 +20,6 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Button from '@/src/components/Button'
-import { StreaksPanel } from './StreaksPanel'
 import {
   LuckHistogram,
   DuplicateRateWidget,
@@ -34,10 +33,6 @@ import { DEFAULT_STATS_SET_TAB, getStatsSetTabs } from '@/src/utils/statsSetTabs
 const DEFAULT_SET = DEFAULT_STATS_SET_TAB
 
 type Scope = 'opened' | 'kept'
-const SCOPE_LABEL: Record<Scope, string> = {
-  opened: 'Packs I opened',
-  kept: 'What I kept',
-}
 
 export interface LuckPayload {
   setCode: string
@@ -76,7 +71,8 @@ export interface LuckSectionProps {
 
 export function LuckSection({ since, until, fetchImpl, initialSet, includeBetaSets = false }: LuckSectionProps) {
   const [setCode, setSetCode] = useState<string>(initialSet || DEFAULT_SET)
-  const [scope, setScope] = useState<Scope>('opened')
+  // "What I kept" was confusing; luck is always "packs I opened".
+  const scope: Scope = 'opened'
   const [state, setState] = useState<FetchState>({
     loading: true,
     refetching: false,
@@ -184,33 +180,6 @@ export function LuckSection({ since, until, fetchImpl, initialSet, includeBetaSe
             ))}
           </select>
         </div>
-
-        <div className="your-stats-luck-scope-selector">
-          <span className="your-stats-control-label" id="your-stats-scope-label">
-            Scope
-          </span>
-          <div
-            className="your-stats-luck-scope-buttons"
-            role="radiogroup"
-            aria-labelledby="your-stats-scope-label"
-          >
-            {(['opened', 'kept'] as Scope[]).map((s) => (
-              <Button
-                key={s}
-                variant="toggle"
-                size="sm"
-                glowColor="blue"
-                active={scope === s}
-                onClick={() => setScope(s)}
-                role="radio"
-                aria-checked={scope === s}
-                data-testid={`scope-button-${s}`}
-              >
-                {SCOPE_LABEL[s]}
-              </Button>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Body */}
@@ -261,15 +230,7 @@ export function LuckSection({ since, until, fetchImpl, initialSet, includeBetaSe
             )}
           </div>
 
-          <AspectBreakdown
-            observed={state.data.aspect?.observed || {}}
-            expected={state.data.aspect?.expected || {}}
-          />
-
-          <StreaksPanel
-            streaks={state.data.streaks || []}
-            streaksHasMore={Boolean(state.data.streaksHasMore)}
-          />
+          <AspectBreakdown cardHits={state.data.cardHits || []} />
         </div>
       )}
     </section>

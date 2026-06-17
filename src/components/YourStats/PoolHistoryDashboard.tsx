@@ -1,10 +1,9 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import Button from '@/src/components/Button'
 import UserAvatar from '@/src/components/UserAvatar'
 import { getPackArtUrl } from '@/src/utils/packArt'
-import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
+import { deletePool } from '@/src/utils/poolApi'
 
 interface PoolBuild {
   shareId: string
@@ -133,16 +132,13 @@ function CopyIcon() {
   )
 }
 
-// The Companion mark — use the extension's own icon when it exposed one via the
-// detection meta tag, otherwise a compass glyph that reads as "wayfinder".
-function WayfinderMark({ iconUrl }: { iconUrl: string | null }) {
-  if (iconUrl) {
-    return <img src={iconUrl} alt="" width={15} height={15} className="your-stats-wf-icon" aria-hidden="true" />
-  }
+function TrashIcon() {
   return (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="10" />
-      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+      <line x1="10" y1="11" x2="10" y2="17" />
+      <line x1="14" y1="11" x2="14" y2="17" />
     </svg>
   )
 }
@@ -150,27 +146,32 @@ function WayfinderMark({ iconUrl }: { iconUrl: string | null }) {
 function PoolBuildCard({
   build,
   setCode,
+  poolShareId,
   copiedKey,
   copyValue,
-  wayfinderDetected,
-  wayfinderIconUrl,
+  onDeletePool,
+  deleteArmed,
+  onArmDelete,
 }: {
   build: PoolBuild
   setCode: string | null
+  poolShareId: string
   copiedKey: string | null
   copyValue: (key: string, value: string) => void
-  wayfinderDetected: boolean
-  wayfinderIconUrl: string | null
+  onDeletePool: (shareId: string) => void
+  deleteArmed: boolean
+  onArmDelete: (shareId: string | null) => void
 }) {
   const deckUrl = absoluteUrl(build.links.deck)
   const jsonUrl = absoluteUrl(build.links.json)
   const hasDeck = Boolean(build.leaderName || build.baseName)
   const style = build.baseColor ? ({ ['--row-tint' as any]: build.baseColor }) : undefined
-  // Prefer the leader's unit-side (landscape) art for the card background; the
-  // portrait is a fallback for older/odd cards that lack it.
+  // Prefer the Hyperspace leader art for the card background; portrait is a
+  // fallback for older/odd cards that lack it.
   const artUrl = build.leaderBackImageUrl || build.leaderImageUrl
 
-  // A pool with no deck built yet: set art + an invitation to build one.
+  // A pool with no deck built yet: set art, a "(No Decklists)" note, a Build
+  // Deck CTA, and a trash control (arm → confirm) to delete the pool.
   if (!hasDeck) {
     const setArt = setCode ? getPackArtUrl(setCode) : null
     return (
@@ -180,8 +181,25 @@ function PoolBuildCard({
             <img src={setArt} alt="" loading="lazy" />
           </div>
         )}
-        <div className="your-stats-replay-content">
-          <a className="btn btn--primary btn--sm your-stats-pool-action" href={build.links.deck}>Build Deck</a>
+        <div className="your-stats-replay-content your-stats-pool-empty-content">
+          <span className="your-stats-pool-empty-note">(No Decklists)</span>
+          <a className="btn btn--primary btn--sm your-stats-pool-action your-stats-pool-action--play" href={build.links.deck}>Build Deck</a>
+          {deleteArmed ? (
+            <span className="your-stats-pool-delete-confirm">
+              <button type="button" className="btn btn--danger btn--sm your-stats-pool-action" onClick={() => onDeletePool(poolShareId)}>Delete pool</button>
+              <button type="button" className="btn btn--secondary btn--sm your-stats-pool-action" onClick={() => onArmDelete(null)}>Cancel</button>
+            </span>
+          ) : (
+            <button
+              type="button"
+              className="your-stats-pool-trash"
+              title="Delete this pool"
+              aria-label="Delete this pool"
+              onClick={() => onArmDelete(poolShareId)}
+            >
+              <TrashIcon />
+            </button>
+          )}
         </div>
       </div>
     )
@@ -223,55 +241,35 @@ function PoolBuildCard({
             <span className="your-stats-pool-build-byline">by {build.builder.username || 'another player'}</span>
           </div>
         )}
-        <div className="your-stats-replay-actions">
-          <a className="btn btn--interactive btn--sm your-stats-pool-action" href={build.links.deck}>Edit</a>
-          <a className="btn btn--secondary btn--sm your-stats-pool-action" href={build.links.play}>Play</a>
-          <Button
-            variant="secondary"
-            size="sm"
+        <div className="your-stats-replay-actions your-stats-pool-actions-row">
+          <a className="btn btn--interactive btn--sm your-stats-pool-action your-stats-pool-action--glow" href={build.links.deck}>Edit</a>
+          <a className="btn btn--primary btn--sm your-stats-pool-action your-stats-pool-action--play" href={build.links.play}>Play</a>
+          <button
+            type="button"
+            className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-action--glow"
             title="Copy deck link"
             onClick={() => copyValue(`url-${build.shareId}`, deckUrl)}
           >
             {copiedKey === `url-${build.shareId}` ? 'Copied' : <LinkIcon />}
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
+          </button>
+          <button
+            type="button"
+            className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-action--glow"
             title="Copy deck JSON"
             onClick={() => copyValue(`json-${build.shareId}`, jsonUrl)}
           >
             {copiedKey === `json-${build.shareId}` ? 'Copied' : <CopyIcon />}
-          </Button>
+          </button>
         </div>
-        {wayfinderDetected && (
-          <div className="your-stats-replay-actions your-stats-pool-lobby-actions">
-            <a
-              className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-lobby-btn"
-              href={`${build.links.play}?lobby=private`}
-              title="Open a private Karabast lobby with this deck"
-            >
-              <WayfinderMark iconUrl={wayfinderIconUrl} />
-              <span>Private Lobby</span>
-            </a>
-            <a
-              className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-lobby-btn"
-              href={`${build.links.play}?lobby=public`}
-              title="Open a public Karabast lobby with this deck"
-            >
-              <WayfinderMark iconUrl={wayfinderIconUrl} />
-              <span>Public Lobby</span>
-            </a>
-          </div>
-        )}
       </div>
     </div>
   )
 }
 
 export function PoolHistoryDashboard({ fetchImpl }: { fetchImpl?: typeof fetch }) {
-  const { detected: wayfinderDetected, iconUrl: wayfinderIconUrl } = useWayfinderDetection()
   const [state, setState] = useState<FetchState>({ loading: true, error: false, pools: [] })
   const [query, setQuery] = useState('')
+  const [armedDelete, setArmedDelete] = useState<string | null>(null)
   const [relationshipFilter, setRelationshipFilter] = useState<PoolFilter>('all')
   const [sortBy, setSortBy] = useState<'recent' | 'leader' | 'owner' | 'builds'>('recent')
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
@@ -348,6 +346,13 @@ export function PoolHistoryDashboard({ fetchImpl }: { fetchImpl?: typeof fetch }
     await navigator.clipboard.writeText(value)
     setCopiedKey(key)
     window.setTimeout(() => setCopiedKey((current) => current === key ? null : current), 1400)
+  }
+
+  async function handleDeletePool(shareId: string) {
+    setArmedDelete(null)
+    // Optimistically drop it from the list; deletePool swallows its own errors.
+    setState((prev) => ({ ...prev, pools: prev.pools.filter((p) => p.shareId !== shareId) }))
+    await deletePool(shareId)
   }
 
   if (state.loading) {
@@ -459,10 +464,12 @@ export function PoolHistoryDashboard({ fetchImpl }: { fetchImpl?: typeof fetch }
                     key={build.shareId}
                     build={build}
                     setCode={pool.setCode}
+                    poolShareId={pool.shareId}
                     copiedKey={copiedKey}
                     copyValue={copyValue}
-                    wayfinderDetected={wayfinderDetected}
-                    wayfinderIconUrl={wayfinderIconUrl}
+                    onDeletePool={handleDeletePool}
+                    deleteArmed={armedDelete === pool.shareId}
+                    onArmDelete={setArmedDelete}
                   />
                 ))}
               </div>

@@ -6,7 +6,28 @@ import { jsonResponse, handleApiError, formatSetCodeRange } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
 import { getAspectColor } from '@/src/utils/aspectColors'
 import { archetypeShortName, poolDisplayName } from '@/src/utils/archetypeName'
+import { getAllCards } from '@/src/utils/cardData'
 import { NextRequest, NextResponse } from 'next/server'
+
+// Hyperspace leader art lookup. Pool cards want the full-bleed Hyperspace
+// version of the leader regardless of which variant the user happened to save,
+// so we resolve by collector id (cardId) to the Hyperspace variant's art.
+let hyperspaceByCardId: Map<string, string> | null = null
+function getHyperspaceLeaderArt(card: any): string | null {
+  if (!card) return null
+  if (!hyperspaceByCardId) {
+    hyperspaceByCardId = new Map<string, string>()
+    for (const c of getAllCards()) {
+      const isHs = c.isHyperspace || (typeof c.variantType === 'string' && c.variantType.includes('Hyperspace'))
+      if (!isHs || !c.cardId) continue
+      // Prefer the unit-side (landscape) Hyperspace art; fall back to the front.
+      const art = c.backImageUrl || c.imageUrl
+      if (art && !hyperspaceByCardId.has(c.cardId)) hyperspaceByCardId.set(c.cardId, art)
+    }
+  }
+  const key = card.cardId || card.id
+  return (key && hyperspaceByCardId.get(key)) || null
+}
 
 interface DeckPreview {
   leaderName: string | null
@@ -59,9 +80,9 @@ function extractDeckPreview(raw: unknown): DeckPreview {
     baseAspects: Array.isArray(baseCard?.aspects) ? baseCard.aspects : [],
     baseHp: typeof baseCard?.hp === 'number' ? baseCard.hp : null,
     leaderImageUrl: leaderCard?.imageUrl || leaderCard?.artUrl || null,
-    // Unit-side (landscape) leader art — looks far better as a card background
-    // than the portrait. Leaders store it as backImageUrl.
-    leaderBackImageUrl: leaderCard?.backImageUrl || null,
+    // Hyperspace leader art (full-bleed) is the preferred pool-card background;
+    // fall back to the saved leader's own unit-side art, then the portrait.
+    leaderBackImageUrl: getHyperspaceLeaderArt(leaderCard) || leaderCard?.backImageUrl || null,
     baseImageUrl: baseCard?.imageUrl || baseCard?.artUrl || null,
     baseColor: baseCard ? getAspectColor(baseCard) : null,
     mainDeckCount,

@@ -1246,11 +1246,13 @@
 .your-stats-pool-build-art img {
   position: absolute;
   top: 0;
-  right: 0;
+  /* Hyperspace leader art shifted ~120px to the left, with its right edge
+     overflowing the card and clipped off (per design). */
+  right: -120px;
   height: 100%;
-  width: 64%;
+  width: calc(64% + 120px);
   object-fit: cover;
-  object-position: center 18%;
+  object-position: center 30%;
   -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 44%, #000 100%);
   mask-image: linear-gradient(to right, transparent 0%, #000 44%, #000 100%);
   transition: transform 380ms ease;
@@ -1287,21 +1289,72 @@
   mask-image: linear-gradient(to right, transparent 0%, #000 30%, #000 70%, transparent 100%);
 }
 
-/* Wayfinder lobby buttons on a built-deck card (only when the Companion is
-   detected). Icon + label, sitting on their own row under the main actions. */
-.your-stats-pool-lobby-actions {
-  margin-top: 0.35rem;
+/* All pool actions on one line; never wrap to a second row. */
+.your-stats-pool-actions-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.4rem;
 }
 
-.your-stats-pool-lobby-btn {
+/* Mouseover glow on every pool action; play-related actions glow green. */
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-pool-action--glow:hover {
+    box-shadow: 0 0 0 1px rgba(74, 144, 226, 0.5), 0 0 12px rgba(74, 144, 226, 0.45);
+    transform: translateY(-1px);
+  }
+  .your-stats-pool-action--play:hover {
+    box-shadow: 0 0 0 1px rgba(39, 174, 96, 0.55), 0 0 14px rgba(39, 174, 96, 0.5);
+    transform: translateY(-1px);
+  }
+}
+
+.your-stats-pool-action--glow,
+.your-stats-pool-action--play {
+  transition: box-shadow 160ms ease, transform 160ms ease;
+}
+
+/* No-decklist card: note + Build Deck + trash on one centered line. */
+.your-stats-pool-empty-content {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.your-stats-pool-empty-note {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.86rem;
+  font-style: italic;
+}
+
+.your-stats-pool-trash {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.4);
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
 }
 
-.your-stats-wf-icon {
-  display: inline-block;
-  border-radius: 4px;
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-pool-trash:hover {
+    color: #ff6b6b;
+    border-color: rgba(231, 76, 60, 0.6);
+    box-shadow: 0 0 12px rgba(231, 76, 60, 0.4);
+  }
+}
+
+.your-stats-pool-delete-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .your-stats-replay-content {
@@ -2607,6 +2660,23 @@ a.your-stats-logged-out-link:active {
   height: 14px;
   border-radius: 4px;
   flex: 0 0 auto;
+}
+
+.your-stats-luck-readout-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 0 auto;
+}
+
+.your-stats-luck-readout-icons img {
+  display: block;
+}
+
+.your-stats-luck-aspects-note {
+  margin: -0.3rem 0 0.7rem;
+  font-size: 0.8rem;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.6));
 }
 
 .your-stats-luck-readout-num {

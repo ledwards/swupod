@@ -23,6 +23,30 @@ import { ASPECT_COLORS, NO_ASPECT_COLOR } from '@/src/utils/aspectColors'
 
 const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning'] as const
 
+// Real game aspects (the 4 colors + the two alignments) and their icon assets.
+const ASPECT_ICON: Record<string, string> = {
+  Vigilance: '/icons/vigilance.png',
+  Command: '/icons/command.png',
+  Aggression: '/icons/aggression.png',
+  Cunning: '/icons/cunning.png',
+  Heroism: '/icons/heroism.png',
+  Villainy: '/icons/villainy.png',
+}
+
+function AspectIcons({ aspects }: { aspects: string[] }) {
+  const icons = (aspects || []).filter((a) => ASPECT_ICON[a])
+  if (icons.length === 0) {
+    return <span className="your-stats-luck-readout-swatch" style={{ background: NO_ASPECT_COLOR }} aria-hidden="true" />
+  }
+  return (
+    <span className="your-stats-luck-readout-icons" aria-hidden="true">
+      {icons.map((a) => (
+        <img key={a} src={ASPECT_ICON[a]} alt="" width={16} height={16} />
+      ))}
+    </span>
+  )
+}
+
 export interface CardHit {
   cardId: string
   number: number
@@ -80,7 +104,7 @@ function CardReadout({ hit, packsCracked }: { hit: CardHit | null; packsCracked:
   return (
     <div className="your-stats-luck-readout">
       <div className="your-stats-luck-readout-head">
-        <span className="your-stats-luck-readout-swatch" style={{ background: barBackground(hit.aspects) }} aria-hidden="true" />
+        <AspectIcons aspects={hit.aspects} />
         <strong>{hit.name}</strong>
         <span className="your-stats-luck-readout-num">#{hit.number}</span>
       </div>
@@ -133,7 +157,9 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
         onMouseLeave={() => setHovered(null)}
       >
         {cardHits.map((hit) => {
-          const heightPct = hit.count > 0 ? Math.max(6, (hit.count / maxCount) * 100) : 2
+          // sqrt scale: keeps single pulls visible even when one card spikes,
+          // and stays readable whether you've opened 10 packs or 1000.
+          const heightPct = hit.count > 0 ? Math.max(8, (Math.sqrt(hit.count) / Math.sqrt(maxCount)) * 100) : 2
           const dimmed = needle.length > 0 && !hit.name.toLowerCase().includes(needle)
           const isActive = active?.cardId === hit.cardId
           return (
@@ -238,40 +264,53 @@ export function ShowcaseRateWidget({ data, packsCracked }: { data: ShowcaseData;
 // Aspect breakdown (icons left of labels; no hover graph)
 // ---------------------------------------------------------------------------
 
-const ASPECT_META: Record<string, { icon: string | null; color: string }> = {
-  Vigilance: { icon: '/icons/vigilance.png', color: ASPECT_COLORS.Vigilance },
-  Command: { icon: '/icons/command.png', color: ASPECT_COLORS.Command },
-  Aggression: { icon: '/icons/aggression.png', color: ASPECT_COLORS.Aggression },
-  Cunning: { icon: '/icons/cunning.png', color: ASPECT_COLORS.Cunning },
-  Neutral: { icon: null, color: NO_ASPECT_COLOR },
-  Multicolor: { icon: '/icons/aspects.png', color: '#b07cff' },
+// Inclusive aspect order: the four colors then the two alignments. A card
+// counts toward EVERY aspect it carries (a Cad Bane adds to both Vigilance and
+// Command), so totals exceed the number of cards opened — that's expected.
+const ASPECT_ORDER = ['Vigilance', 'Command', 'Aggression', 'Cunning', 'Heroism', 'Villainy']
+const ASPECT_COLOR_FOR: Record<string, string> = {
+  Vigilance: ASPECT_COLORS.Vigilance,
+  Command: ASPECT_COLORS.Command,
+  Aggression: ASPECT_COLORS.Aggression,
+  Cunning: ASPECT_COLORS.Cunning,
+  // Villainy is near-black; lift it so the bar is visible on the dark track.
+  Heroism: '#cdd2da',
+  Villainy: '#6b7280',
 }
-const ASPECT_ORDER = ['Vigilance', 'Command', 'Aggression', 'Cunning', 'Multicolor', 'Neutral']
 
-export function AspectBreakdown({ observed, expected }: { observed: Record<string, number>; expected: Record<string, number> }) {
-  const max = Math.max(1, ...ASPECT_ORDER.map((a) => Math.max(observed[a] || 0, expected[a] || 0)))
+export function AspectBreakdown({ cardHits }: { cardHits: CardHit[] }) {
+  const agg: Record<string, { you: number; exp: number }> = {}
+  for (const a of ASPECT_ORDER) agg[a] = { you: 0, exp: 0 }
+  for (const hit of cardHits) {
+    for (const a of hit.aspects || []) {
+      if (agg[a]) {
+        agg[a].you += hit.count
+        agg[a].exp += hit.expected
+      }
+    }
+  }
+  const max = Math.max(1, ...ASPECT_ORDER.map((a) => Math.max(agg[a].you, agg[a].exp)))
   return (
     <div className="your-stats-luck-aspects">
       <h4>Aspect mix</h4>
+      <p className="your-stats-luck-aspects-note">
+        Counts every card that <em>includes</em> a color, so a dual-aspect card lands in
+        both rows — totals add up to more than the cards you opened.
+      </p>
       <ul className="your-stats-luck-aspect-list">
         {ASPECT_ORDER.map((aspect) => {
-          const meta = ASPECT_META[aspect]
-          const you = Math.round(observed[aspect] || 0)
-          const exp = expected[aspect] || 0
+          const you = Math.round(agg[aspect].you)
+          const exp = agg[aspect].exp
           return (
             <li key={aspect} className="your-stats-luck-aspect-row">
               <span className="your-stats-luck-aspect-label">
-                {meta.icon ? (
-                  <img src={meta.icon} alt="" width={18} height={18} aria-hidden="true" />
-                ) : (
-                  <span className="your-stats-luck-aspect-dot" style={{ background: meta.color }} aria-hidden="true" />
-                )}
+                <img src={ASPECT_ICON[aspect]} alt="" width={18} height={18} aria-hidden="true" />
                 <span>{aspect}</span>
               </span>
               <span className="your-stats-luck-aspect-bar-track">
                 <span
                   className="your-stats-luck-aspect-bar"
-                  style={{ width: `${(you / max) * 100}%`, background: meta.color }}
+                  style={{ width: `${(you / max) * 100}%`, background: ASPECT_COLOR_FOR[aspect] }}
                 />
               </span>
               <span className="your-stats-luck-aspect-vals">

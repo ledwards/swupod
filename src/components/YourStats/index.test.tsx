@@ -287,9 +287,8 @@ describe('<LuckSection />', () => {
     assert.match(LUCK_SECTION_CODE, /import\s+Button\s+from\s+['"]@\/src\/components\/Button['"]/)
   })
 
-  it('defaults scope to "opened"', () => {
-    // useState('opened') for the scope.
-    assert.match(LUCK_SECTION_CODE, /useState<Scope>\(['"]opened['"]\)/)
+  it('fixes scope to "opened" (no toggle)', () => {
+    assert.match(LUCK_SECTION_CODE, /scope: Scope = 'opened'/)
   })
 
   it('defaults setCode to LAW (pragmatic v1 default)', () => {
@@ -333,8 +332,8 @@ describe('<LuckSection />', () => {
     assert.match(LUCK_SECTION_CODE, /<AspectBreakdown/)
   })
 
-  it('renders a StreaksPanel for per-card streaks', () => {
-    assert.match(LUCK_SECTION_CODE, /<StreaksPanel/)
+  it('no longer renders the confusing "Notable cards" streaks panel', () => {
+    assert.doesNotMatch(LUCK_SECTION_CODE, /<StreaksPanel/)
   })
 
   it('renders an empty state when packsCracked === 0', () => {
@@ -361,9 +360,9 @@ describe('<LuckSection />', () => {
     assert.match(CSS_SRC, /@media\s*\(\s*max-width:\s*520px\s*\)\s*\{[\s\S]*?\.your-stats-luck-set-native\s*\{\s*display:\s*inline-block/)
   })
 
-  it('scope buttons carry the two scope labels from the plan', () => {
-    assert.ok(LUCK_SECTION_CODE.includes('Packs I opened'))
-    assert.ok(LUCK_SECTION_CODE.includes('What I kept'))
+  it('drops the "What I kept" scope toggle (luck is always packs opened)', () => {
+    assert.doesNotMatch(LUCK_SECTION_CODE, /What I kept/)
+    assert.match(LUCK_SECTION_CODE, /scope: Scope = 'opened'/)
   })
 })
 

@@ -80,18 +80,24 @@ describe('buildCardHits', () => {
 })
 
 describe('buildDuplicates', () => {
-  it('counts repeats only among base-belt normal pulls (cross-treatment foils excluded from the model)', () => {
+  it('counts repeats by base card identity, invariant of variant (HS Vader == normal Vader)', () => {
     const expected = new Map([['SET-001', 2], ['SET-002', 2]])
-    // 3 base pulls of SET-001 (2 duplicates), 1 base of SET-002, 1 foil ignored.
+    // DB rows store catalog UUIDs; uuidToCardId collapses variants onto cardId.
+    const uuidToCardId = new Map([
+      ['uuid-normal-1', 'SET-001'],
+      ['uuid-hyperspace-1', 'SET-001'], // a Hyperspace variant of the same card
+      ['uuid-normal-2', 'SET-002'],
+    ])
+    // 3 pulls that resolve to SET-001 (one is a Hyperspace variant) + 1 SET-002.
     const rows = [
-      { card_id: 'SET-001', treatment: 'base' },
-      { card_id: 'SET-001', treatment: 'base' },
-      { card_id: 'SET-001', treatment: 'base' },
-      { card_id: 'SET-002', treatment: 'base' },
-      { card_id: 'SET-001', treatment: 'foil' },
+      { card_id: 'uuid-normal-1', treatment: 'base' },
+      { card_id: 'uuid-normal-1', treatment: 'base' },
+      { card_id: 'uuid-hyperspace-1', treatment: 'hyperspace' },
+      { card_id: 'uuid-normal-2', treatment: 'base' },
     ] as any
-    const dup = buildDuplicates(rows, expected)
-    // SPEC: duplicates = totalPulls - distinct = 4 - 2 = 2.
+    const dup = buildDuplicates(rows, uuidToCardId, expected)
+    // SPEC: duplicates = totalPulls - distinct cardIds = 4 - 2 = 2 (the HS Vader
+    // is a repeat of the normal Vader).
     assert.equal(dup.actualTotal, 4)
     assert.equal(dup.actualCount, 2)
     // SPEC: expected duplicates via Poisson = Σ(E - (1 - e^-E)) for E=2 twice.
