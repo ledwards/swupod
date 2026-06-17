@@ -649,33 +649,58 @@ export function buildCardHits(
 export function buildDuplicates(
   rows: GenerationRow[],
   uuidToCardId: Map<string, string>,
-  perCardExpected: Map<string, number>,
+  perPackCards: Map<string, number>,
+  baseCardsPerPack: number,
 ) {
-  const perCard = new Map<string, number>()
-  let actualTotal = 0
+  // The duplicate question is asked WITHIN a pool (the packs opened together —
+  // ~6 for sealed, ~3 for draft): how many duplicate cards did you see, and how
+  // many would a fair process produce? Group by source_id (the pool/pod), count
+  // duplicates per pool, and compare to the Poisson expectation for that pool's
+  // pack count. Variants collapse onto the base card (a HS + normal = a repeat).
+  const byPool = new Map<string, { cards: Map<string, number>; packs: Set<string>; total: number }>()
   for (const r of rows) {
     const cardId = uuidToCardId.get(r.card_id) ?? r.card_id
-    if (!perCardExpected.has(cardId)) continue // base-belt pool only
-    actualTotal += 1
-    perCard.set(cardId, (perCard.get(cardId) ?? 0) + 1)
+    if (!perPackCards.has(cardId)) continue // base-belt pool only
+    let pool = byPool.get(r.source_id)
+    if (!pool) { pool = { cards: new Map(), packs: new Set(), total: 0 }; byPool.set(r.source_id, pool) }
+    pool.total += 1
+    pool.cards.set(cardId, (pool.cards.get(cardId) ?? 0) + 1)
+    pool.packs.add(String(r.pack_index))
   }
-  const actualDuplicates = actualTotal - perCard.size
 
-  let expectedTotalPulls = 0
-  let expectedDistinct = 0
-  for (const E of perCardExpected.values()) {
-    expectedTotalPulls += E
-    expectedDistinct += 1 - Math.exp(-E)
+  const expectedDupesForPacks = (packs: number): number => {
+    let total = 0
+    let distinct = 0
+    for (const perPack of perPackCards.values()) {
+      const E = perPack * packs
+      total += E
+      distinct += 1 - Math.exp(-E)
+    }
+    return Math.max(0, total - distinct)
   }
-  const expectedDuplicates = Math.max(0, expectedTotalPulls - expectedDistinct)
+
+  let sumActual = 0
+  let sumExpected = 0
+  let poolCount = 0
+  let sumPacks = 0
+  for (const pool of byPool.values()) {
+    if (pool.total === 0) continue
+    poolCount += 1
+    const actualDupes = pool.total - pool.cards.size
+    // Packs in this pool: prefer distinct pack_index; fall back to cards/perPack.
+    const packs = pool.packs.size > 0 && !pool.packs.has('null')
+      ? pool.packs.size
+      : Math.max(1, Math.round(pool.total / Math.max(1, baseCardsPerPack)))
+    sumPacks += packs
+    sumActual += actualDupes
+    sumExpected += expectedDupesForPacks(packs)
+  }
 
   return {
-    actualCount: actualDuplicates,
-    actualTotal,
-    actualRate: actualTotal > 0 ? actualDuplicates / actualTotal : 0,
-    expectedCount: expectedDuplicates,
-    expectedTotal: expectedTotalPulls,
-    expectedRate: expectedTotalPulls > 0 ? expectedDuplicates / expectedTotalPulls : 0,
+    pools: poolCount,
+    avgPacksPerPool: poolCount > 0 ? sumPacks / poolCount : 0,
+    actualPerPool: poolCount > 0 ? sumActual / poolCount : 0,
+    expectedPerPool: poolCount > 0 ? sumExpected / poolCount : 0,
   }
 }
 
@@ -699,12 +724,10 @@ export function buildShowcase(
 }
 
 const EMPTY_DUPLICATES = {
-  actualCount: 0,
-  actualTotal: 0,
-  actualRate: 0,
-  expectedCount: 0,
-  expectedTotal: 0,
-  expectedRate: 0,
+  pools: 0,
+  avgPacksPerPool: 0,
+  actualPerPool: 0,
+  expectedPerPool: 0,
 }
 const EMPTY_SHOWCASE = {
   actualCount: 0,
@@ -959,7 +982,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // --- card histogram + duplicate / showcase widgets ---
     const cardMeta = getCardMetaLookup(setCode)
     const cardHits = buildCardHits(observedByCardId, expectedTotal.cards, cardMeta)
-    const duplicates = buildDuplicates(rows, uuidToCardId, expectedTotal.cards)
+    const duplicates = buildDuplicates(rows, uuidToCardId, perPack.cards, perPack.baseCardsPerPack)
     const setConfig = getSetConfig(setCode)
     const showcasePerPack = Number(setConfig?.upgradeProbabilities?.leaderToShowcase || 0)
     const showcase = buildShowcase(rows, effectivePacks, showcasePerPack)

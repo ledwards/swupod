@@ -277,12 +277,10 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
 // ---------------------------------------------------------------------------
 
 export interface DuplicatesData {
-  actualCount: number
-  actualTotal: number
-  actualRate: number
-  expectedCount: number
-  expectedTotal: number
-  expectedRate: number
+  pools: number
+  avgPacksPerPool: number
+  actualPerPool: number
+  expectedPerPool: number
 }
 
 export interface ShowcaseData {
@@ -297,28 +295,29 @@ function pct(n: number): string {
 }
 
 export function DuplicateRateWidget({ data }: { data: DuplicatesData }) {
-  const total = Math.round(data.actualTotal)
-  const dupes = Math.round(data.actualCount)
-  const unique = Math.max(0, total - dupes)
-  const copiesPerCard = unique > 0 ? total / unique : 0
+  const actual = data.actualPerPool
+  const expected = data.expectedPerPool
+  const packs = Math.round(data.avgPacksPerPool)
   return (
     <div className="your-stats-luck-widget">
-      <h4>Duplicates</h4>
+      <h4>Duplicates per pool</h4>
       <div className="your-stats-luck-widget-figures">
         <div>
-          <span className="your-stats-luck-widget-num">{copiesPerCard ? copiesPerCard.toFixed(2) : '—'}×</span>
-          <span className="your-stats-luck-widget-cap">copies per card</span>
+          <span className="your-stats-luck-widget-num">{actual.toFixed(1)}</span>
+          <span className="your-stats-luck-widget-cap">you saw</span>
         </div>
+        <span className="your-stats-luck-widget-vs">vs</span>
         <div>
-          <span className="your-stats-luck-widget-num your-stats-luck-widget-num--exp">{unique.toLocaleString()}/{total.toLocaleString()}</span>
-          <span className="your-stats-luck-widget-cap">unique of opened</span>
+          <span className="your-stats-luck-widget-num your-stats-luck-widget-num--exp">{expected.toFixed(1)}</span>
+          <span className="your-stats-luck-widget-cap">expected</span>
         </div>
       </div>
       <p className="your-stats-luck-widget-copy">
-        You&apos;ve opened <strong>{total.toLocaleString()}</strong> cards — <strong>{unique.toLocaleString()}</strong> different
-        ones, so <strong>{dupes.toLocaleString()}</strong> were repeats. Duplicates are normal: with a fixed set,
-        the more you open the more copies you stack up.
-        <span className="your-stats-luck-widget-note"> A precise, set-aware expected baseline is in progress.</span>
+        Within one pool ({packs || '~6'} packs opened), you saw on average{' '}
+        <strong>{actual.toFixed(1)}</strong> duplicate card{actual.toFixed(1) === '1.0' ? '' : 's'} — the math expects about{' '}
+        <strong>{expected.toFixed(1)}</strong>. Duplicates within a single pool are normal:
+        a handful of repeats across 6 packs is exactly what a fair process produces.
+        {data.pools > 0 && <span className="your-stats-luck-widget-note"> Averaged over {data.pools.toLocaleString()} pool{data.pools === 1 ? '' : 's'}.</span>}
       </p>
     </div>
   )

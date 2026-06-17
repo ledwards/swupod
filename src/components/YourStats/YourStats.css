@@ -3179,3 +3179,86 @@ a.your-stats-logged-out-link:active {
   align-self: center;
   margin-right: 0.5rem;
 }
+
+/* Gameplay leaders: usage pie (left) + win-rate legend (right). */
+.your-stats-leaders-pie-layout {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+}
+
+.your-stats-leaders-pie {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.your-stats-leaders-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1 1 240px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.your-stats-leaders-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.your-stats-leaders-legend-art {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 7px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.your-stats-leaders-legend-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+}
+
+.your-stats-leaders-legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.your-stats-leaders-legend-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.your-stats-leaders-legend-name strong {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.your-stats-leaders-legend-name small {
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.55));
+  font-size: 0.76rem;
+}
+
+.your-stats-leaders-legend-winrate {
+  flex: 0 0 auto;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}

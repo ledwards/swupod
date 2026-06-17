@@ -217,47 +217,51 @@ function BreakdownRow({ item }: { item: GameplayBreakdown }) {
   )
 }
 
-function LeaderRow({ leader }: { leader: GameplayLeaderBreakdown }) {
-  // Win-rate fill (0–100%), matching the % beside it.
-  const share = Math.max(0, Math.min(100, Number(leader.winRate || 0)))
-  const tint = leader.baseColor || 'var(--ys-accent)'
-  return (
-    <div className="your-stats-leader-row">
-      <span className="your-stats-leader-art" aria-hidden="true" style={{ ['--row-tint' as any]: tint }}>
-        {leader.leaderImageUrl ? (
-          <img src={leader.leaderImageUrl} alt="" loading="lazy" />
-        ) : (
-          <span className="your-stats-leader-art-fallback">{leader.leaderName.charAt(0)}</span>
-        )}
-      </span>
-      <div className="your-stats-leader-body">
-        <div className="your-stats-leader-toprow">
-          <strong className="your-stats-leader-name">{leader.leaderName}</strong>
-          <span className="your-stats-leader-winrate">{formatPct(leader.winRate)}</span>
-        </div>
-        <div className="your-stats-leader-track" style={{ ['--row-tint' as any]: tint }}>
-          <span className="your-stats-leader-fill" style={{ width: `${share}%` }} />
-        </div>
-        <div className="your-stats-leader-meta">
-          <span>{recordLine(leader)}</span>
-          <span>{formatInt(leader.matches)} {leader.matches === 1 ? 'game' : 'games'} · {formatInt(leader.pools)} {leader.pools === 1 ? 'pool' : 'pools'}</span>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 function LeadersCard({ leaders }: { leaders: GameplayLeaderBreakdown[] }) {
+  // Pie of leader USAGE (share of games) on the left, win rate per leader on the
+  // right — inspired by the Wayfinder meta page.
+  const total = leaders.reduce((s, l) => s + (l.matches || 0), 0)
+  let acc = 0
+  const stops = leaders
+    .filter((l) => l.matches > 0)
+    .map((l) => {
+      const color = l.baseColor || '#888'
+      const start = (acc / (total || 1)) * 360
+      acc += l.matches
+      const end = (acc / (total || 1)) * 360
+      return `${color} ${start}deg ${end}deg`
+    })
+    .join(', ')
   return (
     <div className="your-stats-gameplay-card">
       <div className="your-stats-gameplay-card-header">
         <h3>Your Leaders</h3>
         <span>{leaders.length} {leaders.length === 1 ? 'leader' : 'leaders'} played</span>
       </div>
-      <div className="your-stats-leader-list">
-        {leaders.map((leader) => (
-          <LeaderRow key={leader.leaderName} leader={leader} />
-        ))}
+      <div className="your-stats-leaders-pie-layout">
+        <div
+          className="your-stats-leaders-pie"
+          style={{ background: total > 0 ? `conic-gradient(${stops})` : 'rgba(255,255,255,0.08)' }}
+          aria-hidden="true"
+        />
+        <ul className="your-stats-leaders-legend">
+          {leaders.map((l) => {
+            const color = l.baseColor || '#888'
+            const usePct = total > 0 ? Math.round((l.matches / total) * 100) : 0
+            return (
+              <li key={l.leaderName} className="your-stats-leaders-legend-row">
+                <span className="your-stats-leaders-legend-art" aria-hidden="true">
+                  {l.leaderImageUrl ? <img src={l.leaderImageUrl} alt="" loading="lazy" /> : <span className="your-stats-leaders-legend-dot" style={{ background: color }} />}
+                </span>
+                <span className="your-stats-leaders-legend-name">
+                  <strong>{l.leaderName}</strong>
+                  <small>{formatInt(l.matches)} {l.matches === 1 ? 'game' : 'games'} · {usePct}%</small>
+                </span>
+                <span className="your-stats-leaders-legend-winrate">{formatPct(l.winRate)}</span>
+              </li>
+            )
+          })}
+        </ul>
       </div>
     </div>
   )
