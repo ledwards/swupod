@@ -1,0 +1,197 @@
+# SWUDraftSim Pack Fidelity Research
+
+Date: 2026-06-15
+
+## Summary
+
+This note records a first-pass competitor review of SWUDraftSim's sealed pool
+generation model and compares it to Protect the Pod's pack-generation model.
+
+The useful distinction is not whether SWUDraftSim renders Hyperspace or foil
+treatments in the UI. Those treatments usually do not affect gameplay, and a
+site may reasonably normalize them for deckbuilding. The stronger and fairer
+finding is that SWUDraftSim appears to generate independent random rarity slots
+and then uses duplicate detection/rerolls for selected slots, while Protect the
+Pod models booster construction with belt-based slot lanes and sequential
+collation state.
+
+## Data Capture Status
+
+No raw 100-pool scrape dataset was saved during the initial scouting pass.
+
+What was captured:
+
+- Browser/network observations in the Codex terminal output for one live sealed
+  generation on `https://www.swudraftsim.com/sealed`.
+- A temporary clone of `Trys2Hard/swu-draft-sim` under `/tmp/swu-draft-sim`.
+- The competitor source revision inspected:
+  `0b84befbf0ad110ea3c16d41e89f8b3a42590274`.
+- Current Protect the Pod QA/test output from this session:
+  `npm run qa`, `npm run test:utils`, and `npm run test:law` all passed.
+
+What was not captured:
+
+- No durable HAR file.
+- No 100 sealed pool live scrape.
+- No saved JSON samples from SWUDraftSim's live backend.
+- No measured reroll count from instrumenting the competitor app.
+
+## Sources Inspected
+
+- Live site: `https://www.swudraftsim.com/sealed`
+- Competitor repo: `https://github.com/Trys2Hard/swu-draft-sim`
+- Competitor commit inspected:
+  `https://github.com/Trys2Hard/swu-draft-sim/tree/0b84befbf0ad110ea3c16d41e89f8b3a42590274`
+- Competitor client generator:
+  `https://github.com/Trys2Hard/swu-draft-sim/blob/0b84befbf0ad110ea3c16d41e89f8b3a42590274/client/src/Hooks/useCreatePacks.jsx`
+- Competitor backend rarity endpoints:
+  `https://github.com/Trys2Hard/swu-draft-sim/blob/0b84befbf0ad110ea3c16d41e89f8b3a42590274/server/app.js`
+- PTP pack generator: `src/utils/boosterPack.ts`
+- PTP pack docs: `docs/PACKS.md`
+- PTP statistical QA: `src/qa/packGeneration.test.ts`
+
+## Competitor Model Observed
+
+SWUDraftSim's client-side `generateCardPack` constructs a card pack from:
+
+- 1 rare slot, with a hardcoded 20% legendary chance.
+- 1 "rare uncommon" slot, where the slot is legendary below 2%, rare below
+  10%, otherwise uncommon.
+- 2 additional uncommon cards.
+- 9 common cards.
+- 1 foil endpoint card.
+
+That creates a 14-card non-leader/non-base pack object in client state.
+Separately, sealed starts by asking the leader endpoint for 6 leaders. Bases are
+not opened from boosters; the UI lets the user select a base separately.
+
+Relevant source behavior:
+
+- The client holds `commonIdsRef` and `uncommonIdsRef` arrays.
+- `fetchCard(rarity, seenIds)` checks whether the returned card id has already
+  been seen. If so, it recursively calls `fetchCard` again.
+- Common and uncommon slots pass those `seenIds` arrays into `generateCards`.
+- Rare, legendary, leader, and foil endpoints use backend `$sample` calls from
+  MongoDB.
+
+This is a random-slot model with post-hoc duplicate suppression for commons and
+uncommons, not a physical collation model.
+
+## Protect the Pod Model
+
+PTP's generator explicitly says it "uses belts to provide cards for pack slots"
+in `src/utils/boosterPack.ts`.
+
+Relevant behavior:
+
+- A pack is built from slot-specific belts: leaders, bases, commons, uncommons,
+  rare/legendary, and foil.
+- Commons are split into slot lanes by set block.
+- Sets 1-3 use Block 0 common lanes.
+- Sets 4-6 use Block A common lanes with a slot 5 alternation.
+- LAW+ uses Block B common lanes with a dedicated Hyperspace common slot.
+- Upgrade behavior is modeled with upgrade belts and slot-specific replacement
+  belts rather than independent ad hoc rerolls.
+- Sealed generation produces 6 booster packs sequentially, allowing belt state
+  to advance across the pool.
+
+`docs/PACKS.md` also documents the key philosophy: aspect coverage is produced
+by belt construction and seam-aware refill, not by inspecting a finished pack
+and fixing it afterward.
+
+## Findings
+
+### 1. The main fidelity gap is collation, not variants
+
+Do not lead with "they do not render Hyperspace/foil." That may be an intentional
+deckbuilding simplification and is not necessarily a gameplay quality issue.
+
+Lead with: SWUDraftSim samples independent random rarity endpoints, while PTP
+models slot lanes and sequential belt state.
+
+### 2. SWUDraftSim uses duplicate detection as a generator correction
+
+The competitor code checks returned common/uncommon ids against `seenIds` and
+rerolls recursively on collision. That means duplicate prevention is applied
+after a random draw.
+
+This is materially different from PTP's approach, where card spacing and aspect
+coverage are generated by the belt construction itself.
+
+### 3. SWUDraftSim's sealed representation is not six full physical boosters
+
+SWUDraftSim's sealed flow requests 6 leaders separately, generates 6 card packs
+of 14 cards each, and asks the user to select a base separately. That can still
+be perfectly usable for building sealed decks, but it is not the same model as
+opening six 16-card boosters with a leader and base in each pack.
+
+### 4. Random slot generation should produce different statistical texture
+
+Compared with a belt system, independent sampling plus duplicate suppression
+should tend to:
+
+- Smooth out duplicate commons/uncommons inside a generated pool.
+- Reduce natural card clustering caused by physical sequencing.
+- Remove slot-lane aspect correlations.
+- Produce less realistic adjacent-pack and same-slot correlations.
+
+These are measurable and make a better public claim than subjective "worse
+packs."
+
+## Recommended Benchmark
+
+Build a small competitor comparison harness that reports these metrics for the
+same set and sample size:
+
+- `packs_sampled`: number of packs/pools included.
+- `physical_pack_shape_rate`: percent of packs matching 16 cards with leader,
+  base, 9 commons, 3 uncommons, 1 rare/legendary, and 1 foil/variant slot.
+- `reroll_or_duplicate_intervention_rate`: how often a generator has to reject
+  a random common/uncommon draw.
+- `slot_lane_aspect_signal`: whether common slots show stable lane-specific
+  aspect patterns.
+- `per_pack_basic_aspect_coverage`: percent of packs whose commons cover the
+  expected basic aspect groups.
+- `pool_duplicate_distribution`: mean/stddev for duplicate base-treatment cards
+  across a sealed pool.
+- `adjacent_pack_overlap`: overlap between adjacent packs from the same sealed
+  pool.
+
+For PTP, these can be computed directly from `generateSealedPod`.
+
+For SWUDraftSim, the cleanest path is not to scrape the UI manually. Instead:
+
+1. Clone the public repo at a pinned commit.
+2. Reimplement or instrument the relevant generator functions locally.
+3. Count duplicate rerolls by wrapping the `fetchCard` path.
+4. Save raw pool samples and the script output under a dated artifact path.
+
+If live-site sampling is still desired, capture a HAR and saved JSON samples so
+the findings can be replayed.
+
+## Suggested Public Claim
+
+Use:
+
+> Protect the Pod uses a collation-belt model instead of independent random
+> slot generation, so packs preserve more of the slot structure and variance of
+> physical boosters.
+
+Avoid:
+
+> Other sites make worse packs.
+
+Avoid unless separately proven:
+
+> Other sites mishandle Hyperspace or foil.
+
+## Follow-Up Work
+
+- Add a durable comparison script under `scripts/research/` that can sample PTP
+  and a source-compatible SWUDraftSim model at the same sample size.
+- Save raw generated samples under `docs/research/artifacts/` or another
+  ignored-but-reproducible artifact location.
+- Update `docs/PACKS.md` for LAW+ details; the implementation is ahead of the
+  prose documentation.
+- Consider exposing a public "pack fidelity" page that reports PTP's own QA
+  metrics before making competitor comparisons.
