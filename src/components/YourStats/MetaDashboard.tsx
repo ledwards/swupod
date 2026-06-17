@@ -35,6 +35,11 @@ const WR_ASPECT_ICON: Record<string, string> = {
   Cunning: '/icons/cunning.png',
 }
 
+// Meta = the whole site's pool for the set, all-time — never the page's date
+// range (which would slice the metagame to a sliver).
+const META_SINCE = '2020-01-01'
+const META_UNTIL = '2099-12-31'
+
 export interface MetaDashboardProps {
   since: string
   until: string
@@ -242,7 +247,11 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
     const f = fetchImpl || fetch
     setState((p) => ({ ...p, loading: true, error: false }))
 
-    const base = `setCode=${encodeURIComponent(activeSet)}&since=${encodeURIComponent(since)}&until=${encodeURIComponent(until)}`
+    // Meta is the WHOLE-SITE metagame for the set — the entire pool, not the
+    // page's date window (which slices it to almost nothing, e.g. LAW 24 decks
+    // vs 3,080 all-time, and ASH 0). So the aggregate fetches are all-time; the
+    // per-request edge cache (s-maxage=300 on each endpoint) carries the cost.
+    const base = `setCode=${encodeURIComponent(activeSet)}&since=${encodeURIComponent(META_SINCE)}&until=${encodeURIComponent(META_UNTIL)}`
     const leaderEntry = (l: any): MetaEntry => ({
       name: l.cardName, value: Number(l.selectionRate || 0), loggedIn: null,
       aspects: l.aspects || [], imageUrl: l.imageUrl || null,
@@ -312,7 +321,8 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
     return () => {
       cancelled = true
     }
-  }, [activeSet, since, until, fetchImpl])
+    // Meta is all-time (whole site) — only the set drives a refetch, not range.
+  }, [activeSet, fetchImpl])
 
   return (
     <section className="your-stats-meta" data-testid="meta-dashboard">
@@ -463,7 +473,7 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
             />
           </div>
 
-          <DraftAnalytics setCode={activeSet} since={since} until={until} />
+          <DraftAnalytics setCode={activeSet} since={META_SINCE} until={META_UNTIL} />
         </>
       )}
     </section>
