@@ -65,8 +65,10 @@
   border-radius: 999px;
 }
 
-/* No-deck pool card: just the "Build Deck" CTA, centered. */
+/* No-deck pool card: set art behind a centered "Build Deck" CTA. */
 .your-stats-pool-build--empty {
+  position: relative;
+  overflow: hidden;
   min-height: 64px;
   display: flex;
   align-items: center;
@@ -1272,6 +1274,36 @@
   color: rgba(255, 255, 255, 0.16);
 }
 
+/* Set art behind a no-deck pool card — full-bleed landscape key art, dimmed
+   and faded toward the centered CTA so the button stays legible. */
+.your-stats-pool-build-art--set img {
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  object-position: center 30%;
+  opacity: 0.4;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 30%, #000 70%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 30%, #000 70%, transparent 100%);
+}
+
+/* Wayfinder lobby buttons on a built-deck card (only when the Companion is
+   detected). Icon + label, sitting on their own row under the main actions. */
+.your-stats-pool-lobby-actions {
+  margin-top: 0.35rem;
+}
+
+.your-stats-pool-lobby-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.your-stats-wf-icon {
+  display: inline-block;
+  border-radius: 4px;
+}
+
 .your-stats-replay-content {
   position: relative;
   z-index: 1;
@@ -2456,5 +2488,297 @@ a.your-stats-logged-out-link:active {
   .your-stats,
   .your-stats [role="tabpanel"] {
     animation: none;
+  }
+}
+
+/* ===========================================================================
+   Luck redesign: card histogram, duplicate/showcase widgets, aspect breakdown
+   =========================================================================== */
+
+.your-stats-luck-hist {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1rem 1.1rem 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.your-stats-luck-hist-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.your-stats-luck-hist-head h4 {
+  margin: 0 0 0.2rem;
+  font-size: 1.02rem;
+}
+
+.your-stats-luck-hist-head p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.6));
+}
+
+.your-stats-luck-hist-search {
+  flex: 0 0 auto;
+}
+
+.your-stats-luck-hist-search input {
+  min-width: 180px;
+}
+
+/* The bar field: thin per-card bars, baseline-aligned, scroll on small screens. */
+.your-stats-luck-hist-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+  height: 168px;
+  padding: 2px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.your-stats-luck-bar {
+  flex: 1 1 auto;
+  min-width: 3px;
+  align-self: flex-end;
+  border: 0;
+  border-radius: 2px 2px 0 0;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0.92;
+  transition: opacity 140ms ease, transform 140ms ease, outline-color 140ms ease;
+  outline: 2px solid transparent;
+  outline-offset: 1px;
+}
+
+.your-stats-luck-bar--empty {
+  background: rgba(255, 255, 255, 0.12);
+  cursor: default;
+}
+
+.your-stats-luck-bar--dim {
+  opacity: 0.16;
+}
+
+.your-stats-luck-bar--active {
+  opacity: 1;
+  outline-color: #fff;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-luck-bar:hover {
+    opacity: 1;
+    transform: scaleY(1.02);
+  }
+}
+
+/* Readout under the chart — hover OR tap drives this (mobile-safe). */
+.your-stats-luck-readout {
+  margin-top: 0.9rem;
+  min-height: 58px;
+  background: #f4f4f6;
+  color: #0b0b0c;
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+}
+
+.your-stats-luck-readout--empty {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.55));
+  font-size: 0.85rem;
+}
+
+.your-stats-luck-readout-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.98rem;
+}
+
+.your-stats-luck-readout-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex: 0 0 auto;
+}
+
+.your-stats-luck-readout-num {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.your-stats-luck-readout-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.9rem;
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.your-stats-luck-readout-delta {
+  font-weight: 700;
+}
+
+.your-stats-luck-readout-context {
+  margin: 0.35rem 0 0;
+  font-size: 0.82rem;
+  color: rgba(0, 0, 0, 0.72);
+}
+
+.your-stats-luck-readout-packs {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* Duplicate + showcase widgets */
+.your-stats-luck-widget-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.your-stats-luck-widget {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+}
+
+.your-stats-luck-widget h4 {
+  margin: 0 0 0.6rem;
+  font-size: 1rem;
+}
+
+.your-stats-luck-widget-figures {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  margin-bottom: 0.55rem;
+}
+
+.your-stats-luck-widget-figures > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.your-stats-luck-widget-num {
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.your-stats-luck-widget-num--exp {
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.6));
+  font-weight: 600;
+}
+
+.your-stats-luck-widget-cap {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.55));
+  margin-top: 0.2rem;
+}
+
+.your-stats-luck-widget-vs {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
+  align-self: center;
+}
+
+.your-stats-luck-widget-copy {
+  margin: 0;
+  font-size: 0.83rem;
+  line-height: 1.45;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.68));
+}
+
+/* Aspect breakdown — icon left of label, simple bars, no hover graph */
+.your-stats-luck-aspects {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.your-stats-luck-aspects h4 {
+  margin: 0 0 0.7rem;
+  font-size: 1rem;
+}
+
+.your-stats-luck-aspect-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.your-stats-luck-aspect-row {
+  display: grid;
+  grid-template-columns: 130px 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.your-stats-luck-aspect-label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+}
+
+.your-stats-luck-aspect-label img {
+  border-radius: 4px;
+}
+
+.your-stats-luck-aspect-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.your-stats-luck-aspect-bar-track {
+  height: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.your-stats-luck-aspect-bar {
+  display: block;
+  height: 100%;
+  border-radius: 6px;
+  min-width: 2px;
+  transition: width 320ms ease;
+}
+
+.your-stats-luck-aspect-vals {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+}
+
+.your-stats-luck-aspect-vals small {
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.5));
+  font-size: 0.74rem;
+}
+
+@media (max-width: 540px) {
+  .your-stats-luck-aspect-row {
+    grid-template-columns: 110px 1fr auto;
   }
 }

@@ -138,14 +138,14 @@ describe('<LoggedOutCTA />', () => {
 
   it('promotes the Companion and Chrome install path', () => {
     assert.match(LOGGED_OUT_CODE, /Wayfinder Companion/i)
-    assert.match(LOGGED_OUT_CODE, /queue with your pool/i)
-    assert.match(LOGGED_OUT_CODE, /rewatch your replays/i)
+    assert.match(LOGGED_OUT_CODE, /queue[\s\S]*with your pool/i)
+    assert.match(LOGGED_OUT_CODE, /rewatch your[\s\S]*replays/i)
     assert.ok(LOGGED_OUT_CODE.includes('WayfinderStoreButtons'))
     assert.ok(STORE_BUTTONS_SRC.includes('https://chromewebstore.google.com/detail/wayfinder-companion/econclbajpendbppldcnpngjfddcogfh'))
     assert.match(STORE_BUTTONS_SRC, /Add to Chrome/i)
     assert.match(STORE_BUTTONS_SRC, /Safari/i)
     assert.match(STORE_BUTTONS_SRC, /Firefox/i)
-    assert.match(STORE_BUTTONS_SRC, /Awaiting approval/i)
+    assert.match(STORE_BUTTONS_SRC, /Coming soon/i)
     assert.match(STORE_BUTTONS_SRC, /Powered by/i)
     assert.match(STORE_BUTTONS_SRC, /wayfinder\.news/i)
   })
@@ -185,13 +185,13 @@ describe('<GameplayDashboard />', () => {
   })
 
   it('renders the Companion CTA on the Gameplay tab', () => {
-    assert.match(GAMEPLAY_CODE, /Wayfinder Companion/i)
+    assert.match(GAMEPLAY_CODE, /WayfinderCompanionLockup/)
     assert.match(GAMEPLAY_CODE, /WayfinderStoreButtons/i)
     assert.match(GAMEPLAY_CODE, /queue on Karabast[\s\S]*PTP pool/i)
   })
 
   it('renders gameplay KPI and data-viz surfaces', () => {
-    for (const label of ['Matches', 'Win rate', 'Record', 'Wayfinder captures', 'Outcome Mix', 'Format Performance', 'Set Performance', 'Replay Explorer', 'Replay-Linked Pools']) {
+    for (const label of ['Matches', 'Win rate', 'Record', 'Wayfinder captures', 'Format Performance', 'Set Performance', 'Replay Explorer']) {
       assert.ok(GAMEPLAY_CODE.includes(label), `expected "${label}" in GameplayDashboard`)
     }
     assert.match(CSS_SRC, /your-stats-outcome-bars/)
@@ -206,7 +206,7 @@ describe('<GameplayDashboard />', () => {
     assert.match(GAMEPLAY_CODE, /setSortBy/)
     assert.match(GAMEPLAY_CODE, /leaderImageUrl/)
     assert.match(GAMEPLAY_CODE, /Watch/)
-    assert.match(GAMEPLAY_CODE, /Deck/)
+    assert.match(GAMEPLAY_CODE, /deck/i)
     assert.match(CSS_SRC, /your-stats-replay-row/)
     assert.match(CSS_SRC, /your-stats-replay-art/)
   })
@@ -308,18 +308,29 @@ describe('<LuckSection />', () => {
     assert.match(LUCK_SECTION_CODE, /variant="toggle"[\s\S]{0,120}glowColor="blue"/)
   })
 
-  it('fetches /api/stats/me/luck with setCode, scope, since, until', () => {
+  it('fetches /api/stats/me/luck scoped by setCode + scope (set-wide, not the era window)', () => {
     assert.ok(LUCK_SECTION_CODE.includes('/api/stats/me/luck'))
-    assert.match(LUCK_SECTION_CODE, /new\s+URLSearchParams\(\s*\{\s*setCode\s*,\s*scope\s*,\s*since\s*,\s*until\s*\}/)
+    assert.match(LUCK_SECTION_CODE, /new\s+URLSearchParams\(\s*\{\s*setCode\s*,\s*scope\s*\}/)
   })
 
-  it('refetches when setCode, scope, since, or until change', () => {
-    assert.match(LUCK_SECTION_CODE, /\[\s*setCode\s*,\s*scope\s*,\s*since\s*,\s*until/)
+  it('refetches when setCode or scope change', () => {
+    assert.match(LUCK_SECTION_CODE, /\[\s*setCode\s*,\s*scope\s*,\s*fetchImpl/)
   })
 
-  it('renders both rarity and aspect LuckPanels', () => {
-    assert.match(LUCK_SECTION_CODE, /<LuckPanel[\s\S]*?dimension="rarity"/)
-    assert.match(LUCK_SECTION_CODE, /<LuckPanel[\s\S]*?dimension="aspect"/)
+  it('renders the card histogram and drops the fixed-by-design rarity panel', () => {
+    // Redesign: rarity is fixed per pack (only foil/HS/UC-upgrade slots vary),
+    // so the rarity panel is gone. The per-card histogram is the centerpiece.
+    assert.match(LUCK_SECTION_CODE, /<LuckHistogram/)
+    assert.doesNotMatch(LUCK_SECTION_CODE, /dimension="rarity"/)
+  })
+
+  it('renders the duplicate-rate and showcase-rate widgets', () => {
+    assert.match(LUCK_SECTION_CODE, /<DuplicateRateWidget/)
+    assert.match(LUCK_SECTION_CODE, /<ShowcaseRateWidget/)
+  })
+
+  it('renders the aspect breakdown with icons instead of a hover line graph', () => {
+    assert.match(LUCK_SECTION_CODE, /<AspectBreakdown/)
   })
 
   it('renders a StreaksPanel for per-card streaks', () => {
@@ -526,9 +537,11 @@ describe('<PoolHistoryDashboard />', () => {
     assert.match(POOL_HISTORY_CODE, /builder/)
   })
 
-  it('renders deck, play, URL-copy, and JSON-copy actions for each build', () => {
-    assert.match(POOL_HISTORY_CODE, /Copy URL/)
-    assert.match(POOL_HISTORY_CODE, /Copy JSON/)
+  it('renders edit, play, URL-copy (link icon), and JSON-copy (copy icon) actions for each build', () => {
+    assert.match(POOL_HISTORY_CODE, /Copy deck link/)
+    assert.match(POOL_HISTORY_CODE, /Copy deck JSON/)
+    assert.match(POOL_HISTORY_CODE, /<LinkIcon/)
+    assert.match(POOL_HISTORY_CODE, /<CopyIcon/)
     assert.match(POOL_HISTORY_CODE, /build\.links\.play/)
     assert.match(POOL_HISTORY_CODE, /build\.links\.json/)
   })

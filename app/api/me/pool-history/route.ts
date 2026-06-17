@@ -15,6 +15,7 @@ interface DeckPreview {
   baseAspects: string[]
   baseHp: number | null
   leaderImageUrl: string | null
+  leaderBackImageUrl: string | null
   baseImageUrl: string | null
   baseColor: string | null
   mainDeckCount: number
@@ -58,6 +59,9 @@ function extractDeckPreview(raw: unknown): DeckPreview {
     baseAspects: Array.isArray(baseCard?.aspects) ? baseCard.aspects : [],
     baseHp: typeof baseCard?.hp === 'number' ? baseCard.hp : null,
     leaderImageUrl: leaderCard?.imageUrl || leaderCard?.artUrl || null,
+    // Unit-side (landscape) leader art — looks far better as a card background
+    // than the portrait. Leaders store it as backImageUrl.
+    leaderBackImageUrl: leaderCard?.backImageUrl || null,
     baseImageUrl: baseCard?.imageUrl || baseCard?.artUrl || null,
     baseColor: baseCard ? getAspectColor(baseCard) : null,
     mainDeckCount,
@@ -256,6 +260,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           leaderName: preview.leaderName,
           baseName: preview.baseName,
           leaderImageUrl: preview.leaderImageUrl,
+          leaderBackImageUrl: preview.leaderBackImageUrl,
           baseImageUrl: preview.baseImageUrl,
           baseColor: preview.baseColor,
           mainDeckCount: preview.mainDeckCount,

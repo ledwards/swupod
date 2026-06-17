@@ -78,6 +78,7 @@ import {
   type LuckVerdict,
 } from '@/src/services/luckVerdict'
 import { getAllCards } from '@/src/utils/cardData'
+import { getSetConfig } from '@/src/utils/setConfigs'
 
 const DEFAULT_SINCE = '2020-01-01'
 const DEFAULT_UNTIL = '2099-12-31'
@@ -162,6 +163,11 @@ export interface GenerationRow {
   aspects: string[] | null
   pack_index: number
   source_id: string
+  // Present on the user's own queries (not the platform aggregate); used by
+  // the duplicate-rate and showcase-rate widgets. Defaults treat a missing
+  // value as a normal base pull.
+  treatment?: string | null
+  is_showcase?: boolean | null
 }
 
 export interface ObservedAggregate {
@@ -481,6 +487,9 @@ export function buildEmptyResponse(setCode: string, scope: Scope) {
     aspect: buildAspectPanel(emptyAspect(), emptyAspect(), 0),
     streaks: [],
     streaksHasMore: false,
+    cardHits: [],
+    duplicates: EMPTY_DUPLICATES,
+    showcase: EMPTY_SHOWCASE,
   }
 }
 
@@ -529,11 +538,159 @@ function getNameLookup(setCode: string): (cardId: string) => string {
 }
 
 // ---------------------------------------------------------------------------
+// Card metadata lookup (number + aspects) for the histogram
+// ---------------------------------------------------------------------------
+
+export interface CardMeta {
+  number: number
+  name: string
+  aspects: string[]
+}
+
+const metaCache = new Map<string, Map<string, CardMeta>>()
+function getCardMetaLookup(setCode: string): Map<string, CardMeta> {
+  let map = metaCache.get(setCode)
+  if (map) return map
+  map = new Map<string, CardMeta>()
+  for (const card of getAllCards()) {
+    if (card.set !== setCode || !card.cardId) continue
+    if (map.has(card.cardId)) continue
+    const num = parseInt(String(card.number ?? '').replace(/\D/g, ''), 10)
+    map.set(card.cardId, {
+      number: Number.isFinite(num) ? num : 0,
+      name: card.name,
+      aspects: Array.isArray(card.aspects) ? card.aspects : [],
+    })
+  }
+  metaCache.set(setCode, map)
+  return map
+}
+
+/**
+ * Build the per-card histogram: one entry per base-belt card in the set,
+ * sorted by collector number. `count` is the user's observed hits (0 shows a
+ * faint bar); `delta` and `z` quantify how far that is from expected so the
+ * UI can render a "luckier/unluckier than normal" tooltip with a consistent
+ * (non-aspect) contrast color. Poisson sigma = sqrt(expected).
+ */
+export function buildCardHits(
+  perCardObserved: Map<string, number>,
+  perCardExpected: Map<string, number>,
+  meta: Map<string, CardMeta>,
+) {
+  const hits: Array<{
+    cardId: string
+    number: number
+    name: string
+    aspects: string[]
+    count: number
+    expected: number
+    delta: number
+    z: number
+    withinNormal: boolean
+  }> = []
+  for (const [cardId, expected] of perCardExpected) {
+    const count = perCardObserved.get(cardId) ?? 0
+    const m = meta.get(cardId)
+    const sigma = Math.sqrt(Math.max(expected, 1e-9))
+    const z = sigma > 0 ? (count - expected) / sigma : 0
+    hits.push({
+      cardId,
+      number: m?.number ?? 0,
+      name: m?.name ?? cardId,
+      aspects: m?.aspects ?? [],
+      count,
+      expected,
+      delta: count - expected,
+      z,
+      // With a tiny expectation a single hit is unremarkable; only flag when
+      // there's enough expected mass for a |z|>2 to be meaningful.
+      withinNormal: expected < 1 ? count <= 1 : Math.abs(z) <= 2,
+    })
+  }
+  hits.sort((a, b) => a.number - b.number || a.cardId.localeCompare(b.cardId))
+  return hits
+}
+
+/**
+ * Duplicate-rate widget. Scoped to base-belt normal pulls on BOTH sides so
+ * the comparison is apples-to-apples (foil/HS copies are a separate, harder
+ * model — see expectedDistribution.ts). Expected duplicates use the Poisson
+ * "expected repeats" identity: for each card with expected count E,
+ * P(seen at least once) = 1 - e^-E, so expected duplicates = Σ(E - (1 - e^-E)).
+ */
+export function buildDuplicates(
+  rows: GenerationRow[],
+  perCardExpected: Map<string, number>,
+) {
+  const basePerCard = new Map<string, number>()
+  let actualTotal = 0
+  for (const r of rows) {
+    if ((r.treatment ?? 'base') !== 'base') continue
+    if (!perCardExpected.has(r.card_id)) continue
+    actualTotal += 1
+    basePerCard.set(r.card_id, (basePerCard.get(r.card_id) ?? 0) + 1)
+  }
+  const actualDuplicates = actualTotal - basePerCard.size
+
+  let expectedTotalPulls = 0
+  let expectedDistinct = 0
+  for (const E of perCardExpected.values()) {
+    expectedTotalPulls += E
+    expectedDistinct += 1 - Math.exp(-E)
+  }
+  const expectedDuplicates = Math.max(0, expectedTotalPulls - expectedDistinct)
+
+  return {
+    actualCount: actualDuplicates,
+    actualTotal,
+    actualRate: actualTotal > 0 ? actualDuplicates / actualTotal : 0,
+    expectedCount: expectedDuplicates,
+    expectedTotal: expectedTotalPulls,
+    expectedRate: expectedTotalPulls > 0 ? expectedDuplicates / expectedTotalPulls : 0,
+  }
+}
+
+/**
+ * Showcase-rate widget. Showcase leaders are an independent per-pack coin
+ * flip (setConfig.upgradeProbabilities.leaderToShowcase, ~1/576). Actual =
+ * showcase rows / packs.
+ */
+export function buildShowcase(
+  rows: GenerationRow[],
+  packsCracked: number,
+  expectedPerPack: number,
+) {
+  const actualCount = rows.reduce((n, r) => n + (r.is_showcase ? 1 : 0), 0)
+  return {
+    actualCount,
+    actualRate: packsCracked > 0 ? actualCount / packsCracked : 0,
+    expectedRate: expectedPerPack,
+    expectedCount: expectedPerPack * packsCracked,
+  }
+}
+
+const EMPTY_DUPLICATES = {
+  actualCount: 0,
+  actualTotal: 0,
+  actualRate: 0,
+  expectedCount: 0,
+  expectedTotal: 0,
+  expectedRate: 0,
+}
+const EMPTY_SHOWCASE = {
+  actualCount: 0,
+  actualRate: 0,
+  expectedRate: 0,
+  expectedCount: 0,
+}
+
+// ---------------------------------------------------------------------------
 // SQL — scope=kept
 // ---------------------------------------------------------------------------
 
 const KEPT_SQL = `
-  SELECT card_id, rarity, aspects, pack_index, source_id, source_type
+  SELECT card_id, rarity, aspects, pack_index, source_id, source_type, treatment, is_showcase
   FROM card_generations
   WHERE user_id = $1
     AND set_code = $2
@@ -556,7 +713,7 @@ const PLATFORM_KEPT_SQL = `
 
 // Sealed: cracker == pool owner.
 const OPENED_SEALED_SQL = `
-  SELECT cg.card_id, cg.rarity, cg.aspects, cg.pack_index, cg.source_id, cg.source_type
+  SELECT cg.card_id, cg.rarity, cg.aspects, cg.pack_index, cg.source_id, cg.source_type, cg.treatment, cg.is_showcase
   FROM card_generations cg
   JOIN card_pools cp ON cp.id = cg.source_id
   WHERE cg.source_type = 'sealed'
@@ -585,7 +742,7 @@ const OPENED_SEALED_SQL = `
 // seat_number is 1-indexed (host = 1) so we compare against
 // packOpenerSeat() + 1.
 const OPENED_DRAFT_SQL = `
-  SELECT cg.card_id, cg.rarity, cg.aspects, cg.pack_index, cg.source_id, cg.source_type
+  SELECT cg.card_id, cg.rarity, cg.aspects, cg.pack_index, cg.source_id, cg.source_type, cg.treatment, cg.is_showcase
   FROM card_generations cg
   JOIN pods p ON p.id = cg.source_id
   JOIN pod_players pp ON pp.pod_id = p.id
@@ -744,6 +901,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       nameLookup,
     )
 
+    // --- card histogram + duplicate / showcase widgets ---
+    const cardMeta = getCardMetaLookup(setCode)
+    const cardHits = buildCardHits(observed.perCard, expectedTotal.cards, cardMeta)
+    const duplicates = buildDuplicates(rows, expectedTotal.cards)
+    const setConfig = getSetConfig(setCode)
+    const showcasePerPack = Number(setConfig?.upgradeProbabilities?.leaderToShowcase || 0)
+    const showcase = buildShowcase(rows, observed.packsCracked, showcasePerPack)
+
     const body = {
       setCode,
       scope,
@@ -752,6 +917,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       aspect: aspectPanel,
       streaks: streaksResult.streaks,
       streaksHasMore: streaksResult.hasMore,
+      cardHits,
+      duplicates,
+      showcase,
     }
 
     const response = jsonResponse(body)

@@ -20,8 +20,13 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Button from '@/src/components/Button'
-import { LuckPanel } from './LuckPanel'
 import { StreaksPanel } from './StreaksPanel'
+import {
+  LuckHistogram,
+  DuplicateRateWidget,
+  ShowcaseRateWidget,
+  AspectBreakdown,
+} from './LuckHistogram'
 import { DEFAULT_STATS_SET_TAB, getStatsSetTabs } from '@/src/utils/statsSetTabs'
 
 // Defaulting to LAW is pragmatic; the brainstorm says "most recent set with
@@ -42,6 +47,9 @@ export interface LuckPayload {
   aspect: any
   streaks: any[]
   streaksHasMore: boolean
+  cardHits?: any[]
+  duplicates?: any
+  showcase?: any
 }
 
 interface FetchState {
@@ -241,18 +249,23 @@ export function LuckSection({ since, until, fetchImpl, initialSet, includeBetaSe
           style={{ opacity: dataPanelOpacity }}
           data-testid="luck-panels"
         >
-          <LuckPanel
-            dimension="rarity"
-            data={state.data.rarity}
+          <LuckHistogram
+            cardHits={state.data.cardHits || []}
             packsCracked={state.data.packsCracked}
-            title="Rarity"
           />
-          <LuckPanel
-            dimension="aspect"
-            data={state.data.aspect}
-            packsCracked={state.data.packsCracked}
-            title="Aspect mix"
+
+          <div className="your-stats-luck-widget-row">
+            {state.data.duplicates && <DuplicateRateWidget data={state.data.duplicates} />}
+            {state.data.showcase && (
+              <ShowcaseRateWidget data={state.data.showcase} packsCracked={state.data.packsCracked} />
+            )}
+          </div>
+
+          <AspectBreakdown
+            observed={state.data.aspect?.observed || {}}
+            expected={state.data.aspect?.expected || {}}
           />
+
           <StreaksPanel
             streaks={state.data.streaks || []}
             streaksHasMore={Boolean(state.data.streaksHasMore)}

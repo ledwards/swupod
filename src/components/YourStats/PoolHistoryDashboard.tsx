@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import Button from '@/src/components/Button'
 import UserAvatar from '@/src/components/UserAvatar'
+import { getPackArtUrl } from '@/src/utils/packArt'
+import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 
 interface PoolBuild {
   shareId: string
@@ -17,6 +19,7 @@ interface PoolBuild {
   leaderName: string | null
   baseName: string | null
   leaderImageUrl: string | null
+  leaderBackImageUrl: string | null
   baseImageUrl: string | null
   baseColor: string | null
   mainDeckCount: number
@@ -130,24 +133,53 @@ function CopyIcon() {
   )
 }
 
+// The Companion mark — use the extension's own icon when it exposed one via the
+// detection meta tag, otherwise a compass glyph that reads as "wayfinder".
+function WayfinderMark({ iconUrl }: { iconUrl: string | null }) {
+  if (iconUrl) {
+    return <img src={iconUrl} alt="" width={15} height={15} className="your-stats-wf-icon" aria-hidden="true" />
+  }
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+    </svg>
+  )
+}
+
 function PoolBuildCard({
   build,
+  setCode,
   copiedKey,
   copyValue,
+  wayfinderDetected,
+  wayfinderIconUrl,
 }: {
   build: PoolBuild
+  setCode: string | null
   copiedKey: string | null
   copyValue: (key: string, value: string) => void
+  wayfinderDetected: boolean
+  wayfinderIconUrl: string | null
 }) {
   const deckUrl = absoluteUrl(build.links.deck)
   const jsonUrl = absoluteUrl(build.links.json)
   const hasDeck = Boolean(build.leaderName || build.baseName)
   const style = build.baseColor ? ({ ['--row-tint' as any]: build.baseColor }) : undefined
+  // Prefer the leader's unit-side (landscape) art for the card background; the
+  // portrait is a fallback for older/odd cards that lack it.
+  const artUrl = build.leaderBackImageUrl || build.leaderImageUrl
 
-  // A pool with no deck built yet: just an invitation to build one.
+  // A pool with no deck built yet: set art + an invitation to build one.
   if (!hasDeck) {
+    const setArt = setCode ? getPackArtUrl(setCode) : null
     return (
       <div className="your-stats-pool-build your-stats-pool-build--empty">
+        {setArt && (
+          <div className="your-stats-pool-build-art your-stats-pool-build-art--set" aria-hidden="true">
+            <img src={setArt} alt="" loading="lazy" />
+          </div>
+        )}
         <div className="your-stats-replay-content">
           <a className="btn btn--primary btn--sm your-stats-pool-action" href={build.links.deck}>Build Deck</a>
         </div>
@@ -159,8 +191,8 @@ function PoolBuildCard({
   return (
     <div className="your-stats-pool-build" style={style}>
       <div className="your-stats-pool-build-art" aria-hidden="true">
-        {build.leaderImageUrl ? (
-          <img src={build.leaderImageUrl} alt="" loading="lazy" />
+        {artUrl ? (
+          <img src={artUrl} alt="" loading="lazy" />
         ) : (
           <span className="your-stats-pool-build-art-fallback">{build.leaderName ? build.leaderName.charAt(0) : '·'}</span>
         )}
@@ -211,12 +243,33 @@ function PoolBuildCard({
             {copiedKey === `json-${build.shareId}` ? 'Copied' : <CopyIcon />}
           </Button>
         </div>
+        {wayfinderDetected && (
+          <div className="your-stats-replay-actions your-stats-pool-lobby-actions">
+            <a
+              className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-lobby-btn"
+              href={`${build.links.play}?lobby=private`}
+              title="Open a private Karabast lobby with this deck"
+            >
+              <WayfinderMark iconUrl={wayfinderIconUrl} />
+              <span>Private Lobby</span>
+            </a>
+            <a
+              className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-lobby-btn"
+              href={`${build.links.play}?lobby=public`}
+              title="Open a public Karabast lobby with this deck"
+            >
+              <WayfinderMark iconUrl={wayfinderIconUrl} />
+              <span>Public Lobby</span>
+            </a>
+          </div>
+        )}
       </div>
     </div>
   )
 }
 
 export function PoolHistoryDashboard({ fetchImpl }: { fetchImpl?: typeof fetch }) {
+  const { detected: wayfinderDetected, iconUrl: wayfinderIconUrl } = useWayfinderDetection()
   const [state, setState] = useState<FetchState>({ loading: true, error: false, pools: [] })
   const [query, setQuery] = useState('')
   const [relationshipFilter, setRelationshipFilter] = useState<PoolFilter>('all')
@@ -405,8 +458,11 @@ export function PoolHistoryDashboard({ fetchImpl }: { fetchImpl?: typeof fetch }
                   <PoolBuildCard
                     key={build.shareId}
                     build={build}
+                    setCode={pool.setCode}
                     copiedKey={copiedKey}
                     copyValue={copyValue}
+                    wayfinderDetected={wayfinderDetected}
+                    wayfinderIconUrl={wayfinderIconUrl}
                   />
                 ))}
               </div>

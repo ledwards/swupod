@@ -37,6 +37,9 @@ import {
   buildAspectPanel,
   buildStreaks,
   buildEmptyResponse,
+  buildCardHits,
+  buildDuplicates,
+  buildShowcase,
 } from './route.ts'
 import { classifyAspect } from '@/src/services/expectedDistribution'
 import { MIN_PACKS_PER_CARD } from '@/src/utils/stats'
@@ -54,6 +57,63 @@ const testUser = {
   is_admin: false,
   is_beta_tester: false,
 }
+
+// ---------------------------------------------------------------------------
+// Luck redesign widgets (cardHits / duplicates / showcase) — pure helpers
+// ---------------------------------------------------------------------------
+
+describe('buildCardHits', () => {
+  it('emits one entry per expected card, sorted by collector number, with deltas', () => {
+    const observed = new Map([['SET-002', 3], ['SET-001', 0]])
+    const expected = new Map([['SET-001', 1], ['SET-002', 1]])
+    const meta = new Map([
+      ['SET-001', { number: 1, name: 'Alpha', aspects: ['Vigilance'] }],
+      ['SET-002', { number: 2, name: 'Bravo', aspects: ['Command', 'Cunning'] }],
+    ])
+    const hits = buildCardHits(observed, expected, meta)
+    assert.equal(hits.length, 2, 'one bar per expected card')
+    assert.equal(hits[0].number, 1, 'sorted by collector number')
+    assert.equal(hits[0].count, 0, 'unpulled card still appears')
+    // SPEC: delta = observed - expected. Bravo: 3 - 1 = 2.
+    assert.equal(hits[1].delta, 2)
+  })
+})
+
+describe('buildDuplicates', () => {
+  it('counts repeats only among base-belt normal pulls (cross-treatment foils excluded from the model)', () => {
+    const expected = new Map([['SET-001', 2], ['SET-002', 2]])
+    // 3 base pulls of SET-001 (2 duplicates), 1 base of SET-002, 1 foil ignored.
+    const rows = [
+      { card_id: 'SET-001', treatment: 'base' },
+      { card_id: 'SET-001', treatment: 'base' },
+      { card_id: 'SET-001', treatment: 'base' },
+      { card_id: 'SET-002', treatment: 'base' },
+      { card_id: 'SET-001', treatment: 'foil' },
+    ] as any
+    const dup = buildDuplicates(rows, expected)
+    // SPEC: duplicates = totalPulls - distinct = 4 - 2 = 2.
+    assert.equal(dup.actualTotal, 4)
+    assert.equal(dup.actualCount, 2)
+    // SPEC: expected duplicates via Poisson = Σ(E - (1 - e^-E)) for E=2 twice.
+    const perCard = 2 - (1 - Math.exp(-2))
+    assert.ok(Math.abs(dup.expectedCount - 2 * perCard) < 1e-9)
+  })
+})
+
+describe('buildShowcase', () => {
+  it('counts showcase rows and scales the expected per-pack rate by packs', () => {
+    const rows = [
+      { card_id: 'A', is_showcase: true },
+      { card_id: 'B', is_showcase: false },
+      { card_id: 'C', is_showcase: true },
+    ] as any
+    // SPEC: 1/576 leader showcase rate over 100 packs ≈ 0.174 expected.
+    const sc = buildShowcase(rows, 100, 1 / 576)
+    assert.equal(sc.actualCount, 2)
+    assert.ok(Math.abs(sc.actualRate - 2 / 100) < 1e-9)
+    assert.ok(Math.abs(sc.expectedCount - 100 / 576) < 1e-9)
+  })
+})
 
 let ipCounter = 0
 function uniqueIp(): string {

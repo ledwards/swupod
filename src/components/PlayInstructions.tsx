@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { getLatestReleasedSetCode } from '../utils/setConfigs/latest'
 import { trackEvent } from '../hooks/useAnalytics'
 import { buildLimitedContext, LimitedAnalyticsEvents, LimitedPlayActions } from '../analytics/limitedEvents'
@@ -38,6 +38,12 @@ interface PlayInstructionsProps {
   isOwner?: boolean
   ownerName?: string | null
   wayfinderDetected?: boolean
+  /**
+   * When set (from a ?lobby=private|public deep link, e.g. the /me Pools tab
+   * lobby buttons), auto-open that Karabast lobby once the Companion is detected
+   * and the viewer owns the deck. Fires at most once.
+   */
+  autoLobbyIntent?: 'private' | 'public' | null
   analyticsContext?: Record<string, unknown>
 }
 
@@ -59,6 +65,7 @@ export default function PlayInstructions({
   isOwner = true,
   ownerName = null,
   wayfinderDetected = false,
+  autoLobbyIntent = null,
   analyticsContext = {},
 }: PlayInstructionsProps) {
   const inPod = poolType === 'draft' || poolType === 'sealed_pod'
@@ -114,6 +121,21 @@ export default function PlayInstructions({
     window.addEventListener('message', onMessage)
     return () => window.removeEventListener('message', onMessage)
   }, [wayfinderDetected])
+
+  // Honor a ?lobby=private|public deep link (from the /me Pools tab buttons):
+  // once the Companion is detected and the viewer owns the deck, open that lobby
+  // exactly once. The extension's play-page listener is live by then, and a small
+  // delay lets its metadata (card pool, lobby name) arrive first.
+  const autoLobbyFiredRef = useRef(false)
+  useEffect(() => {
+    if (!autoLobbyIntent || autoLobbyFiredRef.current) return
+    if (!wayfinderDetected || !isOwner) return
+    autoLobbyFiredRef.current = true
+    setActiveTab('wayfinder')
+    const t = window.setTimeout(() => dispatchCreateLobby(autoLobbyIntent), 400)
+    return () => window.clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoLobbyIntent, wayfinderDetected, isOwner])
 
   // -- Extension action dispatchers --
 

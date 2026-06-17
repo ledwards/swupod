@@ -260,6 +260,14 @@ export default function PlayPage({ params }: PageProps) {
   // postMessage, with a localStorage bridge and the ?wayfinder=1/0 QA override).
   const { detected: wayfinderDetected } = useWayfinderDetection()
 
+  // ?lobby=private|public deep link (from the /me Pools tab lobby buttons):
+  // auto-opens the corresponding Karabast lobby once detected + owner.
+  const autoLobbyIntent = useMemo<'private' | 'public' | null>(() => {
+    if (typeof window === 'undefined') return null
+    const v = new URLSearchParams(window.location.search).get('lobby')
+    return v === 'private' || v === 'public' ? v : null
+  }, [])
+
   useEffect(() => {
     setShareId(resolvedParams.shareId)
   }, [resolvedParams])
@@ -2143,6 +2151,7 @@ export default function PlayPage({ params }: PageProps) {
           isOwner={isInfinitePool ? true : (!pool?.owner || !!isOwner)}
           ownerName={pool?.owner?.username || pool?.owner?.name || null}
           wayfinderDetected={wayfinderDetected}
+          autoLobbyIntent={autoLobbyIntent}
           analyticsContext={getLimitedAnalyticsContext()}
         />
 
