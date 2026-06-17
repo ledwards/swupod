@@ -14,8 +14,26 @@ import { useEffect, useMemo, useState } from 'react'
 import Button from '@/src/components/Button'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import { getStatsSetTabs, DEFAULT_STATS_SET_TAB } from '@/src/utils/statsSetTabs'
-import { getAspectColor } from '@/src/utils/aspectColors'
+import { getAspectColor, ASPECT_COLORS } from '@/src/utils/aspectColors'
 import { DraftAnalytics } from './DraftAnalytics'
+
+interface BaseSplit { aspect: string; winRate: number; matches: number }
+interface WinRateLeader {
+  leaderName: string
+  winRate: number
+  matches: number
+  leaderImageUrl: string | null
+  leaderBackImageUrl: string | null
+  baseColor: string | null
+  byBase: BaseSplit[]
+}
+
+const WR_ASPECT_ICON: Record<string, string> = {
+  Vigilance: '/icons/vigilance.png',
+  Command: '/icons/command.png',
+  Aggression: '/icons/aggression.png',
+  Cunning: '/icons/cunning.png',
+}
 
 export interface MetaDashboardProps {
   since: string
@@ -194,7 +212,7 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
   })
   // The viewer's REAL win rate by leader, from their captured games — shown
   // outright (no blur gate). Empty until they have recorded games.
-  const [winRates, setWinRates] = useState<Array<{ leaderName: string; winRate: number; matches: number; leaderImageUrl: string | null; baseColor: string | null }>>([])
+  const [winRates, setWinRates] = useState<WinRateLeader[]>([])
 
   // Follow the page's set. When locked, follow unconditionally (incl. ASH);
   // when unlocked, only adopt sets that exist as tabs.
@@ -468,9 +486,53 @@ function leastOf(entries: MetaEntry[]): MetaEntry[] {
 }
 
 /** Real win rate by leader from the viewer's captured games — shown outright. */
-function WinRateCard({ leaders }: { leaders: Array<{ leaderName: string; winRate: number; matches: number; leaderImageUrl: string | null; baseColor: string | null }> }) {
+/** Win % colored from red (low) → green (high) for the square overlay. */
+function winRateColor(wr: number): string {
+  const hue = Math.max(0, Math.min(120, (wr / 100) * 120)) // 0=red, 120=green
+  return `hsl(${hue}, 70%, 45%)`
+}
+
+/** The 4 base-aspect win-rate bars shown under the grid for the active leader. */
+function BaseBars({ leader }: { leader: WinRateLeader }) {
+  return (
+    <div className="your-stats-wr-readout">
+      <div className="your-stats-wr-readout-head">
+        <strong>{leader.leaderName}</strong>
+        <span>{leader.winRate.toFixed(1)}% · {leader.matches}g overall</span>
+      </div>
+      {leader.byBase.length === 0 ? (
+        <p className="your-stats-meta-empty">No base breakdown yet.</p>
+      ) : (
+        <div className="your-stats-wr-bars">
+          {leader.byBase.map((b) => (
+            <div key={b.aspect} className="your-stats-wr-bar-row">
+              <span className="your-stats-wr-bar-label">
+                {WR_ASPECT_ICON[b.aspect] && <img src={WR_ASPECT_ICON[b.aspect]} alt={b.aspect} width={15} height={15} />}
+                {b.aspect}
+              </span>
+              <div className="your-stats-wr-bar-track">
+                <span className="your-stats-wr-bar-fill" style={{ width: `${Math.max(2, Math.min(100, b.winRate))}%`, background: ASPECT_COLORS[b.aspect as keyof typeof ASPECT_COLORS] || '#888' }} />
+              </div>
+              <span className="your-stats-wr-bar-val">{b.winRate.toFixed(0)}% · {b.matches}g</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function WinRateCard({ leaders }: { leaders: WinRateLeader[] }) {
   const { detected } = useWayfinderDetection()
-  const ranked = [...leaders].filter((l) => l.matches > 0).sort((a, b) => b.winRate - a.winRate).slice(0, 8)
+  const ranked = useMemo(
+    () => [...leaders].filter((l) => l.matches > 0).sort((a, b) => b.winRate - a.winRate).slice(0, 12),
+    [leaders],
+  )
+  const [hovered, setHovered] = useState<string | null>(null)
+  const [pinned, setPinned] = useState<string | null>(null)
+  const activeName = hovered || pinned
+  const active = ranked.find((l) => l.leaderName === activeName) || null
+
   return (
     <section className="your-stats-meta-card">
       <header className="your-stats-meta-card-header">
@@ -486,23 +548,36 @@ function WinRateCard({ leaders }: { leaders: Array<{ leaderName: string; winRate
             : 'Install the Wayfinder Companion and play your pool on Karabast to record games.'}
         </p>
       ) : (
-        <div className="your-stats-meta-bars">
-          {ranked.map((l) => {
-            const color = l.baseColor || getAspectColor({ aspects: [] } as never)
-            const width = Math.max(2, Math.min(100, Number(l.winRate || 0)))
-            return (
-              <div key={l.leaderName} className="your-stats-meta-bar-row">
-                <div className="your-stats-meta-bar-head">
-                  <span className="your-stats-meta-bar-name">{l.leaderName}</span>
-                  <span className="your-stats-meta-bar-value" style={{ color }}>{Number(l.winRate || 0).toFixed(1)}% · {l.matches}g</span>
-                </div>
-                <div className="your-stats-meta-bar-track">
-                  <span className="your-stats-meta-bar-fill" style={{ width: `${width}%`, background: color }} />
-                </div>
-              </div>
-            )
-          })}
-        </div>
+        <>
+          <p className="your-stats-meta-subtitle">Tap or hover a leader for win rate by base aspect.</p>
+          <div className="your-stats-wr-grid" onMouseLeave={() => setHovered(null)}>
+            {ranked.map((l) => {
+              const art = l.leaderBackImageUrl || l.leaderImageUrl
+              const isActive = activeName === l.leaderName
+              return (
+                <button
+                  key={l.leaderName}
+                  type="button"
+                  className={`your-stats-wr-cell${isActive ? ' is-active' : ''}`}
+                  onMouseEnter={() => setHovered(l.leaderName)}
+                  onFocus={() => setHovered(l.leaderName)}
+                  onClick={() => setPinned((cur) => (cur === l.leaderName ? null : l.leaderName))}
+                  aria-label={`${l.leaderName}: ${l.winRate.toFixed(0)}% win rate over ${l.matches} games`}
+                  title={`${l.leaderName} — ${l.winRate.toFixed(0)}% (${l.matches}g)`}
+                >
+                  {art
+                    ? <img className="your-stats-wr-cell-art" src={art} alt="" loading="lazy" />
+                    : <span className="your-stats-wr-cell-art your-stats-wr-cell-art--empty" />}
+                  <span className="your-stats-wr-cell-overlay">
+                    <span className="your-stats-wr-cell-pct" style={{ color: winRateColor(l.winRate) }}>{l.winRate.toFixed(0)}%</span>
+                    <span className="your-stats-wr-cell-games">{l.matches}g</span>
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+          {active && <BaseBars leader={active} />}
+        </>
       )}
     </section>
   )

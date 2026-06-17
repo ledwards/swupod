@@ -2430,6 +2430,117 @@ a.your-stats-logged-out-link:active {
   padding: 0.1rem 0.5rem;
 }
 
+/* ----- Win rate by leader: cropped-art grid + base-aspect readout ----- */
+.your-stats-wr-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
+  gap: 0.5rem;
+}
+.your-stats-wr-cell {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--ys-border);
+  padding: 0;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.05);
+}
+.your-stats-wr-cell.is-active {
+  outline: 2px solid #64B5F6;
+  outline-offset: 0;
+}
+.your-stats-wr-cell-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Push the card frame off the edges so only the central art shows. */
+  object-position: center 32%;
+  transform: scale(1.55);
+}
+.your-stats-wr-cell-art--empty {
+  background: rgba(255, 255, 255, 0.08);
+}
+.your-stats-wr-cell-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.1) 55%, transparent);
+  padding: 0.3rem 0.2rem;
+}
+.your-stats-wr-cell-pct {
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 1;
+  text-shadow: 0 1px 3px #000;
+}
+.your-stats-wr-cell-games {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-wr-cell:hover .your-stats-wr-cell-art {
+    transform: scale(1.62);
+  }
+}
+
+.your-stats-wr-readout {
+  margin-top: 0.9rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--ys-border);
+}
+.your-stats-wr-readout-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.55rem;
+}
+.your-stats-wr-readout-head span {
+  color: rgba(255, 255, 255, 0.65);
+  font-variant-numeric: tabular-nums;
+}
+.your-stats-wr-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.your-stats-wr-bar-row {
+  display: grid;
+  grid-template-columns: minmax(96px, auto) 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+.your-stats-wr-bar-label {
+  display: flex;
+  align-items: center;
+  gap: 0.32rem;
+  font-size: 0.78rem;
+}
+.your-stats-wr-bar-track {
+  height: 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.your-stats-wr-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 6px;
+}
+.your-stats-wr-bar-val {
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.8);
+  min-width: 3.6rem;
+  text-align: right;
+}
+
 /* ----- Draft analytics: P1P1 + average pick-turn ladder ----- */
 .your-stats-pickturn-toolbar {
   display: flex;

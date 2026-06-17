@@ -105,9 +105,19 @@ export interface GameplayRecentPool {
   updatedAt: string | null
 }
 
+export interface GameplayBaseSplit {
+  aspect: string
+  wins: number
+  losses: number
+  draws: number
+  matches: number
+  winRate: number
+}
+
 export interface GameplayLeaderBreakdown {
   leaderName: string
   leaderImageUrl: string | null
+  leaderBackImageUrl: string | null
   baseColor: string | null
   wins: number
   losses: number
@@ -115,6 +125,8 @@ export interface GameplayLeaderBreakdown {
   matches: number
   winRate: number
   pools: number
+  // Win rate split by the base's color aspect — drives the hover bars.
+  byBase: GameplayBaseSplit[]
 }
 
 export interface GameplayReplay {
@@ -173,6 +185,8 @@ interface RawLeaderPoolRow {
  */
 export function buildLeaderBreakdown(rows: RawLeaderPoolRow[]): GameplayLeaderBreakdown[] {
   const byLeader = new Map<string, GameplayLeaderBreakdown>()
+  // leaderName -> aspect -> tally
+  const baseTallies = new Map<string, Map<string, { wins: number; losses: number; draws: number }>>()
   for (const row of rows) {
     const wins = toInt(row.wins)
     const losses = toInt(row.losses)
@@ -184,6 +198,7 @@ export function buildLeaderBreakdown(rows: RawLeaderPoolRow[]): GameplayLeaderBr
     const existing = byLeader.get(name) || {
       leaderName: name,
       leaderImageUrl: preview.leaderImageUrl,
+      leaderBackImageUrl: preview.leaderBackImageUrl,
       baseColor: preview.baseColor,
       wins: 0,
       losses: 0,
@@ -191,22 +206,44 @@ export function buildLeaderBreakdown(rows: RawLeaderPoolRow[]): GameplayLeaderBr
       matches: 0,
       winRate: 0,
       pools: 0,
+      byBase: [],
     }
     existing.wins += wins
     existing.losses += losses
     existing.draws += draws
     existing.pools += 1
     if (!existing.leaderImageUrl && preview.leaderImageUrl) existing.leaderImageUrl = preview.leaderImageUrl
+    if (!existing.leaderBackImageUrl && preview.leaderBackImageUrl) existing.leaderBackImageUrl = preview.leaderBackImageUrl
     if (!existing.baseColor && preview.baseColor) existing.baseColor = preview.baseColor
     byLeader.set(name, existing)
+
+    // Per-base-aspect tally (skip pools where the base has no color aspect).
+    if (preview.baseAspect) {
+      let aspects = baseTallies.get(name)
+      if (!aspects) { aspects = new Map(); baseTallies.set(name, aspects) }
+      const t = aspects.get(preview.baseAspect) || { wins: 0, losses: 0, draws: 0 }
+      t.wins += wins; t.losses += losses; t.draws += draws
+      aspects.set(preview.baseAspect, t)
+    }
   }
   return Array.from(byLeader.values())
     .map((entry) => {
       const matches = entry.wins + entry.losses + entry.draws
+      const aspects = baseTallies.get(entry.leaderName)
+      const byBase: GameplayBaseSplit[] = COLOR_ASPECTS
+        .map((aspect) => {
+          const t = aspects?.get(aspect)
+          if (!t) return null
+          const m = t.wins + t.losses + t.draws
+          if (m === 0) return null
+          return { aspect, wins: t.wins, losses: t.losses, draws: t.draws, matches: m, winRate: Math.round((t.wins / m) * 1000) / 10 }
+        })
+        .filter(Boolean) as GameplayBaseSplit[]
       return {
         ...entry,
         matches,
         winRate: matches > 0 ? Math.round((entry.wins / matches) * 1000) / 10 : 0,
+        byBase,
       }
     })
     .sort((a, b) => b.matches - a.matches || b.winRate - a.winRate || a.leaderName.localeCompare(b.leaderName))
@@ -246,12 +283,16 @@ function cardDisplayName(card: any): string | null {
   return card?.name || card?.title || null
 }
 
+const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning']
+
 function extractDeckPreview(raw: unknown): {
   leaderName: string | null
   baseName: string | null
   leaderImageUrl: string | null
+  leaderBackImageUrl: string | null
   baseImageUrl: string | null
   baseColor: string | null
+  baseAspect: string | null
   deckCardCount: number
 } {
   const state = parseDeckBuilderState(raw)
@@ -266,12 +307,17 @@ function extractDeckPreview(raw: unknown): {
     !pos?.card?.isBase
   ).length
 
+  // Primary color aspect of the base — drives the per-base win-rate bars.
+  const baseAspect = (baseCard?.aspects || []).find((a: string) => COLOR_ASPECTS.includes(a)) || null
+
   return {
     leaderName: cardDisplayName(leaderCard),
     baseName: cardDisplayName(baseCard),
     leaderImageUrl: leaderCard?.imageUrl || leaderCard?.artUrl || null,
+    leaderBackImageUrl: leaderCard?.backImageUrl || null,
     baseImageUrl: baseCard?.imageUrl || baseCard?.artUrl || null,
     baseColor: baseCard ? getAspectColor(baseCard) : null,
+    baseAspect,
     deckCardCount,
   }
 }

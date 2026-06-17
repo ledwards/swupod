@@ -130,6 +130,29 @@ describe('buildLeaderBreakdown', () => {
     ])
     assert.equal(result.length, 0)
   })
+
+  it('splits win rate by the base color aspect (byBase)', () => {
+    const poolWithBase = (leader: string, baseAspect: string, wins: number, losses: number) => ({
+      deck_builder_state: {
+        activeLeader: 'L', activeBase: 'B',
+        cardPositions: {
+          L: { card: { name: leader, imageUrl: '/l.png' } },
+          B: { card: { name: 'A Base', aspects: [baseAspect] } },
+        },
+      },
+      wins, losses, draws: 0,
+    })
+    const result = buildLeaderBreakdown([
+      poolWithBase('Cassian', 'Vigilance', 3, 1), // 75% on Vigilance
+      poolWithBase('Cassian', 'Cunning', 1, 3),   // 25% on Cunning
+    ])
+    const cassian = result.find((r) => r.leaderName === 'Cassian')!
+    const vig = cassian.byBase.find((b) => b.aspect === 'Vigilance')!
+    const cun = cassian.byBase.find((b) => b.aspect === 'Cunning')!
+    assert.equal(vig.winRate, 75) // SPEC: 3/4
+    assert.equal(cun.winRate, 25) // SPEC: 1/4
+    assert.equal(vig.matches, 4)
+  })
 })
 
 describe('buildTerronkDevGameplayFixture', () => {
