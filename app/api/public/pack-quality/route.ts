@@ -13,6 +13,7 @@ import { jsonResponse, handleApiError } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
 import { statCacheGet, statCacheSet } from '@/lib/statCache'
 import { getPackQualityData, getAvailableSets } from '@/src/services/packQualityService'
+import { getAllSetCodes } from '@/src/utils/setConfigs/index'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -48,8 +49,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       })
     }
 
-    // Validate set code
-    const validSets = ['SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'SEC', 'LAW']
+    // Validate set code (from the config registry, so new/pre-release sets like ASH are included)
+    const validSets = getAllSetCodes()
     const normalizedSetCode = setCode.toUpperCase()
     if (!validSets.includes(normalizedSetCode)) {
       return jsonResponse({
