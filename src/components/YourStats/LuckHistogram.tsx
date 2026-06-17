@@ -276,63 +276,75 @@ export function ShowcaseRateWidget({ data, packsCracked }: { data: ShowcaseData;
 // Aspect breakdown (icons left of labels; no hover graph)
 // ---------------------------------------------------------------------------
 
-// Inclusive aspect order: the four colors then the two alignments. A card
-// counts toward EVERY aspect it carries (a Cad Bane adds to both Vigilance and
-// Command), so totals exceed the number of cards opened — that's expected.
-const ASPECT_ORDER = ['Vigilance', 'Command', 'Aggression', 'Cunning', 'Heroism', 'Villainy']
-const ASPECT_COLOR_FOR: Record<string, string> = {
-  Vigilance: ASPECT_COLORS.Vigilance,
-  Command: ASPECT_COLORS.Command,
-  Aggression: ASPECT_COLORS.Aggression,
-  Cunning: ASPECT_COLORS.Cunning,
-  // Villainy is near-black; lift it so the bar is visible on the dark track.
-  Heroism: '#cdd2da',
-  Villainy: '#6b7280',
+const PRIMARIES = ['Vigilance', 'Command', 'Aggression', 'Cunning'] as const
+const ALIGN_COLOR: Record<string, string> = {
+  Heroism: '#dfe4ec',
+  Villainy: '#5b616e',
+  Neutral: NO_ASPECT_COLOR,
+  Multicolor: '#b07cff',
+}
+
+type Slice = { label: string; value: number; color: string }
+
+function Pie({ title, slices }: { title: string; slices: Slice[] }) {
+  const total = slices.reduce((s, x) => s + x.value, 0)
+  let acc = 0
+  const stops = slices
+    .filter((s) => s.value > 0)
+    .map((s) => {
+      const start = (acc / (total || 1)) * 360
+      acc += s.value
+      const end = (acc / (total || 1)) * 360
+      return `${s.color} ${start}deg ${end}deg`
+    })
+    .join(', ')
+  return (
+    <div className="your-stats-luck-pie-block">
+      <div className="your-stats-luck-pie" style={{ background: total > 0 ? `conic-gradient(${stops})` : 'rgba(255,255,255,0.08)' }} aria-hidden="true" />
+      <div className="your-stats-luck-pie-side">
+        <h5>{title}</h5>
+        <ul className="your-stats-luck-pie-legend">
+          {slices.map((s) => (
+            <li key={s.label}>
+              <span className="your-stats-luck-pie-dot" style={{ background: s.color }} />
+              {ASPECT_ICON[s.label] && <img src={ASPECT_ICON[s.label]} alt="" width={15} height={15} />}
+              <span className="your-stats-luck-pie-label">{s.label}</span>
+              <span className="your-stats-luck-pie-val">{Math.round(s.value)}{total > 0 ? ` · ${Math.round((s.value / total) * 100)}%` : ''}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
 }
 
 export function AspectBreakdown({ cardHits }: { cardHits: CardHit[] }) {
-  const agg: Record<string, { you: number; exp: number }> = {}
-  for (const a of ASPECT_ORDER) agg[a] = { you: 0, exp: 0 }
+  const primary: Record<string, number> = { Vigilance: 0, Command: 0, Aggression: 0, Cunning: 0 }
+  const align: Record<string, number> = { Heroism: 0, Villainy: 0, Neutral: 0, Multicolor: 0 }
   for (const hit of cardHits) {
-    for (const a of hit.aspects || []) {
-      if (agg[a]) {
-        agg[a].you += hit.count
-        agg[a].exp += hit.expected
-      }
-    }
+    const aspects = hit.aspects || []
+    const colors = aspects.filter((a) => (PRIMARIES as readonly string[]).includes(a))
+    // Primary wheel: each primary the card carries (a dual card lands in both).
+    for (const c of colors) primary[c] += hit.count
+    // Alignment / structure wheel — separate dimension.
+    if (aspects.includes('Heroism')) align.Heroism += hit.count
+    if (aspects.includes('Villainy')) align.Villainy += hit.count
+    if (colors.length === 0) align.Neutral += hit.count
+    if (colors.length >= 2) align.Multicolor += hit.count
   }
-  const max = Math.max(1, ...ASPECT_ORDER.map((a) => Math.max(agg[a].you, agg[a].exp)))
+  const primarySlices: Slice[] = PRIMARIES.map((p) => ({ label: p, value: primary[p], color: ASPECT_COLORS[p] }))
+  const alignSlices: Slice[] = ['Heroism', 'Villainy', 'Multicolor', 'Neutral'].map((a) => ({ label: a, value: align[a], color: ALIGN_COLOR[a] }))
   return (
     <div className="your-stats-luck-aspects">
       <h4>Aspect mix</h4>
       <p className="your-stats-luck-aspects-note">
-        Counts every card that <em>includes</em> a color, so a dual-aspect card lands in
-        both rows — totals add up to more than the cards you opened.
+        Counts every card that <em>includes</em> a color, so a dual-color card lands in
+        two primaries — slices add to more than the cards you opened.
       </p>
-      <ul className="your-stats-luck-aspect-list">
-        {ASPECT_ORDER.map((aspect) => {
-          const you = Math.round(agg[aspect].you)
-          const exp = agg[aspect].exp
-          return (
-            <li key={aspect} className="your-stats-luck-aspect-row">
-              <span className="your-stats-luck-aspect-label">
-                <img src={ASPECT_ICON[aspect]} alt="" width={18} height={18} aria-hidden="true" />
-                <span>{aspect}</span>
-              </span>
-              <span className="your-stats-luck-aspect-bar-track">
-                <span
-                  className="your-stats-luck-aspect-bar"
-                  style={{ width: `${(you / max) * 100}%`, background: ASPECT_COLOR_FOR[aspect] }}
-                />
-              </span>
-              <span className="your-stats-luck-aspect-vals">
-                <strong>{you}</strong>
-                <small>exp {exp.toFixed(1)}</small>
-              </span>
-            </li>
-          )
-        })}
-      </ul>
+      <div className="your-stats-luck-pies">
+        <Pie title="Primary colors" slices={primarySlices} />
+        <Pie title="Heroism / Villainy / structure" slices={alignSlices} />
+      </div>
     </div>
   )
 }

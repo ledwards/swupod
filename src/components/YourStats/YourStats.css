@@ -691,6 +691,27 @@
   border-radius: 999px;
 }
 
+/* Win-rate bars: a faint 50% reference line so the % bar reads clearly. */
+.your-stats-breakdown-track--pct {
+  position: relative;
+  overflow: visible;
+}
+
+.your-stats-breakdown-track--pct::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  left: 50%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.your-stats-breakdown-track--pct .your-stats-breakdown-fill {
+  position: relative;
+  z-index: 1;
+}
+
 .your-stats-breakdown-fill {
   display: block;
   height: 100%;
@@ -2855,69 +2876,70 @@ a.your-stats-logged-out-link:active {
   font-size: 1rem;
 }
 
-.your-stats-luck-aspect-list {
+/* Two pie charts: primary colors, and Heroism/Villainy/structure. */
+.your-stats-luck-pies {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.your-stats-luck-pie-block {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.your-stats-luck-pie {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.your-stats-luck-pie-side {
+  min-width: 0;
+}
+
+.your-stats-luck-pie-side h5 {
+  margin: 0 0 0.4rem;
+  font-size: 0.82rem;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.7));
+  font-weight: 600;
+}
+
+.your-stats-luck-pie-legend {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 
-.your-stats-luck-aspect-row {
-  display: grid;
-  grid-template-columns: 130px 1fr auto;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.your-stats-luck-aspect-label {
+.your-stats-luck-pie-legend li {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  font-size: 0.9rem;
-}
-
-.your-stats-luck-aspect-label img {
-  border-radius: 4px;
-}
-
-.your-stats-luck-aspect-dot {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.your-stats-luck-aspect-bar-track {
-  height: 10px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.your-stats-luck-aspect-bar {
-  display: block;
-  height: 100%;
-  border-radius: 6px;
-  min-width: 2px;
-  transition: width 320ms ease;
-}
-
-.your-stats-luck-aspect-vals {
-  display: flex;
-  align-items: baseline;
   gap: 0.4rem;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
 }
 
-.your-stats-luck-aspect-vals small {
-  color: var(--ys-text-2, rgba(255, 255, 255, 0.5));
-  font-size: 0.74rem;
+.your-stats-luck-pie-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: 0 0 auto;
 }
 
-@media (max-width: 540px) {
-  .your-stats-luck-aspect-row {
-    grid-template-columns: 110px 1fr auto;
-  }
+.your-stats-luck-pie-legend img {
+  border-radius: 3px;
+}
+
+.your-stats-luck-pie-label {
+  flex: 1 1 auto;
+}
+
+.your-stats-luck-pie-val {
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.55));
+  font-variant-numeric: tabular-nums;
 }

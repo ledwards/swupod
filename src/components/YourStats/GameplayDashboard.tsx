@@ -195,8 +195,10 @@ function OutcomeBars({ wins, losses, draws }: Pick<GameplayBreakdown, 'wins' | '
   )
 }
 
-function BreakdownRow({ item, maxMatches }: { item: GameplayBreakdown; maxMatches: number }) {
-  const width = maxMatches > 0 ? Math.max(8, (item.matches / maxMatches) * 100) : 0
+function BreakdownRow({ item }: { item: GameplayBreakdown }) {
+  // The bar IS the win rate — a true 0–100% fill so it reads as a percentage
+  // and lines up with the % shown beside it (the 50% mark is hinted in CSS).
+  const width = Math.max(0, Math.min(100, Number(item.winRate || 0)))
 
   return (
     <div className="your-stats-breakdown-row">
@@ -204,7 +206,7 @@ function BreakdownRow({ item, maxMatches }: { item: GameplayBreakdown; maxMatche
         <strong>{item.label}</strong>
         <span>{recordLine(item)}</span>
       </div>
-      <div className="your-stats-breakdown-track">
+      <div className="your-stats-breakdown-track your-stats-breakdown-track--pct">
         <span className="your-stats-breakdown-fill" style={{ width: `${width}%` }} />
       </div>
       <div className="your-stats-breakdown-metric">
@@ -215,8 +217,9 @@ function BreakdownRow({ item, maxMatches }: { item: GameplayBreakdown; maxMatche
   )
 }
 
-function LeaderRow({ leader, maxMatches }: { leader: GameplayLeaderBreakdown; maxMatches: number }) {
-  const share = maxMatches > 0 ? Math.max(6, (leader.matches / maxMatches) * 100) : 0
+function LeaderRow({ leader }: { leader: GameplayLeaderBreakdown }) {
+  // Win-rate fill (0–100%), matching the % beside it.
+  const share = Math.max(0, Math.min(100, Number(leader.winRate || 0)))
   const tint = leader.baseColor || 'var(--ys-accent)'
   return (
     <div className="your-stats-leader-row">
@@ -245,7 +248,6 @@ function LeaderRow({ leader, maxMatches }: { leader: GameplayLeaderBreakdown; ma
 }
 
 function LeadersCard({ leaders }: { leaders: GameplayLeaderBreakdown[] }) {
-  const maxMatches = Math.max(0, ...leaders.map((l) => l.matches))
   return (
     <div className="your-stats-gameplay-card">
       <div className="your-stats-gameplay-card-header">
@@ -254,7 +256,7 @@ function LeadersCard({ leaders }: { leaders: GameplayLeaderBreakdown[] }) {
       </div>
       <div className="your-stats-leader-list">
         {leaders.map((leader) => (
-          <LeaderRow key={leader.leaderName} leader={leader} maxMatches={maxMatches} />
+          <LeaderRow key={leader.leaderName} leader={leader} />
         ))}
       </div>
     </div>
@@ -571,15 +573,6 @@ export function GameplayDashboard({ since, until, setCode, fetchImpl }: Gameplay
     }
   }, [since, until, setCode, fetchImpl])
 
-  const maxFormatMatches = useMemo(
-    () => Math.max(0, ...(state.data?.formatBreakdown || []).map((item) => item.matches)),
-    [state.data?.formatBreakdown]
-  )
-  const maxSetMatches = useMemo(
-    () => Math.max(0, ...(state.data?.setBreakdown || []).map((item) => item.matches)),
-    [state.data?.setBreakdown]
-  )
-
   if (state.loading) {
     return (
       <section className="your-stats-gameplay" data-testid="gameplay-dashboard" aria-busy="true">
@@ -660,7 +653,7 @@ export function GameplayDashboard({ since, until, setCode, fetchImpl }: Gameplay
           <h3>Format Performance</h3>
           <div className="your-stats-breakdown-list">
             {state.data.formatBreakdown.map((item) => (
-              <BreakdownRow key={item.key} item={item} maxMatches={maxFormatMatches} />
+              <BreakdownRow key={item.key} item={item} />
             ))}
           </div>
         </div>
@@ -669,7 +662,7 @@ export function GameplayDashboard({ since, until, setCode, fetchImpl }: Gameplay
           <h3>Set Performance</h3>
           <div className="your-stats-breakdown-list">
             {state.data.setBreakdown.map((item) => (
-              <BreakdownRow key={item.key} item={item} maxMatches={maxSetMatches} />
+              <BreakdownRow key={item.key} item={item} />
             ))}
           </div>
         </div>
