@@ -115,74 +115,34 @@ function MetaSection({
   )
 }
 
-/** Win-rate section: gated behind the Companion because WR needs captured games. */
-function WinRateGate({ leaders }: { leaders: MetaEntry[] }) {
-  // Render the leader list with placeholder bars, then blur + overlay the CTA.
-  // When the Companion is already installed (R10), don't pitch the install —
-  // the user just needs to play captured games for win rates to populate.
-  const { detected } = useWayfinderDetection()
-  const teaser = leaders.slice(0, 6)
-  return (
-    <section className="your-stats-meta-card your-stats-meta-card--gated">
-      <header className="your-stats-meta-card-header">
-        <div>
-          <span className="your-stats-eyebrow">Win Rate</span>
-          <h3>Win rate by leader</h3>
-        </div>
-      </header>
-      <div className="your-stats-meta-gate">
-        <div className="your-stats-meta-gate-blur" aria-hidden="true">
-          <div className="your-stats-meta-bars">
-            {(teaser.length ? teaser : Array.from({ length: 5 }, (_, i) => ({ name: `Leader ${i + 1}`, value: 60 - i * 4, aspects: [], loggedIn: null, imageUrl: null }))).map((e, i) => {
-              const color = getAspectColor({ aspects: e.aspects } as never)
-              const width = 70 - i * 9
-              return (
-                <div key={e.name} className="your-stats-meta-bar-row">
-                  <div className="your-stats-meta-bar-head">
-                    <span className="your-stats-meta-bar-name">{e.name}</span>
-                    <span className="your-stats-meta-bar-value" style={{ color }}>5X.X%</span>
-                  </div>
-                  <div className="your-stats-meta-bar-track">
-                    <span className="your-stats-meta-bar-fill" style={{ width: `${width}%`, background: color }} />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-        <div className="your-stats-meta-gate-cta">
-          <span className="your-stats-meta-gate-lock" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-          </span>
-          {detected ? (
-            <>
-              <h4>Play to see your win rates</h4>
-              <p>The Companion is connected. Queue your pools on Karabast and your win rate by leader fills in here.</p>
-            </>
-          ) : (
-            <>
-              <h4>Give data to get data</h4>
-              <p>Win rates come from games captured through the Wayfinder Companion. Install it, play your pool on Karabast, and leader win rates unlock here.</p>
-              <WayfinderStoreButtons orientation="inline" />
-            </>
-          )}
-        </div>
-      </div>
-    </section>
-  )
-}
-
 export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, lockSet = false, includeBetaSets = false, fetchImpl }: MetaDashboardProps) {
   const setTabs = useMemo(() => getStatsSetTabs(includeBetaSets), [includeBetaSets])
   const [activeSet, setActiveSet] = useState<string>(setTabs.includes(setCode) ? setCode : DEFAULT_STATS_SET_TAB)
   const [state, setState] = useState({ loading: true, error: false, played: [] as MetaEntry[], drafted: [] as MetaEntry[] })
+  // The viewer's REAL win rate by leader, from their captured games — shown
+  // outright (no blur gate). Empty until they have recorded games.
+  const [winRates, setWinRates] = useState<Array<{ leaderName: string; winRate: number; matches: number; leaderImageUrl: string | null; baseColor: string | null }>>([])
 
   // Follow the era's set when it changes (unless the user picked one explicitly is fine to override here).
   useEffect(() => {
     if (setTabs.includes(setCode)) setActiveSet(setCode)
   }, [setCode, setTabs])
+
+  useEffect(() => {
+    let cancelled = false
+    const f = fetchImpl || fetch
+    const params = new URLSearchParams({ since, until })
+    if (activeSet) params.set('setCode', activeSet)
+    f(`/api/stats/me/gameplay?${params.toString()}`, { credentials: 'include' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((body) => {
+        if (cancelled) return
+        const data = body && body.data ? body.data : body
+        setWinRates(Array.isArray(data?.leaderBreakdown) ? data.leaderBreakdown : [])
+      })
+      .catch(() => { if (!cancelled) setWinRates([]) })
+    return () => { cancelled = true }
+  }, [activeSet, since, until, fetchImpl])
 
   useEffect(() => {
     let cancelled = false
@@ -264,7 +224,7 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
         <p className="your-stats-error-note" role="status">Couldn't load meta stats. Try refreshing.</p>
       ) : (
         <>
-          <WinRateGate leaders={state.played} />
+          <WinRateCard leaders={winRates} />
           <div className="your-stats-meta-grid">
             <MetaSection
               eyebrow="Deckbuilding"
@@ -280,8 +240,71 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
               entries={state.drafted}
               loading={state.loading}
             />
+            <MetaSection
+              eyebrow="Deckbuilding"
+              title="Least-played leaders"
+              subtitle="The leaders the field almost never builds."
+              entries={leastOf(state.played)}
+              loading={state.loading}
+            />
+            <MetaSection
+              eyebrow="Drafting"
+              title="Least-drafted leaders"
+              subtitle="The leaders most often passed in the draft."
+              entries={leastOf(state.drafted)}
+              loading={state.loading}
+            />
           </div>
         </>
+      )}
+    </section>
+  )
+}
+
+/** Bottom of a most-X list: lowest non-zero entries, ascending. */
+function leastOf(entries: MetaEntry[]): MetaEntry[] {
+  return [...entries]
+    .filter((e) => Number(e.value || 0) > 0)
+    .sort((a, b) => Number(a.value || 0) - Number(b.value || 0))
+    .slice(0, 8)
+}
+
+/** Real win rate by leader from the viewer's captured games — shown outright. */
+function WinRateCard({ leaders }: { leaders: Array<{ leaderName: string; winRate: number; matches: number; leaderImageUrl: string | null; baseColor: string | null }> }) {
+  const { detected } = useWayfinderDetection()
+  const ranked = [...leaders].filter((l) => l.matches > 0).sort((a, b) => b.winRate - a.winRate).slice(0, 8)
+  return (
+    <section className="your-stats-meta-card">
+      <header className="your-stats-meta-card-header">
+        <div>
+          <span className="your-stats-eyebrow">Win Rate</span>
+          <h3>Your win rate by leader</h3>
+        </div>
+      </header>
+      {ranked.length === 0 ? (
+        <p className="your-stats-meta-empty">
+          No captured games yet for this set.{' '}
+          {detected ? 'Queue your pools on Karabast and win rates fill in here.'
+            : 'Install the Wayfinder Companion and play your pool on Karabast to record games.'}
+        </p>
+      ) : (
+        <div className="your-stats-meta-bars">
+          {ranked.map((l) => {
+            const color = l.baseColor || getAspectColor({ aspects: [] } as never)
+            const width = Math.max(2, Math.min(100, Number(l.winRate || 0)))
+            return (
+              <div key={l.leaderName} className="your-stats-meta-bar-row">
+                <div className="your-stats-meta-bar-head">
+                  <span className="your-stats-meta-bar-name">{l.leaderName}</span>
+                  <span className="your-stats-meta-bar-value" style={{ color }}>{Number(l.winRate || 0).toFixed(1)}% · {l.matches}g</span>
+                </div>
+                <div className="your-stats-meta-bar-track">
+                  <span className="your-stats-meta-bar-fill" style={{ width: `${width}%`, background: color }} />
+                </div>
+              </div>
+            )
+          })}
+        </div>
       )}
     </section>
   )
