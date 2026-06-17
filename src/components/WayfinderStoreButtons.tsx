@@ -70,7 +70,18 @@ function useIsMobile(): boolean {
  * for placing above a heading (replaces the old "Powered by Wayfinder" badge).
  * Real brand assets vendored from the Wayfinder repo into public/branding.
  */
-export function WayfinderCompanionLockup({ className = '' }: { className?: string }) {
+export function WayfinderCompanionLockup({ className = '', noLink = false }: { className?: string; noLink?: boolean }) {
+  const inner = (
+    <>
+      <img className="wf-lockup-mark" src="/branding/wayfinder_logo.svg" alt="" width={40} height={40} />
+      <img className="wf-lockup-wordmark" src="/branding/wayfinder_companion_logotype.svg" alt="Wayfinder Companion" height={20} />
+    </>
+  )
+  // When the Companion is already active (e.g. the play-page ready state) the
+  // mark is identity, not a CTA — don't link out.
+  if (noLink) {
+    return <span className={`wf-lockup ${className}`} aria-label="Wayfinder Companion">{inner}</span>
+  }
   return (
     <a
       href={WAYFINDER_NEWS_URL}
@@ -79,8 +90,7 @@ export function WayfinderCompanionLockup({ className = '' }: { className?: strin
       className={`wf-lockup ${className}`}
       aria-label="Wayfinder Companion — opens wayfinder.news"
     >
-      <img className="wf-lockup-mark" src="/branding/wayfinder_logo.svg" alt="" width={40} height={40} />
-      <img className="wf-lockup-wordmark" src="/branding/wayfinder_companion_logotype.svg" alt="Wayfinder Companion" height={20} />
+      {inner}
     </a>
   )
 }

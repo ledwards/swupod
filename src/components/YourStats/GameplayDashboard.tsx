@@ -115,6 +115,8 @@ interface FetchState {
 export interface GameplayDashboardProps {
   since: string
   until: string
+  /** Global Set filter ('all' or a set code) — filters by the pool's set. */
+  setCode?: string
   fetchImpl?: typeof fetch
 }
 
@@ -536,7 +538,7 @@ function ReplayExplorer({ replays, myName }: { replays: GameplayReplay[]; myName
   )
 }
 
-export function GameplayDashboard({ since, until, fetchImpl }: GameplayDashboardProps) {
+export function GameplayDashboard({ since, until, setCode, fetchImpl }: GameplayDashboardProps) {
   const { user } = useAuth() as { user: { username?: string | null } | null }
   const myName = user?.username || 'You'
   const [state, setState] = useState<FetchState>({ loading: true, error: false, data: null })
@@ -545,6 +547,7 @@ export function GameplayDashboard({ since, until, fetchImpl }: GameplayDashboard
     let cancelled = false
     setState((prev) => ({ ...prev, loading: true, error: false }))
     const params = new URLSearchParams({ since, until })
+    if (setCode && setCode !== 'all') params.set('setCode', setCode)
     const f = fetchImpl || fetch
     f(`/api/stats/me/gameplay?${params.toString()}`, { credentials: 'include' })
       .then((r) => {
@@ -566,7 +569,7 @@ export function GameplayDashboard({ since, until, fetchImpl }: GameplayDashboard
     return () => {
       cancelled = true
     }
-  }, [since, until, fetchImpl])
+  }, [since, until, setCode, fetchImpl])
 
   const maxFormatMatches = useMemo(
     () => Math.max(0, ...(state.data?.formatBreakdown || []).map((item) => item.matches)),

@@ -166,7 +166,7 @@ export function YourStats({ since, until, setCode = 'all', filterLabel }: YourSt
           </div>
         ) : activeTab === 'gameplay' ? (
           <div id="your-stats-gameplay-panel" role="tabpanel">
-            <GameplayDashboard since={since} until={until} />
+            <GameplayDashboard since={since} until={until} setCode={setCode} />
           </div>
         ) : activeTab === 'luck' ? (
           <div id="your-stats-luck-panel" role="tabpanel">

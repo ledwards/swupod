@@ -688,12 +688,20 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       ) as unknown as NextResponse
     }
 
-    const params = [session.id, since, until]
+    // Global Set filter. A normal pool's set lives on card_pools.set_code (and
+    // every card / leader / base in it shares that set), so we filter on the
+    // pool's set rather than tagging individual matches. 'all' = no filter.
+    const rawSet = (searchParams.get('setCode') || 'all').trim()
+    const setCode = /^[A-Z]{3}(?:-CB)?$/.test(rawSet) ? rawSet : 'all'
+
+    // $4 carries the set filter for every pool-scoped query below.
+    const params = [session.id, since, until, setCode]
     const ownedPoolWhere = `
       user_id = $1
       AND pool_type IN ('sealed', 'draft', 'chaos_sealed', 'pack_blitz', 'pack_wars', 'rotisserie')
       AND updated_at >= $2
       AND updated_at < ($3::date + interval '1 day')
+      AND ($4 = 'all' OR set_code = $4)
     `
 
     const summaryRow = await queryRow(
@@ -787,11 +795,15 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     const replayRow = await queryRow(
       `SELECT COUNT(*) AS replays_recorded
-       FROM practice_matches
-       WHERE (player1_id = $1 OR player2_id = $1)
-         AND wayfinder_replay_url IS NOT NULL
-         AND created_at >= $2
-         AND created_at < ($3::date + interval '1 day')`,
+       FROM practice_matches pm
+       WHERE (pm.player1_id = $1 OR pm.player2_id = $1)
+         AND pm.wayfinder_replay_url IS NOT NULL
+         AND pm.created_at >= $2
+         AND pm.created_at < ($3::date + interval '1 day')
+         AND ($4 = 'all' OR EXISTS (
+           SELECT 1 FROM card_pools cp
+           WHERE cp.pod_id = pm.pod_id AND cp.user_id = $1 AND cp.set_code = $4
+         ))`,
       params
     ) as { replays_recorded?: string | number | null } | null
 
@@ -832,6 +844,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
            AND pm.wayfinder_replay_url IS NOT NULL
            AND pm.created_at >= $2
            AND pm.created_at < ($3::date + interval '1 day')
+           AND ($4 = 'all' OR cp.set_code = $4)
          ORDER BY pm.id, cp.updated_at DESC NULLS LAST
        ) deduped
        ORDER BY created_at DESC
@@ -867,6 +880,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
          AND cm.wayfinder_replay_url IS NOT NULL
          AND cm.played_at >= $2
          AND cm.played_at < ($3::date + interval '1 day')
+         AND ($4 = 'all' OR cp.set_code = $4)
        ORDER BY cm.played_at DESC
        LIMIT 50`,
       params

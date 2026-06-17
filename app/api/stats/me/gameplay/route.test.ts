@@ -181,8 +181,13 @@ describe('GET /api/stats/me/gameplay route structure', () => {
     assert.match(ROUTE_SRC, /FROM deck_play_visits/)
     assert.match(ROUTE_SRC, /FROM practice_matches/)
     assert.match(ROUTE_SRC, /wayfinder_replay_url IS NOT NULL/)
-    assert.match(ROUTE_SRC, /ORDER BY pm\.created_at DESC/)
+    assert.match(ROUTE_SRC, /ORDER BY created_at DESC/)
     assert.match(ROUTE_SRC, /LIMIT 50/)
+  })
+
+  it('filters every pool-scoped query by the global Set filter ($4)', () => {
+    assert.match(ROUTE_SRC, /\$4 = 'all' OR set_code = \$4/)
+    assert.match(ROUTE_SRC, /\$4 = 'all' OR cp\.set_code = \$4/)
   })
 
   it('returns private cache headers', () => {

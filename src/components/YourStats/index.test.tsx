@@ -115,6 +115,7 @@ describe('<YourStats /> — index.tsx', () => {
     assert.match(INDEX_CODE, /<LuckSection[\s\S]*?lockedSetCode=\{concreteSet\}/)
     assert.match(INDEX_CODE, /<MetaDashboard[\s\S]*?lockSet/)
     assert.match(INDEX_CODE, /<ActivityDashboard[\s\S]*?setCode=\{setCode\}/)
+    assert.match(INDEX_CODE, /<GameplayDashboard[\s\S]*?setCode=\{setCode\}/)
   })
 
   it('threads since/until props down to GameplayDashboard, ActivityDashboard, and LuckSection', () => {

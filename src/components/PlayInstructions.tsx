@@ -37,6 +37,9 @@ interface PlayInstructionsProps {
   showActions?: boolean
   isOwner?: boolean
   ownerName?: string | null
+  /** Whether the viewer is signed in. Drives the "log in to link the Companion"
+   *  CTA shown when the plugin is detected but the user isn't authenticated. */
+  isLoggedIn?: boolean
   wayfinderDetected?: boolean
   /**
    * When set (from a ?lobby=private|public deep link, e.g. the /me Pools tab
@@ -64,6 +67,7 @@ export default function PlayInstructions({
   showActions = true,
   isOwner = true,
   ownerName = null,
+  isLoggedIn = true,
   wayfinderDetected = false,
   autoLobbyIntent = null,
   analyticsContext = {},
@@ -227,10 +231,35 @@ export default function PlayInstructions({
   }
 
   function renderCompanionReadyPanel() {
+    // Companion is active — the mark is identity here, not a CTA, so it does
+    // not link out. No box of its own; the whole tab carries the blue box.
     return (
       <div className="wayfinder-ready-panel">
-        <WayfinderCompanionLockup className="wayfinder-ready-lockup" />
+        <WayfinderCompanionLockup className="wayfinder-ready-lockup" noLink />
       </div>
+    )
+  }
+
+  // Plugin detected but signed out: linking a game to a pool needs an account,
+  // so pitch Discord sign-in (rare, but real). Mirrored anywhere we gate on
+  // login + plugin state.
+  function renderCompanionLoginCta() {
+    const returnTo = typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/'
+    const signInUrl = `/api/auth/signin/discord?return_to=${encodeURIComponent(returnTo)}`
+    return (
+      <section className="wayfinder-tab wayfinder-tab--login">
+        {renderCompanionReadyPanel()}
+        <p className="wayfinder-login-copy">
+          You&apos;ve got the Companion installed. Sign in with Discord so it can link
+          your Karabast games back to this pool and save your replays.
+        </p>
+        <a href={signInUrl} className="btn btn--discord btn--md wayfinder-login-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.5a18 18 0 0 1 4.2 1.4 13 13 0 0 0-15-.0A18 18 0 0 1 8.8 3.5L8.6 3a19.8 19.8 0 0 0-4.9 1.4C1 9.3.2 14.1.6 18.8a20 20 0 0 0 6 3l.8-1.3a13 13 0 0 1-2-1l.5-.4a14 14 0 0 0 12 0l.5.4c-.6.4-1.3.7-2 1l.8 1.3a20 20 0 0 0 6-3c.5-5.5-.8-10.2-3.6-14.4ZM8.9 15.6c-1.2 0-2.1-1.1-2.1-2.4 0-1.3.9-2.4 2.1-2.4 1.2 0 2.2 1.1 2.1 2.4 0 1.3-.9 2.4-2.1 2.4Zm6.2 0c-1.2 0-2.1-1.1-2.1-2.4 0-1.3.9-2.4 2.1-2.4 1.2 0 2.2 1.1 2.1 2.4 0 1.3-.9 2.4-2.1 2.4Z" />
+          </svg>
+          Log in with Discord
+        </a>
+      </section>
     )
   }
 
@@ -440,9 +469,11 @@ export default function PlayInstructions({
         // is installed, or the install promo when it isn't.
         <div className="play-split">
           <div className="play-split-col play-split-plugin">
-            {wayfinderDetected && isOwner
-              ? renderWayfinderTab()
-              : renderCompanionInstallPanel()}
+            {wayfinderDetected && !isLoggedIn
+              ? renderCompanionLoginCta()
+              : wayfinderDetected && isOwner
+                ? renderWayfinderTab()
+                : renderCompanionInstallPanel()}
           </div>
 
           <div className="play-split-or" aria-hidden="true"><span>OR</span></div>
