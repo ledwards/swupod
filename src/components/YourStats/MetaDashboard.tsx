@@ -74,20 +74,69 @@ function MetricBars({ entries, max }: { entries: MetaEntry[]; max: number }) {
   )
 }
 
+function MetaSkeleton() {
+  return (
+    <div className="your-stats-meta-bars">
+      {[0, 1, 2, 3, 4].map((i) => (
+        <div key={i} className="skeleton-line your-stats-meta-skeleton" />
+      ))}
+    </div>
+  )
+}
+
+/** Single-list metric card (used for draft-only metrics that have no sealed side). */
 function MetaSection({
   eyebrow,
   title,
   subtitle,
   entries,
   loading,
+  tag,
 }: {
   eyebrow: string
   title: string
   subtitle: string
   entries: MetaEntry[]
   loading: boolean
+  tag?: string
 }) {
   const max = useMemo(() => Math.max(0, ...entries.map((e) => e.value)), [entries])
+  return (
+    <section className="your-stats-meta-card">
+      <header className="your-stats-meta-card-header">
+        <div>
+          <span className="your-stats-eyebrow">{eyebrow}</span>
+          <h3>{title}</h3>
+        </div>
+        {tag && <span className="your-stats-meta-tag">{tag}</span>}
+      </header>
+      <p className="your-stats-meta-subtitle">{subtitle}</p>
+      {loading ? <MetaSkeleton /> : <MetricBars entries={entries} max={max} />}
+    </section>
+  )
+}
+
+/** Metric card split into Sealed (left) and Draft (right) halves, scaled to a
+ *  shared max so the two columns read comparably. */
+function SplitMetricSection({
+  eyebrow,
+  title,
+  subtitle,
+  sealed,
+  draft,
+  loading,
+}: {
+  eyebrow: string
+  title: string
+  subtitle: string
+  sealed: MetaEntry[]
+  draft: MetaEntry[]
+  loading: boolean
+}) {
+  const max = useMemo(
+    () => Math.max(0, ...sealed.map((e) => e.value), ...draft.map((e) => e.value)),
+    [sealed, draft],
+  )
   return (
     <section className="your-stats-meta-card">
       <header className="your-stats-meta-card-header">
@@ -98,13 +147,18 @@ function MetaSection({
       </header>
       <p className="your-stats-meta-subtitle">{subtitle}</p>
       {loading ? (
-        <div className="your-stats-meta-bars">
-          {[0, 1, 2, 3, 4].map((i) => (
-            <div key={i} className="skeleton-line your-stats-meta-skeleton" />
-          ))}
-        </div>
+        <MetaSkeleton />
       ) : (
-        <MetricBars entries={entries} max={max} />
+        <div className="your-stats-meta-split">
+          <div className="your-stats-meta-split-col">
+            <span className="your-stats-meta-split-label">Sealed</span>
+            <MetricBars entries={sealed} max={max} />
+          </div>
+          <div className="your-stats-meta-split-col">
+            <span className="your-stats-meta-split-label">Draft</span>
+            <MetricBars entries={draft} max={max} />
+          </div>
+        </div>
       )}
     </section>
   )
@@ -118,15 +172,18 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
   const [activeSet, setActiveSet] = useState<string>(
     lockSet ? setCode : (setTabs.includes(setCode) ? setCode : DEFAULT_STATS_SET_TAB),
   )
+  // Full lists, sliced into most/least at render so "least" is the true tail.
+  // Popularity (deck inclusion) is split sealed vs draft; "picked" (draft pick
+  // rate) is draft-only by nature.
   const [state, setState] = useState({
     loading: true,
     error: false,
-    played: [] as MetaEntry[],
-    drafted: [] as MetaEntry[],
-    // Per-CARD (not leader) prevalence: full lists, sliced into most/least at
-    // render so "least" is the true tail, not the bottom of the top-N.
-    playedCards: [] as MetaEntry[],
-    draftedCards: [] as MetaEntry[],
+    leadersPopSealed: [] as MetaEntry[],
+    leadersPopDraft: [] as MetaEntry[],
+    leadersPicked: [] as MetaEntry[],
+    cardsPopSealed: [] as MetaEntry[],
+    cardsPopDraft: [] as MetaEntry[],
+    cardsPicked: [] as MetaEntry[],
   })
   // The viewer's REAL win rate by leader, from their captured games — shown
   // outright (no blur gate). Empty until they have recorded games.
@@ -161,70 +218,50 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
     setState((p) => ({ ...p, loading: true, error: false }))
 
     const base = `setCode=${encodeURIComponent(activeSet)}&since=${encodeURIComponent(since)}&until=${encodeURIComponent(until)}`
+    const leaderEntry = (l: any): MetaEntry => ({
+      name: l.cardName, value: Number(l.selectionRate || 0), loggedIn: null,
+      aspects: l.aspects || [], imageUrl: l.imageUrl || null,
+    })
+    const cardInclusionEntry = (c: any): MetaEntry => ({
+      name: c.cardName, value: Number(c.inclusionRate || 0), loggedIn: null,
+      aspects: c.aspects || [], imageUrl: c.imageUrl || null,
+    })
+    // "Picked" = how often taken first when seen, with a pick floor so a single
+    // lucky first-pick can't top the chart at 100%.
+    const MIN_PICKS = 8
+    const pickedEntries = (rows: any[]): MetaEntry[] => (rows || [])
+      .filter((c: any) => Number(c.timesPicked || 0) >= MIN_PICKS && c.firstPickPct != null)
+      .map((c: any) => ({
+        name: c.cardName, value: Number(c.firstPickPct || 0), loggedIn: null,
+        aspects: c.aspects || [], imageUrl: c.imageUrl || null,
+      }))
+
     Promise.all([
-      getJson(f, `/api/stats/leader-selection?${base}`),
-      getJson(f, `/api/stats/leader-selection?${base}&loggedInOnly=true`),
+      getJson(f, `/api/stats/leader-selection?${base}&poolType=sealed`),
+      getJson(f, `/api/stats/leader-selection?${base}&poolType=draft`),
       getJson(f, `/api/stats/draft-picks?${base}&type=leaders`),
-      getJson(f, `/api/stats/draft-picks?${base}&type=leaders&loggedInOnly=true`),
-      // Per-card sources: deck inclusion (how often a card makes built decks)
-      // and non-leader draft picks (how early it's taken).
-      getJson(f, `/api/stats/deck-inclusion?${base}`),
+      getJson(f, `/api/stats/deck-inclusion?${base}&poolType=sealed`),
+      getJson(f, `/api/stats/deck-inclusion?${base}&poolType=draft`),
       getJson(f, `/api/stats/draft-picks?${base}`),
     ])
-      .then(([playedAll, playedIn, draftAll, draftIn, playedCardsRaw, draftedCardsRaw]) => {
+      .then(([leadSealed, leadDraft, leadPicked, cardSealed, cardDraft, cardPicked]) => {
         if (cancelled) return
-        const playedInMap = new Map((playedIn.leaders || []).map((l: any) => [l.cardName, l.selectionRate]))
-        const played: MetaEntry[] = (playedAll.leaders || []).slice(0, 8).map((l: any) => ({
-          name: l.cardName,
-          value: Number(l.selectionRate || 0),
-          loggedIn: playedInMap.has(l.cardName) ? Number(playedInMap.get(l.cardName)) : null,
-          aspects: l.aspects || [],
-          imageUrl: l.imageUrl || null,
-        }))
-
-        const draftInMap = new Map((draftIn.cards || []).map((c: any) => [c.cardName, c.firstPickPct]))
-        const drafted: MetaEntry[] = (draftAll.cards || [])
-          .slice()
-          .sort((a: any, b: any) => Number(b.firstPickPct || 0) - Number(a.firstPickPct || 0))
-          .slice(0, 8)
-          .map((c: any) => ({
-            name: c.cardName,
-            value: Number(c.firstPickPct || 0),
-            loggedIn: draftInMap.has(c.cardName) ? Number(draftInMap.get(c.cardName)) : null,
-            aspects: c.aspects || [],
-            imageUrl: c.imageUrl || null,
-          }))
-
-        // Per-card "played": share of built decks that ran the card.
-        const playedCards: MetaEntry[] = (playedCardsRaw.cards || []).map((c: any) => ({
-          name: c.cardName,
-          value: Number(c.inclusionRate || 0),
-          loggedIn: null,
-          aspects: c.aspects || [],
-          imageUrl: c.imageUrl || null,
-        }))
-
-        // Per-card "drafted": how often the card is taken first when seen.
-        // Require a floor of picks so a single lucky first-pick can't top the
-        // chart at 100%.
-        const MIN_CARD_PICKS = 8
-        const draftedCards: MetaEntry[] = (draftedCardsRaw.cards || [])
-          .filter((c: any) => Number(c.timesPicked || 0) >= MIN_CARD_PICKS && c.firstPickPct != null)
-          .map((c: any) => ({
-            name: c.cardName,
-            value: Number(c.firstPickPct || 0),
-            loggedIn: null,
-            aspects: c.aspects || [],
-            imageUrl: c.imageUrl || null,
-          }))
-
-        setState({ loading: false, error: false, played, drafted, playedCards, draftedCards })
+        setState({
+          loading: false,
+          error: false,
+          leadersPopSealed: (leadSealed.leaders || []).map(leaderEntry),
+          leadersPopDraft: (leadDraft.leaders || []).map(leaderEntry),
+          leadersPicked: pickedEntries(leadPicked.cards),
+          cardsPopSealed: (cardSealed.cards || []).map(cardInclusionEntry),
+          cardsPopDraft: (cardDraft.cards || []).map(cardInclusionEntry),
+          cardsPicked: pickedEntries(cardPicked.cards),
+        })
       })
       .catch((err) => {
         if (cancelled) return
         // eslint-disable-next-line no-console
         console.error('MetaDashboard fetch error:', err)
-        setState({ loading: false, error: true, played: [], drafted: [], playedCards: [], draftedCards: [] })
+        setState((p) => ({ ...p, loading: false, error: true }))
       })
     return () => {
       cancelled = true
@@ -263,33 +300,42 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
       ) : (
         <>
           <WinRateCard leaders={winRates} />
+
+          <div className="your-stats-meta-subhead">
+            <span className="your-stats-eyebrow">By leader</span>
+            <h3>Leaders</h3>
+          </div>
           <div className="your-stats-meta-grid">
-            <MetaSection
+            <SplitMetricSection
               eyebrow="Deckbuilding"
               title="Most popular leaders"
               subtitle="Share of built decks that chose each leader."
-              entries={state.played}
+              sealed={topOf(state.leadersPopSealed)}
+              draft={topOf(state.leadersPopDraft)}
               loading={state.loading}
             />
             <MetaSection
               eyebrow="Drafting"
+              tag="Draft"
               title="Most picked leaders"
               subtitle="How often each leader is taken first in the draft."
-              entries={state.drafted}
+              entries={topOf(state.leadersPicked)}
               loading={state.loading}
             />
-            <MetaSection
+            <SplitMetricSection
               eyebrow="Deckbuilding"
               title="Least popular leaders"
               subtitle="The leaders the field almost never builds."
-              entries={leastOf(state.played)}
+              sealed={leastOf(state.leadersPopSealed)}
+              draft={leastOf(state.leadersPopDraft)}
               loading={state.loading}
             />
             <MetaSection
               eyebrow="Drafting"
+              tag="Draft"
               title="Least picked leaders"
               subtitle="The leaders most often passed in the draft."
-              entries={leastOf(state.drafted)}
+              entries={leastOf(state.leadersPicked)}
               loading={state.loading}
             />
           </div>
@@ -299,32 +345,36 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
             <h3>Individual cards</h3>
           </div>
           <div className="your-stats-meta-grid">
-            <MetaSection
+            <SplitMetricSection
               eyebrow="Deckbuilding"
               title="Most popular cards"
               subtitle="Share of built decks that run each card."
-              entries={topOf(state.playedCards)}
+              sealed={topOf(state.cardsPopSealed)}
+              draft={topOf(state.cardsPopDraft)}
               loading={state.loading}
             />
             <MetaSection
               eyebrow="Drafting"
+              tag="Draft"
               title="Most picked cards"
               subtitle="How often each card is taken first when seen."
-              entries={topOf(state.draftedCards)}
+              entries={topOf(state.cardsPicked)}
               loading={state.loading}
             />
-            <MetaSection
+            <SplitMetricSection
               eyebrow="Deckbuilding"
               title="Least popular cards"
               subtitle="Cards that almost never make a deck."
-              entries={leastOf(state.playedCards)}
+              sealed={leastOf(state.cardsPopSealed)}
+              draft={leastOf(state.cardsPopDraft)}
               loading={state.loading}
             />
             <MetaSection
               eyebrow="Drafting"
+              tag="Draft"
               title="Least picked cards"
               subtitle="Cards most often left in the pack."
-              entries={leastOf(state.draftedCards)}
+              entries={leastOf(state.cardsPicked)}
               loading={state.loading}
             />
           </div>

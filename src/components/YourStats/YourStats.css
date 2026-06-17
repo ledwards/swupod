@@ -2391,6 +2391,45 @@ a.your-stats-logged-out-link:active {
   margin: 0.15rem 0 0;
 }
 
+/* Sealed | Draft split inside a metric card. */
+.your-stats-meta-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+
+.your-stats-meta-split-col {
+  min-width: 0;
+}
+
+.your-stats-meta-split-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 0.4rem;
+}
+
+.your-stats-meta-split-col + .your-stats-meta-split-col {
+  border-left: 1px solid var(--ys-border);
+  padding-left: 0.9rem;
+}
+
+/* "Draft" tag on draft-only metric cards. */
+.your-stats-meta-tag {
+  align-self: flex-start;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64B5F6;
+  border: 1px solid rgba(100, 181, 246, 0.5);
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+}
+
 .your-stats-meta-card {
   padding: 1.3rem 1.4rem;
   background: var(--ys-surface);
