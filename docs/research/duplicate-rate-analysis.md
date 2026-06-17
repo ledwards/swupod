@@ -68,6 +68,14 @@ Treat every slot as an i.i.d. uniform draw from its rarity pool. Expected duplic
 Σ over rarities of `N·P(Binom(n, 1/N) ≥ 2)`. This **ignores belt collation** and predicts ~15
 per 6-pack pool — almost all of it a phantom ~11 from commons.
 
+A simulated version of this (re-assign each card in a real pool a random identity from its
+category, with replacement) lands at **~16–17 per pool**. Adding **within-pack de-duplication**
+(the basic "no two of the same card in one pack" rule a naive reroll generator would enforce, à la
+SWUDraftSim) barely helps — **~15–16 per pool** — because almost all duplicates are *cross-pack*,
+not within-pack. **Dedup ≠ collation:** a per-pack reroll leaves ~16 duplicates; only the belt's
+cross-pack print-sheet collation reaches ~4. This is the key argument for the belt over a
+reroll-based generator.
+
 ### Theoretical model 2 — variant-collision (the predictive one)
 The belt's boots are **longer than a pool** (commons cycle every 10–12.5 packs, uncommons 20,
 leaders 18, bases 8–12, rares ~58), so within a 6-pack pool no belt has wrapped: **normal-vs-normal
