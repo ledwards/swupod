@@ -112,11 +112,42 @@ function naiveDupSets(n: number, P: number) {
   return P * (1 - Math.pow(q, n) - n * (1 / P) * Math.pow(q, n - 1))
 }
 
+// "Naive random trials": keep the real pool's rarity composition but re-assign each
+// card a uniformly random identity from its category pool (no belt collation).
+// dedup=false allows repeats anywhere; dedup=true forbids repeats within a pack
+// (the basic rule any simple generator enforces). Counts variant-neutral duplicates.
+function naiveCount(packs: any[], sizes: any, dedup: boolean) {
+  const counts = new Map<string, number>()
+  for (const pack of packs) {
+    const used: any = {}
+    for (const c of pack.cards) {
+      const cat = catOf(c); const P = sizes[cat] || 1
+      let id: number
+      if (dedup) {
+        const s = used[cat] || (used[cat] = new Set())
+        let guard = 0
+        do { id = Math.floor(Math.random() * P); guard++ } while (s.has(id) && s.size < P && guard < 64)
+        s.add(id)
+      } else id = Math.floor(Math.random() * P)
+      const k = cat + ':' + id
+      counts.set(k, (counts.get(k) || 0) + 1)
+    }
+  }
+  let d = 0; for (const v of counts.values()) if (v >= 2) d++
+  return d
+}
+
 function runSet(set: string) {
   const sizes = poolSizes(set)
   const sealed = emptyAcc(), sealedShuffled = emptyAcc(), draft = emptyAcc()
+  const naiveND = { sum: 0, n: 0 }, naiveD = { sum: 0, n: 0 } // naive random trials: no-dedup vs within-pack dedup
   // non-shuffled sealed = 6 consecutive packs from a fresh belt (tight collation)
-  for (let i = 0; i < N; i++) recordPod(sealed, flat(generateSealedPod([], set, 6)))
+  for (let i = 0; i < N; i++) {
+    const packs = generateSealedPod([], set, 6)
+    recordPod(sealed, flat(packs))
+    naiveND.sum += naiveCount(packs, sizes, false); naiveND.n++
+    naiveD.sum += naiveCount(packs, sizes, true); naiveD.n++
+  }
   // box-based scenarios: draft (3 packs) and shuffled-sealed (6 packs) sampled spread across a 24-box
   const BOX = Math.max(150, Math.floor(N / 6))
   for (let b = 0; b < BOX; b++) {
@@ -124,7 +155,7 @@ function runSet(set: string) {
     for (let t = 0; t < 25; t++) recordPod(draft, pickK(24, 3).flatMap(ix => box[ix].cards))
     for (let t = 0; t < 12; t++) recordPod(sealedShuffled, pickK(24, 6).flatMap(ix => box[ix].cards))
   }
-  return { set, sizes, sealed, sealedShuffled, draft }
+  return { set, sizes, sealed, sealedShuffled, draft, naiveND, naiveD }
 }
 
 // ---- DB actual: count duplicates (by name) in real opened pools ----
@@ -260,6 +291,40 @@ async function main() {
     await runActual()
     return
   }
+  // Lightweight, single-process naive computation (low memory — one card-cache load).
+  if (mode === 'naiveall') {
+    await initializeCardCache()
+    const fs = await import('fs')
+    const NN = parseInt(process.env.DA_NAIVE_N || '1000', 10)
+    const out: any = {}
+    for (const set of SETS) {
+      const sizes = poolSizes(set)
+      let nd = 0, dd = 0
+      for (let i = 0; i < NN; i++) {
+        const packs = generateSealedPod([], set, 6)
+        nd += naiveCount(packs, sizes, false)
+        dd += naiveCount(packs, sizes, true)
+      }
+      out[set] = { noDedup: +(nd / NN).toFixed(3), dedup: +(dd / NN).toFixed(3) }
+      console.error(`naive ${set}: noDedup=${out[set].noDedup} dedup=${out[set].dedup}`)
+    }
+    fs.writeFileSync('/tmp/da_naive.json', JSON.stringify(out))
+    console.error('wrote /tmp/da_naive.json')
+    return
+  }
+  // Patch naive numbers into the existing duplicateStats.json (no full rebuild needed).
+  if (mode === 'mergenaive') {
+    const fs = await import('fs'); const path = await import('path'); const url = await import('url')
+    const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
+    const dataPath = path.join(__dirname, '..', 'data', 'duplicateStats.json')
+    const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'))
+    const naive = JSON.parse(fs.readFileSync('/tmp/da_naive.json', 'utf8'))
+    for (const s of Object.keys(data.sets || {})) if (naive[s]) data.sets[s].naive = naive[s]
+    fs.writeFileSync(dataPath, JSON.stringify(data, null, 2))
+    console.log('Merged naive into', dataPath)
+    for (const s of Object.keys(data.sets)) console.log(`  ${s}: noDedup=${data.sets[s].naive?.noDedup} dedup=${data.sets[s].naive?.dedup}`)
+    return
+  }
   // build mode: merge simulated per-set files + DB actual, compute stats, write src/data/duplicateStats.json
   const fs = await import('fs')
   const path = await import('path')
@@ -280,9 +345,13 @@ async function main() {
     const sealedShuffled = raw.sealedShuffled ? statsFor(raw.sealedShuffled, raw.sizes, 6) : null
     const draft3 = statsFor(raw.draft, raw.sizes, 3)
     const av = actual[s] || {}
+    const naive = {
+      noDedup: raw.naiveND ? +(raw.naiveND.sum / raw.naiveND.n).toFixed(3) : sealed6.naiveMean,
+      dedup: raw.naiveD ? +(raw.naiveD.sum / raw.naiveD.n).toFixed(3) : null,
+    }
     out.sets[s] = {
       poolSizes: raw.sizes,
-      sealed6, sealedShuffled, draft3,
+      sealed6, sealedShuffled, draft3, naive,
       actual: {
         nonShuffled: actualStats(av.nonShuffled, sealed6.mean, sealed6.sd, sealed6.pods),
         shuffled: actualStats(av.shuffled, sealedShuffled ? sealedShuffled.mean : null, sealedShuffled ? sealedShuffled.sd : 0, sealedShuffled ? sealedShuffled.pods : 1),

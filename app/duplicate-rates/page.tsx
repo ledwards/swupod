@@ -84,6 +84,7 @@ function SetDupView({ code }: { code: string }) {
   const ac = s.actual?.nonShuffled || {}
   const sh = s.sealedShuffled
   const acsh = s.actual?.shuffled || {}
+  const nv = s.naive || {}
   return (
     <div className="dup-view">
       <div className="dup-set-title" style={{ color }}>
@@ -111,57 +112,63 @@ function SetDupView({ code }: { code: string }) {
         </div>
       </div>
 
-      {/* Three estimates: simulated vs theoretical vs actual */}
-      <div className="dup-section">
-        <h3>Three estimates (6-pack sealed pool)</h3>
-        <div className="dup-compare">
-          <div className="dup-compare-row">
-            <span className="dup-compare-label">Simulated <span className="dup-tag">live generator</span></span>
-            <span className="dup-compare-val" style={{ color }}>{fmt2(a.mean)}</span>
-          </div>
-          <div className="dup-compare-row">
-            <span className="dup-compare-label">Theoretical <span className="dup-tag">variant-collision model</span></span>
-            <span className="dup-compare-val">{fmt2(a.theoryMean)}</span>
-          </div>
-          <div className="dup-compare-row">
-            <span className="dup-compare-label">
-              Actual <span className="dup-tag">opened pools{ac.n ? ` · n=${ac.n.toLocaleString()}` : ''}</span> <VerdictBadge v={ac.verdict || 'no-data'} />
-            </span>
-            <span className="dup-compare-val">{ac.n >= 1 && ac.mean != null ? fmt2(ac.mean) : '—'}</span>
-          </div>
-          <div className="dup-compare-row dup-compare-muted">
-            <span className="dup-compare-label">Naive random trials <span className="dup-tag">without collation logic</span></span>
-            <span className="dup-compare-val">{fmt2(a.naiveMean)}</span>
-          </div>
-        </div>
-        <p className="dup-note">{verdictText(ac)}</p>
-        <p className="dup-note">
-          The belt collation makes same-printing repeats ~0, so the naive model over-predicts by 3–4×.
-          The variant-collision model (each foil/hyperspace card may collide with a card of the same name
-          already in the pool) matches the live generator within ~5–13%.
-        </p>
-      </div>
-
-      {/* Effect of shuffling */}
-      {sh ? (
-        <div className="dup-section">
-          <h3>Effect of shuffling packs</h3>
+      {/* Estimates + shuffle, side by side */}
+      <div className="dup-cols">
+        <div className="dup-col dup-section">
+          <h3>Duplicate estimates (6-pack sealed pool)</h3>
           <div className="dup-compare">
             <div className="dup-compare-row">
-              <span className="dup-compare-label">Not shuffled <span className="dup-tag">6 consecutive packs</span></span>
-              <span className="dup-compare-val">{fmt2(a.mean)} <span className="dup-sigma">σ {fmt2(a.sd)}</span></span>
+              <span className="dup-compare-label">
+                Actual <span className="dup-tag">opened pools{ac.n ? ` · n=${ac.n.toLocaleString()}` : ''}</span> <VerdictBadge v={ac.verdict || 'no-data'} />
+              </span>
+              <span className="dup-compare-val" style={{ color }}>{ac.n >= 1 && ac.mean != null ? fmt2(ac.mean) : '—'}</span>
             </div>
             <div className="dup-compare-row">
-              <span className="dup-compare-label">Shuffled <span className="dup-tag">6 packs spread across the box</span></span>
-              <span className="dup-compare-val" style={{ color }}>{fmt2(sh.mean)} <span className="dup-sigma">σ {fmt2(sh.sd)}</span></span>
+              <span className="dup-compare-label">Simulated <span className="dup-tag">live generator</span></span>
+              <span className="dup-compare-val">{fmt2(a.mean)}</span>
+            </div>
+            <div className="dup-compare-row">
+              <span className="dup-compare-label">Theoretical <span className="dup-tag">variant-collision model</span></span>
+              <span className="dup-compare-val">{fmt2(a.theoryMean)}</span>
+            </div>
+            <div className="dup-compare-row dup-compare-muted">
+              <span className="dup-compare-label">Naive random trials <span className="dup-tag">with de-duplication</span></span>
+              <span className="dup-compare-val">{nv.dedup != null ? fmt2(nv.dedup) : '—'}</span>
+            </div>
+            <div className="dup-compare-row dup-compare-muted">
+              <span className="dup-compare-label">Naive random trials <span className="dup-tag">without collation logic</span></span>
+              <span className="dup-compare-val">{fmt2(nv.noDedup != null ? nv.noDedup : a.naiveMean)}</span>
             </div>
           </div>
+          <p className="dup-note">{verdictText(ac)}</p>
           <p className="dup-note">
-            Shuffling draws your 6 packs from across the 24-pack box, outside each belt's 24-card dedup
-            window — so duplicates and their spread both rise. {acsh.n >= 1 ? `Actual shuffled pools: n=${acsh.n}.` : 'No shuffled pools opened yet, so the Actual column above is the not-shuffled case.'}
+            Belt collation drives same-printing repeats to ~0; random trials can't — even with
+            per-pack de-duplication they stay high, because most duplicates are cross-pack. The
+            variant-collision model matches the live generator within ~5–13%.
           </p>
         </div>
-      ) : null}
+
+        {sh ? (
+          <div className="dup-col dup-section">
+            <h3>Effect of shuffling packs</h3>
+            <div className="dup-compare">
+              <div className="dup-compare-row">
+                <span className="dup-compare-label">Not shuffled <span className="dup-tag">6 consecutive packs</span></span>
+                <span className="dup-compare-val">{fmt2(a.mean)} <span className="dup-sigma">σ {fmt2(a.sd)}</span></span>
+              </div>
+              <div className="dup-compare-row">
+                <span className="dup-compare-label">Shuffled <span className="dup-tag">6 packs spread across the box</span></span>
+                <span className="dup-compare-val" style={{ color }}>{fmt2(sh.mean)} <span className="dup-sigma">σ {fmt2(sh.sd)}</span></span>
+              </div>
+            </div>
+            <p className="dup-note">
+              Shuffling draws your 6 packs from across the 24-pack box, outside each belt's 24-card
+              dedup window — so duplicates and their spread both rise (~{(sh.mean / a.mean).toFixed(1)}×).
+              {acsh.n >= 1 ? ` Actual shuffled pools: n=${acsh.n}.` : ' No shuffled pools opened yet, so Actual reflects the not-shuffled case.'}
+            </p>
+          </div>
+        ) : null}
+      </div>
 
       {/* Distribution */}
       <div className="dup-section">
@@ -174,36 +181,37 @@ function SetDupView({ code }: { code: string }) {
         </p>
       </div>
 
-      {/* Category breakdown */}
-      <div className="dup-section">
-        <h3>Where the duplicates land (6-pack pool)</h3>
-        <table className="dup-table">
-          <thead>
-            <tr><th>Card type</th><th>Duplicates / pool</th><th>Pool size</th></tr>
-          </thead>
-          <tbody>
-            {CATS.filter((c) => (a.byCat[c] || 0) > 0.001 || (s.poolSizes[c] || 0) > 0).map((c) => (
-              <tr key={c}>
-                <td>{c}</td>
-                <td>{fmt2(a.byCat[c] || 0)}</td>
-                <td className="dup-muted">{s.poolSizes[c] || 0}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* Category breakdown + variant pairing, side by side */}
+      <div className="dup-cols">
+        <div className="dup-col dup-section">
+          <h3>Where the duplicates land</h3>
+          <table className="dup-table">
+            <thead>
+              <tr><th>Card type</th><th>Dups / pool</th><th>Pool size</th></tr>
+            </thead>
+            <tbody>
+              {CATS.filter((c) => (a.byCat[c] || 0) > 0.001 || (s.poolSizes[c] || 0) > 0).map((c) => (
+                <tr key={c}>
+                  <td>{c}</td>
+                  <td>{fmt2(a.byCat[c] || 0)}</td>
+                  <td className="dup-muted">{s.poolSizes[c] || 0}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-      {/* Variant pairing */}
-      <div className="dup-section">
-        <h3>What variant pairing causes each duplicate</h3>
-        <table className="dup-table">
-          <thead><tr><th>Pairing</th><th>Per pool</th></tr></thead>
-          <tbody>
-            {Object.entries(a.pair).filter(([, v]: any) => v > 0.01).map(([k, v]: any) => (
-              <tr key={k}><td>{k}</td><td>{fmt2(v)}</td></tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="dup-col dup-section">
+          <h3>What pairing causes each duplicate</h3>
+          <table className="dup-table">
+            <thead><tr><th>Pairing</th><th>Per pool</th></tr></thead>
+            <tbody>
+              {Object.entries(a.pair).filter(([, v]: any) => v > 0.01).map(([k, v]: any) => (
+                <tr key={k}><td>{k}</td><td>{fmt2(v)}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )
@@ -220,12 +228,11 @@ export default function DuplicateRatesPage() {
         <div className="dup-header">
           <h1>Duplicate Rates by Set</h1>
           <p>
-            Expected number of duplicate cards per pool — counting a foil, hyperspace, or
-            prestige printing as the <em>same card</em> as its normal version.
+            Expected number of duplicate cards per pool — <em>variant-neutral</em>.
           </p>
           <p className="dup-subnote">
             Measured from {meta.sampleSizePerSet?.toLocaleString?.() || meta.sampleSizePerSet} simulated
-            pools per set using the live pack generator (belts, foils, hyperspace, UC3 &amp; prestige upgrades).
+            pools per set using the live pack generator, and validated against real opened pools.
           </p>
         </div>
 

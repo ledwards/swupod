@@ -179,6 +179,28 @@
   margin-top: 1.5rem;
 }
 
+/* Two-column layout for space efficiency (stacks on narrow screens) */
+.dup-cols {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.dup-col {
+  flex: 1 1 340px;
+  min-width: 0;
+}
+
+.dup-col.dup-section {
+  margin-top: 0;
+}
+
+.dup-col .dup-compare,
+.dup-col .dup-table {
+  max-width: none;
+}
+
 .dup-section h3 {
   font-size: 1rem;
   font-weight: 600;
