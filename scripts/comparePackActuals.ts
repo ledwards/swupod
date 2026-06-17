@@ -91,7 +91,9 @@ async function main() {
   console.log(`Theory: collation v${theory.collationVersion}, ${theory.podsPerSet} pods/set`)
   console.log(`Database: ${label}`)
 
-  const client = new pg.Client({ connectionString: url, ssl: { rejectUnauthorized: false } })
+  // Local Postgres doesn't speak SSL; remote (Railway) requires it.
+  const isLocal = /@(localhost|127\.0\.0\.1)/.test(url) || /^postgres(ql)?:\/\/(localhost|127\.0\.0\.1)/.test(url)
+  const client = new pg.Client({ connectionString: url, ssl: isLocal ? false : { rejectUnauthorized: false } })
   await client.connect()
 
   const sections: string[] = []
@@ -169,7 +171,14 @@ async function main() {
     '',
     'Each booster card pulled in production is tallied by **rarity**, **aspect** (color category), and **variant treatment**, then compared per-pack against theory. Because the collation system produces *constrained, sub-Poisson* counts (exactly 16 cards/pack, one leader, without-replacement hoppers), a chi-square test would misstate significance. Instead we use the Monte-Carlo per-pack standard deviation and the Central Limit Theorem: over *M* packs the observed total is ≈ Normal(mean·M, (sd·√M)²), and **z = (observed − mean·M) / (sd·√M)**.',
     '',
-    'Verdicts: **✅ aligned** (p ≥ 0.01), **🟡 minor** (significant but <5% effect — expected at large N), **🔴 notable** (significant *and* ≥5% per-pack deviation), **⛔ mismatch** (a deterministic slot whose fixed count did not hold).',
+    'Verdicts: **✅ aligned** (p ≥ 0.01), **🟡 minor** (significant but <5% effect — expected at large N), **🔴 notable** (significant *and* ≥5% per-pack deviation), **⛔ mismatch** (a deterministic slot off by ≥1%).',
+    '',
+    '## How to read it — important caveats',
+    '',
+    '- **Version skew is the biggest confound.** Production rows span the app\'s entire history and were generated under *earlier* collation versions, while theory is the *current* algorithm (v' + theory.collationVersion + '). A divergence can mean the live collation differs from what older packs were cut under — not that today\'s generator is wrong. The clearest example: a brand-new slot (e.g. LAW prestige, ~1/18 in theory) reads as **−100%** because the production history predates it (note whether `prestige` even appears in the treatment list above). To judge the *current* algorithm, re-run filtered to packs generated since the last collation change.',
+    '- **Aspect gaps reflect card-data drift.** Theory classifies each generated card by its `cards.json` aspects; actuals classify each row by the aspects stored *at generation time*. A systematic Neutral/Multicolor gap means that stored aspect data differs from today\'s catalog, not that the wheel is mis-weighted.',
+    '- **Large N makes trivial gaps significant.** Sets like LAW (tens of thousands of packs) flag sub-1% deltas as statistically significant; that is why the effect-size gate exists — trust the 🔴 **notable** rows, treat 🟡 **minor** as essentially aligned.',
+    '- **Small N is underpowered.** Pre-release sets (few packs) will mostly read aligned for lack of data, not for fidelity.',
     '',
     `Sets analysed: **${analysedSets}**.`,
     '',

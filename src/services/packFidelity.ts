@@ -79,10 +79,11 @@ export function compareDimension(
     const actualPerPack = packs > 0 ? actualTotal / packs : 0
     const relDev = expectedPerPack > 0 ? (actualPerPack - expectedPerPack) / expectedPerPack : (actualPerPack > 0 ? Infinity : 0)
 
-    // Deterministic theory slot: no variance to test against. Any divergence
-    // from the fixed count is a structural mismatch, not statistical noise.
+    // Deterministic theory slot: no variance to test against. Flag only a
+    // material divergence from the fixed rate (≥1% per-pack) — a handful of
+    // odd rows shouldn't read as a structural break.
     if (t.sd === 0) {
-      const mismatch = Math.abs(actualTotal - expectedTotal) > 1e-9
+      const mismatch = expectedPerPack > 0 ? Math.abs(relDev) >= 0.01 : actualTotal > 0
       return {
         bucket,
         expectedPerPack,
