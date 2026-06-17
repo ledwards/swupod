@@ -13,6 +13,10 @@
 - **[CARD_FIXES.md](./CARD_FIXES.md)** - Runtime card data fix system
 - **[DATA_FORMATS.md](./DATA_FORMATS.md)** - Canonical pack/card data structures
 
+## Research
+- **[research/duplicate-rate-analysis.md](./research/duplicate-rate-analysis.md)** - Duplicate cards per pool, per set: theory vs. actual (powers the `/duplicate-rates` page)
+- **[research/swudraftsim-pack-fidelity-research.md](./research/swudraftsim-pack-fidelity-research.md)** - Pack-fidelity comparison vs. SWUDraftSim
+
 ## Per-Set Documentation
 - **[sets/README.md](./sets/README.md)** - Set index with block definitions and pack structure
 - Individual sets: [SOR](./sets/SOR.md), [SHD](./sets/SHD.md), [TWI](./sets/TWI.md), [JTL](./sets/JTL.md), [LOF](./sets/LOF.md), [SEC](./sets/SEC.md), [LAW](./sets/LAW.md)

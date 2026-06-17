@@ -1,0 +1,296 @@
+@import '../../src/styles/animations.css';
+
+/* Duplicate Rates Page — mirrors the Stats page folder/tab pattern */
+
+.dup-page {
+  min-height: 100vh;
+  background-color: rgb(76, 77, 81);
+  background-image:
+    linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%),
+    linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+    url("/background-images/bg-texture-crop.png");
+  background-size: 100% 100%, 100% 100%, 100% 100%, 150% auto;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  background-position: center center;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .dup-page {
+    background-size: 100% 100%, 100% 100%, 100% 100%, 300% auto;
+    padding: 1rem;
+  }
+}
+
+.dup-header {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.dup-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+
+.dup-header p {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.75);
+  max-width: 760px;
+  margin: 0.25rem auto;
+}
+
+.dup-header .dup-subnote {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* Folder tabs */
+.dup-tabs {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.dup-tab {
+  padding: 0.75rem 1.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Barlow', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  margin-right: -1px;
+  position: relative;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dup-tab:hover {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.1);
+  }
+  .dup-tab[style*="--set-color"]:hover:not(.active) {
+    background: color-mix(in srgb, var(--set-color) 30%, transparent);
+  }
+}
+
+.dup-tab.active {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+  z-index: 2;
+}
+
+/* Folder body */
+.dup-content {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  padding: 2rem;
+  min-height: 400px;
+  margin-top: -1px;
+  position: relative;
+}
+
+.dup-set-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+}
+
+.dup-set-code {
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 400;
+  font-size: 1.1rem;
+}
+
+/* Headline stat cards */
+.dup-headline {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.dup-stat-card {
+  flex: 1 1 220px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.dup-stat-label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.dup-stat-value {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.dup-stat-sub {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.dup-ci {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 0.4rem;
+}
+
+/* Sections */
+.dup-section {
+  margin-top: 1.5rem;
+}
+
+.dup-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 0.75rem 0;
+}
+
+.dup-note {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 0.75rem;
+  line-height: 1.5;
+}
+
+/* Compare rows */
+.dup-compare {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-width: 460px;
+}
+
+.dup-compare-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+}
+
+.dup-compare-muted {
+  opacity: 0.6;
+}
+
+.dup-compare-label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.dup-compare-val {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+/* Distribution bars */
+.dup-dist {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  height: 140px;
+  padding-top: 0.5rem;
+}
+
+.dup-dist-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+}
+
+.dup-dist-bar-track {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.dup-dist-bar {
+  width: 70%;
+  min-height: 2px;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease;
+}
+
+.dup-dist-pct {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  height: 1rem;
+}
+
+.dup-dist-k {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  margin-top: 0.2rem;
+}
+
+/* Tables */
+.dup-table {
+  width: 100%;
+  max-width: 460px;
+  border-collapse: collapse;
+}
+
+.dup-table th,
+.dup-table td {
+  text-align: left;
+  padding: 0.45rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.9rem;
+}
+
+.dup-table th {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+}
+
+.dup-table td:nth-child(2) {
+  font-weight: 600;
+}
+
+.dup-muted {
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 400 !important;
+}
+
+.dup-empty {
+  text-align: center;
+  padding: 3rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.dup-footer-note {
+  text-align: center;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 1.5rem;
+}
