@@ -185,6 +185,10 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
     cardsPopSealed: [] as MetaEntry[],
     cardsPopDraft: [] as MetaEntry[],
     cardsPicked: [] as MetaEntry[],
+    // Cards played OFF the deck's leader+base aspects (a splash), by how often
+    // they show up off-aspect across decks. Popularity ⇒ split sealed/draft.
+    offAspectSealed: [] as MetaEntry[],
+    offAspectDraft: [] as MetaEntry[],
   })
   // The viewer's REAL win rate by leader, from their captured games — shown
   // outright (no blur gate). Empty until they have recorded games.
@@ -227,6 +231,17 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
       name: c.cardName, value: Number(c.inclusionRate || 0), loggedIn: null,
       aspects: c.aspects || [], imageUrl: c.imageUrl || null,
     })
+    // Off-aspect "share": fraction of all decks that ran this card OFF its
+    // leader+base aspects = inclusionRate × offAspectRate. Surfaces splashes.
+    const offAspectEntries = (rows: any[]): MetaEntry[] => (rows || [])
+      .map((c: any) => ({
+        name: c.cardName,
+        value: Math.round((Number(c.inclusionRate || 0) * Number(c.offAspectRate || 0) / 100) * 10) / 10,
+        loggedIn: null,
+        aspects: c.aspects || [],
+        imageUrl: c.imageUrl || null,
+      }))
+      .filter((e) => e.value > 0)
     // "Picked" = how often taken first when seen, with a pick floor so a single
     // lucky first-pick can't top the chart at 100%.
     const MIN_PICKS = 8
@@ -256,6 +271,8 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
           cardsPopSealed: (cardSealed.cards || []).map(cardInclusionEntry),
           cardsPopDraft: (cardDraft.cards || []).map(cardInclusionEntry),
           cardsPicked: pickedEntries(cardPicked.cards),
+          offAspectSealed: offAspectEntries(cardSealed.cards),
+          offAspectDraft: offAspectEntries(cardDraft.cards),
         })
       })
       .catch((err) => {
@@ -376,6 +393,21 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
               title="Least picked cards"
               subtitle="Cards most often left in the pack."
               entries={leastOf(state.cardsPicked)}
+              loading={state.loading}
+            />
+          </div>
+
+          <div className="your-stats-meta-subhead">
+            <span className="your-stats-eyebrow">Off-aspect</span>
+            <h3>Popular splashes</h3>
+          </div>
+          <div className="your-stats-meta-grid">
+            <SplitMetricSection
+              eyebrow="Deckbuilding"
+              title="Most-splashed off-aspect cards"
+              subtitle="Cards run outside their deck's leader+base aspects — share of decks that splash them."
+              sealed={topOf(state.offAspectSealed)}
+              draft={topOf(state.offAspectDraft)}
               loading={state.loading}
             />
           </div>
