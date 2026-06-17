@@ -334,29 +334,30 @@
   position: relative;
   display: flex;
   align-items: center;
-  flex: 1 1 240px;
+  /* Slim and capped — never stretch into a fat full-width bar. */
+  flex: 0 1 220px;
   min-width: 0;
 }
 
 .your-stats-search svg {
   position: absolute;
-  left: 0.7rem;
-  width: 16px;
-  height: 16px;
+  left: 0.6rem;
+  width: 14px;
+  height: 14px;
   color: var(--ys-text-3);
   pointer-events: none;
 }
 
 .your-stats-search input {
   width: 100%;
-  min-height: 42px;
-  padding: 0.55rem 0.8rem 0.55rem 2.2rem;
+  height: 30px;
+  padding: 0 0.7rem 0 1.85rem;
   background: rgba(0, 0, 0, 0.55);
   border: 1px solid var(--ys-border-bright);
-  border-radius: 999px;
+  border-radius: 8px;
   color: #fff;
   font-family: 'Barlow', sans-serif;
-  font-size: 0.92rem;
+  font-size: 0.82rem;
 }
 
 .your-stats-search input::placeholder {
@@ -2550,7 +2551,7 @@ a.your-stats-logged-out-link:active {
   margin-bottom: 0.6rem;
 }
 .your-stats-pickturn-toolbar .your-stats-search {
-  flex: 1 1 180px;
+  flex: 0 1 200px;
 }
 
 .your-stats-luck-filter-btn--cost {

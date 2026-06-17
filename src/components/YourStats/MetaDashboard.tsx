@@ -72,7 +72,7 @@ async function getJson(f: typeof fetch, url: string) {
   return body && body.data ? body.data : body
 }
 
-function MetricBars({ entries, max }: { entries: MetaEntry[]; max: number }) {
+function MetricBars({ entries }: { entries: MetaEntry[] }) {
   if (entries.length === 0) {
     return <p className="your-stats-meta-empty">No data for this set yet.</p>
   }
@@ -80,7 +80,9 @@ function MetricBars({ entries, max }: { entries: MetaEntry[]; max: number }) {
     <div className="your-stats-meta-bars">
       {entries.map((e) => {
         const color = getAspectColor({ aspects: e.aspects } as never)
-        const width = max > 0 ? Math.max(4, (e.value / max) * 100) : 0
+        // Fill to the ACTUAL percentage — a 12% rate fills 12%, not relative to
+        // the row's max (which made a 0.3% rate fill the whole bar).
+        const width = Math.max(0, Math.min(100, Number(e.value) || 0))
         return (
           <div key={e.name} className="your-stats-meta-bar-row">
             <div className="your-stats-meta-bar-head">
@@ -125,7 +127,6 @@ function MetaSection({
   loading: boolean
   tag?: string
 }) {
-  const max = useMemo(() => Math.max(0, ...entries.map((e) => e.value)), [entries])
   return (
     <section className="your-stats-meta-card">
       <header className="your-stats-meta-card-header">
@@ -136,7 +137,7 @@ function MetaSection({
         {tag && <span className="your-stats-meta-tag">{tag}</span>}
       </header>
       <p className="your-stats-meta-subtitle">{subtitle}</p>
-      {loading ? <MetaSkeleton /> : <MetricBars entries={entries} max={max} />}
+      {loading ? <MetaSkeleton /> : <MetricBars entries={entries} />}
     </section>
   )
 }
@@ -158,10 +159,6 @@ function SplitMetricSection({
   draft: MetaEntry[]
   loading: boolean
 }) {
-  const max = useMemo(
-    () => Math.max(0, ...sealed.map((e) => e.value), ...draft.map((e) => e.value)),
-    [sealed, draft],
-  )
   return (
     <section className="your-stats-meta-card">
       <header className="your-stats-meta-card-header">
@@ -177,11 +174,11 @@ function SplitMetricSection({
         <div className="your-stats-meta-split">
           <div className="your-stats-meta-split-col">
             <span className="your-stats-meta-split-label">Sealed</span>
-            <MetricBars entries={sealed} max={max} />
+            <MetricBars entries={sealed} />
           </div>
           <div className="your-stats-meta-split-col">
             <span className="your-stats-meta-split-label">Draft</span>
-            <MetricBars entries={draft} max={max} />
+            <MetricBars entries={draft} />
           </div>
         </div>
       )}

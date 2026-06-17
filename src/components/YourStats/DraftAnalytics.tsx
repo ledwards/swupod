@@ -23,7 +23,15 @@ const ASPECT_ICON: Record<string, string> = {
   Villainy: '/icons/villainy.png',
 }
 const FILTER_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning', 'Heroism', 'Villainy'] as const
-const FILTER_RARITIES = ['Common', 'Uncommon', 'Rare', 'Legendary'] as const
+// Special (S) shows up in some boosters — include it in the rarity filter.
+const FILTER_RARITIES = ['Common', 'Uncommon', 'Rare', 'Legendary', 'Special'] as const
+const RARITY_ICON: Record<string, string> = {
+  Common: '/icons/rarity/common.svg',
+  Uncommon: '/icons/rarity/uncommon.svg',
+  Rare: '/icons/rarity/rare.svg',
+  Legendary: '/icons/rarity/legendary.svg',
+  Special: '/icons/rarity/special.svg',
+}
 const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning']
 
 interface PickRow {
@@ -36,6 +44,7 @@ interface PickRow {
   avgPickPosition: number
   p1p1Picks: number
   p1p1Pct: number | null
+  firstPicks: number
   firstPickPct: number | null
 }
 
@@ -55,13 +64,57 @@ async function getJson(url: string) {
 
 const MIN_PICKS = 8
 
+/** A pick-1 ranking card (Pack-1-Pick-1 or Any-pack-pick-1). Bars are scaled to
+ *  the top row's count, since these are raw pick counts, not percentages. */
+function Pick1Card({ title, subtitle, rows, countOf, pctOf, loading }: {
+  title: string
+  subtitle: string
+  rows: PickRow[]
+  countOf: (c: PickRow) => number
+  pctOf: (c: PickRow) => number | null
+  loading: boolean
+}) {
+  const max = rows.length ? countOf(rows[0]) || 1 : 1
+  return (
+    <section className="your-stats-meta-card">
+      <header className="your-stats-meta-card-header">
+        <div>
+          <span className="your-stats-eyebrow">Drafting</span>
+          <h3>{title}</h3>
+        </div>
+        <span className="your-stats-meta-tag">Draft</span>
+      </header>
+      <p className="your-stats-meta-subtitle">{subtitle}</p>
+      {loading ? (
+        <div className="your-stats-meta-bars">{[0, 1, 2, 3, 4].map((i) => <div key={i} className="skeleton-line your-stats-meta-skeleton" />)}</div>
+      ) : rows.length === 0 ? (
+        <p className="your-stats-meta-empty">No draft data for this set yet.</p>
+      ) : (
+        <div className="your-stats-meta-bars">
+          {rows.map((c) => (
+            <div key={c.cardName} className="your-stats-meta-bar-row">
+              <div className="your-stats-meta-bar-head">
+                <span className="your-stats-meta-bar-name">{c.cardName}</span>
+                <span className="your-stats-meta-bar-value" style={{ color: '#64B5F6' }}>{countOf(c)}× · {pctOf(c)}%</span>
+              </div>
+              <div className="your-stats-meta-bar-track">
+                <span className="your-stats-meta-bar-fill" style={{ width: `${Math.max(4, (countOf(c) / max) * 100)}%`, background: aspectColor(c.aspects) }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  )
+}
+
 export function DraftAnalytics({ setCode, since, until }: { setCode: string; since: string; until: string }) {
   const [cards, setCards] = useState<PickRow[]>([])
   const [leaders, setLeaders] = useState<PickRow[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
-  const [mode, setMode] = useState<'cards' | 'leaders'>('cards')
+  const [mode, setMode] = useState<'cards' | 'leaders'>('leaders')
   const [search, setSearch] = useState('')
   const [aspectFilters, setAspectFilters] = useState<Set<string>>(new Set())
   const [rarityFilters, setRarityFilters] = useState<Set<string>>(new Set())
@@ -87,9 +140,14 @@ export function DraftAnalytics({ setCode, since, until }: { setCode: string; sin
 
   const source = mode === 'cards' ? cards : leaders
 
-  // P1P1 ladder always uses cards (leaders are picked in a separate round).
+  // Pick-1 ladders always use cards (leaders are picked in a separate round).
+  // P1P1 = pack 1 pick 1; "any pack" = pick 1 of pack 1, 2 OR 3.
   const p1p1 = useMemo(
     () => [...cards].filter((c) => c.p1p1Picks > 0).sort((a, b) => b.p1p1Picks - a.p1p1Picks).slice(0, 8),
+    [cards],
+  )
+  const anyPackP1 = useMemo(
+    () => [...cards].filter((c) => (c.firstPicks || 0) > 0).sort((a, b) => (b.firstPicks || 0) - (a.firstPicks || 0)).slice(0, 8),
     [cards],
   )
 
@@ -126,39 +184,25 @@ export function DraftAnalytics({ setCode, since, until }: { setCode: string; sin
         <h3>Draft signal</h3>
       </div>
 
-      {/* P1P1 */}
-      <section className="your-stats-meta-card">
-        <header className="your-stats-meta-card-header">
-          <div>
-            <span className="your-stats-eyebrow">Drafting</span>
-            <h3>Pack 1, Pick 1</h3>
-          </div>
-          <span className="your-stats-meta-tag">Draft</span>
-        </header>
-        <p className="your-stats-meta-subtitle">The cards most often taken as the very first pick of a draft.</p>
-        {loading ? (
-          <div className="your-stats-meta-bars">{[0, 1, 2, 3, 4].map((i) => <div key={i} className="skeleton-line your-stats-meta-skeleton" />)}</div>
-        ) : p1p1.length === 0 ? (
-          <p className="your-stats-meta-empty">No draft data for this set yet.</p>
-        ) : (
-          <div className="your-stats-meta-bars">
-            {p1p1.map((c) => {
-              const max = p1p1[0].p1p1Picks || 1
-              return (
-                <div key={c.cardName} className="your-stats-meta-bar-row">
-                  <div className="your-stats-meta-bar-head">
-                    <span className="your-stats-meta-bar-name">{c.cardName}</span>
-                    <span className="your-stats-meta-bar-value" style={{ color: '#64B5F6' }}>{c.p1p1Picks}× · {c.p1p1Pct}%</span>
-                  </div>
-                  <div className="your-stats-meta-bar-track">
-                    <span className="your-stats-meta-bar-fill" style={{ width: `${Math.max(4, (c.p1p1Picks / max) * 100)}%`, background: aspectColor(c.aspects) }} />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </section>
+      {/* Pick-1 ladders: pack-1 pick-1 and pick-1 of any pack, side by side. */}
+      <div className="your-stats-meta-grid">
+        <Pick1Card
+          title="Pack 1, Pick 1"
+          subtitle="The cards most often taken as the very first pick of a draft."
+          rows={p1p1}
+          countOf={(c) => c.p1p1Picks}
+          pctOf={(c) => c.p1p1Pct}
+          loading={loading}
+        />
+        <Pick1Card
+          title="Any pack, Pick 1"
+          subtitle="Cards taken first out of the pack — pick 1 of pack 1, 2 or 3."
+          rows={anyPackP1}
+          countOf={(c) => c.firstPicks}
+          pctOf={(c) => c.firstPickPct}
+          loading={loading}
+        />
+      </div>
 
       {/* Pick-turn ladder */}
       <section className="your-stats-meta-card">
@@ -172,10 +216,10 @@ export function DraftAnalytics({ setCode, since, until }: { setCode: string; sin
         <p className="your-stats-meta-subtitle">Where each {mode === 'cards' ? 'card' : 'leader'} is taken on average — pick 1 is a first-pick bomb, the far right is wheel fodder.</p>
 
         <div className="your-stats-pickturn-toolbar">
-          <div className="your-stats-luck-sort" role="group" aria-label="Cards or leaders">
-            {(['cards', 'leaders'] as const).map((m) => (
+          <div className="your-stats-luck-sort" role="group" aria-label="Leaders or cards">
+            {(['leaders', 'cards'] as const).map((m) => (
               <button key={m} type="button" className={`your-stats-luck-sort-btn${mode === m ? ' is-on' : ''}`} aria-pressed={mode === m} onClick={() => setMode(m)}>
-                {m === 'cards' ? 'Cards' : 'Leaders'}
+                {m === 'leaders' ? 'Leaders' : 'Cards'}
               </button>
             ))}
           </div>
@@ -200,7 +244,7 @@ export function DraftAnalytics({ setCode, since, until }: { setCode: string; sin
                 className={`your-stats-luck-filter-btn your-stats-luck-filter-btn--rarity${rarityFilters.has(r) ? ' is-on' : ''}`}
                 style={{ ['--rarity' as any]: RARITY_COLORS[r] || '#888' }}
                 onClick={() => toggle(rarityFilters, setRarityFilters, r)}>
-                <span className="your-stats-luck-filter-dot" />{r.charAt(0)}
+                <img src={RARITY_ICON[r]} alt={r} width={15} height={15} />
               </button>
             ))}
           </div>

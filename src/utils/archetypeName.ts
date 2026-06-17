@@ -37,11 +37,24 @@ export interface ArchetypeShortNameInputs {
   leaderName?: string | null
   baseAspects?: string[] | null
   baseHp?: number | null
+  /** The base card's own name (e.g. "Alliance Outpost"). Used for named bases. */
+  baseName?: string | null
+  /** The base card's rarity. "Common" → generic colored base; else a named base. */
+  baseRarity?: string | null
 }
 
 /**
  * The archetype short name: the resolved nickname (stripped of set/format) when
- * present, else a local "Leader Color HP" fallback. Returns null with no leader.
+ * present, else a local fallback. Returns null with no leader.
+ *
+ * Fallback naming depends on the base's RARITY, not its HP:
+ *   - COMMON bases are the generic colored bases (e.g. LAW commons are 27 HP,
+ *     older sets 30) → "<Leader> <Color> <HP>"  e.g. "Vel Sartha Green 27".
+ *   - RARE / SPECIAL bases are named bases (e.g. "Alliance Outpost" 26 HP,
+ *     "Great Pit of Carkoon" 27 HP) → "<Leader> <BaseName>". Naming these
+ *     "<Color> <HP>" is wrong because (a) the HP isn't the generic 30, and
+ *     (b) multiple distinct named bases can share a color+HP, so the name
+ *     would collide. We must use the base's actual name.
  */
 export function archetypeShortName({
   archetypeNickname,
@@ -49,6 +62,8 @@ export function archetypeShortName({
   leaderName,
   baseAspects,
   baseHp,
+  baseName,
+  baseRarity,
 }: ArchetypeShortNameInputs): string | null {
   if (archetypeNickname) {
     const stripped = stripArchetypeTags(archetypeNickname)
@@ -56,6 +71,16 @@ export function archetypeShortName({
   }
   const leader = (leaderShortName || leaderName || '').trim()
   if (!leader) return null
+
+  // Named (Rare/Special) base: use the base's real name, not "Color HP".
+  const rarity = (baseRarity || '').trim().toLowerCase()
+  const isNamedBase = rarity !== '' && rarity !== 'common'
+  const trimmedBaseName = (baseName || '').trim()
+  if (isNamedBase && trimmedBaseName) {
+    return `${leader} ${trimmedBaseName}`
+  }
+
+  // Generic Common base: "<Leader> <Color> <HP>".
   const color = baseColorName(baseAspects)
   return [leader, color, baseHp ? String(baseHp) : null].filter(Boolean).join(' ')
 }

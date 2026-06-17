@@ -26,6 +26,7 @@ export const RARITY_COLORS: Record<string, string> = {
   'Uncommon': '#4CAF50',
   'Rare': '#2196F3',
   'Legendary': '#FF9800',
+  'Special': '#9C27B0',
 };
 
 // === COLOR UTILITIES ===

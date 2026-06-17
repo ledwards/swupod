@@ -238,6 +238,15 @@ Card boxes have reduced top padding to minimize space between header and box edg
 - **Counts in parens**: "Your Deck (28 cards)"
 - **No top margin**: Header sits close to box top edge
 
+## Search Inputs
+
+Search boxes must be **slim**. Do NOT build tall, full-width "pill" search bars.
+
+- Height **~30px** (not 42px+), font **~0.82rem**, padding tight (`0 0.7rem 0 1.85rem` with a 14px leading magnifier icon).
+- **Cap the width** and don't let it grow: `flex: 0 1 ~220px`, never `flex: 1 1 …` (that stretches it into a fat bar).
+- Border radius **~8px** (a subtle round), not a `999px` pill.
+- Reuse `SearchInput` (`src/components/SearchInput.tsx`) where practical, or the `.your-stats-search` pattern. A fat, stretched search box is a recurring smell — keep them small and unobtrusive.
+
 ## Component Patterns
 
 ### Keep Custom (Do Not Replace)

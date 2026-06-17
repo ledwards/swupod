@@ -47,14 +47,23 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       const leader = row.leader
       const base = row.base
       if (!leader) continue
-      const leaderData = cardMap.get(leader.id || leader.cardId || '')
-      if (leaderData && leaderData.type !== 'Leader') continue
-      const baseData = base ? cardMap.get(base.id || base.cardId || '') : null
 
-      const leaderName = leaderData?.name || leader.name || leader.cardName || 'Unknown'
-      const baseAspects = baseData?.aspects || base?.aspects || []
-      const baseHp = baseData?.hp ?? base?.hp ?? null
-      const name = archetypeShortName({ leaderName, baseAspects, baseHp })
+      // An archetype is leader + base. Only count decks that resolve to BOTH a
+      // real Leader card AND a real Base card. Some built_decks rows have a base
+      // JSONB that is null, lacks an id/cardId, or points at a card not in the
+      // set's card data — those would otherwise fall back to a bare leader name
+      // ("Hera Syndulla" with no base), which is not a valid archetype. Skip them.
+      const leaderData = cardMap.get(leader.id || leader.cardId || '')
+      if (!leaderData || leaderData.type !== 'Leader') continue
+      const baseData = base ? cardMap.get(base.id || base.cardId || '') : null
+      if (!baseData || baseData.type !== 'Base') continue
+
+      const leaderName = leaderData.name || leader.name || leader.cardName || 'Unknown'
+      const baseAspects = baseData.aspects || []
+      const baseHp = baseData.hp ?? null
+      const baseName = baseData.name ?? null
+      const baseRarity = baseData.rarity ?? null
+      const name = archetypeShortName({ leaderName, baseAspects, baseHp, baseName, baseRarity })
       if (!name) continue
 
       totalDecks++
