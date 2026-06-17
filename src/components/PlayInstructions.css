@@ -546,7 +546,7 @@
 
 /* The Button component supplies the green "go" CTA style; we only nudge layout. */
 .play-karabast-cta {
-  align-self: flex-start;
+  align-self: flex-end;
   gap: 0.4rem;
 }
 

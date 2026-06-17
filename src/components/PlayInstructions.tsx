@@ -369,7 +369,7 @@ export default function PlayInstructions({
         <div className="play-manual-ways">
           <span className="play-manual-ways-label">3 ways to play:</span>
           <ol className="play-manual-ways-list">
-            <li>Find a match</li>
+            <li>Join the <strong>Match Queue</strong></li>
             <li>Join an existing <strong>Limited Lobby</strong></li>
             <li>Make a <strong>Private Lobby</strong> and share the link with a friend from the <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">Protect the Pod Discord</a></li>
           </ol>
