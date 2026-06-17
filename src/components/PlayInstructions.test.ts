@@ -31,14 +31,19 @@ describe('<PlayInstructions /> Companion adoption', () => {
     assert.ok(SRC.includes('wayfinderDetected && isOwner'))
   })
 
-  it('enables Chrome and leaves Safari/Firefox awaiting approval', () => {
+  it('enables Chrome and Safari (live) and leaves Firefox awaiting approval', () => {
     assert.ok(SRC.includes('WayfinderStoreButtons'))
     assert.ok(STORE_BUTTONS.includes('https://chromewebstore.google.com/detail/wayfinder-companion/econclbajpendbppldcnpngjfddcogfh'))
-    // Chrome is the live, installable browser card.
+    // Chrome is a live, installable browser card.
     assert.match(STORE_BUTTONS, /status:\s*'live'/)
     assert.match(STORE_BUTTONS, /Add to Chrome/)
-    // Safari and Firefox are present but awaiting store approval (status 'soon').
-    assert.match(STORE_BUTTONS, /Safari/)
+    // Safari is now live on desktop: it has a live status, an App Store URL,
+    // and the "Add to Safari" CTA.
+    assert.match(STORE_BUTTONS, /Add to Safari/)
+    assert.ok(STORE_BUTTONS.includes('WAYFINDER_SAFARI_APP_STORE_URL'))
+    assert.ok(STORE_BUTTONS.includes('apps.apple.com'))
+    assert.match(STORE_BUTTONS, /browser:\s*'safari',\s*name:\s*'Safari'[^\n]*status:\s*'live'/)
+    // Firefox is present but awaiting store approval (status 'soon').
     assert.match(STORE_BUTTONS, /Firefox/)
     assert.match(STORE_BUTTONS, /status:\s*'soon'/)
     assert.match(STORE_BUTTONS, /Coming soon/i)

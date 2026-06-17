@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react'
 import './WayfinderStoreButtons.css'
 
 export const WAYFINDER_CHROME_WEB_STORE_URL = 'https://chromewebstore.google.com/detail/wayfinder-companion/econclbajpendbppldcnpngjfddcogfh'
+// TODO: Confirm the final App Store URL for the Safari Web Extension. The app id
+// below is a placeholder — replace with the confirmed listing before relying on it.
+export const WAYFINDER_SAFARI_APP_STORE_URL = 'https://apps.apple.com/app/wayfinder-companion/id6740011619'
 export const WAYFINDER_NEWS_URL = 'https://wayfinder.news'
 
 type BrowserName = 'chrome' | 'safari' | 'firefox'
@@ -36,12 +39,14 @@ interface BrowserCard {
   sub: string
   status: 'live' | 'soon'
   cta: string
+  /** Store URL for live cards. Omitted for 'soon' cards. */
+  url?: string
 }
 
 // Desktop: the browser extension. Subtitle is the platform (one consistent axis).
 const DESKTOP_BROWSERS: BrowserCard[] = [
-  { browser: 'chrome', name: 'Chrome', sub: 'Windows · macOS · Linux', status: 'live', cta: 'Add to Chrome' },
-  { browser: 'safari', name: 'Safari', sub: 'macOS', status: 'soon', cta: 'Add to Safari' },
+  { browser: 'chrome', name: 'Chrome', sub: 'Windows · macOS · Linux', status: 'live', cta: 'Add to Chrome', url: WAYFINDER_CHROME_WEB_STORE_URL },
+  { browser: 'safari', name: 'Safari', sub: 'macOS', status: 'live', cta: 'Add to Safari', url: WAYFINDER_SAFARI_APP_STORE_URL },
   { browser: 'firefox', name: 'Firefox', sub: 'Windows · macOS · Linux', status: 'soon', cta: 'Add to Firefox' },
 ]
 
@@ -121,15 +126,15 @@ export function WayfinderStoreButtons({
             </>
           )
 
-          if (isLive) {
+          if (isLive && b.url) {
             return (
               <a
                 key={b.browser}
-                href={WAYFINDER_CHROME_WEB_STORE_URL}
+                href={b.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={className}
-                onClick={onChromeClick}
+                onClick={b.browser === 'chrome' ? onChromeClick : undefined}
                 aria-label={b.cta}
               >
                 {inner}
