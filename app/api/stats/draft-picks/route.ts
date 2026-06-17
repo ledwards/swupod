@@ -79,6 +79,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         dp.card_type,
         COUNT(*) AS times_picked,
         COUNT(*) FILTER (WHERE dp.pick_in_pack = 1) AS first_picks,
+        COUNT(*) FILTER (WHERE dp.pack_number = 1 AND dp.pick_in_pack = 1) AS p1p1_picks,
         ROUND(AVG(dp.pick_in_pack)::numeric, 2) AS avg_pick_position,
         COUNT(DISTINCT dp.pod_id) AS drafts_seen_in
       FROM draft_picks dp
@@ -121,6 +122,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const cards = cardStats.map(row => {
       const timesPicked = parseInt(row.times_picked)
       const firstPicks = parseInt(row.first_picks)
+      const p1p1Picks = parseInt(row.p1p1_picks || '0')
       const cardData = cardMap.get(row.card_id)
 
       return {
@@ -131,6 +133,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         timesPicked,
         firstPicks,
         firstPickPct: timesPicked > 0 ? Math.round((firstPicks / timesPicked) * 1000) / 10 : null,
+        p1p1Picks,
+        p1p1Pct: timesPicked > 0 ? Math.round((p1p1Picks / timesPicked) * 1000) / 10 : null,
         avgPickPosition: parseFloat(row.avg_pick_position),
         draftsSeenIn: parseInt(row.drafts_seen_in),
         aspects: cardData?.aspects || [],

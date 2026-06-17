@@ -2430,6 +2430,70 @@ a.your-stats-logged-out-link:active {
   padding: 0.1rem 0.5rem;
 }
 
+/* ----- Draft analytics: P1P1 + average pick-turn ladder ----- */
+.your-stats-pickturn-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+.your-stats-pickturn-toolbar .your-stats-search {
+  flex: 1 1 180px;
+}
+
+.your-stats-luck-filter-btn--cost {
+  min-width: 1.9rem;
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+
+.your-stats-pickturn-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 460px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.your-stats-pickturn-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1.3fr) 3fr auto;
+  align-items: center;
+  gap: 0.7rem;
+}
+.your-stats-pickturn-name {
+  font-size: 0.82rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.your-stats-pickturn-track {
+  position: relative;
+  height: 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.your-stats-pickturn-marker {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.45);
+}
+.your-stats-pickturn-pos {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
+  min-width: 2.2rem;
+  text-align: right;
+}
+
 .your-stats-meta-card {
   padding: 1.3rem 1.4rem;
   background: var(--ys-surface);

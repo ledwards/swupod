@@ -15,6 +15,7 @@ import Button from '@/src/components/Button'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import { getStatsSetTabs, DEFAULT_STATS_SET_TAB } from '@/src/utils/statsSetTabs'
 import { getAspectColor } from '@/src/utils/aspectColors'
+import { DraftAnalytics } from './DraftAnalytics'
 
 export interface MetaDashboardProps {
   since: string
@@ -378,6 +379,8 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
               loading={state.loading}
             />
           </div>
+
+          <DraftAnalytics setCode={activeSet} since={since} until={until} />
         </>
       )}
     </section>
