@@ -243,6 +243,7 @@ export function ActivityDashboard({ since, until, setCode, filterLabel, fetchImp
             <li>Join the Karabast queue with your pool</li>
             <li>Collect stats tied to that pool</li>
             <li>Record and rewatch your replays</li>
+            <li>Take notes, enrich your games with metadata</li>
           </ul>
           <div className="your-stats-companion-empty-actions">
             <WayfinderStoreButtons orientation="inline" />

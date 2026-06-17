@@ -15,6 +15,8 @@ import { loadAllCards } from '../../../../../src/utils/cardDataClient'
 import { getBaseSetCode } from '../../../../../src/utils/carboniteConstants'
 import { buildBaseCardMap, getBaseCardId } from '../../../../../src/utils/variantDowngrade'
 import { jsonParse } from '../../../../../src/utils/json'
+import { resolveArchetypeUuid, fetchArchetypeNickname } from '../../../../../src/utils/deckBuilderSharing'
+import { archetypeShortName } from '../../../../../src/utils/archetypeName'
 import { defaultSort } from '../../../../../src/services/cards/cardSorting'
 import { calculateAspectPenalty } from '../../../../../src/services/cards/aspectPenalties'
 import Card from '../../../../../src/components/Card'
@@ -155,15 +157,31 @@ export default function PlayPage({ params }: PageProps) {
   const [baseCardMap, setBaseCardMap] = useState<Map<string, string> | null>(null)
   const [claiming, setClaiming] = useState(false)
   const deckBuilderState = useMemo(() => jsonParse(pool?.deckBuilderState, {}), [pool?.deckBuilderState])
-  // Deck (archetype) name — the deck builder doesn't plumb a name onto this page,
-  // so derive it from the deck's active leader card. Shown under the pool name.
+  // Deck (archetype) name. NEVER a made-up "Leader / Base" slash — use the
+  // canonical swuapi archetype nickname, falling back to the consistent
+  // "Leader Color HP" form (archetypeShortName) while it resolves.
+  const leaderCard = deckBuilderState?.cardPositions?.[deckBuilderState?.activeLeader]?.card || null
+  const baseCard = deckBuilderState?.cardPositions?.[deckBuilderState?.activeBase]?.card || null
+  const [archetypeNickname, setArchetypeNickname] = useState<string | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    setArchetypeNickname(null)
+    const leaderUuid = resolveArchetypeUuid(leaderCard, 'leader')
+    const baseUuid = resolveArchetypeUuid(baseCard, 'base')
+    if (!leaderUuid || !baseUuid) return
+    fetchArchetypeNickname(leaderUuid, baseUuid).then((n) => {
+      if (!cancelled) setArchetypeNickname(n)
+    })
+    return () => { cancelled = true }
+  }, [leaderCard?.id, baseCard?.id])
   const deckArchetypeName = useMemo(() => {
-    const positions = deckBuilderState?.cardPositions
-    const leaderName = positions?.[deckBuilderState?.activeLeader]?.card?.name || null
-    const baseName = positions?.[deckBuilderState?.activeBase]?.card?.name || null
-    if (leaderName && baseName) return `${leaderName} / ${baseName}`
-    return leaderName || baseName || null
-  }, [deckBuilderState])
+    return archetypeShortName({
+      archetypeNickname,
+      leaderName: leaderCard?.name || null,
+      baseAspects: Array.isArray(baseCard?.aspects) ? baseCard.aspects : [],
+      baseHp: typeof baseCard?.hp === 'number' ? baseCard.hp : null,
+    })
+  }, [archetypeNickname, leaderCard?.name, baseCard?.aspects, baseCard?.hp])
   // The play box has two tabs: Play (the existing wayfinder/manual instructions)
   // and Record (your game history, or a prompt to install the plugin).
   const [practiceHand, setPracticeHand] = useState<{

@@ -18,6 +18,7 @@ const WAYFINDER_VALUE_PROPS = [
   'Automagically join the Karabast queue',
   'Collect play data for your pool',
   'Record, share, and rewatch your replays',
+  'Take notes, enrich your games with metadata',
 ] as const
 
 interface PlayInstructionsProps {

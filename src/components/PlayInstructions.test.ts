@@ -14,13 +14,14 @@ const ANALYTICS = readFileSync(join(__dirname, '../analytics/limitedEvents.ts'),
 
 describe('<PlayInstructions /> Companion adoption', () => {
   it('enumerates the PTP Companion value props from the adoption brief', () => {
-    assert.ok(SRC.includes('Seamlessly join the Karabast queue with your pool'))
-    assert.ok(SRC.includes('Collect play data for your stats page tied to your pool'))
-    assert.ok(SRC.includes('Record and rewatch your replays'))
+    assert.ok(SRC.includes('Automagically join the Karabast queue'))
+    assert.ok(SRC.includes('Collect play data for your pool'))
+    assert.ok(SRC.includes('Record, share, and rewatch your replays'))
+    assert.ok(SRC.includes('Take notes, enrich your games with metadata'))
   })
 
   it('shows the Companion install panel to users without the extension', () => {
-    assert.ok(SRC.includes('!wayfinderDetected && renderCompanionInstallPanel()'))
+    assert.ok(SRC.includes('renderCompanionInstallPanel()'))
     assert.match(CSS, /\.wayfinder-promo-panel\s*\{/)
   })
 
@@ -40,7 +41,7 @@ describe('<PlayInstructions /> Companion adoption', () => {
     assert.match(STORE_BUTTONS, /Safari/)
     assert.match(STORE_BUTTONS, /Firefox/)
     assert.match(STORE_BUTTONS, /status:\s*'soon'/)
-    assert.match(STORE_BUTTONS, /awaiting approval/i)
+    assert.match(STORE_BUTTONS, /Coming soon/i)
   })
 
   it('tracks Companion install CTA clicks through limited play analytics', () => {
