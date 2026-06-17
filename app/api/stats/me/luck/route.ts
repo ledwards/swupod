@@ -545,6 +545,7 @@ export interface CardMeta {
   number: number
   name: string
   aspects: string[]
+  rarity: string
 }
 
 // card_generations.card_id stores the catalog UUID (cards.json `id`, e.g.
@@ -578,6 +579,7 @@ function getCardMetaLookup(setCode: string): Map<string, CardMeta> {
       number: Number.isFinite(num) ? num : 0,
       name: card.name,
       aspects: Array.isArray(card.aspects) ? card.aspects : [],
+      rarity: card.rarity || '',
     })
   }
   metaCache.set(setCode, map)
@@ -601,6 +603,7 @@ export function buildCardHits(
     number: number
     name: string
     aspects: string[]
+    rarity: string
     count: number
     expected: number
     delta: number
@@ -617,6 +620,7 @@ export function buildCardHits(
       number: m?.number ?? 0,
       name: m?.name ?? cardId,
       aspects: m?.aspects ?? [],
+      rarity: m?.rarity ?? '',
       count,
       expected,
       delta: count - expected,

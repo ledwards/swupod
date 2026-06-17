@@ -6,16 +6,22 @@
 // DATABASE_URL (your dev DB). Idempotent: every insert is ON CONFLICT DO
 // NOTHING, so re-running tops up without clobbering.
 //
-// Usage:
-//   PROD_DATABASE_URL="postgres://…prod…" \
-//   DATABASE_URL="postgres://…dev…" \
+// Usage (one command — auto-resolves source/target from your env files):
 //   npx tsx scripts/copyUserToDev.ts terronk
 //   npx tsx scripts/copyUserToDev.ts --discord 123456789
 //
+// Source/target resolution (no flags needed):
+//   - TARGET (dev, written to)  = DATABASE_URL from .env.local — the SAME DB the
+//     local Next dev server uses. Override with TARGET_DATABASE_URL.
+//   - SOURCE (prod, read from)  = PROD_DATABASE_URL if set, else DATABASE_URL
+//     from .env (your Railway/prod connection).
+//
 // Safety:
-//   - Refuses to run if PROD_DATABASE_URL and DATABASE_URL resolve to the same
-//     host:port/db (so you can't accidentally write to prod).
+//   - Refuses to run if SOURCE and TARGET resolve to the same host:port/db
+//     (so you can't accidentally write to prod).
 //   - Only ever INSERTs (never updates/deletes) into the target.
+//   - Prints both host:port/db identities (never credentials) so you can verify
+//     the direction before it writes.
 //
 // What it copies (the tables the personal-stats counters + history read):
 //   users (target + referenced opponents/hosts/co-drafters),
@@ -27,11 +33,39 @@
 
 import 'dotenv/config'
 import pg from 'pg'
+import { parse } from 'dotenv'
+import { readFileSync, existsSync } from 'fs'
+import { resolve as resolvePath } from 'path'
 
 const { Pool } = pg
 
-const SOURCE_URL = process.env.PROD_DATABASE_URL || process.env.SOURCE_DATABASE_URL
-const TARGET_URL = process.env.DATABASE_URL || process.env.POSTGRES_URL
+// Read a specific env file WITHOUT mutating process.env, so we can resolve the
+// dev (.env.local) and prod (.env) connections independently. Returns {} if the
+// file is missing or unreadable.
+function readEnvFile(name: string): Record<string, string> {
+  try {
+    const p = resolvePath(process.cwd(), name)
+    return existsSync(p) ? parse(readFileSync(p)) : {}
+  } catch {
+    return {}
+  }
+}
+
+const envLocal = readEnvFile('.env.local')
+const envBase = readEnvFile('.env')
+
+// TARGET = the dev DB the local Next server uses (.env.local's DATABASE_URL).
+const TARGET_URL =
+  process.env.TARGET_DATABASE_URL ||
+  envLocal.DATABASE_URL ||
+  envLocal.POSTGRES_URL ||
+  process.env.DATABASE_URL
+// SOURCE = prod. Explicit PROD_DATABASE_URL wins; else .env's DATABASE_URL.
+const SOURCE_URL =
+  process.env.PROD_DATABASE_URL ||
+  process.env.SOURCE_DATABASE_URL ||
+  envBase.DATABASE_URL ||
+  envBase.POSTGRES_URL
 
 function makePool(connectionString: string) {
   return new Pool({
@@ -130,15 +164,16 @@ async function main() {
     process.exit(1)
   }
   if (!SOURCE_URL) {
-    console.error('Error: set PROD_DATABASE_URL (the source / prod database).')
+    console.error('Error: no source DB found. Set PROD_DATABASE_URL, or put your prod connection in .env (DATABASE_URL).')
     process.exit(1)
   }
   if (!TARGET_URL) {
-    console.error('Error: set DATABASE_URL (the target / dev database).')
+    console.error('Error: no target dev DB found. Put your local dev connection in .env.local (DATABASE_URL), or set TARGET_DATABASE_URL.')
     process.exit(1)
   }
   if (dbIdentity(SOURCE_URL) === dbIdentity(TARGET_URL)) {
-    console.error('Refusing to run: source and target are the SAME database. Point DATABASE_URL at dev.')
+    console.error(`Refusing to run: source and target are the SAME database (${dbIdentity(SOURCE_URL)}).`)
+    console.error('SOURCE comes from .env (prod), TARGET from .env.local (dev) — they must differ.')
     process.exit(1)
   }
 

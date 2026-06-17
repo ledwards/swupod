@@ -2628,6 +2628,63 @@ a.your-stats-logged-out-link:active {
   box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.25);
 }
 
+/* Aspect + rarity filter buttons above the histogram. */
+.your-stats-luck-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.your-stats-luck-filter-group {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+
+.your-stats-luck-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 0.45rem;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.your-stats-luck-filter-btn img {
+  display: block;
+  border-radius: 3px;
+}
+
+.your-stats-luck-filter-btn.is-on {
+  opacity: 1;
+  border-color: rgba(96, 165, 250, 0.7);
+  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.4);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-luck-filter-btn:hover { opacity: 1; }
+}
+
+.your-stats-luck-filter-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--rarity, #888);
+}
+
+.your-stats-luck-filter-btn--rarity.is-on {
+  border-color: var(--rarity, #888);
+  box-shadow: 0 0 0 1px var(--rarity, #888);
+}
+
 /* The bar field: one full-height column per card (so even zero-count cards are
    hoverable), each with the actual bar at the bottom and an expected marker. */
 .your-stats-luck-hist-bars {

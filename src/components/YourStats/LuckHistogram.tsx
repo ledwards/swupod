@@ -19,7 +19,7 @@
  */
 
 import { useMemo, useState } from 'react'
-import { ASPECT_COLORS, NO_ASPECT_COLOR } from '@/src/utils/aspectColors'
+import { ASPECT_COLORS, NO_ASPECT_COLOR, RARITY_COLORS } from '@/src/utils/aspectColors'
 
 const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning'] as const
 
@@ -52,12 +52,16 @@ export interface CardHit {
   number: number
   name: string
   aspects: string[]
+  rarity: string
   count: number
   expected: number
   delta: number
   z: number
   withinNormal: boolean
 }
+
+const FILTER_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning', 'Heroism', 'Villainy'] as const
+const FILTER_RARITIES = ['Common', 'Uncommon', 'Rare', 'Legendary'] as const
 
 // A consistent, aspect-independent color for delta text so it reads the same
 // regardless of the card's aspect — light, for the dark readout.
@@ -123,6 +127,8 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
   const [search, setSearch] = useState('')
   const [hovered, setHovered] = useState<CardHit | null>(null)
   const [pinned, setPinned] = useState<CardHit | null>(null)
+  const [aspectFilters, setAspectFilters] = useState<Set<string>>(new Set())
+  const [rarityFilters, setRarityFilters] = useState<Set<string>>(new Set())
 
   const maxCount = useMemo(
     () => Math.max(1, ...cardHits.map((h) => h.count)),
@@ -130,6 +136,22 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
   )
   const needle = search.trim().toLowerCase()
   const active = hovered || pinned
+
+  function toggle(set: Set<string>, setter: (s: Set<string>) => void, key: string) {
+    const next = new Set(set)
+    if (next.has(key)) next.delete(key)
+    else next.add(key)
+    setter(next)
+  }
+
+  // A card is dimmed if it fails the search OR any active aspect/rarity filter.
+  // Empty filter sets mean "no filter" (show everything).
+  function isDimmed(hit: CardHit): boolean {
+    if (needle && !hit.name.toLowerCase().includes(needle)) return true
+    if (aspectFilters.size > 0 && !hit.aspects.some((a) => aspectFilters.has(a))) return true
+    if (rarityFilters.size > 0 && !rarityFilters.has(hit.rarity)) return true
+    return false
+  }
 
   if (!cardHits.length) return null
 
@@ -150,6 +172,38 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
         </label>
       </div>
 
+      <div className="your-stats-luck-filters">
+        <div className="your-stats-luck-filter-group" role="group" aria-label="Filter by aspect">
+          {FILTER_ASPECTS.map((a) => (
+            <button
+              key={a}
+              type="button"
+              className={`your-stats-luck-filter-btn${aspectFilters.has(a) ? ' is-on' : ''}`}
+              onClick={() => toggle(aspectFilters, setAspectFilters, a)}
+              aria-pressed={aspectFilters.has(a)}
+              title={a}
+            >
+              <img src={ASPECT_ICON[a]} alt={a} width={16} height={16} />
+            </button>
+          ))}
+        </div>
+        <div className="your-stats-luck-filter-group" role="group" aria-label="Filter by rarity">
+          {FILTER_RARITIES.map((r) => (
+            <button
+              key={r}
+              type="button"
+              className={`your-stats-luck-filter-btn your-stats-luck-filter-btn--rarity${rarityFilters.has(r) ? ' is-on' : ''}`}
+              onClick={() => toggle(rarityFilters, setRarityFilters, r)}
+              aria-pressed={rarityFilters.has(r)}
+              style={{ ['--rarity' as any]: RARITY_COLORS[r] || '#888' }}
+              title={r}
+            >
+              <span className="your-stats-luck-filter-dot" />{r.charAt(0)}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div
         className="your-stats-luck-hist-bars"
         role="group"
@@ -162,7 +216,7 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
           const scale = (v: number) => (v > 0 ? (Math.sqrt(v) / Math.sqrt(maxCount)) * 100 : 0)
           const heightPct = hit.count > 0 ? Math.max(8, scale(hit.count)) : 0
           const expPct = Math.min(100, scale(hit.expected))
-          const dimmed = needle.length > 0 && !hit.name.toLowerCase().includes(needle)
+          const dimmed = isDimmed(hit)
           const isActive = active?.cardId === hit.cardId
           // The whole column (full height) is the hover/click target, so even a
           // zero-count card can be inspected.
