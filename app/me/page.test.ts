@@ -18,7 +18,9 @@ describe('/me personal stats page', () => {
     assert.ok(SRC.includes('My Stats'))
     assert.ok(SRC.includes('Gameplay and pull data'))
     assert.ok(SRC.includes('stats-date-range'))
-    assert.ok(SRC.includes('DEFAULT_START_DATE'))
+    // "All" range spans the set's whole history up to today (not the era window).
+    assert.ok(SRC.includes('ALL_TIME_START'))
+    assert.ok(SRC.includes('todayStr()'))
   })
 
   it('keeps the personal data export on the personal page', () => {

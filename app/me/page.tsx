@@ -4,15 +4,14 @@ import { useMemo, useState } from 'react'
 import { useAuth } from '@/src/contexts/AuthContext'
 import UserAvatar from '@/src/components/UserAvatar'
 import YourStats from '@/src/components/YourStats'
-import { getEras, getWeeks } from '@/src/utils/statsEras'
+import { getEras, getWeeks, todayStr } from '@/src/utils/statsEras'
 import '../stats/stats.css'
 
-// "All" range = the set's entire history. The release-era window is wrong for an
-// upcoming set (ASH's window is a future date, which excludes games played NOW
-// during spoilers/beta) and for any set it hides pre-release play. A specific
-// week still narrows to that week.
+// "All" range = the set's entire history, up to today. The release-era window is
+// wrong for an upcoming set (ASH's window is a future date, which excludes games
+// played NOW during spoilers/beta) and for any set it hides pre-release play. A
+// specific week still narrows to that week.
 const ALL_TIME_START = '2020-01-01'
-const ALL_TIME_END = '2099-12-31'
 
 export default function MePage() {
   const { user, isPatron } = useAuth() as {
@@ -34,8 +33,8 @@ export default function MePage() {
   const weeks = useMemo(() => (era ? getWeeks(era) : []), [era])
 
   const { startDate, endDate } = useMemo(() => {
-    if (!era) return { startDate: ALL_TIME_START, endDate: ALL_TIME_END }
-    if (weekKey === 'all') return { startDate: ALL_TIME_START, endDate: ALL_TIME_END }
+    if (!era) return { startDate: ALL_TIME_START, endDate: todayStr() }
+    if (weekKey === 'all') return { startDate: ALL_TIME_START, endDate: todayStr() }
     const w = weeks[weekKey]
     return w ? { startDate: w.start, endDate: w.end } : { startDate: era.start, endDate: era.end }
   }, [era, weekKey, weeks])

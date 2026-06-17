@@ -14,6 +14,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Button from '@/src/components/Button'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import { getStatsSetTabs, DEFAULT_STATS_SET_TAB } from '@/src/utils/statsSetTabs'
+import { todayStr } from '@/src/utils/statsEras'
 import { getAspectColor, ASPECT_COLORS } from '@/src/utils/aspectColors'
 import { DraftAnalytics } from './DraftAnalytics'
 
@@ -35,10 +36,10 @@ const WR_ASPECT_ICON: Record<string, string> = {
   Cunning: '/icons/cunning.png',
 }
 
-// Meta = the whole site's pool for the set, all-time — never the page's date
-// range (which would slice the metagame to a sliver).
+// Meta = the whole site's pool for the set, all-time up to today — never the
+// page's date range (which would slice the metagame to a sliver).
 const META_SINCE = '2020-01-01'
-const META_UNTIL = '2099-12-31'
+const META_UNTIL = todayStr()
 
 export interface MetaDashboardProps {
   since: string
