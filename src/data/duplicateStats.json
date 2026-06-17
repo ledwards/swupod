@@ -1,0 +1,1382 @@
+{
+  "generatedAt": "2026-06-17",
+  "sampleSizePerSet": 2000,
+  "metric": "same card irrespective of variant (name+subtitle)",
+  "sets": {
+    "SOR": {
+      "poolSizes": {
+        "Leader": 18,
+        "Base": 12,
+        "Common": 90,
+        "Uncommon": 60,
+        "Rare": 48,
+        "Legendary": 16,
+        "Special": 8
+      },
+      "sealed6": {
+        "mean": 4.376,
+        "sd": 1.4848,
+        "se": 0.0332,
+        "ci95": [
+          4.3109,
+          4.4411
+        ],
+        "pods": 2000,
+        "hist": [
+          6,
+          41,
+          154,
+          360,
+          501,
+          489,
+          302,
+          114,
+          33,
+          0,
+          0,
+          0
+        ],
+        "theoryMean": 4.8126,
+        "theoryPmf": [
+          0.00111,
+          0.01137,
+          0.05128,
+          0.13405,
+          0.22446,
+          0.25122,
+          0.19037,
+          0.09682,
+          0.03206,
+          0.0065,
+          0.00072,
+          0.00003
+        ],
+        "naiveMean": 14.955,
+        "z": -13.15,
+        "chi2": 161.86,
+        "dof": 8,
+        "chi2PerDof": 20.23,
+        "varLoad": {
+          "Leader": 1.028,
+          "Base": 0.982,
+          "Common": 5.896,
+          "Uncommon": 2.046,
+          "Rare": 0.569,
+          "Legendary": 0.069,
+          "Special": 0
+        },
+        "collisionP": {
+          "Leader": 0.275,
+          "Base": 0.451,
+          "Common": 0.587,
+          "Uncommon": 0.277,
+          "Rare": 0.101,
+          "Legendary": 0.046,
+          "Special": 0
+        },
+        "byCat": {
+          "Leader": 0.423,
+          "Base": 0.507,
+          "Common": 2.838,
+          "Uncommon": 0.549,
+          "Rare": 0.053,
+          "Legendary": 0.004,
+          "Special": 0
+        },
+        "pair": {
+          "Foil + Normal": 2.893,
+          "Hyperspace + Normal": 1.188,
+          "Foil + Hyperspace": 0.08,
+          "Foil + Foil + Normal": 0.063,
+          "HyperspaceFoil + Normal": 0.06,
+          "Foil + Foil": 0.043,
+          "Normal + Normal": 0.025,
+          "Normal + Showcase": 0.012
+        }
+      },
+      "draft3": {
+        "mean": 3.1019,
+        "sd": 1.7462,
+        "se": 0.0191,
+        "ci95": [
+          3.0644,
+          3.1394
+        ],
+        "pods": 8325,
+        "hist": [
+          441,
+          1161,
+          1646,
+          1819,
+          1529,
+          968,
+          465,
+          217,
+          65,
+          12,
+          2,
+          0
+        ],
+        "theoryMean": 1.134,
+        "theoryPmf": [
+          0.27732,
+          0.40564,
+          0.23572,
+          0.06938,
+          0.01098,
+          0.00092,
+          0.00004,
+          0,
+          0,
+          0
+        ],
+        "naiveMean": 4.236,
+        "z": 102.82,
+        "chi2": 398929.97,
+        "dof": 5,
+        "chi2PerDof": 79785.99,
+        "varLoad": {
+          "Leader": 0.517,
+          "Base": 0.506,
+          "Common": 2.899,
+          "Uncommon": 1.095,
+          "Rare": 0.279,
+          "Legendary": 0.028,
+          "Special": 0
+        },
+        "collisionP": {
+          "Leader": 0.131,
+          "Base": 0.209,
+          "Common": 0.275,
+          "Uncommon": 0.136,
+          "Rare": 0.05,
+          "Legendary": 0.024,
+          "Special": 0
+        },
+        "byCat": {
+          "Leader": 0.194,
+          "Base": 0.272,
+          "Common": 2.346,
+          "Uncommon": 0.248,
+          "Rare": 0.039,
+          "Legendary": 0.002,
+          "Special": 0
+        },
+        "pair": {
+          "Normal + Normal": 2.031,
+          "Foil + Normal": 0.651,
+          "Hyperspace + Normal": 0.307,
+          "Foil + Normal + Normal": 0.036,
+          "Normal + Normal + Normal": 0.017,
+          "Foil + Hyperspace": 0.015,
+          "Foil + Foil": 0.012,
+          "HyperspaceFoil + Normal": 0.01
+        }
+      }
+    },
+    "SHD": {
+      "poolSizes": {
+        "Leader": 18,
+        "Base": 8,
+        "Common": 90,
+        "Uncommon": 60,
+        "Rare": 52,
+        "Legendary": 16,
+        "Special": 18
+      },
+      "sealed6": {
+        "mean": 4.325,
+        "sd": 1.5331,
+        "se": 0.0343,
+        "ci95": [
+          4.2578,
+          4.3922
+        ],
+        "pods": 2000,
+        "hist": [
+          7,
+          39,
+          178,
+          382,
+          510,
+          442,
+          284,
+          114,
+          40,
+          3,
+          1,
+          0
+        ],
+        "theoryMean": 4.9952,
+        "theoryPmf": [
+          0.00075,
+          0.00835,
+          0.0408,
+          0.11556,
+          0.2096,
+          0.25381,
+          0.2076,
+          0.11353,
+          0.04022,
+          0.00869,
+          0.00102,
+          0.00005
+        ],
+        "naiveMean": 15.275,
+        "z": -19.55,
+        "chi2": 413.35,
+        "dof": 8,
+        "chi2PerDof": 51.67,
+        "varLoad": {
+          "Leader": 0.994,
+          "Base": 0.998,
+          "Common": 5.891,
+          "Uncommon": 2.108,
+          "Rare": 0.55,
+          "Legendary": 0.07,
+          "Special": 0
+        },
+        "collisionP": {
+          "Leader": 0.277,
+          "Base": 0.625,
+          "Common": 0.586,
+          "Uncommon": 0.277,
+          "Rare": 0.102,
+          "Legendary": 0.044,
+          "Special": 0
+        },
+        "byCat": {
+          "Leader": 0.386,
+          "Base": 0.524,
+          "Common": 2.776,
+          "Uncommon": 0.573,
+          "Rare": 0.064,
+          "Legendary": 0.004,
+          "Special": 0
+        },
+        "pair": {
+          "Foil + Normal": 2.863,
+          "Hyperspace + Normal": 1.173,
+          "Foil + Hyperspace": 0.067,
+          "HyperspaceFoil + Normal": 0.065,
+          "Foil + Foil + Normal": 0.057,
+          "Foil + Foil": 0.05,
+          "Normal + Normal": 0.024,
+          "Normal + Showcase": 0.011
+        }
+      },
+      "draft3": {
+        "mean": 3.1313,
+        "sd": 1.7433,
+        "se": 0.0191,
+        "ci95": [
+          3.0938,
+          3.1687
+        ],
+        "pods": 8325,
+        "hist": [
+          421,
+          1100,
+          1685,
+          1823,
+          1517,
+          1017,
+          477,
+          192,
+          71,
+          19,
+          2,
+          1
+        ],
+        "theoryMean": 1.1701,
+        "theoryPmf": [
+          0.26589,
+          0.40196,
+          0.24322,
+          0.07519,
+          0.01258,
+          0.00111,
+          0.00005,
+          0,
+          0,
+          0
+        ],
+        "naiveMean": 4.34,
+        "z": 102.64,
+        "chi2": 348004.46,
+        "dof": 5,
+        "chi2PerDof": 69600.89,
+        "varLoad": {
+          "Leader": 0.504,
+          "Base": 0.49,
+          "Common": 2.909,
+          "Uncommon": 1.085,
+          "Rare": 0.27,
+          "Legendary": 0.032,
+          "Special": 0
+        },
+        "collisionP": {
+          "Leader": 0.132,
+          "Base": 0.29,
+          "Common": 0.275,
+          "Uncommon": 0.136,
+          "Rare": 0.05,
+          "Legendary": 0.023,
+          "Special": 0
+        },
+        "byCat": {
+          "Leader": 0.202,
+          "Base": 0.281,
+          "Common": 2.348,
+          "Uncommon": 0.26,
+          "Rare": 0.037,
+          "Legendary": 0.003,
+          "Special": 0
+        },
+        "pair": {
+          "Normal + Normal": 2.042,
+          "Foil + Normal": 0.649,
+          "Hyperspace + Normal": 0.311,
+          "Foil + Normal + Normal": 0.039,
+          "Normal + Normal + Normal": 0.022,
+          "Foil + Hyperspace": 0.019,
+          "Foil + Foil": 0.015,
+          "HyperspaceFoil + Normal": 0.01
+        }
+      }
+    },
+    "TWI": {
+      "poolSizes": {
+        "Leader": 18,
+        "Base": 12,
+        "Common": 90,
+        "Uncommon": 60,
+        "Rare": 48,
+        "Legendary": 16,
+        "Special": 13
+      },
+      "sealed6": {
+        "mean": 4.36,
+        "sd": 1.4975,
+        "se": 0.0335,
+        "ci95": [
+          4.2944,
+          4.4256
+        ],
+        "pods": 2000,
+        "hist": [
+          2,
+          38,
+          167,
+          368,
+          522,
+          462,
+          289,
+          110,
+          36,
+          6,
+          0,
+          0
+        ],
+        "theoryMean": 4.8152,
+        "theoryPmf": [
+          0.00113,
+          0.01147,
+          0.05153,
+          0.13418,
+          0.22399,
+          0.25033,
+          0.18993,
+          0.09717,
+          0.03262,
+          0.00681,
+          0.0008,
+          0.00004
+        ],
+        "naiveMean": 14.955,
+        "z": -13.59,
+        "chi2": 177.68,
+        "dof": 8,
+        "chi2PerDof": 22.21,
+        "varLoad": {
+          "Leader": 1.028,
+          "Base": 0.986,
+          "Common": 5.864,
+          "Uncommon": 2.129,
+          "Rare": 0.547,
+          "Legendary": 0.054,
+          "Special": 0
+        },
+        "collisionP": {
+          "Leader": 0.275,
+          "Base": 0.451,
+          "Common": 0.587,
+          "Uncommon": 0.276,
+          "Rare": 0.101,
+          "Legendary": 0.047,
+          "Special": 0
+        },
+        "byCat": {
+          "Leader": 0.407,
+          "Base": 0.533,
+          "Common": 2.788,
+          "Uncommon": 0.569,
+          "Rare": 0.059,
+          "Legendary": 0.003,
+          "Special": 0
+        },
+        "pair": {
+          "Foil + Normal": 2.872,
+          "Hyperspace + Normal": 1.222,
+          "Foil + Hyperspace": 0.07,
+          "Foil + Foil + Normal": 0.064,
+          "HyperspaceFoil + Normal": 0.051,
+          "Foil + Foil": 0.038,
+          "Normal + Normal": 0.021,
+          "Normal + Showcase": 0.006
+        }
+      },
+      "draft3": {
+        "mean": 3.1224,
+        "sd": 1.7478,
+        "se": 0.0192,
+        "ci95": [
+          3.0849,
+          3.1599
+        ],
+        "pods": 8325,
+        "hist": [
+          402,
+          1215,
+          1602,
+          1777,
+          1545,
+          1020,
+          500,
+          181,
+          58,
+          18,
+          6,
+          1
+        ],
+        "theoryMean": 1.1526,
+        "theoryPmf": [
+          0.27002,
+          0.40508,
+          0.2406,
+          0.07191,
+          0.01141,
+          0.00094,
+          0.00004,
+          0,
+          0,
+          0
+        ],
+        "naiveMean": 4.236,
+        "z": 102.83,
+        "chi2": 415404.53,
+        "dof": 5,
+        "chi2PerDof": 83080.91,
+        "varLoad": {
+          "Leader": 0.518,
+          "Base": 0.524,
+          "Common": 2.983,
+          "Uncommon": 1.036,
+          "Rare": 0.285,
+          "Legendary": 0.035,
+          "Special": 0
+        },
+        "collisionP": {
+          "Leader": 0.131,
+          "Base": 0.209,
+          "Common": 0.274,
+          "Uncommon": 0.136,
+          "Rare": 0.05,
+          "Legendary": 0.023,
+          "Special": 0
+        },
+        "byCat": {
+          "Leader": 0.19,
+          "Base": 0.278,
+          "Common": 2.367,
+          "Uncommon": 0.251,
+          "Rare": 0.034,
+          "Legendary": 0.002,
+          "Special": 0
+        },
+        "pair": {
+          "Normal + Normal": 2.01,
+          "Foil + Normal": 0.658,
+          "Hyperspace + Normal": 0.321,
+          "Foil + Normal + Normal": 0.042,
+          "Foil + Hyperspace": 0.023,
+          "Normal + Normal + Normal": 0.018,
+          "HyperspaceFoil + Normal": 0.017,
+          "Foil + Foil": 0.012
+        }
+      }
+    },
+    "JTL": {
+      "poolSizes": {
+        "Leader": 18,
+        "Base": 13,
+        "Common": 98,
+        "Uncommon": 60,
+        "Rare": 45,
+        "Legendary": 20,
+        "Special": 8
+      },
+      "sealed6": {
+        "mean": 3.9805,
+        "sd": 1.5027,
+        "se": 0.0336,
+        "ci95": [
+          3.9146,
+          4.0464
+        ],
+        "pods": 2000,
+        "hist": [
+          12,
+          75,
+          229,
+          458,
+          511,
+          395,
+          218,
+          89,
+          13,
+          0,
+          0,
+          0
+        ],
+        "theoryMean": 4.3818,
+        "theoryPmf": [
+          0.0027,
+          0.02261,
+          0.08354,
+          0.17947,
+          0.2482,
+          0.23106,
+          0.14705,
+          0.0636,
+          0.01819,
+          0.00325,
+          0.00032,
+          0.00001
+        ],
+        "naiveMean": 14.324,
+        "z": -11.94,
+        "chi2": 141.49,
+        "dof": 9,
+        "chi2PerDof": 15.72,
+        "varLoad": {
+          "Leader": 1.007,
+          "Base": 1,
+          "Common": 5.66,
+          "Uncommon": 2.102,
+          "Rare": 0.449,
+          "Legendary": 0.053,
+          "Special": 0.316
+        },
+        "collisionP": {
+          "Leader": 0.276,
+          "Base": 0.424,
+          "Common": 0.539,
+          "Uncommon": 0.277,
+          "Rare": 0.1,
+          "Legendary": 0.049,
+          "Special": 0
+        },
+        "byCat": {
+          "Leader": 0.388,
+          "Base": 0.524,
+          "Common": 2.422,
+          "Uncommon": 0.593,
+          "Rare": 0.048,
+          "Legendary": 0.002,
+          "Special": 0.004
+        },
+        "pair": {
+          "Foil + Normal": 2.55,
+          "Hyperspace + Normal": 1.183,
+          "Foil + Hyperspace": 0.066,
+          "HyperspaceFoil + Normal": 0.055,
+          "Foil + Foil": 0.045,
+          "Foil + Foil + Normal": 0.041,
+          "Normal + Normal": 0.022,
+          "Foil + Hyperspace + Normal": 0.005
+        }
+      },
+      "draft3": {
+        "mean": 2.7819,
+        "sd": 1.6803,
+        "se": 0.0184,
+        "ci95": [
+          2.7458,
+          2.818
+        ],
+        "pods": 8325,
+        "hist": [
+          558,
+          1486,
+          1863,
+          1794,
+          1332,
+          771,
+          337,
+          126,
+          46,
+          10,
+          2,
+          0
+        ],
+        "theoryMean": 1.047,
+        "theoryPmf": [
+          0.31016,
+          0.4087,
+          0.21476,
+          0.05743,
+          0.00828,
+          0.00063,
+          0.00002,
+          0,
+          0,
+          0,
+          0
+        ],
+        "naiveMean": 4.001,
+        "z": 94.2,
+        "chi2": 333377.25,
+        "dof": 5,
+        "chi2PerDof": 66675.45,
+        "varLoad": {
+          "Leader": 0.495,
+          "Base": 0.5,
+          "Common": 2.849,
+          "Uncommon": 1.069,
+          "Rare": 0.21,
+          "Legendary": 0.029,
+          "Special": 0.157
+        },
+        "collisionP": {
+          "Leader": 0.132,
+          "Base": 0.198,
+          "Common": 0.255,
+          "Uncommon": 0.136,
+          "Rare": 0.05,
+          "Legendary": 0.024,
+          "Special": 0
+        },
+        "byCat": {
+          "Leader": 0.201,
+          "Base": 0.269,
+          "Common": 2.038,
+          "Uncommon": 0.248,
+          "Rare": 0.023,
+          "Legendary": 0.001,
+          "Special": 0.002
+        },
+        "pair": {
+          "Normal + Normal": 1.796,
+          "Foil + Normal": 0.576,
+          "Hyperspace + Normal": 0.307,
+          "Foil + Normal + Normal": 0.029,
+          "Foil + Foil": 0.016,
+          "Foil + Hyperspace": 0.015,
+          "Normal + Normal + Normal": 0.013,
+          "HyperspaceFoil + Normal": 0.009
+        }
+      }
+    },
+    "LOF": {
+      "poolSizes": {
+        "Leader": 18,
+        "Base": 12,
+        "Common": 100,
+        "Uncommon": 60,
+        "Rare": 46,
+        "Legendary": 20,
+        "Special": 8
+      },
+      "sealed6": {
+        "mean": 4.0655,
+        "sd": 1.4762,
+        "se": 0.033,
+        "ci95": [
+          4.0008,
+          4.1302
+        ],
+        "pods": 2000,
+        "hist": [
+          5,
+          61,
+          224,
+          433,
+          519,
+          419,
+          242,
+          77,
+          19,
+          1,
+          0,
+          0
+        ],
+        "theoryMean": 4.373,
+        "theoryPmf": [
+          0.00284,
+          0.02336,
+          0.085,
+          0.18043,
+          0.2474,
+          0.22926,
+          0.14593,
+          0.06353,
+          0.01846,
+          0.0034,
+          0.00036,
+          0.00002
+        ],
+        "naiveMean": 14.243,
+        "z": -9.32,
+        "chi2": 83.26,
+        "dof": 9,
+        "chi2PerDof": 9.25,
+        "varLoad": {
+          "Leader": 1.018,
+          "Base": 1.065,
+          "Common": 5.685,
+          "Uncommon": 2.051,
+          "Rare": 0.447,
+          "Legendary": 0.057,
+          "Special": 0.323
+        },
+        "collisionP": {
+          "Leader": 0.276,
+          "Base": 0.445,
+          "Common": 0.528,
+          "Uncommon": 0.277,
+          "Rare": 0.1,
+          "Legendary": 0.05,
+          "Special": 0
+        },
+        "byCat": {
+          "Leader": 0.396,
+          "Base": 0.567,
+          "Common": 2.481,
+          "Uncommon": 0.567,
+          "Rare": 0.048,
+          "Legendary": 0.003,
+          "Special": 0.005
+        },
+        "pair": {
+          "Foil + Normal": 2.6,
+          "Hyperspace + Normal": 1.236,
+          "HyperspaceFoil + Normal": 0.059,
+          "Foil + Hyperspace": 0.054,
+          "Foil + Foil": 0.044,
+          "Foil + Foil + Normal": 0.037,
+          "Normal + Normal": 0.018,
+          "Normal + Showcase": 0.005
+        }
+      },
+      "draft3": {
+        "mean": 2.7175,
+        "sd": 1.6518,
+        "se": 0.0181,
+        "ci95": [
+          2.682,
+          2.753
+        ],
+        "pods": 8325,
+        "hist": [
+          612,
+          1482,
+          1942,
+          1758,
+          1339,
+          735,
+          305,
+          105,
+          36,
+          11,
+          0,
+          0
+        ],
+        "theoryMean": 1.0414,
+        "theoryPmf": [
+          0.31305,
+          0.40801,
+          0.21304,
+          0.05696,
+          0.00828,
+          0.00064,
+          0.00002,
+          0,
+          0,
+          0,
+          0
+        ],
+        "naiveMean": 3.967,
+        "z": 92.58,
+        "chi2": 284526.76,
+        "dof": 5,
+        "chi2PerDof": 56905.35,
+        "varLoad": {
+          "Leader": 0.494,
+          "Base": 0.52,
+          "Common": 2.837,
+          "Uncommon": 1.069,
+          "Rare": 0.224,
+          "Legendary": 0.027,
+          "Special": 0.148
+        },
+        "collisionP": {
+          "Leader": 0.132,
+          "Base": 0.209,
+          "Common": 0.25,
+          "Uncommon": 0.137,
+          "Rare": 0.05,
+          "Legendary": 0.024,
+          "Special": 0
+        },
+        "byCat": {
+          "Leader": 0.191,
+          "Base": 0.28,
+          "Common": 1.979,
+          "Uncommon": 0.244,
+          "Rare": 0.022,
+          "Legendary": 0,
+          "Special": 0.001
+        },
+        "pair": {
+          "Normal + Normal": 1.738,
+          "Foil + Normal": 0.582,
+          "Hyperspace + Normal": 0.297,
+          "Foil + Normal + Normal": 0.031,
+          "Foil + Foil": 0.015,
+          "Foil + Hyperspace": 0.014,
+          "HyperspaceFoil + Normal": 0.014,
+          "Normal + Normal + Normal": 0.011
+        }
+      }
+    },
+    "SEC": {
+      "poolSizes": {
+        "Leader": 18,
+        "Base": 8,
+        "Common": 100,
+        "Uncommon": 60,
+        "Rare": 50,
+        "Legendary": 20,
+        "Special": 8
+      },
+      "sealed6": {
+        "mean": 3.9555,
+        "sd": 1.5048,
+        "se": 0.0336,
+        "ci95": [
+          3.8895,
+          4.0215
+        ],
+        "pods": 2000,
+        "hist": [
+          11,
+          72,
+          258,
+          436,
+          516,
+          410,
+          200,
+          77,
+          18,
+          2,
+          0,
+          0
+        ],
+        "theoryMean": 4.5211,
+        "theoryPmf": [
+          0.002,
+          0.01806,
+          0.0717,
+          0.16484,
+          0.24294,
+          0.23992,
+          0.16114,
+          0.07313,
+          0.0218,
+          0.00403,
+          0.00041,
+          0.00002
+        ],
+        "naiveMean": 14.562,
+        "z": -16.81,
+        "chi2": 283.25,
+        "dof": 8,
+        "chi2PerDof": 35.41,
+        "varLoad": {
+          "Leader": 1.006,
+          "Base": 1.012,
+          "Common": 5.662,
+          "Uncommon": 2.058,
+          "Rare": 0.484,
+          "Legendary": 0.055,
+          "Special": 0.298
+        },
+        "collisionP": {
+          "Leader": 0.276,
+          "Base": 0.623,
+          "Common": 0.528,
+          "Uncommon": 0.277,
+          "Rare": 0.101,
+          "Legendary": 0.048,
+          "Special": 0
+        },
+        "byCat": {
+          "Leader": 0.39,
+          "Base": 0.537,
+          "Common": 2.399,
+          "Uncommon": 0.568,
+          "Rare": 0.052,
+          "Legendary": 0.004,
+          "Special": 0.006
+        },
+        "pair": {
+          "Foil + Normal": 2.526,
+          "Hyperspace + Normal": 1.181,
+          "Foil + Hyperspace": 0.062,
+          "Foil + Foil": 0.051,
+          "HyperspaceFoil + Normal": 0.049,
+          "Foil + Foil + Normal": 0.04,
+          "Normal + Normal": 0.026,
+          "Normal + Showcase": 0.009
+        }
+      },
+      "draft3": {
+        "mean": 2.7414,
+        "sd": 1.6685,
+        "se": 0.0183,
+        "ci95": [
+          2.7055,
+          2.7772
+        ],
+        "pods": 8325,
+        "hist": [
+          658,
+          1433,
+          1825,
+          1825,
+          1325,
+          799,
+          300,
+          123,
+          28,
+          7,
+          1,
+          1
+        ],
+        "theoryMean": 1.0723,
+        "theoryPmf": [
+          0.30168,
+          0.4065,
+          0.22042,
+          0.06138,
+          0.00926,
+          0.00073,
+          0.00003,
+          0,
+          0,
+          0,
+          0
+        ],
+        "naiveMean": 4.071,
+        "z": 91.27,
+        "chi2": 276127.83,
+        "dof": 5,
+        "chi2PerDof": 55225.57,
+        "varLoad": {
+          "Leader": 0.499,
+          "Base": 0.491,
+          "Common": 2.852,
+          "Uncommon": 1.012,
+          "Rare": 0.226,
+          "Legendary": 0.029,
+          "Special": 0.161
+        },
+        "collisionP": {
+          "Leader": 0.132,
+          "Base": 0.29,
+          "Common": 0.25,
+          "Uncommon": 0.137,
+          "Rare": 0.05,
+          "Legendary": 0.025,
+          "Special": 0
+        },
+        "byCat": {
+          "Leader": 0.202,
+          "Base": 0.287,
+          "Common": 1.976,
+          "Uncommon": 0.248,
+          "Rare": 0.027,
+          "Legendary": 0,
+          "Special": 0.001
+        },
+        "pair": {
+          "Normal + Normal": 1.755,
+          "Foil + Normal": 0.594,
+          "Hyperspace + Normal": 0.296,
+          "Foil + Normal + Normal": 0.03,
+          "Foil + Hyperspace": 0.016,
+          "Foil + Foil": 0.014,
+          "HyperspaceFoil + Normal": 0.011,
+          "Normal + Normal + Normal": 0.01
+        }
+      }
+    },
+    "LAW": {
+      "poolSizes": {
+        "Leader": 18,
+        "Base": 12,
+        "Common": 100,
+        "Uncommon": 60,
+        "Rare": 47,
+        "Legendary": 20,
+        "Special": 7
+      },
+      "sealed6": {
+        "mean": 6.7005,
+        "sd": 1.9193,
+        "se": 0.0429,
+        "ci95": [
+          6.6164,
+          6.7846
+        ],
+        "pods": 2000,
+        "hist": [
+          0,
+          2,
+          22,
+          59,
+          168,
+          283,
+          398,
+          391,
+          337,
+          196,
+          100,
+          27
+        ],
+        "theoryMean": 6.47,
+        "theoryPmf": [
+          0.00021,
+          0.00237,
+          0.01273,
+          0.04204,
+          0.09574,
+          0.15934,
+          0.2004,
+          0.19428,
+          0.14676,
+          0.08676,
+          0.04009,
+          0.01438
+        ],
+        "naiveMean": 14.238,
+        "z": 5.37,
+        "chi2": 36.36,
+        "dof": 11,
+        "chi2PerDof": 3.31,
+        "varLoad": {
+          "Leader": 1.002,
+          "Base": 1.016,
+          "Common": 10.255,
+          "Uncommon": 2.783,
+          "Rare": 1.248,
+          "Legendary": 0.348,
+          "Special": 0.392
+        },
+        "collisionP": {
+          "Leader": 0.277,
+          "Base": 0.441,
+          "Common": 0.478,
+          "Uncommon": 0.254,
+          "Rare": 0.1,
+          "Legendary": 0.049,
+          "Special": 0
+        },
+        "byCat": {
+          "Leader": 0.379,
+          "Base": 0.527,
+          "Common": 4.963,
+          "Uncommon": 0.668,
+          "Rare": 0.142,
+          "Legendary": 0.013,
+          "Special": 0.008
+        },
+        "pair": {
+          "Hyperspace + Normal": 4.221,
+          "HyperspaceFoil + Normal": 2.05,
+          "Hyperspace + HyperspaceFoil": 0.168,
+          "Hyperspace + HyperspaceFoil + Normal": 0.115,
+          "Normal + Prestige": 0.034,
+          "HyperspaceFoil + HyperspaceFoil": 0.03,
+          "HyperspaceFoil + HyperspaceFoil + Normal": 0.025,
+          "Normal + Normal": 0.018
+        }
+      },
+      "draft3": {
+        "mean": 2.9198,
+        "sd": 1.6167,
+        "se": 0.0177,
+        "ci95": [
+          2.885,
+          2.9545
+        ],
+        "pods": 8325,
+        "hist": [
+          382,
+          1259,
+          1947,
+          1924,
+          1474,
+          791,
+          360,
+          138,
+          45,
+          5,
+          0,
+          0
+        ],
+        "theoryMean": 1.5554,
+        "theoryPmf": [
+          0.17738,
+          0.34311,
+          0.28889,
+          0.13892,
+          0.04211,
+          0.00839,
+          0.00111,
+          0.0001,
+          0.00001,
+          0,
+          0,
+          0
+        ],
+        "naiveMean": 3.966,
+        "z": 77,
+        "chi2": 41912.48,
+        "dof": 6,
+        "chi2PerDof": 6985.41,
+        "varLoad": {
+          "Leader": 0.514,
+          "Base": 0.497,
+          "Common": 5.142,
+          "Uncommon": 1.393,
+          "Rare": 0.604,
+          "Legendary": 0.144,
+          "Special": 0.219
+        },
+        "collisionP": {
+          "Leader": 0.131,
+          "Base": 0.205,
+          "Common": 0.229,
+          "Uncommon": 0.126,
+          "Rare": 0.05,
+          "Legendary": 0.024,
+          "Special": 0
+        },
+        "byCat": {
+          "Leader": 0.192,
+          "Base": 0.274,
+          "Common": 2.134,
+          "Uncommon": 0.269,
+          "Rare": 0.046,
+          "Legendary": 0.002,
+          "Special": 0.003
+        },
+        "pair": {
+          "Normal + Normal": 1.329,
+          "Hyperspace + Normal": 0.923,
+          "HyperspaceFoil + Normal": 0.501,
+          "Hyperspace + HyperspaceFoil": 0.059,
+          "Hyperspace + Normal + Normal": 0.037,
+          "HyperspaceFoil + Normal + Normal": 0.021,
+          "Hyperspace + HyperspaceFoil + Normal": 0.014,
+          "HyperspaceFoil + HyperspaceFoil": 0.011
+        }
+      }
+    },
+    "ASH": {
+      "poolSizes": {
+        "Leader": 18,
+        "Base": 8,
+        "Common": 100,
+        "Uncommon": 60,
+        "Rare": 50,
+        "Legendary": 20,
+        "Special": 8
+      },
+      "sealed6": {
+        "mean": 6.6505,
+        "sd": 1.9459,
+        "se": 0.0435,
+        "ci95": [
+          6.5652,
+          6.7358
+        ],
+        "pods": 2000,
+        "hist": [
+          1,
+          3,
+          16,
+          74,
+          169,
+          296,
+          396,
+          410,
+          300,
+          181,
+          102,
+          36
+        ],
+        "theoryMean": 6.6253,
+        "theoryPmf": [
+          0.00014,
+          0.00177,
+          0.01011,
+          0.03548,
+          0.08542,
+          0.14965,
+          0.19728,
+          0.1996,
+          0.15666,
+          0.09578,
+          0.04554,
+          0.01673
+        ],
+        "naiveMean": 14.562,
+        "z": 0.58,
+        "chi2": 5.42,
+        "dof": 10,
+        "chi2PerDof": 0.54,
+        "varLoad": {
+          "Leader": 0.988,
+          "Base": 1.004,
+          "Common": 10.195,
+          "Uncommon": 2.779,
+          "Rare": 1.355,
+          "Legendary": 0.377,
+          "Special": 0.394
+        },
+        "collisionP": {
+          "Leader": 0.277,
+          "Base": 0.625,
+          "Common": 0.477,
+          "Uncommon": 0.253,
+          "Rare": 0.1,
+          "Legendary": 0.049,
+          "Special": 0
+        },
+        "byCat": {
+          "Leader": 0.393,
+          "Base": 0.522,
+          "Common": 4.857,
+          "Uncommon": 0.699,
+          "Rare": 0.149,
+          "Legendary": 0.025,
+          "Special": 0.005
+        },
+        "pair": {
+          "Hyperspace + Normal": 4.216,
+          "HyperspaceFoil + Normal": 2.019,
+          "Hyperspace + HyperspaceFoil": 0.151,
+          "Hyperspace + HyperspaceFoil + Normal": 0.119,
+          "HyperspaceFoil + HyperspaceFoil": 0.036,
+          "HyperspaceFoil + HyperspaceFoil + Normal": 0.034,
+          "Normal + Prestige": 0.027,
+          "Normal + Normal": 0.021
+        }
+      },
+      "draft3": {
+        "mean": 2.9453,
+        "sd": 1.5691,
+        "se": 0.0172,
+        "ci95": [
+          2.9116,
+          2.9791
+        ],
+        "pods": 8325,
+        "hist": [
+          351,
+          1171,
+          1911,
+          2061,
+          1505,
+          817,
+          373,
+          95,
+          35,
+          4,
+          2,
+          0
+        ],
+        "theoryMean": 1.59,
+        "theoryPmf": [
+          0.17045,
+          0.33752,
+          0.29174,
+          0.14442,
+          0.04517,
+          0.0093,
+          0.00127,
+          0.00012,
+          0.00001,
+          0,
+          0,
+          0
+        ],
+        "naiveMean": 4.071,
+        "z": 78.82,
+        "chi2": 34207.25,
+        "dof": 6,
+        "chi2PerDof": 5701.21,
+        "varLoad": {
+          "Leader": 0.49,
+          "Base": 0.504,
+          "Common": 5.133,
+          "Uncommon": 1.348,
+          "Rare": 0.639,
+          "Legendary": 0.185,
+          "Special": 0.198
+        },
+        "collisionP": {
+          "Leader": 0.133,
+          "Base": 0.29,
+          "Common": 0.229,
+          "Uncommon": 0.126,
+          "Rare": 0.05,
+          "Legendary": 0.025,
+          "Special": 0
+        },
+        "byCat": {
+          "Leader": 0.19,
+          "Base": 0.274,
+          "Common": 2.172,
+          "Uncommon": 0.257,
+          "Rare": 0.047,
+          "Legendary": 0.004,
+          "Special": 0.002
+        },
+        "pair": {
+          "Normal + Normal": 1.345,
+          "Hyperspace + Normal": 0.933,
+          "HyperspaceFoil + Normal": 0.497,
+          "Hyperspace + HyperspaceFoil": 0.061,
+          "Hyperspace + Normal + Normal": 0.038,
+          "HyperspaceFoil + Normal + Normal": 0.021,
+          "Hyperspace + HyperspaceFoil + Normal": 0.017,
+          "HyperspaceFoil + HyperspaceFoil": 0.01
+        }
+      }
+    }
+  }
+}
