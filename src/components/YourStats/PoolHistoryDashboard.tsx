@@ -6,10 +6,13 @@ import { getPackArtUrl } from '@/src/utils/packArt'
 import { deletePool } from '@/src/utils/poolApi'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 
-// The real Companion mark (vendored brand asset) — reliable, unlike the
-// extension-provided icon URL which can 404 from a page context.
-function WayfinderMark() {
-  return <img src="/branding/wayfinder_logo.svg" alt="" width={16} height={16} className="your-stats-wf-icon" aria-hidden="true" />
+// Play glyph (like a video play button) for the lobby actions.
+function PlayMark() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M8 5v14l11-7z" />
+    </svg>
+  )
 }
 
 interface PoolBuild {
@@ -190,25 +193,26 @@ function PoolBuildCard({
             <img src={setArt} alt="" loading="lazy" />
           </div>
         )}
+        {/* Trash sits in the upper-right of the pool graphic, on a legible chip. */}
+        {deleteArmed ? (
+          <span className="your-stats-pool-delete-confirm your-stats-pool-delete-confirm--corner">
+            <button type="button" className="btn btn--danger btn--sm your-stats-pool-action" onClick={() => onDeletePool(poolShareId)}>Delete pool</button>
+            <button type="button" className="btn btn--secondary btn--sm your-stats-pool-action" onClick={() => onArmDelete(null)}>Cancel</button>
+          </span>
+        ) : (
+          <button
+            type="button"
+            className="your-stats-pool-trash your-stats-pool-trash--corner"
+            title="Delete this pool"
+            aria-label="Delete this pool"
+            onClick={() => onArmDelete(poolShareId)}
+          >
+            <TrashIcon />
+          </button>
+        )}
         <div className="your-stats-replay-content your-stats-pool-empty-content">
           <span className="your-stats-pool-empty-note">(No Decklists)</span>
           <a className="btn btn--primary btn--sm your-stats-pool-action your-stats-pool-action--play" href={build.links.deck}>Build Deck</a>
-          {deleteArmed ? (
-            <span className="your-stats-pool-delete-confirm">
-              <button type="button" className="btn btn--danger btn--sm your-stats-pool-action" onClick={() => onDeletePool(poolShareId)}>Delete pool</button>
-              <button type="button" className="btn btn--secondary btn--sm your-stats-pool-action" onClick={() => onArmDelete(null)}>Cancel</button>
-            </span>
-          ) : (
-            <button
-              type="button"
-              className="your-stats-pool-trash"
-              title="Delete this pool"
-              aria-label="Delete this pool"
-              onClick={() => onArmDelete(poolShareId)}
-            >
-              <TrashIcon />
-            </button>
-          )}
         </div>
       </div>
     )
@@ -277,14 +281,14 @@ function PoolBuildCard({
               href={`${build.links.play}?lobby=private`}
               title="Open a private Karabast lobby with this deck"
             >
-              <WayfinderMark /><span>Private Lobby</span>
+              <PlayMark /><span>Private</span>
             </a>
             <a
               className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-action--play your-stats-pool-lobby-btn"
               href={`${build.links.play}?lobby=public`}
               title="Open a public Karabast lobby with this deck"
             >
-              <WayfinderMark /><span>Public Lobby</span>
+              <PlayMark /><span>Public</span>
             </a>
           </div>
         )}

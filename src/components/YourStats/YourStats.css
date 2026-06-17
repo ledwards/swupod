@@ -221,15 +221,13 @@
   display: flex;
   gap: 0.4rem;
   overflow-x: auto;
-  /* Sticky tab nav — follows you down the page like the deck builder toolbar. */
+  /* Sticky tab nav — follows you down the page, with no grey band behind it. */
   position: sticky;
   top: 0;
   z-index: 20;
   margin-bottom: 0.75rem;
   padding: 0.5rem 0.1rem;
-  background: rgba(12, 13, 16, 0.92);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: transparent;
 }
 
 .your-stats-tab {
@@ -1359,21 +1357,30 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(0, 0, 0, 0.4);
-  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.7);
+  color: rgba(255, 255, 255, 0.92);
   cursor: pointer;
-  transition: color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+  transition: color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+/* Upper-right of the pool graphic, on a legible dark chip above the art. */
+.your-stats-pool-trash--corner {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 2;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .your-stats-pool-trash:hover {
-    color: #ff6b6b;
-    border-color: rgba(231, 76, 60, 0.6);
-    box-shadow: 0 0 12px rgba(231, 76, 60, 0.4);
+    color: #fff;
+    background: rgba(231, 76, 60, 0.85);
+    border-color: rgba(231, 76, 60, 0.9);
+    box-shadow: 0 0 12px rgba(231, 76, 60, 0.45);
   }
 }
 
@@ -1381,6 +1388,13 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+}
+
+.your-stats-pool-delete-confirm--corner {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 2;
 }
 
 .your-stats-replay-content {
@@ -2628,6 +2642,44 @@ a.your-stats-logged-out-link:active {
   box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.25);
 }
 
+/* Sort toggle above the histogram (pick one). */
+.your-stats-luck-sort {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.your-stats-luck-sort-label {
+  font-size: 0.78rem;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.55));
+  margin-right: 0.15rem;
+}
+
+.your-stats-luck-sort-btn {
+  height: 26px;
+  padding: 0 0.6rem;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
+}
+
+.your-stats-luck-sort-btn.is-on {
+  color: #fff;
+  border-color: rgba(96, 165, 250, 0.7);
+  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.4);
+}
+
+.your-stats-luck-pie-exp {
+  color: rgba(255, 255, 255, 0.4);
+}
+
 /* Aspect + rarity filter buttons above the histogram. */
 .your-stats-luck-filters {
   display: flex;
@@ -3015,6 +3067,8 @@ a.your-stats-logged-out-link:active {
   border: 1px solid var(--ys-border, rgba(255, 255, 255, 0.1));
   border-radius: 12px;
   cursor: pointer;
+  text-decoration: none;
+  color: inherit;
 }
 
 .your-stats-replay-card:focus-visible {
@@ -3095,10 +3149,9 @@ a.your-stats-logged-out-link:active {
 }
 
 .your-stats-replay-names strong {
-  max-width: 38%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /* Never truncate player names. */
+  white-space: normal;
+  word-break: break-word;
 }
 
 .your-stats-replay-names .your-stats-replay-vs {

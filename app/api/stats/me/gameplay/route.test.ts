@@ -83,7 +83,8 @@ describe('buildGameplayResponse', () => {
     assert.equal(response.recentPools[0].leaderName, 'Han Solo')
     assert.equal(response.replays[0].result, 'win')
     assert.deepEqual(response.replays[0].gameResults, ['W', 'L', 'W'])
-    assert.equal(response.replays[0].leaderImageUrl, '/han.png')
+    // Replay leader art is swapped for the Hyperspace front art (by name+set).
+    assert.match(response.replays[0].leaderImageUrl, /Han_Solo/)
   })
 })
 

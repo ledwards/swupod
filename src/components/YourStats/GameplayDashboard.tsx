@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import WayfinderStoreButtons, { WayfinderCompanionLockup, WAYFINDER_NEWS_URL } from '@/src/components/WayfinderStoreButtons'
+import WayfinderStoreButtons, { WayfinderCompanionLockup } from '@/src/components/WayfinderStoreButtons'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import { useAuth } from '@/src/contexts/AuthContext'
 
@@ -283,7 +283,8 @@ function CompanionCTA({ hasData }: { hasData: boolean }) {
 }
 
 function ReplayGamePips({ results }: { results: Array<'W' | 'L' | 'D'> }) {
-  if (!results || results.length === 0) return null
+  // For a single game the result chip already shows W/L — don't repeat it.
+  if (!results || results.length <= 1) return null
   return (
     <span className="your-stats-replay-pips" aria-label={`Games: ${results.join('-')}`}>
       {results.map((g, i) => (
@@ -306,126 +307,47 @@ function CardPlaceholder() {
 }
 
 
-function ReplayRow({ replay, myName, expanded, onToggle }: { replay: GameplayReplay; myName: string; expanded: boolean; onToggle: () => void }) {
+function ReplayRow({ replay, myName }: { replay: GameplayReplay; myName: string }) {
   const opp = replay.opponent.username || 'Opponent'
-  const leader = replay.leaderName || replay.baseName || null // for the expanded detail
   const style = replay.baseColor ? ({ ['--row-tint' as any]: replay.baseColor }) : undefined
-  const fullMatchUrl = replay.wayfinderMatchId
-    ? `${WAYFINDER_NEWS_URL}/matches/${replay.wayfinderMatchId}`
-    : null
 
+  // No expand — there's no extra info. The whole card opens the replay.
   return (
-    <div className={`your-stats-replay-item${expanded ? ' is-expanded' : ''}`}>
-      {/* Matchup card: your leader art on the left, opponent's on the right,
-          the result + names + actions down the middle — like a deck card. */}
-      <div
-        className={`your-stats-replay-card your-stats-replay-row--${replay.result}`}
-        style={style}
-        role="button"
-        tabIndex={0}
-        aria-expanded={expanded}
-        onClick={onToggle}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle() }
-        }}
-      >
-        <span className="your-stats-replay-flank your-stats-replay-flank--mine" aria-hidden="true">
-          {replay.leaderImageUrl ? <img src={replay.leaderImageUrl} alt="" loading="lazy" /> : <CardPlaceholder />}
-        </span>
+    <a
+      className={`your-stats-replay-card your-stats-replay-row--${replay.result}`}
+      style={style}
+      href={replay.replayUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <span className="your-stats-replay-flank your-stats-replay-flank--mine" aria-hidden="true">
+        {replay.leaderImageUrl ? <img src={replay.leaderImageUrl} alt="" loading="lazy" /> : <CardPlaceholder />}
+      </span>
 
-        <div className="your-stats-replay-center">
-          <div className="your-stats-replay-center-top">
-            <span className={`your-stats-replay-chip your-stats-replay-chip--${replay.result}`} title={resultLabel(replay.result)}>
-              {resultLetter(replay.result)}
-            </span>
-            <span className="your-stats-replay-names">
-              <strong>{myName}</strong>
-              <span className="your-stats-replay-vs">vs</span>
-              <strong>{opp}</strong>
-            </span>
-          </div>
-          <div className="your-stats-replay-center-sub">
-            <span>{replay.pool.setCode} · {replayDate(replay.playedAt)}</span>
-            <ReplayGamePips results={replay.gameResults} />
-          </div>
-          <a
-            className="your-stats-watch-btn your-stats-replay-watch-inline"
-            href={replay.replayUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <PlayGlyph />Watch
-          </a>
+      <div className="your-stats-replay-center">
+        <div className="your-stats-replay-center-top">
+          <span className={`your-stats-replay-chip your-stats-replay-chip--${replay.result}`} title={resultLabel(replay.result)}>
+            {resultLetter(replay.result)}
+          </span>
+          <span className="your-stats-replay-names">
+            <strong>{myName}</strong>
+            <span className="your-stats-replay-vs">vs</span>
+            <strong>{opp}</strong>
+          </span>
         </div>
-
-        <span className="your-stats-replay-flank your-stats-replay-flank--opp" aria-hidden="true">
-          {replay.opponent.leaderImageUrl ? <img src={replay.opponent.leaderImageUrl} alt="" loading="lazy" /> : <CardPlaceholder />}
-        </span>
-
-        <span className={`your-stats-replay-caret${expanded ? ' is-open' : ''}`} aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
+        <div className="your-stats-replay-center-sub">
+          <span>{replay.pool.setCode} · {replayDate(replay.playedAt)}</span>
+          <ReplayGamePips results={replay.gameResults} />
+        </div>
+        <span className="your-stats-watch-btn your-stats-replay-watch-inline">
+          <PlayGlyph />Watch
         </span>
       </div>
 
-      {expanded && (
-        <div className="your-stats-replay-detail">
-          <div className="your-stats-replay-detail-grid">
-            <div className="your-stats-replay-detail-field">
-              <small>Result</small>
-              <strong>{resultLabel(replay.result)}</strong>
-            </div>
-            {replay.gameResults.length > 0 && (
-              <div className="your-stats-replay-detail-field">
-                <small>Games</small>
-                <span className="your-stats-replay-detail-games">
-                  {replay.gameResults.map((g, i) => (
-                    <span key={i} className={`your-stats-replay-pip your-stats-replay-pip--${g.toLowerCase()}`}>{g}</span>
-                  ))}
-                </span>
-              </div>
-            )}
-            <div className="your-stats-replay-detail-field">
-              <small>Your deck</small>
-              <strong>{leader || 'Your deck'}{replay.baseName ? ` / ${replay.baseName}` : ''}{replay.archetype ? ` · ${replay.archetype}` : ''}</strong>
-            </div>
-            <div className="your-stats-replay-detail-field">
-              <small>Opponent</small>
-              <strong>
-                {opp}
-                {replay.opponent.leaderName ? ` · ${replay.opponent.leaderName}${replay.opponent.baseName ? ` / ${replay.opponent.baseName}` : ''}` : ''}
-                {replay.opponent.archetype ? ` · ${replay.opponent.archetype}` : ''}
-              </strong>
-            </div>
-            <div className="your-stats-replay-detail-field">
-              <small>Pool</small>
-              <strong>{replay.pool.name}</strong>
-            </div>
-            <div className="your-stats-replay-detail-field">
-              <small>Played</small>
-              <strong>{replayDate(replay.playedAt)} · {replay.pool.setCode} {replay.pool.formatLabel}</strong>
-            </div>
-          </div>
-          <div className="your-stats-replay-detail-actions">
-            <a className="your-stats-watch-btn" href={replay.replayUrl} target="_blank" rel="noopener noreferrer">
-              <PlayGlyph />Watch replay
-            </a>
-            {fullMatchUrl && (
-              <a className="btn btn--secondary btn--sm your-stats-pool-action" href={fullMatchUrl} target="_blank" rel="noopener noreferrer">
-                Full match on Wayfinder
-              </a>
-            )}
-            {replay.pool.shareId && (
-              <a className="btn btn--secondary btn--sm your-stats-pool-action" href={`/pool/${replay.pool.shareId}/deck/play`}>
-                Open deck
-              </a>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+      <span className="your-stats-replay-flank your-stats-replay-flank--opp" aria-hidden="true">
+        {replay.opponent.leaderImageUrl ? <img src={replay.opponent.leaderImageUrl} alt="" loading="lazy" /> : <CardPlaceholder />}
+      </span>
+    </a>
   )
 }
 
@@ -434,7 +356,6 @@ function ReplayExplorer({ replays, myName }: { replays: GameplayReplay[]; myName
   const [format, setFormat] = useState('all')
   const [result, setResult] = useState('all')
   const [sortBy, setSortBy] = useState<'recent' | 'leader' | 'result' | 'set'>('recent')
-  const [expandedId, setExpandedId] = useState<string | null>(null)
 
   const formats = useMemo(() => {
     const values = new Map<string, string>()
@@ -527,13 +448,7 @@ function ReplayExplorer({ replays, myName }: { replays: GameplayReplay[]; myName
       ) : (
         <div className="your-stats-replay-list">
           {filtered.map((replay) => (
-            <ReplayRow
-              key={replay.id}
-              replay={replay}
-              myName={myName}
-              expanded={expandedId === replay.id}
-              onToggle={() => setExpandedId((cur) => (cur === replay.id ? null : replay.id))}
-            />
+            <ReplayRow key={replay.id} replay={replay} myName={myName} />
           ))}
         </div>
       )}

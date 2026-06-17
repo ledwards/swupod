@@ -240,7 +240,7 @@ describe('<ActivityDashboard />', () => {
   })
 
   it('renders five counters with the spec labels', () => {
-    const labels = ['Packs cracked', 'Pools opened', 'Drafts joined', 'Decks built', 'Made it to play']
+    const labels = ['Packs cracked', 'Pools opened', 'Drafts joined', 'Decks built', 'Limited matches played']
     for (const label of labels) {
       assert.ok(ACTIVITY_CODE.includes(label), `expected label "${label}" in dashboard`)
     }

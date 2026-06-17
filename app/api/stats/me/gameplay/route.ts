@@ -4,7 +4,21 @@ import { requireAuth } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
 import { getAspectColor } from '@/src/utils/aspectColors'
+import { hyperspaceLeaderArt } from '@/src/utils/hyperspaceLeaderArt'
 import { NextRequest, NextResponse } from 'next/server'
+
+/** Swap a replay's leader art (mine + opponent) for the Hyperspace front art. */
+function withHyperspaceArt(replay: GameplayReplay): GameplayReplay {
+  const set = replay.pool?.setCode
+  return {
+    ...replay,
+    leaderImageUrl: hyperspaceLeaderArt(replay.leaderName, set) || replay.leaderImageUrl,
+    opponent: {
+      ...replay.opponent,
+      leaderImageUrl: hyperspaceLeaderArt(replay.opponent.leaderName, set) || replay.opponent.leaderImageUrl,
+    },
+  }
+}
 
 const DEFAULT_SINCE = '2020-01-01'
 const DEFAULT_UNTIL = '2099-12-31'
@@ -664,7 +678,8 @@ export function buildGameplayResponse(
     ]
       .filter((replay) => replay.replayUrl)
       .sort((a, b) => new Date(b.playedAt || 0).getTime() - new Date(a.playedAt || 0).getTime())
-      .slice(0, 50),
+      .slice(0, 50)
+      .map(withHyperspaceArt),
   }
 }
 

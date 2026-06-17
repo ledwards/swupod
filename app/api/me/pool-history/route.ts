@@ -6,34 +6,8 @@ import { jsonResponse, handleApiError, formatSetCodeRange } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
 import { getAspectColor } from '@/src/utils/aspectColors'
 import { archetypeShortName, poolDisplayName } from '@/src/utils/archetypeName'
-import { getAllCards } from '@/src/utils/cardData'
+import { hyperspaceLeaderArtForCard } from '@/src/utils/hyperspaceLeaderArt'
 import { NextRequest, NextResponse } from 'next/server'
-
-// Hyperspace leader art lookup. The Hyperspace printing of a leader has its OWN
-// collector number (e.g. Tobias Beckett is LAW-002 normal but LAW-266
-// hyperspace), so it does NOT share cardId with the normal leader — it shares
-// the name + set. Resolve by set::name to the Hyperspace variant's full-bleed
-// unit-side art (landscape), falling back to its front art.
-let hyperspaceByName: Map<string, string> | null = null
-function hsKey(setCode: any, name: any): string {
-  return `${String(setCode || '').toUpperCase()}::${String(name || '').trim().toLowerCase()}`
-}
-function getHyperspaceLeaderArt(card: any): string | null {
-  if (!card) return null
-  if (!hyperspaceByName) {
-    hyperspaceByName = new Map<string, string>()
-    for (const c of getAllCards()) {
-      const isLeader = c.isLeader || c.type === 'Leader'
-      const isHs = c.isHyperspace || (typeof c.variantType === 'string' && c.variantType.includes('Hyperspace'))
-      if (!isLeader || !isHs || !c.name) continue
-      // Unit-side (landscape) Hyperspace art reads best as a card background.
-      const art = c.backImageUrl || c.imageUrl
-      const key = hsKey(c.set, c.name)
-      if (art && !hyperspaceByName.has(key)) hyperspaceByName.set(key, art)
-    }
-  }
-  return hyperspaceByName.get(hsKey(card.set, card.name)) || null
-}
 
 interface DeckPreview {
   leaderName: string | null
@@ -88,7 +62,7 @@ function extractDeckPreview(raw: unknown): DeckPreview {
     leaderImageUrl: leaderCard?.imageUrl || leaderCard?.artUrl || null,
     // Hyperspace leader art (full-bleed) is the preferred pool-card background;
     // fall back to the saved leader's own unit-side art, then the portrait.
-    leaderBackImageUrl: getHyperspaceLeaderArt(leaderCard) || leaderCard?.backImageUrl || null,
+    leaderBackImageUrl: hyperspaceLeaderArtForCard(leaderCard) || leaderCard?.backImageUrl || null,
     baseImageUrl: baseCard?.imageUrl || baseCard?.artUrl || null,
     baseColor: baseCard ? getAspectColor(baseCard) : null,
     mainDeckCount,

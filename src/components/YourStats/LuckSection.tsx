@@ -146,7 +146,7 @@ export function LuckSection({ since, until, fetchImpl, initialSet, lockedSetCode
         <h3 className="your-stats-section-heading">
           Luck{headerSuffix}
         </h3>
-        <p className="your-stats-luck-intro">Think you&apos;re lucky or unlucky? Check here to find out.</p>
+        <p className="your-stats-luck-intro">Think you&apos;re lucky or unlucky? Let&apos;s find out.</p>
       </div>
 
       {/* Set selector: only when NOT driven by the page-level global Set filter

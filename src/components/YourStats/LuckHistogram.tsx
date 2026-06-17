@@ -129,6 +129,15 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
   const [pinned, setPinned] = useState<CardHit | null>(null)
   const [aspectFilters, setAspectFilters] = useState<Set<string>>(new Set())
   const [rarityFilters, setRarityFilters] = useState<Set<string>>(new Set())
+  const [sortBy, setSortBy] = useState<'number' | 'frequency' | 'expected'>('number')
+
+  const sortedHits = useMemo(() => {
+    const arr = [...cardHits]
+    if (sortBy === 'frequency') arr.sort((a, b) => b.count - a.count || a.number - b.number)
+    else if (sortBy === 'expected') arr.sort((a, b) => b.expected - a.expected || a.number - b.number)
+    else arr.sort((a, b) => a.number - b.number || a.cardId.localeCompare(b.cardId))
+    return arr
+  }, [cardHits, sortBy])
 
   const maxCount = useMemo(
     () => Math.max(1, ...cardHits.map((h) => h.count)),
@@ -172,6 +181,21 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
         </label>
       </div>
 
+      <div className="your-stats-luck-sort" role="group" aria-label="Sort histogram">
+        <span className="your-stats-luck-sort-label">Sort</span>
+        {([['number', 'Collector №'], ['frequency', 'Frequency'], ['expected', 'Expected rate']] as const).map(([val, label]) => (
+          <button
+            key={val}
+            type="button"
+            className={`your-stats-luck-sort-btn${sortBy === val ? ' is-on' : ''}`}
+            onClick={() => setSortBy(val)}
+            aria-pressed={sortBy === val}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       <div className="your-stats-luck-filters">
         <div className="your-stats-luck-filter-group" role="group" aria-label="Filter by aspect">
           {FILTER_ASPECTS.map((a) => (
@@ -210,7 +234,7 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
         aria-label="Cards by collector number"
         onMouseLeave={() => setHovered(null)}
       >
-        {cardHits.map((hit) => {
+        {sortedHits.map((hit) => {
           // sqrt scale: keeps single pulls visible even when one card spikes,
           // and stays readable whether you've opened 10 packs or 1000.
           const scale = (v: number) => (v > 0 ? (Math.sqrt(v) / Math.sqrt(maxCount)) * 100 : 0)
@@ -338,10 +362,11 @@ const ALIGN_COLOR: Record<string, string> = {
   Multicolor: '#b07cff',
 }
 
-type Slice = { label: string; value: number; color: string }
+type Slice = { label: string; value: number; expected: number; color: string }
 
 function Pie({ title, slices }: { title: string; slices: Slice[] }) {
   const total = slices.reduce((s, x) => s + x.value, 0)
+  const expTotal = slices.reduce((s, x) => s + x.expected, 0)
   let acc = 0
   const stops = slices
     .filter((s) => s.value > 0)
@@ -358,14 +383,21 @@ function Pie({ title, slices }: { title: string; slices: Slice[] }) {
       <div className="your-stats-luck-pie-side">
         <h5>{title}</h5>
         <ul className="your-stats-luck-pie-legend">
-          {slices.map((s) => (
-            <li key={s.label}>
-              <span className="your-stats-luck-pie-dot" style={{ background: s.color }} />
-              {ASPECT_ICON[s.label] && <img src={ASPECT_ICON[s.label]} alt="" width={15} height={15} />}
-              <span className="your-stats-luck-pie-label">{s.label}</span>
-              <span className="your-stats-luck-pie-val">{Math.round(s.value)}{total > 0 ? ` · ${Math.round((s.value / total) * 100)}%` : ''}</span>
-            </li>
-          ))}
+          {slices.map((s) => {
+            const pct = total > 0 ? Math.round((s.value / total) * 100) : 0
+            const expPct = expTotal > 0 ? Math.round((s.expected / expTotal) * 100) : 0
+            return (
+              <li key={s.label}>
+                <span className="your-stats-luck-pie-dot" style={{ background: s.color }} />
+                {ASPECT_ICON[s.label] && <img src={ASPECT_ICON[s.label]} alt="" width={15} height={15} />}
+                <span className="your-stats-luck-pie-label">{s.label}</span>
+                <span className="your-stats-luck-pie-val">
+                  {Math.round(s.value)} · {pct}%
+                  <small className="your-stats-luck-pie-exp"> / exp {expPct}%</small>
+                </span>
+              </li>
+            )
+          })}
         </ul>
       </div>
     </div>
@@ -374,30 +406,32 @@ function Pie({ title, slices }: { title: string; slices: Slice[] }) {
 
 export function AspectBreakdown({ cardHits }: { cardHits: CardHit[] }) {
   const primary: Record<string, number> = { Vigilance: 0, Command: 0, Aggression: 0, Cunning: 0 }
+  const primaryExp: Record<string, number> = { Vigilance: 0, Command: 0, Aggression: 0, Cunning: 0 }
   const align: Record<string, number> = { Heroism: 0, Villainy: 0, Neutral: 0, Multicolor: 0 }
+  const alignExp: Record<string, number> = { Heroism: 0, Villainy: 0, Neutral: 0, Multicolor: 0 }
   for (const hit of cardHits) {
     const aspects = hit.aspects || []
     const colors = aspects.filter((a) => (PRIMARIES as readonly string[]).includes(a))
-    // Primary wheel: each primary the card carries (a dual card lands in both).
-    for (const c of colors) primary[c] += hit.count
-    // Alignment / structure wheel — separate dimension.
-    if (aspects.includes('Heroism')) align.Heroism += hit.count
-    if (aspects.includes('Villainy')) align.Villainy += hit.count
-    if (colors.length === 0) align.Neutral += hit.count
-    if (colors.length >= 2) align.Multicolor += hit.count
+    // Main aspects wheel: each primary the card carries (a dual card lands in both).
+    for (const c of colors) { primary[c] += hit.count; primaryExp[c] += hit.expected }
+    // Heroism / Villainy / Multicolor wheel — a separate dimension.
+    if (aspects.includes('Heroism')) { align.Heroism += hit.count; alignExp.Heroism += hit.expected }
+    if (aspects.includes('Villainy')) { align.Villainy += hit.count; alignExp.Villainy += hit.expected }
+    if (colors.length === 0) { align.Neutral += hit.count; alignExp.Neutral += hit.expected }
+    if (colors.length >= 2) { align.Multicolor += hit.count; alignExp.Multicolor += hit.expected }
   }
-  const primarySlices: Slice[] = PRIMARIES.map((p) => ({ label: p, value: primary[p], color: ASPECT_COLORS[p] }))
-  const alignSlices: Slice[] = ['Heroism', 'Villainy', 'Multicolor', 'Neutral'].map((a) => ({ label: a, value: align[a], color: ALIGN_COLOR[a] }))
+  const primarySlices: Slice[] = PRIMARIES.map((p) => ({ label: p, value: primary[p], expected: primaryExp[p], color: ASPECT_COLORS[p] }))
+  const alignSlices: Slice[] = ['Heroism', 'Villainy', 'Multicolor', 'Neutral'].map((a) => ({ label: a, value: align[a], expected: alignExp[a], color: ALIGN_COLOR[a] }))
   return (
     <div className="your-stats-luck-aspects">
       <h4>Aspect mix</h4>
       <p className="your-stats-luck-aspects-note">
         Counts every card that <em>includes</em> a color, so a dual-color card lands in
-        two primaries — slices add to more than the cards you opened.
+        two aspects — slices add to more than the cards you opened. Expected % is for this set.
       </p>
       <div className="your-stats-luck-pies">
-        <Pie title="Primary colors" slices={primarySlices} />
-        <Pie title="Heroism / Villainy / structure" slices={alignSlices} />
+        <Pie title="Main Aspects" slices={primarySlices} />
+        <Pie title="Heroism / Villainy / Multicolor" slices={alignSlices} />
       </div>
     </div>
   )
