@@ -208,6 +208,31 @@
   font-weight: 700;
 }
 
+.dup-tag {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.45);
+  margin-left: 0.4rem;
+}
+
+.dup-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.1rem 0.45rem;
+  margin-left: 0.4rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
+.dup-sigma {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
+  margin-left: 0.3rem;
+}
+
 /* Distribution bars */
 .dup-dist {
   display: flex;

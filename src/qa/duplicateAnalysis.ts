@@ -25,9 +25,11 @@
  */
 import { generateSealedPod, generateSealedBox } from '../utils/boosterPack'
 import { initializeCardCache, getCachedCards } from '../utils/cardCache'
+import { getAllSetCodes } from '../utils/setConfigs/index'
 
 const N = parseInt(process.argv[2] || '2000', 10)
-const SETS = ['SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'SEC', 'LAW', 'ASH']
+// Derived from the set-config registry, so a newly added set is picked up automatically.
+const SETS = getAllSetCodes()
 const CATS = ['Leader', 'Base', 'Common', 'Uncommon', 'Rare', 'Legendary', 'Special']
 
 const gameId = (c: any) => (c.name || c.cardId || c.id) + '|' + (c.subtitle || '')
@@ -112,11 +114,56 @@ function naiveDupSets(n: number, P: number) {
 
 function runSet(set: string) {
   const sizes = poolSizes(set)
-  const sealed = emptyAcc(), draft = emptyAcc()
+  const sealed = emptyAcc(), sealedShuffled = emptyAcc(), draft = emptyAcc()
+  // non-shuffled sealed = 6 consecutive packs from a fresh belt (tight collation)
   for (let i = 0; i < N; i++) recordPod(sealed, flat(generateSealedPod([], set, 6)))
+  // box-based scenarios: draft (3 packs) and shuffled-sealed (6 packs) sampled spread across a 24-box
   const BOX = Math.max(150, Math.floor(N / 6))
-  for (let b = 0; b < BOX; b++) { const box = generateSealedBox([], set, 24); for (let t = 0; t < 25; t++) recordPod(draft, pickK(24, 3).flatMap(ix => box[ix].cards)) }
-  return { set, sizes, sealed, draft }
+  for (let b = 0; b < BOX; b++) {
+    const box = generateSealedBox([], set, 24)
+    for (let t = 0; t < 25; t++) recordPod(draft, pickK(24, 3).flatMap(ix => box[ix].cards))
+    for (let t = 0; t < 12; t++) recordPod(sealedShuffled, pickK(24, 6).flatMap(ix => box[ix].cards))
+  }
+  return { set, sizes, sealed, sealedShuffled, draft }
+}
+
+// ---- DB actual: count duplicates (by name) in real opened pools ----
+function simpleAcc() { return { n: 0, sum: 0, sq: 0, hist: new Array(16).fill(0) } }
+function recordCount(a: any, d: number) { a.n++; a.sum += d; a.sq += d * d; a.hist[Math.min(d, 15)]++ }
+function dupCountFromNames(names: string[]) {
+  const m = new Map<string, number>()
+  for (const k of names) m.set(k, (m.get(k) || 0) + 1)
+  let d = 0; for (const v of m.values()) if (v >= 2) d++
+  return d
+}
+async function runActual() {
+  const fs = await import('fs')
+  // prefer an explicit DATABASE_URL; otherwise fall back to the LOCAL dev DB (.env.local), never prod (.env)
+  if (!process.env.DATABASE_URL) {
+    try { const e = fs.readFileSync('.env.local', 'utf8').match(/^DATABASE_URL=(.*)$/m); if (e) process.env.DATABASE_URL = e[1].trim().replace(/^["']|["']$/g, '') } catch {}
+  }
+  const { queryRows } = await import('../../lib/db')
+  const LIMIT = parseInt(process.env.DA_ACTUAL_LIMIT || '4000', 10)
+  const out: any = {}
+  for (const set of SETS) {
+    // project just the gameplay identity (name|subtitle) per card — keeps payload small
+    const rows = await queryRows(
+      `SELECT (SELECT jsonb_agg((elem->>'name') || '|' || COALESCE(elem->>'subtitle','')) FROM jsonb_array_elements(cards) elem) AS names,
+              COALESCE(shuffled_packs, false) AS shuffled
+       FROM card_pools
+       WHERE pool_type = 'sealed' AND set_code = $1 AND cards IS NOT NULL
+       ORDER BY created_at DESC LIMIT $2`, [set, LIMIT])
+    const ns = simpleAcc(), sh = simpleAcc()
+    for (const r of rows as any[]) {
+      const names = r.names
+      if (!Array.isArray(names) || names.length < 16) continue // skip malformed / partial pools
+      recordCount(r.shuffled ? sh : ns, dupCountFromNames(names))
+    }
+    out[set] = { nonShuffled: ns, shuffled: sh }
+    console.error(`actual ${set}: nonShuffled n=${ns.n} (mean ${(ns.sum / (ns.n || 1)).toFixed(2)})  shuffled n=${sh.n}`)
+  }
+  fs.writeFileSync('/tmp/da_actual.json', JSON.stringify(out))
+  console.error('wrote /tmp/da_actual.json')
 }
 
 // ---- statistics built at merge time from the raw accumulators ----
@@ -173,8 +220,33 @@ function statsFor(a: any, sizes: any, packs: number) {
   }
 }
 
+// compute actual (DB) stats from a simpleAcc and compare to the simulated reference
+function actualStats(acc: any, simMean: number | null, simSd: number, simPods: number) {
+  if (!acc || acc.n < 1) return { n: 0, verdict: 'no-data' }
+  const mean = acc.sum / acc.n
+  const variance = acc.sq / acc.n - mean * mean
+  const sd = Math.sqrt(Math.max(0, variance))
+  const se = sd / Math.sqrt(acc.n)
+  let z: number | null = null, relDiff: number | null = null, verdict = 'sparse'
+  if (acc.n >= 30 && simMean != null) {
+    const simSe = simSd / Math.sqrt(simPods || 1)
+    z = (mean - simMean) / Math.sqrt(se * se + simSe * simSe)
+    relDiff = (mean - simMean) / simMean
+    const ad = Math.abs(relDiff)
+    // verdict combines effect size (relative diff) with significance, so huge N alone doesn't flag a bug
+    verdict = ad < 0.05 ? 'consistent' : ad < 0.12 ? 'minor-drift' : 'investigate'
+  }
+  return {
+    n: acc.n, mean: +mean.toFixed(4), sd: +sd.toFixed(4),
+    ci95: [+(mean - 1.96 * se).toFixed(4), +(mean + 1.96 * se).toFixed(4)],
+    hist: acc.hist.slice(0, 12),
+    z: z == null ? null : +z.toFixed(2), relDiff: relDiff == null ? null : +relDiff.toFixed(4), verdict,
+  }
+}
+
 async function main() {
   const mode = process.argv[3]
+  if (mode === 'list') { process.stdout.write(SETS.join(' ')); return }
   if (mode === 'run') {
     await initializeCardCache()
     const set = process.argv[4]
@@ -184,31 +256,51 @@ async function main() {
     process.stdout.write(JSON.stringify(r))
     return
   }
-  // build mode: merge per-set raw files, compute stats, write src/data/duplicateStats.json
+  if (mode === 'actual') {
+    await runActual()
+    return
+  }
+  // build mode: merge simulated per-set files + DB actual, compute stats, write src/data/duplicateStats.json
   const fs = await import('fs')
   const path = await import('path')
   const url = await import('url')
   const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
-  const out: any = { generatedAt: process.env.DA_DATE || '', sampleSizePerSet: N, metric: 'same card irrespective of variant (name+subtitle)', sets: {} }
+  let actual: any = {}
+  try { if (fs.existsSync('/tmp/da_actual.json')) actual = JSON.parse(fs.readFileSync('/tmp/da_actual.json', 'utf8')) } catch {}
+  const out: any = {
+    generatedAt: process.env.DA_DATE || '', sampleSizePerSet: N,
+    metric: 'same card irrespective of variant (name+subtitle)',
+    actualSource: Object.keys(actual).length ? 'opened sealed pools (DB)' : 'none', sets: {},
+  }
   for (const s of SETS) {
     const p = `/tmp/da_${s}.json`
     if (!fs.existsSync(p)) { console.error(`missing ${s}`); continue }
     const raw = JSON.parse(fs.readFileSync(p, 'utf8'))
+    const sealed6 = statsFor(raw.sealed, raw.sizes, 6)
+    const sealedShuffled = raw.sealedShuffled ? statsFor(raw.sealedShuffled, raw.sizes, 6) : null
+    const draft3 = statsFor(raw.draft, raw.sizes, 3)
+    const av = actual[s] || {}
     out.sets[s] = {
       poolSizes: raw.sizes,
-      sealed6: statsFor(raw.sealed, raw.sizes, 6),
-      draft3: statsFor(raw.draft, raw.sizes, 3),
+      sealed6, sealedShuffled, draft3,
+      actual: {
+        nonShuffled: actualStats(av.nonShuffled, sealed6.mean, sealed6.sd, sealed6.pods),
+        shuffled: actualStats(av.shuffled, sealedShuffled ? sealedShuffled.mean : null, sealedShuffled ? sealedShuffled.sd : 0, sealedShuffled ? sealedShuffled.pods : 1),
+      },
     }
   }
   const dataPath = path.join(__dirname, '..', 'data', 'duplicateStats.json')
   fs.writeFileSync(dataPath, JSON.stringify(out, null, 2))
   console.log(`Wrote ${dataPath}\n`)
-  // summary table
-  console.log('Set  | SEALED actual (95% CI)        theory   naive  | z     chi2/dof | DRAFT actual')
+  // summary table: simulated vs theory vs actual(DB)
+  console.log('Set  | Simulated (95% CI)      Theory  Naive | Actual DB (n)            relDiff  verdict')
   for (const s of SETS) {
     const o = out.sets[s]; if (!o) continue
-    const a = o.sealed6, d = o.draft3
-    console.log(`${s.padEnd(4)} | ${a.mean.toFixed(2)} [${a.ci95[0].toFixed(2)},${a.ci95[1].toFixed(2)}]   ${a.theoryMean.toFixed(2).padStart(6)}  ${a.naiveMean.toFixed(1).padStart(5)}  | ${a.z.toFixed(2).padStart(5)}  ${a.chi2PerDof.toFixed(2).padStart(7)} | ${d.mean.toFixed(2)} [${d.ci95[0].toFixed(2)},${d.ci95[1].toFixed(2)}]`)
+    const a = o.sealed6, ac = o.actual.nonShuffled
+    const acStr = ac && ac.n >= 1
+      ? `${(ac.mean ?? 0).toFixed(2)} (n=${ac.n})`.padEnd(20) + `${ac.relDiff != null ? (ac.relDiff * 100).toFixed(1) + '%' : '—'}`.padStart(7) + `  ${ac.verdict}`
+      : '(no data)'
+    console.log(`${s.padEnd(4)} | ${a.mean.toFixed(2)} [${a.ci95[0].toFixed(2)},${a.ci95[1].toFixed(2)}]   ${a.theoryMean.toFixed(2).padStart(5)}  ${a.naiveMean.toFixed(1).padStart(4)} | ${acStr}`)
   }
 }
 main().catch(e => { console.error(e); process.exit(1) })

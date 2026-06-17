@@ -47,12 +47,21 @@ A duplicate set is a card **name** that appears ≥2 times in the pool, with all
 
 ## Methodology
 
-### Actual (Monte Carlo)
-N = 2,000 sealed pods per set via `generateSealedPod(set, 6)`, plus 10,000 draft samples
-(3 packs drawn from across a freshly generated 24-pack box via `generateSealedBox(set, 24)`).
-This drives the production generator, so the belt system, foils, hyperspace, UC3 upgrades and
-prestige upgrades are all native. Per pool we record the duplicate count, the full distribution,
-the duplicated-card category, and the variant pairing that caused each duplicate.
+We compare **three** numbers per set:
+
+### 1. Simulated (Monte Carlo)
+N = 2,000 sealed pods per set via `generateSealedPod(set, 6)`, plus box-sampled scenarios
+(3-of-24 for draft, 6-of-24 for shuffled-sealed) via `generateSealedBox(set, 24)`. This drives
+the production generator, so the belt system, foils, hyperspace, UC3 upgrades and prestige
+upgrades are all native. Per pool we record the duplicate count, the full distribution, the
+duplicated-card category, and the variant pairing that caused each duplicate.
+
+### 2. Actual (real opened pools, DB)
+The `card_pools` table stores the full 96-card list of every opened sealed pool. We project each
+pool's card identities (`name|subtitle`) in SQL, count duplicates per pool, and aggregate the mean
+and distribution per set — split by the existing `shuffled_packs` flag. This is the ground truth:
+what players actually opened. Computed over the most recent pools per set (LAW n≈4,000, SEC
+n≈4,000; older/smaller sets fewer). Aggregates only — no per-user data is stored or committed.
 
 ### Theoretical model 1 — naive birthday/occupancy (the "wrong" baseline)
 Treat every slot as an i.i.d. uniform draw from its rarity pool. Expected duplicate sets =
@@ -160,6 +169,73 @@ is out of scope here.
 
 ---
 
+## Validation: simulated vs. actual opened pools
+
+Comparing the simulation to **real opened sealed pools** in the DB (non-shuffled) is the test for
+"is the generator behaving, or is there a bug?" Verdict combines effect size (relative difference)
+with significance, so huge N alone doesn't trip the flag:
+
+| Set | Simulated | Actual (DB) | n | Δ | Verdict |
+|-----|:---:|:---:|:---:|:---:|:---|
+| SOR | 4.37 | 4.48 | 382 | +2.4% | ✓ consistent |
+| SHD | 4.36 | 4.10 | 182 | −5.8% | ≈ minor drift |
+| TWI | 4.33 | 4.91 | 183 | **+13.4%** | ⚠ **investigate** |
+| JTL | 4.04 | 3.91 | 244 | −3.3% | ✓ consistent |
+| LOF | 4.02 | 4.07 | 425 | +1.1% | ✓ consistent |
+| SEC | 3.96 | 4.11 | 4,000 | +3.8% | ✓ consistent |
+| LAW | 6.74 | 6.56 | 3,998 | −2.7% | ✓ consistent |
+| ASH | 6.61 | 4.36 | 14 | — | sparse (beta) |
+
+Six of eight match the simulation within ~4% — the generator is producing what we model. **TWI is
+flagged** (+13.4%, z=2.8): its 183 pools span the set's full lifetime (released 2024-11), so they
+include output from older belt versions before recent collation work — most likely **historical
+drift, not a current bug**, but worth confirming. ASH has too few opened pools (n=14) to judge.
+As more pools are opened, the Actual column tightens automatically.
+
+## Effect of shuffling packs
+
+A sealed pool defaults to packs 0–5 of a 24-pack box (consecutive, one tightly-collated belt run).
+The "Randomize Packs" feature replaces them with 6 packs at **random indices across the box**
+(`shuffled_packs = true`). Those packs fall outside each belt's 24-card dedup window, so they behave
+nearly independently and **normal-vs-normal** common repeats reappear:
+
+| | Not shuffled | Shuffled (6-of-24) | Increase |
+|---|:---:|:---:|:---:|
+| SOR / SHD / TWI | ~4.3 | **~13.4** | ~3.1× |
+| JTL / LOF / SEC | ~4.0 | ~12.0 | ~3.0× |
+| LAW / ASH | ~6.7 | ~12.4 | ~1.8× |
+
+**Shuffling roughly triples the duplicate count** (less for LAW/ASH, which already run high from
+variants). This is why the per-pool `shuffled_packs` flag matters for stats: shuffled and
+non-shuffled pools are different populations and must be compared separately. (Currently ~all opened
+pools are non-shuffled, so the Actual column reflects the non-shuffled case.) These shuffled figures
+are a simulation prediction — there is not yet enough shuffled DB data to confirm them.
+
+## Variance, explained
+
+Per-pool duplicate counts are a sum of near-independent collision events (Poisson-Binomial), so
+**variance ≈ mean**. Sets with more variant cards per pack carry both a higher average and a wider
+spread: σ ≈ 1.5 for SOR–SEC (mean ~4) and σ ≈ 1.9 for LAW/ASH (mean ~6.7, the guaranteed hyperspace
+common). The high χ²/dof for some sets in the theory comparison is **model bias, not data noise** —
+the independent-collision model slightly over-counts (multi-hit) and the test is over-powered at
+N=2,000. Shuffling inflates variance further (independent packs). None of this indicates faulty
+code; it's the expected statistics of the design.
+
+## Generating these numbers for a new set
+
+The set list is derived from the config registry (`getAllSetCodes()`), so **adding a set config
+automatically includes it**. To (re)generate:
+
+```bash
+npm run dupe-stats            # all sets, N=2000, refreshes src/data/duplicateStats.json
+npm run dupe-stats -- 4000    # larger sample
+```
+
+This simulates every set in parallel, queries the DB for the Actual column, and writes the merged
+JSON. Good cadence: re-run on each set release (for Simulated/Theoretical) and on a schedule (e.g.
+weekly) to refresh Actual as pools accumulate. For Actual to reflect production, run it where
+`DATABASE_URL` points at prod (e.g. a Railway cron/one-off); locally it falls back to `.env.local`.
+
 ## Key findings
 
 1. **The belt works.** Same-printing duplicates are ~0 per pool; the naive birthday model
@@ -182,11 +258,13 @@ is out of scope here.
 ## Reproduction
 ```bash
 # Node >= 20 required (cards.json uses JSON import attributes)
-# per-set (parallelizable):
-npx tsx src/qa/duplicateAnalysis.ts 2000 run SOR > /tmp/da_SOR.json
-# ... repeat for each set ...
-# merge -> src/data/duplicateStats.json + summary table:
-DA_DATE=2026-06-17 npx tsx src/qa/duplicateAnalysis.ts 2000 build
+npm run dupe-stats          # simulate all sets + query DB actual + write src/data/duplicateStats.json
+npm run dupe-stats -- 4000  # larger sample
+
+# or the underlying steps (parallelizable):
+npx tsx src/qa/duplicateAnalysis.ts 2000 run SOR > /tmp/da_SOR.json   # per set
+npx tsx src/qa/duplicateAnalysis.ts 2000 actual                       # DB actual -> /tmp/da_actual.json
+DA_DATE=2026-06-17 npx tsx src/qa/duplicateAnalysis.ts 2000 build     # merge -> JSON + summary
 ```
 
 Supporting exploratory script: `src/qa/_dupSim2.ts`

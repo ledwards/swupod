@@ -42,6 +42,7 @@
     "test:data": "npx tsx src/data/cards.test.ts; npx tsx src/data/cardCounts.test.ts",
     "test:counts": "npx tsx src/data/cardCounts.test.ts",
     "qa": "npx tsx src/qa/packGeneration.test.ts && npx tsx src/qa/beltSlotAspects.test.ts && npx tsx src/qa/seamAwareBelt.test.ts && npx tsx src/qa/uc3Upgrade.test.ts",
+    "dupe-stats": "bash scripts/gen-duplicate-stats.sh",
     "test:e2e": "npx playwright test",
     "test:e2e:ui": "npx playwright test --ui",
     "test:e2e:headed": "npx playwright test --headed",
