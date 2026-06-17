@@ -2979,6 +2979,11 @@ a.your-stats-logged-out-link:active {
 
 /* The bar field: one full-height column per card (so even zero-count cards are
    hoverable), each with the actual bar at the bottom and an expected marker. */
+/* Positioning context for the horizontal-scroll affordance chevrons. */
+.your-stats-luck-hist-scroll {
+  position: relative;
+}
+
 .your-stats-luck-hist-bars {
   display: flex;
   align-items: stretch;
@@ -2988,6 +2993,66 @@ a.your-stats-logged-out-link:active {
   padding: 2px 0;
   overflow-x: auto;
   overflow-y: hidden;
+}
+
+/* Scroll cue chevrons: faint arrows on whichever edge still has off-screen
+   content. They overlay the bar field, are hidden by default, and only become
+   visible when the matching scroll direction is available. On desktop they
+   additionally fade in on hover; on touch they stay subtle (the field already
+   scrolls by touch — this is an extra hint, never the only way). */
+.your-stats-luck-scroll-cue {
+  position: absolute;
+  top: 0.4rem;
+  bottom: 0;
+  width: 36px;
+  display: flex;
+  align-items: center;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.9);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+}
+
+.your-stats-luck-scroll-cue--left {
+  left: 0;
+  justify-content: flex-start;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+}
+
+.your-stats-luck-scroll-cue--right {
+  right: 0;
+  justify-content: flex-end;
+  background: linear-gradient(270deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+}
+
+/* Mobile/touch: show the cue (faint) whenever that side can scroll, since there
+   is no hover to reveal it. */
+.your-stats-luck-hist-scroll.can-scroll-left .your-stats-luck-scroll-cue--left,
+.your-stats-luck-hist-scroll.can-scroll-right .your-stats-luck-scroll-cue--right {
+  opacity: 0.4;
+  pointer-events: auto;
+}
+
+/* Desktop: keep them out of the way until the user hovers the graph, then fade
+   in only on the side(s) with more content. */
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-luck-hist-scroll.can-scroll-left .your-stats-luck-scroll-cue--left,
+  .your-stats-luck-hist-scroll.can-scroll-right .your-stats-luck-scroll-cue--right {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .your-stats-luck-hist-scroll.can-scroll-left:hover .your-stats-luck-scroll-cue--left,
+  .your-stats-luck-hist-scroll.can-scroll-right:hover .your-stats-luck-scroll-cue--right {
+    opacity: 0.7;
+    pointer-events: auto;
+  }
+  .your-stats-luck-scroll-cue:hover {
+    opacity: 1 !important;
+  }
 }
 
 .your-stats-luck-bar-col {

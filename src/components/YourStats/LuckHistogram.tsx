@@ -18,7 +18,7 @@
  * both hover and tap drive, per .claude/rules/mobile.md.
  */
 
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { ASPECT_COLORS, NO_ASPECT_COLOR, RARITY_COLORS } from '@/src/utils/aspectColors'
 import { twoSidedPValue } from '@/src/utils/stats'
 
@@ -153,6 +153,27 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
   const [rarityFilters, setRarityFilters] = useState<Set<string>>(new Set())
   const [sortBy, setSortBy] = useState<'number' | 'frequency' | 'expected'>('number')
 
+  // Horizontal-scroll affordance: a faint chevron fades in (desktop hover) on
+  // whichever side still has content to scroll toward. Touch/trackpad scrolling
+  // is unaffected — this is only a hint, never the sole way to scroll.
+  const barsRef = useRef<HTMLDivElement | null>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
+
+  const recomputeScroll = useCallback(() => {
+    const el = barsRef.current
+    if (!el) return
+    setCanScrollLeft(el.scrollLeft > 0)
+    // -1 tolerance for sub-pixel rounding so the right arrow hides at the end.
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1)
+  }, [])
+
+  const scrollByViewport = useCallback((dir: -1 | 1) => {
+    const el = barsRef.current
+    if (!el) return
+    el.scrollBy({ left: dir * el.clientWidth * 0.9, behavior: 'smooth' })
+  }, [])
+
   const sortedHits = useMemo(() => {
     const arr = [...cardHits]
     if (sortBy === 'frequency') arr.sort((a, b) => b.count - a.count || a.number - b.number)
@@ -167,6 +188,17 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
   )
   const needle = search.trim().toLowerCase()
   const active = hovered || pinned
+
+  // Recompute the scroll affordance after layout (mount, sort/content change)
+  // and on window resize.
+  useLayoutEffect(() => {
+    recomputeScroll()
+  }, [recomputeScroll, sortedHits, sortBy])
+
+  useEffect(() => {
+    window.addEventListener('resize', recomputeScroll)
+    return () => window.removeEventListener('resize', recomputeScroll)
+  }, [recomputeScroll])
 
   function toggle(set: Set<string>, setter: (s: Set<string>) => void, key: string) {
     const next = new Set(set)
@@ -251,10 +283,15 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
       </div>
 
       <div
+        className={`your-stats-luck-hist-scroll${canScrollLeft ? ' can-scroll-left' : ''}${canScrollRight ? ' can-scroll-right' : ''}`}
+      >
+      <div
+        ref={barsRef}
         className="your-stats-luck-hist-bars"
         role="group"
         aria-label="Cards by collector number"
         onMouseLeave={() => setHovered(null)}
+        onScroll={recomputeScroll}
       >
         {sortedHits.map((hit) => {
           // sqrt scale: keeps single pulls visible even when one card spikes,
@@ -287,6 +324,30 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
             </button>
           )
         })}
+      </div>
+
+        <button
+          type="button"
+          className="your-stats-luck-scroll-cue your-stats-luck-scroll-cue--left"
+          aria-hidden="true"
+          tabIndex={-1}
+          onClick={() => scrollByViewport(-1)}
+        >
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          className="your-stats-luck-scroll-cue your-stats-luck-scroll-cue--right"
+          aria-hidden="true"
+          tabIndex={-1}
+          onClick={() => scrollByViewport(1)}
+        >
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
       </div>
 
       <CardReadout hit={active} packsCracked={packsCracked} />
