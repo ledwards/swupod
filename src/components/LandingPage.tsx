@@ -18,6 +18,7 @@ import {
 } from './landingPagePromo'
 import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 import ReleaseNotes from './ReleaseNotes'
+import { WAYFINDER_NEWS_URL } from './WayfinderStoreButtons'
 import Button from './Button'
 import SubscribeModal from './SubscribeModal'
 import Countdown from './Countdown'
@@ -584,6 +585,8 @@ function LandingPage() {
           <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">Patreon</a>
           <span className="footer-separator">·</span>
           <a href="https://swag.protectthepod.com" target="_blank" rel="noopener noreferrer">Swag</a>
+          <span className="footer-separator">·</span>
+          <a href={WAYFINDER_NEWS_URL} target="_blank" rel="noopener noreferrer">Companion</a>
           <span className="footer-separator">·</span>
           <a href="/support-the-pod" onClick={(e) => { e.preventDefault(); router.push('/support-the-pod') }}>Support the Pod</a>
           <span className="footer-separator">·</span>

@@ -20,6 +20,7 @@
 
 import { useMemo, useState } from 'react'
 import { ASPECT_COLORS, NO_ASPECT_COLOR, RARITY_COLORS } from '@/src/utils/aspectColors'
+import { twoSidedPValue } from '@/src/utils/stats'
 
 const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning'] as const
 
@@ -77,24 +78,45 @@ function barBackground(aspects: string[]): string {
   return `linear-gradient(180deg, ${colors[0]} 0%, ${colors[colors.length - 1]} 100%)`
 }
 
+// Poisson standard deviation for a count with mean `expected` — the same model
+// the API uses to derive `z` (σ = √expected). Surfaced in the readout so the
+// user sees the actual spread, not a vague "normal variance" hand-wave.
+function sigmaFor(hit: CardHit): number {
+  return Math.sqrt(Math.max(hit.expected, 0))
+}
+
+// "roughly 1 run in N" from the two-sided normal tail for |z|. Used only for
+// the outlier copy, where naming how rare the run is carries the point.
+function oneInRuns(z: number): string {
+  const p = twoSidedPValue(z)
+  if (p <= 0) return 'fewer than 1 run in a million'
+  return `roughly 1 run in ${Math.round(1 / p).toLocaleString()}`
+}
+
 function varianceVerdict(hit: CardHit): string {
-  if (hit.count === 0) {
-    return hit.expected >= 1
-      ? `Expected about ${hit.expected.toFixed(1)} by now — you have none yet. Still well within normal.`
-      : 'Not pulled yet, which is completely normal for a card this rare in your packs.'
+  // Below one expected copy a single σ is wider than the mean itself, so the
+  // z-score is unstable — don't dress it up as a sigma reading.
+  if (hit.expected < 1) {
+    return hit.count === 0
+      ? `Expected well under one copy across these packs, so none yet sits right on the mean.`
+      : `Expected under one copy here — ${hit.count} is too little data to read as luck either way.`
   }
+  const absZ = Math.abs(hit.z).toFixed(1)
+  const dir = hit.z >= 0 ? 'above' : 'below'
   if (hit.withinNormal) {
-    return 'Right around what’s expected — normal variance, not luck.'
+    return `${absZ}σ ${dir} the mean — inside the ±2σ range that holds ~95% of runs, so this is normal variance.`
   }
-  return hit.z > 0
-    ? 'More than expected — a genuinely lucky run on this card.'
-    : 'Fewer than expected — the unlucky tail for this card.'
+  return `${absZ}σ ${dir} the mean — past ±2σ; ${oneInRuns(hit.z)} strays this far. A genuinely ${hit.z > 0 ? 'lucky' : 'unlucky'} run on this card.`
 }
 
 function deltaLabel(hit: CardHit): string {
   const d = hit.delta
   const sign = d > 0 ? '+' : ''
-  return `${sign}${d.toFixed(1)} vs expected ${hit.expected.toFixed(1)}`
+  const sigma = sigmaFor(hit)
+  // Show the spread as expected ± σ so the delta reads against the actual
+  // standard deviation, not a bare number.
+  const band = sigma >= 0.05 ? ` ± ${sigma.toFixed(1)}` : ''
+  return `${sign}${d.toFixed(1)} vs expected ${hit.expected.toFixed(1)}${band}`
 }
 
 function CardReadout({ hit, packsCracked }: { hit: CardHit | null; packsCracked: number }) {

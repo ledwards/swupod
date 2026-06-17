@@ -113,7 +113,16 @@ function MetaSection({
 export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, lockSet = false, includeBetaSets = false, fetchImpl }: MetaDashboardProps) {
   const setTabs = useMemo(() => getStatsSetTabs(includeBetaSets), [includeBetaSets])
   const [activeSet, setActiveSet] = useState<string>(setTabs.includes(setCode) ? setCode : DEFAULT_STATS_SET_TAB)
-  const [state, setState] = useState({ loading: true, error: false, played: [] as MetaEntry[], drafted: [] as MetaEntry[] })
+  const [state, setState] = useState({
+    loading: true,
+    error: false,
+    played: [] as MetaEntry[],
+    drafted: [] as MetaEntry[],
+    // Per-CARD (not leader) prevalence: full lists, sliced into most/least at
+    // render so "least" is the true tail, not the bottom of the top-N.
+    playedCards: [] as MetaEntry[],
+    draftedCards: [] as MetaEntry[],
+  })
   // The viewer's REAL win rate by leader, from their captured games — shown
   // outright (no blur gate). Empty until they have recorded games.
   const [winRates, setWinRates] = useState<Array<{ leaderName: string; winRate: number; matches: number; leaderImageUrl: string | null; baseColor: string | null }>>([])
@@ -150,8 +159,12 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
       getJson(f, `/api/stats/leader-selection?${base}&loggedInOnly=true`),
       getJson(f, `/api/stats/draft-picks?${base}&type=leaders`),
       getJson(f, `/api/stats/draft-picks?${base}&type=leaders&loggedInOnly=true`),
+      // Per-card sources: deck inclusion (how often a card makes built decks)
+      // and non-leader draft picks (how early it's taken).
+      getJson(f, `/api/stats/deck-inclusion?${base}`),
+      getJson(f, `/api/stats/draft-picks?${base}`),
     ])
-      .then(([playedAll, playedIn, draftAll, draftIn]) => {
+      .then(([playedAll, playedIn, draftAll, draftIn, playedCardsRaw, draftedCardsRaw]) => {
         if (cancelled) return
         const playedInMap = new Map((playedIn.leaders || []).map((l: any) => [l.cardName, l.selectionRate]))
         const played: MetaEntry[] = (playedAll.leaders || []).slice(0, 8).map((l: any) => ({
@@ -175,13 +188,36 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
             imageUrl: c.imageUrl || null,
           }))
 
-        setState({ loading: false, error: false, played, drafted })
+        // Per-card "played": share of built decks that ran the card.
+        const playedCards: MetaEntry[] = (playedCardsRaw.cards || []).map((c: any) => ({
+          name: c.cardName,
+          value: Number(c.inclusionRate || 0),
+          loggedIn: null,
+          aspects: c.aspects || [],
+          imageUrl: c.imageUrl || null,
+        }))
+
+        // Per-card "drafted": how often the card is taken first when seen.
+        // Require a floor of picks so a single lucky first-pick can't top the
+        // chart at 100%.
+        const MIN_CARD_PICKS = 8
+        const draftedCards: MetaEntry[] = (draftedCardsRaw.cards || [])
+          .filter((c: any) => Number(c.timesPicked || 0) >= MIN_CARD_PICKS && c.firstPickPct != null)
+          .map((c: any) => ({
+            name: c.cardName,
+            value: Number(c.firstPickPct || 0),
+            loggedIn: null,
+            aspects: c.aspects || [],
+            imageUrl: c.imageUrl || null,
+          }))
+
+        setState({ loading: false, error: false, played, drafted, playedCards, draftedCards })
       })
       .catch((err) => {
         if (cancelled) return
         // eslint-disable-next-line no-console
         console.error('MetaDashboard fetch error:', err)
-        setState({ loading: false, error: true, played: [], drafted: [] })
+        setState({ loading: false, error: true, played: [], drafted: [], playedCards: [], draftedCards: [] })
       })
     return () => {
       cancelled = true
@@ -250,10 +286,52 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
               loading={state.loading}
             />
           </div>
+
+          <div className="your-stats-meta-subhead">
+            <span className="your-stats-eyebrow">By card</span>
+            <h3>Individual cards, not just leaders</h3>
+          </div>
+          <div className="your-stats-meta-grid">
+            <MetaSection
+              eyebrow="Deckbuilding"
+              title="Most-played cards"
+              subtitle="Share of built decks that run each card."
+              entries={topOf(state.playedCards)}
+              loading={state.loading}
+            />
+            <MetaSection
+              eyebrow="Drafting"
+              title="Most-drafted cards"
+              subtitle="How often each card is taken first when seen."
+              entries={topOf(state.draftedCards)}
+              loading={state.loading}
+            />
+            <MetaSection
+              eyebrow="Deckbuilding"
+              title="Least-played cards"
+              subtitle="Cards that almost never make a deck."
+              entries={leastOf(state.playedCards)}
+              loading={state.loading}
+            />
+            <MetaSection
+              eyebrow="Drafting"
+              title="Least-drafted cards"
+              subtitle="Cards most often left in the pack."
+              entries={leastOf(state.draftedCards)}
+              loading={state.loading}
+            />
+          </div>
         </>
       )}
     </section>
   )
+}
+
+/** Top of a most-X list: highest entries, descending. */
+function topOf(entries: MetaEntry[]): MetaEntry[] {
+  return [...entries]
+    .sort((a, b) => Number(b.value || 0) - Number(a.value || 0))
+    .slice(0, 8)
 }
 
 /** Bottom of a most-X list: lowest non-zero entries, ascending. */
