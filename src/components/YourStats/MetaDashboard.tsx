@@ -12,7 +12,6 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Button from '@/src/components/Button'
-import WayfinderStoreButtons from '@/src/components/WayfinderStoreButtons'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import { getStatsSetTabs, DEFAULT_STATS_SET_TAB } from '@/src/utils/statsSetTabs'
 import { getAspectColor } from '@/src/utils/aspectColors'
