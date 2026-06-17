@@ -1,6 +1,7 @@
 // @ts-nocheck
 // GET /api/stats/leader-selection - Get leader selection rates from built decks
 import { queryRows, queryRow } from '@/lib/db'
+import { cachedAggregate, STATS_AGGREGATE_TTL_MS } from '@/lib/queryCache'
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
 import { buildCardLookupMaps } from '@/src/utils/cardNormalization'
@@ -64,34 +65,42 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       userFilter = `AND bd.user_id = $${queryParams.length}::uuid`
     }
 
-    // Get total built decks count
-    const summary = await queryRow(
-      `SELECT COUNT(*) AS total_decks
-       FROM built_decks bd
-       ${joinClause}
-       ${topPlayersJoin}
-       WHERE bd.set_code = $1 AND bd.built_at >= $2 AND bd.built_at < ($3::date + interval '1 day')
-         ${poolTypeFilter}
-         ${botFilter}
-         ${tournamentFilter}
-         ${loggedInFilter}
-         ${userFilter}`,
-      queryParams
-    )
-
-    // Get all leader JSONB values from built_decks
-    const rows = await queryRows(
-      `SELECT bd.leader
-       FROM built_decks bd
-       ${joinClause}
-       ${topPlayersJoin}
-       WHERE bd.set_code = $1 AND bd.built_at >= $2 AND bd.built_at < ($3::date + interval '1 day')
-         ${poolTypeFilter}
-         ${botFilter}
-         ${tournamentFilter}
-         ${loggedInFilter}
-         ${userFilter}`,
-      queryParams
+    // Heavy platform-wide all-time scan — cache the result in-process (5 min)
+    // so the /me Meta tab's repeated all-time fetches don't re-scan every deck.
+    const { summary, rows } = await cachedAggregate(
+      `leader-selection:${url.search}`,
+      STATS_AGGREGATE_TTL_MS,
+      async () => {
+        const [summary, rows] = await Promise.all([
+          queryRow(
+            `SELECT COUNT(*) AS total_decks
+             FROM built_decks bd
+             ${joinClause}
+             ${topPlayersJoin}
+             WHERE bd.set_code = $1 AND bd.built_at >= $2 AND bd.built_at < ($3::date + interval '1 day')
+               ${poolTypeFilter}
+               ${botFilter}
+               ${tournamentFilter}
+               ${loggedInFilter}
+               ${userFilter}`,
+            queryParams
+          ),
+          queryRows(
+            `SELECT bd.leader
+             FROM built_decks bd
+             ${joinClause}
+             ${topPlayersJoin}
+             WHERE bd.set_code = $1 AND bd.built_at >= $2 AND bd.built_at < ($3::date + interval '1 day')
+               ${poolTypeFilter}
+               ${botFilter}
+               ${tournamentFilter}
+               ${loggedInFilter}
+               ${userFilter}`,
+            queryParams
+          ),
+        ])
+        return { summary, rows }
+      },
     )
 
     // Aggregate leader selections by name

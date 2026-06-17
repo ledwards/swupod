@@ -1,6 +1,7 @@
 // @ts-nocheck
 // GET /api/stats/deck-inclusion - Get deck inclusion metrics per card
 import { queryRows, queryRow } from '@/lib/db'
+import { cachedAggregate, STATS_AGGREGATE_TTL_MS } from '@/lib/queryCache'
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
 import { buildCardLookupMaps, cardIdentityKey } from '@/src/utils/cardNormalization'
@@ -73,7 +74,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // Previously fetched full JSONB card objects (images, text, traits) for every row
     // and processed in JS — caused 30+ second response times.
     // Now pushes aggregation to SQL via CTEs, returning only per-card summary rows.
-    const [countResult, cardRows, deckRows] = await Promise.all([
+    const [countResult, cardRows, deckRows] = await cachedAggregate(
+      `deck-inclusion:${url.search}`,
+      STATS_AGGREGATE_TTL_MS,
+      () => Promise.all([
       // Query 1: Count total pool-deck pairs (fast, no JSONB processing)
       queryRow(
         `SELECT COUNT(*) AS total
@@ -157,7 +161,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         WHERE ${baseWhere}`,
         queryParams
       ),
-    ])
+      ]),
+    )
 
     const totalPoolsWithDecks = parseInt(countResult?.total || '0')
 

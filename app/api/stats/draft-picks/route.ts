@@ -1,6 +1,7 @@
 // @ts-nocheck
 // GET /api/stats/draft-picks - Get draft pick analytics per card
 import { queryRows, queryRow } from '@/lib/db'
+import { cachedAggregate, STATS_AGGREGATE_TTL_MS } from '@/lib/queryCache'
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
 import { buildCardLookupMaps } from '@/src/utils/cardNormalization'
@@ -70,8 +71,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     // Per-card pick analytics (non-leader cards only, merge variants by card_name)
-    // Only count picks from completed drafts
-    const cardStats = await queryRows(
+    // Only count picks from completed drafts. Cached in-process (5 min): these
+    // are heavy all-time scans the /me Meta tab requests repeatedly.
+    const { cardStats, summary } = await cachedAggregate(
+      `draft-picks:${url.search}`,
+      STATS_AGGREGATE_TTL_MS,
+      async () => {
+        const [cardStats, summary] = await Promise.all([
+          queryRows(
       `SELECT
         dp.card_name,
         MIN(dp.card_id) AS card_id,
@@ -96,10 +103,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       GROUP BY dp.card_name, dp.rarity, dp.card_type
       ORDER BY avg_pick_position ASC`,
       queryParams
-    )
-
-    // Summary stats (completed drafts only)
-    const summary = await queryRow(
+          ),
+          queryRow(
       `SELECT
         COUNT(*) AS total_picks,
         COUNT(DISTINCT dp.pod_id) AS total_drafts,
@@ -116,6 +121,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         ${loggedInFilter}
         ${userFilter}`,
       queryParams
+          ),
+        ])
+        return { cardStats, summary }
+      },
     )
 
     // Enrich cards with aspects, subtitle, cost from card cache

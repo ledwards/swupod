@@ -5,6 +5,7 @@
 // canonical "Leader Color HP" fallback — never a hand-rolled "Leader / Base"
 // slash). poolType=sealed|draft splits the field.
 import { queryRows } from '@/lib/db'
+import { cachedAggregate, STATS_AGGREGATE_TTL_MS } from '@/lib/queryCache'
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
 import { buildCardLookupMaps } from '@/src/utils/cardNormalization'
@@ -24,12 +25,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const poolTypeFilter = poolType ? `AND bd.pool_type = $4` : ''
     const queryParams: string[] = poolType ? [setCode, since, until, poolType] : [setCode, since, until]
 
-    const rows = await queryRows(
-      `SELECT bd.leader, bd.base
-       FROM built_decks bd
-       WHERE bd.set_code = $1 AND bd.built_at >= $2 AND bd.built_at < ($3::date + interval '1 day')
-         ${poolTypeFilter}`,
-      queryParams,
+    const rows = await cachedAggregate(
+      `archetype-selection:${url.search}`,
+      STATS_AGGREGATE_TTL_MS,
+      () => queryRows(
+        `SELECT bd.leader, bd.base
+         FROM built_decks bd
+         WHERE bd.set_code = $1 AND bd.built_at >= $2 AND bd.built_at < ($3::date + interval '1 day')
+           ${poolTypeFilter}`,
+        queryParams,
+      ),
     )
 
     // Aggregate by archetype identity (leader + base color + base HP).
