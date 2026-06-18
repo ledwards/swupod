@@ -3,7 +3,7 @@
 .match-card {
   background: rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 1rem;
   display: flex;
   flex-direction: column;

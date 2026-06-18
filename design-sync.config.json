@@ -1,0 +1,39 @@
+{
+  "pkg": "swupod",
+  "globalName": "Swupod",
+  "shape": "package",
+  "srcDir": "src",
+  "tsconfig": "tsconfig.json",
+  "cssEntry": "src/index.css",
+  "extraFonts": ".design-sync/fonts/barlow.css",
+  "runtimeFontPrefixes": ["Avenir"],
+  "guidelinesGlob": ["docs/STYLE_GUIDE.md"],
+  "overrides": {
+    "Modal": { "cardMode": "single", "viewport": "600x460" },
+    "ConfirmModal": { "cardMode": "single", "viewport": "600x460" }
+  },
+  "componentSrcMap": {
+    "Button": "src/components/Button.tsx",
+    "Card": "src/components/Card.tsx",
+    "AspectIcon": "src/components/AspectIcon.tsx",
+    "CostIcon": "src/components/CostIcon.tsx",
+    "Modal": "src/components/Modal.tsx",
+    "ConfirmModal": "src/components/ConfirmModal.tsx",
+    "CollapsibleSection": "src/components/CollapsibleSection.tsx",
+    "InfoTooltip": "src/components/InfoTooltip.tsx",
+    "SearchInput": "src/components/SearchInput.tsx",
+    "EditableTitle": "src/components/EditableTitle.tsx",
+    "UserAvatar": "src/components/UserAvatar.tsx",
+    "Countdown": "src/components/Countdown.tsx",
+    "CountdownTimer": "src/components/CountdownTimer.tsx",
+    "DraftTimer": "src/components/DraftTimer.tsx",
+    "TimerButton": "src/components/TimerButton.tsx",
+    "TimerPanel": "src/components/TimerPanel.tsx",
+    "DraftableCard": "src/components/DraftableCard.tsx",
+    "PassDirectionArrow": "src/components/PassDirectionArrow.tsx",
+    "PlayerSeat": "src/components/PlayerSeat.tsx",
+    "MatchCard": "src/components/MatchCard.tsx",
+    "DraftReportButton": "src/components/DraftReportButton.tsx",
+    "WayfinderStoreButtons": "src/components/WayfinderStoreButtons.tsx"
+  }
+}

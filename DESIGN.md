@@ -56,11 +56,16 @@ typography:
     fontWeight: 600
     lineHeight: 1
 rounded:
+  # UI-chrome scale — buttons, modals, inputs, panels.
   xs: "4px"
   sm: "6px"
   md: "8px"
   lg: "12px"
-  card: "8px"
+  # Card rendering is a separate, geometry-derived system, not on the UI scale:
+  # the .canvas-card corner is 11px, with insets computed off it (9px leader/base
+  # inset, 13px focus ring = corner + outline-offset, 18px foil overlay). Do not
+  # snap these to the UI scale — they track the physical card corner.
+  card: "11px"
   full: "50%"
 spacing:
   xs: "0.5rem"
