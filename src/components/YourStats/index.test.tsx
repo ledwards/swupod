@@ -301,9 +301,9 @@ describe('<LuckSection />', () => {
     assert.match(LUCK_SECTION_CODE, /scope: Scope = 'opened'/)
   })
 
-  it('defaults setCode to LAW (pragmatic v1 default)', () => {
-    assert.match(LUCK_SECTION_CODE, /DEFAULT_STATS_SET_TAB/)
-    assert.match(LUCK_SECTION_CODE, /DEFAULT_SET\s*=\s*DEFAULT_STATS_SET_TAB/)
+  it('defaults setCode to the newest set the viewer can see (beta-aware)', () => {
+    // ASH for beta-access users, newest released otherwise — never a hardcoded set.
+    assert.match(LUCK_SECTION_CODE, /getDefaultStatsSetTab\(includeBetaSets\)/)
   })
 
   it('uses the shared stats set tabs so beta sets stay aligned with /stats', () => {

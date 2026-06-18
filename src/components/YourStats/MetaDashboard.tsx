@@ -12,7 +12,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Button from '@/src/components/Button'
-import { getStatsSetTabs, DEFAULT_STATS_SET_TAB } from '@/src/utils/statsSetTabs'
+import { getStatsSetTabs, getDefaultStatsSetTab, DEFAULT_STATS_SET_TAB } from '@/src/utils/statsSetTabs'
 import { todayStr } from '@/src/utils/statsEras'
 import { getAspectColor } from '@/src/utils/aspectColors'
 import { DraftAnalytics } from './DraftAnalytics'
@@ -193,7 +193,7 @@ export function MetaDashboard({ setCode = DEFAULT_STATS_SET_TAB, lockSet = false
   // selector only renders when unlocked, so its tab list still hides beta sets.
   const setTabs = useMemo(() => getStatsSetTabs(includeBetaSets || lockSet), [includeBetaSets, lockSet])
   const [activeSet, setActiveSet] = useState<string>(
-    lockSet ? setCode : (setTabs.includes(setCode) ? setCode : DEFAULT_STATS_SET_TAB),
+    lockSet ? setCode : (setTabs.includes(setCode) ? setCode : getDefaultStatsSetTab(includeBetaSets)),
   )
   // Full lists, sliced into most/least at render so "least" is the true tail.
   // Popularity (deck inclusion) is split sealed vs draft; "picked" (draft pick

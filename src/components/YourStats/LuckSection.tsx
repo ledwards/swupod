@@ -26,11 +26,7 @@ import {
   ShowcaseRateWidget,
   AspectBreakdown,
 } from './LuckHistogram'
-import { DEFAULT_STATS_SET_TAB, getStatsSetTabs } from '@/src/utils/statsSetTabs'
-
-// Defaulting to LAW is pragmatic; the brainstorm says "most recent set with
-// activity" but a cheap fetch would be a second roundtrip.
-const DEFAULT_SET = DEFAULT_STATS_SET_TAB
+import { getDefaultStatsSetTab, getStatsSetTabs } from '@/src/utils/statsSetTabs'
 
 type Scope = 'opened' | 'kept'
 
@@ -75,7 +71,9 @@ export interface LuckSectionProps {
 }
 
 export function LuckSection({ since, until, fetchImpl, initialSet, lockedSetCode, includeBetaSets = false }: LuckSectionProps) {
-  const [setCode, setSetCode] = useState<string>(lockedSetCode || initialSet || DEFAULT_SET)
+  // Default to the newest set the viewer can see (ASH for beta-access users,
+  // newest released otherwise) — never a stale hardcoded set.
+  const [setCode, setSetCode] = useState<string>(lockedSetCode || initialSet || getDefaultStatsSetTab(includeBetaSets))
   // "What I kept" was confusing; luck is always "packs I opened".
   const scope: Scope = 'opened'
   const [state, setState] = useState<FetchState>({
@@ -94,8 +92,8 @@ export function LuckSection({ since, until, fetchImpl, initialSet, lockedSetCode
   useEffect(() => {
     if (lockedSetCode) return
     if (setTabs.includes(setCode)) return
-    setSetCode(DEFAULT_SET)
-  }, [setCode, setTabs, lockedSetCode])
+    setSetCode(getDefaultStatsSetTab(includeBetaSets))
+  }, [setCode, setTabs, lockedSetCode, includeBetaSets])
 
   useEffect(() => {
     let cancelled = false
