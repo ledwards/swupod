@@ -1109,12 +1109,12 @@ export function useDeckExport({
       }
       const textRight = width - padding - (logo ? logoSize + 12 : 0)
       ctx.textAlign = 'right'
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'
-      ctx.font = `600 18px ${FONT}`
-      ctx.fillText('built on Protect the Pod', textRight, footerBaseline - 22)
       ctx.fillStyle = 'rgba(255, 255, 255, 0.55)'
       ctx.font = `400 15px ${FONT}`
-      ctx.fillText(poolPublicUrl, textRight, footerBaseline - 1)
+      ctx.fillText(poolPublicUrl, textRight, footerBaseline - 24)
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'
+      ctx.font = `600 18px ${FONT}`
+      ctx.fillText('built on Protect the Pod', textRight, footerBaseline - 1)
 
       // QR code to the pool, in the bottom-right just above the credit block.
       // Generated locally (no network) as a data URL → never taints the canvas.
