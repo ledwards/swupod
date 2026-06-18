@@ -110,8 +110,14 @@ test.describe('Logged-out user export flow', () => {
     poolShareId = page.url().split('/pool/')[1]?.split('/')[0]?.split('?')[0]
     console.log(`✓ Pool created: ${poolShareId}`)
 
-    // Wait for pool to save to database
-    await page.waitForTimeout(2000)
+    // The pool only persists to the DB when the pack-opening animation completes
+    // (app/pools/new: handleAnimationComplete → savePool). Click "Skip →" to
+    // finish it — the real user flow — then wait for the save to land in the DB.
+    await page.locator('.skip-button').click()
+    await expect
+      .poll(async () => (await page.request.get(`${BASE_URL}/api/pools/${poolShareId}`)).status(), { timeout: 15000 })
+      .toBe(200)
+    console.log('✓ Pool saved to database after opening packs')
 
     // === STEP 2: Navigate to deck builder ===
     console.log('\n--- STEP 2: Opening deck builder ---')
