@@ -4,7 +4,7 @@ This document describes the UI component library and design patterns used in SWU
 
 ## Button Component
 
-The primary Button component (`src/components/Button.jsx`) should be used for all interactive button elements.
+The primary Button component (`src/components/Button.tsx`) should be used for all interactive button elements.
 
 ### Import
 
@@ -26,11 +26,13 @@ import { Button } from '@/src/components/Button'
 | `discord` | Discord purple (#5865F2) | Discord-related actions |
 | `icon` | Square icon-only button | Toolbar icons, close buttons |
 | `toggle` | For toggleable options | Sort/filter toggles |
+| `warning` | Red "action required" look (no hover, reads as disabled) | Action-required / locked states |
 
 ### Sizes
 
 | Size | Description |
 |------|-------------|
+| `xs` | Extra small - 28px height, matches icon button |
 | `sm` | Small - compact UI, toolbars |
 | `md` | Medium (default) - standard buttons |
 | `lg` | Large - prominent CTAs |
@@ -39,11 +41,12 @@ import { Button } from '@/src/components/Button'
 
 ```jsx
 <Button
-  variant="primary"       // Button style variant
-  size="md"               // Size: 'sm' | 'md' | 'lg'
+  variant="primary"       // Button style variant (see table)
+  size="md"               // Size: 'xs' | 'sm' | 'md' | 'lg'
   disabled={false}        // Disabled state
   active={false}          // Active state (for toggle variant)
   textOnly={false}        // Text-only mode (no background/border)
+  glowColor="blue"        // Custom hover glow: 'green' | 'red' | 'blue' | 'yellow' (overrides variant)
   className=""            // Additional CSS classes
   onClick={handleClick}   // Click handler
 >
@@ -234,6 +237,15 @@ Card boxes have reduced top padding to minimize space between header and box edg
 - **White text**: Pure white, not gray
 - **Counts in parens**: "Your Deck (28 cards)"
 - **No top margin**: Header sits close to box top edge
+
+## Search Inputs
+
+Search boxes must be **slim**. Do NOT build tall, full-width "pill" search bars.
+
+- Height **~30px** (not 42px+), font **~0.82rem**, padding tight (`0 0.7rem 0 1.85rem` with a 14px leading magnifier icon).
+- **Cap the width** and don't let it grow: `flex: 0 1 ~220px`, never `flex: 1 1 …` (that stretches it into a fat bar).
+- Border radius **~8px** (a subtle round), not a `999px` pill.
+- Reuse `SearchInput` (`src/components/SearchInput.tsx`) where practical, or the `.your-stats-search` pattern. A fat, stretched search box is a recurring smell — keep them small and unobtrusive.
 
 ## Component Patterns
 
@@ -453,11 +465,11 @@ For chaos sealed where each pack is from a different set:
 
 ```
 src/components/
-├── Button.jsx          # Core button component
+├── Button.tsx          # Core button component
 ├── Button.css          # Button styles
-├── TimerButton.jsx     # Timer pause/play button
+├── TimerButton.tsx     # Timer pause/play button
 ├── TimerButton.css     # Timer button styles
-├── Modal.jsx           # Modal/dialog component
+├── Modal.tsx           # Modal/dialog component
 ├── Modal.css           # Modal styles
 ├── PackSelector.tsx    # Pack selection grid
 ├── PackSelector.css    # Pack selector styles

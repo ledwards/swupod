@@ -8,6 +8,7 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { getBaseCardId as getBaseCardIdRaw, buildBaseCardMap } from '../utils/variantDowngrade'
 import { formatPoolLabel } from '../utils/poolDisplayName'
+import { getPackArtUrl } from '../utils/packArt'
 import { trackEvent, AnalyticsEvents } from './useAnalytics'
 
 // === TYPES ===
@@ -321,8 +322,14 @@ export function useDeckExport({
       const leaderBaseRowHeight = hasLeaderBase ? leaderRotatedHeight : 0
       const footerHeight = poolOwnerUsername ? 100 : 70
 
+      // Hero banner: the set's expansion art runs across the very top, and the
+      // same art is tiled (darkened) as the repeating background for the body.
+      // Set art lives in /public (same-origin) so it never taints the canvas.
+      const setArtUrl = getPackArtUrl(setCode)
+      const heroHeight = setArtUrl ? 200 : 0
+
       const width = padding * 2 + cardsPerRow * cardWidth + (cardsPerRow - 1) * spacing
-      const totalHeight = padding * 2 +
+      const totalHeight = heroHeight + padding * 2 +
         titleHeight + sectionSpacing +
         (hasLeaderBase ? leaderBaseRowHeight + sectionSpacing : 0) +
         labelHeight + deckRows * (cardHeight + spacing) + sectionSpacing +
@@ -338,28 +345,83 @@ export function useDeckExport({
         throw new Error('Failed to get canvas context')
       }
 
-      // Dark background
-      ctx.fillStyle = '#1a1a2e'
-      ctx.fillRect(0, 0, width, totalHeight)
+      // Load the set's expansion art (same-origin → no canvas taint). Falls back
+      // to the flat dark grid if the set has no art or the image fails to load.
+      const loadSameOrigin = (url: string): Promise<HTMLImageElement | null> =>
+        new Promise((resolve) => {
+          const img = new Image()
+          img.onload = (): void => resolve(img)
+          img.onerror = (): void => resolve(null)
+          img.src = url
+        })
+      const setArtImg = setArtUrl ? await loadSameOrigin(setArtUrl) : null
 
-      // Draw grid pattern
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)'
-      ctx.lineWidth = 1
-      const gridSize = 20
-      for (let x = 0; x < width; x += gridSize) {
+      if (setArtImg) {
+        // Base fill.
+        ctx.fillStyle = '#0e0e16'
+        ctx.fillRect(0, 0, width, totalHeight)
+
+        // Repeating set-art motif (darkened) behind the deck body.
+        const tileW = 250
+        const tileH = Math.round((tileW * setArtImg.height) / setArtImg.width)
+        const tile = document.createElement('canvas')
+        tile.width = tileW
+        tile.height = tileH
+        const tctx = tile.getContext('2d')
+        if (tctx) {
+          tctx.drawImage(setArtImg, 0, 0, tileW, tileH)
+          tctx.fillStyle = 'rgba(14, 14, 22, 0.7)'
+          tctx.fillRect(0, 0, tileW, tileH)
+          const pattern = ctx.createPattern(tile, 'repeat')
+          if (pattern) {
+            pattern.setTransform(new DOMMatrix([1, 0, 0, 1, 0, heroHeight]))
+            ctx.save()
+            ctx.fillStyle = pattern
+            ctx.fillRect(0, heroHeight, width, totalHeight - heroHeight)
+            ctx.restore()
+          }
+        }
+        // Readability scrim over the tiled body.
+        ctx.fillStyle = 'rgba(10, 10, 18, 0.5)'
+        ctx.fillRect(0, heroHeight, width, totalHeight - heroHeight)
+
+        // Hero banner: set art across the top, cover-fit, fading into the body.
+        const s = Math.max(width / setArtImg.width, heroHeight / setArtImg.height)
+        const hw = setArtImg.width * s
+        const hh = setArtImg.height * s
+        ctx.save()
         ctx.beginPath()
-        ctx.moveTo(x, 0)
-        ctx.lineTo(x, totalHeight)
-        ctx.stroke()
-      }
-      for (let y = 0; y < totalHeight; y += gridSize) {
-        ctx.beginPath()
-        ctx.moveTo(0, y)
-        ctx.lineTo(width, y)
-        ctx.stroke()
+        ctx.rect(0, 0, width, heroHeight)
+        ctx.clip()
+        ctx.drawImage(setArtImg, (width - hw) / 2, (heroHeight - hh) / 2, hw, hh)
+        const fade = ctx.createLinearGradient(0, heroHeight - 110, 0, heroHeight)
+        fade.addColorStop(0, 'rgba(14, 14, 22, 0)')
+        fade.addColorStop(1, 'rgba(14, 14, 22, 0.96)')
+        ctx.fillStyle = fade
+        ctx.fillRect(0, heroHeight - 110, width, 110)
+        ctx.restore()
+      } else {
+        // Fallback: original flat dark background + faint grid.
+        ctx.fillStyle = '#1a1a2e'
+        ctx.fillRect(0, 0, width, totalHeight)
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)'
+        ctx.lineWidth = 1
+        const gridSize = 20
+        for (let x = 0; x < width; x += gridSize) {
+          ctx.beginPath()
+          ctx.moveTo(x, 0)
+          ctx.lineTo(x, totalHeight)
+          ctx.stroke()
+        }
+        for (let y = 0; y < totalHeight; y += gridSize) {
+          ctx.beginPath()
+          ctx.moveTo(0, y)
+          ctx.lineTo(width, y)
+          ctx.stroke()
+        }
       }
 
-      let currentY = padding
+      let currentY = padding + heroHeight
 
       // Helper to draw a single card
       const drawCard = (card: ExportCard, x: number, y: number, cardW: number, cardH: number, count: number | null, grayscale: boolean): Promise<void> => {

@@ -6,8 +6,10 @@ import type { MouseEvent } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { fetchUserPools } from '../utils/poolApi'
 import { formatPoolLabel } from '../utils/poolDisplayName'
+import { poolDisplayName } from '../utils/archetypeName'
 import { useRouter, usePathname } from 'next/navigation'
 import UserAvatar from './UserAvatar'
+import { WAYFINDER_NEWS_URL } from './WayfinderStoreButtons'
 import './AuthWidget.css'
 
 interface SealedPool {
@@ -131,7 +133,15 @@ export default function AuthWidget() {
             .map((p) => ({
               kind: 'pool' as const,
               url: `/pool/${p.shareId}/deck`,
-              label: p.leaderName || p.name || formatPoolLabel(p.setCode, p.poolType === 'draft' ? 'draft' : 'sealed'),
+              // Canonical pool name: archetype + date when there's a deck, else
+              // SET + format + date. The recent-pools list only carries the
+              // leader (no base), so the archetype is the leader name here.
+              label: poolDisplayName({
+                archetypeShort: p.leaderName,
+                setCode: p.setCode,
+                poolType: p.poolType,
+                date: p.createdAt,
+              }),
             }))
           setRecentPools(recents)
         })
@@ -270,6 +280,22 @@ export default function AuthWidget() {
                 </a>
               )}
 
+              <a
+                href="/me"
+                className="auth-widget-drawer-menu-item"
+                onClick={(e: MouseEvent<HTMLAnchorElement>) => {
+                  e.preventDefault()
+                  router.push('/me')
+                  setDrawerOpen(false)
+                }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 3v18h18" />
+                  <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" />
+                </svg>
+                My Stats
+              </a>
+
               <div className="auth-widget-drawer-section-label">Recent Activity</div>
 
               {loadingData && (
@@ -330,6 +356,19 @@ export default function AuthWidget() {
                 History
               </a>
 
+              <a
+                href={WAYFINDER_NEWS_URL}
+                className="auth-widget-drawer-menu-item"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setDrawerOpen(false)}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10 3H6a2 2 0 0 0-2 2v4a2 2 0 0 1 0 4v4a2 2 0 0 0 2 2h4a2 2 0 0 1 4 0h4a2 2 0 0 0 2-2v-4a2 2 0 0 1 0-4V5a2 2 0 0 0-2-2h-4a2 2 0 0 1-4 0z"></path>
+                </svg>
+                Companion
+              </a>
+
               <div className="auth-widget-drawer-section-label">Perks</div>
 
               {hasShowcases && (
@@ -368,6 +407,30 @@ export default function AuthWidget() {
                     <line x1="16" y1="17" x2="8" y2="17"></line>
                   </svg>
                   Draft Reports
+                </a>
+              )}
+
+              {isPatron && (
+                <a
+                  href="/import"
+                  className="auth-widget-drawer-menu-item auth-widget-import-pool-item"
+                  onClick={(e: MouseEvent<HTMLAnchorElement>) => {
+                    e.preventDefault()
+                    router.push('/import')
+                    setDrawerOpen(false)
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,215,0,0.9)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <path d="M8 13h8"></path>
+                    <path d="M8 17h5"></path>
+                    <path d="M9 6h2"></path>
+                  </svg>
+                  <span className="auth-widget-menu-text">
+                    <span className="auth-widget-menu-title">Import Pool</span>
+                    <span className="auth-widget-menu-subtitle">Scan a sealed registration sheet</span>
+                  </span>
                 </a>
               )}
 

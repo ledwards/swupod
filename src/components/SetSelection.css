@@ -83,8 +83,6 @@
   padding: 0.25rem 0.6rem;
   border-radius: 4px;
   z-index: 10;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
   box-shadow: 0 2px 8px rgba(255, 140, 0, 0.4);
 }
 
@@ -341,8 +339,6 @@
   padding: 0.25rem 0.6rem;
   border-radius: 4px;
   z-index: 10;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
   box-shadow: 0 2px 8px rgba(33, 150, 243, 0.45);
   display: inline-flex;
   align-items: center;
@@ -357,6 +353,4 @@
   color: rgba(100, 181, 246, 0.95);
   font-size: 0.78rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
 }

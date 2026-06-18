@@ -588,8 +588,8 @@
 }
 
 .qa-page .qa-test-item:hover { background: rgba(255, 255, 255, 0.08); }
-.qa-page .qa-test-item.qa-test-passed { border-left: 4px solid #27AE60; }
-.qa-page .qa-test-item.qa-test-failed { border-left: 4px solid #E74C3C; }
+.qa-page .qa-test-item.qa-test-passed { border-color: rgba(39, 174, 96, 0.5); }
+.qa-page .qa-test-item.qa-test-failed { border-color: rgba(231, 76, 60, 0.5); }
 
 .qa-page .qa-test-header { display: flex; align-items: center; gap: 1rem; }
 
@@ -608,7 +608,7 @@
   margin-top: 0.75rem;
   padding: 0.75rem;
   background: rgba(231, 76, 60, 0.1);
-  border-left: 3px solid #E74C3C;
+  border: 1px solid rgba(231, 76, 60, 0.4);
   color: #ffcccc;
   font-family: monospace;
   font-size: 0.85rem;

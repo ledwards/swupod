@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/src/contexts/AuthContext'
 import { deletePool } from '@/src/utils/poolApi'
 import Button from '@/src/components/Button'
+import ConfirmModal from '@/src/components/ConfirmModal'
 import '../draft/draft.css'
 import './page.css'
 
@@ -288,30 +289,16 @@ export default function OtherFormatsPage() {
         )}
 
         {/* Delete Confirmation Modal */}
-        {deleteConfirm && (
-          <div className="draft-delete-confirm-overlay" onClick={() => setDeleteConfirm(null)}>
-            <div className="draft-delete-confirm-modal" onClick={(e) => e.stopPropagation()}>
-              <h2>Delete Pool?</h2>
-              <p>Are you sure you want to delete "{deleteConfirm.name}"? This action cannot be undone.</p>
-              <div className="draft-delete-confirm-buttons">
-                <button
-                  className="draft-delete-confirm-cancel"
-                  onClick={() => setDeleteConfirm(null)}
-                  disabled={isDeleting}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="draft-delete-confirm-delete"
-                  onClick={handleDeletePool}
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? 'Deleting...' : 'Delete'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <ConfirmModal
+          isOpen={!!deleteConfirm}
+          title="Delete Pool?"
+          confirmLabel="Delete"
+          confirming={isDeleting}
+          onConfirm={handleDeletePool}
+          onCancel={() => setDeleteConfirm(null)}
+        >
+          <p>Are you sure you want to delete &quot;{deleteConfirm?.name}&quot;? This action cannot be undone.</p>
+        </ConfirmModal>
       </div>
     </div>
   )

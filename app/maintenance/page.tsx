@@ -43,7 +43,7 @@ export default function MaintenancePage() {
       <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>
         Scheduled Maintenance
       </h1>
-      <p style={{ color: '#888', maxWidth: '400px', lineHeight: 1.6 }}>
+      <p style={{ color: 'rgba(255, 255, 255, 0.7)', maxWidth: '400px', lineHeight: 1.6 }}>
         We&apos;re upgrading our servers for better performance.
         Be back in a few minutes!
       </p>

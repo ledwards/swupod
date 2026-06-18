@@ -7,10 +7,9 @@
  * populated before lib/db, lib/anthropic, etc. read them during their own
  * module initialization.
  *
- * override: true ensures values from .env / .env.local win over any
- * pre-existing shell env. Without this, an empty 'ANTHROPIC_API_KEY=""'
- * exported from .zshrc / launchd / etc. blocks dotenv from loading the
- * real value.
+ * override: true ensures values from local env files win over any pre-existing
+ * shell env. Load the base .env first, then .env.local so local development can
+ * override shared/default values like DATABASE_URL.
  *
  * Production (Railway) doesn't ship a .env file in the deploy, so override
  * has no effect on prod env injection.
@@ -18,5 +17,5 @@
 
 import dotenv from 'dotenv'
 
-dotenv.config({ path: '.env.local', override: true })
 dotenv.config({ override: true })
+dotenv.config({ path: '.env.local', override: true })

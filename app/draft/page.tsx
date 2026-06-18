@@ -7,6 +7,7 @@ import { useAuth } from '../../src/contexts/AuthContext'
 import { usePublicPodsSocket } from '../../src/hooks/usePublicPodsSocket'
 import { dropFromDraft } from '../../src/utils/draftApi'
 import { ChatPanel } from '../../src/components/ChatPanel'
+import ConfirmModal from '../../src/components/ConfirmModal'
 import { PATREON_URL } from '../../src/utils/membership'
 import '../../src/App.css'
 import '../../src/components/LandingPage.css'
@@ -375,56 +376,29 @@ export default function DraftLandingPage() {
         )}
 
         {/* Delete Confirmation Modal */}
-        {deleteConfirm && (
-          <div className="draft-delete-confirm-overlay" onClick={() => setDeleteConfirm(null)}>
-            <div className="draft-delete-confirm-modal" onClick={(e) => e.stopPropagation()}>
-              <h2>Delete Draft?</h2>
-              <p>Are you sure you want to delete this draft? This action cannot be undone.</p>
-              <div className="draft-delete-confirm-buttons">
-                <button
-                  className="draft-delete-confirm-cancel"
-                  onClick={() => setDeleteConfirm(null)}
-                  disabled={isDeleting}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="draft-delete-confirm-delete"
-                  onClick={handleDeleteDraft}
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? 'Deleting...' : 'Delete'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <ConfirmModal
+          isOpen={!!deleteConfirm}
+          title="Delete Draft?"
+          confirmLabel="Delete"
+          confirming={isDeleting}
+          onConfirm={handleDeleteDraft}
+          onCancel={() => setDeleteConfirm(null)}
+        >
+          <p>Are you sure you want to delete this draft? This action cannot be undone.</p>
+        </ConfirmModal>
 
         {/* Drop Confirmation Modal */}
-        {dropConfirm && (
-          <div className="draft-drop-confirm-overlay" onClick={() => setDropConfirm(null)}>
-            <div className="draft-drop-confirm-modal" onClick={(e) => e.stopPropagation()}>
-              <h2>Drop from Draft?</h2>
-              <p>Are you sure you want to drop from this draft? A bot will take over your picks and you will lose access to your drafted cards.</p>
-              <div className="draft-drop-confirm-buttons">
-                <button
-                  className="draft-drop-confirm-cancel"
-                  onClick={() => setDropConfirm(null)}
-                  disabled={isDropping}
-                >
-                  Go Back
-                </button>
-                <button
-                  className="draft-drop-confirm-drop"
-                  onClick={handleDropFromDraft}
-                  disabled={isDropping}
-                >
-                  {isDropping ? 'Dropping...' : 'Drop from Draft'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <ConfirmModal
+          isOpen={!!dropConfirm}
+          title="Drop from Draft?"
+          confirmLabel="Drop from Draft"
+          cancelLabel="Go Back"
+          confirming={isDropping}
+          onConfirm={handleDropFromDraft}
+          onCancel={() => setDropConfirm(null)}
+        >
+          <p>Are you sure you want to drop from this draft? A bot will take over your picks and you will lose access to your drafted cards.</p>
+        </ConfirmModal>
       </div>
       <ChatPanel lobbyType="draft" />
     </div>

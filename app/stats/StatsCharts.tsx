@@ -8,7 +8,7 @@ import { getAspectColor, getAspectColors } from '@/src/utils/aspectColors'
 // === Panel colors ===
 const PANEL_COLORS = {
   you: 'rgba(255, 255, 255, 0.9)',
-  all: '#64B5F6',
+  all: '#4DB6AC',
   tournament: '#CE93D8',
   top: '#FFB74D',
 }
@@ -98,10 +98,10 @@ function renderPieLabel({ cx, cy, midAngle, innerRadius, outerRadius, name, perc
     <text
       x={x}
       y={y}
-      fill="rgba(255,255,255,0.8)"
+      fill="rgba(255,255,255,0.85)"
       textAnchor={x > cx ? 'start' : 'end'}
       dominantBaseline="central"
-      fontSize={10}
+      fontSize={12}
     >
       {label}
     </text>
@@ -113,7 +113,7 @@ function SmallSliceLegend({ items }: { items: { name: string; color: string; pct
   if (!items.length) return null
   return (
     <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
-      <table style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', borderCollapse: 'collapse' }}>
+      <table style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', borderCollapse: 'collapse' }}>
         <tbody>
           {items.map(item => (
             <tr key={item.name}>
@@ -233,8 +233,8 @@ function BarTickWithPreview({ x, y, payload, dataLookup, onCardHover, onCardLeav
         y={0}
         dy={4}
         textAnchor="end"
-        fill="rgba(255,255,255,0.7)"
-        fontSize={10}
+        fill="rgba(255,255,255,0.85)"
+        fontSize={12}
         style={{ cursor: entry ? 'pointer' : 'default' }}
         onMouseEnter={entry && onCardHover ? (e: any) => onCardHover(entry, e) : undefined}
         onMouseLeave={onCardLeave}
@@ -352,7 +352,7 @@ function TopCardsBarChart({ cards, valueKey, formatValue, onCardHover, onCardLea
     <ResponsiveContainer width="100%" height={Math.max(300, data.length * 36)}>
       <BarChart data={data} layout="vertical" margin={{ left: 0, right: 120, top: 5, bottom: 5 }}>
         <GradientDefs data={data} prefix="bar" />
-        <XAxis type="number" tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 11 }} axisLine={false} tickLine={false} />
+        <XAxis type="number" tick={{ fill: 'rgba(255,255,255,0.75)', fontSize: 12 }} axisLine={false} tickLine={false} />
         <YAxis
           type="category"
           dataKey="name"
@@ -371,7 +371,7 @@ function TopCardsBarChart({ cards, valueKey, formatValue, onCardHover, onCardLea
             return <rect x={x} y={y} width={Math.max(0, width)} height={height} fill={barFill} rx={4} ry={4} />
           }}
         >
-          <LabelList dataKey="_label" position="right" fill="rgba(255,255,255,0.7)" fontSize={10} fontWeight={600} />
+          <LabelList dataKey="_label" position="right" fill="rgba(255,255,255,0.85)" fontSize={12} fontWeight={600} />
         </Bar>
       </BarChart>
     </ResponsiveContainer>
@@ -396,7 +396,7 @@ export function LeaderCharts({ allData, tournamentData, topData, youData, valueK
       <ChartPanel label="All Players" color={PANEL_COLORS.all}>
         <LeaderPieChart leaders={allData || []} valueKey={valueKey} />
       </ChartPanel>
-      <ChartPanel label="Tournament Players" color={PANEL_COLORS.tournament} blurred={!canSeeFullStats}>
+      <ChartPanel label="Competitive Players" color={PANEL_COLORS.tournament} blurred={!canSeeFullStats}>
         <LeaderPieChart leaders={tournamentData || []} valueKey={valueKey} />
       </ChartPanel>
       <ChartPanel label="Top Players" color={PANEL_COLORS.top} blurred={!canSeeFullStats}>
@@ -427,7 +427,7 @@ export function CardCharts({ allData, tournamentData, topData, youData, valueKey
       <ChartPanel label="All Players" color={PANEL_COLORS.all}>
         <TopCardsBarChart cards={allData || []} valueKey={valueKey} formatValue={formatValue} onCardHover={onCardHover} onCardLeave={onCardLeave} />
       </ChartPanel>
-      <ChartPanel label="Tournament Players" color={PANEL_COLORS.tournament} blurred={!canSeeFullStats}>
+      <ChartPanel label="Competitive Players" color={PANEL_COLORS.tournament} blurred={!canSeeFullStats}>
         <TopCardsBarChart cards={tournamentData || []} valueKey={valueKey} formatValue={formatValue} onCardHover={onCardHover} onCardLeave={onCardLeave} />
       </ChartPanel>
       <ChartPanel label="Top Players" color={PANEL_COLORS.top} blurred={!canSeeFullStats}>

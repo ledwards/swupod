@@ -1,15 +1,200 @@
 /* ============================================================================
- * YourStats — Personal stats section for /stats#you
- * Per plan U7. Uses the same dark/translucent tokens as app/stats/stats.css.
+ * YourStats — Personal stats experience for /me
+ * Cohesive dark system built on the same Barlow + translucent tokens as
+ * app/stats/stats.css. The Wayfinder browser cards + "Powered by" badge live in
+ * src/components/WayfinderStoreButtons.css (co-located with that component).
+ * ========================================================================== */
+
+.me-page,
+.your-stats {
+  --ys-accent: #64b5f6;
+  --ys-accent-bright: #90caf9;
+  --ys-accent-dim: rgba(100, 181, 246, 0.16);
+  --ys-surface: rgba(0, 0, 0, 0.5);
+  --ys-surface-2: rgba(255, 255, 255, 0.035);
+  --ys-surface-3: rgba(255, 255, 255, 0.07);
+  --ys-border: rgba(255, 255, 255, 0.12);
+  --ys-border-bright: rgba(255, 255, 255, 0.24);
+  --ys-text: #fff;
+  --ys-text-2: rgba(255, 255, 255, 0.72);
+  --ys-text-3: rgba(255, 255, 255, 0.5);
+  --ys-radius: 14px;
+  --ys-radius-sm: 10px;
+  --ys-win: #4ade80;
+  --ys-loss: #f87171;
+  --ys-draw: #facc15;
+}
+
+.me-page {
+  max-width: 1320px;
+  padding: 2.25rem clamp(1.25rem, 5vw, 4rem) 4rem;
+}
+
+/* ============================================================================
+ * Profile hero
+ * ========================================================================== */
+
+.me-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.25rem 2rem;
+  width: min(100%, 1180px);
+  margin: 0 auto 1.75rem;
+  padding: 1.5rem 1.75rem;
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--ys-accent-dim), transparent 55%),
+    var(--ys-surface);
+  border: 1px solid var(--ys-border);
+  border-radius: 18px;
+  backdrop-filter: blur(10px);
+  /* This is the box that sticks as you scroll (avatar + My Stats + Set filter). */
+  position: sticky;
+  top: 0.5rem;
+  z-index: 30;
+}
+
+.me-hero-identity {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  min-width: 0;
+}
+
+.me-hero-avatar {
+  flex: 0 0 auto;
+  margin-right: 0.6rem;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12), 0 8px 22px rgba(0, 0, 0, 0.4);
+  border-radius: 999px;
+}
+
+/* No-deck pool card: set art behind a centered "Build Deck" CTA. */
+.your-stats-pool-build--empty {
+  position: relative;
+  overflow: hidden;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+}
+
+.your-stats-pool-build--empty .your-stats-replay-content {
+  position: static;
+  padding: 0;
+  max-width: none;
+  min-height: 0;
+}
+
+.me-hero-avatar--anon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 66px;
+  height: 66px;
+  border-radius: 999px;
+  background: var(--ys-accent-dim);
+  border: 1px solid var(--ys-border-bright);
+  color: var(--ys-accent-bright);
+}
+
+.me-hero-titles {
+  min-width: 0;
+}
+
+.me-hero-eyebrow {
+  display: block;
+  color: var(--ys-accent-bright);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.me-hero-titles h1 {
+  margin: 0.1rem 0 0.2rem;
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 800;
+  line-height: 1.05;
+  color: #fff;
+  word-break: break-word;
+}
+
+.me-hero-titles p {
+  margin: 0;
+  color: var(--ys-text-2);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.me-hero-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* Icon-only download — text shows on hover via the native title tooltip. */
+.me-export-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  padding: 0;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--ys-border);
+  color: var(--ys-text-2);
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .me-export-btn:hover {
+    color: #fff;
+    border-color: var(--ys-accent-bright);
+    background: var(--ys-accent-dim);
+  }
+}
+
+.me-export-btn:focus-visible {
+  outline: 2px solid var(--ys-accent-bright);
+  outline-offset: 2px;
+}
+
+/* Date range (markup/classes from stats.css) — lay it out cleanly in the hero. */
+.me-hero .stats-date-range {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.6rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--ys-border);
+  border-radius: 999px;
+}
+
+/* ============================================================================
+ * Shell — auth loading + tabs + content folder
  * ========================================================================== */
 
 .your-stats {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  padding: 1.5rem 0 0;
+  gap: 0;
+  width: min(100%, 1180px);
+  margin: 0 auto;
   font-family: 'Barlow', sans-serif;
   color: #fff;
+}
+
+.your-stats [role="tabpanel"] {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .your-stats--auth-loading {
@@ -18,18 +203,1440 @@
 }
 
 .your-stats-auth-loading-text {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ys-text-3);
   font-size: 0.95rem;
 }
 
-/* ----- Section headings ---------------------------------------------------- */
-
 .your-stats-section-heading {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0 0 0.75rem 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 0.85rem 0;
   color: #fff;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
+}
+
+.your-stats-overview {
+  margin-bottom: 1.5rem;
+}
+
+/* Clean segmented tabs above a self-contained content card. No folder-overlap
+   (the old -1px seam left a jagged edge + a stray line under the active tab). */
+.your-stats-tabs {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 0.75rem;
+  padding: 0.1rem;
+}
+
+.your-stats-tab {
+  min-width: 120px;
+  padding: 0.7rem 1.4rem;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--ys-border);
+  border-radius: var(--ys-radius-sm);
+  color: var(--ys-text-3);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  white-space: nowrap;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-tab:hover:not(:disabled) {
+    color: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
+
+.your-stats-tab.active {
+  background: var(--ys-accent-dim);
+  border-color: var(--ys-accent);
+  color: #fff;
+}
+
+.your-stats-tab:focus-visible {
+  outline: 2px solid var(--ys-accent-bright);
+  outline-offset: 2px;
+}
+
+.your-stats-tab:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.your-stats-content {
+  min-height: 430px;
+  padding: 1.75rem;
+  background: var(--ys-surface);
+  border: 1px solid var(--ys-border-bright);
+  border-radius: var(--ys-radius);
+  position: relative;
+}
+
+/* ============================================================================
+ * Shared primitives — eyebrow, count pill, explorer toolbar, search, segments
+ * ========================================================================== */
+
+/* Quiet section label. The one deliberate uppercase kicker is the page hero
+   (.me-hero-eyebrow); per-section labels stay sentence-case and muted so the
+   page doesn't read as an eyebrow-on-every-section AI template. */
+.your-stats-eyebrow {
+  display: block;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.6));
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+  margin-bottom: 0.25rem;
+}
+
+.your-stats-count-pill {
+  flex: 0 0 auto;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: var(--ys-surface-3);
+  border: 1px solid var(--ys-border);
+  color: var(--ys-text-2);
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.your-stats-replay-header,
+.your-stats-pool-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.your-stats-replay-header h3,
+.your-stats-pool-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.your-stats-explorer-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.your-stats-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  /* Slim and capped — never stretch into a fat full-width bar. */
+  flex: 0 1 220px;
+  min-width: 0;
+}
+
+.your-stats-search svg {
+  position: absolute;
+  left: 0.6rem;
+  width: 14px;
+  height: 14px;
+  color: var(--ys-text-3);
+  pointer-events: none;
+}
+
+.your-stats-search input {
+  width: 100%;
+  height: 30px;
+  padding: 0 0.7rem 0 1.85rem;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid var(--ys-border-bright);
+  border-radius: 8px;
+  color: #fff;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.82rem;
+}
+
+.your-stats-search input::placeholder {
+  color: var(--ys-text-3);
+}
+
+.your-stats-search input:focus {
+  outline: none;
+  border-color: var(--ys-accent-bright);
+  box-shadow: 0 0 0 3px var(--ys-accent-dim);
+}
+
+/* Segmented filter (result / relationship) */
+.your-stats-seg {
+  display: inline-flex;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--ys-border);
+  border-radius: 999px;
+}
+
+.your-stats-seg-btn {
+  padding: 0.4rem 0.85rem;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ys-text-2);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-seg-btn:hover {
+    color: #fff;
+  }
+}
+
+.your-stats-seg-btn.active {
+  background: var(--ys-accent);
+  color: #07101f;
+  box-shadow: 0 2px 10px rgba(100, 181, 246, 0.35);
+}
+
+.your-stats-seg-btn:focus-visible {
+  outline: 2px solid var(--ys-accent-bright);
+  outline-offset: 2px;
+}
+
+.your-stats-explorer-selects {
+  display: flex;
+  gap: 0.6rem;
+}
+
+/* .your-stats-field is styled together with .me-range-field (shared pill). */
+
+.your-stats-explorer-empty {
+  margin: 0.5rem 0;
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--ys-text-3);
+  background: var(--ys-surface-2);
+  border: 1px dashed var(--ys-border);
+  border-radius: var(--ys-radius-sm);
+}
+
+/* ============================================================================
+ * Gameplay dashboard
+ * ========================================================================== */
+
+.your-stats-gameplay {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Companion CTA — promo when present, slim footer when the user already plays.
+ * Stacks text over centered branded browser cards so the plugins read central. */
+.your-stats-gameplay-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  text-align: center;
+  background:
+    linear-gradient(135deg, rgba(33, 150, 243, 0.16), rgba(245, 158, 11, 0.05)),
+    var(--ys-surface);
+  border: 1px solid rgba(96, 165, 250, 0.4);
+  border-radius: var(--ys-radius);
+}
+
+.your-stats-gameplay-cta > div:not(.wf-store) {
+  max-width: 56ch;
+  margin: 0 auto;
+}
+
+.your-stats-gameplay-cta--compact {
+  padding: 1.15rem 1.25rem;
+  background:
+    linear-gradient(135deg, rgba(33, 150, 243, 0.1), transparent),
+    rgba(0, 0, 0, 0.4);
+  border-color: var(--ys-border);
+}
+
+.your-stats-gameplay-cta-lockup {
+  margin-bottom: 0.6rem;
+}
+
+.your-stats-gameplay-cta h3,
+.your-stats-gameplay-empty h3,
+.your-stats-gameplay-card h3 {
+  margin: 0;
+  color: #fff;
+}
+
+.your-stats-gameplay-cta h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.your-stats-gameplay-cta p,
+.your-stats-gameplay-empty p {
+  margin: 0.45rem 0 0;
+  color: var(--ys-text-2);
+  line-height: 1.5;
+}
+
+.your-stats-gameplay-empty {
+  padding: 2rem 1.75rem;
+  text-align: center;
+  background: var(--ys-surface-2);
+  border: 1px solid var(--ys-border);
+  border-radius: var(--ys-radius);
+}
+
+.your-stats-gameplay-empty h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+/* KPI strip */
+.your-stats-gameplay-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.your-stats-gameplay-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-height: 104px;
+  justify-content: center;
+  padding: 1rem 1.1rem;
+  background:
+    radial-gradient(120% 120% at 100% 0%, var(--ys-accent-dim), transparent 60%),
+    var(--ys-surface);
+  border: 1px solid var(--ys-border);
+  border-radius: var(--ys-radius);
+}
+
+.your-stats-gameplay-kpi-label {
+  color: var(--ys-text-3);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.your-stats-gameplay-kpi-value {
+  color: #fff;
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+.your-stats-gameplay-kpi-subtext {
+  color: var(--ys-text-3);
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+
+.your-stats-gameplay-kpi-skeleton-label {
+  width: 56%;
+  height: 13px;
+  border-radius: 4px;
+}
+
+.your-stats-gameplay-kpi-skeleton-value {
+  width: 74%;
+  height: 30px;
+  border-radius: 5px;
+}
+
+/* Analytics cards */
+.your-stats-gameplay-card {
+  padding: 1.3rem 1.4rem;
+  background: var(--ys-surface);
+  border: 1px solid var(--ys-border);
+  border-radius: var(--ys-radius);
+}
+
+.your-stats-gameplay-card > h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.your-stats-gameplay-card-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.your-stats-gameplay-card-header h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.your-stats-gameplay-card-header span {
+  color: var(--ys-text-2);
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.your-stats-outcome-bars {
+  display: flex;
+  height: 20px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+}
+
+.your-stats-outcome-bar {
+  min-width: 0;
+}
+
+.your-stats-outcome-bar--win,
+.your-stats-outcome-dot--win {
+  background: var(--ys-win);
+}
+
+.your-stats-outcome-bar--draw,
+.your-stats-outcome-dot--draw {
+  background: var(--ys-draw);
+}
+
+.your-stats-outcome-bar--loss,
+.your-stats-outcome-dot--loss {
+  background: var(--ys-loss);
+}
+
+.your-stats-outcome-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+  margin-top: 0.8rem;
+  color: var(--ys-text-2);
+  font-size: 0.85rem;
+}
+
+.your-stats-outcome-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.your-stats-outcome-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.your-stats-gameplay-split-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.your-stats-breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.your-stats-breakdown-row {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.8fr) minmax(120px, 1.4fr) minmax(86px, 0.6fr);
+  gap: 0.85rem;
+  align-items: center;
+}
+
+.your-stats-breakdown-label,
+.your-stats-breakdown-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.your-stats-breakdown-label strong,
+.your-stats-breakdown-metric strong {
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.your-stats-breakdown-label span,
+.your-stats-breakdown-metric span {
+  color: var(--ys-text-3);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.your-stats-breakdown-metric {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.your-stats-breakdown-track {
+  height: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+}
+
+/* Win-rate bars: a faint 50% reference line so the % bar reads clearly. */
+.your-stats-breakdown-track--pct {
+  position: relative;
+  overflow: visible;
+}
+
+.your-stats-breakdown-track--pct::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  left: 50%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.your-stats-breakdown-track--pct .your-stats-breakdown-fill {
+  position: relative;
+  z-index: 1;
+}
+
+.your-stats-breakdown-fill {
+  display: block;
+  height: 100%;
+  min-width: 0;
+  background: linear-gradient(90deg, var(--ys-accent), #f59e0b);
+  border-radius: inherit;
+}
+
+/* Replay-linked pools */
+.your-stats-recent-pool-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+}
+
+.your-stats-recent-pool,
+.your-stats-recent-pool:visited {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 0.95rem;
+  background: var(--ys-surface-2);
+  border: 1px solid var(--ys-border);
+  border-radius: var(--ys-radius-sm);
+  color: #fff;
+  text-decoration: none;
+  transition: background 150ms ease, transform 150ms ease, border-color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-recent-pool:hover {
+    background: var(--ys-surface-3);
+    border-color: var(--ys-border-bright);
+    transform: translateX(2px);
+    color: #fff;
+    text-decoration: none;
+  }
+}
+
+.your-stats-recent-pool span:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.your-stats-recent-pool strong {
+  font-weight: 700;
+}
+
+.your-stats-recent-pool small {
+  color: var(--ys-text-3);
+}
+
+.your-stats-recent-pool-record {
+  flex: 0 0 auto;
+  color: var(--ys-text-2);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================================
+ * Replay Explorer + Pool History — shared big-leader-art rows
+ * ========================================================================== */
+
+.your-stats-replay-explorer,
+.your-stats-pools {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.your-stats-replay-explorer {
+  padding: 1.4rem;
+  background:
+    radial-gradient(140% 120% at 0% 0%, rgba(100, 181, 246, 0.08), transparent 55%),
+    var(--ys-surface);
+  border: 1px solid rgba(100, 181, 246, 0.28);
+  border-radius: var(--ys-radius);
+}
+
+.your-stats-replay-list,
+.your-stats-pool-list,
+.your-stats-pool-build-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+/* ----- Game history: tight horizontal row -------------------------------- */
+/* result chip · leader art · "Leader vs opponent" · set+date · game pips · Watch */
+.your-stats-replay-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 0.65rem;
+  background: #0b0f17;
+  border: 1px solid var(--ys-border);
+  border-radius: var(--ys-radius-sm);
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-replay-row:hover {
+    border-color: var(--ys-border-bright);
+    background: #0e131d;
+  }
+}
+
+.your-stats-replay-row--win { box-shadow: inset 3px 0 0 var(--ys-win); }
+.your-stats-replay-row--loss { box-shadow: inset 3px 0 0 var(--ys-loss); }
+.your-stats-replay-row--draw,
+.your-stats-replay-row--pending { box-shadow: inset 3px 0 0 var(--ys-draw); }
+
+.your-stats-replay-chip {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #07101f;
+}
+
+.your-stats-replay-chip--win { background: var(--ys-win); }
+.your-stats-replay-chip--loss { background: var(--ys-loss); color: #fff; }
+.your-stats-replay-chip--draw,
+.your-stats-replay-chip--pending { background: var(--ys-draw); }
+
+.your-stats-replay-art {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--row-tint, #1a2233);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.your-stats-replay-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 16%;
+}
+
+.your-stats-replay-art-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.your-stats-replay-matchup {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.your-stats-replay-leader {
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.92rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.your-stats-replay-vs {
+  flex: 0 0 auto;
+  color: var(--ys-text-3);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.your-stats-replay-opp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.your-stats-replay-opp-art {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #1a2233;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.your-stats-replay-opp-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 16%;
+}
+
+.your-stats-replay-opp-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  color: var(--ys-text-2);
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.your-stats-replay-opp-sub {
+  color: var(--ys-text-3);
+  font-size: 0.68rem;
+  font-weight: 500;
+}
+
+/* Two-sided matchup: [leader image] name  vs  [leader image] name */
+.your-stats-replay-side {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.your-stats-side-art {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--row-tint, #1a2233);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.your-stats-side-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 16%;
+}
+
+.your-stats-side-art svg {
+  width: 16px;
+  height: 16px;
+}
+
+.your-stats-replay-side-name {
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.your-stats-replay-when {
+  flex: 0 0 auto;
+  color: var(--ys-text-3);
+  font-size: 0.76rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.your-stats-replay-pips {
+  display: inline-flex;
+  gap: 3px;
+  flex: 0 0 auto;
+}
+
+.your-stats-replay-pip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  font-size: 0.64rem;
+  font-weight: 800;
+  color: #07101f;
+}
+
+.your-stats-replay-pip--w { background: var(--ys-win); }
+.your-stats-replay-pip--l { background: var(--ys-loss); color: #fff; }
+.your-stats-replay-pip--d { background: var(--ys-draw); }
+
+/* Watch button — Wayfinder-style accent pill */
+.your-stats-watch-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.38rem 0.75rem;
+  border-radius: 999px;
+  background: var(--ys-accent);
+  color: #07101f;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: box-shadow 160ms ease, transform 160ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-watch-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 18px rgba(100, 181, 246, 0.5);
+  }
+}
+
+.your-stats-watch-btn:focus-visible {
+  outline: 2px solid var(--ys-accent-bright);
+  outline-offset: 2px;
+}
+
+/* Accordion: row is a button; clicking expands a detail panel */
+.your-stats-replay-row {
+  cursor: pointer;
+}
+
+.your-stats-replay-row:focus-visible {
+  outline: 2px solid var(--ys-accent-bright);
+  outline-offset: 2px;
+}
+
+.your-stats-replay-caret {
+  flex: 0 0 auto;
+  display: inline-flex;
+  color: var(--ys-text-3);
+  transition: transform 180ms ease;
+}
+
+.your-stats-replay-caret.is-open {
+  transform: rotate(180deg);
+}
+
+.your-stats-replay-item.is-expanded .your-stats-replay-row {
+  border-color: var(--ys-border-bright);
+  background: #0e131d;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.your-stats-replay-detail {
+  border: 1px solid var(--ys-border-bright);
+  border-top: none;
+  border-radius: 0 0 var(--ys-radius-sm) var(--ys-radius-sm);
+  background: rgba(0, 0, 0, 0.32);
+  padding: 0.9rem 1rem 1rem;
+  animation: ys-fade 220ms ease-out both;
+}
+
+.your-stats-replay-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.7rem 1.1rem;
+  margin-bottom: 0.9rem;
+}
+
+.your-stats-replay-detail-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.your-stats-replay-detail-field small {
+  color: var(--ys-text-3);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.your-stats-replay-detail-field strong {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.your-stats-replay-detail-games {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.your-stats-replay-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Tight rows wrap on narrow screens */
+@media (max-width: 640px) {
+  .your-stats-replay-row {
+    flex-wrap: wrap;
+  }
+  .your-stats-replay-matchup {
+    flex: 1 1 100%;
+    order: 3;
+  }
+  .your-stats-watch-btn {
+    margin-left: auto;
+  }
+}
+
+/* ----- Your Leaders widget: leader art · name · win-rate bar · record ----- */
+.your-stats-leader-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.your-stats-leader-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.your-stats-leader-art {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 9px;
+  overflow: hidden;
+  background: var(--row-tint, #1a2233);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.your-stats-leader-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 14%;
+}
+
+.your-stats-leader-art-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.your-stats-leader-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.your-stats-leader-toprow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.your-stats-leader-name {
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.your-stats-leader-winrate {
+  flex: 0 0 auto;
+  color: var(--ys-accent-bright);
+  font-size: 0.95rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.your-stats-leader-track {
+  margin: 0.3rem 0 0.25rem;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.your-stats-leader-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--row-tint, var(--ys-accent));
+}
+
+.your-stats-leader-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  color: var(--ys-text-3);
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+/* ----- Pool History card: leader art background + content overlay --------- */
+.your-stats-pool-build {
+  position: relative;
+  display: block;
+  min-height: 96px;
+  overflow: hidden;
+  background: #0b0f17;
+  border: 1px solid var(--ys-border);
+  border-radius: var(--ys-radius);
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.your-stats-pool-build::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(105deg, var(--row-tint, #2a3654) 0%, rgba(11, 15, 23, 0.6) 46%, rgba(11, 15, 23, 0) 74%);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-pool-build:hover {
+    transform: translateY(-2px);
+    border-color: var(--ys-border-bright);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.your-stats-pool-build-art {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.your-stats-pool-build-art img {
+  position: absolute;
+  top: 0;
+  /* Hyperspace unit-side art on the right, ~half the previous width to leave
+     room for a single row of action buttons. Pushed 60px further right to
+     re-center the leader's art within the visible crop. */
+  right: -60px;
+  height: 100%;
+  width: 32%;
+  object-fit: cover;
+  object-position: center 30%;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 44%, #000 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 44%, #000 100%);
+  transition: transform 380ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-pool-build:hover .your-stats-pool-build-art img {
+    transform: scale(1.05);
+  }
+}
+
+.your-stats-pool-build-art-fallback {
+  position: absolute;
+  top: 0;
+  right: 8%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  font-size: 3rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.16);
+}
+
+/* Set art behind a no-deck pool card — full-bleed landscape key art, dimmed
+   and faded toward the centered CTA so the button stays legible. */
+.your-stats-pool-build-art--set img {
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  object-position: center 30%;
+  opacity: 0.4;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 30%, #000 70%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 30%, #000 70%, transparent 100%);
+}
+
+/* All pool actions on one line; never wrap to a second row. */
+.your-stats-pool-actions-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.your-stats-pool-actions-row .your-stats-pool-action {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* Mouseover glow on every pool action; play-related actions glow green. */
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-pool-action--glow:hover {
+    box-shadow: 0 0 0 1px rgba(74, 144, 226, 0.5), 0 0 12px rgba(74, 144, 226, 0.45);
+    transform: translateY(-1px);
+  }
+  .your-stats-pool-action--play:hover {
+    box-shadow: 0 0 0 1px rgba(39, 174, 96, 0.55), 0 0 14px rgba(39, 174, 96, 0.5);
+    transform: translateY(-1px);
+  }
+}
+
+.your-stats-pool-action--glow,
+.your-stats-pool-action--play {
+  transition: box-shadow 160ms ease, transform 160ms ease;
+}
+
+/* No-decklist card: note + Build Deck + trash on one centered line. */
+.your-stats-pool-empty-content {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.your-stats-pool-empty-note {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.86rem;
+  font-style: italic;
+}
+
+.your-stats-pool-trash {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  /* Reset the global `button { padding: .6em 1.2em }` — that horizontal padding
+     (38px) was eating the whole 34px button under border-box and collapsing the
+     flex-child SVG to 0 width, so the icon vanished and left a bare red box. */
+  padding: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  /* Red on black with a clear red border (deckbuilder trash treatment). Solid
+     black so the icon never washes out against the set art behind it. */
+  border: 1.5px solid #f87171;
+  background: #0b0b0c;
+  color: #f87171;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  transition: color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.your-stats-pool-trash svg {
+  display: block;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  /* Force the stroke red regardless of inherited color so the icon is visible. */
+  color: #f87171;
+  stroke: #f87171;
+  fill: none;
+}
+
+/* Upper-right of the pool graphic, on a legible dark chip above the art. */
+.your-stats-pool-trash--corner {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 2;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-pool-trash:hover {
+    color: #fff;
+    background: #e74c3c;
+    border-color: #e74c3c;
+    box-shadow: 0 0 12px rgba(231, 76, 60, 0.45);
+  }
+  .your-stats-pool-trash:hover svg {
+    color: #fff;
+    stroke: #fff;
+  }
+}
+
+.your-stats-pool-delete-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.your-stats-pool-delete-confirm--corner {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 2;
+}
+
+.your-stats-replay-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-height: 96px;
+  /* Art is now only 32% wide, so the content (incl. the one-line action row)
+     gets the rest. */
+  max-width: 90%;
+  padding: 0.8rem 1rem;
+}
+
+.your-stats-replay-combo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+
+.your-stats-replay-combo strong {
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.65);
+}
+
+.your-stats-replay-combo small {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.65);
+}
+
+.your-stats-replay-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.your-stats-replay-meta span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 23px;
+  padding: 0.12rem 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.42);
+  color: var(--ys-text-2);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.your-stats-replay-actions,
+.your-stats-pool-build-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: auto;
+}
+
+.your-stats-pool-action {
+  text-decoration: none;
+}
+
+/* ============================================================================
+ * Pool History — group cards + owner/builder context
+ * ========================================================================== */
+
+.your-stats-pool-group {
+  position: relative;
+  padding: 1.25rem;
+  background: var(--ys-surface);
+  border: 1px solid var(--ys-border);
+  border-radius: var(--ys-radius);
+}
+
+.your-stats-pool-group--built-on {
+  border-color: rgba(245, 158, 11, 0.36);
+}
+
+.your-stats-pool-group--shared {
+  border-color: rgba(167, 139, 250, 0.34);
+}
+
+.your-stats-pool-group-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.your-stats-pool-group-header h3 {
+  margin: 0.15rem 0 0.1rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.your-stats-pool-group-header p {
+  margin: 0.25rem 0 0;
+  color: var(--ys-text-3);
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.your-stats-pool-eyebrow {
+  display: inline-block;
+  padding: 0.16rem 0.55rem;
+  border-radius: 999px;
+  background: var(--ys-accent-dim);
+  border: 1px solid rgba(100, 181, 246, 0.32);
+  color: var(--ys-accent-bright);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.your-stats-pool-group--built-on .your-stats-pool-eyebrow {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #fcd34d;
+}
+
+.your-stats-pool-group--shared .your-stats-pool-eyebrow {
+  background: rgba(167, 139, 250, 0.16);
+  border-color: rgba(167, 139, 250, 0.4);
+  color: #c4b5fd;
+}
+
+.your-stats-pool-owner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex: 0 0 auto;
+  color: var(--ys-text-2);
+}
+
+.your-stats-pool-owner span {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.your-stats-pool-owner small {
+  color: var(--ys-text-3);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.your-stats-owner-avatar-placeholder {
+  background: var(--ys-accent-dim);
+  border: 1px solid rgba(144, 202, 249, 0.32);
+  color: #e3f2fd;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+/* Builder avatar pinned to the build art corner (≈ "belongs to another player") */
+.your-stats-pool-build-owner-badge {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  z-index: 2;
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.55), 0 4px 10px rgba(0, 0, 0, 0.45);
+}
+
+.your-stats-pool-build-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.your-stats-pool-build-tags span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0.15rem 0.55rem;
+  border: 1px solid var(--ys-border);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.32);
+  color: var(--ys-text-2);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.your-stats-pool-build-byline {
+  color: #fcd34d !important;
+  border-color: rgba(245, 158, 11, 0.4) !important;
+  background: rgba(245, 158, 11, 0.12) !important;
+}
+
+.your-stats-pool-toolbar-skeleton {
+  flex: 1;
+  height: 42px;
+  border-radius: 999px;
+}
+
+.your-stats-pool-row-skeleton {
+  height: 26px;
+  border-radius: 6px;
+  width: 100%;
 }
 
 /* ============================================================================
@@ -37,34 +1644,57 @@
  * ========================================================================== */
 
 .your-stats-logged-out {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  padding: 2rem 1.5rem;
+  background:
+    radial-gradient(120% 120% at 50% 0%, var(--ys-accent-dim), transparent 60%),
+    var(--ys-surface);
+  border: 1px solid rgba(96, 165, 250, 0.4);
+  border-radius: var(--ys-radius);
+  padding: 2.5rem 1.75rem;
   text-align: center;
-  max-width: 560px;
-  margin: 2rem auto;
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.your-stats-logged-out-lockup {
+  justify-content: center;
+  margin-bottom: 1.1rem;
+}
+
+.your-stats-early-access-badge {
+  display: inline-block;
+  margin-bottom: 0.9rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  background: var(--ys-accent-dim);
+  border: 1px solid var(--ys-accent);
+  color: var(--ys-accent-bright);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .your-stats-logged-out-title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.7rem;
+  font-weight: 800;
   margin: 0 0 1rem 0;
   color: #fff;
 }
 
 .your-stats-logged-out-body {
   font-size: 1rem;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.8);
-  margin: 0 0 1rem 0;
+  line-height: 1.55;
+  color: var(--ys-text-2);
+  margin: 0 auto 1rem;
+  max-width: 60ch;
 }
 
 .your-stats-logged-out-actions {
-  margin-top: 1.5rem;
+  margin-top: 1.75rem;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
 }
 
 /* Discord-styled anchor — must enforce white on every state because the
@@ -85,17 +1715,16 @@ a.your-stats-logged-out-link:active {
  * ========================================================================== */
 
 .your-stats-activity {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 12px;
-  padding: 1rem 1.5rem 1.5rem;
+  background: var(--ys-surface);
+  border: 1px solid var(--ys-border);
+  border-radius: var(--ys-radius);
+  padding: 1.25rem 1.5rem 1.5rem;
 }
 
 .your-stats-counter-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 1rem;
+  gap: 0.85rem;
 }
 
 .your-stats-counter {
@@ -104,25 +1733,27 @@ a.your-stats-logged-out-link:active {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 0.75rem 0.5rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  min-height: 92px;
+  padding: 1rem 0.5rem;
+  background:
+    radial-gradient(120% 120% at 50% 0%, var(--ys-accent-dim), transparent 65%),
+    var(--ys-surface-2);
+  border: 1px solid var(--ys-border);
+  border-radius: var(--ys-radius-sm);
+  min-height: 98px;
 }
 
 .your-stats-counter-value {
-  font-size: 1.75rem;
-  font-weight: 700;
+  font-size: 1.85rem;
+  font-weight: 800;
   color: #fff;
-  line-height: 1.1;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
 }
 
 .your-stats-counter-label {
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.7);
-  text-align: center;
+  margin-top: 0.45rem;
+  font-size: 0.82rem;
+  color: var(--ys-text-2);
   line-height: 1.25;
 }
 
@@ -134,35 +1765,68 @@ a.your-stats-logged-out-link:active {
   width: 60%;
   height: 28px;
   margin-bottom: 0.5rem;
-  border-radius: 4px;
+  border-radius: 5px;
 }
 
 .your-stats-counter-skeleton-label {
   width: 80%;
-  height: 14px;
+  height: 13px;
   border-radius: 4px;
 }
 
-.your-stats-empty-note {
-  margin: 0.5rem 0 0;
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 0.95rem;
+.your-stats-companion-empty {
+  margin-top: 0.85rem;
+  padding: 1.5rem;
+  background:
+    linear-gradient(135deg, rgba(33, 150, 243, 0.14), rgba(245, 158, 11, 0.05)),
+    var(--ys-surface-2);
+  border: 1px solid rgba(96, 165, 250, 0.34);
+  border-radius: var(--ys-radius);
+}
+
+.your-stats-companion-empty h4 {
+  margin: 0 0 0.5rem;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.your-stats-companion-empty p {
+  margin: 0;
+  color: var(--ys-text-2);
   line-height: 1.5;
 }
 
+.your-stats-companion-empty ul {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.95rem 0;
+  padding-left: 1.1rem;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.your-stats-companion-empty-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  color: var(--ys-text-2);
+  font-size: 0.9rem;
+}
+
 .your-stats-tracking-line {
-  margin: 0.75rem 0 0;
-  color: rgba(255, 255, 255, 0.45);
+  margin: 0.85rem 0 0;
+  color: var(--ys-text-3);
   font-size: 0.8rem;
 }
 
 .your-stats-error-note {
-  margin: 0.75rem 0 0;
-  color: rgba(255, 180, 180, 0.85);
+  margin: 0.85rem 0 0;
+  color: rgba(255, 180, 180, 0.88);
   font-size: 0.85rem;
 }
 
-/* Mobile: 2x3 grid (5 cells + 1 empty 6th) */
+/* Mobile: 2-up counter grid */
 @media (max-width: 520px) {
   .your-stats-counter-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -171,7 +1835,7 @@ a.your-stats-logged-out-link:active {
     min-height: 84px;
   }
   .your-stats-counter-value {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
   }
 }
 
@@ -181,38 +1845,46 @@ a.your-stats-logged-out-link:active {
 
 .your-stats-link,
 .your-stats-link:visited {
-  color: #64B5F6;
+  color: var(--ys-accent);
   text-decoration: none;
+  font-weight: 600;
 }
 
 .your-stats-link:hover {
-  color: #90CAF9;
+  color: var(--ys-accent-bright);
   text-decoration: underline;
 }
 
 /* ============================================================================
- * Luck section
+ * Luck section + panels (You vs Platform vs Theoretical)
  * ========================================================================== */
 
 .your-stats-luck-section {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 12px;
-  padding: 1rem 1.5rem 1.5rem;
+  background: var(--ys-surface);
+  border: 1px solid var(--ys-border);
+  border-radius: var(--ys-radius);
+  padding: 1.25rem 1.5rem 1.5rem;
 }
 
 .your-stats-luck-section-header {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
   justify-content: space-between;
+}
+
+.your-stats-luck-intro {
+  margin: 0;
+  color: var(--ys-text-2);
+  font-size: 0.92rem;
 }
 
 .your-stats-luck-controls {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem 1.5rem;
-  margin: 0.5rem 0 1.25rem;
+  margin: 0.75rem 0 1.5rem;
   align-items: center;
 }
 
@@ -224,10 +1896,11 @@ a.your-stats-logged-out-link:active {
 }
 
 .your-stats-control-label {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--ys-text-3);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
 }
 
 .your-stats-luck-set-buttons,
@@ -237,13 +1910,11 @@ a.your-stats-logged-out-link:active {
   flex-wrap: wrap;
 }
 
-/* Mobile: hide button-row set selector, show the native <select>.
- * Desktop: hide native, show buttons. */
 .your-stats-luck-set-native {
   display: none;
-  background: rgba(0, 0, 0, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--ys-border-bright);
+  border-radius: var(--ys-radius-sm);
   color: #fff;
   padding: 0.45rem 0.7rem;
   font-family: 'Barlow', sans-serif;
@@ -259,8 +1930,6 @@ a.your-stats-logged-out-link:active {
   }
 }
 
-/* Body containers */
-
 .your-stats-luck-body {
   display: flex;
   flex-direction: column;
@@ -272,7 +1941,7 @@ a.your-stats-logged-out-link:active {
 .your-stats-luck-body--error,
 .your-stats-luck-body--empty {
   padding: 1rem 0;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ys-text-2);
 }
 
 .your-stats-luck-body--empty {
@@ -281,19 +1950,15 @@ a.your-stats-logged-out-link:active {
 
 .your-stats-luck-skeleton {
   height: 18px;
-  border-radius: 4px;
+  border-radius: 5px;
   width: 100%;
 }
 
-/* ============================================================================
- * Luck panel (rarity / aspect)
- * ========================================================================== */
-
 .your-stats-luck-panel {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  padding: 1rem 1.25rem;
+  background: var(--ys-surface-2);
+  border: 1px solid var(--ys-border);
+  border-radius: var(--ys-radius);
+  padding: 1.25rem 1.4rem;
 }
 
 .your-stats-luck-panel-header {
@@ -306,7 +1971,7 @@ a.your-stats-logged-out-link:active {
 
 .your-stats-luck-panel-title {
   font-size: 1.05rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #fff;
   margin: 0;
 }
@@ -314,22 +1979,22 @@ a.your-stats-logged-out-link:active {
 .your-stats-luck-panel-headline {
   margin: 0 0 0.75rem 0;
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--ys-text-2);
   line-height: 1.5;
 }
 
 .your-stats-luck-panel-math {
-  margin-top: 0.75rem;
+  margin-top: 0.85rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
 .your-stats-luck-panel-math-content {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
-  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--ys-border);
+  border-radius: var(--ys-radius-sm);
+  padding: 0.85rem;
   overflow-x: auto;
 }
 
@@ -341,17 +2006,21 @@ a.your-stats-logged-out-link:active {
 
 .your-stats-math-table th,
 .your-stats-math-table td {
-  padding: 0.4rem 0.6rem;
+  padding: 0.45rem 0.65rem;
   text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .your-stats-math-table th {
-  color: rgba(255, 255, 255, 0.55);
-  font-weight: 600;
+  color: var(--ys-text-3);
+  font-weight: 800;
   text-transform: uppercase;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   letter-spacing: 0.06em;
+}
+
+.your-stats-math-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .your-stats-math-num {
@@ -359,65 +2028,73 @@ a.your-stats-logged-out-link:active {
   text-align: right;
 }
 
-/* Regime badge */
-
+/* Regime badges */
 .your-stats-regime-badge {
   display: inline-block;
-  padding: 0.15rem 0.5rem;
+  padding: 0.16rem 0.55rem;
   border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 0.68rem;
+  font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .your-stats-regime-badge--normal {
-  background: rgba(76, 175, 80, 0.15);
-  color: #A5D6A7;
+  background: rgba(76, 175, 80, 0.16);
+  color: #a5d6a7;
   border: 1px solid rgba(76, 175, 80, 0.4);
 }
 
 .your-stats-regime-badge--unusual {
-  background: rgba(255, 152, 0, 0.15);
-  color: #FFCC80;
+  background: rgba(255, 152, 0, 0.16);
+  color: #ffcc80;
   border: 1px solid rgba(255, 152, 0, 0.45);
 }
 
 .your-stats-regime-badge--insufficient {
   background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--ys-text-3);
+  border: 1px solid var(--ys-border);
 }
 
 /* ============================================================================
- * Distribution chart shared
+ * Distribution chart (you / platform / theoretical)
  * ========================================================================== */
 
 .your-stats-chart {
-  margin-top: 0.75rem;
+  margin-top: 0.85rem;
+  padding: 0.85rem;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--ys-border);
+  border-radius: var(--ys-radius-sm);
 }
 
 .your-stats-chart-label {
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
-  margin: 0 0 0.5rem 0.25rem;
+  color: var(--ys-text-2);
+  margin: 0 0 0.6rem 0.25rem;
   line-height: 1.4;
 }
 
+.your-stats-chart-label strong {
+  color: #fff;
+}
+
 .your-stats-chart-note {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.45);
-  margin: 0.25rem 0 0 0.25rem;
+  font-size: 0.74rem;
+  color: var(--ys-text-3);
+  margin: 0.3rem 0 0 0.25rem;
 }
 
 .your-stats-chart-legend {
   display: flex;
-  gap: 1rem;
+  gap: 1.1rem;
   flex-wrap: wrap;
-  margin-top: 0.5rem;
+  margin-top: 0.6rem;
   padding-left: 0.25rem;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--ys-text-2);
 }
 
 .your-stats-chart-legend-item {
@@ -430,15 +2107,21 @@ a.your-stats-logged-out-link:active {
   display: inline-block;
   width: 14px;
   height: 10px;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
+/* The aspect bars are drawn in each aspect's own colour at three opacities;
+ * the legend mirrors that ramp (faint → solid) rather than inventing hues. */
 .your-stats-chart-legend-swatch--expected {
-  background: rgba(100, 181, 246, 0.4);
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.your-stats-chart-legend-swatch--platform {
+  background: rgba(255, 255, 255, 0.62);
 }
 
 .your-stats-chart-legend-swatch--observed {
-  background: #64B5F6;
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .your-stats-chart--aspect svg {
@@ -450,16 +2133,16 @@ a.your-stats-logged-out-link:active {
  * ========================================================================== */
 
 .your-stats-streaks {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  padding: 1rem 1.25rem;
+  background: var(--ys-surface-2);
+  border: 1px solid var(--ys-border);
+  border-radius: var(--ys-radius);
+  padding: 1.25rem 1.4rem;
 }
 
 .your-stats-streaks-empty {
   margin: 0;
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ys-text-3);
   padding: 0.5rem 0;
 }
 
@@ -473,10 +2156,10 @@ a.your-stats-logged-out-link:active {
 }
 
 .your-stats-streak-row {
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 6px;
-  padding: 0.6rem 0.85rem;
-  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--ys-border);
+  border-radius: var(--ys-radius-sm);
+  padding: 0.7rem 0.9rem;
+  background: rgba(0, 0, 0, 0.28);
 }
 
 .your-stats-streak-row-main {
@@ -488,25 +2171,1561 @@ a.your-stats-logged-out-link:active {
 }
 
 .your-stats-streak-card-name {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.95rem;
   color: #fff;
 }
 
 .your-stats-streak-counts {
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ys-text-2);
   font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .your-stats-streak-copy {
   margin: 0.35rem 0 0;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ys-text-2);
   line-height: 1.4;
 }
 
 .your-stats-streaks-more {
-  margin-top: 0.75rem;
+  margin-top: 0.85rem;
   display: flex;
   justify-content: center;
+}
+
+/* ============================================================================
+ * Responsive
+ * ========================================================================== */
+
+@media (max-width: 860px) {
+  .your-stats-gameplay-split-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .your-stats-gameplay-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .your-stats-explorer-selects {
+    flex: 1 1 100%;
+  }
+
+  .your-stats-field {
+    flex: 1;
+  }
+}
+
+@media (max-width: 560px) {
+  .me-page {
+    padding-inline: 1rem;
+  }
+
+  .me-hero {
+    padding: 1.25rem;
+  }
+
+  .me-hero-toolbar {
+    width: 100%;
+  }
+
+  .your-stats-tabs {
+    width: 100%;
+  }
+
+  .your-stats-tab {
+    min-width: 0;
+    flex: 1;
+    padding-inline: 0.75rem;
+  }
+
+  .your-stats-content {
+    padding: 1.1rem;
+    border-radius: 0 0 14px 14px;
+  }
+
+  .your-stats-gameplay-kpi-grid,
+  .your-stats-breakdown-row {
+    grid-template-columns: 1fr;
+  }
+
+  .your-stats-replay-row,
+  .your-stats-pool-build {
+    min-height: 112px;
+  }
+
+  .your-stats-replay-content {
+    max-width: 88%;
+    padding: 0.8rem 0.9rem;
+  }
+
+  .your-stats-replay-art img {
+    width: 56%;
+  }
+
+  .your-stats-replay-combo strong {
+    font-size: 0.95rem;
+  }
+
+  .your-stats-pool-group-header,
+  .your-stats-replay-header,
+  .your-stats-pool-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .your-stats-recent-pool {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .your-stats-seg {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* ============================================================================
+ * Hero era + date-range dropdowns
+ * ========================================================================== */
+
+.me-range {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+/* Each control is one clean pill: [ERA  LAW · A Lawless Time ⌄] — the label is
+   a muted inline prefix, not a floating form eyebrow. Shared with .your-stats-field. */
+.me-range-field,
+.your-stats-field {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0.28rem 0.5rem 0.28rem 0.8rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--ys-border);
+  border-radius: 999px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.me-range-field > span,
+.your-stats-field > span {
+  flex: 0 0 auto;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ys-text-3);
+}
+
+.me-range-field select,
+.your-stats-field select {
+  appearance: none;
+  -webkit-appearance: none;
+  max-width: 220px;
+  padding: 0.15rem 1.4rem 0.15rem 0;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-overflow: ellipsis;
+  /* muted chevron */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.55)' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.1rem center;
+}
+
+.me-range-field select:focus,
+.your-stats-field select:focus {
+  outline: none;
+}
+
+.me-range-field:focus-within,
+.your-stats-field:focus-within {
+  border-color: var(--ys-accent-bright);
+  box-shadow: 0 0 0 3px var(--ys-accent-dim);
+}
+
+.me-range-field select option,
+.your-stats-field select option {
+  background: #11161c;
+  color: #fff;
+}
+
+/* ============================================================================
+ * Meta tab — community limited-meta stats
+ * ========================================================================== */
+
+.your-stats-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.your-stats-meta-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.your-stats-meta-toolbar h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.your-stats-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.1rem;
+}
+
+/* Divider heading between the leader grid and the by-card grid. */
+.your-stats-meta-subhead {
+  margin: 1.6rem 0 0.4rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--ys-border);
+}
+
+.your-stats-meta-subhead h3 {
+  margin: 0.15rem 0 0;
+}
+
+/* Sealed | Draft split inside a metric card. */
+.your-stats-meta-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+
+.your-stats-meta-split-col {
+  min-width: 0;
+}
+
+/* Two stacked bar columns within a single Sealed/Draft side — lets a side show
+   ~20 rows (e.g. popular splashes) without running very tall. */
+.your-stats-meta-twocol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem 1rem;
+  align-items: start;
+}
+@media (max-width: 760px) {
+  .your-stats-meta-twocol {
+    grid-template-columns: 1fr;
+  }
+}
+
+.your-stats-meta-split-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 0.4rem;
+}
+
+.your-stats-meta-split-col + .your-stats-meta-split-col {
+  border-left: 1px solid var(--ys-border);
+  padding-left: 0.9rem;
+}
+
+/* "Draft" tag on draft-only metric cards. */
+.your-stats-meta-tag {
+  align-self: flex-start;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64B5F6;
+  border: 1px solid rgba(100, 181, 246, 0.5);
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+}
+
+/* ----- Win rate by leader: cropped-art grid + base-aspect readout ----- */
+.your-stats-wr-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
+  gap: 0.5rem;
+}
+.your-stats-wr-cell {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--ys-border);
+  padding: 0;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.05);
+}
+.your-stats-wr-cell.is-active {
+  outline: 2px solid #64B5F6;
+  outline-offset: 0;
+}
+.your-stats-wr-cell-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Push the card frame off the edges so only the central art shows. */
+  object-position: center 32%;
+  transform: scale(1.55);
+}
+.your-stats-wr-cell-art--empty {
+  background: rgba(255, 255, 255, 0.08);
+}
+.your-stats-wr-cell-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.1) 55%, transparent);
+  padding: 0.3rem 0.2rem;
+}
+.your-stats-wr-cell-pct {
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 1;
+  text-shadow: 0 1px 3px #000;
+}
+.your-stats-wr-cell-games {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-wr-cell:hover .your-stats-wr-cell-art {
+    transform: scale(1.62);
+  }
+}
+
+.your-stats-wr-readout {
+  margin-top: 0.9rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--ys-border);
+}
+
+/* Base-aspect breakdown floats as a styled overlay anchored under the focused
+   leader — never pushes page content down. pointer-events:none so it can't trap
+   the cursor (purely informational; tap the cell again to dismiss). */
+.your-stats-wr-popover {
+  width: 300px;
+  max-width: calc(100vw - 24px);
+  pointer-events: none;
+  background: rgba(12, 15, 22, 0.97);
+  border: 1px solid var(--ys-border-bright, rgba(255, 255, 255, 0.2));
+  border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.6);
+  padding: 0.5rem 0.95rem 0.85rem;
+}
+.your-stats-wr-popover .your-stats-wr-readout {
+  margin-top: 0;
+  padding-top: 0.3rem;
+  border-top: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .your-stats-wr-popover {
+    animation: ys-wr-pop 120ms ease-out;
+  }
+  @keyframes ys-wr-pop {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: none; }
+  }
+}
+.your-stats-wr-readout-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.55rem;
+}
+.your-stats-wr-readout-head span {
+  color: rgba(255, 255, 255, 0.65);
+  font-variant-numeric: tabular-nums;
+}
+.your-stats-wr-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.your-stats-wr-bar-row {
+  display: grid;
+  grid-template-columns: minmax(96px, auto) 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+.your-stats-wr-bar-label {
+  display: flex;
+  align-items: center;
+  gap: 0.32rem;
+  font-size: 0.78rem;
+}
+.your-stats-wr-bar-track {
+  height: 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.your-stats-wr-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 6px;
+}
+.your-stats-wr-bar-val {
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.8);
+  min-width: 3.6rem;
+  text-align: right;
+}
+
+/* ----- Draft analytics: P1P1 + average pick-turn ladder ----- */
+.your-stats-pickturn-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+.your-stats-pickturn-toolbar .your-stats-search {
+  flex: 0 1 200px;
+}
+
+/* Cost filter now holds the golden cost icon (white numeral) — tighten padding
+   so the 24px icon sits snug, no extra text gutters. */
+.your-stats-luck-filter-btn--cost {
+  padding: 0 2px;
+  gap: 0;
+}
+
+/* Cost + rarity filters read as greyscale when OFF and full colour when ON, so
+   the active selection pops. (Aspect filters keep their opacity treatment.) */
+.your-stats-luck-filter-btn--rarity img,
+.your-stats-luck-filter-btn--cost img {
+  filter: grayscale(1);
+  transition: filter 140ms ease;
+}
+.your-stats-luck-filter-btn--rarity.is-on img,
+.your-stats-luck-filter-btn--cost.is-on img {
+  filter: none;
+}
+
+/* Average-pick-turn boxes sit a clear gap below the Pick-1 boxes above them. */
+.your-stats-pickturn-grid {
+  margin-top: 1.5rem;
+}
+
+.your-stats-pickturn-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 460px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.your-stats-pickturn-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1.3fr) 3fr auto;
+  align-items: center;
+  gap: 0.7rem;
+}
+.your-stats-pickturn-name {
+  font-size: 0.82rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.your-stats-pickturn-track {
+  position: relative;
+  height: 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.your-stats-pickturn-marker {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.45);
+}
+.your-stats-pickturn-pos {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
+  min-width: 2.2rem;
+  text-align: right;
+}
+
+.your-stats-meta-card {
+  padding: 1.3rem 1.4rem;
+  background: var(--ys-surface);
+  border: 1px solid var(--ys-border);
+  border-radius: var(--ys-radius);
+}
+
+.your-stats-meta-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.your-stats-meta-card-header h3 {
+  margin: 0.1rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.your-stats-meta-legend {
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ys-text-3);
+  white-space: nowrap;
+}
+
+.your-stats-meta-legend em {
+  color: var(--ys-text-2);
+  font-style: normal;
+}
+
+.your-stats-meta-subtitle {
+  margin: 0.2rem 0 1rem;
+  color: var(--ys-text-3);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.your-stats-meta-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.your-stats-meta-bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.your-stats-meta-bar-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.your-stats-meta-bar-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+/* Card name + subtitle, STACKED so the subtitle always shows (it's part of the
+   card's identity — some sets have two cards with the same name but different
+   subtitles, so the name alone is ambiguous). */
+.your-stats-cardname {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.15;
+}
+.your-stats-cardname-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-cardname.is-previewable:hover .your-stats-cardname-name {
+    text-decoration: underline dotted rgba(255, 255, 255, 0.4);
+    text-underline-offset: 3px;
+  }
+}
+/* Subtitle: deliberately distinct from the name — italic, light, smaller. */
+.your-stats-cardname-sub {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.68rem;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.your-stats-meta-bar-value {
+  flex: 0 0 auto;
+  font-size: 0.86rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.your-stats-meta-loggedin {
+  margin-left: 0.25rem;
+  color: var(--ys-text-3);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.your-stats-meta-bar-track {
+  height: 8px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+}
+
+.your-stats-meta-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  opacity: 0.9;
+}
+
+.your-stats-meta-empty {
+  margin: 0;
+  padding: 0.5rem 0;
+  color: var(--ys-text-3);
+  font-size: 0.9rem;
+}
+
+.your-stats-meta-skeleton {
+  height: 30px;
+  border-radius: 6px;
+}
+
+/* Win-rate gate — blurred teaser + "give data to get data" CTA */
+.your-stats-meta-card--gated {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 120% at 100% 0%, var(--ys-accent-dim), transparent 60%),
+    var(--ys-surface);
+  border-color: rgba(96, 165, 250, 0.34);
+}
+
+.your-stats-meta-gate {
+  position: relative;
+  min-height: 200px;
+}
+
+.your-stats-meta-gate-blur {
+  filter: blur(7px) saturate(0.8);
+  opacity: 0.55;
+  pointer-events: none;
+  user-select: none;
+}
+
+.your-stats-meta-gate-cta {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  padding: 1.25rem;
+  text-align: center;
+  background: radial-gradient(120% 120% at 50% 35%, rgba(11, 15, 23, 0.5), rgba(11, 15, 23, 0.86));
+}
+
+.your-stats-meta-gate-lock {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--ys-accent-dim);
+  border: 1px solid rgba(144, 202, 249, 0.4);
+  color: var(--ys-accent-bright);
+}
+
+.your-stats-meta-gate-cta h4 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.your-stats-meta-gate-cta p {
+  margin: 0;
+  max-width: 48ch;
+  color: var(--ys-text-2);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .your-stats-meta-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================================
+ * Entrance motion
+ * One calm rise as the page settles, then a soft cross-fade whenever the
+ * active tab changes. Pure CSS keyframes (never gated on a JS/visibility
+ * class), so they always fire in a real browser and the content's resting
+ * state is fully visible — nothing ships hidden if the animation is skipped.
+ * ========================================================================== */
+@keyframes ys-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ys-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.me-hero {
+  animation: ys-rise 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.your-stats {
+  animation: ys-rise 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 80ms;
+}
+
+/* The panel re-keys per tab (distinct ids), so this re-runs on every switch —
+   a quick, unobtrusive cross-fade between Gameplay / Luck / Pools / Meta. */
+.your-stats [role="tabpanel"] {
+  animation: ys-fade 300ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .me-hero,
+  .your-stats,
+  .your-stats [role="tabpanel"] {
+    animation: none;
+  }
+}
+
+/* ===========================================================================
+   Luck redesign: card histogram, duplicate/showcase widgets, aspect breakdown
+   =========================================================================== */
+
+.your-stats-luck-hist {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1rem 1.1rem 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.your-stats-luck-hist-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.your-stats-luck-hist-head h4 {
+  margin: 0 0 0.2rem;
+  font-size: 1.02rem;
+}
+
+.your-stats-luck-hist-head p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.6));
+}
+
+/* On-brand search: compact, dark, not a huge full-width input. */
+.your-stats-luck-hist-search {
+  flex: 0 0 auto;
+}
+
+.your-stats-luck-hist-search input {
+  width: 200px;
+  max-width: 48vw;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.85rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  color: #fff;
+}
+
+.your-stats-luck-hist-search input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.your-stats-luck-hist-search input:focus {
+  outline: none;
+  border-color: rgba(96, 165, 250, 0.6);
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.25);
+}
+
+/* Sort toggle above the histogram (pick one). */
+.your-stats-luck-sort {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.your-stats-luck-sort-label {
+  font-size: 0.78rem;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.55));
+  margin-right: 0.15rem;
+}
+
+.your-stats-luck-sort-btn {
+  height: 26px;
+  padding: 0 0.6rem;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
+}
+
+.your-stats-luck-sort-btn.is-on {
+  color: #fff;
+  border-color: rgba(96, 165, 250, 0.7);
+  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.4);
+}
+
+.your-stats-luck-pie-exp {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Aspect + rarity filter buttons above the histogram. */
+.your-stats-luck-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.your-stats-luck-filter-group {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+
+.your-stats-luck-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 0.45rem;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.your-stats-luck-filter-btn img {
+  display: block;
+  border-radius: 3px;
+}
+
+.your-stats-luck-filter-btn.is-on {
+  opacity: 1;
+  border-color: rgba(96, 165, 250, 0.7);
+  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.4);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-luck-filter-btn:hover { opacity: 1; }
+}
+
+.your-stats-luck-filter-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--rarity, #888);
+}
+
+.your-stats-luck-filter-btn--rarity.is-on {
+  border-color: var(--rarity, #888);
+  box-shadow: 0 0 0 1px var(--rarity, #888);
+}
+
+/* The bar field: one full-height column per card (so even zero-count cards are
+   hoverable), each with the actual bar at the bottom and an expected marker. */
+/* Positioning context for the horizontal-scroll affordance chevrons. */
+.your-stats-luck-hist-scroll {
+  position: relative;
+}
+
+.your-stats-luck-hist-bars {
+  display: flex;
+  align-items: stretch;
+  gap: 1px;
+  height: 180px;
+  margin-top: 0.4rem;
+  padding: 2px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Scroll cue chevrons: faint arrows on whichever edge still has off-screen
+   content. They overlay the bar field, are hidden by default, and only become
+   visible when the matching scroll direction is available. On desktop they
+   additionally fade in on hover; on touch they stay subtle (the field already
+   scrolls by touch — this is an extra hint, never the only way). */
+.your-stats-luck-scroll-cue {
+  position: absolute;
+  top: 0.4rem;
+  bottom: 0;
+  width: 36px;
+  display: flex;
+  align-items: center;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.9);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+}
+
+.your-stats-luck-scroll-cue--left {
+  left: 0;
+  justify-content: flex-start;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+}
+
+.your-stats-luck-scroll-cue--right {
+  right: 0;
+  justify-content: flex-end;
+  background: linear-gradient(270deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+}
+
+/* Mobile/touch: show the cue (faint) whenever that side can scroll, since there
+   is no hover to reveal it. */
+.your-stats-luck-hist-scroll.can-scroll-left .your-stats-luck-scroll-cue--left,
+.your-stats-luck-hist-scroll.can-scroll-right .your-stats-luck-scroll-cue--right {
+  opacity: 0.4;
+  pointer-events: auto;
+}
+
+/* Desktop: keep them out of the way until the user hovers the graph, then fade
+   in only on the side(s) with more content. */
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-luck-hist-scroll.can-scroll-left .your-stats-luck-scroll-cue--left,
+  .your-stats-luck-hist-scroll.can-scroll-right .your-stats-luck-scroll-cue--right {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .your-stats-luck-hist-scroll.can-scroll-left:hover .your-stats-luck-scroll-cue--left,
+  .your-stats-luck-hist-scroll.can-scroll-right:hover .your-stats-luck-scroll-cue--right {
+    opacity: 0.7;
+    pointer-events: auto;
+  }
+  .your-stats-luck-scroll-cue:hover {
+    opacity: 1 !important;
+  }
+}
+
+.your-stats-luck-bar-col {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 4px;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.your-stats-luck-bar {
+  display: block;
+  width: 100%;
+  border-radius: 2px 2px 0 0;
+  opacity: 0.92;
+  transition: opacity 140ms ease;
+}
+
+.your-stats-luck-bar--empty {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Expected level marker — a contrasting line across the column so the gap
+   between reality and expected is visible at a glance. */
+.your-stats-luck-bar-expected {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+.your-stats-luck-bar--dim {
+  opacity: 0.18;
+}
+
+.your-stats-luck-bar--active .your-stats-luck-bar {
+  opacity: 1;
+}
+
+.your-stats-luck-bar--active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-luck-bar-col:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .your-stats-luck-bar-col:hover .your-stats-luck-bar {
+    opacity: 1;
+  }
+}
+
+/* Readout under the chart — hover OR tap drives this (mobile-safe). Dark,
+   on-theme card, not a white box. */
+.your-stats-luck-readout {
+  margin-top: 0.9rem;
+  min-height: 58px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.92);
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+}
+
+.your-stats-luck-readout--empty {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.55));
+  font-size: 0.85rem;
+}
+
+.your-stats-luck-readout-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.98rem;
+}
+
+.your-stats-luck-readout-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex: 0 0 auto;
+}
+
+.your-stats-luck-readout-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 0 auto;
+}
+
+.your-stats-luck-readout-icons img {
+  display: block;
+}
+
+.your-stats-luck-aspects-note {
+  margin: -0.3rem 0 0.7rem;
+  font-size: 0.8rem;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.6));
+}
+
+.your-stats-luck-widget-note {
+  color: rgba(255, 255, 255, 0.45);
+  font-style: italic;
+}
+
+/* Activity empty state when the user HAS activity, just not in this filter. */
+.your-stats-activity-filter-empty {
+  padding: 0.9rem 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.65));
+  font-size: 0.9rem;
+}
+
+.your-stats-activity-filter-empty p {
+  margin: 0;
+}
+
+.your-stats-luck-readout-num {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.your-stats-luck-readout-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.9rem;
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.your-stats-luck-readout-delta {
+  font-weight: 700;
+}
+
+.your-stats-luck-readout-context {
+  margin: 0.35rem 0 0;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.your-stats-luck-readout-packs {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Duplicate + showcase widgets */
+.your-stats-luck-widget-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.your-stats-luck-widget {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+}
+
+.your-stats-luck-widget h4 {
+  margin: 0 0 0.6rem;
+  font-size: 1rem;
+}
+
+.your-stats-luck-widget-figures {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  margin-bottom: 0.55rem;
+}
+
+.your-stats-luck-widget-figures > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.your-stats-luck-widget-num {
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.your-stats-luck-widget-num--exp {
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.6));
+  font-weight: 600;
+}
+
+.your-stats-luck-widget-cap {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.55));
+  margin-top: 0.2rem;
+}
+
+.your-stats-luck-widget-vs {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
+  align-self: center;
+}
+
+.your-stats-luck-widget-copy {
+  margin: 0;
+  font-size: 0.83rem;
+  line-height: 1.45;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.68));
+}
+
+/* Aspect breakdown — icon left of label, simple bars, no hover graph */
+.your-stats-luck-aspects {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.your-stats-luck-aspects h4 {
+  margin: 0 0 0.7rem;
+  font-size: 1rem;
+}
+
+/* Two pie charts: primary colors, and Heroism/Villainy/structure. */
+.your-stats-luck-pies {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.your-stats-luck-pie-block {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.your-stats-luck-pie {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.your-stats-luck-pie-side {
+  min-width: 0;
+}
+
+.your-stats-luck-pie-side h5 {
+  margin: 0 0 0.4rem;
+  font-size: 0.82rem;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.7));
+  font-weight: 600;
+}
+
+.your-stats-luck-pie-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.your-stats-luck-pie-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+}
+
+.your-stats-luck-pie-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.your-stats-luck-pie-legend img {
+  border-radius: 3px;
+}
+
+.your-stats-luck-pie-label {
+  flex: 1 1 auto;
+}
+
+.your-stats-luck-pie-val {
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.55));
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===========================================================================
+   Replay matchup card — your leader art on the left, opponent's on the right,
+   result + names + Watch down the middle. Reads like a deck card, not a log row.
+   =========================================================================== */
+/* The match card reuses .your-stats-pool-build for the leader-art-background
+   treatment; here we only add the anchor reset + the result tint. */
+.your-stats-replay-card {
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.your-stats-replay-oppline {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.7));
+}
+
+.your-stats-replay-opp-thumb {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.your-stats-replay-opp-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+}
+
+.your-stats-replay-opp-thumb svg {
+  width: 16px;
+  height: 16px;
+  opacity: 0.4;
+}
+
+.your-stats-replay-card:focus-visible {
+  outline: 2px solid var(--ys-accent-bright, #60a5fa);
+  outline-offset: 2px;
+}
+
+/* Result reads via a full-card border tint + the W/L/D chip — never a 3px side
+   stripe (that left rail is the canonical AI-UI tell). */
+.your-stats-replay-card.your-stats-replay-row--win { border-color: rgba(52, 211, 153, 0.5); }
+.your-stats-replay-card.your-stats-replay-row--loss { border-color: rgba(248, 113, 113, 0.5); }
+.your-stats-replay-card.your-stats-replay-row--draw { border-color: rgba(251, 191, 36, 0.5); }
+.your-stats-replay-card.your-stats-replay-row--pending { border-color: rgba(255, 255, 255, 0.22); }
+
+.your-stats-replay-flank {
+  position: relative;
+  flex: 0 0 27%;
+  max-width: 180px;
+  overflow: hidden;
+}
+
+.your-stats-replay-flank img {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 150%;
+  object-fit: cover;
+  object-position: center 22%;
+}
+
+/* Mine fades toward the center from the left; opponent mirrors it. */
+.your-stats-replay-flank--mine img {
+  left: 0;
+  -webkit-mask-image: linear-gradient(to right, #000 35%, transparent 100%);
+  mask-image: linear-gradient(to right, #000 35%, transparent 100%);
+}
+
+.your-stats-replay-flank--opp img {
+  right: 0;
+  -webkit-mask-image: linear-gradient(to left, #000 35%, transparent 100%);
+  mask-image: linear-gradient(to left, #000 35%, transparent 100%);
+}
+
+.your-stats-replay-flank .your-stats-card-placeholder,
+.your-stats-replay-flank svg {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  opacity: 0.25;
+}
+
+.your-stats-replay-center {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.6rem 0.5rem;
+  text-align: center;
+}
+
+.your-stats-replay-center-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.your-stats-replay-names {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 0.92rem;
+}
+
+.your-stats-replay-names strong {
+  /* Never truncate player names. */
+  white-space: normal;
+  word-break: break-word;
+}
+
+.your-stats-replay-names .your-stats-replay-vs {
+  color: var(--ys-text-3, rgba(255, 255, 255, 0.45));
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.your-stats-replay-center-sub {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  font-size: 0.78rem;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.6));
+}
+
+.your-stats-replay-watch-inline {
+  align-self: center;
+}
+
+.your-stats-replay-card .your-stats-replay-caret {
+  position: relative;
+  z-index: 1;
+  align-self: center;
+  margin-right: 0.5rem;
+}
+
+/* Gameplay leaders: usage pie (left) + win-rate legend (right). */
+.your-stats-leaders-pie-layout {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+}
+
+.your-stats-leaders-pie {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Pies sweep in (conic mask 0→360°) when scrolled into view, echoing how the
+   /stats recharts pies animate on mount. Default 360° so reduced-motion / older
+   browsers / no-JS always show the complete chart. */
+@property --ys-pie-sweep {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 360deg;
+}
+.your-stats-luck-pie,
+.your-stats-leaders-pie {
+  --ys-pie-sweep: 360deg;
+  -webkit-mask: conic-gradient(#000 var(--ys-pie-sweep), transparent 0);
+  mask: conic-gradient(#000 var(--ys-pie-sweep), transparent 0);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .your-stats-reveal .your-stats-luck-pie,
+  .your-stats-reveal .your-stats-leaders-pie {
+    animation: ys-pie-sweep 850ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  @keyframes ys-pie-sweep {
+    from { --ys-pie-sweep: 0deg; }
+    to { --ys-pie-sweep: 360deg; }
+  }
+}
+
+.your-stats-leaders-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1 1 240px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.your-stats-leaders-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.your-stats-leaders-legend-art {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 7px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.your-stats-leaders-legend-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+}
+
+.your-stats-leaders-legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.your-stats-leaders-legend-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.your-stats-leaders-legend-name strong {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.your-stats-leaders-legend-name small {
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.55));
+  font-size: 0.76rem;
+}
+
+.your-stats-leaders-legend-winrate {
+  flex: 0 0 auto;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }

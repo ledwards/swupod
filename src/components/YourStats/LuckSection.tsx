@@ -20,8 +20,12 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Button from '@/src/components/Button'
-import { LuckPanel } from './LuckPanel'
-import { StreaksPanel } from './StreaksPanel'
+import {
+  LuckHistogram,
+  DuplicateRateWidget,
+  ShowcaseRateWidget,
+  AspectBreakdown,
+} from './LuckHistogram'
 import { DEFAULT_STATS_SET_TAB, getStatsSetTabs } from '@/src/utils/statsSetTabs'
 
 // Defaulting to LAW is pragmatic; the brainstorm says "most recent set with
@@ -29,10 +33,6 @@ import { DEFAULT_STATS_SET_TAB, getStatsSetTabs } from '@/src/utils/statsSetTabs
 const DEFAULT_SET = DEFAULT_STATS_SET_TAB
 
 type Scope = 'opened' | 'kept'
-const SCOPE_LABEL: Record<Scope, string> = {
-  opened: 'Packs I opened',
-  kept: 'What I kept',
-}
 
 export interface LuckPayload {
   setCode: string
@@ -42,6 +42,9 @@ export interface LuckPayload {
   aspect: any
   streaks: any[]
   streaksHasMore: boolean
+  cardHits?: any[]
+  duplicates?: any
+  showcase?: any
 }
 
 interface FetchState {
@@ -60,15 +63,21 @@ export interface LuckSectionProps {
    */
   initialSet?: string
   /**
+   * When provided, the set is driven by the page-level global Set filter, so
+   * this section shows NO set selector of its own (the filter isn't repeated).
+   */
+  lockedSetCode?: string
+  /**
    * Include beta-only set tabs before prerelease. The parent derives this from
    * the authenticated user's beta/admin access.
    */
   includeBetaSets?: boolean
 }
 
-export function LuckSection({ since, until, fetchImpl, initialSet, includeBetaSets = false }: LuckSectionProps) {
-  const [setCode, setSetCode] = useState<string>(initialSet || DEFAULT_SET)
-  const [scope, setScope] = useState<Scope>('opened')
+export function LuckSection({ since, until, fetchImpl, initialSet, lockedSetCode, includeBetaSets = false }: LuckSectionProps) {
+  const [setCode, setSetCode] = useState<string>(lockedSetCode || initialSet || DEFAULT_SET)
+  // "What I kept" was confusing; luck is always "packs I opened".
+  const scope: Scope = 'opened'
   const [state, setState] = useState<FetchState>({
     loading: true,
     refetching: false,
@@ -77,10 +86,16 @@ export function LuckSection({ since, until, fetchImpl, initialSet, includeBetaSe
   })
   const setTabs = useMemo(() => getStatsSetTabs(includeBetaSets), [includeBetaSets])
 
+  // The global Set filter owns the set; follow it when it changes.
   useEffect(() => {
+    if (lockedSetCode) setSetCode(lockedSetCode)
+  }, [lockedSetCode])
+
+  useEffect(() => {
+    if (lockedSetCode) return
     if (setTabs.includes(setCode)) return
     setSetCode(DEFAULT_SET)
-  }, [setCode, setTabs])
+  }, [setCode, setTabs, lockedSetCode])
 
   useEffect(() => {
     let cancelled = false
@@ -91,7 +106,10 @@ export function LuckSection({ since, until, fetchImpl, initialSet, includeBetaSe
       refetching: prev.data !== null,
       error: false,
     }))
-    const params = new URLSearchParams({ setCode, scope, since, until })
+    // Luck is scoped by SET, all-time — NOT by the page's era window. Threading
+    // the era since/until here made any narrow Range (or the forward-looking
+    // ASH era) report "no packs opened" even when the user had opened plenty.
+    const params = new URLSearchParams({ setCode, scope })
     const f = fetchImpl || fetch
     f(`/api/stats/me/luck?${params.toString()}`, { credentials: 'include' })
       .then((r) => {
@@ -112,7 +130,7 @@ export function LuckSection({ since, until, fetchImpl, initialSet, includeBetaSe
     return () => {
       cancelled = true
     }
-  }, [setCode, scope, since, until, fetchImpl])
+  }, [setCode, scope, fetchImpl])
 
   const headerSuffix = state.refetching ? ' · Updating…' : ''
 
@@ -128,78 +146,55 @@ export function LuckSection({ since, until, fetchImpl, initialSet, includeBetaSe
         <h3 className="your-stats-section-heading">
           Luck{headerSuffix}
         </h3>
+        <p className="your-stats-luck-intro">Think you&apos;re lucky or unlucky? Let&apos;s find out.</p>
       </div>
 
-      {/* Set selector: button row on desktop, native select on mobile.
-          Both controls are always in the DOM; CSS toggles which is visible. */}
-      <div className="your-stats-luck-controls">
-        <div className="your-stats-luck-set-selector">
-          <span className="your-stats-control-label" id="your-stats-set-label">
-            Set
-          </span>
-          <div
-            className="your-stats-luck-set-buttons"
-            role="radiogroup"
-            aria-labelledby="your-stats-set-label"
-          >
-            {setTabs.map((s) => (
-              <Button
-                key={s}
-                variant="toggle"
-                size="sm"
-                glowColor="blue"
-                active={setCode === s}
-                onClick={() => setSetCode(s)}
-                role="radio"
-                aria-checked={setCode === s}
-                data-testid={`set-button-${s}`}
-              >
-                {s}
-              </Button>
-            ))}
-          </div>
-          <select
-            className="your-stats-luck-set-native"
-            aria-labelledby="your-stats-set-label"
-            value={setCode}
-            onChange={(e) => setSetCode(e.target.value)}
-            data-testid="set-select-mobile"
-          >
-            {setTabs.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="your-stats-luck-scope-selector">
-          <span className="your-stats-control-label" id="your-stats-scope-label">
-            Scope
-          </span>
-          <div
-            className="your-stats-luck-scope-buttons"
-            role="radiogroup"
-            aria-labelledby="your-stats-scope-label"
-          >
-            {(['opened', 'kept'] as Scope[]).map((s) => (
-              <Button
-                key={s}
-                variant="toggle"
-                size="sm"
-                glowColor="blue"
-                active={scope === s}
-                onClick={() => setScope(s)}
-                role="radio"
-                aria-checked={scope === s}
-                data-testid={`scope-button-${s}`}
-              >
-                {SCOPE_LABEL[s]}
-              </Button>
-            ))}
+      {/* Set selector: only when NOT driven by the page-level global Set filter
+          (we don't repeat the filter). Button row on desktop, native select on
+          mobile; CSS toggles which is visible. */}
+      {!lockedSetCode && (
+        <div className="your-stats-luck-controls">
+          <div className="your-stats-luck-set-selector">
+            <span className="your-stats-control-label" id="your-stats-set-label">
+              Set
+            </span>
+            <div
+              className="your-stats-luck-set-buttons"
+              role="radiogroup"
+              aria-labelledby="your-stats-set-label"
+            >
+              {setTabs.map((s) => (
+                <Button
+                  key={s}
+                  variant="toggle"
+                  size="sm"
+                  glowColor="blue"
+                  active={setCode === s}
+                  onClick={() => setSetCode(s)}
+                  role="radio"
+                  aria-checked={setCode === s}
+                  data-testid={`set-button-${s}`}
+                >
+                  {s}
+                </Button>
+              ))}
+            </div>
+            <select
+              className="your-stats-luck-set-native"
+              aria-labelledby="your-stats-set-label"
+              value={setCode}
+              onChange={(e) => setSetCode(e.target.value)}
+              data-testid="set-select-mobile"
+            >
+              {setTabs.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Body */}
       {state.loading ? (
@@ -237,22 +232,19 @@ export function LuckSection({ since, until, fetchImpl, initialSet, includeBetaSe
           style={{ opacity: dataPanelOpacity }}
           data-testid="luck-panels"
         >
-          <LuckPanel
-            dimension="rarity"
-            data={state.data.rarity}
+          <LuckHistogram
+            cardHits={state.data.cardHits || []}
             packsCracked={state.data.packsCracked}
-            title="Rarity"
           />
-          <LuckPanel
-            dimension="aspect"
-            data={state.data.aspect}
-            packsCracked={state.data.packsCracked}
-            title="Aspect mix"
-          />
-          <StreaksPanel
-            streaks={state.data.streaks || []}
-            streaksHasMore={Boolean(state.data.streaksHasMore)}
-          />
+
+          <div className="your-stats-luck-widget-row">
+            {state.data.duplicates && <DuplicateRateWidget data={state.data.duplicates} />}
+            {state.data.showcase && (
+              <ShowcaseRateWidget data={state.data.showcase} packsCracked={state.data.packsCracked} />
+            )}
+          </div>
+
+          <AspectBreakdown cardHits={state.data.cardHits || []} />
         </div>
       )}
     </section>

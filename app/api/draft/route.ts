@@ -8,6 +8,7 @@ import { getSetConfig } from '@/src/utils/setConfigs/index'
 import { getUnavailableSetReason } from '@/src/utils/setAvailability'
 import { initializeCardCache } from '@/src/utils/cardCache'
 import { generateSealedBox, clearBeltCache } from '@/src/utils/boosterPack'
+import { defaultRoundTimerEnabled } from '@/src/utils/draftTimerDefaults'
 import { broadcastPublicPodsUpdate } from '@/src/lib/socketBroadcast'
 import { postPodCreated } from '@/lib/discordLfg'
 import { captureLimitedServerEvent } from '@/lib/posthog'
@@ -134,7 +135,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             'waiting',
             effectiveMaxPlayers,
             1, // Host counts as first player
-            false, // Round timer off by default
+            // Round timer: ON for competitive (the in-draft host controls are
+            // hidden there, so it must be on or it could never show), OFF for
+            // casual (the host toggles it via the visible timer controls).
+            defaultRoundTimerEnabled(competitive),
             60, // Round timer duration default 60s
             timerEnabled,
             timerSeconds,

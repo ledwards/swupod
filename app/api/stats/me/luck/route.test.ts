@@ -37,6 +37,9 @@ import {
   buildAspectPanel,
   buildStreaks,
   buildEmptyResponse,
+  buildCardHits,
+  buildDuplicates,
+  buildShowcase,
 } from './route.ts'
 import { classifyAspect } from '@/src/services/expectedDistribution'
 import { MIN_PACKS_PER_CARD } from '@/src/utils/stats'
@@ -54,6 +57,85 @@ const testUser = {
   is_admin: false,
   is_beta_tester: false,
 }
+
+// ---------------------------------------------------------------------------
+// Luck redesign widgets (cardHits / duplicates / showcase) — pure helpers
+// ---------------------------------------------------------------------------
+
+describe('buildCardHits', () => {
+  it('emits one entry per expected card, sorted by collector number, with deltas', () => {
+    const observed = new Map([['SET-002', 3], ['SET-001', 0]])
+    const expected = new Map([['SET-001', 1], ['SET-002', 1]])
+    const meta = new Map([
+      ['SET-001', { number: 1, name: 'Alpha', aspects: ['Vigilance'] }],
+      ['SET-002', { number: 2, name: 'Bravo', aspects: ['Command', 'Cunning'] }],
+    ])
+    const hits = buildCardHits(observed, expected, meta)
+    assert.equal(hits.length, 2, 'one bar per expected card')
+    assert.equal(hits[0].number, 1, 'sorted by collector number')
+    assert.equal(hits[0].count, 0, 'unpulled card still appears')
+    // SPEC: delta = observed - expected. Bravo: 3 - 1 = 2.
+    assert.equal(hits[1].delta, 2)
+  })
+})
+
+describe('buildDuplicates', () => {
+  it('counts within-pool duplicates by identity (foil/HS = repeat of normal)', () => {
+    // One pool: a normal Vader + a Hyperspace Vader (same name) + one other card.
+    const rows = [
+      { card_name: 'Vader', card_id: 'uuid-normal-1', source_id: 'poolA', pack_index: 0 },
+      { card_name: 'Vader', card_id: 'uuid-hyperspace-1', source_id: 'poolA', pack_index: 1 },
+      { card_name: 'Luke', card_id: 'uuid-normal-2', source_id: 'poolA', pack_index: 2 },
+    ] as any
+    const dup = buildDuplicates(rows, 'SOR')
+    // SPEC: 1 pool; duplicates = pulls - distinct identities = 3 - 2 = 1 (the HS
+    // Vader is a repeat of the normal Vader).
+    assert.equal(dup.pools, 1)
+    assert.equal(dup.actualPerPool, 1)
+  })
+
+  it('expected duplicates come from the per-set model and are NOT zero', () => {
+    // SPEC: per docs/research/duplicate-rate-analysis.md every sealed pool carries
+    // ~4–6.7 duplicates from variant collisions; the placeholder "0" was wrong.
+    const rows = [
+      { card_name: 'A', card_id: 'u1', source_id: 'p', pack_index: 0 },
+      { card_name: 'B', card_id: 'u2', source_id: 'p', pack_index: 1 },
+    ] as any
+    const dup = buildDuplicates(rows, 'SOR')
+    assert.equal(dup.hasModel, true)
+    assert.ok(dup.expectedPerPool > 0, 'expected duplicates are non-zero')
+  })
+
+  it('a sealed-sized pool expects more duplicates than a draft-sized pool', () => {
+    const mk = (packs: number) =>
+      Array.from({ length: packs }, (_, i) => ({ card_name: `C${i}`, card_id: `u${i}`, source_id: 'p', pack_index: i })) as any
+    // SPEC: sealed 6-pack pools collide more than draft 3-pack pools (variant load).
+    const draft = buildDuplicates(mk(3), 'SOR')
+    const sealed = buildDuplicates(mk(6), 'SOR')
+    assert.ok(sealed.expectedPerPool > draft.expectedPerPool)
+  })
+
+  it('unknown set → no model, expected 0', () => {
+    const dup = buildDuplicates([{ card_name: 'X', card_id: 'u', source_id: 'p', pack_index: 0 }] as any, 'ZZZ')
+    assert.equal(dup.hasModel, false)
+    assert.equal(dup.expectedPerPool, 0)
+  })
+})
+
+describe('buildShowcase', () => {
+  it('counts showcase rows and scales the expected per-pack rate by packs', () => {
+    const rows = [
+      { card_id: 'A', is_showcase: true },
+      { card_id: 'B', is_showcase: false },
+      { card_id: 'C', is_showcase: true },
+    ] as any
+    // SPEC: 1/576 leader showcase rate over 100 packs ≈ 0.174 expected.
+    const sc = buildShowcase(rows, 100, 1 / 576)
+    assert.equal(sc.actualCount, 2)
+    assert.ok(Math.abs(sc.actualRate - 2 / 100) < 1e-9)
+    assert.ok(Math.abs(sc.expectedCount - 100 / 576) < 1e-9)
+  })
+})
 
 let ipCounter = 0
 function uniqueIp(): string {
@@ -275,6 +357,20 @@ describe('buildRarityPanel', () => {
     )
   })
 
+  it('includes platform actuals normalized to the player pack count', () => {
+    const out = buildRarityPanel(
+      { Common: 20, Uncommon: 8, Rare: 2, Legendary: 1 },
+      { Common: 21, Uncommon: 7, Rare: 2.5, Legendary: 0.5 },
+      10,
+      { Common: 19.5, Uncommon: 8.2, Rare: 2.1, Legendary: 0.4 },
+      500,
+    )
+
+    assert.strictEqual(out.platformActual.Common, 19.5)
+    assert.strictEqual(out.platformActual.Legendary, 0.4)
+    assert.strictEqual(out.platformPacksCracked, 500)
+  })
+
   it('returns insufficient regime when packsCracked is below MIN_PACKS_RARITY', () => {
     // n=10 << MIN_PACKS_RARITY (120 per stats.ts).
     const out = buildRarityPanel(
@@ -298,6 +394,20 @@ describe('buildAspectPanel', () => {
       Object.keys(out.perAspect).sort(),
       ['Aggression', 'Command', 'Cunning', 'Multicolor', 'Neutral', 'Vigilance'],
     )
+  })
+
+  it('includes platform actuals normalized to the player pack count', () => {
+    const out = buildAspectPanel(
+      { Vigilance: 20, Command: 18, Aggression: 17, Cunning: 16, Neutral: 8, Multicolor: 2 },
+      { Vigilance: 19, Command: 19, Aggression: 19, Cunning: 19, Neutral: 8, Multicolor: 1 },
+      10,
+      { Vigilance: 20.5, Command: 18.5, Aggression: 17.5, Cunning: 16.5, Neutral: 8.5, Multicolor: 1.5 },
+      800,
+    )
+
+    assert.strictEqual(out.platformActual.Vigilance, 20.5)
+    assert.strictEqual(out.platformActual.Multicolor, 1.5)
+    assert.strictEqual(out.platformPacksCracked, 800)
   })
 
   it('picks the most-surprising aspect as the headline driver', () => {
@@ -691,6 +801,30 @@ describe('SQL semantics (spec asserted against route source)', () => {
         /KEPT_SQL[\s\S]*?generated_at >= \$3[\s\S]*?generated_at < \(\$4::date \+ interval '1 day'\)/,
         'kept query uses half-open date filter',
       )
+    })
+  })
+
+  describe('platform actuals', () => {
+    it('queries platform kept pulls with the same set and half-open date filters', () => {
+      assert.match(
+        ROUTE_SRC,
+        /PLATFORM_KEPT_SQL[\s\S]*?user_id IS NOT NULL[\s\S]*?set_code = \$1[\s\S]*?generated_at >= \$2[\s\S]*?generated_at < \(\$3::date \+ interval '1 day'\)/,
+      )
+    })
+
+    it('queries platform opened pulls independently from the current user', () => {
+      assert.match(
+        ROUTE_SRC,
+        /PLATFORM_OPENED_SQL[\s\S]*?FROM card_generations[\s\S]*?WHERE set_code = \$1[\s\S]*?generated_at >= \$2[\s\S]*?generated_at < \(\$3::date \+ interval '1 day'\)/,
+      )
+    })
+
+    it('scales platform actuals down to the current player pack count before panel construction', () => {
+      assert.match(ROUTE_SRC, /function scaleActualsToPlayerPacks/)
+      assert.match(ROUTE_SRC, /targetPacks \/ sourcePacks/)
+      assert.match(ROUTE_SRC, /platformRarityForPlayerPacks[\s\S]*?buildRarityPanel/)
+      assert.match(ROUTE_SRC, /platformAspectForPlayerPacks[\s\S]*?buildAspectPanel/)
+      assert.match(ROUTE_SRC, /platformObserved\.packsCracked/)
     })
   })
 

@@ -49,7 +49,7 @@
   padding: 0.6rem 1rem;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 6px;
-  border-left: 3px solid rgba(255, 255, 255, 0.4); /* fallback if no setColor */
+  border: 1px solid rgba(255, 255, 255, 0.25); /* set color tints full border via inline style */
 }
 
 .subscribe-modal-date-info strong {
@@ -84,7 +84,7 @@
   margin: 0.75rem 0 0;
   padding: 0.75rem 1rem;
   background: rgba(88, 101, 242, 0.08);
-  border-left: 3px solid rgba(88, 101, 242, 0.6);
+  border: 1px solid rgba(88, 101, 242, 0.45);
   border-radius: 6px;
   font-size: 0.85rem;
   line-height: 1.5;

@@ -10,11 +10,9 @@ import { AspectIcon, ASPECTS } from '@/src/components/AspectIcon'
 import { LeaderCharts, CardCharts } from './StatsCharts'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
 import { PATREON_URL } from '@/src/utils/membership'
-import YourStats from '@/src/components/YourStats'
 import {
   DEFAULT_STATS_SET_TAB,
-  getStatsTabs,
-  PERSONAL_STATS_TAB,
+  getStatsSetTabs,
   STATS_SET_COLORS,
 } from '@/src/utils/statsSetTabs'
 import './stats.css'
@@ -126,7 +124,7 @@ function StatsCell({ you, all, top, tournament, format, className, showYou, show
       )}
       {showTournament && (
         <div className="stats-row-tournament">
-          <span className="stats-row-label">Tournament:</span> {isBlurred ? <span className="stats-blur-value">---</span> : (<>{tournament != null ? f(tournament) : '—'}{renderDelta(tournament, 'tournament')}</>)}
+          <span className="stats-row-label">Competitive:</span> {isBlurred ? <span className="stats-blur-value">---</span> : (<>{tournament != null ? f(tournament) : '—'}{renderDelta(tournament, 'tournament')}</>)}
         </div>
       )}
       {showTop && (
@@ -180,8 +178,8 @@ function StatsLegend({ user, showYou, showAll, showTop, showTournament, onToggle
       <div className="stats-legend-group">
         <label className={`stats-legend-toggle stats-legend-tournament ${isBlurred ? 'stats-legend-locked' : ''}`}>
           <input type="checkbox" checked={showTournament} onChange={onToggleTournament} disabled={isBlurred} />
-          Tournament Players {isBlurred && '🔒'}
-          <span className="stats-filter-info" title="App users who have competed in melee.gg tournaments">
+          Competitive Players {isBlurred && '🔒'}
+          <span className="stats-filter-info" title="App users who have competed in melee.gg events">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10"/>
               <line x1="12" y1="16" x2="12" y2="12"/>
@@ -195,7 +193,7 @@ function StatsLegend({ user, showYou, showAll, showTop, showTournament, onToggle
         <label className={`stats-legend-toggle stats-legend-top ${isBlurred ? 'stats-legend-locked' : ''}`}>
           <input type="checkbox" checked={showTop} onChange={onToggleTop} disabled={isBlurred} />
           Top Players {isBlurred && '🔒'}
-          <span className="stats-filter-info" title="Top performing tournament players">
+          <span className="stats-filter-info" title="Top performing competitive players">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10"/>
               <line x1="12" y1="16" x2="12" y2="12"/>
@@ -396,7 +394,7 @@ export default function StatsPage() {
   const { user, isPatron, loading: authLoading } = useAuth()
   const canSeeFullStats = isPatron === true || user?.is_admin
   const hasBetaSetAccess = Boolean(user?.is_beta_tester || user?.is_admin)
-  const tabs = useMemo(() => getStatsTabs(hasBetaSetAccess), [hasBetaSetAccess])
+  const tabs = useMemo(() => getStatsSetTabs(hasBetaSetAccess), [hasBetaSetAccess])
 
   useEffect(() => {
     fetch('/api/stats/top-player-count')
@@ -407,7 +405,13 @@ export default function StatsPage() {
 
   useEffect(() => {
     const hash = window.location.hash.slice(1)
-    if (hash && tabs.includes(hash)) setActiveTab(hash)
+    if (hash && tabs.includes(hash)) {
+      // Respect an explicit tab in the URL (including #you).
+      setActiveTab(hash)
+    } else {
+      // Bare /stats — always default to the latest set (tabs are newest-first).
+      setActiveTab(tabs[0])
+    }
   }, [tabs])
 
   useEffect(() => {
@@ -432,10 +436,6 @@ export default function StatsPage() {
     setActiveTab(tab)
     window.location.hash = tab
   }
-
-  // The personal stats tab (U8) stays last so it does not change the default
-  // landing tab. Beta set tabs are included for beta/admin users before
-  // prerelease, then become public automatically once the set is no longer beta.
 
   const isBlurred = !canSeeFullStats
 
@@ -524,7 +524,7 @@ export default function StatsPage() {
         {tabs.map(tab => (
           <button
             key={tab}
-            className={`stats-tab ${activeTab === tab ? 'active' : ''} ${tab === PERSONAL_STATS_TAB ? 'stats-tab-you' : ''}`}
+            className={`stats-tab ${activeTab === tab ? 'active' : ''}`}
             onClick={() => handleTabChange(tab)}
             style={STATS_SET_COLORS[tab] ? {
               '--set-color': STATS_SET_COLORS[tab],
@@ -534,52 +534,43 @@ export default function StatsPage() {
               } : {})
             } : {}}
           >
-            {tab === PERSONAL_STATS_TAB ? 'You' : tab}
+            {tab}
           </button>
         ))}
       </div>
 
       <div className="stats-content">
-        {activeTab === PERSONAL_STATS_TAB ? (
-          /* U8: Personal stats — bypasses the Patreon gate entirely.
-             Personal data is free for any logged-in user (R2). The set-tabs'
-             Tournament/Top blur CTA below does not render in this branch. */
-          <YourStats since={startDate} until={endDate} />
-        ) : (
-          <>
-            {isBlurred && isPatron !== null && (
-              <div className="stats-patron-cta">
-                <div className="stats-patron-cta-content">
-                  <div className="stats-patron-cta-text">
-                    <span className="stats-patron-cta-icon">🔒</span>
-                    <div>
-                      <h3 className="stats-patron-cta-heading">Unlock <span style={{ color: '#CE93D8' }}>Tournament</span> and Top Player Stats</h3>
-                      <p className="stats-patron-cta-desc">Support Protect the Pod to see stats from top tournament competitors.</p>
-                    </div>
-                  </div>
-                  <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">
-                    <Button variant="primary">Support Protect the Pod</Button>
-                  </a>
+        {isBlurred && isPatron !== null && (
+          <div className="stats-patron-cta">
+            <div className="stats-patron-cta-content">
+              <div className="stats-patron-cta-text">
+                <span className="stats-patron-cta-icon">🔒</span>
+                <div>
+                  <h3 className="stats-patron-cta-heading">Unlock <span style={{ color: '#CE93D8' }}>Competitive</span> and Top Player Stats</h3>
+                  <p className="stats-patron-cta-desc">Support Protect the Pod to see stats from top competitive players.</p>
                 </div>
               </div>
-            )}
-            <SetStatsTab
-              setCode={activeTab}
-              includeBots={includeBots}
-              includeHumans={includeHumans}
-              startDate={startDate}
-              endDate={endDate}
-              user={user}
-              showYou={showYou}
-              showAll={showAll}
-              showTop={showTop}
-              showTournament={showTournament}
-              legendProps={legendProps}
-              isBlurred={isBlurred}
-              canSeeFullStats={canSeeFullStats}
-            />
-          </>
+              <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">
+                <Button variant="primary">Support Protect the Pod</Button>
+              </a>
+            </div>
+          </div>
         )}
+        <SetStatsTab
+          setCode={activeTab}
+          includeBots={includeBots}
+          includeHumans={includeHumans}
+          startDate={startDate}
+          endDate={endDate}
+          user={user}
+          showYou={showYou}
+          showAll={showAll}
+          showTop={showTop}
+          showTournament={showTournament}
+          legendProps={legendProps}
+          isBlurred={isBlurred}
+          canSeeFullStats={canSeeFullStats}
+        />
       </div>
     </div>
   )
@@ -727,12 +718,12 @@ function SkeletonTableRows({ columns, rows = 8 }: { columns: string[], rows?: nu
 }
 
 function SkeletonChartGrid() {
-  const labels = ['You', 'All Players', 'Tournament Players', 'Top Players']
+  const labels = ['You', 'All Players', 'Competitive Players', 'Top Players']
   return (
     <div className="stats-chart-grid">
       {labels.map(label => (
         <div key={label} className="stats-chart-panel">
-          <h4 className="stats-chart-panel-label" style={{ color: label === 'You' ? '#64B5F6' : label.startsWith('Tournament') ? '#CE93D8' : label.startsWith('Top') ? '#FFB74D' : 'rgba(255,255,255,0.9)' }}>{label}</h4>
+          <h4 className="stats-chart-panel-label" style={{ color: label === 'You' ? 'rgba(255,255,255,0.9)' : label.startsWith('Competitive') ? '#CE93D8' : label.startsWith('Top') ? '#FFB74D' : '#4DB6AC' }}>{label}</h4>
           <div className="skeleton-line" style={{ height: '180px', borderRadius: '6px' }} />
         </div>
       ))}
@@ -1150,17 +1141,17 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
   const rarityClass = (r: string) => `rarity-${r.toLowerCase()}`
 
   const CardSortHeader = ({ label, col, title }: { label: string, col: SortKey, title?: string }) => (
-    <th className={`sortable ${cardSortKey === col ? 'active' : ''}`} onClick={() => handleCardSort(col)} title={title}>
+    <th className={`sortable ${cardSortKey === col ? 'active' : ''}`} onClick={() => handleCardSort(col)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardSort(col) } }} tabIndex={0} aria-sort={cardSortKey === col ? (cardSortAsc ? 'ascending' : 'descending') : 'none'} title={title}>
       {label}{cardSortKey === col && <span className="sort-indicator">{cardSortAsc ? ' ▲' : ' ▼'}</span>}
     </th>
   )
   const LeaderSortHeader = ({ label, col, title }: { label: string, col: LeaderSortKey, title?: string }) => (
-    <th className={`sortable ${leaderSortKey === col ? 'active' : ''}`} onClick={() => handleLeaderSort(col)} title={title}>
+    <th className={`sortable ${leaderSortKey === col ? 'active' : ''}`} onClick={() => handleLeaderSort(col)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleLeaderSort(col) } }} tabIndex={0} aria-sort={leaderSortKey === col ? (leaderSortAsc ? 'ascending' : 'descending') : 'none'} title={title}>
       {label}{leaderSortKey === col && <span className="sort-indicator">{leaderSortAsc ? ' ▲' : ' ▼'}</span>}
     </th>
   )
   const LeaderSelSortHeader = ({ label, col, title }: { label: string, col: LeaderSelSortKey, title?: string }) => (
-    <th className={`sortable ${leaderSelSortKey === col ? 'active' : ''}`} onClick={() => handleLeaderSelSort(col)} title={title}>
+    <th className={`sortable ${leaderSelSortKey === col ? 'active' : ''}`} onClick={() => handleLeaderSelSort(col)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleLeaderSelSort(col) } }} tabIndex={0} aria-sort={leaderSelSortKey === col ? (leaderSelSortAsc ? 'ascending' : 'descending') : 'none'} title={title}>
       {label}{leaderSelSortKey === col && <span className="sort-indicator">{leaderSelSortAsc ? ' ▲' : ' ▼'}</span>}
     </th>
   )
@@ -1674,12 +1665,12 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
   const cellProps = { showYou, showAll, showTop, showTournament, isBlurred, user }
 
   const CardSortHeader = ({ label, col, title }: { label: string, col: DeckSortKey, title?: string }) => (
-    <th className={`sortable ${cardSortKey === col ? 'active' : ''}`} onClick={() => handleCardSort(col)} title={title}>
+    <th className={`sortable ${cardSortKey === col ? 'active' : ''}`} onClick={() => handleCardSort(col)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardSort(col) } }} tabIndex={0} aria-sort={cardSortKey === col ? (cardSortAsc ? 'ascending' : 'descending') : 'none'} title={title}>
       {label}{cardSortKey === col && <span className="sort-indicator">{cardSortAsc ? ' ▲' : ' ▼'}</span>}
     </th>
   )
   const LeaderSelSortHeader = ({ label, col, title }: { label: string, col: LeaderSelSortKey, title?: string }) => (
-    <th className={`sortable ${leaderSelSortKey === col ? 'active' : ''}`} onClick={() => handleLeaderSelSort(col)} title={title}>
+    <th className={`sortable ${leaderSelSortKey === col ? 'active' : ''}`} onClick={() => handleLeaderSelSort(col)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleLeaderSelSort(col) } }} tabIndex={0} aria-sort={leaderSelSortKey === col ? (leaderSelSortAsc ? 'ascending' : 'descending') : 'none'} title={title}>
       {label}{leaderSelSortKey === col && <span className="sort-indicator">{leaderSelSortAsc ? ' ▲' : ' ▼'}</span>}
     </th>
   )

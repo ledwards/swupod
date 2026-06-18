@@ -1,0 +1,655 @@
+{
+  "collationVersion": 1,
+  "generatedAt": "2026-06-17T09:42:05.534Z",
+  "podsPerSet": 2500,
+  "packsPerPod": 6,
+  "rarities": [
+    "Common",
+    "Uncommon",
+    "Rare",
+    "Legendary",
+    "Special"
+  ],
+  "aspects": [
+    "Vigilance",
+    "Command",
+    "Aggression",
+    "Cunning",
+    "Neutral",
+    "Multicolor"
+  ],
+  "variants": [
+    "foil",
+    "hyperspace",
+    "hyperspaceFoil",
+    "showcase",
+    "prestige"
+  ],
+  "notes": "Per-pack mean and sd from Monte-Carlo of the real generator. CLT z-test of actuals over M packs: expected = mean*M, se = sd*sqrt(M), z = (obs-expected)/se.",
+  "sets": {
+    "SOR": {
+      "pods": 2500,
+      "packs": 15000,
+      "cardsPerPack": {
+        "mean": 16,
+        "sd": 0
+      },
+      "rarity": {
+        "Common": {
+          "mean": 11.605133,
+          "sd": 0.55882
+        },
+        "Uncommon": {
+          "mean": 3.117267,
+          "sd": 0.424949
+        },
+        "Rare": {
+          "mean": 1.145267,
+          "sd": 0.58255
+        },
+        "Legendary": {
+          "mean": 0.132333,
+          "sd": 0.343542
+        },
+        "Special": {
+          "mean": 0,
+          "sd": 0
+        }
+      },
+      "aspect": {
+        "Vigilance": {
+          "mean": 3.538133,
+          "sd": 1.251884
+        },
+        "Command": {
+          "mean": 3.406667,
+          "sd": 1.306429
+        },
+        "Aggression": {
+          "mean": 3.371,
+          "sd": 1.165801
+        },
+        "Cunning": {
+          "mean": 3.3006,
+          "sd": 1.153822
+        },
+        "Neutral": {
+          "mean": 2.3836,
+          "sd": 0.815874
+        },
+        "Multicolor": {
+          "mean": 0,
+          "sd": 0
+        }
+      },
+      "variant": {
+        "foil": {
+          "mean": 0.979467,
+          "sd": 0.141816
+        },
+        "hyperspace": {
+          "mean": 0.765867,
+          "sd": 0.716181
+        },
+        "hyperspaceFoil": {
+          "mean": 0.020533,
+          "sd": 0.141816
+        },
+        "showcase": {
+          "mean": 0.003467,
+          "sd": 0.058776
+        },
+        "prestige": {
+          "mean": 0,
+          "sd": 0
+        }
+      }
+    },
+    "SHD": {
+      "pods": 2500,
+      "packs": 15000,
+      "cardsPerPack": {
+        "mean": 16,
+        "sd": 0
+      },
+      "rarity": {
+        "Common": {
+          "mean": 11.607267,
+          "sd": 0.561866
+        },
+        "Uncommon": {
+          "mean": 3.123333,
+          "sd": 0.430026
+        },
+        "Rare": {
+          "mean": 1.138,
+          "sd": 0.579905
+        },
+        "Legendary": {
+          "mean": 0.1312,
+          "sd": 0.34135
+        },
+        "Special": {
+          "mean": 0.0002,
+          "sd": 0.014141
+        }
+      },
+      "aspect": {
+        "Vigilance": {
+          "mean": 3.171867,
+          "sd": 1.298638
+        },
+        "Command": {
+          "mean": 3.905467,
+          "sd": 1.362448
+        },
+        "Aggression": {
+          "mean": 3.219133,
+          "sd": 1.315211
+        },
+        "Cunning": {
+          "mean": 3.584333,
+          "sd": 0.994965
+        },
+        "Neutral": {
+          "mean": 2.1192,
+          "sd": 0.867904
+        },
+        "Multicolor": {
+          "mean": 0,
+          "sd": 0
+        }
+      },
+      "variant": {
+        "foil": {
+          "mean": 0.9796,
+          "sd": 0.141364
+        },
+        "hyperspace": {
+          "mean": 0.758,
+          "sd": 0.716824
+        },
+        "hyperspaceFoil": {
+          "mean": 0.0204,
+          "sd": 0.141364
+        },
+        "showcase": {
+          "mean": 0.002867,
+          "sd": 0.053464
+        },
+        "prestige": {
+          "mean": 0,
+          "sd": 0
+        }
+      }
+    },
+    "TWI": {
+      "pods": 2500,
+      "packs": 15000,
+      "cardsPerPack": {
+        "mean": 16,
+        "sd": 0
+      },
+      "rarity": {
+        "Common": {
+          "mean": 11.6064,
+          "sd": 0.56013
+        },
+        "Uncommon": {
+          "mean": 3.122733,
+          "sd": 0.431358
+        },
+        "Rare": {
+          "mean": 1.140667,
+          "sd": 0.57115
+        },
+        "Legendary": {
+          "mean": 0.130067,
+          "sd": 0.339533
+        },
+        "Special": {
+          "mean": 0.000133,
+          "sd": 0.011546
+        }
+      },
+      "aspect": {
+        "Vigilance": {
+          "mean": 3.552333,
+          "sd": 1.343054
+        },
+        "Command": {
+          "mean": 3.354733,
+          "sd": 1.094272
+        },
+        "Aggression": {
+          "mean": 3.5618,
+          "sd": 1.110337
+        },
+        "Cunning": {
+          "mean": 3.107067,
+          "sd": 1.097392
+        },
+        "Neutral": {
+          "mean": 2.424067,
+          "sd": 1.019134
+        },
+        "Multicolor": {
+          "mean": 0,
+          "sd": 0
+        }
+      },
+      "variant": {
+        "foil": {
+          "mean": 0.9808,
+          "sd": 0.137227
+        },
+        "hyperspace": {
+          "mean": 0.7662,
+          "sd": 0.710073
+        },
+        "hyperspaceFoil": {
+          "mean": 0.0192,
+          "sd": 0.137227
+        },
+        "showcase": {
+          "mean": 0.003467,
+          "sd": 0.058776
+        },
+        "prestige": {
+          "mean": 0,
+          "sd": 0
+        }
+      }
+    },
+    "JTL": {
+      "pods": 2500,
+      "packs": 15000,
+      "cardsPerPack": {
+        "mean": 16,
+        "sd": 0
+      },
+      "rarity": {
+        "Common": {
+          "mean": 11.587267,
+          "sd": 0.562244
+        },
+        "Uncommon": {
+          "mean": 3.116533,
+          "sd": 0.429286
+        },
+        "Rare": {
+          "mean": 1.071133,
+          "sd": 0.583958
+        },
+        "Legendary": {
+          "mean": 0.171933,
+          "sd": 0.381889
+        },
+        "Special": {
+          "mean": 0.053133,
+          "sd": 0.227545
+        }
+      },
+      "aspect": {
+        "Vigilance": {
+          "mean": 3.5964,
+          "sd": 1.11668
+        },
+        "Command": {
+          "mean": 3.588733,
+          "sd": 1.385061
+        },
+        "Aggression": {
+          "mean": 3.4424,
+          "sd": 1.118518
+        },
+        "Cunning": {
+          "mean": 3.468067,
+          "sd": 1.298992
+        },
+        "Neutral": {
+          "mean": 1.9044,
+          "sd": 0.654773
+        },
+        "Multicolor": {
+          "mean": 0,
+          "sd": 0
+        }
+      },
+      "variant": {
+        "foil": {
+          "mean": 0.98,
+          "sd": 0.14
+        },
+        "hyperspace": {
+          "mean": 0.7614,
+          "sd": 0.715963
+        },
+        "hyperspaceFoil": {
+          "mean": 0.02,
+          "sd": 0.14
+        },
+        "showcase": {
+          "mean": 0.0036,
+          "sd": 0.059892
+        },
+        "prestige": {
+          "mean": 0,
+          "sd": 0
+        }
+      }
+    },
+    "LOF": {
+      "pods": 2500,
+      "packs": 15000,
+      "cardsPerPack": {
+        "mean": 16,
+        "sd": 0
+      },
+      "rarity": {
+        "Common": {
+          "mean": 11.581133,
+          "sd": 0.573949
+        },
+        "Uncommon": {
+          "mean": 3.116133,
+          "sd": 0.437698
+        },
+        "Rare": {
+          "mean": 1.0784,
+          "sd": 0.58832
+        },
+        "Legendary": {
+          "mean": 0.170933,
+          "sd": 0.380852
+        },
+        "Special": {
+          "mean": 0.0534,
+          "sd": 0.227776
+        }
+      },
+      "aspect": {
+        "Vigilance": {
+          "mean": 3.498,
+          "sd": 1.188723
+        },
+        "Command": {
+          "mean": 3.335533,
+          "sd": 1.351105
+        },
+        "Aggression": {
+          "mean": 3.483467,
+          "sd": 1.102479
+        },
+        "Cunning": {
+          "mean": 3.335467,
+          "sd": 1.18327
+        },
+        "Neutral": {
+          "mean": 2.347533,
+          "sd": 0.792772
+        },
+        "Multicolor": {
+          "mean": 0,
+          "sd": 0
+        }
+      },
+      "variant": {
+        "foil": {
+          "mean": 0.980267,
+          "sd": 0.139082
+        },
+        "hyperspace": {
+          "mean": 0.7594,
+          "sd": 0.716597
+        },
+        "hyperspaceFoil": {
+          "mean": 0.019733,
+          "sd": 0.139082
+        },
+        "showcase": {
+          "mean": 0.003,
+          "sd": 0.05469
+        },
+        "prestige": {
+          "mean": 0,
+          "sd": 0
+        }
+      }
+    },
+    "SEC": {
+      "pods": 2500,
+      "packs": 15000,
+      "cardsPerPack": {
+        "mean": 16,
+        "sd": 0
+      },
+      "rarity": {
+        "Common": {
+          "mean": 11.574133,
+          "sd": 0.576747
+        },
+        "Uncommon": {
+          "mean": 3.1176,
+          "sd": 0.438676
+        },
+        "Rare": {
+          "mean": 1.0816,
+          "sd": 0.58947
+        },
+        "Legendary": {
+          "mean": 0.171533,
+          "sd": 0.38067
+        },
+        "Special": {
+          "mean": 0.055133,
+          "sd": 0.230565
+        }
+      },
+      "aspect": {
+        "Vigilance": {
+          "mean": 3.529133,
+          "sd": 1.115326
+        },
+        "Command": {
+          "mean": 3.488133,
+          "sd": 1.358477
+        },
+        "Aggression": {
+          "mean": 3.378133,
+          "sd": 1.198811
+        },
+        "Cunning": {
+          "mean": 3.3746,
+          "sd": 1.363381
+        },
+        "Neutral": {
+          "mean": 2.23,
+          "sd": 0.73632
+        },
+        "Multicolor": {
+          "mean": 0,
+          "sd": 0
+        }
+      },
+      "variant": {
+        "foil": {
+          "mean": 0.98,
+          "sd": 0.14
+        },
+        "hyperspace": {
+          "mean": 0.754333,
+          "sd": 0.715156
+        },
+        "hyperspaceFoil": {
+          "mean": 0.02,
+          "sd": 0.14
+        },
+        "showcase": {
+          "mean": 0.0048,
+          "sd": 0.069116
+        },
+        "prestige": {
+          "mean": 0,
+          "sd": 0
+        }
+      }
+    },
+    "LAW": {
+      "pods": 2500,
+      "packs": 15000,
+      "cardsPerPack": {
+        "mean": 16,
+        "sd": 0
+      },
+      "rarity": {
+        "Common": {
+          "mean": 11.499733,
+          "sd": 0.603545
+        },
+        "Uncommon": {
+          "mean": 2.998533,
+          "sd": 0.528139
+        },
+        "Rare": {
+          "mean": 1.212,
+          "sd": 0.675072
+        },
+        "Legendary": {
+          "mean": 0.217467,
+          "sd": 0.433638
+        },
+        "Special": {
+          "mean": 0.072267,
+          "sd": 0.264785
+        }
+      },
+      "aspect": {
+        "Vigilance": {
+          "mean": 3.050333,
+          "sd": 1.203356
+        },
+        "Command": {
+          "mean": 3.084267,
+          "sd": 1.268949
+        },
+        "Aggression": {
+          "mean": 2.8828,
+          "sd": 1.154584
+        },
+        "Cunning": {
+          "mean": 2.858,
+          "sd": 1.138582
+        },
+        "Neutral": {
+          "mean": 1.430667,
+          "sd": 0.904945
+        },
+        "Multicolor": {
+          "mean": 2.693933,
+          "sd": 1.44895
+        }
+      },
+      "variant": {
+        "foil": {
+          "mean": 0,
+          "sd": 0
+        },
+        "hyperspace": {
+          "mean": 1.781067,
+          "sd": 0.717543
+        },
+        "hyperspaceFoil": {
+          "mean": 1,
+          "sd": 0
+        },
+        "showcase": {
+          "mean": 0.001667,
+          "sd": 0.040791
+        },
+        "prestige": {
+          "mean": 0.0554,
+          "sd": 0.228759
+        }
+      }
+    },
+    "ASH": {
+      "pods": 2500,
+      "packs": 15000,
+      "cardsPerPack": {
+        "mean": 16,
+        "sd": 0
+      },
+      "rarity": {
+        "Common": {
+          "mean": 11.4868,
+          "sd": 0.607146
+        },
+        "Uncommon": {
+          "mean": 2.986133,
+          "sd": 0.536726
+        },
+        "Rare": {
+          "mean": 1.236333,
+          "sd": 0.690179
+        },
+        "Legendary": {
+          "mean": 0.223667,
+          "sd": 0.442463
+        },
+        "Special": {
+          "mean": 0.067067,
+          "sd": 0.255151
+        }
+      },
+      "aspect": {
+        "Vigilance": {
+          "mean": 3.244933,
+          "sd": 1.344721
+        },
+        "Command": {
+          "mean": 3.529733,
+          "sd": 1.191378
+        },
+        "Aggression": {
+          "mean": 3.285467,
+          "sd": 1.185963
+        },
+        "Cunning": {
+          "mean": 3.392933,
+          "sd": 1.172406
+        },
+        "Neutral": {
+          "mean": 1.9394,
+          "sd": 1.612698
+        },
+        "Multicolor": {
+          "mean": 0.607533,
+          "sd": 0.721228
+        }
+      },
+      "variant": {
+        "foil": {
+          "mean": 1,
+          "sd": 0
+        },
+        "hyperspace": {
+          "mean": 0,
+          "sd": 0
+        },
+        "hyperspaceFoil": {
+          "mean": 0,
+          "sd": 0
+        },
+        "showcase": {
+          "mean": 0,
+          "sd": 0
+        },
+        "prestige": {
+          "mean": 0.057733,
+          "sd": 0.233238
+        }
+      }
+    }
+  }
+}

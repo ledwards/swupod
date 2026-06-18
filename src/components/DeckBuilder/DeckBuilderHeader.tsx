@@ -196,8 +196,9 @@ export function DeckBuilderHeader({
 
         {/* Copy Share URL moved to the PoolBuilds card list (icon-only chip). */}
 
-        {/* Draft Log button */}
-        {draftShareId && (
+        {/* Draft Log button — hidden when the owner is a patron (they get the
+            richer Draft Report button below instead). */}
+        {draftShareId && !(isPatron && isOwner) && (
           <Button
             variant="secondary"
             className="export-button"

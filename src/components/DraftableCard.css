@@ -11,6 +11,11 @@
   cursor: pointer;
   transition: transform 0.1s ease, box-shadow 0.2s ease;
   background: transparent;
+  /* Long-press zooms the card (see DraftableCard.tsx); suppress the iOS
+     image-save callout and text selection so the hold reads cleanly. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .draftable-card:active:not(.disabled) {
@@ -18,8 +23,18 @@
   transition: transform 0.05s ease;
 }
 
+/* Keyboard focus ring (interactive-blue glow per DESIGN.md). The card is the
+   core pick affordance, so keyboard users need a clear focus state. */
+.draftable-card:focus-visible {
+  outline: 2px solid rgba(33, 150, 243, 0.95);
+  outline-offset: 3px;
+  z-index: 101;
+}
+
 .draftable-card.selected {
   z-index: 100;
+  /* Holotable selection: green glow + ring (replaces the old rainbow border). */
+  box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.85), 0 6px 18px rgba(0, 255, 0, 0.5);
 }
 
 

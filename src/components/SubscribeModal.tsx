@@ -105,7 +105,7 @@ export function SubscribeModal({
         {(prereleaseDateLabel || releaseDateLabel) && (
           <p
             className="subscribe-modal-date-info"
-            style={setColor ? { borderLeftColor: setColor } : undefined}
+            style={setColor ? { borderColor: setColor } : undefined}
           >
             {prereleaseDateLabel && (
               <>

@@ -43,8 +43,6 @@ export function CollapsibleSectionHeader({ id, title, expanded, onToggle, classN
           fontSize: '1.2rem',
           fontWeight: 600,
           color: 'rgba(255, 255, 255, 0.9)',
-          textTransform: 'uppercase',
-          letterSpacing: '1px'
         }}
       >
         <span>{expanded ? '▼' : '▶'}</span>

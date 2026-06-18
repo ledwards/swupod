@@ -54,6 +54,14 @@
   overflow: visible;
 }
 
+/* Keyboard focus ring for interactive cards (role="button" + tabIndex).
+   Interactive-blue glow per DESIGN.md; only shows for keyboard users. */
+.canvas-card:focus-visible {
+  outline: 2px solid rgba(33, 150, 243, 0.95);
+  outline-offset: 3px;
+  border-radius: 13px;
+}
+
 /* Leaders and bases are landscape (wider than tall) */
 .canvas-card.leader,
 .canvas-card.base {

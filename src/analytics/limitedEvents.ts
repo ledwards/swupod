@@ -31,6 +31,7 @@ export const LimitedPlayActions = {
   WAYFINDER_CREATE_PUBLIC_LOBBY: 'wayfinder_create_public_lobby',
   WAYFINDER_JOIN_PRIVATE_LOBBY: 'wayfinder_join_private_lobby',
   WAYFINDER_JOIN_PUBLIC_GAME: 'wayfinder_join_public_game',
+  WAYFINDER_INSTALL_CTA: 'wayfinder_install_cta',
   POST_TO_DISCORD: 'post_to_discord',
   CHAT_OPEN: 'chat_open',
   CHAT_SEND: 'chat_send',

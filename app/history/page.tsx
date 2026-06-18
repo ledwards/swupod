@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import { getSetConfig } from '../../src/utils/setConfigs'
 import EditableTitle from '../../src/components/EditableTitle'
 import Button from '../../src/components/Button'
+import ConfirmModal from '../../src/components/ConfirmModal'
 import '../../src/App.css'
 import './History.css'
 
@@ -129,15 +130,30 @@ export default function HistoryPage() {
     if (user) {
       setLoading(true)
 
-      // Fetch user pools, drafts, sealed pods, format pools, and shared pools
-      Promise.all([
+      // Fetch user pools, drafts, sealed pods, format pools, and shared pools.
+      // allSettled so one failed endpoint degrades only its own section to an
+      // empty list instead of blanking the entire page.
+      Promise.allSettled([
         fetchUserPools(user.id),
         fetch('/api/draft/history', { credentials: 'include' }).then(r => r.json()),
         fetch('/api/formats/history', { credentials: 'include' }).then(r => r.json()),
         fetch('/api/sealed/history', { credentials: 'include' }).then(r => r.json()),
         fetch('/api/pools/shared', { credentials: 'include' }).then(r => r.ok ? r.json() : { data: { pools: [] } }),
       ])
-        .then(([poolsData, draftData, formatsData, sealedData, sharedData]) => {
+        .then((results) => {
+          const settled = (i, fallback) => results[i].status === 'fulfilled' ? results[i].value : fallback
+          const poolsData = settled(0, [])
+          const draftData = settled(1, {})
+          const formatsData = settled(2, {})
+          const sealedData = settled(3, {})
+          const sharedData = settled(4, { data: { pools: [] } })
+
+          // Only show a page-level error if every source failed.
+          if (results.every(r => r.status === 'rejected')) {
+            console.error('Failed to fetch history:', results)
+            setError("We couldn't load your history right now. Please try again.")
+          }
+
           // Handle sealed pools (filter out draft pools and other format pool types)
           const formatPoolTypes = ['chaos_sealed', 'pack_wars', 'pack_blitz', 'chaos_draft', 'rotisserie']
           if (poolsData && Array.isArray(poolsData)) {
@@ -182,7 +198,7 @@ export default function HistoryPage() {
         })
         .catch(err => {
           console.error('Failed to fetch history:', err)
-          setError(err.message || 'Failed to load history')
+          setError("We couldn't load your history right now. Please try again.")
         })
         .finally(() => {
           setLoading(false)
@@ -427,6 +443,9 @@ export default function HistoryPage() {
           </div>
           <div className="history-error">
             <p>{error}</p>
+            <Button variant="primary" onClick={() => window.location.reload()} style={{ marginTop: '1rem' }}>
+              Try Again
+            </Button>
           </div>
         </div>
       </div>
@@ -934,36 +953,21 @@ export default function HistoryPage() {
         )}
 
         {/* Delete Confirmation Modal */}
-        {deleteConfirm && (
-          <div className="delete-confirm-overlay" onClick={() => setDeleteConfirm(null)}>
-            <div className="delete-confirm-modal" onClick={(e) => e.stopPropagation()}>
-              <h2>{deleteConfirm.isActiveDraft ? 'Cancel Draft?' : 'Delete Deck?'}</h2>
-              <p>
-                {deleteConfirm.isActiveDraft
-                  ? 'Are you sure you want to cancel this draft? All players will be removed and this action cannot be undone.'
-                  : 'Are you sure you want to delete this deck? This action cannot be undone.'}
-              </p>
-              <div className="delete-confirm-buttons">
-                <button
-                  className="delete-confirm-cancel"
-                  onClick={() => setDeleteConfirm(null)}
-                  disabled={isDeleting}
-                >
-                  Go Back
-                </button>
-                <button
-                  className="delete-confirm-delete"
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                >
-                  {isDeleting
-                    ? (deleteConfirm.isActiveDraft ? 'Cancelling...' : 'Deleting...')
-                    : (deleteConfirm.isActiveDraft ? 'Cancel Draft' : 'Delete')}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <ConfirmModal
+          isOpen={!!deleteConfirm}
+          title={deleteConfirm?.isActiveDraft ? 'Cancel Draft?' : 'Delete Deck?'}
+          confirmLabel={deleteConfirm?.isActiveDraft ? 'Cancel Draft' : 'Delete'}
+          cancelLabel="Go Back"
+          confirming={isDeleting}
+          onConfirm={handleDelete}
+          onCancel={() => setDeleteConfirm(null)}
+        >
+          <p>
+            {deleteConfirm?.isActiveDraft
+              ? 'Are you sure you want to cancel this draft? All players will be removed and this action cannot be undone.'
+              : 'Are you sure you want to delete this deck? This action cannot be undone.'}
+          </p>
+        </ConfirmModal>
 
         {/* Drop Confirmation Modal */}
         {dropConfirm && (

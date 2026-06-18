@@ -18,6 +18,7 @@ import {
 } from './landingPagePromo'
 import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 import ReleaseNotes from './ReleaseNotes'
+import { WAYFINDER_NEWS_URL } from './WayfinderStoreButtons'
 import Button from './Button'
 import SubscribeModal from './SubscribeModal'
 import Countdown from './Countdown'
@@ -58,7 +59,9 @@ const MODE_ART = {
   draftLive: 'https://cdn.starwarsunlimited.com//card_07020493_EN_The_Master_Codebreaker_fb7127ab41.png',
   history: 'https://cdn.starwarsunlimited.com//card_05020502_EN_Darth_Revan_s_Lightsabers_d4bd32215b.png',
   deckbuilder: 'https://cdn.starwarsunlimited.com//card_04030998_EN_Grand_Admiral_Thrawn_Leader_Unit_eba4967d61.png',
-  importPool: 'https://cdn.starwarsunlimited.com//card_04020522_EN_Death_Star_Plans_c573838ad4.png',
+  stats: 'https://cdn.starwarsunlimited.com//card_SWH_01_493_AT_ST_HYP_ff73b562a5.png',
+  // My Stats tile: R2-D2 (TWI) hyperspace unit art.
+  myStats: 'https://cdn.starwarsunlimited.com//card_0331193_EN_R2_D2_a54cf5d4e8.png',
 }
 
 interface ActiveDraft {
@@ -124,6 +127,18 @@ function LandingPage() {
   const [activeDraft, setActiveDraft] = useState<ActiveDraft | null>(null)
   const [activeSealedPod, setActiveSealedPod] = useState<ActiveSealedPod | null>(null)
   const [isDiscordMember, setIsDiscordMember] = useState(true)
+
+  // "NEW" tag + golden glow on the My Stats tile until the user first opens /me.
+  // Defaults to seen (no flash) and reads the real flag after mount.
+  const [meStatsSeen, setMeStatsSeen] = useState(true)
+  useEffect(() => {
+    try { setMeStatsSeen(localStorage.getItem('ptp:me-visited') === '1') } catch {}
+  }, [])
+  const openMyStats = () => {
+    try { localStorage.setItem('ptp:me-visited', '1') } catch {}
+    setMeStatsSeen(true)
+    router.push('/me')
+  }
 
   const sealedPodsOpen = publicPods.filter(p => p.podType === 'sealed').length
   const draftPodsOpen = publicPods.filter(p => p.podType === 'draft').length
@@ -243,11 +258,12 @@ function LandingPage() {
   // Theme the whole banner with the upcoming set's color: faint tinted
   // background + matching border + stronger left accent. Each upcoming set
   // gets its own visual identity instead of a generic neutral chrome.
+  // Per DESIGN.md (Light-Not-Paint + no side-stripes): the banner rests on the
+  // neutral translucent surface from CSS; the set color shows only as a subtle,
+  // uniform tinted border — not a saturated fill or a thick left stripe.
   const promoBannerStyle = setColor
     ? {
-        background: hexToRgba(setColor, 0.14),
-        borderColor: hexToRgba(setColor, 0.45),
-        borderLeftColor: setColor,
+        borderColor: hexToRgba(setColor, 0.5),
       }
     : undefined
 
@@ -543,6 +559,13 @@ function LandingPage() {
           <div className="mode-section">
             <h3 className="mode-section-header">Deckbuilder</h3>
             <div className="mode-column">
+              <button className="mode-button art-unit mode-button-deckbuilder" onClick={() => router.push('/deckbuilder')}>
+                <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.deckbuilder}")` }} />
+                <div className="mode-button-content">
+                  <span className="mode-button-title">Limited</span>
+                  <span className="mode-button-subtitle">Infinite copies of every card in a set</span>
+                </div>
+              </button>
               {user && (
                 <button className="mode-button art-unit" onClick={() => router.push('/history')}>
                   <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.history}")` }} />
@@ -552,22 +575,14 @@ function LandingPage() {
                   </div>
                 </button>
               )}
-              <button className="mode-button art-unit mode-button-deckbuilder" onClick={() => router.push('/deckbuilder')}>
-                <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.deckbuilder}")` }} />
+              <button className={`mode-button art-unit${!meStatsSeen ? ' mode-button--new' : ''}`} onClick={openMyStats}>
+                <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.myStats}")` }} />
+                {!meStatsSeen && <span className="mode-button-new-badge">NEW</span>}
                 <div className="mode-button-content">
-                  <span className="mode-button-title">Limited</span>
-                  <span className="mode-button-subtitle">Infinite copies of every card in a set</span>
+                  <span className="mode-button-title">My Stats</span>
+                  <span className="mode-button-subtitle">Your performance and history</span>
                 </div>
               </button>
-              {hasBetaAccess && (
-                <button className="mode-button art-unit" onClick={() => router.push('/import')}>
-                  <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.importPool}")` }} />
-                  <div className="mode-button-content">
-                    <span className="mode-button-title">Import Pool</span>
-                    <span className="mode-button-subtitle">From your registered sealed sheet</span>
-                  </div>
-                </button>
-              )}
             </div>
           </div>
         </div>
@@ -587,6 +602,8 @@ function LandingPage() {
           <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">Patreon</a>
           <span className="footer-separator">·</span>
           <a href="https://swag.protectthepod.com" target="_blank" rel="noopener noreferrer">Swag</a>
+          <span className="footer-separator">·</span>
+          <a href={WAYFINDER_NEWS_URL} target="_blank" rel="noopener noreferrer">Companion</a>
           <span className="footer-separator">·</span>
           <a href="/support-the-pod" onClick={(e) => { e.preventDefault(); router.push('/support-the-pod') }}>Support the Pod</a>
           <span className="footer-separator">·</span>

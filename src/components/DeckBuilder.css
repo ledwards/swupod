@@ -959,12 +959,12 @@
 }
 
 .view-mode-toggle-button.active {
-  background: rgba(33, 150, 243, 0.3);
-  color: #2196f3;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
 }
 
 .view-mode-toggle-button.active:hover {
-  background: rgba(33, 150, 243, 0.4);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Legacy - kept for backwards compatibility */

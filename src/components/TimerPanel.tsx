@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react'
 import CountdownTimer from './CountdownTimer'
 import TimerButton from './TimerButton'
+import { isRoundTimerEnabled as computeRoundTimerEnabled } from '../utils/draftTimerDefaults'
 import './TimerPanel.css'
 
 interface DraftPlayer {
@@ -59,7 +60,7 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
   const lastPlayerTimerSeconds = draft?.timerSeconds || 30
   const pickStartedAt = draft?.pickStartedAt
   const isDrafting = draft?.status === 'active'
-  const isRoundTimerEnabled = draft?.timed !== false
+  const isRoundTimerEnabled = computeRoundTimerEnabled(draft)
   const isLastPlayerTimerEnabled = draft?.timerEnabled !== false
   const isPaused = optimisticPaused !== null ? optimisticPaused : draft?.paused === true
   const pausedDurationSeconds = draft?.pausedDurationSeconds || 0

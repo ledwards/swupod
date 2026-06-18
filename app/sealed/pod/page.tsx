@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
 import { usePublicPodsSocket } from '../../../src/hooks/usePublicPodsSocket'
 import { ChatPanel } from '../../../src/components/ChatPanel'
+import ConfirmModal from '../../../src/components/ConfirmModal'
 import '../../../src/App.css'
 import '../../../src/components/LandingPage.css'
 import '../../draft/draft.css'
@@ -288,56 +289,29 @@ export default function SealedPodLandingPage() {
         )}
 
         {/* Delete Confirmation Modal */}
-        {deleteConfirm && (
-          <div className="draft-delete-confirm-overlay" onClick={() => setDeleteConfirm(null)}>
-            <div className="draft-delete-confirm-modal" onClick={(e) => e.stopPropagation()}>
-              <h2>Delete Sealed Pod?</h2>
-              <p>Are you sure you want to delete this sealed pod? This action cannot be undone.</p>
-              <div className="draft-delete-confirm-buttons">
-                <button
-                  className="draft-delete-confirm-cancel"
-                  onClick={() => setDeleteConfirm(null)}
-                  disabled={isDeleting}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="draft-delete-confirm-delete"
-                  onClick={handleDeletePod}
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? 'Deleting...' : 'Delete'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <ConfirmModal
+          isOpen={!!deleteConfirm}
+          title="Delete Sealed Pod?"
+          confirmLabel="Delete"
+          confirming={isDeleting}
+          onConfirm={handleDeletePod}
+          onCancel={() => setDeleteConfirm(null)}
+        >
+          <p>Are you sure you want to delete this sealed pod? This action cannot be undone.</p>
+        </ConfirmModal>
 
         {/* Leave Confirmation Modal */}
-        {leaveConfirm && (
-          <div className="draft-drop-confirm-overlay" onClick={() => setLeaveConfirm(null)}>
-            <div className="draft-drop-confirm-modal" onClick={(e) => e.stopPropagation()}>
-              <h2>Leave Sealed Pod?</h2>
-              <p>Are you sure you want to leave this sealed pod?</p>
-              <div className="draft-drop-confirm-buttons">
-                <button
-                  className="draft-drop-confirm-cancel"
-                  onClick={() => setLeaveConfirm(null)}
-                  disabled={isLeaving}
-                >
-                  Go Back
-                </button>
-                <button
-                  className="draft-drop-confirm-drop"
-                  onClick={handleLeavePod}
-                  disabled={isLeaving}
-                >
-                  {isLeaving ? 'Leaving...' : 'Leave Pod'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <ConfirmModal
+          isOpen={!!leaveConfirm}
+          title="Leave Sealed Pod?"
+          confirmLabel="Leave Pod"
+          cancelLabel="Go Back"
+          confirming={isLeaving}
+          onConfirm={handleLeavePod}
+          onCancel={() => setLeaveConfirm(null)}
+        >
+          <p>Are you sure you want to leave this sealed pod?</p>
+        </ConfirmModal>
       </div>
       <ChatPanel lobbyType="sealed" />
     </div>

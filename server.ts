@@ -6,6 +6,8 @@
 import './lib/loadEnv.js'
 import { createServer, IncomingMessage, ServerResponse } from 'http'
 import { spawn } from 'child_process'
+import { copyFileSync, existsSync } from 'fs'
+import { join } from 'path'
 import next from 'next'
 import { Server } from 'socket.io'
 import { query, queryRows } from './lib/db.js'
@@ -23,6 +25,18 @@ const dev = process.env.NODE_ENV !== 'production'
 const port = process.env.PORT || 3000
 
 console.log('🚀 Starting custom server.ts with Socket.io support')
+
+// Release notes are served from public/RELEASE_NOTES.md, which is generated at
+// build time (scripts/postbuild.ts). Dev never builds, so the homepage panel
+// would 404 — copy the root file into public/ on startup. Harmless in prod
+// (postbuild already produced it).
+try {
+  const rnSource = join(process.cwd(), 'RELEASE_NOTES.md')
+  const rnDest = join(process.cwd(), 'public', 'RELEASE_NOTES.md')
+  if (existsSync(rnSource)) copyFileSync(rnSource, rnDest)
+} catch (err) {
+  console.warn('⚠️  Could not copy RELEASE_NOTES.md to public/:', (err as Error).message)
+}
 
 // Run migrations at startup (for Railway where build-time DB access doesn't work).
 // U7: in production a migration failure stops the boot (process exits non-zero

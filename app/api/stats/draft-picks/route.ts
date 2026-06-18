@@ -1,6 +1,7 @@
 // @ts-nocheck
 // GET /api/stats/draft-picks - Get draft pick analytics per card
 import { queryRows, queryRow } from '@/lib/db'
+import { cachedAggregate, STATS_AGGREGATE_TTL_MS } from '@/lib/queryCache'
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
 import { buildCardLookupMaps } from '@/src/utils/cardNormalization'
@@ -20,23 +21,18 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const tournamentOnly = url.searchParams.get('tournamentOnly') === 'true'
     const topPlayersOnly = url.searchParams.get('topPlayersOnly') === 'true'
     const userId = url.searchParams.get('userId') || null
+    // "Logged-in players" segment: picks made by a signed-in (registered) drafter.
+    const loggedInOnly = url.searchParams.get('loggedInOnly') === 'true'
+    const loggedInFilter = loggedInOnly ? `AND dp.user_id IS NOT NULL` : ''
 
     // Build card lookup maps — all variants merge to same card via name|type key
     // See src/utils/cardNormalization.ts for the canonical normalization pattern
     const allCards = getAllCards()
     const { cardMap } = buildCardLookupMaps(allCards)
 
-    // Build bot/human filter
-    let botJoin = ''
-    let botFilter = ''
-    if (!includeBots || !includeHumans) {
-      botJoin = `JOIN pod_players dpp ON dp.pod_id = dpp.pod_id AND dp.user_id = dpp.user_id`
-      if (!includeBots && includeHumans) {
-        botFilter = `AND (dpp.is_bot = false OR dpp.is_bot IS NULL)`
-      } else if (includeBots && !includeHumans) {
-        botFilter = `AND dpp.is_bot = true`
-      }
-    }
+    // Bots are NEVER counted in stats — always exclude their picks.
+    const botJoin = `JOIN pod_players dpp ON dp.pod_id = dpp.pod_id AND dp.user_id = dpp.user_id`
+    const botFilter = `AND (dpp.is_bot = false OR dpp.is_bot IS NULL)`
 
     // Built deck filter - only include picks from drafters who built a deck
     let builtDeckJoin = ''
@@ -67,16 +63,27 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     // Per-card pick analytics (non-leader cards only, merge variants by card_name)
-    // Only count picks from completed drafts
-    const cardStats = await queryRows(
+    // Only count picks from completed drafts. Cached in-process (5 min): these
+    // are heavy all-time scans the /me Meta tab requests repeatedly.
+    const { cardStats, summary } = await cachedAggregate(
+      `draft-picks:${url.search}`,
+      STATS_AGGREGATE_TTL_MS,
+      async () => {
+        const [cardStats, summary] = await Promise.all([
+          queryRows(
+      // Group by card_id (keeps each printing separate); the JS pass below
+      // re-aggregates by name+subtitle so a card's variants merge but two
+      // genuinely-distinct same-name cards stay apart. SUM(pick_in_pack) (not
+      // AVG) so positions can be combined across a card's printings.
       `SELECT
-        dp.card_name,
-        MIN(dp.card_id) AS card_id,
-        dp.rarity,
-        dp.card_type,
+        dp.card_id,
+        MIN(dp.card_name) AS card_name,
+        MIN(dp.rarity) AS rarity,
+        MIN(dp.card_type) AS card_type,
         COUNT(*) AS times_picked,
         COUNT(*) FILTER (WHERE dp.pick_in_pack = 1) AS first_picks,
-        ROUND(AVG(dp.pick_in_pack)::numeric, 2) AS avg_pick_position,
+        COUNT(*) FILTER (WHERE dp.pack_number = 1 AND dp.pick_in_pack = 1) AS p1p1_picks,
+        SUM(dp.pick_in_pack) AS sum_pick_position,
         COUNT(DISTINCT dp.pod_id) AS drafts_seen_in
       FROM draft_picks dp
       JOIN pods pod ON pod.id = dp.pod_id
@@ -89,13 +96,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         ${tournamentFilter}
 
         ${userFilter}
-      GROUP BY dp.card_name, dp.rarity, dp.card_type
-      ORDER BY avg_pick_position ASC`,
+      GROUP BY dp.card_id`,
       queryParams
-    )
-
-    // Summary stats (completed drafts only)
-    const summary = await queryRow(
+          ),
+          queryRow(
       `SELECT
         COUNT(*) AS total_picks,
         COUNT(DISTINCT dp.pod_id) AS total_drafts,
@@ -109,34 +113,69 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         AND pod.status = 'complete'
         ${botFilter}
         ${tournamentFilter}
-
+        ${loggedInFilter}
         ${userFilter}`,
       queryParams
+          ),
+        ])
+        return { cardStats, summary }
+      },
     )
 
-    // Enrich cards with aspects, subtitle, cost from card cache
-    const cards = cardStats.map(row => {
-      const timesPicked = parseInt(row.times_picked)
-      const firstPicks = parseInt(row.first_picks)
+    // Re-aggregate per-card_id rows by gameplay identity = name + subtitle.
+    // A card's printings (normal/hyperspace/foil) carry distinct card_ids but
+    // the same name+subtitle, so they merge here; two different cards that share
+    // a name (different subtitles) stay separate — the name alone is ambiguous.
+    const byIdentity = new Map<string, any>()
+    for (const row of cardStats) {
       const cardData = cardMap.get(row.card_id)
-
-      return {
-        cardName: row.card_name,
-        cardId: row.card_id,
-        rarity: row.rarity,
-        cardType: row.card_type,
-        timesPicked,
-        firstPicks,
-        firstPickPct: timesPicked > 0 ? Math.round((firstPicks / timesPicked) * 1000) / 10 : null,
-        avgPickPosition: parseFloat(row.avg_pick_position),
-        draftsSeenIn: parseInt(row.drafts_seen_in),
-        aspects: cardData?.aspects || [],
-        subtitle: cardData?.subtitle || null,
-        cost: cardData?.cost ?? null,
-        imageUrl: cardData?.imageUrl || null,
-        backImageUrl: cardData?.backImageUrl || null,
+      const name = row.card_name
+      const subtitle = cardData?.subtitle ?? null
+      const key = `${(name || '').toLowerCase()}|${(subtitle || '').toLowerCase()}`
+      let agg = byIdentity.get(key)
+      if (!agg) {
+        agg = {
+          cardName: name, cardId: row.card_id, rarity: row.rarity, cardType: row.card_type,
+          timesPicked: 0, firstPicks: 0, p1p1Picks: 0, sumPickPosition: 0, draftsSeenIn: 0,
+          aspects: cardData?.aspects || [], subtitle,
+          cost: cardData?.cost ?? null, imageUrl: cardData?.imageUrl || null, backImageUrl: cardData?.backImageUrl || null,
+        }
+        byIdentity.set(key, agg)
       }
-    })
+      agg.timesPicked += parseInt(row.times_picked)
+      agg.firstPicks += parseInt(row.first_picks)
+      agg.p1p1Picks += parseInt(row.p1p1_picks || '0')
+      agg.sumPickPosition += parseFloat(row.sum_pick_position || '0')
+      agg.draftsSeenIn += parseInt(row.drafts_seen_in)
+      // Prefer the printing that resolved real card art/metadata.
+      if (!agg.imageUrl && cardData?.imageUrl) {
+        agg.imageUrl = cardData.imageUrl
+        agg.backImageUrl = cardData.backImageUrl || agg.backImageUrl
+        agg.aspects = cardData.aspects || agg.aspects
+        agg.cost = cardData.cost ?? agg.cost
+      }
+    }
+
+    const cards = Array.from(byIdentity.values())
+      .map(a => ({
+        cardName: a.cardName,
+        cardId: a.cardId,
+        rarity: a.rarity,
+        cardType: a.cardType,
+        timesPicked: a.timesPicked,
+        firstPicks: a.firstPicks,
+        firstPickPct: a.timesPicked > 0 ? Math.round((a.firstPicks / a.timesPicked) * 1000) / 10 : null,
+        p1p1Picks: a.p1p1Picks,
+        p1p1Pct: a.timesPicked > 0 ? Math.round((a.p1p1Picks / a.timesPicked) * 1000) / 10 : null,
+        avgPickPosition: a.timesPicked > 0 ? Math.round((a.sumPickPosition / a.timesPicked) * 100) / 100 : 0,
+        draftsSeenIn: a.draftsSeenIn,
+        aspects: a.aspects,
+        subtitle: a.subtitle,
+        cost: a.cost,
+        imageUrl: a.imageUrl,
+        backImageUrl: a.backImageUrl,
+      }))
+      .sort((x, y) => x.avgPickPosition - y.avgPickPosition)
 
     const response = jsonResponse({
       setCode,

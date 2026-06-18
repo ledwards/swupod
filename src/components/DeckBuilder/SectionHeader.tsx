@@ -101,8 +101,6 @@ export function SectionHeader({
     fontSize: '1.2rem',
     fontWeight: 600,
     color: 'rgba(255, 255, 255, 0.9)',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '1px',
   }
 
   const controlsRowStyle = {
@@ -133,7 +131,7 @@ export function SectionHeader({
         <SortControls
           value={sortOption}
           onChange={onSortChange}
-          className={mode === 'pool' ? "marginLeft: '0.5rem'" : ''}
+          className=""
         />
         <FilterWithModal
           isOpen={filterOpen}
