@@ -18,7 +18,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const url = new URL(request.url)
     const setCode = (url.searchParams.get('setCode') || '').trim()
-    if (!SET_CODE_RE.test(setCode)) {
+    // 'all' = combine every set; otherwise must be a valid set code.
+    if (setCode !== 'all' && !SET_CODE_RE.test(setCode)) {
       return errorResponse('Invalid or missing setCode', 400) as unknown as NextResponse
     }
     const since = url.searchParams.get('since') || '2020-01-01'
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         `SELECT cp.deck_builder_state, cp.wins, cp.losses, cp.draws
          FROM card_pools cp
          LEFT JOIN pod_players dpp ON cp.pod_id = dpp.pod_id AND cp.user_id = dpp.user_id
-         WHERE cp.set_code = $1
+         WHERE ($1 = 'all' OR cp.set_code = $1)
            AND cp.updated_at >= $2 AND cp.updated_at < ($3::date + interval '1 day')
            AND (cp.wins + cp.losses + cp.draws > 0)
            AND (dpp.is_bot = false OR dpp.is_bot IS NULL)`,

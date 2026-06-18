@@ -24,7 +24,6 @@ import { LuckSection } from './LuckSection'
 import { LoggedOutCTA } from './LoggedOutCTA'
 import { PoolHistoryDashboard } from './PoolHistoryDashboard'
 import { MetaDashboard } from './MetaDashboard'
-import { getDefaultStatsSetTab } from '@/src/utils/statsSetTabs'
 import { getSetConfig, isBeta } from '@/src/utils/setConfigs/index'
 import { PATREON_URL } from '@/src/utils/membership'
 import './YourStats.css'
@@ -85,9 +84,10 @@ export function YourStats({ since, until, setCode = 'all', filterLabel }: YourSt
   // Tabs that need a concrete set (Luck, Meta) fall back to the latest set when
   // the global filter is "all". Pools/Gameplay/Activity treat 'all' as no filter.
   const isAllSets = !setCode || setCode === 'all'
-  // When the global filter is "all", tabs that need a concrete set (Luck, Meta)
-  // fall back to the newest set the viewer can see — ASH for beta-access users.
-  const concreteSet = isAllSets ? getDefaultStatsSetTab(Boolean(user?.is_beta_tester || user?.is_admin)) : setCode
+  // Meta aggregates across every set when the global filter is "all" — the
+  // dashboard takes setCode='all' and its routes drop the per-set filter. (Luck
+  // still resolves a concrete newest set via its own lockedSetCode path.)
+  const concreteSet = isAllSets ? 'all' : setCode
 
   if (loading) {
     return (

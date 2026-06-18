@@ -52,7 +52,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       userFilter = `AND cp.user_id = $${queryParams.length}::uuid`
     }
 
-    const baseWhere = `cp.set_code = $1 AND cp.created_at >= $2 AND cp.created_at < ($3::date + interval '1 day')
+    const baseWhere = `($1 = 'all' OR cp.set_code = $1) AND cp.created_at >= $2 AND cp.created_at < ($3::date + interval '1 day')
           ${poolType ? `AND cp.pool_type = $4` : ''}
           ${botFilter}
           ${tournamentFilter}

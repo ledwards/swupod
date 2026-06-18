@@ -90,7 +90,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       ${botJoin}
       ${builtDeckJoin}
       ${topPlayersJoin}
-      WHERE dp.set_code = $1 AND dp.is_leader = ${type === 'leaders' ? 'TRUE' : 'FALSE'} AND dp.picked_at >= $2 AND dp.picked_at < ($3::date + interval '1 day')
+      WHERE ($1 = 'all' OR dp.set_code = $1) AND dp.is_leader = ${type === 'leaders' ? 'TRUE' : 'FALSE'} AND dp.picked_at >= $2 AND dp.picked_at < ($3::date + interval '1 day')
         AND pod.status = 'complete'
         ${botFilter}
         ${tournamentFilter}
@@ -109,7 +109,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       ${botJoin}
       ${builtDeckJoin}
       ${topPlayersJoin}
-      WHERE dp.set_code = $1 AND dp.is_leader = ${type === 'leaders' ? 'TRUE' : 'FALSE'} AND dp.picked_at >= $2 AND dp.picked_at < ($3::date + interval '1 day')
+      WHERE ($1 = 'all' OR dp.set_code = $1) AND dp.is_leader = ${type === 'leaders' ? 'TRUE' : 'FALSE'} AND dp.picked_at >= $2 AND dp.picked_at < ($3::date + interval '1 day')
         AND pod.status = 'complete'
         ${botFilter}
         ${tournamentFilter}

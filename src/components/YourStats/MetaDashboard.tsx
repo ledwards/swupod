@@ -193,7 +193,7 @@ export function MetaDashboard({ setCode = DEFAULT_STATS_SET_TAB, lockSet = false
   // selector only renders when unlocked, so its tab list still hides beta sets.
   const setTabs = useMemo(() => getStatsSetTabs(includeBetaSets || lockSet), [includeBetaSets, lockSet])
   const [activeSet, setActiveSet] = useState<string>(
-    lockSet ? setCode : (setTabs.includes(setCode) ? setCode : getDefaultStatsSetTab(includeBetaSets)),
+    lockSet ? setCode : (setCode === 'all' || setTabs.includes(setCode) ? setCode : getDefaultStatsSetTab(includeBetaSets)),
   )
   // Full lists, sliced into most/least at render so "least" is the true tail.
   // Popularity (deck inclusion) is split sealed vs draft; "picked" (draft pick
@@ -222,7 +222,7 @@ export function MetaDashboard({ setCode = DEFAULT_STATS_SET_TAB, lockSet = false
   // when unlocked, only adopt sets that exist as tabs.
   useEffect(() => {
     if (lockSet) { setActiveSet(setCode); return }
-    if (setTabs.includes(setCode)) setActiveSet(setCode)
+    if (setCode === 'all' || setTabs.includes(setCode)) setActiveSet(setCode)
   }, [setCode, setTabs, lockSet])
 
   // Meta-wide win rate by leader (whole site, all-time). The PERSONAL version
@@ -341,7 +341,7 @@ export function MetaDashboard({ setCode = DEFAULT_STATS_SET_TAB, lockSet = false
         </div>
         {!lockSet && (
           <div className="your-stats-luck-set-buttons" role="radiogroup" aria-label="Meta set">
-            {setTabs.map((s) => (
+            {['all', ...setTabs].map((s) => (
               <Button
                 key={s}
                 variant="toggle"
@@ -352,7 +352,7 @@ export function MetaDashboard({ setCode = DEFAULT_STATS_SET_TAB, lockSet = false
                 role="radio"
                 aria-checked={activeSet === s}
               >
-                {s}
+                {s === 'all' ? 'All sets' : s}
               </Button>
             ))}
           </div>
