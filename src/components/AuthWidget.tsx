@@ -50,6 +50,12 @@ export default function AuthWidget() {
   const [recentPools, setRecentPools] = useState<RecentItem[]>([])
   const [hasShowcases, setHasShowcases] = useState(false)
   const [loadingData, setLoadingData] = useState(false)
+  // "NEW" badge on My Stats until the user first opens /me. Re-checked each time
+  // the drawer opens so it clears once they've visited.
+  const [meStatsSeen, setMeStatsSeen] = useState(true)
+  useEffect(() => {
+    try { setMeStatsSeen(localStorage.getItem('ptp:me-visited') === '1') } catch { /* no-op */ }
+  }, [drawerOpen])
   const drawerRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const pathname = usePathname()
@@ -285,6 +291,8 @@ export default function AuthWidget() {
                 className="auth-widget-drawer-menu-item"
                 onClick={(e: MouseEvent<HTMLAnchorElement>) => {
                   e.preventDefault()
+                  try { localStorage.setItem('ptp:me-visited', '1') } catch { /* no-op */ }
+                  setMeStatsSeen(true)
                   router.push('/me')
                   setDrawerOpen(false)
                 }}
@@ -294,6 +302,7 @@ export default function AuthWidget() {
                   <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" />
                 </svg>
                 My Stats
+                {!meStatsSeen && <span className="auth-widget-new-badge">NEW</span>}
               </a>
 
               <div className="auth-widget-drawer-section-label">Recent Activity</div>

@@ -60,8 +60,8 @@ const MODE_ART = {
   history: 'https://cdn.starwarsunlimited.com//card_05020502_EN_Darth_Revan_s_Lightsabers_d4bd32215b.png',
   deckbuilder: 'https://cdn.starwarsunlimited.com//card_04030998_EN_Grand_Admiral_Thrawn_Leader_Unit_eba4967d61.png',
   stats: 'https://cdn.starwarsunlimited.com//card_SWH_01_493_AT_ST_HYP_ff73b562a5.png',
-  // My Stats tile: R2-D2 (TWI) hyperspace unit art.
-  myStats: 'https://cdn.starwarsunlimited.com//card_0331193_EN_R2_D2_a54cf5d4e8.png',
+  // My Stats tile: R2-D2 (TWI) hyperspace art, non-foil.
+  myStats: 'https://cdn.starwarsunlimited.com//card_0302458_EN_R2_D2_a755624266.png',
 }
 
 interface ActiveDraft {

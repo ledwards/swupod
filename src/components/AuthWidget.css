@@ -264,6 +264,18 @@ a.auth-widget-login-circle:active {
   text-decoration: none;
 }
 
+/* "NEW" badge on the My Stats menu item until the user first opens /me. */
+.auth-widget-new-badge {
+  margin-left: auto;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffd55e, #f5a623);
+  color: #1a1205;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
 .auth-widget-drawer-pool-item {
   align-items: flex-start;
   padding-top: 8px;
