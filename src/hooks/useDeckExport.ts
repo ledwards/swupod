@@ -7,6 +7,7 @@
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { getBaseCardId as getBaseCardIdRaw, buildBaseCardMap } from '../utils/variantDowngrade'
+import { cardIdentityKey } from '../utils/cardNormalization'
 import { formatPoolLabel } from '../utils/poolDisplayName'
 import { getPackArtUrl } from '../utils/packArt'
 import { trackEvent, AnalyticsEvents } from './useAnalytics'
@@ -117,6 +118,15 @@ export function useDeckExport({
   function getBaseCardId(card: unknown): string {
     const result = (getBaseCardIdRaw as (card: unknown, map?: unknown) => string | null)(card, baseCardMap)
     return result || ''
+  }
+
+  // Resolve a deck card to the front art of its NORMAL (standard) variant — never
+  // the foil/hyperspace/showcase printing the player happens to own. For a leader
+  // the Normal variant's imageUrl is the LEADER side (landscape); backImageUrl is
+  // the unit side. Falls back to the card's own art if the set map can't resolve it.
+  function normalFrontArt(card: ExportCard): string {
+    const normal = baseCardMap.get(cardIdentityKey(card as unknown as { name: string; type?: string; subtitle?: string | null }))
+    return (normal && (normal as { imageUrl?: string }).imageUrl) || card.frontArt || '/card-back.png'
   }
 
   // Build deck data structure for export (uses base card IDs for Karabast compatibility)
@@ -426,7 +436,7 @@ export function useDeckExport({
       // Helper to draw a single card
       const drawCard = (card: ExportCard, x: number, y: number, cardW: number, cardH: number, count: number | null, grayscale: boolean): Promise<void> => {
         return new Promise((resolve) => {
-          const imageUrl = card.frontArt || '/card-back.png'
+          const imageUrl = normalFrontArt(card)
           const isLeader = card.isLeader
 
           const drawPlaceholder = (): void => {
@@ -536,7 +546,7 @@ export function useDeckExport({
         })
       }
 
-      currentY = padding
+      currentY = padding + heroHeight
 
       // Draw title at top
       ctx.fillStyle = 'white'
@@ -781,32 +791,25 @@ export function useDeckExport({
         })
       const setArtImg = setArtUrl ? await loadSameOrigin(setArtUrl) : null
 
-      if (setArtImg) {
-        ctx.fillStyle = '#0e0e16'
-        ctx.fillRect(0, 0, width, totalHeight)
-
-        const tileW = 250
-        const tileH = Math.round((tileW * setArtImg.height) / setArtImg.width)
-        const tile = document.createElement('canvas')
-        tile.width = tileW
-        tile.height = tileH
-        const tctx = tile.getContext('2d')
-        if (tctx) {
-          tctx.drawImage(setArtImg, 0, 0, tileW, tileH)
-          tctx.fillStyle = 'rgba(14, 14, 22, 0.7)'
-          tctx.fillRect(0, 0, tileW, tileH)
-          const pattern = ctx.createPattern(tile, 'repeat')
-          if (pattern) {
-            pattern.setTransform(new DOMMatrix([1, 0, 0, 1, 0, heroHeight]))
-            ctx.save()
-            ctx.fillStyle = pattern
-            ctx.fillRect(0, heroHeight, width, totalHeight - heroHeight)
-            ctx.restore()
-          }
+      // Site background: the shared tiled texture + an 80% black overlay — the
+      // exact treatment used on the homepage and every other page (see
+      // backgrounds.css). The set's expansion art sits on top as the hero banner.
+      const textureImg = await loadSameOrigin('/background-images/bg-texture-crop.png')
+      ctx.fillStyle = '#090909'
+      ctx.fillRect(0, 0, width, totalHeight)
+      if (textureImg) {
+        const pat = ctx.createPattern(textureImg, 'repeat')
+        if (pat) {
+          ctx.save()
+          ctx.fillStyle = pat
+          ctx.fillRect(0, 0, width, totalHeight)
+          ctx.restore()
         }
-        ctx.fillStyle = 'rgba(10, 10, 18, 0.5)'
-        ctx.fillRect(0, heroHeight, width, totalHeight - heroHeight)
+      }
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.8)'
+      ctx.fillRect(0, 0, width, totalHeight)
 
+      if (setArtImg && heroHeight > 0) {
         const s = Math.max(width / setArtImg.width, heroHeight / setArtImg.height)
         const hw = setArtImg.width * s
         const hh = setArtImg.height * s
@@ -816,29 +819,11 @@ export function useDeckExport({
         ctx.clip()
         ctx.drawImage(setArtImg, (width - hw) / 2, (heroHeight - hh) / 2, hw, hh)
         const fade = ctx.createLinearGradient(0, heroHeight - 110, 0, heroHeight)
-        fade.addColorStop(0, 'rgba(14, 14, 22, 0)')
-        fade.addColorStop(1, 'rgba(14, 14, 22, 0.96)')
+        fade.addColorStop(0, 'rgba(9, 9, 9, 0)')
+        fade.addColorStop(1, 'rgba(9, 9, 9, 0.95)')
         ctx.fillStyle = fade
         ctx.fillRect(0, heroHeight - 110, width, 110)
         ctx.restore()
-      } else {
-        ctx.fillStyle = '#1a1a2e'
-        ctx.fillRect(0, 0, width, totalHeight)
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)'
-        ctx.lineWidth = 1
-        const gridSize = 20
-        for (let x = 0; x < width; x += gridSize) {
-          ctx.beginPath()
-          ctx.moveTo(x, 0)
-          ctx.lineTo(x, totalHeight)
-          ctx.stroke()
-        }
-        for (let y = 0; y < totalHeight; y += gridSize) {
-          ctx.beginPath()
-          ctx.moveTo(0, y)
-          ctx.lineTo(width, y)
-          ctx.stroke()
-        }
       }
 
       let currentY = padding + heroHeight
@@ -846,7 +831,7 @@ export function useDeckExport({
       // Helper to draw a single card
       const drawCard = (card: ExportCard, x: number, y: number, cardW: number, cardH: number, grayscale: boolean): Promise<void> => {
         return new Promise((resolve) => {
-          const imageUrl = card.frontArt || '/card-back.png'
+          const imageUrl = normalFrontArt(card)
           const isLeader = card.isLeader
 
           const drawPlaceholder = (): void => {
@@ -870,34 +855,7 @@ export function useDeckExport({
           img.onload = (): void => {
             clearTimeout(timeoutId)
             try {
-              if (isLeader) {
-                // Rotate leader 90 degrees CCW
-                ctx.save()
-                ctx.translate(x + cardW / 2, y + cardH / 2)
-                ctx.rotate(-Math.PI / 2)
-                if (grayscale) {
-                  const tempCanvas = document.createElement('canvas')
-                  tempCanvas.width = cardH
-                  tempCanvas.height = cardW
-                  const tempCtx = tempCanvas.getContext('2d')
-                  if (tempCtx) {
-                    tempCtx.drawImage(img, 0, 0, cardH, cardW)
-                    const imageData = tempCtx.getImageData(0, 0, cardH, cardW)
-                    const data = imageData.data
-                    for (let i = 0; i < data.length; i += 4) {
-                      const avg = (data[i]! + data[i + 1]! + data[i + 2]!) / 3
-                      data[i] = avg
-                      data[i + 1] = avg
-                      data[i + 2] = avg
-                    }
-                    tempCtx.putImageData(imageData, 0, 0)
-                    ctx.drawImage(tempCanvas, -cardH / 2, -cardW / 2, cardH, cardW)
-                  }
-                } else {
-                  ctx.drawImage(img, -cardH / 2, -cardW / 2, cardH, cardW)
-                }
-                ctx.restore()
-              } else if (grayscale) {
+              if (grayscale) {
                 const tempCanvas = document.createElement('canvas')
                 tempCanvas.width = cardW
                 tempCanvas.height = cardH
@@ -934,7 +892,7 @@ export function useDeckExport({
         })
       }
 
-      currentY = padding
+      currentY = padding + heroHeight
 
       // Draw title at top
       ctx.fillStyle = 'white'
