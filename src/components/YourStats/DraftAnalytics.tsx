@@ -13,6 +13,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { ASPECT_COLORS, NO_ASPECT_COLOR, RARITY_COLORS } from '@/src/utils/aspectColors'
+import { CardName } from './CardNamePreview'
 
 const ASPECT_ICON: Record<string, string> = {
   Vigilance: '/icons/vigilance.png',
@@ -46,6 +47,9 @@ interface PickRow {
   p1p1Pct: number | null
   firstPicks: number
   firstPickPct: number | null
+  subtitle: string | null
+  imageUrl: string | null
+  backImageUrl: string | null
 }
 
 function aspectColor(aspects: string[]): string {
@@ -94,7 +98,7 @@ function Pick1Card({ title, subtitle, rows, countOf, pctOf, loading }: {
           {rows.map((c) => (
             <div key={c.cardName} className="your-stats-meta-bar-row">
               <div className="your-stats-meta-bar-head">
-                <span className="your-stats-meta-bar-name">{c.cardName}</span>
+                <CardName entry={{ name: c.cardName, subtitle: c.subtitle, imageUrl: c.imageUrl, backImageUrl: c.backImageUrl }} className="your-stats-meta-bar-name" />
                 <span className="your-stats-meta-bar-value" style={{ color: '#64B5F6' }}>{countOf(c)}× · {pctOf(c)}%</span>
               </div>
               <div className="your-stats-meta-bar-track">
@@ -271,7 +275,7 @@ export function DraftAnalytics({ setCode, since, until }: { setCode: string; sin
               const pct = Math.min(100, (c.avgPickPosition / maxPick) * 100)
               return (
                 <li key={c.cardName} className="your-stats-pickturn-row">
-                  <span className="your-stats-pickturn-name">{c.cardName}</span>
+                  <CardName entry={{ name: c.cardName, subtitle: c.subtitle, imageUrl: c.imageUrl, backImageUrl: c.backImageUrl, isLeader: mode === 'leaders' }} className="your-stats-pickturn-name" />
                   <div className="your-stats-pickturn-track">
                     <span className="your-stats-pickturn-marker" style={{ left: `${pct}%`, background: aspectColor(c.aspects) }} />
                   </div>

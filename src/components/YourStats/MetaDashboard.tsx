@@ -17,6 +17,7 @@ import { getStatsSetTabs, DEFAULT_STATS_SET_TAB } from '@/src/utils/statsSetTabs
 import { todayStr } from '@/src/utils/statsEras'
 import { getAspectColor, ASPECT_COLORS } from '@/src/utils/aspectColors'
 import { DraftAnalytics } from './DraftAnalytics'
+import { CardPreviewProvider, CardName } from './CardNamePreview'
 
 interface BaseSplit { aspect: string; winRate: number; matches: number }
 interface WinRateLeader {
@@ -58,6 +59,9 @@ interface MetaEntry {
   loggedIn: number | null
   aspects: string[]
   imageUrl: string | null
+  subtitle?: string | null
+  backImageUrl?: string | null
+  isLeader?: boolean
 }
 
 function pct(v: number | null | undefined): string {
@@ -86,7 +90,7 @@ function MetricBars({ entries }: { entries: MetaEntry[] }) {
         return (
           <div key={e.name} className="your-stats-meta-bar-row">
             <div className="your-stats-meta-bar-head">
-              <span className="your-stats-meta-bar-name">{e.name}</span>
+              <CardName entry={e} className="your-stats-meta-bar-name" />
               <span className="your-stats-meta-bar-value" style={{ color }}>
                 {pct(e.value)}
               </span>
@@ -253,10 +257,12 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
     const leaderEntry = (l: any): MetaEntry => ({
       name: l.cardName, value: Number(l.selectionRate || 0), loggedIn: null,
       aspects: l.aspects || [], imageUrl: l.imageUrl || null,
+      subtitle: l.subtitle || null, backImageUrl: l.backImageUrl || null, isLeader: true,
     })
     const cardInclusionEntry = (c: any): MetaEntry => ({
       name: c.cardName, value: Number(c.inclusionRate || 0), loggedIn: null,
       aspects: c.aspects || [], imageUrl: c.imageUrl || null,
+      subtitle: c.subtitle || null, backImageUrl: c.backImageUrl || null,
     })
     // Off-aspect "share": fraction of all decks that ran this card OFF its
     // leader+base aspects = inclusionRate × offAspectRate. Surfaces splashes.
@@ -267,6 +273,7 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
         loggedIn: null,
         aspects: c.aspects || [],
         imageUrl: c.imageUrl || null,
+        subtitle: c.subtitle || null, backImageUrl: c.backImageUrl || null,
       }))
       .filter((e) => e.value > 0)
     // "Picked" = how often taken first when seen, with a pick floor so a single
@@ -277,6 +284,7 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
       .map((c: any) => ({
         name: c.cardName, value: Number(c.firstPickPct || 0), loggedIn: null,
         aspects: c.aspects || [], imageUrl: c.imageUrl || null,
+        subtitle: c.subtitle || null, backImageUrl: c.backImageUrl || null,
       }))
 
     Promise.all([
@@ -291,9 +299,11 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
     ])
       .then(([leadSealed, leadDraft, leadPicked, cardSealed, cardDraft, cardPicked, archSealed, archDraft]) => {
         if (cancelled) return
+        // Archetype name isn't a single card — no subtitle; hover previews the leader.
         const archEntry = (a: any): MetaEntry => ({
           name: a.cardName, value: Number(a.selectionRate || 0), loggedIn: null,
           aspects: a.aspects || [], imageUrl: a.imageUrl || null,
+          backImageUrl: a.backImageUrl || null, isLeader: true,
         })
         setState({
           loading: false,
@@ -323,6 +333,7 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
   }, [activeSet, fetchImpl])
 
   return (
+   <CardPreviewProvider>
     <section className="your-stats-meta" data-testid="meta-dashboard">
       <div className="your-stats-meta-toolbar">
         <div>
@@ -475,6 +486,7 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
         </>
       )}
     </section>
+   </CardPreviewProvider>
   )
 }
 

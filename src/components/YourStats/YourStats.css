@@ -2676,6 +2676,42 @@ a.your-stats-logged-out-link:active {
   font-weight: 700;
 }
 
+/* Card name + subtitle (distinct font) + hover-preview affordance. */
+.your-stats-cardname {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  min-width: 0;
+}
+.your-stats-cardname-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.your-stats-cardname-name.is-previewable {
+  cursor: help;
+}
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-cardname-name.is-previewable:hover {
+    text-decoration: underline dotted rgba(255, 255, 255, 0.4);
+    text-underline-offset: 3px;
+  }
+}
+/* Subtitle: deliberately distinct from the name — italic, light, smaller. */
+.your-stats-cardname-sub {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .your-stats-meta-bar-value {
   flex: 0 0 auto;
   font-size: 0.86rem;
