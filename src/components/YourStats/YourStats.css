@@ -804,6 +804,28 @@
   gap: 0.85rem;
 }
 
+/* "and N more decks on this pool →" — link out to the full pool page when we've
+   filtered a non-owned pool down to just your decks. */
+.your-stats-pool-more-link {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  border: 1px dashed var(--ys-border, rgba(255, 255, 255, 0.2));
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.72));
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 140ms ease, border-color 140ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-pool-more-link:hover {
+    color: #fff;
+    border-color: var(--ys-border-bright, rgba(255, 255, 255, 0.4));
+  }
+}
+
 /* ----- Game history: tight horizontal row -------------------------------- */
 /* result chip · leader art · "Leader vs opponent" · set+date · game pips · Watch */
 .your-stats-replay-row {

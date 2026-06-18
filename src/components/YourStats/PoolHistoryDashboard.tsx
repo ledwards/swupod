@@ -547,22 +547,39 @@ export function PoolHistoryDashboard({ fetchImpl, setFilter = 'all' }: { fetchIm
               </header>
 
               <div className="your-stats-pool-build-list">
-                {pool.builds.map((build) => (
-                  <PoolBuildCard
-                    key={build.shareId}
-                    build={build}
-                    setCode={pool.setCode}
-                    poolType={pool.poolType}
-                    canDeletePool={pool.relationship === 'owned'}
-                    poolShareId={pool.shareId}
-                    copiedKey={copiedKey}
-                    copyValue={copyValue}
-                    onDeletePool={handleDeletePool}
-                    deleteArmed={armedDelete === pool.shareId}
-                    onArmDelete={setArmedDelete}
-                    wayfinderDetected={wayfinderDetected}
-                  />
-                ))}
+                {(() => {
+                  // On a pool you own, show every deck (you can manage them all).
+                  // On someone else's pool, show only YOUR decks; the rest get a
+                  // "and N more" link out to the full pool page.
+                  const ownsPool = pool.relationship === 'owned'
+                  const visible = ownsPool ? pool.builds : pool.builds.filter((b) => b.isMine)
+                  const hidden = pool.builds.length - visible.length
+                  return (
+                    <>
+                      {visible.map((build) => (
+                        <PoolBuildCard
+                          key={build.shareId}
+                          build={build}
+                          setCode={pool.setCode}
+                          poolType={pool.poolType}
+                          canDeletePool={pool.relationship === 'owned'}
+                          poolShareId={pool.shareId}
+                          copiedKey={copiedKey}
+                          copyValue={copyValue}
+                          onDeletePool={handleDeletePool}
+                          deleteArmed={armedDelete === pool.shareId}
+                          onArmDelete={setArmedDelete}
+                          wayfinderDetected={wayfinderDetected}
+                        />
+                      ))}
+                      {hidden > 0 && (
+                        <a className="your-stats-pool-more-link" href={`/pool/${pool.shareId}`}>
+                          and {hidden} more {hidden === 1 ? 'deck' : 'decks'} on this pool →
+                        </a>
+                      )}
+                    </>
+                  )
+                })()}
               </div>
             </article>
           ))}

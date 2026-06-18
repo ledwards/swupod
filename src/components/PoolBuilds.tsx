@@ -184,6 +184,14 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
   const [isDeleting, setIsDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
 
+  // Authoritative pool ownership for delete gating: the ROOT pool's owner is the
+  // builder of the original entry — NOT DeckBuilder's edit-`isOwner`, which on a
+  // child-build page reflects ownership of that build, not the pool. This keeps
+  // "delete any deck on my pool" from leaking to people who merely own one deck
+  // on someone else's pool.
+  const rootPoolOwnerId = builds.find((b) => b.isOriginal)?.builderUserId || null
+  const iOwnPool = Boolean(currentUserId && rootPoolOwnerId && currentUserId === rootPoolOwnerId)
+
   // For an isOriginal target, find the next-best build owned by the same user
   // to promote to root. We pick the oldest sibling by createdAt — the user's
   // first non-original deck. Returns null if they have no other owned builds.
@@ -286,7 +294,7 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
             rootShareId={shareId}
             isActive={b.shareId === activeShareId}
             currentUserId={currentUserId}
-            isOwner={isOwner}
+            isOwner={iOwnPool}
             onRequestDelete={setPendingDelete}
           />
         ))}
@@ -332,7 +340,7 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
                       rootShareId={shareId}
                       isActive={b.shareId === activeShareId}
                       currentUserId={currentUserId}
-                      isOwner={isOwner}
+                      isOwner={iOwnPool}
                       onRequestDelete={setPendingDelete}
                     />
                   ))}
