@@ -22,6 +22,16 @@ next-env.d.ts
 
 # Scratch screenshots / artifacts dropped by agents (chrome-devtools etc.)
 .tmp/
+.tmp-*/
+# Scratch image / diff artifacts dropped by agents (playwright comparisons etc.)
+/_*.png
+
+# Design-sync: converter scripts + generated upload bundle (local tooling only)
+.ds-sync/
+ds-bundle/
+
+# Impeccable: local design-review/critique notes
+.impeccable/
 
 # Editor directories and files
 .vscode/*
