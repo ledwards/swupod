@@ -801,7 +801,7 @@ export function useDeckExport({
       // block in the footer — only when there's a real pool URL to point at.
       const hasPoolUrl = Boolean(rootShareId || shareId)
       const qrSize = 78
-      const footerHeight = (poolOwnerUsername ? 100 : 70) + (hasPoolUrl ? qrSize + 14 : 0)
+      const footerHeight = (poolOwnerUsername ? 100 : 70) + (hasPoolUrl ? qrSize + 40 : 0)
 
       // Hero banner: set art on top + tiled set-art background (same treatment as
       // the deck image export). Set art is same-origin so the canvas stays exportable.
@@ -1128,9 +1128,14 @@ export function useDeckExport({
           })
           const qrImg = await loadSameOrigin(qrDataUrl)
           if (qrImg) {
-            const qrX = width - padding - qrSize
-            const qrY = footerBaseline - 46 - qrSize
+            // Center the QR horizontally over the "built on Protect the Pod" line
+            // (right-aligned at textRight) and sit it above the credit block.
+            ctx.font = `600 18px ${FONT}`
+            const creditWidth = ctx.measureText('built on Protect the Pod').width
+            const creditCenterX = textRight - creditWidth / 2
             const pad = 5
+            const qrX = Math.round(creditCenterX - qrSize / 2)
+            const qrY = footerBaseline - 71 - qrSize
             ctx.fillStyle = '#ffffff'
             ctx.fillRect(qrX - pad, qrY - pad, qrSize + pad * 2, qrSize + pad * 2)
             ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize)
