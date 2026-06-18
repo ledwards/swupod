@@ -22,6 +22,7 @@ next-env.d.ts
 
 # Scratch screenshots / artifacts dropped by agents (chrome-devtools etc.)
 .tmp/
+.tmp-*/
 
 # Editor directories and files
 .vscode/*
