@@ -276,7 +276,6 @@
   background: var(--ys-surface);
   border: 1px solid var(--ys-border-bright);
   border-radius: var(--ys-radius);
-  backdrop-filter: blur(10px);
   position: relative;
 }
 
@@ -284,14 +283,17 @@
  * Shared primitives — eyebrow, count pill, explorer toolbar, search, segments
  * ========================================================================== */
 
+/* Quiet section label. The one deliberate uppercase kicker is the page hero
+   (.me-hero-eyebrow); per-section labels stay sentence-case and muted so the
+   page doesn't read as an eyebrow-on-every-section AI template. */
 .your-stats-eyebrow {
   display: block;
-  color: var(--ys-accent-bright);
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 0.3rem;
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.6));
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+  margin-bottom: 0.25rem;
 }
 
 .your-stats-count-pill {
@@ -600,7 +602,6 @@
 
 .your-stats-outcome-bar {
   min-width: 0;
-  transition: width 240ms ease;
 }
 
 .your-stats-outcome-bar--win,
@@ -1479,7 +1480,6 @@
   color: var(--ys-text-2);
   font-size: 0.74rem;
   font-weight: 700;
-  backdrop-filter: blur(2px);
 }
 
 .your-stats-replay-actions,
@@ -1647,7 +1647,6 @@
   background:
     radial-gradient(120% 120% at 50% 0%, var(--ys-accent-dim), transparent 60%),
     var(--ys-surface);
-  backdrop-filter: blur(10px);
   border: 1px solid rgba(96, 165, 250, 0.4);
   border-radius: var(--ys-radius);
   padding: 2.5rem 1.75rem;
@@ -1717,7 +1716,6 @@ a.your-stats-logged-out-link:active {
 
 .your-stats-activity {
   background: var(--ys-surface);
-  backdrop-filter: blur(10px);
   border: 1px solid var(--ys-border);
   border-radius: var(--ys-radius);
   padding: 1.25rem 1.5rem 1.5rem;
@@ -1863,7 +1861,6 @@ a.your-stats-logged-out-link:active {
 
 .your-stats-luck-section {
   background: var(--ys-surface);
-  backdrop-filter: blur(10px);
   border: 1px solid var(--ys-border);
   border-radius: var(--ys-radius);
   padding: 1.25rem 1.5rem 1.5rem;
@@ -3520,11 +3517,12 @@ a.your-stats-logged-out-link:active {
   outline-offset: 2px;
 }
 
-/* Result tint down the whole card edge. */
-.your-stats-replay-card.your-stats-replay-row--win { border-left: 3px solid #34d399; }
-.your-stats-replay-card.your-stats-replay-row--loss { border-left: 3px solid #f87171; }
-.your-stats-replay-card.your-stats-replay-row--draw { border-left: 3px solid #fbbf24; }
-.your-stats-replay-card.your-stats-replay-row--pending { border-left: 3px solid rgba(255,255,255,0.3); }
+/* Result reads via a full-card border tint + the W/L/D chip — never a 3px side
+   stripe (that left rail is the canonical AI-UI tell). */
+.your-stats-replay-card.your-stats-replay-row--win { border-color: rgba(52, 211, 153, 0.5); }
+.your-stats-replay-card.your-stats-replay-row--loss { border-color: rgba(248, 113, 113, 0.5); }
+.your-stats-replay-card.your-stats-replay-row--draw { border-color: rgba(251, 191, 36, 0.5); }
+.your-stats-replay-card.your-stats-replay-row--pending { border-color: rgba(255, 255, 255, 0.22); }
 
 .your-stats-replay-flank {
   position: relative;
