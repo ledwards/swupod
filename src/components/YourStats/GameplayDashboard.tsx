@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { WinRateByLeader, type WinRateLeader } from './WinRateByLeader'
 import WayfinderStoreButtons, { WayfinderCompanionLockup } from '@/src/components/WayfinderStoreButtons'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
+import { useRevealOnView } from '@/src/hooks/useRevealOnView'
 import { useAuth } from '@/src/contexts/AuthContext'
 
 function PlayGlyph() {
@@ -221,6 +222,7 @@ function BreakdownRow({ item }: { item: GameplayBreakdown }) {
 function LeadersCard({ leaders }: { leaders: GameplayLeaderBreakdown[] }) {
   // Pie of leader USAGE (share of games) on the left, win rate per leader on the
   // right — inspired by the Wayfinder meta page.
+  const { ref: pieRef, inView } = useRevealOnView<HTMLDivElement>()
   const total = leaders.reduce((s, l) => s + (l.matches || 0), 0)
   let acc = 0
   const stops = leaders
@@ -239,7 +241,7 @@ function LeadersCard({ leaders }: { leaders: GameplayLeaderBreakdown[] }) {
         <h3>Your Leaders</h3>
         <span>{leaders.length} {leaders.length === 1 ? 'leader' : 'leaders'} played</span>
       </div>
-      <div className="your-stats-leaders-pie-layout">
+      <div className={`your-stats-leaders-pie-layout${inView ? ' your-stats-reveal' : ''}`} ref={pieRef}>
         <div
           className="your-stats-leaders-pie"
           style={{ background: total > 0 ? `conic-gradient(${stops})` : 'rgba(255,255,255,0.08)' }}

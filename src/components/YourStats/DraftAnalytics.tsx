@@ -14,6 +14,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ASPECT_COLORS, NO_ASPECT_COLOR, RARITY_COLORS } from '@/src/utils/aspectColors'
 import { CardName } from './CardNamePreview'
+import CostIcon from '@/src/components/CostIcon'
 
 const ASPECT_ICON: Record<string, string> = {
   Vigilance: '/icons/vigilance.png',
@@ -27,11 +28,11 @@ const FILTER_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning', 'Herois
 // Special (S) shows up in some boosters — include it in the rarity filter.
 const FILTER_RARITIES = ['Common', 'Uncommon', 'Rare', 'Legendary', 'Special'] as const
 const RARITY_ICON: Record<string, string> = {
-  Common: '/icons/rarity/common.svg',
-  Uncommon: '/icons/rarity/uncommon.svg',
-  Rare: '/icons/rarity/rare.svg',
-  Legendary: '/icons/rarity/legendary.svg',
-  Special: '/icons/rarity/special.svg',
+  Common: '/icons/rarity/common.png',
+  Uncommon: '/icons/rarity/uncommon.png',
+  Rare: '/icons/rarity/rare.png',
+  Legendary: '/icons/rarity/legendary.png',
+  Special: '/icons/rarity/special.png',
 }
 const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning']
 
@@ -83,7 +84,6 @@ function Pick1Card({ title, subtitle, rows, countOf, pctOf, loading }: {
     <section className="your-stats-meta-card">
       <header className="your-stats-meta-card-header">
         <div>
-          <span className="your-stats-eyebrow">Drafting</span>
           <h3>{title}</h3>
         </div>
         <span className="your-stats-meta-tag">Draft</span>
@@ -112,17 +112,121 @@ function Pick1Card({ title, subtitle, rows, countOf, pctOf, loading }: {
   )
 }
 
+function ftoggle<T>(set: Set<T>, setter: (s: Set<T>) => void, key: T) {
+  const next = new Set(set)
+  next.has(key) ? next.delete(key) : next.add(key)
+  setter(next)
+}
+
+/** One pick-turn ladder box. Leaders and cards each get their own identical box
+ *  (side by side) with their own search + filters, instead of a shared toggle. */
+function PickTurnCard({ title, subtitle, rows, showCost, loading }: {
+  title: string
+  subtitle: string
+  rows: PickRow[]
+  showCost: boolean
+  loading: boolean
+}) {
+  const [search, setSearch] = useState('')
+  const [aspectFilters, setAspectFilters] = useState<Set<string>>(new Set())
+  const [rarityFilters, setRarityFilters] = useState<Set<string>>(new Set())
+  const [costFilters, setCostFilters] = useState<Set<number>>(new Set())
+
+  const maxPick = useMemo(() => Math.max(8, ...rows.map((c) => c.avgPickPosition)), [rows])
+  const needle = search.trim().toLowerCase()
+  const filtered = useMemo(() => {
+    return [...rows]
+      .filter((c) => {
+        if (needle && !c.cardName.toLowerCase().includes(needle)) return false
+        if (aspectFilters.size > 0 && !(c.aspects || []).some((a) => aspectFilters.has(a))) return false
+        if (rarityFilters.size > 0 && !rarityFilters.has(c.rarity)) return false
+        if (showCost && costFilters.size > 0) {
+          const cost = c.cost == null ? -1 : Math.min(7, c.cost)
+          if (!costFilters.has(cost)) return false
+        }
+        return true
+      })
+      .sort((a, b) => a.avgPickPosition - b.avgPickPosition)
+  }, [rows, needle, aspectFilters, rarityFilters, costFilters, showCost])
+
+  const label = showCost ? 'card' : 'leader'
+
+  return (
+    <section className="your-stats-meta-card">
+      <header className="your-stats-meta-card-header">
+        <div><h3>{title}</h3></div>
+        <span className="your-stats-meta-tag">Draft</span>
+      </header>
+      <p className="your-stats-meta-subtitle">{subtitle}</p>
+
+      <div className="your-stats-pickturn-toolbar">
+        <label className="your-stats-search">
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={`Find a ${label}…`} aria-label={`Filter ${label} pick-turn list`} />
+        </label>
+      </div>
+
+      <div className="your-stats-luck-filters">
+        <div className="your-stats-luck-filter-group" role="group" aria-label="Filter by aspect">
+          {FILTER_ASPECTS.map((a) => (
+            <button key={a} type="button" title={a} aria-pressed={aspectFilters.has(a)}
+              className={`your-stats-luck-filter-btn${aspectFilters.has(a) ? ' is-on' : ''}`}
+              onClick={() => ftoggle(aspectFilters, setAspectFilters, a)}>
+              <img src={ASPECT_ICON[a]} alt={a} width={16} height={16} />
+            </button>
+          ))}
+        </div>
+        <div className="your-stats-luck-filter-group" role="group" aria-label="Filter by rarity">
+          {FILTER_RARITIES.map((r) => (
+            <button key={r} type="button" title={r} aria-pressed={rarityFilters.has(r)}
+              className={`your-stats-luck-filter-btn your-stats-luck-filter-btn--rarity${rarityFilters.has(r) ? ' is-on' : ''}`}
+              style={{ ['--rarity' as any]: RARITY_COLORS[r] || '#888' }}
+              onClick={() => ftoggle(rarityFilters, setRarityFilters, r)}>
+              <img src={RARITY_ICON[r]} alt={r} width={18} height={18} />
+            </button>
+          ))}
+        </div>
+        {showCost && (
+          <div className="your-stats-luck-filter-group" role="group" aria-label="Filter by cost">
+            {[0, 1, 2, 3, 4, 5, 6, 7].map((cost) => (
+              <button key={cost} type="button" title={cost === 7 ? '7+ cost' : `${cost} cost`} aria-pressed={costFilters.has(cost)}
+                className={`your-stats-luck-filter-btn your-stats-luck-filter-btn--cost${costFilters.has(cost) ? ' is-on' : ''}`}
+                onClick={() => ftoggle(costFilters, setCostFilters, cost)}>
+                <CostIcon cost={cost === 7 ? '7+' : cost} size={24} />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {loading ? (
+        <div className="your-stats-meta-bars">{[0, 1, 2, 3, 4, 5].map((i) => <div key={i} className="skeleton-line your-stats-meta-skeleton" />)}</div>
+      ) : filtered.length === 0 ? (
+        <p className="your-stats-meta-empty">No {label}s match those filters.</p>
+      ) : (
+        <ol className="your-stats-pickturn-list">
+          {filtered.map((c) => {
+            const pct = Math.min(100, (c.avgPickPosition / maxPick) * 100)
+            return (
+              <li key={c.cardName} className="your-stats-pickturn-row">
+                <CardName entry={{ name: c.cardName, subtitle: c.subtitle, imageUrl: c.imageUrl, backImageUrl: c.backImageUrl, isLeader: !showCost }} className="your-stats-pickturn-name" />
+                <div className="your-stats-pickturn-track">
+                  <span className="your-stats-pickturn-marker" style={{ left: `${pct}%`, background: aspectColor(c.aspects) }} />
+                </div>
+                <span className="your-stats-pickturn-pos">{c.avgPickPosition.toFixed(1)}</span>
+              </li>
+            )
+          })}
+        </ol>
+      )}
+    </section>
+  )
+}
+
 export function DraftAnalytics({ setCode, since, until }: { setCode: string; since: string; until: string }) {
   const [cards, setCards] = useState<PickRow[]>([])
   const [leaders, setLeaders] = useState<PickRow[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
-
-  const [mode, setMode] = useState<'cards' | 'leaders'>('leaders')
-  const [search, setSearch] = useState('')
-  const [aspectFilters, setAspectFilters] = useState<Set<string>>(new Set())
-  const [rarityFilters, setRarityFilters] = useState<Set<string>>(new Set())
-  const [costFilters, setCostFilters] = useState<Set<number>>(new Set())
 
   useEffect(() => {
     let cancelled = false
@@ -142,8 +246,6 @@ export function DraftAnalytics({ setCode, since, until }: { setCode: string; sin
     return () => { cancelled = true }
   }, [setCode, since, until])
 
-  const source = mode === 'cards' ? cards : leaders
-
   // Pick-1 ladders always use cards (leaders are picked in a separate round).
   // P1P1 = pack 1 pick 1; "any pack" = pick 1 of pack 1, 2 OR 3.
   const p1p1 = useMemo(
@@ -155,39 +257,10 @@ export function DraftAnalytics({ setCode, since, until }: { setCode: string; sin
     [cards],
   )
 
-  const maxPick = useMemo(() => Math.max(8, ...source.map((c) => c.avgPickPosition)), [source])
-
-  const needle = search.trim().toLowerCase()
-  const filtered = useMemo(() => {
-    return [...source]
-      .filter((c) => {
-        if (needle && !c.cardName.toLowerCase().includes(needle)) return false
-        if (aspectFilters.size > 0 && !(c.aspects || []).some((a) => aspectFilters.has(a))) return false
-        if (rarityFilters.size > 0 && !rarityFilters.has(c.rarity)) return false
-        if (costFilters.size > 0) {
-          const cost = c.cost == null ? -1 : Math.min(7, c.cost)
-          if (!costFilters.has(cost)) return false
-        }
-        return true
-      })
-      .sort((a, b) => a.avgPickPosition - b.avgPickPosition)
-  }, [source, needle, aspectFilters, rarityFilters, costFilters])
-
-  function toggle<T>(set: Set<T>, setter: (s: Set<T>) => void, key: T) {
-    const next = new Set(set)
-    next.has(key) ? next.delete(key) : next.add(key)
-    setter(next)
-  }
-
   if (error) return null
 
   return (
     <section className="your-stats-draft-analytics">
-      <div className="your-stats-meta-subhead">
-        <span className="your-stats-eyebrow">Drafting</span>
-        <h3>Draft signal</h3>
-      </div>
-
       {/* Pick-1 ladders: pack-1 pick-1 and pick-1 of any pack, side by side. */}
       <div className="your-stats-meta-grid">
         <Pick1Card
@@ -208,84 +281,23 @@ export function DraftAnalytics({ setCode, since, until }: { setCode: string; sin
         />
       </div>
 
-      {/* Pick-turn ladder */}
-      <section className="your-stats-meta-card">
-        <header className="your-stats-meta-card-header">
-          <div>
-            <span className="your-stats-eyebrow">Drafting</span>
-            <h3>Average pick turn</h3>
-          </div>
-          <span className="your-stats-meta-tag">Draft</span>
-        </header>
-        <p className="your-stats-meta-subtitle">Where each {mode === 'cards' ? 'card' : 'leader'} is taken on average — pick 1 is a first-pick bomb, the far right is wheel fodder.</p>
-
-        <div className="your-stats-pickturn-toolbar">
-          <div className="your-stats-luck-sort" role="group" aria-label="Leaders or cards">
-            {(['leaders', 'cards'] as const).map((m) => (
-              <button key={m} type="button" className={`your-stats-luck-sort-btn${mode === m ? ' is-on' : ''}`} aria-pressed={mode === m} onClick={() => setMode(m)}>
-                {m === 'leaders' ? 'Leaders' : 'Cards'}
-              </button>
-            ))}
-          </div>
-          <label className="your-stats-search">
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Find a card…" aria-label="Filter pick-turn list" />
-          </label>
-        </div>
-
-        <div className="your-stats-luck-filters">
-          <div className="your-stats-luck-filter-group" role="group" aria-label="Filter by aspect">
-            {FILTER_ASPECTS.map((a) => (
-              <button key={a} type="button" title={a} aria-pressed={aspectFilters.has(a)}
-                className={`your-stats-luck-filter-btn${aspectFilters.has(a) ? ' is-on' : ''}`}
-                onClick={() => toggle(aspectFilters, setAspectFilters, a)}>
-                <img src={ASPECT_ICON[a]} alt={a} width={16} height={16} />
-              </button>
-            ))}
-          </div>
-          <div className="your-stats-luck-filter-group" role="group" aria-label="Filter by rarity">
-            {FILTER_RARITIES.map((r) => (
-              <button key={r} type="button" title={r} aria-pressed={rarityFilters.has(r)}
-                className={`your-stats-luck-filter-btn your-stats-luck-filter-btn--rarity${rarityFilters.has(r) ? ' is-on' : ''}`}
-                style={{ ['--rarity' as any]: RARITY_COLORS[r] || '#888' }}
-                onClick={() => toggle(rarityFilters, setRarityFilters, r)}>
-                <img src={RARITY_ICON[r]} alt={r} width={15} height={15} />
-              </button>
-            ))}
-          </div>
-          {mode === 'cards' && (
-            <div className="your-stats-luck-filter-group" role="group" aria-label="Filter by cost">
-              {[0, 1, 2, 3, 4, 5, 6, 7].map((cost) => (
-                <button key={cost} type="button" title={cost === 7 ? '7+ cost' : `${cost} cost`} aria-pressed={costFilters.has(cost)}
-                  className={`your-stats-luck-filter-btn your-stats-luck-filter-btn--cost${costFilters.has(cost) ? ' is-on' : ''}`}
-                  onClick={() => toggle(costFilters, setCostFilters, cost)}>
-                  {cost === 7 ? '7+' : cost}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {loading ? (
-          <div className="your-stats-meta-bars">{[0, 1, 2, 3, 4, 5].map((i) => <div key={i} className="skeleton-line your-stats-meta-skeleton" />)}</div>
-        ) : filtered.length === 0 ? (
-          <p className="your-stats-meta-empty">No {mode} match those filters.</p>
-        ) : (
-          <ol className="your-stats-pickturn-list">
-            {filtered.map((c) => {
-              const pct = Math.min(100, (c.avgPickPosition / maxPick) * 100)
-              return (
-                <li key={c.cardName} className="your-stats-pickturn-row">
-                  <CardName entry={{ name: c.cardName, subtitle: c.subtitle, imageUrl: c.imageUrl, backImageUrl: c.backImageUrl, isLeader: mode === 'leaders' }} className="your-stats-pickturn-name" />
-                  <div className="your-stats-pickturn-track">
-                    <span className="your-stats-pickturn-marker" style={{ left: `${pct}%`, background: aspectColor(c.aspects) }} />
-                  </div>
-                  <span className="your-stats-pickturn-pos">{c.avgPickPosition.toFixed(1)}</span>
-                </li>
-              )
-            })}
-          </ol>
-        )}
-      </section>
+      {/* Average pick turn — leaders (left) and cards (right), identical boxes. */}
+      <div className="your-stats-meta-grid your-stats-pickturn-grid">
+        <PickTurnCard
+          title="Average pick turn — Leaders"
+          subtitle="Where each leader is taken on average — pick 1 is a first-pick bomb, the far right is wheel fodder."
+          rows={leaders}
+          showCost={false}
+          loading={loading}
+        />
+        <PickTurnCard
+          title="Average pick turn — Cards"
+          subtitle="Where each card is taken on average — pick 1 is a first-pick bomb, the far right is wheel fodder."
+          rows={cards}
+          showCost={true}
+          loading={loading}
+        />
+      </div>
     </section>
   )
 }

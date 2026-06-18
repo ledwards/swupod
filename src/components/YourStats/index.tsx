@@ -15,8 +15,9 @@
  */
 'use client'
 
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { useAuth } from '@/src/contexts/AuthContext'
+import { useStickyTab } from '@/src/hooks/useStickyTab'
 import { ActivityDashboard } from './ActivityDashboard'
 import { GameplayDashboard } from './GameplayDashboard'
 import { LuckSection } from './LuckSection'
@@ -69,7 +70,18 @@ export interface YourStatsProps {
 
 export function YourStats({ since, until, setCode = 'all', filterLabel }: YourStatsProps) {
   const { user, loading } = useAuth()
-  const [activeTab, setActiveTab] = useState<PersonalStatsTab>('gameplay')
+  // Remember the last tab across refresh + Back button (URL ?tab + localStorage).
+  const [activeTab, setActiveTab] = useStickyTab<PersonalStatsTab>(
+    ['gameplay', 'luck', 'pools', 'meta'],
+    'gameplay',
+    { param: 'tab', storageKey: 'ptp:me-tab' },
+  )
+
+  // Landing on /me clears the "NEW" tag on the My Stats tile (covers arriving
+  // here directly, not just via that tile).
+  useEffect(() => {
+    try { localStorage.setItem('ptp:me-visited', '1') } catch { /* no-op */ }
+  }, [])
   // Tabs that need a concrete set (Luck, Meta) fall back to the latest set when
   // the global filter is "all". Pools/Gameplay/Activity treat 'all' as no filter.
   const isAllSets = !setCode || setCode === 'all'

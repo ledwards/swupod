@@ -137,6 +137,7 @@ function SplitMetricSection({
   sealed,
   draft,
   loading,
+  twoColumn = false,
 }: {
   eyebrow: string
   title: string
@@ -144,7 +145,21 @@ function SplitMetricSection({
   sealed: MetaEntry[]
   draft: MetaEntry[]
   loading: boolean
+  /** Render each side (Sealed/Draft) as two stacked columns — lets a side fit
+   *  ~20 rows in the same height. Bars use absolute %, so splitting is safe. */
+  twoColumn?: boolean
 }) {
+  const renderSide = (entries: MetaEntry[]) => {
+    if (!twoColumn || entries.length <= 1) return <MetricBars entries={entries} />
+    const half = Math.ceil(entries.length / 2)
+    const right = entries.slice(half)
+    return (
+      <div className="your-stats-meta-twocol">
+        <MetricBars entries={entries.slice(0, half)} />
+        {right.length > 0 && <MetricBars entries={right} />}
+      </div>
+    )
+  }
   return (
     <section className="your-stats-meta-card">
       <header className="your-stats-meta-card-header">
@@ -160,11 +175,11 @@ function SplitMetricSection({
         <div className="your-stats-meta-split">
           <div className="your-stats-meta-split-col">
             <span className="your-stats-meta-split-label">Sealed</span>
-            <MetricBars entries={sealed} />
+            {renderSide(sealed)}
           </div>
           <div className="your-stats-meta-split-col">
             <span className="your-stats-meta-split-label">Draft</span>
-            <MetricBars entries={draft} />
+            {renderSide(draft)}
           </div>
         </div>
       )}
@@ -455,16 +470,15 @@ export function MetaDashboard({ setCode = DEFAULT_STATS_SET_TAB, lockSet = false
             <span className="your-stats-eyebrow">Off-aspect</span>
             <h3>Popular splashes</h3>
           </div>
-          <div className="your-stats-meta-grid">
-            <SplitMetricSection
-              eyebrow="Deckbuilding"
-              title="Most-splashed off-aspect cards"
-              subtitle="Cards run outside the deck's leader+base aspects — of the pools that had the card, how often it's splashed off-aspect (normalized for how often it shows up)."
-              sealed={topOf(state.offAspectSealed)}
-              draft={topOf(state.offAspectDraft)}
-              loading={state.loading}
-            />
-          </div>
+          <SplitMetricSection
+            eyebrow="Deckbuilding"
+            title="Most-splashed off-aspect cards"
+            subtitle="Cards run outside the deck's leader+base aspects — of the pools that had the card, how often it's splashed off-aspect (normalized for how often it shows up)."
+            sealed={top20(state.offAspectSealed)}
+            draft={top20(state.offAspectDraft)}
+            loading={state.loading}
+            twoColumn
+          />
 
           <DraftAnalytics setCode={activeSet} since={META_SINCE} until={META_UNTIL} />
         </>
@@ -479,6 +493,13 @@ function topOf(entries: MetaEntry[]): MetaEntry[] {
   return [...entries]
     .sort((a, b) => Number(b.value || 0) - Number(a.value || 0))
     .slice(0, 8)
+}
+
+/** Top 20 — for two-column sections (e.g. popular splashes) that have room. */
+function top20(entries: MetaEntry[]): MetaEntry[] {
+  return [...entries]
+    .sort((a, b) => Number(b.value || 0) - Number(a.value || 0))
+    .slice(0, 20)
 }
 
 /** Bottom of a most-X list: lowest non-zero entries, ascending. */

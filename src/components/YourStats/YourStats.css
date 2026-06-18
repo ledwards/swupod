@@ -1365,6 +1365,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
+  /* Reset the global `button { padding: .6em 1.2em }` — that horizontal padding
+     (38px) was eating the whole 34px button under border-box and collapsing the
+     flex-child SVG to 0 width, so the icon vanished and left a bare red box. */
+  padding: 0;
   width: 34px;
   height: 34px;
   border-radius: 8px;
@@ -1380,6 +1385,7 @@
 
 .your-stats-pool-trash svg {
   display: block;
+  flex: 0 0 auto;
   width: 18px;
   height: 18px;
   /* Force the stroke red regardless of inherited color so the icon is visible. */
@@ -2414,6 +2420,20 @@ a.your-stats-logged-out-link:active {
   min-width: 0;
 }
 
+/* Two stacked bar columns within a single Sealed/Draft side — lets a side show
+   ~20 rows (e.g. popular splashes) without running very tall. */
+.your-stats-meta-twocol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem 1rem;
+  align-items: start;
+}
+@media (max-width: 760px) {
+  .your-stats-meta-twocol {
+    grid-template-columns: 1fr;
+  }
+}
+
 .your-stats-meta-split-label {
   display: block;
   font-size: 0.7rem;
@@ -2506,6 +2526,34 @@ a.your-stats-logged-out-link:active {
   padding-top: 0.8rem;
   border-top: 1px solid var(--ys-border);
 }
+
+/* Base-aspect breakdown floats as a styled overlay anchored under the focused
+   leader — never pushes page content down. pointer-events:none so it can't trap
+   the cursor (purely informational; tap the cell again to dismiss). */
+.your-stats-wr-popover {
+  width: 300px;
+  max-width: calc(100vw - 24px);
+  pointer-events: none;
+  background: rgba(12, 15, 22, 0.97);
+  border: 1px solid var(--ys-border-bright, rgba(255, 255, 255, 0.2));
+  border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.6);
+  padding: 0.5rem 0.95rem 0.85rem;
+}
+.your-stats-wr-popover .your-stats-wr-readout {
+  margin-top: 0;
+  padding-top: 0.3rem;
+  border-top: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .your-stats-wr-popover {
+    animation: ys-wr-pop 120ms ease-out;
+  }
+  @keyframes ys-wr-pop {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: none; }
+  }
+}
 .your-stats-wr-readout-head {
   display: flex;
   justify-content: space-between;
@@ -2565,10 +2613,28 @@ a.your-stats-logged-out-link:active {
   flex: 0 1 200px;
 }
 
+/* Cost filter now holds the golden cost icon (white numeral) — tighten padding
+   so the 24px icon sits snug, no extra text gutters. */
 .your-stats-luck-filter-btn--cost {
-  min-width: 1.9rem;
-  font-weight: 700;
-  font-size: 0.78rem;
+  padding: 0 2px;
+  gap: 0;
+}
+
+/* Cost + rarity filters read as greyscale when OFF and full colour when ON, so
+   the active selection pops. (Aspect filters keep their opacity treatment.) */
+.your-stats-luck-filter-btn--rarity img,
+.your-stats-luck-filter-btn--cost img {
+  filter: grayscale(1);
+  transition: filter 140ms ease;
+}
+.your-stats-luck-filter-btn--rarity.is-on img,
+.your-stats-luck-filter-btn--cost.is-on img {
+  filter: none;
+}
+
+/* Average-pick-turn boxes sit a clear gap below the Pick-1 boxes above them. */
+.your-stats-pickturn-grid {
+  margin-top: 1.5rem;
 }
 
 .your-stats-pickturn-list {
@@ -3572,6 +3638,31 @@ a.your-stats-logged-out-link:active {
   border-radius: 50%;
   flex: 0 0 auto;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Pies sweep in (conic mask 0→360°) when scrolled into view, echoing how the
+   /stats recharts pies animate on mount. Default 360° so reduced-motion / older
+   browsers / no-JS always show the complete chart. */
+@property --ys-pie-sweep {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 360deg;
+}
+.your-stats-luck-pie,
+.your-stats-leaders-pie {
+  --ys-pie-sweep: 360deg;
+  -webkit-mask: conic-gradient(#000 var(--ys-pie-sweep), transparent 0);
+  mask: conic-gradient(#000 var(--ys-pie-sweep), transparent 0);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .your-stats-reveal .your-stats-luck-pie,
+  .your-stats-reveal .your-stats-leaders-pie {
+    animation: ys-pie-sweep 850ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  @keyframes ys-pie-sweep {
+    from { --ys-pie-sweep: 0deg; }
+    to { --ys-pie-sweep: 360deg; }
+  }
 }
 
 .your-stats-leaders-legend {

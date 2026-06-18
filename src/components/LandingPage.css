@@ -357,6 +357,36 @@ a.discord-cta:active {
   overflow: hidden;
 }
 
+/* My Stats "NEW" treatment — golden glow + corner tag until the first visit. */
+.mode-button--new {
+  border-color: rgba(255, 200, 64, 0.85);
+  box-shadow: 0 0 18px rgba(255, 193, 64, 0.55), 0 0 4px rgba(255, 193, 64, 0.5);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mode-button--new {
+    animation: mode-new-pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes mode-new-pulse {
+    0%, 100% { box-shadow: 0 0 14px rgba(255, 193, 64, 0.45), 0 0 4px rgba(255, 193, 64, 0.4); }
+    50% { box-shadow: 0 0 28px rgba(255, 193, 64, 0.72), 0 0 8px rgba(255, 193, 64, 0.6); }
+  }
+}
+.mode-button-new-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffd55e, #f5a623);
+  color: #1a1205;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
 /* Card art background - hidden by default, revealed on hover */
 .mode-button-art {
   position: absolute;

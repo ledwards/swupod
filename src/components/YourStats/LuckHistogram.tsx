@@ -21,6 +21,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { ASPECT_COLORS, NO_ASPECT_COLOR, RARITY_COLORS } from '@/src/utils/aspectColors'
 import { twoSidedPValue } from '@/src/utils/stats'
+import { useRevealOnView } from '@/src/hooks/useRevealOnView'
 
 const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning'] as const
 
@@ -465,6 +466,7 @@ const ALIGN_COLOR: Record<string, string> = {
 type Slice = { label: string; value: number; expected: number; color: string }
 
 function Pie({ title, slices }: { title: string; slices: Slice[] }) {
+  const { ref: pieRef, inView } = useRevealOnView()
   const total = slices.reduce((s, x) => s + x.value, 0)
   const expTotal = slices.reduce((s, x) => s + x.expected, 0)
   let acc = 0
@@ -478,7 +480,7 @@ function Pie({ title, slices }: { title: string; slices: Slice[] }) {
     })
     .join(', ')
   return (
-    <div className="your-stats-luck-pie-block">
+    <div className={`your-stats-luck-pie-block${inView ? ' your-stats-reveal' : ''}`} ref={pieRef}>
       <div className="your-stats-luck-pie" style={{ background: total > 0 ? `conic-gradient(${stops})` : 'rgba(255,255,255,0.08)' }} aria-hidden="true" />
       <div className="your-stats-luck-pie-side">
         <h5>{title}</h5>

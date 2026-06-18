@@ -60,8 +60,8 @@ const MODE_ART = {
   history: 'https://cdn.starwarsunlimited.com//card_05020502_EN_Darth_Revan_s_Lightsabers_d4bd32215b.png',
   deckbuilder: 'https://cdn.starwarsunlimited.com//card_04030998_EN_Grand_Admiral_Thrawn_Leader_Unit_eba4967d61.png',
   stats: 'https://cdn.starwarsunlimited.com//card_SWH_01_493_AT_ST_HYP_ff73b562a5.png',
-  // My Stats tile: R2-D2 (JTL) hyperspace unit art.
-  myStats: 'https://cdn.starwarsunlimited.com//card_04020507_EN_R2_D2_19d6f25cf9.png',
+  // My Stats tile: R2-D2 (TWI) hyperspace unit art.
+  myStats: 'https://cdn.starwarsunlimited.com//card_0331193_EN_R2_D2_a54cf5d4e8.png',
 }
 
 interface ActiveDraft {
@@ -127,6 +127,18 @@ function LandingPage() {
   const [activeDraft, setActiveDraft] = useState<ActiveDraft | null>(null)
   const [activeSealedPod, setActiveSealedPod] = useState<ActiveSealedPod | null>(null)
   const [isDiscordMember, setIsDiscordMember] = useState(true)
+
+  // "NEW" tag + golden glow on the My Stats tile until the user first opens /me.
+  // Defaults to seen (no flash) and reads the real flag after mount.
+  const [meStatsSeen, setMeStatsSeen] = useState(true)
+  useEffect(() => {
+    try { setMeStatsSeen(localStorage.getItem('ptp:me-visited') === '1') } catch {}
+  }, [])
+  const openMyStats = () => {
+    try { localStorage.setItem('ptp:me-visited', '1') } catch {}
+    setMeStatsSeen(true)
+    router.push('/me')
+  }
 
   const sealedPodsOpen = publicPods.filter(p => p.podType === 'sealed').length
   const draftPodsOpen = publicPods.filter(p => p.podType === 'draft').length
@@ -563,8 +575,9 @@ function LandingPage() {
                   </div>
                 </button>
               )}
-              <button className="mode-button art-unit" onClick={() => router.push('/me')}>
+              <button className={`mode-button art-unit${!meStatsSeen ? ' mode-button--new' : ''}`} onClick={openMyStats}>
                 <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.myStats}")` }} />
+                {!meStatsSeen && <span className="mode-button-new-badge">NEW</span>}
                 <div className="mode-button-content">
                   <span className="mode-button-title">My Stats</span>
                   <span className="mode-button-subtitle">Your performance and history</span>

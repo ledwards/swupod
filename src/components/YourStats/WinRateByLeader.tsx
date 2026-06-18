@@ -83,8 +83,17 @@ export function WinRateByLeader({
   )
   const [hovered, setHovered] = useState<string | null>(null)
   const [pinned, setPinned] = useState<string | null>(null)
+  const [anchor, setAnchor] = useState<{ left: number; top: number } | null>(null)
   const activeName = hovered || pinned
   const active = ranked.find((l) => l.leaderName === activeName) || null
+
+  // Anchor the breakdown popover just under the focused cell, clamped to the
+  // viewport. Rendered as a fixed overlay so it never pushes page content down.
+  const anchorTo = (el: HTMLElement) => {
+    const r = el.getBoundingClientRect()
+    const W = typeof window !== 'undefined' ? window.innerWidth : 1024
+    setAnchor({ left: Math.max(12, Math.min(r.left, W - 320)), top: r.bottom + 8 })
+  }
 
   return (
     <section className="your-stats-meta-card">
@@ -114,9 +123,9 @@ export function WinRateByLeader({
                   key={l.leaderName}
                   type="button"
                   className={`your-stats-wr-cell${isActive ? ' is-active' : ''}`}
-                  onMouseEnter={() => setHovered(l.leaderName)}
-                  onFocus={() => setHovered(l.leaderName)}
-                  onClick={() => setPinned((cur) => (cur === l.leaderName ? null : l.leaderName))}
+                  onMouseEnter={(e) => { setHovered(l.leaderName); anchorTo(e.currentTarget) }}
+                  onFocus={(e) => { setHovered(l.leaderName); anchorTo(e.currentTarget) }}
+                  onClick={(e) => { anchorTo(e.currentTarget); setPinned((cur) => (cur === l.leaderName ? null : l.leaderName)) }}
                   aria-label={`${l.leaderName}: ${l.winRate.toFixed(0)}% win rate over ${l.matches} games`}
                   title={`${l.leaderName} — ${l.winRate.toFixed(0)}% (${l.matches}g)`}
                 >
@@ -131,7 +140,12 @@ export function WinRateByLeader({
               )
             })}
           </div>
-          {active && <BaseBars leader={active} />}
+          {active && anchor && (
+            <div className="your-stats-wr-popover" role="dialog" aria-label={`${active.leaderName} win rate by base aspect`}
+              style={{ position: 'fixed', left: anchor.left, top: anchor.top, zIndex: 60 }}>
+              <BaseBars leader={active} />
+            </div>
+          )}
         </>
       )}
     </section>
