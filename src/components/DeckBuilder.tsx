@@ -147,6 +147,9 @@ interface DeckBuilderProps {
   poolName?: string | null
   poolOwnerUsername?: string | null
   poolOwnerId?: string | null
+  /** Anonymous (ownerless) pool — editable by anyone, as the API allows. The
+   *  deck page sets this only once the pool has loaded and has no owner. */
+  anonymousEditable?: boolean
   draftShareId?: string | null
   deckBuildDeadline?: string | null
   rootShareId?: string | null
@@ -170,6 +173,7 @@ function DeckBuilder({
   poolName: initialPoolName = null,
   poolOwnerUsername = null,
   poolOwnerId = null,
+  anonymousEditable = false,
   draftShareId = null,
   deckBuildDeadline = null,
   rootShareId = null,
@@ -182,7 +186,12 @@ function DeckBuilder({
   const uiStorageKey = storageLookupKey ? `deckBuilderUI_${storageLookupKey}` : null
   const parsedSavedState = useMemo(() => parseDeckBuilderState(savedState), [savedState])
   const currentSessionId = sessionId || parsedSavedState.sessionId || null
-  const isOwner = isInfiniteMode ? true : Boolean(user && poolOwnerId && user.id === poolOwnerId)
+  // Anonymous pools (no owner) are editable by anyone — the API permits it and
+  // the deck page only sets anonymousEditable once the pool has loaded, so this
+  // never grants edit rights mid-load on someone else's pool.
+  const isOwner = (isInfiniteMode || anonymousEditable)
+    ? true
+    : Boolean(user && poolOwnerId && user.id === poolOwnerId)
   const isDraftMode = poolType === 'draft'
   const isDraftStyleMode = poolType === 'draft' || poolType === 'chaos_draft' || poolType === 'rotisserie'
 

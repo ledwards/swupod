@@ -186,6 +186,12 @@ export default function DeckBuilderPage({ params }: PageProps) {
 
   const draftShareId = pool?.draftShareId || null
   const isOwner = user && pool?.owner && user.id === (pool.owner.id || pool.userId)
+  // Anonymous pools (no owner) are editable + auto-saved by anyone, matching the
+  // API (PUT /api/pools/:id allows edits when user_id is null) and the create
+  // flow. Gated on `pool` being loaded so a mid-load null owner never grants edit
+  // rights on someone else's pool.
+  const isAnonymousPool = Boolean(pool && !pool?.owner?.id && !pool?.userId)
+  const canEdit = Boolean(isOwner) || isAnonymousPool
 
   const [deckBuildDeadline, setDeckBuildDeadline] = useState<string | null>(null)
   const [draftLimitedMode, setDraftLimitedMode] = useState<'solo' | 'group' | null>(null)
@@ -225,13 +231,14 @@ export default function DeckBuilderPage({ params }: PageProps) {
             setCode={setCode}
             onBack={handleBack}
             savedState={savedState}
-            onStateChange={isOwner ? handleDeckStateChange : undefined}
+            onStateChange={canEdit ? handleDeckStateChange : undefined}
             shareId={shareId}
-            poolCreatedAt={isOwner ? pool?.createdAt : undefined}
+            poolCreatedAt={canEdit ? pool?.createdAt : undefined}
             poolType={pool?.poolType}
             poolName={poolName}
             poolOwnerUsername={pool?.owner?.username}
             poolOwnerId={pool?.owner?.id || pool?.userId}
+            anonymousEditable={isAnonymousPool}
             draftShareId={draftShareId}
             deckBuildDeadline={deckBuildDeadline}
             rootShareId={rootShareId}
