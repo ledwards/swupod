@@ -21,6 +21,8 @@ if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
       }
     },
   })
+  // Segment swupod's events within the shared mega-project (web + iOS + extension + swupod).
+  posthog.register({ surface: 'swupod' })
 }
 
 /**
@@ -53,9 +55,14 @@ function PostHogUserIdentifier() {
     if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return
 
     if (user) {
-      // Identify the user when logged in
-      posthog.identify(user.id, {
-        discord_username: user.discord_username,
+      // Identify on the canonical cross-surface id `discord-<snowflake>` so a
+      // person's swupod activity stitches to their web/extension activity in
+      // the shared project. Falls back to the internal id for legacy tokens
+      // minted before discord_id was added to the session (they re-stitch on
+      // next login).
+      const distinctId = user.discord_id ? `discord-${user.discord_id}` : user.id
+      posthog.identify(distinctId, {
+        discord_username: user.discord_username ?? user.username,
         is_admin: user.is_admin,
         is_beta_tester: user.is_beta_tester,
       })

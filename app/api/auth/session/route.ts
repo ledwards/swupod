@@ -4,6 +4,7 @@ import { getSession } from '@/lib/auth'
 
 interface SessionUser {
   id: string
+  discord_id?: string
   email: string
   username: string
   avatar_url: string | null
@@ -34,6 +35,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<SessionRes
       data: {
         user: {
           id: session.id,
+          ...(session.discord_id ? { discord_id: session.discord_id } : {}),
           email: session.email,
           username: session.username,
           avatar_url: session.avatar_url || null,
