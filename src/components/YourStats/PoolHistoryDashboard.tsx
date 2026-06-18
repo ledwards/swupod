@@ -167,6 +167,7 @@ function PoolBuildCard({
   build,
   setCode,
   poolType,
+  canDeletePool,
   poolShareId,
   copiedKey,
   copyValue,
@@ -178,6 +179,7 @@ function PoolBuildCard({
   build: PoolBuild
   setCode: string | null
   poolType: string
+  canDeletePool: boolean
   poolShareId: string
   copiedKey: string | null
   copyValue: (key: string, value: string) => void
@@ -205,8 +207,9 @@ function PoolBuildCard({
             <img src={setArt} alt="" loading="lazy" />
           </div>
         )}
-        {/* Trash sits in the upper-right of the pool graphic, on a legible chip. */}
-        {deleteArmed ? (
+        {/* Trash sits in the upper-right of the pool graphic, on a legible chip.
+            Only the pool's owner can delete it. */}
+        {!canDeletePool ? null : deleteArmed ? (
           <span className="your-stats-pool-delete-confirm your-stats-pool-delete-confirm--corner">
             <button type="button" className="btn btn--danger btn--sm your-stats-pool-action" onClick={() => onDeletePool(poolShareId)}>Delete pool</button>
             <button type="button" className="btn btn--secondary btn--sm your-stats-pool-action" onClick={() => onArmDelete(null)}>Cancel</button>
@@ -262,7 +265,7 @@ function PoolBuildCard({
           </span>
           <span>{build.mainDeckCount || 0} cards</span>
           <span>{recordLine(build)}</span>
-          {build.capturedMatches > 0 && <span>{build.capturedMatches.toLocaleString()} captures</span>}
+          {build.capturedMatches > 0 && <span>{build.capturedMatches.toLocaleString()} {build.capturedMatches === 1 ? 'capture' : 'captures'}</span>}
         </div>
         {!build.isMine && (
           <div className="your-stats-pool-build-tags">
@@ -550,6 +553,7 @@ export function PoolHistoryDashboard({ fetchImpl, setFilter = 'all' }: { fetchIm
                     build={build}
                     setCode={pool.setCode}
                     poolType={pool.poolType}
+                    canDeletePool={pool.relationship === 'owned'}
                     poolShareId={pool.shareId}
                     copiedKey={copiedKey}
                     copyValue={copyValue}

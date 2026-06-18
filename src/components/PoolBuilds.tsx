@@ -109,12 +109,14 @@ function BuildCard({
   rootShareId,
   isActive,
   currentUserId,
+  isOwner = false,
   onRequestDelete,
 }: {
   build: Build
   rootShareId: string
   isActive: boolean
   currentUserId?: string | null
+  isOwner?: boolean
   onRequestDelete?: (build: Build) => void
 }) {
   const builder = build.isOriginal
@@ -138,15 +140,18 @@ function BuildCard({
     ? `/pool/${rootShareId}/deck`
     : `/pool/${rootShareId}/deck/${build.shareId}`
   const ownsThis = Boolean(currentUserId && build.builderUserId && build.builderUserId === currentUserId)
+  // Deletable if it's your deck (anywhere) OR it sits on your pool (you're the
+  // pool owner). Not deletable: someone else's deck on someone else's pool.
+  const canDelete = ownsThis || isOwner
 
   return (
     <div className="pool-build-entry">
-      <a href={href} className={`pool-build-card ${isActive ? 'pool-build-card-active' : ''} ${ownsThis && onRequestDelete ? 'pool-build-card--owned' : ''}`}>
+      <a href={href} className={`pool-build-card ${isActive ? 'pool-build-card-active' : ''} ${canDelete && onRequestDelete ? 'pool-build-card--owned' : ''}`}>
         <span className="pool-build-leader">
           <span style={leaderStyle}>{leader}</span>
           {base && <> <span style={baseStyle}>{base}</span></>}
         </span>
-        {ownsThis && onRequestDelete && (
+        {canDelete && onRequestDelete && (
           <button
             type="button"
             className="pool-build-trash"
@@ -281,6 +286,7 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
             rootShareId={shareId}
             isActive={b.shareId === activeShareId}
             currentUserId={currentUserId}
+            isOwner={isOwner}
             onRequestDelete={setPendingDelete}
           />
         ))}
@@ -326,6 +332,7 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
                       rootShareId={shareId}
                       isActive={b.shareId === activeShareId}
                       currentUserId={currentUserId}
+                      isOwner={isOwner}
                       onRequestDelete={setPendingDelete}
                     />
                   ))}
