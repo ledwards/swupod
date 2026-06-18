@@ -185,6 +185,9 @@ function PackDraftPhase({
 
   const packNumber = draftState?.packNumber || 1
   const pickInPack = draftState?.pickInPack || 1
+  // Spectators (anyone viewing who isn't one of the drafters) get no `myPlayer`.
+  // Hide the player-only drafting UI for them and just show the draft's position.
+  const isSpectator = !myPlayer
 
   // Local selection state, persisted to localStorage
   const storageKey = `draft-selection-${shareId}-pack-${packNumber}-${pickInPack}`
@@ -476,48 +479,59 @@ function PackDraftPhase({
             onTimerExpire={onTimerExpire}
           />
 
-          <div className="draft-info-header">
-            <div className="my-leaders-info">
-              <span className="info-label">Your Leaders:</span>
-              {draftedLeaders.length > 0 ? (
-                <div className="leader-thumbnails">
-                  {draftedLeaders.map((l, idx) => (
-                    <div
-                      key={idx}
-                      className="leader-thumbnail"
-                      onMouseEnter={(e) => handleLeaderNameMouseEnter(e, l)}
-                      onMouseLeave={handleLeaderNameMouseLeave}
-                    >
-                      <img
-                        src={l.imageUrl}
-                        alt={l.name}
-                        className="leader-thumbnail-img"
-                      />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <span className="info-value">None</span>
-              )}
-            </div>
-            <div className="draft-progress-info">
-              <span className="progress-item">
-                <span className="info-label">Cards:</span>
-                <span className="info-value">{draftedCards.length}/{(draft?.packSize || 14) * totalPacks}</span>
-              </span>
-              {!draft?.competitive && (
-                <Button variant="secondary" size="sm" className="review-button" onClick={() => setShowReviewModal(true)}>
-                  <ReviewIcon />
-                  <span>Your Cards</span>
-                </Button>
-              )}
-              {draft?.competitive && (
-                <span className="competitive-card-count" style={{ fontSize: '0.85rem', opacity: 0.7 }}>
-                  {draftedCards?.length || 0} cards drafted
+          {isSpectator ? (
+            <div className="draft-info-header">
+              <div className="draft-progress-info">
+                <span className="progress-item">
+                  <span className="info-label">Spectating —</span>
+                  <span className="info-value">Pack {packNumber}, Pick {pickInPack}</span>
                 </span>
-              )}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="draft-info-header">
+              <div className="my-leaders-info">
+                <span className="info-label">Your Leaders:</span>
+                {draftedLeaders.length > 0 ? (
+                  <div className="leader-thumbnails">
+                    {draftedLeaders.map((l, idx) => (
+                      <div
+                        key={idx}
+                        className="leader-thumbnail"
+                        onMouseEnter={(e) => handleLeaderNameMouseEnter(e, l)}
+                        onMouseLeave={handleLeaderNameMouseLeave}
+                      >
+                        <img
+                          src={l.imageUrl}
+                          alt={l.name}
+                          className="leader-thumbnail-img"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="info-value">None</span>
+                )}
+              </div>
+              <div className="draft-progress-info">
+                <span className="progress-item">
+                  <span className="info-label">Cards:</span>
+                  <span className="info-value">{draftedCards.length}/{(draft?.packSize || 14) * totalPacks}</span>
+                </span>
+                {!draft?.competitive && (
+                  <Button variant="secondary" size="sm" className="review-button" onClick={() => setShowReviewModal(true)}>
+                    <ReviewIcon />
+                    <span>Your Cards</span>
+                  </Button>
+                )}
+                {draft?.competitive && (
+                  <span className="competitive-card-count" style={{ fontSize: '0.85rem', opacity: 0.7 }}>
+                    {draftedCards?.length || 0} cards drafted
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
 
           <Button variant="icon" size="sm" className="fullscreen-toggle-button" style={{ position: 'absolute', top: 10, right: 10, zIndex: 10, opacity: 0.6 }} onClick={() => setIsFullscreen(f => !f)} title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>
             {isFullscreen ? (
@@ -537,6 +551,7 @@ function PackDraftPhase({
             )}
           </Button>
 
+          {!isSpectator && (
           <div className="current-pack">
             {draft?.settings?.draftMode === 'chaos' && (() => {
               const chaosSets = draft?.settings?.chaosSets
@@ -586,16 +601,17 @@ function PackDraftPhase({
               </p>
             )}
           </div>
+          )}
 
           {/* Passing message - below cards */}
-          {showPassing && (lastPackSize > 0 || currentPack.length > 0) && (
+          {!isSpectator && showPassing && (lastPackSize > 0 || currentPack.length > 0) && (
             <div className="passing-message">
               Passing {passDirection === 'left' ? 'Left' : 'Right'}...
             </div>
           )}
 
           {/* Selection confirmation banner - below cards */}
-          {selectedCardId && !showPassing && (() => {
+          {!isSpectator && selectedCardId && !showPassing && (() => {
             const selectedCard = currentPack.find(c => (c.instanceId || c.id) === selectedCardId)
             if (!selectedCard || !selectedCard.name) return null
             const firstAspect = selectedCard.aspects?.[0]
@@ -641,7 +657,7 @@ function PackDraftPhase({
 
 
 
-      {showReviewModal && (
+      {!isSpectator && showReviewModal && (
         <DraftReviewModal
           draftedCards={draftedCards}
           draftedLeaders={draftedLeaders}
