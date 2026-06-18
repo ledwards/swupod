@@ -2192,6 +2192,8 @@ function DeckBuilder({
     setErrorMessage,
     setMessageType,
     setDeckImageModal,
+    shareId,
+    rootShareId,
   })
 
   const packArtUrl = setCode ? getPackArtUrl(setCode) : null

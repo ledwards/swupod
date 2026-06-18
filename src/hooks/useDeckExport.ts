@@ -81,6 +81,10 @@ interface UseDeckExportProps {
   setErrorMessage: (message: string | null) => void;
   setMessageType: (type: MessageType) => void;
   setDeckImageModal: (url: string | null) => void;
+  /** Current build/pool shareId + the root pool shareId, for the "built on
+   *  Protect the Pod" footer URL on the deck image. */
+  shareId?: string | null;
+  rootShareId?: string | null;
 }
 
 /** Return type for useDeckExport hook */
@@ -108,8 +112,12 @@ export function useDeckExport({
   setErrorMessage,
   setMessageType,
   setDeckImageModal,
+  shareId = null,
+  rootShareId = null,
 }: UseDeckExportProps): UseDeckExportReturn {
   const isDraftMode = poolType === 'draft'
+  // Public pool URL for the deck-image footer (root pool when this is a build).
+  const poolPublicUrl = `protectthepod.com/pool/${rootShareId || shareId || ''}`.replace(/\/$/, '')
 
   // Build base card map for variant normalization (handles comma-separated Chaos set codes)
   const baseCardMap = setCode ? buildBaseCardMap(setCode) : new Map()
@@ -795,15 +803,17 @@ export function useDeckExport({
       // exact treatment used on the homepage and every other page (see
       // backgrounds.css). The set's expansion art sits on top as the hero banner.
       const textureImg = await loadSameOrigin('/background-images/bg-texture-crop.png')
-      ctx.fillStyle = '#090909'
+      // Exactly the site's background recipe (backgrounds.css): gray base, the
+      // texture scaled to 150% width and tiled vertically, then an 80% black
+      // overlay. Reproduces what every page shows.
+      ctx.fillStyle = 'rgb(76, 77, 81)'
       ctx.fillRect(0, 0, width, totalHeight)
       if (textureImg) {
-        const pat = ctx.createPattern(textureImg, 'repeat')
-        if (pat) {
-          ctx.save()
-          ctx.fillStyle = pat
-          ctx.fillRect(0, 0, width, totalHeight)
-          ctx.restore()
+        const tw = width * 1.5
+        const th = tw * (textureImg.height / textureImg.width)
+        const tx = (width - tw) / 2
+        for (let ty = 0; ty < totalHeight; ty += th) {
+          ctx.drawImage(textureImg, tx, ty, tw, th)
         }
       }
       ctx.fillStyle = 'rgba(0, 0, 0, 0.8)'
@@ -894,12 +904,16 @@ export function useDeckExport({
 
       currentY = padding + heroHeight
 
-      // Draw title at top
+      // Title (deck name) + "Draft Deck" / "Sealed Deck" subtitle.
+      const titleText = currentPoolName || formatPoolLabel(setCode, isDraftMode ? 'draft' : 'sealed')
       ctx.fillStyle = 'white'
       ctx.font = 'bold 32px Arial'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'top'
-      ctx.fillText(`Sealed Pool (${setCode})`, width / 2, currentY)
+      ctx.fillText(titleText, width / 2, currentY)
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
+      ctx.font = '500 18px Arial'
+      ctx.fillText(isDraftMode ? 'Draft Deck' : 'Sealed Deck', width / 2, currentY + 38)
       currentY += titleHeight + sectionSpacing
 
       // Draw selected leader and base at top
@@ -1004,7 +1018,8 @@ export function useDeckExport({
       }
       currentY += poolRows * (cardHeight + spacing) + sectionSpacing
 
-      // Draw pool name and timestamp at bottom
+      // Footer: credit + timestamp on the left; "built on Protect the Pod"
+      // logomark + pool URL on the bottom-right.
       const now = new Date()
       const month = String(now.getMonth() + 1).padStart(2, '0')
       const day = String(now.getDate()).padStart(2, '0')
@@ -1015,23 +1030,31 @@ export function useDeckExport({
       hours = hours ? hours : 12
       const timeStr = `${month}/${day} ${hours}:${minutes} ${ampm}`
 
-      const displayName = currentPoolName || formatPoolLabel(setCode, poolType === 'draft' ? 'draft' : 'sealed')
-
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
-      ctx.font = 'bold 24px Arial'
-      ctx.textAlign = 'center'
+      const footerBaseline = totalHeight - padding / 2
+      ctx.textAlign = 'left'
       ctx.textBaseline = 'bottom'
-      ctx.fillText(displayName, width / 2, totalHeight - padding / 2 - 40)
-
       if (poolOwnerUsername) {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
         ctx.font = '20px Arial'
-        ctx.fillText(`by ${poolOwnerUsername}`, width / 2, totalHeight - padding / 2 - 15)
+        ctx.fillText(`by ${poolOwnerUsername}`, padding, footerBaseline - 22)
       }
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'
+      ctx.font = '16px Arial'
+      ctx.fillText(timeStr, padding, footerBaseline)
 
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
-      ctx.font = '18px Arial'
-      ctx.fillText(timeStr, width / 2, totalHeight - padding / 2)
+      const logo = await loadSameOrigin('/ptp_logo400.png')
+      const logoSize = 46
+      if (logo) {
+        ctx.drawImage(logo, width - padding - logoSize, footerBaseline - logoSize, logoSize, logoSize)
+      }
+      const textRight = width - padding - (logo ? logoSize + 12 : 0)
+      ctx.textAlign = 'right'
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'
+      ctx.font = 'bold 18px Arial'
+      ctx.fillText('built on Protect the Pod', textRight, footerBaseline - 22)
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)'
+      ctx.font = '15px Arial'
+      ctx.fillText(poolPublicUrl, textRight, footerBaseline - 1)
 
       // Return blob URL
       return new Promise((resolve) => {
