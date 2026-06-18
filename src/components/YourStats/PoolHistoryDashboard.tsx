@@ -574,7 +574,8 @@ export function PoolHistoryDashboard({ fetchImpl, setFilter = 'all' }: { fetchIm
                       ))}
                       {hidden > 0 && (
                         <a className="your-stats-pool-more-link" href={`/pool/${pool.shareId}`}>
-                          and {hidden} more {hidden === 1 ? 'deck' : 'decks'} on this pool →
+                          and {hidden} more {hidden === 1 ? 'deck' : 'decks'} on this pool
+                          <span className="your-stats-pool-more-arrow" aria-hidden="true">→</span>
                         </a>
                       )}
                     </>
