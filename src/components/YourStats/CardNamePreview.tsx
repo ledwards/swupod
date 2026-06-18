@@ -57,6 +57,7 @@ export function CardName({ entry, className = '' }: { entry: CardNameEntry; clas
     ? { name: entry.name, imageUrl: entry.imageUrl, backImageUrl: entry.backImageUrl || null, isLeader: !!entry.isLeader }
     : null
 
+  // The whole name+subtitle is one hover target (subtitle is part of the card).
   const hoverProps = preview && card
     ? {
         onMouseEnter: (e: any) => preview.handleCardMouseEnter(card, e),
@@ -67,10 +68,8 @@ export function CardName({ entry, className = '' }: { entry: CardNameEntry; clas
     : {}
 
   return (
-    <span className={`your-stats-cardname ${className}`}>
-      <span className={`your-stats-cardname-name${card ? ' is-previewable' : ''}`} {...hoverProps}>
-        {entry.name}
-      </span>
+    <span className={`your-stats-cardname ${className}${card ? ' is-previewable' : ''}`} {...hoverProps}>
+      <span className="your-stats-cardname-name">{entry.name}</span>
       {entry.subtitle ? <span className="your-stats-cardname-sub">{entry.subtitle}</span> : null}
     </span>
   )
