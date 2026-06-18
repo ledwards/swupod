@@ -12,30 +12,12 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Button from '@/src/components/Button'
-import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import { getStatsSetTabs, DEFAULT_STATS_SET_TAB } from '@/src/utils/statsSetTabs'
 import { todayStr } from '@/src/utils/statsEras'
-import { getAspectColor, ASPECT_COLORS } from '@/src/utils/aspectColors'
+import { getAspectColor } from '@/src/utils/aspectColors'
 import { DraftAnalytics } from './DraftAnalytics'
 import { CardPreviewProvider, CardName } from './CardNamePreview'
-
-interface BaseSplit { aspect: string; winRate: number; matches: number }
-interface WinRateLeader {
-  leaderName: string
-  winRate: number
-  matches: number
-  leaderImageUrl: string | null
-  leaderBackImageUrl: string | null
-  baseColor: string | null
-  byBase: BaseSplit[]
-}
-
-const WR_ASPECT_ICON: Record<string, string> = {
-  Vigilance: '/icons/vigilance.png',
-  Command: '/icons/command.png',
-  Aggression: '/icons/aggression.png',
-  Cunning: '/icons/cunning.png',
-}
+import { WinRateByLeader, type WinRateLeader } from './WinRateByLeader'
 
 // Meta = the whole site's pool for the set, all-time up to today — never the
 // page's date range (which would slice the metagame to a sliver).
@@ -190,7 +172,7 @@ function SplitMetricSection({
   )
 }
 
-export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, lockSet = false, includeBetaSets = false, fetchImpl }: MetaDashboardProps) {
+export function MetaDashboard({ setCode = DEFAULT_STATS_SET_TAB, lockSet = false, includeBetaSets = false, fetchImpl }: MetaDashboardProps) {
   // When locked by the page filter, always FOLLOW that set (incl. an upcoming/
   // beta set like ASH) — never fall back to a different default. The internal
   // selector only renders when unlocked, so its tab list still hides beta sets.
@@ -228,12 +210,14 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
     if (setTabs.includes(setCode)) setActiveSet(setCode)
   }, [setCode, setTabs, lockSet])
 
+  // Meta-wide win rate by leader (whole site, all-time). The PERSONAL version
+  // lives on the Gameplay tab.
   useEffect(() => {
     let cancelled = false
     const f = fetchImpl || fetch
-    const params = new URLSearchParams({ since, until })
+    const params = new URLSearchParams({ since: META_SINCE, until: META_UNTIL })
     if (activeSet) params.set('setCode', activeSet)
-    f(`/api/stats/me/gameplay?${params.toString()}`, { credentials: 'include' })
+    f(`/api/stats/leader-winrate?${params.toString()}`, { credentials: 'include' })
       .then((r) => (r.ok ? r.json() : null))
       .then((body) => {
         if (cancelled) return
@@ -242,7 +226,7 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
       })
       .catch(() => { if (!cancelled) setWinRates([]) })
     return () => { cancelled = true }
-  }, [activeSet, since, until, fetchImpl])
+  }, [activeSet, fetchImpl])
 
   useEffect(() => {
     let cancelled = false
@@ -364,7 +348,7 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
         <p className="your-stats-error-note" role="status">Couldn't load meta stats. Try refreshing.</p>
       ) : (
         <>
-          <WinRateCard leaders={winRates} />
+          <WinRateByLeader leaders={winRates} title="Win rate by leader" mode="meta" />
 
           <div className="your-stats-meta-subhead">
             <span className="your-stats-eyebrow">By leader</span>
@@ -505,102 +489,5 @@ function leastOf(entries: MetaEntry[]): MetaEntry[] {
     .slice(0, 8)
 }
 
-/** Real win rate by leader from the viewer's captured games — shown outright. */
-/** Win % colored from red (low) → green (high) for the square overlay. */
-function winRateColor(wr: number): string {
-  const hue = Math.max(0, Math.min(120, (wr / 100) * 120)) // 0=red, 120=green
-  return `hsl(${hue}, 70%, 45%)`
-}
-
-/** The 4 base-aspect win-rate bars shown under the grid for the active leader. */
-function BaseBars({ leader }: { leader: WinRateLeader }) {
-  return (
-    <div className="your-stats-wr-readout">
-      <div className="your-stats-wr-readout-head">
-        <strong>{leader.leaderName}</strong>
-        <span>{leader.winRate.toFixed(1)}% · {leader.matches}g overall</span>
-      </div>
-      {leader.byBase.length === 0 ? (
-        <p className="your-stats-meta-empty">No base breakdown yet.</p>
-      ) : (
-        <div className="your-stats-wr-bars">
-          {leader.byBase.map((b) => (
-            <div key={b.aspect} className="your-stats-wr-bar-row">
-              <span className="your-stats-wr-bar-label">
-                {WR_ASPECT_ICON[b.aspect] && <img src={WR_ASPECT_ICON[b.aspect]} alt={b.aspect} width={15} height={15} />}
-                {b.aspect}
-              </span>
-              <div className="your-stats-wr-bar-track">
-                <span className="your-stats-wr-bar-fill" style={{ width: `${Math.max(2, Math.min(100, b.winRate))}%`, background: ASPECT_COLORS[b.aspect as keyof typeof ASPECT_COLORS] || '#888' }} />
-              </div>
-              <span className="your-stats-wr-bar-val">{b.winRate.toFixed(0)}% · {b.matches}g</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
-function WinRateCard({ leaders }: { leaders: WinRateLeader[] }) {
-  const { detected } = useWayfinderDetection()
-  const ranked = useMemo(
-    () => [...leaders].filter((l) => l.matches > 0).sort((a, b) => b.winRate - a.winRate).slice(0, 12),
-    [leaders],
-  )
-  const [hovered, setHovered] = useState<string | null>(null)
-  const [pinned, setPinned] = useState<string | null>(null)
-  const activeName = hovered || pinned
-  const active = ranked.find((l) => l.leaderName === activeName) || null
-
-  return (
-    <section className="your-stats-meta-card">
-      <header className="your-stats-meta-card-header">
-        <div>
-          <span className="your-stats-eyebrow">Win Rate</span>
-          <h3>Your win rate by leader</h3>
-        </div>
-      </header>
-      {ranked.length === 0 ? (
-        <p className="your-stats-meta-empty">
-          No captured games yet for this set.{' '}
-          {detected ? 'Queue your pools on Karabast and win rates fill in here.'
-            : 'Install the Wayfinder Companion and play your pool on Karabast to record games.'}
-        </p>
-      ) : (
-        <>
-          <p className="your-stats-meta-subtitle">Tap or hover a leader for win rate by base aspect.</p>
-          <div className="your-stats-wr-grid" onMouseLeave={() => setHovered(null)}>
-            {ranked.map((l) => {
-              const art = l.leaderBackImageUrl || l.leaderImageUrl
-              const isActive = activeName === l.leaderName
-              return (
-                <button
-                  key={l.leaderName}
-                  type="button"
-                  className={`your-stats-wr-cell${isActive ? ' is-active' : ''}`}
-                  onMouseEnter={() => setHovered(l.leaderName)}
-                  onFocus={() => setHovered(l.leaderName)}
-                  onClick={() => setPinned((cur) => (cur === l.leaderName ? null : l.leaderName))}
-                  aria-label={`${l.leaderName}: ${l.winRate.toFixed(0)}% win rate over ${l.matches} games`}
-                  title={`${l.leaderName} — ${l.winRate.toFixed(0)}% (${l.matches}g)`}
-                >
-                  {art
-                    ? <img className="your-stats-wr-cell-art" src={art} alt="" loading="lazy" />
-                    : <span className="your-stats-wr-cell-art your-stats-wr-cell-art--empty" />}
-                  <span className="your-stats-wr-cell-overlay">
-                    <span className="your-stats-wr-cell-pct" style={{ color: winRateColor(l.winRate) }}>{l.winRate.toFixed(0)}%</span>
-                    <span className="your-stats-wr-cell-games">{l.matches}g</span>
-                  </span>
-                </button>
-              )
-            })}
-          </div>
-          {active && <BaseBars leader={active} />}
-        </>
-      )}
-    </section>
-  )
-}
 
 export default MetaDashboard

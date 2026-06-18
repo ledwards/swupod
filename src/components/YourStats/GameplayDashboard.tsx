@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { WinRateByLeader, type WinRateLeader } from './WinRateByLeader'
 import WayfinderStoreButtons, { WayfinderCompanionLockup } from '@/src/components/WayfinderStoreButtons'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import { useAuth } from '@/src/contexts/AuthContext'
@@ -569,6 +570,8 @@ export function GameplayDashboard({ since, until, setCode, fetchImpl }: Gameplay
       </div>
 
       {leaders.length > 0 && <LeadersCard leaders={leaders} />}
+
+      {leaders.length > 0 && <WinRateByLeader leaders={leaders as unknown as WinRateLeader[]} title="Your win rate by leader" mode="personal" />}
 
       <div className="your-stats-gameplay-split-grid">
         <div className="your-stats-gameplay-card">
