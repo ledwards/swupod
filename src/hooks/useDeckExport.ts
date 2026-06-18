@@ -747,8 +747,13 @@ export function useDeckExport({
       const otherLeadersRowHeight = hasOtherLeadersOrBases ? leaderRotatedHeight : 0
       const footerHeight = poolOwnerUsername ? 100 : 70
 
+      // Hero banner: set art on top + tiled set-art background (same treatment as
+      // the deck image export). Set art is same-origin so the canvas stays exportable.
+      const setArtUrl = getPackArtUrl(setCode)
+      const heroHeight = setArtUrl ? 200 : 0
+
       const width = padding * 2 + cardsPerRow * cardWidth + (cardsPerRow - 1) * spacing
-      const totalHeight = padding * 2 +
+      const totalHeight = heroHeight + padding * 2 +
         titleHeight + sectionSpacing +
         (hasLeaderBase ? leaderBaseRowHeight + sectionSpacing : 0) +
         labelHeight + deckRows * (cardHeight + spacing) + sectionSpacing +
@@ -766,28 +771,77 @@ export function useDeckExport({
         throw new Error('Failed to get canvas context')
       }
 
-      // Dark background
-      ctx.fillStyle = '#1a1a2e'
-      ctx.fillRect(0, 0, width, totalHeight)
+      // Set art background (same as exportDeckImage). Same-origin → no taint.
+      const loadSameOrigin = (url: string): Promise<HTMLImageElement | null> =>
+        new Promise((resolve) => {
+          const img = new Image()
+          img.onload = (): void => resolve(img)
+          img.onerror = (): void => resolve(null)
+          img.src = url
+        })
+      const setArtImg = setArtUrl ? await loadSameOrigin(setArtUrl) : null
 
-      // Draw grid pattern
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)'
-      ctx.lineWidth = 1
-      const gridSize = 20
-      for (let x = 0; x < width; x += gridSize) {
+      if (setArtImg) {
+        ctx.fillStyle = '#0e0e16'
+        ctx.fillRect(0, 0, width, totalHeight)
+
+        const tileW = 250
+        const tileH = Math.round((tileW * setArtImg.height) / setArtImg.width)
+        const tile = document.createElement('canvas')
+        tile.width = tileW
+        tile.height = tileH
+        const tctx = tile.getContext('2d')
+        if (tctx) {
+          tctx.drawImage(setArtImg, 0, 0, tileW, tileH)
+          tctx.fillStyle = 'rgba(14, 14, 22, 0.7)'
+          tctx.fillRect(0, 0, tileW, tileH)
+          const pattern = ctx.createPattern(tile, 'repeat')
+          if (pattern) {
+            pattern.setTransform(new DOMMatrix([1, 0, 0, 1, 0, heroHeight]))
+            ctx.save()
+            ctx.fillStyle = pattern
+            ctx.fillRect(0, heroHeight, width, totalHeight - heroHeight)
+            ctx.restore()
+          }
+        }
+        ctx.fillStyle = 'rgba(10, 10, 18, 0.5)'
+        ctx.fillRect(0, heroHeight, width, totalHeight - heroHeight)
+
+        const s = Math.max(width / setArtImg.width, heroHeight / setArtImg.height)
+        const hw = setArtImg.width * s
+        const hh = setArtImg.height * s
+        ctx.save()
         ctx.beginPath()
-        ctx.moveTo(x, 0)
-        ctx.lineTo(x, totalHeight)
-        ctx.stroke()
-      }
-      for (let y = 0; y < totalHeight; y += gridSize) {
-        ctx.beginPath()
-        ctx.moveTo(0, y)
-        ctx.lineTo(width, y)
-        ctx.stroke()
+        ctx.rect(0, 0, width, heroHeight)
+        ctx.clip()
+        ctx.drawImage(setArtImg, (width - hw) / 2, (heroHeight - hh) / 2, hw, hh)
+        const fade = ctx.createLinearGradient(0, heroHeight - 110, 0, heroHeight)
+        fade.addColorStop(0, 'rgba(14, 14, 22, 0)')
+        fade.addColorStop(1, 'rgba(14, 14, 22, 0.96)')
+        ctx.fillStyle = fade
+        ctx.fillRect(0, heroHeight - 110, width, 110)
+        ctx.restore()
+      } else {
+        ctx.fillStyle = '#1a1a2e'
+        ctx.fillRect(0, 0, width, totalHeight)
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)'
+        ctx.lineWidth = 1
+        const gridSize = 20
+        for (let x = 0; x < width; x += gridSize) {
+          ctx.beginPath()
+          ctx.moveTo(x, 0)
+          ctx.lineTo(x, totalHeight)
+          ctx.stroke()
+        }
+        for (let y = 0; y < totalHeight; y += gridSize) {
+          ctx.beginPath()
+          ctx.moveTo(0, y)
+          ctx.lineTo(width, y)
+          ctx.stroke()
+        }
       }
 
-      let currentY = padding
+      let currentY = padding + heroHeight
 
       // Helper to draw a single card
       const drawCard = (card: ExportCard, x: number, y: number, cardW: number, cardH: number, grayscale: boolean): Promise<void> => {
