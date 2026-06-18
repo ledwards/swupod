@@ -30,17 +30,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const allCards = getAllCards()
     const { cardMap } = buildCardLookupMaps(allCards)
 
-    // Build bot/human filter
-    let botJoin = ''
-    let botFilter = ''
-    if (!includeBots || !includeHumans) {
-      botJoin = `JOIN pod_players dpp ON dp.pod_id = dpp.pod_id AND dp.user_id = dpp.user_id`
-      if (!includeBots && includeHumans) {
-        botFilter = `AND (dpp.is_bot = false OR dpp.is_bot IS NULL)`
-      } else if (includeBots && !includeHumans) {
-        botFilter = `AND dpp.is_bot = true`
-      }
-    }
+    // Bots are NEVER counted in stats — always exclude their picks.
+    const botJoin = `JOIN pod_players dpp ON dp.pod_id = dpp.pod_id AND dp.user_id = dpp.user_id`
+    const botFilter = `AND (dpp.is_bot = false OR dpp.is_bot IS NULL)`
 
     // Built deck filter - only include picks from drafters who built a deck
     let builtDeckJoin = ''

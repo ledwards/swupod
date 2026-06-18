@@ -34,18 +34,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const allCards = getAllCards()
     const { cardMap } = buildCardLookupMaps(allCards)
 
-    // Build bot/human filter clause
-    let botFilter = ''
-    if (!includeBots && includeHumans) {
-      botFilter = `AND (dpp.is_bot = false OR dpp.is_bot IS NULL)`
-    } else if (includeBots && !includeHumans) {
-      botFilter = `AND dpp.is_bot = true`
-    }
-
-    const needsBotJoin = !includeBots || !includeHumans
-    const joinClause = needsBotJoin
-      ? `LEFT JOIN card_pools cp ON cp.id = bd.card_pool_id LEFT JOIN pod_players dpp ON cp.pod_id = dpp.pod_id AND bd.user_id = dpp.user_id`
-      : ''
+    // Bots are NEVER counted in stats — always exclude, regardless of params.
+    const botFilter = `AND (dpp.is_bot = false OR dpp.is_bot IS NULL)`
+    const joinClause = `LEFT JOIN card_pools cp ON cp.id = bd.card_pool_id LEFT JOIN pod_players dpp ON cp.pod_id = dpp.pod_id AND bd.user_id = dpp.user_id`
 
     const poolTypeFilter = poolType ? `AND bd.pool_type = $4` : ''
     const queryParams: (string | string[])[] = poolType ? [setCode, since, until, poolType] : [setCode, since, until]

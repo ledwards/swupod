@@ -27,20 +27,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const allCards = getAllCards()
     const { cardMap, normalCardMap } = buildCardLookupMaps(allCards)
 
-    // Build bot/human filter clause
-    let botFilter = ''
-    if (!includeBots && includeHumans) {
-      botFilter = `AND (dpp.is_bot = false OR dpp.is_bot IS NULL)`
-    } else if (includeBots && !includeHumans) {
-      botFilter = `AND dpp.is_bot = true`
-    }
-
-    // Need the LEFT JOIN to pod_players for bot filtering on draft pools
-    // For non-draft pools (sealed), there's no pod_players entry, so those are always "human"
-    const needsBotJoin = !includeBots || !includeHumans
-    const joinClause = needsBotJoin
-      ? `LEFT JOIN pod_players dpp ON cp.pod_id = dpp.pod_id AND cp.user_id = dpp.user_id`
-      : ''
+    // Bots are NEVER counted in stats — always exclude. Sealed pools have no
+    // pod_players entry (is_bot IS NULL), so those stay as human.
+    const botFilter = `AND (dpp.is_bot = false OR dpp.is_bot IS NULL)`
+    const joinClause = `LEFT JOIN pod_players dpp ON cp.pod_id = dpp.pod_id AND cp.user_id = dpp.user_id`
 
     const queryParams: (string | string[])[] = poolType ? [setCode, since, until, poolType] : [setCode, since, until]
     let tournamentFilter = ''

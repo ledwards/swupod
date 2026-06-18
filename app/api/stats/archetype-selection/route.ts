@@ -29,9 +29,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       `archetype-selection:${url.search}`,
       STATS_AGGREGATE_TTL_MS,
       () => queryRows(
+        // Bots are NEVER counted — exclude bot drafters' decks (draft pods have
+        // a pod_players row with is_bot=true; sealed pools have none → human).
         `SELECT bd.leader, bd.base
          FROM built_decks bd
+         LEFT JOIN card_pools cp ON cp.id = bd.card_pool_id
+         LEFT JOIN pod_players dpp ON cp.pod_id = dpp.pod_id AND bd.user_id = dpp.user_id
          WHERE bd.set_code = $1 AND bd.built_at >= $2 AND bd.built_at < ($3::date + interval '1 day')
+           AND (dpp.is_bot = false OR dpp.is_bot IS NULL)
            ${poolTypeFilter}`,
         queryParams,
       ),
