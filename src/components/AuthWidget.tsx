@@ -4,6 +4,7 @@
 import { useState, useEffect, useRef } from 'react'
 import type { MouseEvent } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { isCompanionBeta } from '../utils/companionBeta'
 import { fetchUserPools } from '../utils/poolApi'
 import { formatPoolLabel } from '../utils/poolDisplayName'
 import { poolDisplayName } from '../utils/archetypeName'
@@ -50,6 +51,12 @@ export default function AuthWidget() {
   const [recentPools, setRecentPools] = useState<RecentItem[]>([])
   const [hasShowcases, setHasShowcases] = useState(false)
   const [loadingData, setLoadingData] = useState(false)
+  // "NEW" badge on My Stats until the user first opens /me. Re-checked each time
+  // the drawer opens so it clears once they've visited.
+  const [meStatsSeen, setMeStatsSeen] = useState(true)
+  useEffect(() => {
+    try { setMeStatsSeen(localStorage.getItem('ptp:me-visited') === '1') } catch { /* no-op */ }
+  }, [drawerOpen])
   const drawerRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const pathname = usePathname()
@@ -285,6 +292,8 @@ export default function AuthWidget() {
                 className="auth-widget-drawer-menu-item"
                 onClick={(e: MouseEvent<HTMLAnchorElement>) => {
                   e.preventDefault()
+                  try { localStorage.setItem('ptp:me-visited', '1') } catch { /* no-op */ }
+                  setMeStatsSeen(true)
                   router.push('/me')
                   setDrawerOpen(false)
                 }}
@@ -294,6 +303,7 @@ export default function AuthWidget() {
                   <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" />
                 </svg>
                 My Stats
+                {!meStatsSeen && <span className="auth-widget-new-badge">NEW</span>}
               </a>
 
               <div className="auth-widget-drawer-section-label">Recent Activity</div>
@@ -356,18 +366,20 @@ export default function AuthWidget() {
                 History
               </a>
 
-              <a
-                href={WAYFINDER_NEWS_URL}
-                className="auth-widget-drawer-menu-item"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setDrawerOpen(false)}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M10 3H6a2 2 0 0 0-2 2v4a2 2 0 0 1 0 4v4a2 2 0 0 0 2 2h4a2 2 0 0 1 4 0h4a2 2 0 0 0 2-2v-4a2 2 0 0 1 0-4V5a2 2 0 0 0-2-2h-4a2 2 0 0 1-4 0z"></path>
-                </svg>
-                Companion
-              </a>
+              {isCompanionBeta(user) && (
+                <a
+                  href={WAYFINDER_NEWS_URL}
+                  className="auth-widget-drawer-menu-item"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setDrawerOpen(false)}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10 3H6a2 2 0 0 0-2 2v4a2 2 0 0 1 0 4v4a2 2 0 0 0 2 2h4a2 2 0 0 1 4 0h4a2 2 0 0 0 2-2v-4a2 2 0 0 1 0-4V5a2 2 0 0 0-2-2h-4a2 2 0 0 1-4 0z"></path>
+                  </svg>
+                  Companion
+                </a>
+              )}
 
               <div className="auth-widget-drawer-section-label">Perks</div>
 

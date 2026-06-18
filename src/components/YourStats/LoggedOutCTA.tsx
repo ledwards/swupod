@@ -10,26 +10,17 @@
  */
 'use client'
 
-import WayfinderStoreButtons, { WayfinderCompanionLockup } from '@/src/components/WayfinderStoreButtons'
-
 const SIGN_IN_URL = '/api/auth/signin/discord?return_to=/me'
 
 export function LoggedOutCTA() {
   return (
     <div className="your-stats-logged-out" data-testid="your-stats-logged-out">
-      <WayfinderCompanionLockup className="your-stats-logged-out-lockup" />
-      <h2 className="your-stats-logged-out-title">Unlock Play Data</h2>
+      <h2 className="your-stats-logged-out-title">Your Performance</h2>
       <p className="your-stats-logged-out-body">
-        Wayfinder Companion is the best way to improve your Limited game: queue
-        with your pool, collect play stats tied to that pool, and rewatch your
-        replays after the match.
-      </p>
-      <p className="your-stats-logged-out-body">
-        Install the Chrome extension, then sign in with Discord so your captured
-        games can land on your personal stats page.
+        Sign in with Discord to see your pools and decks, your pull luck, and the
+        Limited meta — all tied to the pools you&apos;ve opened.
       </p>
       <div className="your-stats-logged-out-actions">
-        <WayfinderStoreButtons orientation="inline" />
         <a
           href={SIGN_IN_URL}
           className="btn btn--discord btn--md your-stats-logged-out-link"

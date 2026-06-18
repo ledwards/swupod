@@ -33,3 +33,14 @@ function isBetaSet(setCode: string): boolean {
 export function getStatsSetTabs(includeBetaSets = false): string[] {
   return STATS_SET_ORDER.filter((setCode) => includeBetaSets || !isBetaSet(setCode))
 }
+
+/**
+ * The set a stats surface should default to: the NEWEST set the viewer can
+ * actually see — i.e. the first available tab. Beta-access users get the newest
+ * set even while it's still beta (ASH today); everyone else gets the newest
+ * released set. Use this instead of the static DEFAULT_STATS_SET_TAB so the
+ * default tracks the newest set automatically as sets ship.
+ */
+export function getDefaultStatsSetTab(includeBetaSets = false): string {
+  return getStatsSetTabs(includeBetaSets)[0] || DEFAULT_STATS_SET_TAB
+}

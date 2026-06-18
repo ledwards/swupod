@@ -7,9 +7,11 @@
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { getBaseCardId as getBaseCardIdRaw, buildBaseCardMap } from '../utils/variantDowngrade'
+import { cardIdentityKey } from '../utils/cardNormalization'
 import { formatPoolLabel } from '../utils/poolDisplayName'
 import { getPackArtUrl } from '../utils/packArt'
 import { trackEvent, AnalyticsEvents } from './useAnalytics'
+import QRCode from 'qrcode'
 
 // === TYPES ===
 
@@ -80,6 +82,10 @@ interface UseDeckExportProps {
   setErrorMessage: (message: string | null) => void;
   setMessageType: (type: MessageType) => void;
   setDeckImageModal: (url: string | null) => void;
+  /** Current build/pool shareId + the root pool shareId, for the "built on
+   *  Protect the Pod" footer URL on the deck image. */
+  shareId?: string | null;
+  rootShareId?: string | null;
 }
 
 /** Return type for useDeckExport hook */
@@ -107,8 +113,12 @@ export function useDeckExport({
   setErrorMessage,
   setMessageType,
   setDeckImageModal,
+  shareId = null,
+  rootShareId = null,
 }: UseDeckExportProps): UseDeckExportReturn {
   const isDraftMode = poolType === 'draft'
+  // Public pool URL for the deck-image footer (root pool when this is a build).
+  const poolPublicUrl = `protectthepod.com/pool/${rootShareId || shareId || ''}`.replace(/\/$/, '')
 
   // Build base card map for variant normalization (handles comma-separated Chaos set codes)
   const baseCardMap = setCode ? buildBaseCardMap(setCode) : new Map()
@@ -117,6 +127,15 @@ export function useDeckExport({
   function getBaseCardId(card: unknown): string {
     const result = (getBaseCardIdRaw as (card: unknown, map?: unknown) => string | null)(card, baseCardMap)
     return result || ''
+  }
+
+  // Resolve a deck card to the front art of its NORMAL (standard) variant — never
+  // the foil/hyperspace/showcase printing the player happens to own. For a leader
+  // the Normal variant's imageUrl is the LEADER side (landscape); backImageUrl is
+  // the unit side. Falls back to the card's own art if the set map can't resolve it.
+  function normalFrontArt(card: ExportCard): string {
+    const normal = baseCardMap.get(cardIdentityKey(card as unknown as { name: string; type?: string; subtitle?: string | null }))
+    return (normal && (normal as { imageUrl?: string }).imageUrl) || card.frontArt || '/card-back.png'
   }
 
   // Build deck data structure for export (uses base card IDs for Karabast compatibility)
@@ -426,7 +445,7 @@ export function useDeckExport({
       // Helper to draw a single card
       const drawCard = (card: ExportCard, x: number, y: number, cardW: number, cardH: number, count: number | null, grayscale: boolean): Promise<void> => {
         return new Promise((resolve) => {
-          const imageUrl = card.frontArt || '/card-back.png'
+          const imageUrl = normalFrontArt(card)
           const isLeader = card.isLeader
 
           const drawPlaceholder = (): void => {
@@ -536,7 +555,7 @@ export function useDeckExport({
         })
       }
 
-      currentY = padding
+      currentY = padding + heroHeight
 
       // Draw title at top
       ctx.fillStyle = 'white'
@@ -677,6 +696,19 @@ export function useDeckExport({
   // Export pool image (shows deck + pool cards)
   const exportPoolImage = async (): Promise<string | null> => {
     try {
+      // Canvas text uses Barlow — the site font (loaded globally in
+      // app/layout.tsx). Await the weights we draw with so they're ready before
+      // the first fillText; falls back to Arial if loading fails.
+      const FONT = 'Barlow, Arial, sans-serif'
+      try {
+        await Promise.all([
+          document.fonts.load('800 32px Barlow'),
+          document.fonts.load('600 24px Barlow'),
+          document.fonts.load('500 18px Barlow'),
+          document.fonts.load('400 16px Barlow'),
+        ])
+      } catch { /* fall back to Arial */ }
+
       // Sort by aspect, then type, then cost, then name (default sort)
       const defaultSort = (a: ExportCard, b: ExportCard): number => {
         // Sort by first aspect
@@ -709,6 +741,26 @@ export function useDeckExport({
         .map(pos => pos.card)
         .sort(defaultSort)
 
+      // Group identical cards into one tile with a quantity, sorted by COST then
+      // alphabetically — so a deck shows "card xN" instead of repeated tiles.
+      const groupCards = (cards: ExportCard[]): Array<{ card: ExportCard; count: number }> => {
+        const m = new Map<string, { card: ExportCard; count: number }>()
+        for (const c of cards) {
+          const key = getBaseCardId(c) || `${c.name || ''}|${(c as { subtitle?: string }).subtitle || ''}`
+          const e = m.get(key)
+          if (e) e.count++
+          else m.set(key, { card: c, count: 1 })
+        }
+        return Array.from(m.values()).sort((a, b) => {
+          const ca = a.card.cost ?? 999
+          const cb = b.card.cost ?? 999
+          if (ca !== cb) return ca - cb
+          return (a.card.name || '').toLowerCase().localeCompare((b.card.name || '').toLowerCase())
+        })
+      }
+      const deckGroups = groupCards(deckCards)
+      const poolGroups = groupCards(poolCards)
+
       // Get other leaders (not the active leader)
       const otherLeaders = Object.entries(cardPositions)
         .filter(([cardId, pos]) => pos.visible && pos.card.isLeader && cardId !== activeLeader)
@@ -737,18 +789,27 @@ export function useDeckExport({
       const leaderRotatedHeight = leaderBaseWidth  // 162
       const cardsPerRow = 8
       const separatorHeight = 4
-      const deckRows = Math.ceil(deckCards.length / cardsPerRow)
-      const poolRows = Math.ceil(poolCards.length / cardsPerRow)
+      const deckRows = Math.ceil(deckGroups.length / cardsPerRow)
+      const poolRows = Math.ceil(poolGroups.length / cardsPerRow)
       const hasLeaderBase = selectedLeader || selectedBase
       const hasOtherLeadersOrBases = otherLeaders.length > 0 || otherBases.length > 0
       // Leader rotated, base landscape — both same height
       const leaderBaseRowHeight = hasLeaderBase ? leaderRotatedHeight : 0
       // Other leaders rotated, other bases landscape — same height
       const otherLeadersRowHeight = hasOtherLeadersOrBases ? leaderRotatedHeight : 0
-      const footerHeight = poolOwnerUsername ? 100 : 70
+      // QR code (links to the pool) stacks above the "built on Protect the Pod"
+      // block in the footer — only when there's a real pool URL to point at.
+      const hasPoolUrl = Boolean(rootShareId || shareId)
+      const qrSize = 78
+      const footerHeight = (poolOwnerUsername ? 100 : 70) + (hasPoolUrl ? qrSize + 40 : 0)
+
+      // Hero banner: set art on top + tiled set-art background (same treatment as
+      // the deck image export). Set art is same-origin so the canvas stays exportable.
+      const setArtUrl = getPackArtUrl(setCode)
+      const heroHeight = setArtUrl ? 200 : 0
 
       const width = padding * 2 + cardsPerRow * cardWidth + (cardsPerRow - 1) * spacing
-      const totalHeight = padding * 2 +
+      const totalHeight = heroHeight + padding * 2 +
         titleHeight + sectionSpacing +
         (hasLeaderBase ? leaderBaseRowHeight + sectionSpacing : 0) +
         labelHeight + deckRows * (cardHeight + spacing) + sectionSpacing +
@@ -766,33 +827,59 @@ export function useDeckExport({
         throw new Error('Failed to get canvas context')
       }
 
-      // Dark background
-      ctx.fillStyle = '#1a1a2e'
+      // Set art background (same as exportDeckImage). Same-origin → no taint.
+      const loadSameOrigin = (url: string): Promise<HTMLImageElement | null> =>
+        new Promise((resolve) => {
+          const img = new Image()
+          img.onload = (): void => resolve(img)
+          img.onerror = (): void => resolve(null)
+          img.src = url
+        })
+      const setArtImg = setArtUrl ? await loadSameOrigin(setArtUrl) : null
+
+      // Site background: the shared tiled texture + an 80% black overlay — the
+      // exact treatment used on the homepage and every other page (see
+      // backgrounds.css). The set's expansion art sits on top as the hero banner.
+      const textureImg = await loadSameOrigin('/background-images/bg-texture-crop.png')
+      // Exactly the site's background recipe (backgrounds.css): gray base, the
+      // texture scaled to 150% width and tiled vertically, then an 80% black
+      // overlay. Reproduces what every page shows.
+      ctx.fillStyle = 'rgb(76, 77, 81)'
+      ctx.fillRect(0, 0, width, totalHeight)
+      if (textureImg) {
+        const tw = width * 1.5
+        const th = tw * (textureImg.height / textureImg.width)
+        const tx = (width - tw) / 2
+        for (let ty = 0; ty < totalHeight; ty += th) {
+          ctx.drawImage(textureImg, tx, ty, tw, th)
+        }
+      }
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.8)'
       ctx.fillRect(0, 0, width, totalHeight)
 
-      // Draw grid pattern
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)'
-      ctx.lineWidth = 1
-      const gridSize = 20
-      for (let x = 0; x < width; x += gridSize) {
+      if (setArtImg && heroHeight > 0) {
+        const s = Math.max(width / setArtImg.width, heroHeight / setArtImg.height)
+        const hw = setArtImg.width * s
+        const hh = setArtImg.height * s
+        ctx.save()
         ctx.beginPath()
-        ctx.moveTo(x, 0)
-        ctx.lineTo(x, totalHeight)
-        ctx.stroke()
-      }
-      for (let y = 0; y < totalHeight; y += gridSize) {
-        ctx.beginPath()
-        ctx.moveTo(0, y)
-        ctx.lineTo(width, y)
-        ctx.stroke()
+        ctx.rect(0, 0, width, heroHeight)
+        ctx.clip()
+        ctx.drawImage(setArtImg, (width - hw) / 2, (heroHeight - hh) / 2, hw, hh)
+        const fade = ctx.createLinearGradient(0, heroHeight - 110, 0, heroHeight)
+        fade.addColorStop(0, 'rgba(9, 9, 9, 0)')
+        fade.addColorStop(1, 'rgba(9, 9, 9, 0.95)')
+        ctx.fillStyle = fade
+        ctx.fillRect(0, heroHeight - 110, width, 110)
+        ctx.restore()
       }
 
-      let currentY = padding
+      let currentY = padding + heroHeight
 
       // Helper to draw a single card
       const drawCard = (card: ExportCard, x: number, y: number, cardW: number, cardH: number, grayscale: boolean): Promise<void> => {
         return new Promise((resolve) => {
-          const imageUrl = card.frontArt || '/card-back.png'
+          const imageUrl = normalFrontArt(card)
           const isLeader = card.isLeader
 
           const drawPlaceholder = (): void => {
@@ -816,34 +903,7 @@ export function useDeckExport({
           img.onload = (): void => {
             clearTimeout(timeoutId)
             try {
-              if (isLeader) {
-                // Rotate leader 90 degrees CCW
-                ctx.save()
-                ctx.translate(x + cardW / 2, y + cardH / 2)
-                ctx.rotate(-Math.PI / 2)
-                if (grayscale) {
-                  const tempCanvas = document.createElement('canvas')
-                  tempCanvas.width = cardH
-                  tempCanvas.height = cardW
-                  const tempCtx = tempCanvas.getContext('2d')
-                  if (tempCtx) {
-                    tempCtx.drawImage(img, 0, 0, cardH, cardW)
-                    const imageData = tempCtx.getImageData(0, 0, cardH, cardW)
-                    const data = imageData.data
-                    for (let i = 0; i < data.length; i += 4) {
-                      const avg = (data[i]! + data[i + 1]! + data[i + 2]!) / 3
-                      data[i] = avg
-                      data[i + 1] = avg
-                      data[i + 2] = avg
-                    }
-                    tempCtx.putImageData(imageData, 0, 0)
-                    ctx.drawImage(tempCanvas, -cardH / 2, -cardW / 2, cardH, cardW)
-                  }
-                } else {
-                  ctx.drawImage(img, -cardH / 2, -cardW / 2, cardH, cardW)
-                }
-                ctx.restore()
-              } else if (grayscale) {
+              if (grayscale) {
                 const tempCanvas = document.createElement('canvas')
                 tempCanvas.width = cardW
                 tempCanvas.height = cardH
@@ -880,14 +940,35 @@ export function useDeckExport({
         })
       }
 
-      currentY = padding
+      // Quantity badge for cards with >1 copy — drawn on top, bottom-right.
+      const drawQtyBadge = (x: number, y: number, w: number, h: number, count: number): void => {
+        if (!count || count <= 1) return
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)'
+        ctx.beginPath()
+        ctx.arc(x + w - 16, y + h - 16, 13, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)'
+        ctx.lineWidth = 1.5
+        ctx.stroke()
+        ctx.fillStyle = 'white'
+        ctx.font = `700 15px ${FONT}`
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(`${count}`, x + w - 16, y + h - 16)
+      }
 
-      // Draw title at top
+      currentY = padding + heroHeight
+
+      // Title (deck name) + "Draft Deck" / "Sealed Deck" subtitle.
+      const titleText = currentPoolName || formatPoolLabel(setCode, isDraftMode ? 'draft' : 'sealed')
       ctx.fillStyle = 'white'
-      ctx.font = 'bold 32px Arial'
+      ctx.font = `800 32px ${FONT}`
       ctx.textAlign = 'center'
       ctx.textBaseline = 'top'
-      ctx.fillText(`Sealed Pool (${setCode})`, width / 2, currentY)
+      ctx.fillText(titleText, width / 2, currentY)
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
+      ctx.font = `500 18px ${FONT}`
+      ctx.fillText(isDraftMode ? 'Draft Deck' : 'Sealed Deck', width / 2, currentY + 38)
       currentY += titleHeight + sectionSpacing
 
       // Draw selected leader and base at top
@@ -910,7 +991,7 @@ export function useDeckExport({
 
       // Draw "Deck" section label
       ctx.fillStyle = 'white'
-      ctx.font = 'bold 24px Arial'
+      ctx.font = `600 24px ${FONT}`
       ctx.textAlign = 'left'
       ctx.textBaseline = 'top'
       ctx.fillText(`Deck (${deckCards.length})`, padding, currentY)
@@ -919,10 +1000,11 @@ export function useDeckExport({
       // Draw deck cards
       let col = 0
       let row = 0
-      for (const card of deckCards) {
+      for (const { card, count } of deckGroups) {
         const x = padding + col * (cardWidth + spacing)
         const y = currentY + row * (cardHeight + spacing)
         await drawCard(card, x, y, cardWidth, cardHeight, false)
+        drawQtyBadge(x, y, cardWidth, cardHeight, count)
         col++
         if (col >= cardsPerRow) {
           col = 0
@@ -940,7 +1022,7 @@ export function useDeckExport({
       // Leaders are rotated 90 CCW so they use swapped dimensions
       if (hasOtherLeadersOrBases) {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
-        ctx.font = 'bold 24px Arial'
+        ctx.font = `600 24px ${FONT}`
         ctx.textAlign = 'left'
         ctx.textBaseline = 'top'
         ctx.fillText('Other Leaders & Bases', padding, currentY)
@@ -969,21 +1051,25 @@ export function useDeckExport({
         currentY += otherLeadersRowHeight + sectionSpacing
       }
 
-      // Draw "Pool" section label
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
-      ctx.font = 'bold 24px Arial'
+      // Leftover (non-deck) cards. In DRAFT these are the player's Sideboard,
+      // drawn in full color and styled exactly like the main deck (same grouping,
+      // qty badges, and cost→name sort). In SEALED they stay the dimmed grayscale
+      // "Pool" — the leftover sealed pool isn't a curated sideboard.
+      ctx.fillStyle = isDraftMode ? 'white' : 'rgba(255, 255, 255, 0.7)'
+      ctx.font = `600 24px ${FONT}`
       ctx.textAlign = 'left'
       ctx.textBaseline = 'top'
-      ctx.fillText(`Pool (${poolCards.length})`, padding, currentY)
+      ctx.fillText(`${isDraftMode ? 'Sideboard' : 'Pool'} (${poolCards.length})`, padding, currentY)
       currentY += labelHeight
 
-      // Draw pool cards (in grayscale)
+      // Draft sideboard: full color (like the deck). Sealed pool: grayscale.
       col = 0
       row = 0
-      for (const card of poolCards) {
+      for (const { card, count } of poolGroups) {
         const x = padding + col * (cardWidth + spacing)
         const y = currentY + row * (cardHeight + spacing)
-        await drawCard(card, x, y, cardWidth, cardHeight, true)
+        await drawCard(card, x, y, cardWidth, cardHeight, !isDraftMode)
+        drawQtyBadge(x, y, cardWidth, cardHeight, count)
         col++
         if (col >= cardsPerRow) {
           col = 0
@@ -992,7 +1078,8 @@ export function useDeckExport({
       }
       currentY += poolRows * (cardHeight + spacing) + sectionSpacing
 
-      // Draw pool name and timestamp at bottom
+      // Footer: credit + timestamp on the left; "built on Protect the Pod"
+      // logomark + pool URL on the bottom-right.
       const now = new Date()
       const month = String(now.getMonth() + 1).padStart(2, '0')
       const day = String(now.getDate()).padStart(2, '0')
@@ -1003,23 +1090,60 @@ export function useDeckExport({
       hours = hours ? hours : 12
       const timeStr = `${month}/${day} ${hours}:${minutes} ${ampm}`
 
-      const displayName = currentPoolName || formatPoolLabel(setCode, poolType === 'draft' ? 'draft' : 'sealed')
-
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
-      ctx.font = 'bold 24px Arial'
-      ctx.textAlign = 'center'
+      const footerBaseline = totalHeight - padding / 2
+      ctx.textAlign = 'left'
       ctx.textBaseline = 'bottom'
-      ctx.fillText(displayName, width / 2, totalHeight - padding / 2 - 40)
-
       if (poolOwnerUsername) {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
-        ctx.font = '20px Arial'
-        ctx.fillText(`by ${poolOwnerUsername}`, width / 2, totalHeight - padding / 2 - 15)
+        ctx.font = `500 20px ${FONT}`
+        ctx.fillText(`by ${poolOwnerUsername}`, padding, footerBaseline - 22)
       }
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'
+      ctx.font = `400 16px ${FONT}`
+      ctx.fillText(timeStr, padding, footerBaseline)
 
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
-      ctx.font = '18px Arial'
-      ctx.fillText(timeStr, width / 2, totalHeight - padding / 2)
+      const logo = await loadSameOrigin('/ptp_logo400.png')
+      const logoSize = 46
+      if (logo) {
+        ctx.drawImage(logo, width - padding - logoSize, footerBaseline - logoSize, logoSize, logoSize)
+      }
+      const textRight = width - padding - (logo ? logoSize + 12 : 0)
+      ctx.textAlign = 'right'
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)'
+      ctx.font = `400 15px ${FONT}`
+      ctx.fillText(poolPublicUrl, textRight, footerBaseline - 24)
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'
+      ctx.font = `600 18px ${FONT}`
+      ctx.fillText('built on Protect the Pod', textRight, footerBaseline - 1)
+
+      // QR code to the pool, in the bottom-right just above the credit block.
+      // Generated locally (no network) as a data URL → never taints the canvas.
+      // Drawn on a small white card so it stays scannable over the dark footer.
+      if (hasPoolUrl) {
+        try {
+          const qrDataUrl = await QRCode.toDataURL(`https://${poolPublicUrl}`, {
+            margin: 1,
+            width: qrSize * 3,
+            color: { dark: '#0e0e16', light: '#ffffff' },
+          })
+          const qrImg = await loadSameOrigin(qrDataUrl)
+          if (qrImg) {
+            // Center the QR horizontally over the "built on Protect the Pod" line
+            // (right-aligned at textRight) and sit it above the credit block.
+            ctx.font = `600 18px ${FONT}`
+            const creditWidth = ctx.measureText('built on Protect the Pod').width
+            const creditCenterX = textRight - creditWidth / 2
+            const pad = 5
+            const qrX = Math.round(creditCenterX - qrSize / 2)
+            const qrY = footerBaseline - 71 - qrSize
+            ctx.fillStyle = '#ffffff'
+            ctx.fillRect(qrX - pad, qrY - pad, qrSize + pad * 2, qrSize + pad * 2)
+            ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize)
+          }
+        } catch (err) {
+          console.warn('QR generation failed; skipping', err)
+        }
+      }
 
       // Return blob URL
       return new Promise((resolve) => {

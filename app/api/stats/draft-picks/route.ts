@@ -90,7 +90,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       ${botJoin}
       ${builtDeckJoin}
       ${topPlayersJoin}
-      WHERE dp.set_code = $1 AND dp.is_leader = ${type === 'leaders' ? 'TRUE' : 'FALSE'} AND dp.picked_at >= $2 AND dp.picked_at < ($3::date + interval '1 day')
+      WHERE ($1 = 'all' OR dp.set_code = $1) AND dp.is_leader = ${type === 'leaders' ? 'TRUE' : 'FALSE'} AND dp.picked_at >= $2 AND dp.picked_at < ($3::date + interval '1 day')
         AND pod.status = 'complete'
         ${botFilter}
         ${tournamentFilter}
@@ -109,7 +109,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       ${botJoin}
       ${builtDeckJoin}
       ${topPlayersJoin}
-      WHERE dp.set_code = $1 AND dp.is_leader = ${type === 'leaders' ? 'TRUE' : 'FALSE'} AND dp.picked_at >= $2 AND dp.picked_at < ($3::date + interval '1 day')
+      WHERE ($1 = 'all' OR dp.set_code = $1) AND dp.is_leader = ${type === 'leaders' ? 'TRUE' : 'FALSE'} AND dp.picked_at >= $2 AND dp.picked_at < ($3::date + interval '1 day')
         AND pod.status = 'complete'
         ${botFilter}
         ${tournamentFilter}
@@ -126,9 +126,18 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // A card's printings (normal/hyperspace/foil) carry distinct card_ids but
     // the same name+subtitle, so they merge here; two different cards that share
     // a name (different subtitles) stay separate — the name alone is ambiguous.
+    // dp.is_leader is unreliable for same-name cards (e.g. LAW has both a Han Solo
+    // LEADER "I Got a Really Good Feeling" and a Han Solo UNIT "Hibernation Sick").
+    // Split by the card's ACTUAL type — from card data, falling back to the pick's
+    // recorded card_type — so the leaders list is only leaders and the cards list
+    // never includes a leader.
+    const wantLeader = type === 'leaders'
     const byIdentity = new Map<string, any>()
     for (const row of cardStats) {
       const cardData = cardMap.get(row.card_id)
+      const resolvedType = cardData?.type || row.card_type
+      const isLeaderCard = resolvedType === 'Leader'
+      if (isLeaderCard !== wantLeader) continue
       const name = row.card_name
       const subtitle = cardData?.subtitle ?? null
       const key = `${(name || '').toLowerCase()}|${(subtitle || '').toLowerCase()}`

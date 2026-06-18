@@ -75,7 +75,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
              FROM built_decks bd
              ${joinClause}
              ${topPlayersJoin}
-             WHERE bd.set_code = $1 AND bd.built_at >= $2 AND bd.built_at < ($3::date + interval '1 day')
+             WHERE ($1 = 'all' OR bd.set_code = $1) AND bd.built_at >= $2 AND bd.built_at < ($3::date + interval '1 day')
                ${poolTypeFilter}
                ${botFilter}
                ${tournamentFilter}
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
              FROM built_decks bd
              ${joinClause}
              ${topPlayersJoin}
-             WHERE bd.set_code = $1 AND bd.built_at >= $2 AND bd.built_at < ($3::date + interval '1 day')
+             WHERE ($1 = 'all' OR bd.set_code = $1) AND bd.built_at >= $2 AND bd.built_at < ($3::date + interval '1 day')
                ${poolTypeFilter}
                ${botFilter}
                ${tournamentFilter}
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 `SELECT c->>'cardId' AS card_id, COUNT(DISTINCT cp.id) AS pools
                  FROM card_pools cp,
                  LATERAL jsonb_array_elements(cp.cards) AS c
-                 WHERE cp.set_code = $1
+                 WHERE ($1 = 'all' OR cp.set_code = $1)
                    AND cp.created_at >= $2 AND cp.created_at < ($3::date + interval '1 day')
                    AND (c->>'type' = 'Leader' OR c->>'isLeader' = 'true')
                    AND c->>'cardId' IS NOT NULL

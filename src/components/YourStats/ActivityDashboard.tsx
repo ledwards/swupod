@@ -98,7 +98,7 @@ const COUNTER_KEYS: Array<{ key: keyof ActivitySummary; label: string; testId: s
   { key: 'poolsOpened', label: 'Pools opened', testId: 'counter-pools-opened' },
   { key: 'draftsJoined', label: 'Drafts joined', testId: 'counter-drafts-joined' },
   { key: 'decksBuilt', label: 'Decks built', testId: 'counter-decks-built' },
-  { key: 'decksPlayed', label: 'Limited matches played', testId: 'counter-decks-played' },
+  { key: 'decksPlayed', label: 'Decks reached play', testId: 'counter-decks-played' },
 ]
 
 export function ActivityDashboard({ since, until, setCode, filterLabel, fetchImpl }: ActivityDashboardProps) {

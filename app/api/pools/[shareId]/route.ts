@@ -369,7 +369,21 @@ export async function DELETE(request: NextRequest, { params }: RouteContext): Pr
       return errorResponse('Pool not found', 404)
     }
 
-    if (pool.user_id !== session.id) {
+    // Delete permissions:
+    //   - A ROOT pool can only be deleted by its owner.
+    //   - A BUILD (child deck) can be deleted by EITHER the person who built it
+    //     (their deck, anywhere) OR the owner of its parent pool (anyone's deck
+    //     on my pool). You can never delete someone else's deck on someone
+    //     else's pool, nor someone else's pool.
+    let canDelete = pool.user_id === session.id
+    if (!canDelete && pool.parent_pool_id) {
+      const parent = await queryRow(
+        'SELECT user_id FROM card_pools WHERE id = $1',
+        [pool.parent_pool_id]
+      )
+      if (parent && parent.user_id === session.id) canDelete = true
+    }
+    if (!canDelete) {
       return errorResponse('Unauthorized', 403)
     }
 

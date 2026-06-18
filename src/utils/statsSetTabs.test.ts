@@ -4,6 +4,7 @@ import assert from 'node:assert/strict'
 import {
   DEFAULT_STATS_SET_TAB,
   getStatsSetTabs,
+  getDefaultStatsSetTab,
   STATS_SET_COLORS,
 } from './statsSetTabs'
 import { getSetConfig, isBeta } from './setConfigs/index'
@@ -38,5 +39,13 @@ describe('stats set tabs', () => {
 
   it('provides a tab color for ASH', () => {
     assert.strictEqual(STATS_SET_COLORS.ASH, '#8B0000')
+  })
+
+  it('defaults to ASH for beta-access users (newest set they can see)', () => {
+    assert.strictEqual(getDefaultStatsSetTab(true), 'ASH')
+  })
+
+  it('defaults to the newest available set for non-beta users', () => {
+    assert.strictEqual(getDefaultStatsSetTab(false), getStatsSetTabs(false)[0])
   })
 })
