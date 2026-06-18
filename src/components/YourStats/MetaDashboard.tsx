@@ -464,7 +464,7 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
             <SplitMetricSection
               eyebrow="Deckbuilding"
               title="Most-splashed off-aspect cards"
-              subtitle="Cards run outside their deck's leader+base aspects — share of decks that splash them."
+              subtitle="Cards run outside the deck's leader+base aspects — of the pools that had the card, how often it's splashed off-aspect (normalized for how often it shows up)."
               sealed={topOf(state.offAspectSealed)}
               draft={topOf(state.offAspectDraft)}
               loading={state.loading}
