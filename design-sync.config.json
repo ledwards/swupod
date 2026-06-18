@@ -46,5 +46,6 @@
     "DraftReportButton": "src/components/DraftReportButton.tsx",
     "WayfinderStoreButtons": "src/components/WayfinderStoreButtons.tsx"
   },
-  "projectId": "1aaf66a4-76cd-4647-9d53-aba5275f9e71"
+  "projectId": "1aaf66a4-76cd-4647-9d53-aba5275f9e71",
+  "readmeHeader": ".design-sync/conventions.md"
 }
