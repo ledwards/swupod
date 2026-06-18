@@ -11,6 +11,7 @@ import { cardIdentityKey } from '../utils/cardNormalization'
 import { formatPoolLabel } from '../utils/poolDisplayName'
 import { getPackArtUrl } from '../utils/packArt'
 import { trackEvent, AnalyticsEvents } from './useAnalytics'
+import QRCode from 'qrcode'
 
 // === TYPES ===
 
@@ -695,6 +696,19 @@ export function useDeckExport({
   // Export pool image (shows deck + pool cards)
   const exportPoolImage = async (): Promise<string | null> => {
     try {
+      // Canvas text uses Barlow — the site font (loaded globally in
+      // app/layout.tsx). Await the weights we draw with so they're ready before
+      // the first fillText; falls back to Arial if loading fails.
+      const FONT = 'Barlow, Arial, sans-serif'
+      try {
+        await Promise.all([
+          document.fonts.load('800 32px Barlow'),
+          document.fonts.load('600 24px Barlow'),
+          document.fonts.load('500 18px Barlow'),
+          document.fonts.load('400 16px Barlow'),
+        ])
+      } catch { /* fall back to Arial */ }
+
       // Sort by aspect, then type, then cost, then name (default sort)
       const defaultSort = (a: ExportCard, b: ExportCard): number => {
         // Sort by first aspect
@@ -783,7 +797,11 @@ export function useDeckExport({
       const leaderBaseRowHeight = hasLeaderBase ? leaderRotatedHeight : 0
       // Other leaders rotated, other bases landscape — same height
       const otherLeadersRowHeight = hasOtherLeadersOrBases ? leaderRotatedHeight : 0
-      const footerHeight = poolOwnerUsername ? 100 : 70
+      // QR code (links to the pool) stacks above the "built on Protect the Pod"
+      // block in the footer — only when there's a real pool URL to point at.
+      const hasPoolUrl = Boolean(rootShareId || shareId)
+      const qrSize = 78
+      const footerHeight = (poolOwnerUsername ? 100 : 70) + (hasPoolUrl ? qrSize + 14 : 0)
 
       // Hero banner: set art on top + tiled set-art background (same treatment as
       // the deck image export). Set art is same-origin so the canvas stays exportable.
@@ -933,7 +951,7 @@ export function useDeckExport({
         ctx.lineWidth = 1.5
         ctx.stroke()
         ctx.fillStyle = 'white'
-        ctx.font = 'bold 15px Arial'
+        ctx.font = `700 15px ${FONT}`
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText(`${count}`, x + w - 16, y + h - 16)
@@ -944,12 +962,12 @@ export function useDeckExport({
       // Title (deck name) + "Draft Deck" / "Sealed Deck" subtitle.
       const titleText = currentPoolName || formatPoolLabel(setCode, isDraftMode ? 'draft' : 'sealed')
       ctx.fillStyle = 'white'
-      ctx.font = 'bold 32px Arial'
+      ctx.font = `800 32px ${FONT}`
       ctx.textAlign = 'center'
       ctx.textBaseline = 'top'
       ctx.fillText(titleText, width / 2, currentY)
       ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
-      ctx.font = '500 18px Arial'
+      ctx.font = `500 18px ${FONT}`
       ctx.fillText(isDraftMode ? 'Draft Deck' : 'Sealed Deck', width / 2, currentY + 38)
       currentY += titleHeight + sectionSpacing
 
@@ -973,7 +991,7 @@ export function useDeckExport({
 
       // Draw "Deck" section label
       ctx.fillStyle = 'white'
-      ctx.font = 'bold 24px Arial'
+      ctx.font = `600 24px ${FONT}`
       ctx.textAlign = 'left'
       ctx.textBaseline = 'top'
       ctx.fillText(`Deck (${deckCards.length})`, padding, currentY)
@@ -1004,7 +1022,7 @@ export function useDeckExport({
       // Leaders are rotated 90 CCW so they use swapped dimensions
       if (hasOtherLeadersOrBases) {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
-        ctx.font = 'bold 24px Arial'
+        ctx.font = `600 24px ${FONT}`
         ctx.textAlign = 'left'
         ctx.textBaseline = 'top'
         ctx.fillText('Other Leaders & Bases', padding, currentY)
@@ -1038,7 +1056,7 @@ export function useDeckExport({
       // qty badges, and cost→name sort). In SEALED they stay the dimmed grayscale
       // "Pool" — the leftover sealed pool isn't a curated sideboard.
       ctx.fillStyle = isDraftMode ? 'white' : 'rgba(255, 255, 255, 0.7)'
-      ctx.font = 'bold 24px Arial'
+      ctx.font = `600 24px ${FONT}`
       ctx.textAlign = 'left'
       ctx.textBaseline = 'top'
       ctx.fillText(`${isDraftMode ? 'Sideboard' : 'Pool'} (${poolCards.length})`, padding, currentY)
@@ -1077,11 +1095,11 @@ export function useDeckExport({
       ctx.textBaseline = 'bottom'
       if (poolOwnerUsername) {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
-        ctx.font = '20px Arial'
+        ctx.font = `500 20px ${FONT}`
         ctx.fillText(`by ${poolOwnerUsername}`, padding, footerBaseline - 22)
       }
       ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'
-      ctx.font = '16px Arial'
+      ctx.font = `400 16px ${FONT}`
       ctx.fillText(timeStr, padding, footerBaseline)
 
       const logo = await loadSameOrigin('/ptp_logo400.png')
@@ -1092,11 +1110,35 @@ export function useDeckExport({
       const textRight = width - padding - (logo ? logoSize + 12 : 0)
       ctx.textAlign = 'right'
       ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'
-      ctx.font = 'bold 18px Arial'
+      ctx.font = `600 18px ${FONT}`
       ctx.fillText('built on Protect the Pod', textRight, footerBaseline - 22)
       ctx.fillStyle = 'rgba(255, 255, 255, 0.55)'
-      ctx.font = '15px Arial'
+      ctx.font = `400 15px ${FONT}`
       ctx.fillText(poolPublicUrl, textRight, footerBaseline - 1)
+
+      // QR code to the pool, in the bottom-right just above the credit block.
+      // Generated locally (no network) as a data URL → never taints the canvas.
+      // Drawn on a small white card so it stays scannable over the dark footer.
+      if (hasPoolUrl) {
+        try {
+          const qrDataUrl = await QRCode.toDataURL(`https://${poolPublicUrl}`, {
+            margin: 1,
+            width: qrSize * 3,
+            color: { dark: '#0e0e16', light: '#ffffff' },
+          })
+          const qrImg = await loadSameOrigin(qrDataUrl)
+          if (qrImg) {
+            const qrX = width - padding - qrSize
+            const qrY = footerBaseline - 46 - qrSize
+            const pad = 5
+            ctx.fillStyle = '#ffffff'
+            ctx.fillRect(qrX - pad, qrY - pad, qrSize + pad * 2, qrSize + pad * 2)
+            ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize)
+          }
+        } catch (err) {
+          console.warn('QR generation failed; skipping', err)
+        }
+      }
 
       // Return blob URL
       return new Promise((resolve) => {
