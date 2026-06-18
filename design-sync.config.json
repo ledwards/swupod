@@ -6,11 +6,21 @@
   "tsconfig": "tsconfig.json",
   "cssEntry": "src/index.css",
   "extraFonts": ".design-sync/fonts/barlow.css",
-  "runtimeFontPrefixes": ["Avenir"],
-  "guidelinesGlob": ["docs/STYLE_GUIDE.md"],
+  "runtimeFontPrefixes": [
+    "Avenir"
+  ],
+  "guidelinesGlob": [
+    "docs/STYLE_GUIDE.md"
+  ],
   "overrides": {
-    "Modal": { "cardMode": "single", "viewport": "600x460" },
-    "ConfirmModal": { "cardMode": "single", "viewport": "600x460" }
+    "Modal": {
+      "cardMode": "single",
+      "viewport": "600x460"
+    },
+    "ConfirmModal": {
+      "cardMode": "single",
+      "viewport": "600x460"
+    }
   },
   "componentSrcMap": {
     "Button": "src/components/Button.tsx",
@@ -35,5 +45,6 @@
     "MatchCard": "src/components/MatchCard.tsx",
     "DraftReportButton": "src/components/DraftReportButton.tsx",
     "WayfinderStoreButtons": "src/components/WayfinderStoreButtons.tsx"
-  }
+  },
+  "projectId": "1aaf66a4-76cd-4647-9d53-aba5275f9e71"
 }
