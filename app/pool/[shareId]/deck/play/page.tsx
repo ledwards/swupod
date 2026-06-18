@@ -15,6 +15,8 @@ import { loadAllCards } from '../../../../../src/utils/cardDataClient'
 import { getBaseSetCode } from '../../../../../src/utils/carboniteConstants'
 import { buildBaseCardMap, getBaseCardId } from '../../../../../src/utils/variantDowngrade'
 import { jsonParse } from '../../../../../src/utils/json'
+import { resolveArchetypeUuid, fetchArchetypeNickname } from '../../../../../src/utils/deckBuilderSharing'
+import { archetypeShortName } from '../../../../../src/utils/archetypeName'
 import { defaultSort } from '../../../../../src/services/cards/cardSorting'
 import { calculateAspectPenalty } from '../../../../../src/services/cards/aspectPenalties'
 import Card from '../../../../../src/components/Card'
@@ -26,6 +28,7 @@ import PlayInstructions from '../../../../../src/components/PlayInstructions'
 import ChatPanel from '../../../../../src/components/ChatPanel'
 import MatchmakingPanel from '../../../../../src/components/MatchmakingPanel'
 import ResultReportModal from '../../../../../src/components/ResultReportModal'
+import { useWayfinderDetection } from '../../../../../src/hooks/useWayfinderDetection'
 import { useDraftSocket } from '../../../../../src/hooks/useDraftSocket'
 import { trackEvent } from '../../../../../src/hooks/useAnalytics'
 import {
@@ -154,6 +157,33 @@ export default function PlayPage({ params }: PageProps) {
   const [baseCardMap, setBaseCardMap] = useState<Map<string, string> | null>(null)
   const [claiming, setClaiming] = useState(false)
   const deckBuilderState = useMemo(() => jsonParse(pool?.deckBuilderState, {}), [pool?.deckBuilderState])
+  // Deck (archetype) name. NEVER a made-up "Leader / Base" slash — use the
+  // canonical swuapi archetype nickname, falling back to the consistent
+  // "Leader Color HP" form (archetypeShortName) while it resolves.
+  const leaderCard = deckBuilderState?.cardPositions?.[deckBuilderState?.activeLeader]?.card || null
+  const baseCard = deckBuilderState?.cardPositions?.[deckBuilderState?.activeBase]?.card || null
+  const [archetypeNickname, setArchetypeNickname] = useState<string | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    setArchetypeNickname(null)
+    const leaderUuid = resolveArchetypeUuid(leaderCard, 'leader')
+    const baseUuid = resolveArchetypeUuid(baseCard, 'base')
+    if (!leaderUuid || !baseUuid) return
+    fetchArchetypeNickname(leaderUuid, baseUuid).then((n) => {
+      if (!cancelled) setArchetypeNickname(n)
+    })
+    return () => { cancelled = true }
+  }, [leaderCard?.id, baseCard?.id])
+  const deckArchetypeName = useMemo(() => {
+    return archetypeShortName({
+      archetypeNickname,
+      leaderName: leaderCard?.name || null,
+      baseAspects: Array.isArray(baseCard?.aspects) ? baseCard.aspects : [],
+      baseHp: typeof baseCard?.hp === 'number' ? baseCard.hp : null,
+    })
+  }, [archetypeNickname, leaderCard?.name, baseCard?.aspects, baseCard?.hp])
+  // The play box has two tabs: Play (the existing wayfinder/manual instructions)
+  // and Record (your game history, or a prompt to install the plugin).
   const [practiceHand, setPracticeHand] = useState<{
     cards: CardType[]
     probAtLeastOne: number
@@ -244,25 +274,16 @@ export default function PlayPage({ params }: PageProps) {
     })
   }
 
-  // Detect Wayfinder extension via DOM marker (content scripts share the DOM
-  // but NOT the page's window — so we check for a <meta name="wayfinder-installed"> tag)
-  const [wayfinderDetected, setWayfinderDetected] = useState(false)
-  useEffect(() => {
-    if (document.querySelector('meta[name="wayfinder-installed"]')) {
-      setWayfinderDetected(true)
-      return
-    }
-    // Extension content script may load after React mount — listen for its event
-    const onInstalled = () => setWayfinderDetected(true)
-    document.addEventListener('wayfinder:installed', onInstalled)
-    // Also poll briefly in case the event fired before this listener was registered
-    const timer = setTimeout(() => {
-      if (document.querySelector('meta[name="wayfinder-installed"]')) setWayfinderDetected(true)
-    }, 1000)
-    return () => {
-      document.removeEventListener('wayfinder:installed', onInstalled)
-      clearTimeout(timer)
-    }
+  // Detect the Wayfinder extension via the centralized hook (meta tag + event +
+  // postMessage, with a localStorage bridge and the ?wayfinder=1/0 QA override).
+  const { detected: wayfinderDetected } = useWayfinderDetection()
+
+  // ?lobby=private|public deep link (from the /me Pools tab lobby buttons):
+  // auto-opens the corresponding Karabast lobby once detected + owner.
+  const autoLobbyIntent = useMemo<'private' | 'public' | null>(() => {
+    if (typeof window === 'undefined') return null
+    const v = new URLSearchParams(window.location.search).get('lobby')
+    return v === 'private' || v === 'public' ? v : null
   }, [])
 
   useEffect(() => {
@@ -2052,6 +2073,7 @@ export default function PlayPage({ params }: PageProps) {
             placeholder="Untitled Deck"
             className="play-title"
           />
+          {deckArchetypeName && <p className="play-deck-name">{deckArchetypeName}</p>}
           <p className="play-pool-type">{poolTypeLabel}</p>
           <WldBadge
             wins={pool.wins ?? 0}
@@ -2059,47 +2081,6 @@ export default function PlayPage({ params }: PageProps) {
             draws={pool.draws ?? 0}
             matchIds={pool.wayfinderMatchIds ?? []}
           />
-        </div>
-
-        <div className="practice-hand-button-container">
-          <button className="play-action-button" onClick={drawPracticeHand}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <g transform="rotate(-15 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
-              <g transform="rotate(0 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
-              <g transform="rotate(15 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
-            </svg>
-            Practice Hand
-          </button>
-          {!isInfinitePool && isOwner && user && (
-            <div className="post-to-discord-wrapper">
-              <button
-                className={`play-action-button${postedToDiscord ? ' posted' : ''}`}
-                onClick={postToDiscord}
-                disabled={postingToDiscord || postedToDiscord}
-              >
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
-                {postedToDiscord ? 'Posted!' : postingToDiscord ? 'Posting...' : 'Post to Discord'}
-              </button>
-              <span className="post-to-discord-help" data-tooltip="Share your deck to the Protect the Pod Discord for feedback and discussion. Makes your pool public.">i</span>
-            </div>
-          )}
-          {pool?.draftShareId && pool?.poolType === 'draft' && (
-            <button className="play-action-button" onClick={() => router.push(`/draft/${pool.draftShareId}/log`)}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
-              </svg>
-              Draft Log
-            </button>
-          )}
-          {pool?.draftShareId && pool?.poolType === 'draft' && isPatron && isOwner && (
-            <DraftReportButton draftShareId={pool.draftShareId} variant="play" />
-          )}
         </div>
 
         {/* Login banner for logged-out users viewing anonymous (unowned) pools */}
@@ -2147,8 +2128,83 @@ export default function PlayPage({ params }: PageProps) {
           isOwner={isInfinitePool ? true : (!pool?.owner || !!isOwner)}
           ownerName={pool?.owner?.username || pool?.owner?.name || null}
           wayfinderDetected={wayfinderDetected}
+          isLoggedIn={Boolean(user)}
+          autoLobbyIntent={autoLobbyIntent}
           analyticsContext={getLimitedAnalyticsContext()}
         />
+
+        {/* Practice Hand / Post to Discord / Draft actions — below the
+            "Deck Complete" box, not above it. */}
+        <div className="practice-hand-button-container">
+          <button className="play-action-button" onClick={drawPracticeHand}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <g transform="rotate(-15 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
+              <g transform="rotate(0 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
+              <g transform="rotate(15 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
+            </svg>
+            Practice Hand
+          </button>
+          {!isInfinitePool && isOwner && user && (
+            <div className="post-to-discord-wrapper">
+              <button
+                className={`play-action-button${postedToDiscord ? ' posted' : ''}`}
+                onClick={postToDiscord}
+                disabled={postingToDiscord || postedToDiscord}
+              >
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                {postedToDiscord ? 'Posted!' : postingToDiscord ? 'Posting...' : 'Post to Discord'}
+              </button>
+              <span className="post-to-discord-help" data-tooltip="Share your deck to the Protect the Pod Discord for feedback and discussion. Makes your pool public.">i</span>
+            </div>
+          )}
+          {pool?.draftShareId && pool?.poolType === 'draft' && (
+            <button className="play-action-button" onClick={() => router.push(`/draft/${pool.draftShareId}/log`)}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              Draft Log
+            </button>
+          )}
+          {pool?.draftShareId && pool?.poolType === 'draft' && isPatron && isOwner && (
+            <DraftReportButton draftShareId={pool.draftShareId} variant="play" />
+          )}
+        </div>
+
+        {/* History — the pool's recorded games (Wayfinder-tracked). Only once
+            the Companion is present; the install pitch lives in PlayInstructions. */}
+        {wayfinderDetected && (
+          <div className="play-history-panel">
+            <span className="play-history-label">History</span>
+            {((pool?.wins ?? 0) + (pool?.losses ?? 0) + (pool?.draws ?? 0) > 0 || (pool?.wayfinderMatchIds?.length ?? 0) > 0) ? (
+              <div className="play-record-summary">
+                <WldBadge
+                  wins={pool?.wins ?? 0}
+                  losses={pool?.losses ?? 0}
+                  draws={pool?.draws ?? 0}
+                  matchIds={pool?.wayfinderMatchIds ?? []}
+                />
+                <a
+                  className="play-record-link"
+                  href={`${process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin.wayfinder.news'}/matches`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View your matches on Wayfinder
+                </a>
+              </div>
+            ) : (
+              <p className="play-record-blurb">
+                You&apos;re all set — play some games to start your record.
+              </p>
+            )}
+          </div>
+        )}
 
         {isCompetitive && user && (
           <MatchmakingPanel

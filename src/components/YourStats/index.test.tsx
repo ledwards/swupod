@@ -32,20 +32,25 @@ function stripComments(src: string): string {
 }
 
 const INDEX_SRC = read('index.tsx')
+const GAMEPLAY_SRC = read('GameplayDashboard.tsx')
 const ACTIVITY_SRC = read('ActivityDashboard.tsx')
 const LUCK_SECTION_SRC = read('LuckSection.tsx')
 const LUCK_PANEL_SRC = read('LuckPanel.tsx')
 const STREAKS_SRC = read('StreaksPanel.tsx')
 const CHART_SRC = read('DistributionChart.tsx')
+const POOL_HISTORY_SRC = read('PoolHistoryDashboard.tsx')
 const LOGGED_OUT_SRC = read('LoggedOutCTA.tsx')
 const CSS_SRC = read('YourStats.css')
+const STORE_BUTTONS_SRC = readFileSync(join(__dirname, '../WayfinderStoreButtons.tsx'), 'utf8')
 
 const INDEX_CODE = stripComments(INDEX_SRC)
+const GAMEPLAY_CODE = stripComments(GAMEPLAY_SRC)
 const ACTIVITY_CODE = stripComments(ACTIVITY_SRC)
 const LUCK_SECTION_CODE = stripComments(LUCK_SECTION_SRC)
 const LUCK_PANEL_CODE = stripComments(LUCK_PANEL_SRC)
 const STREAKS_CODE = stripComments(STREAKS_SRC)
 const CHART_CODE = stripComments(CHART_SRC)
+const POOL_HISTORY_CODE = stripComments(POOL_HISTORY_SRC)
 const LOGGED_OUT_CODE = stripComments(LOGGED_OUT_SRC)
 
 // --- index.tsx --------------------------------------------------------------
@@ -68,10 +73,12 @@ describe('<YourStats /> — index.tsx', () => {
     assert.match(INDEX_CODE, /import\s*\{[^}]*\buseAuth\b[^}]*\}\s*from\s*['"]@\/src\/contexts\/AuthContext['"]/)
   })
 
-  it('imports the three section subcomponents', () => {
+  it('imports the personal stat sections', () => {
+    assert.match(INDEX_CODE, /import\s*\{[^}]*\bGameplayDashboard\b/)
     assert.match(INDEX_CODE, /import\s*\{[^}]*\bActivityDashboard\b/)
     assert.match(INDEX_CODE, /import\s*\{[^}]*\bLuckSection\b/)
     assert.match(INDEX_CODE, /import\s*\{[^}]*\bLoggedOutCTA\b/)
+    assert.match(INDEX_CODE, /import\s*\{[^}]*\bPoolHistoryDashboard\b/)
   })
 
   it('imports its co-located CSS', () => {
@@ -84,13 +91,35 @@ describe('<YourStats /> — index.tsx', () => {
     assert.ok(INDEX_CODE.includes('<LoggedOutCTA />'))
   })
 
-  it('renders both ActivityDashboard and LuckSection in the logged-in branch', () => {
-    assert.match(INDEX_CODE, /<ActivityDashboard\s/)
-    assert.match(INDEX_CODE, /<LuckSection\s/)
+  it('renders Gameplay, Luck, Pools, and Meta tabs with Gameplay as the default', () => {
+    assert.match(INDEX_CODE, /useState<PersonalStatsTab>\(['"]gameplay['"]\)/)
+    assert.match(INDEX_CODE, />\s*Gameplay\s*</)
+    assert.match(INDEX_CODE, />\s*Luck\s*</)
+    assert.match(INDEX_CODE, />\s*Pools\s*</)
+    assert.match(INDEX_CODE, />\s*Meta\s*</)
   })
 
-  it('threads since/until props down to both ActivityDashboard and LuckSection', () => {
-    // Both children receive since={since} until={until}.
+  it('renders the activity overview plus GameplayDashboard, LuckSection, and PoolHistoryDashboard', () => {
+    assert.match(INDEX_CODE, /<GameplayDashboard\s/)
+    // Activity counters live in a persistent overview strip, not a tab branch.
+    assert.match(INDEX_CODE, /<ActivityDashboard\s/)
+    assert.match(INDEX_CODE, /your-stats-overview/)
+    assert.match(INDEX_CODE, /<LuckSection\s/)
+    assert.match(INDEX_CODE, /<PoolHistoryDashboard\s/)
+  })
+
+  it('threads the global Set filter into every tab', () => {
+    // Pools/Activity get the raw filter ('all' or a code); Luck/Meta get a
+    // concrete set so per-set views always have something to render.
+    assert.match(INDEX_CODE, /<PoolHistoryDashboard setFilter=\{setCode\}/)
+    assert.match(INDEX_CODE, /<LuckSection[\s\S]*?lockedSetCode=\{isAllSets \? undefined : setCode\}/)
+    assert.match(INDEX_CODE, /<MetaDashboard[\s\S]*?lockSet=\{!isAllSets\}/)
+    assert.match(INDEX_CODE, /<ActivityDashboard[\s\S]*?setCode=\{setCode\}/)
+    assert.match(INDEX_CODE, /<GameplayDashboard[\s\S]*?setCode=\{setCode\}/)
+  })
+
+  it('threads since/until props down to GameplayDashboard, ActivityDashboard, and LuckSection', () => {
+    assert.match(INDEX_CODE, /<GameplayDashboard[^>]*since=\{since\}[^>]*until=\{until\}/s)
     assert.match(INDEX_CODE, /<ActivityDashboard[^>]*since=\{since\}[^>]*until=\{until\}/s)
     assert.match(INDEX_CODE, /<LuckSection[^>]*since=\{since\}[^>]*until=\{until\}/s)
   })
@@ -109,12 +138,26 @@ describe('<LoggedOutCTA />', () => {
     assert.ok(LOGGED_OUT_SRC.includes("'use client'"))
   })
 
-  it('has the Discord sign-in URL pointing back to /stats#you', () => {
-    assert.ok(LOGGED_OUT_CODE.includes('/api/auth/signin/discord?return_to=/stats#you'))
+  it('has the Discord sign-in URL pointing back to /me', () => {
+    assert.ok(LOGGED_OUT_CODE.includes('/api/auth/signin/discord?return_to=/me'))
   })
 
   it('shows a Sign in with Discord link', () => {
     assert.match(LOGGED_OUT_CODE, /Sign in with Discord/i)
+  })
+
+  it('promotes the Companion and Chrome install path', () => {
+    assert.match(LOGGED_OUT_CODE, /Wayfinder Companion/i)
+    assert.match(LOGGED_OUT_CODE, /queue[\s\S]*with your pool/i)
+    assert.match(LOGGED_OUT_CODE, /rewatch your[\s\S]*replays/i)
+    assert.ok(LOGGED_OUT_CODE.includes('WayfinderStoreButtons'))
+    assert.ok(STORE_BUTTONS_SRC.includes('https://chromewebstore.google.com/detail/wayfinder-companion/econclbajpendbppldcnpngjfddcogfh'))
+    assert.match(STORE_BUTTONS_SRC, /Add to Chrome/i)
+    assert.match(STORE_BUTTONS_SRC, /Safari/i)
+    assert.match(STORE_BUTTONS_SRC, /Firefox/i)
+    assert.match(STORE_BUTTONS_SRC, /Coming soon/i)
+    assert.match(STORE_BUTTONS_SRC, /Powered by/i)
+    assert.match(STORE_BUTTONS_SRC, /wayfinder\.news/i)
   })
 
   it('does NOT render any personal data placeholders (zeros, em-dashes, "your")', () => {
@@ -139,6 +182,46 @@ describe('<LoggedOutCTA />', () => {
   })
 })
 
+// --- GameplayDashboard -----------------------------------------------------
+
+describe('<GameplayDashboard />', () => {
+  it("declares 'use client'", () => {
+    assert.ok(GAMEPLAY_SRC.includes("'use client'"))
+  })
+
+  it('fetches /api/stats/me/gameplay with since and until query params', () => {
+    assert.ok(GAMEPLAY_CODE.includes('/api/stats/me/gameplay'))
+    assert.match(GAMEPLAY_CODE, /new\s+URLSearchParams\(\s*\{\s*since\s*,\s*until\s*\}/)
+  })
+
+  it('renders the Companion CTA on the Gameplay tab', () => {
+    assert.match(GAMEPLAY_CODE, /WayfinderCompanionLockup/)
+    assert.match(GAMEPLAY_CODE, /WayfinderStoreButtons/i)
+    assert.match(GAMEPLAY_CODE, /queue on Karabast[\s\S]*PTP pool/i)
+  })
+
+  it('renders gameplay KPI and data-viz surfaces', () => {
+    for (const label of ['Matches', 'Win rate', 'Record', 'Wayfinder captures', 'Format Performance', 'Set Performance', 'Replay Explorer']) {
+      assert.ok(GAMEPLAY_CODE.includes(label), `expected "${label}" in GameplayDashboard`)
+    }
+    assert.match(CSS_SRC, /your-stats-outcome-bars/)
+    assert.match(CSS_SRC, /your-stats-breakdown-fill/)
+  })
+
+  it('renders replay search, filters, sorting, leader art, and watch/deck actions', () => {
+    assert.match(GAMEPLAY_CODE, /ReplayExplorer/)
+    assert.match(GAMEPLAY_CODE, /setSearch/)
+    assert.match(GAMEPLAY_CODE, /setFormat/)
+    assert.match(GAMEPLAY_CODE, /setResult/)
+    assert.match(GAMEPLAY_CODE, /setSortBy/)
+    assert.match(GAMEPLAY_CODE, /leaderImageUrl/)
+    assert.match(GAMEPLAY_CODE, /Watch/)
+    assert.match(GAMEPLAY_CODE, /deck/i)
+    assert.match(CSS_SRC, /your-stats-replay-row/)
+    assert.match(CSS_SRC, /your-stats-replay-art/)
+  })
+})
+
 // --- ActivityDashboard -----------------------------------------------------
 
 describe('<ActivityDashboard />', () => {
@@ -157,7 +240,7 @@ describe('<ActivityDashboard />', () => {
   })
 
   it('renders five counters with the spec labels', () => {
-    const labels = ['Packs cracked', 'Pools opened', 'Drafts joined', 'Decks built', 'Made it to play']
+    const labels = ['Packs cracked', 'Pools opened', 'Drafts joined', 'Decks built', 'Limited matches played']
     for (const label of labels) {
       assert.ok(ACTIVITY_CODE.includes(label), `expected label "${label}" in dashboard`)
     }
@@ -179,9 +262,12 @@ describe('<ActivityDashboard />', () => {
     assert.ok(ACTIVITY_CODE.includes("couldn't load activity") || ACTIVITY_CODE.includes("Couldn't load activity"))
   })
 
-  it('renders a friendly empty line when all counters are zero', () => {
-    // Plan: "You haven't done anything yet — try a sealed pool or draft."
-    assert.match(ACTIVITY_CODE, /haven't done anything yet/i)
+  it('renders a Companion onboarding state when all counters are zero', () => {
+    assert.match(ACTIVITY_CODE, /Start capturing play data/i)
+    assert.match(ACTIVITY_CODE, /Wayfinder Companion/i)
+    assert.match(ACTIVITY_CODE, /Karabast/i)
+    assert.match(ACTIVITY_CODE, /rewatch your replays/i)
+    assert.ok(ACTIVITY_CODE.includes('WayfinderStoreButtons'))
     assert.match(ACTIVITY_CODE, /sealed pool/i)
     assert.match(ACTIVITY_CODE, /draft/i)
     // Links to /sealed and /draft.
@@ -211,9 +297,8 @@ describe('<LuckSection />', () => {
     assert.match(LUCK_SECTION_CODE, /import\s+Button\s+from\s+['"]@\/src\/components\/Button['"]/)
   })
 
-  it('defaults scope to "opened"', () => {
-    // useState('opened') for the scope.
-    assert.match(LUCK_SECTION_CODE, /useState<Scope>\(['"]opened['"]\)/)
+  it('fixes scope to "opened" (no toggle)', () => {
+    assert.match(LUCK_SECTION_CODE, /scope: Scope = 'opened'/)
   })
 
   it('defaults setCode to LAW (pragmatic v1 default)', () => {
@@ -232,22 +317,33 @@ describe('<LuckSection />', () => {
     assert.match(LUCK_SECTION_CODE, /variant="toggle"[\s\S]{0,120}glowColor="blue"/)
   })
 
-  it('fetches /api/stats/me/luck with setCode, scope, since, until', () => {
+  it('fetches /api/stats/me/luck scoped by setCode + scope (set-wide, not the era window)', () => {
     assert.ok(LUCK_SECTION_CODE.includes('/api/stats/me/luck'))
-    assert.match(LUCK_SECTION_CODE, /new\s+URLSearchParams\(\s*\{\s*setCode\s*,\s*scope\s*,\s*since\s*,\s*until\s*\}/)
+    assert.match(LUCK_SECTION_CODE, /new\s+URLSearchParams\(\s*\{\s*setCode\s*,\s*scope\s*\}/)
   })
 
-  it('refetches when setCode, scope, since, or until change', () => {
-    assert.match(LUCK_SECTION_CODE, /\[\s*setCode\s*,\s*scope\s*,\s*since\s*,\s*until/)
+  it('refetches when setCode or scope change', () => {
+    assert.match(LUCK_SECTION_CODE, /\[\s*setCode\s*,\s*scope\s*,\s*fetchImpl/)
   })
 
-  it('renders both rarity and aspect LuckPanels', () => {
-    assert.match(LUCK_SECTION_CODE, /<LuckPanel[\s\S]*?dimension="rarity"/)
-    assert.match(LUCK_SECTION_CODE, /<LuckPanel[\s\S]*?dimension="aspect"/)
+  it('renders the card histogram and drops the fixed-by-design rarity panel', () => {
+    // Redesign: rarity is fixed per pack (only foil/HS/UC-upgrade slots vary),
+    // so the rarity panel is gone. The per-card histogram is the centerpiece.
+    assert.match(LUCK_SECTION_CODE, /<LuckHistogram/)
+    assert.doesNotMatch(LUCK_SECTION_CODE, /dimension="rarity"/)
   })
 
-  it('renders a StreaksPanel for per-card streaks', () => {
-    assert.match(LUCK_SECTION_CODE, /<StreaksPanel/)
+  it('renders the duplicate-rate and showcase-rate widgets', () => {
+    assert.match(LUCK_SECTION_CODE, /<DuplicateRateWidget/)
+    assert.match(LUCK_SECTION_CODE, /<ShowcaseRateWidget/)
+  })
+
+  it('renders the aspect breakdown with icons instead of a hover line graph', () => {
+    assert.match(LUCK_SECTION_CODE, /<AspectBreakdown/)
+  })
+
+  it('no longer renders the confusing "Notable cards" streaks panel', () => {
+    assert.doesNotMatch(LUCK_SECTION_CODE, /<StreaksPanel/)
   })
 
   it('renders an empty state when packsCracked === 0', () => {
@@ -274,9 +370,9 @@ describe('<LuckSection />', () => {
     assert.match(CSS_SRC, /@media\s*\(\s*max-width:\s*520px\s*\)\s*\{[\s\S]*?\.your-stats-luck-set-native\s*\{\s*display:\s*inline-block/)
   })
 
-  it('scope buttons carry the two scope labels from the plan', () => {
-    assert.ok(LUCK_SECTION_CODE.includes('Packs I opened'))
-    assert.ok(LUCK_SECTION_CODE.includes('What I kept'))
+  it('drops the "What I kept" scope toggle (luck is always packs opened)', () => {
+    assert.doesNotMatch(LUCK_SECTION_CODE, /What I kept/)
+    assert.match(LUCK_SECTION_CODE, /scope: Scope = 'opened'/)
   })
 })
 
@@ -294,6 +390,13 @@ describe('<LuckPanel />', () => {
 
   it('renders DistributionChart with the dimension prop', () => {
     assert.match(LUCK_PANEL_CODE, /<DistributionChart[\s\S]*?dimension=\{dimension\}/)
+  })
+
+  it('labels show-math columns as you vs platform actuals vs theoretical', () => {
+    assert.match(LUCK_PANEL_CODE, />\s*You\s*</)
+    assert.match(LUCK_PANEL_CODE, />\s*Platform\s*</)
+    assert.match(LUCK_PANEL_CODE, />\s*Theoretical\s*</)
+    assert.match(LUCK_PANEL_CODE, /platformActual/)
   })
 
   it('show-math drawer defaults to closed (useState(false))', () => {
@@ -401,15 +504,55 @@ describe('<DistributionChart />', () => {
     assert.match(CHART_CODE, /<BarChart[\s\S]*?layout="vertical"/)
   })
 
+  it('adds a platform actual bar alongside theoretical and user bars', () => {
+    assert.match(CHART_CODE, /platformActual/)
+    assert.match(CHART_CODE, /Platform actual/)
+    assert.match(CSS_SRC, /your-stats-chart-legend-swatch--platform/)
+  })
+
   it('renders an aria-label naming dimension, observed, expected, and verdict', () => {
     assert.match(CHART_CODE, /aria-label=\{ariaLabel\}/)
     // ariaLabel construction references all four fields.
-    assert.match(CHART_CODE, /you pulled/i)
-    assert.match(CHART_CODE, /expected/i)
+    assert.match(CHART_CODE, /you/i)
+    assert.match(CHART_CODE, /theoretical|expected/i)
   })
 
   it('renders a small-sample note below MIN_PACKS threshold', () => {
     assert.match(CHART_CODE, /small sample|small n|Approximate at small/i)
+  })
+})
+
+// --- PoolHistoryDashboard --------------------------------------------------
+
+describe('<PoolHistoryDashboard />', () => {
+  it("declares 'use client'", () => {
+    assert.ok(POOL_HISTORY_SRC.includes("'use client'"))
+  })
+
+  it('fetches grouped pool history from /api/me/pool-history', () => {
+    assert.ok(POOL_HISTORY_CODE.includes('/api/me/pool-history?limit=80'))
+  })
+
+  it('renders search, relationship filter, and sort controls', () => {
+    assert.match(POOL_HISTORY_CODE, /setQuery/)
+    assert.match(POOL_HISTORY_CODE, /setRelationshipFilter/)
+    assert.match(POOL_HISTORY_CODE, /setSortBy/)
+    assert.match(POOL_HISTORY_CODE, /Leader, base, owner, set/)
+  })
+
+  it('renders owner and builder avatars for shared-pool context', () => {
+    assert.match(POOL_HISTORY_CODE, /UserAvatar/)
+    assert.match(POOL_HISTORY_CODE, /Owner/)
+    assert.match(POOL_HISTORY_CODE, /builder/)
+  })
+
+  it('renders edit, play, URL-copy (link icon), and JSON-copy (copy icon) actions for each build', () => {
+    assert.match(POOL_HISTORY_CODE, /Copy deck link/)
+    assert.match(POOL_HISTORY_CODE, /Copy deck JSON/)
+    assert.match(POOL_HISTORY_CODE, /<LinkIcon/)
+    assert.match(POOL_HISTORY_CODE, /<CopyIcon/)
+    assert.match(POOL_HISTORY_CODE, /build\.links\.play/)
+    assert.match(POOL_HISTORY_CODE, /build\.links\.json/)
   })
 })
 

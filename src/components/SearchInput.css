@@ -46,9 +46,11 @@
 .search-input__clear {
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   padding: 0.5rem 0.75rem;
+  min-width: 24px;
+  min-height: 24px;
   font-size: 0.75rem;
   transition: color 0.15s ease;
   flex-shrink: 0;

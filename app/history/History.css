@@ -39,6 +39,12 @@
     font-size: 0.85rem;
   }
 
+  /* Keep a readable minimum so the 6-7 columns scroll horizontally inside the
+     overflow-x:auto container instead of crushing on a phone. */
+  .history-table {
+    min-width: 600px;
+  }
+
   .history-tabs {
     flex-wrap: wrap;
   }

@@ -36,7 +36,3 @@ function isBetaSet(setCode: string): boolean {
 export function getStatsSetTabs(includeBetaSets = false): string[] {
   return STATS_SET_ORDER.filter((setCode) => includeBetaSets || !isBetaSet(setCode))
 }
-
-export function getStatsTabs(includeBetaSets = false): string[] {
-  return [...getStatsSetTabs(includeBetaSets), PERSONAL_STATS_TAB]
-}

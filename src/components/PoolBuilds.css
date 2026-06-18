@@ -75,6 +75,19 @@
   white-space: nowrap;
 }
 
+/* A deck entry: the card rectangle with its record (meta) centered just below. */
+.pool-build-entry {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.pool-build-meta--below {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+}
+
 .pool-build-more .pool-build-leader {
   color: rgba(255, 255, 255, 0.6);
   font-weight: 600;

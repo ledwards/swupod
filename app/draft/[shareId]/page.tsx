@@ -14,6 +14,7 @@ import PackDraftPhase from '../../../src/components/PackDraftPhase'
 import { getPackArtUrl } from '../../../src/utils/packArt'
 import Button from '../../../src/components/Button'
 import Modal from '../../../src/components/Modal'
+import ConfirmModal from '../../../src/components/ConfirmModal'
 import EditableTitle from '../../../src/components/EditableTitle'
 import ChatPanel from '../../../src/components/ChatPanel'
 import CompetitivePracticeRules from '../../../src/components/CompetitivePracticeRules'
@@ -701,56 +702,30 @@ export default function DraftRoomPage({ params }: PageProps) {
         </div>
 
         {/* Cancel Confirmation Modal */}
-        {showCancelConfirm && (
-          <div className="draft-cancel-overlay" onClick={() => setShowCancelConfirm(false)}>
-            <div className="draft-cancel-modal" onClick={(e) => e.stopPropagation()}>
-              <h2>Cancel Draft?</h2>
-              <p>Are you sure you want to cancel this draft? All players will lose their progress and this action cannot be undone.</p>
-              <div className="draft-cancel-buttons">
-                <button
-                  className="draft-cancel-back"
-                  onClick={() => setShowCancelConfirm(false)}
-                  disabled={isCancelling}
-                >
-                  Go Back
-                </button>
-                <button
-                  className="draft-cancel-confirm"
-                  onClick={handleCancelDraft}
-                  disabled={isCancelling}
-                >
-                  {isCancelling ? 'Cancelling...' : 'Cancel Draft'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <ConfirmModal
+          isOpen={showCancelConfirm}
+          title="Cancel Draft?"
+          confirmLabel="Cancel Draft"
+          cancelLabel="Go Back"
+          confirming={isCancelling}
+          onConfirm={handleCancelDraft}
+          onCancel={() => setShowCancelConfirm(false)}
+        >
+          <p>Are you sure you want to cancel this draft? All players will lose their progress and this action cannot be undone.</p>
+        </ConfirmModal>
 
         {/* Drop Confirmation Modal */}
-        {showDropConfirm && (
-          <div className="draft-drop-overlay" onClick={() => setShowDropConfirm(false)}>
-            <div className="draft-drop-modal" onClick={(e) => e.stopPropagation()}>
-              <h2>Drop from Draft?</h2>
-              <p>Are you sure you want to drop from this draft? A bot will take over your picks and you will lose access to your drafted cards.</p>
-              <div className="draft-drop-buttons">
-                <button
-                  className="draft-drop-back"
-                  onClick={() => setShowDropConfirm(false)}
-                  disabled={isDropping}
-                >
-                  Go Back
-                </button>
-                <button
-                  className="draft-drop-confirm"
-                  onClick={handleDropFromDraft}
-                  disabled={isDropping}
-                >
-                  {isDropping ? 'Dropping...' : 'Drop from Draft'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <ConfirmModal
+          isOpen={showDropConfirm}
+          title="Drop from Draft?"
+          confirmLabel="Drop from Draft"
+          cancelLabel="Go Back"
+          confirming={isDropping}
+          onConfirm={handleDropFromDraft}
+          onCancel={() => setShowDropConfirm(false)}
+        >
+          <p>Are you sure you want to drop from this draft? A bot will take over your picks and you will lose access to your drafted cards.</p>
+        </ConfirmModal>
       </div>
 
       {/* Competitive Practice Rules Modal */}

@@ -1,10 +1,17 @@
 // Tests for LandingPage component logic
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
 import {
   selectHomepagePromoVariant,
   promoDismissalKey,
 } from './landingPagePromo'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+const LANDING_PAGE_SRC = readFileSync(join(__dirname, 'LandingPage.tsx'), 'utf8')
 
 // Minimal SetConfig stand-in for variant tests. Only setCode/setName are
 // consumed by the variant selector + the banner rendering logic. Spec-first:
@@ -21,6 +28,21 @@ describe('LandingPage', () => {
 
       handleLimitedDeckbuilderClick()
       assert.strictEqual(navigatedTo, '/deckbuilder')
+    })
+  })
+
+  describe('Deckbuilder utility tile', () => {
+    it('shows a My Stats tile that routes to /me (replacing the Import Pool tile)', () => {
+      assert.ok(LANDING_PAGE_SRC.includes('My Stats'))
+      assert.ok(LANDING_PAGE_SRC.includes("router.push('/me')"))
+      // Import Pool moved to the account dropdown — not a homepage tile anymore.
+      assert.ok(!LANDING_PAGE_SRC.includes("router.push('/import')"))
+    })
+
+    it('uses R2-D2 (JTL) hyperspace unit art for the My Stats tile', () => {
+      assert.ok(LANDING_PAGE_SRC.includes('MODE_ART.myStats'))
+      // JTL-507 — the hyperspace printing of the R2-D2 unit.
+      assert.ok(LANDING_PAGE_SRC.includes('card_04020507_EN_R2_D2_19d6f25cf9.png'))
     })
   })
 

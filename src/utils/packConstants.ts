@@ -14,6 +14,18 @@
  */
 
 // ============================================================================
+// COLLATION ALGORITHM VERSION
+// ============================================================================
+//
+// Bump this whenever the pack-generation / collation logic changes in a way
+// that shifts the produced distribution (belt structure, slot composition,
+// upgrade rates, rarity weights). The precomputed pack-fidelity theory artifact
+// (src/data/packTheory.json) is keyed to this number, so a mismatch tells the
+// app — and the recompute script — that the stored theory is stale and must be
+// regenerated with `npm run compute-theory`.
+export const COLLATION_VERSION = 1
+
+// ============================================================================
 // PACK STRUCTURE (applies to all sets)
 // ============================================================================
 

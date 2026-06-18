@@ -29,6 +29,96 @@
   line-height: 1.5;
 }
 
+.wayfinder-promo-panel {
+  /* Stack: copy on top, the browser buttons below — fits the narrow split column
+     instead of crushing the copy into a tiny side column. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  margin: 0;
+  padding: 1.25rem;
+  background:
+    linear-gradient(135deg, rgba(37, 99, 235, 0.18), rgba(74, 222, 128, 0.1)),
+    rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(96, 165, 250, 0.45);
+  border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+}
+
+.wayfinder-promo-copy {
+  min-width: 0;
+}
+
+.wayfinder-promo-kicker {
+  color: #93c5fd;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.35rem;
+  text-transform: uppercase;
+}
+
+.wayfinder-promo-lockup {
+  margin-bottom: 0.6rem;
+}
+
+.wayfinder-promo-copy h3,
+.wayfinder-ready-panel h3 {
+  margin: 0 0 0.5rem;
+  color: white;
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+.wayfinder-promo-copy p {
+  margin: 0 0 0.9rem;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.wayfinder-promo-list {
+  display: grid;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.wayfinder-promo-list li {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 0.45rem;
+  align-items: start;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.wayfinder-promo-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: #4ade80;
+}
+
+/* Detected state: just the lockup, centered. The blue .wayfinder-tab box wraps
+   the whole Companion area now, so the lockup has no box of its own. */
+.wayfinder-ready-panel {
+  display: flex;
+  align-self: center;
+  justify-content: center;
+  margin: 0 auto 0.25rem;
+}
+
+.wayfinder-ready-lockup {
+  justify-content: center;
+}
+
 .play-steps {
   display: flex;
   flex-direction: column;
@@ -208,6 +298,11 @@
     justify-content: center;
     padding: 0.875rem 1rem;
   }
+
+  .wayfinder-promo-panel,
+  .wayfinder-ready-panel {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* -- Wayfinder tabs --------------------------------------------------------- */
@@ -255,10 +350,34 @@
 
 /* -- Wayfinder tab content -------------------------------------------------- */
 
+/* Plugin-enabled state: a blue box around ALL Companion content (lockup +
+   create/join lobby), matching the no-plugin install promo box. */
 .wayfinder-tab {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  padding: 1.25rem;
+  background:
+    linear-gradient(135deg, rgba(37, 99, 235, 0.18), rgba(74, 222, 128, 0.1)),
+    rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(96, 165, 250, 0.45);
+  border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+}
+
+.wayfinder-login-copy {
+  margin: 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.wayfinder-login-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  align-self: center;
 }
 
 .wayfinder-section {
@@ -308,6 +427,127 @@
   font-weight: 600;
   letter-spacing: 0.05em;
   padding: 0.25rem 0;
+}
+
+/* Automatic (plugin) and manual, side by side. */
+.play-split {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+.play-split-col {
+  min-width: 0;
+}
+
+/* Vertical OR rule between the two columns. */
+.play-split-or {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.play-split-or::before,
+.play-split-or::after {
+  content: '';
+  flex: 1;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.play-split-or span {
+  padding: 0.5rem 0;
+}
+
+@media (max-width: 760px) {
+  .play-split {
+    grid-template-columns: 1fr;
+  }
+  .play-split-or {
+    flex-direction: row;
+    margin: 0.25rem 0;
+  }
+  .play-split-or::before,
+  .play-split-or::after {
+    width: auto;
+    height: 1px;
+  }
+}
+
+/* "OR" rule between the automatic (Companion) and manual setup areas. */
+.play-mode-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin: 1.5rem 0;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.play-mode-divider::before,
+.play-mode-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.play-manual-header {
+  margin-bottom: 1rem;
+}
+
+.play-manual-header h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+/* Casual manual flow: setup bullets + numbered "3 ways to play" + Karabast CTA. */
+.play-manual-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.play-manual-bullets,
+.play-manual-ways-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.play-manual-bullets { list-style: disc; }
+.play-manual-ways-list { list-style: decimal; }
+
+.play-manual-bullets strong,
+.play-manual-ways-list strong {
+  color: #fff;
+}
+
+.play-manual-ways-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* The Button component supplies the green "go" CTA style; we only nudge layout. */
+.play-karabast-cta {
+  align-self: flex-end;
+  gap: 0.4rem;
 }
 
 .wayfinder-join-label {

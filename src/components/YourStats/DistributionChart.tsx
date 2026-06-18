@@ -60,12 +60,14 @@ interface RarityCurveData {
   label: string
   observed: number
   expected: number
+  platformActual: number
 }
 
 interface AspectBarRow {
   aspect: string
   observed: number
   expected: number
+  platformActual: number
   isHeadline: boolean
 }
 
@@ -94,6 +96,8 @@ interface RarityChartProps {
   data: {
     observed: Record<string, number>
     expected: Record<string, number>
+    platformActual?: Record<string, number>
+    platformPacksCracked?: number
     headlineLabel?: string
   }
   /** Below this, the chart adds the small-sample annotation. */
@@ -106,7 +110,7 @@ interface RarityChartProps {
 function pickRarityHighlight(data: RarityChartProps['data']): RarityCurveData {
   const labels = Object.keys(data.expected || {})
   if (labels.length === 0) {
-    return { label: 'Legendary', observed: 0, expected: 0 }
+    return { label: 'Legendary', observed: 0, expected: 0, platformActual: 0 }
   }
   // Prefer headlineLabel; otherwise the rarest non-zero expected bucket.
   if (data.headlineLabel && labels.includes(data.headlineLabel)) {
@@ -114,6 +118,7 @@ function pickRarityHighlight(data: RarityChartProps['data']): RarityCurveData {
       label: data.headlineLabel,
       observed: Number(data.observed[data.headlineLabel] || 0),
       expected: Number(data.expected[data.headlineLabel] || 0),
+      platformActual: Number(data.platformActual?.[data.headlineLabel] || 0),
     }
   }
   // Fallback: Legendary if present, else first non-zero.
@@ -122,6 +127,7 @@ function pickRarityHighlight(data: RarityChartProps['data']): RarityCurveData {
       label: 'Legendary',
       observed: Number(data.observed['Legendary'] || 0),
       expected: Number(data.expected['Legendary'] || 0),
+      platformActual: Number(data.platformActual?.['Legendary'] || 0),
     }
   }
   const first = labels.find((k) => (data.expected[k] || 0) > 0) || labels[0]
@@ -129,6 +135,7 @@ function pickRarityHighlight(data: RarityChartProps['data']): RarityCurveData {
     label: first,
     observed: Number(data.observed[first] || 0),
     expected: Number(data.expected[first] || 0),
+    platformActual: Number(data.platformActual?.[first] || 0),
   }
 }
 
@@ -159,8 +166,8 @@ function RarityCurve({ data, smallSampleThreshold = 50, packsCracked, verdictCop
       data-testid="distribution-chart-rarity"
     >
       <div className="your-stats-chart-label">
-        Distribution of {picked.label} pulls — expected {picked.expected.toFixed(1)}, you pulled{' '}
-        <strong>{picked.observed.toFixed(0)}</strong>
+        {picked.label} pulls — you <strong>{picked.observed.toFixed(0)}</strong>, platform{' '}
+        <strong>{picked.platformActual.toFixed(1)}</strong>, theoretical {picked.expected.toFixed(1)}
       </div>
       <ResponsiveContainer width="100%" height={180}>
         <AreaChart data={curve} margin={{ top: 16, right: 16, bottom: 8, left: 8 }}>
@@ -205,6 +212,12 @@ function RarityCurve({ data, smallSampleThreshold = 50, packsCracked, verdictCop
           Approximate at small n — only {packsCracked} pack{packsCracked === 1 ? '' : 's'} cracked.
         </p>
       )}
+      {Number(data.platformPacksCracked || 0) > 0 && (
+        <p className="your-stats-chart-note">
+          Platform actual is normalized from {Number(data.platformPacksCracked || 0).toLocaleString()} platform pack
+          {Number(data.platformPacksCracked || 0) === 1 ? '' : 's'} into your pack count.
+        </p>
+      )}
     </div>
   )
 }
@@ -215,6 +228,8 @@ interface AspectChartProps {
   data: {
     observed: Record<string, number>
     expected: Record<string, number>
+    platformActual?: Record<string, number>
+    platformPacksCracked?: number
     headlineLabel?: string
   }
   packsCracked: number
@@ -229,6 +244,7 @@ function AspectBars({ data, packsCracked, verdictCopy }: AspectChartProps) {
       aspect: a,
       observed: Number(data.observed[a] || 0),
       expected: Number(data.expected[a] || 0),
+      platformActual: Number(data.platformActual?.[a] || 0),
       isHeadline: a === data.headlineLabel,
     }))
   }, [data])
@@ -239,6 +255,7 @@ function AspectBars({ data, packsCracked, verdictCopy }: AspectChartProps) {
   const xMax = Math.max(
     1,
     ...rows.map((r) => Math.max(r.observed, r.expected)),
+    ...rows.map((r) => Number(r.platformActual || 0)),
   )
 
   // We render two side-by-side bars per aspect: expected and observed.
@@ -251,7 +268,7 @@ function AspectBars({ data, packsCracked, verdictCopy }: AspectChartProps) {
       data-testid="distribution-chart-aspect"
     >
       <div className="your-stats-chart-label">
-        Aspect counts — expected vs your pulls ({packsCracked} pack
+        Aspect counts — you vs platform actuals vs theoretical ({packsCracked} pack
         {packsCracked === 1 ? '' : 's'})
       </div>
       <ResponsiveContainer width="100%" height={Math.max(220, rows.length * 36)}>
@@ -286,10 +303,18 @@ function AspectBars({ data, packsCracked, verdictCopy }: AspectChartProps) {
             }}
             formatter={(value: any, name: any) => [Number(value).toFixed(1), name]}
           />
-          <Bar dataKey="expected" name="Expected" fillOpacity={0.5}>
+          <Bar dataKey="expected" name="Theoretical" fillOpacity={0.42}>
             {rows.map((row) => (
               <Cell
                 key={`exp-${row.aspect}`}
+                fill={ASPECT_COLORS[row.aspect] || NO_ASPECT_COLOR}
+              />
+            ))}
+          </Bar>
+          <Bar dataKey="platformActual" name="Platform actual" fillOpacity={0.68}>
+            {rows.map((row) => (
+              <Cell
+                key={`platform-${row.aspect}`}
                 fill={ASPECT_COLORS[row.aspect] || NO_ASPECT_COLOR}
               />
             ))}
@@ -309,7 +334,11 @@ function AspectBars({ data, packsCracked, verdictCopy }: AspectChartProps) {
       <div className="your-stats-chart-legend" aria-hidden="true">
         <span className="your-stats-chart-legend-item">
           <span className="your-stats-chart-legend-swatch your-stats-chart-legend-swatch--expected" />
-          Expected
+          Theoretical
+        </span>
+        <span className="your-stats-chart-legend-item">
+          <span className="your-stats-chart-legend-swatch your-stats-chart-legend-swatch--platform" />
+          Platform actual
         </span>
         <span className="your-stats-chart-legend-item">
           <span className="your-stats-chart-legend-swatch your-stats-chart-legend-swatch--observed" />

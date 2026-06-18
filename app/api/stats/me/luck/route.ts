@@ -78,6 +78,12 @@ import {
   type LuckVerdict,
 } from '@/src/services/luckVerdict'
 import { getAllCards } from '@/src/utils/cardData'
+import { getSetConfig } from '@/src/utils/setConfigs'
+// Per-set duplicate-rate model (see docs/research/duplicate-rate-analysis.md and
+// the /duplicate-rates page). The definitive expected-duplicates-per-pool: a
+// sealed 6-pack pool runs ~4–6.7 duplicates, NOT zero — every pull of a card you
+// already opened (almost always its foil/hyperspace printing) is a duplicate.
+import duplicateStats from '@/src/data/duplicateStats.json'
 
 const DEFAULT_SINCE = '2020-01-01'
 const DEFAULT_UNTIL = '2099-12-31'
@@ -158,10 +164,16 @@ export function parseSetCodeParam(raw: string | null): string {
  */
 export interface GenerationRow {
   card_id: string
+  card_name?: string | null
   rarity: string
   aspects: string[] | null
   pack_index: number
   source_id: string
+  // Present on the user's own queries (not the platform aggregate); used by
+  // the duplicate-rate and showcase-rate widgets. Defaults treat a missing
+  // value as a normal base pull.
+  treatment?: string | null
+  is_showcase?: boolean | null
 }
 
 export interface ObservedAggregate {
@@ -316,6 +328,8 @@ export function buildRarityPanel(
   observed: Record<ExpectedRarity, number>,
   expected: Record<ExpectedRarity, number>,
   packsCracked: number,
+  platformActual: Record<ExpectedRarity, number> = emptyRarity(),
+  platformPacksCracked = 0,
 ) {
   const perRarity: Record<ExpectedRarity, LuckVerdict> = {} as Record<
     ExpectedRarity,
@@ -337,6 +351,8 @@ export function buildRarityPanel(
   return {
     observed,
     expected,
+    platformActual,
+    platformPacksCracked,
     perRarity,
     headlineRegime: headline.regime,
     headlineCopy: headline.copy,
@@ -352,6 +368,8 @@ export function buildAspectPanel(
   observed: Record<AspectCategory, number>,
   expected: Record<AspectCategory, number>,
   packsCracked: number,
+  platformActual: Record<AspectCategory, number> = emptyAspect(),
+  platformPacksCracked = 0,
 ) {
   const perAspect: Record<AspectCategory, LuckVerdict> = {} as Record<
     AspectCategory,
@@ -373,6 +391,8 @@ export function buildAspectPanel(
   return {
     observed,
     expected,
+    platformActual,
+    platformPacksCracked,
     perAspect,
     headlineRegime: headline.regime,
     headlineCopy: headline.copy,
@@ -473,7 +493,24 @@ export function buildEmptyResponse(setCode: string, scope: Scope) {
     aspect: buildAspectPanel(emptyAspect(), emptyAspect(), 0),
     streaks: [],
     streaksHasMore: false,
+    cardHits: [],
+    duplicates: EMPTY_DUPLICATES,
+    showcase: EMPTY_SHOWCASE,
   }
+}
+
+function scaleActualsToPlayerPacks<T extends string>(
+  actual: Record<T, number>,
+  sourcePacks: number,
+  targetPacks: number,
+  labels: readonly T[],
+): Record<T, number> {
+  const out: Record<string, number> = {}
+  const scale = sourcePacks > 0 ? targetPacks / sourcePacks : 0
+  for (const label of labels) {
+    out[label] = Number(actual[label] || 0) * scale
+  }
+  return out as Record<T, number>
 }
 
 // ---------------------------------------------------------------------------
@@ -507,16 +544,241 @@ function getNameLookup(setCode: string): (cardId: string) => string {
 }
 
 // ---------------------------------------------------------------------------
+// Card metadata lookup (number + aspects) for the histogram
+// ---------------------------------------------------------------------------
+
+export interface CardMeta {
+  number: number
+  name: string
+  aspects: string[]
+  rarity: string
+}
+
+// card_generations.card_id stores the catalog UUID (cards.json `id`, e.g.
+// "019d3176-…"), while the expected-distribution map keys by the collector id
+// (cardId, e.g. "LAW-032"). This resolver bridges the two so observed pulls
+// actually line up with expected — and collapses every variant (Hyperspace,
+// Foil, Showcase) of a card onto the same collector id.
+const uuidCache = new Map<string, Map<string, string>>()
+function getUuidToCardId(setCode: string): Map<string, string> {
+  let map = uuidCache.get(setCode)
+  if (map) return map
+  map = new Map<string, string>()
+  for (const card of getAllCards()) {
+    if (card.set !== setCode || !card.id || !card.cardId) continue
+    map.set(card.id, card.cardId)
+  }
+  uuidCache.set(setCode, map)
+  return map
+}
+
+const metaCache = new Map<string, Map<string, CardMeta>>()
+function getCardMetaLookup(setCode: string): Map<string, CardMeta> {
+  let map = metaCache.get(setCode)
+  if (map) return map
+  map = new Map<string, CardMeta>()
+  for (const card of getAllCards()) {
+    if (card.set !== setCode || !card.cardId) continue
+    if (map.has(card.cardId)) continue
+    const num = parseInt(String(card.number ?? '').replace(/\D/g, ''), 10)
+    map.set(card.cardId, {
+      number: Number.isFinite(num) ? num : 0,
+      name: card.name,
+      aspects: Array.isArray(card.aspects) ? card.aspects : [],
+      rarity: card.rarity || '',
+    })
+  }
+  metaCache.set(setCode, map)
+  return map
+}
+
+/**
+ * Build the per-card histogram: one entry per base-belt card in the set,
+ * sorted by collector number. `count` is the user's observed hits (0 shows a
+ * faint bar); `delta` and `z` quantify how far that is from expected so the
+ * UI can render a "luckier/unluckier than normal" tooltip with a consistent
+ * (non-aspect) contrast color. Poisson sigma = sqrt(expected).
+ */
+export function buildCardHits(
+  perCardObserved: Map<string, number>,
+  perCardExpected: Map<string, number>,
+  meta: Map<string, CardMeta>,
+) {
+  const hits: Array<{
+    cardId: string
+    number: number
+    name: string
+    aspects: string[]
+    rarity: string
+    count: number
+    expected: number
+    delta: number
+    z: number
+    withinNormal: boolean
+  }> = []
+  for (const [cardId, expected] of perCardExpected) {
+    const count = perCardObserved.get(cardId) ?? 0
+    const m = meta.get(cardId)
+    const sigma = Math.sqrt(Math.max(expected, 1e-9))
+    const z = sigma > 0 ? (count - expected) / sigma : 0
+    hits.push({
+      cardId,
+      number: m?.number ?? 0,
+      name: m?.name ?? cardId,
+      aspects: m?.aspects ?? [],
+      rarity: m?.rarity ?? '',
+      count,
+      expected,
+      delta: count - expected,
+      z,
+      // With a tiny expectation a single hit is unremarkable; only flag when
+      // there's enough expected mass for a |z|>2 to be meaningful.
+      withinNormal: expected < 1 ? count <= 1 : Math.abs(z) <= 2,
+    })
+  }
+  hits.sort((a, b) => a.number - b.number || a.cardId.localeCompare(b.cardId))
+  return hits
+}
+
+/**
+ * Per-pool duplicate identity = card NAME + SUBTITLE, collapsing every variant
+ * (foil / hyperspace / showcase / prestige) onto one gameplay card — the metric
+ * the duplicate-rate analysis uses. NEVER key on cardId: LAW gives each variant
+ * printing its own cardId, so a cardId key misses normal-vs-hyperspace
+ * collisions and under-reports (LAW would read ~0 instead of ~6.7).
+ */
+const dupIdentityCache = new Map<string, Map<string, string>>()
+function getDupIdentity(setCode: string): (row: GenerationRow) => string {
+  let map = dupIdentityCache.get(setCode)
+  if (!map) {
+    map = new Map<string, string>()
+    for (const c of getAllCards()) {
+      if (c.set !== setCode || !c.id) continue
+      const key = `${(c.name || '').trim()}|${(c.subtitle || '').trim()}`.toLowerCase()
+      if (!map.has(c.id)) map.set(c.id, key)
+    }
+    dupIdentityCache.set(setCode, map)
+  }
+  const m = map
+  return (row) => m.get(row.card_id) || (row.card_name || '').toLowerCase()
+}
+
+/**
+ * Duplicate-rate widget. Counts duplicates WITHIN each pool by gameplay identity
+ * (name+subtitle) so a card's foil/hyperspace printing counts as a repeat of the
+ * normal. Expected is NOT zero: per docs/research/duplicate-rate-analysis.md the
+ * belt drops same-printing repeats to ~0, but variant slots collide with a card
+ * already in the pool — ~4 per sealed pool (SOR–SEC), ~6.7 for LAW/ASH. We pull
+ * the per-set expected (sealed-6 vs draft-3, chosen per pool by pack count) from
+ * the precomputed duplicateStats.json so the user's actual is judged against the
+ * real model, not a placeholder.
+ */
+function dupModel(setCode: string): { sealed: any; draft: any } | null {
+  const s = (duplicateStats as any).sets?.[setCode]
+  return s ? { sealed: s.sealed6, draft: s.draft3 } : null
+}
+
+export function buildDuplicates(rows: GenerationRow[], setCode: string, identityOf?: (row: GenerationRow) => string) {
+  const idOf = identityOf || ((r: GenerationRow) => (r.card_name || r.card_id || '').toLowerCase())
+  const byPool = new Map<string, { ids: Map<string, number>; packs: Set<string>; total: number }>()
+  for (const r of rows) {
+    const id = idOf(r)
+    if (!id) continue
+    let pool = byPool.get(r.source_id)
+    if (!pool) { pool = { ids: new Map(), packs: new Set(), total: 0 }; byPool.set(r.source_id, pool) }
+    pool.total += 1
+    pool.ids.set(id, (pool.ids.get(id) ?? 0) + 1)
+    if (r.pack_index != null && String(r.pack_index) !== 'null') pool.packs.add(String(r.pack_index))
+  }
+
+  const model = dupModel(setCode)
+  let sumActual = 0
+  let poolCount = 0
+  let sumPacks = 0
+  let expSum = 0
+  let expVar = 0
+  for (const pool of byPool.values()) {
+    if (pool.total === 0) continue
+    poolCount += 1
+    sumActual += pool.total - pool.ids.size
+    const packs = pool.packs.size > 0 ? pool.packs.size : Math.max(1, Math.round(pool.total / 16))
+    sumPacks += packs
+    if (model) {
+      // ≥5 packs ⇒ a sealed 6-pack pool; otherwise a draft-sized pool.
+      const m = packs >= 5 ? model.sealed : model.draft
+      expSum += Number(m?.mean || 0)
+      expVar += Math.pow(Number(m?.sd || 0), 2)
+    }
+  }
+
+  return {
+    pools: poolCount,
+    avgPacksPerPool: poolCount > 0 ? sumPacks / poolCount : 0,
+    actualPerPool: poolCount > 0 ? sumActual / poolCount : 0,
+    expectedPerPool: poolCount > 0 && model ? expSum / poolCount : 0,
+    // SE of the model's expected mean across the user's pools (for the z-test).
+    expectedSd: poolCount > 0 && model ? Math.sqrt(expVar) / poolCount : 0,
+    hasModel: !!model,
+  }
+}
+
+/**
+ * Showcase-rate widget. Showcase leaders are an independent per-pack coin
+ * flip (setConfig.upgradeProbabilities.leaderToShowcase, ~1/576). Actual =
+ * showcase rows / packs.
+ */
+export function buildShowcase(
+  rows: GenerationRow[],
+  packsCracked: number,
+  expectedPerPack: number,
+) {
+  const actualCount = rows.reduce((n, r) => n + (r.is_showcase ? 1 : 0), 0)
+  return {
+    actualCount,
+    actualRate: packsCracked > 0 ? actualCount / packsCracked : 0,
+    expectedRate: expectedPerPack,
+    expectedCount: expectedPerPack * packsCracked,
+  }
+}
+
+const EMPTY_DUPLICATES = {
+  pools: 0,
+  avgPacksPerPool: 0,
+  actualPerPool: 0,
+  expectedPerPool: 0,
+  expectedSd: 0,
+  hasModel: false,
+}
+const EMPTY_SHOWCASE = {
+  actualCount: 0,
+  actualRate: 0,
+  expectedRate: 0,
+  expectedCount: 0,
+}
+
+// ---------------------------------------------------------------------------
 // SQL — scope=kept
 // ---------------------------------------------------------------------------
 
+// Only regular booster packs count toward luck — never leader boxes,
+// carbonite (which carries its own -CB set code anyway), or anything else.
 const KEPT_SQL = `
-  SELECT card_id, rarity, aspects, pack_index, source_id, source_type
+  SELECT card_id, card_name, rarity, aspects, pack_index, source_id, source_type, treatment, is_showcase
   FROM card_generations
   WHERE user_id = $1
     AND set_code = $2
+    AND pack_type = 'booster'
     AND generated_at >= $3
     AND generated_at < ($4::date + interval '1 day')
+`
+
+const PLATFORM_KEPT_SQL = `
+  SELECT card_id, rarity, aspects, pack_index, source_id, source_type
+  FROM card_generations
+  WHERE user_id IS NOT NULL
+    AND set_code = $1
+    AND generated_at >= $2
+    AND generated_at < ($3::date + interval '1 day')
 `
 
 // ---------------------------------------------------------------------------
@@ -525,12 +787,13 @@ const KEPT_SQL = `
 
 // Sealed: cracker == pool owner.
 const OPENED_SEALED_SQL = `
-  SELECT cg.card_id, cg.rarity, cg.aspects, cg.pack_index, cg.source_id, cg.source_type
+  SELECT cg.card_id, cg.card_name, cg.rarity, cg.aspects, cg.pack_index, cg.source_id, cg.source_type, cg.treatment, cg.is_showcase
   FROM card_generations cg
   JOIN card_pools cp ON cp.id = cg.source_id
   WHERE cg.source_type = 'sealed'
     AND cp.user_id = $1
     AND cg.set_code = $2
+    AND cg.pack_type = 'booster'
     AND cg.generated_at >= $3
     AND cg.generated_at < ($4::date + interval '1 day')
 `
@@ -554,7 +817,7 @@ const OPENED_SEALED_SQL = `
 // seat_number is 1-indexed (host = 1) so we compare against
 // packOpenerSeat() + 1.
 const OPENED_DRAFT_SQL = `
-  SELECT cg.card_id, cg.rarity, cg.aspects, cg.pack_index, cg.source_id, cg.source_type
+  SELECT cg.card_id, cg.card_name, cg.rarity, cg.aspects, cg.pack_index, cg.source_id, cg.source_type, cg.treatment, cg.is_showcase
   FROM card_generations cg
   JOIN pods p ON p.id = cg.source_id
   JOIN pod_players pp ON pp.pod_id = p.id
@@ -562,6 +825,7 @@ const OPENED_DRAFT_SQL = `
                       AND pp.is_bot = false
   WHERE cg.source_type = 'draft'
     AND cg.set_code = $2
+    AND cg.pack_type = 'booster'
     AND cg.generated_at >= $3
     AND cg.generated_at < ($4::date + interval '1 day')
     AND (
@@ -571,6 +835,14 @@ const OPENED_DRAFT_SQL = `
       (p.settings->>'draftMode' = 'chaos'
         AND pp.seat_number = (cg.pack_index::int % 8) + 1)
     )
+`
+
+const PLATFORM_OPENED_SQL = `
+  SELECT card_id, rarity, aspects, pack_index, source_id, source_type
+  FROM card_generations
+  WHERE set_code = $1
+    AND generated_at >= $2
+    AND generated_at < ($3::date + interval '1 day')
 `
 
 // ---------------------------------------------------------------------------
@@ -658,39 +930,94 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       response.headers.set('Vary', 'Cookie')
       return response as unknown as NextResponse
     }
-    const expectedTotal = scaleExpected(perPack, observed.packsCracked)
+    // packsCracked from distinct (source_id, pack_index) UNDERCOUNTS whenever
+    // pack_index is null (older pools wrote one null index for a whole pool).
+    // Every booster is ~16 cards, so rows/16 is a robust floor; take the larger
+    // of the two so a reliable pack_index still wins. This keeps "expected"
+    // scaled to the packs actually opened — otherwise expected reads far too
+    // low and every aspect looks "lucky".
+    const CARDS_PER_PACK = 16
+    const effectivePacks = Math.max(
+      observed.packsCracked,
+      Math.round(rows.length / CARDS_PER_PACK),
+    )
+    const expectedTotal = scaleExpected(perPack, effectivePacks)
+
+    const platformRows = (await queryRows(
+      scope === 'kept' ? PLATFORM_KEPT_SQL : PLATFORM_OPENED_SQL,
+      [setCode, since, until],
+    )) as unknown as GenerationRow[]
+    const platformObserved = aggregateObserved(platformRows)
+    const platformRarityForPlayerPacks = scaleActualsToPlayerPacks(
+      platformObserved.rarity,
+      platformObserved.packsCracked,
+      observed.packsCracked,
+      RARITIES,
+    )
+    const platformAspectForPlayerPacks = scaleActualsToPlayerPacks(
+      platformObserved.aspect,
+      platformObserved.packsCracked,
+      observed.packsCracked,
+      ASPECT_CATEGORIES,
+    )
 
     // --- panels ---
     const rarityPanel = buildRarityPanel(
       observed.rarity,
       expectedTotal.rarity,
       observed.packsCracked,
+      platformRarityForPlayerPacks,
+      platformObserved.packsCracked,
     )
     const aspectPanel = buildAspectPanel(
       observed.aspect,
       expectedTotal.aspect,
       observed.packsCracked,
+      platformAspectForPlayerPacks,
+      platformObserved.packsCracked,
     )
+
+    // Collapse observed pulls from the catalog UUID (what the DB stores) to the
+    // collector id (cardId, what expected is keyed by), folding every variant of
+    // a card onto one identity. Without this, per-card observed never matches
+    // expected and the histogram + streaks read as all-zero.
+    const uuidToCardId = getUuidToCardId(setCode)
+    const observedByCardId = new Map<string, number>()
+    for (const [uuid, count] of observed.perCard) {
+      const cardId = uuidToCardId.get(uuid) ?? uuid
+      observedByCardId.set(cardId, (observedByCardId.get(cardId) ?? 0) + count)
+    }
 
     // --- streaks ---
     // PRIVACY: per-card pull history. NEVER expose in a shareable view
     // without an explicit privacy decision.
     const nameLookup = getNameLookup(setCode)
     const streaksResult = buildStreaks(
-      observed.perCard,
+      observedByCardId,
       expectedTotal.cards,
-      observed.packsCracked,
+      effectivePacks,
       nameLookup,
     )
+
+    // --- card histogram + duplicate / showcase widgets ---
+    const cardMeta = getCardMetaLookup(setCode)
+    const cardHits = buildCardHits(observedByCardId, expectedTotal.cards, cardMeta)
+    const duplicates = buildDuplicates(rows, setCode, getDupIdentity(setCode))
+    const setConfig = getSetConfig(setCode)
+    const showcasePerPack = Number(setConfig?.upgradeProbabilities?.leaderToShowcase || 0)
+    const showcase = buildShowcase(rows, effectivePacks, showcasePerPack)
 
     const body = {
       setCode,
       scope,
-      packsCracked: observed.packsCracked,
+      packsCracked: effectivePacks,
       rarity: rarityPanel,
       aspect: aspectPanel,
       streaks: streaksResult.streaks,
       streaksHasMore: streaksResult.hasMore,
+      cardHits,
+      duplicates,
+      showcase,
     }
 
     const response = jsonResponse(body)

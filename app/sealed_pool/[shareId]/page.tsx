@@ -4,6 +4,7 @@
 import { useState, useEffect, use } from 'react'
 import SealedPod from '../../../src/components/SealedPod'
 import PoolBuilds from '../../../src/components/PoolBuilds'
+import Button from '../../../src/components/Button'
 import { loadPool } from '../../../src/utils/poolApi'
 import { useAuth } from '../../../src/contexts/AuthContext'
 import { useTrackPoolView } from '../../../src/hooks/useTrackPoolView'
@@ -125,23 +126,36 @@ export default function SealedPoolPage({ params }: PageProps) {
     }
   }, [shareId])
 
-  useEffect(() => {
-    if (error && !loading && !pool) {
-      const timer = setTimeout(() => {
-        window.location.href = '/sealed'
-      }, 2000)
-      return () => clearTimeout(timer)
-    }
-  }, [error, loading, pool])
-
   const handleBack = () => {
     window.location.href = '/'
   }
 
   if (error && !loading && !pool) {
     return (
-      <div className="app">
-        <div className="loading"></div>
+      <div
+        className="app"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '60vh',
+          textAlign: 'center',
+          padding: '2rem',
+        }}
+      >
+        <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Pool not found</h1>
+        <p style={{ color: 'rgba(255, 255, 255, 0.7)', maxWidth: '400px', lineHeight: 1.6 }}>
+          We couldn&apos;t find that sealed pool. It may have been removed, or the link may be incorrect.
+        </p>
+        <Button
+          variant="primary"
+          size="lg"
+          onClick={() => { window.location.href = '/sealed' }}
+          style={{ marginTop: '2rem' }}
+        >
+          Back to Sealed
+        </Button>
       </div>
     )
   }

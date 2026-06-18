@@ -904,10 +904,12 @@
 }
 
 .metric-value {
-  font-size: 2rem;
+  /* Demoted from the 2rem "hero metric" size — these are supporting QA figures,
+     not a dashboard headline. */
+  font-size: 1.4rem;
   font-weight: 700;
   color: #fff;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
 }
 
 .metric-expected {
@@ -1532,7 +1534,7 @@
 }
 
 .stats-row-all {
-  color: #64B5F6;
+  color: #4DB6AC;
   font-size: 0.8rem;
 }
 
@@ -1592,11 +1594,11 @@
 }
 
 .stats-legend-all {
-  color: #64B5F6;
+  color: #4DB6AC;
 }
 
 .stats-legend-all input[type="checkbox"] {
-  accent-color: #64B5F6;
+  accent-color: #4DB6AC;
 }
 
 .stats-legend-top {
@@ -1768,9 +1770,10 @@
   margin-bottom: 1.5rem;
   padding: 1.25rem;
   background: rgba(0, 0, 0, 0.4);
-  border: 2px solid;
-  border-image: linear-gradient(135deg, #F5A623, #D4831A, #F5A623) 1;
-  border-radius: 0;
+  /* Clean amber border at the system radius (no border-image gradient / squared
+     corners, which broke the 12px radius language). */
+  border: 1px solid rgba(245, 166, 35, 0.55);
+  border-radius: 12px;
 }
 
 .stats-patron-cta-content {

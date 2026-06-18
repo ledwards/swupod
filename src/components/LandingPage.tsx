@@ -18,6 +18,7 @@ import {
 } from './landingPagePromo'
 import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 import ReleaseNotes from './ReleaseNotes'
+import { WAYFINDER_NEWS_URL } from './WayfinderStoreButtons'
 import Button from './Button'
 import SubscribeModal from './SubscribeModal'
 import Countdown from './Countdown'
@@ -58,7 +59,9 @@ const MODE_ART = {
   draftLive: 'https://cdn.starwarsunlimited.com//card_07020493_EN_The_Master_Codebreaker_fb7127ab41.png',
   history: 'https://cdn.starwarsunlimited.com//card_05020502_EN_Darth_Revan_s_Lightsabers_d4bd32215b.png',
   deckbuilder: 'https://cdn.starwarsunlimited.com//card_04030998_EN_Grand_Admiral_Thrawn_Leader_Unit_eba4967d61.png',
-  importPool: 'https://cdn.starwarsunlimited.com//card_04020522_EN_Death_Star_Plans_c573838ad4.png',
+  stats: 'https://cdn.starwarsunlimited.com//card_SWH_01_493_AT_ST_HYP_ff73b562a5.png',
+  // My Stats tile: R2-D2 (JTL) hyperspace unit art.
+  myStats: 'https://cdn.starwarsunlimited.com//card_04020507_EN_R2_D2_19d6f25cf9.png',
 }
 
 interface ActiveDraft {
@@ -544,6 +547,13 @@ function LandingPage() {
           <div className="mode-section">
             <h3 className="mode-section-header">Deckbuilder</h3>
             <div className="mode-column">
+              <button className="mode-button art-unit mode-button-deckbuilder" onClick={() => router.push('/deckbuilder')}>
+                <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.deckbuilder}")` }} />
+                <div className="mode-button-content">
+                  <span className="mode-button-title">Limited</span>
+                  <span className="mode-button-subtitle">Infinite copies of every card in a set</span>
+                </div>
+              </button>
               {user && (
                 <button className="mode-button art-unit" onClick={() => router.push('/history')}>
                   <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.history}")` }} />
@@ -553,22 +563,13 @@ function LandingPage() {
                   </div>
                 </button>
               )}
-              <button className="mode-button art-unit mode-button-deckbuilder" onClick={() => router.push('/deckbuilder')}>
-                <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.deckbuilder}")` }} />
+              <button className="mode-button art-unit" onClick={() => router.push('/me')}>
+                <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.myStats}")` }} />
                 <div className="mode-button-content">
-                  <span className="mode-button-title">Limited</span>
-                  <span className="mode-button-subtitle">Infinite copies of every card in a set</span>
+                  <span className="mode-button-title">My Stats</span>
+                  <span className="mode-button-subtitle">Your performance and history</span>
                 </div>
               </button>
-              {hasBetaAccess && (
-                <button className="mode-button art-unit" onClick={() => router.push('/import')}>
-                  <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.importPool}")` }} />
-                  <div className="mode-button-content">
-                    <span className="mode-button-title">Import Pool</span>
-                    <span className="mode-button-subtitle">From your registered sealed sheet</span>
-                  </div>
-                </button>
-              )}
             </div>
           </div>
         </div>
@@ -576,6 +577,8 @@ function LandingPage() {
       <div className="landing-disclaimer">
         <div className="landing-footer-links">
           <a href="/stats" onClick={(e) => { e.preventDefault(); router.push('/stats') }}>Stats</a>
+          <span className="footer-separator">·</span>
+          <a href="/duplicate-rates" onClick={(e) => { e.preventDefault(); router.push('/duplicate-rates') }}>Dupe Rates</a>
           <span className="footer-separator">·</span>
           <a href="/qa" onClick={(e) => { e.preventDefault(); router.push('/qa') }}>QA</a>
           <span className="footer-separator">·</span>
@@ -586,6 +589,8 @@ function LandingPage() {
           <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">Patreon</a>
           <span className="footer-separator">·</span>
           <a href="https://swag.protectthepod.com" target="_blank" rel="noopener noreferrer">Swag</a>
+          <span className="footer-separator">·</span>
+          <a href={WAYFINDER_NEWS_URL} target="_blank" rel="noopener noreferrer">Companion</a>
           <span className="footer-separator">·</span>
           <a href="/support-the-pod" onClick={(e) => { e.preventDefault(); router.push('/support-the-pod') }}>Support the Pod</a>
           <span className="footer-separator">·</span>

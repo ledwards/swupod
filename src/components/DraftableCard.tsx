@@ -52,6 +52,7 @@ function DraftableCard({
 }: DraftableCardProps) {
   const [imageError, setImageError] = useState(false)
   const [hoveredCardPreview, setHoveredCardPreview] = useState<CardPreview | null>(null)
+  const [mobileZoom, setMobileZoom] = useState(false)
   const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [mounted, setMounted] = useState(false)
 
@@ -74,7 +75,53 @@ function DraftableCard({
 
   const handleClick = () => {
     if (disabled) return
+    // If a long-press just opened the zoom, swallow this click so the same
+    // gesture doesn't also pick the card.
+    if (longPressFiredRef.current) {
+      longPressFiredRef.current = false
+      return
+    }
     onClick?.(card)
+  }
+
+  // Long-press to inspect on touch devices: press and hold (~450ms) zooms the
+  // card; a quick tap still picks it. Movement (a scroll) cancels the press, so
+  // you can't accidentally zoom while scrolling the pack — and the click guard
+  // above means a zoom never doubles as a pick.
+  const LONG_PRESS_MS = 450
+  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const longPressFiredRef = useRef(false)
+  const touchStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
+
+  const clearLongPress = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current)
+      longPressTimerRef.current = null
+    }
+  }
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (disabled || !card.imageUrl) return
+    longPressFiredRef.current = false
+    const t = e.touches[0]
+    touchStartRef.current = { x: t.clientX, y: t.clientY }
+    clearLongPress()
+    longPressTimerRef.current = setTimeout(() => {
+      longPressFiredRef.current = true
+      setMobileZoom(true)
+    }, LONG_PRESS_MS)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const t = e.touches[0]
+    if (Math.abs(t.clientX - touchStartRef.current.x) > 10 ||
+        Math.abs(t.clientY - touchStartRef.current.y) > 10) {
+      clearLongPress()
+    }
+  }
+
+  const handleTouchEnd = () => {
+    clearLongPress()
   }
 
   // Keyboard operability: the card is the core pick affordance, so it must be
@@ -160,6 +207,10 @@ function DraftableCard({
         onContextMenu={handleRightClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
         role="button"
         tabIndex={disabled ? -1 : 0}
         aria-pressed={selected}
@@ -199,6 +250,41 @@ function DraftableCard({
           )}
         </div>
       </div>
+
+      {mounted && mobileZoom && card.imageUrl && createPortal(
+        <div
+          className="draftable-card-zoom-overlay"
+          onClick={() => setMobileZoom(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${card.name || 'Card'} enlarged`}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            background: 'rgba(0, 0, 0, 0.85)',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1rem',
+          }}
+        >
+          <img
+            src={card.imageUrl}
+            alt={card.name}
+            style={{
+              maxWidth: '92vw',
+              maxHeight: '85vh',
+              objectFit: 'contain',
+              borderRadius: '12px',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
+            }}
+          />
+        </div>,
+        document.body
+      )}
 
       {mounted && hoveredCardPreview && createPortal(
         (() => {

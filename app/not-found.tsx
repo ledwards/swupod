@@ -45,7 +45,7 @@ export default function NotFound() {
       <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>
         Page Not Found
       </h1>
-      <p style={{ color: '#888', maxWidth: '400px', lineHeight: 1.6 }}>
+      <p style={{ color: 'rgba(255, 255, 255, 0.7)', maxWidth: '400px', lineHeight: 1.6 }}>
         The page you&apos;re looking for doesn&apos;t exist or has been moved.
       </p>
       <a href="/" className="btn btn--primary btn--lg" style={{ marginTop: '2rem' }}>
