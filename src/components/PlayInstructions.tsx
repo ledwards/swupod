@@ -470,7 +470,7 @@ export default function PlayInstructions({
         </div>
       )}
 
-      {viewingOthersDeck || !companionBeta ? (
+      {viewingOthersDeck || (!companionBeta && !wayfinderDetected) ? (
         <div className="play-steps">
           {renderManualSteps()}
         </div>

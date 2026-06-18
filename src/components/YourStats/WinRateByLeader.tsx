@@ -128,11 +128,12 @@ export function WinRateByLeader({
         <p className="your-stats-meta-empty">
           {mode === 'meta'
             ? 'No captured games for this set across the site yet.'
-            : !companionBeta
-              ? 'Coming soon — your win rate by leader will show up here.'
-              : (<>No captured games yet for this set.{' '}
-                {detected ? 'Queue your pools on Karabast and win rates fill in here.'
-                  : 'Install the Wayfinder Companion and play your pool on Karabast to record games.'}</>)}
+            : detected
+              // Has the plugin → functional copy regardless of the promo gate.
+              ? (<>No captured games yet for this set. Queue your pools on Karabast and win rates fill in here.</>)
+              : !companionBeta
+                ? 'Coming soon — your win rate by leader will show up here.'
+                : (<>No captured games yet for this set. Install the Wayfinder Companion and play your pool on Karabast to record games.</>)}
         </p>
       ) : (
         <>
