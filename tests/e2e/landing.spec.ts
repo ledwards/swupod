@@ -37,9 +37,11 @@ test.describe('Landing Page', () => {
     await expect(page.locator('.mode-section-header').nth(0)).toContainText('Solo')
     await expect(page.locator('.mode-section-header').nth(1)).toContainText('Live Pod')
 
-    // Check mode buttons exist (Sealed, Draft, Other in each column)
+    // Mode buttons across three columns. Logged out: Solo (Sealed/Draft/Other) +
+    // Live Pod (Sealed/Draft/Other) + Deckbuilder (Limited/My Stats) = 8.
+    // (History only appears in the Deckbuilder column when signed in.)
     const modeButtons = page.locator('.mode-button')
-    await expect(modeButtons).toHaveCount(6)
+    await expect(modeButtons).toHaveCount(8)
 
     // Check for subtitle text
     await expect(page.locator('.subtitle')).toContainText('Star Wars Unlimited')
