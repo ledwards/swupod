@@ -111,7 +111,7 @@ export function WayfinderStoreButtons({
 }: WayfinderStoreButtonsProps) {
   const isMobile = useIsMobile()
   const cards = isMobile ? MOBILE_BROWSERS : DESKTOP_BROWSERS
-  const alsoOn = isMobile ? 'desktop' : 'mobile'
+  const alsoLine = isMobile ? 'Also available on desktop' : 'Also available on iOS and Android'
   return (
     <div className={`wf-store wf-store--${orientation}`}>
       <div className="wf-store-grid" aria-label="Companion availability">
@@ -159,7 +159,7 @@ export function WayfinderStoreButtons({
           )
         })}
       </div>
-      <p className="wf-store-also">Also available for {alsoOn}</p>
+      <p className="wf-store-also">{alsoLine}</p>
     </div>
   )
 }
