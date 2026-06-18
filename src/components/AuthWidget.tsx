@@ -4,6 +4,7 @@
 import { useState, useEffect, useRef } from 'react'
 import type { MouseEvent } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { isCompanionBeta } from '../utils/companionBeta'
 import { fetchUserPools } from '../utils/poolApi'
 import { formatPoolLabel } from '../utils/poolDisplayName'
 import { poolDisplayName } from '../utils/archetypeName'
@@ -365,18 +366,20 @@ export default function AuthWidget() {
                 History
               </a>
 
-              <a
-                href={WAYFINDER_NEWS_URL}
-                className="auth-widget-drawer-menu-item"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setDrawerOpen(false)}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M10 3H6a2 2 0 0 0-2 2v4a2 2 0 0 1 0 4v4a2 2 0 0 0 2 2h4a2 2 0 0 1 4 0h4a2 2 0 0 0 2-2v-4a2 2 0 0 1 0-4V5a2 2 0 0 0-2-2h-4a2 2 0 0 1-4 0z"></path>
-                </svg>
-                Companion
-              </a>
+              {isCompanionBeta(user) && (
+                <a
+                  href={WAYFINDER_NEWS_URL}
+                  className="auth-widget-drawer-menu-item"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setDrawerOpen(false)}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10 3H6a2 2 0 0 0-2 2v4a2 2 0 0 1 0 4v4a2 2 0 0 0 2 2h4a2 2 0 0 1 4 0h4a2 2 0 0 0 2-2v-4a2 2 0 0 1 0-4V5a2 2 0 0 0-2-2h-4a2 2 0 0 1-4 0z"></path>
+                  </svg>
+                  Companion
+                </a>
+              )}
 
               <div className="auth-widget-drawer-section-label">Perks</div>
 

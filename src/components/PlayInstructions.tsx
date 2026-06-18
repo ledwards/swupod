@@ -8,6 +8,8 @@ import { buildLimitedContext, LimitedAnalyticsEvents, LimitedPlayActions } from 
 import { KARABAST_PUBLIC_LOBBY_NAME } from '../utils/karabastLobby'
 import WayfinderStoreButtons, { WayfinderCompanionLockup } from './WayfinderStoreButtons'
 import Button from './Button'
+import { useAuth } from '../contexts/AuthContext'
+import { isCompanionBeta } from '../utils/companionBeta'
 import './PlayInstructions.css'
 
 const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/u6fkdDzWqF'
@@ -77,6 +79,10 @@ export default function PlayInstructions({
   autoLobbyIntent = null,
   analyticsContext = {},
 }: PlayInstructionsProps) {
+  // The Companion is beta-gated: non-beta players see the pre-plugin manual
+  // flow only (no install pitch, no autojoin column).
+  const { user } = useAuth() as { user: { is_beta_tester?: boolean | null; is_admin?: boolean | null } | null }
+  const companionBeta = isCompanionBeta(user)
   const inPod = poolType === 'draft' || poolType === 'sealed_pod'
   const viewingOthersDeck = !isOwner && ownerName
   const isCurrentSet = setCode === getLatestReleasedSetCode()
@@ -464,7 +470,7 @@ export default function PlayInstructions({
         </div>
       )}
 
-      {viewingOthersDeck ? (
+      {viewingOthersDeck || !companionBeta ? (
         <div className="play-steps">
           {renderManualSteps()}
         </div>

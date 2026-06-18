@@ -87,11 +87,15 @@ export function WinRateByLeader({
   title,
   mode,
   eyebrow = 'Win Rate',
+  companionBeta = true,
 }: {
   leaders: WinRateLeader[]
   title: string
   mode: 'personal' | 'meta'
   eyebrow?: string
+  /** Beta users get the Companion install pitch in the empty state; others get a
+   *  neutral "coming soon". Defaults true (meta usage isn't a plugin pitch). */
+  companionBeta?: boolean
 }) {
   const { detected } = useWayfinderDetection()
   const ranked = useMemo(
@@ -124,7 +128,9 @@ export function WinRateByLeader({
         <p className="your-stats-meta-empty">
           {mode === 'meta'
             ? 'No captured games for this set across the site yet.'
-            : (<>No captured games yet for this set.{' '}
+            : !companionBeta
+              ? 'Coming soon — your win rate by leader will show up here.'
+              : (<>No captured games yet for this set.{' '}
                 {detected ? 'Queue your pools on Karabast and win rates fill in here.'
                   : 'Install the Wayfinder Companion and play your pool on Karabast to record games.'}</>)}
         </p>

@@ -603,8 +603,12 @@ function LandingPage() {
           <span className="footer-separator">·</span>
           <a href="https://swag.protectthepod.com" target="_blank" rel="noopener noreferrer">Swag</a>
           <span className="footer-separator">·</span>
-          <a href={WAYFINDER_NEWS_URL} target="_blank" rel="noopener noreferrer">Companion</a>
-          <span className="footer-separator">·</span>
+          {hasBetaAccess && (
+            <>
+              <a href={WAYFINDER_NEWS_URL} target="_blank" rel="noopener noreferrer">Companion</a>
+              <span className="footer-separator">·</span>
+            </>
+          )}
           <a href="/support-the-pod" onClick={(e) => { e.preventDefault(); router.push('/support-the-pod') }}>Support the Pod</a>
           <span className="footer-separator">·</span>
           <a href="/terms-of-service" onClick={(e) => { e.preventDefault(); router.push('/terms-of-service') }}>Terms</a>

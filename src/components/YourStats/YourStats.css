@@ -454,6 +454,25 @@
   border-radius: var(--ys-radius);
 }
 
+/* Non-beta "coming soon" variant — neutral, no Companion-blue pitch styling. */
+.your-stats-gameplay-cta--soon {
+  background: var(--ys-surface);
+  border-color: var(--ys-border, rgba(255, 255, 255, 0.16));
+}
+.your-stats-soon-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  margin-bottom: 0.6rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--ys-border, rgba(255, 255, 255, 0.2));
+  color: var(--ys-text-2, rgba(255, 255, 255, 0.7));
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
 .your-stats-gameplay-cta > div:not(.wf-store) {
   max-width: 56ch;
   margin: 0 auto;
