@@ -727,6 +727,26 @@ export function useDeckExport({
         .map(pos => pos.card)
         .sort(defaultSort)
 
+      // Group identical cards into one tile with a quantity, sorted by COST then
+      // alphabetically — so a deck shows "card xN" instead of repeated tiles.
+      const groupCards = (cards: ExportCard[]): Array<{ card: ExportCard; count: number }> => {
+        const m = new Map<string, { card: ExportCard; count: number }>()
+        for (const c of cards) {
+          const key = getBaseCardId(c) || `${c.name || ''}|${(c as { subtitle?: string }).subtitle || ''}`
+          const e = m.get(key)
+          if (e) e.count++
+          else m.set(key, { card: c, count: 1 })
+        }
+        return Array.from(m.values()).sort((a, b) => {
+          const ca = a.card.cost ?? 999
+          const cb = b.card.cost ?? 999
+          if (ca !== cb) return ca - cb
+          return (a.card.name || '').toLowerCase().localeCompare((b.card.name || '').toLowerCase())
+        })
+      }
+      const deckGroups = groupCards(deckCards)
+      const poolGroups = groupCards(poolCards)
+
       // Get other leaders (not the active leader)
       const otherLeaders = Object.entries(cardPositions)
         .filter(([cardId, pos]) => pos.visible && pos.card.isLeader && cardId !== activeLeader)
@@ -755,8 +775,8 @@ export function useDeckExport({
       const leaderRotatedHeight = leaderBaseWidth  // 162
       const cardsPerRow = 8
       const separatorHeight = 4
-      const deckRows = Math.ceil(deckCards.length / cardsPerRow)
-      const poolRows = Math.ceil(poolCards.length / cardsPerRow)
+      const deckRows = Math.ceil(deckGroups.length / cardsPerRow)
+      const poolRows = Math.ceil(poolGroups.length / cardsPerRow)
       const hasLeaderBase = selectedLeader || selectedBase
       const hasOtherLeadersOrBases = otherLeaders.length > 0 || otherBases.length > 0
       // Leader rotated, base landscape — both same height
@@ -902,6 +922,23 @@ export function useDeckExport({
         })
       }
 
+      // Quantity badge for cards with >1 copy — drawn on top, bottom-right.
+      const drawQtyBadge = (x: number, y: number, w: number, h: number, count: number): void => {
+        if (!count || count <= 1) return
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)'
+        ctx.beginPath()
+        ctx.arc(x + w - 16, y + h - 16, 13, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)'
+        ctx.lineWidth = 1.5
+        ctx.stroke()
+        ctx.fillStyle = 'white'
+        ctx.font = 'bold 15px Arial'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(`${count}`, x + w - 16, y + h - 16)
+      }
+
       currentY = padding + heroHeight
 
       // Title (deck name) + "Draft Deck" / "Sealed Deck" subtitle.
@@ -945,10 +982,11 @@ export function useDeckExport({
       // Draw deck cards
       let col = 0
       let row = 0
-      for (const card of deckCards) {
+      for (const { card, count } of deckGroups) {
         const x = padding + col * (cardWidth + spacing)
         const y = currentY + row * (cardHeight + spacing)
         await drawCard(card, x, y, cardWidth, cardHeight, false)
+        drawQtyBadge(x, y, cardWidth, cardHeight, count)
         col++
         if (col >= cardsPerRow) {
           col = 0
@@ -1006,10 +1044,11 @@ export function useDeckExport({
       // Draw pool cards (in grayscale)
       col = 0
       row = 0
-      for (const card of poolCards) {
+      for (const { card, count } of poolGroups) {
         const x = padding + col * (cardWidth + spacing)
         const y = currentY + row * (cardHeight + spacing)
         await drawCard(card, x, y, cardWidth, cardHeight, true)
+        drawQtyBadge(x, y, cardWidth, cardHeight, count)
         col++
         if (col >= cardsPerRow) {
           col = 0
