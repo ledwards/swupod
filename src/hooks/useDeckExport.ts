@@ -1033,21 +1033,24 @@ export function useDeckExport({
         currentY += otherLeadersRowHeight + sectionSpacing
       }
 
-      // Draw "Pool" section label
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
+      // Leftover (non-deck) cards. In DRAFT these are the player's Sideboard,
+      // drawn in full color and styled exactly like the main deck (same grouping,
+      // qty badges, and cost→name sort). In SEALED they stay the dimmed grayscale
+      // "Pool" — the leftover sealed pool isn't a curated sideboard.
+      ctx.fillStyle = isDraftMode ? 'white' : 'rgba(255, 255, 255, 0.7)'
       ctx.font = 'bold 24px Arial'
       ctx.textAlign = 'left'
       ctx.textBaseline = 'top'
-      ctx.fillText(`Pool (${poolCards.length})`, padding, currentY)
+      ctx.fillText(`${isDraftMode ? 'Sideboard' : 'Pool'} (${poolCards.length})`, padding, currentY)
       currentY += labelHeight
 
-      // Draw pool cards (in grayscale)
+      // Draft sideboard: full color (like the deck). Sealed pool: grayscale.
       col = 0
       row = 0
       for (const { card, count } of poolGroups) {
         const x = padding + col * (cardWidth + spacing)
         const y = currentY + row * (cardHeight + spacing)
-        await drawCard(card, x, y, cardWidth, cardHeight, true)
+        await drawCard(card, x, y, cardWidth, cardHeight, !isDraftMode)
         drawQtyBadge(x, y, cardWidth, cardHeight, count)
         col++
         if (col >= cardsPerRow) {
