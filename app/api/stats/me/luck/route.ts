@@ -80,7 +80,7 @@ import {
 import { getAllCards } from '@/src/utils/cardData'
 import { getSetConfig } from '@/src/utils/setConfigs'
 // Per-set duplicate-rate model (see docs/research/duplicate-rate-analysis.md and
-// the /duplicate-rates page). The definitive expected-duplicates-per-pool: a
+// the Duplicates tab on /qa). The definitive expected-duplicates-per-pool: a
 // sealed 6-pack pool runs ~4–6.7 duplicates, NOT zero — every pull of a card you
 // already opened (almost always its foil/hyperspace printing) is a duplicate.
 import duplicateStats from '@/src/data/duplicateStats.json'

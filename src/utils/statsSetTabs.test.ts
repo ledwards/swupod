@@ -10,8 +10,8 @@ import {
 import { getSetConfig, isBeta } from './setConfigs/index'
 
 describe('stats set tabs', () => {
-  it('keeps LAW as the default stats set tab', () => {
-    assert.strictEqual(DEFAULT_STATS_SET_TAB, 'LAW')
+  it('uses ASH (newest set) as the static default stats set tab', () => {
+    assert.strictEqual(DEFAULT_STATS_SET_TAB, 'ASH')
   })
 
   it('includes ASH for beta-access users', () => {
