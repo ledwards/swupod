@@ -288,8 +288,8 @@ export function MetaDashboard({ since, until, setCode = DEFAULT_STATS_SET_TAB, l
       }))
 
     Promise.all([
-      getJson(f, `/api/stats/leader-selection?${base}&poolType=sealed`),
-      getJson(f, `/api/stats/leader-selection?${base}&poolType=draft`),
+      getJson(f, `/api/stats/leader-selection?${base}&poolType=sealed&normalized=true`),
+      getJson(f, `/api/stats/leader-selection?${base}&poolType=draft&normalized=true`),
       getJson(f, `/api/stats/draft-picks?${base}&type=leaders`),
       getJson(f, `/api/stats/deck-inclusion?${base}&poolType=sealed`),
       getJson(f, `/api/stats/deck-inclusion?${base}&poolType=draft`),

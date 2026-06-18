@@ -15,6 +15,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const since = url.searchParams.get('since') || '2020-01-01'
     const until = url.searchParams.get('until') || '2099-12-31'
     const poolType = url.searchParams.get('poolType') || null
+    // Availability-normalized rate: timesSelected / pools that HAD the leader
+    // available (not / all decks) — so a leader that's rare in pools but always
+    // built isn't penalised vs a common one. Opt-in so /stats stays unchanged.
+    const normalized = url.searchParams.get('normalized') === 'true'
     const includeBots = url.searchParams.get('includeBots') === 'true'
     const includeHumans = url.searchParams.get('includeHumans') !== 'false'
     const tournamentOnly = url.searchParams.get('tournamentOnly') === 'true'
@@ -67,11 +71,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     // Heavy platform-wide all-time scan — cache the result in-process (5 min)
     // so the /me Meta tab's repeated all-time fetches don't re-scan every deck.
-    const { summary, rows } = await cachedAggregate(
+    // For the normalized rate: count, per leader card, how many pools had it
+    // available (leader card present in cp.cards).
+    const cpPoolTypeFilter = poolType ? `AND cp.pool_type = $4` : ''
+    const { summary, rows, availability } = await cachedAggregate(
       `leader-selection:${url.search}`,
       STATS_AGGREGATE_TTL_MS,
       async () => {
-        const [summary, rows] = await Promise.all([
+        const [summary, rows, availability] = await Promise.all([
           queryRow(
             `SELECT COUNT(*) AS total_decks
              FROM built_decks bd
@@ -98,10 +105,34 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                ${userFilter}`,
             queryParams
           ),
+          normalized
+            ? queryRows(
+                `SELECT c->>'cardId' AS card_id, COUNT(DISTINCT cp.id) AS pools
+                 FROM card_pools cp,
+                 LATERAL jsonb_array_elements(cp.cards) AS c
+                 WHERE cp.set_code = $1
+                   AND cp.created_at >= $2 AND cp.created_at < ($3::date + interval '1 day')
+                   AND (c->>'type' = 'Leader' OR c->>'isLeader' = 'true')
+                   AND c->>'cardId' IS NOT NULL
+                   ${cpPoolTypeFilter}
+                 GROUP BY c->>'cardId'`,
+                queryParams
+              )
+            : Promise.resolve([]),
         ])
-        return { summary, rows }
+        return { summary, rows, availability }
       },
     )
+
+    // poolsAvailable per leader NAME (collapse variant cardIds via cardMap).
+    const poolsAvailableByName = new Map<string, number>()
+    if (normalized) {
+      for (const a of availability || []) {
+        const name = cardMap.get(a.card_id)?.name || cardMap.get(a.card_id?.replace(/-/g, '_'))?.name
+        if (!name) continue
+        poolsAvailableByName.set(name, (poolsAvailableByName.get(name) || 0) + parseInt(a.pools))
+      }
+    }
 
     // Aggregate leader selections by name
     const leaderStats = new Map<string, {
@@ -132,8 +163,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // Enrich and format
     const leaders = Array.from(leaderStats.values())
       .map(stat => {
-        const selectionRate = totalDecks > 0
-          ? (stat.count / totalDecks) * 100
+        // Normalized: chosen / pools that had the leader available (clamped to
+        // 100). Else: chosen / all decks. Falls back to all-decks if a leader's
+        // availability is somehow missing.
+        const denom = normalized ? (poolsAvailableByName.get(stat.cardName) || totalDecks) : totalDecks
+        const selectionRate = denom > 0
+          ? Math.min(100, (stat.count / denom) * 100)
           : 0
 
         const cardData = cardMap.get(stat.cardId) || cardMap.get(stat.cardId?.replace(/-/g, '_'))
