@@ -4,26 +4,25 @@ import { useEffect, useState } from 'react'
 import './WayfinderStoreButtons.css'
 
 export const WAYFINDER_CHROME_WEB_STORE_URL = 'https://chromewebstore.google.com/detail/wayfinder-companion/econclbajpendbppldcnpngjfddcogfh'
-// TODO: Confirm the final App Store URL for the Safari Web Extension. The app id
-// below is a placeholder — replace with the confirmed listing before relying on it.
-export const WAYFINDER_SAFARI_APP_STORE_URL = 'https://apps.apple.com/app/wayfinder-companion/id6740011619'
+// The Wayfinder Companion app on the App Store ships the Safari Web Extension
+// (macOS + iOS) and the iOS app — desktop Safari and mobile iOS both link here.
+export const WAYFINDER_APP_STORE_URL = 'https://apps.apple.com/us/app/wayfinder-companion/id6779564194'
+// Back-compat alias (Safari desktop card + anything importing the old name).
+export const WAYFINDER_SAFARI_APP_STORE_URL = WAYFINDER_APP_STORE_URL
 export const WAYFINDER_NEWS_URL = 'https://wayfinder.news'
 
-type BrowserName = 'chrome' | 'safari' | 'firefox'
+// Card keys: desktop browsers (icons in /icons/browsers) + mobile app stores
+// (icons in /icons/stores).
+type CardKey = 'chrome' | 'safari' | 'firefox' | 'app-store' | 'google-play'
+const STORE_KEYS = new Set<CardKey>(['app-store', 'google-play'])
 
-interface WayfinderStoreButtonsProps {
-  /** 'inline' lays the cards in a centered wrapping row (default); 'stack' is a tighter centered column for narrow rails. */
-  orientation?: 'stack' | 'inline'
-  onChromeClick?: () => void
-}
-
-// Real, official browser logos (vendored from github.com/alrra/browser-logos
-// under public/icons/browsers). Used nominatively to indicate which browsers
-// the companion extension supports.
-function BrowserIcon({ browser }: { browser: BrowserName }) {
+// Real, official logos (browsers vendored from github.com/alrra/browser-logos;
+// store marks under public/icons/stores). Used nominatively.
+function BrowserIcon({ browser }: { browser: CardKey }) {
+  const dir = STORE_KEYS.has(browser) ? 'stores' : 'browsers'
   return (
     <img
-      src={`/icons/browsers/${browser}.svg`}
+      src={`/icons/${dir}/${browser}.svg`}
       alt=""
       width={34}
       height={34}
@@ -34,7 +33,7 @@ function BrowserIcon({ browser }: { browser: BrowserName }) {
 }
 
 interface BrowserCard {
-  browser: BrowserName
+  browser: CardKey
   name: string
   sub: string
   status: 'live' | 'soon'
@@ -46,16 +45,22 @@ interface BrowserCard {
 // Desktop: the browser extension. Subtitle is the platform (one consistent axis).
 const DESKTOP_BROWSERS: BrowserCard[] = [
   { browser: 'chrome', name: 'Chrome', sub: 'Windows · macOS · Linux', status: 'live', cta: 'Add to Chrome', url: WAYFINDER_CHROME_WEB_STORE_URL },
-  { browser: 'safari', name: 'Safari', sub: 'macOS', status: 'live', cta: 'Add to Safari', url: WAYFINDER_SAFARI_APP_STORE_URL },
+  { browser: 'safari', name: 'Safari', sub: 'macOS', status: 'live', cta: 'Add to Safari', url: WAYFINDER_APP_STORE_URL },
   { browser: 'firefox', name: 'Firefox', sub: 'Windows · macOS · Linux', status: 'soon', cta: 'Add to Firefox' },
 ]
 
-// Mobile: the companion's mobile builds. Per Wayfinder, iOS Safari and Chrome
-// on mobile are not public yet, so both are "Soon".
+// Mobile: the companion ships through the phone app stores. iOS is live on the
+// App Store; Android is still in progress.
 const MOBILE_BROWSERS: BrowserCard[] = [
-  { browser: 'safari', name: 'Safari', sub: 'iOS', status: 'soon', cta: 'Get on iOS' },
-  { browser: 'chrome', name: 'Chrome', sub: 'Android', status: 'soon', cta: 'Get on Android' },
+  { browser: 'app-store', name: 'App Store', sub: 'iOS · iPadOS', status: 'live', cta: 'Download on the App Store', url: WAYFINDER_APP_STORE_URL },
+  { browser: 'google-play', name: 'Google Play', sub: 'Android', status: 'soon', cta: 'Get it on Google Play' },
 ]
+
+interface WayfinderStoreButtonsProps {
+  /** 'inline' lays the cards in a centered wrapping row (default); 'stack' is a tighter centered column for narrow rails. */
+  orientation?: 'stack' | 'inline'
+  onChromeClick?: () => void
+}
 
 /** Coarse pointer / narrow viewport = treat as a phone/tablet. */
 function useIsMobile(): boolean {

@@ -74,6 +74,8 @@ a.wf-browser-card:active {
 .wf-browser-card--chrome { --wf-tint: rgba(66, 133, 244, 0.22); --wf-glow: rgba(66, 133, 244, 0.4); }
 .wf-browser-card--safari { --wf-tint: rgba(30, 144, 255, 0.2); --wf-glow: rgba(25, 211, 255, 0.34); }
 .wf-browser-card--firefox { --wf-tint: rgba(255, 95, 31, 0.18); --wf-glow: rgba(255, 122, 24, 0.34); }
+.wf-browser-card--app-store { --wf-tint: rgba(10, 132, 255, 0.22); --wf-glow: rgba(30, 144, 255, 0.4); }
+.wf-browser-card--google-play { --wf-tint: rgba(0, 200, 120, 0.2); --wf-glow: rgba(0, 230, 118, 0.36); }
 
 .wf-browser-card.is-live {
   border-color: rgba(255, 255, 255, 0.26);

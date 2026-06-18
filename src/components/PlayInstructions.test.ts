@@ -49,6 +49,17 @@ describe('<PlayInstructions /> Companion adoption', () => {
     assert.match(STORE_BUTTONS, /Coming soon/i)
   })
 
+  it('offers iOS live on the App Store and Android coming soon on mobile', () => {
+    // Mobile swaps the browser cards for the phone app stores.
+    // iOS is live on the App Store (links to the published listing).
+    assert.match(STORE_BUTTONS, /name:\s*'App Store'[^\n]*status:\s*'live'/)
+    assert.match(STORE_BUTTONS, /Download on the App Store/)
+    assert.ok(STORE_BUTTONS.includes('apps.apple.com/us/app/wayfinder-companion/id6779564194'))
+    // Android (Google Play) is still awaiting release.
+    assert.match(STORE_BUTTONS, /name:\s*'Google Play'[^\n]*status:\s*'soon'/)
+    assert.match(STORE_BUTTONS, /Get it on Google Play/)
+  })
+
   it('tracks Companion install CTA clicks through limited play analytics', () => {
     assert.ok(ANALYTICS.includes("WAYFINDER_INSTALL_CTA: 'wayfinder_install_cta'"))
     assert.ok(SRC.includes('LimitedPlayActions.WAYFINDER_INSTALL_CTA'))

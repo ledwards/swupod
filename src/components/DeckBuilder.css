@@ -376,6 +376,27 @@
   box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
 }
 
+/* ── Uniform header action row ───────────────────────────────────────────────
+ * Buttons in a cluster should be the same size. This row had drifted: "Draft
+ * Log" was a borderless 0.5/0.75 text button, while "Ready to Play" (0.75/1.25)
+ * and "Draft Report" (md 0.75/1.5) were bordered boxes — plus an 18px vs 20px
+ * icon. Normalize every header button to one bordered size + icon. Scoped to
+ * .header-buttons so other .export-button / .draft-report-button uses are
+ * untouched. */
+.header-buttons .btn.export-button,
+.header-buttons .btn.draft-report-button {
+  padding: 0.75rem 1.25rem;
+}
+.header-buttons .btn.export-button:not(.ready-to-play-button) {
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.7);
+}
+.header-buttons .btn svg {
+  width: 20px;
+  height: 20px;
+}
+
 .header-buttons-in-nav {
   display: flex;
   gap: 0.5rem;
@@ -1755,6 +1776,18 @@
 
   .export-button.ready-to-play-button {
     padding: 0.6rem 1rem;
+  }
+
+  /* Keep the header row uniform at the mobile scale too (mirrors the desktop
+     normalization; wins over it here via later source order). */
+  .header-buttons .btn.export-button,
+  .header-buttons .btn.draft-report-button {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.9rem;
+  }
+  .header-buttons .btn svg {
+    width: 17px;
+    height: 17px;
   }
 
   /* Downsize nav icon buttons 25% on mobile */
