@@ -1365,20 +1365,27 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 9px;
-  border: 1px solid rgba(248, 113, 113, 0.85);
-  background: rgba(0, 0, 0, 0.82);
-  color: #ff7b7b;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  /* Red on black with a clear red border (deckbuilder trash treatment). Solid
+     black so the icon never washes out against the set art behind it. */
+  border: 1.5px solid #f87171;
+  background: #0b0b0c;
+  color: #f87171;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   transition: color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
 }
 
 .your-stats-pool-trash svg {
+  display: block;
   width: 18px;
   height: 18px;
+  /* Force the stroke red regardless of inherited color so the icon is visible. */
+  color: #f87171;
+  stroke: #f87171;
+  fill: none;
 }
 
 /* Upper-right of the pool graphic, on a legible dark chip above the art. */
@@ -1392,9 +1399,13 @@
 @media (hover: hover) and (pointer: fine) {
   .your-stats-pool-trash:hover {
     color: #fff;
-    background: rgba(231, 76, 60, 0.85);
-    border-color: rgba(231, 76, 60, 0.9);
+    background: #e74c3c;
+    border-color: #e74c3c;
     box-shadow: 0 0 12px rgba(231, 76, 60, 0.45);
+  }
+  .your-stats-pool-trash:hover svg {
+    color: #fff;
+    stroke: #fff;
   }
 }
 
