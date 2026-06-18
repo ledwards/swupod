@@ -28,6 +28,9 @@ interface PlayInstructionsProps {
   opponentName?: string | null
   hasBye?: boolean
   isSoloDraft?: boolean
+  /** Suppress the "simulated pod" solo notice (the pod page renders it inside
+   *  the Pod Status box instead). */
+  hideSoloNotice?: boolean
   onCopyLink?: () => void
   onCopyJson?: () => void
   onDownload?: () => void
@@ -58,6 +61,7 @@ export default function PlayInstructions({
   opponentName = null,
   hasBye = false,
   isSoloDraft = false,
+  hideSoloNotice = false,
   onCopyLink,
   onCopyJson,
   onDownload,
@@ -454,7 +458,7 @@ export default function PlayInstructions({
         : "Your deck is built! Now find a human opponent and play on Karabast."
       }</p>
 
-      {isSoloDraft && !viewingOthersDeck && (
+      {isSoloDraft && !viewingOthersDeck && !hideSoloNotice && (
         <div className="play-solo-notice">
           This was a simulated pod — you can't play against the bots, but you can check out their decks from the draft log. You need to find a human opponent to play your deck!
         </div>

@@ -827,6 +827,53 @@ export default function PodPage({ params }: PageProps) {
     }
   }
 
+  // Pod Status box — rendered above the Deck Complete box. For solo (bot) drafts
+  // the simulated-pod warning lives INSIDE it (suppressed in PlayInstructions).
+  const podStatusBox = (
+    <div className="pod-status-section">
+      <h2>Pod Status</h2>
+      {isSolo && (
+        <div className="play-solo-notice">
+          This was a simulated pod — you can&apos;t play against the bots, but you can check out their decks from the draft log. You need to find a human opponent to play your deck!
+        </div>
+      )}
+      <div className="pod-player-grid">
+        {[...players].sort((a, b) => a.seatNumber - b.seatNumber).map((player, i) => (
+          <div key={player.id} className="pod-player-row">
+            <span className="pod-seat-number">{i + 1}</span>
+            {player.avatarUrl ? (
+              <img src={player.avatarUrl} alt="" className="pod-match-avatar" />
+            ) : (
+              <DefaultAvatar />
+            )}
+            <span className="pod-match-name">{player.id === draft.hostId && <CrownIcon />}{player.username}</span>
+            <span className={`pod-status-badge ${player.isReady ? 'ready' : 'building'}`}>
+              {player.isReady ? 'Ready' : 'Deckbuilding'}
+            </span>
+            {isHost && player.isReady && playerPoolMap.get(player.id) && (
+              <button
+                className="pod-eye-button"
+                onClick={() => viewPlayerDeck(player.id)}
+                disabled={generatingForPlayer === player.id}
+                title={`View ${player.username}'s deck`}
+              >
+                {generatingForPlayer === player.id ? (
+                  <span className="pod-eye-spinner" />
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                )}
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+
   return (
     <div className="page-with-chat">
       <div className="page-content">
@@ -888,7 +935,11 @@ export default function PodPage({ params }: PageProps) {
           </button>
         </div>
 
-        {/* In solo mode, show play instructions and actions above pod details */}
+        {/* Solo (bot) draft: Pod Status (with the simulated-pod notice) goes
+            ABOVE the Deck Complete box. */}
+        {isSolo && podStatusBox}
+
+        {/* In solo mode, show play instructions and actions below pod status */}
         {isSolo && (
           <>
             <PlayInstructions
@@ -897,6 +948,7 @@ export default function PodPage({ params }: PageProps) {
               setCode={draft?.setCode || myPool?.setCode}
               hasBye={false}
               isSoloDraft={true}
+              hideSoloNotice={true}
               onCopyLink={copyDeckUrl}
               showActions={false}
               wayfinderDetected={wayfinderDetected}
@@ -941,44 +993,9 @@ export default function PodPage({ params }: PageProps) {
           </>
         )}
 
-        {/* Pod Status — 2-column player grid by seat */}
-        <div className="pod-status-section">
-          <h2>Pod Status</h2>
-          <div className="pod-player-grid">
-            {[...players].sort((a, b) => a.seatNumber - b.seatNumber).map((player, i) => (
-              <div key={player.id} className="pod-player-row">
-                <span className="pod-seat-number">{i + 1}</span>
-                {player.avatarUrl ? (
-                  <img src={player.avatarUrl} alt="" className="pod-match-avatar" />
-                ) : (
-                  <DefaultAvatar />
-                )}
-                <span className="pod-match-name">{player.id === draft.hostId && <CrownIcon />}{player.username}</span>
-                <span className={`pod-status-badge ${player.isReady ? 'ready' : 'building'}`}>
-                  {player.isReady ? 'Ready' : 'Deckbuilding'}
-                </span>
-                {isHost && player.isReady && playerPoolMap.get(player.id) && (
-                  <button
-                    className="pod-eye-button"
-                    onClick={() => viewPlayerDeck(player.id)}
-                    disabled={generatingForPlayer === player.id}
-                    title={`View ${player.username}'s deck`}
-                  >
-                    {generatingForPlayer === player.id ? (
-                      <span className="pod-eye-spinner" />
-                    ) : (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                        <polyline points="21 15 16 10 5 21"></polyline>
-                      </svg>
-                    )}
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* Non-solo: Pod Status renders here (already above the Deck Complete
+            box). Solo renders it above, near the top. */}
+        {!isSolo && podStatusBox}
 
         {/* Player view: Your opponent (skip in solo mode) */}
         {!isSolo && <div className="pod-opponent-card">
