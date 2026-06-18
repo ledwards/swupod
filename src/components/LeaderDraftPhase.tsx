@@ -76,6 +76,9 @@ function LeaderDraftPhase({
   const hasSelected = myPlayer?.pickStatus === 'selected'
   const round = draftState?.leaderRound || 1
   const totalLeaderRounds = draftState?.totalPacks || draft?.settings?.chaosSets?.length || 3
+  // Spectators (anyone viewing who isn't one of the drafters) get no `myPlayer`.
+  // Hide the player-only leader-draft UI for them and just show the round.
+  const isSpectator = !myPlayer
 
   // Local selection state, persisted to localStorage
   const storageKey = `draft-selection-${shareId}-leader-${round}`
@@ -254,6 +257,18 @@ function LeaderDraftPhase({
             onTimerExpire={onTimerExpire}
           />
 
+          {isSpectator && (
+            <div className="draft-info-header">
+              <div className="draft-progress-info">
+                <span className="progress-item">
+                  <span className="info-label">Spectating —</span>
+                  <span className="info-value">Leader Round {round} of {totalLeaderRounds}</span>
+                </span>
+              </div>
+            </div>
+          )}
+
+          {!isSpectator && (<>
           <div className="drafted-leaders">
             <h3>Your Drafted Leaders ({draftedLeaders.length}/{totalLeaderRounds})</h3>
             <div className="drafted-leaders-grid">
@@ -321,16 +336,17 @@ function LeaderDraftPhase({
               </p>
             )}
           </div>
+          </>)}
 
           {/* Passing message - below cards */}
-          {showPassing && (lastLeadersCount > 0 || leaders.length > 0) && (
+          {!isSpectator && showPassing && (lastLeadersCount > 0 || leaders.length > 0) && (
             <div className="passing-message">
               Passing Right...
             </div>
           )}
 
           {/* Selection confirmation banner - below cards */}
-          {selectedCardId && !showPassing && (() => {
+          {!isSpectator && selectedCardId && !showPassing && (() => {
             const selectedLeader = leaders.find(l => (l.instanceId || l.id) === selectedCardId)
             if (!selectedLeader || !selectedLeader.name) return null
             const firstAspect = selectedLeader.aspects?.[0]
