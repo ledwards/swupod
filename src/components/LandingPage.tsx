@@ -578,8 +578,6 @@ function LandingPage() {
         <div className="landing-footer-links">
           <a href="/stats" onClick={(e) => { e.preventDefault(); router.push('/stats') }}>Stats</a>
           <span className="footer-separator">·</span>
-          <a href="/duplicate-rates" onClick={(e) => { e.preventDefault(); router.push('/duplicate-rates') }}>Dupe Rates</a>
-          <span className="footer-separator">·</span>
           <a href="/qa" onClick={(e) => { e.preventDefault(); router.push('/qa') }}>QA</a>
           <span className="footer-separator">·</span>
           <a href="/api" onClick={(e) => { e.preventDefault(); router.push('/api') }}>API</a>
