@@ -1536,6 +1536,37 @@
   line-height: 1.35;
 }
 
+/* Pool title + Draft/Sealed format tag on one line. */
+.your-stats-pool-group-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Draft/Sealed chip — used on the pool header and each deck card. */
+.your-stats-format-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.your-stats-format-tag--draft {
+  color: #8ec5ff;
+  background: rgba(100, 181, 246, 0.14);
+  border-color: rgba(100, 181, 246, 0.4);
+}
+.your-stats-format-tag--sealed {
+  color: #f6c873;
+  background: rgba(245, 179, 74, 0.14);
+  border-color: rgba(245, 179, 74, 0.4);
+}
+
 .your-stats-pool-eyebrow {
   display: inline-block;
   padding: 0.16rem 0.55rem;

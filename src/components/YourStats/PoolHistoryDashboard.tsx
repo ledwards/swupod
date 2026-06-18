@@ -6,11 +6,21 @@ import { getPackArtUrl } from '@/src/utils/packArt'
 import { deletePool } from '@/src/utils/poolApi'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 
-// Play glyph (like a video play button) for the lobby actions.
+// Play glyph (like a video play button) for the lobby + play actions.
 function PlayMark() {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M8 5v14l11-7z" />
+    </svg>
+  )
+}
+
+// Pencil glyph — the conventional "edit" affordance.
+function EditMark() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
     </svg>
   )
 }
@@ -156,6 +166,7 @@ function TrashIcon() {
 function PoolBuildCard({
   build,
   setCode,
+  poolType,
   poolShareId,
   copiedKey,
   copyValue,
@@ -166,6 +177,7 @@ function PoolBuildCard({
 }: {
   build: PoolBuild
   setCode: string | null
+  poolType: string
   poolShareId: string
   copiedKey: string | null
   copyValue: (key: string, value: string) => void
@@ -245,6 +257,9 @@ function PoolBuildCard({
           {build.baseName && <small>{build.baseName}</small>}
         </div>
         <div className="your-stats-replay-meta">
+          <span className={`your-stats-format-tag your-stats-format-tag--${poolType === 'draft' ? 'draft' : 'sealed'}`}>
+            {poolType === 'draft' ? 'Draft' : 'Sealed'}
+          </span>
           <span>{build.mainDeckCount || 0} cards</span>
           <span>{recordLine(build)}</span>
           {build.capturedMatches > 0 && <span>{build.capturedMatches.toLocaleString()} captures</span>}
@@ -256,8 +271,8 @@ function PoolBuildCard({
         )}
         {/* All actions on ONE line. */}
         <div className="your-stats-replay-actions your-stats-pool-actions-row">
-          <a className="btn btn--interactive btn--sm your-stats-pool-action your-stats-pool-action--glow" href={build.links.deck}>Edit</a>
-          <a className="btn btn--primary btn--sm your-stats-pool-action your-stats-pool-action--play" href={build.links.play}>Play</a>
+          <a className="btn btn--interactive btn--sm your-stats-pool-action your-stats-pool-action--glow" href={build.links.deck}><EditMark /><span>Edit</span></a>
+          <a className="btn btn--primary btn--sm your-stats-pool-action your-stats-pool-action--play" href={build.links.play}><PlayMark /><span>Play</span></a>
           <button
             type="button"
             className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-action--glow"
@@ -304,6 +319,7 @@ export function PoolHistoryDashboard({ fetchImpl, setFilter = 'all' }: { fetchIm
   const [query, setQuery] = useState('')
   const [armedDelete, setArmedDelete] = useState<string | null>(null)
   const [relationshipFilter, setRelationshipFilter] = useState<PoolFilter>('all')
+  const [formatFilter, setFormatFilter] = useState<'all' | 'sealed' | 'draft'>('all')
   const [sortBy, setSortBy] = useState<'recent' | 'leader' | 'owner' | 'builds'>('recent')
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
 
@@ -353,6 +369,17 @@ export function PoolHistoryDashboard({ fetchImpl, setFilter = 'all' }: { fetchIm
 
     return state.pools
       .filter((pool) => {
+        // Pools tab is limited-only: exclude chaos sealed, pack wars, blitz,
+        // rotisserie and any other non-draft/sealed formats.
+        const t = String(pool.poolType || '').toLowerCase()
+        return t === 'draft' || t === 'sealed'
+      })
+      .filter((pool) => {
+        // All | Sealed | Draft format filter.
+        if (formatFilter === 'all') return true
+        return String(pool.poolType || '').toLowerCase() === formatFilter
+      })
+      .filter((pool) => {
         // Global Set filter (from the page) — 'all' shows every set.
         if (setFilter && setFilter !== 'all') {
           return String(pool.setCode || '').split(',').map((s) => s.trim()).includes(setFilter)
@@ -380,7 +407,7 @@ export function PoolHistoryDashboard({ fetchImpl, setFilter = 'all' }: { fetchIm
         }
         return new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime()
       })
-  }, [query, relationshipFilter, sortBy, setFilter, state.pools])
+  }, [query, relationshipFilter, formatFilter, sortBy, setFilter, state.pools])
 
   async function copyValue(key: string, value: string) {
     await navigator.clipboard.writeText(value)
@@ -454,6 +481,19 @@ export function PoolHistoryDashboard({ fetchImpl, setFilter = 'all' }: { fetchIm
             </button>
           ))}
         </div>
+        <div className="your-stats-seg" role="group" aria-label="Filter pools by format">
+          {(['all', 'sealed', 'draft'] as const).map((f) => (
+            <button
+              key={f}
+              type="button"
+              className={`your-stats-seg-btn ${formatFilter === f ? 'active' : ''}`}
+              onClick={() => setFormatFilter(f)}
+              aria-pressed={formatFilter === f}
+            >
+              {f === 'all' ? 'All' : f === 'sealed' ? 'Sealed' : 'Draft'}
+            </button>
+          ))}
+        </div>
         <div className="your-stats-explorer-selects">
           <label className="your-stats-field">
             <span>Sort</span>
@@ -478,7 +518,12 @@ export function PoolHistoryDashboard({ fetchImpl, setFilter = 'all' }: { fetchIm
             <article key={pool.shareId} className={`your-stats-pool-group your-stats-pool-group--${pool.relationship}`}>
               <header className="your-stats-pool-group-header">
                 <div>
-                  <h3>{pool.name}</h3>
+                  <div className="your-stats-pool-group-title">
+                    <h3>{pool.name}</h3>
+                    <span className={`your-stats-format-tag your-stats-format-tag--${pool.poolType === 'draft' ? 'draft' : 'sealed'}`}>
+                      {pool.poolType === 'draft' ? 'Draft' : 'Sealed'}
+                    </span>
+                  </div>
                   <p>
                     {pool.setCode || 'SWU'} · {pool.cardCount.toLocaleString()} cards · {formatDate(pool.updatedAt || pool.createdAt)}
                   </p>
@@ -504,6 +549,7 @@ export function PoolHistoryDashboard({ fetchImpl, setFilter = 'all' }: { fetchIm
                     key={build.shareId}
                     build={build}
                     setCode={pool.setCode}
+                    poolType={pool.poolType}
                     poolShareId={pool.shareId}
                     copiedKey={copiedKey}
                     copyValue={copyValue}

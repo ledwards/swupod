@@ -69,8 +69,9 @@ async function getJson(url: string) {
 
 const MIN_PICKS = 8
 
-/** A pick-1 ranking card (Pack-1-Pick-1 or Any-pack-pick-1). Bars are scaled to
- *  the top row's count, since these are raw pick counts, not percentages. */
+/** A pick-1 ranking card (Pack-1-Pick-1 or Any-pack-pick-1). Bars show the
+ *  ACTUAL pick-1 percentage (not normalized to the top row), so a 20.8% rate
+ *  fills 20.8% of the track. */
 function Pick1Card({ title, subtitle, rows, countOf, pctOf, loading }: {
   title: string
   subtitle: string
@@ -79,7 +80,6 @@ function Pick1Card({ title, subtitle, rows, countOf, pctOf, loading }: {
   pctOf: (c: PickRow) => number | null
   loading: boolean
 }) {
-  const max = rows.length ? countOf(rows[0]) || 1 : 1
   return (
     <section className="your-stats-meta-card">
       <header className="your-stats-meta-card-header">
@@ -102,7 +102,7 @@ function Pick1Card({ title, subtitle, rows, countOf, pctOf, loading }: {
                 <span className="your-stats-meta-bar-value" style={{ color: '#64B5F6' }}>{countOf(c)}× · {pctOf(c)}%</span>
               </div>
               <div className="your-stats-meta-bar-track">
-                <span className="your-stats-meta-bar-fill" style={{ width: `${Math.max(4, (countOf(c) / max) * 100)}%`, background: aspectColor(c.aspects) }} />
+                <span className="your-stats-meta-bar-fill" style={{ width: `${Math.max(2, Math.min(100, pctOf(c) || 0))}%`, background: aspectColor(c.aspects) }} />
               </div>
             </div>
           ))}
@@ -140,7 +140,7 @@ function PickTurnCard({ title, subtitle, rows, showCost, loading }: {
         if (needle && !c.cardName.toLowerCase().includes(needle)) return false
         if (aspectFilters.size > 0 && !(c.aspects || []).some((a) => aspectFilters.has(a))) return false
         if (rarityFilters.size > 0 && !rarityFilters.has(c.rarity)) return false
-        if (showCost && costFilters.size > 0) {
+        if (costFilters.size > 0) {
           const cost = c.cost == null ? -1 : Math.min(7, c.cost)
           if (!costFilters.has(cost)) return false
         }
@@ -185,17 +185,15 @@ function PickTurnCard({ title, subtitle, rows, showCost, loading }: {
             </button>
           ))}
         </div>
-        {showCost && (
-          <div className="your-stats-luck-filter-group" role="group" aria-label="Filter by cost">
-            {[0, 1, 2, 3, 4, 5, 6, 7].map((cost) => (
-              <button key={cost} type="button" title={cost === 7 ? '7+ cost' : `${cost} cost`} aria-pressed={costFilters.has(cost)}
-                className={`your-stats-luck-filter-btn your-stats-luck-filter-btn--cost${costFilters.has(cost) ? ' is-on' : ''}`}
-                onClick={() => ftoggle(costFilters, setCostFilters, cost)}>
-                <CostIcon cost={cost === 7 ? '7+' : cost} size={24} />
-              </button>
-            ))}
-          </div>
-        )}
+        <div className="your-stats-luck-filter-group" role="group" aria-label="Filter by cost">
+          {[0, 1, 2, 3, 4, 5, 6, 7].map((cost) => (
+            <button key={cost} type="button" title={cost === 7 ? '7+ cost' : `${cost} cost`} aria-pressed={costFilters.has(cost)}
+              className={`your-stats-luck-filter-btn your-stats-luck-filter-btn--cost${costFilters.has(cost) ? ' is-on' : ''}`}
+              onClick={() => ftoggle(costFilters, setCostFilters, cost)}>
+              <CostIcon cost={cost === 7 ? '7+' : cost} size={24} />
+            </button>
+          ))}
+        </div>
       </div>
 
       {loading ? (

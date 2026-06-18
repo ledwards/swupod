@@ -12,15 +12,28 @@ import { useMemo, useState } from 'react'
 import { ASPECT_COLORS } from '@/src/utils/aspectColors'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 
-export interface BaseSplit { aspect: string; winRate: number; matches: number }
+export interface BaseSplit { aspect: string; winRate: number; matches: number; wins?: number; losses?: number; draws?: number }
 export interface WinRateLeader {
   leaderName: string
   winRate: number
   matches: number
+  wins?: number
+  losses?: number
+  draws?: number
   leaderImageUrl: string | null
   leaderBackImageUrl: string | null
   baseColor: string | null
   byBase: BaseSplit[]
+}
+
+/** "2 matches" / "1 match" — never the cryptic "2g". */
+function matchesLabel(n: number): string {
+  return `${n} ${n === 1 ? 'match' : 'matches'}`
+}
+/** Real record: "3–1" or "3–1–1" when there are draws. */
+function recordLabel(w?: number, l?: number, d?: number): string | null {
+  if (w == null || l == null) return null
+  return d ? `${w}–${l}–${d}` : `${w}–${l}`
 }
 
 const WR_ASPECT_ICON: Record<string, string> = {
@@ -41,7 +54,11 @@ function BaseBars({ leader }: { leader: WinRateLeader }) {
     <div className="your-stats-wr-readout">
       <div className="your-stats-wr-readout-head">
         <strong>{leader.leaderName}</strong>
-        <span>{leader.winRate.toFixed(1)}% · {leader.matches}g overall</span>
+        <span>
+          {leader.winRate.toFixed(1)}%
+          {recordLabel(leader.wins, leader.losses, leader.draws) ? ` · ${recordLabel(leader.wins, leader.losses, leader.draws)}` : ''}
+          {' · '}{matchesLabel(leader.matches)}
+        </span>
       </div>
       {leader.byBase.length === 0 ? (
         <p className="your-stats-meta-empty">No base breakdown yet.</p>
@@ -56,7 +73,7 @@ function BaseBars({ leader }: { leader: WinRateLeader }) {
               <div className="your-stats-wr-bar-track">
                 <span className="your-stats-wr-bar-fill" style={{ width: `${Math.max(2, Math.min(100, b.winRate))}%`, background: ASPECT_COLORS[b.aspect as keyof typeof ASPECT_COLORS] || '#888' }} />
               </div>
-              <span className="your-stats-wr-bar-val">{b.winRate.toFixed(0)}% · {b.matches}g</span>
+              <span className="your-stats-wr-bar-val">{b.winRate.toFixed(0)}%{recordLabel(b.wins, b.losses, b.draws) ? ` · ${recordLabel(b.wins, b.losses, b.draws)}` : ''} · {matchesLabel(b.matches)}</span>
             </div>
           ))}
         </div>
@@ -126,15 +143,15 @@ export function WinRateByLeader({
                   onMouseEnter={(e) => { setHovered(l.leaderName); anchorTo(e.currentTarget) }}
                   onFocus={(e) => { setHovered(l.leaderName); anchorTo(e.currentTarget) }}
                   onClick={(e) => { anchorTo(e.currentTarget); setPinned((cur) => (cur === l.leaderName ? null : l.leaderName)) }}
-                  aria-label={`${l.leaderName}: ${l.winRate.toFixed(0)}% win rate over ${l.matches} games`}
-                  title={`${l.leaderName} — ${l.winRate.toFixed(0)}% (${l.matches}g)`}
+                  aria-label={`${l.leaderName}: ${l.winRate.toFixed(0)}% win rate, ${recordLabel(l.wins, l.losses, l.draws) || ''} over ${matchesLabel(l.matches)}`}
+                  title={`${l.leaderName} — ${l.winRate.toFixed(0)}%${recordLabel(l.wins, l.losses, l.draws) ? ` (${recordLabel(l.wins, l.losses, l.draws)})` : ''} · ${matchesLabel(l.matches)}`}
                 >
                   {art
                     ? <img className="your-stats-wr-cell-art" src={art} alt="" loading="lazy" />
                     : <span className="your-stats-wr-cell-art your-stats-wr-cell-art--empty" />}
                   <span className="your-stats-wr-cell-overlay">
                     <span className="your-stats-wr-cell-pct" style={{ color: winRateColor(l.winRate) }}>{l.winRate.toFixed(0)}%</span>
-                    <span className="your-stats-wr-cell-games">{l.matches}g</span>
+                    <span className="your-stats-wr-cell-games">{recordLabel(l.wins, l.losses, l.draws) || matchesLabel(l.matches)}</span>
                   </span>
                 </button>
               )
