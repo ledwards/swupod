@@ -56,7 +56,9 @@ describe('server PostHog capture', () => {
     assert.strictEqual(capturedBody.api_key, 'phc_test_key')
     assert.strictEqual(capturedBody.event, 'limited_pod_created')
     assert.strictEqual(capturedBody.distinct_id, 'user-1')
-    assert.deepStrictEqual(capturedBody.properties, { format: 'draft' })
+    // swupod tags every server event with surface:'swupod' so it segments within
+    // the shared Wayfinder PostHog project (see captureServerEvent).
+    assert.deepStrictEqual(capturedBody.properties, { format: 'draft', surface: 'swupod' })
   })
 
   it('swallows transport failures and reports false', async () => {
