@@ -1,6 +1,12 @@
 // @ts-nocheck
 import Button from './Button'
-import type { WayfinderMatchState } from './MatchmakingPanel.helpers'
+import ReplayWatchLink from './ReplayWatchLink'
+import {
+  liveGameAction,
+  liveGameStatusLabel,
+  type PracticeLaunchMessage,
+  type WayfinderMatchState,
+} from './MatchmakingPanel.helpers'
 import { formatRecord, type PlayerRecord } from '../services/matchmaking/standings'
 import './MatchCard.css'
 
@@ -24,6 +30,23 @@ interface MatchData {
   matchWinner: string | null
   podOwnerOverride: boolean
   wayfinderMatchId?: string | null
+  games?: unknown[]
+  currentGame?: {
+    status?: string | null
+    gameNumber?: number | null
+    lobbyUrl?: string | null
+    spectateUrl?: string | null
+    replayUrl?: string | null
+    elapsedSeconds?: number | null
+    stale?: boolean | null
+    retryable?: boolean | null
+    game?: {
+      createdByUserId?: string | null
+      lobbyUrl?: string | null
+      spectateUrl?: string | null
+      replayUrl?: string | null
+    } | null
+  } | null
 }
 
 interface MatchCardProps {
@@ -35,6 +58,10 @@ interface MatchCardProps {
   onBoot: (userId: string) => void
   playerRecords?: Map<string, PlayerRecord>
   wayfinderState?: WayfinderMatchState
+  liveLaunchEnabled?: boolean
+  onPracticeLaunch?: (matchId: string) => void | Promise<void>
+  practiceLaunchPending?: boolean
+  practiceLaunchMessage?: PracticeLaunchMessage | null
 }
 
 function getMatchStatus(match: MatchData): string {
@@ -60,6 +87,10 @@ export function MatchCard({
   onBoot,
   playerRecords,
   wayfinderState = 'manual',
+  liveLaunchEnabled = false,
+  onPracticeLaunch,
+  practiceLaunchPending = false,
+  practiceLaunchMessage = null,
 }: MatchCardProps) {
   const isMyMatch = match.player1?.id === currentUserId || match.player2?.id === currentUserId
   const status = getMatchStatus(match)
@@ -70,6 +101,56 @@ export function MatchCard({
   const canReport = isMyMatch && !match.finalConfirmed && !match.isBye && !iHaveSubmitted
   const canOverride = isHost && !match.isBye
   const recordFor = (player: MatchPlayer | null) => player?.id ? formatRecord(playerRecords?.get(player.id)) : '0-0'
+  const liveStatus = liveGameStatusLabel(match.currentGame)
+  const liveAction = liveGameAction({
+    match,
+    currentUserId,
+    liveLaunchEnabled: Boolean(liveLaunchEnabled && onPracticeLaunch),
+    pending: practiceLaunchPending,
+  })
+  const showLiveRow = Boolean(liveStatus || liveAction.kind !== 'none' || practiceLaunchMessage)
+
+  const renderLiveAction = () => {
+    if (liveAction.kind === 'none') return null
+
+    if (liveAction.kind === 'watch' || liveAction.kind === 'replay') {
+      return (
+        <ReplayWatchLink
+          href={liveAction.href || undefined}
+          className="match-card-live-watch"
+          ariaLabel={`${liveAction.label} ${match.player1?.username || 'player 1'} vs ${match.player2?.username || 'opponent'}`}
+        >
+          {liveAction.label}
+        </ReplayWatchLink>
+      )
+    }
+
+    if (liveAction.kind === 'play' || liveAction.kind === 'join' || liveAction.kind === 'retry') {
+      return (
+        <Button
+          variant="primary"
+          glowColor="yellow"
+          size="sm"
+          className="match-card-live-button"
+          disabled={practiceLaunchPending || !onPracticeLaunch}
+          onClick={() => onPracticeLaunch?.(match.id)}
+        >
+          {liveAction.label}
+        </Button>
+      )
+    }
+
+    return (
+      <Button
+        variant="secondary"
+        size="sm"
+        className="match-card-live-button"
+        disabled
+      >
+        {liveAction.label}
+      </Button>
+    )
+  }
 
   return (
     <div
@@ -80,6 +161,8 @@ export function MatchCard({
       data-final-confirmed={match.finalConfirmed ? 'true' : 'false'}
       data-match-winner={match.matchWinner || ''}
       data-is-bye={match.isBye ? 'true' : 'false'}
+      data-live-game-status={match.currentGame?.status || ''}
+      data-live-game-action={liveAction.kind}
       data-player1-id={match.player1?.id || ''}
       data-player2-id={match.player2?.id || ''}
     >
@@ -136,6 +219,24 @@ export function MatchCard({
           )}
         </div>
       </div>
+
+      {showLiveRow && (
+        <div className={`match-card-live match-card-live--${match.currentGame?.status || 'pending'}`}>
+          <div className="match-card-live-copy">
+            {liveStatus && (
+              <span className="match-card-live-status">{liveStatus}</span>
+            )}
+            {practiceLaunchMessage && (
+              <span className={`match-card-live-message match-card-live-message--${practiceLaunchMessage.type}`}>
+                {practiceLaunchMessage.text}
+              </span>
+            )}
+          </div>
+          <div className="match-card-live-actions">
+            {renderLiveAction()}
+          </div>
+        </div>
+      )}
 
       <div className="match-card-footer">
         <span className={`match-card-status match-card-status--${status.toLowerCase().replace(/\s+/g, '-')}`}>

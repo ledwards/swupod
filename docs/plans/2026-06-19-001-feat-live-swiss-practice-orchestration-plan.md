@@ -670,7 +670,7 @@ fast helper tests, TypeScript, and the `@ts-nocheck` ratchet.
 
 ---
 
-- [ ] **U6. Implement the PTP page-to-Wayfinder live launch contract**
+- [x] **U6. Implement the PTP page-to-Wayfinder live launch contract**
 
 **Goal:** Replace local create/join convenience messages with Swiss
 Practice-specific intents that include the official PTP game identity.
@@ -711,6 +711,18 @@ Practice-specific intents that include the official PTP game identity.
 
 **Verification:** With a mocked Companion listener, Play produces the expected
 window message and the live panel moves into creating/waiting state.
+
+**Implemented 2026-06-19:** Added `useWayfinderPracticeLaunch()` and wired the
+deck play page through the claim endpoint before any browser automation is
+requested. The hook posts Swiss-specific
+`wayfinder:practice-create-game`/`wayfinder:practice-join-game` messages with
+official PTP game identity, card-pool metadata, and callback context, while
+refusing to reserve live game rows when Wayfinder is not detected. Match cards
+now derive Play, Join, Retry, Watch, Replay, Creating, and Waiting actions from
+the live `currentGame` read model, reuse shared `Button` and `ReplayWatchLink`
+patterns, and keep manual reporting available. Added
+`docs/WAYFINDER_PLUGIN_LIVE_SWISS.md` as the cross-repo contract. Verified with
+TypeScript and focused helper/launch tests.
 
 ---
 

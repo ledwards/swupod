@@ -198,6 +198,95 @@
   color: #bfdbfe;
 }
 
+.match-card-live {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.65rem;
+  border: 1px solid rgba(100, 181, 246, 0.24);
+  border-radius: 8px;
+  background: rgba(100, 181, 246, 0.08);
+  padding: 0.55rem 0.65rem;
+}
+
+.match-card-live--pending {
+  border-color: rgba(255, 215, 0, 0.22);
+  background: rgba(255, 215, 0, 0.06);
+}
+
+.match-card-live--creating,
+.match-card-live--lobby_ready {
+  border-color: rgba(255, 200, 0, 0.28);
+  background: rgba(255, 200, 0, 0.075);
+}
+
+.match-card-live--in_progress {
+  border-color: rgba(100, 181, 246, 0.34);
+  background: rgba(100, 181, 246, 0.1);
+}
+
+.match-card-live--complete {
+  border-color: rgba(34, 197, 94, 0.28);
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.match-card-live--failed,
+.match-card-live--voided {
+  border-color: rgba(248, 113, 113, 0.3);
+  background: rgba(248, 113, 113, 0.08);
+}
+
+.match-card-live-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.match-card-live-status {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.match-card-live-message {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.78rem;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.match-card-live-message--error {
+  color: #fecaca;
+}
+
+.match-card-live-message--success {
+  color: #bbf7d0;
+}
+
+.match-card-live-message--info {
+  color: #bfdbfe;
+}
+
+.match-card-live-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.match-card-live-button {
+  white-space: nowrap;
+}
+
+.match-card-live-watch {
+  --ys-accent: #93c5fd;
+  --ys-accent-bright: #bfdbfe;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .match-card-wayfinder-link:hover {
     color: #bfdbfe;
@@ -220,5 +309,18 @@
 
   .match-card-player-name {
     font-size: 0.85rem;
+  }
+
+  .match-card-live {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .match-card-live-actions {
+    justify-content: flex-start;
+  }
+
+  .match-card-live-actions .your-stats-watch-btn {
+    margin-left: 0;
   }
 }

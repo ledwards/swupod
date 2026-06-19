@@ -2,6 +2,8 @@ import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import {
   confirmedCount,
+  liveGameAction,
+  liveGameStatusLabel,
   nextActiveTabAfterRoundChange,
   roundProgressLabel,
   roundTabState,
@@ -115,5 +117,140 @@ describe('MatchmakingPanel helpers', () => {
     assert.equal(shouldShowInstallNudge(false, false, true), false)
     assert.equal(shouldShowInstallNudge(false, true, false), false)
     assert.equal(shouldShowInstallNudge(true, true, true), false)
+  })
+
+  it('offers Play for a participant before the next live game is claimed', () => {
+    assert.deepEqual(
+      liveGameAction({
+        match: match({ currentGame: { status: 'pending', gameNumber: 1 } }),
+        currentUserId: 'A',
+        liveLaunchEnabled: true,
+      }),
+      { kind: 'play', label: 'Play Game 1' }
+    )
+  })
+
+  it('hides live launch actions when Companion launch is not enabled', () => {
+    assert.deepEqual(
+      liveGameAction({
+        match: match({ currentGame: { status: 'pending', gameNumber: 1 } }),
+        currentUserId: 'A',
+        liveLaunchEnabled: false,
+      }),
+      { kind: 'none', label: '' }
+    )
+  })
+
+  it('distinguishes the creator from the opponent while Wayfinder creates the lobby', () => {
+    assert.deepEqual(
+      liveGameAction({
+        match: match({
+          currentGame: {
+            status: 'creating',
+            gameNumber: 1,
+            game: { createdByUserId: 'A' },
+          },
+        }),
+        currentUserId: 'A',
+        liveLaunchEnabled: true,
+      }),
+      { kind: 'creating', label: 'Creating...', disabled: true }
+    )
+
+    assert.deepEqual(
+      liveGameAction({
+        match: match({
+          currentGame: {
+            status: 'creating',
+            gameNumber: 1,
+            game: { createdByUserId: 'A' },
+          },
+        }),
+        currentUserId: 'B',
+        liveLaunchEnabled: true,
+      }),
+      { kind: 'waiting', label: 'Waiting for lobby', disabled: true }
+    )
+  })
+
+  it('lets a participant join a ready lobby without exposing the raw link as the primary action', () => {
+    assert.deepEqual(
+      liveGameAction({
+        match: match({
+          currentGame: {
+            status: 'lobby_ready',
+            gameNumber: 2,
+            lobbyUrl: 'https://karabast.net/?lobbyId=abc',
+          },
+        }),
+        currentUserId: 'A',
+        liveLaunchEnabled: true,
+      }),
+      { kind: 'join', label: 'Join Game' }
+    )
+  })
+
+  it('reuses the watch/replay link path for spectators and completed matches', () => {
+    assert.deepEqual(
+      liveGameAction({
+        match: match({
+          currentGame: {
+            status: 'in_progress',
+            gameNumber: 1,
+            spectateUrl: 'https://karabast.net/watch/abc',
+          },
+        }),
+        currentUserId: 'C',
+        liveLaunchEnabled: true,
+      }),
+      { kind: 'watch', label: 'Watch', href: 'https://karabast.net/watch/abc' }
+    )
+
+    assert.deepEqual(
+      liveGameAction({
+        match: match({
+          finalConfirmed: true,
+          currentGame: { status: 'complete', gameNumber: null },
+          games: [
+            { gameNumber: 1, attemptNumber: 1, status: 'complete', replayUrl: 'https://karabast.net/replay/one' },
+            { gameNumber: 2, attemptNumber: 1, status: 'complete', replayUrl: 'https://karabast.net/replay/two' },
+          ],
+        }),
+        currentUserId: 'A',
+        liveLaunchEnabled: true,
+      }),
+      { kind: 'replay', label: 'Replay', href: 'https://karabast.net/replay/two' }
+    )
+  })
+
+  it('surfaces stale or failed lobby setup as a retry for participants', () => {
+    assert.deepEqual(
+      liveGameAction({
+        match: match({ currentGame: { status: 'creating', gameNumber: 1, stale: true, retryable: true } }),
+        currentUserId: 'A',
+        liveLaunchEnabled: true,
+      }),
+      { kind: 'retry', label: 'Retry Game 1' }
+    )
+
+    assert.deepEqual(
+      liveGameAction({
+        match: match({ currentGame: { status: 'failed', gameNumber: 2 } }),
+        currentUserId: 'A',
+        liveLaunchEnabled: true,
+      }),
+      { kind: 'retry', label: 'Retry Game 2' }
+    )
+  })
+
+  it('formats live game status with elapsed time for active games', () => {
+    assert.equal(
+      liveGameStatusLabel({ status: 'in_progress', gameNumber: 3, elapsedSeconds: 12 * 60 + 5 }),
+      'Game 3 In Progress · 12m'
+    )
+    assert.equal(
+      liveGameStatusLabel({ status: 'in_progress', gameNumber: 1, elapsedSeconds: 65 * 60 }),
+      'Game 1 In Progress · 1h 05m'
+    )
   })
 })

@@ -5,6 +5,7 @@ import Button from './Button'
 import CompetitivePracticeRules from './CompetitivePracticeRules'
 import {
   nextActiveTabAfterRoundChange,
+  type PracticeLaunchMessage,
   roundProgressLabel,
   roundTabState,
   shouldShowInstallNudge,
@@ -59,6 +60,9 @@ interface MatchmakingPanelProps {
   onBoot: (userId: string) => void
   onAssignBye: (targetUserId: string) => void
   onStartMatches: () => void
+  onPracticeLaunch?: (matchId: string) => void | Promise<void>
+  practiceLaunchPendingMatchId?: string | null
+  practiceLaunchMessage?: PracticeLaunchMessage | null
   wayfinderDetected?: boolean
   wayfinderSettled?: boolean
   hasCompanionBetaAccess?: boolean
@@ -76,6 +80,9 @@ export function MatchmakingPanel({
   onBoot,
   onAssignBye,
   onStartMatches,
+  onPracticeLaunch,
+  practiceLaunchPendingMatchId = null,
+  practiceLaunchMessage = null,
   wayfinderDetected = false,
   wayfinderSettled = true,
   hasCompanionBetaAccess = false,
@@ -130,6 +137,7 @@ export function MatchmakingPanel({
   const progressLabel = roundProgressLabel(currentRound, totalRounds, activeRound)
   const playerStatus = statusLine({ matchmakingStatus, currentRound, currentUserId, myMatch })
   const showInstallNudge = shouldShowInstallNudge(wayfinderDetected, hasCompanionBetaAccess, wayfinderSettled)
+  const liveLaunchEnabled = Boolean(wayfinderDetected && hasCompanionBetaAccess && onPracticeLaunch)
 
   return (
     <div
@@ -274,6 +282,14 @@ export function MatchmakingPanel({
                         currentUserId={currentUserId}
                         isHost={isHost}
                         playerRecords={playerRecords}
+                        liveLaunchEnabled={liveLaunchEnabled}
+                        onPracticeLaunch={onPracticeLaunch}
+                        practiceLaunchPending={practiceLaunchPendingMatchId === match.id}
+                        practiceLaunchMessage={
+                          practiceLaunchMessage?.matchId === match.id
+                            ? practiceLaunchMessage
+                            : null
+                        }
                         wayfinderState={wayfinderMatchState(
                           wayfinderDetected,
                           match.wayfinderMatchId,
