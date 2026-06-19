@@ -186,10 +186,7 @@ export function WinRateByLeader({
                         <span className="your-stats-wr-cell-games">{recordLabel(l.wins, l.losses, l.draws) || matchesLabel(l.matches)}</span>
                       </>
                     ) : (
-                      <>
-                        <span className="your-stats-wr-cell-pct your-stats-wr-cell-pct--empty">–</span>
-                        <span className="your-stats-wr-cell-games">—</span>
-                      </>
+                      <span className="your-stats-wr-cell-pct your-stats-wr-cell-pct--empty">—</span>
                     )}
                   </span>
                 </button>
