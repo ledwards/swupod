@@ -5,6 +5,7 @@ import {
   liveConsoleRoundOrder,
   liveGameAction,
   liveGameStatusLabel,
+  liveRoundMatchGroups,
   nextActiveTabAfterRoundChange,
   roundProgressLabel,
   roundTabState,
@@ -58,6 +59,19 @@ describe('MatchmakingPanel helpers', () => {
 
     assert.deepEqual(confirmedCount(activeRound), { confirmed: 1, total: 3 })
     assert.equal(roundProgressLabel(2, 3, activeRound), 'Round 2 of 3 · 1 of 3 matches confirmed')
+  })
+
+  it('groups live round matches by actionable and completed state', () => {
+    const activeRound = round([
+      match({ id: 'live' }),
+      match({ id: 'submitted', player1Submitted: true }),
+      match({ id: 'complete', finalConfirmed: true }),
+      match({ id: 'bye', player2: null, isBye: true, finalConfirmed: true }),
+    ])
+
+    const groups = liveRoundMatchGroups(activeRound)
+    assert.deepEqual(groups.live.map(m => m.id), ['live', 'submitted'])
+    assert.deepEqual(groups.completed.map(m => m.id), ['complete', 'bye'])
   })
 
   it('returns specific player status lines across matchmaking states', () => {

@@ -338,6 +338,63 @@
   gap: 0.75rem;
 }
 
+.matchmaking-round-match-groups {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.matchmaking-round-match-group {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.matchmaking-round-match-group--completed {
+  border-top: 1px solid rgba(255, 255, 255, 0.11);
+  padding-top: 0.8rem;
+}
+
+.matchmaking-round-match-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-family: 'Barlow', sans-serif;
+}
+
+.matchmaking-round-match-group-header h5 {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.matchmaking-round-match-group-header span {
+  flex-shrink: 0;
+  border: 1px solid rgba(147, 197, 253, 0.22);
+  border-radius: 999px;
+  background: rgba(147, 197, 253, 0.07);
+  padding: 0.08rem 0.45rem;
+  color: rgba(219, 234, 254, 0.86);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.matchmaking-round-match-group--live .matchmaking-round-match-group-header h5 {
+  color: rgba(125, 211, 252, 0.9);
+}
+
+.matchmaking-round-match-group--completed .matchmaking-round-match-group-header h5 {
+  color: rgba(196, 181, 253, 0.86);
+}
+
+.matchmaking-matches-grid--completed {
+  opacity: 0.88;
+}
+
 /* Matches grid */
 .matchmaking-matches-grid {
   display: grid;
@@ -644,6 +701,12 @@
 
   .matchmaking-matches-grid {
     grid-template-columns: 1fr;
+  }
+
+  .matchmaking-round-match-group-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
   }
 
   .matchmaking-round-section {

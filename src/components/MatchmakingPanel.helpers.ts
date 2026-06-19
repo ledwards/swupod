@@ -70,6 +70,11 @@ export interface LiveConsoleRoundOrder {
   historyRoundNumbers: number[]
 }
 
+export interface LiveRoundMatchGroups {
+  live: MatchmakingHelperMatch[]
+  completed: MatchmakingHelperMatch[]
+}
+
 export interface MatchmakingHelperRound {
   roundNumber: number
   matches?: MatchmakingHelperMatch[] | null
@@ -91,6 +96,20 @@ export function confirmedCount(round?: MatchmakingHelperRound | null): { confirm
     confirmed: realMatches.filter(match => match.finalConfirmed).length,
     total: realMatches.length,
   }
+}
+
+export function liveRoundMatchGroups(round?: MatchmakingHelperRound | null): LiveRoundMatchGroups {
+  const groups: LiveRoundMatchGroups = { live: [], completed: [] }
+
+  for (const match of round?.matches || []) {
+    if (match.finalConfirmed || match.isBye) {
+      groups.completed.push(match)
+    } else {
+      groups.live.push(match)
+    }
+  }
+
+  return groups
 }
 
 export function roundProgressLabel(

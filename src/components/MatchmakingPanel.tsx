@@ -5,6 +5,7 @@ import Button from './Button'
 import CompetitivePracticeRules from './CompetitivePracticeRules'
 import {
   liveConsoleRoundOrder,
+  liveRoundMatchGroups,
   nextActiveTabAfterRoundChange,
   type PracticeLaunchMessage,
   roundProgressLabel,
@@ -228,6 +229,14 @@ export function MatchmakingPanel({
 
   const renderRoundSection = (round: Round, variant: 'active' | 'history') => {
     const focused = variant === 'history' && focusedRoundNumber === round.roundNumber
+    const matchGroups = variant === 'active' ? liveRoundMatchGroups(round) : null
+    const shouldGroupMatches = Boolean(matchGroups && matchGroups.completed.length > 0)
+    const renderMatchGrid = (matches: MatchData[], className = '') => (
+      <div className={`matchmaking-matches-grid${className ? ` ${className}` : ''}`}>
+        {matches.map(match => renderMatchCard(match, round.roundNumber))}
+      </div>
+    )
+
     return (
       <section
         key={round.roundNumber}
@@ -247,9 +256,29 @@ export function MatchmakingPanel({
             {roundProgressLabel(round.roundNumber, totalRounds, round)}
           </span>
         </div>
-        <div className="matchmaking-matches-grid">
-          {round.matches.map(match => renderMatchCard(match, round.roundNumber))}
-        </div>
+        {shouldGroupMatches && matchGroups ? (
+          <div className="matchmaking-round-match-groups">
+            {matchGroups.live.length > 0 && (
+              <div className="matchmaking-round-match-group matchmaking-round-match-group--live">
+                <div className="matchmaking-round-match-group-header">
+                  <h5>Live matches</h5>
+                  <span>{matchGroups.live.length} active</span>
+                </div>
+                {renderMatchGrid(matchGroups.live)}
+              </div>
+            )}
+
+            <div className="matchmaking-round-match-group matchmaking-round-match-group--completed">
+              <div className="matchmaking-round-match-group-header">
+                <h5>Completed matches</h5>
+                <span>{matchGroups.completed.length} done</span>
+              </div>
+              {renderMatchGrid(matchGroups.completed, 'matchmaking-matches-grid--completed')}
+            </div>
+          </div>
+        ) : (
+          renderMatchGrid(round.matches)
+        )}
       </section>
     )
   }
