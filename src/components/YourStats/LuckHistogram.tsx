@@ -527,14 +527,14 @@ export function AspectBreakdown({ cardHits }: { cardHits: CardHit[] }) {
   return (
     <div className="your-stats-luck-aspects">
       <h4>Aspect mix</h4>
-      <p className="your-stats-luck-aspects-note">
-        Counts every card that <em>includes</em> a color, so a dual-color card lands in
-        two aspects — slices add to more than the cards you opened. Expected % is for this set.
-      </p>
       <div className="your-stats-luck-pies">
         <Pie title="Main Aspects" slices={primarySlices} />
         <Pie title="Heroism / Villainy / Multicolor" slices={alignSlices} />
       </div>
+      <p className="your-stats-luck-aspects-note">
+        Counts every card that <em>includes</em> a color, so a dual-color card lands in
+        two aspects — slices add to more than the cards you opened. Expected % is for this set.
+      </p>
     </div>
   )
 }
