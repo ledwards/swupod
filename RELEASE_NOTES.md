@@ -1,5 +1,13 @@
 # Release Notes
 
+## 06.18.2026
+
+### 📊 My Stats
+- **Your leaders and archetypes at a glance**: My Stats now charts how your games split across the leaders and archetypes you play — each in its own color — so your most-played decks, and how they perform, stand out immediately.
+- **Win rate by leader**: See your win rate broken down by the leader you ran.
+- **Set and format performance**: Compare how you're doing across each set and format, side by side.
+- **Smarter Set filter**: The Set filter now defaults to the newest set you can open, so you land on your most relevant stats first.
+
 ## 06.15.2026
 
 ### 🧭 Wayfinder Companion

@@ -1,0 +1,4 @@
+#!/bin/sh
+# Keep the published release notes (public/RELEASE_NOTES.md) in sync with the
+# source RELEASE_NOTES.md on every commit. Best-effort — never blocks a commit.
+npm run release-notes:build || true

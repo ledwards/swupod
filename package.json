@@ -10,6 +10,8 @@
     "build": "next build",
     "postbuild": "npx tsx scripts/postbuild.ts",
     "release-notes:update": "npx tsx scripts/updateReleaseNotes.ts",
+    "release-notes:build": "npx tsx scripts/buildReleaseNotes.ts",
+    "prepare": "git config core.hooksPath .githooks || true",
     "start": "NODE_ENV=production npx tsx server.ts",
     "lint": "eslint .",
     "fetch-cards": "npx tsx scripts/fetchCards.ts",
