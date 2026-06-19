@@ -784,7 +784,12 @@ export async function postBotDeckSummaries(
   if (!BOT_TOKEN) return
   if (!DRAFTBOTS_CHANNEL_ID) return
 
-  for (const bot of botSummaries) {
+  for (const [i, bot] of botSummaries.entries()) {
+    // Throttle: #draftbots receives a burst of N bot posts at once. Without
+    // spacing them, Discord rate-limits the channel and silently drops posts
+    // (and their deck images) — the cause of #32. Space posts ~1.5s apart.
+    if (i > 0) await new Promise(resolve => setTimeout(resolve, 1500))
+
     // Generate deck image via swuapi
     let deckImage: Buffer | null = null
     if (bot.deckCards && bot.deckCards.length > 0) {
@@ -800,6 +805,11 @@ export async function postBotDeckSummaries(
         console.error('[Discord Bots] Deck image generation failed:', err)
         return null
       })
+      if (!deckImage) {
+        console.warn(`[Discord Bots] No deck image for ${bot.botName} (swuapi returned null); posting without it`)
+      }
+    } else {
+      console.warn(`[Discord Bots] ${bot.botName} has no deckCards (deckSize=${bot.deckSize}); posting leader image only`)
     }
 
     // Build links section based on pod type
@@ -834,23 +844,35 @@ export async function postBotDeckSummaries(
       embed.image = { url: bot.leaderImageUrl }
     }
 
-    try {
-      let res: Response
+    // Post the embed (multipart with the PNG attachment when we have one). On a
+    // 429 we wait the rate-limit window and retry once — KEEPING the image,
+    // since the deck image is the whole point of #draftbots (unlike the user
+    // channel, we do not drop it on retry).
+    const postSummary = (): Promise<Response> => {
       if (deckImage) {
         const formData = new FormData()
         formData.append('payload_json', JSON.stringify({ embeds: [embed], attachments: [{ id: 0, filename: 'deck.png' }] }))
         formData.append('files[0]', new Blob([deckImage as BlobPart], { type: 'image/png' }), 'deck.png')
-
-        res = await fetch(`${DISCORD_API}/channels/${DRAFTBOTS_CHANNEL_ID}/messages`, {
+        return fetch(`${DISCORD_API}/channels/${DRAFTBOTS_CHANNEL_ID}/messages`, {
           method: 'POST',
           headers: { Authorization: `Bot ${BOT_TOKEN}` },
           body: formData,
         })
-      } else {
-        res = await discordFetch(`/channels/${DRAFTBOTS_CHANNEL_ID}/messages`, {
-          method: 'POST',
-          body: JSON.stringify({ embeds: [embed] }),
-        })
+      }
+      return discordFetch(`/channels/${DRAFTBOTS_CHANNEL_ID}/messages`, {
+        method: 'POST',
+        body: JSON.stringify({ embeds: [embed] }),
+      })
+    }
+
+    try {
+      let res = await postSummary()
+      if (res.status === 429) {
+        const retryData = await res.json().catch(() => ({})) as { retry_after?: number }
+        const retryAfter = (retryData.retry_after || 2) * 1000
+        console.warn(`[Discord Bots] Rate limited posting ${bot.botName}, retrying after ${retryAfter}ms`)
+        await new Promise(resolve => setTimeout(resolve, retryAfter))
+        res = await postSummary()
       }
 
       if (!res.ok) {
