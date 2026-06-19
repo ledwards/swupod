@@ -14,6 +14,7 @@ import '../../log/log.css'
 import '../report.css'
 import { getPackArtUrl } from '../../../../../src/utils/packArt'
 import { parseMarkdownToHTML } from '../../../../../src/utils/markdown'
+import { useStickyTab } from '../../../../../src/hooks/useStickyTab'
 
 interface ReportData {
   draft: {
@@ -60,7 +61,8 @@ interface ReportData {
   } | null
 }
 
-type TabId = 'seating' | 'log' | 'pool' | 'deck' | 'notes' | 'gameplay'
+const REPORT_TABS = ['seating', 'log', 'pool', 'deck', 'notes', 'gameplay'] as const
+type TabId = typeof REPORT_TABS[number]
 
 interface PageProps {
   params: Promise<{ shareId: string; poolShareId: string }>
@@ -76,13 +78,9 @@ export default function DraftReportPage({ params }: PageProps) {
   const [data, setData] = useState<ReportData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<TabId>(() => {
-    if (typeof window !== 'undefined') {
-      const hash = window.location.hash.replace('#', '') as TabId
-      if (['seating', 'log', 'pool', 'deck', 'notes', 'gameplay'].includes(hash)) return hash
-    }
-    return 'seating'
-  })
+  // Hash-deep-linked tabs (#deck etc.). No storageKey — a fresh report should
+  // open on Seating, not whatever tab you last viewed on a different report.
+  const [activeTab, setActiveTab] = useStickyTab<TabId>(REPORT_TABS, 'seating')
   const [message, setMessage] = useState<string | null>(null)
   const [reportPublic, setReportPublic] = useState(false)
   const [editingNotes, setEditingNotes] = useState(false)
@@ -305,10 +303,7 @@ export default function DraftReportPage({ params }: PageProps) {
           <button
             key={tab.id}
             className={`draft-report-tab ${activeTab === tab.id ? 'active' : ''} ${tab.placeholder ? 'placeholder' : ''}`}
-            onClick={() => {
-              setActiveTab(tab.id)
-              window.history.replaceState(null, '', `#${tab.id}`)
-            }}
+            onClick={() => setActiveTab(tab.id)}
           >
             {tab.label}
           </button>

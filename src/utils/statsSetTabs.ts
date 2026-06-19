@@ -1,7 +1,6 @@
 // @ts-nocheck
 import { getSetConfig, isBeta } from './setConfigs/index'
 
-export const PERSONAL_STATS_TAB = 'you'
 // Latest set. Beta sets (e.g. ASH pre-release) only show for users with beta access;
 // the stats page falls back to the newest visible set (tabs[0]) for everyone else.
 export const DEFAULT_STATS_SET_TAB = 'ASH'

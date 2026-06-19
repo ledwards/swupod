@@ -2,6 +2,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useStickyTab } from '../../src/hooks/useStickyTab'
 import '../../src/App.css'
 import './api-docs.css'
 
@@ -137,7 +138,8 @@ function CodeBlock({ code }: { code: string }) {
 }
 
 export default function ApiDocsPage() {
-  const [language, setLanguage] = useState<Language>('curl')
+  // Code-sample language — remembered across visits (localStorage; not a deep link).
+  const [language, setLanguage] = useStickyTab<Language>(['curl', 'javascript', 'python'], 'curl', { url: false, storageKey: 'ptp:api-lang' })
   const [activeSection, setActiveSection] = useState('')
   const [token, setToken] = useState<string | null>(null)
   const [tokenLoading, setTokenLoading] = useState(true)

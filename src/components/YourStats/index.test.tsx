@@ -92,9 +92,9 @@ describe('<YourStats /> — index.tsx', () => {
   })
 
   it('renders Gameplay, Luck, Pools, and Meta tabs with Gameplay as the default', () => {
-    // The active tab is now persisted via useStickyTab (URL ?tab + localStorage,
-    // so it survives refresh + Back). 'gameplay' is still the fallback default —
-    // the 2nd arg, after the ordered tab list.
+    // The active tab is now persisted via useStickyTab (URL #hash + localStorage,
+    // so it survives refresh + deep link). 'gameplay' is still the fallback
+    // default — the 2nd arg, after the ordered tab list.
     assert.match(INDEX_CODE, /useStickyTab<PersonalStatsTab>\(\s*\[[^\]]*\]\s*,\s*['"]gameplay['"]/)
     assert.match(INDEX_CODE, />\s*Gameplay\s*</)
     assert.match(INDEX_CODE, />\s*Luck\s*</)

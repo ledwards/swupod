@@ -7,6 +7,7 @@ import { fetchUserPools, updatePool, deletePool } from '../../src/utils/poolApi'
 import { dropFromDraft } from '../../src/utils/draftApi'
 import { useRouter } from 'next/navigation'
 import { getSetConfig } from '../../src/utils/setConfigs'
+import { useStickyTab } from '../../src/hooks/useStickyTab'
 import EditableTitle from '../../src/components/EditableTitle'
 import Button from '../../src/components/Button'
 import ConfirmModal from '../../src/components/ConfirmModal'
@@ -105,7 +106,7 @@ interface SharedPool {
 
 export default function HistoryPage() {
   const { user, loading: authLoading } = useAuth()
-  const [activeTab, setActiveTab] = useState<'solo' | 'multiplayer' | 'shared'>('solo')
+  const [activeTab, setActiveTab] = useStickyTab(['solo', 'multiplayer', 'shared'] as const, 'solo', { storageKey: 'ptp:history-tab' })
   const [sealedPools, setSealedPools] = useState<SealedPool[]>([])
   const [draftPods, setDraftPods] = useState<DraftPod[]>([])
   const [formatPools, setFormatPools] = useState<FormatPool[]>([])

@@ -69,11 +69,12 @@ export interface YourStatsProps {
 
 export function YourStats({ since, until, setCode = 'all', filterLabel }: YourStatsProps) {
   const { user, loading } = useAuth()
-  // Remember the last tab across refresh + Back button (URL ?tab + localStorage).
+  // Remember the last tab across refresh + deep link (URL #hash + localStorage).
+  // legacyParam upgrades old /me?tab=meta bookmarks to /me#meta on arrival.
   const [activeTab, setActiveTab] = useStickyTab<PersonalStatsTab>(
     ['gameplay', 'luck', 'pools', 'meta'],
     'gameplay',
-    { param: 'tab', storageKey: 'ptp:me-tab' },
+    { storageKey: 'ptp:me-tab', legacyParam: 'tab' },
   )
 
   // Landing on /me clears the "NEW" tag on the My Stats tile (covers arriving

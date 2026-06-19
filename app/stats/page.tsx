@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { useCardPreview } from '@/src/hooks/useCardPreview'
+import { useStickyTab } from '@/src/hooks/useStickyTab'
 import { CardPreview } from '@/src/components/DeckBuilder/CardPreview'
 import { useAuth } from '@/src/contexts/AuthContext'
 import Button from '@/src/components/Button'
@@ -406,7 +407,7 @@ export default function StatsPage() {
   useEffect(() => {
     const hash = window.location.hash.slice(1)
     if (hash && tabs.includes(hash)) {
-      // Respect an explicit tab in the URL (including #you).
+      // Respect an explicit set tab in the URL hash.
       setActiveTab(hash)
     } else {
       // Bare /stats — always default to the latest set (tabs are newest-first).
@@ -593,7 +594,9 @@ interface SetStatsTabProps {
 }
 
 function SetStatsTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred, canSeeFullStats }: SetStatsTabProps) {
-  const [subTab, setSubTab] = useState('sealed')
+  // Secondary subtab — persists across visits via localStorage; the page hash
+  // belongs to the primary set tab, so this group stays out of the URL (url:false).
+  const [subTab, setSubTab] = useStickyTab(['sealed', 'draft'] as const, 'sealed', { url: false, storageKey: 'ptp:stats-subtab' })
 
   return (
     <div className="generation-stats">
