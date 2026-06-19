@@ -1,4 +1,4 @@
-571
+570
 app/admin/page.tsx
 app/api/admin/grant/route.test.ts
 app/api/admin/grant/route.ts
@@ -134,7 +134,6 @@ app/draft/page.tsx
 app/draft/reports/page.tsx
 app/draft/solo/page.tsx
 app/draft_pool/[shareId]/page.tsx
-app/duplicate-rates/page.tsx
 app/error.tsx
 app/formats/chaos-draft/page.tsx
 app/formats/chaos-sealed/page.tsx

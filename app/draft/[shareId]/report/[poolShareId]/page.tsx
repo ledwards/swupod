@@ -7,6 +7,7 @@ import { useAuth } from '../../../../../src/contexts/AuthContext'
 import Button from '../../../../../src/components/Button'
 import PlayerCircle from '../../../../../src/components/PlayerCircle'
 import CardWithPreview from '../../../../../src/components/CardWithPreview'
+import DraftSlideshow from '../../../../../src/components/DraftSlideshow'
 import '../../../../../src/App.css'
 import '../../../../../src/styles/backgrounds.css'
 import '../../../../../src/components/SealedPod.css'
@@ -87,6 +88,10 @@ export default function DraftReportPage({ params }: PageProps) {
   const [notesDraft, setNotesDraft] = useState('')
   const [savingNotes, setSavingNotes] = useState(false)
   const [showMdHelp, setShowMdHelp] = useState(false)
+  const [isSlideshowOpen, setIsSlideshowOpen] = useState(false)
+  const [slideshowData, setSlideshowData] = useState(null)
+  const [slideshowLoading, setSlideshowLoading] = useState(false)
+  const [slideshowError, setSlideshowError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!shareId || !poolShareId) return
@@ -110,6 +115,50 @@ export default function DraftReportPage({ params }: PageProps) {
     }
     fetchReport()
   }, [shareId])
+
+  useEffect(() => {
+    setSlideshowData(null)
+    setSlideshowError(null)
+    setIsSlideshowOpen(false)
+  }, [shareId])
+
+  useEffect(() => {
+    if (!isSlideshowOpen || !shareId || slideshowData || slideshowError) return
+
+    const controller = new AbortController()
+    let cancelled = false
+    async function fetchSlideshow() {
+      try {
+        if (!cancelled) {
+          setSlideshowLoading(true)
+          setSlideshowError(null)
+        }
+        const res = await fetch(`/api/draft/${shareId}/report/slideshow`, {
+          credentials: 'include',
+          signal: controller.signal,
+        })
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: 'Failed to load slideshow data' }))
+          if (!cancelled) setSlideshowError(err.error || 'Failed to load slideshow data')
+          return
+        }
+        const payload = await res.json()
+        if (!cancelled) setSlideshowData(payload)
+      } catch (err) {
+        if (!cancelled && err?.name !== 'AbortError') {
+          setSlideshowError('Failed to load slideshow data')
+        }
+      } finally {
+        if (!cancelled) setSlideshowLoading(false)
+      }
+    }
+
+    fetchSlideshow()
+    return () => {
+      cancelled = true
+      controller.abort()
+    }
+  }, [isSlideshowOpen, shareId, slideshowData, slideshowError])
 
   const handleToggleVisibility = async () => {
     const newValue = !reportPublic
@@ -287,6 +336,22 @@ export default function DraftReportPage({ params }: PageProps) {
                 <span>{reportPublic ? 'Public' : 'Private'}</span>
               </Button>
             )}
+            <Button
+              variant="interactive"
+              className="draft-report-slideshow-toggle"
+              onClick={() => {
+                if (!isSlideshowOpen) setSlideshowError(null)
+                setIsSlideshowOpen(open => !open)
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="4" width="18" height="14" rx="2" ry="2"></rect>
+                <path d="M8 21h8"></path>
+                <path d="M12 18v3"></path>
+                <path d="m10 9 4 3-4 3V9z"></path>
+              </svg>
+              <span>Slideshow Mode</span>
+            </Button>
             <Button variant="secondary" onClick={handleCopyLink}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
@@ -555,6 +620,15 @@ export default function DraftReportPage({ params }: PageProps) {
       </div>
 
       {message && <div className="draft-report-message">{message}</div>}
+      {isSlideshowOpen && (
+        <DraftSlideshow
+          data={slideshowData}
+          loading={slideshowLoading}
+          error={slideshowError}
+          setCode={draft.setCode}
+          onClose={() => setIsSlideshowOpen(false)}
+        />
+      )}
       </div>
     </div>
   )

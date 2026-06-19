@@ -1,5 +1,10 @@
 # Release Notes
 
+## 06.19.2026
+
+### 🎮 Draft Reports
+- **Slideshow Mode for draft reviews**: Completed Draft Reports now include a desktop presentation view with player tabs, all-seat pack review, picked-card highlights, keyboard and edge-arrow navigation, and no-scroll fitted cards for screenshares.
+
 ## 06.18.2026
 
 ### 📊 My Stats

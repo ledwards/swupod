@@ -116,6 +116,16 @@
   align-items: center;
 }
 
+.draft-report-slideshow-toggle {
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .draft-report-slideshow-toggle {
+    display: none;
+  }
+}
+
 .draft-report-visibility-toggle {
   display: flex;
   align-items: center;

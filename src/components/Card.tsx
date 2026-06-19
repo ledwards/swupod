@@ -8,7 +8,7 @@
  */
 
 import './Card.css'
-import type { CSSProperties, ReactNode, MouseEvent, TouchEvent } from 'react'
+import type { CSSProperties, ReactNode, MouseEvent, TouchEvent, HTMLAttributes } from 'react'
 import { AspectIcon } from './AspectIcon'
 
 export interface CardData {
@@ -28,7 +28,8 @@ export interface CardData {
   isPlaceholder?: boolean
 }
 
-export interface CardProps {
+export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'onClick' | 'onMouseEnter' | 'onMouseLeave' | 'onTouchStart' | 'onTouchEnd' | 'style'> {
+  [dataAttribute: `data-${string}`]: string | number | boolean | undefined
   card: CardData | null
   selected?: boolean
   hovered?: boolean
