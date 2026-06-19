@@ -848,7 +848,7 @@ helper, launch helper tests, and TypeScript.
 
 ---
 
-- [ ] **U9. Upgrade Draft Report/archive views to read the live game model**
+- [x] **U9. Upgrade Draft Report/archive views to read the live game model**
 
 **Goal:** Make the post-event archive reflect the richer live game state and
 per-game replays, while preserving the existing report visibility boundary.
@@ -891,6 +891,16 @@ per-game replays, while preserving the existing report visibility boundary.
 
 **Verification:** Draft Report remains an archive of the same live event data,
 not a second divergent model.
+
+**Implemented 2026-06-19:** The player draft report route now keeps the
+existing report visibility gate and folds `practice_match_games` into each
+competitive match row with a lateral JSON aggregate. The normalizer prefers
+per-game live replay/watch data for game pips and game buttons, falls back to
+historical match-level replay/match ids when no live rows exist, and does not
+duplicate rows when both models are present. The Matches tab reuses
+`ReplayWatchLink` for per-game G1/G2/G3 actions and preserves the old single
+Watch/View Match fallback. Verified with draft report normalization tests and
+TypeScript.
 
 ---
 

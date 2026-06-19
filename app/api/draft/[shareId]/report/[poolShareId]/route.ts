@@ -179,15 +179,44 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
          pm.player2_leader_image,
          pm.player2_base,
          pm.player2_base_image,
-         pm.player2_archetype
+         pm.player2_archetype,
+         live_games.live_games
        FROM practice_matches pm
        LEFT JOIN practice_rounds pr ON pr.id = pm.round_id
        LEFT JOIN users u1 ON u1.id = pm.player1_id
        LEFT JOIN users u2 ON u2.id = pm.player2_id
+       LEFT JOIN LATERAL (
+         SELECT json_agg(
+           json_build_object(
+             'id', pmg.id,
+             'gameNumber', pmg.game_number,
+             'attemptNumber', pmg.attempt_number,
+             'status', pmg.status,
+             'result', pmg.result,
+             'replayUrl', pmg.replay_url,
+             'wayfinderMatchId', pmg.wayfinder_match_id,
+             'wayfinderGameId', pmg.wayfinder_game_id,
+             'playedAt', COALESCE(pmg.completed_at, pmg.started_at, pmg.created_at)
+           )
+           ORDER BY pmg.game_number, pmg.attempt_number
+         ) AS live_games
+         FROM practice_match_games pmg
+         WHERE pmg.match_id = pm.id
+           AND pmg.status <> 'voided'
+           AND (
+             pmg.replay_url IS NOT NULL OR
+             pmg.wayfinder_match_id IS NOT NULL OR
+             pmg.result IS NOT NULL
+           )
+       ) live_games ON true
        WHERE pm.pod_id = $1
          AND (pm.player1_id = $2 OR pm.player2_id = $2)
          AND pm.is_bye = false
-         AND (pm.wayfinder_replay_url IS NOT NULL OR pm.wayfinder_match_id IS NOT NULL)
+         AND (
+           pm.wayfinder_replay_url IS NOT NULL OR
+           pm.wayfinder_match_id IS NOT NULL OR
+           live_games.live_games IS NOT NULL
+         )
        ORDER BY pr.round_number ASC NULLS LAST, pm.created_at ASC`,
       [pod.id, targetUserId]
     )

@@ -430,6 +430,14 @@
   gap: 4px;
 }
 
+.draft-report-match-game-replays {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
 .draft-report-match-game {
   width: 22px;
   height: 22px;

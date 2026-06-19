@@ -61,6 +61,48 @@ describe('draft report match normalization', () => {
     assert.equal(match.player.leaderName, 'Darth Vader')
   })
 
+  it('prefers live per-game replay rows for competitive reports', () => {
+    const match = normalizeCompetitiveReportMatch({
+      ...competitiveRow,
+      wayfinder_replay_url: 'https://wayfinder.news/replay/match-level',
+      live_games: [
+        {
+          game_number: 1,
+          result: 'player1',
+          replay_url: 'https://wayfinder.news/replay/game-1',
+          wayfinder_match_id: 'wf-game-1',
+          wayfinder_game_id: 'wfg-1',
+          completed_at: '2026-06-01T20:10:00.000Z',
+        },
+        {
+          game_number: 2,
+          result: 'player2',
+          replay_url: 'https://wayfinder.news/replay/game-2',
+          wayfinder_match_id: 'wf-game-2',
+          wayfinder_game_id: 'wfg-2',
+          completed_at: '2026-06-01T20:30:00.000Z',
+        },
+      ],
+    }, 'u1')
+
+    assert.deepEqual(match.gameResults, ['W', 'L'])
+    assert.equal(match.replayUrl, 'https://wayfinder.news/replay/match-level')
+    assert.equal(match.games.length, 2)
+    assert.equal(match.games[0].replayUrl, 'https://wayfinder.news/replay/game-1')
+    assert.equal(match.games[1].wayfinderGameId, 'wfg-2')
+  })
+
+  it('keeps historical competitive rows valid when no live game rows exist', () => {
+    const match = normalizeCompetitiveReportMatch({
+      ...competitiveRow,
+      live_games: [],
+    }, 'u1')
+
+    assert.deepEqual(match.gameResults, ['W', 'L', 'W'])
+    assert.deepEqual(match.games, [])
+    assert.equal(match.replayUrl, 'https://wayfinder.news/replay/wf-competitive')
+  })
+
   it('maps casual rows that are already user-perspective', () => {
     const match = normalizeCasualReportMatch({
       id: 'cm-1',

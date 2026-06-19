@@ -15,6 +15,15 @@ export interface DraftReportOpponent extends DraftReportDeckIdentity {
   avatarUrl: string | null
 }
 
+export interface DraftReportGameReplay {
+  gameNumber: number | null
+  result: DraftReportGameResult | null
+  replayUrl: string | null
+  wayfinderMatchId: string | null
+  wayfinderGameId: string | null
+  playedAt: string | null
+}
+
 export interface DraftReportMatch {
   id: string
   source: DraftReportMatchSource
@@ -25,8 +34,28 @@ export interface DraftReportMatch {
   playedAt: string | null
   result: DraftReportMatchResult
   gameResults: DraftReportGameResult[]
+  games: DraftReportGameReplay[]
   player: DraftReportDeckIdentity
   opponent: DraftReportOpponent
+}
+
+export interface RawCompetitiveReportGame {
+  id?: string | null
+  game_number?: string | number | null
+  gameNumber?: string | number | null
+  result?: string | null
+  replay_url?: string | null
+  replayUrl?: string | null
+  wayfinder_match_id?: string | null
+  wayfinderMatchId?: string | null
+  wayfinder_game_id?: string | null
+  wayfinderGameId?: string | null
+  completed_at?: string | Date | null
+  completedAt?: string | Date | null
+  started_at?: string | Date | null
+  startedAt?: string | Date | null
+  created_at?: string | Date | null
+  createdAt?: string | Date | null
 }
 
 export interface RawCompetitiveReportMatch {
@@ -56,6 +85,8 @@ export interface RawCompetitiveReportMatch {
   player2_base?: string | null
   player2_base_image?: string | null
   player2_archetype?: string | null
+  live_games?: RawCompetitiveReportGame[] | string | null
+  games?: RawCompetitiveReportGame[] | string | null
 }
 
 export interface RawCasualReportMatch {
@@ -141,6 +172,40 @@ function casualGame(value: string | null | undefined): DraftReportGameResult | n
   return null
 }
 
+function parseLiveGames(value: RawCompetitiveReportMatch['live_games']): RawCompetitiveReportGame[] {
+  if (!value) return []
+  if (Array.isArray(value)) return value
+  if (typeof value !== 'string') return []
+
+  try {
+    const parsed = JSON.parse(value)
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+}
+
+function normalizeCompetitiveGameReplays(
+  row: RawCompetitiveReportMatch,
+  userSide: 'player1' | 'player2' | null
+): DraftReportGameReplay[] {
+  return parseLiveGames(row.live_games || row.games)
+    .map((game) => ({
+      gameNumber: normalizeRoundNumber(game.gameNumber ?? game.game_number),
+      result: competitiveGameFromPerspective(game.result, userSide),
+      replayUrl: game.replayUrl || game.replay_url || null,
+      wayfinderMatchId: game.wayfinderMatchId || game.wayfinder_match_id || null,
+      wayfinderGameId: game.wayfinderGameId || game.wayfinder_game_id || null,
+      playedAt: formatTimestamp(
+        game.completedAt || game.completed_at ||
+        game.startedAt || game.started_at ||
+        game.createdAt || game.created_at
+      ),
+    }))
+    .filter(game => Boolean(game.result || game.replayUrl || game.wayfinderMatchId || game.wayfinderGameId))
+    .sort((a, b) => (a.gameNumber || 0) - (b.gameNumber || 0))
+}
+
 function deckIdentity(row: RawCompetitiveReportMatch | RawCasualReportMatch, prefix: string): DraftReportDeckIdentity {
   return {
     leaderName: row[`${prefix}_leader` as keyof typeof row] as string | null || null,
@@ -159,19 +224,25 @@ export function normalizeCompetitiveReportMatch(
   const opponentSide = otherSide(userSide) || 'player2'
   const roundNumber = normalizeRoundNumber(row.round_number)
   const id = row.id || row.match_id || row.wayfinder_match_id || row.wayfinder_replay_url || ''
+  const games = normalizeCompetitiveGameReplays(row, userSide)
+  const gameResults = games.length > 0
+    ? games.map(game => game.result).filter((game): game is DraftReportGameResult => Boolean(game))
+    : [row.game1_result, row.game2_result, row.game3_result]
+      .map((game) => competitiveGameFromPerspective(game, userSide))
+      .filter((game): game is DraftReportGameResult => Boolean(game))
+  const firstLinkedGame = games.find(game => game.replayUrl || game.wayfinderMatchId)
 
   return {
     id,
     source: 'competitive',
     label: roundNumber ? `Round ${roundNumber}` : 'Match',
     roundNumber,
-    wayfinderMatchId: row.wayfinder_match_id || null,
+    wayfinderMatchId: row.wayfinder_match_id || firstLinkedGame?.wayfinderMatchId || null,
     replayUrl: row.wayfinder_replay_url || null,
     playedAt: formatTimestamp(row.created_at),
     result: competitiveResultFromPerspective(row, userSide),
-    gameResults: [row.game1_result, row.game2_result, row.game3_result]
-      .map((game) => competitiveGameFromPerspective(game, userSide))
-      .filter((game): game is DraftReportGameResult => Boolean(game)),
+    gameResults,
+    games,
     player: deckIdentity(row, userSide || 'player1'),
     opponent: {
       username: row[`${opponentSide}_username` as keyof RawCompetitiveReportMatch] as string | null || null,
@@ -196,6 +267,7 @@ export function normalizeCasualReportMatch(row: RawCasualReportMatch): DraftRepo
     gameResults: [row.game1_result, row.game2_result, row.game3_result]
       .map(casualGame)
       .filter((game): game is DraftReportGameResult => Boolean(game)),
+    games: [],
     player: deckIdentity(row, 'player'),
     opponent: {
       username: row.opponent_name || null,

@@ -15,7 +15,7 @@ import '../../log/log.css'
 import '../report.css'
 import { getPackArtUrl } from '../../../../../src/utils/packArt'
 import { parseMarkdownToHTML } from '../../../../../src/utils/markdown'
-import type { DraftReportGameResult, DraftReportMatch, DraftReportMatchResult } from '../../../../../src/utils/draftReportMatches'
+import type { DraftReportGameReplay, DraftReportGameResult, DraftReportMatch, DraftReportMatchResult } from '../../../../../src/utils/draftReportMatches'
 
 interface ReportData {
   draft: {
@@ -89,6 +89,15 @@ function replayHref(match: DraftReportMatch): string | null {
   if (match.wayfinderMatchId) {
     const wayfinder = process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin.wayfinder.news'
     return `${wayfinder}/matches/${match.wayfinderMatchId}`
+  }
+  return null
+}
+
+function gameReplayHref(game: DraftReportGameReplay): string | null {
+  if (game.replayUrl) return game.replayUrl
+  if (game.wayfinderMatchId) {
+    const wayfinder = process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin.wayfinder.news'
+    return `${wayfinder}/matches/${game.wayfinderMatchId}`
   }
   return null
 }
@@ -518,6 +527,7 @@ export default function DraftReportPage({ params }: PageProps) {
               <div className="draft-report-match-list">
                 {reportMatches.map(match => {
                   const href = replayHref(match)
+                  const linkedGames = (match.games || []).filter(game => gameReplayHref(game))
                   const opponentName = match.opponent.username || 'Opponent'
                   const playerLeader = match.player.leaderName || 'Your deck'
                   const opponentLeader = match.opponent.leaderName || 'Opponent deck'
@@ -546,7 +556,22 @@ export default function DraftReportPage({ params }: PageProps) {
                       </div>
                       <div className="draft-report-match-actions">
                         <MatchGamePips results={match.gameResults} />
-                        {href ? (
+                        {linkedGames.length > 0 ? (
+                          <div className="draft-report-match-game-replays">
+                            {linkedGames.map((game, index) => {
+                              const gameHref = gameReplayHref(game)
+                              return (
+                                <ReplayWatchLink
+                                  key={`${match.id}-game-${game.gameNumber || index}`}
+                                  href={gameHref || undefined}
+                                  ariaLabel={`Watch game ${game.gameNumber || index + 1} replay against ${opponentName}`}
+                                >
+                                  {game.gameNumber ? `G${game.gameNumber}` : `G${index + 1}`}
+                                </ReplayWatchLink>
+                              )
+                            })}
+                          </div>
+                        ) : href ? (
                           <ReplayWatchLink
                             href={href}
                             ariaLabel={match.replayUrl ? `Watch replay against ${opponentName}` : `View Wayfinder match against ${opponentName}`}
