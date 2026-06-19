@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react'
 import { getLatestReleasedSetCode } from '../utils/setConfigs/latest'
 import { trackEvent } from '../hooks/useAnalytics'
 import { buildLimitedContext, LimitedAnalyticsEvents, LimitedPlayActions } from '../analytics/limitedEvents'
-import { KARABAST_PUBLIC_LOBBY_NAME } from '../utils/karabastLobby'
+import { buildLobbyName } from '../utils/karabastLobby'
 import WayfinderStoreButtons, { WayfinderCompanionLockup } from './WayfinderStoreButtons'
 import Button from './Button'
 import { useAuth } from '../contexts/AuthContext'
@@ -27,6 +27,8 @@ interface PlayInstructionsProps {
   shareId: string | null
   poolType: 'draft' | 'sealed' | 'sealed_pod' | string
   setCode?: string | null
+  /** Deck archetype name, used to build the public Karabast game name. */
+  archetypeName?: string | null
   opponentName?: string | null
   hasBye?: boolean
   isSoloDraft?: boolean
@@ -64,6 +66,7 @@ export default function PlayInstructions({
   shareId,
   poolType,
   setCode = null,
+  archetypeName = null,
   opponentName = null,
   hasBye = false,
   isSoloDraft = false,
@@ -98,7 +101,6 @@ export default function PlayInstructions({
   const [joinUrl, setJoinUrl] = useState('')
   const [joinError, setJoinError] = useState<string | null>(null)
   const [cardPool, setCardPool] = useState(cardPoolName)
-  const [lobbyName, setLobbyName] = useState(KARABAST_PUBLIC_LOBBY_NAME)
   const [wayfinderIconUrl, setWayfinderIconUrl] = useState<string | null>(null)
 
   function trackPlayAction(action: string, extra: Record<string, unknown> = {}) {
@@ -134,7 +136,6 @@ export default function PlayInstructions({
         setLobbyCount(e.data.count)
       } else if (e.data?.type === 'wayfinder:metadata') {
         if (e.data.cardPool) setCardPool(e.data.cardPool)
-        if (e.data.lobbyName) setLobbyName(e.data.lobbyName)
       }
     }
 
@@ -169,7 +170,8 @@ export default function PlayInstructions({
       shareId,
       format: poolType === 'sealed_pod' ? 'pool' : poolType === 'draft' ? 'pool' : poolType,
       cardPool,
-      lobbyName,
+      // Public Karabast game name, e.g. "ASH SEALED Boba Aggro protectthepod.com".
+      lobbyName: buildLobbyName({ setCode, poolType, archetypeName }),
     }, '*')
     trackPlayAction(
       privacy === 'private'

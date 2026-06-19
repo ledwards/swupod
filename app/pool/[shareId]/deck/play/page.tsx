@@ -2136,6 +2136,7 @@ export default function PlayPage({ params }: PageProps) {
           shareId={shareId}
           poolType={isSoloDraft ? 'sealed' : (pool?.poolType || 'sealed')}
           setCode={pool?.setCode}
+          archetypeName={deckArchetypeName}
           opponentName={firstOpponent?.username}
           hasBye={hasBye}
           isSoloDraft={isSoloDraft}
