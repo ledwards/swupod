@@ -7,6 +7,7 @@
  */
 import { queryRow, queryRows } from '@/lib/db'
 import { jsonParse } from '@/src/utils/json'
+import { deckIdentityFromDeckState } from '@/src/services/matchmaking/eventAnalytics'
 import { fetchRoundsWithMatches } from '@/src/utils/matchmakingRounds'
 import type { Server as SocketIOServer } from 'socket.io'
 
@@ -50,6 +51,9 @@ interface DraftPlayer {
   current_pack: string | unknown[]
   username: string
   avatar_url: string
+  pool_share_id: string | null
+  deck_builder_state: string | Record<string, unknown> | null
+  pool_cards: string | unknown[] | null
 }
 
 interface PublicLeader {
@@ -73,6 +77,13 @@ interface PublicPlayer {
   draftedCardsCount: number
   draftedLeadersCount: number
   draftedLeaders: PublicLeader[]
+  poolShareId: string | null
+  activeLeaderName: string | null
+  baseName: string | null
+  baseAspects: string[]
+  baseHp: number | null
+  archetypeName: string | null
+  poolCardCount: number | null
 }
 
 interface BroadcastState {
@@ -128,9 +139,11 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
     const players = await queryRows(
       `SELECT dpp.id, dpp.user_id, dpp.seat_number, dpp.pick_status, dpp.is_bot,
               dpp.dropped, dpp.leaders, dpp.drafted_leaders, dpp.drafted_cards, dpp.current_pack,
-              u.username, u.avatar_url
+              u.username, u.avatar_url,
+              cp.share_id AS pool_share_id, cp.deck_builder_state, cp.cards AS pool_cards
        FROM pod_players dpp
        JOIN users u ON dpp.user_id = u.id
+       LEFT JOIN card_pools cp ON cp.pod_id = dpp.pod_id AND cp.user_id = dpp.user_id
        WHERE dpp.pod_id = $1
        ORDER BY dpp.seat_number`,
       [pod.id]
@@ -144,6 +157,8 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
     const publicPlayers: PublicPlayer[] = players.map(p => {
       const draftedLeaders = jsonParse<unknown[]>(p.drafted_leaders, []) as { name: string; aspects?: string[]; imageUrl: string; backImageUrl: string }[]
       const leadersPack = jsonParse<unknown[]>(p.leaders, []) as { name: string; aspects?: string[]; imageUrl: string; backImageUrl: string }[]
+      const deckIdentity = deckIdentityFromDeckState(p.deck_builder_state, draftedLeaders)
+      const poolCards = jsonParse<unknown[]>(p.pool_cards, []) as unknown[]
 
       return {
         id: p.id,
@@ -170,6 +185,13 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
           imageUrl: l.imageUrl,
           backImageUrl: l.backImageUrl,
         })),
+        poolShareId: p.pool_share_id || null,
+        activeLeaderName: deckIdentity.activeLeaderName,
+        baseName: deckIdentity.baseName,
+        baseAspects: deckIdentity.baseAspects,
+        baseHp: deckIdentity.baseHp,
+        archetypeName: deckIdentity.archetypeName,
+        poolCardCount: Array.isArray(poolCards) ? poolCards.length : null,
       }
     })
 

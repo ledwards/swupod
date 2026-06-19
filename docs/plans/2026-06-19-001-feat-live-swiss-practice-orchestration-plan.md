@@ -787,7 +787,7 @@ pending, creating, in-progress, complete, and history states at
 
 ---
 
-- [ ] **U8. Add final standings, deck/pool links, and event analytics**
+- [x] **U8. Add final standings, deck/pool links, and event analytics**
 
 **Goal:** Turn the completed Swiss Practice page into a useful event summary
 without declaring a winner.
@@ -832,6 +832,19 @@ without declaring a winner.
 
 **Verification:** Completing a mocked event renders final standings and
 analytics with useful links and no "winner" declaration.
+
+**Implemented 2026-06-19:** Added a lightweight
+`computeSwissPracticeEventSummary()` service for leader/archetype meta share,
+non-bye match win rates, small-sample labels, and pool coverage context. Draft
+GET/socket payloads now include each player's pool share id, active
+leader/base/archetype summary, and pool card count so final standings can link
+to Pool and Deck without extra per-row fetches. The Standings tab renders
+enhanced rows plus a compact Event Summary at completion and deliberately avoids
+winner/champion language. Full expected-pull luck math is not loaded into the
+live socket; the panel shows coverage/expected-pack context and leaves the
+heavier Luck-tab-equivalent analysis for the lazy event summary endpoint
+described in the approach. Verified with event analytics, standings, panel
+helper, launch helper tests, and TypeScript.
 
 ---
 

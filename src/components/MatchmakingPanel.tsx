@@ -19,6 +19,10 @@ import {
   hasConfirmedMatch,
   recordsThroughRound,
 } from '../services/matchmaking/standings'
+import {
+  computeSwissPracticeEventSummary,
+  type EventMetaRow,
+} from '../services/matchmaking/eventAnalytics'
 import './MatchmakingPanel.css'
 
 interface MatchPlayer {
@@ -55,7 +59,18 @@ interface MatchmakingPanelProps {
   matchmakingStatus: string
   currentUserId: string
   isHost: boolean
-  players: { id: string; username: string; dropped?: boolean }[]
+  players: {
+    id: string
+    username: string
+    dropped?: boolean
+    poolShareId?: string | null
+    activeLeaderName?: string | null
+    baseName?: string | null
+    baseAspects?: string[] | null
+    baseHp?: number | null
+    archetypeName?: string | null
+    poolCardCount?: number | null
+  }[]
   onReport: (matchId: string) => void
   onOverride: (matchId: string) => void
   onBoot: (userId: string) => void
@@ -142,6 +157,15 @@ export function MatchmakingPanel({
 
   const standings = useMemo(() => computeRankedStandings(displayRounds, players), [displayRounds, players])
   const hasResults = useMemo(() => hasConfirmedMatch(displayRounds), [displayRounds])
+  const eventSummary = useMemo(
+    () => computeSwissPracticeEventSummary({ players, rounds: displayRounds }),
+    [players, displayRounds]
+  )
+  const playerById = useMemo(() => {
+    const byId = new Map<string, MatchmakingPanelProps['players'][number]>()
+    for (const player of players) byId.set(player.id, player)
+    return byId
+  }, [players])
   const playerRecordsByRound = useMemo(() => {
     const records = new Map<number, ReturnType<typeof recordsThroughRound>>()
     for (const round of displayRounds) {
@@ -325,33 +349,55 @@ export function MatchmakingPanel({
             {!hasResults ? (
               <p className="matchmaking-empty">No results yet</p>
             ) : (
-              <ol className="matchmaking-standings-list">
-                {standings.map((player, i) => (
-                  <li
-                    key={player.id}
-                    className={`matchmaking-standing-row${player.id === currentUserId ? ' matchmaking-standing-row--mine' : ''}${player.dropped ? ' matchmaking-standing-row--dropped' : ''}`}
-                    data-testid={`standing-row-${i + 1}`}
-                    data-player-id={player.id}
-                    data-rank={player.rank}
-                    data-wins={player.wins}
-                    data-losses={player.losses}
-                    data-draws={player.draws}
-                    data-omw={Math.round(player.omwPercent * 100)}
-                  >
-                    <span className="matchmaking-standing-rank">{player.rank}.</span>
-                    <span className="matchmaking-standing-name">
-                      {player.username}
-                      {player.dropped && <span className="matchmaking-standing-dropped">dropped</span>}
-                    </span>
-                    <span className="matchmaking-standing-record">
-                      {player.wins}W-{player.losses}L{player.draws > 0 ? `-${player.draws}D` : ''}
-                    </span>
-                    <span className="matchmaking-standing-omw">
-                      {Math.round(player.omwPercent * 100)}% <span>OMW</span>
-                    </span>
-                  </li>
-                ))}
-              </ol>
+              <>
+                <ol className="matchmaking-standings-list">
+                  {standings.map((player, i) => {
+                    const playerMeta = playerById.get(player.id)
+                    const identity = playerMeta?.archetypeName
+                      || [playerMeta?.activeLeaderName, playerMeta?.baseName].filter(Boolean).join(' · ')
+                    return (
+                      <li
+                        key={player.id}
+                        className={`matchmaking-standing-row${player.id === currentUserId ? ' matchmaking-standing-row--mine' : ''}${player.dropped ? ' matchmaking-standing-row--dropped' : ''}`}
+                        data-testid={`standing-row-${i + 1}`}
+                        data-player-id={player.id}
+                        data-rank={player.rank}
+                        data-wins={player.wins}
+                        data-losses={player.losses}
+                        data-draws={player.draws}
+                        data-omw={Math.round(player.omwPercent * 100)}
+                      >
+                        <span className="matchmaking-standing-rank">{player.rank}.</span>
+                        <span className="matchmaking-standing-name">
+                          <span className="matchmaking-standing-name-line">
+                            {player.username}
+                            {player.dropped && <span className="matchmaking-standing-dropped">dropped</span>}
+                          </span>
+                          {identity && (
+                            <span className="matchmaking-standing-identity">{identity}</span>
+                          )}
+                          {playerMeta?.poolShareId && (
+                            <span className="matchmaking-standing-links">
+                              <a href={`/pool/${playerMeta.poolShareId}`} target="_blank" rel="noopener noreferrer">Pool</a>
+                              <a href={`/pool/${playerMeta.poolShareId}/deck`} target="_blank" rel="noopener noreferrer">Deck</a>
+                            </span>
+                          )}
+                        </span>
+                        <span className="matchmaking-standing-record">
+                          {player.wins}W-{player.losses}L{player.draws > 0 ? `-${player.draws}D` : ''}
+                        </span>
+                        <span className="matchmaking-standing-omw">
+                          {Math.round(player.omwPercent * 100)}% <span>OMW</span>
+                        </span>
+                      </li>
+                    )
+                  })}
+                </ol>
+
+                {matchmakingStatus === 'complete' && (
+                  <SwissPracticeEventSummary summary={eventSummary} />
+                )}
+              </>
             )}
           </div>
         ) : (
@@ -437,6 +483,78 @@ function timestampMs(value: unknown): number | null {
 
   const parsed = Date.parse(value)
   return Number.isNaN(parsed) ? null : parsed
+}
+
+function SwissPracticeEventSummary({
+  summary,
+}: {
+  summary: ReturnType<typeof computeSwissPracticeEventSummary>
+}) {
+  return (
+    <div className="matchmaking-event-summary" data-testid="swiss-practice-event-summary">
+      <div className="matchmaking-event-summary-header">
+        <span className="matchmaking-event-summary-kicker">Event summary</span>
+        <span className="matchmaking-event-summary-note">
+          {summary.totalDecks} decks · {summary.knownArchetypeDecks} identified
+        </span>
+      </div>
+      <div className="matchmaking-event-summary-grid">
+        <EventMetaPanel title="Archetypes" rows={summary.archetypeMeta.slice(0, 5)} />
+        <EventMetaPanel title="Leaders" rows={summary.leaderMeta.slice(0, 5)} />
+        <div className="matchmaking-event-card">
+          <span className="matchmaking-event-card-title">Pool Context</span>
+          <dl className="matchmaking-pool-context">
+            <div>
+              <dt>Pool links</dt>
+              <dd>{summary.poolContext.playersWithPools}/{summary.poolContext.totalPlayers}</dd>
+            </div>
+            <div>
+              <dt>Expected packs</dt>
+              <dd>{summary.poolContext.expectedPacksPerPlayer ?? 'TBD'} per player</dd>
+            </div>
+            <div>
+              <dt>Avg pool cards</dt>
+              <dd>{summary.poolContext.averagePoolCards == null ? 'TBD' : summary.poolContext.averagePoolCards.toFixed(1)}</dd>
+            </div>
+          </dl>
+          <p className="matchmaking-pool-context-note">
+            Full expected-pull luck math belongs in the lazy event summary endpoint; this live view shows coverage only.
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function EventMetaPanel({ title, rows }: { title: string; rows: EventMetaRow[] }) {
+  return (
+    <div className="matchmaking-event-card">
+      <span className="matchmaking-event-card-title">{title}</span>
+      {rows.length === 0 ? (
+        <p className="matchmaking-event-empty">No deck identity yet</p>
+      ) : (
+        <div className="matchmaking-event-meta-list">
+          {rows.map(row => (
+            <div className="matchmaking-event-meta-row" key={`${title}-${row.name}`}>
+              <span className="matchmaking-event-meta-name">{row.name}</span>
+              <span className="matchmaking-event-meta-share">{formatPercent(row.metaShare)}</span>
+              <span className="matchmaking-event-meta-record">
+                {row.matchWins}-{row.matchLosses}{row.matchDraws > 0 ? `-${row.matchDraws}` : ''}
+                {row.smallSample && <span>small sample</span>}
+              </span>
+              <span className="matchmaking-event-meta-rate">
+                {row.matchWinRate == null ? 'No matches' : `${formatPercent(row.matchWinRate)} WR`}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function formatPercent(value: number): string {
+  return `${Math.round(value * 100)}%`
 }
 
 export default MatchmakingPanel

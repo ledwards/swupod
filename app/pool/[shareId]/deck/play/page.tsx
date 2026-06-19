@@ -2232,6 +2232,13 @@ export default function PlayPage({ params }: PageProps) {
               id: (p as any).odId || '',
               username: p.username || 'Unknown',
               dropped: Boolean((p as any).dropped),
+              poolShareId: (p as any).poolShareId || null,
+              activeLeaderName: (p as any).activeLeaderName || null,
+              baseName: (p as any).baseName || null,
+              baseAspects: Array.isArray((p as any).baseAspects) ? (p as any).baseAspects : [],
+              baseHp: typeof (p as any).baseHp === 'number' ? (p as any).baseHp : null,
+              archetypeName: (p as any).archetypeName || null,
+              poolCardCount: typeof (p as any).poolCardCount === 'number' ? (p as any).poolCardCount : null,
             }))}
             wayfinderDetected={wayfinderDetected}
             wayfinderSettled={wayfinderSettled}
