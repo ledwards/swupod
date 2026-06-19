@@ -21,6 +21,8 @@ const COOKIE_NAME = 'swupod_session'
 
 export interface User {
   id: string
+  /** Discord snowflake — used to form the cross-surface `discord-<id>` analytics identity. */
+  discord_id?: string
   email: string
   username: string
   avatar_url?: string | null
@@ -32,6 +34,8 @@ export interface User {
 
 export interface Session {
   id: string
+  /** Discord snowflake — present on tokens minted after the analytics identity change. */
+  discord_id?: string
   email: string
   username: string
   avatar_url?: string | null
@@ -67,6 +71,7 @@ export function createToken(user: User): string {
   return jwt.sign(
     {
       id: user.id,
+      discord_id: user.discord_id,
       email: user.email,
       username: user.username,
       avatar_url: user.avatar_url,
