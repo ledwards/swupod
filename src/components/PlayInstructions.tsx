@@ -170,7 +170,7 @@ export default function PlayInstructions({
       shareId,
       format: poolType === 'sealed_pod' ? 'pool' : poolType === 'draft' ? 'pool' : poolType,
       cardPool,
-      // Public Karabast game name, e.g. "ASH SEALED Boba Aggro protectthepod.com".
+      // Public Karabast game name, e.g. "SEC Draft Leia Splash Green protectthepod.com".
       lobbyName: buildLobbyName({ setCode, poolType, archetypeName }),
     }, '*')
     trackPlayAction(

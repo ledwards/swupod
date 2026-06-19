@@ -3,31 +3,32 @@ import assert from 'node:assert/strict'
 import { buildLobbyName, appendProtectThePod } from './karabastLobby'
 
 describe('buildLobbyName', () => {
-  it('builds "SET SEALED archetype protectthepod.com" for a sealed pool', () => {
+  it('builds "SET Sealed archetype protectthepod.com" for a sealed pool', () => {
     assert.equal(
       buildLobbyName({ setCode: 'ash', poolType: 'sealed', archetypeName: 'Boba Aggro' }),
-      'ASH SEALED Boba Aggro protectthepod.com'
+      'ASH Sealed Boba Aggro protectthepod.com'
     )
   })
 
-  it('maps draft and rotisserie pools to DRAFT', () => {
+  it('maps draft and rotisserie pools to Draft', () => {
     assert.equal(
       buildLobbyName({ setCode: 'LOF', poolType: 'draft', archetypeName: 'Vader Control' }),
-      'LOF DRAFT Vader Control protectthepod.com'
+      'LOF Draft Vader Control protectthepod.com'
     )
-    assert.match(buildLobbyName({ setCode: 'LOF', poolType: 'rotisserie' }), /^LOF DRAFT /)
+    assert.match(buildLobbyName({ setCode: 'LOF', poolType: 'rotisserie' }), /^LOF Draft /)
   })
 
-  it('strips the (Limited) tag from the archetype', () => {
+  it('strips the (Limited) and embedded set tags from the archetype', () => {
+    // The set is already the prefix, so "(SEC)" would be redundant.
     assert.equal(
-      buildLobbyName({ setCode: 'SEC', poolType: 'sealed', archetypeName: 'Boba Aggro (Limited)' }),
-      'SEC SEALED Boba Aggro protectthepod.com'
+      buildLobbyName({ setCode: 'SEC', poolType: 'draft', archetypeName: 'Leia (SEC) Splash Green (Limited)' }),
+      'SEC Draft Leia Splash Green protectthepod.com'
     )
   })
 
   it('drops missing pieces gracefully but always ends with protectthepod.com', () => {
-    assert.equal(buildLobbyName({ setCode: 'ASH', poolType: 'sealed' }), 'ASH SEALED protectthepod.com')
-    assert.equal(buildLobbyName({ poolType: 'sealed' }), 'SEALED protectthepod.com')
+    assert.equal(buildLobbyName({ setCode: 'ASH', poolType: 'sealed' }), 'ASH Sealed protectthepod.com')
+    assert.equal(buildLobbyName({ poolType: 'sealed' }), 'Sealed protectthepod.com')
   })
 })
 

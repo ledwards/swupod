@@ -14,10 +14,11 @@ export function appendProtectThePod(name: string | null | undefined): string {
 
 /**
  * Build the public Karabast game name for a PTP pool, e.g.
- * "ASH SEALED Boba Aggro protectthepod.com" — so public games are attributable
- * to Protect the Pod and announce the set / format / deck. The archetype's
- * "(Limited)" tag is stripped, and the name always ends with protectthepod.com.
- * Pieces are dropped gracefully when unknown.
+ * "SEC Draft Leia Splash Green protectthepod.com" — so public games are
+ * attributable to Protect the Pod and announce the set / format / deck. The
+ * archetype's set/"(Limited)" tags are stripped (the set is already the prefix),
+ * and the name always ends with protectthepod.com. Pieces drop gracefully when
+ * unknown.
  */
 export function buildLobbyName(opts: {
   setCode?: string | null
@@ -25,7 +26,7 @@ export function buildLobbyName(opts: {
   archetypeName?: string | null
 }): string {
   const set = (opts.setCode || '').trim().toUpperCase()
-  const format = /draft|rotisserie/i.test(opts.poolType || '') ? 'DRAFT' : 'SEALED'
+  const format = /draft|rotisserie/i.test(opts.poolType || '') ? 'Draft' : 'Sealed'
   const archetype = stripArchetypeTags(opts.archetypeName || '').trim()
   const base = [set, format, archetype].filter(Boolean).join(' ')
   return appendProtectThePod(base)
