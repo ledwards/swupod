@@ -33,3 +33,25 @@ describe('/stats tab defaults', () => {
     assert.match(SRC, /if\s*\(\s*hash\s*&&\s*tabs\.includes\(hash\)\s*\)\s*setActiveTab\(hash\)/)
   })
 })
+
+describe('/stats set consistency across tabs', () => {
+  // Regression: on the ASH tab, the All Players / Competitive Players panels showed
+  // LAW data. The tab resolves LAW->ASH as auth loads, and the unguarded fetch effects
+  // let slow LAW responses clobber fresh ASH data. Both Sealed and Draft fetch effects
+  // must drop stale responses when setCode (or auth-derived params) change.
+  const cancelGuards = SRC.match(/return \(\) => \{ cancelled = true \}/g) || []
+  const cancelFlags = SRC.match(/let cancelled = false/g) || []
+
+  it('guards every data-fetch effect with a stale-response cancel flag', () => {
+    // One per tab component (SealedTab + DraftTab).
+    assert.ok(cancelFlags.length >= 2, `expected >= 2 cancel flags, found ${cancelFlags.length}`)
+    assert.ok(cancelGuards.length >= 2, `expected >= 2 cleanup cancels, found ${cancelGuards.length}`)
+  })
+
+  it('only applies fetch results when the effect is still current', () => {
+    // setState from a resolved fetch must be gated on !cancelled so a prior set's
+    // response cannot overwrite the active set's panels.
+    assert.match(SRC, /if\s*\(\s*!cancelled\s*\)/)
+    assert.doesNotMatch(SRC, /\.then\(result => setCardData\(result\.data \|\| result\)\)/)
+  })
+})
