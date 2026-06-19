@@ -123,6 +123,38 @@ export function isPackPickComplete(player: Pick<DraftPlayer, 'pick_status' | 'cu
 }
 
 /**
+ * A pack round is exhausted only when EVERY player's pack is empty.
+ *
+ * Uniform packs deplete in lockstep, so for a normal draft this is equivalent
+ * to the old single-seat (players[0]) check. But Carbonite packs carry one
+ * extra draftable card, so packs can be unequal size — checking only seat 0
+ * would declare the round over (and complete the draft) while another seat
+ * still holds the Carbonite pack's last card, hanging the final round (#19).
+ * Requiring ALL packs empty lets that extra card get drafted and the draft
+ * conclude.
+ */
+export function isPackRoundExhausted(
+  players: Pick<DraftPlayer, 'current_pack'>[]
+): boolean {
+  return players.length > 0 &&
+    players.every(p => parseCurrentPack(p.current_pack).length === 0)
+}
+
+/**
+ * Whether a player has resolved their pick for the current staged round.
+ * Resolved = they selected a card, OR their pack is already empty (nothing left
+ * to pick — e.g. a depleted standard pack while a larger Carbonite pack is
+ * still being drafted). Empty-pack players must NOT block the round, otherwise
+ * an uneven-pack (Carbonite) draft can never finish its final pick (#19).
+ */
+export function isStagedPickResolved(
+  player: Pick<DraftPlayer, 'pick_status' | 'selected_card_id' | 'current_pack'>
+): boolean {
+  if (player.pick_status === 'selected' && player.selected_card_id) return true
+  return parseCurrentPack(player.current_pack).length === 0
+}
+
+/**
  * Process all staged picks when all players have selected
  * This is the "staged pick" system where:
  * 1. Players select cards (stored in selected_card_id)
@@ -170,9 +202,12 @@ export async function processAllStagedPicks(podId: string): Promise<boolean> {
       return false
     }
 
-    // Double-check ALL players are in 'selected' status before processing
-    // This prevents partial processing if some picks already went through
-    const allSelected = players.every(p => p.pick_status === 'selected' && p.selected_card_id)
+    // Double-check ALL players are resolved before processing. A player whose
+    // pack is empty (a depleted standard pack while a larger Carbonite pack is
+    // still in play) counts as resolved — otherwise an uneven-pack draft can
+    // never finish its final pick (#19). This prevents partial processing while
+    // still letting the Carbonite holder's last pick go through.
+    const allSelected = players.every(isStagedPickResolved)
     if (!allSelected) {
       // Not all players have selected - don't process yet
       return false
@@ -444,11 +479,9 @@ async function advancePackDraftAfterPicks(
   const pickInPack = draftState.pickInPack || 1
   const totalPacks = getTotalPacks(draftState, pod)
 
-  // Check if current pack is exhausted
-  const firstPlayer = players[0]
-  const remainingPack: RawCard[] = parseCurrentPack(firstPlayer.current_pack)
-
-  if (remainingPack.length === 0) {
+  // The pack round is over only when EVERY player's pack is empty. Keying off a
+  // single seat breaks on uneven Carbonite packs (#19) — see isPackRoundExhausted.
+  if (isPackRoundExhausted(players)) {
     if (packNumber >= totalPacks) {
       // Draft complete
       await tx.query(
@@ -634,7 +667,7 @@ export async function checkAndAdvanceLeaderDraft(
         [podId]
       )
     } else {
-      // Round 3 complete - transition to pack draft phase
+      // Final leader round complete - transition to pack draft phase
       draftState.phase = 'pack_draft'
       draftState.packNumber = 1
       draftState.pickInPack = 1
@@ -727,7 +760,9 @@ export async function checkAndAdvancePackDraft(
       [podId]
     )
 
-    const allPicked = players.every(p => p.pick_status === 'picked')
+    // Empty packs count as complete so uneven Carbonite packs don't hang (#19);
+    // mirrors the leader path, which already uses isPackPickComplete.
+    const allPicked = players.every(isPackPickComplete)
     if (!allPicked) {
       // Just increment state version
       await tx.query(
