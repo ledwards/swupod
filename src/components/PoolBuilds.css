@@ -88,6 +88,12 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
+.pool-build-meta--record {
+  color: rgba(255, 255, 255, 0.82);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
 .pool-build-more .pool-build-leader {
   color: rgba(255, 255, 255, 0.6);
   font-weight: 600;

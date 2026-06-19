@@ -17,6 +17,7 @@ import { buildBaseCardMap, getBaseCardId } from '../../../../../src/utils/varian
 import { jsonParse } from '../../../../../src/utils/json'
 import { resolveArchetypeUuid, fetchArchetypeNickname } from '../../../../../src/utils/deckBuilderSharing'
 import { archetypeShortName } from '../../../../../src/utils/archetypeName'
+import { formatRecord } from '../../../../../src/utils/deckRecord'
 import { defaultSort } from '../../../../../src/services/cards/cardSorting'
 import { calculateAspectPenalty } from '../../../../../src/services/cards/aspectPenalties'
 import Card from '../../../../../src/components/Card'
@@ -46,20 +47,17 @@ function WldBadge({
 }: {
   wins: number; losses: number; draws: number; matchIds: string[]
 }) {
-  if (wins === 0 && losses === 0 && draws === 0) return null
   const wayfinder = process.env.NEXT_PUBLIC_WAYFINDER_URL ?? 'https://plugin.wayfinder.news'
   return (
-    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-      <span style={{ fontWeight: 700, fontSize: '14px' }}>
-        {wins}W {losses}L {draws}D
-      </span>
+    <div className="play-record-line">
+      <span className="play-record-badge">{formatRecord(wins, losses, draws)}</span>
       {matchIds.map((id, i) => (
         <a
           key={id}
           href={`${wayfinder}/matches/${id}`}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ fontSize: '12px', color: '#93c5fd' }}
+          className="play-record-match-link"
         >
           Match {i + 1}
         </a>
@@ -2075,12 +2073,24 @@ export default function PlayPage({ params }: PageProps) {
           />
           {deckArchetypeName && <p className="play-deck-name">{deckArchetypeName}</p>}
           <p className="play-pool-type">{poolTypeLabel}</p>
-          <WldBadge
-            wins={pool.wins ?? 0}
-            losses={pool.losses ?? 0}
-            draws={pool.draws ?? 0}
-            matchIds={pool.wayfinderMatchIds ?? []}
-          />
+          <div className="play-header-actions">
+            <WldBadge
+              wins={pool.wins ?? 0}
+              losses={pool.losses ?? 0}
+              draws={pool.draws ?? 0}
+              matchIds={pool.wayfinderMatchIds ?? []}
+            />
+            {shareId && (
+              <Button
+                variant="secondary"
+                size="sm"
+                className="play-stats-button"
+                onClick={() => router.push(`/pool/${shareId}/deck/stats?tab=gamelog`)}
+              >
+                Stats
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Login banner for logged-out users viewing anonymous (unowned) pools */}

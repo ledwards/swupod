@@ -79,6 +79,7 @@ interface GameplayReplay {
   leaderName: string | null
   baseName: string | null
   leaderImageUrl: string | null
+  leaderBackImageUrl?: string | null
   baseImageUrl: string | null
   baseColor: string | null
   archetype: string | null
@@ -330,13 +331,10 @@ function CardPlaceholder() {
   )
 }
 
-
-function ReplayRow({ replay, myName }: { replay: GameplayReplay; myName: string }) {
+export function ReplayListItem({ replay, myName }: { replay: GameplayReplay; myName: string }) {
   const opp = replay.opponent.username || 'Opponent'
   const style = replay.baseColor ? ({ ['--row-tint' as any]: replay.baseColor }) : undefined
 
-  // Same treatment as the pool/deck cards: your Hyperspace leader art as the
-  // card background, the match info over it. No expand — the card opens the replay.
   return (
     <a
       className={`your-stats-pool-build your-stats-replay-card your-stats-replay-row--${replay.result}`}
@@ -345,8 +343,17 @@ function ReplayRow({ replay, myName }: { replay: GameplayReplay; myName: string 
       target="_blank"
       rel="noopener noreferrer"
     >
-      <div className="your-stats-pool-build-art" aria-hidden="true">
-        {replay.leaderImageUrl ? <img src={replay.leaderImageUrl} alt="" loading="lazy" /> : <CardPlaceholder />}
+      <div className="your-stats-pool-build-art your-stats-replay-art-pair" aria-hidden="true">
+        {replay.opponent.leaderImageUrl ? (
+          <img className="your-stats-replay-side-art your-stats-replay-side-art--opp" src={replay.opponent.leaderImageUrl} alt="" loading="lazy" />
+        ) : (
+          <span className="your-stats-pool-build-art-fallback your-stats-pool-build-art-fallback--opp"><CardPlaceholder /></span>
+        )}
+        {replay.leaderImageUrl ? (
+          <img className="your-stats-replay-side-art your-stats-replay-side-art--mine" src={replay.leaderImageUrl} alt="" loading="lazy" />
+        ) : (
+          <span className="your-stats-pool-build-art-fallback"><CardPlaceholder /></span>
+        )}
       </div>
       <div className="your-stats-replay-content">
         <div className="your-stats-replay-center-top">
@@ -360,9 +367,8 @@ function ReplayRow({ replay, myName }: { replay: GameplayReplay; myName: string 
           </span>
         </div>
         <div className="your-stats-replay-oppline">
-          <span className="your-stats-replay-opp-thumb" aria-hidden="true">
-            {replay.opponent.leaderImageUrl ? <img src={replay.opponent.leaderImageUrl} alt="" loading="lazy" /> : <CardPlaceholder />}
-          </span>
+          <span>{replay.leaderName || 'Unknown leader'}</span>
+          <span className="your-stats-replay-vs">vs</span>
           <span>{replay.opponent.leaderName || 'Unknown leader'}</span>
         </div>
         <div className="your-stats-replay-center-sub">
@@ -377,7 +383,7 @@ function ReplayRow({ replay, myName }: { replay: GameplayReplay; myName: string 
   )
 }
 
-function ReplayExplorer({ replays, myName }: { replays: GameplayReplay[]; myName: string }) {
+export function ReplayExplorer({ replays, myName }: { replays: GameplayReplay[]; myName: string }) {
   const [search, setSearch] = useState('')
   const [format, setFormat] = useState('all')
   const [result, setResult] = useState('all')
@@ -474,7 +480,7 @@ function ReplayExplorer({ replays, myName }: { replays: GameplayReplay[]; myName
       ) : (
         <div className="your-stats-replay-list">
           {filtered.map((replay) => (
-            <ReplayRow key={replay.id} replay={replay} myName={myName} />
+            <ReplayListItem key={replay.id} replay={replay} myName={myName} />
           ))}
         </div>
       )}

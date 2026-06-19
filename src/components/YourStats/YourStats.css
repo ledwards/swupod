@@ -1497,6 +1497,12 @@
   padding: 0.8rem 1rem;
 }
 
+.your-stats-replay-card .your-stats-replay-content {
+  margin: 0 auto;
+  max-width: min(64%, 680px);
+  text-align: center;
+}
+
 .your-stats-replay-combo {
   display: flex;
   flex-direction: column;
@@ -3565,6 +3571,34 @@ a.your-stats-logged-out-link:active {
   color: inherit;
 }
 
+.your-stats-replay-art-pair .your-stats-replay-side-art {
+  top: 0;
+  height: 100%;
+  width: 34%;
+  object-fit: cover;
+  object-position: center 30%;
+  transition: transform 380ms ease;
+}
+
+.your-stats-replay-art-pair .your-stats-replay-side-art--opp {
+  left: -60px;
+  right: auto;
+  -webkit-mask-image: linear-gradient(to right, #000 0%, #000 44%, transparent 100%);
+  mask-image: linear-gradient(to right, #000 0%, #000 44%, transparent 100%);
+}
+
+.your-stats-replay-art-pair .your-stats-replay-side-art--mine {
+  right: -60px;
+  left: auto;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 56%, #000 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 56%, #000 100%);
+}
+
+.your-stats-pool-build-art-fallback--opp {
+  left: 8%;
+  right: auto;
+}
+
 .your-stats-replay-oppline {
   display: flex;
   align-items: center;
@@ -3609,56 +3643,6 @@ a.your-stats-logged-out-link:active {
 .your-stats-replay-card.your-stats-replay-row--loss { border-color: rgba(248, 113, 113, 0.5); }
 .your-stats-replay-card.your-stats-replay-row--draw { border-color: rgba(251, 191, 36, 0.5); }
 .your-stats-replay-card.your-stats-replay-row--pending { border-color: rgba(255, 255, 255, 0.22); }
-
-.your-stats-replay-flank {
-  position: relative;
-  flex: 0 0 27%;
-  max-width: 180px;
-  overflow: hidden;
-}
-
-.your-stats-replay-flank img {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  width: 150%;
-  object-fit: cover;
-  object-position: center 22%;
-}
-
-/* Mine fades toward the center from the left; opponent mirrors it. */
-.your-stats-replay-flank--mine img {
-  left: 0;
-  -webkit-mask-image: linear-gradient(to right, #000 35%, transparent 100%);
-  mask-image: linear-gradient(to right, #000 35%, transparent 100%);
-}
-
-.your-stats-replay-flank--opp img {
-  right: 0;
-  -webkit-mask-image: linear-gradient(to left, #000 35%, transparent 100%);
-  mask-image: linear-gradient(to left, #000 35%, transparent 100%);
-}
-
-.your-stats-replay-flank .your-stats-card-placeholder,
-.your-stats-replay-flank svg {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  opacity: 0.25;
-}
-
-.your-stats-replay-center {
-  position: relative;
-  z-index: 1;
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.3rem;
-  padding: 0.6rem 0.5rem;
-  text-align: center;
-}
 
 .your-stats-replay-center-top {
   display: flex;
@@ -3706,6 +3690,25 @@ a.your-stats-logged-out-link:active {
   z-index: 1;
   align-self: center;
   margin-right: 0.5rem;
+}
+
+@media (max-width: 560px) {
+  .your-stats-replay-card .your-stats-replay-content {
+    max-width: 72%;
+  }
+
+  .your-stats-replay-art-pair .your-stats-replay-side-art {
+    width: 42%;
+    object-position: center calc(30% + 50px);
+  }
+
+  .your-stats-replay-art-pair .your-stats-replay-side-art--opp {
+    left: -72px;
+  }
+
+  .your-stats-replay-art-pair .your-stats-replay-side-art--mine {
+    right: -72px;
+  }
 }
 
 /* Gameplay leaders: usage pie (left) + win-rate legend (right). */

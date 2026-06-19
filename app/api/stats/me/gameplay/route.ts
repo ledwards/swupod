@@ -7,12 +7,12 @@ import { getAspectColor } from '@/src/utils/aspectColors'
 import { hyperspaceLeaderArt } from '@/src/utils/hyperspaceLeaderArt'
 import { NextRequest, NextResponse } from 'next/server'
 
-/** Swap a replay's leader art (mine + opponent) for the Hyperspace front art. */
-function withHyperspaceArt(replay: GameplayReplay): GameplayReplay {
+/** Replay list items use unit-side leader art, preferring Hyperspace variants. */
+function withPreferredReplayArt(replay: GameplayReplay): GameplayReplay {
   const set = replay.pool?.setCode
   return {
     ...replay,
-    leaderImageUrl: hyperspaceLeaderArt(replay.leaderName, set) || replay.leaderImageUrl,
+    leaderImageUrl: hyperspaceLeaderArt(replay.leaderName, set) || replay.leaderBackImageUrl || replay.leaderImageUrl,
     opponent: {
       ...replay.opponent,
       leaderImageUrl: hyperspaceLeaderArt(replay.opponent.leaderName, set) || replay.opponent.leaderImageUrl,
@@ -95,6 +95,7 @@ export interface GameplayRecentPool {
   leaderName: string | null
   baseName: string | null
   leaderImageUrl: string | null
+  leaderBackImageUrl: string | null
   baseImageUrl: string | null
   deckCardCount: number
   wins: number
@@ -154,6 +155,7 @@ export interface GameplayReplay {
   leaderName: string | null
   baseName: string | null
   leaderImageUrl: string | null
+  leaderBackImageUrl: string | null
   baseImageUrl: string | null
   archetype: string | null
   deckCardCount: number
@@ -460,6 +462,7 @@ export function buildTerronkDevGameplayFixture(poolRows: DevFixturePoolRow[]): G
     leaderName: pool.leaderName,
     baseName: pool.baseName,
     leaderImageUrl: pool.leaderImageUrl,
+    leaderBackImageUrl: pool.leaderBackImageUrl,
     baseImageUrl: pool.baseImageUrl,
     archetype: null,
     deckCardCount: pool.deckCardCount,
@@ -725,7 +728,7 @@ export function buildGameplayResponse(
       .filter((replay) => replay.replayUrl)
       .sort((a, b) => new Date(b.playedAt || 0).getTime() - new Date(a.playedAt || 0).getTime())
       .slice(0, 50)
-      .map(withHyperspaceArt),
+      .map(withPreferredReplayArt),
   }
 }
 
