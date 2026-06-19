@@ -12,8 +12,8 @@
 }
 
 .match-card--mine {
-  border-color: rgba(255, 215, 0, 0.6);
-  box-shadow: 0 0 12px rgba(255, 215, 0, 0.15);
+  border-color: rgba(147, 197, 253, 0.58);
+  box-shadow: 0 0 14px rgba(147, 197, 253, 0.16);
 }
 
 .match-card--confirmed {
@@ -36,7 +36,7 @@
 }
 
 .match-card-player--winner .match-card-player-name {
-  color: rgba(255, 215, 0, 0.9);
+  color: #bfdbfe;
   font-weight: 700;
 }
 
@@ -59,15 +59,15 @@
 
 .match-card-player-record {
   flex-shrink: 0;
-  border: 1px solid rgba(255, 215, 0, 0.28);
+  border: 1px solid rgba(147, 197, 253, 0.28);
   border-radius: 999px;
-  background: rgba(255, 215, 0, 0.08);
+  background: rgba(147, 197, 253, 0.08);
   padding: 0.08rem 0.4rem;
   font-family: 'Barlow', sans-serif;
   font-size: 0.72rem;
   font-weight: 700;
   line-height: 1.35;
-  color: rgba(255, 215, 0, 0.9);
+  color: #bfdbfe;
 }
 
 .match-card-player-name--bye {
@@ -109,7 +109,7 @@
 }
 
 .game-dot--draw {
-  background: rgba(255, 200, 0, 0.7);
+  background: rgba(150, 185, 255, 0.7);
 }
 
 .match-card-boot {
@@ -159,7 +159,7 @@
 }
 
 .match-card-status--awaiting-confirmation {
-  color: rgba(255, 200, 0, 0.9);
+  color: #c4b5fd;
 }
 
 .match-card-status--complete {
@@ -179,14 +179,14 @@
 }
 
 .match-card-wayfinder-state {
-  border: 1px solid rgba(255, 215, 0, 0.28);
+  border: 1px solid rgba(147, 197, 253, 0.28);
   border-radius: 999px;
-  background: rgba(255, 215, 0, 0.08);
+  background: rgba(147, 197, 253, 0.08);
   padding: 0.12rem 0.45rem;
   font-family: 'Barlow', sans-serif;
   font-size: 0.68rem;
   font-weight: 800;
-  color: rgba(255, 215, 0, 0.9);
+  color: #bfdbfe;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -210,14 +210,14 @@
 }
 
 .match-card-live--pending {
-  border-color: rgba(255, 215, 0, 0.22);
-  background: rgba(255, 215, 0, 0.06);
+  border-color: rgba(167, 139, 250, 0.24);
+  background: rgba(167, 139, 250, 0.065);
 }
 
 .match-card-live--creating,
 .match-card-live--lobby_ready {
-  border-color: rgba(255, 200, 0, 0.28);
-  background: rgba(255, 200, 0, 0.075);
+  border-color: rgba(167, 139, 250, 0.3);
+  background: rgba(167, 139, 250, 0.08);
 }
 
 .match-card-live--in_progress {

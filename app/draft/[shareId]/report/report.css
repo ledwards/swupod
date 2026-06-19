@@ -64,8 +64,8 @@
 
 .draft-report-header {
   padding: 16px 32px;
-  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
-  background: linear-gradient(180deg, rgba(255, 215, 0, 0.08) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(147, 197, 253, 0.18);
+  background: linear-gradient(180deg, rgba(37, 99, 235, 0.08) 0%, transparent 100%);
 }
 
 .draft-report-header-content {
@@ -85,7 +85,7 @@
 
 .draft-report-label {
   font-size: 0.75rem;
-  color: rgba(255, 215, 0, 0.7);
+  color: rgba(147, 197, 253, 0.78);
   text-transform: uppercase;
   letter-spacing: 2px;
 }
@@ -186,8 +186,8 @@
 }
 
 .draft-report-tab.active {
-  color: rgba(255, 215, 0, 0.9);
-  border-bottom-color: rgba(255, 215, 0, 0.8);
+  color: rgba(191, 219, 254, 0.94);
+  border-bottom-color: rgba(147, 197, 253, 0.86);
   font-weight: 600;
 }
 
@@ -241,7 +241,7 @@
 .draft-report-log-section h3 {
   font-size: 1.1rem;
   margin-bottom: 1rem;
-  color: rgba(255, 215, 0, 0.8);
+  color: rgba(191, 219, 254, 0.84);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 0.5rem;
 }
@@ -279,7 +279,7 @@
 .draft-report-pool-section h3 {
   font-size: 1.1rem;
   margin-bottom: 1rem;
-  color: rgba(255, 215, 0, 0.8);
+  color: rgba(191, 219, 254, 0.84);
 }
 
 .draft-report-deck {
@@ -412,7 +412,7 @@
 }
 
 .draft-report-match-decks span:nth-child(2) {
-  color: rgba(255, 215, 0, 0.58);
+  color: rgba(167, 139, 250, 0.68);
   font-size: 0.76rem;
   text-transform: uppercase;
 }
@@ -479,7 +479,7 @@
   transform: translateX(-50%);
   padding: 10px 20px;
   background: rgba(0, 0, 0, 0.9);
-  border: 1px solid rgba(255, 215, 0, 0.4);
+  border: 1px solid rgba(147, 197, 253, 0.4);
   border-radius: 8px;
   color: white;
   font-size: 0.9rem;
@@ -613,7 +613,7 @@
 
 .draft-report-notes-edit:focus {
   outline: none;
-  border-color: rgba(255, 215, 0, 0.5);
+  border-color: rgba(147, 197, 253, 0.55);
 }
 
 .draft-report-notes-edit::placeholder {
@@ -703,7 +703,7 @@
 
 .draft-report-md-help td:first-child {
   font-family: monospace;
-  color: rgba(255, 215, 0, 0.7);
+  color: rgba(191, 219, 254, 0.78);
   white-space: nowrap;
 }
 
@@ -736,8 +736,8 @@
 }
 
 .draft-report-list-item:hover {
-  border-color: rgba(255, 215, 0, 0.4);
-  background: rgba(255, 215, 0, 0.05);
+  border-color: rgba(147, 197, 253, 0.4);
+  background: rgba(147, 197, 253, 0.055);
 }
 
 .draft-report-list-avatar {
@@ -754,7 +754,7 @@
 
 .draft-report-list-you {
   font-weight: 400;
-  color: rgba(255, 215, 0, 0.7);
+  color: rgba(167, 139, 250, 0.78);
   font-size: 0.85rem;
 }
 

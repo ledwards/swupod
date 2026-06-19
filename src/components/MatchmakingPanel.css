@@ -1,10 +1,17 @@
 /* MatchmakingPanel styles */
 
 .matchmaking-panel {
+  --swiss-blue: #93c5fd;
+  --swiss-blue-bright: #bfdbfe;
+  --swiss-blue-soft: rgba(147, 197, 253, 0.12);
+  --swiss-violet: #c4b5fd;
+  --swiss-violet-soft: rgba(167, 139, 250, 0.1);
+  --swiss-premium: #f6d16b;
+
   margin-top: 2rem;
-  border: 1px solid rgba(255, 215, 0, 0.3);
+  border: 1px solid rgba(147, 197, 253, 0.28);
   border-radius: 12px;
-  background: rgba(0, 0, 0, 0.4);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.68) 0%, rgba(0, 0, 0, 0.42) 100%);
   padding: 1.5rem;
 }
 
@@ -21,13 +28,13 @@
   font-weight: 700;
   font-size: 0.85rem;
   letter-spacing: 1.5px;
-  color: rgba(255, 215, 0, 0.8);
+  color: var(--swiss-premium);
   text-transform: uppercase;
 }
 
 .matchmaking-how-toggle {
   flex-shrink: 0;
-  color: rgba(255, 215, 0, 0.88);
+  color: var(--swiss-blue-bright);
 }
 
 .matchmaking-how-caret {
@@ -41,7 +48,7 @@
 
 .matchmaking-how-panel {
   margin-bottom: 1rem;
-  border: 1px solid rgba(255, 215, 0, 0.16);
+  border: 1px solid rgba(147, 197, 253, 0.18);
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.28);
   padding: 0.85rem 1rem;
@@ -62,9 +69,9 @@
 .matchmaking-status-band {
   display: grid;
   gap: 0.35rem;
-  border: 1px solid rgba(255, 215, 0, 0.18);
+  border: 1px solid rgba(147, 197, 253, 0.24);
   border-radius: 8px;
-  background: rgba(255, 215, 0, 0.055);
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.12), rgba(124, 58, 237, 0.08));
   padding: 0.7rem 0.85rem;
   margin-bottom: 1rem;
   font-family: 'Barlow', sans-serif;
@@ -75,7 +82,7 @@
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: rgba(255, 215, 0, 0.9);
+  color: var(--swiss-blue-bright);
 }
 
 .matchmaking-status-line {
@@ -89,9 +96,9 @@
   grid-template-columns: minmax(180px, 0.7fr) minmax(220px, 1fr);
   align-items: center;
   gap: 1rem;
-  border: 1px solid rgba(255, 215, 0, 0.25);
+  border: 1px solid rgba(167, 139, 250, 0.24);
   border-radius: 8px;
-  background: rgba(255, 215, 0, 0.08);
+  background: linear-gradient(90deg, rgba(147, 197, 253, 0.08), rgba(167, 139, 250, 0.08));
   padding: 0.9rem 1rem;
   margin-bottom: 1rem;
 }
@@ -104,7 +111,7 @@
 }
 
 .matchmaking-wayfinder-copy strong {
-  color: rgba(255, 215, 0, 0.95);
+  color: var(--swiss-violet);
   font-size: 0.95rem;
 }
 
@@ -124,8 +131,8 @@
 
 /* Current match callout */
 .matchmaking-my-match {
-  background: rgba(255, 215, 0, 0.08);
-  border: 1px solid rgba(255, 215, 0, 0.25);
+  background: rgba(147, 197, 253, 0.08);
+  border: 1px solid rgba(147, 197, 253, 0.26);
   border-radius: 8px;
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
@@ -135,7 +142,7 @@
 }
 
 .matchmaking-my-match strong {
-  color: rgba(255, 215, 0, 0.95);
+  color: var(--swiss-blue-bright);
 }
 
 /* Host controls */
@@ -167,19 +174,19 @@
 }
 
 .matchmaking-tab.btn--active {
-  color: rgba(255, 215, 0, 0.94);
-  border-color: rgba(255, 215, 0, 0.72);
-  background: rgba(255, 215, 0, 0.12);
+  color: var(--swiss-blue-bright);
+  border-color: rgba(147, 197, 253, 0.72);
+  background: rgba(147, 197, 253, 0.13);
 }
 
 .matchmaking-tab--completed {
   color: rgba(255, 255, 255, 0.68);
-  border-color: rgba(255, 215, 0, 0.25);
+  border-color: rgba(167, 139, 250, 0.24);
 }
 
 .matchmaking-tab--completed::before {
   content: "✓";
-  color: rgba(255, 215, 0, 0.88);
+  color: var(--swiss-violet);
 }
 
 .matchmaking-tab--current::before {
@@ -187,8 +194,8 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: rgba(255, 215, 0, 0.95);
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.55);
+  background: var(--swiss-blue);
+  box-shadow: 0 0 8px rgba(147, 197, 253, 0.55);
 }
 
 .matchmaking-tab--upcoming {
@@ -222,8 +229,8 @@
 }
 
 .matchmaking-round-section--active {
-  border-color: rgba(255, 215, 0, 0.28);
-  background: rgba(255, 215, 0, 0.035);
+  border-color: rgba(147, 197, 253, 0.28);
+  background: linear-gradient(180deg, rgba(147, 197, 253, 0.055), rgba(167, 139, 250, 0.035));
 }
 
 .matchmaking-round-section--history {
@@ -261,7 +268,7 @@
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255, 215, 0, 0.76);
+  color: rgba(147, 197, 253, 0.8);
 }
 
 .matchmaking-round-section--history .matchmaking-round-section-kicker {
@@ -360,8 +367,8 @@
 }
 
 .matchmaking-standing-row--mine {
-  background: rgba(255, 215, 0, 0.08);
-  border: 1px solid rgba(255, 215, 0, 0.2);
+  background: rgba(147, 197, 253, 0.08);
+  border: 1px solid rgba(147, 197, 253, 0.2);
 }
 
 .matchmaking-standing-row--dropped {
@@ -444,7 +451,7 @@
   text-align: right;
   font-weight: 700;
   font-size: 0.9rem;
-  color: rgba(255, 215, 0, 0.88);
+  color: var(--swiss-violet);
 }
 
 .matchmaking-standing-omw span {
@@ -477,7 +484,7 @@
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255, 215, 0, 0.84);
+  color: var(--swiss-blue-bright);
 }
 
 .matchmaking-event-summary-note {
@@ -545,7 +552,7 @@
   justify-self: end;
   font-size: 0.84rem;
   font-weight: 800;
-  color: rgba(255, 215, 0, 0.84);
+  color: var(--swiss-violet);
 }
 
 .matchmaking-event-meta-record,
