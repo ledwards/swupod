@@ -1,5 +1,6 @@
 import { deriveMatchWinner } from './results'
 import type { TxClient } from '@/lib/db'
+import type { RoundAdvanceResult } from './advancement'
 
 export type PracticeGameResult = 'player1' | 'player2' | 'draw'
 
@@ -80,6 +81,7 @@ export type PracticeGameClaimAction =
   | 'manual_only'
 
 export type PracticeGameLifecycleStatus = 'lobby_ready' | 'joined' | 'in_progress' | 'failed'
+export type WayfinderReportedResult = 'win' | 'loss' | 'draw'
 
 export interface PracticeGameClaimParams {
   shareId: string
@@ -151,6 +153,53 @@ export class PracticeGameLifecycleError extends Error {
   ) {
     super(message)
     this.name = 'PracticeGameLifecycleError'
+  }
+}
+
+export interface PracticeGameResultParams {
+  poolShareId: string
+  wayfinderMatchId: string
+  result: WayfinderReportedResult
+  practiceMatchGameId?: string | null
+  gameNumber?: number | null
+  replayUrl?: string | null
+  wayfinderGameId?: string | null
+  playerLeader?: string | null
+  playerLeaderImage?: string | null
+  playerBase?: string | null
+  playerBaseImage?: string | null
+  playerArchetype?: string | null
+  opponentLeader?: string | null
+  opponentLeaderImage?: string | null
+  opponentBase?: string | null
+  opponentBaseImage?: string | null
+  opponentArchetype?: string | null
+  occurredAt?: Date | string | null
+}
+
+export interface PracticeGameResultRecordResult {
+  ok: true
+  changed: boolean
+  duplicate: boolean
+  shareId: string
+  podId: string
+  matchId: string
+  practiceMatchGameId: string | null
+  gameNumber: GameNumber
+  matchFinalized: boolean
+  roundAdvanced: boolean
+  eventCompleted: boolean
+  advanceResult: RoundAdvanceResult | null
+}
+
+export class PracticeGameResultError extends Error {
+  constructor(
+    public readonly status: number,
+    public readonly code: string,
+    message: string
+  ) {
+    super(message)
+    this.name = 'PracticeGameResultError'
   }
 }
 
@@ -391,6 +440,13 @@ export async function recordPracticeMatchGameLifecycle(
   return withTransaction(tx => recordPracticeMatchGameLifecycleInTransaction(tx, params))
 }
 
+export async function recordPracticeMatchGameResult(
+  params: PracticeGameResultParams
+): Promise<PracticeGameResultRecordResult> {
+  const { withTransaction } = await import('@/lib/db')
+  return withTransaction(tx => recordPracticeMatchGameResultInTransaction(tx, params))
+}
+
 export async function claimPracticeMatchGameInTransaction(
   tx: TxClient,
   {
@@ -625,6 +681,157 @@ export async function recordPracticeMatchGameLifecycleInTransaction(
   }
 }
 
+export async function recordPracticeMatchGameResultInTransaction(
+  tx: TxClient,
+  params: PracticeGameResultParams
+): Promise<PracticeGameResultRecordResult> {
+  const occurredAt = coerceDate(params.occurredAt) ?? new Date()
+  const pool = await tx.queryRow(
+    `SELECT
+       cp.id AS card_pool_id,
+       cp.user_id,
+       cp.pod_id,
+       p.share_id AS pod_share_id,
+       p.competitive
+     FROM card_pools cp
+     JOIN pods p ON cp.pod_id = p.id
+     WHERE cp.share_id = $1`,
+    [params.poolShareId]
+  )
+
+  if (!pool) {
+    throw new PracticeGameResultError(404, 'pool_not_found', 'Pool not found')
+  }
+
+  if (pool.competitive !== true) {
+    throw new PracticeGameResultError(400, 'not_competitive', 'Pool is not in a competitive pod')
+  }
+
+  await tx.query('SELECT pg_advisory_xact_lock(hashtext($1::text))', [pool.pod_id])
+
+  const resolved = await resolveResultTarget(tx, params, pool)
+  const { matchRow, gameRow, gameNumber } = resolved
+  const reporterIsPlayer1 = matchRow.player1_id === pool.user_id
+  const gameResult = resultFromReporterPerspective(params.result, reporterIsPlayer1)
+  const resultIdempotencyKey = resultIdempotencyKeyFor(params, gameNumber)
+
+  const duplicateRow = await tx.queryRow(
+    `SELECT id
+     FROM practice_match_games
+     WHERE result_idempotency_key = $1`,
+    [resultIdempotencyKey]
+  )
+  if (duplicateRow) {
+    return {
+      ok: true,
+      changed: false,
+      duplicate: true,
+      shareId: String(pool.pod_share_id),
+      podId: String(pool.pod_id),
+      matchId: String(matchRow.id),
+      practiceMatchGameId: String(duplicateRow.id),
+      gameNumber,
+      matchFinalized: false,
+      roundAdvanced: false,
+      eventCompleted: false,
+      advanceResult: null,
+    }
+  }
+
+  const currentAggregate = matchAggregateFromRow(matchRow)
+  const currentResult = currentAggregate[resultColumnForGameNumber(gameNumber)]
+  if (currentResult && currentResult !== gameResult) {
+    throw new PracticeGameResultError(409, 'game_result_conflict', 'This game already has a different result')
+  }
+
+  const nextGameRow = gameRow
+    ? await completeExistingGameRow(tx, {
+        gameRow,
+        params,
+        gameResult,
+        resultIdempotencyKey,
+        occurredAt,
+      })
+    : await insertCompletedGameRow(tx, {
+        matchRow,
+        gameNumber,
+        attemptNumber: resolved.nextAttemptNumber,
+        createdByUserId: stringOrNull(pool.user_id),
+        params,
+        gameResult,
+        resultIdempotencyKey,
+        occurredAt,
+      })
+
+  const identities = identityColumnsForReporter(params, reporterIsPlayer1)
+  await mirrorGameResultToPracticeMatch(tx, {
+    matchId: String(matchRow.id),
+    gameNumber,
+    gameResult,
+    wayfinderMatchId: params.wayfinderMatchId,
+    replayUrl: params.replayUrl ?? null,
+    identities,
+  })
+
+  const updatedMatch = await tx.queryRow(
+    `SELECT *
+     FROM practice_matches
+     WHERE id = $1
+     FOR UPDATE`,
+    [matchRow.id]
+  )
+  if (!updatedMatch) {
+    throw new PracticeGameResultError(404, 'match_not_found', 'Practice match not found')
+  }
+
+  const winner = deriveMatchWinner(
+    stringOrNull(updatedMatch.game1_result),
+    stringOrNull(updatedMatch.game2_result),
+    stringOrNull(updatedMatch.game3_result)
+  )
+
+  let matchFinalized = false
+  let advanceResult: RoundAdvanceResult | null = null
+  if (winner && updatedMatch.final_confirmed !== true) {
+    await tx.query(
+      `UPDATE practice_matches
+       SET final_confirmed = true,
+           match_winner = $2,
+           player1_submitted = true,
+           player2_submitted = true
+       WHERE id = $1`,
+      [updatedMatch.id, winner]
+    )
+
+    await updatePlayerPoolRecordsOnce(tx, {
+      podId: String(pool.pod_id),
+      player1Id: stringOrNull(updatedMatch.player1_id),
+      player2Id: stringOrNull(updatedMatch.player2_id),
+      winner,
+      wayfinderMatchId: params.wayfinderMatchId,
+    })
+
+    matchFinalized = true
+    const { checkAndAdvanceRoundInTransaction } = await import('./advancement')
+    advanceResult = await checkAndAdvanceRoundInTransaction(tx, String(pool.pod_id))
+  }
+
+  return {
+    ok: true,
+    changed: true,
+    duplicate: false,
+    shareId: String(pool.pod_share_id),
+    podId: String(pool.pod_id),
+    matchId: String(updatedMatch.id),
+    practiceMatchGameId: nextGameRow.id ?? null,
+    gameNumber,
+    matchFinalized,
+    roundAdvanced: advanceResult?.advanced ?? false,
+    eventCompleted: advanceResult?.completedEvent ?? false,
+    advanceResult,
+  }
+}
+
 export function normalizePracticeMatchGameRow(row: Record<string, unknown>): PracticeMatchGameLike {
   return {
     id: stringOrNull(row.id),
@@ -745,6 +952,440 @@ function validateLifecycleContext(
       `Illegal Swiss Practice lifecycle transition: ${currentStatus} -> ${eventStatus}`
     )
   }
+}
+
+async function resolveResultTarget(
+  tx: TxClient,
+  params: PracticeGameResultParams,
+  pool: Record<string, unknown>
+): Promise<{
+  matchRow: Record<string, unknown>
+  gameRow: PracticeMatchGameLike | null
+  gameNumber: GameNumber
+  nextAttemptNumber: number
+}> {
+  if (params.practiceMatchGameId) {
+    const row = await tx.queryRow(
+      `SELECT
+         pmg.*,
+         pm.id AS practice_match_id,
+         pm.player1_id,
+         pm.player2_id,
+         pm.is_bye,
+         pm.game1_result,
+         pm.game2_result,
+         pm.game3_result,
+         pm.final_confirmed,
+         pm.match_winner
+       FROM practice_match_games pmg
+       JOIN practice_matches pm ON pmg.match_id = pm.id
+       WHERE pmg.id = $1
+       FOR UPDATE OF pmg, pm`,
+      [params.practiceMatchGameId]
+    )
+
+    if (!row) {
+      throw new PracticeGameResultError(404, 'game_not_found', 'Practice match game not found')
+    }
+
+    if (row.pod_id !== pool.pod_id) {
+      throw new PracticeGameResultError(403, 'game_not_in_pool_pod', 'Practice match game is not in this pod')
+    }
+
+    validateReporterInMatch(row, pool)
+
+    return {
+      matchRow: matchRowFromJoinedGameRow(row),
+      gameRow: normalizePracticeMatchGameRow(row),
+      gameNumber: asGameNumber(row.game_number),
+      nextAttemptNumber: Number(row.attempt_number) || 1,
+    }
+  }
+
+  const activeRound = await tx.queryRow(
+    `SELECT id
+     FROM practice_rounds
+     WHERE pod_id = $1 AND status = 'active'
+     ORDER BY round_number DESC
+     LIMIT 1
+     FOR UPDATE`,
+    [pool.pod_id]
+  )
+
+  if (!activeRound) {
+    throw new PracticeGameResultError(404, 'active_round_not_found', 'No active round found')
+  }
+
+  const matchRow = await tx.queryRow(
+    `SELECT *
+     FROM practice_matches
+     WHERE round_id = $1
+       AND is_bye = false
+       AND (player1_id = $2 OR player2_id = $2)
+     FOR UPDATE`,
+    [activeRound.id, pool.user_id]
+  )
+
+  if (!matchRow) {
+    throw new PracticeGameResultError(404, 'match_not_found', 'No active practice match found for this player')
+  }
+
+  validateReporterInMatch(matchRow, pool)
+
+  const games = (await tx.queryRows(
+    `SELECT *
+     FROM practice_match_games
+     WHERE match_id = $1
+     ORDER BY game_number, attempt_number
+     FOR UPDATE`,
+    [matchRow.id]
+  )).map(normalizePracticeMatchGameRow)
+
+  const gameNumber = params.gameNumber
+    ? asGameNumber(params.gameNumber)
+    : inferResultGameNumber(matchRow, games)
+  const gameRow = officialGameForNumber(games, gameNumber)
+
+  return {
+    matchRow,
+    gameRow,
+    gameNumber,
+    nextAttemptNumber: nextAttemptNumber(games, gameNumber),
+  }
+}
+
+function validateReporterInMatch(row: Record<string, unknown>, pool: Record<string, unknown>): void {
+  if (row.is_bye === true) {
+    throw new PracticeGameResultError(400, 'bye_match', 'Bye matches cannot record game results')
+  }
+
+  if (row.player1_id !== pool.user_id && row.player2_id !== pool.user_id) {
+    throw new PracticeGameResultError(403, 'pool_not_match_participant', 'Reporting pool is not in this match')
+  }
+}
+
+function matchRowFromJoinedGameRow(row: Record<string, unknown>): Record<string, unknown> {
+  return {
+    id: row.match_id,
+    round_id: row.round_id,
+    pod_id: row.pod_id,
+    player1_id: row.player1_id,
+    player2_id: row.player2_id,
+    is_bye: row.is_bye,
+    game1_result: row.game1_result,
+    game2_result: row.game2_result,
+    game3_result: row.game3_result,
+    final_confirmed: row.final_confirmed,
+    match_winner: row.match_winner,
+  }
+}
+
+function inferResultGameNumber(
+  matchRow: Record<string, unknown>,
+  games: PracticeMatchGameLike[]
+): GameNumber {
+  const gameNumber = nextNeededGameNumber(matchAggregateFromRow(matchRow), games)
+  if (gameNumber === null) {
+    throw new PracticeGameResultError(409, 'match_already_decided', 'Match already has enough game results')
+  }
+
+  return gameNumber
+}
+
+export function resultFromReporterPerspective(
+  result: WayfinderReportedResult,
+  reporterIsPlayer1: boolean
+): PracticeGameResult {
+  if (result === 'draw') return 'draw'
+  if (reporterIsPlayer1) return result === 'win' ? 'player1' : 'player2'
+  return result === 'win' ? 'player2' : 'player1'
+}
+
+async function completeExistingGameRow(
+  tx: TxClient,
+  {
+    gameRow,
+    params,
+    gameResult,
+    resultIdempotencyKey,
+    occurredAt,
+  }: {
+    gameRow: PracticeMatchGameLike
+    params: PracticeGameResultParams
+    gameResult: PracticeGameResult
+    resultIdempotencyKey: string
+    occurredAt: Date
+  }
+): Promise<PracticeMatchGameLike> {
+  if (!gameRow.id) {
+    throw new PracticeGameResultError(500, 'missing_game_id', 'Practice match game row is missing an id')
+  }
+
+  if (gameRow.status === 'failed' || gameRow.status === 'voided') {
+    throw new PracticeGameResultError(409, 'inactive_game_row', 'Cannot complete a failed or voided game attempt')
+  }
+
+  const existingResult = normalizePracticeGameResult(gameRow.result)
+  if (gameRow.status === 'complete' && existingResult && existingResult !== gameResult) {
+    throw new PracticeGameResultError(409, 'game_result_conflict', 'This game already has a different result')
+  }
+
+  const row = await tx.queryRow(
+    `UPDATE practice_match_games
+     SET status = 'complete',
+         result = COALESCE(result, $2),
+         wayfinder_match_id = COALESCE(wayfinder_match_id, $3),
+         wayfinder_game_id = COALESCE(wayfinder_game_id, $4),
+         replay_url = COALESCE($5, replay_url),
+         result_idempotency_key = COALESCE(result_idempotency_key, $6),
+         started_at = COALESCE(started_at, $7),
+         completed_at = COALESCE(completed_at, $7),
+         updated_at = $7
+     WHERE id = $1
+     RETURNING *`,
+    [
+      gameRow.id,
+      gameResult,
+      params.wayfinderMatchId,
+      nonEmptyStringOrNull(params.wayfinderGameId),
+      nonEmptyStringOrNull(params.replayUrl),
+      resultIdempotencyKey,
+      occurredAt,
+    ]
+  )
+
+  if (!row) {
+    throw new PracticeGameResultError(404, 'game_not_found', 'Practice match game not found')
+  }
+
+  return normalizePracticeMatchGameRow(row)
+}
+
+async function insertCompletedGameRow(
+  tx: TxClient,
+  {
+    matchRow,
+    gameNumber,
+    attemptNumber,
+    createdByUserId,
+    params,
+    gameResult,
+    resultIdempotencyKey,
+    occurredAt,
+  }: {
+    matchRow: Record<string, unknown>
+    gameNumber: GameNumber
+    attemptNumber: number
+    createdByUserId: string | null
+    params: PracticeGameResultParams
+    gameResult: PracticeGameResult
+    resultIdempotencyKey: string
+    occurredAt: Date
+  }
+): Promise<PracticeMatchGameLike> {
+  const row = await tx.queryRow(
+    `INSERT INTO practice_match_games (
+       match_id,
+       round_id,
+       pod_id,
+       game_number,
+       attempt_number,
+       status,
+       created_by_user_id,
+       wayfinder_match_id,
+       wayfinder_game_id,
+       replay_url,
+       result,
+       result_idempotency_key,
+       claimed_at,
+       started_at,
+       completed_at,
+       created_at,
+       updated_at
+     )
+     VALUES ($1, $2, $3, $4, $5, 'complete', $6, $7, $8, $9, $10, $11, $12, $12, $12, $12, $12)
+     RETURNING *`,
+    [
+      matchRow.id,
+      matchRow.round_id,
+      matchRow.pod_id,
+      gameNumber,
+      attemptNumber,
+      createdByUserId,
+      params.wayfinderMatchId,
+      nonEmptyStringOrNull(params.wayfinderGameId),
+      nonEmptyStringOrNull(params.replayUrl),
+      gameResult,
+      resultIdempotencyKey,
+      occurredAt,
+    ]
+  )
+
+  if (!row) {
+    throw new PracticeGameResultError(500, 'game_insert_failed', 'Failed to record practice game result')
+  }
+
+  return normalizePracticeMatchGameRow(row)
+}
+
+function resultIdempotencyKeyFor(
+  params: PracticeGameResultParams,
+  gameNumber: GameNumber
+): string {
+  const wayfinderGameId = nonEmptyStringOrNull(params.wayfinderGameId)
+  if (wayfinderGameId) return `wayfinder-game:${wayfinderGameId}`
+  return `wayfinder-match:${params.wayfinderMatchId}:game:${gameNumber}`
+}
+
+function identityColumnsForReporter(
+  params: PracticeGameResultParams,
+  reporterIsPlayer1: boolean
+): {
+  player1: DeckIdentity
+  player2: DeckIdentity
+} {
+  const player = {
+    leader: params.playerLeader ?? null,
+    leaderImage: params.playerLeaderImage ?? null,
+    base: params.playerBase ?? null,
+    baseImage: params.playerBaseImage ?? null,
+    archetype: params.playerArchetype ?? null,
+  }
+  const opponent = {
+    leader: params.opponentLeader ?? null,
+    leaderImage: params.opponentLeaderImage ?? null,
+    base: params.opponentBase ?? null,
+    baseImage: params.opponentBaseImage ?? null,
+    archetype: params.opponentArchetype ?? null,
+  }
+
+  return reporterIsPlayer1
+    ? { player1: player, player2: opponent }
+    : { player1: opponent, player2: player }
+}
+
+interface DeckIdentity {
+  leader: string | null
+  leaderImage: string | null
+  base: string | null
+  baseImage: string | null
+  archetype: string | null
+}
+
+async function mirrorGameResultToPracticeMatch(
+  tx: TxClient,
+  {
+    matchId,
+    gameNumber,
+    gameResult,
+    wayfinderMatchId,
+    replayUrl,
+    identities,
+  }: {
+    matchId: string
+    gameNumber: GameNumber
+    gameResult: PracticeGameResult
+    wayfinderMatchId: string
+    replayUrl: string | null
+    identities: { player1: DeckIdentity; player2: DeckIdentity }
+  }
+): Promise<void> {
+  const gameColumn = resultColumnForGameNumber(gameNumber).replace('Result', '_result').toLowerCase()
+  await tx.query(
+    `UPDATE practice_matches SET
+       ${gameColumn} = COALESCE(${gameColumn}, $2),
+       wayfinder_match_id = COALESCE($3, wayfinder_match_id),
+       wayfinder_replay_url = COALESCE($4, wayfinder_replay_url),
+       player1_leader = COALESCE($5, player1_leader),
+       player1_leader_image = COALESCE($6, player1_leader_image),
+       player1_base = COALESCE($7, player1_base),
+       player1_base_image = COALESCE($8, player1_base_image),
+       player1_archetype = COALESCE($9, player1_archetype),
+       player2_leader = COALESCE($10, player2_leader),
+       player2_leader_image = COALESCE($11, player2_leader_image),
+       player2_base = COALESCE($12, player2_base),
+       player2_base_image = COALESCE($13, player2_base_image),
+       player2_archetype = COALESCE($14, player2_archetype)
+     WHERE id = $1`,
+    [
+      matchId,
+      gameResult,
+      wayfinderMatchId,
+      replayUrl,
+      identities.player1.leader,
+      identities.player1.leaderImage,
+      identities.player1.base,
+      identities.player1.baseImage,
+      identities.player1.archetype,
+      identities.player2.leader,
+      identities.player2.leaderImage,
+      identities.player2.base,
+      identities.player2.baseImage,
+      identities.player2.archetype,
+    ]
+  )
+}
+
+async function updatePlayerPoolRecordsOnce(
+  tx: TxClient,
+  {
+    podId,
+    player1Id,
+    player2Id,
+    winner,
+    wayfinderMatchId,
+  }: {
+    podId: string
+    player1Id: string | null
+    player2Id: string | null
+    winner: string
+    wayfinderMatchId: string
+  }
+): Promise<void> {
+  if (winner === 'player1') {
+    await updatePoolRecordDelta(tx, { podId, userId: player1Id, wins: 1, losses: 0, draws: 0, wayfinderMatchId })
+    await updatePoolRecordDelta(tx, { podId, userId: player2Id, wins: 0, losses: 1, draws: 0, wayfinderMatchId })
+  } else if (winner === 'player2') {
+    await updatePoolRecordDelta(tx, { podId, userId: player1Id, wins: 0, losses: 1, draws: 0, wayfinderMatchId })
+    await updatePoolRecordDelta(tx, { podId, userId: player2Id, wins: 1, losses: 0, draws: 0, wayfinderMatchId })
+  } else if (winner === 'draw') {
+    await updatePoolRecordDelta(tx, { podId, userId: player1Id, wins: 0, losses: 0, draws: 1, wayfinderMatchId })
+    await updatePoolRecordDelta(tx, { podId, userId: player2Id, wins: 0, losses: 0, draws: 1, wayfinderMatchId })
+  }
+}
+
+async function updatePoolRecordDelta(
+  tx: TxClient,
+  {
+    podId,
+    userId,
+    wins,
+    losses,
+    draws,
+    wayfinderMatchId,
+  }: {
+    podId: string
+    userId: string | null
+    wins: number
+    losses: number
+    draws: number
+    wayfinderMatchId: string
+  }
+): Promise<void> {
+  if (!userId) return
+
+  await tx.query(
+    `UPDATE card_pools
+     SET wins = wins + $1,
+         losses = losses + $2,
+         draws = draws + $3,
+         wayfinder_match_ids = array_append(wayfinder_match_ids, $4),
+         updated_at = NOW()
+     WHERE user_id = $5
+       AND pod_id = $6
+       AND NOT ($4 = ANY(wayfinder_match_ids))`,
+    [wins, losses, draws, wayfinderMatchId, userId, podId]
+  )
 }
 
 function matchAggregateFromRow(row: Record<string, unknown>): PracticeMatchAggregateLike {
@@ -1024,6 +1665,12 @@ function numberOrNull(value: unknown): number | null {
     return Number.isFinite(parsed) ? parsed : null
   }
   return null
+}
+
+function asGameNumber(value: unknown): GameNumber {
+  const parsed = numberOrNull(value)
+  if (parsed === 1 || parsed === 2 || parsed === 3) return parsed
+  throw new PracticeGameResultError(400, 'invalid_game_number', 'gameNumber must be 1, 2, or 3')
 }
 
 function dateOrNull(value: unknown): Date | null {

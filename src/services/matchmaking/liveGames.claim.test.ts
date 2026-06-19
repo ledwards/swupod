@@ -14,6 +14,7 @@ const db = await import('@/lib/db')
 const { query, queryRow, queryRows, closePool } = db
 const {
   claimPracticeMatchGame,
+  recordPracticeMatchGameResult,
   recordPracticeMatchGameLifecycle,
   PracticeGameClaimError,
   PracticeGameLifecycleError,
@@ -177,6 +178,24 @@ async function matchGameRows(matchId: string) {
      WHERE match_id = $1
      ORDER BY attempt_number`,
     [matchId]
+  )
+}
+
+async function matchRow(matchId: string) {
+  return queryRow(
+    `SELECT game1_result, game2_result, game3_result, final_confirmed, match_winner, wayfinder_match_id, wayfinder_replay_url
+     FROM practice_matches
+     WHERE id = $1`,
+    [matchId]
+  )
+}
+
+async function poolRecord(shareId: string) {
+  return queryRow(
+    `SELECT wins, losses, draws, wayfinder_match_ids
+     FROM card_pools
+     WHERE share_id = $1`,
+    [shareId]
   )
 }
 
@@ -429,6 +448,129 @@ describe('recordPracticeMatchGameLifecycle', { skip: !dbAvailable }, () => {
         error instanceof PracticeGameLifecycleError &&
         error.status === 403 &&
         error.code === 'pool_not_in_match_pod'
+    )
+  })
+})
+
+describe('recordPracticeMatchGameResult', { skip: !dbAvailable }, () => {
+  it('records one claimed game row and mirrors the aggregate game pip without finalizing the match', async () => {
+    const seeded = await seedActiveSwissMatch()
+    const claim = await claimPracticeMatchGame({
+      shareId: seeded.shareId,
+      matchId: seeded.matchId,
+      userId: seeded.userIds[0],
+      now: new Date('2026-06-19T20:00:00.000Z'),
+    })
+
+    const recorded = await recordPracticeMatchGameResult({
+      poolShareId: seeded.poolShareIds[0],
+      wayfinderMatchId: 'wf-result-one',
+      practiceMatchGameId: claim.practiceMatchGameId,
+      result: 'win',
+      replayUrl: 'https://wayfinder.example/replay/wf-result-one',
+      playerLeader: 'Han Solo',
+      opponentLeader: 'Darth Vader',
+      occurredAt: '2026-06-19T20:30:00.000Z',
+    })
+
+    assert.equal(recorded.changed, true)
+    assert.equal(recorded.matchFinalized, false)
+    assert.equal(recorded.roundAdvanced, false)
+    assert.equal(recorded.practiceMatchGameId, claim.practiceMatchGameId)
+
+    const match = await matchRow(seeded.matchId)
+    assert.equal(match!.game1_result, 'player1')
+    assert.equal(match!.final_confirmed, false)
+    assert.equal(match!.wayfinder_replay_url, 'https://wayfinder.example/replay/wf-result-one')
+
+    const games = await queryRows(
+      `SELECT status, result, replay_url, completed_at
+       FROM practice_match_games
+       WHERE id = $1`,
+      [claim.practiceMatchGameId]
+    )
+    assert.equal(games[0].status, 'complete')
+    assert.equal(games[0].result, 'player1')
+    assert.equal(games[0].replay_url, 'https://wayfinder.example/replay/wf-result-one')
+    assert.ok(games[0].completed_at)
+  })
+
+  it('finalizes after two game wins and treats a duplicate result as a no-op for pool records', async () => {
+    const seeded = await seedActiveSwissMatch()
+
+    await recordPracticeMatchGameResult({
+      poolShareId: seeded.poolShareIds[0],
+      wayfinderMatchId: 'wf-final-game-1',
+      gameNumber: 1,
+      result: 'win',
+    })
+    const final = await recordPracticeMatchGameResult({
+      poolShareId: seeded.poolShareIds[0],
+      wayfinderMatchId: 'wf-final-game-2',
+      gameNumber: 2,
+      result: 'win',
+    })
+    const duplicate = await recordPracticeMatchGameResult({
+      poolShareId: seeded.poolShareIds[0],
+      wayfinderMatchId: 'wf-final-game-2',
+      gameNumber: 2,
+      result: 'win',
+    })
+
+    assert.equal(final.matchFinalized, true)
+    assert.equal(duplicate.duplicate, true)
+    assert.equal(duplicate.changed, false)
+
+    const match = await matchRow(seeded.matchId)
+    assert.equal(match!.final_confirmed, true)
+    assert.equal(match!.match_winner, 'player1')
+
+    const player1Pool = await poolRecord(seeded.poolShareIds[0])
+    const player2Pool = await poolRecord(seeded.poolShareIds[1])
+    assert.deepEqual(
+      { wins: player1Pool!.wins, losses: player1Pool!.losses, draws: player1Pool!.draws },
+      { wins: 1, losses: 0, draws: 0 }
+    )
+    assert.deepEqual(
+      { wins: player2Pool!.wins, losses: player2Pool!.losses, draws: player2Pool!.draws },
+      { wins: 0, losses: 1, draws: 0 }
+    )
+    assert.deepEqual(player1Pool!.wayfinder_match_ids, ['wf-final-game-2'])
+    assert.deepEqual(player2Pool!.wayfinder_match_ids, ['wf-final-game-2'])
+  })
+
+  it('keeps split games unfinalized until game 3 is reported', async () => {
+    const seeded = await seedActiveSwissMatch()
+
+    await recordPracticeMatchGameResult({
+      poolShareId: seeded.poolShareIds[0],
+      wayfinderMatchId: 'wf-split-game-1',
+      gameNumber: 1,
+      result: 'win',
+    })
+    const split = await recordPracticeMatchGameResult({
+      poolShareId: seeded.poolShareIds[0],
+      wayfinderMatchId: 'wf-split-game-2',
+      gameNumber: 2,
+      result: 'loss',
+    })
+
+    assert.equal(split.matchFinalized, false)
+
+    const match = await matchRow(seeded.matchId)
+    assert.equal(match!.game1_result, 'player1')
+    assert.equal(match!.game2_result, 'player2')
+    assert.equal(match!.final_confirmed, false)
+
+    const player1Pool = await poolRecord(seeded.poolShareIds[0])
+    const player2Pool = await poolRecord(seeded.poolShareIds[1])
+    assert.deepEqual(
+      { wins: player1Pool!.wins, losses: player1Pool!.losses, draws: player1Pool!.draws },
+      { wins: 0, losses: 0, draws: 0 }
+    )
+    assert.deepEqual(
+      { wins: player2Pool!.wins, losses: player2Pool!.losses, draws: player2Pool!.draws },
+      { wins: 0, losses: 0, draws: 0 }
     )
   })
 })

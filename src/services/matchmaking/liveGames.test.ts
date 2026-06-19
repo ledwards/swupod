@@ -13,6 +13,7 @@ import {
   nextAttemptNumber,
   nextNeededGameNumber,
   officialGameForNumber,
+  resultFromReporterPerspective,
   resultColumnForGameNumber,
   summarizeCurrentPracticeGame,
   type PracticeMatchAggregateLike,
@@ -174,5 +175,14 @@ describe('live Swiss Practice game helpers', () => {
     assert.equal(formatElapsedPracticeGame(60), '1m')
     assert.equal(formatElapsedPracticeGame(67 * 60 + 15), '1h 07m')
     assert.equal(formatElapsedPracticeGame(null), null)
+  })
+
+  it('maps Wayfinder win/loss reports to player1/player2 perspective', () => {
+    assert.equal(resultFromReporterPerspective('win', true), 'player1')
+    assert.equal(resultFromReporterPerspective('loss', true), 'player2')
+    assert.equal(resultFromReporterPerspective('win', false), 'player2')
+    assert.equal(resultFromReporterPerspective('loss', false), 'player1')
+    assert.equal(resultFromReporterPerspective('draw', true), 'draw')
+    assert.equal(resultFromReporterPerspective('draw', false), 'draw')
   })
 })

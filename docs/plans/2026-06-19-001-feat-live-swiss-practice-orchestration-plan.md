@@ -552,7 +552,7 @@ fast helper tests, TypeScript, and the `@ts-nocheck` ratchet.
 
 ---
 
-- [ ] **U4. Refactor plugin result ingestion into a transactional idempotent service**
+- [x] **U4. Refactor plugin result ingestion into a transactional idempotent service**
 
 **Goal:** Make Wayfinder-reported game results safe against retries, duplicate
 posts, partial writes, and round-advance races.
@@ -598,6 +598,21 @@ posts, partial writes, and round-advance races.
 
 **Verification:** The expanded result path can be safely retried by Wayfinder
 without corrupting records or rounds.
+
+**Implemented 2026-06-19:** Competitive Wayfinder result ingestion now flows
+through `recordPracticeMatchGameResult()` instead of the route's previous loose
+sequence of writes. The service runs in one transaction under the pod advisory
+lock, prefers explicit `practiceMatchGameId`, falls back to active-match lookup
+for older payloads, writes/creates the per-game row, mirrors the result to
+`practice_matches`, finalizes the match once, updates both players' pool records
+once, and advances Swiss rounds through a transaction-safe advancement helper.
+The plugin route remains backward compatible for `poolShareId`, `matchId`,
+`gameNumber`, replay URL, and deck identity fields; casual/non-competitive
+handling is unchanged. Added fast result-perspective tests and DB-backed tests
+for claimed game recording, duplicate result no-op, two-game finalization, and
+split-game behavior; DB-backed tests skip loudly when `swupod_test` is not
+available or has not run the new migration. Verified with fast helper tests,
+TypeScript, and the `@ts-nocheck` ratchet.
 
 ---
 
