@@ -6,7 +6,7 @@ import { applyRateLimit } from '@/lib/rateLimit'
 import { getAspectColor } from '@/src/utils/aspectColors'
 import { stripArchetypeTags } from '@/src/utils/archetypeName'
 import { hyperspaceLeaderArt } from '@/src/utils/hyperspaceLeaderArt'
-import { wayfinderReplayUrl } from '@/src/utils/wayfinderUrls'
+import { wayfinderReplayUrl, resolveReplayUrl } from '@/src/utils/wayfinderUrls'
 import { NextRequest, NextResponse } from 'next/server'
 
 /** Swap a replay's leader art (mine + opponent) for the Hyperspace front art. */
@@ -682,9 +682,9 @@ interface RawCasualRow {
 function mapCasualReplay(row: RawCasualRow): GameplayReplay {
   const format = row.pool_type || 'sealed'
   const deckPreview = extractDeckPreview(row.deck_builder_state)
-  // Derive the canonical replay link from the match id (older captures stored a
-  // broken wayfinder.news/live/ URL); fall back to the stored URL if no id.
-  const replayUrl = wayfinderReplayUrl(row.wayfinder_match_id) || row.wayfinder_replay_url || ''
+  // Prefer a stored canonical playback URL; otherwise derive from the match id
+  // (repairs older captures that stored a broken wayfinder.news/live/ URL).
+  const replayUrl = resolveReplayUrl(row.wayfinder_match_id, row.wayfinder_replay_url)
   const result = (row.result === 'win' || row.result === 'loss' || row.result === 'draw') ? row.result : 'pending'
   return {
     id: row.id || row.wayfinder_match_id || replayUrl,
@@ -736,8 +736,9 @@ export function buildGameplayResponse(
     ...replayRows.map((row): GameplayReplay => {
       const format = row.pool_type || 'sealed'
       const deckPreview = extractDeckPreview(row.deck_builder_state)
-      // Canonical replay link derived from the match id (see mapCasualReplay).
-      const replayUrl = wayfinderReplayUrl(row.wayfinder_match_id) || row.wayfinder_replay_url || ''
+      // Canonical replay link (see mapCasualReplay): prefer stored /playback/,
+      // else derive from the match id.
+      const replayUrl = resolveReplayUrl(row.wayfinder_match_id, row.wayfinder_replay_url)
       return {
         id: row.match_id || row.wayfinder_match_id || replayUrl,
         wayfinderMatchId: row.wayfinder_match_id || null,

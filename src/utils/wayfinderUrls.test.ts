@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { wayfinderReplayUrl, wayfinderMatchesUrl } from './wayfinderUrls'
+import { wayfinderReplayUrl, wayfinderMatchesUrl, resolveReplayUrl } from './wayfinderUrls'
 
 describe('wayfinderReplayUrl', () => {
   it('builds the canonical replay-playback URL from a match id', () => {
@@ -28,5 +28,25 @@ describe('wayfinderMatchesUrl', () => {
 
   it('points at a single match when given an id', () => {
     assert.equal(wayfinderMatchesUrl('wf-1'), 'https://plugin.wayfinder.news/matches/wf-1')
+  })
+})
+
+describe('resolveReplayUrl', () => {
+  it('keeps a stored canonical playback URL as-is', () => {
+    assert.equal(
+      resolveReplayUrl('wf-1', 'https://replay.wayfinder.news/playback/evt-xyz'),
+      'https://replay.wayfinder.news/playback/evt-xyz'
+    )
+  })
+
+  it('repairs a broken wayfinder.news/live/ URL by deriving from the match id', () => {
+    assert.equal(
+      resolveReplayUrl('wf-1', 'https://wayfinder.news/live/wf-1'),
+      'https://replay.wayfinder.news/playback/wf-1'
+    )
+  })
+
+  it('derives from the match id when nothing is stored', () => {
+    assert.equal(resolveReplayUrl('wf-2', ''), 'https://replay.wayfinder.news/playback/wf-2')
   })
 })

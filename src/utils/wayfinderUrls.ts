@@ -28,3 +28,14 @@ export function wayfinderMatchesUrl(matchId?: string | null): string {
   const id = (matchId || '').trim()
   return id ? `${COMPANION_BASE}/matches/${id}` : `${COMPANION_BASE}/matches`
 }
+
+/**
+ * The replay link to surface for a match. Prefer a stored canonical playback
+ * URL (the Companion now sends one), and otherwise derive it from the match id —
+ * which repairs older captures that stored a broken wayfinder.news/live/ URL.
+ */
+export function resolveReplayUrl(matchId: string | null | undefined, storedUrl?: string | null): string {
+  const stored = (storedUrl || '').trim()
+  if (stored.includes('/playback/')) return stored
+  return wayfinderReplayUrl(matchId) || stored
+}
