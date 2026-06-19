@@ -12,6 +12,19 @@ import { describe, it, beforeEach } from 'node:test'
 import assert from 'node:assert'
 import { processBoxPacksForDraft } from './draftLogic'
 
+// Deterministic RNG so the "shuffling changes the distribution" assertions can't
+// flake. Fisher-Yates with Math.random() leaves index 0 in place ~1/24 of runs,
+// which intermittently reddened CI. A seeded mulberry32 PRNG (reset before each
+// test) keeps the shuffles reproducible while still exercising the real logic.
+const RNG_SEED = 0x1a2b3c4d
+let rngState = RNG_SEED
+function seededRandom(): number {
+  rngState = (rngState + 0x6d2b79f5) | 0
+  let t = Math.imul(rngState ^ (rngState >>> 15), 1 | rngState)
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+}
+
 // Mock pack data - each pack has a unique identifier
 function createMockBox(size = 24) {
   return Array.from({ length: size }, (_, i) => ({
@@ -28,7 +41,7 @@ function createMockBox(size = 24) {
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array]
   for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
+    const j = Math.floor(seededRandom() * (i + 1))
     ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
   }
   return shuffled
@@ -40,7 +53,7 @@ function generateRandomIndices(count: number, max: number): number[] {
   const available = Array.from({ length: max }, (_, i) => i)
 
   for (let i = 0; i < count; i++) {
-    const randomIndex = Math.floor(Math.random() * available.length)
+    const randomIndex = Math.floor(seededRandom() * available.length)
     indices.push(available[randomIndex])
     available.splice(randomIndex, 1)
   }
@@ -49,6 +62,12 @@ function generateRandomIndices(count: number, max: number): number[] {
 }
 
 describe('Shuffle Packs', () => {
+  // Reset the deterministic RNG before each test so shuffles are reproducible
+  // and the distribution-difference assertions can't flake.
+  beforeEach(() => {
+    rngState = RNG_SEED
+  })
+
   describe('processBoxPacksForDraft', () => {
     it('distributes packs from box in order: player 0 gets packs 0,1,2', () => {
       const box = createMockBox(24)
