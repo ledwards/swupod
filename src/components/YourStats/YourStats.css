@@ -6,7 +6,8 @@
  * ========================================================================== */
 
 .me-page,
-.your-stats {
+.your-stats,
+.play-history-panel {
   --ys-accent: #64b5f6;
   --ys-accent-bright: #90caf9;
   --ys-accent-dim: rgba(100, 181, 246, 0.16);
@@ -1100,6 +1101,58 @@
 .your-stats-watch-btn:focus-visible {
   outline: 2px solid var(--ys-accent-bright);
   outline-offset: 2px;
+}
+
+/* The card's action buttons (Watch / Edit Pool / Draft Log) are real <a>
+   elements now, so pin their text color against the global `a:hover` rule that
+   would otherwise repaint link text purple. */
+a.your-stats-watch-btn,
+a.your-stats-watch-btn:visited,
+a.your-stats-watch-btn:hover,
+a.your-stats-watch-btn:active {
+  color: #07101f;
+}
+
+/* Secondary actions beside Watch (Edit Pool / Draft Log) — ghost pills so the
+   blue Watch button stays the primary call to action. */
+.your-stats-replay-action {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.38rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--ys-border-bright);
+  background: rgba(0, 0, 0, 0.42);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.your-stats-replay-action,
+.your-stats-replay-action:visited,
+.your-stats-replay-action:hover,
+.your-stats-replay-action:active {
+  color: var(--ys-text);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-replay-action:hover {
+    transform: translateY(-1px);
+    border-color: var(--ys-accent);
+    background: rgba(100, 181, 246, 0.16);
+  }
+}
+
+.your-stats-replay-action:focus-visible {
+  outline: 2px solid var(--ys-accent-bright);
+  outline-offset: 2px;
+}
+
+/* Center the action row under the centered matchup above it. */
+.your-stats-replay-card .your-stats-replay-actions {
+  justify-content: center;
 }
 
 /* Accordion: row is a button; clicking expands a detail panel */
@@ -3802,7 +3855,10 @@ a.your-stats-logged-out-link:active {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 22%;
+  /* Unit-side (back) leader art. Zoom past the card frame so only the central
+     character art shows in the thumbnail — mirrors the win-rate grid cells. */
+  object-position: center 30%;
+  transform: scale(1.5);
 }
 
 .your-stats-leaders-legend-dot {

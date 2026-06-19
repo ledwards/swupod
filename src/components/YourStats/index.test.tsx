@@ -227,6 +227,31 @@ describe('<GameplayDashboard />', () => {
     assert.match(CSS_SRC, /your-stats-breakdown-fill/)
   })
 
+  it('colors the usage pies via the tested usagePie helper (distinct per item)', () => {
+    // Wedges get distinct palette colors and are cut apart; the logic lives in
+    // the unit-tested usagePie helper — it must not be re-inlined here.
+    assert.match(GAMEPLAY_CODE, /import\s*\{[^}]*\bbuildUsagePieStops\b[^}]*\busagePieColor\b[^}]*\}\s*from\s*['"]\.\/usagePie['"]/)
+    assert.match(GAMEPLAY_CODE, /buildUsagePieStops\(/)
+    assert.match(GAMEPLAY_CODE, /usagePieColor\(/)
+    assert.match(GAMEPLAY_CODE, /conic-gradient\(\$\{pieStops\}\)/)
+  })
+
+  it('renders both the Your Leaders and Your Archetypes usage pies', () => {
+    // The archetype pie mirrors the leaders pie via the shared UsagePieCard and
+    // reads from the API's archetypeBreakdown.
+    assert.match(GAMEPLAY_CODE, /<UsagePieCard/)
+    assert.match(GAMEPLAY_CODE, /title="Your Leaders"/)
+    assert.match(GAMEPLAY_CODE, /title="Your Archetypes"/)
+    assert.match(GAMEPLAY_CODE, /archetypeBreakdown/)
+  })
+
+  it('uses the unit-side (back) leader art for the pie legends', () => {
+    // Both pies prefer leaderBackImageUrl (the "..._Unit_..." art) over the
+    // leader side, falling back to the front when there's no back image.
+    assert.match(GAMEPLAY_CODE, /art: l\.leaderBackImageUrl \|\| l\.leaderImageUrl/)
+    assert.match(GAMEPLAY_CODE, /art: a\.leaderBackImageUrl \|\| a\.leaderImageUrl/)
+  })
+
   it('renders replay search, filters, sorting, leader art, and watch/deck actions', () => {
     assert.match(GAMEPLAY_CODE, /ReplayExplorer/)
     assert.match(GAMEPLAY_CODE, /setSearch/)

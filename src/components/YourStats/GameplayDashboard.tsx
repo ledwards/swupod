@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { WinRateByLeader, type WinRateLeader } from './WinRateByLeader'
+import { buildUsagePieStops, usagePieColor } from './usagePie'
 import WayfinderStoreButtons, { WayfinderCompanionLockup } from '@/src/components/WayfinderStoreButtons'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import { useRevealOnView } from '@/src/hooks/useRevealOnView'
@@ -54,7 +55,7 @@ interface GameplayRecentPool {
   updatedAt: string | null
 }
 
-interface GameplayReplay {
+export interface GameplayReplay {
   id: string
   wayfinderMatchId: string | null
   replayUrl: string
@@ -71,6 +72,7 @@ interface GameplayReplay {
   }
   pool: {
     shareId: string | null
+    draftShareId: string | null
     name: string
     setCode: string
     format: string
@@ -88,6 +90,7 @@ interface GameplayReplay {
 interface GameplayLeaderBreakdown {
   leaderName: string
   leaderImageUrl: string | null
+  leaderBackImageUrl: string | null
   baseColor: string | null
   wins: number
   losses: number
@@ -95,6 +98,18 @@ interface GameplayLeaderBreakdown {
   matches: number
   winRate: number
   pools: number
+}
+
+interface GameplayArchetypeBreakdown {
+  archetype: string
+  leaderName: string | null
+  leaderImageUrl: string | null
+  leaderBackImageUrl: string | null
+  wins: number
+  losses: number
+  draws: number
+  matches: number
+  winRate: number
 }
 
 interface GameplayPayload {
@@ -105,6 +120,7 @@ interface GameplayPayload {
   formatBreakdown: GameplayBreakdown[]
   setBreakdown: GameplayBreakdown[]
   leaderBreakdown?: GameplayLeaderBreakdown[]
+  archetypeBreakdown?: GameplayArchetypeBreakdown[]
   recentPools: GameplayRecentPool[]
   replays?: GameplayReplay[]
 }
@@ -220,48 +236,51 @@ function BreakdownRow({ item }: { item: GameplayBreakdown }) {
   )
 }
 
-function LeadersCard({ leaders }: { leaders: GameplayLeaderBreakdown[] }) {
-  // Pie of leader USAGE (share of games) on the left, win rate per leader on the
-  // right — inspired by the Wayfinder meta page.
+interface UsagePieItem {
+  key: string
+  name: string
+  art: string | null
+  matches: number
+  winRate: number
+}
+
+/**
+ * Usage pie (share of games) on the left + per-item win rate on the right.
+ * Each item gets its OWN palette color so wedges never blend, and the same color
+ * rings its legend art so a wedge maps unambiguously to its row. Used for both
+ * "Your Leaders" and "Your Archetypes" — inspired by the Wayfinder meta page.
+ */
+function UsagePieCard({ title, noun, items }: { title: string; noun: string; items: UsagePieItem[] }) {
   const { ref: pieRef, inView } = useRevealOnView<HTMLDivElement>()
-  const total = leaders.reduce((s, l) => s + (l.matches || 0), 0)
-  let acc = 0
-  const stops = leaders
-    .filter((l) => l.matches > 0)
-    .map((l) => {
-      const color = l.baseColor || '#888'
-      const start = (acc / (total || 1)) * 360
-      acc += l.matches
-      const end = (acc / (total || 1)) * 360
-      return `${color} ${start}deg ${end}deg`
-    })
-    .join(', ')
+  const total = items.reduce((s, it) => s + (it.matches || 0), 0)
+  // Color assigned in display order so each wedge matches its legend swatch.
+  const colored = items.map((it, i) => ({ ...it, color: usagePieColor(i) }))
+  const pieStops = buildUsagePieStops(colored.map((it) => ({ matches: it.matches, color: it.color })))
   return (
     <div className="your-stats-gameplay-card">
       <div className="your-stats-gameplay-card-header">
-        <h3>Your Leaders</h3>
-        <span>{leaders.length} {leaders.length === 1 ? 'leader' : 'leaders'} played</span>
+        <h3>{title}</h3>
+        <span>{items.length} {items.length === 1 ? noun : `${noun}s`} played</span>
       </div>
       <div className={`your-stats-leaders-pie-layout${inView ? ' your-stats-reveal' : ''}`} ref={pieRef}>
         <div
           className="your-stats-leaders-pie"
-          style={{ background: total > 0 ? `conic-gradient(${stops})` : 'rgba(255,255,255,0.08)' }}
+          style={{ background: pieStops ? `conic-gradient(${pieStops})` : 'rgba(255,255,255,0.08)' }}
           aria-hidden="true"
         />
         <ul className="your-stats-leaders-legend">
-          {leaders.map((l) => {
-            const color = l.baseColor || '#888'
-            const usePct = total > 0 ? Math.round((l.matches / total) * 100) : 0
+          {colored.map((it) => {
+            const usePct = total > 0 ? Math.round((it.matches / total) * 100) : 0
             return (
-              <li key={l.leaderName} className="your-stats-leaders-legend-row">
-                <span className="your-stats-leaders-legend-art" aria-hidden="true">
-                  {l.leaderImageUrl ? <img src={l.leaderImageUrl} alt="" loading="lazy" /> : <span className="your-stats-leaders-legend-dot" style={{ background: color }} />}
+              <li key={it.key} className="your-stats-leaders-legend-row">
+                <span className="your-stats-leaders-legend-art" style={{ boxShadow: `0 0 0 2px ${it.color}` }} aria-hidden="true">
+                  {it.art ? <img src={it.art} alt="" loading="lazy" /> : <span className="your-stats-leaders-legend-dot" style={{ background: it.color }} />}
                 </span>
                 <span className="your-stats-leaders-legend-name">
-                  <strong>{l.leaderName}</strong>
-                  <small>{formatInt(l.matches)} {l.matches === 1 ? 'game' : 'games'} · {usePct}%</small>
+                  <strong>{it.name}</strong>
+                  <small>{formatInt(it.matches)} {it.matches === 1 ? 'game' : 'games'} · {usePct}%</small>
                 </span>
-                <span className="your-stats-leaders-legend-winrate">{formatPct(l.winRate)}</span>
+                <span className="your-stats-leaders-legend-winrate">{formatPct(it.winRate)}</span>
               </li>
             )
           })}
@@ -334,16 +353,20 @@ function CardPlaceholder() {
 function ReplayRow({ replay, myName }: { replay: GameplayReplay; myName: string }) {
   const opp = replay.opponent.username || 'Opponent'
   const style = replay.baseColor ? ({ ['--row-tint' as any]: replay.baseColor }) : undefined
+  // Show the opponent's leader if the Companion captured it; fall back to their
+  // archetype. When neither is known we drop the line entirely rather than print
+  // a jarring "Unknown leader".
+  const oppLeader = replay.opponent.leaderName || replay.opponent.archetype || null
+  const poolShareId = replay.pool.shareId
+  const draftShareId = replay.pool.format === 'draft' ? replay.pool.draftShareId : null
 
-  // Same treatment as the pool/deck cards: your Hyperspace leader art as the
-  // card background, the match info over it. No expand — the card opens the replay.
+  // Your Hyperspace leader art is the card background, match info over it. The
+  // card is no longer one big anchor: Watch opens the replay while Edit Pool /
+  // Draft Log jump back to the pool, so they can't be nested in a single <a>.
   return (
-    <a
+    <div
       className={`your-stats-pool-build your-stats-replay-card your-stats-replay-row--${replay.result}`}
       style={style}
-      href={replay.replayUrl}
-      target="_blank"
-      rel="noopener noreferrer"
     >
       <div className="your-stats-pool-build-art" aria-hidden="true">
         {replay.leaderImageUrl ? <img src={replay.leaderImageUrl} alt="" loading="lazy" /> : <CardPlaceholder />}
@@ -359,25 +382,51 @@ function ReplayRow({ replay, myName }: { replay: GameplayReplay; myName: string 
             <strong>{opp}</strong>
           </span>
         </div>
-        <div className="your-stats-replay-oppline">
-          <span className="your-stats-replay-opp-thumb" aria-hidden="true">
-            {replay.opponent.leaderImageUrl ? <img src={replay.opponent.leaderImageUrl} alt="" loading="lazy" /> : <CardPlaceholder />}
-          </span>
-          <span>{replay.opponent.leaderName || 'Unknown leader'}</span>
-        </div>
+        {oppLeader && (
+          <div className="your-stats-replay-oppline">
+            <span className="your-stats-replay-opp-thumb" aria-hidden="true">
+              {replay.opponent.leaderImageUrl ? <img src={replay.opponent.leaderImageUrl} alt="" loading="lazy" /> : <CardPlaceholder />}
+            </span>
+            <span>{oppLeader}</span>
+          </div>
+        )}
         <div className="your-stats-replay-center-sub">
           <span>{replay.pool.setCode} · {replayDate(replay.playedAt)}</span>
           <ReplayGamePips results={replay.gameResults} />
         </div>
-        <span className="your-stats-watch-btn your-stats-replay-watch-inline">
-          <PlayGlyph />Watch
-        </span>
+        <div className="your-stats-replay-actions">
+          {replay.replayUrl && (
+            <a className="your-stats-watch-btn your-stats-replay-watch-inline" href={replay.replayUrl} target="_blank" rel="noopener noreferrer">
+              <PlayGlyph />Watch
+            </a>
+          )}
+          {poolShareId && (
+            <a className="your-stats-replay-action" href={`/pool/${poolShareId}/deck`}>
+              Edit Pool
+            </a>
+          )}
+          {draftShareId && (
+            <a className="your-stats-replay-action" href={`/draft/${draftShareId}/log`}>
+              Draft Log
+            </a>
+          )}
+        </div>
       </div>
-    </a>
+    </div>
   )
 }
 
-function ReplayExplorer({ replays, myName }: { replays: GameplayReplay[]; myName: string }) {
+export function ReplayExplorer({
+  replays,
+  myName,
+  eyebrow = 'Replay Explorer',
+  heading = 'Every game, by leader & base',
+}: {
+  replays: GameplayReplay[]
+  myName: string
+  eyebrow?: string
+  heading?: string
+}) {
   const [search, setSearch] = useState('')
   const [format, setFormat] = useState('all')
   const [result, setResult] = useState('all')
@@ -418,8 +467,8 @@ function ReplayExplorer({ replays, myName }: { replays: GameplayReplay[]; myName
     <section className="your-stats-replay-explorer" aria-label="Replay explorer">
       <div className="your-stats-replay-header">
         <div>
-          <span className="your-stats-eyebrow">Replay Explorer</span>
-          <h3>Every game, by leader &amp; base</h3>
+          <span className="your-stats-eyebrow">{eyebrow}</span>
+          <h3>{heading}</h3>
         </div>
         <span className="your-stats-count-pill">{filtered.length.toLocaleString()} of {replays.length.toLocaleString()}</span>
       </div>
@@ -547,6 +596,32 @@ export function GameplayDashboard({ since, until, setCode, fetchImpl }: Gameplay
   const hasData = summary.matches > 0 || summary.capturedMatches > 0 || summary.decksPlayed > 0
   const replays = state.data.replays || []
   const leaders = state.data.leaderBreakdown || []
+  const archetypes = state.data.archetypeBreakdown || []
+
+  // "Your Leaders" + "Your Archetypes" sit side by side. Render whichever has
+  // data; pair them in the split grid only when both exist so a lone pie stays
+  // full width instead of orphaned in a half column.
+  const usagePies: ReactNode[] = []
+  if (leaders.length > 0) {
+    usagePies.push(
+      <UsagePieCard
+        key="leaders"
+        title="Your Leaders"
+        noun="leader"
+        items={leaders.map((l) => ({ key: l.leaderName, name: l.leaderName, art: l.leaderBackImageUrl || l.leaderImageUrl, matches: l.matches, winRate: l.winRate }))}
+      />,
+    )
+  }
+  if (archetypes.length > 0) {
+    usagePies.push(
+      <UsagePieCard
+        key="archetypes"
+        title="Your Archetypes"
+        noun="archetype"
+        items={archetypes.map((a) => ({ key: a.archetype, name: a.archetype, art: a.leaderBackImageUrl || a.leaderImageUrl, matches: a.matches, winRate: a.winRate }))}
+      />,
+    )
+  }
 
   if (!hasData) {
     return (
@@ -589,7 +664,8 @@ export function GameplayDashboard({ since, until, setCode, fetchImpl }: Gameplay
         </div>
       </div>
 
-      {leaders.length > 0 && <LeadersCard leaders={leaders} />}
+      {usagePies.length === 1 && usagePies}
+      {usagePies.length > 1 && <div className="your-stats-gameplay-split-grid">{usagePies}</div>}
 
       {leaders.length > 0 && <WinRateByLeader leaders={leaders as unknown as WinRateLeader[]} title="Your win rate by leader" mode="personal" companionBeta={companionBeta} />}
 
