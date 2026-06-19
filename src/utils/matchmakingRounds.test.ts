@@ -25,13 +25,17 @@ const { fetchRoundsWithMatches } = await import('./matchmakingRounds')
 let dbAvailable = false
 try {
   dbAvailable = await db.testConnection()
+  if (dbAvailable) {
+    const table = await queryRow("SELECT to_regclass('public.practice_match_games') AS table_name")
+    dbAvailable = Boolean(table?.table_name)
+  }
 } catch {
   dbAvailable = false
 }
 
 if (!dbAvailable) {
   console.warn(
-    `⚠️  matchmakingRounds.test.ts: test database unreachable at ${TEST_DB_URL} — skipping. ` +
+    `⚠️  matchmakingRounds.test.ts: test database unreachable or missing practice_match_games at ${TEST_DB_URL} — skipping. ` +
     'Create it with: createdb swupod_test && POSTGRES_URL=postgresql://localhost:5432/swupod_test npx tsx scripts/migrate.ts dev --yes'
   )
 }
@@ -88,6 +92,17 @@ describe('fetchRoundsWithMatches', { skip: !dbAvailable }, () => {
         [roundId, podId, userIds[2]]
       )
       matchIds[roundNumber - 1].push(matchA!.id as string, matchB!.id as string)
+
+      if (roundNumber === 1) {
+        await query(
+          `INSERT INTO practice_match_games (
+             match_id, round_id, pod_id, game_number, attempt_number, status,
+             wayfinder_match_id, replay_url, result, completed_at
+           )
+           VALUES ($1, $2, $3, 1, 1, 'complete', 'wf-123-game-1', 'https://wayfinder.example/replay/wf-123-game-1', 'player1', NOW())`,
+          [matchA!.id, roundId, podId]
+        )
+      }
     }
   })
 
@@ -126,8 +141,14 @@ describe('fetchRoundsWithMatches', { skip: !dbAvailable }, () => {
       matchWinner: 'player1',
       podOwnerOverride: false,
       wayfinderMatchId: 'wf-123',
+      games: decided.games,
+      currentGame: decided.currentGame,
     })
     assert.match(String(decided.player1!.username), /^mmr-user-/)
+    assert.strictEqual(decided.games.length, 1)
+    assert.strictEqual(decided.games[0]!.status, 'complete')
+    assert.strictEqual(decided.games[0]!.replayUrl, 'https://wayfinder.example/replay/wf-123-game-1')
+    assert.strictEqual(decided.currentGame.status, 'complete')
 
     // Bye match: player2 is null, wayfinderMatchId normalizes to null
     const bye = rounds[0]!.matches[1]!
@@ -136,6 +157,8 @@ describe('fetchRoundsWithMatches', { skip: !dbAvailable }, () => {
     assert.strictEqual(bye.player1!.id, userIds[2])
     assert.strictEqual(bye.wayfinderMatchId, null)
     assert.strictEqual(bye.matchWinner, null)
+    assert.deepStrictEqual(bye.games, [])
+    assert.strictEqual(bye.currentGame.status, 'complete')
   })
 
   it('touches the database exactly once regardless of round count', async () => {

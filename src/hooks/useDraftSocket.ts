@@ -175,9 +175,12 @@ export function useDraftSocket(
 
     // When state changes, fetch fresh data via HTTP
     socket.on('state', async (data: SocketStateData) => {
-      // Only fetch if version is newer
-      if (data.stateVersion > stateVersionRef.current) {
-        stateVersionRef.current = data.stateVersion
+      // Draft picks bump stateVersion, but matchmaking/game lifecycle updates
+      // can broadcast without changing pod.state_version. Apply same-version
+      // public state so live Swiss rows update immediately.
+      const shouldFetchPrivateData = data.stateVersion > stateVersionRef.current
+      if (data.stateVersion >= stateVersionRef.current) {
+        stateVersionRef.current = Math.max(stateVersionRef.current, data.stateVersion)
 
         // Update public state immediately for responsiveness
         setDraft(prev => prev ? {
@@ -201,6 +204,8 @@ export function useDraftSocket(
           deckBuildDeadline: data.deckBuildDeadline,
           rounds: data.rounds,
         } : null)
+
+        if (!shouldFetchPrivateData) return
 
         // Fetch user-specific data via HTTP (uses auth cookie)
         try {

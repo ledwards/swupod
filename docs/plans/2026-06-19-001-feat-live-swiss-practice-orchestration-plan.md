@@ -616,7 +616,7 @@ TypeScript, and the `@ts-nocheck` ratchet.
 
 ---
 
-- [ ] **U5. Extend the draft socket/read model with live game state**
+- [x] **U5. Extend the draft socket/read model with live game state**
 
 **Goal:** Make the live room/game state available to both initial page loads and
 socket pushes.
@@ -656,6 +656,17 @@ socket pushes.
 
 **Verification:** Opening the play page after a game is already in progress
 shows the correct status without waiting for a fresh callback.
+
+**Implemented 2026-06-19:** `fetchRoundsWithMatches()` now includes
+per-game live rows and a normalized `currentGame` summary for every match while
+preserving old match fields for compatibility. The draft GET route already used
+this helper, and socket broadcasts now reuse it instead of the previous
+per-round/per-match query loop. `useDraftSocket()` now applies same-version
+public state broadcasts so lifecycle/result updates that do not bump
+`pod.state_version` still update the live Swiss view immediately. DB-backed
+read-model tests cover the new game-row shape and skip loudly when
+`swupod_test` is not available or has not run the new migration. Verified with
+fast helper tests, TypeScript, and the `@ts-nocheck` ratchet.
 
 ---
 
