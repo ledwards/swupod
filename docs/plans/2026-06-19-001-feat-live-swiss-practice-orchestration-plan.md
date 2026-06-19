@@ -904,7 +904,7 @@ TypeScript.
 
 ---
 
-- [ ] **U10. Add integration tests and Wayfinder handoff prompts**
+- [x] **U10. Add integration tests and Wayfinder handoff prompts**
 
 **Goal:** Make the feature hard to break across PTP, the Companion bridge, and
 browser UI flows.
@@ -987,6 +987,16 @@ browser UI flows.
 
 **Verification:** The PTP test suite and mocked browser flow pass before
 shipping; Wayfinder prompts are concrete enough for a separate agent/thread.
+
+**Implemented 2026-06-19:** Added focused tests across live game state,
+Wayfinder launch payloads, panel state helpers, event analytics, standings, and
+Draft Report normalization. `docs/WAYFINDER_PLUGIN_LIVE_SWISS.md` is the
+canonical handoff contract for Wayfinder, and the prompts above mirror the exact
+event names, callback endpoints, and server-side token boundary. Final local
+verification: 50 targeted tests passed; `liveGames.claim.test.ts` and
+`matchmakingRounds.test.ts` skipped loudly because local `swupod_test` was not
+available or migrated. `npx tsc --noEmit --pretty false` passed, and
+`npm run check:ts-ratchet` passed at baseline 571.
 
 ## System-Wide Impact
 
