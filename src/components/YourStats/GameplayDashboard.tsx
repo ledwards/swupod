@@ -7,14 +7,7 @@ import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import { useRevealOnView } from '@/src/hooks/useRevealOnView'
 import { useAuth } from '@/src/contexts/AuthContext'
 import { isCompanionBeta } from '@/src/utils/companionBeta'
-
-function PlayGlyph() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="13" height="13">
-      <path d="M8 5v14l11-7z" />
-    </svg>
-  )
-}
+import ReplayWatchLink from '@/src/components/ReplayWatchLink'
 
 function resultLetter(result: GameplayReplay['result']): string {
   if (result === 'win') return 'W'
@@ -369,9 +362,9 @@ function ReplayRow({ replay, myName }: { replay: GameplayReplay; myName: string 
           <span>{replay.pool.setCode} · {replayDate(replay.playedAt)}</span>
           <ReplayGamePips results={replay.gameResults} />
         </div>
-        <span className="your-stats-watch-btn your-stats-replay-watch-inline">
-          <PlayGlyph />Watch
-        </span>
+        <ReplayWatchLink ariaLabel={`Watch replay against ${opp}`}>
+          Watch
+        </ReplayWatchLink>
       </div>
     </a>
   )

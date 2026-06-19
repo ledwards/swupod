@@ -55,5 +55,7 @@ HTML does not allow `<button>` inside `<button>`. Use `<div role="button" tabInd
 
 ## Always Use Existing Implementations
 - Check existing components and style guide BEFORE implementing UI
-- Copy from existing working code — don't invent new patterns
+- Search the codebase for prior art before creating any new action, link, button, badge, or row treatment; reuse the existing component/classes when the user-facing action is the same.
+- Copy from existing working code — don't invent new patterns.
+- For replay/watch/match-view actions, reuse `src/components/ReplayWatchLink.tsx` and the `.your-stats-watch-btn` prior-art styling instead of creating bespoke Watch/Replay button CSS.
 - Packs: `.cards-grid` flex-wrap. Leaders/bases: `.leaders-bases-container`

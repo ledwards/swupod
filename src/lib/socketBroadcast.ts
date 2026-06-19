@@ -42,6 +42,7 @@ interface DraftPlayer {
   seat_number: number
   pick_status: string
   is_bot: boolean
+  dropped: boolean
   leaders: string | unknown[]
   drafted_leaders: string | unknown[]
   drafted_cards: string | unknown[]
@@ -65,6 +66,7 @@ interface PublicPlayer {
   seatNumber: number
   pickStatus: string
   isBot: boolean
+  dropped: boolean
   currentPackSize: number
   leaderPack: PublicLeader[] | null
   draftedCardsCount: number
@@ -124,7 +126,7 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
     // Get all players (public info only)
     const players = await queryRows(
       `SELECT dpp.id, dpp.user_id, dpp.seat_number, dpp.pick_status, dpp.is_bot,
-              dpp.leaders, dpp.drafted_leaders, dpp.drafted_cards, dpp.current_pack,
+              dpp.dropped, dpp.leaders, dpp.drafted_leaders, dpp.drafted_cards, dpp.current_pack,
               u.username, u.avatar_url
        FROM pod_players dpp
        JOIN users u ON dpp.user_id = u.id
@@ -150,6 +152,7 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
         seatNumber: p.seat_number,
         pickStatus: p.pick_status,
         isBot: p.is_bot === true,
+        dropped: p.dropped === true,
         currentPackSize: (jsonParse<unknown[]>(p.current_pack, []) as unknown[]).length,
         // During leader draft, show each player's leader pack to all (visible at the table)
         leaderPack: isLeaderDraftPhase ? leadersPack.map(l => ({

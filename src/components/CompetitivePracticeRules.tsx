@@ -5,9 +5,28 @@ import './CompetitivePracticeRules.css'
 
 interface CompetitivePracticeRulesProps {
   showTitle?: boolean
+  swissOnly?: boolean
 }
 
-export function CompetitivePracticeRules({ showTitle = true }: CompetitivePracticeRulesProps = {}) {
+export function CompetitivePracticeRules({ showTitle = true, swissOnly = false }: CompetitivePracticeRulesProps = {}) {
+  if (swissOnly) {
+    return (
+      <div className="cpm-rules cpm-rules--swiss-only">
+        {showTitle && <h3 className="cpm-rules-title">Swiss Practice</h3>}
+        <div className="cpm-rules-section">
+          <h4>How it works</h4>
+          <ul>
+            <li>Three Swiss rounds after deck building.</li>
+            <li>Best-of-three matches each round.</li>
+            <li>Pairings are based on record, with no rematches.</li>
+            <li>Odd player counts create a bye, which counts as a win.</li>
+            <li>Standings rank by record, then OMW% tiebreaker.</li>
+          </ul>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="cpm-rules">
       {showTitle && <h3 className="cpm-rules-title">Competitive Practice Mode</h3>}
@@ -75,8 +94,8 @@ export function CompetitivePracticeRules({ showTitle = true }: CompetitivePracti
       <div className="cpm-rules-section">
         <h4>Matches</h4>
         <ul>
-          <li>Swiss pairings after the draft — best-of-three matches each round.</li>
-          <li>Report results through the in-app modal; both players confirm.</li>
+          <li>Swiss Practice begins after the draft — three best-of-three rounds paired by record.</li>
+          <li>Wayfinder can record results automatically; manual mutual confirmation remains available.</li>
         </ul>
       </div>
     </div>

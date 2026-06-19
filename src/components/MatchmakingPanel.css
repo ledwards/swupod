@@ -9,6 +9,10 @@
 }
 
 .matchmaking-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 
@@ -19,6 +23,103 @@
   letter-spacing: 1.5px;
   color: rgba(255, 215, 0, 0.8);
   text-transform: uppercase;
+}
+
+.matchmaking-how-toggle {
+  flex-shrink: 0;
+  color: rgba(255, 215, 0, 0.88);
+}
+
+.matchmaking-how-caret {
+  display: inline-block;
+  transition: transform 0.16s ease;
+}
+
+.matchmaking-how-caret.is-open {
+  transform: rotate(90deg);
+}
+
+.matchmaking-how-panel {
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 215, 0, 0.16);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.28);
+  padding: 0.85rem 1rem;
+}
+
+.matchmaking-how-panel .cpm-rules {
+  margin: 0;
+}
+
+.matchmaking-how-panel .cpm-rules-section {
+  margin: 0;
+}
+
+.matchmaking-how-panel h4 {
+  margin-top: 0;
+}
+
+.matchmaking-status-band {
+  display: grid;
+  gap: 0.35rem;
+  border: 1px solid rgba(255, 215, 0, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 215, 0, 0.055);
+  padding: 0.7rem 0.85rem;
+  margin-bottom: 1rem;
+  font-family: 'Barlow', sans-serif;
+}
+
+.matchmaking-round-progress {
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 215, 0, 0.9);
+}
+
+.matchmaking-status-line {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.matchmaking-wayfinder-nudge {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.7fr) minmax(220px, 1fr);
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: 8px;
+  background: rgba(255, 215, 0, 0.08);
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.matchmaking-wayfinder-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-family: 'Barlow', sans-serif;
+}
+
+.matchmaking-wayfinder-copy strong {
+  color: rgba(255, 215, 0, 0.95);
+  font-size: 0.95rem;
+}
+
+.matchmaking-wayfinder-copy span {
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
+.matchmaking-wayfinder-nudge .wf-store {
+  gap: 0.45rem;
+}
+
+.matchmaking-wayfinder-nudge .wf-store-grid {
+  max-width: 360px;
 }
 
 /* Current match callout */
@@ -45,8 +146,9 @@
 /* Tabs */
 .matchmaking-tabs {
   display: flex;
-  gap: 0;
+  gap: 0.4rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 0.65rem;
   margin-bottom: 1rem;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -57,24 +159,40 @@
   font-weight: 600;
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.5);
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
+  position: relative;
+  background: rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.18);
   padding: 0.5rem 1rem;
-  cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
   white-space: nowrap;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .matchmaking-tab:hover {
-    color: rgba(255, 255, 255, 0.8);
-  }
+.matchmaking-tab.btn--active {
+  color: rgba(255, 215, 0, 0.94);
+  border-color: rgba(255, 215, 0, 0.72);
+  background: rgba(255, 215, 0, 0.12);
 }
 
-.matchmaking-tab--active {
-  color: rgba(255, 215, 0, 0.9);
-  border-bottom-color: rgba(255, 215, 0, 0.8);
+.matchmaking-tab--completed {
+  color: rgba(255, 255, 255, 0.68);
+  border-color: rgba(255, 215, 0, 0.25);
+}
+
+.matchmaking-tab--completed::before {
+  content: "✓";
+  color: rgba(255, 215, 0, 0.88);
+}
+
+.matchmaking-tab--current::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 215, 0, 0.95);
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.55);
+}
+
+.matchmaking-tab--upcoming {
+  opacity: 0.58;
 }
 
 /* Tab content */
@@ -107,17 +225,23 @@
 }
 
 .matchmaking-standing-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 0.75rem;
   padding: 0.6rem 0.75rem;
   border-radius: 6px;
   font-family: 'Barlow', sans-serif;
+  border: 1px solid transparent;
 }
 
 .matchmaking-standing-row--mine {
   background: rgba(255, 215, 0, 0.08);
   border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.matchmaking-standing-row--dropped {
+  opacity: 0.68;
 }
 
 .matchmaking-standing-rank {
@@ -127,18 +251,50 @@
 }
 
 .matchmaking-standing-name {
-  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 600;
   color: white;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
+}
+
+.matchmaking-standing-dropped {
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 0.06rem 0.38rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.62);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .matchmaking-standing-record {
   font-weight: 600;
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.7);
+}
+
+.matchmaking-standing-omw {
+  min-width: 78px;
+  text-align: right;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: rgba(255, 215, 0, 0.88);
+}
+
+.matchmaking-standing-omw span {
+  display: block;
+  margin-top: 1px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.42);
 }
 
 /* Bye control */
@@ -180,7 +336,15 @@
     margin-top: 1.5rem;
   }
 
+  .matchmaking-panel-header {
+    align-items: flex-start;
+  }
+
   .matchmaking-matches-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .matchmaking-wayfinder-nudge {
     grid-template-columns: 1fr;
   }
 
@@ -188,5 +352,16 @@
     flex-direction: column;
     align-items: stretch;
     gap: 0.5rem;
+  }
+
+  .matchmaking-standing-row {
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+  }
+
+  .matchmaking-standing-omw {
+    grid-column: 2 / -1;
+    justify-self: start;
+    text-align: left;
+    min-width: 0;
   }
 }

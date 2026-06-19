@@ -32,6 +32,7 @@
   flex-direction: column;
   gap: 4px;
   position: relative;
+  min-width: 0;
 }
 
 .match-card-player--winner .match-card-player-name {
@@ -47,6 +48,26 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.match-card-player-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.match-card-player-record {
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 215, 0, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 215, 0, 0.08);
+  padding: 0.08rem 0.4rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: rgba(255, 215, 0, 0.9);
 }
 
 .match-card-player-name--bye {
@@ -157,6 +178,26 @@
   transition: color 0.2s ease;
 }
 
+.match-card-wayfinder-state {
+  border: 1px solid rgba(255, 215, 0, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 215, 0, 0.08);
+  padding: 0.12rem 0.45rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: rgba(255, 215, 0, 0.9);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.match-card-wayfinder-state--recorded {
+  border-color: rgba(147, 197, 253, 0.35);
+  background: rgba(147, 197, 253, 0.1);
+  color: #bfdbfe;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .match-card-wayfinder-link:hover {
     color: #bfdbfe;
@@ -167,6 +208,8 @@
 .match-card-actions {
   display: flex;
   gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 /* Mobile */

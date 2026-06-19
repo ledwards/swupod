@@ -1074,34 +1074,6 @@
 .your-stats-replay-pip--l { background: var(--ys-loss); color: #fff; }
 .your-stats-replay-pip--d { background: var(--ys-draw); }
 
-/* Watch button — Wayfinder-style accent pill */
-.your-stats-watch-btn {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.38rem 0.75rem;
-  border-radius: 999px;
-  background: var(--ys-accent);
-  color: #07101f;
-  font-size: 0.78rem;
-  font-weight: 800;
-  text-decoration: none;
-  transition: box-shadow 160ms ease, transform 160ms ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .your-stats-watch-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 0 18px rgba(100, 181, 246, 0.5);
-  }
-}
-
-.your-stats-watch-btn:focus-visible {
-  outline: 2px solid var(--ys-accent-bright);
-  outline-offset: 2px;
-}
-
 /* Accordion: row is a button; clicking expands a detail panel */
 .your-stats-replay-row {
   cursor: pointer;
@@ -1188,9 +1160,6 @@
   .your-stats-replay-matchup {
     flex: 1 1 100%;
     order: 3;
-  }
-  .your-stats-watch-btn {
-    margin-left: auto;
   }
 }
 
@@ -3695,10 +3664,6 @@ a.your-stats-logged-out-link:active {
   gap: 0.6rem;
   font-size: 0.78rem;
   color: var(--ys-text-2, rgba(255, 255, 255, 0.6));
-}
-
-.your-stats-replay-watch-inline {
-  align-self: center;
 }
 
 .your-stats-replay-card .your-stats-replay-caret {

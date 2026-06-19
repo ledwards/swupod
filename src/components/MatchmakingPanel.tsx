@@ -1,7 +1,22 @@
 // @ts-nocheck
-import { useState, useMemo } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import MatchCard from './MatchCard'
 import Button from './Button'
+import CompetitivePracticeRules from './CompetitivePracticeRules'
+import {
+  nextActiveTabAfterRoundChange,
+  roundProgressLabel,
+  roundTabState,
+  shouldShowInstallNudge,
+  statusLine,
+  wayfinderMatchState,
+} from './MatchmakingPanel.helpers'
+import WayfinderStoreButtons from './WayfinderStoreButtons'
+import {
+  computeRankedStandings,
+  hasConfirmedMatch,
+  recordsThroughRound,
+} from '../services/matchmaking/standings'
 import './MatchmakingPanel.css'
 
 interface MatchPlayer {
@@ -38,55 +53,15 @@ interface MatchmakingPanelProps {
   matchmakingStatus: string
   currentUserId: string
   isHost: boolean
-  players: { id: string; username: string }[]
+  players: { id: string; username: string; dropped?: boolean }[]
   onReport: (matchId: string) => void
   onOverride: (matchId: string) => void
   onBoot: (userId: string) => void
   onAssignBye: (targetUserId: string) => void
   onStartMatches: () => void
-}
-
-function computeStandings(rounds: Round[]) {
-  const records: Record<string, { id: string; username: string; wins: number; losses: number; draws: number }> = {}
-
-  const ensurePlayer = (p: MatchPlayer | null) => {
-    if (!p) return
-    if (!records[p.id]) {
-      records[p.id] = { id: p.id, username: p.username, wins: 0, losses: 0, draws: 0 }
-    }
-  }
-
-  for (const round of rounds) {
-    for (const match of round.matches) {
-      ensurePlayer(match.player1)
-      ensurePlayer(match.player2)
-
-      if (!match.finalConfirmed) continue
-
-      if (match.isBye && match.player1) {
-        records[match.player1.id].wins += 1
-        continue
-      }
-
-      if (match.matchWinner === 'player1' && match.player1) {
-        records[match.player1.id].wins += 1
-        if (match.player2) records[match.player2.id].losses += 1
-      } else if (match.matchWinner === 'player2' && match.player2) {
-        records[match.player2.id].wins += 1
-        if (match.player1) records[match.player1.id].losses += 1
-      } else if (match.matchWinner === 'draw') {
-        if (match.player1) records[match.player1.id].draws += 1
-        if (match.player2) records[match.player2.id].draws += 1
-      }
-    }
-  }
-
-  return Object.values(records).sort((a, b) => {
-    // Sort by wins desc, then losses asc, then draws desc
-    if (b.wins !== a.wins) return b.wins - a.wins
-    if (a.losses !== b.losses) return a.losses - b.losses
-    return b.draws - a.draws
-  })
+  wayfinderDetected?: boolean
+  wayfinderSettled?: boolean
+  hasCompanionBetaAccess?: boolean
 }
 
 export function MatchmakingPanel({
@@ -101,16 +76,27 @@ export function MatchmakingPanel({
   onBoot,
   onAssignBye,
   onStartMatches,
+  wayfinderDetected = false,
+  wayfinderSettled = true,
+  hasCompanionBetaAccess = false,
 }: MatchmakingPanelProps) {
   const totalRounds = Math.max(rounds.length, 3)
   const tabs = []
   for (let i = 1; i <= totalRounds; i++) {
     tabs.push({ label: `Round ${i}`, key: `round-${i}` })
   }
-  tabs.push({ label: 'Results', key: 'results' })
+  tabs.push({ label: 'Standings', key: 'results' })
 
   const defaultTab = matchmakingStatus === 'complete' ? 'results' : `round-${currentRound}`
   const [activeTab, setActiveTab] = useState(defaultTab)
+  const [showHowItWorks, setShowHowItWorks] = useState(false)
+  const previousCurrentRoundRef = useRef(currentRound)
+
+  useEffect(() => {
+    const previousCurrentRound = previousCurrentRoundRef.current
+    setActiveTab(tab => nextActiveTabAfterRoundChange(tab, previousCurrentRound, currentRound, matchmakingStatus))
+    previousCurrentRoundRef.current = currentRound
+  }, [currentRound, matchmakingStatus])
 
   // Find current user's match in the active round
   const myMatch = useMemo(() => {
@@ -121,7 +107,8 @@ export function MatchmakingPanel({
     ) || null
   }, [rounds, currentRound, currentUserId])
 
-  const standings = useMemo(() => computeStandings(rounds), [rounds])
+  const standings = useMemo(() => computeRankedStandings(rounds, players), [rounds, players])
+  const hasResults = useMemo(() => hasConfirmedMatch(rounds), [rounds])
 
   // Find bye player for the active round's bye dropdown
   const activeRound = rounds.find(r => r.roundNumber === currentRound)
@@ -140,6 +127,9 @@ export function MatchmakingPanel({
 
   const showStartButton = isHost && matchmakingStatus === 'deck_building' && rounds.length === 0
   const hasActiveRound = activeRound && activeRound.status === 'active'
+  const progressLabel = roundProgressLabel(currentRound, totalRounds, activeRound)
+  const playerStatus = statusLine({ matchmakingStatus, currentRound, currentUserId, myMatch })
+  const showInstallNudge = shouldShowInstallNudge(wayfinderDetected, hasCompanionBetaAccess, wayfinderSettled)
 
   return (
     <div
@@ -148,10 +138,42 @@ export function MatchmakingPanel({
       data-matchmaking-status={matchmakingStatus}
       data-current-round={currentRound}
       data-active-tab={activeTab}
+      data-wayfinder-detected={wayfinderDetected ? 'true' : 'false'}
     >
       <div className="matchmaking-panel-header">
-        <span className="matchmaking-panel-label">COMPETITIVE PRACTICE</span>
+        <span className="matchmaking-panel-label">Swiss Practice</span>
+        <Button
+          variant="secondary"
+          size="sm"
+          textOnly
+          className="matchmaking-how-toggle"
+          onClick={() => setShowHowItWorks(v => !v)}
+          aria-expanded={showHowItWorks}
+        >
+          How it works <span className={`matchmaking-how-caret${showHowItWorks ? ' is-open' : ''}`}>▸</span>
+        </Button>
       </div>
+
+      {showHowItWorks && (
+        <div className="matchmaking-how-panel">
+          <CompetitivePracticeRules showTitle={false} swissOnly />
+        </div>
+      )}
+
+      <div className="matchmaking-status-band">
+        <span className="matchmaking-round-progress">{progressLabel}</span>
+        <span className="matchmaking-status-line">{playerStatus}</span>
+      </div>
+
+      {showInstallNudge && (
+        <div className="matchmaking-wayfinder-nudge">
+          <div className="matchmaking-wayfinder-copy">
+            <strong>Install Wayfinder</strong>
+            <span>Auto-record and auto-confirm your Practice games.</span>
+          </div>
+          <WayfinderStoreButtons orientation="inline" />
+        </div>
+      )}
 
       {/* Current match callout */}
       {myMatch && matchmakingStatus === 'active' && (
@@ -183,14 +205,17 @@ export function MatchmakingPanel({
       {/* Round tabs */}
       <div className="matchmaking-tabs">
         {tabs.map(tab => (
-          <button
+          <Button
             key={tab.key}
-            className={`matchmaking-tab${activeTab === tab.key ? ' matchmaking-tab--active' : ''}`}
+            variant="toggle"
+            glowColor="yellow"
+            active={activeTab === tab.key}
+            className={`matchmaking-tab${tab.key.startsWith('round-') ? ` matchmaking-tab--${roundTabState(parseInt(tab.key.replace('round-', '')), currentRound, matchmakingStatus)}` : ''}`}
             onClick={() => setActiveTab(tab.key)}
             data-testid={`matchmaking-tab-${tab.key}`}
           >
             {tab.label}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -198,25 +223,32 @@ export function MatchmakingPanel({
       <div className="matchmaking-tab-content">
         {activeTab === 'results' ? (
           <div className="matchmaking-standings">
-            {standings.length === 0 ? (
+            {!hasResults ? (
               <p className="matchmaking-empty">No results yet</p>
             ) : (
               <ol className="matchmaking-standings-list">
                 {standings.map((player, i) => (
                   <li
                     key={player.id}
-                    className={`matchmaking-standing-row${player.id === currentUserId ? ' matchmaking-standing-row--mine' : ''}`}
+                    className={`matchmaking-standing-row${player.id === currentUserId ? ' matchmaking-standing-row--mine' : ''}${player.dropped ? ' matchmaking-standing-row--dropped' : ''}`}
                     data-testid={`standing-row-${i + 1}`}
                     data-player-id={player.id}
-                    data-rank={i + 1}
+                    data-rank={player.rank}
                     data-wins={player.wins}
                     data-losses={player.losses}
                     data-draws={player.draws}
+                    data-omw={Math.round(player.omwPercent * 100)}
                   >
-                    <span className="matchmaking-standing-rank">{i + 1}.</span>
-                    <span className="matchmaking-standing-name">{player.username}</span>
+                    <span className="matchmaking-standing-rank">{player.rank}.</span>
+                    <span className="matchmaking-standing-name">
+                      {player.username}
+                      {player.dropped && <span className="matchmaking-standing-dropped">dropped</span>}
+                    </span>
                     <span className="matchmaking-standing-record">
                       {player.wins}W-{player.losses}L{player.draws > 0 ? `-${player.draws}D` : ''}
+                    </span>
+                    <span className="matchmaking-standing-omw">
+                      {Math.round(player.omwPercent * 100)}% <span>OMW</span>
                     </span>
                   </li>
                 ))}
@@ -233,17 +265,30 @@ export function MatchmakingPanel({
               }
               return (
                 <div className="matchmaking-matches-grid">
-                  {round.matches.map(match => (
-                    <MatchCard
-                      key={match.id}
-                      match={match}
-                      currentUserId={currentUserId}
-                      isHost={isHost}
-                      onReport={onReport}
-                      onOverride={onOverride}
-                      onBoot={onBoot}
-                    />
-                  ))}
+                  {(() => {
+                    const playerRecords = recordsThroughRound(rounds, round.roundNumber)
+                    return round.matches.map(match => (
+                      <MatchCard
+                        key={match.id}
+                        match={match}
+                        currentUserId={currentUserId}
+                        isHost={isHost}
+                        playerRecords={playerRecords}
+                        wayfinderState={wayfinderMatchState(
+                          wayfinderDetected,
+                          match.wayfinderMatchId,
+                          Boolean(
+                            !match.finalConfirmed &&
+                            !match.isBye &&
+                            (match.player1?.id === currentUserId || match.player2?.id === currentUserId)
+                          )
+                        )}
+                        onReport={onReport}
+                        onOverride={onOverride}
+                        onBoot={onBoot}
+                      />
+                    ))
+                  })()}
                 </div>
               )
             })()}

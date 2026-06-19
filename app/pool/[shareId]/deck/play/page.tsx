@@ -31,6 +31,7 @@ import ResultReportModal from '../../../../../src/components/ResultReportModal'
 import { useWayfinderDetection } from '../../../../../src/hooks/useWayfinderDetection'
 import { useDraftSocket } from '../../../../../src/hooks/useDraftSocket'
 import { trackEvent } from '../../../../../src/hooks/useAnalytics'
+import { hasBetaAccess } from '../../../../../src/types/user'
 import {
   buildLimitedContext,
   getOrCreateLimitedFlowId,
@@ -276,7 +277,7 @@ export default function PlayPage({ params }: PageProps) {
 
   // Detect the Wayfinder extension via the centralized hook (meta tag + event +
   // postMessage, with a localStorage bridge and the ?wayfinder=1/0 QA override).
-  const { detected: wayfinderDetected } = useWayfinderDetection()
+  const { detected: wayfinderDetected, settled: wayfinderSettled } = useWayfinderDetection()
 
   // ?lobby=private|public deep link (from the /me Pools tab lobby buttons):
   // auto-opens the corresponding Karabast lobby once detected + owner.
@@ -2213,7 +2214,14 @@ export default function PlayPage({ params }: PageProps) {
             matchmakingStatus={matchmakingStatus}
             currentUserId={user.id}
             isHost={isCompetitiveHost}
-            players={draftPlayers.map(p => ({ id: (p as any).odId || '', username: p.username || 'Unknown' }))}
+            players={draftPlayers.map(p => ({
+              id: (p as any).odId || '',
+              username: p.username || 'Unknown',
+              dropped: Boolean((p as any).dropped),
+            }))}
+            wayfinderDetected={wayfinderDetected}
+            wayfinderSettled={wayfinderSettled}
+            hasCompanionBetaAccess={hasBetaAccess(user)}
             onReport={(matchId) => {
               trackLimitedPlayAction(LimitedPlayActions.MATCH_REPORT_OPEN, {
                 target: 'match_result',

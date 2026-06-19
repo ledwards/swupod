@@ -1,5 +1,7 @@
 // @ts-nocheck
 import Button from './Button'
+import type { WayfinderMatchState } from './MatchmakingPanel.helpers'
+import { formatRecord, type PlayerRecord } from '../services/matchmaking/standings'
 import './MatchCard.css'
 
 interface MatchPlayer {
@@ -31,6 +33,8 @@ interface MatchCardProps {
   onReport: (matchId: string) => void
   onOverride: (matchId: string) => void
   onBoot: (userId: string) => void
+  playerRecords?: Map<string, PlayerRecord>
+  wayfinderState?: WayfinderMatchState
 }
 
 function getMatchStatus(match: MatchData): string {
@@ -47,7 +51,16 @@ function GameDot({ result, forPlayer }: { result: string | null; forPlayer: 'pla
   return <span className="game-dot game-dot--loss" />
 }
 
-export function MatchCard({ match, currentUserId, isHost, onReport, onOverride, onBoot }: MatchCardProps) {
+export function MatchCard({
+  match,
+  currentUserId,
+  isHost,
+  onReport,
+  onOverride,
+  onBoot,
+  playerRecords,
+  wayfinderState = 'manual',
+}: MatchCardProps) {
   const isMyMatch = match.player1?.id === currentUserId || match.player2?.id === currentUserId
   const status = getMatchStatus(match)
   const iAmPlayer1 = match.player1?.id === currentUserId
@@ -56,6 +69,7 @@ export function MatchCard({ match, currentUserId, isHost, onReport, onOverride, 
 
   const canReport = isMyMatch && !match.finalConfirmed && !match.isBye && !iHaveSubmitted
   const canOverride = isHost && !match.isBye
+  const recordFor = (player: MatchPlayer | null) => player?.id ? formatRecord(playerRecords?.get(player.id)) : '0-0'
 
   return (
     <div
@@ -71,7 +85,10 @@ export function MatchCard({ match, currentUserId, isHost, onReport, onOverride, 
     >
       <div className="match-card-players">
         <div className={`match-card-player${match.matchWinner === 'player1' ? ' match-card-player--winner' : ''}`}>
-          <span className="match-card-player-name">{match.player1?.username || '???'}</span>
+          <span className="match-card-player-heading">
+            <span className="match-card-player-name">{match.player1?.username || '???'}</span>
+            <span className="match-card-player-record">{recordFor(match.player1)}</span>
+          </span>
           {!match.isBye && (
             <div className="match-card-dots">
               <GameDot result={match.game1Result} forPlayer="player1" />
@@ -95,7 +112,10 @@ export function MatchCard({ match, currentUserId, isHost, onReport, onOverride, 
         <div className={`match-card-player${match.matchWinner === 'player2' ? ' match-card-player--winner' : ''}`}>
           {!match.isBye ? (
             <>
-              <span className="match-card-player-name">{match.player2?.username || '???'}</span>
+              <span className="match-card-player-heading">
+                <span className="match-card-player-name">{match.player2?.username || '???'}</span>
+                <span className="match-card-player-record">{recordFor(match.player2)}</span>
+              </span>
               <div className="match-card-dots">
                 <GameDot result={match.game1Result} forPlayer="player2" />
                 <GameDot result={match.game2Result} forPlayer="player2" />
@@ -122,6 +142,12 @@ export function MatchCard({ match, currentUserId, isHost, onReport, onOverride, 
           {status}
           {match.podOwnerOverride && ' (Override)'}
         </span>
+        {wayfinderState === 'auto-recording' && (
+          <span className="match-card-wayfinder-state">Auto-recording</span>
+        )}
+        {wayfinderState === 'recorded' && (
+          <span className="match-card-wayfinder-state match-card-wayfinder-state--recorded">Recorded</span>
+        )}
         {match.wayfinderMatchId && (
           <a
             href={`${process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin.wayfinder.news'}/matches/${match.wayfinderMatchId}`}
@@ -135,8 +161,12 @@ export function MatchCard({ match, currentUserId, isHost, onReport, onOverride, 
         <div className="match-card-actions">
           {canReport && (
             <span data-testid={`match-report-button-${match.id}`}>
-              <Button variant="primary" size="sm" onClick={() => onReport(match.id)}>
-                Report Result
+              <Button
+                variant={wayfinderState === 'auto-recording' ? 'secondary' : 'primary'}
+                size="sm"
+                onClick={() => onReport(match.id)}
+              >
+                {wayfinderState === 'auto-recording' ? 'Report Manually' : 'Report Result'}
               </Button>
             </span>
           )}

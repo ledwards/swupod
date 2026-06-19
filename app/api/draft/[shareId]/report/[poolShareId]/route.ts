@@ -1,9 +1,14 @@
 // app/api/draft/[shareId]/report/[poolShareId]/route.ts
 // @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server'
-import { query, queryRow } from '@/lib/db'
+import { query, queryRow, queryRows } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 import { reconstructDraftLog } from '@/src/utils/draftLogReconstruction'
+import {
+  normalizeCasualReportMatch,
+  normalizeCompetitiveReportMatch,
+  sortDraftReportMatches,
+} from '@/src/utils/draftReportMatches'
 
 type RouteContext = { params: Promise<{ shareId: string; poolShareId: string }> }
 
@@ -22,10 +27,16 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
   if (!pod) {
     return NextResponse.json({ error: 'Draft not found' }, { status: 404 })
   }
+  const podSettings = typeof pod.settings === 'string'
+    ? (() => {
+        try { return JSON.parse(pod.settings) } catch { return {} }
+      })()
+    : (pod.settings || {})
+  const isCompetitiveDraft = Boolean(podSettings.competitive)
 
   // Look up the target pool by share_id
   const targetPool = await queryRow(
-    `SELECT cp.user_id, cp.report_public
+    `SELECT cp.id, cp.user_id, cp.report_public
      FROM card_pools cp
      WHERE cp.share_id = $1 AND cp.pod_id = $2`,
     [poolShareId, pod.id]
@@ -140,6 +151,82 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     [pod.id, targetUserId]
   )
 
+  let matches = []
+  if (isCompetitiveDraft) {
+    const matchRows = await queryRows(
+      `SELECT
+         pm.id,
+         pr.round_number,
+         pm.wayfinder_match_id,
+         pm.wayfinder_replay_url,
+         pm.created_at,
+         pm.match_winner,
+         pm.game1_result,
+         pm.game2_result,
+         pm.game3_result,
+         pm.player1_id,
+         pm.player2_id,
+         u1.username AS player1_username,
+         u1.avatar_url AS player1_avatar_url,
+         u2.username AS player2_username,
+         u2.avatar_url AS player2_avatar_url,
+         pm.player1_leader,
+         pm.player1_leader_image,
+         pm.player1_base,
+         pm.player1_base_image,
+         pm.player1_archetype,
+         pm.player2_leader,
+         pm.player2_leader_image,
+         pm.player2_base,
+         pm.player2_base_image,
+         pm.player2_archetype
+       FROM practice_matches pm
+       LEFT JOIN practice_rounds pr ON pr.id = pm.round_id
+       LEFT JOIN users u1 ON u1.id = pm.player1_id
+       LEFT JOIN users u2 ON u2.id = pm.player2_id
+       WHERE pm.pod_id = $1
+         AND (pm.player1_id = $2 OR pm.player2_id = $2)
+         AND pm.is_bye = false
+         AND (pm.wayfinder_replay_url IS NOT NULL OR pm.wayfinder_match_id IS NOT NULL)
+       ORDER BY pr.round_number ASC NULLS LAST, pm.created_at ASC`,
+      [pod.id, targetUserId]
+    )
+    matches = sortDraftReportMatches(
+      matchRows.map(row => normalizeCompetitiveReportMatch(row, targetUserId))
+    )
+  } else {
+    const matchRows = await queryRows(
+      `SELECT
+         cm.id,
+         cm.wayfinder_match_id,
+         cm.wayfinder_replay_url,
+         cm.result,
+         cm.game1_result,
+         cm.game2_result,
+         cm.game3_result,
+         cm.opponent_name,
+         cm.player_leader,
+         cm.player_leader_image,
+         cm.player_base,
+         cm.player_archetype,
+         cm.opponent_leader,
+         cm.opponent_leader_image,
+         cm.opponent_base,
+         cm.opponent_archetype,
+         cm.played_at,
+         cm.created_at
+       FROM casual_matches cm
+       WHERE cm.card_pool_id = $1
+         AND cm.user_id = $2
+         AND (cm.wayfinder_replay_url IS NOT NULL OR cm.wayfinder_match_id IS NOT NULL)
+       ORDER BY cm.played_at ASC NULLS LAST, cm.created_at ASC`,
+      [targetPool.id, targetUserId]
+    )
+    matches = sortDraftReportMatches(
+      matchRows.map(row => normalizeCasualReportMatch(row))
+    )
+  }
+
   return NextResponse.json({
     draft: {
       shareId: pod.share_id,
@@ -152,12 +239,13 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       isPublic: pod.is_public,
       startedAt: pod.started_at,
       completedAt: pod.completed_at,
-      competitive: pod.settings?.competitive || false,
+      competitive: isCompetitiveDraft,
     },
     players,
     mySeat: targetPlayer.seat_number,
     isOwner,
     picks,
+    matches,
     pool: pool ? {
       shareId: pool.share_id,
       cards: typeof pool.cards === 'string' ? JSON.parse(pool.cards) : (pool.cards || []),

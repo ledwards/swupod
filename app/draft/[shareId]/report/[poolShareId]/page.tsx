@@ -1,12 +1,13 @@
 // @ts-nocheck
 'use client'
 
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect, use, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../../../src/contexts/AuthContext'
 import Button from '../../../../../src/components/Button'
 import PlayerCircle from '../../../../../src/components/PlayerCircle'
 import CardWithPreview from '../../../../../src/components/CardWithPreview'
+import ReplayWatchLink from '../../../../../src/components/ReplayWatchLink'
 import '../../../../../src/App.css'
 import '../../../../../src/styles/backgrounds.css'
 import '../../../../../src/components/SealedPod.css'
@@ -14,6 +15,7 @@ import '../../log/log.css'
 import '../report.css'
 import { getPackArtUrl } from '../../../../../src/utils/packArt'
 import { parseMarkdownToHTML } from '../../../../../src/utils/markdown'
+import type { DraftReportGameResult, DraftReportMatch, DraftReportMatchResult } from '../../../../../src/utils/draftReportMatches'
 
 interface ReportData {
   draft: {
@@ -40,7 +42,9 @@ interface ReportData {
     strategyName: string | null
     mixinName: string | null
   }>
+  isOwner?: boolean
   mySeat: number
+  matches?: DraftReportMatch[]
   picks: Array<{
     type: 'leader' | 'card'
     packNumber: number
@@ -60,10 +64,46 @@ interface ReportData {
   } | null
 }
 
-type TabId = 'seating' | 'log' | 'pool' | 'deck' | 'notes' | 'gameplay'
+type TabId = 'seating' | 'log' | 'pool' | 'deck' | 'matches' | 'notes'
 
 interface PageProps {
   params: Promise<{ shareId: string; poolShareId: string }>
+}
+
+function reportMatchDate(value: string | null): string {
+  if (!value) return 'Unknown date'
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return 'Unknown date'
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+function reportMatchResultLabel(result: DraftReportMatchResult): string {
+  if (result === 'win') return 'Win'
+  if (result === 'loss') return 'Loss'
+  if (result === 'draw') return 'Draw'
+  return 'Pending'
+}
+
+function replayHref(match: DraftReportMatch): string | null {
+  if (match.replayUrl) return match.replayUrl
+  if (match.wayfinderMatchId) {
+    const wayfinder = process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin.wayfinder.news'
+    return `${wayfinder}/matches/${match.wayfinderMatchId}`
+  }
+  return null
+}
+
+function MatchGamePips({ results }: { results: DraftReportGameResult[] }) {
+  if (!results || results.length === 0) return null
+  return (
+    <div className="draft-report-match-games" aria-label={`Games: ${results.join('-')}`}>
+      {results.map((result, index) => (
+        <span key={`${result}-${index}`} className={`draft-report-match-game draft-report-match-game--${result.toLowerCase()}`}>
+          {result}
+        </span>
+      ))}
+    </div>
+  )
 }
 
 export default function DraftReportPage({ params }: PageProps) {
@@ -78,8 +118,9 @@ export default function DraftReportPage({ params }: PageProps) {
   const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<TabId>(() => {
     if (typeof window !== 'undefined') {
-      const hash = window.location.hash.replace('#', '') as TabId
-      if (['seating', 'log', 'pool', 'deck', 'notes', 'gameplay'].includes(hash)) return hash
+      const hash = window.location.hash.replace('#', '')
+      if (hash === 'gameplay') return 'matches'
+      if (['seating', 'log', 'pool', 'deck', 'matches', 'notes'].includes(hash)) return hash as TabId
     }
     return 'seating'
   })
@@ -89,6 +130,7 @@ export default function DraftReportPage({ params }: PageProps) {
   const [notesDraft, setNotesDraft] = useState('')
   const [savingNotes, setSavingNotes] = useState(false)
   const [showMdHelp, setShowMdHelp] = useState(false)
+  const activeTabRef = useRef<HTMLButtonElement | null>(null)
 
   useEffect(() => {
     if (!shareId || !poolShareId) return
@@ -112,6 +154,10 @@ export default function DraftReportPage({ params }: PageProps) {
     }
     fetchReport()
   }, [shareId])
+
+  useEffect(() => {
+    activeTabRef.current?.scrollIntoView({ block: 'nearest', inline: 'center' })
+  }, [activeTab, loading])
 
   const handleToggleVisibility = async () => {
     const newValue = !reportPublic
@@ -216,6 +262,7 @@ export default function DraftReportPage({ params }: PageProps) {
   ].filter(s => s.picks.length > 0)
 
   const poolPacks = pool?.packs || []
+  const reportMatches = data.matches || []
 
   const deckState = pool?.deckBuilderState || null
   const deckCards = []
@@ -244,7 +291,7 @@ export default function DraftReportPage({ params }: PageProps) {
     { id: 'log', label: 'Draft Log' },
     { id: 'pool', label: 'Pool' },
     { id: 'deck', label: 'Deck' },
-    { id: 'gameplay', label: 'Gameplay', placeholder: true },
+    { id: 'matches', label: 'Matches' },
     { id: 'notes', label: 'Notes' },
   ]
 
@@ -304,6 +351,7 @@ export default function DraftReportPage({ params }: PageProps) {
         {tabs.map(tab => (
           <button
             key={tab.id}
+            ref={activeTab === tab.id ? activeTabRef : null}
             className={`draft-report-tab ${activeTab === tab.id ? 'active' : ''} ${tab.placeholder ? 'placeholder' : ''}`}
             onClick={() => {
               setActiveTab(tab.id)
@@ -460,6 +508,63 @@ export default function DraftReportPage({ params }: PageProps) {
           </div>
         )}
 
+        {activeTab === 'matches' && (
+          <div className="draft-report-matches">
+            {reportMatches.length === 0 ? (
+              <div className="draft-report-deck-empty">
+                No plugin-recorded matches yet.
+              </div>
+            ) : (
+              <div className="draft-report-match-list">
+                {reportMatches.map(match => {
+                  const href = replayHref(match)
+                  const opponentName = match.opponent.username || 'Opponent'
+                  const playerLeader = match.player.leaderName || 'Your deck'
+                  const opponentLeader = match.opponent.leaderName || 'Opponent deck'
+                  const playerDeckLine = match.player.baseName ? `${playerLeader} / ${match.player.baseName}` : playerLeader
+                  const opponentDeckLine = match.opponent.baseName ? `${opponentLeader} / ${match.opponent.baseName}` : opponentLeader
+
+                  return (
+                    <article key={match.id} className={`draft-report-match-row draft-report-match-row--${match.result}`}>
+                      <div className="draft-report-match-main">
+                        <div className="draft-report-match-kicker">
+                          <span>{match.label}</span>
+                          <span>{match.source === 'competitive' ? 'Swiss Practice' : 'Pool Play'}</span>
+                          <span>{reportMatchDate(match.playedAt)}</span>
+                        </div>
+                        <div className="draft-report-match-title">
+                          <strong>vs {opponentName}</strong>
+                          <span className={`draft-report-match-result draft-report-match-result--${match.result}`}>
+                            {reportMatchResultLabel(match.result)}
+                          </span>
+                        </div>
+                        <div className="draft-report-match-decks">
+                          <span>{playerDeckLine}</span>
+                          <span aria-hidden="true">vs</span>
+                          <span>{opponentDeckLine}</span>
+                        </div>
+                      </div>
+                      <div className="draft-report-match-actions">
+                        <MatchGamePips results={match.gameResults} />
+                        {href ? (
+                          <ReplayWatchLink
+                            href={href}
+                            ariaLabel={match.replayUrl ? `Watch replay against ${opponentName}` : `View Wayfinder match against ${opponentName}`}
+                          >
+                            {match.replayUrl ? 'Watch' : 'View Match'}
+                          </ReplayWatchLink>
+                        ) : (
+                          <span className="draft-report-match-no-replay">No replay link</span>
+                        )}
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
         {activeTab === 'notes' && (
           <div className="draft-report-notes">
             {editingNotes ? (
@@ -528,31 +633,6 @@ export default function DraftReportPage({ params }: PageProps) {
             ) : (
               <div className="draft-report-notes-empty" style={{ cursor: 'default' }}>
                 No notes yet.
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'gameplay' && (
-          <div className="draft-report-gameplay-placeholder">
-            <h3>Gameplay — Coming Soon</h3>
-            <p>
-              Match results, replay links, deck validation, and tournament brackets will appear here
-              once integrated with the Wayfinder extension.
-            </p>
-            <p>
-              <a href="https://wayfinder.news" target="_blank" rel="noopener noreferrer">
-                Learn more about Wayfinder
-              </a>
-            </p>
-            {pool?.shareId && (
-              <div style={{ marginTop: '1.5rem' }}>
-                <Button variant="primary" onClick={() => { window.location.href = `/pool/${pool.shareId}/deck/play` }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                  </svg>
-                  Play
-                </Button>
               </div>
             )}
           </div>

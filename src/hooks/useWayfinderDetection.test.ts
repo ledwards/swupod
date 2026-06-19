@@ -37,4 +37,10 @@ describe('useWayfinderDetection contract', () => {
     assert.match(SRC, /forced === '1'/)
     assert.match(SRC, /forced === '0'/)
   })
+
+  it('returns a settled flag so install nudges do not flash before detection resolves', () => {
+    assert.match(SRC, /settled:\s*boolean/)
+    assert.match(SRC, /setSettled\(true\)/)
+    assert.match(SRC, /return \{ detected, iconUrl, settled \}/)
+  })
 })

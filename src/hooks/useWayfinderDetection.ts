@@ -33,6 +33,7 @@ import { useEffect, useState } from 'react'
 export interface WayfinderDetection {
   detected: boolean
   iconUrl: string | null
+  settled: boolean
 }
 
 const STAMP_KEY = 'wf_companion_seen_at'
@@ -59,17 +60,19 @@ function rememberedRecently(): boolean {
 export function useWayfinderDetection(): WayfinderDetection {
   const [detected, setDetected] = useState(false)
   const [iconUrl, setIconUrl] = useState<string | null>(null)
+  const [settled, setSettled] = useState(false)
 
   useEffect(() => {
     // QA override: ?wayfinder=1 / ?wayfinder=0
     const forced = new URLSearchParams(window.location.search).get('wayfinder')
-    if (forced === '1' || forced === 'true') { setDetected(true); stamp(); return }
-    if (forced === '0' || forced === 'false') { setDetected(false); clearStamp(); return }
+    if (forced === '1' || forced === 'true') { setDetected(true); setSettled(true); stamp(); return }
+    if (forced === '0' || forced === 'false') { setDetected(false); setSettled(true); clearStamp(); return }
 
     let liveSeen = false
     const markLive = (icon?: string | null) => {
       liveSeen = true
       setDetected(true)
+      setSettled(true)
       if (icon) setIconUrl(icon)
       stamp()
     }
@@ -92,15 +95,19 @@ export function useWayfinderDetection(): WayfinderDetection {
 
     // 2. REMEMBERED — trust a recent stamp on pages the extension can't inject into.
     const injectable = INJECTABLE_RE.test(window.location.pathname)
-    if (!hadMeta && !injectable && rememberedRecently()) setDetected(true)
+    if (!hadMeta && !injectable) {
+      if (rememberedRecently()) setDetected(true)
+      setSettled(true)
+    }
 
     // 3. SELF-HEAL — on an injectable page, the marker should appear fast. If it
     //    hasn't after a grace window, the extension isn't installed: drop the
     //    stamp and the (possibly remembered) detected state.
     const timer = window.setTimeout(() => {
-      if (liveSeen) return
-      if (readMeta()) return
+      if (liveSeen) { setSettled(true); return }
+      if (readMeta()) { setSettled(true); return }
       if (injectable) { clearStamp(); setDetected(false) }
+      setSettled(true)
     }, 1500)
 
     return () => {
@@ -110,7 +117,7 @@ export function useWayfinderDetection(): WayfinderDetection {
     }
   }, [])
 
-  return { detected, iconUrl }
+  return { detected, iconUrl, settled }
 }
 
 export default useWayfinderDetection
