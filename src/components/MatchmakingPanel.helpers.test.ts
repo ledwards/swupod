@@ -2,6 +2,7 @@ import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import {
   confirmedCount,
+  liveConsoleRoundOrder,
   liveGameAction,
   liveGameStatusLabel,
   nextActiveTabAfterRoundChange,
@@ -117,6 +118,34 @@ describe('MatchmakingPanel helpers', () => {
     assert.equal(shouldShowInstallNudge(false, false, true), false)
     assert.equal(shouldShowInstallNudge(false, true, false), false)
     assert.equal(shouldShowInstallNudge(true, true, true), false)
+  })
+
+  it('keeps the active round primary and prior rounds as newest-first history', () => {
+    assert.deepEqual(
+      liveConsoleRoundOrder([
+        { roundNumber: 1, matches: [match()] },
+        { roundNumber: 2, matches: [match()] },
+      ], 2, 'active'),
+      { primaryRoundNumber: 2, historyRoundNumbers: [1] }
+    )
+  })
+
+  it('uses the latest known round as the primary complete-round view', () => {
+    assert.deepEqual(
+      liveConsoleRoundOrder([
+        { roundNumber: 1, matches: [match()] },
+        { roundNumber: 2, matches: [match()] },
+        { roundNumber: 3, matches: [match()] },
+      ], 99, 'complete'),
+      { primaryRoundNumber: 3, historyRoundNumbers: [2, 1] }
+    )
+  })
+
+  it('does not show empty history while deck building has not started rounds', () => {
+    assert.deepEqual(
+      liveConsoleRoundOrder([], 1, 'deck_building'),
+      { primaryRoundNumber: null, historyRoundNumbers: [] }
+    )
   })
 
   it('offers Play for a participant before the next live game is claimed', () => {

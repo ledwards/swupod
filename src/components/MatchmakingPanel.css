@@ -207,6 +207,130 @@
   padding: 2rem 0;
 }
 
+.matchmaking-live-console {
+  display: grid;
+  gap: 1rem;
+}
+
+.matchmaking-round-section {
+  display: grid;
+  gap: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.22);
+  padding: 0.85rem;
+}
+
+.matchmaking-round-section--active {
+  border-color: rgba(255, 215, 0, 0.28);
+  background: rgba(255, 215, 0, 0.035);
+}
+
+.matchmaking-round-section--history {
+  border-color: rgba(147, 197, 253, 0.16);
+  background: rgba(147, 197, 253, 0.035);
+}
+
+.matchmaking-round-section--focused {
+  border-color: rgba(147, 197, 253, 0.48);
+  box-shadow: 0 0 0 1px rgba(147, 197, 253, 0.16);
+}
+
+.matchmaking-round-section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.matchmaking-round-section-title {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.matchmaking-round-section-title h4 {
+  margin: 0;
+  font-family: 'Barlow', sans-serif;
+  font-size: 1.02rem;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.matchmaking-round-section-kicker {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 215, 0, 0.76);
+}
+
+.matchmaking-round-section--history .matchmaking-round-section-kicker {
+  color: rgba(147, 197, 253, 0.78);
+}
+
+.matchmaking-round-section-progress {
+  max-width: 260px;
+  text-align: right;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.matchmaking-round-history {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 0.15rem;
+}
+
+.matchmaking-round-history summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.15rem;
+  cursor: pointer;
+  list-style: none;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(147, 197, 253, 0.84);
+}
+
+.matchmaking-round-history summary::-webkit-details-marker {
+  display: none;
+}
+
+.matchmaking-round-history summary::before {
+  content: "▸";
+  flex: 0 0 auto;
+  color: rgba(147, 197, 253, 0.78);
+  transition: transform 0.16s ease;
+}
+
+.matchmaking-round-history[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.matchmaking-round-history summary span:first-of-type {
+  margin-right: auto;
+}
+
+.matchmaking-round-history summary span:last-of-type {
+  border: 1px solid rgba(147, 197, 253, 0.22);
+  border-radius: 999px;
+  padding: 0.05rem 0.38rem;
+  font-size: 0.68rem;
+  color: rgba(219, 234, 254, 0.86);
+}
+
+.matchmaking-round-history-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
 /* Matches grid */
 .matchmaking-matches-grid {
   display: grid;
@@ -342,6 +466,21 @@
 
   .matchmaking-matches-grid {
     grid-template-columns: 1fr;
+  }
+
+  .matchmaking-round-section {
+    padding: 0.7rem;
+  }
+
+  .matchmaking-round-section-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .matchmaking-round-section-progress {
+    max-width: none;
+    text-align: left;
   }
 
   .matchmaking-wayfinder-nudge {

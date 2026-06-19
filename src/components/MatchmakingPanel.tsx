@@ -4,6 +4,7 @@ import MatchCard from './MatchCard'
 import Button from './Button'
 import CompetitivePracticeRules from './CompetitivePracticeRules'
 import {
+  liveConsoleRoundOrder,
   nextActiveTabAfterRoundChange,
   type PracticeLaunchMessage,
   roundProgressLabel,
@@ -97,6 +98,7 @@ export function MatchmakingPanel({
   const defaultTab = matchmakingStatus === 'complete' ? 'results' : `round-${currentRound}`
   const [activeTab, setActiveTab] = useState(defaultTab)
   const [showHowItWorks, setShowHowItWorks] = useState(false)
+  const [elapsedNow, setElapsedNow] = useState(() => Date.now())
   const previousCurrentRoundRef = useRef(currentRound)
 
   useEffect(() => {
@@ -105,20 +107,51 @@ export function MatchmakingPanel({
     previousCurrentRoundRef.current = currentRound
   }, [currentRound, matchmakingStatus])
 
+  const hasInProgressGame = useMemo(() => hasInProgressLiveGame(rounds), [rounds])
+
+  useEffect(() => {
+    if (!hasInProgressGame) return
+    setElapsedNow(Date.now())
+    const timer = window.setInterval(() => setElapsedNow(Date.now()), 60_000)
+    return () => window.clearInterval(timer)
+  }, [hasInProgressGame])
+
+  const displayRounds = useMemo(() => roundsWithLiveElapsed(rounds, elapsedNow), [rounds, elapsedNow])
+  const roundOrder = useMemo(
+    () => liveConsoleRoundOrder(displayRounds, currentRound, matchmakingStatus),
+    [displayRounds, currentRound, matchmakingStatus]
+  )
+  const primaryRound = roundOrder.primaryRoundNumber
+    ? displayRounds.find(r => r.roundNumber === roundOrder.primaryRoundNumber) || null
+    : null
+  const historyRounds = roundOrder.historyRoundNumbers
+    .map(roundNumber => displayRounds.find(r => r.roundNumber === roundNumber))
+    .filter(Boolean)
+  const focusedRoundNumber = activeTab.startsWith('round-')
+    ? parseInt(activeTab.replace('round-', ''))
+    : null
+
   // Find current user's match in the active round
   const myMatch = useMemo(() => {
-    const activeRound = rounds.find(r => r.roundNumber === currentRound)
+    const activeRound = displayRounds.find(r => r.roundNumber === currentRound)
     if (!activeRound) return null
     return activeRound.matches.find(
       m => m.player1?.id === currentUserId || m.player2?.id === currentUserId
     ) || null
-  }, [rounds, currentRound, currentUserId])
+  }, [displayRounds, currentRound, currentUserId])
 
-  const standings = useMemo(() => computeRankedStandings(rounds, players), [rounds, players])
-  const hasResults = useMemo(() => hasConfirmedMatch(rounds), [rounds])
+  const standings = useMemo(() => computeRankedStandings(displayRounds, players), [displayRounds, players])
+  const hasResults = useMemo(() => hasConfirmedMatch(displayRounds), [displayRounds])
+  const playerRecordsByRound = useMemo(() => {
+    const records = new Map<number, ReturnType<typeof recordsThroughRound>>()
+    for (const round of displayRounds) {
+      records.set(round.roundNumber, recordsThroughRound(displayRounds, round.roundNumber))
+    }
+    return records
+  }, [displayRounds])
 
   // Find bye player for the active round's bye dropdown
-  const activeRound = rounds.find(r => r.roundNumber === currentRound)
+  const activeRound = displayRounds.find(r => r.roundNumber === currentRound)
   const currentByePlayerId = activeRound?.matches.find(m => m.isBye)?.player1?.id || null
 
   // Players available for bye reassignment (exclude current bye holder)
@@ -138,6 +171,64 @@ export function MatchmakingPanel({
   const playerStatus = statusLine({ matchmakingStatus, currentRound, currentUserId, myMatch })
   const showInstallNudge = shouldShowInstallNudge(wayfinderDetected, hasCompanionBetaAccess, wayfinderSettled)
   const liveLaunchEnabled = Boolean(wayfinderDetected && hasCompanionBetaAccess && onPracticeLaunch)
+
+  const renderMatchCard = (match: MatchData, roundNumber: number) => (
+    <MatchCard
+      key={match.id}
+      match={match}
+      currentUserId={currentUserId}
+      isHost={isHost}
+      playerRecords={playerRecordsByRound.get(roundNumber)}
+      liveLaunchEnabled={liveLaunchEnabled}
+      onPracticeLaunch={onPracticeLaunch}
+      practiceLaunchPending={practiceLaunchPendingMatchId === match.id}
+      practiceLaunchMessage={
+        practiceLaunchMessage?.matchId === match.id
+          ? practiceLaunchMessage
+          : null
+      }
+      wayfinderState={wayfinderMatchState(
+        wayfinderDetected,
+        match.wayfinderMatchId,
+        Boolean(
+          !match.finalConfirmed &&
+          !match.isBye &&
+          (match.player1?.id === currentUserId || match.player2?.id === currentUserId)
+        )
+      )}
+      onReport={onReport}
+      onOverride={onOverride}
+      onBoot={onBoot}
+    />
+  )
+
+  const renderRoundSection = (round: Round, variant: 'active' | 'history') => {
+    const focused = variant === 'history' && focusedRoundNumber === round.roundNumber
+    return (
+      <section
+        key={round.roundNumber}
+        className={`matchmaking-round-section matchmaking-round-section--${variant}${focused ? ' matchmaking-round-section--focused' : ''}`}
+        data-testid={`matchmaking-round-section-${round.roundNumber}`}
+        data-round-number={round.roundNumber}
+        data-round-status={round.status}
+      >
+        <div className="matchmaking-round-section-header">
+          <div className="matchmaking-round-section-title">
+            <span className="matchmaking-round-section-kicker">
+              {variant === 'active' ? 'Live round' : 'History'}
+            </span>
+            <h4>Round {round.roundNumber}</h4>
+          </div>
+          <span className="matchmaking-round-section-progress">
+            {roundProgressLabel(round.roundNumber, totalRounds, round)}
+          </span>
+        </div>
+        <div className="matchmaking-matches-grid">
+          {round.matches.map(match => renderMatchCard(match, round.roundNumber))}
+        </div>
+      </section>
+    )
+  }
 
   return (
     <div
@@ -264,50 +355,12 @@ export function MatchmakingPanel({
             )}
           </div>
         ) : (
-          <>
-            {(() => {
-              const roundNum = parseInt(activeTab.replace('round-', ''))
-              const round = rounds.find(r => r.roundNumber === roundNum)
-              if (!round) {
-                return <p className="matchmaking-empty">Round not yet started</p>
-              }
-              return (
-                <div className="matchmaking-matches-grid">
-                  {(() => {
-                    const playerRecords = recordsThroughRound(rounds, round.roundNumber)
-                    return round.matches.map(match => (
-                      <MatchCard
-                        key={match.id}
-                        match={match}
-                        currentUserId={currentUserId}
-                        isHost={isHost}
-                        playerRecords={playerRecords}
-                        liveLaunchEnabled={liveLaunchEnabled}
-                        onPracticeLaunch={onPracticeLaunch}
-                        practiceLaunchPending={practiceLaunchPendingMatchId === match.id}
-                        practiceLaunchMessage={
-                          practiceLaunchMessage?.matchId === match.id
-                            ? practiceLaunchMessage
-                            : null
-                        }
-                        wayfinderState={wayfinderMatchState(
-                          wayfinderDetected,
-                          match.wayfinderMatchId,
-                          Boolean(
-                            !match.finalConfirmed &&
-                            !match.isBye &&
-                            (match.player1?.id === currentUserId || match.player2?.id === currentUserId)
-                          )
-                        )}
-                        onReport={onReport}
-                        onOverride={onOverride}
-                        onBoot={onBoot}
-                      />
-                    ))
-                  })()}
-                </div>
-              )
-            })()}
+          <div className="matchmaking-live-console" data-testid="matchmaking-live-console">
+            {primaryRound ? (
+              renderRoundSection(primaryRound, 'active')
+            ) : (
+              <p className="matchmaking-empty">Round not yet started</p>
+            )}
 
             {/* Bye override dropdown for host */}
             {isHost && hasActiveRound && currentByePlayerId && byeCandidates.length > 0 && (
@@ -330,11 +383,60 @@ export function MatchmakingPanel({
                 </select>
               </div>
             )}
-          </>
+
+            {historyRounds.length > 0 && (
+              <details className="matchmaking-round-history" open>
+                <summary>
+                  <span>Previous rounds</span>
+                  <span>{historyRounds.length}</span>
+                </summary>
+                <div className="matchmaking-round-history-list">
+                  {historyRounds.map(round => renderRoundSection(round, 'history'))}
+                </div>
+              </details>
+            )}
+          </div>
         )}
       </div>
     </div>
   )
+}
+
+function hasInProgressLiveGame(rounds: Round[]): boolean {
+  return rounds.some(round => round.matches.some(match => match.currentGame?.status === 'in_progress'))
+}
+
+function roundsWithLiveElapsed(rounds: Round[], nowMs: number): Round[] {
+  if (!hasInProgressLiveGame(rounds)) return rounds
+
+  return rounds.map(round => ({
+    ...round,
+    matches: round.matches.map(match => {
+      const currentGame = currentGameWithLiveElapsed(match.currentGame, nowMs)
+      return currentGame === match.currentGame ? match : { ...match, currentGame }
+    }),
+  }))
+}
+
+function currentGameWithLiveElapsed(currentGame: any, nowMs: number) {
+  if (!currentGame || currentGame.status !== 'in_progress') return currentGame
+
+  const startedMs = timestampMs(currentGame.game?.startedAt)
+  if (!startedMs) return currentGame
+
+  return {
+    ...currentGame,
+    elapsedSeconds: Math.max(0, Math.floor((nowMs - startedMs) / 1000)),
+  }
+}
+
+function timestampMs(value: unknown): number | null {
+  if (!value) return null
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value.getTime()
+  if (typeof value !== 'string') return null
+
+  const parsed = Date.parse(value)
+  return Number.isNaN(parsed) ? null : parsed
 }
 
 export default MatchmakingPanel

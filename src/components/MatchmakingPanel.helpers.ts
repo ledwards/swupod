@@ -65,6 +65,11 @@ export interface LiveGameAction {
   disabled?: boolean
 }
 
+export interface LiveConsoleRoundOrder {
+  primaryRoundNumber: number | null
+  historyRoundNumbers: number[]
+}
+
 export interface MatchmakingHelperRound {
   roundNumber: number
   matches?: MatchmakingHelperMatch[] | null
@@ -200,6 +205,34 @@ export function shouldShowInstallNudge(
   settled: boolean
 ): boolean {
   return !detected && hasBetaAccess && settled
+}
+
+export function liveConsoleRoundOrder(
+  rounds: MatchmakingHelperRound[],
+  currentRound: number,
+  matchmakingStatus: string
+): LiveConsoleRoundOrder {
+  if (rounds.length === 0) {
+    return { primaryRoundNumber: null, historyRoundNumbers: [] }
+  }
+
+  const sortedRounds = [...rounds].sort((a, b) => a.roundNumber - b.roundNumber)
+  const primaryRound = sortedRounds.find(round => round.roundNumber === currentRound)
+    ?? sortedRounds[sortedRounds.length - 1]
+
+  if (!primaryRound) {
+    return { primaryRoundNumber: null, historyRoundNumbers: [] }
+  }
+
+  const historyRoundNumbers = sortedRounds
+    .filter(round => round.roundNumber < primaryRound.roundNumber)
+    .map(round => round.roundNumber)
+    .sort((a, b) => b - a)
+
+  return {
+    primaryRoundNumber: primaryRound.roundNumber,
+    historyRoundNumbers: matchmakingStatus === 'deck_building' ? [] : historyRoundNumbers,
+  }
 }
 
 export function isMatchParticipant(

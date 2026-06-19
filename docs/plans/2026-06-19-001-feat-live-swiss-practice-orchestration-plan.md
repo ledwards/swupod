@@ -726,7 +726,7 @@ TypeScript and focused helper/launch tests.
 
 ---
 
-- [ ] **U7. Redesign the Swiss Practice panel as a live round console**
+- [x] **U7. Redesign the Swiss Practice panel as a live round console**
 
 **Goal:** Make the active round and live game state the primary UI, while keeping
 round history, standings, manual fallback, and host controls discoverable.
@@ -773,6 +773,17 @@ round history, standings, manual fallback, and host controls discoverable.
 
 **Verification:** Browser screenshots with mocked round/game states show pending,
 creating, in-progress, complete/history, and final states on desktop and mobile.
+
+**Implemented 2026-06-19:** The round tab body now renders as a live console:
+the active/latest round stays primary, previous rounds render below as an open
+history stack, and history rounds remain focusable from the existing round tabs.
+`MatchCard` carries the live game status/action row from U6, and
+`MatchmakingPanel` now recomputes elapsed in-progress labels from `startedAt`
+once per minute when that timestamp is available. Added helper tests for active
+round/history ordering and captured desktop/mobile screenshots with mocked
+pending, creating, in-progress, complete, and history states at
+`artifacts/screenshots/live-swiss-console-desktop.png` and
+`artifacts/screenshots/live-swiss-console-mobile.png`.
 
 ---
 
