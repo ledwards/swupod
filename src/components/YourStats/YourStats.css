@@ -2623,6 +2623,14 @@ a.your-stats-logged-out-link:active {
   grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
   gap: 0.5rem;
 }
+/* Nudge the leader grid up under the subtitle — tighter on the meta roster,
+   gentler on the personal Gameplay grid. */
+.your-stats-wr--meta .your-stats-wr-grid {
+  margin-top: -20px;
+}
+.your-stats-wr--personal .your-stats-wr-grid {
+  margin-top: -10px;
+}
 .your-stats-wr-cell {
   position: relative;
   aspect-ratio: 1 / 1;

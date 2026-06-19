@@ -135,7 +135,7 @@ export function WinRateByLeader({
   }
 
   return (
-    <section className="your-stats-meta-card">
+    <section className={`your-stats-meta-card your-stats-wr--${mode}`}>
       <header className="your-stats-meta-card-header">
         <div>
           <span className="your-stats-eyebrow">{eyebrow}</span>
@@ -188,7 +188,7 @@ export function WinRateByLeader({
                     ) : (
                       <>
                         <span className="your-stats-wr-cell-pct your-stats-wr-cell-pct--empty">–</span>
-                        <span className="your-stats-wr-cell-games">No games yet</span>
+                        <span className="your-stats-wr-cell-games">—</span>
                       </>
                     )}
                   </span>
