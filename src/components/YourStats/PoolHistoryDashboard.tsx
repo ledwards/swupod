@@ -317,7 +317,7 @@ function PoolBuildCard({
 }
 
 export function PoolHistoryDashboard({ fetchImpl, setFilter = 'all' }: { fetchImpl?: typeof fetch; setFilter?: string }) {
-  const { detected: wayfinderDetected } = useWayfinderDetection()
+  const { detected: wayfinderDetected, pluginLoggedIn } = useWayfinderDetection()
   const [state, setState] = useState<FetchState>({ loading: true, error: false, pools: [] })
   const [query, setQuery] = useState('')
   const [armedDelete, setArmedDelete] = useState<string | null>(null)
@@ -459,6 +459,19 @@ export function PoolHistoryDashboard({ fetchImpl, setFilter = 'all' }: { fetchIm
         </div>
         <span className="your-stats-count-pill">{filteredPools.length.toLocaleString()} of {state.pools.length.toLocaleString()}</span>
       </div>
+
+      {/* Companion installed but signed out: the lobby buttons below lead to the
+          play page, which can't open the extension popup — so explain the one
+          remaining step (sign in from the toolbar) once, here. */}
+      {wayfinderDetected && pluginLoggedIn === false && (
+        <div className="your-stats-companion-banner" role="status">
+          <span>
+            The Companion is installed but not signed in. Click its icon in your
+            browser toolbar and <strong>Log in with Discord</strong> to enable
+            one-click lobbies and link your games to these pools.
+          </span>
+        </div>
+      )}
 
       <div className="your-stats-explorer-toolbar" aria-label="Pool history controls">
         <label className="your-stats-search">

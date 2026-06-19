@@ -1912,6 +1912,25 @@ a.your-stats-logged-out-link:active {
   font-size: 0.85rem;
 }
 
+/* Companion "installed but signed out" notice on the Pools tab. Matches the
+   blue Companion accent used in the play-page sign-in panel. */
+.your-stats-companion-banner {
+  margin: 0 0 0.85rem;
+  padding: 0.7rem 0.95rem;
+  border: 1px solid rgba(96, 165, 250, 0.45);
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, rgba(37, 99, 235, 0.18), rgba(74, 222, 128, 0.1)),
+    rgba(0, 0, 0, 0.4);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.your-stats-companion-banner strong {
+  color: #fff;
+}
+
 /* Mobile: 2-up counter grid */
 @media (max-width: 520px) {
   .your-stats-counter-grid {

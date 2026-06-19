@@ -47,6 +47,10 @@ interface PlayInstructionsProps {
    *  CTA shown when the plugin is detected but the user isn't authenticated. */
   isLoggedIn?: boolean
   wayfinderDetected?: boolean
+  /** Whether the Companion extension itself is signed in. `null`/undefined =
+   *  unknown (older build or no signal yet) — we don't nag. When explicitly
+   *  `false` we swap the lobby flow for a "sign in from your toolbar" CTA. */
+  pluginLoggedIn?: boolean | null
   /**
    * When set (from a ?lobby=private|public deep link, e.g. the /me Pools tab
    * lobby buttons), auto-open that Karabast lobby once the Companion is detected
@@ -76,6 +80,7 @@ export default function PlayInstructions({
   ownerName = null,
   isLoggedIn = true,
   wayfinderDetected = false,
+  pluginLoggedIn = null,
   autoLobbyIntent = null,
   analyticsContext = {},
 }: PlayInstructionsProps) {
@@ -144,13 +149,15 @@ export default function PlayInstructions({
   const autoLobbyFiredRef = useRef(false)
   useEffect(() => {
     if (!autoLobbyIntent || autoLobbyFiredRef.current) return
-    if (!wayfinderDetected || !isOwner) return
+    // Signed out of the Companion → don't fire a lobby it can't act on; the
+    // toolbar sign-in CTA renders instead.
+    if (!wayfinderDetected || !isOwner || pluginLoggedIn === false) return
     autoLobbyFiredRef.current = true
     setActiveTab('wayfinder')
     const t = window.setTimeout(() => dispatchCreateLobby(autoLobbyIntent), 400)
     return () => window.clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoLobbyIntent, wayfinderDetected, isOwner])
+  }, [autoLobbyIntent, wayfinderDetected, isOwner, pluginLoggedIn])
 
   // -- Extension action dispatchers --
 
@@ -270,6 +277,26 @@ export default function PlayInstructions({
           </svg>
           Log in with Discord
         </a>
+      </section>
+    )
+  }
+
+  // Plugin installed AND the viewer is signed into PTP, but the Companion itself
+  // is signed out. A page can't open the extension popup (browsers don't allow
+  // it), so point them at the toolbar to finish signing in there.
+  function renderCompanionToolbarLoginCta() {
+    return (
+      <section className="wayfinder-tab wayfinder-tab--login">
+        {renderCompanionReadyPanel()}
+        <p className="wayfinder-login-copy">
+          The Companion is installed — it just needs to sign in. Click the Companion
+          icon
+          {wayfinderIconUrl && (
+            <img className="wayfinder-toolbar-icon" src={wayfinderIconUrl} alt="" width={18} height={18} />
+          )}
+          {' '}in your browser toolbar, then <strong>Log in with Discord</strong>. Your
+          Karabast games will link back to this pool automatically.
+        </p>
       </section>
     )
   }
@@ -482,9 +509,11 @@ export default function PlayInstructions({
           <div className="play-split-col play-split-plugin">
             {wayfinderDetected && !isLoggedIn
               ? renderCompanionLoginCta()
-              : wayfinderDetected && isOwner
-                ? renderWayfinderTab()
-                : renderCompanionInstallPanel()}
+              : wayfinderDetected && isOwner && pluginLoggedIn === false
+                ? renderCompanionToolbarLoginCta()
+                : wayfinderDetected && isOwner
+                  ? renderWayfinderTab()
+                  : renderCompanionInstallPanel()}
           </div>
 
           <div className="play-split-or" aria-hidden="true"><span>OR</span></div>

@@ -67,7 +67,7 @@ export default function PodPage({ params }: PageProps) {
   } | null>(null)
 
   // Detect the Wayfinder extension via the centralized hook.
-  const { detected: wayfinderDetected } = useWayfinderDetection()
+  const { detected: wayfinderDetected, pluginLoggedIn } = useWayfinderDetection()
 
   const [isDiscordMember, setIsDiscordMember] = useState<boolean | null>(null)
   const botBuildTriggered = useRef(false)
@@ -931,6 +931,7 @@ export default function PodPage({ params }: PageProps) {
               onCopyLink={copyDeckUrl}
               showActions={false}
               wayfinderDetected={wayfinderDetected}
+              pluginLoggedIn={pluginLoggedIn}
               analyticsContext={getLimitedAnalyticsContext()}
             />
 
@@ -1010,6 +1011,7 @@ export default function PodPage({ params }: PageProps) {
           onCopyLink={copyDeckUrl}
           showActions={false}
           wayfinderDetected={wayfinderDetected}
+          pluginLoggedIn={pluginLoggedIn}
           analyticsContext={getLimitedAnalyticsContext()}
         />}
 

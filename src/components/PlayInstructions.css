@@ -380,6 +380,14 @@
   align-self: center;
 }
 
+/* The Companion's own toolbar icon, shown inline in the "sign in from your
+   toolbar" copy so users know exactly what to look for. */
+.wayfinder-toolbar-icon {
+  vertical-align: middle;
+  margin: 0 4px;
+  border-radius: 4px;
+}
+
 .wayfinder-section {
   display: flex;
   flex-direction: column;

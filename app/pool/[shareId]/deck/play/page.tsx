@@ -276,7 +276,7 @@ export default function PlayPage({ params }: PageProps) {
 
   // Detect the Wayfinder extension via the centralized hook (meta tag + event +
   // postMessage, with a localStorage bridge and the ?wayfinder=1/0 QA override).
-  const { detected: wayfinderDetected } = useWayfinderDetection()
+  const { detected: wayfinderDetected, pluginLoggedIn } = useWayfinderDetection()
 
   // ?lobby=private|public deep link (from the /me Pools tab lobby buttons):
   // auto-opens the corresponding Karabast lobby once detected + owner.
@@ -2128,6 +2128,7 @@ export default function PlayPage({ params }: PageProps) {
           isOwner={isInfinitePool ? true : (!pool?.owner || !!isOwner)}
           ownerName={pool?.owner?.username || pool?.owner?.name || null}
           wayfinderDetected={wayfinderDetected}
+          pluginLoggedIn={pluginLoggedIn}
           isLoggedIn={Boolean(user)}
           autoLobbyIntent={autoLobbyIntent}
           analyticsContext={getLimitedAnalyticsContext()}
