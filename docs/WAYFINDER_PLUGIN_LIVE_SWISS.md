@@ -178,3 +178,38 @@ Optional leader/base/archetype fields from
 - Manual result reporting and host override remain available.
 - PTP renders spectator/watch links only when Wayfinder provides a real
   `spectateUrl` or replay URL.
+
+## Recommended E2E test layers
+
+Do not make required PTP CI depend on real Karabast. Use three layers:
+
+1. **PTP deterministic journey:** PTP seeds a Swiss pod and uses fake Companion
+   callbacks against the real claim/lifecycle/result services. This proves the
+   official state machine, read model, live/completed grouping, round
+   advancement, and Swiss pairing without external flake.
+2. **Wayfinder real Companion + fake Karabast:** Wayfinder CI loads the unpacked
+   Companion extension in Playwright, points it at a controlled fake Karabast
+   origin, and verifies that the real extension consumes PTP intents and sends
+   lifecycle/result callbacks.
+3. **Staging smoke:** an optional non-blocking job or manual run uses real
+   Wayfinder Companion and real Karabast for create/join/lifecycle sanity. Full
+   game completion should stay in fake Karabast/result-callback tests.
+
+Wayfinder's E2E build mode should support:
+
+- An unpacked extension build that Playwright can load.
+- Configurable PTP, Wayfinder web, and Karabast origins.
+- Localhost/staging PTP host permissions.
+- A fake Karabast fixture page that can create a private lobby, expose the
+  lobby URL, accept a join, emit an in-progress signal, and emit deterministic
+  game results/replay URLs.
+- Test-visible diagnostics for:
+  - `wayfinder:practice-create-game` intent received.
+  - `wayfinder:practice-join-game` intent received.
+  - lobby created.
+  - lifecycle callback sent.
+  - result callback sent.
+
+The extension/browser test mode must still keep `PTP_SERVICE_KEY` server-side in
+Wayfinder web. The extension may hold only the same plugin/session credentials it
+uses in normal operation.
