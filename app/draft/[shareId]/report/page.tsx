@@ -5,7 +5,6 @@ import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../../src/contexts/AuthContext'
 import Button from '../../../../src/components/Button'
-import DraftSlideshow from '../../../../src/components/DraftSlideshow'
 import '../../../../src/App.css'
 import '../../../../src/styles/backgrounds.css'
 import './report.css'
@@ -44,10 +43,6 @@ export default function DraftReportIndexPage({ params }: PageProps) {
   const [error, setError] = useState(null)
   const [message, setMessage] = useState(null)
   const [draftReportsPublic, setDraftReportsPublic] = useState(false)
-  const [isSlideshowOpen, setIsSlideshowOpen] = useState(false)
-  const [slideshowData, setSlideshowData] = useState(null)
-  const [slideshowLoading, setSlideshowLoading] = useState(false)
-  const [slideshowError, setSlideshowError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!shareId) return
@@ -71,50 +66,6 @@ export default function DraftReportIndexPage({ params }: PageProps) {
     }
     fetchIndex()
   }, [shareId, router])
-
-  useEffect(() => {
-    setSlideshowData(null)
-    setSlideshowError(null)
-    setIsSlideshowOpen(false)
-  }, [shareId])
-
-  useEffect(() => {
-    if (!isSlideshowOpen || !shareId || slideshowData || slideshowError) return
-
-    const controller = new AbortController()
-    let cancelled = false
-    async function fetchSlideshow() {
-      try {
-        if (!cancelled) {
-          setSlideshowLoading(true)
-          setSlideshowError(null)
-        }
-        const res = await fetch(`/api/draft/${shareId}/report/slideshow`, {
-          credentials: 'include',
-          signal: controller.signal,
-        })
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({ error: 'Failed to load slideshow data' }))
-          if (!cancelled) setSlideshowError(err.error || 'Failed to load slideshow data')
-          return
-        }
-        const payload = await res.json()
-        if (!cancelled) setSlideshowData(payload)
-      } catch (err) {
-        if (!cancelled && err?.name !== 'AbortError') {
-          setSlideshowError('Failed to load slideshow data')
-        }
-      } finally {
-        if (!cancelled) setSlideshowLoading(false)
-      }
-    }
-
-    fetchSlideshow()
-    return () => {
-      cancelled = true
-      controller.abort()
-    }
-  }, [isSlideshowOpen, shareId, slideshowData, slideshowError])
 
   const handleToggleDraftVisibility = async () => {
     const newValue = !draftReportsPublic
@@ -207,22 +158,6 @@ export default function DraftReportIndexPage({ params }: PageProps) {
                   <span>{draftReportsPublic ? 'Draft Public' : 'Draft Private'}</span>
                 </Button>
               )}
-              <Button
-                variant="interactive"
-                className="draft-report-slideshow-toggle"
-                onClick={() => {
-                  if (!isSlideshowOpen) setSlideshowError(null)
-                  setIsSlideshowOpen(open => !open)
-                }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="4" width="18" height="14" rx="2" ry="2"></rect>
-                  <path d="M8 21h8"></path>
-                  <path d="M12 18v3"></path>
-                  <path d="m10 9 4 3-4 3V9z"></path>
-                </svg>
-                <span>Slideshow Mode</span>
-              </Button>
             </div>
           </div>
         </div>
@@ -255,15 +190,6 @@ export default function DraftReportIndexPage({ params }: PageProps) {
             </div>
           )}
         </div>
-        {isSlideshowOpen && (
-          <DraftSlideshow
-            data={slideshowData}
-            loading={slideshowLoading}
-            error={slideshowError}
-            setCode={draft.setCode}
-            onClose={() => setIsSlideshowOpen(false)}
-          />
-        )}
       </div>
     </div>
   )

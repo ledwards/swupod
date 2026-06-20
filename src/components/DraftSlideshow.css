@@ -1,778 +1,142 @@
-@import '../styles/animations.css';
+/**
+ * DraftSlideshow.css — overlay shell, immersive background, and reserved layout
+ * chrome ONLY (Unit U4). The tab bar, stage, and nav children own their own CSS.
+ *
+ * Hard rule: NO `overflow` on the overlay or its bands. No-scroll is the whole
+ * point. The stage band is the viewport MINUS the two fixed reserved bands, so
+ * its height is stable across slides (layout-shift discipline).
+ */
 
-.draft-slideshow-overlay {
-  --slideshow-tabs-h: 116px;
-  --slideshow-nav-h: 82px;
-  --slide-card-w: 120px;
-  --slide-card-gap: 8px;
-  --slide-label-gutter-w: 168px;
-  --rainbow-border-reference: var(--slide-card-w);
+/* Reserved chrome heights — the single source of truth for the layout math.
+   The stage band = 100vh - (tabbar + navbar). Children read these too. */
+.draft-slideshow {
+  --slideshow-tabbar-h: 96px;
+  --slideshow-navbar-h: 72px;
+
   position: fixed;
   inset: 0;
-  z-index: 2147483000;
-  overflow: hidden;
-  color: white;
+  z-index: 10000; /* above the report (PackDraftPhase fullscreen uses 9998) */
   font-family: 'Barlow', sans-serif;
-  background-color: rgb(9, 9, 9);
-  isolation: isolate;
+  color: white;
+  outline: none;
 }
 
-body.draft-slideshow-mode-active .auth-widget,
-body.draft-slideshow-mode-active .auth-widget-drawer,
-body.draft-slideshow-mode-active .auth-widget-drawer-overlay,
-body.draft-slideshow-mode-active nextjs-portal {
-  display: none !important;
-}
-
-.draft-slideshow-overlay,
-.draft-slideshow-overlay * {
-  box-sizing: border-box;
-}
-
-.draft-slideshow-art {
+/* Full-viewport set art, behind a darkening scrim. */
+.draft-slideshow-bg {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  filter: saturate(0.9);
+  pointer-events: none;
 }
 
+/* Darkening scrim so foreground cards/labels read clearly over the art. */
 .draft-slideshow-scrim {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background:
-    linear-gradient(rgb(9, 9, 9) 0%, rgba(9, 9, 9, 0.38) 28%, rgba(9, 9, 9, 0.68) 100%),
-    linear-gradient(0deg, rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.78));
   pointer-events: none;
+  background:
+    linear-gradient(rgba(9, 9, 9, 0.55), rgba(9, 9, 9, 0.55)),
+    linear-gradient(to bottom, rgba(9, 9, 9, 0.85) 0%, rgba(9, 9, 9, 0.35) 18%, rgba(9, 9, 9, 0.35) 80%, rgba(9, 9, 9, 0.9) 100%);
 }
 
-.draft-slideshow-shell {
-  position: relative;
+/* Three stacked bands: fixed tab bar, fluid stage, fixed nav bar. */
+.draft-slideshow-layout {
+  position: absolute;
+  inset: 0;
   z-index: 2;
   display: grid;
-  grid-template-rows: var(--slideshow-tabs-h) minmax(0, 1fr) var(--slideshow-nav-h);
-  height: 100vh;
-  min-height: 0;
+  grid-template-rows: var(--slideshow-tabbar-h) 1fr var(--slideshow-navbar-h);
+  /* Bound the single column to the viewport (minmax floor 0) so wide multi-row
+     content can never widen the grid past the screen — otherwise an `auto`
+     column sizes to max-content and the stage measures its own inflated width,
+     a feedback loop that never re-fits down on viewport shrink. */
+  grid-template-columns: minmax(0, 1fr);
+  /* No overflow — the stage fits via U6's fit math; this never scrolls. */
 }
 
-.draft-slideshow-topbar {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-  height: var(--slideshow-tabs-h);
-  padding: 12px 20px;
-  border-bottom: 1px solid rgba(255, 215, 0, 0.18);
-  background: linear-gradient(180deg, rgba(255, 215, 0, 0.08), rgba(0, 0, 0, 0.18));
-}
-
-.draft-slideshow-tabs,
-.draft-slideshow-tab-list {
-  display: flex;
-  align-items: stretch;
-  gap: 8px;
-  min-width: 0;
-}
-
-.draft-slideshow-tabs {
-  height: 92px;
-}
-
-.draft-slideshow-tab-list {
-  flex: 1 1 auto;
-  overflow: hidden;
-}
-
-.draft-slideshow-tabs-placeholder {
-  min-height: 92px;
-}
-
-.draft-slideshow-all-tab {
-  --slideshow-all-tab-art: none;
-  flex: 0 0 92px;
-  min-height: 92px;
-  align-self: stretch;
-  align-items: flex-end;
-  position: relative;
-  overflow: hidden;
-  padding: 0 0 10px;
-  background-color: rgba(0, 0, 0, 0.58);
-  background-image: none;
-}
-
-.draft-slideshow-all-tab::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  border-radius: inherit;
-  background-image: var(--slideshow-all-tab-art);
-  background-position: 50% 82%;
-  background-repeat: no-repeat;
-  background-size: 195% auto;
-  pointer-events: none;
-}
-
-.draft-slideshow-all-tab::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.88)),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.22));
-  pointer-events: none;
-}
-
-.draft-slideshow-all-tab-label {
-  position: relative;
-  z-index: 2;
-  color: white;
-  font-size: 0.9rem;
-  font-weight: 800;
-  line-height: 1;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.92);
-}
-
-.draft-slideshow-player-tab {
-  --slideshow-tab-avatar: none;
-  flex: 1 1 0;
-  min-width: 88px;
-  max-width: 178px;
+.draft-slideshow-tabbar {
+  height: var(--slideshow-tabbar-h);
+  min-height: var(--slideshow-tabbar-h);
   display: flex;
   align-items: center;
-  gap: 0;
-  padding: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 6px;
-  background-color: rgba(0, 0, 0, 0.52);
-  background-image: none;
-  background-position: center;
-  background-size: cover;
-  color: rgba(255, 255, 255, 0.78);
-  font-family: 'Barlow', sans-serif;
-  text-align: left;
-  cursor: pointer;
-  min-height: 92px;
-  overflow: hidden;
-  position: relative;
-  transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+  justify-content: center;
 }
 
-.draft-slideshow-player-tab::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  border-radius: inherit;
-  background-image: var(--slideshow-tab-avatar);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  transform: scale(1);
-  transition: transform 0.18s ease, filter 0.18s ease;
-  pointer-events: none;
-}
-
-.draft-slideshow-player-tab::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  border-radius: inherit;
-  background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.34)),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.66));
-  pointer-events: none;
-  transition: background 0.18s ease;
-}
-
-.draft-slideshow-player-tab.active {
-  color: white;
-  border-color: rgba(33, 150, 243, 0.82);
-  background-color: rgba(33, 150, 243, 0.16);
-  box-shadow: 0 0 16px rgba(33, 150, 243, 0.24);
-}
-
-.draft-slideshow-player-tab.active::before {
-  background:
-    linear-gradient(90deg, rgba(2, 17, 32, 0.62), rgba(12, 61, 103, 0.34)),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.58));
-}
-
-.draft-slideshow-player-tab.locked {
-  cursor: default;
-  color: rgba(255, 255, 255, 0.62);
-  border-color: rgba(0, 0, 0, 0.96);
-  background-color: rgb(0, 0, 0);
-  opacity: 1;
-}
-
-.draft-slideshow-player-tab.locked::after {
-  filter: grayscale(1) brightness(0.06);
-  transform: none;
-}
-
-.draft-slideshow-player-tab.locked::before {
-  inset: 0;
-  border-radius: inherit;
-  background: rgba(0, 0, 0, 0.97);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.035);
-}
-
-.draft-slideshow-player-tab.locked .draft-slideshow-tab-detail {
-  color: rgba(255, 255, 255, 0.34);
-}
-
-.draft-slideshow-tab-copy {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  line-height: 1.05;
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.92);
-}
-
-.draft-slideshow-tab-name {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-  font-size: 0.86rem;
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.draft-slideshow-tab-detail {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  min-width: 0;
-  font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.58);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.draft-slideshow-player-tab.active .draft-slideshow-tab-detail {
-  color: rgba(255, 255, 255, 0.76);
-}
-
-.draft-slideshow-close {
-  align-self: start;
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  padding: 0 !important;
-  border-radius: 50% !important;
-  flex: 0 0 auto;
-  line-height: 1;
-}
-
-.draft-slideshow-close:hover:not(:disabled) {
-  transform: none;
-}
-
+/* The stage band is the stable middle region. Its size never depends on the
+   slide contents (U6 fits cards INTO this box). */
 .draft-slideshow-stage {
-  min-height: 0;
-  min-width: 0;
-  height: 100%;
-  padding: 16px 86px;
-  overflow: hidden;
-}
-
-.draft-slideshow-stage--empty,
-.draft-slideshow-center-state {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.draft-slideshow-center-state {
-  min-height: 0;
-  padding: 24px;
-  color: rgba(255, 255, 255, 0.76);
-  font-size: 1rem;
-  gap: 16px;
-  flex-direction: column;
-}
-
-.draft-slideshow-center-state--error {
-  color: rgba(255, 205, 205, 0.92);
-}
-
-.draft-slideshow-empty-state {
-  color: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(0, 0, 0, 0.44);
-  border-radius: 6px;
-  padding: 18px 22px;
-}
-
-.draft-slideshow-stage--single {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.draft-slideshow-stage--multi {
-  padding-top: 6px;
-  padding-bottom: 6px;
-}
-
-.draft-slideshow-single-grid {
-  display: grid;
-  gap: var(--slide-card-gap);
-  justify-content: center;
-  align-content: center;
-  max-width: 100%;
-  max-height: 100%;
-}
-
-.draft-slideshow-row-stack {
-  height: 100%;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  align-items: flex-start;
-  gap: 0;
-  /* visible so the focus ring can stick out into the stage's side padding */
-  overflow: visible;
-}
-
-/* In the stack each row hugs its content (gutter + that seat's pack) so the
-   focus ring wraps tightly with symmetric breathing room, not the full width. */
-.draft-slideshow-row-stack .draft-slideshow-seat-row {
-  /* hug the identity + pack so the ring sits close to the cards on the right;
-     the avatar/name (content-width) is on the left. */
-  grid-template-columns: auto auto;
-  max-width: 100%;
-}
-
-.draft-slideshow-leader-grid {
-  height: 100%;
-  min-height: 0;
-  display: grid;
-  grid-auto-flow: column;
-  gap: 0 20px;
-  align-items: center;
-  align-content: space-evenly;
-  overflow: visible;
-}
-
-.draft-slideshow-seat-row {
+  min-height: 0; /* allow the grid row to actually constrain the child */
+  min-width: 0; /* allow the grid column to constrain width too (no content-driven overflow) */
   position: relative;
-  display: grid;
-  grid-template-columns: var(--slide-label-gutter-w) minmax(0, 1fr);
-  align-items: center;
-  gap: 10px;
-  min-height: 0;
-}
-
-.draft-slideshow-leader-seat {
-  height: auto;
-}
-
-.draft-slideshow-leader-seat--right {
-  grid-template-columns: minmax(0, 1fr) var(--slide-label-gutter-w);
-}
-
-.draft-slideshow-leader-seat--right .draft-slideshow-row-label {
-  grid-column: 2;
-  justify-content: flex-end;
-}
-
-.draft-slideshow-leader-seat--right .draft-slideshow-row-cards {
-  grid-column: 1;
-  grid-row: 1;
-  justify-content: flex-end;
-}
-
-.draft-slideshow-row-label {
   display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: center;
-  min-width: 0;
-  width: 100%;
-  padding: 0;
-  color: white;
-  font-size: clamp(0.62rem, 1vh, 0.78rem);
-  font-weight: 700;
-  line-height: 1;
+}
+
+.draft-slideshow-stage--message {
+  padding: 0 24px;
   text-align: center;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
 }
 
-.draft-slideshow-row-identity {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-}
-
-.draft-slideshow-row-avatar {
-  position: relative;
-  display: inline-flex;
-  width: 38px;
-  height: 38px;
-  flex: 0 0 auto;
-  /* It's a <button> (click to focus the player) — strip default chrome. */
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: pointer;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-/* Focused player (click the avatar, or Up/Down to cycle): ring the whole row
-   — the player's avatar + their pack — with symmetric left/right breathing room
-   and a tighter top/bottom so it survives cramped rows. */
-.draft-slideshow-seat-row.is-focused::before {
-  content: '';
-  position: absolute;
-  left: -10px;
-  right: -10px;
-  top: -4px;
-  bottom: -4px;
-  border: 2px solid rgba(33, 150, 243, 0.95);
-  border-radius: 10px;
-  box-shadow: 0 0 14px rgba(33, 150, 243, 0.3);
-  pointer-events: none;
-}
-
-.draft-slideshow-seat-row.is-focused .draft-slideshow-row-avatar img {
-  border-color: rgba(33, 150, 243, 0.95);
-  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.55);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .draft-slideshow-row-avatar:hover img {
-    border-color: rgba(255, 255, 255, 0.7);
-  }
-}
-
-.draft-slideshow-row-label img {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  object-fit: cover;
-  flex: 0 0 auto;
-}
-
-.draft-slideshow-row-seat-number {
-  position: absolute;
-  right: -5px;
-  bottom: -4px;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: rgba(9, 18, 30, 0.66);
-  border: 1px solid rgba(255, 255, 255, 0.36);
-  color: rgba(255, 255, 255, 0.96);
-  font-size: 1.15rem;
-  font-weight: 900;
-  line-height: 1;
-  box-shadow: 0 1px 8px rgba(33, 150, 243, 0.28);
-  cursor: default;
-}
-
-.draft-slideshow-row-name {
-  min-width: 0;
-  max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.draft-slideshow-row-cards {
-  display: flex;
-  align-items: center;
-  gap: var(--slide-card-gap);
-  min-width: 0;
-  overflow: hidden;
-}
-
-.draft-slideshow-stage .canvas-card,
-.draft-slideshow-stage .canvas-card.leader,
-.draft-slideshow-stage .canvas-card.base {
-  --rainbow-border-reference: var(--slide-card-w);
-  --rainbow-border-size: calc(var(--rainbow-border-reference) * var(--rainbow-border-thickness-ratio));
-  --rainbow-border-radius: calc(var(--rainbow-border-reference) * var(--rainbow-border-radius-ratio));
-  width: var(--slide-card-w) !important;
-  max-width: var(--slide-card-w) !important;
-  flex: 0 0 var(--slide-card-w);
-  margin: 0;
-}
-
-.draft-slideshow-stage .canvas-card {
-  cursor: zoom-in;
-}
-
-.draft-slideshow-stage .canvas-card.selected::before {
-  inset: 0;
-  z-index: 4;
-  padding: var(--rainbow-border-size);
-  border-radius: var(--rainbow-border-radius);
-  background: var(--rainbow-border-gradient);
-  background-size: var(--rainbow-border-background-size);
-  opacity: 1;
-  animation: var(--rainbow-border-animation);
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-}
-
-.draft-slideshow-stage .canvas-card.leader.selected::before,
-.draft-slideshow-stage .canvas-card.base.selected::before {
-  inset: 0;
-  border-radius: var(--rainbow-border-radius);
-}
-
-.draft-slideshow-empty-card {
-  width: var(--slide-card-w);
-  aspect-ratio: 2.5 / 3.5;
-  flex: 0 0 var(--slide-card-w);
+.draft-slideshow-navbar {
+  height: var(--slideshow-navbar-h);
+  min-height: var(--slideshow-navbar-h);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 11px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.01)),
-    rgba(0, 0, 0, 0.58);
-  color: rgba(255, 255, 255, 0.52);
-  font-size: clamp(0.62rem, 1.1vw, 0.9rem);
-  font-weight: 700;
 }
 
-.draft-slideshow-empty-card.landscape {
-  aspect-ratio: 3.5 / 2.5;
-  border-radius: 8px;
-}
-
-.draft-slideshow-bottom {
-  position: relative;
-  min-height: var(--slideshow-nav-h);
-}
-
-.draft-slideshow-nav {
-  height: var(--slideshow-nav-h);
-  display: grid;
-  grid-template-columns: minmax(150px, 1fr) auto minmax(150px, 1fr);
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  padding: 12px 20px 18px;
-  border-top: 1px solid rgba(255, 215, 0, 0.16);
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.12));
-}
-
-.draft-slideshow-nav-side {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-}
-
-.draft-slideshow-nav-side--prev {
-  justify-content: flex-end;
-}
-
-.draft-slideshow-nav-side--next {
-  justify-content: flex-start;
-}
-
-.draft-slideshow-nav-label {
-  min-width: 184px;
-  text-align: center;
-  color: white;
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: 0;
-}
-
-.draft-slideshow-player-jump {
+/* Close button, pinned top-right above everything. */
+.draft-slideshow-close.btn {
   position: absolute;
-  bottom: 18px;
+  top: 16px;
+  right: 16px;
   z-index: 5;
-  min-width: 186px;
-  max-width: min(260px, calc(50vw - 36px));
-  height: 50px;
-  padding: 7px 12px !important;
-  border-color: rgba(33, 150, 243, 0.64) !important;
-  background: rgba(0, 0, 0, 0.78) !important;
-  box-shadow: 0 0 18px rgba(33, 150, 243, 0.18);
-}
-
-.draft-slideshow-player-jump--prev {
-  left: 20px;
-}
-
-.draft-slideshow-player-jump--next {
-  right: 20px;
-}
-
-.draft-slideshow-player-jump-copy {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  line-height: 1;
-}
-
-.draft-slideshow-player-jump-kicker {
-  color: rgba(255, 255, 255, 0.58);
-  font-size: 0.66rem;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.draft-slideshow-player-jump-name {
-  max-width: 170px;
-  color: white;
-  font-size: 0.94rem;
-  font-weight: 800;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.draft-slideshow-edge-arrow {
-  position: fixed;
-  top: calc(var(--slideshow-tabs-h) + (100vh - var(--slideshow-tabs-h) - var(--slideshow-nav-h)) / 2);
-  z-index: 4;
-  width: 46px !important;
-  height: 74px !important;
-  padding: 0 !important;
-  transform: translateY(-50%);
-  border-radius: 6px !important;
-  background: rgba(0, 0, 0, 0.56) !important;
-  backdrop-filter: blur(8px);
-}
-
-.draft-slideshow-edge-arrow--left {
-  left: 20px;
-}
-
-.draft-slideshow-edge-arrow--right {
-  right: 20px;
-}
-
-.draft-slideshow-edge-arrow:disabled {
-  opacity: 0.28;
+  opacity: 0.7;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .draft-slideshow-player-tab:hover:not(:disabled) {
-    border-color: rgba(255, 255, 255, 0.42);
-    background-color: rgba(255, 255, 255, 0.08);
-  }
-
-  .draft-slideshow-player-tab:hover:not(:disabled)::after {
-    filter: saturate(1.08);
-    transform: scale(1.5);
-  }
-
-  .draft-slideshow-player-tab.active:hover:not(:disabled) {
-    border-color: rgba(33, 150, 243, 0.95);
-    background-color: rgba(33, 150, 243, 0.2);
-  }
-
-  .draft-slideshow-stage .canvas-card:hover {
-    transform: none;
+  .draft-slideshow-close.btn:hover {
+    opacity: 1;
   }
 }
 
-@media (max-width: 1100px) {
-  .draft-slideshow-overlay {
-    --slideshow-tabs-h: 104px;
-    --slideshow-nav-h: 74px;
-    --slide-label-gutter-w: 132px;
-  }
+/* Loading state. */
+.draft-slideshow-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.1rem;
+}
 
-  .draft-slideshow-topbar {
-    padding: 10px 16px;
-  }
+.draft-slideshow-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  animation: draft-slideshow-spin 0.8s linear infinite;
+}
 
-  .draft-slideshow-tabs,
-  .draft-slideshow-tabs-placeholder,
-  .draft-slideshow-all-tab,
-  .draft-slideshow-player-tab {
-    min-height: 82px;
-    height: 82px;
+@keyframes draft-slideshow-spin {
+  to {
+    transform: rotate(360deg);
   }
+}
 
-  .draft-slideshow-player-tab {
-    padding: 8px;
-  }
+/* Error state. */
+.draft-slideshow-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.05rem;
+}
 
-  .draft-slideshow-tab-name {
-    font-size: 0.78rem;
-  }
-
-  .draft-slideshow-tab-detail {
-    font-size: 0.66rem;
-  }
-
-  .draft-slideshow-stage {
-    padding: 12px 66px;
-  }
-
-  .draft-slideshow-stage--multi {
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-
-  .draft-slideshow-row-label img {
-    width: 28px;
-    height: 28px;
-  }
-
-  .draft-slideshow-row-avatar {
-    width: 28px;
-    height: 28px;
-  }
-
-  .draft-slideshow-row-seat-number {
-    width: 22px;
-    height: 22px;
-    font-size: 1rem;
-  }
-
-  .draft-slideshow-edge-arrow {
-    width: 38px !important;
-    height: 64px !important;
-  }
-
-  .draft-slideshow-edge-arrow--left {
-    left: 14px;
-  }
-
-  .draft-slideshow-edge-arrow--right {
-    right: 14px;
-  }
+.draft-slideshow-error p {
+  margin: 0;
 }

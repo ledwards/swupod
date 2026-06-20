@@ -1,255 +1,469 @@
-import { afterEach, describe, it } from 'node:test'
-import assert from 'node:assert/strict'
+/**
+ * Tests for GET /api/draft/:shareId/report/slideshow (plan U1).
+ *
+ * Strategy follows the project convention seen in
+ * app/api/stats/me/summary/route.test.ts and app/api/draft/[shareId]/pod/route.test.ts:
+ *   - The load-bearing, DB-free logic of the route is exported as pure
+ *     functions from route.ts and exercised directly against the unit's
+ *     spec with crafted inputs — NO database, NO mocking.
+ *   - `computeViewableSeats(...)` is the entitlement/gating gate (mirrors
+ *     the /log route's viewableSeats model, with the deliberate
+ *     participant-sees-all divergence from the plan).
+ *   - `buildSlideshowResponse(...)` assembles the response: it loops the
+ *     seated players, calls the real (pure) reconstructDraftLog for
+ *     UNLOCKED seats, omits the `picks` key for LOCKED seats, and computes
+ *     cardsPerPack / slideCount. Because reconstructDraftLog is pure we run
+ *     it for real here against internally-consistent seeded packs, so the
+ *     visibleCards / slide-alignment / leaders-first / under-filled
+ *     assertions are genuine end-to-end through the reconstruction.
+ */
+import { describe, it } from 'node:test'
+import assert from 'node:assert'
+import {
+  computeViewableSeats,
+  buildSlideshowResponse,
+  type SlideshowPlayer,
+  type SlideshowPod,
+  type SlideshowResponse,
+  type SlideshowSeat,
+} from './route'
 
-const { GET, _testSeams } = await import('./route.ts')
+// ---------------------------------------------------------------------------
+// Fixture builders — an internally consistent completed draft.
+// ---------------------------------------------------------------------------
 
-const originalSeams = {
-  queryRow: _testSeams.queryRow,
-  queryRows: _testSeams.queryRows,
-  getSession: _testSeams.getSession,
+// A small, deterministic pack of N cards for a given seat index + pack number.
+// instanceIds are namespaced by seat + pack + slot so they're unique and the
+// reconstruction has something concrete to surface as visibleCards.
+function makePack(seatIdx: number, packNum: number, count: number) {
+  const cards = []
+  for (let slot = 0; slot < count; slot++) {
+    cards.push({
+      instanceId: `s${seatIdx}-p${packNum}-c${slot}`,
+      cardId: `card-${packNum}-${slot}`,
+      name: `Card ${packNum}.${slot}`,
+    })
+  }
+  return { cards }
 }
 
-afterEach(() => {
-  Object.assign(_testSeams, originalSeams)
-})
-
-function makeAllPacks(playerCount = 4, cardsPerPack = 5) {
-  return Array.from({ length: playerCount }, (_, playerIndex) =>
-    Array.from({ length: 3 }, (_, packIndex) => ({
-      cards: Array.from({ length: cardsPerPack }, (_, cardIndex) => ({
-        instanceId: `seat-${playerIndex + 1}-pack-${packIndex + 1}-card-${cardIndex + 1}`,
-        name: `S${playerIndex + 1} P${packIndex + 1} C${cardIndex + 1}`,
-        imageUrl: `/cards/${playerIndex + 1}-${packIndex + 1}-${cardIndex + 1}.png`,
-      })),
-    }))
-  )
+// allPacks[playerIndex][packIndex] = { cards: [...] }
+// Every seat gets 3 physical packs of `cardsPerPack` cards.
+function makeAllPacks(totalSeats: number, cardsPerPack: number) {
+  const allPacks = []
+  for (let seatIdx = 0; seatIdx < totalSeats; seatIdx++) {
+    allPacks.push([
+      makePack(seatIdx, 1, cardsPerPack),
+      makePack(seatIdx, 2, cardsPerPack),
+      makePack(seatIdx, 3, cardsPerPack),
+    ])
+  }
+  return allPacks
 }
 
-function makeDraftedCards(seatNumber, cardsPerPack = 5) {
-  const picks = []
-  for (let packNumber = 1; packNumber <= 3; packNumber++) {
-    for (let pickInPack = 1; pickInPack <= cardsPerPack; pickInPack++) {
-      picks.push({
-        instanceId: `seat-${seatNumber}-pack-${packNumber}-card-${pickInPack}`,
-        packNumber,
-        pickInPack,
-        pickNumber: (packNumber - 1) * cardsPerPack + pickInPack,
+// Each player picks their OWN pack's slot-0 card at every pick. That keeps the
+// fixture self-consistent (every card a player "drafted" really exists in a
+// pack they could have seen) and gives each pick a known pickedInstanceId.
+function makeDraftedCards(seatIdx: number, cardsPerPack: number) {
+  const drafted = []
+  for (let packNum = 1; packNum <= 3; packNum++) {
+    for (let pick = 1; pick <= cardsPerPack; pick++) {
+      drafted.push({
+        instanceId: `s${seatIdx}-p${packNum}-c0`,
+        packNumber: packNum,
+        pickInPack: pick,
+        pickNumber: (packNum - 1) * cardsPerPack + pick,
       })
     }
   }
-  return picks
+  return drafted
 }
 
-function makeDraftedLeaders(seatNumber, playerCount = 4) {
-  return Array.from({ length: Math.min(3, playerCount) }, (_, index) => ({
-    instanceId: `seat-${seatNumber}-leader-${index + 1}`,
-    leaderRound: index + 1,
-    name: `Leader ${seatNumber}.${index + 1}`,
-    imageUrl: `/leaders/${seatNumber}-${index + 1}.png`,
-  }))
+function makeDraftedLeaders(seatIdx: number, leaderRounds: number) {
+  const leaders = []
+  for (let round = 1; round <= leaderRounds; round++) {
+    leaders.push({
+      instanceId: `s${seatIdx}-leader-r${round}`,
+      leaderRound: round,
+      name: `Leader ${seatIdx}.${round}`,
+    })
+  }
+  return leaders
 }
 
-function makeDeckBuilderState(seatNumber) {
-  return JSON.stringify({
-    activeLeader: `leader-${seatNumber}`,
-    activeBase: `base-${seatNumber}`,
-    cardPositions: {
-      [`leader-${seatNumber}`]: {
-        card: { name: `Active Leader ${seatNumber}` },
-      },
-      [`base-${seatNumber}`]: {
-        card: {
-          name: `Base ${seatNumber}`,
-          aspects: ['Command'],
-          imageUrl: `/bases/${seatNumber}.png`,
-          backImageUrl: `/bases/${seatNumber}-back.png`,
-        },
-      },
-    },
-  })
-}
-
-function makePod(overrides = {}) {
+// A pod_players-shaped row (snake_case, as it comes back from SQL).
+function makePlayerRow(seatNumber: number, overrides: Partial<SlideshowPlayer> = {}): SlideshowPlayer {
+  const seatIdx = seatNumber - 1
   return {
-    id: 'pod-1',
-    share_id: 'draft-1',
-    name: 'Friday Draft',
-    status: 'complete',
-    set_code: 'SOR',
-    set_name: 'Spark of Rebellion',
-    max_players: 8,
-    current_players: 4,
-    host_id: 'host-user',
+    seat_number: seatNumber,
+    user_id: `user-${seatNumber}`,
+    username: `Player ${seatNumber}`,
+    avatar_url: `/avatar-${seatNumber}.png`,
+    is_bot: false,
     is_log_public: false,
-    all_packs: makeAllPacks(),
-    completed_at: '2026-06-19T12:00:00Z',
+    drafted_cards: makeDraftedCards(seatIdx, DEFAULT_CARDS_PER_PACK),
+    drafted_leaders: makeDraftedLeaders(seatIdx, 3),
+    active_leader_name: `Leader ${seatIdx}.1`,
+    chosen_base: { name: `Base ${seatNumber}`, aspects: [], imageUrl: null, backImageUrl: null },
     ...overrides,
   }
 }
 
-function makePlayerRows(overridesBySeat = {}) {
-  return [1, 2, 3, 4].map(seatNumber => ({
-    user_id: `user-${seatNumber}`,
-    seat_number: seatNumber,
-    username: `Player ${seatNumber}`,
-    avatar_url: `/avatars/${seatNumber}.png`,
-    drafted_cards: JSON.stringify(makeDraftedCards(seatNumber)),
-    drafted_leaders: JSON.stringify(makeDraftedLeaders(seatNumber)),
-    is_bot: seatNumber === 4,
-    is_log_public: seatNumber === 3,
-    deck_builder_state: makeDeckBuilderState(seatNumber),
-    ...overridesBySeat[seatNumber],
-  }))
-}
+const DEFAULT_CARDS_PER_PACK = 14
 
-function installRouteMocks({ pod = makePod(), playerRows = makePlayerRows(), session = null } = {}) {
-  _testSeams.getSession = () => session
-  _testSeams.queryRow = async (_sql, params) => {
-    return params[0] === pod.share_id ? pod : null
+// A full, standard 4-seat completed draft.
+function makeFullDraft() {
+  const cardsPerPack = DEFAULT_CARDS_PER_PACK
+  const totalSeats = 4
+  const players: SlideshowPlayer[] = [
+    makePlayerRow(1),
+    makePlayerRow(2),
+    makePlayerRow(3),
+    makePlayerRow(4, { is_bot: true, username: 'Bot (Seat 4)' }),
+  ]
+  const pod: SlideshowPod = {
+    id: 'pod-1',
+    share_id: 'share-abc',
+    set_code: 'SOR',
+    set_name: 'Spark of Rebellion',
+    name: 'Test Draft',
+    status: 'complete',
+    host_id: 'user-1',
+    is_log_public: false,
   }
-  _testSeams.queryRows = async () => playerRows
+  const allPacks = makeAllPacks(totalSeats, cardsPerPack)
+  return { pod, players, allPacks, cardsPerPack, totalSeats }
 }
 
-async function callRoute(shareId = 'draft-1') {
-  const response = await GET(
-    new Request(`http://localhost/api/draft/${shareId}/report/slideshow`),
-    { params: Promise.resolve({ shareId }) }
+// Narrowing accessors — assert.ok's `asserts` predicate removes `undefined`,
+// so the spec bodies stay clean while picks stays honestly optional on the type.
+function seatOf(body: SlideshowResponse, seatNumber: number): SlideshowSeat {
+  const seat = body.seats.find(s => s.seatNumber === seatNumber)
+  assert.ok(seat, `seat ${seatNumber} should be present`)
+  return seat
+}
+
+function picksOf(seat: SlideshowSeat) {
+  assert.ok(seat.picks, `seat ${seat.seatNumber} should carry picks`)
+  return seat.picks
+}
+
+// ---------------------------------------------------------------------------
+// computeViewableSeats — entitlement gating
+// ---------------------------------------------------------------------------
+
+describe('computeViewableSeats (entitlement gating)', () => {
+  const { pod, players } = makeFullDraft()
+  // seat 4 is a bot; mark seat 3 public, leave seats 1 & 2 private.
+  const mixedPlayers = players.map(p =>
+    p.seat_number === 3 ? { ...p, is_log_public: true } : p,
   )
-  return { response, body: await response.json() }
-}
 
-function seatByNumber(body, seatNumber) {
-  return body.seats.find(seat => seat.seatNumber === seatNumber)
-}
-
-describe('GET /api/draft/[shareId]/report/slideshow', () => {
-  it('returns all aligned, leader-first seat logs for a participant', async () => {
-    installRouteMocks({ session: { id: 'user-2' } })
-
-    const { response, body } = await callRoute()
-
-    assert.equal(response.status, 200)
-    assert.equal(body.viewerSeat, 2)
-    assert.equal(body.cardsPerPack, 5)
-    assert.equal(body.slideCount, 18)
-    assert.equal(body.seats.length, 4)
-
-    for (const seat of body.seats) {
-      assert.equal(seat.locked, false)
-      assert.equal(seat.picks.length, body.slideCount)
-      assert.equal(seat.picks[0].type, 'leader')
-      assert.equal(seat.picks[0].packNumber, 0)
-      assert.equal(seat.picks[2].type, 'leader')
-      assert.equal(seat.picks[3].type, 'card')
-      assert.ok(Array.isArray(seat.picks[3].visibleCards))
-      assert.equal(typeof seat.picks[3].pickedInstanceId, 'string')
-    }
-
-    const seatOne = seatByNumber(body, 1)
-    const seatTwo = seatByNumber(body, 2)
-    for (let i = 0; i < body.slideCount; i++) {
-      assert.equal(seatOne.picks[i].packNumber, seatTwo.picks[i].packNumber)
-      assert.equal(seatOne.picks[i].pickInPack, seatTwo.picks[i].pickInPack)
-    }
-
-    assert.equal(seatTwo.activeLeaderName, 'Active Leader 2')
-    assert.deepEqual(seatTwo.chosenBase, {
-      name: 'Base 2',
-      aspects: ['Command'],
-      imageUrl: '/bases/2.png',
-      backImageUrl: '/bases/2-back.png',
-    })
+  it('host sees ALL seats', () => {
+    const session = { id: pod.host_id as string } // user-1 is host
+    const viewable = computeViewableSeats(pod, mixedPlayers, session)
+    assert.deepStrictEqual([...viewable].sort((a, b) => a - b), [1, 2, 3, 4])
   })
 
-  it('locks private human seats for non-participants while public and bot seats stay unlocked', async () => {
-    installRouteMocks({ session: { id: 'stranger-user' } })
-
-    const { response, body } = await callRoute()
-
-    assert.equal(response.status, 200)
-    assert.equal(body.viewerSeat, null)
-
-    const privateSeat = seatByNumber(body, 1)
-    assert.equal(privateSeat.locked, true)
-    assert.equal(privateSeat.username, 'Player 1')
-    assert.equal(privateSeat.avatarUrl, '/avatars/1.png')
-    assert.equal(Object.hasOwn(privateSeat, 'picks'), false)
-
-    const publicSeat = seatByNumber(body, 3)
-    assert.equal(publicSeat.locked, false)
-    assert.equal(publicSeat.picks.length, body.slideCount)
-
-    const botSeat = seatByNumber(body, 4)
-    assert.equal(botSeat.isBot, true)
-    assert.equal(botSeat.locked, false)
-    assert.equal(botSeat.picks.length, body.slideCount)
+  it('participant (non-host) sees ALL seats (participant-sees-all policy)', () => {
+    const session = { id: 'user-2' } // seat 2, not the host
+    const viewable = computeViewableSeats(pod, mixedPlayers, session)
+    assert.deepStrictEqual([...viewable].sort((a, b) => a - b), [1, 2, 3, 4])
   })
 
-  it('treats unauthenticated viewers as non-participants, not 401s', async () => {
-    installRouteMocks({ session: null })
-
-    const { response, body } = await callRoute()
-
-    assert.equal(response.status, 200)
-    assert.equal(seatByNumber(body, 1).locked, true)
-    assert.equal(Object.hasOwn(seatByNumber(body, 1), 'picks'), false)
-    assert.equal(seatByNumber(body, 3).locked, false)
-    assert.equal(seatByNumber(body, 4).locked, false)
+  it('pod.is_log_public makes ALL seats viewable for anyone', () => {
+    const publicPod = { ...pod, is_log_public: true }
+    const stranger = { id: 'user-999' }
+    const viewable = computeViewableSeats(publicPod, players, stranger)
+    assert.deepStrictEqual([...viewable].sort((a, b) => a - b), [1, 2, 3, 4])
   })
 
-  it('unlocks every seat for the host and for pod-public drafts', async () => {
-    installRouteMocks({ session: { id: 'host-user' } })
-    const hostResult = await callRoute()
-    assert.equal(hostResult.response.status, 200)
-    assert.deepEqual(hostResult.body.seats.map(seat => seat.locked), [false, false, false, false])
-
-    installRouteMocks({ pod: makePod({ is_log_public: true }), session: null })
-    const publicResult = await callRoute()
-    assert.equal(publicResult.response.status, 200)
-    assert.deepEqual(publicResult.body.seats.map(seat => seat.locked), [false, false, false, false])
+  it('non-participant sees only public seats + bot seats', () => {
+    const stranger = { id: 'user-999' }
+    const viewable = computeViewableSeats(pod, mixedPlayers, stranger)
+    // seat 3 public, seat 4 bot — seats 1 & 2 are private and hidden.
+    assert.deepStrictEqual([...viewable].sort((a, b) => a - b), [3, 4])
   })
 
-  it('uses seated player count, not max_players, when reconstructing under-filled drafts', async () => {
-    installRouteMocks({ session: { id: 'user-1' } })
-
-    const { body } = await callRoute()
-    const seatOne = seatByNumber(body, 1)
-    const fifthPick = seatOne.picks.find(pick => pick.packNumber === 1 && pick.pickInPack === 5)
-
-    assert.ok(fifthPick, 'expected pack 1 pick 5 to exist')
-    assert.ok(
-      fifthPick.visibleCards.length > 0,
-      'pick 5 in a four-player draft with max_players=8 should still resolve a real source pack'
-    )
+  it('unauthenticated (session == null) is treated as a non-participant, not a 401', () => {
+    const viewable = computeViewableSeats(pod, mixedPlayers, null)
+    assert.deepStrictEqual([...viewable].sort((a, b) => a - b), [3, 4])
   })
 
-  it('falls back safely for malformed JSON and missing pack arrays', async () => {
-    installRouteMocks({
-      pod: makePod({ all_packs: 'not json' }),
-      playerRows: makePlayerRows({
-        1: { drafted_cards: 'not json', drafted_leaders: 'not json', deck_builder_state: 'not json' },
-        2: { drafted_cards: null, drafted_leaders: null },
-      }),
-      session: { id: 'user-1' },
-    })
-
-    const { response, body } = await callRoute()
-
-    assert.equal(response.status, 200)
-    assert.equal(body.cardsPerPack, 14)
-    assert.equal(body.slideCount, 45)
-    const cardPick = seatByNumber(body, 1).picks.find(pick => pick.type === 'card')
-    assert.deepEqual(cardPick.visibleCards, [])
-    assert.equal(seatByNumber(body, 1).activeLeaderName, null)
-    assert.equal(seatByNumber(body, 1).chosenBase, null)
+  it('bot seats are always viewable, even to a stranger on a fully private draft', () => {
+    const allPrivate = players // seats 1-3 private, seat 4 bot
+    const stranger = { id: 'user-999' }
+    const viewable = computeViewableSeats(pod, allPrivate, stranger)
+    assert.deepStrictEqual([...viewable], [4])
   })
 
-  it('returns 404 for an unknown shareId', async () => {
-    installRouteMocks()
-
-    const { response, body } = await callRoute('missing-draft')
-
-    assert.equal(response.status, 404)
-    assert.equal(body.error, 'Draft not found')
+  it('fully private draft viewed by a stranger with no bots → no viewable seats', () => {
+    const noBots = players.map(p => ({ ...p, is_bot: false }))
+    const stranger = { id: 'user-999' }
+    const viewable = computeViewableSeats(pod, noBots, stranger)
+    assert.deepStrictEqual([...viewable], [])
   })
 })
+
+// ---------------------------------------------------------------------------
+// buildSlideshowResponse — payload assembly + reconstruction
+// ---------------------------------------------------------------------------
+
+describe('buildSlideshowResponse (happy path — participant sees all)', () => {
+  const { pod, players, allPacks, cardsPerPack, totalSeats } = makeFullDraft()
+  const session = { id: 'user-2' } // participant → all seats unlocked
+  const viewable = new Set([1, 2, 3, 4])
+  const body = buildSlideshowResponse({ pod, players, allPacks, viewableSeats: viewable, session })
+
+  it('returns one seat entry per seated player', () => {
+    assert.strictEqual(body.seats.length, players.length)
+    assert.strictEqual(body.seats.length, 4)
+  })
+
+  it('viewerSeat reflects the requesting participant', () => {
+    assert.strictEqual(body.viewerSeat, 2)
+  })
+
+  it('cardsPerPack === allPacks[0][0].cards.length', () => {
+    assert.strictEqual(body.cardsPerPack, allPacks[0][0].cards.length)
+    assert.strictEqual(body.cardsPerPack, cardsPerPack)
+  })
+
+  it('slideCount === min(3, players.length) + 3 * cardsPerPack', () => {
+    const expected = Math.min(3, totalSeats) + 3 * cardsPerPack
+    assert.strictEqual(body.slideCount, expected)
+  })
+
+  it('every unlocked seat has picks.length === slideCount', () => {
+    for (const seat of body.seats) {
+      assert.strictEqual(seat.locked, false, `seat ${seat.seatNumber} should be unlocked`)
+      const picks = picksOf(seat)
+      assert.ok(Array.isArray(picks), `seat ${seat.seatNumber} should carry a picks array`)
+      assert.strictEqual(picks.length, body.slideCount)
+    }
+  })
+
+  it('each pick carries visibleCards and a pickedInstanceId field', () => {
+    const seat = body.seats[0]
+    for (const pick of picksOf(seat)) {
+      assert.ok(Array.isArray(pick.visibleCards), 'visibleCards is an array')
+      assert.ok('pickedInstanceId' in pick, 'pick exposes pickedInstanceId')
+    }
+  })
+
+  it('a real card pick (pack 1, pick 1) has non-empty visibleCards and a matching pickedInstanceId', () => {
+    const seat = body.seats[0]
+    const firstCardPick = picksOf(seat).find(p => p.type === 'card' && p.packNumber === 1 && p.pickInPack === 1)
+    assert.ok(firstCardPick, 'found pack1/pick1')
+    assert.ok(firstCardPick.visibleCards.length > 0, 'pack1/pick1 shows a full pack of cards')
+    assert.strictEqual(firstCardPick.visibleCards.length, cardsPerPack)
+    // The seeded picker always took their own slot-0 card.
+    assert.strictEqual(firstCardPick.pickedInstanceId, 's0-p1-c0')
+  })
+
+  it('seat identity fields (username, avatarUrl, isBot, activeLeaderName, chosenBase) are present', () => {
+    const seat = seatOf(body, 1)
+    assert.strictEqual(seat.username, 'Player 1')
+    assert.strictEqual(seat.avatarUrl, '/avatar-1.png')
+    assert.strictEqual(seat.isBot, false)
+    assert.strictEqual(seat.activeLeaderName, 'Leader 0.1')
+    assert.ok(seat.chosenBase && seat.chosenBase.name === 'Base 1')
+  })
+
+  it('draft meta is echoed (shareId, setCode, setName, status)', () => {
+    assert.strictEqual(body.draft.shareId, pod.share_id)
+    assert.strictEqual(body.draft.setCode, pod.set_code)
+    assert.strictEqual(body.draft.setName, pod.set_name)
+    assert.strictEqual(body.draft.status, pod.status)
+  })
+})
+
+describe('buildSlideshowResponse (slide alignment across seats)', () => {
+  const { pod, players, allPacks } = makeFullDraft()
+  const viewable = new Set([1, 2, 3, 4])
+  const body = buildSlideshowResponse({
+    pod, players, allPacks, viewableSeats: viewable, session: { id: 'user-1' },
+  })
+
+  it('picks[i].packNumber and picks[i].pickInPack are equal across two different seats at every i', () => {
+    const picksA = picksOf(seatOf(body, 1))
+    const picksB = picksOf(seatOf(body, 3))
+    assert.strictEqual(picksA.length, picksB.length)
+    for (let i = 0; i < picksA.length; i++) {
+      assert.strictEqual(picksA[i].packNumber, picksB[i].packNumber, `packNumber mismatch at i=${i}`)
+      assert.strictEqual(picksA[i].pickInPack, picksB[i].pickInPack, `pickInPack mismatch at i=${i}`)
+    }
+  })
+})
+
+describe('buildSlideshowResponse (leaders are the first slides)', () => {
+  const { pod, players, allPacks, totalSeats } = makeFullDraft()
+  const viewable = new Set([1, 2, 3, 4])
+  const body = buildSlideshowResponse({
+    pod, players, allPacks, viewableSeats: viewable, session: { id: 'user-1' },
+  })
+
+  it('the first min(3, players.length) picks are type "leader" with packNumber 0', () => {
+    const leaderRounds = Math.min(3, totalSeats)
+    const picks = picksOf(body.seats[0])
+    for (let i = 0; i < leaderRounds; i++) {
+      assert.strictEqual(picks[i].type, 'leader', `pick ${i} should be a leader`)
+      assert.strictEqual(picks[i].packNumber, 0, `leader pick ${i} should have packNumber 0`)
+    }
+    // The slide right after the leaders is a real card pick.
+    assert.strictEqual(picks[leaderRounds].type, 'card')
+    assert.strictEqual(picks[leaderRounds].packNumber, 1)
+  })
+})
+
+describe('buildSlideshowResponse (gating — private seat locked for non-participant)', () => {
+  const { pod, players, allPacks } = makeFullDraft()
+  // seat 3 public, seat 4 bot; seats 1 & 2 private.
+  const mixedPlayers = players.map(p =>
+    p.seat_number === 3 ? { ...p, is_log_public: true } : p,
+  )
+
+  // Non-participant: only seats 3 (public) + 4 (bot) are viewable.
+  const strangerViewable = new Set([3, 4])
+  const body = buildSlideshowResponse({
+    pod, players: mixedPlayers, allPacks, viewableSeats: strangerViewable, session: { id: 'user-999' },
+  })
+
+  it('still returns a seat entry for every seated player (including locked ones)', () => {
+    assert.strictEqual(body.seats.length, mixedPlayers.length)
+  })
+
+  it('a private seat is locked, retains identity, and OMITS the picks key entirely', () => {
+    const lockedSeat = seatOf(body, 1)
+    assert.strictEqual(lockedSeat.locked, true)
+    // identity present
+    assert.strictEqual(lockedSeat.username, 'Player 1')
+    assert.strictEqual(lockedSeat.avatarUrl, '/avatar-1.png')
+    assert.strictEqual(lockedSeat.isBot, false)
+    assert.strictEqual(lockedSeat.activeLeaderName, 'Leader 0.1')
+    assert.ok(lockedSeat.chosenBase && lockedSeat.chosenBase.name === 'Base 1')
+    // picks must NOT be serialized at all for a locked seat
+    assert.ok(!('picks' in lockedSeat), 'locked seat must not carry a picks key')
+  })
+
+  it('the public seat is unlocked and carries picks', () => {
+    const publicSeat = seatOf(body, 3)
+    assert.strictEqual(publicSeat.locked, false)
+    const picks = picksOf(publicSeat)
+    assert.ok(Array.isArray(picks))
+    assert.strictEqual(picks.length, body.slideCount)
+  })
+
+  it('the bot seat is unlocked even for a non-participant', () => {
+    const botSeat = seatOf(body, 4)
+    assert.strictEqual(botSeat.isBot, true)
+    assert.strictEqual(botSeat.locked, false)
+    assert.ok(Array.isArray(picksOf(botSeat)))
+  })
+})
+
+describe('buildSlideshowResponse (gating — same private seat unlocked for participant/host)', () => {
+  const { pod, players, allPacks } = makeFullDraft()
+  const mixedPlayers = players.map(p =>
+    p.seat_number === 3 ? { ...p, is_log_public: true } : p,
+  )
+  // Participant / host sees all seats unlocked.
+  const allViewable = new Set([1, 2, 3, 4])
+  const body = buildSlideshowResponse({
+    pod, players: mixedPlayers, allPacks, viewableSeats: allViewable, session: { id: 'user-1' },
+  })
+
+  it('seat 1 (private) is unlocked with picks when the viewer is entitled', () => {
+    const seat = seatOf(body, 1)
+    assert.strictEqual(seat.locked, false)
+    const picks = picksOf(seat)
+    assert.ok(Array.isArray(picks))
+    assert.strictEqual(picks.length, body.slideCount)
+  })
+})
+
+describe('buildSlideshowResponse (under-filled draft — totalSeats = players.length, NOT max_players)', () => {
+  // A draft with capacity for 8 but only 4 seated. If totalSeats were
+  // mistakenly max_players (8), reconstruction would index allPacks out of
+  // bounds and emit EMPTY visibleCards for real picks. We assert non-empty.
+  const cardsPerPack = DEFAULT_CARDS_PER_PACK
+  const totalSeats = 4
+  const players = [makePlayerRow(1), makePlayerRow(2), makePlayerRow(3), makePlayerRow(4)]
+  const pod: SlideshowPod = {
+    id: 'pod-underfilled',
+    share_id: 'share-underfilled',
+    set_code: 'SOR',
+    set_name: 'Spark of Rebellion',
+    name: 'Underfilled Draft',
+    status: 'complete',
+    host_id: 'user-1',
+    is_log_public: false,
+    max_players: 8, // deliberately larger than players.length
+  }
+  const allPacks = makeAllPacks(totalSeats, cardsPerPack)
+  const viewable = new Set([1, 2, 3, 4])
+  const body = buildSlideshowResponse({ pod, players, allPacks, viewableSeats: viewable, session: { id: 'user-1' } })
+
+  it('seats.length === players.length (4), not max_players (8)', () => {
+    assert.strictEqual(body.seats.length, 4)
+  })
+
+  it('a real card pick has NON-EMPTY visibleCards (proves totalSeats = seated count)', () => {
+    const seat = body.seats[0]
+    const cardPick = picksOf(seat).find(p => p.type === 'card' && p.packNumber === 1 && p.pickInPack === 1)
+    assert.ok(cardPick, 'found pack1/pick1')
+    assert.ok(cardPick.visibleCards.length > 0, 'visibleCards must not be empty for an under-filled draft')
+    assert.strictEqual(cardPick.visibleCards.length, cardsPerPack)
+  })
+})
+
+describe('buildSlideshowResponse (edge — missing/short all_packs degrades, never throws)', () => {
+  const { pod, players } = makeFullDraft()
+  const viewable = new Set([1, 2, 3, 4])
+
+  it('empty all_packs → seats still returned, card picks have empty visibleCards, no throw', () => {
+    let body: SlideshowResponse | undefined
+    assert.doesNotThrow(() => {
+      body = buildSlideshowResponse({ pod, players, allPacks: [], viewableSeats: viewable, session: { id: 'user-1' } })
+    })
+    assert.ok(body, 'body assigned')
+    assert.strictEqual(body.seats.length, players.length)
+    // cardsPerPack falls back to 14 when packs are missing.
+    assert.strictEqual(body.cardsPerPack, 14)
+    const seat = body.seats[0]
+    const cardPick = picksOf(seat).find(p => p.type === 'card')
+    assert.ok(cardPick, 'card picks still generated')
+    assert.deepStrictEqual(cardPick.visibleCards, [], 'visibleCards empty when packs missing')
+  })
+
+  it('null all_packs (guarded to []) → does not throw', () => {
+    assert.doesNotThrow(() => {
+      buildSlideshowResponse({ pod, players, allPacks: null, viewableSeats: viewable, session: { id: 'user-1' } })
+    })
+  })
+})
+
+describe('buildSlideshowResponse (cardsPerPack derivation)', () => {
+  it('derives cardsPerPack from the actual pack size (e.g. 10), not a hardcoded 14', () => {
+    const cardsPerPack = 10
+    const totalSeats = 4
+    const players: SlideshowPlayer[] = [
+      { ...makePlayerRow(1), drafted_cards: makeDraftedCards(0, cardsPerPack) },
+      { ...makePlayerRow(2), drafted_cards: makeDraftedCards(1, cardsPerPack) },
+      { ...makePlayerRow(3), drafted_cards: makeDraftedCards(2, cardsPerPack) },
+      { ...makePlayerRow(4), drafted_cards: makeDraftedCards(3, cardsPerPack) },
+    ]
+    const pod: SlideshowPod = {
+      id: 'pod-10', share_id: 'share-10', set_code: 'SOR', set_name: 'X',
+      status: 'complete', host_id: 'user-1', is_log_public: false,
+    }
+    const allPacks = makeAllPacks(totalSeats, cardsPerPack)
+    const body = buildSlideshowResponse({
+      pod, players, allPacks, viewableSeats: new Set([1, 2, 3, 4]), session: { id: 'user-1' },
+    })
+    assert.strictEqual(body.cardsPerPack, 10)
+    assert.strictEqual(body.slideCount, Math.min(3, totalSeats) + 3 * 10)
+  })
+})
+
+console.log('\n🧪 Running slideshow report API tests...\n')

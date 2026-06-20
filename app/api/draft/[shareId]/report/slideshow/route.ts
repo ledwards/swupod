@@ -1,69 +1,88 @@
+// app/api/draft/[shareId]/report/slideshow/route.ts
+/**
+ * GET /api/draft/:shareId/report/slideshow
+ *
+ * Serves every VIEWABLE seat's reconstructed picks for one completed draft, in
+ * a single gated request, so the Slideshow Mode client never fans out fetches
+ * or filters privacy in the browser.
+ *
+ * Modeled on app/api/draft/[shareId]/log/route.ts (the all-seats reconstruction
+ * precedent): it loads the pod + every pod_player, parses JSON with jsonParse,
+ * computes per-seat entitlement (viewableSeats), and calls reconstructDraftLog
+ * with totalSeats = players.length (the SEATED count, never pod.max_players —
+ * passing max_players on an under-filled draft indexes allPacks out of bounds
+ * and emits empty visibleCards for real picks).
+ *
+ * activeLeaderName / chosenBase are sourced the way the per-pool report route
+ * (app/api/draft/[shareId]/report/[poolShareId]/route.ts) sources them: from
+ * each pool's deck_builder_state.
+ *
+ * Entitlement (mirrors /log's viewableSeats, with one DELIBERATE divergence):
+ *   - pod.is_log_public OR isHost OR myPlayer (participant) → ALL seats unlocked.
+ *     NOTE: letting any *participant* see all seats is more permissive than the
+ *     Draft Log, which restricts a non-host participant to own + bots + public.
+ *     This is the team-review intent (see the plan's Key Technical Decisions).
+ *     To restore per-seat privacy among participants, change the participant
+ *     branch in computeViewableSeats to own + bots + public — a one-line edit.
+ *   - otherwise (non-participant OR unauthenticated session === null) → only
+ *     seats where is_log_public, PLUS bot seats (bots carry no privacy interest).
+ *     An unauthenticated viewer of a public draft is NOT 401'd.
+ *
+ * Locked seats return identity + locked:true and OMIT the `picks` key entirely
+ * (server-side — picks for a locked seat are never serialized).
+ */
 import { NextRequest, NextResponse } from 'next/server'
 import { queryRow, queryRows } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 import { jsonParse } from '@/src/utils/json'
-import {
-  DraftLogPick,
-  DraftPack,
-  DraftedCard,
-  DraftedLeader,
-  PlayerData,
-  reconstructDraftLog,
-} from '@/src/utils/draftLogReconstruction'
+import { reconstructDraftLog, type DraftLogPick } from '@/src/utils/draftLogReconstruction'
 
-type RouteContext = {
-  params: Promise<{ shareId: string }>
-}
+type RouteContext = { params: Promise<{ shareId: string }> }
 
-type SessionLike = {
-  id?: string | null
-} | null
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
-type PodRow = {
-  id: string
-  share_id: string
-  name?: string | null
-  status: string
-  set_code?: string | null
-  set_name?: string | null
-  max_players?: number | null
-  current_players?: number | null
-  host_id?: string | null
-  is_log_public?: boolean | null
-  all_packs?: unknown
-  completed_at?: string | null
-}
-
-type PlayerRow = {
-  user_id?: string | null
-  seat_number: number
-  username?: string | null
-  avatar_url?: string | null
-  drafted_cards?: unknown
-  drafted_leaders?: unknown
-  is_bot?: boolean | null
-  is_log_public?: boolean | null
-  deck_builder_state?: unknown
-}
-
-type ChosenBase = {
+/** A drafted base resolved from a pool's deck_builder_state. */
+export interface ChosenBase {
   name: string
-  aspects: unknown[]
+  aspects: string[]
   imageUrl: string | null
   backImageUrl: string | null
 }
 
-type SlideshowPlayer = PlayerData & {
-  userId: string | null
-  username: string
-  avatarUrl: string | null
-  isBot: boolean
-  isLogPublic: boolean
-  activeLeaderName: string | null
-  chosenBase: ChosenBase | null
+/** Pod fields this route reads (the SELECT pins these). */
+export interface SlideshowPod {
+  id: string
+  share_id: string
+  set_code: string
+  set_name?: string | null
+  name?: string | null
+  status: string
+  host_id: string | null
+  is_log_public: boolean
+  max_players?: number
+  // Raw JSON column; parsed by the handler, not the pure logic.
+  all_packs?: any
 }
 
-type SlideshowSeatBase = {
+/** A seated player, normalized to the shape the pure logic consumes. */
+export interface SlideshowPlayer {
+  seat_number: number
+  user_id: string | null
+  username: string
+  avatar_url: string | null
+  is_bot: boolean
+  is_log_public: boolean
+  // Draft picks are untyped JSON from the DB (node-pg returns jsonb parsed).
+  drafted_cards: any[]
+  drafted_leaders: any[]
+  active_leader_name: string | null
+  chosen_base: ChosenBase | null
+}
+
+/** One seat in the response. Locked seats OMIT `picks` entirely (no key). */
+export interface SlideshowSeat {
   seatNumber: number
   username: string
   avatarUrl: string | null
@@ -71,23 +90,16 @@ type SlideshowSeatBase = {
   activeLeaderName: string | null
   chosenBase: ChosenBase | null
   locked: boolean
-}
-
-type SlideshowSeat = SlideshowSeatBase & {
   picks?: DraftLogPick[]
 }
 
-type SlideshowPayload = {
+export interface SlideshowResponse {
   draft: {
     shareId: string
     name: string | null
-    setCode: string | null
+    setCode: string
     setName: string | null
     status: string
-    maxPlayers: number | null
-    currentPlayers: number
-    isLogPublic: boolean
-    completedAt: string | null
   }
   viewerSeat: number | null
   slideCount: number
@@ -95,294 +107,237 @@ type SlideshowPayload = {
   seats: SlideshowSeat[]
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
+// ---------------------------------------------------------------------------
+// Pure logic (exported for unit tests — no DB, no I/O).
+// ---------------------------------------------------------------------------
 
-function arrayOrEmpty<T = unknown>(value: unknown): T[] {
-  return Array.isArray(value) ? value as T[] : []
-}
+/**
+ * Compute the set of seat numbers the requesting session may view.
+ *
+ * @param pod      Pod row (needs `host_id`, `is_log_public`).
+ * @param players  Seated players (need `seat_number`, `user_id`, `is_bot`, `is_log_public`).
+ * @param session  Auth session or null.
+ * @returns Set of viewable seat numbers.
+ */
+export function computeViewableSeats(
+  pod: SlideshowPod,
+  players: SlideshowPlayer[],
+  session: { id: string } | null,
+): Set<number> {
+  const rows = players || []
+  const isHost = !!session && session.id === pod.host_id
+  const myPlayer = session ? rows.find(p => p.user_id === session.id) : null
 
-function numberOrNull(value: unknown): number | null {
-  return typeof value === 'number' && Number.isFinite(value) ? value : null
-}
+  // Participant / host / pod-public → all seats unlocked (participant-sees-all).
+  if (pod.is_log_public || isHost || myPlayer) {
+    return new Set(rows.map(p => p.seat_number))
+  }
 
-function normalizeAllPacks(value: unknown): DraftPack[][] {
-  const parsed = jsonParse(value, [])
-  return arrayOrEmpty(parsed).map(seatPacks =>
-    arrayOrEmpty(seatPacks).map(pack => {
-      const rawCards = isRecord(pack) ? pack['cards'] : []
-      return {
-        cards: arrayOrEmpty<Record<string, unknown>>(rawCards)
-          .filter(isRecord)
-          .filter(card => typeof card['instanceId'] === 'string')
-          .map(card => ({ ...card, instanceId: card['instanceId'] as string })),
-      }
-    })
+  // Non-participant or unauthenticated → only public seats + bot seats.
+  return new Set(
+    rows
+      .filter(p => p.is_log_public || p.is_bot)
+      .map(p => p.seat_number),
   )
 }
 
-function ensurePackSlots(allPacks: DraftPack[][], totalSeats: number): DraftPack[][] {
-  return Array.from({ length: totalSeats }, (_, seatIndex) => {
-    const seatPacks = allPacks[seatIndex] || []
-    return [0, 1, 2].map(packIndex => {
-      const pack = seatPacks[packIndex]
-      return pack ? { cards: pack.cards || [] } : { cards: [] }
-    })
-  })
-}
-
-function normalizeDraftedCards(value: unknown): DraftedCard[] {
-  return arrayOrEmpty<Record<string, unknown>>(jsonParse(value, []))
-    .filter(isRecord)
-    .filter(card =>
-      typeof card['instanceId'] === 'string' &&
-      typeof card['packNumber'] === 'number' &&
-      typeof card['pickInPack'] === 'number'
-    )
-    .map(card => ({
-      ...card,
-      instanceId: card['instanceId'] as string,
-      packNumber: card['packNumber'] as number,
-      pickInPack: card['pickInPack'] as number,
-      pickNumber: typeof card['pickNumber'] === 'number' ? card['pickNumber'] : 0,
-    }))
-}
-
-function normalizeDraftedLeaders(value: unknown): DraftedLeader[] {
-  return arrayOrEmpty<Record<string, unknown>>(jsonParse(value, []))
-    .filter(isRecord)
-    .filter(leader =>
-      typeof leader['instanceId'] === 'string' &&
-      typeof leader['leaderRound'] === 'number'
-    )
-    .map(leader => ({
-      ...leader,
-      instanceId: leader['instanceId'] as string,
-      leaderRound: leader['leaderRound'] as number,
-    }))
-}
-
-function extractDeckBuilderHighlights(value: unknown): {
-  activeLeaderName: string | null
-  chosenBase: ChosenBase | null
-} {
-  const deckState = jsonParse(value, {})
-  if (!isRecord(deckState) || !isRecord(deckState['cardPositions'])) {
-    return { activeLeaderName: null, chosenBase: null }
-  }
-
-  const cardPositions = deckState['cardPositions']
-  const activeLeaderKey = typeof deckState['activeLeader'] === 'string' ? deckState['activeLeader'] : null
-  const activeBaseKey = typeof deckState['activeBase'] === 'string' ? deckState['activeBase'] : null
-
-  let activeLeaderName: string | null = null
-  if (activeLeaderKey) {
-    const leaderPosition = cardPositions[activeLeaderKey]
-    const leaderCard = isRecord(leaderPosition) && isRecord(leaderPosition['card'])
-      ? leaderPosition['card']
-      : null
-    activeLeaderName = typeof leaderCard?.['name'] === 'string' ? leaderCard['name'] : null
-  }
-
-  let chosenBase: ChosenBase | null = null
-  if (activeBaseKey) {
-    const basePosition = cardPositions[activeBaseKey]
-    const baseCard = isRecord(basePosition) && isRecord(basePosition['card'])
-      ? basePosition['card']
-      : null
-    if (baseCard) {
-      chosenBase = {
-        name: typeof baseCard['name'] === 'string' ? baseCard['name'] : '',
-        aspects: arrayOrEmpty(baseCard['aspects']),
-        imageUrl: typeof baseCard['imageUrl'] === 'string' ? baseCard['imageUrl'] : null,
-        backImageUrl: typeof baseCard['backImageUrl'] === 'string' ? baseCard['backImageUrl'] : null,
-      }
-    }
-  }
-
-  return { activeLeaderName, chosenBase }
-}
-
-function buildPlayers(playerRows: PlayerRow[]): SlideshowPlayer[] {
-  return playerRows
-    .filter(row => typeof row.seat_number === 'number')
-    .sort((a, b) => a.seat_number - b.seat_number)
-    .map(row => {
-      const isBot = row.is_bot === true
-      const { activeLeaderName, chosenBase } = extractDeckBuilderHighlights(row.deck_builder_state)
-
-      return {
-        seatNumber: row.seat_number,
-        userId: row.user_id || null,
-        username: row.username || (isBot ? `Bot (Seat ${row.seat_number})` : `Player ${row.seat_number}`),
-        avatarUrl: row.avatar_url || null,
-        isBot,
-        isLogPublic: row.is_log_public === true,
-        draftedCards: normalizeDraftedCards(row.drafted_cards),
-        draftedLeaders: normalizeDraftedLeaders(row.drafted_leaders),
-        activeLeaderName,
-        chosenBase,
-      }
-    })
-}
-
-function getCardsPerPack(allPacks: DraftPack[][]): number {
-  return allPacks[0]?.[0]?.cards?.length || 14
-}
-
-function seatIdentity(player: SlideshowPlayer): SlideshowSeatBase {
-  return {
-    seatNumber: player.seatNumber,
-    username: player.username,
-    avatarUrl: player.avatarUrl,
-    isBot: player.isBot,
-    activeLeaderName: player.activeLeaderName,
-    chosenBase: player.chosenBase,
-    locked: false,
-  }
-}
-
-function reconstructSeatPicks({
-  targetSeat,
-  allPacks,
-  players,
-}: {
-  targetSeat: number
-  allPacks: DraftPack[][]
-  players: SlideshowPlayer[]
-}): DraftLogPick[] {
-  try {
-    return reconstructDraftLog({
-      targetSeat,
-      totalSeats: players.length,
-      allPacks,
-      players,
-    })
-  } catch (error) {
-    console.error('[DraftSlideshow] Failed to reconstruct picks:', error)
-    return []
-  }
-}
-
-function buildSlideshowPayload({
+/**
+ * Assemble the slideshow response body from already-loaded, already-parsed data.
+ *
+ * Pure: reconstructDraftLog is itself pure, so this runs end-to-end in tests
+ * against seeded packs. Locked seats omit `picks` entirely.
+ */
+export function buildSlideshowResponse({
   pod,
-  playerRows,
+  players,
+  allPacks,
+  viewableSeats,
   session,
 }: {
-  pod: PodRow
-  playerRows: PlayerRow[]
-  session: SessionLike
-}): SlideshowPayload {
-  const players = buildPlayers(playerRows || [])
-  const allPacks = ensurePackSlots(normalizeAllPacks(pod.all_packs), players.length)
-  const viewerSeat = session?.id
-    ? players.find(player => player.userId === session.id)?.seatNumber || null
-    : null
-  const isHost = Boolean(session?.id && session.id === pod.host_id)
-  const isParticipant = viewerSeat !== null
-  const unlockAllSeats = pod.is_log_public === true || isHost || isParticipant
+  pod: SlideshowPod
+  players: SlideshowPlayer[]
+  allPacks: unknown
+  viewableSeats: Set<number>
+  session: { id: string } | null
+}): SlideshowResponse {
+  const rows = players || []
+  const packs: any[] = Array.isArray(allPacks) ? allPacks : []
+  const totalSeats = rows.length
+  const cardsPerPack: number = packs[0]?.[0]?.cards?.length || 14
 
-  let referencePicks: DraftLogPick[] | null = null
-  const seats = players.map(player => {
-    const unlocked = unlockAllSeats || player.isLogPublic || player.isBot
-    const identity = seatIdentity(player)
+  // Player data for the reconstructor (1-indexed seats, parsed picks).
+  const playerData = rows.map(p => ({
+    seatNumber: p.seat_number,
+    username: p.username,
+    draftedCards: p.drafted_cards || [],
+    draftedLeaders: p.drafted_leaders || [],
+  }))
 
-    if (!unlocked) {
+  let slideCount = 0
+
+  const seats: SlideshowSeat[] = rows.map(p => {
+    const identity = {
+      seatNumber: p.seat_number,
+      username: p.username,
+      avatarUrl: p.avatar_url ?? null,
+      isBot: !!p.is_bot,
+      activeLeaderName: p.active_leader_name ?? null,
+      chosenBase: p.chosen_base ?? null,
+    }
+
+    // Locked seat: identity only, NO picks key serialized.
+    if (!viewableSeats.has(p.seat_number)) {
       return { ...identity, locked: true }
     }
 
-    const picks = reconstructSeatPicks({
-      targetSeat: player.seatNumber,
-      allPacks,
-      players,
+    const picks = reconstructDraftLog({
+      targetSeat: p.seat_number,
+      totalSeats, // SEATED count — never pod.max_players
+      allPacks: packs,
+      players: playerData,
     })
-    referencePicks ||= picks
-    return { ...identity, picks }
+
+    if (picks.length > slideCount) {
+      slideCount = picks.length
+    }
+
+    return { ...identity, locked: false, picks }
   })
 
-  if (!referencePicks && players[0]) {
-    referencePicks = reconstructSeatPicks({
-      targetSeat: players[0].seatNumber,
-      allPacks,
-      players,
-    })
+  // slideCount derives from a reconstructed seat's picks.length. If no seat is
+  // viewable (all locked), fall back to the structural count so the client can
+  // still size its nav: min(3, seats) leader rounds + 3 packs.
+  if (slideCount === 0) {
+    slideCount = Math.min(3, totalSeats) + 3 * cardsPerPack
   }
+
+  const viewerSeat = session
+    ? (rows.find(p => p.user_id === session.id)?.seat_number ?? null)
+    : null
 
   return {
     draft: {
       shareId: pod.share_id,
-      name: pod.name || null,
-      setCode: pod.set_code || null,
-      setName: pod.set_name || null,
+      name: pod.name ?? null,
+      setCode: pod.set_code,
+      setName: pod.set_name ?? null,
       status: pod.status,
-      maxPlayers: numberOrNull(pod.max_players),
-      currentPlayers: numberOrNull(pod.current_players) || players.length,
-      isLogPublic: pod.is_log_public === true,
-      completedAt: pod.completed_at || null,
     },
     viewerSeat,
-    slideCount: referencePicks?.length || 0,
-    cardsPerPack: getCardsPerPack(allPacks),
+    slideCount,
+    cardsPerPack,
     seats,
   }
 }
 
-export const _testSeams = {
-  queryRow,
-  queryRows,
-  getSession,
-  buildSlideshowPayload,
-}
+// ---------------------------------------------------------------------------
+// Route handler (DB I/O — wires the pure logic above to Postgres).
+// ---------------------------------------------------------------------------
 
 export async function GET(request: NextRequest, { params }: RouteContext): Promise<NextResponse> {
   try {
     const { shareId } = await params
-    const session = _testSeams.getSession(request)
+    const session = getSession(request)
 
-    const pod = await _testSeams.queryRow(
-      `SELECT p.id, p.share_id, p.name, p.status, p.set_code, p.set_name,
-              p.max_players, p.current_players, p.host_id, p.is_log_public,
-              p.all_packs, p.completed_at
+    // Load the draft pod (host + visibility + packs). The SELECT pins the fields.
+    const pod = (await queryRow(
+      `SELECT p.id, p.share_id, p.set_code, p.set_name, p.name, p.status,
+              p.host_id, p.is_log_public, p.all_packs
        FROM pods p
        WHERE p.share_id = $1 AND p.pod_type = 'draft'`,
-      [shareId]
-    ) as PodRow | null
-
+      [shareId],
+    )) as unknown as SlideshowPod | null
     if (!pod) {
       return NextResponse.json({ error: 'Draft not found' }, { status: 404 })
     }
 
-    if (pod.status !== 'complete') {
-      return NextResponse.json({ error: 'Draft is not complete yet' }, { status: 400 })
-    }
-
-    const playerRows = await _testSeams.queryRows(
+    // Load all players with pick data + visibility (one row per seat).
+    const playerRows = (await queryRows(
       `SELECT DISTINCT ON (pp.seat_number)
-              pp.user_id,
               pp.seat_number,
+              pp.user_id,
               pp.drafted_cards,
               pp.drafted_leaders,
               pp.is_bot,
               pp.is_log_public,
               u.username,
-              u.avatar_url,
-              cp.deck_builder_state
+              u.avatar_url
        FROM pod_players pp
        LEFT JOIN users u ON pp.user_id = u.id
-       LEFT JOIN card_pools cp ON cp.pod_id = pp.pod_id AND cp.user_id = pp.user_id
        WHERE pp.pod_id = $1
-       ORDER BY pp.seat_number, cp.created_at DESC NULLS LAST`,
-      [pod.id]
-    ) as PlayerRow[]
+       ORDER BY pp.seat_number`,
+      [pod.id],
+    )) as unknown as Array<{
+      seat_number: number
+      user_id: string | null
+      drafted_cards: any
+      drafted_leaders: any
+      is_bot: boolean
+      is_log_public: boolean
+      username: string | null
+      avatar_url: string | null
+    }>
 
     if (!playerRows || playerRows.length === 0) {
       return NextResponse.json({ error: 'No players found for this draft' }, { status: 404 })
     }
 
-    return NextResponse.json(buildSlideshowPayload({ pod, playerRows, session }))
+    // Resolve activeLeaderName / chosenBase from each pool's deck_builder_state
+    // (same source as the per-pool report route).
+    const poolsResult = (await queryRows(
+      `SELECT cp.user_id, cp.deck_builder_state
+       FROM card_pools cp
+       WHERE cp.pod_id = $1`,
+      [pod.id],
+    )) as unknown as Array<{ user_id: string; deck_builder_state: any }>
+
+    const activeLeaderByUser = new Map<string, string>()
+    const chosenBaseByUser = new Map<string, ChosenBase>()
+    for (const row of poolsResult || []) {
+      const dbs: any = jsonParse(row.deck_builder_state, null)
+      if (dbs?.cardPositions) {
+        if (dbs.activeLeader) {
+          const leaderPos = dbs.cardPositions[dbs.activeLeader]
+          if (leaderPos?.card?.name) {
+            activeLeaderByUser.set(row.user_id, leaderPos.card.name)
+          }
+        }
+        if (dbs.activeBase) {
+          const basePos = dbs.cardPositions[dbs.activeBase]
+          if (basePos?.card) {
+            chosenBaseByUser.set(row.user_id, {
+              name: basePos.card.name || '',
+              aspects: basePos.card.aspects || [],
+              imageUrl: basePos.card.imageUrl || null,
+              backImageUrl: basePos.card.backImageUrl || null,
+            })
+          }
+        }
+      }
+    }
+
+    // Normalize player rows: parse JSON picks, synthesize bot names, attach
+    // resolved leader/base — the shape buildSlideshowResponse consumes.
+    const players: SlideshowPlayer[] = playerRows.map(p => ({
+      seat_number: p.seat_number,
+      user_id: p.user_id,
+      username: p.username || (p.is_bot ? `Bot (Seat ${p.seat_number})` : `Player ${p.seat_number}`),
+      avatar_url: p.avatar_url ?? null,
+      is_bot: !!p.is_bot,
+      is_log_public: !!p.is_log_public,
+      drafted_cards: jsonParse<any[]>(p.drafted_cards, []) || [],
+      drafted_leaders: jsonParse<any[]>(p.drafted_leaders, []) || [],
+      active_leader_name: (p.user_id != null && activeLeaderByUser.get(p.user_id)) || null,
+      chosen_base: (p.user_id != null && chosenBaseByUser.get(p.user_id)) || null,
+    }))
+
+    const allPacks = jsonParse<any[]>(pod.all_packs, [])
+    const viewableSeats = computeViewableSeats(pod, players, session)
+
+    const body = buildSlideshowResponse({ pod, players, allPacks, viewableSeats, session })
+    return NextResponse.json(body)
   } catch (error) {
-    console.error('[DraftSlideshow] API error:', error)
+    console.error('Failed to build slideshow report:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

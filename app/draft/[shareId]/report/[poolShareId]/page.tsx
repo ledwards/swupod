@@ -7,6 +7,8 @@ import { useAuth } from '../../../../../src/contexts/AuthContext'
 import Button from '../../../../../src/components/Button'
 import PlayerCircle from '../../../../../src/components/PlayerCircle'
 import CardWithPreview from '../../../../../src/components/CardWithPreview'
+import DraftSlideshow from '../../../../../src/components/DraftSlideshow'
+import { useIsMobile } from '../../../../../src/hooks/common/useIsMobile'
 import MatchCard from '../../../../../src/components/MatchCard'
 import WayfinderStoreButtons, { WayfinderCompanionLockup } from '../../../../../src/components/WayfinderStoreButtons'
 import '../../../../../src/App.css'
@@ -126,6 +128,8 @@ export default function DraftReportPage({ params }: PageProps) {
   const [activeTab, setActiveTab] = useStickyTab<TabId>(REPORT_TABS, 'seating')
   const [message, setMessage] = useState<string | null>(null)
   const [reportPublic, setReportPublic] = useState(false)
+  const [isSlideshowOpen, setIsSlideshowOpen] = useState(false)
+  const isMobile = useIsMobile()
   const [draftReportsPublic, setDraftReportsPublic] = useState(false)
   const [editingNotes, setEditingNotes] = useState(false)
   const [notesDraft, setNotesDraft] = useState('')
@@ -344,6 +348,20 @@ export default function DraftReportPage({ params }: PageProps) {
             </div>
           </div>
           <div className="draft-report-header-actions">
+            {!isMobile && (
+              <Button
+                variant="interactive"
+                onClick={() => setIsSlideshowOpen(true)}
+                aria-label="Open Slideshow Mode"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+                <span>Slideshow Mode</span>
+              </Button>
+            )}
             {data.isHost && (
               <Button
                 variant={draftReportsPublic ? 'primary' : 'danger'}
@@ -664,6 +682,13 @@ export default function DraftReportPage({ params }: PageProps) {
 
       {message && <div className="draft-report-message">{message}</div>}
       </div>
+      {isSlideshowOpen && (
+        <DraftSlideshow
+          shareId={shareId}
+          setCode={draft.setCode}
+          onClose={() => setIsSlideshowOpen(false)}
+        />
+      )}
     </div>
   )
 }

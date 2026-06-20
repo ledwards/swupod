@@ -1,0 +1,149 @@
+/**
+ * SlideshowNav.css — bottom nav bar (label + prev/next) and the large
+ * full-height edge arrow strips (Unit U7; R9, R10).
+ *
+ * The bottom bar lives inside the shell's reserved fixed-height nav band
+ * (--slideshow-navbar-h). The edge arrows are `position: fixed` full-height
+ * strips at the LEFT / RIGHT viewport edges — they intentionally escape the
+ * bottom band to sit at the overlay edges. All :hover wrapped per mobile rules.
+ */
+
+/* ---------------------------------------------------------------------------
+   Bottom bar: Prev — label — Next
+   --------------------------------------------------------------------------- */
+
+.slideshow-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 0 16px;
+}
+
+.slideshow-nav-label {
+  min-width: 180px;
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0.01em;
+}
+
+.slideshow-nav-btn.btn {
+  min-width: 96px;
+  /* Icon-glyph + text need an explicit gap (icon-spacing rule). */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.slideshow-nav-btn-glyph {
+  font-size: 1.3em;
+  line-height: 1;
+  /* Optically center the chevron with the text baseline. */
+  margin-top: -0.08em;
+}
+
+/* ---------------------------------------------------------------------------
+   Large full-height edge arrow strips, fixed to the viewport edges.
+   They sit above the stage but below the close button / nav bar content.
+   --------------------------------------------------------------------------- */
+
+.slideshow-edge {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 88px;
+  z-index: 3; /* above the stage band (layout z-index 2), below close (5) */
+
+  display: flex;
+  align-items: center;
+
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.slideshow-edge--prev {
+  left: 0;
+  justify-content: flex-start;
+  padding-left: 8px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0));
+}
+
+.slideshow-edge--next {
+  right: 0;
+  justify-content: flex-end;
+  padding-right: 8px;
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0));
+}
+
+.slideshow-edge-glyph {
+  font-size: 3.5rem;
+  line-height: 1;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.78);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+/* Hard-stop at the ends: disabled edge arrows read as inert and stop catching
+   clicks (no wrap). Mirrors the disabled Prev/Next buttons. */
+.slideshow-edge:disabled,
+.slideshow-edge[aria-disabled='true'] {
+  cursor: default;
+  pointer-events: none;
+  background: transparent;
+}
+
+.slideshow-edge:disabled .slideshow-edge-glyph,
+.slideshow-edge[aria-disabled='true'] .slideshow-edge-glyph {
+  color: rgba(255, 255, 255, 0.18);
+  text-shadow: none;
+}
+
+/* Keyboard focus ring (do not gate behind hover — focus must always show). */
+.slideshow-edge:focus-visible {
+  outline: 2px solid rgba(33, 150, 243, 0.9);
+  outline-offset: -4px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .slideshow-edge--prev:hover {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+  }
+
+  .slideshow-edge--next:hover {
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+  }
+
+  .slideshow-edge:hover .slideshow-edge-glyph {
+    color: white;
+  }
+
+  .slideshow-edge--prev:hover .slideshow-edge-glyph {
+    transform: translateX(-3px);
+  }
+
+  .slideshow-edge--next:hover .slideshow-edge-glyph {
+    transform: translateX(3px);
+  }
+
+  /* Disabled arrows never react to hover even where hover exists. */
+  .slideshow-edge:disabled:hover,
+  .slideshow-edge[aria-disabled='true']:hover {
+    background: transparent;
+  }
+
+  .slideshow-edge:disabled:hover .slideshow-edge-glyph,
+  .slideshow-edge[aria-disabled='true']:hover .slideshow-edge-glyph {
+    color: rgba(255, 255, 255, 0.18);
+    transform: none;
+  }
+}

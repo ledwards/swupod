@@ -1,317 +1,225 @@
 'use client'
 
-import { useMemo, type CSSProperties } from 'react'
+/**
+ * SlideshowStage — the fitted card STAGE (Unit U6): the load-bearing visual unit.
+ *
+ * Fills the measured content box with the SELECTED seats' packs-on-offer at the
+ * current slide, sized to the largest card that fits WITHOUT scrolling, with the
+ * picked card flagged via the existing `.selected` rainbow border.
+ *
+ * "Components Don't Calculate": the fit math is the pure util `slideshowFit`; this
+ * component measures (via `useElementSize`), calls the util, and writes the result
+ * as a SINGLE `--slide-card-w` CSS variable on the stage container — never a
+ * per-card inline style. The stage is deliberately NOT a descendant of
+ * `.cards-grid`, and `SlideshowStage.css` overrides `Card.css`'s base
+ * `.canvas-card { width:120px }` so the fitted size isn't silently clamped.
+ *
+ * Two layouts (per the plan's Layout decision matrix):
+ *   - Single-player (1 seat): flow that seat's `visibleCards` into the R×C grid
+ *     from `computeSinglePlayerFit`, centered. A preview-size native cap keeps a
+ *     lone last-pick card comfortable rather than full-screen (R6).
+ *   - Multi-player (>=2 seats): one labeled row per seat — avatar (left) + name in
+ *     a fixed gutter, then that seat's cards in a row at the uniform `cardH` from
+ *     `computeMultiPlayerFit`. An empty `visibleCards` keeps its row via a neutral
+ *     "No cards" tile sized to `cardH` (never drop a seat's row).
+ *
+ * Stage cards are `tabIndex=-1` so up to ~112 cards never become a keyboard trap;
+ * the hover / long-press preview (CardWithPreview) is the detail-on-demand path.
+ */
+
+import { useMemo } from 'react'
+import './SlideshowStage.css'
 import CardWithPreview from './CardWithPreview'
+import type { CardData } from './Card'
+import type { SlideshowStageProps, SlideshowSeat } from './DraftSlideshow'
 import { useElementSize } from '../hooks/useElementSize'
 import {
-  computeLeaderGridFit,
-  computeMultiPlayerFit,
   computeSinglePlayerFit,
-  type LeaderGridFit,
-  type MultiPlayerFit,
-  type SinglePlayerFit,
+  computeMultiPlayerFit,
+  type NativeCap,
 } from '../utils/slideshowFit'
-import type { SeatSelection, SlideshowCard, SlideshowPick, SlideshowSeat } from './draftSlideshowTypes'
 
-const PORTRAIT = 2.5 / 3.5
-const LANDSCAPE = 3.5 / 2.5
+// Card aspect ratios (width / height). Portrait = drafted cards; landscape =
+// leader slides (packNumber === 0). Mirrors Card.css's `aspect-ratio`.
+const PORTRAIT_ASPECT = 2.5 / 3.5
+const LANDSCAPE_ASPECT = 3.5 / 2.5
+
+// Single-player native cap = the CardPreview size, so a lone last-pick card
+// renders comfortably centered (preview-scale), NOT stretched full-height (R6).
+const SINGLE_CAP_PORTRAIT: NativeCap = { w: 360, h: 504 }
+const SINGLE_CAP_LANDSCAPE: NativeCap = { w: 504, h: 360 }
+
+// Multi-player native cap = the asset's full source resolution, so dense rows
+// stay sharp while the fit shrinks them to contain all rows without scrolling.
+const MULTI_CAP_PORTRAIT: NativeCap = { w: 734, h: 1024 }
+const MULTI_CAP_LANDSCAPE: NativeCap = { w: 1024, h: 734 }
+
+// Tunable layout constants (the fit util takes them as params; tuning here does
+// not change logic). Label gutter holds the avatar + name in multi-player rows.
 const GAP = 8
-const LABEL_GUTTER_W = 96
-const LABEL_CARD_GAP = 10
-const LEADER_COLUMNS = 2
-const LEADER_COLUMN_GAP = 20
-const LEADER_LABEL_GUTTER_W = 90
-const MIN_CARD_H = 72
-const PORTRAIT_NATIVE = { w: 734, h: 1024 }
-const LANDSCAPE_NATIVE = { w: 1024, h: 734 }
-const AVATAR_FALLBACK = '/ptp_logo400.png'
+const LABEL_GUTTER_W = 150
+const MIN_CARD_H = 70
 
-type SlideshowCssVars = CSSProperties & {
-  '--slide-card-w': string
-  '--slide-card-gap': string
-  '--slide-label-gutter-w': string
+const AVATAR_FALLBACK = '/icons/discord-logo.png'
+
+type VisibleCard = { instanceId: string; [key: string]: unknown }
+
+/** Read a seat's pack-on-offer at the current slide (empty if locked/absent). */
+function seatVisibleCards(seat: SlideshowSeat, slideIndex: number): VisibleCard[] {
+  return seat.picks?.[slideIndex]?.visibleCards ?? []
 }
 
-function getPick(seat: SlideshowSeat, slideIndex: number): SlideshowPick | null {
-  return seat?.picks?.[slideIndex] || null
+/** Read a seat's picked instanceId at the current slide (null when none). */
+function seatPickedId(seat: SlideshowSeat, slideIndex: number): string | null {
+  return seat.picks?.[slideIndex]?.pickedInstanceId ?? null
 }
 
-function getAspect(pick: SlideshowPick | null): number {
-  return pick?.type === 'leader' || pick?.packNumber === 0 ? LANDSCAPE : PORTRAIT
-}
+export function SlideshowStage({ seats, slideIndex }: SlideshowStageProps) {
+  const { ref, width, height } = useElementSize<HTMLDivElement>()
 
-function getNativeCap(pick: SlideshowPick | null) {
-  return getAspect(pick) === LANDSCAPE ? LANDSCAPE_NATIVE : PORTRAIT_NATIVE
-}
+  const isMulti = seats.length >= 2
 
-function stageCard(card: SlideshowCard, pick: SlideshowPick | null): SlideshowCard {
-  if (!card) return card
-  if (pick?.type === 'leader' || pick?.packNumber === 0) {
-    return { ...card, isLeader: true }
-  }
-  return card
-}
-
-function EmptyCardTile({ landscape }: { landscape: boolean }) {
-  return (
-    <div className={`draft-slideshow-empty-card ${landscape ? 'landscape' : ''}`}>
-      <span>No cards</span>
-    </div>
-  )
-}
-
-function SeatLabel({
-  seat,
-  focused,
-  onFocus,
-}: {
-  seat: SlideshowSeat
-  focused: boolean
-  onFocus?: ((seatNumber: number) => void) | undefined
-}) {
-  return (
-    <div className="draft-slideshow-row-label">
-      <span className="draft-slideshow-row-identity">
-        <button
-          type="button"
-          className="draft-slideshow-row-avatar"
-          onClick={() => onFocus?.(seat.seatNumber)}
-          aria-pressed={focused}
-          aria-label={`${focused ? 'Unfocus' : 'Focus'} ${seat.username}`}
-        >
-          <img src={seat.avatarUrl || AVATAR_FALLBACK} alt="" aria-hidden="true" />
-          <span className="draft-slideshow-row-seat-number" aria-label={`Seat ${seat.seatNumber}`}>
-            {seat.seatNumber}
-          </span>
-        </button>
-        <span className="draft-slideshow-row-name">{seat.username}</span>
-      </span>
-    </div>
-  )
-}
-
-export default function SlideshowStage({
-  seats = [],
-  selectedSeats,
-  slideIndex,
-  focusedSeat = null,
-  onFocusSeat,
-}: {
-  seats: SlideshowSeat[]
-  selectedSeats: SeatSelection
-  slideIndex: number
-  focusedSeat?: number | null
-  onFocusSeat?: ((seatNumber: number) => void) | undefined
-}) {
-  const [stageRef, size] = useElementSize(100)
-
-  const selected = useMemo(() => {
-    return seats
-      .filter(seat => selectedSeats.has(seat.seatNumber) && !seat.locked && seat.picks)
-      .sort((a, b) => a.seatNumber - b.seatNumber)
-  }, [seats, selectedSeats])
-
-  const firstSelectedSeat = selected[0]
-  const currentPick = firstSelectedSeat ? getPick(firstSelectedSeat, slideIndex) : null
-  const aspect = getAspect(currentPick)
-  const nativeCap = getNativeCap(currentPick)
-  const isLandscape = aspect === LANDSCAPE
-  const isLeaderSlide = currentPick?.type === 'leader' || currentPick?.packNumber === 0
-
-  const rows = selected.map(seat => {
-    const pick = getPick(seat, slideIndex)
-    const visibleCards = pick?.visibleCards || []
-    return { seat, pick, visibleCards }
-  })
-  const useLeaderGrid = selected.length === 8 && isLeaderSlide
-
-  const fit = useMemo(() => {
-    if (selected.length === 1) {
-      const cardCount = Math.max(0, rows[0]?.visibleCards?.length || 0)
-      return computeSinglePlayerFit({
-        boxW: size.width,
-        boxH: size.height,
-        cardCount,
-        aspect,
-        nativeCap,
-        gap: GAP,
-      })
+  // The slide's card aspect: leaders (packNumber 0) are landscape; cards portrait.
+  // All selected seats share the same (packNumber, pickInPack) at slideIndex, so
+  // reading the first available pick's packNumber is sufficient.
+  const isLeaderSlide = useMemo(() => {
+    for (const seat of seats) {
+      const pick = seat.picks?.[slideIndex]
+      if (pick) return pick.packNumber === 0
     }
+    return false
+  }, [seats, slideIndex])
 
-    if (useLeaderGrid) {
-      return computeLeaderGridFit({
-        boxW: size.width,
-        boxH: size.height,
-        seatCount: rows.length,
-        cardsPerSeat: Math.max(1, ...rows.map(row => row.visibleCards.length)),
-        aspect,
-        nativeCap,
-        columns: LEADER_COLUMNS,
-        gap: GAP,
-        columnGap: LEADER_COLUMN_GAP,
-        labelGutterW: LEADER_LABEL_GUTTER_W,
-        labelGap: LABEL_CARD_GAP,
-        minCardH: MIN_CARD_H,
-      })
-    }
+  const aspect = isLeaderSlide ? LANDSCAPE_ASPECT : PORTRAIT_ASPECT
 
-    return computeMultiPlayerFit({
-      boxW: size.width,
-      boxH: size.height,
-      perRowCounts: rows.map(row => Math.max(1, row.visibleCards.length)),
+  // ---- Single-player fit -------------------------------------------------
+  const singleFit = useMemo(() => {
+    if (isMulti || !seats[0] || width <= 0 || height <= 0) return null
+    const n = seatVisibleCards(seats[0], slideIndex).length
+    return computeSinglePlayerFit({
+      boxW: width,
+      boxH: height,
+      n,
       aspect,
-      nativeCap,
+      nativeCap: isLeaderSlide ? SINGLE_CAP_LANDSCAPE : SINGLE_CAP_PORTRAIT,
       gap: GAP,
+    })
+  }, [isMulti, seats, slideIndex, width, height, aspect, isLeaderSlide])
+
+  // ---- Multi-player fit --------------------------------------------------
+  const multiFit = useMemo(() => {
+    if (!isMulti || width <= 0 || height <= 0) return null
+    const perRowCounts = seats.map(s => seatVisibleCards(s, slideIndex).length)
+    return computeMultiPlayerFit({
+      boxW: width,
+      boxH: height,
+      perRowCounts,
+      aspect,
+      nativeCap: isLeaderSlide ? MULTI_CAP_LANDSCAPE : MULTI_CAP_PORTRAIT,
       labelGutterW: LABEL_GUTTER_W,
+      gap: GAP,
       minCardH: MIN_CARD_H,
     })
-  }, [selected.length, useLeaderGrid, rows, size.width, size.height, aspect, nativeCap])
+  }, [isMulti, seats, slideIndex, width, height, aspect, isLeaderSlide])
 
-  if (selected.length === 0) {
-    const hasSelectableSeats = seats.some(seat => !seat.locked && seat.picks)
-    return (
-      <div ref={stageRef} className="draft-slideshow-stage draft-slideshow-stage--empty" data-testid="slideshow-stage">
-        <div className="draft-slideshow-empty-state">
-          {hasSelectableSeats ? 'No players selected.' : 'No public seats are available for this draft.'}
-        </div>
-      </div>
-    )
-  }
+  // Single CSS-variable write for the whole stage (not 112 inline styles). The
+  // scoped `.slideshow-stage .canvas-card` rule consumes it, overriding the base
+  // 120px so the fitted size actually applies.
+  const cardW = isMulti ? multiFit?.cardW ?? 0 : singleFit?.cardW ?? 0
+  const cardH = isMulti ? multiFit?.cardH ?? 0 : singleFit?.cardH ?? 0
+  const stageStyle = {
+    '--slide-card-w': `${cardW}px`,
+    '--slide-card-h': `${cardH}px`,
+    '--slide-gap': `${GAP}px`,
+    '--slide-label-gutter': `${LABEL_GUTTER_W}px`,
+  } as React.CSSProperties
 
-  const cardWidth = Math.max(0, fit.cardW || 0)
-  const cssVars: SlideshowCssVars = {
-    '--slide-card-w': `${cardWidth}px`,
-    '--slide-card-gap': `${GAP}px`,
-    '--slide-label-gutter-w': `${useLeaderGrid ? LEADER_LABEL_GUTTER_W : LABEL_GUTTER_W}px`,
-  }
-
-  if (selected.length === 1) {
-    const row = rows[0]
-    if (!row) {
-      return (
-        <div ref={stageRef} className="draft-slideshow-stage draft-slideshow-stage--empty" data-testid="slideshow-stage">
-          <div className="draft-slideshow-empty-state">No public seats are available for this draft.</div>
-        </div>
-      )
-    }
-    const singleFit = fit as SinglePlayerFit
-    const cards = row.visibleCards
-    const gridStyle = {
-      width: `${singleFit.blockW || 0}px`,
-      gridTemplateColumns: singleFit.cols > 0 ? `repeat(${singleFit.cols}, var(--slide-card-w))` : 'none',
-    }
-
+  // ---- Single-player rows (memoized) ------------------------------------
+  const singleContent = useMemo(() => {
+    if (isMulti) return null
+    const seat = seats[0]
+    if (!seat) return null
+    const cards = seatVisibleCards(seat, slideIndex)
+    const pickedId = seatPickedId(seat, slideIndex)
+    const cols = singleFit?.cols ?? 0
     return (
       <div
-        ref={stageRef}
-        className={`draft-slideshow-stage draft-slideshow-stage--single ${singleFit.centered ? 'is-capped' : ''} ${isLandscape ? 'is-landscape' : ''}`}
-        style={cssVars}
-        data-overflow={fit.overflow ? 'true' : 'false'}
-        data-testid="slideshow-stage"
+        className="slideshow-stage-single"
+        style={cols > 0 ? ({ '--slide-cols': cols } as React.CSSProperties) : undefined}
       >
-        {cards.length > 0 ? (
-          <div className="draft-slideshow-single-grid" style={gridStyle}>
-            {cards.map((card, index) => (
-              <CardWithPreview
-                key={`${row.seat.seatNumber}-${card.instanceId || index}`}
-                card={stageCard(card, row.pick)}
-                selected={card.instanceId === row.pick?.pickedInstanceId}
-                tabIndex={-1}
-                data-instance-id={card.instanceId}
-              />
-            ))}
-          </div>
-        ) : (
-          <EmptyCardTile landscape={isLandscape} />
-        )}
-      </div>
-    )
-  }
-
-  if (useLeaderGrid) {
-    const leaderFit = fit as LeaderGridFit
-    const gridStyle = {
-      gridTemplateColumns: `repeat(${leaderFit.columns}, minmax(0, 1fr))`,
-      gridTemplateRows: `repeat(${leaderFit.rows}, auto)`,
-    }
-
-    return (
-      <div
-        ref={stageRef}
-        className="draft-slideshow-stage draft-slideshow-stage--multi draft-slideshow-stage--leader-grid is-landscape"
-        style={cssVars}
-        data-overflow={leaderFit.overflow ? 'true' : 'false'}
-        data-testid="slideshow-stage"
-      >
-        <div className="draft-slideshow-leader-grid" style={gridStyle}>
-          {rows.map((row, index) => {
-            const isRightColumn = leaderFit.columns > 1 && index >= leaderFit.rows
-            return (
-              <div
-                key={row.seat.seatNumber}
-                className={`draft-slideshow-seat-row draft-slideshow-leader-seat ${isRightColumn ? 'draft-slideshow-leader-seat--right' : ''} ${focusedSeat === row.seat.seatNumber ? 'is-focused' : ''}`}
-                data-testid="slideshow-seat-row"
-                data-seat-number={row.seat.seatNumber}
-              >
-                <SeatLabel seat={row.seat} focused={focusedSeat === row.seat.seatNumber} onFocus={onFocusSeat} />
-                <div className="draft-slideshow-row-cards">
-                  {row.visibleCards.length > 0 ? (
-                    row.visibleCards.map((card, index) => (
-                      <CardWithPreview
-                        key={`${row.seat.seatNumber}-${card.instanceId || index}`}
-                        card={stageCard(card, row.pick)}
-                        selected={card.instanceId === row.pick?.pickedInstanceId}
-                        tabIndex={-1}
-                        data-instance-id={card.instanceId}
-                      />
-                    ))
-                  ) : (
-                    <EmptyCardTile landscape={isLandscape} />
-                  )}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div
-      ref={stageRef}
-      className={`draft-slideshow-stage draft-slideshow-stage--multi ${isLandscape ? 'is-landscape' : ''}`}
-      style={cssVars}
-      data-overflow={(fit as MultiPlayerFit).overflow ? 'true' : 'false'}
-      data-testid="slideshow-stage"
-    >
-      <div className="draft-slideshow-row-stack">
-        {rows.map(row => (
-          <div
-            key={row.seat.seatNumber}
-            className={`draft-slideshow-seat-row ${focusedSeat === row.seat.seatNumber ? 'is-focused' : ''}`}
-            data-testid="slideshow-seat-row"
-            data-seat-number={row.seat.seatNumber}
-          >
-            <SeatLabel seat={row.seat} focused={focusedSeat === row.seat.seatNumber} onFocus={onFocusSeat} />
-            <div className="draft-slideshow-row-cards">
-              {row.visibleCards.length > 0 ? (
-                row.visibleCards.map((card, index) => (
-                  <CardWithPreview
-                    key={`${row.seat.seatNumber}-${card.instanceId || index}`}
-                    card={stageCard(card, row.pick)}
-                    selected={card.instanceId === row.pick?.pickedInstanceId}
-                    tabIndex={-1}
-                    data-instance-id={card.instanceId}
-                  />
-                ))
-              ) : (
-                <EmptyCardTile landscape={isLandscape} />
-              )}
-            </div>
+        {cards.map(card => (
+          <div key={card.instanceId} className="slideshow-stage-card" tabIndex={-1}>
+            <CardWithPreview
+              card={card as unknown as CardData}
+              selected={card.instanceId === pickedId}
+            />
           </div>
         ))}
       </div>
+    )
+  }, [isMulti, seats, slideIndex, singleFit])
+
+  // ---- Multi-player rows (memoized) -------------------------------------
+  const multiContent = useMemo(() => {
+    if (!isMulti) return null
+    return (
+      <div className="slideshow-stage-multi">
+        {seats.map(seat => {
+          const cards = seatVisibleCards(seat, slideIndex)
+          const pickedId = seatPickedId(seat, slideIndex)
+          return (
+            <div key={seat.seatNumber} className="slideshow-stage-row">
+              <div className="slideshow-stage-row-label">
+                <img
+                  className="slideshow-stage-avatar"
+                  src={seat.avatarUrl || AVATAR_FALLBACK}
+                  alt=""
+                  aria-hidden="true"
+                  draggable={false}
+                />
+                <span className="slideshow-stage-name">{seat.username}</span>
+              </div>
+              <div className="slideshow-stage-row-cards">
+                {cards.length === 0 ? (
+                  // Keep the row's height so the other rows don't shift.
+                  <div
+                    className="slideshow-stage-empty"
+                    aria-label={`${seat.username} — no cards`}
+                  >
+                    No cards
+                  </div>
+                ) : (
+                  cards.map(card => (
+                    // Namespace the key by seat: an instanceId can recur across seats.
+                    <div
+                      key={`${seat.seatNumber}:${card.instanceId}`}
+                      className="slideshow-stage-card"
+                      tabIndex={-1}
+                    >
+                      <CardWithPreview
+                        card={card as unknown as CardData}
+                        selected={card.instanceId === pickedId}
+                      />
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    )
+  }, [isMulti, seats, slideIndex])
+
+  return (
+    <div
+      ref={ref}
+      className={`slideshow-stage ${isMulti ? 'slideshow-stage--multi' : 'slideshow-stage--single'}`}
+      style={stageStyle}
+    >
+      {isMulti ? multiContent : singleContent}
     </div>
   )
 }
+
+export default SlideshowStage

@@ -1,130 +1,174 @@
 'use client'
 
-import type { CSSProperties } from 'react'
+/**
+ * SlideshowPlayerTabs — multi-select player tabs + "All" (Unit U5).
+ *
+ * One tab per seat: a circular avatar on the LEFT of a text column showing the
+ * seat's name, its drafted leader, and its drafted base (name tinted by the
+ * base's first aspect, with small aspect icons). Plus an "All" button that
+ * selects every UNLOCKED seat.
+ *
+ * Selectable tabs use the shared Button component (`variant="toggle"
+ * glowColor="blue" active`) — the rich avatar/name/leader/base content fits as
+ * the button's children (no nested interactive elements, so no nested-<button>
+ * violation), which keeps the blue-glow active token automatic per the style
+ * guide and the project's "use Button for toggles" rule.
+ *
+ * Locked seats (R12) render their identity (avatar + name + reduced-opacity
+ * leader/base) with `Button variant="warning"` + a lock icon, are
+ * `aria-disabled`, carry `aria-label="Private seat — {username}"`, are NOT
+ * clickable, and are excluded from "All".
+ *
+ * Plain-click toggles a seat in/out (no modifier keys). The shell
+ * (DraftSlideshow) prevents emptying the selection and owns "All"'s active
+ * state (true iff every unlocked seat is selected — never on a partial set).
+ */
+
+import './SlideshowPlayerTabs.css'
 import Button from './Button'
-import type { SeatSelection, SlideshowSeat } from './draftSlideshowTypes'
+import { ASPECT_COLORS } from '../utils/aspectColors'
+import type { SlideshowPlayerTabsProps, SlideshowSeat } from './DraftSlideshow'
 
-const AVATAR_FALLBACK = '/ptp_logo400.png'
-const RULE_WITH_RESPECT_HYPERSPACE_IMAGE = 'https://cdn.starwarsunlimited.com//card_0202375_EN_Rule_with_Respect_2ee7f9b662.png'
+const AVATAR_FALLBACK = '/icons/discord-logo.png'
 
-type PlayerTabStyle = CSSProperties & {
-  '--slideshow-tab-avatar': string
-}
-
-type AllTabStyle = CSSProperties & {
-  '--slideshow-all-tab-art': string
-}
-
+/** Small lock glyph for locked (private) seats. Local so the file stays self-contained. */
 function LockIcon() {
   return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      className="slideshow-player-tab__lock-icon"
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
       <path d="M7 11V7a5 5 0 0 1 10 0v4" />
     </svg>
   )
 }
 
-function cssUrl(url: string): string {
-  return `url("${url.replace(/["\\]/g, '\\$&')}")`
+/** Compact row of aspect icons (e.g. for a base's aspects). */
+function AspectIcons({ aspects }: { aspects?: string[] | null }) {
+  if (!aspects || aspects.length === 0) return null
+  return (
+    <span className="slideshow-player-tab__aspects">
+      {aspects.map((aspect, idx) => (
+        <img
+          key={`${aspect}-${idx}`}
+          src={`/icons/${aspect.toLowerCase()}.png`}
+          alt={aspect}
+          className="slideshow-player-tab__aspect-icon"
+        />
+      ))}
+    </span>
+  )
 }
 
-function playerTabBackground(url: string): PlayerTabStyle {
-  return {
-    '--slideshow-tab-avatar': cssUrl(url),
-  }
+/** Circular avatar with a Discord-logo fallback (bots already carry their own avatar). */
+function TabAvatar({ seat }: { seat: SlideshowSeat }) {
+  return (
+    <img
+      className="slideshow-player-tab__avatar"
+      src={seat.avatarUrl || AVATAR_FALLBACK}
+      alt=""
+      aria-hidden="true"
+    />
+  )
 }
 
-function allTabBackground(): AllTabStyle {
-  return {
-    '--slideshow-all-tab-art': cssUrl(RULE_WITH_RESPECT_HYPERSPACE_IMAGE),
-  }
-}
-
-export default function SlideshowPlayerTabs({
-  seats = [],
-  selectedSeats,
-  onSelectionChange,
-}: {
-  seats: SlideshowSeat[]
-  selectedSeats: SeatSelection
-  onSelectionChange: (next: SeatSelection) => void
-}) {
-  const unlockedSeats = seats.filter(seat => !seat.locked && seat.picks)
-  const allUnlockedSelected = unlockedSeats.length > 0 &&
-    unlockedSeats.every(seat => selectedSeats.has(seat.seatNumber))
-
-  const toggleAll = () => {
-    onSelectionChange(allUnlockedSelected
-      ? new Set()
-      : new Set(unlockedSeats.map(seat => seat.seatNumber))
-    )
-  }
-
-  const toggleSeat = (seatNumber: number) => {
-    if (allUnlockedSelected && selectedSeats.has(seatNumber)) {
-      onSelectionChange(new Set([seatNumber]))
-      return
-    }
-
-    const next = new Set(selectedSeats)
-    if (next.has(seatNumber)) {
-      if (next.size === 1) return
-      next.delete(seatNumber)
-    } else {
-      next.add(seatNumber)
-    }
-    onSelectionChange(next)
-  }
+/** Name + leader + base text column (shared by selectable and locked tabs). */
+function TabIdentity({ seat }: { seat: SlideshowSeat }) {
+  const baseColor =
+    seat.chosenBase?.aspects?.[0] != null
+      ? ASPECT_COLORS[seat.chosenBase.aspects[0] as keyof typeof ASPECT_COLORS] || 'white'
+      : 'white'
 
   return (
-    <div className="draft-slideshow-tabs" aria-label="Players">
+    <span className="slideshow-player-tab__identity">
+      <span className="slideshow-player-tab__name" title={seat.username}>
+        {seat.username}
+      </span>
+      {seat.activeLeaderName && (
+        <span className="slideshow-player-tab__leader" title={seat.activeLeaderName}>
+          {seat.activeLeaderName}
+        </span>
+      )}
+      {seat.chosenBase && (
+        <span className="slideshow-player-tab__base">
+          <span
+            className="slideshow-player-tab__base-name"
+            style={{ color: baseColor }}
+            title={seat.chosenBase.name}
+          >
+            {seat.chosenBase.name}
+          </span>
+          <AspectIcons aspects={seat.chosenBase.aspects} />
+        </span>
+      )}
+    </span>
+  )
+}
+
+export function SlideshowPlayerTabs({
+  seats,
+  selectedSeats,
+  onToggleSeat,
+  onSelectAll,
+  allSelected,
+}: SlideshowPlayerTabsProps) {
+  return (
+    <div className="slideshow-player-tabs" role="group" aria-label="Players">
       <Button
         variant="toggle"
         glowColor="blue"
-        active={allUnlockedSelected}
-        disabled={unlockedSeats.length === 0}
-        className="draft-slideshow-all-tab"
-        onClick={toggleAll}
-        style={allTabBackground()}
-        aria-label={allUnlockedSelected ? 'Deselect all players' : 'Select all players'}
+        active={allSelected}
+        onClick={onSelectAll}
+        className="slideshow-player-tab slideshow-player-tab--all"
       >
-        <span className="draft-slideshow-all-tab-label">{allUnlockedSelected ? 'None' : 'All'}</span>
+        All
       </Button>
 
-      <div className="draft-slideshow-tab-list" role="list">
-        {seats.map(seat => {
-          const selected = selectedSeats.has(seat.seatNumber)
-          const locked = seat.locked || !seat.picks
-          const baseName = seat.chosenBase?.name || 'No base'
-          const leaderName = seat.activeLeaderName || 'No leader'
-          const tabStyle = playerTabBackground(seat.avatarUrl || AVATAR_FALLBACK)
-
+      {(seats || []).map(seat => {
+        // Locked seat (R12): identity visible, never selectable, excluded from "All".
+        if (seat.locked) {
           return (
-            <button
+            <Button
               key={seat.seatNumber}
-              type="button"
-              className={`draft-slideshow-player-tab ${selected ? 'active' : ''} ${locked ? 'locked' : ''}`}
-              onClick={() => !locked && toggleSeat(seat.seatNumber)}
-              disabled={locked}
-              aria-pressed={!locked ? selected : undefined}
-              aria-disabled={locked || undefined}
-              aria-label={locked ? `Private seat - ${seat.username}` : `${selected ? 'Deselect' : 'Select'} ${seat.username}`}
-              data-testid="slideshow-player-tab"
-              data-seat-number={seat.seatNumber}
-              style={tabStyle}
+              variant="warning"
+              className="slideshow-player-tab slideshow-player-tab--locked"
+              aria-label={`Private seat — ${seat.username}`}
+              aria-disabled="true"
             >
-              <span className="draft-slideshow-tab-copy">
-                <span className="draft-slideshow-tab-name">
-                  {seat.username}
-                  {locked && <LockIcon />}
-                </span>
-                <span className="draft-slideshow-tab-detail">{leaderName}</span>
-                <span className="draft-slideshow-tab-detail base">{baseName}</span>
-              </span>
-            </button>
+              <TabAvatar seat={seat} />
+              <TabIdentity seat={seat} />
+              <LockIcon />
+            </Button>
           )
-        })}
-      </div>
+        }
+
+        const selected = selectedSeats.has(seat.seatNumber)
+        return (
+          <Button
+            key={seat.seatNumber}
+            variant="toggle"
+            glowColor="blue"
+            active={selected}
+            aria-pressed={selected}
+            onClick={() => onToggleSeat(seat.seatNumber)}
+            className="slideshow-player-tab"
+          >
+            <TabAvatar seat={seat} />
+            <TabIdentity seat={seat} />
+          </Button>
+        )
+      })}
     </div>
   )
 }
+
+export default SlideshowPlayerTabs

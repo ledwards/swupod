@@ -1,200 +1,141 @@
 'use client'
 
-import { useCallback, useEffect, useMemo } from 'react'
+/**
+ * SlideshowNav — bottom navigation for Slideshow Mode (Unit U7; R9, R10).
+ *
+ * Three navigation affordances that all advance the SAME single slide index
+ * (one source of truth → on-screen + keyboard parity):
+ *   1. Bottom-center "Pack X · Pick Y" label (an aria-live region so slide
+ *      changes are announced) flanked by Prev / Next {@link Button}s.
+ *   2. Large full-height clickable arrow strips pinned to the LEFT / RIGHT
+ *      viewport edges (`position: fixed`) — these sit at the overlay edges even
+ *      though this component renders in the bottom band (expected).
+ *   3. A `window` `keydown` listener: ArrowLeft → onPrev, ArrowRight → onNext.
+ *
+ * Hard-stops at the ends (no wrap): at the first slide Prev (button + left edge
+ * arrow + ArrowLeft) is a disabled no-op; at the last slide Next is disabled.
+ *
+ * Mirrors the keydown pattern in DraftReviewModal.tsx / PackDraftPhase.tsx
+ * (window listener added on mount, removed on unmount). Escape is owned by the
+ * shell (DraftSlideshow), NOT here.
+ */
+
+import { useEffect } from 'react'
+import './SlideshowNav.css'
 import Button from './Button'
-import type { SlideshowPick, SlideshowSeat } from './draftSlideshowTypes'
+import type { SlideshowNavProps } from './DraftSlideshow'
 
-type BoundaryPlayer = Pick<SlideshowSeat, 'seatNumber' | 'username'>
-
-function ArrowIcon({ direction }: { direction: 'left' | 'right' }) {
-  const left = direction === 'left'
+/** True when focus is in a typeable field — arrow keys should not navigate then. */
+function isTypingTarget(target: EventTarget | null): boolean {
+  const el = target as HTMLElement | null
+  if (!el || !el.tagName) return false
+  const tag = el.tagName.toUpperCase()
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      {left ? (
-        <>
-          <path d="M19 12H5" />
-          <path d="M12 19l-7-7 7-7" />
-        </>
-      ) : (
-        <>
-          <path d="M5 12h14" />
-          <path d="M12 5l7 7-7 7" />
-        </>
-      )}
-    </svg>
+    tag === 'INPUT' ||
+    tag === 'TEXTAREA' ||
+    tag === 'SELECT' ||
+    el.isContentEditable === true
   )
 }
 
-function isTextInputActive() {
-  const active = document.activeElement
-  if (!active) return false
-  const tag = active.tagName?.toLowerCase()
-  return tag === 'input' || tag === 'textarea' || tag === 'select' || (active instanceof HTMLElement && active.isContentEditable)
-}
+export function SlideshowNav({ slideIndex, slideCount, label, onPrev, onNext }: SlideshowNavProps) {
+  const atStart = slideIndex <= 0
+  const atEnd = slideCount <= 0 || slideIndex >= slideCount - 1
 
-export function getSlideLabel(pick: SlideshowPick | null | undefined): string {
-  if (!pick) return 'No Public Picks'
-  if (pick.packNumber === 0 || pick.type === 'leader') return `Leaders · Pick ${pick.pickInPack}`
-  return `Pack ${pick.packNumber} · Pick ${pick.pickInPack}`
-}
-
-export default function SlideshowNav({
-  slideIndex,
-  slideCount,
-  currentPick,
-  onSlideChange,
-  previousPlayer,
-  nextPlayer,
-  onPlayerBoundaryChange,
-}: {
-  slideIndex: number
-  slideCount: number
-  currentPick: SlideshowPick | null
-  onSlideChange: (nextIndex: number) => void
-  previousPlayer?: BoundaryPlayer | null
-  nextPlayer?: BoundaryPlayer | null
-  onPlayerBoundaryChange?: (seatNumber: number, nextSlideIndex: number) => void
-}) {
-  const isFirstSlide = slideIndex <= 0
-  const isLastSlide = slideIndex >= slideCount - 1
-  const showPreviousPlayerJump = Boolean(previousPlayer && isFirstSlide && slideCount > 0)
-  const showNextPlayerJump = Boolean(nextPlayer && isLastSlide && slideCount > 0)
-  const canGoPrevious = slideIndex > 0 || showPreviousPlayerJump
-  const canGoNext = slideIndex < slideCount - 1 || showNextPlayerJump
-  const label = useMemo(() => getSlideLabel(currentPick), [currentPick])
-
-  const goPrevious = useCallback(() => {
-    if (slideIndex > 0) {
-      onSlideChange(slideIndex - 1)
-      return
-    }
-
-    if (previousPlayer && showPreviousPlayerJump) {
-      onPlayerBoundaryChange?.(previousPlayer.seatNumber, Math.max(0, slideCount - 1))
-    }
-  }, [onPlayerBoundaryChange, onSlideChange, previousPlayer, showPreviousPlayerJump, slideCount, slideIndex])
-
-  const goNext = useCallback(() => {
-    if (slideIndex < slideCount - 1) {
-      onSlideChange(slideIndex + 1)
-      return
-    }
-
-    if (nextPlayer && showNextPlayerJump) {
-      onPlayerBoundaryChange?.(nextPlayer.seatNumber, 0)
-    }
-  }, [nextPlayer, onPlayerBoundaryChange, onSlideChange, showNextPlayerJump, slideCount, slideIndex])
-
+  // Keyboard Left/Right → the SAME onPrev/onNext the on-screen controls call.
+  // Single source of truth keeps keyboard and click navigation in parity.
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (isTextInputActive()) return
-      if (event.key === 'ArrowLeft') {
-        event.preventDefault()
-        goPrevious()
-      } else if (event.key === 'ArrowRight') {
-        event.preventDefault()
-        goNext()
+    const handleKeyDown = (e: globalThis.KeyboardEvent) => {
+      // Escape is the shell's job — never touch it here.
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
+      // Defensive: don't hijack arrows while the user is in a typeable field.
+      if (isTypingTarget(e.target)) return
+      e.preventDefault()
+      if (e.key === 'ArrowLeft') {
+        if (!atStart) onPrev()
+      } else if (!atEnd) {
+        onNext()
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [goPrevious, goNext])
+  }, [atStart, atEnd, onPrev, onNext])
+
+  // On-screen edge arrows: real <button>s so they're keyboard/AT reachable and
+  // get native disabled semantics. No-op clicks at the ends (defensive — they're
+  // disabled anyway). They share onPrev/onNext with the keyboard handler.
+  const handlePrevClick = () => {
+    if (!atStart) onPrev()
+  }
+  const handleNextClick = () => {
+    if (!atEnd) onNext()
+  }
 
   return (
     <>
-      <Button
-        variant="icon"
-        className="draft-slideshow-edge-arrow draft-slideshow-edge-arrow--left"
-        onClick={goPrevious}
-        disabled={!canGoPrevious}
-        aria-label={showPreviousPlayerJump && previousPlayer ? `Previous player: ${previousPlayer.username}` : 'Previous pick'}
-        aria-disabled={!canGoPrevious}
-        data-testid="slideshow-edge-prev"
+      {/* Full-height edge arrow strips, fixed to the viewport edges. */}
+      <button
+        type="button"
+        className="slideshow-edge slideshow-edge--prev"
+        onClick={handlePrevClick}
+        disabled={atStart}
+        aria-disabled={atStart}
+        aria-label="Previous pick"
       >
-        <ArrowIcon direction="left" />
-      </Button>
+        <span className="slideshow-edge-glyph" aria-hidden="true">
+          ‹
+        </span>
+      </button>
 
-      <Button
-        variant="icon"
-        className="draft-slideshow-edge-arrow draft-slideshow-edge-arrow--right"
-        onClick={goNext}
-        disabled={!canGoNext}
-        aria-label={showNextPlayerJump && nextPlayer ? `Next player: ${nextPlayer.username}` : 'Next pick'}
-        aria-disabled={!canGoNext}
-        data-testid="slideshow-edge-next"
-      >
-        <ArrowIcon direction="right" />
-      </Button>
-
-      {showPreviousPlayerJump && previousPlayer && (
+      {/* Bottom bar: Prev — label — Next, inside the shell's reserved nav band. */}
+      <div className="slideshow-nav">
         <Button
           variant="secondary"
-          size="sm"
-          className="draft-slideshow-player-jump draft-slideshow-player-jump--prev"
-          onClick={goPrevious}
-          aria-label={`Previous player: ${previousPlayer.username}`}
-          data-testid="slideshow-prev-player"
+          onClick={handlePrevClick}
+          disabled={atStart}
+          aria-disabled={atStart}
+          aria-label="Previous pick"
+          className="slideshow-nav-btn"
         >
-          <ArrowIcon direction="left" />
-          <span className="draft-slideshow-player-jump-copy">
-            <span className="draft-slideshow-player-jump-kicker">Previous player</span>
-            <span className="draft-slideshow-player-jump-name">{previousPlayer.username}</span>
+          <span className="slideshow-nav-btn-glyph" aria-hidden="true">
+            ‹
           </span>
+          Prev
         </Button>
-      )}
 
-      {showNextPlayerJump && nextPlayer && (
-        <Button
-          variant="secondary"
-          size="sm"
-          className="draft-slideshow-player-jump draft-slideshow-player-jump--next"
-          onClick={goNext}
-          aria-label={`Next player: ${nextPlayer.username}`}
-          data-testid="slideshow-next-player"
-        >
-          <span className="draft-slideshow-player-jump-copy">
-            <span className="draft-slideshow-player-jump-kicker">Next player</span>
-            <span className="draft-slideshow-player-jump-name">{nextPlayer.username}</span>
-          </span>
-          <ArrowIcon direction="right" />
-        </Button>
-      )}
-
-      <div className="draft-slideshow-nav">
-        <div className="draft-slideshow-nav-side draft-slideshow-nav-side--prev">
-          {!showPreviousPlayerJump && (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={goPrevious}
-              disabled={!canGoPrevious}
-              aria-disabled={!canGoPrevious}
-            >
-              <ArrowIcon direction="left" />
-              Prev
-            </Button>
-          )}
-        </div>
-
-        <div className="draft-slideshow-nav-label" aria-live="polite" data-testid="slideshow-slide-label">
+        <div className="slideshow-nav-label" aria-live="polite">
           {label}
         </div>
 
-        <div className="draft-slideshow-nav-side draft-slideshow-nav-side--next">
-          {!showNextPlayerJump && (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={goNext}
-              disabled={!canGoNext}
-              aria-disabled={!canGoNext}
-            >
-              Next
-              <ArrowIcon direction="right" />
-            </Button>
-          )}
-        </div>
+        <Button
+          variant="secondary"
+          onClick={handleNextClick}
+          disabled={atEnd}
+          aria-disabled={atEnd}
+          aria-label="Next pick"
+          className="slideshow-nav-btn"
+        >
+          Next
+          <span className="slideshow-nav-btn-glyph" aria-hidden="true">
+            ›
+          </span>
+        </Button>
       </div>
+
+      <button
+        type="button"
+        className="slideshow-edge slideshow-edge--next"
+        onClick={handleNextClick}
+        disabled={atEnd}
+        aria-disabled={atEnd}
+        aria-label="Next pick"
+      >
+        <span className="slideshow-edge-glyph" aria-hidden="true">
+          ›
+        </span>
+      </button>
     </>
   )
 }
+
+export default SlideshowNav
