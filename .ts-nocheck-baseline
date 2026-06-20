@@ -1,4 +1,4 @@
-570
+572
 app/admin/page.tsx
 app/api/admin/grant/route.test.ts
 app/api/admin/grant/route.ts
@@ -431,6 +431,7 @@ src/services/cards/cardSorting.ts
 src/services/cards/index.ts
 src/services/cards/setSpoilerOverview.test.ts
 src/services/cards/setSpoilerOverview.ts
+src/services/deckImage/renderDeckImage.ts
 src/services/expectedDistribution.test.ts
 src/services/expectedDistribution.ts
 src/services/importPool/buildAnomalies.ts
@@ -497,6 +498,7 @@ src/utils/draftLogReconstruction.ts
 src/utils/draftLogic.test.ts
 src/utils/draftLogic.ts
 src/utils/draftTimeout.ts
+src/utils/hyperspaceLeaderArt.test.ts
 src/utils/hyperspaceLeaderArt.ts
 src/utils/infiniteDeckbuilder.test.ts
 src/utils/infiniteDeckbuilder.ts
