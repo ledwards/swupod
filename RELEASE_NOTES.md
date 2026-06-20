@@ -3,10 +3,27 @@
 ## 06.20.2026
 
 ### 🎞️ Draft Report Slideshow
-- **Review a finished draft together, full-screen**: Open any completed draft report and hit **Slideshow Mode** for a screenshare-friendly view — every seat's pack at each pick, sized to fill the screen with no scrolling.
-- **Choose who's on screen**: Tabs across the top let you show one player, a few, or all eight at once; each tab carries the player's avatar, leader, and base.
-- **Focus a player**: With several players shown, click a player's avatar to ring them and their pack, then use the up/down arrows to move that highlight from player to player.
-- **Step through the draft**: Move pick by pick with the on-screen arrows or your left/right arrow keys — from the leader picks through all three packs.
+
+* New Slideshow mode for Draft Reports
+- Review a finished draft with your pod, full-screen, ideal for screensharing on Discord — Slideshow Mode shows every seat's pack at each pick, sized to fill the screen with no scrolling.
+- Tabs across the top allow you to review one player at a time or the whole team at once
+- Step pick-by-pick with on-screen or left/right arrow keys, from leaders through all three packs.
+- Visually highlight a player row with up/down arrows.
+
+### ⏱️ Competitive Draft Pick Timer
+- The round timer dial now follows the official per-card schedule (more time early, less as the pack empties), so the clock always matches how long you actually have — even deep into a pack.
+
+* Pick timer is disabled in Competitive Mode (all players have the full round time to pick a card.)
+
+### 🃏 Deck Images
+- Pod deck images now include the QR code, set-art background, and full footer — matching the play-page export. All four deck-image surfaces share one renderer now.
+
+### 📊 Your Stats
+- New Your Leaders and Your Archetypes data visualization, plus a cleaned-up luck histogram and corrected spread (σ for the math dorks).
+
+### 🐛 Bug Fixes
+- Private lobby links paste cleanly (Karabast's new `/lobby?lobbyId=…` format).
+- Recorded games no longer double-count in deck stats, even if reported through more than one path.
 
 ## 06.19.2026
 
