@@ -17,6 +17,7 @@ import { buildBaseCardMap, getBaseCardId } from '../../../../../src/utils/varian
 import { jsonParse } from '../../../../../src/utils/json'
 import { resolveArchetypeUuid, fetchArchetypeNickname } from '../../../../../src/utils/deckBuilderSharing'
 import { archetypeShortName } from '../../../../../src/utils/archetypeName'
+import { formatRecord } from '../../../../../src/utils/deckRecord'
 import { wayfinderMatchesUrl } from '../../../../../src/utils/wayfinderUrls'
 import { defaultSort } from '../../../../../src/services/cards/cardSorting'
 import { calculateAspectPenalty } from '../../../../../src/services/cards/aspectPenalties'
@@ -29,7 +30,6 @@ import PlayInstructions from '../../../../../src/components/PlayInstructions'
 import ChatPanel from '../../../../../src/components/ChatPanel'
 import MatchmakingPanel from '../../../../../src/components/MatchmakingPanel'
 import ResultReportModal from '../../../../../src/components/ResultReportModal'
-import { ReplayExplorer, type GameplayReplay } from '../../../../../src/components/YourStats/GameplayDashboard'
 import { useWayfinderDetection } from '../../../../../src/hooks/useWayfinderDetection'
 import { useDraftSocket } from '../../../../../src/hooks/useDraftSocket'
 import { trackEvent } from '../../../../../src/hooks/useAnalytics'
@@ -41,7 +41,6 @@ import {
 } from '../../../../../src/analytics/limitedEvents'
 import '../../../../../src/App.css'
 import '../../../../../src/components/ChatPanel.css'
-import '../../../../../src/components/YourStats/YourStats.css'
 import './play.css'
 
 function WldBadge({
@@ -49,20 +48,17 @@ function WldBadge({
 }: {
   wins: number; losses: number; draws: number; matchIds: string[]
 }) {
-  if (wins === 0 && losses === 0 && draws === 0) return null
   const wayfinder = process.env.NEXT_PUBLIC_WAYFINDER_URL ?? 'https://plugin.wayfinder.news'
   return (
-    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-      <span style={{ fontWeight: 700, fontSize: '14px' }}>
-        {wins}W {losses}L {draws}D
-      </span>
+    <div className="play-record-line">
+      <span className="play-record-badge">{formatRecord(wins, losses, draws)}</span>
       {matchIds.map((id, i) => (
         <a
           key={id}
           href={`${wayfinder}/matches/${id}`}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ fontSize: '12px', color: '#93c5fd' }}
+          className="play-record-match-link"
         >
           Match {i + 1}
         </a>
@@ -279,26 +275,7 @@ export default function PlayPage({ params }: PageProps) {
 
   // Detect the Wayfinder extension via the centralized hook (meta tag + event +
   // postMessage, with a localStorage bridge and the ?wayfinder=1/0 QA override).
-  const { detected: wayfinderDetected, pluginLoggedIn } = useWayfinderDetection()
-
-  // This pool's captured games (the viewer's own), for the rich history explorer
-  // below. Reuses the personal gameplay endpoint (full date range) and filters
-  // to this pool — non-owners simply get an empty list and the bare fallback.
-  const [poolReplays, setPoolReplays] = useState<GameplayReplay[]>([])
-  useEffect(() => {
-    if (!wayfinderDetected || !user?.id || !shareId) { setPoolReplays([]); return }
-    let cancelled = false
-    fetch('/api/stats/me/gameplay', { credentials: 'include' })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((body) => {
-        if (cancelled || !body) return
-        const data = body?.data ? body.data : body
-        const all: GameplayReplay[] = Array.isArray(data?.replays) ? data.replays : []
-        setPoolReplays(all.filter((rep) => rep?.pool?.shareId === shareId))
-      })
-      .catch(() => { if (!cancelled) setPoolReplays([]) })
-    return () => { cancelled = true }
-  }, [wayfinderDetected, user?.id, shareId])
+  const { detected: wayfinderDetected } = useWayfinderDetection()
 
   // ?lobby=private|public deep link (from the /me Pools tab lobby buttons):
   // auto-opens the corresponding Karabast lobby once detected + owner.
@@ -2097,12 +2074,24 @@ export default function PlayPage({ params }: PageProps) {
           />
           {deckArchetypeName && <p className="play-deck-name">{deckArchetypeName}</p>}
           <p className="play-pool-type">{poolTypeLabel}</p>
-          <WldBadge
-            wins={pool.wins ?? 0}
-            losses={pool.losses ?? 0}
-            draws={pool.draws ?? 0}
-            matchIds={pool.wayfinderMatchIds ?? []}
-          />
+          <div className="play-header-actions">
+            <WldBadge
+              wins={pool.wins ?? 0}
+              losses={pool.losses ?? 0}
+              draws={pool.draws ?? 0}
+              matchIds={pool.wayfinderMatchIds ?? []}
+            />
+            {shareId && (
+              <Button
+                variant="secondary"
+                size="sm"
+                className="play-stats-button"
+                onClick={() => router.push(`/pool/${shareId}/deck/stats?tab=gamelog`)}
+              >
+                Stats
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Login banner for logged-out users viewing anonymous (unowned) pools */}
@@ -2136,7 +2125,6 @@ export default function PlayPage({ params }: PageProps) {
           shareId={shareId}
           poolType={isSoloDraft ? 'sealed' : (pool?.poolType || 'sealed')}
           setCode={pool?.setCode}
-          archetypeName={deckArchetypeName}
           opponentName={firstOpponent?.username}
           hasBye={hasBye}
           isSoloDraft={isSoloDraft}
@@ -2151,7 +2139,6 @@ export default function PlayPage({ params }: PageProps) {
           isOwner={isInfinitePool ? true : (!pool?.owner || !!isOwner)}
           ownerName={pool?.owner?.username || pool?.owner?.name || null}
           wayfinderDetected={wayfinderDetected}
-          pluginLoggedIn={pluginLoggedIn}
           isLoggedIn={Boolean(user)}
           autoLobbyIntent={autoLobbyIntent}
           analyticsContext={getLimitedAnalyticsContext()}
@@ -2205,24 +2192,7 @@ export default function PlayPage({ params }: PageProps) {
         {wayfinderDetected && (
           <div className="play-history-panel">
             <span className="play-history-label">History</span>
-            {poolReplays.length > 0 ? (
-              <>
-                <ReplayExplorer
-                  replays={poolReplays}
-                  myName={user?.username || 'You'}
-                  eyebrow="Match History"
-                  heading="Your games in this pool"
-                />
-                <a
-                  className="play-record-link"
-                  href={wayfinderMatchesUrl()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View all your matches on Wayfinder
-                </a>
-              </>
-            ) : ((pool?.wins ?? 0) + (pool?.losses ?? 0) + (pool?.draws ?? 0) > 0 || (pool?.wayfinderMatchIds?.length ?? 0) > 0) ? (
+            {((pool?.wins ?? 0) + (pool?.losses ?? 0) + (pool?.draws ?? 0) > 0 || (pool?.wayfinderMatchIds?.length ?? 0) > 0) ? (
               <div className="play-record-summary">
                 <WldBadge
                   wins={pool?.wins ?? 0}
@@ -2232,7 +2202,7 @@ export default function PlayPage({ params }: PageProps) {
                 />
                 <a
                   className="play-record-link"
-                  href={wayfinderMatchesUrl()}
+                  href={`${process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin.wayfinder.news'}/matches`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

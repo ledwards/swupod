@@ -1,12 +1,10 @@
 # Release Notes
 
-## 06.18.2026
+## 06.19.2026
 
-### 📊 My Stats
-- **Your leaders and archetypes at a glance**: My Stats now charts how your games split across the leaders and archetypes you play — each in its own color — so your most-played decks, and how they perform, stand out immediately.
-- **Win rate by leader**: See your win rate broken down by the leader you ran.
-- **Set and format performance**: Compare how you're doing across each set and format, side by side.
-- **Smarter Set filter**: The Set filter now defaults to the newest set you can open, so you land on your most relevant stats first.
+### 🎮 Deck Stats + Homepage Polish
+- **Gameplay and Matchups empty states are clearer**: Players outside the Wayfinder rollout now just see `Coming Soon`, while flagged users get the right deck-specific prompt. If Wayfinder is installed but there are no games yet, the tab points you at the play page for that deck.
+- **The homepage Discord login button is easier to hit**: Logged-out visitors now get a larger `Login with Discord` button with more breathing room above and below it, while logged-in Discord prompts keep their existing size.
 
 ## 06.15.2026
 

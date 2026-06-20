@@ -560,7 +560,7 @@ export interface CardMeta {
 // actually line up with expected — and collapses every variant (Hyperspace,
 // Foil, Showcase) of a card onto the same collector id.
 const uuidCache = new Map<string, Map<string, string>>()
-function getUuidToCardId(setCode: string): Map<string, string> {
+export function getUuidToCardId(setCode: string): Map<string, string> {
   let map = uuidCache.get(setCode)
   if (map) return map
   map = new Map<string, string>()
@@ -573,7 +573,7 @@ function getUuidToCardId(setCode: string): Map<string, string> {
 }
 
 const metaCache = new Map<string, Map<string, CardMeta>>()
-function getCardMetaLookup(setCode: string): Map<string, CardMeta> {
+export function getCardMetaLookup(setCode: string): Map<string, CardMeta> {
   let map = metaCache.get(setCode)
   if (map) return map
   map = new Map<string, CardMeta>()
@@ -648,7 +648,7 @@ export function buildCardHits(
  * collisions and under-reports (LAW would read ~0 instead of ~6.7).
  */
 const dupIdentityCache = new Map<string, Map<string, string>>()
-function getDupIdentity(setCode: string): (row: GenerationRow) => string {
+export function getDupIdentity(setCode: string): (row: GenerationRow) => string {
   let map = dupIdentityCache.get(setCode)
   if (!map) {
     map = new Map<string, string>()

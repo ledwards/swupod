@@ -54,6 +54,13 @@
   transition: all 0.2s ease;
 }
 
+.discord-cta--signin {
+  padding: 12px 24px;
+  margin-top: 1.25rem;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .discord-cta:hover {
     background: #4752C4;
