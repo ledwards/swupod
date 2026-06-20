@@ -2187,36 +2187,6 @@ export default function PlayPage({ params }: PageProps) {
           )}
         </div>
 
-        {/* History — the pool's recorded games (Wayfinder-tracked). Only once
-            the Companion is present; the install pitch lives in PlayInstructions. */}
-        {wayfinderDetected && (
-          <div className="play-history-panel">
-            <span className="play-history-label">History</span>
-            {((pool?.wins ?? 0) + (pool?.losses ?? 0) + (pool?.draws ?? 0) > 0 || (pool?.wayfinderMatchIds?.length ?? 0) > 0) ? (
-              <div className="play-record-summary">
-                <WldBadge
-                  wins={pool?.wins ?? 0}
-                  losses={pool?.losses ?? 0}
-                  draws={pool?.draws ?? 0}
-                  matchIds={pool?.wayfinderMatchIds ?? []}
-                />
-                <a
-                  className="play-record-link"
-                  href={`${process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin.wayfinder.news'}/matches`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View your matches on Wayfinder
-                </a>
-              </div>
-            ) : (
-              <p className="play-record-blurb">
-                You&apos;re all set — play some games to start your record.
-              </p>
-            )}
-          </div>
-        )}
-
         {isCompetitive && user && (
           <MatchmakingPanel
             rounds={competitiveRounds}
