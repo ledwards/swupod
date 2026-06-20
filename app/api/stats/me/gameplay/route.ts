@@ -5,6 +5,7 @@ import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
 import { getAspectColor } from '@/src/utils/aspectColors'
 import { hyperspaceLeaderArt } from '@/src/utils/hyperspaceLeaderArt'
+import { resolveReplayUrl } from '@/src/utils/wayfinderUrls'
 import { NextRequest, NextResponse } from 'next/server'
 
 /** Replay list items use unit-side leader art, preferring Hyperspace variants. */
@@ -614,7 +615,10 @@ interface RawCasualRow {
 function mapCasualReplay(row: RawCasualRow): GameplayReplay {
   const format = row.pool_type || 'sealed'
   const deckPreview = extractDeckPreview(row.deck_builder_state)
-  const replayUrl = row.wayfinder_replay_url || ''
+  // Prefer a stored canonical /playback/ URL; otherwise derive from the match id.
+  // Strips the bogus `ing-` ingestion prefix (see resolveReplayUrl) so the link
+  // resolves instead of showing "out of range" + Discord login.
+  const replayUrl = resolveReplayUrl(row.wayfinder_match_id, row.wayfinder_replay_url)
   const result = (row.result === 'win' || row.result === 'loss' || row.result === 'draw') ? row.result : 'pending'
   return {
     id: row.id || row.wayfinder_match_id || replayUrl,
@@ -701,7 +705,9 @@ export function buildGameplayResponse(
       ...replayRows.map((row): GameplayReplay => {
         const format = row.pool_type || 'sealed'
         const deckPreview = extractDeckPreview(row.deck_builder_state)
-        const replayUrl = row.wayfinder_replay_url || ''
+        // Canonical replay link (see mapCasualReplay): prefer stored /playback/,
+        // else derive from the match id, stripping the bogus `ing-` prefix.
+        const replayUrl = resolveReplayUrl(row.wayfinder_match_id, row.wayfinder_replay_url)
         return {
           id: row.match_id || row.wayfinder_match_id || replayUrl,
           wayfinderMatchId: row.wayfinder_match_id || null,
