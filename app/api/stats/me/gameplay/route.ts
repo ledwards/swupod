@@ -870,8 +870,31 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       // Every owned pool with games — aggregated by leader in JS for the
       // leader-mix + win-rate-per-leader widget (leader lives in the JSON state,
       // so we can't GROUP BY it in SQL).
+      //
+      // buildLeaderBreakdown reads ONLY the leader + base out of each pool, so
+      // we trim deck_builder_state down to { activeLeader, activeBase, and those
+      // two cardPositions } in SQL instead of shipping up to 300 full pool blobs
+      // (every card with full card objects). The CASE guards a malformed/legacy
+      // shape by passing it through untouched, so the JS path is unchanged for
+      // those rows. The trim is spec'd + locked by leaderBreakdownPayload.test.ts
+      // (trimForLeader) — keep the two in sync.
       queryRows(
-        `SELECT deck_builder_state, wins, losses, draws
+        `SELECT
+           CASE
+             WHEN jsonb_typeof(deck_builder_state) = 'object'
+              AND jsonb_typeof(deck_builder_state->'cardPositions') = 'object'
+             THEN jsonb_build_object(
+               'activeLeader', deck_builder_state->'activeLeader',
+               'activeBase', deck_builder_state->'activeBase',
+               'cardPositions', COALESCE((
+                 SELECT jsonb_object_agg(key, value)
+                 FROM jsonb_each(deck_builder_state->'cardPositions')
+                 WHERE key IN (deck_builder_state->>'activeLeader', deck_builder_state->>'activeBase')
+               ), '{}'::jsonb)
+             )
+             ELSE deck_builder_state
+           END AS deck_builder_state,
+           wins, losses, draws
          FROM card_pools
          WHERE ${ownedPoolWhere}
            AND (wins + losses + draws > 0)
