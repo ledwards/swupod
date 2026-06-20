@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react'
 import { getLatestReleasedSetCode } from '../utils/setConfigs/latest'
 import { trackEvent } from '../hooks/useAnalytics'
 import { buildLimitedContext, LimitedAnalyticsEvents, LimitedPlayActions } from '../analytics/limitedEvents'
-import { buildLobbyName } from '../utils/karabastLobby'
+import { buildLobbyName, isValidPrivateLobbyUrl } from '../utils/karabastLobby'
 import { WayfinderCompanionLockup } from './WayfinderStoreButtons'
 import PluginCTA from '@/src/components/PluginCTA'
 import Button from './Button'
@@ -14,8 +14,6 @@ import { isCompanionBeta } from '../utils/companionBeta'
 import './PlayInstructions.css'
 
 const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/u6fkdDzWqF'
-
-const PRIVATE_LOBBY_PATTERN = /^https:\/\/karabast\.net\/\?lobbyId=[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 interface PlayInstructionsProps {
   shareId: string | null
@@ -177,7 +175,7 @@ export default function PlayInstructions({
 
   function dispatchJoinPrivate() {
     const url = joinUrl.trim()
-    if (!PRIVATE_LOBBY_PATTERN.test(url)) {
+    if (!isValidPrivateLobbyUrl(url)) {
       setJoinError('Not a valid Karabast private lobby URL')
       trackPlayAction(LimitedPlayActions.WAYFINDER_JOIN_PRIVATE_LOBBY, {
         target: 'wayfinder',
@@ -436,7 +434,7 @@ export default function PlayInstructions({
               className={`wayfinder-join-input${joinError ? ' error' : ''}`}
               value={joinUrl}
               onChange={e => { setJoinUrl(e.target.value); setJoinError(null) }}
-              placeholder="https://karabast.net/?lobbyId=..."
+              placeholder="https://karabast.net/lobby?lobbyId=..."
             />
             <button className="wayfinder-join-btn" onClick={dispatchJoinPrivate}>
               Join

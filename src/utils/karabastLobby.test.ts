@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { buildLobbyName, appendProtectThePod } from './karabastLobby'
+import { buildLobbyName, appendProtectThePod, isValidPrivateLobbyUrl } from './karabastLobby'
 
 describe('buildLobbyName', () => {
   it('builds "SET Sealed archetype protectthepod.com" for a sealed pool', () => {
@@ -45,5 +45,34 @@ describe('appendProtectThePod', () => {
   it('falls back to the bare suffix for empty input', () => {
     assert.equal(appendProtectThePod(''), 'protectthepod.com')
     assert.equal(appendProtectThePod(null), 'protectthepod.com')
+  })
+})
+
+describe('isValidPrivateLobbyUrl', () => {
+  const ID = 'd508ac36-c2b9-4601-9695-3b1b416b5b16'
+
+  it('FIXED: accepts the /lobby?lobbyId= URL Karabast now serves', () => {
+    // Regression: the old regex pinned lobbyId to the root path (/?lobbyId=)
+    // and rejected this real, valid lobby link.
+    assert.equal(isValidPrivateLobbyUrl(`https://karabast.net/lobby?lobbyId=${ID}`), true)
+  })
+
+  it('still accepts the legacy root /?lobbyId= URL', () => {
+    assert.equal(isValidPrivateLobbyUrl(`https://karabast.net/?lobbyId=${ID}`), true)
+  })
+
+  it('is tolerant of surrounding whitespace and extra query params', () => {
+    assert.equal(isValidPrivateLobbyUrl(`  https://karabast.net/lobby?lobbyId=${ID}  `), true)
+    assert.equal(isValidPrivateLobbyUrl(`https://karabast.net/lobby?foo=bar&lobbyId=${ID}`), true)
+  })
+
+  it('rejects the wrong host, non-https, a missing/malformed lobbyId, and junk', () => {
+    assert.equal(isValidPrivateLobbyUrl(`https://evil.example.com/lobby?lobbyId=${ID}`), false)
+    assert.equal(isValidPrivateLobbyUrl(`http://karabast.net/lobby?lobbyId=${ID}`), false)
+    assert.equal(isValidPrivateLobbyUrl('https://karabast.net/lobby'), false)
+    assert.equal(isValidPrivateLobbyUrl('https://karabast.net/lobby?lobbyId=not-a-uuid'), false)
+    assert.equal(isValidPrivateLobbyUrl('not a url'), false)
+    assert.equal(isValidPrivateLobbyUrl(''), false)
+    assert.equal(isValidPrivateLobbyUrl(null), false)
   })
 })

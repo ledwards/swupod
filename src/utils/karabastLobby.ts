@@ -5,6 +5,33 @@ export const KARABAST_PUBLIC_LOBBY_NAME = 'Limited Draft through protectthepod.c
 
 const PTP_SUFFIX = 'protectthepod.com'
 
+/** A Karabast lobby id is a standard UUID. */
+const LOBBY_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+/**
+ * Whether `raw` is a valid Karabast private-lobby URL.
+ *
+ * Karabast serves these as `https://karabast.net/lobby?lobbyId=<uuid>` (and
+ * historically `https://karabast.net/?lobbyId=<uuid>`). We validate the host
+ * and a well-formed `lobbyId` rather than pinning the exact path — Karabast has
+ * already moved the path once, and parsing also tolerates whitespace, query
+ * param order, and extra params.
+ */
+export function isValidPrivateLobbyUrl(raw: string | null | undefined): boolean {
+  if (!raw) return false
+  let url: URL
+  try {
+    url = new URL(raw.trim())
+  } catch {
+    return false
+  }
+  if (url.protocol !== 'https:') return false
+  const host = url.hostname.toLowerCase()
+  if (host !== 'karabast.net' && host !== 'www.karabast.net') return false
+  const lobbyId = url.searchParams.get('lobbyId')
+  return !!lobbyId && LOBBY_ID_PATTERN.test(lobbyId)
+}
+
 /** Ensure a lobby/game name ends with the protectthepod.com attribution. */
 export function appendProtectThePod(name: string | null | undefined): string {
   const n = (name || '').trim()
