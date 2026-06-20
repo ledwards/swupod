@@ -77,14 +77,14 @@ model, and real Swiss round advancement.
 - The new test passes when `swupod_test` exists and migrations are current; it skips
   loudly otherwise.
 
-- [ ] **Unit 2: PTP Playwright fake Companion driver**
+- [x] **Unit 2: PTP Playwright fake Companion driver**
 
 **Goal:** Add browser-level coverage for the same journey using two logged-in
 contexts and a fake Companion event driver.
 
 **Files:**
 - Create: `tests/e2e/live-swiss-fake-companion.spec.ts`
-- Create/Modify: `tests/e2e/test-utils.ts`
+- Reuse: `tests/e2e/test-utils.ts`
 
 **Approach:** Use Playwright to inject Wayfinder detection, intercept practice
 postMessages, and call PTP lifecycle/result endpoints from the test process.
