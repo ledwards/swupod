@@ -1,3 +1,5 @@
+@import '../../../../src/styles/animations.css';
+
 .rotisserie-play-page {
   min-height: 100vh;
   display: flex;
@@ -1568,30 +1570,14 @@
   .pool-card.pickable:hover .canvas-card::before {
     content: '';
     position: absolute;
-    inset: -4px;
-    border-radius: 10px;
-    background: linear-gradient(
-      45deg,
-      #ff0000,
-      #ff7f00,
-      #ffff00,
-      #00ff00,
-      #0000ff,
-      #4b0082,
-      #9400d3,
-      #ff0000
-    );
-    background-size: 400% 400%;
+    inset: calc(var(--rainbow-border-size) * -1);
+    border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
+    background: var(--rainbow-border-gradient);
+    background-size: var(--rainbow-border-background-size);
     z-index: -1;
-    animation: rainbow-border 3s linear infinite;
+    animation: var(--rainbow-border-animation);
     pointer-events: none;
   }
-}
-
-@keyframes rainbow-border {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }
 
 .picked-overlay {

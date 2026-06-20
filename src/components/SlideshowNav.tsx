@@ -1,8 +1,10 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import Button from './Button'
-import type { SlideshowPick } from './draftSlideshowTypes'
+import type { SlideshowPick, SlideshowSeat } from './draftSlideshowTypes'
+
+type BoundaryPlayer = Pick<SlideshowSeat, 'seatNumber' | 'username'>
 
 function ArrowIcon({ direction }: { direction: 'left' | 'right' }) {
   const left = direction === 'left'
@@ -41,38 +43,62 @@ export default function SlideshowNav({
   slideCount,
   currentPick,
   onSlideChange,
+  previousPlayer,
+  nextPlayer,
+  onPlayerBoundaryChange,
 }: {
   slideIndex: number
   slideCount: number
   currentPick: SlideshowPick | null
   onSlideChange: (nextIndex: number) => void
+  previousPlayer?: BoundaryPlayer | null
+  nextPlayer?: BoundaryPlayer | null
+  onPlayerBoundaryChange?: (seatNumber: number, nextSlideIndex: number) => void
 }) {
-  const canGoPrevious = slideIndex > 0
-  const canGoNext = slideIndex < slideCount - 1
+  const isFirstSlide = slideIndex <= 0
+  const isLastSlide = slideIndex >= slideCount - 1
+  const showPreviousPlayerJump = Boolean(previousPlayer && isFirstSlide && slideCount > 0)
+  const showNextPlayerJump = Boolean(nextPlayer && isLastSlide && slideCount > 0)
+  const canGoPrevious = slideIndex > 0 || showPreviousPlayerJump
+  const canGoNext = slideIndex < slideCount - 1 || showNextPlayerJump
   const label = useMemo(() => getSlideLabel(currentPick), [currentPick])
 
-  const goPrevious = () => {
-    if (canGoPrevious) onSlideChange(slideIndex - 1)
-  }
+  const goPrevious = useCallback(() => {
+    if (slideIndex > 0) {
+      onSlideChange(slideIndex - 1)
+      return
+    }
 
-  const goNext = () => {
-    if (canGoNext) onSlideChange(slideIndex + 1)
-  }
+    if (previousPlayer && showPreviousPlayerJump) {
+      onPlayerBoundaryChange?.(previousPlayer.seatNumber, Math.max(0, slideCount - 1))
+    }
+  }, [onPlayerBoundaryChange, onSlideChange, previousPlayer, showPreviousPlayerJump, slideCount, slideIndex])
+
+  const goNext = useCallback(() => {
+    if (slideIndex < slideCount - 1) {
+      onSlideChange(slideIndex + 1)
+      return
+    }
+
+    if (nextPlayer && showNextPlayerJump) {
+      onPlayerBoundaryChange?.(nextPlayer.seatNumber, 0)
+    }
+  }, [nextPlayer, onPlayerBoundaryChange, onSlideChange, showNextPlayerJump, slideCount, slideIndex])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (isTextInputActive()) return
       if (event.key === 'ArrowLeft') {
         event.preventDefault()
-        if (slideIndex > 0) onSlideChange(slideIndex - 1)
+        goPrevious()
       } else if (event.key === 'ArrowRight') {
         event.preventDefault()
-        if (slideIndex < slideCount - 1) onSlideChange(slideIndex + 1)
+        goNext()
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [slideIndex, slideCount, onSlideChange])
+  }, [goPrevious, goNext])
 
   return (
     <>
@@ -81,7 +107,7 @@ export default function SlideshowNav({
         className="draft-slideshow-edge-arrow draft-slideshow-edge-arrow--left"
         onClick={goPrevious}
         disabled={!canGoPrevious}
-        aria-label="Previous pick"
+        aria-label={showPreviousPlayerJump && previousPlayer ? `Previous player: ${previousPlayer.username}` : 'Previous pick'}
         aria-disabled={!canGoPrevious}
         data-testid="slideshow-edge-prev"
       >
@@ -93,39 +119,81 @@ export default function SlideshowNav({
         className="draft-slideshow-edge-arrow draft-slideshow-edge-arrow--right"
         onClick={goNext}
         disabled={!canGoNext}
-        aria-label="Next pick"
+        aria-label={showNextPlayerJump && nextPlayer ? `Next player: ${nextPlayer.username}` : 'Next pick'}
         aria-disabled={!canGoNext}
         data-testid="slideshow-edge-next"
       >
         <ArrowIcon direction="right" />
       </Button>
 
-      <div className="draft-slideshow-nav">
+      {showPreviousPlayerJump && previousPlayer && (
         <Button
           variant="secondary"
           size="sm"
+          className="draft-slideshow-player-jump draft-slideshow-player-jump--prev"
           onClick={goPrevious}
-          disabled={!canGoPrevious}
-          aria-disabled={!canGoPrevious}
+          aria-label={`Previous player: ${previousPlayer.username}`}
+          data-testid="slideshow-prev-player"
         >
           <ArrowIcon direction="left" />
-          Prev
+          <span className="draft-slideshow-player-jump-copy">
+            <span className="draft-slideshow-player-jump-kicker">Previous player</span>
+            <span className="draft-slideshow-player-jump-name">{previousPlayer.username}</span>
+          </span>
         </Button>
+      )}
+
+      {showNextPlayerJump && nextPlayer && (
+        <Button
+          variant="secondary"
+          size="sm"
+          className="draft-slideshow-player-jump draft-slideshow-player-jump--next"
+          onClick={goNext}
+          aria-label={`Next player: ${nextPlayer.username}`}
+          data-testid="slideshow-next-player"
+        >
+          <span className="draft-slideshow-player-jump-copy">
+            <span className="draft-slideshow-player-jump-kicker">Next player</span>
+            <span className="draft-slideshow-player-jump-name">{nextPlayer.username}</span>
+          </span>
+          <ArrowIcon direction="right" />
+        </Button>
+      )}
+
+      <div className="draft-slideshow-nav">
+        <div className="draft-slideshow-nav-side draft-slideshow-nav-side--prev">
+          {!showPreviousPlayerJump && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={goPrevious}
+              disabled={!canGoPrevious}
+              aria-disabled={!canGoPrevious}
+            >
+              <ArrowIcon direction="left" />
+              Prev
+            </Button>
+          )}
+        </div>
 
         <div className="draft-slideshow-nav-label" aria-live="polite" data-testid="slideshow-slide-label">
           {label}
         </div>
 
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={goNext}
-          disabled={!canGoNext}
-          aria-disabled={!canGoNext}
-        >
-          Next
-          <ArrowIcon direction="right" />
-        </Button>
+        <div className="draft-slideshow-nav-side draft-slideshow-nav-side--next">
+          {!showNextPlayerJump && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={goNext}
+              disabled={!canGoNext}
+              aria-disabled={!canGoNext}
+            >
+              Next
+              <ArrowIcon direction="right" />
+            </Button>
+          )}
+        </div>
       </div>
     </>
   )

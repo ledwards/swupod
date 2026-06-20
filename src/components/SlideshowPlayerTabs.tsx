@@ -43,8 +43,11 @@ export default function SlideshowPlayerTabs({
   const allUnlockedSelected = unlockedSeats.length > 0 &&
     unlockedSeats.every(seat => selectedSeats.has(seat.seatNumber))
 
-  const setAll = () => {
-    onSelectionChange(new Set(unlockedSeats.map(seat => seat.seatNumber)))
+  const toggleAll = () => {
+    onSelectionChange(allUnlockedSelected
+      ? new Set()
+      : new Set(unlockedSeats.map(seat => seat.seatNumber))
+    )
   }
 
   const toggleSeat = (seatNumber: number) => {
@@ -71,10 +74,11 @@ export default function SlideshowPlayerTabs({
         active={allUnlockedSelected}
         disabled={unlockedSeats.length === 0}
         className="draft-slideshow-all-tab"
-        onClick={setAll}
+        onClick={toggleAll}
         style={allTabBackground()}
+        aria-label={allUnlockedSelected ? 'Deselect all players' : 'Select all players'}
       >
-        <span className="draft-slideshow-all-tab-label">All</span>
+        <span className="draft-slideshow-all-tab-label">{allUnlockedSelected ? 'None' : 'All'}</span>
       </Button>
 
       <div className="draft-slideshow-tab-list" role="list">

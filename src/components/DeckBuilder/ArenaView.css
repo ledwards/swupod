@@ -6,6 +6,8 @@
  * Deck shows cards in cost columns with vertical stacking.
  */
 
+@import '../../styles/animations.css';
+
 /* ==========================================================================
    Arena View Container
    ========================================================================== */
@@ -22,6 +24,8 @@
    ========================================================================== */
 
 .resizable-card {
+  --rainbow-border-size: calc(var(--rainbow-border-reference) * var(--rainbow-border-thickness-ratio));
+  --rainbow-border-radius: calc(var(--rainbow-border-reference) * var(--rainbow-border-radius-ratio));
   position: relative;
   width: 100%;
   aspect-ratio: 2.5 / 3.5;
@@ -102,17 +106,14 @@
 .resizable-card::before {
   content: '';
   position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  background: linear-gradient(
-    45deg,
-    #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000
-  );
-  background-size: 400% 400%;
+  inset: calc(var(--rainbow-border-size) * -1);
+  border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
+  background: var(--rainbow-border-gradient);
+  background-size: var(--rainbow-border-background-size);
   z-index: -1;
   opacity: 0;
   pointer-events: none;
-  animation: rainbow-border 3s linear infinite;
+  animation: var(--rainbow-border-animation);
 }
 
 .resizable-card.selected::before,

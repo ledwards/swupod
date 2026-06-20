@@ -5,6 +5,34 @@
  * Import this file where needed instead of duplicating keyframes.
  */
 
+/* Rainbow border system.
+ * On each bordered element, set --rainbow-border-reference to the rendered
+ * width of the thing being bordered and derive --rainbow-border-size /
+ * --rainbow-border-radius from it. Border thickness and radius scale as:
+ *   thickness = reference * 1.5%
+ *   radius    = reference * 3.2%
+ */
+:root {
+  --rainbow-border-reference: 120px;
+  --rainbow-border-thickness-ratio: 0.015;
+  --rainbow-border-radius-ratio: 0.032;
+  --rainbow-border-size: calc(var(--rainbow-border-reference) * var(--rainbow-border-thickness-ratio));
+  --rainbow-border-radius: calc(var(--rainbow-border-reference) * var(--rainbow-border-radius-ratio));
+  --rainbow-border-gradient: linear-gradient(
+    135deg,
+    #ff0000,
+    #ff7f00,
+    #ffff00,
+    #00ff00,
+    #0000ff,
+    #4b0082,
+    #9400d3,
+    #ff0000
+  );
+  --rainbow-border-background-size: 400% 400%;
+  --rainbow-border-animation: rainbow-border 3s linear infinite;
+}
+
 /* Rainbow border animation for card selection */
 @keyframes rainbow-border {
   0% {

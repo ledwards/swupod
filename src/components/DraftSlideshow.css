@@ -1,9 +1,12 @@
+@import '../styles/animations.css';
+
 .draft-slideshow-overlay {
   --slideshow-tabs-h: 116px;
   --slideshow-nav-h: 82px;
   --slide-card-w: 120px;
   --slide-card-gap: 8px;
   --slide-label-gutter-w: 168px;
+  --rainbow-border-reference: var(--slide-card-w);
   position: fixed;
   inset: 0;
   z-index: 2147483000;
@@ -145,14 +148,30 @@ body.draft-slideshow-mode-active nextjs-portal {
   transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
 }
 
-.draft-slideshow-player-tab::before {
+.draft-slideshow-player-tab::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
+  border-radius: inherit;
+  background-image: inherit;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  transform: scale(1);
+  transition: transform 0.18s ease, filter 0.18s ease;
+  pointer-events: none;
+}
+
+.draft-slideshow-player-tab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
   background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.84), rgba(0, 0, 0, 0.5)),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.72));
+    linear-gradient(90deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.34)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.66));
   pointer-events: none;
   transition: background 0.18s ease;
 }
@@ -166,22 +185,32 @@ body.draft-slideshow-mode-active nextjs-portal {
 
 .draft-slideshow-player-tab.active::before {
   background:
-    linear-gradient(90deg, rgba(2, 17, 32, 0.72), rgba(12, 61, 103, 0.42)),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.62));
+    linear-gradient(90deg, rgba(2, 17, 32, 0.62), rgba(12, 61, 103, 0.34)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.58));
 }
 
 .draft-slideshow-player-tab.locked {
   cursor: default;
-  color: rgba(255, 205, 205, 0.82);
-  border-color: rgba(255, 0, 0, 0.5);
-  background-color: rgba(100, 0, 0, 0.26);
-  opacity: 0.82;
+  color: rgba(255, 255, 255, 0.62);
+  border-color: rgba(0, 0, 0, 0.96);
+  background-color: rgb(0, 0, 0);
+  opacity: 1;
+}
+
+.draft-slideshow-player-tab.locked::after {
+  filter: grayscale(1) brightness(0.06);
+  transform: none;
 }
 
 .draft-slideshow-player-tab.locked::before {
-  background:
-    linear-gradient(90deg, rgba(38, 0, 0, 0.86), rgba(74, 0, 0, 0.58)),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.34), rgba(0, 0, 0, 0.78));
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(0, 0, 0, 0.94);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.035);
+}
+
+.draft-slideshow-player-tab.locked .draft-slideshow-tab-detail {
+  color: rgba(255, 255, 255, 0.34);
 }
 
 .draft-slideshow-tab-copy {
@@ -191,7 +220,7 @@ body.draft-slideshow-mode-active nextjs-portal {
   gap: 3px;
   line-height: 1.05;
   position: relative;
-  z-index: 1;
+  z-index: 2;
   width: 100%;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.92);
 }
@@ -226,7 +255,17 @@ body.draft-slideshow-mode-active nextjs-portal {
 
 .draft-slideshow-close {
   align-self: start;
-  white-space: nowrap;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  flex: 0 0 auto;
+  line-height: 1;
+}
+
+.draft-slideshow-close:hover:not(:disabled) {
+  transform: none;
 }
 
 .draft-slideshow-stage {
@@ -271,6 +310,11 @@ body.draft-slideshow-mode-active nextjs-portal {
   justify-content: center;
 }
 
+.draft-slideshow-stage--multi {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 .draft-slideshow-single-grid {
   display: grid;
   gap: var(--slide-card-gap);
@@ -285,8 +329,8 @@ body.draft-slideshow-mode-active nextjs-portal {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: var(--slide-card-gap);
+  justify-content: space-evenly;
+  gap: 0;
   overflow: hidden;
 }
 
@@ -295,8 +339,9 @@ body.draft-slideshow-mode-active nextjs-portal {
   min-height: 0;
   display: grid;
   grid-auto-flow: column;
-  gap: var(--slide-card-gap) 20px;
+  gap: 0 20px;
   align-items: center;
+  align-content: space-evenly;
   overflow: hidden;
 }
 
@@ -309,18 +354,69 @@ body.draft-slideshow-mode-active nextjs-portal {
 }
 
 .draft-slideshow-leader-seat {
-  height: 100%;
+  height: auto;
+}
+
+.draft-slideshow-leader-seat--right {
+  grid-template-columns: minmax(0, 1fr) var(--slide-label-gutter-w);
+}
+
+.draft-slideshow-leader-seat--right .draft-slideshow-row-label {
+  grid-column: 2;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+.draft-slideshow-leader-seat--right .draft-slideshow-row-cards {
+  grid-column: 1;
+  grid-row: 1;
+  justify-content: flex-end;
+}
+
+.draft-slideshow-leader-seat--right .draft-slideshow-row-identity {
+  align-items: flex-end;
 }
 
 .draft-slideshow-row-label {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 8px;
+  justify-content: flex-start;
+  gap: 7px;
   min-width: 0;
+  width: 100%;
+  padding: 0;
   color: white;
-  font-size: clamp(0.72rem, 1.2vh, 0.94rem);
+  font-size: clamp(0.62rem, 1vh, 0.78rem);
   font-weight: 700;
+  line-height: 1;
+  text-align: center;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+}
+
+.draft-slideshow-row-seat-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border-radius: 50%;
+  background: rgba(33, 150, 243, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 0 12px rgba(33, 150, 243, 0.18);
+}
+
+.draft-slideshow-row-identity {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
 }
 
 .draft-slideshow-row-label img {
@@ -332,8 +428,9 @@ body.draft-slideshow-mode-active nextjs-portal {
   flex: 0 0 auto;
 }
 
-.draft-slideshow-row-label span {
+.draft-slideshow-row-name {
   min-width: 0;
+  max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -350,6 +447,9 @@ body.draft-slideshow-mode-active nextjs-portal {
 .draft-slideshow-stage .canvas-card,
 .draft-slideshow-stage .canvas-card.leader,
 .draft-slideshow-stage .canvas-card.base {
+  --rainbow-border-reference: var(--slide-card-w);
+  --rainbow-border-size: calc(var(--rainbow-border-reference) * var(--rainbow-border-thickness-ratio));
+  --rainbow-border-radius: calc(var(--rainbow-border-reference) * var(--rainbow-border-radius-ratio));
   width: var(--slide-card-w) !important;
   max-width: var(--slide-card-w) !important;
   flex: 0 0 var(--slide-card-w);
@@ -358,6 +458,31 @@ body.draft-slideshow-mode-active nextjs-portal {
 
 .draft-slideshow-stage .canvas-card {
   cursor: zoom-in;
+}
+
+.draft-slideshow-stage .canvas-card.selected::before {
+  inset: 0;
+  z-index: 4;
+  padding: var(--rainbow-border-size);
+  border-radius: var(--rainbow-border-radius);
+  background: var(--rainbow-border-gradient);
+  background-size: var(--rainbow-border-background-size);
+  opacity: 1;
+  animation: var(--rainbow-border-animation);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+.draft-slideshow-stage .canvas-card.leader.selected::before,
+.draft-slideshow-stage .canvas-card.base.selected::before {
+  inset: 0;
+  border-radius: var(--rainbow-border-radius);
 }
 
 .draft-slideshow-empty-card {
@@ -389,13 +514,28 @@ body.draft-slideshow-mode-active nextjs-portal {
 
 .draft-slideshow-nav {
   height: var(--slideshow-nav-h);
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) auto minmax(150px, 1fr);
   align-items: center;
   justify-content: center;
   gap: 16px;
   padding: 12px 20px 18px;
   border-top: 1px solid rgba(255, 215, 0, 0.16);
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.12));
+}
+
+.draft-slideshow-nav-side {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.draft-slideshow-nav-side--prev {
+  justify-content: flex-end;
+}
+
+.draft-slideshow-nav-side--next {
+  justify-content: flex-start;
 }
 
 .draft-slideshow-nav-label {
@@ -405,6 +545,53 @@ body.draft-slideshow-mode-active nextjs-portal {
   font-size: 1.05rem;
   font-weight: 700;
   letter-spacing: 0;
+}
+
+.draft-slideshow-player-jump {
+  position: absolute;
+  bottom: 18px;
+  z-index: 5;
+  min-width: 186px;
+  max-width: min(260px, calc(50vw - 36px));
+  height: 50px;
+  padding: 7px 12px !important;
+  border-color: rgba(33, 150, 243, 0.64) !important;
+  background: rgba(0, 0, 0, 0.78) !important;
+  box-shadow: 0 0 18px rgba(33, 150, 243, 0.18);
+}
+
+.draft-slideshow-player-jump--prev {
+  left: 20px;
+}
+
+.draft-slideshow-player-jump--next {
+  right: 20px;
+}
+
+.draft-slideshow-player-jump-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  line-height: 1;
+}
+
+.draft-slideshow-player-jump-kicker {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.draft-slideshow-player-jump-name {
+  max-width: 170px;
+  color: white;
+  font-size: 0.94rem;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .draft-slideshow-edge-arrow {
@@ -435,12 +622,17 @@ body.draft-slideshow-mode-active nextjs-portal {
 @media (hover: hover) and (pointer: fine) {
   .draft-slideshow-player-tab:hover:not(:disabled) {
     border-color: rgba(255, 255, 255, 0.42);
-    background: rgba(255, 255, 255, 0.08);
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .draft-slideshow-player-tab:hover:not(:disabled)::after {
+    filter: saturate(1.08);
+    transform: scale(1.5);
   }
 
   .draft-slideshow-player-tab.active:hover:not(:disabled) {
     border-color: rgba(33, 150, 243, 0.95);
-    background: rgba(33, 150, 243, 0.2);
+    background-color: rgba(33, 150, 243, 0.2);
   }
 
   .draft-slideshow-stage .canvas-card:hover {
@@ -483,9 +675,21 @@ body.draft-slideshow-mode-active nextjs-portal {
     padding: 12px 66px;
   }
 
+  .draft-slideshow-stage--multi {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
   .draft-slideshow-row-label img {
     width: 28px;
     height: 28px;
+  }
+
+  .draft-slideshow-row-seat-number {
+    width: 22px;
+    height: 22px;
+    flex-basis: 22px;
+    font-size: 0.68rem;
   }
 
   .draft-slideshow-edge-arrow {

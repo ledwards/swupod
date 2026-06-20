@@ -23,6 +23,7 @@ const CATALOG_CARDS = (cardCatalogData as any).cards || []
 const REAL_LEADERS = uniqueCards(CATALOG_CARDS.filter(card => card.isLeader && card.imageUrl))
 const REAL_BASES = uniqueCards(CATALOG_CARDS.filter(card => card.isBase && card.imageUrl))
 const REAL_DRAFT_CARDS = uniqueCards(CATALOG_CARDS.filter(card => !card.isLeader && !card.isBase && card.imageUrl && card.variantType === 'Normal'))
+const BOT_AVATAR_SEEDS = ['chopper', 'gonk', 'treadwell', 'pit-droid', 'lothal', 'spark', 'hyperspace', 'sentinel']
 
 test.describe.configure({ mode: 'serial' })
 test.skip(!connectionString, 'DATABASE_URL or POSTGRES_URL is required for slideshow E2E fixtures')
@@ -51,7 +52,8 @@ function catalogCardAt(cards, index: number) {
 }
 
 function avatarArtForSeat(seatNumber: number) {
-  return catalogCardAt(REAL_DRAFT_CARDS, 120 + seatNumber * 11).imageUrl
+  const seed = BOT_AVATAR_SEEDS[(seatNumber - 1) % BOT_AVATAR_SEEDS.length]
+  return `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${encodeURIComponent(seed)}&backgroundColor=0f172a,1e3a8a,312e81,3b0764`
 }
 
 async function assignArtworkAvatars(db: pg.Pool, users) {
@@ -110,7 +112,10 @@ function simulateDraft(allPacks) {
         const sourceIndex = passLeft
           ? (pickerIndex + (pickInPack - 1)) % PLAYER_COUNT
           : ((pickerIndex - (pickInPack - 1)) % PLAYER_COUNT + PLAYER_COUNT) % PLAYER_COUNT
-        const picked = remaining[sourceIndex].shift()
+        const pickIndex = remaining[sourceIndex].length > 1
+          ? (pickerIndex + packNumber + pickInPack) % remaining[sourceIndex].length
+          : 0
+        const [picked] = remaining[sourceIndex].splice(pickIndex, 1)
         draftedCards[pickerIndex].push({
           ...picked,
           packNumber,
@@ -143,7 +148,10 @@ function simulateLeaders() {
   for (let round = 1; round <= 3; round++) {
     for (let pickerIndex = 0; pickerIndex < PLAYER_COUNT; pickerIndex++) {
       const sourceIndex = ((pickerIndex - (round - 1)) % PLAYER_COUNT + PLAYER_COUNT) % PLAYER_COUNT
-      const picked = remaining[sourceIndex].shift()
+      const pickIndex = remaining[sourceIndex].length > 1
+        ? (pickerIndex + round) % remaining[sourceIndex].length
+        : 0
+      const [picked] = remaining[sourceIndex].splice(pickIndex, 1)
       draftedLeaders[pickerIndex].push({
         ...picked,
         leaderRound: round,
@@ -273,6 +281,110 @@ async function expectLeaderTwoColumnGrid(page: Page) {
   }
   expect(boxes[4].x).toBeGreaterThan(boxes[0].x)
   expect(Math.abs(boxes[4].y - boxes[0].y)).toBeLessThan(4)
+
+  const labelAlignment = await page.getByTestId('slideshow-seat-row').evaluateAll(rows =>
+    rows.map(row => {
+      const label = row.querySelector('.draft-slideshow-row-label')?.getBoundingClientRect()
+      const number = row.querySelector('.draft-slideshow-row-seat-number')?.getBoundingClientRect()
+      const avatar = row.querySelector('.draft-slideshow-row-identity img')?.getBoundingClientRect()
+      const cards = row.querySelector('.draft-slideshow-row-cards')?.getBoundingClientRect()
+      return {
+        rightColumn: row.classList.contains('draft-slideshow-leader-seat--right'),
+        labelLeft: label?.left || 0,
+        labelRight: label?.right || 0,
+        numberLeft: number?.left || 0,
+        numberRight: number?.right || 0,
+        avatarLeft: avatar?.left || 0,
+        avatarRight: avatar?.right || 0,
+        cardsLeft: cards?.left || 0,
+        cardsRight: cards?.right || 0,
+      }
+    })
+  )
+  for (const [index, row] of labelAlignment.entries()) {
+    if (index < 4) {
+      expect(row.rightColumn).toBe(false)
+      expect(row.numberLeft).toBeLessThan(row.avatarLeft)
+      expect(row.labelRight).toBeLessThan(row.cardsLeft)
+    } else {
+      expect(row.rightColumn).toBe(true)
+      expect(row.numberRight).toBeGreaterThan(row.avatarRight)
+      expect(row.cardsRight).toBeLessThan(row.labelLeft)
+    }
+  }
+}
+
+async function expectSeatNumberLabels(page: Page, seatNumbers: number[]) {
+  await expect(page.locator('.draft-slideshow-row-seat-number')).toHaveText(seatNumbers.map(String))
+}
+
+async function expectProportionalRainbowBorder(page: Page) {
+  const metrics = await page.locator('.draft-slideshow-stage .canvas-card.selected').first().evaluate(card => {
+    const rect = card.getBoundingClientRect()
+    const styles = getComputedStyle(card, '::before')
+    const padding = Number.parseFloat(styles.paddingTop)
+    const radius = Number.parseFloat(styles.borderTopLeftRadius)
+    return {
+      paddingRatio: padding / rect.width,
+      radiusRatio: radius / rect.width,
+    }
+  })
+
+  expect(metrics.paddingRatio).toBeGreaterThan(0.014)
+  expect(metrics.paddingRatio).toBeLessThan(0.016)
+  expect(metrics.radiusRatio).toBeGreaterThan(0.031)
+  expect(metrics.radiusRatio).toBeLessThan(0.033)
+}
+
+async function expectPickedCardCanAppearAfterFirst(page: Page) {
+  const selectedIndex = await page.getByTestId('slideshow-seat-row').first().evaluate(row => {
+    const cards = Array.from(row.querySelectorAll('.canvas-card'))
+    return cards.findIndex(card => card.classList.contains('selected'))
+  })
+  expect(selectedIndex).toBeGreaterThan(0)
+}
+
+async function expectEvenVerticalRowSpacing(page: Page) {
+  const result = await page.evaluate(() => {
+    const stage = document.querySelector('[data-testid="slideshow-stage"]')?.getBoundingClientRect()
+    const rows = Array.from(document.querySelectorAll('[data-testid="slideshow-seat-row"]')).map(row => {
+      const rect = row.getBoundingClientRect()
+      return { x: rect.x, top: rect.top, bottom: rect.bottom }
+    })
+    if (!stage || rows.length === 0) return { missing: true, groups: [] }
+
+    const groups: { x: number; rows: typeof rows }[] = []
+    for (const row of rows) {
+      const group = groups.find(candidate => Math.abs(candidate.x - row.x) < 4)
+      if (group) {
+        group.rows.push(row)
+      } else {
+        groups.push({ x: row.x, rows: [row] })
+      }
+    }
+
+    return {
+      missing: false,
+      groups: groups.map(group => {
+        const sorted = group.rows.sort((a, b) => a.top - b.top)
+        const gaps = [
+          sorted[0].top - stage.top,
+          ...sorted.slice(1).map((row, index) => row.top - sorted[index].bottom),
+          stage.bottom - sorted[sorted.length - 1].bottom,
+        ]
+        return {
+          gaps,
+          spread: Math.max(...gaps) - Math.min(...gaps),
+        }
+      }),
+    }
+  })
+
+  expect(result.missing).toBe(false)
+  expect(result.groups.length).toBeGreaterThan(0)
+  for (const group of result.groups) {
+    expect(group.spread).toBeLessThan(2)
+  }
 }
 
 async function expectArtworkBackedTabs(page: Page) {
@@ -407,15 +519,32 @@ test.describe('Draft Report Slideshow Mode', () => {
       await openSlideshow(page, fixture)
       await expect(page.getByTestId('slideshow-slide-label')).toHaveText('Leaders · Pick 1')
       await expectArtworkBackedTabs(page)
+      const allTab = page.locator('.draft-slideshow-all-tab')
+      await expect(allTab).toContainText('None')
+      await allTab.click()
+      await expect(allTab).toContainText('All')
+      await expect(page.getByText('No players selected.')).toBeVisible()
+      await expect(page.getByTestId('slideshow-seat-row')).toHaveCount(0)
+      await expectNoSlideshowOverflow(page)
+      await allTab.click()
+      await expect(allTab).toContainText('None')
+      await expect(page.getByTestId('slideshow-seat-row')).toHaveCount(8)
       await expectLeaderTwoColumnGrid(page)
+      await expectSeatNumberLabels(page, [1, 2, 3, 4, 5, 6, 7, 8])
+      await expectProportionalRainbowBorder(page)
+      await expectEvenVerticalRowSpacing(page)
       await expectNoSlideshowOverflow(page)
 
       await goToFirstCardPick(page)
       await expect(page.getByTestId('slideshow-stage')).not.toHaveClass(/draft-slideshow-stage--leader-grid/)
       await expect(page.getByTestId('slideshow-seat-row')).toHaveCount(8)
+      await expectSeatNumberLabels(page, [1, 2, 3, 4, 5, 6, 7, 8])
+      await expectPickedCardCanAppearAfterFirst(page)
+      await expectProportionalRainbowBorder(page)
       for (const row of await page.getByTestId('slideshow-seat-row').all()) {
         await expect(row.locator('.canvas-card.selected')).toHaveCount(1)
       }
+      await expectEvenVerticalRowSpacing(page)
       await expectNoSlideshowOverflow(page)
 
       await page.getByTestId('slideshow-player-tab').filter({ hasText: 'SlideP1' }).click()
@@ -435,7 +564,7 @@ test.describe('Draft Report Slideshow Mode', () => {
     }
   })
 
-  test('caps and centers a single final card and hard-stops at the last slide', async ({ page }) => {
+  test('caps a single final card and crosses player boundaries with arrow keys', async ({ page }) => {
     await page.setViewportSize({ width: 1366, height: 768 })
     await setAuthCookie(page, users[0])
     await openSlideshow(page, fixture)
@@ -449,9 +578,27 @@ test.describe('Draft Report Slideshow Mode', () => {
     expect(cardBox!.width).toBeLessThanOrEqual(735)
     expect(Math.abs((cardBox!.x + cardBox!.width / 2) - (stageBox!.x + stageBox!.width / 2))).toBeLessThan(10)
     expect(Math.abs((cardBox!.y + cardBox!.height / 2) - (stageBox!.y + stageBox!.height / 2))).toBeLessThan(10)
-    await expect(page.getByTestId('slideshow-edge-next')).toBeDisabled()
+    await expectProportionalRainbowBorder(page)
+    await expect(page.getByTestId('slideshow-next-player')).toContainText('SlideP2')
+    await expect(page.getByTestId('slideshow-edge-next')).toBeEnabled()
     await expectNoSlideshowOverflow(page)
     await takeScreenshot(page, 'draft-slideshow-single-final-card')
+
+    await page.keyboard.press('ArrowRight')
+    await expect(page.getByTestId('slideshow-slide-label')).toHaveText('Leaders · Pick 1')
+    await expect(page.getByTestId('slideshow-player-tab').filter({ hasText: 'SlideP2' })).toHaveClass(/active/)
+    await expect(page.getByTestId('slideshow-prev-player')).toContainText('SlideP1')
+
+    await page.keyboard.press('ArrowLeft')
+    await expect(page.getByTestId('slideshow-slide-label')).toHaveText('Pack 3 · Pick 14')
+    await expect(page.getByTestId('slideshow-player-tab').filter({ hasText: 'SlideP1' })).toHaveClass(/active/)
+
+    await page.locator('.draft-slideshow-all-tab').click()
+    await expect(page.locator('.draft-slideshow-all-tab')).toContainText('None')
+    await page.getByTestId('slideshow-player-tab').filter({ hasText: 'SlideP8' }).click()
+    await expect(page.getByTestId('slideshow-next-player')).toHaveCount(0)
+    await expect(page.getByTestId('slideshow-edge-next')).toBeDisabled()
+    await expectNoSlideshowOverflow(page)
   })
 
   test('locks private teammate seats for non-participants without rendering their cards', async ({ page }) => {

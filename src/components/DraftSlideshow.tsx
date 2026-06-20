@@ -65,6 +65,31 @@ function collectNeighborImageUrls(
   return Array.from(urls)
 }
 
+function getSingleSelectionNeighbors(
+  data: DraftSlideshowData | null | undefined,
+  selectedSeats: SeatSelection
+) {
+  const unlockedSeats = (data?.seats || [])
+    .filter(seat => !seat.locked && seat.picks)
+    .sort((a, b) => a.seatNumber - b.seatNumber)
+  const selected = unlockedSeats.filter(seat => selectedSeats.has(seat.seatNumber))
+
+  if (selected.length !== 1) {
+    return { previousPlayer: null, nextPlayer: null }
+  }
+
+  const selectedSeat = selected[0]
+  if (!selectedSeat) {
+    return { previousPlayer: null, nextPlayer: null }
+  }
+
+  const currentIndex = unlockedSeats.findIndex(seat => seat.seatNumber === selectedSeat.seatNumber)
+  return {
+    previousPlayer: currentIndex > 0 ? unlockedSeats[currentIndex - 1] ?? null : null,
+    nextPlayer: currentIndex >= 0 && currentIndex < unlockedSeats.length - 1 ? unlockedSeats[currentIndex + 1] ?? null : null,
+  }
+}
+
 export default function DraftSlideshow({
   data,
   loading,
@@ -101,6 +126,11 @@ export default function DraftSlideshow({
 
   const handleSlideChange = useCallback((nextIndex: number) => {
     setSlideIndex(Math.min(Math.max(nextIndex, 0), Math.max(0, slideCount - 1)))
+  }, [slideCount])
+
+  const handlePlayerBoundaryChange = useCallback((seatNumber: number, nextSlideIndex: number) => {
+    setSelectedSeats(new Set([seatNumber]))
+    setSlideIndex(Math.min(Math.max(nextSlideIndex, 0), Math.max(0, slideCount - 1)))
   }, [slideCount])
 
   useEffect(() => {
@@ -171,6 +201,10 @@ export default function DraftSlideshow({
     () => findCurrentPick(data, selectedSeats, slideIndex),
     [data, selectedSeats, slideIndex]
   )
+  const { previousPlayer, nextPlayer } = useMemo(
+    () => getSingleSelectionNeighbors(data, selectedSeats),
+    [data, selectedSeats]
+  )
 
   const slideshow = (
     <div
@@ -203,9 +237,9 @@ export default function DraftSlideshow({
             className="draft-slideshow-close"
             onClick={onClose}
             aria-label="Exit Slideshow Mode"
+            title="Exit Slideshow Mode"
           >
             <CloseIcon />
-            <span>Exit Slideshow Mode</span>
           </Button>
         </div>
 
@@ -233,6 +267,9 @@ export default function DraftSlideshow({
               slideCount={slideCount}
               currentPick={currentPick}
               onSlideChange={handleSlideChange}
+              previousPlayer={previousPlayer}
+              nextPlayer={nextPlayer}
+              onPlayerBoundaryChange={handlePlayerBoundaryChange}
             />
           )}
         </div>

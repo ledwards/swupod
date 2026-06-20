@@ -16,11 +16,11 @@ import type { SeatSelection, SlideshowCard, SlideshowPick, SlideshowSeat } from 
 const PORTRAIT = 2.5 / 3.5
 const LANDSCAPE = 3.5 / 2.5
 const GAP = 8
-const LABEL_GUTTER_W = 168
+const LABEL_GUTTER_W = 96
 const LABEL_CARD_GAP = 10
 const LEADER_COLUMNS = 2
 const LEADER_COLUMN_GAP = 20
-const LEADER_LABEL_GUTTER_W = 132
+const LEADER_LABEL_GUTTER_W = 90
 const MIN_CARD_H = 72
 const PORTRAIT_NATIVE = { w: 734, h: 1024 }
 const LANDSCAPE_NATIVE = { w: 1024, h: 734 }
@@ -63,8 +63,13 @@ function EmptyCardTile({ landscape }: { landscape: boolean }) {
 function SeatLabel({ seat }: { seat: SlideshowSeat }) {
   return (
     <div className="draft-slideshow-row-label">
-      <img src={seat.avatarUrl || AVATAR_FALLBACK} alt="" aria-hidden="true" />
-      <span>{seat.username}</span>
+      <span className="draft-slideshow-row-seat-number" aria-label={`Seat ${seat.seatNumber}`}>
+        {seat.seatNumber}
+      </span>
+      <span className="draft-slideshow-row-identity">
+        <img src={seat.avatarUrl || AVATAR_FALLBACK} alt="" aria-hidden="true" />
+        <span className="draft-slideshow-row-name">{seat.username}</span>
+      </span>
     </div>
   )
 }
@@ -143,9 +148,12 @@ export default function SlideshowStage({
   }, [selected.length, useLeaderGrid, rows, size.width, size.height, aspect, nativeCap])
 
   if (selected.length === 0) {
+    const hasSelectableSeats = seats.some(seat => !seat.locked && seat.picks)
     return (
       <div ref={stageRef} className="draft-slideshow-stage draft-slideshow-stage--empty" data-testid="slideshow-stage">
-        <div className="draft-slideshow-empty-state">No public seats are available for this draft.</div>
+        <div className="draft-slideshow-empty-state">
+          {hasSelectableSeats ? 'No players selected.' : 'No public seats are available for this draft.'}
+        </div>
       </div>
     )
   }
@@ -204,7 +212,7 @@ export default function SlideshowStage({
     const leaderFit = fit as LeaderGridFit
     const gridStyle = {
       gridTemplateColumns: `repeat(${leaderFit.columns}, minmax(0, 1fr))`,
-      gridTemplateRows: `repeat(${leaderFit.rows}, minmax(0, 1fr))`,
+      gridTemplateRows: `repeat(${leaderFit.rows}, auto)`,
     }
 
     return (
@@ -216,31 +224,34 @@ export default function SlideshowStage({
         data-testid="slideshow-stage"
       >
         <div className="draft-slideshow-leader-grid" style={gridStyle}>
-          {rows.map(row => (
-            <div
-              key={row.seat.seatNumber}
-              className="draft-slideshow-seat-row draft-slideshow-leader-seat"
-              data-testid="slideshow-seat-row"
-              data-seat-number={row.seat.seatNumber}
-            >
-              <SeatLabel seat={row.seat} />
-              <div className="draft-slideshow-row-cards">
-                {row.visibleCards.length > 0 ? (
-                  row.visibleCards.map((card, index) => (
-                    <CardWithPreview
-                      key={`${row.seat.seatNumber}-${card.instanceId || index}`}
-                      card={stageCard(card, row.pick)}
-                      selected={card.instanceId === row.pick?.pickedInstanceId}
-                      tabIndex={-1}
-                      data-instance-id={card.instanceId}
-                    />
-                  ))
-                ) : (
-                  <EmptyCardTile landscape={isLandscape} />
-                )}
+          {rows.map((row, index) => {
+            const isRightColumn = leaderFit.columns > 1 && index >= leaderFit.rows
+            return (
+              <div
+                key={row.seat.seatNumber}
+                className={`draft-slideshow-seat-row draft-slideshow-leader-seat ${isRightColumn ? 'draft-slideshow-leader-seat--right' : ''}`}
+                data-testid="slideshow-seat-row"
+                data-seat-number={row.seat.seatNumber}
+              >
+                <SeatLabel seat={row.seat} />
+                <div className="draft-slideshow-row-cards">
+                  {row.visibleCards.length > 0 ? (
+                    row.visibleCards.map((card, index) => (
+                      <CardWithPreview
+                        key={`${row.seat.seatNumber}-${card.instanceId || index}`}
+                        card={stageCard(card, row.pick)}
+                        selected={card.instanceId === row.pick?.pickedInstanceId}
+                        tabIndex={-1}
+                        data-instance-id={card.instanceId}
+                      />
+                    ))
+                  ) : (
+                    <EmptyCardTile landscape={isLandscape} />
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     )

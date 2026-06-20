@@ -5,6 +5,8 @@
  * Extracted from DeckBuilder.css for reusability.
  */
 
+@import '../styles/animations.css';
+
 /* ==========================================================================
    Context-specific card sizing (when used in grids/containers)
    ========================================================================== */
@@ -40,6 +42,9 @@
    ========================================================================== */
 
 .canvas-card {
+  --rainbow-border-reference: 120px;
+  --rainbow-border-size: calc(var(--rainbow-border-reference) * var(--rainbow-border-thickness-ratio));
+  --rainbow-border-radius: calc(var(--rainbow-border-reference) * var(--rainbow-border-radius-ratio));
   position: relative;
   width: 120px;
   aspect-ratio: 2.5 / 3.5;
@@ -65,6 +70,7 @@
 /* Leaders and bases are landscape (wider than tall) */
 .canvas-card.leader,
 .canvas-card.base {
+  --rainbow-border-reference: 168px;
   width: 168px;
   aspect-ratio: 3.5 / 2.5;
   border-radius: 8px;  /* Reduced from 11px - looks better on landscape cards */
@@ -75,41 +81,25 @@
   border-radius: 8px;
 }
 
-/* Selection border pseudo-element - animated rainbow gradient */
+/* Selection border uses the shared proportional rainbow system. */
 .canvas-card::before {
   content: '';
   position: absolute;
-  inset: -2px;
-  border-radius: 12px;
-  background: linear-gradient(
-    135deg,
-    #ff0000,
-    #ff7f00,
-    #ffff00,
-    #00ff00,
-    #0000ff,
-    #4b0082,
-    #9400d3,
-    #ff0000
-  );
-  background-size: 300% 300%;
+  inset: calc(var(--rainbow-border-size) * -1);
+  border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
+  background: var(--rainbow-border-gradient);
+  background-size: var(--rainbow-border-background-size);
   z-index: -1;
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
 }
 
-@keyframes rainbow-spin {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* Leaders and bases use reduced border-radius matching their card */
+/* Leaders and bases inherit the same proportional border formula. */
 .canvas-card.leader::before,
 .canvas-card.base::before {
-  inset: -1px;
-  border-radius: 9px;  /* Reduced to match 8px card radius + 1px inset */
+  inset: calc(var(--rainbow-border-size) * -1);
+  border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
 }
 
 .canvas-card > * {
@@ -126,7 +116,7 @@
 .canvas-card.active-leader::before,
 .canvas-card.active-base::before {
   opacity: 1;
-  animation: rainbow-spin 3s linear infinite;
+  animation: var(--rainbow-border-animation);
 }
 
 .canvas-card:hover {
@@ -174,7 +164,7 @@
 
 .canvas-card.foil {
   position: relative;
-  /* No overflow:hidden — it clips the rainbow selection border (::before at inset:-2px) */
+  /* No overflow:hidden; it clips the proportional rainbow selection border. */
 }
 
 .canvas-card.foil::after {
@@ -212,7 +202,7 @@
 
 .canvas-card.showcase {
   position: relative;
-  /* No overflow:hidden — it clips the rainbow selection border (::before at inset:-2px) */
+  /* No overflow:hidden; it clips the proportional rainbow selection border. */
 }
 
 .canvas-card.showcase::after {

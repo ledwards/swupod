@@ -351,22 +351,17 @@
   align-items: start;
 }
 
-/* Non-picked cards stay at full opacity — the animated rainbow border on the
-   picked card is enough to show what was taken. */
-
-/* Thicken the rainbow selection border here: it's now the sole "what was picked"
-   indicator, so make it wider than the default 2px rim. (Scoped to the log so the
-   selection border stays unchanged everywhere else it's used.) */
+/* Non-picked cards stay at full opacity; the shared proportional rainbow border
+   on the picked card is enough to show what was taken. */
 .draft-log-pack-cards .canvas-card.selected::before {
-  inset: -4px;
-  border-radius: 15px;
+  inset: calc(var(--rainbow-border-size) * -1);
+  border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
 }
 
-/* Leaders/bases are landscape with a smaller radius — bump proportionally. */
 .draft-log-pack-cards .canvas-card.leader.selected::before,
 .draft-log-pack-cards .canvas-card.base.selected::before {
-  inset: -3px;
-  border-radius: 11px;
+  inset: calc(var(--rainbow-border-size) * -1);
+  border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
 }
 
 /* Blank state when no viewable logs */
