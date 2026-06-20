@@ -778,187 +778,201 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       AND ($4 = 'all' OR set_code = $4)
     `
 
-    const summaryRow = await queryRow(
-      `SELECT
-         COALESCE(SUM(wins), 0) AS wins,
-         COALESCE(SUM(losses), 0) AS losses,
-         COALESCE(SUM(draws), 0) AS draws,
-         COUNT(*) FILTER (WHERE wins + losses + draws > 0) AS pools,
-         COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) AS captured_matches,
-         (
-           SELECT COUNT(*)
-           FROM deck_play_visits dpv
-           WHERE dpv.user_id = $1
-             AND dpv.first_visited_at >= $2
-             AND dpv.first_visited_at < ($3::date + interval '1 day')
-         ) AS decks_played
-       FROM card_pools
-       WHERE ${ownedPoolWhere}`,
-      params
-    ) as RawRecordRow | null
+    // All eight reads below are independent and hit indexed columns. Fire them
+    // concurrently (the pg pool allows up to 20 connections) so the route waits
+    // on one round-trip, not eight in series — the dominant cost on /me.
+    const [
+      summaryRow,
+      formatRows,
+      setRows,
+      recentPoolRows,
+      leaderPoolRows,
+      replayRow,
+      replayRows,
+      casualRows,
+    ] = await Promise.all([
+      queryRow(
+        `SELECT
+           COALESCE(SUM(wins), 0) AS wins,
+           COALESCE(SUM(losses), 0) AS losses,
+           COALESCE(SUM(draws), 0) AS draws,
+           COUNT(*) FILTER (WHERE wins + losses + draws > 0) AS pools,
+           COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) AS captured_matches,
+           (
+             SELECT COUNT(*)
+             FROM deck_play_visits dpv
+             WHERE dpv.user_id = $1
+               AND dpv.first_visited_at >= $2
+               AND dpv.first_visited_at < ($3::date + interval '1 day')
+           ) AS decks_played
+         FROM card_pools
+         WHERE ${ownedPoolWhere}`,
+        params
+      ) as Promise<RawRecordRow | null>,
 
-    const formatRows = await queryRows(
-      `SELECT
-         COALESCE(pool_type, 'sealed') AS key,
-         COALESCE(pool_type, 'sealed') AS label,
-         COALESCE(SUM(wins), 0) AS wins,
-         COALESCE(SUM(losses), 0) AS losses,
-         COALESCE(SUM(draws), 0) AS draws,
-         COUNT(*) FILTER (WHERE wins + losses + draws > 0) AS pools,
-         COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) AS captured_matches
-       FROM card_pools
-       WHERE ${ownedPoolWhere}
-       GROUP BY COALESCE(pool_type, 'sealed')
-       HAVING COALESCE(SUM(wins + losses + draws), 0) > 0
-          OR COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) > 0
-       ORDER BY COALESCE(SUM(wins + losses + draws), 0) DESC, key ASC`,
-      params
-    ) as RawBreakdownRow[]
+      queryRows(
+        `SELECT
+           COALESCE(pool_type, 'sealed') AS key,
+           COALESCE(pool_type, 'sealed') AS label,
+           COALESCE(SUM(wins), 0) AS wins,
+           COALESCE(SUM(losses), 0) AS losses,
+           COALESCE(SUM(draws), 0) AS draws,
+           COUNT(*) FILTER (WHERE wins + losses + draws > 0) AS pools,
+           COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) AS captured_matches
+         FROM card_pools
+         WHERE ${ownedPoolWhere}
+         GROUP BY COALESCE(pool_type, 'sealed')
+         HAVING COALESCE(SUM(wins + losses + draws), 0) > 0
+            OR COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) > 0
+         ORDER BY COALESCE(SUM(wins + losses + draws), 0) DESC, key ASC`,
+        params
+      ) as Promise<RawBreakdownRow[]>,
 
-    const setRows = await queryRows(
-      `SELECT
-         COALESCE(set_code, 'UNK') AS key,
-         COALESCE(set_code, 'UNK') AS label,
-         COALESCE(SUM(wins), 0) AS wins,
-         COALESCE(SUM(losses), 0) AS losses,
-         COALESCE(SUM(draws), 0) AS draws,
-         COUNT(*) FILTER (WHERE wins + losses + draws > 0) AS pools,
-         COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) AS captured_matches
-       FROM card_pools
-       WHERE ${ownedPoolWhere}
-       GROUP BY COALESCE(set_code, 'UNK')
-       HAVING COALESCE(SUM(wins + losses + draws), 0) > 0
-          OR COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) > 0
-       ORDER BY COALESCE(SUM(wins + losses + draws), 0) DESC, key ASC
-       LIMIT 8`,
-      params
-    ) as RawBreakdownRow[]
+      queryRows(
+        `SELECT
+           COALESCE(set_code, 'UNK') AS key,
+           COALESCE(set_code, 'UNK') AS label,
+           COALESCE(SUM(wins), 0) AS wins,
+           COALESCE(SUM(losses), 0) AS losses,
+           COALESCE(SUM(draws), 0) AS draws,
+           COUNT(*) FILTER (WHERE wins + losses + draws > 0) AS pools,
+           COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) AS captured_matches
+         FROM card_pools
+         WHERE ${ownedPoolWhere}
+         GROUP BY COALESCE(set_code, 'UNK')
+         HAVING COALESCE(SUM(wins + losses + draws), 0) > 0
+            OR COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) > 0
+         ORDER BY COALESCE(SUM(wins + losses + draws), 0) DESC, key ASC
+         LIMIT 8`,
+        params
+      ) as Promise<RawBreakdownRow[]>,
 
-    const recentPoolRows = await queryRows(
-      `SELECT
-         share_id,
-         name,
-         set_code,
-         pool_type,
-         deck_builder_state,
-         wins,
-         losses,
-         draws,
-         cardinality(wayfinder_match_ids) AS captured_matches,
-         updated_at
-       FROM card_pools
-       WHERE ${ownedPoolWhere}
-         AND (wins + losses + draws > 0 OR cardinality(wayfinder_match_ids) > 0)
-       ORDER BY updated_at DESC
-       LIMIT 6`,
-      params
-    ) as RawRecentPoolRow[]
+      queryRows(
+        `SELECT
+           share_id,
+           name,
+           set_code,
+           pool_type,
+           deck_builder_state,
+           wins,
+           losses,
+           draws,
+           cardinality(wayfinder_match_ids) AS captured_matches,
+           updated_at
+         FROM card_pools
+         WHERE ${ownedPoolWhere}
+           AND (wins + losses + draws > 0 OR cardinality(wayfinder_match_ids) > 0)
+         ORDER BY updated_at DESC
+         LIMIT 6`,
+        params
+      ) as Promise<RawRecentPoolRow[]>,
 
-    // Every owned pool with games — aggregated by leader in JS for the
-    // leader-mix + win-rate-per-leader widget (leader lives in the JSON state,
-    // so we can't GROUP BY it in SQL).
-    const leaderPoolRows = await queryRows(
-      `SELECT deck_builder_state, wins, losses, draws
-       FROM card_pools
-       WHERE ${ownedPoolWhere}
-         AND (wins + losses + draws > 0)
-       ORDER BY updated_at DESC
-       LIMIT 300`,
-      params
-    ) as RawLeaderPoolRow[]
+      // Every owned pool with games — aggregated by leader in JS for the
+      // leader-mix + win-rate-per-leader widget (leader lives in the JSON state,
+      // so we can't GROUP BY it in SQL).
+      queryRows(
+        `SELECT deck_builder_state, wins, losses, draws
+         FROM card_pools
+         WHERE ${ownedPoolWhere}
+           AND (wins + losses + draws > 0)
+         ORDER BY updated_at DESC
+         LIMIT 300`,
+        params
+      ) as Promise<RawLeaderPoolRow[]>,
 
-    const replayRow = await queryRow(
-      `SELECT COUNT(*) AS replays_recorded
-       FROM practice_matches pm
-       WHERE (pm.player1_id = $1 OR pm.player2_id = $1)
-         AND pm.wayfinder_replay_url IS NOT NULL
-         AND pm.created_at >= $2
-         AND pm.created_at < ($3::date + interval '1 day')
-         AND ($4 = 'all' OR EXISTS (
-           SELECT 1 FROM card_pools cp
-           WHERE cp.pod_id = pm.pod_id AND cp.user_id = $1 AND cp.set_code = $4
-         ))`,
-      params
-    ) as { replays_recorded?: string | number | null } | null
+      queryRow(
+        `SELECT COUNT(*) AS replays_recorded
+         FROM practice_matches pm
+         WHERE (pm.player1_id = $1 OR pm.player2_id = $1)
+           AND pm.wayfinder_replay_url IS NOT NULL
+           AND pm.created_at >= $2
+           AND pm.created_at < ($3::date + interval '1 day')
+           AND ($4 = 'all' OR EXISTS (
+             SELECT 1 FROM card_pools cp
+             WHERE cp.pod_id = pm.pod_id AND cp.user_id = $1 AND cp.set_code = $4
+           ))`,
+        params
+      ) as Promise<{ replays_recorded?: string | number | null } | null>,
 
-    // DISTINCT ON (pm.id): a user can own several pools that share a pod_id
-    // (multiple builds of one draft pool), and the card_pools join fans out one
-    // match into N rows. Collapse to one row per match so the history isn't
-    // double-counted (R5). Pick the most recently updated matching pool.
-    const replayRows = await queryRows(
-      `SELECT * FROM (
-         SELECT DISTINCT ON (pm.id)
-           pm.id AS match_id,
-           pm.wayfinder_match_id,
-           pm.wayfinder_replay_url,
-           pm.created_at,
-           pm.match_winner,
-           pm.game1_result,
-           pm.game2_result,
-           pm.game3_result,
-           pm.player1_id,
-           pm.player2_id,
-           CASE WHEN pm.player1_id = $1 THEN u2.username ELSE u1.username END AS opponent_username,
-           CASE WHEN pm.player1_id = $1 THEN u2.avatar_url ELSE u1.avatar_url END AS opponent_avatar_url,
-           CASE WHEN pm.player1_id = $1 THEN pm.player2_leader ELSE pm.player1_leader END AS opponent_leader,
-           CASE WHEN pm.player1_id = $1 THEN pm.player2_leader_image ELSE pm.player1_leader_image END AS opponent_leader_image,
-           CASE WHEN pm.player1_id = $1 THEN pm.player2_base ELSE pm.player1_base END AS opponent_base,
-           CASE WHEN pm.player1_id = $1 THEN pm.player2_archetype ELSE pm.player1_archetype END AS opponent_archetype,
-           CASE WHEN pm.player1_id = $1 THEN pm.player1_archetype ELSE pm.player2_archetype END AS my_archetype,
+      // DISTINCT ON (pm.id): a user can own several pools that share a pod_id
+      // (multiple builds of one draft pool), and the card_pools join fans out one
+      // match into N rows. Collapse to one row per match so the history isn't
+      // double-counted (R5). Pick the most recently updated matching pool.
+      queryRows(
+        `SELECT * FROM (
+           SELECT DISTINCT ON (pm.id)
+             pm.id AS match_id,
+             pm.wayfinder_match_id,
+             pm.wayfinder_replay_url,
+             pm.created_at,
+             pm.match_winner,
+             pm.game1_result,
+             pm.game2_result,
+             pm.game3_result,
+             pm.player1_id,
+             pm.player2_id,
+             CASE WHEN pm.player1_id = $1 THEN u2.username ELSE u1.username END AS opponent_username,
+             CASE WHEN pm.player1_id = $1 THEN u2.avatar_url ELSE u1.avatar_url END AS opponent_avatar_url,
+             CASE WHEN pm.player1_id = $1 THEN pm.player2_leader ELSE pm.player1_leader END AS opponent_leader,
+             CASE WHEN pm.player1_id = $1 THEN pm.player2_leader_image ELSE pm.player1_leader_image END AS opponent_leader_image,
+             CASE WHEN pm.player1_id = $1 THEN pm.player2_base ELSE pm.player1_base END AS opponent_base,
+             CASE WHEN pm.player1_id = $1 THEN pm.player2_archetype ELSE pm.player1_archetype END AS opponent_archetype,
+             CASE WHEN pm.player1_id = $1 THEN pm.player1_archetype ELSE pm.player2_archetype END AS my_archetype,
+             cp.share_id AS pool_share_id,
+             cp.name AS pool_name,
+             cp.set_code,
+             cp.pool_type,
+             cp.deck_builder_state
+           FROM practice_matches pm
+           LEFT JOIN users u1 ON u1.id = pm.player1_id
+           LEFT JOIN users u2 ON u2.id = pm.player2_id
+           LEFT JOIN card_pools cp ON cp.pod_id = pm.pod_id AND cp.user_id = $1
+           WHERE (pm.player1_id = $1 OR pm.player2_id = $1)
+             AND pm.wayfinder_replay_url IS NOT NULL
+             AND pm.created_at >= $2
+             AND pm.created_at < ($3::date + interval '1 day')
+             AND ($4 = 'all' OR cp.set_code = $4)
+           ORDER BY pm.id, cp.updated_at DESC NULLS LAST
+         ) deduped
+         ORDER BY created_at DESC
+         LIMIT 50`,
+        params
+      ) as Promise<RawReplayRow[]>,
+
+      // Casual (non-competitive) games — logged to casual_matches by the plugin.
+      queryRows(
+        `SELECT
+           cm.id,
+           cm.wayfinder_match_id,
+           cm.wayfinder_replay_url,
+           cm.result,
+           cm.game1_result,
+           cm.game2_result,
+           cm.game3_result,
+           cm.opponent_name,
+           cm.player_archetype,
+           cm.opponent_leader,
+           cm.opponent_leader_image,
+           cm.opponent_base,
+           cm.opponent_archetype,
+           cm.played_at,
            cp.share_id AS pool_share_id,
            cp.name AS pool_name,
            cp.set_code,
            cp.pool_type,
            cp.deck_builder_state
-         FROM practice_matches pm
-         LEFT JOIN users u1 ON u1.id = pm.player1_id
-         LEFT JOIN users u2 ON u2.id = pm.player2_id
-         LEFT JOIN card_pools cp ON cp.pod_id = pm.pod_id AND cp.user_id = $1
-         WHERE (pm.player1_id = $1 OR pm.player2_id = $1)
-           AND pm.wayfinder_replay_url IS NOT NULL
-           AND pm.created_at >= $2
-           AND pm.created_at < ($3::date + interval '1 day')
+         FROM casual_matches cm
+         LEFT JOIN card_pools cp ON cp.id = cm.card_pool_id
+         WHERE cm.user_id = $1
+           AND cm.wayfinder_replay_url IS NOT NULL
+           AND cm.played_at >= $2
+           AND cm.played_at < ($3::date + interval '1 day')
            AND ($4 = 'all' OR cp.set_code = $4)
-         ORDER BY pm.id, cp.updated_at DESC NULLS LAST
-       ) deduped
-       ORDER BY created_at DESC
-       LIMIT 50`,
-      params
-    ) as RawReplayRow[]
-
-    // Casual (non-competitive) games — logged to casual_matches by the plugin.
-    const casualRows = await queryRows(
-      `SELECT
-         cm.id,
-         cm.wayfinder_match_id,
-         cm.wayfinder_replay_url,
-         cm.result,
-         cm.game1_result,
-         cm.game2_result,
-         cm.game3_result,
-         cm.opponent_name,
-         cm.player_archetype,
-         cm.opponent_leader,
-         cm.opponent_leader_image,
-         cm.opponent_base,
-         cm.opponent_archetype,
-         cm.played_at,
-         cp.share_id AS pool_share_id,
-         cp.name AS pool_name,
-         cp.set_code,
-         cp.pool_type,
-         cp.deck_builder_state
-       FROM casual_matches cm
-       LEFT JOIN card_pools cp ON cp.id = cm.card_pool_id
-       WHERE cm.user_id = $1
-         AND cm.wayfinder_replay_url IS NOT NULL
-         AND cm.played_at >= $2
-         AND cm.played_at < ($3::date + interval '1 day')
-         AND ($4 = 'all' OR cp.set_code = $4)
-       ORDER BY cm.played_at DESC
-       LIMIT 50`,
-      params
-    ) as RawCasualRow[]
+         ORDER BY cm.played_at DESC
+         LIMIT 50`,
+        params
+      ) as Promise<RawCasualRow[]>,
+    ])
 
     if (shouldUseTerronkDevFixture(session.username, summaryRow, formatRows, replayRow)) {
       const devFixturePoolRows = await queryRows(

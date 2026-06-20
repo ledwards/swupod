@@ -6,6 +6,9 @@
 - **Gameplay and Matchups empty states are clearer**: Players outside the Wayfinder rollout now just see `Coming Soon`, while flagged users get the right deck-specific prompt. If Wayfinder is installed but there are no games yet, the tab points you at the play page for that deck.
 - **The homepage Discord login button is easier to hit**: Logged-out visitors now get a larger `Login with Discord` button with more breathing room above and below it, while logged-in Discord prompts keep their existing size.
 
+### ⚡ Performance
+- **My Stats loads faster**: The Activity and Gameplay sections of your **My Stats** page now load their data in parallel instead of one query at a time, so the page fills in noticeably quicker — especially if you have a lot of pools and recorded games.
+
 ## 06.15.2026
 
 ### 🧭 Wayfinder Companion

@@ -119,110 +119,123 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       ) as unknown as NextResponse
     }
 
-    // 1. packsCracked, sealed half.
-    // Count distinct (source_id, pack_index) pairs in card_generations where
-    // the source is a sealed pool the user owns. pack_index distinguishes
-    // packs within a single sealed pool — this is the count of individual
-    // packs the user opened across all sealed pools they created.
-    const sealedRow = await queryRow(
-      `SELECT COUNT(*) AS n
-       FROM (
-         SELECT DISTINCT cg.source_id, cg.pack_index
-         FROM card_generations cg
-         JOIN card_pools cp ON cp.id = cg.source_id
-         WHERE cg.source_type = 'sealed'
-           AND cp.user_id = $1
-           AND cg.generated_at >= $2
-           AND cg.generated_at < ($3::date + interval '1 day')
-       ) sub`,
-      [session.id, since, until]
-    )
+    // All six counters are independent COUNTs on indexed columns. Fire them
+    // concurrently (the pg pool allows up to 20 connections) so the route waits
+    // on one round-trip instead of six in series.
+    const [
+      sealedRow,
+      draftRow,
+      poolsRow,
+      draftsJoinedRow,
+      decksBuiltRow,
+      decksPlayedRow,
+    ] = await Promise.all([
+      // 1. packsCracked, sealed half.
+      // Count distinct (source_id, pack_index) pairs in card_generations where
+      // the source is a sealed pool the user owns. pack_index distinguishes
+      // packs within a single sealed pool — this is the count of individual
+      // packs the user opened across all sealed pools they created.
+      queryRow(
+        `SELECT COUNT(*) AS n
+         FROM (
+           SELECT DISTINCT cg.source_id, cg.pack_index
+           FROM card_generations cg
+           JOIN card_pools cp ON cp.id = cg.source_id
+           WHERE cg.source_type = 'sealed'
+             AND cp.user_id = $1
+             AND cg.generated_at >= $2
+             AND cg.generated_at < ($3::date + interval '1 day')
+         ) sub`,
+        [session.id, since, until]
+      ),
+
+      // 2. packsCracked, draft half.
+      // For each completed draft the user joined as a human, count the
+      // packsPerPlayer for that pod. See header comment for the JSONB lookup.
+      // Filter on pod.created_at matches the plan's spec; alternatives like
+      // started_at or completed_at would shift "joined a draft today" to
+      // different timestamps and complicate the user mental model.
+      queryRow(
+        `SELECT COALESCE(SUM(COALESCE(jsonb_array_length(p.settings->'chaosSets'), 3)), 0) AS n
+         FROM pod_players pp
+         JOIN pods p ON p.id = pp.pod_id
+         WHERE pp.user_id = $1
+           AND pp.is_bot = false
+           AND p.status = 'complete'
+           AND p.created_at >= $2
+           AND p.created_at < ($3::date + interval '1 day')`,
+        [session.id, since, until]
+      ),
+
+      // 3. poolsOpened.
+      // Pool types are constrained by migration 059 to:
+      //   sealed | draft | pack_blitz | pack_wars | chaos_sealed | rotisserie | imported
+      // The plan calls for sealed + draft only — imported pools are user
+      // uploads of physical pulls and bot-generated pools don't count toward
+      // "you opened this." A future tweak could widen this to chaos_sealed
+      // and pack_blitz if user research shows they want them counted.
+      queryRow(
+        `SELECT COUNT(*) AS n
+         FROM card_pools
+         WHERE user_id = $1
+           AND pool_type IN ('sealed', 'draft')
+           AND created_at >= $2
+           AND created_at < ($3::date + interval '1 day')`,
+        [session.id, since, until]
+      ),
+
+      // 4. draftsJoined.
+      // Distinct pods the user joined as a human player. Completed status
+      // only — in-progress drafts don't count as "joined" for activity
+      // totals. is_bot guard prevents an adversarial pod with a bot row
+      // claiming the user's id from inflating the count.
+      queryRow(
+        `SELECT COUNT(DISTINCT pp.pod_id) AS n
+         FROM pod_players pp
+         JOIN pods p ON p.id = pp.pod_id
+         WHERE pp.user_id = $1
+           AND pp.is_bot = false
+           AND p.status = 'complete'
+           AND p.created_at >= $2
+           AND p.created_at < ($3::date + interval '1 day')`,
+        [session.id, since, until]
+      ),
+
+      // 5. decksBuilt.
+      // Filter on built_decks.built_at — NOT created_at. Verified against
+      // migrations/031_create_built_decks.sql, which has no created_at
+      // column. Because built_decks has UNIQUE(card_pool_id), this is
+      // really "pools with a built deck"; the UI label is "Decks built."
+      queryRow(
+        `SELECT COUNT(*) AS n
+         FROM built_decks bd
+         JOIN card_pools cp ON bd.card_pool_id = cp.id
+         WHERE cp.user_id = $1
+           AND bd.built_at >= $2
+           AND bd.built_at < ($3::date + interval '1 day')`,
+        [session.id, since, until]
+      ),
+
+      // 6. decksPlayed.
+      // Filter on first_visited_at. last_visited_at would make the
+      // counter "decks I came back to in this window" which is a different
+      // (less interesting) signal for the activity dashboard. Per the
+      // unique constraint, a single pool played many times counts as 1.
+      queryRow(
+        `SELECT COUNT(*) AS n
+         FROM deck_play_visits
+         WHERE user_id = $1
+           AND first_visited_at >= $2
+           AND first_visited_at < ($3::date + interval '1 day')`,
+        [session.id, since, until]
+      ),
+    ])
+
     const sealedPacks = parseInt(sealedRow?.n || '0', 10)
-
-    // 2. packsCracked, draft half.
-    // For each completed draft the user joined as a human, count the
-    // packsPerPlayer for that pod. See header comment for the JSONB lookup.
-    // Filter on pod.created_at matches the plan's spec; alternatives like
-    // started_at or completed_at would shift "joined a draft today" to
-    // different timestamps and complicate the user mental model.
-    const draftRow = await queryRow(
-      `SELECT COALESCE(SUM(COALESCE(jsonb_array_length(p.settings->'chaosSets'), 3)), 0) AS n
-       FROM pod_players pp
-       JOIN pods p ON p.id = pp.pod_id
-       WHERE pp.user_id = $1
-         AND pp.is_bot = false
-         AND p.status = 'complete'
-         AND p.created_at >= $2
-         AND p.created_at < ($3::date + interval '1 day')`,
-      [session.id, since, until]
-    )
     const draftPacks = parseInt(draftRow?.n || '0', 10)
-
-    // 3. poolsOpened.
-    // Pool types are constrained by migration 059 to:
-    //   sealed | draft | pack_blitz | pack_wars | chaos_sealed | rotisserie | imported
-    // The plan calls for sealed + draft only — imported pools are user
-    // uploads of physical pulls and bot-generated pools don't count toward
-    // "you opened this." A future tweak could widen this to chaos_sealed
-    // and pack_blitz if user research shows they want them counted.
-    const poolsRow = await queryRow(
-      `SELECT COUNT(*) AS n
-       FROM card_pools
-       WHERE user_id = $1
-         AND pool_type IN ('sealed', 'draft')
-         AND created_at >= $2
-         AND created_at < ($3::date + interval '1 day')`,
-      [session.id, since, until]
-    )
     const poolsOpened = parseInt(poolsRow?.n || '0', 10)
-
-    // 4. draftsJoined.
-    // Distinct pods the user joined as a human player. Completed status
-    // only — in-progress drafts don't count as "joined" for activity
-    // totals. is_bot guard prevents an adversarial pod with a bot row
-    // claiming the user's id from inflating the count.
-    const draftsJoinedRow = await queryRow(
-      `SELECT COUNT(DISTINCT pp.pod_id) AS n
-       FROM pod_players pp
-       JOIN pods p ON p.id = pp.pod_id
-       WHERE pp.user_id = $1
-         AND pp.is_bot = false
-         AND p.status = 'complete'
-         AND p.created_at >= $2
-         AND p.created_at < ($3::date + interval '1 day')`,
-      [session.id, since, until]
-    )
     const draftsJoined = parseInt(draftsJoinedRow?.n || '0', 10)
-
-    // 5. decksBuilt.
-    // Filter on built_decks.built_at — NOT created_at. Verified against
-    // migrations/031_create_built_decks.sql, which has no created_at
-    // column. Because built_decks has UNIQUE(card_pool_id), this is
-    // really "pools with a built deck"; the UI label is "Decks built."
-    const decksBuiltRow = await queryRow(
-      `SELECT COUNT(*) AS n
-       FROM built_decks bd
-       JOIN card_pools cp ON bd.card_pool_id = cp.id
-       WHERE cp.user_id = $1
-         AND bd.built_at >= $2
-         AND bd.built_at < ($3::date + interval '1 day')`,
-      [session.id, since, until]
-    )
     const decksBuilt = parseInt(decksBuiltRow?.n || '0', 10)
-
-    // 6. decksPlayed.
-    // Filter on first_visited_at. last_visited_at would make the
-    // counter "decks I came back to in this window" which is a different
-    // (less interesting) signal for the activity dashboard. Per the
-    // unique constraint, a single pool played many times counts as 1.
-    const decksPlayedRow = await queryRow(
-      `SELECT COUNT(*) AS n
-       FROM deck_play_visits
-       WHERE user_id = $1
-         AND first_visited_at >= $2
-         AND first_visited_at < ($3::date + interval '1 day')`,
-      [session.id, since, until]
-    )
     const decksPlayed = parseInt(decksPlayedRow?.n || '0', 10)
 
     const response = jsonResponse(
