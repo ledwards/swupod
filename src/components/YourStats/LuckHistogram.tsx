@@ -33,6 +33,7 @@ const ASPECT_ICON: Record<string, string> = {
   Cunning: '/icons/cunning.png',
   Heroism: '/icons/heroism.png',
   Villainy: '/icons/villainy.png',
+  Multicolor: '/icons/aspects.png',
 }
 
 function AspectIcons({ aspects }: { aspects: string[] }) {
@@ -465,6 +466,14 @@ const ALIGN_COLOR: Record<string, string> = {
 
 type Slice = { label: string; value: number; expected: number; color: string }
 
+function PieLegendMark({ slice }: { slice: Slice }) {
+  const icon = ASPECT_ICON[slice.label]
+  if (icon) {
+    return <img className="your-stats-luck-pie-icon" src={icon} alt="" width={15} height={15} />
+  }
+  return <span className="your-stats-luck-pie-dot" style={{ background: slice.color }} />
+}
+
 function Pie({ title, slices }: { title: string; slices: Slice[] }) {
   const { ref: pieRef, inView } = useRevealOnView()
   const total = slices.reduce((s, x) => s + x.value, 0)
@@ -490,8 +499,7 @@ function Pie({ title, slices }: { title: string; slices: Slice[] }) {
             const expPct = expTotal > 0 ? Math.round((s.expected / expTotal) * 100) : 0
             return (
               <li key={s.label}>
-                <span className="your-stats-luck-pie-dot" style={{ background: s.color }} />
-                {ASPECT_ICON[s.label] && <img src={ASPECT_ICON[s.label]} alt="" width={15} height={15} />}
+                <PieLegendMark slice={s} />
                 <span className="your-stats-luck-pie-label">{s.label}</span>
                 <span className="your-stats-luck-pie-val">
                   {Math.round(s.value)} · {pct}%

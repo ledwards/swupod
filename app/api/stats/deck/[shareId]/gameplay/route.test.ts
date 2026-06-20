@@ -61,6 +61,7 @@ describe('buildDeckGameplayResponse', () => {
     assert.equal(response.deck.recordIsBuildExact, true)
     assert.equal(response.replays.length, 1)
     assert.equal(response.replays[0].result, 'win')
+    assert.equal(response.replays[0].playerSide, 'player1')
     assert.deepEqual(response.replays[0].gameResults, ['W', 'L', 'W'])
   })
 
@@ -87,6 +88,7 @@ describe('buildDeckGameplayResponse', () => {
 
     assert.equal(response.deck.competitiveAttribution, 'pod')
     assert.equal(response.replays[0].result, 'win')
+    assert.equal(response.replays[0].playerSide, 'player2')
     assert.deepEqual(response.replays[0].gameResults, ['L', 'W', 'W'])
   })
 

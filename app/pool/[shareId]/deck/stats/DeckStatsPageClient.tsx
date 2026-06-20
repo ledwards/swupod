@@ -1,9 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useStickyTab } from '@/src/hooks/useStickyTab'
+import { useAuth } from '@/src/contexts/AuthContext'
 import Button from '@/src/components/Button'
+import { useStickyTab } from '@/src/hooks/useStickyTab'
+import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
+import { isCompanionBeta } from '@/src/utils/companionBeta'
 import { ReplayExplorer } from '@/src/components/YourStats/GameplayDashboard'
+import WayfinderStoreButtons, { WayfinderCompanionLockup } from '@/src/components/WayfinderStoreButtons'
 import { AspectBreakdown, DuplicateRateWidget, LuckHistogram } from '@/src/components/YourStats/LuckHistogram'
 import {
   buildDeckGameplayMetrics,
@@ -34,11 +38,52 @@ function CardSilhouette() {
   )
 }
 
+function PlayMark() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M8 5v14l11-7z" />
+    </svg>
+  )
+}
+
+function DraftLogIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+      <polyline points="10 9 9 9 8 9" />
+    </svg>
+  )
+}
+
 function ArtSlot({ src, label, tint }: { src: string | null; label: string; tint?: string | null }) {
   return (
     <div className="deck-stats-art-slot" style={{ ['--deck-art-tint' as any]: tint || '#1a2233' }}>
       {src ? <img src={src} alt="" loading="lazy" /> : <CardSilhouette />}
       <span>{label}</span>
+    </div>
+  )
+}
+
+function DeckStatsSideLabels({
+  left,
+  right,
+}: {
+  left: { leaderName: string; baseName: string }
+  right: { leaderName: string; baseName: string }
+}) {
+  return (
+    <div className="deck-stats-card-side-labels" aria-hidden="true">
+      <span className="deck-stats-card-side-label deck-stats-card-side-label--left">
+        <strong>{left.leaderName}</strong>
+        <small>{left.baseName}</small>
+      </span>
+      <span className="deck-stats-card-side-label deck-stats-card-side-label--right">
+        <strong>{right.leaderName}</strong>
+        <small>{right.baseName}</small>
+      </span>
     </div>
   )
 }
@@ -69,6 +114,65 @@ function StatePanel({
       <span className="your-stats-eyebrow">{eyebrow}</span>
       <h3>{title}</h3>
       <p>{children}</p>
+    </section>
+  )
+}
+
+function ComingSoonPanel({ eyebrow }: { eyebrow: string }) {
+  return (
+    <StatePanel eyebrow={eyebrow} title="Coming Soon">
+      This section will show deck gameplay details once it rolls out.
+    </StatePanel>
+  )
+}
+
+function CompanionInstallPanel({ eyebrow, deckName }: { eyebrow: string; deckName: string }) {
+  return (
+    <section className="deck-stats-panel deck-stats-panel--install">
+      <div className="deck-stats-install-copy">
+        <WayfinderCompanionLockup className="deck-stats-install-lockup" />
+        <span className="your-stats-eyebrow">{eyebrow}</span>
+        <h3>Install Wayfinder Companion</h3>
+        <p>
+          Install the Companion to record {deckName} games and unlock the gameplay and matchup tabs.
+        </p>
+      </div>
+      <WayfinderStoreButtons orientation="stack" />
+    </section>
+  )
+}
+
+function EmptyGameplayPrompt({
+  deck,
+  kind,
+  hasCompanion,
+  wayfinderDetected,
+}: {
+  deck: any
+  kind: 'gameplay' | 'matchups'
+  hasCompanion: boolean
+  wayfinderDetected: boolean
+}) {
+  if (!hasCompanion) {
+    return <ComingSoonPanel eyebrow={kind === 'gameplay' ? 'Gameplay' : 'Matchups'} />
+  }
+
+  if (!wayfinderDetected) {
+    return <CompanionInstallPanel eyebrow={kind === 'gameplay' ? 'Gameplay' : 'Matchups'} deckName={deck.name} />
+  }
+
+  const href = `/pool/${deck.shareId}/deck/play`
+  return (
+    <section className="deck-stats-panel deck-stats-panel--empty">
+      <span className="your-stats-eyebrow">{kind === 'gameplay' ? 'Gameplay' : 'Matchups'}</span>
+      <h3>No games recorded yet</h3>
+      <p>
+        You have Wayfinder installed. Play some games with {deck.name} to unlock this tab.
+      </p>
+      <a className="btn btn--primary btn--sm deck-stats-empty-play" href={href}>
+        <PlayMark />
+        <span>Play deck</span>
+      </a>
     </section>
   )
 }
@@ -140,12 +244,13 @@ function GameLogTab({ state, deck }: { state: any; deck: any }) {
 
   return (
     <section className="deck-stats-game-log">
-      {state.data?.deck?.competitiveAttribution === 'pod' && (
-        <p className="deck-stats-attribution-note">
-          Competitive games are attributed at the draft pod level for this version; casual games are exact to this deck.
-        </p>
-      )}
-      <ReplayExplorer replays={replays} myName={deck.ownerName || 'Deck owner'} />
+      <ReplayExplorer
+        replays={replays}
+        myName={deck.ownerName || 'Deck owner'}
+        cardMode="side-labels"
+        eyebrow="Game log"
+        heading="Games"
+      />
     </section>
   )
 }
@@ -215,7 +320,17 @@ function DistributionChart({ data }: { data: any[] }) {
   )
 }
 
-function GameplayTab({ state, deck }: { state: any; deck: any }) {
+function GameplayTab({
+  state,
+  deck,
+  hasCompanion,
+  wayfinderDetected,
+}: {
+  state: any
+  deck: any
+  hasCompanion: boolean
+  wayfinderDetected: boolean
+}) {
   if (state.loading) return <SkeletonPanel />
   if (state.error) {
     return (
@@ -226,6 +341,10 @@ function GameplayTab({ state, deck }: { state: any; deck: any }) {
   }
 
   const replays = state.data?.replays || []
+  if (replays.length === 0) {
+    return <EmptyGameplayPrompt deck={deck} kind="gameplay" hasCompanion={hasCompanion} wayfinderDetected={wayfinderDetected} />
+  }
+
   const metrics = buildDeckGameplayMetrics(replays)
   const matchRecord = metrics.matchRecord.matches > 0 ? metrics.matchRecord : {
     wins: deck.record.wins,
@@ -237,21 +356,13 @@ function GameplayTab({ state, deck }: { state: any; deck: any }) {
       : 0,
   }
 
-  if (matchRecord.matches === 0) {
-    return (
-      <StatePanel eyebrow="Gameplay" title="Insufficient data">
-        Play at least one recorded game with {deck.name} to start showing result-level stats.
-      </StatePanel>
-    )
-  }
-
   return (
     <section className="deck-stats-gameplay">
       <div className="your-stats-gameplay-kpi-grid">
-        <KpiCard label="Matches" value={matchRecord.matches.toLocaleString()} subtext="recorded for this deck" />
+        <KpiCard label="Matches" value={matchRecord.matches.toLocaleString()} subtext="Recorded" />
         <KpiCard label="Match win rate" value={pct(matchRecord.winRate)} subtext={formatRecord(matchRecord)} />
         <KpiCard label="Game win rate" value={metrics.gameRecord.matches ? pct(metrics.gameRecord.winRate) : '—'} subtext={metrics.gameRecord.matches ? formatRecord(metrics.gameRecord) : 'No game splits'} />
-        <KpiCard label="Chart threshold" value={`${MIN_DISTRIBUTION_MATCHES}+`} subtext={metrics.canShowDistributionChart ? 'distribution enabled' : 'showing record only'} />
+        <KpiCard label="Chart min" value={`${MIN_DISTRIBUTION_MATCHES}+`} subtext={metrics.canShowDistributionChart ? 'Chart on' : 'Record only'} />
       </div>
 
       <div className="your-stats-gameplay-card">
@@ -277,7 +388,7 @@ function GameplayTab({ state, deck }: { state: any; deck: any }) {
       </div>
 
       <p className="deck-stats-muted-copy">
-        On-the-play splits, game length, remaining health, cards resourced, and card-level win rates are not captured yet.
+        Not yet tracked: play/draw, game length, health, resources, or card-level win rates.
       </p>
     </section>
   )
@@ -286,6 +397,14 @@ function GameplayTab({ state, deck }: { state: any; deck: any }) {
 function MatchupListItem({ item, deck }: { item: any; deck: any }) {
   const style = deck.baseColor ? ({ ['--right-row-tint' as any]: deck.baseColor }) : undefined
   const myLeaderArt = deck.leaderListImageUrl || deck.leaderImageUrl
+  const leftLabel = {
+    leaderName: item.leaderName || item.opponentName || 'Unknown leader',
+    baseName: item.baseName || 'Unknown base',
+  }
+  const rightLabel = {
+    leaderName: deck.leaderName || 'Your leader',
+    baseName: deck.baseName || 'Unknown base',
+  }
 
   return (
     <article className="your-stats-pool-build deck-stats-matchup-card" style={style}>
@@ -303,17 +422,6 @@ function MatchupListItem({ item, deck }: { item: any; deck: any }) {
       </div>
 
       <div className="deck-stats-matchup-card-content">
-        <div className="deck-stats-matchup-card-top">
-          <span className="deck-stats-matchup-side deck-stats-matchup-side--opp">
-            <strong>{item.leaderName || item.opponentName}</strong>
-            <span>{item.baseName || 'Unknown base'}{item.archetype ? ` · ${item.archetype}` : ''}</span>
-          </span>
-          <span className="your-stats-replay-vs">vs</span>
-          <span className="deck-stats-matchup-side deck-stats-matchup-side--mine">
-            <strong>{deck.leaderName || 'Your leader'}</strong>
-            <span>{deck.baseName || 'Unknown base'}</span>
-          </span>
-        </div>
         <div className="deck-stats-matchup-card-record">
           <strong>{formatRecord(item)}</strong>
           {item.sufficientData ? (
@@ -323,11 +431,22 @@ function MatchupListItem({ item, deck }: { item: any; deck: any }) {
           )}
         </div>
       </div>
+      <DeckStatsSideLabels left={leftLabel} right={rightLabel} />
     </article>
   )
 }
 
-function MatchupsTab({ state, deck }: { state: any; deck: any }) {
+function MatchupsTab({
+  state,
+  deck,
+  hasCompanion,
+  wayfinderDetected,
+}: {
+  state: any
+  deck: any
+  hasCompanion: boolean
+  wayfinderDetected: boolean
+}) {
   if (state.loading) return <SkeletonPanel />
   if (state.error) {
     return (
@@ -339,11 +458,7 @@ function MatchupsTab({ state, deck }: { state: any; deck: any }) {
 
   const matchups = buildOpponentBreakdown(state.data?.replays || [])
   if (matchups.length === 0) {
-    return (
-      <StatePanel eyebrow="Matchups" title="No opponent data yet">
-        Matchup records appear after this deck has recorded games with opponent leader or base data.
-      </StatePanel>
-    )
+    return <EmptyGameplayPrompt deck={deck} kind="matchups" hasCompanion={hasCompanion} wayfinderDetected={wayfinderDetected} />
   }
 
   return (
@@ -365,6 +480,10 @@ function MatchupsTab({ state, deck }: { state: any; deck: any }) {
 }
 
 export default function DeckStatsPageClient({ deck }: { deck: any }) {
+  const { user } = useAuth() as { user: { is_beta_tester?: boolean | null; is_admin?: boolean | null } | null }
+  const { detected: wayfinderDetected } = useWayfinderDetection()
+  const companionBeta = isCompanionBeta(user)
+  const hasCompanionSurface = companionBeta || wayfinderDetected
   const [activeTab, setActiveTab] = useStickyTab<DeckStatsTab>(
     ['gamelog', 'gameplay', 'matchups', 'pool'],
     'pool',
@@ -451,9 +570,16 @@ export default function DeckStatsPageClient({ deck }: { deck: any }) {
               <p>{deck.name}{deck.ownerName ? ` · ${deck.ownerName}` : ''}{deck.deckCardCount ? ` · ${deck.deckCardCount} cards` : ''}</p>
             </div>
           </div>
-          <div className="deck-stats-record" aria-label={`Deck record: ${recordDisplay}`}>
-            <span>Record</span>
-            <strong>{recordDisplay}</strong>
+          <div className="deck-stats-record-cluster">
+            {deck.draftLogUrl && (
+              <a className="deck-stats-draft-log-icon" href={deck.draftLogUrl} title="Draft Log" aria-label="Open Draft Log">
+                <DraftLogIcon />
+              </a>
+            )}
+            <div className="deck-stats-record" aria-label={`Deck record: ${recordDisplay}`}>
+              <span>Record</span>
+              <strong>{recordDisplay}</strong>
+            </div>
           </div>
         </header>
 
@@ -474,11 +600,6 @@ export default function DeckStatsPageClient({ deck }: { deck: any }) {
                 </button>
               ))}
             </div>
-            {deck.draftLogUrl && (
-              <a className="your-stats-tab deck-stats-draft-log-tab" href={deck.draftLogUrl}>
-                Draft Log
-              </a>
-            )}
           </div>
 
           <div className="your-stats-content deck-stats-content">
@@ -488,9 +609,9 @@ export default function DeckStatsPageClient({ deck }: { deck: any }) {
                 : activeTab === 'pool'
                   ? <PoolTab state={luckState} deck={deck} />
                   : activeTab === 'gameplay'
-                  ? <GameplayTab state={gameplayState} deck={deck} />
+                  ? <GameplayTab state={gameplayState} deck={deck} hasCompanion={hasCompanionSurface} wayfinderDetected={wayfinderDetected} />
                   : activeTab === 'matchups'
-                      ? <MatchupsTab state={gameplayState} deck={deck} />
+                      ? <MatchupsTab state={gameplayState} deck={deck} hasCompanion={hasCompanionSurface} wayfinderDetected={wayfinderDetected} />
                       : null}
             </div>
             <div className="deck-stats-state-samples" aria-hidden="true">

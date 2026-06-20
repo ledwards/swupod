@@ -61,6 +61,7 @@ interface GameplayReplay {
   playedAt: string | null
   result: 'win' | 'loss' | 'draw' | 'pending'
   gameResults: Array<'W' | 'L' | 'D'>
+  playerSide?: 'player1' | 'player2' | null
   opponent: {
     username: string | null
     avatarUrl: string | null
@@ -331,26 +332,67 @@ function CardPlaceholder() {
   )
 }
 
-export function ReplayListItem({ replay, myName }: { replay: GameplayReplay; myName: string }) {
+type ReplayCardMode = 'default' | 'side-labels'
+
+interface ReplaySide {
+  playerName: string
+  leaderName: string
+  baseName: string
+  leaderImageUrl: string | null
+}
+
+function ReplaySideLabels({ left, right }: { left: ReplaySide; right: ReplaySide }) {
+  return (
+    <div className="your-stats-replay-side-labels" aria-hidden="true">
+      <span className="your-stats-replay-side-label your-stats-replay-side-label--left">
+        <strong>{left.leaderName}</strong>
+        <small>{left.baseName}</small>
+      </span>
+      <span className="your-stats-replay-side-label your-stats-replay-side-label--right">
+        <strong>{right.leaderName}</strong>
+        <small>{right.baseName}</small>
+      </span>
+    </div>
+  )
+}
+
+export function ReplayListItem({ replay, myName, mode = 'default' }: { replay: GameplayReplay; myName: string; mode?: ReplayCardMode }) {
   const opp = replay.opponent.username || 'Opponent'
   const style = replay.baseColor ? ({ ['--row-tint' as any]: replay.baseColor }) : undefined
+  const mineSide: ReplaySide = {
+    playerName: myName,
+    leaderName: replay.leaderName || 'Unknown leader',
+    baseName: replay.baseName || 'Unknown base',
+    leaderImageUrl: replay.leaderImageUrl,
+  }
+  const oppSide: ReplaySide = {
+    playerName: opp,
+    leaderName: replay.opponent.leaderName || 'Unknown leader',
+    baseName: replay.opponent.baseName || 'Unknown base',
+    leaderImageUrl: replay.opponent.leaderImageUrl,
+  }
+  const orderedSides = mode === 'side-labels' && replay.playerSide === 'player2'
+    ? { left: oppSide, right: mineSide }
+    : mode === 'side-labels'
+      ? { left: mineSide, right: oppSide }
+      : { left: oppSide, right: mineSide }
 
   return (
     <a
-      className={`your-stats-pool-build your-stats-replay-card your-stats-replay-row--${replay.result}`}
+      className={`your-stats-pool-build your-stats-replay-card your-stats-replay-row--${replay.result}${mode === 'side-labels' ? ' your-stats-replay-card--side-labels' : ''}`}
       style={style}
       href={replay.replayUrl}
       target="_blank"
       rel="noopener noreferrer"
     >
       <div className="your-stats-pool-build-art your-stats-replay-art-pair" aria-hidden="true">
-        {replay.opponent.leaderImageUrl ? (
-          <img className="your-stats-replay-side-art your-stats-replay-side-art--opp" src={replay.opponent.leaderImageUrl} alt="" loading="lazy" />
+        {orderedSides.left.leaderImageUrl ? (
+          <img className="your-stats-replay-side-art your-stats-replay-side-art--left" src={orderedSides.left.leaderImageUrl} alt="" loading="lazy" />
         ) : (
           <span className="your-stats-pool-build-art-fallback your-stats-pool-build-art-fallback--opp"><CardPlaceholder /></span>
         )}
-        {replay.leaderImageUrl ? (
-          <img className="your-stats-replay-side-art your-stats-replay-side-art--mine" src={replay.leaderImageUrl} alt="" loading="lazy" />
+        {orderedSides.right.leaderImageUrl ? (
+          <img className="your-stats-replay-side-art your-stats-replay-side-art--right" src={orderedSides.right.leaderImageUrl} alt="" loading="lazy" />
         ) : (
           <span className="your-stats-pool-build-art-fallback"><CardPlaceholder /></span>
         )}
@@ -361,16 +403,16 @@ export function ReplayListItem({ replay, myName }: { replay: GameplayReplay; myN
             {resultLetter(replay.result)}
           </span>
           <span className="your-stats-replay-names">
-            <strong>{myName}</strong>
+            <strong>{mode === 'side-labels' ? orderedSides.left.playerName : myName}</strong>
             <span className="your-stats-replay-vs">vs</span>
-            <strong>{opp}</strong>
+            <strong>{mode === 'side-labels' ? orderedSides.right.playerName : opp}</strong>
           </span>
         </div>
-        <div className="your-stats-replay-oppline">
+        {mode !== 'side-labels' && <div className="your-stats-replay-oppline">
           <span>{replay.leaderName || 'Unknown leader'}</span>
           <span className="your-stats-replay-vs">vs</span>
           <span>{replay.opponent.leaderName || 'Unknown leader'}</span>
-        </div>
+        </div>}
         <div className="your-stats-replay-center-sub">
           <span>{replay.pool.setCode} · {replayDate(replay.playedAt)}</span>
           <ReplayGamePips results={replay.gameResults} />
@@ -379,11 +421,24 @@ export function ReplayListItem({ replay, myName }: { replay: GameplayReplay; myN
           <PlayGlyph />Watch
         </span>
       </div>
+      {mode === 'side-labels' && <ReplaySideLabels left={orderedSides.left} right={orderedSides.right} />}
     </a>
   )
 }
 
-export function ReplayExplorer({ replays, myName }: { replays: GameplayReplay[]; myName: string }) {
+export function ReplayExplorer({
+  replays,
+  myName,
+  cardMode = 'default',
+  eyebrow = 'Replay Explorer',
+  heading = 'Recorded games',
+}: {
+  replays: GameplayReplay[]
+  myName: string
+  cardMode?: ReplayCardMode
+  eyebrow?: string
+  heading?: string
+}) {
   const [search, setSearch] = useState('')
   const [format, setFormat] = useState('all')
   const [result, setResult] = useState('all')
@@ -424,8 +479,8 @@ export function ReplayExplorer({ replays, myName }: { replays: GameplayReplay[];
     <section className="your-stats-replay-explorer" aria-label="Replay explorer">
       <div className="your-stats-replay-header">
         <div>
-          <span className="your-stats-eyebrow">Replay Explorer</span>
-          <h3>Every game, by leader &amp; base</h3>
+          <span className="your-stats-eyebrow">{eyebrow}</span>
+          <h3>{heading}</h3>
         </div>
         <span className="your-stats-count-pill">{filtered.length.toLocaleString()} of {replays.length.toLocaleString()}</span>
       </div>
@@ -480,7 +535,7 @@ export function ReplayExplorer({ replays, myName }: { replays: GameplayReplay[];
       ) : (
         <div className="your-stats-replay-list">
           {filtered.map((replay) => (
-            <ReplayListItem key={replay.id} replay={replay} myName={myName} />
+            <ReplayListItem key={replay.id} replay={replay} myName={myName} mode={cardMode} />
           ))}
         </div>
       )}

@@ -3546,6 +3546,13 @@ a.your-stats-logged-out-link:active {
   flex: 0 0 auto;
 }
 
+.your-stats-luck-pie-icon {
+  width: 15px;
+  height: 15px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
 .your-stats-luck-pie-legend img {
   border-radius: 3px;
 }
@@ -3557,6 +3564,34 @@ a.your-stats-logged-out-link:active {
 .your-stats-luck-pie-val {
   color: var(--ys-text-2, rgba(255, 255, 255, 0.55));
   font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 560px) {
+  .your-stats-luck-pie-legend li {
+    gap: 0.32rem;
+  }
+
+  .your-stats-luck-pie-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .your-stats-luck-pie-icon,
+  .your-stats-luck-pie-dot {
+    width: 18px;
+    height: 18px;
+  }
+
+  .your-stats-luck-pie-val {
+    margin-left: auto;
+    font-size: 0.78rem;
+  }
 }
 
 /* ===========================================================================
@@ -3580,14 +3615,16 @@ a.your-stats-logged-out-link:active {
   transition: transform 380ms ease;
 }
 
-.your-stats-replay-art-pair .your-stats-replay-side-art--opp {
+.your-stats-replay-art-pair .your-stats-replay-side-art--opp,
+.your-stats-replay-art-pair .your-stats-replay-side-art--left {
   left: -60px;
   right: auto;
   -webkit-mask-image: linear-gradient(to right, #000 0%, #000 44%, transparent 100%);
   mask-image: linear-gradient(to right, #000 0%, #000 44%, transparent 100%);
 }
 
-.your-stats-replay-art-pair .your-stats-replay-side-art--mine {
+.your-stats-replay-art-pair .your-stats-replay-side-art--mine,
+.your-stats-replay-art-pair .your-stats-replay-side-art--right {
   right: -60px;
   left: auto;
   -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 56%, #000 100%);
@@ -3692,6 +3729,71 @@ a.your-stats-logged-out-link:active {
   margin-right: 0.5rem;
 }
 
+.your-stats-replay-card--side-labels {
+  min-height: 140px;
+}
+
+.your-stats-replay-card--side-labels .your-stats-replay-content {
+  min-height: 118px;
+  justify-content: center;
+  padding-bottom: 1.45rem;
+}
+
+.your-stats-replay-side-labels {
+  position: absolute;
+  left: 0.85rem;
+  right: 0.85rem;
+  bottom: 0.58rem;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  pointer-events: none;
+}
+
+.your-stats-replay-side-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  width: fit-content;
+  max-width: min(36%, 220px);
+  min-width: 0;
+  padding: 0.26rem 0.38rem 0.3rem;
+  background: rgba(0, 0, 0, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.82);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(2px);
+}
+
+.your-stats-replay-side-label--right {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.your-stats-replay-side-label strong,
+.your-stats-replay-side-label small {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.your-stats-replay-side-label strong {
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.08;
+}
+
+.your-stats-replay-side-label small {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
 @media (max-width: 560px) {
   .your-stats-replay-card .your-stats-replay-content {
     max-width: 72%;
@@ -3702,12 +3804,38 @@ a.your-stats-logged-out-link:active {
     object-position: center calc(30% + 50px);
   }
 
-  .your-stats-replay-art-pair .your-stats-replay-side-art--opp {
+  .your-stats-replay-art-pair .your-stats-replay-side-art--opp,
+  .your-stats-replay-art-pair .your-stats-replay-side-art--left {
     left: -72px;
   }
 
-  .your-stats-replay-art-pair .your-stats-replay-side-art--mine {
+  .your-stats-replay-art-pair .your-stats-replay-side-art--mine,
+  .your-stats-replay-art-pair .your-stats-replay-side-art--right {
     right: -72px;
+  }
+
+  .your-stats-replay-card--side-labels .your-stats-replay-content {
+    max-width: 72%;
+    min-height: 118px;
+  }
+
+  .your-stats-replay-side-labels {
+    left: 0.65rem;
+    right: 0.65rem;
+    bottom: 0.52rem;
+  }
+
+  .your-stats-replay-side-label {
+    max-width: 39%;
+    padding: 0.22rem 0.32rem 0.25rem;
+  }
+
+  .your-stats-replay-side-label strong {
+    font-size: 0.82rem;
+  }
+
+  .your-stats-replay-side-label small {
+    font-size: 0.68rem;
   }
 }
 

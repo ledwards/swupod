@@ -137,6 +137,7 @@ export interface GameplayReplay {
   playedAt: string | null
   result: 'win' | 'loss' | 'draw' | 'pending'
   gameResults: Array<'W' | 'L' | 'D'>
+  playerSide: 'player1' | 'player2' | null
   opponent: {
     username: string | null
     avatarUrl: string | null
@@ -399,11 +400,17 @@ function formatTimestamp(value: string | Date | null | undefined): string | null
   return value instanceof Date ? value.toISOString() : String(value)
 }
 
+function userSideFromReplay(row: RawReplayRow, currentUserId: string): 'player1' | 'player2' | null {
+  if (row.player1_id === currentUserId) return 'player1'
+  if (row.player2_id === currentUserId) return 'player2'
+  return null
+}
+
 function resultFromPerspective(row: RawReplayRow, currentUserId: string): GameplayReplay['result'] {
   const winner = row.match_winner
   if (winner === 'draw') return 'draw'
   if (winner !== 'player1' && winner !== 'player2') return 'pending'
-  const userSide = row.player1_id === currentUserId ? 'player1' : row.player2_id === currentUserId ? 'player2' : null
+  const userSide = userSideFromReplay(row, currentUserId)
   if (!userSide) return 'pending'
   return winner === userSide ? 'win' : 'loss'
 }
@@ -415,7 +422,7 @@ function gameResultFromPerspective(
 ): 'W' | 'L' | 'D' | null {
   if (!gameResult) return null
   if (gameResult === 'draw') return 'D'
-  const userSide = row.player1_id === currentUserId ? 'player1' : row.player2_id === currentUserId ? 'player2' : null
+  const userSide = userSideFromReplay(row, currentUserId)
   if (!userSide) return null
   return gameResult === userSide ? 'W' : 'L'
 }
@@ -443,6 +450,7 @@ export function buildTerronkDevGameplayFixture(poolRows: DevFixturePoolRow[]): G
     replayUrl: `https://wayfinder.news/replay/terronk-dev-${index + 1}`,
     playedAt: pool.updatedAt,
     result: index % 3 === 1 ? 'loss' as const : 'win' as const,
+    playerSide: index % 2 === 0 ? 'player1' as const : 'player2' as const,
     gameResults: index % 3 === 1 ? ['L', 'W', 'L'] as Array<'W' | 'L' | 'D'> : ['W', 'L', 'W'] as Array<'W' | 'L' | 'D'>,
     opponent: {
       username: index % 2 === 0 ? 'Karabast Opponent' : 'Wayfinder Rival',
@@ -614,6 +622,7 @@ function mapCasualReplay(row: RawCasualRow): GameplayReplay {
     replayUrl,
     playedAt: formatTimestamp(row.played_at),
     result,
+    playerSide: 'player1',
     gameResults: [row.game1_result, row.game2_result, row.game3_result]
       .filter((g): g is 'W' | 'L' | 'D' => g === 'W' || g === 'L' || g === 'D'),
     opponent: {
@@ -699,6 +708,7 @@ export function buildGameplayResponse(
           replayUrl,
           playedAt: formatTimestamp(row.created_at),
           result: resultFromPerspective(row, currentUserId),
+          playerSide: userSideFromReplay(row, currentUserId),
           gameResults: [row.game1_result, row.game2_result, row.game3_result]
             .map((game) => gameResultFromPerspective(game, row, currentUserId))
             .filter(Boolean) as Array<'W' | 'L' | 'D'>,
