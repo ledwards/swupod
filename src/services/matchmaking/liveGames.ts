@@ -1460,6 +1460,14 @@ function isOlderLifecycleStatus(
     return true
   }
 
+  // failed/voided are terminal off-ramps (LEGAL_TRANSITIONS permits them from any
+  // active status), not linear regressions. Their lifecycleRank of 0 would
+  // otherwise make every active status look "newer", silently dropping a real
+  // failure (e.g. Wayfinder's "lobby creation failed" on a still-creating game).
+  if (nextStatus === 'failed' || nextStatus === 'voided') {
+    return false
+  }
+
   return lifecycleRank(currentStatus) > lifecycleRank(nextStatus)
 }
 

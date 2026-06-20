@@ -390,6 +390,49 @@ describe('recordPracticeMatchGameLifecycle', { skip: !dbAvailable }, () => {
     assert.equal(row!.started_at, null)
   })
 
+  it('marks a creating game failed on a failed lifecycle and lets a retry open a new attempt', async () => {
+    const seeded = await seedActiveSwissMatch()
+    const claim = await claimPracticeMatchGame({
+      shareId: seeded.shareId,
+      matchId: seeded.matchId,
+      userId: seeded.userIds[0],
+      now: new Date('2026-06-20T20:00:00.000Z'),
+    })
+
+    const failed = await recordPracticeMatchGameLifecycle({
+      practiceMatchGameId: claim.practiceMatchGameId!,
+      poolShareId: seeded.poolShareIds[0],
+      status: 'failed',
+      failureReason: 'Karabast lobby creation failed',
+      occurredAt: '2026-06-20T20:01:00.000Z',
+    })
+
+    // SPEC: a failed lifecycle is a terminal off-ramp (LEGAL_TRANSITIONS allows
+    // creating -> failed). It must apply, not be dropped as a rank regression.
+    assert.equal(failed.changed, true)
+    assert.equal(failed.previousStatus, 'creating')
+    assert.equal(failed.status, 'failed')
+
+    const row = await queryRow(
+      `SELECT status, failure_reason, failed_at FROM practice_match_games WHERE id = $1`,
+      [claim.practiceMatchGameId]
+    )
+    assert.equal(row!.status, 'failed')
+    assert.equal(row!.failure_reason, 'Karabast lobby creation failed')
+    assert.ok(row!.failed_at)
+
+    // The failed row is not "active", so a retry opens a fresh attempt for game 1.
+    const retry = await claimPracticeMatchGame({
+      shareId: seeded.shareId,
+      matchId: seeded.matchId,
+      userId: seeded.userIds[0],
+      now: new Date('2026-06-20T20:02:00.000Z'),
+    })
+    assert.equal(retry.gameNumber, 1)
+    assert.equal(retry.attemptNumber, 2)
+    assert.notEqual(retry.practiceMatchGameId, claim.practiceMatchGameId)
+  })
+
   it('moves lobby_ready to in_progress and preserves the original lobby timestamp', async () => {
     const seeded = await seedActiveSwissMatch()
     const claim = await claimPracticeMatchGame({
