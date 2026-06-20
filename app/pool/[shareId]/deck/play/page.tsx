@@ -33,7 +33,6 @@ import { useWayfinderDetection } from '../../../../../src/hooks/useWayfinderDete
 import { useWayfinderPracticeLaunch } from '../../../../../src/hooks/useWayfinderPracticeLaunch'
 import { useDraftSocket } from '../../../../../src/hooks/useDraftSocket'
 import { trackEvent } from '../../../../../src/hooks/useAnalytics'
-import { hasBetaAccess } from '../../../../../src/types/user'
 import {
   buildLimitedContext,
   getOrCreateLimitedFlowId,
@@ -2242,7 +2241,7 @@ export default function PlayPage({ params }: PageProps) {
             }))}
             wayfinderDetected={wayfinderDetected}
             wayfinderSettled={wayfinderSettled}
-            hasCompanionBetaAccess={hasBetaAccess(user)}
+            hasCompanionBetaAccess={Boolean(user?.is_beta_tester || user?.is_admin)}
             onPracticeLaunch={practiceLaunch.launchPracticeMatch}
             practiceLaunchPendingMatchId={practiceLaunch.pendingMatchId}
             practiceLaunchMessage={practiceLaunch.launchMessage}

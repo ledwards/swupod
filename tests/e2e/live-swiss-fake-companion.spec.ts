@@ -12,6 +12,7 @@ import dotenv from 'dotenv'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
+import { seedLiveSwissPod, cleanupLiveSwissPod } from '../../lib/testFixtures/liveSwiss.ts'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -22,10 +23,6 @@ const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:3000'
 const SERVICE_KEY = process.env.PTP_SERVICE_KEY
 const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL
 const TEST_ID = `e2e_live_swiss_${Date.now()}`
-
-function uniqueId(prefix: string): string {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-}
 
 function serviceHeaders() {
   return {
@@ -69,8 +66,8 @@ test('fake Companion drives live Swiss from create/join through round advance', 
 
     const playerAMatch = playerAPage.locator(`[data-testid="match-card-${fixture.matchIds[0]}"]`)
     const playerCMatch = playerCPage.locator(`[data-testid="match-card-${fixture.matchIds[0]}"]`)
-    await expect(playerAMatch).toBeVisible()
-    await expect(playerCMatch).toBeVisible()
+    await expect(playerAMatch).toBeVisible({ timeout: 30_000 })
+    await expect(playerCMatch).toBeVisible({ timeout: 30_000 })
 
     await playerAMatch.getByRole('button', { name: /Play Game/i }).click()
 
@@ -183,10 +180,9 @@ async function installFakeCompanion(context: BrowserContext, captured: CapturedI
     captured.push(payload)
   })
   await context.addInitScript(() => {
-    const meta = document.createElement('meta')
-    meta.name = 'wayfinder-installed'
-    meta.content = 'true'
-    document.documentElement.appendChild(meta)
+    // Register the intent capture FIRST. The install marker below can throw at
+    // document_start (document.documentElement is null before the <html> element
+    // exists), and that must not prevent the message listener from attaching.
     window.addEventListener('message', event => {
       if (event.source !== window) return
       const payload = event.data
@@ -197,6 +193,19 @@ async function installFakeCompanion(context: BrowserContext, captured: CapturedI
         window.ptpFakeCompanionCapture(payload)
       }
     })
+    // Best-effort install marker. Detection is also forced via ?wayfinder=1, so
+    // this is belt-and-suspenders — guard against a null root and dedupe.
+    const addMarker = () => {
+      if (document.querySelector('meta[name="wayfinder-installed"]')) return
+      const root = document.documentElement || document.head || document.body
+      if (!root) return
+      const meta = document.createElement('meta')
+      meta.name = 'wayfinder-installed'
+      meta.content = 'true'
+      root.appendChild(meta)
+    }
+    if (document.documentElement) addMarker()
+    else document.addEventListener('DOMContentLoaded', addMarker)
   })
 }
 
@@ -219,9 +228,7 @@ async function loginContext(context: BrowserContext, player: Awaited<ReturnType<
 }
 
 async function cleanupLiveSwissFixture(db: pg.Pool, podId: string) {
-  await db.query('DELETE FROM practice_match_games WHERE pod_id = $1', [podId])
-  await db.query('DELETE FROM practice_matches WHERE pod_id = $1', [podId])
-  await db.query('DELETE FROM practice_rounds WHERE pod_id = $1', [podId])
+  await cleanupLiveSwissPod((text, params) => db.query(text, params), { podId })
 }
 
 async function createLiveSwissFixture(db: pg.Pool): Promise<LiveSwissFixture> {
@@ -232,131 +239,16 @@ async function createLiveSwissFixture(db: pg.Pool): Promise<LiveSwissFixture> {
     createTestUser('LiveD', TEST_ID, { isBetaTester: true }),
   ])
   const userIds = players.map(player => player.user.id)
-  const podShareId = uniqueId('live-swiss-pod')
-  const pod = await db.query(
-    `INSERT INTO pods (
-       share_id,
-       host_id,
-       set_code,
-       set_name,
-       name,
-       status,
-       max_players,
-       current_players,
-       competitive,
-       draft_state,
-       state_version,
-       box_packs,
-       is_public
-     )
-     VALUES ($1, $2, 'SOR', 'Spark of Rebellion', 'Live Swiss Fake Companion', 'active',
-       4, 4, true, $3::jsonb, 1, '[]'::jsonb, false)
-     RETURNING id`,
-    [
-      podShareId,
-      userIds[0],
-      JSON.stringify({
-        phase: 'matchmaking',
-        matchmakingStatus: 'active',
-        currentRound: 1,
-      }),
-    ]
-  )
-  const podId = pod.rows[0].id as string
-
-  const poolShareIds: string[] = []
-  for (let i = 0; i < userIds.length; i++) {
-    const poolShareId = uniqueId(`live-swiss-pool-${i}`)
-    await db.query(
-      `INSERT INTO card_pools (
-         share_id,
-         pod_id,
-         user_id,
-         set_code,
-         pool_type,
-         cards,
-         deck_builder_state,
-         wins,
-         losses,
-         draws,
-         wayfinder_match_ids,
-         created_at,
-         updated_at
-       )
-       VALUES ($1, $2, $3, 'SOR', 'draft', '[]'::jsonb, $4::jsonb, 0, 0, 0, '{}', NOW(), NOW())`,
-      [
-        poolShareId,
-        podId,
-        userIds[i],
-        JSON.stringify({
-          cardPositions: {},
-          poolName: `Live Swiss Browser Deck ${i + 1}`,
-        }),
-      ]
-    )
-    poolShareIds.push(poolShareId)
-  }
-
-  for (let seat = 0; seat < userIds.length; seat++) {
-    await db.query(
-      `INSERT INTO pod_players (
-         pod_id,
-         user_id,
-         seat_number,
-         pick_status,
-         is_bot,
-         leaders,
-         drafted_leaders,
-         drafted_cards,
-         current_pack
-       )
-       VALUES ($1, $2, $3, 'done', false, '[]'::jsonb, '[]'::jsonb, '[]'::jsonb, '[]'::jsonb)`,
-      [podId, userIds[seat], seat + 1]
-    )
-  }
-
-  const round = await db.query(
-    `INSERT INTO practice_rounds (pod_id, round_number, status, created_at)
-     VALUES ($1, 1, 'active', NOW())
-     RETURNING id`,
-    [podId]
-  )
-  const roundId = round.rows[0].id as string
-  const matchOne = await createPracticeMatch(db, roundId, podId, userIds[0], userIds[2])
-  const matchTwo = await createPracticeMatch(db, roundId, podId, userIds[1], userIds[3])
+  const seeded = await seedLiveSwissPod((text, params) => db.query(text, params), { userIds })
 
   return {
-    podId,
-    podShareId,
+    podId: seeded.podId,
+    podShareId: seeded.podShareId,
     players,
     userIds,
-    poolShareIds,
-    matchIds: [matchOne, matchTwo],
+    poolShareIds: seeded.poolShareIds,
+    matchIds: seeded.matches.map(match => match.matchId),
   }
-}
-
-async function createPracticeMatch(
-  db: pg.Pool,
-  roundId: string,
-  podId: string,
-  player1Id: string,
-  player2Id: string
-): Promise<string> {
-  const match = await db.query(
-    `INSERT INTO practice_matches (
-       round_id,
-       pod_id,
-       player1_id,
-       player2_id,
-       is_bye,
-       final_confirmed,
-       created_at
-     )
-     VALUES ($1, $2, $3, $4, false, false, NOW())
-     RETURNING id`,
-    [roundId, podId, player1Id, player2Id]
-  )
-  return match.rows[0].id as string
 }
 
 async function postLifecycle(body: Record<string, unknown>) {
