@@ -28,3 +28,38 @@ describe('POST /api/plugin/v1/match/result', () => {
     assert.equal(res.status, 401)  // SPEC: unauthorized without Bearer token
   })
 })
+
+// SPEC: the same real game can reach PTP under two ids — Wayfinder's server-side
+// ingestion path historically sent `ing-<eventId>` while the live/replay path
+// sends the bare `<eventId>`. They must collapse to ONE canonical id so the game
+// is stored once (one casual_matches row, one W/L increment), not twice.
+describe('canonicalMatchId', () => {
+  it('OLD BUG: ing- and bare ids differ, so the same game stored as two rows', async () => {
+    const { canonicalMatchId } = await import('./route.ts')
+    // Demonstrates the pre-fix hazard: the two raw ids are NOT equal.
+    assert.notEqual('ing-match_123', 'match_123')
+    // FIXED: after normalization they are the same key.
+    assert.equal(canonicalMatchId('ing-match_123'), canonicalMatchId('match_123'))
+  })
+
+  it('FIXED: strips a single leading ing- prefix', async () => {
+    const { canonicalMatchId } = await import('./route.ts')
+    assert.equal(canonicalMatchId('ing-match_1781946660329_9q3djx'), 'match_1781946660329_9q3djx')
+  })
+
+  it('FIXED: leaves a bare id unchanged', async () => {
+    const { canonicalMatchId } = await import('./route.ts')
+    assert.equal(canonicalMatchId('match_123'), 'match_123')
+  })
+
+  it('FIXED: only strips the FIRST ing- (mirrors /^ing-/ replace)', async () => {
+    const { canonicalMatchId } = await import('./route.ts')
+    assert.equal(canonicalMatchId('ing-ing-x'), 'ing-x')
+  })
+
+  it('FIXED: is idempotent — canonical of canonical is stable', async () => {
+    const { canonicalMatchId } = await import('./route.ts')
+    const once = canonicalMatchId('ing-match_123')
+    assert.equal(canonicalMatchId(once), once)
+  })
+})

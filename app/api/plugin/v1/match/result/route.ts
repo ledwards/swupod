@@ -11,6 +11,22 @@ import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { NextRequest, NextResponse } from 'next/server'
 import { broadcastDraftState } from '@/src/lib/socketBroadcast'
 
+/**
+ * Normalize a Wayfinder match id to its canonical (bare) form.
+ *
+ * Wayfinder's server-side ingestion path historically reported results under an
+ * `ing-${eventId}` placeholder id, while the live/replay path reports the bare
+ * `eventId`. The same real game could therefore arrive twice under two different
+ * ids and be stored as two rows (and double-count the pool's W/L). Stripping the
+ * `ing-` prefix collapses both onto one idempotent record. Mirrors Wayfinder's
+ * own `gameId.replace(/^ing-/, "")`.
+ */
+export function canonicalMatchId(matchId: string): string {
+  return typeof matchId === 'string' && matchId.startsWith('ing-')
+    ? matchId.slice(4)
+    : matchId
+}
+
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     requireServiceKey(request)
@@ -34,6 +50,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (gameNumber !== undefined && ![1, 2, 3].includes(gameNumber)) {
       return errorResponse('gameNumber must be 1, 2, or 3', 400)
     }
+
+    // Store/dedupe under the canonical (bare) match id so an `ing-` ingestion
+    // write-back and a bare live/replay write-back for the same game converge.
+    const canonicalId = canonicalMatchId(matchId)
 
     const pool = await queryRow(
       'SELECT id FROM card_pools WHERE share_id = $1',
@@ -122,7 +142,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
            player2_archetype = COALESCE($14, player2_archetype)
          WHERE id = $1`,
         [
-          practiceMatch.id, gameResult, matchId, replayUrl ?? null,
+          practiceMatch.id, gameResult, canonicalId, replayUrl ?? null,
           p1.leader ?? null, p1.leaderImage ?? null, p1.base ?? null, p1.baseImage ?? null, p1.archetype ?? null,
           p2.leader ?? null, p2.leaderImage ?? null, p2.base ?? null, p2.baseImage ?? null, p2.archetype ?? null,
         ]
@@ -159,7 +179,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                    wayfinder_match_ids = array_append(wayfinder_match_ids, $1),
                    updated_at = NOW()
                WHERE share_id = $2`,
-              [matchId, player1Pool.share_id]
+              [canonicalId, player1Pool.share_id]
             )
           }
           if (player2Pool) {
@@ -169,7 +189,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                    wayfinder_match_ids = array_append(wayfinder_match_ids, $1),
                    updated_at = NOW()
                WHERE share_id = $2`,
-              [matchId, player2Pool.share_id]
+              [canonicalId, player2Pool.share_id]
             )
           }
         } else if (winner === 'player2') {
@@ -181,7 +201,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                    wayfinder_match_ids = array_append(wayfinder_match_ids, $1),
                    updated_at = NOW()
                WHERE share_id = $2`,
-              [matchId, player1Pool.share_id]
+              [canonicalId, player1Pool.share_id]
             )
           }
           if (player2Pool) {
@@ -191,7 +211,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                    wayfinder_match_ids = array_append(wayfinder_match_ids, $1),
                    updated_at = NOW()
                WHERE share_id = $2`,
-              [matchId, player2Pool.share_id]
+              [canonicalId, player2Pool.share_id]
             )
           }
         } else if (winner === 'draw') {
@@ -203,7 +223,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                    wayfinder_match_ids = array_append(wayfinder_match_ids, $1),
                    updated_at = NOW()
                WHERE share_id = $2`,
-              [matchId, player1Pool.share_id]
+              [canonicalId, player1Pool.share_id]
             )
           }
           if (player2Pool) {
@@ -213,7 +233,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                    wayfinder_match_ids = array_append(wayfinder_match_ids, $1),
                    updated_at = NOW()
                WHERE share_id = $2`,
-              [matchId, player2Pool.share_id]
+              [canonicalId, player2Pool.share_id]
             )
           }
         }
@@ -231,20 +251,28 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       const lossDelta = result === 'loss' ? 1 : 0
       const drawDelta = result === 'draw' ? 1 : 0
 
+      // Idempotent per (pool, canonical match id): if this game was already
+      // recorded for the pool (e.g. an `ing-` ingestion write-back landed first
+      // and the bare live write-back follows), don't double-count W/L or
+      // re-append the id.
       await query(
         `UPDATE card_pools
-         SET wins = wins + $1,
-             losses = losses + $2,
-             draws = draws + $3,
-             wayfinder_match_ids = array_append(wayfinder_match_ids, $4),
+         SET wins = wins + CASE WHEN $4 = ANY(COALESCE(wayfinder_match_ids, '{}')) THEN 0 ELSE $1 END,
+             losses = losses + CASE WHEN $4 = ANY(COALESCE(wayfinder_match_ids, '{}')) THEN 0 ELSE $2 END,
+             draws = draws + CASE WHEN $4 = ANY(COALESCE(wayfinder_match_ids, '{}')) THEN 0 ELSE $3 END,
+             wayfinder_match_ids = CASE
+               WHEN $4 = ANY(COALESCE(wayfinder_match_ids, '{}')) THEN wayfinder_match_ids
+               ELSE array_append(COALESCE(wayfinder_match_ids, '{}'), $4)
+             END,
              updated_at = NOW()
          WHERE share_id = $5`,
-        [winDelta, lossDelta, drawDelta, matchId, poolShareId]
+        [winDelta, lossDelta, drawDelta, canonicalId, poolShareId]
       )
 
       // Also log the match so it appears in the personal gameplay history
       // (casual games have no practice_matches row). Idempotent per
-      // (user, match) so a re-report updates rather than duplicates.
+      // (user, pool, match) so a re-report updates rather than duplicates AND
+      // a self-play game logs to BOTH of the user's decks (one row per pool).
       const owner = await queryRow('SELECT user_id FROM card_pools WHERE share_id = $1', [poolShareId])
       if (owner?.user_id) {
         await query(
@@ -256,7 +284,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
            )
            SELECT $1, cp.id, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
            FROM card_pools cp WHERE cp.share_id = $14
-           ON CONFLICT (user_id, wayfinder_match_id) WHERE wayfinder_match_id IS NOT NULL
+           ON CONFLICT (user_id, card_pool_id, wayfinder_match_id) WHERE wayfinder_match_id IS NOT NULL
            DO UPDATE SET
              wayfinder_replay_url = COALESCE(EXCLUDED.wayfinder_replay_url, casual_matches.wayfinder_replay_url),
              result = EXCLUDED.result,
@@ -270,7 +298,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
              opponent_base = COALESCE(EXCLUDED.opponent_base, casual_matches.opponent_base),
              opponent_archetype = COALESCE(EXCLUDED.opponent_archetype, casual_matches.opponent_archetype)`,
           [
-            owner.user_id, matchId, replayUrl ?? null, result,
+            owner.user_id, canonicalId, replayUrl ?? null, result,
             body.opponentName ?? null,
             playerLeader ?? null, playerLeaderImage ?? null, playerBase ?? null, playerArchetype ?? null,
             opponentLeader ?? null, opponentLeaderImage ?? null, opponentBase ?? null, opponentArchetype ?? null,
