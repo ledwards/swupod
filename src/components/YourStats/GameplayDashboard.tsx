@@ -2,8 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { WinRateByLeader, type WinRateLeader } from './WinRateByLeader'
-import WayfinderStoreButtons, { WayfinderCompanionLockup } from '@/src/components/WayfinderStoreButtons'
-import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
+import PluginCTA from '@/src/components/PluginCTA'
 import { useRevealOnView } from '@/src/hooks/useRevealOnView'
 import { useAuth } from '@/src/contexts/AuthContext'
 import { isCompanionBeta } from '@/src/utils/companionBeta'
@@ -270,41 +269,6 @@ function LeadersCard({ leaders }: { leaders: GameplayLeaderBreakdown[] }) {
           })}
         </ul>
       </div>
-    </div>
-  )
-}
-
-export function CompanionCTA({ hasData, beta }: { hasData: boolean; beta: boolean }) {
-  // Already running the Companion? Don't pitch the install (R8).
-  const { detected } = useWayfinderDetection()
-  if (detected) return null
-  // Non-beta users aren't meant to know the Companion exists yet — show a
-  // neutral "coming soon" instead of pitching the plugin.
-  if (!beta) {
-    return (
-      <div className={`your-stats-gameplay-cta your-stats-gameplay-cta--soon ${hasData ? 'your-stats-gameplay-cta--compact' : ''}`}>
-        <div>
-          <span className="your-stats-soon-badge">Coming soon</span>
-          <h3>Gameplay stats are on the way</h3>
-          <p>
-            Soon you&apos;ll be able to record your games, tie them back to the pool
-            you drafted, and rewatch your replays — right here.
-          </p>
-        </div>
-      </div>
-    )
-  }
-  return (
-    <div className={`your-stats-gameplay-cta ${hasData ? 'your-stats-gameplay-cta--compact' : ''}`}>
-      <div>
-        <WayfinderCompanionLockup className="your-stats-gameplay-cta-lockup" />
-        <h3>{hasData ? 'Keep every match connected' : 'Start capturing gameplay stats'}</h3>
-        <p>
-          Install the Companion to queue on Karabast with your PTP pool, tie games
-          back to this page, and record replays you can rewatch.
-        </p>
-      </div>
-      <WayfinderStoreButtons orientation="inline" />
     </div>
   )
 }
@@ -613,7 +577,7 @@ export function GameplayDashboard({ since, until, setCode, fetchImpl }: Gameplay
   if (state.error || !state.data) {
     return (
       <section className="your-stats-gameplay" data-testid="gameplay-dashboard">
-        <CompanionCTA hasData={false} beta={companionBeta} />
+        <PluginCTA variant="card" />
         <p className="your-stats-error-note" role="status">
           Couldn't load gameplay stats. Try refreshing.
         </p>
@@ -629,7 +593,7 @@ export function GameplayDashboard({ since, until, setCode, fetchImpl }: Gameplay
   if (!hasData) {
     return (
       <section className="your-stats-gameplay" data-testid="gameplay-dashboard">
-        <CompanionCTA hasData={false} beta={companionBeta} />
+        <PluginCTA variant="card" />
         <div className="your-stats-gameplay-empty" data-testid="gameplay-empty">
           <h3>No captured games yet</h3>
           <p>
@@ -643,7 +607,7 @@ export function GameplayDashboard({ since, until, setCode, fetchImpl }: Gameplay
 
   return (
     <section className="your-stats-gameplay" data-testid="gameplay-dashboard">
-      <CompanionCTA hasData={hasData} beta={companionBeta} />
+      <PluginCTA variant="compact" />
 
       {/* Performance first: KPIs, win rate, and format/set splits sit ABOVE the
           long per-game history list (R13). Replay-Linked Pools removed. */}

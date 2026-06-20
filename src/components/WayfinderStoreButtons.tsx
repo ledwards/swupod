@@ -76,7 +76,7 @@ interface WayfinderStoreButtonsProps {
   /** 'all' (default) shows every browser. 'current' auto-detects the browser
    *  you're in and shows only its card, listing the rest in the "also" line. */
   mode?: 'all' | 'current'
-  onChromeClick?: () => void
+  onChromeClick?: (() => void) | undefined
 }
 
 /** Coarse pointer / narrow viewport = treat as a phone/tablet. A reported width
@@ -102,16 +102,15 @@ function useIsMobile(): boolean {
 }
 
 /**
- * WayfinderCompanionLockup — the compass mark stacked above the Companion
- * logotype. Real brand assets vendored from the Wayfinder repo into
- * public/branding.
+ * WayfinderCompanionLockup — the OFFICIAL single combined Companion lockup
+ * (pyramid mark stacked above the "WAYFINDER COMPANION" wordmark, designed as
+ * ONE asset: public/branding/wayfinder_companion.svg). NEVER composite a bare
+ * mark beside a separate wordmark — that doubles "WAYFINDER" and is the one
+ * lockup we never ship.
  */
 export function WayfinderCompanionLockup({ className = '', noLink = false }: { className?: string; noLink?: boolean }) {
   const inner = (
-    <>
-      <img className="wf-lockup-mark" src="/branding/wayfinder_logo.svg" alt="" width={48} height={48} />
-      <img className="wf-lockup-wordmark" src="/branding/wayfinder_companion_logotype.svg" alt="" width={190} height={40} />
-    </>
+    <img className="wf-lockup-img" src="/branding/wayfinder_companion.svg" alt="" width={1089} height={1054} />
   )
   // When the Companion is already active (e.g. the play-page ready state) the
   // mark is identity, not a CTA — don't link out.

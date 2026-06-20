@@ -230,8 +230,9 @@ a.wf-browser-card:active {
 }
 
 /* ============================================================================
- * Wayfinder Companion lockup — compass mark stacked above the Companion
- * logotype. Real brand assets (public/branding). Sits above install headings.
+ * Wayfinder Companion lockup — the OFFICIAL single combined asset
+ * (public/branding/wayfinder_companion.svg: mark stacked above the wordmark).
+ * One <img>, never a bare mark beside a separate wordmark. Sits above headings.
  * ========================================================================== */
 
 .wf-lockup,
@@ -248,18 +249,11 @@ a.wf-browser-card:active {
   transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
-.wf-lockup-mark {
-  width: clamp(42px, 7vw, 52px);
-  height: clamp(42px, 7vw, 52px);
+.wf-lockup-img {
+  width: auto;
+  height: clamp(96px, 16vw, 128px);
   flex: 0 0 auto;
   filter: drop-shadow(0 2px 8px rgba(142, 214, 255, 0.25));
-}
-
-.wf-lockup-wordmark {
-  width: clamp(150px, 22vw, 190px);
-  height: auto;
-  /* The wordmark ships in a light blue-grey; keep it crisp on the dark surface. */
-  opacity: 0.92;
 }
 
 @media (hover: hover) and (pointer: fine) {

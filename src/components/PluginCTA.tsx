@@ -70,6 +70,8 @@ export interface PluginCTAProps {
   /** Optional context copy (defaults to the install copy). */
   copy?: string
   className?: string
+  /** Fires when the Chrome card/button is clicked (e.g. install-click analytics). */
+  onChromeClick?: () => void
 }
 
 const DEFAULT_HEADING = 'Play Your Protect the Pod Deck Online'
@@ -88,7 +90,7 @@ function Lockup() {
   )
 }
 
-export function PluginCTA({ variant = 'card', heading, copy, className = '' }: PluginCTAProps) {
+export function PluginCTA({ variant = 'card', heading, copy, className = '', onChromeClick }: PluginCTAProps) {
   const { state } = usePluginCTA()
 
   if (state === 'hidden') return null
@@ -110,7 +112,7 @@ export function PluginCTA({ variant = 'card', heading, copy, className = '' }: P
   if (variant === 'compact') {
     return (
       <div className={`plugin-cta plugin-cta--install plugin-cta--compact ${className}`.trim()}>
-        <WayfinderStoreButtons mode="all" />
+        <WayfinderStoreButtons mode="all" onChromeClick={onChromeClick} />
       </div>
     )
   }
@@ -123,7 +125,7 @@ export function PluginCTA({ variant = 'card', heading, copy, className = '' }: P
         <h3 className="plugin-cta-heading">{heading || DEFAULT_HEADING}</h3>
         <p className="plugin-cta-copy">{copy || DEFAULT_COPY}</p>
       </div>
-      <WayfinderStoreButtons mode={variant === 'autodetect' ? 'current' : 'all'} />
+      <WayfinderStoreButtons mode={variant === 'autodetect' ? 'current' : 'all'} onChromeClick={onChromeClick} />
     </div>
   )
 }

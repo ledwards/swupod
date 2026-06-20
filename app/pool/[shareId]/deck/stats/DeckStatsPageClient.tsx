@@ -1,12 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useAuth } from '@/src/contexts/AuthContext'
 import Button from '@/src/components/Button'
 import { useStickyTab } from '@/src/hooks/useStickyTab'
-import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
-import { isCompanionBeta } from '@/src/utils/companionBeta'
-import { ReplayExplorer, CompanionCTA } from '@/src/components/YourStats/GameplayDashboard'
+import { ReplayExplorer } from '@/src/components/YourStats/GameplayDashboard'
+import PluginCTA, { usePluginCTA } from '@/src/components/PluginCTA'
 import { AspectBreakdown, DuplicateRateWidget, LuckHistogram } from '@/src/components/YourStats/LuckHistogram'
 import {
   buildDeckGameplayMetrics,
@@ -116,26 +114,18 @@ function StatePanel({
   )
 }
 
-function EmptyGameplayPrompt({
-  deck,
-  kind,
-  hasCompanion,
-  wayfinderDetected,
-}: {
-  deck: any
-  kind: 'gameplay' | 'matchups'
-  hasCompanion: boolean
-  wayfinderDetected: boolean
-}) {
-  // Companion running but no games for this deck yet → deck-specific play prompt.
-  if (wayfinderDetected) {
+function EmptyGameplayPrompt({ deck, kind }: { deck: any; kind: 'gameplay' | 'matchups' }) {
+  const { hasPlugin } = usePluginCTA()
+
+  // Has the Companion but no games for this deck yet → deck-specific play prompt.
+  if (hasPlugin) {
     const href = `/pool/${deck.shareId}/deck/play`
     return (
       <section className="deck-stats-panel deck-stats-panel--empty">
         <span className="your-stats-eyebrow">{kind === 'gameplay' ? 'Performance' : 'Matchups'}</span>
         <h3>No games recorded yet</h3>
         <p>
-          You have Wayfinder installed. Play some games with {deck.name} to unlock this tab.
+          You have the Companion — play some games with {deck.name} to unlock this tab.
         </p>
         <a className="btn btn--primary btn--sm deck-stats-empty-play" href={href}>
           <PlayMark />
@@ -145,12 +135,11 @@ function EmptyGameplayPrompt({
     )
   }
 
-  // Not detected → reuse the same Companion CTA /me uses (install pitch for beta
-  // users, neutral "coming soon" otherwise). With the Companion undetected here,
-  // hasCompanion is exactly the beta flag. Centered to match the other empty states.
+  // No Companion → the one universal CTA. It self-gates (install pitch for the
+  // rollout, neutral "coming soon" otherwise). Centered to match the other empties.
   return (
     <div className="deck-stats-empty-cta">
-      <CompanionCTA hasData={false} beta={hasCompanion} />
+      <PluginCTA />
     </div>
   )
 }
@@ -301,13 +290,9 @@ function DistributionChart({ data }: { data: any[] }) {
 function GameplayTab({
   state,
   deck,
-  hasCompanion,
-  wayfinderDetected,
 }: {
   state: any
   deck: any
-  hasCompanion: boolean
-  wayfinderDetected: boolean
 }) {
   if (state.loading) return <SkeletonPanel />
   if (state.error) {
@@ -320,7 +305,7 @@ function GameplayTab({
 
   const replays = state.data?.replays || []
   if (replays.length === 0) {
-    return <EmptyGameplayPrompt deck={deck} kind="gameplay" hasCompanion={hasCompanion} wayfinderDetected={wayfinderDetected} />
+    return <EmptyGameplayPrompt deck={deck} kind="gameplay" />
   }
 
   const metrics = buildDeckGameplayMetrics(replays)
@@ -417,13 +402,9 @@ function MatchupListItem({ item, deck }: { item: any; deck: any }) {
 function MatchupsTab({
   state,
   deck,
-  hasCompanion,
-  wayfinderDetected,
 }: {
   state: any
   deck: any
-  hasCompanion: boolean
-  wayfinderDetected: boolean
 }) {
   if (state.loading) return <SkeletonPanel />
   if (state.error) {
@@ -436,7 +417,7 @@ function MatchupsTab({
 
   const matchups = buildOpponentBreakdown(state.data?.replays || [])
   if (matchups.length === 0) {
-    return <EmptyGameplayPrompt deck={deck} kind="matchups" hasCompanion={hasCompanion} wayfinderDetected={wayfinderDetected} />
+    return <EmptyGameplayPrompt deck={deck} kind="matchups" />
   }
 
   return (
@@ -458,10 +439,6 @@ function MatchupsTab({
 }
 
 export default function DeckStatsPageClient({ deck }: { deck: any }) {
-  const { user } = useAuth() as { user: { is_beta_tester?: boolean | null; is_admin?: boolean | null } | null }
-  const { detected: wayfinderDetected } = useWayfinderDetection()
-  const companionBeta = isCompanionBeta(user)
-  const hasCompanionSurface = companionBeta || wayfinderDetected
   const [activeTab, setActiveTab] = useStickyTab<DeckStatsTab>(
     ['gamelog', 'gameplay', 'matchups', 'pool'],
     'pool',
@@ -587,9 +564,9 @@ export default function DeckStatsPageClient({ deck }: { deck: any }) {
                 : activeTab === 'pool'
                   ? <PoolTab state={luckState} deck={deck} />
                   : activeTab === 'gameplay'
-                  ? <GameplayTab state={gameplayState} deck={deck} hasCompanion={hasCompanionSurface} wayfinderDetected={wayfinderDetected} />
+                  ? <GameplayTab state={gameplayState} deck={deck} />
                   : activeTab === 'matchups'
-                      ? <MatchupsTab state={gameplayState} deck={deck} hasCompanion={hasCompanionSurface} wayfinderDetected={wayfinderDetected} />
+                      ? <MatchupsTab state={gameplayState} deck={deck} />
                       : null}
             </div>
             <div className="deck-stats-state-samples" aria-hidden="true">
