@@ -238,7 +238,7 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
       <div className="your-stats-luck-hist-head">
         <div>
           <h4>Every card you opened</h4>
-          <p>Bars are cards in collector-number order, colored by aspect. Taller = you pulled it more.</p>
+          <p>Bars are cards in collector-number order, colored by aspect. Height = how many you pulled — twice as tall means twice as many.</p>
         </div>
         <label className="your-stats-search your-stats-luck-hist-search">
           <input
@@ -309,10 +309,12 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
         onScroll={recomputeScroll}
       >
         {sortedHits.map((hit) => {
-          // sqrt scale: keeps single pulls visible even when one card spikes,
-          // and stays readable whether you've opened 10 packs or 1000.
-          const scale = (v: number) => (v > 0 ? (Math.sqrt(v) / Math.sqrt(maxCount)) * 100 : 0)
-          const heightPct = hit.count > 0 ? Math.max(8, scale(hit.count)) : 0
+          // Linear scale so the chart reads as a true histogram: a card pulled
+          // twice is exactly twice as tall as one pulled once. (A small CSS
+          // min-height on the bar keeps single pulls visible without distorting
+          // the ratio the way the old sqrt scale did.)
+          const scale = (v: number) => (v > 0 ? (v / maxCount) * 100 : 0)
+          const heightPct = scale(hit.count)
           const expPct = Math.min(100, scale(hit.expected))
           const dimmed = isDimmed(hit)
           const isActive = active?.cardId === hit.cardId
@@ -379,7 +381,8 @@ export interface DuplicatesData {
   avgPacksPerPool: number
   actualPerPool: number
   expectedPerPool: number
-  /** SE of the model's expected mean across the user's pools (for the z-test). */
+  /** Model's typical per-pool spread (σ) — natural variation between pools,
+   *  invariant to how many pools you've opened (NOT the standard error of the mean). */
   expectedSd?: number
   /** False when this set has no precomputed duplicate model yet. */
   hasModel?: boolean

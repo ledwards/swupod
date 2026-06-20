@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { WinRateByLeader, type WinRateLeader } from './WinRateByLeader'
+import { buildUsagePieStops, usagePieColor } from './usagePie'
 import PluginCTA from '@/src/components/PluginCTA'
 import { useRevealOnView } from '@/src/hooks/useRevealOnView'
 import { useAuth } from '@/src/contexts/AuthContext'
@@ -90,6 +91,8 @@ interface GameplayReplay {
 interface GameplayLeaderBreakdown {
   leaderName: string
   leaderImageUrl: string | null
+  /** Unit (back) side art — the side these stat cards crop to. */
+  leaderBackImageUrl: string | null
   baseColor: string | null
   wins: number
   losses: number
@@ -97,6 +100,18 @@ interface GameplayLeaderBreakdown {
   matches: number
   winRate: number
   pools: number
+}
+
+interface GameplayArchetypeBreakdown {
+  archetype: string
+  leaderName: string | null
+  leaderImageUrl: string | null
+  leaderBackImageUrl: string | null
+  wins: number
+  losses: number
+  draws: number
+  matches: number
+  winRate: number
 }
 
 interface GameplayPayload {
@@ -107,6 +122,7 @@ interface GameplayPayload {
   formatBreakdown: GameplayBreakdown[]
   setBreakdown: GameplayBreakdown[]
   leaderBreakdown?: GameplayLeaderBreakdown[]
+  archetypeBreakdown?: GameplayArchetypeBreakdown[]
   recentPools: GameplayRecentPool[]
   replays?: GameplayReplay[]
 }
@@ -222,48 +238,50 @@ function BreakdownRow({ item }: { item: GameplayBreakdown }) {
   )
 }
 
-function LeadersCard({ leaders }: { leaders: GameplayLeaderBreakdown[] }) {
-  // Pie of leader USAGE (share of games) on the left, win rate per leader on the
-  // right — inspired by the Wayfinder meta page.
+interface UsagePieItem {
+  key: string
+  name: string
+  matches: number
+  /** Unit-side art for the legend thumbnail; null falls back to a color dot. */
+  art: string | null
+}
+
+function UsagePieCard({ title, unit, items }: { title: string; unit: string; items: UsagePieItem[] }) {
+  // A usage pie (share of games) with a legend. Each item gets its OWN palette
+  // color via the tested usagePie helper, so wedges never blend into one disc
+  // (the old base-aspect tint collapsed same-aspect leaders into a solid color).
+  // The legend's right-hand number is the pie share — win rate lives in its own
+  // card below, so it isn't duplicated here.
   const { ref: pieRef, inView } = useRevealOnView<HTMLDivElement>()
-  const total = leaders.reduce((s, l) => s + (l.matches || 0), 0)
-  let acc = 0
-  const stops = leaders
-    .filter((l) => l.matches > 0)
-    .map((l) => {
-      const color = l.baseColor || '#888'
-      const start = (acc / (total || 1)) * 360
-      acc += l.matches
-      const end = (acc / (total || 1)) * 360
-      return `${color} ${start}deg ${end}deg`
-    })
-    .join(', ')
+  const played = items.filter((it) => (it.matches || 0) > 0)
+  const total = played.reduce((s, it) => s + it.matches, 0)
+  const pieStops = buildUsagePieStops(items.map((it, i) => ({ matches: it.matches || 0, color: usagePieColor(i) })))
   return (
     <div className="your-stats-gameplay-card">
       <div className="your-stats-gameplay-card-header">
-        <h3>Your Leaders</h3>
-        <span>{leaders.length} {leaders.length === 1 ? 'leader' : 'leaders'} played</span>
+        <h3>{title}</h3>
+        <span>{played.length} {played.length === 1 ? unit : `${unit}s`} played</span>
       </div>
       <div className={`your-stats-leaders-pie-layout${inView ? ' your-stats-reveal' : ''}`} ref={pieRef}>
         <div
           className="your-stats-leaders-pie"
-          style={{ background: total > 0 ? `conic-gradient(${stops})` : 'rgba(255,255,255,0.08)' }}
+          style={{ background: pieStops ? `conic-gradient(${pieStops})` : 'rgba(255,255,255,0.08)' }}
           aria-hidden="true"
         />
         <ul className="your-stats-leaders-legend">
-          {leaders.map((l) => {
-            const color = l.baseColor || '#888'
-            const usePct = total > 0 ? Math.round((l.matches / total) * 100) : 0
+          {items.map((it, i) => {
+            const color = usagePieColor(i)
+            const sharePct = total > 0 ? Math.round((it.matches / total) * 100) : 0
             return (
-              <li key={l.leaderName} className="your-stats-leaders-legend-row">
-                <span className="your-stats-leaders-legend-art" aria-hidden="true">
-                  {l.leaderImageUrl ? <img src={l.leaderImageUrl} alt="" loading="lazy" /> : <span className="your-stats-leaders-legend-dot" style={{ background: color }} />}
+              <li key={it.key} className="your-stats-leaders-legend-row">
+                <span className="your-stats-leaders-legend-art" style={{ ['--leader-color' as any]: color }} aria-hidden="true">
+                  {it.art ? <img src={it.art} alt="" loading="lazy" /> : <span className="your-stats-leaders-legend-dot" style={{ background: color }} />}
                 </span>
                 <span className="your-stats-leaders-legend-name">
-                  <strong>{l.leaderName}</strong>
-                  <small>{formatInt(l.matches)} {l.matches === 1 ? 'game' : 'games'} · {usePct}%</small>
+                  <strong>{it.name}</strong>
+                  <small>{formatInt(it.matches)} {it.matches === 1 ? 'game' : 'games'}</small>
                 </span>
-                <span className="your-stats-leaders-legend-winrate">{formatPct(l.winRate)}</span>
+                <span className="your-stats-leaders-legend-share">{sharePct}%</span>
               </li>
             )
           })}
@@ -589,6 +607,7 @@ export function GameplayDashboard({ since, until, setCode, fetchImpl }: Gameplay
   const hasData = summary.matches > 0 || summary.capturedMatches > 0 || summary.decksPlayed > 0
   const replays = state.data.replays || []
   const leaders = state.data.leaderBreakdown || []
+  const archetypes = state.data.archetypeBreakdown || []
 
   if (!hasData) {
     return (
@@ -631,7 +650,33 @@ export function GameplayDashboard({ since, until, setCode, fetchImpl }: Gameplay
         </div>
       </div>
 
-      {leaders.length > 0 && <LeadersCard leaders={leaders} />}
+      {leaders.length > 0 && (
+        <UsagePieCard
+          title="Your Leaders"
+          unit="leader"
+          items={leaders.map((l) => ({
+            key: l.leaderName,
+            name: l.leaderName,
+            matches: l.matches,
+            // Prefer the unit (back) side — what the legend crop is tuned for.
+            art: l.leaderBackImageUrl || l.leaderImageUrl,
+          }))}
+        />
+      )}
+
+      {archetypes.length > 0 && (
+        <UsagePieCard
+          title="Your Archetypes"
+          unit="archetype"
+          items={archetypes.map((a) => ({
+            key: a.archetype,
+            name: a.archetype,
+            matches: a.matches,
+            // Same unit-side art preference as the leaders pie.
+            art: a.leaderBackImageUrl || a.leaderImageUrl,
+          }))}
+        />
+      )}
 
       {leaders.length > 0 && <WinRateByLeader leaders={leaders as unknown as WinRateLeader[]} title="Your win rate by leader" mode="personal" companionBeta={companionBeta} />}
 

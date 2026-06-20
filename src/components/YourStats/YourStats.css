@@ -3365,6 +3365,13 @@ a.your-stats-logged-out-link:active {
   transition: opacity 140ms ease;
 }
 
+/* Linear bar heights are honest (2× count = 2× height); this floor keeps a
+   single pull visible when one card spikes the max, without distorting the
+   ratio the way a percentage floor would. */
+.your-stats-luck-bar:not(.your-stats-luck-bar--empty) {
+  min-height: 3px;
+}
+
 .your-stats-luck-bar--empty {
   background: rgba(255, 255, 255, 0.1);
 }
@@ -4004,6 +4011,8 @@ a.your-stats-logged-out-link:active {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  /* Ring in this item's pie color so the legend row maps to its wedge. */
+  box-shadow: 0 0 0 2px var(--leader-color, transparent);
 }
 
 .your-stats-leaders-legend-art img {
@@ -4043,7 +4052,7 @@ a.your-stats-logged-out-link:active {
   font-size: 0.76rem;
 }
 
-.your-stats-leaders-legend-winrate {
+.your-stats-leaders-legend-share {
   flex: 0 0 auto;
   font-weight: 700;
   font-variant-numeric: tabular-nums;

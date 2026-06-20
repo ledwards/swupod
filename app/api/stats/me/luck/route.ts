@@ -716,8 +716,13 @@ export function buildDuplicates(rows: GenerationRow[], setCode: string, identity
     avgPacksPerPool: poolCount > 0 ? sumPacks / poolCount : 0,
     actualPerPool: poolCount > 0 ? sumActual / poolCount : 0,
     expectedPerPool: poolCount > 0 && model ? expSum / poolCount : 0,
-    // SE of the model's expected mean across the user's pools (for the z-test).
-    expectedSd: poolCount > 0 && model ? Math.sqrt(expVar) / poolCount : 0,
+    // Typical per-pool spread (σ) of the model — the natural variation BETWEEN
+    // pools, NOT the standard error of the mean. Dividing by √n (the SE of the
+    // mean) makes the z-score balloon with pool count: an ordinary ~0.9σ-per-pool
+    // run reads as a scary "3σ" once you've opened a dozen pools, even though the
+    // generator is fine. A luck verdict must be judged against how far a single
+    // pool naturally strays, so σ is invariant to how many pools you've opened.
+    expectedSd: poolCount > 0 && model ? Math.sqrt(expVar / poolCount) : 0,
     hasModel: !!model,
   }
 }

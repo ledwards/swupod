@@ -131,6 +131,18 @@ export interface GameplayLeaderBreakdown {
   byBase: GameplayBaseSplit[]
 }
 
+export interface GameplayArchetypeBreakdown {
+  archetype: string
+  leaderName: string | null
+  leaderImageUrl: string | null
+  leaderBackImageUrl: string | null
+  wins: number
+  losses: number
+  draws: number
+  matches: number
+  winRate: number
+}
+
 export interface GameplayReplay {
   id: string
   wayfinderMatchId: string | null
@@ -171,6 +183,7 @@ export interface GameplayResponse {
   formatBreakdown: GameplayBreakdown[]
   setBreakdown: GameplayBreakdown[]
   leaderBreakdown: GameplayLeaderBreakdown[]
+  archetypeBreakdown: GameplayArchetypeBreakdown[]
   recentPools: GameplayRecentPool[]
   replays: GameplayReplay[]
 }
@@ -251,6 +264,72 @@ export function buildLeaderBreakdown(rows: RawLeaderPoolRow[]): GameplayLeaderBr
       }
     })
     .sort((a, b) => b.matches - a.matches || b.winRate - a.winRate || a.leaderName.localeCompare(b.leaderName))
+}
+
+/** Drop a trailing "(Limited)" tag so a draft archetype and its constructed twin
+ *  collapse onto one row (the swuapi name is the source of truth — we never build
+ *  a "Leader / Base" string here). */
+function canonicalArchetype(name: string | null): string | null {
+  if (!name) return null
+  const trimmed = name.replace(/\s*\(limited\)\s*$/i, '').trim()
+  return trimmed || null
+}
+
+/**
+ * Aggregate captured games by archetype for the "Your Archetypes" usage pie —
+ * the archetype mirror of buildLeaderBreakdown. Each replay contributes its
+ * individual GAMES (gameResults), falling back to the single match result when a
+ * replay carries no per-game breakdown. Keyed by the archetype with its
+ * "(Limited)" tag stripped; replays with no archetype or no scored game are
+ * skipped. Keeps the leader's unit-side art for the legend thumbnail.
+ */
+export function buildArchetypeBreakdown(replays: GameplayReplay[]): GameplayArchetypeBreakdown[] {
+  const byArchetype = new Map<string, GameplayArchetypeBreakdown>()
+  for (const replay of replays) {
+    const archetype = canonicalArchetype(replay.archetype)
+    if (!archetype) continue
+    let wins = 0
+    let losses = 0
+    let draws = 0
+    if (replay.gameResults && replay.gameResults.length > 0) {
+      for (const g of replay.gameResults) {
+        if (g === 'W') wins += 1
+        else if (g === 'L') losses += 1
+        else if (g === 'D') draws += 1
+      }
+    } else if (replay.result === 'win') {
+      wins += 1
+    } else if (replay.result === 'loss') {
+      losses += 1
+    } else if (replay.result === 'draw') {
+      draws += 1
+    }
+    if (wins + losses + draws === 0) continue
+    const existing = byArchetype.get(archetype) || {
+      archetype,
+      leaderName: replay.leaderName,
+      leaderImageUrl: replay.leaderImageUrl,
+      leaderBackImageUrl: replay.leaderBackImageUrl,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      matches: 0,
+      winRate: 0,
+    }
+    existing.wins += wins
+    existing.losses += losses
+    existing.draws += draws
+    if (!existing.leaderName && replay.leaderName) existing.leaderName = replay.leaderName
+    if (!existing.leaderImageUrl && replay.leaderImageUrl) existing.leaderImageUrl = replay.leaderImageUrl
+    if (!existing.leaderBackImageUrl && replay.leaderBackImageUrl) existing.leaderBackImageUrl = replay.leaderBackImageUrl
+    byArchetype.set(archetype, existing)
+  }
+  return Array.from(byArchetype.values())
+    .map((entry) => {
+      const matches = entry.wins + entry.losses + entry.draws
+      return { ...entry, matches, winRate: matches > 0 ? Math.round((entry.wins / matches) * 1000) / 10 : 0 }
+    })
+    .sort((a, b) => b.matches - a.matches || b.winRate - a.winRate || a.archetype.localeCompare(b.archetype))
 }
 
 function parseDateParam(raw: string | null): string | null {
@@ -473,7 +552,8 @@ export function buildTerronkDevGameplayFixture(poolRows: DevFixturePoolRow[]): G
     leaderImageUrl: pool.leaderImageUrl,
     leaderBackImageUrl: pool.leaderBackImageUrl,
     baseImageUrl: pool.baseImageUrl,
-    archetype: null,
+    // Dev-only illustrative archetype labels so the Your Archetypes pie renders.
+    archetype: index % 2 === 0 ? 'Aggro' : 'Midrange',
     deckCardCount: pool.deckCardCount,
   }))
 
@@ -565,6 +645,7 @@ export function buildTerronkDevGameplayFixture(poolRows: DevFixturePoolRow[]): G
       },
     ],
     recentPools,
+    archetypeBreakdown: buildArchetypeBreakdown(replays),
     replays,
   }
 }
@@ -664,6 +745,53 @@ export function buildGameplayResponse(
   const decksPlayed = toInt(summaryRow?.decks_played)
   const replayUrlCount = toInt(replayRow?.replays_recorded)
 
+  // Built once so the replay history list and the archetype usage pie aggregate
+  // the exact same per-game results.
+  const replays: GameplayReplay[] = [
+    ...replayRows.map((row): GameplayReplay => {
+      const format = row.pool_type || 'sealed'
+      const deckPreview = extractDeckPreview(row.deck_builder_state)
+      // Canonical replay link (see mapCasualReplay): prefer stored /playback/,
+      // else derive from the match id, stripping the bogus `ing-` prefix.
+      const replayUrl = resolveReplayUrl(row.wayfinder_match_id, row.wayfinder_replay_url)
+      return {
+        id: row.match_id || row.wayfinder_match_id || replayUrl,
+        wayfinderMatchId: row.wayfinder_match_id || null,
+        replayUrl,
+        playedAt: formatTimestamp(row.created_at),
+        result: resultFromPerspective(row, currentUserId),
+        playerSide: userSideFromReplay(row, currentUserId),
+        gameResults: [row.game1_result, row.game2_result, row.game3_result]
+          .map((game) => gameResultFromPerspective(game, row, currentUserId))
+          .filter(Boolean) as Array<'W' | 'L' | 'D'>,
+        opponent: {
+          username: row.opponent_username || null,
+          avatarUrl: row.opponent_avatar_url || null,
+          leaderName: row.opponent_leader || null,
+          leaderImageUrl: row.opponent_leader_image || null,
+          baseName: row.opponent_base || null,
+          archetype: row.opponent_archetype || null,
+        },
+        pool: {
+          shareId: row.pool_share_id || null,
+          name: row.pool_name || `${row.set_code || 'SWU'} ${formatLabel(format)}`,
+          setCode: row.set_code || 'UNK',
+          format,
+          formatLabel: formatLabel(format),
+        },
+        ...deckPreview,
+        archetype: row.my_archetype || null,
+      }
+    }),
+    // Casual (non-competitive) games come from casual_matches, already
+    // user-perspective, and interleave by date with competitive replays.
+    ...casualRows.map(mapCasualReplay),
+  ]
+    .filter((replay) => replay.replayUrl)
+    .sort((a, b) => new Date(b.playedAt || 0).getTime() - new Date(a.playedAt || 0).getTime())
+    .slice(0, 50)
+    .map(withPreferredReplayArt)
+
   return {
     summary: {
       ...summary,
@@ -701,50 +829,8 @@ export function buildGameplayResponse(
         updatedAt: formatTimestamp(row.updated_at),
       }
     }).filter((pool) => pool.shareId),
-    replays: [
-      ...replayRows.map((row): GameplayReplay => {
-        const format = row.pool_type || 'sealed'
-        const deckPreview = extractDeckPreview(row.deck_builder_state)
-        // Canonical replay link (see mapCasualReplay): prefer stored /playback/,
-        // else derive from the match id, stripping the bogus `ing-` prefix.
-        const replayUrl = resolveReplayUrl(row.wayfinder_match_id, row.wayfinder_replay_url)
-        return {
-          id: row.match_id || row.wayfinder_match_id || replayUrl,
-          wayfinderMatchId: row.wayfinder_match_id || null,
-          replayUrl,
-          playedAt: formatTimestamp(row.created_at),
-          result: resultFromPerspective(row, currentUserId),
-          playerSide: userSideFromReplay(row, currentUserId),
-          gameResults: [row.game1_result, row.game2_result, row.game3_result]
-            .map((game) => gameResultFromPerspective(game, row, currentUserId))
-            .filter(Boolean) as Array<'W' | 'L' | 'D'>,
-          opponent: {
-            username: row.opponent_username || null,
-            avatarUrl: row.opponent_avatar_url || null,
-            leaderName: row.opponent_leader || null,
-            leaderImageUrl: row.opponent_leader_image || null,
-            baseName: row.opponent_base || null,
-            archetype: row.opponent_archetype || null,
-          },
-          pool: {
-            shareId: row.pool_share_id || null,
-            name: row.pool_name || `${row.set_code || 'SWU'} ${formatLabel(format)}`,
-            setCode: row.set_code || 'UNK',
-            format,
-            formatLabel: formatLabel(format),
-          },
-          ...deckPreview,
-          archetype: row.my_archetype || null,
-        }
-      }),
-      // Casual (non-competitive) games come from casual_matches, already
-      // user-perspective, and interleave by date with competitive replays.
-      ...casualRows.map(mapCasualReplay),
-    ]
-      .filter((replay) => replay.replayUrl)
-      .sort((a, b) => new Date(b.playedAt || 0).getTime() - new Date(a.playedAt || 0).getTime())
-      .slice(0, 50)
-      .map(withPreferredReplayArt),
+    archetypeBreakdown: buildArchetypeBreakdown(replays),
+    replays,
   }
 }
 
