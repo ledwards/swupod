@@ -24,7 +24,7 @@ type DeckStatsTab = 'gamelog' | 'pool' | 'gameplay' | 'matchups'
 
 const TABS: Array<{ value: DeckStatsTab; label: string }> = [
   { value: 'gamelog', label: 'Game Log' },
-  { value: 'gameplay', label: 'Gameplay' },
+  { value: 'gameplay', label: 'Performance' },
   { value: 'matchups', label: 'Matchups' },
   { value: 'pool', label: 'Pool' },
 ]
@@ -121,7 +121,7 @@ function StatePanel({
 function ComingSoonPanel({ eyebrow }: { eyebrow: string }) {
   return (
     <StatePanel eyebrow={eyebrow} title="Coming Soon">
-      This section will show deck gameplay details once it rolls out.
+      This section will show your deck stats once it rolls out.
     </StatePanel>
   )
 }
@@ -134,7 +134,7 @@ function CompanionInstallPanel({ eyebrow, deckName }: { eyebrow: string; deckNam
         <span className="your-stats-eyebrow">{eyebrow}</span>
         <h3>Install Wayfinder Companion</h3>
         <p>
-          Install the Companion to record {deckName} games and unlock the gameplay and matchup tabs.
+          Install the Companion to record {deckName} games and unlock the Performance and Matchups tabs.
         </p>
       </div>
       <WayfinderStoreButtons orientation="stack" />
@@ -154,17 +154,17 @@ function EmptyGameplayPrompt({
   wayfinderDetected: boolean
 }) {
   if (!hasCompanion) {
-    return <ComingSoonPanel eyebrow={kind === 'gameplay' ? 'Gameplay' : 'Matchups'} />
+    return <ComingSoonPanel eyebrow={kind === 'gameplay' ? 'Performance' : 'Matchups'} />
   }
 
   if (!wayfinderDetected) {
-    return <CompanionInstallPanel eyebrow={kind === 'gameplay' ? 'Gameplay' : 'Matchups'} deckName={deck.name} />
+    return <CompanionInstallPanel eyebrow={kind === 'gameplay' ? 'Performance' : 'Matchups'} deckName={deck.name} />
   }
 
   const href = `/pool/${deck.shareId}/deck/play`
   return (
     <section className="deck-stats-panel deck-stats-panel--empty">
-      <span className="your-stats-eyebrow">{kind === 'gameplay' ? 'Gameplay' : 'Matchups'}</span>
+      <span className="your-stats-eyebrow">{kind === 'gameplay' ? 'Performance' : 'Matchups'}</span>
       <h3>No games recorded yet</h3>
       <p>
         You have Wayfinder installed. Play some games with {deck.name} to unlock this tab.
@@ -334,7 +334,7 @@ function GameplayTab({
   if (state.loading) return <SkeletonPanel />
   if (state.error) {
     return (
-      <StatePanel eyebrow="Gameplay" title="Couldn't load gameplay stats" tone="error">
+      <StatePanel eyebrow="Performance" title="Couldn't load performance stats" tone="error">
         Try refreshing this page.
       </StatePanel>
     )
