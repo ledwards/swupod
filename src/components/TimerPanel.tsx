@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react'
 import CountdownTimer from './CountdownTimer'
 import TimerButton from './TimerButton'
-import { isRoundTimerEnabled as computeRoundTimerEnabled } from '../utils/draftTimerDefaults'
+import { isRoundTimerEnabled as computeRoundTimerEnabled, getDisplayPickSeconds } from '../utils/draftTimerDefaults'
 import './TimerPanel.css'
 
 interface DraftPlayer {
@@ -40,6 +40,11 @@ export interface TimerPanelProps {
   onUpdateTimerSettings?: (settings: Record<string, unknown>) => void
   draftState?: DraftState | null
   onTimerExpire?: () => void
+  /**
+   * Cards left in the player's pack (pack draft) or leaders left (leader draft).
+   * Drives the competitive Appendix C round-timer schedule. Ignored for casual.
+   */
+  cardsRemaining?: number
 }
 
 /**
@@ -47,7 +52,7 @@ export interface TimerPanelProps {
  * Shows either pick timeout or last player timer (whichever has less time remaining)
  * Both timers can be enabled/disabled independently
  */
-function TimerPanel({ draft, players = [], compact = false, isHost = false, onTogglePause, onUpdateTimerSettings, draftState = null, onTimerExpire }: TimerPanelProps) {
+function TimerPanel({ draft, players = [], compact = false, isHost = false, onTogglePause, onUpdateTimerSettings, draftState = null, onTimerExpire, cardsRemaining = 0 }: TimerPanelProps) {
   const [activeTimer, setActiveTimer] = useState<'round' | 'lastPlayer'>('round')
   const [optimisticPaused, setOptimisticPaused] = useState<boolean | null>(null)
 
@@ -62,6 +67,17 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
   const isDrafting = draft?.status === 'active'
   const isRoundTimerEnabled = computeRoundTimerEnabled(draft)
   const isLastPlayerTimerEnabled = draft?.timerEnabled !== false
+
+  // Competitive pods run the official Appendix C schedule: the round timer steps
+  // down as the pack/leaders deplete (60→…→5→auto) and is NOT host-customizable.
+  // `null` means the schedule auto-picks the last card — nothing to time.
+  const isCompetitive = draft?.competitive === true
+  const displayedPickSeconds = getDisplayPickSeconds({
+    competitive: isCompetitive,
+    phase: draftState?.phase,
+    itemsRemaining: cardsRemaining,
+    roundTimeoutSeconds: pickTimeoutSeconds,
+  })
   const isPaused = optimisticPaused !== null ? optimisticPaused : draft?.paused === true
   const pausedDurationSeconds = draft?.pausedDurationSeconds || 0
 
@@ -123,9 +139,11 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
     }
   }, [isDrafting, pickStartedAt, pausedDurationSeconds, isRoundTimerEnabled, isLastPlayerTimerEnabled, isLastPlayer, pickTimeoutSeconds, lastPlayerTimerSeconds, isPaused, lastPlayerStartedAt])
 
-  // Determine what should be shown
-  const showRoundTimer = isRoundTimerEnabled
-  const showLastPlayerTimer = isLastPlayerTimerEnabled && isLastPlayer
+  // Determine what should be shown. Competitive: always show the round timer on
+  // the Appendix C schedule (hidden only when the schedule auto-picks the last
+  // card → null), and never the Last Player timer (not a sanctioned rule).
+  const showRoundTimer = isCompetitive ? displayedPickSeconds !== null : isRoundTimerEnabled
+  const showLastPlayerTimer = !isCompetitive && isLastPlayerTimerEnabled && isLastPlayer
 
   // If neither timer should be shown, render invisible placeholder to prevent layout shift
   if (!isDrafting || (!showRoundTimer && !showLastPlayerTimer)) {
@@ -189,7 +207,7 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
               ) : (
                 <CountdownTimer
                   label={timerLabel}
-                  totalSeconds={pickTimeoutSeconds}
+                  totalSeconds={displayedPickSeconds ?? pickTimeoutSeconds}
                   startedAt={pickStartedAt}
                   warningThreshold={30}
                   active={isDrafting}

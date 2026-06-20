@@ -477,6 +477,7 @@ function PackDraftPhase({
             onUpdateTimerSettings={onUpdateTimerSettings}
             draftState={draftState}
             onTimerExpire={onTimerExpire}
+            cardsRemaining={currentPack.length}
           />
 
           {isSpectator ? (
