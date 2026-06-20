@@ -153,10 +153,10 @@ export default function DraftSlideshow({
     setFocusedSeat(prev => {
       const list = visibleSeatNumbers
       if (list.length <= 1) return null
-      if (prev == null) return direction === 1 ? list[0] : list[list.length - 1]
+      if (prev == null) return (direction === 1 ? list[0] : list[list.length - 1]) ?? null
       const index = list.indexOf(prev)
-      if (index === -1) return direction === 1 ? list[0] : list[list.length - 1]
-      return list[(index + direction + list.length) % list.length]
+      if (index === -1) return (direction === 1 ? list[0] : list[list.length - 1]) ?? null
+      return list[(index + direction + list.length) % list.length] ?? null
     })
   }, [visibleSeatNumbers])
 

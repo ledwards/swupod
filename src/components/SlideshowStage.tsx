@@ -67,7 +67,7 @@ function SeatLabel({
 }: {
   seat: SlideshowSeat
   focused: boolean
-  onFocus?: (seatNumber: number) => void
+  onFocus?: ((seatNumber: number) => void) | undefined
 }) {
   return (
     <div className="draft-slideshow-row-label">
@@ -101,7 +101,7 @@ export default function SlideshowStage({
   selectedSeats: SeatSelection
   slideIndex: number
   focusedSeat?: number | null
-  onFocusSeat?: (seatNumber: number) => void
+  onFocusSeat?: ((seatNumber: number) => void) | undefined
 }) {
   const [stageRef, size] = useElementSize(100)
 
