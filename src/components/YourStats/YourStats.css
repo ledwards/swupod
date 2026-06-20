@@ -1078,6 +1078,7 @@
 /* Watch button — Wayfinder-style accent pill */
 .your-stats-watch-btn {
   flex: 0 0 auto;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;

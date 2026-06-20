@@ -40,6 +40,13 @@ describe('wayfinderMatchesUrl', () => {
   it('points at a single match when given an id', () => {
     assert.equal(wayfinderMatchesUrl('wf-1'), 'https://plugin.wayfinder.news/matches/wf-1')
   })
+
+  it('FIXED: strips the ingestion ing- prefix so the match id is the bare event id', () => {
+    assert.equal(
+      wayfinderMatchesUrl('ing-match_1781829124602_3osa8h'),
+      'https://plugin.wayfinder.news/matches/match_1781829124602_3osa8h'
+    )
+  })
 })
 
 describe('resolveReplayUrl', () => {

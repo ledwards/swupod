@@ -9,6 +9,9 @@
 ### ⚡ Performance
 - **My Stats loads faster**: We've made the **My Stats** page noticeably quicker to load — it now fetches less behind the scenes, loads what's left in parallel, and reuses shared data across visitors, so your stats fill in faster.
 
+### 🐛 Bug Fixes
+- **Watch links on My Stats open the right replay**: On the **My Stats** Performance tab, a recorded game's **Watch** button could hit an "out of range" error and a Discord login — even for replays you own — because the replay link was built from the wrong identifier. Watch now opens the correct replay, and clicking the game row itself takes you to its match page on Wayfinder.
+
 ## 06.15.2026
 
 ### 🧭 Wayfinder Companion

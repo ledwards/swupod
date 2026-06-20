@@ -13,13 +13,13 @@ const COMPANION_BASE = (process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin
 const REPLAY_BASE = (process.env.NEXT_PUBLIC_WAYFINDER_REPLAY_URL || 'https://replay.wayfinder.news').replace(/\/+$/, '')
 
 /**
- * The replay player resolves `/playback/<id>` against the capture `event_id`,
- * which is the BARE `match_<ts>_<rand>`. Wayfinder's server-side ingestion gameId
- * adds an `ing-` prefix (`ing-${eventId}`), and PTP stores that gameId in
- * `wayfinder_match_id` — so an `ing-...` id reaches the playback URL and matches
- * no event ("This replay is out of range" + Discord login). Strip it here.
+ * The replay player and the Companion matches page both key off the BARE capture
+ * `event_id` (`match_<ts>_<rand>`). Wayfinder's server-side ingestion gameId adds
+ * an `ing-` prefix (`ing-${eventId}`), and PTP stores that gameId in
+ * `wayfinder_match_id` — so an `ing-...` id reaches the URL and matches no event
+ * ("This replay is out of range" + Discord login). Strip it here.
  */
-function canonicalReplayId(matchId: string | null | undefined): string {
+function canonicalEventId(matchId: string | null | undefined): string {
   return (matchId || '').trim().replace(/^ing-/, '')
 }
 
@@ -29,14 +29,14 @@ function canonicalReplayId(matchId: string | null | undefined): string {
  * Returns '' when there is no match id.
  */
 export function wayfinderReplayUrl(matchId: string | null | undefined): string {
-  const id = canonicalReplayId(matchId)
+  const id = canonicalEventId(matchId)
   if (!id) return ''
   return `${REPLAY_BASE}/playback/${id}`
 }
 
 /** The Companion "your matches" list, or a single match when an id is given. */
 export function wayfinderMatchesUrl(matchId?: string | null): string {
-  const id = (matchId || '').trim()
+  const id = canonicalEventId(matchId)
   return id ? `${COMPANION_BASE}/matches/${id}` : `${COMPANION_BASE}/matches`
 }
 

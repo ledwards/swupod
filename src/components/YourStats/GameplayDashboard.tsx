@@ -7,6 +7,7 @@ import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import { useRevealOnView } from '@/src/hooks/useRevealOnView'
 import { useAuth } from '@/src/contexts/AuthContext'
 import { isCompanionBeta } from '@/src/utils/companionBeta'
+import { wayfinderMatchesUrl } from '@/src/utils/wayfinderUrls'
 
 function PlayGlyph() {
   return (
@@ -377,13 +378,22 @@ export function ReplayListItem({ replay, myName, mode = 'default' }: { replay: G
       ? { left: mineSide, right: oppSide }
       : { left: oppSide, right: mineSide }
 
+  // The row links to the Companion match page; the Watch pill opens the replay.
+  const matchUrl = wayfinderMatchesUrl(replay.wayfinderMatchId)
+  const openReplay = (event: { preventDefault: () => void; stopPropagation: () => void }) => {
+    event.preventDefault()
+    event.stopPropagation()
+    if (replay.replayUrl) window.open(replay.replayUrl, '_blank', 'noopener,noreferrer')
+  }
+
   return (
     <a
       className={`your-stats-pool-build your-stats-replay-card your-stats-replay-row--${replay.result}${mode === 'side-labels' ? ' your-stats-replay-card--side-labels' : ''}`}
       style={style}
-      href={replay.replayUrl}
+      href={matchUrl}
       target="_blank"
       rel="noopener noreferrer"
+      aria-label={`View match: ${myName} vs ${opp}`}
     >
       <div className="your-stats-pool-build-art your-stats-replay-art-pair" aria-hidden="true">
         {orderedSides.left.leaderImageUrl ? (
@@ -417,7 +427,14 @@ export function ReplayListItem({ replay, myName, mode = 'default' }: { replay: G
           <span>{replay.pool.setCode} · {replayDate(replay.playedAt)}</span>
           <ReplayGamePips results={replay.gameResults} />
         </div>
-        <span className="your-stats-watch-btn your-stats-replay-watch-inline">
+        <span
+          className="your-stats-watch-btn your-stats-replay-watch-inline"
+          role="link"
+          tabIndex={0}
+          aria-label="Watch replay"
+          onClick={openReplay}
+          onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') openReplay(event) }}
+        >
           <PlayGlyph />Watch
         </span>
       </div>
