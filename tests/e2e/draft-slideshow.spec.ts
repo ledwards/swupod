@@ -223,7 +223,7 @@ async function expectNoSlideshowOverflow(page: Page) {
 }
 
 async function openSlideshow(page: Page, fixture) {
-  await page.goto(`${BASE_URL}/draft/${fixture.podShareId}/report/${fixture.pool1ShareId}`)
+  await page.goto(`${BASE_URL}/draft/${fixture.podShareId}/report`)
   await expect(page.locator('.draft-report-header')).toBeVisible({ timeout: 20_000 })
   await page.getByRole('button', { name: 'Slideshow Mode' }).click()
   await expect(page.getByTestId('draft-slideshow')).toBeVisible({ timeout: 20_000 })
@@ -630,7 +630,7 @@ test.describe('Draft Report Slideshow Mode', () => {
   test('hides the Slideshow Mode toggle below the desktop threshold', async ({ page }) => {
     await page.setViewportSize({ width: 800, height: 700 })
     await setAuthCookie(page, users[0])
-    await page.goto(`${BASE_URL}/draft/${fixture.podShareId}/report/${fixture.pool1ShareId}`)
+    await page.goto(`${BASE_URL}/draft/${fixture.podShareId}/report`)
     await expect(page.locator('.draft-report-header')).toBeVisible({ timeout: 20_000 })
     await expect(page.getByRole('button', { name: 'Slideshow Mode' })).toHaveCount(0)
   })

@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { wayfinderReplayUrl, wayfinderMatchesUrl, resolveReplayUrl } from './wayfinderUrls'
+import { wayfinderReplayUrl, wayfinderMatchesUrl, wayfinderCompanionUrl, resolveReplayUrl } from './wayfinderUrls'
 
 describe('wayfinderReplayUrl', () => {
   it('builds the canonical replay-playback URL from a match id', () => {
@@ -46,6 +46,14 @@ describe('wayfinderMatchesUrl', () => {
       wayfinderMatchesUrl('ing-match_1781829124602_3osa8h'),
       'https://plugin.wayfinder.news/matches/match_1781829124602_3osa8h'
     )
+  })
+})
+
+describe('wayfinderCompanionUrl', () => {
+  it('points at the Companion site home', () => {
+    // SPEC: generic "Companion" links (nav, footer) open the Companion site home
+    // on plugin.wayfinder.news — NOT the bare wayfinder.news marketing domain.
+    assert.equal(wayfinderCompanionUrl(), 'https://plugin.wayfinder.news')
   })
 })
 

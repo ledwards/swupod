@@ -40,6 +40,11 @@ export function wayfinderMatchesUrl(matchId?: string | null): string {
   return id ? `${COMPANION_BASE}/matches/${id}` : `${COMPANION_BASE}/matches`
 }
 
+/** The Companion site home — where generic "Companion" links (nav, footer) point. */
+export function wayfinderCompanionUrl(): string {
+  return COMPANION_BASE
+}
+
 /**
  * The replay link to surface for a match. Prefer a stored canonical playback
  * URL (the Companion now sends one), and otherwise derive it from the match id —

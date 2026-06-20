@@ -18,7 +18,7 @@ import {
 } from './landingPagePromo'
 import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 import ReleaseNotes from './ReleaseNotes'
-import { WAYFINDER_NEWS_URL } from './WayfinderStoreButtons'
+import { wayfinderCompanionUrl } from '../utils/wayfinderUrls'
 import Button from './Button'
 import SubscribeModal from './SubscribeModal'
 import Countdown from './Countdown'
@@ -603,7 +603,7 @@ function LandingPage() {
           <span className="footer-separator">·</span>
           {hasBetaAccess && (
             <>
-              <a href={WAYFINDER_NEWS_URL} target="_blank" rel="noopener noreferrer">Companion</a>
+              <a href={wayfinderCompanionUrl()} target="_blank" rel="noopener noreferrer">Companion</a>
               <span className="footer-separator">·</span>
             </>
           )}
