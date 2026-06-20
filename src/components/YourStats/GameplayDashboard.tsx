@@ -273,7 +273,7 @@ function LeadersCard({ leaders }: { leaders: GameplayLeaderBreakdown[] }) {
   )
 }
 
-function CompanionCTA({ hasData, beta }: { hasData: boolean; beta: boolean }) {
+export function CompanionCTA({ hasData, beta }: { hasData: boolean; beta: boolean }) {
   // Already running the Companion? Don't pitch the install (R8).
   const { detected } = useWayfinderDetection()
   if (detected) return null

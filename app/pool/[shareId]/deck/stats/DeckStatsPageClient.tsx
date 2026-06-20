@@ -6,8 +6,7 @@ import Button from '@/src/components/Button'
 import { useStickyTab } from '@/src/hooks/useStickyTab'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import { isCompanionBeta } from '@/src/utils/companionBeta'
-import { ReplayExplorer } from '@/src/components/YourStats/GameplayDashboard'
-import WayfinderStoreButtons, { WayfinderCompanionLockup } from '@/src/components/WayfinderStoreButtons'
+import { ReplayExplorer, CompanionCTA } from '@/src/components/YourStats/GameplayDashboard'
 import { AspectBreakdown, DuplicateRateWidget, LuckHistogram } from '@/src/components/YourStats/LuckHistogram'
 import {
   buildDeckGameplayMetrics,
@@ -58,11 +57,10 @@ function DraftLogIcon() {
   )
 }
 
-function ArtSlot({ src, label, tint }: { src: string | null; label: string; tint?: string | null }) {
+function ArtSlot({ src, tint }: { src: string | null; tint?: string | null }) {
   return (
     <div className="deck-stats-art-slot" style={{ ['--deck-art-tint' as any]: tint || '#1a2233' }}>
       {src ? <img src={src} alt="" loading="lazy" /> : <CardSilhouette />}
-      <span>{label}</span>
     </div>
   )
 }
@@ -118,30 +116,6 @@ function StatePanel({
   )
 }
 
-function ComingSoonPanel({ eyebrow }: { eyebrow: string }) {
-  return (
-    <StatePanel eyebrow={eyebrow} title="Coming Soon">
-      This section will show your deck stats once it rolls out.
-    </StatePanel>
-  )
-}
-
-function CompanionInstallPanel({ eyebrow, deckName }: { eyebrow: string; deckName: string }) {
-  return (
-    <section className="deck-stats-panel deck-stats-panel--install">
-      <div className="deck-stats-install-copy">
-        <WayfinderCompanionLockup className="deck-stats-install-lockup" />
-        <span className="your-stats-eyebrow">{eyebrow}</span>
-        <h3>Install Wayfinder Companion</h3>
-        <p>
-          Install the Companion to record {deckName} games and unlock the Performance and Matchups tabs.
-        </p>
-      </div>
-      <WayfinderStoreButtons orientation="stack" />
-    </section>
-  )
-}
-
 function EmptyGameplayPrompt({
   deck,
   kind,
@@ -153,27 +127,31 @@ function EmptyGameplayPrompt({
   hasCompanion: boolean
   wayfinderDetected: boolean
 }) {
-  if (!hasCompanion) {
-    return <ComingSoonPanel eyebrow={kind === 'gameplay' ? 'Performance' : 'Matchups'} />
+  // Companion running but no games for this deck yet → deck-specific play prompt.
+  if (wayfinderDetected) {
+    const href = `/pool/${deck.shareId}/deck/play`
+    return (
+      <section className="deck-stats-panel deck-stats-panel--empty">
+        <span className="your-stats-eyebrow">{kind === 'gameplay' ? 'Performance' : 'Matchups'}</span>
+        <h3>No games recorded yet</h3>
+        <p>
+          You have Wayfinder installed. Play some games with {deck.name} to unlock this tab.
+        </p>
+        <a className="btn btn--primary btn--sm deck-stats-empty-play" href={href}>
+          <PlayMark />
+          <span>Play deck</span>
+        </a>
+      </section>
+    )
   }
 
-  if (!wayfinderDetected) {
-    return <CompanionInstallPanel eyebrow={kind === 'gameplay' ? 'Performance' : 'Matchups'} deckName={deck.name} />
-  }
-
-  const href = `/pool/${deck.shareId}/deck/play`
+  // Not detected → reuse the same Companion CTA /me uses (install pitch for beta
+  // users, neutral "coming soon" otherwise). With the Companion undetected here,
+  // hasCompanion is exactly the beta flag. Centered to match the other empty states.
   return (
-    <section className="deck-stats-panel deck-stats-panel--empty">
-      <span className="your-stats-eyebrow">{kind === 'gameplay' ? 'Performance' : 'Matchups'}</span>
-      <h3>No games recorded yet</h3>
-      <p>
-        You have Wayfinder installed. Play some games with {deck.name} to unlock this tab.
-      </p>
-      <a className="btn btn--primary btn--sm deck-stats-empty-play" href={href}>
-        <PlayMark />
-        <span>Play deck</span>
-      </a>
-    </section>
+    <div className="deck-stats-empty-cta">
+      <CompanionCTA hasData={false} beta={hasCompanion} />
+    </div>
   )
 }
 
@@ -561,8 +539,8 @@ export default function DeckStatsPageClient({ deck }: { deck: any }) {
         <header className="deck-stats-hero">
           <div className="deck-stats-identity">
             <div className="deck-stats-art-pair" aria-hidden="true">
-              <ArtSlot src={deck.leaderImageUrl} label={deck.leaderName || 'Leader'} tint={deck.baseColor} />
-              <ArtSlot src={deck.baseImageUrl} label={deck.baseName || 'Base'} tint={deck.baseColor} />
+              <ArtSlot src={deck.leaderImageUrl} tint={deck.baseColor} />
+              <ArtSlot src={deck.baseImageUrl} tint={deck.baseColor} />
             </div>
             <div className="deck-stats-titles">
               <span className="me-hero-eyebrow">{deck.setCode} · {deck.poolTypeLabel}</span>

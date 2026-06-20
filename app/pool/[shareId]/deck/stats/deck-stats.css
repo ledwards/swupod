@@ -206,6 +206,13 @@
 
 .deck-stats-content {
   min-height: 360px;
+  display: flex;
+  flex-direction: column;
+}
+
+.deck-stats-content > [role="tabpanel"] {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .deck-stats-panel {
@@ -215,8 +222,7 @@
   border-radius: 14px;
 }
 
-.deck-stats-panel--empty,
-.deck-stats-panel--install {
+.deck-stats-panel--empty {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -226,17 +232,14 @@
   min-height: 320px;
 }
 
-.deck-stats-install-copy {
+/* Companion CTA empty state (reused from /me) — center it in the tab area so it
+   matches the other empty states instead of hugging the top. */
+.deck-stats-empty-cta {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 0.45rem;
-  max-width: 38rem;
-}
-
-.deck-stats-install-lockup {
-  margin-bottom: 0.2rem;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-height: 320px;
 }
 
 .deck-stats-empty-play {
