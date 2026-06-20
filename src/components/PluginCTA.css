@@ -1,0 +1,108 @@
+/* PluginCTA — the one Wayfinder Companion CTA.
+   Brand: cinematic + dark + glowing where it counts (an install pitch IS a moment),
+   calm and legible everywhere else. Tokens per docs/STYLE_GUIDE.md — Barlow, dark
+   surfaces, interactive-blue glow. Variants: card / autodetect (vertical hero),
+   compact (just the browser logos). No decorative page-load motion. */
+
+.plugin-cta {
+  box-sizing: border-box;
+  font-family: 'Barlow', sans-serif;
+  color: #fff;
+}
+
+.plugin-cta-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.plugin-cta-heading {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.2rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.plugin-cta-copy {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* The official combined lockup — one asset, intrinsic ratio preserved. */
+.plugin-cta-lockup {
+  display: block;
+  width: auto;
+  flex: 0 0 auto;
+}
+
+/* ---------- INSTALL hero (card + autodetect) ---------- */
+.plugin-cta--install.plugin-cta--card,
+.plugin-cta--install.plugin-cta--autodetect {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.15rem;
+  padding: 2rem 1.75rem;
+  border: 1px solid rgba(96, 165, 250, 0.32);
+  border-radius: 16px;
+  background:
+    radial-gradient(125% 90% at 50% -10%, rgba(33, 150, 243, 0.2), transparent 62%),
+    rgba(0, 0, 0, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 20px 50px -28px rgba(33, 150, 243, 0.55);
+}
+.plugin-cta--card .plugin-cta-lockup,
+.plugin-cta--autodetect .plugin-cta-lockup {
+  height: 128px;
+}
+.plugin-cta--card .plugin-cta-text,
+.plugin-cta--autodetect .plugin-cta-text {
+  align-items: center;
+  max-width: 46ch;
+}
+
+/* ---------- COMPACT: just the browser logos, no card chrome ---------- */
+.plugin-cta--install.plugin-cta--compact {
+  display: flex;
+  justify-content: center;
+}
+
+/* ---------- SOON: quiet neutral placeholder, no promotion ---------- */
+.plugin-cta--soon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.55rem;
+  padding: 2rem 1.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.32);
+}
+.plugin-cta--soon .plugin-cta-text {
+  align-items: center;
+  max-width: 46ch;
+}
+
+.plugin-cta-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 0.35rem;
+  padding: 3px 11px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

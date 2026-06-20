@@ -33,6 +33,15 @@ const ASPECT_ICON: Record<string, string> = {
   Cunning: '/icons/cunning.png',
   Heroism: '/icons/heroism.png',
   Villainy: '/icons/villainy.png',
+  Multicolor: '/icons/aspects.png',
+}
+
+const RARITY_ICON: Record<string, string> = {
+  Common: '/icons/rarity/common.png',
+  Uncommon: '/icons/rarity/uncommon.png',
+  Rare: '/icons/rarity/rare.png',
+  Legendary: '/icons/rarity/legendary.png',
+  Special: '/icons/rarity/special.png',
 }
 
 function AspectIcons({ aspects }: { aspects: string[] }) {
@@ -133,7 +142,12 @@ function CardReadout({ hit, packsCracked }: { hit: CardHit | null; packsCracked:
       <div className="your-stats-luck-readout-head">
         <AspectIcons aspects={hit.aspects} />
         <strong>{hit.name}</strong>
-        <span className="your-stats-luck-readout-num">#{hit.number}</span>
+        <span className="your-stats-luck-readout-num">
+          #{hit.number}
+          {RARITY_ICON[hit.rarity] && (
+            <img className="your-stats-luck-readout-rarity" src={RARITY_ICON[hit.rarity]} alt={hit.rarity} title={hit.rarity} width={15} height={15} />
+          )}
+        </span>
       </div>
       <div className="your-stats-luck-readout-body">
         <span className="your-stats-luck-readout-count">You pulled it <strong>{hit.count}×</strong></span>
@@ -382,6 +396,12 @@ function pct(n: number): string {
   return `${(n * 100).toFixed(n >= 0.1 ? 0 : 1)}%`
 }
 
+// Card counts are whole — show "5", not "5.0". Keep a single decimal only when
+// the value is genuinely fractional (e.g. a per-pool average across many pools).
+function wholeIfInt(n: number, dp = 1): string {
+  return Number.isInteger(n) ? String(n) : n.toFixed(dp)
+}
+
 export function DuplicateRateWidget({ data }: { data: DuplicatesData }) {
   const actual = data.actualPerPool
   const expected = data.expectedPerPool
@@ -404,7 +424,7 @@ export function DuplicateRateWidget({ data }: { data: DuplicatesData }) {
       <h4>Duplicates per pool</h4>
       <div className="your-stats-luck-widget-figures">
         <div>
-          <span className="your-stats-luck-widget-num">{actual.toFixed(1)}</span>
+          <span className="your-stats-luck-widget-num">{wholeIfInt(actual)}</span>
           <span className="your-stats-luck-widget-cap">you saw</span>
         </div>
         <span className="your-stats-luck-widget-vs">vs</span>
@@ -465,6 +485,14 @@ const ALIGN_COLOR: Record<string, string> = {
 
 type Slice = { label: string; value: number; expected: number; color: string }
 
+function PieLegendMark({ slice }: { slice: Slice }) {
+  const icon = ASPECT_ICON[slice.label]
+  if (icon) {
+    return <img className="your-stats-luck-pie-icon" src={icon} alt="" width={15} height={15} />
+  }
+  return <span className="your-stats-luck-pie-dot" style={{ background: slice.color }} />
+}
+
 function Pie({ title, slices }: { title: string; slices: Slice[] }) {
   const { ref: pieRef, inView } = useRevealOnView()
   const total = slices.reduce((s, x) => s + x.value, 0)
@@ -490,8 +518,7 @@ function Pie({ title, slices }: { title: string; slices: Slice[] }) {
             const expPct = expTotal > 0 ? Math.round((s.expected / expTotal) * 100) : 0
             return (
               <li key={s.label}>
-                <span className="your-stats-luck-pie-dot" style={{ background: s.color }} />
-                {ASPECT_ICON[s.label] && <img src={ASPECT_ICON[s.label]} alt="" width={15} height={15} />}
+                <PieLegendMark slice={s} />
                 <span className="your-stats-luck-pie-label">{s.label}</span>
                 <span className="your-stats-luck-pie-val">
                   {Math.round(s.value)} · {pct}%

@@ -13,19 +13,30 @@ const COMPANION_BASE = (process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin
 const REPLAY_BASE = (process.env.NEXT_PUBLIC_WAYFINDER_REPLAY_URL || 'https://replay.wayfinder.news').replace(/\/+$/, '')
 
 /**
+ * The replay player and the Companion matches page both key off the BARE capture
+ * `event_id` (`match_<ts>_<rand>`). Wayfinder's server-side ingestion gameId adds
+ * an `ing-` prefix (`ing-${eventId}`), and PTP stores that gameId in
+ * `wayfinder_match_id` — so an `ing-...` id reaches the URL and matches no event
+ * ("This replay is out of range" + Discord login). Strip it here.
+ */
+function canonicalEventId(matchId: string | null | undefined): string {
+  return (matchId || '').trim().replace(/^ing-/, '')
+}
+
+/**
  * Canonical public replay-playback URL for a Wayfinder match id, e.g.
  * `https://replay.wayfinder.news/playback/match_1781829124602_3osa8h`.
  * Returns '' when there is no match id.
  */
 export function wayfinderReplayUrl(matchId: string | null | undefined): string {
-  const id = (matchId || '').trim()
+  const id = canonicalEventId(matchId)
   if (!id) return ''
   return `${REPLAY_BASE}/playback/${id}`
 }
 
 /** The Companion "your matches" list, or a single match when an id is given. */
 export function wayfinderMatchesUrl(matchId?: string | null): string {
-  const id = (matchId || '').trim()
+  const id = canonicalEventId(matchId)
   return id ? `${COMPANION_BASE}/matches/${id}` : `${COMPANION_BASE}/matches`
 }
 
@@ -36,6 +47,10 @@ export function wayfinderMatchesUrl(matchId?: string | null): string {
  */
 export function resolveReplayUrl(matchId: string | null | undefined, storedUrl?: string | null): string {
   const stored = (storedUrl || '').trim()
-  if (stored.includes('/playback/')) return stored
+  if (stored.includes('/playback/')) {
+    // Canonicalize even a stored playback URL: a Companion build briefly sent
+    // `/playback/ing-<id>`, which matches no event and 404s.
+    return stored.replace('/playback/ing-', '/playback/')
+  }
   return wayfinderReplayUrl(matchId) || stored
 }

@@ -1078,6 +1078,7 @@
 /* Watch button — Wayfinder-style accent pill */
 .your-stats-watch-btn {
   flex: 0 0 auto;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
@@ -1548,6 +1549,12 @@ a.your-stats-watch-btn:active {
      gets the rest. */
   max-width: 90%;
   padding: 0.8rem 1rem;
+}
+
+.your-stats-replay-card .your-stats-replay-content {
+  margin: 0 auto;
+  max-width: min(64%, 680px);
+  text-align: center;
 }
 
 .your-stats-replay-combo {
@@ -2623,6 +2630,14 @@ a.your-stats-logged-out-link:active {
   grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
   gap: 0.5rem;
 }
+/* Nudge the leader grid up under the subtitle — tighter on the meta roster,
+   gentler on the personal Gameplay grid. */
+.your-stats-wr--meta .your-stats-wr-grid {
+  margin-top: -20px;
+}
+.your-stats-wr--personal .your-stats-wr-grid {
+  margin-top: -10px;
+}
 .your-stats-wr-cell {
   position: relative;
   aspect-ratio: 1 / 1;
@@ -2643,11 +2658,10 @@ a.your-stats-logged-out-link:active {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Push the card frame off the edges so only the central art shows.
-     translateY before scale shifts the crop down a literal 25px (unscaled),
-     enough to clip the printed trait line (e.g. "Force • Jedi") off the bottom. */
+  /* Zoom into the central illustration and lift it so the card's top name
+     banner / frame chrome is clipped off the top edge — only the photo shows. */
   object-position: center 32%;
-  transform: translateY(25px) scale(1.55);
+  transform: translateY(5px) scale(1.55);
 }
 .your-stats-wr-cell-art--empty {
   background: rgba(255, 255, 255, 0.08);
@@ -2680,7 +2694,7 @@ a.your-stats-logged-out-link:active {
 }
 @media (hover: hover) and (pointer: fine) {
   .your-stats-wr-cell:hover .your-stats-wr-cell-art {
-    transform: translateY(25px) scale(1.62);
+    transform: translateY(5px) scale(1.62);
   }
 }
 
@@ -3459,9 +3473,18 @@ a.your-stats-logged-out-link:active {
 }
 
 .your-stats-luck-readout-num {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.82rem;
   font-weight: 600;
+}
+
+.your-stats-luck-readout-rarity {
+  display: block;
+  width: 15px;
+  height: 15px;
 }
 
 .your-stats-luck-readout-body {
@@ -3620,6 +3643,13 @@ a.your-stats-logged-out-link:active {
   flex: 0 0 auto;
 }
 
+.your-stats-luck-pie-icon {
+  width: 15px;
+  height: 15px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
 .your-stats-luck-pie-legend img {
   border-radius: 3px;
 }
@@ -3633,6 +3663,34 @@ a.your-stats-logged-out-link:active {
   font-variant-numeric: tabular-nums;
 }
 
+@media (max-width: 560px) {
+  .your-stats-luck-pie-legend li {
+    gap: 0.32rem;
+  }
+
+  .your-stats-luck-pie-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .your-stats-luck-pie-icon,
+  .your-stats-luck-pie-dot {
+    width: 18px;
+    height: 18px;
+  }
+
+  .your-stats-luck-pie-val {
+    margin-left: auto;
+    font-size: 0.78rem;
+  }
+}
+
 /* ===========================================================================
    Replay matchup card — your leader art on the left, opponent's on the right,
    result + names + Watch down the middle. Reads like a deck card, not a log row.
@@ -3643,6 +3701,36 @@ a.your-stats-logged-out-link:active {
   cursor: pointer;
   text-decoration: none;
   color: inherit;
+}
+
+.your-stats-replay-art-pair .your-stats-replay-side-art {
+  top: 0;
+  height: 100%;
+  width: 34%;
+  object-fit: cover;
+  object-position: center 30%;
+  transition: transform 380ms ease;
+}
+
+.your-stats-replay-art-pair .your-stats-replay-side-art--opp,
+.your-stats-replay-art-pair .your-stats-replay-side-art--left {
+  left: -60px;
+  right: auto;
+  -webkit-mask-image: linear-gradient(to right, #000 0%, #000 44%, transparent 100%);
+  mask-image: linear-gradient(to right, #000 0%, #000 44%, transparent 100%);
+}
+
+.your-stats-replay-art-pair .your-stats-replay-side-art--mine,
+.your-stats-replay-art-pair .your-stats-replay-side-art--right {
+  right: -60px;
+  left: auto;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 56%, #000 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 56%, #000 100%);
+}
+
+.your-stats-pool-build-art-fallback--opp {
+  left: 8%;
+  right: auto;
 }
 
 .your-stats-replay-oppline {
@@ -3690,56 +3778,6 @@ a.your-stats-logged-out-link:active {
 .your-stats-replay-card.your-stats-replay-row--draw { border-color: rgba(251, 191, 36, 0.5); }
 .your-stats-replay-card.your-stats-replay-row--pending { border-color: rgba(255, 255, 255, 0.22); }
 
-.your-stats-replay-flank {
-  position: relative;
-  flex: 0 0 27%;
-  max-width: 180px;
-  overflow: hidden;
-}
-
-.your-stats-replay-flank img {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  width: 150%;
-  object-fit: cover;
-  object-position: center 22%;
-}
-
-/* Mine fades toward the center from the left; opponent mirrors it. */
-.your-stats-replay-flank--mine img {
-  left: 0;
-  -webkit-mask-image: linear-gradient(to right, #000 35%, transparent 100%);
-  mask-image: linear-gradient(to right, #000 35%, transparent 100%);
-}
-
-.your-stats-replay-flank--opp img {
-  right: 0;
-  -webkit-mask-image: linear-gradient(to left, #000 35%, transparent 100%);
-  mask-image: linear-gradient(to left, #000 35%, transparent 100%);
-}
-
-.your-stats-replay-flank .your-stats-card-placeholder,
-.your-stats-replay-flank svg {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  opacity: 0.25;
-}
-
-.your-stats-replay-center {
-  position: relative;
-  z-index: 1;
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.3rem;
-  padding: 0.6rem 0.5rem;
-  text-align: center;
-}
-
 .your-stats-replay-center-top {
   display: flex;
   align-items: center;
@@ -3786,6 +3824,116 @@ a.your-stats-logged-out-link:active {
   z-index: 1;
   align-self: center;
   margin-right: 0.5rem;
+}
+
+.your-stats-replay-card--side-labels {
+  min-height: 140px;
+}
+
+.your-stats-replay-card--side-labels .your-stats-replay-content {
+  min-height: 118px;
+  justify-content: center;
+  padding-bottom: 1.45rem;
+}
+
+.your-stats-replay-side-labels {
+  position: absolute;
+  left: 0.85rem;
+  right: 0.85rem;
+  bottom: 0.58rem;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  pointer-events: none;
+}
+
+.your-stats-replay-side-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  width: fit-content;
+  max-width: min(36%, 220px);
+  min-width: 0;
+  padding: 0.26rem 0.38rem 0.3rem;
+  background: rgba(0, 0, 0, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.82);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(2px);
+}
+
+.your-stats-replay-side-label--right {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.your-stats-replay-side-label strong,
+.your-stats-replay-side-label small {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.your-stats-replay-side-label strong {
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.08;
+}
+
+.your-stats-replay-side-label small {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+@media (max-width: 560px) {
+  .your-stats-replay-card .your-stats-replay-content {
+    max-width: 72%;
+  }
+
+  .your-stats-replay-art-pair .your-stats-replay-side-art {
+    width: 42%;
+    object-position: center calc(30% + 50px);
+  }
+
+  .your-stats-replay-art-pair .your-stats-replay-side-art--opp,
+  .your-stats-replay-art-pair .your-stats-replay-side-art--left {
+    left: -72px;
+  }
+
+  .your-stats-replay-art-pair .your-stats-replay-side-art--mine,
+  .your-stats-replay-art-pair .your-stats-replay-side-art--right {
+    right: -72px;
+  }
+
+  .your-stats-replay-card--side-labels .your-stats-replay-content {
+    max-width: 72%;
+    min-height: 118px;
+  }
+
+  .your-stats-replay-side-labels {
+    left: 0.65rem;
+    right: 0.65rem;
+    bottom: 0.52rem;
+  }
+
+  .your-stats-replay-side-label {
+    max-width: 39%;
+    padding: 0.22rem 0.32rem 0.25rem;
+  }
+
+  .your-stats-replay-side-label strong {
+    font-size: 0.82rem;
+  }
+
+  .your-stats-replay-side-label small {
+    font-size: 0.68rem;
+  }
 }
 
 /* Gameplay leaders: usage pie (left) + win-rate legend (right). */

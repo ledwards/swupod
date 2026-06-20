@@ -560,7 +560,7 @@ export interface CardMeta {
 // actually line up with expected — and collapses every variant (Hyperspace,
 // Foil, Showcase) of a card onto the same collector id.
 const uuidCache = new Map<string, Map<string, string>>()
-function getUuidToCardId(setCode: string): Map<string, string> {
+export function getUuidToCardId(setCode: string): Map<string, string> {
   let map = uuidCache.get(setCode)
   if (map) return map
   map = new Map<string, string>()
@@ -573,7 +573,7 @@ function getUuidToCardId(setCode: string): Map<string, string> {
 }
 
 const metaCache = new Map<string, Map<string, CardMeta>>()
-function getCardMetaLookup(setCode: string): Map<string, CardMeta> {
+export function getCardMetaLookup(setCode: string): Map<string, CardMeta> {
   let map = metaCache.get(setCode)
   if (map) return map
   map = new Map<string, CardMeta>()
@@ -648,7 +648,7 @@ export function buildCardHits(
  * collisions and under-reports (LAW would read ~0 instead of ~6.7).
  */
 const dupIdentityCache = new Map<string, Map<string, string>>()
-function getDupIdentity(setCode: string): (row: GenerationRow) => string {
+export function getDupIdentity(setCode: string): (row: GenerationRow) => string {
   let map = dupIdentityCache.get(setCode)
   if (!map) {
     map = new Map<string, string>()
@@ -846,6 +846,62 @@ const PLATFORM_OPENED_SQL = `
 `
 
 // ---------------------------------------------------------------------------
+// Platform-wide baseline cache
+// ---------------------------------------------------------------------------
+//
+// The platform pull distribution for a (scope, setCode, since, until) is the
+// SAME for every user — it's the aggregate over everyone's generations. The
+// per-user `private` HTTP cache can never share it, so without this each user's
+// Luck request re-scanned card_generations for the whole set and re-aggregated
+// it (the single heaviest query backing /me). We run that once and memoize the
+// tiny result (per-rarity / per-aspect counts) in-process, shared across users,
+// with a short TTL so it still tracks newly opened packs. Concurrent misses
+// coalesce on one in-flight promise (no thundering herd); a rejected fetch is
+// evicted so the next request retries instead of caching the error.
+
+interface CachedPlatform {
+  value: Promise<ObservedAggregate>
+  expires: number
+}
+export const PLATFORM_CACHE_TTL_MS = 5 * 60 * 1000
+const platformCache = new Map<string, CachedPlatform>()
+
+/** Test seam: drop all cached platform aggregates. */
+export function __clearPlatformCache(): void {
+  platformCache.clear()
+}
+
+/**
+ * Memoized platform aggregate. `fetchAggregate` (the card_generations scan +
+ * aggregateObserved) runs only on a cold or expired key; same-key callers
+ * within the TTL share the cached promise. `now` is injectable for tests.
+ */
+export function platformObservedCached(
+  scope: Scope,
+  setCode: string,
+  since: string,
+  until: string,
+  fetchAggregate: () => Promise<ObservedAggregate>,
+  now: number = Date.now(),
+): Promise<ObservedAggregate> {
+  const key = `${scope}:${setCode}:${since}:${until}`
+  const hit = platformCache.get(key)
+  if (hit && hit.expires > now) return hit.value
+  // Evict expired entries so daily `until=today` keys don't accumulate forever.
+  for (const [k, v] of platformCache) {
+    if (v.expires <= now) platformCache.delete(k)
+  }
+  const value = fetchAggregate()
+  platformCache.set(key, { value, expires: now + PLATFORM_CACHE_TTL_MS })
+  // Never cache a rejected fetch — evict it so the next request retries.
+  value.catch(() => {
+    const current = platformCache.get(key)
+    if (current && current.value === value) platformCache.delete(key)
+  })
+  return value
+}
+
+// ---------------------------------------------------------------------------
 // GET handler
 // ---------------------------------------------------------------------------
 
@@ -943,11 +999,22 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     )
     const expectedTotal = scaleExpected(perPack, effectivePacks)
 
-    const platformRows = (await queryRows(
-      scope === 'kept' ? PLATFORM_KEPT_SQL : PLATFORM_OPENED_SQL,
-      [setCode, since, until],
-    )) as unknown as GenerationRow[]
-    const platformObserved = aggregateObserved(platformRows)
+    // Platform baseline is identical across users for this (scope, set, range),
+    // so it's memoized in-process (see platformObservedCached) — the heavy
+    // card_generations scan runs once per key per TTL, not once per request.
+    const platformObserved = await platformObservedCached(
+      scope,
+      setCode,
+      since,
+      until,
+      async () =>
+        aggregateObserved(
+          (await queryRows(
+            scope === 'kept' ? PLATFORM_KEPT_SQL : PLATFORM_OPENED_SQL,
+            [setCode, since, until],
+          )) as unknown as GenerationRow[],
+        ),
+    )
     const platformRarityForPlayerPacks = scaleActualsToPlayerPacks(
       platformObserved.rarity,
       platformObserved.packsCracked,

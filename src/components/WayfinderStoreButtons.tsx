@@ -57,21 +57,46 @@ const MOBILE_BROWSERS: BrowserCard[] = [
   { browser: 'google-play', name: 'Google Play', sub: 'Android', status: 'soon', cta: 'Get it on Google Play' },
 ]
 
+type DesktopBrowser = 'chrome' | 'safari' | 'firefox'
+
+// Which desktop browser are we in? Chromium variants (Edge/Brave/Opera) map to
+// 'chrome' — the Chrome Web Store extension installs on all of them.
+function detectDesktopBrowser(): DesktopBrowser | null {
+  if (typeof navigator === 'undefined') return null
+  const ua = navigator.userAgent
+  if (/Firefox\//.test(ua)) return 'firefox'
+  if (/Safari\//.test(ua) && !/Chrome|Chromium|Edg|OPR|Brave/.test(ua)) return 'safari'
+  if (/Chrome|Chromium|Edg|OPR/.test(ua)) return 'chrome'
+  return null
+}
+
 interface WayfinderStoreButtonsProps {
   /** 'inline' lays the cards in a centered wrapping row (default); 'stack' is a tighter centered column for narrow rails. */
   orientation?: 'stack' | 'inline'
+  /** 'all' (default) shows every browser. 'current' auto-detects the browser
+   *  you're in and shows only its card, listing the rest in the "also" line. */
+  mode?: 'all' | 'current'
   onChromeClick?: () => void
 }
 
-/** Coarse pointer / narrow viewport = treat as a phone/tablet. */
+/** Coarse pointer / narrow viewport = treat as a phone/tablet. A reported width
+ *  of 0 is "unknown" (some headless / detached renderers), NOT mobile. */
 function useIsMobile(): boolean {
   const [isMobile, setIsMobile] = useState(false)
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 640px), (pointer: coarse)')
-    const update = () => setIsMobile(mq.matches)
+    const update = () => {
+      const w = window.innerWidth
+      const coarse = window.matchMedia('(pointer: coarse)').matches
+      setIsMobile(coarse || (w > 0 && w <= 640))
+    }
     update()
+    const mq = window.matchMedia('(max-width: 640px), (pointer: coarse)')
     mq.addEventListener?.('change', update)
-    return () => mq.removeEventListener?.('change', update)
+    window.addEventListener('resize', update)
+    return () => {
+      mq.removeEventListener?.('change', update)
+      window.removeEventListener('resize', update)
+    }
   }, [])
   return isMobile
 }
@@ -106,15 +131,70 @@ export function WayfinderCompanionLockup({ className = '', noLink = false }: { c
   )
 }
 
+// "Also available …" line, with platform logos before iOS / Android. When
+// `extraBrowsers` is set (autodetect mode) it leads with the other desktop
+// browsers, then the mobile platforms.
+function AlsoAvailable({ extraBrowsers, isMobile }: { extraBrowsers: string[] | null; isMobile: boolean }) {
+  if (isMobile) return <p className="wf-store-also">Also available on desktop</p>
+  return (
+    <p className="wf-store-also">
+      {extraBrowsers && extraBrowsers.length > 0 ? (
+        <>
+          Also available on {extraBrowsers.join(' and ')}
+          <br />
+          and on{' '}
+        </>
+      ) : (
+        'Also available on '
+      )}
+      <img className="wf-store-also-icon" src="/icons/apple.svg" alt="" width={13} height={13} />
+      iOS and{' '}
+      <img className="wf-store-also-icon" src="/icons/android.svg" alt="" width={14} height={14} />
+      Android
+    </p>
+  )
+}
+
 export function WayfinderStoreButtons({
   orientation = 'inline',
+  mode = 'all',
   onChromeClick,
 }: WayfinderStoreButtonsProps) {
   const isMobile = useIsMobile()
+  const [currentBrowser, setCurrentBrowser] = useState<DesktopBrowser | null>(null)
+  useEffect(() => {
+    setCurrentBrowser(detectDesktopBrowser())
+  }, [])
+
+  // Autodetect (desktop) shows a single prominent install button for the browser
+  // you're in and lists the rest in the "also" line. Until detection resolves, or
+  // in 'all' mode, show every card.
+  const single =
+    !isMobile && mode === 'current' && currentBrowser
+      ? DESKTOP_BROWSERS.find((b) => b.browser === currentBrowser) || null
+      : null
   const cards = isMobile ? MOBILE_BROWSERS : DESKTOP_BROWSERS
-  const alsoLine = isMobile ? 'Also available on desktop' : 'Also available on iOS and Android'
+  const extraBrowsers = single
+    ? DESKTOP_BROWSERS.filter((b) => b.browser !== single.browser).map((b) => b.name)
+    : null
+
   return (
-    <div className={`wf-store wf-store--${orientation}`}>
+    <div className={`wf-store wf-store--${orientation}${mode === 'current' ? ' wf-store--current' : ''}`}>
+      {single ? (
+        <a
+          className={`wf-install-btn wf-browser-card--${single.browser}`}
+          href={single.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={single.browser === 'chrome' ? onChromeClick : undefined}
+          aria-label={single.cta}
+        >
+          <span className="wf-install-btn-logo">
+            <BrowserIcon browser={single.browser} />
+          </span>
+          <span className="wf-install-btn-label">{single.cta}</span>
+        </a>
+      ) : (
       <div className="wf-store-grid" aria-label="Companion availability">
         {cards.map((b) => {
           const isLive = b.status === 'live'
@@ -160,7 +240,8 @@ export function WayfinderStoreButtons({
           )
         })}
       </div>
-      <p className="wf-store-also">{alsoLine}</p>
+      )}
+      <AlsoAvailable extraBrowsers={extraBrowsers} isMobile={isMobile} />
     </div>
   )
 }

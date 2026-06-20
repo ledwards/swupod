@@ -9,6 +9,7 @@
  */
 
 import { useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { ASPECT_COLORS } from '@/src/utils/aspectColors'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 
@@ -135,7 +136,7 @@ export function WinRateByLeader({
   }
 
   return (
-    <section className="your-stats-meta-card">
+    <section className={`your-stats-meta-card your-stats-wr--${mode}`}>
       <header className="your-stats-meta-card-header">
         <div>
           <span className="your-stats-eyebrow">{eyebrow}</span>
@@ -186,21 +187,19 @@ export function WinRateByLeader({
                         <span className="your-stats-wr-cell-games">{recordLabel(l.wins, l.losses, l.draws) || matchesLabel(l.matches)}</span>
                       </>
                     ) : (
-                      <>
-                        <span className="your-stats-wr-cell-pct your-stats-wr-cell-pct--empty">–</span>
-                        <span className="your-stats-wr-cell-games">No games yet</span>
-                      </>
+                      <span className="your-stats-wr-cell-pct your-stats-wr-cell-pct--empty">—</span>
                     )}
                   </span>
                 </button>
               )
             })}
           </div>
-          {active && anchor && (
+          {active && anchor && typeof document !== 'undefined' && createPortal(
             <div className="your-stats-wr-popover" role="dialog" aria-label={`${active.leaderName} win rate by base aspect`}
               style={{ position: 'fixed', left: anchor.left, top: anchor.top, zIndex: 60 }}>
               <BaseBars leader={active} />
-            </div>
+            </div>,
+            document.body,
           )}
         </>
       )}

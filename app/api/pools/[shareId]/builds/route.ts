@@ -100,6 +100,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
 
     const root = await queryRow(
       `SELECT cp.id, cp.share_id, cp.user_id, cp.name, cp.deck_builder_state, cp.is_public,
+              cp.wins, cp.losses, cp.draws,
               u.username AS owner_username
        FROM card_pools cp
        LEFT JOIN users u ON cp.user_id = u.id
@@ -113,6 +114,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
 
     const children = await query(
       `SELECT cp.share_id, cp.deck_builder_state, cp.created_at, cp.user_id,
+              cp.wins, cp.losses, cp.draws,
               u.username as builder_name
        FROM card_pools cp
        LEFT JOIN users u ON cp.user_id = u.id
@@ -128,6 +130,9 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         builderUserId: root.user_id || null,
         isOriginal: true,
         createdAt: null,
+        wins: root.wins ?? 0,
+        losses: root.losses ?? 0,
+        draws: root.draws ?? 0,
         ...extractBuildInfo(root.deck_builder_state),
       },
       ...children.rows.map(b => ({
@@ -136,6 +141,9 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         builderUserId: b.user_id || null,
         isOriginal: false,
         createdAt: b.created_at,
+        wins: b.wins ?? 0,
+        losses: b.losses ?? 0,
+        draws: b.draws ?? 0,
         ...extractBuildInfo(b.deck_builder_state),
       })),
     ]

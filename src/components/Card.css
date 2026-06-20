@@ -264,6 +264,14 @@
   pointer-events: none;
 }
 
+/* Leaders and bases are landscape — the image-less placeholder fallback must
+   match the landscape card aspect ratio, otherwise it renders portrait and
+   spills out of its container. */
+.canvas-card.leader .card-placeholder,
+.canvas-card.base .card-placeholder {
+  aspect-ratio: 3.5 / 2.5;
+}
+
 .canvas-card.placeholder-card .card-placeholder {
   background: linear-gradient(135deg, #181818 0%, #2f2a21 100%);
   border: 1px solid rgba(247, 200, 115, 0.35);

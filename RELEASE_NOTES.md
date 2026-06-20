@@ -2,16 +2,15 @@
 
 ## 06.19.2026
 
-### 🎮 Draft Reports
-- **Slideshow Mode for draft reviews**: Completed Draft Reports now include a desktop presentation view with player tabs, all-seat pack review, picked-card highlights, keyboard and edge-arrow navigation, and no-scroll fitted cards for screenshares.
+### 🎮 Deck Stats + Homepage Polish
+- **Gameplay and Matchups empty states are clearer**: Players outside the Wayfinder rollout now just see `Coming Soon`, while flagged users get the right deck-specific prompt. If Wayfinder is installed but there are no games yet, the tab points you at the play page for that deck.
+- **The homepage Discord login button is easier to hit**: Logged-out visitors now get a larger `Login with Discord` button with more breathing room above and below it, while logged-in Discord prompts keep their existing size.
 
-## 06.18.2026
+### ⚡ Performance
+- **My Stats loads faster**: We've made the **My Stats** page noticeably quicker to load — it now fetches less behind the scenes, loads what's left in parallel, and reuses shared data across visitors, so your stats fill in faster.
 
-### 📊 My Stats
-- **Your leaders and archetypes at a glance**: My Stats now charts how your games split across the leaders and archetypes you play — each in its own color — so your most-played decks, and how they perform, stand out immediately.
-- **Win rate by leader**: See your win rate broken down by the leader you ran.
-- **Set and format performance**: Compare how you're doing across each set and format, side by side.
-- **Smarter Set filter**: The Set filter now defaults to the newest set you can open, so you land on your most relevant stats first.
+### 🐛 Bug Fixes
+- **Watch links on My Stats open the right replay**: On the **My Stats** Performance tab, a recorded game's **Watch** button could hit an "out of range" error and a Discord login — even for replays you own — because the replay link was built from the wrong identifier. Watch now opens the correct replay, and clicking the game row itself takes you to its match page on Wayfinder.
 
 ## 06.15.2026
 

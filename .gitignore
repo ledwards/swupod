@@ -82,6 +82,7 @@ migrations/.buildstamp
 # Git worktrees
 .worktrees/
 .claude/settings.local.json
+.claude/launch.json
 
 # Import Pool: synthetic-only fixtures; never commit real player photos (per memory rule)
 tests/fixtures/import-pool/
