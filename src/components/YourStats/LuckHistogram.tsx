@@ -36,6 +36,14 @@ const ASPECT_ICON: Record<string, string> = {
   Multicolor: '/icons/aspects.png',
 }
 
+const RARITY_ICON: Record<string, string> = {
+  Common: '/icons/rarity/common.png',
+  Uncommon: '/icons/rarity/uncommon.png',
+  Rare: '/icons/rarity/rare.png',
+  Legendary: '/icons/rarity/legendary.png',
+  Special: '/icons/rarity/special.png',
+}
+
 function AspectIcons({ aspects }: { aspects: string[] }) {
   const icons = (aspects || []).filter((a) => ASPECT_ICON[a])
   if (icons.length === 0) {
@@ -134,7 +142,12 @@ function CardReadout({ hit, packsCracked }: { hit: CardHit | null; packsCracked:
       <div className="your-stats-luck-readout-head">
         <AspectIcons aspects={hit.aspects} />
         <strong>{hit.name}</strong>
-        <span className="your-stats-luck-readout-num">#{hit.number}</span>
+        <span className="your-stats-luck-readout-num">
+          #{hit.number}
+          {RARITY_ICON[hit.rarity] && (
+            <img className="your-stats-luck-readout-rarity" src={RARITY_ICON[hit.rarity]} alt={hit.rarity} title={hit.rarity} width={15} height={15} />
+          )}
+        </span>
       </div>
       <div className="your-stats-luck-readout-body">
         <span className="your-stats-luck-readout-count">You pulled it <strong>{hit.count}×</strong></span>
@@ -383,6 +396,12 @@ function pct(n: number): string {
   return `${(n * 100).toFixed(n >= 0.1 ? 0 : 1)}%`
 }
 
+// Card counts are whole — show "5", not "5.0". Keep a single decimal only when
+// the value is genuinely fractional (e.g. a per-pool average across many pools).
+function wholeIfInt(n: number, dp = 1): string {
+  return Number.isInteger(n) ? String(n) : n.toFixed(dp)
+}
+
 export function DuplicateRateWidget({ data }: { data: DuplicatesData }) {
   const actual = data.actualPerPool
   const expected = data.expectedPerPool
@@ -405,7 +424,7 @@ export function DuplicateRateWidget({ data }: { data: DuplicatesData }) {
       <h4>Duplicates per pool</h4>
       <div className="your-stats-luck-widget-figures">
         <div>
-          <span className="your-stats-luck-widget-num">{actual.toFixed(1)}</span>
+          <span className="your-stats-luck-widget-num">{wholeIfInt(actual)}</span>
           <span className="your-stats-luck-widget-cap">you saw</span>
         </div>
         <span className="your-stats-luck-widget-vs">vs</span>

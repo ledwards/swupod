@@ -3473,9 +3473,18 @@ a.your-stats-logged-out-link:active {
 }
 
 .your-stats-luck-readout-num {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.82rem;
   font-weight: 600;
+}
+
+.your-stats-luck-readout-rarity {
+  display: block;
+  width: 15px;
+  height: 15px;
 }
 
 .your-stats-luck-readout-body {
