@@ -302,13 +302,13 @@ async function expectLeaderTwoColumnGrid(page: Page) {
     })
   )
   for (const [index, row] of labelAlignment.entries()) {
+    expect(row.numberLeft).toBeGreaterThanOrEqual(row.avatarLeft - 8)
+    expect(row.numberRight).toBeLessThanOrEqual(row.avatarRight + 8)
     if (index < 4) {
       expect(row.rightColumn).toBe(false)
-      expect(row.numberLeft).toBeLessThan(row.avatarLeft)
       expect(row.labelRight).toBeLessThan(row.cardsLeft)
     } else {
       expect(row.rightColumn).toBe(true)
-      expect(row.numberRight).toBeGreaterThan(row.avatarRight)
       expect(row.cardsRight).toBeLessThan(row.labelLeft)
     }
   }
@@ -390,14 +390,25 @@ async function expectEvenVerticalRowSpacing(page: Page) {
 async function expectArtworkBackedTabs(page: Page) {
   await expect(page.locator('.draft-slideshow-all-tab img')).toHaveCount(0)
   await expect(page.locator('.draft-slideshow-player-tab img')).toHaveCount(0)
-  await expect(page.locator('.draft-slideshow-all-tab')).toHaveCSS('background-image', /Rule_with_Respect_2ee7f9b662/)
-  await expect(page.locator('.draft-slideshow-all-tab')).toHaveCSS('background-position', '50% 82%')
-  await expect(page.locator('.draft-slideshow-all-tab')).toHaveCSS('background-size', /195%/)
+  const allTabBackground = await page.locator('.draft-slideshow-all-tab').evaluate(tab => ({
+    tab: getComputedStyle(tab).backgroundImage,
+    artLayer: getComputedStyle(tab, '::after').backgroundImage,
+    artPosition: getComputedStyle(tab, '::after').backgroundPosition,
+    artSize: getComputedStyle(tab, '::after').backgroundSize,
+  }))
+  expect(allTabBackground.tab).toBe('none')
+  expect(allTabBackground.artLayer).toMatch(/Rule_with_Respect_2ee7f9b662/)
+  expect(allTabBackground.artPosition).toBe('50% 82%')
+  expect(allTabBackground.artSize).toMatch(/195%/)
   const backgrounds = await page.getByTestId('slideshow-player-tab').evaluateAll(tabs =>
-    tabs.map(tab => getComputedStyle(tab).backgroundImage)
+    tabs.map(tab => ({
+      tab: getComputedStyle(tab).backgroundImage,
+      artLayer: getComputedStyle(tab, '::after').backgroundImage,
+    }))
   )
   expect(backgrounds).toHaveLength(8)
-  expect(backgrounds.every(background => background.includes('url('))).toBe(true)
+  expect(backgrounds.every(background => background.tab === 'none')).toBe(true)
+  expect(backgrounds.every(background => background.artLayer.includes('url('))).toBe(true)
 }
 
 async function createFixture(db, users) {

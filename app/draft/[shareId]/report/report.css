@@ -63,7 +63,7 @@
 }
 
 .draft-report-header {
-  padding: 16px 32px;
+  padding: 16px 104px 16px 32px;
   border-bottom: 1px solid rgba(255, 215, 0, 0.2);
   background: linear-gradient(180deg, rgba(255, 215, 0, 0.08) 0%, transparent 100%);
 }
@@ -114,6 +114,12 @@
   display: flex;
   gap: 12px;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.draft-report-visibility-button {
+  white-space: nowrap;
 }
 
 .draft-report-slideshow-toggle {
@@ -212,6 +218,14 @@
   padding: 32px;
 }
 
+.draft-report-content-seating {
+  min-height: calc(100vh - 164px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
 .draft-report-loading {
   display: flex;
   align-items: center;
@@ -236,8 +250,10 @@
 
 .draft-report-seating {
   display: flex;
+  align-items: center;
   justify-content: center;
-  padding: 0 0 2rem;
+  width: 100%;
+  padding: 0;
 }
 
 .draft-report-log {
@@ -309,26 +325,98 @@
   color: rgba(255, 255, 255, 0.4);
 }
 
-.draft-report-gameplay-placeholder {
-  text-align: center;
-  padding: 4rem 2rem;
+.draft-report-gameplay {
+  padding: 1rem 0 2rem;
 }
 
-.draft-report-gameplay-placeholder h3 {
-  color: rgba(255, 215, 0, 0.8);
+.draft-report-gameplay-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 
-.draft-report-gameplay-placeholder p {
-  color: rgba(255, 255, 255, 0.5);
-  max-width: 500px;
-  margin: 0 auto 1.5rem;
-  line-height: 1.6;
+.draft-report-gameplay-header h3,
+.draft-report-gameplay-wayfinder h3 {
+  color: rgba(255, 215, 0, 0.8);
+  margin: 0;
 }
 
-.draft-report-gameplay-placeholder a {
-  color: rgba(255, 215, 0, 0.9);
-  text-decoration: underline;
+.draft-report-gameplay-eyebrow {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+
+.draft-report-gameplay-count {
+  flex: 0 0 auto;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.draft-report-gameplay-matches {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.draft-report-gameplay-match-row {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.draft-report-gameplay-round {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.38);
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.draft-report-gameplay-match-row .match-card {
+  min-width: 0;
+}
+
+.draft-report-gameplay-wayfinder {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2.25rem;
+  text-align: center;
+  border: 1px solid rgba(100, 181, 246, 0.25);
+  border-radius: 14px;
+  background:
+    radial-gradient(120% 140% at 50% 0%, rgba(100, 181, 246, 0.1), transparent 58%),
+    rgba(0, 0, 0, 0.46);
+}
+
+.draft-report-gameplay-wayfinder-lockup {
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.draft-report-gameplay-wayfinder p {
+  color: rgba(255, 255, 255, 0.5);
+  max-width: 560px;
+  margin: 0.75rem auto 1.4rem;
+  line-height: 1.6;
 }
 
 .draft-report-message {
@@ -347,7 +435,7 @@
 
 @media (max-width: 768px) {
   .draft-report-header {
-    padding: 16px;
+    padding: 16px 72px 16px 16px;
   }
 
   .draft-report-header-content {
@@ -368,6 +456,12 @@
     padding: 16px;
   }
 
+  .draft-report-content-seating {
+    min-height: calc(100vh - 190px);
+    align-items: flex-start;
+    padding-top: 32px;
+  }
+
   .draft-report-pick-row {
     flex-direction: column;
   }
@@ -376,6 +470,22 @@
     min-width: auto;
     flex-direction: row;
     gap: 8px;
+  }
+
+  .draft-report-gameplay-header {
+    flex-direction: column;
+  }
+
+  .draft-report-gameplay-match-row {
+    grid-template-columns: 1fr;
+  }
+
+  .draft-report-gameplay-round {
+    min-height: 36px;
+  }
+
+  .draft-report-gameplay-wayfinder {
+    padding: 1.5rem;
   }
 }
 
@@ -434,6 +544,10 @@
 }
 
 .draft-report-notes-empty {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Barlow', sans-serif;
   color: rgba(255, 255, 255, 0.4);
   font-size: 1rem;
   padding: 3rem;
@@ -441,6 +555,15 @@
   cursor: pointer;
   border: 1px dashed rgba(255, 255, 255, 0.15);
   border-radius: 8px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+button.draft-report-notes-empty:hover,
+button.draft-report-notes-empty:focus-visible {
+  color: rgba(255, 255, 255, 0.75);
+  border-color: rgba(255, 215, 0, 0.38);
+  background: rgba(255, 215, 0, 0.05);
+  outline: none;
 }
 
 .draft-report-notes-edit {

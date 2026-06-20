@@ -92,6 +92,7 @@ body.draft-slideshow-mode-active nextjs-portal {
 }
 
 .draft-slideshow-all-tab {
+  --slideshow-all-tab-art: none;
   flex: 0 0 92px;
   min-height: 92px;
   align-self: stretch;
@@ -100,15 +101,27 @@ body.draft-slideshow-mode-active nextjs-portal {
   overflow: hidden;
   padding: 0 0 10px;
   background-color: rgba(0, 0, 0, 0.58);
+  background-image: none;
+}
+
+.draft-slideshow-all-tab::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background-image: var(--slideshow-all-tab-art);
   background-position: 50% 82%;
+  background-repeat: no-repeat;
   background-size: 195% auto;
+  pointer-events: none;
 }
 
 .draft-slideshow-all-tab::before {
   content: '';
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: 1;
   background:
     linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.88)),
     linear-gradient(90deg, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.22));
@@ -117,7 +130,7 @@ body.draft-slideshow-mode-active nextjs-portal {
 
 .draft-slideshow-all-tab-label {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   color: white;
   font-size: 0.9rem;
   font-weight: 800;
@@ -126,6 +139,7 @@ body.draft-slideshow-mode-active nextjs-portal {
 }
 
 .draft-slideshow-player-tab {
+  --slideshow-tab-avatar: none;
   flex: 1 1 0;
   min-width: 88px;
   max-width: 178px;
@@ -136,6 +150,7 @@ body.draft-slideshow-mode-active nextjs-portal {
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 6px;
   background-color: rgba(0, 0, 0, 0.52);
+  background-image: none;
   background-position: center;
   background-size: cover;
   color: rgba(255, 255, 255, 0.78);
@@ -154,7 +169,7 @@ body.draft-slideshow-mode-active nextjs-portal {
   inset: 0;
   z-index: 0;
   border-radius: inherit;
-  background-image: inherit;
+  background-image: var(--slideshow-tab-avatar);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -205,7 +220,7 @@ body.draft-slideshow-mode-active nextjs-portal {
 .draft-slideshow-player-tab.locked::before {
   inset: 0;
   border-radius: inherit;
-  background: rgba(0, 0, 0, 0.94);
+  background: rgba(0, 0, 0, 0.97);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.035);
 }
 
@@ -311,8 +326,8 @@ body.draft-slideshow-mode-active nextjs-portal {
 }
 
 .draft-slideshow-stage--multi {
-  padding-top: 0;
-  padding-bottom: 0;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .draft-slideshow-single-grid {
@@ -330,8 +345,19 @@ body.draft-slideshow-mode-active nextjs-portal {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  align-items: flex-start;
   gap: 0;
-  overflow: hidden;
+  /* visible so the focus ring can stick out into the stage's side padding */
+  overflow: visible;
+}
+
+/* In the stack each row hugs its content (gutter + that seat's pack) so the
+   focus ring wraps tightly with symmetric breathing room, not the full width. */
+.draft-slideshow-row-stack .draft-slideshow-seat-row {
+  /* hug the identity + pack so the ring sits close to the cards on the right;
+     the avatar/name (content-width) is on the left. */
+  grid-template-columns: auto auto;
+  max-width: 100%;
 }
 
 .draft-slideshow-leader-grid {
@@ -342,10 +368,11 @@ body.draft-slideshow-mode-active nextjs-portal {
   gap: 0 20px;
   align-items: center;
   align-content: space-evenly;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .draft-slideshow-seat-row {
+  position: relative;
   display: grid;
   grid-template-columns: var(--slide-label-gutter-w) minmax(0, 1fr);
   align-items: center;
@@ -363,7 +390,6 @@ body.draft-slideshow-mode-active nextjs-portal {
 
 .draft-slideshow-leader-seat--right .draft-slideshow-row-label {
   grid-column: 2;
-  flex-direction: row-reverse;
   justify-content: flex-end;
 }
 
@@ -373,16 +399,11 @@ body.draft-slideshow-mode-active nextjs-portal {
   justify-content: flex-end;
 }
 
-.draft-slideshow-leader-seat--right .draft-slideshow-row-identity {
-  align-items: flex-end;
-}
-
 .draft-slideshow-row-label {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
-  gap: 7px;
+  justify-content: center;
   min-width: 0;
   width: 100%;
   padding: 0;
@@ -394,23 +415,6 @@ body.draft-slideshow-mode-active nextjs-portal {
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
 }
 
-.draft-slideshow-row-seat-number {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  flex: 0 0 24px;
-  border-radius: 50%;
-  background: rgba(33, 150, 243, 0.38);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  color: white;
-  font-size: 0.72rem;
-  font-weight: 900;
-  line-height: 1;
-  box-shadow: 0 0 12px rgba(33, 150, 243, 0.18);
-}
-
 .draft-slideshow-row-identity {
   min-width: 0;
   display: flex;
@@ -419,13 +423,76 @@ body.draft-slideshow-mode-active nextjs-portal {
   gap: 5px;
 }
 
+.draft-slideshow-row-avatar {
+  position: relative;
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  /* It's a <button> (click to focus the player) — strip default chrome. */
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Focused player (click the avatar, or Up/Down to cycle): ring the whole row
+   — the player's avatar + their pack — with symmetric left/right breathing room
+   and a tighter top/bottom so it survives cramped rows. */
+.draft-slideshow-seat-row.is-focused::before {
+  content: '';
+  position: absolute;
+  left: -10px;
+  right: -10px;
+  top: -4px;
+  bottom: -4px;
+  border: 2px solid rgba(33, 150, 243, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 0 14px rgba(33, 150, 243, 0.3);
+  pointer-events: none;
+}
+
+.draft-slideshow-seat-row.is-focused .draft-slideshow-row-avatar img {
+  border-color: rgba(33, 150, 243, 0.95);
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.55);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .draft-slideshow-row-avatar:hover img {
+    border-color: rgba(255, 255, 255, 0.7);
+  }
+}
+
 .draft-slideshow-row-label img {
-  width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.28);
   object-fit: cover;
   flex: 0 0 auto;
+}
+
+.draft-slideshow-row-seat-number {
+  position: absolute;
+  right: -5px;
+  bottom: -4px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(9, 18, 30, 0.66);
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  color: rgba(255, 255, 255, 0.96);
+  font-size: 1.15rem;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 1px 8px rgba(33, 150, 243, 0.28);
+  cursor: default;
 }
 
 .draft-slideshow-row-name {
@@ -685,11 +752,15 @@ body.draft-slideshow-mode-active nextjs-portal {
     height: 28px;
   }
 
+  .draft-slideshow-row-avatar {
+    width: 28px;
+    height: 28px;
+  }
+
   .draft-slideshow-row-seat-number {
     width: 22px;
     height: 22px;
-    flex-basis: 22px;
-    font-size: 0.68rem;
+    font-size: 1rem;
   }
 
   .draft-slideshow-edge-arrow {

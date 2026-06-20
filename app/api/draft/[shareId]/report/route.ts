@@ -13,7 +13,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
 
   const pod = await queryRow(
     `SELECT p.id, p.share_id, p.set_code, p.set_name, p.name, p.status,
-            p.max_players, p.started_at, p.completed_at, p.settings
+            p.max_players, p.host_id, p.started_at, p.completed_at, p.settings,
+            p.is_public, p.is_log_public
      FROM pods p WHERE p.share_id = $1 AND p.pod_type = 'draft'`,
     [shareId]
   )
@@ -23,9 +24,9 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
 
   // Get all players with their pool share IDs and report visibility
   const result = await query(
-    `SELECT pp.seat_number, pp.user_id, pp.is_bot,
+    `SELECT pp.seat_number, pp.user_id, pp.is_bot, pp.is_log_public,
             u.username, u.avatar_url,
-            cp.share_id as pool_share_id, cp.report_public
+            cp.share_id as pool_share_id, cp.is_public, cp.report_public
      FROM pod_players pp
      LEFT JOIN users u ON pp.user_id = u.id
      LEFT JOIN card_pools cp ON cp.pod_id = pp.pod_id AND cp.user_id = pp.user_id
@@ -55,6 +56,18 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       isMe: session?.id === r.user_id,
     }))
 
+  const isHost = session?.id === pod.host_id
+  const poolRows = result.rows.filter(r => r.pool_share_id)
+  const allPoolsPublic = poolRows.length > 0 && poolRows.every(r => r.is_public === true)
+  const allReportsPublic = poolRows.length > 0 && poolRows.every(r => r.report_public === true)
+  const allPlayerLogsPublic = result.rows.length > 0 && result.rows.every(r => r.is_log_public === true)
+  const draftReportsPublic =
+    pod.is_public === true &&
+    pod.is_log_public === true &&
+    allPoolsPublic &&
+    allReportsPublic &&
+    allPlayerLogsPublic
+
   return NextResponse.json({
     draft: {
       shareId: pod.share_id,
@@ -69,5 +82,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     },
     reports,
     myPoolShareId,
+    isHost,
+    draftReportsPublic,
   })
 }

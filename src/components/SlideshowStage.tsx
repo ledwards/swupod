@@ -60,14 +60,30 @@ function EmptyCardTile({ landscape }: { landscape: boolean }) {
   )
 }
 
-function SeatLabel({ seat }: { seat: SlideshowSeat }) {
+function SeatLabel({
+  seat,
+  focused,
+  onFocus,
+}: {
+  seat: SlideshowSeat
+  focused: boolean
+  onFocus?: (seatNumber: number) => void
+}) {
   return (
     <div className="draft-slideshow-row-label">
-      <span className="draft-slideshow-row-seat-number" aria-label={`Seat ${seat.seatNumber}`}>
-        {seat.seatNumber}
-      </span>
       <span className="draft-slideshow-row-identity">
-        <img src={seat.avatarUrl || AVATAR_FALLBACK} alt="" aria-hidden="true" />
+        <button
+          type="button"
+          className="draft-slideshow-row-avatar"
+          onClick={() => onFocus?.(seat.seatNumber)}
+          aria-pressed={focused}
+          aria-label={`${focused ? 'Unfocus' : 'Focus'} ${seat.username}`}
+        >
+          <img src={seat.avatarUrl || AVATAR_FALLBACK} alt="" aria-hidden="true" />
+          <span className="draft-slideshow-row-seat-number" aria-label={`Seat ${seat.seatNumber}`}>
+            {seat.seatNumber}
+          </span>
+        </button>
         <span className="draft-slideshow-row-name">{seat.username}</span>
       </span>
     </div>
@@ -78,10 +94,14 @@ export default function SlideshowStage({
   seats = [],
   selectedSeats,
   slideIndex,
+  focusedSeat = null,
+  onFocusSeat,
 }: {
   seats: SlideshowSeat[]
   selectedSeats: SeatSelection
   slideIndex: number
+  focusedSeat?: number | null
+  onFocusSeat?: (seatNumber: number) => void
 }) {
   const [stageRef, size] = useElementSize(100)
 
@@ -229,11 +249,11 @@ export default function SlideshowStage({
             return (
               <div
                 key={row.seat.seatNumber}
-                className={`draft-slideshow-seat-row draft-slideshow-leader-seat ${isRightColumn ? 'draft-slideshow-leader-seat--right' : ''}`}
+                className={`draft-slideshow-seat-row draft-slideshow-leader-seat ${isRightColumn ? 'draft-slideshow-leader-seat--right' : ''} ${focusedSeat === row.seat.seatNumber ? 'is-focused' : ''}`}
                 data-testid="slideshow-seat-row"
                 data-seat-number={row.seat.seatNumber}
               >
-                <SeatLabel seat={row.seat} />
+                <SeatLabel seat={row.seat} focused={focusedSeat === row.seat.seatNumber} onFocus={onFocusSeat} />
                 <div className="draft-slideshow-row-cards">
                   {row.visibleCards.length > 0 ? (
                     row.visibleCards.map((card, index) => (
@@ -269,11 +289,11 @@ export default function SlideshowStage({
         {rows.map(row => (
           <div
             key={row.seat.seatNumber}
-            className="draft-slideshow-seat-row"
+            className={`draft-slideshow-seat-row ${focusedSeat === row.seat.seatNumber ? 'is-focused' : ''}`}
             data-testid="slideshow-seat-row"
             data-seat-number={row.seat.seatNumber}
           >
-            <SeatLabel seat={row.seat} />
+            <SeatLabel seat={row.seat} focused={focusedSeat === row.seat.seatNumber} onFocus={onFocusSeat} />
             <div className="draft-slideshow-row-cards">
               {row.visibleCards.length > 0 ? (
                 row.visibleCards.map((card, index) => (

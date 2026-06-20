@@ -31,6 +31,7 @@ interface MatchCardProps {
   onReport: (matchId: string) => void
   onOverride: (matchId: string) => void
   onBoot: (userId: string) => void
+  readOnly?: boolean
 }
 
 function getMatchStatus(match: MatchData): string {
@@ -47,15 +48,15 @@ function GameDot({ result, forPlayer }: { result: string | null; forPlayer: 'pla
   return <span className="game-dot game-dot--loss" />
 }
 
-export function MatchCard({ match, currentUserId, isHost, onReport, onOverride, onBoot }: MatchCardProps) {
+export function MatchCard({ match, currentUserId, isHost, onReport, onOverride, onBoot, readOnly = false }: MatchCardProps) {
   const isMyMatch = match.player1?.id === currentUserId || match.player2?.id === currentUserId
   const status = getMatchStatus(match)
   const iAmPlayer1 = match.player1?.id === currentUserId
   const iAmPlayer2 = match.player2?.id === currentUserId
   const iHaveSubmitted = (iAmPlayer1 && match.player1Submitted) || (iAmPlayer2 && match.player2Submitted)
 
-  const canReport = isMyMatch && !match.finalConfirmed && !match.isBye && !iHaveSubmitted
-  const canOverride = isHost && !match.isBye
+  const canReport = !readOnly && isMyMatch && !match.finalConfirmed && !match.isBye && !iHaveSubmitted
+  const canOverride = !readOnly && isHost && !match.isBye
 
   return (
     <div
@@ -79,7 +80,7 @@ export function MatchCard({ match, currentUserId, isHost, onReport, onOverride, 
               {match.game3Result !== null && <GameDot result={match.game3Result} forPlayer="player1" />}
             </div>
           )}
-          {isHost && match.player1 && match.player1.id !== currentUserId && (
+          {!readOnly && isHost && match.player1 && match.player1.id !== currentUserId && (
             <button
               className="match-card-boot"
               onClick={(e) => { e.stopPropagation(); onBoot(match.player1.id) }}
@@ -101,7 +102,7 @@ export function MatchCard({ match, currentUserId, isHost, onReport, onOverride, 
                 <GameDot result={match.game2Result} forPlayer="player2" />
                 {match.game3Result !== null && <GameDot result={match.game3Result} forPlayer="player2" />}
               </div>
-              {isHost && match.player2 && match.player2.id !== currentUserId && (
+              {!readOnly && isHost && match.player2 && match.player2.id !== currentUserId && (
                 <button
                   className="match-card-boot"
                   onClick={(e) => { e.stopPropagation(); onBoot(match.player2.id) }}

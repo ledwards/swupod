@@ -15,7 +15,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
   const pod = await queryRow(
     `SELECT p.id, p.share_id, p.set_code, p.set_name, p.name, p.status,
             p.max_players, p.current_players, p.host_id, p.started_at, p.completed_at,
-            p.all_packs, p.settings, p.is_public
+            p.all_packs, p.settings, p.is_public, p.is_log_public
      FROM pods p WHERE p.share_id = $1 AND p.pod_type = 'draft'`,
     [shareId]
   )
@@ -35,7 +35,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
   }
 
   const isOwner = session?.id === targetPool.user_id
-  if (!isOwner && !targetPool.report_public) {
+  const isHost = session?.id === pod.host_id
+  if (!isOwner && !isHost && !targetPool.report_public) {
     return NextResponse.json({ error: 'This report is private' }, { status: 403 })
   }
 
@@ -54,7 +55,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
   // Get all players for seating display
   const playersResult = await query(
     `SELECT pp.seat_number, pp.user_id, pp.is_bot, pp.drafted_leaders, pp.drafted_cards,
-            pp.strategy_name, pp.mixin_name,
+            pp.strategy_name, pp.mixin_name, pp.is_log_public,
             u.username, u.avatar_url
      FROM pod_players pp
      LEFT JOIN users u ON pp.user_id = u.id
@@ -65,11 +66,21 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
 
   // Get each player's active leader and base from deck builder state
   const poolsResult = await query(
-    `SELECT cp.user_id, cp.deck_builder_state
+    `SELECT cp.user_id, cp.deck_builder_state, cp.is_public, cp.report_public
      FROM card_pools cp
      WHERE cp.pod_id = $1`,
     [pod.id]
   )
+  const allPoolsPublic = poolsResult.rows.length > 0 && poolsResult.rows.every(row => row.is_public === true)
+  const allReportsPublic = poolsResult.rows.length > 0 && poolsResult.rows.every(row => row.report_public === true)
+  const allPlayerLogsPublic = playersResult.rows.length > 0 && playersResult.rows.every(row => row.is_log_public === true)
+  const draftReportsPublic =
+    pod.is_public === true &&
+    pod.is_log_public === true &&
+    allPoolsPublic &&
+    allReportsPublic &&
+    allPlayerLogsPublic
+
   const activeLeaderByUser = new Map()
   const chosenBaseByUser = new Map()
   for (const row of poolsResult.rows) {
@@ -140,6 +151,32 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     [pod.id, targetUserId]
   )
 
+  const matchesResult = await query(
+    `SELECT pr.round_number,
+            pm.id, pm.player1_id, pm.player2_id, pm.is_bye,
+            pm.game1_result, pm.game2_result, pm.game3_result,
+            pm.player1_submitted, pm.player2_submitted,
+            pm.final_confirmed, pm.match_winner, pm.pod_owner_override,
+            pm.wayfinder_match_id,
+            u1.username AS p1_username, u1.avatar_url AS p1_avatar,
+            u2.username AS p2_username, u2.avatar_url AS p2_avatar
+     FROM practice_matches pm
+     JOIN practice_rounds pr ON pr.id = pm.round_id
+     LEFT JOIN users u1 ON u1.id = pm.player1_id
+     LEFT JOIN users u2 ON u2.id = pm.player2_id
+     WHERE pm.pod_id = $1
+       AND (pm.player1_id = $2 OR pm.player2_id = $2)
+       AND (
+         pm.final_confirmed = true
+         OR pm.wayfinder_match_id IS NOT NULL
+         OR pm.game1_result IS NOT NULL
+         OR pm.game2_result IS NOT NULL
+         OR pm.game3_result IS NOT NULL
+       )
+     ORDER BY pr.round_number, pm.created_at`,
+    [pod.id, targetUserId]
+  )
+
   return NextResponse.json({
     draft: {
       shareId: pod.share_id,
@@ -157,7 +194,35 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     players,
     mySeat: targetPlayer.seat_number,
     isOwner,
+    isHost,
+    draftReportsPublic,
     picks,
+    gameplay: {
+      matches: matchesResult.rows.map(row => ({
+        id: row.id,
+        roundNumber: row.round_number,
+        player1: row.player1_id ? {
+          id: row.player1_id,
+          username: row.p1_username || 'Player 1',
+          avatarUrl: row.p1_avatar,
+        } : null,
+        player2: row.player2_id ? {
+          id: row.player2_id,
+          username: row.p2_username || 'Player 2',
+          avatarUrl: row.p2_avatar,
+        } : null,
+        isBye: row.is_bye,
+        game1Result: row.game1_result,
+        game2Result: row.game2_result,
+        game3Result: row.game3_result,
+        player1Submitted: row.player1_submitted,
+        player2Submitted: row.player2_submitted,
+        finalConfirmed: row.final_confirmed,
+        matchWinner: row.match_winner,
+        podOwnerOverride: row.pod_owner_override,
+        wayfinderMatchId: row.wayfinder_match_id || null,
+      })),
+    },
     pool: pool ? {
       shareId: pool.share_id,
       cards: typeof pool.cards === 'string' ? JSON.parse(pool.cards) : (pool.cards || []),

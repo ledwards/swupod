@@ -8,6 +8,8 @@ import Button from '../../../../../src/components/Button'
 import PlayerCircle from '../../../../../src/components/PlayerCircle'
 import CardWithPreview from '../../../../../src/components/CardWithPreview'
 import DraftSlideshow from '../../../../../src/components/DraftSlideshow'
+import MatchCard from '../../../../../src/components/MatchCard'
+import WayfinderStoreButtons, { WayfinderCompanionLockup } from '../../../../../src/components/WayfinderStoreButtons'
 import '../../../../../src/App.css'
 import '../../../../../src/styles/backgrounds.css'
 import '../../../../../src/components/SealedPod.css'
@@ -16,6 +18,7 @@ import '../report.css'
 import { getPackArtUrl } from '../../../../../src/utils/packArt'
 import { parseMarkdownToHTML } from '../../../../../src/utils/markdown'
 import { useStickyTab } from '../../../../../src/hooks/useStickyTab'
+import { useWayfinderDetection } from '../../../../../src/hooks/useWayfinderDetection'
 
 interface ReportData {
   draft: {
@@ -60,10 +63,49 @@ interface ReportData {
     notes: string | null
     createdAt: string
   } | null
+  isHost?: boolean
+  isOwner?: boolean
+  draftReportsPublic?: boolean
+  gameplay?: {
+    matches: Array<{
+      id: string
+      roundNumber: number
+      player1: { id: string; username: string; avatarUrl?: string | null } | null
+      player2: { id: string; username: string; avatarUrl?: string | null } | null
+      isBye: boolean
+      game1Result: string | null
+      game2Result: string | null
+      game3Result: string | null
+      player1Submitted: boolean
+      player2Submitted: boolean
+      finalConfirmed: boolean
+      matchWinner: string | null
+      podOwnerOverride: boolean
+      wayfinderMatchId?: string | null
+    }>
+  }
 }
 
 const REPORT_TABS = ['seating', 'log', 'pool', 'deck', 'notes', 'gameplay'] as const
 type TabId = typeof REPORT_TABS[number]
+
+function VisibilityLockIcon({ open }: { open: boolean }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      {open ? (
+        <>
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+        </>
+      ) : (
+        <>
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </>
+      )}
+    </svg>
+  )
+}
 
 interface PageProps {
   params: Promise<{ shareId: string; poolShareId: string }>
@@ -75,6 +117,7 @@ export default function DraftReportPage({ params }: PageProps) {
   const poolShareId = resolvedParams.poolShareId
   const router = useRouter()
   const { user, isPatron } = useAuth()
+  const { detected: wayfinderDetected } = useWayfinderDetection()
 
   const [data, setData] = useState<ReportData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -84,6 +127,7 @@ export default function DraftReportPage({ params }: PageProps) {
   const [activeTab, setActiveTab] = useStickyTab<TabId>(REPORT_TABS, 'seating')
   const [message, setMessage] = useState<string | null>(null)
   const [reportPublic, setReportPublic] = useState(false)
+  const [draftReportsPublic, setDraftReportsPublic] = useState(false)
   const [editingNotes, setEditingNotes] = useState(false)
   const [notesDraft, setNotesDraft] = useState('')
   const [savingNotes, setSavingNotes] = useState(false)
@@ -107,6 +151,7 @@ export default function DraftReportPage({ params }: PageProps) {
         const reportData = await res.json()
         setData(reportData)
         setReportPublic(reportData.pool?.reportPublic || false)
+        setDraftReportsPublic(reportData.draftReportsPublic || false)
       } catch {
         setError('Failed to load report')
       } finally {
@@ -114,7 +159,7 @@ export default function DraftReportPage({ params }: PageProps) {
       }
     }
     fetchReport()
-  }, [shareId])
+  }, [shareId, poolShareId])
 
   useEffect(() => {
     setSlideshowData(null)
@@ -171,12 +216,47 @@ export default function DraftReportPage({ params }: PageProps) {
         body: JSON.stringify({ reportPublic: newValue }),
       })
       if (res.ok) {
+        setData(prev => prev ? {
+          ...prev,
+          pool: prev.pool ? { ...prev.pool, reportPublic: newValue } : prev.pool,
+        } : prev)
+        if (data?.isHost && !newValue) setDraftReportsPublic(false)
         setMessage(newValue ? 'Report is now public' : 'Report is now private')
         setTimeout(() => setMessage(null), 3000)
       } else {
         setReportPublic(!newValue)
       }
     } catch {
+      setReportPublic(!newValue)
+    }
+  }
+
+  const handleToggleDraftVisibility = async () => {
+    const newValue = !draftReportsPublic
+    setDraftReportsPublic(newValue)
+    setReportPublic(newValue)
+    try {
+      const res = await fetch(`/api/draft/${shareId}/report/visibility`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ reportPublic: newValue, scope: 'draft' }),
+      })
+      if (res.ok) {
+        setData(prev => prev ? {
+          ...prev,
+          draft: { ...prev.draft, isPublic: newValue },
+          draftReportsPublic: newValue,
+          pool: prev.pool ? { ...prev.pool, reportPublic: newValue } : prev.pool,
+        } : prev)
+        setMessage(newValue ? 'Whole draft is now public' : 'Whole draft is now private')
+        setTimeout(() => setMessage(null), 3000)
+      } else {
+        setDraftReportsPublic(!newValue)
+        setReportPublic(!newValue)
+      }
+    } catch {
+      setDraftReportsPublic(!newValue)
       setReportPublic(!newValue)
     }
   }
@@ -195,7 +275,7 @@ export default function DraftReportPage({ params }: PageProps) {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ notes: notesDraft }),
+        body: JSON.stringify({ notes: notesDraft, poolShareId }),
       })
       if (res.ok) {
         setData(prev => prev ? {
@@ -245,6 +325,7 @@ export default function DraftReportPage({ params }: PageProps) {
 
   const { draft, players, picks, pool } = data
   const isOwner = data.isOwner ?? (user && data.mySeat != null)
+  const canEditNotes = isOwner || data.isHost
   const completedDate = draft.completedAt
     ? new Date(draft.completedAt).toLocaleDateString('en-US', {
         weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
@@ -263,6 +344,7 @@ export default function DraftReportPage({ params }: PageProps) {
   ].filter(s => s.picks.length > 0)
 
   const poolPacks = pool?.packs || []
+  const gameplayMatches = data.gameplay?.matches || []
 
   const deckState = pool?.deckBuilderState || null
   const deckCards = []
@@ -291,7 +373,7 @@ export default function DraftReportPage({ params }: PageProps) {
     { id: 'log', label: 'Draft Log' },
     { id: 'pool', label: 'Pool' },
     { id: 'deck', label: 'Deck' },
-    { id: 'gameplay', label: 'Gameplay', placeholder: true },
+    { id: 'gameplay', label: 'Gameplay' },
     { id: 'notes', label: 'Notes' },
   ]
 
@@ -311,29 +393,34 @@ export default function DraftReportPage({ params }: PageProps) {
             </div>
           </div>
           <div className="draft-report-header-actions">
-            {isOwner && (
+            {data.isHost && (
+              <Button
+                variant={draftReportsPublic ? 'primary' : 'danger'}
+                onClick={handleToggleDraftVisibility}
+                title={draftReportsPublic ? 'Make the whole draft private' : 'Make the whole draft public'}
+                className="draft-report-visibility-button"
+                style={{
+                  borderColor: draftReportsPublic ? 'rgba(0, 255, 0, 0.5)' : 'rgba(255, 0, 0, 0.5)',
+                  boxShadow: draftReportsPublic ? '0 0 8px rgba(0, 255, 0, 0.2)' : '0 0 8px rgba(255, 0, 0, 0.2)',
+                }}
+              >
+                <VisibilityLockIcon open={draftReportsPublic} />
+                <span>{draftReportsPublic ? 'Draft Public' : 'Draft Private'}</span>
+              </Button>
+            )}
+            {isOwner && !data.isHost && (
               <Button
                 variant={reportPublic ? 'primary' : 'danger'}
                 onClick={handleToggleVisibility}
+                title={reportPublic ? 'Make your report private' : 'Make your report public'}
+                className="draft-report-visibility-button"
                 style={{
                   borderColor: reportPublic ? 'rgba(0, 255, 0, 0.5)' : 'rgba(255, 0, 0, 0.5)',
                   boxShadow: reportPublic ? '0 0 8px rgba(0, 255, 0, 0.2)' : '0 0 8px rgba(255, 0, 0, 0.2)',
                 }}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  {reportPublic ? (
-                    <>
-                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                      <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
-                    </>
-                  ) : (
-                    <>
-                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                    </>
-                  )}
-                </svg>
-                <span>{reportPublic ? 'Public' : 'Private'}</span>
+                <VisibilityLockIcon open={reportPublic} />
+                <span>{reportPublic ? 'Report Public' : 'Report Private'}</span>
               </Button>
             )}
             <Button
@@ -375,7 +462,7 @@ export default function DraftReportPage({ params }: PageProps) {
         ))}
       </div>
 
-      <div className="draft-report-content">
+      <div className={`draft-report-content ${activeTab === 'seating' ? 'draft-report-content-seating' : ''}`}>
         {activeTab === 'seating' && (
           <div className="draft-report-seating">
             <PlayerCircle
@@ -565,7 +652,7 @@ export default function DraftReportPage({ params }: PageProps) {
               </>
             ) : pool?.notes ? (
               <>
-                {isOwner && (
+                {canEditNotes && (
                   <button className="draft-report-notes-edit-btn" onClick={() => { setNotesDraft(pool.notes || ''); setEditingNotes(true) }} title="Edit notes">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -578,13 +665,14 @@ export default function DraftReportPage({ params }: PageProps) {
                   dangerouslySetInnerHTML={{ __html: parseMarkdownToHTML(pool.notes) }}
                 />
               </>
-            ) : isOwner ? (
-              <div
+            ) : canEditNotes ? (
+              <button
+                type="button"
                 className="draft-report-notes-empty"
                 onClick={() => { setNotesDraft(''); setEditingNotes(true) }}
               >
                 Click to add notes...
-              </div>
+              </button>
             ) : (
               <div className="draft-report-notes-empty" style={{ cursor: 'default' }}>
                 No notes yet.
@@ -594,25 +682,45 @@ export default function DraftReportPage({ params }: PageProps) {
         )}
 
         {activeTab === 'gameplay' && (
-          <div className="draft-report-gameplay-placeholder">
-            <h3>Gameplay — Coming Soon</h3>
-            <p>
-              Match results, replay links, deck validation, and tournament brackets will appear here
-              once integrated with the Wayfinder extension.
-            </p>
-            <p>
-              <a href="https://wayfinder.news" target="_blank" rel="noopener noreferrer">
-                Learn more about Wayfinder
-              </a>
-            </p>
-            {pool?.shareId && (
-              <div style={{ marginTop: '1.5rem' }}>
-                <Button variant="primary" onClick={() => { window.location.href = `/pool/${pool.shareId}/deck/play` }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                  </svg>
-                  Play
-                </Button>
+          <div className="draft-report-gameplay">
+            {wayfinderDetected && gameplayMatches.length > 0 ? (
+              <>
+                <div className="draft-report-gameplay-header">
+                  <div>
+                    <span className="draft-report-gameplay-eyebrow">Pod Matches</span>
+                    <h3>Matches with this deck</h3>
+                  </div>
+                  <span className="draft-report-gameplay-count">
+                    {gameplayMatches.length} {gameplayMatches.length === 1 ? 'match' : 'matches'}
+                  </span>
+                </div>
+                <div className="draft-report-gameplay-matches">
+                  {gameplayMatches.map(match => (
+                    <div key={match.id} className="draft-report-gameplay-match-row">
+                      <span className="draft-report-gameplay-round">Round {match.roundNumber}</span>
+                      <MatchCard
+                        match={match}
+                        currentUserId={data.players.find(p => p.seatNumber === data.mySeat)?.userId || ''}
+                        isHost={false}
+                        onReport={() => {}}
+                        onOverride={() => {}}
+                        onBoot={() => {}}
+                        readOnly
+                      />
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="draft-report-gameplay-wayfinder">
+                <WayfinderCompanionLockup className="draft-report-gameplay-wayfinder-lockup" />
+                <h3>{wayfinderDetected ? 'No pod matches recorded yet' : 'Capture pod matches with Wayfinder'}</h3>
+                <p>
+                  {wayfinderDetected
+                    ? 'Play this deck through Wayfinder and recorded matches against other decks in this pod will appear here.'
+                    : 'Install the Wayfinder Companion, play this draft deck, and its pod match history will appear here once games are recorded.'}
+                </p>
+                <WayfinderStoreButtons orientation="inline" />
               </div>
             )}
           </div>

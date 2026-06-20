@@ -101,6 +101,7 @@ export default function DraftSlideshow({
   const previouslyFocusedRef = useRef<HTMLElement | null>(null)
   const [slideIndex, setSlideIndex] = useState(0)
   const [selectedSeats, setSelectedSeats] = useState<SeatSelection>(() => new Set())
+  const [focusedSeat, setFocusedSeat] = useState<number | null>(null)
   const [mounted, setMounted] = useState(false)
 
   const slideCount = data?.slideCount || 0
@@ -132,6 +133,42 @@ export default function DraftSlideshow({
     setSelectedSeats(new Set([seatNumber]))
     setSlideIndex(Math.min(Math.max(nextSlideIndex, 0), Math.max(0, slideCount - 1)))
   }, [slideCount])
+
+  // Players currently shown as rows, in on-screen (seat) order. Drives the
+  // click-to-focus ring and Up/Down cycling.
+  const visibleSeatNumbers = useMemo(() => {
+    return (data?.seats || [])
+      .filter(seat => selectedSeats.has(seat.seatNumber) && !seat.locked && seat.picks)
+      .map(seat => seat.seatNumber)
+      .sort((a, b) => a - b)
+  }, [data, selectedSeats])
+
+  // Click an avatar to ring that player + their pack; click it again to clear.
+  const handleFocusSeat = useCallback((seatNumber: number) => {
+    setFocusedSeat(prev => (prev === seatNumber ? null : seatNumber))
+  }, [])
+
+  // Up/Down cycle the focus ring through the on-screen players (wraps around).
+  const cycleFocus = useCallback((direction: 1 | -1) => {
+    setFocusedSeat(prev => {
+      const list = visibleSeatNumbers
+      if (list.length <= 1) return null
+      if (prev == null) return direction === 1 ? list[0] : list[list.length - 1]
+      const index = list.indexOf(prev)
+      if (index === -1) return direction === 1 ? list[0] : list[list.length - 1]
+      return list[(index + direction + list.length) % list.length]
+    })
+  }, [visibleSeatNumbers])
+
+  // Drop the ring if its player is gone, or when only one player is shown
+  // (single-player view has no selector).
+  useEffect(() => {
+    setFocusedSeat(prev => {
+      if (prev == null) return prev
+      if (visibleSeatNumbers.length <= 1 || !visibleSeatNumbers.includes(prev)) return null
+      return prev
+    })
+  }, [visibleSeatNumbers])
 
   useEffect(() => {
     setMounted(true)
@@ -188,6 +225,19 @@ export default function DraftSlideshow({
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [onClose])
+
+  // Up/Down cycle the player focus ring through the on-screen players.
+  useEffect(() => {
+    const handleArrowFocus = (event: KeyboardEvent) => {
+      if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return
+      const target = event.target as HTMLElement | null
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) return
+      event.preventDefault()
+      cycleFocus(event.key === 'ArrowDown' ? 1 : -1)
+    }
+    window.addEventListener('keydown', handleArrowFocus)
+    return () => window.removeEventListener('keydown', handleArrowFocus)
+  }, [cycleFocus])
 
   useEffect(() => {
     if (!data || selectedSeats.size === 0) return
@@ -255,6 +305,8 @@ export default function DraftSlideshow({
             seats={data.seats || []}
             selectedSeats={selectedSeats}
             slideIndex={slideIndex}
+            focusedSeat={focusedSeat}
+            onFocusSeat={handleFocusSeat}
           />
         ) : (
           <div className="draft-slideshow-center-state">No slideshow data available.</div>

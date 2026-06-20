@@ -77,15 +77,15 @@ function useIsMobile(): boolean {
 }
 
 /**
- * WayfinderCompanionLockup — the compass mark + "wayfinder companion" wordmark,
- * for placing above a heading (replaces the old "Powered by Wayfinder" badge).
- * Real brand assets vendored from the Wayfinder repo into public/branding.
+ * WayfinderCompanionLockup — the compass mark stacked above the Companion
+ * logotype. Real brand assets vendored from the Wayfinder repo into
+ * public/branding.
  */
 export function WayfinderCompanionLockup({ className = '', noLink = false }: { className?: string; noLink?: boolean }) {
   const inner = (
     <>
-      <img className="wf-lockup-mark" src="/branding/wayfinder_logo.svg" alt="" width={40} height={40} />
-      <img className="wf-lockup-wordmark" src="/branding/wayfinder_companion_logotype.svg" alt="Wayfinder Companion" height={20} />
+      <img className="wf-lockup-mark" src="/branding/wayfinder_logo.svg" alt="" width={48} height={48} />
+      <img className="wf-lockup-wordmark" src="/branding/wayfinder_companion_logotype.svg" alt="" width={190} height={40} />
     </>
   )
   // When the Companion is already active (e.g. the play-page ready state) the

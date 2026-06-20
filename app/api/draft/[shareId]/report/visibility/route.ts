@@ -14,19 +14,58 @@ export async function PATCH(request: NextRequest, { params }: RouteContext): Pro
 
   const { shareId } = await params
   const body = await request.json()
-  const { reportPublic } = body
+  const { reportPublic, scope = 'player' } = body
 
   if (typeof reportPublic !== 'boolean') {
     return NextResponse.json({ error: 'reportPublic must be a boolean' }, { status: 400 })
   }
 
+  if (!['player', 'draft'].includes(scope)) {
+    return NextResponse.json({ error: 'scope must be player or draft' }, { status: 400 })
+  }
+
   // Find the draft pod
   const pod = await queryRow(
-    `SELECT id FROM pods WHERE share_id = $1 AND pod_type = 'draft'`,
+    `SELECT id, host_id FROM pods WHERE share_id = $1 AND pod_type = 'draft'`,
     [shareId]
   )
   if (!pod) {
     return NextResponse.json({ error: 'Draft not found' }, { status: 404 })
+  }
+
+  if (scope === 'draft') {
+    if (session.id !== pod.host_id) {
+      return NextResponse.json({ error: 'Only the draft host can change draft visibility' }, { status: 403 })
+    }
+
+    // Keep the draft's public surfaces in sync so the host can open or lock the whole report at once.
+    await query(
+      `UPDATE pods
+       SET is_public = $1,
+           is_log_public = $1
+       WHERE id = $2`,
+      [reportPublic, pod.id]
+    )
+    await query(
+      `UPDATE pod_players
+       SET is_log_public = $1
+       WHERE pod_id = $2`,
+      [reportPublic, pod.id]
+    )
+    const poolsResult = await query(
+      `UPDATE card_pools
+       SET is_public = $1,
+           report_public = $1
+       WHERE pod_id = $2`,
+      [reportPublic, pod.id]
+    )
+
+    return NextResponse.json({
+      success: true,
+      reportPublic,
+      scope,
+      updatedPools: poolsResult.rowCount,
+    })
   }
 
   // Update the user's pool report_public flag
