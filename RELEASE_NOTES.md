@@ -1,5 +1,13 @@
 # Release Notes
 
+## 06.20.2026
+
+### 🎞️ Draft Report Slideshow
+- **Review a finished draft together, full-screen**: Open any completed draft report and hit **Slideshow Mode** for a screenshare-friendly view — every seat's pack at each pick, sized to fill the screen with no scrolling.
+- **Choose who's on screen**: Tabs across the top let you show one player, a few, or all eight at once; each tab carries the player's avatar, leader, and base.
+- **Focus a player**: With several players shown, click a player's avatar to ring them and their pack, then use the up/down arrows to move that highlight from player to player.
+- **Step through the draft**: Move pick by pick with the on-screen arrows or your left/right arrow keys — from the leader picks through all three packs.
+
 ## 06.19.2026
 
 ### 🎮 Deck Stats + Homepage Polish
