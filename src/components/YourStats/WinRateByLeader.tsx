@@ -9,6 +9,7 @@
  */
 
 import { useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { ASPECT_COLORS } from '@/src/utils/aspectColors'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 
@@ -193,11 +194,12 @@ export function WinRateByLeader({
               )
             })}
           </div>
-          {active && anchor && (
+          {active && anchor && typeof document !== 'undefined' && createPortal(
             <div className="your-stats-wr-popover" role="dialog" aria-label={`${active.leaderName} win rate by base aspect`}
               style={{ position: 'fixed', left: anchor.left, top: anchor.top, zIndex: 60 }}>
               <BaseBars leader={active} />
-            </div>
+            </div>,
+            document.body,
           )}
         </>
       )}
