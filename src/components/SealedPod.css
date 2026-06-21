@@ -214,6 +214,20 @@
   gap: 0.5rem;
 }
 
+/* Pool action row (Build Deck / Copy Link / Draft Log / Draft Report).
+   A flex row so every button shares the same baseline and height regardless
+   of whether it carries an icon — align-items: center keeps them on one line.
+   The container owns the top margin + gap; the individual buttons reset the
+   per-button margins they used to carry (see overrides below). */
+.pool-action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
 .build-deck-button {
   background: rgba(0, 0, 0, 0.8);
   border: 2px solid rgba(255, 255, 255, 0.4);
@@ -226,7 +240,7 @@
   font-size: 1rem;
   font-weight: 600;
   transition: all 0.3s ease;
-  margin: 1.5rem 0.75rem 0;
+  margin: 0;
 }
 
 .build-deck-button:hover {
@@ -242,7 +256,7 @@
 }
 
 .draft-log-button {
-  margin: 1.5rem 0.75rem 0;
+  margin: 0;
 }
 
 .instruction {
