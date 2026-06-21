@@ -4,7 +4,7 @@
 
 ### 🎞️ Draft Report Slideshow
 
-* New Slideshow mode for Draft Reports
+- New Slideshow mode for Draft Reports
 - Review a finished draft with your pod, full-screen, ideal for screensharing on Discord — Slideshow Mode shows every seat's pack at each pick, sized to fill the screen with no scrolling.
 - Tabs across the top allow you to review one player at a time or the whole team at once
 - Step pick-by-pick with on-screen or left/right arrow keys, from leaders through all three packs.
@@ -12,8 +12,7 @@
 
 ### ⏱️ Competitive Draft Pick Timer
 - The round timer dial now follows the official per-card schedule (more time early, less as the pack empties), so the clock always matches how long you actually have — even deep into a pack.
-
-* Pick timer is disabled in Competitive Mode (all players have the full round time to pick a card.)
+- Pick timer is disabled in Competitive Mode (all players have the full round time to pick a card.)
 
 ### 🃏 Deck Images
 - Pod deck images now include the QR code, set-art background, and full footer — matching the play-page export. All four deck-image surfaces share one renderer now.
