@@ -1257,6 +1257,55 @@ export default function PlayPage({ params }: PageProps) {
           </div>
         )}
 
+        {/* Swiss Practice panel sits at the top — above the play/deck-complete
+            CTA — taking the place of the normal pod status for competitive pods. */}
+        {isCompetitive && user && (
+          <MatchmakingPanel
+            rounds={competitiveRounds}
+            currentRound={competitiveCurrentRound}
+            matchmakingStatus={matchmakingStatus}
+            currentUserId={user.id}
+            isHost={isCompetitiveHost}
+            players={draftPlayers.map(p => ({
+              id: (p as any).odId || '',
+              username: p.username || 'Unknown',
+              dropped: Boolean((p as any).dropped),
+              poolShareId: (p as any).poolShareId || null,
+              activeLeaderName: (p as any).activeLeaderName || null,
+              baseName: (p as any).baseName || null,
+              baseAspects: Array.isArray((p as any).baseAspects) ? (p as any).baseAspects : [],
+              baseHp: typeof (p as any).baseHp === 'number' ? (p as any).baseHp : null,
+              archetypeName: (p as any).archetypeName || null,
+              poolCardCount: typeof (p as any).poolCardCount === 'number' ? (p as any).poolCardCount : null,
+            }))}
+            wayfinderDetected={wayfinderDetected}
+            wayfinderSettled={wayfinderSettled}
+            hasCompanionBetaAccess={Boolean(user?.is_beta_tester || user?.is_admin)}
+            onPracticeLaunch={practiceLaunch.launchPracticeMatch}
+            practiceLaunchPendingMatchId={practiceLaunch.pendingMatchId}
+            practiceLaunchMessage={practiceLaunch.launchMessage}
+            onReport={(matchId) => {
+              trackLimitedPlayAction(LimitedPlayActions.MATCH_REPORT_OPEN, {
+                target: 'match_result',
+                matchId,
+                result_source: 'player_report',
+              })
+              setReportingMatchId(matchId)
+            }}
+            onOverride={(matchId) => {
+              trackLimitedPlayAction(LimitedPlayActions.MATCH_REPORT_OPEN, {
+                target: 'match_result',
+                matchId,
+                result_source: 'host_override',
+              })
+              setOverridingMatchId(matchId)
+            }}
+            onBoot={handleBootPlayer}
+            onAssignBye={handleAssignBye}
+            onStartMatches={handleStartMatches}
+          />
+        )}
+
         <PlayInstructions
           shareId={shareId}
           poolType={isSoloDraft ? 'sealed' : (pool?.poolType || 'sealed')}
@@ -1323,53 +1372,6 @@ export default function PlayPage({ params }: PageProps) {
             <DraftReportButton draftShareId={pool.draftShareId} variant="play" />
           )}
         </div>
-
-        {isCompetitive && user && (
-          <MatchmakingPanel
-            rounds={competitiveRounds}
-            currentRound={competitiveCurrentRound}
-            matchmakingStatus={matchmakingStatus}
-            currentUserId={user.id}
-            isHost={isCompetitiveHost}
-            players={draftPlayers.map(p => ({
-              id: (p as any).odId || '',
-              username: p.username || 'Unknown',
-              dropped: Boolean((p as any).dropped),
-              poolShareId: (p as any).poolShareId || null,
-              activeLeaderName: (p as any).activeLeaderName || null,
-              baseName: (p as any).baseName || null,
-              baseAspects: Array.isArray((p as any).baseAspects) ? (p as any).baseAspects : [],
-              baseHp: typeof (p as any).baseHp === 'number' ? (p as any).baseHp : null,
-              archetypeName: (p as any).archetypeName || null,
-              poolCardCount: typeof (p as any).poolCardCount === 'number' ? (p as any).poolCardCount : null,
-            }))}
-            wayfinderDetected={wayfinderDetected}
-            wayfinderSettled={wayfinderSettled}
-            hasCompanionBetaAccess={Boolean(user?.is_beta_tester || user?.is_admin)}
-            onPracticeLaunch={practiceLaunch.launchPracticeMatch}
-            practiceLaunchPendingMatchId={practiceLaunch.pendingMatchId}
-            practiceLaunchMessage={practiceLaunch.launchMessage}
-            onReport={(matchId) => {
-              trackLimitedPlayAction(LimitedPlayActions.MATCH_REPORT_OPEN, {
-                target: 'match_result',
-                matchId,
-                result_source: 'player_report',
-              })
-              setReportingMatchId(matchId)
-            }}
-            onOverride={(matchId) => {
-              trackLimitedPlayAction(LimitedPlayActions.MATCH_REPORT_OPEN, {
-                target: 'match_result',
-                matchId,
-                result_source: 'host_override',
-              })
-              setOverridingMatchId(matchId)
-            }}
-            onBoot={handleBootPlayer}
-            onAssignBye={handleAssignBye}
-            onStartMatches={handleStartMatches}
-          />
-        )}
 
       </div>
 
