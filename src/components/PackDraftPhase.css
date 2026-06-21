@@ -610,3 +610,86 @@
     border-radius: 6px;
   }
 }
+
+/* Inter-pack "Review Your Cards" peek (competitive) — maximize space + group-by toggles */
+.review-period {
+  display: flex;
+  flex-direction: column;
+  min-height: 72vh;
+  padding: 10px 16px 16px;
+  box-sizing: border-box;
+}
+.review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.review-header-text {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.review-title {
+  margin: 0;
+  color: rgba(255, 215, 0, 0.95);
+  font-size: 1.1rem;
+}
+.review-subtitle {
+  opacity: 0.7;
+  font-size: 0.85rem;
+}
+.review-controls {
+  display: flex;
+  gap: 8px;
+}
+.review-groups {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.review-group-label {
+  margin-bottom: 6px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.review-group-count {
+  opacity: 0.5;
+  font-weight: 400;
+}
+.review-group-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.review-card {
+  flex-shrink: 0;
+  cursor: zoom-in;
+  transition: transform 0.1s ease;
+}
+.review-card-img {
+  display: block;
+  width: 132px;
+  border-radius: 6px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .review-card:hover { transform: translateY(-2px); }
+}
+@media (max-width: 1100px) {
+  .review-card-img { width: 108px; }
+}
+@media (max-width: 768px) {
+  .review-period { min-height: 0; padding: 8px; }
+  .review-card-img { width: 84px; }
+}

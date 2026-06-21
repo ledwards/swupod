@@ -10,6 +10,7 @@ import CountdownTimer from './CountdownTimer'
 import Button from './Button'
 import { CardPreview } from './DeckBuilder/CardPreview'
 import useCardPreview from '../hooks/useCardPreview'
+import { groupDraftedCards, type DraftGroupMode } from '../utils/draftedCardGrouping'
 import { getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
 import { getSetConfig } from '../utils/setConfigs'
 import './PackDraftPhase.css'
@@ -108,6 +109,7 @@ function PackDraftPhase({
 }: PackDraftPhaseProps) {
 
   const [showReviewModal, setShowReviewModal] = useState(false)
+  const [reviewGroupBy, setReviewGroupBy] = useState<DraftGroupMode>('pack')
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [hoveredLeaderPreview, setHoveredLeaderPreview] = useState<HoveredLeaderPreview | null>(null)
   const {
@@ -392,43 +394,51 @@ function PackDraftPhase({
     : null
 
   if (isReviewPeriod) {
+    const reviewGroups = groupDraftedCards(draftedCards, reviewGroupBy, draft?.packSize || 14)
     return (
       <div className="pack-draft-phase">
-        <div className="review-period" style={{ textAlign: 'center', padding: '32px' }}>
-          <h3 style={{ color: 'rgba(255, 215, 0, 0.9)', marginBottom: '8px' }}>Review Your Cards</h3>
-          <p style={{ marginBottom: '16px', opacity: 0.8 }}>Next pack starts in:</p>
-          <CountdownTimer
-            totalSeconds={30}
-            startedAt={reviewStartedAt}
-            active={true}
-            label=""
-            warningThreshold={10}
-          />
-          <div
-            className="review-cards"
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '8px',
-              justifyContent: 'center',
-              marginTop: '24px',
-            }}
-          >
-            {draftedCards.map(card => (
-              <div
-                key={card.instanceId || card.id}
-                style={{ flexShrink: 0, cursor: 'zoom-in' }}
-                onMouseEnter={(e) => reviewHandleMouseEnter(card, e)}
-                onMouseLeave={reviewHandleMouseLeave}
-                onTouchStart={() => reviewHandleTouchStart(card)}
-                onTouchEnd={reviewHandleTouchEnd}
-              >
-                <img
-                  src={card.imageUrl}
-                  alt={card.name || card.title || 'Card'}
-                  style={{ width: '80px', borderRadius: '4px', display: 'block' }}
-                />
-              </div>
+        <div className="review-period">
+          <div className="review-header">
+            <div className="review-header-text">
+              <h3 className="review-title">Review Your Cards</h3>
+              <span className="review-subtitle">Next pack in</span>
+              <CountdownTimer
+                totalSeconds={30}
+                startedAt={reviewStartedAt}
+                active={true}
+                label=""
+                warningThreshold={10}
+              />
+            </div>
+            <div className="review-controls" role="group" aria-label="Group cards by">
+              <Button variant="toggle" glowColor="blue" active={reviewGroupBy === 'pack'} onClick={() => setReviewGroupBy('pack')}>Pack</Button>
+              <Button variant="toggle" glowColor="blue" active={reviewGroupBy === 'cost'} onClick={() => setReviewGroupBy('cost')}>Cost</Button>
+              <Button variant="toggle" glowColor="blue" active={reviewGroupBy === 'aspect'} onClick={() => setReviewGroupBy('aspect')}>Aspect</Button>
+            </div>
+          </div>
+          <div className="review-groups">
+            {reviewGroups.map(group => (
+              <section key={group.key} className="review-group">
+                <div className="review-group-label">{group.label} <span className="review-group-count">({group.cards.length})</span></div>
+                <div className="review-group-cards">
+                  {group.cards.map(card => (
+                    <div
+                      key={card.instanceId || card.id}
+                      className="review-card"
+                      onMouseEnter={(e) => reviewHandleMouseEnter(card, e)}
+                      onMouseLeave={reviewHandleMouseLeave}
+                      onTouchStart={() => reviewHandleTouchStart(card)}
+                      onTouchEnd={reviewHandleTouchEnd}
+                    >
+                      <img
+                        src={card.imageUrl}
+                        alt={card.name || card.title || 'Card'}
+                        className="review-card-img"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
         </div>
