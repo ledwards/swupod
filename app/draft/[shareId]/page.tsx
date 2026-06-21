@@ -605,6 +605,13 @@ export default function DraftRoomPage({ params }: PageProps) {
                         }}
                         maxLength={100}
                       />
+                    </h1>
+                  </div>
+                  {status === 'active' && (draftState?.phase === 'leader_draft' || draftState?.phase === 'pack_draft') && (
+                    <div className="draft-subhead-row" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span className="draft-round-info">
+                        {draftState?.phase === 'leader_draft' ? 'Leader Drafting Phase' : 'Drafting Phase'}
+                      </span>
                       {draft?.competitive && (
                         <>
                           <span style={{
@@ -616,49 +623,39 @@ export default function DraftRoomPage({ params }: PageProps) {
                             color: 'rgba(255, 215, 0, 0.9)',
                             border: '1px solid rgba(255, 215, 0, 0.4)',
                             borderRadius: '4px',
-                            marginLeft: '8px',
                             verticalAlign: 'middle',
                           }}>
                             COMPETITIVE
                           </span>
-                          {status === 'active' && (
-                            <button
-                              type="button"
-                              aria-label="Competitive Practice rules"
-                              title="Competitive Practice rules"
-                              onClick={() => setShowRulesModal(true)}
-                              style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: '22px',
-                                height: '22px',
-                                marginLeft: '6px',
-                                padding: 0,
-                                border: '1px solid rgba(255, 215, 0, 0.4)',
-                                borderRadius: '50%',
-                                background: 'transparent',
-                                color: 'rgba(255, 215, 0, 0.9)',
-                                cursor: 'pointer',
-                                verticalAlign: 'middle',
-                              }}
-                            >
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <circle cx="12" cy="12" r="10"/>
-                                <line x1="12" y1="16" x2="12" y2="12"/>
-                                <line x1="12" y1="8" x2="12.01" y2="8"/>
-                              </svg>
-                            </button>
-                          )}
+                          <button
+                            type="button"
+                            aria-label="Competitive Practice rules"
+                            title="Competitive Practice rules"
+                            onClick={() => setShowRulesModal(true)}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: '22px',
+                              height: '22px',
+                              padding: 0,
+                              border: '1px solid rgba(255, 215, 0, 0.4)',
+                              borderRadius: '50%',
+                              background: 'transparent',
+                              color: 'rgba(255, 215, 0, 0.9)',
+                              cursor: 'pointer',
+                              verticalAlign: 'middle',
+                            }}
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="12" cy="12" r="10"/>
+                              <line x1="12" y1="16" x2="12" y2="12"/>
+                              <line x1="12" y1="8" x2="12.01" y2="8"/>
+                            </svg>
+                          </button>
                         </>
                       )}
-                    </h1>
-                  </div>
-                  {status === 'active' && draftState?.phase === 'leader_draft' && (
-                    <span className="draft-round-info">Leader Drafting Phase</span>
-                  )}
-                  {status === 'active' && draftState?.phase === 'pack_draft' && (
-                    <span className="draft-round-info">Drafting Phase</span>
+                    </div>
                   )}
                 </div>
               </div>
