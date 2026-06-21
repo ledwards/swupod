@@ -17,7 +17,9 @@
 }
 
 .draft-report-button.pool-variant {
-  margin: 1.5rem 0.75rem 0;
+  /* Spacing is owned by the .pool-action-buttons flex row in SealedPod.css so
+     this button aligns on the same baseline/height as its siblings. */
+  margin: 0;
 }
 
 .draft-report-button-play {

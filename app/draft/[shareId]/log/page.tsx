@@ -4,6 +4,7 @@
 import { useState, useEffect, use } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Button from '../../../../src/components/Button'
+import ConfirmModal from '../../../../src/components/ConfirmModal'
 import CardWithPreview from '../../../../src/components/CardWithPreview'
 import { getPackArtUrl } from '../../../../src/utils/packArt'
 import '../../../../src/App.css'
@@ -84,6 +85,9 @@ export default function DraftLogPage({ params }: PageProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
+  // Gate making the whole draft public behind a confirm — it exposes every
+  // player's picks, so it shouldn't fire on a single stray click.
+  const [showPublicConfirm, setShowPublicConfirm] = useState(false)
 
   const shareId = resolvedParams.shareId
   const seatParam = searchParams.get('seat')
@@ -139,9 +143,10 @@ export default function DraftLogPage({ params }: PageProps) {
     }
   }
 
-  const handleToggleDraftPublic = async () => {
+  // Persist the draft-level visibility change (optimistic, with revert on
+  // failure). Going public is gated by a confirm; see handleToggleDraftPublic.
+  const applyDraftPublic = async (newValue: boolean) => {
     if (!data) return
-    const newValue = !data.meta.isDraftPublic
     // Optimistic update
     setData({
       ...data,
@@ -174,6 +179,22 @@ export default function DraftLogPage({ params }: PageProps) {
         meta: { ...data.meta },
       })
     }
+  }
+
+  const handleToggleDraftPublic = () => {
+    if (!data) return
+    // Making the draft public exposes every participant's picks, so confirm
+    // first. Flipping back to private is harmless and applies immediately.
+    if (!data.meta.isDraftPublic) {
+      setShowPublicConfirm(true)
+      return
+    }
+    applyDraftPublic(false)
+  }
+
+  const handleConfirmDraftPublic = () => {
+    setShowPublicConfirm(false)
+    applyDraftPublic(true)
   }
 
   const handleTogglePlayerPublic = async (player: PlayerInfo) => {
@@ -428,6 +449,22 @@ export default function DraftLogPage({ params }: PageProps) {
             </button>
           )}
         </div>
+
+        <ConfirmModal
+          isOpen={showPublicConfirm}
+          title="Make this draft log public?"
+          confirmLabel="Make Public"
+          cancelLabel="Cancel"
+          onConfirm={handleConfirmDraftPublic}
+          onCancel={() => setShowPublicConfirm(false)}
+        >
+          <p>
+            This makes the entire draft log publicly visible — every player&apos;s
+            picks become viewable by anyone with the link, not just the
+            participants.
+          </p>
+          <p>You can switch it back to private at any time.</p>
+        </ConfirmModal>
 
         {/* Feedback message */}
         {message && (

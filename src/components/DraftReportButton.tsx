@@ -31,11 +31,21 @@ export default function DraftReportButton({ draftShareId, variant = 'default' }:
     )
   }
 
+  const reportHref = `/draft/${draftShareId}/report`
+  const handleClick = () => {
+    // On the pool page, open the report in a new tab so the pool stays put.
+    if (variant === 'pool') {
+      window.open(reportHref, '_blank', 'noopener')
+    } else {
+      window.location.href = reportHref
+    }
+  }
+
   return (
     <Button
       variant="secondary"
       className={`draft-report-button${variant === 'pool' ? ' pool-variant' : ''}`}
-      onClick={() => { window.location.href = `/draft/${draftShareId}/report` }}
+      onClick={handleClick}
     >
       {icon}
       <span>Draft Report</span>

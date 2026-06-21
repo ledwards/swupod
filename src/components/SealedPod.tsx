@@ -395,6 +395,7 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
           {getCanonicalPoolSubtitle({ ownerName: poolOwnerUsername, setCode, poolType, createdAt })}
         </p>
         {saving && <p className="saving-indicator"></p>}
+        <div className="pool-action-buttons">
         {packs.length > 0 && (
           <Button
             variant="primary"
@@ -429,7 +430,7 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
           <Button
             variant="secondary"
             className="draft-log-button"
-            onClick={() => { window.location.href = `/draft/${draftShareId}/log` }}
+            onClick={() => { window.open(`/draft/${draftShareId}/log`, '_blank', 'noopener') }}
           >
             Draft Log
           </Button>
@@ -437,6 +438,7 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
         {draftShareId && isPatron && isOwner && (
           <DraftReportButton draftShareId={draftShareId} variant="pool" />
         )}
+        </div>
       </div>
 
       <div className="packs-container">
