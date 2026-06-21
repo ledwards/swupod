@@ -36,6 +36,7 @@ interface Pod {
   paused_duration_seconds: number
   competitive: boolean
   deck_lock_at: string | null
+  decks_unlocked: boolean
 }
 
 interface DraftPlayer {
@@ -105,6 +106,7 @@ interface BroadcastState {
   matchmakingStatus?: string
   currentRound?: number
   deckBuildDeadline?: string | null
+  decksUnlocked?: boolean
   rounds?: unknown[]
 }
 
@@ -125,7 +127,7 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
               dp.host_id, dp.timed, dp.timer_enabled, dp.timer_seconds, dp.pick_timeout_seconds,
               dp.started_at, dp.completed_at, dp.pick_started_at,
               dp.paused, dp.paused_at, dp.paused_duration_seconds, dp.competitive,
-              dp.deck_lock_at
+              dp.deck_lock_at, dp.decks_unlocked
        FROM pods dp WHERE dp.share_id = $1`,
       [shareId]
     ) as Pod | null
@@ -212,6 +214,7 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
       pausedAt: pod.paused_at,
       pausedDurationSeconds: pod.paused_duration_seconds || 0,
       competitive: pod.competitive === true,
+      decksUnlocked: pod.decks_unlocked === true,
     }
 
     // Add matchmaking data for competitive pods in matchmaking phase
