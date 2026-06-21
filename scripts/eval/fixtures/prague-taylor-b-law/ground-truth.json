@@ -1,0 +1,503 @@
+{
+  "fixtureName": "prague-taylor-b-law",
+  "setCode": "LAW",
+  "expectedTotals": {
+    "pool": 96,
+    "deck": 32,
+    "leaders": 6,
+    "bases": 6
+  },
+  "_note": "STARTER from model run (2026-06-21T09:10:21.980Z). poolSum=89 deckSum=33. VERIFY against photos: walk each table, drop hallucinated rows, add missed rows, fix qty mistakes. Remove _note when done.",
+  "rows": [
+    {
+      "name": "Boba Fett",
+      "subtitle": "Krayt's Claw Commander",
+      "type": "Leader",
+      "poolQty": 2,
+      "deckQty": 0
+    },
+    {
+      "name": "Hera Syndulla",
+      "subtitle": "Not Fighting Alone",
+      "type": "Leader",
+      "poolQty": 2,
+      "deckQty": 0
+    },
+    {
+      "name": "Chewbacca",
+      "subtitle": "Hero of Kessel",
+      "type": "Leader",
+      "poolQty": 2,
+      "deckQty": 1
+    },
+    {
+      "name": "Canto Bight",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Imperial Door Technician",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "IGV-55 Listener",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Bodhi Rook",
+      "subtitle": "Creating a Diversion",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Cinta Kaz",
+      "subtitle": "Stone Cold and Fearless",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Swoop Bike Marauder",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Phoenix Squadron Fighters",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Boonta Eve Flagbearer",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Industrious Team",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Watchful",
+      "subtitle": null,
+      "type": "Upgrade",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Mastery",
+      "subtitle": null,
+      "type": "Upgrade",
+      "poolQty": 2,
+      "deckQty": 2
+    },
+    {
+      "name": "Incapacitate",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 2,
+      "deckQty": 0
+    },
+    {
+      "name": "The Tree Remembers",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Lost and Forgotten",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Pirate Snub Fighter",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Targeted For Removal",
+      "subtitle": null,
+      "type": "Upgrade",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Liberated Wookiee",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Smuggler's YT-2400",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Profiteering Hunter",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Follower of the Code",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Partisan Infantry",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 2,
+      "deckQty": 1
+    },
+    {
+      "name": "Getaway Freighter",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 2,
+      "deckQty": 1
+    },
+    {
+      "name": "Target Tagger",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 2,
+      "deckQty": 0
+    },
+    {
+      "name": "Khetanna",
+      "subtitle": "Upon the Dune Sea",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Mercenary Fleet",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 2,
+      "deckQty": 1
+    },
+    {
+      "name": "Putting a Team Together",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 2,
+      "deckQty": 0
+    },
+    {
+      "name": "Haymaker",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 2,
+      "deckQty": 1
+    },
+    {
+      "name": "Son-tuul Berserkers",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Cloud-Rider Veteran",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Aerie",
+      "subtitle": "Cloud-Rider Dropship",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Savareen Survivor",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Bracca Shipbreaker",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Mid Rim Sharpshooter",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Relentless Hunters",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Shifty Suspects",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 2,
+      "deckQty": 2
+    },
+    {
+      "name": "Daring Delve",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Flash the Vents",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 3,
+      "deckQty": 2
+    },
+    {
+      "name": "That's a Rock",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Attack From All Sides",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 2,
+      "deckQty": 2
+    },
+    {
+      "name": "Collateral Damage",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Nihil Stormsower",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Cutthroat Podracer",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Jabba's Rancor",
+      "subtitle": "Snack Time!",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Rose Tico",
+      "subtitle": "Now It's Worth It",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Canyon Frontrunner",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Ohnaka Gang Starhopper",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Weequay Pirate",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Champion's KT9 Podracer",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Kage Elite",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Bix Caleen",
+      "subtitle": "Selling Scrap",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Transmission Jamming",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Unmarked Credits",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "The Axe Forgets",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Backed by the Hutts",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 2,
+      "deckQty": 0
+    },
+    {
+      "name": "Windfall",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 2,
+      "deckQty": 0
+    },
+    {
+      "name": "Lepi Lookout",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "IG-88",
+      "subtitle": "Programmed to Kill",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Cassian Andor",
+      "subtitle": "Everything For the Rebellion",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "L3-37",
+      "subtitle": "Radical Instigator",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "4-LOM",
+      "subtitle": "Devious",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Millennium Falcon",
+      "subtitle": "Dodging Patrols",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Vult Skerris's Defender",
+      "subtitle": "Secret Project",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Sullustan Sapper",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Jango Fett",
+      "subtitle": "Wily Mercenary",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Rio Durant",
+      "subtitle": "Beckett's Right Hands",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Seasoned Tracker",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 2,
+      "deckQty": 1
+    },
+    {
+      "name": "Kessel Hulk",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 2,
+      "deckQty": 0
+    }
+  ]
+}

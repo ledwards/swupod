@@ -1,0 +1,230 @@
+{
+  "fixtureName": "palmsprings-taylor-b-law",
+  "setCode": "LAW",
+  "expectedTotals": {
+    "pool": 96,
+    "deck": 32,
+    "leaders": 6,
+    "bases": 6
+  },
+  "_note": "STARTER from model run (2026-06-21T09:16:48.556Z). poolSum=41 deckSum=3. VERIFY against photos: walk each table, drop hallucinated rows, add missed rows, fix qty mistakes. Remove _note when done.",
+  "rows": [
+    {
+      "name": "The Client",
+      "subtitle": "Please Lower Your Blaster",
+      "type": "Leader",
+      "poolQty": 6,
+      "deckQty": 0
+    },
+    {
+      "name": "Coaxium Mine",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Vandor Range Troopers",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "IGV-55 Listener",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Boonta Eve Flagbearer",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Rickety Quadjumper",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Rodian Bondsman",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Shielded Hauler",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Syndicate Security",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Mastery",
+      "subtitle": null,
+      "type": "Upgrade",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Betrayed Trust",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Lost and Forgotten",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Haymaker",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 2,
+      "deckQty": 0
+    },
+    {
+      "name": "Son-tuul Berserkers",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Nihil Stormsower",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 2,
+      "deckQty": 0
+    },
+    {
+      "name": "Black Sun Patroller",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Cutthroat Podracer",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 2,
+      "deckQty": 0
+    },
+    {
+      "name": "Jabba's Rancor",
+      "subtitle": "Snack Time!",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Rookie Rocket-jumper",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Ohnaka Gang Starhopper",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Weequay Pirate",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Kage Elite",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Bix Caleen",
+      "subtitle": "Selling Scrap",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Black Sun Cabalist",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Callous Bounty Hunter",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 2,
+      "deckQty": 0
+    },
+    {
+      "name": "Night Wind Assailants",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Jango Fett",
+      "subtitle": "Wily Mercenary",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Toydarian Technician",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Rio Durant",
+      "subtitle": "Beckett's Right Hands",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Cartel Heavy Fighter",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 2,
+      "deckQty": 0
+    },
+    {
+      "name": "Street Gang Recruiter",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    }
+  ]
+}

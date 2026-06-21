@@ -29,9 +29,15 @@ function loadEnvFile(path: string) {
     }
   } catch {}
 }
+// Prefer this checkout's .env.local (works in a git worktree); fall back to
+// the primary repo where the key normally lives. First load wins per key.
+loadEnvFile(join(process.cwd(), '.env.local'))
 loadEnvFile('/Users/lee/Repos/ledwards/swupod/.env.local')
 
-const REPO_ROOT = '/Users/lee/Repos/ledwards/swupod'
+// REPO_ROOT defaults to the current checkout so this runs correctly from a
+// worktree (reads photos from / writes ground-truth into THIS tree, not the
+// primary repo). Override with REPO_ROOT=… if needed.
+const REPO_ROOT = process.env.REPO_ROOT || process.cwd()
 const FIXTURE = process.env.FIXTURE
 if (!FIXTURE) {
   console.error('Set FIXTURE=<name>')

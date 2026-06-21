@@ -1,0 +1,384 @@
+{
+  "fixtureName": "palmsprings-taylor-a-law",
+  "setCode": "LAW",
+  "expectedTotals": {
+    "pool": 96,
+    "deck": 32,
+    "leaders": 6,
+    "bases": 6
+  },
+  "_note": "STARTER from model run (2026-06-21T09:13:16.847Z). poolSum=59 deckSum=31. VERIFY against photos: walk each table, drop hallucinated rows, add missed rows, fix qty mistakes. Remove _note when done.",
+  "rows": [
+    {
+      "name": "Jyn Erso",
+      "subtitle": "Time to Fight",
+      "type": "Leader",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Vel Sartha",
+      "subtitle": "Aldhani Insurgent",
+      "type": "Leader",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Boba Fett",
+      "subtitle": "Krayt's Claw Commander",
+      "type": "Leader",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Director Krennic",
+      "subtitle": "Amidst My Achievement",
+      "type": "Leader",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Hera Syndulla",
+      "subtitle": "Not Fighting Alone",
+      "type": "Leader",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Han Solo",
+      "subtitle": "I Got a Really Good Feeling",
+      "type": "Leader",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Daimyo's Palace",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Aldhani Garrison",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Great Pit of Carkoon",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Imperial Command Complex",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Contested Caverns",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Shipbreaking Yard",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Stygeon Spire",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Canto Bight",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Partisan Hideout",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Imperial Door Technician",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "IGV-55 Listener",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Boonta Eve Flagbearer",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Shield Drive Outfitter",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Rodian Bondsman",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Vigilant Scouts",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Canto Bight Security",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Shielded Hauler",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Kill Switch",
+      "subtitle": null,
+      "type": "Upgrade",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Pirate Snub Fighter",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 3,
+      "deckQty": 3
+    },
+    {
+      "name": "Ruthless Duo",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 3,
+      "deckQty": 2
+    },
+    {
+      "name": "Partisan Infantry",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Target Tagger",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "The Sarlacc of Carkoon",
+      "subtitle": "Horror of the Dune Sea",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Combat Exercise",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Haymaker",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Stockpile",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Prototype TIE Advanced",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Dogged Pursuers",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Flash the Vents",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 2,
+      "deckQty": 2
+    },
+    {
+      "name": "Black Sun Patroller",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Boba Fett",
+      "subtitle": "For a Price",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Jabba's Rancor",
+      "subtitle": "Snack Time!",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "The Master Codebreaker",
+      "subtitle": "High Stakes",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Lady Proxima",
+      "subtitle": "Where's the Money?",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Improvise",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Transmission Jamming",
+      "subtitle": null,
+      "type": "Event",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Callous Bounty Hunter",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 2,
+      "deckQty": 2
+    },
+    {
+      "name": "Night Wind Assailants",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Hound's Tooth",
+      "subtitle": "Hunters' Approach",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Han Solo",
+      "subtitle": "Hibernation Sick",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Lepi Lookout",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Dengar",
+      "subtitle": "Take Your Shot",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Honor-Bound Partisan",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Jango Fett",
+      "subtitle": "Wily Mercenary",
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Hidden Hand Supplier",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Cartel Heavy Fighter",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Bank Job Fugitives",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    }
+  ]
+}
