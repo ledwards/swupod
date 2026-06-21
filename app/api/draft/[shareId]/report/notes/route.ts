@@ -14,27 +14,30 @@ export async function PATCH(request: NextRequest, { params }: RouteContext): Pro
   const { shareId } = await params
 
   const pod = await queryRow(
-    `SELECT id FROM pods WHERE share_id = $1 AND pod_type = 'draft'`,
+    `SELECT id, host_id FROM pods WHERE share_id = $1 AND pod_type = 'draft'`,
     [shareId]
   )
   if (!pod) {
     return NextResponse.json({ error: 'Draft not found' }, { status: 404 })
   }
 
+  const body = await request.json()
+  const notes = typeof body.notes === 'string' ? body.notes : ''
+  const poolShareId = typeof body.poolShareId === 'string' ? body.poolShareId : null
+
   const pool = await queryRow(
-    `SELECT id, user_id FROM card_pools WHERE pod_id = $1 AND user_id = $2`,
-    [pod.id, session.id]
+    poolShareId
+      ? `SELECT id, user_id FROM card_pools WHERE pod_id = $1 AND share_id = $2`
+      : `SELECT id, user_id FROM card_pools WHERE pod_id = $1 AND user_id = $2`,
+    [pod.id, poolShareId || session.id]
   )
   if (!pool) {
     return NextResponse.json({ error: 'Pool not found' }, { status: 404 })
   }
 
-  if (pool.user_id !== session.id) {
+  if (pool.user_id !== session.id && pod.host_id !== session.id) {
     return NextResponse.json({ error: 'Not authorized' }, { status: 403 })
   }
-
-  const body = await request.json()
-  const notes = typeof body.notes === 'string' ? body.notes : ''
 
   await query(
     `UPDATE card_pools SET notes = $1, updated_at = NOW() WHERE id = $2`,

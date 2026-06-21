@@ -5,14 +5,15 @@ import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
 import { getAspectColor } from '@/src/utils/aspectColors'
 import { hyperspaceLeaderArt } from '@/src/utils/hyperspaceLeaderArt'
+import { resolveReplayUrl } from '@/src/utils/wayfinderUrls'
 import { NextRequest, NextResponse } from 'next/server'
 
-/** Swap a replay's leader art (mine + opponent) for the Hyperspace front art. */
-function withHyperspaceArt(replay: GameplayReplay): GameplayReplay {
+/** Replay list items use unit-side leader art, preferring Hyperspace variants. */
+function withPreferredReplayArt(replay: GameplayReplay): GameplayReplay {
   const set = replay.pool?.setCode
   return {
     ...replay,
-    leaderImageUrl: hyperspaceLeaderArt(replay.leaderName, set) || replay.leaderImageUrl,
+    leaderImageUrl: hyperspaceLeaderArt(replay.leaderName, set) || replay.leaderBackImageUrl || replay.leaderImageUrl,
     opponent: {
       ...replay.opponent,
       leaderImageUrl: hyperspaceLeaderArt(replay.opponent.leaderName, set) || replay.opponent.leaderImageUrl,
@@ -68,6 +69,7 @@ interface RawReplayRow {
   opponent_archetype?: string | null
   my_archetype?: string | null
   pool_share_id?: string | null
+  pool_draft_share_id?: string | null
   pool_name?: string | null
   set_code?: string | null
   pool_type?: string | null
@@ -95,6 +97,7 @@ export interface GameplayRecentPool {
   leaderName: string | null
   baseName: string | null
   leaderImageUrl: string | null
+  leaderBackImageUrl: string | null
   baseImageUrl: string | null
   deckCardCount: number
   wins: number
@@ -129,6 +132,18 @@ export interface GameplayLeaderBreakdown {
   byBase: GameplayBaseSplit[]
 }
 
+export interface GameplayArchetypeBreakdown {
+  archetype: string
+  leaderName: string | null
+  leaderImageUrl: string | null
+  leaderBackImageUrl: string | null
+  wins: number
+  losses: number
+  draws: number
+  matches: number
+  winRate: number
+}
+
 export interface GameplayReplay {
   id: string
   wayfinderMatchId: string | null
@@ -136,6 +151,7 @@ export interface GameplayReplay {
   playedAt: string | null
   result: 'win' | 'loss' | 'draw' | 'pending'
   gameResults: Array<'W' | 'L' | 'D'>
+  playerSide: 'player1' | 'player2' | null
   opponent: {
     username: string | null
     avatarUrl: string | null
@@ -146,6 +162,7 @@ export interface GameplayReplay {
   }
   pool: {
     shareId: string | null
+    draftShareId: string | null
     name: string
     setCode: string
     format: string
@@ -154,6 +171,7 @@ export interface GameplayReplay {
   leaderName: string | null
   baseName: string | null
   leaderImageUrl: string | null
+  leaderBackImageUrl: string | null
   baseImageUrl: string | null
   archetype: string | null
   deckCardCount: number
@@ -167,6 +185,7 @@ export interface GameplayResponse {
   formatBreakdown: GameplayBreakdown[]
   setBreakdown: GameplayBreakdown[]
   leaderBreakdown: GameplayLeaderBreakdown[]
+  archetypeBreakdown: GameplayArchetypeBreakdown[]
   recentPools: GameplayRecentPool[]
   replays: GameplayReplay[]
 }
@@ -247,6 +266,72 @@ export function buildLeaderBreakdown(rows: RawLeaderPoolRow[]): GameplayLeaderBr
       }
     })
     .sort((a, b) => b.matches - a.matches || b.winRate - a.winRate || a.leaderName.localeCompare(b.leaderName))
+}
+
+/** Drop a trailing "(Limited)" tag so a draft archetype and its constructed twin
+ *  collapse onto one row (the swuapi name is the source of truth — we never build
+ *  a "Leader / Base" string here). */
+function canonicalArchetype(name: string | null): string | null {
+  if (!name) return null
+  const trimmed = name.replace(/\s*\(limited\)\s*$/i, '').trim()
+  return trimmed || null
+}
+
+/**
+ * Aggregate captured games by archetype for the "Your Archetypes" usage pie —
+ * the archetype mirror of buildLeaderBreakdown. Each replay contributes its
+ * individual GAMES (gameResults), falling back to the single match result when a
+ * replay carries no per-game breakdown. Keyed by the archetype with its
+ * "(Limited)" tag stripped; replays with no archetype or no scored game are
+ * skipped. Keeps the leader's unit-side art for the legend thumbnail.
+ */
+export function buildArchetypeBreakdown(replays: GameplayReplay[]): GameplayArchetypeBreakdown[] {
+  const byArchetype = new Map<string, GameplayArchetypeBreakdown>()
+  for (const replay of replays) {
+    const archetype = canonicalArchetype(replay.archetype)
+    if (!archetype) continue
+    let wins = 0
+    let losses = 0
+    let draws = 0
+    if (replay.gameResults && replay.gameResults.length > 0) {
+      for (const g of replay.gameResults) {
+        if (g === 'W') wins += 1
+        else if (g === 'L') losses += 1
+        else if (g === 'D') draws += 1
+      }
+    } else if (replay.result === 'win') {
+      wins += 1
+    } else if (replay.result === 'loss') {
+      losses += 1
+    } else if (replay.result === 'draw') {
+      draws += 1
+    }
+    if (wins + losses + draws === 0) continue
+    const existing = byArchetype.get(archetype) || {
+      archetype,
+      leaderName: replay.leaderName,
+      leaderImageUrl: replay.leaderImageUrl,
+      leaderBackImageUrl: replay.leaderBackImageUrl,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      matches: 0,
+      winRate: 0,
+    }
+    existing.wins += wins
+    existing.losses += losses
+    existing.draws += draws
+    if (!existing.leaderName && replay.leaderName) existing.leaderName = replay.leaderName
+    if (!existing.leaderImageUrl && replay.leaderImageUrl) existing.leaderImageUrl = replay.leaderImageUrl
+    if (!existing.leaderBackImageUrl && replay.leaderBackImageUrl) existing.leaderBackImageUrl = replay.leaderBackImageUrl
+    byArchetype.set(archetype, existing)
+  }
+  return Array.from(byArchetype.values())
+    .map((entry) => {
+      const matches = entry.wins + entry.losses + entry.draws
+      return { ...entry, matches, winRate: matches > 0 ? Math.round((entry.wins / matches) * 1000) / 10 : 0 }
+    })
+    .sort((a, b) => b.matches - a.matches || b.winRate - a.winRate || a.archetype.localeCompare(b.archetype))
 }
 
 function parseDateParam(raw: string | null): string | null {
@@ -397,11 +482,17 @@ function formatTimestamp(value: string | Date | null | undefined): string | null
   return value instanceof Date ? value.toISOString() : String(value)
 }
 
+function userSideFromReplay(row: RawReplayRow, currentUserId: string): 'player1' | 'player2' | null {
+  if (row.player1_id === currentUserId) return 'player1'
+  if (row.player2_id === currentUserId) return 'player2'
+  return null
+}
+
 function resultFromPerspective(row: RawReplayRow, currentUserId: string): GameplayReplay['result'] {
   const winner = row.match_winner
   if (winner === 'draw') return 'draw'
   if (winner !== 'player1' && winner !== 'player2') return 'pending'
-  const userSide = row.player1_id === currentUserId ? 'player1' : row.player2_id === currentUserId ? 'player2' : null
+  const userSide = userSideFromReplay(row, currentUserId)
   if (!userSide) return 'pending'
   return winner === userSide ? 'win' : 'loss'
 }
@@ -413,7 +504,7 @@ function gameResultFromPerspective(
 ): 'W' | 'L' | 'D' | null {
   if (!gameResult) return null
   if (gameResult === 'draw') return 'D'
-  const userSide = row.player1_id === currentUserId ? 'player1' : row.player2_id === currentUserId ? 'player2' : null
+  const userSide = userSideFromReplay(row, currentUserId)
   if (!userSide) return null
   return gameResult === userSide ? 'W' : 'L'
 }
@@ -441,6 +532,7 @@ export function buildTerronkDevGameplayFixture(poolRows: DevFixturePoolRow[]): G
     replayUrl: `https://wayfinder.news/replay/terronk-dev-${index + 1}`,
     playedAt: pool.updatedAt,
     result: index % 3 === 1 ? 'loss' as const : 'win' as const,
+    playerSide: index % 2 === 0 ? 'player1' as const : 'player2' as const,
     gameResults: index % 3 === 1 ? ['L', 'W', 'L'] as Array<'W' | 'L' | 'D'> : ['W', 'L', 'W'] as Array<'W' | 'L' | 'D'>,
     opponent: {
       username: index % 2 === 0 ? 'Karabast Opponent' : 'Wayfinder Rival',
@@ -452,6 +544,7 @@ export function buildTerronkDevGameplayFixture(poolRows: DevFixturePoolRow[]): G
     },
     pool: {
       shareId: pool.shareId,
+      draftShareId: null,
       name: pool.name,
       setCode: pool.setCode,
       format: pool.format,
@@ -460,8 +553,10 @@ export function buildTerronkDevGameplayFixture(poolRows: DevFixturePoolRow[]): G
     leaderName: pool.leaderName,
     baseName: pool.baseName,
     leaderImageUrl: pool.leaderImageUrl,
+    leaderBackImageUrl: pool.leaderBackImageUrl,
     baseImageUrl: pool.baseImageUrl,
-    archetype: null,
+    // Dev-only illustrative archetype labels so the Your Archetypes pie renders.
+    archetype: index % 2 === 0 ? 'Aggro' : 'Midrange',
     deckCardCount: pool.deckCardCount,
   }))
 
@@ -553,6 +648,7 @@ export function buildTerronkDevGameplayFixture(poolRows: DevFixturePoolRow[]): G
       },
     ],
     recentPools,
+    archetypeBreakdown: buildArchetypeBreakdown(replays),
     replays,
   }
 }
@@ -593,6 +689,7 @@ interface RawCasualRow {
   opponent_archetype?: string | null
   played_at?: string | Date | null
   pool_share_id?: string | null
+  pool_draft_share_id?: string | null
   pool_name?: string | null
   set_code?: string | null
   pool_type?: string | null
@@ -603,7 +700,10 @@ interface RawCasualRow {
 function mapCasualReplay(row: RawCasualRow): GameplayReplay {
   const format = row.pool_type || 'sealed'
   const deckPreview = extractDeckPreview(row.deck_builder_state)
-  const replayUrl = row.wayfinder_replay_url || ''
+  // Prefer a stored canonical /playback/ URL; otherwise derive from the match id.
+  // Strips the bogus `ing-` ingestion prefix (see resolveReplayUrl) so the link
+  // resolves instead of showing "out of range" + Discord login.
+  const replayUrl = resolveReplayUrl(row.wayfinder_match_id, row.wayfinder_replay_url)
   const result = (row.result === 'win' || row.result === 'loss' || row.result === 'draw') ? row.result : 'pending'
   return {
     id: row.id || row.wayfinder_match_id || replayUrl,
@@ -611,6 +711,7 @@ function mapCasualReplay(row: RawCasualRow): GameplayReplay {
     replayUrl,
     playedAt: formatTimestamp(row.played_at),
     result,
+    playerSide: 'player1',
     gameResults: [row.game1_result, row.game2_result, row.game3_result]
       .filter((g): g is 'W' | 'L' | 'D' => g === 'W' || g === 'L' || g === 'D'),
     opponent: {
@@ -623,6 +724,7 @@ function mapCasualReplay(row: RawCasualRow): GameplayReplay {
     },
     pool: {
       shareId: row.pool_share_id || null,
+      draftShareId: row.pool_draft_share_id || null,
       name: row.pool_name || `${row.set_code || 'SWU'} ${formatLabel(format)}`,
       setCode: row.set_code || 'UNK',
       format,
@@ -647,6 +749,54 @@ export function buildGameplayResponse(
   const summary = buildBreakdown(summaryRow || {}, 'all', 'All Play')
   const decksPlayed = toInt(summaryRow?.decks_played)
   const replayUrlCount = toInt(replayRow?.replays_recorded)
+
+  // Built once so the replay history list and the archetype usage pie aggregate
+  // the exact same per-game results.
+  const replays: GameplayReplay[] = [
+    ...replayRows.map((row): GameplayReplay => {
+      const format = row.pool_type || 'sealed'
+      const deckPreview = extractDeckPreview(row.deck_builder_state)
+      // Canonical replay link (see mapCasualReplay): prefer stored /playback/,
+      // else derive from the match id, stripping the bogus `ing-` prefix.
+      const replayUrl = resolveReplayUrl(row.wayfinder_match_id, row.wayfinder_replay_url)
+      return {
+        id: row.match_id || row.wayfinder_match_id || replayUrl,
+        wayfinderMatchId: row.wayfinder_match_id || null,
+        replayUrl,
+        playedAt: formatTimestamp(row.created_at),
+        result: resultFromPerspective(row, currentUserId),
+        playerSide: userSideFromReplay(row, currentUserId),
+        gameResults: [row.game1_result, row.game2_result, row.game3_result]
+          .map((game) => gameResultFromPerspective(game, row, currentUserId))
+          .filter(Boolean) as Array<'W' | 'L' | 'D'>,
+        opponent: {
+          username: row.opponent_username || null,
+          avatarUrl: row.opponent_avatar_url || null,
+          leaderName: row.opponent_leader || null,
+          leaderImageUrl: row.opponent_leader_image || null,
+          baseName: row.opponent_base || null,
+          archetype: row.opponent_archetype || null,
+        },
+        pool: {
+          shareId: row.pool_share_id || null,
+          draftShareId: row.pool_draft_share_id || null,
+          name: row.pool_name || `${row.set_code || 'SWU'} ${formatLabel(format)}`,
+          setCode: row.set_code || 'UNK',
+          format,
+          formatLabel: formatLabel(format),
+        },
+        ...deckPreview,
+        archetype: row.my_archetype || null,
+      }
+    }),
+    // Casual (non-competitive) games come from casual_matches, already
+    // user-perspective, and interleave by date with competitive replays.
+    ...casualRows.map(mapCasualReplay),
+  ]
+    .filter((replay) => replay.replayUrl)
+    .sort((a, b) => new Date(b.playedAt || 0).getTime() - new Date(a.playedAt || 0).getTime())
+    .slice(0, 50)
+    .map(withPreferredReplayArt)
 
   return {
     summary: {
@@ -685,47 +835,8 @@ export function buildGameplayResponse(
         updatedAt: formatTimestamp(row.updated_at),
       }
     }).filter((pool) => pool.shareId),
-    replays: [
-      ...replayRows.map((row): GameplayReplay => {
-        const format = row.pool_type || 'sealed'
-        const deckPreview = extractDeckPreview(row.deck_builder_state)
-        const replayUrl = row.wayfinder_replay_url || ''
-        return {
-          id: row.match_id || row.wayfinder_match_id || replayUrl,
-          wayfinderMatchId: row.wayfinder_match_id || null,
-          replayUrl,
-          playedAt: formatTimestamp(row.created_at),
-          result: resultFromPerspective(row, currentUserId),
-          gameResults: [row.game1_result, row.game2_result, row.game3_result]
-            .map((game) => gameResultFromPerspective(game, row, currentUserId))
-            .filter(Boolean) as Array<'W' | 'L' | 'D'>,
-          opponent: {
-            username: row.opponent_username || null,
-            avatarUrl: row.opponent_avatar_url || null,
-            leaderName: row.opponent_leader || null,
-            leaderImageUrl: row.opponent_leader_image || null,
-            baseName: row.opponent_base || null,
-            archetype: row.opponent_archetype || null,
-          },
-          pool: {
-            shareId: row.pool_share_id || null,
-            name: row.pool_name || `${row.set_code || 'SWU'} ${formatLabel(format)}`,
-            setCode: row.set_code || 'UNK',
-            format,
-            formatLabel: formatLabel(format),
-          },
-          ...deckPreview,
-          archetype: row.my_archetype || null,
-        }
-      }),
-      // Casual (non-competitive) games come from casual_matches, already
-      // user-perspective, and interleave by date with competitive replays.
-      ...casualRows.map(mapCasualReplay),
-    ]
-      .filter((replay) => replay.replayUrl)
-      .sort((a, b) => new Date(b.playedAt || 0).getTime() - new Date(a.playedAt || 0).getTime())
-      .slice(0, 50)
-      .map(withHyperspaceArt),
+    archetypeBreakdown: buildArchetypeBreakdown(replays),
+    replays,
   }
 }
 
@@ -765,187 +876,228 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       AND ($4 = 'all' OR set_code = $4)
     `
 
-    const summaryRow = await queryRow(
-      `SELECT
-         COALESCE(SUM(wins), 0) AS wins,
-         COALESCE(SUM(losses), 0) AS losses,
-         COALESCE(SUM(draws), 0) AS draws,
-         COUNT(*) FILTER (WHERE wins + losses + draws > 0) AS pools,
-         COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) AS captured_matches,
-         (
-           SELECT COUNT(*)
-           FROM deck_play_visits dpv
-           WHERE dpv.user_id = $1
-             AND dpv.first_visited_at >= $2
-             AND dpv.first_visited_at < ($3::date + interval '1 day')
-         ) AS decks_played
-       FROM card_pools
-       WHERE ${ownedPoolWhere}`,
-      params
-    ) as RawRecordRow | null
+    // All eight reads below are independent and hit indexed columns. Fire them
+    // concurrently (the pg pool allows up to 20 connections) so the route waits
+    // on one round-trip, not eight in series — the dominant cost on /me.
+    const [
+      summaryRow,
+      formatRows,
+      setRows,
+      recentPoolRows,
+      leaderPoolRows,
+      replayRow,
+      replayRows,
+      casualRows,
+    ] = await Promise.all([
+      queryRow(
+        `SELECT
+           COALESCE(SUM(wins), 0) AS wins,
+           COALESCE(SUM(losses), 0) AS losses,
+           COALESCE(SUM(draws), 0) AS draws,
+           COUNT(*) FILTER (WHERE wins + losses + draws > 0) AS pools,
+           COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) AS captured_matches,
+           (
+             SELECT COUNT(*)
+             FROM deck_play_visits dpv
+             WHERE dpv.user_id = $1
+               AND dpv.first_visited_at >= $2
+               AND dpv.first_visited_at < ($3::date + interval '1 day')
+           ) AS decks_played
+         FROM card_pools
+         WHERE ${ownedPoolWhere}`,
+        params
+      ) as Promise<RawRecordRow | null>,
 
-    const formatRows = await queryRows(
-      `SELECT
-         COALESCE(pool_type, 'sealed') AS key,
-         COALESCE(pool_type, 'sealed') AS label,
-         COALESCE(SUM(wins), 0) AS wins,
-         COALESCE(SUM(losses), 0) AS losses,
-         COALESCE(SUM(draws), 0) AS draws,
-         COUNT(*) FILTER (WHERE wins + losses + draws > 0) AS pools,
-         COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) AS captured_matches
-       FROM card_pools
-       WHERE ${ownedPoolWhere}
-       GROUP BY COALESCE(pool_type, 'sealed')
-       HAVING COALESCE(SUM(wins + losses + draws), 0) > 0
-          OR COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) > 0
-       ORDER BY COALESCE(SUM(wins + losses + draws), 0) DESC, key ASC`,
-      params
-    ) as RawBreakdownRow[]
+      queryRows(
+        `SELECT
+           COALESCE(pool_type, 'sealed') AS key,
+           COALESCE(pool_type, 'sealed') AS label,
+           COALESCE(SUM(wins), 0) AS wins,
+           COALESCE(SUM(losses), 0) AS losses,
+           COALESCE(SUM(draws), 0) AS draws,
+           COUNT(*) FILTER (WHERE wins + losses + draws > 0) AS pools,
+           COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) AS captured_matches
+         FROM card_pools
+         WHERE ${ownedPoolWhere}
+         GROUP BY COALESCE(pool_type, 'sealed')
+         HAVING COALESCE(SUM(wins + losses + draws), 0) > 0
+            OR COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) > 0
+         ORDER BY COALESCE(SUM(wins + losses + draws), 0) DESC, key ASC`,
+        params
+      ) as Promise<RawBreakdownRow[]>,
 
-    const setRows = await queryRows(
-      `SELECT
-         COALESCE(set_code, 'UNK') AS key,
-         COALESCE(set_code, 'UNK') AS label,
-         COALESCE(SUM(wins), 0) AS wins,
-         COALESCE(SUM(losses), 0) AS losses,
-         COALESCE(SUM(draws), 0) AS draws,
-         COUNT(*) FILTER (WHERE wins + losses + draws > 0) AS pools,
-         COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) AS captured_matches
-       FROM card_pools
-       WHERE ${ownedPoolWhere}
-       GROUP BY COALESCE(set_code, 'UNK')
-       HAVING COALESCE(SUM(wins + losses + draws), 0) > 0
-          OR COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) > 0
-       ORDER BY COALESCE(SUM(wins + losses + draws), 0) DESC, key ASC
-       LIMIT 8`,
-      params
-    ) as RawBreakdownRow[]
+      queryRows(
+        `SELECT
+           COALESCE(set_code, 'UNK') AS key,
+           COALESCE(set_code, 'UNK') AS label,
+           COALESCE(SUM(wins), 0) AS wins,
+           COALESCE(SUM(losses), 0) AS losses,
+           COALESCE(SUM(draws), 0) AS draws,
+           COUNT(*) FILTER (WHERE wins + losses + draws > 0) AS pools,
+           COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) AS captured_matches
+         FROM card_pools
+         WHERE ${ownedPoolWhere}
+         GROUP BY COALESCE(set_code, 'UNK')
+         HAVING COALESCE(SUM(wins + losses + draws), 0) > 0
+            OR COALESCE(SUM(cardinality(wayfinder_match_ids)), 0) > 0
+         ORDER BY COALESCE(SUM(wins + losses + draws), 0) DESC, key ASC
+         LIMIT 8`,
+        params
+      ) as Promise<RawBreakdownRow[]>,
 
-    const recentPoolRows = await queryRows(
-      `SELECT
-         share_id,
-         name,
-         set_code,
-         pool_type,
-         deck_builder_state,
-         wins,
-         losses,
-         draws,
-         cardinality(wayfinder_match_ids) AS captured_matches,
-         updated_at
-       FROM card_pools
-       WHERE ${ownedPoolWhere}
-         AND (wins + losses + draws > 0 OR cardinality(wayfinder_match_ids) > 0)
-       ORDER BY updated_at DESC
-       LIMIT 6`,
-      params
-    ) as RawRecentPoolRow[]
+      queryRows(
+        `SELECT
+           share_id,
+           name,
+           set_code,
+           pool_type,
+           deck_builder_state,
+           wins,
+           losses,
+           draws,
+           cardinality(wayfinder_match_ids) AS captured_matches,
+           updated_at
+         FROM card_pools
+         WHERE ${ownedPoolWhere}
+           AND (wins + losses + draws > 0 OR cardinality(wayfinder_match_ids) > 0)
+         ORDER BY updated_at DESC
+         LIMIT 6`,
+        params
+      ) as Promise<RawRecentPoolRow[]>,
 
-    // Every owned pool with games — aggregated by leader in JS for the
-    // leader-mix + win-rate-per-leader widget (leader lives in the JSON state,
-    // so we can't GROUP BY it in SQL).
-    const leaderPoolRows = await queryRows(
-      `SELECT deck_builder_state, wins, losses, draws
-       FROM card_pools
-       WHERE ${ownedPoolWhere}
-         AND (wins + losses + draws > 0)
-       ORDER BY updated_at DESC
-       LIMIT 300`,
-      params
-    ) as RawLeaderPoolRow[]
+      // Every owned pool with games — aggregated by leader in JS for the
+      // leader-mix + win-rate-per-leader widget (leader lives in the JSON state,
+      // so we can't GROUP BY it in SQL).
+      //
+      // buildLeaderBreakdown reads ONLY the leader + base out of each pool, so
+      // we trim deck_builder_state down to { activeLeader, activeBase, and those
+      // two cardPositions } in SQL instead of shipping up to 300 full pool blobs
+      // (every card with full card objects). The CASE guards a malformed/legacy
+      // shape by passing it through untouched, so the JS path is unchanged for
+      // those rows. The trim is spec'd + locked by leaderBreakdownPayload.test.ts
+      // (trimForLeader) — keep the two in sync.
+      queryRows(
+        `SELECT
+           CASE
+             WHEN jsonb_typeof(deck_builder_state) = 'object'
+              AND jsonb_typeof(deck_builder_state->'cardPositions') = 'object'
+             THEN jsonb_build_object(
+               'activeLeader', deck_builder_state->'activeLeader',
+               'activeBase', deck_builder_state->'activeBase',
+               'cardPositions', COALESCE((
+                 SELECT jsonb_object_agg(key, value)
+                 FROM jsonb_each(deck_builder_state->'cardPositions')
+                 WHERE key IN (deck_builder_state->>'activeLeader', deck_builder_state->>'activeBase')
+               ), '{}'::jsonb)
+             )
+             ELSE deck_builder_state
+           END AS deck_builder_state,
+           wins, losses, draws
+         FROM card_pools
+         WHERE ${ownedPoolWhere}
+           AND (wins + losses + draws > 0)
+         ORDER BY updated_at DESC
+         LIMIT 300`,
+        params
+      ) as Promise<RawLeaderPoolRow[]>,
 
-    const replayRow = await queryRow(
-      `SELECT COUNT(*) AS replays_recorded
-       FROM practice_matches pm
-       WHERE (pm.player1_id = $1 OR pm.player2_id = $1)
-         AND pm.wayfinder_replay_url IS NOT NULL
-         AND pm.created_at >= $2
-         AND pm.created_at < ($3::date + interval '1 day')
-         AND ($4 = 'all' OR EXISTS (
-           SELECT 1 FROM card_pools cp
-           WHERE cp.pod_id = pm.pod_id AND cp.user_id = $1 AND cp.set_code = $4
-         ))`,
-      params
-    ) as { replays_recorded?: string | number | null } | null
-
-    // DISTINCT ON (pm.id): a user can own several pools that share a pod_id
-    // (multiple builds of one draft pool), and the card_pools join fans out one
-    // match into N rows. Collapse to one row per match so the history isn't
-    // double-counted (R5). Pick the most recently updated matching pool.
-    const replayRows = await queryRows(
-      `SELECT * FROM (
-         SELECT DISTINCT ON (pm.id)
-           pm.id AS match_id,
-           pm.wayfinder_match_id,
-           pm.wayfinder_replay_url,
-           pm.created_at,
-           pm.match_winner,
-           pm.game1_result,
-           pm.game2_result,
-           pm.game3_result,
-           pm.player1_id,
-           pm.player2_id,
-           CASE WHEN pm.player1_id = $1 THEN u2.username ELSE u1.username END AS opponent_username,
-           CASE WHEN pm.player1_id = $1 THEN u2.avatar_url ELSE u1.avatar_url END AS opponent_avatar_url,
-           CASE WHEN pm.player1_id = $1 THEN pm.player2_leader ELSE pm.player1_leader END AS opponent_leader,
-           CASE WHEN pm.player1_id = $1 THEN pm.player2_leader_image ELSE pm.player1_leader_image END AS opponent_leader_image,
-           CASE WHEN pm.player1_id = $1 THEN pm.player2_base ELSE pm.player1_base END AS opponent_base,
-           CASE WHEN pm.player1_id = $1 THEN pm.player2_archetype ELSE pm.player1_archetype END AS opponent_archetype,
-           CASE WHEN pm.player1_id = $1 THEN pm.player1_archetype ELSE pm.player2_archetype END AS my_archetype,
-           cp.share_id AS pool_share_id,
-           cp.name AS pool_name,
-           cp.set_code,
-           cp.pool_type,
-           cp.deck_builder_state
+      queryRow(
+        `SELECT COUNT(*) AS replays_recorded
          FROM practice_matches pm
-         LEFT JOIN users u1 ON u1.id = pm.player1_id
-         LEFT JOIN users u2 ON u2.id = pm.player2_id
-         LEFT JOIN card_pools cp ON cp.pod_id = pm.pod_id AND cp.user_id = $1
          WHERE (pm.player1_id = $1 OR pm.player2_id = $1)
            AND pm.wayfinder_replay_url IS NOT NULL
            AND pm.created_at >= $2
            AND pm.created_at < ($3::date + interval '1 day')
-           AND ($4 = 'all' OR cp.set_code = $4)
-         ORDER BY pm.id, cp.updated_at DESC NULLS LAST
-       ) deduped
-       ORDER BY created_at DESC
-       LIMIT 50`,
-      params
-    ) as RawReplayRow[]
+           AND ($4 = 'all' OR EXISTS (
+             SELECT 1 FROM card_pools cp
+             WHERE cp.pod_id = pm.pod_id AND cp.user_id = $1 AND cp.set_code = $4
+           ))`,
+        params
+      ) as Promise<{ replays_recorded?: string | number | null } | null>,
 
-    // Casual (non-competitive) games — logged to casual_matches by the plugin.
-    const casualRows = await queryRows(
-      `SELECT
-         cm.id,
-         cm.wayfinder_match_id,
-         cm.wayfinder_replay_url,
-         cm.result,
-         cm.game1_result,
-         cm.game2_result,
-         cm.game3_result,
-         cm.opponent_name,
-         cm.player_archetype,
-         cm.opponent_leader,
-         cm.opponent_leader_image,
-         cm.opponent_base,
-         cm.opponent_archetype,
-         cm.played_at,
-         cp.share_id AS pool_share_id,
-         cp.name AS pool_name,
-         cp.set_code,
-         cp.pool_type,
-         cp.deck_builder_state
-       FROM casual_matches cm
-       LEFT JOIN card_pools cp ON cp.id = cm.card_pool_id
-       WHERE cm.user_id = $1
-         AND cm.wayfinder_replay_url IS NOT NULL
-         AND cm.played_at >= $2
-         AND cm.played_at < ($3::date + interval '1 day')
-         AND ($4 = 'all' OR cp.set_code = $4)
-       ORDER BY cm.played_at DESC
-       LIMIT 50`,
-      params
-    ) as RawCasualRow[]
+      // DISTINCT ON (pm.id): a user can own several pools that share a pod_id
+      // (multiple builds of one draft pool), and the card_pools join fans out one
+      // match into N rows. Collapse to one row per match so the history isn't
+      // double-counted (R5). Pick the most recently updated matching pool.
+      queryRows(
+        `SELECT * FROM (
+           SELECT DISTINCT ON (pm.id)
+             pm.id AS match_id,
+             pm.wayfinder_match_id,
+             pm.wayfinder_replay_url,
+             pm.created_at,
+             pm.match_winner,
+             pm.game1_result,
+             pm.game2_result,
+             pm.game3_result,
+             pm.player1_id,
+             pm.player2_id,
+             CASE WHEN pm.player1_id = $1 THEN u2.username ELSE u1.username END AS opponent_username,
+             CASE WHEN pm.player1_id = $1 THEN u2.avatar_url ELSE u1.avatar_url END AS opponent_avatar_url,
+             CASE WHEN pm.player1_id = $1 THEN pm.player2_leader ELSE pm.player1_leader END AS opponent_leader,
+             CASE WHEN pm.player1_id = $1 THEN pm.player2_leader_image ELSE pm.player1_leader_image END AS opponent_leader_image,
+             CASE WHEN pm.player1_id = $1 THEN pm.player2_base ELSE pm.player1_base END AS opponent_base,
+             CASE WHEN pm.player1_id = $1 THEN pm.player2_archetype ELSE pm.player1_archetype END AS opponent_archetype,
+             CASE WHEN pm.player1_id = $1 THEN pm.player1_archetype ELSE pm.player2_archetype END AS my_archetype,
+             cp.share_id AS pool_share_id,
+             p.share_id AS pool_draft_share_id,
+             cp.name AS pool_name,
+             cp.set_code,
+             cp.pool_type,
+             cp.deck_builder_state
+           FROM practice_matches pm
+           LEFT JOIN users u1 ON u1.id = pm.player1_id
+           LEFT JOIN users u2 ON u2.id = pm.player2_id
+           LEFT JOIN card_pools cp ON cp.pod_id = pm.pod_id AND cp.user_id = $1
+           LEFT JOIN pods p ON p.id = pm.pod_id
+           WHERE (pm.player1_id = $1 OR pm.player2_id = $1)
+             AND pm.wayfinder_replay_url IS NOT NULL
+             AND pm.created_at >= $2
+             AND pm.created_at < ($3::date + interval '1 day')
+             AND ($4 = 'all' OR cp.set_code = $4)
+           ORDER BY pm.id, cp.updated_at DESC NULLS LAST
+         ) deduped
+         ORDER BY created_at DESC
+         LIMIT 50`,
+        params
+      ) as Promise<RawReplayRow[]>,
+
+      // Casual (non-competitive) games — logged to casual_matches by the plugin.
+      queryRows(
+        `SELECT
+           cm.id,
+           cm.wayfinder_match_id,
+           cm.wayfinder_replay_url,
+           cm.result,
+           cm.game1_result,
+           cm.game2_result,
+           cm.game3_result,
+           cm.opponent_name,
+           cm.player_archetype,
+           cm.opponent_leader,
+           cm.opponent_leader_image,
+           cm.opponent_base,
+           cm.opponent_archetype,
+           cm.played_at,
+           cp.share_id AS pool_share_id,
+           p.share_id AS pool_draft_share_id,
+           cp.name AS pool_name,
+           cp.set_code,
+           cp.pool_type,
+           cp.deck_builder_state
+         FROM casual_matches cm
+         LEFT JOIN card_pools cp ON cp.id = cm.card_pool_id
+         LEFT JOIN pods p ON p.id = cp.pod_id
+         WHERE cm.user_id = $1
+           AND cm.wayfinder_replay_url IS NOT NULL
+           AND cm.played_at >= $2
+           AND cm.played_at < ($3::date + interval '1 day')
+           AND ($4 = 'all' OR cp.set_code = $4)
+         ORDER BY cm.played_at DESC
+         LIMIT 50`,
+        params
+      ) as Promise<RawCasualRow[]>,
+    ])
 
     if (shouldUseTerronkDevFixture(session.username, summaryRow, formatRows, replayRow)) {
       const devFixturePoolRows = await queryRows(

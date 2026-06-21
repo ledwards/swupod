@@ -144,40 +144,44 @@
   letter-spacing: 0.05em;
 }
 
-/* History — recorded games for this pool, below the play instructions */
-.play-history-panel {
-  margin-top: 1.25rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  text-align: center;
-}
-
-.play-history-label {
-  display: block;
-  margin-bottom: 0.85rem;
-  color: rgba(255, 255, 255, 0.55);
-  font-family: 'Barlow', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.play-record-blurb {
-  color: rgba(255, 255, 255, 0.8);
-  margin: 0 0 1rem 0;
-}
-
-.play-record-summary {
+.play-header-actions {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
-.play-record-link {
-  color: #2196f3;
-  font-weight: 600;
+.play-record-line {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.play-record-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0.22rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.42);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.88rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.play-record-match-link {
+  color: #93c5fd;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.play-stats-button {
+  min-height: 30px;
 }
 
 .practice-hand-button-container {

@@ -92,7 +92,10 @@ describe('<YourStats /> — index.tsx', () => {
   })
 
   it('renders Gameplay, Luck, Pools, and Meta tabs with Gameplay as the default', () => {
-    assert.match(INDEX_CODE, /useState<PersonalStatsTab>\(['"]gameplay['"]\)/)
+    // The active tab is now persisted via useStickyTab (URL #hash + localStorage,
+    // so it survives refresh + deep link). 'gameplay' is still the fallback
+    // default — the 2nd arg, after the ordered tab list.
+    assert.match(INDEX_CODE, /useStickyTab<PersonalStatsTab>\(\s*\[[^\]]*\]\s*,\s*['"]gameplay['"]/)
     assert.match(INDEX_CODE, />\s*Gameplay\s*</)
     assert.match(INDEX_CODE, />\s*Luck\s*</)
     assert.match(INDEX_CODE, />\s*Pools\s*</)
@@ -146,18 +149,17 @@ describe('<LoggedOutCTA />', () => {
     assert.match(LOGGED_OUT_CODE, /Sign in with Discord/i)
   })
 
-  it('promotes the Companion and Chrome install path', () => {
-    assert.match(LOGGED_OUT_CODE, /Wayfinder Companion/i)
-    assert.match(LOGGED_OUT_CODE, /queue[\s\S]*with your pool/i)
-    assert.match(LOGGED_OUT_CODE, /rewatch your[\s\S]*replays/i)
-    assert.ok(LOGGED_OUT_CODE.includes('WayfinderStoreButtons'))
-    assert.ok(STORE_BUTTONS_SRC.includes('https://chromewebstore.google.com/detail/wayfinder-companion/econclbajpendbppldcnpngjfddcogfh'))
-    assert.match(STORE_BUTTONS_SRC, /Add to Chrome/i)
-    assert.match(STORE_BUTTONS_SRC, /Safari/i)
-    assert.match(STORE_BUTTONS_SRC, /Firefox/i)
-    assert.match(STORE_BUTTONS_SRC, /Coming soon/i)
-    assert.match(STORE_BUTTONS_SRC, /Powered by/i)
-    assert.match(STORE_BUTTONS_SRC, /wayfinder\.news/i)
+  it('pitches the signed-in value (pools, luck, meta) without the beta-gated Companion promo', () => {
+    // The Wayfinder Companion promotion was gated behind the beta program
+    // (commit 1491710): the lockup + store buttons moved to the Gameplay and
+    // Activity dashboards, and the anonymous CTA now pitches signing in to see
+    // pools/decks, pull luck, and the Limited meta. No Companion copy or store
+    // buttons live in this component anymore.
+    assert.match(LOGGED_OUT_CODE, /pools and decks/i)
+    assert.match(LOGGED_OUT_CODE, /pull luck/i)
+    assert.match(LOGGED_OUT_CODE, /Limited meta/i)
+    assert.doesNotMatch(LOGGED_OUT_CODE, /Wayfinder Companion/i)
+    assert.ok(!LOGGED_OUT_CODE.includes('WayfinderStoreButtons'))
   })
 
   it('does NOT render any personal data placeholders (zeros, em-dashes, "your")', () => {
@@ -179,6 +181,23 @@ describe('<LoggedOutCTA />', () => {
     const hasInlineGap = /marginRight:\s*8/.test(LOGGED_OUT_CODE)
     const hasCssGap = /a\.your-stats-logged-out-link[\s\S]*?gap:\s*8px/.test(CSS_SRC)
     assert.ok(hasInlineGap || hasCssGap, 'expected icon-text gap on Discord button')
+  })
+})
+
+// --- WayfinderStoreButtons -------------------------------------------------
+
+describe('<WayfinderStoreButtons />', () => {
+  it('links to the Chrome Web Store listing and names every browser path', () => {
+    // Shared Companion install widget. It used to be embedded in LoggedOutCTA;
+    // it now renders inside the Gameplay/Activity dashboards' Companion CTA.
+    // Either way it owns the install link + browser-availability copy.
+    assert.ok(STORE_BUTTONS_SRC.includes('https://chromewebstore.google.com/detail/wayfinder-companion/econclbajpendbppldcnpngjfddcogfh'))
+    assert.match(STORE_BUTTONS_SRC, /Add to Chrome/i)
+    assert.match(STORE_BUTTONS_SRC, /Safari/i)
+    assert.match(STORE_BUTTONS_SRC, /Firefox/i)
+    assert.match(STORE_BUTTONS_SRC, /Coming soon/i)
+    assert.match(STORE_BUTTONS_SRC, /Powered by/i)
+    assert.match(STORE_BUTTONS_SRC, /wayfinder\.news/i)
   })
 })
 
@@ -206,6 +225,31 @@ describe('<GameplayDashboard />', () => {
     }
     assert.match(CSS_SRC, /your-stats-outcome-bars/)
     assert.match(CSS_SRC, /your-stats-breakdown-fill/)
+  })
+
+  it('colors the usage pies via the tested usagePie helper (distinct per item)', () => {
+    // Wedges get distinct palette colors and are cut apart; the logic lives in
+    // the unit-tested usagePie helper — it must not be re-inlined here.
+    assert.match(GAMEPLAY_CODE, /import\s*\{[^}]*\bbuildUsagePieStops\b[^}]*\busagePieColor\b[^}]*\}\s*from\s*['"]\.\/usagePie['"]/)
+    assert.match(GAMEPLAY_CODE, /buildUsagePieStops\(/)
+    assert.match(GAMEPLAY_CODE, /usagePieColor\(/)
+    assert.match(GAMEPLAY_CODE, /conic-gradient\(\$\{pieStops\}\)/)
+  })
+
+  it('renders both the Your Leaders and Your Archetypes usage pies', () => {
+    // The archetype pie mirrors the leaders pie via the shared UsagePieCard and
+    // reads from the API's archetypeBreakdown.
+    assert.match(GAMEPLAY_CODE, /<UsagePieCard/)
+    assert.match(GAMEPLAY_CODE, /title="Your Leaders"/)
+    assert.match(GAMEPLAY_CODE, /title="Your Archetypes"/)
+    assert.match(GAMEPLAY_CODE, /archetypeBreakdown/)
+  })
+
+  it('uses the unit-side (back) leader art for the pie legends', () => {
+    // Both pies prefer leaderBackImageUrl (the "..._Unit_..." art) over the
+    // leader side, falling back to the front when there's no back image.
+    assert.match(GAMEPLAY_CODE, /art: l\.leaderBackImageUrl \|\| l\.leaderImageUrl/)
+    assert.match(GAMEPLAY_CODE, /art: a\.leaderBackImageUrl \|\| a\.leaderImageUrl/)
   })
 
   it('renders replay search, filters, sorting, leader art, and watch/deck actions', () => {

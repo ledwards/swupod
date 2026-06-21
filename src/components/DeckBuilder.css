@@ -1050,6 +1050,9 @@
 
 /* Rainbow border for sort buttons - thin outline only */
 .sort-button-icon {
+  --rainbow-border-reference: 44px;
+  --rainbow-border-size: calc(var(--rainbow-border-reference) * var(--rainbow-border-thickness-ratio));
+  --rainbow-border-radius: calc(var(--rainbow-border-reference) * var(--rainbow-border-radius-ratio));
   position: relative;
   isolation: isolate;
   overflow: visible;
@@ -1058,24 +1061,14 @@
 .sort-button-icon::before {
   content: '';
   position: absolute;
-  inset: -2px;
-  border-radius: 8px;
-  background: linear-gradient(
-    45deg,
-    #ff0000,
-    #ff7f00,
-    #ffff00,
-    #00ff00,
-    #0000ff,
-    #4b0082,
-    #9400d3,
-    #ff0000
-  );
-  background-size: 400% 400%;
+  inset: calc(var(--rainbow-border-size) * -1);
+  border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
+  background: var(--rainbow-border-gradient);
+  background-size: var(--rainbow-border-background-size);
   z-index: -1;
   opacity: 0;
   transition: opacity 0.3s ease;
-  animation: rainbow-border 3s linear infinite;
+  animation: var(--rainbow-border-animation);
   pointer-events: none;
 }
 

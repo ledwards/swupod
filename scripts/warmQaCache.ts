@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Warm the in-process QA stat caches (lib/statCache) by hitting the heavy endpoints
  * for every set, so no real user ever pays the cold ~60s computation.
@@ -28,7 +27,8 @@ async function warm() {
         const r = await fetch(url)
         console.log(`  ${r.ok ? 'ok ' : 'ERR'} ${((Date.now() - t) / 1000).toFixed(1)}s  ${ep}  ${set}`)
       } catch (e) {
-        console.log(`  ERR ${ep} ${set}: ${e.message}`)
+        const message = e instanceof Error ? e.message : String(e)
+        console.log(`  ERR ${ep} ${set}: ${message}`)
       }
     }
   }

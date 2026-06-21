@@ -1,0 +1,142 @@
+/**
+ * DraftSlideshow.css — overlay shell, immersive background, and reserved layout
+ * chrome ONLY (Unit U4). The tab bar, stage, and nav children own their own CSS.
+ *
+ * Hard rule: NO `overflow` on the overlay or its bands. No-scroll is the whole
+ * point. The stage band is the viewport MINUS the two fixed reserved bands, so
+ * its height is stable across slides (layout-shift discipline).
+ */
+
+/* Reserved chrome heights — the single source of truth for the layout math.
+   The stage band = 100vh - (tabbar + navbar). Children read these too. */
+.draft-slideshow {
+  --slideshow-tabbar-h: 96px;
+  --slideshow-navbar-h: 72px;
+
+  position: fixed;
+  inset: 0;
+  z-index: 10000; /* above the report (PackDraftPhase fullscreen uses 9998) */
+  font-family: 'Barlow', sans-serif;
+  color: white;
+  outline: none;
+}
+
+/* Full-viewport set art, behind a darkening scrim. */
+.draft-slideshow-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Darkening scrim so foreground cards/labels read clearly over the art. */
+.draft-slideshow-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(9, 9, 9, 0.55), rgba(9, 9, 9, 0.55)),
+    linear-gradient(to bottom, rgba(9, 9, 9, 0.85) 0%, rgba(9, 9, 9, 0.35) 18%, rgba(9, 9, 9, 0.35) 80%, rgba(9, 9, 9, 0.9) 100%);
+}
+
+/* Three stacked bands: fixed tab bar, fluid stage, fixed nav bar. */
+.draft-slideshow-layout {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-rows: var(--slideshow-tabbar-h) 1fr var(--slideshow-navbar-h);
+  /* Bound the single column to the viewport (minmax floor 0) so wide multi-row
+     content can never widen the grid past the screen — otherwise an `auto`
+     column sizes to max-content and the stage measures its own inflated width,
+     a feedback loop that never re-fits down on viewport shrink. */
+  grid-template-columns: minmax(0, 1fr);
+  /* No overflow — the stage fits via U6's fit math; this never scrolls. */
+}
+
+.draft-slideshow-tabbar {
+  height: var(--slideshow-tabbar-h);
+  min-height: var(--slideshow-tabbar-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The stage band is the stable middle region. Its size never depends on the
+   slide contents (U6 fits cards INTO this box). */
+.draft-slideshow-stage {
+  min-height: 0; /* allow the grid row to actually constrain the child */
+  min-width: 0; /* allow the grid column to constrain width too (no content-driven overflow) */
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.draft-slideshow-stage--message {
+  padding: 0 24px;
+  text-align: center;
+}
+
+.draft-slideshow-navbar {
+  height: var(--slideshow-navbar-h);
+  min-height: var(--slideshow-navbar-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Close button, pinned top-right above everything. */
+.draft-slideshow-close.btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 5;
+  opacity: 0.7;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .draft-slideshow-close.btn:hover {
+    opacity: 1;
+  }
+}
+
+/* Loading state. */
+.draft-slideshow-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.1rem;
+}
+
+.draft-slideshow-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  animation: draft-slideshow-spin 0.8s linear infinite;
+}
+
+@keyframes draft-slideshow-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error state. */
+.draft-slideshow-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.05rem;
+}
+
+.draft-slideshow-error p {
+  margin: 0;
+}

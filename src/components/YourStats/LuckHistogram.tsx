@@ -33,6 +33,15 @@ const ASPECT_ICON: Record<string, string> = {
   Cunning: '/icons/cunning.png',
   Heroism: '/icons/heroism.png',
   Villainy: '/icons/villainy.png',
+  Multicolor: '/icons/aspects.png',
+}
+
+const RARITY_ICON: Record<string, string> = {
+  Common: '/icons/rarity/common.png',
+  Uncommon: '/icons/rarity/uncommon.png',
+  Rare: '/icons/rarity/rare.png',
+  Legendary: '/icons/rarity/legendary.png',
+  Special: '/icons/rarity/special.png',
 }
 
 function AspectIcons({ aspects }: { aspects: string[] }) {
@@ -133,7 +142,12 @@ function CardReadout({ hit, packsCracked }: { hit: CardHit | null; packsCracked:
       <div className="your-stats-luck-readout-head">
         <AspectIcons aspects={hit.aspects} />
         <strong>{hit.name}</strong>
-        <span className="your-stats-luck-readout-num">#{hit.number}</span>
+        <span className="your-stats-luck-readout-num">
+          #{hit.number}
+          {RARITY_ICON[hit.rarity] && (
+            <img className="your-stats-luck-readout-rarity" src={RARITY_ICON[hit.rarity]} alt={hit.rarity} title={hit.rarity} width={15} height={15} />
+          )}
+        </span>
       </div>
       <div className="your-stats-luck-readout-body">
         <span className="your-stats-luck-readout-count">You pulled it <strong>{hit.count}×</strong></span>
@@ -224,7 +238,7 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
       <div className="your-stats-luck-hist-head">
         <div>
           <h4>Every card you opened</h4>
-          <p>Bars are cards in collector-number order, colored by aspect. Taller = you pulled it more.</p>
+          <p>Bars are cards in collector-number order, colored by aspect. Height = how many you pulled — twice as tall means twice as many.</p>
         </div>
         <label className="your-stats-search your-stats-luck-hist-search">
           <input
@@ -295,10 +309,12 @@ export function LuckHistogram({ cardHits, packsCracked }: { cardHits: CardHit[];
         onScroll={recomputeScroll}
       >
         {sortedHits.map((hit) => {
-          // sqrt scale: keeps single pulls visible even when one card spikes,
-          // and stays readable whether you've opened 10 packs or 1000.
-          const scale = (v: number) => (v > 0 ? (Math.sqrt(v) / Math.sqrt(maxCount)) * 100 : 0)
-          const heightPct = hit.count > 0 ? Math.max(8, scale(hit.count)) : 0
+          // Linear scale so the chart reads as a true histogram: a card pulled
+          // twice is exactly twice as tall as one pulled once. (A small CSS
+          // min-height on the bar keeps single pulls visible without distorting
+          // the ratio the way the old sqrt scale did.)
+          const scale = (v: number) => (v > 0 ? (v / maxCount) * 100 : 0)
+          const heightPct = scale(hit.count)
           const expPct = Math.min(100, scale(hit.expected))
           const dimmed = isDimmed(hit)
           const isActive = active?.cardId === hit.cardId
@@ -365,7 +381,8 @@ export interface DuplicatesData {
   avgPacksPerPool: number
   actualPerPool: number
   expectedPerPool: number
-  /** SE of the model's expected mean across the user's pools (for the z-test). */
+  /** Model's typical per-pool spread (σ) — natural variation between pools,
+   *  invariant to how many pools you've opened (NOT the standard error of the mean). */
   expectedSd?: number
   /** False when this set has no precomputed duplicate model yet. */
   hasModel?: boolean
@@ -380,6 +397,12 @@ export interface ShowcaseData {
 
 function pct(n: number): string {
   return `${(n * 100).toFixed(n >= 0.1 ? 0 : 1)}%`
+}
+
+// Card counts are whole — show "5", not "5.0". Keep a single decimal only when
+// the value is genuinely fractional (e.g. a per-pool average across many pools).
+function wholeIfInt(n: number, dp = 1): string {
+  return Number.isInteger(n) ? String(n) : n.toFixed(dp)
 }
 
 export function DuplicateRateWidget({ data }: { data: DuplicatesData }) {
@@ -404,7 +427,7 @@ export function DuplicateRateWidget({ data }: { data: DuplicatesData }) {
       <h4>Duplicates per pool</h4>
       <div className="your-stats-luck-widget-figures">
         <div>
-          <span className="your-stats-luck-widget-num">{actual.toFixed(1)}</span>
+          <span className="your-stats-luck-widget-num">{wholeIfInt(actual)}</span>
           <span className="your-stats-luck-widget-cap">you saw</span>
         </div>
         <span className="your-stats-luck-widget-vs">vs</span>
@@ -465,6 +488,14 @@ const ALIGN_COLOR: Record<string, string> = {
 
 type Slice = { label: string; value: number; expected: number; color: string }
 
+function PieLegendMark({ slice }: { slice: Slice }) {
+  const icon = ASPECT_ICON[slice.label]
+  if (icon) {
+    return <img className="your-stats-luck-pie-icon" src={icon} alt="" width={15} height={15} />
+  }
+  return <span className="your-stats-luck-pie-dot" style={{ background: slice.color }} />
+}
+
 function Pie({ title, slices }: { title: string; slices: Slice[] }) {
   const { ref: pieRef, inView } = useRevealOnView()
   const total = slices.reduce((s, x) => s + x.value, 0)
@@ -490,8 +521,7 @@ function Pie({ title, slices }: { title: string; slices: Slice[] }) {
             const expPct = expTotal > 0 ? Math.round((s.expected / expTotal) * 100) : 0
             return (
               <li key={s.label}>
-                <span className="your-stats-luck-pie-dot" style={{ background: s.color }} />
-                {ASPECT_ICON[s.label] && <img src={ASPECT_ICON[s.label]} alt="" width={15} height={15} />}
+                <PieLegendMark slice={s} />
                 <span className="your-stats-luck-pie-label">{s.label}</span>
                 <span className="your-stats-luck-pie-val">
                   {Math.round(s.value)} · {pct}%
@@ -527,14 +557,14 @@ export function AspectBreakdown({ cardHits }: { cardHits: CardHit[] }) {
   return (
     <div className="your-stats-luck-aspects">
       <h4>Aspect mix</h4>
-      <p className="your-stats-luck-aspects-note">
-        Counts every card that <em>includes</em> a color, so a dual-color card lands in
-        two aspects — slices add to more than the cards you opened. Expected % is for this set.
-      </p>
       <div className="your-stats-luck-pies">
         <Pie title="Main Aspects" slices={primarySlices} />
         <Pie title="Heroism / Villainy / Multicolor" slices={alignSlices} />
       </div>
+      <p className="your-stats-luck-aspects-note">
+        Counts every card that <em>includes</em> a color, so a dual-color card lands in
+        two aspects — slices add to more than the cards you opened. Expected % is for this set.
+      </p>
     </div>
   )
 }

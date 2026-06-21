@@ -141,6 +141,45 @@
   color: #888;
 }
 
+/* Competitive Practice Mode: timers are fixed by Appendix C rules and can't be
+   changed, so they render as static, locked, disabled-looking chips. */
+.competitive-timers {
+  gap: 12px;
+}
+
+.competitive-timer-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  cursor: not-allowed;
+  user-select: none;
+}
+
+.competitive-timer-chip svg {
+  flex-shrink: 0;
+  color: #6b6b6b;
+}
+
+.competitive-timer-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #9a9a9a;
+}
+
+.competitive-timer-value {
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-style: italic;
+  color: #7d7d7d;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+
 .setting-select {
   background: rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -456,6 +495,11 @@
     flex-direction: row;
     gap: 8px;
     flex-wrap: nowrap;
+  }
+
+  .competitive-timers {
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
   .setting-checkbox {

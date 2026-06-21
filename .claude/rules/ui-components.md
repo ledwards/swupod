@@ -32,6 +32,22 @@ Use `src/components/Card.jsx`. Key CSS classes: `.canvas-card`, `.canvas-card.se
 ## Modal Component
 Use `src/components/Modal.jsx` with `<Modal.Body>` and `<Modal.Actions>`.
 
+## Plugin CTA — Wayfinder Companion (ALWAYS USE)
+Use `src/components/PluginCTA.tsx` for EVERY "install the Wayfinder Companion" pitch. **Never** hand-roll an install block, and never drop `WayfinderStoreButtons` straight into a surface — it lives inside `PluginCTA`.
+
+```jsx
+import PluginCTA, { usePluginCTA } from '@/src/components/PluginCTA'
+
+<PluginCTA />                       // card (default) — empty states, /me, deck stats
+<PluginCTA variant="autodetect" /> // single install button for the current browser (play page columns)
+<PluginCTA variant="compact" />    // just the browser logos (tight nudges)
+```
+
+- **Self-gating** — the component decides what to show: the install pitch for users in the rollout (`isCompanionBeta` = admin), a neutral "Coming soon" for everyone else, and **nothing** for users who already have the Companion (detected OR have recorded games). Call sites pass only a variant.
+- **To branch a surface** (e.g. show a "Play deck" prompt to users who already have it), read `usePluginCTA()` → `{ state, shouldShow, hasPlugin }`. Never re-implement the gating.
+- The hero is the OFFICIAL single combined lockup (`/branding/wayfinder_companion.svg`) — never a bare mark beside a separate wordmark.
+- QA override: `?plugincta=install|soon|hide` forces the state on any session.
+
 ## Design Tokens
 - Dark backgrounds: `rgba(0, 0, 0, 0.7)`
 - Borders: `rgba(255, 255, 255, 0.3)`

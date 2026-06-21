@@ -50,6 +50,9 @@
 }
 
 .showcases-title {
+  --rainbow-border-reference: 160px;
+  --rainbow-border-size: calc(var(--rainbow-border-reference) * var(--rainbow-border-thickness-ratio));
+  --rainbow-border-radius: calc(var(--rainbow-border-reference) * var(--rainbow-border-radius-ratio));
   position: fixed;
   top: 20px;
   left: 50%;
@@ -70,25 +73,19 @@
 .showcases-title::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   border-radius: 30px;
-  background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000);
-  background-size: 400% 400%;
+  background: var(--rainbow-border-gradient);
+  background-size: var(--rainbow-border-background-size);
   z-index: -2;
-  animation: rainbow-border 3s linear infinite;
+  animation: var(--rainbow-border-animation);
 }
 
 .showcases-title::after {
   content: '';
   position: absolute;
-  top: 2px;
-  left: 2px;
-  right: 2px;
-  bottom: 2px;
-  border-radius: 28px;
+  inset: var(--rainbow-border-size);
+  border-radius: calc(30px - var(--rainbow-border-size));
   background: black;
   z-index: -1;
 }
@@ -148,11 +145,11 @@
 
 .showcases-count:hover {
   border-color: transparent;
-  background-image: linear-gradient(black, black), linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000);
+  background-image: linear-gradient(black, black), var(--rainbow-border-gradient);
   background-origin: border-box;
   background-clip: padding-box, border-box;
-  background-size: 100% 100%, 400% 400%;
-  animation: rainbow-border 3s linear infinite;
+  background-size: 100% 100%, var(--rainbow-border-background-size);
+  animation: var(--rainbow-border-animation);
 }
 
 /* Showcase Card */
@@ -352,11 +349,11 @@
   background: rgba(255, 255, 255, 0.1);
   transform: scale(1.05);
   border-color: transparent;
-  background-image: linear-gradient(black, black), linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000);
+  background-image: linear-gradient(black, black), var(--rainbow-border-gradient);
   background-origin: border-box;
   background-clip: padding-box, border-box;
-  background-size: 100% 100%, 400% 400%;
-  animation: rainbow-border 3s linear infinite;
+  background-size: 100% 100%, var(--rainbow-border-background-size);
+  animation: var(--rainbow-border-animation);
 }
 
 .showcases-share-button svg {
@@ -459,6 +456,9 @@
 }
 
 .showcase-image-modal-content {
+  --rainbow-border-reference: min(95vw, 720px);
+  --rainbow-border-size: calc(var(--rainbow-border-reference) * var(--rainbow-border-thickness-ratio));
+  --rainbow-border-radius: calc(var(--rainbow-border-reference) * var(--rainbow-border-radius-ratio));
   position: relative;
   max-width: 95vw;
   max-height: 95vh;
@@ -471,25 +471,19 @@
 .showcase-image-modal-content::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 14px;
-  background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000);
-  background-size: 400% 400%;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--rainbow-border-gradient);
+  background-size: var(--rainbow-border-background-size);
   z-index: -2;
-  animation: rainbow-border 3s linear infinite;
+  animation: var(--rainbow-border-animation);
 }
 
 .showcase-image-modal-content::after {
   content: '';
   position: absolute;
-  top: 2px;
-  left: 2px;
-  right: 2px;
-  bottom: 2px;
-  border-radius: 12px;
+  inset: var(--rainbow-border-size);
+  border-radius: calc(14px - var(--rainbow-border-size));
   background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
   z-index: -1;
 }

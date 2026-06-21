@@ -1,7 +1,7 @@
 ---
 title: "feat: Draft Report Slideshow Mode"
 type: feat
-status: active
+status: completed
 date: 2026-06-17
 deepened: 2026-06-17
 ---
@@ -271,7 +271,7 @@ Worst-case sanity (8 rows × 14 portrait, gap = 8px, label gutter ≈ 150px): on
 
 ---
 
-- [ ] **U1. All-seats slideshow data endpoint (gated)**
+- [x] **U1. All-seats slideshow data endpoint (gated)**
 
 **Goal:** Serve every seat's reconstructed picks for one draft, in one gated request, so the client never fans out fetches or filters privacy.
 
@@ -312,7 +312,7 @@ Worst-case sanity (8 rows × 14 portrait, gap = 8px, label gutter ≈ 150px): on
 
 ---
 
-- [ ] **U2. Fit-to-viewport sizing util (pure) + spec tests**
+- [x] **U2. Fit-to-viewport sizing util (pure) + spec tests**
 
 **Goal:** Given the content box, the per-row card counts, and card aspect, compute the card pixel size (and per-mode layout) that fills the space **without scrolling**, capping at native resolution and flagging sub-floor density.
 
@@ -350,7 +350,7 @@ Worst-case sanity (8 rows × 14 portrait, gap = 8px, label gutter ≈ 150px): on
 
 ---
 
-- [ ] **U3. `useElementSize` hook (ResizeObserver, debounced)**
+- [x] **U3. `useElementSize` hook (ResizeObserver, debounced)**
 
 **Goal:** Measure the stage's content box and re-emit on resize so the stage can re-fit, without per-frame thrash.
 
@@ -376,7 +376,7 @@ Worst-case sanity (8 rows × 14 portrait, gap = 8px, label gutter ≈ 150px): on
 
 ---
 
-- [ ] **U4. Slideshow overlay shell — toggle, takeover, background, exit**
+- [x] **U4. Slideshow overlay shell — toggle, takeover, background, exit**
 
 **Goal:** A full-viewport takeover launched from the report header, with the set-art + pattern background, body scroll-lock, Escape/toggle-to-exit, focus management, and the slideshow's own state (`slideIndex`, `selectedSeats`). Lazy-fetches U1 data on first open.
 
@@ -412,7 +412,7 @@ Worst-case sanity (8 rows × 14 portrait, gap = 8px, label gutter ≈ 150px): on
 
 ---
 
-- [ ] **U5. Player tabs — multi-select + "All"**
+- [x] **U5. Player tabs — multi-select + "All"**
 
 **Goal:** The top row of up-to-8 player tabs (avatar + name + leader + base) plus an "All" button, multi-select, with locked seats shown but unselectable-to-empty.
 
@@ -444,7 +444,7 @@ Worst-case sanity (8 rows × 14 portrait, gap = 8px, label gutter ≈ 150px): on
 
 ---
 
-- [ ] **U6. Slideshow stage — fitted card rows (single + multi), highlight, cap**
+- [x] **U6. Slideshow stage — fitted card rows (single + multi), highlight, cap**
 
 **Goal:** The main stage that fills the content box with the selected players' packs-on-offer at the current slide — single-player wrapped/centered (native cap), multi-player one labeled row per player — all without scrolling, with the picked card highlighted.
 
@@ -482,7 +482,7 @@ Worst-case sanity (8 rows × 14 portrait, gap = 8px, label gutter ≈ 150px): on
 
 ---
 
-- [ ] **U7. Bottom navigation — "Pack X, Pick Y", prev/next, edge arrows, keyboard**
+- [x] **U7. Bottom navigation — "Pack X, Pick Y", prev/next, edge arrows, keyboard**
 
 **Goal:** The bottom slide label and the prev/next controls — on-screen edge arrows and keyboard Left/Right in parity — with hard-stop disabled states at the ends.
 
@@ -513,7 +513,7 @@ Worst-case sanity (8 rows × 14 portrait, gap = 8px, label gutter ≈ 150px): on
 
 ---
 
-- [ ] **U8. Playwright visual validation + mobile gating**
+- [x] **U8. Playwright visual validation + mobile gating**
 
 **Goal:** Prove — through the UI, across viewports — that the feature meets the visual requirements, especially no-scroll and sizing.
 

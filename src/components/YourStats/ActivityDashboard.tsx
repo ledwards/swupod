@@ -17,7 +17,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import WayfinderStoreButtons from '@/src/components/WayfinderStoreButtons'
+import PluginCTA from '@/src/components/PluginCTA'
 
 const STATS_START_DATE = process.env.NEXT_PUBLIC_STATS_START_DATE || '2026-02-12'
 
@@ -234,19 +234,8 @@ export function ActivityDashboard({ since, until, setCode, filterLabel, fetchImp
       >
         <h3 className="your-stats-section-heading">Activity</h3>
         <div className="your-stats-companion-empty" data-testid="activity-empty">
-          <h4>Start capturing play data</h4>
-          <p>
-            Install the Wayfinder Companion, play your Protect the Pod pool on
-            Karabast, and your matches can become stats and replays here.
-          </p>
-          <ul>
-            <li>Join the Karabast queue with your pool</li>
-            <li>Collect stats tied to that pool</li>
-            <li>Record and rewatch your replays</li>
-            <li>Take notes, enrich your games with metadata</li>
-          </ul>
+          <PluginCTA variant="card" />
           <div className="your-stats-companion-empty-actions">
-            <WayfinderStoreButtons orientation="inline" />
             <span>
               Or start with a <a href="/sealed" className="your-stats-link">sealed pool</a> or{' '}
               <a href="/draft" className="your-stats-link">draft</a>.

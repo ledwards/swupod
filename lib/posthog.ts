@@ -1,3 +1,4 @@
+import { after } from 'next/server'
 import { buildLimitedContext } from '@/src/analytics/limitedEvents'
 
 function posthogKey() {
@@ -28,7 +29,8 @@ export async function captureServerEvent(
         api_key: apiKey,
         event,
         distinct_id: distinctId,
-        properties,
+        // Segment swupod within the shared mega-project.
+        properties: { ...properties, surface: 'swupod' },
       }),
     })
     return response.ok
@@ -43,9 +45,19 @@ export function captureServerEventLater(
   distinctId: string | null | undefined,
   properties: Record<string, unknown> = {}
 ) {
-  captureServerEvent(event, distinctId, properties).catch(error => {
-    console.warn('[posthog] capture failed', error)
-  })
+  const run = () =>
+    captureServerEvent(event, distinctId, properties).catch(error => {
+      console.warn('[posthog] capture failed', error)
+    })
+  // On Vercel serverless the function can freeze the instant the response is
+  // sent, dropping un-awaited work. `after()` keeps the capture alive past the
+  // response flush. Outside a request scope (scripts/tests) `after()` throws —
+  // fall back to plain fire-and-forget.
+  try {
+    after(run)
+  } catch {
+    run()
+  }
 }
 
 export function buildLimitedServerProperties(properties: Record<string, unknown> = {}) {

@@ -1,5 +1,58 @@
 # Release Notes
 
+## 06.20.2026
+
+### 🎴 Competitive Draft — Pack Review
+
+- The between-pack **Review Your Cards** peek now fills the screen, so you can take in your whole pool at a glance during the 30-second window.
+- Group your drafted cards three ways with one tap — **Pack Order**, **Cost**, or **Aspect** — with graphical buttons matching the deck builder.
+- **Pack Order** lays cards out in rows by pack (like a freshly opened pool); **Cost** and **Aspect** stack them into labeled columns with cost and aspect icons.
+- **Small / Medium / Large** toggle to fit more cards in or see them bigger.
+
+### 🏆 Competitive Practice Lobby & Timer
+
+- The Competitive Practice Mode rules are now a collapsible panel (collapsed by default), tucked below Host Controls so the lobby stays clean.
+- Timer settings read as fixed in Competitive Mode — **Round Timer: Competitive Rules** and **Pick Timer: disabled** — making it clear the official schedule is in effect and can't be changed.
+- The in-draft timer is now labeled **Round Timer** in Competitive Mode, matching the official per-card round schedule.
+
+### ✨ Polish
+
+- A little more breathing room above the "Selected" confirmation when you pick your leader.
+
+### 🎞️ Draft Report Slideshow
+
+- New Slideshow mode for Draft Reports
+- Review a finished draft with your pod, full-screen, ideal for screensharing on Discord — Slideshow Mode shows every seat's pack at each pick, sized to fill the screen with no scrolling.
+- Tabs across the top allow you to review one player at a time or the whole team at once
+- Step pick-by-pick with on-screen or left/right arrow keys, from leaders through all three packs.
+- Visually highlight a player row with up/down arrows.
+
+### ⏱️ Competitive Draft Pick Timer
+- The round timer dial now follows the official per-card schedule (more time early, less as the pack empties), so the clock always matches how long you actually have — even deep into a pack.
+- Pick timer is disabled in Competitive Mode (all players have the full round time to pick a card.)
+
+### 🃏 Deck Images
+- Pod deck images now include the QR code, set-art background, and full footer — matching the play-page export. All four deck-image surfaces share one renderer now.
+
+### 📊 Your Stats
+- New Your Leaders and Your Archetypes data visualization, plus a cleaned-up luck histogram and corrected spread (σ for the math dorks).
+
+### 🐛 Bug Fixes
+- Private lobby links paste cleanly (Karabast's new `/lobby?lobbyId=…` format).
+- Recorded games no longer double-count in deck stats, even if reported through more than one path.
+
+## 06.19.2026
+
+### 🎮 Deck Stats + Homepage Polish
+- **Gameplay and Matchups empty states are clearer**: Players outside the Wayfinder rollout now just see `Coming Soon`, while flagged users get the right deck-specific prompt. If Wayfinder is installed but there are no games yet, the tab points you at the play page for that deck.
+- **The homepage Discord login button is easier to hit**: Logged-out visitors now get a larger `Login with Discord` button with more breathing room above and below it, while logged-in Discord prompts keep their existing size.
+
+### ⚡ Performance
+- **My Stats loads faster**: We've made the **My Stats** page noticeably quicker to load — it now fetches less behind the scenes, loads what's left in parallel, and reuses shared data across visitors, so your stats fill in faster.
+
+### 🐛 Bug Fixes
+- **Watch links on My Stats open the right replay**: On the **My Stats** Performance tab, a recorded game's **Watch** button could hit an "out of range" error and a Discord login — even for replays you own — because the replay link was built from the wrong identifier. Watch now opens the correct replay, and clicking the game row itself takes you to its match page on Wayfinder.
+
 ## 06.15.2026
 
 ### 🧭 Wayfinder Companion

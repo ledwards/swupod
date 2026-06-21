@@ -63,6 +63,7 @@ export function ResizableCard({
 }: ResizableCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [borderRadius, setBorderRadius] = useState(BASE_RADIUS)
+  const [cardWidth, setCardWidth] = useState(BASE_CARD_WIDTH)
 
   // Update border radius when card resizes
   useEffect(() => {
@@ -75,6 +76,7 @@ export function ResizableCard({
       if (cardRef.current) {
         const width = cardRef.current.offsetWidth
         const newRadius = Math.round(width * ratio)
+        setCardWidth(width)
         setBorderRadius(newRadius)
       }
     }
@@ -112,6 +114,7 @@ export function ResizableCard({
   ].filter(Boolean).join(' ')
 
   const cardStyle: CSSProperties = {
+    '--rainbow-border-reference': `${cardWidth}px`,
     borderRadius: `${borderRadius}px`,
     cursor: 'pointer',
     ...style,

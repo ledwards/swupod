@@ -1,0 +1,133 @@
+/**
+ * SlideshowStage.css — fit-to-viewport sizing for the slideshow STAGE (U6).
+ *
+ * The stage measures its own content box (useElementSize), the pure fit util
+ * computes one card size, and the component writes it ONCE as `--slide-card-w`
+ * (+ `--slide-card-h`) on `.slideshow-stage`. Every stage card reads that
+ * variable through the scoped override below.
+ *
+ * CRITICAL — defeat the 120px clamp: the stage is intentionally NOT inside
+ * `.cards-grid`, and the scoped `.slideshow-stage .canvas-card` rule overrides
+ * `Card.css`'s base `.canvas-card { width:120px; max-width:120px }`. Without the
+ * `!important` width the fixed 120px silently clamps the fitted size.
+ *
+ * NO `overflow` anywhere — the fit guarantees containment (no-scroll is the
+ * whole point of Slideshow Mode).
+ */
+
+.slideshow-stage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   Defeat Card.css's fixed 120px base width — drive every stage card from the
+   single `--slide-card-w` variable. `height:auto` lets aspect-ratio set height.
+   ========================================================================== */
+.slideshow-stage .canvas-card {
+  width: var(--slide-card-w) !important;
+  max-width: var(--slide-card-w) !important;
+  height: auto;
+}
+
+/* The per-card wrapper shrink-wraps its card so flex gaps stay exact. */
+.slideshow-stage-card {
+  flex: 0 0 auto;
+  display: flex;
+}
+
+/* ==========================================================================
+   Single-player: one centered R×C block. `--slide-cols` fixes the column count
+   the fit util chose; the block centers in the content box (both axes).
+   ========================================================================== */
+.slideshow-stage-single {
+  display: grid;
+  grid-template-columns: repeat(var(--slide-cols, 1), var(--slide-card-w));
+  gap: var(--slide-gap, 8px);
+  align-content: center;
+  justify-content: center;
+  justify-items: center;
+  align-items: center;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* ==========================================================================
+   Multi-player: one labeled row per seat, stacked top-to-bottom, left-aligned.
+   ========================================================================== */
+.slideshow-stage-multi {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--slide-gap, 8px);
+  width: 100%;
+  height: 100%;
+}
+
+.slideshow-stage-row {
+  display: flex;
+  align-items: center;
+  gap: var(--slide-gap, 8px);
+  width: 100%;
+  min-width: 0;
+}
+
+/* Fixed-width gutter: avatar (LEFT) + name. Gap keeps icon and text apart. */
+.slideshow-stage-row-label {
+  flex: 0 0 var(--slide-label-gutter, 150px);
+  width: var(--slide-label-gutter, 150px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.slideshow-stage-avatar {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.slideshow-stage-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.92);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* Cards in a single left-aligned row at the uniform fitted height. */
+.slideshow-stage-row-cards {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--slide-gap, 8px);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Empty pack: a neutral tile sized to the row's card box so the row keeps its
+   height and the other rows don't shift. */
+.slideshow-stage-empty {
+  flex: 0 0 auto;
+  width: var(--slide-card-w);
+  height: var(--slide-card-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 11px;
+  background: rgba(0, 0, 0, 0.45);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  font-weight: 600;
+}

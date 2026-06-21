@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { useCardPreview } from '@/src/hooks/useCardPreview'
+import { useStickyTab } from '@/src/hooks/useStickyTab'
 import { CardPreview } from '@/src/components/DeckBuilder/CardPreview'
 import { useAuth } from '@/src/contexts/AuthContext'
 import Button from '@/src/components/Button'
@@ -406,7 +407,7 @@ export default function StatsPage() {
   useEffect(() => {
     const hash = window.location.hash.slice(1)
     if (hash && tabs.includes(hash)) {
-      // Respect an explicit tab in the URL (including #you).
+      // Respect an explicit set tab in the URL hash.
       setActiveTab(hash)
     } else {
       // Bare /stats — always default to the latest set (tabs are newest-first).
@@ -593,7 +594,9 @@ interface SetStatsTabProps {
 }
 
 function SetStatsTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred, canSeeFullStats }: SetStatsTabProps) {
-  const [subTab, setSubTab] = useState('sealed')
+  // Secondary subtab — persists across visits via localStorage; the page hash
+  // belongs to the primary set tab, so this group stays out of the URL (url:false).
+  const [subTab, setSubTab] = useStickyTab(['sealed', 'draft'] as const, 'sealed', { url: false, storageKey: 'ptp:stats-subtab' })
 
   return (
     <div className="generation-stats">
@@ -964,6 +967,13 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
 
   useEffect(() => {
     if (!hasLoadedOnce.current) setLoading(true)
+    // Drop stale responses: the active set tab can change (e.g. LAW -> ASH as auth
+    // resolves) while requests are in flight. Without this guard a slow response for
+    // the previous set overwrites the current set's panels, so e.g. the ASH tab shows
+    // LAW data. apply() ignores any result once this effect has been superseded.
+    let cancelled = false
+    const apply = (setter: (v: any) => void) => (result: any) => { if (!cancelled) setter(result.data || result) }
+
     const baseParams = new URLSearchParams({
       setCode,
       since: startDate,
@@ -992,13 +1002,13 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
     const fetches: Promise<void>[] = [
       // All Players
       fetch(`/api/stats/draft-picks?${baseParams}`)
-        .then(r => r.json()).then(result => setCardData(result.data || result))
+        .then(r => r.json()).then(apply(setCardData))
         .catch(err => console.error('Error fetching card draft picks:', err)),
       fetch(`/api/stats/draft-picks?${baseParams}&type=leaders`)
-        .then(r => r.json()).then(result => setLeaderData(result.data || result))
+        .then(r => r.json()).then(apply(setLeaderData))
         .catch(err => console.error('Error fetching leader draft picks:', err)),
       fetch(`/api/stats/leader-selection?${baseParams}&poolType=draft`)
-        .then(r => r.json()).then(result => setLeaderSelData(result.data || result))
+        .then(r => r.json()).then(apply(setLeaderSelData))
         .catch(err => console.error('Error fetching leader selection:', err)),
     ]
 
@@ -1007,23 +1017,23 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
       fetches.push(
         // Tournament Players (not affected by Humans/Bots filter)
         fetch(`/api/stats/draft-picks?${tournamentParams}`)
-          .then(r => r.json()).then(result => setCardDataTournament(result.data || result))
+          .then(r => r.json()).then(apply(setCardDataTournament))
           .catch(err => console.error('Error fetching tournament card draft picks:', err)),
         fetch(`/api/stats/draft-picks?${tournamentParams}&type=leaders`)
-          .then(r => r.json()).then(result => setLeaderDataTournament(result.data || result))
+          .then(r => r.json()).then(apply(setLeaderDataTournament))
           .catch(err => console.error('Error fetching tournament leader draft picks:', err)),
         fetch(`/api/stats/leader-selection?${tournamentParams}&poolType=draft`)
-          .then(r => r.json()).then(result => setLeaderSelDataTournament(result.data || result))
+          .then(r => r.json()).then(apply(setLeaderSelDataTournament))
           .catch(err => console.error('Error fetching tournament leader selection:', err)),
         // Top Players (not affected by Humans/Bots filter)
         fetch(`/api/stats/draft-picks?${topPlayersParams}`)
-          .then(r => r.json()).then(result => setCardDataTop(result.data || result))
+          .then(r => r.json()).then(apply(setCardDataTop))
           .catch(err => console.error('Error fetching top player card draft picks:', err)),
         fetch(`/api/stats/draft-picks?${topPlayersParams}&type=leaders`)
-          .then(r => r.json()).then(result => setLeaderDataTop(result.data || result))
+          .then(r => r.json()).then(apply(setLeaderDataTop))
           .catch(err => console.error('Error fetching top player leader draft picks:', err)),
         fetch(`/api/stats/leader-selection?${topPlayersParams}&poolType=draft`)
-          .then(r => r.json()).then(result => setLeaderSelDataTop(result.data || result))
+          .then(r => r.json()).then(apply(setLeaderSelDataTop))
           .catch(err => console.error('Error fetching top player leader selection:', err)),
       )
     } else {
@@ -1046,13 +1056,13 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
       youParams.set('builtDeckOnly', 'true')
       fetches.push(
         fetch(`/api/stats/draft-picks?${youParams}`)
-          .then(r => r.json()).then(result => setCardDataYou(result.data || result))
+          .then(r => r.json()).then(apply(setCardDataYou))
           .catch(err => console.error('Error fetching your card draft picks:', err)),
         fetch(`/api/stats/draft-picks?${youParams}&type=leaders`)
-          .then(r => r.json()).then(result => setLeaderDataYou(result.data || result))
+          .then(r => r.json()).then(apply(setLeaderDataYou))
           .catch(err => console.error('Error fetching your leader draft picks:', err)),
         fetch(`/api/stats/leader-selection?${youParams}&poolType=draft`)
-          .then(r => r.json()).then(result => setLeaderSelDataYou(result.data || result))
+          .then(r => r.json()).then(apply(setLeaderSelDataYou))
           .catch(err => console.error('Error fetching your leader selection:', err)),
       )
     } else {
@@ -1061,7 +1071,8 @@ function DraftTab({ setCode, includeBots, includeHumans, startDate, endDate, use
       setLeaderSelDataYou(null)
     }
 
-    Promise.all(fetches).finally(() => { setLoading(false); hasLoadedOnce.current = true })
+    Promise.all(fetches).finally(() => { if (!cancelled) { setLoading(false); hasLoadedOnce.current = true } })
+    return () => { cancelled = true }
   }, [setCode, includeBots, includeHumans, startDate, endDate, user?.id, canSeeFullStats])
 
   // Build lookup maps for Tournament, Top, and You data
@@ -1512,6 +1523,13 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
 
   useEffect(() => {
     if (!hasLoadedOnce.current) setLoading(true)
+    // Drop stale responses: the active set tab can change (e.g. LAW -> ASH as auth
+    // resolves) while requests are in flight. Without this guard a slow response for
+    // the previous set overwrites the current set's panels, so e.g. the ASH tab shows
+    // LAW data. apply() ignores any result once this effect has been superseded.
+    let cancelled = false
+    const apply = (setter: (v: any) => void) => (result: any) => { if (!cancelled) setter(result.data || result) }
+
     const baseParams = new URLSearchParams({
       setCode,
       since: startDate,
@@ -1540,10 +1558,10 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
     const fetches: Promise<void>[] = [
       // All Players
       fetch(`/api/stats/deck-inclusion?${baseParams}`)
-        .then(r => r.json()).then(result => setCardData(result.data || result))
+        .then(r => r.json()).then(apply(setCardData))
         .catch(err => console.error('Error fetching deck inclusion:', err)),
       fetch(`/api/stats/leader-selection?${baseParams}`)
-        .then(r => r.json()).then(result => setLeaderSelData(result.data || result))
+        .then(r => r.json()).then(apply(setLeaderSelData))
         .catch(err => console.error('Error fetching leader selection:', err)),
     ]
 
@@ -1552,17 +1570,17 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
       fetches.push(
         // Tournament Players (not affected by Humans/Bots filter)
         fetch(`/api/stats/deck-inclusion?${tournamentParams}`)
-          .then(r => r.json()).then(result => setCardDataTournament(result.data || result))
+          .then(r => r.json()).then(apply(setCardDataTournament))
           .catch(err => console.error('Error fetching tournament deck inclusion:', err)),
         fetch(`/api/stats/leader-selection?${tournamentParams}`)
-          .then(r => r.json()).then(result => setLeaderSelDataTournament(result.data || result))
+          .then(r => r.json()).then(apply(setLeaderSelDataTournament))
           .catch(err => console.error('Error fetching tournament leader selection:', err)),
         // Top Players (not affected by Humans/Bots filter)
         fetch(`/api/stats/deck-inclusion?${topPlayersParams}`)
-          .then(r => r.json()).then(result => setCardDataTop(result.data || result))
+          .then(r => r.json()).then(apply(setCardDataTop))
           .catch(err => console.error('Error fetching top player deck inclusion:', err)),
         fetch(`/api/stats/leader-selection?${topPlayersParams}`)
-          .then(r => r.json()).then(result => setLeaderSelDataTop(result.data || result))
+          .then(r => r.json()).then(apply(setLeaderSelDataTop))
           .catch(err => console.error('Error fetching top player leader selection:', err)),
       )
     } else {
@@ -1583,10 +1601,10 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
       })
       fetches.push(
         fetch(`/api/stats/deck-inclusion?${youParams}`)
-          .then(r => r.json()).then(result => setCardDataYou(result.data || result))
+          .then(r => r.json()).then(apply(setCardDataYou))
           .catch(err => console.error('Error fetching your deck inclusion:', err)),
         fetch(`/api/stats/leader-selection?${youParams}`)
-          .then(r => r.json()).then(result => setLeaderSelDataYou(result.data || result))
+          .then(r => r.json()).then(apply(setLeaderSelDataYou))
           .catch(err => console.error('Error fetching your leader selection:', err)),
       )
     } else {
@@ -1594,7 +1612,8 @@ function SealedTab({ setCode, includeBots, includeHumans, startDate, endDate, us
       setLeaderSelDataYou(null)
     }
 
-    Promise.all(fetches).finally(() => { setLoading(false); hasLoadedOnce.current = true })
+    Promise.all(fetches).finally(() => { if (!cancelled) { setLoading(false); hasLoadedOnce.current = true } })
+    return () => { cancelled = true }
   }, [setCode, includeBots, includeHumans, startDate, endDate, user?.id, canSeeFullStats])
 
   // Build lookup maps

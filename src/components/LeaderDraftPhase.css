@@ -328,6 +328,14 @@
   gap: 12px;
 }
 
+/* Leader pick only: add breathing room between the leader cards and the
+   selection confirmation banner below them. Scoped under .leader-draft-phase
+   so the pack phase (which shares .selection-confirmation-banner) is
+   unaffected. */
+.leader-draft-phase .selection-confirmation-banner {
+  margin-top: 28px;
+}
+
 .selection-info {
   display: flex;
   align-items: center;

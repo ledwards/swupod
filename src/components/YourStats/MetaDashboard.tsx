@@ -363,7 +363,7 @@ export function MetaDashboard({ setCode = DEFAULT_STATS_SET_TAB, lockSet = false
         <p className="your-stats-error-note" role="status">Couldn't load meta stats. Try refreshing.</p>
       ) : (
         <>
-          <WinRateByLeader leaders={winRates} title="Win rate by leader" mode="meta" />
+          <WinRateByLeader leaders={winRates} title="Win rate by leader" mode="meta" showFullRoster={activeSet !== 'all'} />
 
           <div className="your-stats-meta-subhead">
             <span className="your-stats-eyebrow">By leader</span>

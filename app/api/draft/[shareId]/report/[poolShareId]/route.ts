@@ -1,14 +1,9 @@
 // app/api/draft/[shareId]/report/[poolShareId]/route.ts
 // @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server'
-import { query, queryRow, queryRows } from '@/lib/db'
+import { query, queryRow } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 import { reconstructDraftLog } from '@/src/utils/draftLogReconstruction'
-import {
-  normalizeCasualReportMatch,
-  normalizeCompetitiveReportMatch,
-  sortDraftReportMatches,
-} from '@/src/utils/draftReportMatches'
 
 type RouteContext = { params: Promise<{ shareId: string; poolShareId: string }> }
 
@@ -20,23 +15,17 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
   const pod = await queryRow(
     `SELECT p.id, p.share_id, p.set_code, p.set_name, p.name, p.status,
             p.max_players, p.current_players, p.host_id, p.started_at, p.completed_at,
-            p.all_packs, p.settings, p.is_public
+            p.all_packs, p.settings, p.is_public, p.is_log_public
      FROM pods p WHERE p.share_id = $1 AND p.pod_type = 'draft'`,
     [shareId]
   )
   if (!pod) {
     return NextResponse.json({ error: 'Draft not found' }, { status: 404 })
   }
-  const podSettings = typeof pod.settings === 'string'
-    ? (() => {
-        try { return JSON.parse(pod.settings) } catch { return {} }
-      })()
-    : (pod.settings || {})
-  const isCompetitiveDraft = Boolean(podSettings.competitive)
 
   // Look up the target pool by share_id
   const targetPool = await queryRow(
-    `SELECT cp.id, cp.user_id, cp.report_public
+    `SELECT cp.user_id, cp.report_public
      FROM card_pools cp
      WHERE cp.share_id = $1 AND cp.pod_id = $2`,
     [poolShareId, pod.id]
@@ -46,7 +35,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
   }
 
   const isOwner = session?.id === targetPool.user_id
-  if (!isOwner && !targetPool.report_public) {
+  const isHost = session?.id === pod.host_id
+  if (!isOwner && !isHost && !targetPool.report_public) {
     return NextResponse.json({ error: 'This report is private' }, { status: 403 })
   }
 
@@ -65,7 +55,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
   // Get all players for seating display
   const playersResult = await query(
     `SELECT pp.seat_number, pp.user_id, pp.is_bot, pp.drafted_leaders, pp.drafted_cards,
-            pp.strategy_name, pp.mixin_name,
+            pp.strategy_name, pp.mixin_name, pp.is_log_public,
             u.username, u.avatar_url
      FROM pod_players pp
      LEFT JOIN users u ON pp.user_id = u.id
@@ -76,11 +66,21 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
 
   // Get each player's active leader and base from deck builder state
   const poolsResult = await query(
-    `SELECT cp.user_id, cp.deck_builder_state
+    `SELECT cp.user_id, cp.deck_builder_state, cp.is_public, cp.report_public
      FROM card_pools cp
      WHERE cp.pod_id = $1`,
     [pod.id]
   )
+  const allPoolsPublic = poolsResult.rows.length > 0 && poolsResult.rows.every(row => row.is_public === true)
+  const allReportsPublic = poolsResult.rows.length > 0 && poolsResult.rows.every(row => row.report_public === true)
+  const allPlayerLogsPublic = playersResult.rows.length > 0 && playersResult.rows.every(row => row.is_log_public === true)
+  const draftReportsPublic =
+    pod.is_public === true &&
+    pod.is_log_public === true &&
+    allPoolsPublic &&
+    allReportsPublic &&
+    allPlayerLogsPublic
+
   const activeLeaderByUser = new Map()
   const chosenBaseByUser = new Map()
   for (const row of poolsResult.rows) {
@@ -151,110 +151,31 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     [pod.id, targetUserId]
   )
 
-  let matches = []
-  if (isCompetitiveDraft) {
-    const matchRows = await queryRows(
-      `SELECT
-         pm.id,
-         pr.round_number,
-         pm.wayfinder_match_id,
-         pm.wayfinder_replay_url,
-         pm.created_at,
-         pm.match_winner,
-         pm.game1_result,
-         pm.game2_result,
-         pm.game3_result,
-         pm.player1_id,
-         pm.player2_id,
-         u1.username AS player1_username,
-         u1.avatar_url AS player1_avatar_url,
-         u2.username AS player2_username,
-         u2.avatar_url AS player2_avatar_url,
-         pm.player1_leader,
-         pm.player1_leader_image,
-         pm.player1_base,
-         pm.player1_base_image,
-         pm.player1_archetype,
-         pm.player2_leader,
-         pm.player2_leader_image,
-         pm.player2_base,
-         pm.player2_base_image,
-         pm.player2_archetype,
-         live_games.live_games
-       FROM practice_matches pm
-       LEFT JOIN practice_rounds pr ON pr.id = pm.round_id
-       LEFT JOIN users u1 ON u1.id = pm.player1_id
-       LEFT JOIN users u2 ON u2.id = pm.player2_id
-       LEFT JOIN LATERAL (
-         SELECT json_agg(
-           json_build_object(
-             'id', pmg.id,
-             'gameNumber', pmg.game_number,
-             'attemptNumber', pmg.attempt_number,
-             'status', pmg.status,
-             'result', pmg.result,
-             'replayUrl', pmg.replay_url,
-             'wayfinderMatchId', pmg.wayfinder_match_id,
-             'wayfinderGameId', pmg.wayfinder_game_id,
-             'playedAt', COALESCE(pmg.completed_at, pmg.started_at, pmg.created_at)
-           )
-           ORDER BY pmg.game_number, pmg.attempt_number
-         ) AS live_games
-         FROM practice_match_games pmg
-         WHERE pmg.match_id = pm.id
-           AND pmg.status <> 'voided'
-           AND (
-             pmg.replay_url IS NOT NULL OR
-             pmg.wayfinder_match_id IS NOT NULL OR
-             pmg.result IS NOT NULL
-           )
-       ) live_games ON true
-       WHERE pm.pod_id = $1
-         AND (pm.player1_id = $2 OR pm.player2_id = $2)
-         AND pm.is_bye = false
-         AND (
-           pm.wayfinder_replay_url IS NOT NULL OR
-           pm.wayfinder_match_id IS NOT NULL OR
-           live_games.live_games IS NOT NULL
-         )
-       ORDER BY pr.round_number ASC NULLS LAST, pm.created_at ASC`,
-      [pod.id, targetUserId]
-    )
-    matches = sortDraftReportMatches(
-      matchRows.map(row => normalizeCompetitiveReportMatch(row, targetUserId))
-    )
-  } else {
-    const matchRows = await queryRows(
-      `SELECT
-         cm.id,
-         cm.wayfinder_match_id,
-         cm.wayfinder_replay_url,
-         cm.result,
-         cm.game1_result,
-         cm.game2_result,
-         cm.game3_result,
-         cm.opponent_name,
-         cm.player_leader,
-         cm.player_leader_image,
-         cm.player_base,
-         cm.player_archetype,
-         cm.opponent_leader,
-         cm.opponent_leader_image,
-         cm.opponent_base,
-         cm.opponent_archetype,
-         cm.played_at,
-         cm.created_at
-       FROM casual_matches cm
-       WHERE cm.card_pool_id = $1
-         AND cm.user_id = $2
-         AND (cm.wayfinder_replay_url IS NOT NULL OR cm.wayfinder_match_id IS NOT NULL)
-       ORDER BY cm.played_at ASC NULLS LAST, cm.created_at ASC`,
-      [targetPool.id, targetUserId]
-    )
-    matches = sortDraftReportMatches(
-      matchRows.map(row => normalizeCasualReportMatch(row))
-    )
-  }
+  const matchesResult = await query(
+    `SELECT pr.round_number,
+            pm.id, pm.player1_id, pm.player2_id, pm.is_bye,
+            pm.game1_result, pm.game2_result, pm.game3_result,
+            pm.player1_submitted, pm.player2_submitted,
+            pm.final_confirmed, pm.match_winner, pm.pod_owner_override,
+            pm.wayfinder_match_id,
+            u1.username AS p1_username, u1.avatar_url AS p1_avatar,
+            u2.username AS p2_username, u2.avatar_url AS p2_avatar
+     FROM practice_matches pm
+     JOIN practice_rounds pr ON pr.id = pm.round_id
+     LEFT JOIN users u1 ON u1.id = pm.player1_id
+     LEFT JOIN users u2 ON u2.id = pm.player2_id
+     WHERE pm.pod_id = $1
+       AND (pm.player1_id = $2 OR pm.player2_id = $2)
+       AND (
+         pm.final_confirmed = true
+         OR pm.wayfinder_match_id IS NOT NULL
+         OR pm.game1_result IS NOT NULL
+         OR pm.game2_result IS NOT NULL
+         OR pm.game3_result IS NOT NULL
+       )
+     ORDER BY pr.round_number, pm.created_at`,
+    [pod.id, targetUserId]
+  )
 
   return NextResponse.json({
     draft: {
@@ -268,13 +189,40 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       isPublic: pod.is_public,
       startedAt: pod.started_at,
       completedAt: pod.completed_at,
-      competitive: isCompetitiveDraft,
+      competitive: pod.settings?.competitive || false,
     },
     players,
     mySeat: targetPlayer.seat_number,
     isOwner,
+    isHost,
+    draftReportsPublic,
     picks,
-    matches,
+    gameplay: {
+      matches: matchesResult.rows.map(row => ({
+        id: row.id,
+        roundNumber: row.round_number,
+        player1: row.player1_id ? {
+          id: row.player1_id,
+          username: row.p1_username || 'Player 1',
+          avatarUrl: row.p1_avatar,
+        } : null,
+        player2: row.player2_id ? {
+          id: row.player2_id,
+          username: row.p2_username || 'Player 2',
+          avatarUrl: row.p2_avatar,
+        } : null,
+        isBye: row.is_bye,
+        game1Result: row.game1_result,
+        game2Result: row.game2_result,
+        game3Result: row.game3_result,
+        player1Submitted: row.player1_submitted,
+        player2Submitted: row.player2_submitted,
+        finalConfirmed: row.final_confirmed,
+        matchWinner: row.match_winner,
+        podOwnerOverride: row.pod_owner_override,
+        wayfinderMatchId: row.wayfinder_match_id || null,
+      })),
+    },
     pool: pool ? {
       shareId: pool.share_id,
       cards: typeof pool.cards === 'string' ? JSON.parse(pool.cards) : (pool.cards || []),

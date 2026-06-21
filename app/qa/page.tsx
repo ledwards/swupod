@@ -2,6 +2,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import { useStickyTab } from '@/src/hooks/useStickyTab'
 import './qa.css'
 import { STATS_SET_ORDER, STATS_SET_COLORS } from '@/src/utils/statsSetTabs'
 import duplicateStats from '@/src/data/duplicateStats.json'
@@ -251,7 +252,8 @@ interface QASetTabProps {
 }
 
 function QASetTab({ stats, setCode }: QASetTabProps) {
-  const [subTab, setSubTab] = useState('quality')
+  // Secondary subtab — localStorage-only; the set tab owns the page hash (url:false).
+  const [subTab, setSubTab] = useStickyTab(['quality', 'duplicates', 'packs'] as const, 'quality', { url: false, storageKey: 'ptp:qa-subtab' })
   const [qualityData, setQualityData] = useState<QualityData | null>(null)
   const [qualityLoading, setQualityLoading] = useState(true)
 

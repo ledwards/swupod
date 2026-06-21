@@ -5,8 +5,9 @@ import { useState, useEffect, useRef } from 'react'
 import { getLatestReleasedSetCode } from '../utils/setConfigs/latest'
 import { trackEvent } from '../hooks/useAnalytics'
 import { buildLimitedContext, LimitedAnalyticsEvents, LimitedPlayActions } from '../analytics/limitedEvents'
-import { KARABAST_PUBLIC_LOBBY_NAME } from '../utils/karabastLobby'
-import WayfinderStoreButtons, { WayfinderCompanionLockup } from './WayfinderStoreButtons'
+import { buildLobbyName, isValidPrivateLobbyUrl } from '../utils/karabastLobby'
+import { WayfinderCompanionLockup } from './WayfinderStoreButtons'
+import PluginCTA from '@/src/components/PluginCTA'
 import Button from './Button'
 import { useAuth } from '../contexts/AuthContext'
 import { isCompanionBeta } from '../utils/companionBeta'
@@ -14,19 +15,12 @@ import './PlayInstructions.css'
 
 const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/u6fkdDzWqF'
 
-const PRIVATE_LOBBY_PATTERN = /^https:\/\/karabast\.net\/\?lobbyId=[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-
-const WAYFINDER_VALUE_PROPS = [
-  'Automagically join the Karabast queue',
-  'Collect play data for your pool',
-  'Record, share, and rewatch your replays',
-  'Take notes, enrich your games with metadata',
-] as const
-
 interface PlayInstructionsProps {
   shareId: string | null
   poolType: 'draft' | 'sealed' | 'sealed_pod' | string
   setCode?: string | null
+  /** Deck archetype name, used to build the public Karabast game name. */
+  archetypeName?: string | null
   opponentName?: string | null
   hasBye?: boolean
   isSoloDraft?: boolean
@@ -47,6 +41,10 @@ interface PlayInstructionsProps {
    *  CTA shown when the plugin is detected but the user isn't authenticated. */
   isLoggedIn?: boolean
   wayfinderDetected?: boolean
+  /** Whether the Companion extension itself is signed in. `null`/undefined =
+   *  unknown (older build or no signal yet) — we don't nag. When explicitly
+   *  `false` we swap the lobby flow for a "sign in from your toolbar" CTA. */
+  pluginLoggedIn?: boolean | null
   /**
    * When set (from a ?lobby=private|public deep link, e.g. the /me Pools tab
    * lobby buttons), auto-open that Karabast lobby once the Companion is detected
@@ -60,6 +58,7 @@ export default function PlayInstructions({
   shareId,
   poolType,
   setCode = null,
+  archetypeName = null,
   opponentName = null,
   hasBye = false,
   isSoloDraft = false,
@@ -76,6 +75,7 @@ export default function PlayInstructions({
   ownerName = null,
   isLoggedIn = true,
   wayfinderDetected = false,
+  pluginLoggedIn = null,
   autoLobbyIntent = null,
   analyticsContext = {},
 }: PlayInstructionsProps) {
@@ -93,7 +93,6 @@ export default function PlayInstructions({
   const [joinUrl, setJoinUrl] = useState('')
   const [joinError, setJoinError] = useState<string | null>(null)
   const [cardPool, setCardPool] = useState(cardPoolName)
-  const [lobbyName, setLobbyName] = useState(KARABAST_PUBLIC_LOBBY_NAME)
   const [wayfinderIconUrl, setWayfinderIconUrl] = useState<string | null>(null)
 
   function trackPlayAction(action: string, extra: Record<string, unknown> = {}) {
@@ -129,7 +128,6 @@ export default function PlayInstructions({
         setLobbyCount(e.data.count)
       } else if (e.data?.type === 'wayfinder:metadata') {
         if (e.data.cardPool) setCardPool(e.data.cardPool)
-        if (e.data.lobbyName) setLobbyName(e.data.lobbyName)
       }
     }
 
@@ -144,13 +142,15 @@ export default function PlayInstructions({
   const autoLobbyFiredRef = useRef(false)
   useEffect(() => {
     if (!autoLobbyIntent || autoLobbyFiredRef.current) return
-    if (!wayfinderDetected || !isOwner) return
+    // Signed out of the Companion → don't fire a lobby it can't act on; the
+    // toolbar sign-in CTA renders instead.
+    if (!wayfinderDetected || !isOwner || pluginLoggedIn === false) return
     autoLobbyFiredRef.current = true
     setActiveTab('wayfinder')
     const t = window.setTimeout(() => dispatchCreateLobby(autoLobbyIntent), 400)
     return () => window.clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoLobbyIntent, wayfinderDetected, isOwner])
+  }, [autoLobbyIntent, wayfinderDetected, isOwner, pluginLoggedIn])
 
   // -- Extension action dispatchers --
 
@@ -162,7 +162,8 @@ export default function PlayInstructions({
       shareId,
       format: poolType === 'sealed_pod' ? 'pool' : poolType === 'draft' ? 'pool' : poolType,
       cardPool,
-      lobbyName,
+      // Public Karabast game name, e.g. "SEC Draft Leia Splash Green protectthepod.com".
+      lobbyName: buildLobbyName({ setCode, poolType, archetypeName }),
     }, '*')
     trackPlayAction(
       privacy === 'private'
@@ -174,7 +175,7 @@ export default function PlayInstructions({
 
   function dispatchJoinPrivate() {
     const url = joinUrl.trim()
-    if (!PRIVATE_LOBBY_PATTERN.test(url)) {
+    if (!isValidPrivateLobbyUrl(url)) {
       setJoinError('Not a valid Karabast private lobby URL')
       trackPlayAction(LimitedPlayActions.WAYFINDER_JOIN_PRIVATE_LOBBY, {
         target: 'wayfinder',
@@ -206,39 +207,10 @@ export default function PlayInstructions({
     })
   }
 
-  function renderValueProps() {
-    return (
-      <ul className="wayfinder-promo-list">
-        {WAYFINDER_VALUE_PROPS.map((value) => (
-          <li key={value}>
-            <span className="wayfinder-promo-check" aria-hidden="true">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            </span>
-            <span>{value}</span>
-          </li>
-        ))}
-      </ul>
-    )
-  }
-
   function renderCompanionInstallPanel() {
-    return (
-      <section className="wayfinder-promo-panel" aria-label="Wayfinder Companion">
-        <div className="wayfinder-promo-copy">
-          <WayfinderCompanionLockup className="wayfinder-promo-lockup" />
-          <h3>Play on Karabast with Protect the Pod</h3>
-          <p>
-            Install the Companion before you queue and Protect the Pod can
-            connect your pool back to your stats and replays.
-          </p>
-          {renderValueProps()}
-        </div>
-
-        <WayfinderStoreButtons onChromeClick={() => trackInstallClick('chrome')} />
-      </section>
-    )
+    // The one universal install CTA. Autodetect = a single prominent button for
+    // the browser you're in. It self-gates on rollout + Companion presence.
+    return <PluginCTA variant="autodetect" onChromeClick={() => trackInstallClick('chrome')} />
   }
 
   function renderCompanionReadyPanel() {
@@ -270,6 +242,26 @@ export default function PlayInstructions({
           </svg>
           Log in with Discord
         </a>
+      </section>
+    )
+  }
+
+  // Plugin installed AND the viewer is signed into PTP, but the Companion itself
+  // is signed out. A page can't open the extension popup (browsers don't allow
+  // it), so point them at the toolbar to finish signing in there.
+  function renderCompanionToolbarLoginCta() {
+    return (
+      <section className="wayfinder-tab wayfinder-tab--login">
+        {renderCompanionReadyPanel()}
+        <p className="wayfinder-login-copy">
+          The Companion is installed — it just needs to sign in. Click the Companion
+          icon
+          {wayfinderIconUrl && (
+            <img className="wayfinder-toolbar-icon" src={wayfinderIconUrl} alt="" width={18} height={18} />
+          )}
+          {' '}in your browser toolbar, then <strong>Log in with Discord</strong>. Your
+          Karabast games will link back to this pool automatically.
+        </p>
       </section>
     )
   }
@@ -442,7 +434,7 @@ export default function PlayInstructions({
               className={`wayfinder-join-input${joinError ? ' error' : ''}`}
               value={joinUrl}
               onChange={e => { setJoinUrl(e.target.value); setJoinError(null) }}
-              placeholder="https://karabast.net/?lobbyId=..."
+              placeholder="https://karabast.net/lobby?lobbyId=..."
             />
             <button className="wayfinder-join-btn" onClick={dispatchJoinPrivate}>
               Join
@@ -482,9 +474,11 @@ export default function PlayInstructions({
           <div className="play-split-col play-split-plugin">
             {wayfinderDetected && !isLoggedIn
               ? renderCompanionLoginCta()
-              : wayfinderDetected && isOwner
-                ? renderWayfinderTab()
-                : renderCompanionInstallPanel()}
+              : wayfinderDetected && isOwner && pluginLoggedIn === false
+                ? renderCompanionToolbarLoginCta()
+                : wayfinderDetected && isOwner
+                  ? renderWayfinderTab()
+                  : renderCompanionInstallPanel()}
           </div>
 
           <div className="play-split-or" aria-hidden="true"><span>OR</span></div>

@@ -5,6 +5,7 @@ import UserAvatar from '@/src/components/UserAvatar'
 import { getPackArtUrl } from '@/src/utils/packArt'
 import { deletePool } from '@/src/utils/poolApi'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
+import { formatRecord } from '@/src/utils/deckRecord'
 
 // Play glyph (like a video play button) for the lobby + play actions.
 function PlayMark() {
@@ -21,6 +22,18 @@ function EditMark() {
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M12 20h9" />
       <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+    </svg>
+  )
+}
+
+function StatsMark() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M4 19V5" />
+      <path d="M4 19h16" />
+      <rect x="7" y="11" width="3" height="5" rx="1" />
+      <rect x="12" y="8" width="3" height="8" rx="1" />
+      <rect x="17" y="6" width="3" height="10" rx="1" />
     </svg>
   )
 }
@@ -112,14 +125,6 @@ function formatDate(value: string | null): string {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return 'Unknown date'
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
-
-function recordLine(item: Pick<PoolBuild, 'wins' | 'losses' | 'draws'>): string {
-  const wins = Number(item.wins || 0)
-  const losses = Number(item.losses || 0)
-  const draws = Number(item.draws || 0)
-  if (wins + losses + draws === 0) return 'No matches'
-  return `${wins}W ${losses}L ${draws}D`
 }
 
 function comboLine(build: PoolBuild): string {
@@ -264,7 +269,7 @@ function PoolBuildCard({
             {poolType === 'draft' ? 'Draft' : 'Sealed'}
           </span>
           <span>{build.mainDeckCount || 0} cards</span>
-          <span>{recordLine(build)}</span>
+          <span>{formatRecord(build)}</span>
           {build.capturedMatches > 0 && <span>{build.capturedMatches.toLocaleString()} {build.capturedMatches === 1 ? 'capture' : 'captures'}</span>}
         </div>
         {!build.isMine && (
@@ -276,6 +281,7 @@ function PoolBuildCard({
         <div className="your-stats-replay-actions your-stats-pool-actions-row">
           <a className="btn btn--interactive btn--sm your-stats-pool-action your-stats-pool-action--glow" href={build.links.deck}><EditMark /><span>Edit</span></a>
           <a className="btn btn--primary btn--sm your-stats-pool-action your-stats-pool-action--play" href={build.links.play}><PlayMark /><span>Play</span></a>
+          <a className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-action--glow" href={`/pool/${build.shareId}/deck/stats`}><StatsMark /><span>Stats</span></a>
           <button
             type="button"
             className="btn btn--secondary btn--sm your-stats-pool-action your-stats-pool-action--glow"
@@ -317,7 +323,7 @@ function PoolBuildCard({
 }
 
 export function PoolHistoryDashboard({ fetchImpl, setFilter = 'all' }: { fetchImpl?: typeof fetch; setFilter?: string }) {
-  const { detected: wayfinderDetected } = useWayfinderDetection()
+  const { detected: wayfinderDetected, pluginLoggedIn } = useWayfinderDetection()
   const [state, setState] = useState<FetchState>({ loading: true, error: false, pools: [] })
   const [query, setQuery] = useState('')
   const [armedDelete, setArmedDelete] = useState<string | null>(null)
@@ -459,6 +465,19 @@ export function PoolHistoryDashboard({ fetchImpl, setFilter = 'all' }: { fetchIm
         </div>
         <span className="your-stats-count-pill">{filteredPools.length.toLocaleString()} of {state.pools.length.toLocaleString()}</span>
       </div>
+
+      {/* Companion installed but signed out: the lobby buttons below lead to the
+          play page, which can't open the extension popup — so explain the one
+          remaining step (sign in from the toolbar) once, here. */}
+      {wayfinderDetected && pluginLoggedIn === false && (
+        <div className="your-stats-companion-banner" role="status">
+          <span>
+            The Companion is installed but not signed in. Click its icon in your
+            browser toolbar and <strong>Log in with Discord</strong> to enable
+            one-click lobbies and link your games to these pools.
+          </span>
+        </div>
+      )}
 
       <div className="your-stats-explorer-toolbar" aria-label="Pool history controls">
         <label className="your-stats-search">

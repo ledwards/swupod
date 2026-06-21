@@ -9,6 +9,7 @@
  */
 
 import { useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { ASPECT_COLORS } from '@/src/utils/aspectColors'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 
@@ -55,13 +56,17 @@ function BaseBars({ leader }: { leader: WinRateLeader }) {
       <div className="your-stats-wr-readout-head">
         <strong>{leader.leaderName}</strong>
         <span>
-          {leader.winRate.toFixed(1)}%
-          {recordLabel(leader.wins, leader.losses, leader.draws) ? ` · ${recordLabel(leader.wins, leader.losses, leader.draws)}` : ''}
-          {' · '}{matchesLabel(leader.matches)}
+          {leader.matches > 0 ? (
+            <>
+              {leader.winRate.toFixed(1)}%
+              {recordLabel(leader.wins, leader.losses, leader.draws) ? ` · ${recordLabel(leader.wins, leader.losses, leader.draws)}` : ''}
+              {' · '}{matchesLabel(leader.matches)}
+            </>
+          ) : 'No games yet'}
         </span>
       </div>
       {leader.byBase.length === 0 ? (
-        <p className="your-stats-meta-empty">No base breakdown yet.</p>
+        <p className="your-stats-meta-empty">{leader.matches > 0 ? 'No base breakdown yet.' : 'No games recorded with this leader yet.'}</p>
       ) : (
         <div className="your-stats-wr-bars">
           {leader.byBase.map((b) => (
@@ -88,6 +93,7 @@ export function WinRateByLeader({
   mode,
   eyebrow = 'Win Rate',
   companionBeta = true,
+  showFullRoster = false,
 }: {
   leaders: WinRateLeader[]
   title: string
@@ -96,12 +102,25 @@ export function WinRateByLeader({
   /** Beta users get the Companion install pitch in the empty state; others get a
    *  neutral "coming soon". Defaults true (meta usage isn't a plugin pitch). */
   companionBeta?: boolean
+  /** Meta on a single set: show every leader in the set (unplayed → "–") instead
+   *  of a top-12. Off for the "all sets" aggregate and the personal Gameplay tab. */
+  showFullRoster?: boolean
 }) {
   const { detected } = useWayfinderDetection()
-  const ranked = useMemo(
-    () => [...leaders].filter((l) => l.matches > 0).sort((a, b) => b.winRate - a.winRate).slice(0, 12),
-    [leaders],
-  )
+  const ranked = useMemo(() => {
+    // A specific set's Meta view shows the FULL roster (every leader, "–" until it
+    // has games): leaders with games lead, sorted by win rate; the rest follow A→Z.
+    // Personal and the "all sets" aggregate stay a focused top-12 of played leaders.
+    if (mode === 'meta' && showFullRoster) {
+      return [...leaders].sort(
+        (a, b) =>
+          (b.matches > 0 ? 1 : 0) - (a.matches > 0 ? 1 : 0) ||
+          b.winRate - a.winRate ||
+          a.leaderName.localeCompare(b.leaderName),
+      )
+    }
+    return [...leaders].filter((l) => l.matches > 0).sort((a, b) => b.winRate - a.winRate).slice(0, 12)
+  }, [leaders, mode, showFullRoster])
   const [hovered, setHovered] = useState<string | null>(null)
   const [pinned, setPinned] = useState<string | null>(null)
   const [anchor, setAnchor] = useState<{ left: number; top: number } | null>(null)
@@ -117,7 +136,7 @@ export function WinRateByLeader({
   }
 
   return (
-    <section className="your-stats-meta-card">
+    <section className={`your-stats-meta-card your-stats-wr--${mode}`}>
       <header className="your-stats-meta-card-header">
         <div>
           <span className="your-stats-eyebrow">{eyebrow}</span>
@@ -142,6 +161,7 @@ export function WinRateByLeader({
             {ranked.map((l) => {
               const art = l.leaderBackImageUrl || l.leaderImageUrl
               const isActive = activeName === l.leaderName
+              const hasGames = l.matches > 0
               return (
                 <button
                   key={l.leaderName}
@@ -150,25 +170,36 @@ export function WinRateByLeader({
                   onMouseEnter={(e) => { setHovered(l.leaderName); anchorTo(e.currentTarget) }}
                   onFocus={(e) => { setHovered(l.leaderName); anchorTo(e.currentTarget) }}
                   onClick={(e) => { anchorTo(e.currentTarget); setPinned((cur) => (cur === l.leaderName ? null : l.leaderName)) }}
-                  aria-label={`${l.leaderName}: ${l.winRate.toFixed(0)}% win rate, ${recordLabel(l.wins, l.losses, l.draws) || ''} over ${matchesLabel(l.matches)}`}
-                  title={`${l.leaderName} — ${l.winRate.toFixed(0)}%${recordLabel(l.wins, l.losses, l.draws) ? ` (${recordLabel(l.wins, l.losses, l.draws)})` : ''} · ${matchesLabel(l.matches)}`}
+                  aria-label={hasGames
+                    ? `${l.leaderName}: ${l.winRate.toFixed(0)}% win rate, ${recordLabel(l.wins, l.losses, l.draws) || ''} over ${matchesLabel(l.matches)}`
+                    : `${l.leaderName}: no games yet`}
+                  title={hasGames
+                    ? `${l.leaderName} — ${l.winRate.toFixed(0)}%${recordLabel(l.wins, l.losses, l.draws) ? ` (${recordLabel(l.wins, l.losses, l.draws)})` : ''} · ${matchesLabel(l.matches)}`
+                    : `${l.leaderName} — no games yet`}
                 >
                   {art
                     ? <img className="your-stats-wr-cell-art" src={art} alt="" loading="lazy" />
                     : <span className="your-stats-wr-cell-art your-stats-wr-cell-art--empty" />}
                   <span className="your-stats-wr-cell-overlay">
-                    <span className="your-stats-wr-cell-pct" style={{ color: winRateColor(l.winRate) }}>{l.winRate.toFixed(0)}%</span>
-                    <span className="your-stats-wr-cell-games">{recordLabel(l.wins, l.losses, l.draws) || matchesLabel(l.matches)}</span>
+                    {hasGames ? (
+                      <>
+                        <span className="your-stats-wr-cell-pct" style={{ color: winRateColor(l.winRate) }}>{l.winRate.toFixed(0)}%</span>
+                        <span className="your-stats-wr-cell-games">{recordLabel(l.wins, l.losses, l.draws) || matchesLabel(l.matches)}</span>
+                      </>
+                    ) : (
+                      <span className="your-stats-wr-cell-pct your-stats-wr-cell-pct--empty">—</span>
+                    )}
                   </span>
                 </button>
               )
             })}
           </div>
-          {active && anchor && (
+          {active && anchor && typeof document !== 'undefined' && createPortal(
             <div className="your-stats-wr-popover" role="dialog" aria-label={`${active.leaderName} win rate by base aspect`}
               style={{ position: 'fixed', left: anchor.left, top: anchor.top, zIndex: 60 }}>
               <BaseBars leader={active} />
-            </div>
+            </div>,
+            document.body,
           )}
         </>
       )}

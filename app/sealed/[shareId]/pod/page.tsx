@@ -8,7 +8,7 @@ import { getPackArtUrl } from '../../../../src/utils/packArt'
 import { useAuth } from '../../../../src/contexts/AuthContext'
 import { loadPool } from '../../../../src/utils/poolApi'
 import { jsonParse } from '../../../../src/utils/json'
-import { defaultSort } from '../../../../src/services/cards/cardSorting'
+import { renderPoolImageBlob } from '../../../../src/services/deckImage'
 import { getCachedCards, initializeCardCache } from '../../../../src/utils/cardCache'
 import { getBaseSetCode } from '../../../../src/utils/carboniteConstants'
 import { buildBaseCardMap, getBaseCardId } from '../../../../src/utils/variantDowngrade'
@@ -438,143 +438,34 @@ export default function SealedPodPlayPage({ params }: PageProps) {
         return
       }
 
-      const leaderCard = cardPositions[activeLeader]?.card
-      const baseCard = cardPositions[activeBase]?.card
-      const deckCards = Object.values(cardPositions)
-        .filter(pos => pos.section === 'deck' && !pos.card.isBase && !pos.card.isLeader && pos.enabled !== false)
-        .map(pos => pos.card)
-        .sort(defaultSort)
-
-      const barlowFont = new FontFace('Barlow', 'url(https://fonts.gstatic.com/s/barlow/v12/7cHpv4kjgoGqM7E_DMs5.woff2)')
-      const barlowBold = new FontFace('Barlow', 'url(https://fonts.gstatic.com/s/barlow/v12/7cHqv4kjgoGqM7E30-8s51os.woff2)', { weight: '700' })
-      await Promise.all([barlowFont.load(), barlowBold.load()])
-      document.fonts.add(barlowFont)
-      document.fonts.add(barlowBold)
-
-      const width = 2767
-      const padding = 100
-      const cardWidth = 300
-      const cardHeight = 420
-      const cardBorderRadius = 15
-      const leaderBaseWidth = 525
-      const leaderBaseHeight = 375
-      const spacing = 25
-      const titleHeight = 100
-      const subtitleHeight = 65
-      const labelHeight = 90
-      const sectionSpacing = 50
-      const footerHeight = 200
-      const cardsPerRow = 8
-
-      const deckRows = Math.ceil(deckCards.length / cardsPerRow)
-      const totalHeight = padding + titleHeight + subtitleHeight + sectionSpacing +
-        leaderBaseHeight + sectionSpacing +
-        labelHeight + deckRows * (cardHeight + spacing) + sectionSpacing +
-        footerHeight + padding
-
-      const canvas = document.createElement('canvas')
-      canvas.width = width
-      canvas.height = totalHeight
-      const ctx = canvas.getContext('2d')
-      ctx.fillStyle = 'rgb(9, 9, 9)'
-      ctx.fillRect(0, 0, width, totalHeight)
-
-      const roundedClip = (x, y, w, h, r) => {
-        ctx.beginPath()
-        ctx.moveTo(x + r, y)
-        ctx.lineTo(x + w - r, y)
-        ctx.quadraticCurveTo(x + w, y, x + w, y + r)
-        ctx.lineTo(x + w, y + h - r)
-        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
-        ctx.lineTo(x + r, y + h)
-        ctx.quadraticCurveTo(x, y + h, x, y + h - r)
-        ctx.lineTo(x, y + r)
-        ctx.quadraticCurveTo(x, y, x + r, y)
-        ctx.closePath()
-      }
-
-      const drawCard = async (card, x, y, w, h, borderRadius = cardBorderRadius) => {
-        if (!card?.imageUrl) {
-          ctx.save(); roundedClip(x, y, w, h, borderRadius); ctx.clip()
-          ctx.fillStyle = '#333'; ctx.fillRect(x, y, w, h); ctx.restore()
-          ctx.fillStyle = '#888'; ctx.font = '30px Barlow'; ctx.textAlign = 'center'
-          ctx.fillText(card?.name || 'Unknown', x + w / 2, y + h / 2)
-          return
-        }
-        const imageUrl = card.imageUrl.replace('/small/', '/large/').replace('/medium/', '/large/')
-        const tryLoadImage = (url) => new Promise((resolve, reject) => {
-          const img = new Image()
-          img.crossOrigin = 'anonymous'
-          img.onload = () => resolve(img)
-          img.onerror = reject
-          img.src = url
-        })
-        try {
-          const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(imageUrl)}`
-          const img = await tryLoadImage(proxyUrl)
-          ctx.save(); roundedClip(x, y, w, h, borderRadius); ctx.clip()
-          ctx.drawImage(img, x, y, w, h); ctx.restore()
-        } catch {
-          ctx.save(); roundedClip(x, y, w, h, borderRadius); ctx.clip()
-          ctx.fillStyle = '#333'; ctx.fillRect(x, y, w, h); ctx.restore()
-          ctx.fillStyle = '#888'; ctx.font = '30px Barlow'; ctx.textAlign = 'center'
-          ctx.fillText(card?.name || 'Unknown', x + w / 2, y + h / 2)
-        }
-      }
-
-      let currentY = padding
-      ctx.fillStyle = 'white'; ctx.font = 'bold 70px Barlow'; ctx.textAlign = 'center'; ctx.textBaseline = 'top'
-      const displayName = state.poolName || myPool.name || formatPoolLabel(myPool.setCode, 'sealed')
-      ctx.fillText(displayName, width / 2, currentY)
-      currentY += titleHeight
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'; ctx.font = '600 45px Barlow'
-      ctx.fillText('Sealed Deck', width / 2, currentY - 20)
-      currentY += subtitleHeight + sectionSpacing
-
-      const totalLeaderBaseWidth = leaderBaseWidth * 2 + spacing
-      const startX = (width - totalLeaderBaseWidth) / 2
-      if (leaderCard) await drawCard(leaderCard, startX, currentY, leaderBaseWidth, leaderBaseHeight, 20)
-      if (baseCard) await drawCard(baseCard, startX + leaderBaseWidth + spacing, currentY, leaderBaseWidth, leaderBaseHeight, 20)
-      currentY += leaderBaseHeight + sectionSpacing
-
-      ctx.fillStyle = 'white'; ctx.font = 'bold 50px Barlow'; ctx.textAlign = 'left'; ctx.textBaseline = 'top'
-      ctx.fillText(`Deck (${deckCards.length} cards)`, padding, currentY)
-      currentY += labelHeight
-
-      let col = 0, row = 0
-      for (const card of deckCards) {
-        const x = padding + col * (cardWidth + spacing)
-        const y = currentY + row * (cardHeight + spacing)
-        await drawCard(card, x, y, cardWidth, cardHeight)
-        col++
-        if (col >= cardsPerRow) { col = 0; row++ }
-      }
-
-      const footerY = totalHeight - footerHeight - padding + 20
-      ctx.fillStyle = 'white'; ctx.font = 'bold 50px Barlow'; ctx.textAlign = 'center'
-      const now = new Date()
-      ctx.fillText(`Created by Protect the Pod on ${now.toLocaleDateString()} at ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`, width / 2, footerY)
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'; ctx.font = '48px Barlow'
-      ctx.fillText(`https://www.protectthepod.com/pool/${myPoolShareId}/deck`, width / 2, footerY + 80)
-
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          setGeneratingImage(false)
-          trackPodPlayAction(LimitedPlayActions.GENERATE_DECK_IMAGE, {
-            target: 'deck_image',
-            success: false,
-            failure_reason: 'canvas_blob_failed',
-          })
-          return
-        }
-        const url = URL.createObjectURL(blob)
-        setViewingDeckImage(url)
+      const blob = await renderPoolImageBlob({
+        cardPositions,
+        activeLeader,
+        activeBase,
+        leaderCard: cardPositions[activeLeader]?.card || null,
+        baseCard: cardPositions[activeBase]?.card || null,
+        setCode: myPool.setCode,
+        poolType: 'sealed',
+        poolName: state.poolName || myPool.name || null,
+        ownerUsername: myPool?.owner?.username || myPool?.owner?.name || null,
+        shareId: myPoolShareId,
+        rootShareId: null,
+      })
+      if (!blob) {
         setGeneratingImage(false)
         trackPodPlayAction(LimitedPlayActions.GENERATE_DECK_IMAGE, {
           target: 'deck_image',
-          deck_size: deckCards.length,
+          success: false,
+          failure_reason: 'canvas_blob_failed',
         })
-      }, 'image/png')
+        return
+      }
+      setViewingDeckImage(URL.createObjectURL(blob))
+      setGeneratingImage(false)
+      trackPodPlayAction(LimitedPlayActions.GENERATE_DECK_IMAGE, {
+        target: 'deck_image',
+        success: true,
+      })
     } catch (err) {
       console.error('[POD] Error generating own deck image:', err)
       setGeneratingImage(false)

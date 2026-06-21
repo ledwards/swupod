@@ -4,6 +4,7 @@ import Modal from './Modal'
 import ConfirmModal from './ConfirmModal'
 import { getAspectColor } from '../utils/aspectColors'
 import { archetypeShortName } from '../utils/archetypeName'
+import { formatRecord } from '../utils/deckRecord'
 import './PoolBuilds.css'
 // Shared delete-confirm visual — red title, red filled button. Same rules
 // the History page has used for a long time; importing the canonical file
@@ -22,6 +23,9 @@ interface Build {
   baseHp?: number | null
   archetypeNickname?: string | null
   deckCardCount: number
+  wins: number
+  losses: number
+  draws: number
   createdAt?: string | null
 }
 
@@ -171,6 +175,9 @@ function BuildCard({
       {/* Deck record below the card rectangle, centered. */}
       <span className="pool-build-meta pool-build-meta--below">
         by {builder}
+      </span>
+      <span className="pool-build-meta pool-build-meta--record">
+        {formatRecord(build)}
       </span>
     </div>
   )

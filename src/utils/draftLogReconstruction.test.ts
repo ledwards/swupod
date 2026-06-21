@@ -85,6 +85,50 @@ describe('draftLogReconstruction', () => {
       assert.strictEqual(pack1Picks[2].visibleCards.length, 1, 'Pick 3 should see 1 card')
       assert.strictEqual(pack1Picks[2].pickedInstanceId, 'B')
     })
+
+    it('preserves visible card order when the picked card is not first', () => {
+      const allPacks = [
+        [
+          { cards: [card('A'), card('B'), card('C')] },
+          { cards: [] },
+          { cards: [] },
+        ],
+        [
+          { cards: [card('D'), card('E'), card('F')] },
+          { cards: [] },
+          { cards: [] },
+        ],
+      ]
+
+      const players = [
+        {
+          seatNumber: 1,
+          draftedCards: [
+            draftedCard('B', 1, 1, 1),
+          ],
+          draftedLeaders: [],
+        },
+        {
+          seatNumber: 2,
+          draftedCards: [
+            draftedCard('D', 1, 1, 1),
+          ],
+          draftedLeaders: [],
+        },
+      ]
+
+      const result = reconstructDraftLog({
+        targetSeat: 1,
+        totalSeats: 2,
+        allPacks,
+        players,
+      })
+      const firstPick = result.find(p => p.type === 'card' && p.packNumber === 1 && p.pickInPack === 1)
+
+      assert.ok(firstPick)
+      assert.deepStrictEqual(firstPick.visibleCards.map(c => c.instanceId), ['A', 'B', 'C'])
+      assert.strictEqual(firstPick.pickedInstanceId, 'B')
+    })
   })
 
   describe('4-player pass-right (pack 2)', () => {

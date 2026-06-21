@@ -18,7 +18,9 @@ import { buildBaseCardMap, getBaseCardId } from '../../../../../src/utils/varian
 import { jsonParse } from '../../../../../src/utils/json'
 import { resolveArchetypeUuid, fetchArchetypeNickname } from '../../../../../src/utils/deckBuilderSharing'
 import { archetypeShortName } from '../../../../../src/utils/archetypeName'
-import { defaultSort } from '../../../../../src/services/cards/cardSorting'
+import { formatRecord } from '../../../../../src/utils/deckRecord'
+import { wayfinderMatchesUrl } from '../../../../../src/utils/wayfinderUrls'
+import { renderDeckImageBlob, renderPoolImageBlob } from '../../../../../src/services/deckImage'
 import { calculateAspectPenalty } from '../../../../../src/services/cards/aspectPenalties'
 import Card from '../../../../../src/components/Card'
 import CardWithPreview from '../../../../../src/components/CardWithPreview'
@@ -48,20 +50,17 @@ function WldBadge({
 }: {
   wins: number; losses: number; draws: number; matchIds: string[]
 }) {
-  if (wins === 0 && losses === 0 && draws === 0) return null
   const wayfinder = process.env.NEXT_PUBLIC_WAYFINDER_URL ?? 'https://plugin.wayfinder.news'
   return (
-    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-      <span style={{ fontWeight: 700, fontSize: '14px' }}>
-        {wins}W {losses}L {draws}D
-      </span>
+    <div className="play-record-line">
+      <span className="play-record-badge">{formatRecord(wins, losses, draws)}</span>
       {matchIds.map((id, i) => (
         <a
           key={id}
           href={`${wayfinder}/matches/${id}`}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ fontSize: '12px', color: '#93c5fd' }}
+          className="play-record-match-link"
         >
           Match {i + 1}
         </a>
@@ -711,9 +710,6 @@ export default function PlayPage({ params }: PageProps) {
   }
 
   const exportDeckImage = async () => {
-    console.log('=== exportDeckImage called ===')
-    console.log('Pool exists:', !!pool)
-    console.log('DeckBuilderState exists:', !!pool?.deckBuilderState)
     if (!pool?.deckBuilderState) {
       trackLimitedPlayAction(LimitedPlayActions.GENERATE_DECK_IMAGE, {
         target: 'image',
@@ -727,19 +723,10 @@ export default function PlayPage({ params }: PageProps) {
     }
 
     setGeneratingImage(true)
-    console.log('=== Starting image generation ===')
-
     try {
       const state = jsonParse(pool.deckBuilderState)
-
-      console.log('State parsed successfully')
-      console.log('cardPositions exists:', !!state.cardPositions)
-      console.log('activeLeader:', state.activeLeader)
-      console.log('activeBase:', state.activeBase)
-
       const { cardPositions, activeLeader, activeBase } = state
       if (!cardPositions || !activeLeader || !activeBase) {
-        console.log('Missing required state:', { hasPositions: !!cardPositions, hasLeader: !!activeLeader, hasBase: !!activeBase })
         trackLimitedPlayAction(LimitedPlayActions.GENERATE_DECK_IMAGE, {
           target: 'image',
           success: false,
@@ -752,442 +739,36 @@ export default function PlayPage({ params }: PageProps) {
         return
       }
 
-      const leaderCard = cardPositions[activeLeader]?.card
-      const baseCard = cardPositions[activeBase]?.card
+      const blob = await renderDeckImageBlob({
+        cardPositions,
+        activeLeader,
+        activeBase,
+        leaderCard: cardPositions[activeLeader]?.card || null,
+        baseCard: cardPositions[activeBase]?.card || null,
+        setCode: pool.setCode,
+        poolType: pool.poolType === 'draft' ? 'draft' : 'sealed',
+        poolName: state.poolName || pool.name || null,
+        ownerUsername: pool?.owner?.username || pool?.owner?.name || null,
+        shareId: pool?.shareId || shareId,
+        rootShareId: pool?.rootShareId ?? null,
+      })
 
-      console.log('Leader/base lookup done')
-      // Debug logging
-      console.log('=== Deck Image Export Debug ===')
-      console.log('Total positions:', Object.keys(cardPositions).length)
-      console.log('Active leader ID:', activeLeader)
-      console.log('Active base ID:', activeBase)
-      console.log('Leader card:', leaderCard?.name, 'imageUrl:', leaderCard?.imageUrl)
-      console.log('Base card:', baseCard?.name, 'imageUrl:', baseCard?.imageUrl)
+      trackLimitedPlayAction(LimitedPlayActions.GENERATE_DECK_IMAGE, {
+        target: 'image',
+        success: !!blob,
+        ...getDeckCounts(),
+      })
 
-      // Get deck cards only (no sideboard), sorted by default sort (aspect combo -> type -> cost -> name)
-      const deckCards = Object.values(cardPositions)
-        .filter(pos => pos.section === 'deck' && !pos.card.isBase && !pos.card.isLeader && pos.enabled !== false)
-        .map(pos => pos.card)
-        .sort(defaultSort)
-
-      console.log('Deck cards found:', deckCards.length)
-      console.log('First 3 deck cards:', deckCards.slice(0, 3).map(c => ({ name: c.name, imageUrl: c.imageUrl })))
-      console.log('Cards missing imageUrl:', deckCards.filter(c => !c.imageUrl).map(c => c.name))
-
-      // Load Barlow font
-      const barlowFont = new FontFace('Barlow', 'url(https://fonts.gstatic.com/s/barlow/v12/7cHpv4kjgoGqM7E_DMs5.woff2)')
-      const barlowBold = new FontFace('Barlow', 'url(https://fonts.gstatic.com/s/barlow/v12/7cHqv4kjgoGqM7E30-8s51os.woff2)', { weight: '700' })
-      await Promise.all([barlowFont.load(), barlowBold.load()])
-      document.fonts.add(barlowFont)
-      document.fonts.add(barlowBold)
-
-      // Canvas settings - high resolution (2767px wide)
-      const width = 2767
-      const padding = 100
-      const cardWidth = 300
-      const cardHeight = 420
-      const cardBorderRadius = 15
-      // Leader/base are landscape (wider than tall)
-      const leaderBaseWidth = 525
-      const leaderBaseHeight = 375
-      const spacing = 25
-      const titleHeight = 100
-      const byLineHeight = 60
-      const subtitleHeight = 65
-      const labelHeight = 90
-      const sectionSpacing = 50
-      const footerHeight = 200
-      const cardsPerRow = 8
-
-      // Calculate heights
-      const deckRows = Math.ceil(deckCards.length / cardsPerRow)
-      const totalHeight = padding + titleHeight + byLineHeight + subtitleHeight + sectionSpacing +
-        leaderBaseHeight + sectionSpacing +
-        labelHeight + deckRows * (cardHeight + spacing) + sectionSpacing +
-        footerHeight + padding
-
-      // Create canvas
-      const canvas = document.createElement('canvas')
-      canvas.width = width
-      canvas.height = totalHeight
-      const ctx = canvas.getContext('2d')
-
-      // Fill base background
-      ctx.fillStyle = 'rgb(76, 77, 81)'
-      ctx.fillRect(0, 0, width, totalHeight)
-
-      // Load set art and texture pattern
-      const loadImage = async (url) => {
-        try {
-          const response = await fetch(url)
-          const blob = await response.blob()
-          const dataUrl = await new Promise((resolve) => {
-            const reader = new FileReader()
-            reader.onloadend = () => resolve(reader.result)
-            reader.readAsDataURL(blob)
-          })
-          return await new Promise((resolve) => {
-            const img = new Image()
-            img.onload = () => resolve(img)
-            img.onerror = () => resolve(null)
-            img.src = dataUrl
-          })
-        } catch {
-          return null
-        }
-      }
-
-      // Load both images
-      const setArtUrl = pool?.setCode ? getPackArtUrl(pool.setCode) : null
-      const [setArtImg, bgImg] = await Promise.all([
-        setArtUrl ? loadImage(setArtUrl) : null,
-        loadImage('/background-images/bg-texture-crop.png')
-      ])
-
-      // Calculate set art height: natural height at canvas width, minus 80px crop
-      const cropAmount = 80
-      const topShift = 15 // shift image up, clipping top 15px
-      let setArtHeight = 300 // fallback
-      if (setArtImg && setArtImg.width > 0) {
-        // Natural height if image fills canvas width
-        const naturalHeight = Math.round(width / (setArtImg.width / setArtImg.height))
-        setArtHeight = naturalHeight - cropAmount
-      }
-
-      // Draw texture pattern starting at the crop point
-      if (bgImg && bgImg.width > 0) {
-        const scaledWidth = bgImg.width * 1.5
-        const scaledHeight = bgImg.height * 1.5
-        // Tile starting from where set art is cropped
-        for (let y = setArtHeight; y < totalHeight; y += scaledHeight) {
-          for (let x = 0; x < width; x += scaledWidth) {
-            ctx.drawImage(bgImg, x, y, scaledWidth, scaledHeight)
-          }
-        }
-        // Dark overlay on texture area (0.8 opacity)
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)'
-        ctx.fillRect(0, setArtHeight, width, totalHeight - setArtHeight)
-
-        // Fade at top of texture (blends with set art bottom)
-        const textureFadeHeight = 150
-        const textureFadeGrad = ctx.createLinearGradient(0, setArtHeight, 0, setArtHeight + textureFadeHeight)
-        textureFadeGrad.addColorStop(0, 'rgb(9, 9, 9)')
-        textureFadeGrad.addColorStop(1, 'rgba(9, 9, 9, 0)')
-        ctx.fillStyle = textureFadeGrad
-        ctx.fillRect(0, setArtHeight, width, textureFadeHeight)
-
-        // Left fade on texture
-        const textureSideFadeWidth = 200
-        const textureLeftGrad = ctx.createLinearGradient(0, 0, textureSideFadeWidth, 0)
-        textureLeftGrad.addColorStop(0, 'rgb(9, 9, 9)')
-        textureLeftGrad.addColorStop(1, 'rgba(9, 9, 9, 0)')
-        ctx.fillStyle = textureLeftGrad
-        ctx.fillRect(0, setArtHeight, textureSideFadeWidth, totalHeight - setArtHeight)
-
-        // Right fade on texture
-        const textureRightGrad = ctx.createLinearGradient(width - textureSideFadeWidth, 0, width, 0)
-        textureRightGrad.addColorStop(0, 'rgba(9, 9, 9, 0)')
-        textureRightGrad.addColorStop(1, 'rgb(9, 9, 9)')
-        ctx.fillStyle = textureRightGrad
-        ctx.fillRect(width - textureSideFadeWidth, setArtHeight, textureSideFadeWidth, totalHeight - setArtHeight)
-
-        // Bottom fade on texture
-        const textureBottomFadeHeight = 200
-        const textureBottomGrad = ctx.createLinearGradient(0, totalHeight - textureBottomFadeHeight, 0, totalHeight)
-        textureBottomGrad.addColorStop(0, 'rgba(9, 9, 9, 0)')
-        textureBottomGrad.addColorStop(1, 'rgb(9, 9, 9)')
-        ctx.fillStyle = textureBottomGrad
-        ctx.fillRect(0, totalHeight - textureBottomFadeHeight, width, textureBottomFadeHeight)
-      }
-
-      // Draw set art at top (cropped - bottom 80px removed)
-      if (setArtImg && setArtImg.width > 0) {
-        // Fill set art area with dark first
-        ctx.fillStyle = 'rgb(9, 9, 9)'
-        ctx.fillRect(0, 0, width, setArtHeight)
-
-        // Draw set art at natural ratio, shifted up and cropped
-        const naturalHeight = setArtHeight + cropAmount + topShift
-        ctx.drawImage(setArtImg, 0, -topShift, width, naturalHeight)
-
-        // Dark overlay on set art (0.8 opacity) - extend 40px to fully cover image
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)'
-        ctx.fillRect(0, 0, width, setArtHeight + 100)
-
-        // Top fade on set art: rgb(9,9,9) at 0% -> transparent at ~18%
-        const topFadeEnd = Math.round(setArtHeight * 0.18)
-        const topGrad = ctx.createLinearGradient(0, 0, 0, topFadeEnd)
-        topGrad.addColorStop(0, 'rgb(9, 9, 9)')
-        topGrad.addColorStop(1, 'rgba(9, 9, 9, 0)')
-        ctx.fillStyle = topGrad
-        ctx.fillRect(0, 0, width, topFadeEnd)
-
-        // Bottom fade on set art ending at crop point
-        const bottomFadeHeight = 250
-        const bottomFadeStart = setArtHeight - bottomFadeHeight
-        const bottomGrad = ctx.createLinearGradient(0, bottomFadeStart, 0, setArtHeight)
-        bottomGrad.addColorStop(0, 'rgba(9, 9, 9, 0)')
-        bottomGrad.addColorStop(0.2, 'rgba(9, 9, 9, 0.2)')
-        bottomGrad.addColorStop(0.4, 'rgba(9, 9, 9, 0.5)')
-        bottomGrad.addColorStop(0.6, 'rgba(9, 9, 9, 0.8)')
-        bottomGrad.addColorStop(0.8, 'rgba(9, 9, 9, 0.95)')
-        bottomGrad.addColorStop(1, 'rgb(9, 9, 9)')
-        ctx.fillStyle = bottomGrad
-        ctx.fillRect(0, bottomFadeStart, width, bottomFadeHeight)
-
-        // Left fade on set art (extend to cover the full overlay area)
-        const sideFadeWidth = 200
-        const setArtWithOverlay = setArtHeight + 100
-        const leftGrad = ctx.createLinearGradient(0, 0, sideFadeWidth, 0)
-        leftGrad.addColorStop(0, 'rgb(9, 9, 9)')
-        leftGrad.addColorStop(1, 'rgba(9, 9, 9, 0)')
-        ctx.fillStyle = leftGrad
-        ctx.fillRect(0, 0, sideFadeWidth, setArtWithOverlay)
-
-        // Right fade on set art
-        const rightGrad = ctx.createLinearGradient(width - sideFadeWidth, 0, width, 0)
-        rightGrad.addColorStop(0, 'rgba(9, 9, 9, 0)')
-        rightGrad.addColorStop(1, 'rgb(9, 9, 9)')
-        ctx.fillStyle = rightGrad
-        ctx.fillRect(width - sideFadeWidth, 0, sideFadeWidth, setArtWithOverlay)
-      } else {
-        // No set art - just fill top with dark
-        ctx.fillStyle = 'rgb(9, 9, 9)'
-        ctx.fillRect(0, 0, width, setArtHeight)
-      }
-
-      // Bottom fade for entire image
-      const overallBottomFadeStart = Math.round(totalHeight * 0.78)
-      const overallBottomFadeEnd = Math.round(totalHeight * 0.93)
-      const overallBottomGrad = ctx.createLinearGradient(0, overallBottomFadeStart, 0, overallBottomFadeEnd)
-      overallBottomGrad.addColorStop(0, 'rgba(9, 9, 9, 0)')
-      overallBottomGrad.addColorStop(1, 'rgb(9, 9, 9)')
-      ctx.fillStyle = overallBottomGrad
-      ctx.fillRect(0, overallBottomFadeStart, width, overallBottomFadeEnd - overallBottomFadeStart)
-      ctx.fillStyle = 'rgb(9, 9, 9)'
-      ctx.fillRect(0, overallBottomFadeEnd, width, totalHeight - overallBottomFadeEnd)
-
-
-      // Helper to draw rounded rect clip
-      const roundedClip = (x, y, w, h, r) => {
-        ctx.beginPath()
-        ctx.moveTo(x + r, y)
-        ctx.lineTo(x + w - r, y)
-        ctx.quadraticCurveTo(x + w, y, x + w, y + r)
-        ctx.lineTo(x + w, y + h - r)
-        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
-        ctx.lineTo(x + r, y + h)
-        ctx.quadraticCurveTo(x, y + h, x, y + h - r)
-        ctx.lineTo(x, y + r)
-        ctx.quadraticCurveTo(x, y, x + r, y)
-        ctx.closePath()
-      }
-
-      // Build lookup to resolve cards saved with null imageUrl (art wasn't published when pool was created)
-      const cardById = new Map((await loadAllCards()).map(c => [c.id, c]))
-
-      // Helper to draw card with multiple CORS proxy fallbacks and border radius
-      const drawCard = async (card, x, y, w, h, borderRadius = cardBorderRadius) => {
-        if (!card?.imageUrl && card?.id) card = { ...card, ...(cardById.get(card.id) || {}) }
-        if (!card?.imageUrl) {
-          ctx.save()
-          roundedClip(x, y, w, h, borderRadius)
-          ctx.clip()
-          ctx.fillStyle = '#333'
-          ctx.fillRect(x, y, w, h)
-          ctx.restore()
-          ctx.fillStyle = '#888'
-          ctx.font = '30px Barlow'
-          ctx.textAlign = 'center'
-          ctx.fillText(card?.name || 'Unknown', x + w / 2, y + h / 2)
-          return
-        }
-
-        // Use high-res image URL if available
-        const imageUrl = card.imageUrl.replace('/small/', '/large/').replace('/medium/', '/large/')
-
-        const tryLoadImage = (url) => {
-          return new Promise((resolve, reject) => {
-            const img = new Image()
-            img.crossOrigin = 'anonymous'
-            img.onload = () => resolve(img)
-            img.onerror = reject
-            img.src = url
-          })
-        }
-
-        // Try loading via fetch + blob URL (better CORS handling)
-        const tryLoadViaFetch = async (url) => {
-          const response = await fetch(url)
-          if (!response.ok) throw new Error(`HTTP ${response.status}`)
-          const blob = await response.blob()
-          const blobUrl = URL.createObjectURL(blob)
-          return new Promise((resolve, reject) => {
-            const img = new Image()
-            img.onload = () => {
-              URL.revokeObjectURL(blobUrl)
-              resolve(img)
-            }
-            img.onerror = () => {
-              URL.revokeObjectURL(blobUrl)
-              reject(new Error('Failed to load blob image'))
-            }
-            img.src = blobUrl
-          })
-        }
-
-        try {
-          let img
-          // Always use our own API proxy to avoid CORS issues
-          const corsProxies = [
-            `/api/image-proxy?url=${encodeURIComponent(imageUrl)}`
-          ]
-
-          for (const proxyUrl of corsProxies) {
-            try {
-              // Try image loading first
-              img = await tryLoadImage(proxyUrl)
-              break
-            } catch {
-              try {
-                // Try fetch approach for this URL
-                img = await tryLoadViaFetch(proxyUrl)
-                break
-              } catch {
-                // Continue to next proxy
-              }
-            }
-          }
-
-          if (img) {
-            // Draw with rounded corners
-            ctx.save()
-            roundedClip(x, y, w, h, borderRadius)
-            ctx.clip()
-            ctx.drawImage(img, x, y, w, h)
-            ctx.restore()
-          } else {
-            throw new Error('All image loading methods failed')
-          }
-        } catch {
-          ctx.save()
-          roundedClip(x, y, w, h, borderRadius)
-          ctx.clip()
-          ctx.fillStyle = '#333'
-          ctx.fillRect(x, y, w, h)
-          ctx.restore()
-          ctx.fillStyle = '#888'
-          ctx.font = '30px Barlow'
-          ctx.textAlign = 'center'
-          ctx.fillText(card?.name || 'Unknown', x + w / 2, y + h / 2)
-        }
-      }
-
-      let currentY = padding
-
-      // Draw title (H1)
-      ctx.fillStyle = 'white'
-      ctx.font = 'bold 70px Barlow'
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'top'
-      const displayName = state.poolName || pool.name || (isInfinitePool ? `${pool.setCode} Limited Deckbuilder` : `${pool.setCode} ${pool.poolType === 'draft' ? 'Draft' : 'Sealed'}`)
-      ctx.fillText(displayName, width / 2, currentY)
-      currentY += titleHeight
-
-      // Draw subtitle (H2) - Sealed Deck or Draft Deck, smaller and grey, tight to title
-      const poolTypeLabel = isInfinitePool ? 'Limited Deckbuilder' : pool.poolType === 'draft' ? 'Draft Deck' : 'Sealed Deck'
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
-      ctx.font = '600 45px Barlow'
-      ctx.fillText(poolTypeLabel, width / 2, currentY - 20)
-      currentY += subtitleHeight
-
-      // Draw "by [discord handle]" line
-      const ownerName = pool.owner?.username || pool.owner?.name || 'Protect the Pod'
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
-      ctx.font = '40px Barlow'
-      ctx.fillText(`by ${ownerName}`, width / 2, currentY - 20)
-      currentY += byLineHeight + sectionSpacing
-
-      // Draw leader and base centered (landscape orientation)
-      const totalLeaderBaseWidth = leaderBaseWidth * 2 + spacing
-      const startX = (width - totalLeaderBaseWidth) / 2
-      if (leaderCard) {
-        await drawCard(leaderCard, startX, currentY, leaderBaseWidth, leaderBaseHeight, 20)
-      }
-      if (baseCard) {
-        await drawCard(baseCard, startX + leaderBaseWidth + spacing, currentY, leaderBaseWidth, leaderBaseHeight, 20)
-      }
-      currentY += leaderBaseHeight + sectionSpacing
-
-      // Draw "Deck" label
-      ctx.fillStyle = 'white'
-      ctx.font = 'bold 50px Barlow'
-      ctx.textAlign = 'left'
-      ctx.textBaseline = 'top'
-      ctx.fillText(`Deck (${deckCards.length} cards)`, padding, currentY)
-      currentY += labelHeight
-
-      // Draw deck cards
-      console.log('=== Starting to draw', deckCards.length, 'deck cards ===')
-      let col = 0
-      let row = 0
-      let cardsDrawn = 0
-      for (const card of deckCards) {
-        const x = padding + col * (cardWidth + spacing)
-        const y = currentY + row * (cardHeight + spacing)
-        await drawCard(card, x, y, cardWidth, cardHeight)
-        cardsDrawn++
-        if (cardsDrawn % 10 === 0) {
-          console.log(`Drawn ${cardsDrawn}/${deckCards.length} cards`)
-        }
-        col++
-        if (col >= cardsPerRow) {
-          col = 0
-          row++
-        }
-      }
-      console.log('=== Finished drawing all deck cards ===')
-
-      // Draw footer
-      const footerY = totalHeight - footerHeight - padding + 20
-
-      // Created by text with date/time - bold and white
-      const now = new Date()
-      const dateStr = now.toLocaleDateString()
-      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      ctx.fillStyle = 'white'
-      ctx.font = 'bold 50px Barlow'
-      ctx.textAlign = 'center'
-      ctx.fillText(`Created by Protect the Pod on ${dateStr} at ${timeStr}`, width / 2, footerY)
-
-      // URL to deckbuilder
-      const deckUrl = `https://www.protectthepod.com/pool/${shareId}/deck`
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
-      ctx.font = '48px Barlow'
-      ctx.fillText(deckUrl, width / 2, footerY + 80)
-
-      // Show image in modal
-      console.log('=== Drawing complete, creating blob ===')
-      canvas.toBlob((blob) => {
-        console.log('=== Blob created:', blob?.size, 'bytes ===')
-        trackLimitedPlayAction(LimitedPlayActions.GENERATE_DECK_IMAGE, {
-          target: 'image',
-          success: !!blob,
-          ...getDeckCounts(),
-        })
-        if (!blob) {
-          setMessage('Failed to generate image')
-          setMessageType('error')
-          setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
-          setGeneratingImage(false)
-          return
-        }
-        const url = URL.createObjectURL(blob)
-        console.log('=== Blob URL created:', url, '===')
-        setDeckImageModal(url)
+      if (!blob) {
+        setMessage('Failed to generate image')
+        setMessageType('error')
+        setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
         setGeneratingImage(false)
-      }, 'image/png')
+        return
+      }
 
+      setDeckImageModal(URL.createObjectURL(blob))
+      setGeneratingImage(false)
     } catch (error) {
       console.error('Error generating deck image:', error)
       trackLimitedPlayAction(LimitedPlayActions.GENERATE_DECK_IMAGE, {
@@ -1204,485 +785,25 @@ export default function PlayPage({ params }: PageProps) {
 
   const exportPoolImage = async (): Promise<string | null> => {
     if (!pool?.deckBuilderState) return null
-
     try {
       const state = jsonParse(pool.deckBuilderState)
       const { cardPositions, activeLeader, activeBase } = state
       if (!cardPositions) return null
 
-      const leaderCard = activeLeader ? cardPositions[activeLeader]?.card : null
-      const baseCard = activeBase ? cardPositions[activeBase]?.card : null
-
-      // Get deck cards
-      const deckCards = Object.values(cardPositions)
-        .filter((pos: CardPosition) => pos.section === 'deck' && !pos.card.isBase && !pos.card.isLeader && pos.enabled !== false)
-        .map((pos: CardPosition) => pos.card)
-        .sort(defaultSort)
-
-      // Get pool cards (sideboard)
-      const poolCards = Object.values(cardPositions)
-        .filter((pos: CardPosition) => pos.section === 'sideboard' && !pos.card.isBase && !pos.card.isLeader)
-        .map((pos: CardPosition) => pos.card)
-        .sort(defaultSort)
-
-      // Get other leaders (not the active one)
-      const otherLeaders = Object.entries(cardPositions)
-        .filter(([cardId, pos]: [string, CardPosition]) => pos.card.isLeader && cardId !== activeLeader)
-        .map(([_, pos]: [string, CardPosition]) => pos.card)
-
-      // Get other RARE bases only (filter out common bases)
-      const otherRareBases = Object.entries(cardPositions)
-        .filter(([cardId, pos]: [string, CardPosition]) => {
-          if (!pos.card.isBase || cardId === activeBase) return false
-          const rarity = (pos.card as any).rarity?.toLowerCase() || ''
-          return rarity !== 'common'
-        })
-        .map(([_, pos]: [string, CardPosition]) => pos.card)
-
-      // Load fonts
-      const barlowFont = new FontFace('Barlow', 'url(https://fonts.gstatic.com/s/barlow/v12/7cHpv4kjgoGqM7E_DMs5.woff2)')
-      const barlowBold = new FontFace('Barlow', 'url(https://fonts.gstatic.com/s/barlow/v12/7cHqv4kjgoGqM7E30-8s51os.woff2)', { weight: '700' })
-      await Promise.all([barlowFont.load(), barlowBold.load()])
-      document.fonts.add(barlowFont)
-      document.fonts.add(barlowBold)
-
-      // Canvas settings - 90% of deck image to reduce file size for Discord
-      const width = 2490
-      const padding = 90
-      const cardWidth = 270
-      const cardHeight = 378
-      const cardBorderRadius = 14
-      // Leader/base are landscape (wider than tall) - 90% of deck image
-      const leaderBaseWidth = 473
-      const leaderBaseHeight = 338
-      const spacing = 23
-      const titleHeight = 90
-      const byLineHeight = 54
-      const subtitleHeight = 59
-      const labelHeight = 81
-      const sectionSpacing = 45
-      const footerHeight = 180
-      const cardsPerRow = 8
-      const separatorHeight = 7
-
-      const deckRows = Math.ceil(deckCards.length / cardsPerRow)
-      const poolRows = Math.ceil(poolCards.length / cardsPerRow)
-      const hasLeaderBase = leaderCard || baseCard
-      const hasOtherLeaders = otherLeaders.length > 0
-      const hasOtherRareBases = otherRareBases.length > 0
-
-      const totalHeight = padding + titleHeight + byLineHeight + subtitleHeight + sectionSpacing +
-        (hasLeaderBase ? leaderBaseHeight + sectionSpacing : 0) +
-        labelHeight + deckRows * (cardHeight + spacing) + sectionSpacing +
-        separatorHeight + sectionSpacing +
-        (hasOtherLeaders ? labelHeight + leaderBaseHeight + sectionSpacing : 0) +
-        (hasOtherRareBases ? (hasOtherLeaders ? 0 : labelHeight) + leaderBaseHeight + sectionSpacing : 0) +
-        labelHeight + poolRows * (cardHeight + spacing) + sectionSpacing +
-        footerHeight + padding
-
-      const canvas = document.createElement('canvas')
-      canvas.width = width
-      canvas.height = totalHeight
-      const ctx = canvas.getContext('2d')
-      if (!ctx) return null
-
-      // === EXACT SAME BACKGROUND AS DECK IMAGE ===
-      // Fill base background
-      ctx.fillStyle = 'rgb(76, 77, 81)'
-      ctx.fillRect(0, 0, width, totalHeight)
-
-      // Load set art and texture pattern
-      const loadImage = async (url: string) => {
-        try {
-          const response = await fetch(url)
-          const blob = await response.blob()
-          const dataUrl = await new Promise<string>((resolve) => {
-            const reader = new FileReader()
-            reader.onloadend = () => resolve(reader.result as string)
-            reader.readAsDataURL(blob)
-          })
-          return await new Promise<HTMLImageElement | null>((resolve) => {
-            const img = new Image()
-            img.onload = () => resolve(img)
-            img.onerror = () => resolve(null)
-            img.src = dataUrl
-          })
-        } catch {
-          return null
-        }
-      }
-
-      // Load both images
-      const setArtUrl = pool?.setCode ? getPackArtUrl(pool.setCode) : null
-      const [setArtImg, bgImg] = await Promise.all([
-        setArtUrl ? loadImage(setArtUrl) : null,
-        loadImage('/background-images/bg-texture-crop.png')
-      ])
-
-      // Calculate set art height: natural height at canvas width, minus 80px crop
-      const cropAmount = 80
-      const topShift = 15
-      let setArtHeight = 300
-      if (setArtImg && setArtImg.width > 0) {
-        const naturalHeight = Math.round(width / (setArtImg.width / setArtImg.height))
-        setArtHeight = naturalHeight - cropAmount
-      }
-
-      // Draw texture pattern starting at the crop point
-      if (bgImg && bgImg.width > 0) {
-        const scaledWidth = bgImg.width * 1.5
-        const scaledHeight = bgImg.height * 1.5
-        for (let y = setArtHeight; y < totalHeight; y += scaledHeight) {
-          for (let x = 0; x < width; x += scaledWidth) {
-            ctx.drawImage(bgImg, x, y, scaledWidth, scaledHeight)
-          }
-        }
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)'
-        ctx.fillRect(0, setArtHeight, width, totalHeight - setArtHeight)
-
-        const textureFadeHeight = 150
-        const textureFadeGrad = ctx.createLinearGradient(0, setArtHeight, 0, setArtHeight + textureFadeHeight)
-        textureFadeGrad.addColorStop(0, 'rgb(9, 9, 9)')
-        textureFadeGrad.addColorStop(1, 'rgba(9, 9, 9, 0)')
-        ctx.fillStyle = textureFadeGrad
-        ctx.fillRect(0, setArtHeight, width, textureFadeHeight)
-
-        const textureSideFadeWidth = 200
-        const textureLeftGrad = ctx.createLinearGradient(0, 0, textureSideFadeWidth, 0)
-        textureLeftGrad.addColorStop(0, 'rgb(9, 9, 9)')
-        textureLeftGrad.addColorStop(1, 'rgba(9, 9, 9, 0)')
-        ctx.fillStyle = textureLeftGrad
-        ctx.fillRect(0, setArtHeight, textureSideFadeWidth, totalHeight - setArtHeight)
-
-        const textureRightGrad = ctx.createLinearGradient(width - textureSideFadeWidth, 0, width, 0)
-        textureRightGrad.addColorStop(0, 'rgba(9, 9, 9, 0)')
-        textureRightGrad.addColorStop(1, 'rgb(9, 9, 9)')
-        ctx.fillStyle = textureRightGrad
-        ctx.fillRect(width - textureSideFadeWidth, setArtHeight, textureSideFadeWidth, totalHeight - setArtHeight)
-
-        const textureBottomFadeHeight = 200
-        const textureBottomGrad = ctx.createLinearGradient(0, totalHeight - textureBottomFadeHeight, 0, totalHeight)
-        textureBottomGrad.addColorStop(0, 'rgba(9, 9, 9, 0)')
-        textureBottomGrad.addColorStop(1, 'rgb(9, 9, 9)')
-        ctx.fillStyle = textureBottomGrad
-        ctx.fillRect(0, totalHeight - textureBottomFadeHeight, width, textureBottomFadeHeight)
-      }
-
-      // Draw set art at top
-      if (setArtImg && setArtImg.width > 0) {
-        ctx.fillStyle = 'rgb(9, 9, 9)'
-        ctx.fillRect(0, 0, width, setArtHeight)
-
-        const naturalHeight = setArtHeight + cropAmount + topShift
-        ctx.drawImage(setArtImg, 0, -topShift, width, naturalHeight)
-
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)'
-        ctx.fillRect(0, 0, width, setArtHeight + 100)
-
-        const topFadeEnd = Math.round(setArtHeight * 0.18)
-        const topGrad = ctx.createLinearGradient(0, 0, 0, topFadeEnd)
-        topGrad.addColorStop(0, 'rgb(9, 9, 9)')
-        topGrad.addColorStop(1, 'rgba(9, 9, 9, 0)')
-        ctx.fillStyle = topGrad
-        ctx.fillRect(0, 0, width, topFadeEnd)
-
-        const bottomFadeHeight = 250
-        const bottomFadeStart = setArtHeight - bottomFadeHeight
-        const bottomGrad = ctx.createLinearGradient(0, bottomFadeStart, 0, setArtHeight)
-        bottomGrad.addColorStop(0, 'rgba(9, 9, 9, 0)')
-        bottomGrad.addColorStop(0.2, 'rgba(9, 9, 9, 0.2)')
-        bottomGrad.addColorStop(0.4, 'rgba(9, 9, 9, 0.5)')
-        bottomGrad.addColorStop(0.6, 'rgba(9, 9, 9, 0.8)')
-        bottomGrad.addColorStop(0.8, 'rgba(9, 9, 9, 0.95)')
-        bottomGrad.addColorStop(1, 'rgb(9, 9, 9)')
-        ctx.fillStyle = bottomGrad
-        ctx.fillRect(0, bottomFadeStart, width, bottomFadeHeight)
-
-        const sideFadeWidth = 200
-        const setArtWithOverlay = setArtHeight + 100
-        const leftGrad = ctx.createLinearGradient(0, 0, sideFadeWidth, 0)
-        leftGrad.addColorStop(0, 'rgb(9, 9, 9)')
-        leftGrad.addColorStop(1, 'rgba(9, 9, 9, 0)')
-        ctx.fillStyle = leftGrad
-        ctx.fillRect(0, 0, sideFadeWidth, setArtWithOverlay)
-
-        const rightGrad = ctx.createLinearGradient(width - sideFadeWidth, 0, width, 0)
-        rightGrad.addColorStop(0, 'rgba(9, 9, 9, 0)')
-        rightGrad.addColorStop(1, 'rgb(9, 9, 9)')
-        ctx.fillStyle = rightGrad
-        ctx.fillRect(width - sideFadeWidth, 0, sideFadeWidth, setArtWithOverlay)
-      } else {
-        ctx.fillStyle = 'rgb(9, 9, 9)'
-        ctx.fillRect(0, 0, width, setArtHeight)
-      }
-
-      const overallBottomFadeStart = Math.round(totalHeight * 0.78)
-      const overallBottomFadeEnd = Math.round(totalHeight * 0.93)
-      const overallBottomGrad = ctx.createLinearGradient(0, overallBottomFadeStart, 0, overallBottomFadeEnd)
-      overallBottomGrad.addColorStop(0, 'rgba(9, 9, 9, 0)')
-      overallBottomGrad.addColorStop(1, 'rgb(9, 9, 9)')
-      ctx.fillStyle = overallBottomGrad
-      ctx.fillRect(0, overallBottomFadeStart, width, overallBottomFadeEnd - overallBottomFadeStart)
-      ctx.fillStyle = 'rgb(9, 9, 9)'
-      ctx.fillRect(0, overallBottomFadeEnd, width, totalHeight - overallBottomFadeEnd)
-      // === END BACKGROUND ===
-
-      // Helper to draw rounded rect clip
-      const roundedClip = (x: number, y: number, w: number, h: number, r: number) => {
-        ctx.beginPath()
-        ctx.moveTo(x + r, y)
-        ctx.lineTo(x + w - r, y)
-        ctx.quadraticCurveTo(x + w, y, x + w, y + r)
-        ctx.lineTo(x + w, y + h - r)
-        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
-        ctx.lineTo(x + r, y + h)
-        ctx.quadraticCurveTo(x, y + h, x, y + h - r)
-        ctx.lineTo(x, y + r)
-        ctx.quadraticCurveTo(x, y, x + r, y)
-        ctx.closePath()
-      }
-
-      // Build lookup to resolve cards saved with null imageUrl (art wasn't published when pool was created)
-      const cardById = new Map((await loadAllCards()).map(c => [c.id, c]))
-
-      // Helper to draw card - SAME as deck image (uses CORS proxy)
-      const drawCard = async (card: CardType, x: number, y: number, w: number, h: number, borderRadius = cardBorderRadius, grayscale = false) => {
-        if (!card?.imageUrl && card?.id) card = { ...card, ...(cardById.get(card.id) || {}) }
-        if (!card?.imageUrl) {
-          ctx.save()
-          roundedClip(x, y, w, h, borderRadius)
-          ctx.clip()
-          ctx.fillStyle = '#333'
-          ctx.fillRect(x, y, w, h)
-          ctx.restore()
-          ctx.fillStyle = '#888'
-          ctx.font = '30px Barlow'
-          ctx.textAlign = 'center'
-          ctx.fillText(card?.name || 'Unknown', x + w / 2, y + h / 2)
-          return
-        }
-
-        const imageUrl = card.imageUrl.replace('/small/', '/large/').replace('/medium/', '/large/')
-
-        const tryLoadImage = (url: string) => {
-          return new Promise<HTMLImageElement>((resolve, reject) => {
-            const img = new Image()
-            img.crossOrigin = 'anonymous'
-            img.onload = () => resolve(img)
-            img.onerror = reject
-            img.src = url
-          })
-        }
-
-        const tryLoadViaFetch = async (url: string) => {
-          const response = await fetch(url)
-          if (!response.ok) throw new Error(`HTTP ${response.status}`)
-          const blob = await response.blob()
-          const blobUrl = URL.createObjectURL(blob)
-          return new Promise<HTMLImageElement>((resolve, reject) => {
-            const img = new Image()
-            img.onload = () => {
-              URL.revokeObjectURL(blobUrl)
-              resolve(img)
-            }
-            img.onerror = () => {
-              URL.revokeObjectURL(blobUrl)
-              reject(new Error('Failed to load blob image'))
-            }
-            img.src = blobUrl
-          })
-        }
-
-        try {
-          let img: HTMLImageElement | null = null
-          const corsProxies = [
-            `/api/image-proxy?url=${encodeURIComponent(imageUrl)}`
-          ]
-
-          for (const proxyUrl of corsProxies) {
-            try {
-              img = await tryLoadImage(proxyUrl)
-              break
-            } catch {
-              try {
-                img = await tryLoadViaFetch(proxyUrl)
-                break
-              } catch {
-                // Continue to next proxy
-              }
-            }
-          }
-
-          if (img) {
-            ctx.save()
-            roundedClip(x, y, w, h, borderRadius)
-            ctx.clip()
-            if (grayscale) {
-              ctx.filter = 'grayscale(100%)'
-            }
-            ctx.drawImage(img, x, y, w, h)
-            ctx.restore()
-          } else {
-            throw new Error('All image loading methods failed')
-          }
-        } catch {
-          ctx.save()
-          roundedClip(x, y, w, h, borderRadius)
-          ctx.clip()
-          ctx.fillStyle = '#333'
-          ctx.fillRect(x, y, w, h)
-          ctx.restore()
-          ctx.fillStyle = '#888'
-          ctx.font = '30px Barlow'
-          ctx.textAlign = 'center'
-          ctx.fillText(card?.name || 'Unknown', x + w / 2, y + h / 2)
-        }
-      }
-
-      let currentY = padding
-
-      // Title
-      const displayName = state.poolName || pool.name || (isInfinitePool ? `${pool.setCode} Limited Deckbuilder` : `${pool.setCode} ${pool.poolType === 'draft' ? 'Draft' : 'Sealed'}`)
-      ctx.fillStyle = 'white'
-      ctx.font = 'bold 70px Barlow'
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'top'
-      ctx.fillText(displayName, width / 2, currentY)
-      currentY += titleHeight
-
-      // Subtitle
-      const poolTypeLabel = isInfinitePool ? 'Limited Deckbuilder' : pool.poolType === 'draft' ? 'Draft Pool' : 'Sealed Pool'
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
-      ctx.font = '600 45px Barlow'
-      ctx.fillText(poolTypeLabel, width / 2, currentY - 20)
-      currentY += subtitleHeight
-
-      // By line
-      const ownerName = pool.owner?.username || pool.owner?.name || 'Protect the Pod'
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
-      ctx.font = '40px Barlow'
-      ctx.fillText(`by ${ownerName}`, width / 2, currentY - 20)
-      currentY += byLineHeight + sectionSpacing
-
-      // Leader and base - SAME orientation as deck image (landscape, no rotation)
-      if (hasLeaderBase) {
-        const totalLeaderBaseWidth = leaderBaseWidth * 2 + spacing
-        const startX = (width - totalLeaderBaseWidth) / 2
-        if (leaderCard) {
-          await drawCard(leaderCard, startX, currentY, leaderBaseWidth, leaderBaseHeight, 20)
-        }
-        if (baseCard) {
-          await drawCard(baseCard, startX + leaderBaseWidth + spacing, currentY, leaderBaseWidth, leaderBaseHeight, 20)
-        }
-        currentY += leaderBaseHeight + sectionSpacing
-      }
-
-      // Deck section
-      ctx.fillStyle = 'white'
-      ctx.font = 'bold 50px Barlow'
-      ctx.textAlign = 'left'
-      ctx.textBaseline = 'top'
-      ctx.fillText(`Deck (${deckCards.length} cards)`, padding, currentY)
-      currentY += labelHeight
-
-      let col = 0
-      let row = 0
-      for (const card of deckCards) {
-        const x = padding + col * (cardWidth + spacing)
-        const y = currentY + row * (cardHeight + spacing)
-        await drawCard(card, x, y, cardWidth, cardHeight)
-        col++
-        if (col >= cardsPerRow) { col = 0; row++ }
-      }
-      currentY += deckRows * (cardHeight + spacing) + sectionSpacing
-
-      // Separator
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.3)'
-      ctx.fillRect(padding, currentY, width - padding * 2, separatorHeight)
-      currentY += separatorHeight + sectionSpacing
-
-      // Other leaders row (if any)
-      if (hasOtherLeaders) {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
-        ctx.font = 'bold 50px Barlow'
-        ctx.textAlign = 'left'
-        ctx.fillText('Other Leaders', padding, currentY)
-        currentY += labelHeight
-
-        const totalLeadersWidth = otherLeaders.length * leaderBaseWidth + (otherLeaders.length - 1) * spacing
-        const startX = Math.max(padding, (width - totalLeadersWidth) / 2)
-        let x = startX
-        for (const card of otherLeaders) {
-          await drawCard(card, x, currentY, leaderBaseWidth, leaderBaseHeight, 20, true)
-          x += leaderBaseWidth + spacing
-        }
-        currentY += leaderBaseHeight + sectionSpacing
-      }
-
-      // Other rare bases row (if any) - on separate line below leaders
-      if (hasOtherRareBases) {
-        if (!hasOtherLeaders) {
-          // Only show label if we didn't show "Other Leaders" above
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
-          ctx.font = 'bold 50px Barlow'
-          ctx.textAlign = 'left'
-          ctx.fillText('Other Bases', padding, currentY)
-          currentY += labelHeight
-        } else {
-          // Just add a sub-label for bases
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'
-          ctx.font = '40px Barlow'
-          ctx.textAlign = 'left'
-          ctx.fillText('Other Bases', padding, currentY)
-          currentY += 60
-        }
-
-        const totalBasesWidth = otherRareBases.length * leaderBaseWidth + (otherRareBases.length - 1) * spacing
-        const startX = Math.max(padding, (width - totalBasesWidth) / 2)
-        let x = startX
-        for (const card of otherRareBases) {
-          await drawCard(card, x, currentY, leaderBaseWidth, leaderBaseHeight, 20, true)
-          x += leaderBaseWidth + spacing
-        }
-        currentY += leaderBaseHeight + sectionSpacing
-      }
-
-      // Pool section - same styling as Deck
-      ctx.fillStyle = 'white'
-      ctx.font = 'bold 50px Barlow'
-      ctx.textAlign = 'left'
-      ctx.textBaseline = 'top'
-      ctx.fillText(`Pool (${poolCards.length} cards)`, padding, currentY)
-      currentY += labelHeight
-
-      col = 0
-      row = 0
-      for (const card of poolCards) {
-        const x = padding + col * (cardWidth + spacing)
-        const y = currentY + row * (cardHeight + spacing)
-        await drawCard(card, x, y, cardWidth, cardHeight, cardBorderRadius, true)
-        col++
-        if (col >= cardsPerRow) { col = 0; row++ }
-      }
-      currentY += poolRows * (cardHeight + spacing) + sectionSpacing
-
-      // Footer
-      const now = new Date()
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
-      ctx.font = '32px Barlow'
-      ctx.textAlign = 'center'
-      ctx.fillText(`Created by Protect the Pod on ${now.toLocaleDateString()} at ${now.toLocaleTimeString()}`, width / 2, currentY + 40)
-      ctx.fillText(`https://www.protectthepod.com/pool/${pool?.shareId}/deck`, width / 2, currentY + 80)
-
-      return new Promise((resolve) => {
-        canvas.toBlob((blob) => {
-          if (blob) {
-            resolve(URL.createObjectURL(blob))
-          } else {
-            resolve(null)
-          }
-        }, 'image/png')
+      const blob = await renderPoolImageBlob({
+        cardPositions,
+        activeLeader: activeLeader || null,
+        activeBase: activeBase || null,
+        leaderCard: activeLeader ? cardPositions[activeLeader]?.card || null : null,
+        baseCard: activeBase ? cardPositions[activeBase]?.card || null : null,
+        setCode: pool.setCode,
+        poolType: pool.poolType === 'draft' ? 'draft' : 'sealed',
+        poolName: state.poolName || pool.name || null,
+        ownerUsername: pool?.owner?.username || pool?.owner?.name || null,
+        shareId: pool?.shareId || shareId,
+        rootShareId: pool?.rootShareId ?? null,
       })
+      return blob ? URL.createObjectURL(blob) : null
     } catch (error) {
       console.error('Error generating pool image:', error)
       return null
@@ -2089,12 +1210,24 @@ export default function PlayPage({ params }: PageProps) {
           />
           {deckArchetypeName && <p className="play-deck-name">{deckArchetypeName}</p>}
           <p className="play-pool-type">{poolTypeLabel}</p>
-          <WldBadge
-            wins={pool.wins ?? 0}
-            losses={pool.losses ?? 0}
-            draws={pool.draws ?? 0}
-            matchIds={pool.wayfinderMatchIds ?? []}
-          />
+          <div className="play-header-actions">
+            <WldBadge
+              wins={pool.wins ?? 0}
+              losses={pool.losses ?? 0}
+              draws={pool.draws ?? 0}
+              matchIds={pool.wayfinderMatchIds ?? []}
+            />
+            {shareId && (
+              <Button
+                variant="secondary"
+                size="sm"
+                className="play-stats-button"
+                onClick={() => router.push(`/pool/${shareId}/deck/stats?tab=gamelog`)}
+              >
+                Stats
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Login banner for logged-out users viewing anonymous (unowned) pools */}
@@ -2189,36 +1322,6 @@ export default function PlayPage({ params }: PageProps) {
             <DraftReportButton draftShareId={pool.draftShareId} variant="play" />
           )}
         </div>
-
-        {/* History — the pool's recorded games (Wayfinder-tracked). Only once
-            the Companion is present; the install pitch lives in PlayInstructions. */}
-        {wayfinderDetected && (
-          <div className="play-history-panel">
-            <span className="play-history-label">History</span>
-            {((pool?.wins ?? 0) + (pool?.losses ?? 0) + (pool?.draws ?? 0) > 0 || (pool?.wayfinderMatchIds?.length ?? 0) > 0) ? (
-              <div className="play-record-summary">
-                <WldBadge
-                  wins={pool?.wins ?? 0}
-                  losses={pool?.losses ?? 0}
-                  draws={pool?.draws ?? 0}
-                  matchIds={pool?.wayfinderMatchIds ?? []}
-                />
-                <a
-                  className="play-record-link"
-                  href={`${process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin.wayfinder.news'}/matches`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View your matches on Wayfinder
-                </a>
-              </div>
-            ) : (
-              <p className="play-record-blurb">
-                You&apos;re all set — play some games to start your record.
-              </p>
-            )}
-          </div>
-        )}
 
         {isCompetitive && user && (
           <MatchmakingPanel

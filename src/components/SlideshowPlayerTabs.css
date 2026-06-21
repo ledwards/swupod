@@ -1,0 +1,206 @@
+/**
+ * SlideshowPlayerTabs.css — multi-select player tabs + "All" (Unit U5).
+ *
+ * Lives inside the shell's reserved fixed-height tab bar
+ * (`.draft-slideshow-tabbar`, --slideshow-tabbar-h ≈ 96px). One horizontal row
+ * of up to 8 tabs + an "All" button; tabs shrink (text ellipsizes) so they fit
+ * without wrapping into a second line or introducing vertical scroll.
+ *
+ * Each tab: circular avatar on the LEFT + a text column (name / leader / base).
+ * Selectable tabs are Button variant="toggle" glowColor="blue"; the blue-glow
+ * active token comes from .btn--toggle.btn--active. Unselected tabs are dimmed
+ * + grayscaled (mirroring PackSelector's grayscale-on-unselected); the active
+ * tab is full color. Locked tabs (variant="warning") show identity with a lock.
+ *
+ * All :hover rules are wrapped in @media (hover: hover) and (pointer: fine) per
+ * the mobile rule (CSS :hover otherwise fires on tap).
+ */
+
+.slideshow-player-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 100%;
+  /* Leave room for the pinned top-right close button (36px + margins). */
+  padding: 0 60px;
+  box-sizing: border-box;
+}
+
+/* ---- shared tab chrome (selectable + locked) ------------------------------ */
+
+/* Override the compact .btn--toggle padding so the avatar + two text lines fit,
+   and let tabs shrink (min-width:0) so up to 8 stay on one row at 1366px. */
+.slideshow-player-tab.btn {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 200px;
+  height: 72px;
+  padding: 6px 12px;
+  gap: 8px; /* avatar ↔ text (icon+text spacing rule) */
+  justify-content: flex-start;
+  text-align: left;
+  border-radius: 10px;
+}
+
+/* The "All" button is a plain pill — no avatar/identity, so it sizes to content. */
+.slideshow-player-tab--all.btn {
+  flex: 0 0 auto;
+  max-width: none;
+  height: 72px;
+  padding: 6px 16px;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.slideshow-player-tab__avatar {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  object-fit: cover;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* Text column: name / leader / base, each truncating rather than wrapping. */
+.slideshow-player-tab__identity {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 0; /* enables ellipsis on the children */
+  line-height: 1.2;
+  overflow: hidden;
+}
+
+.slideshow-player-tab__name {
+  max-width: 100%;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slideshow-player-tab__leader {
+  max-width: 100%;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slideshow-player-tab__base {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.slideshow-player-tab__base-name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slideshow-player-tab__aspects {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 0 auto;
+}
+
+.slideshow-player-tab__aspect-icon {
+  width: 11px;
+  height: 11px;
+  display: block;
+}
+
+/* ---- selection state ------------------------------------------------------ */
+
+/* Unselected selectable tabs read dimmer + grayscaled (PackSelector pattern).
+   :not(.btn--active) is a selectable toggle that isn't currently selected;
+   locked tabs use variant="warning" (no .btn--toggle) so they're unaffected. */
+.slideshow-player-tab.btn--toggle:not(.btn--active) {
+  opacity: 0.65;
+}
+
+.slideshow-player-tab.btn--toggle:not(.btn--active) .slideshow-player-tab__avatar,
+.slideshow-player-tab.btn--toggle:not(.btn--active) .slideshow-player-tab__aspect-icon {
+  filter: grayscale(0.85);
+}
+
+/* Active (selected) tab: full color, solid blue-tinted active treatment. */
+.slideshow-player-tab.btn--toggle.btn--active {
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  /* Hovering a selectable tab restores full color (preview of selecting it). */
+  .slideshow-player-tab.btn--toggle:not(.btn--active):hover {
+    opacity: 1;
+  }
+
+  .slideshow-player-tab.btn--toggle:not(.btn--active):hover .slideshow-player-tab__avatar,
+  .slideshow-player-tab.btn--toggle:not(.btn--active):hover .slideshow-player-tab__aspect-icon {
+    filter: none;
+  }
+}
+
+/* ---- locked (private) seats — R12 ----------------------------------------- */
+
+/* Identity stays legible; leader/base are reduced-opacity (withheld-but-shown). */
+.slideshow-player-tab--locked.btn {
+  cursor: default;
+}
+
+.slideshow-player-tab--locked .slideshow-player-tab__leader,
+.slideshow-player-tab--locked .slideshow-player-tab__base {
+  opacity: 0.55;
+}
+
+.slideshow-player-tab--locked .slideshow-player-tab__avatar {
+  filter: grayscale(0.5);
+}
+
+.slideshow-player-tab__lock-icon {
+  flex: 0 0 auto;
+  margin-left: 2px;
+  opacity: 0.9;
+}
+
+/* ---- narrower desktops: keep all 8 on one row ----------------------------- */
+
+@media (max-width: 1440px) {
+  .slideshow-player-tab.btn {
+    max-width: 168px;
+  }
+}
+
+@media (max-width: 1280px) {
+  .slideshow-player-tabs {
+    gap: 6px;
+    padding: 0 52px;
+  }
+
+  .slideshow-player-tab.btn {
+    max-width: 148px;
+    padding: 6px 10px;
+  }
+
+  .slideshow-player-tab__avatar {
+    width: 28px;
+    height: 28px;
+  }
+}

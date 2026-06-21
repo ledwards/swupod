@@ -354,6 +354,7 @@
 /* Leaders and bases display landscape (wider than tall) */
 .draft-mode .card-item.leader,
 .draft-mode .card-item.base {
+  --rainbow-border-reference: 168px;
   width: 168px;
   aspect-ratio: 3.5 / 2.5;
 }
@@ -369,6 +370,9 @@
 }
 
 .card-item {
+  --rainbow-border-reference: 120px;
+  --rainbow-border-size: calc(var(--rainbow-border-reference) * var(--rainbow-border-thickness-ratio));
+  --rainbow-border-radius: calc(var(--rainbow-border-reference) * var(--rainbow-border-radius-ratio));
   width: 120px;
   flex-shrink: 0;
   background: rgba(0, 0, 0, 0.6);
@@ -385,24 +389,14 @@
 .card-item::before {
   content: '';
   position: absolute;
-  inset: -1px;
-  border-radius: 12px;
-  background: linear-gradient(
-    45deg,
-    #ff0000,
-    #ff7f00,
-    #ffff00,
-    #00ff00,
-    #0000ff,
-    #4b0082,
-    #9400d3,
-    #ff0000
-  );
-  background-size: 400% 400%;
+  inset: calc(var(--rainbow-border-size) * -1);
+  border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
+  background: var(--rainbow-border-gradient);
+  background-size: var(--rainbow-border-background-size);
   z-index: -1;
   opacity: 0;
   transition: opacity 0.3s ease;
-  animation: rainbow-border 3s linear infinite;
+  animation: var(--rainbow-border-animation);
   pointer-events: none;
 }
 

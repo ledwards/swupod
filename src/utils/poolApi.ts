@@ -94,6 +94,41 @@ export async function loadPool(shareId: string): Promise<SavedPool> {
 }
 
 /**
+ * Load a pool, retrying briefly on failure.
+ *
+ * A freshly-created pool is saved fire-and-forget on the previous screen
+ * (pools/new), so its row may not be committed the instant the deck builder
+ * mounts. Without a retry the deck page treats that transient miss as "not
+ * found" and bounces the user back to /sealed (#37). `loader`/`sleep` are
+ * injectable so the retry behaviour is unit-testable without real timers.
+ */
+export async function loadPoolWithRetry(
+  shareId: string,
+  {
+    attempts = 5,
+    delayMs = 400,
+    loader = loadPool,
+    sleep = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms)),
+  }: {
+    attempts?: number
+    delayMs?: number
+    loader?: (shareId: string) => Promise<SavedPool>
+    sleep?: (ms: number) => Promise<void>
+  } = {}
+): Promise<SavedPool> {
+  let lastError: unknown
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      return await loader(shareId)
+    } catch (error) {
+      lastError = error
+      if (attempt < attempts) await sleep(delayMs)
+    }
+  }
+  throw lastError
+}
+
+/**
  * Update a pool (e.g., deck builder state)
  * @param shareId - Share ID of the pool
  * @param updates - Fields to update

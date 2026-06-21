@@ -1,13 +1,16 @@
 // @ts-nocheck
 'use client'
 
-import { useState, useEffect, use, useRef } from 'react'
+import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../../../src/contexts/AuthContext'
 import Button from '../../../../../src/components/Button'
 import PlayerCircle from '../../../../../src/components/PlayerCircle'
 import CardWithPreview from '../../../../../src/components/CardWithPreview'
-import ReplayWatchLink from '../../../../../src/components/ReplayWatchLink'
+import DraftSlideshow from '../../../../../src/components/DraftSlideshow'
+import { useIsMobile } from '../../../../../src/hooks/common/useIsMobile'
+import MatchCard from '../../../../../src/components/MatchCard'
+import WayfinderStoreButtons, { WayfinderCompanionLockup } from '../../../../../src/components/WayfinderStoreButtons'
 import '../../../../../src/App.css'
 import '../../../../../src/styles/backgrounds.css'
 import '../../../../../src/components/SealedPod.css'
@@ -15,7 +18,8 @@ import '../../log/log.css'
 import '../report.css'
 import { getPackArtUrl } from '../../../../../src/utils/packArt'
 import { parseMarkdownToHTML } from '../../../../../src/utils/markdown'
-import type { DraftReportGameReplay, DraftReportGameResult, DraftReportMatch, DraftReportMatchResult } from '../../../../../src/utils/draftReportMatches'
+import { useStickyTab } from '../../../../../src/hooks/useStickyTab'
+import { useWayfinderDetection } from '../../../../../src/hooks/useWayfinderDetection'
 
 interface ReportData {
   draft: {
@@ -42,9 +46,7 @@ interface ReportData {
     strategyName: string | null
     mixinName: string | null
   }>
-  isOwner?: boolean
   mySeat: number
-  matches?: DraftReportMatch[]
   picks: Array<{
     type: 'leader' | 'card'
     packNumber: number
@@ -62,57 +64,52 @@ interface ReportData {
     notes: string | null
     createdAt: string
   } | null
+  isHost?: boolean
+  isOwner?: boolean
+  draftReportsPublic?: boolean
+  gameplay?: {
+    matches: Array<{
+      id: string
+      roundNumber: number
+      player1: { id: string; username: string; avatarUrl?: string | null } | null
+      player2: { id: string; username: string; avatarUrl?: string | null } | null
+      isBye: boolean
+      game1Result: string | null
+      game2Result: string | null
+      game3Result: string | null
+      player1Submitted: boolean
+      player2Submitted: boolean
+      finalConfirmed: boolean
+      matchWinner: string | null
+      podOwnerOverride: boolean
+      wayfinderMatchId?: string | null
+    }>
+  }
 }
 
-type TabId = 'seating' | 'log' | 'pool' | 'deck' | 'matches' | 'notes'
+const REPORT_TABS = ['seating', 'log', 'pool', 'deck', 'notes', 'gameplay'] as const
+type TabId = typeof REPORT_TABS[number]
+
+function VisibilityLockIcon({ open }: { open: boolean }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      {open ? (
+        <>
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+        </>
+      ) : (
+        <>
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </>
+      )}
+    </svg>
+  )
+}
 
 interface PageProps {
   params: Promise<{ shareId: string; poolShareId: string }>
-}
-
-function reportMatchDate(value: string | null): string {
-  if (!value) return 'Unknown date'
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return 'Unknown date'
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
-
-function reportMatchResultLabel(result: DraftReportMatchResult): string {
-  if (result === 'win') return 'Win'
-  if (result === 'loss') return 'Loss'
-  if (result === 'draw') return 'Draw'
-  return 'Pending'
-}
-
-function replayHref(match: DraftReportMatch): string | null {
-  if (match.replayUrl) return match.replayUrl
-  if (match.wayfinderMatchId) {
-    const wayfinder = process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin.wayfinder.news'
-    return `${wayfinder}/matches/${match.wayfinderMatchId}`
-  }
-  return null
-}
-
-function gameReplayHref(game: DraftReportGameReplay): string | null {
-  if (game.replayUrl) return game.replayUrl
-  if (game.wayfinderMatchId) {
-    const wayfinder = process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin.wayfinder.news'
-    return `${wayfinder}/matches/${game.wayfinderMatchId}`
-  }
-  return null
-}
-
-function MatchGamePips({ results }: { results: DraftReportGameResult[] }) {
-  if (!results || results.length === 0) return null
-  return (
-    <div className="draft-report-match-games" aria-label={`Games: ${results.join('-')}`}>
-      {results.map((result, index) => (
-        <span key={`${result}-${index}`} className={`draft-report-match-game draft-report-match-game--${result.toLowerCase()}`}>
-          {result}
-        </span>
-      ))}
-    </div>
-  )
 }
 
 export default function DraftReportPage({ params }: PageProps) {
@@ -121,25 +118,23 @@ export default function DraftReportPage({ params }: PageProps) {
   const poolShareId = resolvedParams.poolShareId
   const router = useRouter()
   const { user, isPatron } = useAuth()
+  const { detected: wayfinderDetected } = useWayfinderDetection()
 
   const [data, setData] = useState<ReportData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<TabId>(() => {
-    if (typeof window !== 'undefined') {
-      const hash = window.location.hash.replace('#', '')
-      if (hash === 'gameplay') return 'matches'
-      if (['seating', 'log', 'pool', 'deck', 'matches', 'notes'].includes(hash)) return hash as TabId
-    }
-    return 'seating'
-  })
+  // Hash-deep-linked tabs (#deck etc.). No storageKey — a fresh report should
+  // open on Seating, not whatever tab you last viewed on a different report.
+  const [activeTab, setActiveTab] = useStickyTab<TabId>(REPORT_TABS, 'seating')
   const [message, setMessage] = useState<string | null>(null)
   const [reportPublic, setReportPublic] = useState(false)
+  const [isSlideshowOpen, setIsSlideshowOpen] = useState(false)
+  const isMobile = useIsMobile()
+  const [draftReportsPublic, setDraftReportsPublic] = useState(false)
   const [editingNotes, setEditingNotes] = useState(false)
   const [notesDraft, setNotesDraft] = useState('')
   const [savingNotes, setSavingNotes] = useState(false)
   const [showMdHelp, setShowMdHelp] = useState(false)
-  const activeTabRef = useRef<HTMLButtonElement | null>(null)
 
   useEffect(() => {
     if (!shareId || !poolShareId) return
@@ -155,6 +150,7 @@ export default function DraftReportPage({ params }: PageProps) {
         const reportData = await res.json()
         setData(reportData)
         setReportPublic(reportData.pool?.reportPublic || false)
+        setDraftReportsPublic(reportData.draftReportsPublic || false)
       } catch {
         setError('Failed to load report')
       } finally {
@@ -162,11 +158,7 @@ export default function DraftReportPage({ params }: PageProps) {
       }
     }
     fetchReport()
-  }, [shareId])
-
-  useEffect(() => {
-    activeTabRef.current?.scrollIntoView({ block: 'nearest', inline: 'center' })
-  }, [activeTab, loading])
+  }, [shareId, poolShareId])
 
   const handleToggleVisibility = async () => {
     const newValue = !reportPublic
@@ -179,12 +171,47 @@ export default function DraftReportPage({ params }: PageProps) {
         body: JSON.stringify({ reportPublic: newValue }),
       })
       if (res.ok) {
+        setData(prev => prev ? {
+          ...prev,
+          pool: prev.pool ? { ...prev.pool, reportPublic: newValue } : prev.pool,
+        } : prev)
+        if (data?.isHost && !newValue) setDraftReportsPublic(false)
         setMessage(newValue ? 'Report is now public' : 'Report is now private')
         setTimeout(() => setMessage(null), 3000)
       } else {
         setReportPublic(!newValue)
       }
     } catch {
+      setReportPublic(!newValue)
+    }
+  }
+
+  const handleToggleDraftVisibility = async () => {
+    const newValue = !draftReportsPublic
+    setDraftReportsPublic(newValue)
+    setReportPublic(newValue)
+    try {
+      const res = await fetch(`/api/draft/${shareId}/report/visibility`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ reportPublic: newValue, scope: 'draft' }),
+      })
+      if (res.ok) {
+        setData(prev => prev ? {
+          ...prev,
+          draft: { ...prev.draft, isPublic: newValue },
+          draftReportsPublic: newValue,
+          pool: prev.pool ? { ...prev.pool, reportPublic: newValue } : prev.pool,
+        } : prev)
+        setMessage(newValue ? 'Whole draft is now public' : 'Whole draft is now private')
+        setTimeout(() => setMessage(null), 3000)
+      } else {
+        setDraftReportsPublic(!newValue)
+        setReportPublic(!newValue)
+      }
+    } catch {
+      setDraftReportsPublic(!newValue)
       setReportPublic(!newValue)
     }
   }
@@ -203,7 +230,7 @@ export default function DraftReportPage({ params }: PageProps) {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ notes: notesDraft }),
+        body: JSON.stringify({ notes: notesDraft, poolShareId }),
       })
       if (res.ok) {
         setData(prev => prev ? {
@@ -253,6 +280,7 @@ export default function DraftReportPage({ params }: PageProps) {
 
   const { draft, players, picks, pool } = data
   const isOwner = data.isOwner ?? (user && data.mySeat != null)
+  const canEditNotes = isOwner || data.isHost
   const completedDate = draft.completedAt
     ? new Date(draft.completedAt).toLocaleDateString('en-US', {
         weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
@@ -271,7 +299,7 @@ export default function DraftReportPage({ params }: PageProps) {
   ].filter(s => s.picks.length > 0)
 
   const poolPacks = pool?.packs || []
-  const reportMatches = data.matches || []
+  const gameplayMatches = data.gameplay?.matches || []
 
   const deckState = pool?.deckBuilderState || null
   const deckCards = []
@@ -300,7 +328,7 @@ export default function DraftReportPage({ params }: PageProps) {
     { id: 'log', label: 'Draft Log' },
     { id: 'pool', label: 'Pool' },
     { id: 'deck', label: 'Deck' },
-    { id: 'matches', label: 'Matches' },
+    { id: 'gameplay', label: 'Gameplay' },
     { id: 'notes', label: 'Notes' },
   ]
 
@@ -320,29 +348,48 @@ export default function DraftReportPage({ params }: PageProps) {
             </div>
           </div>
           <div className="draft-report-header-actions">
-            {isOwner && (
+            {!isMobile && (
+              <Button
+                variant="interactive"
+                onClick={() => setIsSlideshowOpen(true)}
+                aria-label="Open Slideshow Mode"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+                <span>Slideshow Mode</span>
+              </Button>
+            )}
+            {data.isHost && (
+              <Button
+                variant={draftReportsPublic ? 'primary' : 'danger'}
+                onClick={handleToggleDraftVisibility}
+                title={draftReportsPublic ? 'Make the whole draft private' : 'Make the whole draft public'}
+                className="draft-report-visibility-button"
+                style={{
+                  borderColor: draftReportsPublic ? 'rgba(0, 255, 0, 0.5)' : 'rgba(255, 0, 0, 0.5)',
+                  boxShadow: draftReportsPublic ? '0 0 8px rgba(0, 255, 0, 0.2)' : '0 0 8px rgba(255, 0, 0, 0.2)',
+                }}
+              >
+                <VisibilityLockIcon open={draftReportsPublic} />
+                <span>{draftReportsPublic ? 'Draft Public' : 'Draft Private'}</span>
+              </Button>
+            )}
+            {isOwner && !data.isHost && (
               <Button
                 variant={reportPublic ? 'primary' : 'danger'}
                 onClick={handleToggleVisibility}
+                title={reportPublic ? 'Make your report private' : 'Make your report public'}
+                className="draft-report-visibility-button"
                 style={{
                   borderColor: reportPublic ? 'rgba(0, 255, 0, 0.5)' : 'rgba(255, 0, 0, 0.5)',
                   boxShadow: reportPublic ? '0 0 8px rgba(0, 255, 0, 0.2)' : '0 0 8px rgba(255, 0, 0, 0.2)',
                 }}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  {reportPublic ? (
-                    <>
-                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                      <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
-                    </>
-                  ) : (
-                    <>
-                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                    </>
-                  )}
-                </svg>
-                <span>{reportPublic ? 'Public' : 'Private'}</span>
+                <VisibilityLockIcon open={reportPublic} />
+                <span>{reportPublic ? 'Report Public' : 'Report Private'}</span>
               </Button>
             )}
             <Button variant="secondary" onClick={handleCopyLink}>
@@ -360,19 +407,15 @@ export default function DraftReportPage({ params }: PageProps) {
         {tabs.map(tab => (
           <button
             key={tab.id}
-            ref={activeTab === tab.id ? activeTabRef : null}
             className={`draft-report-tab ${activeTab === tab.id ? 'active' : ''} ${tab.placeholder ? 'placeholder' : ''}`}
-            onClick={() => {
-              setActiveTab(tab.id)
-              window.history.replaceState(null, '', `#${tab.id}`)
-            }}
+            onClick={() => setActiveTab(tab.id)}
           >
             {tab.label}
           </button>
         ))}
       </div>
 
-      <div className="draft-report-content">
+      <div className={`draft-report-content ${activeTab === 'seating' ? 'draft-report-content-seating' : ''}`}>
         {activeTab === 'seating' && (
           <div className="draft-report-seating">
             <PlayerCircle
@@ -517,79 +560,6 @@ export default function DraftReportPage({ params }: PageProps) {
           </div>
         )}
 
-        {activeTab === 'matches' && (
-          <div className="draft-report-matches">
-            {reportMatches.length === 0 ? (
-              <div className="draft-report-deck-empty">
-                No plugin-recorded matches yet.
-              </div>
-            ) : (
-              <div className="draft-report-match-list">
-                {reportMatches.map(match => {
-                  const href = replayHref(match)
-                  const linkedGames = (match.games || []).filter(game => gameReplayHref(game))
-                  const opponentName = match.opponent.username || 'Opponent'
-                  const playerLeader = match.player.leaderName || 'Your deck'
-                  const opponentLeader = match.opponent.leaderName || 'Opponent deck'
-                  const playerDeckLine = match.player.baseName ? `${playerLeader} / ${match.player.baseName}` : playerLeader
-                  const opponentDeckLine = match.opponent.baseName ? `${opponentLeader} / ${match.opponent.baseName}` : opponentLeader
-
-                  return (
-                    <article key={match.id} className={`draft-report-match-row draft-report-match-row--${match.result}`}>
-                      <div className="draft-report-match-main">
-                        <div className="draft-report-match-kicker">
-                          <span>{match.label}</span>
-                          <span>{match.source === 'competitive' ? 'Swiss Practice' : 'Pool Play'}</span>
-                          <span>{reportMatchDate(match.playedAt)}</span>
-                        </div>
-                        <div className="draft-report-match-title">
-                          <strong>vs {opponentName}</strong>
-                          <span className={`draft-report-match-result draft-report-match-result--${match.result}`}>
-                            {reportMatchResultLabel(match.result)}
-                          </span>
-                        </div>
-                        <div className="draft-report-match-decks">
-                          <span>{playerDeckLine}</span>
-                          <span aria-hidden="true">vs</span>
-                          <span>{opponentDeckLine}</span>
-                        </div>
-                      </div>
-                      <div className="draft-report-match-actions">
-                        <MatchGamePips results={match.gameResults} />
-                        {linkedGames.length > 0 ? (
-                          <div className="draft-report-match-game-replays">
-                            {linkedGames.map((game, index) => {
-                              const gameHref = gameReplayHref(game)
-                              return (
-                                <ReplayWatchLink
-                                  key={`${match.id}-game-${game.gameNumber || index}`}
-                                  href={gameHref || undefined}
-                                  ariaLabel={`Watch game ${game.gameNumber || index + 1} replay against ${opponentName}`}
-                                >
-                                  {game.gameNumber ? `G${game.gameNumber}` : `G${index + 1}`}
-                                </ReplayWatchLink>
-                              )
-                            })}
-                          </div>
-                        ) : href ? (
-                          <ReplayWatchLink
-                            href={href}
-                            ariaLabel={match.replayUrl ? `Watch replay against ${opponentName}` : `View Wayfinder match against ${opponentName}`}
-                          >
-                            {match.replayUrl ? 'Watch' : 'View Match'}
-                          </ReplayWatchLink>
-                        ) : (
-                          <span className="draft-report-match-no-replay">No replay link</span>
-                        )}
-                      </div>
-                    </article>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        )}
-
         {activeTab === 'notes' && (
           <div className="draft-report-notes">
             {editingNotes ? (
@@ -635,7 +605,7 @@ export default function DraftReportPage({ params }: PageProps) {
               </>
             ) : pool?.notes ? (
               <>
-                {isOwner && (
+                {canEditNotes && (
                   <button className="draft-report-notes-edit-btn" onClick={() => { setNotesDraft(pool.notes || ''); setEditingNotes(true) }} title="Edit notes">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -648,16 +618,62 @@ export default function DraftReportPage({ params }: PageProps) {
                   dangerouslySetInnerHTML={{ __html: parseMarkdownToHTML(pool.notes) }}
                 />
               </>
-            ) : isOwner ? (
-              <div
+            ) : canEditNotes ? (
+              <button
+                type="button"
                 className="draft-report-notes-empty"
                 onClick={() => { setNotesDraft(''); setEditingNotes(true) }}
               >
                 Click to add notes...
-              </div>
+              </button>
             ) : (
               <div className="draft-report-notes-empty" style={{ cursor: 'default' }}>
                 No notes yet.
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'gameplay' && (
+          <div className="draft-report-gameplay">
+            {wayfinderDetected && gameplayMatches.length > 0 ? (
+              <>
+                <div className="draft-report-gameplay-header">
+                  <div>
+                    <span className="draft-report-gameplay-eyebrow">Pod Matches</span>
+                    <h3>Matches with this deck</h3>
+                  </div>
+                  <span className="draft-report-gameplay-count">
+                    {gameplayMatches.length} {gameplayMatches.length === 1 ? 'match' : 'matches'}
+                  </span>
+                </div>
+                <div className="draft-report-gameplay-matches">
+                  {gameplayMatches.map(match => (
+                    <div key={match.id} className="draft-report-gameplay-match-row">
+                      <span className="draft-report-gameplay-round">Round {match.roundNumber}</span>
+                      <MatchCard
+                        match={match}
+                        currentUserId={data.players.find(p => p.seatNumber === data.mySeat)?.userId || ''}
+                        isHost={false}
+                        onReport={() => {}}
+                        onOverride={() => {}}
+                        onBoot={() => {}}
+                        readOnly
+                      />
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="draft-report-gameplay-wayfinder">
+                <WayfinderCompanionLockup className="draft-report-gameplay-wayfinder-lockup" />
+                <h3>{wayfinderDetected ? 'No pod matches recorded yet' : 'Capture pod matches with Wayfinder'}</h3>
+                <p>
+                  {wayfinderDetected
+                    ? 'Play this deck through Wayfinder and recorded matches against other decks in this pod will appear here.'
+                    : 'Install the Wayfinder Companion, play this draft deck, and its pod match history will appear here once games are recorded.'}
+                </p>
+                <WayfinderStoreButtons orientation="inline" />
               </div>
             )}
           </div>
@@ -666,6 +682,13 @@ export default function DraftReportPage({ params }: PageProps) {
 
       {message && <div className="draft-report-message">{message}</div>}
       </div>
+      {isSlideshowOpen && (
+        <DraftSlideshow
+          shareId={shareId}
+          setCode={draft.setCode}
+          onClose={() => setIsSlideshowOpen(false)}
+        />
+      )}
     </div>
   )
 }

@@ -41,6 +41,25 @@ describe('useWayfinderDetection contract', () => {
   it('returns a settled flag so install nudges do not flash before detection resolves', () => {
     assert.match(SRC, /settled:\s*boolean/)
     assert.match(SRC, /setSettled\(true\)/)
-    assert.match(SRC, /return \{ detected, iconUrl, settled \}/)
+    assert.match(SRC, /return \{ detected, iconUrl, settled, pluginLoggedIn \}/)
+  })
+
+  // Sign-in state: the marker carries data-logged-in and the extension
+  // postMessages wayfinder:auth-state. These tell "installed but signed out"
+  // apart from "installed and ready" so callers can nudge toolbar sign-in.
+  it('reads the marker sign-in attribute and the auth-state postMessage', () => {
+    assert.match(SRC, /dataset\.loggedIn/)
+    assert.match(SRC, /wayfinder:auth-state/)
+  })
+
+  it('exposes pluginLoggedIn as a tri-state (null = unknown, do not nag)', () => {
+    assert.match(SRC, /pluginLoggedIn:\s*boolean\s*\|\s*null/)
+    assert.match(SRC, /useState<boolean \| null>\(null\)/)
+  })
+
+  it('honors the ?wflogin=1/0 QA override for sign-in state', () => {
+    assert.match(SRC, /['"]wflogin['"]/)
+    assert.match(SRC, /forcedLogin === '1'/)
+    assert.match(SRC, /forcedLogin === '0'/)
   })
 })

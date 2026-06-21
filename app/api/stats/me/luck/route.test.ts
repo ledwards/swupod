@@ -120,6 +120,24 @@ describe('buildDuplicates', () => {
     assert.equal(dup.hasModel, false)
     assert.equal(dup.expectedPerPool, 0)
   })
+
+  it('expectedSd is the per-pool σ, invariant to pool count (not SE of the mean)', () => {
+    // BUGGY (old): expectedSd = σ/√n (standard error of the mean), so the
+    // duplicate z-score grew with pool count — an ordinary run looked like a 3σ
+    // anomaly after a dozen pools. FIXED: expectedSd is the model's per-pool σ,
+    // the same whether you've opened 1 pool or 20.
+    const mk = (pools: number) =>
+      Array.from({ length: pools }, (_, p) =>
+        Array.from({ length: 6 }, (_, i) => ({ card_name: `C${i}`, card_id: `u${p}-${i}`, source_id: `pool${p}`, pack_index: i })),
+      ).flat() as any
+    const one = buildDuplicates(mk(1), 'SOR')
+    const many = buildDuplicates(mk(20), 'SOR')
+    // Same set + pool type ⇒ identical per-pool σ. (An SE-of-the-mean would shrink
+    // by ~√20 ≈ 4.5× between these two.)
+    assert.ok(Math.abs(one.expectedSd! - many.expectedSd!) < 1e-9, 'per-pool σ must not change with pool count')
+    // SPEC: SOR sealed-6 model σ = 1.5515 (src/data/duplicateStats.json).
+    assert.ok(Math.abs(many.expectedSd! - 1.5515) < 1e-3, 'σ equals the model per-pool sd')
+  })
 })
 
 describe('buildShowcase', () => {

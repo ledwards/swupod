@@ -5,7 +5,7 @@ import { useState, useEffect, useRef, useCallback, use } from 'react'
 import DeckBuilder from '../../../../src/components/DeckBuilder'
 import PoolBuilds from '../../../../src/components/PoolBuilds'
 import ChatPanel from '../../../../src/components/ChatPanel'
-import { loadPool, updatePool } from '../../../../src/utils/poolApi'
+import { loadPool, loadPoolWithRetry, updatePool } from '../../../../src/utils/poolApi'
 import { usePoolBuildsSocket } from '../../../../src/hooks/usePoolBuildsSocket'
 import { useAuth } from '../../../../src/contexts/AuthContext'
 import { useTrackPoolView } from '../../../../src/hooks/useTrackPoolView'
@@ -71,7 +71,11 @@ export default function DeckBuilderPage({ params }: PageProps) {
 
       try {
         setLoading(true)
-        const poolData = await loadPool(shareId)
+        // Retry briefly: a just-created pool may still be committing its
+        // fire-and-forget save, and bouncing to /sealed during that window is
+        // exactly bug #37. loading stays true across retries so the redirect
+        // guard below can't fire mid-retry.
+        const poolData = await loadPoolWithRetry(shareId)
         setPool(poolData)
       } catch (err) {
         console.error('Failed to load pool:', err)
