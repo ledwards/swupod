@@ -182,3 +182,67 @@ describe('pairing', () => {
     })
   })
 })
+
+describe('pairing — bye × drop invariants', () => {
+  const make = (id: string, seat: number, extra: Partial<PairingPlayer> = {}): PairingPlayer => ({
+    id,
+    seatNumber: seat,
+    matchWins: 0,
+    matchLosses: 0,
+    hasBye: false,
+    dropped: false,
+    opponents: [],
+    ...extra,
+  })
+
+  it('SPEC: even active count produces zero byes', () => {
+    const players = [1, 2, 3, 4].map(n => make(`p${n}`, n))
+    const pairings = pairSwiss(players)
+    assert.equal(pairings.filter(p => p.isBye).length, 0)
+    assert.equal(pairings.length, 2)
+  })
+
+  it('SPEC: odd active count produces exactly one bye', () => {
+    const players = [1, 2, 3, 4, 5].map(n => make(`p${n}`, n))
+    const pairings = pairSwiss(players)
+    assert.equal(pairings.filter(p => p.isBye).length, 1)
+    // 5 active → 1 bye + 2 real matches; everyone appears exactly once.
+    const everyId = pairings.flatMap(p => [p.player1Id, p.player2Id]).filter(Boolean)
+    assert.equal(new Set(everyId).size, 5)
+  })
+
+  it('SPEC: a drop that turns an even field odd yields exactly one bye for the next round', () => {
+    // 6 seated, one dropped → 5 active → odd → one bye.
+    const players = [1, 2, 3, 4, 5, 6].map(n => make(`p${n}`, n))
+    players[2]!.dropped = true
+    const pairings = pairSwiss(players)
+    assert.equal(pairings.filter(p => p.isBye).length, 1)
+    const allIds = pairings.flatMap(p => [p.player1Id, p.player2Id]).filter(Boolean)
+    assert.ok(!allIds.includes('p3'), 'dropped p3 must not be paired or given a bye')
+  })
+
+  it('SPEC: two drops keeping the field even yields no bye', () => {
+    // 6 seated, two dropped → 4 active → even → no bye.
+    const players = [1, 2, 3, 4, 5, 6].map(n => make(`p${n}`, n))
+    players[1]!.dropped = true
+    players[4]!.dropped = true
+    const pairings = pairSwiss(players)
+    assert.equal(pairings.filter(p => p.isBye).length, 0)
+    assert.equal(pairings.length, 2)
+    const allIds = pairings.flatMap(p => [p.player1Id, p.player2Id]).filter(Boolean)
+    assert.ok(!allIds.includes('p2') && !allIds.includes('p5'), 'dropped players excluded')
+  })
+
+  it('SPEC: assignBye never returns a dropped player even when every eligible player already had a bye', () => {
+    // All non-dropped players already had a bye → fallback path; the dropped
+    // player has the fewest wins but must still never receive the bye.
+    const players = [
+      make('p1', 1, { matchWins: 2, hasBye: true }),
+      make('p2', 2, { matchWins: 1, hasBye: true }),
+      make('p3', 3, { matchWins: 0, dropped: true }),
+    ]
+    const byeId = assignBye(players)
+    assert.notEqual(byeId, 'p3')
+    assert.ok(byeId === 'p1' || byeId === 'p2')
+  })
+})

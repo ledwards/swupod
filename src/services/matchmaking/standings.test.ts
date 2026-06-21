@@ -192,3 +192,74 @@ describe('matchmaking standings derivation', () => {
     assert.deepEqual(finalTally.get('C'), { wins: 0, losses: 1, draws: 1 })
   })
 })
+
+describe('matchmaking standings — byes & drops', () => {
+  it('SPEC: a bye counts as a match win (worth points) in the standings record', () => {
+    const players = [p('A'), p('B'), p('C')]
+    const [A, B, C] = players
+    const rounds = [
+      round(1, [
+        match('bye-a', 1, A, null, 'player1', { bye: true }),
+        match('b-c', 1, B, C, 'player1'),
+      ]),
+    ]
+
+    const a = computeRankedStandings(rounds, players).find(s => s.id === 'A')!
+    assert.equal(a.wins, 1, 'SPEC: a bye is a match win')
+    assert.equal(a.losses, 0)
+  })
+
+  it('SPEC: a dropped player keeps prior confirmed results, takes the auto-loss, and is flagged dropped', () => {
+    const A = p('A')
+    const B = p('B', 'Dropped B', true)
+    const C = p('C')
+    const players = [A, B, C]
+    const rounds = [
+      // Round 1 played out normally: A beat B.
+      round(1, [
+        match('r1-ab', 1, A, B, 'player1'),
+        match('r1-bye-c', 1, C, null, 'player1', { bye: true }),
+      ]),
+      // Round 2: B drops mid-match — auto-loss recorded as a win for opponent C.
+      round(2, [
+        match('r2-bc', 2, B, C, 'player2'),
+      ]),
+    ]
+
+    const standings = computeRankedStandings(rounds, players)
+    const b = standings.find(s => s.id === 'B')!
+    const c = standings.find(s => s.id === 'C')!
+
+    // Prior R1 loss retained + R2 auto-loss counted = 0-2, and flagged dropped.
+    assert.deepEqual({ wins: b.wins, losses: b.losses, dropped: b.dropped }, { wins: 0, losses: 2, dropped: true })
+    // Opponent C is credited the auto-loss win (plus their R1 bye win) = 2-0.
+    assert.deepEqual({ wins: c.wins, losses: c.losses }, { wins: 2, losses: 0 })
+  })
+
+  it('SPEC: OMW counts a dropped opponent with their real record but never counts a bye as an opponent', () => {
+    const A = p('A')
+    const B = p('B', 'Dropped B', true)
+    const C = p('C')
+    const D = p('D')
+    const players = [A, B, C, D]
+    const rounds = [
+      round(1, [
+        match('r1-ad', 1, A, D, 'player1'),  // A beats D
+        match('r1-bc', 1, B, C, 'player1'),  // B beats C
+      ]),
+      round(2, [
+        match('r2-ab', 2, A, B, 'player1'),  // A beats B; B then drops
+      ]),
+    ]
+
+    const standings = computeRankedStandings(rounds, players)
+    const a = standings.find(s => s.id === 'A')!
+    const b = standings.find(s => s.id === 'B')!
+
+    assert.deepEqual({ wins: a.wins, losses: a.losses }, { wins: 2, losses: 0 })
+    // A's opponents: D (0-1 → floored 0.33) and dropped B (1-1 → 0.5).
+    // OMW = (0.33 + 0.5) / 2 = 0.415 ≈ 42%. The drop does not erase B's record.
+    assert.equal(Math.round(a.omwPercent * 100), 42)
+    assert.deepEqual({ wins: b.wins, losses: b.losses, dropped: b.dropped }, { wins: 1, losses: 1, dropped: true })
+  })
+})

@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
 import MatchCard from './MatchCard'
 import Button from './Button'
+import Modal from './Modal'
 import CompetitivePracticeRules from './CompetitivePracticeRules'
 import { avatarSrc } from '../utils/avatar'
 import {
@@ -11,6 +12,7 @@ import {
   type PracticeLaunchMessage,
   roundProgressLabel,
   roundTabState,
+  selfDropState,
   shouldShowInstallNudge,
   statusLine,
   wayfinderMatchState,
@@ -79,6 +81,7 @@ interface MatchmakingPanelProps {
   onReport: (matchId: string) => void
   onOverride: (matchId: string) => void
   onBoot: (userId: string) => void
+  onSelfDrop: () => void
   onAssignBye: (targetUserId: string) => void
   onStartMatches: () => void
   onPracticeLaunch?: (matchId: string) => void | Promise<void>
@@ -99,6 +102,7 @@ export function MatchmakingPanel({
   onReport,
   onOverride,
   onBoot,
+  onSelfDrop,
   onAssignBye,
   onStartMatches,
   onPracticeLaunch,
@@ -118,6 +122,7 @@ export function MatchmakingPanel({
   const defaultTab = matchmakingStatus === 'complete' ? 'results' : `round-${currentRound}`
   const [activeTab, setActiveTab] = useState(defaultTab)
   const [showHowItWorks, setShowHowItWorks] = useState(false)
+  const [showDropConfirm, setShowDropConfirm] = useState(false)
   const [elapsedNow, setElapsedNow] = useState(() => Date.now())
   const previousCurrentRoundRef = useRef(currentRound)
 
@@ -211,6 +216,12 @@ export function MatchmakingPanel({
   const playerStatus = statusLine({ matchmakingStatus, currentRound, currentUserId, myMatch })
   const showInstallNudge = shouldShowInstallNudge(wayfinderDetected, hasCompanionBetaAccess, wayfinderSettled)
   const liveLaunchEnabled = Boolean(wayfinderDetected && hasCompanionBetaAccess && onPracticeLaunch)
+  const dropState = selfDropState({ isHost, matchmakingStatus, currentUserId, players })
+
+  const confirmSelfDrop = () => {
+    setShowDropConfirm(false)
+    onSelfDrop()
+  }
 
   const renderMatchCard = (match: MatchData, roundNumber: number, tableNumber?: number) => (
     <MatchCard
@@ -524,6 +535,58 @@ export function MatchmakingPanel({
           </div>
         )}
       </div>
+
+      {dropState !== 'hidden' && (
+        <div className="matchmaking-self-drop">
+          {dropState === 'dropped' ? (
+            <span className="matchmaking-self-drop-note" data-testid="self-drop-dropped-note">
+              You&apos;ve dropped from this event.
+            </span>
+          ) : (
+            <Button
+              variant="danger"
+              size="sm"
+              className="matchmaking-self-drop-button"
+              data-testid="self-drop-button"
+              onClick={() => setShowDropConfirm(true)}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              Drop from event
+            </Button>
+          )}
+        </div>
+      )}
+
+      <Modal
+        isOpen={showDropConfirm}
+        onClose={() => setShowDropConfirm(false)}
+        variant="danger"
+        title="Drop from Swiss Practice?"
+      >
+        <Modal.Body>
+          <p>
+            You&apos;ll be removed from the rest of this event. Your current match is recorded
+            as a loss for you, and you won&apos;t be paired in future rounds. This can&apos;t be undone.
+          </p>
+        </Modal.Body>
+        <Modal.Actions>
+          <Button variant="secondary" onClick={() => setShowDropConfirm(false)}>
+            Stay in
+          </Button>
+          <Button variant="danger" data-testid="self-drop-confirm" onClick={confirmSelfDrop}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Drop
+          </Button>
+        </Modal.Actions>
+      </Modal>
     </div>
   )
 }

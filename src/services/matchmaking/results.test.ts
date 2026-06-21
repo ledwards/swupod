@@ -276,3 +276,46 @@ describe('ResultReportModal countWins', () => {
     assert.strictEqual(countWins(['player2', 'draw', 'player2'], 'player2'), 2)
   })
 })
+
+describe('calculateOMW — byes & drops', () => {
+  it('SPEC: an auto-loss from a drop counts against the dropped opponent\'s win rate', () => {
+    // 'a' beat 'b'. 'b' beat 'c' earlier, then took an auto-loss to 'd' on drop.
+    // b is 1-2 across confirmed non-bye matches → 1/3 ≈ 0.333 (above the 0.33 floor).
+    const matches = [
+      { player1Id: 'b', player2Id: 'c', matchWinner: 'b', isBye: false, finalConfirmed: true },
+      { player1Id: 'a', player2Id: 'b', matchWinner: 'a', isBye: false, finalConfirmed: true },
+      { player1Id: 'b', player2Id: 'd', matchWinner: 'd', isBye: false, finalConfirmed: true },
+    ]
+    const omw = calculateOMW('a', matches, ['a', 'b', 'c', 'd'])
+    assert(
+      Math.abs(omw - 1 / 3) < 0.001,
+      `Expected a's OMW ≈ 0.333 (dropped opp's auto-loss counted), got ${omw}`
+    )
+  })
+
+  it('SPEC: a bye never inflates an opponent\'s win rate (opponent with only byes floors to 0.33)', () => {
+    // 'x' beat 'b'. 'b' otherwise only ever received byes (each a self-win).
+    // If byes counted toward b's rate, b would be 2/3 = 0.67; excluded, b is 0/1 → floored 0.33.
+    const matches = [
+      { player1Id: 'x', player2Id: 'b', matchWinner: 'x', isBye: false, finalConfirmed: true },
+      { player1Id: 'b', player2Id: null, matchWinner: 'b', isBye: true, finalConfirmed: true },
+      { player1Id: 'b', player2Id: null, matchWinner: 'b', isBye: true, finalConfirmed: true },
+    ]
+    const omw = calculateOMW('x', matches, ['x', 'b'])
+    assert(
+      Math.abs(omw - 0.33) < 0.001,
+      `Expected 0.33 (byes excluded from opponent win rate), got ${omw}`
+    )
+  })
+
+  it('SPEC: a player whose only games are byes contributes the floor as an opponent', () => {
+    // 'a' beat 'b'. 'b' only ever had a bye, so b has no real matches to rate → floor.
+    const matches = [
+      { player1Id: 'a', player2Id: 'b', matchWinner: 'a', isBye: false, finalConfirmed: true },
+      { player1Id: 'c', player2Id: null, matchWinner: 'c', isBye: true, finalConfirmed: true },
+    ]
+    // a's own bye (if any) is excluded; here a's only opponent is b (0-1 → 0.33).
+    const omw = calculateOMW('a', matches, ['a', 'b', 'c'])
+    assert(Math.abs(omw - 0.33) < 0.001, `Expected 0.33, got ${omw}`)
+  })
+})

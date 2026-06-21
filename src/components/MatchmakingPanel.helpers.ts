@@ -194,6 +194,40 @@ export function statusLine({
   return `Round ${currentRound} is ready. Play your best-of-three match against ${opponent}, then report the result.`
 }
 
+export type SelfDropState = 'can-drop' | 'dropped' | 'hidden'
+
+export interface SelfDropPlayer {
+  id: string
+  dropped?: boolean | null
+}
+
+/**
+ * Decide what self-drop control (if any) the current player should see.
+ * - 'dropped'  — they've already dropped; show a passive "you dropped" note.
+ * - 'can-drop' — an active, non-host player still in the event; show the Drop button.
+ * - 'hidden'   — host (they cancel the pod instead), not a player, or the event
+ *                is not in an actively-running round.
+ * Self-drop is a player-only action; the host removes others via boot.
+ */
+export function selfDropState({
+  isHost,
+  matchmakingStatus,
+  currentUserId,
+  players,
+}: {
+  isHost: boolean
+  matchmakingStatus: string
+  currentUserId: string
+  players: SelfDropPlayer[]
+}): SelfDropState {
+  const me = (players || []).find(player => player.id === currentUserId)
+  if (me?.dropped) return 'dropped'
+  if (isHost) return 'hidden'
+  if (!me) return 'hidden'
+  if (matchmakingStatus !== 'active') return 'hidden'
+  return 'can-drop'
+}
+
 export function roundTabState(
   roundNumber: number,
   currentRound: number,

@@ -863,3 +863,19 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Player self-drop footer */
+.matchmaking-self-drop {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.matchmaking-self-drop-note {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+}

@@ -9,6 +9,7 @@ import {
   nextActiveTabAfterRoundChange,
   roundProgressLabel,
   roundTabState,
+  selfDropState,
   shouldShowInstallNudge,
   statusLine,
   wayfinderMatchState,
@@ -353,6 +354,59 @@ describe('MatchmakingPanel helpers', () => {
     assert.equal(
       liveGameStatusLabel({ status: 'in_progress', gameNumber: 1, elapsedSeconds: 65 * 60 }),
       'Game 1 In Progress · 1h 05m'
+    )
+  })
+})
+
+describe('selfDropState', () => {
+  const me = 'me'
+  const others = [{ id: 'me', dropped: false }, { id: 'other', dropped: false }]
+
+  it('lets an active, non-host player drop during a live round', () => {
+    assert.equal(
+      selfDropState({ isHost: false, matchmakingStatus: 'active', currentUserId: me, players: others }),
+      'can-drop'
+    )
+  })
+
+  it('hides the control from the host — they cancel the pod instead of dropping', () => {
+    assert.equal(
+      selfDropState({ isHost: true, matchmakingStatus: 'active', currentUserId: me, players: others }),
+      'hidden'
+    )
+  })
+
+  it('shows the dropped note once the player has dropped (even mid-round)', () => {
+    const players = [{ id: 'me', dropped: true }, { id: 'other', dropped: false }]
+    assert.equal(
+      selfDropState({ isHost: false, matchmakingStatus: 'active', currentUserId: me, players }),
+      'dropped'
+    )
+  })
+
+  it('hides the control before round 1 (deck building) and after the event completes', () => {
+    assert.equal(
+      selfDropState({ isHost: false, matchmakingStatus: 'deck_building', currentUserId: me, players: others }),
+      'hidden'
+    )
+    assert.equal(
+      selfDropState({ isHost: false, matchmakingStatus: 'complete', currentUserId: me, players: others }),
+      'hidden'
+    )
+  })
+
+  it('hides the control for a viewer who is not one of the players', () => {
+    assert.equal(
+      selfDropState({ isHost: false, matchmakingStatus: 'active', currentUserId: 'stranger', players: others }),
+      'hidden'
+    )
+  })
+
+  it('treats a dropped player as dropped even after the event completes (no resurrect)', () => {
+    const players = [{ id: 'me', dropped: true }]
+    assert.equal(
+      selfDropState({ isHost: false, matchmakingStatus: 'complete', currentUserId: me, players }),
+      'dropped'
     )
   })
 })

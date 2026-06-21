@@ -1024,6 +1024,26 @@ export default function PlayPage({ params }: PageProps) {
     }
   }
 
+  const handleSelfDrop = async () => {
+    if (!draftShareId) return
+    try {
+      const res = await fetch(`/api/draft/${draftShareId}/matchmaking/drop`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setMessage(data.error || 'Failed to drop from event')
+        setMessageType('error')
+        setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      }
+    } catch {
+      setMessage('Failed to drop from event')
+      setMessageType('error')
+      setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+    }
+  }
+
   const handleAssignBye = async (targetUserId: string) => {
     if (!draftShareId) return
     try {
@@ -1341,6 +1361,7 @@ export default function PlayPage({ params }: PageProps) {
               setOverridingMatchId(matchId)
             }}
             onBoot={handleBootPlayer}
+            onSelfDrop={handleSelfDrop}
             onAssignBye={handleAssignBye}
             onStartMatches={handleStartMatches}
           />
