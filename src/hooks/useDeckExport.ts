@@ -10,7 +10,7 @@
 import { getBaseCardId as getBaseCardIdRaw, buildBaseCardMap } from '../utils/variantDowngrade'
 import { formatPoolLabel } from '../utils/poolDisplayName'
 import { trackEvent, AnalyticsEvents } from './useAnalytics'
-import { renderDeckImageBlob, renderPoolImageBlob } from '../services/deckImage'
+import { renderPoolImageBlob } from '../services/deckImage'
 
 // === TYPES ===
 
@@ -292,12 +292,12 @@ export function useDeckExport({
     rootShareId,
   })
 
-  // Export deck as image (deck view) — shows it in the modal.
+  // Export deck as image (deck-only view) — shows it in the modal.
   const exportDeckImage = async (): Promise<void> => {
     setErrorMessage('Generating image...')
     setMessageType('success')
     const deckData = buildDeckData()
-    const blob = await renderDeckImageBlob(imageParams())
+    const blob = await renderPoolImageBlob({ ...imageParams(), showSideboard: false })
     if (blob) {
       setDeckImageModal(URL.createObjectURL(blob))
       setErrorMessage('Image generated!')
@@ -322,9 +322,9 @@ export function useDeckExport({
     }
   }
 
-  // Export pool image (deck + entire pool) — returns a blob URL for the modal.
+  // Export pool image (deck + sideboard/pool column) — returns a blob URL for the modal.
   const exportPoolImage = async (): Promise<string | null> => {
-    const blob = await renderPoolImageBlob(imageParams())
+    const blob = await renderPoolImageBlob({ ...imageParams(), showSideboard: true })
     if (!blob) return null
     const deckData = buildDeckData()
     trackEvent(AnalyticsEvents.POOL_IMAGE_GENERATED, {
