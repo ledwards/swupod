@@ -50,6 +50,11 @@ export interface DeckBuilderHeaderProps {
   currentUserId?: string | null
   subtitleOverride?: string | null
   competitive?: boolean
+  /** Swiss Practice: primary deck is frozen (no rename, no forced-forward timer). */
+  swissLocked?: boolean
+  /** Pod owner can toggle the pod-level lock for everyone. */
+  swissCanUnlock?: boolean
+  onToggleSwissLock?: () => void
 }
 
 export function DeckBuilderHeader({
@@ -82,6 +87,9 @@ export function DeckBuilderHeader({
   currentUserId = null,
   subtitleOverride = null,
   competitive = false,
+  swissLocked = false,
+  swissCanUnlock = false,
+  onToggleSwissLock,
 }: DeckBuilderHeaderProps) {
   // Calculate deck legality for Play button
   const deckCardCount = Object.values(cardPositions)
@@ -151,14 +159,40 @@ export function DeckBuilderHeader({
           <EditableTitle
             value={currentPoolName}
             onSave={onRenamePool}
-            isEditable={isOwner}
+            isEditable={isOwner && !swissLocked}
             placeholder="Deck Builder"
           />
         </h1>
         <p className="deck-builder-pool-type">{subtitleOverride || (isInfiniteMode ? 'Limited Deckbuilder' : isDraftMode ? 'Draft Pool' : 'Sealed Pool')}{competitive && ' · Competitive'}</p>
       </div>
 
-      {deckBuildDeadline && (
+      {/* Swiss Practice lock indicator. Replaces the build timer once the deck is
+          frozen. For the pod owner it's a button that toggles the pod-level lock
+          for everyone; for everyone else it's a non-interactive "warning" badge.
+          Note: the timer NEVER forces the user forward anymore — it just counts
+          down, and when time is up the lock indicator takes over. */}
+      {swissLocked ? (
+        <div className="deck-build-lock">
+          <Button
+            variant="warning"
+            disabled={!swissCanUnlock}
+            onClick={swissCanUnlock ? onToggleSwissLock : undefined}
+            title={swissCanUnlock
+              ? 'Unlock every player’s deck for this pod'
+              : undefined}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <span>
+              {swissCanUnlock
+                ? 'Swiss Practice in progress — tap to unlock decks'
+                : 'Swiss Practice in progress — primary deck can’t be edited'}
+            </span>
+          </Button>
+        </div>
+      ) : deckBuildDeadline ? (
         <div className="deck-build-timer" style={{
           display: 'flex', alignItems: 'center', gap: '8px',
           color: 'rgba(255, 215, 0, 0.9)', fontWeight: 600
@@ -170,14 +204,9 @@ export function DeckBuilderHeader({
             active={true}
             label=""
             warningThreshold={300}
-            onExpire={() => {
-              if (typeof window !== 'undefined' && shareId) {
-                window.location.href = `/pool/${shareId}/deck/play`
-              }
-            }}
           />
         </div>
-      )}
+      ) : null}
 
       {!isLoading && <div className={`header-buttons ${isInfoBarSticky ? 'hidden' : ''}`}>
         {/* Play button */}
