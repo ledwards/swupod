@@ -655,6 +655,72 @@
   gap: 8px;
 }
 
+/* Graphical group-by buttons (cost badge, mirrors DeckBuilder SortControls) */
+.review-sort-cost {
+  position: relative;
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+.review-sort-cost img {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+.review-sort-cost-num {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-weight: 700;
+  font-size: 11px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Pack mode — full-card rows, one per pack (mirrors the opened-pool view) */
+.review-packs {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.review-pack-title {
+  margin: 0 0 8px;
+  color: rgba(255, 215, 0, 0.85);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.review-pack-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.review-pack-card {
+  flex-shrink: 0;
+  cursor: zoom-in;
+  transition: transform 0.1s ease;
+}
+.review-pack-img {
+  display: block;
+  width: 132px;
+  border-radius: 6px;
+}
+.review-packs[data-density="small"] .review-pack-img { width: 96px; }
+.review-packs[data-density="medium"] .review-pack-img { width: 132px; }
+.review-packs[data-density="large"] .review-pack-img { width: 184px; }
+@media (hover: hover) and (pointer: fine) {
+  .review-pack-card:hover { transform: translateY(-2px); }
+}
+@media (max-width: 768px) {
+  .review-pack-img,
+  .review-packs[data-density="small"] .review-pack-img,
+  .review-packs[data-density="medium"] .review-pack-img { width: 84px; }
+  .review-packs[data-density="large"] .review-pack-img { width: 120px; }
+}
+
 /* Grouped columns — mirrors the DeckBuilder arena cost/aspect columns */
 .review-columns {
   flex: 1;
