@@ -209,7 +209,13 @@ export default function DeckBuilderPage({ params }: PageProps) {
     }
     fetch(`/api/draft/${draftShareId}`)
       .then(res => res.ok ? res.json() : null)
-      .then(data => {
+      .then(payload => {
+        // /api/draft/[shareId] wraps its body in { success, data, message }, so
+        // the draft fields live under .data. Reading the top level made
+        // `competitive` (and deckBuildDeadline / isSolo) silently undefined,
+        // which made the Play button route competitive pods to /draft/[id]/pod
+        // instead of the single /pool/[id]/deck/play (Swiss) page.
+        const data = payload?.data ?? payload
         if (data?.deckBuildDeadline) {
           setDeckBuildDeadline(data.deckBuildDeadline)
         }

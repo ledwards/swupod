@@ -9,6 +9,7 @@ import { getSetConfig } from '../../../../../src/utils/setConfigs'
 import { getLatestReleasedSetCode } from '../../../../../src/utils/setConfigs/latest'
 import { useAuth } from '../../../../../src/contexts/AuthContext'
 import EditableTitle from '../../../../../src/components/EditableTitle'
+import PluginCTA, { usePluginCTA } from '../../../../../src/components/PluginCTA'
 import { getCachedCards, initializeCardCache } from '../../../../../src/utils/cardCache'
 // Fetch-based loader (NOT cardData) — 'use client' page; a cardData import
 // would embed the 8 MB cards.json in this bundle (U5, foundations hardening).
@@ -278,6 +279,10 @@ export default function PlayPage({ params }: PageProps) {
   // Detect the Wayfinder extension via the centralized hook (meta tag + event +
   // postMessage, with a localStorage bridge and the ?wayfinder=1/0 QA override).
   const { detected: wayfinderDetected, settled: wayfinderSettled } = useWayfinderDetection()
+  // Companion pitch shown above the Swiss panel for logged-in players who don't
+  // have the Companion. shouldShow (with required) === !hasPlugin, so the banner
+  // and the full install CTA appear/disappear together.
+  const { shouldShow: showCompanionPitch } = usePluginCTA({ required: true })
   const wayfinderCardPool = useMemo(() => {
     if (!pool?.setCode) return 'Unlimited'
     return pool.setCode === getLatestReleasedSetCode() ? 'Current' : 'Unlimited'
@@ -1261,6 +1266,24 @@ export default function PlayPage({ params }: PageProps) {
                 Login with Discord
               </a>
             </div>
+          </div>
+        )}
+
+        {/* Logged-in competitive player without the Companion: strongly nudge the
+            install above the Swiss panel — banner, then a lesser subhead, then the
+            full install CTA. */}
+        {isCompetitive && user && wayfinderSettled && showCompanionPitch && (
+          <div className="swiss-companion-pitch">
+            <h2 className="swiss-companion-pitch-title">
+              We strongly recommend Wayfinder Companion to make the Swiss
+              experience smoother for Competitive Draft. Just takes a minute to
+              set up.
+            </h2>
+            <p className="swiss-companion-pitch-sub">
+              Then you&apos;ll get recordings and analysis of your Limited and
+              Premier games as well!
+            </p>
+            <PluginCTA required />
           </div>
         )}
 
