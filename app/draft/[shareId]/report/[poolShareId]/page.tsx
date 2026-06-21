@@ -43,6 +43,7 @@ interface ReportData {
     isBot: boolean
     draftedLeaders: unknown[]
     activeLeaderName: string | null
+    hasBuiltDeck?: boolean
     strategyName: string | null
     mixinName: string | null
   }>
@@ -67,6 +68,7 @@ interface ReportData {
   isHost?: boolean
   isOwner?: boolean
   draftReportsPublic?: boolean
+  reportReady?: boolean
   gameplay?: {
     matches: Array<{
       id: string
@@ -90,9 +92,15 @@ interface ReportData {
 const REPORT_TABS = ['seating', 'log', 'pool', 'deck', 'notes', 'gameplay'] as const
 type TabId = typeof REPORT_TABS[number]
 
+// A pool has a "built deck" once its deck_builder_state has card positions.
+function deckStateHasCards(deckBuilderState: unknown): boolean {
+  const dbs = deckBuilderState as { cardPositions?: Record<string, unknown> } | null | undefined
+  return !!(dbs && dbs.cardPositions && Object.keys(dbs.cardPositions).length > 0)
+}
+
 function VisibilityLockIcon({ open }: { open: boolean }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       {open ? (
         <>
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -131,6 +139,7 @@ export default function DraftReportPage({ params }: PageProps) {
   const [isSlideshowOpen, setIsSlideshowOpen] = useState(false)
   const isMobile = useIsMobile()
   const [draftReportsPublic, setDraftReportsPublic] = useState(false)
+  const [reportReady, setReportReady] = useState(false)
   const [editingNotes, setEditingNotes] = useState(false)
   const [notesDraft, setNotesDraft] = useState('')
   const [savingNotes, setSavingNotes] = useState(false)
@@ -151,6 +160,7 @@ export default function DraftReportPage({ params }: PageProps) {
         setData(reportData)
         setReportPublic(reportData.pool?.reportPublic || false)
         setDraftReportsPublic(reportData.draftReportsPublic || false)
+        setReportReady(reportData.reportReady || false)
       } catch {
         setError('Failed to load report')
       } finally {
@@ -281,6 +291,11 @@ export default function DraftReportPage({ params }: PageProps) {
   const { draft, players, picks, pool } = data
   const isOwner = data.isOwner ?? (user && data.mySeat != null)
   const canEditNotes = isOwner || data.isHost
+  const reportReadyData = data.reportReady ?? reportReady
+  // The player this report is for, and whether they have built a deck yet.
+  const targetPlayer = players.find(p => p.seatNumber === data.mySeat) || players[data.mySeat] || null
+  const targetHasBuiltDeck =
+    targetPlayer?.hasBuiltDeck ?? !!(deckStateHasCards(pool?.deckBuilderState))
   const completedDate = draft.completedAt
     ? new Date(draft.completedAt).toLocaleDateString('en-US', {
         weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
@@ -345,6 +360,28 @@ export default function DraftReportPage({ params }: PageProps) {
               {completedDate && `${completedDate} · `}
               {draft.maxPlayers} Players
               {draft.competitive && ' · Competitive'}
+              {data.isHost && (
+                <button
+                  type="button"
+                  className={`draft-report-meta-lock ${draftReportsPublic ? 'lock-public' : 'lock-private'}`}
+                  onClick={handleToggleDraftVisibility}
+                  title={draftReportsPublic ? 'Whole draft is public — click to make private' : 'Whole draft is private — click to make public'}
+                  aria-label={draftReportsPublic ? 'Make the whole draft private' : 'Make the whole draft public'}
+                >
+                  <VisibilityLockIcon open={draftReportsPublic} />
+                </button>
+              )}
+              {isOwner && !data.isHost && (
+                <button
+                  type="button"
+                  className={`draft-report-meta-lock ${reportPublic ? 'lock-public' : 'lock-private'}`}
+                  onClick={handleToggleVisibility}
+                  title={reportPublic ? 'Your report is public — click to make private' : 'Your report is private — click to make public'}
+                  aria-label={reportPublic ? 'Make your report private' : 'Make your report public'}
+                >
+                  <VisibilityLockIcon open={reportPublic} />
+                </button>
+              )}
             </div>
           </div>
           <div className="draft-report-header-actions">
@@ -362,36 +399,6 @@ export default function DraftReportPage({ params }: PageProps) {
                 <span>Slideshow Mode</span>
               </Button>
             )}
-            {data.isHost && (
-              <Button
-                variant={draftReportsPublic ? 'primary' : 'danger'}
-                onClick={handleToggleDraftVisibility}
-                title={draftReportsPublic ? 'Make the whole draft private' : 'Make the whole draft public'}
-                className="draft-report-visibility-button"
-                style={{
-                  borderColor: draftReportsPublic ? 'rgba(0, 255, 0, 0.5)' : 'rgba(255, 0, 0, 0.5)',
-                  boxShadow: draftReportsPublic ? '0 0 8px rgba(0, 255, 0, 0.2)' : '0 0 8px rgba(255, 0, 0, 0.2)',
-                }}
-              >
-                <VisibilityLockIcon open={draftReportsPublic} />
-                <span>{draftReportsPublic ? 'Draft Public' : 'Draft Private'}</span>
-              </Button>
-            )}
-            {isOwner && !data.isHost && (
-              <Button
-                variant={reportPublic ? 'primary' : 'danger'}
-                onClick={handleToggleVisibility}
-                title={reportPublic ? 'Make your report private' : 'Make your report public'}
-                className="draft-report-visibility-button"
-                style={{
-                  borderColor: reportPublic ? 'rgba(0, 255, 0, 0.5)' : 'rgba(255, 0, 0, 0.5)',
-                  boxShadow: reportPublic ? '0 0 8px rgba(0, 255, 0, 0.2)' : '0 0 8px rgba(255, 0, 0, 0.2)',
-                }}
-              >
-                <VisibilityLockIcon open={reportPublic} />
-                <span>{reportPublic ? 'Report Public' : 'Report Private'}</span>
-              </Button>
-            )}
             <Button variant="secondary" onClick={handleCopyLink}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
@@ -403,6 +410,30 @@ export default function DraftReportPage({ params }: PageProps) {
         </div>
       </div>
 
+      {!reportReadyData ? (
+        <div className="draft-report-content">
+          <div className="draft-report-deck-empty">
+            This draft report isn&apos;t ready yet.
+            <div style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
+              It becomes available once a player has built their deck.
+            </div>
+          </div>
+        </div>
+      ) : !targetHasBuiltDeck ? (
+        <div className="draft-report-content">
+          <div className="draft-report-deck-empty">
+            {targetPlayer?.username ? `${targetPlayer.username} hasn't` : "This player hasn't"} built a deck yet.
+            {isOwner && pool?.shareId && (
+              <div style={{ marginTop: '1rem' }}>
+                <Button variant="primary" onClick={() => { window.location.href = `/draft/${shareId}/pod` }}>
+                  Build Your Deck
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <>
       <div className="draft-report-tabs">
         {tabs.map(tab => (
           <button
@@ -679,6 +710,8 @@ export default function DraftReportPage({ params }: PageProps) {
           </div>
         )}
       </div>
+        </>
+      )}
 
       {message && <div className="draft-report-message">{message}</div>}
       </div>
