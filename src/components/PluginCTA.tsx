@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/src/contexts/AuthContext'
 import { isCompanionBeta } from '@/src/utils/companionBeta'
 import { usePluginPresence } from '@/src/hooks/usePluginPresence'
+import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import WayfinderStoreButtons from '@/src/components/WayfinderStoreButtons'
 import './PluginCTA.css'
 
@@ -39,6 +40,14 @@ export function usePluginCTA(opts?: {
   const inRollout = isCompanionBeta(user)
   const required = opts?.required ?? false
   const { hasPlugin } = usePluginPresence()
+  const { detected } = useWayfinderDetection()
+
+  // On the Swiss "required" surface the player needs the Companion running RIGHT
+  // NOW, so gate on LIVE detection — not the durable hasPlugin signal (which also
+  // counts ever-recorded games and a 45-day "seen" stamp). Otherwise a returning
+  // player without the extension installed gets no install push on the very page
+  // that requires it. Everywhere else, hasPlugin still hides the CTA.
+  const present = required ? detected : hasPlugin
 
   const [qa, setQa] = useState<string | null>(null)
   useEffect(() => {
@@ -49,7 +58,7 @@ export function usePluginCTA(opts?: {
     qa === 'install' ? 'install'
     : qa === 'soon' ? 'soon'
     : qa === 'hide' ? 'hidden'
-    : hasPlugin ? 'hidden'
+    : present ? 'hidden'
     : (inRollout || required) ? 'install'
     : 'soon'
 
