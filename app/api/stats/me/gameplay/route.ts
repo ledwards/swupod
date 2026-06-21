@@ -69,6 +69,7 @@ interface RawReplayRow {
   opponent_archetype?: string | null
   my_archetype?: string | null
   pool_share_id?: string | null
+  pool_draft_share_id?: string | null
   pool_name?: string | null
   set_code?: string | null
   pool_type?: string | null
@@ -161,6 +162,7 @@ export interface GameplayReplay {
   }
   pool: {
     shareId: string | null
+    draftShareId: string | null
     name: string
     setCode: string
     format: string
@@ -542,6 +544,7 @@ export function buildTerronkDevGameplayFixture(poolRows: DevFixturePoolRow[]): G
     },
     pool: {
       shareId: pool.shareId,
+      draftShareId: null,
       name: pool.name,
       setCode: pool.setCode,
       format: pool.format,
@@ -686,6 +689,7 @@ interface RawCasualRow {
   opponent_archetype?: string | null
   played_at?: string | Date | null
   pool_share_id?: string | null
+  pool_draft_share_id?: string | null
   pool_name?: string | null
   set_code?: string | null
   pool_type?: string | null
@@ -720,6 +724,7 @@ function mapCasualReplay(row: RawCasualRow): GameplayReplay {
     },
     pool: {
       shareId: row.pool_share_id || null,
+      draftShareId: row.pool_draft_share_id || null,
       name: row.pool_name || `${row.set_code || 'SWU'} ${formatLabel(format)}`,
       setCode: row.set_code || 'UNK',
       format,
@@ -774,6 +779,7 @@ export function buildGameplayResponse(
         },
         pool: {
           shareId: row.pool_share_id || null,
+          draftShareId: row.pool_draft_share_id || null,
           name: row.pool_name || `${row.set_code || 'SWU'} ${formatLabel(format)}`,
           setCode: row.set_code || 'UNK',
           format,
@@ -1034,6 +1040,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
              CASE WHEN pm.player1_id = $1 THEN pm.player2_archetype ELSE pm.player1_archetype END AS opponent_archetype,
              CASE WHEN pm.player1_id = $1 THEN pm.player1_archetype ELSE pm.player2_archetype END AS my_archetype,
              cp.share_id AS pool_share_id,
+             p.share_id AS pool_draft_share_id,
              cp.name AS pool_name,
              cp.set_code,
              cp.pool_type,
@@ -1042,6 +1049,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
            LEFT JOIN users u1 ON u1.id = pm.player1_id
            LEFT JOIN users u2 ON u2.id = pm.player2_id
            LEFT JOIN card_pools cp ON cp.pod_id = pm.pod_id AND cp.user_id = $1
+           LEFT JOIN pods p ON p.id = pm.pod_id
            WHERE (pm.player1_id = $1 OR pm.player2_id = $1)
              AND pm.wayfinder_replay_url IS NOT NULL
              AND pm.created_at >= $2
@@ -1072,12 +1080,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
            cm.opponent_archetype,
            cm.played_at,
            cp.share_id AS pool_share_id,
+           p.share_id AS pool_draft_share_id,
            cp.name AS pool_name,
            cp.set_code,
            cp.pool_type,
            cp.deck_builder_state
          FROM casual_matches cm
          LEFT JOIN card_pools cp ON cp.id = cm.card_pool_id
+         LEFT JOIN pods p ON p.id = cp.pod_id
          WHERE cm.user_id = $1
            AND cm.wayfinder_replay_url IS NOT NULL
            AND cm.played_at >= $2

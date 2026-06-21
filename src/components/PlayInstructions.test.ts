@@ -13,11 +13,12 @@ const STORE_BUTTONS = readFileSync(join(__dirname, 'WayfinderStoreButtons.tsx'),
 const ANALYTICS = readFileSync(join(__dirname, '../analytics/limitedEvents.ts'), 'utf8')
 
 describe('<PlayInstructions /> Companion adoption', () => {
-  it('enumerates the PTP Companion value props from the adoption brief', () => {
-    assert.ok(SRC.includes('Automagically join the Karabast queue'))
-    assert.ok(SRC.includes('Collect play data for your pool'))
-    assert.ok(SRC.includes('Record, share, and rewatch your replays'))
-    assert.ok(SRC.includes('Take notes, enrich your games with metadata'))
+  it('pitches the Companion via the canonical PluginCTA component', () => {
+    // The inline value-prop copy was consolidated into the single PluginCTA
+    // component; PlayInstructions delegates the install pitch to it rather than
+    // hand-rolling a block (see .claude/rules/ui-components.md).
+    assert.ok(SRC.includes('PluginCTA'))
+    assert.ok(SRC.includes('variant="autodetect"'))
   })
 
   it('shows the Companion install panel to users without the extension', () => {
