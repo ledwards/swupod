@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react'
 import './WayfinderStoreButtons.css'
 
-export const WAYFINDER_CHROME_WEB_STORE_URL = 'https://chromewebstore.google.com/detail/wayfinder-companion/econclbajpendbppldcnpngjfddcogfh'
+export const WAYFINDER_CHROME_WEB_STORE_URL = 'https://chromewebstore.google.com/detail/wayfinder-companion/econclbajpendbppldcnpngjfddcogfh?authuser=0'
 // The Wayfinder Companion app on the App Store ships the Safari Web Extension
 // (macOS + iOS) and the iOS app — desktop Safari and mobile iOS both link here.
-export const WAYFINDER_APP_STORE_URL = 'https://apps.apple.com/us/app/wayfinder-companion/id6779564194'
+export const WAYFINDER_APP_STORE_URL = 'https://apps.apple.com/app/id6779564194'
 // Back-compat alias (Safari desktop card + anything importing the old name).
 export const WAYFINDER_SAFARI_APP_STORE_URL = WAYFINDER_APP_STORE_URL
 export const WAYFINDER_FIREFOX_ADDON_URL = 'https://addons.mozilla.org/en-US/firefox/addon/51dd34375c8e4087bdf5/'
