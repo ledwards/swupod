@@ -63,6 +63,8 @@ interface MatchCardProps {
   practiceLaunchPending?: boolean
   practiceLaunchMessage?: PracticeLaunchMessage | null
   readOnly?: boolean
+  /** Swiss table number (1 = top tables, ordered by record). */
+  tableNumber?: number
 }
 
 function getMatchStatus(match: MatchData): string {
@@ -93,6 +95,7 @@ export function MatchCard({
   practiceLaunchPending = false,
   practiceLaunchMessage = null,
   readOnly = false,
+  tableNumber,
 }: MatchCardProps) {
   const isMyMatch = match.player1?.id === currentUserId || match.player2?.id === currentUserId
   const status = getMatchStatus(match)
@@ -171,6 +174,7 @@ export function MatchCard({
       data-player1-id={match.player1?.id || ''}
       data-player2-id={match.player2?.id || ''}
     >
+      {tableNumber != null && <div className="match-card-table">Table {tableNumber}</div>}
       <div className="match-card-players">
         <div className={`match-card-player${match.matchWinner === 'player1' ? ' match-card-player--winner' : ''}`}>
           <span className="match-card-player-heading">

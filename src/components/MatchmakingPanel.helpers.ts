@@ -344,7 +344,7 @@ export function liveGameAction({
   }
 
   if (status === 'pending') {
-    return { kind: 'play', label: `Play ${gameLabel}` }
+    return { kind: 'play', label: 'Play' }
   }
 
   if (status === 'creating') {

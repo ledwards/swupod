@@ -157,6 +157,9 @@ export function MatchmakingPanel({
   }, [displayRounds, currentRound, currentUserId])
 
   const standings = useMemo(() => computeRankedStandings(displayRounds, players), [displayRounds, players])
+  // Rank by Swiss standing (1 = top) so match cards can be numbered Table 1..N
+  // by record — Table 1 trends toward the winners as rounds progress.
+  const rankByPlayer = useMemo(() => new Map(standings.map(s => [s.id, s.rank])), [standings])
   const hasResults = useMemo(() => hasConfirmedMatch(displayRounds), [displayRounds])
   const eventSummary = useMemo(
     () => computeSwissPracticeEventSummary({ players, rounds: displayRounds }),
@@ -197,10 +200,11 @@ export function MatchmakingPanel({
   const showInstallNudge = shouldShowInstallNudge(wayfinderDetected, hasCompanionBetaAccess, wayfinderSettled)
   const liveLaunchEnabled = Boolean(wayfinderDetected && hasCompanionBetaAccess && onPracticeLaunch)
 
-  const renderMatchCard = (match: MatchData, roundNumber: number) => (
+  const renderMatchCard = (match: MatchData, roundNumber: number, tableNumber?: number) => (
     <MatchCard
       key={match.id}
       match={match}
+      tableNumber={tableNumber}
       currentUserId={currentUserId}
       isHost={isHost}
       playerRecords={playerRecordsByRound.get(roundNumber)}
@@ -231,9 +235,17 @@ export function MatchmakingPanel({
     const focused = variant === 'history' && focusedRoundNumber === round.roundNumber
     const matchGroups = variant === 'active' ? liveRoundMatchGroups(round) : null
     const shouldGroupMatches = Boolean(matchGroups && matchGroups.completed.length > 0)
+    // Number every match in the round by Swiss rank (best player's standing),
+    // stable across the live/completed groupings below.
+    const rankOf = (m: MatchData) => Math.min(
+      rankByPlayer.get(m.player1?.id ?? '') ?? Number.MAX_SAFE_INTEGER,
+      rankByPlayer.get(m.player2?.id ?? '') ?? Number.MAX_SAFE_INTEGER,
+    )
+    const tableByMatch = new Map<string, number>()
+    ;[...round.matches].sort((a, b) => rankOf(a) - rankOf(b)).forEach((m, i) => tableByMatch.set(m.id, i + 1))
     const renderMatchGrid = (matches: MatchData[], className = '') => (
       <div className={`matchmaking-matches-grid${className ? ` ${className}` : ''}`}>
-        {matches.map(match => renderMatchCard(match, round.roundNumber))}
+        {matches.map(match => renderMatchCard(match, round.roundNumber, tableByMatch.get(match.id)))}
       </div>
     )
 

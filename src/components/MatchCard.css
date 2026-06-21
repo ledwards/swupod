@@ -112,6 +112,15 @@
   background: rgba(150, 185, 255, 0.7);
 }
 
+.match-card-table {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 8px;
+}
+
 .match-card-boot {
   position: absolute;
   top: -4px;
