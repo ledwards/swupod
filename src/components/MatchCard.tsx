@@ -65,6 +65,8 @@ interface MatchCardProps {
   readOnly?: boolean
   /** Swiss table number (1 = top tables, ordered by record). */
   tableNumber?: number
+  /** Whether the viewer's Companion is detected (drives the current user's dot). */
+  wayfinderDetected?: boolean
 }
 
 function getMatchStatus(match: MatchData): string {
@@ -96,6 +98,7 @@ export function MatchCard({
   practiceLaunchMessage = null,
   readOnly = false,
   tableNumber,
+  wayfinderDetected = false,
 }: MatchCardProps) {
   const isMyMatch = match.player1?.id === currentUserId || match.player2?.id === currentUserId
   const status = getMatchStatus(match)
@@ -117,6 +120,23 @@ export function MatchCard({
     pending: practiceLaunchPending,
   })
   const showLiveRow = Boolean(liveStatus || liveAction.kind !== 'none' || practiceLaunchMessage)
+
+  // Per-player Companion indicator, left of the name: green = Companion
+  // connected (lobby creator, or the current viewer when detected); blinking
+  // red = actively recording on Karabast (creator + game in progress).
+  const creatorId = match.currentGame?.game?.createdByUserId || null
+  const liveInProgress = match.currentGame?.status === 'in_progress'
+  const companionDot = (player: MatchPlayer | null) => {
+    if (!player?.id || match.isBye) return null
+    const isRecorder = creatorId != null && creatorId === player.id
+    if (isRecorder && liveInProgress) {
+      return <span className="companion-dot companion-dot--recording" title="Recording on Karabast" />
+    }
+    if (isRecorder || (player.id === currentUserId && wayfinderDetected)) {
+      return <span className="companion-dot companion-dot--connected" title="Companion connected" />
+    }
+    return null
+  }
 
   const renderLiveAction = () => {
     if (liveAction.kind === 'none') return null
@@ -178,6 +198,7 @@ export function MatchCard({
       <div className="match-card-players">
         <div className={`match-card-player${match.matchWinner === 'player1' ? ' match-card-player--winner' : ''}`}>
           <span className="match-card-player-heading">
+            {companionDot(match.player1)}
             <span className="match-card-player-name">{match.player1?.username || '???'}</span>
             <span className="match-card-player-record">{recordFor(match.player1)}</span>
           </span>
@@ -205,6 +226,7 @@ export function MatchCard({
           {!match.isBye ? (
             <>
               <span className="match-card-player-heading">
+                {companionDot(match.player2)}
                 <span className="match-card-player-name">{match.player2?.username || '???'}</span>
                 <span className="match-card-player-record">{recordFor(match.player2)}</span>
               </span>
@@ -252,9 +274,6 @@ export function MatchCard({
           {status}
           {match.podOwnerOverride && ' (Override)'}
         </span>
-        {wayfinderState === 'auto-recording' && (
-          <span className="match-card-wayfinder-state">Auto-recording</span>
-        )}
         {wayfinderState === 'recorded' && (
           <span className="match-card-wayfinder-state match-card-wayfinder-state--recorded">Recorded</span>
         )}

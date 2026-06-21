@@ -228,6 +228,7 @@ export function MatchmakingPanel({
       onReport={onReport}
       onOverride={onOverride}
       onBoot={onBoot}
+      wayfinderDetected={wayfinderDetected}
     />
   )
 

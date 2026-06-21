@@ -1224,7 +1224,14 @@ export default function PlayPage({ params }: PageProps) {
                 className="play-stats-button"
                 onClick={() => router.push(`/pool/${shareId}/deck/stats?tab=gamelog`)}
               >
-                Stats
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 19V5"></path>
+                  <path d="M4 19h16"></path>
+                  <rect x="7" y="11" width="3" height="5" rx="1"></rect>
+                  <rect x="12" y="8" width="3" height="8" rx="1"></rect>
+                  <rect x="17" y="6" width="3" height="10" rx="1"></rect>
+                </svg>
+                <span>Stats</span>
               </Button>
             )}
           </div>

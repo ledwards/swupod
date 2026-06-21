@@ -28,7 +28,7 @@ export function formatRecord(
   const safeDraws = toCount(record.draws)
   const total = wins + safeLosses + safeDraws
 
-  if (total === 0) return opts.emptyLabel || 'No games'
+  if (total === 0) return opts.emptyLabel || 'No games yet'
 
   const winRate = Math.round((wins / total) * 100)
   return `${wins}W-${safeLosses}L-${safeDraws}D (${winRate}%)`
