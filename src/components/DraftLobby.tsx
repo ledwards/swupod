@@ -5,6 +5,7 @@ import { useState } from 'react'
 import PlayerCircle from './PlayerCircle'
 import HostControls from './HostControls'
 import Button from './Button'
+import CollapsibleSection from './CollapsibleSection'
 import CompetitivePracticeRules from './CompetitivePracticeRules'
 import { trackEvent } from '../hooks/useAnalytics'
 import { buildLimitedContext, LimitedAnalyticsEvents } from '../analytics/limitedEvents'
@@ -132,7 +133,14 @@ function DraftLobby({
         <div className="controls-section">
           {draft?.competitive && (
             <div className="cpm-rules-panel">
-              <CompetitivePracticeRules />
+              <CollapsibleSection
+                title="Competitive Practice Mode"
+                variant="default"
+                defaultExpanded={false}
+                className="cpm-rules-collapsible"
+              >
+                <CompetitivePracticeRules showTitle={false} />
+              </CollapsibleSection>
             </div>
           )}
 
