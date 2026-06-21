@@ -648,7 +648,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 .review-groupby {
   display: flex;
@@ -739,6 +739,16 @@
   background: rgba(0, 0, 0, 0.2);
   border-radius: 6px;
   padding: 0.5rem;
+}
+
+/* Aspect grouping can produce many groups — wrap at ~6 per row instead of one
+   long horizontally-scrolling row. (Cost stays single-row: few, ordered cols.) */
+.review-columns--aspect {
+  flex-wrap: wrap;
+}
+.review-columns--aspect .review-column {
+  flex: 1 1 calc((100% - 5 * 8px) / 6);
+  min-width: 110px;
 }
 .review-col-header {
   display: flex;

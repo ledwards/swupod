@@ -298,7 +298,7 @@ function DraftReviewModal({ draftedCards = [], draftedLeaders = [], onClose, pac
   )
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="draft-review-overlay" onClick={onClose}>
       <div className="modal-content draft-review-modal" onClick={(e) => e.stopPropagation()}>
         <div className="review-controls">
           <div className="review-controls-left">

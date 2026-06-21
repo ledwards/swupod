@@ -237,19 +237,23 @@
   filter: blur(10px);
 }
 
-/* Mobile styles */
-@media (max-width: 768px) {
-  .draftable-card {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    border-radius: 8px;
-  }
-
+/* Phones only: one card per row, full width. Tablets and half-desktop windows
+   (e.g. ~756px = half a 14" MBP, or an iPad) keep the fixed card size so several
+   columns still fit — previously ≤768px collapsed them to a single full-width
+   column, which is wrong for anything bigger than a phone. */
+@media (max-width: 480px) {
+  .draftable-card,
   .draftable-card.leader {
     width: 100%;
     min-width: 0;
     max-width: 100%;
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .draftable-card {
+    border-radius: 8px;
   }
 
   /* Card image styles applied via inline styles in JSX */

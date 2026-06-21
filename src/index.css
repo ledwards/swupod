@@ -59,9 +59,13 @@ button {
 button:hover {
   border-color: #646cff;
 }
-button:focus,
+/* Clean, keyboard-only focus ring (interactive-blue, matches the Button
+   component). Replaces the Vite boilerplate `4px auto -webkit-focus-ring-color`,
+   whose native ring rendered as an odd pinched "watch" shape — and which popped
+   on the × whenever a modal programmatically focused it on open. */
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 2px solid rgba(33, 150, 243, 0.9);
+  outline-offset: 2px;
 }
 
 @media (prefers-color-scheme: light) {

@@ -113,7 +113,7 @@ function PackDraftPhase({
 
   const [showReviewModal, setShowReviewModal] = useState(false)
   const [reviewGroupBy, setReviewGroupBy] = useState<DraftGroupMode>('pack')
-  const [reviewDensity, setReviewDensity] = useState<CardDensity>('medium')
+  const [reviewDensity, setReviewDensity] = useState<CardDensity>('large')
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [hoveredLeaderPreview, setHoveredLeaderPreview] = useState<HoveredLeaderPreview | null>(null)
   const {
@@ -445,7 +445,9 @@ function PackDraftPhase({
                   <img src="/icons/heroism.png" alt="Aspect" style={{ width: '20px', height: '20px', display: 'block' }} />
                 </Button>
               </div>
-              <CardDensityToggle value={reviewDensity} onChange={setReviewDensity} />
+              {(reviewGroupBy === 'cost' || reviewGroupBy === 'aspect') && (
+                <CardDensityToggle value={reviewDensity} onChange={setReviewDensity} densities={['small', 'large']} />
+              )}
             </div>
           </div>
           {reviewGroupBy === 'pack' ? (
@@ -471,7 +473,7 @@ function PackDraftPhase({
               ))}
             </div>
           ) : (
-            <div className="review-columns">
+            <div className={`review-columns review-columns--${reviewGroupBy}`}>
               {reviewGroups.map(group => {
                 const aspects = group.cards[0]?.aspects || []
                 return (
