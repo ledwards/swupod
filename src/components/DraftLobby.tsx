@@ -131,19 +131,6 @@ function DraftLobby({
         </div>
 
         <div className="controls-section">
-          {draft?.competitive && (
-            <div className="cpm-rules-panel">
-              <CollapsibleSection
-                title="Competitive Practice Mode"
-                variant="default"
-                defaultExpanded={false}
-                className="cpm-rules-collapsible"
-              >
-                <CompetitivePracticeRules showTitle={false} />
-              </CollapsibleSection>
-            </div>
-          )}
-
           {isHost && (
             <HostControls
               draft={draft}
@@ -163,6 +150,19 @@ function DraftLobby({
               onSwitchToSolo={onSwitchToSolo}
               isAdmin={isAdmin}
             />
+          )}
+
+          {draft?.competitive && (
+            <div className="cpm-rules-panel">
+              <CollapsibleSection
+                title="Competitive Practice Mode"
+                variant="default"
+                defaultExpanded={false}
+                className="cpm-rules-collapsible"
+              >
+                <CompetitivePracticeRules showTitle={false} />
+              </CollapsibleSection>
+            </div>
           )}
 
           {isPlayer && !isHost && (
