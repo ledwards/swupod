@@ -1243,9 +1243,6 @@ a.your-stats-watch-btn:active {
     flex: 1 1 100%;
     order: 3;
   }
-  .your-stats-watch-btn {
-    margin-left: auto;
-  }
 }
 
 /* ----- Your Leaders widget: leader art · name · win-rate bar · record ----- */
@@ -3820,10 +3817,6 @@ a.your-stats-logged-out-link:active {
   gap: 0.6rem;
   font-size: 0.78rem;
   color: var(--ys-text-2, rgba(255, 255, 255, 0.6));
-}
-
-.your-stats-replay-watch-inline {
-  align-self: center;
 }
 
 .your-stats-replay-card .your-stats-replay-caret {

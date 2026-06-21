@@ -1,52 +1,91 @@
-import { queryRow, queryRows, query } from '@/lib/db'
+import { queryRow, queryRows, query, type TxClient } from '@/lib/db'
 import { broadcastDraftState } from '@/src/lib/socketBroadcast'
 import { pairRound1, pairSwiss, type PairingPlayer } from './pairing'
+
+interface MatchmakingDbClient {
+  query: typeof query
+  queryRow: typeof queryRow
+  queryRows: typeof queryRows
+}
+
+export interface RoundAdvanceResult {
+  advanced: boolean
+  completedEvent: boolean
+  nextRoundNumber: number | null
+}
+
+const defaultClient: MatchmakingDbClient = { query, queryRow, queryRows }
 
 /**
  * Check if all matches in the active round are confirmed, and if so,
  * advance to the next round or mark the event complete.
  */
 export async function checkAndAdvanceRound(podId: string, shareId: string): Promise<void> {
-  const round = await queryRow(
+  const result = await checkAndAdvanceRoundWithClient(defaultClient, podId)
+  if (result.advanced) {
+    await broadcastDraftState(shareId)
+  }
+}
+
+export async function checkAndAdvanceRoundInTransaction(
+  tx: TxClient,
+  podId: string
+): Promise<RoundAdvanceResult> {
+  return checkAndAdvanceRoundWithClient(tx, podId)
+}
+
+async function checkAndAdvanceRoundWithClient(
+  db: MatchmakingDbClient,
+  podId: string
+): Promise<RoundAdvanceResult> {
+  const round = await db.queryRow(
     `SELECT id, round_number FROM practice_rounds WHERE pod_id = $1 AND status = 'active' ORDER BY round_number DESC LIMIT 1`,
     [podId]
   )
 
-  if (!round) return
+  if (!round) return { advanced: false, completedEvent: false, nextRoundNumber: null }
 
   const roundId = round.id as string
   const roundNumber = round.round_number as number
 
-  const countRow = await queryRow(
+  const countRow = await db.queryRow(
     `SELECT COUNT(*)::int as count FROM practice_matches WHERE round_id = $1 AND final_confirmed = false AND is_bye = false`,
     [roundId]
   )
 
   const unconfirmedCount = (countRow?.count as number) ?? 0
-  if (unconfirmedCount > 0) return
+  if (unconfirmedCount > 0) return { advanced: false, completedEvent: false, nextRoundNumber: null }
 
-  await query(
+  await db.query(
     `UPDATE practice_rounds SET status = 'complete', completed_at = NOW() WHERE id = $1`,
     [roundId]
   )
 
   if (roundNumber >= 3) {
-    await query(
+    await db.query(
       `UPDATE pods SET draft_state = draft_state || $1::jsonb WHERE id = $2`,
       [JSON.stringify({ matchmakingStatus: 'complete' }), podId]
     )
+    return { advanced: true, completedEvent: true, nextRoundNumber: null }
   } else {
-    await createNextRound(podId, roundNumber + 1)
+    await createNextRoundWithClient(db, podId, roundNumber + 1)
+    return { advanced: true, completedEvent: false, nextRoundNumber: roundNumber + 1 }
   }
-
-  await broadcastDraftState(shareId)
 }
 
 /**
  * Create the next Swiss round based on current standings.
  */
 export async function createNextRound(podId: string, roundNumber: number): Promise<void> {
-  const playerRows = await queryRows(
+  await createNextRoundWithClient(defaultClient, podId, roundNumber)
+}
+
+async function createNextRoundWithClient(
+  db: MatchmakingDbClient,
+  podId: string,
+  roundNumber: number
+): Promise<void> {
+  const playerRows = await db.queryRows(
     `SELECT pp.user_id as id, pp.seat_number, pp.dropped,
       COALESCE(SUM(CASE
         WHEN pm.match_winner = 'player1' AND pm.player1_id = pp.user_id THEN 1
@@ -66,7 +105,7 @@ export async function createNextRound(podId: string, roundNumber: number): Promi
     [podId]
   )
 
-  const previousMatchRows = await queryRows(
+  const previousMatchRows = await db.queryRows(
     `SELECT player1_id, player2_id FROM practice_matches WHERE pod_id = $1 AND is_bye = false`,
     [podId]
   )
@@ -93,7 +132,7 @@ export async function createNextRound(podId: string, roundNumber: number): Promi
 
   const pairings = pairSwiss(pairingPlayers)
 
-  const newRound = await queryRow(
+  const newRound = await db.queryRow(
     `INSERT INTO practice_rounds (pod_id, round_number, status, created_at) VALUES ($1, $2, 'active', NOW()) RETURNING id`,
     [podId, roundNumber]
   )
@@ -102,13 +141,13 @@ export async function createNextRound(podId: string, roundNumber: number): Promi
 
   for (const pairing of pairings) {
     if (pairing.isBye) {
-      await query(
+      await db.query(
         `INSERT INTO practice_matches (round_id, pod_id, player1_id, player2_id, is_bye, final_confirmed, match_winner, created_at)
          VALUES ($1, $2, $3, NULL, true, true, 'player1', NOW())`,
         [newRoundId, podId, pairing.player1Id]
       )
     } else {
-      await query(
+      await db.query(
         `INSERT INTO practice_matches (round_id, pod_id, player1_id, player2_id, is_bye, final_confirmed, created_at)
          VALUES ($1, $2, $3, $4, false, false, NOW())`,
         [newRoundId, podId, pairing.player1Id, pairing.player2Id]
@@ -116,7 +155,7 @@ export async function createNextRound(podId: string, roundNumber: number): Promi
     }
   }
 
-  await query(
+  await db.query(
     `UPDATE pods SET draft_state = draft_state || $1::jsonb WHERE id = $2`,
     [JSON.stringify({ currentRound: roundNumber }), podId]
   )

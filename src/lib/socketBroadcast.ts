@@ -7,6 +7,8 @@
  */
 import { queryRow, queryRows } from '@/lib/db'
 import { jsonParse } from '@/src/utils/json'
+import { deckIdentityFromDeckState } from '@/src/services/matchmaking/eventAnalytics'
+import { fetchRoundsWithMatches } from '@/src/utils/matchmakingRounds'
 import type { Server as SocketIOServer } from 'socket.io'
 
 // Extend global with io
@@ -42,12 +44,16 @@ interface DraftPlayer {
   seat_number: number
   pick_status: string
   is_bot: boolean
+  dropped: boolean
   leaders: string | unknown[]
   drafted_leaders: string | unknown[]
   drafted_cards: string | unknown[]
   current_pack: string | unknown[]
   username: string
   avatar_url: string
+  pool_share_id: string | null
+  deck_builder_state: string | Record<string, unknown> | null
+  pool_cards: string | unknown[] | null
 }
 
 interface PublicLeader {
@@ -65,11 +71,19 @@ interface PublicPlayer {
   seatNumber: number
   pickStatus: string
   isBot: boolean
+  dropped: boolean
   currentPackSize: number
   leaderPack: PublicLeader[] | null
   draftedCardsCount: number
   draftedLeadersCount: number
   draftedLeaders: PublicLeader[]
+  poolShareId: string | null
+  activeLeaderName: string | null
+  baseName: string | null
+  baseAspects: string[]
+  baseHp: number | null
+  archetypeName: string | null
+  poolCardCount: number | null
 }
 
 interface BroadcastState {
@@ -124,10 +138,12 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
     // Get all players (public info only)
     const players = await queryRows(
       `SELECT dpp.id, dpp.user_id, dpp.seat_number, dpp.pick_status, dpp.is_bot,
-              dpp.leaders, dpp.drafted_leaders, dpp.drafted_cards, dpp.current_pack,
-              u.username, u.avatar_url
+              dpp.dropped, dpp.leaders, dpp.drafted_leaders, dpp.drafted_cards, dpp.current_pack,
+              u.username, u.avatar_url,
+              cp.share_id AS pool_share_id, cp.deck_builder_state, cp.cards AS pool_cards
        FROM pod_players dpp
        JOIN users u ON dpp.user_id = u.id
+       LEFT JOIN card_pools cp ON cp.pod_id = dpp.pod_id AND cp.user_id = dpp.user_id
        WHERE dpp.pod_id = $1
        ORDER BY dpp.seat_number`,
       [pod.id]
@@ -141,6 +157,8 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
     const publicPlayers: PublicPlayer[] = players.map(p => {
       const draftedLeaders = jsonParse<unknown[]>(p.drafted_leaders, []) as { name: string; aspects?: string[]; imageUrl: string; backImageUrl: string }[]
       const leadersPack = jsonParse<unknown[]>(p.leaders, []) as { name: string; aspects?: string[]; imageUrl: string; backImageUrl: string }[]
+      const deckIdentity = deckIdentityFromDeckState(p.deck_builder_state, draftedLeaders)
+      const poolCards = jsonParse<unknown[]>(p.pool_cards, []) as unknown[]
 
       return {
         id: p.id,
@@ -150,6 +168,7 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
         seatNumber: p.seat_number,
         pickStatus: p.pick_status,
         isBot: p.is_bot === true,
+        dropped: p.dropped === true,
         currentPackSize: (jsonParse<unknown[]>(p.current_pack, []) as unknown[]).length,
         // During leader draft, show each player's leader pack to all (visible at the table)
         leaderPack: isLeaderDraftPhase ? leadersPack.map(l => ({
@@ -166,6 +185,13 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
           imageUrl: l.imageUrl,
           backImageUrl: l.backImageUrl,
         })),
+        poolShareId: p.pool_share_id || null,
+        activeLeaderName: deckIdentity.activeLeaderName,
+        baseName: deckIdentity.baseName,
+        baseAspects: deckIdentity.baseAspects,
+        baseHp: deckIdentity.baseHp,
+        archetypeName: deckIdentity.archetypeName,
+        poolCardCount: Array.isArray(poolCards) ? poolCards.length : null,
       }
     })
 
@@ -197,52 +223,10 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
     }
 
     if (podDraftState.phase === 'matchmaking' && pod.competitive) {
-      const rounds = await queryRows(
-        `SELECT id, round_number, status FROM practice_rounds WHERE pod_id = $1 ORDER BY round_number`,
-        [pod.id]
-      )
-
-      const roundsWithMatches = []
-      for (const round of rounds) {
-        const matches = await queryRows(
-          `SELECT pm.id, pm.player1_id, pm.player2_id, pm.is_bye,
-                  pm.game1_result, pm.game2_result, pm.game3_result,
-                  pm.player1_submitted, pm.player2_submitted,
-                  pm.final_confirmed, pm.match_winner, pm.pod_owner_override,
-                  pm.wayfinder_match_id,
-                  u1.username as p1_username, u1.avatar_url as p1_avatar,
-                  u2.username as p2_username, u2.avatar_url as p2_avatar
-           FROM practice_matches pm
-           LEFT JOIN users u1 ON pm.player1_id = u1.id
-           LEFT JOIN users u2 ON pm.player2_id = u2.id
-           WHERE pm.round_id = $1 ORDER BY pm.created_at`,
-          [round.id]
-        )
-        roundsWithMatches.push({
-          roundNumber: round.round_number,
-          status: round.status,
-          matches: matches.map(m => ({
-            id: m.id,
-            player1: m.player1_id ? { id: m.player1_id, username: m.p1_username, avatarUrl: m.p1_avatar } : null,
-            player2: m.player2_id ? { id: m.player2_id, username: m.p2_username, avatarUrl: m.p2_avatar } : null,
-            isBye: m.is_bye,
-            game1Result: m.game1_result,
-            game2Result: m.game2_result,
-            game3Result: m.game3_result,
-            player1Submitted: m.player1_submitted,
-            player2Submitted: m.player2_submitted,
-            finalConfirmed: m.final_confirmed,
-            matchWinner: m.match_winner,
-            podOwnerOverride: m.pod_owner_override,
-            wayfinderMatchId: m.wayfinder_match_id || null,
-          })),
-        })
-      }
-
       broadcastPayload.matchmakingStatus = podDraftState.matchmakingStatus || 'active'
       broadcastPayload.currentRound = podDraftState.currentRound || 1
       broadcastPayload.deckBuildDeadline = pod.deck_lock_at
-      broadcastPayload.rounds = roundsWithMatches
+      broadcastPayload.rounds = await fetchRoundsWithMatches(pod.id)
     }
 
     io.to(`draft:${shareId}`).emit('state', broadcastPayload)

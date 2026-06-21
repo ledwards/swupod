@@ -56,6 +56,8 @@ still lives at `{wayfinder}/matches`.
 - `src/components/PlayInstructions.tsx` — the **"Play with Wayfinder" vs "Manual"**
   tabs (create/join lobby with the plugin, or copy-deck-link manual flow). This is
   the existing plugin-aware play UI to reuse/extend.
+- `docs/WAYFINDER_PLUGIN_LIVE_SWISS.md` — the live Swiss Practice
+  create/join/lifecycle/result contract for competitive draft pods.
 - `src/components/MatchCard.tsx` — links each match to `/matches/{wayfinderMatchId}`.
 - The `.../deck/play` and format `.../play` pages — detection + the `WldBadge`
   (wins/losses/draws) record.

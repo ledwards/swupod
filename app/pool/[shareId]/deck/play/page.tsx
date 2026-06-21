@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { loadPool, updatePool, claimPool } from '../../../../../src/utils/poolApi'
 import { getPackArtUrl } from '../../../../../src/utils/packArt'
 import { getSetConfig } from '../../../../../src/utils/setConfigs'
+import { getLatestReleasedSetCode } from '../../../../../src/utils/setConfigs/latest'
 import { useAuth } from '../../../../../src/contexts/AuthContext'
 import EditableTitle from '../../../../../src/components/EditableTitle'
 import { getCachedCards, initializeCardCache } from '../../../../../src/utils/cardCache'
@@ -31,6 +32,7 @@ import ChatPanel from '../../../../../src/components/ChatPanel'
 import MatchmakingPanel from '../../../../../src/components/MatchmakingPanel'
 import ResultReportModal from '../../../../../src/components/ResultReportModal'
 import { useWayfinderDetection } from '../../../../../src/hooks/useWayfinderDetection'
+import { useWayfinderPracticeLaunch } from '../../../../../src/hooks/useWayfinderPracticeLaunch'
 import { useDraftSocket } from '../../../../../src/hooks/useDraftSocket'
 import { trackEvent } from '../../../../../src/hooks/useAnalytics'
 import {
@@ -275,7 +277,19 @@ export default function PlayPage({ params }: PageProps) {
 
   // Detect the Wayfinder extension via the centralized hook (meta tag + event +
   // postMessage, with a localStorage bridge and the ?wayfinder=1/0 QA override).
-  const { detected: wayfinderDetected } = useWayfinderDetection()
+  const { detected: wayfinderDetected, settled: wayfinderSettled } = useWayfinderDetection()
+  const wayfinderCardPool = useMemo(() => {
+    if (!pool?.setCode) return 'Unlimited'
+    return pool.setCode === getLatestReleasedSetCode() ? 'Current' : 'Unlimited'
+  }, [pool?.setCode])
+  const practiceLaunch = useWayfinderPracticeLaunch({
+    draftShareId,
+    poolShareId: shareId,
+    wayfinderDetected,
+    cardPool: wayfinderCardPool,
+    format: 'pool',
+    onTrack: trackLimitedPlayAction,
+  })
 
   // ?lobby=private|public deep link (from the /me Pools tab lobby buttons):
   // auto-opens the corresponding Karabast lobby once detected + owner.
@@ -1316,7 +1330,24 @@ export default function PlayPage({ params }: PageProps) {
             matchmakingStatus={matchmakingStatus}
             currentUserId={user.id}
             isHost={isCompetitiveHost}
-            players={draftPlayers.map(p => ({ id: (p as any).odId || '', username: p.username || 'Unknown' }))}
+            players={draftPlayers.map(p => ({
+              id: (p as any).odId || '',
+              username: p.username || 'Unknown',
+              dropped: Boolean((p as any).dropped),
+              poolShareId: (p as any).poolShareId || null,
+              activeLeaderName: (p as any).activeLeaderName || null,
+              baseName: (p as any).baseName || null,
+              baseAspects: Array.isArray((p as any).baseAspects) ? (p as any).baseAspects : [],
+              baseHp: typeof (p as any).baseHp === 'number' ? (p as any).baseHp : null,
+              archetypeName: (p as any).archetypeName || null,
+              poolCardCount: typeof (p as any).poolCardCount === 'number' ? (p as any).poolCardCount : null,
+            }))}
+            wayfinderDetected={wayfinderDetected}
+            wayfinderSettled={wayfinderSettled}
+            hasCompanionBetaAccess={Boolean(user?.is_beta_tester || user?.is_admin)}
+            onPracticeLaunch={practiceLaunch.launchPracticeMatch}
+            practiceLaunchPendingMatchId={practiceLaunch.pendingMatchId}
+            practiceLaunchMessage={practiceLaunch.launchMessage}
             onReport={(matchId) => {
               trackLimitedPlayAction(LimitedPlayActions.MATCH_REPORT_OPEN, {
                 target: 'match_result',

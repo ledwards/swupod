@@ -12,8 +12,8 @@
 }
 
 .match-card--mine {
-  border-color: rgba(255, 215, 0, 0.6);
-  box-shadow: 0 0 12px rgba(255, 215, 0, 0.15);
+  border-color: rgba(147, 197, 253, 0.58);
+  box-shadow: 0 0 14px rgba(147, 197, 253, 0.16);
 }
 
 .match-card--confirmed {
@@ -32,10 +32,11 @@
   flex-direction: column;
   gap: 4px;
   position: relative;
+  min-width: 0;
 }
 
 .match-card-player--winner .match-card-player-name {
-  color: rgba(255, 215, 0, 0.9);
+  color: #bfdbfe;
   font-weight: 700;
 }
 
@@ -47,6 +48,26 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.match-card-player-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.match-card-player-record {
+  flex-shrink: 0;
+  border: 1px solid rgba(147, 197, 253, 0.28);
+  border-radius: 999px;
+  background: rgba(147, 197, 253, 0.08);
+  padding: 0.08rem 0.4rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #bfdbfe;
 }
 
 .match-card-player-name--bye {
@@ -88,7 +109,7 @@
 }
 
 .game-dot--draw {
-  background: rgba(255, 200, 0, 0.7);
+  background: rgba(150, 185, 255, 0.7);
 }
 
 .match-card-boot {
@@ -138,7 +159,7 @@
 }
 
 .match-card-status--awaiting-confirmation {
-  color: rgba(255, 200, 0, 0.9);
+  color: #c4b5fd;
 }
 
 .match-card-status--complete {
@@ -157,6 +178,115 @@
   transition: color 0.2s ease;
 }
 
+.match-card-wayfinder-state {
+  border: 1px solid rgba(147, 197, 253, 0.28);
+  border-radius: 999px;
+  background: rgba(147, 197, 253, 0.08);
+  padding: 0.12rem 0.45rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #bfdbfe;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.match-card-wayfinder-state--recorded {
+  border-color: rgba(147, 197, 253, 0.35);
+  background: rgba(147, 197, 253, 0.1);
+  color: #bfdbfe;
+}
+
+.match-card-live {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.65rem;
+  border: 1px solid rgba(100, 181, 246, 0.24);
+  border-radius: 8px;
+  background: rgba(100, 181, 246, 0.08);
+  padding: 0.55rem 0.65rem;
+}
+
+.match-card-live--pending {
+  border-color: rgba(167, 139, 250, 0.24);
+  background: rgba(167, 139, 250, 0.065);
+}
+
+.match-card-live--creating,
+.match-card-live--lobby_ready {
+  border-color: rgba(167, 139, 250, 0.3);
+  background: rgba(167, 139, 250, 0.08);
+}
+
+.match-card-live--in_progress {
+  border-color: rgba(100, 181, 246, 0.34);
+  background: rgba(100, 181, 246, 0.1);
+}
+
+.match-card-live--complete {
+  border-color: rgba(34, 197, 94, 0.28);
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.match-card-live--failed,
+.match-card-live--voided {
+  border-color: rgba(248, 113, 113, 0.3);
+  background: rgba(248, 113, 113, 0.08);
+}
+
+.match-card-live-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.match-card-live-status {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.match-card-live-message {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.78rem;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.match-card-live-message--error {
+  color: #fecaca;
+}
+
+.match-card-live-message--success {
+  color: #bbf7d0;
+}
+
+.match-card-live-message--info {
+  color: #bfdbfe;
+}
+
+.match-card-live-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.match-card-live-button {
+  white-space: nowrap;
+}
+
+.match-card-live-watch {
+  --ys-accent: #93c5fd;
+  --ys-accent-bright: #bfdbfe;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .match-card-wayfinder-link:hover {
     color: #bfdbfe;
@@ -167,6 +297,8 @@
 .match-card-actions {
   display: flex;
   gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 /* Mobile */
@@ -177,5 +309,18 @@
 
   .match-card-player-name {
     font-size: 0.85rem;
+  }
+
+  .match-card-live {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .match-card-live-actions {
+    justify-content: flex-start;
+  }
+
+  .match-card-live-actions .your-stats-watch-btn {
+    margin-left: 0;
   }
 }

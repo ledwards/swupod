@@ -10,6 +10,7 @@ import { markPodCancelled, deletePodMessage } from '@/lib/discordLfg'
 import { broadcastDraftState, broadcastSystemChatMessage } from '@/src/lib/socketBroadcast'
 import { jsonParse } from '@/src/utils/json'
 import { resolveCatalogCards } from '@/src/services/cards/cardCatalogResolver'
+import { deckIdentityFromDeckState } from '@/src/services/matchmaking/eventAnalytics'
 import { fetchRoundsWithMatches } from '@/src/utils/matchmakingRounds'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -73,9 +74,13 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         dpp.*,
         u.id as user_id,
         u.username,
-        u.avatar_url
+        u.avatar_url,
+        cp.share_id as pool_share_id,
+        cp.deck_builder_state,
+        cp.cards as pool_cards
        FROM pod_players dpp
        JOIN users u ON dpp.user_id = u.id
+       LEFT JOIN card_pools cp ON cp.pod_id = dpp.pod_id AND cp.user_id = dpp.user_id
        WHERE dpp.pod_id = $1
        ORDER BY dpp.seat_number`,
       [pod.id]
@@ -95,12 +100,14 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     const isLeaderDraftPhase = draftState?.phase === 'leader_draft'
 
     // Format players for response
-    const formattedPlayers = players.map(p => {
-      const draftedLeaders = resolveCatalogCards(jsonParse(p.drafted_leaders, []))
-      const leadersPack = resolveCatalogCards(jsonParse(p.leaders, []))
+  const formattedPlayers = players.map(p => {
+    const draftedLeaders = resolveCatalogCards(jsonParse(p.drafted_leaders, []))
+    const leadersPack = resolveCatalogCards(jsonParse(p.leaders, []))
+    const deckIdentity = deckIdentityFromDeckState(p.deck_builder_state, draftedLeaders)
+    const poolCards = jsonParse(p.pool_cards, [])
 
-      return {
-        id: p.id,
+    return {
+      id: p.id,
         odId: p.user_id,
         username: p.username,
         avatarUrl: p.avatar_url,
@@ -125,11 +132,18 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         draftedLeaders: draftedLeaders.map(l => ({
           name: l.name,
           aspects: l.aspects || [],
-          imageUrl: l.imageUrl,
-          backImageUrl: l.backImageUrl,
-        })),
-      }
-    })
+        imageUrl: l.imageUrl,
+        backImageUrl: l.backImageUrl,
+      })),
+      poolShareId: p.pool_share_id || null,
+      activeLeaderName: deckIdentity.activeLeaderName,
+      baseName: deckIdentity.baseName,
+      baseAspects: deckIdentity.baseAspects,
+      baseHp: deckIdentity.baseHp,
+      archetypeName: deckIdentity.archetypeName,
+      poolCardCount: Array.isArray(poolCards) ? poolCards.length : null,
+    }
+  })
 
     // For competitive pods in matchmaking phase, include matchmaking data
     // so clients that load the page AFTER start-matches (and miss the socket
