@@ -11,6 +11,9 @@ import Button from './Button'
 import { CardPreview } from './DeckBuilder/CardPreview'
 import useCardPreview from '../hooks/useCardPreview'
 import { groupDraftedCards, type DraftGroupMode } from '../utils/draftedCardGrouping'
+import AspectIcon from './AspectIcon'
+import CostIcon from './CostIcon'
+import CardDensityToggle, { type CardDensity } from './DeckBuilder/CardDensityToggle'
 import { getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
 import { getSetConfig } from '../utils/setConfigs'
 import './PackDraftPhase.css'
@@ -110,6 +113,7 @@ function PackDraftPhase({
 
   const [showReviewModal, setShowReviewModal] = useState(false)
   const [reviewGroupBy, setReviewGroupBy] = useState<DraftGroupMode>('pack')
+  const [reviewDensity, setReviewDensity] = useState<CardDensity>('medium')
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [hoveredLeaderPreview, setHoveredLeaderPreview] = useState<HoveredLeaderPreview | null>(null)
   const {
@@ -410,36 +414,55 @@ function PackDraftPhase({
                 warningThreshold={10}
               />
             </div>
-            <div className="review-controls" role="group" aria-label="Group cards by">
-              <Button variant="toggle" glowColor="blue" active={reviewGroupBy === 'pack'} onClick={() => setReviewGroupBy('pack')}>Pack</Button>
-              <Button variant="toggle" glowColor="blue" active={reviewGroupBy === 'cost'} onClick={() => setReviewGroupBy('cost')}>Cost</Button>
-              <Button variant="toggle" glowColor="blue" active={reviewGroupBy === 'aspect'} onClick={() => setReviewGroupBy('aspect')}>Aspect</Button>
+            <div className="review-controls">
+              <div className="review-groupby" role="group" aria-label="Group cards by">
+                <Button variant="toggle" glowColor="blue" active={reviewGroupBy === 'pack'} onClick={() => setReviewGroupBy('pack')}>Pack</Button>
+                <Button variant="toggle" glowColor="blue" active={reviewGroupBy === 'cost'} onClick={() => setReviewGroupBy('cost')}>Cost</Button>
+                <Button variant="toggle" glowColor="blue" active={reviewGroupBy === 'aspect'} onClick={() => setReviewGroupBy('aspect')}>Aspect</Button>
+              </div>
+              <CardDensityToggle value={reviewDensity} onChange={setReviewDensity} />
             </div>
           </div>
-          <div className="review-groups">
-            {reviewGroups.map(group => (
-              <section key={group.key} className="review-group">
-                <div className="review-group-label">{group.label} <span className="review-group-count">({group.cards.length})</span></div>
-                <div className="review-group-cards">
-                  {group.cards.map(card => (
-                    <div
-                      key={card.instanceId || card.id}
-                      className="review-card"
-                      onMouseEnter={(e) => reviewHandleMouseEnter(card, e)}
-                      onMouseLeave={reviewHandleMouseLeave}
-                      onTouchStart={() => reviewHandleTouchStart(card)}
-                      onTouchEnd={reviewHandleTouchEnd}
-                    >
-                      <img
-                        src={card.imageUrl}
-                        alt={card.name || card.title || 'Card'}
-                        className="review-card-img"
-                      />
+          <div className="review-columns">
+            {reviewGroups.map(group => {
+              const aspects = group.cards[0]?.aspects || []
+              return (
+                <section key={group.key} className="review-column">
+                  <div className="review-col-header">
+                    {reviewGroupBy === 'cost' ? (
+                      <CostIcon cost={group.label.replace(/^Cost\s*/, '')} size={26} />
+                    ) : reviewGroupBy === 'aspect' ? (
+                      aspects.length === 0
+                        ? <span className="review-col-title">Neutral</span>
+                        : <span className="review-col-icons">{aspects.map((a, i) => <AspectIcon key={i} aspect={a} size="md" />)}</span>
+                    ) : (
+                      <span className="review-col-title">{group.label}</span>
+                    )}
+                    <span className="review-col-count">({group.cards.length})</span>
+                  </div>
+                  <div className="review-stack">
+                    <div className="review-stack-inner">
+                      {group.cards.map((card, i) => (
+                        <div
+                          key={card.instanceId || card.id}
+                          className={`review-stacked-card review-stacked-card--${reviewDensity}${i === group.cards.length - 1 ? ' is-last' : ''}`}
+                          onMouseEnter={(e) => reviewHandleMouseEnter(card, e)}
+                          onMouseLeave={reviewHandleMouseLeave}
+                          onTouchStart={() => reviewHandleTouchStart(card)}
+                          onTouchEnd={reviewHandleTouchEnd}
+                        >
+                          <img
+                            src={card.imageUrl}
+                            alt={card.name || card.title || 'Card'}
+                            className="review-card-img"
+                          />
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </section>
-            ))}
+                  </div>
+                </section>
+              )
+            })}
           </div>
         </div>
         {reviewHoveredCard && (

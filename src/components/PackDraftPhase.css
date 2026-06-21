@@ -646,50 +646,140 @@
 }
 .review-controls {
   display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.review-groupby {
+  display: flex;
   gap: 8px;
 }
-.review-groups {
+
+/* Grouped columns — mirrors the DeckBuilder arena cost/aspect columns */
+.review-columns {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
+  overflow: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding-bottom: 8px;
+}
+.review-column {
+  flex: 1 1 0;
+  min-width: 96px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  padding: 0.5rem;
 }
-.review-group-label {
-  margin-bottom: 6px;
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-.review-group-count {
-  opacity: 0.5;
-  font-weight: 400;
-}
-.review-group-cards {
+.review-col-header {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  font-weight: 600;
+  color: #fff;
+  padding: 0.25rem;
+  margin-bottom: 0.5rem;
+  background: rgb(30, 30, 30);
+  border-radius: 4px;
 }
-.review-card {
-  flex-shrink: 0;
+.review-col-title { font-size: 0.85rem; }
+.review-col-icons { display: inline-flex; align-items: center; gap: 2px; }
+.review-col-count { font-size: 0.75rem; font-weight: 400; color: rgba(255, 255, 255, 0.6); }
+
+/* Vertical card stack within a column */
+.review-stack { position: relative; }
+.review-stack-inner { display: flex; flex-direction: column; }
+.review-stacked-card {
+  position: relative;
+  width: 100%;
   cursor: zoom-in;
-  transition: transform 0.1s ease;
 }
 .review-card-img {
   display: block;
-  width: 132px;
+  width: 100%;
+  aspect-ratio: 2.5 / 3.5;
+  object-fit: cover;
   border-radius: 6px;
 }
+
+/* small: overlapping fan — only the top sliver of each card shows */
+.review-stacked-card--small { margin-bottom: calc(-1 * (100% * 1.4) * 0.875); }
+.review-stacked-card--small.is-last { margin-bottom: 0; }
+
+/* medium: crop each card to its top ~33%, small gap between */
+.review-stacked-card--medium {
+  margin-bottom: 4px;
+  aspect-ratio: 2.5 / 1.15;
+  overflow: hidden;
+  border-radius: 0 0 8px 8px;
+}
+.review-stacked-card--medium .review-card-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.review-stacked-card--medium.is-last { margin-bottom: 0; }
+
+/* large: full cards, gap between */
+.review-stacked-card--large { margin-bottom: 6px; }
+.review-stacked-card--large.is-last { margin-bottom: 0; }
+
 @media (hover: hover) and (pointer: fine) {
-  .review-card:hover { transform: translateY(-2px); }
+  .review-stacked-card:hover { z-index: 5; }
 }
-@media (max-width: 1100px) {
-  .review-card-img { width: 108px; }
+
+/* Card density toggle (small/medium/large) — reused from DeckBuilder */
+.card-density-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
 }
+.card-density-toggle-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 22px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.55);
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .card-density-toggle-button:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+.card-density-toggle-button.active {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+.card-density-toggle-preview {
+  display: block;
+  width: 14px;
+  background: currentColor;
+  border-radius: 1px;
+}
+.card-density-toggle-button--small .card-density-toggle-preview { height: 3px; }
+.card-density-toggle-button--medium .card-density-toggle-preview { height: 7px; }
+.card-density-toggle-button--large .card-density-toggle-preview { height: 14px; }
+
 @media (max-width: 768px) {
   .review-period { min-height: 0; padding: 8px; }
-  .review-card-img { width: 84px; }
+  .review-column { min-width: 64px; padding: 0.3rem; }
+  .review-col-header { min-height: 30px; }
 }
