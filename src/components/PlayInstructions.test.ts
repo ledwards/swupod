@@ -55,7 +55,7 @@ describe('<PlayInstructions /> Companion adoption', () => {
     // iOS is live on the App Store (links to the published listing).
     assert.match(STORE_BUTTONS, /name:\s*'App Store'[^\n]*status:\s*'live'/)
     assert.match(STORE_BUTTONS, /Download on the App Store/)
-    assert.ok(STORE_BUTTONS.includes('apps.apple.com/us/app/wayfinder-companion/id6779564194'))
+    assert.ok(STORE_BUTTONS.includes('apps.apple.com/app/id6779564194'))
     // Android (Google Play) is still awaiting release.
     assert.match(STORE_BUTTONS, /name:\s*'Google Play'[^\n]*status:\s*'soon'/)
     assert.match(STORE_BUTTONS, /Get it on Google Play/)
