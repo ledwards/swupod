@@ -459,13 +459,18 @@
     object-fit: cover;
   }
 
-  /* COMPLETELY disable hover effects on mobile - no enlarged preview */
-  .canvas-card:hover {
-    transform: none !important;
-    z-index: auto !important;
-  }
+  /* Disable the hover enlarge on narrow viewports - no enlarged preview.
+     Wrapped in the hover-capability guard so taps on touch devices (where
+     :hover sticks) never trigger it, and scoped to leave the selection
+     rainbow on selected/active cards intact (it must stay visible on hover). */
+  @media (hover: hover) and (pointer: fine) {
+    .canvas-card:hover {
+      transform: none !important;
+      z-index: auto !important;
+    }
 
-  .canvas-card:hover::before {
-    display: none !important;
+    .canvas-card:hover:not(.selected):not(.active-leader):not(.active-base)::before {
+      display: none !important;
+    }
   }
 }

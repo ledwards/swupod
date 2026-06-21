@@ -352,16 +352,19 @@
 }
 
 /* Non-picked cards stay at full opacity; the shared proportional rainbow border
-   on the picked card is enough to show what was taken. */
+   on the picked card is enough to show what was taken. The animation is set
+   explicitly here so the higher-specificity selector keeps the rainbow moving. */
 .draft-log-pack-cards .canvas-card.selected::before {
   inset: calc(var(--rainbow-border-size) * -1);
   border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
+  animation: var(--rainbow-border-animation);
 }
 
 .draft-log-pack-cards .canvas-card.leader.selected::before,
 .draft-log-pack-cards .canvas-card.base.selected::before {
   inset: calc(var(--rainbow-border-size) * -1);
   border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
+  animation: var(--rainbow-border-animation);
 }
 
 /* Blank state when no viewable logs */
