@@ -1,6 +1,11 @@
 @import '../styles/animations.css';
 
 .draftable-card {
+  /* Proportional rainbow selection ring (shared system, see animations.css).
+     The ring is drawn as an inset border via ::before so it stays visible
+     even though the card keeps `overflow: hidden` to clip its image/foil. */
+  --rainbow-border-reference: 120px;
+  --rainbow-border-size: calc(var(--rainbow-border-reference) * var(--rainbow-border-thickness-ratio));
   position: relative;
   width: 120px;
   min-width: 120px;
@@ -33,12 +38,31 @@
 
 .draftable-card.selected {
   z-index: 100;
-  /* Holotable selection: green glow + ring (replaces the old rainbow border). */
-  box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.85), 0 6px 18px rgba(0, 255, 0, 0.5);
+}
+
+/* Selection indicator: animated rainbow ring (shared rainbow system).
+   Rendered as an inset border via mask-compositing so the gradient ring is
+   visible inside the card's `overflow: hidden` (which clips the image/foil). */
+.draftable-card.selected::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: var(--rainbow-border-size);
+  background: var(--rainbow-border-gradient);
+  background-size: var(--rainbow-border-background-size);
+  animation: var(--rainbow-border-animation);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 20;
 }
 
 
 .draftable-card.leader {
+  --rainbow-border-reference: 168px;
   width: 168px;
   min-width: 168px;
   max-width: 168px;
