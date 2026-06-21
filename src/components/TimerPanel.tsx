@@ -157,10 +157,13 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
   // Wrapper component - when not compact, include timer-bar wrapper
   const wrapperClass = compact ? '' : 'timer-bar'
 
-  // Get timer label
+  // Get timer label. In competitive, the live timer IS the Appendix C round
+  // timer (the per-pick timer is disabled), so it's labelled "Round Timer".
   const timerLabel = displayLastPlayer
     ? (compact ? "Last Player" : "Last Player:")
-    : (compact ? "Pick" : "Pick Timeout:")
+    : isCompetitive
+      ? (compact ? "Round" : "Round Timer:")
+      : (compact ? "Pick" : "Pick Timeout:")
   const totalLeaderRounds = draftState?.totalPacks || draft?.settings?.chaosSets?.length || 3
 
   return (
