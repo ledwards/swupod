@@ -47,6 +47,64 @@
   text-transform: uppercase;
 }
 
+/* Pre-round roster (deck-building phase): players + deck-ready + host tag. */
+.matchmaking-roster {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.matchmaking-roster-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+}
+
+.matchmaking-roster-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  color: white;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.matchmaking-roster-host {
+  flex-shrink: 0;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  padding: 0.05rem 0.4rem;
+}
+
+.matchmaking-roster-ready {
+  flex-shrink: 0;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.matchmaking-roster-ready.is-ready {
+  color: #22c55e;
+}
+
 .matchmaking-how-toggle {
   flex-shrink: 0;
   color: var(--swiss-blue-bright);

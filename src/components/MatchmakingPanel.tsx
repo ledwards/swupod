@@ -71,6 +71,7 @@ interface MatchmakingPanelProps {
     baseHp?: number | null
     archetypeName?: string | null
     poolCardCount?: number | null
+    isHost?: boolean
   }[]
   onReport: (matchId: string) => void
   onOverride: (matchId: string) => void
@@ -332,6 +333,32 @@ export function MatchmakingPanel({
         <span className="matchmaking-round-progress">{progressLabel}</span>
         <span className="matchmaking-status-line">{playerStatus}</span>
       </div>
+
+      {/* Pre-round roster: who's in the pod, deck-ready status, and the host
+          (plain "Host" tag — no crown). No deck-image links. */}
+      {matchmakingStatus === 'deck_building' && rounds.length === 0 && players.length > 0 && (
+        <div className="matchmaking-roster" data-testid="matchmaking-roster">
+          {players.map(p => {
+            const ready = Boolean(p.activeLeaderName && p.baseName)
+            return (
+              <div
+                key={p.id}
+                className="matchmaking-roster-row"
+                data-player-id={p.id}
+                data-ready={ready ? 'true' : 'false'}
+              >
+                <span className="matchmaking-roster-name">
+                  {p.username}
+                  {p.isHost && <span className="matchmaking-roster-host">Host</span>}
+                </span>
+                <span className={`matchmaking-roster-ready${ready ? ' is-ready' : ''}`}>
+                  {ready ? 'Ready' : 'Building…'}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+      )}
 
       {showInstallNudge && (
         <div className="matchmaking-wayfinder-nudge">

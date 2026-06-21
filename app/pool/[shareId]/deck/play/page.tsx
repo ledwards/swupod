@@ -1284,6 +1284,7 @@ export default function PlayPage({ params }: PageProps) {
               baseHp: typeof (p as any).baseHp === 'number' ? (p as any).baseHp : null,
               archetypeName: (p as any).archetypeName || null,
               poolCardCount: typeof (p as any).poolCardCount === 'number' ? (p as any).poolCardCount : null,
+              isHost: Boolean((p as any).isHost),
             }))}
             wayfinderDetected={wayfinderDetected}
             wayfinderSettled={wayfinderSettled}
