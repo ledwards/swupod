@@ -228,7 +228,12 @@
   display: flex;
   gap: 0.4rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-  padding-bottom: 0.65rem;
+  /* overflow-x: auto also clips vertical overflow, which was cutting off the
+     active tab's glow and the current/completed indicators. Pad top + sides
+     (with a compensating negative margin) so nothing clips. */
+  padding: 0.5rem 0.25rem 0.65rem;
+  margin-left: -0.25rem;
+  margin-right: -0.25rem;
   margin-bottom: 1rem;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
