@@ -100,8 +100,11 @@ export function MatchCard({
   const iAmPlayer2 = match.player2?.id === currentUserId
   const iHaveSubmitted = (iAmPlayer1 && match.player1Submitted) || (iAmPlayer2 && match.player2Submitted)
 
-  const canReport = !readOnly && isMyMatch && !match.finalConfirmed && !match.isBye && !iHaveSubmitted
-  const canOverride = !readOnly && isHost && !match.isBye
+  const hasResult = match.finalConfirmed || match.player1Submitted || match.player2Submitted
+  // One action: participants report (and re-edit) their own match; the host can
+  // edit any match. Once a result exists the button reads "Edit" — Report
+  // Manually covers both reporting and editing (no separate Edit button).
+  const canReportOrEdit = !readOnly && !match.isBye && (isMyMatch || isHost)
   const recordFor = (player: MatchPlayer | null) => player?.id ? formatRecord(playerRecords?.get(player.id)) : '0-0'
   const liveStatus = liveGameStatusLabel(match.currentGame)
   const liveAction = liveGameAction({
@@ -262,21 +265,16 @@ export function MatchCard({
           </a>
         )}
         <div className="match-card-actions">
-          {canReport && (
+          {canReportOrEdit && (
             <span data-testid={`match-report-button-${match.id}`}>
               <Button
-                variant={wayfinderState === 'auto-recording' ? 'secondary' : 'primary'}
+                variant={!hasResult && wayfinderState !== 'auto-recording' ? 'primary' : 'secondary'}
                 size="sm"
-                onClick={() => onReport(match.id)}
+                onClick={() => (isMyMatch ? onReport : onOverride)(match.id)}
               >
-                {wayfinderState === 'auto-recording' ? 'Report Manually' : 'Report Result'}
+                {hasResult ? 'Edit' : (wayfinderState === 'auto-recording' ? 'Report Manually' : 'Report Result')}
               </Button>
             </span>
-          )}
-          {canOverride && (
-            <Button variant="secondary" size="sm" onClick={() => onOverride(match.id)}>
-              Edit
-            </Button>
           )}
         </div>
       </div>

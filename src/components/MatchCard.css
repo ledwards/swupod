@@ -116,9 +116,9 @@
   position: absolute;
   top: -4px;
   right: -4px;
-  background: rgba(200, 0, 0, 0.3);
-  border: 1px solid rgba(255, 0, 0, 0.5);
-  color: rgba(255, 100, 100, 0.9);
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.85);
   width: 20px;
   height: 20px;
   border-radius: 50%;
@@ -134,8 +134,8 @@
 
 @media (hover: hover) and (pointer: fine) {
   .match-card-boot:hover {
-    background: rgba(200, 0, 0, 0.6);
-    border-color: rgba(255, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.9);
+    border-color: rgba(255, 255, 255, 0.5);
   }
 }
 
