@@ -110,6 +110,37 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
+/* Subtle inline visibility lock — mirrors the log page's understated lock.
+   Sits next to the player-count meta instead of a prominent button. */
+.draft-report-meta-lock {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  padding: 2px;
+  margin-left: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  line-height: 0;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.draft-report-meta-lock.lock-private {
+  color: #ff6b6b;
+}
+
+.draft-report-meta-lock.lock-public {
+  color: #81c784;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .draft-report-meta-lock:hover {
+    opacity: 1;
+  }
+}
+
 .draft-report-header-actions {
   display: flex;
   gap: 12px;
@@ -708,6 +739,25 @@ button.draft-report-notes-empty:focus-visible {
 .draft-report-list-item:hover {
   border-color: rgba(255, 215, 0, 0.4);
   background: rgba(255, 215, 0, 0.05);
+}
+
+/* Player hasn't built a deck yet — grey out the entry (their "tab"). */
+.draft-report-list-item.no-deck {
+  opacity: 0.5;
+}
+
+.draft-report-list-item.no-deck .draft-report-list-avatar {
+  filter: grayscale(1);
+}
+
+.draft-report-list-nodeck {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 2px 8px;
 }
 
 .draft-report-list-avatar {
