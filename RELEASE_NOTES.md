@@ -2,6 +2,23 @@
 
 ## 06.20.2026
 
+### 🎴 Competitive Draft — Pack Review
+
+- The between-pack **Review Your Cards** peek now fills the screen, so you can take in your whole pool at a glance during the 30-second window.
+- Group your drafted cards three ways with one tap — **Pack Order**, **Cost**, or **Aspect** — with graphical buttons matching the deck builder.
+- **Pack Order** lays cards out in rows by pack (like a freshly opened pool); **Cost** and **Aspect** stack them into labeled columns with cost and aspect icons.
+- **Small / Medium / Large** toggle to fit more cards in or see them bigger.
+
+### 🏆 Competitive Practice Lobby & Timer
+
+- The Competitive Practice Mode rules are now a collapsible panel (collapsed by default), tucked below Host Controls so the lobby stays clean.
+- Timer settings read as fixed in Competitive Mode — **Round Timer: Competitive Rules** and **Pick Timer: disabled** — making it clear the official schedule is in effect and can't be changed.
+- The in-draft timer is now labeled **Round Timer** in Competitive Mode, matching the official per-card round schedule.
+
+### ✨ Polish
+
+- A little more breathing room above the "Selected" confirmation when you pick your leader.
+
 ### 🎞️ Draft Report Slideshow
 
 - New Slideshow mode for Draft Reports
