@@ -23,6 +23,21 @@
   margin-bottom: 1rem;
 }
 
+.matchmaking-panel-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.matchmaking-panel-eyebrow {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
 .matchmaking-panel-label {
   font-family: 'Barlow', sans-serif;
   font-weight: 700;

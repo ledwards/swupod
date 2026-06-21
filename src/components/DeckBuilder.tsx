@@ -2497,6 +2497,7 @@ function DeckBuilder({
           rootShareId={rootShareId}
           currentUserId={currentUserId}
           subtitleOverride={isDefaultName ? (poolOwnerUsername ? `by ${poolOwnerUsername}` : null) : canonicalSubtitle}
+          competitive={competitive}
         />
 
       {/* Selected Leader/Base and Deck/Sideboard Info - Sticky Bar */}

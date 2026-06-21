@@ -306,7 +306,10 @@ export function MatchmakingPanel({
       data-wayfinder-detected={wayfinderDetected ? 'true' : 'false'}
     >
       <div className="matchmaking-panel-header">
-        <span className="matchmaking-panel-label">Swiss Practice</span>
+        <div className="matchmaking-panel-heading">
+          <span className="matchmaking-panel-eyebrow">Competitive</span>
+          <span className="matchmaking-panel-label">Swiss Practice</span>
+        </div>
         <Button
           variant="secondary"
           size="sm"
