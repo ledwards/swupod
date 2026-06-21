@@ -1273,6 +1273,7 @@ export default function PlayPage({ params }: PageProps) {
           messageType={messageType}
           showActions={true}
           isOwner={isInfinitePool ? true : (!pool?.owner || !!isOwner)}
+          pluginRequired={!!(isCompetitive && isOwner)}
           ownerName={pool?.owner?.username || pool?.owner?.name || null}
           wayfinderDetected={wayfinderDetected}
           isLoggedIn={Boolean(user)}

@@ -41,6 +41,9 @@ interface PlayInstructionsProps {
    *  CTA shown when the plugin is detected but the user isn't authenticated. */
   isLoggedIn?: boolean
   wayfinderDetected?: boolean
+  /** Companion is required here (competitive/Swiss pod) — force the install CTA
+   *  on even for users outside the rollout. Set only by the play page. */
+  pluginRequired?: boolean
   /** Whether the Companion extension itself is signed in. `null`/undefined =
    *  unknown (older build or no signal yet) — we don't nag. When explicitly
    *  `false` we swap the lobby flow for a "sign in from your toolbar" CTA. */
@@ -75,6 +78,7 @@ export default function PlayInstructions({
   ownerName = null,
   isLoggedIn = true,
   wayfinderDetected = false,
+  pluginRequired = false,
   pluginLoggedIn = null,
   autoLobbyIntent = null,
   analyticsContext = {},
@@ -210,7 +214,7 @@ export default function PlayInstructions({
   function renderCompanionInstallPanel() {
     // The one universal install CTA. Autodetect = a single prominent button for
     // the browser you're in. It self-gates on rollout + Companion presence.
-    return <PluginCTA variant="autodetect" onChromeClick={() => trackInstallClick('chrome')} />
+    return <PluginCTA variant="autodetect" required={pluginRequired} onChromeClick={() => trackInstallClick('chrome')} />
   }
 
   function renderCompanionReadyPanel() {
@@ -462,7 +466,7 @@ export default function PlayInstructions({
         </div>
       )}
 
-      {viewingOthersDeck || (!companionBeta && !wayfinderDetected) ? (
+      {viewingOthersDeck || (!companionBeta && !wayfinderDetected && !pluginRequired) ? (
         <div className="play-steps">
           {renderManualSteps()}
         </div>

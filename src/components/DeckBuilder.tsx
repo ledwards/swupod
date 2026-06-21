@@ -155,6 +155,9 @@ interface DeckBuilderProps {
   rootShareId?: string | null
   currentUserId?: string | null
   limitedMode?: 'solo' | 'group' | null
+  /** True when the parent draft is competitive — Play goes to the single play
+      URL (which renders the Swiss Practice panel) instead of the /pod hub. */
+  competitive?: boolean
 }
 
 function DeckBuilder({
@@ -178,7 +181,8 @@ function DeckBuilder({
   deckBuildDeadline = null,
   rootShareId = null,
   currentUserId = null,
-  limitedMode = null
+  limitedMode = null,
+  competitive = false
 }: DeckBuilderProps) {
   const { user, isAuthenticated, signIn, isPatron } = useAuth()
   const isInfiniteMode = mode === 'infinite'
@@ -2317,7 +2321,11 @@ function DeckBuilder({
     }
 
     if (isDraftMode && draftShareId) {
-      window.location.href = `/draft/${draftShareId}/pod`
+      // Competitive/Swiss uses the single play URL (which renders the Swiss
+      // Practice panel); the /pod hub is only for casual draft pods.
+      window.location.href = competitive && shareId
+        ? `/pool/${shareId}/deck/play`
+        : `/draft/${draftShareId}/pod`
     } else if (!isDraftMode && draftShareId) {
       window.location.href = `/sealed/${draftShareId}/pod`
     } else if (shareId) {
@@ -2332,6 +2340,7 @@ function DeckBuilder({
     uiStorageKey,
     isDraftMode,
     draftShareId,
+    competitive,
     shareId,
     setCode,
     cards,

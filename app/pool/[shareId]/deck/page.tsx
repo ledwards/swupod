@@ -199,10 +199,12 @@ export default function DeckBuilderPage({ params }: PageProps) {
 
   const [deckBuildDeadline, setDeckBuildDeadline] = useState<string | null>(null)
   const [draftLimitedMode, setDraftLimitedMode] = useState<'solo' | 'group' | null>(null)
+  const [competitive, setCompetitive] = useState(false)
 
   useEffect(() => {
     if (!draftShareId || pool?.poolType !== 'draft') {
       setDraftLimitedMode(null)
+      setCompetitive(false)
       return
     }
     fetch(`/api/draft/${draftShareId}`)
@@ -212,6 +214,7 @@ export default function DeckBuilderPage({ params }: PageProps) {
           setDeckBuildDeadline(data.deckBuildDeadline)
         }
         setDraftLimitedMode(data?.settings?.isSolo === true ? 'solo' : 'group')
+        setCompetitive(data?.competitive === true)
       })
       .catch(() => {})
   }, [draftShareId, pool?.poolType])
@@ -248,6 +251,7 @@ export default function DeckBuilderPage({ params }: PageProps) {
             rootShareId={rootShareId}
             currentUserId={user?.id || null}
             limitedMode={limitedMode}
+            competitive={competitive}
           />
         </div>
       </div>
