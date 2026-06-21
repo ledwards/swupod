@@ -13,6 +13,82 @@ for competitive draft pods.
 - The browser postMessage payloads never contain `PTP_SERVICE_KEY` or plugin
   tokens. Those stay server-side in Wayfinder web.
 
+## Local plugin testing (CORS-clean dev loop)
+
+Run the whole loop against localhost with **zero CORS / `ERR_FAILED`**. The
+golden rule: every browser call the extension makes must be either same-origin
+or covered by the extension's `host_permissions`.
+
+### Who calls whom in dev
+
+| Call | Made from | Dev target | How it's resolved | CORS |
+| --- | --- | --- | --- | --- |
+| PTP play metadata `GET /api/plugin/v1/play/{format}/{shareId}` | content script (`content-ptp-play.ts`) injected on the PTP play page | `window.location.origin` → `http://localhost:3000` | same-origin as the page it's injected on | none (same-origin) |
+| Hub calls (heartbeat, capture, live-actions, auth) | background service worker | `http://plugin.localhost:3001` (or `http://localhost:3001`) | dev mode → `wf_dev_url` in `chrome.storage.local` | none (background fetch under `host_permissions`) |
+| Hub → PTP (server-to-server: claim / result / private) | Wayfinder web (`apps/web`) | `PTP_API_URL=http://localhost:3000` | `apps/web/.env.local` env, not a browser request | n/a |
+| Open Karabast lobby | background service worker | `https://karabast.net` | no dev override (real Karabast) | n/a |
+
+The **direct PTP call is same-origin** because the content script reads
+`window.location.origin`, not a hardcoded host. On `localhost:3000` it hits
+local PTP; on prod it hits prod. This is the entire CORS fix — see
+`packages/extension-shared/src/content-ptp-play.ts`
+(`const PTP_API_BASE = window.location.origin`). **No PTP plugin route loosens
+CORS**, so production stays locked down.
+
+> Historical cause of the `Access to fetch … from origin http://localhost:3000
+> blocked by CORS` error: the content script used to hardcode
+> `https://www.protectthepod.com` for this call, making it cross-origin on
+> localhost. The same-origin change retired it.
+
+### One-time setup
+
+1. **PTP on :3000** — in swupod: `npm run dev`. (Dev now runs the **webpack**
+   bundler, not Turbopack, and with an 8 GB Node heap — see
+   `server.ts` / `package.json`. This avoids the Turbopack truncated-chunk hang
+   and cold-compile OOM that otherwise broke local testing.)
+2. **Wayfinder hub on :3001** — in `apps/web`: ensure `.env.local` has
+   `PTP_API_URL=http://localhost:3000` and a valid `PTP_SERVICE_KEY`, then start
+   it on port 3001.
+3. **Build the extension from the live-swiss worktree** —
+   `wayfinder-ptp-live-swiss/apps/extension-chrome`:
+   ```
+   nvm use 20            # the repo needs Node 20+
+   npm run build         # dev build — KEEPS localhost host_permissions
+   ```
+   Do **not** use `build:zip` for local work — `--zip` strips the `localhost:*`
+   host permissions (it's the store build).
+4. **Load + reload** — chrome://extensions → Load unpacked → select
+   `apps/extension-chrome/dist/`. **After every rebuild, click the reload ↻ on
+   the extension card.** Chrome serves the previously-loaded build until you do;
+   a stale build is the most common reason a "fixed" CORS error appears to
+   persist.
+5. **Developer Mode** — open the Companion popup, enable Developer Mode, and
+   confirm the hub URL is `http://plugin.localhost:3001` (or `localhost:3001`).
+   The popup shows a `DEV` badge when it's pointed at localhost.
+
+### Verify the loop
+
+- Same-origin metadata call (the exact request the content script makes):
+  ```
+  curl http://localhost:3000/api/plugin/v1/play/pool/<shareId>
+  # → 200 {"success":true,"data":{"setCode":…,"competitive":…,"lobbyName":…}}
+  ```
+- On the PTP play page (`http://localhost:3000/pool/<shareId>/deck/play`),
+  DevTools console: no CORS / `ERR_FAILED` on `/api/plugin/v1/play`;
+  `meta[name="wayfinder-installed"]` is present; a `wayfinder:metadata` message
+  arrives.
+- Full Swiss loop: claim a game → extension opens Karabast → lifecycle/result
+  callbacks flow hub → PTP (see the callback sections below).
+
+### Reconcile with the harness
+
+The cross-repo harness `apps/web/scripts/ptp-practice-e2e.ts` drives the
+hub → PTP path (claim/lifecycle/result) directly, using the same
+`PTP_API_URL=http://localhost:3000` + `PTP_SERVICE_KEY` from `apps/web/.env.local`.
+So the manual loop above and the harness share one config: point `PTP_API_URL`
+at local PTP and both exercise the same server-to-server contract; the extension
+adds the browser half (same-origin metadata + Karabast automation) on top.
+
 ## PTP page messages
 
 The PTP play page calls its claim endpoint first:
