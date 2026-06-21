@@ -152,8 +152,8 @@
 
 .match-card-boot {
   position: absolute;
-  top: -4px;
-  right: -4px;
+  top: 2px;
+  right: -2px;
   background: rgba(0, 0, 0, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: rgba(255, 255, 255, 0.85);
@@ -172,9 +172,31 @@
 
 @media (hover: hover) and (pointer: fine) {
   .match-card-boot:hover {
-    background: rgba(0, 0, 0, 0.9);
-    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(220, 38, 38, 0.92);
+    border-color: rgba(248, 113, 113, 0.95);
+    color: #fff;
   }
+}
+
+/* Live action: play button is icon-only + green (variant primary). The 'open'
+   lobby link is an <a> styled as that button — kill the global link
+   underline/purple-hover so it reads as a button. */
+.match-card-live-open,
+.match-card-live-open:visited,
+.match-card-live-open:hover,
+.match-card-live-open:active {
+  text-decoration: none;
+  color: #fff;
+}
+
+.match-card-live-disabled-wrap {
+  display: inline-flex;
+}
+
+/* "(opponent) is ready!" beside the play button once a private lobby exists. */
+.match-card-live-ready {
+  color: #4ade80;
+  font-weight: 700;
 }
 
 .match-card-footer {

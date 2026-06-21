@@ -51,6 +51,7 @@ export interface MatchmakingHelperCurrentGame {
 export type LiveGameActionKind =
   | 'none'
   | 'play'
+  | 'open'
   | 'join'
   | 'watch'
   | 'replay'
@@ -63,6 +64,10 @@ export interface LiveGameAction {
   label: string
   href?: string | null
   disabled?: boolean
+  /** Hover hint for a disabled play button (e.g. "Install Wayfinder…"). */
+  tooltip?: string | null
+  /** "(opponent) is ready!" shown beside the play button once a lobby exists. */
+  readyText?: string | null
 }
 
 export interface LiveConsoleRoundOrder {
@@ -334,17 +339,34 @@ export function liveGameAction({
     return { kind: 'none', label: '' }
   }
 
+  // A private lobby exists → ANY participant can open it via its URL (you don't
+  // need the Companion to JOIN). The play button becomes a green link to the
+  // lobby, with "(opponent) is ready!" beside it when the opponent opened it.
+  if ((status === 'lobby_ready' || status === 'in_progress') && lobbyUrl) {
+    const creatorId = currentGame?.game?.createdByUserId || null
+    const openedByOpponent = Boolean(creatorId && creatorId !== currentUserId)
+    return {
+      kind: 'open',
+      label: '',
+      href: lobbyUrl,
+      readyText: openedByOpponent ? `${opponentName(match, currentUserId)} is ready!` : null,
+    }
+  }
+
   if (pending) {
     return { kind: 'waiting', label: 'Launching...', disabled: true }
   }
 
   if (!liveLaunchEnabled) {
     if (status === 'complete') return replayAction(match)
-    return { kind: 'none', label: '' }
+    // The opponent is spinning up the lobby — just wait for its URL to arrive.
+    if (status === 'creating') return { kind: 'waiting', label: 'Waiting for lobby', disabled: true }
+    // No Companion and no lobby yet → a disabled play button that nudges install.
+    return { kind: 'play', label: '', disabled: true, tooltip: 'Install Wayfinder to start a lobby' }
   }
 
   if (status === 'pending') {
-    return { kind: 'play', label: 'Play' }
+    return { kind: 'play', label: '' }
   }
 
   if (status === 'creating') {
@@ -358,12 +380,7 @@ export function liveGameAction({
   }
 
   if (status === 'lobby_ready' || status === 'in_progress') {
-    if (lobbyUrl) {
-      return {
-        kind: 'join',
-        label: status === 'in_progress' ? 'Rejoin Game' : 'Join Game',
-      }
-    }
+    // The lobby-URL-present case is handled above; without a URL we still wait.
     return { kind: 'waiting', label: 'Waiting for lobby', disabled: true }
   }
 

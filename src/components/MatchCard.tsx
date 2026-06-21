@@ -138,6 +138,12 @@ export function MatchCard({
     return null
   }
 
+  const playIcon = (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M8 5v14l11-7z" />
+    </svg>
+  )
+
   const renderLiveAction = () => {
     if (liveAction.kind === 'none') return null
 
@@ -153,21 +159,45 @@ export function MatchCard({
       )
     }
 
+    // Lobby exists → a green play LINK to the lobby URL. Works for both players,
+    // with or without the Companion (you don't need it just to join a lobby).
+    if (liveAction.kind === 'open') {
+      return (
+        <a
+          className="btn btn--primary btn--sm match-card-live-button match-card-live-open"
+          href={liveAction.href || '#'}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open game lobby"
+        >
+          {playIcon}
+        </a>
+      )
+    }
+
+    // No Companion + no lobby yet → a disabled green play button. Wrap it in a
+    // titled span so the install tooltip still shows (disabled buttons swallow it).
+    if (liveAction.kind === 'play' && liveAction.disabled) {
+      return (
+        <span className="match-card-live-disabled-wrap" title={liveAction.tooltip || undefined}>
+          <Button variant="primary" size="sm" className="match-card-live-button" disabled aria-label="Play">
+            {playIcon}
+          </Button>
+        </span>
+      )
+    }
+
     if (liveAction.kind === 'play' || liveAction.kind === 'join' || liveAction.kind === 'retry') {
       return (
         <Button
           variant="primary"
-          glowColor="yellow"
           size="sm"
           className="match-card-live-button"
           disabled={practiceLaunchPending || !onPracticeLaunch}
+          aria-label={liveAction.kind === 'play' ? 'Play' : undefined}
           onClick={() => onPracticeLaunch?.(match.id)}
         >
-          {liveAction.kind === 'play' && (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          )}
+          {liveAction.kind === 'play' && playIcon}
           {liveAction.label}
         </Button>
       )
@@ -259,9 +289,11 @@ export function MatchCard({
       {showLiveRow && (
         <div className={`match-card-live match-card-live--${match.currentGame?.status || 'pending'}`}>
           <div className="match-card-live-copy">
-            {liveStatus && (
+            {liveAction.readyText ? (
+              <span className="match-card-live-status match-card-live-ready">{liveAction.readyText}</span>
+            ) : liveStatus ? (
               <span className="match-card-live-status">{liveStatus}</span>
-            )}
+            ) : null}
             {practiceLaunchMessage && (
               <span className={`match-card-live-message match-card-live-message--${practiceLaunchMessage.type}`}>
                 {practiceLaunchMessage.text}

@@ -133,7 +133,7 @@ export async function seedLiveSwissPod(
        max_players, current_players, competitive, draft_state, state_version,
        box_packs, is_public
      )
-     VALUES ($1, $2, $3, $4, $5, 'active', 4, 4, true, $6::jsonb, 1, '[]'::jsonb, false)
+     VALUES ($1, $2, $3, $4, $5, 'complete', 4, 4, true, $6::jsonb, 1, '[]'::jsonb, false)
      RETURNING id`,
     [
       podShareId,

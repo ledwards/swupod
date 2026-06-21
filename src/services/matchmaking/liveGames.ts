@@ -890,7 +890,12 @@ function validateClaimableMatch(matchRow: Record<string, unknown>, userId: strin
     ? draftState.currentRound
     : numberOrNull(draftState.currentRound)
 
-  if (matchRow.pod_status !== 'active') {
+  // A competitive pod is 'complete' once the DRAFT finishes — that is the normal
+  // pod status all through Swiss Practice (the matchmaking phase). Requiring
+  // 'active' here wrongly rejected every real Swiss launch with "Draft is not
+  // active". Only a genuinely dead pod should block; the real Swiss gates
+  // (competitive + matchmaking phase + active round) are enforced below.
+  if (matchRow.pod_status !== 'active' && matchRow.pod_status !== 'complete') {
     throw new PracticeGameClaimError(400, 'pod_not_active', 'Draft is not active')
   }
 
