@@ -1,0 +1,47 @@
+/* Watch button — Wayfinder-style accent pill. Prior art from YourStats replay rows. */
+.your-stats-watch-btn {
+  --replay-watch-accent: var(--ys-accent, #64b5f6);
+  --replay-watch-accent-bright: var(--ys-accent-bright, #90caf9);
+
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.38rem 0.75rem;
+  border-radius: 999px;
+  background: var(--replay-watch-accent);
+  color: #07101f;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: box-shadow 160ms ease, transform 160ms ease;
+  white-space: nowrap;
+}
+
+.your-stats-replay-watch-inline {
+  align-self: center;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .your-stats-watch-btn:hover {
+    color: #07101f;
+    transform: translateY(-1px);
+    box-shadow: 0 0 18px rgba(100, 181, 246, 0.5);
+  }
+}
+
+.your-stats-watch-btn:visited,
+.your-stats-watch-btn:active {
+  color: #07101f;
+}
+
+.your-stats-watch-btn:focus-visible {
+  outline: 2px solid var(--replay-watch-accent-bright);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .your-stats-watch-btn {
+    margin-left: auto;
+  }
+}

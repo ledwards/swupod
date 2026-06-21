@@ -1,14 +1,25 @@
 /* MatchmakingPanel styles */
 
 .matchmaking-panel {
+  --swiss-blue: #93c5fd;
+  --swiss-blue-bright: #bfdbfe;
+  --swiss-blue-soft: rgba(147, 197, 253, 0.12);
+  --swiss-violet: #c4b5fd;
+  --swiss-violet-soft: rgba(167, 139, 250, 0.1);
+  --swiss-premium: #f6d16b;
+
   margin-top: 2rem;
-  border: 1px solid rgba(255, 215, 0, 0.3);
+  border: 1px solid rgba(147, 197, 253, 0.28);
   border-radius: 12px;
-  background: rgba(0, 0, 0, 0.4);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.68) 0%, rgba(0, 0, 0, 0.42) 100%);
   padding: 1.5rem;
 }
 
 .matchmaking-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 
@@ -17,14 +28,111 @@
   font-weight: 700;
   font-size: 0.85rem;
   letter-spacing: 1.5px;
-  color: rgba(255, 215, 0, 0.8);
+  color: var(--swiss-premium);
   text-transform: uppercase;
+}
+
+.matchmaking-how-toggle {
+  flex-shrink: 0;
+  color: var(--swiss-blue-bright);
+}
+
+.matchmaking-how-caret {
+  display: inline-block;
+  transition: transform 0.16s ease;
+}
+
+.matchmaking-how-caret.is-open {
+  transform: rotate(90deg);
+}
+
+.matchmaking-how-panel {
+  margin-bottom: 1rem;
+  border: 1px solid rgba(147, 197, 253, 0.18);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.28);
+  padding: 0.85rem 1rem;
+}
+
+.matchmaking-how-panel .cpm-rules {
+  margin: 0;
+}
+
+.matchmaking-how-panel .cpm-rules-section {
+  margin: 0;
+}
+
+.matchmaking-how-panel h4 {
+  margin-top: 0;
+}
+
+.matchmaking-status-band {
+  display: grid;
+  gap: 0.35rem;
+  border: 1px solid rgba(147, 197, 253, 0.24);
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.12), rgba(124, 58, 237, 0.08));
+  padding: 0.7rem 0.85rem;
+  margin-bottom: 1rem;
+  font-family: 'Barlow', sans-serif;
+}
+
+.matchmaking-round-progress {
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--swiss-blue-bright);
+}
+
+.matchmaking-status-line {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.matchmaking-wayfinder-nudge {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.7fr) minmax(220px, 1fr);
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid rgba(167, 139, 250, 0.24);
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(147, 197, 253, 0.08), rgba(167, 139, 250, 0.08));
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.matchmaking-wayfinder-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-family: 'Barlow', sans-serif;
+}
+
+.matchmaking-wayfinder-copy strong {
+  color: var(--swiss-violet);
+  font-size: 0.95rem;
+}
+
+.matchmaking-wayfinder-copy span {
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
+.matchmaking-wayfinder-nudge .wf-store {
+  gap: 0.45rem;
+}
+
+.matchmaking-wayfinder-nudge .wf-store-grid {
+  max-width: 360px;
 }
 
 /* Current match callout */
 .matchmaking-my-match {
-  background: rgba(255, 215, 0, 0.08);
-  border: 1px solid rgba(255, 215, 0, 0.25);
+  background: rgba(147, 197, 253, 0.08);
+  border: 1px solid rgba(147, 197, 253, 0.26);
   border-radius: 8px;
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
@@ -34,7 +142,7 @@
 }
 
 .matchmaking-my-match strong {
-  color: rgba(255, 215, 0, 0.95);
+  color: var(--swiss-blue-bright);
 }
 
 /* Host controls */
@@ -45,8 +153,9 @@
 /* Tabs */
 .matchmaking-tabs {
   display: flex;
-  gap: 0;
+  gap: 0.4rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 0.65rem;
   margin-bottom: 1rem;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -57,24 +166,40 @@
   font-weight: 600;
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.5);
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
+  position: relative;
+  background: rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.18);
   padding: 0.5rem 1rem;
-  cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
   white-space: nowrap;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .matchmaking-tab:hover {
-    color: rgba(255, 255, 255, 0.8);
-  }
+.matchmaking-tab.btn--active {
+  color: var(--swiss-blue-bright);
+  border-color: rgba(147, 197, 253, 0.72);
+  background: rgba(147, 197, 253, 0.13);
 }
 
-.matchmaking-tab--active {
-  color: rgba(255, 215, 0, 0.9);
-  border-bottom-color: rgba(255, 215, 0, 0.8);
+.matchmaking-tab--completed {
+  color: rgba(255, 255, 255, 0.68);
+  border-color: rgba(167, 139, 250, 0.24);
+}
+
+.matchmaking-tab--completed::before {
+  content: "✓";
+  color: var(--swiss-violet);
+}
+
+.matchmaking-tab--current::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--swiss-blue);
+  box-shadow: 0 0 8px rgba(147, 197, 253, 0.55);
+}
+
+.matchmaking-tab--upcoming {
+  opacity: 0.58;
 }
 
 /* Tab content */
@@ -87,6 +212,187 @@
   color: rgba(255, 255, 255, 0.4);
   text-align: center;
   padding: 2rem 0;
+}
+
+.matchmaking-live-console {
+  display: grid;
+  gap: 1rem;
+}
+
+.matchmaking-round-section {
+  display: grid;
+  gap: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.22);
+  padding: 0.85rem;
+}
+
+.matchmaking-round-section--active {
+  border-color: rgba(147, 197, 253, 0.28);
+  background: linear-gradient(180deg, rgba(147, 197, 253, 0.055), rgba(167, 139, 250, 0.035));
+}
+
+.matchmaking-round-section--history {
+  border-color: rgba(147, 197, 253, 0.16);
+  background: rgba(147, 197, 253, 0.035);
+}
+
+.matchmaking-round-section--focused {
+  border-color: rgba(147, 197, 253, 0.48);
+  box-shadow: 0 0 0 1px rgba(147, 197, 253, 0.16);
+}
+
+.matchmaking-round-section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.matchmaking-round-section-title {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.matchmaking-round-section-title h4 {
+  margin: 0;
+  font-family: 'Barlow', sans-serif;
+  font-size: 1.02rem;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.matchmaking-round-section-kicker {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(147, 197, 253, 0.8);
+}
+
+.matchmaking-round-section--history .matchmaking-round-section-kicker {
+  color: rgba(147, 197, 253, 0.78);
+}
+
+.matchmaking-round-section-progress {
+  max-width: 260px;
+  text-align: right;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.matchmaking-round-history {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 0.15rem;
+}
+
+.matchmaking-round-history summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.15rem;
+  cursor: pointer;
+  list-style: none;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(147, 197, 253, 0.84);
+}
+
+.matchmaking-round-history summary::-webkit-details-marker {
+  display: none;
+}
+
+.matchmaking-round-history summary::before {
+  content: "▸";
+  flex: 0 0 auto;
+  color: rgba(147, 197, 253, 0.78);
+  transition: transform 0.16s ease;
+}
+
+.matchmaking-round-history[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.matchmaking-round-history summary span:first-of-type {
+  margin-right: auto;
+}
+
+.matchmaking-round-history summary span:last-of-type {
+  border: 1px solid rgba(147, 197, 253, 0.22);
+  border-radius: 999px;
+  padding: 0.05rem 0.38rem;
+  font-size: 0.68rem;
+  color: rgba(219, 234, 254, 0.86);
+}
+
+.matchmaking-round-history-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.matchmaking-round-match-groups {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.matchmaking-round-match-group {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.matchmaking-round-match-group--completed {
+  border-top: 1px solid rgba(255, 255, 255, 0.11);
+  padding-top: 0.8rem;
+}
+
+.matchmaking-round-match-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-family: 'Barlow', sans-serif;
+}
+
+.matchmaking-round-match-group-header h5 {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.matchmaking-round-match-group-header span {
+  flex-shrink: 0;
+  border: 1px solid rgba(147, 197, 253, 0.22);
+  border-radius: 999px;
+  background: rgba(147, 197, 253, 0.07);
+  padding: 0.08rem 0.45rem;
+  color: rgba(219, 234, 254, 0.86);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.matchmaking-round-match-group--live .matchmaking-round-match-group-header h5 {
+  color: rgba(125, 211, 252, 0.9);
+}
+
+.matchmaking-round-match-group--completed .matchmaking-round-match-group-header h5 {
+  color: rgba(196, 181, 253, 0.86);
+}
+
+.matchmaking-matches-grid--completed {
+  opacity: 0.88;
 }
 
 /* Matches grid */
@@ -107,17 +413,23 @@
 }
 
 .matchmaking-standing-row {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto auto;
+  align-items: start;
   gap: 0.75rem;
   padding: 0.6rem 0.75rem;
   border-radius: 6px;
   font-family: 'Barlow', sans-serif;
+  border: 1px solid transparent;
 }
 
 .matchmaking-standing-row--mine {
-  background: rgba(255, 215, 0, 0.08);
-  border: 1px solid rgba(255, 215, 0, 0.2);
+  background: rgba(147, 197, 253, 0.08);
+  border: 1px solid rgba(147, 197, 253, 0.2);
+}
+
+.matchmaking-standing-row--dropped {
+  opacity: 0.68;
 }
 
 .matchmaking-standing-rank {
@@ -127,18 +439,221 @@
 }
 
 .matchmaking-standing-name {
-  flex: 1;
+  display: grid;
+  gap: 0.18rem;
   font-weight: 600;
   color: white;
   overflow: hidden;
+  min-width: 0;
+}
+
+.matchmaking-standing-name-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.matchmaking-standing-identity {
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.matchmaking-standing-links {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.matchmaking-standing-links a {
+  border: 1px solid rgba(147, 197, 253, 0.22);
+  border-radius: 999px;
+  padding: 0.08rem 0.42rem;
+  background: rgba(147, 197, 253, 0.08);
+  color: #bfdbfe;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.matchmaking-standing-links a:focus-visible {
+  outline: 2px solid #bfdbfe;
+  outline-offset: 2px;
+}
+
+.matchmaking-standing-dropped {
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 0.06rem 0.38rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.62);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .matchmaking-standing-record {
   font-weight: 600;
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.7);
+}
+
+.matchmaking-standing-omw {
+  min-width: 78px;
+  text-align: right;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--swiss-violet);
+}
+
+.matchmaking-standing-omw span {
+  display: block;
+  margin-top: 1px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.matchmaking-event-summary {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 1rem;
+}
+
+.matchmaking-event-summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-family: 'Barlow', sans-serif;
+}
+
+.matchmaking-event-summary-kicker {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--swiss-blue-bright);
+}
+
+.matchmaking-event-summary-note {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.54);
+}
+
+.matchmaking-event-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.matchmaking-event-card {
+  display: grid;
+  gap: 0.65rem;
+  border: 1px solid rgba(147, 197, 253, 0.16);
+  border-radius: 8px;
+  background: rgba(147, 197, 253, 0.04);
+  padding: 0.75rem;
+  min-width: 0;
+}
+
+.matchmaking-event-card-title {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(147, 197, 253, 0.86);
+}
+
+.matchmaking-event-empty,
+.matchmaking-pool-context-note {
+  margin: 0;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.matchmaking-event-meta-list {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.matchmaking-event-meta-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.12rem 0.55rem;
+  font-family: 'Barlow', sans-serif;
+}
+
+.matchmaking-event-meta-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.matchmaking-event-meta-share {
+  justify-self: end;
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: var(--swiss-violet);
+}
+
+.matchmaking-event-meta-record,
+.matchmaking-event-meta-rate {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.matchmaking-event-meta-record span {
+  margin-left: 0.35rem;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.matchmaking-event-meta-rate {
+  justify-self: end;
+}
+
+.matchmaking-pool-context {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.matchmaking-pool-context div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.65rem;
+  font-family: 'Barlow', sans-serif;
+}
+
+.matchmaking-pool-context dt {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.matchmaking-pool-context dd {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-align: right;
 }
 
 /* Bye control */
@@ -180,7 +695,36 @@
     margin-top: 1.5rem;
   }
 
+  .matchmaking-panel-header {
+    align-items: flex-start;
+  }
+
   .matchmaking-matches-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .matchmaking-round-match-group-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .matchmaking-round-section {
+    padding: 0.7rem;
+  }
+
+  .matchmaking-round-section-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .matchmaking-round-section-progress {
+    max-width: none;
+    text-align: left;
+  }
+
+  .matchmaking-wayfinder-nudge {
     grid-template-columns: 1fr;
   }
 
@@ -188,5 +732,26 @@
     flex-direction: column;
     align-items: stretch;
     gap: 0.5rem;
+  }
+
+  .matchmaking-standing-row {
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+  }
+
+  .matchmaking-standing-omw {
+    grid-column: 2 / -1;
+    justify-self: start;
+    text-align: left;
+    min-width: 0;
+  }
+
+  .matchmaking-event-summary-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .matchmaking-event-summary-grid {
+    grid-template-columns: 1fr;
   }
 }

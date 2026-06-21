@@ -38,6 +38,12 @@ describe('useWayfinderDetection contract', () => {
     assert.match(SRC, /forced === '0'/)
   })
 
+  it('returns a settled flag so install nudges do not flash before detection resolves', () => {
+    assert.match(SRC, /settled:\s*boolean/)
+    assert.match(SRC, /setSettled\(true\)/)
+    assert.match(SRC, /return \{ detected, iconUrl, settled, pluginLoggedIn \}/)
+  })
+
   // Sign-in state: the marker carries data-logged-in and the extension
   // postMessages wayfinder:auth-state. These tell "installed but signed out"
   // apart from "installed and ready" so callers can nudge toolbar sign-in.

@@ -1,5 +1,13 @@
 // @ts-nocheck
 import Button from './Button'
+import ReplayWatchLink from './ReplayWatchLink'
+import {
+  liveGameAction,
+  liveGameStatusLabel,
+  type PracticeLaunchMessage,
+  type WayfinderMatchState,
+} from './MatchmakingPanel.helpers'
+import { formatRecord, type PlayerRecord } from '../services/matchmaking/standings'
 import './MatchCard.css'
 
 interface MatchPlayer {
@@ -22,6 +30,23 @@ interface MatchData {
   matchWinner: string | null
   podOwnerOverride: boolean
   wayfinderMatchId?: string | null
+  games?: unknown[]
+  currentGame?: {
+    status?: string | null
+    gameNumber?: number | null
+    lobbyUrl?: string | null
+    spectateUrl?: string | null
+    replayUrl?: string | null
+    elapsedSeconds?: number | null
+    stale?: boolean | null
+    retryable?: boolean | null
+    game?: {
+      createdByUserId?: string | null
+      lobbyUrl?: string | null
+      spectateUrl?: string | null
+      replayUrl?: string | null
+    } | null
+  } | null
 }
 
 interface MatchCardProps {
@@ -31,6 +56,12 @@ interface MatchCardProps {
   onReport: (matchId: string) => void
   onOverride: (matchId: string) => void
   onBoot: (userId: string) => void
+  playerRecords?: Map<string, PlayerRecord>
+  wayfinderState?: WayfinderMatchState
+  liveLaunchEnabled?: boolean
+  onPracticeLaunch?: (matchId: string) => void | Promise<void>
+  practiceLaunchPending?: boolean
+  practiceLaunchMessage?: PracticeLaunchMessage | null
   readOnly?: boolean
 }
 
@@ -48,7 +79,21 @@ function GameDot({ result, forPlayer }: { result: string | null; forPlayer: 'pla
   return <span className="game-dot game-dot--loss" />
 }
 
-export function MatchCard({ match, currentUserId, isHost, onReport, onOverride, onBoot, readOnly = false }: MatchCardProps) {
+export function MatchCard({
+  match,
+  currentUserId,
+  isHost,
+  onReport,
+  onOverride,
+  onBoot,
+  playerRecords,
+  wayfinderState = 'manual',
+  liveLaunchEnabled = false,
+  onPracticeLaunch,
+  practiceLaunchPending = false,
+  practiceLaunchMessage = null,
+  readOnly = false,
+}: MatchCardProps) {
   const isMyMatch = match.player1?.id === currentUserId || match.player2?.id === currentUserId
   const status = getMatchStatus(match)
   const iAmPlayer1 = match.player1?.id === currentUserId
@@ -57,6 +102,57 @@ export function MatchCard({ match, currentUserId, isHost, onReport, onOverride, 
 
   const canReport = !readOnly && isMyMatch && !match.finalConfirmed && !match.isBye && !iHaveSubmitted
   const canOverride = !readOnly && isHost && !match.isBye
+  const recordFor = (player: MatchPlayer | null) => player?.id ? formatRecord(playerRecords?.get(player.id)) : '0-0'
+  const liveStatus = liveGameStatusLabel(match.currentGame)
+  const liveAction = liveGameAction({
+    match,
+    currentUserId,
+    liveLaunchEnabled: Boolean(liveLaunchEnabled && onPracticeLaunch),
+    pending: practiceLaunchPending,
+  })
+  const showLiveRow = Boolean(liveStatus || liveAction.kind !== 'none' || practiceLaunchMessage)
+
+  const renderLiveAction = () => {
+    if (liveAction.kind === 'none') return null
+
+    if (liveAction.kind === 'watch' || liveAction.kind === 'replay') {
+      return (
+        <ReplayWatchLink
+          href={liveAction.href || undefined}
+          className="match-card-live-watch"
+          ariaLabel={`${liveAction.label} ${match.player1?.username || 'player 1'} vs ${match.player2?.username || 'opponent'}`}
+        >
+          {liveAction.label}
+        </ReplayWatchLink>
+      )
+    }
+
+    if (liveAction.kind === 'play' || liveAction.kind === 'join' || liveAction.kind === 'retry') {
+      return (
+        <Button
+          variant="primary"
+          glowColor="yellow"
+          size="sm"
+          className="match-card-live-button"
+          disabled={practiceLaunchPending || !onPracticeLaunch}
+          onClick={() => onPracticeLaunch?.(match.id)}
+        >
+          {liveAction.label}
+        </Button>
+      )
+    }
+
+    return (
+      <Button
+        variant="secondary"
+        size="sm"
+        className="match-card-live-button"
+        disabled
+      >
+        {liveAction.label}
+      </Button>
+    )
+  }
 
   return (
     <div
@@ -67,12 +163,17 @@ export function MatchCard({ match, currentUserId, isHost, onReport, onOverride, 
       data-final-confirmed={match.finalConfirmed ? 'true' : 'false'}
       data-match-winner={match.matchWinner || ''}
       data-is-bye={match.isBye ? 'true' : 'false'}
+      data-live-game-status={match.currentGame?.status || ''}
+      data-live-game-action={liveAction.kind}
       data-player1-id={match.player1?.id || ''}
       data-player2-id={match.player2?.id || ''}
     >
       <div className="match-card-players">
         <div className={`match-card-player${match.matchWinner === 'player1' ? ' match-card-player--winner' : ''}`}>
-          <span className="match-card-player-name">{match.player1?.username || '???'}</span>
+          <span className="match-card-player-heading">
+            <span className="match-card-player-name">{match.player1?.username || '???'}</span>
+            <span className="match-card-player-record">{recordFor(match.player1)}</span>
+          </span>
           {!match.isBye && (
             <div className="match-card-dots">
               <GameDot result={match.game1Result} forPlayer="player1" />
@@ -96,7 +197,10 @@ export function MatchCard({ match, currentUserId, isHost, onReport, onOverride, 
         <div className={`match-card-player${match.matchWinner === 'player2' ? ' match-card-player--winner' : ''}`}>
           {!match.isBye ? (
             <>
-              <span className="match-card-player-name">{match.player2?.username || '???'}</span>
+              <span className="match-card-player-heading">
+                <span className="match-card-player-name">{match.player2?.username || '???'}</span>
+                <span className="match-card-player-record">{recordFor(match.player2)}</span>
+              </span>
               <div className="match-card-dots">
                 <GameDot result={match.game1Result} forPlayer="player2" />
                 <GameDot result={match.game2Result} forPlayer="player2" />
@@ -118,11 +222,35 @@ export function MatchCard({ match, currentUserId, isHost, onReport, onOverride, 
         </div>
       </div>
 
+      {showLiveRow && (
+        <div className={`match-card-live match-card-live--${match.currentGame?.status || 'pending'}`}>
+          <div className="match-card-live-copy">
+            {liveStatus && (
+              <span className="match-card-live-status">{liveStatus}</span>
+            )}
+            {practiceLaunchMessage && (
+              <span className={`match-card-live-message match-card-live-message--${practiceLaunchMessage.type}`}>
+                {practiceLaunchMessage.text}
+              </span>
+            )}
+          </div>
+          <div className="match-card-live-actions">
+            {renderLiveAction()}
+          </div>
+        </div>
+      )}
+
       <div className="match-card-footer">
         <span className={`match-card-status match-card-status--${status.toLowerCase().replace(/\s+/g, '-')}`}>
           {status}
           {match.podOwnerOverride && ' (Override)'}
         </span>
+        {wayfinderState === 'auto-recording' && (
+          <span className="match-card-wayfinder-state">Auto-recording</span>
+        )}
+        {wayfinderState === 'recorded' && (
+          <span className="match-card-wayfinder-state match-card-wayfinder-state--recorded">Recorded</span>
+        )}
         {match.wayfinderMatchId && (
           <a
             href={`${process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin.wayfinder.news'}/matches/${match.wayfinderMatchId}`}
@@ -136,8 +264,12 @@ export function MatchCard({ match, currentUserId, isHost, onReport, onOverride, 
         <div className="match-card-actions">
           {canReport && (
             <span data-testid={`match-report-button-${match.id}`}>
-              <Button variant="primary" size="sm" onClick={() => onReport(match.id)}>
-                Report Result
+              <Button
+                variant={wayfinderState === 'auto-recording' ? 'secondary' : 'primary'}
+                size="sm"
+                onClick={() => onReport(match.id)}
+              >
+                {wayfinderState === 'auto-recording' ? 'Report Manually' : 'Report Result'}
               </Button>
             </span>
           )}
