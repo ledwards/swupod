@@ -610,3 +610,242 @@
     border-radius: 6px;
   }
 }
+
+/* Inter-pack "Review Your Cards" peek (competitive) — maximize space + group-by toggles */
+.review-period {
+  display: flex;
+  flex-direction: column;
+  min-height: 72vh;
+  padding: 10px 16px 16px;
+  box-sizing: border-box;
+}
+.review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.review-header-text {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.review-title {
+  margin: 0;
+  color: rgba(255, 215, 0, 0.95);
+  font-size: 1.1rem;
+}
+.review-subtitle {
+  opacity: 0.7;
+  font-size: 0.85rem;
+}
+.review-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.review-groupby {
+  display: flex;
+  gap: 8px;
+}
+
+/* Graphical group-by buttons (cost badge, mirrors DeckBuilder SortControls) */
+.review-sort-cost {
+  position: relative;
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+.review-sort-cost img {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+.review-sort-cost-num {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-weight: 700;
+  font-size: 11px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Pack mode — full-card rows, one per pack (mirrors the opened-pool view) */
+.review-packs {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.review-pack-title {
+  margin: 0 0 8px;
+  color: rgba(255, 215, 0, 0.85);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.review-pack-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.review-pack-card {
+  flex-shrink: 0;
+  cursor: zoom-in;
+  transition: transform 0.1s ease;
+}
+.review-pack-img {
+  display: block;
+  width: 132px;
+  border-radius: 6px;
+}
+.review-packs[data-density="small"] .review-pack-img { width: 96px; }
+.review-packs[data-density="medium"] .review-pack-img { width: 132px; }
+.review-packs[data-density="large"] .review-pack-img { width: 184px; }
+@media (hover: hover) and (pointer: fine) {
+  .review-pack-card:hover { transform: translateY(-2px); }
+}
+@media (max-width: 768px) {
+  .review-pack-img,
+  .review-packs[data-density="small"] .review-pack-img,
+  .review-packs[data-density="medium"] .review-pack-img { width: 84px; }
+  .review-packs[data-density="large"] .review-pack-img { width: 120px; }
+}
+
+/* Grouped columns — mirrors the DeckBuilder arena cost/aspect columns */
+.review-columns {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding-bottom: 8px;
+}
+.review-column {
+  flex: 1 1 0;
+  min-width: 96px;
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  padding: 0.5rem;
+}
+.review-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  font-weight: 600;
+  color: #fff;
+  padding: 0.25rem;
+  margin-bottom: 0.5rem;
+  background: rgb(30, 30, 30);
+  border-radius: 4px;
+}
+.review-col-title { font-size: 0.85rem; }
+.review-col-icons { display: inline-flex; align-items: center; gap: 2px; }
+.review-col-count { font-size: 0.75rem; font-weight: 400; color: rgba(255, 255, 255, 0.6); }
+
+/* Vertical card stack within a column */
+.review-stack { position: relative; }
+.review-stack-inner { display: flex; flex-direction: column; }
+.review-stacked-card {
+  position: relative;
+  width: 100%;
+  cursor: zoom-in;
+}
+.review-card-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2.5 / 3.5;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* small: overlapping fan — only the top sliver of each card shows */
+.review-stacked-card--small { margin-bottom: calc(-1 * (100% * 1.4) * 0.875); }
+.review-stacked-card--small.is-last { margin-bottom: 0; }
+
+/* medium: crop each card to its top ~33%, small gap between */
+.review-stacked-card--medium {
+  margin-bottom: 4px;
+  aspect-ratio: 2.5 / 1.15;
+  overflow: hidden;
+  border-radius: 0 0 8px 8px;
+}
+.review-stacked-card--medium .review-card-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.review-stacked-card--medium.is-last { margin-bottom: 0; }
+
+/* large: full cards, gap between */
+.review-stacked-card--large { margin-bottom: 6px; }
+.review-stacked-card--large.is-last { margin-bottom: 0; }
+
+@media (hover: hover) and (pointer: fine) {
+  .review-stacked-card:hover { z-index: 5; }
+}
+
+/* Card density toggle (small/medium/large) — reused from DeckBuilder */
+.card-density-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+}
+.card-density-toggle-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 22px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.55);
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .card-density-toggle-button:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+.card-density-toggle-button.active {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+.card-density-toggle-preview {
+  display: block;
+  width: 14px;
+  background: currentColor;
+  border-radius: 1px;
+}
+.card-density-toggle-button--small .card-density-toggle-preview { height: 3px; }
+.card-density-toggle-button--medium .card-density-toggle-preview { height: 7px; }
+.card-density-toggle-button--large .card-density-toggle-preview { height: 14px; }
+
+@media (max-width: 768px) {
+  .review-period { min-height: 0; padding: 8px; }
+  .review-column { min-width: 64px; padding: 0.3rem; }
+  .review-col-header { min-height: 30px; }
+}

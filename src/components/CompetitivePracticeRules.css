@@ -84,6 +84,26 @@
   border: 1px solid rgba(255, 215, 0, 0.35);
   border-radius: 8px;
   background: rgba(15, 15, 20, 0.6);
-  padding: 16px 18px;
+  padding: 6px 10px;
   margin-bottom: 16px;
+}
+
+/* Collapsed-by-default accordion header inside the gold competitive panel */
+.cpm-rules-collapsible {
+  margin-bottom: 0;
+}
+
+.cpm-rules-collapsible .collapsible-section__title {
+  color: #FFD95A;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.cpm-rules-collapsible .collapsible-section__toggle {
+  color: #FFD95A;
+}
+
+.cpm-rules-collapsible .collapsible-section__content {
+  padding-top: 12px;
 }

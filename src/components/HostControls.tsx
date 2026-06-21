@@ -14,6 +14,13 @@ const CopyIcon = () => (
   </svg>
 )
 
+const LockIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+  </svg>
+)
+
 const DiceIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -56,6 +63,7 @@ interface Draft {
   pickTimeoutSeconds?: number
   timerSeconds?: number
   isPublic?: boolean
+  competitive?: boolean
   [key: string]: unknown
 }
 
@@ -120,6 +128,9 @@ function HostControls({
   const canAddBot = playerCount < (draft?.maxPlayers || 8)
   const isRoundTimerEnabled = draft?.timed === true
   const isLastPlayerTimerEnabled = draft?.timerEnabled !== false
+  // Competitive Practice Mode governs all timers by Appendix C rules — the host
+  // can't change them, so the timer settings render as static, locked constants.
+  const isCompetitive = draft?.competitive === true
 
   const handleCancelDraft = async () => {
     if (!shareId) return
@@ -215,47 +226,64 @@ function HostControls({
       </div>
 
       <div className="draft-settings">
-        <div className="settings-row">
-          <label className="setting-checkbox">
-            <input
-              type="checkbox"
-              checked={isRoundTimerEnabled}
-              onChange={handleRoundTimerChange}
-            />
-            <span>Round Timer</span>
-          </label>
-          <input
-            type="number"
-            className="setting-timer-input"
-            value={pickTimeoutSeconds}
-            onChange={handleRoundTimerSecondsChange}
-            disabled={!isRoundTimerEnabled}
-            min={5}
-            max={600}
-          />
-          <span className="setting-timer-unit">sec</span>
-        </div>
+        {isCompetitive ? (
+          <div className="settings-row competitive-timers" aria-disabled="true">
+            <div className="competitive-timer-chip" title="Set by Competitive Practice Mode — can't be changed">
+              <LockIcon />
+              <span className="competitive-timer-name">Round Timer</span>
+              <span className="competitive-timer-value">Competitive Rules</span>
+            </div>
+            <div className="competitive-timer-chip" title="Set by Competitive Practice Mode — can't be changed">
+              <LockIcon />
+              <span className="competitive-timer-name">Pick Timer</span>
+              <span className="competitive-timer-value">disabled</span>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="settings-row">
+              <label className="setting-checkbox">
+                <input
+                  type="checkbox"
+                  checked={isRoundTimerEnabled}
+                  onChange={handleRoundTimerChange}
+                />
+                <span>Round Timer</span>
+              </label>
+              <input
+                type="number"
+                className="setting-timer-input"
+                value={pickTimeoutSeconds}
+                onChange={handleRoundTimerSecondsChange}
+                disabled={!isRoundTimerEnabled}
+                min={5}
+                max={600}
+              />
+              <span className="setting-timer-unit">sec</span>
+            </div>
 
-        <div className="settings-row">
-          <label className="setting-checkbox">
-            <input
-              type="checkbox"
-              checked={isLastPlayerTimerEnabled}
-              onChange={handleLastPlayerTimerChange}
-            />
-            <span>Last Player Timer</span>
-          </label>
-          <input
-            type="number"
-            className="setting-timer-input"
-            value={lastPlayerTimerSeconds}
-            onChange={handleLastPlayerTimerSecondsChange}
-            disabled={!isLastPlayerTimerEnabled}
-            min={5}
-            max={600}
-          />
-          <span className="setting-timer-unit">sec</span>
-        </div>
+            <div className="settings-row">
+              <label className="setting-checkbox">
+                <input
+                  type="checkbox"
+                  checked={isLastPlayerTimerEnabled}
+                  onChange={handleLastPlayerTimerChange}
+                />
+                <span>Last Player Timer</span>
+              </label>
+              <input
+                type="number"
+                className="setting-timer-input"
+                value={lastPlayerTimerSeconds}
+                onChange={handleLastPlayerTimerSecondsChange}
+                disabled={!isLastPlayerTimerEnabled}
+                min={5}
+                max={600}
+              />
+              <span className="setting-timer-unit">sec</span>
+            </div>
+          </>
+        )}
 
         <div className="settings-row">
           <span className="setting-item">

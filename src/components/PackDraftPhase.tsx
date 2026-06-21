@@ -10,6 +10,10 @@ import CountdownTimer from './CountdownTimer'
 import Button from './Button'
 import { CardPreview } from './DeckBuilder/CardPreview'
 import useCardPreview from '../hooks/useCardPreview'
+import { groupDraftedCards, type DraftGroupMode } from '../utils/draftedCardGrouping'
+import AspectIcon from './AspectIcon'
+import CostIcon from './CostIcon'
+import CardDensityToggle, { type CardDensity } from './DeckBuilder/CardDensityToggle'
 import { getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
 import { getSetConfig } from '../utils/setConfigs'
 import './PackDraftPhase.css'
@@ -108,6 +112,8 @@ function PackDraftPhase({
 }: PackDraftPhaseProps) {
 
   const [showReviewModal, setShowReviewModal] = useState(false)
+  const [reviewGroupBy, setReviewGroupBy] = useState<DraftGroupMode>('pack')
+  const [reviewDensity, setReviewDensity] = useState<CardDensity>('medium')
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [hoveredLeaderPreview, setHoveredLeaderPreview] = useState<HoveredLeaderPreview | null>(null)
   const {
@@ -392,45 +398,119 @@ function PackDraftPhase({
     : null
 
   if (isReviewPeriod) {
+    const reviewGroups = groupDraftedCards(draftedCards, reviewGroupBy, draft?.packSize || 14)
     return (
       <div className="pack-draft-phase">
-        <div className="review-period" style={{ textAlign: 'center', padding: '32px' }}>
-          <h3 style={{ color: 'rgba(255, 215, 0, 0.9)', marginBottom: '8px' }}>Review Your Cards</h3>
-          <p style={{ marginBottom: '16px', opacity: 0.8 }}>Next pack starts in:</p>
-          <CountdownTimer
-            totalSeconds={30}
-            startedAt={reviewStartedAt}
-            active={true}
-            label=""
-            warningThreshold={10}
-          />
-          <div
-            className="review-cards"
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '8px',
-              justifyContent: 'center',
-              marginTop: '24px',
-            }}
-          >
-            {draftedCards.map(card => (
-              <div
-                key={card.instanceId || card.id}
-                style={{ flexShrink: 0, cursor: 'zoom-in' }}
-                onMouseEnter={(e) => reviewHandleMouseEnter(card, e)}
-                onMouseLeave={reviewHandleMouseLeave}
-                onTouchStart={() => reviewHandleTouchStart(card)}
-                onTouchEnd={reviewHandleTouchEnd}
-              >
-                <img
-                  src={card.imageUrl}
-                  alt={card.name || card.title || 'Card'}
-                  style={{ width: '80px', borderRadius: '4px', display: 'block' }}
-                />
+        <div className="review-period">
+          <div className="review-header">
+            <div className="review-header-text">
+              <h3 className="review-title">Review Your Cards</h3>
+              <span className="review-subtitle">Next pack in</span>
+              <CountdownTimer
+                totalSeconds={30}
+                startedAt={reviewStartedAt}
+                active={true}
+                label=""
+                warningThreshold={10}
+              />
+            </div>
+            <div className="review-controls">
+              <div className="review-groupby" role="group" aria-label="Group cards by">
+                <Button
+                  variant="toggle" glowColor="blue" active={reviewGroupBy === 'pack'}
+                  onClick={() => setReviewGroupBy('pack')} title="Pack Order"
+                  style={{ opacity: reviewGroupBy === 'pack' ? 1 : 0.55, width: '34px', height: '30px', padding: '4px' }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <rect x="3" y="4" width="18" height="4" rx="1.5" />
+                    <rect x="3" y="10" width="18" height="4" rx="1.5" />
+                    <rect x="3" y="16" width="18" height="4" rx="1.5" />
+                  </svg>
+                </Button>
+                <Button
+                  variant="toggle" glowColor="blue" active={reviewGroupBy === 'cost'}
+                  onClick={() => setReviewGroupBy('cost')} title="Cost"
+                  style={{ opacity: reviewGroupBy === 'cost' ? 1 : 0.55, width: '34px', height: '30px', padding: '4px' }}
+                >
+                  <span className="review-sort-cost">
+                    <img src="/icons/cost.png" alt="Cost" />
+                    <span className="review-sort-cost-num">3</span>
+                  </span>
+                </Button>
+                <Button
+                  variant="toggle" glowColor="blue" active={reviewGroupBy === 'aspect'}
+                  onClick={() => setReviewGroupBy('aspect')} title="Aspect"
+                  style={{ opacity: reviewGroupBy === 'aspect' ? 1 : 0.55, width: '34px', height: '30px', padding: '4px' }}
+                >
+                  <img src="/icons/heroism.png" alt="Aspect" style={{ width: '20px', height: '20px', display: 'block' }} />
+                </Button>
               </div>
-            ))}
+              <CardDensityToggle value={reviewDensity} onChange={setReviewDensity} />
+            </div>
           </div>
+          {reviewGroupBy === 'pack' ? (
+            <div className="review-packs" data-density={reviewDensity}>
+              {reviewGroups.map(group => (
+                <section key={group.key} className="review-pack">
+                  <h4 className="review-pack-title">{group.label} <span className="review-col-count">({group.cards.length})</span></h4>
+                  <div className="review-pack-grid">
+                    {group.cards.map(card => (
+                      <div
+                        key={card.instanceId || card.id}
+                        className="review-pack-card"
+                        onMouseEnter={(e) => reviewHandleMouseEnter(card, e)}
+                        onMouseLeave={reviewHandleMouseLeave}
+                        onTouchStart={() => reviewHandleTouchStart(card)}
+                        onTouchEnd={reviewHandleTouchEnd}
+                      >
+                        <img src={card.imageUrl} alt={card.name || card.title || 'Card'} className="review-pack-img" />
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          ) : (
+            <div className="review-columns">
+              {reviewGroups.map(group => {
+                const aspects = group.cards[0]?.aspects || []
+                return (
+                  <section key={group.key} className="review-column">
+                    <div className="review-col-header">
+                      {reviewGroupBy === 'cost' ? (
+                        <CostIcon cost={group.label.replace(/^Cost\s*/, '')} size={26} />
+                      ) : (
+                        aspects.length === 0
+                          ? <span className="review-col-title">Neutral</span>
+                          : <span className="review-col-icons">{aspects.map((a, i) => <AspectIcon key={i} aspect={a} size="md" />)}</span>
+                      )}
+                      <span className="review-col-count">({group.cards.length})</span>
+                    </div>
+                    <div className="review-stack">
+                      <div className="review-stack-inner">
+                        {group.cards.map((card, i) => (
+                          <div
+                            key={card.instanceId || card.id}
+                            className={`review-stacked-card review-stacked-card--${reviewDensity}${i === group.cards.length - 1 ? ' is-last' : ''}`}
+                            onMouseEnter={(e) => reviewHandleMouseEnter(card, e)}
+                            onMouseLeave={reviewHandleMouseLeave}
+                            onTouchStart={() => reviewHandleTouchStart(card)}
+                            onTouchEnd={reviewHandleTouchEnd}
+                          >
+                            <img
+                              src={card.imageUrl}
+                              alt={card.name || card.title || 'Card'}
+                              className="review-card-img"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </section>
+                )
+              })}
+            </div>
+          )}
         </div>
         {reviewHoveredCard && (
           <CardPreview
