@@ -84,21 +84,23 @@ function GameRow({ label, gameKey, player1Name, player2Name, value, onChange, di
   player1Name: string
   player2Name: string
   value: string | null
-  onChange: (v: string) => void
+  onChange: (v: string | null) => void
   disabled?: boolean
   hint?: string | null
 }) {
+  // Click an option to select it; click it again to unset (back to no result).
+  const pick = (option: string) => onChange(value === option ? null : option)
   return (
     <div className="result-report-row" data-testid={`game-row-${gameKey}`} data-game-key={gameKey}>
       <span className="result-report-label">{label}{hint && <span className="result-report-hint">{hint}</span>}</span>
       <div className="result-report-buttons">
-        <Button variant="toggle" glowColor="blue" active={value === 'player1'} disabled={disabled} onClick={() => onChange('player1')} data-testid={`game-${gameKey}-player1`}>
+        <Button variant="toggle" glowColor="blue" active={value === 'player1'} disabled={disabled} onClick={() => pick('player1')} data-testid={`game-${gameKey}-player1`}>
           {player1Name}
         </Button>
-        <Button variant="toggle" glowColor="blue" active={value === 'draw'} disabled={disabled} onClick={() => onChange('draw')} data-testid={`game-${gameKey}-draw`}>
+        <Button variant="toggle" glowColor="blue" active={value === 'draw'} disabled={disabled} onClick={() => pick('draw')} data-testid={`game-${gameKey}-draw`}>
           Draw
         </Button>
-        <Button variant="toggle" glowColor="blue" active={value === 'player2'} disabled={disabled} onClick={() => onChange('player2')} data-testid={`game-${gameKey}-player2`}>
+        <Button variant="toggle" glowColor="blue" active={value === 'player2'} disabled={disabled} onClick={() => pick('player2')} data-testid={`game-${gameKey}-player2`}>
           {player2Name}
         </Button>
       </div>
