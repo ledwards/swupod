@@ -1228,31 +1228,18 @@ export default function PlayPage({ params }: PageProps) {
           />
           {deckArchetypeName && <p className="play-deck-name">{deckArchetypeName}</p>}
           <p className="play-pool-type">{poolTypeLabel}</p>
-          <div className="play-header-actions">
-            <WldBadge
-              wins={pool.wins ?? 0}
-              losses={pool.losses ?? 0}
-              draws={pool.draws ?? 0}
-              matchIds={pool.wayfinderMatchIds ?? []}
-            />
-            {shareId && (
-              <Button
-                variant="secondary"
-                size="sm"
-                className="play-stats-button"
-                onClick={() => router.push(`/pool/${shareId}/deck/stats?tab=gamelog`)}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 19V5"></path>
-                  <path d="M4 19h16"></path>
-                  <rect x="7" y="11" width="3" height="5" rx="1"></rect>
-                  <rect x="12" y="8" width="3" height="8" rx="1"></rect>
-                  <rect x="17" y="6" width="3" height="10" rx="1"></rect>
-                </svg>
-                <span>Stats</span>
-              </Button>
-            )}
-          </div>
+          {/* The record badge ("No games yet" / W-L) is hidden while Swiss
+              Practice is underway — your Swiss record lives in the panel above. */}
+          {!(isCompetitive && matchmakingStatus !== 'complete') && (
+            <div className="play-header-actions">
+              <WldBadge
+                wins={pool.wins ?? 0}
+                losses={pool.losses ?? 0}
+                draws={pool.draws ?? 0}
+                matchIds={pool.wayfinderMatchIds ?? []}
+              />
+            </div>
+          )}
         </div>
 
         {/* Login banner for logged-out users viewing anonymous (unowned) pools */}
@@ -1424,32 +1411,45 @@ export default function PlayPage({ params }: PageProps) {
         {/* Practice Hand / Post to Discord / Draft actions — below the
             "Deck Complete" box, not above it. */}
         <div className="practice-hand-button-container">
-          <button className="play-action-button" onClick={drawPracticeHand}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <Button variant="secondary" size="sm" onClick={drawPracticeHand}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <g transform="rotate(-15 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
               <g transform="rotate(0 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
               <g transform="rotate(15 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
             </svg>
             Practice Hand
-          </button>
+          </Button>
           {!isInfinitePool && isOwner && user && (
             <div className="post-to-discord-wrapper">
-              <button
-                className={`play-action-button${postedToDiscord ? ' posted' : ''}`}
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={postToDiscord}
                 disabled={postingToDiscord || postedToDiscord}
               >
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                 </svg>
                 {postedToDiscord ? 'Posted!' : postingToDiscord ? 'Posting...' : 'Post to Discord'}
-              </button>
+              </Button>
               <span className="post-to-discord-help" data-tooltip="Share your deck to the Protect the Pod Discord for feedback and discussion. Makes your pool public.">i</span>
             </div>
           )}
+          {shareId && (
+            <Button variant="secondary" size="sm" onClick={() => router.push(`/pool/${shareId}/deck/stats?tab=gamelog`)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 19V5"></path>
+                <path d="M4 19h16"></path>
+                <rect x="7" y="11" width="3" height="5" rx="1"></rect>
+                <rect x="12" y="8" width="3" height="8" rx="1"></rect>
+                <rect x="17" y="6" width="3" height="10" rx="1"></rect>
+              </svg>
+              Stats
+            </Button>
+          )}
           {pool?.draftShareId && pool?.poolType === 'draft' && (
-            <button className="play-action-button" onClick={() => router.push(`/draft/${pool.draftShareId}/log`)}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <Button variant="secondary" size="sm" onClick={() => router.push(`/draft/${pool.draftShareId}/log`)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                 <polyline points="14 2 14 8 20 8"></polyline>
                 <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -1457,7 +1457,7 @@ export default function PlayPage({ params }: PageProps) {
                 <polyline points="10 9 9 9 8 9"></polyline>
               </svg>
               Draft Log
-            </button>
+            </Button>
           )}
           {pool?.draftShareId && pool?.poolType === 'draft' && isPatron && isOwner && (
             <DraftReportButton draftShareId={pool.draftShareId} variant="play" />
