@@ -609,6 +609,22 @@ export async function recordPracticeMatchGameLifecycleInTransaction(
 
   await tx.query('SELECT pg_advisory_xact_lock(hashtext($1::text))', [row.pod_id])
 
+  assertLifecycleParticipant(row)
+
+  // Recovery: a lobby arrived AFTER this attempt already died. failed/voided are
+  // terminal, so a normal transition would be rejected (illegal_transition) —
+  // instead open a NEW lobby_ready attempt for this game number (automatic
+  // "newest wins"). This is what makes a hand-made lobby count when the
+  // Companion's auto-create failed (e.g. a localhost deck-validation wall).
+  const reportsLobby = eventStatus === 'lobby_ready' || eventStatus === 'joined' || eventStatus === 'in_progress'
+  const currentlyTerminal = row.status === 'failed' || row.status === 'voided'
+  if (reportsLobby && currentlyTerminal) {
+    if (!hasLobbyIdentity(row, params)) {
+      throw new PracticeGameLifecycleError(400, 'missing_lobby_identity', 'Lobby lifecycle events require a lobby id or URL')
+    }
+    return recordLobbyRecoveryAttempt(tx, row, params, occurredAt)
+  }
+
   validateLifecycleContext(row, params)
 
   const game = normalizePracticeMatchGameRow(row)
@@ -678,6 +694,76 @@ export async function recordPracticeMatchGameLifecycleInTransaction(
     shareId: String(row.share_id),
     status: nextStatus,
     previousStatus,
+  }
+}
+
+// A lobby was reported for a game whose latest attempt is terminal
+// (failed/voided). Open a NEW lobby_ready attempt for the same game number so
+// the lobby becomes canonical — the automatic "newest wins" recovery path.
+async function recordLobbyRecoveryAttempt(
+  tx: TxClient,
+  row: Record<string, unknown>,
+  params: PracticeGameLifecycleParams,
+  occurredAt: Date
+): Promise<PracticeGameLifecycleResult> {
+  const gameNumber = row.game_number as GameNumber
+
+  // Lock all attempts for this game number to compute the next attempt number
+  // and free the partial-unique "active" slot (idx_practice_match_games_active).
+  const siblings = (await tx.queryRows(
+    `SELECT * FROM practice_match_games
+     WHERE match_id = $1 AND game_number = $2
+     FOR UPDATE`,
+    [row.match_id, gameNumber]
+  )).map(normalizePracticeMatchGameRow)
+  const attemptNumber = nextAttemptNumber(siblings, gameNumber)
+
+  // Void any still-active attempt so the new lobby_ready can take the active
+  // slot — "newest lobby wins".
+  await tx.query(
+    `UPDATE practice_match_games
+     SET status = 'voided',
+         failed_at = COALESCE(failed_at, $3),
+         failure_reason = COALESCE(failure_reason, 'Superseded by a recovered lobby'),
+         updated_at = $3
+     WHERE match_id = $1 AND game_number = $2
+       AND status IN ('creating', 'lobby_ready')`,
+    [row.match_id, gameNumber, occurredAt]
+  )
+
+  const inserted = await tx.queryRow(
+    `INSERT INTO practice_match_games (
+       match_id, round_id, pod_id, game_number, attempt_number,
+       status, lobby_id, lobby_url, spectate_url,
+       wayfinder_match_id, wayfinder_game_id,
+       created_by_user_id, claimed_at, lobby_ready_at, created_at, updated_at
+     )
+     VALUES ($1, $2, $3, $4, $5, 'lobby_ready', $6, $7, $8, $9, $10, $11, $12, $12, $12, $12)
+     RETURNING *`,
+    [
+      row.match_id,
+      row.round_id,
+      row.pod_id,
+      gameNumber,
+      attemptNumber,
+      nonEmptyStringOrNull(params.lobbyId),
+      nonEmptyStringOrNull(params.lobbyUrl),
+      nonEmptyStringOrNull(params.spectateUrl),
+      nonEmptyStringOrNull(params.wayfinderMatchId),
+      nonEmptyStringOrNull(params.wayfinderGameId),
+      row.reporting_user_id,
+      occurredAt,
+    ]
+  )
+
+  return {
+    ok: true,
+    changed: true,
+    practiceMatchGameId: String(inserted!.id),
+    podId: String(row.pod_id),
+    shareId: String(row.share_id),
+    status: 'lobby_ready',
+    previousStatus: normalizePracticeGameStatus(row.status),
   }
 }
 
@@ -928,10 +1014,7 @@ function validateClaimableMatch(matchRow: Record<string, unknown>, userId: strin
   }
 }
 
-function validateLifecycleContext(
-  row: Record<string, unknown>,
-  params: PracticeGameLifecycleParams
-): void {
+function assertLifecycleParticipant(row: Record<string, unknown>): void {
   if (!row.reporting_user_id || row.reporting_pod_id !== row.pod_id) {
     throw new PracticeGameLifecycleError(403, 'pool_not_in_match_pod', 'Reporting pool is not in this match pod')
   }
@@ -939,6 +1022,13 @@ function validateLifecycleContext(
   if (row.reporting_user_id !== row.player1_id && row.reporting_user_id !== row.player2_id) {
     throw new PracticeGameLifecycleError(403, 'pool_not_match_participant', 'Reporting pool is not in this match')
   }
+}
+
+function validateLifecycleContext(
+  row: Record<string, unknown>,
+  params: PracticeGameLifecycleParams
+): void {
+  assertLifecycleParticipant(row)
 
   if ((params.status === 'lobby_ready' || params.status === 'joined') && !hasLobbyIdentity(row, params)) {
     throw new PracticeGameLifecycleError(400, 'missing_lobby_identity', 'Lobby lifecycle events require a lobby id or URL')

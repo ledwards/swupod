@@ -390,6 +390,63 @@ describe('recordPracticeMatchGameLifecycle', { skip: !dbAvailable }, () => {
     assert.equal(row!.started_at, null)
   })
 
+  it('opens a NEW lobby_ready attempt when a lobby is reported after the attempt failed', async () => {
+    const seeded = await seedActiveSwissMatch()
+    const claim = await claimPracticeMatchGame({
+      shareId: seeded.shareId,
+      matchId: seeded.matchId,
+      userId: seeded.userIds[0],
+      now: new Date('2026-06-19T20:00:00.000Z'),
+    })
+
+    // Auto-create dies → terminal failed.
+    const failed = await recordPracticeMatchGameLifecycle({
+      practiceMatchGameId: claim.practiceMatchGameId!,
+      poolShareId: seeded.poolShareIds[0],
+      status: 'failed',
+      failureReason: 'no Copy Invite Link appeared',
+      occurredAt: '2026-06-19T20:00:30.000Z',
+    })
+    assert.equal(failed.status, 'failed')
+
+    // A hand-made lobby is reported against the now-terminal game → recovery
+    // opens a new lobby_ready attempt instead of rejecting (failed is terminal).
+    const recovered = await recordPracticeMatchGameLifecycle({
+      practiceMatchGameId: claim.practiceMatchGameId!,
+      poolShareId: seeded.poolShareIds[0],
+      status: 'lobby_ready',
+      lobbyId: 'karabast-manual-1',
+      lobbyUrl: 'https://karabast.example/lobby/manual-1',
+      occurredAt: '2026-06-19T20:01:00.000Z',
+    })
+
+    assert.equal(recovered.status, 'lobby_ready')
+    assert.equal(recovered.previousStatus, 'failed')
+    assert.notEqual(recovered.practiceMatchGameId, claim.practiceMatchGameId)
+
+    // Original attempt stays failed with no lobby; the new attempt carries it.
+    const oldRow = await queryRow(
+      `SELECT status, lobby_url FROM practice_match_games WHERE id = $1`,
+      [claim.practiceMatchGameId]
+    )
+    assert.equal(oldRow!.status, 'failed')
+    assert.equal(oldRow!.lobby_url, null)
+
+    const newRow = await queryRow(
+      `SELECT status, attempt_number, lobby_url, created_by_user_id FROM practice_match_games WHERE id = $1`,
+      [recovered.practiceMatchGameId]
+    )
+    assert.equal(newRow!.status, 'lobby_ready')
+    assert.equal(newRow!.lobby_url, 'https://karabast.example/lobby/manual-1')
+    assert.ok((newRow!.attempt_number as number) > 1)
+    // Created-by = the reporter (lobby's creator) so the opponent reads
+    // "<creator> is in the lobby".
+    assert.equal(newRow!.created_by_user_id, seeded.userIds[0])
+
+    // It is the canonical current game (newest lobby_ready wins).
+    assert.equal(recovered.changed, true)
+  })
+
   it('marks a creating game failed on a failed lifecycle and lets a retry open a new attempt', async () => {
     const seeded = await seedActiveSwissMatch()
     const claim = await claimPracticeMatchGame({
