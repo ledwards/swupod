@@ -774,33 +774,12 @@ function isLimitedFormat(format: string | null | undefined): boolean {
   return typeof format === 'string' && format.trim().toLowerCase() === 'limited'
 }
 
-// Fail-open name compare: unknown on either side → treat as a match (don't
-// reject a legit game just because a field is missing).
-function archetypeNameMatches(a: string | null | undefined, b: string | null | undefined): boolean {
-  if (!a || !b) return true
-  return String(a).trim().toLowerCase() === String(b).trim().toLowerCase()
-}
-
-// The leader/base the player drafted, read from their saved deck builder state.
-function registeredArchetypeFromPool(pool: Record<string, unknown>): { leader: string | null; base: string | null } {
-  const state = pool.deck_builder_state as Record<string, unknown> | null
-  if (!state || typeof state !== 'object') return { leader: null, base: null }
-  const positions = (state.cardPositions ?? {}) as Record<string, { card?: { name?: string } }>
-  const leader = positions[String(state.activeLeader)]?.card?.name ?? null
-  const base = positions[String(state.activeBase)]?.card?.name ?? null
-  return { leader, base }
-}
-
-// Reject games that don't belong to this Swiss Practice series. Every check
-// fail-opens when the relevant data is absent, so a legitimate game is never
-// dropped just because the Companion omitted a field.
-function assertSwissPracticeGameMatches(
-  params: PracticeGameResultParams,
-  pool: Record<string, unknown>,
-  gameNumber: GameNumber
-): void {
-  // 1. Format must be Limited — Swiss Practice is a Limited draft. (This is the
-  //    check that catches a Premier game even when the leader happens to match.)
+// Reject games that don't belong to this Swiss Practice series. Fail-opens when
+// the data is absent, so a legit game is never dropped for a missing field.
+function assertSwissPracticeGameMatches(params: PracticeGameResultParams): void {
+  // Format must be Limited — Swiss Practice is a Limited draft. This is the
+  // reliable safeguard: it catches a Premier game even when the player's drafted
+  // leader happens to match the one they played casually.
   if (params.format && !isLimitedFormat(params.format)) {
     throw new PracticeGameResultError(
       422,
@@ -809,25 +788,11 @@ function assertSwissPracticeGameMatches(
     )
   }
 
-  // 2. Game 1 must use the player's drafted leader + base; they can't change
-  //    them for game 1 (swaps are allowed from game 2 on). Games 2+ skip this.
-  if (gameNumber === 1) {
-    const registered = registeredArchetypeFromPool(pool)
-    if (!archetypeNameMatches(registered.leader, params.playerLeader)) {
-      throw new PracticeGameResultError(
-        422,
-        'archetype_mismatch',
-        `Ignoring game 1 — leader "${params.playerLeader}" doesn't match your drafted "${registered.leader}"`
-      )
-    }
-    if (!archetypeNameMatches(registered.base, params.playerBase)) {
-      throw new PracticeGameResultError(
-        422,
-        'archetype_mismatch',
-        `Ignoring game 1 — base "${params.playerBase}" doesn't match your drafted "${registered.base}"`
-      )
-    }
-  }
+  // NOTE: a game-1 "must use your drafted leader/base" check isn't reliable yet.
+  // The Companion reports the leader as a Karabast numeric id (e.g. 5648009238)
+  // while the drafted deck stores the NAME ("Cad Bane"), so there is no common
+  // key to compare — an earlier attempt false-rejected real games. Revisit once
+  // the Companion sends the leader name (or a shared id).
 }
 
 export async function recordPracticeMatchGameResultInTransaction(
@@ -840,7 +805,6 @@ export async function recordPracticeMatchGameResultInTransaction(
        cp.id AS card_pool_id,
        cp.user_id,
        cp.pod_id,
-       cp.deck_builder_state,
        p.share_id AS pod_share_id,
        p.competitive
      FROM card_pools cp
@@ -865,7 +829,7 @@ export async function recordPracticeMatchGameResultInTransaction(
   // Safeguard: only count games that actually belong to this Swiss Practice
   // series. Rejects, e.g., a Premier Constructed game the player happened to be
   // playing on the side (which the Companion would otherwise log as game 1).
-  assertSwissPracticeGameMatches(params, pool, gameNumber)
+  assertSwissPracticeGameMatches(params)
 
   const reporterIsPlayer1 = matchRow.player1_id === pool.user_id
   const gameResult = resultFromReporterPerspective(params.result, reporterIsPlayer1)
