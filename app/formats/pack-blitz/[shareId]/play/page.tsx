@@ -7,6 +7,7 @@ import Card from '@/src/components/Card'
 import Button from '@/src/components/Button'
 import { getPackArtUrl } from '@/src/utils/packArt'
 import { useAuth } from '@/src/contexts/AuthContext'
+import { isRenderableMatchId } from '@/src/utils/deckRecord'
 import './play.css'
 
 function WldBadge({
@@ -16,12 +17,14 @@ function WldBadge({
 }) {
   if (wins === 0 && losses === 0 && draws === 0) return null
   const wayfinder = process.env.NEXT_PUBLIC_WAYFINDER_URL ?? 'https://plugin.wayfinder.news'
+  // Drop synthetic placeholders (e.g. "manual-recover-g2") that have no match page.
+  const links = (matchIds ?? []).filter(isRenderableMatchId)
   return (
     <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
       <span style={{ fontWeight: 700, fontSize: '14px' }}>
         {wins}W {losses}L {draws}D
       </span>
-      {matchIds.map((id, i) => (
+      {links.map((id, i) => (
         <a
           key={id}
           href={`${wayfinder}/matches/${id}`}

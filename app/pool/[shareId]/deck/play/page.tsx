@@ -19,7 +19,7 @@ import { buildBaseCardMap, getBaseCardId } from '../../../../../src/utils/varian
 import { jsonParse } from '../../../../../src/utils/json'
 import { resolveArchetypeUuid, fetchArchetypeNickname } from '../../../../../src/utils/deckBuilderSharing'
 import { archetypeShortName } from '../../../../../src/utils/archetypeName'
-import { formatRecord } from '../../../../../src/utils/deckRecord'
+import { formatRecord, isRenderableMatchId } from '../../../../../src/utils/deckRecord'
 import { wayfinderMatchesUrl } from '../../../../../src/utils/wayfinderUrls'
 import { renderPoolImageBlob } from '../../../../../src/services/deckImage'
 import { calculateAspectPenalty } from '../../../../../src/services/cards/aspectPenalties'
@@ -52,10 +52,15 @@ function WldBadge({
   wins: number; losses: number; draws: number; matchIds: string[]
 }) {
   const wayfinder = process.env.NEXT_PUBLIC_WAYFINDER_URL ?? 'https://plugin.wayfinder.news'
+  // Only link real captured-game ids — drop synthetic placeholders (e.g.
+  // "manual-recover-g2") that rendered as a dead "Match 1" link.
+  const links = (matchIds ?? []).filter(isRenderableMatchId)
+  const hasRecord = wins > 0 || losses > 0 || draws > 0
+  if (!hasRecord && links.length === 0) return null
   return (
     <div className="play-record-line">
       <span className="play-record-badge">{formatRecord(wins, losses, draws)}</span>
-      {matchIds.map((id, i) => (
+      {links.map((id, i) => (
         <a
           key={id}
           href={`${wayfinder}/matches/${id}`}
