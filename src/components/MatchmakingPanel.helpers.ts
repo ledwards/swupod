@@ -343,11 +343,17 @@ export function liveGameAction({
     return { kind: 'none', label: '' }
   }
 
+  // Game is underway → you're already in the table/room, so disable Play (no
+  // point re-opening the lobby). The live row still shows "Game N In Progress".
+  if (status === 'in_progress') {
+    return { kind: 'play', label: '', disabled: true, tooltip: 'Game in progress' }
+  }
+
   // A private lobby exists → ANY participant can open it via its URL (you don't
   // need the Companion to JOIN). The play button becomes a green link to the
   // lobby. Beside it: "<opponent> is in the lobby" when the opponent created it,
-  // or "Lobby created" when you did.
-  if ((status === 'lobby_ready' || status === 'in_progress') && lobbyUrl) {
+  // or "Lobby created" when you did (and your button copies the link to share).
+  if (status === 'lobby_ready' && lobbyUrl) {
     const creatorId = currentGame?.game?.createdByUserId || null
     const openedByOpponent = Boolean(creatorId && creatorId !== currentUserId)
     return {

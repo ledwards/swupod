@@ -275,6 +275,23 @@ describe('MatchmakingPanel helpers', () => {
     assert.equal(opponentView.readyText, 'Benthic is in the lobby')
   })
 
+  it('disables Play once the game is in progress (already at the table)', () => {
+    const action = liveGameAction({
+      match: match({
+        currentGame: {
+          status: 'in_progress',
+          gameNumber: 1,
+          lobbyUrl: 'https://karabast.net/lobby?lobbyId=abc',
+          game: { createdByUserId: 'A' },
+        },
+      }),
+      currentUserId: 'A',
+      liveLaunchEnabled: true,
+    })
+    assert.equal(action.kind, 'play')
+    assert.equal(action.disabled, true)
+  })
+
   it('reuses the watch/replay link path for spectators and completed matches', () => {
     assert.deepEqual(
       liveGameAction({
