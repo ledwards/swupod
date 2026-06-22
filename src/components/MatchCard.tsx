@@ -380,7 +380,7 @@ export function MatchCard({
             <div className="match-card-dots">
               <GameDot result={match.game1Result} forPlayer="player1" />
               <GameDot result={match.game2Result} forPlayer="player1" />
-              {match.game3Result !== null && <GameDot result={match.game3Result} forPlayer="player1" />}
+              <GameDot result={match.game3Result} forPlayer="player1" />
             </div>
           )}
           {renderKickButton(match.player1)}
@@ -400,7 +400,7 @@ export function MatchCard({
               <div className="match-card-dots">
                 <GameDot result={match.game1Result} forPlayer="player2" />
                 <GameDot result={match.game2Result} forPlayer="player2" />
-                {match.game3Result !== null && <GameDot result={match.game3Result} forPlayer="player2" />}
+                <GameDot result={match.game3Result} forPlayer="player2" />
               </div>
               {renderKickButton(match.player2)}
             </>
