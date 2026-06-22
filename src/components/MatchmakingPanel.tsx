@@ -82,6 +82,7 @@ interface MatchmakingPanelProps {
   onPracticeLaunch?: (matchId: string) => void | Promise<void>
   practiceLaunchPendingMatchId?: string | null
   practiceLaunchMessage?: PracticeLaunchMessage | null
+  onSetLobby?: (matchId: string, lobbyUrl: string) => void | Promise<void>
   wayfinderDetected?: boolean
   wayfinderSettled?: boolean
   hasCompanionBetaAccess?: boolean
@@ -102,6 +103,7 @@ export function MatchmakingPanel({
   onPracticeLaunch,
   practiceLaunchPendingMatchId = null,
   practiceLaunchMessage = null,
+  onSetLobby,
   wayfinderDetected = false,
   wayfinderSettled = true,
   hasCompanionBetaAccess = false,
@@ -218,6 +220,7 @@ export function MatchmakingPanel({
           ? practiceLaunchMessage
           : null
       }
+      onSetLobby={onSetLobby}
       wayfinderState={wayfinderMatchState(
         wayfinderDetected,
         match.wayfinderMatchId,

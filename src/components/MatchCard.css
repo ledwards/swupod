@@ -394,6 +394,55 @@
   justify-content: flex-end;
 }
 
+/* "Have a lobby link? Paste it" recovery affordance */
+.match-card-set-lobby {
+  display: flex;
+  flex-direction: column;
+}
+
+.match-card-set-lobby-toggle {
+  align-self: flex-start;
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.match-card-set-lobby-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.match-card-set-lobby-input {
+  flex: 1 1 220px;
+  min-width: 0;
+  height: 30px;
+  padding: 0 0.7rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.82rem;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.match-card-set-lobby-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.match-card-set-lobby-input:focus {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.match-card-set-lobby-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
 /* Mobile */
 @media (max-width: 768px) {
   .match-card {

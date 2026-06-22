@@ -955,6 +955,34 @@ export default function PlayPage({ params }: PageProps) {
     setReportingMatchId(null)
   }
 
+  const handleSetLobby = async (matchId: string, lobbyUrl: string) => {
+    if (!draftShareId) return
+    try {
+      const res = await fetch(`/api/draft/${draftShareId}/match/${matchId}/game/set-lobby`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ lobbyUrl }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setMessage(data.error || 'Failed to set lobby link')
+        setMessageType('error')
+        setTimeout(() => { setMessage(null); setMessageType(null) }, 4000)
+      } else {
+        // The socket broadcast from the endpoint refreshes the round state so
+        // both players' Play button becomes the join link.
+        setMessage('Lobby link set — both players can now join.')
+        setMessageType('success')
+        setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      }
+    } catch {
+      setMessage('Failed to set lobby link')
+      setMessageType('error')
+      setTimeout(() => { setMessage(null); setMessageType(null) }, 4000)
+    }
+  }
+
   const handleOverrideResult = async (matchId: string, game1: string, game2: string, game3: string | null) => {
     if (!draftShareId) return
     try {
@@ -1317,6 +1345,7 @@ export default function PlayPage({ params }: PageProps) {
             onPracticeLaunch={handlePracticeLaunch}
             practiceLaunchPendingMatchId={practiceLaunch.pendingMatchId}
             practiceLaunchMessage={practiceLaunch.launchMessage}
+            onSetLobby={handleSetLobby}
             onReport={(matchId) => {
               trackLimitedPlayAction(LimitedPlayActions.MATCH_REPORT_OPEN, {
                 target: 'match_result',
