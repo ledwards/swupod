@@ -334,9 +334,21 @@ describe('GET /api/stats/me/gameplay route structure', () => {
   it('filters owned card_pools by user_id, pool_type, and updated_at date range', () => {
     assert.match(ROUTE_SRC, /FROM card_pools/)
     assert.match(ROUTE_SRC, /user_id = \$1/)
-    assert.match(ROUTE_SRC, /pool_type IN \('sealed', 'draft', 'chaos_sealed', 'pack_blitz', 'pack_wars', 'rotisserie'\)/)
+    // 'imported' MUST be in the allow-list: Wayfinder-captured/imported games
+    // live on imported pools, and this dashboard reports captures + record.
+    assert.match(ROUTE_SRC, /pool_type IN \('sealed', 'draft', 'chaos_sealed', 'pack_blitz', 'pack_wars', 'rotisserie', 'imported'\)/)
     assert.match(ROUTE_SRC, /updated_at >= \$2/)
     assert.match(ROUTE_SRC, /updated_at < \(\$3::date \+ interval '1 day'\)/)
+  })
+
+  it('scopes "decks reached play" (deck_play_visits) by the global Set filter', () => {
+    // decks_played must join card_pools and honor $4 — otherwise selecting a set
+    // shows the user's cross-set deck-play total instead of the set's count.
+    assert.match(
+      ROUTE_SRC,
+      /FROM deck_play_visits dpv\s+JOIN card_pools cp ON cp\.id = dpv\.pool_id[\s\S]*?\$4 = 'all' OR cp\.set_code = \$4[\s\S]*?\) AS decks_played/,
+      'decks_played subquery must join card_pools and filter by the set ($4)'
+    )
   })
 
   it('aggregates record, Wayfinder captures, deck play visits, and replay URLs', () => {

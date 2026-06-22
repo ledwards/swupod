@@ -1,5 +1,12 @@
 # Release Notes
 
+## 06.22.2026
+
+### 🐛 Bug Fixes
+
+- **My Stats now counts imported-pool games when you filter by set**: Picking a set (e.g. **LAW**) could show **0 matches, 0% win rate, and 0 Wayfinder captures** even though those games were sitting right there in your replay history. Games recorded against an imported pool were being left out of the per-set record — they now count toward your matches, record, win rate, and Wayfinder captures.
+- **"Decks reached play" respects the set filter**: This counter was always showing your all-time total regardless of the set you'd selected. It now reflects only the chosen set.
+
 ## 06.20.2026
 
 ### 🎴 Competitive Draft — Pack Review

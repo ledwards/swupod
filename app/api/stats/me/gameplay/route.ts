@@ -884,9 +884,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     // $4 carries the set filter for every pool-scoped query below.
     const params = [session.id, since, until, setCode]
+    // 'imported' pools are the home for Wayfinder-companion-captured / imported
+    // games (record + wayfinder_match_ids live on the pool). This dashboard is
+    // about play record and Wayfinder captures, so imported pools MUST count —
+    // otherwise a set whose only games are in an imported pool reads 0 matches /
+    // 0 captures even though the replay history (which doesn't filter pool_type)
+    // lists them. (The Activity dashboard's /summary route intentionally
+    // EXCLUDES imported from "pools opened" — different metric, different route.)
     const ownedPoolWhere = `
       user_id = $1
-      AND pool_type IN ('sealed', 'draft', 'chaos_sealed', 'pack_blitz', 'pack_wars', 'rotisserie')
+      AND pool_type IN ('sealed', 'draft', 'chaos_sealed', 'pack_blitz', 'pack_wars', 'rotisserie', 'imported')
       AND updated_at >= $2
       AND updated_at < ($3::date + interval '1 day')
       AND ($4 = 'all' OR set_code = $4)
@@ -915,9 +922,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
            (
              SELECT COUNT(*)
              FROM deck_play_visits dpv
+             JOIN card_pools cp ON cp.id = dpv.pool_id
              WHERE dpv.user_id = $1
                AND dpv.first_visited_at >= $2
                AND dpv.first_visited_at < ($3::date + interval '1 day')
+               AND ($4 = 'all' OR cp.set_code = $4)
            ) AS decks_played
          FROM card_pools
          WHERE ${ownedPoolWhere}`,
