@@ -350,22 +350,27 @@ export function MatchCard({
           {!isMyMatch && spectateUrl && (
             <a className="match-card-table-link" href={spectateUrl} target="_blank" rel="noopener noreferrer">Spectate Match ↗</a>
           )}
-          {canReportOrEdit && (
-            <span data-testid={`match-report-button-${match.id}`} className="match-card-report-inline">
-              <Button
-                variant={!hasResult && wayfinderState !== 'auto-recording' ? 'primary' : 'secondary'}
-                size="xs"
-                onClick={() => (isMyMatch ? onReport : onOverride)(match.id)}
-              >
-                {hasResult ? 'Edit' : 'Report'}
-              </Button>
-            </span>
-          )}
-          {!match.isBye && (
-            <span className={`match-card-status match-card-status--${status.toLowerCase().replace(/\s+/g, '-')}`}>
-              {status}{match.podOwnerOverride && ' (Override)'}
-            </span>
-          )}
+          {/* Report button + status, right-aligned together (Report sits just left
+              of the status). One wrapper carries margin-left:auto so they stay
+              adjacent instead of spreading apart. */}
+          <span className="match-card-table-right">
+            {canReportOrEdit && (
+              <span data-testid={`match-report-button-${match.id}`} className="match-card-report-inline">
+                <Button
+                  variant={!hasResult && wayfinderState !== 'auto-recording' ? 'primary' : 'secondary'}
+                  size="xs"
+                  onClick={() => (isMyMatch ? onReport : onOverride)(match.id)}
+                >
+                  {hasResult ? 'Edit' : 'Report'}
+                </Button>
+              </span>
+            )}
+            {!match.isBye && (
+              <span className={`match-card-status match-card-status--${status.toLowerCase().replace(/\s+/g, '-')}`}>
+                {status}{match.podOwnerOverride && ' (Override)'}
+              </span>
+            )}
+          </span>
         </div>
       )}
       <div className="match-card-players">

@@ -238,11 +238,17 @@
   gap: 0.5rem;
 }
 
-/* Inline "Report"/"Edit" button in the table row, just left of the status.
-   margin-left:auto pushes it + the status to the right as a group; the smallest
-   button size keeps the row from growing. Reset the row's uppercase styling. */
-.match-card-report-inline {
+/* Report button + status grouped at the right of the table row, adjacent. */
+.match-card-table-right {
   margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* Inline "Report"/"Edit" button, just left of the status. Smallest button size
+   keeps the row from growing; reset the row's uppercase styling on it. */
+.match-card-report-inline {
   display: inline-flex;
   flex-shrink: 0;
   text-transform: none;
@@ -250,7 +256,6 @@
 }
 
 .match-card-status {
-  margin-left: auto;
   font-family: 'Barlow', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;

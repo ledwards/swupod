@@ -1564,6 +1564,9 @@ export default function PlayPage({ params }: PageProps) {
             matchId={reportingMatchId}
             player1Name={match.player1?.username || '???'}
             player2Name={match.player2?.username || '???'}
+            currentGame1={match.game1Result ?? null}
+            currentGame2={match.game2Result ?? null}
+            currentGame3={match.game3Result ?? null}
             onSubmit={handleReportResult}
             onClose={() => setReportingMatchId(null)}
           />
@@ -1580,6 +1583,9 @@ export default function PlayPage({ params }: PageProps) {
             player1Name={match.player1?.username || '???'}
             player2Name={match.player2?.username || '???'}
             isOverride
+            currentGame1={match.game1Result ?? null}
+            currentGame2={match.game2Result ?? null}
+            currentGame3={match.game3Result ?? null}
             onSubmit={handleOverrideResult}
             onClose={() => setOverridingMatchId(null)}
           />
