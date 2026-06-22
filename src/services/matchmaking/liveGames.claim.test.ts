@@ -18,6 +18,7 @@ const {
   recordPracticeMatchGameLifecycle,
   PracticeGameClaimError,
   PracticeGameLifecycleError,
+  PracticeGameResultError,
 } = await import('./liveGames')
 
 let dbAvailable = false
@@ -445,6 +446,37 @@ describe('recordPracticeMatchGameLifecycle', { skip: !dbAvailable }, () => {
 
     // It is the canonical current game (newest lobby_ready wins).
     assert.equal(recovered.changed, true)
+  })
+
+  it('rejects a non-Limited (Premier) game so it is not counted in the series', async () => {
+    const seeded = await seedActiveSwissMatch()
+
+    // A Premier game the player was playing on the side must NOT be recorded.
+    await assert.rejects(
+      () => recordPracticeMatchGameResult({
+        poolShareId: seeded.poolShareIds[0],
+        wayfinderMatchId: 'wf-premier-side-game',
+        result: 'win',
+        gameNumber: 1,
+        format: 'Premier',
+      }),
+      (err: unknown) => err instanceof PracticeGameResultError && (err as { code?: string }).code === 'not_limited_format'
+    )
+
+    // The match has no recorded game 1.
+    const match = await queryRow(`SELECT game1_result FROM practice_matches WHERE id = $1`, [seeded.matchId])
+    assert.equal(match!.game1_result, null)
+
+    // A Limited game for the same match records fine (fail-open on archetype:
+    // the seed has no drafted deck, so the leader check is skipped).
+    const ok = await recordPracticeMatchGameResult({
+      poolShareId: seeded.poolShareIds[0],
+      wayfinderMatchId: 'wf-limited-1',
+      result: 'win',
+      gameNumber: 1,
+      format: 'Limited',
+    })
+    assert.equal(ok.duplicate ?? false, false)
   })
 
   it('marks a creating game failed on a failed lifecycle and lets a retry open a new attempt', async () => {

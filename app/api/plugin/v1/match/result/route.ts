@@ -37,7 +37,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const body = await request.json()
     const {
-      poolShareId, result, matchId, gameNumber, replayUrl, practiceMatchGameId, wayfinderGameId,
+      poolShareId, result, matchId, gameNumber, replayUrl, practiceMatchGameId, wayfinderGameId, format,
       // Optional captured deck identities (Wayfinder Companion ≥ identity build).
       // "player*" is the reporting player's deck; "opponent*" is the other side.
       // See docs/WAYFINDER_PLUGIN_MATCH_IDENTITY.md.
@@ -83,6 +83,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         result,
         practiceMatchGameId: practiceMatchGameId ?? null,
         gameNumber: gameNumber ?? null,
+        format: format ?? null,
         replayUrl: replayUrl ?? null,
         wayfinderGameId: wayfinderGameId ?? null,
         playerLeader: playerLeader ?? null,
