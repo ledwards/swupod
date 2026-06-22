@@ -1,4 +1,4 @@
-577
+578
 app/admin/page.tsx
 app/api/admin/grant/route.test.ts
 app/api/admin/grant/route.ts
@@ -41,6 +41,7 @@ app/api/draft/[shareId]/start-matches/route.ts
 app/api/draft/[shareId]/start/route.ts
 app/api/draft/[shareId]/state/route.ts
 app/api/draft/[shareId]/trigger-bots/route.ts
+app/api/draft/[shareId]/unlock-decks/route.ts
 app/api/draft/history/route.ts
 app/api/draft/reports/route.ts
 app/api/draft/route.ts
