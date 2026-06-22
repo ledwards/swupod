@@ -193,6 +193,23 @@
   margin-bottom: 1rem;
 }
 
+/* Transient "Posted to Discord!" confirmation below the button row — fades out
+   on its own (state is cleared after the animation). */
+.discord-post-toast {
+  text-align: center;
+  margin-top: -0.5rem;
+  margin-bottom: 0.75rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #bbf7d0;
+  animation: discordPostToastFade 4s ease forwards;
+}
+@keyframes discordPostToastFade {
+  0%, 60% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 /* Login banner for logged-out users */
 .login-banner {
   background: linear-gradient(135deg, rgba(88, 101, 242, 0.2) 0%, rgba(88, 101, 242, 0.1) 100%);

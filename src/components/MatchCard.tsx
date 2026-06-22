@@ -350,6 +350,17 @@ export function MatchCard({
           {!isMyMatch && spectateUrl && (
             <a className="match-card-table-link" href={spectateUrl} target="_blank" rel="noopener noreferrer">Spectate Match ↗</a>
           )}
+          {canReportOrEdit && (
+            <span data-testid={`match-report-button-${match.id}`} className="match-card-report-inline">
+              <Button
+                variant={!hasResult && wayfinderState !== 'auto-recording' ? 'primary' : 'secondary'}
+                size="xs"
+                onClick={() => (isMyMatch ? onReport : onOverride)(match.id)}
+              >
+                {hasResult ? 'Edit' : 'Report'}
+              </Button>
+            </span>
+          )}
           {!match.isBye && (
             <span className={`match-card-status match-card-status--${status.toLowerCase().replace(/\s+/g, '-')}`}>
               {status}{match.podOwnerOverride && ' (Override)'}
@@ -418,22 +429,6 @@ export function MatchCard({
           </div>
         </div>
       )}
-
-      <div className="match-card-footer">
-        <div className="match-card-actions">
-          {canReportOrEdit && (
-            <span data-testid={`match-report-button-${match.id}`}>
-              <Button
-                variant={!hasResult && wayfinderState !== 'auto-recording' ? 'primary' : 'secondary'}
-                size="sm"
-                onClick={() => (isMyMatch ? onReport : onOverride)(match.id)}
-              >
-                {hasResult ? 'Edit' : (wayfinderState === 'auto-recording' ? 'Report Manually' : 'Report Result')}
-              </Button>
-            </span>
-          )}
-        </div>
-      </div>
 
       <ConfirmModal
         isOpen={!!kickTarget}

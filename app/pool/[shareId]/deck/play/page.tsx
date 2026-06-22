@@ -150,6 +150,7 @@ export default function PlayPage({ params }: PageProps) {
   const [showingPool, setShowingPool] = useState(false)
   const [loadingPool, setLoadingPool] = useState(false)
   const [postingToDiscord, setPostingToDiscord] = useState(false)
+  const [discordJustPosted, setDiscordJustPosted] = useState(false)
   const [postedToDiscord, setPostedToDiscord] = useState(() => {
     if (typeof window !== 'undefined' && resolvedParams?.shareId) {
       return localStorage.getItem(`postedToDiscord_${resolvedParams.shareId}`) === 'true'
@@ -702,8 +703,10 @@ export default function PlayPage({ params }: PageProps) {
         setPostedToDiscord(true)
         if (shareId) localStorage.setItem(`postedToDiscord_${shareId}`, 'true')
         trackLimitedPlayAction(LimitedPlayActions.POST_TO_DISCORD, { target: 'discord' })
-        setMessage('Deck posted to Discord!')
-        setMessageType('success')
+        // Transient confirmation rendered below the button row (not the shared
+        // message box), and fades out on its own.
+        setDiscordJustPosted(true)
+        setTimeout(() => setDiscordJustPosted(false), 4000)
       } else {
         const data = await res.json().catch(() => ({}))
         trackLimitedPlayAction(LimitedPlayActions.POST_TO_DISCORD, {
@@ -1462,6 +1465,9 @@ export default function PlayPage({ params }: PageProps) {
             <DraftReportButton draftShareId={pool.draftShareId} variant="play" />
           )}
         </div>
+        {discordJustPosted && (
+          <div className="discord-post-toast">Posted to Discord!</div>
+        )}
 
       </div>
 
