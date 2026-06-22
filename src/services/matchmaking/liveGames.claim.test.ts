@@ -69,6 +69,7 @@ async function seedActiveSwissMatch(options: {
   roundStatus?: string
   isBye?: boolean
   finalConfirmed?: boolean
+  podStatus?: string
 } = {}): Promise<SeededMatch> {
   const suffix = randomUUID().slice(0, 8)
   const userIds: string[] = []
@@ -102,9 +103,9 @@ async function seedActiveSwissMatch(options: {
        current_players,
        competitive
      )
-     VALUES ($1, $2, 'TST', 'active', $3, 1, 2, 2, $4)
+     VALUES ($1, $2, 'TST', $5, $3, 1, 2, 2, $4)
      RETURNING id`,
-    [shareId, userIds[0], JSON.stringify(draftState), options.competitive ?? true]
+    [shareId, userIds[0], JSON.stringify(draftState), options.competitive ?? true, options.podStatus ?? 'complete']
   )
   const podId = pod!.id as string
   seededPods.push(podId)
@@ -229,6 +230,35 @@ describe('claimPracticeMatchGame', { skip: !dbAvailable }, () => {
     assert.equal(rows.length, 1)
     assert.equal(rows[0].status, 'creating')
     assert.equal(rows[0].created_by_user_id, seeded.userIds[0])
+  })
+
+  it('NEW CODE: claims a game on a completed-draft pod (real Swiss Practice state)', async () => {
+    // Swiss Practice runs after the draft FINISHES, so a real competitive pod is
+    // status=complete at claim time. Regression guard for the "Draft is not active"
+    // bug, which fired because the claim guard wrongly required status=active.
+    const seeded = await seedActiveSwissMatch({ podStatus: 'complete' })
+    const creator = await claimPracticeMatchGame({
+      shareId: seeded.shareId,
+      matchId: seeded.matchId,
+      userId: seeded.userIds[0],
+      now: new Date('2026-06-19T20:00:00.000Z'),
+    })
+    assert.equal(creator.action, 'create_lobby')
+    assert.equal(creator.status, 'creating')
+  })
+
+  it('rejects a claim before the draft is over (pod status=waiting)', async () => {
+    const seeded = await seedActiveSwissMatch({ podStatus: 'waiting' })
+    await assert.rejects(
+      () =>
+        claimPracticeMatchGame({
+          shareId: seeded.shareId,
+          matchId: seeded.matchId,
+          userId: seeded.userIds[0],
+          now: new Date('2026-06-19T20:00:00.000Z'),
+        }),
+      /Draft is not active/
+    )
   })
 
   it('returns join_lobby after Wayfinder has reported a lobby URL', async () => {
