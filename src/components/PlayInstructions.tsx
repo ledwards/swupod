@@ -2,7 +2,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { getLatestReleasedSetCode } from '../utils/setConfigs/latest'
+import { getKarabastCardPool } from '../utils/setConfigs/latest'
 import { trackEvent } from '../hooks/useAnalytics'
 import { buildLimitedContext, LimitedAnalyticsEvents, LimitedPlayActions } from '../analytics/limitedEvents'
 import { buildLobbyName, isValidPrivateLobbyUrl } from '../utils/karabastLobby'
@@ -89,8 +89,7 @@ export default function PlayInstructions({
   const companionBeta = isCompanionBeta(user)
   const inPod = poolType === 'draft' || poolType === 'sealed_pod'
   const viewingOthersDeck = !isOwner && ownerName
-  const isCurrentSet = setCode === getLatestReleasedSetCode()
-  const cardPoolName = isCurrentSet ? 'Current' : 'Unlimited'
+  const cardPoolName = getKarabastCardPool(setCode)
 
   const [activeTab, setActiveTab] = useState<'wayfinder' | 'manual'>('wayfinder')
   const [lobbyCount, setLobbyCount] = useState(0)

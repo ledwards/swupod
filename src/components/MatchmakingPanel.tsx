@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useMemo } from 'react'
 import MatchCard from './MatchCard'
 import Button from './Button'
 import CompetitivePracticeRules from './CompetitivePracticeRules'
+import { avatarSrc } from '../utils/avatar'
 import {
   liveConsoleRoundOrder,
   liveRoundMatchGroups,
@@ -378,13 +379,9 @@ export function MatchmakingPanel({
           ) : (
             <span className="matchmaking-my-match-line">
               Your Round {currentRound} match:{' '}
-              {(myMatch.player1?.id === currentUserId ? myMatch.player1 : myMatch.player2)?.avatarUrl && (
-                <img className="matchmaking-avatar" src={(myMatch.player1?.id === currentUserId ? myMatch.player1 : myMatch.player2).avatarUrl} alt="" />
-              )}
+              <img className="matchmaking-avatar" src={avatarSrc((myMatch.player1?.id === currentUserId ? myMatch.player1 : myMatch.player2)?.avatarUrl, (myMatch.player1?.id === currentUserId ? myMatch.player1 : myMatch.player2)?.id)} alt="" />
               You vs.{' '}
-              {(myMatch.player1?.id === currentUserId ? myMatch.player2 : myMatch.player1)?.avatarUrl && (
-                <img className="matchmaking-avatar" src={(myMatch.player1?.id === currentUserId ? myMatch.player2 : myMatch.player1).avatarUrl} alt="" />
-              )}
+              <img className="matchmaking-avatar" src={avatarSrc((myMatch.player1?.id === currentUserId ? myMatch.player2 : myMatch.player1)?.avatarUrl, (myMatch.player1?.id === currentUserId ? myMatch.player2 : myMatch.player1)?.id)} alt="" />
               <strong>
                 {myMatch.player1?.id === currentUserId
                   ? myMatch.player2?.username || '???'

@@ -8,6 +8,7 @@ import {
   type WayfinderMatchState,
 } from './MatchmakingPanel.helpers'
 import { formatRecord, type PlayerRecord } from '../services/matchmaking/standings'
+import { avatarSrc } from '../utils/avatar'
 import './MatchCard.css'
 
 interface MatchPlayer {
@@ -234,7 +235,7 @@ export function MatchCard({
         <div className={`match-card-player${match.matchWinner === 'player1' ? ' match-card-player--winner' : ''}`}>
           <span className="match-card-player-heading">
             {companionDot(match.player1)}
-            {match.player1?.avatarUrl && <img className="match-card-avatar" src={match.player1.avatarUrl} alt="" />}
+            {match.player1 && <img className="match-card-avatar" src={avatarSrc(match.player1.avatarUrl, match.player1.id || match.player1.username)} alt="" />}
             <span className="match-card-player-name">{match.player1?.username || '???'}</span>
             <span className="match-card-player-record">{recordFor(match.player1)}</span>
           </span>
@@ -263,7 +264,7 @@ export function MatchCard({
             <>
               <span className="match-card-player-heading">
                 {companionDot(match.player2)}
-                {match.player2?.avatarUrl && <img className="match-card-avatar" src={match.player2.avatarUrl} alt="" />}
+                {match.player2 && <img className="match-card-avatar" src={avatarSrc(match.player2.avatarUrl, match.player2.id || match.player2.username)} alt="" />}
                 <span className="match-card-player-name">{match.player2?.username || '???'}</span>
                 <span className="match-card-player-record">{recordFor(match.player2)}</span>
               </span>

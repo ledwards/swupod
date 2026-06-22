@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { loadPool, updatePool, claimPool } from '../../../../../src/utils/poolApi'
 import { getPackArtUrl } from '../../../../../src/utils/packArt'
 import { getSetConfig } from '../../../../../src/utils/setConfigs'
-import { getLatestReleasedSetCode } from '../../../../../src/utils/setConfigs/latest'
+import { getLatestReleasedSetCode, getKarabastCardPool } from '../../../../../src/utils/setConfigs/latest'
 import { useAuth } from '../../../../../src/contexts/AuthContext'
 import EditableTitle from '../../../../../src/components/EditableTitle'
 import PluginCTA, { usePluginCTA } from '../../../../../src/components/PluginCTA'
@@ -283,10 +283,7 @@ export default function PlayPage({ params }: PageProps) {
   // have the Companion. shouldShow (with required) === !hasPlugin, so the banner
   // and the full install CTA appear/disappear together.
   const { shouldShow: showCompanionPitch } = usePluginCTA({ required: true })
-  const wayfinderCardPool = useMemo(() => {
-    if (!pool?.setCode) return 'Unlimited'
-    return pool.setCode === getLatestReleasedSetCode() ? 'Current' : 'Unlimited'
-  }, [pool?.setCode])
+  const wayfinderCardPool = useMemo(() => getKarabastCardPool(pool?.setCode), [pool?.setCode])
   const practiceLaunch = useWayfinderPracticeLaunch({
     draftShareId,
     poolShareId: shareId,
