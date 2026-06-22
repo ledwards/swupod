@@ -141,6 +141,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       baseAspects: deckIdentity.baseAspects,
       baseHp: deckIdentity.baseHp,
       archetypeName: deckIdentity.archetypeName,
+      leaderImageUrl: deckIdentity.leaderImageUrl,
+      baseImageUrl: deckIdentity.baseImageUrl,
       poolCardCount: Array.isArray(poolCards) ? poolCards.length : null,
     }
   })
