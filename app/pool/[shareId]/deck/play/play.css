@@ -938,23 +938,18 @@ a.login-banner-button:focus {
 /* Swiss-in-progress deck export box — no instructions; the Play button + Swiss
    panel drive play, this is just quick export. */
 .swiss-deck-export {
-  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.65rem;
-  max-width: 640px;
-  margin: 1rem auto 2rem;        /* centered box + space before Practice Hand etc. */
-  padding: 2rem 1.1rem 1.2rem;   /* top padding leaves room for the upper-left label */
+  gap: 1rem;                /* match the Swiss panel header→content spacing */
+  margin: 1rem 0 2rem;      /* full width (matches the Swiss box); space before Practice Hand */
+  padding: 1.1rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   background: rgba(0, 0, 0, 0.35);
 }
 
 .swiss-deck-export-label {
-  position: absolute;
-  top: 0.7rem;
-  left: 1rem;
+  align-self: flex-start;
   font-family: 'Barlow', sans-serif;
   font-size: 0.7rem;
   font-weight: 700;

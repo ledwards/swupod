@@ -85,32 +85,22 @@
 
 .match-card-dots {
   display: flex;
-  gap: 4px;
+  gap: 7px;
 }
 
-.game-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
+/* Per-game result: green W (win), red L (loss), grey – (not decided), D (draw). */
+.game-result {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 800;
+  font-size: 0.82rem;
+  line-height: 1;
+  min-width: 11px;
+  text-align: center;
 }
-
-.game-dot--pending {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.game-dot--win {
-  background: rgba(0, 200, 0, 0.8);
-}
-
-.game-dot--loss {
-  background: rgba(200, 0, 0, 0.7);
-}
-
-.game-dot--draw {
-  background: rgba(150, 185, 255, 0.7);
-}
+.game-result--win { color: #22c55e; }
+.game-result--loss { color: #ef4444; }
+.game-result--pending { color: rgba(255, 255, 255, 0.35); }
+.game-result--draw { color: rgba(150, 185, 255, 0.85); }
 
 /* Per-player Companion indicator (left of name): green = connected,
    blinking red = recording on Karabast. Replaces the Auto-recording tag. */
@@ -142,12 +132,31 @@
 }
 
 .match-card-table {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.5);
   margin-bottom: 8px;
+}
+
+/* "View Match" / "Spectate Match" links beside the table number. Override the
+   global a:hover purple + the uppercase table styling. */
+.match-card-table-link,
+.match-card-table-link:visited,
+.match-card-table-link:active {
+  color: #93c5fd;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 600;
+}
+@media (hover: hover) and (pointer: fine) {
+  .match-card-table-link:hover { color: #bfdbfe; text-decoration: underline; }
 }
 
 .match-card-boot {

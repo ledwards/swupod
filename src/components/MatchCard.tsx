@@ -78,10 +78,11 @@ function getMatchStatus(match: MatchData): string {
 }
 
 function GameDot({ result, forPlayer }: { result: string | null; forPlayer: 'player1' | 'player2' }) {
-  if (!result) return <span className="game-dot game-dot--pending" />
-  if (result === 'draw') return <span className="game-dot game-dot--draw" />
-  if (result === forPlayer) return <span className="game-dot game-dot--win" />
-  return <span className="game-dot game-dot--loss" />
+  // Green W (win), red L (loss), grey – (game not decided yet), muted D (draw).
+  if (!result) return <span className="game-result game-result--pending">–</span>
+  if (result === 'draw') return <span className="game-result game-result--draw">D</span>
+  if (result === forPlayer) return <span className="game-result game-result--win">W</span>
+  return <span className="game-result game-result--loss">L</span>
 }
 
 export function MatchCard({
@@ -122,6 +123,11 @@ export function MatchCard({
   })
   const showLiveRow = Boolean(liveStatus || liveAction.kind !== 'none' || practiceLaunchMessage)
 
+  // Live spectate link (provided by the recorder's Companion) + recorded-match
+  // link. Both live next to the table number.
+  const spectateUrl = match.currentGame?.spectateUrl || match.currentGame?.game?.spectateUrl || null
+  const wayfinderBase = process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin.wayfinder.news'
+
   // Per-player Companion indicator, left of the name: green = Companion
   // connected (lobby creator, or the current viewer when detected); blinking
   // red = actively recording on Karabast (creator + game in progress).
@@ -148,7 +154,11 @@ export function MatchCard({
   const renderLiveAction = () => {
     if (liveAction.kind === 'none') return null
 
-    if (liveAction.kind === 'watch' || liveAction.kind === 'replay') {
+    // Live spectate ('watch') is surfaced as "Spectate Match" next to the table
+    // number; only completed-match replays stay in the live action row.
+    if (liveAction.kind === 'watch') return null
+
+    if (liveAction.kind === 'replay') {
       return (
         <ReplayWatchLink
           href={liveAction.href || undefined}
@@ -230,7 +240,17 @@ export function MatchCard({
       data-player1-id={match.player1?.id || ''}
       data-player2-id={match.player2?.id || ''}
     >
-      {tableNumber != null && <div className="match-card-table">Table {tableNumber}</div>}
+      {(tableNumber != null || match.wayfinderMatchId || (!isMyMatch && spectateUrl)) && (
+        <div className="match-card-table">
+          {tableNumber != null && <span className="match-card-table-num">Table {tableNumber}</span>}
+          {match.wayfinderMatchId && (
+            <a className="match-card-table-link" href={`${wayfinderBase}/matches/${match.wayfinderMatchId}`} target="_blank" rel="noopener noreferrer">View Match ↗</a>
+          )}
+          {!isMyMatch && spectateUrl && (
+            <a className="match-card-table-link" href={spectateUrl} target="_blank" rel="noopener noreferrer">Spectate Match ↗</a>
+          )}
+        </div>
+      )}
       <div className="match-card-players">
         <div className={`match-card-player${match.matchWinner === 'player1' ? ' match-card-player--winner' : ''}`}>
           <span className="match-card-player-heading">
@@ -314,19 +334,6 @@ export function MatchCard({
           {status}
           {match.podOwnerOverride && ' (Override)'}
         </span>
-        {wayfinderState === 'recorded' && (
-          <span className="match-card-wayfinder-state match-card-wayfinder-state--recorded">Recorded</span>
-        )}
-        {match.wayfinderMatchId && (
-          <a
-            href={`${process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin.wayfinder.news'}/matches/${match.wayfinderMatchId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="match-card-wayfinder-link"
-          >
-            View Match ↗
-          </a>
-        )}
         <div className="match-card-actions">
           {canReportOrEdit && (
             <span data-testid={`match-report-button-${match.id}`}>
