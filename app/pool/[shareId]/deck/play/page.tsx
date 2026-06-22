@@ -286,7 +286,7 @@ export default function PlayPage({ params }: PageProps) {
 
   // Detect the Wayfinder extension via the centralized hook (meta tag + event +
   // postMessage, with a localStorage bridge and the ?wayfinder=1/0 QA override).
-  const { detected: wayfinderDetected, settled: wayfinderSettled } = useWayfinderDetection()
+  const { detected: wayfinderDetected, settled: wayfinderSettled, capabilities: wayfinderCapabilities } = useWayfinderDetection()
   // Companion pitch shown above the Swiss panel for logged-in players who don't
   // have the Companion. shouldShow (with required) === !hasPlugin, so the banner
   // and the full install CTA appear/disappear together.
@@ -1267,8 +1267,9 @@ export default function PlayPage({ params }: PageProps) {
           )}
         </div>
 
-        {/* Login banner for logged-out users viewing anonymous (unowned) pools */}
-        {!isInfinitePool && !user && !pool?.owner && (
+        {/* Login banner for logged-out users — adapts copy to the pool/context
+            (competitive pod, someone's owned pool, or an unclaimed deck). */}
+        {!isInfinitePool && !user && (
           <div className="login-banner">
             <div className="login-banner-content">
               <div className="login-banner-icon">
@@ -1278,8 +1279,12 @@ export default function PlayPage({ params }: PageProps) {
                 </svg>
               </div>
               <div className="login-banner-text">
-                <h3>Save Your Deck</h3>
-                <p>Login with Discord to permanently save this deck to your account. You'll be able to access it from any device and see it in your deck history.</p>
+                <h3>{isCompetitive ? 'Sign in to play your matches' : pool?.owner ? 'Sign in to Protect the Pod' : 'Save Your Deck'}</h3>
+                <p>{isCompetitive
+                  ? 'Sign in with Discord to see your Swiss Practice pairings, launch your games, and report results. If this pod is yours, your match controls come back the moment you sign in.'
+                  : pool?.owner
+                    ? 'Sign in with Discord to access your decks, pods, and game history from any device.'
+                    : 'Login with Discord to permanently save this deck to your account. You\'ll be able to access it from any device and see it in your deck history.'}</p>
               </div>
               <a
                 href={`/api/auth/signin/discord?return_to=${encodeURIComponent(`/pool/${shareId}/deck/play`)}`}
@@ -1340,6 +1345,7 @@ export default function PlayPage({ params }: PageProps) {
             }))}
             wayfinderDetected={wayfinderDetected}
             wayfinderSettled={wayfinderSettled}
+            capabilities={wayfinderCapabilities}
             hasCompanionBetaAccess={Boolean(user?.is_beta_tester || user?.is_admin)}
             onPracticeLaunch={handlePracticeLaunch}
             practiceLaunchPendingMatchId={practiceLaunch.pendingMatchId}

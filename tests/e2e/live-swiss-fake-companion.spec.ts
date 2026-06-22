@@ -61,8 +61,8 @@ test('fake Companion drives live Swiss from create/join through round advance', 
     const playerAPage = await playerAContext.newPage()
     const playerCPage = await playerCContext.newPage()
 
-    await playerAPage.goto(`${BASE_URL}/pool/${fixture.poolShareIds[0]}/deck/play?wayfinder=1`)
-    await playerCPage.goto(`${BASE_URL}/pool/${fixture.poolShareIds[2]}/deck/play?wayfinder=1`)
+    await playerAPage.goto(`${BASE_URL}/pool/${fixture.poolShareIds[0]}/deck/play?wfcap=ready`)
+    await playerCPage.goto(`${BASE_URL}/pool/${fixture.poolShareIds[2]}/deck/play?wfcap=ready`)
 
     const playerAMatch = playerAPage.locator(`[data-testid="match-card-${fixture.matchIds[0]}"]`)
     const playerCMatch = playerCPage.locator(`[data-testid="match-card-${fixture.matchIds[0]}"]`)
@@ -193,8 +193,9 @@ async function installFakeCompanion(context: BrowserContext, captured: CapturedI
         window.ptpFakeCompanionCapture(payload)
       }
     })
-    // Best-effort install marker. Detection is also forced via ?wayfinder=1, so
-    // this is belt-and-suspenders — guard against a null root and dedupe.
+    // Best-effort install marker for a CAPABLE Companion. Detection + the
+    // practice-live capability are forced via ?wfcap=ready, so this is
+    // belt-and-suspenders — guard against a null root and dedupe.
     const addMarker = () => {
       if (document.querySelector('meta[name="wayfinder-installed"]')) return
       const root = document.documentElement || document.head || document.body
@@ -202,6 +203,7 @@ async function installFakeCompanion(context: BrowserContext, captured: CapturedI
       const meta = document.createElement('meta')
       meta.name = 'wayfinder-installed'
       meta.content = 'true'
+      meta.setAttribute('data-capabilities', 'ptp-practice-live')
       root.appendChild(meta)
     }
     if (document.documentElement) addMarker()

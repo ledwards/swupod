@@ -17,6 +17,7 @@ import {
   statusLine,
   wayfinderMatchState,
 } from './MatchmakingPanel.helpers'
+import { wayfinderPracticeTier, shouldShowUpdateNudge } from '../utils/wayfinderCapabilities'
 import WayfinderStoreButtons from './WayfinderStoreButtons'
 import {
   computeRankedStandings,
@@ -90,6 +91,7 @@ interface MatchmakingPanelProps {
   wayfinderDetected?: boolean
   wayfinderSettled?: boolean
   hasCompanionBetaAccess?: boolean
+  capabilities?: string[]
 }
 
 export function MatchmakingPanel({
@@ -111,6 +113,7 @@ export function MatchmakingPanel({
   wayfinderDetected = false,
   wayfinderSettled = true,
   hasCompanionBetaAccess = false,
+  capabilities = [],
 }: MatchmakingPanelProps) {
   const totalRounds = Math.max(rounds.length, 3)
   const tabs = []
@@ -214,8 +217,14 @@ export function MatchmakingPanel({
   const hasActiveRound = activeRound && activeRound.status === 'active'
   const progressLabel = roundProgressLabel(currentRound, totalRounds, activeRound)
   const playerStatus = statusLine({ matchmakingStatus, currentRound, currentUserId, myMatch })
+  // Capability tier: 'none' (no Companion) | 'needs-update' (old build) | 'ready'.
+  // Manual reporting works in every tier; the live launch is gated on 'ready'.
+  const practiceTier = wayfinderPracticeTier(wayfinderDetected, capabilities)
   const showInstallNudge = shouldShowInstallNudge(wayfinderDetected, hasCompanionBetaAccess, wayfinderSettled)
-  const liveLaunchEnabled = Boolean(wayfinderDetected && hasCompanionBetaAccess && onPracticeLaunch)
+  const showUpdateNudge = shouldShowUpdateNudge(practiceTier, wayfinderSettled)
+  // Live launch + auto-report ONLY when a capable Companion is present. An old
+  // Companion (detected, no capability) falls back to manual — never a dead button.
+  const liveLaunchEnabled = Boolean(practiceTier === 'ready' && onPracticeLaunch)
   const dropState = selfDropState({ isHost, matchmakingStatus, currentUserId, players })
 
   const confirmSelfDrop = () => {
@@ -241,7 +250,7 @@ export function MatchmakingPanel({
           : null
       }
       wayfinderState={wayfinderMatchState(
-        wayfinderDetected,
+        practiceTier === 'ready',
         match.wayfinderMatchId,
         Boolean(
           !match.finalConfirmed &&
@@ -387,7 +396,17 @@ export function MatchmakingPanel({
         <div className="matchmaking-wayfinder-nudge">
           <div className="matchmaking-wayfinder-copy">
             <strong>Install Wayfinder</strong>
-            <span>Auto-record and auto-confirm your Practice games.</span>
+            <span>Auto-record and auto-confirm your Practice games. You can also report results manually below.</span>
+          </div>
+          <WayfinderStoreButtons orientation="inline" />
+        </div>
+      )}
+
+      {showUpdateNudge && (
+        <div className="matchmaking-wayfinder-nudge">
+          <div className="matchmaking-wayfinder-copy">
+            <strong>Update Wayfinder</strong>
+            <span>Update the Companion to auto-record and auto-confirm your Practice games. Until then, report results manually below.</span>
           </div>
           <WayfinderStoreButtons orientation="inline" />
         </div>

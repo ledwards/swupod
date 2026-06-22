@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { PRACTICE_LIVE_CAPABILITY, parseCapabilities } from '../utils/wayfinderCapabilities'
 
 /**
  * useWayfinderDetection — is the Wayfinder Companion extension installed, and is
@@ -27,9 +28,10 @@ import { useEffect, useState } from 'react'
  *      (Only PRESENCE is remembered — sign-in state is too volatile to cache, so
  *      `pluginLoggedIn` comes from live signals only.)
  *
- * `?wayfinder=1` / `?wayfinder=0` force presence and `?wflogin=1` / `?wflogin=0`
- * force sign-in state, for local QA (the extension only matches localhost:3000,
- * so it can't be detected on other dev ports).
+ * `?wayfinder=1` / `?wayfinder=0` force presence, `?wflogin=1` / `?wflogin=0`
+ * force sign-in state, and `?wfcap=ready|old|none` forces the practice-live
+ * capability tier — for local QA (the extension only matches localhost:3000, so
+ * it can't be detected on other dev ports).
  */
 export interface WayfinderDetection {
   detected: boolean
@@ -39,6 +41,9 @@ export interface WayfinderDetection {
    *  `null` = unknown — no signal yet, or an older build that predates it.
    *  Treat null as "don't nag". */
   pluginLoggedIn: boolean | null
+  /** Capabilities the Companion advertised (e.g. PRACTICE_LIVE_CAPABILITY).
+   *  Empty for older builds that announce none — treated as "needs update". */
+  capabilities: string[]
 }
 
 const STAMP_KEY = 'wf_companion_seen_at'
@@ -67,6 +72,7 @@ export function useWayfinderDetection(): WayfinderDetection {
   const [iconUrl, setIconUrl] = useState<string | null>(null)
   const [settled, setSettled] = useState(false)
   const [pluginLoggedIn, setPluginLoggedIn] = useState<boolean | null>(null)
+  const [capabilities, setCapabilities] = useState<string[]>([])
 
   useEffect(() => {
     // QA overrides: ?wayfinder=1/0 forces presence; ?wflogin=1/0 forces sign-in.
@@ -74,6 +80,11 @@ export function useWayfinderDetection(): WayfinderDetection {
     const forcedLogin = params.get('wflogin')
     if (forcedLogin === '1' || forcedLogin === 'true') setPluginLoggedIn(true)
     else if (forcedLogin === '0' || forcedLogin === 'false') setPluginLoggedIn(false)
+    // ?wfcap=ready|old|none forces the practice-live capability tier for local QA.
+    const forcedCap = params.get('wfcap')
+    if (forcedCap === 'ready') { setDetected(true); setSettled(true); setCapabilities([PRACTICE_LIVE_CAPABILITY]); stamp(); return }
+    if (forcedCap === 'old') { setDetected(true); setSettled(true); setCapabilities([]); stamp(); return }
+    if (forcedCap === 'none') { setDetected(false); setSettled(true); setCapabilities([]); clearStamp(); return }
     const forced = params.get('wayfinder')
     if (forced === '1' || forced === 'true') { setDetected(true); setSettled(true); stamp(); return }
     if (forced === '0' || forced === 'false') { setDetected(false); setSettled(true); clearStamp(); return }
@@ -93,9 +104,13 @@ export function useWayfinderDetection(): WayfinderDetection {
       if (li === 'true') setPluginLoggedIn(true)
       else if (li === 'false') setPluginLoggedIn(false)
     }
+    // The marker may carry a comma-separated capability list.
+    const applyCapabilities = (meta: HTMLMetaElement) => {
+      if (meta.dataset.capabilities !== undefined) setCapabilities(parseCapabilities(meta.dataset.capabilities))
+    }
     const readMeta = (): boolean => {
       const meta = document.querySelector('meta[name="wayfinder-installed"]') as HTMLMetaElement | null
-      if (meta) { markLive(meta.dataset.iconUrl || null); applyLoginAttr(meta); return true }
+      if (meta) { markLive(meta.dataset.iconUrl || null); applyLoginAttr(meta); applyCapabilities(meta); return true }
       return false
     }
 
@@ -105,7 +120,10 @@ export function useWayfinderDetection(): WayfinderDetection {
     const onMessage = (e: MessageEvent) => {
       if (e.source !== window) return
       const t = e.data?.type
-      if (t === 'wayfinder:installed' || t === 'wayfinder:metadata' || t === 'wayfinder:lobby-count') markLive()
+      if (t === 'wayfinder:installed' || t === 'wayfinder:metadata' || t === 'wayfinder:lobby-count') {
+        markLive()
+        if (t === 'wayfinder:metadata' && e.data?.capabilities !== undefined) setCapabilities(parseCapabilities(e.data.capabilities))
+      }
       else if (t === 'wayfinder:auth-state') { markLive(); setPluginLoggedIn(Boolean(e.data.loggedIn)) }
     }
     document.addEventListener('wayfinder:installed', onInstalled)
@@ -135,7 +153,7 @@ export function useWayfinderDetection(): WayfinderDetection {
     }
   }, [])
 
-  return { detected, iconUrl, settled, pluginLoggedIn }
+  return { detected, iconUrl, settled, pluginLoggedIn, capabilities }
 }
 
 export default useWayfinderDetection

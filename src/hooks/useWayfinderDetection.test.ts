@@ -41,7 +41,22 @@ describe('useWayfinderDetection contract', () => {
   it('returns a settled flag so install nudges do not flash before detection resolves', () => {
     assert.match(SRC, /settled:\s*boolean/)
     assert.match(SRC, /setSettled\(true\)/)
-    assert.match(SRC, /return \{ detected, iconUrl, settled, pluginLoggedIn \}/)
+    assert.match(SRC, /return \{ detected, iconUrl, settled, pluginLoggedIn, capabilities \}/)
+  })
+
+  // Capability gating: the marker / metadata postMessage carry a capability list
+  // so the play page can tell an old Companion (manual) from a capable one (live).
+  it('parses advertised capabilities from the marker and the metadata postMessage', () => {
+    assert.match(SRC, /capabilities:\s*string\[\]/)
+    assert.match(SRC, /dataset\.capabilities/)
+    assert.match(SRC, /parseCapabilities/)
+  })
+
+  it('honors the ?wfcap=ready|old|none QA override', () => {
+    assert.match(SRC, /['"]wfcap['"]/)
+    assert.match(SRC, /forcedCap === 'ready'/)
+    assert.match(SRC, /forcedCap === 'old'/)
+    assert.match(SRC, /forcedCap === 'none'/)
   })
 
   // Sign-in state: the marker carries data-logged-in and the extension
