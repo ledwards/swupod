@@ -352,7 +352,7 @@ export function liveGameAction({
   }
 
   if (pending) {
-    return { kind: 'waiting', label: 'Launching...', disabled: true }
+    return { kind: 'waiting', label: 'Creating Lobby', disabled: true }
   }
 
   if (!liveLaunchEnabled) {

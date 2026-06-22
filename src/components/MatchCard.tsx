@@ -140,6 +140,9 @@ export function MatchCard({
     return () => clearTimeout(t)
   }, [isFailedSetup, match.currentGame?.gameNumber, match.currentGame?.attemptNumber])
   const displayStatus = isFailedSetup && failureSettled ? null : liveStatus
+  // Once a failed setup has settled, drop the red failed styling too so the box
+  // reverts to a normal "ready to play" state instead of a lingering red banner.
+  const liveRowStatus = isFailedSetup && failureSettled ? 'pending' : (match.currentGame?.status || 'pending')
 
   // Per-player Companion indicator, left of the name: green = Companion
   // connected (lobby creator, or the current viewer when detected); blinking
@@ -253,7 +256,7 @@ export function MatchCard({
       data-player1-id={match.player1?.id || ''}
       data-player2-id={match.player2?.id || ''}
     >
-      {(tableNumber != null || match.wayfinderMatchId || (!isMyMatch && spectateUrl)) && (
+      {(tableNumber != null || match.wayfinderMatchId || (!isMyMatch && spectateUrl) || !match.isBye) && (
         <div className="match-card-table">
           {tableNumber != null && <span className="match-card-table-num">Table {tableNumber}</span>}
           {match.wayfinderMatchId && (
@@ -261,6 +264,11 @@ export function MatchCard({
           )}
           {!isMyMatch && spectateUrl && (
             <a className="match-card-table-link" href={spectateUrl} target="_blank" rel="noopener noreferrer">Spectate Match ↗</a>
+          )}
+          {!match.isBye && (
+            <span className={`match-card-status match-card-status--${status.toLowerCase().replace(/\s+/g, '-')}`}>
+              {status}{match.podOwnerOverride && ' (Override)'}
+            </span>
           )}
         </div>
       )}
@@ -323,7 +331,7 @@ export function MatchCard({
       </div>
 
       {showLiveRow && (
-        <div className={`match-card-live match-card-live--${match.currentGame?.status || 'pending'}`}>
+        <div className={`match-card-live match-card-live--${liveRowStatus}`}>
           <div className="match-card-live-copy">
             {liveAction.readyText ? (
               <span className="match-card-live-status match-card-live-ready">{liveAction.readyText}</span>
@@ -343,10 +351,6 @@ export function MatchCard({
       )}
 
       <div className="match-card-footer">
-        <span className={`match-card-status match-card-status--${status.toLowerCase().replace(/\s+/g, '-')}`}>
-          {status}
-          {match.podOwnerOverride && ' (Override)'}
-        </span>
         <div className="match-card-actions">
           {canReportOrEdit && (
             <span data-testid={`match-report-button-${match.id}`}>

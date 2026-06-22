@@ -221,11 +221,12 @@
 .match-card-footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 0.5rem;
 }
 
 .match-card-status {
+  margin-left: auto;
   font-family: 'Barlow', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
