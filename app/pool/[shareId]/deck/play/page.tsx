@@ -20,6 +20,7 @@ import { jsonParse } from '../../../../../src/utils/json'
 import { resolveArchetypeUuid, fetchArchetypeNickname } from '../../../../../src/utils/deckBuilderSharing'
 import { archetypeShortName } from '../../../../../src/utils/archetypeName'
 import { formatRecord, isRenderableMatchId } from '../../../../../src/utils/deckRecord'
+import { computePoolRarityStats } from '../../../../../src/utils/poolRarityStats'
 import { wayfinderMatchesUrl } from '../../../../../src/utils/wayfinderUrls'
 import { renderPoolImageBlob } from '../../../../../src/services/deckImage'
 import { calculateAspectPenalty } from '../../../../../src/services/cards/aspectPenalties'
@@ -166,6 +167,18 @@ export default function PlayPage({ params }: PageProps) {
   const [baseCardMap, setBaseCardMap] = useState<Map<string, string> | null>(null)
   const [claiming, setClaiming] = useState(false)
   const deckBuilderState = useMemo(() => jsonParse(pool?.deckBuilderState, {}), [pool?.deckBuilderState])
+
+  // Rarity/duplicate breakdown of the viewer's drafted pool (deck + sideboard,
+  // excluding leaders/bases) — drives the Swiss event summary's pool-context panel.
+  const viewerPoolStats = useMemo(() => {
+    const positions = deckBuilderState?.cardPositions
+    if (!positions) return null
+    const cards = Object.values(positions)
+      .filter((pos: any) => pos?.card && !pos.card.isLeader && !pos.card.isBase)
+      .map((pos: any) => pos.card)
+    if (cards.length === 0) return null
+    return computePoolRarityStats(cards)
+  }, [deckBuilderState])
   // Deck (archetype) name. NEVER a made-up "Leader / Base" slash — use the
   // canonical swuapi archetype nickname, falling back to the consistent
   // "Leader Color HP" form (archetypeShortName) while it resolves.
@@ -1386,6 +1399,7 @@ export default function PlayPage({ params }: PageProps) {
             wayfinderDetected={wayfinderDetected}
             wayfinderSettled={wayfinderSettled}
             capabilities={wayfinderCapabilities}
+            poolStats={viewerPoolStats}
             hasCompanionBetaAccess={Boolean(user?.is_beta_tester || user?.is_admin)}
             onPracticeLaunch={handlePracticeLaunch}
             practiceLaunchPendingMatchId={practiceLaunch.pendingMatchId}

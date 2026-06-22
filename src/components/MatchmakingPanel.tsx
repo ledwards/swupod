@@ -18,6 +18,7 @@ import {
   wayfinderMatchState,
 } from './MatchmakingPanel.helpers'
 import { wayfinderPracticeTier, shouldShowUpdateNudge } from '../utils/wayfinderCapabilities'
+import { buildUsagePieStops, usagePieColor } from './YourStats/usagePie'
 import WayfinderStoreButtons from './WayfinderStoreButtons'
 import {
   computeRankedStandings,
@@ -92,6 +93,8 @@ interface MatchmakingPanelProps {
   wayfinderSettled?: boolean
   hasCompanionBetaAccess?: boolean
   capabilities?: string[]
+  /** Viewer's drafted-pool rarity/duplicate breakdown for the summary's pool panel. */
+  poolStats?: { total: number; legendaries: number; rares: number; duplicates: number } | null
 }
 
 export function MatchmakingPanel({
@@ -114,6 +117,7 @@ export function MatchmakingPanel({
   wayfinderSettled = true,
   hasCompanionBetaAccess = false,
   capabilities = [],
+  poolStats = null,
 }: MatchmakingPanelProps) {
   const totalRounds = Math.max(rounds.length, 3)
   const tabs = []
@@ -516,7 +520,7 @@ export function MatchmakingPanel({
                 </ol>
 
                 {matchmakingStatus === 'complete' && (
-                  <SwissPracticeEventSummary summary={eventSummary} />
+                  <SwissPracticeEventSummary summary={eventSummary} poolStats={poolStats} />
                 )}
               </>
             )}
@@ -649,8 +653,10 @@ function timestampMs(value: unknown): number | null {
 
 function SwissPracticeEventSummary({
   summary,
+  poolStats = null,
 }: {
   summary: ReturnType<typeof computeSwissPracticeEventSummary>
+  poolStats?: { total: number; legendaries: number; rares: number; duplicates: number } | null
 }) {
   return (
     <div className="matchmaking-event-summary" data-testid="swiss-practice-event-summary">
@@ -663,52 +669,74 @@ function SwissPracticeEventSummary({
       <div className="matchmaking-event-summary-grid">
         <EventMetaPanel title="Archetypes" rows={summary.archetypeMeta.slice(0, 5)} />
         <EventMetaPanel title="Leaders" rows={summary.leaderMeta.slice(0, 5)} />
-        <div className="matchmaking-event-card">
-          <span className="matchmaking-event-card-title">Pool Context</span>
-          <dl className="matchmaking-pool-context">
-            <div>
-              <dt>Pool links</dt>
-              <dd>{summary.poolContext.playersWithPools}/{summary.poolContext.totalPlayers}</dd>
-            </div>
-            <div>
-              <dt>Expected packs</dt>
-              <dd>{summary.poolContext.expectedPacksPerPlayer ?? 'TBD'} per player</dd>
-            </div>
-            <div>
-              <dt>Avg pool cards</dt>
-              <dd>{summary.poolContext.averagePoolCards == null ? 'TBD' : summary.poolContext.averagePoolCards.toFixed(1)}</dd>
-            </div>
-          </dl>
-          <p className="matchmaking-pool-context-note">
-            Full expected-pull luck math belongs in the lazy event summary endpoint; this live view shows coverage only.
-          </p>
-        </div>
+        <PoolStatsPanel stats={poolStats} />
       </div>
     </div>
   )
 }
 
+/**
+ * Your pool's "how did it roll" numbers — legendaries, rares, and duplicate
+ * copies, each shown as a share of the pool (statistical context, like /me).
+ * Replaces the old coverage-only "Pool Context" panel.
+ */
+function PoolStatsPanel({ stats }: { stats: { total: number; legendaries: number; rares: number; duplicates: number } | null }) {
+  const pct = (n: number) => (stats && stats.total > 0 ? `${Math.round((n / stats.total) * 100)}% of pool` : '')
+  return (
+    <div className="matchmaking-event-card">
+      <span className="matchmaking-event-card-title">Your Pool</span>
+      {!stats || stats.total === 0 ? (
+        <p className="matchmaking-event-empty">No pool cards yet</p>
+      ) : (
+        <dl className="matchmaking-pool-context">
+          <div>
+            <dt>Legendaries</dt>
+            <dd>{stats.legendaries}<span className="matchmaking-pool-context-ctx">{pct(stats.legendaries)}</span></dd>
+          </div>
+          <div>
+            <dt>Rares</dt>
+            <dd>{stats.rares}<span className="matchmaking-pool-context-ctx">{pct(stats.rares)}</span></dd>
+          </div>
+          <div>
+            <dt>Duplicates</dt>
+            <dd>{stats.duplicates}<span className="matchmaking-pool-context-ctx">{pct(stats.duplicates)}</span></dd>
+          </div>
+        </dl>
+      )}
+    </div>
+  )
+}
+
 function EventMetaPanel({ title, rows }: { title: string; rows: EventMetaRow[] }) {
+  const pieStops = buildUsagePieStops(rows.map((r, i) => ({ matches: Math.max(1, Math.round((r.metaShare || 0) * 1000)), color: usagePieColor(i) })))
   return (
     <div className="matchmaking-event-card">
       <span className="matchmaking-event-card-title">{title}</span>
       {rows.length === 0 ? (
         <p className="matchmaking-event-empty">No deck identity yet</p>
       ) : (
-        <div className="matchmaking-event-meta-list">
-          {rows.map(row => (
-            <div className="matchmaking-event-meta-row" key={`${title}-${row.name}`}>
-              <span className="matchmaking-event-meta-name">{row.name}</span>
-              <span className="matchmaking-event-meta-share">{formatPercent(row.metaShare)}</span>
-              <span className="matchmaking-event-meta-record">
-                {row.matchWins}-{row.matchLosses}{row.matchDraws > 0 ? `-${row.matchDraws}` : ''}
-                {row.smallSample && <span>small sample</span>}
-              </span>
-              <span className="matchmaking-event-meta-rate">
-                {row.matchWinRate == null ? 'No matches' : `${formatPercent(row.matchWinRate)} WR`}
-              </span>
-            </div>
-          ))}
+        <div className="matchmaking-event-meta-body">
+          <div
+            className="matchmaking-event-pie"
+            style={{ background: pieStops ? `conic-gradient(${pieStops})` : 'rgba(255,255,255,0.08)' }}
+            aria-hidden="true"
+          />
+          <div className="matchmaking-event-meta-list">
+            {rows.map((row, i) => (
+              <div className="matchmaking-event-meta-row" key={`${title}-${row.name}`}>
+                <span className="matchmaking-event-meta-swatch" style={{ background: usagePieColor(i) }} aria-hidden="true" />
+                <span className="matchmaking-event-meta-name">{row.name}</span>
+                <span className="matchmaking-event-meta-share">{formatPercent(row.metaShare)}</span>
+                <span className="matchmaking-event-meta-record">
+                  {row.matchWins}-{row.matchLosses}{row.matchDraws > 0 ? `-${row.matchDraws}` : ''}
+                  {row.smallSample && <span>small sample</span>}
+                </span>
+                <span className="matchmaking-event-meta-rate">
+                  {row.matchWinRate == null ? 'No matches' : `${formatPercent(row.matchWinRate)} WR`}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
