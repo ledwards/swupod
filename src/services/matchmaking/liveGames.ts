@@ -1242,9 +1242,21 @@ async function resolveResultTarget(
     [matchRow.id]
   )).map(normalizePracticeMatchGameRow)
 
-  const gameNumber = params.gameNumber
+  let gameNumber = params.gameNumber
     ? asGameNumber(params.gameNumber)
     : inferResultGameNumber(matchRow, games)
+  // The Companion's reported gameNumber is the per-LOBBY Karabast number, which
+  // resets whenever players make a NEW lobby for the next series game (a fresh
+  // Bo3, a retry, a recovery lobby) — so it can point at an already-decided
+  // game (e.g. "game 1 of this new lobby" when the match is past game 1). When
+  // that number lands on a decided game and the match isn't over yet, redirect
+  // to the game the series actually needs next: the next observed game IS the
+  // next series game. A genuine duplicate on a FINISHED match keeps its number
+  // so the idempotency dedup still catches it. (Limited-format gate still runs.)
+  const targetedResult = matchAggregateFromRow(matchRow)[resultColumnForGameNumber(gameNumber)]
+  if (targetedResult != null && matchRow.final_confirmed !== true) {
+    gameNumber = inferResultGameNumber(matchRow, games)
+  }
   const gameRow = officialGameForNumber(games, gameNumber)
 
   return {

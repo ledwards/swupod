@@ -513,13 +513,15 @@ describe('recordPracticeMatchGameLifecycle', { skip: !dbAvailable }, () => {
     assert.equal(g2!.status, 'in_progress')
     assert.equal(g2!.lobby_url, 'https://karabast.net/lobby?lobbyId=lobby-bo3')
 
-    // Game 2 reported by game number (no practiceMatchGameId, as a continuation
-    // game) completes the carried-forward game 2 → 2-0, match decided.
+    // Game 2 reported with the WRONG per-lobby number (1 — as a new lobby would
+    // report it) and no practiceMatchGameId. PTP must ignore that number and
+    // count it as the next series game (2), completing the carried-forward game
+    // 2 → 2-0, match decided.
     await recordPracticeMatchGameResult({
       poolShareId: seeded.poolShareIds[0],
       wayfinderMatchId: 'wf-bo3',
       result: 'win',
-      gameNumber: 2,
+      gameNumber: 1,
       format: 'Limited',
     })
 
