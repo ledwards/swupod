@@ -35,9 +35,13 @@ export async function POST(request: NextRequest): Promise<Response> {
       occurredAt: stringField(body.occurredAt),
     })
 
-    if (result.changed) {
-      await broadcastDraftState(result.shareId)
-    }
+    // Always push, not just on a row-level change. A lobby_ready for a new or
+    // remade lobby must reach the opponent's Play button immediately — including
+    // the cases where the targeted row didn't "change" (a deduped re-report, or
+    // the lobby landing on a sibling game). Lifecycle events are infrequent
+    // (a handful per game), so an occasional redundant broadcast is cheap
+    // insurance against a stale lobby link that only a manual refresh fixes.
+    await broadcastDraftState(result.shareId)
 
     return jsonResponse(result)
   } catch (error) {

@@ -77,7 +77,9 @@ interface MatchCardProps {
 function getMatchStatus(match: MatchData): string {
   if (match.finalConfirmed) return 'Complete'
   if (match.isBye) return 'Bye'
-  if (match.player1Submitted || match.player2Submitted) return 'Awaiting Confirmation'
+  // One report finalizes a complete result, so a submitted-but-not-confirmed
+  // match is just a partial/undecided result — it's still in progress, not
+  // "awaiting" the opponent's confirmation.
   return 'In Progress'
 }
 

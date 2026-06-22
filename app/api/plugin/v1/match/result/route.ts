@@ -98,7 +98,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         opponentArchetype: opponentArchetype ?? null,
       })
 
-      if (recorded.changed) {
+      // Always push the refreshed state (not only on change) so both screens —
+      // including a no-plugin opponent — reflect the result and any lobby carried
+      // forward to the next game without a manual refresh.
+      if (recorded.shareId) {
         await broadcastDraftState(recorded.shareId)
       }
 

@@ -40,12 +40,21 @@ export function ResultReportModal({
     if (!showGame3) setGame3(null)
   }, [showGame3])
 
-  const canSubmit = (() => {
+  const decided = (() => {
     if (!game1 || !game2) return false
     if (!showGame3) return isDecided(game1, game2, null)
     if (!game3) return false
     return isDecided(game1, game2, game3)
   })()
+
+  // "Unsubmit": the player cleared every game on a match that already had a
+  // saved result. Allow saving the empty result so the match goes back to
+  // unreported. (A partial/incomplete result — neither decided nor fully
+  // cleared — still can't be saved.)
+  const hadPriorResult = Boolean(currentGame1 || currentGame2 || currentGame3)
+  const isCleared = !game1 && !game2 && !game3
+  const isUnsubmit = isCleared && hadPriorResult
+  const canSubmit = decided || isUnsubmit
 
   const handleSubmit = () => {
     if (!canSubmit) return
@@ -71,7 +80,9 @@ export function ResultReportModal({
       <Modal.Actions>
         <Button variant="secondary" onClick={onClose}>Cancel</Button>
         <span data-testid="result-report-submit">
-          <Button variant="primary" onClick={handleSubmit} disabled={!canSubmit}>Submit</Button>
+          <Button variant={isUnsubmit ? 'danger' : 'primary'} onClick={handleSubmit} disabled={!canSubmit}>
+            {isUnsubmit ? 'Unsubmit' : 'Submit'}
+          </Button>
         </span>
       </Modal.Actions>
     </Modal>

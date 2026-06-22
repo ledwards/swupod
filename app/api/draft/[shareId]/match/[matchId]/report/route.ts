@@ -4,7 +4,8 @@ import { requireAuth } from '@/lib/auth'
 import { queryRow, query } from '@/lib/db'
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { deriveMatchWinner } from '@/src/services/matchmaking/results'
-import { checkAndAdvanceRound } from '@/src/services/matchmaking/advancement'
+import { checkAndAdvanceRound, revertRoundCompletionIfNeeded } from '@/src/services/matchmaking/advancement'
+import { broadcastDraftState } from '@/src/lib/socketBroadcast'
 import { jsonParse } from '@/src/utils/json'
 import { captureLimitedServerEvent } from '@/lib/posthog'
 import { LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
@@ -42,9 +43,8 @@ export async function POST(
       return jsonResponse({ error: 'Match not found' }, 404)
     }
 
-    if (match.final_confirmed) {
-      return jsonResponse({ error: 'Match already confirmed' }, 400)
-    }
+    // A confirmed match is intentionally still editable — a participant can
+    // re-report to correct it, or clear all games to unsubmit it (see below).
 
     const isPlayer1 = match.player1_id === session.id
     const isPlayer2 = match.player2_id === session.id
@@ -65,22 +65,45 @@ export async function POST(
       [matchId, game1, game2, game3 || null]
     )
 
-    // Refetch to check if both submitted
+    // Refetch the stored results.
     const updated = await queryRow(`SELECT * FROM practice_matches WHERE id = $1`, [matchId])
     let finalConfirmed = false
 
-    if (updated.player1_submitted && updated.player2_submitted) {
-      // Both submitted — auto-confirm with derived winner
-      const winner = deriveMatchWinner(updated.game1_result, updated.game2_result, updated.game3_result)
-      if (winner) {
-        await query(
-          `UPDATE practice_matches SET final_confirmed = true, match_winner = $2 WHERE id = $1`,
-          [matchId, winner]
-        )
-        finalConfirmed = true
-        await checkAndAdvanceRound(match.pod_id, shareId)
-      }
+    // One report is enough: as soon as a player reports a complete result
+    // (a winner can be derived), the match is confirmed and the round can
+    // advance — we don't wait for the opponent to also confirm. Requiring both
+    // submissions was unnecessary friction (and left the result invisible to
+    // the opponent until they re-reported). A mistake is fixable afterward via
+    // the pod-owner override endpoint, which re-derives the winner and
+    // re-advances. (deriveMatchWinner returns null for an undecided match, e.g.
+    // a partial 1-0 report, so an incomplete report stays unconfirmed.)
+    const winner = deriveMatchWinner(updated.game1_result, updated.game2_result, updated.game3_result)
+    if (winner) {
+      await query(
+        `UPDATE practice_matches SET final_confirmed = true, match_winner = $2 WHERE id = $1`,
+        [matchId, winner]
+      )
+      finalConfirmed = true
+      await checkAndAdvanceRound(match.pod_id, shareId)
+    } else if (updated.final_confirmed) {
+      // Unsubmit: the player cleared the result (unchecked games) on a match
+      // that was already confirmed. Roll it back to fully unreported, and reopen
+      // the round (and event) if confirming this match had advanced them.
+      await query(
+        `UPDATE practice_matches
+           SET final_confirmed = false, match_winner = NULL,
+               player1_submitted = false, player2_submitted = false
+         WHERE id = $1`,
+        [matchId]
+      )
+      await revertRoundCompletionIfNeeded(match.pod_id, match.round_id)
     }
+
+    // Push the new state to everyone in the pod (including a no-plugin opponent
+    // who reported nothing). checkAndAdvanceRound only broadcasts when the whole
+    // round advances, so without this a confirmed match in a multi-match round —
+    // or a not-yet-winning partial report — would never reach the other screen.
+    await broadcastDraftState(shareId)
 
     const podSettings = jsonParse(match.settings, {})
     captureLimitedServerEvent(

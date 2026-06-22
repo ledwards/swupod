@@ -27,6 +27,70 @@ export async function checkAndAdvanceRound(podId: string, shareId: string): Prom
   }
 }
 
+/**
+ * Undo a round's completion after a match in it is unsubmitted. A round only
+ * advances once ALL its matches are confirmed, so clearing one match's result
+ * means the round is no longer complete and any advancement it triggered must
+ * roll back:
+ *   - Reopen the round itself (active again).
+ *   - If completing it had ended the EVENT (final round, number >= 3), reopen
+ *     the event (matchmakingStatus back to active).
+ *   - Otherwise, if the freshly-created next round has NO confirmed results of
+ *     its own, remove it and its matches so pairings regenerate when the round
+ *     re-completes. A next round that already has confirmed results is left
+ *     intact (removing it would discard real progress) — the round is still
+ *     reopened so the unsubmitted match shows as pending.
+ * No-ops when the round is still active (an unsubmit that didn't complete a
+ * round needs no rollback — clearing the match result is enough).
+ */
+export async function revertRoundCompletionIfNeeded(
+  podId: string,
+  roundId: string,
+): Promise<void> {
+  const round = await queryRow(
+    `SELECT round_number, status FROM practice_rounds WHERE id = $1 AND pod_id = $2`,
+    [roundId, podId]
+  )
+  if (!round || round.status !== 'complete') return
+
+  const roundNumber = round.round_number as number
+
+  await query(
+    `UPDATE practice_rounds SET status = 'active', completed_at = NULL WHERE id = $1`,
+    [roundId]
+  )
+
+  if (roundNumber >= 3) {
+    // Final round — completing it had finished the event. Reopen it.
+    await query(
+      `UPDATE pods SET draft_state = draft_state || $1::jsonb WHERE id = $2`,
+      [JSON.stringify({ matchmakingStatus: 'active', currentRound: roundNumber }), podId]
+    )
+    return
+  }
+
+  // A next round was created on advance. Remove it only if nothing has been
+  // played in it yet, so we don't discard real progress.
+  const nextRound = await queryRow(
+    `SELECT id FROM practice_rounds WHERE pod_id = $1 AND round_number = $2`,
+    [podId, roundNumber + 1]
+  )
+  if (!nextRound) return
+
+  const confirmed = await queryRow(
+    `SELECT COUNT(*)::int AS count FROM practice_matches WHERE round_id = $1 AND final_confirmed = true AND is_bye = false`,
+    [nextRound.id]
+  )
+  if (((confirmed?.count as number) ?? 0) > 0) return
+
+  await query(`DELETE FROM practice_matches WHERE round_id = $1`, [nextRound.id])
+  await query(`DELETE FROM practice_rounds WHERE id = $1`, [nextRound.id])
+  await query(
+    `UPDATE pods SET draft_state = draft_state || $1::jsonb WHERE id = $2`,
+    [JSON.stringify({ currentRound: roundNumber }), podId]
+  )
+}
+
 export async function checkAndAdvanceRoundInTransaction(
   tx: TxClient,
   podId: string
