@@ -2655,10 +2655,10 @@ a.your-stats-logged-out-link:active {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Zoom into the central illustration and lift it so the card's top name
-     banner / frame chrome is clipped off the top edge — only the photo shows. */
+  /* Zoom into the central illustration and nudge it down so the framing centers
+     on the character (pushed down 10px from its old +5px offset). */
   object-position: center 32%;
-  transform: translateY(5px) scale(1.55);
+  transform: translateY(15px) scale(1.55);
 }
 .your-stats-wr-cell-art--empty {
   background: rgba(255, 255, 255, 0.08);
@@ -2691,7 +2691,7 @@ a.your-stats-logged-out-link:active {
 }
 @media (hover: hover) and (pointer: fine) {
   .your-stats-wr-cell:hover .your-stats-wr-cell-art {
-    transform: translateY(5px) scale(1.62);
+    transform: translateY(15px) scale(1.62);
   }
 }
 
@@ -4012,12 +4012,11 @@ a.your-stats-logged-out-link:active {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Unit-side (back) leader art. Zoom past the card frame and shift the crop
-     down a literal 10px (unscaled) so only the central character art shows and
-     the printed trait line (e.g. "Force • Jedi") clips off the bottom — same
-     proportional crop as the win-rate grid cells. */
+  /* Unit-side (back) leader art. Zoom past the card frame so only the central
+     character art shows. The crop sits at center 30% with no vertical nudge —
+     pulled up 10px from its old +10px offset so the face isn't clipped low. */
   object-position: center 30%;
-  transform: translateY(10px) scale(1.5);
+  transform: translateY(0px) scale(1.5);
 }
 
 .your-stats-leaders-legend-dot {

@@ -117,6 +117,55 @@ describe('buildGameplayResponse', () => {
     assert.equal(replay.replayUrl, 'https://replay.wayfinder.news/playback/wf-99')
     assert.equal(replay.pool.draftShareId, 'draft-9')
   })
+
+  it('FIXED: archetype + replay leader follow the match-recorded leader, not a sibling pool deck', () => {
+    // Regression (the "Dedra Meero shows Ahsoka's photo" bug): a pod can hold
+    // several built decks, and the replay query joins the MOST RECENTLY UPDATED
+    // pool for that pod — so a Han Solo match can pick up a sibling Ahsoka deck's
+    // leader + art while practice_matches.my_archetype still (correctly) reads
+    // "Han Solo Red 30". The legend then showed Ahsoka's photo under the Han
+    // archetype. The leader actually played (my_leader) must win.
+    const response = buildGameplayResponse(
+      null, [], [], [], { replays_recorded: '1' },
+      [{
+        match_id: 'm-mismatch',
+        wayfinder_match_id: 'wf-mm',
+        wayfinder_replay_url: 'https://replay.wayfinder.news/playback/wf-mm',
+        created_at: '2026-06-13T13:00:00.000Z',
+        match_winner: 'player1',
+        game1_result: 'player1',
+        player1_id: 'user-1',
+        player2_id: 'user-2',
+        // What the player actually played this match (recorded by the plugin).
+        my_leader: 'Han Solo',
+        my_archetype: 'Han Solo Red 30',
+        pool_share_id: 'pool-mm',
+        pool_name: 'LAW Draft',
+        set_code: 'LAW',
+        pool_type: 'draft',
+        // The joined sibling pool deck — a DIFFERENT leader with stale art.
+        deck_builder_state: {
+          activeLeader: 'L',
+          activeBase: 'B',
+          cardPositions: {
+            L: { section: 'leaders', card: { name: 'Ahsoka Tano', imageUrl: '/ahsoka.png', backImageUrl: '/ahsoka_unit.png', isLeader: true } },
+          },
+        },
+      }],
+      'user-1'
+    )
+    const replay = response.replays[0]
+    // The replay reflects the leader actually played, not the sibling deck.
+    assert.equal(replay.leaderName, 'Han Solo')
+    // Both art fields resolve to Han Solo by name — never the stale Ahsoka art.
+    assert.match(replay.leaderImageUrl!, /Han_Solo/)
+    assert.match(replay.leaderBackImageUrl!, /Han_Solo/)
+    assert.doesNotMatch(replay.leaderBackImageUrl!, /ahsoka/i)
+    // The "Your Archetypes" legend thumbnail (leaderBackImageUrl) is Han's art.
+    const arch = response.archetypeBreakdown.find((a) => a.archetype === 'Han Solo Red 30')!
+    assert.ok(arch, 'archetype row exists')
+    assert.match(arch.leaderBackImageUrl!, /Han_Solo/)
+  })
 })
 
 describe('buildLeaderBreakdown', () => {
