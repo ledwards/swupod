@@ -216,6 +216,24 @@ describe('MatchmakingPanel helpers', () => {
     )
   })
 
+  it('reverts a stuck "creating" game to a Play button once the 30s timeout fires', () => {
+    // SPEC: a lobby should appear within seconds; past the 30s max a stuck
+    // "creating" becomes a Play (retry) for both the creator and the opponent.
+    for (const userId of ['A', 'B']) {
+      assert.deepEqual(
+        liveGameAction({
+          match: match({
+            currentGame: { status: 'creating', gameNumber: 1, game: { createdByUserId: 'A' } },
+          }),
+          currentUserId: userId,
+          liveLaunchEnabled: true,
+          creatingTimedOut: true,
+        }),
+        { kind: 'play', label: '' }
+      )
+    }
+  })
+
   it('turns a ready lobby into an open-link play button for any participant', () => {
     assert.deepEqual(
       liveGameAction({

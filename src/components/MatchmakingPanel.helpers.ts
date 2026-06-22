@@ -309,11 +309,14 @@ export function liveGameAction({
   currentUserId,
   liveLaunchEnabled,
   pending = false,
+  creatingTimedOut = false,
 }: {
   match: MatchmakingHelperMatch
   currentUserId: string
   liveLaunchEnabled: boolean
   pending?: boolean
+  /** Client-side 30s timer fired: treat a stuck "creating" game as failed. */
+  creatingTimedOut?: boolean
 }): LiveGameAction {
   if (match.isBye || match.finalConfirmed) {
     return replayAction(match)
@@ -357,8 +360,9 @@ export function liveGameAction({
 
   if (!liveLaunchEnabled) {
     if (status === 'complete') return replayAction(match)
-    // The opponent is spinning up the lobby — just wait for its URL to arrive.
-    if (status === 'creating') return { kind: 'waiting', label: 'Waiting for lobby', disabled: true }
+    // The opponent is spinning up the lobby — just wait for its URL to arrive,
+    // but don't wait forever: after the 30s timeout fall through to the nudge.
+    if (status === 'creating' && !creatingTimedOut) return { kind: 'waiting', label: 'Waiting for lobby', disabled: true }
     // No Companion and no lobby yet → a disabled play button that nudges install.
     return { kind: 'play', label: '', disabled: true, tooltip: 'Install Wayfinder to start a lobby' }
   }
@@ -374,7 +378,7 @@ export function liveGameAction({
     // button. (The launching client re-reads ~32s after launch so elapsedSeconds
     // catches up.)
     const stuckTooLong = (currentGame?.elapsedSeconds ?? 0) > 30
-    if (currentGame?.retryable || currentGame?.stale || stuckTooLong) {
+    if (currentGame?.retryable || currentGame?.stale || stuckTooLong || creatingTimedOut) {
       return { kind: 'play', label: '' }
     }
     if (currentGame?.game?.createdByUserId === currentUserId) {

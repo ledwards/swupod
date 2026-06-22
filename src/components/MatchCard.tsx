@@ -117,11 +117,30 @@ export function MatchCard({
   const canReportOrEdit = !readOnly && !match.isBye && (isMyMatch || isHost)
   const recordFor = (player: MatchPlayer | null) => player?.id ? formatRecord(playerRecords?.get(player.id)) : '0-0'
   const liveStatus = liveGameStatusLabel(match.currentGame)
+
+  // A lobby should appear within seconds. If a game sits in "creating" past a
+  // 30s max, the launch almost certainly died with no callback — flip to a Play
+  // button (retry) instead of a stuck spinner. Client-side timer so it fires
+  // even without a fresh server push (elapsedSeconds can be frozen between
+  // pushes). It also clears the instant the status changes — lobby created
+  // (lobby_ready) or failed both reset it.
+  const isCreating = match.currentGame?.status === 'creating'
+  const [creatingStuck, setCreatingStuck] = useState(false)
+  useEffect(() => {
+    if (!isCreating) { setCreatingStuck(false); return }
+    setCreatingStuck(false)
+    const elapsed = match.currentGame?.elapsedSeconds || 0
+    const remainingMs = Math.max(0, (30 - elapsed) * 1000)
+    const t = setTimeout(() => setCreatingStuck(true), remainingMs)
+    return () => clearTimeout(t)
+  }, [isCreating, match.currentGame?.gameNumber, match.currentGame?.attemptNumber, match.currentGame?.elapsedSeconds])
+
   const liveAction = liveGameAction({
     match,
     currentUserId,
     liveLaunchEnabled: Boolean(liveLaunchEnabled && onPracticeLaunch),
     pending: practiceLaunchPending,
+    creatingTimedOut: creatingStuck,
   })
   const showLiveRow = Boolean(liveStatus || liveAction.kind !== 'none' || practiceLaunchMessage)
 
@@ -149,10 +168,12 @@ export function MatchCard({
   // Only a still-live match falls back to the ready copy — a finished/bye match
   // (e.g. one showing only a replay link) must not read "Game N Ready".
   const defaultLiveCopy = (!match.isBye && !match.finalConfirmed) ? `Game ${nextGameNumber} Ready` : null
-  const displayStatus = isFailedSetup && failureSettled ? defaultLiveCopy : (liveStatus || defaultLiveCopy)
-  // Once a failed setup has settled, drop the red failed styling too so the box
-  // reverts to a normal "ready to play" state instead of a lingering red banner.
-  const liveRowStatus = isFailedSetup && failureSettled ? 'pending' : (match.currentGame?.status || 'pending')
+  // A settled failure OR a timed-out "creating" both revert the box to the
+  // normal ready state (default copy + a plain Play button) instead of a
+  // lingering red banner or a stuck spinner.
+  const revertedToReady = (isFailedSetup && failureSettled) || (isCreating && creatingStuck)
+  const displayStatus = revertedToReady ? defaultLiveCopy : (liveStatus || defaultLiveCopy)
+  const liveRowStatus = revertedToReady ? 'pending' : (match.currentGame?.status || 'pending')
 
   // Host-only "kick" affordance: a bare red X that appears upper-right of a
   // player's name on hover, opening a confirmation dialog before removing them.
