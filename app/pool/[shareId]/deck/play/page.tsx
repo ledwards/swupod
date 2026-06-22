@@ -28,6 +28,7 @@ import CardWithPreview from '../../../../../src/components/CardWithPreview'
 import Modal from '../../../../../src/components/Modal'
 import Button from '../../../../../src/components/Button'
 import DraftReportButton from '../../../../../src/components/DraftReportButton'
+import { useStickyTab } from '../../../../../src/hooks/useStickyTab'
 import PlayInstructions from '../../../../../src/components/PlayInstructions'
 import ChatPanel from '../../../../../src/components/ChatPanel'
 import MatchmakingPanel from '../../../../../src/components/MatchmakingPanel'
@@ -314,6 +315,11 @@ export default function PlayPage({ params }: PageProps) {
     window.setTimeout(() => { refreshCompetitive?.() }, 32000)
     return result
   }, [practiceLaunch, refreshCompetitive])
+
+  // After the Swiss event ends, the page splits into two tabs — "Swiss Practice
+  // Results" (final standings) and "Play" (play the deck) — so you can review your
+  // standings AND still play. Default to the standings tab.
+  const [postTab, setPostTab] = useStickyTab(['swiss', 'play'] as const, 'swiss', { storageKey: 'ptp:posttourney-tab' })
 
   // ?lobby=private|public deep link (from the /me Pools tab lobby buttons):
   // auto-opens the corresponding Karabast lobby once detected + owner.
@@ -1324,9 +1330,38 @@ export default function PlayPage({ params }: PageProps) {
           </div>
         )}
 
+        {/* Once the Swiss event is over, split the page into Swiss-results vs
+            Play tabs (default: results). While it's underway there are no tabs —
+            the panel and the play actions stack as before. */}
+        {isCompetitive && user && matchmakingStatus === 'complete' && (
+          <div className="posttourney-tabs" role="tablist" aria-label="Swiss Practice">
+            <Button
+              variant="toggle"
+              glowColor="blue"
+              active={postTab === 'swiss'}
+              onClick={() => setPostTab('swiss')}
+              role="tab"
+              aria-selected={postTab === 'swiss'}
+            >
+              Swiss Practice Results
+            </Button>
+            <Button
+              variant="toggle"
+              glowColor="blue"
+              active={postTab === 'play'}
+              onClick={() => setPostTab('play')}
+              role="tab"
+              aria-selected={postTab === 'play'}
+            >
+              Play
+            </Button>
+          </div>
+        )}
+
         {/* Swiss Practice panel sits at the top — above the play/deck-complete
-            CTA — taking the place of the normal pod status for competitive pods. */}
-        {isCompetitive && user && (
+            CTA — taking the place of the normal pod status for competitive pods.
+            After the event, it lives under the "Swiss Practice Results" tab. */}
+        {isCompetitive && user && !(matchmakingStatus === 'complete' && postTab === 'play') && (
           <MatchmakingPanel
             rounds={competitiveRounds}
             currentRound={competitiveCurrentRound}
@@ -1379,8 +1414,9 @@ export default function PlayPage({ params }: PageProps) {
         )}
 
         {/* Skeleton while we don't yet know if this is a competitive (Swiss) pod —
-            render the right thing ONCE rather than flashing the normal play box. */}
-        {competitiveUndetermined ? (
+            render the right thing ONCE rather than flashing the normal play box.
+            After the event, the play box lives under the "Play" tab only. */}
+        {(isCompetitive && matchmakingStatus === 'complete' && postTab === 'swiss') ? null : competitiveUndetermined ? (
           <div className="swiss-area-skeleton" aria-hidden="true">
             <div className="swiss-area-skeleton-bar" />
             <div className="swiss-area-skeleton-block" />
