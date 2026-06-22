@@ -1,5 +1,4 @@
 import { deriveMatchWinner } from './results'
-import { isValidPrivateLobbyUrl } from '@/src/utils/karabastLobby'
 import type { TxClient } from '@/lib/db'
 import type { RoundAdvanceResult } from './advancement'
 
@@ -120,15 +119,6 @@ export class PracticeGameClaimError extends Error {
     super(message)
     this.name = 'PracticeGameClaimError'
   }
-}
-
-export interface PracticeGameSetLobbyParams {
-  shareId: string
-  matchId: string
-  userId: string
-  lobbyUrl: string
-  now?: Date
-  staleAfterMs?: number | undefined
 }
 
 export interface PracticeGameLifecycleParams {
@@ -443,13 +433,6 @@ export async function claimPracticeMatchGame(
   return withTransaction(tx => claimPracticeMatchGameInTransaction(tx, params))
 }
 
-export async function setPracticeMatchGameLobby(
-  params: PracticeGameSetLobbyParams
-): Promise<PracticeGameClaimResult> {
-  const { withTransaction } = await import('@/lib/db')
-  return withTransaction(tx => setPracticeMatchGameLobbyInTransaction(tx, params))
-}
-
 export async function recordPracticeMatchGameLifecycle(
   params: PracticeGameLifecycleParams
 ): Promise<PracticeGameLifecycleResult> {
@@ -587,125 +570,6 @@ export async function claimPracticeMatchGameInTransaction(
 
   return claimResultFromSummary({
     action: 'create_lobby',
-    matchRow,
-    gameNumber,
-    game,
-    now,
-    staleAfterMs,
-    isNewlyCreated: true,
-  })
-}
-
-export async function setPracticeMatchGameLobbyInTransaction(
-  tx: TxClient,
-  {
-    shareId,
-    matchId,
-    userId,
-    lobbyUrl,
-    now = new Date(),
-    staleAfterMs = DEFAULT_STALE_AFTER_MS,
-  }: PracticeGameSetLobbyParams
-): Promise<PracticeGameClaimResult> {
-  if (!isValidPrivateLobbyUrl(lobbyUrl)) {
-    throw new PracticeGameClaimError(
-      400,
-      'invalid_lobby_url',
-      'Paste a Karabast private lobby link (https://karabast.net/lobby?lobbyId=…)'
-    )
-  }
-
-  const matchRow = await tx.queryRow(
-    `SELECT
-       pm.id,
-       pm.round_id,
-       pm.pod_id,
-       pm.player1_id,
-       pm.player2_id,
-       pm.is_bye,
-       pm.game1_result,
-       pm.game2_result,
-       pm.game3_result,
-       pm.final_confirmed,
-       pm.match_winner,
-       pr.round_number,
-       pr.status AS round_status,
-       p.share_id,
-       p.status AS pod_status,
-       p.competitive,
-       p.draft_state
-     FROM practice_matches pm
-     JOIN practice_rounds pr ON pm.round_id = pr.id
-     JOIN pods p ON pm.pod_id = p.id
-     WHERE pm.id = $1 AND p.share_id = $2
-     FOR UPDATE OF pm, pr, p`,
-    [matchId, shareId]
-  )
-
-  if (!matchRow) {
-    throw new PracticeGameClaimError(404, 'match_not_found', 'Match not found')
-  }
-
-  await tx.query('SELECT pg_advisory_xact_lock(hashtext($1::text))', [matchRow.pod_id])
-
-  validateClaimableMatch(matchRow, userId)
-
-  const games = (await tx.queryRows(
-    `SELECT *
-     FROM practice_match_games
-     WHERE match_id = $1
-     ORDER BY game_number, attempt_number
-     FOR UPDATE`,
-    [matchId]
-  )).map(normalizePracticeMatchGameRow)
-
-  const matchAggregate = matchAggregateFromRow(matchRow)
-  const gameNumber = nextNeededGameNumber(matchAggregate, games)
-
-  if (gameNumber === null) {
-    throw new PracticeGameClaimError(409, 'match_already_decided', 'This match already has enough results')
-  }
-
-  // Don't let a pasted lobby hijack a game that is already underway. A new
-  // lobby_ready attempt would otherwise rank below in_progress/complete and be
-  // ignored, but reject explicitly so the player gets a clear error.
-  const officialGame = officialGameForNumber(games, gameNumber)
-  if (officialGame && (officialGame.status === 'in_progress' || officialGame.status === 'complete')) {
-    throw new PracticeGameClaimError(
-      409,
-      'game_in_progress',
-      'This game is already underway — finish it before setting a new lobby'
-    )
-  }
-
-  // NEWEST-WINS: void any still-active attempt (an in-flight auto-create or an
-  // earlier pasted lobby) for this game number before inserting the new
-  // lobby_ready attempt. This frees the partial-unique "active" slot
-  // (idx_practice_match_games_active) so the new attempt can be inserted and
-  // become canonical via officialGameForNumber (voided rows are filtered out).
-  await tx.query(
-    `UPDATE practice_match_games
-     SET status = 'voided',
-         failed_at = COALESCE(failed_at, $3),
-         failure_reason = COALESCE(failure_reason, 'Superseded by a pasted lobby link'),
-         updated_at = $3
-     WHERE match_id = $1
-       AND game_number = $2
-       AND status IN ('creating', 'lobby_ready')`,
-    [matchId, gameNumber, now]
-  )
-
-  const game = await createPracticeMatchGameLobbyAttempt(tx, {
-    matchRow,
-    gameNumber,
-    attemptNumber: nextAttemptNumber(games, gameNumber),
-    userId,
-    lobbyUrl: lobbyUrl.trim(),
-    now,
-  })
-
-  return claimResultFromSummary({
-    action: actionForClaimedGame(game, userId),
     matchRow,
     gameNumber,
     game,
@@ -1696,60 +1560,6 @@ async function createPracticeMatchGameAttempt(
 
   if (!row) {
     throw new PracticeGameClaimError(500, 'claim_failed', 'Failed to reserve a practice game')
-  }
-
-  return normalizePracticeMatchGameRow(row)
-}
-
-async function createPracticeMatchGameLobbyAttempt(
-  tx: TxClient,
-  {
-    matchRow,
-    gameNumber,
-    attemptNumber,
-    userId,
-    lobbyUrl,
-    now,
-  }: {
-    matchRow: Record<string, unknown>
-    gameNumber: GameNumber
-    attemptNumber: number
-    userId: string
-    lobbyUrl: string
-    now: Date
-  }
-): Promise<PracticeMatchGameLike> {
-  const row = await tx.queryRow(
-    `INSERT INTO practice_match_games (
-       match_id,
-       round_id,
-       pod_id,
-       game_number,
-       attempt_number,
-       status,
-       created_by_user_id,
-       lobby_url,
-       claimed_at,
-       lobby_ready_at,
-       created_at,
-       updated_at
-     )
-     VALUES ($1, $2, $3, $4, $5, 'lobby_ready', $6, $7, $8, $8, $8, $8)
-     RETURNING *`,
-    [
-      matchRow.id,
-      matchRow.round_id,
-      matchRow.pod_id,
-      gameNumber,
-      attemptNumber,
-      userId,
-      lobbyUrl,
-      now,
-    ]
-  )
-
-  if (!row) {
-    throw new PracticeGameClaimError(500, 'set_lobby_failed', 'Failed to set the practice game lobby')
   }
 
   return normalizePracticeMatchGameRow(row)

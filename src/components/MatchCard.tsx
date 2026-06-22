@@ -11,7 +11,6 @@ import {
 } from './MatchmakingPanel.helpers'
 import { formatRecord, type PlayerRecord } from '../services/matchmaking/standings'
 import { avatarSrc } from '../utils/avatar'
-import { isValidPrivateLobbyUrl } from '../utils/karabastLobby'
 import './MatchCard.css'
 
 interface MatchPlayer {
@@ -66,7 +65,6 @@ interface MatchCardProps {
   onPracticeLaunch?: (matchId: string) => void | Promise<void>
   practiceLaunchPending?: boolean
   practiceLaunchMessage?: PracticeLaunchMessage | null
-  onSetLobby?: (matchId: string, lobbyUrl: string) => void | Promise<void>
   readOnly?: boolean
   /** Swiss table number (1 = top tables, ordered by record). */
   tableNumber?: number
@@ -102,14 +100,10 @@ export function MatchCard({
   onPracticeLaunch,
   practiceLaunchPending = false,
   practiceLaunchMessage = null,
-  onSetLobby,
   readOnly = false,
   tableNumber,
   wayfinderDetected = false,
 }: MatchCardProps) {
-  const [showLobbyInput, setShowLobbyInput] = useState(false)
-  const [lobbyInput, setLobbyInput] = useState('')
-  const [lobbySubmitting, setLobbySubmitting] = useState(false)
   const isMyMatch = match.player1?.id === currentUserId || match.player2?.id === currentUserId
   const status = getMatchStatus(match)
   const iAmPlayer1 = match.player1?.id === currentUserId
@@ -201,31 +195,6 @@ export function MatchCard({
       <path d="M8 5v14l11-7z" />
     </svg>
   )
-
-  // "Have a lobby link? Paste it" recovery affordance — only on my own match,
-  // before it's confirmed, and not once a game has actually started or finished.
-  const liveGameStatus = match.currentGame?.status
-  const canSetLobby =
-    !readOnly &&
-    isMyMatch &&
-    !match.isBye &&
-    !match.finalConfirmed &&
-    liveGameStatus !== 'in_progress' &&
-    liveGameStatus !== 'complete' &&
-    Boolean(onSetLobby)
-  const lobbyInputValid = isValidPrivateLobbyUrl(lobbyInput)
-
-  const handleSubmitLobby = async () => {
-    if (!lobbyInputValid || lobbySubmitting || !onSetLobby) return
-    setLobbySubmitting(true)
-    try {
-      await onSetLobby(match.id, lobbyInput.trim())
-      setLobbyInput('')
-      setShowLobbyInput(false)
-    } finally {
-      setLobbySubmitting(false)
-    }
-  }
 
   const renderLiveAction = () => {
     if (liveAction.kind === 'none') return null
@@ -391,54 +360,6 @@ export function MatchCard({
           <div className="match-card-live-actions">
             {renderLiveAction()}
           </div>
-        </div>
-      )}
-
-      {canSetLobby && (
-        <div className="match-card-set-lobby" data-testid={`match-set-lobby-${match.id}`}>
-          {!showLobbyInput ? (
-            <Button
-              variant="secondary"
-              size="sm"
-              textOnly
-              className="match-card-set-lobby-toggle"
-              onClick={() => setShowLobbyInput(true)}
-            >
-              Have a lobby link? Paste it
-            </Button>
-          ) : (
-            <div className="match-card-set-lobby-form">
-              <input
-                type="url"
-                className="match-card-set-lobby-input"
-                placeholder="https://karabast.net/lobby?lobbyId=…"
-                value={lobbyInput}
-                onChange={(e) => setLobbyInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') handleSubmitLobby() }}
-                aria-label="Karabast private lobby link"
-                autoFocus
-              />
-              <div className="match-card-set-lobby-buttons">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  disabled={!lobbyInputValid || lobbySubmitting}
-                  onClick={handleSubmitLobby}
-                >
-                  {lobbySubmitting ? 'Setting…' : 'Use Lobby'}
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  textOnly
-                  disabled={lobbySubmitting}
-                  onClick={() => { setShowLobbyInput(false); setLobbyInput('') }}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
       )}
 
