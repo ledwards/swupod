@@ -1381,6 +1381,30 @@ a.discord-login-button:active {
   filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.4));
 }
 
+/* Swiss Rounds toggle in the OFF state: muted/neutral, no gold glow. */
+.set-selection-header .setting-lock-competitive.setting-lock-competitive-off {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: none;
+  box-shadow: none;
+}
+
+.set-selection-header .setting-lock-competitive.setting-lock-competitive-off svg {
+  color: rgba(255, 255, 255, 0.7);
+  filter: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .set-selection-header .setting-lock-competitive {
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .set-selection-header .setting-lock-competitive:hover {
+    transform: translateY(-2px);
+  }
+}
+
 /* Draft landing: Standard + Competitive button row */
 .draft-mode-buttons {
   display: flex;

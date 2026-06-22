@@ -245,4 +245,55 @@ describe('pairing — bye × drop invariants', () => {
     assert.notEqual(byeId, 'p3')
     assert.ok(byeId === 'p1' || byeId === 'p2')
   })
+
+  describe('rematch avoidance (4+ players)', () => {
+    it('SPEC: avoids an AVOIDABLE rematch via cross-group pairing (closed win-group)', () => {
+      // a & b are 2-0 and already played each other; c & d are 1-1 and already
+      // played each other. The win-group greedy pass is forced into a-b AND c-d
+      // (both rematches), but a-c + b-d is rematch-free. pairSwiss is randomized,
+      // so loop hard to defeat luck.
+      for (let iter = 0; iter < 300; iter++) {
+        const players = [
+          makePlayer({ id: 'a', seatNumber: 1, matchWins: 2, opponents: ['b'] }),
+          makePlayer({ id: 'b', seatNumber: 2, matchWins: 2, opponents: ['a'] }),
+          makePlayer({ id: 'c', seatNumber: 3, matchWins: 1, opponents: ['d'] }),
+          makePlayer({ id: 'd', seatNumber: 4, matchWins: 1, opponents: ['c'] }),
+        ]
+        const pairings = pairSwiss(players)
+        assert.strictEqual(pairings.length, 2, `iter ${iter}: two matches, no bye`)
+        const byId = Object.fromEntries(players.map(p => [p.id, p]))
+        for (const pr of pairings) {
+          assert.ok(!pr.isBye && pr.player2Id, `iter ${iter}: no bye expected`)
+          const isRematch = byId[pr.player1Id].opponents.includes(pr.player2Id)
+          assert.ok(!isRematch, `iter ${iter}: ${pr.player1Id} vs ${pr.player2Id} is an avoidable rematch`)
+        }
+      }
+    })
+
+    it('SPEC: an UNAVOIDABLE rematch still produces a pairing (no crash, no spurious bye)', () => {
+      // Only two active players who already played: they MUST be paired again.
+      for (let iter = 0; iter < 50; iter++) {
+        const players = [
+          makePlayer({ id: 'a', seatNumber: 1, matchWins: 1, opponents: ['b'] }),
+          makePlayer({ id: 'b', seatNumber: 2, matchWins: 0, opponents: ['a'] }),
+        ]
+        const pairings = pairSwiss(players)
+        assert.strictEqual(pairings.length, 1, `iter ${iter}: exactly one match`)
+        assert.strictEqual(pairings[0].isBye, false, `iter ${iter}: not a bye`)
+        const ids = [pairings[0].player1Id, pairings[0].player2Id].sort()
+        assert.deepStrictEqual(ids, ['a', 'b'], `iter ${iter}: a vs b`)
+      }
+    })
+
+    it('SPEC: a clean 8-player round with no prior matches yields four matches and no byes', () => {
+      for (let iter = 0; iter < 100; iter++) {
+        const players = [1, 2, 3, 4, 5, 6, 7, 8].map(n =>
+          makePlayer({ id: `p${n}`, seatNumber: n, matchWins: n <= 4 ? 1 : 0 })
+        )
+        const pairings = pairSwiss(players)
+        assert.strictEqual(pairings.length, 4, `iter ${iter}: four matches`)
+        assert.ok(pairings.every(p => !p.isBye), `iter ${iter}: no byes for even count`)
+      }
+    })
+  })
 })
