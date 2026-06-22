@@ -614,14 +614,18 @@ export async function recordPracticeMatchGameLifecycleInTransaction(
 
   assertLifecycleParticipant(row)
 
-  // Recovery: a lobby arrived AFTER this attempt already died. failed/voided are
-  // terminal, so a normal transition would be rejected (illegal_transition) —
-  // instead open a NEW lobby_ready attempt for this game number (automatic
-  // "newest wins"). This is what makes a hand-made lobby count when the
-  // Companion's auto-create failed (e.g. a localhost deck-validation wall).
+  // Recovery / "newest lobby wins": open a NEW lobby_ready attempt for this game
+  // number instead of rejecting an (illegal) transition, when either:
+  //  - the current attempt already died (failed/voided are terminal) — e.g. the
+  //    auto-create failed and the player made the lobby by hand; or
+  //  - a lobby_ready arrives carrying a DIFFERENT lobby than the current one —
+  //    i.e. the player remade the lobby because something broke mid-game.
   const reportsLobby = eventStatus === 'lobby_ready' || eventStatus === 'joined' || eventStatus === 'in_progress'
   const currentlyTerminal = row.status === 'failed' || row.status === 'voided'
-  if (reportsLobby && currentlyTerminal) {
+  const reportLobbyId = nonEmptyStringOrNull(params.lobbyId)
+  const currentLobbyId = nonEmptyStringOrNull(row.lobby_id)
+  const supersedingLobby = eventStatus === 'lobby_ready' && reportLobbyId != null && currentLobbyId != null && reportLobbyId !== currentLobbyId
+  if (reportsLobby && (currentlyTerminal || supersedingLobby)) {
     if (!hasLobbyIdentity(row, params)) {
       throw new PracticeGameLifecycleError(400, 'missing_lobby_identity', 'Lobby lifecycle events require a lobby id or URL')
     }
@@ -936,6 +940,22 @@ export async function recordPracticeMatchGameResultInTransaction(
     advanceResult = await checkAndAdvanceRoundInTransaction(tx, String(pool.pod_id))
   }
 
+  // Bo3 continuation: the match isn't decided, so the next game plays in the
+  // SAME Karabast lobby. Carry the lobby forward as an in-progress next game so
+  // the live status reads "Game N+1 In Progress" immediately; the Companion's
+  // result then completes it (resolved by game number). If the lobby breaks and
+  // the player makes a new one, the recovery branch supersedes this attempt.
+  if (!winner && gameNumber < 3) {
+    await carryLobbyForwardToNextGame(tx, {
+      matchRow: updatedMatch,
+      nextGameNumber: (gameNumber + 1) as GameNumber,
+      lobbyId: nextGameRow.lobbyId ?? null,
+      lobbyUrl: nextGameRow.lobbyUrl ?? null,
+      createdByUserId: stringOrNull(nextGameRow.createdByUserId) ?? stringOrNull(pool.user_id),
+      now: occurredAt,
+    })
+  }
+
   return {
     ok: true,
     changed: true,
@@ -950,6 +970,58 @@ export async function recordPracticeMatchGameResultInTransaction(
     eventCompleted: advanceResult?.completedEvent ?? false,
     advanceResult,
   }
+}
+
+// Bo3 continuation: insert the next game as an in-progress row reusing the same
+// lobby, so it shows live immediately. No-op if there's no lobby to carry or the
+// next game already exists.
+async function carryLobbyForwardToNextGame(
+  tx: TxClient,
+  {
+    matchRow,
+    nextGameNumber,
+    lobbyId,
+    lobbyUrl,
+    createdByUserId,
+    now,
+  }: {
+    matchRow: Record<string, unknown>
+    nextGameNumber: GameNumber
+    lobbyId: string | null
+    lobbyUrl: string | null
+    createdByUserId: string | null
+    now: Date
+  }
+): Promise<void> {
+  if (!lobbyId && !lobbyUrl) return
+
+  const existing = await tx.queryRow(
+    `SELECT 1 FROM practice_match_games
+     WHERE match_id = $1 AND game_number = $2
+       AND status IN ('creating', 'lobby_ready', 'in_progress', 'complete')
+     LIMIT 1`,
+    [matchRow.id, nextGameNumber]
+  )
+  if (existing) return
+
+  await tx.query(
+    `INSERT INTO practice_match_games (
+       match_id, round_id, pod_id, game_number, attempt_number,
+       status, lobby_id, lobby_url, created_by_user_id,
+       claimed_at, lobby_ready_at, started_at, created_at, updated_at
+     )
+     VALUES ($1, $2, $3, $4, 1, 'in_progress', $5, $6, $7, $8, $8, $8, $8, $8)`,
+    [
+      matchRow.id,
+      matchRow.round_id,
+      matchRow.pod_id,
+      nextGameNumber,
+      lobbyId,
+      lobbyUrl,
+      createdByUserId,
+      now,
+    ]
+  )
 }
 
 export function normalizePracticeMatchGameRow(row: Record<string, unknown>): PracticeMatchGameLike {

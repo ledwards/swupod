@@ -479,6 +479,60 @@ describe('recordPracticeMatchGameLifecycle', { skip: !dbAvailable }, () => {
     assert.equal(ok.duplicate ?? false, false)
   })
 
+  it('Bo3 continuation: completing game 1 carries the lobby into an in-progress game 2, then game 2 records by game number', async () => {
+    const seeded = await seedActiveSwissMatch()
+    const claim = await claimPracticeMatchGame({
+      shareId: seeded.shareId,
+      matchId: seeded.matchId,
+      userId: seeded.userIds[0],
+      now: new Date('2026-06-20T10:00:00.000Z'),
+    })
+    await recordPracticeMatchGameLifecycle({
+      practiceMatchGameId: claim.practiceMatchGameId!,
+      poolShareId: seeded.poolShareIds[0],
+      status: 'lobby_ready',
+      lobbyId: 'lobby-bo3',
+      lobbyUrl: 'https://karabast.net/lobby?lobbyId=lobby-bo3',
+      occurredAt: '2026-06-20T10:00:10.000Z',
+    })
+
+    // Game 1 result (player1 wins) — match not decided → carry the lobby forward.
+    await recordPracticeMatchGameResult({
+      poolShareId: seeded.poolShareIds[0],
+      wayfinderMatchId: 'wf-bo3',
+      result: 'win',
+      gameNumber: 1,
+      practiceMatchGameId: claim.practiceMatchGameId,
+      format: 'Limited',
+    })
+
+    const g2 = await queryRow(
+      `SELECT status, lobby_url FROM practice_match_games WHERE match_id = $1 AND game_number = 2 ORDER BY attempt_number DESC LIMIT 1`,
+      [seeded.matchId]
+    )
+    assert.equal(g2!.status, 'in_progress')
+    assert.equal(g2!.lobby_url, 'https://karabast.net/lobby?lobbyId=lobby-bo3')
+
+    // Game 2 reported by game number (no practiceMatchGameId, as a continuation
+    // game) completes the carried-forward game 2 → 2-0, match decided.
+    await recordPracticeMatchGameResult({
+      poolShareId: seeded.poolShareIds[0],
+      wayfinderMatchId: 'wf-bo3',
+      result: 'win',
+      gameNumber: 2,
+      format: 'Limited',
+    })
+
+    const m = await queryRow(`SELECT game1_result, game2_result, match_winner FROM practice_matches WHERE id = $1`, [seeded.matchId])
+    assert.equal(m!.game1_result, 'player1')
+    assert.equal(m!.game2_result, 'player1')
+    assert.equal(m!.match_winner, 'player1')
+
+    // No duplicate game 2 rows were created.
+    const g2count = await queryRow(`SELECT count(*)::int AS n FROM practice_match_games WHERE match_id = $1 AND game_number = 2 AND status = 'complete'`, [seeded.matchId])
+    assert.equal(g2count!.n, 1)
+  })
+
   it('marks a creating game failed on a failed lifecycle and lets a retry open a new attempt', async () => {
     const seeded = await seedActiveSwissMatch()
     const claim = await claimPracticeMatchGame({
