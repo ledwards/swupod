@@ -74,53 +74,73 @@ function shuffle<T>(arr: T[]): T[] {
   return result
 }
 
-function pairGroupGreedy(group: PairingPlayer[]): { pairings: Pairing[], leftover: PairingPlayer | null, rematches: number } {
-  const pairings: Pairing[] = []
-  const available = [...group]
-  let rematches = 0
+// Penalty applied to a pairing that repeats a prior matchup. It dwarfs any
+// possible accumulated score-distance cost (wins are bounded by the round count,
+// so per-pair score cost is tiny), guaranteeing the matcher only ever produces a
+// rematch when NO rematch-free perfect matching exists.
+const REMATCH_PENALTY = 1_000_000
 
-  while (available.length >= 2) {
-    const player = available.shift()!
-    const opponentIdx = available.findIndex(p => !player.opponents.includes(p.id) && !p.opponents.includes(player.id))
-
-    if (opponentIdx !== -1) {
-      const opponent = available.splice(opponentIdx, 1)[0]!
-      pairings.push({ player1Id: player.id, player2Id: opponent.id, isBye: false })
-    } else {
-      // No valid opponent found (rematch unavoidable in this ordering)
-      const opponent = available.shift()!
-      pairings.push({ player1Id: player.id, player2Id: opponent.id, isBye: false })
-      rematches += 1
-    }
-  }
-
-  const leftover = available.length === 1 ? (available[0] ?? null) : null
-  return { pairings, leftover, rematches }
+function pairCost(a: PairingPlayer, b: PairingPlayer): number {
+  const isRematch = a.opponents.includes(b.id) || b.opponents.includes(a.id)
+  const winDistance = a.matchWins - b.matchWins
+  // Squared score distance keeps players paired within their score group and,
+  // when a pair-down is forced, prefers the smallest drop in the standings.
+  return (isRematch ? REMATCH_PENALTY : 0) + winDistance * winDistance
 }
 
-function pairGroup(group: PairingPlayer[], previouslyPaired: Set<string>): { pairings: Pairing[], leftover: PairingPlayer | null } {
-  // Greedy pairing on a shuffled group can produce rematches even when a
-  // non-greedy ordering would avoid them. Try multiple shuffles and keep the
-  // best (fewest rematches). Cap attempts so this stays O(N) for sane sizes.
-  let best: { pairings: Pairing[], leftover: PairingPlayer | null, rematches: number } | null = null
-  const maxAttempts = group.length <= 8 ? 50 : 10
-  for (let i = 0; i < maxAttempts; i++) {
-    const candidate = pairGroupGreedy(i === 0 ? group : shuffle(group))
-    if (!best || candidate.rematches < best.rematches) {
-      best = candidate
-      if (best.rematches === 0) break  // perfect — done
+/**
+ * Exact minimum-cost perfect matching over an even-sized set of players.
+ *
+ * Swiss pairing must never repeat a matchup while a rematch-free pairing is
+ * still possible, even when avoiding the rematch requires pairing a player DOWN
+ * into a lower score group. A greedy "pair within the score group, float the
+ * leftover down" approach can strand a player into a rematch because it commits
+ * to local pairings before seeing the downstream consequence. Pods are tiny
+ * (<= 8 players), so we instead solve it exactly: every avoided rematch saves
+ * REMATCH_PENALTY, which no amount of score-distance cost can outweigh, so the
+ * minimum-cost matching is rematch-free whenever one exists, and otherwise uses
+ * the fewest rematches. Among equal-cost matchings the secondary score-distance
+ * term reproduces standard Swiss behaviour (pair within group, pair down least).
+ *
+ * O(2^n) with memoization on the remaining-player bitmask — trivial for n <= 8.
+ */
+function minCostMatching(players: PairingPlayer[]): Pairing[] {
+  const n = players.length
+  if (n === 0) return []
+
+  const memo = new Map<number, { cost: number, pairs: Array<[number, number]> }>()
+
+  function solve(mask: number): { cost: number, pairs: Array<[number, number]> } {
+    if (mask === 0) return { cost: 0, pairs: [] }
+    const cached = memo.get(mask)
+    if (cached) return cached
+
+    // Match the lowest-index unmatched player against every possible partner.
+    let i = 0
+    while ((mask & (1 << i)) === 0) i++
+
+    let best: { cost: number, pairs: Array<[number, number]> } | null = null
+    for (let j = i + 1; j < n; j++) {
+      if ((mask & (1 << j)) === 0) continue
+      const rest = mask & ~(1 << i) & ~(1 << j)
+      const sub = solve(rest)
+      const total = pairCost(players[i]!, players[j]!) + sub.cost
+      if (!best || total < best.cost) {
+        best = { cost: total, pairs: [[i, j], ...sub.pairs] }
+      }
     }
+
+    const result = best!
+    memo.set(mask, result)
+    return result
   }
 
-  if (!best) {
-    return { pairings: [], leftover: null }
-  }
-
-  for (const pairing of best.pairings) {
-    previouslyPaired.add(`${pairing.player1Id}:${pairing.player2Id}`)
-  }
-
-  return { pairings: best.pairings, leftover: best.leftover }
+  const { pairs } = solve((1 << n) - 1)
+  return pairs.map(([i, j]) => ({
+    player1Id: players[i]!.id,
+    player2Id: players[j]!.id,
+    isBye: false,
+  }))
 }
 
 /** True if these two players have already faced each other. */
@@ -198,9 +218,10 @@ function pairGlobalMinRematch(players: PairingPlayer[]): Pairing[] | null {
 export function pairSwiss(players: PairingPlayer[]): Pairing[] {
   const active = players.filter(p => !p.dropped)
   const pairings: Pairing[] = []
-  const previouslyPaired = new Set<string>()
 
-  let remaining = [...active]
+  // Shuffle once so that, among equally-valid (same-cost) matchings, the chosen
+  // pairing varies between rounds rather than always following seat order.
+  let remaining = shuffle(active)
 
   // Assign bye if odd number of active players
   if (remaining.length % 2 !== 0) {
@@ -209,31 +230,9 @@ export function pairSwiss(players: PairingPlayer[]): Pairing[] {
     remaining = remaining.filter(p => p.id !== byePlayerId)
   }
 
-  // Group by matchWins descending
-  const winCounts = [...new Set(remaining.map(p => p.matchWins))].sort((a, b) => b - a)
-  const groups: Map<number, PairingPlayer[]> = new Map()
-  for (const wins of winCounts) {
-    groups.set(wins, shuffle(remaining.filter(p => p.matchWins === wins)))
-  }
-
-  let floatDown: PairingPlayer | null = null
-
-  for (const wins of winCounts) {
-    const group = groups.get(wins)!
-    if (floatDown) {
-      group.unshift(floatDown)
-      floatDown = null
-    }
-
-    const { pairings: groupPairings, leftover } = pairGroup(group, previouslyPaired)
-    pairings.push(...groupPairings)
-    floatDown = leftover
-  }
-
-  // If there's still a floatDown after all groups (shouldn't happen with even count, but safety net)
-  if (floatDown) {
-    pairings.push({ player1Id: floatDown.id, player2Id: null, isBye: true })
-  }
+  // Exact minimum-cost matching: pairs within score groups and never repeats a
+  // matchup unless every possible pairing of the remaining players would.
+  pairings.push(...minCostMatching(remaining))
 
   // Rematch-avoidance safety net. The win-group greedy pass only reshuffles
   // WITHIN a win-group, so a closed in-group rematch (e.g. two 2-0 players who
