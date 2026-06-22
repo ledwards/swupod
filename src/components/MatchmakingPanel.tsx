@@ -142,12 +142,20 @@ export function MatchmakingPanel({
   const primaryRound = roundOrder.primaryRoundNumber
     ? displayRounds.find(r => r.roundNumber === roundOrder.primaryRoundNumber) || null
     : null
-  const historyRounds = roundOrder.historyRoundNumbers
-    .map(roundNumber => displayRounds.find(r => r.roundNumber === roundNumber))
-    .filter(Boolean)
   const focusedRoundNumber = activeTab.startsWith('round-')
     ? parseInt(activeTab.replace('round-', ''))
     : null
+  // The round tabs ARE the history navigation: the console shows the round for
+  // the selected tab (falling back to the live round), so there's no separate
+  // "previous rounds" box repeating them. A past round renders in its completed
+  // ('history') form; the live round in its 'active' form.
+  const consoleRound = focusedRoundNumber != null
+    ? (displayRounds.find(r => r.roundNumber === focusedRoundNumber) || null)
+    : primaryRound
+  const consoleVariant: 'active' | 'history' =
+    consoleRound && consoleRound.roundNumber === currentRound && matchmakingStatus !== 'complete'
+      ? 'active'
+      : 'history'
 
   // Find current user's match in the active round
   const myMatch = useMemo(() => {
@@ -478,8 +486,8 @@ export function MatchmakingPanel({
           </div>
         ) : (
           <div className="matchmaking-live-console" data-testid="matchmaking-live-console">
-            {primaryRound ? (
-              renderRoundSection(primaryRound, 'active')
+            {consoleRound ? (
+              renderRoundSection(consoleRound, consoleVariant)
             ) : (
               <p className="matchmaking-empty">Round not yet started</p>
             )}
@@ -506,17 +514,6 @@ export function MatchmakingPanel({
               </div>
             )}
 
-            {historyRounds.length > 0 && (
-              <details className="matchmaking-round-history" open>
-                <summary>
-                  <span>Previous rounds</span>
-                  <span>{historyRounds.length}</span>
-                </summary>
-                <div className="matchmaking-round-history-list">
-                  {historyRounds.map(round => renderRoundSection(round, 'history'))}
-                </div>
-              </details>
-            )}
           </div>
         )}
       </div>
