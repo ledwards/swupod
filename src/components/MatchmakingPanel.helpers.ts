@@ -383,21 +383,39 @@ export function liveGameAction({
     return { kind: 'play', label: '', disabled: true, tooltip: 'Game in progress' }
   }
 
-  // A private lobby exists → ANY participant can open it via its URL (you don't
-  // need the Companion to JOIN). The play button becomes a green link to the
-  // lobby. Beside it: "<opponent> is in the lobby" when the opponent created it,
-  // or "Lobby created" when you did (and your button copies the link to share).
+  // A private lobby exists. What the button does depends on who you are:
+  //  - Creator: you're already in the lobby — your button just copies the link
+  //    to share (iCreated 'open').
+  //  - Joiner WITH a capable Companion: launch through the plugin so it opens
+  //    the private lobby AND imports your deck for you (the claim returns
+  //    action:'join_lobby' → buildWayfinderPracticeJoinPayload). Rendered as a
+  //    'join' button that calls onPracticeLaunch.
+  //  - Joiner WITHOUT the Companion: a plain green link to the lobby; they open
+  //    it and import their deck by hand.
   if (status === 'lobby_ready' && lobbyUrl) {
     const creatorId = currentGame?.game?.createdByUserId || null
+    const iCreated = creatorId === currentUserId
     const openedByOpponent = Boolean(creatorId && creatorId !== currentUserId)
+
+    // Only route to the plugin JOIN when we KNOW the opponent created the lobby.
+    // If the creator is unknown, stay on the safe raw link — never risk
+    // re-launching (a 2nd tab + re-import) for someone who might be the creator.
+    if (openedByOpponent && liveLaunchEnabled) {
+      return {
+        kind: 'join',
+        label: 'Join',
+        readyText: `${opponentName(match, currentUserId)} is in the lobby`,
+      }
+    }
+
     return {
       kind: 'open',
       label: '',
       href: lobbyUrl,
-      iCreated: creatorId === currentUserId,
+      iCreated,
       readyText: openedByOpponent
         ? `${opponentName(match, currentUserId)} is in the lobby`
-        : (creatorId === currentUserId ? 'Lobby created' : null),
+        : (iCreated ? 'Lobby created' : null),
     }
   }
 

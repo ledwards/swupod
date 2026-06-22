@@ -276,6 +276,24 @@ describe('MatchmakingPanel helpers', () => {
     assert.equal(opponentView.readyText, 'Benthic is in the lobby')
   })
 
+  it('routes a plugin-capable JOINER to a Companion join (opens lobby + imports deck)', () => {
+    const lobby = {
+      status: 'lobby_ready',
+      gameNumber: 2,
+      lobbyUrl: 'https://karabast.net/lobby?lobbyId=abc',
+      game: { createdByUserId: 'B' },
+    }
+    // Opponent (A) created by B, A HAS a capable Companion → 'join' (launch),
+    // which claims (action:'join_lobby') and opens+imports via the plugin.
+    const joiner = liveGameAction({ match: match({ currentGame: lobby }), currentUserId: 'A', liveLaunchEnabled: true })
+    assert.equal(joiner.kind, 'join')
+    assert.equal(joiner.readyText, 'Benthic is in the lobby')
+    // Creator (B) is already in the lobby — stays on copy-link 'open', never join.
+    const creator = liveGameAction({ match: match({ currentGame: lobby }), currentUserId: 'B', liveLaunchEnabled: true })
+    assert.equal(creator.kind, 'open')
+    assert.equal(creator.iCreated, true)
+  })
+
   it('disables Play once the game is in progress (already at the table)', () => {
     const action = liveGameAction({
       match: match({
