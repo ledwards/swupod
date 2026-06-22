@@ -85,10 +85,11 @@
 
 .match-card-dots {
   display: flex;
+  align-items: center;
   gap: 7px;
 }
 
-/* Per-game result: green W (win), red L (loss), grey – (not decided), D (draw). */
+/* Per-game result: green W (win), red L (loss), grey circle (not played), D (draw). */
 .game-result {
   font-family: 'Barlow', sans-serif;
   font-weight: 800;
@@ -99,8 +100,16 @@
 }
 .game-result--win { color: #22c55e; }
 .game-result--loss { color: #ef4444; }
-.game-result--pending { color: rgba(255, 255, 255, 0.35); }
 .game-result--draw { color: rgba(150, 185, 255, 0.85); }
+/* Unplayed games show a small grey circle rather than a dash. */
+.game-result--pending {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  min-width: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+}
 
 /* Per-player Companion indicator (left of name): green = connected,
    blinking red = recording on Karabast. Replaces the Auto-recording tag. */
@@ -159,31 +168,35 @@
   .match-card-table-link:hover { color: #bfdbfe; text-decoration: underline; }
 }
 
-.match-card-boot {
+/* Kick (host only): a bare red X — no circle — that fades in upper-right of a
+   player's name on hover and opens a confirm dialog. On touch (no hover) it
+   stays visible so hosts can still kick on mobile. */
+.match-card-kick {
   position: absolute;
-  top: 2px;
+  top: -6px;
   right: -2px;
-  background: rgba(0, 0, 0, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: rgba(255, 255, 255, 0.85);
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  font-size: 14px;
-  line-height: 1;
-  display: flex;
+  background: none;
+  border: none;
+  padding: 2px;
+  color: #ef4444;
+  cursor: pointer;
+  line-height: 0;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  transition: all 0.2s ease;
+  opacity: 1;
+  transition: opacity 0.15s ease, color 0.15s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .match-card-boot:hover {
-    background: rgba(220, 38, 38, 0.92);
-    border-color: rgba(248, 113, 113, 0.95);
-    color: #fff;
+  .match-card-kick {
+    opacity: 0;
+  }
+  .match-card-player:hover .match-card-kick {
+    opacity: 1;
+  }
+  .match-card-kick:hover {
+    color: #f87171;
   }
 }
 

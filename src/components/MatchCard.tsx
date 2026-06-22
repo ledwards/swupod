@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useState, useEffect } from 'react'
 import Button from './Button'
+import ConfirmModal from './ConfirmModal'
 import ReplayWatchLink from './ReplayWatchLink'
 import {
   liveGameAction,
@@ -79,8 +80,8 @@ function getMatchStatus(match: MatchData): string {
 }
 
 function GameDot({ result, forPlayer }: { result: string | null; forPlayer: 'player1' | 'player2' }) {
-  // Green W (win), red L (loss), grey – (game not decided yet), muted D (draw).
-  if (!result) return <span className="game-result game-result--pending">–</span>
+  // Green W (win), red L (loss), grey circle (game not played yet), muted D (draw).
+  if (!result) return <span className="game-result game-result--pending" aria-label="not played" />
   if (result === 'draw') return <span className="game-result game-result--draw">D</span>
   if (result === forPlayer) return <span className="game-result game-result--win">W</span>
   return <span className="game-result game-result--loss">L</span>
@@ -139,10 +140,38 @@ export function MatchCard({
     const t = setTimeout(() => setFailureSettled(true), 4000)
     return () => clearTimeout(t)
   }, [isFailedSetup, match.currentGame?.gameNumber, match.currentGame?.attemptNumber])
-  const displayStatus = isFailedSetup && failureSettled ? null : liveStatus
+  // The live copy (left of the play button) always shows a sensible default —
+  // never blank. When there's no live status yet, or once a failed setup has
+  // settled, it falls back to the pre-error "Game N Ready" copy. Only the error
+  // state itself ("Setup Failed") is transient.
+  const nextGameNumber = match.currentGame?.gameNumber
+    || (!match.game1Result ? 1 : !match.game2Result ? 2 : 3)
+  // Only a still-live match falls back to the ready copy — a finished/bye match
+  // (e.g. one showing only a replay link) must not read "Game N Ready".
+  const defaultLiveCopy = (!match.isBye && !match.finalConfirmed) ? `Game ${nextGameNumber} Ready` : null
+  const displayStatus = isFailedSetup && failureSettled ? defaultLiveCopy : (liveStatus || defaultLiveCopy)
   // Once a failed setup has settled, drop the red failed styling too so the box
   // reverts to a normal "ready to play" state instead of a lingering red banner.
   const liveRowStatus = isFailedSetup && failureSettled ? 'pending' : (match.currentGame?.status || 'pending')
+
+  // Host-only "kick" affordance: a bare red X that appears upper-right of a
+  // player's name on hover, opening a confirmation dialog before removing them.
+  const [kickTarget, setKickTarget] = useState<MatchPlayer | null>(null)
+  const renderKickButton = (player: MatchPlayer | null) => {
+    if (readOnly || !isHost || !player?.id || player.id === currentUserId) return null
+    return (
+      <button
+        className="match-card-kick"
+        onClick={(e) => { e.stopPropagation(); setKickTarget(player) }}
+        title="Kick player"
+        aria-label={`Kick ${player.username || 'player'}`}
+      >
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+    )
+  }
 
   // Per-player Companion indicator, left of the name: green = Companion
   // connected (lobby creator, or the current viewer when detected); blinking
@@ -287,15 +316,7 @@ export function MatchCard({
               {match.game3Result !== null && <GameDot result={match.game3Result} forPlayer="player1" />}
             </div>
           )}
-          {!readOnly && isHost && match.player1 && match.player1.id !== currentUserId && (
-            <button
-              className="match-card-boot"
-              onClick={(e) => { e.stopPropagation(); onBoot(match.player1.id) }}
-              title="Boot player"
-            >
-              &times;
-            </button>
-          )}
+          {renderKickButton(match.player1)}
         </div>
 
         <span className="match-card-vs">{match.isBye ? 'BYE' : 'vs'}</span>
@@ -314,15 +335,7 @@ export function MatchCard({
                 <GameDot result={match.game2Result} forPlayer="player2" />
                 {match.game3Result !== null && <GameDot result={match.game3Result} forPlayer="player2" />}
               </div>
-              {!readOnly && isHost && match.player2 && match.player2.id !== currentUserId && (
-                <button
-                  className="match-card-boot"
-                  onClick={(e) => { e.stopPropagation(); onBoot(match.player2.id) }}
-                  title="Boot player"
-                >
-                  &times;
-                </button>
-              )}
+              {renderKickButton(match.player2)}
             </>
           ) : (
             <span className="match-card-player-name match-card-player-name--bye">---</span>
@@ -365,6 +378,18 @@ export function MatchCard({
           )}
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={!!kickTarget}
+        title={kickTarget ? `Kick ${kickTarget.username || 'player'}?` : 'Kick player?'}
+        confirmLabel="Kick"
+        cancelLabel="Cancel"
+        variant="danger"
+        onConfirm={() => { if (kickTarget) onBoot(kickTarget.id); setKickTarget(null) }}
+        onCancel={() => setKickTarget(null)}
+      >
+        They&rsquo;ll be removed from this match and the pod.
+      </ConfirmModal>
     </div>
   )
 }
