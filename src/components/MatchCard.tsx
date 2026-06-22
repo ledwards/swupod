@@ -68,6 +68,8 @@ interface MatchCardProps {
   readOnly?: boolean
   /** Swiss table number (1 = top tables, ordered by record). */
   tableNumber?: number
+  /** Round this match belongs to — prefixes the live status ("Round 1 · Game 2…"). */
+  roundNumber?: number
   /** Whether the viewer's Companion is detected (drives the current user's dot). */
   wayfinderDetected?: boolean
 }
@@ -133,6 +135,7 @@ export function MatchCard({
   practiceLaunchMessage = null,
   readOnly = false,
   tableNumber,
+  roundNumber,
   wayfinderDetected = false,
 }: MatchCardProps) {
   const isMyMatch = match.player1?.id === currentUserId || match.player2?.id === currentUserId
@@ -203,7 +206,10 @@ export function MatchCard({
   // normal ready state (default copy + a plain Play button) instead of a
   // lingering red banner or a stuck spinner.
   const revertedToReady = (isFailedSetup && failureSettled) || (isCreating && creatingStuck)
-  const displayStatus = revertedToReady ? defaultLiveCopy : (liveStatus || defaultLiveCopy)
+  const baseLiveCopy = revertedToReady ? defaultLiveCopy : (liveStatus || defaultLiveCopy)
+  // Prefix the round so a live status reads "Round 1 · Game 2 In Progress" —
+  // avoids confusion about which round you're looking at.
+  const displayStatus = (baseLiveCopy && roundNumber) ? `Round ${roundNumber} · ${baseLiveCopy}` : baseLiveCopy
   const liveRowStatus = revertedToReady ? 'pending' : (match.currentGame?.status || 'pending')
 
   // Host-only "kick" affordance: a bare red X that appears upper-right of a

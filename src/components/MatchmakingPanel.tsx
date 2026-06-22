@@ -71,6 +71,8 @@ interface MatchmakingPanelProps {
     baseAspects?: string[] | null
     baseHp?: number | null
     archetypeName?: string | null
+    leaderImageUrl?: string | null
+    baseImageUrl?: string | null
     poolCardCount?: number | null
     isHost?: boolean
   }[]
@@ -215,6 +217,7 @@ export function MatchmakingPanel({
       key={match.id}
       match={match}
       tableNumber={tableNumber}
+      roundNumber={roundNumber}
       currentUserId={currentUserId}
       isHost={isHost}
       playerRecords={playerRecordsByRound.get(roundNumber)}
@@ -460,10 +463,14 @@ export function MatchmakingPanel({
                           {identity && (
                             <span className="matchmaking-standing-identity">{identity}</span>
                           )}
-                          {playerMeta?.poolShareId && (
-                            <span className="matchmaking-standing-links">
-                              <a href={`/pool/${playerMeta.poolShareId}`} target="_blank" rel="noopener noreferrer">Pool</a>
-                              <a href={`/pool/${playerMeta.poolShareId}/deck`} target="_blank" rel="noopener noreferrer">Deck</a>
+                          {(playerMeta?.leaderImageUrl || playerMeta?.baseImageUrl) && (
+                            <span className="matchmaking-standing-cards" aria-hidden="true">
+                              {playerMeta?.leaderImageUrl && (
+                                <img className="matchmaking-standing-card" src={playerMeta.leaderImageUrl} alt="" loading="lazy" />
+                              )}
+                              {playerMeta?.baseImageUrl && (
+                                <img className="matchmaking-standing-card" src={playerMeta.baseImageUrl} alt="" loading="lazy" />
+                              )}
                             </span>
                           )}
                         </span>

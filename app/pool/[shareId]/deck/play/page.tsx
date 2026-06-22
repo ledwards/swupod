@@ -1311,6 +1311,8 @@ export default function PlayPage({ params }: PageProps) {
               baseAspects: Array.isArray((p as any).baseAspects) ? (p as any).baseAspects : [],
               baseHp: typeof (p as any).baseHp === 'number' ? (p as any).baseHp : null,
               archetypeName: (p as any).archetypeName || null,
+              leaderImageUrl: (p as any).leaderImageUrl || null,
+              baseImageUrl: (p as any).baseImageUrl || null,
               poolCardCount: typeof (p as any).poolCardCount === 'number' ? (p as any).poolCardCount : null,
               isHost: Boolean((p as any).isHost),
             }))}

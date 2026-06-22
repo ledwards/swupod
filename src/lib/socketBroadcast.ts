@@ -84,6 +84,8 @@ interface PublicPlayer {
   baseAspects: string[]
   baseHp: number | null
   archetypeName: string | null
+  leaderImageUrl: string | null
+  baseImageUrl: string | null
   poolCardCount: number | null
 }
 
@@ -193,6 +195,8 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
         baseAspects: deckIdentity.baseAspects,
         baseHp: deckIdentity.baseHp,
         archetypeName: deckIdentity.archetypeName,
+        leaderImageUrl: deckIdentity.leaderImageUrl,
+        baseImageUrl: deckIdentity.baseImageUrl,
         poolCardCount: Array.isArray(poolCards) ? poolCards.length : null,
       }
     })

@@ -516,6 +516,21 @@
   border: 1px solid transparent;
 }
 
+/* Leader (leader side) + base, both landscape, under the name in each row. */
+.matchmaking-standing-cards {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-top: 4px;
+}
+.matchmaking-standing-card {
+  width: 56px;
+  height: auto;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: block;
+}
+
 .matchmaking-standing-row--mine {
   background: rgba(147, 197, 253, 0.08);
   border: 1px solid rgba(147, 197, 253, 0.2);
