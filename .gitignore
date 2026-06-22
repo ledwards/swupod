@@ -114,3 +114,7 @@ ds-bundle/
 .design-sync/.cache/
 .design-sync/learnings/
 .design-sync/node_modules/
+
+# temp verification artifacts (screenshots + throwaway specs)
+_verify-*
+**/_verify-*
