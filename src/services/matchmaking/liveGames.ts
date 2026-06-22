@@ -195,6 +195,35 @@ export interface PracticeGameResultRecordResult {
   advanceResult: RoundAdvanceResult | null
 }
 
+/**
+ * Params for a Bo3 SET-concede match forfeit. Unlike a per-game result this is
+ * MATCH-grained: there is no gameNumber/slot. `result` is the REPORTING pool
+ * owner's match outcome ("win" when the opponent conceded the set, "loss" when
+ * the owner conceded) — the same owner-POV convention as a per-game result.
+ */
+export interface PracticeMatchForfeitParams {
+  poolShareId: string
+  result: WayfinderReportedResult
+  /** Synthetic Wayfinder match id — used as the per-pool W/L dedup key. */
+  wayfinderMatchId?: string | null
+  /** Optional anchor: resolve the match via this game id instead of the active round. */
+  practiceMatchGameId?: string | null
+}
+
+export interface PracticeMatchForfeitResult {
+  ok: true
+  changed: boolean
+  /** True when the match was already final_confirmed (idempotent no-op). */
+  alreadyFinalized: boolean
+  shareId: string
+  podId: string
+  matchId: string
+  matchWinner: 'player1' | 'player2'
+  roundAdvanced: boolean
+  eventCompleted: boolean
+  advanceResult: RoundAdvanceResult | null
+}
+
 export class PracticeGameResultError extends Error {
   constructor(
     public readonly status: number,
@@ -448,6 +477,13 @@ export async function recordPracticeMatchGameResult(
 ): Promise<PracticeGameResultRecordResult> {
   const { withTransaction } = await import('@/lib/db')
   return withTransaction(tx => recordPracticeMatchGameResultInTransaction(tx, params))
+}
+
+export async function forfeitPracticeMatch(
+  params: PracticeMatchForfeitParams
+): Promise<PracticeMatchForfeitResult> {
+  const { withTransaction } = await import('@/lib/db')
+  return withTransaction(tx => forfeitPracticeMatchInTransaction(tx, params))
 }
 
 export async function claimPracticeMatchGameInTransaction(
@@ -1022,6 +1058,145 @@ async function carryLobbyForwardToNextGame(
       now,
     ]
   )
+}
+
+/**
+ * Forfeit-finalize a Bo3 practice match after a SET concede.
+ *
+ * Unlike {@link recordPracticeMatchGameResultInTransaction} this does NOT touch
+ * the per-game slots — a set concede ends the match regardless of the game
+ * tally, so we set `match_winner` = the non-conceder and `final_confirmed`
+ * directly, then run the normal advancement. Idempotent: a second call (the
+ * real-time report + the ingestion reaffirmation both fire) is a no-op once the
+ * match is already final_confirmed.
+ */
+export async function forfeitPracticeMatchInTransaction(
+  tx: TxClient,
+  params: PracticeMatchForfeitParams
+): Promise<PracticeMatchForfeitResult> {
+  const pool = await tx.queryRow(
+    `SELECT
+       cp.id AS card_pool_id,
+       cp.user_id,
+       cp.pod_id,
+       p.share_id AS pod_share_id,
+       p.competitive
+     FROM card_pools cp
+     JOIN pods p ON cp.pod_id = p.id
+     WHERE cp.share_id = $1`,
+    [params.poolShareId]
+  )
+  if (!pool) {
+    throw new PracticeGameResultError(404, 'pool_not_found', 'Pool not found')
+  }
+  if (pool.competitive !== true) {
+    throw new PracticeGameResultError(400, 'not_competitive', 'Pool is not in a competitive pod')
+  }
+  if (params.result === 'draw') {
+    throw new PracticeGameResultError(400, 'forfeit_not_draw', 'A match forfeit cannot be a draw')
+  }
+
+  await tx.query('SELECT pg_advisory_xact_lock(hashtext($1::text))', [pool.pod_id])
+
+  // Resolve the match: prefer an explicit practiceMatchGameId anchor, else the
+  // pool owner's active-round match. Mirrors resolveResultTarget but
+  // match-grained (no game slot).
+  let matchRow: Record<string, unknown> | null = null
+  if (params.practiceMatchGameId) {
+    matchRow = await tx.queryRow(
+      `SELECT pm.*
+       FROM practice_match_games pmg
+       JOIN practice_matches pm ON pmg.match_id = pm.id
+       WHERE pmg.id = $1
+       FOR UPDATE OF pm`,
+      [params.practiceMatchGameId]
+    )
+  } else {
+    const activeRound = await tx.queryRow(
+      `SELECT id
+       FROM practice_rounds
+       WHERE pod_id = $1 AND status = 'active'
+       ORDER BY round_number DESC
+       LIMIT 1
+       FOR UPDATE`,
+      [pool.pod_id]
+    )
+    if (!activeRound) {
+      throw new PracticeGameResultError(404, 'active_round_not_found', 'No active round found')
+    }
+    matchRow = await tx.queryRow(
+      `SELECT *
+       FROM practice_matches
+       WHERE round_id = $1
+         AND is_bye = false
+         AND (player1_id = $2 OR player2_id = $2)
+       FOR UPDATE`,
+      [activeRound.id, pool.user_id]
+    )
+  }
+
+  if (!matchRow) {
+    throw new PracticeGameResultError(404, 'match_not_found', 'No active practice match found for this player')
+  }
+  if (matchRow.pod_id !== pool.pod_id) {
+    throw new PracticeGameResultError(403, 'game_not_in_pool_pod', 'Practice match is not in this pod')
+  }
+  validateReporterInMatch(matchRow, pool)
+
+  // Idempotent: already finalized (the real-time + ingestion senders both fire).
+  if (matchRow.final_confirmed === true) {
+    return {
+      ok: true,
+      changed: false,
+      alreadyFinalized: true,
+      shareId: String(pool.pod_share_id),
+      podId: String(pool.pod_id),
+      matchId: String(matchRow.id),
+      matchWinner: (stringOrNull(matchRow.match_winner) ?? 'player1') as 'player1' | 'player2',
+      roundAdvanced: false,
+      eventCompleted: false,
+      advanceResult: null,
+    }
+  }
+
+  const reporterIsPlayer1 = matchRow.player1_id === pool.user_id
+  const winner = resultFromReporterPerspective(params.result, reporterIsPlayer1) as 'player1' | 'player2'
+
+  await tx.query(
+    `UPDATE practice_matches
+     SET final_confirmed = true,
+         match_winner = $2,
+         player1_submitted = true,
+         player2_submitted = true,
+         wayfinder_match_id = COALESCE(wayfinder_match_id, $3)
+     WHERE id = $1
+       AND final_confirmed IS NOT TRUE`,
+    [matchRow.id, winner, params.wayfinderMatchId ?? null]
+  )
+
+  await updatePlayerPoolRecordsOnce(tx, {
+    podId: String(pool.pod_id),
+    player1Id: stringOrNull(matchRow.player1_id),
+    player2Id: stringOrNull(matchRow.player2_id),
+    winner,
+    wayfinderMatchId: params.wayfinderMatchId ?? `forfeit:${String(matchRow.id)}`,
+  })
+
+  const { checkAndAdvanceRoundInTransaction } = await import('./advancement')
+  const advanceResult = await checkAndAdvanceRoundInTransaction(tx, String(pool.pod_id))
+
+  return {
+    ok: true,
+    changed: true,
+    alreadyFinalized: false,
+    shareId: String(pool.pod_share_id),
+    podId: String(pool.pod_id),
+    matchId: String(matchRow.id),
+    matchWinner: winner,
+    roundAdvanced: advanceResult?.advanced ?? false,
+    eventCompleted: advanceResult?.completedEvent ?? false,
+    advanceResult,
+  }
 }
 
 export function normalizePracticeMatchGameRow(row: Record<string, unknown>): PracticeMatchGameLike {

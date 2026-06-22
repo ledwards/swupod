@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { broadcastDraftState } from '@/src/lib/socketBroadcast'
 import {
   PracticeGameResultError,
+  forfeitPracticeMatch,
   recordPracticeMatchGameResult,
 } from '@/src/services/matchmaking/liveGames'
 
@@ -38,6 +39,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const body = await request.json()
     const {
       poolShareId, result, matchId, gameNumber, replayUrl, practiceMatchGameId, wayfinderGameId, format,
+      // Bo3 SET concede — finalize match_winner = non-conceder independent of the
+      // per-game tally (recordPracticeMatchGameResult is per-game). `result` is
+      // the reporting pool owner's MATCH outcome; `gameNumber` is ignored.
+      matchForfeit,
       // Optional captured deck identities (Wayfinder Companion ≥ identity build).
       // "player*" is the reporting player's deck; "opponent*" is the other side.
       // See docs/WAYFINDER_PLUGIN_MATCH_IDENTITY.md.
@@ -51,7 +56,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (!['win', 'loss', 'draw'].includes(result)) {
       return errorResponse('result must be win, loss, or draw', 400)
     }
-    if (gameNumber !== undefined && ![1, 2, 3].includes(gameNumber)) {
+    if (!matchForfeit && gameNumber !== undefined && ![1, 2, 3].includes(gameNumber)) {
       return errorResponse('gameNumber must be 1, 2, or 3', 400)
     }
 
@@ -76,7 +81,30 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       [poolShareId]
     )
 
-    if (poolWithPod?.competitive) {
+    if (poolWithPod?.competitive && matchForfeit) {
+      // Bo3 SET concede: finalize the match by forfeit (non-conceder wins),
+      // independent of how many games were recorded, then advance the round.
+      const forfeited = await forfeitPracticeMatch({
+        poolShareId,
+        result,
+        wayfinderMatchId: matchId,
+        practiceMatchGameId: practiceMatchGameId ?? null,
+      })
+
+      if (forfeited.changed) {
+        await broadcastDraftState(forfeited.shareId)
+      }
+
+      return jsonResponse({
+        ok: true,
+        competitive: true,
+        forfeit: true,
+        alreadyFinalized: forfeited.alreadyFinalized,
+        matchWinner: forfeited.matchWinner,
+        roundAdvanced: forfeited.roundAdvanced,
+        eventCompleted: forfeited.eventCompleted,
+      })
+    } else if (poolWithPod?.competitive) {
       const recorded = await recordPracticeMatchGameResult({
         poolShareId,
         wayfinderMatchId: matchId,

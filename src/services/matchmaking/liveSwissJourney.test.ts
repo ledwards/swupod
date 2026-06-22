@@ -14,6 +14,7 @@ const {
   claimPracticeMatchGame,
   recordPracticeMatchGameLifecycle,
   recordPracticeMatchGameResult,
+  forfeitPracticeMatch,
 } = await import('./liveGames')
 const { liveRoundMatchGroups } = await import('@/src/components/MatchmakingPanel.helpers')
 const { fetchRoundsWithMatches } = await import('@/src/utils/matchmakingRounds')
@@ -185,6 +186,121 @@ describe('live Swiss Practice fake Companion journey', { skip: !dbAvailable }, (
       playerPairKey(playerA, playerB),
       playerPairKey(playerC, playerD),
     ].sort())
+  })
+
+  it('forfeits a Bo3 match on a SET concede: winner = non-conceder regardless of game count, and the match counts toward advancement', async () => {
+    const seeded = await seedFourPlayerLiveSwissPod()
+    const [playerA, , playerC] = seeded.userIds
+    const [poolA, poolB, poolC] = seeded.poolShareIds
+    const [matchOne] = seeded.matchIds // player1 = playerA, player2 = playerC
+
+    // Game 1: playerA wins → 1-0 (player1). Not enough for a 2-win finish.
+    await recordPracticeMatchGameResult({
+      poolShareId: poolA!,
+      wayfinderMatchId: 'wf-ff-r1m1',
+      gameNumber: 1,
+      result: 'win',
+      occurredAt: '2026-06-20T18:20:00.000Z',
+    })
+
+    let m = await queryRow(
+      'SELECT final_confirmed, match_winner, game1_result, game2_result, game3_result FROM practice_matches WHERE id = $1',
+      [matchOne],
+    )
+    assert.equal(m!.final_confirmed, false) // a 1-0 lead does NOT finalize a Bo3
+
+    // playerA (ahead 1-0) concedes the SET. Reported from the OPPONENT pool
+    // (playerC), owner POV "win". PTP forfeit-finalizes: playerC wins the match.
+    const forfeited = await forfeitPracticeMatch({
+      poolShareId: poolC!,
+      result: 'win',
+      wayfinderMatchId: 'wf-ff-r1m1',
+    })
+    assert.equal(forfeited.changed, true)
+    assert.equal(forfeited.alreadyFinalized, false)
+    assert.equal(forfeited.matchWinner, 'player2') // playerC is player2 in matchOne
+
+    m = await queryRow(
+      'SELECT final_confirmed, match_winner, player1_id, player2_id, game1_result, game2_result, game3_result FROM practice_matches WHERE id = $1',
+      [matchOne],
+    )
+    assert.equal(m!.final_confirmed, true)
+    // Winner is the NON-conceder (playerC), despite the 1-0 game tally favoring playerA.
+    assert.equal(m!.match_winner === 'player1' ? m!.player1_id : m!.player2_id, playerC)
+    // Per-game slots are NOT fabricated — only the one real game stays recorded.
+    assert.equal(m!.game2_result, null)
+    assert.equal(m!.game3_result, null)
+
+    // Idempotent: the real-time report + the ingestion reaffirmation both fire.
+    const again = await forfeitPracticeMatch({ poolShareId: poolA!, result: 'loss', wayfinderMatchId: 'wf-ff-r1m1' })
+    assert.equal(again.alreadyFinalized, true)
+    assert.equal(again.changed, false)
+
+    // Pool W/L: winner +1 win, conceder +1 loss (deduped on wayfinderMatchId).
+    const winPool = await queryRow('SELECT wins, losses FROM card_pools WHERE share_id = $1', [poolC])
+    assert.equal(Number(winPool!.wins), 1)
+    assert.equal(Number(winPool!.losses), 0)
+    const losePool = await queryRow('SELECT wins, losses FROM card_pools WHERE share_id = $1', [poolA])
+    assert.equal(Number(losePool!.wins), 0)
+    assert.equal(Number(losePool!.losses), 1)
+
+    // Completing the OTHER match now advances the round — proving the
+    // forfeited match counts as complete for advancement.
+    await recordPracticeMatchGameResult({ poolShareId: poolB!, wayfinderMatchId: 'wf-ff-r1m2', gameNumber: 1, result: 'win' })
+    const final = await recordPracticeMatchGameResult({ poolShareId: poolB!, wayfinderMatchId: 'wf-ff-r1m2', gameNumber: 2, result: 'win' })
+    assert.equal(final.matchFinalized, true)
+    assert.equal(final.roundAdvanced, true)
+    assert.equal(final.advanceResult?.nextRoundNumber, 2)
+  })
+
+  it('POST /api/plugin/v1/match/result with matchForfeit finalizes the match (route → forfeit → DB), no gameNumber required', async () => {
+    process.env['PTP_SERVICE_KEY'] = process.env['PTP_SERVICE_KEY'] || 'test-service-key-for-unit-tests'
+    const { POST } = await import('@/app/api/plugin/v1/match/result/route')
+
+    const seeded = await seedFourPlayerLiveSwissPod()
+    const [playerA, , playerC] = seeded.userIds
+    const [poolA, , poolC] = seeded.poolShareIds
+    const [matchOne] = seeded.matchIds // player1 = playerA, player2 = playerC
+
+    // Game 1: playerA wins → 1-0, match not yet finalized.
+    await recordPracticeMatchGameResult({
+      poolShareId: poolA!,
+      wayfinderMatchId: 'wf-route-ff',
+      gameNumber: 1,
+      result: 'win',
+    })
+
+    // playerA concedes the SET. The opponent (playerC) reports the forfeit win
+    // via the real route — match-grained, NO gameNumber in the body.
+    const res = await POST(
+      new Request('http://localhost/api/plugin/v1/match/result', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env['PTP_SERVICE_KEY']}`,
+        },
+        body: JSON.stringify({
+          poolShareId: poolC,
+          result: 'win',
+          matchId: 'wf-route-ff',
+          matchForfeit: true,
+        }),
+      }) as unknown as import('next/server').NextRequest,
+    )
+
+    assert.equal(res.status, 200)
+    const body = await res.json()
+    assert.equal(body.data.forfeit, true)
+    assert.equal(body.data.matchWinner, 'player2') // playerC won by forfeit
+
+    const m = await queryRow(
+      'SELECT final_confirmed, match_winner, player1_id, player2_id FROM practice_matches WHERE id = $1',
+      [matchOne],
+    )
+    assert.equal(m!.final_confirmed, true)
+    assert.equal(m!.match_winner === 'player1' ? m!.player1_id : m!.player2_id, playerC)
+    // playerA (the conceder) is NOT the winner despite leading 1-0.
+    assert.notEqual(m!.match_winner === 'player1' ? m!.player1_id : m!.player2_id, playerA)
   })
 })
 
