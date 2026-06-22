@@ -199,6 +199,16 @@
   font-weight: 700;
 }
 
+/* Player avatar beside the name in a match card. */
+.match-card-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  margin-right: 5px;
+}
+
 .match-card-footer {
   display: flex;
   align-items: center;

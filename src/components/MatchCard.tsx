@@ -234,6 +234,7 @@ export function MatchCard({
         <div className={`match-card-player${match.matchWinner === 'player1' ? ' match-card-player--winner' : ''}`}>
           <span className="match-card-player-heading">
             {companionDot(match.player1)}
+            {match.player1?.avatarUrl && <img className="match-card-avatar" src={match.player1.avatarUrl} alt="" />}
             <span className="match-card-player-name">{match.player1?.username || '???'}</span>
             <span className="match-card-player-record">{recordFor(match.player1)}</span>
           </span>
@@ -262,6 +263,7 @@ export function MatchCard({
             <>
               <span className="match-card-player-heading">
                 {companionDot(match.player2)}
+                {match.player2?.avatarUrl && <img className="match-card-avatar" src={match.player2.avatarUrl} alt="" />}
                 <span className="match-card-player-name">{match.player2?.username || '???'}</span>
                 <span className="match-card-player-record">{recordFor(match.player2)}</span>
               </span>

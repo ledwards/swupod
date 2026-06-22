@@ -308,8 +308,8 @@ export function MatchmakingPanel({
     >
       <div className="matchmaking-panel-header">
         <div className="matchmaking-panel-heading">
-          <span className="matchmaking-panel-eyebrow">Competitive</span>
-          <span className="matchmaking-panel-label">Swiss Practice</span>
+          <span className="matchmaking-panel-eyebrow">Swiss Practice</span>
+          <span className="matchmaking-panel-label">Competitive</span>
         </div>
         <Button
           variant="secondary"
@@ -376,8 +376,15 @@ export function MatchmakingPanel({
           {myMatch.isBye ? (
             <span>You have a bye this round</span>
           ) : (
-            <span>
-              Your match: You vs.{' '}
+            <span className="matchmaking-my-match-line">
+              Your Round {currentRound} match:{' '}
+              {(myMatch.player1?.id === currentUserId ? myMatch.player1 : myMatch.player2)?.avatarUrl && (
+                <img className="matchmaking-avatar" src={(myMatch.player1?.id === currentUserId ? myMatch.player1 : myMatch.player2).avatarUrl} alt="" />
+              )}
+              You vs.{' '}
+              {(myMatch.player1?.id === currentUserId ? myMatch.player2 : myMatch.player1)?.avatarUrl && (
+                <img className="matchmaking-avatar" src={(myMatch.player1?.id === currentUserId ? myMatch.player2 : myMatch.player1).avatarUrl} alt="" />
+              )}
               <strong>
                 {myMatch.player1?.id === currentUserId
                   ? myMatch.player2?.username || '???'

@@ -934,3 +934,55 @@ a.login-banner-button:focus {
     font-size: 1rem;
   }
 }
+
+/* Swiss-in-progress deck export box — no instructions; the Play button + Swiss
+   panel drive play, this is just quick export. */
+.swiss-deck-export {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem 1.1rem;
+  margin-top: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.swiss-deck-export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.swiss-deck-export-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .swiss-deck-export-btn:not(:disabled):hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+}
+
+.swiss-deck-export-msg {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-left: 0.25rem;
+}
+.swiss-deck-export-msg--success { color: #4ade80; }
+.swiss-deck-export-msg--error { color: #fca5a5; }
+.swiss-deck-export-msg--info { color: rgba(255, 255, 255, 0.7); }

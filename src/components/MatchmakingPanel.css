@@ -105,6 +105,21 @@
   color: #22c55e;
 }
 
+/* Player avatars in the "Your Round X match" callout. */
+.matchmaking-my-match-line {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.matchmaking-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  vertical-align: middle;
+}
+
 .matchmaking-how-toggle {
   flex-shrink: 0;
   color: var(--swiss-blue-bright);
