@@ -68,6 +68,9 @@ export interface LiveGameAction {
   tooltip?: string | null
   /** "(opponent) is ready!" shown beside the play button once a lobby exists. */
   readyText?: string | null
+  /** True on an `open` action when the current viewer created the lobby — their
+   *  button copies the link (to share) rather than opening it. */
+  iCreated?: boolean
 }
 
 export interface LiveConsoleRoundOrder {
@@ -351,6 +354,7 @@ export function liveGameAction({
       kind: 'open',
       label: '',
       href: lobbyUrl,
+      iCreated: creatorId === currentUserId,
       readyText: openedByOpponent
         ? `${opponentName(match, currentUserId)} is in the lobby`
         : (creatorId === currentUserId ? 'Lobby created' : null),

@@ -247,7 +247,7 @@ describe('MatchmakingPanel helpers', () => {
         currentUserId: 'A',
         liveLaunchEnabled: true,
       }),
-      { kind: 'open', label: '', href: 'https://karabast.net/?lobbyId=abc', readyText: null }
+      { kind: 'open', label: '', href: 'https://karabast.net/?lobbyId=abc', iCreated: false, readyText: null }
     )
   })
 

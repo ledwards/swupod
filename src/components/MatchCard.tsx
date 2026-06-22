@@ -87,6 +87,37 @@ function GameDot({ result, forPlayer }: { result: string | null; forPlayer: 'pla
   return <span className="game-result game-result--loss">L</span>
 }
 
+// The lobby creator already has Karabast open, so their button copies the lobby
+// link to share (a fallback if the opponent's PTP didn't pick it up). Falls back
+// to opening the lobby if the clipboard is blocked.
+function CopyLobbyLink({ url }: { url: string }) {
+  const [copied, setCopied] = useState(false)
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      window.open(url, '_blank', 'noopener')
+    }
+  }
+  return (
+    <Button
+      variant="primary"
+      size="sm"
+      className="match-card-live-button"
+      onClick={copy}
+      aria-label="Copy lobby link"
+    >
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+      </svg>
+      {copied ? 'Copied!' : 'Copy link'}
+    </Button>
+  )
+}
+
 export function MatchCard({
   match,
   currentUserId,
@@ -238,7 +269,11 @@ export function MatchCard({
 
     // Lobby exists → a green play LINK to the lobby URL. Works for both players,
     // with or without the Companion (you don't need it just to join a lobby).
+    // The creator is already in the lobby, so their button copies the link.
     if (liveAction.kind === 'open') {
+      if (liveAction.iCreated && liveAction.href) {
+        return <CopyLobbyLink url={liveAction.href} />
+      }
       return (
         <a
           className="btn btn--primary btn--sm match-card-live-button match-card-live-open"
