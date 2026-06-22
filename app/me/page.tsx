@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useAuth } from '@/src/contexts/AuthContext'
 import UserAvatar from '@/src/components/UserAvatar'
 import YourStats from '@/src/components/YourStats'
@@ -21,27 +21,13 @@ export default function MePage() {
   }
 
   const eras = useMemo(() => getEras(), [])
-  // Early access = beta tester or admin — the same gate as /stats and the
-  // EarlyAccessCTA. It decides whether a pre-release set counts as the "latest
-  // set" this viewer can actually open.
-  const hasEarlyAccess = Boolean(user?.is_beta_tester || user?.is_admin)
-  // Global Set filter — drives every tab. Defaults to the newest set the viewer
-  // can open: the upcoming pre-release set (e.g. ASH) for early-access users, the
-  // newest released set for everyone else. Uses the shared beta-aware helper so
-  // "latest set" means the same thing here, on /stats, and in the Luck/Meta tabs.
-  const [setFilter, setSetFilter] = useState<string>(() => getDefaultStatsSetTab(hasEarlyAccess))
-  // Once the viewer picks a set, the post-auth re-sync below must not clobber it.
-  const userPickedSet = useRef(false)
+  // Global Set filter — drives every tab. Defaults to the NEWEST set for every
+  // viewer regardless of access: getDefaultStatsSetTab(true) takes the first entry
+  // of STATS_SET_ORDER (currently the pre-release ASH) and auto-advances as new
+  // sets ship — never a hardcoded code. Viewers can switch sets from the picker.
+  const [setFilter, setSetFilter] = useState<string>(() => getDefaultStatsSetTab(true))
   // 'all' = whole era; otherwise an index into the era's weeks.
   const [weekKey, setWeekKey] = useState<'all' | number>('all')
-
-  // useAuth resolves after mount, so the initial default is computed before we
-  // know the viewer's access. Re-sync once access is known so a beta/admin viewer
-  // lands on ASH (and only they do) — unless they've already chosen a set.
-  useEffect(() => {
-    if (userPickedSet.current) return
-    setSetFilter(getDefaultStatsSetTab(hasEarlyAccess))
-  }, [hasEarlyAccess])
 
   const era = useMemo(
     () => (setFilter === 'all' ? null : eras.find((e) => e.setCode === setFilter) || null),
@@ -101,7 +87,6 @@ export default function MePage() {
               <select
                 value={setFilter}
                 onChange={(e) => {
-                  userPickedSet.current = true
                   setSetFilter(e.target.value)
                   setWeekKey('all')
                 }}

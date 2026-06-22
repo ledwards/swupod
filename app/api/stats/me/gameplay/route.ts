@@ -11,9 +11,15 @@ import { NextRequest, NextResponse } from 'next/server'
 /** Replay list items use unit-side leader art, preferring Hyperspace variants. */
 function withPreferredReplayArt(replay: GameplayReplay): GameplayReplay {
   const set = replay.pool?.setCode
+  // Resolve art by the (authoritative) leader name so the back/unit art stays in
+  // sync with the leader actually played — never a stale image from a sibling
+  // pool that shares the pod. The archetype legend thumbnail prefers
+  // leaderBackImageUrl, so both fields must point at the resolved leader.
+  const art = hyperspaceLeaderArt(replay.leaderName, set)
   return {
     ...replay,
-    leaderImageUrl: hyperspaceLeaderArt(replay.leaderName, set) || replay.leaderBackImageUrl || replay.leaderImageUrl,
+    leaderImageUrl: art || replay.leaderBackImageUrl || replay.leaderImageUrl,
+    leaderBackImageUrl: art || replay.leaderBackImageUrl,
     opponent: {
       ...replay.opponent,
       leaderImageUrl: hyperspaceLeaderArt(replay.opponent.leaderName, set) || replay.opponent.leaderImageUrl,
@@ -68,6 +74,9 @@ interface RawReplayRow {
   opponent_base?: string | null
   opponent_archetype?: string | null
   my_archetype?: string | null
+  // The leader the current user actually played this match (recorded by the
+  // plugin), independent of which sibling pool deck the row joins to.
+  my_leader?: string | null
   pool_share_id?: string | null
   pool_draft_share_id?: string | null
   pool_name?: string | null
@@ -683,6 +692,8 @@ interface RawCasualRow {
   game3_result?: string | null
   opponent_name?: string | null
   player_archetype?: string | null
+  // The leader the user actually played (recorded by the plugin).
+  player_leader?: string | null
   opponent_leader?: string | null
   opponent_leader_image?: string | null
   opponent_base?: string | null
@@ -731,6 +742,8 @@ function mapCasualReplay(row: RawCasualRow): GameplayReplay {
       formatLabel: formatLabel(format),
     },
     ...deckPreview,
+    // Prefer the plugin-recorded leader over the joined pool's deck leader.
+    leaderName: row.player_leader || deckPreview.leaderName,
     archetype: row.player_archetype || null,
   }
 }
@@ -786,6 +799,9 @@ export function buildGameplayResponse(
           formatLabel: formatLabel(format),
         },
         ...deckPreview,
+        // The plugin-recorded leader is authoritative for which leader was
+        // actually played; the joined pool can be a sibling deck in the same pod.
+        leaderName: row.my_leader || deckPreview.leaderName,
         archetype: row.my_archetype || null,
       }
     }),
@@ -868,9 +884,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     // $4 carries the set filter for every pool-scoped query below.
     const params = [session.id, since, until, setCode]
+    // 'imported' pools are the home for Wayfinder-companion-captured / imported
+    // games (record + wayfinder_match_ids live on the pool). This dashboard is
+    // about play record and Wayfinder captures, so imported pools MUST count —
+    // otherwise a set whose only games are in an imported pool reads 0 matches /
+    // 0 captures even though the replay history (which doesn't filter pool_type)
+    // lists them. (The Activity dashboard's /summary route intentionally
+    // EXCLUDES imported from "pools opened" — different metric, different route.)
     const ownedPoolWhere = `
       user_id = $1
-      AND pool_type IN ('sealed', 'draft', 'chaos_sealed', 'pack_blitz', 'pack_wars', 'rotisserie')
+      AND pool_type IN ('sealed', 'draft', 'chaos_sealed', 'pack_blitz', 'pack_wars', 'rotisserie', 'imported')
       AND updated_at >= $2
       AND updated_at < ($3::date + interval '1 day')
       AND ($4 = 'all' OR set_code = $4)
@@ -899,9 +922,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
            (
              SELECT COUNT(*)
              FROM deck_play_visits dpv
+             JOIN card_pools cp ON cp.id = dpv.pool_id
              WHERE dpv.user_id = $1
                AND dpv.first_visited_at >= $2
                AND dpv.first_visited_at < ($3::date + interval '1 day')
+               AND ($4 = 'all' OR cp.set_code = $4)
            ) AS decks_played
          FROM card_pools
          WHERE ${ownedPoolWhere}`,
@@ -1039,6 +1064,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
              CASE WHEN pm.player1_id = $1 THEN pm.player2_base ELSE pm.player1_base END AS opponent_base,
              CASE WHEN pm.player1_id = $1 THEN pm.player2_archetype ELSE pm.player1_archetype END AS opponent_archetype,
              CASE WHEN pm.player1_id = $1 THEN pm.player1_archetype ELSE pm.player2_archetype END AS my_archetype,
+             CASE WHEN pm.player1_id = $1 THEN pm.player1_leader ELSE pm.player2_leader END AS my_leader,
              cp.share_id AS pool_share_id,
              p.share_id AS pool_draft_share_id,
              cp.name AS pool_name,
@@ -1074,6 +1100,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
            cm.game3_result,
            cm.opponent_name,
            cm.player_archetype,
+           cm.player_leader,
            cm.opponent_leader,
            cm.opponent_leader_image,
            cm.opponent_base,

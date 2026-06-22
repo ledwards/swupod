@@ -21,7 +21,7 @@ import { resolveArchetypeUuid, fetchArchetypeNickname } from '../../../../../src
 import { archetypeShortName } from '../../../../../src/utils/archetypeName'
 import { formatRecord } from '../../../../../src/utils/deckRecord'
 import { wayfinderMatchesUrl } from '../../../../../src/utils/wayfinderUrls'
-import { renderDeckImageBlob, renderPoolImageBlob } from '../../../../../src/services/deckImage'
+import { renderPoolImageBlob } from '../../../../../src/services/deckImage'
 import { calculateAspectPenalty } from '../../../../../src/services/cards/aspectPenalties'
 import Card from '../../../../../src/components/Card'
 import CardWithPreview from '../../../../../src/components/CardWithPreview'
@@ -760,7 +760,7 @@ export default function PlayPage({ params }: PageProps) {
         return
       }
 
-      const blob = await renderDeckImageBlob({
+      const blob = await renderPoolImageBlob({
         cardPositions,
         activeLeader,
         activeBase,
@@ -768,6 +768,7 @@ export default function PlayPage({ params }: PageProps) {
         baseCard: cardPositions[activeBase]?.card || null,
         setCode: pool.setCode,
         poolType: pool.poolType === 'draft' ? 'draft' : 'sealed',
+        showSideboard: false,
         poolName: state.poolName || pool.name || null,
         ownerUsername: pool?.owner?.username || pool?.owner?.name || null,
         shareId: pool?.shareId || shareId,
@@ -819,6 +820,7 @@ export default function PlayPage({ params }: PageProps) {
         baseCard: activeBase ? cardPositions[activeBase]?.card || null : null,
         setCode: pool.setCode,
         poolType: pool.poolType === 'draft' ? 'draft' : 'sealed',
+        showSideboard: true,
         poolName: state.poolName || pool.name || null,
         ownerUsername: pool?.owner?.username || pool?.owner?.name || null,
         shareId: pool?.shareId || shareId,

@@ -446,6 +446,7 @@ export default function SealedPodPlayPage({ params }: PageProps) {
         baseCard: cardPositions[activeBase]?.card || null,
         setCode: myPool.setCode,
         poolType: 'sealed',
+        showSideboard: false,
         poolName: state.poolName || myPool.name || null,
         ownerUsername: myPool?.owner?.username || myPool?.owner?.name || null,
         shareId: myPoolShareId,

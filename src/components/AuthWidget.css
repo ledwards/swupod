@@ -267,6 +267,7 @@ a.auth-widget-login-circle:active {
 /* "NEW" badge on the My Stats menu item until the user first opens /me. */
 .auth-widget-new-badge {
   margin-left: auto;
+  margin-right: 6px;
   padding: 2px 8px;
   border-radius: 999px;
   background: linear-gradient(180deg, #ffd55e, #f5a623);
