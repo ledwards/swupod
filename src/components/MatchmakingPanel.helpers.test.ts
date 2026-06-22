@@ -251,6 +251,30 @@ describe('MatchmakingPanel helpers', () => {
     )
   })
 
+  it('labels the open lobby and gives the opponent an enabled link even without the Companion', () => {
+    const lobby = {
+      status: 'lobby_ready',
+      gameNumber: 2,
+      lobbyUrl: 'https://karabast.net/?lobbyId=abc',
+      game: { createdByUserId: 'B' },
+    }
+    // Creator (B) sees "Lobby created".
+    assert.equal(
+      liveGameAction({ match: match({ currentGame: lobby }), currentUserId: 'B', liveLaunchEnabled: true }).readyText,
+      'Lobby created'
+    )
+    // The opponent (A) — even with NO Companion — gets an enabled open-link to
+    // the lobby labelled "<creator> is in the lobby".
+    const opponentView = liveGameAction({
+      match: match({ currentGame: lobby }),
+      currentUserId: 'A',
+      liveLaunchEnabled: false,
+    })
+    assert.equal(opponentView.kind, 'open')
+    assert.equal(opponentView.href, 'https://karabast.net/?lobbyId=abc')
+    assert.equal(opponentView.readyText, 'Benthic is in the lobby')
+  })
+
   it('reuses the watch/replay link path for spectators and completed matches', () => {
     assert.deepEqual(
       liveGameAction({

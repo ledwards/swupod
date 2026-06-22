@@ -342,7 +342,8 @@ export function liveGameAction({
 
   // A private lobby exists → ANY participant can open it via its URL (you don't
   // need the Companion to JOIN). The play button becomes a green link to the
-  // lobby, with "(opponent) is ready!" beside it when the opponent opened it.
+  // lobby. Beside it: "<opponent> is in the lobby" when the opponent created it,
+  // or "Lobby created" when you did.
   if ((status === 'lobby_ready' || status === 'in_progress') && lobbyUrl) {
     const creatorId = currentGame?.game?.createdByUserId || null
     const openedByOpponent = Boolean(creatorId && creatorId !== currentUserId)
@@ -350,7 +351,9 @@ export function liveGameAction({
       kind: 'open',
       label: '',
       href: lobbyUrl,
-      readyText: openedByOpponent ? `${opponentName(match, currentUserId)} is ready!` : null,
+      readyText: openedByOpponent
+        ? `${opponentName(match, currentUserId)} is in the lobby`
+        : (creatorId === currentUserId ? 'Lobby created' : null),
     }
   }
 
