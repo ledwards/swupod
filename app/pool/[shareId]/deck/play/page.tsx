@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import { useState, useEffect, useRef, use, useMemo } from 'react'
+import { useState, useEffect, useRef, use, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { loadPool, updatePool, claimPool } from '../../../../../src/utils/poolApi'
 import { getPackArtUrl } from '../../../../../src/utils/packArt'
@@ -205,7 +205,14 @@ export default function PlayPage({ params }: PageProps) {
     draft: competitiveDraft,
     isHost: isCompetitiveHost,
     players: draftPlayers,
+    loading: competitiveLoading,
+    refresh: refreshCompetitive,
   } = useDraftSocket(draftShareId, { enabled: !!draftShareId && pool?.poolType === 'draft' })
+
+  // Until the draft socket resolves we don't know whether this is a competitive
+  // (Swiss) pod — render a skeleton instead of guessing, which caused the normal
+  // play box to flash in and then get replaced by the Swiss box.
+  const competitiveUndetermined = Boolean(draftShareId) && pool?.poolType === 'draft' && competitiveLoading
 
   const isCompetitive = competitiveDraft?.competitive === true
   const competitiveRounds = (competitiveDraft?.rounds || []) as {
@@ -292,6 +299,15 @@ export default function PlayPage({ params }: PageProps) {
     format: 'pool',
     onTrack: trackLimitedPlayAction,
   })
+
+  // Launch wrapper: after kicking off a game, re-read the draft ~32s later so that
+  // if the lobby is still "creating" (a silent Karabast failure with no lifecycle
+  // callback) the 30s server staleness surfaces a Retry instead of a stuck button.
+  const handlePracticeLaunch = useCallback((matchId: string) => {
+    const result = practiceLaunch.launchPracticeMatch(matchId)
+    window.setTimeout(() => { refreshCompetitive?.() }, 32000)
+    return result
+  }, [practiceLaunch, refreshCompetitive])
 
   // ?lobby=private|public deep link (from the /me Pools tab lobby buttons):
   // auto-opens the corresponding Karabast lobby once detected + owner.
@@ -1311,7 +1327,7 @@ export default function PlayPage({ params }: PageProps) {
             wayfinderDetected={wayfinderDetected}
             wayfinderSettled={wayfinderSettled}
             hasCompanionBetaAccess={Boolean(user?.is_beta_tester || user?.is_admin)}
-            onPracticeLaunch={practiceLaunch.launchPracticeMatch}
+            onPracticeLaunch={handlePracticeLaunch}
             practiceLaunchPendingMatchId={practiceLaunch.pendingMatchId}
             practiceLaunchMessage={practiceLaunch.launchMessage}
             onReport={(matchId) => {
@@ -1336,13 +1352,26 @@ export default function PlayPage({ params }: PageProps) {
           />
         )}
 
-        {/* While Swiss Practice is underway (matchmaking not yet 'complete'), the
+        {/* Skeleton while we don't yet know if this is a competitive (Swiss) pod —
+            render the right thing ONCE rather than flashing the normal play box. */}
+        {competitiveUndetermined ? (
+          <div className="swiss-area-skeleton" aria-hidden="true">
+            <div className="swiss-area-skeleton-bar" />
+            <div className="swiss-area-skeleton-block" />
+            <div className="swiss-area-skeleton-row">
+              <div className="swiss-area-skeleton-pill" />
+              <div className="swiss-area-skeleton-pill" />
+            </div>
+          </div>
+        ) : /* While Swiss Practice is underway (matchmaking not yet 'complete'), the
             Swiss panel + Play button drive everything — so skip the verbose
             "Deck Complete!" guidance and just offer deck export. Once Swiss is
             over (matchmakingStatus 'complete') fall back to the normal Play
-            instructions so the deck can still be played outside Swiss. */}
-        {isCompetitive && matchmakingStatus !== 'complete' ? (
+            instructions so the deck can still be played outside Swiss. */
+        isCompetitive && matchmakingStatus !== 'complete' ? (
           <div className="swiss-deck-export">
+            <span className="swiss-deck-export-label">Play manually</span>
+            <div className="swiss-deck-export-actions">
             {!isInfinitePool && (
               <button className="swiss-deck-export-btn" onClick={copyDeckLink}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
@@ -1361,6 +1390,7 @@ export default function PlayPage({ params }: PageProps) {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
               {generatingImage ? 'Generating…' : 'Deck Image'}
             </button>
+            </div>
             {message && (
               <span className={`swiss-deck-export-msg swiss-deck-export-msg--${messageType || 'info'}`}>{message}</span>
             )}

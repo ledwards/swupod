@@ -162,25 +162,25 @@ describe('MatchmakingPanel helpers', () => {
     )
   })
 
-  it('offers Play for a participant before the next live game is claimed', () => {
+  it('offers an icon-only Play for a participant before the next live game is claimed', () => {
     assert.deepEqual(
       liveGameAction({
         match: match({ currentGame: { status: 'pending', gameNumber: 1 } }),
         currentUserId: 'A',
         liveLaunchEnabled: true,
       }),
-      { kind: 'play', label: 'Play Game 1' }
+      { kind: 'play', label: '' }
     )
   })
 
-  it('hides live launch actions when Companion launch is not enabled', () => {
+  it('shows a disabled Play that nudges install when the Companion is not enabled', () => {
     assert.deepEqual(
       liveGameAction({
         match: match({ currentGame: { status: 'pending', gameNumber: 1 } }),
         currentUserId: 'A',
         liveLaunchEnabled: false,
       }),
-      { kind: 'none', label: '' }
+      { kind: 'play', label: '', disabled: true, tooltip: 'Install Wayfinder to start a lobby' }
     )
   })
 
@@ -216,7 +216,7 @@ describe('MatchmakingPanel helpers', () => {
     )
   })
 
-  it('lets a participant join a ready lobby without exposing the raw link as the primary action', () => {
+  it('turns a ready lobby into an open-link play button for any participant', () => {
     assert.deepEqual(
       liveGameAction({
         match: match({
@@ -229,7 +229,7 @@ describe('MatchmakingPanel helpers', () => {
         currentUserId: 'A',
         liveLaunchEnabled: true,
       }),
-      { kind: 'join', label: 'Join Game' }
+      { kind: 'open', label: '', href: 'https://karabast.net/?lobbyId=abc', readyText: null }
     )
   })
 

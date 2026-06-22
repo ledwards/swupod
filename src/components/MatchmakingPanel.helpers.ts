@@ -370,7 +370,13 @@ export function liveGameAction({
   }
 
   if (status === 'creating') {
-    if (currentGame?.retryable || currentGame?.stale) {
+    // A lobby should be created in seconds. If it's been "creating" for >30s the
+    // launch almost certainly failed (often a silent Karabast error with no
+    // lifecycle callback) — surface a Retry so the player isn't stuck on a dead
+    // button. (The launching client re-reads ~32s after launch so elapsedSeconds
+    // catches up.)
+    const stuckTooLong = (currentGame?.elapsedSeconds ?? 0) > 30
+    if (currentGame?.retryable || currentGame?.stale || stuckTooLong) {
       return { kind: 'retry', label: `Retry ${gameLabel}` }
     }
     if (currentGame?.game?.createdByUserId === currentUserId) {
