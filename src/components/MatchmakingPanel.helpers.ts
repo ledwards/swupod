@@ -322,11 +322,9 @@ export function liveGameAction({
   const participant = isMatchParticipant(match, currentUserId)
   const currentGame = match.currentGame
   const status = currentGame?.status || 'pending'
-  const gameNumber = currentGame?.gameNumber || 1
   const lobbyUrl = currentGame?.lobbyUrl || currentGame?.game?.lobbyUrl || null
   const spectateUrl = currentGame?.spectateUrl || currentGame?.game?.spectateUrl || null
   const replayUrl = currentGame?.replayUrl || currentGame?.game?.replayUrl || null
-  const gameLabel = `Game ${gameNumber}`
 
   if (!participant) {
     if ((status === 'lobby_ready' || status === 'in_progress') && spectateUrl) {
@@ -377,7 +375,7 @@ export function liveGameAction({
     // catches up.)
     const stuckTooLong = (currentGame?.elapsedSeconds ?? 0) > 30
     if (currentGame?.retryable || currentGame?.stale || stuckTooLong) {
-      return { kind: 'retry', label: `Retry ${gameLabel}` }
+      return { kind: 'play', label: '' }
     }
     if (currentGame?.game?.createdByUserId === currentUserId) {
       return { kind: 'creating', label: 'Creating...', disabled: true }
@@ -391,7 +389,7 @@ export function liveGameAction({
   }
 
   if (status === 'failed' || status === 'voided') {
-    return { kind: 'retry', label: `Retry ${gameLabel}` }
+    return { kind: 'play', label: '' }
   }
 
   if (status === 'complete' && replayUrl) {

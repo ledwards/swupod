@@ -266,14 +266,14 @@ describe('MatchmakingPanel helpers', () => {
     )
   })
 
-  it('surfaces stale or failed lobby setup as a retry for participants', () => {
+  it('surfaces stale or failed lobby setup as a plain Play (re-launch) for participants', () => {
     assert.deepEqual(
       liveGameAction({
         match: match({ currentGame: { status: 'creating', gameNumber: 1, stale: true, retryable: true } }),
         currentUserId: 'A',
         liveLaunchEnabled: true,
       }),
-      { kind: 'retry', label: 'Retry Game 1' }
+      { kind: 'play', label: '' }
     )
 
     assert.deepEqual(
@@ -282,7 +282,7 @@ describe('MatchmakingPanel helpers', () => {
         currentUserId: 'A',
         liveLaunchEnabled: true,
       }),
-      { kind: 'retry', label: 'Retry Game 2' }
+      { kind: 'play', label: '' }
     )
   })
 

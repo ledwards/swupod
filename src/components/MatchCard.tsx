@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { useState, useEffect } from 'react'
 import Button from './Button'
 import ReplayWatchLink from './ReplayWatchLink'
 import {
@@ -127,6 +128,18 @@ export function MatchCard({
   // link. Both live next to the table number.
   const spectateUrl = match.currentGame?.spectateUrl || match.currentGame?.game?.spectateUrl || null
   const wayfinderBase = process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin.wayfinder.news'
+
+  // A failed/voided lobby setup shows its status briefly, then reverts to the
+  // normal ready state (a plain Play icon) — no lingering "Setup Failed" banner.
+  const isFailedSetup = match.currentGame?.status === 'failed' || match.currentGame?.status === 'voided'
+  const [failureSettled, setFailureSettled] = useState(false)
+  useEffect(() => {
+    if (!isFailedSetup) { setFailureSettled(false); return }
+    setFailureSettled(false)
+    const t = setTimeout(() => setFailureSettled(true), 4000)
+    return () => clearTimeout(t)
+  }, [isFailedSetup, match.currentGame?.gameNumber, match.currentGame?.attemptNumber])
+  const displayStatus = isFailedSetup && failureSettled ? null : liveStatus
 
   // Per-player Companion indicator, left of the name: green = Companion
   // connected (lobby creator, or the current viewer when detected); blinking
@@ -314,8 +327,8 @@ export function MatchCard({
           <div className="match-card-live-copy">
             {liveAction.readyText ? (
               <span className="match-card-live-status match-card-live-ready">{liveAction.readyText}</span>
-            ) : liveStatus ? (
-              <span className="match-card-live-status">{liveStatus}</span>
+            ) : displayStatus ? (
+              <span className="match-card-live-status">{displayStatus}</span>
             ) : null}
             {practiceLaunchMessage && (
               <span className={`match-card-live-message match-card-live-message--${practiceLaunchMessage.type}`}>
