@@ -400,6 +400,15 @@
     padding: 0 0.25rem;
   }
 
+  /* Card picks: 2 cards per row on mobile. DraftableCard.css defaults to
+     width:100% (1 per row) on mobile; override it here so the pack reads as
+     a 2-up grid. gap is 0.4rem, so each card takes half minus half the gap. */
+  .pack-grid .draftable-card {
+    width: calc(50% - 0.2rem);
+    min-width: 0;
+    max-width: calc(50% - 0.2rem);
+  }
+
   .pack-controls {
     padding: 0.5rem;
     margin-bottom: 0.75rem;
