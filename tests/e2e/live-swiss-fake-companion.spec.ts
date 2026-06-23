@@ -69,7 +69,11 @@ test('fake Companion drives live Swiss from create/join through round advance', 
     await expect(playerAMatch).toBeVisible({ timeout: 30_000 })
     await expect(playerCMatch).toBeVisible({ timeout: 30_000 })
 
-    await playerAMatch.getByRole('button', { name: /Play Game/i }).click()
+    // The live action button is icon-only ("Play") / "Join"; drive + assert off
+    // the card's `data-live-game-action` attribute + `.match-card-live-button`
+    // class rather than the label text, which has changed before.
+    await expect(playerAMatch).toHaveAttribute('data-live-game-action', 'play', { timeout: 15_000 })
+    await playerAMatch.locator('.match-card-live-button').click()
 
     const createIntent = await waitForIntent(captured, 'wayfinder:practice-create-game')
     expect(createIntent.practiceMatchGameId).toBeTruthy()
@@ -87,8 +91,8 @@ test('fake Companion drives live Swiss from create/join through round advance', 
       lifecycleIdempotencyKey: 'e2e-r1m1-lobby-ready',
     })
 
-    await expect(playerCMatch.getByRole('button', { name: /Join Game/i })).toBeVisible({ timeout: 15_000 })
-    await playerCMatch.getByRole('button', { name: /Join Game/i }).click()
+    await expect(playerCMatch).toHaveAttribute('data-live-game-action', 'join', { timeout: 15_000 })
+    await playerCMatch.locator('.match-card-live-button').click()
 
     const joinIntent = await waitForIntent(captured, 'wayfinder:practice-join-game')
     expect(joinIntent.practiceMatchGameId).toBe(createIntent.practiceMatchGameId)
