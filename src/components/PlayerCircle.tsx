@@ -106,9 +106,22 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
   // Create array of seats (filled or empty)
   let seats: Seat[] = []
   if (hideEmptySeats) {
-    // Build seats from actual players — handles players in seats beyond maxPlayers
-    seats = players
-      .slice()
+    // Build seats from actual players — handles players in seats beyond maxPlayers.
+    // Dedupe by seatNumber defensively: a pod corrupted by a pre-fix join (one
+    // that collided onto an already-occupied seat — see findNextAvailableSeat in
+    // app/api/draft/[shareId]/join/route.ts) can have two players sharing a
+    // seat_number. Rendered directly, that produces two children with the same
+    // `seat-${n}` key and crashes the phase. Keep one occupant per seat (the
+    // current user wins their own seat; otherwise the first by seat/id order) so
+    // the draft survives legacy bad data. New joins can no longer create this.
+    const bySeat = new Map<number, (typeof players)[number]>()
+    for (const p of players.slice().sort((a, b) => a.seatNumber - b.seatNumber || String(a.id).localeCompare(String(b.id)))) {
+      const existing = bySeat.get(p.seatNumber)
+      if (!existing || (p.id === currentUserId && existing.id !== currentUserId)) {
+        bySeat.set(p.seatNumber, p)
+      }
+    }
+    seats = Array.from(bySeat.values())
       .sort((a, b) => a.seatNumber - b.seatNumber)
       .map(p => ({
         seatNumber: p.seatNumber,
