@@ -249,6 +249,16 @@ export default function DeckBuilderPage({ params }: PageProps) {
   const deckIsLocked = Boolean(
     isCompetitivePod && swissPracticeActive && !decksUnlocked && !isChildBuildForLock
   )
+  // Same Swiss-active, non-child context as the lock, but AFTER the owner has
+  // unlocked: the deck is editable again, yet the build deadline has passed, so we
+  // show the lock area in its "tap to lock again" state instead of a dead "0:00"
+  // build timer.
+  const deckUnlockedDuringSwiss = Boolean(
+    isCompetitivePod && swissPracticeActive && decksUnlocked && !isChildBuildForLock
+  )
+  // Hide Stats / Draft Log / Draft Report in the header while the competitive
+  // event is underway — they reappear once the Swiss event is complete.
+  const swissEventInProgress = Boolean(isCompetitivePod && matchmakingStatus !== 'complete')
 
   const handleToggleLock = useCallback(async () => {
     if (!draftShareId || !isCompetitiveHost) return
@@ -299,6 +309,8 @@ export default function DeckBuilderPage({ params }: PageProps) {
             limitedMode={limitedMode}
             competitive={competitive}
             swissLocked={deckIsLocked}
+            swissUnlocked={deckUnlockedDuringSwiss}
+            swissInProgress={swissEventInProgress}
             swissCanUnlock={isCompetitiveHost}
             onToggleSwissLock={handleToggleLock}
             poolParentShareId={pool?.parentShareId || null}

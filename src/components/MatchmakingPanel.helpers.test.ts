@@ -174,14 +174,19 @@ describe('MatchmakingPanel helpers', () => {
     )
   })
 
-  it('shows a disabled Play that nudges install when the Companion is not enabled', () => {
+  it('shows a disabled Play with an install tooltip when the live launch is unavailable', () => {
     assert.deepEqual(
       liveGameAction({
         match: match({ currentGame: { status: 'pending', gameNumber: 1 } }),
         currentUserId: 'A',
         liveLaunchEnabled: false,
       }),
-      { kind: 'play', label: '', disabled: true, tooltip: 'Install Wayfinder to start a lobby' }
+      {
+        kind: 'play',
+        label: '',
+        disabled: true,
+        tooltip: 'Install the Wayfinder Companion to launch from here — or play manually with Copy JSON / Copy Link below.',
+      }
     )
   })
 
@@ -198,7 +203,7 @@ describe('MatchmakingPanel helpers', () => {
         currentUserId: 'A',
         liveLaunchEnabled: true,
       }),
-      { kind: 'creating', label: 'Creating...', disabled: true }
+      { kind: 'creating', label: 'Creating...', disabled: true, tooltip: 'Opening your lobby — this takes a few seconds.' }
     )
 
     assert.deepEqual(
@@ -213,7 +218,7 @@ describe('MatchmakingPanel helpers', () => {
         currentUserId: 'B',
         liveLaunchEnabled: true,
       }),
-      { kind: 'waiting', label: 'Waiting for lobby', disabled: true }
+      { kind: 'waiting', label: 'Waiting for lobby', disabled: true, tooltip: 'Your opponent is opening the lobby — the link will appear here.' }
     )
   })
 
@@ -364,14 +369,14 @@ describe('MatchmakingPanel helpers', () => {
     )
   })
 
-  it('formats live game status with elapsed time for active games', () => {
+  it('labels an in-progress game without count-up elapsed (the round countdown replaces it)', () => {
     assert.equal(
       liveGameStatusLabel({ status: 'in_progress', gameNumber: 3, elapsedSeconds: 12 * 60 + 5 }),
-      'Game 3 In Progress · 12m'
+      'Game 3 In Progress'
     )
     assert.equal(
       liveGameStatusLabel({ status: 'in_progress', gameNumber: 1, elapsedSeconds: 65 * 60 }),
-      'Game 1 In Progress · 1h 05m'
+      'Game 1 In Progress'
     )
   })
 })

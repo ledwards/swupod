@@ -30,6 +30,24 @@ describe('groupDraftedCards', () => {
     assert.equal(groups[0].cards.length, 2)
   })
 
+  it('SPEC: padCostColumns shows every cost column even when empty, but omits an empty Cost 0', () => {
+    const groups = groupDraftedCards([mk({ cost: 2 }), mk({ cost: 5 })], 'cost', 14, true)
+    assert.deepEqual(
+      groups.map(g => g.label),
+      ['Cost 1', 'Cost 2', 'Cost 3', 'Cost 4', 'Cost 5', 'Cost 6', 'Cost 7', 'Cost 8+'],
+    )
+    assert.equal(groups.find(g => g.label === 'Cost 2')!.cards.length, 1)
+    assert.equal(groups.find(g => g.label === 'Cost 3')!.cards.length, 0) // empty column still shown
+  })
+
+  it('SPEC: padCostColumns includes Cost 0 only when a zero-cost card exists', () => {
+    const groups = groupDraftedCards([mk({ cost: 0 }), mk({ cost: 1 })], 'cost', 14, true)
+    assert.deepEqual(
+      groups.map(g => g.label),
+      ['Cost 0', 'Cost 1', 'Cost 2', 'Cost 3', 'Cost 4', 'Cost 5', 'Cost 6', 'Cost 7', 'Cost 8+'],
+    )
+  })
+
   it('SPEC: aspect mode orders Vigilance, Command, Aggression, Cunning, multi, then Neutral last', () => {
     const cards = [
       mk({ aspects: ['Command'] }),

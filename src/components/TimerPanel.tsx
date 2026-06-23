@@ -45,6 +45,9 @@ export interface TimerPanelProps {
    * Drives the competitive Appendix C round-timer schedule. Ignored for casual.
    */
   cardsRemaining?: number
+  /** Hide the "Pack X - Pick Y" line — used by the duplicate bottom timer so the
+   *  round/pick info isn't shown twice on the same screen. */
+  hideRoundInfo?: boolean
 }
 
 /**
@@ -52,7 +55,7 @@ export interface TimerPanelProps {
  * Shows either pick timeout or last player timer (whichever has less time remaining)
  * Both timers can be enabled/disabled independently
  */
-function TimerPanel({ draft, players = [], compact = false, isHost = false, onTogglePause, onUpdateTimerSettings, draftState = null, onTimerExpire, cardsRemaining = 0 }: TimerPanelProps) {
+function TimerPanel({ draft, players = [], compact = false, isHost = false, onTogglePause, onUpdateTimerSettings, draftState = null, onTimerExpire, cardsRemaining = 0, hideRoundInfo = false }: TimerPanelProps) {
   const [activeTimer, setActiveTimer] = useState<'round' | 'lastPlayer'>('round')
   const [optimisticPaused, setOptimisticPaused] = useState<boolean | null>(null)
 
@@ -169,12 +172,12 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
   return (
     <>
       {/* Round/Pick info displayed ABOVE the timer box */}
-      {draftState?.phase === 'leader_draft' && (
+      {!hideRoundInfo && draftState?.phase === 'leader_draft' && (
         <div className="round-pick-info">
           Leader {draftState?.leaderRound || 1}/{totalLeaderRounds}
         </div>
       )}
-      {draftState?.phase === 'pack_draft' && (
+      {!hideRoundInfo && draftState?.phase === 'pack_draft' && (
         <div className="round-pick-info">
           Pack {draftState?.packNumber || 1} - Pick {draftState?.pickInPack || 1}
         </div>

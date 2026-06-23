@@ -398,7 +398,9 @@ function PackDraftPhase({
     : null
 
   if (isReviewPeriod) {
-    const reviewGroups = groupDraftedCards(draftedCards, reviewGroupBy, draft?.packSize || 14)
+    // Pad the cost view so every cost column shows even when empty (Cost 0 stays
+    // optional) — a steady curve between packs.
+    const reviewGroups = groupDraftedCards(draftedCards, reviewGroupBy, draft?.packSize || 14, true)
     return (
       <div className="pack-draft-phase">
         <div className="review-period">
@@ -476,6 +478,32 @@ function PackDraftPhase({
             <div className={`review-columns review-columns--${reviewGroupBy}`}>
               {reviewGroups.map(group => {
                 const aspects = group.cards[0]?.aspects || []
+                // Separate by type within each bucket (Unit vs Non-Unit), mirroring
+                // the deckbuilder's cost/aspect columns.
+                const units = group.cards.filter(c => c.type === 'Unit')
+                const nonUnits = group.cards.filter(c => c.type !== 'Unit')
+                const renderTypeStack = (stackCards: typeof group.cards) => (
+                  <div className="review-stack">
+                    <div className="review-stack-inner">
+                      {stackCards.map((card, i) => (
+                        <div
+                          key={card.instanceId || card.id}
+                          className={`review-stacked-card review-stacked-card--${reviewDensity}${i === stackCards.length - 1 ? ' is-last' : ''}`}
+                          onMouseEnter={(e) => reviewHandleMouseEnter(card, e)}
+                          onMouseLeave={reviewHandleMouseLeave}
+                          onTouchStart={() => reviewHandleTouchStart(card)}
+                          onTouchEnd={reviewHandleTouchEnd}
+                        >
+                          <img
+                            src={card.imageUrl}
+                            alt={card.name || card.title || 'Card'}
+                            className="review-card-img"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
                 return (
                   <section key={group.key} className="review-column">
                     <div className="review-col-header">
@@ -488,26 +516,18 @@ function PackDraftPhase({
                       )}
                       <span className="review-col-count">({group.cards.length})</span>
                     </div>
-                    <div className="review-stack">
-                      <div className="review-stack-inner">
-                        {group.cards.map((card, i) => (
-                          <div
-                            key={card.instanceId || card.id}
-                            className={`review-stacked-card review-stacked-card--${reviewDensity}${i === group.cards.length - 1 ? ' is-last' : ''}`}
-                            onMouseEnter={(e) => reviewHandleMouseEnter(card, e)}
-                            onMouseLeave={reviewHandleMouseLeave}
-                            onTouchStart={() => reviewHandleTouchStart(card)}
-                            onTouchEnd={reviewHandleTouchEnd}
-                          >
-                            <img
-                              src={card.imageUrl}
-                              alt={card.name || card.title || 'Card'}
-                              className="review-card-img"
-                            />
-                          </div>
-                        ))}
+                    {units.length > 0 && (
+                      <>
+                        <div className="review-type-label">Unit ({units.length})</div>
+                        {renderTypeStack(units)}
+                      </>
+                    )}
+                    {nonUnits.length > 0 && (
+                      <div className={units.length > 0 ? 'review-nonunits' : ''}>
+                        <div className="review-type-label">Non-Unit ({nonUnits.length})</div>
+                        {renderTypeStack(nonUnits)}
                       </div>
-                    </div>
+                    )}
                   </section>
                 )
               })}
@@ -690,6 +710,24 @@ function PackDraftPhase({
           {!isSpectator && showPassing && (lastPackSize > 0 || currentPack.length > 0) && (
             <div className="passing-message">
               Passing {passDirection === 'left' ? 'Left' : 'Right'}...
+            </div>
+          )}
+
+          {/* Bottom timer — the same pick/round timer as the top, repeated right
+              above where the pick/confirm box appears so the clock stays in view
+              while you choose. Display-only (no host controls, no expiry handler —
+              the top timer owns expiry). */}
+          {!isSpectator && (
+            <div className="timer-bar-bottom">
+              <TimerPanel
+                draft={draft}
+                players={players}
+                compact={true}
+                isHost={false}
+                draftState={draftState}
+                cardsRemaining={currentPack.length}
+                hideRoundInfo={true}
+              />
             </div>
           )}
 

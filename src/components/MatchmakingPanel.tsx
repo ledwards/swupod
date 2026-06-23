@@ -17,7 +17,7 @@ import {
   statusLine,
   wayfinderMatchState,
 } from './MatchmakingPanel.helpers'
-import { wayfinderPracticeTier, shouldShowUpdateNudge } from '../utils/wayfinderCapabilities'
+import { wayfinderPracticeTier } from '../utils/wayfinderCapabilities'
 import { buildUsagePieStops, usagePieColor } from './YourStats/usagePie'
 import WayfinderStoreButtons from './WayfinderStoreButtons'
 import {
@@ -56,6 +56,7 @@ interface MatchData {
 interface Round {
   roundNumber: number
   status: string
+  startedAt?: string | Date | null
   matches: MatchData[]
 }
 
@@ -86,13 +87,20 @@ interface MatchmakingPanelProps {
   onSelfDrop: () => void
   onAssignBye: (targetUserId: string) => void
   onStartMatches: () => void
+  /** Pod owner only: the pod-level primary-deck lock state, and a toggle for it.
+   *  Lets the host unlock everyone's deck mid-event (e.g. to fix a deck) and
+   *  re-lock — the same control as the deckbuilder, surfaced in the Swiss panel. */
+  decksUnlocked?: boolean
+  onToggleDeckLock?: () => void
+  /** Pod owner only: cancel the whole event (tears down rounds + returns the pod
+   *  to deck building). Gated behind a confirm dialog. */
+  onCancelEvent?: () => void
   onPracticeLaunch?: (matchId: string) => void | Promise<void>
   practiceLaunchPendingMatchId?: string | null
   practiceLaunchMessage?: PracticeLaunchMessage | null
   wayfinderDetected?: boolean
   wayfinderSettled?: boolean
   hasCompanionBetaAccess?: boolean
-  capabilities?: string[]
   /** Viewer's drafted-pool rarity/duplicate breakdown for the summary's pool panel. */
   poolStats?: { total: number; legendaries: number; rares: number; duplicates: number } | null
 }
@@ -110,13 +118,15 @@ export function MatchmakingPanel({
   onSelfDrop,
   onAssignBye,
   onStartMatches,
+  decksUnlocked = false,
+  onToggleDeckLock,
+  onCancelEvent,
   onPracticeLaunch,
   practiceLaunchPendingMatchId = null,
   practiceLaunchMessage = null,
   wayfinderDetected = false,
   wayfinderSettled = true,
   hasCompanionBetaAccess = false,
-  capabilities = [],
   poolStats = null,
 }: MatchmakingPanelProps) {
   const totalRounds = Math.max(rounds.length, 3)
@@ -130,6 +140,7 @@ export function MatchmakingPanel({
   const [activeTab, setActiveTab] = useState(defaultTab)
   const [showHowItWorks, setShowHowItWorks] = useState(false)
   const [showDropConfirm, setShowDropConfirm] = useState(false)
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [elapsedNow, setElapsedNow] = useState(() => Date.now())
   const previousCurrentRoundRef = useRef(currentRound)
 
@@ -221,13 +232,12 @@ export function MatchmakingPanel({
   const hasActiveRound = activeRound && activeRound.status === 'active'
   const progressLabel = roundProgressLabel(currentRound, totalRounds, activeRound)
   const playerStatus = statusLine({ matchmakingStatus, currentRound, currentUserId, myMatch })
-  // Capability tier: 'none' (no Companion) | 'needs-update' (old build) | 'ready'.
-  // Manual reporting works in every tier; the live launch is gated on 'ready'.
-  const practiceTier = wayfinderPracticeTier(wayfinderDetected, capabilities)
+  // Tier: 'none' (no Companion) | 'ready' (Companion detected). We don't gate on
+  // plugin version/capability — a detected Companion can launch. Manual reporting
+  // works either way.
+  const practiceTier = wayfinderPracticeTier(wayfinderDetected)
   const showInstallNudge = shouldShowInstallNudge(wayfinderDetected, hasCompanionBetaAccess, wayfinderSettled)
-  const showUpdateNudge = shouldShowUpdateNudge(practiceTier, wayfinderSettled)
-  // Live launch + auto-report ONLY when a capable Companion is present. An old
-  // Companion (detected, no capability) falls back to manual — never a dead button.
+  // Live launch + auto-report whenever the Companion is detected.
   const liveLaunchEnabled = Boolean(practiceTier === 'ready' && onPracticeLaunch)
   const dropState = selfDropState({ isHost, matchmakingStatus, currentUserId, players })
 
@@ -236,12 +246,21 @@ export function MatchmakingPanel({
     onSelfDrop()
   }
 
-  const renderMatchCard = (match: MatchData, roundNumber: number, tableNumber?: number) => (
+  const confirmCancelEvent = () => {
+    setShowCancelConfirm(false)
+    onCancelEvent?.()
+  }
+
+  // Organizer can cancel the event while it's running (not after it's complete).
+  const canCancelEvent = Boolean(isHost && matchmakingStatus === 'active' && onCancelEvent)
+
+  const renderMatchCard = (match: MatchData, roundNumber: number, tableNumber?: number, roundStartedAt?: string | Date | null) => (
     <MatchCard
       key={match.id}
       match={match}
       tableNumber={tableNumber}
       roundNumber={roundNumber}
+      roundStartedAt={roundStartedAt}
       currentUserId={currentUserId}
       isHost={isHost}
       playerRecords={playerRecordsByRound.get(roundNumber)}
@@ -283,7 +302,7 @@ export function MatchmakingPanel({
     ;[...round.matches].sort((a, b) => rankOf(a) - rankOf(b)).forEach((m, i) => tableByMatch.set(m.id, i + 1))
     const renderMatchGrid = (matches: MatchData[], className = '') => (
       <div className={`matchmaking-matches-grid${className ? ` ${className}` : ''}`}>
-        {matches.map(match => renderMatchCard(match, round.roundNumber, tableByMatch.get(match.id)))}
+        {matches.map(match => renderMatchCard(match, round.roundNumber, tableByMatch.get(match.id), round.startedAt))}
       </div>
     )
 
@@ -406,16 +425,6 @@ export function MatchmakingPanel({
         </div>
       )}
 
-      {showUpdateNudge && (
-        <div className="matchmaking-wayfinder-nudge">
-          <div className="matchmaking-wayfinder-copy">
-            <strong>Update Wayfinder</strong>
-            <span>Update the Companion to auto-record and auto-confirm your Practice games. Until then, report results manually below.</span>
-          </div>
-          <WayfinderStoreButtons orientation="inline" />
-        </div>
-      )}
-
       {/* Current match callout */}
       {myMatch && matchmakingStatus === 'active' && (
         <div className="matchmaking-my-match">
@@ -443,6 +452,40 @@ export function MatchmakingPanel({
           <Button variant="primary" glowColor="yellow" onClick={onStartMatches}>
             Start Round 1
           </Button>
+        </div>
+      )}
+
+      {/* Pod owner only: lock / unlock everyone's primary deck mid-event. Decks
+          freeze when Swiss begins; the host can release them (e.g. so a player can
+          fix a deck) and re-lock. Mirrors the deckbuilder lock control. */}
+      {isHost && matchmakingStatus === 'active' && onToggleDeckLock && (
+        <div className="matchmaking-host-controls matchmaking-deck-lock" data-testid="deck-lock-control">
+          <Button
+            variant="warning"
+            size="sm"
+            onClick={onToggleDeckLock}
+            title={decksUnlocked
+              ? 'Lock every player’s primary deck for this pod again'
+              : 'Unlock every player’s primary deck so they can edit'}
+          >
+            {decksUnlocked ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+              </svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            )}
+            <span>{decksUnlocked ? 'Lock player decks' : 'Unlock player decks'}</span>
+          </Button>
+          <span className="matchmaking-deck-lock-note">
+            {decksUnlocked
+              ? 'Decks are unlocked — players can edit. Tap to freeze them again.'
+              : 'Decks are locked for Swiss. Tap to let players edit.'}
+          </span>
         </div>
       )}
 
@@ -559,13 +602,28 @@ export function MatchmakingPanel({
         )}
       </div>
 
-      {dropState !== 'hidden' && (
+      {(dropState !== 'hidden' || canCancelEvent) && (
         <div className="matchmaking-self-drop">
+          {canCancelEvent && (
+            <Button
+              variant="danger"
+              size="sm"
+              className="matchmaking-cancel-event-button"
+              data-testid="cancel-event-button"
+              onClick={() => setShowCancelConfirm(true)}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M15 9l-6 6M9 9l6 6"></path>
+              </svg>
+              Cancel Swiss Practice
+            </Button>
+          )}
           {dropState === 'dropped' ? (
             <span className="matchmaking-self-drop-note" data-testid="self-drop-dropped-note">
               You&apos;ve dropped from this event.
             </span>
-          ) : (
+          ) : dropState !== 'hidden' ? (
             <Button
               variant="danger"
               size="sm"
@@ -580,7 +638,7 @@ export function MatchmakingPanel({
               </svg>
               Drop from event
             </Button>
-          )}
+          ) : null}
         </div>
       )}
 
@@ -607,6 +665,32 @@ export function MatchmakingPanel({
               <line x1="21" y1="12" x2="9" y2="12"></line>
             </svg>
             Drop
+          </Button>
+        </Modal.Actions>
+      </Modal>
+
+      <Modal
+        isOpen={showCancelConfirm}
+        onClose={() => setShowCancelConfirm(false)}
+        variant="danger"
+        title="Cancel this Swiss Practice event?"
+      >
+        <Modal.Body>
+          <p>
+            Every round, pairing, and reported result will be deleted and all players
+            return to deck building. This ends the event for everyone and can&apos;t be undone.
+          </p>
+        </Modal.Body>
+        <Modal.Actions>
+          <Button variant="secondary" onClick={() => setShowCancelConfirm(false)}>
+            Keep playing
+          </Button>
+          <Button variant="danger" data-testid="cancel-event-confirm" onClick={confirmCancelEvent}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="M15 9l-6 6M9 9l6 6"></path>
+            </svg>
+            Cancel Swiss Practice
           </Button>
         </Modal.Actions>
       </Modal>

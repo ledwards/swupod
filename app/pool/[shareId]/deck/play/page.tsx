@@ -238,6 +238,7 @@ export default function PlayPage({ params }: PageProps) {
   const competitiveRounds = (competitiveDraft?.rounds || []) as {
     roundNumber: number
     status: string
+    startedAt?: string | null
     matches: {
       id: string
       player1: { id: string; username: string; avatarUrl?: string } | null
@@ -256,6 +257,12 @@ export default function PlayPage({ params }: PageProps) {
   }[]
   const competitiveCurrentRound = competitiveDraft?.currentRound || 1
   const matchmakingStatus = competitiveDraft?.matchmakingStatus || 'deck_building'
+  // Pod-level deck lock override (host can unlock everyone's primary deck mid-event).
+  const decksUnlocked = competitiveDraft?.decksUnlocked === true
+  // While a competitive event is underway (deck building → matches), hide the
+  // Stats / Draft Log / Draft Report actions — they reveal info that shouldn't be
+  // available mid-flow. They reappear once the Swiss event is complete.
+  const swissInProgress = isCompetitive && matchmakingStatus !== 'complete'
 
   const getLimitedFormat = () => pool?.poolType === 'draft' ? 'draft' : 'sealed'
   const getLimitedMode = () => {
@@ -305,7 +312,7 @@ export default function PlayPage({ params }: PageProps) {
 
   // Detect the Wayfinder extension via the centralized hook (meta tag + event +
   // postMessage, with a localStorage bridge and the ?wayfinder=1/0 QA override).
-  const { detected: wayfinderDetected, settled: wayfinderSettled, capabilities: wayfinderCapabilities } = useWayfinderDetection()
+  const { detected: wayfinderDetected, settled: wayfinderSettled } = useWayfinderDetection()
   // Companion pitch shown above the Swiss panel for logged-in players who don't
   // have the Companion. shouldShow (with required) === !hasPlugin, so the banner
   // and the full install CTA appear/disappear together.
@@ -1110,6 +1117,53 @@ export default function PlayPage({ params }: PageProps) {
     }
   }
 
+  // Host-only: toggle the pod-level deck lock from the Swiss panel (same endpoint
+  // as the deckbuilder lock). The socket broadcast updates decksUnlocked for
+  // everyone, so the deckbuilder lock state and this button stay in sync.
+  const handleToggleDeckLock = async () => {
+    if (!draftShareId || !isCompetitiveHost) return
+    try {
+      const res = await fetch(`/api/draft/${draftShareId}/unlock-decks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ unlocked: !decksUnlocked }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setMessage(data.error || 'Failed to toggle deck lock')
+        setMessageType('error')
+        setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      }
+    } catch {
+      setMessage('Failed to toggle deck lock')
+      setMessageType('error')
+      setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+    }
+  }
+
+  // Host-only: cancel the whole event (tears down rounds + returns everyone to
+  // deck building). The confirm dialog lives in the Swiss panel.
+  const handleCancelEvent = async () => {
+    if (!draftShareId || !isCompetitiveHost) return
+    try {
+      const res = await fetch(`/api/draft/${draftShareId}/cancel-event`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setMessage(data.error || 'Failed to cancel event')
+        setMessageType('error')
+        setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      }
+    } catch {
+      setMessage('Failed to cancel event')
+      setMessageType('error')
+      setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+    }
+  }
+
   const handleToggleView = async () => {
     if (showingPool) {
       setShowingPool(false)
@@ -1398,7 +1452,6 @@ export default function PlayPage({ params }: PageProps) {
             }))}
             wayfinderDetected={wayfinderDetected}
             wayfinderSettled={wayfinderSettled}
-            capabilities={wayfinderCapabilities}
             poolStats={viewerPoolStats}
             hasCompanionBetaAccess={Boolean(user?.is_beta_tester || user?.is_admin)}
             onPracticeLaunch={handlePracticeLaunch}
@@ -1424,6 +1477,9 @@ export default function PlayPage({ params }: PageProps) {
             onSelfDrop={handleSelfDrop}
             onAssignBye={handleAssignBye}
             onStartMatches={handleStartMatches}
+            decksUnlocked={decksUnlocked}
+            onToggleDeckLock={handleToggleDeckLock}
+            onCancelEvent={handleCancelEvent}
           />
         )}
 
@@ -1523,7 +1579,7 @@ export default function PlayPage({ params }: PageProps) {
               <span className="post-to-discord-help" data-tooltip="Share your deck to the Protect the Pod Discord for feedback and discussion. Makes your pool public.">i</span>
             </div>
           )}
-          {shareId && (
+          {shareId && !swissInProgress && (
             <Button variant="secondary" onClick={() => router.push(`/pool/${shareId}/deck/stats?tab=gamelog`)}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 19V5"></path>
@@ -1535,7 +1591,7 @@ export default function PlayPage({ params }: PageProps) {
               Stats
             </Button>
           )}
-          {pool?.draftShareId && pool?.poolType === 'draft' && (
+          {pool?.draftShareId && pool?.poolType === 'draft' && !swissInProgress && (
             <Button variant="secondary" onClick={() => router.push(`/draft/${pool.draftShareId}/log`)}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -1547,7 +1603,7 @@ export default function PlayPage({ params }: PageProps) {
               Draft Log
             </Button>
           )}
-          {pool?.draftShareId && pool?.poolType === 'draft' && isPatron && isOwner && (
+          {pool?.draftShareId && pool?.poolType === 'draft' && isPatron && isOwner && !swissInProgress && (
             <DraftReportButton draftShareId={pool.draftShareId} variant="play" />
           )}
         </div>

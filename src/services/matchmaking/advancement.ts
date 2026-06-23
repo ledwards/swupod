@@ -1,4 +1,4 @@
-import { queryRow, queryRows, query, type TxClient } from '@/lib/db'
+import { queryRow, queryRows, query, withTransaction, type TxClient } from '@/lib/db'
 import { broadcastDraftState } from '@/src/lib/socketBroadcast'
 import { pairRound1, pairSwiss, type PairingPlayer } from './pairing'
 
@@ -273,6 +273,39 @@ export async function createRound1(podId: string, shareId: string): Promise<void
     `UPDATE pods SET draft_state = draft_state || $1::jsonb WHERE id = $2`,
     [JSON.stringify({ phase: 'matchmaking', matchmakingStatus: 'active', currentRound: 1 }), podId]
   )
+
+  await broadcastDraftState(shareId)
+}
+
+/**
+ * Cancel a competitive event entirely. Tears down every round, pairing and game
+ * for the pod and returns it to its pre-event deck-building lobby:
+ *   - Deletes all practice rounds (matches + games cascade away).
+ *   - Resets matchmaking back to 'deck_building' / round 1 so the roster and
+ *     "Start Round 1" reappear (the organizer can restart or disband).
+ *   - Clears the deck-build deadline and the pod-level unlock override so every
+ *     primary deck unfreezes (a cancelled event no longer locks decks).
+ *
+ * Host-authorization is enforced by the route. This is irreversible — the UI
+ * gates it behind a confirm dialog.
+ */
+export async function cancelEvent(podId: string, shareId: string): Promise<void> {
+  await withTransaction(async (tx) => {
+    // ON DELETE CASCADE removes matches + games, but delete explicitly so the
+    // intent is obvious and the operation is robust to future FK changes.
+    await tx.query('DELETE FROM practice_match_games WHERE pod_id = $1', [podId])
+    await tx.query('DELETE FROM practice_matches WHERE pod_id = $1', [podId])
+    await tx.query('DELETE FROM practice_rounds WHERE pod_id = $1', [podId])
+    await tx.query(
+      `UPDATE pods
+         SET draft_state = draft_state || $1::jsonb,
+             deck_lock_at = NULL,
+             decks_unlocked = false,
+             updated_at = NOW()
+       WHERE id = $2`,
+      [JSON.stringify({ matchmakingStatus: 'deck_building', currentRound: 1 }), podId]
+    )
+  })
 
   await broadcastDraftState(shareId)
 }

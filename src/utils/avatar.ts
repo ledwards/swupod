@@ -17,7 +17,8 @@ export function defaultAvatarUrl(seed?: string | null): string {
   for (let i = 0; i < s.length; i++) {
     h = (Math.imul(h, 31) + s.charCodeAt(i)) >>> 0
   }
-  return DEFAULT_AVATARS[h % DEFAULT_AVATARS.length]
+  // Modulo over a non-empty constant array always yields a valid index.
+  return DEFAULT_AVATARS[h % DEFAULT_AVATARS.length]!
 }
 
 /**

@@ -164,6 +164,12 @@ interface DeckBuilderProps {
   /** The pod owner can flip the pod-level lock for everyone. */
   swissCanUnlock?: boolean
   onToggleSwissLock?: () => void
+  /** Swiss Practice is underway but the owner has unlocked the decks: show the
+   *  lock area in its "tap to lock again" state instead of the expired build timer. */
+  swissUnlocked?: boolean
+  /** Competitive event in progress — hides Stats / Draft Log / Draft Report in the
+   *  header until the Swiss event is complete. */
+  swissInProgress?: boolean
   poolParentShareId?: string | null
 }
 
@@ -193,6 +199,8 @@ function DeckBuilder({
   swissLocked = false,
   swissCanUnlock = false,
   onToggleSwissLock,
+  swissUnlocked = false,
+  swissInProgress = false,
   poolParentShareId = null
 }: DeckBuilderProps) {
   const { user, isAuthenticated, signIn, isPatron } = useAuth()
@@ -2545,6 +2553,8 @@ function DeckBuilder({
           swissLocked={swissLocked}
           swissCanUnlock={swissCanUnlock}
           onToggleSwissLock={onToggleSwissLock}
+          swissUnlocked={swissUnlocked}
+          swissInProgress={swissInProgress}
         />
 
       {/* Selected Leader/Base and Deck/Sideboard Info - Sticky Bar */}

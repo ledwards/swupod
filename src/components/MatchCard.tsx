@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import Button from './Button'
 import ConfirmModal from './ConfirmModal'
 import ReplayWatchLink from './ReplayWatchLink'
+import CountdownTimer from './CountdownTimer'
 import {
   liveGameAction,
   liveGameStatusLabel,
@@ -70,9 +71,15 @@ interface MatchCardProps {
   tableNumber?: number
   /** Round this match belongs to — prefixes the live status ("Round 1 · Game 2…"). */
   roundNumber?: number
+  /** When the round began — anchors the 55:00 round countdown shown while a game
+   *  is in progress. */
+  roundStartedAt?: string | Date | null
   /** Whether the viewer's Companion is detected (drives the current user's dot). */
   wayfinderDetected?: boolean
 }
+
+/** Swiss round clock: 55 minutes for the whole round (cosmetic). */
+const ROUND_TIMER_SECONDS = 55 * 60
 
 function getMatchStatus(match: MatchData): string {
   if (match.finalConfirmed) return 'Complete'
@@ -138,10 +145,14 @@ export function MatchCard({
   readOnly = false,
   tableNumber,
   roundNumber,
+  roundStartedAt = null,
   wayfinderDetected = false,
 }: MatchCardProps) {
   const isMyMatch = match.player1?.id === currentUserId || match.player2?.id === currentUserId
   const status = getMatchStatus(match)
+  const roundStartedAtIso = roundStartedAt
+    ? (typeof roundStartedAt === 'string' ? roundStartedAt : new Date(roundStartedAt).toISOString())
+    : null
   const iAmPlayer1 = match.player1?.id === currentUserId
   const iAmPlayer2 = match.player2?.id === currentUserId
   const iHaveSubmitted = (iAmPlayer1 && match.player1Submitted) || (iAmPlayer2 && match.player2Submitted)
@@ -323,15 +334,20 @@ export function MatchCard({
       )
     }
 
+    // Any other disabled live state (Creating Lobby / Waiting for lobby / Creating…).
+    // Wrap in a titled span so the explanation shows on hover — a disabled <button>
+    // swallows its own title attribute.
     return (
-      <Button
-        variant="secondary"
-        size="sm"
-        className="match-card-live-button"
-        disabled
-      >
-        {liveAction.label}
-      </Button>
+      <span className="match-card-live-disabled-wrap" title={liveAction.tooltip || undefined}>
+        <Button
+          variant="secondary"
+          size="sm"
+          className="match-card-live-button"
+          disabled
+        >
+          {liveAction.label}
+        </Button>
+      </span>
     )
   }
 
@@ -386,7 +402,10 @@ export function MatchCard({
           <span className="match-card-player-heading">
             {companionDot(match.player1)}
             {match.player1 && <img className="match-card-avatar" src={avatarSrc(match.player1.avatarUrl, match.player1.id || match.player1.username)} alt="" />}
-            <span className="match-card-player-name">{match.player1?.username || '???'}</span>
+            <span className="match-card-player-name-wrap">
+              <span className="match-card-player-name">{match.player1?.username || '???'}</span>
+              {renderKickButton(match.player1)}
+            </span>
             <span className="match-card-player-record">{recordFor(match.player1)}</span>
           </span>
           {!match.isBye && (
@@ -396,7 +415,6 @@ export function MatchCard({
               <GameDot result={match.game3Result} forPlayer="player1" />
             </div>
           )}
-          {renderKickButton(match.player1)}
         </div>
 
         <span className="match-card-vs">{match.isBye ? 'BYE' : 'vs'}</span>
@@ -407,7 +425,10 @@ export function MatchCard({
               <span className="match-card-player-heading">
                 {companionDot(match.player2)}
                 {match.player2 && <img className="match-card-avatar" src={avatarSrc(match.player2.avatarUrl, match.player2.id || match.player2.username)} alt="" />}
-                <span className="match-card-player-name">{match.player2?.username || '???'}</span>
+                <span className="match-card-player-name-wrap">
+                  <span className="match-card-player-name">{match.player2?.username || '???'}</span>
+                  {renderKickButton(match.player2)}
+                </span>
                 <span className="match-card-player-record">{recordFor(match.player2)}</span>
               </span>
               <div className="match-card-dots">
@@ -415,7 +436,6 @@ export function MatchCard({
                 <GameDot result={match.game2Result} forPlayer="player2" />
                 <GameDot result={match.game3Result} forPlayer="player2" />
               </div>
-              {renderKickButton(match.player2)}
             </>
           ) : (
             <span className="match-card-player-name match-card-player-name--bye">---</span>
@@ -429,7 +449,20 @@ export function MatchCard({
             {liveAction.readyText ? (
               <span className="match-card-live-status match-card-live-ready">{liveAction.readyText}</span>
             ) : displayStatus ? (
-              <span className="match-card-live-status">{displayStatus}</span>
+              <div className="match-card-live-headline">
+                <span className="match-card-live-status">{displayStatus}</span>
+                {liveRowStatus === 'in_progress' && roundStartedAtIso && (
+                  <>
+                    <span className="match-card-live-sep" aria-hidden="true">·</span>
+                    <CountdownTimer
+                      totalSeconds={ROUND_TIMER_SECONDS}
+                      startedAt={roundStartedAtIso}
+                      warningThreshold={300}
+                      compact
+                    />
+                  </>
+                )}
+              </div>
             ) : null}
             {practiceLaunchMessage && (
               <span className={`match-card-live-message match-card-live-message--${practiceLaunchMessage.type}`}>

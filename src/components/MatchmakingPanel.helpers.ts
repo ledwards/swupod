@@ -326,10 +326,10 @@ export function liveGameStatusLabel(currentGame?: MatchmakingHelperCurrentGame |
       return `${gameLabel} Starting`
     case 'lobby_ready':
       return `${gameLabel} Lobby Ready`
-    case 'in_progress': {
-      const elapsed = formatLiveGameElapsed(currentGame.elapsedSeconds)
-      return elapsed ? `${gameLabel} In Progress · ${elapsed}` : `${gameLabel} In Progress`
-    }
+    case 'in_progress':
+      // The round-level countdown timer (rendered alongside this label in
+      // MatchCard) replaces the old count-up elapsed text.
+      return `${gameLabel} In Progress`
     case 'complete':
       return `${gameLabel} Complete`
     case 'failed':
@@ -420,16 +420,22 @@ export function liveGameAction({
   }
 
   if (pending) {
-    return { kind: 'waiting', label: 'Creating Lobby', disabled: true }
+    return { kind: 'waiting', label: 'Creating Lobby', disabled: true, tooltip: 'Opening your Karabast lobby — this takes a few seconds.' }
   }
 
   if (!liveLaunchEnabled) {
     if (status === 'complete') return replayAction(match)
     // The opponent is spinning up the lobby — just wait for its URL to arrive,
     // but don't wait forever: after the 30s timeout fall through to the nudge.
-    if (status === 'creating' && !creatingTimedOut) return { kind: 'waiting', label: 'Waiting for lobby', disabled: true }
-    // No Companion and no lobby yet → a disabled play button that nudges install.
-    return { kind: 'play', label: '', disabled: true, tooltip: 'Install Wayfinder to start a lobby' }
+    if (status === 'creating' && !creatingTimedOut) return { kind: 'waiting', label: 'Waiting for lobby', disabled: true, tooltip: 'Your opponent is opening the lobby — the link will appear here.' }
+    // No Companion detected and no lobby yet → a disabled play button that explains
+    // why and points to the manual fallback.
+    return {
+      kind: 'play',
+      label: '',
+      disabled: true,
+      tooltip: 'Install the Wayfinder Companion to launch from here — or play manually with Copy JSON / Copy Link below.',
+    }
   }
 
   if (status === 'pending') {
@@ -447,14 +453,15 @@ export function liveGameAction({
       return { kind: 'play', label: '' }
     }
     if (currentGame?.game?.createdByUserId === currentUserId) {
-      return { kind: 'creating', label: 'Creating...', disabled: true }
+      return { kind: 'creating', label: 'Creating...', disabled: true, tooltip: 'Opening your lobby — this takes a few seconds.' }
     }
-    return { kind: 'waiting', label: 'Waiting for lobby', disabled: true }
+    return { kind: 'waiting', label: 'Waiting for lobby', disabled: true, tooltip: 'Your opponent is opening the lobby — the link will appear here.' }
   }
 
-  if (status === 'lobby_ready' || status === 'in_progress') {
+  if (status === 'lobby_ready') {
     // The lobby-URL-present case is handled above; without a URL we still wait.
-    return { kind: 'waiting', label: 'Waiting for lobby', disabled: true }
+    // ('in_progress' can't reach here — it returns at the guard above.)
+    return { kind: 'waiting', label: 'Waiting for lobby', disabled: true, tooltip: 'Waiting for the lobby link to arrive…' }
   }
 
   if (status === 'failed' || status === 'voided') {

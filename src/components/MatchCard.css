@@ -171,10 +171,18 @@
 /* Kick (host only): a bare red X — no circle — that fades in upper-right of a
    player's name on hover and opens a confirm dialog. On touch (no hover) it
    stays visible so hosts can still kick on mobile. */
+/* Wraps just the name so the kick X can anchor to the name's own top-right
+   corner (not the full-width player column). */
+.match-card-player-name-wrap {
+  position: relative;
+  display: flex;
+  min-width: 0;
+}
+
 .match-card-kick {
   position: absolute;
-  top: -6px;
-  right: -2px;
+  top: -8px;
+  right: -9px;
   background: none;
   border: none;
   padding: 2px;
@@ -350,6 +358,42 @@
   display: flex;
   flex-direction: column;
   gap: 0.18rem;
+}
+
+/* Status text + the 55:00 round countdown, inline ("… In Progress · 52:34"). */
+.match-card-live-headline {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.match-card-live-sep {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.78rem;
+}
+.match-card-live-headline .countdown-timer {
+  display: inline-flex;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: #bfdbfe;
+}
+.match-card-live-headline .countdown-timer.warning .timer-value,
+.match-card-live-headline .countdown-timer.expired .timer-value {
+  color: #f87171;
+}
+/* Game ran past the round clock: hold at 0:00 and flash until a result lands. */
+.match-card-live-headline .countdown-timer.expired {
+  animation: round-timer-flash 1s steps(1, end) infinite;
+}
+@keyframes round-timer-flash {
+  50% { opacity: 0.2; }
 }
 
 .match-card-live-status {

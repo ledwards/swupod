@@ -302,6 +302,50 @@ describe('live Swiss Practice fake Companion journey', { skip: !dbAvailable }, (
     // playerA (the conceder) is NOT the winner despite leading 1-0.
     assert.notEqual(m!.match_winner === 'player1' ? m!.player1_id : m!.player2_id, playerA)
   })
+
+  it('records a Bo3 game 2 reported against game 1\'s ANCHOR + gameNumber=2 (does not collapse onto game 1)', async () => {
+    // SPEC: the Companion only ever claims game 1 of a single-lobby Bo3, then
+    // reports games 2/3 against that SAME practiceMatchGameId with an incremented
+    // gameNumber. The result must land on game 2's slot — not silently re-record
+    // game 1 (the old bug, which 409'd or no-op'd and never finished the match).
+    const seeded = await seedFourPlayerLiveSwissPod()
+    const [playerA] = seeded.userIds
+    const [poolA] = seeded.poolShareIds
+    const [matchOne] = seeded.matchIds
+
+    const click = await claimPracticeMatchGame({
+      shareId: seeded.shareId,
+      matchId: matchOne!,
+      userId: playerA!,
+      now: new Date('2026-06-21T18:00:00.000Z'),
+    })
+    const anchor = click.practiceMatchGameId!
+
+    await recordPracticeMatchGameResult({
+      poolShareId: poolA!,
+      wayfinderMatchId: 'wf-anchor-bo3',
+      practiceMatchGameId: anchor,
+      gameNumber: 1,
+      result: 'win',
+    })
+    // Game 2 reported against game 1's anchor — the real Companion pattern.
+    const afterGame2 = await recordPracticeMatchGameResult({
+      poolShareId: poolA!,
+      wayfinderMatchId: 'wf-anchor-bo3',
+      practiceMatchGameId: anchor,
+      gameNumber: 2,
+      result: 'win',
+    })
+
+    assert.equal(afterGame2.gameNumber, 2, 'result resolves to game 2, not the anchor row\'s game 1')
+    assert.equal(afterGame2.matchFinalized, true, '2-0 finishes the match')
+
+    const rounds = await fetchRoundsWithMatches(seeded.podId)
+    const match = rounds.flatMap(r => r.matches).find(x => x.id === matchOne)!
+    assert.notEqual(match.game2Result, null, 'game 2 slot is recorded')
+    assert.equal(match.game2Result, match.game1Result, 'same player won both games')
+    assert.notEqual(match.matchWinner, null, 'match has a winner')
+  })
 })
 
 async function seedFourPlayerLiveSwissPod(): Promise<SeededLiveSwissPod> {

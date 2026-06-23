@@ -55,6 +55,12 @@ export interface DeckBuilderHeaderProps {
   /** Pod owner can toggle the pod-level lock for everyone. */
   swissCanUnlock?: boolean
   onToggleSwissLock?: () => void
+  /** Swiss Practice is underway but decks are unlocked: show the lock area in its
+   *  "tap to lock again" state instead of the expired build timer. */
+  swissUnlocked?: boolean
+  /** Competitive event in progress (not yet complete): hide Stats / Draft Log /
+   *  Draft Report until the Swiss event is over. */
+  swissInProgress?: boolean
 }
 
 export function DeckBuilderHeader({
@@ -90,6 +96,8 @@ export function DeckBuilderHeader({
   swissLocked = false,
   swissCanUnlock = false,
   onToggleSwissLock,
+  swissUnlocked = false,
+  swissInProgress = false,
 }: DeckBuilderHeaderProps) {
   // Calculate deck legality for Play button
   const deckCardCount = Object.values(cardPositions)
@@ -170,7 +178,10 @@ export function DeckBuilderHeader({
           frozen. For the pod owner it's a button that toggles the pod-level lock
           for everyone; for everyone else it's a non-interactive "warning" badge.
           Note: the timer NEVER forces the user forward anymore — it just counts
-          down, and when time is up the lock indicator takes over. */}
+          down, and when time is up the lock indicator takes over. Once the owner
+          unlocks (swissUnlocked), the SAME area stays put but flips to an open
+          padlock with "tap to lock again" — we never fall back to a dead 0:00
+          build timer. */}
       {swissLocked ? (
         <div className="deck-build-lock">
           <Button
@@ -189,6 +200,27 @@ export function DeckBuilderHeader({
               {swissCanUnlock
                 ? 'Swiss Practice in progress — tap to unlock decks'
                 : 'Swiss Practice in progress — primary deck can’t be edited'}
+            </span>
+          </Button>
+        </div>
+      ) : swissUnlocked ? (
+        <div className="deck-build-lock">
+          <Button
+            variant="warning"
+            disabled={!swissCanUnlock}
+            onClick={swissCanUnlock ? onToggleSwissLock : undefined}
+            title={swissCanUnlock
+              ? 'Lock every player’s deck for this pod again'
+              : undefined}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+            </svg>
+            <span>
+              {swissCanUnlock
+                ? 'Swiss Practice in progress — decks unlocked · tap to lock again'
+                : 'Swiss Practice in progress — decks unlocked by the host'}
             </span>
           </Button>
         </div>
@@ -224,7 +256,7 @@ export function DeckBuilderHeader({
           </Button>
         )}
 
-        {shareId && (
+        {shareId && !swissInProgress && (
           <Button
             variant="secondary"
             className="export-button"
@@ -245,7 +277,7 @@ export function DeckBuilderHeader({
 
         {/* Draft Log button — hidden when the owner is a patron (they get the
             richer Draft Report button below instead). */}
-        {draftShareId && !(isPatron && isOwner) && (
+        {draftShareId && !(isPatron && isOwner) && !swissInProgress && (
           <Button
             variant="secondary"
             className="export-button"
@@ -263,7 +295,7 @@ export function DeckBuilderHeader({
         )}
 
         {/* Draft Report button (FOP only) */}
-        {draftShareId && isPatron && isOwner && (
+        {draftShareId && isPatron && isOwner && !swissInProgress && (
           <DraftReportButton draftShareId={draftShareId} />
         )}
       </div>}

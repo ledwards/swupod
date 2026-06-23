@@ -1370,11 +1370,39 @@ async function resolveResultTarget(
 
     validateReporterInMatch(row, pool)
 
+    const matchRow = matchRowFromJoinedGameRow(row)
+
+    // The anchor identifies the MATCH/series; the reported gameNumber identifies
+    // the SLOT. In a single-lobby Bo3 the Companion only ever claims game 1, then
+    // reports games 2/3 against game 1's anchor with an incremented gameNumber —
+    // so resolve the slot from the reported number (exactly like the no-anchor
+    // path below) instead of pinning every result back onto the anchor row's own
+    // game_number (which silently collapsed games 2/3 onto game 1).
+    const games = (await tx.queryRows(
+      `SELECT *
+       FROM practice_match_games
+       WHERE match_id = $1
+       ORDER BY game_number, attempt_number
+       FOR UPDATE`,
+      [row.match_id]
+    )).map(normalizePracticeMatchGameRow)
+
+    let gameNumber = params.gameNumber
+      ? asGameNumber(params.gameNumber)
+      : asGameNumber(row.game_number)
+    // Same redirect as the no-anchor path: a reported number that lands on an
+    // already-decided game (lobby numbering reset for a fresh series game) moves
+    // to the game the series actually needs next.
+    const targetedResult = matchAggregateFromRow(matchRow)[resultColumnForGameNumber(gameNumber)]
+    if (targetedResult != null && matchRow.final_confirmed !== true) {
+      gameNumber = inferResultGameNumber(matchRow, games)
+    }
+
     return {
-      matchRow: matchRowFromJoinedGameRow(row),
-      gameRow: normalizePracticeMatchGameRow(row),
-      gameNumber: asGameNumber(row.game_number),
-      nextAttemptNumber: Number(row.attempt_number) || 1,
+      matchRow,
+      gameRow: officialGameForNumber(games, gameNumber),
+      gameNumber,
+      nextAttemptNumber: nextAttemptNumber(games, gameNumber),
     }
   }
 
