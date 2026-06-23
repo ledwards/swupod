@@ -713,20 +713,21 @@ function PackDraftPhase({
             </div>
           )}
 
-          {/* Bottom timer — the same pick/round timer as the top, repeated right
-              above where the pick/confirm box appears so the clock stays in view
-              while you choose. Display-only (no host controls, no expiry handler —
-              the top timer owns expiry). */}
+          {/* Bottom timer — identical to the top timer (same TimerPanel, same
+              props), repeated right above the pick/confirm box so the clock stays
+              in view while you scroll. Expiry is owned by the top timer only (no
+              onTimerExpire here) to avoid the auto-pick firing twice. */}
           {!isSpectator && (
             <div className="timer-bar-bottom">
               <TimerPanel
                 draft={draft}
                 players={players}
-                compact={true}
-                isHost={false}
+                compact={false}
+                isHost={isHost}
+                onTogglePause={onTogglePause}
+                onUpdateTimerSettings={onUpdateTimerSettings}
                 draftState={draftState}
                 cardsRemaining={currentPack.length}
-                hideRoundInfo={true}
               />
             </div>
           )}

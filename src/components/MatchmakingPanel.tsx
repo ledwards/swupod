@@ -101,8 +101,6 @@ interface MatchmakingPanelProps {
   wayfinderDetected?: boolean
   wayfinderSettled?: boolean
   hasCompanionBetaAccess?: boolean
-  /** Viewer's drafted-pool rarity/duplicate breakdown for the summary's pool panel. */
-  poolStats?: { total: number; legendaries: number; rares: number; duplicates: number } | null
 }
 
 export function MatchmakingPanel({
@@ -127,7 +125,6 @@ export function MatchmakingPanel({
   wayfinderDetected = false,
   wayfinderSettled = true,
   hasCompanionBetaAccess = false,
-  poolStats = null,
 }: MatchmakingPanelProps) {
   const totalRounds = Math.max(rounds.length, 3)
   const tabs = []
@@ -563,7 +560,7 @@ export function MatchmakingPanel({
                 </ol>
 
                 {matchmakingStatus === 'complete' && (
-                  <SwissPracticeEventSummary summary={eventSummary} poolStats={poolStats} />
+                  <SwissPracticeEventSummary summary={eventSummary} />
                 )}
               </>
             )}
@@ -737,10 +734,8 @@ function timestampMs(value: unknown): number | null {
 
 function SwissPracticeEventSummary({
   summary,
-  poolStats = null,
 }: {
   summary: ReturnType<typeof computeSwissPracticeEventSummary>
-  poolStats?: { total: number; legendaries: number; rares: number; duplicates: number } | null
 }) {
   return (
     <div className="matchmaking-event-summary" data-testid="swiss-practice-event-summary">
@@ -753,40 +748,7 @@ function SwissPracticeEventSummary({
       <div className="matchmaking-event-summary-grid">
         <EventMetaPanel title="Archetypes" rows={summary.archetypeMeta.slice(0, 5)} />
         <EventMetaPanel title="Leaders" rows={summary.leaderMeta.slice(0, 5)} />
-        <PoolStatsPanel stats={poolStats} />
       </div>
-    </div>
-  )
-}
-
-/**
- * Your pool's "how did it roll" numbers — legendaries, rares, and duplicate
- * copies, each shown as a share of the pool (statistical context, like /me).
- * Replaces the old coverage-only "Pool Context" panel.
- */
-function PoolStatsPanel({ stats }: { stats: { total: number; legendaries: number; rares: number; duplicates: number } | null }) {
-  const pct = (n: number) => (stats && stats.total > 0 ? `${Math.round((n / stats.total) * 100)}% of pool` : '')
-  return (
-    <div className="matchmaking-event-card">
-      <span className="matchmaking-event-card-title">Your Pool</span>
-      {!stats || stats.total === 0 ? (
-        <p className="matchmaking-event-empty">No pool cards yet</p>
-      ) : (
-        <dl className="matchmaking-pool-context">
-          <div>
-            <dt>Legendaries</dt>
-            <dd>{stats.legendaries}<span className="matchmaking-pool-context-ctx">{pct(stats.legendaries)}</span></dd>
-          </div>
-          <div>
-            <dt>Rares</dt>
-            <dd>{stats.rares}<span className="matchmaking-pool-context-ctx">{pct(stats.rares)}</span></dd>
-          </div>
-          <div>
-            <dt>Duplicates</dt>
-            <dd>{stats.duplicates}<span className="matchmaking-pool-context-ctx">{pct(stats.duplicates)}</span></dd>
-          </div>
-        </dl>
-      )}
     </div>
   )
 }

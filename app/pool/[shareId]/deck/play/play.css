@@ -1055,12 +1055,49 @@ a.login-banner-button:focus {
   .swiss-area-skeleton-pill { animation: none; }
 }
 
-/* Post-event tab strip: "Swiss Practice Results" / "Play". Two toggle buttons
-   centered above the panel/play area once the Swiss event is complete. */
+/* Post-event tab strip: "Swiss Practice Results" / "Play". Real tabs (not toggle
+   pills), centered above the panel/play area once the Swiss event is complete. */
 .posttourney-tabs {
   display: flex;
-  gap: 8px;
+  gap: 0.4rem;
   justify-content: center;
   flex-wrap: wrap;
   margin: 0 auto 16px;
+  padding: 0.1rem;
+}
+
+/* Real tab look — mirrors the deck-stats / YourStats tabs (.your-stats-tab)
+   so the Swiss tabs read as tabs, not toggle pills. */
+.posttourney-tab {
+  min-width: 120px;
+  padding: 0.7rem 1.4rem;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.posttourney-tab.active {
+  background: rgba(100, 181, 246, 0.16);
+  border-color: #64b5f6;
+  color: #fff;
+}
+
+.posttourney-tab:focus-visible {
+  outline: 2px solid #64b5f6;
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .posttourney-tab:hover:not(.active) {
+    color: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.06);
+  }
 }

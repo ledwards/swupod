@@ -196,10 +196,10 @@
   box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
 }
 
-/* Duplicate bottom draft timer — centered just above the pick/confirm box. */
+/* Duplicate bottom draft timer — a second copy of the top timer, just above the
+   pick/confirm box. Only adds vertical spacing; the TimerPanel renders exactly as
+   it does at the top (no layout/visual overrides). */
 .timer-bar-bottom {
-  display: flex;
-  justify-content: center;
   margin: 0.75rem 0 0.25rem;
 }
 
