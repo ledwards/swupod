@@ -162,7 +162,7 @@ export function MatchCard({
   // edit any match. Once a result exists the button reads "Edit" — Report
   // Manually covers both reporting and editing (no separate Edit button).
   const canReportOrEdit = !readOnly && !match.isBye && (isMyMatch || isHost)
-  const recordFor = (player: MatchPlayer | null) => player?.id ? formatRecord(playerRecords?.get(player.id)) : '0-0'
+  const recordFor = (player: MatchPlayer | null) => player?.id ? formatRecord(playerRecords?.get(player.id)) : '0 (0-0)'
   const liveStatus = liveGameStatusLabel(match.currentGame)
 
   // A lobby should appear within seconds. If a game sits in "creating" past a
