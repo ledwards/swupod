@@ -86,7 +86,15 @@ async function runMigrations(): Promise<void> {
   })
 }
 
-const app = next({ dev })
+// Dev: force the webpack bundler instead of Turbopack. Next 16's custom-server
+// path defaults TURBOPACK to 'auto' (on), and the Turbopack dev server can serve
+// a *truncated* built-in chunk while a route is still compiling (HTTP 200 but the
+// body is cut off mid-token). The browser then throws "Invalid or unexpected
+// token", React can't mount the page or its error boundary, and the route hangs
+// on skeletons forever. Webpack dev doesn't have that failure mode. Note: passing
+// `turbopack: false` is NOT enough — Next only switches off Turbopack when you
+// pass `webpack: true`. Prod (dev=false) is left entirely untouched.
+const app = next(dev ? { dev, webpack: true } : { dev })
 const handle = app.getRequestHandler()
 
 // Run migrations before starting

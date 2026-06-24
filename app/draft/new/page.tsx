@@ -18,11 +18,15 @@ export default function NewDraftPage() {
   const { user, isAuthenticated, loading: authLoading } = useAuth()
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [competitive, setCompetitive] = useState(false)
+  // "Swiss Rounds" defaults ON: a new pod runs the full competitive Swiss flow
+  // (draft → Swiss matchmaking) unless the owner unchecks it for a normal draft.
+  const [competitive, setCompetitive] = useState(true)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    if (params.get('competitive') === '1') {
+    if (params.get('competitive') === '0') {
+      setCompetitive(false)
+    } else if (params.get('competitive') === '1') {
       setCompetitive(true)
     }
   }, [])
@@ -153,22 +157,34 @@ export default function NewDraftPage() {
     </button>
   )
 
+  // Owner toggle: checked = full competitive Swiss flow; unchecked = normal draft.
+  // Mirrors the adjacent lock button's visual language; glows when on.
+  const swissToggle = (
+    <button
+      type="button"
+      className={`setting-lock setting-lock-competitive${competitive ? '' : ' setting-lock-competitive-off'}`}
+      onClick={() => setCompetitive(v => !v)}
+      aria-pressed={competitive}
+      title={competitive
+        ? 'Swiss Rounds ON — runs the full competitive Swiss flow (draft → Swiss matchmaking). Uncheck for a normal draft.'
+        : 'Swiss Rounds OFF — this will be a normal draft. Check to run the competitive Swiss flow.'}
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/>
+        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/>
+        <path d="M4 22h16"/>
+        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22"/>
+        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22"/>
+        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+      </svg>
+      <span>Swiss Rounds{competitive ? ' ✓' : ''}</span>
+    </button>
+  )
+
   const headerActions = (
     <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
       {lockButton}
-      {competitive && (
-        <span className="setting-lock setting-lock-competitive" style={{ cursor: 'default' }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/>
-            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/>
-            <path d="M4 22h16"/>
-            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22"/>
-            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22"/>
-            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
-          </svg>
-          <span>Competitive</span>
-        </span>
-      )}
+      {swissToggle}
     </div>
   )
 

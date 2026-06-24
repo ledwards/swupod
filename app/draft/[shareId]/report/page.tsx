@@ -14,9 +14,14 @@ interface PageProps {
   params: Promise<{ shareId: string }>
 }
 
+// Fallback avatar for Discord users with no avatar (or a broken avatar URL).
+// Reuses the "draftbot"-style Discord default-avatar approach (BOT_AVATARS in
+// app/api/draft/[shareId]/dev/add-bots/route.ts).
+const DRAFTBOT_AVATAR = 'https://cdn.discordapp.com/embed/avatars/0.png'
+
 function VisibilityLockIcon({ open }: { open: boolean }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       {open ? (
         <>
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -43,6 +48,7 @@ export default function DraftReportIndexPage({ params }: PageProps) {
   const [error, setError] = useState(null)
   const [message, setMessage] = useState(null)
   const [draftReportsPublic, setDraftReportsPublic] = useState(false)
+  const [reportReady, setReportReady] = useState(false)
 
   useEffect(() => {
     if (!shareId) return
@@ -58,6 +64,7 @@ export default function DraftReportIndexPage({ params }: PageProps) {
         const indexData = await res.json()
         setData(indexData)
         setDraftReportsPublic(indexData.draftReportsPublic || false)
+        setReportReady(indexData.reportReady || false)
       } catch {
         setError('Failed to load')
       } finally {
@@ -140,30 +147,31 @@ export default function DraftReportIndexPage({ params }: PageProps) {
                 {completedDate && `${completedDate} · `}
                 {draft.maxPlayers} Players
                 {draft.competitive && ' · Competitive'}
+                {data.isHost && (
+                  <button
+                    type="button"
+                    className={`draft-report-meta-lock ${draftReportsPublic ? 'lock-public' : 'lock-private'}`}
+                    onClick={handleToggleDraftVisibility}
+                    title={draftReportsPublic ? 'Whole draft is public — click to make private' : 'Whole draft is private — click to make public'}
+                    aria-label={draftReportsPublic ? 'Make the whole draft private' : 'Make the whole draft public'}
+                  >
+                    <VisibilityLockIcon open={draftReportsPublic} />
+                  </button>
+                )}
               </div>
-            </div>
-            <div className="draft-report-header-actions">
-              {data.isHost && (
-                <Button
-                  variant={draftReportsPublic ? 'primary' : 'danger'}
-                  onClick={handleToggleDraftVisibility}
-                  title={draftReportsPublic ? 'Make the whole draft private' : 'Make the whole draft public'}
-                  className="draft-report-visibility-button"
-                  style={{
-                    borderColor: draftReportsPublic ? 'rgba(0, 255, 0, 0.5)' : 'rgba(255, 0, 0, 0.5)',
-                    boxShadow: draftReportsPublic ? '0 0 8px rgba(0, 255, 0, 0.2)' : '0 0 8px rgba(255, 0, 0, 0.2)',
-                  }}
-                >
-                  <VisibilityLockIcon open={draftReportsPublic} />
-                  <span>{draftReportsPublic ? 'Draft Public' : 'Draft Private'}</span>
-                </Button>
-              )}
             </div>
           </div>
         </div>
         {message && <div className="draft-report-message">{message}</div>}
         <div className="draft-report-content">
-          {publicReports.length === 0 ? (
+          {!reportReady ? (
+            <div className="draft-report-deck-empty">
+              This draft report isn&apos;t ready yet.
+              <div style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>
+                It becomes available once a player has built their deck.
+              </div>
+            </div>
+          ) : publicReports.length === 0 ? (
             <div className="draft-report-deck-empty">
               No public reports for this draft yet.
             </div>
@@ -173,17 +181,23 @@ export default function DraftReportIndexPage({ params }: PageProps) {
                 <a
                   key={r.poolShareId}
                   href={`/draft/${shareId}/report/${r.poolShareId}`}
-                  className="draft-report-list-item"
+                  className={`draft-report-list-item ${r.hasBuiltDeck ? '' : 'no-deck'}`}
+                  title={r.hasBuiltDeck ? undefined : `${r.username} hasn't built a deck yet`}
                 >
                   <img
-                    src={r.avatarUrl || '/icons/discord-logo.png'}
+                    src={r.avatarUrl || DRAFTBOT_AVATAR}
                     alt=""
                     className="draft-report-list-avatar"
+                    onError={(e) => {
+                      const img = e.target as HTMLImageElement
+                      if (img.src !== DRAFTBOT_AVATAR) img.src = DRAFTBOT_AVATAR
+                    }}
                   />
                   <span className="draft-report-list-name">
                     {r.username}
                     {r.isMe && <span className="draft-report-list-you"> (you)</span>}
                   </span>
+                  {!r.hasBuiltDeck && <span className="draft-report-list-nodeck">No deck yet</span>}
                   <span className="draft-report-list-seat">Seat {r.seatNumber}</span>
                 </a>
               ))}

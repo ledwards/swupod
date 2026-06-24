@@ -330,7 +330,7 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
         )}
       </div>
 
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="All Builds" showCloseButton>
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="All Builds" showCloseButton className="modal--wide">
         <Modal.Body>
           <div className="pool-builds-modal-sections">
             {groupBuildsByAuthor(builds).map(group => (

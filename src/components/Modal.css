@@ -26,8 +26,12 @@
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 12px;
   padding: 2rem;
-  max-width: 500px;
-  width: 100%;
+  /* Hug the content by default — a one-line confirm should not render in a
+     fixed 500px box. Caps keep it readable and viewport-safe; large/full
+     modals opt in explicitly via .modal--wide / .modal--image. */
+  width: fit-content;
+  min-width: min(20rem, calc(100vw - 2rem));
+  max-width: min(28rem, calc(100vw - 2rem));
   color: white;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   position: relative;
@@ -124,7 +128,6 @@
 @media (max-width: 768px) {
   .modal-content {
     padding: 1.5rem;
-    max-width: 95%;
   }
 
   .modal-title {

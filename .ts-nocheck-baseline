@@ -1,4 +1,4 @@
-572
+578
 app/admin/page.tsx
 app/api/admin/grant/route.test.ts
 app/api/admin/grant/route.ts
@@ -41,6 +41,7 @@ app/api/draft/[shareId]/start-matches/route.ts
 app/api/draft/[shareId]/start/route.ts
 app/api/draft/[shareId]/state/route.ts
 app/api/draft/[shareId]/trigger-bots/route.ts
+app/api/draft/[shareId]/unlock-decks/route.ts
 app/api/draft/history/route.ts
 app/api/draft/reports/route.ts
 app/api/draft/route.ts
@@ -118,6 +119,9 @@ app/api/stats/qa/route.ts
 app/api/stats/tests/route.ts
 app/api/test/cleanup/route.ts
 app/api/test/create-user/route.ts
+app/api/test/live-swiss/cleanup/route.ts
+app/api/test/live-swiss/seed/route.ts
+app/api/test/live-swiss/state/route.ts
 app/api/users/[userId]/showcase-leaders/route.ts
 app/beta/page.tsx
 app/deckbuilder/build/page.tsx
@@ -555,6 +559,8 @@ tests/e2e/import-pool.spec.ts
 tests/e2e/karabast-badge.spec.ts
 tests/e2e/kick-player.spec.ts
 tests/e2e/landing.spec.ts
+tests/e2e/live-swiss-fake-companion.spec.ts
+tests/e2e/live-swiss-self-drop.spec.ts
 tests/e2e/logged-out-export.spec.ts
 tests/e2e/multiplayer-draft.spec.ts
 tests/e2e/multiplayer.spec.ts

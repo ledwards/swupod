@@ -18,6 +18,7 @@ const {
   recordPracticeMatchGameLifecycle,
   PracticeGameClaimError,
   PracticeGameLifecycleError,
+  PracticeGameResultError,
 } = await import('./liveGames')
 
 let dbAvailable = false
@@ -68,6 +69,7 @@ async function seedActiveSwissMatch(options: {
   roundStatus?: string
   isBye?: boolean
   finalConfirmed?: boolean
+  podStatus?: string
 } = {}): Promise<SeededMatch> {
   const suffix = randomUUID().slice(0, 8)
   const userIds: string[] = []
@@ -101,9 +103,9 @@ async function seedActiveSwissMatch(options: {
        current_players,
        competitive
      )
-     VALUES ($1, $2, 'TST', 'active', $3, 1, 2, 2, $4)
+     VALUES ($1, $2, 'TST', $5, $3, 1, 2, 2, $4)
      RETURNING id`,
-    [shareId, userIds[0], JSON.stringify(draftState), options.competitive ?? true]
+    [shareId, userIds[0], JSON.stringify(draftState), options.competitive ?? true, options.podStatus ?? 'complete']
   )
   const podId = pod!.id as string
   seededPods.push(podId)
@@ -228,6 +230,35 @@ describe('claimPracticeMatchGame', { skip: !dbAvailable }, () => {
     assert.equal(rows.length, 1)
     assert.equal(rows[0].status, 'creating')
     assert.equal(rows[0].created_by_user_id, seeded.userIds[0])
+  })
+
+  it('NEW CODE: claims a game on a completed-draft pod (real Swiss Practice state)', async () => {
+    // Swiss Practice runs after the draft FINISHES, so a real competitive pod is
+    // status=complete at claim time. Regression guard for the "Draft is not active"
+    // bug, which fired because the claim guard wrongly required status=active.
+    const seeded = await seedActiveSwissMatch({ podStatus: 'complete' })
+    const creator = await claimPracticeMatchGame({
+      shareId: seeded.shareId,
+      matchId: seeded.matchId,
+      userId: seeded.userIds[0],
+      now: new Date('2026-06-19T20:00:00.000Z'),
+    })
+    assert.equal(creator.action, 'create_lobby')
+    assert.equal(creator.status, 'creating')
+  })
+
+  it('rejects a claim before the draft is over (pod status=waiting)', async () => {
+    const seeded = await seedActiveSwissMatch({ podStatus: 'waiting' })
+    await assert.rejects(
+      () =>
+        claimPracticeMatchGame({
+          shareId: seeded.shareId,
+          matchId: seeded.matchId,
+          userId: seeded.userIds[0],
+          now: new Date('2026-06-19T20:00:00.000Z'),
+        }),
+      /Draft is not active/
+    )
   })
 
   it('returns join_lobby after Wayfinder has reported a lobby URL', async () => {
@@ -388,6 +419,150 @@ describe('recordPracticeMatchGameLifecycle', { skip: !dbAvailable }, () => {
     assert.ok(row!.lobby_ready_at)
     assert.equal(new Date(row!.joined_at as string | Date).toISOString(), '2026-06-19T20:03:00.000Z')
     assert.equal(row!.started_at, null)
+  })
+
+  it('opens a NEW lobby_ready attempt when a lobby is reported after the attempt failed', async () => {
+    const seeded = await seedActiveSwissMatch()
+    const claim = await claimPracticeMatchGame({
+      shareId: seeded.shareId,
+      matchId: seeded.matchId,
+      userId: seeded.userIds[0],
+      now: new Date('2026-06-19T20:00:00.000Z'),
+    })
+
+    // Auto-create dies → terminal failed.
+    const failed = await recordPracticeMatchGameLifecycle({
+      practiceMatchGameId: claim.practiceMatchGameId!,
+      poolShareId: seeded.poolShareIds[0],
+      status: 'failed',
+      failureReason: 'no Copy Invite Link appeared',
+      occurredAt: '2026-06-19T20:00:30.000Z',
+    })
+    assert.equal(failed.status, 'failed')
+
+    // A hand-made lobby is reported against the now-terminal game → recovery
+    // opens a new lobby_ready attempt instead of rejecting (failed is terminal).
+    const recovered = await recordPracticeMatchGameLifecycle({
+      practiceMatchGameId: claim.practiceMatchGameId!,
+      poolShareId: seeded.poolShareIds[0],
+      status: 'lobby_ready',
+      lobbyId: 'karabast-manual-1',
+      lobbyUrl: 'https://karabast.example/lobby/manual-1',
+      occurredAt: '2026-06-19T20:01:00.000Z',
+    })
+
+    assert.equal(recovered.status, 'lobby_ready')
+    assert.equal(recovered.previousStatus, 'failed')
+    assert.notEqual(recovered.practiceMatchGameId, claim.practiceMatchGameId)
+
+    // Original attempt stays failed with no lobby; the new attempt carries it.
+    const oldRow = await queryRow(
+      `SELECT status, lobby_url FROM practice_match_games WHERE id = $1`,
+      [claim.practiceMatchGameId]
+    )
+    assert.equal(oldRow!.status, 'failed')
+    assert.equal(oldRow!.lobby_url, null)
+
+    const newRow = await queryRow(
+      `SELECT status, attempt_number, lobby_url, created_by_user_id FROM practice_match_games WHERE id = $1`,
+      [recovered.practiceMatchGameId]
+    )
+    assert.equal(newRow!.status, 'lobby_ready')
+    assert.equal(newRow!.lobby_url, 'https://karabast.example/lobby/manual-1')
+    assert.ok((newRow!.attempt_number as number) > 1)
+    // Created-by = the reporter (lobby's creator) so the opponent reads
+    // "<creator> is in the lobby".
+    assert.equal(newRow!.created_by_user_id, seeded.userIds[0])
+
+    // It is the canonical current game (newest lobby_ready wins).
+    assert.equal(recovered.changed, true)
+  })
+
+  it('rejects a non-Limited (Premier) game so it is not counted in the series', async () => {
+    const seeded = await seedActiveSwissMatch()
+
+    // A Premier game the player was playing on the side must NOT be recorded.
+    await assert.rejects(
+      () => recordPracticeMatchGameResult({
+        poolShareId: seeded.poolShareIds[0],
+        wayfinderMatchId: 'wf-premier-side-game',
+        result: 'win',
+        gameNumber: 1,
+        format: 'Premier',
+      }),
+      (err: unknown) => err instanceof PracticeGameResultError && (err as { code?: string }).code === 'not_limited_format'
+    )
+
+    // The match has no recorded game 1.
+    const match = await queryRow(`SELECT game1_result FROM practice_matches WHERE id = $1`, [seeded.matchId])
+    assert.equal(match!.game1_result, null)
+
+    // A Limited game for the same match records fine (fail-open on archetype:
+    // the seed has no drafted deck, so the leader check is skipped).
+    const ok = await recordPracticeMatchGameResult({
+      poolShareId: seeded.poolShareIds[0],
+      wayfinderMatchId: 'wf-limited-1',
+      result: 'win',
+      gameNumber: 1,
+      format: 'Limited',
+    })
+    assert.equal(ok.duplicate ?? false, false)
+  })
+
+  it('Bo3 continuation: completing game 1 carries the lobby into an in-progress game 2, then game 2 records by game number', async () => {
+    const seeded = await seedActiveSwissMatch()
+    const claim = await claimPracticeMatchGame({
+      shareId: seeded.shareId,
+      matchId: seeded.matchId,
+      userId: seeded.userIds[0],
+      now: new Date('2026-06-20T10:00:00.000Z'),
+    })
+    await recordPracticeMatchGameLifecycle({
+      practiceMatchGameId: claim.practiceMatchGameId!,
+      poolShareId: seeded.poolShareIds[0],
+      status: 'lobby_ready',
+      lobbyId: 'lobby-bo3',
+      lobbyUrl: 'https://karabast.net/lobby?lobbyId=lobby-bo3',
+      occurredAt: '2026-06-20T10:00:10.000Z',
+    })
+
+    // Game 1 result (player1 wins) — match not decided → carry the lobby forward.
+    await recordPracticeMatchGameResult({
+      poolShareId: seeded.poolShareIds[0],
+      wayfinderMatchId: 'wf-bo3',
+      result: 'win',
+      gameNumber: 1,
+      practiceMatchGameId: claim.practiceMatchGameId,
+      format: 'Limited',
+    })
+
+    const g2 = await queryRow(
+      `SELECT status, lobby_url FROM practice_match_games WHERE match_id = $1 AND game_number = 2 ORDER BY attempt_number DESC LIMIT 1`,
+      [seeded.matchId]
+    )
+    assert.equal(g2!.status, 'in_progress')
+    assert.equal(g2!.lobby_url, 'https://karabast.net/lobby?lobbyId=lobby-bo3')
+
+    // Game 2 reported with the WRONG per-lobby number (1 — as a new lobby would
+    // report it) and no practiceMatchGameId. PTP must ignore that number and
+    // count it as the next series game (2), completing the carried-forward game
+    // 2 → 2-0, match decided.
+    await recordPracticeMatchGameResult({
+      poolShareId: seeded.poolShareIds[0],
+      wayfinderMatchId: 'wf-bo3',
+      result: 'win',
+      gameNumber: 1,
+      format: 'Limited',
+    })
+
+    const m = await queryRow(`SELECT game1_result, game2_result, match_winner FROM practice_matches WHERE id = $1`, [seeded.matchId])
+    assert.equal(m!.game1_result, 'player1')
+    assert.equal(m!.game2_result, 'player1')
+    assert.equal(m!.match_winner, 'player1')
+
+    // No duplicate game 2 rows were created.
+    const g2count = await queryRow(`SELECT count(*)::int AS n FROM practice_match_games WHERE match_id = $1 AND game_number = 2 AND status = 'complete'`, [seeded.matchId])
+    assert.equal(g2count!.n, 1)
   })
 
   it('marks a creating game failed on a failed lifecycle and lets a retry open a new attempt', async () => {

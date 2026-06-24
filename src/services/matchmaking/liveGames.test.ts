@@ -132,6 +132,31 @@ describe('live Swiss Practice game helpers', () => {
     assert.equal(latestAttemptForGameNumber([staleCreating, freshCreating], 1)?.attemptNumber, 2)
   })
 
+  it('recovers a game stuck in_progress past the long window (the hours-old match jam)', () => {
+    const now = new Date('2026-06-19T22:00:00.000Z')
+    // ~2h in_progress with no result → abandoned → stale + retryable (the bug: an
+    // in_progress game previously had NO recovery path and jammed the match forever).
+    const stuck = game({
+      gameNumber: 1,
+      status: 'in_progress',
+      startedAt: '2026-06-19T20:00:00.000Z',
+      updatedAt: '2026-06-19T20:01:00.000Z',
+    })
+    assert.equal(isStalePracticeGame(stuck, { now }), true)
+    assert.equal(isRetryablePracticeGame(stuck, { now }), true)
+
+    // A game in_progress for only ~20 min is genuinely LIVE — never staled/interrupted.
+    const live = game({ gameNumber: 1, status: 'in_progress', updatedAt: '2026-06-19T21:40:00.000Z' })
+    assert.equal(isStalePracticeGame(live, { now }), false)
+    assert.equal(isRetryablePracticeGame(live, { now }), false)
+
+    // The read model surfaces the stuck game as retryable so the card can offer Retry.
+    const summary = summarizeCurrentPracticeGame(match(), [stuck], { now })
+    assert.equal(summary.status, 'in_progress')
+    assert.equal(summary.gameNumber, 1)
+    assert.equal(summary.retryable, true)
+  })
+
   it('summarizes pending, active, failed, and complete states for the live UI', () => {
     const now = new Date('2026-06-19T20:20:00.000Z')
     const inProgress = game({

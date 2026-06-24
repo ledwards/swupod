@@ -1,6 +1,9 @@
 // @ts-nocheck
+import { useState, useEffect } from 'react'
 import Button from './Button'
+import ConfirmModal from './ConfirmModal'
 import ReplayWatchLink from './ReplayWatchLink'
+import CountdownTimer from './CountdownTimer'
 import {
   liveGameAction,
   liveGameStatusLabel,
@@ -8,6 +11,7 @@ import {
   type WayfinderMatchState,
 } from './MatchmakingPanel.helpers'
 import { formatRecord, type PlayerRecord } from '../services/matchmaking/standings'
+import { avatarSrc } from '../utils/avatar'
 import './MatchCard.css'
 
 interface MatchPlayer {
@@ -63,20 +67,66 @@ interface MatchCardProps {
   practiceLaunchPending?: boolean
   practiceLaunchMessage?: PracticeLaunchMessage | null
   readOnly?: boolean
+  /** Swiss table number (1 = top tables, ordered by record). */
+  tableNumber?: number
+  /** Round this match belongs to — prefixes the live status ("Round 1 · Game 2…"). */
+  roundNumber?: number
+  /** When the round began — anchors the 55:00 round countdown shown while a game
+   *  is in progress. */
+  roundStartedAt?: string | Date | null
+  /** Whether the viewer's Companion is detected (drives the current user's dot). */
+  wayfinderDetected?: boolean
 }
+
+/** Swiss round clock: 55 minutes for the whole round (cosmetic). */
+const ROUND_TIMER_SECONDS = 55 * 60
 
 function getMatchStatus(match: MatchData): string {
   if (match.finalConfirmed) return 'Complete'
   if (match.isBye) return 'Bye'
-  if (match.player1Submitted || match.player2Submitted) return 'Awaiting Confirmation'
+  // One report finalizes a complete result, so a submitted-but-not-confirmed
+  // match is just a partial/undecided result — it's still in progress, not
+  // "awaiting" the opponent's confirmation.
   return 'In Progress'
 }
 
 function GameDot({ result, forPlayer }: { result: string | null; forPlayer: 'player1' | 'player2' }) {
-  if (!result) return <span className="game-dot game-dot--pending" />
-  if (result === 'draw') return <span className="game-dot game-dot--draw" />
-  if (result === forPlayer) return <span className="game-dot game-dot--win" />
-  return <span className="game-dot game-dot--loss" />
+  // Green W (win), red L (loss), grey circle (game not played yet), muted D (draw).
+  if (!result) return <span className="game-result game-result--pending" aria-label="not played" />
+  if (result === 'draw') return <span className="game-result game-result--draw">D</span>
+  if (result === forPlayer) return <span className="game-result game-result--win">W</span>
+  return <span className="game-result game-result--loss">L</span>
+}
+
+// The lobby creator already has Karabast open, so their button copies the lobby
+// link to share (a fallback if the opponent's PTP didn't pick it up). Falls back
+// to opening the lobby if the clipboard is blocked.
+function CopyLobbyLink({ url }: { url: string }) {
+  const [copied, setCopied] = useState(false)
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      window.open(url, '_blank', 'noopener')
+    }
+  }
+  return (
+    <Button
+      variant="primary"
+      size="sm"
+      className="match-card-live-button"
+      onClick={copy}
+      aria-label="Copy lobby link"
+    >
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+      </svg>
+      {copied ? 'Copied!' : 'Copy link'}
+    </Button>
+  )
 }
 
 export function MatchCard({
@@ -93,29 +143,138 @@ export function MatchCard({
   practiceLaunchPending = false,
   practiceLaunchMessage = null,
   readOnly = false,
+  tableNumber,
+  roundNumber,
+  roundStartedAt = null,
+  wayfinderDetected = false,
 }: MatchCardProps) {
   const isMyMatch = match.player1?.id === currentUserId || match.player2?.id === currentUserId
   const status = getMatchStatus(match)
+  const roundStartedAtIso = roundStartedAt
+    ? (typeof roundStartedAt === 'string' ? roundStartedAt : new Date(roundStartedAt).toISOString())
+    : null
   const iAmPlayer1 = match.player1?.id === currentUserId
   const iAmPlayer2 = match.player2?.id === currentUserId
   const iHaveSubmitted = (iAmPlayer1 && match.player1Submitted) || (iAmPlayer2 && match.player2Submitted)
 
-  const canReport = !readOnly && isMyMatch && !match.finalConfirmed && !match.isBye && !iHaveSubmitted
-  const canOverride = !readOnly && isHost && !match.isBye
-  const recordFor = (player: MatchPlayer | null) => player?.id ? formatRecord(playerRecords?.get(player.id)) : '0-0'
+  const hasResult = match.finalConfirmed || match.player1Submitted || match.player2Submitted
+  // One action: participants report (and re-edit) their own match; the host can
+  // edit any match. Once a result exists the button reads "Edit" — Report
+  // Manually covers both reporting and editing (no separate Edit button).
+  const canReportOrEdit = !readOnly && !match.isBye && (isMyMatch || isHost)
+  const recordFor = (player: MatchPlayer | null) => player?.id ? formatRecord(playerRecords?.get(player.id)) : '0 (0-0)'
   const liveStatus = liveGameStatusLabel(match.currentGame)
+
+  // A lobby should appear within seconds. If a game sits in "creating" past a
+  // 30s max, the launch almost certainly died with no callback — flip to a Play
+  // button (retry) instead of a stuck spinner. Client-side timer so it fires
+  // even without a fresh server push (elapsedSeconds can be frozen between
+  // pushes). It also clears the instant the status changes — lobby created
+  // (lobby_ready) or failed both reset it.
+  const isCreating = match.currentGame?.status === 'creating'
+  const [creatingStuck, setCreatingStuck] = useState(false)
+  useEffect(() => {
+    if (!isCreating) { setCreatingStuck(false); return }
+    setCreatingStuck(false)
+    const elapsed = match.currentGame?.elapsedSeconds || 0
+    const remainingMs = Math.max(0, (30 - elapsed) * 1000)
+    const t = setTimeout(() => setCreatingStuck(true), remainingMs)
+    return () => clearTimeout(t)
+  }, [isCreating, match.currentGame?.gameNumber, match.currentGame?.attemptNumber, match.currentGame?.elapsedSeconds])
+
   const liveAction = liveGameAction({
     match,
     currentUserId,
     liveLaunchEnabled: Boolean(liveLaunchEnabled && onPracticeLaunch),
     pending: practiceLaunchPending,
+    creatingTimedOut: creatingStuck,
   })
   const showLiveRow = Boolean(liveStatus || liveAction.kind !== 'none' || practiceLaunchMessage)
+
+  // Live spectate link (provided by the recorder's Companion) + recorded-match
+  // link. Both live next to the table number.
+  const spectateUrl = match.currentGame?.spectateUrl || match.currentGame?.game?.spectateUrl || null
+  const wayfinderBase = process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin.wayfinder.news'
+
+  // A failed/voided lobby setup shows its status briefly, then reverts to the
+  // normal ready state (a plain Play icon) — no lingering "Setup Failed" banner.
+  const isFailedSetup = match.currentGame?.status === 'failed' || match.currentGame?.status === 'voided'
+  const [failureSettled, setFailureSettled] = useState(false)
+  useEffect(() => {
+    if (!isFailedSetup) { setFailureSettled(false); return }
+    setFailureSettled(false)
+    const t = setTimeout(() => setFailureSettled(true), 4000)
+    return () => clearTimeout(t)
+  }, [isFailedSetup, match.currentGame?.gameNumber, match.currentGame?.attemptNumber])
+  // The live copy (left of the play button) always shows a sensible default —
+  // never blank. When there's no live status yet, or once a failed setup has
+  // settled, it falls back to the pre-error "Game N Ready" copy. Only the error
+  // state itself ("Setup Failed") is transient.
+  const nextGameNumber = match.currentGame?.gameNumber
+    || (!match.game1Result ? 1 : !match.game2Result ? 2 : 3)
+  // Only a still-live match falls back to the ready copy — a finished/bye match
+  // (e.g. one showing only a replay link) must not read "Game N Ready".
+  const defaultLiveCopy = (!match.isBye && !match.finalConfirmed) ? `Game ${nextGameNumber} Ready to Play` : null
+  // A settled failure OR a timed-out "creating" both revert the box to the
+  // normal ready state (default copy + a plain Play button) instead of a
+  // lingering red banner or a stuck spinner.
+  const revertedToReady = (isFailedSetup && failureSettled) || (isCreating && creatingStuck)
+  const baseLiveCopy = revertedToReady ? defaultLiveCopy : (liveStatus || defaultLiveCopy)
+  // Prefix the round so a live status reads "Round 1 · Game 2 In Progress" —
+  // avoids confusion about which round you're looking at.
+  const displayStatus = (baseLiveCopy && roundNumber) ? `Round ${roundNumber} · ${baseLiveCopy}` : baseLiveCopy
+  const liveRowStatus = revertedToReady ? 'pending' : (match.currentGame?.status || 'pending')
+
+  // Host-only "kick" affordance: a bare red X that appears upper-right of a
+  // player's name on hover, opening a confirmation dialog before removing them.
+  const [kickTarget, setKickTarget] = useState<MatchPlayer | null>(null)
+  const renderKickButton = (player: MatchPlayer | null) => {
+    if (readOnly || !isHost || !player?.id || player.id === currentUserId) return null
+    return (
+      <button
+        className="match-card-kick"
+        onClick={(e) => { e.stopPropagation(); setKickTarget(player) }}
+        title="Kick player"
+        aria-label={`Kick ${player.username || 'player'}`}
+      >
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+    )
+  }
+
+  // Per-player Companion indicator, left of the name: green = Companion
+  // connected (lobby creator, or the current viewer when detected); blinking
+  // red = actively recording on Karabast (creator + game in progress).
+  const creatorId = match.currentGame?.game?.createdByUserId || null
+  const liveInProgress = match.currentGame?.status === 'in_progress'
+  const companionDot = (player: MatchPlayer | null) => {
+    if (!player?.id || match.isBye) return null
+    const isRecorder = creatorId != null && creatorId === player.id
+    if (isRecorder && liveInProgress) {
+      return <span className="companion-dot companion-dot--recording" title="Recording on Karabast" />
+    }
+    if (isRecorder || (player.id === currentUserId && wayfinderDetected)) {
+      return <span className="companion-dot companion-dot--connected" title="Companion connected" />
+    }
+    return null
+  }
+
+  const playIcon = (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M8 5v14l11-7z" />
+    </svg>
+  )
 
   const renderLiveAction = () => {
     if (liveAction.kind === 'none') return null
 
-    if (liveAction.kind === 'watch' || liveAction.kind === 'replay') {
+    // Live spectate ('watch') is surfaced as "Spectate Match" next to the table
+    // number; only completed-match replays stay in the live action row.
+    if (liveAction.kind === 'watch') return null
+
+    if (liveAction.kind === 'replay') {
       return (
         <ReplayWatchLink
           href={liveAction.href || undefined}
@@ -127,30 +286,68 @@ export function MatchCard({
       )
     }
 
+    // Lobby exists → a green play LINK to the lobby URL. Works for both players,
+    // with or without the Companion (you don't need it just to join a lobby).
+    // The creator is already in the lobby, so their button copies the link.
+    if (liveAction.kind === 'open') {
+      if (liveAction.iCreated && liveAction.href) {
+        return <CopyLobbyLink url={liveAction.href} />
+      }
+      return (
+        <a
+          className="btn btn--primary btn--sm match-card-live-button match-card-live-open"
+          href={liveAction.href || '#'}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open game lobby"
+        >
+          {playIcon}
+        </a>
+      )
+    }
+
+    // No Companion + no lobby yet → a disabled green play button. Wrap it in a
+    // titled span so the install tooltip still shows (disabled buttons swallow it).
+    if (liveAction.kind === 'play' && liveAction.disabled) {
+      return (
+        <span className="match-card-live-disabled-wrap" title={liveAction.tooltip || undefined}>
+          <Button variant="primary" size="sm" className="match-card-live-button" disabled aria-label="Play">
+            {playIcon}
+          </Button>
+        </span>
+      )
+    }
+
     if (liveAction.kind === 'play' || liveAction.kind === 'join' || liveAction.kind === 'retry') {
       return (
         <Button
           variant="primary"
-          glowColor="yellow"
           size="sm"
           className="match-card-live-button"
           disabled={practiceLaunchPending || !onPracticeLaunch}
+          aria-label={liveAction.kind === 'play' ? 'Play' : undefined}
           onClick={() => onPracticeLaunch?.(match.id)}
         >
+          {liveAction.kind === 'play' && playIcon}
           {liveAction.label}
         </Button>
       )
     }
 
+    // Any other disabled live state (Creating Lobby / Waiting for lobby / Creating…).
+    // Wrap in a titled span so the explanation shows on hover — a disabled <button>
+    // swallows its own title attribute.
     return (
-      <Button
-        variant="secondary"
-        size="sm"
-        className="match-card-live-button"
-        disabled
-      >
-        {liveAction.label}
-      </Button>
+      <span className="match-card-live-disabled-wrap" title={liveAction.tooltip || undefined}>
+        <Button
+          variant="secondary"
+          size="sm"
+          className="match-card-live-button"
+          disabled
+        >
+          {liveAction.label}
+        </Button>
+      </span>
     )
   }
 
@@ -168,27 +365,55 @@ export function MatchCard({
       data-player1-id={match.player1?.id || ''}
       data-player2-id={match.player2?.id || ''}
     >
+      {(tableNumber != null || match.wayfinderMatchId || (!isMyMatch && spectateUrl) || !match.isBye) && (
+        <div className="match-card-table">
+          {tableNumber != null && <span className="match-card-table-num">Table {tableNumber}</span>}
+          {match.wayfinderMatchId && (
+            <a className="match-card-table-link" href={`${wayfinderBase}/matches/${match.wayfinderMatchId}`} target="_blank" rel="noopener noreferrer">View Match ↗</a>
+          )}
+          {!isMyMatch && spectateUrl && (
+            <a className="match-card-table-link" href={spectateUrl} target="_blank" rel="noopener noreferrer">Spectate Match ↗</a>
+          )}
+          {/* Report button + status, right-aligned together (Report sits just left
+              of the status). One wrapper carries margin-left:auto so they stay
+              adjacent instead of spreading apart. */}
+          <span className="match-card-table-right">
+            {canReportOrEdit && (
+              <span data-testid={`match-report-button-${match.id}`} className="match-card-report-inline">
+                <Button
+                  variant={!hasResult && wayfinderState !== 'auto-recording' ? 'primary' : 'secondary'}
+                  size="xs"
+                  onClick={() => (isMyMatch ? onReport : onOverride)(match.id)}
+                >
+                  {hasResult ? 'Edit' : 'Report'}
+                </Button>
+              </span>
+            )}
+            {!match.isBye && (
+              <span className={`match-card-status match-card-status--${status.toLowerCase().replace(/\s+/g, '-')}`}>
+                {status}{match.podOwnerOverride && ' (Override)'}
+              </span>
+            )}
+          </span>
+        </div>
+      )}
       <div className="match-card-players">
         <div className={`match-card-player${match.matchWinner === 'player1' ? ' match-card-player--winner' : ''}`}>
           <span className="match-card-player-heading">
-            <span className="match-card-player-name">{match.player1?.username || '???'}</span>
+            {companionDot(match.player1)}
+            {match.player1 && <img className="match-card-avatar" src={avatarSrc(match.player1.avatarUrl, match.player1.id || match.player1.username)} alt="" />}
+            <span className="match-card-player-name-wrap">
+              <span className="match-card-player-name">{match.player1?.username || '???'}</span>
+              {renderKickButton(match.player1)}
+            </span>
             <span className="match-card-player-record">{recordFor(match.player1)}</span>
           </span>
           {!match.isBye && (
             <div className="match-card-dots">
               <GameDot result={match.game1Result} forPlayer="player1" />
               <GameDot result={match.game2Result} forPlayer="player1" />
-              {match.game3Result !== null && <GameDot result={match.game3Result} forPlayer="player1" />}
+              <GameDot result={match.game3Result} forPlayer="player1" />
             </div>
-          )}
-          {!readOnly && isHost && match.player1 && match.player1.id !== currentUserId && (
-            <button
-              className="match-card-boot"
-              onClick={(e) => { e.stopPropagation(); onBoot(match.player1.id) }}
-              title="Boot player"
-            >
-              &times;
-            </button>
           )}
         </div>
 
@@ -198,23 +423,19 @@ export function MatchCard({
           {!match.isBye ? (
             <>
               <span className="match-card-player-heading">
-                <span className="match-card-player-name">{match.player2?.username || '???'}</span>
+                {companionDot(match.player2)}
+                {match.player2 && <img className="match-card-avatar" src={avatarSrc(match.player2.avatarUrl, match.player2.id || match.player2.username)} alt="" />}
+                <span className="match-card-player-name-wrap">
+                  <span className="match-card-player-name">{match.player2?.username || '???'}</span>
+                  {renderKickButton(match.player2)}
+                </span>
                 <span className="match-card-player-record">{recordFor(match.player2)}</span>
               </span>
               <div className="match-card-dots">
                 <GameDot result={match.game1Result} forPlayer="player2" />
                 <GameDot result={match.game2Result} forPlayer="player2" />
-                {match.game3Result !== null && <GameDot result={match.game3Result} forPlayer="player2" />}
+                <GameDot result={match.game3Result} forPlayer="player2" />
               </div>
-              {!readOnly && isHost && match.player2 && match.player2.id !== currentUserId && (
-                <button
-                  className="match-card-boot"
-                  onClick={(e) => { e.stopPropagation(); onBoot(match.player2.id) }}
-                  title="Boot player"
-                >
-                  &times;
-                </button>
-              )}
             </>
           ) : (
             <span className="match-card-player-name match-card-player-name--bye">---</span>
@@ -223,11 +444,26 @@ export function MatchCard({
       </div>
 
       {showLiveRow && (
-        <div className={`match-card-live match-card-live--${match.currentGame?.status || 'pending'}`}>
+        <div className={`match-card-live match-card-live--${liveRowStatus}`}>
           <div className="match-card-live-copy">
-            {liveStatus && (
-              <span className="match-card-live-status">{liveStatus}</span>
-            )}
+            {liveAction.readyText ? (
+              <span className="match-card-live-status match-card-live-ready">{liveAction.readyText}</span>
+            ) : displayStatus ? (
+              <div className="match-card-live-headline">
+                <span className="match-card-live-status">{displayStatus}</span>
+                {liveRowStatus === 'in_progress' && roundStartedAtIso && (
+                  <>
+                    <span className="match-card-live-sep" aria-hidden="true">·</span>
+                    <CountdownTimer
+                      totalSeconds={ROUND_TIMER_SECONDS}
+                      startedAt={roundStartedAtIso}
+                      warningThreshold={300}
+                      compact
+                    />
+                  </>
+                )}
+              </div>
+            ) : null}
             {practiceLaunchMessage && (
               <span className={`match-card-live-message match-card-live-message--${practiceLaunchMessage.type}`}>
                 {practiceLaunchMessage.text}
@@ -240,46 +476,17 @@ export function MatchCard({
         </div>
       )}
 
-      <div className="match-card-footer">
-        <span className={`match-card-status match-card-status--${status.toLowerCase().replace(/\s+/g, '-')}`}>
-          {status}
-          {match.podOwnerOverride && ' (Override)'}
-        </span>
-        {wayfinderState === 'auto-recording' && (
-          <span className="match-card-wayfinder-state">Auto-recording</span>
-        )}
-        {wayfinderState === 'recorded' && (
-          <span className="match-card-wayfinder-state match-card-wayfinder-state--recorded">Recorded</span>
-        )}
-        {match.wayfinderMatchId && (
-          <a
-            href={`${process.env.NEXT_PUBLIC_WAYFINDER_URL || 'https://plugin.wayfinder.news'}/matches/${match.wayfinderMatchId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="match-card-wayfinder-link"
-          >
-            View Match ↗
-          </a>
-        )}
-        <div className="match-card-actions">
-          {canReport && (
-            <span data-testid={`match-report-button-${match.id}`}>
-              <Button
-                variant={wayfinderState === 'auto-recording' ? 'secondary' : 'primary'}
-                size="sm"
-                onClick={() => onReport(match.id)}
-              >
-                {wayfinderState === 'auto-recording' ? 'Report Manually' : 'Report Result'}
-              </Button>
-            </span>
-          )}
-          {canOverride && (
-            <Button variant="secondary" size="sm" onClick={() => onOverride(match.id)}>
-              Edit
-            </Button>
-          )}
-        </div>
-      </div>
+      <ConfirmModal
+        isOpen={!!kickTarget}
+        title={kickTarget ? `Kick ${kickTarget.username || 'player'}?` : 'Kick player?'}
+        confirmLabel="Kick"
+        cancelLabel="Cancel"
+        variant="danger"
+        onConfirm={() => { if (kickTarget) onBoot(kickTarget.id); setKickTarget(null) }}
+        onCancel={() => setKickTarget(null)}
+      >
+        They&rsquo;ll be removed from this match and the pod.
+      </ConfirmModal>
     </div>
   )
 }

@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "npx tsx server.ts",
+    "dev": "NODE_OPTIONS=--max-old-space-size=8192 npx tsx server.ts",
     "//prebuild": "Fetches latest card data (non-fatal if API down) and busts Docker layer cache",
     "prebuild": "npx tsx scripts/fetchCards.ts || echo '⚠️  Card fetch failed, using existing data'; date > migrations/.buildstamp",
     "build": "next build",

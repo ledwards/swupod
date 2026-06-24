@@ -114,6 +114,13 @@
   align-items: center;
 }
 
+/* Swiss Practice lock indicator — centered under the title, replaces the timer */
+.deck-build-lock {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 1.5rem 0;
+}
+
 
 /* Make edit button not affect centering */
 .deck-builder-header-title-container .editable-title {

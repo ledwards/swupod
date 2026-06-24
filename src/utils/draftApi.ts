@@ -226,6 +226,26 @@ export async function pollState(shareId: string, sinceVersion: number = 0): Prom
  * @param cardId - ID of the card to select, or null to unselect
  * @returns Selection result
  */
+/**
+ * True when a select rejection means the client's local view of the deal is STALE
+ * (out of sync with the server) rather than a hard error to surface. Both cases
+ * collapse to the same remedy — refresh the draft state and let the player re-pick
+ * from the server's current cards:
+ *   - 409: the server explicitly signalled the state changed under us.
+ *   - 400 "Leader/Card not available": we sent a card the server no longer has on
+ *     our list because our pack/leader view hadn't caught up to the latest deal.
+ *     (This is the "Leader not available" red banner — really a stale screen, not a
+ *     dead end; a refresh re-syncs the correct cards.)
+ * An UNRELATED 400 (e.g. a validation error) is NOT treated as stale, so we never
+ * silently refresh-and-loop on an error the player actually needs to see.
+ */
+export function isStaleSelectionError(error: unknown): boolean {
+  if (!(error instanceof HttpError)) return false
+  if (error.status === 409) return true
+  if (error.status === 400 && /not available/i.test(error.message)) return true
+  return false
+}
+
 export async function selectCard(shareId: string, cardId: string | null): Promise<SelectResult> {
   if (!shareId || typeof shareId !== 'string') {
     throw new Error('Invalid shareId')
@@ -233,9 +253,11 @@ export async function selectCard(shareId: string, cardId: string | null): Promis
   try {
     return await httpClient.post<SelectResult>(`/draft/${shareId}/select`, { cardId })
   } catch (error) {
-    // Return special object for 409 (state changed) - caller should refresh
-    if (error instanceof HttpError && error.status === 409) {
-      return { stateChanged: true, message: error.message }
+    // A stale local view of the deal is not a hard error — signal the caller to
+    // refresh and re-sync (handleSelect treats stateChanged as a silent refresh)
+    // instead of throwing a dead error banner the player can't act on.
+    if (isStaleSelectionError(error)) {
+      return { stateChanged: true, message: error instanceof Error ? error.message : undefined }
     }
     console.error('Failed to select card:', error)
     throw error

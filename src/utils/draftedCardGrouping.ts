@@ -55,6 +55,7 @@ export function groupDraftedCards<T extends GroupableCard>(
   cards: T[],
   mode: DraftGroupMode,
   packSize = 14,
+  padCostColumns = false,
 ): CardGroup<T>[] {
   const size = packSize > 0 ? packSize : 14
 
@@ -78,8 +79,12 @@ export function groupDraftedCards<T extends GroupableCard>(
       byCost.get(seg)!.push(card)
     })
     const order = ['0', '1', '2', '3', '4', '5', '6', '7', '8+']
-    return order.filter(s => byCost.has(s))
-      .map(seg => ({ key: `cost-${seg}`, label: `Cost ${seg}`, cards: byCost.get(seg)! }))
+    // padCostColumns: keep every cost column for a steady, readable curve even
+    // when empty — EXCEPT Cost 0, which only appears when a zero-cost card exists.
+    const segs = padCostColumns
+      ? order.filter(s => s !== '0' || byCost.has('0'))
+      : order.filter(s => byCost.has(s))
+    return segs.map(seg => ({ key: `cost-${seg}`, label: `Cost ${seg}`, cards: byCost.get(seg) ?? [] }))
   }
 
   // aspect

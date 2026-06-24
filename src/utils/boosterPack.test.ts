@@ -170,10 +170,18 @@ async function runTests(): Promise<void> {
       9,
       'ASH pack should contain 9 common cards'
     )
+    // Prerelease sets (ASH) have no Hyperspace/HSF art from FFG yet, so the foil
+    // slot is a PLAIN foil placeholder (foil overlay only) — not a fake hyperspace
+    // foil with a hyperspace treatment it has no art for.
+    assertEqual(
+      pack.cards.filter((c: Card) => c.isFoil).length,
+      1,
+      'ASH pack should contain exactly 1 foil slot'
+    )
     assertEqual(
       pack.cards.filter((c: Card) => c.isFoil && c.isHyperspace).length,
-      1,
-      'ASH pack should contain 1 hyperspace foil slot'
+      0,
+      'ASH foil slot is a plain foil (no hyperspace art yet), not a hyperspace foil'
     )
     assert(
       pack.cards.filter((c: Card) => c.isPlaceholder).every((c: Card) => !c.number && !c.cardId),

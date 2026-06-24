@@ -10,34 +10,51 @@ interface ResultReportModalProps {
   player1Name: string
   player2Name: string
   isOverride?: boolean
+  /** Existing results so the modal opens pre-populated. */
+  currentGame1?: string | null
+  currentGame2?: string | null
+  currentGame3?: string | null
   onSubmit: (matchId: string, game1: string, game2: string, game3: string | null) => void
   onClose: () => void
 }
 
-export function ResultReportModal({ matchId, player1Name, player2Name, isOverride, onSubmit, onClose }: ResultReportModalProps) {
-  const [game1, setGame1] = useState<string | null>(null)
-  const [game2, setGame2] = useState<string | null>(null)
-  const [game3, setGame3] = useState<string | null>(null)
+export function ResultReportModal({
+  matchId,
+  player1Name,
+  player2Name,
+  isOverride,
+  currentGame1 = null,
+  currentGame2 = null,
+  currentGame3 = null,
+  onSubmit,
+  onClose,
+}: ResultReportModalProps) {
+  const [game1, setGame1] = useState<string | null>(currentGame1)
+  const [game2, setGame2] = useState<string | null>(currentGame2)
+  const [game3, setGame3] = useState<string | null>(currentGame3)
 
+  // Game 3 only matters once the first two split; otherwise it's disabled.
   const showGame3 = needsGame3(game1, game2)
 
-  // Clear game3 if it's no longer needed
   useEffect(() => {
-    if (!showGame3) {
-      setGame3(null)
-    }
+    if (!showGame3) setGame3(null)
   }, [showGame3])
 
-  const canSubmit = (() => {
+  const decided = (() => {
     if (!game1 || !game2) return false
-    if (!showGame3) {
-      // Result must be decided after 2 games
-      return isDecided(game1, game2, null)
-    }
-    // Game 3 is shown — need it filled and result decided
+    if (!showGame3) return isDecided(game1, game2, null)
     if (!game3) return false
     return isDecided(game1, game2, game3)
   })()
+
+  // "Unsubmit": the player cleared every game on a match that already had a
+  // saved result. Allow saving the empty result so the match goes back to
+  // unreported. (A partial/incomplete result — neither decided nor fully
+  // cleared — still can't be saved.)
+  const hadPriorResult = Boolean(currentGame1 || currentGame2 || currentGame3)
+  const isCleared = !game1 && !game2 && !game3
+  const isUnsubmit = isCleared && hadPriorResult
+  const canSubmit = decided || isUnsubmit
 
   const handleSubmit = () => {
     if (!canSubmit) return
@@ -50,32 +67,9 @@ export function ResultReportModal({ matchId, player1Name, player2Name, isOverrid
     <Modal isOpen onClose={onClose} title={title} showCloseButton>
       <Modal.Body>
         <div className="result-report-games" data-testid="result-report-modal">
-          <GameRow
-            label="Game 1"
-            gameKey="game1"
-            player1Name={player1Name}
-            player2Name={player2Name}
-            value={game1}
-            onChange={setGame1}
-          />
-          <GameRow
-            label="Game 2"
-            gameKey="game2"
-            player1Name={player1Name}
-            player2Name={player2Name}
-            value={game2}
-            onChange={setGame2}
-          />
-          {showGame3 && (
-            <GameRow
-              label="Game 3"
-              gameKey="game3"
-              player1Name={player1Name}
-              player2Name={player2Name}
-              value={game3}
-              onChange={setGame3}
-            />
-          )}
+          <GameRow label="Game 1" gameKey="game1" player1Name={player1Name} player2Name={player2Name} value={game1} onChange={setGame1} />
+          <GameRow label="Game 2" gameKey="game2" player1Name={player1Name} player2Name={player2Name} value={game2} onChange={setGame2} />
+          <GameRow label="Game 3" gameKey="game3" player1Name={player1Name} player2Name={player2Name} value={game3} onChange={setGame3} disabled={!showGame3} hint={!showGame3 ? 'only if 1–1' : null} />
         </div>
         {isOverride && (
           <p className="result-report-override-note">
@@ -86,49 +80,40 @@ export function ResultReportModal({ matchId, player1Name, player2Name, isOverrid
       <Modal.Actions>
         <Button variant="secondary" onClick={onClose}>Cancel</Button>
         <span data-testid="result-report-submit">
-          <Button variant="primary" onClick={handleSubmit} disabled={!canSubmit}>Submit</Button>
+          <Button variant={isUnsubmit ? 'danger' : 'primary'} onClick={handleSubmit} disabled={!canSubmit}>
+            {isUnsubmit ? 'Unsubmit' : 'Submit'}
+          </Button>
         </span>
       </Modal.Actions>
     </Modal>
   )
 }
 
-function GameRow({ label, gameKey, player1Name, player2Name, value, onChange }: {
+function GameRow({ label, gameKey, player1Name, player2Name, value, onChange, disabled = false, hint = null }: {
   label: string
   gameKey: 'game1' | 'game2' | 'game3'
   player1Name: string
   player2Name: string
   value: string | null
-  onChange: (v: string) => void
+  onChange: (v: string | null) => void
+  disabled?: boolean
+  hint?: string | null
 }) {
+  // Click an option to select it; click it again to unset (back to no result).
+  const pick = (option: string) => onChange(value === option ? null : option)
   return (
     <div className="result-report-row" data-testid={`game-row-${gameKey}`} data-game-key={gameKey}>
-      <span className="result-report-label">{label}</span>
+      <span className="result-report-label">{label}{hint && <span className="result-report-hint">{hint}</span>}</span>
       <div className="result-report-buttons">
-        <button
-          className={`result-report-btn${value === 'player1' ? ' result-report-btn--selected' : ''}`}
-          onClick={() => onChange('player1')}
-          type="button"
-          data-testid={`game-${gameKey}-player1`}
-        >
+        <Button variant="toggle" glowColor="blue" active={value === 'player1'} disabled={disabled} onClick={() => pick('player1')} data-testid={`game-${gameKey}-player1`}>
           {player1Name}
-        </button>
-        <button
-          className={`result-report-btn result-report-btn--draw${value === 'draw' ? ' result-report-btn--selected' : ''}`}
-          onClick={() => onChange('draw')}
-          type="button"
-          data-testid={`game-${gameKey}-draw`}
-        >
+        </Button>
+        <Button variant="toggle" glowColor="blue" active={value === 'draw'} disabled={disabled} onClick={() => pick('draw')} data-testid={`game-${gameKey}-draw`}>
           Draw
-        </button>
-        <button
-          className={`result-report-btn${value === 'player2' ? ' result-report-btn--selected' : ''}`}
-          onClick={() => onChange('player2')}
-          type="button"
-          data-testid={`game-${gameKey}-player2`}
-        >
+        </Button>
+        <Button variant="toggle" glowColor="blue" active={value === 'player2'} disabled={disabled} onClick={() => pick('player2')} data-testid={`game-${gameKey}-player2`}>
           {player2Name}
-        </button>
+        </Button>
       </div>
     </div>
   )

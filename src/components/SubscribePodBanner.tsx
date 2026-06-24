@@ -106,6 +106,9 @@ export function SubscribePodBanner({ podSetCode }: SubscribePodBannerProps) {
 
   const setConfig = baseSetCode ? getSetConfig(baseSetCode) : null
   const setName = setConfig?.setName || baseSetCode || 'this set'
+  // Short code (e.g. "ASH") pulled from the pod's set config so the copy
+  // auto-updates for the next pre-release set without hardcoding.
+  const setShortCode = (setConfig?.setCode || baseSetCode || 'these') as string
 
   const isActivateVariant = decision.variant === 'activate'
 
@@ -117,7 +120,7 @@ export function SubscribePodBanner({ podSetCode }: SubscribePodBannerProps) {
 
   const bannerCopy = isActivateVariant
     ? `This pod uses ${setName}. Your membership unlocks early access — enroll in beta to get it.`
-    : `This pod uses ${setName}. Get your own early access — start a free trial.`
+    : `This pod uses ${setName}. Get early access to start your own ${setShortCode} pods — start a free trial.`
 
   const handleSubscribeClick = () => {
     // U7 — track the banner CTA click (distinct from the modal's

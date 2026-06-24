@@ -113,7 +113,7 @@ function PackDraftPhase({
 
   const [showReviewModal, setShowReviewModal] = useState(false)
   const [reviewGroupBy, setReviewGroupBy] = useState<DraftGroupMode>('pack')
-  const [reviewDensity, setReviewDensity] = useState<CardDensity>('medium')
+  const [reviewDensity, setReviewDensity] = useState<CardDensity>('large')
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [hoveredLeaderPreview, setHoveredLeaderPreview] = useState<HoveredLeaderPreview | null>(null)
   const {
@@ -398,7 +398,9 @@ function PackDraftPhase({
     : null
 
   if (isReviewPeriod) {
-    const reviewGroups = groupDraftedCards(draftedCards, reviewGroupBy, draft?.packSize || 14)
+    // Pad the cost view so every cost column shows even when empty (Cost 0 stays
+    // optional) — a steady curve between packs.
+    const reviewGroups = groupDraftedCards(draftedCards, reviewGroupBy, draft?.packSize || 14, true)
     return (
       <div className="pack-draft-phase">
         <div className="review-period">
@@ -445,7 +447,9 @@ function PackDraftPhase({
                   <img src="/icons/heroism.png" alt="Aspect" style={{ width: '20px', height: '20px', display: 'block' }} />
                 </Button>
               </div>
-              <CardDensityToggle value={reviewDensity} onChange={setReviewDensity} />
+              {(reviewGroupBy === 'cost' || reviewGroupBy === 'aspect') && (
+                <CardDensityToggle value={reviewDensity} onChange={setReviewDensity} densities={['small', 'large']} />
+              )}
             </div>
           </div>
           {reviewGroupBy === 'pack' ? (
@@ -471,9 +475,35 @@ function PackDraftPhase({
               ))}
             </div>
           ) : (
-            <div className="review-columns">
+            <div className={`review-columns review-columns--${reviewGroupBy}`}>
               {reviewGroups.map(group => {
                 const aspects = group.cards[0]?.aspects || []
+                // Separate by type within each bucket (Unit vs Non-Unit), mirroring
+                // the deckbuilder's cost/aspect columns.
+                const units = group.cards.filter(c => c.type === 'Unit')
+                const nonUnits = group.cards.filter(c => c.type !== 'Unit')
+                const renderTypeStack = (stackCards: typeof group.cards) => (
+                  <div className="review-stack">
+                    <div className="review-stack-inner">
+                      {stackCards.map((card, i) => (
+                        <div
+                          key={card.instanceId || card.id}
+                          className={`review-stacked-card review-stacked-card--${reviewDensity}${i === stackCards.length - 1 ? ' is-last' : ''}`}
+                          onMouseEnter={(e) => reviewHandleMouseEnter(card, e)}
+                          onMouseLeave={reviewHandleMouseLeave}
+                          onTouchStart={() => reviewHandleTouchStart(card)}
+                          onTouchEnd={reviewHandleTouchEnd}
+                        >
+                          <img
+                            src={card.imageUrl}
+                            alt={card.name || card.title || 'Card'}
+                            className="review-card-img"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
                 return (
                   <section key={group.key} className="review-column">
                     <div className="review-col-header">
@@ -486,26 +516,18 @@ function PackDraftPhase({
                       )}
                       <span className="review-col-count">({group.cards.length})</span>
                     </div>
-                    <div className="review-stack">
-                      <div className="review-stack-inner">
-                        {group.cards.map((card, i) => (
-                          <div
-                            key={card.instanceId || card.id}
-                            className={`review-stacked-card review-stacked-card--${reviewDensity}${i === group.cards.length - 1 ? ' is-last' : ''}`}
-                            onMouseEnter={(e) => reviewHandleMouseEnter(card, e)}
-                            onMouseLeave={reviewHandleMouseLeave}
-                            onTouchStart={() => reviewHandleTouchStart(card)}
-                            onTouchEnd={reviewHandleTouchEnd}
-                          >
-                            <img
-                              src={card.imageUrl}
-                              alt={card.name || card.title || 'Card'}
-                              className="review-card-img"
-                            />
-                          </div>
-                        ))}
+                    {units.length > 0 && (
+                      <>
+                        <div className="review-type-label">Unit ({units.length})</div>
+                        {renderTypeStack(units)}
+                      </>
+                    )}
+                    {nonUnits.length > 0 && (
+                      <div className={units.length > 0 ? 'review-nonunits' : ''}>
+                        <div className="review-type-label">Non-Unit ({nonUnits.length})</div>
+                        {renderTypeStack(nonUnits)}
                       </div>
-                    </div>
+                    )}
                   </section>
                 )
               })}
@@ -688,6 +710,25 @@ function PackDraftPhase({
           {!isSpectator && showPassing && (lastPackSize > 0 || currentPack.length > 0) && (
             <div className="passing-message">
               Passing {passDirection === 'left' ? 'Left' : 'Right'}...
+            </div>
+          )}
+
+          {/* Bottom timer — identical to the top timer (same TimerPanel, same
+              props), repeated right above the pick/confirm box so the clock stays
+              in view while you scroll. Expiry is owned by the top timer only (no
+              onTimerExpire here) to avoid the auto-pick firing twice. */}
+          {!isSpectator && (
+            <div className="timer-bar-bottom">
+              <TimerPanel
+                draft={draft}
+                players={players}
+                compact={false}
+                isHost={isHost}
+                onTogglePause={onTogglePause}
+                onUpdateTimerSettings={onUpdateTimerSettings}
+                draftState={draftState}
+                cardsRemaining={currentPack.length}
+              />
             </div>
           )}
 

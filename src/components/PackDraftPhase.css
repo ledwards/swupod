@@ -196,6 +196,30 @@
   box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
 }
 
+/* Duplicate bottom draft timer — a second copy of the top timer, just above the
+   pick/confirm box. Only adds vertical spacing; the TimerPanel renders exactly as
+   it does at the top (no layout/visual overrides). */
+.timer-bar-bottom {
+  margin: 0.75rem 0 0.25rem;
+}
+
+/* Review cost/aspect columns: Unit / Non-Unit sub-sections (mirrors deckbuilder). */
+.review-type-label {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  margin: 0.35rem 0 0.15rem;
+}
+.review-nonunits {
+  margin-top: 0.4rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
 
 .draft-layout {
   display: flex;
@@ -657,7 +681,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 .review-groupby {
   display: flex;
@@ -748,6 +772,16 @@
   background: rgba(0, 0, 0, 0.2);
   border-radius: 6px;
   padding: 0.5rem;
+}
+
+/* Aspect grouping can produce many groups — wrap at ~6 per row instead of one
+   long horizontally-scrolling row. (Cost stays single-row: few, ordered cols.) */
+.review-columns--aspect {
+  flex-wrap: wrap;
+}
+.review-columns--aspect .review-column {
+  flex: 1 1 calc((100% - 5 * 8px) / 6);
+  min-width: 110px;
 }
 .review-col-header {
   display: flex;

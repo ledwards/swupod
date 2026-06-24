@@ -162,6 +162,9 @@ export interface PracticeGameResultParams {
   result: WayfinderReportedResult
   practiceMatchGameId?: string | null
   gameNumber?: number | null
+  /** Karabast game format ("Limited"/"Premier"). Swiss Practice is Limited;
+   *  non-Limited games are rejected. Optional — fail-open when absent. */
+  format?: string | null
   replayUrl?: string | null
   wayfinderGameId?: string | null
   playerLeader?: string | null
@@ -192,6 +195,35 @@ export interface PracticeGameResultRecordResult {
   advanceResult: RoundAdvanceResult | null
 }
 
+/**
+ * Params for a Bo3 SET-concede match forfeit. Unlike a per-game result this is
+ * MATCH-grained: there is no gameNumber/slot. `result` is the REPORTING pool
+ * owner's match outcome ("win" when the opponent conceded the set, "loss" when
+ * the owner conceded) — the same owner-POV convention as a per-game result.
+ */
+export interface PracticeMatchForfeitParams {
+  poolShareId: string
+  result: WayfinderReportedResult
+  /** Synthetic Wayfinder match id — used as the per-pool W/L dedup key. */
+  wayfinderMatchId?: string | null
+  /** Optional anchor: resolve the match via this game id instead of the active round. */
+  practiceMatchGameId?: string | null
+}
+
+export interface PracticeMatchForfeitResult {
+  ok: true
+  changed: boolean
+  /** True when the match was already final_confirmed (idempotent no-op). */
+  alreadyFinalized: boolean
+  shareId: string
+  podId: string
+  matchId: string
+  matchWinner: 'player1' | 'player2'
+  roundAdvanced: boolean
+  eventCompleted: boolean
+  advanceResult: RoundAdvanceResult | null
+}
+
 export class PracticeGameResultError extends Error {
   constructor(
     public readonly status: number,
@@ -209,6 +241,15 @@ interface PracticeGameStaleOptions {
 }
 
 const DEFAULT_STALE_AFTER_MS = 15 * 60 * 1000
+// A game stuck `in_progress` (the result write-back never arrived — e.g. the
+// player closed the tab, or a capture/delivery failure) has NO other recovery
+// path: `in_progress` is not a RETRYABLE_STALE_STATUS, so the read model sits on
+// it forever, the match card shows a disabled "Game in progress", and the match
+// jams permanently. A single SWU game never runs anywhere near this long, so an
+// `in_progress` row older than this window is treated as abandoned and becomes
+// retryable, letting the match recover. Deliberately long (vs the 15-min
+// creating/lobby_ready window) so a genuinely live game is never interrupted.
+const IN_PROGRESS_STALE_AFTER_MS = 90 * 60 * 1000
 const GAME_NUMBERS: GameNumber[] = [1, 2, 3]
 
 const LEGAL_TRANSITIONS: Record<PracticeGameStatus, PracticeGameStatus[]> = {
@@ -342,7 +383,20 @@ export function isStalePracticeGame(
   game: PracticeMatchGameLike | null | undefined,
   { now = new Date(), staleAfterMs }: PracticeGameStaleOptions = {}
 ): boolean {
-  if (!game || staleAfterMs === undefined) return false
+  if (!game) return false
+
+  // A game stuck `in_progress` (its result never arrived) is the only status with
+  // no other recovery path — stale it after a long, game-length-safe window so an
+  // abandoned game can't jam the match forever. Anchored on last activity
+  // (updatedAt / startedAt) so a game that keeps reporting is never falsely staled.
+  if (game.status === 'in_progress') {
+    const anchor = coerceDate(game.updatedAt) ?? coerceDate(game.startedAt)
+      ?? coerceDate(game.claimedAt) ?? coerceDate(game.createdAt)
+    if (!anchor) return false
+    return now.getTime() - anchor.getTime() >= IN_PROGRESS_STALE_AFTER_MS
+  }
+
+  if (staleAfterMs === undefined) return false
   if (!RETRYABLE_STALE_STATUSES.includes(game.status)) return false
 
   const anchor = coerceDate(game.claimedAt) ?? coerceDate(game.createdAt) ?? coerceDate(game.updatedAt)
@@ -447,6 +501,13 @@ export async function recordPracticeMatchGameResult(
   return withTransaction(tx => recordPracticeMatchGameResultInTransaction(tx, params))
 }
 
+export async function forfeitPracticeMatch(
+  params: PracticeMatchForfeitParams
+): Promise<PracticeMatchForfeitResult> {
+  const { withTransaction } = await import('@/lib/db')
+  return withTransaction(tx => forfeitPracticeMatchInTransaction(tx, params))
+}
+
 export async function claimPracticeMatchGameInTransaction(
   tx: TxClient,
   {
@@ -532,19 +593,22 @@ export async function claimPracticeMatchGameInTransaction(
       })
     }
 
+    const staleReason = officialGame.status === 'in_progress'
+      ? 'Game stalled in progress — no result received'
+      : 'Timed out waiting for Wayfinder lobby'
     await tx.query(
       `UPDATE practice_match_games
        SET status = 'failed',
            failed_at = COALESCE(failed_at, $2),
-           failure_reason = COALESCE(failure_reason, 'Timed out waiting for Wayfinder lobby'),
+           failure_reason = COALESCE(failure_reason, $3),
            updated_at = $2
        WHERE id = $1`,
-      [officialGame.id, now]
+      [officialGame.id, now, staleReason]
     )
 
     officialGame.status = 'failed'
     officialGame.failedAt = officialGame.failedAt ?? now
-    officialGame.failureReason = officialGame.failureReason ?? 'Timed out waiting for Wayfinder lobby'
+    officialGame.failureReason = officialGame.failureReason ?? staleReason
   }
 
   const latestAttempt = latestAttemptForGameNumber(games, gameNumber)
@@ -608,6 +672,26 @@ export async function recordPracticeMatchGameLifecycleInTransaction(
   }
 
   await tx.query('SELECT pg_advisory_xact_lock(hashtext($1::text))', [row.pod_id])
+
+  assertLifecycleParticipant(row)
+
+  // Recovery / "newest lobby wins": open a NEW lobby_ready attempt for this game
+  // number instead of rejecting an (illegal) transition, when either:
+  //  - the current attempt already died (failed/voided are terminal) — e.g. the
+  //    auto-create failed and the player made the lobby by hand; or
+  //  - a lobby_ready arrives carrying a DIFFERENT lobby than the current one —
+  //    i.e. the player remade the lobby because something broke mid-game.
+  const reportsLobby = eventStatus === 'lobby_ready' || eventStatus === 'joined' || eventStatus === 'in_progress'
+  const currentlyTerminal = row.status === 'failed' || row.status === 'voided'
+  const reportLobbyId = nonEmptyStringOrNull(params.lobbyId)
+  const currentLobbyId = nonEmptyStringOrNull(row.lobby_id)
+  const supersedingLobby = eventStatus === 'lobby_ready' && reportLobbyId != null && currentLobbyId != null && reportLobbyId !== currentLobbyId
+  if (reportsLobby && (currentlyTerminal || supersedingLobby)) {
+    if (!hasLobbyIdentity(row, params)) {
+      throw new PracticeGameLifecycleError(400, 'missing_lobby_identity', 'Lobby lifecycle events require a lobby id or URL')
+    }
+    return recordLobbyRecoveryAttempt(tx, row, params, occurredAt)
+  }
 
   validateLifecycleContext(row, params)
 
@@ -681,6 +765,101 @@ export async function recordPracticeMatchGameLifecycleInTransaction(
   }
 }
 
+// A lobby was reported for a game whose latest attempt is terminal
+// (failed/voided). Open a NEW lobby_ready attempt for the same game number so
+// the lobby becomes canonical — the automatic "newest wins" recovery path.
+async function recordLobbyRecoveryAttempt(
+  tx: TxClient,
+  row: Record<string, unknown>,
+  params: PracticeGameLifecycleParams,
+  occurredAt: Date
+): Promise<PracticeGameLifecycleResult> {
+  const gameNumber = row.game_number as GameNumber
+
+  // Lock all attempts for this game number to compute the next attempt number
+  // and free the partial-unique "active" slot (idx_practice_match_games_active).
+  const siblings = (await tx.queryRows(
+    `SELECT * FROM practice_match_games
+     WHERE match_id = $1 AND game_number = $2
+     FOR UPDATE`,
+    [row.match_id, gameNumber]
+  )).map(normalizePracticeMatchGameRow)
+  const attemptNumber = nextAttemptNumber(siblings, gameNumber)
+
+  // Void any still-active attempt so the new lobby_ready can take the active
+  // slot — "newest lobby wins".
+  await tx.query(
+    `UPDATE practice_match_games
+     SET status = 'voided',
+         failed_at = COALESCE(failed_at, $3),
+         failure_reason = COALESCE(failure_reason, 'Superseded by a recovered lobby'),
+         updated_at = $3
+     WHERE match_id = $1 AND game_number = $2
+       AND status IN ('creating', 'lobby_ready')`,
+    [row.match_id, gameNumber, occurredAt]
+  )
+
+  const inserted = await tx.queryRow(
+    `INSERT INTO practice_match_games (
+       match_id, round_id, pod_id, game_number, attempt_number,
+       status, lobby_id, lobby_url, spectate_url,
+       wayfinder_match_id, wayfinder_game_id,
+       created_by_user_id, claimed_at, lobby_ready_at, created_at, updated_at
+     )
+     VALUES ($1, $2, $3, $4, $5, 'lobby_ready', $6, $7, $8, $9, $10, $11, $12, $12, $12, $12)
+     RETURNING *`,
+    [
+      row.match_id,
+      row.round_id,
+      row.pod_id,
+      gameNumber,
+      attemptNumber,
+      nonEmptyStringOrNull(params.lobbyId),
+      nonEmptyStringOrNull(params.lobbyUrl),
+      nonEmptyStringOrNull(params.spectateUrl),
+      nonEmptyStringOrNull(params.wayfinderMatchId),
+      nonEmptyStringOrNull(params.wayfinderGameId),
+      row.reporting_user_id,
+      occurredAt,
+    ]
+  )
+
+  return {
+    ok: true,
+    changed: true,
+    practiceMatchGameId: String(inserted!.id),
+    podId: String(row.pod_id),
+    shareId: String(row.share_id),
+    status: 'lobby_ready',
+    previousStatus: normalizePracticeGameStatus(row.status),
+  }
+}
+
+function isLimitedFormat(format: string | null | undefined): boolean {
+  return typeof format === 'string' && format.trim().toLowerCase() === 'limited'
+}
+
+// Reject games that don't belong to this Swiss Practice series. Fail-opens when
+// the data is absent, so a legit game is never dropped for a missing field.
+function assertSwissPracticeGameMatches(params: PracticeGameResultParams): void {
+  // Format must be Limited — Swiss Practice is a Limited draft. This is the
+  // reliable safeguard: it catches a Premier game even when the player's drafted
+  // leader happens to match the one they played casually.
+  if (params.format && !isLimitedFormat(params.format)) {
+    throw new PracticeGameResultError(
+      422,
+      'not_limited_format',
+      `Ignoring a ${params.format} game — Swiss Practice games are Limited only`
+    )
+  }
+
+  // NOTE: a game-1 "must use your drafted leader/base" check isn't reliable yet.
+  // The Companion reports the leader as a Karabast numeric id (e.g. 5648009238)
+  // while the drafted deck stores the NAME ("Cad Bane"), so there is no common
+  // key to compare — an earlier attempt false-rejected real games. Revisit once
+  // the Companion sends the leader name (or a shared id).
+}
+
 export async function recordPracticeMatchGameResultInTransaction(
   tx: TxClient,
   params: PracticeGameResultParams
@@ -711,6 +890,12 @@ export async function recordPracticeMatchGameResultInTransaction(
 
   const resolved = await resolveResultTarget(tx, params, pool)
   const { matchRow, gameRow, gameNumber } = resolved
+
+  // Safeguard: only count games that actually belong to this Swiss Practice
+  // series. Rejects, e.g., a Premier Constructed game the player happened to be
+  // playing on the side (which the Companion would otherwise log as game 1).
+  assertSwissPracticeGameMatches(params)
+
   const reporterIsPlayer1 = matchRow.player1_id === pool.user_id
   const gameResult = resultFromReporterPerspective(params.result, reporterIsPlayer1)
   const resultIdempotencyKey = resultIdempotencyKeyFor(params, gameNumber)
@@ -816,6 +1001,22 @@ export async function recordPracticeMatchGameResultInTransaction(
     advanceResult = await checkAndAdvanceRoundInTransaction(tx, String(pool.pod_id))
   }
 
+  // Bo3 continuation: the match isn't decided, so the next game plays in the
+  // SAME Karabast lobby. Carry the lobby forward as an in-progress next game so
+  // the live status reads "Game N+1 In Progress" immediately; the Companion's
+  // result then completes it (resolved by game number). If the lobby breaks and
+  // the player makes a new one, the recovery branch supersedes this attempt.
+  if (!winner && gameNumber < 3) {
+    await carryLobbyForwardToNextGame(tx, {
+      matchRow: updatedMatch,
+      nextGameNumber: (gameNumber + 1) as GameNumber,
+      lobbyId: nextGameRow.lobbyId ?? null,
+      lobbyUrl: nextGameRow.lobbyUrl ?? null,
+      createdByUserId: stringOrNull(nextGameRow.createdByUserId) ?? stringOrNull(pool.user_id),
+      now: occurredAt,
+    })
+  }
+
   return {
     ok: true,
     changed: true,
@@ -826,6 +1027,197 @@ export async function recordPracticeMatchGameResultInTransaction(
     practiceMatchGameId: nextGameRow.id ?? null,
     gameNumber,
     matchFinalized,
+    roundAdvanced: advanceResult?.advanced ?? false,
+    eventCompleted: advanceResult?.completedEvent ?? false,
+    advanceResult,
+  }
+}
+
+// Bo3 continuation: insert the next game as an in-progress row reusing the same
+// lobby, so it shows live immediately. No-op if there's no lobby to carry or the
+// next game already exists.
+async function carryLobbyForwardToNextGame(
+  tx: TxClient,
+  {
+    matchRow,
+    nextGameNumber,
+    lobbyId,
+    lobbyUrl,
+    createdByUserId,
+    now,
+  }: {
+    matchRow: Record<string, unknown>
+    nextGameNumber: GameNumber
+    lobbyId: string | null
+    lobbyUrl: string | null
+    createdByUserId: string | null
+    now: Date
+  }
+): Promise<void> {
+  if (!lobbyId && !lobbyUrl) return
+
+  const existing = await tx.queryRow(
+    `SELECT 1 FROM practice_match_games
+     WHERE match_id = $1 AND game_number = $2
+       AND status IN ('creating', 'lobby_ready', 'in_progress', 'complete')
+     LIMIT 1`,
+    [matchRow.id, nextGameNumber]
+  )
+  if (existing) return
+
+  await tx.query(
+    `INSERT INTO practice_match_games (
+       match_id, round_id, pod_id, game_number, attempt_number,
+       status, lobby_id, lobby_url, created_by_user_id,
+       claimed_at, lobby_ready_at, started_at, created_at, updated_at
+     )
+     VALUES ($1, $2, $3, $4, 1, 'in_progress', $5, $6, $7, $8, $8, $8, $8, $8)`,
+    [
+      matchRow.id,
+      matchRow.round_id,
+      matchRow.pod_id,
+      nextGameNumber,
+      lobbyId,
+      lobbyUrl,
+      createdByUserId,
+      now,
+    ]
+  )
+}
+
+/**
+ * Forfeit-finalize a Bo3 practice match after a SET concede.
+ *
+ * Unlike {@link recordPracticeMatchGameResultInTransaction} this does NOT touch
+ * the per-game slots — a set concede ends the match regardless of the game
+ * tally, so we set `match_winner` = the non-conceder and `final_confirmed`
+ * directly, then run the normal advancement. Idempotent: a second call (the
+ * real-time report + the ingestion reaffirmation both fire) is a no-op once the
+ * match is already final_confirmed.
+ */
+export async function forfeitPracticeMatchInTransaction(
+  tx: TxClient,
+  params: PracticeMatchForfeitParams
+): Promise<PracticeMatchForfeitResult> {
+  const pool = await tx.queryRow(
+    `SELECT
+       cp.id AS card_pool_id,
+       cp.user_id,
+       cp.pod_id,
+       p.share_id AS pod_share_id,
+       p.competitive
+     FROM card_pools cp
+     JOIN pods p ON cp.pod_id = p.id
+     WHERE cp.share_id = $1`,
+    [params.poolShareId]
+  )
+  if (!pool) {
+    throw new PracticeGameResultError(404, 'pool_not_found', 'Pool not found')
+  }
+  if (pool.competitive !== true) {
+    throw new PracticeGameResultError(400, 'not_competitive', 'Pool is not in a competitive pod')
+  }
+  if (params.result === 'draw') {
+    throw new PracticeGameResultError(400, 'forfeit_not_draw', 'A match forfeit cannot be a draw')
+  }
+
+  await tx.query('SELECT pg_advisory_xact_lock(hashtext($1::text))', [pool.pod_id])
+
+  // Resolve the match: prefer an explicit practiceMatchGameId anchor, else the
+  // pool owner's active-round match. Mirrors resolveResultTarget but
+  // match-grained (no game slot).
+  let matchRow: Record<string, unknown> | null = null
+  if (params.practiceMatchGameId) {
+    matchRow = await tx.queryRow(
+      `SELECT pm.*
+       FROM practice_match_games pmg
+       JOIN practice_matches pm ON pmg.match_id = pm.id
+       WHERE pmg.id = $1
+       FOR UPDATE OF pm`,
+      [params.practiceMatchGameId]
+    )
+  } else {
+    const activeRound = await tx.queryRow(
+      `SELECT id
+       FROM practice_rounds
+       WHERE pod_id = $1 AND status = 'active'
+       ORDER BY round_number DESC
+       LIMIT 1
+       FOR UPDATE`,
+      [pool.pod_id]
+    )
+    if (!activeRound) {
+      throw new PracticeGameResultError(404, 'active_round_not_found', 'No active round found')
+    }
+    matchRow = await tx.queryRow(
+      `SELECT *
+       FROM practice_matches
+       WHERE round_id = $1
+         AND is_bye = false
+         AND (player1_id = $2 OR player2_id = $2)
+       FOR UPDATE`,
+      [activeRound.id, pool.user_id]
+    )
+  }
+
+  if (!matchRow) {
+    throw new PracticeGameResultError(404, 'match_not_found', 'No active practice match found for this player')
+  }
+  if (matchRow.pod_id !== pool.pod_id) {
+    throw new PracticeGameResultError(403, 'game_not_in_pool_pod', 'Practice match is not in this pod')
+  }
+  validateReporterInMatch(matchRow, pool)
+
+  // Idempotent: already finalized (the real-time + ingestion senders both fire).
+  if (matchRow.final_confirmed === true) {
+    return {
+      ok: true,
+      changed: false,
+      alreadyFinalized: true,
+      shareId: String(pool.pod_share_id),
+      podId: String(pool.pod_id),
+      matchId: String(matchRow.id),
+      matchWinner: (stringOrNull(matchRow.match_winner) ?? 'player1') as 'player1' | 'player2',
+      roundAdvanced: false,
+      eventCompleted: false,
+      advanceResult: null,
+    }
+  }
+
+  const reporterIsPlayer1 = matchRow.player1_id === pool.user_id
+  const winner = resultFromReporterPerspective(params.result, reporterIsPlayer1) as 'player1' | 'player2'
+
+  await tx.query(
+    `UPDATE practice_matches
+     SET final_confirmed = true,
+         match_winner = $2,
+         player1_submitted = true,
+         player2_submitted = true,
+         wayfinder_match_id = COALESCE(wayfinder_match_id, $3)
+     WHERE id = $1
+       AND final_confirmed IS NOT TRUE`,
+    [matchRow.id, winner, params.wayfinderMatchId ?? null]
+  )
+
+  await updatePlayerPoolRecordsOnce(tx, {
+    podId: String(pool.pod_id),
+    player1Id: stringOrNull(matchRow.player1_id),
+    player2Id: stringOrNull(matchRow.player2_id),
+    winner,
+    wayfinderMatchId: params.wayfinderMatchId ?? `forfeit:${String(matchRow.id)}`,
+  })
+
+  const { checkAndAdvanceRoundInTransaction } = await import('./advancement')
+  const advanceResult = await checkAndAdvanceRoundInTransaction(tx, String(pool.pod_id))
+
+  return {
+    ok: true,
+    changed: true,
+    alreadyFinalized: false,
+    shareId: String(pool.pod_share_id),
+    podId: String(pool.pod_id),
+    matchId: String(matchRow.id),
+    matchWinner: winner,
     roundAdvanced: advanceResult?.advanced ?? false,
     eventCompleted: advanceResult?.completedEvent ?? false,
     advanceResult,
@@ -890,7 +1282,12 @@ function validateClaimableMatch(matchRow: Record<string, unknown>, userId: strin
     ? draftState.currentRound
     : numberOrNull(draftState.currentRound)
 
-  if (matchRow.pod_status !== 'active') {
+  // A competitive pod is 'complete' once the DRAFT finishes — that is the normal
+  // pod status all through Swiss Practice (the matchmaking phase). Requiring
+  // 'active' here wrongly rejected every real Swiss launch with "Draft is not
+  // active". Only a genuinely dead pod should block; the real Swiss gates
+  // (competitive + matchmaking phase + active round) are enforced below.
+  if (matchRow.pod_status !== 'active' && matchRow.pod_status !== 'complete') {
     throw new PracticeGameClaimError(400, 'pod_not_active', 'Draft is not active')
   }
 
@@ -923,10 +1320,7 @@ function validateClaimableMatch(matchRow: Record<string, unknown>, userId: strin
   }
 }
 
-function validateLifecycleContext(
-  row: Record<string, unknown>,
-  params: PracticeGameLifecycleParams
-): void {
+function assertLifecycleParticipant(row: Record<string, unknown>): void {
   if (!row.reporting_user_id || row.reporting_pod_id !== row.pod_id) {
     throw new PracticeGameLifecycleError(403, 'pool_not_in_match_pod', 'Reporting pool is not in this match pod')
   }
@@ -934,6 +1328,13 @@ function validateLifecycleContext(
   if (row.reporting_user_id !== row.player1_id && row.reporting_user_id !== row.player2_id) {
     throw new PracticeGameLifecycleError(403, 'pool_not_match_participant', 'Reporting pool is not in this match')
   }
+}
+
+function validateLifecycleContext(
+  row: Record<string, unknown>,
+  params: PracticeGameLifecycleParams
+): void {
+  assertLifecycleParticipant(row)
 
   if ((params.status === 'lobby_ready' || params.status === 'joined') && !hasLobbyIdentity(row, params)) {
     throw new PracticeGameLifecycleError(400, 'missing_lobby_identity', 'Lobby lifecycle events require a lobby id or URL')
@@ -994,11 +1395,39 @@ async function resolveResultTarget(
 
     validateReporterInMatch(row, pool)
 
+    const matchRow = matchRowFromJoinedGameRow(row)
+
+    // The anchor identifies the MATCH/series; the reported gameNumber identifies
+    // the SLOT. In a single-lobby Bo3 the Companion only ever claims game 1, then
+    // reports games 2/3 against game 1's anchor with an incremented gameNumber —
+    // so resolve the slot from the reported number (exactly like the no-anchor
+    // path below) instead of pinning every result back onto the anchor row's own
+    // game_number (which silently collapsed games 2/3 onto game 1).
+    const games = (await tx.queryRows(
+      `SELECT *
+       FROM practice_match_games
+       WHERE match_id = $1
+       ORDER BY game_number, attempt_number
+       FOR UPDATE`,
+      [row.match_id]
+    )).map(normalizePracticeMatchGameRow)
+
+    let gameNumber = params.gameNumber
+      ? asGameNumber(params.gameNumber)
+      : asGameNumber(row.game_number)
+    // Same redirect as the no-anchor path: a reported number that lands on an
+    // already-decided game (lobby numbering reset for a fresh series game) moves
+    // to the game the series actually needs next.
+    const targetedResult = matchAggregateFromRow(matchRow)[resultColumnForGameNumber(gameNumber)]
+    if (targetedResult != null && matchRow.final_confirmed !== true) {
+      gameNumber = inferResultGameNumber(matchRow, games)
+    }
+
     return {
-      matchRow: matchRowFromJoinedGameRow(row),
-      gameRow: normalizePracticeMatchGameRow(row),
-      gameNumber: asGameNumber(row.game_number),
-      nextAttemptNumber: Number(row.attempt_number) || 1,
+      matchRow,
+      gameRow: officialGameForNumber(games, gameNumber),
+      gameNumber,
+      nextAttemptNumber: nextAttemptNumber(games, gameNumber),
     }
   }
 
@@ -1041,9 +1470,21 @@ async function resolveResultTarget(
     [matchRow.id]
   )).map(normalizePracticeMatchGameRow)
 
-  const gameNumber = params.gameNumber
+  let gameNumber = params.gameNumber
     ? asGameNumber(params.gameNumber)
     : inferResultGameNumber(matchRow, games)
+  // The Companion's reported gameNumber is the per-LOBBY Karabast number, which
+  // resets whenever players make a NEW lobby for the next series game (a fresh
+  // Bo3, a retry, a recovery lobby) — so it can point at an already-decided
+  // game (e.g. "game 1 of this new lobby" when the match is past game 1). When
+  // that number lands on a decided game and the match isn't over yet, redirect
+  // to the game the series actually needs next: the next observed game IS the
+  // next series game. A genuine duplicate on a FINISHED match keeps its number
+  // so the idempotency dedup still catches it. (Limited-format gate still runs.)
+  const targetedResult = matchAggregateFromRow(matchRow)[resultColumnForGameNumber(gameNumber)]
+  if (targetedResult != null && matchRow.final_confirmed !== true) {
+    gameNumber = inferResultGameNumber(matchRow, games)
+  }
   const gameRow = officialGameForNumber(games, gameNumber)
 
   return {

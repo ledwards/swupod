@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/src/contexts/AuthContext'
 import { isCompanionBeta } from '@/src/utils/companionBeta'
 import { usePluginPresence } from '@/src/hooks/usePluginPresence'
+import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import WayfinderStoreButtons from '@/src/components/WayfinderStoreButtons'
 import './PluginCTA.css'
 
@@ -21,7 +22,12 @@ export type PluginCTAState = 'install' | 'soon' | 'hidden'
  *
  * Dev override: ?plugincta=install|soon|hide forces the state on any session.
  */
-export function usePluginCTA(): {
+export function usePluginCTA(opts?: {
+  /** Force the install CTA on for everyone — used where the Companion is
+   *  REQUIRED (a participant in a competitive/Swiss pod). The play page is the
+   *  one caller that sets this; the show/hide decision still lives here. */
+  required?: boolean
+}): {
   state: PluginCTAState
   /** True unless the user already has the Companion (state !== 'hidden'). */
   shouldShow: boolean
@@ -32,7 +38,16 @@ export function usePluginCTA(): {
 } {
   const { user } = useAuth()
   const inRollout = isCompanionBeta(user)
+  const required = opts?.required ?? false
   const { hasPlugin } = usePluginPresence()
+  const { detected } = useWayfinderDetection()
+
+  // On the Swiss "required" surface the player needs the Companion running RIGHT
+  // NOW, so gate on LIVE detection — not the durable hasPlugin signal (which also
+  // counts ever-recorded games and a 45-day "seen" stamp). Otherwise a returning
+  // player without the extension installed gets no install push on the very page
+  // that requires it. Everywhere else, hasPlugin still hides the CTA.
+  const present = required ? detected : hasPlugin
 
   const [qa, setQa] = useState<string | null>(null)
   useEffect(() => {
@@ -43,8 +58,8 @@ export function usePluginCTA(): {
     qa === 'install' ? 'install'
     : qa === 'soon' ? 'soon'
     : qa === 'hide' ? 'hidden'
-    : hasPlugin ? 'hidden'
-    : inRollout ? 'install'
+    : present ? 'hidden'
+    : (inRollout || required) ? 'install'
     : 'soon'
 
   return { state, shouldShow: state !== 'hidden', inRollout, hasPlugin }
@@ -65,6 +80,8 @@ export function usePluginCTA(): {
  */
 export interface PluginCTAProps {
   variant?: 'card' | 'compact' | 'autodetect'
+  /** Force the install CTA on (Companion required, e.g. competitive/Swiss pod). */
+  required?: boolean
   /** Optional context heading (defaults to the install headline). */
   heading?: string
   /** Optional context copy (defaults to the install copy). */
@@ -90,8 +107,8 @@ function Lockup() {
   )
 }
 
-export function PluginCTA({ variant = 'card', heading, copy, className = '', onChromeClick }: PluginCTAProps) {
-  const { state } = usePluginCTA()
+export function PluginCTA({ variant = 'card', heading, copy, className = '', onChromeClick, required = false }: PluginCTAProps) {
+  const { state } = usePluginCTA({ required })
 
   if (state === 'hidden') return null
 

@@ -1,10 +1,9 @@
 // @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
-import { queryRow, query } from '@/lib/db'
+import { queryRow } from '@/lib/db'
 import { jsonResponse, handleApiError } from '@/lib/utils'
-import { broadcastDraftState } from '@/src/lib/socketBroadcast'
-import { checkAndAdvanceRound } from '@/src/services/matchmaking/advancement'
+import { dropPlayerFromMatchmaking } from '@/src/services/matchmaking/drops'
 
 export async function POST(
   request: NextRequest,
@@ -31,31 +30,11 @@ export async function POST(
       return jsonResponse({ error: 'Cannot boot yourself' }, 400)
     }
 
-    await query(
-      `UPDATE pod_players SET dropped = true, dropped_at = NOW() WHERE pod_id = $1 AND user_id = $2`,
-      [pod.id, userId]
-    )
+    // Host-remove and player self-drop share one core: mark dropped, auto-loss
+    // the current match, void orphaned live games, advance the round.
+    const result = await dropPlayerFromMatchmaking({ podId: pod.id, userId, shareId })
 
-    await query(
-      `UPDATE practice_matches
-       SET final_confirmed = true,
-           match_winner = CASE
-             WHEN player1_id = $2 THEN 'player2'
-             WHEN player2_id = $2 THEN 'player1'
-           END
-       WHERE pod_id = $1
-         AND final_confirmed = false
-         AND (player1_id = $2 OR player2_id = $2)`,
-      [pod.id, userId]
-    )
-
-    await checkAndAdvanceRound(pod.id, shareId)
-
-    broadcastDraftState(shareId).catch(err => {
-      console.error('Error broadcasting draft state after boot:', err)
-    })
-
-    return jsonResponse({ ok: true })
+    return jsonResponse({ ok: true, dropped: result.dropped })
   } catch (error) {
     return handleApiError(error)
   }

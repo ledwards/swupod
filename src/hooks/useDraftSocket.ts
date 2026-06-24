@@ -52,6 +52,7 @@ interface Draft {
   matchmakingStatus?: string;
   currentRound?: number;
   deckBuildDeadline?: string | null;
+  decksUnlocked?: boolean;
   rounds?: unknown[];
   [key: string]: unknown;
 }
@@ -75,6 +76,7 @@ interface SocketStateData {
   matchmakingStatus?: string;
   currentRound?: number;
   deckBuildDeadline?: string | null;
+  decksUnlocked?: boolean;
   rounds?: unknown[];
 }
 
@@ -202,6 +204,7 @@ export function useDraftSocket(
           matchmakingStatus: data.matchmakingStatus,
           currentRound: data.currentRound,
           deckBuildDeadline: data.deckBuildDeadline,
+          decksUnlocked: data.decksUnlocked,
           rounds: data.rounds,
         } : null)
 

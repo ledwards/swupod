@@ -220,6 +220,15 @@
   }
 }
 
+/* Touch / no-hover devices (iPad, touch laptops) have no hover to reveal the
+   ✕, which left the host unable to remove a player at all. Show + enable it. */
+@media (hover: none), (pointer: coarse) {
+  .seat-remove-btn {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
 @media (max-width: 768px) {
   /* Hide name below avatar on mobile - name shows in leader info area instead */
   .seat-name {

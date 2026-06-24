@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export type PracticeLaunchMessageType = 'success' | 'error' | 'info'
 
@@ -136,10 +136,18 @@ export function useWayfinderPracticeLaunch({
   const [pendingMatchId, setPendingMatchId] = useState<string | null>(null)
   const [launchMessage, setLaunchMessage] = useState<PracticeLaunchMessage | null>(null)
 
+  const clearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   const setMessage = useCallback((matchId: string | null, text: string, type: PracticeLaunchMessageType) => {
     setLaunchMessage({ matchId, text, type })
     onMessage?.(text, type)
+    // Auto-clear transient launch messages so a stale "Creating…" / "Opening…"
+    // doesn't linger after the game resolves (or silently fails).
+    if (clearTimerRef.current) clearTimeout(clearTimerRef.current)
+    clearTimerRef.current = setTimeout(() => setLaunchMessage(null), 8000)
   }, [onMessage])
+
+  useEffect(() => () => { if (clearTimerRef.current) clearTimeout(clearTimerRef.current) }, [])
 
   const launchPracticeMatch = useCallback(async (matchId: string) => {
     if (!draftShareId || !poolShareId) {
@@ -205,7 +213,7 @@ export function useWayfinderPracticeLaunch({
       if (claim.action === 'create_lobby') {
         if (!claim.practiceMatchGameId) throw new Error(CLAIM_ERROR_MESSAGE)
         window.postMessage(buildWayfinderPracticeCreatePayload(payloadOptions), '*')
-        setMessage(matchId, `Creating Game ${claim.gameNumber || ''} in Wayfinder...`.trim(), 'info')
+        setMessage(matchId, `Creating Game ${claim.gameNumber || ''} from Wayfinder...`.trim(), 'info')
         onTrack?.('swiss_practice_game_create_lobby', {
           target: 'wayfinder',
           matchId,
@@ -221,7 +229,7 @@ export function useWayfinderPracticeLaunch({
           return
         }
         window.postMessage(buildWayfinderPracticeJoinPayload(payloadOptions), '*')
-        setMessage(matchId, 'Opening your game in Wayfinder...', 'info')
+        setMessage(matchId, 'Opening your game from Wayfinder...', 'info')
         onTrack?.('swiss_practice_game_join_lobby', {
           target: 'wayfinder',
           matchId,

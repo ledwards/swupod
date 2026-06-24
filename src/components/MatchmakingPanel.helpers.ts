@@ -51,6 +51,7 @@ export interface MatchmakingHelperCurrentGame {
 export type LiveGameActionKind =
   | 'none'
   | 'play'
+  | 'open'
   | 'join'
   | 'watch'
   | 'replay'
@@ -63,6 +64,13 @@ export interface LiveGameAction {
   label: string
   href?: string | null
   disabled?: boolean
+  /** Hover hint for a disabled play button (e.g. "Install Wayfinder…"). */
+  tooltip?: string | null
+  /** "(opponent) is ready!" shown beside the play button once a lobby exists. */
+  readyText?: string | null
+  /** True on an `open` action when the current viewer created the lobby — their
+   *  button copies the link (to share) rather than opening it. */
+  iCreated?: boolean
 }
 
 export interface LiveConsoleRoundOrder {
@@ -186,6 +194,40 @@ export function statusLine({
   return `Round ${currentRound} is ready. Play your best-of-three match against ${opponent}, then report the result.`
 }
 
+export type SelfDropState = 'can-drop' | 'dropped' | 'hidden'
+
+export interface SelfDropPlayer {
+  id: string
+  dropped?: boolean | null
+}
+
+/**
+ * Decide what self-drop control (if any) the current player should see.
+ * - 'dropped'  — they've already dropped; show a passive "you dropped" note.
+ * - 'can-drop' — an active, non-host player still in the event; show the Drop button.
+ * - 'hidden'   — host (they cancel the pod instead), not a player, or the event
+ *                is not in an actively-running round.
+ * Self-drop is a player-only action; the host removes others via boot.
+ */
+export function selfDropState({
+  isHost,
+  matchmakingStatus,
+  currentUserId,
+  players,
+}: {
+  isHost: boolean
+  matchmakingStatus: string
+  currentUserId: string
+  players: SelfDropPlayer[]
+}): SelfDropState {
+  const me = (players || []).find(player => player.id === currentUserId)
+  if (me?.dropped) return 'dropped'
+  if (isHost) return 'hidden'
+  if (!me) return 'hidden'
+  if (matchmakingStatus !== 'active') return 'hidden'
+  return 'can-drop'
+}
+
 export function roundTabState(
   roundNumber: number,
   currentRound: number,
@@ -279,15 +321,15 @@ export function liveGameStatusLabel(currentGame?: MatchmakingHelperCurrentGame |
   const gameLabel = currentGame.gameNumber ? `Game ${currentGame.gameNumber}` : 'Match'
   switch (currentGame.status) {
     case 'pending':
-      return `${gameLabel} Ready`
+      return `${gameLabel} Ready to Play`
     case 'creating':
       return `${gameLabel} Starting`
     case 'lobby_ready':
       return `${gameLabel} Lobby Ready`
-    case 'in_progress': {
-      const elapsed = formatLiveGameElapsed(currentGame.elapsedSeconds)
-      return elapsed ? `${gameLabel} In Progress · ${elapsed}` : `${gameLabel} In Progress`
-    }
+    case 'in_progress':
+      // The round-level countdown timer (rendered alongside this label in
+      // MatchCard) replaces the old count-up elapsed text.
+      return `${gameLabel} In Progress`
     case 'complete':
       return `${gameLabel} Complete`
     case 'failed':
@@ -304,11 +346,14 @@ export function liveGameAction({
   currentUserId,
   liveLaunchEnabled,
   pending = false,
+  creatingTimedOut = false,
 }: {
   match: MatchmakingHelperMatch
   currentUserId: string
   liveLaunchEnabled: boolean
   pending?: boolean
+  /** Client-side 30s timer fired: treat a stuck "creating" game as failed. */
+  creatingTimedOut?: boolean
 }): LiveGameAction {
   if (match.isBye || match.finalConfirmed) {
     return replayAction(match)
@@ -317,11 +362,9 @@ export function liveGameAction({
   const participant = isMatchParticipant(match, currentUserId)
   const currentGame = match.currentGame
   const status = currentGame?.status || 'pending'
-  const gameNumber = currentGame?.gameNumber || 1
   const lobbyUrl = currentGame?.lobbyUrl || currentGame?.game?.lobbyUrl || null
   const spectateUrl = currentGame?.spectateUrl || currentGame?.game?.spectateUrl || null
   const replayUrl = currentGame?.replayUrl || currentGame?.game?.replayUrl || null
-  const gameLabel = `Game ${gameNumber}`
 
   if (!participant) {
     if ((status === 'lobby_ready' || status === 'in_progress') && spectateUrl) {
@@ -334,41 +377,101 @@ export function liveGameAction({
     return { kind: 'none', label: '' }
   }
 
+  // Game is underway → you're already in the table/room, so disable Play (no
+  // point re-opening the lobby). The live row still shows "Game N In Progress".
+  // EXCEPT when the game has been stuck `in_progress` far too long (its result
+  // never arrived): offer an enabled Retry so an abandoned game can't jam the
+  // match forever. The claim path fails the stale attempt and opens a fresh one.
+  if (status === 'in_progress') {
+    if (currentGame?.retryable || currentGame?.stale) {
+      return { kind: 'play', label: '', tooltip: 'This game stalled — retry to reopen the lobby' }
+    }
+    return { kind: 'play', label: '', disabled: true, tooltip: 'Game in progress' }
+  }
+
+  // A private lobby exists. What the button does depends on who you are:
+  //  - Creator: you're already in the lobby — your button just copies the link
+  //    to share (iCreated 'open').
+  //  - Joiner WITH a capable Companion: launch through the plugin so it opens
+  //    the private lobby AND imports your deck for you (the claim returns
+  //    action:'join_lobby' → buildWayfinderPracticeJoinPayload). Rendered as a
+  //    'join' button that calls onPracticeLaunch.
+  //  - Joiner WITHOUT the Companion: a plain green link to the lobby; they open
+  //    it and import their deck by hand.
+  if (status === 'lobby_ready' && lobbyUrl) {
+    const creatorId = currentGame?.game?.createdByUserId || null
+    const iCreated = creatorId === currentUserId
+    const openedByOpponent = Boolean(creatorId && creatorId !== currentUserId)
+
+    // Only route to the plugin JOIN when we KNOW the opponent created the lobby.
+    // If the creator is unknown, stay on the safe raw link — never risk
+    // re-launching (a 2nd tab + re-import) for someone who might be the creator.
+    if (openedByOpponent && liveLaunchEnabled) {
+      return {
+        kind: 'join',
+        label: 'Join',
+        readyText: `${opponentName(match, currentUserId)} is in the lobby`,
+      }
+    }
+
+    return {
+      kind: 'open',
+      label: '',
+      href: lobbyUrl,
+      iCreated,
+      readyText: openedByOpponent
+        ? `${opponentName(match, currentUserId)} is in the lobby`
+        : (iCreated ? 'Lobby created' : null),
+    }
+  }
+
   if (pending) {
-    return { kind: 'waiting', label: 'Launching...', disabled: true }
+    return { kind: 'waiting', label: 'Creating Lobby', disabled: true, tooltip: 'Opening your Karabast lobby — this takes a few seconds.' }
   }
 
   if (!liveLaunchEnabled) {
     if (status === 'complete') return replayAction(match)
-    return { kind: 'none', label: '' }
+    // The opponent is spinning up the lobby — just wait for its URL to arrive,
+    // but don't wait forever: after the 30s timeout fall through to the nudge.
+    if (status === 'creating' && !creatingTimedOut) return { kind: 'waiting', label: 'Waiting for lobby', disabled: true, tooltip: 'Your opponent is opening the lobby — the link will appear here.' }
+    // No Companion detected and no lobby yet → a disabled play button that explains
+    // why and points to the manual fallback.
+    return {
+      kind: 'play',
+      label: '',
+      disabled: true,
+      tooltip: 'Install the Wayfinder Companion to launch from here — or play manually with Copy JSON / Copy Link below.',
+    }
   }
 
   if (status === 'pending') {
-    return { kind: 'play', label: `Play ${gameLabel}` }
+    return { kind: 'play', label: '' }
   }
 
   if (status === 'creating') {
-    if (currentGame?.retryable || currentGame?.stale) {
-      return { kind: 'retry', label: `Retry ${gameLabel}` }
+    // A lobby should be created in seconds. If it's been "creating" for >30s the
+    // launch almost certainly failed (often a silent Karabast error with no
+    // lifecycle callback) — surface a Retry so the player isn't stuck on a dead
+    // button. (The launching client re-reads ~32s after launch so elapsedSeconds
+    // catches up.)
+    const stuckTooLong = (currentGame?.elapsedSeconds ?? 0) > 30
+    if (currentGame?.retryable || currentGame?.stale || stuckTooLong || creatingTimedOut) {
+      return { kind: 'play', label: '' }
     }
     if (currentGame?.game?.createdByUserId === currentUserId) {
-      return { kind: 'creating', label: 'Creating...', disabled: true }
+      return { kind: 'creating', label: 'Creating...', disabled: true, tooltip: 'Opening your lobby — this takes a few seconds.' }
     }
-    return { kind: 'waiting', label: 'Waiting for lobby', disabled: true }
+    return { kind: 'waiting', label: 'Waiting for lobby', disabled: true, tooltip: 'Your opponent is opening the lobby — the link will appear here.' }
   }
 
-  if (status === 'lobby_ready' || status === 'in_progress') {
-    if (lobbyUrl) {
-      return {
-        kind: 'join',
-        label: status === 'in_progress' ? 'Rejoin Game' : 'Join Game',
-      }
-    }
-    return { kind: 'waiting', label: 'Waiting for lobby', disabled: true }
+  if (status === 'lobby_ready') {
+    // The lobby-URL-present case is handled above; without a URL we still wait.
+    // ('in_progress' can't reach here — it returns at the guard above.)
+    return { kind: 'waiting', label: 'Waiting for lobby', disabled: true, tooltip: 'Waiting for the lobby link to arrive…' }
   }
 
   if (status === 'failed' || status === 'voided') {
-    return { kind: 'retry', label: `Retry ${gameLabel}` }
+    return { kind: 'play', label: '' }
   }
 
   if (status === 'complete' && replayUrl) {
