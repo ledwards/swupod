@@ -18,11 +18,13 @@ import {
   type PtpPlayRuntimeMode,
   type PtpPlaySeat,
 } from './playState'
+import { launchForcetekiMatch, type ForcetekiLaunchResult } from './forcetekiLaunch'
 import { getRuntimeLaunchPlan, type RuntimeLaunchPlan } from './runtimeLaunch'
 
 interface PoolRow {
   id: string
   userId: string
+  username: string | null
   shareId: string
   setCode: string
   setName: string | null
@@ -36,8 +38,14 @@ interface PoolRow {
 interface QueueOpponentRow {
   id: string
   userId: string
+  username: string | null
   cardPoolId: string
   poolShareId: string
+  setCode: string
+  setName: string | null
+  poolType: string
+  name: string | null
+  deckBuilderState: unknown
 }
 
 interface MatchCore {
@@ -214,6 +222,7 @@ export async function getPlayLobby(userId: string): Promise<PlayLobby> {
          m.completed_at,
          m.created_at,
          s.launch_token AS my_launch_token,
+         s.launch_url AS my_launch_url,
          s.seat AS my_seat,
          u1.username AS player1_username,
          u2.username AS player2_username,
@@ -365,9 +374,15 @@ export async function claimPlaySeat(params: {
 }): Promise<SeatLaunchResult> {
   return withTransaction(async (tx) => {
     const seat = await tx.queryRow(
-      `SELECT seat, launch_token
-       FROM ptp_play_seats
-       WHERE match_id = $1 AND user_id = $2`,
+      `SELECT
+         s.seat,
+         s.launch_token,
+         s.launch_url,
+         m.runtime_mode,
+         m.runtime_launch_url
+       FROM ptp_play_seats s
+       JOIN ptp_play_matches m ON m.id = s.match_id
+       WHERE s.match_id = $1 AND s.user_id = $2`,
       [params.matchId, params.userId]
     )
     if (!seat) {
@@ -383,7 +398,13 @@ export async function claimPlaySeat(params: {
     return {
       matchId: params.matchId,
       seat: seatColumn(seat, 'seat'),
-      launchUrl: buildLocalRuntimeUrl(params.matchId, stringColumn(seat, 'launch_token')),
+      launchUrl: buildRuntimeLaunchUrl(
+        runtimeModeColumn(seat, 'runtime_mode'),
+        params.matchId,
+        stringColumn(seat, 'launch_token'),
+        nullableStringColumn(seat, 'launch_url'),
+        nullableStringColumn(seat, 'runtime_launch_url')
+      ),
     }
   })
 }
@@ -648,6 +669,7 @@ export async function getPlayReplay(params: {
        m.completed_at,
        m.created_at,
        s.launch_token AS my_launch_token,
+       s.launch_url AS my_launch_url,
        s.seat AS my_seat,
        u1.username AS player1_username,
        u2.username AS player2_username,
@@ -698,10 +720,22 @@ async function loadOwnedPoolForQueue(
   poolShareId: string
 ): Promise<PoolRow> {
   const row = await tx.queryRow(
-    `SELECT id, user_id, share_id, set_code, set_name, pool_type, name, deck_builder_state, created_at, updated_at
-     FROM card_pools
-     WHERE share_id = $1
-     FOR UPDATE`,
+    `SELECT
+       cp.id,
+       cp.user_id,
+       u.username,
+       cp.share_id,
+       cp.set_code,
+       cp.set_name,
+       cp.pool_type,
+       cp.name,
+       cp.deck_builder_state,
+       cp.created_at,
+       cp.updated_at
+     FROM card_pools cp
+     JOIN users u ON u.id = cp.user_id
+     WHERE cp.share_id = $1
+     FOR UPDATE OF cp`,
     [poolShareId]
   )
   if (!row) {
@@ -748,16 +782,28 @@ async function findQueuedOpponent(
   userId: string
 ): Promise<QueueOpponentRow | null> {
   const row = await tx.queryRow(
-    `SELECT id, user_id, card_pool_id, pool_share_id
-     FROM ptp_play_queue_entries
-     WHERE status = 'queued'
-       AND set_code = $1
-       AND pool_type = $2
-       AND user_id <> $3
-       AND expires_at > NOW()
-     ORDER BY requested_at ASC
+    `SELECT
+       qe.id,
+       qe.user_id,
+       u.username,
+       qe.card_pool_id,
+       qe.pool_share_id,
+       cp.set_code,
+       cp.set_name,
+       cp.pool_type,
+       cp.name,
+       cp.deck_builder_state
+     FROM ptp_play_queue_entries qe
+     JOIN card_pools cp ON cp.id = qe.card_pool_id
+     JOIN users u ON u.id = qe.user_id
+     WHERE qe.status = 'queued'
+       AND qe.set_code = $1
+       AND qe.pool_type = $2
+       AND qe.user_id <> $3
+       AND qe.expires_at > NOW()
+     ORDER BY qe.requested_at ASC
      LIMIT 1
-     FOR UPDATE SKIP LOCKED`,
+     FOR UPDATE OF qe SKIP LOCKED`,
     [pool.setCode, pool.poolType, userId]
   )
 
@@ -765,8 +811,14 @@ async function findQueuedOpponent(
   return {
     id: stringColumn(row, 'id'),
     userId: stringColumn(row, 'user_id'),
+    username: nullableStringColumn(row, 'username'),
     cardPoolId: stringColumn(row, 'card_pool_id'),
     poolShareId: stringColumn(row, 'pool_share_id'),
+    setCode: stringColumn(row, 'set_code'),
+    setName: nullableStringColumn(row, 'set_name'),
+    poolType: nullableStringColumn(row, 'pool_type') ?? 'sealed',
+    name: nullableStringColumn(row, 'name'),
+    deckBuilderState: row.deck_builder_state,
   }
 }
 
@@ -792,9 +844,43 @@ async function createMatchedGame(
   const runtimeGameId = `ptp-${matchId}`
   const player1Token = randomUUID()
   const player2Token = randomUUID()
+  const forcetekiLaunch = launchPlan.mode === 'forceteki'
+    ? await launchForcetekiMatch({
+      matchId,
+      runtimeGameId,
+      launchPlan,
+      players: [
+        {
+          seat: 'player1',
+          userId: opponent.userId,
+          username: opponent.username,
+          poolShareId: opponent.poolShareId,
+          setCode: opponent.setCode,
+          poolType: opponent.poolType,
+          poolName: opponent.name,
+          deckBuilderState: opponent.deckBuilderState,
+          launchToken: player1Token,
+        },
+        {
+          seat: 'player2',
+          userId: pool.userId,
+          username: pool.username,
+          poolShareId: pool.shareId,
+          setCode: pool.setCode,
+          poolType: pool.poolType,
+          poolName: pool.name,
+          deckBuilderState: pool.deckBuilderState,
+          launchToken: player2Token,
+        },
+      ],
+    })
+    : null
+  const player1Launch = forcetekiLaunch ? launchSeatFor(forcetekiLaunch, 'player1') : null
+  const player2Launch = forcetekiLaunch ? launchSeatFor(forcetekiLaunch, 'player2') : null
   const runtimeLaunchUrl = launchPlan.mode === 'local_stub'
     ? `/play/runtime/${matchId}`
-    : launchPlan.launchUrl
+    : forcetekiLaunch?.lobbyUrl ?? launchPlan.runtimeBaseUrl
+  const storedRuntimeGameId = forcetekiLaunch?.runtimeGameId ?? runtimeGameId
 
   await tx.query(
     `INSERT INTO ptp_play_matches (
@@ -806,19 +892,21 @@ async function createMatchedGame(
        runtime_mode,
        runtime_game_id,
        runtime_launch_url,
+       spectate_url,
        player1_user_id,
        player2_user_id,
        player1_pool_id,
        player2_pool_id
      )
-     VALUES ($1, 'limited', $2, $3, 'launch_ready', $4, $5, $6, $7, $8, $9, $10)`,
+     VALUES ($1, 'limited', $2, $3, 'launch_ready', $4, $5, $6, $7, $8, $9, $10, $11)`,
     [
       matchId,
       pool.poolType,
       pool.setCode,
       launchPlan.mode,
-      runtimeGameId,
+      storedRuntimeGameId,
       runtimeLaunchUrl,
+      forcetekiLaunch?.spectateUrl ?? null,
       opponent.userId,
       pool.userId,
       opponent.cardPoolId,
@@ -827,11 +915,31 @@ async function createMatchedGame(
   )
 
   await tx.query(
-    `INSERT INTO ptp_play_seats (match_id, user_id, card_pool_id, seat, launch_token)
+    `INSERT INTO ptp_play_seats (
+       match_id,
+       user_id,
+       card_pool_id,
+       seat,
+       launch_token,
+       launch_url,
+       runtime_user_id
+     )
      VALUES
-       ($1, $2, $3, 'player1', $4),
-       ($1, $5, $6, 'player2', $7)`,
-    [matchId, opponent.userId, opponent.cardPoolId, player1Token, pool.userId, pool.id, player2Token]
+       ($1, $2, $3, 'player1', $4, $5, $6),
+       ($1, $7, $8, 'player2', $9, $10, $11)`,
+    [
+      matchId,
+      opponent.userId,
+      opponent.cardPoolId,
+      player1Token,
+      player1Launch?.launchUrl ?? null,
+      player1Launch?.runtimeUserId ?? null,
+      pool.userId,
+      pool.id,
+      player2Token,
+      player2Launch?.launchUrl ?? null,
+      player2Launch?.runtimeUserId ?? null,
+    ]
   )
 
   await tx.query(
@@ -849,7 +957,8 @@ async function createMatchedGame(
     eventType: 'match.created',
     payload: {
       runtimeMode: launchPlan.mode,
-      runtimeGameId,
+      runtimeGameId: storedRuntimeGameId,
+      runtimeLobbyId: forcetekiLaunch?.lobbyId ?? null,
       player1PoolShareId: opponent.poolShareId,
       player2PoolShareId: pool.shareId,
       setCode: pool.setCode,
@@ -859,6 +968,14 @@ async function createMatchedGame(
   })
 
   return matchId
+}
+
+function launchSeatFor(launch: ForcetekiLaunchResult, seat: PtpPlaySeat) {
+  const seatLaunch = launch.seats.find(candidate => candidate.seat === seat)
+  if (!seatLaunch) {
+    throw new PtpPlayError(502, 'runtime_launch_invalid_response', `Forceteki launch response missing ${seat}`)
+  }
+  return seatLaunch
 }
 
 async function markSeatJoined(
@@ -1022,7 +1139,13 @@ function rowToMatchSummary(row: Record<string, unknown>, userId: string): PlayMa
     winnerUserId: nullableStringColumn(row, 'winner_user_id'),
     mySeat,
     launchUrl: launchToken && status !== 'complete' && status !== 'failed' && status !== 'cancelled'
-      ? buildRuntimeLaunchUrl(runtimeMode, stringColumn(row, 'id'), launchToken, nullableStringColumn(row, 'runtime_launch_url'))
+      ? buildRuntimeLaunchUrl(
+        runtimeMode,
+        stringColumn(row, 'id'),
+        launchToken,
+        nullableStringColumn(row, 'my_launch_url'),
+        nullableStringColumn(row, 'runtime_launch_url')
+      )
       : null,
     replayUrl: nullableStringColumn(row, 'replay_url'),
     player1: {
@@ -1098,6 +1221,7 @@ function rowToPool(row: Record<string, unknown>): PoolRow {
   return {
     id: stringColumn(row, 'id'),
     userId: stringColumn(row, 'user_id'),
+    username: nullableStringColumn(row, 'username'),
     shareId: stringColumn(row, 'share_id'),
     setCode: stringColumn(row, 'set_code'),
     setName: nullableStringColumn(row, 'set_name'),
@@ -1142,9 +1266,11 @@ function buildRuntimeLaunchUrl(
   mode: PtpPlayRuntimeMode,
   matchId: string,
   launchToken: string,
+  seatLaunchUrl: string | null,
   storedLaunchUrl: string | null
 ): string {
   if (mode === 'local_stub') return buildLocalRuntimeUrl(matchId, launchToken)
+  if (seatLaunchUrl) return seatLaunchUrl
   if (!storedLaunchUrl) return buildLocalRuntimeUrl(matchId, launchToken)
   const separator = storedLaunchUrl.includes('?') ? '&' : '?'
   return `${storedLaunchUrl}${separator}seatToken=${encodeURIComponent(launchToken)}`
