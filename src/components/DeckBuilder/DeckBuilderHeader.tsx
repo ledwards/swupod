@@ -206,7 +206,7 @@ export function DeckBuilderHeader({
       ) : swissUnlocked ? (
         <div className="deck-build-lock">
           <Button
-            variant="warning"
+            variant="primary"
             disabled={!swissCanUnlock}
             onClick={swissCanUnlock ? onToggleSwissLock : undefined}
             title={swissCanUnlock
