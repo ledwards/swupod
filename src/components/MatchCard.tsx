@@ -214,7 +214,7 @@ export function MatchCard({
     || (!match.game1Result ? 1 : !match.game2Result ? 2 : 3)
   // Only a still-live match falls back to the ready copy — a finished/bye match
   // (e.g. one showing only a replay link) must not read "Game N Ready".
-  const defaultLiveCopy = (!match.isBye && !match.finalConfirmed) ? `Game ${nextGameNumber} Ready` : null
+  const defaultLiveCopy = (!match.isBye && !match.finalConfirmed) ? `Game ${nextGameNumber} Ready to Play` : null
   // A settled failure OR a timed-out "creating" both revert the box to the
   // normal ready state (default copy + a plain Play button) instead of a
   // lingering red banner or a stuck spinner.

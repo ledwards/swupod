@@ -321,7 +321,7 @@ export function liveGameStatusLabel(currentGame?: MatchmakingHelperCurrentGame |
   const gameLabel = currentGame.gameNumber ? `Game ${currentGame.gameNumber}` : 'Match'
   switch (currentGame.status) {
     case 'pending':
-      return `${gameLabel} Ready`
+      return `${gameLabel} Ready to Play`
     case 'creating':
       return `${gameLabel} Starting`
     case 'lobby_ready':
