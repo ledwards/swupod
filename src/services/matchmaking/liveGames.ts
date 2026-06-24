@@ -241,6 +241,15 @@ interface PracticeGameStaleOptions {
 }
 
 const DEFAULT_STALE_AFTER_MS = 15 * 60 * 1000
+// A game stuck `in_progress` (the result write-back never arrived — e.g. the
+// player closed the tab, or a capture/delivery failure) has NO other recovery
+// path: `in_progress` is not a RETRYABLE_STALE_STATUS, so the read model sits on
+// it forever, the match card shows a disabled "Game in progress", and the match
+// jams permanently. A single SWU game never runs anywhere near this long, so an
+// `in_progress` row older than this window is treated as abandoned and becomes
+// retryable, letting the match recover. Deliberately long (vs the 15-min
+// creating/lobby_ready window) so a genuinely live game is never interrupted.
+const IN_PROGRESS_STALE_AFTER_MS = 90 * 60 * 1000
 const GAME_NUMBERS: GameNumber[] = [1, 2, 3]
 
 const LEGAL_TRANSITIONS: Record<PracticeGameStatus, PracticeGameStatus[]> = {
@@ -374,7 +383,20 @@ export function isStalePracticeGame(
   game: PracticeMatchGameLike | null | undefined,
   { now = new Date(), staleAfterMs }: PracticeGameStaleOptions = {}
 ): boolean {
-  if (!game || staleAfterMs === undefined) return false
+  if (!game) return false
+
+  // A game stuck `in_progress` (its result never arrived) is the only status with
+  // no other recovery path — stale it after a long, game-length-safe window so an
+  // abandoned game can't jam the match forever. Anchored on last activity
+  // (updatedAt / startedAt) so a game that keeps reporting is never falsely staled.
+  if (game.status === 'in_progress') {
+    const anchor = coerceDate(game.updatedAt) ?? coerceDate(game.startedAt)
+      ?? coerceDate(game.claimedAt) ?? coerceDate(game.createdAt)
+    if (!anchor) return false
+    return now.getTime() - anchor.getTime() >= IN_PROGRESS_STALE_AFTER_MS
+  }
+
+  if (staleAfterMs === undefined) return false
   if (!RETRYABLE_STALE_STATUSES.includes(game.status)) return false
 
   const anchor = coerceDate(game.claimedAt) ?? coerceDate(game.createdAt) ?? coerceDate(game.updatedAt)
@@ -571,19 +593,22 @@ export async function claimPracticeMatchGameInTransaction(
       })
     }
 
+    const staleReason = officialGame.status === 'in_progress'
+      ? 'Game stalled in progress — no result received'
+      : 'Timed out waiting for Wayfinder lobby'
     await tx.query(
       `UPDATE practice_match_games
        SET status = 'failed',
            failed_at = COALESCE(failed_at, $2),
-           failure_reason = COALESCE(failure_reason, 'Timed out waiting for Wayfinder lobby'),
+           failure_reason = COALESCE(failure_reason, $3),
            updated_at = $2
        WHERE id = $1`,
-      [officialGame.id, now]
+      [officialGame.id, now, staleReason]
     )
 
     officialGame.status = 'failed'
     officialGame.failedAt = officialGame.failedAt ?? now
-    officialGame.failureReason = officialGame.failureReason ?? 'Timed out waiting for Wayfinder lobby'
+    officialGame.failureReason = officialGame.failureReason ?? staleReason
   }
 
   const latestAttempt = latestAttemptForGameNumber(games, gameNumber)

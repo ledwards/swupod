@@ -379,7 +379,13 @@ export function liveGameAction({
 
   // Game is underway → you're already in the table/room, so disable Play (no
   // point re-opening the lobby). The live row still shows "Game N In Progress".
+  // EXCEPT when the game has been stuck `in_progress` far too long (its result
+  // never arrived): offer an enabled Retry so an abandoned game can't jam the
+  // match forever. The claim path fails the stale attempt and opens a fresh one.
   if (status === 'in_progress') {
+    if (currentGame?.retryable || currentGame?.stale) {
+      return { kind: 'play', label: '', tooltip: 'This game stalled — retry to reopen the lobby' }
+    }
     return { kind: 'play', label: '', disabled: true, tooltip: 'Game in progress' }
   }
 
