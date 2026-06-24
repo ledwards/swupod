@@ -160,6 +160,57 @@ values stop new runtime launches. Enable runtime launches only when both
 runtime URLs are configured and the current pinned refs have passed the smoke
 gate.
 
+For local PTP development, `swupod` now supports a runtime stub so the PTP-owned
+queue/result/replay loop can be exercised before the Forceteki fork exists:
+
+| Config | Meaning |
+|---|---|
+| `PTP_PLAY_LOCAL_RUNTIME_STUB` | Defaults to enabled outside production. Set to `0`/`false` to force the real-runtime availability gate locally. |
+| `FORCETEKI_RESULT_KEY` | Required by the server-to-server runtime callback route. Not needed for the browser local stub result route. |
+
+## Current PTP Local Flow
+
+The first runnable PTP-side slice is DB-backed and lives entirely in `swupod`.
+It does not run real SWU rules yet; it proves the product and data path:
+
+1. Visit `/play`.
+2. Queue a built limited deck.
+3. Queue a second user's built deck with the same `set_code` and `pool_type`.
+4. PTP creates a `ptp_play_matches` row, two `ptp_play_seats` rows, and matched
+   queue rows.
+5. Each player opens their seat URL at `/play/runtime/:matchId?seatToken=...`.
+6. The local runtime stub logs `runtime.loaded`.
+7. A player records win/loss/draw.
+8. PTP stores the result idempotently and exposes `/play/runtime/:matchId/replay`.
+
+The PTP-side tables are:
+
+| Table | Purpose |
+|---|---|
+| `ptp_play_queue_entries` | Limited queue entries and cancellation/expiry state. |
+| `ptp_play_matches` | Official PTP match identity, runtime mode, result, replay URL, and seat ownership. |
+| `ptp_play_seats` | Per-player launch tokens. Browsers never choose their deck or opponent. |
+| `ptp_play_events` | Replay-grade events and analytics capture seed. |
+
+The PTP API surface is:
+
+| Route | Purpose |
+|---|---|
+| `GET /api/play/lobby` | Authenticated lobby read model. |
+| `POST /api/play/queue` | Queue a built deck by `poolShareId`. |
+| `DELETE /api/play/queue/:entryId` | Cancel a queued deck. |
+| `POST /api/play/matches/:matchId/join` | Claim/open the user's official seat. |
+| `GET /api/play/runtime/matches/:matchId?seatToken=...` | Verify a runtime seat and load stub session data. |
+| `POST /api/play/runtime/matches/:matchId/events` | Store runtime/replay events from the verified seat. |
+| `POST /api/play/runtime/matches/:matchId/result` | Local-stub result write from a verified authenticated seat. |
+| `GET /api/play/runtime/matches/:matchId/replay` | Participant replay/event read model. |
+| `POST /api/play/runtime/callback/result` | Server-to-server result callback authenticated by `FORCETEKI_RESULT_KEY`. |
+
+When the real runtime fork is ready, keep the `/play` lobby and ledger as the
+source of truth. Replace the local-stub launch URL with a PTP-to-runtime
+create-game call that returns Forceteki/client seat URLs, then report lifecycle,
+result, and replay events back through the callback/event routes.
+
 ## Runtime Origin And CORS
 
 V1 uses `play.protectthepod.com` with short-lived seat tokens. Do not broaden PTP
