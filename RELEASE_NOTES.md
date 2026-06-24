@@ -1,33 +1,47 @@
 # Release Notes
 
+## 06.24.2026
+
+### 🏆 Competitive Practice — Swiss Practice [Experimental]
+- **Play your competitive draft out in Swiss practice rounds**: After a competitive draft, your pod is paired into Swiss rounds automatically. Owners get a **Swiss Practice** toggle (on by default), and the same matchup never repeats while a rematch-free pairing exists.
+
+### 🎮 Live Play with the Wayfinder Companion [Experimental]
+- **One-click into your match**: With the Companion installed, hit **Play** and Protect the Pod spins up the Karabast lobby for you — your opponent sees **Join** appear automatically, no link-pasting.
+- **Results report themselves**: Game results flow back from the Companion to your match card automatically; the card shows three game dots for a Bo3 (grey until played).
+- **Manual reporting always works**: Even without the Companion, you can report a match's result by hand so a round can still advance.
+
+### 📊 Event Summary
+- **Results & Play tabs after the event**: A post-event view defaults to **Results**, with a **Play** tab alongside.
+- **See the metagame and your pool**: Meta-share pie charts and **Your Pool** rarity stats round out the event summary.
+
+### 🔧 Data Quality
+- **Manual-lobby recovery**: If the automatic lobby launch hiccups, you can still create the lobby yourself — your opponent's **Join** surfaces from it, and a result reported after a failed attempt is accepted.
+- **No more jammed events**: A match stuck "creating" resets after 30 seconds, and a practice game stuck in progress can no longer jam your matchmaking — even hours later.
+- **Only your series counts**: Games that don't belong to the Swiss series are rejected, so a stray Karabast game can't mis-grade your match.
+
+### ✨ Polish
+- **Set expansion art** now decorates draft lobby cards.
+- **Card picks show 2-up on mobile** for an easier read. Because I keep drafting on my phone in the Waymo.
+
 ## 06.22.2026
 
 ### 🐛 Bug Fixes
-
-- **My Stats now counts imported-pool games when you filter by set**: Picking a set (e.g. **LAW**) could show **0 matches, 0% win rate, and 0 Wayfinder captures** even though those games were sitting right there in your replay history. Games recorded against an imported pool were being left out of the per-set record — they now count toward your matches, record, win rate, and Wayfinder captures.
-- **"Decks reached play" respects the set filter**: This counter was always showing your all-time total regardless of the set you'd selected. It now reflects only the chosen set.
+- **Per-set stats now add up**: Filtering your stats by a set shows the correct matches, win rate, and game counts. Thanks for the quick report, @spacejunktroy.
 
 ## 06.20.2026
 
 ### 🎴 Competitive Draft — Pack Review
-
 - The between-pack **Review Your Cards** peek now fills the screen, so you can take in your whole pool at a glance during the 30-second window.
 - Group your drafted cards three ways with one tap — **Pack Order**, **Cost**, or **Aspect** — with graphical buttons matching the deck builder.
 - **Pack Order** lays cards out in rows by pack (like a freshly opened pool); **Cost** and **Aspect** stack them into labeled columns with cost and aspect icons.
 - **Small / Medium / Large** toggle to fit more cards in or see them bigger.
 
 ### 🏆 Competitive Practice Lobby & Timer
-
 - The Competitive Practice Mode rules are now a collapsible panel (collapsed by default), tucked below Host Controls so the lobby stays clean.
 - Timer settings read as fixed in Competitive Mode — **Round Timer: Competitive Rules** and **Pick Timer: disabled** — making it clear the official schedule is in effect and can't be changed.
 - The in-draft timer is now labeled **Round Timer** in Competitive Mode, matching the official per-card round schedule.
 
-### ✨ Polish
-
-- A little more breathing room above the "Selected" confirmation when you pick your leader.
-
-### 🎞️ Draft Report Slideshow
-
+### 🎥 Draft Report Slideshow
 - New Slideshow mode for Draft Reports
 - Review a finished draft with your pod, full-screen, ideal for screensharing on Discord — Slideshow Mode shows every seat's pack at each pick, sized to fill the screen with no scrolling.
 - Tabs across the top allow you to review one player at a time or the whole team at once
@@ -43,10 +57,6 @@
 
 ### 📊 Your Stats
 - New Your Leaders and Your Archetypes data visualization, plus a cleaned-up luck histogram and corrected spread (σ for the math dorks).
-
-### 🐛 Bug Fixes
-- Private lobby links paste cleanly (Karabast's new `/lobby?lobbyId=…` format).
-- Recorded games no longer double-count in deck stats, even if reported through more than one path.
 
 ## 06.19.2026
 
