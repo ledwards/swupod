@@ -179,32 +179,53 @@
   min-width: 0;
 }
 
+/* Avatar wrapper so the kick badge can pin to the avatar's corner. */
+.match-card-avatar-wrap {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  line-height: 0;
+  margin-right: 5px;
+}
+
+/* Kick (✕) badge — same treatment as the draft pod's seat-remove-btn: a small
+   circular red badge with a white ring, pinned to the avatar's top-right.
+   Always visible on touch; fades in on hover for pointer devices. */
 .match-card-kick {
   position: absolute;
-  top: -8px;
-  right: -9px;
-  background: none;
-  border: none;
-  padding: 2px;
-  color: #ef4444;
+  top: -5px;
+  right: -5px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #d32f2f;
+  color: #fff;
+  border: 1.5px solid #fff;
+  outline: none;
+  padding: 0;
+  font-size: 9px;
+  line-height: 1;
   cursor: pointer;
-  line-height: 0;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 1;
-  transition: opacity 0.15s ease, color 0.15s ease;
+  z-index: 5;
+  transition: opacity 0.15s ease, background 0.15s ease, transform 0.15s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .match-card-kick {
     opacity: 0;
+    pointer-events: none;
   }
   .match-card-player:hover .match-card-kick {
     opacity: 1;
+    pointer-events: auto;
   }
   .match-card-kick:hover {
-    color: #f87171;
+    background: #f44336;
+    border-color: #1a1a1a;
+    transform: scale(1.1);
   }
 }
 
@@ -236,7 +257,6 @@
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
-  margin-right: 5px;
 }
 
 .match-card-footer {

@@ -241,10 +241,20 @@ export function MatchCard({
         title="Kick player"
         aria-label={`Kick ${player.username || 'player'}`}
       >
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true">
-          <path d="M6 6l12 12M18 6L6 18" />
-        </svg>
+        ✕
       </button>
+    )
+  }
+
+  // Avatar with the host's kick (✕) badge pinned to its top-right corner — the
+  // same treatment as a player's avatar in the draft pod (seat-remove-btn).
+  const renderAvatar = (player: MatchPlayer | null) => {
+    if (!player) return null
+    return (
+      <span className="match-card-avatar-wrap">
+        <img className="match-card-avatar" src={avatarSrc(player.avatarUrl, player.id || player.username)} alt="" />
+        {renderKickButton(player)}
+      </span>
     )
   }
 
@@ -423,10 +433,9 @@ export function MatchCard({
         <div className={`match-card-player${match.matchWinner === 'player1' ? ' match-card-player--winner' : ''}`}>
           <span className="match-card-player-heading">
             {companionDot(match.player1)}
-            {match.player1 && <img className="match-card-avatar" src={avatarSrc(match.player1.avatarUrl, match.player1.id || match.player1.username)} alt="" />}
+            {renderAvatar(match.player1)}
             <span className="match-card-player-name-wrap">
               <span className="match-card-player-name">{match.player1?.username || '???'}</span>
-              {renderKickButton(match.player1)}
             </span>
             <span className="match-card-player-record">{recordFor(match.player1)}</span>
           </span>
@@ -446,10 +455,9 @@ export function MatchCard({
             <>
               <span className="match-card-player-heading">
                 {companionDot(match.player2)}
-                {match.player2 && <img className="match-card-avatar" src={avatarSrc(match.player2.avatarUrl, match.player2.id || match.player2.username)} alt="" />}
+                {renderAvatar(match.player2)}
                 <span className="match-card-player-name-wrap">
                   <span className="match-card-player-name">{match.player2?.username || '???'}</span>
-                  {renderKickButton(match.player2)}
                 </span>
                 <span className="match-card-player-record">{recordFor(match.player2)}</span>
               </span>
