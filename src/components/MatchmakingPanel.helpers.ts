@@ -120,6 +120,26 @@ export function liveRoundMatchGroups(round?: MatchmakingHelperRound | null): Liv
   return groups
 }
 
+export interface RosterReadinessPlayer {
+  /** True once the player has LOCKED a deck (hit Play → built_decks row). */
+  isReady?: boolean | null
+  activeLeaderName?: string | null
+  baseName?: string | null
+}
+
+/**
+ * Swiss Practice pre-round roster readiness.
+ *
+ * A player is "Ready" ONLY once they've LOCKED their deck (hit Play, which
+ * records a built_decks row surfaced as `isReady`). Having a leader/base picked
+ * in the live deckbuilder must NOT count: every drafter ends up with a leader,
+ * and the base is chosen mid-build — so leader+base flips "Ready" on long before
+ * the player has actually committed their deck.
+ */
+export function rosterPlayerReady(player: RosterReadinessPlayer): boolean {
+  return player.isReady === true
+}
+
 export function roundProgressLabel(
   currentRound: number,
   totalRounds: number,
@@ -496,4 +516,38 @@ function replayAction(match: MatchmakingHelperMatch): LiveGameAction {
   if (replayGame?.replayUrl) return { kind: 'replay', label: 'Replay', href: replayGame.replayUrl }
 
   return { kind: 'none', label: '' }
+}
+
+export interface CompletedGameReplay {
+  gameNumber: number
+  replayUrl: string
+}
+
+/**
+ * Replay links for a finished match — one per GAME that has a Karabast replay.
+ * A Bo3 plays 2-3 games and each produces its own replay, so the completed-match
+ * view should list them all rather than surfacing only the latest (the old
+ * single "Replay" button). Collapsed to the latest attempt per game number and
+ * ordered by game number; games that happen to share an identical replay URL
+ * (e.g. legacy duplicate rows) collapse to a single entry.
+ */
+export function completedGameReplays(match: MatchmakingHelperMatch): CompletedGameReplay[] {
+  const latestByGame = new Map<number, { attempt: number; replayUrl: string }>()
+  for (const game of match.games || []) {
+    const replayUrl = typeof game.replayUrl === 'string' && game.replayUrl ? game.replayUrl : null
+    const gameNumber = typeof game.gameNumber === 'number' ? game.gameNumber : null
+    if (!replayUrl || gameNumber == null) continue
+    const attempt = typeof game.attemptNumber === 'number' ? game.attemptNumber : 0
+    const existing = latestByGame.get(gameNumber)
+    if (!existing || attempt >= existing.attempt) latestByGame.set(gameNumber, { attempt, replayUrl })
+  }
+
+  const seenUrls = new Set<string>()
+  const replays: CompletedGameReplay[] = []
+  for (const [gameNumber, entry] of [...latestByGame.entries()].sort((a, b) => a[0] - b[0])) {
+    if (seenUrls.has(entry.replayUrl)) continue
+    seenUrls.add(entry.replayUrl)
+    replays.push({ gameNumber, replayUrl: entry.replayUrl })
+  }
+  return replays
 }

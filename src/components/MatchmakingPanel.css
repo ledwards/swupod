@@ -715,10 +715,18 @@
 
 .matchmaking-event-meta-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.12rem 0.55rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: 0.5rem;
+  row-gap: 0.05rem;
   font-family: 'Barlow', sans-serif;
 }
+/* The swatch sits in col 1 beside the name; name + record share col 2 and
+   share + win-rate share col 3, so the record/WR indent neatly under the name. */
+.matchmaking-event-meta-row .matchmaking-event-meta-name { grid-column: 2; }
+.matchmaking-event-meta-row .matchmaking-event-meta-record { grid-column: 2; }
+.matchmaking-event-meta-row .matchmaking-event-meta-share { grid-column: 3; }
+.matchmaking-event-meta-row .matchmaking-event-meta-rate { grid-column: 3; }
 
 .matchmaking-event-meta-name {
   overflow: hidden;
@@ -915,11 +923,12 @@
   min-width: 0;
 }
 .matchmaking-event-meta-swatch {
-  flex: 0 0 auto;
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
   width: 9px;
   height: 9px;
   border-radius: 2px;
-  margin-right: 6px;
   display: inline-block;
 }
 

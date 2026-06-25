@@ -11,9 +11,10 @@ process.env['DATABASE_URL'] = TEST_DB_URL
 process.env['POSTGRES_URL'] = TEST_DB_URL
 
 const db = await import('@/lib/db')
-const { query, queryRow, queryRows, closePool } = db
+const { query, queryRow, queryRows, closePool, withTransaction } = db
 const {
   claimPracticeMatchGame,
+  createPracticeMatchGameAttempt,
   recordPracticeMatchGameResult,
   recordPracticeMatchGameLifecycle,
   PracticeGameClaimError,
@@ -299,7 +300,7 @@ describe('claimPracticeMatchGame', { skip: !dbAvailable }, () => {
     assert.equal(join.spectateUrl, 'https://wayfinder.example/watch/private-abc')
   })
 
-  it('serializes simultaneous claims so only one official create row exists', async () => {
+  it('serializes simultaneous claims: exactly one create_lobby, the other told to wait', async () => {
     const seeded = await seedActiveSwissMatch()
     const now = new Date('2026-06-19T20:00:00.000Z')
 
@@ -309,12 +310,39 @@ describe('claimPracticeMatchGame', { skip: !dbAvailable }, () => {
     ])
 
     assert.equal(claims.filter(claim => claim.isNewlyCreated).length, 1)
-    assert.equal(claims.filter(claim => claim.action === 'create_lobby').length, 1)
-    assert.equal(new Set(claims.map(claim => claim.practiceMatchGameId)).size, 1)
+    const creators = claims.filter(claim => claim.action === 'create_lobby')
+    const waiters = claims.filter(claim => claim.action !== 'create_lobby')
+    assert.equal(creators.length, 1, 'exactly one player creates the lobby')
+    assert.equal(waiters.length, 1, 'the other does NOT also create')
+    assert.equal(waiters[0]!.action, 'wait_for_lobby', 'the loser is told to wait — never a duplicate or an error')
+    assert.equal(new Set(claims.map(claim => claim.practiceMatchGameId)).size, 1, 'both reference the same game')
 
     const rows = await matchGameRows(seeded.matchId)
     assert.equal(rows.length, 1)
     assert.equal(rows[0].status, 'creating')
+  })
+
+  it('the active-game unique index is the final mutex: a second reservation returns null, not a 500', async () => {
+    // Belt-and-suspenders for the lock: even if two claims ever both reached the
+    // insert, idx_practice_match_games_active (UNIQUE on match+game while active)
+    // lets exactly one win. The loser's insert is a graceful no-op (null) that the
+    // claim path turns into wait_for_lobby — it must NOT throw a duplicate-key 500.
+    const seeded = await seedActiveSwissMatch()
+    const matchRow = { id: seeded.matchId, round_id: seeded.roundId, pod_id: seeded.podId }
+    const now = new Date('2026-06-19T20:00:00.000Z')
+
+    const { first, second } = await withTransaction(async (tx) => {
+      const first = await createPracticeMatchGameAttempt(tx, { matchRow, gameNumber: 1, attemptNumber: 1, userId: seeded.userIds[0]!, now })
+      // Same slot, different attempt — the active index still rejects it.
+      const second = await createPracticeMatchGameAttempt(tx, { matchRow, gameNumber: 1, attemptNumber: 2, userId: seeded.userIds[1]!, now })
+      return { first, second }
+    })
+
+    assert.ok(first, 'first reservation wins the slot')
+    assert.equal(second, null, 'second reservation is rejected by the mutex and returns null (no throw)')
+
+    const rows = await matchGameRows(seeded.matchId)
+    assert.equal(rows.length, 1, 'only one active game row exists')
   })
 
   it('marks a stale creating row failed before reserving a retry attempt', async () => {

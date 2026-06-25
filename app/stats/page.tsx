@@ -596,7 +596,7 @@ interface SetStatsTabProps {
 function SetStatsTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred, canSeeFullStats }: SetStatsTabProps) {
   // Secondary subtab — persists across visits via localStorage; the page hash
   // belongs to the primary set tab, so this group stays out of the URL (url:false).
-  const [subTab, setSubTab] = useStickyTab(['sealed', 'draft'] as const, 'sealed', { url: false, storageKey: 'ptp:stats-subtab' })
+  const [subTab, setSubTab] = useStickyTab(['sealed', 'draft', 'card-data'] as const, 'sealed', { url: false, storageKey: 'ptp:stats-subtab' })
 
   return (
     <div className="generation-stats">
@@ -613,12 +613,20 @@ function SetStatsTab({ setCode, includeBots, includeHumans, startDate, endDate, 
         >
           Draft
         </button>
+        <button
+          className={`stats-subtab ${subTab === 'card-data' ? 'active' : ''}`}
+          onClick={() => setSubTab('card-data')}
+        >
+          Card Data
+        </button>
       </div>
 
       {subTab === 'sealed' ? (
         <SealedTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} canSeeFullStats={canSeeFullStats} />
-      ) : (
+      ) : subTab === 'draft' ? (
         <DraftTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} canSeeFullStats={canSeeFullStats} />
+      ) : (
+        <CardDataTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} canSeeFullStats={canSeeFullStats} />
       )}
     </div>
   )
@@ -682,6 +690,52 @@ interface DeckInclusionStats {
   leaderSynergies?: LeaderSynergy[]
 }
 
+interface CardDataCard {
+  cardName: string
+  cardId: string | null
+  subtitle: string | null
+  rarity: string
+  cardType: string
+  aspects: string[]
+  cost: number | null
+  imageUrl: string | null
+  backImageUrl?: string | null
+  grade: string | null
+  gradeBasis: string
+  gradeStatus: string
+  gradeStatusLabel: string
+  deckCount: number
+  rawCopies: number
+  gpCount: number
+  gpWins: number
+  gpWr: number | null
+  ohCount: number | null
+  ohWr: number | null
+  gdCount: number | null
+  gdWr: number | null
+  gihCount: number | null
+  gihWr: number | null
+  gnsCount: number | null
+  gnsWr: number | null
+  iih: number | null
+  playedRate: number | null
+  resourcedWhenSeen: number | null
+  playedWar: number | null
+  sampleWarning: string | null
+}
+
+interface CardDataStats {
+  setCode: string
+  format: string
+  source: string
+  totalDecks: number
+  totalMatches: number
+  onlineLinkedDecks: number
+  replayMetricsStatus: string
+  gradeBasis: string
+  cards: CardDataCard[]
+}
+
 interface LeaderSelection {
   cardName: string
   cardId: string
@@ -695,10 +749,18 @@ interface LeaderSelection {
 
 type SortKey = 'cardName' | 'rarity' | 'avgPickPosition' | 'firstPickPct' | 'timesPicked'
 type DeckSortKey = 'cardName' | 'rarity' | 'inclusionRate' | 'avgCopiesPlayed' | 'poolsWithCard' | 'offAspectRate'
+type CardDataSortKey = 'cardName' | 'grade' | 'rarity' | 'gpWr' | 'gpCount' | 'deckCount' | 'rawCopies'
 type LeaderSortKey = 'cardName' | 'avgPickPosition' | 'firstPickPct' | 'timesPicked'
 type LeaderSelSortKey = 'cardName' | 'timesSelected' | 'selectionRate'
 
 const RARITY_ORDER: Record<string, number> = { 'Legendary': 0, 'Rare': 1, 'Uncommon': 2, 'Common': 3 }
+const GRADE_ORDER: Record<string, number> = {
+  'A+': 12, A: 11, 'A-': 10,
+  'B+': 9, B: 8, 'B-': 7,
+  'C+': 6, C: 5, 'C-': 4,
+  'D+': 3, D: 2, 'D-': 1,
+  F: 0,
+}
 
 // === Shared Skeleton ===
 
@@ -894,6 +956,283 @@ function buildLookupMap<T extends { cardName: string }>(items: T[] | undefined):
     map.set(item.cardName, item)
   }
   return map
+}
+
+// === Card Data Tab ===
+
+function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred, canSeeFullStats }: TabProps) {
+  const [cardData, setCardData] = useState<CardDataStats | null>(null)
+  const [cardDataTournament, setCardDataTournament] = useState<CardDataStats | null>(null)
+  const [cardDataTop, setCardDataTop] = useState<CardDataStats | null>(null)
+  const [cardDataYou, setCardDataYou] = useState<CardDataStats | null>(null)
+  const [format, setFormat] = useState<'all' | 'sealed' | 'draft'>('all')
+  const [source, setSource] = useState<'all' | 'online' | 'in-person'>('all')
+  const [loading, setLoading] = useState(true)
+  const hasLoadedOnce = useRef(false)
+  const [sortKey, setSortKey] = useState<CardDataSortKey>('grade')
+  const [sortAsc, setSortAsc] = useState(false)
+  const cardFilter = useTableFilter()
+  const {
+    handleCardMouseEnter,
+    handleCardMouseLeave,
+    handleCardTouchStart,
+    handleCardTouchEnd,
+    hoveredCardPreview,
+    handlePreviewMouseEnter,
+    handlePreviewMouseLeave,
+    dismissPreview,
+  } = useCardPreview()
+
+  useEffect(() => {
+    if (!hasLoadedOnce.current) setLoading(true)
+    let cancelled = false
+    const apply = (setter: (v: any) => void) => (result: any) => { if (!cancelled) setter(result.data || result) }
+
+    const baseParams = new URLSearchParams({
+      setCode,
+      since: startDate,
+      until: endDate,
+      includeBots: String(includeBots),
+      includeHumans: String(includeHumans),
+      format,
+      source,
+    })
+    const fetches: Promise<void>[] = [
+      fetch(`/api/stats/card-data?${baseParams}`)
+        .then(r => r.json()).then(apply(setCardData))
+        .catch(err => console.error('Error fetching card data:', err)),
+    ]
+
+    if (canSeeFullStats) {
+      const tournamentParams = new URLSearchParams(baseParams)
+      tournamentParams.set('tournamentOnly', 'true')
+      const topPlayersParams = new URLSearchParams(baseParams)
+      topPlayersParams.set('topPlayersOnly', 'true')
+      fetches.push(
+        fetch(`/api/stats/card-data?${tournamentParams}`)
+          .then(r => r.json()).then(apply(setCardDataTournament))
+          .catch(err => console.error('Error fetching tournament card data:', err)),
+        fetch(`/api/stats/card-data?${topPlayersParams}`)
+          .then(r => r.json()).then(apply(setCardDataTop))
+          .catch(err => console.error('Error fetching top player card data:', err)),
+      )
+    } else {
+      setCardDataTournament(null)
+      setCardDataTop(null)
+    }
+
+    if (user?.id) {
+      const youParams = new URLSearchParams(baseParams)
+      youParams.set('userId', user.id)
+      fetches.push(
+        fetch(`/api/stats/card-data?${youParams}`)
+          .then(r => r.json()).then(apply(setCardDataYou))
+          .catch(err => console.error('Error fetching your card data:', err)),
+      )
+    } else {
+      setCardDataYou(null)
+    }
+
+    Promise.all(fetches).finally(() => { if (!cancelled) { setLoading(false); hasLoadedOnce.current = true } })
+    return () => { cancelled = true }
+  }, [setCode, includeBots, includeHumans, startDate, endDate, user?.id, canSeeFullStats, format, source])
+
+  const tournamentMap = useMemo(() => buildLookupMap(cardDataTournament?.cards), [cardDataTournament?.cards])
+  const topMap = useMemo(() => buildLookupMap(cardDataTop?.cards), [cardDataTop?.cards])
+  const youMap = useMemo(() => buildLookupMap(cardDataYou?.cards), [cardDataYou?.cards])
+
+  const handleSort = (key: CardDataSortKey) => {
+    if (sortKey === key) setSortAsc(!sortAsc)
+    else { setSortKey(key); setSortAsc(key === 'cardName') }
+  }
+
+  const sortedCards = useMemo(() => {
+    if (!cardData?.cards) return []
+    return [...cardData.cards].sort((a, b) => {
+      let cmp = 0
+      switch (sortKey) {
+        case 'cardName': cmp = a.cardName.localeCompare(b.cardName); break
+        case 'grade': cmp = (GRADE_ORDER[a.grade || ''] ?? -1) - (GRADE_ORDER[b.grade || ''] ?? -1); break
+        case 'rarity': cmp = (RARITY_ORDER[a.rarity] ?? 9) - (RARITY_ORDER[b.rarity] ?? 9); break
+        case 'gpWr': cmp = (a.gpWr ?? -1) - (b.gpWr ?? -1); break
+        case 'gpCount': cmp = a.gpCount - b.gpCount; break
+        case 'deckCount': cmp = a.deckCount - b.deckCount; break
+        case 'rawCopies': cmp = a.rawCopies - b.rawCopies; break
+      }
+      return sortAsc ? cmp : -cmp
+    })
+  }, [cardData?.cards, sortKey, sortAsc])
+
+  const filteredCards = useMemo(() => sortedCards.filter(cardFilter.filterFn), [sortedCards, cardFilter.search, cardFilter.activeAspects])
+
+  if (loading) return <LoadingSkeleton />
+
+  const hasCards = cardData && cardData.cards && cardData.cards.length > 0
+  const rarityClass = (r: string) => `rarity-${r.toLowerCase()}`
+  const cellProps = { showYou, showAll, showTop, showTournament, isBlurred, user }
+  const formatPct = (v: number) => `${v.toFixed(1)}%`
+  const replayTitle = 'Replay-hand metrics require validated opening-hand and draw facts.'
+
+  const SortHeader = ({ label, col, title }: { label: string, col: CardDataSortKey, title?: string }) => (
+    <th className={`sortable ${sortKey === col ? 'active' : ''}`} onClick={() => handleSort(col)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSort(col) } }} tabIndex={0} aria-sort={sortKey === col ? (sortAsc ? 'ascending' : 'descending') : 'none'} title={title}>
+      {label}{sortKey === col && <span className="sort-indicator">{sortAsc ? ' ▲' : ' ▼'}</span>}
+    </th>
+  )
+
+  const unavailableMetric = <span className="metric-unavailable" title={replayTitle}>—</span>
+
+  return (
+    <div className="cards-subtab card-data-tab">
+      <div className="card-data-toolbar">
+        <div className="card-data-control">
+          <span className="card-data-control-label">Format</span>
+          <div className="card-data-segmented">
+            {[
+              ['all', 'Limited'],
+              ['sealed', 'Sealed'],
+              ['draft', 'Draft'],
+            ].map(([value, label]) => (
+              <button key={value} className={`card-data-segment ${format === value ? 'active' : ''}`} onClick={() => setFormat(value as any)}>{label}</button>
+            ))}
+          </div>
+        </div>
+        <div className="card-data-control">
+          <span className="card-data-control-label">Source</span>
+          <div className="card-data-segmented">
+            {[
+              ['all', 'All'],
+              ['online', 'Online'],
+              ['in-person', 'In-Person'],
+            ].map(([value, label]) => (
+              <button key={value} className={`card-data-segment ${source === value ? 'active' : ''}`} onClick={() => setSource(value as any)}>{label}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {!hasCards ? (
+        <div className="stats-empty">
+          <p>No card data available for {setCode} with these filters yet.</p>
+        </div>
+      ) : (
+        <>
+          <div className="draft-picks-summary">
+            <div className="stat-item">
+              <span className="stat-label">Decks With Results:</span>
+              <span className="stat-value">{fmt(cardData.totalDecks)}</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Matches:</span>
+              <span className="stat-value">{fmt(cardData.totalMatches)}</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Grade Basis:</span>
+              <span className="stat-value">{cardData.gradeBasis}</span>
+            </div>
+          </div>
+
+          <p className="stats-warning">
+            Replay-hand columns stay blank until Wayfinder supplies validated card-observation facts.
+          </p>
+
+          <StatsLegend {...legendProps} showBuiltDeckFilter={false} />
+          <TableFilter {...cardFilter} />
+
+          <div className="stats-table-container">
+            <table className="stats-table card-data-table">
+              <thead>
+                <tr>
+                  <SortHeader label="Name" col="cardName" />
+                  <th className="aspects-col">Aspects</th>
+                  <SortHeader label="Rarity" col="rarity" />
+                  <SortHeader label="Grade" col="grade" title="Derived from the selected metric; GP WR until replay hand metrics are validated." />
+                  <SortHeader label="# GP" col="gpCount" title="Copy-weighted decklist games/matches with resolved results." />
+                  <SortHeader label="GP WR" col="gpWr" title="Copy-weighted wins divided by copy-weighted games/matches." />
+                  <th title={replayTitle}>OH WR</th>
+                  <th title={replayTitle}>GD WR</th>
+                  <th title={replayTitle}>GIH WR</th>
+                  <th title={replayTitle}>GNS WR</th>
+                  <th title={replayTitle}>IIH</th>
+                  <th title={replayTitle}>Played</th>
+                  <th title={replayTitle}>Resourced</th>
+                  <th>Sample</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredCards.map(card => {
+                  const tournamentCard = tournamentMap.get(card.cardName)
+                  const topCard = topMap.get(card.cardName)
+                  const youCard = youMap.get(card.cardName)
+                  return (
+                    <tr key={card.cardId || card.cardName}>
+                      <td
+                        className="card-name-cell"
+                        onMouseEnter={(e) => handleCardMouseEnter({ imageUrl: card.imageUrl || undefined, name: card.cardName, rarity: card.rarity }, e)}
+                        onMouseLeave={handleCardMouseLeave}
+                        onTouchStart={() => handleCardTouchStart({ imageUrl: card.imageUrl || undefined, name: card.cardName, rarity: card.rarity })}
+                        onTouchEnd={handleCardTouchEnd}
+                      >
+                        <span className="card-name">{card.cardName}</span>
+                        {card.subtitle && <span className="card-subtitle">{card.subtitle}</span>}
+                      </td>
+                      <AspectsCell aspects={card.aspects} />
+                      <td><span className={rarityClass(card.rarity)}>{card.rarity}</span></td>
+                      <td>
+                        {card.grade ? (
+                          <span className={`card-grade card-grade-${card.grade.replace('+', 'plus').replace('-', 'minus').toLowerCase()}`} title={`${card.gradeBasis} grade`}>
+                            {card.grade}
+                          </span>
+                        ) : (
+                          <span className="metric-unavailable" title={card.gradeStatusLabel}>—</span>
+                        )}
+                      </td>
+                      <StatsCell
+                        {...cellProps}
+                        you={youCard?.gpCount}
+                        all={card.gpCount}
+                        top={topCard?.gpCount}
+                        tournament={tournamentCard?.gpCount}
+                        format={(v: number) => fmt(Math.round(v))}
+                      />
+                      <StatsCell
+                        {...cellProps}
+                        you={youCard?.gpWr}
+                        all={card.gpWr}
+                        top={topCard?.gpWr}
+                        tournament={tournamentCard?.gpWr}
+                        format={formatPct}
+                        deltaMode="pct"
+                      />
+                      <td>{unavailableMetric}</td>
+                      <td>{unavailableMetric}</td>
+                      <td>{unavailableMetric}</td>
+                      <td>{unavailableMetric}</td>
+                      <td>{unavailableMetric}</td>
+                      <td>{unavailableMetric}</td>
+                      <td>{unavailableMetric}</td>
+                      <td>
+                        {card.sampleWarning ? <span className="sample-warning">{card.sampleWarning}</span> : <span className="sample-ok">OK</span>}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
+      {hoveredCardPreview && (
+        <CardPreview
+          card={hoveredCardPreview.card}
+          position={hoveredCardPreview.position}
+          onMouseEnter={handlePreviewMouseEnter}
+          onMouseLeave={handlePreviewMouseLeave}
+          onClose={dismissPreview}
+        />
+      )}
+    </div>
+  )
 }
 
 // === Draft Tab (Cards + Leaders) ===

@@ -1,6 +1,7 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import {
+  completedGameReplays,
   confirmedCount,
   liveConsoleRoundOrder,
   liveGameAction,
@@ -8,6 +9,7 @@ import {
   liveRoundMatchGroups,
   nextActiveTabAfterRoundChange,
   roundProgressLabel,
+  rosterPlayerReady,
   roundTabState,
   selfDropState,
   shouldShowInstallNudge,
@@ -431,5 +433,68 @@ describe('selfDropState', () => {
       selfDropState({ isHost: false, matchmakingStatus: 'complete', currentUserId: me, players }),
       'dropped'
     )
+  })
+
+  // Bug: the pre-round roster showed "Ready" as soon as a player had a leader and
+  // base in their live deckbuilder — which is true for essentially every drafter
+  // before they ever hit Play. Readiness must track the LOCKED deck instead.
+  it('BUGGY: a player with a leader + base picked but no locked deck is NOT ready', () => {
+    assert.equal(
+      rosterPlayerReady({ activeLeaderName: 'Luke Skywalker', baseName: 'Echo Base', isReady: false }),
+      false
+    )
+  })
+
+  it('FIXED: a player is ready only once their deck is locked (hit Play → isReady)', () => {
+    assert.equal(rosterPlayerReady({ isReady: true }), true)
+  })
+
+  it('treats a missing readiness signal as not ready', () => {
+    assert.equal(rosterPlayerReady({ activeLeaderName: 'Leia Organa', baseName: 'Echo Base' }), false)
+  })
+})
+
+describe('completedGameReplays (per-game replays for a finished Bo3)', () => {
+  const withGames = (games: unknown[]) => ({ games } as never)
+
+  it('returns one replay per game, ordered by game number', () => {
+    const replays = completedGameReplays(withGames([
+      { gameNumber: 2, attemptNumber: 1, replayUrl: 'r2' },
+      { gameNumber: 1, attemptNumber: 1, replayUrl: 'r1' },
+    ]))
+    assert.deepEqual(replays, [
+      { gameNumber: 1, replayUrl: 'r1' },
+      { gameNumber: 2, replayUrl: 'r2' },
+    ])
+  })
+
+  it('keeps the latest attempt for a given game number', () => {
+    const replays = completedGameReplays(withGames([
+      { gameNumber: 1, attemptNumber: 1, replayUrl: 'old' },
+      { gameNumber: 1, attemptNumber: 2, replayUrl: 'new' },
+    ]))
+    assert.deepEqual(replays, [{ gameNumber: 1, replayUrl: 'new' }])
+  })
+
+  it('collapses games that share an identical replay URL to a single entry', () => {
+    // Legacy duplicate rows (from the old double-report bug) point at one replay.
+    const replays = completedGameReplays(withGames([
+      { gameNumber: 1, attemptNumber: 1, replayUrl: 'same' },
+      { gameNumber: 2, attemptNumber: 1, replayUrl: 'same' },
+    ]))
+    assert.deepEqual(replays, [{ gameNumber: 1, replayUrl: 'same' }])
+  })
+
+  it('ignores games without a replay URL', () => {
+    const replays = completedGameReplays(withGames([
+      { gameNumber: 1, attemptNumber: 1, replayUrl: null },
+      { gameNumber: 2, attemptNumber: 1, replayUrl: 'r2' },
+    ]))
+    assert.deepEqual(replays, [{ gameNumber: 2, replayUrl: 'r2' }])
+  })
+
+  it('returns empty when no games have replays', () => {
+    assert.deepEqual(completedGameReplays({ games: [] } as never), [])
+    assert.deepEqual(completedGameReplays({} as never), [])
   })
 })

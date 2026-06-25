@@ -357,6 +357,93 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
+.card-data-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1.25rem;
+}
+
+.card-data-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.card-data-control-label {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.card-data-segmented {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.card-data-segment {
+  min-height: 34px;
+  padding: 0.4rem 0.85rem;
+  border: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.16);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.68);
+  cursor: pointer;
+  font: inherit;
+  white-space: nowrap;
+}
+
+.card-data-segment:last-child {
+  border-right: none;
+}
+
+.card-data-segment:hover,
+.card-data-segment.active {
+  background: rgba(33, 150, 243, 0.22);
+  color: #fff;
+}
+
+.card-data-table th,
+.card-data-table td {
+  vertical-align: top;
+}
+
+.card-grade {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.4rem;
+  min-height: 1.6rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-weight: 800;
+}
+
+.metric-unavailable {
+  color: rgba(255, 255, 255, 0.35);
+  cursor: help;
+}
+
+.sample-warning {
+  color: #F39C12;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sample-ok {
+  color: #27AE60;
+  font-weight: 600;
+}
+
 /* Card Name Cell */
 .card-name-cell {
   cursor: pointer;

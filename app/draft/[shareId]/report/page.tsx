@@ -45,6 +45,7 @@ export default function DraftReportIndexPage({ params }: PageProps) {
 
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [redirecting, setRedirecting] = useState(false)
   const [error, setError] = useState(null)
   const [message, setMessage] = useState(null)
   const [draftReportsPublic, setDraftReportsPublic] = useState(false)
@@ -62,6 +63,24 @@ export default function DraftReportIndexPage({ params }: PageProps) {
           return
         }
         const indexData = await res.json()
+
+        // Skip the player-picker and go straight to the report. Your own report
+        // is always the target when you have one; otherwise, if exactly one
+        // report is viewable, open that. Fall back to the picker only when the
+        // choice is genuinely ambiguous (e.g. a spectator with several public
+        // reports to choose from).
+        const viewable = (indexData.reports || []).filter(
+          r => indexData.isHost || r.isPublic || r.isMe
+        )
+        const target =
+          indexData.myPoolShareId ||
+          (viewable.length === 1 ? viewable[0].poolShareId : null)
+        if (target) {
+          setRedirecting(true)
+          router.replace(`/draft/${shareId}/report/${target}`)
+          return
+        }
+
         setData(indexData)
         setDraftReportsPublic(indexData.draftReportsPublic || false)
         setReportReady(indexData.reportReady || false)
@@ -101,7 +120,7 @@ export default function DraftReportIndexPage({ params }: PageProps) {
     }
   }
 
-  if (loading) {
+  if (loading || redirecting) {
     return (
       <div className="draft-report-page page-background-with-art">
         <div className="draft-report-loading">Loading...</div>

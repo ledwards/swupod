@@ -164,3 +164,29 @@ export function needsGame3(game1: string | null, game2: string | null): boolean 
   // Otherwise game 3 is needed (split, draws, or 0-0).
   return true
 }
+
+/**
+ * Whether the games entered in the Report modal can be submitted.
+ *
+ * A report may be PARTIAL — just game 1, or game 1+2 mid-match — or a full
+ * decided match. Both are allowed: a partial report records progress (the match
+ * stays unconfirmed until a winner is derivable) and is pushed live to everyone.
+ * Only two things block submission:
+ *  - Gaps: a later game set without the earlier one (game 2 without game 1, or
+ *    game 3 without game 1+2). Results must be a contiguous prefix.
+ *  - Nothing to do: no games set AND no prior result to clear. Clearing every
+ *    game on a match that already had a result is a valid "unsubmit".
+ */
+export function canSubmitMatchReport(
+  game1: string | null,
+  game2: string | null,
+  game3: string | null,
+  hadPriorResult: boolean
+): boolean {
+  if (game2 && !game1) return false
+  if (game3 && (!game1 || !game2)) return false
+
+  const anyGameSet = Boolean(game1 || game2 || game3)
+  if (anyGameSet) return true
+  return hadPriorResult
+}

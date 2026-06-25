@@ -248,8 +248,10 @@ export default function PlayPage({ params }: PageProps) {
   // Pod-level deck lock override (host can unlock everyone's primary deck mid-event).
   const decksUnlocked = competitiveDraft?.decksUnlocked === true
   // While a competitive event is underway (deck building → matches), hide the
-  // Stats / Draft Log / Draft Report actions — they reveal info that shouldn't be
-  // available mid-flow. They reappear once the Swiss event is complete.
+  // Stats / Draft Log / Draft Report actions from PLAYERS — they reveal info that
+  // shouldn't be available mid-flow. They reappear for everyone once the Swiss
+  // event is complete. The ORGANIZER (pod host) keeps Draft Log + Draft Report
+  // throughout so they can run the event — see `isCompetitiveHost` below.
   const swissInProgress = isCompetitive && matchmakingStatus !== 'complete'
 
   const getLimitedFormat = () => pool?.poolType === 'draft' ? 'draft' : 'sealed'
@@ -963,6 +965,9 @@ export default function PlayPage({ params }: PageProps) {
           matchId,
           result_source: 'player_report',
         })
+        // The server broadcasts to every player; refresh our own view too so the
+        // reporter sees their result immediately without waiting on the round-trip.
+        refreshCompetitive?.()
       }
     } catch {
       trackLimitedPlayAction(LimitedPlayActions.MATCH_RESULT_SUBMIT, {
@@ -1006,6 +1011,8 @@ export default function PlayPage({ params }: PageProps) {
           matchId,
           result_source: 'host_override',
         })
+        // Server broadcasts to all; refresh our own view so the host sees it now.
+        refreshCompetitive?.()
       }
     } catch {
       trackLimitedPlayAction(LimitedPlayActions.MATCH_RESULT_SUBMIT, {
@@ -1435,6 +1442,7 @@ export default function PlayPage({ params }: PageProps) {
               baseImageUrl: (p as any).baseImageUrl || null,
               poolCardCount: typeof (p as any).poolCardCount === 'number' ? (p as any).poolCardCount : null,
               isHost: Boolean((p as any).isHost),
+              isReady: Boolean((p as any).isReady),
             }))}
             wayfinderDetected={wayfinderDetected}
             wayfinderSettled={wayfinderSettled}
@@ -1576,7 +1584,7 @@ export default function PlayPage({ params }: PageProps) {
               Stats
             </Button>
           )}
-          {pool?.draftShareId && pool?.poolType === 'draft' && !swissInProgress && (
+          {pool?.draftShareId && pool?.poolType === 'draft' && (!swissInProgress || isCompetitiveHost) && (
             <Button variant="secondary" onClick={() => router.push(`/draft/${pool.draftShareId}/log`)}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -1588,7 +1596,7 @@ export default function PlayPage({ params }: PageProps) {
               Draft Log
             </Button>
           )}
-          {pool?.draftShareId && pool?.poolType === 'draft' && isPatron && isOwner && !swissInProgress && (
+          {pool?.draftShareId && pool?.poolType === 'draft' && isPatron && isOwner && (!swissInProgress || isCompetitiveHost) && (
             <DraftReportButton draftShareId={pool.draftShareId} variant="play" />
           )}
         </div>

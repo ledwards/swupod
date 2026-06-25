@@ -9,6 +9,7 @@ import {
   isDecided,
   needsGame3,
   countWins,
+  canSubmitMatchReport,
 } from './results'
 
 describe('results', () => {
@@ -264,6 +265,30 @@ describe('ResultReportModal needsGame3', () => {
   })
   it('returns true on 0-0 (both draws)', () => {
     assert.strictEqual(needsGame3('draw', 'draw'), true)
+  })
+})
+
+describe('ResultReportModal canSubmitMatchReport (report 1 game OR the whole match)', () => {
+  it('allows a single-game (partial) report', () => {
+    assert.strictEqual(canSubmitMatchReport('player1', null, null, false), true)
+  })
+  it('allows a partial two-game (1-1) report with no game 3 yet', () => {
+    assert.strictEqual(canSubmitMatchReport('player1', 'player2', null, false), true)
+  })
+  it('allows a full decided match (2-0 and 2-1)', () => {
+    assert.strictEqual(canSubmitMatchReport('player1', 'player1', null, false), true)
+    assert.strictEqual(canSubmitMatchReport('player1', 'player2', 'player1', false), true)
+  })
+  it('blocks gaps: a later game set without the earlier one', () => {
+    assert.strictEqual(canSubmitMatchReport(null, 'player1', null, false), false)
+    assert.strictEqual(canSubmitMatchReport('player1', null, 'player1', false), false)
+    assert.strictEqual(canSubmitMatchReport(null, null, 'player1', false), false)
+  })
+  it('blocks an empty form with nothing to clear', () => {
+    assert.strictEqual(canSubmitMatchReport(null, null, null, false), false)
+  })
+  it('allows clearing everything (unsubmit) only when there was a prior result', () => {
+    assert.strictEqual(canSubmitMatchReport(null, null, null, true), true)
   })
 })
 
