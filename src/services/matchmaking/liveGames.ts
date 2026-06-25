@@ -632,6 +632,46 @@ export async function claimPracticeMatchGameInTransaction(
     now,
   })
 
+  if (!game) {
+    // Lost the create race: a concurrent claim reserved this slot between our
+    // read and our insert (the active-game unique index rejected ours). Re-read
+    // the now-existing active game and hand THIS caller its action — the loser
+    // is told to wait (or join, if the lobby is already up), never a 500.
+    const winner = officialGameForNumber(
+      (await tx.queryRows(
+        `SELECT *
+         FROM practice_match_games
+         WHERE match_id = $1
+         ORDER BY game_number, attempt_number
+         FOR UPDATE`,
+        [matchId]
+      )).map(normalizePracticeMatchGameRow),
+      gameNumber
+    )
+    if (winner) {
+      return claimResultFromSummary({
+        action: actionForClaimedGame(winner, userId),
+        matchRow,
+        gameNumber,
+        game: winner,
+        now,
+        staleAfterMs,
+        isNewlyCreated: false,
+      })
+    }
+    // Conflict but no active winner found (it failed/voided in the same instant):
+    // safest is to tell the caller to wait and re-press rather than 500.
+    return claimResultFromSummary({
+      action: 'wait_for_lobby',
+      matchRow,
+      gameNumber,
+      game: null,
+      now,
+      staleAfterMs,
+      isNewlyCreated: false,
+    })
+  }
+
   return claimResultFromSummary({
     action: 'create_lobby',
     matchRow,
@@ -901,15 +941,36 @@ export async function recordPracticeMatchGameResultInTransaction(
   const resultIdempotencyKey = resultIdempotencyKeyFor(params, gameNumber)
 
   const duplicateRow = await tx.queryRow(
-    `SELECT id
+    `SELECT id, replay_url
      FROM practice_match_games
      WHERE result_idempotency_key = $1`,
     [resultIdempotencyKey]
   )
   if (duplicateRow) {
+    // A duplicate result must NOT re-count the game — but it may carry a Karabast
+    // replay URL the first report lacked. The replay link is often not ready at
+    // the instant the result is captured, so it arrives on the OTHER player's
+    // (slightly later) report or a re-report. Backfill it onto the game and the
+    // match aggregate so the replay still surfaces; never overwrite an existing
+    // one (COALESCE), and never touch the result.
+    const replayUrl = nonEmptyStringOrNull(params.replayUrl)
+    if (replayUrl && !duplicateRow.replay_url) {
+      await tx.query(
+        `UPDATE practice_match_games
+         SET replay_url = COALESCE(replay_url, $2), updated_at = $3
+         WHERE id = $1`,
+        [duplicateRow.id, replayUrl, occurredAt]
+      )
+      await tx.query(
+        `UPDATE practice_matches
+         SET wayfinder_replay_url = COALESCE(wayfinder_replay_url, $2)
+         WHERE id = $1`,
+        [matchRow.id, replayUrl]
+      )
+    }
     return {
       ok: true,
-      changed: false,
+      changed: Boolean(replayUrl && !duplicateRow.replay_url),
       duplicate: true,
       shareId: String(pool.pod_share_id),
       podId: String(pool.pod_id),
@@ -1669,13 +1730,40 @@ async function insertCompletedGameRow(
   return normalizePracticeMatchGameRow(row)
 }
 
-function resultIdempotencyKeyFor(
+/**
+ * Reporter-independent dedup key for a single physical game.
+ *
+ * Both players' Companions report the same game, so the key MUST come out
+ * identical for both — otherwise the duplicate slips past the dedup check and
+ * `resolveResultTarget` redirects it onto the next slot, inventing a phantom
+ * game (a single game recorded as "W W"). The fields, most-shared first:
+ *
+ *  1. `practiceMatchGameId` — the CLAIMED game's row id. Both the lobby creator
+ *     and the joiner receive the SAME value from `claimPracticeMatchGame`, and
+ *     the Companion forwards it as (in its words) "PTP's dedup key". It anchors
+ *     the MATCH/lobby, not one game — a single-lobby Bo3 reports games 2/3
+ *     against game 1's anchor with an incremented number — so it must be paired
+ *     with the game slot below.
+ *  2. `wayfinderGameId` — the Karabast per-game gamestate id, already unique per
+ *     physical game and shared by both players watching the same lobby.
+ *  3. `wayfinderMatchId` + slot — last resort; the match id is per-player, so
+ *     this only holds when neither shared id is present.
+ *
+ * The slot uses the REPORTED game number (`params.gameNumber`), which is
+ * reporter-independent (both players report the same physical game's number) —
+ * NOT the resolved `fallbackGameNumber`, which the redirect can bump to the next
+ * slot for the very duplicate we're trying to catch.
+ */
+export function resultIdempotencyKeyFor(
   params: PracticeGameResultParams,
-  gameNumber: GameNumber
+  fallbackGameNumber: GameNumber
 ): string {
+  const slot = params.gameNumber ? asGameNumber(params.gameNumber) : fallbackGameNumber
+  const practiceMatchGameId = nonEmptyStringOrNull(params.practiceMatchGameId)
+  if (practiceMatchGameId) return `practice-game:${practiceMatchGameId}:game:${slot}`
   const wayfinderGameId = nonEmptyStringOrNull(params.wayfinderGameId)
   if (wayfinderGameId) return `wayfinder-game:${wayfinderGameId}`
-  return `wayfinder-match:${params.wayfinderMatchId}:game:${gameNumber}`
+  return `wayfinder-match:${params.wayfinderMatchId}:game:${slot}`
 }
 
 function identityColumnsForReporter(
@@ -1952,7 +2040,19 @@ function hasLobbyIdentity(
   )
 }
 
-async function createPracticeMatchGameAttempt(
+/**
+ * Reserve a new "creating" game row for (match, gameNumber).
+ *
+ * The mutex: `idx_practice_match_games_active` is a UNIQUE partial index on
+ * (match_id, game_number) WHERE status IN ('creating','lobby_ready','in_progress',
+ * 'complete') — so at most ONE active game can exist per slot. The claim path
+ * already serializes with `FOR UPDATE` + an advisory lock, so two players never
+ * both reach this insert. But we make the insert itself the final authority:
+ * `ON CONFLICT DO NOTHING` means if a concurrent claim already reserved this slot
+ * (e.g. a lock were ever bypassed), this returns `null` instead of raising a
+ * 500 — the caller then re-reads and hands the loser a clean wait/join.
+ */
+export async function createPracticeMatchGameAttempt(
   tx: TxClient,
   {
     matchRow,
@@ -1967,7 +2067,7 @@ async function createPracticeMatchGameAttempt(
     userId: string
     now: Date
   }
-): Promise<PracticeMatchGameLike> {
+): Promise<PracticeMatchGameLike | null> {
   const row = await tx.queryRow(
     `INSERT INTO practice_match_games (
        match_id,
@@ -1982,6 +2082,9 @@ async function createPracticeMatchGameAttempt(
        updated_at
      )
      VALUES ($1, $2, $3, $4, $5, 'creating', $6, $7, $7, $7)
+     ON CONFLICT (match_id, game_number)
+       WHERE status IN ('creating', 'lobby_ready', 'in_progress', 'complete')
+     DO NOTHING
      RETURNING *`,
     [
       matchRow.id,
@@ -1994,11 +2097,8 @@ async function createPracticeMatchGameAttempt(
     ]
   )
 
-  if (!row) {
-    throw new PracticeGameClaimError(500, 'claim_failed', 'Failed to reserve a practice game')
-  }
-
-  return normalizePracticeMatchGameRow(row)
+  // No row → a concurrent claim already holds this slot (the mutex did its job).
+  return row ? normalizePracticeMatchGameRow(row) : null
 }
 
 function claimResultFromSummary({

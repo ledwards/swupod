@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Modal from './Modal'
 import Button from './Button'
 import './ResultReportModal.css'
-import { isDecided, needsGame3 } from '@/src/services/matchmaking/results'
+import { canSubmitMatchReport, isDecided, needsGame3 } from '@/src/services/matchmaking/results'
 
 interface ResultReportModalProps {
   matchId: string
@@ -47,14 +47,15 @@ export function ResultReportModal({
     return isDecided(game1, game2, game3)
   })()
 
-  // "Unsubmit": the player cleared every game on a match that already had a
-  // saved result. Allow saving the empty result so the match goes back to
-  // unreported. (A partial/incomplete result — neither decided nor fully
-  // cleared — still can't be saved.)
+  // You can report just the game(s) played so far OR the whole match. A partial
+  // report (e.g. game 1 only) records progress and stays unconfirmed until a
+  // winner is derivable. Clearing every game on a match that already had a result
+  // is an "unsubmit". Only gaps (a later game without the earlier one) are blocked.
   const hadPriorResult = Boolean(currentGame1 || currentGame2 || currentGame3)
   const isCleared = !game1 && !game2 && !game3
   const isUnsubmit = isCleared && hadPriorResult
-  const canSubmit = decided || isUnsubmit
+  const canSubmit = canSubmitMatchReport(game1, game2, showGame3 ? game3 : null, hadPriorResult)
+  const submitLabel = isUnsubmit ? 'Unsubmit' : decided ? 'Submit Match' : 'Save Games'
 
   const handleSubmit = () => {
     if (!canSubmit) return
@@ -68,9 +69,12 @@ export function ResultReportModal({
       <Modal.Body>
         <div className="result-report-games" data-testid="result-report-modal">
           <GameRow label="Game 1" gameKey="game1" player1Name={player1Name} player2Name={player2Name} value={game1} onChange={setGame1} />
-          <GameRow label="Game 2" gameKey="game2" player1Name={player1Name} player2Name={player2Name} value={game2} onChange={setGame2} />
+          <GameRow label="Game 2" gameKey="game2" player1Name={player1Name} player2Name={player2Name} value={game2} onChange={setGame2} disabled={!game1} hint={!game1 ? 'after game 1' : null} />
           <GameRow label="Game 3" gameKey="game3" player1Name={player1Name} player2Name={player2Name} value={game3} onChange={setGame3} disabled={!showGame3} hint={!showGame3 ? 'only if 1–1' : null} />
         </div>
+        <p className="result-report-partial-note">
+          Report just the games played so far, or the whole match — either way both players update live.
+        </p>
         {isOverride && (
           <p className="result-report-override-note">
             This will override any player-submitted results.
@@ -81,7 +85,7 @@ export function ResultReportModal({
         <Button variant="secondary" onClick={onClose}>Cancel</Button>
         <span data-testid="result-report-submit">
           <Button variant={isUnsubmit ? 'danger' : 'primary'} onClick={handleSubmit} disabled={!canSubmit}>
-            {isUnsubmit ? 'Unsubmit' : 'Submit'}
+            {submitLabel}
           </Button>
         </span>
       </Modal.Actions>

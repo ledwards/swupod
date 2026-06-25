@@ -346,6 +346,101 @@ describe('live Swiss Practice fake Companion journey', { skip: !dbAvailable }, (
     assert.equal(match.game2Result, match.game1Result, 'same player won both games')
     assert.notEqual(match.matchWinner, null, 'match has a winner')
   })
+
+  it('BOTH players reporting the SAME game 1 records it once — no phantom 2-0', async () => {
+    // The double-report bug: when both players have the Companion they each report
+    // game 1. They carry the SAME claim anchor (practiceMatchGameId) but DIFFERENT
+    // per-player wayfinderMatchIds. Before the fix the divergent fallback key let
+    // the second report slip the dedup and get redirected onto game 2 — recording
+    // one real game as a phantom 2-0 sweep. Now both converge on the anchor+slot.
+    const seeded = await seedFourPlayerLiveSwissPod()
+    const [playerA] = seeded.userIds
+    const [poolA, , poolC] = seeded.poolShareIds // matchOne pairs playerA vs playerC
+    const [matchOne] = seeded.matchIds
+
+    const click = await claimPracticeMatchGame({
+      shareId: seeded.shareId,
+      matchId: matchOne!,
+      userId: playerA!,
+      now: new Date('2026-06-22T18:00:00.000Z'),
+    })
+    const anchor = click.practiceMatchGameId!
+
+    // Player A's Companion reports game 1 (A won).
+    const first = await recordPracticeMatchGameResult({
+      poolShareId: poolA!,
+      wayfinderMatchId: 'wf-a-side',
+      practiceMatchGameId: anchor,
+      gameNumber: 1,
+      result: 'win',
+    })
+    // Player C's Companion reports the SAME game 1 (C lost) — own match id.
+    const second = await recordPracticeMatchGameResult({
+      poolShareId: poolC!,
+      wayfinderMatchId: 'wf-c-side',
+      practiceMatchGameId: anchor,
+      gameNumber: 1,
+      result: 'loss',
+    })
+
+    assert.equal(first.duplicate ?? false, false, 'first report records the game')
+    assert.equal(second.duplicate, true, 'second player\'s report is deduped, not a new game')
+    assert.equal(second.matchFinalized ?? false, false, 'a single game must not finish a Bo3')
+
+    const rounds = await fetchRoundsWithMatches(seeded.podId)
+    const match = rounds.flatMap(r => r.matches).find(x => x.id === matchOne)!
+    assert.notEqual(match.game1Result, null, 'game 1 is recorded')
+    assert.equal(match.game2Result, null, 'NO phantom game 2 was invented')
+    assert.equal(match.matchWinner, null, 'the match is still 1-0, not won')
+  })
+
+  it('a duplicate report backfills a replay the first report lacked', async () => {
+    // The replay link often is not ready when the result is first captured, so it
+    // arrives on the OTHER player's slightly-later (duplicate) report. That report
+    // must not re-count the game, but it MUST contribute the replay URL.
+    const seeded = await seedFourPlayerLiveSwissPod()
+    const [playerA] = seeded.userIds
+    const [poolA, , poolC] = seeded.poolShareIds
+    const [matchOne] = seeded.matchIds
+
+    const click = await claimPracticeMatchGame({
+      shareId: seeded.shareId,
+      matchId: matchOne!,
+      userId: playerA!,
+      now: new Date('2026-06-23T18:00:00.000Z'),
+    })
+    const anchor = click.practiceMatchGameId!
+
+    // Player A reports game 1 — the Karabast replay link isn't ready yet.
+    await recordPracticeMatchGameResult({
+      poolShareId: poolA!,
+      wayfinderMatchId: 'wf-a-noreplay',
+      practiceMatchGameId: anchor,
+      gameNumber: 1,
+      result: 'win',
+    })
+    let match = (await fetchRoundsWithMatches(seeded.podId)).flatMap(r => r.matches).find(x => x.id === matchOne)!
+    assert.equal(match.games.find(g => g.gameNumber === 1)!.replayUrl, null, 'no replay captured yet')
+
+    // Player C reports the SAME game 1 a moment later, now with the replay URL.
+    const second = await recordPracticeMatchGameResult({
+      poolShareId: poolC!,
+      wayfinderMatchId: 'wf-c-withreplay',
+      practiceMatchGameId: anchor,
+      gameNumber: 1,
+      result: 'loss',
+      replayUrl: 'https://karabast.net/replay/round1-game1',
+    })
+    assert.equal(second.duplicate, true, 'still deduped — not a new game')
+
+    match = (await fetchRoundsWithMatches(seeded.podId)).flatMap(r => r.matches).find(x => x.id === matchOne)!
+    assert.equal(
+      match.games.find(g => g.gameNumber === 1)!.replayUrl,
+      'https://karabast.net/replay/round1-game1',
+      'the replay from the duplicate report is backfilled onto game 1'
+    )
+    assert.equal(match.game2Result, null, 'still no phantom game 2')
+  })
 })
 
 async function seedFourPlayerLiveSwissPod(): Promise<SeededLiveSwissPod> {

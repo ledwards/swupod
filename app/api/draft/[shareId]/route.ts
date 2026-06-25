@@ -68,7 +68,9 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       )
     }
 
-    // Get all players
+    // Get all players. `is_ready` reflects whether the player has LOCKED a deck
+    // (hit Play → a built_decks row exists), NOT merely picked a leader/base in
+    // the in-progress deckbuilder. The Swiss Practice roster uses this.
     const players = await queryRows(
       `SELECT
         dpp.*,
@@ -77,10 +79,12 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         u.avatar_url,
         cp.share_id as pool_share_id,
         cp.deck_builder_state,
-        cp.cards as pool_cards
+        cp.cards as pool_cards,
+        CASE WHEN bd.id IS NOT NULL THEN true ELSE false END as is_ready
        FROM pod_players dpp
        JOIN users u ON dpp.user_id = u.id
        LEFT JOIN card_pools cp ON cp.pod_id = dpp.pod_id AND cp.user_id = dpp.user_id
+       LEFT JOIN built_decks bd ON bd.card_pool_id = cp.id
        WHERE dpp.pod_id = $1
        ORDER BY dpp.seat_number`,
       [pod.id]
@@ -144,6 +148,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       leaderImageUrl: deckIdentity.leaderImageUrl,
       baseImageUrl: deckIdentity.baseImageUrl,
       poolCardCount: Array.isArray(poolCards) ? poolCards.length : null,
+      isReady: p.is_ready === true,
     }
   })
 

@@ -11,6 +11,7 @@ import {
   nextActiveTabAfterRoundChange,
   type PracticeLaunchMessage,
   roundProgressLabel,
+  rosterPlayerReady,
   roundTabState,
   selfDropState,
   shouldShowInstallNudge,
@@ -80,6 +81,9 @@ interface MatchmakingPanelProps {
     baseImageUrl?: string | null
     poolCardCount?: number | null
     isHost?: boolean
+    /** True once the player has LOCKED a deck (hit Play → built_decks row),
+     *  not merely picked a leader/base. Drives the roster Ready/Building status. */
+    isReady?: boolean
   }[]
   onReport: (matchId: string) => void
   onOverride: (matchId: string) => void
@@ -391,7 +395,10 @@ export function MatchmakingPanel({
       {matchmakingStatus === 'deck_building' && rounds.length === 0 && players.length > 0 && (
         <div className="matchmaking-roster" data-testid="matchmaking-roster">
           {players.map(p => {
-            const ready = Boolean(p.activeLeaderName && p.baseName)
+            // Ready = the player has LOCKED their deck (hit Play). A picked
+            // leader/base in the live deckbuilder is NOT "ready" — that flips on
+            // far too early (every drafter has a leader, base lands mid-build).
+            const ready = rosterPlayerReady(p)
             return (
               <div
                 key={p.id}

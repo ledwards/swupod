@@ -55,6 +55,7 @@ interface DraftPlayer {
   pool_share_id: string | null
   deck_builder_state: string | Record<string, unknown> | null
   pool_cards: string | unknown[] | null
+  is_ready: boolean
 }
 
 interface PublicLeader {
@@ -87,6 +88,7 @@ interface PublicPlayer {
   leaderImageUrl: string | null
   baseImageUrl: string | null
   poolCardCount: number | null
+  isReady: boolean
 }
 
 interface BroadcastState {
@@ -139,15 +141,19 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
       return
     }
 
-    // Get all players (public info only)
+    // Get all players (public info only). `is_ready` = the player has LOCKED a
+    // deck (hit Play → built_decks row), not merely picked a leader/base in the
+    // in-progress deckbuilder — this drives the Swiss Practice roster status.
     const players = await queryRows(
       `SELECT dpp.id, dpp.user_id, dpp.seat_number, dpp.pick_status, dpp.is_bot,
               dpp.dropped, dpp.leaders, dpp.drafted_leaders, dpp.drafted_cards, dpp.current_pack,
               u.username, u.avatar_url,
-              cp.share_id AS pool_share_id, cp.deck_builder_state, cp.cards AS pool_cards
+              cp.share_id AS pool_share_id, cp.deck_builder_state, cp.cards AS pool_cards,
+              CASE WHEN bd.id IS NOT NULL THEN true ELSE false END as is_ready
        FROM pod_players dpp
        JOIN users u ON dpp.user_id = u.id
        LEFT JOIN card_pools cp ON cp.pod_id = dpp.pod_id AND cp.user_id = dpp.user_id
+       LEFT JOIN built_decks bd ON bd.card_pool_id = cp.id
        WHERE dpp.pod_id = $1
        ORDER BY dpp.seat_number`,
       [pod.id]
@@ -198,6 +204,7 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
         leaderImageUrl: deckIdentity.leaderImageUrl,
         baseImageUrl: deckIdentity.baseImageUrl,
         poolCardCount: Array.isArray(poolCards) ? poolCards.length : null,
+        isReady: p.is_ready === true,
       }
     })
 

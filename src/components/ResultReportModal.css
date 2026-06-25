@@ -51,6 +51,12 @@
   font-style: italic;
 }
 
+.result-report-partial-note {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
 /* Mobile */
 @media (max-width: 768px) {
   .result-report-row {

@@ -440,6 +440,16 @@
   --ys-accent-bright: #bfdbfe;
 }
 
+/* Per-game replay links for a finished Bo3 (Game 1 / Game 2 / Game 3). */
+.match-card-live-replays {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .match-card-wayfinder-link:hover {
     color: #bfdbfe;

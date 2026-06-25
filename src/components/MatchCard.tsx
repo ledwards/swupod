@@ -5,6 +5,7 @@ import ConfirmModal from './ConfirmModal'
 import ReplayWatchLink from './ReplayWatchLink'
 import CountdownTimer from './CountdownTimer'
 import {
+  completedGameReplays,
   liveGameAction,
   liveGameStatusLabel,
   type PracticeLaunchMessage,
@@ -189,6 +190,9 @@ export function MatchCard({
     pending: practiceLaunchPending,
     creatingTimedOut: creatingStuck,
   })
+  // A finished Bo3 plays 2-3 games, each with its own replay — list them all
+  // rather than only the latest. One distinct URL falls back to a single "Replay".
+  const gameReplays = completedGameReplays(match)
   const showLiveRow = Boolean(liveStatus || liveAction.kind !== 'none' || practiceLaunchMessage)
 
   // Live spectate link (provided by the recorder's Companion) + recorded-match
@@ -275,11 +279,29 @@ export function MatchCard({
     if (liveAction.kind === 'watch') return null
 
     if (liveAction.kind === 'replay') {
+      const vsLabel = `${match.player1?.username || 'player 1'} vs ${match.player2?.username || 'opponent'}`
+      // 2+ distinct game replays → one labeled link per game ("Game 1", "Game 2").
+      if (gameReplays.length > 1) {
+        return (
+          <div className="match-card-live-replays">
+            {gameReplays.map(replay => (
+              <ReplayWatchLink
+                key={replay.gameNumber}
+                href={replay.replayUrl}
+                className="match-card-live-watch"
+                ariaLabel={`Watch game ${replay.gameNumber} replay: ${vsLabel}`}
+              >
+                {`Game ${replay.gameNumber}`}
+              </ReplayWatchLink>
+            ))}
+          </div>
+        )
+      }
       return (
         <ReplayWatchLink
           href={liveAction.href || undefined}
           className="match-card-live-watch"
-          ariaLabel={`${liveAction.label} ${match.player1?.username || 'player 1'} vs ${match.player2?.username || 'opponent'}`}
+          ariaLabel={`${liveAction.label} ${vsLabel}`}
         >
           {liveAction.label}
         </ReplayWatchLink>
