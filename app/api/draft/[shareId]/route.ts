@@ -31,7 +31,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         dp.draft_state, dp.state_version, dp.started_at, dp.completed_at,
         dp.timer_enabled, dp.timer_seconds, dp.pick_timeout_seconds, dp.timed,
         dp.pick_started_at, dp.paused, dp.paused_at, dp.paused_duration_seconds,
-        dp.is_public, dp.competitive, dp.deck_lock_at, dp.decks_unlocked,
+        dp.is_public, dp.observer_public, dp.competitive, dp.deck_lock_at, dp.decks_unlocked,
         dp.created_at, dp.updated_at,
         u.username as host_username,
         u.avatar_url as host_avatar
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
           dp.draft_state, dp.state_version, dp.started_at, dp.completed_at,
           dp.timer_enabled, dp.timer_seconds, dp.pick_timeout_seconds, dp.timed,
           dp.pick_started_at, dp.paused, dp.paused_at, dp.paused_duration_seconds,
-          dp.is_public, dp.competitive, dp.deck_lock_at, dp.decks_unlocked,
+          dp.is_public, dp.observer_public, dp.competitive, dp.deck_lock_at, dp.decks_unlocked,
           dp.created_at, dp.updated_at,
           u.username as host_username,
           u.avatar_url as host_avatar
@@ -186,6 +186,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       },
       players: formattedPlayers,
       isPublic: pod.is_public || false,
+      observerPublic: pod.observer_public || false,
       isHost: session ? pod.host_id === session.id : false,
       isPlayer: !!myPlayer,
       myPlayer: myPlayer ? {

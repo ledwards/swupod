@@ -102,6 +102,20 @@
   }
 }
 
+/* Live round/pick timer (Privileged Observer), pinned top-center above the stage. */
+.draft-slideshow-timer {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  pointer-events: none;
+}
+
 /* Loading state. */
 .draft-slideshow-loading {
   display: flex;

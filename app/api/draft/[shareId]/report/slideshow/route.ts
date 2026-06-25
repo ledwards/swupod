@@ -61,6 +61,18 @@ export interface SlideshowPod {
   status: string
   host_id: string | null
   is_log_public: boolean
+  // Live-mode access + timer fields (selected only when needed):
+  is_public?: boolean
+  observer_public?: boolean
+  timer_enabled?: boolean
+  timer_seconds?: number
+  pick_timeout_seconds?: number | null
+  pick_started_at?: string | null
+  paused?: boolean
+  paused_at?: string | null
+  paused_duration_seconds?: number
+  competitive?: boolean
+  draft_state?: any
   max_players?: number
   // Raw JSON column; parsed by the handler, not the pure logic.
   all_packs?: any
@@ -93,6 +105,21 @@ export interface SlideshowSeat {
   picks?: DraftLogPick[]
 }
 
+/** Live timer/phase block — present only on live (?live=1) responses. Mirrors
+ *  the fields TimerPanel consumes; the socket `state` event supersedes it. */
+export interface SlideshowTimer {
+  status: string
+  paused: boolean
+  pausedAt: string | null
+  pausedDurationSeconds: number
+  pickStartedAt: string | null
+  timerEnabled: boolean
+  timerSeconds: number
+  pickTimeoutSeconds: number
+  competitive: boolean
+  draftState: any
+}
+
 export interface SlideshowResponse {
   draft: {
     shareId: string
@@ -105,6 +132,10 @@ export interface SlideshowResponse {
   slideCount: number
   cardsPerPack: number
   seats: SlideshowSeat[]
+  // Live mode only:
+  live?: boolean
+  timer?: SlideshowTimer
+  phase?: { phase: string | null }
 }
 
 // ---------------------------------------------------------------------------
@@ -139,6 +170,27 @@ export function computeViewableSeats(
       .filter(p => p.is_log_public || p.is_bot)
       .map(p => p.seat_number),
   )
+}
+
+/**
+ * Gate a LIVE (in-progress) slideshow request — Privileged Observer only.
+ *
+ *   - mode 'observer' → public, no-login kiosk link. Allowed only when the host
+ *     has explicitly enabled it (`observer_public`). No auth required.
+ *
+ * When allowed, the caller unlocks ALL seats: enabling the observer link is an
+ * explicit host opt-in to exposing the in-progress table.
+ */
+export function computeLiveAccess(
+  pod: { observer_public?: boolean },
+  mode: string | null,
+): { allowed: boolean; reason?: string } {
+  if (mode === 'observer') {
+    return pod.observer_public
+      ? { allowed: true }
+      : { allowed: false, reason: 'The Privileged Observer link is not enabled for this draft' }
+  }
+  return { allowed: false, reason: 'Unknown live mode' }
 }
 
 /**
@@ -242,13 +294,27 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     // Load the draft pod (host + visibility + packs). The SELECT pins the fields.
     const pod = (await queryRow(
       `SELECT p.id, p.share_id, p.set_code, p.set_name, p.name, p.status,
-              p.host_id, p.is_log_public, p.all_packs
+              p.host_id, p.is_log_public, p.is_public, p.observer_public,
+              p.timer_enabled, p.timer_seconds, p.pick_timeout_seconds,
+              p.pick_started_at, p.paused, p.paused_at, p.paused_duration_seconds,
+              p.competitive, p.draft_state, p.all_packs
        FROM pods p
        WHERE p.share_id = $1 AND p.pod_type = 'draft'`,
       [shareId],
     )) as unknown as SlideshowPod | null
     if (!pod) {
       return NextResponse.json({ error: 'Draft not found' }, { status: 404 })
+    }
+
+    // Live (in-progress) Privileged Observer — gate before doing work.
+    const url = new URL(request.url)
+    const live = url.searchParams.get('live') === '1'
+    const mode = url.searchParams.get('mode') // 'observer' | null
+    if (live) {
+      const access = computeLiveAccess(pod, mode)
+      if (!access.allowed) {
+        return NextResponse.json({ error: access.reason || 'Forbidden' }, { status: 403 })
+      }
     }
 
     // Load all players with pick data + visibility (one row per seat).
@@ -332,9 +398,33 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     }))
 
     const allPacks = jsonParse<any[]>(pod.all_packs, [])
-    const viewableSeats = computeViewableSeats(pod, players, session)
+    // Live (Privileged Observer) access is an explicit host opt-in (an enabled
+    // observer link), so every seat is unlocked while watching. Outside live
+    // mode the normal per-seat privacy model applies.
+    const viewableSeats = live
+      ? new Set<number>(players.map(p => p.seat_number))
+      : computeViewableSeats(pod, players, session)
 
     const body = buildSlideshowResponse({ pod, players, allPacks, viewableSeats, session })
+
+    if (live) {
+      const draftState = jsonParse(pod.draft_state, {}) as any
+      body.live = true
+      body.timer = {
+        status: pod.status,
+        paused: pod.paused === true,
+        pausedAt: pod.paused_at ?? null,
+        pausedDurationSeconds: pod.paused_duration_seconds || 0,
+        pickStartedAt: pod.pick_started_at ?? null,
+        timerEnabled: pod.timer_enabled !== false,
+        timerSeconds: pod.timer_seconds || 0,
+        pickTimeoutSeconds: pod.pick_timeout_seconds || 60,
+        competitive: pod.competitive === true,
+        draftState,
+      }
+      body.phase = { phase: draftState?.phase ?? null }
+    }
+
     return NextResponse.json(body)
   } catch (error) {
     console.error('Failed to build slideshow report:', error)
