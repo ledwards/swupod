@@ -166,13 +166,8 @@
   z-index: 10;
   animation: foil-shimmer 6s linear infinite;
   filter: blur(8px);
-}
-
-
-/* Hyperspace treatment */
-.draftable-card.hyperspace {
-  border-color: #9C27B0 !important;
-  box-shadow: 0 0 10px rgba(156, 39, 176, 0.5);
+  /* Clip the blurred shimmer to the card so it never bleeds onto neighbors. */
+  clip-path: inset(0 round 7px);
 }
 
 /* Card image styles applied via inline styles in JSX */
