@@ -408,6 +408,21 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     const body = buildSlideshowResponse({ pod, players, allPacks, viewableSeats, session })
 
     if (live) {
+      // Slides to expose: every COMPLETED pick PLUS the one in progress (the
+      // pack / set of leaders the table is currently on) — but never beyond.
+      // `completed` is the min made-picks across seats (a pick round is "done"
+      // only once every seat has taken it); +1 surfaces the current pack so the
+      // observer always shows what's being drafted, capped to the full length.
+      const totalSlides = body.slideCount
+      const completed = players.length
+        ? Math.min(...players.map(p => (p.drafted_leaders?.length || 0) + (p.drafted_cards?.length || 0)))
+        : 0
+      const frontier = Math.min(completed + 1, totalSlides)
+      body.slideCount = frontier
+      for (const seat of body.seats) {
+        if (Array.isArray(seat.picks)) seat.picks = seat.picks.slice(0, frontier)
+      }
+
       const draftState = jsonParse(pod.draft_state, {}) as any
       body.live = true
       body.timer = {

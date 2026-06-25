@@ -14,6 +14,13 @@ const CopyIcon = () => (
   </svg>
 )
 
+const BroadcastIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="2"></circle>
+    <path d="M16.24 7.76a6 6 0 0 1 0 8.49M7.76 16.24a6 6 0 0 1 0-8.49M19.07 4.93a10 10 0 0 1 0 14.14M4.93 19.07a10 10 0 0 1 0-14.14"></path>
+  </svg>
+)
+
 const LockIcon = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -119,6 +126,38 @@ function HostControls({
   const [copied, setCopied] = useState(false)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [isCancelling, setIsCancelling] = useState(false)
+  // Privileged Observer — public, no-login live-slideshow link for streaming.
+  const [observerEnabled, setObserverEnabled] = useState(!!draft?.observerPublic)
+  const [observerBusy, setObserverBusy] = useState(false)
+  const [observerCopied, setObserverCopied] = useState(false)
+  const observerUrl = typeof window !== 'undefined' && shareId ? `${window.location.origin}/draft/${shareId}/observe` : ''
+
+  const setObserver = async (value: boolean) => {
+    setObserverBusy(true)
+    try {
+      const res = await fetch(`/api/draft/${shareId}/report/visibility`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ observerPublic: value }),
+      })
+      if (res.ok) setObserverEnabled(value)
+    } catch {
+      /* ignore */
+    } finally {
+      setObserverBusy(false)
+    }
+  }
+
+  const handleCopyObserverUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(observerUrl)
+      setObserverCopied(true)
+      setTimeout(() => setObserverCopied(false), 2000)
+    } catch {
+      /* ignore */
+    }
+  }
   // Solo mode (entered from Solo button) allows 1 human + bots; pod mode needs 2+ humans.
   // Admins bypass the 2-human requirement for testing/facilitation.
   const isSoloDraft = draft?.settings?.isSolo === true
@@ -342,7 +381,7 @@ function HostControls({
           )}
         </div>
 
-        {/* Row 2: Add Bot */}
+        {/* Row 2: Add Bot + Privileged Observer */}
         <div className="controls-row secondary-controls">
           <Button
             variant="secondary"
@@ -354,7 +393,49 @@ function HostControls({
             <RobotIcon />
             <span>{addingBot ? 'Adding...' : 'Add Bot'}</span>
           </Button>
+
+          {shareId && (observerEnabled ? (
+            <Button
+              variant="secondary"
+              glowColor="yellow"
+              className="control-button"
+              onClick={handleCopyObserverUrl}
+              title={observerUrl}
+            >
+              <CopyIcon />
+              <span>{observerCopied ? 'Copied!' : 'Copy Observer Link'}</span>
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              glowColor="yellow"
+              className="control-button"
+              onClick={() => setObserver(true)}
+              disabled={observerBusy}
+              title="Public, no-login link to stream this draft as a live slideshow"
+            >
+              <BroadcastIcon />
+              <span>{observerBusy ? 'Enabling…' : 'Enable Observer'}</span>
+            </Button>
+          ))}
         </div>
+
+        {observerEnabled && (
+          <div
+            className="observer-status-line"
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.75rem', color: 'rgba(255, 215, 0, 0.85)', marginBottom: '4px' }}
+          >
+            <span>● Observer link live</span>
+            <button
+              type="button"
+              onClick={() => setObserver(false)}
+              disabled={observerBusy}
+              style={{ background: 'none', border: 'none', color: 'rgba(255, 255, 255, 0.6)', textDecoration: 'underline', cursor: 'pointer', fontSize: '0.75rem', padding: 0 }}
+            >
+              Disable
+            </button>
+          </div>
+        )}
 
         {!canStart && !needsMoreHumans && (
           <div className="min-players-note">

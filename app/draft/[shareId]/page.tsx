@@ -5,7 +5,6 @@ import { useState, useEffect, useRef, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
 import { useDraftSocket } from '../../../src/hooks/useDraftSocket'
-import ObserverHostControl from '../../../src/components/ObserverHostControl'
 import { usePresence } from '../../../src/hooks/usePresence'
 import { joinDraft, leaveDraft, startDraft, randomizeSeats, randomizePacks, makePick, selectCard, updateSettings, togglePause, dropFromDraft } from '../../../src/utils/draftApi'
 import { formatPoolLabel } from '../../../src/utils/poolDisplayName'
@@ -655,9 +654,6 @@ export default function DraftRoomPage({ params }: PageProps) {
                             </svg>
                           </button>
                         </>
-                      )}
-                      {isHost && (
-                        <ObserverHostControl shareId={shareId} initialEnabled={draft?.observerPublic} />
                       )}
                     </div>
                   )}

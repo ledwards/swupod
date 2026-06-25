@@ -128,6 +128,7 @@ export function DraftSlideshow({
   const [selectedSeats, setSelectedSeats] = useState<Set<number>>(() => new Set())
   const initializedRef = useRef(false)
   const prevSlideCountRef = useRef(0)
+  const slideIndexRef = useRef(0)
 
   // Live data source (Privileged Observer). No-op unless `live`.
   const liveSlideshow = useLiveSlideshow(shareId, mode, { enabled: live })
@@ -200,14 +201,22 @@ export function DraftSlideshow({
     setSlideIndex(i => Math.min(Math.max(i, 0), slideCount - 1))
   }, [slideCount])
 
-  // Follow-tail: if the viewer is parked on the latest slide when new picks
-  // arrive, advance them to the new latest. If they've scrubbed back, leave them.
+  // Track the live slide so follow-tail can check "was at tail" without making
+  // slideIndex a dependency of the growth effect below.
+  useEffect(() => {
+    slideIndexRef.current = slideIndex
+  }, [slideIndex])
+
+  // Follow-tail: when new picks arrive AND the viewer was parked on the latest
+  // slide, dwell ~1s on the just-completed pick (so its highlight reads), then
+  // advance to the new latest. If they've scrubbed back, leave them put.
   useEffect(() => {
     const prev = prevSlideCountRef.current
-    if (followTail && prev > 0 && slideCount > prev) {
-      setSlideIndex(i => (i >= prev - 1 ? slideCount - 1 : i))
-    }
     prevSlideCountRef.current = slideCount
+    if (!followTail || prev <= 0 || slideCount <= prev) return
+    if (slideIndexRef.current < prev - 1) return // scrubbed back — don't follow
+    const t = setTimeout(() => setSlideIndex(slideCount - 1), 1000)
+    return () => clearTimeout(t)
   }, [slideCount, followTail])
 
   // Selection handlers — selection can never be emptied (keeps the stage non-blank).
@@ -224,8 +233,13 @@ export function DraftSlideshow({
     })
   }, [])
 
+  // Toggle: if every unlocked seat is selected, clear to none; otherwise select
+  // all. (The "All" tab flips to "None" when everything is on.)
   const onSelectAll = useCallback(() => {
-    setSelectedSeats(new Set(unlockedSeatNumbers))
+    setSelectedSeats(prev => {
+      const allOn = unlockedSeatNumbers.length > 0 && unlockedSeatNumbers.every(n => prev.has(n))
+      return allOn ? new Set<number>() : new Set(unlockedSeatNumbers)
+    })
   }, [unlockedSeatNumbers])
 
   const onPrev = useCallback(() => {
