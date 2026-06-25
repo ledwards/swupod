@@ -517,11 +517,6 @@
   filter: blur(10px);
 }
 
-.card-item.hyperspace {
-  border-color: #9C27B0 !important;
-  box-shadow: 0 0 10px rgba(156, 39, 176, 0.5);
-}
-
 .card-item.showcase {
   position: relative;
   overflow: hidden;

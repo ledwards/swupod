@@ -362,6 +362,30 @@ export async function renderPoolImageBlob(params: DeckImageParams): Promise<Blob
     ctx.fillText(creditText, width / 2, headerH - 4)
     ctx.restore()
 
+    // Static foil sheen — the canvas equivalent of the CSS `.canvas-card.foil`
+    // shimmer (same rainbow gradient stops). A PNG can't animate, so we bake a
+    // single diagonal pass over the standard card art. Reuses the existing foil
+    // look rather than inventing a new one.
+    const drawFoilSheen = (x, y, cardW, cardH): void => {
+      const grad = ctx.createLinearGradient(x, y + cardH, x + cardW, y)
+      grad.addColorStop(0.0, 'rgba(255, 0, 0, 0)')
+      grad.addColorStop(0.15, 'rgba(255, 0, 0, 0.35)')
+      grad.addColorStop(0.25, 'rgba(255, 127, 0, 0.4)')
+      grad.addColorStop(0.35, 'rgba(255, 255, 0, 0.45)')
+      grad.addColorStop(0.45, 'rgba(0, 255, 0, 0.45)')
+      grad.addColorStop(0.55, 'rgba(0, 0, 255, 0.45)')
+      grad.addColorStop(0.65, 'rgba(75, 0, 130, 0.4)')
+      grad.addColorStop(0.75, 'rgba(148, 0, 211, 0.35)')
+      grad.addColorStop(0.85, 'rgba(148, 0, 211, 0)')
+      grad.addColorStop(1.0, 'rgba(148, 0, 211, 0)')
+      ctx.save()
+      ctx.globalCompositeOperation = 'overlay'
+      ctx.globalAlpha = 0.8
+      ctx.fillStyle = grad
+      ctx.fillRect(x, y, cardW, cardH)
+      ctx.restore()
+    }
+
     // Helper to draw a single card
     const drawCard = (card, x, y, cardW, cardH, grayscale): Promise<void> => {
       return new Promise((resolve) => {
@@ -409,6 +433,8 @@ export async function renderPoolImageBlob(params: DeckImageParams): Promise<Blob
             } else {
               ctx.drawImage(img, x, y, cardW, cardH)
             }
+            // Foils get the holographic sheen on top of the standard art.
+            if (card.isFoil) drawFoilSheen(x, y, cardW, cardH)
             resolve()
           } catch {
             drawPlaceholder()

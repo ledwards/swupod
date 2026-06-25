@@ -194,10 +194,9 @@
   z-index: 2;
   animation: foil-shimmer 6s ease-in-out infinite;
   filter: blur(10px);
-}
-
-.canvas-card.hyperspace {
-  border-color: #9C27B0 !important;
+  /* Clip the blurred shimmer to the card so it never bleeds onto the
+     neighboring card in a tight grid (gap is smaller than the blur radius). */
+  clip-path: inset(0 round 11px);
 }
 
 .canvas-card.showcase {
@@ -232,6 +231,7 @@
   z-index: 2;
   animation: foil-shimmer 6s ease-in-out infinite;
   filter: blur(10px);
+  clip-path: inset(0 round 11px);
 }
 
 /* ==========================================================================
