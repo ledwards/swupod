@@ -67,7 +67,7 @@ describe('card data metrics', () => {
     assert.equal(gradeFromZScore(-2), 'F')
   })
 
-  it('shrinks and grades a sufficiently large slice', () => {
+  it('grades a sufficiently large 17Lands-style slice', () => {
     const inputs = Array.from({ length: 25 }, (_, index) => ({
       key: `card-${index}`,
       wins: 25 + index,

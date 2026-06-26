@@ -60,7 +60,7 @@ export interface GradeResult {
   status: 'graded' | 'sample-too-small' | 'slice-too-small' | 'zero-variance'
 }
 
-export const CARD_GRADE_PRIOR_WEIGHT = 50
+export const CARD_GRADE_PRIOR_WEIGHT = 0
 export const CARD_GRADE_MIN_DENOMINATOR = 50
 export const CARD_GRADE_MIN_CARDS = 25
 

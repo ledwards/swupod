@@ -750,6 +750,7 @@ interface LeaderSelection {
 type SortKey = 'cardName' | 'rarity' | 'avgPickPosition' | 'firstPickPct' | 'timesPicked'
 type DeckSortKey = 'cardName' | 'rarity' | 'inclusionRate' | 'avgCopiesPlayed' | 'poolsWithCard' | 'offAspectRate'
 type CardDataSortKey = 'cardName' | 'grade' | 'rarity' | 'gpWr' | 'gpCount' | 'deckCount' | 'rawCopies'
+type CardDataView = 'table' | 'tiers'
 type LeaderSortKey = 'cardName' | 'avgPickPosition' | 'firstPickPct' | 'timesPicked'
 type LeaderSelSortKey = 'cardName' | 'timesSelected' | 'selectionRate'
 
@@ -761,6 +762,7 @@ const GRADE_ORDER: Record<string, number> = {
   'D+': 3, D: 2, 'D-': 1,
   F: 0,
 }
+const CARD_TIER_ORDER = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F', 'Ungraded']
 
 // === Shared Skeleton ===
 
@@ -969,6 +971,7 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
   const [source, setSource] = useState<'all' | 'online' | 'in-person'>('all')
   const [loading, setLoading] = useState(true)
   const hasLoadedOnce = useRef(false)
+  const [view, setView] = useState<CardDataView>('table')
   const [sortKey, setSortKey] = useState<CardDataSortKey>('grade')
   const [sortAsc, setSortAsc] = useState(false)
   const cardFilter = useTableFilter()
@@ -1064,6 +1067,14 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
   }, [cardData?.cards, sortKey, sortAsc])
 
   const filteredCards = useMemo(() => sortedCards.filter(cardFilter.filterFn), [sortedCards, cardFilter.search, cardFilter.activeAspects])
+  const tierGroups = useMemo(() => {
+    const groups = new Map<string, CardDataCard[]>()
+    for (const grade of CARD_TIER_ORDER) groups.set(grade, [])
+    for (const card of filteredCards) {
+      groups.get(card.grade || 'Ungraded')?.push(card)
+    }
+    return groups
+  }, [filteredCards])
 
   if (loading) return <LoadingSkeleton />
 
@@ -1108,6 +1119,17 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
             ))}
           </div>
         </div>
+        <div className="card-data-control">
+          <span className="card-data-control-label">View</span>
+          <div className="card-data-segmented">
+            {[
+              ['table', 'Table'],
+              ['tiers', 'Tier List'],
+            ].map(([value, label]) => (
+              <button key={value} className={`card-data-segment ${view === value ? 'active' : ''}`} onClick={() => setView(value as CardDataView)}>{label}</button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {!hasCards ? (
@@ -1138,6 +1160,37 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
           <StatsLegend {...legendProps} showBuiltDeckFilter={false} />
           <TableFilter {...cardFilter} />
 
+          {view === 'tiers' ? (
+            <div className="card-data-tier-list" aria-label={`${setCode} card tier list`}>
+              {CARD_TIER_ORDER.map(grade => {
+                const cards = tierGroups.get(grade) || []
+                if (cards.length === 0) return null
+                return (
+                  <section className="card-data-tier-row" key={grade}>
+                    <div className="card-data-tier-label">{grade}</div>
+                    <div className="card-data-tier-cards">
+                      {cards.map(card => (
+                        <span
+                          key={card.cardId || card.cardName}
+                          className="card-data-tier-card"
+                          onMouseEnter={(e) => handleCardMouseEnter({ imageUrl: card.imageUrl || undefined, name: card.cardName, rarity: card.rarity }, e)}
+                          onMouseLeave={handleCardMouseLeave}
+                          onTouchStart={() => handleCardTouchStart({ imageUrl: card.imageUrl || undefined, name: card.cardName, rarity: card.rarity })}
+                          onTouchEnd={handleCardTouchEnd}
+                        >
+                          <span className="card-data-tier-card-name">{card.cardName}</span>
+                          <span className={rarityClass(card.rarity)}>{card.rarity.slice(0, 1)}</span>
+                          <span className="card-data-tier-card-metric">
+                            {card.gpWr == null ? '—' : `${formatPct(card.gpWr)}`} · n={fmt(card.gpCount)}
+                          </span>
+                        </span>
+                      ))}
+                    </div>
+                  </section>
+                )
+              })}
+            </div>
+          ) : (
           <div className="stats-table-container">
             <table className="stats-table card-data-table">
               <thead>
@@ -1219,6 +1272,7 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
               </tbody>
             </table>
           </div>
+          )}
         </>
       )}
 
