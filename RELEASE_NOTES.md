@@ -1,5 +1,10 @@
 # Release Notes
 
+## 06.26.2026
+
+### 🔥 Ashes of the Empire
+- **ASH packs now follow watched box openings**: Updated common-belt collation, Hyperspace Foil fallback handling, and tier-1 prestige expectations from real ASH box openings while the prestige checklist and images finish landing in card data.
+
 ## 06.24.2026
 
 ### 🏆 Competitive Practice — Swiss Practice [Experimental]

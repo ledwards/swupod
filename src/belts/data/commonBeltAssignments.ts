@@ -747,6 +747,23 @@ const BELT_OVERRIDES: Record<string, Record<string, 'A' | 'B'>> = {
   'LAW': {
     'Hidden Hand Supplier': 'A',
   },
+  // ASH: physical box openings show the mono-H cards on Belt B, with neutral
+  // cards split 3/3 to keep the Block B common belts at 50/50.
+  'ASH': {
+    'Covert Veteran': 'B',
+    'Imperial Defector': 'B',
+    'Zealous Soldier': 'B',
+    'N5 Sentry Droid': 'B',
+    'Gallofree Transport': 'B',
+    'Rebel Infiltrators': 'B',
+    'Grassroots Resistance': 'B',
+    'LEP Ratcatcher': 'A',
+    'Mos Espa Watermonger': 'A',
+    'Noti Mobile Pod': 'A',
+    'Faith in the Empire': 'B',
+    "The Way of the Mand'alor": 'B',
+    'A New Order': 'B',
+  },
 }
 
 /**

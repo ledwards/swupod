@@ -6,7 +6,7 @@
  * Pack rules are a copy of LAW (Set 7) until FFG announces changes:
  * - No regular foils - foil slot is ALWAYS Hyperspace Foil
  * - Guaranteed Hyperspace card in every pack (last common slot)
- * - Prestige cards in standard boosters (~1 in 18 packs)
+ * - Prestige cards in standard boosters (~2 tier-1 prestige per box on average)
  * - Showcase leaders are significantly rarer
  * - LAW-style multicolor symmetry with fewer multicolor cards than LAW
  *
@@ -18,6 +18,7 @@ import { SET_7_PLUS_CONSTANTS } from '../packConstants'
 import type { SetConfig } from './index'
 
 const constants = SET_7_PLUS_CONSTANTS
+const ASH_T1_PRESTIGE_RATE = 1 / 12
 
 export const ASH_CONFIG: SetConfig = {
   setCode: 'ASH',
@@ -82,7 +83,10 @@ export const ASH_CONFIG: SetConfig = {
     secondUCToHyperspaceUC: constants.uncommonHyperspaceRate,
     commonToHyperspace: 0,
     rareToPrestige: 0,
-    uc3ToPrestige: constants.uc3PrestigeRate || 1/18,
+    // Box openings point to ~2 tier-1 prestige cards per 24-pack box.
+    // If the API has not published ASH prestige variants yet, standard packs
+    // no-op this outcome rather than synthesizing an unknown checklist.
+    uc3ToPrestige: ASH_T1_PRESTIGE_RATE,
   },
 
   // Triple-aspect cards present but fewer than LAW

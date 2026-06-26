@@ -3,6 +3,7 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import { LAW_CONFIG } from './LAW'
+import { ASH_CONFIG } from './ASH'
 import { SET_CONFIGS, getSetConfig } from './index'
 
 describe('LAW_CONFIG', () => {
@@ -156,6 +157,14 @@ describe('LAW_CONFIG', () => {
       assert.ok(Math.abs(upgradeProbabilities.uc3ToPrestige - 1/18) < tolerance,
         `UC3 prestige rate should be ~1/18 (${1/18}), got ${upgradeProbabilities.uc3ToPrestige}`)
     })
+  })
+})
+
+describe('ASH_CONFIG', () => {
+  it('should set UC3 prestige to two tier-1 prestige cards per box on average', () => {
+    const rate = ASH_CONFIG.upgradeProbabilities.uc3ToPrestige
+    assert.strictEqual(rate, 1 / 12)
+    assert.strictEqual(rate * 24, 2)
   })
 })
 

@@ -361,7 +361,10 @@ function getSet7PlusUc3OutcomeBelt(setCode: SetCode | string): Set7PlusUc3Outcom
   if (!usesLawPackRules(setCode)) return null;
   const key = `set7plus-uc3-${setCode}`;
   if (!beltCache.has(key)) {
-    beltCache.set(key, new Set7PlusUc3OutcomeBelt());
+    const config = getSetConfig(setCode) as SetConfig | null;
+    beltCache.set(key, new Set7PlusUc3OutcomeBelt({
+      prestigeRate: config?.upgradeProbabilities?.uc3ToPrestige,
+    }));
   }
   return beltCache.get(key) as Set7PlusUc3OutcomeBelt;
 }
@@ -497,7 +500,7 @@ function applyUpgradePass(pack: Pack, setCode: SetCode | string): Pack {
 
       if (outcome === 'prestige') {
         const prestigeBelt = getPrestigeBelt(setCode);
-        const prestige = prestigeBelt ? (prestigeBelt as CarbonitePrestigeBelt).nextTier1() : null;
+        const prestige = prestigeBelt ? (prestigeBelt as CarbonitePrestigeBelt).nextTier1({ allowSynthesis: false }) : null;
         if (prestige) pack.cards[thirdUCIndex] = prestige;
       } else if (outcome === 'hsUncommon') {
         const hsUCBelt = getHyperspaceUncommonBelt(setCode);
@@ -568,7 +571,7 @@ function applyUpgradePass(pack: Pack, setCode: SetCode | string): Pack {
   if (config?.packRules?.prestigeInStandardPacks && probs.rareToPrestige && shouldUpgrade(probs.rareToPrestige)) {
     const prestigeBelt = getPrestigeBelt(setCode);
     if (prestigeBelt && rareIndex >= 0) {
-      const prestige = (prestigeBelt as CarbonitePrestigeBelt).nextTier1();
+      const prestige = (prestigeBelt as CarbonitePrestigeBelt).nextTier1({ allowSynthesis: false });
       if (prestige) {
         pack.cards[rareIndex] = prestige;
       }

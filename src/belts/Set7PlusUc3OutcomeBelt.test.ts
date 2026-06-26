@@ -59,6 +59,23 @@ async function runTests(): Promise<void> {
     assertEqual(counts.hsLegendary, 17, 'hsLegendary count should be exact')
   })
 
+  test('outcome belt supports ASH prestige rate from box openings', () => {
+    const belt = new Set7PlusUc3OutcomeBelt({ prestigeRate: 1 / 12 })
+    const counts: Record<string, number> = {}
+
+    for (let i = 0; i < 2160; i++) {
+      const outcome = belt.next()
+      counts[outcome] = (counts[outcome] || 0) + 1
+    }
+
+    assertEqual(counts.none, 1300, 'none count should adjust for ASH prestige rate')
+    assertEqual(counts.prestige, 180, 'prestige count should be 1/12 of the cycle')
+    assertEqual(counts.hsUncommon, 408, 'hsUncommon count should stay LAW-shaped')
+    assertEqual(counts.hsRare, 204, 'hsRare count should stay LAW-shaped')
+    assertEqual(counts.hsSpecial, 51, 'hsSpecial count should stay LAW-shaped')
+    assertEqual(counts.hsLegendary, 17, 'hsLegendary count should stay LAW-shaped')
+  })
+
   test('outcome belt refills after one cycle', () => {
     const belt = new Set7PlusUc3OutcomeBelt()
     for (let i = 0; i < 2160; i++) belt.next()

@@ -162,6 +162,19 @@ async function runTests(): Promise<void> {
     assert(counts.Rare > counts.Legendary, `Rares (${counts.Rare}) should exceed legendaries (${counts.Legendary})`)
   })
 
+  test('ASH: Normal-art fallback still returns Hyperspace Foil flags', () => {
+    const belt = new HyperfoilBelt('ASH')
+    assert(belt.fillingPool.length > 0, 'Filling pool should not be empty')
+    assert(belt.usingNormalFallback === true, 'ASH should currently use Normal art fallback')
+    assert(belt.fillingPool.every(c => c.variantType === 'Normal'), 'Fallback pool should use Normal cards as art source')
+
+    const card = belt.next()
+    assert(card !== null, 'next() should return a card')
+    assert(card.variantType === 'Normal', 'Fallback card keeps Normal image source')
+    assert(card.isFoil === true, 'Fallback HSF should be marked foil')
+    assert(card.isHyperspace === true, 'Fallback HSF should be marked hyperspace')
+  })
+
   test('no repeating pattern: consecutive belt fills produce different sequences', () => {
     const belt = new HyperfoilBelt('SOR')
     const fillSize = Math.min(belt.fillingPool.length, 30)

@@ -165,6 +165,31 @@ describe('Common Belt Assignments', () => {
       assert.ok(total >= 80,
         `LAW should have ~100 commons total, got ${total}`)
     })
+
+    test('ASH uses observed 50/50 common belt split with neutral overrides', async (t) => {
+      const assignments = COMMON_BELT_ASSIGNMENTS['ASH']
+      assert.ok(assignments.autoAssign, 'ASH should have autoAssign enabled')
+
+      const beltACards = getBeltCards('ASH', 'A')
+      const beltBCards = getBeltCards('ASH', 'B')
+      const beltANames = new Set(beltACards.map(c => c.name))
+      const beltBNames = new Set(beltBCards.map(c => c.name))
+
+      assert.strictEqual(beltACards.length, 50, `ASH Belt A should have 50 cards, got ${beltACards.length}`)
+      assert.strictEqual(beltBCards.length, 50, `ASH Belt B should have 50 cards, got ${beltBCards.length}`)
+
+      for (const name of ['LEP Ratcatcher', 'Mos Espa Watermonger', 'Noti Mobile Pod']) {
+        assert.ok(beltANames.has(name), `${name} should be on ASH Belt A`)
+      }
+
+      for (const name of ['Faith in the Empire', "The Way of the Mand'alor", 'A New Order']) {
+        assert.ok(beltBNames.has(name), `${name} should be on ASH Belt B`)
+      }
+
+      for (const name of ['Covert Veteran', 'Imperial Defector', 'Zealous Soldier', 'N5 Sentry Droid', 'Gallofree Transport', 'Rebel Infiltrators', 'Grassroots Resistance']) {
+        assert.ok(beltBNames.has(name), `${name} should be on ASH Belt B`)
+      }
+    })
   })
 
   describe('Pack Generation Slot Patterns', () => {

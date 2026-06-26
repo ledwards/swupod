@@ -124,6 +124,19 @@ async function runTests(): Promise<void> {
     }
   })
 
+  test('nextTier1() can refuse synthesis for standard packs without real prestige data', () => {
+    const belt = new CarbonitePrestigeBelt('ASH')
+    const card = belt.nextTier1({ allowSynthesis: false })
+
+    if (belt.useSynthesis) {
+      assert(card === null, 'ASH standard packs should no-op prestige until real prestige variants exist')
+    } else {
+      assert(card !== null, 'ASH should draw real Standard Prestige once variants exist')
+      assert(card.variantType === 'Standard Prestige',
+        `Expected real Standard Prestige, got ${card.variantType}`)
+    }
+  })
+
   test('prestige cards include uncommons (not just R/L)', () => {
     // Real prestige data includes Uncommons — synthesis only had R/L
     const belt = new CarbonitePrestigeBelt('JTL')

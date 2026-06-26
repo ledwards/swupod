@@ -166,15 +166,18 @@ export class CarbonitePrestigeBelt {
 
   /**
    * Draw a tier1 (Standard Prestige) card.
-   * Used by standard pack UC3 and rare slot prestige upgrades.
+   * Standard packs pass allowSynthesis=false so unreleased prestige checklists
+   * do not invent cards before SWU API publishes the real variants.
    */
-  nextTier1(): RawCard | null {
+  nextTier1(options: { allowSynthesis?: boolean } = {}): RawCard | null {
+    const allowSynthesis = options.allowSynthesis ?? true
+
     if (this.useSynthesis) {
-      return this._drawSynthesized('tier1')
+      return allowSynthesis ? this._drawSynthesized('tier1') : null
     }
 
     const card = this._drawFromTier('tier1')
-    if (!card) return this._drawSynthesized('tier1') // fallback
+    if (!card) return allowSynthesis ? this._drawSynthesized('tier1') : null
     return card
   }
 
