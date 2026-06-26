@@ -3,7 +3,7 @@
 ## 06.26.2026
 
 ### 🔥 Ashes of the Empire
-- **ASH packs now follow watched box openings**: Updated common-belt collation, Hyperspace Foil fallback handling, and tier-1 prestige expectations from real ASH box openings while the prestige checklist and images finish landing in card data.
+- We spent the day watching ASH box opening videos and brought improvements to the realism of the packs. A few details remain, and our goal is to have those ironed out before ASH graduates from beta in a few weeks.
 
 ## 06.24.2026
 
