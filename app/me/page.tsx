@@ -21,7 +21,7 @@ export default function MePage() {
   }
 
   const eras = useMemo(() => getEras(), [])
-  // Global Set filter — drives every tab. Defaults to the NEWEST set for every
+  // Global era filter — drives every tab. Defaults to the NEWEST set for every
   // viewer regardless of access: getDefaultStatsSetTab(true) takes the first entry
   // of STATS_SET_ORDER (currently the pre-release ASH) and auto-advances as new
   // sets ship — never a hardcoded code. Viewers can switch sets from the picker.
@@ -30,10 +30,19 @@ export default function MePage() {
   const [weekKey, setWeekKey] = useState<'all' | number>('all')
 
   const era = useMemo(
-    () => (setFilter === 'all' ? null : eras.find((e) => e.setCode === setFilter) || null),
+    () => {
+      if (setFilter === 'all') return null
+      return (
+        eras.find((e) => e.id === setFilter) ||
+        eras.find((e) => e.setCode === setFilter && !e.cardPool) ||
+        eras.find((e) => e.setCode === setFilter) ||
+        null
+      )
+    },
     [eras, setFilter],
   )
   const weeks = useMemo(() => (era ? getWeeks(era) : []), [era])
+  const statsSetCode = setFilter === 'all' ? 'all' : era?.setCode || setFilter
 
   const { startDate, endDate } = useMemo(() => {
     if (!era) return { startDate: ALL_TIME_START, endDate: todayStr() }
@@ -43,7 +52,7 @@ export default function MePage() {
   }, [era, weekKey, weeks])
 
   const filterLabel = useMemo(() => {
-    const setPart = setFilter === 'all' ? 'All sets' : setFilter
+    const setPart = setFilter === 'all' ? 'All sets' : era?.label || setFilter
     if (!era || weekKey === 'all') return setPart
     return `${setPart} · ${weeks[weekKey]?.label || ''}`.trim()
   }, [setFilter, era, weekKey, weeks])
@@ -93,7 +102,7 @@ export default function MePage() {
               >
                 <option value="all">All sets</option>
                 {eras.map((e) => (
-                  <option key={e.setCode} value={e.setCode}>{e.setCode}</option>
+                  <option key={e.id} value={e.id}>{e.label}</option>
                 ))}
               </select>
             </label>
@@ -131,7 +140,7 @@ export default function MePage() {
         </div>
       </header>
 
-      <YourStats since={startDate} until={endDate} setCode={setFilter} filterLabel={filterLabel} />
+      <YourStats since={startDate} until={endDate} setCode={statsSetCode} filterLabel={filterLabel} />
     </div>
   )
 }

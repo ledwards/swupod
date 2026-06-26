@@ -6575,6 +6575,9 @@
               "properties": {},
               "additionalProperties": {}
             }
+          },
+          "cardPool": {
+            "type": "string"
           }
         },
         "required": [
@@ -6637,6 +6640,9 @@
                     "properties": {},
                     "additionalProperties": {}
                   }
+                },
+                "cardPool": {
+                  "type": "string"
                 }
               },
               "required": [
@@ -6706,6 +6712,9 @@
               "properties": {},
               "additionalProperties": {}
             }
+          },
+          "cardPool": {
+            "type": "string"
           }
         },
         "required": [
