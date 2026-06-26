@@ -5,6 +5,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { useCardPreview } from '@/src/hooks/useCardPreview'
 import { useStickyTab } from '@/src/hooks/useStickyTab'
 import { CardPreview } from '@/src/components/DeckBuilder/CardPreview'
+import { CardPreviewProvider, CardName } from '@/src/components/CardNamePreview'
 import { useAuth } from '@/src/contexts/AuthContext'
 import Button from '@/src/components/Button'
 import { AspectIcon, ASPECTS } from '@/src/components/AspectIcon'
@@ -241,9 +242,9 @@ function useTableFilter(startAllOn = true) {
 
   const clearAll = () => setActiveAspects(new Set())
 
-  const filterFn = (card: { cardName: string; aspects: string[] }) => {
+  const filterFn = (card: { cardName: string; subtitle?: string | null; aspects: string[] }) => {
     // Name search
-    if (search && !card.cardName.toLowerCase().includes(search.toLowerCase())) return false
+    if (search && !`${card.cardName} ${card.subtitle || ''}`.toLowerCase().includes(search.toLowerCase())) return false
     // Aspect filter — no active aspects = nothing matches
     if (activeAspects.size === 0) return false
     // All on = show everything
@@ -305,18 +306,19 @@ function AspectFilterButtons({ activeAspects, toggleAspect, clearAll }: { active
   )
 }
 
-function TableFilter({ search, setSearch, activeAspects, toggleAspect, clearAll }: {
+function TableFilter({ search, setSearch, activeAspects, toggleAspect, clearAll, placeholder = 'Search cards...' }: {
   search: string
   setSearch: (s: string) => void
   activeAspects: Set<string>
   toggleAspect: (a: string) => void
   clearAll?: () => void
+  placeholder?: string
 }) {
   return (
     <div className="stats-table-filter">
       <input
         type="text"
-        placeholder="Search cards..."
+        placeholder={placeholder}
         value={search}
         onChange={e => setSearch(e.target.value)}
         className="stats-search-input"
@@ -700,6 +702,8 @@ interface CardDataCard {
   cost: number | null
   imageUrl: string | null
   backImageUrl?: string | null
+  isLeader?: boolean
+  isBase?: boolean
   grade: string | null
   gradeBasis: string
   gradeStatus: string
@@ -733,6 +737,8 @@ interface CardDataStats {
   onlineLinkedDecks: number
   replayMetricsStatus: string
   gradeBasis: string
+  leaders?: CardDataCard[]
+  bases?: CardDataCard[]
   cards: CardDataCard[]
 }
 
@@ -960,6 +966,19 @@ function buildLookupMap<T extends { cardName: string }>(items: T[] | undefined):
   return map
 }
 
+function cardDataLookupKey(item: Pick<CardDataCard, 'cardName' | 'subtitle' | 'cardType'>): string {
+  return `${item.cardName}|${item.subtitle || ''}|${item.cardType || ''}`
+}
+
+function buildCardDataLookupMap(items: CardDataCard[] | undefined): Map<string, CardDataCard> {
+  const map = new Map<string, CardDataCard>()
+  if (!items) return map
+  for (const item of items) {
+    map.set(cardDataLookupKey(item), item)
+  }
+  return map
+}
+
 // === Card Data Tab ===
 
 function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred, canSeeFullStats }: TabProps) {
@@ -975,16 +994,6 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
   const [sortKey, setSortKey] = useState<CardDataSortKey>('grade')
   const [sortAsc, setSortAsc] = useState(false)
   const cardFilter = useTableFilter()
-  const {
-    handleCardMouseEnter,
-    handleCardMouseLeave,
-    handleCardTouchStart,
-    handleCardTouchEnd,
-    hoveredCardPreview,
-    handlePreviewMouseEnter,
-    handlePreviewMouseLeave,
-    dismissPreview,
-  } = useCardPreview()
 
   useEffect(() => {
     if (!hasLoadedOnce.current) setLoading(true)
@@ -1040,18 +1049,30 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
     return () => { cancelled = true }
   }, [setCode, includeBots, includeHumans, startDate, endDate, user?.id, canSeeFullStats, format, source])
 
-  const tournamentMap = useMemo(() => buildLookupMap(cardDataTournament?.cards), [cardDataTournament?.cards])
-  const topMap = useMemo(() => buildLookupMap(cardDataTop?.cards), [cardDataTop?.cards])
-  const youMap = useMemo(() => buildLookupMap(cardDataYou?.cards), [cardDataYou?.cards])
+  const tournamentMaps = useMemo(() => ({
+    leaders: buildCardDataLookupMap(cardDataTournament?.leaders),
+    bases: buildCardDataLookupMap(cardDataTournament?.bases),
+    cards: buildCardDataLookupMap(cardDataTournament?.cards),
+  }), [cardDataTournament?.leaders, cardDataTournament?.bases, cardDataTournament?.cards])
+  const topMaps = useMemo(() => ({
+    leaders: buildCardDataLookupMap(cardDataTop?.leaders),
+    bases: buildCardDataLookupMap(cardDataTop?.bases),
+    cards: buildCardDataLookupMap(cardDataTop?.cards),
+  }), [cardDataTop?.leaders, cardDataTop?.bases, cardDataTop?.cards])
+  const youMaps = useMemo(() => ({
+    leaders: buildCardDataLookupMap(cardDataYou?.leaders),
+    bases: buildCardDataLookupMap(cardDataYou?.bases),
+    cards: buildCardDataLookupMap(cardDataYou?.cards),
+  }), [cardDataYou?.leaders, cardDataYou?.bases, cardDataYou?.cards])
 
   const handleSort = (key: CardDataSortKey) => {
     if (sortKey === key) setSortAsc(!sortAsc)
     else { setSortKey(key); setSortAsc(key === 'cardName') }
   }
 
-  const sortedCards = useMemo(() => {
-    if (!cardData?.cards) return []
-    return [...cardData.cards].sort((a, b) => {
+  const sortRows = (rows: CardDataCard[] | undefined) => {
+    if (!rows) return []
+    return [...rows].sort((a, b) => {
       let cmp = 0
       switch (sortKey) {
         case 'cardName': cmp = a.cardName.localeCompare(b.cardName); break
@@ -1064,25 +1085,63 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
       }
       return sortAsc ? cmp : -cmp
     })
-  }, [cardData?.cards, sortKey, sortAsc])
+  }
 
-  const filteredCards = useMemo(() => sortedCards.filter(cardFilter.filterFn), [sortedCards, cardFilter.search, cardFilter.activeAspects])
-  const tierGroups = useMemo(() => {
+  const makeTierGroups = (rows: CardDataCard[]) => {
     const groups = new Map<string, CardDataCard[]>()
     for (const grade of CARD_TIER_ORDER) groups.set(grade, [])
-    for (const card of filteredCards) {
+    for (const card of rows) {
       groups.get(card.grade || 'Ungraded')?.push(card)
     }
     return groups
-  }, [filteredCards])
+  }
+
+  const cardSections = useMemo(() => {
+    const defs = [
+      { key: 'leaders', title: 'Leaders', description: 'Selected leaders from decks with match results.', rows: cardData?.leaders || [] },
+      { key: 'bases', title: 'Bases', description: 'Selected bases from decks with match results.', rows: cardData?.bases || [] },
+      { key: 'cards', title: 'Cards', description: 'Main-deck cards, copy-weighted by deck count and match results.', rows: cardData?.cards || [] },
+    ]
+    return defs.map(section => {
+      const rows = sortRows(section.rows).filter(cardFilter.filterFn)
+      return {
+        ...section,
+        rows,
+        totalRows: section.rows.length,
+        tierGroups: makeTierGroups(rows),
+        tournamentMap: tournamentMaps[section.key],
+        topMap: topMaps[section.key],
+        youMap: youMaps[section.key],
+      }
+    })
+  }, [
+    cardData?.leaders,
+    cardData?.bases,
+    cardData?.cards,
+    sortKey,
+    sortAsc,
+    cardFilter.search,
+    cardFilter.activeAspects,
+    tournamentMaps,
+    topMaps,
+    youMaps,
+  ])
 
   if (loading) return <LoadingSkeleton />
 
-  const hasCards = cardData && cardData.cards && cardData.cards.length > 0
+  const hasCards = cardData && ((cardData.cards?.length || 0) + (cardData.leaders?.length || 0) + (cardData.bases?.length || 0)) > 0
   const rarityClass = (r: string) => `rarity-${r.toLowerCase()}`
   const cellProps = { showYou, showAll, showTop, showTournament, isBlurred, user }
   const formatPct = (v: number) => `${v.toFixed(1)}%`
   const replayTitle = 'Replay-hand metrics require validated opening-hand and draw facts.'
+  const cardNameEntry = (card: CardDataCard) => ({
+    name: card.cardName,
+    subtitle: card.subtitle,
+    imageUrl: card.imageUrl,
+    backImageUrl: card.backImageUrl,
+    isLeader: Boolean(card.isLeader),
+    isBase: Boolean(card.isBase),
+  })
 
   const SortHeader = ({ label, col, title }: { label: string, col: CardDataSortKey, title?: string }) => (
     <th className={`sortable ${sortKey === col ? 'active' : ''}`} onClick={() => handleSort(col)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSort(col) } }} tabIndex={0} aria-sort={sortKey === col ? (sortAsc ? 'ascending' : 'descending') : 'none'} title={title}>
@@ -1092,106 +1151,37 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
 
   const unavailableMetric = <span className="metric-unavailable" title={replayTitle}>—</span>
 
-  return (
-    <div className="cards-subtab card-data-tab">
-      <div className="card-data-toolbar">
-        <div className="card-data-control">
-          <span className="card-data-control-label">Format</span>
-          <div className="card-data-segmented">
-            {[
-              ['all', 'Limited'],
-              ['sealed', 'Sealed'],
-              ['draft', 'Draft'],
-            ].map(([value, label]) => (
-              <button key={value} className={`card-data-segment ${format === value ? 'active' : ''}`} onClick={() => setFormat(value as any)}>{label}</button>
-            ))}
-          </div>
-        </div>
-        <div className="card-data-control">
-          <span className="card-data-control-label">Source</span>
-          <div className="card-data-segmented">
-            {[
-              ['all', 'All'],
-              ['online', 'Online'],
-              ['in-person', 'In-Person'],
-            ].map(([value, label]) => (
-              <button key={value} className={`card-data-segment ${source === value ? 'active' : ''}`} onClick={() => setSource(value as any)}>{label}</button>
-            ))}
-          </div>
-        </div>
-        <div className="card-data-control">
-          <span className="card-data-control-label">View</span>
-          <div className="card-data-segmented">
-            {[
-              ['table', 'Table'],
-              ['tiers', 'Tier List'],
-            ].map(([value, label]) => (
-              <button key={value} className={`card-data-segment ${view === value ? 'active' : ''}`} onClick={() => setView(value as CardDataView)}>{label}</button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {!hasCards ? (
-        <div className="stats-empty">
-          <p>No card data available for {setCode} with these filters yet.</p>
-        </div>
+  const renderGradeCell = (card: CardDataCard) => (
+    <td>
+      {card.grade ? (
+        <span className={`card-grade card-grade-${card.grade.replace('+', 'plus').replace('-', 'minus').toLowerCase()}`} title={`${card.gradeBasis} grade`}>
+          {card.grade}
+        </span>
       ) : (
-        <>
-          <div className="draft-picks-summary">
-            <div className="stat-item">
-              <span className="stat-label">Decks With Results:</span>
-              <span className="stat-value">{fmt(cardData.totalDecks)}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Matches:</span>
-              <span className="stat-value">{fmt(cardData.totalMatches)}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Grade Basis:</span>
-              <span className="stat-value">{cardData.gradeBasis}</span>
-            </div>
-          </div>
+        <span className="metric-unavailable" title={card.gradeStatusLabel}>—</span>
+      )}
+    </td>
+  )
 
-          <p className="stats-warning">
-            Replay-hand columns stay blank until Wayfinder supplies validated card-observation facts.
-          </p>
+  const renderSectionHeader = (section: any) => (
+    <div className="card-data-section-header">
+      <div>
+        <h4>{section.title}</h4>
+        <p>{section.description}</p>
+      </div>
+      <span>{fmt(section.rows.length)} / {fmt(section.totalRows)} shown</span>
+    </div>
+  )
 
-          <StatsLegend {...legendProps} showBuiltDeckFilter={false} />
-          <TableFilter {...cardFilter} />
-
-          {view === 'tiers' ? (
-            <div className="card-data-tier-list" aria-label={`${setCode} card tier list`}>
-              {CARD_TIER_ORDER.map(grade => {
-                const cards = tierGroups.get(grade) || []
-                if (cards.length === 0) return null
-                return (
-                  <section className="card-data-tier-row" key={grade}>
-                    <div className="card-data-tier-label">{grade}</div>
-                    <div className="card-data-tier-cards">
-                      {cards.map(card => (
-                        <span
-                          key={card.cardId || card.cardName}
-                          className="card-data-tier-card"
-                          onMouseEnter={(e) => handleCardMouseEnter({ imageUrl: card.imageUrl || undefined, name: card.cardName, rarity: card.rarity }, e)}
-                          onMouseLeave={handleCardMouseLeave}
-                          onTouchStart={() => handleCardTouchStart({ imageUrl: card.imageUrl || undefined, name: card.cardName, rarity: card.rarity })}
-                          onTouchEnd={handleCardTouchEnd}
-                        >
-                          <span className="card-data-tier-card-name">{card.cardName}</span>
-                          <span className={rarityClass(card.rarity)}>{card.rarity.slice(0, 1)}</span>
-                          <span className="card-data-tier-card-metric">
-                            {card.gpWr == null ? '—' : `${formatPct(card.gpWr)}`} · n={fmt(card.gpCount)}
-                          </span>
-                        </span>
-                      ))}
-                    </div>
-                  </section>
-                )
-              })}
-            </div>
-          ) : (
-          <div className="stats-table-container">
+  const renderTableSection = (section: any) => {
+    if (section.totalRows === 0) return null
+    return (
+      <section className={`card-data-section card-data-section-${section.key}`} key={section.key}>
+        {renderSectionHeader(section)}
+        {section.rows.length === 0 ? (
+          <div className="stats-empty card-data-section-empty">No {section.title.toLowerCase()} match these filters.</div>
+        ) : (
+          <div className="stats-table-container card-data-table-container">
             <table className="stats-table card-data-table">
               <thead>
                 <tr>
@@ -1212,33 +1202,19 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
                 </tr>
               </thead>
               <tbody>
-                {filteredCards.map(card => {
-                  const tournamentCard = tournamentMap.get(card.cardName)
-                  const topCard = topMap.get(card.cardName)
-                  const youCard = youMap.get(card.cardName)
+                {section.rows.map((card: CardDataCard) => {
+                  const lookupKey = cardDataLookupKey(card)
+                  const tournamentCard = section.tournamentMap.get(lookupKey)
+                  const topCard = section.topMap.get(lookupKey)
+                  const youCard = section.youMap.get(lookupKey)
                   return (
-                    <tr key={card.cardId || card.cardName}>
-                      <td
-                        className="card-name-cell"
-                        onMouseEnter={(e) => handleCardMouseEnter({ imageUrl: card.imageUrl || undefined, name: card.cardName, rarity: card.rarity }, e)}
-                        onMouseLeave={handleCardMouseLeave}
-                        onTouchStart={() => handleCardTouchStart({ imageUrl: card.imageUrl || undefined, name: card.cardName, rarity: card.rarity })}
-                        onTouchEnd={handleCardTouchEnd}
-                      >
-                        <span className="card-name">{card.cardName}</span>
-                        {card.subtitle && <span className="card-subtitle">{card.subtitle}</span>}
+                    <tr key={`${section.key}-${lookupKey}`}>
+                      <td className="card-name-cell">
+                        <CardName entry={cardNameEntry(card)} className="card-data-name" />
                       </td>
                       <AspectsCell aspects={card.aspects} />
                       <td><span className={rarityClass(card.rarity)}>{card.rarity}</span></td>
-                      <td>
-                        {card.grade ? (
-                          <span className={`card-grade card-grade-${card.grade.replace('+', 'plus').replace('-', 'minus').toLowerCase()}`} title={`${card.gradeBasis} grade`}>
-                            {card.grade}
-                          </span>
-                        ) : (
-                          <span className="metric-unavailable" title={card.gradeStatusLabel}>—</span>
-                        )}
-                      </td>
+                      {renderGradeCell(card)}
                       <StatsCell
                         {...cellProps}
                         you={youCard?.gpCount}
@@ -1272,20 +1248,137 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
               </tbody>
             </table>
           </div>
-          )}
-        </>
-      )}
+        )}
+      </section>
+    )
+  }
 
-      {hoveredCardPreview && (
-        <CardPreview
-          card={hoveredCardPreview.card}
-          position={hoveredCardPreview.position}
-          onMouseEnter={handlePreviewMouseEnter}
-          onMouseLeave={handlePreviewMouseLeave}
-          onClose={dismissPreview}
-        />
-      )}
-    </div>
+  const renderTierSection = (section: any) => {
+    if (section.totalRows === 0) return null
+    return (
+      <section className={`card-data-section card-data-section-${section.key}`} key={section.key}>
+        {renderSectionHeader(section)}
+        {section.rows.length === 0 ? (
+          <div className="stats-empty card-data-section-empty">No {section.title.toLowerCase()} match these filters.</div>
+        ) : (
+          <div className="card-data-tier-list" aria-label={`${setCode} ${section.title.toLowerCase()} tier list`}>
+            {CARD_TIER_ORDER.map(grade => {
+              const rows = section.tierGroups.get(grade) || []
+              if (rows.length === 0) return null
+              return (
+                <div className="card-data-tier-row" key={`${section.key}-${grade}`}>
+                  <div className="card-data-tier-label">{grade}</div>
+                  <div className="card-data-tier-cards">
+                    {rows.map((card: CardDataCard) => (
+                      <span key={`${section.key}-${cardDataLookupKey(card)}`} className="card-data-tier-card">
+                        <CardName entry={cardNameEntry(card)} className="card-data-name card-data-tier-card-name" />
+                        <span className="card-data-tier-card-meta">
+                          <span className={rarityClass(card.rarity)} title={card.rarity}>{card.rarity.slice(0, 1)}</span>
+                          <span>{card.gpWr == null ? '—' : formatPct(card.gpWr)}</span>
+                          <span>n={fmt(card.gpCount)}</span>
+                        </span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </section>
+    )
+  }
+
+  return (
+    <CardPreviewProvider>
+      <div className="cards-subtab card-data-tab">
+        <div className="card-data-toolbar">
+          <div className="card-data-control">
+            <span className="card-data-control-label">Format</span>
+            <div className="card-data-segmented">
+              {[
+                ['all', 'Limited'],
+                ['sealed', 'Sealed'],
+                ['draft', 'Draft'],
+              ].map(([value, label]) => (
+                <button key={value} className={`card-data-segment ${format === value ? 'active' : ''}`} onClick={() => setFormat(value as any)}>{label}</button>
+              ))}
+            </div>
+          </div>
+          <div className="card-data-control">
+            <span className="card-data-control-label">Source</span>
+            <div className="card-data-segmented">
+              {[
+                ['all', 'All'],
+                ['online', 'Online'],
+                ['in-person', 'In-Person'],
+              ].map(([value, label]) => (
+                <button key={value} className={`card-data-segment ${source === value ? 'active' : ''}`} onClick={() => setSource(value as any)}>{label}</button>
+              ))}
+            </div>
+          </div>
+          <div className="card-data-control">
+            <span className="card-data-control-label">View</span>
+            <div className="card-data-segmented">
+              {[
+                ['table', 'Table'],
+                ['tiers', 'Tier List'],
+              ].map(([value, label]) => (
+                <button key={value} className={`card-data-segment ${view === value ? 'active' : ''}`} onClick={() => setView(value as CardDataView)}>{label}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {!hasCards ? (
+          <div className="stats-empty">
+            <p>No card data available for {setCode} with these filters yet.</p>
+          </div>
+        ) : (
+          <>
+            <div className="draft-picks-summary card-data-summary">
+              <div className="stat-item">
+                <span className="stat-label">Decks With Results:</span>
+                <span className="stat-value">{fmt(cardData.totalDecks)}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Matches:</span>
+                <span className="stat-value">{fmt(cardData.totalMatches)}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Leaders:</span>
+                <span className="stat-value">{fmt(cardData.leaders?.length || 0)}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Bases:</span>
+                <span className="stat-value">{fmt(cardData.bases?.length || 0)}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Cards:</span>
+                <span className="stat-value">{fmt(cardData.cards?.length || 0)}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Grade Basis:</span>
+                <span className="stat-value">{cardData.gradeBasis}</span>
+              </div>
+            </div>
+
+            <p className="stats-warning">
+              Replay-hand columns stay blank until Wayfinder supplies validated card-observation facts.
+            </p>
+
+            <StatsLegend {...legendProps} showBuiltDeckFilter={false} />
+            <TableFilter {...cardFilter} placeholder="Search cards, leaders, bases..." />
+
+            <div className={`card-data-sections card-data-sections-${view}`}>
+              {view === 'tiers'
+                ? cardSections.map(renderTierSection)
+                : cardSections.map(renderTableSection)}
+            </div>
+          </>
+        )}
+      </div>
+    </CardPreviewProvider>
   )
 }
 

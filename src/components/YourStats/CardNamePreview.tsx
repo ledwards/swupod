@@ -25,6 +25,7 @@ export interface CardNameEntry {
   imageUrl?: string | null
   backImageUrl?: string | null
   isLeader?: boolean
+  isBase?: boolean
 }
 
 const Ctx = createContext(null)
@@ -54,7 +55,7 @@ export function CardPreviewProvider({ children }: { children: React.ReactNode })
 export function CardName({ entry, className = '' }: { entry: CardNameEntry; className?: string }) {
   const preview = useContext(Ctx)
   const card = entry.imageUrl
-    ? { name: entry.name, imageUrl: entry.imageUrl, backImageUrl: entry.backImageUrl || null, isLeader: !!entry.isLeader }
+    ? { name: entry.name, imageUrl: entry.imageUrl, backImageUrl: entry.backImageUrl || null, isLeader: !!entry.isLeader, isBase: !!entry.isBase }
     : null
 
   // The whole name+subtitle is one hover target (subtitle is part of the card).

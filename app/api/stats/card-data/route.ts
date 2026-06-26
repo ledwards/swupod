@@ -41,6 +41,25 @@ function resolveCard(cardMap: Map<string, any>, entry: any) {
   return cardMap.get(id) || cardMap.get(String(id).replace(/-/g, '_')) || null
 }
 
+function fallbackStoredCard(entry: any, type: 'Leader' | 'Base' | 'Unit') {
+  const name = entry?.name || entry?.cardName
+  if (!name) return null
+  return {
+    id: entry?.id || entry?.cardId || entry?.card_id || `${type}:${name}:${entry?.subtitle || ''}`,
+    cardId: entry?.cardId || entry?.card_id || null,
+    name,
+    subtitle: entry?.subtitle || null,
+    rarity: entry?.rarity || (type === 'Base' ? 'Common' : 'Unknown'),
+    type: entry?.type || type,
+    aspects: Array.isArray(entry?.aspects) ? entry.aspects : [],
+    cost: entry?.cost ?? null,
+    imageUrl: entry?.imageUrl || entry?.image_url || null,
+    backImageUrl: entry?.backImageUrl || entry?.back_image_url || null,
+    isLeader: type === 'Leader',
+    isBase: type === 'Base',
+  }
+}
+
 function entryCopies(entry: any): number {
   return Math.max(0, Math.floor(num(entry?.count, 1)))
 }
@@ -50,6 +69,100 @@ function gradeStatusLabel(status: string): string {
   if (status === 'slice-too-small') return 'Needs 25 cards'
   if (status === 'zero-variance') return 'No spread'
   return status
+}
+
+function newBucket(card: any) {
+  return {
+    card,
+    deckCount: 0,
+    rawCopies: 0,
+    gpCount: 0,
+    gpWins: 0,
+    matchWins: 0,
+    matchLosses: 0,
+    matchDraws: 0,
+  }
+}
+
+function addMetricFact(
+  map: Map<string, any>,
+  normalCardMap: Map<string, any>,
+  card: any,
+  copies: number,
+  wins: number,
+  losses: number,
+  draws: number,
+) {
+  if (!card || copies <= 0) return
+  const normal = normalCardMap.get(cardIdentityKey(card)) || card
+  const key = cardIdentityKey(normal)
+  const matches = wins + losses + draws
+  if (matches <= 0) return
+
+  const current = map.get(key) || newBucket(normal)
+  current.deckCount += 1
+  current.rawCopies += copies
+  current.gpCount += copies * matches
+  current.gpWins += copies * wins
+  current.matchWins += wins
+  current.matchLosses += losses
+  current.matchDraws += draws
+  map.set(key, current)
+}
+
+function buildMetricRows(map: Map<string, any>, normalCardMap: Map<string, any>) {
+  const gradeInputs = Array.from(map.entries()).map(([key, value]) => ({
+    key,
+    wins: value.gpWins,
+    denominator: value.gpCount,
+  }))
+  const grades = new Map(computeCardGrades(gradeInputs).map((grade) => [grade.key, grade]))
+
+  return Array.from(map.entries()).map(([key, value]) => {
+    const card = value.card || normalCardMap.get(key)
+    const grade = grades.get(key)
+    const status = grade?.status || 'sample-too-small'
+
+    return {
+      cardName: card?.name || key.split('|')[0],
+      cardId: card?.cardId || card?.id || null,
+      subtitle: card?.subtitle || null,
+      rarity: card?.rarity || 'Unknown',
+      cardType: card?.type || 'Unknown',
+      aspects: card?.aspects || [],
+      cost: card?.cost ?? null,
+      imageUrl: card?.imageUrl || null,
+      backImageUrl: card?.backImageUrl || null,
+      isLeader: Boolean(card?.isLeader || card?.type === 'Leader'),
+      isBase: Boolean(card?.isBase || card?.type === 'Base'),
+      grade: grade?.grade || null,
+      gradeBasis: 'GP WR',
+      gradeStatus: status,
+      gradeStatusLabel: grade?.grade ? 'Graded' : gradeStatusLabel(status),
+      deckCount: value.deckCount,
+      rawCopies: value.rawCopies,
+      gpCount: value.gpCount,
+      gpWins: value.gpWins,
+      gpWr: pct(value.gpWins, value.gpCount),
+      ohCount: null,
+      ohWr: null,
+      gdCount: null,
+      gdWr: null,
+      gihCount: null,
+      gihWr: null,
+      gnsCount: null,
+      gnsWr: null,
+      iih: null,
+      playedRate: null,
+      resourcedWhenSeen: null,
+      playedWar: null,
+      sampleWarning: value.gpCount < 50 ? 'Low sample' : null,
+    }
+  }).sort((a, b) => {
+    const gradeCmp = (GRADE_SORT[b.grade] ?? -1) - (GRADE_SORT[a.grade] ?? -1)
+    if (gradeCmp !== 0) return gradeCmp
+    return (b.gpWr ?? -1) - (a.gpWr ?? -1) || b.gpCount - a.gpCount || a.cardName.localeCompare(b.cardName)
+  })
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -133,16 +246,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       ),
     )
 
-    const byCard = new Map<string, {
-      card: any
-      deckCount: number
-      rawCopies: number
-      gpCount: number
-      gpWins: number
-      matchWins: number
-      matchLosses: number
-      matchDraws: number
-    }>()
+    const byCard = new Map<string, any>()
+    const byLeader = new Map<string, any>()
+    const byBase = new Map<string, any>()
 
     let totalDecks = 0
     let totalMatches = 0
@@ -159,6 +265,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       totalMatches += matches
       if (num(row.linked_match_count) > 0) onlineLinkedDecks += 1
 
+      const leader = resolveCard(cardMap, row.leader) || fallbackStoredCard(row.leader, 'Leader')
+      const base = resolveCard(cardMap, row.base) || fallbackStoredCard(row.base, 'Base')
+      addMetricFact(byLeader, normalCardMap, leader, 1, wins, losses, draws)
+      addMetricFact(byBase, normalCardMap, base, 1, wins, losses, draws)
+
       const seenInDeck = new Set<string>()
       for (const entry of Array.isArray(row.deck) ? row.deck : []) {
         const card = resolveCard(cardMap, entry)
@@ -169,24 +280,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         const copies = entryCopies(entry)
         if (copies <= 0) continue
 
-        const current = byCard.get(key) || {
-          card: normal,
-          deckCount: 0,
-          rawCopies: 0,
-          gpCount: 0,
-          gpWins: 0,
-          matchWins: 0,
-          matchLosses: 0,
-          matchDraws: 0,
-        }
-
         if (!seenInDeck.has(key)) {
+          const current = byCard.get(key) || newBucket(normal)
           current.deckCount += 1
           current.matchWins += wins
           current.matchLosses += losses
           current.matchDraws += draws
+          byCard.set(key, current)
           seenInDeck.add(key)
         }
+        const current = byCard.get(key) || newBucket(normal)
         current.rawCopies += copies
         current.gpCount += copies * matches
         current.gpWins += copies * wins
@@ -194,56 +297,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }
     }
 
-    const gradeInputs = Array.from(byCard.entries()).map(([key, value]) => ({
-      key,
-      wins: value.gpWins,
-      denominator: value.gpCount,
-    }))
-    const grades = new Map(computeCardGrades(gradeInputs).map((grade) => [grade.key, grade]))
-
-    const cards = Array.from(byCard.entries()).map(([key, value]) => {
-      const card = value.card || normalCardMap.get(key)
-      const grade = grades.get(key)
-      const status = grade?.status || 'sample-too-small'
-
-      return {
-        cardName: card?.name || key.split('|')[0],
-        cardId: card?.cardId || card?.id || null,
-        subtitle: card?.subtitle || null,
-        rarity: card?.rarity || 'Unknown',
-        cardType: card?.type || 'Unknown',
-        aspects: card?.aspects || [],
-        cost: card?.cost ?? null,
-        imageUrl: card?.imageUrl || null,
-        backImageUrl: card?.backImageUrl || null,
-        grade: grade?.grade || null,
-        gradeBasis: 'GP WR',
-        gradeStatus: status,
-        gradeStatusLabel: grade?.grade ? 'Graded' : gradeStatusLabel(status),
-        deckCount: value.deckCount,
-        rawCopies: value.rawCopies,
-        gpCount: value.gpCount,
-        gpWins: value.gpWins,
-        gpWr: pct(value.gpWins, value.gpCount),
-        ohCount: null,
-        ohWr: null,
-        gdCount: null,
-        gdWr: null,
-        gihCount: null,
-        gihWr: null,
-        gnsCount: null,
-        gnsWr: null,
-        iih: null,
-        playedRate: null,
-        resourcedWhenSeen: null,
-        playedWar: null,
-        sampleWarning: value.gpCount < 50 ? 'Low sample' : null,
-      }
-    }).sort((a, b) => {
-      const gradeCmp = (GRADE_SORT[b.grade] ?? -1) - (GRADE_SORT[a.grade] ?? -1)
-      if (gradeCmp !== 0) return gradeCmp
-      return (b.gpWr ?? -1) - (a.gpWr ?? -1) || b.gpCount - a.gpCount || a.cardName.localeCompare(b.cardName)
-    })
+    const cards = buildMetricRows(byCard, normalCardMap)
+    const leaders = buildMetricRows(byLeader, normalCardMap)
+    const bases = buildMetricRows(byBase, normalCardMap)
 
     const response = jsonResponse({
       setCode,
@@ -254,6 +310,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       onlineLinkedDecks,
       replayMetricsStatus: 'unavailable',
       gradeBasis: 'GP WR',
+      leaders,
+      bases,
       cards,
     })
     response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
