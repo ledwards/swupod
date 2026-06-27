@@ -439,13 +439,24 @@ export function computeStrictOrProvisionalGrades(inputs: GradeInput[]): {
   provisional: boolean
 } {
   const strict = computeCardGrades(inputs)
-  if (strict.some((grade) => grade.grade != null)) {
-    return { grades: new Map(strict.map((grade) => [grade.key, grade])), provisional: false }
-  }
-
   const provisional = computeCardGrades(inputs, {
     minDenominator: 1,
     minCards: 5,
   })
-  return { grades: new Map(provisional.map((grade) => [grade.key, grade])), provisional: true }
+  const provisionalByKey = new Map(provisional.map((grade) => [grade.key, grade]))
+  let usedProvisional = false
+  const merged = strict.map((grade) => {
+    if (grade.grade != null) return grade
+    const fallback = provisionalByKey.get(grade.key)
+    if (fallback?.grade != null) {
+      usedProvisional = true
+      return fallback
+    }
+    return grade
+  })
+
+  return {
+    grades: new Map(merged.map((grade) => [grade.key, grade])),
+    provisional: usedProvisional,
+  }
 }

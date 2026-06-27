@@ -147,6 +147,23 @@ describe('card data metrics', () => {
     assert.notEqual(grades.get('c')?.grade, null)
   })
 
+  it('keeps strict grades and fills smaller nonzero samples with provisional grades', () => {
+    const inputs = Array.from({ length: 25 }, (_, index) => ({
+      key: `strict-${index}`,
+      wins: 25 + index,
+      denominator: 50,
+    }))
+    inputs.push({ key: 'small-but-observed', wins: 1, denominator: 1 })
+    inputs.push({ key: 'unobserved', wins: 0, denominator: 0 })
+
+    const { grades, provisional } = computeStrictOrProvisionalGrades(inputs)
+
+    assert.equal(provisional, true)
+    assert.notEqual(grades.get('strict-0')?.grade, null)
+    assert.notEqual(grades.get('small-but-observed')?.grade, null)
+    assert.equal(grades.get('unobserved')?.grade, null)
+  })
+
   it('assigns C when every gradeable card is exactly average', () => {
     const grades = computeCardGrades(Array.from({ length: 25 }, (_, index) => ({
       key: `card-${index}`,

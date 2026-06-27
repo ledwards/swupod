@@ -21,6 +21,7 @@ import {
 import {
   formatSeventeenLandsDeltaMetric,
   formatSeventeenLandsRateMetric,
+  SEVENTEEN_LANDS_METRICS,
 } from '@/src/services/cardDataMetrics'
 import './stats.css'
 
@@ -772,8 +773,12 @@ const GRADE_ORDER: Record<string, number> = {
   'C+': 6, C: 5, 'C-': 4,
   'D+': 3, D: 2, 'D-': 1,
   F: 0,
+  U: -1,
 }
-const CARD_TIER_ORDER = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F', 'Ungraded']
+const UNGRADED_LABEL = 'U'
+const CARD_TIER_ORDER = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F', UNGRADED_LABEL]
+const CARD_DATA_RATE_KEYS = ['gpWr', 'ohWr', 'gdWr', 'gihWr', 'gnsWr', 'playedRate', 'resourcedWhenSeen'] as const
+const CARD_DATA_DELTA_KEYS = ['iih', 'playedWar'] as const
 
 // === Shared Skeleton ===
 
@@ -1000,6 +1005,8 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
   const [view, setView] = useState<CardDataView>('table')
   const [sortKey, setSortKey] = useState<CardDataSortKey>('grade')
   const [sortAsc, setSortAsc] = useState(false)
+  const [selectedStatsCard, setSelectedStatsCard] = useState<CardDataCard | null>(null)
+  const [definitionsOpen, setDefinitionsOpen] = useState(false)
   const cardFilter = useTableFilter()
 
   useEffect(() => {
@@ -1105,7 +1112,7 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
     const groups = new Map<string, CardDataCard[]>()
     for (const grade of CARD_TIER_ORDER) groups.set(grade, [])
     for (const card of rows) {
-      groups.get(card.grade || 'Ungraded')?.push(card)
+      groups.get(card.grade || UNGRADED_LABEL)?.push(card)
     }
     return groups
   }
@@ -1177,6 +1184,79 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
     isLeader: Boolean(card.isLeader),
     isBase: Boolean(card.isBase),
   })
+  const displayGrade = (card: CardDataCard | null | undefined) => card?.grade || UNGRADED_LABEL
+  const tileImageUrl = (card: CardDataCard) => {
+    if (card.isLeader) return card.backImageUrl || card.imageUrl || null
+    return card.imageUrl || card.backImageUrl || null
+  }
+  const tileKind = (card: CardDataCard) => {
+    if (card.isBase) return 'base'
+    if ((card.cardType || '').toLowerCase().includes('event')) return 'event'
+    return 'unit'
+  }
+  const tierCardStyle = (card: CardDataCard) => {
+    const image = tileImageUrl(card)
+    return image ? { backgroundImage: `url("${image}")` } : undefined
+  }
+  const openCardStats = (card: CardDataCard) => setSelectedStatsCard(card)
+  const closeCardStats = () => setSelectedStatsCard(null)
+  const metricValue = (card: CardDataCard, key: string) => {
+    if (key === 'grade') return displayGrade(card)
+    if ((CARD_DATA_RATE_KEYS as readonly string[]).includes(key)) return rateDisplay(card, key as any)
+    if ((CARD_DATA_DELTA_KEYS as readonly string[]).includes(key)) return deltaDisplay(card, key as any)
+    return '—'
+  }
+  const statsMetricRows = (card: CardDataCard) => [
+    {
+      key: 'grade',
+      label: 'G',
+      value: displayGrade(card),
+      formula: SEVENTEEN_LANDS_METRICS.grade.formula,
+      detail: card.gradeStatusLabel,
+    },
+    ...(['gpWr', 'ohWr', 'gdWr', 'gihWr', 'gnsWr'] as const).map(key => ({
+      key,
+      label: SEVENTEEN_LANDS_METRICS[key].label,
+      value: metricValue(card, key),
+      formula: SEVENTEEN_LANDS_METRICS[key].formula,
+    })),
+    {
+      key: 'iih',
+      label: SEVENTEEN_LANDS_METRICS.iih.label,
+      value: metricValue(card, 'iih'),
+      formula: SEVENTEEN_LANDS_METRICS.iih.formula,
+    },
+    {
+      key: 'playedRate',
+      label: SEVENTEEN_LANDS_METRICS.playedRate.label,
+      value: metricValue(card, 'playedRate'),
+      formula: SEVENTEEN_LANDS_METRICS.playedRate.formula,
+    },
+    {
+      key: 'resourcedWhenSeen',
+      label: SEVENTEEN_LANDS_METRICS.resourcedWhenSeen.label,
+      value: metricValue(card, 'resourcedWhenSeen'),
+      formula: SEVENTEEN_LANDS_METRICS.resourcedWhenSeen.formula,
+    },
+    {
+      key: 'playedWar',
+      label: SEVENTEEN_LANDS_METRICS.playedWar.label,
+      value: metricValue(card, 'playedWar'),
+      formula: SEVENTEEN_LANDS_METRICS.playedWar.formula,
+    },
+  ]
+  const metricDefinitions = [
+    SEVENTEEN_LANDS_METRICS.grade,
+    SEVENTEEN_LANDS_METRICS.gpWr,
+    SEVENTEEN_LANDS_METRICS.ohWr,
+    SEVENTEEN_LANDS_METRICS.gdWr,
+    SEVENTEEN_LANDS_METRICS.gihWr,
+    SEVENTEEN_LANDS_METRICS.gnsWr,
+    SEVENTEEN_LANDS_METRICS.iih,
+    SEVENTEEN_LANDS_METRICS.playedRate,
+    SEVENTEEN_LANDS_METRICS.resourcedWhenSeen,
+    SEVENTEEN_LANDS_METRICS.playedWar,
+  ]
 
   const SortHeader = ({ label, col, title }: { label: string, col: CardDataSortKey, title?: string }) => (
     <th className={`sortable ${sortKey === col ? 'active' : ''}`} onClick={() => handleSort(col)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSort(col) } }} tabIndex={0} aria-sort={sortKey === col ? (sortAsc ? 'ascending' : 'descending') : 'none'} title={title}>
@@ -1212,7 +1292,7 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
           {card.grade}
         </span>
       ) : (
-        <span className="metric-unavailable" title={card.gradeStatusLabel}>—</span>
+        <span className="card-grade card-grade-ungraded" title={card.gradeStatusLabel}>U</span>
       )}
     </td>
   )
@@ -1317,7 +1397,21 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
                   <div className="card-data-tier-label">{grade}</div>
                   <div className="card-data-tier-cards">
                     {rows.map((card: CardDataCard) => (
-                      <span key={`${section.key}-${cardDataLookupKey(card)}`} className="card-data-tier-card">
+                      <span
+                        key={`${section.key}-${cardDataLookupKey(card)}`}
+                        className={`card-data-tier-card card-data-tier-card-${tileKind(card)} ${tileImageUrl(card) ? 'card-data-tier-card-has-art' : ''}`}
+                        style={tierCardStyle(card)}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => openCardStats(card)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            openCardStats(card)
+                          }
+                        }}
+                        title={`Open 17L stats for ${card.cardName}`}
+                      >
                         <CardName entry={cardNameEntry(card)} className="card-data-name card-data-tier-card-name" />
                         <span className="card-data-tier-card-meta">
                           <span className={rarityClass(card.rarity)} title={card.rarity}>{card.rarity.slice(0, 1)}</span>
@@ -1374,6 +1468,15 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
               ))}
             </div>
           </div>
+          <button
+            type="button"
+            className="card-data-info-button"
+            onClick={() => setDefinitionsOpen(true)}
+            title="Explain the 17L card data terms"
+            aria-label="Explain 17L card data terms"
+          >
+            i
+          </button>
         </div>
 
         {!hasCards ? (
@@ -1428,6 +1531,53 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
                 : cardSections.map(renderTableSection)}
             </div>
           </>
+        )}
+        {selectedStatsCard && (
+          <div className="card-data-modal-backdrop" role="presentation" onClick={closeCardStats}>
+            <section className="card-data-modal" role="dialog" aria-modal="true" aria-label={`17L stats for ${selectedStatsCard.cardName}`} onClick={(e) => e.stopPropagation()}>
+              <div className="card-data-modal-header">
+                <div>
+                  <h3>{selectedStatsCard.cardName}</h3>
+                  {selectedStatsCard.subtitle ? <p>{selectedStatsCard.subtitle}</p> : null}
+                </div>
+                <button type="button" className="card-data-modal-close" onClick={closeCardStats} aria-label="Close card stats">x</button>
+              </div>
+              <div className="card-data-modal-grid">
+                {statsMetricRows(selectedStatsCard).map(metric => (
+                  <div className="card-data-modal-metric" key={metric.key} title={metric.formula}>
+                    <span className="card-data-modal-metric-label">{metric.label}</span>
+                    <span className="card-data-modal-metric-value">{metric.value || '—'}</span>
+                    <span className="card-data-modal-metric-formula">{metric.formula}</span>
+                    {metric.detail ? <span className="card-data-modal-metric-detail">{metric.detail}</span> : null}
+                  </div>
+                ))}
+              </div>
+              <p className="card-data-modal-note">
+                {selectedStatsCard.sampleWarning || `${selectedStatsCard.gradeBasis} grade. ${selectedStatsCard.gpCount ? fmt(selectedStatsCard.gpCount) : 0} game-observations.`}
+              </p>
+            </section>
+          </div>
+        )}
+        {definitionsOpen && (
+          <div className="card-data-modal-backdrop" role="presentation" onClick={() => setDefinitionsOpen(false)}>
+            <section className="card-data-modal card-data-definitions-modal" role="dialog" aria-modal="true" aria-label="17L metric definitions" onClick={(e) => e.stopPropagation()}>
+              <div className="card-data-modal-header">
+                <div>
+                  <h3>17L Terms</h3>
+                  <p>Canonical card-data display terms and formulas.</p>
+                </div>
+                <button type="button" className="card-data-modal-close" onClick={() => setDefinitionsOpen(false)} aria-label="Close definitions">x</button>
+              </div>
+              <div className="card-data-definitions-grid">
+                {metricDefinitions.map(metric => (
+                  <div className="card-data-definition" key={metric.key}>
+                    <span>{metric.label}</span>
+                    <p>{metric.formula}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
         )}
       </div>
     </CardPreviewProvider>

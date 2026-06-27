@@ -8,6 +8,8 @@ export interface WayfinderCardStatsRow {
   cost: number | null
   setCode: string | null
   rarity: string | null
+  imageUrl?: string | null
+  backImageUrl?: string | null
   deckCount: number
   totalDecks: number
   deckGames: number
@@ -137,8 +139,8 @@ export function mapWayfinderCardStatsRow(row: WayfinderCardStatsRow): SwupodCard
     cardType: row.type || 'Unknown',
     aspects: Array.isArray(row.aspects) ? row.aspects : [],
     cost: row.cost,
-    imageUrl: null,
-    backImageUrl: null,
+    imageUrl: row.imageUrl || null,
+    backImageUrl: row.backImageUrl || null,
     isLeader: false,
     isBase: false,
     grade: row.grade,
