@@ -320,12 +320,196 @@
 
 .canvas-card .card-badges {
   position: absolute;
-  top: 4px;
-  right: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  inset: 0;
+  display: block;
   pointer-events: none;
+}
+
+.canvas-card .card-badges > * {
+  pointer-events: auto;
+}
+
+.canvas-card .card-badges > :not(.swupod-card-17l-button) {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+}
+
+.swupod-card-17l-button {
+  align-items: center;
+  background: rgba(4, 10, 18, 0.86);
+  border: 1px solid rgba(185, 213, 245, 0.72);
+  border-radius: 8px;
+  bottom: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  display: inline-flex;
+  height: 28px;
+  justify-content: center;
+  padding: 0 5px;
+  position: absolute;
+  right: 5px;
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+  width: 28px;
+  z-index: 12;
+}
+
+.swupod-card-17l-button:hover,
+.swupod-card-17l-button:focus-visible {
+  background: rgba(10, 22, 36, 0.96);
+  border-color: rgba(210, 232, 255, 0.95);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.swupod-card-17l-button img {
+  display: block;
+  max-height: 18px;
+  max-width: 18px;
+}
+
+.swupod-17l-modal-backdrop {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.74);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  z-index: 2147482000;
+}
+
+.swupod-17l-modal {
+  background: #11161d;
+  border: 1px solid rgba(185, 213, 245, 0.24);
+  border-radius: 12px;
+  box-shadow: 0 24px 90px rgba(0, 0, 0, 0.62);
+  color: #e8eef5;
+  max-height: min(88vh, 820px);
+  overflow: auto;
+  position: relative;
+  width: min(720px, 100%);
+}
+
+.swupod-17l-modal-close {
+  background: #0b0f14;
+  border: 1px solid rgba(185, 213, 245, 0.22);
+  border-radius: 8px;
+  color: #aebccd;
+  cursor: pointer;
+  float: right;
+  font-size: 22px;
+  height: 34px;
+  line-height: 1;
+  margin: 10px 10px 0 0;
+  position: sticky;
+  top: 10px;
+  width: 34px;
+  z-index: 2;
+}
+
+.swupod-17l-panel {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+}
+
+.swupod-17l-panel-header {
+  align-items: flex-start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  padding-right: 36px;
+}
+
+.swupod-17l-kicker,
+.swupod-17l-metric-label,
+.swupod-17l-metric-formula {
+  color: #91a5b7;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.swupod-17l-panel h2 {
+  color: #f2e5d0;
+  font-family: var(--heading-font, inherit);
+  font-size: 28px;
+  line-height: 1;
+  margin: 4px 0 0;
+}
+
+.swupod-17l-panel h2 span {
+  color: #91a5b7;
+  display: block;
+  font-size: 18px;
+  font-weight: 500;
+  margin-top: 5px;
+}
+
+.swupod-17l-panel p {
+  color: #91a5b7;
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+
+.swupod-17l-grade {
+  background: rgba(185, 213, 245, 0.13);
+  border-radius: 8px;
+  color: #f2e5d0;
+  font-weight: 850;
+  min-width: 48px;
+  padding: 7px 10px;
+  text-align: center;
+}
+
+.swupod-17l-metric-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+}
+
+.swupod-17l-metric-cell {
+  background: #151d25;
+  border: 1px solid #293744;
+  border-radius: 8px;
+  min-height: 96px;
+  min-width: 0;
+  padding: 10px;
+}
+
+.swupod-17l-metric-value {
+  color: #f2e5d0;
+  font-size: 20px;
+  font-weight: 850;
+  margin-top: 7px;
+  overflow-wrap: anywhere;
+}
+
+.swupod-17l-metric-secondary {
+  color: #91a5b7;
+  font-size: 12px;
+  font-weight: 750;
+  margin-top: 1px;
+}
+
+.swupod-17l-metric-formula {
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  margin-top: 9px;
+  overflow-wrap: anywhere;
+  text-transform: none;
+}
+
+.swupod-17l-note,
+.swupod-17l-empty {
+  border: 1px solid #293744;
+  border-radius: 8px;
+  color: #aebccd;
+  font-size: 13px;
+  padding: 12px;
 }
 
 .canvas-card .aspect-penalty-badge {

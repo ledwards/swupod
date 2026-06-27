@@ -13,6 +13,7 @@
 import { useState, useRef, useCallback, type MouseEvent, type TouchEvent } from 'react'
 import Card, { type CardProps, type CardData } from './Card'
 import { CardPreview } from './DeckBuilder/CardPreview'
+import { WayfinderCardStatsButton } from './WayfinderCardStatsButton'
 
 // Detect small viewport (phones)
 function isSmallViewport(): boolean {
@@ -25,7 +26,7 @@ export interface CardWithPreviewProps extends Omit<CardProps, 'onMouseEnter' | '
   onClick?: (e: MouseEvent<HTMLDivElement>) => void
 }
 
-export function CardWithPreview({ card, onClick, ...rest }: CardWithPreviewProps) {
+export function CardWithPreview({ card, onClick, children, ...rest }: CardWithPreviewProps) {
   const [preview, setPreview] = useState<{ card: CardData; x: number; y: number; isMobile: boolean } | null>(null)
   const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const longPressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -107,7 +108,10 @@ export function CardWithPreview({ card, onClick, ...rest }: CardWithPreviewProps
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         {...rest}
-      />
+      >
+        {children}
+        <WayfinderCardStatsButton card={card} />
+      </Card>
       {preview && (
         <CardPreview
           card={preview.card}
