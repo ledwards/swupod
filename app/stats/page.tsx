@@ -1409,9 +1409,15 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
               </div>
             </div>
 
-            <p className="stats-warning">
-              Replay-hand columns stay blank until Wayfinder supplies validated card-observation facts.
-            </p>
+            {cardData.replayMetricsStatus === 'available' ? (
+              <p className="stats-warning stats-warning-success">
+                Replay-hand columns are hydrated from Wayfinder card-observation facts for online global slices.
+              </p>
+            ) : (
+              <p className="stats-warning">
+                Replay-hand columns stay blank until Wayfinder supplies validated card-observation facts for this slice.
+              </p>
+            )}
 
             <StatsLegend {...legendProps} showBuiltDeckFilter={false} />
             <TableFilter {...cardFilter} placeholder="Search cards, leaders, bases..." />

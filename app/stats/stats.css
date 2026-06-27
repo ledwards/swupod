@@ -423,6 +423,12 @@
   margin: 0.75rem 0;
 }
 
+.card-data-tab .stats-warning-success {
+  background: rgba(76, 175, 80, 0.13);
+  border-color: rgba(76, 175, 80, 0.32);
+  color: #8FE3A1;
+}
+
 .card-data-gate {
   margin: 2rem auto;
   max-width: 560px;

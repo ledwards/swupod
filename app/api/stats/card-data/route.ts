@@ -6,6 +6,7 @@ import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
 import { buildCardLookupMaps, cardIdentityKey } from '@/src/utils/cardNormalization'
 import { computeStrictOrProvisionalGrades } from '@/src/services/cardDataMetrics'
+import { fetchWayfinderReplayCardStats } from '@/src/services/wayfinderCardStatsBridge'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -300,7 +301,21 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }
     }
 
-    const cards = buildMetricRows(byCard, normalCardMap)
+    const wayfinderReplayStats = await fetchWayfinderReplayCardStats({
+      setCode,
+      since,
+      until,
+      format,
+      source,
+      userId,
+      tournamentOnly,
+      topPlayersOnly,
+    }).catch((error) => {
+      console.warn('wayfinder card stats bridge failed:', error)
+      return null
+    })
+
+    const cards = wayfinderReplayStats?.rows || buildMetricRows(byCard, normalCardMap)
     const leaders = buildMetricRows(byLeader, normalCardMap)
     const bases = buildMetricRows(byBase, normalCardMap)
 
@@ -308,11 +323,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       setCode,
       format,
       source,
-      totalDecks,
+      totalDecks: wayfinderReplayStats?.totalDecks ?? totalDecks,
       totalMatches,
       onlineLinkedDecks,
-      replayMetricsStatus: 'unavailable',
-      gradeBasis: 'GP WR',
+      replayMetricsStatus: wayfinderReplayStats?.replayMetricsStatus ?? 'unavailable',
+      gradeBasis: wayfinderReplayStats?.gradeBasis ?? 'GP WR',
       leaders,
       bases,
       cards,
