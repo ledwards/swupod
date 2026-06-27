@@ -5,7 +5,7 @@ import { cachedAggregate, STATS_AGGREGATE_TTL_MS } from '@/lib/queryCache'
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
 import { buildCardLookupMaps, cardIdentityKey } from '@/src/utils/cardNormalization'
-import { computeCardGrades } from '@/src/services/cardDataMetrics'
+import { computeStrictOrProvisionalGrades } from '@/src/services/cardDataMetrics'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -116,7 +116,7 @@ function buildMetricRows(map: Map<string, any>, normalCardMap: Map<string, any>)
     wins: value.gpWins,
     denominator: value.gpCount,
   }))
-  const grades = new Map(computeCardGrades(gradeInputs).map((grade) => [grade.key, grade]))
+  const { grades, provisional } = computeStrictOrProvisionalGrades(gradeInputs)
 
   return Array.from(map.entries()).map(([key, value]) => {
     const card = value.card || normalCardMap.get(key)
@@ -138,7 +138,7 @@ function buildMetricRows(map: Map<string, any>, normalCardMap: Map<string, any>)
       grade: grade?.grade || null,
       gradeBasis: 'GP WR',
       gradeStatus: status,
-      gradeStatusLabel: grade?.grade ? 'Graded' : gradeStatusLabel(status),
+      gradeStatusLabel: grade?.grade ? (provisional ? 'Provisional grade' : 'Graded') : gradeStatusLabel(status),
       deckCount: value.deckCount,
       rawCopies: value.rawCopies,
       gpCount: value.gpCount,
@@ -156,7 +156,10 @@ function buildMetricRows(map: Map<string, any>, normalCardMap: Map<string, any>)
       playedRate: null,
       resourcedWhenSeen: null,
       playedWar: null,
-      sampleWarning: value.gpCount < 50 ? 'Low sample' : null,
+      sampleWarning: [
+        provisional && grade?.grade ? 'Provisional grade' : null,
+        value.gpCount < 50 ? 'Low sample' : null,
+      ].filter(Boolean).join('; ') || null,
     }
   }).sort((a, b) => {
     const gradeCmp = (GRADE_SORT[b.grade] ?? -1) - (GRADE_SORT[a.grade] ?? -1)

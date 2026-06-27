@@ -28,6 +28,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## CRITICAL: USE WORKTREES, NOT BRANCH SWITCHES, FOR AGENT WORK
+
+This checkout may be shared with other agents. **Do not run `git checkout`, `git switch`, or otherwise change branches in the main working tree for feature work.**
+
+- Create/use a separate git worktree for every agent task or parallel feature.
+- If work spans multiple repos, create one worktree per repo with matching branch names.
+- Before changing branch state, inspect existing worktrees and current dirty state.
+- Never disrupt another agent's uncommitted changes by switching branches in their checkout.
+- If a requested change already has dirty work in the current checkout, either continue in the existing worktree or make a new worktree and explicitly move only the intended changes.
+
+---
+
 ## Project Overview
 
 Protect the Pod is a Star Wars: Unlimited draft and sealed simulator. It generates booster packs, supports multiplayer drafts with real-time sync via Socket.io, and includes a deck builder.

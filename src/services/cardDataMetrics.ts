@@ -1,5 +1,31 @@
 export type CardMetricKey = 'gpWr' | 'ohWr' | 'gdWr' | 'gihWr' | 'gnsWr'
 
+export type SeventeenLandsRateMetricKey = CardMetricKey | 'playedRate' | 'resourcedWhenSeen'
+export type SeventeenLandsDeltaMetricKey = 'iih' | 'playedWar'
+export type SeventeenLandsDisplayMetricKey =
+  | 'grade'
+  | SeventeenLandsRateMetricKey
+  | SeventeenLandsDeltaMetricKey
+
+export interface SeventeenLandsMetricDefinition {
+  key: SeventeenLandsDisplayMetricKey
+  column: string
+  label: string
+  formula: string
+  kind: 'grade' | 'rate' | 'delta'
+}
+
+export interface SeventeenLandsFormattedMetric {
+  key: SeventeenLandsDisplayMetricKey
+  label: string
+  value: string
+  display: string
+  formula: string
+  numerator?: number
+  denominator?: number
+  percentage?: number | null
+}
+
 export type CardGrade =
   | 'A+'
   | 'A'
@@ -60,9 +86,99 @@ export interface GradeResult {
   status: 'graded' | 'sample-too-small' | 'slice-too-small' | 'zero-variance'
 }
 
-export const CARD_GRADE_PRIOR_WEIGHT = 0
+export const CARD_GRADE_PRIOR_WEIGHT = 50
 export const CARD_GRADE_MIN_DENOMINATOR = 50
 export const CARD_GRADE_MIN_CARDS = 25
+
+export const SEVENTEEN_LANDS_TABLE_COLUMNS = [
+  'Title',
+  'Aspects',
+  'C',
+  'R',
+  'G',
+  'GP WR',
+  'OH WR',
+  'GD WR',
+  'GIH WR',
+  'GNS WR',
+  'IIH',
+  'PR',
+  'RWS%',
+  'PWAR',
+] as const
+
+export const SEVENTEEN_LANDS_METRICS: Record<SeventeenLandsDisplayMetricKey, SeventeenLandsMetricDefinition> = {
+  grade: {
+    key: 'grade',
+    column: 'G',
+    label: 'G',
+    formula: 'derived grade from selected basis, default GIH WR, fallback GP WR',
+    kind: 'grade',
+  },
+  gpWr: {
+    key: 'gpWr',
+    column: 'GP WR',
+    label: 'GP WR',
+    formula: 'gp_wins / gp_count',
+    kind: 'rate',
+  },
+  ohWr: {
+    key: 'ohWr',
+    column: 'OH WR',
+    label: 'OH WR',
+    formula: 'oh_wins / oh_count',
+    kind: 'rate',
+  },
+  gdWr: {
+    key: 'gdWr',
+    column: 'GD WR',
+    label: 'GD WR',
+    formula: 'gd_wins / gd_count',
+    kind: 'rate',
+  },
+  gihWr: {
+    key: 'gihWr',
+    column: 'GIH WR',
+    label: 'GIH WR',
+    formula: 'gih_wins / gih_count',
+    kind: 'rate',
+  },
+  gnsWr: {
+    key: 'gnsWr',
+    column: 'GNS WR',
+    label: 'GNS WR',
+    formula: 'gns_wins / gns_count',
+    kind: 'rate',
+  },
+  iih: {
+    key: 'iih',
+    column: 'IIH',
+    label: 'IIH',
+    formula: '(gih_wins / gih_count) - (gns_wins / gns_count)',
+    kind: 'delta',
+  },
+  playedRate: {
+    key: 'playedRate',
+    column: 'PR',
+    label: 'PR',
+    formula: 'played_copies_from_seen_hand / gih_count',
+    kind: 'rate',
+  },
+  resourcedWhenSeen: {
+    key: 'resourcedWhenSeen',
+    column: 'RWS%',
+    label: 'RWS%',
+    formula: 'resourced_copies_from_seen_hand / gih_count',
+    kind: 'rate',
+  },
+  playedWar: {
+    key: 'playedWar',
+    column: 'PWAR',
+    label: 'PWAR',
+    formula: '(played_wins / played_count) - (unplayed_wins / unplayed_count)',
+    kind: 'delta',
+  },
+}
 
 export function computeGnsCopies(input: {
   deckCopies: number
@@ -79,6 +195,79 @@ export function computeGnsCopies(input: {
 
 function wr(wins: number, denominator: number): number | null {
   return denominator > 0 ? wins / denominator : null
+}
+
+function cleanDisplayCount(value: number): number {
+  return Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0
+}
+
+function formatPercentage(value: number): string {
+  return `${(Math.round(value * 1000) / 10).toFixed(1)}%`
+}
+
+export function formatSeventeenLandsRateMetric(
+  key: SeventeenLandsRateMetricKey,
+  numerator: number | null | undefined,
+  denominator: number | null | undefined,
+): SeventeenLandsFormattedMetric {
+  const definition = SEVENTEEN_LANDS_METRICS[key]
+  const cleanNumerator = cleanDisplayCount(numerator ?? 0)
+  const cleanDenominator = cleanDisplayCount(denominator ?? 0)
+
+  if (cleanDenominator <= 0) {
+    return {
+      key,
+      label: definition.label,
+      value: '--',
+      display: `${definition.label} --`,
+      formula: definition.formula,
+      numerator: cleanNumerator,
+      denominator: cleanDenominator,
+      percentage: null,
+    }
+  }
+
+  const percentage = cleanNumerator / cleanDenominator
+  const value = `${formatPercentage(percentage)} (${cleanNumerator}/${cleanDenominator})`
+
+  return {
+    key,
+    label: definition.label,
+    value,
+    display: `${definition.label} ${value}`,
+    formula: definition.formula,
+    numerator: cleanNumerator,
+    denominator: cleanDenominator,
+    percentage,
+  }
+}
+
+export function formatSeventeenLandsDeltaMetric(
+  key: SeventeenLandsDeltaMetricKey,
+  percentagePoints: number | null | undefined,
+): SeventeenLandsFormattedMetric {
+  const definition = SEVENTEEN_LANDS_METRICS[key]
+  if (percentagePoints == null || !Number.isFinite(percentagePoints)) {
+    return {
+      key,
+      label: definition.label,
+      value: '--',
+      display: `${definition.label} --`,
+      formula: definition.formula,
+      percentage: null,
+    }
+  }
+
+  const rounded = Math.round(percentagePoints * 10) / 10
+  const value = `${rounded >= 0 ? '+' : ''}${rounded.toFixed(1)}pp`
+  return {
+    key,
+    label: definition.label,
+    value,
+    display: `${definition.label} ${value}`,
+    formula: definition.formula,
+    percentage: rounded,
+  }
 }
 
 function pp(a: number | null, b: number | null, minA: number, minB: number, denomA: number, denomB: number): number | null {
@@ -215,10 +404,10 @@ export function computeCardGrades(inputs: GradeInput[], options?: {
   if (sd === 0) {
     return inputs.map((input) => ({
       key: input.key,
-      grade: null,
-      zScore: null,
+      grade: input.denominator >= minDenominator ? 'C' : null,
+      zScore: input.denominator >= minDenominator ? 0 : null,
       shrunkRate: shrunk.get(input.key) ?? null,
-      status: input.denominator >= minDenominator ? 'zero-variance' : 'sample-too-small',
+      status: input.denominator >= minDenominator ? 'graded' : 'sample-too-small',
     }))
   }
 
@@ -243,4 +432,20 @@ export function computeCardGrades(inputs: GradeInput[], options?: {
       status: 'graded',
     }
   })
+}
+
+export function computeStrictOrProvisionalGrades(inputs: GradeInput[]): {
+  grades: Map<string, GradeResult>
+  provisional: boolean
+} {
+  const strict = computeCardGrades(inputs)
+  if (strict.some((grade) => grade.grade != null)) {
+    return { grades: new Map(strict.map((grade) => [grade.key, grade])), provisional: false }
+  }
+
+  const provisional = computeCardGrades(inputs, {
+    minDenominator: 1,
+    minCards: 5,
+  })
+  return { grades: new Map(provisional.map((grade) => [grade.key, grade])), provisional: true }
 }
