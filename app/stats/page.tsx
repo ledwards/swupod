@@ -4,6 +4,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { useCardPreview } from '@/src/hooks/useCardPreview'
 import { useStickyTab } from '@/src/hooks/useStickyTab'
+import { usePluginPresence } from '@/src/hooks/usePluginPresence'
 import { CardPreview } from '@/src/components/DeckBuilder/CardPreview'
 import { CardPreviewProvider, CardName } from '@/src/components/CardNamePreview'
 import { useAuth } from '@/src/contexts/AuthContext'
@@ -17,6 +18,10 @@ import {
   getStatsSetTabs,
   STATS_SET_COLORS,
 } from '@/src/utils/statsSetTabs'
+import {
+  formatSeventeenLandsDeltaMetric,
+  formatSeventeenLandsRateMetric,
+} from '@/src/services/cardDataMetrics'
 import './stats.css'
 
 const tournamentPlayerCount = tournamentUserIds.length
@@ -598,7 +603,7 @@ interface SetStatsTabProps {
 function SetStatsTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred, canSeeFullStats }: SetStatsTabProps) {
   // Secondary subtab — persists across visits via localStorage; the page hash
   // belongs to the primary set tab, so this group stays out of the URL (url:false).
-  const [subTab, setSubTab] = useStickyTab(['sealed', 'draft', 'card-data'] as const, 'sealed', { url: false, storageKey: 'ptp:stats-subtab' })
+  const [subTab, setSubTab] = useStickyTab(['sealed', 'draft', 'card-data'] as const, 'card-data', { url: false, storageKey: 'ptp:stats-subtab' })
 
   return (
     <div className="generation-stats">
@@ -982,6 +987,8 @@ function buildCardDataLookupMap(items: CardDataCard[] | undefined): Map<string, 
 // === Card Data Tab ===
 
 function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred, canSeeFullStats }: TabProps) {
+  const pluginPresence = usePluginPresence()
+  const canViewCardData = pluginPresence.loaded && pluginPresence.hasPlugin && pluginPresence.eligibleForCardStats
   const [cardData, setCardData] = useState<CardDataStats | null>(null)
   const [cardDataTournament, setCardDataTournament] = useState<CardDataStats | null>(null)
   const [cardDataTop, setCardDataTop] = useState<CardDataStats | null>(null)
@@ -996,6 +1003,13 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
   const cardFilter = useTableFilter()
 
   useEffect(() => {
+    if (!pluginPresence.loaded) return
+    if (!canViewCardData) {
+      setLoading(false)
+      hasLoadedOnce.current = true
+      return
+    }
+
     if (!hasLoadedOnce.current) setLoading(true)
     let cancelled = false
     const apply = (setter: (v: any) => void) => (result: any) => { if (!cancelled) setter(result.data || result) }
@@ -1047,7 +1061,7 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
 
     Promise.all(fetches).finally(() => { if (!cancelled) { setLoading(false); hasLoadedOnce.current = true } })
     return () => { cancelled = true }
-  }, [setCode, includeBots, includeHumans, startDate, endDate, user?.id, canSeeFullStats, format, source])
+  }, [setCode, includeBots, includeHumans, startDate, endDate, user?.id, canSeeFullStats, format, source, pluginPresence.loaded, canViewCardData])
 
   const tournamentMaps = useMemo(() => ({
     leaders: buildCardDataLookupMap(cardDataTournament?.leaders),
@@ -1127,13 +1141,34 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
     youMaps,
   ])
 
-  if (loading) return <LoadingSkeleton />
-
   const hasCards = cardData && ((cardData.cards?.length || 0) + (cardData.leaders?.length || 0) + (cardData.bases?.length || 0)) > 0
   const rarityClass = (r: string) => `rarity-${r.toLowerCase()}`
   const cellProps = { showYou, showAll, showTop, showTournament, isBlurred, user }
   const formatPct = (v: number) => `${v.toFixed(1)}%`
   const replayTitle = 'Replay-hand metrics require validated opening-hand and draw facts.'
+  const metricUnavailable = (reason = replayTitle) => <span className="metric-unavailable" title={reason}>—</span>
+  const rowRateNumerator = (ratePct: number | null | undefined, count: number | null | undefined) => {
+    if (ratePct == null || count == null || !Number.isFinite(ratePct) || !Number.isFinite(count)) return null
+    return (ratePct / 100) * count
+  }
+  const toPercentagePoints = (value: number | null | undefined) => {
+    if (value == null || !Number.isFinite(value)) return null
+    return Math.abs(value) <= 1 ? value * 100 : value
+  }
+  const rateDisplay = (card: CardDataCard | undefined, key: 'gpWr' | 'ohWr' | 'gdWr' | 'gihWr' | 'gnsWr' | 'playedRate' | 'resourcedWhenSeen') => {
+    if (!card) return undefined
+    if (key === 'gpWr') return formatSeventeenLandsRateMetric('gpWr', card.gpWins, card.gpCount).value
+    if (key === 'ohWr') return formatSeventeenLandsRateMetric('ohWr', rowRateNumerator(card.ohWr, card.ohCount), card.ohCount).value
+    if (key === 'gdWr') return formatSeventeenLandsRateMetric('gdWr', rowRateNumerator(card.gdWr, card.gdCount), card.gdCount).value
+    if (key === 'gihWr') return formatSeventeenLandsRateMetric('gihWr', rowRateNumerator(card.gihWr, card.gihCount), card.gihCount).value
+    if (key === 'gnsWr') return formatSeventeenLandsRateMetric('gnsWr', rowRateNumerator(card.gnsWr, card.gnsCount), card.gnsCount).value
+    if (key === 'playedRate') return formatSeventeenLandsRateMetric('playedRate', rowRateNumerator(card.playedRate, card.gihCount), card.gihCount).value
+    return formatSeventeenLandsRateMetric('resourcedWhenSeen', rowRateNumerator(card.resourcedWhenSeen, card.gihCount), card.gihCount).value
+  }
+  const deltaDisplay = (card: CardDataCard | undefined, key: 'iih' | 'playedWar') => {
+    if (!card) return undefined
+    return formatSeventeenLandsDeltaMetric(key, toPercentagePoints(card[key])).value
+  }
   const cardNameEntry = (card: CardDataCard) => ({
     name: card.cardName,
     subtitle: card.subtitle,
@@ -1149,7 +1184,26 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
     </th>
   )
 
-  const unavailableMetric = <span className="metric-unavailable" title={replayTitle}>—</span>
+  if (!pluginPresence.loaded) return <LoadingSkeleton />
+
+  if (!canViewCardData) {
+    return (
+      <div className="cards-subtab card-data-tab">
+        <div className="stats-empty card-data-gate">
+          <h3>Card Data unlocks after 5 recorded Wayfinder games</h3>
+          <p>
+            {pluginPresence.hasPlugin
+              ? `${fmt(pluginPresence.recordedGames)} / ${fmt(pluginPresence.requiredGames)} games recorded.`
+              : 'Install or sign in to Wayfinder Companion, then record 5 games to view live card stats.'}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  if (loading) return <LoadingSkeleton />
+
+  const unavailableMetric = metricUnavailable()
 
   const renderGradeCell = (card: CardDataCard) => (
     <td>
@@ -1187,17 +1241,18 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
                 <tr>
                   <SortHeader label="Name" col="cardName" />
                   <th className="aspects-col">Aspects</th>
-                  <SortHeader label="Rarity" col="rarity" />
-                  <SortHeader label="Grade" col="grade" title="Derived from the selected metric; GP WR until replay hand metrics are validated." />
-                  <SortHeader label="# GP" col="gpCount" title="Copy-weighted decklist games/matches with resolved results." />
-                  <SortHeader label="GP WR" col="gpWr" title="Copy-weighted wins divided by copy-weighted games/matches." />
-                  <th title={replayTitle}>OH WR</th>
-                  <th title={replayTitle}>GD WR</th>
-                  <th title={replayTitle}>GIH WR</th>
-                  <th title={replayTitle}>GNS WR</th>
-                  <th title={replayTitle}>IIH</th>
-                  <th title={replayTitle}>Played</th>
-                  <th title={replayTitle}>Resourced</th>
+                  <th title="Cost">C</th>
+                  <SortHeader label="R" col="rarity" />
+                  <SortHeader label="G" col="grade" title="Derived from the selected metric; GP WR until replay hand metrics are validated." />
+                  <SortHeader label="GP WR" col="gpWr" title="gp_wins / gp_count. Count appears as wins/denominator in the cell." />
+                  <th title="oh_wins / oh_count. Requires validated replay hand facts.">OH WR</th>
+                  <th title="gd_wins / gd_count. Requires validated replay hand facts.">GD WR</th>
+                  <th title="gih_wins / gih_count. Requires validated replay hand facts.">GIH WR</th>
+                  <th title="gns_wins / gns_count. Requires validated replay hand facts.">GNS WR</th>
+                  <th title="(gih_wins / gih_count) - (gns_wins / gns_count)">IIH</th>
+                  <th title="played_copies_from_seen_hand / gih_count">PR</th>
+                  <th title="resourced_copies_from_seen_hand / gih_count">RWS%</th>
+                  <th title="(played_wins / played_count) - (unplayed_wins / unplayed_count)">PWAR</th>
                   <th>Sample</th>
                 </tr>
               </thead>
@@ -1213,32 +1268,24 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
                         <CardName entry={cardNameEntry(card)} className="card-data-name" />
                       </td>
                       <AspectsCell aspects={card.aspects} />
+                      <td>{card.cost == null ? '—' : card.cost}</td>
                       <td><span className={rarityClass(card.rarity)}>{card.rarity}</span></td>
                       {renderGradeCell(card)}
                       <StatsCell
                         {...cellProps}
-                        you={youCard?.gpCount}
-                        all={card.gpCount}
-                        top={topCard?.gpCount}
-                        tournament={tournamentCard?.gpCount}
-                        format={(v: number) => fmt(Math.round(v))}
+                        you={rateDisplay(youCard, 'gpWr')}
+                        all={rateDisplay(card, 'gpWr')}
+                        top={rateDisplay(topCard, 'gpWr')}
+                        tournament={rateDisplay(tournamentCard, 'gpWr')}
                       />
-                      <StatsCell
-                        {...cellProps}
-                        you={youCard?.gpWr}
-                        all={card.gpWr}
-                        top={topCard?.gpWr}
-                        tournament={tournamentCard?.gpWr}
-                        format={formatPct}
-                        deltaMode="pct"
-                      />
-                      <td>{unavailableMetric}</td>
-                      <td>{unavailableMetric}</td>
-                      <td>{unavailableMetric}</td>
-                      <td>{unavailableMetric}</td>
-                      <td>{unavailableMetric}</td>
-                      <td>{unavailableMetric}</td>
-                      <td>{unavailableMetric}</td>
+                      <td>{card.ohCount == null ? unavailableMetric : rateDisplay(card, 'ohWr')}</td>
+                      <td>{card.gdCount == null ? unavailableMetric : rateDisplay(card, 'gdWr')}</td>
+                      <td>{card.gihCount == null ? unavailableMetric : rateDisplay(card, 'gihWr')}</td>
+                      <td>{card.gnsCount == null ? unavailableMetric : rateDisplay(card, 'gnsWr')}</td>
+                      <td>{card.iih == null ? unavailableMetric : deltaDisplay(card, 'iih')}</td>
+                      <td>{card.playedRate == null ? unavailableMetric : rateDisplay(card, 'playedRate')}</td>
+                      <td>{card.resourcedWhenSeen == null ? unavailableMetric : rateDisplay(card, 'resourcedWhenSeen')}</td>
+                      <td>{card.playedWar == null ? metricUnavailable('Played WAR requires played and unplayed replay samples.') : deltaDisplay(card, 'playedWar')}</td>
                       <td>
                         {card.sampleWarning ? <span className="sample-warning">{card.sampleWarning}</span> : <span className="sample-ok">OK</span>}
                       </td>
@@ -1274,8 +1321,7 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
                         <CardName entry={cardNameEntry(card)} className="card-data-name card-data-tier-card-name" />
                         <span className="card-data-tier-card-meta">
                           <span className={rarityClass(card.rarity)} title={card.rarity}>{card.rarity.slice(0, 1)}</span>
-                          <span>{card.gpWr == null ? '—' : formatPct(card.gpWr)}</span>
-                          <span>n={fmt(card.gpCount)}</span>
+                          <span title="gp_wins / gp_count">{rateDisplay(card, 'gpWr')}</span>
                         </span>
                       </span>
                     ))}

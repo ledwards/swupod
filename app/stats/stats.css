@@ -423,6 +423,21 @@
   margin: 0.75rem 0;
 }
 
+.card-data-gate {
+  margin: 2rem auto;
+  max-width: 560px;
+  padding: 1.75rem;
+  text-align: center;
+}
+
+.card-data-gate h3 {
+  margin: 0 0 0.5rem;
+}
+
+.card-data-gate p {
+  margin: 0;
+}
+
 .card-data-tab .stats-legend-bar {
   align-items: center;
   background: rgba(0, 0, 0, 0.22);

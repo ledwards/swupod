@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import { queryRow } from '@/lib/db'
 
+const REQUIRED_CARD_STATS_GAMES = 5
+
 /**
  * GET /api/me/wayfinder-presence
  *
@@ -23,25 +25,34 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     userId = requireAuth(request).id
   } catch {
-    return NextResponse.json({ data: { hasActivity: false } })
+    return NextResponse.json({ data: { hasActivity: false, recordedGames: 0, eligibleForCardStats: false, requiredGames: REQUIRED_CARD_STATS_GAMES } })
   }
 
   try {
     const row = await queryRow(
-      `SELECT (
-         EXISTS (SELECT 1 FROM casual_matches WHERE user_id = $1)
-         OR EXISTS (SELECT 1 FROM practice_matches WHERE player1_id = $1 OR player2_id = $1)
-         OR EXISTS (
-           SELECT 1 FROM card_pools
-           WHERE user_id = $1
-             AND (COALESCE(wins, 0) + COALESCE(losses, 0) + COALESCE(draws, 0)) > 0
-         )
-       ) AS has_activity`,
+      `SELECT
+         (
+           (SELECT COUNT(*) FROM casual_matches WHERE user_id = $1)
+           + (SELECT COUNT(*) FROM practice_matches WHERE player1_id = $1 OR player2_id = $1)
+           + COALESCE((
+             SELECT SUM(COALESCE(wins, 0) + COALESCE(losses, 0) + COALESCE(draws, 0))
+             FROM card_pools
+             WHERE user_id = $1
+           ), 0)
+         )::int AS recorded_games`,
       [userId],
     )
-    return NextResponse.json({ data: { hasActivity: Boolean(row?.has_activity) } })
+    const recordedGames = Number(row?.recorded_games || 0)
+    return NextResponse.json({
+      data: {
+        hasActivity: recordedGames > 0,
+        recordedGames,
+        eligibleForCardStats: recordedGames >= REQUIRED_CARD_STATS_GAMES,
+        requiredGames: REQUIRED_CARD_STATS_GAMES,
+      },
+    })
   } catch (err) {
     console.error('wayfinder-presence query failed:', err)
-    return NextResponse.json({ data: { hasActivity: false } })
+    return NextResponse.json({ data: { hasActivity: false, recordedGames: 0, eligibleForCardStats: false, requiredGames: REQUIRED_CARD_STATS_GAMES } })
   }
 }

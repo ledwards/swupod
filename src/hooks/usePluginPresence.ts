@@ -3,31 +3,55 @@
 import { useEffect, useState } from 'react'
 import { useWayfinderDetection } from './useWayfinderDetection'
 
+export interface WayfinderPresenceData {
+  hasActivity: boolean
+  recordedGames: number
+  eligibleForCardStats: boolean
+  requiredGames: number
+}
+
+const EMPTY_PRESENCE: WayfinderPresenceData = {
+  hasActivity: false,
+  recordedGames: 0,
+  eligibleForCardStats: false,
+  requiredGames: 5,
+}
+
 // Fetch the server presence signal once per page load and share it across every
 // PluginCTA instance (module-level cache + in-flight de-dup so N CTAs = 1 fetch).
-let activityCache: boolean | null = null
-let activityInFlight: Promise<boolean> | null = null
+let presenceCache: WayfinderPresenceData | null = null
+let presenceInFlight: Promise<WayfinderPresenceData> | null = null
 
-function fetchActivity(): Promise<boolean> {
-  if (activityCache !== null) return Promise.resolve(activityCache)
-  if (!activityInFlight) {
-    activityInFlight = fetch('/api/me/wayfinder-presence', { credentials: 'include' })
+function fetchPresence(): Promise<WayfinderPresenceData> {
+  if (presenceCache !== null) return Promise.resolve(presenceCache)
+  if (!presenceInFlight) {
+    presenceInFlight = fetch('/api/me/wayfinder-presence', { credentials: 'include' })
       .then((r) => (r.ok ? r.json() : null))
       .then((b) => {
-        activityCache = Boolean(b?.data?.hasActivity)
-        return activityCache
+        presenceCache = {
+          hasActivity: Boolean(b?.data?.hasActivity),
+          recordedGames: Number(b?.data?.recordedGames || 0),
+          eligibleForCardStats: Boolean(b?.data?.eligibleForCardStats),
+          requiredGames: Number(b?.data?.requiredGames || 5),
+        }
+        return presenceCache
       })
       .catch(() => {
-        activityCache = false
-        return false
+        presenceCache = EMPTY_PRESENCE
+        return EMPTY_PRESENCE
       })
   }
-  return activityInFlight
+  return presenceInFlight
 }
 
 export interface PluginPresence {
   /** Has the Wayfinder Companion — live-detected OR proven by recorded PTP games. */
   hasPlugin: boolean
+  hasActivity: boolean
+  recordedGames: number
+  eligibleForCardStats: boolean
+  requiredGames: number
+  loaded: boolean
 }
 
 /**
@@ -40,19 +64,30 @@ export interface PluginPresence {
  */
 export function usePluginPresence(): PluginPresence {
   const { detected } = useWayfinderDetection()
-  const [hasActivity, setHasActivity] = useState<boolean>(activityCache ?? false)
+  const [presence, setPresence] = useState<WayfinderPresenceData>(presenceCache ?? EMPTY_PRESENCE)
+  const [loaded, setLoaded] = useState<boolean>(presenceCache !== null)
 
   useEffect(() => {
     let alive = true
-    fetchActivity().then((v) => {
-      if (alive) setHasActivity(v)
+    fetchPresence().then((v) => {
+      if (alive) {
+        setPresence(v)
+        setLoaded(true)
+      }
     })
     return () => {
       alive = false
     }
   }, [])
 
-  return { hasPlugin: detected || hasActivity }
+  return {
+    hasPlugin: detected || presence.hasActivity,
+    hasActivity: presence.hasActivity,
+    recordedGames: presence.recordedGames,
+    eligibleForCardStats: presence.eligibleForCardStats,
+    requiredGames: presence.requiredGames,
+    loaded,
+  }
 }
 
 export default usePluginPresence
