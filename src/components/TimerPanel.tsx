@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import CountdownTimer from './CountdownTimer'
 import TimerButton from './TimerButton'
 import { isRoundTimerEnabled as computeRoundTimerEnabled, getDisplayPickSeconds } from '../utils/draftTimerDefaults'
+import { elapsedTimerSeconds } from '../utils/serverClock'
 import './TimerPanel.css'
 
 interface DraftPlayer {
@@ -28,6 +29,7 @@ interface Draft {
   timerEnabled?: boolean
   paused?: boolean
   pausedDurationSeconds?: number
+  serverTimeOffsetMs?: number
   draftState?: DraftState
 }
 
@@ -80,6 +82,7 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
   })
   const isPaused = optimisticPaused !== null ? optimisticPaused : draft?.paused === true
   const pausedDurationSeconds = draft?.pausedDurationSeconds || 0
+  const serverTimeOffsetMs = draft?.serverTimeOffsetMs || 0
 
   // Reset optimistic state when server state changes
   useEffect(() => {
@@ -105,21 +108,21 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
     if (!isDrafting || !pickStartedAt) return
 
     const calculateActiveTimer = () => {
-      const startTime = new Date(pickStartedAt).getTime()
-      const now = Date.now()
-      const timeSinceStart = Math.floor((now - startTime) / 1000)
-
-      // If pausedDurationSeconds exceeds time since pick started, it's stale data - ignore it
-      const effectivePausedDuration = pausedDurationSeconds > timeSinceStart ? 0 : pausedDurationSeconds
-      const elapsed = timeSinceStart - effectivePausedDuration
+      const elapsed = elapsedTimerSeconds({
+        startedAt: pickStartedAt,
+        pausedDurationSeconds,
+        serverTimeOffsetMs,
+      })
 
       const roundRemaining = isRoundTimerEnabled ? Math.max(0, pickTimeoutSeconds - elapsed) : Infinity
 
       // Last player timer uses its own start time (when they became the last player)
       let lastPlayerRemaining = Infinity
       if (isLastPlayerTimerEnabled && isLastPlayer && lastPlayerStartedAt) {
-        const lastPlayerStart = new Date(lastPlayerStartedAt).getTime()
-        const lastPlayerElapsed = Math.floor((now - lastPlayerStart) / 1000)
+        const lastPlayerElapsed = elapsedTimerSeconds({
+          startedAt: lastPlayerStartedAt,
+          serverTimeOffsetMs,
+        })
         lastPlayerRemaining = Math.max(0, lastPlayerTimerSeconds - lastPlayerElapsed)
       }
 
@@ -137,7 +140,7 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
       const interval = setInterval(calculateActiveTimer, 1000)
       return () => clearInterval(interval)
     }
-  }, [isDrafting, pickStartedAt, pausedDurationSeconds, isRoundTimerEnabled, isLastPlayerTimerEnabled, isLastPlayer, pickTimeoutSeconds, lastPlayerTimerSeconds, isPaused, lastPlayerStartedAt])
+  }, [isDrafting, pickStartedAt, pausedDurationSeconds, serverTimeOffsetMs, isRoundTimerEnabled, isLastPlayerTimerEnabled, isLastPlayer, pickTimeoutSeconds, lastPlayerTimerSeconds, isPaused, lastPlayerStartedAt])
 
   // Determine what should be shown. Competitive: always show the round timer on
   // the Appendix C schedule (hidden only when the schedule auto-picks the last
@@ -205,6 +208,7 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
                   compact={compact}
                   paused={isPaused}
                   pausedDurationSeconds={0}
+                  serverTimeOffsetMs={serverTimeOffsetMs}
                   onExpire={onTimerExpire}
                 />
               ) : (
@@ -217,6 +221,7 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
                   compact={compact}
                   paused={isPaused}
                   pausedDurationSeconds={pausedDurationSeconds}
+                  serverTimeOffsetMs={serverTimeOffsetMs}
                   onExpire={onTimerExpire}
                 />
               )}

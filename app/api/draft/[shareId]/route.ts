@@ -211,6 +211,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       paused: pod.paused === true,
       pausedAt: pod.paused_at,
       pausedDurationSeconds: pod.paused_duration_seconds || 0,
+      serverNow: new Date().toISOString(),
       competitive: pod.competitive === true,
       deckBuildDeadline: pod.deck_lock_at || null,
       decksUnlocked: pod.decks_unlocked === true,

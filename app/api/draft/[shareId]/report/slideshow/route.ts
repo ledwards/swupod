@@ -118,6 +118,8 @@ export interface SlideshowTimer {
   pickTimeoutSeconds: number
   competitive: boolean
   draftState: any
+  serverNow?: string
+  serverTimeOffsetMs?: number
 }
 
 export interface SlideshowResponse {
@@ -136,6 +138,7 @@ export interface SlideshowResponse {
   live?: boolean
   timer?: SlideshowTimer
   phase?: { phase: string | null }
+  serverNow?: string
 }
 
 // ---------------------------------------------------------------------------
@@ -424,7 +427,9 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       }
 
       const draftState = jsonParse(pod.draft_state, {}) as any
+      const serverNow = new Date().toISOString()
       body.live = true
+      body.serverNow = serverNow
       body.timer = {
         status: pod.status,
         paused: pod.paused === true,
@@ -436,6 +441,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         pickTimeoutSeconds: pod.pick_timeout_seconds || 60,
         competitive: pod.competitive === true,
         draftState,
+        serverNow,
       }
       body.phase = { phase: draftState?.phase ?? null }
     }

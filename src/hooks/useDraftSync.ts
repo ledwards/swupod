@@ -48,6 +48,7 @@ interface Draft {
   paused: boolean;
   pausedAt: string | null;
   pausedDurationSeconds: number;
+  serverTimeOffsetMs?: number;
   [key: string]: unknown;
 }
 
@@ -69,6 +70,7 @@ interface PollStateResponse {
   paused: boolean;
   pausedAt: string | null;
   pausedDurationSeconds: number;
+  serverTimeOffsetMs?: number;
 }
 
 /** Options for useDraftSync hook */
@@ -158,6 +160,7 @@ export function useDraftSync(
           paused: data.paused,
           pausedAt: data.pausedAt,
           pausedDurationSeconds: data.pausedDurationSeconds,
+          serverTimeOffsetMs: data.serverTimeOffsetMs,
         } : null)
         stateVersionRef.current = data.stateVersion
       }

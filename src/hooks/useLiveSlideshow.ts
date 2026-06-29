@@ -17,6 +17,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { io, Socket } from 'socket.io-client'
 import type { SlideshowResponse, SlideshowTimer } from '@/app/api/draft/[shareId]/report/slideshow/route'
+import { estimateServerTimeOffsetMs } from '@/src/utils/serverClock'
 
 export type LiveLoadState = 'loading' | 'ready' | 'error'
 
@@ -43,6 +44,7 @@ export function useLiveSlideshow(
   const fetchSlideshow = useCallback(async (showLoading = true): Promise<void> => {
     if (!shareId) return
     if (showLoading) setLoadState('loading')
+    const requestStartedAtMs = Date.now()
     try {
       const res = await fetch(
         `/api/draft/${shareId}/report/slideshow?live=1&mode=${mode}`,
@@ -55,6 +57,15 @@ export function useLiveSlideshow(
         return
       }
       const body: SlideshowResponse = await res.json()
+      if (body.timer) {
+        body.timer = {
+          ...body.timer,
+          serverTimeOffsetMs: estimateServerTimeOffsetMs(
+            body.timer.serverNow ?? body.serverNow,
+            requestStartedAtMs,
+          ),
+        }
+      }
       setData(body)
       if (body.timer) setTimer(body.timer)
       setError(null)
@@ -92,6 +103,8 @@ export function useLiveSlideshow(
         pickTimeoutSeconds: payload.pickTimeoutSeconds || prev?.pickTimeoutSeconds || 60,
         competitive: payload.competitive ?? prev?.competitive ?? false,
         draftState: payload.draftState ?? prev?.draftState ?? {},
+        serverNow: payload.serverNow ?? prev?.serverNow,
+        serverTimeOffsetMs: prev?.serverTimeOffsetMs ?? estimateServerTimeOffsetMs(payload.serverNow),
       }))
       // Refetch picks when the draft state advances (new pick appended).
       if (typeof payload.stateVersion === 'number' && payload.stateVersion > stateVersionRef.current) {

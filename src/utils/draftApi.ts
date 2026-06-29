@@ -6,6 +6,7 @@
  * Uses httpClient for standardized request handling.
  */
 import { httpClient, HttpError } from '../repositories/httpClient'
+import { estimateServerTimeOffsetMs } from './serverClock'
 
 interface DraftSettings {
   maxPlayers?: number
@@ -33,6 +34,8 @@ interface DraftData {
   hostId: string
   players: unknown[]
   draftState: Record<string, unknown>
+  serverNow?: string
+  serverTimeOffsetMs?: number
 }
 
 interface JoinResult {
@@ -60,6 +63,8 @@ interface StateData {
   status: string
   draftState: Record<string, unknown>
   players: unknown[]
+  serverNow?: string
+  serverTimeOffsetMs?: number
 }
 
 interface SelectResult {
@@ -109,7 +114,11 @@ export async function loadDraft(shareId: string): Promise<DraftData> {
     throw new Error('Invalid shareId')
   }
   try {
-    return await httpClient.get<DraftData>(`/draft/${shareId}`)
+    const requestStartedAtMs = Date.now()
+    return withServerTimeOffset(
+      await httpClient.get<DraftData>(`/draft/${shareId}`),
+      requestStartedAtMs,
+    )
   } catch (error) {
     console.error('Failed to load draft:', error)
     throw error
@@ -209,13 +218,29 @@ export async function updateSettings(shareId: string, settings: DraftSettings): 
  */
 export async function pollState(shareId: string, sinceVersion: number = 0): Promise<StateData> {
   try {
-    return await httpClient.get<StateData>(`/draft/${shareId}/state?sinceVersion=${sinceVersion}`)
+    const requestStartedAtMs = Date.now()
+    return withServerTimeOffset(
+      await httpClient.get<StateData>(`/draft/${shareId}/state?sinceVersion=${sinceVersion}`),
+      requestStartedAtMs,
+    )
   } catch (error) {
     // Don't log "Draft not found" - it's expected when drafts are cancelled
     if (!(error instanceof Error) || !error.message?.includes('Draft not found')) {
       console.error('Failed to poll state:', error)
     }
     throw error
+  }
+}
+
+function withServerTimeOffset<T extends { serverNow?: string; serverTimeOffsetMs?: number }>(
+  data: T,
+  clientReferenceAtMs: number = Date.now(),
+): T {
+  return {
+    ...data,
+    // Use the request start time as the client reference so network delay makes
+    // the visible timer conservative instead of showing extra seconds.
+    serverTimeOffsetMs: estimateServerTimeOffsetMs(data?.serverNow, clientReferenceAtMs),
   }
 }
 

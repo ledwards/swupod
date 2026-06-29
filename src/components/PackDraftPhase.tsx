@@ -17,6 +17,7 @@ import CardDensityToggle, { type CardDensity } from './DeckBuilder/CardDensityTo
 import { getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
 import { getSetConfig } from '../utils/setConfigs'
 import { getDraftPackDisplayOrder } from '../utils/draftPackDisplayOrder'
+import { serverSyncedNowMs } from '../utils/serverClock'
 import { CardStatsBadge } from './CardStatsBadge'
 import './PackDraftPhase.css'
 
@@ -74,6 +75,7 @@ interface Draft {
   maxPlayers?: number
   packSize?: number
   competitive?: boolean
+  serverTimeOffsetMs?: number
   [key: string]: unknown
 }
 
@@ -153,13 +155,14 @@ function PackDraftPhase({
   // Force re-render when review period ends
   useEffect(() => {
     if (draftState?.reviewUntil) {
-      const remaining = new Date(draftState.reviewUntil).getTime() - Date.now()
+      const remaining = new Date(draftState.reviewUntil).getTime() -
+        serverSyncedNowMs(draft?.serverTimeOffsetMs || 0)
       if (remaining > 0) {
         const timer = setTimeout(() => forceUpdate(n => n + 1), remaining + 100)
         return () => clearTimeout(timer)
       }
     }
-  }, [draftState?.reviewUntil])
+  }, [draftState?.reviewUntil, draft?.serverTimeOffsetMs])
 
   const handleLeaderNameMouseEnter = (e: React.MouseEvent, leader: Leader) => {
     // Disable hover preview on mobile
@@ -387,7 +390,7 @@ function PackDraftPhase({
   // Inter-pack review period for competitive drafts
   const isReviewPeriod = draft?.competitive &&
     draftState?.reviewUntil &&
-    new Date(draftState.reviewUntil).getTime() > Date.now()
+    new Date(draftState.reviewUntil).getTime() > serverSyncedNowMs(draft?.serverTimeOffsetMs || 0)
 
   const reviewStartedAt = isReviewPeriod
     ? new Date(new Date(draftState!.reviewUntil!).getTime() - 30 * 1000).toISOString()
@@ -410,6 +413,7 @@ function PackDraftPhase({
                 active={true}
                 label=""
                 warningThreshold={10}
+                serverTimeOffsetMs={draft?.serverTimeOffsetMs || 0}
               />
             </div>
             <div className="review-controls">

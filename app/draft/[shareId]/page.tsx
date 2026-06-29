@@ -149,7 +149,7 @@ export default function DraftRoomPage({ params }: PageProps) {
   const isReviewPeriod = !!(
     draft?.competitive &&
     draftState?.reviewUntil &&
-    new Date(draftState.reviewUntil).getTime() > nowTick
+    new Date(draftState.reviewUntil).getTime() > nowTick + (draft?.serverTimeOffsetMs || 0)
   )
 
   // Detect when current user is kicked (was a player, now isn't, still in waiting)

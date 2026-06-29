@@ -112,6 +112,7 @@ interface BroadcastState {
   deckBuildDeadline?: string | null
   decksUnlocked?: boolean
   rounds?: unknown[]
+  serverNow?: string
 }
 
 /**
@@ -226,6 +227,7 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
       pausedDurationSeconds: pod.paused_duration_seconds || 0,
       competitive: pod.competitive === true,
       decksUnlocked: pod.decks_unlocked === true,
+      serverNow: new Date().toISOString(),
     }
 
     // Add matchmaking data for competitive pods in matchmaking phase
