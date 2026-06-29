@@ -847,7 +847,7 @@ export default function PodPage({ params }: PageProps) {
         <Modal.Body>
           <div className="practice-hand-cards">
             {practiceHand?.cards.map((card, i) => (
-              <CardWithPreview key={`${card.id}-${i}`} card={card} />
+              <CardWithPreview key={`${card.id}-${i}`} card={card} statsSetCode={draft?.setCode || myPool?.setCode} />
             ))}
           </div>
           {practiceHand && (

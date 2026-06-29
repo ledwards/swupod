@@ -211,6 +211,7 @@
 }
 
 .review-leader {
+  position: relative;
   width: 168px;
   height: 120px;
   border-radius: 6px;

@@ -1,4 +1,3 @@
-// @ts-nocheck
 // GET /api/stats/card-data - 17Lands-style card data, currently backed by decklist + match-result facts.
 import { queryRows } from '@/lib/db'
 import { cachedAggregate, STATS_AGGREGATE_TTL_MS } from '@/lib/queryCache'
@@ -7,7 +6,7 @@ import { getAllCards } from '@/src/utils/cardData'
 import { buildCardLookupMaps, cardIdentityKey } from '@/src/utils/cardNormalization'
 import { computeCardGrades } from '@/src/services/cardDataMetrics'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 
 const GRADE_SORT: Record<string, number> = {
   'A+': 12,
@@ -159,13 +158,13 @@ function buildMetricRows(map: Map<string, any>, normalCardMap: Map<string, any>)
       sampleWarning: value.gpCount < 50 ? 'Low sample' : null,
     }
   }).sort((a, b) => {
-    const gradeCmp = (GRADE_SORT[b.grade] ?? -1) - (GRADE_SORT[a.grade] ?? -1)
+    const gradeCmp = (GRADE_SORT[b.grade ?? ''] ?? -1) - (GRADE_SORT[a.grade ?? ''] ?? -1)
     if (gradeCmp !== 0) return gradeCmp
     return (b.gpWr ?? -1) - (a.gpWr ?? -1) || b.gpCount - a.gpCount || a.cardName.localeCompare(b.cardName)
   })
 }
 
-export async function GET(request: NextRequest): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<Response> {
   try {
     const url = new URL(request.url)
     const setCode = url.searchParams.get('setCode') || 'SOR'
@@ -173,7 +172,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const until = url.searchParams.get('until') || '2099-12-31'
     const format = url.searchParams.get('format') || url.searchParams.get('poolType') || 'all'
     const source = url.searchParams.get('source') || 'all'
-    const includeBots = url.searchParams.get('includeBots') === 'true'
     const includeHumans = url.searchParams.get('includeHumans') !== 'false'
     const tournamentOnly = url.searchParams.get('tournamentOnly') === 'true'
     const topPlayersOnly = url.searchParams.get('topPlayersOnly') === 'true'

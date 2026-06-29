@@ -598,7 +598,23 @@ interface SetStatsTabProps {
 function SetStatsTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred, canSeeFullStats }: SetStatsTabProps) {
   // Secondary subtab — persists across visits via localStorage; the page hash
   // belongs to the primary set tab, so this group stays out of the URL (url:false).
-  const [subTab, setSubTab] = useStickyTab(['sealed', 'draft', 'card-data'] as const, 'sealed', { url: false, storageKey: 'ptp:stats-subtab' })
+  const [subTab, setStickySubTab] = useStickyTab(STATS_SUBTABS, 'sealed', { url: false, storageKey: 'ptp:stats-subtab' })
+
+  useEffect(() => {
+    const requestedTab = getUrlSearchParam(STATS_SUBTAB_PARAM)
+    const requestedView = getUrlSearchParam(CARD_DATA_VIEW_PARAM)
+    if (STATS_SUBTABS.includes(requestedTab as StatsSubTab)) {
+      setStickySubTab(requestedTab as StatsSubTab)
+    } else if (requestedView === 'tiers') {
+      setStickySubTab('card-data')
+    }
+  }, [setStickySubTab])
+
+  const setSubTab = (next: StatsSubTab) => {
+    setStickySubTab(next)
+    replaceUrlSearchParam(STATS_SUBTAB_PARAM, next === 'sealed' ? null : next)
+    if (next !== 'card-data') replaceUrlSearchParam(CARD_DATA_VIEW_PARAM, null)
+  }
 
   return (
     <div className="generation-stats">
@@ -769,6 +785,30 @@ const GRADE_ORDER: Record<string, number> = {
   F: 0,
 }
 const CARD_TIER_ORDER = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F', 'Ungraded']
+const STATS_SUBTABS = ['sealed', 'draft', 'card-data'] as const
+type StatsSubTab = typeof STATS_SUBTABS[number]
+const STATS_SUBTAB_PARAM = 'tab'
+const CARD_DATA_VIEW_PARAM = 'view'
+const RARITY_ICON_PATHS: Record<string, string> = {
+  Common: '/icons/rarity/common.svg',
+  Uncommon: '/icons/rarity/uncommon.svg',
+  Rare: '/icons/rarity/rare.svg',
+  Legendary: '/icons/rarity/legendary.svg',
+  Special: '/icons/rarity/special.svg',
+}
+
+function getUrlSearchParam(name: string): string | null {
+  if (typeof window === 'undefined') return null
+  return new URLSearchParams(window.location.search).get(name)
+}
+
+function replaceUrlSearchParam(name: string, value: string | null) {
+  if (typeof window === 'undefined') return
+  const url = new URL(window.location.href)
+  if (value) url.searchParams.set(name, value)
+  else url.searchParams.delete(name)
+  window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`)
+}
 
 // === Shared Skeleton ===
 
@@ -979,6 +1019,23 @@ function buildCardDataLookupMap(items: CardDataCard[] | undefined): Map<string, 
   return map
 }
 
+function RarityIcon({ rarity }: { rarity: string }) {
+  const src = RARITY_ICON_PATHS[rarity]
+  if (!src) {
+    return <span className="card-data-rarity-fallback">{rarity}</span>
+  }
+
+  return (
+    <img
+      className="card-data-rarity-icon"
+      src={src}
+      alt={rarity}
+      title={rarity}
+      loading="lazy"
+    />
+  )
+}
+
 // === Card Data Tab ===
 
 function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred, canSeeFullStats }: TabProps) {
@@ -990,10 +1047,22 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
   const [source, setSource] = useState<'all' | 'online' | 'in-person'>('all')
   const [loading, setLoading] = useState(true)
   const hasLoadedOnce = useRef(false)
-  const [view, setView] = useState<CardDataView>('table')
+  const [view, setView] = useState<CardDataView>('tiers')
   const [sortKey, setSortKey] = useState<CardDataSortKey>('grade')
   const [sortAsc, setSortAsc] = useState(false)
   const cardFilter = useTableFilter()
+
+  useEffect(() => {
+    const requestedView = getUrlSearchParam(CARD_DATA_VIEW_PARAM)
+    if (requestedView === 'table' || requestedView === 'tiers') {
+      setView(requestedView)
+    }
+  }, [])
+
+  const setCardDataView = (next: CardDataView) => {
+    setView(next)
+    replaceUrlSearchParam(CARD_DATA_VIEW_PARAM, next === 'tiers' ? null : next)
+  }
 
   useEffect(() => {
     if (!hasLoadedOnce.current) setLoading(true)
@@ -1273,7 +1342,7 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
                       <span key={`${section.key}-${cardDataLookupKey(card)}`} className="card-data-tier-card">
                         <CardName entry={cardNameEntry(card)} className="card-data-name card-data-tier-card-name" />
                         <span className="card-data-tier-card-meta">
-                          <span className={rarityClass(card.rarity)} title={card.rarity}>{card.rarity.slice(0, 1)}</span>
+                          <RarityIcon rarity={card.rarity} />
                           <span>{card.gpWr == null ? '—' : formatPct(card.gpWr)}</span>
                           <span>n={fmt(card.gpCount)}</span>
                         </span>
@@ -1321,10 +1390,10 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
             <span className="card-data-control-label">View</span>
             <div className="card-data-segmented">
               {[
-                ['table', 'Table'],
                 ['tiers', 'Tier List'],
+                ['table', 'Table'],
               ].map(([value, label]) => (
-                <button key={value} className={`card-data-segment ${view === value ? 'active' : ''}`} onClick={() => setView(value as CardDataView)}>{label}</button>
+                <button key={value} className={`card-data-segment ${view === value ? 'active' : ''}`} onClick={() => setCardDataView(value as CardDataView)}>{label}</button>
               ))}
             </div>
           </div>

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import CountdownTimer from '../CountdownTimer'
 
 const BUILD_WINDOW_SECONDS = 20 * 60

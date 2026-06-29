@@ -61,14 +61,14 @@ export function DeckBuilderProvider({
   // Get cards in deck section
   const deckCards = useMemo(() => {
     return Object.entries(cardPositions)
-      .filter(([_, pos]) => pos.section === 'deck' && pos.visible && !pos.card.isBase && !pos.card.isLeader && pos.enabled !== false)
+      .filter(([, pos]) => pos.section === 'deck' && pos.visible && !pos.card.isBase && !pos.card.isLeader && pos.enabled !== false)
       .map(([cardId, pos]) => ({ cardId, ...pos }))
   }, [cardPositions])
 
   // Get cards in pool section
   const poolCards = useMemo(() => {
     return Object.entries(cardPositions)
-      .filter(([_, pos]) => (pos.section === 'sideboard' || pos.enabled === false) && pos.visible && !pos.card.isBase && !pos.card.isLeader)
+      .filter(([, pos]) => (pos.section === 'sideboard' || pos.enabled === false) && pos.visible && !pos.card.isBase && !pos.card.isLeader)
       .map(([cardId, pos]) => ({ cardId, ...pos }))
   }, [cardPositions])
 
@@ -243,6 +243,7 @@ export function DeckBuilderProvider({
   )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useDeckBuilder() {
   const context = useContext(DeckBuilderContext)
   if (!context) {

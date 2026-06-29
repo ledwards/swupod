@@ -579,6 +579,7 @@ export default function DraftLogPage({ params }: PageProps) {
                           key={card.instanceId}
                           card={card}
                           selected={card.instanceId === pick.pickedInstanceId}
+                          statsSetCode={meta.setCode}
                         />
                       ))}
                     </div>

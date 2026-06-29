@@ -1673,7 +1673,7 @@ export default function PlayPage({ params }: PageProps) {
         <Modal.Body>
           <div className="practice-hand-cards">
             {practiceHand?.cards.map((card, i) => (
-              <CardWithPreview key={`${card.id}-${i}`} card={card} />
+              <CardWithPreview key={`${card.id}-${i}`} card={card} statsSetCode={pool?.setCode} />
             ))}
           </div>
           {practiceHand && (

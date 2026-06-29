@@ -17,6 +17,7 @@ import CardDensityToggle, { type CardDensity } from './DeckBuilder/CardDensityTo
 import { getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
 import { getSetConfig } from '../utils/setConfigs'
 import { getDraftPackDisplayOrder } from '../utils/draftPackDisplayOrder'
+import { CardStatsBadge } from './CardStatsBadge'
 import './PackDraftPhase.css'
 
 const ReviewIcon = () => (
@@ -337,6 +338,11 @@ function PackDraftPhase({
     ? draft?.settings?.chaosSets?.[packNumber - 1]
     : draft?.setCode
   const sortedPack = getDraftPackDisplayOrder(currentPack, activePackSetCode)
+  const statsSetCodeForCard = (card: Card | Leader | null | undefined) => (
+    draft?.settings?.draftMode === 'chaos'
+      ? card?.setCode || null
+      : draft?.setCode || null
+  )
 
   const handleCardClick = (card: Card) => {
     if (loading || !canSelect) return
@@ -458,6 +464,9 @@ function PackDraftPhase({
                         onTouchEnd={reviewHandleTouchEnd}
                       >
                         <img src={card.imageUrl} alt={card.name || card.title || 'Card'} className="review-pack-img" />
+                        {card.imageUrl ? (
+                          <CardStatsBadge card={card} setCode={statsSetCodeForCard(card)} />
+                        ) : null}
                       </div>
                     ))}
                   </div>
@@ -489,6 +498,9 @@ function PackDraftPhase({
                             alt={card.name || card.title || 'Card'}
                             className="review-card-img"
                           />
+                          {card.imageUrl ? (
+                            <CardStatsBadge card={card} setCode={statsSetCodeForCard(card)} />
+                          ) : null}
                         </div>
                       ))}
                     </div>
@@ -682,6 +694,7 @@ function PackDraftPhase({
                       selected={selectedCardId === cardId}
                       dimmed={!!(selectedCardId && selectedCardId !== cardId)}
                       useStaticPreview={true}
+                      statsSetCode={card.setCode || activePackSetCode || null}
                     />
                   )
                 })}

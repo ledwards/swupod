@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 interface DraftPackDisplayCard {
   rarity?: string
   isFoil?: boolean
@@ -43,6 +41,9 @@ function getSlotOrderedPack(cards: DraftPackDisplayCard[]): DraftPackDisplayCard
   }
 
   const foilCard = cards[foilIndex]
+  if (!foilCard) {
+    return cards
+  }
   const nonFoils = cards.filter((_, index) => index !== foilIndex)
   const insertionIndex = nonFoils.findIndex(card => card.rarity !== 'Common')
   const safeInsertionIndex = insertionIndex < 0 ? nonFoils.length : insertionIndex
