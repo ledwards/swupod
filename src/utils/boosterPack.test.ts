@@ -43,6 +43,20 @@ function withMockedRandom<T>(value: number, fn: () => T): T {
   }
 }
 
+function withSeededRandom<T>(seed: number, fn: () => T): T {
+  const originalRandom = Math.random
+  let state = seed >>> 0
+  Math.random = () => {
+    state = (state * 1664525 + 1013904223) >>> 0
+    return state / 0x100000000
+  }
+  try {
+    return fn()
+  } finally {
+    Math.random = originalRandom
+  }
+}
+
 interface Card {
   id: string
   name: string
@@ -369,7 +383,7 @@ async function runTests(): Promise<void> {
     assert(adjacentDupes <= 1, `Too many adjacent duplicate leaders: ${adjacentDupes}`)
   })
 
-  test('ASH 24-pack draft box has exactly 4 non-repeating rare leaders', () => {
+  test('FIXED: ASH 24-pack draft box gets rare leaders from physical leader sheets', () => {
     const ashCards = getCachedCards('ASH')
     if (ashCards.length === 0) {
       console.log('\x1b[33m   Skipping: ASH placeholder catalog is not generated\x1b[0m')
@@ -381,11 +395,15 @@ async function runTests(): Promise<void> {
       const leaders = box.map((pack: Pack) => pack.cards.find((c: Card) => c.isLeader)).filter(Boolean)
       const rareLeaders = leaders.filter((card: Card) => card.rarity === 'Rare')
       const rareNames = rareLeaders.map((card: Card) => card.name)
-      const uniqueRareNames = new Set(rareNames)
+      const rareCounts = new Map<string, number>()
+      for (const name of rareNames) {
+        rareCounts.set(name, (rareCounts.get(name) || 0) + 1)
+      }
+      const maxSameRare = Math.max(0, ...Array.from(rareCounts.values()))
 
       assertEqual(leaders.length, 24, 'Draft box should contain exactly 24 leader slots')
-      assertEqual(rareLeaders.length, 4, `ASH draft box should contain exactly 4 rare leaders, got ${rareLeaders.length}: ${rareNames.join(', ')}`)
-      assertEqual(uniqueRareNames.size, rareNames.length, `ASH draft box rare leaders should not repeat: ${rareNames.join(', ')}`)
+      assert(rareLeaders.length > 0, 'ASH draft box should not be able to contain zero rare leaders')
+      assert(maxSameRare <= 2, `A rare leader appeared ${maxSameRare} times across independent leader belts: ${rareNames.join(', ')}`)
     })
   })
 
@@ -909,65 +927,73 @@ async function runTests(): Promise<void> {
     // Printer-faithful behavior: leader upgrades pull from an independent HS leader belt.
     // That means HS+Normal same-name pairs are allowed, but the rate should still stay
     // comfortably below "nearly every pod" territory.
-    clearBeltCache()
+    withSeededRandom(0x1eed3074, () => {
+      clearBeltCache()
 
-    const podCount = 100
-    let podsWithViolation = 0
-    const violationExamples: string[] = []
+      const podCount = 100
+      let podsWithViolation = 0
+      const violationExamples: string[] = []
 
-    for (let i = 0; i < podCount; i++) {
-      const pod = generateSealedPod(cards, 'SOR', 6)
+      for (let i = 0; i < podCount; i++) {
+        const pod = generateSealedPod(cards, 'SOR', 6)
 
-      // Collect all leaders in the pod
-      const leaders: Card[] = []
-      pod.forEach((pack: Pack) => {
-        const leader = pack.cards.find((c: Card) => c.isLeader)
-        if (leader) leaders.push(leader)
-      })
+        // Collect all leaders in the pod
+        const leaders: Card[] = []
+        pod.forEach((pack: Pack) => {
+          const leader = pack.cards.find((c: Card) => c.isLeader)
+          if (leader) leaders.push(leader)
+        })
 
-      // Check for same leader appearing as both HS and Normal
-      const leadersByName: Record<string, Card[]> = {}
-      for (const leader of leaders) {
-        if (!leadersByName[leader.name]) {
-          leadersByName[leader.name] = []
+        // Check for same leader appearing as both HS and Normal
+        const leadersByName: Record<string, Card[]> = {}
+        for (const leader of leaders) {
+          if (!leadersByName[leader.name]) {
+            leadersByName[leader.name] = []
+          }
+          leadersByName[leader.name].push(leader)
         }
-        leadersByName[leader.name].push(leader)
-      }
 
-      let podHasViolation = false
-      for (const [name, instances] of Object.entries(leadersByName)) {
-        const hasHS = instances.some(l => l.isHyperspace || l.variantType === 'Hyperspace')
-        const hasNormal = instances.some(l => !l.isHyperspace && l.variantType === 'Normal')
+        let podHasViolation = false
+        for (const [name, instances] of Object.entries(leadersByName)) {
+          const hasHS = instances.some(l => l.isHyperspace || l.variantType === 'Hyperspace')
+          const hasNormal = instances.some(l => !l.isHyperspace && l.variantType === 'Normal')
 
-        if (hasHS && hasNormal) {
-          podHasViolation = true
-          if (violationExamples.length < 3) {
-            violationExamples.push(`Pod ${i}: ${name} appears as both HS and Normal`)
+          if (hasHS && hasNormal) {
+            podHasViolation = true
+            if (violationExamples.length < 3) {
+              violationExamples.push(`Pod ${i}: ${name} appears as both HS and Normal`)
+            }
           }
         }
+
+        if (podHasViolation) {
+          podsWithViolation++
+        }
       }
 
-      if (podHasViolation) {
-        podsWithViolation++
+      const observedRate = podsWithViolation / podCount
+      const minExpectedRate = 0.10
+      const maxAcceptableRate = 0.60
+
+      console.log(`\x1b[36m   HS+Normal same-leader pod rate: ${(observedRate * 100).toFixed(1)}% (${podsWithViolation}/${podCount})\x1b[0m`)
+      console.log(`\x1b[36m   Independent-belt sanity band: ${(minExpectedRate * 100).toFixed(0)}%-${(maxAcceptableRate * 100).toFixed(0)}%\x1b[0m`)
+
+      if (violationExamples.length > 0) {
+        console.log(`\x1b[36m   Examples: ${violationExamples.join('; ')}\x1b[0m`)
       }
-    }
 
-    const observedRate = podsWithViolation / podCount
-    const maxAcceptableRate = 0.60
-
-    console.log(`\x1b[36m   HS+Normal same-leader pod rate: ${(observedRate * 100).toFixed(1)}% (${podsWithViolation}/${podCount})\x1b[0m`)
-    console.log(`\x1b[36m   Independent-belt sanity cap: ${(maxAcceptableRate * 100).toFixed(0)}%\x1b[0m`)
-
-    if (violationExamples.length > 0) {
-      console.log(`\x1b[36m   Examples: ${violationExamples.join('; ')}\x1b[0m`)
-    }
-
-    assert(
-      observedRate <= maxAcceptableRate,
-      `HS+Normal same-leader rate (${(observedRate * 100).toFixed(1)}%) exceeds ${(maxAcceptableRate * 100).toFixed(0)}% ` +
-      `for independent leader belts. ` +
-      `Examples: ${violationExamples.join('; ')}`
-    )
+      assert(
+        observedRate >= minExpectedRate,
+        `HS+Normal same-leader rate (${(observedRate * 100).toFixed(1)}%) is too low for independent leader belts. ` +
+        `This suggests leader upgrades are preserving the standard leader instead of pulling from the HS leader belt.`
+      )
+      assert(
+        observedRate <= maxAcceptableRate,
+        `HS+Normal same-leader rate (${(observedRate * 100).toFixed(1)}%) exceeds ${(maxAcceptableRate * 100).toFixed(0)}% ` +
+        `for independent leader belts. ` +
+        `Examples: ${violationExamples.join('; ')}`
+      )
+    })
   })
 
   console.log('')

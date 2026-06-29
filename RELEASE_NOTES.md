@@ -4,6 +4,7 @@
 
 ### 🐛 Bug Fixes
 - **Draft countdowns are steadier with server latency**: Pick timers now sync to the server clock, so the visible countdown better matches when auto-picks actually happen.
+- **Leaders collate more like real draft boxes**: Thanks to @Scary3074, we found and fixed a bug where leaders were not being collated correctly, allowing far too much variance in common/rare leader occurrence. You should notice far more realistic leader distribution now, especially in draft pods.
 
 ## 06.26.2026
 

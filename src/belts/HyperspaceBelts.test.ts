@@ -40,6 +40,16 @@ function assertEqual<T>(actual: T, expected: T, message?: string): void {
   }
 }
 
+function withMockedRandom<T>(value: number, fn: () => T): T {
+  const originalRandom = Math.random
+  Math.random = () => value
+  try {
+    return fn()
+  } finally {
+    Math.random = originalRandom
+  }
+}
+
 async function runTests(): Promise<void> {
   console.log('Initializing card cache...')
   await initializeCardCache()
@@ -192,10 +202,50 @@ async function runTests(): Promise<void> {
 
   test('HyperspaceLeader: hopper refills', () => {
     const belt = new HyperspaceLeaderBelt('SOR')
-    const poolSize = belt.fillingPool.length
-    while (belt.size > poolSize) belt.next(); belt.next()
+    const bootSize = belt.bootSize
+    while (belt.size > bootSize) belt.next(); belt.next()
     belt.next()
-    assert(belt.size >= poolSize, 'Hopper should refill')
+    assert(belt.size >= bootSize, 'Hopper should refill')
+  })
+
+  test('FIXED: HyperspaceLeader uses the same six-common one-rare sheet as standard leaders', () => {
+    withMockedRandom(0, () => {
+      const belt = new HyperspaceLeaderBelt('SOR')
+      const sheet = Array.from({ length: 56 }, () => belt.next())
+      const commonLeaders = sheet.filter(card => card.rarity === 'Common')
+      const rareLeaders = sheet.filter(card => card.rarity === 'Rare')
+
+      assertEqual(commonLeaders.length, 48, 'SOR hyperspace leader sheet should print 48 common leader positions')
+      assertEqual(rareLeaders.length, 8, 'SOR hyperspace leader sheet should print 8 rare leader positions')
+
+      const rareCounts = new Map<string, number>()
+      for (const card of rareLeaders) {
+        rareCounts.set(card.name, (rareCounts.get(card.name) || 0) + 1)
+      }
+      for (const [name, count] of rareCounts) {
+        assertEqual(count, 1, `Hyperspace rare leader "${name}" should appear exactly once per sheet`)
+      }
+    })
+  })
+
+  test('FIXED: HyperspaceLeader rare leaders do not repeat within a 24-position window across seams', () => {
+    withMockedRandom(0, () => {
+      const belt = new HyperspaceLeaderBelt('ASH')
+      const leaders = Array.from({ length: 112 }, () => belt.next())
+
+      for (let start = 0; start <= leaders.length - 24; start++) {
+        const window = leaders.slice(start, start + 24)
+        const rareCounts = new Map<string, number>()
+        for (const leader of window) {
+          if (leader.rarity === 'Rare') {
+            rareCounts.set(leader.name, (rareCounts.get(leader.name) || 0) + 1)
+          }
+        }
+        for (const [name, count] of rareCounts) {
+          assertEqual(count, 1, `Hyperspace rare leader "${name}" repeated ${count} times in 24-position window starting at ${start}`)
+        }
+      }
+    })
   })
 
   console.log('')
