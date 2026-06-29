@@ -56,6 +56,12 @@ describe('<CardDataTierList /> controls', () => {
     assert.match(STATS_CSS, /\.card-grade-f,[\s\S]*?--grade-rgb:\s*165,\s*48,\s*64;/)
   })
 
+  it('unlocks card stats from recorded Wayfinder activity when live extension detection is absent', () => {
+    assert.match(COMPONENT_SRC, /const companionReady = wayfinderDetected \|\| hasRecordedGame/)
+    assert.match(COMPONENT_SRC, /const companionLoginReady = pluginLoggedIn === true \|\| hasRecordedGame/)
+    assert.match(COMPONENT_SRC, /const cardsUnlocked = !presenceLoading && companionReady && companionLoginReady && hasRecordedGame/)
+  })
+
   it('prefers hyperspace art for tier-list card images', () => {
     assert.match(COMPONENT_SRC, /hyperspaceImageUrl\?: string \| null/)
     assert.match(COMPONENT_SRC, /card\.hyperspaceBackImageUrl \|\| card\.backImageUrl \|\| card\.hyperspaceImageUrl \|\| card\.imageUrl/)

@@ -678,16 +678,18 @@ export default function CardDataTierList({
   const shownCount = rankedCardRows.rows.length
   const formatLabel = format === 'all' ? 'All' : format === 'sealed' ? 'Sealed' : 'Draft'
   const scopedCount = scopedCardRows.length
+  const companionReady = wayfinderDetected || hasRecordedGame
+  const companionLoginReady = pluginLoggedIn === true || hasRecordedGame
   const requirements = [
-    { label: 'Wayfinder Companion installed and running', met: wayfinderSettled ? wayfinderDetected : null },
-    { label: 'Signed in to Wayfinder Companion', met: wayfinderSettled ? pluginLoggedIn === true : null },
+    { label: 'Wayfinder Companion installed and running', met: (wayfinderSettled || hasRecordedGame) ? companionReady : null },
+    { label: 'Signed in to Wayfinder Companion', met: (wayfinderSettled || hasRecordedGame) ? companionLoginReady : null },
     { label: 'At least one game recorded', met: presenceLoading ? null : hasRecordedGame },
   ]
-  const cardsUnlocked = wayfinderSettled && !presenceLoading && wayfinderDetected && pluginLoggedIn === true && hasRecordedGame
+  const cardsUnlocked = !presenceLoading && companionReady && companionLoginReady && hasRecordedGame
   const gateState: 'checking' | 'install' | 'login' | 'play' =
     (!wayfinderSettled || presenceLoading) ? 'checking'
-    : !wayfinderDetected ? 'install'
-    : pluginLoggedIn !== true ? 'login'
+    : !companionReady ? 'install'
+    : !companionLoginReady ? 'login'
     : 'play'
 
   const SortHeader = ({ label, col, title }: { label: string, col: CardDataSortKey, title?: string }) => (
