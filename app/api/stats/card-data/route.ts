@@ -127,6 +127,8 @@ function buildMetricRows(map: Map<string, any>, normalCardMap: Map<string, any>)
     return {
       cardName: card?.name || key.split('|')[0],
       cardId: card?.cardId || card?.id || null,
+      setCode: card?.set || null,
+      collectorNumber: card?.number || null,
       subtitle: card?.subtitle || null,
       rarity: card?.rarity || 'Unknown',
       cardType: card?.type || 'Unknown',
@@ -166,6 +168,52 @@ function buildMetricRows(map: Map<string, any>, normalCardMap: Map<string, any>)
     const gradeCmp = (GRADE_SORT[b.grade] ?? -1) - (GRADE_SORT[a.grade] ?? -1)
     if (gradeCmp !== 0) return gradeCmp
     return (b.gpWr ?? -1) - (a.gpWr ?? -1) || b.gpCount - a.gpCount || a.cardName.localeCompare(b.cardName)
+  })
+}
+
+function findNormalCardForMetricRow(row: any, normalCardMap: Map<string, any>) {
+  const exact = normalCardMap.get(cardIdentityKey({
+    name: row.cardName,
+    type: row.cardType,
+    subtitle: row.subtitle,
+  }))
+  if (exact) return exact
+
+  const rowName = String(row.cardName || '').toLowerCase()
+  const rowSubtitle = String(row.subtitle || '').toLowerCase()
+  for (const card of normalCardMap.values()) {
+    if (String(card.name || '').toLowerCase() !== rowName) continue
+    if (String(card.subtitle || '').toLowerCase() !== rowSubtitle) continue
+    return card
+  }
+  return null
+}
+
+function enrichMetricRowsWithCatalog(rows: any[], normalCardMap: Map<string, any>) {
+  return rows.map((row) => {
+    const normal = findNormalCardForMetricRow(row, normalCardMap)
+    if (!normal) {
+      return {
+        ...row,
+        setCode: row.setCode ?? null,
+        collectorNumber: row.collectorNumber ?? null,
+      }
+    }
+
+    return {
+      ...row,
+      cardId: normal.cardId || row.cardId || null,
+      setCode: normal.set || row.setCode || null,
+      collectorNumber: normal.number || row.collectorNumber || null,
+      rarity: row.rarity && row.rarity !== 'Unknown' ? row.rarity : normal.rarity,
+      cardType: row.cardType && row.cardType !== 'Unknown' ? row.cardType : normal.type,
+      aspects: row.aspects?.length ? row.aspects : normal.aspects || [],
+      cost: row.cost ?? normal.cost ?? null,
+      imageUrl: row.imageUrl || normal.imageUrl || null,
+      backImageUrl: row.backImageUrl || normal.backImageUrl || null,
+      isLeader: Boolean(row.isLeader || normal.isLeader || normal.type === 'Leader'),
+      isBase: Boolean(row.isBase || normal.isBase || normal.type === 'Base'),
+    }
   })
 }
 
@@ -315,9 +363,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       return null
     })
 
-    const cards = wayfinderReplayStats?.rows || buildMetricRows(byCard, normalCardMap)
-    const leaders = buildMetricRows(byLeader, normalCardMap)
-    const bases = buildMetricRows(byBase, normalCardMap)
+    const cards = enrichMetricRowsWithCatalog(wayfinderReplayStats?.rows || buildMetricRows(byCard, normalCardMap), normalCardMap)
+    const leaders = enrichMetricRowsWithCatalog(buildMetricRows(byLeader, normalCardMap), normalCardMap)
+    const bases = enrichMetricRowsWithCatalog(buildMetricRows(byBase, normalCardMap), normalCardMap)
 
     const response = jsonResponse({
       setCode,

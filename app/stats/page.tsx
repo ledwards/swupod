@@ -701,6 +701,8 @@ interface DeckInclusionStats {
 interface CardDataCard {
   cardName: string
   cardId: string | null
+  setCode?: string | null
+  collectorNumber?: string | null
   subtitle: string | null
   rarity: string
   cardType: string
@@ -779,6 +781,25 @@ const UNGRADED_LABEL = 'U'
 const CARD_TIER_ORDER = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F', UNGRADED_LABEL]
 const CARD_DATA_RATE_KEYS = ['gpWr', 'ohWr', 'gdWr', 'gihWr', 'gnsWr', 'playedRate', 'resourcedWhenSeen'] as const
 const CARD_DATA_DELTA_KEYS = ['iih', 'playedWar'] as const
+const RARITY_ICON: Record<string, string> = {
+  Common: '/icons/rarity/common.png',
+  Uncommon: '/icons/rarity/uncommon.png',
+  Rare: '/icons/rarity/rare.png',
+  Legendary: '/icons/rarity/legendary.png',
+  Special: '/icons/rarity/special.png',
+}
+const CARD_METRIC_FORMULA_COPY: Record<string, string> = {
+  grade: 'Selected Limited metric compared with other cards under the same format, era/date, source, and card-pool filters',
+  gpWr: 'Wins with this card in the deck / games with this card in the deck',
+  ohWr: 'Wins when this card starts in the opening hand / opening hands containing this card',
+  gdWr: 'Wins when this card is drawn after the opener / games where this card is drawn after the opener',
+  gihWr: 'Wins when this card is seen in hand / games where this card is seen in hand',
+  gnsWr: 'Wins when this card is not seen / games where this card is not seen',
+  iih: 'Win rate when seen in hand minus win rate when not seen',
+  playedRate: 'Copies played from seen hand / copies seen in hand',
+  resourcedWhenSeen: 'Copies resourced from seen hand / copies seen in hand',
+  playedWar: 'Win rate when played minus win rate when in deck but not played',
+}
 
 // === Shared Skeleton ===
 
@@ -1150,8 +1171,11 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
 
   const hasCards = cardData && ((cardData.cards?.length || 0) + (cardData.leaders?.length || 0) + (cardData.bases?.length || 0)) > 0
   const rarityClass = (r: string) => `rarity-${r.toLowerCase()}`
+  const rarityIcon = (rarity: string, size = 14) => {
+    const src = RARITY_ICON[rarity]
+    return src ? <img className="card-data-rarity-icon" src={src} alt={rarity} title={rarity} style={{ width: size, height: size }} /> : <span className={rarityClass(rarity)}>{rarity.slice(0, 1)}</span>
+  }
   const cellProps = { showYou, showAll, showTop, showTournament, isBlurred, user }
-  const formatPct = (v: number) => `${v.toFixed(1)}%`
   const replayTitle = 'Replay-hand metrics require validated opening-hand and draw facts.'
   const metricUnavailable = (reason = replayTitle) => <span className="metric-unavailable" title={reason}>—</span>
   const rowRateNumerator = (ratePct: number | null | undefined, count: number | null | undefined) => {
@@ -1185,6 +1209,10 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
     isBase: Boolean(card.isBase),
   })
   const displayGrade = (card: CardDataCard | null | undefined) => card?.grade || UNGRADED_LABEL
+  const collectorNumber = (card: CardDataCard) => {
+    const value = card.collectorNumber || card.cardId?.match(/^[A-Z0-9]+[-_](\d+)$/)?.[1] || ''
+    return value.replace(/^0+(\d)/, '$1')
+  }
   const tileImageUrl = (card: CardDataCard) => {
     if (card.isLeader) return card.backImageUrl || card.imageUrl || null
     return card.imageUrl || card.backImageUrl || null
@@ -1198,6 +1226,12 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
     const image = tileImageUrl(card)
     return image ? { backgroundImage: `url("${image}")` } : undefined
   }
+  const tierCardMetric = (card: CardDataCard) => {
+    if (!card.gpCount || card.gpCount <= 0) return '—'
+    const pct = Math.round((card.gpWins / card.gpCount) * 1000) / 10
+    return `${pct.toFixed(1)}% · n=${fmt(card.gpCount)}`
+  }
+  const metricFormula = (key: string, fallback?: string) => CARD_METRIC_FORMULA_COPY[key] || fallback || ''
   const openCardStats = (card: CardDataCard) => setSelectedStatsCard(card)
   const closeCardStats = () => setSelectedStatsCard(null)
   const metricValue = (card: CardDataCard, key: string) => {
@@ -1211,38 +1245,38 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
       key: 'grade',
       label: 'G',
       value: displayGrade(card),
-      formula: SEVENTEEN_LANDS_METRICS.grade.formula,
+      formula: metricFormula('grade', SEVENTEEN_LANDS_METRICS.grade.formula),
       detail: card.gradeStatusLabel,
     },
     ...(['gpWr', 'ohWr', 'gdWr', 'gihWr', 'gnsWr'] as const).map(key => ({
       key,
       label: SEVENTEEN_LANDS_METRICS[key].label,
       value: metricValue(card, key),
-      formula: SEVENTEEN_LANDS_METRICS[key].formula,
+      formula: metricFormula(key, SEVENTEEN_LANDS_METRICS[key].formula),
     })),
     {
       key: 'iih',
       label: SEVENTEEN_LANDS_METRICS.iih.label,
       value: metricValue(card, 'iih'),
-      formula: SEVENTEEN_LANDS_METRICS.iih.formula,
+      formula: metricFormula('iih', SEVENTEEN_LANDS_METRICS.iih.formula),
     },
     {
       key: 'playedRate',
       label: SEVENTEEN_LANDS_METRICS.playedRate.label,
       value: metricValue(card, 'playedRate'),
-      formula: SEVENTEEN_LANDS_METRICS.playedRate.formula,
+      formula: metricFormula('playedRate', SEVENTEEN_LANDS_METRICS.playedRate.formula),
     },
     {
       key: 'resourcedWhenSeen',
       label: SEVENTEEN_LANDS_METRICS.resourcedWhenSeen.label,
       value: metricValue(card, 'resourcedWhenSeen'),
-      formula: SEVENTEEN_LANDS_METRICS.resourcedWhenSeen.formula,
+      formula: metricFormula('resourcedWhenSeen', SEVENTEEN_LANDS_METRICS.resourcedWhenSeen.formula),
     },
     {
       key: 'playedWar',
       label: SEVENTEEN_LANDS_METRICS.playedWar.label,
       value: metricValue(card, 'playedWar'),
-      formula: SEVENTEEN_LANDS_METRICS.playedWar.formula,
+      formula: metricFormula('playedWar', SEVENTEEN_LANDS_METRICS.playedWar.formula),
     },
   ]
   const metricDefinitions = [
@@ -1309,6 +1343,7 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
 
   const renderTableSection = (section: any) => {
     if (section.totalRows === 0) return null
+    const isCardSection = section.key === 'cards'
     return (
       <section className={`card-data-section card-data-section-${section.key}`} key={section.key}>
         {renderSectionHeader(section)}
@@ -1321,18 +1356,18 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
                 <tr>
                   <SortHeader label="Name" col="cardName" />
                   <th className="aspects-col">Aspects</th>
-                  <th title="Cost">C</th>
+                  {isCardSection ? <th title="Cost">C</th> : null}
                   <SortHeader label="R" col="rarity" />
                   <SortHeader label="G" col="grade" title="Derived from the selected metric; GP WR until replay hand metrics are validated." />
-                  <SortHeader label="GP WR" col="gpWr" title="gp_wins / gp_count. Count appears as wins/denominator in the cell." />
-                  <th title="oh_wins / oh_count. Requires validated replay hand facts.">OH WR</th>
-                  <th title="gd_wins / gd_count. Requires validated replay hand facts.">GD WR</th>
-                  <th title="gih_wins / gih_count. Requires validated replay hand facts.">GIH WR</th>
-                  <th title="gns_wins / gns_count. Requires validated replay hand facts.">GNS WR</th>
-                  <th title="(gih_wins / gih_count) - (gns_wins / gns_count)">IIH</th>
-                  <th title="played_copies_from_seen_hand / gih_count">PR</th>
-                  <th title="resourced_copies_from_seen_hand / gih_count">RWS%</th>
-                  <th title="(played_wins / played_count) - (unplayed_wins / unplayed_count)">PWAR</th>
+                  <SortHeader label="GP WR" col="gpWr" title={metricFormula('gpWr')} />
+                  {isCardSection ? <th title={`${metricFormula('ohWr')}. Requires validated replay hand facts.`}>OH WR</th> : null}
+                  {isCardSection ? <th title={`${metricFormula('gdWr')}. Requires validated replay hand facts.`}>GD WR</th> : null}
+                  {isCardSection ? <th title={`${metricFormula('gihWr')}. Requires validated replay hand facts.`}>GIH WR</th> : null}
+                  {isCardSection ? <th title={`${metricFormula('gnsWr')}. Requires validated replay hand facts.`}>GNS WR</th> : null}
+                  {isCardSection ? <th title={metricFormula('iih')}>IIH</th> : null}
+                  {isCardSection ? <th title={metricFormula('playedRate')}>PR</th> : null}
+                  {isCardSection ? <th title={metricFormula('resourcedWhenSeen')}>RWS%</th> : null}
+                  {isCardSection ? <th title={metricFormula('playedWar')}>PWAR</th> : null}
                   <th>Sample</th>
                 </tr>
               </thead>
@@ -1348,8 +1383,8 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
                         <CardName entry={cardNameEntry(card)} className="card-data-name" />
                       </td>
                       <AspectsCell aspects={card.aspects} />
-                      <td>{card.cost == null ? '—' : card.cost}</td>
-                      <td><span className={rarityClass(card.rarity)}>{card.rarity}</span></td>
+                      {isCardSection ? <td>{card.cost == null ? '—' : card.cost}</td> : null}
+                      <td>{rarityIcon(card.rarity, 16)}</td>
                       {renderGradeCell(card)}
                       <StatsCell
                         {...cellProps}
@@ -1358,14 +1393,14 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
                         top={rateDisplay(topCard, 'gpWr')}
                         tournament={rateDisplay(tournamentCard, 'gpWr')}
                       />
-                      <td>{card.ohCount == null ? unavailableMetric : rateDisplay(card, 'ohWr')}</td>
-                      <td>{card.gdCount == null ? unavailableMetric : rateDisplay(card, 'gdWr')}</td>
-                      <td>{card.gihCount == null ? unavailableMetric : rateDisplay(card, 'gihWr')}</td>
-                      <td>{card.gnsCount == null ? unavailableMetric : rateDisplay(card, 'gnsWr')}</td>
-                      <td>{card.iih == null ? unavailableMetric : deltaDisplay(card, 'iih')}</td>
-                      <td>{card.playedRate == null ? unavailableMetric : rateDisplay(card, 'playedRate')}</td>
-                      <td>{card.resourcedWhenSeen == null ? unavailableMetric : rateDisplay(card, 'resourcedWhenSeen')}</td>
-                      <td>{card.playedWar == null ? metricUnavailable('Played WAR requires played and unplayed replay samples.') : deltaDisplay(card, 'playedWar')}</td>
+                      {isCardSection ? <td>{card.ohCount == null ? unavailableMetric : rateDisplay(card, 'ohWr')}</td> : null}
+                      {isCardSection ? <td>{card.gdCount == null ? unavailableMetric : rateDisplay(card, 'gdWr')}</td> : null}
+                      {isCardSection ? <td>{card.gihCount == null ? unavailableMetric : rateDisplay(card, 'gihWr')}</td> : null}
+                      {isCardSection ? <td>{card.gnsCount == null ? unavailableMetric : rateDisplay(card, 'gnsWr')}</td> : null}
+                      {isCardSection ? <td>{card.iih == null ? unavailableMetric : deltaDisplay(card, 'iih')}</td> : null}
+                      {isCardSection ? <td>{card.playedRate == null ? unavailableMetric : rateDisplay(card, 'playedRate')}</td> : null}
+                      {isCardSection ? <td>{card.resourcedWhenSeen == null ? unavailableMetric : rateDisplay(card, 'resourcedWhenSeen')}</td> : null}
+                      {isCardSection ? <td>{card.playedWar == null ? metricUnavailable('Played WAR requires played and unplayed replay samples.') : deltaDisplay(card, 'playedWar')}</td> : null}
                       <td>
                         {card.sampleWarning ? <span className="sample-warning">{card.sampleWarning}</span> : <span className="sample-ok">OK</span>}
                       </td>
@@ -1410,12 +1445,22 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
                             openCardStats(card)
                           }
                         }}
-                        title={`Open 17L stats for ${card.cardName}`}
+                        title={`Open card stats for ${card.cardName}`}
                       >
-                        <CardName entry={cardNameEntry(card)} className="card-data-name card-data-tier-card-name" />
-                        <span className="card-data-tier-card-meta">
-                          <span className={rarityClass(card.rarity)} title={card.rarity}>{card.rarity.slice(0, 1)}</span>
-                          <span title="gp_wins / gp_count">{rateDisplay(card, 'gpWr')}</span>
+                        <span className="card-data-tier-card-copy">
+                          <span className="card-data-tier-card-title">{card.cardName}</span>
+                          {card.subtitle ? <span className="card-data-tier-card-subtitle">{card.subtitle}</span> : null}
+                          <span className="card-data-tier-card-metric" title={metricFormula('gpWr')}>{tierCardMetric(card)}</span>
+                        </span>
+                        <span className="card-data-tier-card-footer">
+                          <span className="card-data-tier-card-aspects">
+                            {card.aspects.map(aspect => <AspectIcon key={aspect} aspect={aspect} size="xs" />)}
+                          </span>
+                          <span className="card-data-tier-card-printing">
+                            {collectorNumber(card) ? <span>{collectorNumber(card)}</span> : null}
+                            {collectorNumber(card) && card.rarity ? <span className="card-data-tier-card-dot">&middot;</span> : null}
+                            {rarityIcon(card.rarity, 13)}
+                          </span>
                         </span>
                       </span>
                     ))}
@@ -1472,8 +1517,8 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
             type="button"
             className="card-data-info-button"
             onClick={() => setDefinitionsOpen(true)}
-            title="Explain the 17L card data terms"
-            aria-label="Explain 17L card data terms"
+            title="Explain the card data terms"
+            aria-label="Explain card data terms"
           >
             i
           </button>
@@ -1514,11 +1559,11 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
 
             {cardData.replayMetricsStatus === 'available' ? (
               <p className="stats-warning stats-warning-success">
-                Replay-hand columns are hydrated from Wayfinder card-observation facts for online global slices.
+                Replay-hand columns are hydrated from Wayfinder card-observation facts for the selected online format, set, and date window.
               </p>
             ) : (
               <p className="stats-warning">
-                Replay-hand columns stay blank until Wayfinder supplies validated card-observation facts for this slice.
+                Replay-hand columns stay blank until Wayfinder supplies validated card-observation facts for the selected format, source, set, and date window.
               </p>
             )}
 
@@ -1534,7 +1579,7 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
         )}
         {selectedStatsCard && (
           <div className="card-data-modal-backdrop" role="presentation" onClick={closeCardStats}>
-            <section className="card-data-modal" role="dialog" aria-modal="true" aria-label={`17L stats for ${selectedStatsCard.cardName}`} onClick={(e) => e.stopPropagation()}>
+            <section className="card-data-modal" role="dialog" aria-modal="true" aria-label={`Card stats for ${selectedStatsCard.cardName}`} onClick={(e) => e.stopPropagation()}>
               <div className="card-data-modal-header">
                 <div>
                   <h3>{selectedStatsCard.cardName}</h3>
@@ -1560,10 +1605,10 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
         )}
         {definitionsOpen && (
           <div className="card-data-modal-backdrop" role="presentation" onClick={() => setDefinitionsOpen(false)}>
-            <section className="card-data-modal card-data-definitions-modal" role="dialog" aria-modal="true" aria-label="17L metric definitions" onClick={(e) => e.stopPropagation()}>
+            <section className="card-data-modal card-data-definitions-modal" role="dialog" aria-modal="true" aria-label="Card metric definitions" onClick={(e) => e.stopPropagation()}>
               <div className="card-data-modal-header">
                 <div>
-                  <h3>17L Terms</h3>
+                  <h3>Card Stats Terms</h3>
                   <p>Canonical card-data display terms and formulas.</p>
                 </div>
                 <button type="button" className="card-data-modal-close" onClick={() => setDefinitionsOpen(false)} aria-label="Close definitions">x</button>
@@ -1572,7 +1617,7 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
                 {metricDefinitions.map(metric => (
                   <div className="card-data-definition" key={metric.key}>
                     <span>{metric.label}</span>
-                    <p>{metric.formula}</p>
+                    <p>{metricFormula(metric.key, metric.formula)}</p>
                   </div>
                 ))}
               </div>

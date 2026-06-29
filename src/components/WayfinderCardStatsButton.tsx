@@ -66,6 +66,18 @@ type LookupState =
   | { status: 'error'; row: null; payload: null; error: string }
 
 const statsCache = new Map<string, CardDataStatsPayload>()
+const CARD_METRIC_FORMULA_COPY: Record<string, string> = {
+  grade: 'Selected Limited metric compared with other cards under the same format, era/date, and source filters',
+  gpWr: 'Wins with this card in the deck / games with this card in the deck',
+  ohWr: 'Wins when this card starts in the opening hand / opening hands containing this card',
+  gdWr: 'Wins when this card is drawn after the opener / games where this card is drawn after the opener',
+  gihWr: 'Wins when this card is seen in hand / games where this card is seen in hand',
+  gnsWr: 'Wins when this card is not seen / games where this card is not seen',
+  iih: 'Win rate when seen in hand minus win rate when not seen',
+  playedRate: 'Copies played from seen hand / copies seen in hand',
+  resourcedWhenSeen: 'Copies resourced from seen hand / copies seen in hand',
+  playedWar: 'Win rate when played minus win rate when in deck but not played',
+}
 
 function clean(value: string | null | undefined): string | null {
   const trimmed = value?.trim() ?? ''
@@ -133,16 +145,16 @@ function metricRows(row: CardDataStatsRow): DisplayMetric[] {
   const pwar = formatSeventeenLandsDeltaMetric('playedWar', toPercentagePoints(row.playedWar))
 
   return [
-    { key: 'grade', label: 'G', value: row.grade || 'U', formula: SEVENTEEN_LANDS_METRICS.grade.formula },
-    { key: 'gpWr', label: gp.label, value: gp.value, formula: gp.formula },
-    { key: 'ohWr', label: oh.label, value: oh.value, formula: oh.formula },
-    { key: 'gdWr', label: gd.label, value: gd.value, formula: gd.formula },
-    { key: 'gihWr', label: gih.label, value: gih.value, formula: gih.formula },
-    { key: 'gnsWr', label: gns.label, value: gns.value, formula: gns.formula },
-    { key: 'iih', label: iih.label, value: iih.value, formula: iih.formula },
-    { key: 'playedRate', label: pr.label, value: pr.value, formula: pr.formula },
-    { key: 'resourcedWhenSeen', label: rws.label, value: rws.value, formula: rws.formula },
-    { key: 'playedWar', label: pwar.label, value: pwar.value, formula: pwar.formula },
+    { key: 'grade', label: 'G', value: row.grade || 'U', formula: CARD_METRIC_FORMULA_COPY.grade },
+    { key: 'gpWr', label: gp.label, value: gp.value, formula: CARD_METRIC_FORMULA_COPY.gpWr },
+    { key: 'ohWr', label: oh.label, value: oh.value, formula: CARD_METRIC_FORMULA_COPY.ohWr },
+    { key: 'gdWr', label: gd.label, value: gd.value, formula: CARD_METRIC_FORMULA_COPY.gdWr },
+    { key: 'gihWr', label: gih.label, value: gih.value, formula: CARD_METRIC_FORMULA_COPY.gihWr },
+    { key: 'gnsWr', label: gns.label, value: gns.value, formula: CARD_METRIC_FORMULA_COPY.gnsWr },
+    { key: 'iih', label: iih.label, value: iih.value, formula: CARD_METRIC_FORMULA_COPY.iih },
+    { key: 'playedRate', label: pr.label, value: pr.value, formula: CARD_METRIC_FORMULA_COPY.playedRate },
+    { key: 'resourcedWhenSeen', label: rws.label, value: rws.value, formula: CARD_METRIC_FORMULA_COPY.resourcedWhenSeen },
+    { key: 'playedWar', label: pwar.label, value: pwar.value, formula: CARD_METRIC_FORMULA_COPY.playedWar },
   ]
 }
 
@@ -170,13 +182,13 @@ function MetricCell({ metric }: { metric: DisplayMetric }) {
 function StatsModal({ state, card, onClose }: { state: LookupState; card: CardData; onClose: () => void }) {
   return createPortal(
     <div className="swupod-17l-modal-backdrop" onClick={onClose}>
-      <div className="swupod-17l-modal" role="dialog" aria-label="Wayfinder 17L card stats" onClick={(event) => event.stopPropagation()}>
-        <button type="button" className="swupod-17l-modal-close" aria-label="Close 17L card stats" onClick={onClose}>×</button>
+      <div className="swupod-17l-modal" role="dialog" aria-label="Wayfinder card stats" onClick={(event) => event.stopPropagation()}>
+        <button type="button" className="swupod-17l-modal-close" aria-label="Close card stats" onClick={onClose}>×</button>
         {state.status === 'loaded' && state.row ? (
           <div className="swupod-17l-panel">
             <div className="swupod-17l-panel-header">
               <div>
-                <div className="swupod-17l-kicker">Wayfinder 17L Stats</div>
+                <div className="swupod-17l-kicker">Wayfinder Card Stats</div>
                 <h2>{state.row.cardName}{state.row.subtitle && <span>{state.row.subtitle}</span>}</h2>
                 <p>{state.payload.setCode} / limited / online</p>
               </div>
@@ -191,7 +203,7 @@ function StatsModal({ state, card, onClose }: { state: LookupState; card: CardDa
             )}
           </div>
         ) : state.status === 'loaded' ? (
-          <div className="swupod-17l-empty">No 17L card stats found for {card.name || 'this card'} in this limited online slice.</div>
+          <div className="swupod-17l-empty">No card stats found for {card.name || 'this card'} in Limited online play for this set and date window.</div>
         ) : state.status === 'error' ? (
           <div className="swupod-17l-empty">{state.error}</div>
         ) : (
@@ -251,8 +263,8 @@ export function WayfinderCardStatsButton({ card }: { card: CardData }) {
       <button
         type="button"
         className="swupod-card-17l-button"
-        aria-label="Show Wayfinder 17L card stats"
-        title="Show Wayfinder 17L card stats"
+        aria-label="Show Wayfinder card stats"
+        title="Show Wayfinder card stats"
         onClick={(event) => {
           event.preventDefault()
           event.stopPropagation()

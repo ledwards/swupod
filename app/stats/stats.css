@@ -414,6 +414,12 @@
   vertical-align: top;
 }
 
+.card-data-rarity-icon {
+  display: inline-block;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
 .card-data-summary {
   grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
   gap: 0.75rem;
@@ -597,55 +603,58 @@
 
 .card-data-tier-list {
   display: grid;
-  gap: 0.55rem;
+  gap: 10px;
+  padding: 0;
 }
 
 .card-data-tier-row {
-  align-items: start;
   display: grid;
-  gap: 0.6rem;
-  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 10px;
+  grid-template-columns: 64px minmax(0, 1fr);
 }
 
 .card-data-tier-label {
   align-items: center;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  align-self: stretch;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 6px;
   color: #fff;
   display: flex;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 850;
   justify-content: center;
-  min-height: 38px;
-  padding: 0.35rem;
+  min-height: 44px;
+  padding: 0.35rem 0.5rem;
 }
 
 .card-data-tier-cards {
-  display: grid;
-  gap: 0.45rem;
-  grid-template-columns: repeat(auto-fill, minmax(236px, 1fr));
+  align-items: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   min-width: 0;
 }
 
 .card-data-tier-card {
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.34);
-  background-position: 50% 34%;
+  align-items: stretch;
+  background-color: rgba(255, 255, 255, 0.035);
+  background-position: 50% calc(34% + 20px);
   background-repeat: no-repeat;
   background-size: 155% auto;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 6px;
-  color: rgba(255, 255, 255, 0.9);
+  color: #fff;
   cursor: pointer;
-  display: grid;
-  gap: 0.55rem;
-  grid-template-columns: minmax(0, 1fr) auto;
-  min-height: 68px;
-  min-width: 0;
+  display: inline-grid;
+  gap: 8px;
+  grid-template-rows: 1fr auto;
+  min-height: 86px;
+  min-width: 236px;
   overflow: hidden;
-  padding: 0.55rem 0.65rem;
+  padding: 10px 10px 8px;
   position: relative;
+  text-decoration: none;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.72);
 }
 
@@ -667,15 +676,15 @@
 }
 
 .card-data-tier-card-event {
-  background-position: 50% 44%;
+  background-position: 50% calc(44% + 20px);
   background-size: 160% auto;
 }
 
 .card-data-tier-card-base {
   aspect-ratio: 2.2 / 1;
-  background-position: 50% 52%;
+  background-position: 50% calc(52% + 20px);
   background-size: 136% auto;
-  min-height: 74px;
+  min-height: 86px;
 }
 
 .card-data-tier-card > * {
@@ -683,23 +692,78 @@
   z-index: 1;
 }
 
-.card-data-tier-card-name {
+.card-data-tier-card-copy {
+  align-self: start;
+  display: grid;
+  gap: 2px;
   min-width: 0;
 }
 
-.card-data-tier-card-meta {
-  align-items: center;
-  color: rgba(255, 255, 255, 0.58);
-  display: inline-flex;
-  flex: 0 0 auto;
-  font-size: 0.72rem;
-  gap: 0.35rem;
-  justify-content: flex-end;
+.card-data-tier-card-title {
+  color: #fff;
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.card-data-tier-card-meta > span:first-child {
-  font-weight: 850;
+.card-data-tier-card-subtitle {
+  color: rgba(222, 230, 238, 0.8);
+  font-size: 0.68rem;
+  font-weight: 650;
+  line-height: 1.15;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-data-tier-card-metric {
+  color: #fff;
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 750;
+  line-height: 1.1;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+.card-data-tier-card-footer {
+  align-items: flex-end;
+  align-self: end;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.card-data-tier-card-aspects,
+.card-data-tier-card-printing {
+  align-items: center;
+  display: inline-flex;
+  min-width: 0;
+}
+
+.card-data-tier-card-printing {
+  color: rgba(177, 190, 203, 0.78);
+  flex: 0 1 auto;
+  font-size: 0.68rem;
+  font-weight: 750;
+  gap: 5px;
+  justify-content: flex-end;
+  letter-spacing: 0.02em;
+  min-width: 0;
+}
+
+.card-data-tier-card-printing > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-data-tier-card-dot {
+  color: rgba(177, 190, 203, 0.62);
 }
 
 .card-data-info-button {
@@ -846,7 +910,12 @@
   }
 
   .card-data-tier-cards {
+    display: grid;
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .card-data-tier-card {
+    min-width: 0;
   }
 
   .card-data-section-header {

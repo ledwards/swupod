@@ -50,6 +50,8 @@ interface WayfinderCardStatsApiResponse {
 export interface SwupodCardStatsBridgeRow {
   cardName: string
   cardId: string | null
+  setCode: string | null
+  collectorNumber: string | null
   subtitle: string | null
   rarity: string
   cardType: string
@@ -134,6 +136,8 @@ export function mapWayfinderCardStatsRow(row: WayfinderCardStatsRow): SwupodCard
   return {
     cardName: row.name,
     cardId: row.cardUuid,
+    setCode: row.setCode || null,
+    collectorNumber: null,
     subtitle: row.subtitle,
     rarity: row.rarity || 'Unknown',
     cardType: row.type || 'Unknown',
