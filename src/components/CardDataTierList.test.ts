@@ -8,16 +8,52 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const COMPONENT_SRC = readFileSync(join(__dirname, 'CardDataTierList.tsx'), 'utf8')
 const FILTERS_SRC = readFileSync(join(__dirname, 'stats/TableFilters.tsx'), 'utf8')
+const MODAL_SRC = readFileSync(join(__dirname, 'Modal.tsx'), 'utf8')
 const STATS_CSS = readFileSync(join(__dirname, '../../app/stats/stats.css'), 'utf8')
 
 describe('<CardDataTierList /> controls', () => {
-  it('opens on GP WR so the default tier list has a populated grade basis', () => {
-    assert.match(COMPONENT_SRC, /useState<CardMetricKey>\(\s*['"]gpWr['"]\s*\)/)
+  it('grades from GIH only and does not render metric toggles', () => {
+    assert.match(COMPONENT_SRC, /const GIH_GRADE_METRIC: CardMetricKey = ['"]gihWr['"]/)
+    assert.doesNotMatch(COMPONENT_SRC, /useState<CardMetricKey>/)
+    assert.doesNotMatch(COMPONENT_SRC, /setSelectedMetric/)
+    assert.doesNotMatch(COMPONENT_SRC, /aria-label=['"]Grade metric['"]/)
   })
 
-  it('derives GIH tiers from selected metric samples instead of trusting a missing backend grade', () => {
+  it('derives GIH tiers from metric samples instead of trusting a missing backend grade', () => {
     assert.match(COMPONENT_SRC, /const inputs = rows\.map\(card => \(\{/)
+    assert.match(COMPONENT_SRC, /groups\.get\(card\.displayGrade \|\| ['"]U['"]\)\?\.push\(card\)/)
     assert.doesNotMatch(COMPONENT_SRC, /metric === ['"]gihWr['"] && hasWayfinderReplayMetrics/)
+  })
+
+  it('shows all requested rates on tier-list cards', () => {
+    assert.match(COMPONENT_SRC, /GIH: \$\{formatTierCardPct\(card\.gihWr\)\} · OH: \$\{formatTierCardPct\(card\.ohWr\)\} · GD: \$\{formatTierCardPct\(card\.gdWr\)\} · GP \$\{formatTierCardPct\(card\.gpWr\)\}/)
+    assert.doesNotMatch(COMPONENT_SRC, /GIH: \$\{formatTierCardPct\(card\.gihWr\)\} \* OH:/)
+  })
+
+  it('stacks title, subtitle, aspects, then footer stats on tier cards', () => {
+    assert.match(COMPONENT_SRC, /card-data-tier-card-copy[\s\S]*?card-data-tier-card-title[\s\S]*?card-data-tier-card-subtitle[\s\S]*?card-data-tier-card-aspects[\s\S]*?card-data-tier-card-footer[\s\S]*?card-data-tier-card-metric/)
+    const metricRule = STATS_CSS.match(/\.card-data-tier-card-metric\s*\{[\s\S]*?\n\}/)?.[0] || ''
+    const printingRule = Array.from(STATS_CSS.matchAll(/\.card-data-tier-card-printing\s*\{[\s\S]*?\n\}/g))
+      .map(match => match[0])
+      .find(rule => /font-size:\s*0\.62rem;/.test(rule)) || ''
+    assert.match(metricRule, /font-size:\s*0\.62rem;/)
+    assert.match(printingRule, /font-size:\s*0\.62rem;/)
+  })
+
+  it('puts the modal grade in the meta row and format plus rarity in the right badge', () => {
+    assert.match(COMPONENT_SRC, /className=['"]card-data-stats-modal-meta['"][\s\S]*?className=\{`card-grade/)
+    assert.match(COMPONENT_SRC, /className=['"]card-data-stats-modal-context['"][\s\S]*?\{formatLabel\}[\s\S]*?<RarityIcon rarity=\{card\.rarity\}/)
+    const contextRule = STATS_CSS.match(/\.card-data-stats-modal-context\s*\{[\s\S]*?\n\}/)?.[0] || ''
+    assert.doesNotMatch(contextRule, /background:/)
+    assert.doesNotMatch(contextRule, /border:/)
+  })
+
+  it('colors modal and tier grades on a shared red-to-green scale', () => {
+    assert.match(COMPONENT_SRC, /function gradeClassSuffix\(grade: string\)/)
+    assert.match(COMPONENT_SRC, /className=\{`card-data-tier-label card-grade-\$\{gradeClassSuffix\(grade\)\}`\}/)
+    assert.match(COMPONENT_SRC, /className=\{`card-grade card-grade-\$\{gradeClassSuffix\(grade\)\}`\}/)
+    assert.match(STATS_CSS, /\.card-grade-aplus,[\s\S]*?--grade-rgb:\s*88,\s*214,\s*128;/)
+    assert.match(STATS_CSS, /\.card-grade-f,[\s\S]*?--grade-rgb:\s*165,\s*48,\s*64;/)
   })
 
   it('prefers hyperspace art for tier-list card images', () => {
@@ -53,5 +89,11 @@ describe('<CardDataTierList /> styling contracts', () => {
     assert.match(STATS_CSS, /background-size:\s*cover;/)
     assert.match(STATS_CSS, /background-position:\s*right 25%;/)
     assert.match(STATS_CSS, /\.card-data-tier-card-event\s*\{[\s\S]*?background-position:\s*right 86%;/)
+  })
+
+  it('keeps the card stats modal centered and viewport-safe', () => {
+    assert.match(MODAL_SRC, /createPortal\(modal,\s*document\.body\)/)
+    assert.match(STATS_CSS, /\.modal-overlay:has\(\.card-data-stats-modal\)\s*\{[\s\S]*?align-items:\s*center;[\s\S]*?justify-content:\s*center;/)
+    assert.match(STATS_CSS, /\.modal-content\.card-data-stats-modal\s*\{[\s\S]*?max-height:\s*min\(760px,\s*calc\(100dvh - 2rem\)\);[\s\S]*?overflow-y:\s*auto;/)
   })
 })

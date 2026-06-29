@@ -1,6 +1,8 @@
-// @ts-nocheck
+'use client'
+
 import { useEffect, useCallback, useRef, useId } from 'react'
-import type { ReactNode, MouseEvent, KeyboardEvent } from 'react'
+import { createPortal } from 'react-dom'
+import type { ReactNode, MouseEvent } from 'react'
 import './Modal.css'
 import Button from './Button'
 
@@ -76,8 +78,8 @@ export function Modal({
         e.preventDefault()
         return
       }
-      const first = focusables[0]
-      const last = focusables[focusables.length - 1]
+      const first = focusables[0]!
+      const last = focusables[focusables.length - 1]!
       if (e.shiftKey && document.activeElement === first) {
         e.preventDefault()
         last.focus()
@@ -110,10 +112,11 @@ export function Modal({
   }, [isOpen, handleKeyDown])
 
   if (!isOpen) return null
+  if (typeof document === 'undefined') return null
 
   const variantClass = variant !== 'default' ? `modal--${variant}` : ''
 
-  return (
+  const modal = (
     <div
       className="modal-overlay"
       onClick={onClose}
@@ -147,6 +150,8 @@ export function Modal({
       </div>
     </div>
   )
+
+  return createPortal(modal, document.body)
 }
 
 /**

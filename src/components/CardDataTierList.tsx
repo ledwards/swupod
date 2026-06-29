@@ -101,6 +101,7 @@ const GRADE_ORDER: Record<string, number> = {
   F: 0, U: -1,
 }
 const CARD_TIER_ORDER = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F', 'U']
+const GIH_GRADE_METRIC: CardMetricKey = 'gihWr'
 const RARITY_ICON_PATHS: Record<string, string> = {
   Common: '/icons/rarity/common.png',
   Uncommon: '/icons/rarity/uncommon.png',
@@ -108,12 +109,18 @@ const RARITY_ICON_PATHS: Record<string, string> = {
   Legendary: '/icons/rarity/legendary.png',
   Special: '/icons/rarity/special.png',
 }
-const GRADE_METRIC_OPTIONS: Array<{ key: CardMetricKey; label: string; fullLabel: string; description: string }> = [
-  { key: 'gihWr', label: 'GIH WR', fullLabel: 'Games In Hand Win Rate (GIH WR)', description: 'Games in hand win rate.' },
-  { key: 'ohWr', label: 'OH WR', fullLabel: 'Opening Hand Win Rate (OH WR)', description: 'Opening hand win rate.' },
-  { key: 'gdWr', label: 'GD WR', fullLabel: 'Games Drawn Win Rate (GD WR)', description: 'Drawn later win rate.' },
-  { key: 'gpWr', label: 'GP WR', fullLabel: 'Games Played Win Rate (GP WR)', description: 'Games played win rate.' },
-]
+const CARD_METRIC_LABELS: Record<CardMetricKey, string> = {
+  gihWr: 'GIH WR',
+  ohWr: 'OH WR',
+  gdWr: 'GD WR',
+  gpWr: 'GP WR',
+}
+const CARD_METRIC_FULL_LABELS: Record<CardMetricKey, string> = {
+  gihWr: 'Games In Hand',
+  ohWr: 'Opening Hand Win Rate',
+  gdWr: 'Games Drawn Win Rate',
+  gpWr: 'Games Played Win Rate',
+}
 
 function getUrlSearchParam(name: string): string | null {
   if (typeof window === 'undefined') return null
@@ -228,17 +235,12 @@ function CardDataMetricDefinitions() {
   )
 }
 
-function cardDataMetricOption(metric: CardMetricKey) {
-  return GRADE_METRIC_OPTIONS.find(option => option.key === metric)
-}
-
 function cardDataMetricLabel(metric: CardMetricKey) {
-  return cardDataMetricOption(metric)?.label || 'GP WR'
+  return CARD_METRIC_LABELS[metric] || 'GP WR'
 }
 
 function cardDataMetricFullLabel(metric: CardMetricKey) {
-  const option = cardDataMetricOption(metric)
-  return option?.fullLabel || option?.label || 'Games Played Win Rate (GP WR)'
+  return CARD_METRIC_FULL_LABELS[metric] || cardDataMetricLabel(metric)
 }
 
 function hasWayfinderReplayMetrics(sourceDetail?: string) {
@@ -276,6 +278,10 @@ function cardDataTileKind(card: CardDataCard) {
   if (type.includes('base')) return 'base'
   if (type.includes('event')) return 'event'
   return 'unit'
+}
+
+function gradeClassSuffix(grade: string) {
+  return grade.replace('+', 'plus').replace('-', 'minus').toLowerCase()
 }
 
 function CardDataLockIcon() {
@@ -349,15 +355,14 @@ function CardDataModalStat({ label, value, detail }: { label: string; value: str
   )
 }
 
-function CardDataStatsModal({ card, onClose, activeMetricLabel, formatLabel, sampleWarningLabel }: {
+function CardDataStatsModal({ card, onClose, formatLabel, sampleWarningLabel }: {
   card: CardDataCard
   onClose: () => void
-  activeMetricLabel: string
   formatLabel: string
   sampleWarningLabel?: string | null
 }) {
   const artUrl = cardDataTileImageUrl(card)
-  const grade = card.displayGrade || card.grade || 'U'
+  const grade = card.displayGrade || 'U'
   const metricStats = [
     { label: 'Games Played WR', value: formatCardDataPct(card.gpWr), detail: cardDataGamesLabel(card.gpCount) },
     { label: 'Opening Hand WR', value: formatCardDataPct(card.ohWr), detail: card.ohCount == null ? undefined : cardDataGamesLabel(card.ohCount) },
@@ -382,13 +387,14 @@ function CardDataStatsModal({ card, onClose, activeMetricLabel, formatLabel, sam
           <h3>{card.cardName}</h3>
           {card.subtitle ? <p>{card.subtitle}</p> : null}
           <div className="card-data-stats-modal-meta">
-            <span>{formatLabel}</span>
-            <span>{activeMetricLabel}</span>
-            <span className="card-data-stats-modal-rarity"><RarityIcon rarity={card.rarity} /></span>
+            <span className={`card-grade card-grade-${gradeClassSuffix(grade)}`}>
+              {grade}
+            </span>
           </div>
         </div>
-        <span className={`card-grade card-grade-${grade.replace('+', 'plus').replace('-', 'minus').toLowerCase()}`}>
-          {grade}
+        <span className="card-data-stats-modal-context">
+          <span>{formatLabel}</span>
+          <span className="card-data-stats-modal-rarity"><RarityIcon rarity={card.rarity} /></span>
         </span>
       </div>
       <div className="card-data-stats-modal-body">
@@ -444,7 +450,7 @@ export default function CardDataTierList({
   includeBots = false,
   includeHumans = true,
   title = 'Cards',
-  description = 'Filter the card stats view by format, metric, card name, and aspect.',
+  description = 'Filter the card stats view by format, card name, and aspect.',
   allowTable = true,
   className = '',
   defaultFormat = 'draft',
@@ -456,7 +462,6 @@ export default function CardDataTierList({
   const [loading, setLoading] = useState(true)
   const hasLoadedOnce = useRef(false)
   const [view, setView] = useState<CardDataView>(defaultView)
-  const [selectedMetric, setSelectedMetric] = useState<CardMetricKey>('gpWr')
   const [selectedCard, setSelectedCard] = useState<CardDataCard | null>(null)
   const [cardKindFilter, setCardKindFilter] = useState<CardKindFilter>('deck-cards')
   const [sortKey, setSortKey] = useState<CardDataSortKey>('grade')
@@ -467,6 +472,7 @@ export default function CardDataTierList({
   const cardFilter = useTableFilter()
   const source = 'online'
   const activeView = allowTable ? view : 'tiers'
+  const selectedMetric = GIH_GRADE_METRIC
 
   useEffect(() => {
     if (!allowTable || !viewParamName) return
@@ -559,7 +565,7 @@ export default function CardDataTierList({
       let cmp = 0
       switch (sortKey) {
         case 'cardName': cmp = a.cardName.localeCompare(b.cardName); break
-        case 'grade': cmp = (GRADE_ORDER[a.displayGrade || a.grade || 'U'] ?? -1) - (GRADE_ORDER[b.displayGrade || b.grade || 'U'] ?? -1); break
+        case 'grade': cmp = (GRADE_ORDER[a.displayGrade || 'U'] ?? -1) - (GRADE_ORDER[b.displayGrade || 'U'] ?? -1); break
         case 'rarity': cmp = (RARITY_ORDER[a.rarity] ?? 9) - (RARITY_ORDER[b.rarity] ?? 9); break
         case 'gpWr': cmp = (a.displayMetricValue ?? metricValue(a, selectedMetric) ?? -1) - (b.displayMetricValue ?? metricValue(b, selectedMetric) ?? -1); break
         case 'gpCount': cmp = (a.displayMetricCount ?? metricCount(a, selectedMetric) ?? 0) - (b.displayMetricCount ?? metricCount(b, selectedMetric) ?? 0); break
@@ -574,7 +580,7 @@ export default function CardDataTierList({
     const groups = new Map<string, CardDataCard[]>()
     for (const grade of CARD_TIER_ORDER) groups.set(grade, [])
     for (const card of rows) {
-      groups.get(card.displayGrade || card.grade || 'U')?.push(card)
+      groups.get(card.displayGrade || 'U')?.push(card)
     }
     return groups
   }
@@ -655,6 +661,10 @@ export default function CardDataTierList({
     if (v == null || !Number.isFinite(v)) return '—'
     return Number.isInteger(v) ? `${v.toFixed(0)}%` : `${v.toFixed(1)}%`
   }
+  const formatTierCardPct = (v: number | null | undefined) => {
+    if (v == null || !Number.isFinite(v)) return '—'
+    return `${Math.round(v)}%`
+  }
   const cardNameEntry = (card: CardDataCard) => ({
     name: card.cardName,
     subtitle: card.subtitle,
@@ -687,9 +697,9 @@ export default function CardDataTierList({
   )
 
   const gradeBadge = (card: CardDataCard) => {
-    const grade = card.displayGrade || card.grade
+    const grade = card.displayGrade
     return grade ? (
-      <span className={`card-grade card-grade-${grade.replace('+', 'plus').replace('-', 'minus').toLowerCase()}`} title={`${activeMetricLabel} grade`}>
+      <span className={`card-grade card-grade-${gradeClassSuffix(grade)}`} title={`${activeMetricLabel} grade`}>
         {grade}
       </span>
     ) : (
@@ -698,13 +708,16 @@ export default function CardDataTierList({
   }
 
   const metricTile = (card: CardDataCard) => {
-    const count = card.displayMetricCount ?? metricCount(card, selectedMetric) ?? 0
-    return (
-      <>
-        <span>{formatPctCompact(card.displayMetricValue ?? metricValue(card, selectedMetric))}</span>
-        <span>{cardDataGamesLabel(count)}</span>
-      </>
-    )
+    return `GIH: ${formatTierCardPct(card.gihWr)} · OH: ${formatTierCardPct(card.ohWr)} · GD: ${formatTierCardPct(card.gdWr)} · GP ${formatTierCardPct(card.gpWr)}`
+  }
+
+  const metricTileTitle = (card: CardDataCard) => {
+    return [
+      `GIH sample: ${cardDataGamesLabel(card.gihCount)}`,
+      `OH sample: ${cardDataGamesLabel(card.ohCount)}`,
+      `GD sample: ${cardDataGamesLabel(card.gdCount)}`,
+      `GP sample: ${cardDataGamesLabel(card.gpCount)}`,
+    ].join(' · ')
   }
 
   const sampleWarningLabel = (card: CardDataCard) => {
@@ -739,9 +752,9 @@ export default function CardDataTierList({
             <SortHeader label="Name" col="cardName" />
             <th className="aspects-col">Aspects</th>
             <SortHeader label="Rarity" col="rarity" />
-            <SortHeader label="Grade" col="grade" title={`Derived from ${activeMetricLabel} within the active filters.`} />
-            <SortHeader label="# Sample" col="gpCount" title="Sample for the selected metric." />
-            <SortHeader label="Selected WR" col="gpWr" title={activeMetricLabel} />
+            <SortHeader label="Grade" col="grade" title="Derived from GIH within the active filters." />
+            <SortHeader label="GIH Sample" col="gpCount" title="Games in hand sample used for grading." />
+            <SortHeader label="GIH WR" col="gpWr" title={activeMetricLabel} />
             <th>GP WR</th>
             <th>OH WR</th>
             <th>GD WR</th>
@@ -797,7 +810,7 @@ export default function CardDataTierList({
         if (rows.length === 0) return null
         return (
           <div className="card-data-tier-row" key={grade}>
-            <div className="card-data-tier-label">{grade}</div>
+            <div className={`card-data-tier-label card-grade-${gradeClassSuffix(grade)}`}>{grade}</div>
             <div className="card-data-tier-cards">
               {rows.map((card: CardDataCard) => {
                 const imageUrl = cardDataTileImageUrl(card)
@@ -812,12 +825,14 @@ export default function CardDataTierList({
                     <span className="card-data-tier-card-copy">
                       <span className="card-data-tier-card-title">{card.cardName}</span>
                       {card.subtitle ? <span className="card-data-tier-card-subtitle">{card.subtitle}</span> : null}
-                      <span className="card-data-tier-card-metric">{metricTile(card)}</span>
+                      {card.aspects.length > 0 ? (
+                        <span className="card-data-tier-card-aspects">
+                          {card.aspects.map((aspect) => <AspectIcon key={aspect} aspect={aspect} size="xs" />)}
+                        </span>
+                      ) : null}
                     </span>
                     <span className="card-data-tier-card-footer">
-                      <span className="card-data-tier-card-aspects">
-                        {card.aspects.map((aspect) => <AspectIcon key={aspect} aspect={aspect} size="xs" />)}
-                      </span>
+                      <span className="card-data-tier-card-metric" title={metricTileTitle(card)}>{metricTile(card)}</span>
                       <span className="card-data-tier-card-printing">
                         {card.collectorNumber ? <span>{card.collectorNumber}</span> : null}
                         <RarityIcon rarity={card.rarity} />
@@ -920,22 +935,6 @@ export default function CardDataTierList({
                   </div>
                 </div>
 
-                <div className="card-data-control">
-                  <span className="card-data-control-label">Metric</span>
-                  <div className="card-stats-metric-pills" role="list" aria-label="Grade metric">
-                    {GRADE_METRIC_OPTIONS.map((option) => (
-                      <button
-                        key={option.key}
-                        className={`card-data-metric-pill ${selectedMetric === option.key ? 'active' : ''}`}
-                        title={option.description}
-                        onClick={() => setSelectedMetric(option.key)}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
                 <CardDataSearchAndFilter {...cardFilter} />
               </div>
 
@@ -959,7 +958,6 @@ export default function CardDataTierList({
           <CardDataStatsModal
             card={selectedCard}
             onClose={() => setSelectedCard(null)}
-            activeMetricLabel={activeMetricLabel}
             formatLabel={formatLabel}
             sampleWarningLabel={sampleWarningLabel(selectedCard)}
           />
