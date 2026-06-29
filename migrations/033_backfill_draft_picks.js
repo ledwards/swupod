@@ -59,7 +59,7 @@ export async function run(client) {
       cards = typeof drafted_cards === 'string'
         ? JSON.parse(drafted_cards)
         : drafted_cards || []
-    } catch (e) {
+    } catch {
       console.log(`   Player ${playerRow.player_id}: Invalid JSON, skipping`)
       totalPlayersSkipped++
       continue

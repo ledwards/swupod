@@ -74,7 +74,7 @@ export async function run(client) {
     let packsData
     try {
       packsData = typeof packs === 'string' ? JSON.parse(packs) : packs
-    } catch (e) {
+    } catch {
       console.log(`   Pool ${share_id}: Invalid packs JSON, skipping`)
       totalPoolsSkipped++
       continue

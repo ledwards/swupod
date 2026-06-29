@@ -10,9 +10,33 @@ import Modal from './components/Modal'
 import Button from './components/Button'
 import { initializeCardCache } from './utils/cardCache'
 
+function getInitialView() {
+  if (typeof window === 'undefined') return 'landing'
+
+  const path = window.location.pathname
+  if (path === '/terms-of-service') return 'terms-of-service'
+  if (path === '/privacy-policy') return 'privacy-policy'
+  return 'landing'
+}
+
+function getInitialSelectedSet() {
+  if (typeof window === 'undefined') return null
+
+  const savedSealedPod = window.sessionStorage.getItem('sealedPod')
+  if (!savedSealedPod) return null
+
+  try {
+    const data = JSON.parse(savedSealedPod)
+    return data.setCode || null
+  } catch (e) {
+    console.error('Failed to load saved sealed pod:', e)
+    return null
+  }
+}
+
 function App() {
-  const [view, setView] = useState('landing') // 'landing', 'set-selection', 'sealed-pod', 'deck-builder'
-  const [selectedSet, setSelectedSet] = useState(null)
+  const [view, setView] = useState(getInitialView) // 'landing', 'set-selection', 'sealed-pod', 'deck-builder'
+  const [selectedSet, setSelectedSet] = useState(getInitialSelectedSet)
   const [deckCards, setDeckCards] = useState([])
   const [showWarning, setShowWarning] = useState(false)
 
@@ -22,16 +46,6 @@ function App() {
     initializeCardCache().catch((error) => {
       console.error('Failed to load cards:', error)
     })
-  }, [])
-
-  // Handle URL-based routing for legal pages
-  useEffect(() => {
-    const path = window.location.pathname
-    if (path === '/terms-of-service') {
-      setView('terms-of-service')
-    } else if (path === '/privacy-policy') {
-      setView('privacy-policy')
-    }
   }, [])
 
   // Handle browser back/forward navigation
@@ -48,20 +62,6 @@ function App() {
     }
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
-  }, [])
-
-  // Load persisted sealed pod from sessionStorage on mount
-  useEffect(() => {
-    const savedSealedPod = sessionStorage.getItem('sealedPod')
-    if (savedSealedPod) {
-      try {
-        const data = JSON.parse(savedSealedPod)
-        setSelectedSet(data.setCode)
-        // Don't auto-navigate, let user choose
-      } catch (e) {
-        console.error('Failed to load saved sealed pod:', e)
-      }
-    }
   }, [])
 
   const handleSealedClick = () => {

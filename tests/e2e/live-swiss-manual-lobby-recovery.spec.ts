@@ -1,5 +1,4 @@
 // tests/e2e/live-swiss-manual-lobby-recovery.spec.ts
-// @ts-nocheck
 // Browser-level Swiss Practice RECOVERY test with a fake Companion.
 //
 // Reproduces the real-world symptom: the auto-create of the Karabast lobby

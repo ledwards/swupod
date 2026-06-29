@@ -487,6 +487,7 @@ export default function DraftReportPage({ params }: PageProps) {
                             key={card.instanceId}
                             card={card}
                             selected={card.instanceId === pick.pickedInstanceId}
+                            statsSetCode={draft.setCode}
                           />
                         ))}
                       </div>
@@ -508,7 +509,7 @@ export default function DraftReportPage({ params }: PageProps) {
                   <h3>{pack.name || `Round ${index + 1}`}</h3>
                   <div className="cards-grid">
                     {(pack.cards || []).map((card, ci) => (
-                      <CardWithPreview key={card.instanceId || ci} card={card} />
+                      <CardWithPreview key={card.instanceId || ci} card={card} statsSetCode={draft.setCode} />
                     ))}
                   </div>
                 </div>
@@ -537,7 +538,7 @@ export default function DraftReportPage({ params }: PageProps) {
                   <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', marginBottom: '12px' }}>Deck not yet built — showing full card pool.</p>
                   <div className="cards-grid">
                     {[...pool.cards].sort((a, b) => (a.cost ?? 0) - (b.cost ?? 0)).map((card, i) => (
-                      <CardWithPreview key={card.instanceId || i} card={card} />
+                      <CardWithPreview key={card.instanceId || i} card={card} statsSetCode={draft.setCode} />
                     ))}
                   </div>
                 </div>
@@ -548,8 +549,8 @@ export default function DraftReportPage({ params }: PageProps) {
                   <div className="draft-report-pool-section">
                     <h3>Leader & Base</h3>
                     <div className="cards-grid">
-                      {activeLeaderCard && <CardWithPreview card={activeLeaderCard} selected />}
-                      {activeBaseCard && <CardWithPreview card={activeBaseCard} selected />}
+                      {activeLeaderCard && <CardWithPreview card={activeLeaderCard} selected statsSetCode={draft.setCode} />}
+                      {activeBaseCard && <CardWithPreview card={activeBaseCard} selected statsSetCode={draft.setCode} />}
                     </div>
                   </div>
                 )}
@@ -559,7 +560,7 @@ export default function DraftReportPage({ params }: PageProps) {
                     <h3>Deck ({deckCards.length})</h3>
                     <div className="cards-grid">
                       {deckCards.map((card, i) => (
-                        <CardWithPreview key={card.instanceId || i} card={card} />
+                        <CardWithPreview key={card.instanceId || i} card={card} statsSetCode={draft.setCode} />
                       ))}
                     </div>
                   </div>
@@ -570,7 +571,7 @@ export default function DraftReportPage({ params }: PageProps) {
                     <h3>Sideboard ({sideboardCards.length})</h3>
                     <div className="cards-grid" style={{ opacity: 0.6 }}>
                       {sideboardCards.map((card, i) => (
-                        <CardWithPreview key={card.instanceId || i} card={card} />
+                        <CardWithPreview key={card.instanceId || i} card={card} statsSetCode={draft.setCode} />
                       ))}
                     </div>
                   </div>

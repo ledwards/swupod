@@ -636,6 +636,17 @@
   font-weight: 850;
 }
 
+.card-data-rarity-icon {
+  display: block;
+  flex: 0 0 auto;
+  height: 16px;
+  width: 16px;
+}
+
+.card-data-rarity-fallback {
+  font-weight: 850;
+}
+
 @media (max-width: 720px) {
   .card-data-tier-row {
     grid-template-columns: 1fr;

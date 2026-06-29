@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Friends of the Pod (Patreon supporter) features — SINGLE SOURCE OF TRUTH.
  *

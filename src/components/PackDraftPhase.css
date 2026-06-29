@@ -732,6 +732,7 @@
   gap: 8px;
 }
 .review-pack-card {
+  position: relative;
   flex-shrink: 0;
   cursor: zoom-in;
   transition: transform 0.1s ease;

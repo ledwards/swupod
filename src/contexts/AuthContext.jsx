@@ -18,6 +18,11 @@ export function AuthProvider({ children }) {
   // Tracks the user id we've already auto-enrolled this session so the effect
   // can't loop if enrollment fails (e.g. patron-status flicker, server error).
   const autoEnrollAttemptedRef = useRef(null)
+  const userRef = useRef(user)
+
+  useEffect(() => {
+    userRef.current = user
+  }, [user])
 
   useEffect(() => {
     // Load session on mount
@@ -53,12 +58,14 @@ export function AuthProvider({ children }) {
     }
     document.addEventListener('visibilitychange', handleVisibilityChange)
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+    // The listener is mounted once; loadSession reads current user state via userRef.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   async function loadSession() {
     try {
       const session = await getSession()
-      const wasLoggedOut = !user
+      const wasLoggedOut = !userRef.current
       setUser(session)
       if (session) {
         refreshPatronStatus()

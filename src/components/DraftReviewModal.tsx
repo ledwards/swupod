@@ -5,6 +5,7 @@ import { useState, useMemo, useRef, useEffect, type MouseEvent } from 'react'
 import './DraftReviewModal.css'
 import TimerPanel from './TimerPanel'
 import Button from './Button'
+import { CardStatsBadge } from './CardStatsBadge'
 
 interface Card {
   id: string
@@ -286,6 +287,12 @@ function DraftReviewModal({ draftedCards = [], draftedLeaders = [], onClose, pac
     setHoveredCardPreview(null)
   }
 
+  const statsSetCodeForCard = (card: Card | null | undefined) => (
+    draft?.settings?.draftMode === 'chaos'
+      ? card?.setCode || null
+      : draft?.setCode || null
+  )
+
   const renderCard = (card: CardWithPickInfo) => (
     <div
       key={`${card.id}-${card.pickNumber}`}
@@ -294,6 +301,9 @@ function DraftReviewModal({ draftedCards = [], draftedLeaders = [], onClose, pac
       onMouseLeave={handleCardMouseLeave}
     >
       <img src={card.imageUrl} alt={card.name} className="review-card-image" />
+      {card.imageUrl ? (
+        <CardStatsBadge card={card} setCode={statsSetCodeForCard(card)} />
+      ) : null}
     </div>
   )
 
@@ -355,6 +365,9 @@ function DraftReviewModal({ draftedCards = [], draftedLeaders = [], onClose, pac
                     onMouseLeave={handleCardMouseLeave}
                   >
                     <img src={leader.imageUrl} alt={leader.name} className="review-leader-image" />
+                    {leader.imageUrl ? (
+                      <CardStatsBadge card={leader} setCode={statsSetCodeForCard(leader)} />
+                    ) : null}
                   </div>
                 ))}
               </div>
