@@ -1,35 +1,32 @@
 // @ts-nocheck
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
 import { createDraft } from '../../../src/utils/draftApi'
 import { initializeCardCache } from '../../../src/utils/cardCache'
 import { trackEvent, AnalyticsEvents } from '../../../src/hooks/useAnalytics'
 import { getOrCreateLimitedFlowId, LimitedAnalyticsEvents } from '../../../src/analytics/limitedEvents'
+import { initialDraftCompetitiveFromSearch } from '../../../src/utils/draftCreationRoutes'
 import SetSelection from '../../../src/components/SetSelection'
 import Button from '../../../src/components/Button'
 import '../../../src/App.css'
 import '../draft.css'
 
-export default function NewDraftPage() {
+function NewDraftPageContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { user, isAuthenticated, loading: authLoading } = useAuth()
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  // "Swiss Rounds" defaults ON: a new pod runs the full competitive Swiss flow
-  // (draft → Swiss matchmaking) unless the owner unchecks it for a normal draft.
-  const [competitive, setCompetitive] = useState(true)
+  // Direct /draft/new defaults ON; explicit Standard Draft entry points pass
+  // competitive=0 so the owner lands in normal draft mode.
+  const [competitive, setCompetitive] = useState(() => initialDraftCompetitiveFromSearch(searchParams))
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    if (params.get('competitive') === '0') {
-      setCompetitive(false)
-    } else if (params.get('competitive') === '1') {
-      setCompetitive(true)
-    }
-  }, [])
+    setCompetitive(initialDraftCompetitiveFromSearch(searchParams))
+  }, [searchParams])
   const [isPublic, setIsPublic] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('pod-visibility')
@@ -52,7 +49,10 @@ export default function NewDraftPage() {
   }, [])
 
   const handleLogin = () => {
-    const returnUrl = encodeURIComponent('/draft/new')
+    const path = typeof window !== 'undefined'
+      ? `/draft/new${window.location.search || ''}`
+      : '/draft/new'
+    const returnUrl = encodeURIComponent(path)
     window.location.href = `/api/auth/signin/discord?return_to=${returnUrl}`
   }
 
@@ -192,5 +192,13 @@ export default function NewDraftPage() {
     <div className="app">
       <SetSelection onSetSelect={handleSetSelect} onBack={handleBack} headerAction={headerActions} />
     </div>
+  )
+}
+
+export default function NewDraftPage() {
+  return (
+    <Suspense fallback={<div className="draft-page-bg"><div className="loading"></div></div>}>
+      <NewDraftPageContent />
+    </Suspense>
   )
 }

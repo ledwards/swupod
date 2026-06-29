@@ -23,6 +23,7 @@ import Button from './Button'
 import SubscribeModal from './SubscribeModal'
 import Countdown from './Countdown'
 import { getSetConfig } from '../utils/setConfigs/index'
+import { STANDARD_DRAFT_NEW_PATH } from '../utils/draftCreationRoutes'
 // Summary-backed (NOT cardData) — this is a 'use client' component; a
 // cardData import would embed the 8 MB cards.json in the landing bundle (U5).
 import { getNormalSpoilerProgress } from '../utils/cardSummary'
@@ -293,7 +294,7 @@ function LandingPage() {
   }
 
   // Compute modal headline + CTA overrides per variant. Patron activation does
-  // NOT use the modal (CTA goes straight to /draft/new).
+  // NOT use the modal (CTA goes straight to standard draft creation).
   let modalHeadline = ''
   let modalCtaUrl: string | undefined = undefined
   let modalCtaLabel: string | undefined = undefined
@@ -401,7 +402,7 @@ function LandingPage() {
             variant="primary"
             size="sm"
             className="next-set-promo-banner-cta"
-            onClick={() => router.push('/draft/new')}
+            onClick={() => router.push(STANDARD_DRAFT_NEW_PATH)}
           >
             Try a Draft
           </Button>

@@ -10,6 +10,7 @@ import { getPackArtUrl } from '../../src/utils/packArt'
 import { ChatPanel } from '../../src/components/ChatPanel'
 import ConfirmModal from '../../src/components/ConfirmModal'
 import { PATREON_URL } from '../../src/utils/membership'
+import { COMPETITIVE_DRAFT_NEW_PATH, STANDARD_DRAFT_NEW_PATH } from '../../src/utils/draftCreationRoutes'
 import '../../src/App.css'
 import '../../src/components/LandingPage.css'
 import './draft.css'
@@ -109,15 +110,15 @@ export default function DraftLandingPage() {
   }, [isAuthenticated, user])
 
   const handleCreateStandard = () => {
-    router.push('/draft/new')
+    router.push(STANDARD_DRAFT_NEW_PATH)
   }
 
   const handleCreateCompetitive = () => {
-    router.push('/draft/new?competitive=1')
+    router.push(COMPETITIVE_DRAFT_NEW_PATH)
   }
 
   const handleLogin = () => {
-    const returnUrl = encodeURIComponent('/draft/new')
+    const returnUrl = encodeURIComponent(STANDARD_DRAFT_NEW_PATH)
     window.location.href = `/api/auth/signin/discord?return_to=${returnUrl}`
   }
 
