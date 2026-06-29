@@ -1,5 +1,10 @@
 # Release Notes
 
+## 06.29.2026
+
+### 🐛 Bug Fixes
+- **Draft countdowns are steadier with server latency**: Pick timers now sync to the server clock, so the visible countdown better matches when auto-picks actually happen.
+
 ## 06.26.2026
 
 ### 🔥 Ashes of the Empire
