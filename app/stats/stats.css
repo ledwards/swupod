@@ -749,7 +749,7 @@
   border-top: 1px solid rgba(185, 205, 225, 0.14);
   display: grid;
   gap: 0.85rem;
-  grid-template-columns: minmax(200px, auto) minmax(320px, auto) minmax(280px, 1fr) minmax(260px, auto);
+  grid-template-columns: max-content max-content minmax(280px, 1fr) max-content;
   padding-top: 0.85rem;
 }
 
@@ -765,8 +765,11 @@
   border-radius: 8px;
   display: inline-flex;
   gap: 0;
+  justify-self: start;
+  max-width: 100%;
   min-height: 44px;
   overflow: hidden;
+  width: max-content;
 }
 
 .card-data-control-panel .card-data-segment,
@@ -833,6 +836,31 @@
   flex-wrap: nowrap;
   gap: 0.35rem;
   min-height: 44px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.card-data-filter-heading {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.45rem;
+}
+
+.card-data-filter-clear {
+  background: transparent;
+  border: 0;
+  color: rgba(216, 237, 255, 0.72);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  padding: 0;
+  text-transform: uppercase;
+}
+
+.card-data-filter-clear:hover {
+  color: #fff;
 }
 
 .card-data-control--filter .stats-aspect-btn {
@@ -1059,9 +1087,9 @@
 .card-data-tier-card {
   align-items: stretch;
   background-color: rgba(255, 255, 255, 0.035);
-  background-position: 50% calc(34% + 20px);
+  background-position: right 25%;
   background-repeat: no-repeat;
-  background-size: 155% auto;
+  background-size: cover;
   border: 1px solid rgba(185, 205, 225, 0.28);
   border-radius: 8px;
   color: #f5f9fd;
@@ -1098,7 +1126,7 @@
 
 .card-data-tier-card-event {
   background-position: right 86%;
-  background-size: auto 250%;
+  background-size: cover;
 }
 
 .card-data-tier-card-base {
@@ -2900,12 +2928,14 @@
 }
 
 .stats-aspect-btn {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 4px;
-  padding: 3px;
   cursor: pointer;
+  min-height: 32px;
+  min-width: 32px;
   opacity: 0.35;
+  padding: 3px;
   transition: opacity 0.15s ease;
   display: flex;
   align-items: center;
@@ -2914,7 +2944,7 @@
 
 .stats-aspect-btn.active {
   opacity: 1;
-  border-color: rgba(255, 255, 255, 0.5);
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 .stats-aspect-btn-text {

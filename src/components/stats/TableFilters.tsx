@@ -54,7 +54,7 @@ export function AspectFilterButtons({ activeAspects, toggleAspect, clearAll }: {
           onClick={() => toggleAspect(aspect)}
           title={aspect}
         >
-          <AspectIcon aspect={aspect} size="sm" />
+          <AspectIcon aspect={aspect} size="lg" />
         </button>
       ))}
       <button

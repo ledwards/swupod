@@ -1,7 +1,6 @@
-// @ts-nocheck
 'use client'
 
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { CardPreviewProvider, CardName } from '@/src/components/CardNamePreview'
 import Modal from '@/src/components/Modal'
 import PluginCTA from '@/src/components/PluginCTA'
@@ -258,6 +257,11 @@ function cardDataGamesLabel(count: number | null | undefined) {
   return `${fmt(rounded)} ${rounded === 1 ? 'game' : 'games'}`
 }
 
+function winsFromPct(rate: number | null | undefined, count: number | null | undefined): number {
+  if (rate == null || count == null) return 0
+  return (rate * count) / 100
+}
+
 function cardDataTileImageUrl(card: CardDataCard) {
   return card.isLeader
     ? (card.backImageUrl || card.imageUrl)
@@ -332,7 +336,7 @@ function CardDataGateOverlay({ state, requirements }: {
   )
 }
 
-function CardDataModalStat({ label, value, detail }: { label: string; value: string; detail?: string }) {
+function CardDataModalStat({ label, value, detail }: { label: string; value: string; detail?: string | undefined }) {
   return (
     <div className="card-data-stats-modal-stat">
       <span>{label}</span>
@@ -415,8 +419,15 @@ function CardDataSearchAndFilter({ search, setSearch, activeAspects, toggleAspec
         />
       </div>
       <div className="card-data-control card-data-control--filter">
-        <span className="card-data-control-label">Filter</span>
-        <AspectFilterButtons activeAspects={activeAspects} toggleAspect={toggleAspect} clearAll={clearAll} />
+        <div className="card-data-filter-heading">
+          <span className="card-data-control-label">Filter</span>
+          {clearAll ? (
+            <button type="button" className="card-data-filter-clear" onClick={clearAll}>
+              Clear
+            </button>
+          ) : null}
+        </div>
+        <AspectFilterButtons activeAspects={activeAspects} toggleAspect={toggleAspect} />
       </div>
     </>
   )
@@ -441,7 +452,7 @@ export default function CardDataTierList({
   const [loading, setLoading] = useState(true)
   const hasLoadedOnce = useRef(false)
   const [view, setView] = useState<CardDataView>(defaultView)
-  const [selectedMetric, setSelectedMetric] = useState<CardMetricKey>('gihWr')
+  const [selectedMetric, setSelectedMetric] = useState<CardMetricKey>('gpWr')
   const [selectedCard, setSelectedCard] = useState<CardDataCard | null>(null)
   const [cardKindFilter, setCardKindFilter] = useState<CardKindFilter>('deck-cards')
   const [sortKey, setSortKey] = useState<CardDataSortKey>('grade')
@@ -525,10 +536,10 @@ export default function CardDataTierList({
   }
 
   const metricWins = (card: CardDataCard, metric: CardMetricKey) => {
-    if (metric === 'ohWr') return card.ohWins ?? ((card.ohWr ?? null) == null || (card.ohCount ?? null) == null ? 0 : (card.ohWr * card.ohCount) / 100)
-    if (metric === 'gdWr') return card.gdWins ?? ((card.gdWr ?? null) == null || (card.gdCount ?? null) == null ? 0 : (card.gdWr * card.gdCount) / 100)
-    if (metric === 'gihWr') return card.gihWins ?? ((card.gihWr ?? null) == null || (card.gihCount ?? null) == null ? 0 : (card.gihWr * card.gihCount) / 100)
-    return card.gpWins ?? ((card.gpWr ?? null) == null || (card.gpCount ?? null) == null ? 0 : (card.gpWr * card.gpCount) / 100)
+    if (metric === 'ohWr') return card.ohWins ?? winsFromPct(card.ohWr, card.ohCount)
+    if (metric === 'gdWr') return card.gdWins ?? winsFromPct(card.gdWr, card.gdCount)
+    if (metric === 'gihWr') return card.gihWins ?? winsFromPct(card.gihWr, card.gihCount)
+    return card.gpWins ?? winsFromPct(card.gpWr, card.gpCount)
   }
 
   const metricValue = (card: CardDataCard, metric: CardMetricKey) => {
@@ -565,18 +576,6 @@ export default function CardDataTierList({
   }
 
   const rankRowsForMetric = (rows: CardDataCard[], metric: CardMetricKey) => {
-    if (metric === 'gihWr' && hasWayfinderReplayMetrics(cardData?.sourceDetail)) {
-      return {
-        provisional: false,
-        rows: rows.map(card => ({
-          ...card,
-          displayGrade: card.grade || null,
-          displayMetricValue: metricValue(card, metric),
-          displayMetricCount: metricCount(card, metric),
-        })),
-      }
-    }
-
     const inputs = rows.map(card => ({
       key: cardDataLookupKey(card),
       wins: metricWins(card, metric),
@@ -656,7 +655,7 @@ export default function CardDataTierList({
     name: card.cardName,
     subtitle: card.subtitle,
     imageUrl: card.imageUrl,
-    backImageUrl: card.backImageUrl,
+    backImageUrl: card.backImageUrl || null,
     isLeader: Boolean(card.isLeader),
     isBase: Boolean(card.isBase),
   })
