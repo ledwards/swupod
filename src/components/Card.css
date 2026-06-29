@@ -346,12 +346,23 @@
   display: inline-flex;
   height: 28px;
   justify-content: center;
+  opacity: 0;
   padding: 0 5px;
+  pointer-events: none;
   position: absolute;
   right: 5px;
-  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+  transform: translateY(2px);
+  transition: opacity 120ms ease, transform 120ms ease, border-color 120ms ease, background 120ms ease;
   width: 28px;
   z-index: 12;
+}
+
+.canvas-card:hover .swupod-card-17l-button,
+.canvas-card:focus-within .swupod-card-17l-button,
+.swupod-card-17l-button:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 
 .swupod-card-17l-button:hover,
