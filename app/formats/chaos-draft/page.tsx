@@ -143,14 +143,14 @@ export default function ChaosDraftPage() {
           Select{' '}
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', verticalAlign: 'middle', margin: '0 0.4rem' }}>
             <button
-              className="pack-count-minus"
+              className="pack-count-btn pack-count-minus"
               style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 22, height: 22, minWidth: 22, minHeight: 22, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.1)', color: 'white', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', padding: 0, lineHeight: 1 }}
               onClick={() => handlePackCountChange(-1)}
               disabled={packCount <= 1}
             >−</button>
             <span style={{ display: 'inline-block', minWidth: '1.5rem', textAlign: 'center', fontWeight: 700, fontSize: '1.3rem', color: 'white' }}>{packCount}</span>
             <button
-              className="pack-count-plus"
+              className="pack-count-btn pack-count-plus"
               style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 22, height: 22, minWidth: 22, minHeight: 22, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.1)', color: 'white', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', padding: 0, lineHeight: 1 }}
               onClick={() => handlePackCountChange(1)}
               disabled={packCount >= 12}

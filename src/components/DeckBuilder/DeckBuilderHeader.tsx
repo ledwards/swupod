@@ -13,9 +13,9 @@ import { useState } from 'react'
 import EditableTitle from '../EditableTitle'
 import Button from '../Button'
 import DraftReportButton from '../DraftReportButton'
-import CountdownTimer from '../CountdownTimer'
 import PoolBuilds from '../PoolBuilds'
 import { savePool } from '../../utils/poolApi'
+import DeckBuildTimer from './DeckBuildTimer'
 import type { CardPosition } from './AspectPenaltyToggle'
 import type { MessageType } from './DeleteDeckSection'
 import type { PoolType } from './DeckImageModal'
@@ -225,19 +225,7 @@ export function DeckBuilderHeader({
           </Button>
         </div>
       ) : deckBuildDeadline ? (
-        <div className="deck-build-timer" style={{
-          display: 'flex', alignItems: 'center', gap: '8px',
-          color: 'rgba(255, 215, 0, 0.9)', fontWeight: 600
-        }}>
-          <span>Build Timer:</span>
-          <CountdownTimer
-            totalSeconds={Math.max(0, Math.floor((new Date(deckBuildDeadline).getTime() - Date.now()) / 1000))}
-            startedAt={new Date(new Date(deckBuildDeadline).getTime() - 20 * 60 * 1000).toISOString()}
-            active={true}
-            label=""
-            warningThreshold={300}
-          />
-        </div>
+        <DeckBuildTimer deadline={deckBuildDeadline} />
       ) : null}
 
       {!isLoading && <div className={`header-buttons ${isInfoBarSticky ? 'hidden' : ''}`}>
