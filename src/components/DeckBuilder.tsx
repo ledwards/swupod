@@ -2596,6 +2596,9 @@ function DeckBuilder({
         showNavTooltip={showNavTooltip}
         hideTooltip={hideTooltip}
         onPlay={handlePlay}
+        deckBuildDeadline={deckBuildDeadline}
+        swissLocked={swissLocked}
+        swissUnlocked={swissUnlocked}
       />
 
       {/* View mode toggle - hidden when sticky (shown in nav bar instead) */}

@@ -13,6 +13,7 @@ import Button from '../Button'
 import { getAspectColor } from '../../utils/aspectColors'
 import { savePool } from '../../utils/poolApi'
 import { ViewModeToggle, type ViewMode } from './ViewModeToggle'
+import DeckBuildTimer from './DeckBuildTimer'
 import type { CardPosition } from './AspectPenaltyToggle'
 import type { MessageType } from './DeleteDeckSection'
 import type { PoolType } from './DeckImageModal'
@@ -72,6 +73,9 @@ export interface StickyInfoBarProps {
   showNavTooltip: (text: string, e: MouseEvent, position?: 'left' | 'below') => void
   hideTooltip: () => void
   onPlay?: () => void
+  deckBuildDeadline?: string | null
+  swissLocked?: boolean
+  swissUnlocked?: boolean
 }
 
 export function StickyInfoBar({
@@ -110,6 +114,9 @@ export function StickyInfoBar({
   showNavTooltip,
   hideTooltip,
   onPlay,
+  deckBuildDeadline,
+  swissLocked = false,
+  swissUnlocked = false,
 }: StickyInfoBarProps) {
   const longPressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -213,9 +220,13 @@ export function StickyInfoBar({
   const baseCard = activeBase && cardPositions[activeBase]?.card
   const deckAnchorSelector = viewMode === 'arena' ? '#arena-deck-header' : viewMode === 'list' ? '#deck-list-header' : '#deck-header'
   const poolAnchorSelector = viewMode === 'arena' ? '#arena-pool-header' : viewMode === 'list' ? '#pool-list-header' : '#pool-header'
+  const showStickyBuildTimer = isInfoBarSticky && deckBuildDeadline && !swissLocked && !swissUnlocked
 
   return (
-    <div className={`deck-info-bar ${isInfoBarSticky ? 'sticky' : ''}`} ref={infoBarRef}>
+    <div
+      className={`deck-info-bar ${isInfoBarSticky ? 'sticky' : ''} ${showStickyBuildTimer ? 'with-build-timer' : ''}`}
+      ref={infoBarRef}
+    >
       <div className="selected-cards-info">
         {/* Leader display */}
         <div
@@ -282,6 +293,10 @@ export function StickyInfoBar({
           <span className="sticky-builder-label">by {builderLabel}</span>
         )}
       </div>
+
+      {showStickyBuildTimer && (
+        <DeckBuildTimer deadline={deckBuildDeadline} variant="nav" />
+      )}
 
       <div className="deck-counts-info">
         {/* Deck count */}

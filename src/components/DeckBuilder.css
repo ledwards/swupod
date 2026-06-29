@@ -121,6 +121,63 @@
   margin: 0 0 1.5rem 0;
 }
 
+.deck-build-timer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: rgba(255, 215, 0, 0.9);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.deck-build-timer--header {
+  margin: 0 0 1.5rem 0;
+}
+
+.deck-build-timer-label {
+  color: rgba(255, 215, 0, 0.82);
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.deck-build-timer .countdown-timer {
+  gap: 0;
+}
+
+.deck-build-timer--nav {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  max-width: min(30vw, 260px);
+  height: calc(100% - 0.75rem);
+  min-height: 32px;
+  padding: 0 0.75rem;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  gap: 0.45rem;
+}
+
+.deck-build-timer--nav .deck-build-timer-label {
+  max-width: 88px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: clamp(0.62rem, 0.8vw, 0.75rem);
+}
+
+.deck-build-timer--nav .timer-value {
+  font-size: clamp(1.7rem, 2.4vw, 2.25rem);
+  line-height: 1;
+  font-weight: 800;
+}
+
+.deck-build-timer--nav .timer-label {
+  line-height: 1;
+}
+
 
 /* Make edit button not affect centering */
 .deck-builder-header-title-container .editable-title {
@@ -1645,6 +1702,10 @@
     justify-content: center;
   }
 
+  .deck-build-timer--nav {
+    display: none;
+  }
+
   /* Show mobile view mode toggle in action buttons row */
   .deck-info-bar .mobile-view-mode-in-nav {
     display: flex;
@@ -1868,6 +1929,10 @@
     width: auto;
     flex-shrink: 0;
     gap: 0.25rem;
+  }
+
+  .deck-build-timer--nav {
+    display: none;
   }
 
   /* Show mobile view mode toggle in landscape */
