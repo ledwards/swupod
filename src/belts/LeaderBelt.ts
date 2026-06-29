@@ -4,10 +4,10 @@
  *
  * A belt that provides leader cards for booster packs.
  *
- * Design: Cycles through all unique common leaders before repeating any,
- * with rare leaders sprinkled in probabilistically (not at fixed intervals).
+ * Design: Cycles through 24-pack sheets with exactly four rare leaders,
+ * while common leaders still cycle through every unique card before repeating.
  *
- * Target ratio: 1/6 packs get a Rare leader (~16.67%)
+ * Target ratio: 4/24 packs get a Rare leader (~16.67%)
  */
 
 import { getCachedCards } from '../utils/cardCache'
@@ -31,6 +31,7 @@ export class LeaderBelt {
   setCode: SetCode
   commonLeaders: RawCard[]
   rareLeaders: RawCard[]
+  hopper: RawCard[]
   commonCycle: RawCard[]  // Shuffled cycle of common leaders
   commonIndex: number     // Current position in common cycle
   lastLeaderName: string | null  // Track last served leader to avoid adjacent duplicates
@@ -39,6 +40,7 @@ export class LeaderBelt {
     this.setCode = setCode as SetCode
     this.commonLeaders = []
     this.rareLeaders = []
+    this.hopper = []
     this.commonCycle = []
     this.commonIndex = 0
     this.lastLeaderName = null
@@ -86,62 +88,92 @@ export class LeaderBelt {
     return this.commonCycle[this.commonIndex++]
   }
 
-  /**
-   * Get a random rare leader
-   */
-  _randomRare(): RawCard | null {
-    if (this.rareLeaders.length === 0) return null
-    const index = Math.floor(Math.random() * this.rareLeaders.length)
-    return this.rareLeaders[index] ?? null
+  _nextCommonAvoiding(previousName: string | null): RawCard | null {
+    let attempts = 0
+    const maxAttempts = this.commonLeaders.length
+
+    while (attempts < maxAttempts) {
+      const common = this._nextCommon()
+      if (common && common.name !== previousName) {
+        return common
+      }
+      attempts++
+    }
+
+    return this._nextCommon() ?? null
+  }
+
+  _rareSlotsForSheet(sheetSize: number, rareCount: number): Set<number> {
+    const slots = new Set<number>()
+    if (sheetSize <= 0 || rareCount <= 0) return slots
+
+    const zoneSize = sheetSize / rareCount
+    for (let i = 0; i < rareCount; i++) {
+      const zoneStart = Math.floor(i * zoneSize)
+      const zoneEnd = Math.floor((i + 1) * zoneSize)
+      const span = Math.max(1, zoneEnd - zoneStart)
+      slots.add(zoneStart + Math.floor(Math.random() * span))
+    }
+
+    return slots
+  }
+
+  _nextRareFromQueue(rareQueue: RawCard[], previousName: string | null): RawCard | null {
+    if (rareQueue.length === 0) return null
+
+    const preferredIndex = rareQueue.findIndex(card => card.name !== previousName)
+    const index = preferredIndex >= 0 ? preferredIndex : 0
+    const [rare] = rareQueue.splice(index, 1)
+    return rare ?? null
+  }
+
+  _fillSheet(): void {
+    const SHEET_SIZE = 24
+    const RARES_PER_SHEET = 4
+    const rareCount = Math.min(RARES_PER_SHEET, this.rareLeaders.length)
+    const rareSlots = this._rareSlotsForSheet(SHEET_SIZE, rareCount)
+    const rareQueue = shuffle([...this.rareLeaders]).slice(0, rareCount)
+    const sheet: RawCard[] = []
+
+    let previousName = this.lastLeaderName
+    for (let i = 0; i < SHEET_SIZE; i++) {
+      let leader: RawCard | null = null
+
+      if (rareSlots.has(i)) {
+        leader = this._nextRareFromQueue(rareQueue, previousName)
+      }
+
+      if (!leader) {
+        leader = this._nextCommonAvoiding(previousName)
+      }
+
+      if (leader) {
+        sheet.push(leader)
+        previousName = leader.name
+      }
+    }
+
+    this.hopper.push(...sheet)
+  }
+
+  _fillIfNeeded(): void {
+    if (this.hopper.length === 0) {
+      this._fillSheet()
+    }
   }
 
   /**
    * Get the next leader from the belt
    *
    * Logic:
-   * - 1/6 chance (~16.67%) to serve a rare leader
-   * - 5/6 chance to serve the next common from the cycle
-   * - If rare would duplicate the last leader, fall back to common
-   * - If common would duplicate the last leader, try next in cycle
+   * - Fill a 24-pack sheet with exactly 4 unique rare leaders
+   * - Spread rare slots across the sheet so a box does not cluster them
+   * - Fill the remaining slots from the common cycle
+   * - Avoid immediate duplicate names at sheet seams and within common runs
    */
   next(): RawCard | null {
-    const RARE_PROBABILITY = 1 / 6
-
-    let leader: RawCard | null = null
-
-    // Decide: rare or common?
-    if (this.rareLeaders.length > 0 && Math.random() < RARE_PROBABILITY) {
-      // Try to serve a rare
-      const rare = this._randomRare()
-      if (rare && rare.name !== this.lastLeaderName) {
-        leader = rare
-      }
-      // If rare would duplicate last leader, fall through to common
-    }
-
-    // If no rare selected, serve from common cycle
-    if (!leader) {
-      // Get next common, but avoid duplicating last leader
-      let attempts = 0
-      const maxAttempts = this.commonLeaders.length
-
-      while (attempts < maxAttempts) {
-        const common = this._nextCommon()
-        if (common && common.name !== this.lastLeaderName) {
-          leader = common
-          break
-        }
-        attempts++
-      }
-
-      // Fallback: if somehow all commons match last leader (shouldn't happen with 8+ commons)
-      if (!leader && this.commonLeaders.length > 0) {
-        const fallback = this._nextCommon()
-        if (fallback) {
-          leader = fallback
-        }
-      }
-    }
+    this._fillIfNeeded()
+    const leader = this.hopper.shift() ?? null
 
     if (leader) {
       this.lastLeaderName = leader.name
@@ -152,27 +184,18 @@ export class LeaderBelt {
   }
 
   /**
-   * Peek at upcoming cards (approximate - doesn't account for rare probability)
+   * Peek at upcoming cards in the current leader sheet
    */
   peek(count = 1): RawCard[] {
-    const result: RawCard[] = []
-    const tempIndex = this.commonIndex
-
-    for (let i = 0; i < count && i < this.commonCycle.length; i++) {
-      const idx = (tempIndex + i) % this.commonCycle.length
-      const card = this.commonCycle[idx]
-      if (card) {
-        result.push({ ...card })
-      }
-    }
-
-    return result
+    this._fillIfNeeded()
+    return this.hopper.slice(0, count).map(card => ({ ...card }))
   }
 
   /**
-   * Get approximate hopper size (commons remaining in current cycle)
+   * Get current leader hopper size
    */
   get size(): number {
-    return this.commonCycle.length - this.commonIndex
+    this._fillIfNeeded()
+    return this.hopper.length
   }
 }

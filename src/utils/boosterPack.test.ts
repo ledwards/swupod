@@ -5,7 +5,7 @@
  * Run with: npx tsx src/utils/boosterPack.test.ts
  */
 
-import { generateBoosterPack, generateSealedPod, clearBeltCache } from './boosterPack'
+import { generateBoosterPack, generateSealedPod, generateSealedBox, clearBeltCache } from './boosterPack'
 import { initializeCardCache, getCachedCards } from './cardCache'
 
 let passed = 0
@@ -30,6 +30,16 @@ function assert(condition: boolean, message?: string): asserts condition {
 function assertEqual<T>(actual: T, expected: T, message?: string): void {
   if (actual !== expected) {
     throw new Error(message || `Expected ${expected}, got ${actual}`)
+  }
+}
+
+function withMockedRandom<T>(value: number, fn: () => T): T {
+  const originalRandom = Math.random
+  Math.random = () => value
+  try {
+    return fn()
+  } finally {
+    Math.random = originalRandom
   }
 }
 
@@ -357,6 +367,26 @@ async function runTests(): Promise<void> {
     }
 
     assert(adjacentDupes <= 1, `Too many adjacent duplicate leaders: ${adjacentDupes}`)
+  })
+
+  test('ASH 24-pack draft box has exactly 4 non-repeating rare leaders', () => {
+    const ashCards = getCachedCards('ASH')
+    if (ashCards.length === 0) {
+      console.log('\x1b[33m   Skipping: ASH placeholder catalog is not generated\x1b[0m')
+      return
+    }
+
+    withMockedRandom(0.5, () => {
+      const box = generateSealedBox(ashCards, 'ASH', 24)
+      const leaders = box.map((pack: Pack) => pack.cards.find((c: Card) => c.isLeader)).filter(Boolean)
+      const rareLeaders = leaders.filter((card: Card) => card.rarity === 'Rare')
+      const rareNames = rareLeaders.map((card: Card) => card.name)
+      const uniqueRareNames = new Set(rareNames)
+
+      assertEqual(leaders.length, 24, 'Draft box should contain exactly 24 leader slots')
+      assertEqual(rareLeaders.length, 4, `ASH draft box should contain exactly 4 rare leaders, got ${rareLeaders.length}: ${rareNames.join(', ')}`)
+      assertEqual(uniqueRareNames.size, rareNames.length, `ASH draft box rare leaders should not repeat: ${rareNames.join(', ')}`)
+    })
   })
 
   test('clearBeltCache causes new belt initialization', () => {

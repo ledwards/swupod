@@ -33,6 +33,16 @@ function assertEqual<T>(actual: T, expected: T, message?: string): void {
   }
 }
 
+function withMockedRandom<T>(value: number, fn: () => T): T {
+  const originalRandom = Math.random
+  Math.random = () => value
+  try {
+    return fn()
+  } finally {
+    Math.random = originalRandom
+  }
+}
+
 async function runTests(): Promise<void> {
   console.log('\x1b[36m🔄 Initializing card cache...\x1b[0m')
   await initializeCardCache()
@@ -140,6 +150,19 @@ async function runTests(): Promise<void> {
     assert(Math.abs(rareRate - expectedRate) < tolerance,
       `Rare rate should be ~${(expectedRate * 100).toFixed(1)}% (1 in 6), ` +
       `got ${(rareRate * 100).toFixed(1)}% (${counts.Rare}/${total})`)
+  })
+
+  test('24-pack leader sheet has exactly 4 non-repeating rare leaders', () => {
+    withMockedRandom(0, () => {
+      const belt = new LeaderBelt('ASH')
+      const leaders = Array.from({ length: 24 }, () => belt.next())
+      const rareLeaders = leaders.filter(card => card?.rarity === 'Rare')
+      const rareNames = rareLeaders.map(card => card.name)
+      const uniqueRareNames = new Set(rareNames)
+
+      assertEqual(rareLeaders.length, 4, `Expected exactly 4 rare leaders per 24-pack sheet, got ${rareLeaders.length}: ${rareNames.join(', ')}`)
+      assertEqual(uniqueRareNames.size, rareNames.length, `Rare leaders should not repeat inside one 24-pack sheet: ${rareNames.join(', ')}`)
+    })
   })
 
   test('no immediately adjacent duplicate leaders', () => {

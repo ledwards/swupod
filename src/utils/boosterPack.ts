@@ -138,6 +138,24 @@ function findHyperspaceVariant(card: RawCard | null, setCode: SetCode | string):
   return { ...card, variantType: 'Hyperspace', isHyperspace: true };
 }
 
+function findShowcaseVariant(card: RawCard | null, setCode: SetCode | string): RawCard | null {
+  if (!card || !card.name) return null;
+
+  const allCards = getCachedCards(setCode);
+  const showcaseVariant = allCards.find(c =>
+    c.name === card.name &&
+    c.variantType === 'Showcase' &&
+    c.rarity === card.rarity &&
+    c.type === card.type
+  );
+
+  if (showcaseVariant) {
+    return { ...showcaseVariant, isShowcase: true };
+  }
+
+  return { ...card, variantType: 'Showcase', isShowcase: true };
+}
+
 /**
  * Check if a set uses LAW+ pack rules (Set 7 onwards)
  * - Foil slot is always Hyperspace Foil
@@ -421,18 +439,18 @@ function applyUpgradePass(pack: Pack, setCode: SetCode | string): Pack {
   const hsPlan: UpgradePlan | null = hsBelt ? hsBelt.next() : null;
 
   // 1. Leader upgrades
-  // Showcase takes precedence (independent coin flip — too rare to affect variance)
-  // Variant upgrades always replace the slot with a fresh draw from the relevant belt.
+  // Showcase takes precedence (independent coin flip — too rare to affect variance).
+  // Leader treatment upgrades preserve the selected leader so box-level leader
+  // collation is not disturbed by the variant pass.
   if (leaderIndex >= 0) {
+    const currentLeader = pack.cards[leaderIndex] ?? null;
     if (probs.leaderToShowcase && shouldUpgrade(probs.leaderToShowcase)) {
-      const showcaseBelt = getShowcaseLeaderBelt(setCode);
-      const upgraded = showcaseBelt.next();
+      const upgraded = findShowcaseVariant(currentLeader, setCode);
       if (upgraded) pack.cards[leaderIndex] = upgraded;
     } else {
       const shouldUpgradeLeader = hsPlan ? hsPlan.leader : (probs.leaderToHyperspace && shouldUpgrade(probs.leaderToHyperspace));
       if (shouldUpgradeLeader) {
-        const hsLeaderBelt = getHyperspaceLeaderBelt(setCode);
-        const upgraded = hsLeaderBelt.next();
+        const upgraded = findHyperspaceVariant(currentLeader, setCode);
         if (upgraded) pack.cards[leaderIndex] = upgraded;
       }
     }
