@@ -24,6 +24,7 @@ import { LuckSection } from './LuckSection'
 import { LoggedOutCTA } from './LoggedOutCTA'
 import { PoolHistoryDashboard } from './PoolHistoryDashboard'
 import { MetaDashboard } from './MetaDashboard'
+import CardDataTierList from '@/src/components/CardDataTierList'
 import { getSetConfig, isBeta } from '@/src/utils/setConfigs/index'
 import { PATREON_URL } from '@/src/utils/membership'
 import './YourStats.css'
@@ -54,7 +55,7 @@ function EarlyAccessCTA({ setCode }: { setCode: string }) {
   )
 }
 
-type PersonalStatsTab = 'gameplay' | 'luck' | 'pools' | 'meta'
+type PersonalStatsTab = 'gameplay' | 'tier-list' | 'luck' | 'pools' | 'meta'
 
 export interface YourStatsProps {
   /** Start of the date range (YYYY-MM-DD) — from the /me era + date picker. */
@@ -72,7 +73,7 @@ export function YourStats({ since, until, setCode = 'all', filterLabel }: YourSt
   // Remember the last tab across refresh + deep link (URL #hash + localStorage).
   // legacyParam upgrades old /me?tab=meta bookmarks to /me#meta on arrival.
   const [activeTab, setActiveTab] = useStickyTab<PersonalStatsTab>(
-    ['gameplay', 'luck', 'pools', 'meta'],
+    ['gameplay', 'tier-list', 'luck', 'pools', 'meta'],
     'gameplay',
     { storageKey: 'ptp:me-tab', legacyParam: 'tab' },
   )
@@ -138,6 +139,18 @@ export function YourStats({ since, until, setCode = 'all', filterLabel }: YourSt
         </button>
         <button
           type="button"
+          className={`your-stats-tab ${activeTab === 'tier-list' ? 'active' : ''}`}
+          onClick={() => setActiveTab('tier-list')}
+          role="tab"
+          aria-selected={activeTab === 'tier-list'}
+          aria-controls="your-stats-tier-list-panel"
+          disabled={!user}
+          title={!user ? 'Sign in to see the tier list' : undefined}
+        >
+          Tier List
+        </button>
+        <button
+          type="button"
           className={`your-stats-tab ${activeTab === 'luck' ? 'active' : ''}`}
           onClick={() => setActiveTab('luck')}
           role="tab"
@@ -182,6 +195,19 @@ export function YourStats({ since, until, setCode = 'all', filterLabel }: YourSt
         ) : activeTab === 'gameplay' ? (
           <div id="your-stats-gameplay-panel" role="tabpanel">
             <GameplayDashboard since={since} until={until} setCode={setCode} />
+          </div>
+        ) : activeTab === 'tier-list' ? (
+          <div id="your-stats-tier-list-panel" role="tabpanel">
+            <CardDataTierList
+              setCode={setCode}
+              startDate={since}
+              endDate={until}
+              includeBots={false}
+              includeHumans
+              title="Tier List"
+              allowTable={false}
+              viewParamName={null}
+            />
           </div>
         ) : activeTab === 'luck' ? (
           <div id="your-stats-luck-panel" role="tabpanel">

@@ -221,6 +221,70 @@ export function mapWayfinderRowsToCardDataStats({
   }
 }
 
+function cardDataRowStrictKey(row: any): string {
+  return `${row.cardName || ''}|${row.subtitle || ''}|${row.cardType || ''}`.toLowerCase()
+}
+
+function cardDataRowLooseKey(row: any): string {
+  return `${row.cardName || ''}|${row.subtitle || ''}`.toLowerCase()
+}
+
+const WAYFINDER_REPLAY_FIELDS = [
+  'collectorNumber',
+  'setCode',
+  'ohCount',
+  'ohWins',
+  'ohWr',
+  'gdCount',
+  'gdWins',
+  'gdWr',
+  'gihCount',
+  'gihWins',
+  'gihWr',
+  'gnsCount',
+  'gnsWins',
+  'gnsWr',
+  'iih',
+  'playedRate',
+  'resourcedWhenSeen',
+  'playedWar',
+]
+
+function mergeWayfinderReplayRows<T extends Record<string, any>>(rows: T[], wayfinderRows: any[]): T[] {
+  const byStrictKey = new Map(wayfinderRows.map(row => [cardDataRowStrictKey(row), row]))
+  const byLooseKey = new Map(wayfinderRows.map(row => [cardDataRowLooseKey(row), row]))
+
+  return rows.map(row => {
+    const wayfinderRow = byStrictKey.get(cardDataRowStrictKey(row)) || byLooseKey.get(cardDataRowLooseKey(row))
+    if (!wayfinderRow) return row
+
+    const merged: any = { ...row }
+    for (const field of WAYFINDER_REPLAY_FIELDS) {
+      if (wayfinderRow[field] != null) merged[field] = wayfinderRow[field]
+    }
+    if (wayfinderRow.sampleWarning && !merged.sampleWarning) merged.sampleWarning = wayfinderRow.sampleWarning
+    return merged
+  })
+}
+
+function mergeWayfinderReplayMetrics(payload: any, wayfinderPayload: any) {
+  const wayfinderRows = [
+    ...(wayfinderPayload?.leaders || []),
+    ...(wayfinderPayload?.bases || []),
+    ...(wayfinderPayload?.cards || []),
+  ]
+  if (wayfinderRows.length === 0) return payload
+
+  return {
+    ...payload,
+    sourceDetail: 'local-wayfinder',
+    replayMetricsStatus: wayfinderPayload.replayMetricsStatus,
+    leaders: mergeWayfinderReplayRows(payload.leaders || [], wayfinderRows),
+    bases: mergeWayfinderReplayRows(payload.bases || [], wayfinderRows),
+    cards: mergeWayfinderReplayRows(payload.cards || [], wayfinderRows),
+  }
+}
+
 async function fetchWayfinderCardData(setCode: string, format: string) {
   const url = wayfinderStatsUrl(setCode)
   if (!url) return null
@@ -487,7 +551,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     const leaders = buildMetricRows(byLeader, normalCardMap)
     const bases = buildMetricRows(byBase, normalCardMap)
 
-    const payload = {
+    let payload = {
       setCode,
       format,
       source,
@@ -502,6 +566,17 @@ export async function GET(request: NextRequest): Promise<Response> {
     }
 
     const hasLocalCards = cards.length > 0 || leaders.length > 0 || bases.length > 0
+    if (hasLocalCards && source !== 'in-person') {
+      try {
+        const wayfinderPayload = await fetchWayfinderCardData(setCode, format)
+        if (wayfinderPayload) {
+          payload = mergeWayfinderReplayMetrics(payload, wayfinderPayload)
+        }
+      } catch (error) {
+        console.warn('[card-data] Wayfinder replay merge failed:', error)
+      }
+    }
+
     if (!hasLocalCards && source !== 'in-person') {
       try {
         const wayfinderPayload = await fetchWayfinderCardData(setCode, format)

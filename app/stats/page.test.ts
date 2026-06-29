@@ -28,6 +28,12 @@ describe('/stats tab defaults', () => {
     assert.doesNotMatch(SRC, /Play Data/)
   })
 
+  it('renders card tiers through the shared CardDataTierList component', () => {
+    assert.match(SRC, /import\s+CardDataTierList\s+from\s+['"]@\/src\/components\/CardDataTierList['"]/)
+    assert.match(SRC, /<CardDataTierList[\s\S]*?allowTable[\s\S]*?viewParamName=\{CARD_DATA_VIEW_PARAM\}/)
+    assert.doesNotMatch(SRC, /function\s+CardDataTab/)
+  })
+
   it('still honors valid hash links for set tabs', () => {
     assert.ok(SRC.includes('window.location.hash.slice(1)'))
     assert.match(SRC, /if\s*\(\s*hash\s*&&\s*tabs\.includes\(hash\)\s*\)\s*setActiveTab\(hash\)/)

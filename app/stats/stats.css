@@ -41,29 +41,6 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
-.stats-export-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 0.75rem;
-  padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.85rem;
-  font-family: 'Barlow', sans-serif;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .stats-export-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
-  }
-}
-
 .stats-date-range {
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.5);
@@ -453,6 +430,15 @@
   min-width: 220px;
 }
 
+.card-data-tab .card-data-search-input {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  height: 44px;
+  max-width: none;
+  min-width: 0;
+  width: 100%;
+}
+
 .card-data-tab .stats-aspect-filter {
   flex-wrap: wrap;
   min-width: 0;
@@ -763,20 +749,101 @@
   border-top: 1px solid rgba(185, 205, 225, 0.14);
   display: grid;
   gap: 0.85rem;
-  grid-template-columns: auto auto minmax(260px, 1fr);
+  grid-template-columns: minmax(200px, auto) minmax(320px, auto) minmax(280px, 1fr) minmax(260px, auto);
   padding-top: 0.85rem;
+}
+
+.card-data-control-panel .card-data-control {
+  min-width: 0;
+}
+
+.card-data-control-panel .card-data-segmented,
+.card-data-control-panel .card-stats-metric-pills {
+  align-items: stretch;
+  background: rgba(5, 8, 12, 0.44);
+  border: 1px solid rgba(185, 205, 225, 0.26);
+  border-radius: 8px;
+  display: inline-flex;
+  gap: 0;
+  min-height: 44px;
+  overflow: hidden;
+}
+
+.card-data-control-panel .card-data-segment,
+.card-data-control-panel .card-data-metric-pill {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid rgba(185, 205, 225, 0.14);
+  color: rgba(226, 235, 244, 0.72);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 800;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.55rem 0.9rem;
+  white-space: nowrap;
+}
+
+.card-data-control-panel .card-data-segment:last-child,
+.card-data-control-panel .card-data-metric-pill:last-child {
+  border-right: 0;
+}
+
+.card-data-control-panel .card-data-segment:hover,
+.card-data-control-panel .card-data-segment.active,
+.card-data-control-panel .card-data-metric-pill:hover,
+.card-data-control-panel .card-data-metric-pill.active {
+  background: rgba(34, 68, 98, 0.8);
+  color: #f4f9ff;
+}
+
+.card-data-control-panel .card-data-metric-pill.active {
+  background: #d8edff;
+  color: #081018;
 }
 
 .card-data-control--search {
   min-width: 0;
 }
 
-.card-data-control--search .stats-table-filter {
-  margin: 0;
+.card-data-search-input {
+  background: rgba(5, 8, 12, 0.44);
+  border: 1px solid rgba(185, 205, 225, 0.26);
+  border-radius: 8px;
+  color: #eef5fb;
+  font: inherit;
+  min-height: 44px;
+  max-width: none;
+  min-width: 0;
+  padding: 0.55rem 0.9rem;
+  width: 100%;
 }
 
-.card-data-control--search .stats-search-input {
-  max-width: none;
+.card-data-search-input:focus {
+  border-color: rgba(216, 237, 255, 0.64);
+  outline: none;
+}
+
+.card-data-control--filter .stats-aspect-filter {
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.35rem;
+  min-height: 44px;
+}
+
+.card-data-control--filter .stats-aspect-btn {
+  height: 36px;
+  width: 36px;
+}
+
+.card-data-control--filter .stats-aspect-btn-text {
+  min-width: 36px;
+  padding: 0 0.55rem;
+  width: auto;
 }
 
 .card-stats-mode-row {
@@ -863,11 +930,6 @@
   font-weight: 600;
 }
 
-.card-data-definitions-link {
-  color: rgba(157, 176, 195, 0.72);
-  font-size: 0.72rem;
-}
-
 .card-data-definitions-grid {
   display: grid;
   gap: 1rem;
@@ -920,6 +982,51 @@
   color: #f5ddbf;
   font-size: 1rem;
   letter-spacing: 0.04em;
+}
+
+.card-data-tier-header-actions {
+  align-items: flex-end;
+  display: grid;
+  gap: 0.45rem;
+  justify-items: end;
+  min-width: min(100%, 420px);
+}
+
+.card-data-card-kind-toggle {
+  align-items: stretch;
+  background: rgba(5, 8, 12, 0.44);
+  border: 1px solid rgba(185, 205, 225, 0.22);
+  border-radius: 8px;
+  display: inline-flex;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.card-data-card-kind-button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid rgba(185, 205, 225, 0.14);
+  color: rgba(226, 235, 244, 0.68);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 850;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0.42rem 0.65rem;
+  white-space: nowrap;
+}
+
+.card-data-card-kind-button:last-child {
+  border-right: 0;
+}
+
+.card-data-card-kind-button:hover,
+.card-data-card-kind-button.active {
+  background: rgba(34, 68, 98, 0.82);
+  color: #f4f9ff;
 }
 
 .card-data-tier-list {
@@ -1077,10 +1184,6 @@
   white-space: nowrap;
 }
 
-.card-data-tier-card-dot {
-  color: rgba(187, 201, 215, 0.62);
-}
-
 .card-data-tier-card-printing .card-data-rarity-icon {
   height: 13px;
   width: 13px;
@@ -1096,6 +1199,16 @@
 .card-data-metric-stack small {
   color: rgba(255, 255, 255, 0.48);
   font-size: 0.66rem;
+}
+
+.card-data-rarity-cell {
+  text-align: center;
+  vertical-align: middle !important;
+}
+
+.card-data-rarity-cell .card-data-rarity-icon {
+  display: inline-block;
+  margin: 0 auto;
 }
 
 .card-data-table-row {
@@ -1279,7 +1392,7 @@
 .card-data-stats-modal-hero {
   align-items: end;
   background-color: rgba(32, 38, 45, 0.88);
-  background-position: center 34%;
+  background-position: center 26%;
   background-repeat: no-repeat;
   background-size: cover;
   display: grid;
@@ -1291,11 +1404,11 @@
 }
 
 .card-data-stats-modal-hero-event {
-  background-position: center 78%;
+  background-position: center 68%;
 }
 
 .card-data-stats-modal-hero-base {
-  background-position: center 58%;
+  background-position: center 50%;
 }
 
 .card-data-stats-modal-hero::before {
