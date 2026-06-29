@@ -502,7 +502,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     }
 
     const hasLocalCards = cards.length > 0 || leaders.length > 0 || bases.length > 0
-    if (!hasLocalCards && (format === 'all' || format === 'limited') && source !== 'in-person') {
+    if (!hasLocalCards && source !== 'in-person') {
       try {
         const wayfinderPayload = await fetchWayfinderCardData(setCode, format)
         if (wayfinderPayload) {

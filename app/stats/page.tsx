@@ -8,7 +8,10 @@ import { CardPreview } from '@/src/components/DeckBuilder/CardPreview'
 import { CardPreviewProvider, CardName } from '@/src/components/CardNamePreview'
 import { useAuth } from '@/src/contexts/AuthContext'
 import Button from '@/src/components/Button'
+import Modal from '@/src/components/Modal'
+import PluginCTA from '@/src/components/PluginCTA'
 import { AspectIcon, ASPECTS } from '@/src/components/AspectIcon'
+import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
 import { LeaderCharts, CardCharts } from './StatsCharts'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
 import { PATREON_URL } from '@/src/utils/membership'
@@ -599,27 +602,35 @@ interface SetStatsTabProps {
 function SetStatsTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred, canSeeFullStats }: SetStatsTabProps) {
   // Secondary subtab — persists across visits via localStorage; the page hash
   // belongs to the primary set tab, so this group stays out of the URL (url:false).
-  const [subTab, setStickySubTab] = useStickyTab(STATS_SUBTABS, 'sealed', { url: false, storageKey: 'ptp:stats-subtab' })
+  const [subTab, setStickySubTab] = useStickyTab(STATS_SUBTABS, 'cards', { url: false, storageKey: 'ptp:stats-subtab' })
 
   useEffect(() => {
     const requestedTab = getUrlSearchParam(STATS_SUBTAB_PARAM)
     const requestedView = getUrlSearchParam(CARD_DATA_VIEW_PARAM)
-    if (STATS_SUBTABS.includes(requestedTab as StatsSubTab)) {
+    if (requestedTab === 'card-data') {
+      setStickySubTab('cards')
+    } else if (STATS_SUBTABS.includes(requestedTab as StatsSubTab)) {
       setStickySubTab(requestedTab as StatsSubTab)
-    } else if (requestedView === 'tiers') {
-      setStickySubTab('card-data')
+    } else if (requestedView === 'tiers' || requestedView === 'table') {
+      setStickySubTab('cards')
     }
   }, [setStickySubTab])
 
   const setSubTab = (next: StatsSubTab) => {
     setStickySubTab(next)
-    replaceUrlSearchParam(STATS_SUBTAB_PARAM, next === 'sealed' ? null : next)
-    if (next !== 'card-data') replaceUrlSearchParam(CARD_DATA_VIEW_PARAM, null)
+    replaceUrlSearchParam(STATS_SUBTAB_PARAM, next === 'cards' ? null : next)
+    if (next !== 'cards') replaceUrlSearchParam(CARD_DATA_VIEW_PARAM, null)
   }
 
   return (
     <div className="generation-stats">
       <div className="stats-subtabs">
+        <button
+          className={`stats-subtab ${subTab === 'cards' ? 'active' : ''}`}
+          onClick={() => setSubTab('cards')}
+        >
+          Cards
+        </button>
         <button
           className={`stats-subtab ${subTab === 'sealed' ? 'active' : ''}`}
           onClick={() => setSubTab('sealed')}
@@ -632,20 +643,14 @@ function SetStatsTab({ setCode, includeBots, includeHumans, startDate, endDate, 
         >
           Draft
         </button>
-        <button
-          className={`stats-subtab ${subTab === 'card-data' ? 'active' : ''}`}
-          onClick={() => setSubTab('card-data')}
-        >
-          Card Data
-        </button>
       </div>
 
-      {subTab === 'sealed' ? (
-        <SealedTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} canSeeFullStats={canSeeFullStats} />
-      ) : subTab === 'draft' ? (
-        <DraftTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} canSeeFullStats={canSeeFullStats} />
-      ) : (
+      {subTab === 'cards' ? (
         <CardDataTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} canSeeFullStats={canSeeFullStats} />
+      ) : subTab === 'sealed' ? (
+        <SealedTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} canSeeFullStats={canSeeFullStats} />
+      ) : (
+        <DraftTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} canSeeFullStats={canSeeFullStats} />
       )}
     </div>
   )
@@ -787,22 +792,22 @@ const GRADE_ORDER: Record<string, number> = {
   F: 0, U: -1,
 }
 const CARD_TIER_ORDER = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F', 'U']
-const STATS_SUBTABS = ['sealed', 'draft', 'card-data'] as const
+const STATS_SUBTABS = ['cards', 'sealed', 'draft'] as const
 type StatsSubTab = typeof STATS_SUBTABS[number]
 const STATS_SUBTAB_PARAM = 'tab'
 const CARD_DATA_VIEW_PARAM = 'view'
 const RARITY_ICON_PATHS: Record<string, string> = {
-  Common: '/icons/rarity/common.svg',
-  Uncommon: '/icons/rarity/uncommon.svg',
-  Rare: '/icons/rarity/rare.svg',
-  Legendary: '/icons/rarity/legendary.svg',
-  Special: '/icons/rarity/special.svg',
+  Common: '/icons/rarity/common.png',
+  Uncommon: '/icons/rarity/uncommon.png',
+  Rare: '/icons/rarity/rare.png',
+  Legendary: '/icons/rarity/legendary.png',
+  Special: '/icons/rarity/special.png',
 }
-const GRADE_METRIC_OPTIONS: Array<{ key: CardMetricKey; label: string; description: string }> = [
-  { key: 'gihWr', label: 'GIH WR', description: 'Games in hand win rate; default when replay hand facts exist.' },
-  { key: 'ohWr', label: 'OH WR', description: 'Opening hand win rate.' },
-  { key: 'gdWr', label: 'GD WR', description: 'Drawn later win rate.' },
-  { key: 'gpWr', label: 'GP WR', description: 'Games played win rate; decklist fallback.' },
+const GRADE_METRIC_OPTIONS: Array<{ key: CardMetricKey; label: string; fullLabel: string; description: string }> = [
+  { key: 'gihWr', label: 'GIH WR', fullLabel: 'Games In Hand Win Rate (GIH WR)', description: 'Games in hand win rate.' },
+  { key: 'ohWr', label: 'OH WR', fullLabel: 'Opening Hand Win Rate (OH WR)', description: 'Opening hand win rate.' },
+  { key: 'gdWr', label: 'GD WR', fullLabel: 'Games Drawn Win Rate (GD WR)', description: 'Drawn later win rate.' },
+  { key: 'gpWr', label: 'GP WR', fullLabel: 'Games Played Win Rate (GP WR)', description: 'Games played win rate.' },
 ]
 
 function getUrlSearchParam(name: string): string | null {
@@ -1003,6 +1008,35 @@ function LoadingSkeleton() {
   )
 }
 
+function CardDataLoadingSkeleton() {
+  return (
+    <div className="card-data-tier-card-shell">
+      <div className="card-data-section-header">
+        <div>
+          <SkeletonBlock width="180px" height={18} />
+          <SkeletonBlock width="320px" height={12} />
+        </div>
+        <SkeletonBlock width="140px" height={12} />
+      </div>
+      <div className="card-data-tier-list">
+        {['A+', 'A', 'B+', 'B'].map((grade) => (
+          <div className="card-data-tier-row" key={grade}>
+            <div className="card-data-tier-label">{grade}</div>
+            <div className="card-data-tier-cards">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="card-data-tier-card card-data-tier-card-loading">
+                  <SkeletonBlock width="70%" height={14} />
+                  <SkeletonBlock width="44%" height={12} />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // === Helper: build lookup map keyed by cardName ===
 
 function buildLookupMap<T extends { cardName: string }>(items: T[] | undefined): Map<string, T> {
@@ -1021,7 +1055,7 @@ function cardDataLookupKey(item: Pick<CardDataCard, 'cardName' | 'subtitle' | 'c
 function RarityIcon({ rarity }: { rarity: string }) {
   const src = RARITY_ICON_PATHS[rarity]
   if (!src) {
-    return <span className="card-data-rarity-fallback">{rarity}</span>
+    return <span className="card-data-rarity-icon card-data-rarity-icon-missing" aria-label={rarity} title={rarity} />
   }
 
   return (
@@ -1082,19 +1116,188 @@ function CardDataMetricDefinitions() {
   )
 }
 
+function cardDataMetricOption(metric: CardMetricKey) {
+  return GRADE_METRIC_OPTIONS.find(option => option.key === metric)
+}
+
+function cardDataMetricLabel(metric: CardMetricKey) {
+  return cardDataMetricOption(metric)?.label || 'GP WR'
+}
+
+function cardDataMetricFullLabel(metric: CardMetricKey) {
+  const option = cardDataMetricOption(metric)
+  return option?.fullLabel || option?.label || 'Games Played Win Rate (GP WR)'
+}
+
+function formatCardDataPct(value: number | null | undefined) {
+  if (value == null || !Number.isFinite(value)) return '—'
+  return Number.isInteger(value) ? `${value.toFixed(0)}%` : `${value.toFixed(1)}%`
+}
+
+function formatSignedCardDataPct(value: number | null | undefined) {
+  if (value == null || !Number.isFinite(value)) return '—'
+  return `${value > 0 ? '+' : ''}${formatCardDataPct(value)}`
+}
+
+function cardDataGamesLabel(count: number | null | undefined) {
+  const rounded = Math.round(count || 0)
+  return `${fmt(rounded)} ${rounded === 1 ? 'game' : 'games'}`
+}
+
+function cardDataTileImageUrl(card: CardDataCard) {
+  return card.isLeader
+    ? (card.backImageUrl || card.imageUrl)
+    : (card.imageUrl || card.backImageUrl)
+}
+
+function cardDataTileKind(card: CardDataCard) {
+  const type = (card.cardType || '').toLowerCase()
+  if (type.includes('base')) return 'base'
+  if (type.includes('event')) return 'event'
+  return 'unit'
+}
+
+function CardDataLockIcon() {
+  return (
+    <span className="card-data-gate-lock" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="4" y="10" width="16" height="10" rx="2" />
+        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+      </svg>
+    </span>
+  )
+}
+
+function CardDataGateOverlay({ state, requirements }: {
+  state: 'checking' | 'install' | 'login' | 'play'
+  requirements: Array<{ label: string; met: boolean | null }>
+}) {
+  const title = state === 'checking'
+    ? 'Checking card stats access'
+    : 'Card stats are locked'
+  const copy = state === 'play'
+    ? 'You have to give to get! Record one game with the Companion, then these stats unlock here.'
+    : 'You have to give to get! Install the Companion, sign in, and record one game to view these stats.'
+
+  return (
+    <div className="card-data-gate-overlay" role="region" aria-label="Card stats access requirements">
+      <div className="card-data-gate-panel">
+        <CardDataLockIcon />
+        <div className="card-data-gate-copy">
+          <h3>{title}</h3>
+          <p>{copy}</p>
+        </div>
+        <div className="card-data-gate-requirements" aria-label="Requirements">
+          {requirements.map(requirement => (
+            <div key={requirement.label} className={`card-data-gate-requirement ${requirement.met ? 'complete' : 'missing'}`}>
+              <span className="card-data-gate-status" aria-hidden="true" />
+              <span>{requirement.label}</span>
+              <strong>{requirement.met ? 'Done' : state === 'checking' && requirement.met == null ? 'Checking' : 'Required'}</strong>
+            </div>
+          ))}
+        </div>
+        {state === 'install' ? (
+          <PluginCTA
+            required
+            variant="autodetect"
+            className="card-data-gate-plugin-cta"
+            heading="Download Wayfinder Companion"
+            copy="Install it, sign in, and record one game to unlock card stats."
+          />
+        ) : state === 'play' ? (
+          <a className="card-data-gate-link" href="https://karabast.net" target="_blank" rel="noreferrer">
+            Start on Karabast
+          </a>
+        ) : state === 'login' ? (
+          <p className="card-data-gate-note">Open the Companion extension and sign in, then refresh this page.</p>
+        ) : (
+          <p className="card-data-gate-note">Reading your Companion status.</p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function CardDataModalStat({ label, value, detail }: { label: string; value: string; detail?: string }) {
+  return (
+    <div className="card-data-stats-modal-stat">
+      <span>{label}</span>
+      <strong>{value}</strong>
+      {detail ? <small>{detail}</small> : null}
+    </div>
+  )
+}
+
+function CardDataStatsModal({ card, onClose, activeMetricLabel, formatLabel }: {
+  card: CardDataCard
+  onClose: () => void
+  activeMetricLabel: string
+  formatLabel: string
+}) {
+  const artUrl = cardDataTileImageUrl(card)
+  const grade = card.displayGrade || card.grade || 'U'
+  const metricStats = [
+    { label: 'Games Played WR', value: formatCardDataPct(card.gpWr), detail: cardDataGamesLabel(card.gpCount) },
+    { label: 'Opening Hand WR', value: formatCardDataPct(card.ohWr), detail: card.ohCount == null ? undefined : cardDataGamesLabel(card.ohCount) },
+    { label: 'Games Drawn WR', value: formatCardDataPct(card.gdWr), detail: card.gdCount == null ? undefined : cardDataGamesLabel(card.gdCount) },
+    { label: 'Games In Hand WR', value: formatCardDataPct(card.gihWr), detail: card.gihCount == null ? undefined : cardDataGamesLabel(card.gihCount) },
+    { label: 'Games Not Seen WR', value: formatCardDataPct(card.gnsWr), detail: card.gnsCount == null ? undefined : cardDataGamesLabel(card.gnsCount) },
+    { label: 'Improvement In Hand', value: formatSignedCardDataPct(card.iih) },
+    { label: 'Played Rate', value: formatCardDataPct(card.playedRate), detail: 'when seen' },
+    { label: 'Resourced When Seen', value: formatCardDataPct(card.resourcedWhenSeen) },
+    { label: 'Decks', value: fmt(card.deckCount || 0), detail: `${fmt(card.rawCopies || 0)} copies` },
+  ]
+
+  if (card.playedWar != null) {
+    metricStats.push({ label: 'Played WAR', value: formatSignedCardDataPct(card.playedWar) })
+  }
+
+  return (
+    <Modal isOpen onClose={onClose} showCloseButton className="card-data-stats-modal">
+      <div className={`card-data-stats-modal-hero card-data-stats-modal-hero-${cardDataTileKind(card)}`} style={artUrl ? { backgroundImage: `url("${artUrl}")` } : undefined}>
+        <div className="card-data-stats-modal-hero-copy">
+          <span className="card-data-stats-modal-eyebrow">Card Stats</span>
+          <h3>{card.cardName}</h3>
+          {card.subtitle ? <p>{card.subtitle}</p> : null}
+          <div className="card-data-stats-modal-meta">
+            <span>{formatLabel}</span>
+            <span>{activeMetricLabel}</span>
+            <span className="card-data-stats-modal-rarity"><RarityIcon rarity={card.rarity} /></span>
+          </div>
+        </div>
+        <span className={`card-grade card-grade-${grade.replace('+', 'plus').replace('-', 'minus').toLowerCase()}`}>
+          {grade}
+        </span>
+      </div>
+      <div className="card-data-stats-modal-body">
+        <div className="card-data-stats-modal-grid">
+          {metricStats.map(stat => (
+            <CardDataModalStat key={stat.label} {...stat} />
+          ))}
+        </div>
+        {card.sampleWarning ? <p className="card-data-stats-modal-warning">{card.sampleWarning}</p> : null}
+      </div>
+    </Modal>
+  )
+}
+
 // === Card Data Tab ===
 
 function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate }: TabProps) {
   const [cardData, setCardData] = useState<CardDataStats | null>(null)
-  const [format, setFormat] = useState<'all' | 'sealed' | 'draft'>('all')
-  const [source, setSource] = useState<'all' | 'online' | 'in-person'>('online')
+  const [format, setFormat] = useState<'all' | 'sealed' | 'draft'>('draft')
   const [loading, setLoading] = useState(true)
   const hasLoadedOnce = useRef(false)
   const [view, setView] = useState<CardDataView>('tiers')
   const [selectedMetric, setSelectedMetric] = useState<CardMetricKey>('gihWr')
+  const [selectedCard, setSelectedCard] = useState<CardDataCard | null>(null)
   const [sortKey, setSortKey] = useState<CardDataSortKey>('grade')
   const [sortAsc, setSortAsc] = useState(false)
+  const [hasRecordedGame, setHasRecordedGame] = useState(false)
+  const [presenceLoading, setPresenceLoading] = useState(true)
+  const { detected: wayfinderDetected, settled: wayfinderSettled, pluginLoggedIn } = useWayfinderDetection()
   const cardFilter = useTableFilter()
+  const source = 'online'
 
   useEffect(() => {
     const requestedView = getUrlSearchParam(CARD_DATA_VIEW_PARAM)
@@ -1107,6 +1310,29 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate }
     setView(next)
     replaceUrlSearchParam(CARD_DATA_VIEW_PARAM, next === 'tiers' ? null : next)
   }
+
+  useEffect(() => {
+    let cancelled = false
+    const forcedActivity = getUrlSearchParam('wfactivity')
+    if (forcedActivity === '1' || forcedActivity === 'true') {
+      setHasRecordedGame(true)
+      setPresenceLoading(false)
+      return () => { cancelled = true }
+    }
+    if (forcedActivity === '0' || forcedActivity === 'false') {
+      setHasRecordedGame(false)
+      setPresenceLoading(false)
+      return () => { cancelled = true }
+    }
+
+    fetch('/api/me/wayfinder-presence', { credentials: 'include' })
+      .then(r => r.ok ? r.json() : null)
+      .then(body => { if (!cancelled) setHasRecordedGame(Boolean(body?.data?.hasActivity)) })
+      .catch(() => { if (!cancelled) setHasRecordedGame(false) })
+      .finally(() => { if (!cancelled) setPresenceLoading(false) })
+
+    return () => { cancelled = true }
+  }, [])
 
   useEffect(() => {
     if (!hasLoadedOnce.current) setLoading(true)
@@ -1183,7 +1409,7 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate }
     return card.gpWr
   }
 
-  const metricLabel = (metric: CardMetricKey) => GRADE_METRIC_OPTIONS.find(option => option.key === metric)?.label || 'GP WR'
+  const metricLabel = cardDataMetricLabel
 
   const rankRowsForMetric = (rows: CardDataCard[], metric: CardMetricKey) => {
     if (metric === 'gihWr' && cardData?.sourceDetail === 'wayfinder') {
@@ -1260,8 +1486,6 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate }
     cardFilter.activeAspects,
   ])
 
-  if (loading) return <LoadingSkeleton />
-
   const hasCards = allCardRows.length > 0
   const formatPct = (v: number) => `${v.toFixed(1)}%`
   const formatPctCompact = (v: number | null | undefined) => {
@@ -1277,11 +1501,21 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate }
     isBase: Boolean(card.isBase),
   })
   const activeMetricLabel = metricLabel(selectedMetric)
+  const activeMetricFullLabel = cardDataMetricFullLabel(selectedMetric)
   const shownCount = rankedCardRows.rows.length
-  const filterSetLabel = setCode === 'ASH' ? 'ASH PRE-RELEASE' : setCode
-  const filterFormatLabel = format === 'all' ? 'LIMITED' : format.toUpperCase()
-  const filterSourceLabel = source === 'in-person' ? 'IN-PERSON' : source.toUpperCase()
+  const formatLabel = format === 'all' ? 'All' : format === 'sealed' ? 'Sealed' : 'Draft'
   const hasReplayMetrics = allCardRows.some(card => (card.gihCount || 0) > 0 || (card.ohCount || 0) > 0 || (card.gdCount || 0) > 0)
+  const requirements = [
+    { label: 'Wayfinder Companion installed and running', met: wayfinderSettled ? wayfinderDetected : null },
+    { label: 'Signed in to Wayfinder Companion', met: wayfinderSettled ? pluginLoggedIn === true : null },
+    { label: 'At least one game recorded', met: presenceLoading ? null : hasRecordedGame },
+  ]
+  const cardsUnlocked = wayfinderSettled && !presenceLoading && wayfinderDetected && pluginLoggedIn === true && hasRecordedGame
+  const gateState: 'checking' | 'install' | 'login' | 'play' =
+    (!wayfinderSettled || presenceLoading) ? 'checking'
+    : !wayfinderDetected ? 'install'
+    : pluginLoggedIn !== true ? 'login'
+    : 'play'
 
   const SortHeader = ({ label, col, title }: { label: string, col: CardDataSortKey, title?: string }) => (
     <th className={`sortable ${sortKey === col ? 'active' : ''}`} onClick={() => handleSort(col)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSort(col) } }} tabIndex={0} aria-sort={sortKey === col ? (sortAsc ? 'ascending' : 'descending') : 'none'} title={title}>
@@ -1300,7 +1534,15 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate }
     )
   }
 
-  const metricTile = (card: CardDataCard) => `${formatPctCompact(card.displayMetricValue ?? metricValue(card, selectedMetric))} · n=${fmt(Math.round(card.displayMetricCount ?? metricCount(card, selectedMetric) ?? 0))}`
+  const metricTile = (card: CardDataCard) => {
+    const count = card.displayMetricCount ?? metricCount(card, selectedMetric) ?? 0
+    return (
+      <>
+        <span>{formatPctCompact(card.displayMetricValue ?? metricValue(card, selectedMetric))}</span>
+        <span>{cardDataGamesLabel(count)}</span>
+      </>
+    )
+  }
 
   const metricCell = (card: CardDataCard, metric: CardMetricKey) => {
     const value = metricValue(card, metric)
@@ -1309,21 +1551,14 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate }
     return (
       <span className="card-data-metric-stack" title={`${metricLabel(metric)} sample`}>
         <span>{formatPct(value)}</span>
-        <small>n={fmt(Math.round(count || 0))}</small>
+        <small>{cardDataGamesLabel(count)}</small>
       </span>
     )
   }
 
-  const tileImageUrl = (card: CardDataCard) => card.isLeader
-    ? (card.backImageUrl || card.imageUrl)
-    : (card.imageUrl || card.backImageUrl)
+  const tileImageUrl = cardDataTileImageUrl
 
-  const tileKind = (card: CardDataCard) => {
-    const type = (card.cardType || '').toLowerCase()
-    if (type.includes('base')) return 'base'
-    if (type.includes('event')) return 'event'
-    return 'unit'
-  }
+  const tileKind = cardDataTileKind
 
   const tileStyle = (card: CardDataCard) => {
     const imageUrl = tileImageUrl(card)
@@ -1352,7 +1587,19 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate }
         </thead>
         <tbody>
           {rankedCardRows.rows.map((card: CardDataCard) => (
-            <tr key={cardDataLookupKey(card)}>
+            <tr
+              key={cardDataLookupKey(card)}
+              className="card-data-table-row"
+              role="button"
+              tabIndex={0}
+              onClick={() => setSelectedCard(card)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  setSelectedCard(card)
+                }
+              }}
+            >
               <td className="card-name-cell">
                 <CardName entry={cardNameEntry(card)} className="card-data-name" />
               </td>
@@ -1389,10 +1636,12 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate }
               {rows.map((card: CardDataCard) => {
                 const imageUrl = tileImageUrl(card)
                 return (
-                  <span
+                  <button
+                    type="button"
                     key={cardDataLookupKey(card)}
                     className={`card-data-tier-card card-data-tier-card-${tileKind(card)} ${imageUrl ? 'card-data-tier-card-has-art' : ''}`}
                     style={tileStyle(card)}
+                    onClick={() => setSelectedCard(card)}
                   >
                     <span className="card-data-tier-card-copy">
                       <span className="card-data-tier-card-title">{card.cardName}</span>
@@ -1405,11 +1654,10 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate }
                       </span>
                       <span className="card-data-tier-card-printing">
                         {card.collectorNumber ? <span>{card.collectorNumber}</span> : null}
-                        {card.collectorNumber && card.rarity ? <span className="card-data-tier-card-dot">·</span> : null}
                         <RarityIcon rarity={card.rarity} />
                       </span>
                     </span>
-                  </span>
+                  </button>
                 )
               })}
             </div>
@@ -1420,6 +1668,8 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate }
   )
 
   const renderCardDataContent = () => {
+    if (loading) return <CardDataLoadingSkeleton />
+
     if (!hasCards) {
       return (
         <div className="stats-empty">
@@ -1430,12 +1680,11 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate }
 
     return (
       <>
-        <TableFilter {...cardFilter} placeholder="Search cards..." />
         <div className="card-data-tier-card-shell">
           <div className="card-data-section-header">
             <div>
               <h4>Cards Tier List</h4>
-              <p>Grouped by {activeMetricLabel} using z-score grade bands for this filtered slice.</p>
+              <p>Grouped by {activeMetricFullLabel}</p>
             </div>
             <span>{fmt(shownCount)} / {fmt(allCardRows.length)} cards shown</span>
           </div>
@@ -1454,80 +1703,85 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate }
   return (
     <CardPreviewProvider>
       <div className="cards-subtab card-data-tab">
-        <details className="card-data-filter-strip">
-          <summary>
-            <span className="card-data-filter-title">Filters</span>
-            <span className="card-data-filter-chip">{filterSetLabel}</span>
-            <span className="card-data-filter-chip card-data-filter-chip-green">{filterFormatLabel}</span>
-            <span className="card-data-filter-chip card-data-filter-chip-gold">{filterSourceLabel}</span>
-          </summary>
-          <div className="card-data-toolbar">
-            <div className="card-data-control">
-              <span className="card-data-control-label">Format</span>
-              <div className="card-data-segmented">
-                {[
-                  ['all', 'Limited'],
-                  ['sealed', 'Sealed'],
-                  ['draft', 'Draft'],
-                ].map(([value, label]) => (
-                  <button key={value} className={`card-data-segment ${format === value ? 'active' : ''}`} onClick={() => setFormat(value as any)}>{label}</button>
-                ))}
+        <div className={`card-data-gated-shell ${cardsUnlocked ? '' : 'card-data-gated-shell--locked'}`.trim()}>
+          <div className="card-data-gated-content" aria-hidden={!cardsUnlocked}>
+            <div className="card-stats-mode-card card-data-control-panel">
+              <div className="card-stats-mode-row">
+                <div>
+                  <div className="card-stats-mode-title">Cards</div>
+                  <div className="card-data-muted">Filter the card stats view by format, metric, card name, and aspect.</div>
+                </div>
+                <div className="card-data-segmented card-stats-view-tabs" role="tablist" aria-label="Card stats view">
+                  {[
+                    ['tiers', 'Tier List'],
+                    ['table', 'Table'],
+                  ].map(([value, label]) => (
+                    <button key={value} className={`card-data-segment ${view === value ? 'active' : ''}`} onClick={() => setCardDataView(value as CardDataView)}>{label}</button>
+                  ))}
+                </div>
               </div>
-            </div>
-            <div className="card-data-control">
-              <span className="card-data-control-label">Source</span>
-              <div className="card-data-segmented">
-                {[
-                  ['online', 'Online'],
-                  ['all', 'All'],
-                  ['in-person', 'In-Person'],
-                ].map(([value, label]) => (
-                  <button key={value} className={`card-data-segment ${source === value ? 'active' : ''}`} onClick={() => setSource(value as any)}>{label}</button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </details>
 
-        <div className="card-stats-mode-card">
-          <div className="card-stats-mode-row">
-            <div>
-              <div className="card-stats-mode-title">Card Data</div>
-              <div className="card-data-muted">Recompute filters redistribute grades; hide-only filters such as aspect and search only narrow visible rows.</div>
+              <div className="card-data-controls-grid">
+                <div className="card-data-control">
+                  <span className="card-data-control-label">Format</span>
+                  <div className="card-data-segmented">
+                    {[
+                      ['all', 'All'],
+                      ['sealed', 'Sealed'],
+                      ['draft', 'Draft'],
+                    ].map(([value, label]) => (
+                      <button key={value} className={`card-data-segment ${format === value ? 'active' : ''}`} onClick={() => setFormat(value as any)}>{label}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="card-data-control">
+                  <span className="card-data-control-label">Metric</span>
+                  <div className="card-stats-metric-pills" role="list" aria-label="Grade metric">
+                    {GRADE_METRIC_OPTIONS.map((option) => (
+                      <button
+                        key={option.key}
+                        className={`card-data-metric-pill ${selectedMetric === option.key ? 'active' : ''}`}
+                        title={option.description}
+                        onClick={() => setSelectedMetric(option.key)}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="card-data-control card-data-control--search">
+                  <span className="card-data-control-label">Search</span>
+                  <TableFilter {...cardFilter} placeholder="Search cards..." />
+                </div>
+              </div>
+
+              <div className="card-stats-mode-row card-stats-mode-row--compact">
+                <CardDataMetricDefinitions />
+                <div className="card-data-muted">
+                  {formatLabel} · {fmt(shownCount)} / {fmt(allCardRows.length)} cards loaded
+                  {rankedCardRows.provisional ? ' · provisional grade thresholds' : ''}
+                  {cardData?.sourceDetail === 'wayfinder' ? ' · Wayfinder data' : ''}
+                  {!hasReplayMetrics ? ' · replay hand metrics pending' : ''}
+                </div>
+              </div>
             </div>
-            <div className="card-data-segmented card-stats-view-tabs" role="tablist" aria-label="Card stats view">
-              {[
-                ['tiers', 'Tier List'],
-                ['table', 'Table'],
-              ].map(([value, label]) => (
-                <button key={value} className={`card-data-segment ${view === value ? 'active' : ''}`} onClick={() => setCardDataView(value as CardDataView)}>{label}</button>
-              ))}
-            </div>
+
+            {renderCardDataContent()}
           </div>
-          <div className="card-stats-mode-row card-stats-mode-row--compact">
-            <div className="card-stats-metric-pills" role="list" aria-label="Grade metric">
-              {GRADE_METRIC_OPTIONS.map((option) => (
-                <button
-                  key={option.key}
-                  className={`card-data-metric-pill ${selectedMetric === option.key ? 'active' : ''}`}
-                  title={option.description}
-                  onClick={() => setSelectedMetric(option.key)}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-            <div className="card-data-muted">
-              {fmt(shownCount)} / {fmt(allCardRows.length)} cards loaded
-              {rankedCardRows.provisional ? ' · provisional grade thresholds' : ''}
-              {cardData?.sourceDetail === 'wayfinder' ? ' · Wayfinder data' : ''}
-              {!hasReplayMetrics ? ' · replay hand metrics pending' : ''}
-            </div>
-          </div>
+
+          {!cardsUnlocked ? <CardDataGateOverlay state={gateState} requirements={requirements} /> : null}
         </div>
 
-        <CardDataMetricDefinitions />
-        {renderCardDataContent()}
+        {selectedCard ? (
+          <CardDataStatsModal
+            card={selectedCard}
+            onClose={() => setSelectedCard(null)}
+            activeMetricLabel={activeMetricLabel}
+            formatLabel={formatLabel}
+          />
+        ) : null}
       </div>
     </CardPreviewProvider>
   )
