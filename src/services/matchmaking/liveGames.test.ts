@@ -272,4 +272,10 @@ describe('resultIdempotencyKeyFor (both-players-with-plugin dedup)', () => {
     const key = resultIdempotencyKeyFor(report({ wayfinderMatchId: 'm-only', gameNumber: 3 }), 3)
     assert.equal(key, 'wayfinder-match:m-only:game:3')
   })
+
+  it('canonicalizes ing-prefixed fallback match ids', () => {
+    const ingKey = resultIdempotencyKeyFor(report({ wayfinderMatchId: 'ing-match-123', gameNumber: 1 }), 1)
+    const bareKey = resultIdempotencyKeyFor(report({ wayfinderMatchId: 'match-123', gameNumber: 1 }), 1)
+    assert.equal(ingKey, bareKey)
+  })
 })
