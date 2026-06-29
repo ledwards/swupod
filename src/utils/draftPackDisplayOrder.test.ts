@@ -3,6 +3,7 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import { getDraftPackDisplayOrder, shouldPreserveDraftPackSlotOrder } from './draftPackDisplayOrder'
+import { getAllSetCodes } from './setConfigs/index'
 
 describe('draft pack display order', () => {
   it('preserves ASH slot order so the foil slot stays before uncommons', () => {
@@ -33,7 +34,7 @@ describe('draft pack display order', () => {
     assert.deepStrictEqual(ordered.map(c => c.id), ['common-1', 'common-2', 'foil', 'uncommon-1', 'rare-1'])
   })
 
-  it('continues to sort non-ASH packs by rarity with foils last', () => {
+  it('keeps the foil last for every non-ASH set', () => {
     const pack = [
       { id: 'foil', rarity: 'Common', isFoil: true },
       { id: 'rare-1', rarity: 'Rare' },
@@ -41,10 +42,25 @@ describe('draft pack display order', () => {
       { id: 'uncommon-1', rarity: 'Uncommon' },
     ]
 
-    const ordered = getDraftPackDisplayOrder(pack, 'SOR')
+    const nonAshSetCodes = getAllSetCodes().filter(setCode => setCode !== 'ASH')
 
-    assert.notStrictEqual(ordered, pack, 'non-ASH display sort should return a sorted copy')
-    assert.deepStrictEqual(ordered.map(c => c.id), ['common-1', 'uncommon-1', 'rare-1', 'foil'])
+    for (const setCode of nonAshSetCodes) {
+      for (const displaySetCode of [setCode, `${setCode}-CB`]) {
+        const ordered = getDraftPackDisplayOrder(pack, displaySetCode)
+
+        assert.notStrictEqual(ordered, pack, `${displaySetCode} display sort should return a sorted copy`)
+        assert.strictEqual(
+          ordered[ordered.length - 1].id,
+          'foil',
+          `${displaySetCode} should keep foil as the last visible card`
+        )
+        assert.deepStrictEqual(
+          ordered.map(c => c.id),
+          ['common-1', 'uncommon-1', 'rare-1', 'foil'],
+          `${displaySetCode} should retain the standard rarity sort`
+        )
+      }
+    }
   })
 
   it('treats ASH carbonite set suffixes as ASH for display order', () => {
