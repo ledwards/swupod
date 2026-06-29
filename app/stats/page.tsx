@@ -17,6 +17,7 @@ import {
   getStatsSetTabs,
   STATS_SET_COLORS,
 } from '@/src/utils/statsSetTabs'
+import { computeCardGrades } from '@/src/services/cardDataMetrics'
 import './stats.css'
 
 const tournamentPlayerCount = tournamentUserIds.length
@@ -773,6 +774,7 @@ type SortKey = 'cardName' | 'rarity' | 'avgPickPosition' | 'firstPickPct' | 'tim
 type DeckSortKey = 'cardName' | 'rarity' | 'inclusionRate' | 'avgCopiesPlayed' | 'poolsWithCard' | 'offAspectRate'
 type CardDataSortKey = 'cardName' | 'grade' | 'rarity' | 'gpWr' | 'gpCount' | 'deckCount' | 'rawCopies'
 type CardDataView = 'table' | 'tiers'
+type CardMetricKey = 'gihWr' | 'ohWr' | 'gdWr' | 'gpWr'
 type LeaderSortKey = 'cardName' | 'avgPickPosition' | 'firstPickPct' | 'timesPicked'
 type LeaderSelSortKey = 'cardName' | 'timesSelected' | 'selectionRate'
 
@@ -782,9 +784,9 @@ const GRADE_ORDER: Record<string, number> = {
   'B+': 9, B: 8, 'B-': 7,
   'C+': 6, C: 5, 'C-': 4,
   'D+': 3, D: 2, 'D-': 1,
-  F: 0,
+  F: 0, U: -1,
 }
-const CARD_TIER_ORDER = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F', 'Ungraded']
+const CARD_TIER_ORDER = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F', 'U']
 const STATS_SUBTABS = ['sealed', 'draft', 'card-data'] as const
 type StatsSubTab = typeof STATS_SUBTABS[number]
 const STATS_SUBTAB_PARAM = 'tab'
@@ -796,6 +798,12 @@ const RARITY_ICON_PATHS: Record<string, string> = {
   Legendary: '/icons/rarity/legendary.svg',
   Special: '/icons/rarity/special.svg',
 }
+const GRADE_METRIC_OPTIONS: Array<{ key: CardMetricKey; label: string; description: string }> = [
+  { key: 'gihWr', label: 'GIH WR', description: 'Games in hand win rate; default when replay hand facts exist.' },
+  { key: 'ohWr', label: 'OH WR', description: 'Opening hand win rate.' },
+  { key: 'gdWr', label: 'GD WR', description: 'Drawn later win rate.' },
+  { key: 'gpWr', label: 'GP WR', description: 'Games played win rate; decklist fallback.' },
+]
 
 function getUrlSearchParam(name: string): string | null {
   if (typeof window === 'undefined') return null
@@ -1010,15 +1018,6 @@ function cardDataLookupKey(item: Pick<CardDataCard, 'cardName' | 'subtitle' | 'c
   return `${item.cardName}|${item.subtitle || ''}|${item.cardType || ''}`
 }
 
-function buildCardDataLookupMap(items: CardDataCard[] | undefined): Map<string, CardDataCard> {
-  const map = new Map<string, CardDataCard>()
-  if (!items) return map
-  for (const item of items) {
-    map.set(cardDataLookupKey(item), item)
-  }
-  return map
-}
-
 function RarityIcon({ rarity }: { rarity: string }) {
   const src = RARITY_ICON_PATHS[rarity]
   if (!src) {
@@ -1036,18 +1035,63 @@ function RarityIcon({ rarity }: { rarity: string }) {
   )
 }
 
+function CardDataMetricDefinitions() {
+  return (
+    <details className="card-data-definitions">
+      <summary>
+        <span>Metric Definitions</span>
+        <span className="card-data-definitions-link">Card data terms</span>
+      </summary>
+      <div className="card-data-definitions-grid">
+        <section className="card-data-definition-group">
+          <h4>Win Rates</h4>
+          <dl>
+            <div className="card-data-definition-row">
+              <dt>GP WR</dt>
+              <dd>Wins with this card in the deck divided by games with this card in the deck.</dd>
+            </div>
+            <div className="card-data-definition-row">
+              <dt>OH WR</dt>
+              <dd>Wins when this card starts in opening hand divided by opening hands containing it.</dd>
+            </div>
+            <div className="card-data-definition-row">
+              <dt>GD WR</dt>
+              <dd>Wins when this card is drawn after the opener divided by later draws of this card.</dd>
+            </div>
+          </dl>
+        </section>
+        <section className="card-data-definition-group">
+          <h4>Replay Metrics</h4>
+          <dl>
+            <div className="card-data-definition-row">
+              <dt>GIH WR</dt>
+              <dd>Wins when this card is seen in hand: opening hand plus later draws.</dd>
+            </div>
+            <div className="card-data-definition-row">
+              <dt>GNS WR</dt>
+              <dd>Wins when this card is in deck but not seen in hand.</dd>
+            </div>
+            <div className="card-data-definition-row">
+              <dt>IIH</dt>
+              <dd>Improvement in hand: GIH WR minus GNS WR.</dd>
+            </div>
+          </dl>
+        </section>
+      </div>
+    </details>
+  )
+}
+
 // === Card Data Tab ===
 
-function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred, canSeeFullStats }: TabProps) {
+function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate }: TabProps) {
   const [cardData, setCardData] = useState<CardDataStats | null>(null)
-  const [cardDataTournament, setCardDataTournament] = useState<CardDataStats | null>(null)
-  const [cardDataTop, setCardDataTop] = useState<CardDataStats | null>(null)
-  const [cardDataYou, setCardDataYou] = useState<CardDataStats | null>(null)
   const [format, setFormat] = useState<'all' | 'sealed' | 'draft'>('all')
-  const [source, setSource] = useState<'all' | 'online' | 'in-person'>('all')
+  const [source, setSource] = useState<'all' | 'online' | 'in-person'>('online')
   const [loading, setLoading] = useState(true)
   const hasLoadedOnce = useRef(false)
   const [view, setView] = useState<CardDataView>('tiers')
+  const [selectedMetric, setSelectedMetric] = useState<CardMetricKey>('gihWr')
   const [sortKey, setSortKey] = useState<CardDataSortKey>('grade')
   const [sortAsc, setSortAsc] = useState(false)
   const cardFilter = useTableFilter()
@@ -1078,61 +1122,14 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
       format,
       source,
     })
-    const fetches: Promise<void>[] = [
-      fetch(`/api/stats/card-data?${baseParams}`)
-        .then(r => r.json()).then(apply(setCardData))
-        .catch(err => console.error('Error fetching card data:', err)),
-    ]
 
-    if (canSeeFullStats) {
-      const tournamentParams = new URLSearchParams(baseParams)
-      tournamentParams.set('tournamentOnly', 'true')
-      const topPlayersParams = new URLSearchParams(baseParams)
-      topPlayersParams.set('topPlayersOnly', 'true')
-      fetches.push(
-        fetch(`/api/stats/card-data?${tournamentParams}`)
-          .then(r => r.json()).then(apply(setCardDataTournament))
-          .catch(err => console.error('Error fetching tournament card data:', err)),
-        fetch(`/api/stats/card-data?${topPlayersParams}`)
-          .then(r => r.json()).then(apply(setCardDataTop))
-          .catch(err => console.error('Error fetching top player card data:', err)),
-      )
-    } else {
-      setCardDataTournament(null)
-      setCardDataTop(null)
-    }
-
-    if (user?.id) {
-      const youParams = new URLSearchParams(baseParams)
-      youParams.set('userId', user.id)
-      fetches.push(
-        fetch(`/api/stats/card-data?${youParams}`)
-          .then(r => r.json()).then(apply(setCardDataYou))
-          .catch(err => console.error('Error fetching your card data:', err)),
-      )
-    } else {
-      setCardDataYou(null)
-    }
-
-    Promise.all(fetches).finally(() => { if (!cancelled) { setLoading(false); hasLoadedOnce.current = true } })
+    fetch(`/api/stats/card-data?${baseParams}`)
+      .then(r => r.json())
+      .then(apply(setCardData))
+      .catch(err => console.error('Error fetching card data:', err))
+      .finally(() => { if (!cancelled) { setLoading(false); hasLoadedOnce.current = true } })
     return () => { cancelled = true }
-  }, [setCode, includeBots, includeHumans, startDate, endDate, user?.id, canSeeFullStats, format, source])
-
-  const tournamentMaps = useMemo(() => ({
-    leaders: buildCardDataLookupMap(cardDataTournament?.leaders),
-    bases: buildCardDataLookupMap(cardDataTournament?.bases),
-    cards: buildCardDataLookupMap(cardDataTournament?.cards),
-  }), [cardDataTournament?.leaders, cardDataTournament?.bases, cardDataTournament?.cards])
-  const topMaps = useMemo(() => ({
-    leaders: buildCardDataLookupMap(cardDataTop?.leaders),
-    bases: buildCardDataLookupMap(cardDataTop?.bases),
-    cards: buildCardDataLookupMap(cardDataTop?.cards),
-  }), [cardDataTop?.leaders, cardDataTop?.bases, cardDataTop?.cards])
-  const youMaps = useMemo(() => ({
-    leaders: buildCardDataLookupMap(cardDataYou?.leaders),
-    bases: buildCardDataLookupMap(cardDataYou?.bases),
-    cards: buildCardDataLookupMap(cardDataYou?.cards),
-  }), [cardDataYou?.leaders, cardDataYou?.bases, cardDataYou?.cards])
+  }, [setCode, includeBots, includeHumans, startDate, endDate, format, source])
 
   const handleSort = (key: CardDataSortKey) => {
     if (sortKey === key) setSortAsc(!sortAsc)
@@ -1145,10 +1142,10 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
       let cmp = 0
       switch (sortKey) {
         case 'cardName': cmp = a.cardName.localeCompare(b.cardName); break
-        case 'grade': cmp = (GRADE_ORDER[a.grade || ''] ?? -1) - (GRADE_ORDER[b.grade || ''] ?? -1); break
+        case 'grade': cmp = (GRADE_ORDER[a.displayGrade || a.grade || 'U'] ?? -1) - (GRADE_ORDER[b.displayGrade || b.grade || 'U'] ?? -1); break
         case 'rarity': cmp = (RARITY_ORDER[a.rarity] ?? 9) - (RARITY_ORDER[b.rarity] ?? 9); break
-        case 'gpWr': cmp = (a.gpWr ?? -1) - (b.gpWr ?? -1); break
-        case 'gpCount': cmp = a.gpCount - b.gpCount; break
+        case 'gpWr': cmp = (a.displayMetricValue ?? metricValue(a, selectedMetric) ?? -1) - (b.displayMetricValue ?? metricValue(b, selectedMetric) ?? -1); break
+        case 'gpCount': cmp = (a.displayMetricCount ?? metricCount(a, selectedMetric) ?? 0) - (b.displayMetricCount ?? metricCount(b, selectedMetric) ?? 0); break
         case 'deckCount': cmp = a.deckCount - b.deckCount; break
         case 'rawCopies': cmp = a.rawCopies - b.rawCopies; break
       }
@@ -1160,49 +1157,117 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
     const groups = new Map<string, CardDataCard[]>()
     for (const grade of CARD_TIER_ORDER) groups.set(grade, [])
     for (const card of rows) {
-      groups.get(card.grade || 'Ungraded')?.push(card)
+      groups.get(card.displayGrade || card.grade || 'U')?.push(card)
     }
     return groups
   }
 
-  const cardSections = useMemo(() => {
-    const defs = [
-      { key: 'leaders', title: 'Leaders', description: 'Selected leaders from decks with match results.', rows: cardData?.leaders || [] },
-      { key: 'bases', title: 'Bases', description: 'Selected bases from decks with match results.', rows: cardData?.bases || [] },
-      { key: 'cards', title: 'Cards', description: 'Main-deck cards, copy-weighted by deck count and match results.', rows: cardData?.cards || [] },
-    ]
-    return defs.map(section => {
-      const rows = sortRows(section.rows).filter(cardFilter.filterFn)
+  const metricCount = (card: CardDataCard, metric: CardMetricKey) => {
+    if (metric === 'ohWr') return card.ohCount
+    if (metric === 'gdWr') return card.gdCount
+    if (metric === 'gihWr') return card.gihCount
+    return card.gpCount
+  }
+
+  const metricWins = (card: CardDataCard, metric: CardMetricKey) => {
+    if (metric === 'ohWr') return card.ohWins ?? ((card.ohWr ?? null) == null || (card.ohCount ?? null) == null ? 0 : (card.ohWr * card.ohCount) / 100)
+    if (metric === 'gdWr') return card.gdWins ?? ((card.gdWr ?? null) == null || (card.gdCount ?? null) == null ? 0 : (card.gdWr * card.gdCount) / 100)
+    if (metric === 'gihWr') return card.gihWins ?? ((card.gihWr ?? null) == null || (card.gihCount ?? null) == null ? 0 : (card.gihWr * card.gihCount) / 100)
+    return card.gpWins ?? ((card.gpWr ?? null) == null || (card.gpCount ?? null) == null ? 0 : (card.gpWr * card.gpCount) / 100)
+  }
+
+  const metricValue = (card: CardDataCard, metric: CardMetricKey) => {
+    if (metric === 'ohWr') return card.ohWr
+    if (metric === 'gdWr') return card.gdWr
+    if (metric === 'gihWr') return card.gihWr
+    return card.gpWr
+  }
+
+  const metricLabel = (metric: CardMetricKey) => GRADE_METRIC_OPTIONS.find(option => option.key === metric)?.label || 'GP WR'
+
+  const rankRowsForMetric = (rows: CardDataCard[], metric: CardMetricKey) => {
+    if (metric === 'gihWr' && cardData?.sourceDetail === 'wayfinder') {
       return {
-        ...section,
-        rows,
-        totalRows: section.rows.length,
-        tierGroups: makeTierGroups(rows),
-        tournamentMap: tournamentMaps[section.key],
-        topMap: topMaps[section.key],
-        youMap: youMaps[section.key],
+        provisional: false,
+        rows: rows.map(card => ({
+          ...card,
+          displayGrade: card.grade || null,
+          displayMetricValue: metricValue(card, metric),
+          displayMetricCount: metricCount(card, metric),
+        })),
       }
-    })
+    }
+
+    const inputs = rows.map(card => ({
+      key: cardDataLookupKey(card),
+      wins: metricWins(card, metric),
+      denominator: metricCount(card, metric) || 0,
+    }))
+    const strict = computeCardGrades(inputs)
+    const provisional = computeCardGrades(inputs, { minDenominator: 1, minCards: 5 })
+    const provisionalByKey = new Map(provisional.map(grade => [grade.key, grade]))
+    let usedProvisional = false
+    const gradeByKey = new Map(strict.map(grade => {
+      if (grade.grade) return [grade.key, grade]
+      const fallback = provisionalByKey.get(grade.key)
+      if (fallback?.grade) {
+        usedProvisional = true
+        return [grade.key, fallback]
+      }
+      return [grade.key, grade]
+    }))
+
+    return {
+      provisional: usedProvisional,
+      rows: rows.map(card => {
+        const key = cardDataLookupKey(card)
+        const grade = gradeByKey.get(key)
+        return {
+          ...card,
+          displayGrade: grade?.grade || null,
+          displayMetricValue: metricValue(card, metric),
+          displayMetricCount: metricCount(card, metric),
+        }
+      }),
+    }
+  }
+
+  const allCardRows = useMemo(() => [
+    ...(cardData?.leaders || []),
+    ...(cardData?.bases || []),
+    ...(cardData?.cards || []),
+  ], [cardData?.leaders, cardData?.bases, cardData?.cards])
+
+  const rankedCardRows = useMemo(() => {
+    const filtered = allCardRows.filter(cardFilter.filterFn)
+    const ranked = rankRowsForMetric(filtered, selectedMetric)
+    const rows = sortRows(ranked.rows)
+    return {
+      ...ranked,
+      rows,
+      tierGroups: makeTierGroups(rows),
+    }
   }, [
+    allCardRows,
     cardData?.leaders,
     cardData?.bases,
     cardData?.cards,
     sortKey,
     sortAsc,
+    selectedMetric,
+    cardData?.sourceDetail,
     cardFilter.search,
     cardFilter.activeAspects,
-    tournamentMaps,
-    topMaps,
-    youMaps,
   ])
 
   if (loading) return <LoadingSkeleton />
 
-  const hasCards = cardData && ((cardData.cards?.length || 0) + (cardData.leaders?.length || 0) + (cardData.bases?.length || 0)) > 0
-  const rarityClass = (r: string) => `rarity-${r.toLowerCase()}`
-  const cellProps = { showYou, showAll, showTop, showTournament, isBlurred, user }
+  const hasCards = allCardRows.length > 0
   const formatPct = (v: number) => `${v.toFixed(1)}%`
-  const replayTitle = 'Replay-hand metrics require validated opening-hand and draw facts.'
+  const formatPctCompact = (v: number | null | undefined) => {
+    if (v == null || !Number.isFinite(v)) return '—'
+    return Number.isInteger(v) ? `${v.toFixed(0)}%` : `${v.toFixed(1)}%`
+  }
   const cardNameEntry = (card: CardDataCard) => ({
     name: card.cardName,
     subtitle: card.subtitle,
@@ -1211,6 +1276,12 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
     isLeader: Boolean(card.isLeader),
     isBase: Boolean(card.isBase),
   })
+  const activeMetricLabel = metricLabel(selectedMetric)
+  const shownCount = rankedCardRows.rows.length
+  const filterSetLabel = setCode === 'ASH' ? 'ASH PRE-RELEASE' : setCode
+  const filterFormatLabel = format === 'all' ? 'LIMITED' : format.toUpperCase()
+  const filterSourceLabel = source === 'in-person' ? 'IN-PERSON' : source.toUpperCase()
+  const hasReplayMetrics = allCardRows.some(card => (card.gihCount || 0) > 0 || (card.ohCount || 0) > 0 || (card.gdCount || 0) > 0)
 
   const SortHeader = ({ label, col, title }: { label: string, col: CardDataSortKey, title?: string }) => (
     <th className={`sortable ${sortKey === col ? 'active' : ''}`} onClick={() => handleSort(col)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSort(col) } }} tabIndex={0} aria-sort={sortKey === col ? (sortAsc ? 'ascending' : 'descending') : 'none'} title={title}>
@@ -1218,177 +1289,213 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
     </th>
   )
 
-  const unavailableMetric = <span className="metric-unavailable" title={replayTitle}>—</span>
-
-  const renderGradeCell = (card: CardDataCard) => (
-    <td>
-      {card.grade ? (
-        <span className={`card-grade card-grade-${card.grade.replace('+', 'plus').replace('-', 'minus').toLowerCase()}`} title={`${card.gradeBasis} grade`}>
-          {card.grade}
-        </span>
-      ) : (
-        <span className="metric-unavailable" title={card.gradeStatusLabel}>—</span>
-      )}
-    </td>
-  )
-
-  const renderSectionHeader = (section: any) => (
-    <div className="card-data-section-header">
-      <div>
-        <h4>{section.title}</h4>
-        <p>{section.description}</p>
-      </div>
-      <span>{fmt(section.rows.length)} / {fmt(section.totalRows)} shown</span>
-    </div>
-  )
-
-  const renderTableSection = (section: any) => {
-    if (section.totalRows === 0) return null
-    return (
-      <section className={`card-data-section card-data-section-${section.key}`} key={section.key}>
-        {renderSectionHeader(section)}
-        {section.rows.length === 0 ? (
-          <div className="stats-empty card-data-section-empty">No {section.title.toLowerCase()} match these filters.</div>
-        ) : (
-          <div className="stats-table-container card-data-table-container">
-            <table className="stats-table card-data-table">
-              <thead>
-                <tr>
-                  <SortHeader label="Name" col="cardName" />
-                  <th className="aspects-col">Aspects</th>
-                  <SortHeader label="Rarity" col="rarity" />
-                  <SortHeader label="Grade" col="grade" title="Derived from the selected metric; GP WR until replay hand metrics are validated." />
-                  <SortHeader label="# GP" col="gpCount" title="Copy-weighted decklist games/matches with resolved results." />
-                  <SortHeader label="GP WR" col="gpWr" title="Copy-weighted wins divided by copy-weighted games/matches." />
-                  <th title={replayTitle}>OH WR</th>
-                  <th title={replayTitle}>GD WR</th>
-                  <th title={replayTitle}>GIH WR</th>
-                  <th title={replayTitle}>GNS WR</th>
-                  <th title={replayTitle}>IIH</th>
-                  <th title={replayTitle}>Played</th>
-                  <th title={replayTitle}>Resourced</th>
-                  <th>Sample</th>
-                </tr>
-              </thead>
-              <tbody>
-                {section.rows.map((card: CardDataCard) => {
-                  const lookupKey = cardDataLookupKey(card)
-                  const tournamentCard = section.tournamentMap.get(lookupKey)
-                  const topCard = section.topMap.get(lookupKey)
-                  const youCard = section.youMap.get(lookupKey)
-                  return (
-                    <tr key={`${section.key}-${lookupKey}`}>
-                      <td className="card-name-cell">
-                        <CardName entry={cardNameEntry(card)} className="card-data-name" />
-                      </td>
-                      <AspectsCell aspects={card.aspects} />
-                      <td><span className={rarityClass(card.rarity)}>{card.rarity}</span></td>
-                      {renderGradeCell(card)}
-                      <StatsCell
-                        {...cellProps}
-                        you={youCard?.gpCount}
-                        all={card.gpCount}
-                        top={topCard?.gpCount}
-                        tournament={tournamentCard?.gpCount}
-                        format={(v: number) => fmt(Math.round(v))}
-                      />
-                      <StatsCell
-                        {...cellProps}
-                        you={youCard?.gpWr}
-                        all={card.gpWr}
-                        top={topCard?.gpWr}
-                        tournament={tournamentCard?.gpWr}
-                        format={formatPct}
-                        deltaMode="pct"
-                      />
-                      <td>{unavailableMetric}</td>
-                      <td>{unavailableMetric}</td>
-                      <td>{unavailableMetric}</td>
-                      <td>{unavailableMetric}</td>
-                      <td>{unavailableMetric}</td>
-                      <td>{unavailableMetric}</td>
-                      <td>{unavailableMetric}</td>
-                      <td>
-                        {card.sampleWarning ? <span className="sample-warning">{card.sampleWarning}</span> : <span className="sample-ok">OK</span>}
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
+  const gradeBadge = (card: CardDataCard) => {
+    const grade = card.displayGrade || card.grade
+    return grade ? (
+      <span className={`card-grade card-grade-${grade.replace('+', 'plus').replace('-', 'minus').toLowerCase()}`} title={`${activeMetricLabel} grade`}>
+        {grade}
+      </span>
+    ) : (
+      <span className="card-grade card-grade-u" title="Ungraded">U</span>
     )
   }
 
-  const renderTierSection = (section: any) => {
-    if (section.totalRows === 0) return null
+  const metricTile = (card: CardDataCard) => `${formatPctCompact(card.displayMetricValue ?? metricValue(card, selectedMetric))} · n=${fmt(Math.round(card.displayMetricCount ?? metricCount(card, selectedMetric) ?? 0))}`
+
+  const metricCell = (card: CardDataCard, metric: CardMetricKey) => {
+    const value = metricValue(card, metric)
+    const count = metricCount(card, metric)
+    if (value == null) return <span className="metric-unavailable">—</span>
     return (
-      <section className={`card-data-section card-data-section-${section.key}`} key={section.key}>
-        {renderSectionHeader(section)}
-        {section.rows.length === 0 ? (
-          <div className="stats-empty card-data-section-empty">No {section.title.toLowerCase()} match these filters.</div>
-        ) : (
-          <div className="card-data-tier-list" aria-label={`${setCode} ${section.title.toLowerCase()} tier list`}>
-            {CARD_TIER_ORDER.map(grade => {
-              const rows = section.tierGroups.get(grade) || []
-              if (rows.length === 0) return null
-              return (
-                <div className="card-data-tier-row" key={`${section.key}-${grade}`}>
-                  <div className="card-data-tier-label">{grade}</div>
-                  <div className="card-data-tier-cards">
-                    {rows.map((card: CardDataCard) => (
-                      <span key={`${section.key}-${cardDataLookupKey(card)}`} className="card-data-tier-card">
-                        <CardName entry={cardNameEntry(card)} className="card-data-name card-data-tier-card-name" />
-                        <span className="card-data-tier-card-meta">
-                          <RarityIcon rarity={card.rarity} />
-                          <span>{card.gpWr == null ? '—' : formatPct(card.gpWr)}</span>
-                          <span>n={fmt(card.gpCount)}</span>
-                        </span>
+      <span className="card-data-metric-stack" title={`${metricLabel(metric)} sample`}>
+        <span>{formatPct(value)}</span>
+        <small>n={fmt(Math.round(count || 0))}</small>
+      </span>
+    )
+  }
+
+  const tileImageUrl = (card: CardDataCard) => card.isLeader
+    ? (card.backImageUrl || card.imageUrl)
+    : (card.imageUrl || card.backImageUrl)
+
+  const tileKind = (card: CardDataCard) => {
+    const type = (card.cardType || '').toLowerCase()
+    if (type.includes('base')) return 'base'
+    if (type.includes('event')) return 'event'
+    return 'unit'
+  }
+
+  const tileStyle = (card: CardDataCard) => {
+    const imageUrl = tileImageUrl(card)
+    return imageUrl ? { backgroundImage: `url("${imageUrl}")` } : undefined
+  }
+
+  const renderTable = () => (
+    <div className="stats-table-container card-data-table-container">
+      <table className="stats-table card-data-table">
+        <thead>
+          <tr>
+            <SortHeader label="Name" col="cardName" />
+            <th className="aspects-col">Aspects</th>
+            <SortHeader label="Rarity" col="rarity" />
+            <SortHeader label="Grade" col="grade" title={`Derived from ${activeMetricLabel} within the active filters.`} />
+            <SortHeader label="# Sample" col="gpCount" title="Sample for the selected metric." />
+            <SortHeader label="Selected WR" col="gpWr" title={activeMetricLabel} />
+            <th>GP WR</th>
+            <th>OH WR</th>
+            <th>GD WR</th>
+            <th>GIH WR</th>
+            <th>GNS WR</th>
+            <th>IIH</th>
+            <th>Sample</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rankedCardRows.rows.map((card: CardDataCard) => (
+            <tr key={cardDataLookupKey(card)}>
+              <td className="card-name-cell">
+                <CardName entry={cardNameEntry(card)} className="card-data-name" />
+              </td>
+              <AspectsCell aspects={card.aspects} />
+              <td><RarityIcon rarity={card.rarity} /></td>
+              <td>{gradeBadge(card)}</td>
+              <td>{fmt(Math.round(card.displayMetricCount ?? metricCount(card, selectedMetric) ?? 0))}</td>
+              <td>{formatPctCompact(card.displayMetricValue ?? metricValue(card, selectedMetric))}</td>
+              <td>{metricCell(card, 'gpWr')}</td>
+              <td>{metricCell(card, 'ohWr')}</td>
+              <td>{metricCell(card, 'gdWr')}</td>
+              <td>{metricCell(card, 'gihWr')}</td>
+              <td>{card.gnsWr == null ? <span className="metric-unavailable">—</span> : formatPct(card.gnsWr)}</td>
+              <td>{card.iih == null ? <span className="metric-unavailable">—</span> : `${card.iih > 0 ? '+' : ''}${formatPct(card.iih)}`}</td>
+              <td>
+                {card.sampleWarning ? <span className="sample-warning">{card.sampleWarning}</span> : <span className="sample-ok">OK</span>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+
+  const renderTierList = () => (
+    <div className="card-data-tier-list" aria-label={`${setCode} card tier list`}>
+      {CARD_TIER_ORDER.map(grade => {
+        const rows = rankedCardRows.tierGroups.get(grade) || []
+        if (rows.length === 0) return null
+        return (
+          <div className="card-data-tier-row" key={grade}>
+            <div className="card-data-tier-label">{grade}</div>
+            <div className="card-data-tier-cards">
+              {rows.map((card: CardDataCard) => {
+                const imageUrl = tileImageUrl(card)
+                return (
+                  <span
+                    key={cardDataLookupKey(card)}
+                    className={`card-data-tier-card card-data-tier-card-${tileKind(card)} ${imageUrl ? 'card-data-tier-card-has-art' : ''}`}
+                    style={tileStyle(card)}
+                  >
+                    <span className="card-data-tier-card-copy">
+                      <span className="card-data-tier-card-title">{card.cardName}</span>
+                      {card.subtitle ? <span className="card-data-tier-card-subtitle">{card.subtitle}</span> : null}
+                      <span className="card-data-tier-card-metric">{metricTile(card)}</span>
+                    </span>
+                    <span className="card-data-tier-card-footer">
+                      <span className="card-data-tier-card-aspects">
+                        {card.aspects.map((aspect) => <AspectIcon key={aspect} aspect={aspect} size="xs" />)}
                       </span>
-                    ))}
-                  </div>
-                </div>
-              )
-            })}
+                      <span className="card-data-tier-card-printing">
+                        {card.collectorNumber ? <span>{card.collectorNumber}</span> : null}
+                        {card.collectorNumber && card.rarity ? <span className="card-data-tier-card-dot">·</span> : null}
+                        <RarityIcon rarity={card.rarity} />
+                      </span>
+                    </span>
+                  </span>
+                )
+              })}
+            </div>
           </div>
-        )}
-      </section>
+        )
+      })}
+    </div>
+  )
+
+  const renderCardDataContent = () => {
+    if (!hasCards) {
+      return (
+        <div className="stats-empty">
+          <p>No card data available for {setCode} with these filters yet.</p>
+        </div>
+      )
+    }
+
+    return (
+      <>
+        <TableFilter {...cardFilter} placeholder="Search cards..." />
+        <div className="card-data-tier-card-shell">
+          <div className="card-data-section-header">
+            <div>
+              <h4>Cards Tier List</h4>
+              <p>Grouped by {activeMetricLabel} using z-score grade bands for this filtered slice.</p>
+            </div>
+            <span>{fmt(shownCount)} / {fmt(allCardRows.length)} cards shown</span>
+          </div>
+          {shownCount === 0 ? (
+            <div className="stats-empty card-data-section-empty">No cards match these filters.</div>
+          ) : view === 'tiers' ? (
+            renderTierList()
+          ) : (
+            renderTable()
+          )}
+        </div>
+      </>
     )
   }
 
   return (
     <CardPreviewProvider>
       <div className="cards-subtab card-data-tab">
-        <div className="card-data-toolbar">
-          <div className="card-data-control">
-            <span className="card-data-control-label">Format</span>
-            <div className="card-data-segmented">
-              {[
-                ['all', 'Limited'],
-                ['sealed', 'Sealed'],
-                ['draft', 'Draft'],
-              ].map(([value, label]) => (
-                <button key={value} className={`card-data-segment ${format === value ? 'active' : ''}`} onClick={() => setFormat(value as any)}>{label}</button>
-              ))}
+        <details className="card-data-filter-strip">
+          <summary>
+            <span className="card-data-filter-title">Filters</span>
+            <span className="card-data-filter-chip">{filterSetLabel}</span>
+            <span className="card-data-filter-chip card-data-filter-chip-green">{filterFormatLabel}</span>
+            <span className="card-data-filter-chip card-data-filter-chip-gold">{filterSourceLabel}</span>
+          </summary>
+          <div className="card-data-toolbar">
+            <div className="card-data-control">
+              <span className="card-data-control-label">Format</span>
+              <div className="card-data-segmented">
+                {[
+                  ['all', 'Limited'],
+                  ['sealed', 'Sealed'],
+                  ['draft', 'Draft'],
+                ].map(([value, label]) => (
+                  <button key={value} className={`card-data-segment ${format === value ? 'active' : ''}`} onClick={() => setFormat(value as any)}>{label}</button>
+                ))}
+              </div>
+            </div>
+            <div className="card-data-control">
+              <span className="card-data-control-label">Source</span>
+              <div className="card-data-segmented">
+                {[
+                  ['online', 'Online'],
+                  ['all', 'All'],
+                  ['in-person', 'In-Person'],
+                ].map(([value, label]) => (
+                  <button key={value} className={`card-data-segment ${source === value ? 'active' : ''}`} onClick={() => setSource(value as any)}>{label}</button>
+                ))}
+              </div>
             </div>
           </div>
-          <div className="card-data-control">
-            <span className="card-data-control-label">Source</span>
-            <div className="card-data-segmented">
-              {[
-                ['all', 'All'],
-                ['online', 'Online'],
-                ['in-person', 'In-Person'],
-              ].map(([value, label]) => (
-                <button key={value} className={`card-data-segment ${source === value ? 'active' : ''}`} onClick={() => setSource(value as any)}>{label}</button>
-              ))}
+        </details>
+
+        <div className="card-stats-mode-card">
+          <div className="card-stats-mode-row">
+            <div>
+              <div className="card-stats-mode-title">Card Data</div>
+              <div className="card-data-muted">Recompute filters redistribute grades; hide-only filters such as aspect and search only narrow visible rows.</div>
             </div>
-          </div>
-          <div className="card-data-control">
-            <span className="card-data-control-label">View</span>
-            <div className="card-data-segmented">
+            <div className="card-data-segmented card-stats-view-tabs" role="tablist" aria-label="Card stats view">
               {[
                 ['tiers', 'Tier List'],
                 ['table', 'Table'],
@@ -1397,55 +1504,30 @@ function CardDataTab({ setCode, includeBots, includeHumans, startDate, endDate, 
               ))}
             </div>
           </div>
+          <div className="card-stats-mode-row card-stats-mode-row--compact">
+            <div className="card-stats-metric-pills" role="list" aria-label="Grade metric">
+              {GRADE_METRIC_OPTIONS.map((option) => (
+                <button
+                  key={option.key}
+                  className={`card-data-metric-pill ${selectedMetric === option.key ? 'active' : ''}`}
+                  title={option.description}
+                  onClick={() => setSelectedMetric(option.key)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            <div className="card-data-muted">
+              {fmt(shownCount)} / {fmt(allCardRows.length)} cards loaded
+              {rankedCardRows.provisional ? ' · provisional grade thresholds' : ''}
+              {cardData?.sourceDetail === 'wayfinder' ? ' · Wayfinder data' : ''}
+              {!hasReplayMetrics ? ' · replay hand metrics pending' : ''}
+            </div>
+          </div>
         </div>
 
-        {!hasCards ? (
-          <div className="stats-empty">
-            <p>No card data available for {setCode} with these filters yet.</p>
-          </div>
-        ) : (
-          <>
-            <div className="draft-picks-summary card-data-summary">
-              <div className="stat-item">
-                <span className="stat-label">Decks With Results:</span>
-                <span className="stat-value">{fmt(cardData.totalDecks)}</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">Matches:</span>
-                <span className="stat-value">{fmt(cardData.totalMatches)}</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">Leaders:</span>
-                <span className="stat-value">{fmt(cardData.leaders?.length || 0)}</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">Bases:</span>
-                <span className="stat-value">{fmt(cardData.bases?.length || 0)}</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">Cards:</span>
-                <span className="stat-value">{fmt(cardData.cards?.length || 0)}</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">Grade Basis:</span>
-                <span className="stat-value">{cardData.gradeBasis}</span>
-              </div>
-            </div>
-
-            <p className="stats-warning">
-              Replay-hand columns stay blank until Wayfinder supplies validated card-observation facts.
-            </p>
-
-            <StatsLegend {...legendProps} showBuiltDeckFilter={false} />
-            <TableFilter {...cardFilter} placeholder="Search cards, leaders, bases..." />
-
-            <div className={`card-data-sections card-data-sections-${view}`}>
-              {view === 'tiers'
-                ? cardSections.map(renderTierSection)
-                : cardSections.map(renderTableSection)}
-            </div>
-          </>
-        )}
+        <CardDataMetricDefinitions />
+        {renderCardDataContent()}
       </div>
     </CardPreviewProvider>
   )

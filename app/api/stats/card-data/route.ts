@@ -24,6 +24,43 @@ const GRADE_SORT: Record<string, number> = {
   F: 0,
 }
 
+type WayfinderCardStatsRow = {
+  slug?: string
+  cardUuid?: string | null
+  name?: string | null
+  subtitle?: string | null
+  type?: string | null
+  aspects?: unknown
+  cost?: number | null
+  setCode?: string | null
+  collectorNumber?: string | null
+  rarity?: string | null
+  imageUrl?: string | null
+  backImageUrl?: string | null
+  deckCount?: number | null
+  totalDecks?: number | null
+  deckGames?: number | null
+  gpWins?: number | null
+  gpWr?: number | null
+  ohGames?: number | null
+  ohWr?: number | null
+  gdGames?: number | null
+  gdWr?: number | null
+  gihGames?: number | null
+  gihWr?: number | null
+  gnsGames?: number | null
+  gnsWr?: number | null
+  iih?: number | null
+  playedRate?: number | null
+  resourcedWhenSeenRate?: number | null
+  playedWar?: number | null
+  grade?: string | null
+  gradeMetricLabel?: string | null
+  gradeBasis?: string | null
+  handMetricsStatus?: string | null
+  sampleWarning?: string | null
+}
+
 function pct(wins: number, denominator: number): number | null {
   if (denominator <= 0) return null
   return Math.round((wins / denominator) * 1000) / 10
@@ -68,6 +105,137 @@ function gradeStatusLabel(status: string): string {
   if (status === 'slice-too-small') return 'Needs 25 cards'
   if (status === 'zero-variance') return 'No spread'
   return status
+}
+
+function rateToPct(value: unknown): number | null {
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed)) return null
+  return Math.round(parsed * 1000) / 10
+}
+
+function winsFromRate(rate: unknown, denominator: unknown): number | null {
+  const parsedRate = Number(rate)
+  const parsedDenominator = Number(denominator)
+  if (!Number.isFinite(parsedRate) || !Number.isFinite(parsedDenominator)) return null
+  return Math.round(parsedRate * parsedDenominator * 10) / 10
+}
+
+function wayfinderEraForSet(setCode: string): string | null {
+  if (!setCode || setCode === 'all') return null
+  return setCode === 'ASH' ? 'ASH-pre-release' : setCode
+}
+
+function wayfinderStatsUrl(setCode: string): string | null {
+  const era = wayfinderEraForSet(setCode)
+  if (!era) return null
+
+  const base = process.env.WAYFINDER_CARD_STATS_BASE_URL || 'https://plugin.wayfinder.news'
+  const url = new URL('/api/cards/stats', base)
+  url.searchParams.set('era', era)
+  url.searchParams.set('format', 'limited')
+  url.searchParams.set('sources', 'karabast,ptp')
+  url.searchParams.set('limit', 'all')
+  return url.toString()
+}
+
+function mapWayfinderRow(row: WayfinderCardStatsRow) {
+  const cardType = row.type || 'Unknown'
+  const gpCount = num(row.deckGames)
+  const ohCount = row.ohGames == null ? null : num(row.ohGames)
+  const gdCount = row.gdGames == null ? null : num(row.gdGames)
+  const gihCount = row.gihGames == null ? null : num(row.gihGames)
+  const gnsCount = row.gnsGames == null ? null : num(row.gnsGames)
+  const gradeStatus = row.grade ? 'graded' : 'sample-too-small'
+
+  return {
+    cardName: row.name || row.slug || 'Unknown Card',
+    cardId: row.cardUuid || row.slug || null,
+    subtitle: row.subtitle || null,
+    rarity: row.rarity || 'Unknown',
+    cardType,
+    aspects: Array.isArray(row.aspects) ? row.aspects.filter((aspect): aspect is string => typeof aspect === 'string') : [],
+    cost: row.cost ?? null,
+    imageUrl: row.imageUrl || null,
+    backImageUrl: row.backImageUrl || null,
+    collectorNumber: row.collectorNumber || null,
+    setCode: row.setCode || null,
+    isLeader: cardType.toLowerCase().includes('leader'),
+    isBase: cardType.toLowerCase().includes('base'),
+    grade: row.grade || null,
+    gradeBasis: row.gradeMetricLabel || 'GIH WR',
+    gradeStatus,
+    gradeStatusLabel: row.grade ? 'Graded' : gradeStatusLabel(gradeStatus),
+    deckCount: num(row.deckCount),
+    rawCopies: gpCount,
+    gpCount,
+    gpWins: num(row.gpWins),
+    gpWr: rateToPct(row.gpWr),
+    ohCount,
+    ohWins: winsFromRate(row.ohWr, row.ohGames),
+    ohWr: rateToPct(row.ohWr),
+    gdCount,
+    gdWins: winsFromRate(row.gdWr, row.gdGames),
+    gdWr: rateToPct(row.gdWr),
+    gihCount,
+    gihWins: winsFromRate(row.gihWr, row.gihGames),
+    gihWr: rateToPct(row.gihWr),
+    gnsCount,
+    gnsWins: winsFromRate(row.gnsWr, row.gnsGames),
+    gnsWr: rateToPct(row.gnsWr),
+    iih: rateToPct(row.iih),
+    playedRate: rateToPct(row.playedRate),
+    resourcedWhenSeen: rateToPct(row.resourcedWhenSeenRate),
+    playedWar: rateToPct(row.playedWar),
+    sampleWarning: row.sampleWarning || null,
+  }
+}
+
+export function mapWayfinderRowsToCardDataStats({
+  rows,
+  setCode,
+  format,
+}: {
+  rows: WayfinderCardStatsRow[]
+  setCode: string
+  format: string
+}) {
+  const cards = rows.map(mapWayfinderRow)
+  const totalDecks = rows.reduce((max, row) => Math.max(max, num(row.totalDecks)), 0)
+  const totalMatches = cards.reduce((sum, card) => sum + card.gpCount, 0)
+  const gradeBasis = cards.find((card) => card.gradeBasis)?.gradeBasis || 'GIH WR'
+  const hasReplayMetrics = cards.some((card) => (card.gihCount || 0) > 0 || (card.ohCount || 0) > 0 || (card.gdCount || 0) > 0)
+
+  return {
+    setCode,
+    format: format === 'all' ? 'limited' : format,
+    source: 'online',
+    sourceDetail: 'wayfinder',
+    totalDecks,
+    totalMatches,
+    onlineLinkedDecks: totalDecks,
+    replayMetricsStatus: hasReplayMetrics ? 'available' : 'unvalidated',
+    gradeBasis,
+    leaders: [],
+    bases: [],
+    cards,
+  }
+}
+
+async function fetchWayfinderCardData(setCode: string, format: string) {
+  const url = wayfinderStatsUrl(setCode)
+  if (!url) return null
+
+  const response = await fetch(url, {
+    headers: { Accept: 'application/json' },
+    next: { revalidate: 300 },
+  })
+  if (!response.ok) return null
+
+  const body = await response.json()
+  const rows = body?.data?.rows
+  if (!Array.isArray(rows) || rows.length === 0) return null
+
+  return mapWayfinderRowsToCardDataStats({ rows, setCode, format })
 }
 
 function newBucket(card: any) {
@@ -176,6 +344,26 @@ export async function GET(request: NextRequest): Promise<Response> {
     const tournamentOnly = url.searchParams.get('tournamentOnly') === 'true'
     const topPlayersOnly = url.searchParams.get('topPlayersOnly') === 'true'
     const userId = url.searchParams.get('userId') || null
+
+    const shouldPreferWayfinder =
+      (format === 'all' || format === 'limited') &&
+      source === 'online' &&
+      !tournamentOnly &&
+      !topPlayersOnly &&
+      !userId
+
+    if (shouldPreferWayfinder) {
+      try {
+        const wayfinderPayload = await fetchWayfinderCardData(setCode, format)
+        if (wayfinderPayload) {
+          const response = jsonResponse(wayfinderPayload)
+          response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
+          return response
+        }
+      } catch (error) {
+        console.warn('[card-data] Wayfinder preferred source failed:', error)
+      }
+    }
 
     const allCards = getAllCards()
     const { cardMap, normalCardMap } = buildCardLookupMaps(allCards)
@@ -299,7 +487,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     const leaders = buildMetricRows(byLeader, normalCardMap)
     const bases = buildMetricRows(byBase, normalCardMap)
 
-    const response = jsonResponse({
+    const payload = {
       setCode,
       format,
       source,
@@ -311,7 +499,23 @@ export async function GET(request: NextRequest): Promise<Response> {
       leaders,
       bases,
       cards,
-    })
+    }
+
+    const hasLocalCards = cards.length > 0 || leaders.length > 0 || bases.length > 0
+    if (!hasLocalCards && (format === 'all' || format === 'limited') && source !== 'in-person') {
+      try {
+        const wayfinderPayload = await fetchWayfinderCardData(setCode, format)
+        if (wayfinderPayload) {
+          const response = jsonResponse(wayfinderPayload)
+          response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
+          return response
+        }
+      } catch (error) {
+        console.warn('[card-data] Wayfinder fallback failed:', error)
+      }
+    }
+
+    const response = jsonResponse(payload)
     response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
     return response
   } catch (error) {
