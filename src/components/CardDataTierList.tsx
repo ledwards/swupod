@@ -26,7 +26,10 @@ interface CardDataCard {
   cost: number | null
   imageUrl: string | null
   backImageUrl?: string | null
+  hyperspaceImageUrl?: string | null
+  hyperspaceBackImageUrl?: string | null
   collectorNumber?: string | null
+  setCode?: string | null
   isLeader?: boolean
   isBase?: boolean
   grade: string | null
@@ -264,8 +267,8 @@ function winsFromPct(rate: number | null | undefined, count: number | null | und
 
 function cardDataTileImageUrl(card: CardDataCard) {
   return card.isLeader
-    ? (card.backImageUrl || card.imageUrl)
-    : (card.imageUrl || card.backImageUrl)
+    ? (card.hyperspaceBackImageUrl || card.backImageUrl || card.hyperspaceImageUrl || card.imageUrl)
+    : (card.hyperspaceImageUrl || card.imageUrl || card.hyperspaceBackImageUrl || card.backImageUrl)
 }
 
 function cardDataTileKind(card: CardDataCard) {
@@ -346,11 +349,12 @@ function CardDataModalStat({ label, value, detail }: { label: string; value: str
   )
 }
 
-function CardDataStatsModal({ card, onClose, activeMetricLabel, formatLabel }: {
+function CardDataStatsModal({ card, onClose, activeMetricLabel, formatLabel, sampleWarningLabel }: {
   card: CardDataCard
   onClose: () => void
   activeMetricLabel: string
   formatLabel: string
+  sampleWarningLabel?: string | null
 }) {
   const artUrl = cardDataTileImageUrl(card)
   const grade = card.displayGrade || card.grade || 'U'
@@ -393,7 +397,7 @@ function CardDataStatsModal({ card, onClose, activeMetricLabel, formatLabel }: {
             <CardDataModalStat key={stat.label} {...stat} />
           ))}
         </div>
-        {card.sampleWarning ? <p className="card-data-stats-modal-warning">{card.sampleWarning}</p> : null}
+        {sampleWarningLabel ? <p className="card-data-stats-modal-warning">{sampleWarningLabel}</p> : null}
       </div>
     </Modal>
   )
@@ -703,6 +707,13 @@ export default function CardDataTierList({
     )
   }
 
+  const sampleWarningLabel = (card: CardDataCard) => {
+    if (!card.sampleWarning) return null
+    if (/\bn\s*=/.test(card.sampleWarning)) return card.sampleWarning
+    const count = card.displayMetricCount ?? metricCount(card, selectedMetric) ?? 0
+    return `${card.sampleWarning} * n=${fmt(Math.round(count))}`
+  }
+
   const metricCell = (card: CardDataCard, metric: CardMetricKey) => {
     const value = metricValue(card, metric)
     const count = metricCount(card, metric)
@@ -770,7 +781,7 @@ export default function CardDataTierList({
               <td>{card.gnsWr == null ? <span className="metric-unavailable">—</span> : formatPct(card.gnsWr)}</td>
               <td>{card.iih == null ? <span className="metric-unavailable">—</span> : `${card.iih > 0 ? '+' : ''}${formatPct(card.iih)}`}</td>
               <td>
-                {card.sampleWarning ? <span className="sample-warning">{card.sampleWarning}</span> : <span className="sample-ok">OK</span>}
+                {card.sampleWarning ? <span className="sample-warning">{sampleWarningLabel(card)}</span> : <span className="sample-ok">OK</span>}
               </td>
             </tr>
           ))}
@@ -950,6 +961,7 @@ export default function CardDataTierList({
             onClose={() => setSelectedCard(null)}
             activeMetricLabel={activeMetricLabel}
             formatLabel={formatLabel}
+            sampleWarningLabel={sampleWarningLabel(selectedCard)}
           />
         ) : null}
       </div>

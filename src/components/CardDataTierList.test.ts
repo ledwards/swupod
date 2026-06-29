@@ -20,6 +20,18 @@ describe('<CardDataTierList /> controls', () => {
     assert.doesNotMatch(COMPONENT_SRC, /metric === ['"]gihWr['"] && hasWayfinderReplayMetrics/)
   })
 
+  it('prefers hyperspace art for tier-list card images', () => {
+    assert.match(COMPONENT_SRC, /hyperspaceImageUrl\?: string \| null/)
+    assert.match(COMPONENT_SRC, /card\.hyperspaceBackImageUrl \|\| card\.backImageUrl \|\| card\.hyperspaceImageUrl \|\| card\.imageUrl/)
+    assert.match(COMPONENT_SRC, /card\.hyperspaceImageUrl \|\| card\.imageUrl \|\| card\.hyperspaceBackImageUrl \|\| card\.backImageUrl/)
+  })
+
+  it('shows the selected metric sample size beside low-sample warnings', () => {
+    assert.match(COMPONENT_SRC, /const sampleWarningLabel = \(card: CardDataCard\) => \{/)
+    assert.match(COMPONENT_SRC, /\$\{card\.sampleWarning\} \* n=\$\{fmt\(Math\.round\(count\)\)\}/)
+    assert.match(COMPONENT_SRC, /sampleWarningLabel=\{sampleWarningLabel\(selectedCard\)\}/)
+  })
+
   it('puts Clear beside the Filter label instead of after the aspect icons', () => {
     assert.match(COMPONENT_SRC, /className=['"]card-data-filter-heading['"]/)
     assert.match(COMPONENT_SRC, /className=['"]card-data-filter-clear['"]/)

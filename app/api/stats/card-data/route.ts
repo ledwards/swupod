@@ -3,6 +3,7 @@ import { queryRows } from '@/lib/db'
 import { cachedAggregate, STATS_AGGREGATE_TTL_MS } from '@/lib/queryCache'
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
+import type { RawCard } from '@/src/utils/cardData'
 import { buildCardLookupMaps, cardIdentityKey } from '@/src/utils/cardNormalization'
 import { computeCardGrades } from '@/src/services/cardDataMetrics'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
@@ -37,6 +38,8 @@ type WayfinderCardStatsRow = {
   rarity?: string | null
   imageUrl?: string | null
   backImageUrl?: string | null
+  hyperspaceImageUrl?: string | null
+  hyperspaceBackImageUrl?: string | null
   deckCount?: number | null
   totalDecks?: number | null
   deckGames?: number | null
@@ -157,6 +160,8 @@ function mapWayfinderRow(row: WayfinderCardStatsRow) {
     cost: row.cost ?? null,
     imageUrl: row.imageUrl || null,
     backImageUrl: row.backImageUrl || null,
+    hyperspaceImageUrl: row.hyperspaceImageUrl || null,
+    hyperspaceBackImageUrl: row.hyperspaceBackImageUrl || null,
     collectorNumber: row.collectorNumber || null,
     setCode: row.setCode || null,
     isLeader: cardType.toLowerCase().includes('leader'),
@@ -227,6 +232,101 @@ function cardDataRowStrictKey(row: any): string {
 
 function cardDataRowLooseKey(row: any): string {
   return `${row.cardName || ''}|${row.subtitle || ''}`.toLowerCase()
+}
+
+type HyperspaceImages = {
+  hyperspaceImageUrl: string | null
+  hyperspaceBackImageUrl: string | null
+}
+
+type HyperspaceImageLookup = {
+  bySetIdentity: Map<string, HyperspaceImages>
+  byIdentity: Map<string, HyperspaceImages>
+}
+
+function hyperspaceKeyPart(value: unknown): string {
+  return String(value ?? '').trim().toLowerCase()
+}
+
+function hyperspaceIdentityKey(name: unknown, type: unknown, subtitle: unknown): string | null {
+  const cardName = hyperspaceKeyPart(name)
+  if (!cardName) return null
+  return `${cardName}|${hyperspaceKeyPart(type)}|${hyperspaceKeyPart(subtitle)}`
+}
+
+function hyperspaceSetIdentityKey(setCode: unknown, identityKey: string | null): string | null {
+  const set = hyperspaceKeyPart(setCode)
+  if (!set || !identityKey) return null
+  return `${set}|${identityKey}`
+}
+
+function isHyperspaceCard(card: RawCard): boolean {
+  return Boolean(card.isHyperspace || card.variantType?.includes('Hyperspace'))
+}
+
+function hyperspacePreference(card: RawCard): number {
+  if (card.variantType === 'Hyperspace') return 2
+  if (card.variantType === 'Hyperspace Foil') return 1
+  return 0
+}
+
+function buildHyperspaceImageLookup(cards: RawCard[]): HyperspaceImageLookup {
+  const bySetIdentity = new Map<string, HyperspaceImages>()
+  const byIdentity = new Map<string, HyperspaceImages>()
+  const hyperspaceCards = cards
+    .filter(card => isHyperspaceCard(card) && (card.imageUrl || card.backImageUrl))
+    .sort((a, b) => hyperspacePreference(b) - hyperspacePreference(a))
+
+  for (const card of hyperspaceCards) {
+    const identityKey = hyperspaceIdentityKey(card.name, card.type, card.subtitle)
+    if (!identityKey) continue
+
+    const images = {
+      hyperspaceImageUrl: card.imageUrl || null,
+      hyperspaceBackImageUrl: card.backImageUrl || null,
+    }
+    const setIdentityKey = hyperspaceSetIdentityKey(card.set, identityKey)
+    if (setIdentityKey && !bySetIdentity.has(setIdentityKey)) {
+      bySetIdentity.set(setIdentityKey, images)
+    }
+    if (!byIdentity.has(identityKey)) {
+      byIdentity.set(identityKey, images)
+    }
+  }
+
+  return { bySetIdentity, byIdentity }
+}
+
+function hyperspaceImagesForRow(row: any, lookup: HyperspaceImageLookup): HyperspaceImages | null {
+  const identityKey = hyperspaceIdentityKey(row.cardName || row.name, row.cardType || row.type, row.subtitle)
+  if (!identityKey) return null
+
+  const setIdentityKey = hyperspaceSetIdentityKey(row.setCode || row.set, identityKey)
+  return (setIdentityKey ? lookup.bySetIdentity.get(setIdentityKey) : null) || lookup.byIdentity.get(identityKey) || null
+}
+
+function enrichRowsWithHyperspaceImages<T extends Record<string, any>>(rows: T[] | undefined, lookup: HyperspaceImageLookup): T[] {
+  return (rows || []).map(row => {
+    const images = hyperspaceImagesForRow(row, lookup)
+    return {
+      ...row,
+      hyperspaceImageUrl: row.hyperspaceImageUrl || images?.hyperspaceImageUrl || null,
+      hyperspaceBackImageUrl: row.hyperspaceBackImageUrl || images?.hyperspaceBackImageUrl || null,
+    }
+  })
+}
+
+export function enrichPayloadWithHyperspaceImages<T extends { leaders?: any[]; bases?: any[]; cards?: any[] }>(
+  payload: T,
+  allCards: RawCard[],
+): T {
+  const lookup = buildHyperspaceImageLookup(allCards)
+  return {
+    ...payload,
+    leaders: enrichRowsWithHyperspaceImages(payload.leaders, lookup),
+    bases: enrichRowsWithHyperspaceImages(payload.bases, lookup),
+    cards: enrichRowsWithHyperspaceImages(payload.cards, lookup),
+  }
 }
 
 const WAYFINDER_REPLAY_FIELDS = [
@@ -364,6 +464,8 @@ function buildMetricRows(map: Map<string, any>, normalCardMap: Map<string, any>)
       cost: card?.cost ?? null,
       imageUrl: card?.imageUrl || null,
       backImageUrl: card?.backImageUrl || null,
+      collectorNumber: card?.cardId || card?.number || null,
+      setCode: card?.set || null,
       isLeader: Boolean(card?.isLeader || card?.type === 'Leader'),
       isBase: Boolean(card?.isBase || card?.type === 'Base'),
       grade: grade?.grade || null,
@@ -420,7 +522,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       try {
         const wayfinderPayload = await fetchWayfinderCardData(setCode, format)
         if (wayfinderPayload) {
-          const response = jsonResponse(wayfinderPayload)
+          const response = jsonResponse(enrichPayloadWithHyperspaceImages(wayfinderPayload, getAllCards()))
           response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
           return response
         }
@@ -581,7 +683,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       try {
         const wayfinderPayload = await fetchWayfinderCardData(setCode, format)
         if (wayfinderPayload) {
-          const response = jsonResponse(wayfinderPayload)
+          const response = jsonResponse(enrichPayloadWithHyperspaceImages(wayfinderPayload, allCards))
           response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
           return response
         }
@@ -589,6 +691,8 @@ export async function GET(request: NextRequest): Promise<Response> {
         console.warn('[card-data] Wayfinder fallback failed:', error)
       }
     }
+
+    payload = enrichPayloadWithHyperspaceImages(payload, allCards)
 
     const response = jsonResponse(payload)
     response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')

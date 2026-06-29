@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { mapWayfinderRowsToCardDataStats } from './route'
+import { enrichPayloadWithHyperspaceImages, mapWayfinderRowsToCardDataStats } from './route'
 
 describe('/api/stats/card-data Wayfinder mapping', () => {
   it('maps Wayfinder card stats rows into SWUPOD card-data rows with percent metrics', () => {
@@ -48,5 +48,95 @@ describe('/api/stats/card-data Wayfinder mapping', () => {
     assert.equal(payload.cards[0].gnsWr, 52.9)
     assert.equal(payload.cards[0].iih, 47.1)
     assert.equal(payload.cards[0].gradeBasis, 'GIH WR')
+  })
+
+  it('enriches stats rows with set-aware hyperspace card art', () => {
+    const payload = {
+      leaders: [
+        {
+          cardName: 'Saw Gerrera',
+          subtitle: 'Bring Down the Empire',
+          cardType: 'Leader',
+          setCode: 'ASH',
+          imageUrl: 'normal-leader-front.png',
+          backImageUrl: 'normal-leader-back.png',
+        },
+      ],
+      bases: [
+        {
+          cardName: "Daimyo's Palace",
+          subtitle: null,
+          cardType: 'Base',
+          setCode: 'ASH',
+          imageUrl: 'normal-base.png',
+        },
+      ],
+      cards: [
+        {
+          cardName: 'Rancor Keeper',
+          subtitle: null,
+          cardType: 'Unit',
+          setCode: 'ASH',
+          imageUrl: 'normal-unit.png',
+        },
+      ],
+    }
+
+    const enriched = enrichPayloadWithHyperspaceImages(payload, [
+      {
+        name: 'Rancor Keeper',
+        subtitle: null,
+        type: 'Unit',
+        set: 'LAW',
+        variantType: 'Hyperspace',
+        isHyperspace: true,
+        imageUrl: 'law-hyperspace-unit.png',
+        backImageUrl: null,
+      },
+      {
+        name: 'Rancor Keeper',
+        subtitle: null,
+        type: 'Unit',
+        set: 'ASH',
+        variantType: 'Hyperspace Foil',
+        isHyperspace: true,
+        imageUrl: 'ash-hyperspace-foil-unit.png',
+        backImageUrl: null,
+      },
+      {
+        name: 'Rancor Keeper',
+        subtitle: null,
+        type: 'Unit',
+        set: 'ASH',
+        variantType: 'Hyperspace',
+        isHyperspace: true,
+        imageUrl: 'ash-hyperspace-unit.png',
+        backImageUrl: null,
+      },
+      {
+        name: 'Saw Gerrera',
+        subtitle: 'Bring Down the Empire',
+        type: 'Leader',
+        set: 'ASH',
+        variantType: 'Hyperspace',
+        isHyperspace: true,
+        imageUrl: 'hyperspace-leader-front.png',
+        backImageUrl: 'hyperspace-leader-back.png',
+      },
+      {
+        name: "Daimyo's Palace",
+        subtitle: null,
+        type: 'Base',
+        set: 'ASH',
+        variantType: 'Hyperspace',
+        isHyperspace: true,
+        imageUrl: 'hyperspace-base.png',
+        backImageUrl: null,
+      },
+    ] as any)
+
+    assert.equal(enriched.cards[0].hyperspaceImageUrl, 'ash-hyperspace-unit.png')
+    assert.equal(enriched.leaders[0].hyperspaceBackImageUrl, 'hyperspace-leader-back.png')
+    assert.equal(enriched.bases[0].hyperspaceImageUrl, 'hyperspace-base.png')
   })
 })
