@@ -10,6 +10,7 @@
 import './Card.css'
 import type { CSSProperties, ReactNode, MouseEvent, TouchEvent, HTMLAttributes } from 'react'
 import { AspectIcon } from './AspectIcon'
+import { isBaseCard, isLeaderCard } from '../utils/cardFrame'
 
 export interface CardData {
   id: string
@@ -119,19 +120,22 @@ export function Card({
 }: CardProps) {
   if (!card) return null
 
+  const isLeader = isLeaderCard(card)
+  const isBase = isBaseCard(card)
+
   // Build class list using DeckBuilder.css class names
   const classes = [
     'canvas-card',
-    card.isLeader && 'leader',
-    card.isBase && 'base',
+    isLeader && 'leader',
+    isBase && 'base',
     card.isFoil && 'foil',
     card.isHyperspace && 'hyperspace',
     card.isShowcase && 'showcase',
     card.isPlaceholder && 'placeholder-card',
     selected && 'selected',
     hovered && 'hovered',
-    active && card.isLeader && 'active-leader',
-    active && card.isBase && 'active-base',
+    active && isLeader && 'active-leader',
+    active && isBase && 'active-base',
     disabled && 'disabled',
     filteredOut && 'filtered-out',
     stacked && 'stacked',

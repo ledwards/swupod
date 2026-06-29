@@ -188,12 +188,16 @@ export function DraftSlideshow({
       setData(liveSlideshow.data)
       if (!initializedRef.current) {
         const unlocked = (liveSlideshow.data.seats || []).filter(s => !s.locked).map(s => s.seatNumber)
+        const initialSlideIndex = followTail
+          ? Math.max((liveSlideshow.data.slideCount || 1) - 1, 0)
+          : 0
         setSelectedSeats(new Set(unlocked))
-        setSlideIndex(0)
+        setSlideIndex(initialSlideIndex)
+        slideIndexRef.current = initialSlideIndex
         initializedRef.current = true
       }
     }
-  }, [live, liveSlideshow.data, liveSlideshow.loadState])
+  }, [live, liveSlideshow.data, liveSlideshow.loadState, followTail])
 
   // Keep slideIndex clamped to [0, slideCount-1] when data arrives/changes.
   useEffect(() => {

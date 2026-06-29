@@ -28,9 +28,15 @@
    single `--slide-card-w` variable. `height:auto` lets aspect-ratio set height.
    ========================================================================== */
 .slideshow-stage .canvas-card {
+  --rainbow-border-reference: var(--slide-card-w);
   width: var(--slide-card-w) !important;
   max-width: var(--slide-card-w) !important;
   height: auto;
+}
+
+.slideshow-stage .canvas-card.leader,
+.slideshow-stage .canvas-card.base {
+  --rainbow-border-reference: var(--slide-card-w);
 }
 
 /* The per-card wrapper shrink-wraps its card so flex gaps stay exact. */

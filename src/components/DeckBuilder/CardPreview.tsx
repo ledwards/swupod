@@ -6,6 +6,8 @@
  * Shows both front and back for leaders with back images.
  */
 
+import { isBaseCard, isLeaderCard } from '../../utils/cardFrame'
+
 export interface PreviewCard {
   cardId?: string
   name?: string
@@ -63,8 +65,10 @@ export function CardPreview({
 }: CardPreviewProps) {
   if (!card) return null
 
-  const hasBackImage = card.backImageUrl && card.isLeader
-  const isHorizontal = card.isLeader || card.isBase
+  const isLeader = isLeaderCard(card)
+  const isBase = isBaseCard(card)
+  const hasBackImage = card.backImageUrl && isLeader
+  const isHorizontal = isLeader || isBase
   const borderRadius = '12px'
 
   // Calculate dimensions
@@ -80,7 +84,7 @@ export function CardPreview({
     previewHeight = isHorizontal ? 360 : 504
   }
 
-  const isFoilOrShowcase = (card.isFoil && !card.isLeader) || card.isShowcase
+  const isFoilOrShowcase = (card.isFoil && !isLeader) || card.isShowcase
 
   // Mobile: fullscreen overlay with card scaled to fit viewport
   if (isMobile) {

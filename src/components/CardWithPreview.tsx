@@ -13,6 +13,7 @@
 import { useState, useRef, useCallback, type MouseEvent, type TouchEvent } from 'react'
 import Card, { type CardProps, type CardData } from './Card'
 import { CardPreview } from './DeckBuilder/CardPreview'
+import { isBaseCard, isLeaderCard } from '../utils/cardFrame'
 
 // Detect small viewport (phones)
 function isSmallViewport(): boolean {
@@ -40,7 +41,7 @@ export function CardWithPreview({ card, onClick, ...rest }: CardWithPreviewProps
     const rect = e.currentTarget.getBoundingClientRect()
 
     previewTimeoutRef.current = setTimeout(() => {
-      const isHorizontal = card.isLeader || card.isBase
+      const isHorizontal = isLeaderCard(card) || isBaseCard(card)
       const previewWidth = isHorizontal ? 504 : 360
       const previewHeight = isHorizontal ? 360 : 504
 
