@@ -18,6 +18,7 @@ const {
 } = await import('./liveGames')
 const { liveRoundMatchGroups } = await import('@/src/components/MatchmakingPanel.helpers')
 const { fetchRoundsWithMatches } = await import('@/src/utils/matchmakingRounds')
+const { getPracticeSwissSummary } = await import('./practiceSummary')
 
 let dbAvailable = false
 try {
@@ -62,6 +63,56 @@ after(async () => {
 })
 
 describe('live Swiss Practice fake Companion journey', { skip: !dbAvailable }, () => {
+  it('serves a Companion-readable Swiss summary for the active practice match', async () => {
+    process.env['PTP_SERVICE_KEY'] = process.env['PTP_SERVICE_KEY'] || 'test-service-key-for-unit-tests'
+    const seeded = await seedFourPlayerLiveSwissPod()
+    const [playerA, , playerC] = seeded.userIds
+    const [poolA] = seeded.poolShareIds
+    const [matchOne] = seeded.matchIds
+
+    const claim = await claimPracticeMatchGame({
+      shareId: seeded.shareId,
+      matchId: matchOne!,
+      userId: playerA!,
+      now: new Date('2026-06-20T18:00:00.000Z'),
+    })
+
+    await recordPracticeMatchGameLifecycle({
+      practiceMatchGameId: claim.practiceMatchGameId!,
+      poolShareId: poolA!,
+      status: 'lobby_ready',
+      lobbyId: 'karabast-summary-r1m1',
+      lobbyUrl: 'https://karabast.example/lobby/summary-r1m1',
+      lifecycleIdempotencyKey: `summary-lobby-ready-${claim.practiceMatchGameId}`,
+      occurredAt: '2026-06-20T18:01:00.000Z',
+    })
+
+    const opponent = await queryRow('SELECT username FROM users WHERE id = $1', [playerC])
+    const summary = await getPracticeSwissSummary({
+      practiceMatchGameId: claim.practiceMatchGameId,
+      poolShareId: poolA,
+    })
+
+    assert.equal(summary.status, 'ready')
+    assert.equal(summary.currentRound, 1)
+    assert.equal(summary.pairing?.opponent, opponent!.username)
+    assert.equal(summary.pairing?.status, 'lobby_ready')
+    assert.equal(summary.playerRecord, '0-0')
+    assert.equal(summary.standings.length, 4)
+    assert.equal(summary.unavailableReason, null)
+
+    const { GET } = await import('@/app/api/plugin/v1/practice/swiss-summary/route')
+    const res = await GET(
+      new Request(`http://localhost/api/plugin/v1/practice/swiss-summary?practiceMatchGameId=${claim.practiceMatchGameId}&poolShareId=${poolA}`, {
+        headers: { Authorization: `Bearer ${process.env['PTP_SERVICE_KEY']}` },
+      }) as unknown as import('next/server').NextRequest,
+    )
+    assert.equal(res.status, 200)
+    const body = await res.json()
+    assert.equal(body.data.status, 'ready')
+    assert.equal(body.data.pairing.opponent, opponent!.username)
+  })
+
   it('claims one lobby, records lifecycle/results, separates completed matches, and advances Swiss pairings', async () => {
     const seeded = await seedFourPlayerLiveSwissPod()
     const [playerA, playerB, playerC, playerD] = seeded.userIds
