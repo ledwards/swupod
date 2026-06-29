@@ -31,6 +31,7 @@ const LEADER_QA_SETS = ['SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'SEC', 'ASH']
 const LEADER_BOX_QA_SET = 'ASH'
 const LEADER_BOX_QA_SAMPLE_SIZE = 1000
 const DRAFT_BOX_SIZE = 24
+const PACK_QA_SEED_BASE = 0x9a5eed00
 
 interface TestResult {
   suite: string
@@ -437,7 +438,7 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
     )
   })
 
-  for (const setCode of sets) {
+  for (const [setIndex, setCode] of sets.entries()) {
     console.log('')
     console.log(`\x1b[1m\x1b[35m=== 🎴 ${setCode} ===\x1b[0m`)
     const cards = getCachedCards(setCode)
@@ -450,10 +451,13 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
     // Generate sealed pods
     console.log(`\x1b[36m🎁 Generating ${POD_SAMPLE_SIZE} sealed pods (${POD_SAMPLE_SIZE * PACKS_PER_POD} packs)...\x1b[0m`)
     clearBeltCache()
-    const pods: Pack[][] = []
-    for (let i = 0; i < POD_SAMPLE_SIZE; i++) {
-      pods.push(generateSealedPod(cards, setCode, PACKS_PER_POD))
-    }
+    const pods = withSeededRandom(PACK_QA_SEED_BASE + setIndex, () => {
+      const generatedPods: Pack[][] = []
+      for (let i = 0; i < POD_SAMPLE_SIZE; i++) {
+        generatedPods.push(generateSealedPod(cards, setCode, PACKS_PER_POD))
+      }
+      return generatedPods
+    })
     console.log('\x1b[32m✔️  Generation complete.\x1b[0m')
     console.log('')
 
