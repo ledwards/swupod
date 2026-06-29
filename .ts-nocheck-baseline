@@ -1,4 +1,4 @@
-578
+576
 app/admin/page.tsx
 app/api/admin/grant/route.test.ts
 app/api/admin/grant/route.ts
@@ -184,7 +184,6 @@ lib/auth.test.ts
 lib/discordLfg.test.ts
 lib/patreon.test.ts
 lib/utils.test.ts
-middleware.ts
 playwright.config.ts
 scripts/cardFixes.ts
 scripts/copyUserToDev.ts
@@ -335,7 +334,6 @@ src/components/LeaderDraftPhase.tsx
 src/components/LogoHeader.tsx
 src/components/MatchCard.tsx
 src/components/MatchmakingPanel.tsx
-src/components/Modal.tsx
 src/components/PackDraftPhase.tsx
 src/components/PackOpeningAnimation.tsx
 src/components/PackSelector.tsx

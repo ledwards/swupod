@@ -1,7 +1,6 @@
-// @ts-nocheck
-import { NextResponse, NextRequest } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // Check maintenance mode
   if (process.env.MAINTENANCE_MODE === 'true') {
     // Allow access to maintenance page and static assets
