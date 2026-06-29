@@ -303,6 +303,49 @@ describe('live Swiss Practice fake Companion journey', { skip: !dbAvailable }, (
     assert.notEqual(m!.match_winner === 'player1' ? m!.player1_id : m!.player2_id, playerA)
   })
 
+  it('dedupes a duplicate SET concede after a two-player pod advances to the next round', async () => {
+    const seeded = await seedTwoPlayerLiveSwissPod()
+    const [playerA, playerB] = seeded.userIds
+    const [poolA, poolB] = seeded.poolShareIds
+
+    const first = await forfeitPracticeMatch({
+      poolShareId: poolA!,
+      result: 'loss',
+      wayfinderMatchId: 'ing-wf-duplicate-forfeit',
+    })
+    assert.equal(first.changed, true)
+    assert.equal(first.roundAdvanced, true)
+    assert.equal(first.advanceResult?.nextRoundNumber, 2)
+
+    const duplicate = await forfeitPracticeMatch({
+      poolShareId: poolA!,
+      result: 'loss',
+      wayfinderMatchId: 'wf-duplicate-forfeit',
+    })
+    assert.equal(duplicate.alreadyFinalized, true)
+    assert.equal(duplicate.changed, false)
+    assert.equal(duplicate.roundAdvanced, false)
+
+    const rounds = await fetchRoundsWithMatches(seeded.podId)
+    assert.equal(rounds.length, 2)
+    assert.equal(rounds.find(round => round.roundNumber === 1)!.status, 'complete')
+    assert.equal(rounds.find(round => round.roundNumber === 2)!.status, 'active')
+
+    const completedMatches = rounds.flatMap(round => round.matches).filter(match => match.finalConfirmed)
+    assert.equal(completedMatches.length, 1, 'only the original round-1 match was finalized')
+    assert.equal(completedMatches[0]!.matchWinner === 'player1'
+      ? completedMatches[0]!.player1?.id
+      : completedMatches[0]!.player2?.id, playerB)
+
+    const poolARecord = await queryRow('SELECT wins, losses FROM card_pools WHERE share_id = $1', [poolA])
+    const poolBRecord = await queryRow('SELECT wins, losses FROM card_pools WHERE share_id = $1', [poolB])
+    assert.equal(Number(poolARecord!.wins), 0)
+    assert.equal(Number(poolARecord!.losses), 1)
+    assert.equal(Number(poolBRecord!.wins), 1)
+    assert.equal(Number(poolBRecord!.losses), 0)
+    assert.ok(playerA, 'the conceding player stays present in the seeded pod')
+  })
+
   it('records a Bo3 game 2 reported against game 1\'s ANCHOR + gameNumber=2 (does not collapse onto game 1)', async () => {
     // SPEC: the Companion only ever claims game 1 of a single-lobby Bo3, then
     // reports games 2/3 against that SAME practiceMatchGameId with an incremented
@@ -442,6 +485,105 @@ describe('live Swiss Practice fake Companion journey', { skip: !dbAvailable }, (
     assert.equal(match.game2Result, null, 'still no phantom game 2')
   })
 })
+
+async function seedTwoPlayerLiveSwissPod(): Promise<SeededLiveSwissPod> {
+  const suffix = randomUUID().slice(0, 8)
+  const userIds: string[] = []
+  const poolShareIds: string[] = []
+
+  for (let i = 0; i < 2; i++) {
+    const user = await queryRow(
+      `INSERT INTO users (username, email, is_beta_tester)
+       VALUES ($1, $2, true)
+       RETURNING id`,
+      [`live-swiss-2p-${suffix}-${i}`, `live-swiss-2p-${suffix}-${i}@example.test`]
+    )
+    userIds.push(user!.id as string)
+    seededUsers.push(user!.id as string)
+  }
+
+  const shareId = `live-swiss-2p-${suffix}`
+  const pod = await queryRow(
+    `INSERT INTO pods (
+       share_id,
+       host_id,
+       set_code,
+       status,
+       draft_state,
+       state_version,
+       max_players,
+       current_players,
+       competitive
+     )
+     VALUES ($1, $2, 'TST', 'active', $3, 1, 2, 2, true)
+     RETURNING id`,
+    [
+      shareId,
+      userIds[0],
+      JSON.stringify({
+        phase: 'matchmaking',
+        matchmakingStatus: 'active',
+        currentRound: 1,
+      }),
+    ]
+  )
+  const podId = pod!.id as string
+  seededPods.push(podId)
+
+  for (let i = 0; i < 2; i++) {
+    const poolShareId = `live-swiss-2p-pool-${suffix}-${i}`
+    await query(
+      `INSERT INTO card_pools (user_id, share_id, set_code, pool_type, cards, deck_builder_state, pod_id)
+       VALUES ($1, $2, 'TST', 'draft', '[]', $3, $4)`,
+      [
+        userIds[i],
+        poolShareId,
+        JSON.stringify({
+          cardPositions: {},
+          poolName: `Live Swiss 2P Test Deck ${i + 1}`,
+        }),
+        podId,
+      ]
+    )
+    poolShareIds.push(poolShareId)
+  }
+
+  for (let seat = 0; seat < 2; seat++) {
+    await query(
+      `INSERT INTO pod_players (
+         pod_id,
+         user_id,
+         seat_number,
+         pick_status,
+         is_bot,
+         leaders,
+         drafted_leaders,
+         drafted_cards,
+         current_pack
+       )
+       VALUES ($1, $2, $3, 'done', false, '[]', '[]', '[]', '[]')`,
+      [podId, userIds[seat], seat + 1]
+    )
+  }
+
+  const round = await queryRow(
+    `INSERT INTO practice_rounds (pod_id, round_number, status)
+     VALUES ($1, 1, 'active')
+     RETURNING id`,
+    [podId]
+  )
+  const round1Id = round!.id as string
+  const matchOne = await insertPracticeMatch(round1Id, podId, userIds[0]!, userIds[1]!)
+
+  return {
+    podId,
+    shareId,
+    userIds,
+    poolShareIds,
+    round1Id,
+    matchIds: [matchOne],
+  }
+}
 
 async function seedFourPlayerLiveSwissPod(): Promise<SeededLiveSwissPod> {
   const suffix = randomUUID().slice(0, 8)

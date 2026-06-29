@@ -16,6 +16,7 @@ import CostIcon from './CostIcon'
 import CardDensityToggle, { type CardDensity } from './DeckBuilder/CardDensityToggle'
 import { getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
 import { getSetConfig } from '../utils/setConfigs'
+import { getDraftPackDisplayOrder } from '../utils/draftPackDisplayOrder'
 import './PackDraftPhase.css'
 
 const ReviewIcon = () => (
@@ -332,21 +333,10 @@ function PackDraftPhase({
 
   // Pack draft: pack 1 & 3 pass left, pack 2 passes right
   const passDirection = packNumber % 2 === 1 ? 'left' : 'right'
-
-  // Sort cards by rarity (common first, then uncommon, rare, legendary), foil always last
-  const sortCards = (cards: Card[]) => {
-    const sorted = [...cards]
-    const rarityOrder: Record<string, number> = { 'Common': 0, 'Uncommon': 1, 'Rare': 2, 'Legendary': 3 }
-    return sorted.sort((a, b) => {
-      // Foils always go last
-      if (a.isFoil && !b.isFoil) return 1
-      if (!a.isFoil && b.isFoil) return -1
-      // Then sort by rarity
-      return (rarityOrder[a.rarity || ''] ?? 4) - (rarityOrder[b.rarity || ''] ?? 4)
-    })
-  }
-
-  const sortedPack = sortCards(currentPack)
+  const activePackSetCode = draft?.settings?.draftMode === 'chaos'
+    ? draft?.settings?.chaosSets?.[packNumber - 1]
+    : draft?.setCode
+  const sortedPack = getDraftPackDisplayOrder(currentPack, activePackSetCode)
 
   const handleCardClick = (card: Card) => {
     if (loading || !canSelect) return

@@ -235,6 +235,10 @@ export class PracticeGameResultError extends Error {
   }
 }
 
+export function canonicalWayfinderMatchId(matchId: string): string {
+  return matchId.startsWith('ing-') ? matchId.slice(4) : matchId
+}
+
 interface PracticeGameStaleOptions {
   now?: Date
   staleAfterMs?: number | undefined
@@ -904,6 +908,10 @@ export async function recordPracticeMatchGameResultInTransaction(
   tx: TxClient,
   params: PracticeGameResultParams
 ): Promise<PracticeGameResultRecordResult> {
+  const normalizedParams = {
+    ...params,
+    wayfinderMatchId: canonicalWayfinderMatchId(params.wayfinderMatchId),
+  }
   const occurredAt = coerceDate(params.occurredAt) ?? new Date()
   const pool = await tx.queryRow(
     `SELECT
@@ -928,17 +936,17 @@ export async function recordPracticeMatchGameResultInTransaction(
 
   await tx.query('SELECT pg_advisory_xact_lock(hashtext($1::text))', [pool.pod_id])
 
-  const resolved = await resolveResultTarget(tx, params, pool)
+  const resolved = await resolveResultTarget(tx, normalizedParams, pool)
   const { matchRow, gameRow, gameNumber } = resolved
 
   // Safeguard: only count games that actually belong to this Swiss Practice
   // series. Rejects, e.g., a Premier Constructed game the player happened to be
   // playing on the side (which the Companion would otherwise log as game 1).
-  assertSwissPracticeGameMatches(params)
+  assertSwissPracticeGameMatches(normalizedParams)
 
   const reporterIsPlayer1 = matchRow.player1_id === pool.user_id
-  const gameResult = resultFromReporterPerspective(params.result, reporterIsPlayer1)
-  const resultIdempotencyKey = resultIdempotencyKeyFor(params, gameNumber)
+  const gameResult = resultFromReporterPerspective(normalizedParams.result, reporterIsPlayer1)
+  const resultIdempotencyKey = resultIdempotencyKeyFor(normalizedParams, gameNumber)
 
   const duplicateRow = await tx.queryRow(
     `SELECT id, replay_url
@@ -953,7 +961,7 @@ export async function recordPracticeMatchGameResultInTransaction(
     // (slightly later) report or a re-report. Backfill it onto the game and the
     // match aggregate so the replay still surfaces; never overwrite an existing
     // one (COALESCE), and never touch the result.
-    const replayUrl = nonEmptyStringOrNull(params.replayUrl)
+    const replayUrl = nonEmptyStringOrNull(normalizedParams.replayUrl)
     if (replayUrl && !duplicateRow.replay_url) {
       await tx.query(
         `UPDATE practice_match_games
@@ -993,7 +1001,7 @@ export async function recordPracticeMatchGameResultInTransaction(
   const nextGameRow = gameRow
     ? await completeExistingGameRow(tx, {
         gameRow,
-        params,
+        params: normalizedParams,
         gameResult,
         resultIdempotencyKey,
         occurredAt,
@@ -1003,19 +1011,19 @@ export async function recordPracticeMatchGameResultInTransaction(
         gameNumber,
         attemptNumber: resolved.nextAttemptNumber,
         createdByUserId: stringOrNull(pool.user_id),
-        params,
+        params: normalizedParams,
         gameResult,
         resultIdempotencyKey,
         occurredAt,
       })
 
-  const identities = identityColumnsForReporter(params, reporterIsPlayer1)
+  const identities = identityColumnsForReporter(normalizedParams, reporterIsPlayer1)
   await mirrorGameResultToPracticeMatch(tx, {
     matchId: String(matchRow.id),
     gameNumber,
     gameResult,
-    wayfinderMatchId: params.wayfinderMatchId,
-    replayUrl: params.replayUrl ?? null,
+    wayfinderMatchId: normalizedParams.wayfinderMatchId,
+    replayUrl: normalizedParams.replayUrl ?? null,
     identities,
   })
 
@@ -1054,7 +1062,7 @@ export async function recordPracticeMatchGameResultInTransaction(
       player1Id: stringOrNull(updatedMatch.player1_id),
       player2Id: stringOrNull(updatedMatch.player2_id),
       winner,
-      wayfinderMatchId: params.wayfinderMatchId,
+      wayfinderMatchId: normalizedParams.wayfinderMatchId,
     })
 
     matchFinalized = true
@@ -1160,6 +1168,9 @@ export async function forfeitPracticeMatchInTransaction(
   tx: TxClient,
   params: PracticeMatchForfeitParams
 ): Promise<PracticeMatchForfeitResult> {
+  const wayfinderMatchId = params.wayfinderMatchId
+    ? canonicalWayfinderMatchId(params.wayfinderMatchId)
+    : null
   const pool = await tx.queryRow(
     `SELECT
        cp.id AS card_pool_id,
@@ -1184,9 +1195,12 @@ export async function forfeitPracticeMatchInTransaction(
 
   await tx.query('SELECT pg_advisory_xact_lock(hashtext($1::text))', [pool.pod_id])
 
-  // Resolve the match: prefer an explicit practiceMatchGameId anchor, else the
-  // pool owner's active-round match. Mirrors resolveResultTarget but
-  // match-grained (no game slot).
+  // Resolve the match: prefer an explicit practiceMatchGameId anchor, then the
+  // Wayfinder match id already stored on this pod, then the pool owner's
+  // active-round match. Mirrors resolveResultTarget but match-grained (no game
+  // slot). The Wayfinder id check is the cross-round idempotency guard: in a
+  // two-player pod the first forfeit advances immediately, so a duplicate
+  // callback without a game anchor must not float forward into round 2.
   let matchRow: Record<string, unknown> | null = null
   if (params.practiceMatchGameId) {
     matchRow = await tx.queryRow(
@@ -1197,7 +1211,23 @@ export async function forfeitPracticeMatchInTransaction(
        FOR UPDATE OF pm`,
       [params.practiceMatchGameId]
     )
-  } else {
+  }
+
+  if (!matchRow && wayfinderMatchId) {
+    matchRow = await tx.queryRow(
+      `SELECT *
+       FROM practice_matches
+       WHERE pod_id = $1
+         AND wayfinder_match_id = $2
+         AND is_bye = false
+       ORDER BY final_confirmed DESC, created_at ASC
+       LIMIT 1
+       FOR UPDATE`,
+      [pool.pod_id, wayfinderMatchId]
+    )
+  }
+
+  if (!matchRow) {
     const activeRound = await tx.queryRow(
       `SELECT id
        FROM practice_rounds
@@ -1250,14 +1280,14 @@ export async function forfeitPracticeMatchInTransaction(
 
   await tx.query(
     `UPDATE practice_matches
-     SET final_confirmed = true,
-         match_winner = $2,
-         player1_submitted = true,
-         player2_submitted = true,
-         wayfinder_match_id = COALESCE(wayfinder_match_id, $3)
+       SET final_confirmed = true,
+           match_winner = $2,
+           player1_submitted = true,
+           player2_submitted = true,
+           wayfinder_match_id = COALESCE(wayfinder_match_id, $3)
      WHERE id = $1
        AND final_confirmed IS NOT TRUE`,
-    [matchRow.id, winner, params.wayfinderMatchId ?? null]
+    [matchRow.id, winner, wayfinderMatchId]
   )
 
   await updatePlayerPoolRecordsOnce(tx, {
@@ -1265,7 +1295,7 @@ export async function forfeitPracticeMatchInTransaction(
     player1Id: stringOrNull(matchRow.player1_id),
     player2Id: stringOrNull(matchRow.player2_id),
     winner,
-    wayfinderMatchId: params.wayfinderMatchId ?? `forfeit:${String(matchRow.id)}`,
+    wayfinderMatchId: wayfinderMatchId ?? `forfeit:${String(matchRow.id)}`,
   })
 
   const { checkAndAdvanceRoundInTransaction } = await import('./advancement')
@@ -1763,7 +1793,7 @@ export function resultIdempotencyKeyFor(
   if (practiceMatchGameId) return `practice-game:${practiceMatchGameId}:game:${slot}`
   const wayfinderGameId = nonEmptyStringOrNull(params.wayfinderGameId)
   if (wayfinderGameId) return `wayfinder-game:${wayfinderGameId}`
-  return `wayfinder-match:${params.wayfinderMatchId}:game:${slot}`
+  return `wayfinder-match:${canonicalWayfinderMatchId(params.wayfinderMatchId)}:game:${slot}`
 }
 
 function identityColumnsForReporter(

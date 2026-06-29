@@ -76,6 +76,21 @@ describe('Draft pack format', () => {
     assert.ok(!hasLeader, 'pack.cards should not contain leaders')
   })
 
+  it('keeps the ASH foil slot before the uncommon slots after leader/base extraction', async () => {
+    const { packs } = generateDraftPacks('ASH', 2)
+    const firstPack = packs[0][0]
+
+    assert.strictEqual(firstPack.cards.length, 14, 'ASH draft pack should contain 14 draftable cards')
+    assert.ok(!firstPack.cards.some(c => c.isLeader), 'draft pack should not contain a leader')
+    assert.ok(!firstPack.cards.some(c => c.isBase), 'draft pack should not contain a base')
+
+    const foilIndex = firstPack.cards.findIndex(c => c.isFoil === true)
+
+    assert.strictEqual(foilIndex, 9, 'ASH foil slot should be after nine commons')
+    assert.notStrictEqual(foilIndex, firstPack.cards.length - 1, 'ASH foil slot should not be the last draft card')
+    assert.ok(firstPack.cards.slice(0, 9).every(c => c.rarity === 'Common'), 'first nine draft cards should be common slots')
+  })
+
   it('chaos draft uses all selected sets when more than 3 packs are chosen', async () => {
     const chaosSets = ['SHD', 'SHD', 'LAW', 'LAW']
     const { packs, leaders } = generateDraftPacks('SHD', {
