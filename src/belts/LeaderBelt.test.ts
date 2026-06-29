@@ -68,10 +68,9 @@ async function runTests(): Promise<void> {
     assert(belt.rareLeaders.every(c => c.rarity === 'Rare'), 'Rare leaders should all be Rare rarity')
   })
 
-  test('common cycle is initialized on construction', () => {
+  test('hopper is initialized from a full leader sheet boot', () => {
     const belt = new LeaderBelt('SOR')
-    assert(belt.commonCycle.length === belt.commonLeaders.length, 'Common cycle should contain all common leaders')
-    assert(belt.commonIndex === 0, 'Common index should start at 0')
+    assertEqual(belt.hopper.length, 56, 'SOR leader boot should have 56 cards: 8 commons x6 + 8 rares x1')
   })
 
   test('next() returns a leader card', () => {
@@ -82,19 +81,16 @@ async function runTests(): Promise<void> {
     assert(card.set === 'SOR', 'Returned card should be from correct set')
   })
 
-  test('next() advances through the common cycle', () => {
+  test('next() advances through the leader sheet hopper', () => {
     const belt = new LeaderBelt('SOR')
-    const initialIndex = belt.commonIndex
+    const upcoming = belt.peek(10).map(card => card.id)
+    const drawn: string[] = []
 
-    // Draw several cards (some may be rares, but commons should advance)
     for (let i = 0; i < 10; i++) {
-      belt.next()
+      drawn.push(belt.next().id)
     }
 
-    // Common index should have advanced (accounting for rares not advancing it)
-    // With ~16% rare rate, 10 draws should give ~8 common advances
-    assert(belt.commonIndex > initialIndex || belt.commonIndex === 0,
-      'Common index should advance or cycle has reset')
+    assertEqual(drawn.join(','), upcoming.join(','), 'next() should serve cards sequentially from the leader sheet hopper')
   })
 
   test('next() returns a copy, not the original', () => {
@@ -106,62 +102,62 @@ async function runTests(): Promise<void> {
     assert(card2.modified === undefined, 'Cards should be copies, not references')
   })
 
-  test('common cycle reshuffles when exhausted', () => {
+  test('hopper refills when exhausted', () => {
     const belt = new LeaderBelt('SOR')
-    const numCommons = belt.commonLeaders.length
+    const bootSize = 56
 
-    // Record the first cycle order
-    const firstCycleOrder = [...belt.commonCycle].map(c => c.id)
+    while (belt.size > bootSize) belt.next()
+    belt.next()
+    belt.next()
 
-    // Draw enough to exhaust multiple cycles (draw 3x commons, accounting for ~16% rares)
-    const drawCount = numCommons * 4  // Should trigger at least 2-3 reshuffles
-    for (let i = 0; i < drawCount; i++) {
-      belt.next()
-    }
-
-    // After reshuffling, the current cycle should be different from the first
-    const currentCycleOrder = belt.commonCycle.map(c => c.id)
-    const areIdentical = firstCycleOrder.every((id, idx) => id === currentCycleOrder[idx])
-
-    // It's possible but very unlikely (1/8! = 1/40320) for two shuffles to be identical
-    // We just verify the cycle still has the right cards
-    assertEqual(belt.commonCycle.length, numCommons, 'Cycle should maintain same size after reshuffle')
+    assert(belt.size >= bootSize, `Hopper should refill to at least one full boot, got ${belt.size}`)
   })
 
-  test('rare leaders appear in approximately 1/6 of packs (5:1 ratio)', () => {
-    // SPEC: Rare leaders should appear 1 in 6 packs (5:1 common:rare ratio = 16.67% rare)
-    // This is defined in packConstants and set configs
-    const belt = new LeaderBelt('SOR')
+  test('FIXED: leader sheet boot prints six of each common and one of each rare', () => {
+    withMockedRandom(0, () => {
+      const belt = new LeaderBelt('SOR')
+      const sheet = Array.from({ length: 56 }, () => belt.next())
+      const commonLeaders = sheet.filter(card => card.rarity === 'Common')
+      const rareLeaders = sheet.filter(card => card.rarity === 'Rare')
 
-    // Sample 600 cards for statistical significance
-    const counts: Record<string, number> = { Common: 0, Rare: 0 }
-    for (let i = 0; i < 600; i++) {
-      const card = belt.next()
-      counts[card.rarity] = (counts[card.rarity] || 0) + 1
-    }
+      assertEqual(commonLeaders.length, 48, 'SOR leader sheet should print 48 common leader positions')
+      assertEqual(rareLeaders.length, 8, 'SOR leader sheet should print 8 rare leader positions')
 
-    const total = counts.Common + counts.Rare
-    const rareRate = counts.Rare / total
+      const commonCounts = new Map<string, number>()
+      for (const card of commonLeaders) {
+        commonCounts.set(card.name, (commonCounts.get(card.name) || 0) + 1)
+      }
+      for (const [name, count] of commonCounts) {
+        assertEqual(count, 6, `Common leader "${name}" should appear exactly 6 times per sheet`)
+      }
 
-    // SPEC: 1/6 = 16.67% rare rate
-    const expectedRate = 1 / 6
-    const tolerance = 0.05  // Allow 5% variance for statistical noise
-
-    assert(Math.abs(rareRate - expectedRate) < tolerance,
-      `Rare rate should be ~${(expectedRate * 100).toFixed(1)}% (1 in 6), ` +
-      `got ${(rareRate * 100).toFixed(1)}% (${counts.Rare}/${total})`)
+      const rareCounts = new Map<string, number>()
+      for (const card of rareLeaders) {
+        rareCounts.set(card.name, (rareCounts.get(card.name) || 0) + 1)
+      }
+      for (const [name, count] of rareCounts) {
+        assertEqual(count, 1, `Rare leader "${name}" should appear exactly once per sheet`)
+      }
+    })
   })
 
-  test('24-pack leader sheet has exactly 4 non-repeating rare leaders', () => {
+  test('FIXED: rare leaders do not repeat within a 24-position window across seams', () => {
     withMockedRandom(0, () => {
       const belt = new LeaderBelt('ASH')
-      const leaders = Array.from({ length: 24 }, () => belt.next())
-      const rareLeaders = leaders.filter(card => card?.rarity === 'Rare')
-      const rareNames = rareLeaders.map(card => card.name)
-      const uniqueRareNames = new Set(rareNames)
+      const leaders = Array.from({ length: 112 }, () => belt.next())
 
-      assertEqual(rareLeaders.length, 4, `Expected exactly 4 rare leaders per 24-pack sheet, got ${rareLeaders.length}: ${rareNames.join(', ')}`)
-      assertEqual(uniqueRareNames.size, rareNames.length, `Rare leaders should not repeat inside one 24-pack sheet: ${rareNames.join(', ')}`)
+      for (let start = 0; start <= leaders.length - 24; start++) {
+        const window = leaders.slice(start, start + 24)
+        const rareCounts = new Map<string, number>()
+        for (const leader of window) {
+          if (leader.rarity === 'Rare') {
+            rareCounts.set(leader.name, (rareCounts.get(leader.name) || 0) + 1)
+          }
+        }
+        for (const [name, count] of rareCounts) {
+          assertEqual(count, 1, `Rare leader "${name}" repeated ${count} times in 24-position window starting at ${start}`)
+        }
+      }
     })
   })
 
@@ -197,71 +193,19 @@ async function runTests(): Promise<void> {
     assert(firstCards.size > 1, 'Different belt instances should start at different positions')
   })
 
-  test('each unique common leader appears before any repeats', () => {
+  test('common leader repeats are spaced by sheet placement rules', () => {
     const belt = new LeaderBelt('SOR')
-    const numCommons = belt.commonLeaders.length
+    const leaders = Array.from({ length: 116 }, () => belt.next())
+    const minGap = 8
 
-    // Draw one full cycle worth of commons (accounting for rares)
-    // We need to track common leaders specifically
-    const commonsSeen = new Set<string>()
-    const commonsOrder: string[] = []
-    let drawCount = 0
-    const maxDraws = numCommons * 3  // Safety limit
-
-    while (commonsSeen.size < numCommons && drawCount < maxDraws) {
-      const card = belt.next()
-      drawCount++
-
-      if (card.rarity === 'Common') {
-        if (commonsSeen.has(card.name)) {
-          // We hit a repeat - check if we've seen all commons first
-          assert(
-            commonsSeen.size === numCommons,
-            `Saw repeat of "${card.name}" after only seeing ${commonsSeen.size}/${numCommons} unique commons. ` +
-            `Commons seen: ${Array.from(commonsSeen).join(', ')}`
-          )
+    for (let i = 0; i < leaders.length; i++) {
+      if (leaders[i].rarity !== 'Common') continue
+      for (let j = i + 1; j < Math.min(leaders.length, i + minGap); j++) {
+        if (leaders[j].name === leaders[i].name) {
+          throw new Error(`Common leader "${leaders[i].name}" repeated after ${j - i} positions (minimum ${minGap})`)
         }
-        commonsSeen.add(card.name)
-        commonsOrder.push(card.name)
       }
     }
-
-    assertEqual(commonsSeen.size, numCommons,
-      `Should see all ${numCommons} unique commons before any repeat`)
-  })
-
-  test('average gap between duplicate commons is close to cycle size', () => {
-    const belt = new LeaderBelt('SOR')
-    const numCommons = belt.commonLeaders.length
-
-    // Track when each common leader is seen (in common-only count, not total draws)
-    const lastSeenCommonIndex = new Map<string, number>()  // name -> common index
-    const gaps: number[] = []  // distances between same-name commons (in common-only count)
-    let commonIndex = 0
-
-    for (let i = 0; i < 200; i++) {
-      const card = belt.next()
-      if (card.rarity === 'Common') {
-        if (lastSeenCommonIndex.has(card.name)) {
-          const gap = commonIndex - lastSeenCommonIndex.get(card.name)!
-          gaps.push(gap)
-        }
-        lastSeenCommonIndex.set(card.name, commonIndex)
-        commonIndex++
-      }
-    }
-
-    // Average gap should be close to numCommons (the cycle size)
-    // Due to adjacent-duplicate skipping at cycle boundaries, gaps can occasionally
-    // be smaller, but the average should still be close to the cycle size
-    const avgGap = gaps.reduce((a, b) => a + b, 0) / gaps.length
-    const minExpectedAvg = numCommons - 2  // Allow for boundary skips
-    const maxExpectedAvg = numCommons + 2  // Should not be much larger
-
-    assert(
-      avgGap >= minExpectedAvg && avgGap <= maxExpectedAvg,
-      `Average gap should be ~${numCommons}, got ${avgGap.toFixed(1)} (range: [${Math.min(...gaps)}-${Math.max(...gaps)}])`
-    )
   })
 
   console.log('')

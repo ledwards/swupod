@@ -33,6 +33,16 @@ function assertEqual<T>(actual: T, expected: T, message?: string): void {
   }
 }
 
+function withMockedRandom<T>(value: number, fn: () => T): T {
+  const originalRandom = Math.random
+  Math.random = () => value
+  try {
+    return fn()
+  } finally {
+    Math.random = originalRandom
+  }
+}
+
 async function runTests(): Promise<void> {
   console.log('\x1b[36m🔄 Initializing card cache...\x1b[0m')
   await initializeCardCache()
@@ -100,37 +110,36 @@ async function runTests(): Promise<void> {
     assert(firstCards.size > 1, 'Different belt instances should start at different positions')
   })
 
-  test('no repeating pattern: consecutive belt fills produce different sequences', () => {
+  test('showcase leaders respect full-sheet duplicate spacing across seams', () => {
     const belt = new ShowcaseLeaderBelt('SOR')
-    const fillSize = belt.fillingPool.length
+    const sheetSize = belt.fillingPool.length
+    const leaders = Array.from({ length: sheetSize * 2 }, () => belt.next())
 
-    // Deploy entire first fill into an array
-    const firstFill: string[] = []
-    for (let i = 0; i < fillSize; i++) {
-      firstFill.push(belt.next().id)
+    for (let i = 0; i < leaders.length; i++) {
+      for (let j = i + 1; j < Math.min(leaders.length, i + sheetSize); j++) {
+        if (leaders[j].name === leaders[i].name) {
+          throw new Error(`Showcase leader "${leaders[i].name}" repeated after ${j - i} positions (minimum ${sheetSize})`)
+        }
+      }
     }
+  })
 
-    // Deploy second fill into an array
-    const secondFill: string[] = []
-    for (let i = 0; i < fillSize; i++) {
-      secondFill.push(belt.next().id)
-    }
+  test('FIXED: showcase leader sheet gives every showcase leader equal weight', () => {
+    withMockedRandom(0, () => {
+      const belt = new ShowcaseLeaderBelt('SOR')
+      const sheetSize = belt.fillingPool.length
+      const sheet = Array.from({ length: sheetSize }, () => belt.next())
+      const counts = new Map<string, number>()
 
-    // Arrays should not be identical
-    const areIdentical = firstFill.length === secondFill.length &&
-      firstFill.every((id, idx) => id === secondFill[idx])
+      for (const card of sheet) {
+        counts.set(card.name, (counts.get(card.name) || 0) + 1)
+      }
 
-    assert(!areIdentical, 'Consecutive belt fills should not produce identical sequences')
-
-    // Count how many positions are different
-    let differences = 0
-    for (let i = 0; i < Math.min(firstFill.length, secondFill.length); i++) {
-      if (firstFill[i] !== secondFill[i]) differences++
-    }
-
-    // At least 50% of positions should be different (shuffled)
-    const diffPercent = (differences / firstFill.length) * 100
-    assert(diffPercent > 50, `At least 50% of positions should differ, got ${diffPercent.toFixed(1)}%`)
+      assertEqual(counts.size, sheetSize, 'A showcase boot should contain every showcase leader exactly once')
+      for (const [name, count] of counts) {
+        assertEqual(count, 1, `Showcase leader "${name}" should appear exactly once per showcase sheet`)
+      }
+    })
   })
 
   test('Fallback: falls back to Normal leaders for pre-release sets without Showcase variants (ASH)', () => {
