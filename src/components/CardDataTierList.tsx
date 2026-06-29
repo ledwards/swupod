@@ -726,7 +726,7 @@ export default function CardDataTierList({
     if (!card.sampleWarning) return null
     if (/\bn\s*=/.test(card.sampleWarning)) return card.sampleWarning
     const count = card.displayMetricCount ?? metricCount(card, selectedMetric) ?? 0
-    return `${card.sampleWarning} * n=${fmt(Math.round(count))}`
+    return `${card.sampleWarning} · n=${fmt(Math.round(count))}`
   }
 
   const metricCell = (card: CardDataCard, metric: CardMetricKey) => {

@@ -70,7 +70,7 @@ describe('<CardDataTierList /> controls', () => {
 
   it('shows the selected metric sample size beside low-sample warnings', () => {
     assert.match(COMPONENT_SRC, /const sampleWarningLabel = \(card: CardDataCard\) => \{/)
-    assert.match(COMPONENT_SRC, /\$\{card\.sampleWarning\} \* n=\$\{fmt\(Math\.round\(count\)\)\}/)
+    assert.match(COMPONENT_SRC, /\$\{card\.sampleWarning\} · n=\$\{fmt\(Math\.round\(count\)\)\}/)
     assert.match(COMPONENT_SRC, /sampleWarningLabel=\{sampleWarningLabel\(selectedCard\)\}/)
   })
 
