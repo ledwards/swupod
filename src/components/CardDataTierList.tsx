@@ -6,7 +6,6 @@ import Modal from '@/src/components/Modal'
 import PluginCTA from '@/src/components/PluginCTA'
 import { AspectIcon } from '@/src/components/AspectIcon'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
-import { computeCardGrades } from '@/src/services/cardDataMetrics'
 import { AspectFilterButtons, AspectsCell, useTableFilter } from '@/src/components/stats/TableFilters'
 
 const fmt = (n: number) => n.toLocaleString()
@@ -36,6 +35,7 @@ interface CardDataCard {
   gradeBasis: string
   gradeStatus: string
   gradeStatusLabel: string
+  gradePolicy?: string | null
   deckCount: number
   rawCopies: number
   gpCount: number
@@ -90,6 +90,8 @@ export interface CardDataTierListProps {
   defaultFormat?: 'all' | 'sealed' | 'draft'
   defaultView?: CardDataView
   viewParamName?: string | null
+  userId?: string | null
+  metaTierListHref?: string | null
 }
 
 const RARITY_ORDER: Record<string, number> = { Legendary: 0, Rare: 1, Uncommon: 2, Common: 3 }
@@ -102,6 +104,7 @@ const GRADE_ORDER: Record<string, number> = {
 }
 const CARD_TIER_ORDER = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F', 'U']
 const GIH_GRADE_METRIC: CardMetricKey = 'gihWr'
+const LEADER_GRADE_METRIC: CardMetricKey = 'gpWr'
 const RARITY_ICON_PATHS: Record<string, string> = {
   Common: '/icons/rarity/common.png',
   Uncommon: '/icons/rarity/uncommon.png',
@@ -262,9 +265,22 @@ function cardDataGamesLabel(count: number | null | undefined) {
   return `${fmt(rounded)} ${rounded === 1 ? 'game' : 'games'}`
 }
 
+function formatCollectorNumber(value: string | null | undefined) {
+  const raw = String(value || '').trim()
+  if (!raw) return null
+  const match = raw.match(/^([A-Za-z0-9]+)[._-]([0-9][A-Za-z0-9]*)$/)
+  if (!match) return raw
+  return `${match[1]!.toUpperCase()}.${match[2]!}`
+}
+
 function winsFromPct(rate: number | null | undefined, count: number | null | undefined): number {
   if (rate == null || count == null) return 0
   return (rate * count) / 100
+}
+
+function roundedMetricWins(rate: number | null | undefined, count: number | null | undefined, wins?: number | null): number {
+  if (wins != null && Number.isFinite(wins)) return Math.round(wins)
+  return Math.round(winsFromPct(rate, count))
 }
 
 function cardDataTileImageUrl(card: CardDataCard) {
@@ -275,6 +291,7 @@ function cardDataTileImageUrl(card: CardDataCard) {
 
 function cardDataTileKind(card: CardDataCard) {
   const type = (card.cardType || '').toLowerCase()
+  if (type.includes('leader')) return 'leader'
   if (type.includes('base')) return 'base'
   if (type.includes('event')) return 'event'
   return 'unit'
@@ -363,7 +380,11 @@ function CardDataStatsModal({ card, onClose, formatLabel, sampleWarningLabel }: 
 }) {
   const artUrl = cardDataTileImageUrl(card)
   const grade = card.displayGrade || 'U'
-  const metricStats = [
+  const leaderWins = roundedMetricWins(card.gpWr, card.gpCount, card.gpWins)
+  const metricStats = card.isLeader ? [
+    { label: 'Leader WR', value: formatCardDataPct(card.gpWr), detail: `${fmt(leaderWins)} / ${fmt(Math.round(card.gpCount || 0))} games` },
+    { label: 'Decks', value: fmt(card.deckCount || 0) },
+  ] : [
     { label: 'Games Played WR', value: formatCardDataPct(card.gpWr), detail: cardDataGamesLabel(card.gpCount) },
     { label: 'Opening Hand WR', value: formatCardDataPct(card.ohWr), detail: card.ohCount == null ? undefined : cardDataGamesLabel(card.ohCount) },
     { label: 'Games Drawn WR', value: formatCardDataPct(card.gdWr), detail: card.gdCount == null ? undefined : cardDataGamesLabel(card.gdCount) },
@@ -375,7 +396,7 @@ function CardDataStatsModal({ card, onClose, formatLabel, sampleWarningLabel }: 
     { label: 'Decks', value: fmt(card.deckCount || 0), detail: `${fmt(card.rawCopies || 0)} copies` },
   ]
 
-  if (card.playedWar != null) {
+  if (!card.isLeader && card.playedWar != null) {
     metricStats.push({ label: 'Played WAR', value: formatSignedCardDataPct(card.playedWar) })
   }
 
@@ -383,7 +404,7 @@ function CardDataStatsModal({ card, onClose, formatLabel, sampleWarningLabel }: 
     <Modal isOpen onClose={onClose} showCloseButton className="card-data-stats-modal">
       <div className={`card-data-stats-modal-hero card-data-stats-modal-hero-${cardDataTileKind(card)}`} style={artUrl ? { backgroundImage: `url("${artUrl}")` } : undefined}>
         <div className="card-data-stats-modal-hero-copy">
-          <span className="card-data-stats-modal-eyebrow">Card Stats</span>
+          <span className="card-data-stats-modal-eyebrow">{card.isLeader ? 'Leader Stats' : 'Card Stats'}</span>
           <h3>{card.cardName}</h3>
           {card.subtitle ? <p>{card.subtitle}</p> : null}
           <div className="card-data-stats-modal-meta">
@@ -456,6 +477,8 @@ export default function CardDataTierList({
   defaultFormat = 'draft',
   defaultView = 'tiers',
   viewParamName = 'view',
+  userId = null,
+  metaTierListHref = null,
 }: CardDataTierListProps) {
   const [cardData, setCardData] = useState<CardDataStats | null>(null)
   const [format, setFormat] = useState<'all' | 'sealed' | 'draft'>(defaultFormat)
@@ -467,12 +490,14 @@ export default function CardDataTierList({
   const [sortKey, setSortKey] = useState<CardDataSortKey>('grade')
   const [sortAsc, setSortAsc] = useState(false)
   const [hasRecordedGame, setHasRecordedGame] = useState(false)
+  const [hasBetaStatsAccess, setHasBetaStatsAccess] = useState(false)
   const [presenceLoading, setPresenceLoading] = useState(true)
   const { detected: wayfinderDetected, settled: wayfinderSettled, pluginLoggedIn } = useWayfinderDetection()
   const cardFilter = useTableFilter()
   const source = 'online'
   const activeView = allowTable ? view : 'tiers'
-  const selectedMetric = GIH_GRADE_METRIC
+  const isLeaderView = cardKindFilter === 'leaders'
+  const selectedMetric = isLeaderView ? LEADER_GRADE_METRIC : GIH_GRADE_METRIC
 
   useEffect(() => {
     if (!allowTable || !viewParamName) return
@@ -492,19 +517,31 @@ export default function CardDataTierList({
     const forcedActivity = getUrlSearchParam('wfactivity')
     if (forcedActivity === '1' || forcedActivity === 'true') {
       setHasRecordedGame(true)
+      setHasBetaStatsAccess(false)
       setPresenceLoading(false)
       return () => { cancelled = true }
     }
     if (forcedActivity === '0' || forcedActivity === 'false') {
       setHasRecordedGame(false)
+      setHasBetaStatsAccess(false)
       setPresenceLoading(false)
       return () => { cancelled = true }
     }
 
     fetch('/api/me/wayfinder-presence', { credentials: 'include' })
       .then(r => r.ok ? r.json() : null)
-      .then(body => { if (!cancelled) setHasRecordedGame(Boolean(body?.data?.hasActivity)) })
-      .catch(() => { if (!cancelled) setHasRecordedGame(false) })
+      .then(body => {
+        if (!cancelled) {
+          setHasRecordedGame(Boolean(body?.data?.hasActivity))
+          setHasBetaStatsAccess(Boolean(body?.data?.hasBetaAccess))
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setHasRecordedGame(false)
+          setHasBetaStatsAccess(false)
+        }
+      })
       .finally(() => { if (!cancelled) setPresenceLoading(false) })
 
     return () => { cancelled = true }
@@ -524,6 +561,7 @@ export default function CardDataTierList({
       format,
       source,
     })
+    if (userId) baseParams.set('userId', userId)
 
     fetch(`/api/stats/card-data?${baseParams}`)
       .then(r => r.json())
@@ -531,7 +569,7 @@ export default function CardDataTierList({
       .catch(err => console.error('Error fetching card data:', err))
       .finally(() => { if (!cancelled) { setLoading(false); hasLoadedOnce.current = true } })
     return () => { cancelled = true }
-  }, [setCode, includeBots, includeHumans, startDate, endDate, format, source])
+  }, [setCode, includeBots, includeHumans, startDate, endDate, format, source, userId])
 
   const handleSort = (key: CardDataSortKey) => {
     if (sortKey === key) setSortAsc(!sortAsc)
@@ -543,13 +581,6 @@ export default function CardDataTierList({
     if (metric === 'gdWr') return card.gdCount
     if (metric === 'gihWr') return card.gihCount
     return card.gpCount
-  }
-
-  const metricWins = (card: CardDataCard, metric: CardMetricKey) => {
-    if (metric === 'ohWr') return card.ohWins ?? winsFromPct(card.ohWr, card.ohCount)
-    if (metric === 'gdWr') return card.gdWins ?? winsFromPct(card.gdWr, card.gdCount)
-    if (metric === 'gihWr') return card.gihWins ?? winsFromPct(card.gihWr, card.gihCount)
-    return card.gpWins ?? winsFromPct(card.gpWr, card.gpCount)
   }
 
   const metricValue = (card: CardDataCard, metric: CardMetricKey) => {
@@ -585,38 +616,15 @@ export default function CardDataTierList({
     return groups
   }
 
-  const rankRowsForMetric = (rows: CardDataCard[], metric: CardMetricKey) => {
-    const inputs = rows.map(card => ({
-      key: cardDataLookupKey(card),
-      wins: metricWins(card, metric),
-      denominator: metricCount(card, metric) || 0,
-    }))
-    const strict = computeCardGrades(inputs)
-    const provisional = computeCardGrades(inputs, { minDenominator: 1, minCards: 5 })
-    const provisionalByKey = new Map(provisional.map(grade => [grade.key, grade]))
-    let usedProvisional = false
-    const gradeByKey = new Map(strict.map(grade => {
-      if (grade.grade) return [grade.key, grade]
-      const fallback = provisionalByKey.get(grade.key)
-      if (fallback?.grade) {
-        usedProvisional = true
-        return [grade.key, fallback]
-      }
-      return [grade.key, grade]
-    }))
-
+  const decorateRowsFromApiGrades = (rows: CardDataCard[], metric: CardMetricKey) => {
     return {
-      provisional: usedProvisional,
-      rows: rows.map(card => {
-        const key = cardDataLookupKey(card)
-        const grade = gradeByKey.get(key)
-        return {
-          ...card,
-          displayGrade: grade?.grade || null,
-          displayMetricValue: metricValue(card, metric),
-          displayMetricCount: metricCount(card, metric),
-        }
-      }),
+      provisional: rows.some(card => /provisional/i.test(card.gradePolicy || card.gradeStatus || card.sampleWarning || '')),
+      rows: rows.map(card => ({
+        ...card,
+        displayGrade: card.displayGrade ?? card.grade ?? null,
+        displayMetricValue: metricValue(card, metric),
+        displayMetricCount: metricCount(card, metric),
+      })),
     }
   }
 
@@ -628,7 +636,12 @@ export default function CardDataTierList({
 
   const scopedCardRows = useMemo(() => {
     const deckCards = cardData?.cards || []
-    if (cardKindFilter === 'leaders') return cardData?.leaders || []
+    if (cardKindFilter === 'leaders') {
+      const leaders = cardData?.leaders || []
+      return leaders.length > 0
+        ? leaders
+        : deckCards.filter(card => card.isLeader || cardDataTileKind(card) === 'leader')
+    }
     if (cardKindFilter === 'units') return deckCards.filter(card => cardDataTileKind(card) === 'unit')
     if (cardKindFilter === 'non-units') return deckCards.filter(card => cardDataTileKind(card) !== 'unit')
     return deckCards
@@ -636,7 +649,7 @@ export default function CardDataTierList({
 
   const rankedCardRows = useMemo(() => {
     const filtered = scopedCardRows.filter(cardFilter.filterFn)
-    const ranked = rankRowsForMetric(filtered, selectedMetric)
+    const ranked = decorateRowsFromApiGrades(filtered, selectedMetric)
     const rows = sortRows(ranked.rows)
     return {
       ...ranked,
@@ -673,19 +686,21 @@ export default function CardDataTierList({
     isLeader: Boolean(card.isLeader),
     isBase: Boolean(card.isBase),
   })
-  const activeMetricLabel = cardDataMetricLabel(selectedMetric)
-  const activeMetricFullLabel = cardDataMetricFullLabel(selectedMetric)
+  const activeMetricLabel = isLeaderView ? 'Leader WR' : cardDataMetricLabel(selectedMetric)
+  const activeMetricFullLabel = isLeaderView ? 'Leader Win Rate' : cardDataMetricFullLabel(selectedMetric)
   const shownCount = rankedCardRows.rows.length
   const formatLabel = format === 'all' ? 'All' : format === 'sealed' ? 'Sealed' : 'Draft'
   const scopedCount = scopedCardRows.length
-  const companionReady = wayfinderDetected || hasRecordedGame
-  const companionLoginReady = pluginLoggedIn === true || hasRecordedGame
+  const rowNoun = isLeaderView ? 'leaders' : 'cards'
+  const statsAccessGranted = hasRecordedGame || hasBetaStatsAccess
+  const companionReady = hasBetaStatsAccess || wayfinderDetected || hasRecordedGame
+  const companionLoginReady = hasBetaStatsAccess || pluginLoggedIn === true || hasRecordedGame
   const requirements = [
-    { label: 'Wayfinder Companion installed and running', met: (wayfinderSettled || hasRecordedGame) ? companionReady : null },
-    { label: 'Signed in to Wayfinder Companion', met: (wayfinderSettled || hasRecordedGame) ? companionLoginReady : null },
-    { label: 'At least one game recorded', met: presenceLoading ? null : hasRecordedGame },
+    { label: 'Wayfinder Companion installed and running', met: hasBetaStatsAccess ? true : (wayfinderSettled || hasRecordedGame) ? companionReady : null },
+    { label: 'Signed in to Wayfinder Companion', met: hasBetaStatsAccess ? true : (wayfinderSettled || hasRecordedGame) ? companionLoginReady : null },
+    { label: 'At least one game recorded or beta access', met: presenceLoading ? null : statsAccessGranted },
   ]
-  const cardsUnlocked = !presenceLoading && companionReady && companionLoginReady && hasRecordedGame
+  const cardsUnlocked = !presenceLoading && (hasBetaStatsAccess || (companionReady && companionLoginReady && hasRecordedGame))
   const gateState: 'checking' | 'install' | 'login' | 'play' =
     (!wayfinderSettled || presenceLoading) ? 'checking'
     : !companionReady ? 'install'
@@ -710,10 +725,17 @@ export default function CardDataTierList({
   }
 
   const metricTile = (card: CardDataCard) => {
+    if (card.isLeader) {
+      const wins = roundedMetricWins(card.gpWr, card.gpCount, card.gpWins)
+      return `Leader WR: ${formatTierCardPct(card.gpWr)} · ${fmt(wins)}/${fmt(Math.round(card.gpCount || 0))} games`
+    }
     return `GIH: ${formatTierCardPct(card.gihWr)} · OH: ${formatTierCardPct(card.ohWr)} · GD: ${formatTierCardPct(card.gdWr)} · GP ${formatTierCardPct(card.gpWr)}`
   }
 
   const metricTileTitle = (card: CardDataCard) => {
+    if (card.isLeader) {
+      return `Leader win-rate sample: ${cardDataGamesLabel(card.gpCount)}`
+    }
     return [
       `GIH sample: ${cardDataGamesLabel(card.gihCount)}`,
       `OH sample: ${cardDataGamesLabel(card.ohCount)}`,
@@ -737,6 +759,18 @@ export default function CardDataTierList({
       <span className="card-data-metric-stack" title={`${cardDataMetricLabel(metric)} sample`}>
         <span>{formatPct(value)}</span>
         <small>{cardDataGamesLabel(count)}</small>
+      </span>
+    )
+  }
+
+  const leaderWinRateCell = (card: CardDataCard) => {
+    if (card.gpWr == null) return <span className="metric-unavailable">—</span>
+    const games = Math.round(card.gpCount || 0)
+    const wins = roundedMetricWins(card.gpWr, games, card.gpWins)
+    return (
+      <span className="card-data-metric-stack" title="Leader win-rate sample">
+        <span>{formatPct(card.gpWr)}</span>
+        <small>{fmt(wins)} / {fmt(games)} games</small>
       </span>
     )
   }
@@ -805,6 +839,53 @@ export default function CardDataTierList({
     </div>
   )
 
+  const renderLeaderTable = () => (
+    <div className="stats-table-container card-data-table-container">
+      <table className="stats-table card-data-table">
+        <thead>
+          <tr>
+            <SortHeader label="Name" col="cardName" />
+            <th className="aspects-col">Aspects</th>
+            <SortHeader label="Rarity" col="rarity" />
+            <SortHeader label="Grade" col="grade" title="Derived from leader win rate within the active filters." />
+            <SortHeader label="Leader WR" col="gpWr" title="Win rate in games played with this leader." />
+            <SortHeader label="Games" col="gpCount" title="Games played with this leader." />
+            <th>Sample</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rankedCardRows.rows.map((card: CardDataCard) => (
+            <tr
+              key={cardDataLookupKey(card)}
+              className="card-data-table-row"
+              role="button"
+              tabIndex={0}
+              onClick={() => setSelectedCard(card)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  setSelectedCard(card)
+                }
+              }}
+            >
+              <td className="card-name-cell">
+                <CardName entry={cardNameEntry(card)} className="card-data-name" />
+              </td>
+              <AspectsCell aspects={card.aspects} />
+              <td className="card-data-rarity-cell"><RarityIcon rarity={card.rarity} /></td>
+              <td>{gradeBadge(card)}</td>
+              <td>{leaderWinRateCell(card)}</td>
+              <td>{fmt(Math.round(card.gpCount || 0))}</td>
+              <td>
+                {card.sampleWarning ? <span className="sample-warning">{sampleWarningLabel(card)}</span> : <span className="sample-ok">OK</span>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+
   const renderTierList = () => (
     <div className="card-data-tier-list" aria-label={`${setCode} card tier list`}>
       {CARD_TIER_ORDER.map(grade => {
@@ -816,6 +897,7 @@ export default function CardDataTierList({
             <div className="card-data-tier-cards">
               {rows.map((card: CardDataCard) => {
                 const imageUrl = cardDataTileImageUrl(card)
+                const collectorNumber = formatCollectorNumber(card.collectorNumber)
                 return (
                   <button
                     type="button"
@@ -836,7 +918,7 @@ export default function CardDataTierList({
                     <span className="card-data-tier-card-footer">
                       <span className="card-data-tier-card-metric" title={metricTileTitle(card)}>{metricTile(card)}</span>
                       <span className="card-data-tier-card-printing">
-                        {card.collectorNumber ? <span>{card.collectorNumber}</span> : null}
+                        {collectorNumber ? <span>{collectorNumber}</span> : null}
                         <RarityIcon rarity={card.rarity} />
                       </span>
                     </span>
@@ -865,7 +947,7 @@ export default function CardDataTierList({
       <div className="card-data-tier-card-shell">
         <div className="card-data-section-header">
           <div>
-            <h4>Cards Tier List</h4>
+            <h4>{isLeaderView ? 'Leaders Tier List' : 'Cards Tier List'}</h4>
             <p>Grouped by {activeMetricFullLabel}</p>
           </div>
           <div className="card-data-tier-header-actions">
@@ -886,13 +968,15 @@ export default function CardDataTierList({
                 </button>
               ))}
             </div>
-            <span>{fmt(shownCount)} / {fmt(scopedCount)} cards shown</span>
+            <span>{fmt(shownCount)} / {fmt(scopedCount)} {rowNoun} shown</span>
           </div>
         </div>
         {shownCount === 0 ? (
           <div className="stats-empty card-data-section-empty">No cards match these filters.</div>
         ) : activeView === 'tiers' ? (
           renderTierList()
+        ) : isLeaderView ? (
+          renderLeaderTable()
         ) : (
           renderTable()
         )}
@@ -910,6 +994,9 @@ export default function CardDataTierList({
                 <div>
                   <div className="card-stats-mode-title">{title}</div>
                   <div className="card-data-muted">{description}</div>
+                  {metaTierListHref ? (
+                    <a className="card-data-meta-link" href={metaTierListHref}>View meta tier list</a>
+                  ) : null}
                 </div>
                 {allowTable ? (
                   <div className="card-data-segmented card-stats-view-tabs" role="tablist" aria-label="Card stats view">
@@ -943,7 +1030,7 @@ export default function CardDataTierList({
               <div className="card-stats-mode-row card-stats-mode-row--compact">
                 <CardDataMetricDefinitions />
                 <div className="card-data-muted">
-                  {formatLabel} · {fmt(shownCount)} / {fmt(scopedCount)} cards loaded
+                  {formatLabel} · {fmt(shownCount)} / {fmt(scopedCount)} {rowNoun} loaded
                   {rankedCardRows.provisional ? ' · provisional grade thresholds' : ''}
                   {hasWayfinderReplayMetrics(cardData?.sourceDetail) ? ' · Wayfinder data' : ''}
                 </div>
