@@ -20,10 +20,11 @@ describe('<CardDataTierList /> controls', () => {
     assert.doesNotMatch(COMPONENT_SRC, /aria-label=['"]Grade metric['"]/)
   })
 
-  it('derives GIH tiers from metric samples instead of trusting a missing backend grade', () => {
-    assert.match(COMPONENT_SRC, /const inputs = rows\.map\(card => \(\{/)
+  it('uses API-owned display grades instead of recomputing grade bands in React', () => {
+    assert.doesNotMatch(COMPONENT_SRC, /computeCardGrades/)
+    assert.match(COMPONENT_SRC, /displayGrade: card\.displayGrade \?\? card\.grade \?\? null/)
     assert.match(COMPONENT_SRC, /groups\.get\(card\.displayGrade \|\| ['"]U['"]\)\?\.push\(card\)/)
-    assert.doesNotMatch(COMPONENT_SRC, /metric === ['"]gihWr['"] && hasWayfinderReplayMetrics/)
+    assert.doesNotMatch(COMPONENT_SRC, /const inputs = rows\.map\(card => \(\{/)
   })
 
   it('shows all requested rates on tier-list cards', () => {
@@ -73,10 +74,12 @@ describe('<CardDataTierList /> controls', () => {
     assert.match(STATS_CSS, /\.card-grade-f,[\s\S]*?--grade-rgb:\s*165,\s*48,\s*64;/)
   })
 
-  it('unlocks card stats from recorded Wayfinder activity when live extension detection is absent', () => {
-    assert.match(COMPONENT_SRC, /const companionReady = wayfinderDetected \|\| hasRecordedGame/)
-    assert.match(COMPONENT_SRC, /const companionLoginReady = pluginLoggedIn === true \|\| hasRecordedGame/)
-    assert.match(COMPONENT_SRC, /const cardsUnlocked = !presenceLoading && companionReady && companionLoginReady && hasRecordedGame/)
+  it('unlocks card stats from recorded Wayfinder activity or beta access', () => {
+    assert.match(COMPONENT_SRC, /setHasBetaStatsAccess\(Boolean\(body\?\.data\?\.hasBetaAccess\)\)/)
+    assert.match(COMPONENT_SRC, /const statsAccessGranted = hasRecordedGame \|\| hasBetaStatsAccess/)
+    assert.match(COMPONENT_SRC, /const companionReady = hasBetaStatsAccess \|\| wayfinderDetected \|\| hasRecordedGame/)
+    assert.match(COMPONENT_SRC, /const companionLoginReady = hasBetaStatsAccess \|\| pluginLoggedIn === true \|\| hasRecordedGame/)
+    assert.match(COMPONENT_SRC, /const cardsUnlocked = !presenceLoading && \(hasBetaStatsAccess \|\| \(companionReady && companionLoginReady && hasRecordedGame\)\)/)
   })
 
   it('can scope card data to a specific user and link back to the meta tier list', () => {

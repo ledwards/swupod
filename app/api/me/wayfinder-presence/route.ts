@@ -16,14 +16,20 @@ import { queryRow } from '@/lib/db'
  * ORs the two. The fact is monotonic and the query is cheap (EXISTS short-circuits),
  * so it's safe to cache for the page's lifetime.
  *
- * Unauthenticated or on any error → hasActivity:false (never block the UI).
+ * Beta/admin access is returned alongside activity so beta users can open the
+ * stats dashboard even before they have recorded a game.
+ *
+ * Unauthenticated or on any error → no activity/access (never block the UI).
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
   let userId: string
+  let hasBetaAccess = false
   try {
-    userId = requireAuth(request).id
+    const session = requireAuth(request)
+    userId = session.id
+    hasBetaAccess = Boolean(session.is_beta_tester || session.is_admin)
   } catch {
-    return NextResponse.json({ data: { hasActivity: false } })
+    return NextResponse.json({ data: { hasActivity: false, hasBetaAccess: false } })
   }
 
   try {
@@ -39,9 +45,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
        ) AS has_activity`,
       [userId],
     )
-    return NextResponse.json({ data: { hasActivity: Boolean(row?.has_activity) } })
+    return NextResponse.json({ data: { hasActivity: Boolean(row?.has_activity), hasBetaAccess } })
   } catch (err) {
     console.error('wayfinder-presence query failed:', err)
-    return NextResponse.json({ data: { hasActivity: false } })
+    return NextResponse.json({ data: { hasActivity: false, hasBetaAccess } })
   }
 }

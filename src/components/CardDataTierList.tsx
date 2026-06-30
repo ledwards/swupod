@@ -6,7 +6,6 @@ import Modal from '@/src/components/Modal'
 import PluginCTA from '@/src/components/PluginCTA'
 import { AspectIcon } from '@/src/components/AspectIcon'
 import { useWayfinderDetection } from '@/src/hooks/useWayfinderDetection'
-import { computeCardGrades } from '@/src/services/cardDataMetrics'
 import { AspectFilterButtons, AspectsCell, useTableFilter } from '@/src/components/stats/TableFilters'
 
 const fmt = (n: number) => n.toLocaleString()
@@ -36,6 +35,7 @@ interface CardDataCard {
   gradeBasis: string
   gradeStatus: string
   gradeStatusLabel: string
+  gradePolicy?: string | null
   deckCount: number
   rawCopies: number
   gpCount: number
@@ -301,23 +301,6 @@ function gradeClassSuffix(grade: string) {
   return grade.replace('+', 'plus').replace('-', 'minus').toLowerCase()
 }
 
-function leaderGradeFromWinRate(value: number | null | undefined, count: number | null | undefined) {
-  if (value == null || !Number.isFinite(value) || (count || 0) <= 0) return null
-  if (value >= 70) return 'A+'
-  if (value >= 65) return 'A'
-  if (value >= 60) return 'A-'
-  if (value >= 57.5) return 'B+'
-  if (value >= 55) return 'B'
-  if (value >= 52.5) return 'B-'
-  if (value >= 50) return 'C+'
-  if (value >= 47.5) return 'C'
-  if (value >= 45) return 'C-'
-  if (value >= 42.5) return 'D+'
-  if (value >= 40) return 'D'
-  if (value >= 35) return 'D-'
-  return 'F'
-}
-
 function CardDataLockIcon() {
   return (
     <span className="card-data-gate-lock" aria-hidden="true">
@@ -507,6 +490,7 @@ export default function CardDataTierList({
   const [sortKey, setSortKey] = useState<CardDataSortKey>('grade')
   const [sortAsc, setSortAsc] = useState(false)
   const [hasRecordedGame, setHasRecordedGame] = useState(false)
+  const [hasBetaStatsAccess, setHasBetaStatsAccess] = useState(false)
   const [presenceLoading, setPresenceLoading] = useState(true)
   const { detected: wayfinderDetected, settled: wayfinderSettled, pluginLoggedIn } = useWayfinderDetection()
   const cardFilter = useTableFilter()
@@ -533,19 +517,31 @@ export default function CardDataTierList({
     const forcedActivity = getUrlSearchParam('wfactivity')
     if (forcedActivity === '1' || forcedActivity === 'true') {
       setHasRecordedGame(true)
+      setHasBetaStatsAccess(false)
       setPresenceLoading(false)
       return () => { cancelled = true }
     }
     if (forcedActivity === '0' || forcedActivity === 'false') {
       setHasRecordedGame(false)
+      setHasBetaStatsAccess(false)
       setPresenceLoading(false)
       return () => { cancelled = true }
     }
 
     fetch('/api/me/wayfinder-presence', { credentials: 'include' })
       .then(r => r.ok ? r.json() : null)
-      .then(body => { if (!cancelled) setHasRecordedGame(Boolean(body?.data?.hasActivity)) })
-      .catch(() => { if (!cancelled) setHasRecordedGame(false) })
+      .then(body => {
+        if (!cancelled) {
+          setHasRecordedGame(Boolean(body?.data?.hasActivity))
+          setHasBetaStatsAccess(Boolean(body?.data?.hasBetaAccess))
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setHasRecordedGame(false)
+          setHasBetaStatsAccess(false)
+        }
+      })
       .finally(() => { if (!cancelled) setPresenceLoading(false) })
 
     return () => { cancelled = true }
@@ -587,13 +583,6 @@ export default function CardDataTierList({
     return card.gpCount
   }
 
-  const metricWins = (card: CardDataCard, metric: CardMetricKey) => {
-    if (metric === 'ohWr') return card.ohWins ?? winsFromPct(card.ohWr, card.ohCount)
-    if (metric === 'gdWr') return card.gdWins ?? winsFromPct(card.gdWr, card.gdCount)
-    if (metric === 'gihWr') return card.gihWins ?? winsFromPct(card.gihWr, card.gihCount)
-    return card.gpWins ?? winsFromPct(card.gpWr, card.gpCount)
-  }
-
   const metricValue = (card: CardDataCard, metric: CardMetricKey) => {
     if (metric === 'ohWr') return card.ohWr
     if (metric === 'gdWr') return card.gdWr
@@ -627,50 +616,15 @@ export default function CardDataTierList({
     return groups
   }
 
-  const rankRowsForMetric = (rows: CardDataCard[], metric: CardMetricKey) => {
-    if (isLeaderView && metric === LEADER_GRADE_METRIC) {
-      return {
-        provisional: false,
-        rows: rows.map(card => ({
-          ...card,
-          displayGrade: leaderGradeFromWinRate(card.gpWr, card.gpCount),
-          displayMetricValue: card.gpWr,
-          displayMetricCount: card.gpCount,
-        })),
-      }
-    }
-
-    const inputs = rows.map(card => ({
-      key: cardDataLookupKey(card),
-      wins: metricWins(card, metric),
-      denominator: metricCount(card, metric) || 0,
-    }))
-    const strict = computeCardGrades(inputs)
-    const provisional = computeCardGrades(inputs, { minDenominator: 1, minCards: 5 })
-    const provisionalByKey = new Map(provisional.map(grade => [grade.key, grade]))
-    let usedProvisional = false
-    const gradeByKey = new Map(strict.map(grade => {
-      if (grade.grade) return [grade.key, grade]
-      const fallback = provisionalByKey.get(grade.key)
-      if (fallback?.grade) {
-        usedProvisional = true
-        return [grade.key, fallback]
-      }
-      return [grade.key, grade]
-    }))
-
+  const decorateRowsFromApiGrades = (rows: CardDataCard[], metric: CardMetricKey) => {
     return {
-      provisional: usedProvisional,
-      rows: rows.map(card => {
-        const key = cardDataLookupKey(card)
-        const grade = gradeByKey.get(key)
-        return {
-          ...card,
-          displayGrade: grade?.grade || null,
-          displayMetricValue: metricValue(card, metric),
-          displayMetricCount: metricCount(card, metric),
-        }
-      }),
+      provisional: rows.some(card => /provisional/i.test(card.gradePolicy || card.gradeStatus || card.sampleWarning || '')),
+      rows: rows.map(card => ({
+        ...card,
+        displayGrade: card.displayGrade ?? card.grade ?? null,
+        displayMetricValue: metricValue(card, metric),
+        displayMetricCount: metricCount(card, metric),
+      })),
     }
   }
 
@@ -695,7 +649,7 @@ export default function CardDataTierList({
 
   const rankedCardRows = useMemo(() => {
     const filtered = scopedCardRows.filter(cardFilter.filterFn)
-    const ranked = rankRowsForMetric(filtered, selectedMetric)
+    const ranked = decorateRowsFromApiGrades(filtered, selectedMetric)
     const rows = sortRows(ranked.rows)
     return {
       ...ranked,
@@ -738,14 +692,15 @@ export default function CardDataTierList({
   const formatLabel = format === 'all' ? 'All' : format === 'sealed' ? 'Sealed' : 'Draft'
   const scopedCount = scopedCardRows.length
   const rowNoun = isLeaderView ? 'leaders' : 'cards'
-  const companionReady = wayfinderDetected || hasRecordedGame
-  const companionLoginReady = pluginLoggedIn === true || hasRecordedGame
+  const statsAccessGranted = hasRecordedGame || hasBetaStatsAccess
+  const companionReady = hasBetaStatsAccess || wayfinderDetected || hasRecordedGame
+  const companionLoginReady = hasBetaStatsAccess || pluginLoggedIn === true || hasRecordedGame
   const requirements = [
-    { label: 'Wayfinder Companion installed and running', met: (wayfinderSettled || hasRecordedGame) ? companionReady : null },
-    { label: 'Signed in to Wayfinder Companion', met: (wayfinderSettled || hasRecordedGame) ? companionLoginReady : null },
-    { label: 'At least one game recorded', met: presenceLoading ? null : hasRecordedGame },
+    { label: 'Wayfinder Companion installed and running', met: hasBetaStatsAccess ? true : (wayfinderSettled || hasRecordedGame) ? companionReady : null },
+    { label: 'Signed in to Wayfinder Companion', met: hasBetaStatsAccess ? true : (wayfinderSettled || hasRecordedGame) ? companionLoginReady : null },
+    { label: 'At least one game recorded or beta access', met: presenceLoading ? null : statsAccessGranted },
   ]
-  const cardsUnlocked = !presenceLoading && companionReady && companionLoginReady && hasRecordedGame
+  const cardsUnlocked = !presenceLoading && (hasBetaStatsAccess || (companionReady && companionLoginReady && hasRecordedGame))
   const gateState: 'checking' | 'install' | 'login' | 'play' =
     (!wayfinderSettled || presenceLoading) ? 'checking'
     : !companionReady ? 'install'

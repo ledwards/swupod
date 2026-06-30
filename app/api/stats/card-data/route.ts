@@ -104,10 +104,29 @@ function entryCopies(entry: any): number {
 }
 
 function gradeStatusLabel(status: string): string {
+  if (status === 'graded') return 'Graded'
+  if (status === 'provisional') return 'Provisional'
   if (status === 'sample-too-small') return 'Needs 50+ GP'
   if (status === 'slice-too-small') return 'Needs 25 cards'
   if (status === 'zero-variance') return 'No spread'
   return status
+}
+
+function leaderGradeFromWinRate(value: number | null | undefined, count: number | null | undefined) {
+  if (value == null || !Number.isFinite(value) || (count || 0) <= 0) return null
+  if (value >= 70) return 'A+'
+  if (value >= 65) return 'A'
+  if (value >= 60) return 'A-'
+  if (value >= 57.5) return 'B+'
+  if (value >= 55) return 'B'
+  if (value >= 52.5) return 'B-'
+  if (value >= 50) return 'C+'
+  if (value >= 47.5) return 'C'
+  if (value >= 45) return 'C-'
+  if (value >= 42.5) return 'D+'
+  if (value >= 40) return 'D'
+  if (value >= 35) return 'D-'
+  return 'F'
 }
 
 function rateToPct(value: unknown): number | null {
@@ -151,8 +170,17 @@ function mapWayfinderRow(row: WayfinderCardStatsRow) {
   const gdCount = row.gdGames == null ? null : num(row.gdGames)
   const gihCount = row.gihGames == null ? null : num(row.gihGames)
   const gnsCount = row.gnsGames == null ? null : num(row.gnsGames)
-  const grade = isLeader ? null : row.grade || null
-  const gradeStatus = grade ? 'graded' : 'sample-too-small'
+  const sampleWarning = row.sampleWarning || null
+  const gpWr = rateToPct(row.gpWr)
+  const grade = isLeader ? leaderGradeFromWinRate(gpWr, gpCount) : row.grade || null
+  const gradeStatus = grade
+    ? sampleWarning && /provisional/i.test(sampleWarning) ? 'provisional' : 'graded'
+    : 'sample-too-small'
+  const gradePolicy = isLeader
+    ? 'leader-win-rate'
+    : grade
+      ? gradeStatus === 'provisional' ? 'wayfinder-provisional' : 'wayfinder'
+      : 'ungraded'
 
   return {
     cardName: row.name || row.slug || 'Unknown Card',
@@ -171,14 +199,16 @@ function mapWayfinderRow(row: WayfinderCardStatsRow) {
     isLeader,
     isBase,
     grade,
+    displayGrade: grade,
     gradeBasis: isLeader ? 'Leader WR' : row.gradeMetricLabel || 'GIH WR',
     gradeStatus,
-    gradeStatusLabel: grade ? 'Graded' : gradeStatusLabel(gradeStatus),
+    gradeStatusLabel: gradeStatusLabel(gradeStatus),
+    gradePolicy,
     deckCount: num(row.deckCount),
     rawCopies: gpCount,
     gpCount,
     gpWins: num(row.gpWins),
-    gpWr: rateToPct(row.gpWr),
+    gpWr,
     ohCount: isLeader ? null : ohCount,
     ohWins: isLeader ? null : winsFromRate(row.ohWr, row.ohGames),
     ohWr: isLeader ? null : rateToPct(row.ohWr),
@@ -195,7 +225,7 @@ function mapWayfinderRow(row: WayfinderCardStatsRow) {
     playedRate: isLeader ? null : rateToPct(row.playedRate),
     resourcedWhenSeen: isLeader ? null : rateToPct(row.resourcedWhenSeenRate),
     playedWar: isLeader ? null : rateToPct(row.playedWar),
-    sampleWarning: row.sampleWarning || null,
+    sampleWarning,
   }
 }
 
@@ -374,6 +404,16 @@ const WAYFINDER_REPLAY_FIELDS = [
   'playedWar',
 ]
 
+const WAYFINDER_GRADE_FIELDS = [
+  'grade',
+  'displayGrade',
+  'gradeBasis',
+  'gradeStatus',
+  'gradeStatusLabel',
+  'gradePolicy',
+  'sampleWarning',
+]
+
 function mergeWayfinderReplayRows<T extends Record<string, any>>(rows: T[], wayfinderRows: any[]): T[] {
   const byStrictKey = new Map(wayfinderRows.map(row => [cardDataRowStrictKey(row), row]))
   const byLooseKey = new Map(wayfinderRows.map(row => [cardDataRowLooseKey(row), row]))
@@ -387,7 +427,9 @@ function mergeWayfinderReplayRows<T extends Record<string, any>>(rows: T[], wayf
     for (const field of WAYFINDER_REPLAY_FIELDS) {
       if (wayfinderRow[field] != null) merged[field] = wayfinderRow[field]
     }
-    if (wayfinderRow.sampleWarning && !merged.sampleWarning) merged.sampleWarning = wayfinderRow.sampleWarning
+    for (const field of WAYFINDER_GRADE_FIELDS) {
+      if (field in wayfinderRow) merged[field] = wayfinderRow[field]
+    }
     return merged
   })
 }
@@ -479,8 +521,15 @@ function buildMetricRows(map: Map<string, any>, normalCardMap: Map<string, any>)
     const isLeader = Boolean(card?.isLeader || card?.type === 'Leader')
     const isBase = Boolean(card?.isBase || card?.type === 'Base')
     const grade = grades.get(key)
-    const displayGrade = isLeader ? null : grade?.grade || null
+    const gpWr = pct(value.gpWins, value.gpCount)
+    const displayGrade = isLeader ? leaderGradeFromWinRate(gpWr, value.gpCount) : grade?.grade || null
     const status = grade?.status || 'sample-too-small'
+    const gradeStatus = isLeader
+      ? displayGrade ? 'graded' : 'sample-too-small'
+      : status
+    const gradePolicy = isLeader
+      ? 'leader-win-rate'
+      : displayGrade ? 'local-gp-strict' : 'ungraded'
 
     return {
       cardName: card?.name || key.split('|')[0],
@@ -497,14 +546,16 @@ function buildMetricRows(map: Map<string, any>, normalCardMap: Map<string, any>)
       isLeader,
       isBase,
       grade: displayGrade,
+      displayGrade,
       gradeBasis: isLeader ? 'Leader WR' : 'GP WR',
-      gradeStatus: status,
-      gradeStatusLabel: displayGrade ? 'Graded' : gradeStatusLabel(status),
+      gradeStatus,
+      gradeStatusLabel: gradeStatusLabel(gradeStatus),
+      gradePolicy,
       deckCount: value.deckCount,
       rawCopies: value.rawCopies,
       gpCount: value.gpCount,
       gpWins: value.gpWins,
-      gpWr: pct(value.gpWins, value.gpCount),
+      gpWr,
       ohCount: null,
       ohWr: null,
       gdCount: null,

@@ -64,7 +64,11 @@ describe('/api/stats/card-data Wayfinder mapping', () => {
     assert.equal(payload.cards[0].gihWr, 100)
     assert.equal(payload.cards[0].gnsWr, 52.9)
     assert.equal(payload.cards[0].iih, 47.1)
+    assert.equal(payload.cards[0].grade, 'A+')
+    assert.equal(payload.cards[0].displayGrade, 'A+')
     assert.equal(payload.cards[0].gradeBasis, 'GIH WR')
+    assert.equal(payload.cards[0].gradeStatus, 'provisional')
+    assert.equal(payload.cards[0].gradePolicy, 'wayfinder-provisional')
   })
 
   it('keeps leader hand metrics null even if an upstream source sends them', () => {
@@ -100,8 +104,10 @@ describe('/api/stats/card-data Wayfinder mapping', () => {
     const leader = payload.cards[0]
     assert.equal(leader.isLeader, true)
     assert.equal(leader.gpWr, 66.7)
-    assert.equal(leader.grade, null)
+    assert.equal(leader.grade, 'A')
+    assert.equal(leader.displayGrade, 'A')
     assert.equal(leader.gradeBasis, 'Leader WR')
+    assert.equal(leader.gradePolicy, 'leader-win-rate')
     assert.equal(leader.ohWr, null)
     assert.equal(leader.gdWr, null)
     assert.equal(leader.gihWr, null)
