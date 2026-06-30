@@ -1,6 +1,13 @@
 // app/api/plugin/v1/match/result/route.test.ts
 import { describe, it, before, after } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+const ROUTE_SRC = readFileSync(join(__dirname, 'route.ts'), 'utf8')
 
 const REAL_SERVICE_KEY = process.env['PTP_SERVICE_KEY'] || 'test-service-key-for-unit-tests'
 
@@ -61,5 +68,32 @@ describe('canonicalMatchId', () => {
     const { canonicalMatchId } = await import('./route.ts')
     const once = canonicalMatchId('ing-match_123')
     assert.equal(canonicalMatchId(once), once)
+  })
+})
+
+describe('POST /api/plugin/v1/match/result contract', () => {
+  it('accepts and forwards Wayfinder replay, game, practice, format, and deck identity fields', () => {
+    for (const field of [
+      'gameNumber',
+      'replayUrl',
+      'practiceMatchGameId',
+      'wayfinderGameId',
+      'format',
+      'playerLeader',
+      'playerBase',
+      'playerArchetype',
+      'opponentLeader',
+      'opponentBase',
+      'opponentArchetype',
+    ]) {
+      assert.ok(ROUTE_SRC.includes(field), `${field} is part of the result contract`)
+    }
+
+    assert.match(ROUTE_SRC, /recordPracticeMatchGameResult\(\{[\s\S]*practiceMatchGameId/)
+    assert.match(ROUTE_SRC, /recordPracticeMatchGameResult\(\{[\s\S]*replayUrl/)
+    assert.match(ROUTE_SRC, /recordPracticeMatchGameResult\(\{[\s\S]*wayfinderGameId/)
+    assert.match(ROUTE_SRC, /recordPracticeMatchGameResult\(\{[\s\S]*format/)
+    assert.match(ROUTE_SRC, /wayfinder_replay_url/)
+    assert.match(ROUTE_SRC, /ON CONFLICT \(user_id, card_pool_id, wayfinder_match_id\)/)
   })
 })

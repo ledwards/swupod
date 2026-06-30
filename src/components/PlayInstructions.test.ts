@@ -32,7 +32,7 @@ describe('<PlayInstructions /> Companion adoption', () => {
     assert.ok(SRC.includes('wayfinderDetected && isOwner'))
   })
 
-  it('enables Chrome and Safari (live) and leaves Firefox awaiting approval', () => {
+  it('enables Chrome, Safari, and Firefox store install paths', () => {
     assert.ok(SRC.includes('WayfinderStoreButtons'))
     assert.ok(STORE_BUTTONS.includes('https://chromewebstore.google.com/detail/wayfinder-companion/econclbajpendbppldcnpngjfddcogfh'))
     // Chrome is a live, installable browser card.
@@ -44,10 +44,19 @@ describe('<PlayInstructions /> Companion adoption', () => {
     assert.ok(STORE_BUTTONS.includes('WAYFINDER_SAFARI_APP_STORE_URL'))
     assert.ok(STORE_BUTTONS.includes('apps.apple.com'))
     assert.match(STORE_BUTTONS, /browser:\s*'safari',\s*name:\s*'Safari'[^\n]*status:\s*'live'/)
-    // Firefox is present but awaiting store approval (status 'soon').
+    // Firefox is live through AMO.
     assert.match(STORE_BUTTONS, /Firefox/)
-    assert.match(STORE_BUTTONS, /status:\s*'soon'/)
-    assert.match(STORE_BUTTONS, /Coming soon/i)
+    assert.ok(STORE_BUTTONS.includes('WAYFINDER_FIREFOX_ADDON_URL'))
+    assert.ok(STORE_BUTTONS.includes('addons.mozilla.org'))
+    assert.match(STORE_BUTTONS, /browser:\s*'firefox',\s*name:\s*'Firefox'[^\n]*status:\s*'live'/)
+    assert.match(STORE_BUTTONS, /Add to Firefox/)
+  })
+
+  it('surfaces the Wayfinder result and replay loop in the play UI', () => {
+    assert.ok(SRC.includes('Pool and match linked'))
+    assert.ok(SRC.includes('Result returns to PTP'))
+    assert.ok(SRC.includes('Replay saved to My Stats'))
+    assert.match(CSS, /\.wayfinder-sync-strip\s*\{/)
   })
 
   it('offers iOS live on the App Store and Android coming soon on mobile', () => {
