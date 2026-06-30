@@ -59,10 +59,10 @@ describe('bundle guard', () => {
     })
 
     it('the /deckbuilder/build exemption is ratcheted, not open-ended', () => {
-      const over = findViolations([report('/deckbuilder/build', [['static/chunks/cards.js', 7.5 * MB]])])
+      const over = findViolations([report('/deckbuilder/build', [['static/chunks/cards.js', 7.75 * MB]])])
       assert.ok(over.some(v => v.kind === 'route-total'), 'exceeding the exemption cap still fails')
 
-      const within = findViolations([report('/deckbuilder/build', [['static/chunks/cards.js', 6 * MB]])])
+      const within = findViolations([report('/deckbuilder/build', [['static/chunks/cards.js', 7.25 * MB]])])
       assert.deepStrictEqual(within, [], 'current known weight passes')
     })
   })

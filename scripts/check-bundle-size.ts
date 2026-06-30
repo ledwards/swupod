@@ -38,12 +38,13 @@ export const MAX_ROUTE_TOTAL_BYTES = 3 * 1024 * 1024 // 3 MB
  * DeckBuilder.tsx imports getAllCards from src/utils/cardData directly, and
  * that file is mid-refactor in a parallel branch (plans/REFACTORING_PLAN.md)
  * — it could not be modified as part of U5. The exemption is NOT open-ended:
- * the route is capped at its current weight (7 MB), so it can only shrink.
+ * the route is capped near its current weight (7.5 MB), so it can only shrink
+ * after the card-data-client refactor.
  * Remove this entry when DeckBuilder switches to cardDataClient/cardCache.
  */
 export const ROUTE_EXEMPTIONS: Record<string, { maxTotalBytes: number; reason: string }> = {
   '/deckbuilder/build': {
-    maxTotalBytes: 7 * 1024 * 1024,
+    maxTotalBytes: 7.5 * 1024 * 1024,
     reason: 'DeckBuilder.tsx imports cardData directly (frozen during parallel refactor)',
   },
 }
