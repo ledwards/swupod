@@ -1,6 +1,7 @@
 import { deriveMatchWinner } from './results'
 import type { TxClient } from '@/lib/db'
 import type { RoundAdvanceResult } from './advancement'
+import { isLeaderMirrorMatch } from '@/src/utils/mirrorMatch'
 
 export type PracticeGameResult = 'player1' | 'player2' | 'draw'
 
@@ -208,6 +209,16 @@ export interface PracticeMatchForfeitParams {
   wayfinderMatchId?: string | null
   /** Optional anchor: resolve the match via this game id instead of the active round. */
   practiceMatchGameId?: string | null
+  playerLeader?: string | null
+  playerLeaderImage?: string | null
+  playerBase?: string | null
+  playerBaseImage?: string | null
+  playerArchetype?: string | null
+  opponentLeader?: string | null
+  opponentLeaderImage?: string | null
+  opponentBase?: string | null
+  opponentBaseImage?: string | null
+  opponentArchetype?: string | null
 }
 
 export interface PracticeMatchForfeitResult {
@@ -1061,6 +1072,8 @@ export async function recordPracticeMatchGameResultInTransaction(
       podId: String(pool.pod_id),
       player1Id: stringOrNull(updatedMatch.player1_id),
       player2Id: stringOrNull(updatedMatch.player2_id),
+      player1Leader: stringOrNull(updatedMatch.player1_leader),
+      player2Leader: stringOrNull(updatedMatch.player2_leader),
       winner,
       wayfinderMatchId: normalizedParams.wayfinderMatchId,
     })
@@ -1277,6 +1290,9 @@ export async function forfeitPracticeMatchInTransaction(
 
   const reporterIsPlayer1 = matchRow.player1_id === pool.user_id
   const winner = resultFromReporterPerspective(params.result, reporterIsPlayer1) as 'player1' | 'player2'
+  const identities = identityColumnsForReporter(params, reporterIsPlayer1)
+  const player1Leader = identities.player1.leader ?? stringOrNull(matchRow.player1_leader)
+  const player2Leader = identities.player2.leader ?? stringOrNull(matchRow.player2_leader)
 
   await tx.query(
     `UPDATE practice_matches
@@ -1284,16 +1300,42 @@ export async function forfeitPracticeMatchInTransaction(
            match_winner = $2,
            player1_submitted = true,
            player2_submitted = true,
-           wayfinder_match_id = COALESCE(wayfinder_match_id, $3)
+           wayfinder_match_id = COALESCE(wayfinder_match_id, $3),
+           player1_leader = COALESCE($4, player1_leader),
+           player1_leader_image = COALESCE($5, player1_leader_image),
+           player1_base = COALESCE($6, player1_base),
+           player1_base_image = COALESCE($7, player1_base_image),
+           player1_archetype = COALESCE($8, player1_archetype),
+           player2_leader = COALESCE($9, player2_leader),
+           player2_leader_image = COALESCE($10, player2_leader_image),
+           player2_base = COALESCE($11, player2_base),
+           player2_base_image = COALESCE($12, player2_base_image),
+           player2_archetype = COALESCE($13, player2_archetype)
      WHERE id = $1
        AND final_confirmed IS NOT TRUE`,
-    [matchRow.id, winner, wayfinderMatchId]
+    [
+      matchRow.id,
+      winner,
+      wayfinderMatchId,
+      identities.player1.leader,
+      identities.player1.leaderImage,
+      identities.player1.base,
+      identities.player1.baseImage,
+      identities.player1.archetype,
+      identities.player2.leader,
+      identities.player2.leaderImage,
+      identities.player2.base,
+      identities.player2.baseImage,
+      identities.player2.archetype,
+    ]
   )
 
   await updatePlayerPoolRecordsOnce(tx, {
     podId: String(pool.pod_id),
     player1Id: stringOrNull(matchRow.player1_id),
     player2Id: stringOrNull(matchRow.player2_id),
+    player1Leader,
+    player2Leader,
     winner,
     wayfinderMatchId: wayfinderMatchId ?? `forfeit:${String(matchRow.id)}`,
   })
@@ -1796,8 +1838,22 @@ export function resultIdempotencyKeyFor(
   return `wayfinder-match:${canonicalWayfinderMatchId(params.wayfinderMatchId)}:game:${slot}`
 }
 
+type DeckIdentityParams = Pick<
+  PracticeGameResultParams,
+  | 'playerLeader'
+  | 'playerLeaderImage'
+  | 'playerBase'
+  | 'playerBaseImage'
+  | 'playerArchetype'
+  | 'opponentLeader'
+  | 'opponentLeaderImage'
+  | 'opponentBase'
+  | 'opponentBaseImage'
+  | 'opponentArchetype'
+>
+
 function identityColumnsForReporter(
-  params: PracticeGameResultParams,
+  params: DeckIdentityParams,
   reporterIsPlayer1: boolean
 ): {
   player1: DeckIdentity
@@ -1891,16 +1947,26 @@ async function updatePlayerPoolRecordsOnce(
     podId,
     player1Id,
     player2Id,
+    player1Leader,
+    player2Leader,
     winner,
     wayfinderMatchId,
   }: {
     podId: string
     player1Id: string | null
     player2Id: string | null
+    player1Leader?: string | null
+    player2Leader?: string | null
     winner: string
     wayfinderMatchId: string
   }
 ): Promise<void> {
+  if (isLeaderMirrorMatch(player1Leader, player2Leader)) {
+    await updatePoolRecordDelta(tx, { podId, userId: player1Id, wins: 0, losses: 0, draws: 0, wayfinderMatchId })
+    await updatePoolRecordDelta(tx, { podId, userId: player2Id, wins: 0, losses: 0, draws: 0, wayfinderMatchId })
+    return
+  }
+
   if (winner === 'player1') {
     await updatePoolRecordDelta(tx, { podId, userId: player1Id, wins: 1, losses: 0, draws: 0, wayfinderMatchId })
     await updatePoolRecordDelta(tx, { podId, userId: player2Id, wins: 0, losses: 1, draws: 0, wayfinderMatchId })
@@ -1938,11 +2004,11 @@ async function updatePoolRecordDelta(
      SET wins = wins + $1,
          losses = losses + $2,
          draws = draws + $3,
-         wayfinder_match_ids = array_append(wayfinder_match_ids, $4),
+         wayfinder_match_ids = array_append(COALESCE(wayfinder_match_ids, '{}'), $4),
          updated_at = NOW()
      WHERE user_id = $5
        AND pod_id = $6
-       AND NOT ($4 = ANY(wayfinder_match_ids))`,
+       AND NOT ($4 = ANY(COALESCE(wayfinder_match_ids, '{}')))`,
     [wins, losses, draws, wayfinderMatchId, userId, podId]
   )
 }

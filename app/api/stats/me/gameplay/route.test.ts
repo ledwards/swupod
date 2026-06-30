@@ -288,6 +288,28 @@ describe('buildArchetypeBreakdown', () => {
     assert.equal(boba.winRate, 50)
   })
 
+  it('excludes leader mirrors from archetype win-rate calculations', () => {
+    const result = buildArchetypeBreakdown([
+      replay({
+        archetype: 'Sabine Green30',
+        leaderName: 'Sabine Wren',
+        opponent: { username: null, avatarUrl: null, leaderName: 'Sabine Wren', leaderImageUrl: null, baseName: null, archetype: null },
+        gameResults: ['W'],
+      }),
+      replay({
+        archetype: 'Sabine Green30',
+        leaderName: 'Sabine Wren',
+        opponent: { username: null, avatarUrl: null, leaderName: 'Darth Vader', leaderImageUrl: null, baseName: null, archetype: null },
+        gameResults: ['L'],
+      }),
+    ])
+    const sabine = result.find((r) => r.archetype === 'Sabine Green30')!
+    assert.equal(sabine.wins, 0)
+    assert.equal(sabine.losses, 1)
+    assert.equal(sabine.matches, 1)
+    assert.equal(sabine.winRate, 0)
+  })
+
   it('skips replays with no archetype or no scored games', () => {
     const result = buildArchetypeBreakdown([
       replay({ archetype: null, gameResults: ['W'] }), // no archetype

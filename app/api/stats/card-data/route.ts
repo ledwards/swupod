@@ -138,17 +138,21 @@ function wayfinderStatsUrl(setCode: string): string | null {
   url.searchParams.set('format', 'limited')
   url.searchParams.set('sources', 'karabast,ptp')
   url.searchParams.set('limit', 'all')
+  url.searchParams.set('excludeMirrors', 'true')
   return url.toString()
 }
 
 function mapWayfinderRow(row: WayfinderCardStatsRow) {
   const cardType = row.type || 'Unknown'
+  const isLeader = cardType.toLowerCase().includes('leader')
+  const isBase = cardType.toLowerCase().includes('base')
   const gpCount = num(row.deckGames)
   const ohCount = row.ohGames == null ? null : num(row.ohGames)
   const gdCount = row.gdGames == null ? null : num(row.gdGames)
   const gihCount = row.gihGames == null ? null : num(row.gihGames)
   const gnsCount = row.gnsGames == null ? null : num(row.gnsGames)
-  const gradeStatus = row.grade ? 'graded' : 'sample-too-small'
+  const grade = isLeader ? null : row.grade || null
+  const gradeStatus = grade ? 'graded' : 'sample-too-small'
 
   return {
     cardName: row.name || row.slug || 'Unknown Card',
@@ -164,33 +168,33 @@ function mapWayfinderRow(row: WayfinderCardStatsRow) {
     hyperspaceBackImageUrl: row.hyperspaceBackImageUrl || null,
     collectorNumber: row.collectorNumber || null,
     setCode: row.setCode || null,
-    isLeader: cardType.toLowerCase().includes('leader'),
-    isBase: cardType.toLowerCase().includes('base'),
-    grade: row.grade || null,
-    gradeBasis: row.gradeMetricLabel || 'GIH WR',
+    isLeader,
+    isBase,
+    grade,
+    gradeBasis: isLeader ? 'Leader WR' : row.gradeMetricLabel || 'GIH WR',
     gradeStatus,
-    gradeStatusLabel: row.grade ? 'Graded' : gradeStatusLabel(gradeStatus),
+    gradeStatusLabel: grade ? 'Graded' : gradeStatusLabel(gradeStatus),
     deckCount: num(row.deckCount),
     rawCopies: gpCount,
     gpCount,
     gpWins: num(row.gpWins),
     gpWr: rateToPct(row.gpWr),
-    ohCount,
-    ohWins: winsFromRate(row.ohWr, row.ohGames),
-    ohWr: rateToPct(row.ohWr),
-    gdCount,
-    gdWins: winsFromRate(row.gdWr, row.gdGames),
-    gdWr: rateToPct(row.gdWr),
-    gihCount,
-    gihWins: winsFromRate(row.gihWr, row.gihGames),
-    gihWr: rateToPct(row.gihWr),
-    gnsCount,
-    gnsWins: winsFromRate(row.gnsWr, row.gnsGames),
-    gnsWr: rateToPct(row.gnsWr),
-    iih: rateToPct(row.iih),
-    playedRate: rateToPct(row.playedRate),
-    resourcedWhenSeen: rateToPct(row.resourcedWhenSeenRate),
-    playedWar: rateToPct(row.playedWar),
+    ohCount: isLeader ? null : ohCount,
+    ohWins: isLeader ? null : winsFromRate(row.ohWr, row.ohGames),
+    ohWr: isLeader ? null : rateToPct(row.ohWr),
+    gdCount: isLeader ? null : gdCount,
+    gdWins: isLeader ? null : winsFromRate(row.gdWr, row.gdGames),
+    gdWr: isLeader ? null : rateToPct(row.gdWr),
+    gihCount: isLeader ? null : gihCount,
+    gihWins: isLeader ? null : winsFromRate(row.gihWr, row.gihGames),
+    gihWr: isLeader ? null : rateToPct(row.gihWr),
+    gnsCount: isLeader ? null : gnsCount,
+    gnsWins: isLeader ? null : winsFromRate(row.gnsWr, row.gnsGames),
+    gnsWr: isLeader ? null : rateToPct(row.gnsWr),
+    iih: isLeader ? null : rateToPct(row.iih),
+    playedRate: isLeader ? null : rateToPct(row.playedRate),
+    resourcedWhenSeen: isLeader ? null : rateToPct(row.resourcedWhenSeenRate),
+    playedWar: isLeader ? null : rateToPct(row.playedWar),
     sampleWarning: row.sampleWarning || null,
   }
 }
@@ -224,6 +228,26 @@ export function mapWayfinderRowsToCardDataStats({
     bases: [],
     cards,
   }
+}
+
+export function shouldPreferWayfinderCardData({
+  format,
+  source,
+  tournamentOnly,
+  topPlayersOnly,
+  userId,
+}: {
+  format: string
+  source: string
+  tournamentOnly: boolean
+  topPlayersOnly: boolean
+  userId: string | null
+}) {
+  return format === 'limited' &&
+    source === 'online' &&
+    !tournamentOnly &&
+    !topPlayersOnly &&
+    !userId
 }
 
 function cardDataRowStrictKey(row: any): string {
@@ -359,6 +383,7 @@ function mergeWayfinderReplayRows<T extends Record<string, any>>(rows: T[], wayf
     if (!wayfinderRow) return row
 
     const merged: any = { ...row }
+    if (merged.isLeader || String(merged.cardType || '').toLowerCase().includes('leader')) return merged
     for (const field of WAYFINDER_REPLAY_FIELDS) {
       if (wayfinderRow[field] != null) merged[field] = wayfinderRow[field]
     }
@@ -451,7 +476,10 @@ function buildMetricRows(map: Map<string, any>, normalCardMap: Map<string, any>)
 
   return Array.from(map.entries()).map(([key, value]) => {
     const card = value.card || normalCardMap.get(key)
+    const isLeader = Boolean(card?.isLeader || card?.type === 'Leader')
+    const isBase = Boolean(card?.isBase || card?.type === 'Base')
     const grade = grades.get(key)
+    const displayGrade = isLeader ? null : grade?.grade || null
     const status = grade?.status || 'sample-too-small'
 
     return {
@@ -466,12 +494,12 @@ function buildMetricRows(map: Map<string, any>, normalCardMap: Map<string, any>)
       backImageUrl: card?.backImageUrl || null,
       collectorNumber: card?.cardId || card?.number || null,
       setCode: card?.set || null,
-      isLeader: Boolean(card?.isLeader || card?.type === 'Leader'),
-      isBase: Boolean(card?.isBase || card?.type === 'Base'),
-      grade: grade?.grade || null,
-      gradeBasis: 'GP WR',
+      isLeader,
+      isBase,
+      grade: displayGrade,
+      gradeBasis: isLeader ? 'Leader WR' : 'GP WR',
       gradeStatus: status,
-      gradeStatusLabel: grade?.grade ? 'Graded' : gradeStatusLabel(status),
+      gradeStatusLabel: displayGrade ? 'Graded' : gradeStatusLabel(status),
       deckCount: value.deckCount,
       rawCopies: value.rawCopies,
       gpCount: value.gpCount,
@@ -511,12 +539,13 @@ export async function GET(request: NextRequest): Promise<Response> {
     const topPlayersOnly = url.searchParams.get('topPlayersOnly') === 'true'
     const userId = url.searchParams.get('userId') || null
 
-    const shouldPreferWayfinder =
-      (format === 'all' || format === 'limited') &&
-      source === 'online' &&
-      !tournamentOnly &&
-      !topPlayersOnly &&
-      !userId
+    const shouldPreferWayfinder = shouldPreferWayfinderCardData({
+      format,
+      source,
+      tournamentOnly,
+      topPlayersOnly,
+      userId,
+    })
 
     if (shouldPreferWayfinder) {
       try {

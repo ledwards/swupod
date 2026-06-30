@@ -899,6 +899,21 @@
   line-height: 1.35;
 }
 
+.card-data-meta-link,
+.card-data-meta-link:visited {
+  color: #d8edff;
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 800;
+  margin-top: 0.4rem;
+  text-decoration: none;
+}
+
+.card-data-meta-link:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
 .card-stats-view-tabs {
   flex: 0 0 auto;
 }

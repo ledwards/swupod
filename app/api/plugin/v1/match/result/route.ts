@@ -10,6 +10,7 @@ import { requireServiceKey } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { NextRequest, NextResponse } from 'next/server'
 import { broadcastDraftState } from '@/src/lib/socketBroadcast'
+import { isLeaderMirrorMatch } from '@/src/utils/mirrorMatch'
 import {
   PracticeGameResultError,
   forfeitPracticeMatch,
@@ -89,6 +90,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         result,
         wayfinderMatchId: matchId,
         practiceMatchGameId: practiceMatchGameId ?? null,
+        playerLeader: playerLeader ?? null,
+        playerLeaderImage: playerLeaderImage ?? null,
+        playerBase: playerBase ?? null,
+        playerBaseImage: playerBaseImage ?? null,
+        playerArchetype: playerArchetype ?? null,
+        opponentLeader: opponentLeader ?? null,
+        opponentLeaderImage: opponentLeaderImage ?? null,
+        opponentBase: opponentBase ?? null,
+        opponentBaseImage: opponentBaseImage ?? null,
+        opponentArchetype: opponentArchetype ?? null,
       })
 
       if (forfeited.changed) {
@@ -136,9 +147,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return jsonResponse({ ok: true, competitive: true, duplicate: recorded.duplicate })
     } else {
       // NON-COMPETITIVE: update card_pools directly with overall match result
-      const winDelta = result === 'win' ? 1 : 0
-      const lossDelta = result === 'loss' ? 1 : 0
-      const drawDelta = result === 'draw' ? 1 : 0
+      const mirrorMatch = isLeaderMirrorMatch(playerLeader, opponentLeader)
+      const winDelta = !mirrorMatch && result === 'win' ? 1 : 0
+      const lossDelta = !mirrorMatch && result === 'loss' ? 1 : 0
+      const drawDelta = !mirrorMatch && result === 'draw' ? 1 : 0
 
       // Idempotent per (pool, canonical match id): if this game was already
       // recorded for the pool (e.g. an `ing-` ingestion write-back landed first

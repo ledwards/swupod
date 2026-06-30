@@ -130,6 +130,8 @@ describe('GET /api/stats/deck/[shareId]/gameplay route structure', () => {
     assert.match(ROUTE_SRC, /FROM casual_matches cm[\s\S]*?WHERE cm\.card_pool_id = \$1/)
     assert.match(ROUTE_SRC, /FROM practice_matches pm[\s\S]*?WHERE pm\.pod_id = cp\.pod_id/)
     assert.match(ROUTE_SRC, /pm\.player1_id = \$2 OR pm\.player2_id = \$2/)
+    assert.match(ROUTE_SRC, /cm\.player_leader/)
+    assert.match(ROUTE_SRC, /CASE WHEN pm\.player1_id = \$2 THEN pm\.player1_leader ELSE pm\.player2_leader END AS my_leader/)
   })
 
   it('returns 404 for unknown shareId and public cache headers for shareable reads', () => {

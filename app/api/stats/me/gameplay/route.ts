@@ -5,6 +5,7 @@ import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
 import { getAspectColor } from '@/src/utils/aspectColors'
 import { hyperspaceLeaderArt } from '@/src/utils/hyperspaceLeaderArt'
+import { isLeaderMirrorMatch } from '@/src/utils/mirrorMatch'
 import { resolveReplayUrl } from '@/src/utils/wayfinderUrls'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -286,6 +287,10 @@ function canonicalArchetype(name: string | null): string | null {
   return trimmed || null
 }
 
+function isGameplayReplayMirror(replay: GameplayReplay): boolean {
+  return isLeaderMirrorMatch(replay.leaderName, replay.opponent.leaderName)
+}
+
 /**
  * Aggregate captured games by archetype for the "Your Archetypes" usage pie —
  * the archetype mirror of buildLeaderBreakdown. Each replay contributes its
@@ -297,6 +302,7 @@ function canonicalArchetype(name: string | null): string | null {
 export function buildArchetypeBreakdown(replays: GameplayReplay[]): GameplayArchetypeBreakdown[] {
   const byArchetype = new Map<string, GameplayArchetypeBreakdown>()
   for (const replay of replays) {
+    if (isGameplayReplayMirror(replay)) continue
     const archetype = canonicalArchetype(replay.archetype)
     if (!archetype) continue
     let wins = 0

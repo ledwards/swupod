@@ -139,6 +139,12 @@ describe('<YourStats /> — index.tsx', () => {
     assert.doesNotMatch(INDEX_CODE, /card-data-tier-row/)
   })
 
+  it('scopes the tier list to the signed-in user and links to the global meta tier list', () => {
+    assert.match(INDEX_CODE, /userId=\{user\.id\}/)
+    assert.match(INDEX_CODE, /const metaTierListHref = isAllSets[\s\S]*?\/stats\?tab=card-data/)
+    assert.match(INDEX_CODE, /metaTierListHref=\{metaTierListHref\}/)
+  })
+
   it('handles the auth-loading state without flashing LoggedOutCTA', () => {
     // Reading loading from useAuth and gating before the !user branch.
     assert.match(INDEX_CODE, /\bloading\b/)

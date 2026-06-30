@@ -12,8 +12,9 @@ const MODAL_SRC = readFileSync(join(__dirname, 'Modal.tsx'), 'utf8')
 const STATS_CSS = readFileSync(join(__dirname, '../../app/stats/stats.css'), 'utf8')
 
 describe('<CardDataTierList /> controls', () => {
-  it('grades from GIH only and does not render metric toggles', () => {
+  it('grades deck cards from GIH only and does not render metric toggles', () => {
     assert.match(COMPONENT_SRC, /const GIH_GRADE_METRIC: CardMetricKey = ['"]gihWr['"]/)
+    assert.match(COMPONENT_SRC, /const selectedMetric = isLeaderView \? LEADER_GRADE_METRIC : GIH_GRADE_METRIC/)
     assert.doesNotMatch(COMPONENT_SRC, /useState<CardMetricKey>/)
     assert.doesNotMatch(COMPONENT_SRC, /setSelectedMetric/)
     assert.doesNotMatch(COMPONENT_SRC, /aria-label=['"]Grade metric['"]/)
@@ -28,6 +29,22 @@ describe('<CardDataTierList /> controls', () => {
   it('shows all requested rates on tier-list cards', () => {
     assert.match(COMPONENT_SRC, /GIH: \$\{formatTierCardPct\(card\.gihWr\)\} · OH: \$\{formatTierCardPct\(card\.ohWr\)\} · GD: \$\{formatTierCardPct\(card\.gdWr\)\} · GP \$\{formatTierCardPct\(card\.gpWr\)\}/)
     assert.doesNotMatch(COMPONENT_SRC, /GIH: \$\{formatTierCardPct\(card\.gihWr\)\} \* OH:/)
+  })
+
+  it('normalizes card set numbers to the dot separator on tier cards', () => {
+    assert.match(COMPONENT_SRC, /function formatCollectorNumber\(value: string \| null \| undefined\)/)
+    assert.match(COMPONENT_SRC, /\[._-\]\(\[0-9\]\[A-Za-z0-9\]\*\)/)
+    assert.match(COMPONENT_SRC, /return `\$\{match\[1\]!\.toUpperCase\(\)\}\.\$\{match\[2\]!\}`/)
+    assert.match(COMPONENT_SRC, /const collectorNumber = formatCollectorNumber\(card\.collectorNumber\)/)
+    assert.doesNotMatch(COMPONENT_SRC, /card\.collectorNumber \? <span>\{card\.collectorNumber\}<\/span>/)
+  })
+
+  it('treats leaders as a pure leader win-rate slice', () => {
+    assert.match(COMPONENT_SRC, /const LEADER_GRADE_METRIC: CardMetricKey = ['"]gpWr['"]/)
+    assert.match(COMPONENT_SRC, /if \(card\.isLeader\) \{[\s\S]*?Leader WR: \$\{formatTierCardPct\(card\.gpWr\)\}/)
+    assert.match(COMPONENT_SRC, /const renderLeaderTable = \(\) => \(/)
+    assert.match(COMPONENT_SRC, /Leader WR[\s\S]*?Win rate in games played with this leader/)
+    assert.match(COMPONENT_SRC, /const metricStats = card\.isLeader \? \[[\s\S]*?label: ['"]Leader WR['"][\s\S]*?\] : \[/)
   })
 
   it('stacks title, subtitle, aspects, then footer stats on tier cards', () => {
@@ -60,6 +77,13 @@ describe('<CardDataTierList /> controls', () => {
     assert.match(COMPONENT_SRC, /const companionReady = wayfinderDetected \|\| hasRecordedGame/)
     assert.match(COMPONENT_SRC, /const companionLoginReady = pluginLoggedIn === true \|\| hasRecordedGame/)
     assert.match(COMPONENT_SRC, /const cardsUnlocked = !presenceLoading && companionReady && companionLoginReady && hasRecordedGame/)
+  })
+
+  it('can scope card data to a specific user and link back to the meta tier list', () => {
+    assert.match(COMPONENT_SRC, /userId\?: string \| null/)
+    assert.match(COMPONENT_SRC, /if \(userId\) baseParams\.set\(['"]userId['"], userId\)/)
+    assert.match(COMPONENT_SRC, /metaTierListHref\?: string \| null/)
+    assert.match(COMPONENT_SRC, /className=['"]card-data-meta-link['"][^>]*>View meta tier list/)
   })
 
   it('prefers hyperspace art for tier-list card images', () => {

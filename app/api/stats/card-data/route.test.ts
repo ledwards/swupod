@@ -1,8 +1,25 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { enrichPayloadWithHyperspaceImages, mapWayfinderRowsToCardDataStats } from './route'
+import { enrichPayloadWithHyperspaceImages, mapWayfinderRowsToCardDataStats, shouldPreferWayfinderCardData } from './route'
 
 describe('/api/stats/card-data Wayfinder mapping', () => {
+  it('keeps All formats on the local aggregate so leaders and bases remain available', () => {
+    assert.equal(shouldPreferWayfinderCardData({
+      format: 'all',
+      source: 'online',
+      tournamentOnly: false,
+      topPlayersOnly: false,
+      userId: null,
+    }), false)
+    assert.equal(shouldPreferWayfinderCardData({
+      format: 'limited',
+      source: 'online',
+      tournamentOnly: false,
+      topPlayersOnly: false,
+      userId: null,
+    }), true)
+  })
+
   it('maps Wayfinder card stats rows into SWUPOD card-data rows with percent metrics', () => {
     const payload = mapWayfinderRowsToCardDataStats({
       setCode: 'ASH',
@@ -48,6 +65,51 @@ describe('/api/stats/card-data Wayfinder mapping', () => {
     assert.equal(payload.cards[0].gnsWr, 52.9)
     assert.equal(payload.cards[0].iih, 47.1)
     assert.equal(payload.cards[0].gradeBasis, 'GIH WR')
+  })
+
+  it('keeps leader hand metrics null even if an upstream source sends them', () => {
+    const payload = mapWayfinderRowsToCardDataStats({
+      setCode: 'ASH',
+      format: 'all',
+      rows: [
+        {
+          slug: 'ahsoka-tano',
+          name: 'Ahsoka Tano',
+          type: 'Leader',
+          deckGames: 12,
+          gpWins: 8,
+          gpWr: 0.666666667,
+          ohGames: 12,
+          ohWr: 0.666666667,
+          gdGames: 12,
+          gdWr: 0.666666667,
+          gihGames: 12,
+          gihWr: 0.666666667,
+          gnsGames: 12,
+          gnsWr: 0.666666667,
+          iih: 0,
+          playedRate: 1,
+          resourcedWhenSeenRate: 0,
+          playedWar: 0,
+          grade: 'A',
+          gradeMetricLabel: 'GIH WR',
+        },
+      ],
+    })
+
+    const leader = payload.cards[0]
+    assert.equal(leader.isLeader, true)
+    assert.equal(leader.gpWr, 66.7)
+    assert.equal(leader.grade, null)
+    assert.equal(leader.gradeBasis, 'Leader WR')
+    assert.equal(leader.ohWr, null)
+    assert.equal(leader.gdWr, null)
+    assert.equal(leader.gihWr, null)
+    assert.equal(leader.gnsWr, null)
+    assert.equal(leader.iih, null)
+    assert.equal(leader.playedRate, null)
+    assert.equal(leader.resourcedWhenSeen, null)
+    assert.equal(leader.playedWar, null)
   })
 
   it('enriches stats rows with set-aware hyperspace card art', () => {

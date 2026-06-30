@@ -1,9 +1,12 @@
+import { isLeaderMirrorMatch } from '@/src/utils/mirrorMatch'
+
 export type ReplayResult = 'win' | 'loss' | 'draw' | 'pending'
 export type GameResult = 'W' | 'L' | 'D'
 
 export interface DeckGameplayReplay {
   result?: ReplayResult
   gameResults?: GameResult[]
+  leaderName?: string | null
   opponent?: {
     username?: string | null
     leaderName?: string | null
@@ -79,6 +82,10 @@ function distributionKey(replay: DeckGameplayReplay): ResultDistributionBucket['
   return wins > 0 ? '1-2' : '0-2'
 }
 
+function isDeckGameplayMirror(replay: DeckGameplayReplay): boolean {
+  return isLeaderMirrorMatch(replay.leaderName, replay.opponent?.leaderName)
+}
+
 export function buildDeckGameplayMetrics(replays: DeckGameplayReplay[]): DeckGameplayMetrics {
   const matchRecord = { wins: 0, losses: 0, draws: 0 }
   const gameRecord = { wins: 0, losses: 0, draws: 0 }
@@ -91,6 +98,7 @@ export function buildDeckGameplayMetrics(replays: DeckGameplayReplay[]): DeckGam
   }
 
   for (const replay of replays || []) {
+    if (isDeckGameplayMirror(replay)) continue
     if (replay.result === 'win') matchRecord.wins += 1
     else if (replay.result === 'loss') matchRecord.losses += 1
     else if (replay.result === 'draw') matchRecord.draws += 1
@@ -140,6 +148,7 @@ export function buildOpponentBreakdown(replays: DeckGameplayReplay[]): OpponentB
   const map = new Map<string, OpponentBreakdown>()
 
   for (const replay of replays || []) {
+    if (isDeckGameplayMirror(replay)) continue
     if (replay.result !== 'win' && replay.result !== 'loss' && replay.result !== 'draw') continue
     const opponent = replay.opponent || {}
     const key = opponentKey(replay)

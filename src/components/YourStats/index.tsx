@@ -90,6 +90,9 @@ export function YourStats({ since, until, setCode = 'all', filterLabel }: YourSt
   // dashboard takes setCode='all' and its routes drop the per-set filter. (Luck
   // still resolves a concrete newest set via its own lockedSetCode path.)
   const concreteSet = isAllSets ? 'all' : setCode
+  const metaTierListHref = isAllSets
+    ? '/stats?tab=card-data'
+    : `/stats?tab=card-data#${encodeURIComponent(setCode)}`
 
   if (loading) {
     return (
@@ -207,6 +210,8 @@ export function YourStats({ since, until, setCode = 'all', filterLabel }: YourSt
               title="Tier List"
               allowTable={false}
               viewParamName={null}
+              userId={user.id}
+              metaTierListHref={metaTierListHref}
             />
           </div>
         ) : activeTab === 'luck' ? (
