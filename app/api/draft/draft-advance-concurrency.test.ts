@@ -20,7 +20,7 @@ process.env['POSTGRES_URL'] = TEST_DB_URL
 
 const db = await import('@/lib/db')
 const { query, queryRow, queryRows, closePool } = db
-const { processAllStagedPicks, _testSeams } = await import('@/src/utils/draftAdvance')
+const { processAllStagedPicks, checkAndAdvancePackDraft, _testSeams } = await import('@/src/utils/draftAdvance')
 const { processBotTurns } = await import('@/src/utils/botLogic')
 const { deleteAbandonedPodRecords } = await import('@/src/utils/podCleanup')
 
@@ -48,6 +48,17 @@ function leaderCard(n: number) {
     set: 'TST',
     rarity: 'Legendary',
     type: 'Leader',
+  }
+}
+
+function draftCard(label: string) {
+  return {
+    id: `test-card-${label}`,
+    instanceId: `inst-card-${label}`,
+    name: `Test Card ${label}`,
+    set: 'TST',
+    rarity: 'Common',
+    type: 'Unit',
   }
 }
 
@@ -103,9 +114,117 @@ async function seedSelectedPod(): Promise<SeededPod> {
   return { podId, shareId, playerIds, userIds }
 }
 
+/**
+ * Seed an active 2-player competitive pod at the end of pack 1. In staged mode,
+ * BOTH players have selected the last card in their current pack. In legacy
+ * mode, BOTH players have already picked it and hold an empty pack.
+ */
+async function seedCompetitivePackEndPod(mode: 'selected' | 'picked' = 'selected'): Promise<SeededPod> {
+  const shareId = `tx-pack-test-${randomUUID().slice(0, 8)}`
+  const userIds: string[] = []
+  for (let i = 0; i < 2; i++) {
+    const user = await queryRow(
+      `INSERT INTO users (username, email) VALUES ($1, $2) RETURNING id`,
+      [`tx-pack-test-user-${shareId}-${i}`, `tx-pack-test-${shareId}-${i}@example.test`]
+    )
+    userIds.push(user!.id as string)
+    seededUsers.push(user!.id as string)
+  }
+
+  const allPacks = [
+    [
+      { cards: [draftCard('0-pack-1-last')] },
+      { cards: [draftCard('0-pack-2-a'), draftCard('0-pack-2-b')] },
+    ],
+    [
+      { cards: [draftCard('1-pack-1-last')] },
+      { cards: [draftCard('1-pack-2-a'), draftCard('1-pack-2-b')] },
+    ],
+  ]
+  const draftState = { phase: 'pack_draft', packNumber: 1, pickInPack: 14, totalPacks: 2, setCode: 'TST' }
+  const pod = await queryRow(
+    `INSERT INTO pods (
+       share_id, set_code, status, draft_state, state_version, max_players,
+       competitive, pick_started_at, all_packs
+     )
+     VALUES ($1, 'TST', 'active', $2, 20, 2, true, NOW(), $3)
+     RETURNING id`,
+    [shareId, JSON.stringify(draftState), JSON.stringify(allPacks)]
+  )
+  const podId = pod!.id as string
+  seededPods.push(podId)
+
+  const playerIds: string[] = []
+  for (let seat = 0; seat < 2; seat++) {
+    const selectedCard = draftCard(`${seat}-pack-1-last`)
+    const draftedCards = Array.from({ length: 13 }, (_, index) => ({
+      ...draftCard(`${seat}-prior-${index + 1}`),
+      pickNumber: index + 1,
+      packNumber: 1,
+      pickInPack: index + 1,
+    }))
+    const currentPack = mode === 'selected' ? [selectedCard] : []
+    const selectedCardId = mode === 'selected' ? selectedCard.instanceId : null
+    if (mode === 'picked') {
+      draftedCards.push({
+        ...selectedCard,
+        pickNumber: 14,
+        packNumber: 1,
+        pickInPack: 14,
+      })
+    }
+    const player = await queryRow(
+      `INSERT INTO pod_players (
+         pod_id, user_id, seat_number, pick_status, is_bot,
+         leaders, drafted_leaders, drafted_cards, current_pack, selected_card_id
+       )
+       VALUES ($1, $2, $3, $4, false, '[]', '[]', $5, $6, $7)
+       RETURNING id`,
+      [
+        podId,
+        userIds[seat],
+        seat,
+        mode,
+        JSON.stringify(draftedCards),
+        JSON.stringify(currentPack),
+        selectedCardId,
+      ]
+    )
+    playerIds.push(player!.id as string)
+  }
+
+  return { podId, shareId, playerIds, userIds }
+}
+
 async function podStateVersion(podId: string): Promise<number> {
   const pod = await queryRow('SELECT state_version FROM pods WHERE id = $1', [podId])
   return pod!.state_version as number
+}
+
+async function assertPackTwoReviewTimerDeferred(podId: string, beforeAdvanceMs: number): Promise<void> {
+  const pod = await queryRow(
+    'SELECT draft_state, pick_started_at FROM pods WHERE id = $1',
+    [podId]
+  )
+  const draftState = typeof pod!.draft_state === 'string'
+    ? JSON.parse(pod!.draft_state)
+    : pod!.draft_state as { packNumber: number; pickInPack: number; reviewUntil?: string }
+  const pickStartedAt = pod!.pick_started_at instanceof Date
+    ? pod!.pick_started_at
+    : new Date(pod!.pick_started_at as string)
+
+  assert.strictEqual(draftState.packNumber, 2)
+  assert.strictEqual(draftState.pickInPack, 1)
+  assert.ok(draftState.reviewUntil, 'competitive pack transition starts the review period')
+  assert.strictEqual(
+    pickStartedAt.getTime(),
+    new Date(draftState.reviewUntil!).getTime(),
+    'pack 2 timer must start when review ends, not when pack 1 ends'
+  )
+  assert.ok(
+    new Date(draftState.reviewUntil!).getTime() - beforeAdvanceMs >= 25_000,
+    'reviewUntil should be approximately 30 seconds after pack 1 ended'
+  )
 }
 
 describe('atomic draft advancement (pg_advisory_xact_lock)', { skip: !dbAvailable }, () => {
@@ -254,6 +373,34 @@ describe('atomic draft advancement (pg_advisory_xact_lock)', { skip: !dbAvailabl
     assert.strictEqual(picks.length, 2)
     const players = await queryRows('SELECT pick_status FROM pod_players WHERE pod_id = $1', [podId])
     assert.ok(players.every(p => p.pick_status === 'picking'), 'advanced to the next leader round')
+  })
+
+  it('competitive inter-pack review does not spend the next pack timer', async () => {
+    const { podId } = await seedCompetitivePackEndPod('selected')
+    const beforeAdvanceMs = Date.now()
+
+    const processed = await processAllStagedPicks(podId)
+    assert.strictEqual(processed, true)
+
+    await assertPackTwoReviewTimerDeferred(podId, beforeAdvanceMs)
+  })
+
+  it('legacy competitive pack advancement does not spend the next pack timer', async () => {
+    const { podId } = await seedCompetitivePackEndPod('picked')
+    const podBeforeAdvance = await queryRow(
+      `SELECT id, share_id, status, draft_state, state_version, settings, competitive
+       FROM pods WHERE id = $1`,
+      [podId]
+    )
+    const draftState = typeof podBeforeAdvance!.draft_state === 'string'
+      ? JSON.parse(podBeforeAdvance!.draft_state)
+      : podBeforeAdvance!.draft_state
+    const beforeAdvanceMs = Date.now()
+
+    const advanced = await checkAndAdvancePackDraft(podId, draftState, podBeforeAdvance as never)
+    assert.strictEqual(advanced, true)
+
+    await assertPackTwoReviewTimerDeferred(podId, beforeAdvanceMs)
   })
 })
 

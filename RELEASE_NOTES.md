@@ -1,5 +1,10 @@
 # Release Notes
 
+## 07.02.2026
+
+### 🐛 Bug Fixes
+- **Competitive pack review no longer burns the next timer**: The next pack timer now starts after the 30-second review window, so each new pack opens with the full scheduled pick time.
+
 ## 06.29.2026
 
 ### 🐛 Bug Fixes

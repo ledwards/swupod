@@ -552,6 +552,9 @@ async function advancePackDraftAfterPicks(
     if (pod.competitive && newPackNumber <= totalPacks) {
       draftState.reviewUntil = new Date(Date.now() + 30 * 1000).toISOString()
     }
+    const pickStartedAtOverride = pod.competitive && draftState.reviewUntil
+      ? draftState.reviewUntil
+      : null
 
     // Fetch all_packs only when we need to start a new pack
     // (not loaded in most queries to save memory)
@@ -580,10 +583,10 @@ async function advancePackDraftAfterPicks(
       `UPDATE pods
        SET draft_state = $1,
            state_version = state_version + 1,
-           pick_started_at = NOW(),
+           pick_started_at = COALESCE($3::timestamptz, NOW()),
            paused_duration_seconds = 0
        WHERE id = $2`,
-      [JSON.stringify(draftState), podId]
+      [JSON.stringify(draftState), podId, pickStartedAtOverride]
     )
 
   } else {
