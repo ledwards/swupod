@@ -49,7 +49,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       return errorResponse('Not in this draft', 400)
     }
 
-    if (player.pick_status !== 'picking') {
+    if (player.pick_status !== 'picking' && player.pick_status !== 'selected' && player.pick_status !== 'confirmed') {
       return errorResponse('Not your turn to pick', 400)
     }
 
@@ -110,6 +110,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
         `UPDATE pod_players
          SET drafted_leaders = $1,
              leaders = $2,
+             selected_card_id = NULL,
              pick_status = 'picked',
              last_pick_at = NOW()
          WHERE id = $3`,
@@ -182,6 +183,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
         `UPDATE pod_players
          SET drafted_cards = $1,
              current_pack = $2,
+             selected_card_id = NULL,
              pick_status = 'picked',
              last_pick_at = NOW()
          WHERE id = $3`,

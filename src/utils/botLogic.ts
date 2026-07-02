@@ -476,16 +476,27 @@ export async function processBotTurns(podId: string): Promise<void> {
         // Note: We still process bot turns while paused - pause only affects timers, not turn advancement
         // This allows the draft to continue if all players have selected while paused
 
-        // Check if all players have selected (using new staged pick system)
+        // Check whether bot-staged picks can be finalized. Human selections are
+        // still soft until the player confirms or the timer expires.
         const players = await queryRows(
           'SELECT pick_status, is_bot, selected_card_id FROM pod_players WHERE pod_id = $1',
           [podId]
         )
 
-        const allSelected = players.every(p => p.pick_status === 'selected' && p.selected_card_id)
+        const isStagedPickStatus = (status: string) => status === 'selected' || status === 'confirmed'
+        const allResolved = players.every(p =>
+          p.pick_status === 'picked' || (isStagedPickStatus(p.pick_status) && p.selected_card_id)
+        )
+        const stagedBotPicks = players.some(p =>
+          p.is_bot && isStagedPickStatus(p.pick_status) && p.selected_card_id
+        )
+        const humansWaitingOnConfirm = players.some(p =>
+          !p.is_bot && isStagedPickStatus(p.pick_status) && p.selected_card_id
+        )
 
-        if (allSelected) {
-          // Process all staged picks and advance (transactional + advisory-locked)
+        if (allResolved && stagedBotPicks && !humansWaitingOnConfirm) {
+          // Process bot-staged picks and advance once confirmed human picks are
+          // already recorded. Pure bot drafts also resolve here.
           await processAllStagedPicks(podId)
 
           // After advancing, trigger bot picks if any bots need to pick

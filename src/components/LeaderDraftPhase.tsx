@@ -22,11 +22,12 @@ interface Leader {
 
 interface Player {
   id: string
-  pickStatus?: 'picked' | 'selected' | 'picking' | 'timeout'
+  pickStatus?: 'picked' | 'selected' | 'confirmed' | 'picking' | 'timeout'
   [key: string]: unknown
 }
 
 interface MyPlayer extends Player {
+  selectedCardId?: string | null
   leaders?: Leader[]
   draftedLeaders?: Leader[]
 }
@@ -47,7 +48,9 @@ interface LeaderDraftPhaseProps {
   myPlayer: MyPlayer | null
   draftState: DraftState | null
   onSelect: (cardId: string | null) => void
+  onConfirm: (cardId: string) => void
   loading: boolean
+  confirming?: boolean
   error: string | null
   isHost: boolean
   onTogglePause: () => void
@@ -62,7 +65,9 @@ function LeaderDraftPhase({
   myPlayer,
   draftState,
   onSelect,
+  onConfirm,
   loading,
+  confirming = false,
   error,
   isHost,
   onTogglePause,
@@ -72,8 +77,9 @@ function LeaderDraftPhase({
 }: LeaderDraftPhaseProps) {
   const leaders = myPlayer?.leaders || []
   const draftedLeaders = myPlayer?.draftedLeaders || []
-  const canSelect = (myPlayer?.pickStatus === 'picking' || myPlayer?.pickStatus === 'selected') && leaders.length > 0
-  const hasSelected = myPlayer?.pickStatus === 'selected'
+  const stagedPickStatuses = new Set(['selected', 'confirmed'])
+  const canSelect = (myPlayer?.pickStatus === 'picking' || stagedPickStatuses.has(myPlayer?.pickStatus || '')) && leaders.length > 0
+  const hasSelected = stagedPickStatuses.has(myPlayer?.pickStatus || '')
   const round = draftState?.leaderRound || 1
   const totalLeaderRounds = draftState?.totalPacks || draft?.settings?.chaosSets?.length || 3
   // Spectators (anyone viewing who isn't one of the drafters) get no `myPlayer`.
@@ -91,12 +97,15 @@ function LeaderDraftPhase({
   // Load selection from localStorage on mount and when round changes
   useEffect(() => {
     const stored = localStorage.getItem(storageKey)
-    if (stored && leaders.some(l => (l.instanceId || l.id) === stored)) {
-      setSelectedCardId(stored)
+    const serverSelected = myPlayer?.selectedCardId || null
+    const nextSelection = serverSelected || stored
+    if (nextSelection && leaders.some(l => (l.instanceId || l.id) === nextSelection)) {
+      localStorage.setItem(storageKey, nextSelection)
+      setSelectedCardId(nextSelection)
     } else {
       setSelectedCardId(null)
     }
-  }, [storageKey, leaders])
+  }, [storageKey, leaders, myPlayer?.selectedCardId])
 
   // Sync localStorage selection with server on mount (in case of refresh)
   // Only re-send if the stored leader is still in the current leaders array
@@ -146,12 +155,8 @@ function LeaderDraftPhase({
     const myStatus = myPublicPlayer?.pickStatus || myPlayer?.pickStatus
 
     const iPicked = myStatus === 'picked'
-    const iSelected = myStatus === 'selected'
-
-    // Check if all players are done (picked or selected)
-    const allPlayersDone = players?.length > 0 && players.every(p =>
-      p.pickStatus === 'picked' || p.pickStatus === 'selected'
-    )
+    // Check if all players have confirmed picks.
+    const allPlayersDone = players?.length > 0 && players.every(p => p.pickStatus === 'picked')
 
     // Get first leader ID to track pack identity
     const firstLeaderId = leaders[0]?.instanceId || leaders[0]?.id || null
@@ -196,7 +201,7 @@ function LeaderDraftPhase({
   }, [myPlayer?.pickStatus, leaders, showPassing, players])
 
   const handleCardClick = (card: Leader) => {
-    if (loading || !canSelect) return
+    if (loading || confirming || !canSelect) return
 
     const cardId = card.instanceId || card.id
 
@@ -219,9 +224,16 @@ function LeaderDraftPhase({
 
   const handleDeselect = (e: React.MouseEvent) => {
     e.stopPropagation()
+    if (loading || confirming) return
     localStorage.removeItem(storageKey)
     setSelectedCardId(null)
     onSelect(null)
+  }
+
+  const handleConfirmSelection = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!selectedCardId || loading || confirming) return
+    onConfirm(selectedCardId)
   }
 
   // Leader draft always passes right
@@ -294,9 +306,7 @@ function LeaderDraftPhase({
           <div className="available-leaders">
             <h3>
               {hasSelected
-                ? (players?.some(p => p.pickStatus !== 'picked' && p.pickStatus !== 'selected')
-                    ? 'Waiting for other players...'
-                    : 'Ready')
+                ? 'Confirm Selection'
                 : canSelect
                   ? (round === totalLeaderRounds ? 'Select Your Final Leader' : 'Select a Leader')
                   : 'Waiting...'}
@@ -369,18 +379,25 @@ function LeaderDraftPhase({
                     <span className="selection-card-subtitle">{selectedLeader.subtitle}</span>
                   )}
                 </div>
-                {hasSelected ? (
-                  players?.some(p => p.pickStatus !== 'picked' && p.pickStatus !== 'selected') ? (
-                    <div className="selection-status-text">Waiting for other players...</div>
-                  ) : null
-                ) : (
-                  <button className="deselect-button" onClick={(e) => handleDeselect(e)} title="Deselect">
+                <div className="selection-status-text">
+                  {hasSelected ? 'Selected. Confirm to lock it in.' : 'Confirm to pick this leader.'}
+                </div>
+                <div className="selection-actions">
+                  <button
+                    type="button"
+                    className="selection-confirm-button"
+                    onClick={(e) => handleConfirmSelection(e)}
+                    disabled={loading || confirming}
+                  >
+                    {confirming ? 'Confirming...' : 'Confirm'}
+                  </button>
+                  <button type="button" className="deselect-button" onClick={(e) => handleDeselect(e)} aria-label="Clear selection">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <line x1="18" y1="6" x2="6" y2="18"></line>
                       <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
                   </button>
-                )}
+                </div>
               </div>
             )
           })()}

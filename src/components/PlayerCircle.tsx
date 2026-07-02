@@ -22,7 +22,7 @@ interface Player {
   id: string
   seatNumber: number
   username?: string
-  pickStatus?: 'picked' | 'selected' | 'picking' | 'timeout'
+  pickStatus?: 'picked' | 'selected' | 'confirmed' | 'picking' | 'timeout'
   currentPackSize?: number
   draftedLeaders?: Leader[]
   leaderPack?: Leader[]
@@ -59,6 +59,8 @@ export interface PlayerCircleProps {
   hostId?: string
   onRemovePlayer?: (userId: string) => void
 }
+
+const isDoneStatus = (status?: string) => status === 'picked' || status === 'selected' || status === 'confirmed'
 
 /**
  * Circular layout for draft players
@@ -194,6 +196,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
     switch (status) {
       case 'picked': return '#4CAF50'
       case 'selected': return '#4CAF50'  // Green - player has made their choice
+      case 'confirmed': return '#4CAF50'
       case 'picking': return '#FFC107'
       case 'timeout': return '#F44336'
       default: return '#666'
@@ -275,7 +278,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
             className="leader-info-status"
             style={{ color: getStatusColor(player.pickStatus) }}
           >
-            {player.pickStatus === 'picked' || player.pickStatus === 'selected' ? 'Done' : 'Picking...'}
+            {isDoneStatus(player.pickStatus) ? 'Done' : 'Picking...'}
           </div>
         )}
       </div>
@@ -356,7 +359,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
           className="leader-info-status"
           style={{ color: getStatusColor(player.pickStatus) }}
         >
-          {player.pickStatus === 'picked' || player.pickStatus === 'selected' ? 'Done' : 'Picking...'}
+          {isDoneStatus(player.pickStatus) ? 'Done' : 'Picking...'}
         </div>
       </div>
     )

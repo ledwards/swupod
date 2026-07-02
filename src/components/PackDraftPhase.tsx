@@ -54,11 +54,12 @@ interface Leader {
 
 interface Player {
   id: string
-  pickStatus?: 'picked' | 'selected' | 'picking' | 'timeout'
+  pickStatus?: 'picked' | 'selected' | 'confirmed' | 'picking' | 'timeout'
   [key: string]: unknown
 }
 
 interface MyPlayer extends Player {
+  selectedCardId?: string | null
   currentPack?: Card[]
   draftedCards?: Card[]
   draftedLeaders?: Leader[]
@@ -91,7 +92,9 @@ interface PackDraftPhaseProps {
   myPlayer: MyPlayer | null
   draftState: DraftState | null
   onSelect: (cardId: string | null) => void
+  onConfirm: (cardId: string) => void
   loading: boolean
+  confirming?: boolean
   error: string | null
   isHost: boolean
   onTogglePause: () => void
@@ -106,7 +109,9 @@ function PackDraftPhase({
   myPlayer,
   draftState,
   onSelect,
+  onConfirm,
   loading,
+  confirming = false,
   error,
   isHost,
   onTogglePause,
@@ -191,8 +196,9 @@ function PackDraftPhase({
   const draftedCards = myPlayer?.draftedCards || []
   const draftedLeaders = myPlayer?.draftedLeaders || []
   const totalPacks = draftState?.totalPacks || draft?.settings?.chaosSets?.length || 3
-  const canSelect = (myPlayer?.pickStatus === 'picking' || myPlayer?.pickStatus === 'selected') && currentPack.length > 0
-  const hasSelected = myPlayer?.pickStatus === 'selected'
+  const stagedPickStatuses = new Set(['selected', 'confirmed'])
+  const canSelect = (myPlayer?.pickStatus === 'picking' || stagedPickStatuses.has(myPlayer?.pickStatus || '')) && currentPack.length > 0
+  const hasSelected = stagedPickStatuses.has(myPlayer?.pickStatus || '')
 
   const packNumber = draftState?.packNumber || 1
   const pickInPack = draftState?.pickInPack || 1
@@ -206,12 +212,15 @@ function PackDraftPhase({
   // Load selection from localStorage on mount and when pick changes
   useEffect(() => {
     const stored = localStorage.getItem(storageKey)
-    if (stored && currentPack.some(c => (c.instanceId || c.id) === stored)) {
-      setSelectedCardId(stored)
+    const serverSelected = myPlayer?.selectedCardId || null
+    const nextSelection = serverSelected || stored
+    if (nextSelection && currentPack.some(c => (c.instanceId || c.id) === nextSelection)) {
+      localStorage.setItem(storageKey, nextSelection)
+      setSelectedCardId(nextSelection)
     } else {
       setSelectedCardId(null)
     }
-  }, [storageKey, currentPack])
+  }, [storageKey, currentPack, myPlayer?.selectedCardId])
 
   // Sync localStorage selection with server on mount (in case of refresh)
   // Only re-send if the stored card is still in the current pack
@@ -274,10 +283,8 @@ function PackDraftPhase({
     const pickChanged = prevPickRef.current.packNumber !== packNumber ||
                         prevPickRef.current.pickInPack !== pickInPack
 
-    // Check if all players are done (picked or selected)
-    const allPlayersDone = players?.length > 0 && players.every(p =>
-      p.pickStatus === 'picked' || p.pickStatus === 'selected'
-    )
+    // Check if all players have confirmed picks.
+    const allPlayersDone = players?.length > 0 && players.every(p => p.pickStatus === 'picked')
 
     // Update previous pick tracking
     if (pickChanged && currentPack.length > 0) {
@@ -348,7 +355,7 @@ function PackDraftPhase({
   )
 
   const handleCardClick = (card: Card) => {
-    if (loading || !canSelect) return
+    if (loading || confirming || !canSelect) return
 
     const cardId = card.instanceId || card.id
 
@@ -382,9 +389,16 @@ function PackDraftPhase({
 
   const handleDeselect = (e: React.MouseEvent) => {
     e.stopPropagation()
+    if (loading || confirming) return
     localStorage.removeItem(storageKey)
     setSelectedCardId(null)
     onSelect(null)
+  }
+
+  const handleConfirmSelection = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!selectedCardId || loading || confirming) return
+    onConfirm(selectedCardId)
   }
 
   // Inter-pack review period for competitive drafts
@@ -762,19 +776,25 @@ function PackDraftPhase({
                     <span className="selection-card-subtitle">{selectedCard.subtitle}</span>
                   )}
                 </div>
-                {hasSelected ? (
-                  // Only show "Waiting" if there are players who aren't done yet
-                  players?.some(p => p.pickStatus !== 'picked' && p.pickStatus !== 'selected') ? (
-                    <div className="selection-status-text">Waiting for other players...</div>
-                  ) : null
-                ) : (
-                  <button className="deselect-button" onClick={(e) => handleDeselect(e)} title="Deselect">
+                <div className="selection-status-text">
+                  {hasSelected ? 'Selected. Confirm to lock it in.' : 'Confirm to pick this card.'}
+                </div>
+                <div className="selection-actions">
+                  <button
+                    type="button"
+                    className="selection-confirm-button"
+                    onClick={(e) => handleConfirmSelection(e)}
+                    disabled={loading || confirming}
+                  >
+                    {confirming ? 'Confirming...' : 'Confirm'}
+                  </button>
+                  <button type="button" className="deselect-button" onClick={(e) => handleDeselect(e)} aria-label="Clear selection">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <line x1="18" y1="6" x2="6" y2="18"></line>
                       <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
                   </button>
-                )}
+                </div>
               </div>
             )
           })()}
