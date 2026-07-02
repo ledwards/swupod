@@ -771,7 +771,7 @@
 .review-pack-card {
   position: relative;
   flex-shrink: 0;
-  cursor: zoom-in;
+  cursor: default;
   transition: transform 0.1s ease;
 }
 .review-pack-img {
@@ -844,7 +844,7 @@
 .review-stacked-card {
   position: relative;
   width: 100%;
-  cursor: zoom-in;
+  cursor: default;
 }
 .review-card-img {
   display: block;
