@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react'
 import PlayerCircle from './PlayerCircle'
 import DraftableCard from './DraftableCard'
 import TimerPanel from './TimerPanel'
-import { getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
+import { getReadableAspectTextColor, getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
 import './LeaderDraftPhase.css'
 
 interface Leader {
@@ -362,6 +362,7 @@ function LeaderDraftPhase({
             if (!selectedLeader || !selectedLeader.name) return null
             const firstAspect = selectedLeader.aspects?.[0]
             const aspectColor = firstAspect ? getSingleAspectColor(firstAspect) : NO_ASPECT_COLOR
+            const leaderNameColor = getReadableAspectTextColor(aspectColor)
             return (
               <div
                 className="selection-confirmation-banner"
@@ -372,7 +373,7 @@ function LeaderDraftPhase({
               >
                 <div className="selection-info">
                   <span className="selection-label">Selected:</span>
-                  <span className="selection-card-name" style={{ color: aspectColor }}>
+                  <span className="selection-card-name" style={{ color: leaderNameColor }}>
                     {selectedLeader.name || selectedLeader.title || 'Leader'}
                   </span>
                   {selectedLeader.subtitle && (

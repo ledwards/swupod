@@ -14,7 +14,7 @@ import { groupDraftedCards, type DraftGroupMode } from '../utils/draftedCardGrou
 import AspectIcon from './AspectIcon'
 import CostIcon from './CostIcon'
 import CardDensityToggle, { type CardDensity } from './DeckBuilder/CardDensityToggle'
-import { getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
+import { getReadableAspectTextColor, getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
 import { getSetConfig } from '../utils/setConfigs'
 import { getDraftPackDisplayOrder } from '../utils/draftPackDisplayOrder'
 import { serverSyncedNowMs } from '../utils/serverClock'
@@ -759,6 +759,7 @@ function PackDraftPhase({
             if (!selectedCard || !selectedCard.name) return null
             const firstAspect = selectedCard.aspects?.[0]
             const aspectColor = firstAspect ? getSingleAspectColor(firstAspect) : NO_ASPECT_COLOR
+            const cardNameColor = getReadableAspectTextColor(aspectColor)
             return (
               <div
                 className="selection-confirmation-banner"
@@ -769,7 +770,7 @@ function PackDraftPhase({
               >
                 <div className="selection-info">
                   <span className="selection-label">Selected:</span>
-                  <span className="selection-card-name" style={{ color: aspectColor }}>
+                  <span className="selection-card-name" style={{ color: cardNameColor }}>
                     {selectedCard.name || selectedCard.title || 'Card'}
                   </span>
                   {selectedCard.subtitle && (
