@@ -353,6 +353,10 @@ function PackDraftPhase({
       ? card?.setCode || null
       : draft?.setCode || null
   )
+  const reviewCardIdentityAttrs = (card: Card | Leader | null | undefined) => ({
+    'data-card-name': card?.name || card?.title || undefined,
+    'data-card-id': card?.cardId || card?.card_id || undefined,
+  })
 
   const handleCardClick = (card: Card) => {
     if (loading || confirming || !canSelect) return
@@ -476,6 +480,7 @@ function PackDraftPhase({
                       <div
                         key={card.instanceId || card.id}
                         className="review-pack-card"
+                        {...reviewCardIdentityAttrs(card)}
                         onMouseEnter={(e) => reviewHandleMouseEnter(card, e)}
                         onMouseLeave={reviewHandleMouseLeave}
                         onTouchStart={() => reviewHandleTouchStart(card)}
@@ -506,6 +511,7 @@ function PackDraftPhase({
                         <div
                           key={card.instanceId || card.id}
                           className={`review-stacked-card review-stacked-card--${reviewDensity}${i === stackCards.length - 1 ? ' is-last' : ''}`}
+                          {...reviewCardIdentityAttrs(card)}
                           onMouseEnter={(e) => reviewHandleMouseEnter(card, e)}
                           onMouseLeave={reviewHandleMouseLeave}
                           onTouchStart={() => reviewHandleTouchStart(card)}
