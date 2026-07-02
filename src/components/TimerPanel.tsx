@@ -71,8 +71,8 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
   const isLastPlayerTimerEnabled = draft?.timerEnabled !== false
 
   // Competitive pods run the official Appendix C schedule: the round timer steps
-  // down as the pack/leaders deplete (60→…→5→auto) and is NOT host-customizable.
-  // `null` means the schedule auto-picks the last card — nothing to time.
+  // down as the pack/leaders deplete and is NOT host-customizable. `null` means
+  // the schedule auto-picks the last pack card — nothing to time.
   const isCompetitive = draft?.competitive === true
   const displayedPickSeconds = getDisplayPickSeconds({
     competitive: isCompetitive,
@@ -144,7 +144,7 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
 
   // Determine what should be shown. Competitive: always show the round timer on
   // the Appendix C schedule (hidden only when the schedule auto-picks the last
-  // card → null), and never the Last Player timer (not a sanctioned rule).
+  // pack card → null), and never the Last Player timer (not a sanctioned rule).
   const showRoundTimer = isCompetitive ? displayedPickSeconds !== null : isRoundTimerEnabled
   const showLastPlayerTimer = !isCompetitive && isLastPlayerTimerEnabled && isLastPlayer
 
