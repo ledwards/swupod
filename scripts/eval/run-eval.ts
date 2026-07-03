@@ -127,6 +127,11 @@ async function evalFixture(name: string): Promise<FixtureScore> {
   if (!truth.rows || truth.rows.length === 0) {
     return { name, status: 'skipped', reason: 'ground-truth.json has empty rows[]' }
   }
+  // A _note marks a model-generated STARTER truth awaiting human verification.
+  // Scoring against unverified truth poisons the aggregate, so skip it.
+  if (truth._note) {
+    return { name, status: 'skipped', reason: 'ground truth is an unverified starter (_note present)' }
+  }
   if (!existsSync(photo1) || !existsSync(photo2)) {
     return { name, status: 'skipped', reason: 'missing photo1.jpg or photo2.jpg' }
   }
