@@ -41,6 +41,7 @@ REPO = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO / "scripts" / "omr"))
 
 from extract import (  # noqa: E402
+    count_clean_components,
     detect_canonical_table_rects,
     identify_page_1_tables,
     identify_page_2_tables,
@@ -204,24 +205,36 @@ def cell_rows_for_table(crop_bgr: np.ndarray, table_name: str, emit_thresh: floa
             continue
         y0, y1 = recenter(y0, y1)
 
-        def ink_frac(cell_x: tuple) -> float:
+        def cell_mask(cell_x: tuple):
             x0 = max(0, cell_x[0])
             x1 = min(W, cell_x[1])
             iy0 = y0 + 4
             iy1 = max(iy0 + 2, y1 - 4)
-            cell = g.marks_only[iy0:iy1, x0:x1]
-            if cell.size == 0:
-                return 0.0
-            return float(np.count_nonzero(cell)) / float(cell.size)
+            return g.marks_only[iy0:iy1, x0:x1]
 
-        p_ink = ink_frac(played_cell)
-        t_ink = ink_frac(total_cell)
+        def ink_frac(mask) -> float:
+            if mask.size == 0:
+                return 0.0
+            return float(np.count_nonzero(mask)) / float(mask.size)
+
+        p_mask = cell_mask(played_cell)
+        t_mask = cell_mask(total_cell)
+        p_ink = ink_frac(p_mask)
+        t_ink = ink_frac(t_mask)
+        # Printed-text density in the number/name region — used to tell
+        # data rows (digits present) from subsection header bands.
+        tx0, tx1 = int(0.25 * W), int(0.55 * W)
+        text_band = g.binary[max(0, y0 + 3):max(0, y1 - 3), tx0:tx1]
+        text_ink = float(np.count_nonzero(text_band)) / float(text_band.size) if text_band.size else 0.0
         row = {
             "index": len(rows),
             "y0": int(y0),
             "y1": int(y1),
             "played_ink": round(p_ink, 5),
             "total_ink": round(t_ink, 5),
+            "played_comp": int(count_clean_components(p_mask)),
+            "total_comp": int(count_clean_components(t_mask)),
+            "text_ink": round(text_ink, 5),
         }
         if max(p_ink, t_ink) >= emit_thresh:
             # Pad generously so the model sees context, then draw RED guides
