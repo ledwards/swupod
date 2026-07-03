@@ -7,6 +7,7 @@
 
 import { BaseBelt } from './BaseBelt'
 import { initializeCardCache, getCachedCards } from '../utils/cardCache'
+import { generateSealedBox, clearBeltCache } from '../utils/boosterPack'
 
 let passed = 0
 let failed = 0
@@ -124,7 +125,7 @@ async function runTests(): Promise<void> {
     assert(adjacentMatches <= 10, `Found ${adjacentMatches} adjacent aspect matches (max allowed: 10)`)
   })
 
-  test('FIXED: Set 7+ base belt does NOT enforce aspect separation (real ASH box 001: adjacent same-aspect at random rate, e.g. Throne Room→Kryze Castle, 3 consecutive Aggression bases p22-24)', () => {
+  test('FIXED: Set 7+ base belt separates aspects on the LINE (real ASH box 001 line order: 1/21 adjacent same-aspect)', () => {
     const belt = new BaseBelt('ASH')
     const sample: Array<{ aspects?: string[] }> = []
     for (let i = 0; i < 400; i++) sample.push(belt.next())
@@ -136,10 +137,12 @@ async function runTests(): Promise<void> {
         adjacentMatches++
       }
     }
-    // SPEC: with 8 bases (2 per aspect) and no aspect dedup, random expectation is
-    // ~1/7 of adjacencies ≈ 57 in 399. The old aspect-dedup code produced near 0.
-    assert(adjacentMatches >= 20,
-      `Set 7+ base belt should NOT suppress aspect adjacency: got ${adjacentMatches}/399 (random ≈ 57)`)
+    // SPEC: real ASH box 001 in LINE order shows the base sheet rotates aspects
+    // (1/21 adjacent same-aspect pairs). The line-level belt must model this;
+    // consumer-visible randomness comes from box stacking, not the belt.
+    // Tolerant of best-effort swap failures (~<=10% of 399).
+    assert(adjacentMatches <= 40,
+      `Set 7+ base belt should separate aspects on the line: got ${adjacentMatches}/399 (real ASH line: 1/21 ≈ 5%)`)
   })
 
   test('FIXED: Set 7+ base belt never serves the same base back-to-back', () => {
@@ -165,6 +168,32 @@ async function runTests(): Promise<void> {
       }
     }
     assert(adjacentMatches <= 10, `JTL should still dedup aspects: ${adjacentMatches} matches`)
+  })
+
+  test('Set 7+ consumer order shows ~random base aspect adjacency (stacking scrambles the line)', () => {
+    // Generate real ASH boxes and inspect the 24 packs in returned (box/consumer)
+    // order. The line separates aspects (~5%), but box stacking scrambles adjacency
+    // back toward random. Real photo-order data: 5/21 ≈ 24%; pure random ≈ 25%;
+    // line-separated WITHOUT stacking would be ~5% — so this also guards that
+    // stacking is actually applied to sealed boxes.
+    const numBoxes = 40
+    let sameAspectPairs = 0
+    let totalPairs = 0
+    clearBeltCache()
+    for (let b = 0; b < numBoxes; b++) {
+      const box = generateSealedBox([], 'ASH', 24)
+      const bases = box.map(pack => pack.cards.find(c => c.isBase))
+      for (let i = 1; i < bases.length; i++) {
+        const prev = bases[i - 1], curr = bases[i]
+        if (prev?.aspects && curr?.aspects) {
+          totalPairs++
+          if (prev.aspects.some(a => curr.aspects!.includes(a))) sameAspectPairs++
+        }
+      }
+    }
+    const rate = sameAspectPairs / totalPairs
+    assert(rate >= 0.10 && rate <= 0.40,
+      `Set 7+ consumer-order base aspect adjacency should be ~random (real photo order: 5/21 ≈ 24%), got ${(rate * 100).toFixed(1)}% (${sameAspectPairs}/${totalPairs})`)
   })
 
   test('different belt instances start at different positions', () => {
