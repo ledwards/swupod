@@ -55,11 +55,14 @@ async function main() {
   const photo2 = readFileSync(join(dir, 'photo2.jpg')).toString('base64')
 
   // Same arch switch as run-eval: default to the architecture prod serves.
-  const { extractPoolFromImages, extractPoolFromImagesWholeTable } = await import('../../lib/anthropic')
+  const mod = await import('../../lib/anthropic')
+  const arch = (process.env.EXTRACT_ARCH || 'wholetable').toLowerCase()
   const extractPool =
-    (process.env.EXTRACT_ARCH || 'wholetable').toLowerCase() === 'legacy'
-      ? extractPoolFromImages
-      : extractPoolFromImagesWholeTable
+    arch === 'legacy'
+      ? mod.extractPoolFromImages
+      : arch === 'cells'
+        ? mod.extractPoolFromImagesCells
+        : mod.extractPoolFromImagesWholeTable
   console.log(`extracting on ${FIXTURE}…`)
   const start = Date.now()
   const result = await extractPool(

@@ -108,6 +108,33 @@ cache $0.10 read / $1.25 write) prices the same workload at ~$0.04.
     at Haiku rates. Bigger build (sidecar Python + cell plumbing);
     justify only if Phases 1-4 can't hold accuracy at budget.
 
+### Phase 5 results (2026-07-03, first build day)
+
+Built end-to-end (`EXTRACT_ARCH=cells`): sidecar `--cells` mode emits
+per-row ink stats (marks-only mask) + red-banded row strips, re-centered
+on the printed number text (ruled-line detection alone drifts); Node
+batches strips to the model and joins by transcribed card number.
+
+- **Cost target hit mechanically: $0.09-0.12/sheet at Haiku rates**
+  (further tunable — strip emission is still ~2.4x the truly-inked rows).
+- **Precision by construction: 89-99%** — classical ink detection means
+  fabrication is impossible; every FP traces to a real ambiguity.
+- **Blocker: Haiku's strip reading is brittle.** Four harness variants
+  scored 76/36/42/57% recall on sq-tom-law (opus whole-table: 95.7%).
+  Whole tables zero out non-deterministically (Leaders 0/6 twice).
+  Band geometry was fixed and visually verified — the residual is the
+  reader, not the harness.
+
+Next options (in preference order):
+1. FREE: score the classical qty classifier (density + connected
+   components, `classify_grid_marks`) on the new text-anchored bands
+   against all 5 truths. If its high-confidence subset is >=90%, ship
+   classical-first + strips only for low-confidence cells (~$0.01-0.03).
+2. Cells + a stronger strip reader on ONLY low-confidence/zeroed-but-
+   inked strips (bounded escalation, ~$0.05-0.15 blended).
+3. Log raw strip reads per run (observability gap found today) before
+   any further prompt iteration.
+
 ## Guardrails (standing)
 
 - Cost prints on every eval/regenerate run; prod route logs per-attempt

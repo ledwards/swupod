@@ -39,7 +39,10 @@ import {
 } from '../src/services/importPool/sectionExtraction'
 import {
   classifyTableWithClaude,
+  classifyCellStrips,
   runOmrSidecar,
+  type CellStripInput,
+  type CellStripRead,
 } from '../src/services/importPool/omrExtraction'
 import {
   addResponseUsage,
@@ -1626,6 +1629,249 @@ export async function extractPoolFromImagesWholeTable(
   void phase2Elapsed
   void droppedUnknownNumbers
   void invariantDistance
+
+  return {
+    result,
+    iterations,
+    converged: status.passing,
+    bestIteration: 1,
+    usage,
+  }
+}
+
+/**
+ * CELLS architecture: classical CV decides WHERE the ink is; the model
+ * only reads the inked cells.
+ *
+ * Pipeline:
+ *   1. Phase 1 (header + fallback bounds) — same helper as the siblings;
+ *      at Haiku rates this is ~$0.01.
+ *   2. OMR sidecar with --cells: warps each table, detects row bands via
+ *      grid lines (gap-filled), measures per-cell ink on a marks-only
+ *      mask, and returns a strip image [PLAYED|TOTAL|NO.#] for every band
+ *      that looks inked (deliberately over-emitting — blank strips cost
+ *      pennies; a missed strip is an unrecoverable miss).
+ *   3. Batched strip reads: ~40 strips per call. The model transcribes
+ *      the printed card number and the two handwritten quantities per
+ *      strip — no table scanning, no row alignment, no closed-list
+ *      matching. Bases strips (no printed number) carry the name column.
+ *   4. Join by card number (bases by name) against the set's card list;
+ *      unmatched or ambiguous reads become low-confidence rows.
+ *
+ * Target cost: ~$0.02-0.05/sheet at Haiku 4.5 rates.
+ */
+export async function extractPoolFromImagesCells(
+  images: ImageInput[],
+  opts: ExtractOptions = {},
+): Promise<ExtractResult> {
+  if (images.length === 0) {
+    throw new Error('extractPoolFromImagesCells requires at least 1 image')
+  }
+  if (images.length > 2) {
+    throw new Error('extractPoolFromImagesCells supports at most 2 images')
+  }
+
+  const originalBuffers: Buffer[] = images.map((img) => Buffer.from(img.data, 'base64'))
+  const preprocessedBuffers: Buffer[] = []
+  for (const buf of originalBuffers) {
+    preprocessedBuffers.push(opts.skipPreprocess ? buf : await preprocessImageForExtraction(buf))
+  }
+  const preprocessedInputs: ImageInput[] = preprocessedBuffers.map((buf) => ({
+    data: buf.toString('base64'),
+    mediaType: 'image/jpeg',
+  }))
+
+  await initializeCardCache().catch(() => {})
+  const setCode = opts.setHint || getLatestReleasedSetCode()
+  const allCards = (getCachedCards(setCode) || []).filter((c: any) => c.variantType === 'Normal')
+  const tableGroups = groupCardsByTable(allCards)
+
+  const client = getClient()
+  const usage = newExtractUsage()
+
+  // Phase 1: header (+ fallback section bounds).
+  let phase1: { header: ExtractedHeader; sections: SectionBounds[]; usage: any }
+  try {
+    phase1 = await runPhase1(client, preprocessedInputs, opts.setHint)
+  } catch (err) {
+    throw new Error(`Phase 1 failed: ${(err as Error).message}`)
+  }
+  addResponseUsage(usage, phase1.usage)
+
+  // Phase 2: OMR sidecar with per-row cell detection.
+  const sidecar = await runOmrSidecar(opts.sidecarBuffers || originalBuffers, { cells: true })
+  if (sidecar.warnings.length > 0) {
+    for (const w of sidecar.warnings) console.warn(`[omr-sidecar] ${w}`)
+  }
+  const omrSections: SectionBounds[] = sidecar.tables.map((t) => ({
+    name: t.name as SectionName,
+    photoIndex: t.photo_index,
+    x0: t.bounds_original.x0,
+    y0: t.bounds_original.y0,
+    x1: t.bounds_original.x1,
+    y1: t.bounds_original.y1,
+  }))
+
+  // Collect inked strips across all tables.
+  const strips: CellStripInput[] = []
+  for (const t of sidecar.tables) {
+    for (const r of t.rows || []) {
+      if (r.strip_b64) strips.push({ id: strips.length, table: t.name as TableName, b64: r.strip_b64 })
+    }
+  }
+
+  // Read strips in batches (bounded parallelism). Small batches on
+  // purpose: long multimodal sequences degrade small-model attention —
+  // batch=40 measurably under-read vs batch=10 in eval.
+  const BATCH = 10
+  const batches: CellStripInput[][] = []
+  for (let i = 0; i < strips.length; i += BATCH) batches.push(strips.slice(i, i + BATCH))
+  const readsById = new Map<number, CellStripRead>()
+  const batchErrors: string[] = []
+  const batchQueue = [...batches]
+  await Promise.all(
+    Array.from({ length: 3 }, async () => {
+      while (batchQueue.length > 0) {
+        const batch = batchQueue.shift()
+        if (!batch) break
+        try {
+          const reads = await classifyCellStrips(client, batch, usage)
+          for (const r of reads) readsById.set(r.s, r)
+        } catch (err) {
+          batchErrors.push((err as Error).message)
+          console.warn(`[cells] strip batch failed: ${(err as Error).message}`)
+        }
+      }
+    }),
+  )
+
+  // Join reads back to cards, per table.
+  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '')
+  const cardByNumber = new Map<number, any>()
+  for (const c of allCards) cardByNumber.set(cardNumberOf(c.cardId), c)
+
+  let unknownReads = 0
+  const tableResults: Array<{
+    tableName: TableName
+    rows: Array<{ cardNumber: number; poolQty: number; deckQty: number; poolUnclear: boolean; deckUnclear: boolean }>
+    error: string | null
+  }> = []
+  for (const t of sidecar.tables) {
+    const tableName = t.name as TableName
+    const vocab = (tableGroups.get(tableName) || []) as any[]
+    if (vocab.length === 0) continue
+    const vocabNumbers = new Set(vocab.map((c: any) => cardNumberOf(c.cardId)))
+    const readByCard = new Map<number, { p: number; t: number; u: boolean }>()
+
+    const tableStrips = strips.filter((s) => s.table === tableName)
+    for (const s of tableStrips) {
+      const read = readsById.get(s.id)
+      if (!read || read.skip) continue
+      if (read.p <= 0 && read.t <= 0) continue
+      let cardNumber: number | null = null
+      if (tableName === 'Bases') {
+        const want = read.b ? norm(read.b) : null
+        const match = want
+          ? vocab.find((c: any) => norm(c.name) === want) || vocab.find((c: any) => norm(c.name).includes(want) || want.includes(norm(c.name)))
+          : null
+        if (match) cardNumber = cardNumberOf(match.cardId)
+      } else if (read.n != null && vocabNumbers.has(read.n)) {
+        cardNumber = read.n
+      } else if (read.n != null && cardByNumber.has(read.n)) {
+        // Number exists in the set but not this table — geometry drift or
+        // misread. Accept it (the number is authoritative).
+        cardNumber = read.n
+      }
+      if (cardNumber == null) {
+        unknownReads++
+        continue
+      }
+      const prev = readByCard.get(cardNumber)
+      if (prev) {
+        // Two bands read the same row (overlapping strips): keep the
+        // larger read and flag as unclear.
+        readByCard.set(cardNumber, {
+          p: Math.max(prev.p, read.p),
+          t: Math.max(prev.t, read.t),
+          u: true,
+        })
+      } else {
+        readByCard.set(cardNumber, { p: read.p, t: read.t, u: read.u })
+      }
+    }
+
+    const rows = vocab.map((c: any) => {
+      const num = cardNumberOf(c.cardId)
+      const rd = readByCard.get(num)
+      return {
+        cardNumber: num,
+        poolQty: rd?.t ?? 0,
+        deckQty: rd?.p ?? 0,
+        poolUnclear: rd?.u ?? false,
+        deckUnclear: rd?.u ?? false,
+      }
+    })
+    // Reads that resolved to cards outside this table's vocab still need a
+    // home: attach them to the table whose vocab contains them instead.
+    tableResults.push({ tableName, rows, error: null })
+  }
+  if (unknownReads > 0) console.warn(`[cells] ${unknownReads} strip reads did not resolve to a card`)
+
+  // Aggregate (same shape as the whole-table path).
+  const allRows: ExtractedRow[] = []
+  for (const tr of tableResults) {
+    for (const r of tr.rows) {
+      const card = cardByNumber.get(r.cardNumber)
+      if (!card) continue
+      allRows.push({
+        name: card.name,
+        type: card.type,
+        subtitle: card.subtitle,
+        poolQty: r.poolQty,
+        deckQty: r.deckQty,
+        aspectGroup: card.aspects?.join(' ') || null,
+        poolQtyConfidence: r.poolUnclear ? 'low' : 'high',
+        deckQtyConfidence: r.deckUnclear ? 'low' : 'high',
+      } as any)
+    }
+  }
+
+  const iterations: ExtractIterationLog[] = tableResults.map((tr, i) => {
+    const markedPool = tr.rows.filter((r) => Number(r.poolQty) > 0)
+    const markedDeck = tr.rows.filter((r) => Number(r.deckQty) > 0)
+    const poolSum = tr.rows.reduce((s, r) => s + Number(r.poolQty || 0), 0)
+    const deckSum = tr.rows.reduce((s, r) => s + Number(r.deckQty || 0), 0)
+    const subsetViolations = tr.rows.filter((r) => Number(r.deckQty || 0) > Number(r.poolQty || 0)).length
+    const tableTotal = tableGroups.get(tr.tableName)?.length || 0
+    return {
+      iteration: i + 1,
+      poolSum,
+      deckSum,
+      leaderCount: tr.tableName === 'Leaders' ? poolSum : 0,
+      baseCount: tr.tableName === 'Bases' ? poolSum : 0,
+      subsetViolations,
+      passing: false,
+      failures: [
+        `table=${tr.tableName} pool=${poolSum} deck=${deckSum} (${markedPool.length}/${tableTotal} rows marked, ${markedDeck.length}/${tableTotal} in deck)`,
+        ...(batchErrors.length > 0 && i === 0 ? batchErrors.map((e) => `strip batch ERROR: ${e}`) : []),
+      ],
+      outputTokens: 0,
+      cacheReadTokens: 0,
+      cacheCreationTokens: 0,
+      tableName: tr.tableName,
+      tableTotalCards: tableTotal,
+      tableMarkedRows: markedPool.length,
+      tableDeckRows: markedDeck.length,
+    }
+  })
+
+  const status = checkInvariants(allRows)
+  const sectionsForResponse = omrSections.length > 0 ? omrSections : phase1.sections
+  const result: RawExtractResponse = {
+    header: phase1.header,
+    rows: allRows,
+    sections: sectionsForResponse,
+  } as RawExtractResponse
 
   return {
     result,

@@ -45,6 +45,18 @@ const MAX_TOKENS = 16000
 
 // ----- Sidecar invocation -----
 
+/** One detected row band of a table, from the sidecar's --cells mode.
+ *  Ink fractions are measured on the marks-only mask (printed grid
+ *  subtracted); strip_b64 is only present when the band looks inked. */
+export interface SidecarCellRow {
+  index: number
+  y0: number
+  y1: number
+  played_ink: number
+  total_ink: number
+  strip_b64?: string
+}
+
 export interface SidecarTable {
   name: TableName
   page: 1 | 2
@@ -57,6 +69,8 @@ export interface SidecarTable {
    *  to just this section without re-warping. */
   bounds_original: { x0: number; y0: number; x1: number; y1: number }
   original_size: [number, number]
+  /** Present only when the sidecar ran with cells: true. */
+  rows?: SidecarCellRow[]
 }
 
 interface SidecarResponse {
@@ -100,7 +114,10 @@ function resolvePythonBinary(): string {
  * Writes each buffer to a tmp file, invokes the sidecar with the file
  * paths, parses stdout JSON, and cleans up.
  */
-export async function runOmrSidecar(images: Buffer[]): Promise<SidecarResponse> {
+export async function runOmrSidecar(
+  images: Buffer[],
+  opts: { cells?: boolean } = {},
+): Promise<SidecarResponse> {
   // Write images to tmp dir
   const tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'omr-'))
   const paths: string[] = []
@@ -112,7 +129,7 @@ export async function runOmrSidecar(images: Buffer[]): Promise<SidecarResponse> 
     }
     const pythonBin = resolvePythonBinary()
     return await new Promise<SidecarResponse>((resolve, reject) => {
-      const proc = spawn(pythonBin, [SIDECAR_SCRIPT, ...paths], {
+      const proc = spawn(pythonBin, [SIDECAR_SCRIPT, ...(opts.cells ? ['--cells'] : []), ...paths], {
         cwd: process.cwd(),
         env: process.env,
       })
@@ -295,5 +312,107 @@ export async function classifyTableWithClaude(
     deckQty: Number(row.p || 0),
     poolUnclear: Boolean(row.t_unclear),
     deckUnclear: Boolean(row.p_unclear),
+  }))
+}
+
+// ----- Cell-strip classification (cells architecture) -----
+
+const SYSTEM_PROMPT_STRIPS = `You are reading row-strips cut from a Star Wars: Unlimited limited-event registration sheet. Each image shows ONE target table row plus a little context above/below.
+
+TWO HORIZONTAL RED LINES mark the TARGET ROW band on every strip. Read the row between them; marks clearly above/below the band belong to neighboring rows.
+
+Row layout, left to right: [PLAYED cell][TOTAL cell][printed NO. # card number][card name]. Strips labeled "table Bases" have no printed number — they show the base's printed NAME instead.
+
+Handwriting rules:
+- An empty cell = 0. One stroke "|" / "/" / a check, or digit "1" = 1. "||" or "2" = 2. "|||" or "3" = 3, etc.
+- The printed card number is NOT a tally — it identifies the row.
+- p and t are SEPARATE cells. On most sheets the majority of marked rows have ONLY t marked and p empty — never copy t's value into p. Report p>0 only when a distinct mark sits in the leftmost (PLAYED) cell itself.
+
+For EVERY strip, in the order given, output one entry:
+{"s": <strip id from its label>, "n": <printed card number, or null for Bases strips>, "b": <printed base name for Bases strips, else null>, "p": <PLAYED qty>, "t": <TOTAL qty>, "u": <true if the handwriting is ambiguous>, "skip": <true if the band contains a section divider, column header, or otherwise no card row>}
+
+Output ONLY: {"strips": [ ... ]} — no other text.`
+
+export interface CellStripInput {
+  id: number
+  table: TableName
+  b64: string
+}
+
+export interface CellStripRead {
+  s: number
+  n: number | null
+  b: string | null
+  p: number
+  t: number
+  u: boolean
+  skip?: boolean
+}
+
+/**
+ * Read a batch of row strips in one call. Strips are tiny (one row each),
+ * so a single call covers ~40 of them — this is the whole-sheet cost
+ * reducer: classical CV decides WHERE the ink is; the model only reads
+ * the handful of inked cells.
+ */
+export async function classifyCellStrips(
+  client: Anthropic,
+  strips: CellStripInput[],
+  usage?: ExtractUsage,
+): Promise<CellStripRead[]> {
+  if (strips.length === 0) return []
+  const content: any[] = []
+  for (const s of strips) {
+    content.push({ type: 'text', text: `STRIP ${s.id} (table ${s.table}):` })
+    content.push({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: s.b64 } })
+  }
+  content.push({ type: 'text', text: `Read all ${strips.length} strips above and output the JSON.` })
+
+  let response: any
+  let lastErr: any
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      response = await client.messages.create({
+        model: MODEL,
+        max_tokens: MAX_TOKENS,
+        system: [
+          { type: 'text', text: SYSTEM_PROMPT_STRIPS, cache_control: { type: 'ephemeral' } },
+        ],
+        messages: [{ role: 'user', content }],
+      })
+      break
+    } catch (err: any) {
+      lastErr = err
+      const status = err?.status || err?.response?.status
+      if (status === 429 || status === 529 || status === 500 || err?.code === 'ECONNRESET') {
+        await new Promise((r) => setTimeout(r, 1000 * Math.pow(2, attempt)))
+        continue
+      }
+      throw err
+    }
+  }
+  if (!response) throw lastErr ?? new Error('Claude call failed (no response)')
+  addResponseUsage(usage, response.usage)
+
+  const textBlock = response.content?.find((b: any) => b.type === 'text')
+  const text = textBlock?.text || ''
+  const jsonMatch = text.match(/\{[\s\S]*\}/)
+  if (!jsonMatch) {
+    throw new Error(`classifyCellStrips: no JSON in response: ${text.slice(0, 200)}`)
+  }
+  let parsed: any
+  try {
+    parsed = JSON.parse(jsonMatch[0])
+  } catch (err) {
+    throw new Error(`classifyCellStrips: bad JSON: ${(err as Error).message}`)
+  }
+  return (parsed.strips || []).map((r: any) => ({
+    s: Number(r.s),
+    n: r.n == null ? null : Number(r.n),
+    b: r.b == null ? null : String(r.b),
+    p: Number(r.p || 0),
+    t: Number(r.t || 0),
+    u: Boolean(r.u),
+    skip: Boolean(r.skip),
   }))
 }

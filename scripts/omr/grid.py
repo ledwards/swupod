@@ -30,6 +30,7 @@ class GridLines(NamedTuple):
     binary: np.ndarray   # full-table binary
     grid_mask: np.ndarray  # h_lines + v_lines morphology mask
     marks_only: np.ndarray  # binary AND NOT grid_mask
+    v_line_xs: list[int]  # x-coords (relative to table) of column dividers
 
 
 def extract_grid(table_bgr: np.ndarray) -> GridLines:
@@ -58,8 +59,13 @@ def extract_grid(table_bgr: np.ndarray) -> GridLines:
     # so first CLOSE with a small vertical kernel to bridge those gaps,
     # then OPEN with a long kernel (>>row_h) so only full-table-spanning
     # dividers survive — not single-cell tally marks.
+    # Verticals are detected on an UNBLURRED binary: cell dividers are only
+    # 1-2px wide and the median blur (needed for h-line stability) erodes
+    # them below the opening kernel's reach.
+    gray_sharp = cv2.cvtColor(table_bgr, cv2.COLOR_BGR2GRAY)
+    _, binary_sharp = cv2.threshold(gray_sharp, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
     bridge_k = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 5))
-    bridged = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, bridge_k)
+    bridged = cv2.morphologyEx(binary_sharp, cv2.MORPH_CLOSE, bridge_k)
     v_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 60))
     v_lines = cv2.morphologyEx(bridged, cv2.MORPH_OPEN, v_kernel)
     grid = cv2.bitwise_or(h_lines, v_lines)
@@ -103,7 +109,34 @@ def extract_grid(table_bgr: np.ndarray) -> GridLines:
             line_ys.append(band_start + peak_offset)
         else:
             line_ys.append(end)
-    return GridLines(h_lines=line_ys, binary=binary, grid_mask=grid, marks_only=marks)
+
+    # Column-divider peaks from the v_lines profile (same band-peak logic,
+    # lower threshold — verticals fragment at subsection breaks so their
+    # column density is weaker than full-width horizontals).
+    # Low threshold: warp tilt smears a tall divider across several pixel
+    # columns, so per-column density lands well under the h-line levels.
+    # Band-peak selection still resolves each smear to one x.
+    cd = v_lines.sum(axis=0) / 255.0 / max(1, v_lines.shape[0])
+    line_xs: list[int] = []
+    in_band = False
+    band_start = 0
+    V_THRESH = 0.05
+    for i, d in enumerate(cd):
+        if d >= V_THRESH:
+            if not in_band:
+                in_band = True
+                band_start = i
+        else:
+            if in_band:
+                in_band = False
+                end = i - 1
+                sub = cd[band_start:end + 1]
+                line_xs.append(band_start + int(np.argmax(sub)))
+    if in_band:
+        sub = cd[band_start:]
+        line_xs.append(band_start + int(np.argmax(sub)))
+
+    return GridLines(h_lines=line_ys, binary=binary, grid_mask=grid, marks_only=marks, v_line_xs=line_xs)
 
 
 def derive_row_positions(h_lines: list[int], num_cards: int) -> list[tuple[int, int]] | None:

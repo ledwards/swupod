@@ -143,13 +143,17 @@ async function evalFixture(name: string): Promise<FixtureScore> {
   }
 
   // EXTRACT_ARCH selects the architecture under test. Default is the one
-  // PROD serves (whole-table, ~$0.60/sheet at opus rates); 'legacy' is the
-  // multi-sample sidecar-failure fallback ($18/sheet, cache never hits).
-  const { extractPoolFromImages, extractPoolFromImagesWholeTable } = await import('../../lib/anthropic')
+  // PROD serves (whole-table, ~$1.17/sheet at opus rates); 'cells' is the
+  // OMR cell-strip pipeline (<$0.10 target); 'legacy' is the multi-sample
+  // sidecar-failure fallback ($18/sheet, cache never hits).
+  const mod = await import('../../lib/anthropic')
+  const arch = (process.env.EXTRACT_ARCH || 'wholetable').toLowerCase()
   const extract =
-    (process.env.EXTRACT_ARCH || 'wholetable').toLowerCase() === 'legacy'
-      ? extractPoolFromImages
-      : extractPoolFromImagesWholeTable
+    arch === 'legacy'
+      ? mod.extractPoolFromImages
+      : arch === 'cells'
+        ? mod.extractPoolFromImagesCells
+        : mod.extractPoolFromImagesWholeTable
   const p1 = readFileSync(photo1).toString('base64')
   const p2 = readFileSync(photo2).toString('base64')
 
