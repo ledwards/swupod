@@ -1,5 +1,9 @@
 # Line + Stacking Collation (Set 7+) — Test-First Plan
 
+> **STATUS: SHIPPED 2026-07-03.** All 5 slices landed red-green; all 9 benchmark
+> metrics in band (docs/collation-benchmark-baseline.md vs -after.md); full
+> suite + QA 3x + sealed E2E green. Phase 4 (6-box recalibration) pending.
+
 **Goal:** make generated 6-pack sealed pools and 24-pack draft boxes statistically
 indistinguishable from real ones, by modeling what the factory actually does:
 belts fill packs in **line order** with simple physical rules, then packs are
