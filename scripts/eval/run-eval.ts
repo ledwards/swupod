@@ -142,14 +142,21 @@ async function evalFixture(name: string): Promise<FixtureScore> {
     return { name, status: 'skipped', reason: 'missing photo1.jpg or photo2.jpg' }
   }
 
-  const { extractPoolFromImages } = await import('../../lib/anthropic')
+  // EXTRACT_ARCH selects the architecture under test. Default is the one
+  // PROD serves (whole-table, ~$0.60/sheet at opus rates); 'legacy' is the
+  // multi-sample sidecar-failure fallback ($18/sheet, cache never hits).
+  const { extractPoolFromImages, extractPoolFromImagesWholeTable } = await import('../../lib/anthropic')
+  const extract =
+    (process.env.EXTRACT_ARCH || 'wholetable').toLowerCase() === 'legacy'
+      ? extractPoolFromImages
+      : extractPoolFromImagesWholeTable
   const p1 = readFileSync(photo1).toString('base64')
   const p2 = readFileSync(photo2).toString('base64')
 
   const start = Date.now()
   let result: any
   try {
-    result = await extractPoolFromImages(
+    result = await extract(
       [
         { data: p1, mediaType: 'image/jpeg' },
         { data: p2, mediaType: 'image/jpeg' },
