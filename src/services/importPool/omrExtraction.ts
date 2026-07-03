@@ -39,7 +39,9 @@ import { addResponseUsage, type ExtractUsage } from './extractUsage'
 // extraction phases (a hardcoded copy here once silently pinned the
 // whole-table Phase 2 to opus while Phase 1 A/B'd other models).
 const MODEL = process.env.IMPORT_EXTRACT_MODEL || 'claude-opus-4-7'
-const MAX_TOKENS = 6000
+// 16K, not 6K: thinking-enabled models (Claude 5 family) spend output budget
+// on thinking blocks before the JSON. A cap, not a spend, for opus.
+const MAX_TOKENS = 16000
 
 // ----- Sidecar invocation -----
 
@@ -267,7 +269,11 @@ export async function classifyTableWithClaude(
   if (!response) throw lastErr ?? new Error('Claude call failed (no response)')
   addResponseUsage(usage, response.usage)
 
-  const text = response.content?.[0]?.text || ''
+  // Find the text block explicitly — on thinking-enabled models (Claude 5
+  // family) content[0] is the thinking block, and reading it as text made
+  // every table "fail" with no JSON.
+  const textBlock = response.content?.find((b: any) => b.type === 'text')
+  const text = textBlock?.text || ''
   const jsonMatch = text.match(/\{[\s\S]*\}/)
   if (!jsonMatch) {
     throw new Error(

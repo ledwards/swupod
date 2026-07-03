@@ -39,6 +39,25 @@ cache $0.10 read / $1.25 write) prices the same workload at ~$0.04.
    only acceptable with Phase 2's output diet) before any escalation
    complexity.
 
+### Phase 0/1 results (2026-07-03)
+
+- Whole-table + opus baseline (sq-tom-law): **95.7r/97.8p, $1.17/sheet
+  measured** — output tokens (all-rows JSON at $75/MTok) are the cost hog.
+- **Haiku 4.5: NO-GO on vision.** Sweep of 5 verified fixtures:
+  71.2r/76.6p mean, hallucinates upward (sfpq 119/96 pool, 45 FP), deck
+  sums wild. Price was right (~$0.075/sheet) — accuracy wasn't.
+- **Sonnet 5 sweep invalidated by harness bugs**, since fixed:
+  classifyTableWithClaude read content[0] (the THINKING block on Claude 5
+  models) instead of finding the text block, and MAX_TOKENS 6000 starved
+  thinking runs. Fixed: block find + 16K cap.
+- **Economics kill mid-tier thinking models regardless**: Sonnet 5 spent
+  ~25-30K output tokens/sheet on thinking alone (~$0.40 at sonnet-class
+  out-rates) — over budget even if accuracy passes, and the output diet
+  can't cut thinking. Model-shopping is a dead end for <$0.10;
+  **Phase 5 (OMR cells) is the road.** Single-cell tally reading is a far
+  easier task than whole-table scanning — cheap models plausibly hold
+  accuracy there.
+
 ## Phase 2 — token diet (free to implement, ~$0.25 to re-verify)
 
 7. Marked-rows-only output: whole-table calls currently return JSON for
