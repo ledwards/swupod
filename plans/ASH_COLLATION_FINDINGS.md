@@ -246,6 +246,66 @@ co-locate in packs 1-5 and 16-24 — duplicate-dense print-run stretches, clean 
 **C. Data to de-risk B:** ASH box #2 (photo pipeline), treatment-aware entry for
 future event pools if convenient. Two more clumpy-pool observations would pin p and L.
 
+---
+
+## 📦 Factory pack-order discovery (2026-07-03, box 001 re-analysis)
+
+Lee's box theory: packs are placed in the box bottom-up in left/right pairs, so the
+factory line order is photo-packs 12,24,11,23,10,22,…,1,13 (photo order = one column
+top-down, then the other). Re-running box 001 under this "line order" gives **three
+independent confirmations**:
+1. **Shared identities**: line-adjacent pack pairs share 1.65 non-L/B identities/pair
+   vs 0.39 for photo-adjacent and 0.72 for random pairs (4x signal).
+2. **Bases become aspect-separated**: 1/21 adjacent same-aspect in line order
+   (P≈4% if random) vs 5/21 (=random) in photo order — the base sheet DOES rotate
+   aspects, on the line.
+3. **Commons gap histogram collapses** from flat 3-13 (photo) to a clean short-range
+   pattern: gap 1 ×32, gap 3 ×17, decaying — **a common's duplicate copies ride
+   1-3 packs apart on the line, uniformly across the box** (no "dense stretches";
+   that was aliasing from the column stacking).
+
+Under line order: rare #247 repeat gap 2→4, Shin Hati leader gap 2→4 (min leader
+gap 3), UC min gap 4, Freetown base repeat gap 1 (the one anomaly — adjacent same
+base on the line).
+
+**Key modeling insight**: our generator serves packs in CONSUMPTION order (players
+take packs off the top of a column), so the photo-order statistics remain the right
+calibration target for what players see — A4 (random base-aspect adjacency for
+players) stands. But the PHYSICAL model is now clear and simple:
+**line rules + box stacking**. Belts follow line rules (dup copies adjacent,
+base aspects separated, leader/rare short-range spacing), then a stacking
+permutation (line → two interleaved columns) maps line packs to box order.
+Consumption of column runs then reproduces everything we measured for free:
+random-looking base aspects, gap-2 consumer repeats, AND the clean/clumpy pool
+split (line-adjacent dup pairs land in the same pool only for some grab patterns).
+This **replaces the "stretch echo" Phase B design** with something simpler and
+physically grounded. User confirmed proceeding on the interleave theory (2026-07-03).
+**Implementation plan: `plans/LINE_STACKING_COLLATION_PLAN.md`** (test-first;
+benchmark before/after; 6-box recalibration next week).
+
+---
+
+## 🎴 Pool 002 (6 ASH packs, transcribed 2026-07-03; data/real-boxes/ash-pool-002.csv, uncommitted)
+
+Provenance not yet confirmed (loose packs vs box position). Findings:
+- **13 dup identities / 84 pulls (repeatShare 15.5%) — a CLUMPY pool**, and
+  **10 of 13 pairs are Normal+Normal** at pack distances 1-5 (3 cross-variant).
+  Our generator produces 0.00 Normal+Normal pairs per pool — this single pool has ten.
+  Clumpy tail is now 4 of 13 real full pools ≥10 dup identities.
+- **pack06 has an HS leader AND an HS base in the same pack** (Vane #276 +
+  Dragonsnake Bog #288), plus a UC3 HS upgrade — 3 belt upgrades in one pack.
+  Our HyperspaceUpgradeBelt forbids leader+base co-occurrence AND caps budget at 2:
+  both constraints are falsified by one real pack (our model gives this pack
+  probability zero). Candidate fix when more boxes confirm: drop the co-occurrence
+  constraint and allow budget-3 plans (or move to independent per-slot draws).
+- Confirmations: HS common exactly 1/pack (6/6, slot 5); foil 6/6 HS-foil (C5/U1);
+  UC1/UC2 upgrades still zero (cumulative 0/60 slots across 30 packs); UC3 upgraded
+  3/6 (2 HS-UC, 1 HS-Rare, all at UC3); rare slot 5R/1L; within-pack dup = 1
+  (Huyang normal + its own HS foil, cross-belt as expected).
+- HS leaders 2/6, HS bases 2/6 (model 1/6 each — high but n=6).
+- Note: pack01 was photographed in a nonstandard layout (leader at pos3) —
+  structure stats for it are type-derived, not position-derived.
+
 ## 🔎 Caveats
 
 - Single box (24 packs). All z-scores are one-box evidence.

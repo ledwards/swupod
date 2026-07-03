@@ -22,7 +22,12 @@ those are scanner/OCR eval fixtures and do not encode treatment.
 
 - `ash-box-001.csv` — ASH box, 24 packs, opened in order June 2026, transcribed
   from photos via printed collector numbers (pack 4 is art-matched — blurry photo).
-  Findings: `plans/ASH_COLLATION_FINDINGS.md`.
+  Photo order = box columns (left top-down, then right); factory line order is the
+  interleave 12,24,11,23,…,1,13. Findings: `plans/ASH_COLLATION_FINDINGS.md`.
+- `ash-pool-002.csv` — 6 ASH packs from a PRERELEASE box (July 2026). Collation
+  of prerelease boxes is unknown and we never generate them: use for intra-pack
+  and aggregate stats only, NOT pack-sequence analysis. pack01 was photographed
+  in a nonstandard layout (leader at pos3) — derive its structure by card type.
 
 ## Analysis
 
