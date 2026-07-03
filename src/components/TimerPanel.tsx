@@ -47,6 +47,12 @@ export interface TimerPanelProps {
    * Drives the competitive Appendix C round-timer schedule. Ignored for casual.
    */
   cardsRemaining?: number
+  /**
+   * Where the Pack/Pick (or Leader round) indicator renders relative to the
+   * timer box. The top and bottom stacks mirror each other inside-out, so the
+   * bottom copy puts the round indicator BELOW the timer.
+   */
+  roundInfoPosition?: 'above' | 'below'
 }
 
 /**
@@ -54,7 +60,7 @@ export interface TimerPanelProps {
  * Shows either pick timeout or last player timer (whichever has less time remaining)
  * Both timers can be enabled/disabled independently
  */
-function TimerPanel({ draft, players = [], compact = false, isHost = false, onTogglePause, onUpdateTimerSettings, draftState = null, onTimerExpire, cardsRemaining = 0 }: TimerPanelProps) {
+function TimerPanel({ draft, players = [], compact = false, isHost = false, onTogglePause, onUpdateTimerSettings, draftState = null, onTimerExpire, cardsRemaining = 0, roundInfoPosition = 'above' }: TimerPanelProps) {
   const [activeTimer, setActiveTimer] = useState<'round' | 'lastPlayer'>('round')
   const [optimisticPaused, setOptimisticPaused] = useState<boolean | null>(null)
 
@@ -169,19 +175,19 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
       : (compact ? "Pick" : "Pick Timeout:")
   const totalLeaderRounds = draftState?.totalPacks || draft?.settings?.chaosSets?.length || 3
 
+  const roundPickInfo = draftState?.phase === 'leader_draft' ? (
+    <div className="round-pick-info">
+      Leader {draftState?.leaderRound || 1}/{totalLeaderRounds}
+    </div>
+  ) : draftState?.phase === 'pack_draft' ? (
+    <div className="round-pick-info">
+      Pack {draftState?.packNumber || 1} - Pick {draftState?.pickInPack || 1}
+    </div>
+  ) : null
+
   return (
     <>
-      {/* Round/Pick info displayed ABOVE the timer box */}
-      {draftState?.phase === 'leader_draft' && (
-        <div className="round-pick-info">
-          Leader {draftState?.leaderRound || 1}/{totalLeaderRounds}
-        </div>
-      )}
-      {draftState?.phase === 'pack_draft' && (
-        <div className="round-pick-info">
-          Pack {draftState?.packNumber || 1} - Pick {draftState?.pickInPack || 1}
-        </div>
-      )}
+      {roundInfoPosition === 'above' && roundPickInfo}
 
       <div className={wrapperClass}>
         <div className={`timer-panel ${compact ? 'compact' : ''} ${isPaused ? 'paused' : ''}`}>
@@ -232,6 +238,8 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
           )}
         </div>
       </div>
+
+      {roundInfoPosition === 'below' && roundPickInfo}
 
       {/* Host timer controls — modify timers during active draft */}
       {isHost && onUpdateTimerSettings && !compact && !draft?.competitive && (

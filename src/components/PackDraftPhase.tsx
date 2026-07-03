@@ -575,6 +575,52 @@ function PackDraftPhase({
     )
   }
 
+  // Selected-card confirm banner, rendered in BOTH the top and bottom stacks.
+  // Each stack shows round indicator / timer / confirm banner mirrored
+  // inside-out: the banner sits innermost (closest to the pack grid) on both.
+  const selectionBanner = !isSpectator && selectedCardId && !showPassing ? (() => {
+    const selectedCard = currentPack.find(c => (c.instanceId || c.id) === selectedCardId)
+    if (!selectedCard || !selectedCard.name) return null
+    const firstAspect = selectedCard.aspects?.[0]
+    const aspectColor = firstAspect ? getSingleAspectColor(firstAspect) : NO_ASPECT_COLOR
+    const cardNameColor = getReadableAspectTextColor(aspectColor)
+    return (
+      <div
+        className="selection-confirmation-banner"
+        style={{
+          background: `linear-gradient(135deg, ${aspectColor}33 0%, ${aspectColor}22 100%)`,
+          borderColor: aspectColor,
+        }}
+      >
+        <div className="selection-info">
+          <span className="selection-label">Selected:</span>
+          <span className="selection-card-name" style={{ color: cardNameColor }}>
+            {selectedCard.name || selectedCard.title || 'Card'}
+          </span>
+          {selectedCard.subtitle && (
+            <span className="selection-card-subtitle">{selectedCard.subtitle}</span>
+          )}
+        </div>
+        <div className="selection-actions">
+          <button
+            type="button"
+            className="selection-confirm-button"
+            onClick={(e) => handleConfirmSelection(e)}
+            disabled={loading || confirming}
+          >
+            {confirming ? 'Confirming...' : 'Confirm'}
+          </button>
+          <button type="button" className="deselect-button" onClick={(e) => handleDeselect(e)} aria-label="Clear selection" title="Deselect">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+    )
+  })() : null
+
   return (
     <div className="pack-draft-phase">
       <div className={`draft-layout${isFullscreen ? ' draft-layout-expanded' : ''}`}>
@@ -595,7 +641,9 @@ function PackDraftPhase({
         </div>
 
         <div className={`cards-section${isFullscreen ? ' cards-section-fullscreen' : ''}`}>
-          {/* Timer bar above pick area - TimerPanel handles its own visibility */}
+          {/* Top stack, outermost-in: round indicator, timer, confirm banner.
+              TimerPanel renders the round indicator above the timer here; the
+              bottom stack mirrors this order inside-out. */}
           <TimerPanel
             draft={draft}
             players={players}
@@ -607,6 +655,8 @@ function PackDraftPhase({
             onTimerExpire={onTimerExpire}
             cardsRemaining={currentPack.length}
           />
+
+          {selectionBanner}
 
           {isSpectator ? (
             <div className="draft-info-header">
@@ -740,10 +790,12 @@ function PackDraftPhase({
             </div>
           )}
 
-          {/* Bottom timer — identical to the top timer (same TimerPanel, same
-              props), repeated right above the pick/confirm box so the clock stays
-              in view while you scroll. Expiry is owned by the top timer only (no
-              onTimerExpire here) to avoid the auto-pick firing twice. */}
+          {/* Bottom stack, innermost-out: confirm banner, timer, round
+              indicator — the top stack mirrored. Same TimerPanel props as the
+              top; expiry is owned by the top timer only (no onTimerExpire
+              here) to avoid the auto-pick firing twice. */}
+          {selectionBanner}
+
           {!isSpectator && (
             <div className="timer-bar-bottom">
               <TimerPanel
@@ -755,53 +807,10 @@ function PackDraftPhase({
                 onUpdateTimerSettings={onUpdateTimerSettings}
                 draftState={draftState}
                 cardsRemaining={currentPack.length}
+                roundInfoPosition="below"
               />
             </div>
           )}
-
-          {/* Selection confirmation banner - below cards */}
-          {!isSpectator && selectedCardId && !showPassing && (() => {
-            const selectedCard = currentPack.find(c => (c.instanceId || c.id) === selectedCardId)
-            if (!selectedCard || !selectedCard.name) return null
-            const firstAspect = selectedCard.aspects?.[0]
-            const aspectColor = firstAspect ? getSingleAspectColor(firstAspect) : NO_ASPECT_COLOR
-            const cardNameColor = getReadableAspectTextColor(aspectColor)
-            return (
-              <div
-                className="selection-confirmation-banner"
-                style={{
-                  background: `linear-gradient(135deg, ${aspectColor}33 0%, ${aspectColor}22 100%)`,
-                  borderColor: aspectColor,
-                }}
-              >
-                <div className="selection-info">
-                  <span className="selection-label">Selected:</span>
-                  <span className="selection-card-name" style={{ color: cardNameColor }}>
-                    {selectedCard.name || selectedCard.title || 'Card'}
-                  </span>
-                  {selectedCard.subtitle && (
-                    <span className="selection-card-subtitle">{selectedCard.subtitle}</span>
-                  )}
-                </div>
-                <div className="selection-actions">
-                  <button
-                    type="button"
-                    className="selection-confirm-button"
-                    onClick={(e) => handleConfirmSelection(e)}
-                    disabled={loading || confirming}
-                  >
-                    {confirming ? 'Confirming...' : 'Confirm'}
-                  </button>
-                  <button type="button" className="deselect-button" onClick={(e) => handleDeselect(e)} aria-label="Clear selection" title="Deselect">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                      <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            )
-          })()}
 
         </div>
       </div>

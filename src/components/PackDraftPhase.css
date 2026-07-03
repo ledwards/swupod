@@ -196,11 +196,17 @@
   box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
 }
 
-/* Duplicate bottom draft timer — a second copy of the top timer, just above the
+/* Duplicate bottom draft timer — a second copy of the top timer, just below the
    pick/confirm box. Only adds vertical spacing; the TimerPanel renders exactly as
    it does at the top (no layout/visual overrides). */
 .timer-bar-bottom {
   margin: 0.75rem 0 0.25rem;
+}
+
+/* Bottom stack mirrors the top inside-out, so its round indicator sits BELOW
+   the timer — flip the indicator's spacing to match. */
+.timer-bar-bottom .round-pick-info {
+  margin: 10px 0 0;
 }
 
 /* Review cost/aspect columns: Unit / Non-Unit sub-sections (mirrors deckbuilder). */
