@@ -1,5 +1,11 @@
 # Release Notes
 
+## 07.03.2026
+
+### 🔥 Real-Box Collation Calibration (LAW & ASH)
+- **Packs now collate like a real ASH box**: We opened and transcribed a full ASH booster box card-by-card and calibrated the generator against it. Uncommon slots 1–2 no longer upgrade to hyperspace (in reality all hyperspace uncommons arrive via the third slot), ASH foil-slot rarities now match observed pulls, base cards no longer follow an artificial aspect rotation the real printer doesn't use, and heroism-only and neutral commons now ride the correct print lanes.
+- Under the hood: real-box data now lives in `data/real-boxes/` with a repeatable analysis script, so every future box opening tightens the calibration.
+
 ## 07.02.2026
 
 ### 🐛 Bug Fixes

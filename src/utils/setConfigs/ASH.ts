@@ -58,9 +58,12 @@ export const ASH_CONFIG: SetConfig = {
   },
 
   rarityWeights: {
-    hyperspaceFoilSlot: constants.hyperspaceFoilSlotWeights || {
-      Common: 65,
-      Uncommon: 20,
+    // ASH override (real box 001, 24 foils: C20/U1/R1/S1/L1 — commons heavier,
+    // uncommons lighter than the LAW-derived C65/U20; R/S/L on target).
+    // Moderate shift, not chasing one box; revisit with box #2.
+    hyperspaceFoilSlot: {
+      Common: 72,
+      Uncommon: 13,
       Rare: 8,
       Special: 4,
       Legendary: 3,
@@ -89,9 +92,6 @@ export const ASH_CONFIG: SetConfig = {
     uc3ToPrestige: ASH_T1_PRESTIGE_RATE,
   },
 
-  // Triple-aspect cards present but fewer than LAW
-  tripleAspect: {
-    enabled: true,
-    beltAssignment: 'primaryAspectPriority',
-  },
+  // NOTE: Triple-aspect cards need no special config — belt assignment uses
+  // aspects[0] (primary-aspect priority) in assignCardToBelt for all cards.
 }

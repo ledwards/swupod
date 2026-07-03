@@ -8,6 +8,7 @@
  */
 
 import { getCachedCards } from '../utils/cardCache';
+import { getSetConfig } from '../utils/setConfigs';
 import type { RawCard } from '../utils/cardData';
 import type { SetCode } from '../types';
 
@@ -32,6 +33,14 @@ function hasSameAspect(a: RawCard | undefined, b: RawCard | undefined): boolean 
   if (!a.aspects || !b.aspects) return false
   // Check if any aspect overlaps
   return a.aspects.some(aspect => b.aspects.includes(aspect))
+}
+
+/**
+ * Check if two cards are the same base (name + subtitle)
+ */
+function isSameBase(a: RawCard | undefined, b: RawCard | undefined): boolean {
+  if (!a || !b) return false
+  return a.name === b.name && (a.subtitle || '') === (b.subtitle || '')
 }
 
 export class BaseBelt {
@@ -81,17 +90,26 @@ export class BaseBelt {
 
   /**
    * Fill the hopper with a new batch of bases
+   *
+   * Sets 1-6: aspect-based adjacency dedup (no adjacent bases share an aspect).
+   * Set 7+: real ASH box 001 showed NO aspect rotation in the base belt
+   * (adjacent same-aspect at exactly the random rate, e.g. Throne Room→Kryze
+   * Castle, three consecutive Aggression bases) — so only prevent the same
+   * base name from being served back-to-back at boot seams.
    */
   _fill(): void {
+    const setNumber = getSetConfig(this.setCode)?.setNumber ?? 0
+    const conflicts = setNumber >= 7 ? isSameBase : hasSameAspect
+
     // Shuffle the bases for this boot
     const boot = shuffle([...this.fillingPool])
 
-    // Add each card, checking for aspect conflicts at the seam
+    // Add each card, checking for conflicts at the seam
     for (let i = 0; i < boot.length; i++) {
       const card = boot[i]!
       const prevCard = this.hopper[this.hopper.length - 1]
 
-      if (prevCard && hasSameAspect(card, prevCard)) {
+      if (prevCard && conflicts(card, prevCard)) {
         // Move this card to back half of boot (remaining unprocessed cards)
         // and try the next card instead
         const remainingStart = i + 1
