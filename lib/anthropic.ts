@@ -41,6 +41,11 @@ import {
   classifyTableWithClaude,
   runOmrSidecar,
 } from '../src/services/importPool/omrExtraction'
+import {
+  addResponseUsage,
+  newExtractUsage,
+  type ExtractUsage,
+} from '../src/services/importPool/extractUsage'
 
 // Extraction model. Env-overridable so the eval harness can A/B alternative
 // models (e.g. IMPORT_EXTRACT_MODEL=claude-fable-5) without a code change.
@@ -614,6 +619,9 @@ export interface ExtractResult {
    *  passing iteration; otherwise it's the iteration with the smallest
    *  invariant distance. */
   bestIteration: number
+  /** Cumulative token usage across EVERY API call in this extraction
+   *  (Phase 1 + all Phase 2 table/sample/refine calls). */
+  usage: ExtractUsage
 }
 
 function buildInitialUserText(setHint: string | undefined): string {
@@ -1068,6 +1076,9 @@ export async function extractPoolFromImages(
 
   const client = getClient()
 
+  // Cumulative token usage across every API call in this extraction.
+  const usage = newExtractUsage()
+
   // Phase 1: header + section bounds
   const phase1Start = Date.now()
   let phase1: { header: ExtractedHeader; sections: SectionBounds[]; usage: any }
@@ -1076,6 +1087,7 @@ export async function extractPoolFromImages(
   } catch (err) {
     throw new Error(`Phase 1 failed: ${(err as Error).message}`)
   }
+  addResponseUsage(usage, phase1.usage)
   const phase1Elapsed = Date.now() - phase1Start
 
   // Phase 2: per-SUB-GROUP parallel extraction with multi-sample voting.
@@ -1206,6 +1218,7 @@ export async function extractPoolFromImages(
       setCode,
       samplesForThis,
       hint,
+      usage,
     )
     return {
       subGroup,
@@ -1255,6 +1268,7 @@ export async function extractPoolFromImages(
         setCode,
         3,
         { ...baseHint, lookHarder: true },
+        usage,
       )
       const secondHasMarks = second.rows.some((r: any) => Number(r.poolQty || 0) > 0)
       if (secondHasMarks) {
@@ -1306,6 +1320,7 @@ export async function extractPoolFromImages(
       tableCards,
       setCode,
       refineHint,
+      usage,
     )
     sg.rows = refineResult.rows
     sg.outputTokens += refineResult.outputTokens
@@ -1412,6 +1427,7 @@ export async function extractPoolFromImages(
     iterations,
     converged: status.passing,
     bestIteration: 1,
+    usage,
   }
 }
 
@@ -1462,6 +1478,9 @@ export async function extractPoolFromImagesWholeTable(
 
   const client = getClient()
 
+  // Cumulative token usage across every API call in this extraction.
+  const usage = newExtractUsage()
+
   // Phase 1: header + section bounds (kept from legacy path).
   const phase1Start = Date.now()
   let phase1: { header: ExtractedHeader; sections: SectionBounds[]; usage: any }
@@ -1470,6 +1489,7 @@ export async function extractPoolFromImagesWholeTable(
   } catch (err) {
     throw new Error(`Phase 1 failed: ${(err as Error).message}`)
   }
+  addResponseUsage(usage, phase1.usage)
   const phase1Elapsed = Date.now() - phase1Start
 
   // Phase 2: OMR sidecar (Python) + per-table whole-table Claude calls.
@@ -1509,7 +1529,7 @@ export async function extractPoolFromImagesWholeTable(
         const cards = (tableGroups.get(t.name as TableName) || []) as any[]
         if (cards.length === 0) continue
         try {
-          const rows = await classifyTableWithClaude(client, t.name as TableName, cards, t.image_b64)
+          const rows = await classifyTableWithClaude(client, t.name as TableName, cards, t.image_b64, usage)
           tableResults.push({ tableName: t.name as TableName, rows, error: null })
         } catch (err) {
           tableResults.push({
@@ -1612,6 +1632,7 @@ export async function extractPoolFromImagesWholeTable(
     iterations,
     converged: status.passing,
     bestIteration: 1,
+    usage,
   }
 }
 

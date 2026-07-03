@@ -11,6 +11,7 @@
  */
 import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
+import { fmtCost, fmtTokens } from './pricing'
 
 function loadEnvFile(path: string) {
   try {
@@ -67,6 +68,10 @@ async function main() {
 
   // Per-table breakdown for review
   console.log(`elapsed=${elapsed}s sections=${result.result.sections?.length || 0}`)
+  if (result.usage) {
+    const model = process.env.IMPORT_EXTRACT_MODEL || 'claude-opus-4-7'
+    console.log(`tokens: ${fmtTokens(result.usage)}  cost: ${fmtCost(model, result.usage)}`)
+  }
   for (const it of result.iterations) {
     if (it.failures && it.failures.length > 0) console.log('  ' + it.failures.join(' | '))
   }

@@ -38,12 +38,7 @@ if (!FIXTURE) {
   process.exit(1)
 }
 
-// $/MTok. Fable 5 pricing is not published in this repo's knowledge — when the
-// model has no entry we print the token math with a bounded estimate instead.
-const RATES: Record<string, { in: number; out: number; cacheRead: number; cacheWrite5m: number; cacheWrite1h: number } | null> = {
-  'claude-opus-4-7': { in: 15, out: 75, cacheRead: 1.5, cacheWrite5m: 18.75, cacheWrite1h: 30 },
-  'claude-fable-5': null,
-}
+import { fmtCost, fmtTokens } from './pricing'
 
 async function main() {
   const { extractPoolAgentic } = await import('../../lib/agenticExtract')
@@ -66,21 +61,8 @@ async function main() {
   console.log(`totals: pool=${result.totals.pool} deck=${result.totals.deck} leaders=${result.totals.leaders} bases=${result.totals.bases}`)
   if (result.unresolved) console.log(`unresolved: ${result.unresolved}`)
 
-  const u = result.usage
-  console.log(`\ntokens: calls=${u.apiCalls} in=${u.inputTokens.toLocaleString()} out=${u.outputTokens.toLocaleString()} cacheRead=${u.cacheReadTokens.toLocaleString()} cacheWrite=${u.cacheCreationTokens.toLocaleString()}`)
-  const rate = RATES[result.model]
-  const cost = (r: NonNullable<(typeof RATES)[string]>) =>
-    (u.inputTokens / 1e6) * r.in +
-    (u.outputTokens / 1e6) * r.out +
-    (u.cacheReadTokens / 1e6) * r.cacheRead +
-    (u.cacheCreationTokens / 1e6) * r.cacheWrite5m
-  if (rate) {
-    console.log(`cost @ ${result.model} rates: $${cost(rate).toFixed(3)}`)
-  } else {
-    const lo = cost({ in: 3, out: 15, cacheRead: 0.3, cacheWrite5m: 3.75, cacheWrite1h: 6 })
-    const hi = cost({ in: 15, out: 75, cacheRead: 1.5, cacheWrite5m: 18.75, cacheWrite1h: 30 })
-    console.log(`cost: no published rate for ${result.model} — $${lo.toFixed(3)} at Sonnet-class rates, $${hi.toFixed(3)} at Opus-class rates`)
-  }
+  console.log(`\ntokens: ${fmtTokens(result.usage)}`)
+  console.log(`cost: ${fmtCost(result.model, result.usage)}`)
 
   const outPath = process.env.OUT || join(REPO_ROOT, 'scripts/eval/extractions', `agentic-${FIXTURE}.json`)
   mkdirSync(join(REPO_ROOT, 'scripts/eval/extractions'), { recursive: true })

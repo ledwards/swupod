@@ -50,6 +50,11 @@ const REPO_ROOT = process.env.REPO_ROOT || process.cwd()
 const FIXTURES_DIR = join(REPO_ROOT, 'scripts/eval/fixtures')
 const RESULTS_DIR = join(REPO_ROOT, 'scripts/eval/results')
 
+import { fmtCost, fmtTokens, sumUsage } from './pricing'
+// Mirrors the pipeline's model resolution (lib/anthropic.ts + section/omr
+// extraction) so cost lines price against the model that actually ran.
+const EXTRACT_MODEL = process.env.IMPORT_EXTRACT_MODEL || 'claude-opus-4-7'
+
 interface GroundTruthRow {
   name: string
   subtitle?: string | null
@@ -85,6 +90,7 @@ interface FixtureScore {
   converged?: boolean
   bestIteration?: number
   elapsedSec?: number
+  usage?: import('./pricing').UsageLike
   perIterCounts?: Array<{ iter: number; pool: number; deck: number; leaders: number; bases: number }>
   iterationFailures?: string[]
   sectionsCount?: number
@@ -257,6 +263,7 @@ async function evalFixture(name: string): Promise<FixtureScore> {
     converged: result.converged,
     bestIteration: result.bestIteration,
     elapsedSec,
+    usage: result.usage,
     perIterCounts: result.iterations.map((it: any) => ({
       iter: it.iteration,
       pool: it.poolSum,
@@ -301,6 +308,9 @@ function reportFixture(s: FixtureScore) {
   console.log(
     `iterations: ${s.iterations} (best=${s.bestIteration}, converged=${s.converged}, elapsed=${s.elapsedSec!.toFixed(1)}s)`,
   )
+  if (s.usage) {
+    console.log(`tokens: ${fmtTokens(s.usage)}  cost: ${fmtCost(EXTRACT_MODEL, s.usage)}`)
+  }
   if (s.tableBreakdown && s.tableBreakdown.length > 0) {
     console.log(`table breakdown:`)
     console.log(`  ${'table'.padEnd(13)} ${'pool sum'.padStart(8)}  ${'deck sum'.padStart(8)}  rows-marked  rows-in-deck`)
@@ -352,6 +362,11 @@ function reportAggregate(scored: FixtureScore[]) {
   console.log(`mean qty error: ${meanQtyErr.toFixed(2)}`)
   console.log(`mean iterations: ${meanIters.toFixed(1)}`)
   console.log(`total elapsed: ${totalElapsed.toFixed(0)}s`)
+  const totalUsage = sumUsage(ok.map((s) => s.usage))
+  if (totalUsage.apiCalls > 0) {
+    console.log(`total tokens: ${fmtTokens(totalUsage)}`)
+    console.log(`TOTAL COST: ${fmtCost(EXTRACT_MODEL, totalUsage)}`)
+  }
 }
 
 async function main() {

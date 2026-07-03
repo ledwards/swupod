@@ -33,8 +33,12 @@ import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
 import type { TableName } from './tableGrouping'
+import { addResponseUsage, type ExtractUsage } from './extractUsage'
 
-const MODEL = 'claude-opus-4-7'
+// Keep in sync with lib/anthropic.ts — IMPORT_EXTRACT_MODEL overrides ALL
+// extraction phases (a hardcoded copy here once silently pinned the
+// whole-table Phase 2 to opus while Phase 1 A/B'd other models).
+const MODEL = process.env.IMPORT_EXTRACT_MODEL || 'claude-opus-4-7'
 const MAX_TOKENS = 6000
 
 // ----- Sidecar invocation -----
@@ -213,6 +217,7 @@ export async function classifyTableWithClaude(
   tableName: TableName,
   cards: any[],
   imageB64: string,
+  usage?: ExtractUsage,
 ): Promise<WholeTableResult[]> {
   const sortedCards = [...cards].sort((a, b) => Number(a.number) - Number(b.number))
   const nameList = sortedCards
@@ -260,6 +265,7 @@ export async function classifyTableWithClaude(
     }
   }
   if (!response) throw lastErr ?? new Error('Claude call failed (no response)')
+  addResponseUsage(usage, response.usage)
 
   const text = response.content?.[0]?.text || ''
   const jsonMatch = text.match(/\{[\s\S]*\}/)

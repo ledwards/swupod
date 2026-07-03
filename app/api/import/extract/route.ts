@@ -237,6 +237,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       converged = extractResult.converged
       bestIteration = extractResult.bestIteration
 
+      // Cost observability: cumulative token usage across every API call in
+      // this extraction (both architectures report it).
+      if (extractResult.usage) {
+        const u = extractResult.usage
+        logAttempt(
+          `usage: calls=${u.apiCalls} in=${u.inputTokens} out=${u.outputTokens} cacheR=${u.cacheReadTokens} cacheW=${u.cacheCreationTokens}`,
+        )
+      }
+
       // Per-iteration log line: one line per pass with the invariant counts.
       // Comparing iteration N to iteration N-1 tells us whether refine prompts
       // are actually moving the needle, or whether tweaks are no-ops.
