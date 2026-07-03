@@ -8,6 +8,7 @@
  */
 
 import { getCachedCards } from '../utils/cardCache'
+import { getSetConfig } from '../utils/setConfigs'
 import type { RawCard } from '../utils/cardData'
 import type { SetCode } from '../types'
 import {
@@ -76,10 +77,14 @@ export class HyperspaceLeaderBelt {
 
   _fill(): void {
     const priorCards = [...this.recentCards, ...this.hopper].slice(-LEADER_DEDUP_WINDOW)
+    // Set 7+ uses the same loosened dedup cap as the normal LeaderBelt
+    // (real ASH box 001: leader repeats at line gaps 3-5)
+    const setNumber = getSetConfig(this.setCode)?.setNumber ?? 0
     const boot = buildLeaderSheetBoot({
       commonLeaders: this.commonLeaders,
       rareLeaders: this.rareLeaders,
       priorCards,
+      ...(setNumber >= 7 ? { dedupWindowCap: 3 } : {}),
     })
 
     this.hopper.push(...boot)

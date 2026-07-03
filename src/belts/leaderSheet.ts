@@ -13,6 +13,10 @@ interface BuildLeaderBootOptions {
   rarePrintsPerLeader?: number
   priorCards?: RawCard[]
   equalWeight?: boolean
+  // Upper bound on the per-card minimum dedup gap. Set 7+ (LAW/ASH) pass 3 so
+  // common-leader repeats can occur at line gap 3 (real ASH box 001: gaps 3,4,5).
+  // Undefined keeps the default LEADER_DEDUP_WINDOW cap (Sets 1-6 unchanged).
+  dedupWindowCap?: number
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -67,16 +71,21 @@ function duplicateDistance(sequence: RawCard[], candidate: RawCard): number | nu
   return null
 }
 
-function minDuplicateGap(candidate: RawCard, totalPrints: number, copyCounts: Map<string, number>): number {
+function minDuplicateGap(
+  candidate: RawCard,
+  totalPrints: number,
+  copyCounts: Map<string, number>,
+  dedupWindowCap: number,
+): number {
   const copies = copyCounts.get(leaderIdentityKey(candidate)) || 1
   if (copies > 1) {
     let keysWithSamePrintCount = 0
     for (const count of copyCounts.values()) {
       if (count === copies) keysWithSamePrintCount++
     }
-    return Math.min(LEADER_DEDUP_WINDOW, Math.max(1, keysWithSamePrintCount))
+    return Math.min(dedupWindowCap, Math.max(1, keysWithSamePrintCount))
   }
-  return Math.min(LEADER_DEDUP_WINDOW, Math.max(1, Math.floor(totalPrints / copies)))
+  return Math.min(dedupWindowCap, Math.max(1, Math.floor(totalPrints / copies)))
 }
 
 function candidateScore(
@@ -84,9 +93,10 @@ function candidateScore(
   sequence: RawCard[],
   totalPrints: number,
   copyCounts: Map<string, number>,
+  dedupWindowCap: number,
 ): number {
   const distance = duplicateDistance(sequence, candidate)
-  const minGap = minDuplicateGap(candidate, totalPrints, copyCounts)
+  const minGap = minDuplicateGap(candidate, totalPrints, copyCounts, dedupWindowCap)
   const duplicatePenalty = distance !== null && distance < minGap
     ? (minGap - distance) * 1000
     : 0
@@ -103,6 +113,7 @@ function takeBestCandidate(
   sequence: RawCard[],
   totalPrints: number,
   copyCounts: Map<string, number>,
+  dedupWindowCap: number,
 ): RawCard | null {
   if (queue.length === 0) return null
 
@@ -110,7 +121,7 @@ function takeBestCandidate(
   let bestScore = Number.POSITIVE_INFINITY
 
   for (let i = 0; i < queue.length; i++) {
-    const score = candidateScore(queue[i]!, sequence, totalPrints, copyCounts) + Math.random() * 0.001
+    const score = candidateScore(queue[i]!, sequence, totalPrints, copyCounts, dedupWindowCap) + Math.random() * 0.001
     if (score < bestScore) {
       bestIndex = i
       bestScore = score
@@ -162,6 +173,7 @@ export function buildLeaderSheetBoot(options: BuildLeaderBootOptions): RawCard[]
   const commonPrintsPerLeader = options.commonPrintsPerLeader ?? LEADER_COMMON_PRINTS_PER_BOOT
   const rarePrintsPerLeader = options.rarePrintsPerLeader ?? LEADER_RARE_PRINTS_PER_BOOT
   const priorCards = (options.priorCards || []).slice(-LEADER_DEDUP_WINDOW)
+  const dedupWindowCap = options.dedupWindowCap ?? LEADER_DEDUP_WINDOW
   const sequence = [...priorCards]
   const boot: RawCard[] = []
 
@@ -172,7 +184,7 @@ export function buildLeaderSheetBoot(options: BuildLeaderBootOptions): RawCard[]
     const totalPrints = queue.length
 
     while (queue.length > 0) {
-      const next = takeBestCandidate(queue, sequence, totalPrints, copyCounts)
+      const next = takeBestCandidate(queue, sequence, totalPrints, copyCounts, dedupWindowCap)
       if (!next) break
       boot.push(next)
       sequence.push(next)
@@ -198,8 +210,8 @@ export function buildLeaderSheetBoot(options: BuildLeaderBootOptions): RawCard[]
     const preferredQueue = slot === 'Rare' ? rareQueue : commonQueue
     const fallbackQueue = slot === 'Rare' ? commonQueue : rareQueue
     const next =
-      takeBestCandidate(preferredQueue, sequence, totalPrints, copyCounts) ||
-      takeBestCandidate(fallbackQueue, sequence, totalPrints, copyCounts)
+      takeBestCandidate(preferredQueue, sequence, totalPrints, copyCounts, dedupWindowCap) ||
+      takeBestCandidate(fallbackQueue, sequence, totalPrints, copyCounts, dedupWindowCap)
 
     if (!next) break
     boot.push(next)
