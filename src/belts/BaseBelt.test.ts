@@ -124,6 +124,49 @@ async function runTests(): Promise<void> {
     assert(adjacentMatches <= 10, `Found ${adjacentMatches} adjacent aspect matches (max allowed: 10)`)
   })
 
+  test('FIXED: Set 7+ base belt does NOT enforce aspect separation (real ASH box 001: adjacent same-aspect at random rate, e.g. Throne Room→Kryze Castle, 3 consecutive Aggression bases p22-24)', () => {
+    const belt = new BaseBelt('ASH')
+    const sample: Array<{ aspects?: string[] }> = []
+    for (let i = 0; i < 400; i++) sample.push(belt.next())
+
+    let adjacentMatches = 0
+    for (let i = 1; i < sample.length; i++) {
+      const prev = sample[i - 1], curr = sample[i]
+      if (prev.aspects && curr.aspects && prev.aspects.some(a => curr.aspects!.includes(a))) {
+        adjacentMatches++
+      }
+    }
+    // SPEC: with 8 bases (2 per aspect) and no aspect dedup, random expectation is
+    // ~1/7 of adjacencies ≈ 57 in 399. The old aspect-dedup code produced near 0.
+    assert(adjacentMatches >= 20,
+      `Set 7+ base belt should NOT suppress aspect adjacency: got ${adjacentMatches}/399 (random ≈ 57)`)
+  })
+
+  test('FIXED: Set 7+ base belt never serves the same base back-to-back', () => {
+    const belt = new BaseBelt('ASH')
+    let prev = belt.next()
+    for (let i = 0; i < 400; i++) {
+      const curr = belt.next()
+      assert(!(prev && curr && prev.name === curr.name && prev.subtitle === curr.subtitle),
+        `Same base served back-to-back at draw ${i}: ${curr?.name}`)
+      prev = curr
+    }
+  })
+
+  test('sets 1-6 base belts keep aspect seam dedup (unchanged)', () => {
+    const belt = new BaseBelt('JTL')
+    const sample: Array<{ aspects?: string[] }> = []
+    for (let i = 0; i < 50; i++) sample.push(belt.next())
+    let adjacentMatches = 0
+    for (let i = 1; i < sample.length; i++) {
+      const prev = sample[i - 1], curr = sample[i]
+      if (prev.aspects && curr.aspects && prev.aspects.some(a => curr.aspects!.includes(a))) {
+        adjacentMatches++
+      }
+    }
+    assert(adjacentMatches <= 10, `JTL should still dedup aspects: ${adjacentMatches} matches`)
+  })
+
   test('different belt instances start at different positions', () => {
     // Create multiple belts and check their first card varies
     const firstCards = new Set<string>()

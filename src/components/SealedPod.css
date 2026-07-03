@@ -565,11 +565,6 @@
   z-index: 1;
 }
 
-.card-item > .card-stats-badge {
-  position: absolute;
-  z-index: 35;
-}
-
 /* Leaders and bases display naturally (landscape) in draft mode */
 .draft-mode .card-item.leader .card-image,
 .draft-mode .card-item.base .card-image {

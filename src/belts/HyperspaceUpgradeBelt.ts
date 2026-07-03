@@ -71,7 +71,42 @@ export class HyperspaceUpgradeBelt {
 
   _fill(): void {
     const { cycleSize, budgetDistribution, slotCounts } = this.config
+    const targetTotal =
+      slotCounts.leader + slotCounts.base + slotCounts.common +
+      slotCounts.uc1 + slotCounts.uc2 + slotCounts.uc3
 
+    // Random assignment can strand budget capacity when the config is tight
+    // (e.g. LAW: budget-2 plans can only be satisfied by (leader|base)+uc3 since
+    // leader/base are mutually exclusive and uc1/uc2/common are 0). Repair any
+    // shortfall with augmenting swaps so every cycle carries its full quota.
+    const budgets: number[] = [
+      ...Array(budgetDistribution[0]).fill(0),
+      ...Array(budgetDistribution[1]).fill(1),
+      ...Array(budgetDistribution[2]).fill(2),
+    ]
+    const plans = this._buildPlans(cycleSize, budgetDistribution, slotCounts, budgets)
+    const assigned = plans.reduce((sum, p) => sum + countTrue(p), 0)
+    if (assigned < targetTotal) {
+      this._repairAssignment(plans, budgets, slotCounts)
+      const repaired = plans.reduce((sum, p) => sum + countTrue(p), 0)
+      if (repaired < targetTotal) {
+        console.warn(`HyperspaceUpgradeBelt: could not place all ${targetTotal} upgrades (placed ${repaired})`)
+      }
+    }
+
+    // Shuffle the plans (but only the non-zero plans — zeros stay as zeros mixed in)
+    shuffle(plans)
+
+    // Push to hopper
+    this.hopper.push(...plans)
+  }
+
+  _buildPlans(
+    cycleSize: number,
+    budgetDistribution: { 0: number, 1: number, 2: number },
+    slotCounts: HSBeltConfig['slotCounts'],
+    budgets: number[]
+  ): UpgradePlan[] {
     // Step 1: Create plans with assigned budgets
     const plans: UpgradePlan[] = []
 
@@ -88,27 +123,11 @@ export class HyperspaceUpgradeBelt {
       plans.push(emptyPlan())
     }
 
-    // Track budget for each plan
-    const budgets: number[] = [
-      ...Array(budgetDistribution[0]).fill(0),
-      ...Array(budgetDistribution[1]).fill(1),
-      ...Array(budgetDistribution[2]).fill(2),
-    ]
-
     // Step 2: Distribute slot assignments
     // We need to assign N upgrades of each slot type across the plans,
     // respecting budget limits and co-occurrence constraints.
-
-    // Build list of eligible plan indices for each slot
-    // Budget-0 plans get no slots at all
+    // Budget-0 plans get no slots at all.
     const budget1Start = budgetDistribution[0]
-    const budget2Start = budget1Start + budgetDistribution[1]
-
-    // All plans that can receive at least one upgrade
-    const eligibleIndices = []
-    for (let i = budget1Start; i < cycleSize; i++) {
-      eligibleIndices.push(i)
-    }
 
     // Assign leader upgrades — only to plans that don't already have base
     this._assignSlot(plans, budgets, 'leader', slotCounts.leader, budget1Start, cycleSize)
@@ -123,11 +142,68 @@ export class HyperspaceUpgradeBelt {
     this._assignSlot(plans, budgets, 'uc1', slotCounts.uc1, budget1Start, cycleSize)
     this._assignSlot(plans, budgets, 'uc2', slotCounts.uc2, budget1Start, cycleSize)
 
-    // Step 3: Shuffle the plans (but only the non-zero plans — zeros stay as zeros mixed in)
-    shuffle(plans)
+    return plans
+  }
 
-    // Step 4: Push to hopper
-    this.hopper.push(...plans)
+  /**
+   * Place any unassigned slot quota via one-step augmenting swaps.
+   *
+   * A slot type T can be unplaced when every plan with spare budget is blocked
+   * (already has T, or leader/base co-occurrence). Fix: find a plan P with
+   * spare budget and a donor plan Q holding a slot type S that P can accept,
+   * where Q can accept T after giving up S. Move S from Q to P, place T on Q.
+   */
+  _repairAssignment(
+    plans: UpgradePlan[],
+    budgets: number[],
+    slotCounts: HSBeltConfig['slotCounts']
+  ): void {
+    const canAccept = (plan: UpgradePlan, budget: number, slot: SlotKey): boolean => {
+      if (plan[slot]) return false
+      if (countTrue(plan) >= budget) return false
+      if (slot === 'leader' && plan.base) return false
+      if (slot === 'base' && plan.leader) return false
+      return true
+    }
+
+    for (const slot of ALL_SLOTS) {
+      const target = slotCounts[slot] || 0
+      let placed = plans.filter(p => p[slot]).length
+
+      let guard = plans.length * ALL_SLOTS.length
+      while (placed < target && guard-- > 0) {
+        // Direct placement if some plan can take it
+        const direct = plans.findIndex((p, i) => canAccept(p, budgets[i], slot))
+        if (direct >= 0) {
+          plans[direct][slot] = true
+          placed++
+          continue
+        }
+
+        // Augmenting swap: P has spare budget, Q donates S to P and takes `slot`
+        let swapped = false
+        outer:
+        for (let pi = 0; pi < plans.length && !swapped; pi++) {
+          if (countTrue(plans[pi]) >= budgets[pi]) continue
+          for (const s of ALL_SLOTS) {
+            if (s === slot || !canAccept(plans[pi], budgets[pi], s)) continue
+            for (let qi = 0; qi < plans.length; qi++) {
+              if (qi === pi || !plans[qi][s]) continue
+              plans[qi][s] = false
+              if (canAccept(plans[qi], budgets[qi], slot)) {
+                plans[qi][slot] = true
+                plans[pi][s] = true
+                placed++
+                swapped = true
+                break outer
+              }
+              plans[qi][s] = true // revert
+            }
+          }
+        }
+        if (!swapped) break // no augmenting path — give up on this slot type
+      }
+    }
   }
 
   /**
