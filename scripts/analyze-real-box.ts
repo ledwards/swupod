@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Analyze a real-box collation CSV (data/real-boxes/*.csv) and optionally
  * compare against the current generator using identical definitions.
