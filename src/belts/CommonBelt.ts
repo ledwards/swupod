@@ -41,6 +41,7 @@ import type { RawCard } from '../utils/cardData'
 import type { SetCode } from '../types'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { COMMON_BELT_ASSIGNMENTS, getBlockForSet, assignCardToBelt } from './data/commonBeltAssignments'
+import { getSetConfig } from '../utils/setConfigs'
 
 // Type for belt ID
 export type BeltId = 'A' | 'B'
@@ -285,6 +286,194 @@ function buildInterleavedSequence(cards: RawCard[], lastAspect: string | null): 
 
 function segmentHasRequiredAspects(cards: RawCard[], requiredAspects: string[]): boolean {
   return requiredAspects.every(aspect => cards.some(card => cardHasAspect(card, aspect)))
+}
+
+// ============================================================================
+// Set 7+ paired-copy boot (line model)
+//
+// Real ASH box 001, read in factory line order, shows each common's duplicate
+// copies riding 1-3 packs apart on the line (pack-gap histogram ~{1:32, 3:17,
+// 5:10, 7:6, 9:5, 6:4, 8:2, 4:1}), never inside the same pack. Long-gap
+// repeats (11+ packs) come from boot seams. So a Set 7+ boot contains every
+// belt card exactly TWICE: a primary sequence (built with all existing
+// constraints) merged with "echo" copies scheduled a sampled pack-gap after
+// their primary. See plans/LINE_STACKING_COLLATION_PLAN.md (L1).
+// ============================================================================
+
+// Pack-gap samplers weighted to the observed line histogram (gaps 1-9).
+// Gap PARITY controls player-visible pool duplication: odd gaps split across
+// the two box columns (clean pools), even gaps stay in one column (paired
+// pools). Real data shows both clean pools (most) and clumpy pools (~25-30%,
+// e.g. box 001 pool 1 with 7 same-column pairs, prague-taylor-b) — modeled as
+// per-boot sheet-cut variation: most boots are odd-heavy, some even-heavy.
+const PAIR_GAPS_ODD_HEAVY: number[] = []
+for (const [gap, weight] of [[1, 42], [3, 22], [5, 13], [7, 8], [9, 7], [6, 5], [8, 2], [4, 1]] as Array<[number, number]>) {
+  for (let i = 0; i < weight; i++) PAIR_GAPS_ODD_HEAVY.push(gap)
+}
+const PAIR_GAPS_EVEN_HEAVY: number[] = []
+for (const [gap, weight] of [[1, 26], [3, 14], [5, 8], [7, 5], [9, 4], [2, 14], [4, 12], [6, 10], [8, 7]] as Array<[number, number]>) {
+  for (let i = 0; i < weight; i++) PAIR_GAPS_EVEN_HEAVY.push(gap)
+}
+const EVEN_HEAVY_BOOT_RATE = 0.20
+
+function samplePairPackGapFrom(sampler: number[]): number {
+  return sampler[Math.floor(Math.random() * sampler.length)]!
+}
+
+/**
+ * Expand a single-copy primary boot into a paired boot (every card twice).
+ *
+ * Emission loop: at each output slot, prefer a due echo (its scheduled global
+ * position has arrived) if it doesn't violate aspect adjacency, same-pack
+ * placement vs its own primary, or an urgent segment quota; otherwise emit the
+ * next compatible primary (bounded look-ahead) and schedule its echo. Retries
+ * with fresh jitter, then relaxes echo gaps before EVER relaxing aspect/quota
+ * rules; a hard failure returns null so the caller can fall back loudly.
+ */
+function buildPairedBoot(
+  primary: RawCard[],
+  drawSize: number,
+  requiredAspects: string[],
+  globalStart: number,
+  lastAspect: string | null
+): RawCard[] | null {
+  const packOf = (g: number) => Math.floor(g / drawSize)
+  const MAX_ATTEMPTS = 12
+
+  // Per-boot sheet-cut parity mode (see sampler comment above)
+  const gapSampler = Math.random() < EVEN_HEAVY_BOOT_RATE ? PAIR_GAPS_EVEN_HEAVY : PAIR_GAPS_ODD_HEAVY
+
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    const relaxGaps = attempt >= 8 // late attempts: spread echoes further
+    const stream = [...primary]
+    const out: RawCard[] = []
+    // targetPack is exact: echoes land in their sampled pack, and when a pack
+    // can't take them (aspect/quota conflicts) they retarget by +2 packs.
+    // PARITY MATTERS: the real line histogram is odd-gap dominant, which makes
+    // box stacking SPLIT most pairs across columns (clean pools). Drifting by
+    // ±1 flips parity and floods consumer pools with same-column pairs.
+    const pending: Array<{ card: RawCard, targetPack: number, firstG: number }> = []
+    let prevAspect = lastAspect
+    let failed = false
+
+    const targetLen = primary.length * 2
+
+    while (out.length < targetLen) {
+      const g = globalStart + out.length
+      const currentPack = packOf(g)
+
+      // retarget echoes whose pack has passed (+2 keeps gap parity)
+      for (const p of pending) {
+        while (p.targetPack < currentPack) p.targetPack += 2
+      }
+
+      const wStart = Math.floor(g / drawSize) * drawSize
+      const inWindow = out.slice(out.length - (g - wStart))
+      const missing = requiredAspects.filter(a => !inWindow.some(c => cardHasAspect(c, a)))
+      const slotsLeft = wStart + drawSize - g
+      const mustCover = missing.length >= slotsLeft && missing.length > 0
+
+      const ok = (c: RawCard, ignoreQuota = false) =>
+        getPrimaryAspect(c) !== prevAspect &&
+        (ignoreQuota || !mustCover || missing.some(a => cardHasAspect(c, a)))
+
+      // urgency: how many echoes must land in this pack vs slots left in it
+      const dueNow = pending.filter(p => p.targetPack === currentPack)
+      const packSlotsLeft = (currentPack + 1) * drawSize - g
+      const echoUrgent = dueNow.length >= packSlotsLeft && dueNow.length > 0
+
+      let pick: RawCard | null = null
+
+      // 1) echoes targeted at this pack (keeps pair gaps AND parity tight)
+      for (let e = 0; e < pending.length; e++) {
+        const p = pending[e]!
+        if (p.targetPack === currentPack && packOf(p.firstG) !== currentPack && ok(p.card, echoUrgent)) {
+          pick = p.card
+          pending.splice(e, 1)
+          break
+        }
+      }
+
+      // 2) next compatible primary (bounded look-ahead), schedule its echo
+      if (!pick && !echoUrgent) {
+        for (let j = 0; j < Math.min(10, stream.length); j++) {
+          if (ok(stream[j]!)) {
+            pick = stream.splice(j, 1)[0]!
+            const gapPacks = samplePairPackGapFrom(gapSampler) + (relaxGaps ? 2 : 0)
+            pending.push({ card: pick, targetPack: currentPack + gapPacks, firstG: g })
+            break
+          }
+        }
+      }
+
+      // 3) forced: due echo ignoring quota, then any primary, then any echo
+      if (!pick) {
+        for (let e = 0; e < pending.length; e++) {
+          const p = pending[e]!
+          if (p.targetPack === currentPack && packOf(p.firstG) !== currentPack && ok(p.card, true)) {
+            pick = p.card
+            pending.splice(e, 1)
+            break
+          }
+        }
+      }
+      if (!pick && stream.length > 0) {
+        // any primary that at least avoids aspect adjacency
+        const j = stream.findIndex(c => getPrimaryAspect(c) !== prevAspect)
+        if (j >= 0) {
+          pick = stream.splice(j, 1)[0]!
+          pending.push({ card: pick, targetPack: currentPack + samplePairPackGapFrom(gapSampler), firstG: g })
+        }
+      }
+      if (!pick) {
+        // last resort: earliest echo not from this pack; prefer parity match
+        let e = pending.findIndex(p => p.targetPack === currentPack && packOf(p.firstG) !== currentPack)
+        if (e < 0) e = pending.findIndex(p => packOf(p.firstG) !== currentPack && (p.targetPack - currentPack) % 2 === 0)
+        if (e < 0) e = pending.findIndex(p => packOf(p.firstG) !== currentPack)
+        if (e >= 0) {
+          pick = pending[e]!.card
+          pending.splice(e, 1)
+        }
+      }
+
+      if (!pick) { failed = true; break } // only same-pack echoes remain — retry
+
+      out.push(pick)
+      prevAspect = getPrimaryAspect(pick)
+    }
+
+    if (failed || out.length !== targetLen) continue
+
+    // Validate: aspect adjacency stays rare, quotas on aligned windows,
+    // no same-pack pairs, pair gap >= 2
+    let valid = true
+    let adjSame = 0
+    for (let i = 1; i < out.length; i++) {
+      const a = getPrimaryAspect(out[i]!)
+      if (a !== null && a === getPrimaryAspect(out[i - 1]!)) adjSame++
+    }
+    if (adjSame > Math.ceil(out.length * 0.02)) valid = false
+    for (let s = Math.floor(globalStart / drawSize) * drawSize; s + drawSize <= globalStart + out.length; s += drawSize) {
+      const w: RawCard[] = []
+      for (let g = Math.max(s, globalStart); g < s + drawSize; g++) w.push(out[g - globalStart]!)
+      if (w.length === drawSize && !segmentHasRequiredAspects(w, requiredAspects)) { valid = false; break }
+    }
+    if (valid) {
+      const first = new Map<string, number>()
+      for (let i = 0; i < out.length; i++) {
+        const id = out[i]!.id
+        if (first.has(id)) {
+          const p1 = first.get(id)!
+          if (i - p1 < 2 || packOf(globalStart + p1) === packOf(globalStart + i)) { valid = false; break }
+        } else {
+          first.set(id, i)
+        }
+      }
+    }
+    if (valid) return out
+  }
+
+  return null
 }
 
 function shuffleCopy<T>(arr: T[]): T[] {
@@ -898,6 +1087,12 @@ export class CommonBelt {
     // Dedup window: min(24, floor(beltSize/2)) to ensure feasibility
     this.DEDUP_WINDOW = Math.min(24, Math.floor(this.beltCards.length / 2))
 
+    // Set 7+ normal lanes use the paired-copy line model (every card twice per
+    // boot, copies 1-3 packs apart — real ASH box 001 line order). Variant
+    // lanes (HS) and sets 1-6 keep single-copy boots.
+    this.usesPairedBoot =
+      (getSetConfig(setCode)?.setNumber ?? 0) >= 7 && variantType === 'Normal'
+
     // Track last served aspect for seam continuity
     this.lastServedAspect = null
 
@@ -979,7 +1174,20 @@ export class CommonBelt {
       (this.totalDraws + seamCards.length) % drawSize
     )
 
-    this.hopper.push(...boot)
+    let finalBoot = boot
+    if (this.usesPairedBoot) {
+      const globalStart = this.totalDraws + seamCards.length
+      const paired = buildPairedBoot(boot, drawSize, requiredAspects, globalStart, lastAspect)
+      if (paired) {
+        finalBoot = paired
+      } else {
+        // Fallback hierarchy per LINE_STACKING_COLLATION_PLAN: never relax
+        // aspect/quota rules — fall back to the single-copy boot, loudly.
+        console.warn(`CommonBelt ${this.beltId} for ${this.setCode}: paired boot construction failed after retries — serving single-copy boot`)
+      }
+    }
+
+    this.hopper.push(...finalBoot)
   }
 
   /**

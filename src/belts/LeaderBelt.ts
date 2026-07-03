@@ -10,6 +10,7 @@
  */
 
 import { getCachedCards } from '../utils/cardCache'
+import { getSetConfig } from '../utils/setConfigs/index'
 import type { RawCard } from '../utils/cardData'
 import type { SetCode } from '../types'
 import {
@@ -19,6 +20,11 @@ import {
   LEADER_RARE_PRINTS_PER_BOOT,
 } from './leaderSheet'
 
+// Set 7+ (LAW/ASH): cap the per-card leader dedup gap at 3 so common-leader repeats
+// can occur at line gap 3 (real ASH box 001: gaps 3,4,5). Sets 1-6 keep the default
+// LEADER_DEDUP_WINDOW behavior. (LINE_STACKING_COLLATION_PLAN L3)
+const SET7_LEADER_DEDUP_CAP = 3
+
 export class LeaderBelt {
   setCode: SetCode
   hopper: RawCard[]
@@ -26,6 +32,7 @@ export class LeaderBelt {
   commonLeaders: RawCard[]
   rareLeaders: RawCard[]
   recentCards: RawCard[]
+  dedupWindowCap: number
 
   constructor(setCode: SetCode | string) {
     this.setCode = setCode as SetCode
@@ -34,6 +41,11 @@ export class LeaderBelt {
     this.commonLeaders = []
     this.rareLeaders = []
     this.recentCards = []
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const config = getSetConfig(this.setCode) as any
+    const setNumber = config?.setNumber || 1
+    this.dedupWindowCap = setNumber >= 7 ? SET7_LEADER_DEDUP_CAP : LEADER_DEDUP_WINDOW
 
     this._initialize()
   }
@@ -75,6 +87,7 @@ export class LeaderBelt {
       commonLeaders: this.commonLeaders,
       rareLeaders: this.rareLeaders,
       priorCards,
+      dedupWindowCap: this.dedupWindowCap,
     })
 
     this.hopper.push(...boot)

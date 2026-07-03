@@ -4,6 +4,7 @@
 
 ### 🎴 More Realistic Packs (LAW & ASH)
 - **Packs now match a real box**: We opened a real ASH booster box card-by-card and tuned pack generation against it — hyperspace upgrades, foil rarities, and card ordering now mirror the real thing more closely.
+- **Boxes now stack like the factory line**: We modeled how packs physically come off the printing line and get stacked into the box. Sealed pools and draft boxes now duplicate cards the way real ones do — most pools run clean, and some come loaded with pairs, just like real product.
 
 ## 07.02.2026
 

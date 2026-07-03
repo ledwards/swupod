@@ -14,9 +14,16 @@
  *   Total: 51 upgrades → μ = 0.85, σ = 0.703
  *
  * Constraints:
- *   - Leader + Base never co-occur in same plan
  *   - Per-slot rates match target probabilities
  *   - Budget never exceeds 2
+ *
+ * NOTE (Set 7+ / 'LAW' group only): Leader and Base CAN co-occur in the same
+ * plan. Real data falsified the old exclusivity rule — ASH pool-002 pack06 held
+ * both a hyperspace leader and hyperspace base, at a rate consistent with
+ * independent 1/6 × 1/6 draws. Under the budget structure a leader+base pair
+ * can only land in a budget-2 plan, so co-occurrence is rare (roughly 0-4 per
+ * 60-pack cycle) but permitted. Groups '1-3' and '4-6' keep the exclusivity
+ * rule — never change past-set behavior without set-specific evidence.
  */
 
 import { HS_BELT_CONFIGS, type HSBeltConfig } from '../utils/packConstants'
@@ -55,9 +62,12 @@ function shuffle<T>(arr: T[]): T[] {
 export class HyperspaceUpgradeBelt {
   hopper: UpgradePlan[]
   config: HSBeltConfig
+  allowLeaderBaseCoOccurrence: boolean
 
   constructor(setGroup: string = '1-3') {
     this.config = HS_BELT_CONFIGS[setGroup] || HS_BELT_CONFIGS['1-3']
+    // Set 7+ only (real ASH pool-002 pack06); groups 1-3/4-6 keep exclusivity
+    this.allowLeaderBaseCoOccurrence = setGroup === 'LAW'
     this.hopper = []
     this._fill()
   }
@@ -76,9 +86,9 @@ export class HyperspaceUpgradeBelt {
       slotCounts.uc1 + slotCounts.uc2 + slotCounts.uc3
 
     // Random assignment can strand budget capacity when the config is tight
-    // (e.g. LAW: budget-2 plans can only be satisfied by (leader|base)+uc3 since
-    // leader/base are mutually exclusive and uc1/uc2/common are 0). Repair any
-    // shortfall with augmenting swaps so every cycle carries its full quota.
+    // (e.g. LAW: budget-2 plans draw from {leader, base, uc3} since uc1/uc2/common
+    // are 0). Repair any shortfall with augmenting swaps so every cycle carries
+    // its full quota.
     const budgets: number[] = [
       ...Array(budgetDistribution[0]).fill(0),
       ...Array(budgetDistribution[1]).fill(1),
@@ -125,17 +135,16 @@ export class HyperspaceUpgradeBelt {
 
     // Step 2: Distribute slot assignments
     // We need to assign N upgrades of each slot type across the plans,
-    // respecting budget limits and co-occurrence constraints.
+    // respecting budget limits. There are no co-occurrence constraints between
+    // slots — leader and base may share a (budget-2) plan.
     // Budget-0 plans get no slots at all.
     const budget1Start = budgetDistribution[0]
 
-    // Assign leader upgrades — only to plans that don't already have base
+    // Assign leader and base upgrades (may co-occur in budget-2 plans)
     this._assignSlot(plans, budgets, 'leader', slotCounts.leader, budget1Start, cycleSize)
-
-    // Assign base upgrades — only to plans that don't already have leader
     this._assignSlot(plans, budgets, 'base', slotCounts.base, budget1Start, cycleSize)
 
-    // Assign remaining slots (no co-occurrence constraints between these)
+    // Assign remaining slots
     // NOTE: Rare slot NEVER upgrades to HS. HS rares only appear via UC3 upgrade.
     this._assignSlot(plans, budgets, 'common', slotCounts.common, budget1Start, cycleSize)
     this._assignSlot(plans, budgets, 'uc3', slotCounts.uc3, budget1Start, cycleSize)
@@ -148,10 +157,10 @@ export class HyperspaceUpgradeBelt {
   /**
    * Place any unassigned slot quota via one-step augmenting swaps.
    *
-   * A slot type T can be unplaced when every plan with spare budget is blocked
-   * (already has T, or leader/base co-occurrence). Fix: find a plan P with
-   * spare budget and a donor plan Q holding a slot type S that P can accept,
-   * where Q can accept T after giving up S. Move S from Q to P, place T on Q.
+   * A slot type T can be unplaced when every plan with spare budget already
+   * holds T. Fix: find a plan P with spare budget and a donor plan Q holding a
+   * slot type S that P can accept, where Q can accept T after giving up S. Move
+   * S from Q to P, place T on Q.
    */
   _repairAssignment(
     plans: UpgradePlan[],
@@ -161,8 +170,10 @@ export class HyperspaceUpgradeBelt {
     const canAccept = (plan: UpgradePlan, budget: number, slot: SlotKey): boolean => {
       if (plan[slot]) return false
       if (countTrue(plan) >= budget) return false
-      if (slot === 'leader' && plan.base) return false
-      if (slot === 'base' && plan.leader) return false
+      if (!this.allowLeaderBaseCoOccurrence) {
+        if (slot === 'leader' && plan.base) return false
+        if (slot === 'base' && plan.leader) return false
+      }
       return true
     }
 
@@ -208,7 +219,7 @@ export class HyperspaceUpgradeBelt {
 
   /**
    * Assign `count` upgrades of `slot` across plans.
-   * Respects budget limits and leader/base co-occurrence constraint.
+   * Respects budget limits only (leader and base may co-occur).
    */
   _assignSlot(
     plans: UpgradePlan[],
@@ -228,9 +239,11 @@ export class HyperspaceUpgradeBelt {
       const currentCount = countTrue(plans[i])
       if (currentCount >= budgets[i]) continue
 
-      // Co-occurrence constraint: leader and base must not co-occur
-      if (slot === 'leader' && plans[i].base) continue
-      if (slot === 'base' && plans[i].leader) continue
+      // Groups 1-3/4-6: leader and base stay mutually exclusive
+      if (!this.allowLeaderBaseCoOccurrence) {
+        if (slot === 'leader' && plans[i].base) continue
+        if (slot === 'base' && plans[i].leader) continue
+      }
 
       eligible.push(i)
     }

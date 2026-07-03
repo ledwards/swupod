@@ -106,6 +106,12 @@ const beltCache = new Map<string, Belt>();
 // Track which common belt to start with for alternating (true = start with A)
 let startWithBeltA = true;
 
+// Per-set virtual-box buffer for Set 7+ sealed pods.
+// Real boxes are stacked from the factory line into two interleaved columns and
+// consumed top-down by column; pods must be cut from consecutive box positions.
+// Keyed by setCode; cleared by clearBeltCache like the other belt caches.
+const virtualBoxBuffer = new Map<string, Pack[]>();
+
 // === HELPER FUNCTIONS ===
 
 /** Weighted random rarity selection from a weights map (e.g. { Uncommon: 24, Rare: 12, ... }) */
@@ -147,6 +153,42 @@ function findHyperspaceVariant(card: RawCard | null, setCode: SetCode | string):
 function usesLawPackRules(setCode: SetCode | string): boolean {
   const config = getSetConfig(setCode) as SetConfig | null;
   return config?.packRules?.foilSlotIsHyperspaceFoil === true;
+}
+
+/**
+ * Set 7+ (LAW, ASH) model the physical factory line + box stacking. Sets 1-6
+ * keep byte-identical behavior.
+ */
+function usesLineStacking(setCode: SetCode | string): boolean {
+  const config = getSetConfig(setCode) as { setNumber?: number } | null;
+  return typeof config?.setNumber === 'number' && config.setNumber >= 7;
+}
+
+/**
+ * Reorder packs from factory LINE order into physical BOX order (Set 7+).
+ *
+ * The factory belts emit packs in line order (line index k = 1..N in generation
+ * sequence). Packs are stacked into the box in two interleaved columns of N/2,
+ * bottom-up alternating. Mapping (1-indexed positions):
+ *   - line k (odd)  → box position 12-(k-1)/2   (generalizes to (N/2)-(k-1)/2)
+ *   - line k (even) → box position 24-(k-2)/2   (generalizes to N-(k-2)/2)
+ * Return array index = box position - 1.
+ *
+ * This is physical box assembly — whole packs move, contents are never touched.
+ * Odd or too-short boxes (< 2) are returned unchanged.
+ */
+export function stackBoxOrder<T>(packs: T[]): T[] {
+  const n = packs.length;
+  if (n < 2 || n % 2 !== 0) return packs;
+  const half = n / 2;
+  const boxed = new Array<T>(n);
+  for (let k = 1; k <= n; k++) {
+    const pos = (k % 2 === 1)
+      ? half - (k - 1) / 2   // odd line index → first (top) column
+      : n - (k - 2) / 2;     // even line index → second (bottom) column
+    boxed[pos - 1] = packs[k - 1];
+  }
+  return boxed;
 }
 
 // === BELT GETTERS ===
@@ -375,6 +417,7 @@ function getSet7PlusUc3OutcomeBelt(setCode: SetCode | string): Set7PlusUc3Outcom
 export function clearBeltCache(): void {
   beltCache.clear();
   clearCarboniteBeltCache();
+  virtualBoxBuffer.clear(); // Discard any buffered virtual-box remainder
   startWithBeltA = true; // Reset alternating state
 }
 
@@ -761,6 +804,29 @@ export function generateBoosterPack(_cards: RawCard[], setCode: SetCode | string
  * @returns Array of pack objects (each with cards array)
  */
 export function generateSealedPod(_cards: RawCard[], setCode: SetCode | string, packCount: number = 6): Pack[] {
+  // Set 7+ (LAW, ASH): pods are cut from stacked boxes — consecutive box
+  // positions. A per-set virtual-box buffer holds the remainder of the current
+  // stacked box; when it runs dry we generate a fresh full 24-pack stacked box.
+  // This makes pods come out as box positions 1-6, 7-12, 13-18, 19-24, then a
+  // fresh box. If a request spans a box boundary we finish the old box and start
+  // a new one (simplest correct behavior).
+  if (usesLineStacking(setCode)) {
+    const key = String(setCode);
+    const packs: Pack[] = [];
+    while (packs.length < packCount) {
+      let buffer = virtualBoxBuffer.get(key);
+      if (!buffer || buffer.length === 0) {
+        buffer = generateStackedBox(_cards, setCode, 24);
+        virtualBoxBuffer.set(key, buffer);
+      }
+      const need = packCount - packs.length;
+      const take = Math.min(need, buffer.length);
+      packs.push(...buffer.splice(0, take));
+    }
+    return packs;
+  }
+
+  // Sets 1-6: independent-pack behavior (unchanged).
   // Clear belt cache for fresh pod generation
   // This ensures each sealed pod starts with a fresh belt at random position
   clearBeltCache();
@@ -786,10 +852,22 @@ export function generateSealedBox(_cards: RawCard[], setCode: SetCode | string, 
   // Clear belt cache for fresh box generation
   // This ensures the box starts with fresh belts for proper collation
   clearBeltCache();
+  return generateStackedBox(_cards, setCode, boxSize);
+}
 
-  const packs: Pack[] = [];
+/**
+ * Generate a box's worth of packs in LINE order, then stack into BOX order for
+ * Set 7+. Does NOT clear the belt cache (callers manage belt/buffer lifecycle):
+ * generateSealedBox clears first for a fresh box; the pod path refills its
+ * virtual box on top of whatever belt state exists.
+ *
+ * Sets 1-6 return line order unchanged; Set 7+ returns box order. Pack contents
+ * are never touched — only the array order changes.
+ */
+function generateStackedBox(_cards: RawCard[], setCode: SetCode | string, boxSize: number = 24): Pack[] {
+  const linePacks: Pack[] = [];
   for (let i = 0; i < boxSize; i++) {
-    packs.push(generateBoosterPack(_cards, setCode));
+    linePacks.push(generateBoosterPack(_cards, setCode));
   }
-  return packs;
+  return usesLineStacking(setCode) ? stackBoxOrder(linePacks) : linePacks;
 }
