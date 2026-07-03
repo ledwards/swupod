@@ -17,11 +17,13 @@
  *   - Per-slot rates match target probabilities
  *   - Budget never exceeds 2
  *
- * NOTE: Leader and Base CAN co-occur in the same plan. Real data falsified the
- * old exclusivity rule — ASH pool-002 pack06 held both a hyperspace leader and
- * hyperspace base, at a rate consistent with independent 1/6 × 1/6 draws. Under
- * the budget structure a leader+base pair can only land in a budget-2 plan, so
- * co-occurrence is rare (roughly 0-4 per 60-pack LAW cycle) but permitted.
+ * NOTE (Set 7+ / 'LAW' group only): Leader and Base CAN co-occur in the same
+ * plan. Real data falsified the old exclusivity rule — ASH pool-002 pack06 held
+ * both a hyperspace leader and hyperspace base, at a rate consistent with
+ * independent 1/6 × 1/6 draws. Under the budget structure a leader+base pair
+ * can only land in a budget-2 plan, so co-occurrence is rare (roughly 0-4 per
+ * 60-pack cycle) but permitted. Groups '1-3' and '4-6' keep the exclusivity
+ * rule — never change past-set behavior without set-specific evidence.
  */
 
 import { HS_BELT_CONFIGS, type HSBeltConfig } from '../utils/packConstants'
@@ -60,9 +62,12 @@ function shuffle<T>(arr: T[]): T[] {
 export class HyperspaceUpgradeBelt {
   hopper: UpgradePlan[]
   config: HSBeltConfig
+  allowLeaderBaseCoOccurrence: boolean
 
   constructor(setGroup: string = '1-3') {
     this.config = HS_BELT_CONFIGS[setGroup] || HS_BELT_CONFIGS['1-3']
+    // Set 7+ only (real ASH pool-002 pack06); groups 1-3/4-6 keep exclusivity
+    this.allowLeaderBaseCoOccurrence = setGroup === 'LAW'
     this.hopper = []
     this._fill()
   }
@@ -165,6 +170,10 @@ export class HyperspaceUpgradeBelt {
     const canAccept = (plan: UpgradePlan, budget: number, slot: SlotKey): boolean => {
       if (plan[slot]) return false
       if (countTrue(plan) >= budget) return false
+      if (!this.allowLeaderBaseCoOccurrence) {
+        if (slot === 'leader' && plan.base) return false
+        if (slot === 'base' && plan.leader) return false
+      }
       return true
     }
 
@@ -229,6 +238,12 @@ export class HyperspaceUpgradeBelt {
       // Check budget: can this plan accept another upgrade?
       const currentCount = countTrue(plans[i])
       if (currentCount >= budgets[i]) continue
+
+      // Groups 1-3/4-6: leader and base stay mutually exclusive
+      if (!this.allowLeaderBaseCoOccurrence) {
+        if (slot === 'leader' && plans[i].base) continue
+        if (slot === 'base' && plans[i].leader) continue
+      }
 
       eligible.push(i)
     }

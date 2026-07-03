@@ -79,13 +79,18 @@ function minDuplicateGap(
 ): number {
   const copies = copyCounts.get(leaderIdentityKey(candidate)) || 1
   if (copies > 1) {
+    // Multi-print (common) leaders: Set 7+ caps this gap (real ASH box 001:
+    // common-leader repeats at line gaps 3-5).
     let keysWithSamePrintCount = 0
     for (const count of copyCounts.values()) {
       if (count === copies) keysWithSamePrintCount++
     }
     return Math.min(dedupWindowCap, Math.max(1, keysWithSamePrintCount))
   }
-  return Math.min(dedupWindowCap, Math.max(1, Math.floor(totalPrints / copies)))
+  // Single-print (rare) leaders always keep the full window — they repeat only
+  // across boot seams, and no close rare-leader repeat exists in real data
+  // (box 001: all rare leader pulls distinct on the normal belt).
+  return Math.min(LEADER_DEDUP_WINDOW, Math.max(1, Math.floor(totalPrints / copies)))
 }
 
 function candidateScore(

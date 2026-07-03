@@ -128,21 +128,14 @@ function runTests(): void {
   // CO-OCCURRENCE (leader + base CAN co-occur — real data falsified exclusivity)
   // ========================================================================
 
-  test('FIXED: leader + base can co-occur (real ASH pool-002 pack06 had HS leader + HS base; rate matches independence)', () => {
-    // SPEC (L5): leader+base are NOT mutually exclusive. Real ASH pool-002 pack06
-    // held both a hyperspace leader and hyperspace base; observed rate (1 pack in
-    // ~30) matches independent 1/6 × 1/6 draws. Co-occurrence only lands in
-    // budget-2 plans, so it is rare but must be > 0. Rate-based, no exact values.
-    const CO_CYCLES = 50
-    const belt = new HyperspaceUpgradeBelt() // '1-3' group (budget-2 = 10/cycle)
-    let coCount = 0
-    for (let i = 0; i < CO_CYCLES * CYCLE_SIZE; i++) {
+  test('sets 1-6: leader + base never co-occur (past-set behavior preserved)', () => {
+    // Co-occurrence evidence exists only for Set 7+ (ASH pool-002 pack06).
+    // Groups 1-3/4-6 keep the exclusivity rule — never change past sets.
+    const belt = new HyperspaceUpgradeBelt() // '1-3' group
+    for (let i = 0; i < 10 * CYCLE_SIZE; i++) {
       const plan = belt.next()
-      if (plan.leader && plan.base) coCount++
+      assert(!(plan.leader && plan.base), `Plan ${i} has both leader and base (forbidden for sets 1-6)`)
     }
-    console.log(`\x1b[36m   leader+base co-occurrences over ${CO_CYCLES} cycles: ${coCount} (${(coCount / CO_CYCLES).toFixed(2)}/cycle)\x1b[0m`)
-    assert(coCount > 0, `leader+base must be able to co-occur, got ${coCount} over ${CO_CYCLES} cycles`)
-    assert(coCount <= 300, `leader+base co-occurrence ${coCount} unexpectedly high over ${CO_CYCLES} cycles (cap 300)`)
   })
 
   // ========================================================================
