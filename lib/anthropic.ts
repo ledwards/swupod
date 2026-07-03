@@ -42,7 +42,9 @@ import {
   runOmrSidecar,
 } from '../src/services/importPool/omrExtraction'
 
-const MODEL = 'claude-opus-4-7'
+// Extraction model. Env-overridable so the eval harness can A/B alternative
+// models (e.g. IMPORT_EXTRACT_MODEL=claude-fable-5) without a code change.
+const MODEL = process.env.IMPORT_EXTRACT_MODEL || 'claude-opus-4-7'
 // Vision parses can produce 80-100 JSON rows. 32K leaves comfortable headroom
 // (Opus 4.7 supports up to 128K). Stays under the SDK's non-streaming HTTP
 // timeout window. If responses still truncate, the route surfaces stop_reason.
@@ -951,7 +953,11 @@ async function runPhase1(
       response = await client.messages
         .stream({
           model: MODEL,
-          max_tokens: 2000,
+          // 16K, not 2K: thinking-enabled models (e.g. Fable 5) spend output
+          // budget on thinking blocks before the JSON — observed >8K thinking
+          // on busy two-photo sheets. Opus 4.7 ignores the extra headroom —
+          // max_tokens is a cap, not a spend.
+          max_tokens: 16000,
           system: PHASE1_SYSTEM_PROMPT,
           output_config: { format: { type: 'json_schema' as const, schema: PHASE1_SCHEMA } },
           messages: [{ role: 'user', content: userContent }],

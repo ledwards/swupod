@@ -7,28 +7,49 @@
     "leaders": 6,
     "bases": 6
   },
-  "_note": "STARTER from model run (2026-06-21T09:10:21.980Z). poolSum=89 deckSum=33. VERIFY against photos: walk each table, drop hallucinated rows, add missed rows, fix qty mistakes. Remove _note when done.",
+  "_note": "STARTER from claude-fable-5 pipeline run (2026-07-03T14:12:19.093Z). poolSum=96 deckSum=37. VERIFY against photos: walk each table, drop hallucinated rows, add missed rows, fix qty mistakes. Remove _note when done. NOTE: the earlier opus-4-7 starter for this sheet was structurally broken (89 pool, 1 base, 3 leaders x2); fable-5 output kept as the better candidate.",
   "rows": [
+    {
+      "name": "Aurra Sing",
+      "subtitle": "Assassin",
+      "type": "Leader",
+      "poolQty": 1,
+      "deckQty": 0
+    },
     {
       "name": "Boba Fett",
       "subtitle": "Krayt's Claw Commander",
       "type": "Leader",
-      "poolQty": 2,
+      "poolQty": 1,
       "deckQty": 0
     },
     {
       "name": "Hera Syndulla",
       "subtitle": "Not Fighting Alone",
       "type": "Leader",
-      "poolQty": 2,
+      "poolQty": 1,
       "deckQty": 0
     },
     {
       "name": "Chewbacca",
       "subtitle": "Hero of Kessel",
       "type": "Leader",
-      "poolQty": 2,
+      "poolQty": 1,
       "deckQty": 1
+    },
+    {
+      "name": "Han Solo",
+      "subtitle": "I Got a Really Good Feeling",
+      "type": "Leader",
+      "poolQty": 2,
+      "deckQty": 0
+    },
+    {
+      "name": "Stygeon Spire",
+      "subtitle": null,
+      "type": "Base",
+      "poolQty": 1,
+      "deckQty": 0
     },
     {
       "name": "Canto Bight",
@@ -48,6 +69,13 @@
       "name": "IGV-55 Listener",
       "subtitle": null,
       "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Choke on Aspirations",
+      "subtitle": null,
+      "type": "Event",
       "poolQty": 1,
       "deckQty": 0
     },
@@ -126,13 +154,13 @@
       "subtitle": null,
       "type": "Event",
       "poolQty": 1,
-      "deckQty": 0
+      "deckQty": 1
     },
     {
       "name": "Pirate Snub Fighter",
       "subtitle": null,
       "type": "Unit",
-      "poolQty": 1,
+      "poolQty": 2,
       "deckQty": 0
     },
     {
@@ -168,7 +196,7 @@
       "subtitle": null,
       "type": "Unit",
       "poolQty": 1,
-      "deckQty": 0
+      "deckQty": 1
     },
     {
       "name": "Partisan Infantry",
@@ -188,7 +216,7 @@
       "name": "Target Tagger",
       "subtitle": null,
       "type": "Unit",
-      "poolQty": 2,
+      "poolQty": 1,
       "deckQty": 0
     },
     {
@@ -202,7 +230,7 @@
       "name": "Mercenary Fleet",
       "subtitle": null,
       "type": "Unit",
-      "poolQty": 2,
+      "poolQty": 1,
       "deckQty": 1
     },
     {
@@ -294,7 +322,7 @@
       "subtitle": null,
       "type": "Event",
       "poolQty": 1,
-      "deckQty": 1
+      "deckQty": 0
     },
     {
       "name": "Attack From All Sides",
@@ -363,7 +391,7 @@
       "name": "Champion's KT9 Podracer",
       "subtitle": null,
       "type": "Unit",
-      "poolQty": 1,
+      "poolQty": 2,
       "deckQty": 1
     },
     {
@@ -392,7 +420,7 @@
       "subtitle": null,
       "type": "Event",
       "poolQty": 1,
-      "deckQty": 0
+      "deckQty": 1
     },
     {
       "name": "The Axe Forgets",
@@ -413,6 +441,27 @@
       "subtitle": null,
       "type": "Event",
       "poolQty": 2,
+      "deckQty": 0
+    },
+    {
+      "name": "Stalwart Fleet Trooper",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 1
+    },
+    {
+      "name": "Callous Bounty Hunter",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
+      "deckQty": 0
+    },
+    {
+      "name": "Night Wind Assailants",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 1,
       "deckQty": 0
     },
     {
@@ -447,7 +496,7 @@
       "name": "4-LOM",
       "subtitle": "Devious",
       "type": "Unit",
-      "poolQty": 1,
+      "poolQty": 2,
       "deckQty": 0
     },
     {
@@ -486,6 +535,13 @@
       "deckQty": 0
     },
     {
+      "name": "Criminal Contact",
+      "subtitle": null,
+      "type": "Unit",
+      "poolQty": 2,
+      "deckQty": 1
+    },
+    {
       "name": "Seasoned Tracker",
       "subtitle": null,
       "type": "Unit",
@@ -496,7 +552,7 @@
       "name": "Kessel Hulk",
       "subtitle": null,
       "type": "Unit",
-      "poolQty": 2,
+      "poolQty": 1,
       "deckQty": 0
     }
   ]

@@ -44,7 +44,9 @@ function loadEnvFile(path: string) {
 }
 loadEnvFile('/Users/lee/Repos/ledwards/swupod/.env.local')
 
-const REPO_ROOT = '/Users/lee/Repos/ledwards/swupod'
+// Default to the current checkout so the eval runs correctly from a git
+// worktree; override with REPO_ROOT=... if needed.
+const REPO_ROOT = process.env.REPO_ROOT || process.cwd()
 const FIXTURES_DIR = join(REPO_ROOT, 'scripts/eval/fixtures')
 const RESULTS_DIR = join(REPO_ROOT, 'scripts/eval/results')
 
