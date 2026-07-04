@@ -244,7 +244,12 @@ export default function DeckBuilderPage({ params }: PageProps) {
   const deadlinePassed = Boolean(
     deckBuildDeadline && new Date(deckBuildDeadline).getTime() <= Date.now()
   )
-  const swissPracticeActive = matchmakingStatus === 'active' || deadlinePassed
+  // Once the Swiss event is complete the deck is free again — no lock, no
+  // "in progress" banner — even though the build deadline is (permanently) in
+  // the past. `deadlinePassed` alone would otherwise keep the pod locked forever.
+  const swissPracticeActive =
+    matchmakingStatus !== 'complete' &&
+    (matchmakingStatus === 'active' || deadlinePassed)
   const isChildBuildForLock = Boolean(pool?.parentShareId)
   const deckIsLocked = Boolean(
     isCompetitivePod && swissPracticeActive && !decksUnlocked && !isChildBuildForLock
