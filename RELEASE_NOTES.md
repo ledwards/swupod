@@ -1,5 +1,10 @@
 # Release Notes
 
+## 07.04.2026
+
+### 📸 Import Pool tune-up (under the hood)
+- **Faster, leaner sheet reading**: Reworked how the AI reads registration sheets during import — same accuracy, roughly 40% less compute per sheet, and better internal telemetry so we can keep improving it.
+
 ## 07.03.2026
 
 ### 🎴 Collation Fine-Tuning (LAW & ASH)
