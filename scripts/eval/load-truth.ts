@@ -19,7 +19,9 @@
 import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 
-const REPO_ROOT = '/Users/lee/Repos/ledwards/swupod'
+// Default to the current checkout so the eval runs correctly from a git
+// worktree; override with REPO_ROOT=... if needed.
+const REPO_ROOT = process.env.REPO_ROOT || process.cwd()
 const FIXTURE = process.env.FIXTURE
 if (!FIXTURE) {
   console.error('Set FIXTURE=<name>')
