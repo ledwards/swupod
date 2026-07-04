@@ -105,8 +105,8 @@ export const LAW_CONFIG: SetConfig = {
 
     // UC slot upgrades
     thirdUCToHyperspaceRL: constants.ucSlot3UpgradeRate,      // 1/3 (belt: 20/60, fallback if prestige misses; rarity from ucSlot3UpgradedWeights)
-    firstUCToHyperspaceUC: constants.uncommonHyperspaceRate,   // 0 — UC3 is the only UC upgrade slot (real ASH box: 0/48)
-    secondUCToHyperspaceUC: constants.uncommonHyperspaceRate,  // 0 — UC3 is the only UC upgrade slot
+    firstUCToHyperspaceUC: constants.uncommonHyperspaceRate,   // 1/8 (belt: 4/60)
+    secondUCToHyperspaceUC: constants.uncommonHyperspaceRate,  // 1/8 (belt: 2/60)
 
     // Common upgrades - NONE for LAW (slot 5 is dedicated belt, other commons don't upgrade)
     commonToHyperspace: 0,
@@ -119,6 +119,15 @@ export const LAW_CONFIG: SetConfig = {
     uc3ToPrestige: constants.uc3PrestigeRate || 1/18,
   },
 
-  // NOTE: Triple-aspect cards need no special config — belt assignment uses
-  // aspects[0] (primary-aspect priority) in assignCardToBelt for all cards.
+  // Triple-aspect card handling
+  // LAW introduces cards with double primary aspects (e.g., Vigilance + Command + Heroism)
+  // For collation purposes, we assign these to Belt A if they contain any Belt A aspect
+  tripleAspect: {
+    enabled: true,
+    // Belt assignment strategy for triple-aspect cards:
+    // - If card has Vigilance, Command, OR their belt aspects -> Belt A
+    // - Otherwise -> Belt B
+    // This is configurable in case we need to adjust
+    beltAssignment: 'primaryAspectPriority', // Options: 'primaryAspectPriority', 'randomBelt', 'splitEvenly'
+  },
 }

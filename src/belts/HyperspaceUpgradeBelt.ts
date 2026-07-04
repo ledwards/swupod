@@ -14,16 +14,9 @@
  *   Total: 51 upgrades → μ = 0.85, σ = 0.703
  *
  * Constraints:
+ *   - Leader + Base never co-occur in same plan
  *   - Per-slot rates match target probabilities
  *   - Budget never exceeds 2
- *
- * NOTE (Set 7+ / 'LAW' group only): Leader and Base CAN co-occur in the same
- * plan. Real data falsified the old exclusivity rule — ASH pool-002 pack06 held
- * both a hyperspace leader and hyperspace base, at a rate consistent with
- * independent 1/6 × 1/6 draws. Under the budget structure a leader+base pair
- * can only land in a budget-2 plan, so co-occurrence is rare (roughly 0-4 per
- * 60-pack cycle) but permitted. Groups '1-3' and '4-6' keep the exclusivity
- * rule — never change past-set behavior without set-specific evidence.
  */
 
 import { HS_BELT_CONFIGS, type HSBeltConfig } from '../utils/packConstants'
@@ -62,12 +55,9 @@ function shuffle<T>(arr: T[]): T[] {
 export class HyperspaceUpgradeBelt {
   hopper: UpgradePlan[]
   config: HSBeltConfig
-  allowLeaderBaseCoOccurrence: boolean
 
   constructor(setGroup: string = '1-3') {
     this.config = HS_BELT_CONFIGS[setGroup] || HS_BELT_CONFIGS['1-3']
-    // Set 7+ only (real ASH pool-002 pack06); groups 1-3/4-6 keep exclusivity
-    this.allowLeaderBaseCoOccurrence = setGroup === 'LAW'
     this.hopper = []
     this._fill()
   }
@@ -81,42 +71,7 @@ export class HyperspaceUpgradeBelt {
 
   _fill(): void {
     const { cycleSize, budgetDistribution, slotCounts } = this.config
-    const targetTotal =
-      slotCounts.leader + slotCounts.base + slotCounts.common +
-      slotCounts.uc1 + slotCounts.uc2 + slotCounts.uc3
 
-    // Random assignment can strand budget capacity when the config is tight
-    // (e.g. LAW: budget-2 plans draw from {leader, base, uc3} since uc1/uc2/common
-    // are 0). Repair any shortfall with augmenting swaps so every cycle carries
-    // its full quota.
-    const budgets: number[] = [
-      ...Array(budgetDistribution[0]).fill(0),
-      ...Array(budgetDistribution[1]).fill(1),
-      ...Array(budgetDistribution[2]).fill(2),
-    ]
-    const plans = this._buildPlans(cycleSize, budgetDistribution, slotCounts, budgets)
-    const assigned = plans.reduce((sum, p) => sum + countTrue(p), 0)
-    if (assigned < targetTotal) {
-      this._repairAssignment(plans, budgets, slotCounts)
-      const repaired = plans.reduce((sum, p) => sum + countTrue(p), 0)
-      if (repaired < targetTotal) {
-        console.warn(`HyperspaceUpgradeBelt: could not place all ${targetTotal} upgrades (placed ${repaired})`)
-      }
-    }
-
-    // Shuffle the plans (but only the non-zero plans — zeros stay as zeros mixed in)
-    shuffle(plans)
-
-    // Push to hopper
-    this.hopper.push(...plans)
-  }
-
-  _buildPlans(
-    cycleSize: number,
-    budgetDistribution: { 0: number, 1: number, 2: number },
-    slotCounts: HSBeltConfig['slotCounts'],
-    budgets: number[]
-  ): UpgradePlan[] {
     // Step 1: Create plans with assigned budgets
     const plans: UpgradePlan[] = []
 
@@ -133,93 +88,51 @@ export class HyperspaceUpgradeBelt {
       plans.push(emptyPlan())
     }
 
+    // Track budget for each plan
+    const budgets: number[] = [
+      ...Array(budgetDistribution[0]).fill(0),
+      ...Array(budgetDistribution[1]).fill(1),
+      ...Array(budgetDistribution[2]).fill(2),
+    ]
+
     // Step 2: Distribute slot assignments
     // We need to assign N upgrades of each slot type across the plans,
-    // respecting budget limits. There are no co-occurrence constraints between
-    // slots — leader and base may share a (budget-2) plan.
-    // Budget-0 plans get no slots at all.
-    const budget1Start = budgetDistribution[0]
+    // respecting budget limits and co-occurrence constraints.
 
-    // Assign leader and base upgrades (may co-occur in budget-2 plans)
+    // Build list of eligible plan indices for each slot
+    // Budget-0 plans get no slots at all
+    const budget1Start = budgetDistribution[0]
+    const budget2Start = budget1Start + budgetDistribution[1]
+
+    // All plans that can receive at least one upgrade
+    const eligibleIndices = []
+    for (let i = budget1Start; i < cycleSize; i++) {
+      eligibleIndices.push(i)
+    }
+
+    // Assign leader upgrades — only to plans that don't already have base
     this._assignSlot(plans, budgets, 'leader', slotCounts.leader, budget1Start, cycleSize)
+
+    // Assign base upgrades — only to plans that don't already have leader
     this._assignSlot(plans, budgets, 'base', slotCounts.base, budget1Start, cycleSize)
 
-    // Assign remaining slots
+    // Assign remaining slots (no co-occurrence constraints between these)
     // NOTE: Rare slot NEVER upgrades to HS. HS rares only appear via UC3 upgrade.
     this._assignSlot(plans, budgets, 'common', slotCounts.common, budget1Start, cycleSize)
     this._assignSlot(plans, budgets, 'uc3', slotCounts.uc3, budget1Start, cycleSize)
     this._assignSlot(plans, budgets, 'uc1', slotCounts.uc1, budget1Start, cycleSize)
     this._assignSlot(plans, budgets, 'uc2', slotCounts.uc2, budget1Start, cycleSize)
 
-    return plans
-  }
+    // Step 3: Shuffle the plans (but only the non-zero plans — zeros stay as zeros mixed in)
+    shuffle(plans)
 
-  /**
-   * Place any unassigned slot quota via one-step augmenting swaps.
-   *
-   * A slot type T can be unplaced when every plan with spare budget already
-   * holds T. Fix: find a plan P with spare budget and a donor plan Q holding a
-   * slot type S that P can accept, where Q can accept T after giving up S. Move
-   * S from Q to P, place T on Q.
-   */
-  _repairAssignment(
-    plans: UpgradePlan[],
-    budgets: number[],
-    slotCounts: HSBeltConfig['slotCounts']
-  ): void {
-    const canAccept = (plan: UpgradePlan, budget: number, slot: SlotKey): boolean => {
-      if (plan[slot]) return false
-      if (countTrue(plan) >= budget) return false
-      if (!this.allowLeaderBaseCoOccurrence) {
-        if (slot === 'leader' && plan.base) return false
-        if (slot === 'base' && plan.leader) return false
-      }
-      return true
-    }
-
-    for (const slot of ALL_SLOTS) {
-      const target = slotCounts[slot] || 0
-      let placed = plans.filter(p => p[slot]).length
-
-      let guard = plans.length * ALL_SLOTS.length
-      while (placed < target && guard-- > 0) {
-        // Direct placement if some plan can take it
-        const direct = plans.findIndex((p, i) => canAccept(p, budgets[i], slot))
-        if (direct >= 0) {
-          plans[direct][slot] = true
-          placed++
-          continue
-        }
-
-        // Augmenting swap: P has spare budget, Q donates S to P and takes `slot`
-        let swapped = false
-        outer:
-        for (let pi = 0; pi < plans.length && !swapped; pi++) {
-          if (countTrue(plans[pi]) >= budgets[pi]) continue
-          for (const s of ALL_SLOTS) {
-            if (s === slot || !canAccept(plans[pi], budgets[pi], s)) continue
-            for (let qi = 0; qi < plans.length; qi++) {
-              if (qi === pi || !plans[qi][s]) continue
-              plans[qi][s] = false
-              if (canAccept(plans[qi], budgets[qi], slot)) {
-                plans[qi][slot] = true
-                plans[pi][s] = true
-                placed++
-                swapped = true
-                break outer
-              }
-              plans[qi][s] = true // revert
-            }
-          }
-        }
-        if (!swapped) break // no augmenting path — give up on this slot type
-      }
-    }
+    // Step 4: Push to hopper
+    this.hopper.push(...plans)
   }
 
   /**
    * Assign `count` upgrades of `slot` across plans.
-   * Respects budget limits only (leader and base may co-occur).
+   * Respects budget limits and leader/base co-occurrence constraint.
    */
   _assignSlot(
     plans: UpgradePlan[],
@@ -239,11 +152,9 @@ export class HyperspaceUpgradeBelt {
       const currentCount = countTrue(plans[i])
       if (currentCount >= budgets[i]) continue
 
-      // Groups 1-3/4-6: leader and base stay mutually exclusive
-      if (!this.allowLeaderBaseCoOccurrence) {
-        if (slot === 'leader' && plans[i].base) continue
-        if (slot === 'base' && plans[i].leader) continue
-      }
+      // Co-occurrence constraint: leader and base must not co-occur
+      if (slot === 'leader' && plans[i].base) continue
+      if (slot === 'base' && plans[i].leader) continue
 
       eligible.push(i)
     }

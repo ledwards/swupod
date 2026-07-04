@@ -200,57 +200,6 @@ async function runTests(): Promise<void> {
     assertEqual(next1.id, peeked[0].id, 'First peeked card should match first next()')
   })
 
-  test('FIXED: Set 7+ rare belt allows same-card repeats at distance 4 (real ASH box 001: #247 at line gap 4)', () => {
-    // SPEC (LINE_STACKING_COLLATION_PLAN L4): Set 7+ (LAW/ASH) loosen the same-card
-    // dedup window from 6 to 3, so same-rare repeats CAN occur inside the old
-    // forbidden zone (distances 4-6; real ASH box 001: rare #247 repeated 4 packs
-    // apart), but never back-to-back. Rate-based: over 6000 draws, repeats at
-    // distance 4-6 (impossible under the old window) must be > 0; distance 1 never.
-    const belt = new RareLegendaryBelt('ASH')
-    const seq: string[] = []
-    for (let i = 0; i < 6000; i++) seq.push(belt.next().id)
-
-    const last = new Map<string, number>()
-    let shortZone = 0
-    let minDist = Infinity
-    for (let i = 0; i < seq.length; i++) {
-      const prev = last.get(seq[i])
-      if (prev !== undefined) {
-        const d = i - prev
-        minDist = Math.min(minDist, d)
-        if (d >= 4 && d <= 6) shortZone++
-      }
-      last.set(seq[i], i)
-    }
-
-    assert(shortZone > 0,
-      `SPEC (Set 7+): ASH rare belt should produce same-card repeats at distance 4-6 ` +
-      `(old window forbade <7; real ASH box 001 observed line gap 4), got 0 in 6000 draws`)
-    assert(minDist >= 2,
-      `SPEC (Set 7+): ASH rare belt must never repeat back-to-back (distance 1), got min distance ${minDist}`)
-  })
-
-  test('sets 1-6 rare belt window unchanged: SOR same-card repeats stay >= 7 apart (window 6)', () => {
-    // SPEC: Sets 1-6 keep the dedup window of 6, so same-card repeats within 4 draws
-    // are effectively impossible. Distance-<=4 events are rare seam artifacts only;
-    // pin them near zero to prove Set 7+ loosening did NOT touch old sets.
-    const belt = new RareLegendaryBelt('SOR')
-    const seq: string[] = []
-    for (let i = 0; i < 2000; i++) seq.push(belt.next().id)
-
-    const last = new Map<string, number>()
-    let shortRepeats = 0
-    for (let i = 0; i < seq.length; i++) {
-      const prev = last.get(seq[i])
-      if (prev !== undefined && i - prev <= 4) shortRepeats++
-      last.set(seq[i], i)
-    }
-
-    assert(shortRepeats <= 3,
-      `SPEC (Sets 1-6): SOR rare belt (window 6) should have ~0 same-card repeats within 4 draws ` +
-      `over 2000 draws, got ${shortRepeats}`)
-  })
-
   test('no repeating pattern: consecutive belt fills produce different sequences', () => {
     const belt = new RareLegendaryBelt('SOR')
     const fillSize = belt.fillingPool.length

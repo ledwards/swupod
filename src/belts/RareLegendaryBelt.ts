@@ -48,7 +48,6 @@ export class RareLegendaryBelt {
   rares: RawCard[]
   legendaries: RawCard[]
   ratio: number
-  dedupWindow: number
 
   constructor(setCode: SetCode | string) {
     this.setCode = setCode as SetCode
@@ -57,10 +56,6 @@ export class RareLegendaryBelt {
     this.rares = []
     this.legendaries = []
     this.ratio = 7 // Default, will be set based on config
-    // Same-card dedup window: forbids repeats within this many subsequent draws.
-    // Window 6 → min allowed repeat distance 7. Set 7+ (LAW/ASH) loosen to 3 so a
-    // same-rare repeat can occur at distance 4 (real ASH box 001), never back-to-back.
-    this.dedupWindow = 6
 
     this._initialize()
   }
@@ -77,11 +72,6 @@ export class RareLegendaryBelt {
     // Sets 1-3: 7:1 (1 in 8), Sets 4+: 5:1 (1 in 6)
     const setNumber = config?.setNumber || 1
     this.ratio = setNumber <= 3 ? 7 : 5
-
-    // Set 7+ (LAW, ASH): loosen the same-card dedup window from 6 to 3 so same-rare
-    // repeats become possible at line gap 4 (real ASH box 001), matching factory
-    // collation. Sets 1-6 keep window 6. (LINE_STACKING_COLLATION_PLAN L4)
-    this.dedupWindow = setNumber >= 7 ? 3 : 6
 
     // Check if this set puts rare bases in the base slot (no current sets do)
     // If so, exclude them from the rare slot. Otherwise, include them.
@@ -193,22 +183,21 @@ export class RareLegendaryBelt {
    * Scan entire segment for duplicates within 6 slots and fix them
    */
   _fullDedup(segment: RawCard[], maxPasses = 3): void {
-    const window = this.dedupWindow
     for (let pass = 0; pass < maxPasses; pass++) {
       let foundDuplicate = false
 
       for (let i = 0; i < segment.length; i++) {
         const card = segment[i]
 
-        // Check for duplicates within `window` slots ahead
-        for (let j = i + 1; j <= Math.min(i + window, segment.length - 1); j++) {
+        // Check for duplicates within 6 slots ahead
+        for (let j = i + 1; j <= Math.min(i + 6, segment.length - 1); j++) {
           if (isSameCard(card, segment[j])) {
             foundDuplicate = true
-            // Find a swap candidate from further away (outside the window)
+            // Find a swap candidate from further away (outside the 6-slot window)
             const swapCandidates: number[] = []
             for (let k = 0; k < segment.length; k++) {
-              // Must be outside the duplicate's window
-              if (Math.abs(k - j) > window && Math.abs(k - i) > window) {
+              // Must be outside the duplicate's 6-slot window
+              if (Math.abs(k - j) > 6 && Math.abs(k - i) > 6) {
                 // And not create a new duplicate
                 const wouldCreateDup = this._wouldCreateDuplicate(segment, k, segment[j]!)
                 if (!wouldCreateDup) {
@@ -236,8 +225,7 @@ export class RareLegendaryBelt {
    * Check if placing a card at index would create a duplicate within 6 slots
    */
   _wouldCreateDuplicate(segment: RawCard[], index: number, card: RawCard): boolean {
-    const window = this.dedupWindow
-    for (let offset = -window; offset <= window; offset++) {
+    for (let offset = -6; offset <= 6; offset++) {
       if (offset === 0) continue
       const checkIdx = index + offset
       if (checkIdx < 0 || checkIdx >= segment.length) continue
@@ -265,7 +253,6 @@ export class RareLegendaryBelt {
     // Prevent infinite recursion
     if (depth > 10) return
 
-    const window = this.dedupWindow
     const seamSize = Math.min(5, segmentLength)
     const backHalfStart = segmentStart + Math.floor(segmentLength / 2)
     const backHalfEnd = segmentStart + segmentLength
@@ -274,9 +261,9 @@ export class RareLegendaryBelt {
       const cardIndex = segmentStart + i
       const card = this.hopper[cardIndex]
 
-      // Check for duplicates within `window` slots (before and after)
+      // Check for duplicates within 6 slots (before and after)
       let hasDuplicate = false
-      for (let offset = -window; offset <= window; offset++) {
+      for (let offset = -6; offset <= 6; offset++) {
         if (offset === 0) continue
         const checkIndex = cardIndex + offset
         if (checkIndex < 0 || checkIndex >= this.hopper.length) continue

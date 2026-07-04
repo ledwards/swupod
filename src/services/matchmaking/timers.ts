@@ -18,7 +18,7 @@ const PACK_TIMEOUTS: Record<number, number> = {
 const LEADER_TIMEOUTS: Record<number, number> = {
   3: 15,
   2: 10,
-  1: 5,
+  1: 0,
 }
 
 export function getCompetitivePickTimeout(cardsRemaining: number): number {

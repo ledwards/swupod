@@ -74,6 +74,11 @@ export interface UpgradeProbabilities {
   uc3ToPrestige?: number
 }
 
+export interface TripleAspectConfig {
+  enabled: boolean
+  beltAssignment: 'primaryAspectPriority' | 'randomBelt' | 'splitEvenly'
+}
+
 export interface SetConfig {
   setCode: SetCode | string
   setName: string
@@ -86,6 +91,7 @@ export interface SetConfig {
   rarityWeights: SetRarityWeights
   beltRatios: BeltRatios
   upgradeProbabilities: UpgradeProbabilities
+  tripleAspect?: TripleAspectConfig
 }
 
 /**

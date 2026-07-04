@@ -57,11 +57,11 @@ test('FIXED: competitive last card has no timer (SPEC: 1 card remaining is auto-
   )
 })
 
-test('FIXED: competitive leader draft uses the leader schedule (SPEC: 3→15, 2→10, 1→5)', () => {
+test('FIXED: competitive leader draft uses the leader schedule (SPEC: 3→15, 2→10, 1→auto/null)', () => {
   const base = { competitive: true, phase: 'leader_draft', roundTimeoutSeconds: 120 }
   assert.strictEqual(getDisplayPickSeconds({ ...base, itemsRemaining: 3 }), 15)
   assert.strictEqual(getDisplayPickSeconds({ ...base, itemsRemaining: 2 }), 10)
-  assert.strictEqual(getDisplayPickSeconds({ ...base, itemsRemaining: 1 }), 5)
+  assert.strictEqual(getDisplayPickSeconds({ ...base, itemsRemaining: 1 }), null)
 })
 
 test('casual draft keeps the fixed host-configured round timeout regardless of cards remaining', () => {

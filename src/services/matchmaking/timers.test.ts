@@ -75,8 +75,8 @@ describe('timers', () => {
       assert.strictEqual(getLeaderPickTimeout(2), 10)
     })
 
-    it('returns 5 for 1 leader remaining', () => {
-      assert.strictEqual(getLeaderPickTimeout(1), 5)
+    it('returns 0 for 1 leader remaining', () => {
+      assert.strictEqual(getLeaderPickTimeout(1), 0)
     })
 
     it('returns 0 for unknown leader count', () => {

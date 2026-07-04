@@ -292,16 +292,11 @@ function DraftReviewModal({ draftedCards = [], draftedLeaders = [], onClose, pac
       ? card?.setCode || null
       : draft?.setCode || null
   )
-  const reviewCardIdentityAttrs = (card: Card | null | undefined) => ({
-    'data-card-name': card?.name || card?.title || undefined,
-    'data-card-id': card?.cardId || card?.card_id || undefined,
-  })
 
   const renderCard = (card: CardWithPickInfo) => (
     <div
       key={`${card.id}-${card.pickNumber}`}
       className="review-card"
-      {...reviewCardIdentityAttrs(card)}
       onMouseEnter={(e) => handleCardMouseEnter(e, card)}
       onMouseLeave={handleCardMouseLeave}
     >
@@ -366,7 +361,6 @@ function DraftReviewModal({ draftedCards = [], draftedLeaders = [], onClose, pac
                   <div
                     key={idx}
                     className="review-leader"
-                    {...reviewCardIdentityAttrs(leader)}
                     onMouseEnter={(e) => handleCardMouseEnter(e, leader as CardWithPickInfo)}
                     onMouseLeave={handleCardMouseLeave}
                   >

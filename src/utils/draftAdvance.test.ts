@@ -92,18 +92,6 @@ describe('draftAdvance pack completion', () => {
       } as never), true)
     })
 
-    it('a player who has confirmed a pick is resolved', () => {
-      assert.strictEqual(isStagedPickResolved({
-        pick_status: 'picked', selected_card_id: null, current_pack: [card],
-      } as never), true)
-    })
-
-    it('a player with the legacy confirmed staged status is resolved', () => {
-      assert.strictEqual(isStagedPickResolved({
-        pick_status: 'confirmed', selected_card_id: 'c1', current_pack: [card],
-      } as never), true)
-    })
-
     it('a player still holding cards but not selected is NOT resolved', () => {
       assert.strictEqual(isStagedPickResolved({
         pick_status: 'picking', selected_card_id: null, current_pack: [card],

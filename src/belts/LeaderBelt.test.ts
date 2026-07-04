@@ -193,52 +193,6 @@ async function runTests(): Promise<void> {
     assert(firstCards.size > 1, 'Different belt instances should start at different positions')
   })
 
-  test('FIXED: Set 7+ leader belt allows same-leader repeats at gap 3 (real ASH box 001: common leaders at gaps 3,4,5)', () => {
-    // SPEC (LINE_STACKING_COLLATION_PLAN L3): Set 7+ (LAW/ASH) cap the per-card leader
-    // dedup min gap at 3, so common-leader repeats CAN occur at line gap 3 (real ASH
-    // box 001: common leaders repeat at gaps 3,4,5) but never back-to-back (gap 1-2).
-    // Statistical: over ~1000 draws the minimum same-name repeat distance should be
-    // <= 5 (a small gap becomes possible) AND >= 2 (never immediately adjacent).
-    const belt = new LeaderBelt('ASH')
-    const seq: string[] = []
-    for (let i = 0; i < 1000; i++) seq.push(belt.next().name)
-
-    const last = new Map<string, number>()
-    let minDist = Infinity
-    for (let i = 0; i < seq.length; i++) {
-      const prev = last.get(seq[i])
-      if (prev !== undefined) minDist = Math.min(minDist, i - prev)
-      last.set(seq[i], i)
-    }
-
-    assert(minDist <= 5,
-      `SPEC (Set 7+): ASH leader belt should allow a same-leader repeat at gap <= 5 ` +
-      `(real ASH box 001: common leaders at gaps 3,4,5), got min distance ${minDist}`)
-    assert(minDist >= 2,
-      `SPEC (Set 7+): ASH leader belt must never repeat back-to-back (gap 1), got min distance ${minDist}`)
-  })
-
-  test('sets 1-6 leader belt spacing unchanged: SOR same-leader repeats stay >= 6 apart', () => {
-    // SPEC: Sets 1-6 keep LEADER_DEDUP_WINDOW=24 behavior. Measured current SOR common
-    // leader min repeat gap is 8 (stable across runs); pin a conservative band >= 6 so
-    // the Set 7+ cap did NOT touch old sets.
-    const belt = new LeaderBelt('SOR')
-    const seq: string[] = []
-    for (let i = 0; i < 1000; i++) seq.push(belt.next().name)
-
-    const last = new Map<string, number>()
-    let minDist = Infinity
-    for (let i = 0; i < seq.length; i++) {
-      const prev = last.get(seq[i])
-      if (prev !== undefined) minDist = Math.min(minDist, i - prev)
-      last.set(seq[i], i)
-    }
-
-    assert(minDist >= 6,
-      `SPEC (Sets 1-6): SOR leader belt should keep same-leader repeats >= 6 apart ` +
-      `(measured baseline 8, window 24), got min distance ${minDist}`)
-  })
-
   test('common leader repeats are spaced by sheet placement rules', () => {
     const belt = new LeaderBelt('SOR')
     const leaders = Array.from({ length: 116 }, () => belt.next())

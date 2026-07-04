@@ -434,11 +434,9 @@ export const SET_7_PLUS_CONSTANTS: PackConstants = {
   commonHyperspaceRate: 0,
 
   // ---------------------------------------------------------------------------
-  // Uncommon Hyperspace Upgrade Rate (UC1/UC2)
-  // Set 7+: 0 — UC3 is the ONLY uncommon upgrade slot (via Set7PlusUc3OutcomeBelt).
-  // Real ASH box observation: 0/48 UC1/UC2 hyperspace upgrades.
+  // Uncommon Hyperspace Upgrade Rate
   // ---------------------------------------------------------------------------
-  uncommonHyperspaceRate: 0,
+  uncommonHyperspaceRate: 1 / 8,
 
   // NOTE: Rare slot NEVER upgrades to Hyperspace. HS rares only appear via UC3 upgrade.
 
@@ -551,23 +549,21 @@ export const HS_BELT_CONFIGS: Record<string, HSBeltConfig> = {
   // LAW (Set 7+): Slot 5 is a dedicated HS common from HyperspaceCommonBelt.
   // The belt handles non-common HS upgrades only.
   // common: 0 because the HS common comes from a dedicated belt, not an upgrade.
-  // uc1/uc2: 0 — UC3 is the ONLY uncommon upgrade slot for Set 7+ (real ASH
-  // box observation: 0/48 UC1/UC2 hyperspace upgrades; all HS uncommons via UC3).
   // UC3 can still upgrade to HS R/L (if prestige doesn't trigger first).
   'LAW': {
     cycleSize: 60,
-    budgetDistribution: { 0: 26, 1: 28, 2: 6 },
+    budgetDistribution: { 0: 22, 1: 30, 2: 8 },
     slotCounts: {
       leader: 10,   // 1/6
       base: 10,     // 1/6
       common: 0,    // No common HS upgrades; dedicated belt provides HS common
-      uc1: 0,       // Never — UC3 is the only UC upgrade slot for Set 7+
-      uc2: 0,       // Never — UC3 is the only UC upgrade slot for Set 7+
+      uc1: 4,       // ~1/15
+      uc2: 2,       // ~1/30
       uc3: 20,      // ~1/3 (from 4-box observation: 34 HS upgrades in 96 packs)
     }
-    // total: 10+10+0+0+0+20 = 40 ✓
-    // budget: 0×26 + 1×28 + 2×6 = 40 ✓
-    // μ = 40/60 ≈ 0.67 belt upgrades + 1 guaranteed HS common = ~1.67 HS/pack
+    // total: 10+10+0+4+2+20 = 46 ✓
+    // budget: 0×22 + 1×30 + 2×8 = 46 ✓
+    // μ = 46/60 ≈ 0.77 belt upgrades + 1 guaranteed HS common = ~1.77 HS/pack
   },
 }
 

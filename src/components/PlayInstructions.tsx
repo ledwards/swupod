@@ -404,12 +404,6 @@ export default function PlayInstructions({
       <div className="wayfinder-tab">
         {renderCompanionReadyPanel()}
 
-        <div className="wayfinder-sync-strip" aria-label="Wayfinder sync details">
-          <span>Pool and match linked</span>
-          <span>Result returns to PTP</span>
-          <span>Replay saved to My Stats</span>
-        </div>
-
         <div className="wayfinder-section">
           <button className="wayfinder-btn" onClick={() => dispatchCreateLobby('private')}>
             🔒 Create Private Lobby

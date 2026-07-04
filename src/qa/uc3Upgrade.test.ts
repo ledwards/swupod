@@ -58,33 +58,22 @@ function collectUC3Stats(setCode: string, count: number): UC3Stats {
   uc3SlotIndex = -1  // Reset for each set
   const stats: UC3Stats = { total: count, upgraded: 0, byRarity: {}, prestige: 0 }
 
-  // Determine UC3 slot index: find the 3rd uncommon position in a probe pack.
-  // This position is fixed per set (pack assembly is deterministic before upgrades),
-  // but a single probe is unreliable: if its UC3 upgraded to a rare/prestige, only
-  // 2 uncommons remain — and the old findIndex fallback would find the UPGRADED
-  // UC3 itself as "the R/L slot" and mis-detect index 13, silently measuring a
-  // UC2 slot for the whole run. Probe until a pack has 3 unupgraded uncommons.
+  // Determine UC3 slot index: generate one pack and find the 3rd uncommon position
+  // This position is fixed per set (pack assembly is deterministic before upgrades)
   if (uc3SlotIndex === -1) {
-    for (let attempt = 0; attempt < 30 && uc3SlotIndex === -1; attempt++) {
-      const probe = generateBoosterPack([], setCode)
-      let ucCount = 0
-      for (let idx = 0; idx < probe.cards.length; idx++) {
-        const c = probe.cards[idx]
-        if (c.rarity === 'Uncommon' && !c.isLeader && !c.isBase && !c.isFoil) {
-          ucCount++
-          if (ucCount === 3) { uc3SlotIndex = idx; break }
-        }
+    const probe = generateBoosterPack([], setCode)
+    let ucCount = 0
+    for (let idx = 0; idx < probe.cards.length; idx++) {
+      const c = probe.cards[idx]
+      if (c.rarity === 'Uncommon' && !c.isLeader && !c.isBase && !c.isFoil) {
+        ucCount++
+        if (ucCount === 3) { uc3SlotIndex = idx; break }
       }
     }
+    // If upgrade happened in probe pack, try more packs
     if (uc3SlotIndex === -1) {
-      // Fallback: UC3 sits just before the R/L slot, which is the LAST
-      // non-foil R/L card in the pack (an upgraded UC3 would come earlier).
-      const probe = generateBoosterPack([], setCode)
-      let rlIdx = -1
-      for (let idx = probe.cards.length - 1; idx >= 0; idx--) {
-        const c = probe.cards[idx]
-        if ((c.rarity === 'Rare' || c.rarity === 'Legendary') && !c.isFoil && !c.isLeader && !c.isBase) { rlIdx = idx; break }
-      }
+      // Fallback: UC3 is the slot just before the R/L slot
+      const rlIdx = probe.cards.findIndex(c => (c.rarity === 'Rare' || c.rarity === 'Legendary') && !c.isFoil && !c.isLeader && !c.isBase)
       uc3SlotIndex = rlIdx > 0 ? rlIdx - 1 : 14
     }
     console.log(`\x1b[36m   UC3 slot index for ${setCode}: ${uc3SlotIndex}\x1b[0m`)

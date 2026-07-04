@@ -14,7 +14,7 @@ import { groupDraftedCards, type DraftGroupMode } from '../utils/draftedCardGrou
 import AspectIcon from './AspectIcon'
 import CostIcon from './CostIcon'
 import CardDensityToggle, { type CardDensity } from './DeckBuilder/CardDensityToggle'
-import { getReadableAspectTextColor, getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
+import { getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
 import { getSetConfig } from '../utils/setConfigs'
 import { getDraftPackDisplayOrder } from '../utils/draftPackDisplayOrder'
 import { serverSyncedNowMs } from '../utils/serverClock'
@@ -54,12 +54,11 @@ interface Leader {
 
 interface Player {
   id: string
-  pickStatus?: 'picked' | 'selected' | 'confirmed' | 'picking' | 'timeout'
+  pickStatus?: 'picked' | 'selected' | 'picking' | 'timeout'
   [key: string]: unknown
 }
 
 interface MyPlayer extends Player {
-  selectedCardId?: string | null
   currentPack?: Card[]
   draftedCards?: Card[]
   draftedLeaders?: Leader[]
@@ -92,9 +91,7 @@ interface PackDraftPhaseProps {
   myPlayer: MyPlayer | null
   draftState: DraftState | null
   onSelect: (cardId: string | null) => void
-  onConfirm: (cardId: string) => void
   loading: boolean
-  confirming?: boolean
   error: string | null
   isHost: boolean
   onTogglePause: () => void
@@ -109,9 +106,7 @@ function PackDraftPhase({
   myPlayer,
   draftState,
   onSelect,
-  onConfirm,
   loading,
-  confirming = false,
   error,
   isHost,
   onTogglePause,
@@ -196,9 +191,8 @@ function PackDraftPhase({
   const draftedCards = myPlayer?.draftedCards || []
   const draftedLeaders = myPlayer?.draftedLeaders || []
   const totalPacks = draftState?.totalPacks || draft?.settings?.chaosSets?.length || 3
-  const stagedPickStatuses = new Set(['selected', 'confirmed'])
-  const canSelect = (myPlayer?.pickStatus === 'picking' || stagedPickStatuses.has(myPlayer?.pickStatus || '')) && currentPack.length > 0
-  const hasSelected = stagedPickStatuses.has(myPlayer?.pickStatus || '')
+  const canSelect = (myPlayer?.pickStatus === 'picking' || myPlayer?.pickStatus === 'selected') && currentPack.length > 0
+  const hasSelected = myPlayer?.pickStatus === 'selected'
 
   const packNumber = draftState?.packNumber || 1
   const pickInPack = draftState?.pickInPack || 1
@@ -212,15 +206,12 @@ function PackDraftPhase({
   // Load selection from localStorage on mount and when pick changes
   useEffect(() => {
     const stored = localStorage.getItem(storageKey)
-    const serverSelected = myPlayer?.selectedCardId || null
-    const nextSelection = serverSelected || stored
-    if (nextSelection && currentPack.some(c => (c.instanceId || c.id) === nextSelection)) {
-      localStorage.setItem(storageKey, nextSelection)
-      setSelectedCardId(nextSelection)
+    if (stored && currentPack.some(c => (c.instanceId || c.id) === stored)) {
+      setSelectedCardId(stored)
     } else {
       setSelectedCardId(null)
     }
-  }, [storageKey, currentPack, myPlayer?.selectedCardId])
+  }, [storageKey, currentPack])
 
   // Sync localStorage selection with server on mount (in case of refresh)
   // Only re-send if the stored card is still in the current pack
@@ -283,8 +274,10 @@ function PackDraftPhase({
     const pickChanged = prevPickRef.current.packNumber !== packNumber ||
                         prevPickRef.current.pickInPack !== pickInPack
 
-    // Check if all players have confirmed picks.
-    const allPlayersDone = players?.length > 0 && players.every(p => p.pickStatus === 'picked')
+    // Check if all players are done (picked or selected)
+    const allPlayersDone = players?.length > 0 && players.every(p =>
+      p.pickStatus === 'picked' || p.pickStatus === 'selected'
+    )
 
     // Update previous pick tracking
     if (pickChanged && currentPack.length > 0) {
@@ -353,13 +346,9 @@ function PackDraftPhase({
       ? card?.setCode || null
       : draft?.setCode || null
   )
-  const reviewCardIdentityAttrs = (card: Card | Leader | null | undefined) => ({
-    'data-card-name': card?.name || card?.title || undefined,
-    'data-card-id': card?.cardId || card?.card_id || undefined,
-  })
 
   const handleCardClick = (card: Card) => {
-    if (loading || confirming || !canSelect) return
+    if (loading || !canSelect) return
 
     const cardId = card.instanceId || card.id
 
@@ -393,16 +382,9 @@ function PackDraftPhase({
 
   const handleDeselect = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (loading || confirming) return
     localStorage.removeItem(storageKey)
     setSelectedCardId(null)
     onSelect(null)
-  }
-
-  const handleConfirmSelection = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    if (!selectedCardId || loading || confirming) return
-    onConfirm(selectedCardId)
   }
 
   // Inter-pack review period for competitive drafts
@@ -480,7 +462,6 @@ function PackDraftPhase({
                       <div
                         key={card.instanceId || card.id}
                         className="review-pack-card"
-                        {...reviewCardIdentityAttrs(card)}
                         onMouseEnter={(e) => reviewHandleMouseEnter(card, e)}
                         onMouseLeave={reviewHandleMouseLeave}
                         onTouchStart={() => reviewHandleTouchStart(card)}
@@ -511,7 +492,6 @@ function PackDraftPhase({
                         <div
                           key={card.instanceId || card.id}
                           className={`review-stacked-card review-stacked-card--${reviewDensity}${i === stackCards.length - 1 ? ' is-last' : ''}`}
-                          {...reviewCardIdentityAttrs(card)}
                           onMouseEnter={(e) => reviewHandleMouseEnter(card, e)}
                           onMouseLeave={reviewHandleMouseLeave}
                           onTouchStart={() => reviewHandleTouchStart(card)}
@@ -575,52 +555,6 @@ function PackDraftPhase({
     )
   }
 
-  // Selected-card confirm banner, rendered in BOTH the top and bottom stacks.
-  // Each stack shows round indicator / timer / confirm banner mirrored
-  // inside-out: the banner sits innermost (closest to the pack grid) on both.
-  const selectionBanner = !isSpectator && selectedCardId && !showPassing ? (() => {
-    const selectedCard = currentPack.find(c => (c.instanceId || c.id) === selectedCardId)
-    if (!selectedCard || !selectedCard.name) return null
-    const firstAspect = selectedCard.aspects?.[0]
-    const aspectColor = firstAspect ? getSingleAspectColor(firstAspect) : NO_ASPECT_COLOR
-    const cardNameColor = getReadableAspectTextColor(aspectColor)
-    return (
-      <div
-        className="selection-confirmation-banner"
-        style={{
-          background: `linear-gradient(135deg, ${aspectColor}33 0%, ${aspectColor}22 100%)`,
-          borderColor: aspectColor,
-        }}
-      >
-        <div className="selection-info">
-          <span className="selection-label">Selected:</span>
-          <span className="selection-card-name" style={{ color: cardNameColor }}>
-            {selectedCard.name || selectedCard.title || 'Card'}
-          </span>
-          {selectedCard.subtitle && (
-            <span className="selection-card-subtitle">{selectedCard.subtitle}</span>
-          )}
-        </div>
-        <div className="selection-actions">
-          <button
-            type="button"
-            className="selection-confirm-button"
-            onClick={(e) => handleConfirmSelection(e)}
-            disabled={loading || confirming}
-          >
-            {confirming ? 'Confirming...' : 'Confirm'}
-          </button>
-          <button type="button" className="deselect-button" onClick={(e) => handleDeselect(e)} aria-label="Clear selection" title="Deselect">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-      </div>
-    )
-  })() : null
-
   return (
     <div className="pack-draft-phase">
       <div className={`draft-layout${isFullscreen ? ' draft-layout-expanded' : ''}`}>
@@ -641,9 +575,7 @@ function PackDraftPhase({
         </div>
 
         <div className={`cards-section${isFullscreen ? ' cards-section-fullscreen' : ''}`}>
-          {/* Top stack, outermost-in: round indicator, timer, confirm banner.
-              TimerPanel renders the round indicator above the timer here; the
-              bottom stack mirrors this order inside-out. */}
+          {/* Timer bar above pick area - TimerPanel handles its own visibility */}
           <TimerPanel
             draft={draft}
             players={players}
@@ -655,8 +587,6 @@ function PackDraftPhase({
             onTimerExpire={onTimerExpire}
             cardsRemaining={currentPack.length}
           />
-
-          {selectionBanner}
 
           {isSpectator ? (
             <div className="draft-info-header">
@@ -790,12 +720,10 @@ function PackDraftPhase({
             </div>
           )}
 
-          {/* Bottom stack, innermost-out: confirm banner, timer, round
-              indicator — the top stack mirrored. Same TimerPanel props as the
-              top; expiry is owned by the top timer only (no onTimerExpire
-              here) to avoid the auto-pick firing twice. */}
-          {selectionBanner}
-
+          {/* Bottom timer — identical to the top timer (same TimerPanel, same
+              props), repeated right above the pick/confirm box so the clock stays
+              in view while you scroll. Expiry is owned by the top timer only (no
+              onTimerExpire here) to avoid the auto-pick firing twice. */}
           {!isSpectator && (
             <div className="timer-bar-bottom">
               <TimerPanel
@@ -807,10 +735,49 @@ function PackDraftPhase({
                 onUpdateTimerSettings={onUpdateTimerSettings}
                 draftState={draftState}
                 cardsRemaining={currentPack.length}
-                roundInfoPosition="below"
               />
             </div>
           )}
+
+          {/* Selection confirmation banner - below cards */}
+          {!isSpectator && selectedCardId && !showPassing && (() => {
+            const selectedCard = currentPack.find(c => (c.instanceId || c.id) === selectedCardId)
+            if (!selectedCard || !selectedCard.name) return null
+            const firstAspect = selectedCard.aspects?.[0]
+            const aspectColor = firstAspect ? getSingleAspectColor(firstAspect) : NO_ASPECT_COLOR
+            return (
+              <div
+                className="selection-confirmation-banner"
+                style={{
+                  background: `linear-gradient(135deg, ${aspectColor}33 0%, ${aspectColor}22 100%)`,
+                  borderColor: aspectColor,
+                }}
+              >
+                <div className="selection-info">
+                  <span className="selection-label">Selected:</span>
+                  <span className="selection-card-name" style={{ color: aspectColor }}>
+                    {selectedCard.name || selectedCard.title || 'Card'}
+                  </span>
+                  {selectedCard.subtitle && (
+                    <span className="selection-card-subtitle">{selectedCard.subtitle}</span>
+                  )}
+                </div>
+                {hasSelected ? (
+                  // Only show "Waiting" if there are players who aren't done yet
+                  players?.some(p => p.pickStatus !== 'picked' && p.pickStatus !== 'selected') ? (
+                    <div className="selection-status-text">Waiting for other players...</div>
+                  ) : null
+                ) : (
+                  <button className="deselect-button" onClick={(e) => handleDeselect(e)} title="Deselect">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                )}
+              </div>
+            )
+          })()}
 
         </div>
       </div>

@@ -11,8 +11,6 @@ const CrownIcon = () => (
   </svg>
 )
 
-const isDoneStatus = (status?: string) => status === 'picked' || status === 'selected' || status === 'confirmed'
-
 interface Player {
   id?: string
   username?: string
@@ -49,8 +47,6 @@ function PlayerSeat({
   const getStatusColor = (status?: string): string => {
     switch (status) {
       case 'picked':
-      case 'selected':
-      case 'confirmed':
         return '#4CAF50' // Green
       case 'picking':
         return '#FFC107' // Yellow
@@ -111,7 +107,7 @@ function PlayerSeat({
           size={44}
           fallback={player?.username?.[0]?.toUpperCase() || '?'}
         />
-        {showStatus && isDoneStatus(player?.pickStatus) && (
+        {showStatus && player?.pickStatus === 'picked' && (
           <div className="status-check">✓</div>
         )}
       </div>
@@ -128,7 +124,7 @@ function PlayerSeat({
           className="seat-status"
           style={{ color: getStatusColor(player?.pickStatus) }}
         >
-          {isDoneStatus(player?.pickStatus) ? 'Done' : 'Picking...'}
+          {player?.pickStatus === 'picked' ? 'Done' : 'Picking...'}
         </div>
       )}
       <div className="seat-name">
