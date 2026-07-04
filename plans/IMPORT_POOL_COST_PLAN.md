@@ -60,9 +60,13 @@ cache $0.10 read / $1.25 write) prices the same workload at ~$0.04.
 
 ## Phase 2 — token diet (free to implement, ~$0.25 to re-verify)
 
-7. Marked-rows-only output: whole-table calls currently return JSON for
-   ALL rows ("most will be poolQty=0"). Return only rows with marks;
-   server reconstructs zeros from the closed vocab. ~80% output cut.
+7. ~~Marked-rows-only output~~ **DONE 2026-07-04 as COMPACT TUPLES instead**:
+   marked-rows-only was measured and REJECTED — recall dropped 95.7→88.0
+   ("output every row" is the per-row attention mechanism, not waste).
+   Shipped form: every row still emitted, as [n,p,t,pu,tu] tuples (~9
+   tokens vs ~25). Measured on sq-tom-law: **$1.17 → $0.727/sheet (-38%)
+   at 94.6r/97.8p** (parity within run variance). Server reconstructs the
+   pre-diet shape, accepts both encodings.
 8. Cache hygiene: per-table card vocab is static per set but sits in the
    uncached user turn; the 10 parallel table calls also race the cache.
    Prime with one serial call, then parallelize. (Matters less at Haiku
