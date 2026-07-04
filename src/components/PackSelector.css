@@ -141,26 +141,33 @@
   z-index: 10;
 }
 
+.pack-selector-badge--add-only {
+  top: 50%;
+}
+
 .pack-selector-qty-btn {
-  width: 16px;
-  height: 16px;
-  background: rgba(0, 0, 0, 0.7);
-  border: none;
+  width: 20px;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 50%;
   color: white;
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
   line-height: 1;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.45);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .pack-selector-qty-btn:hover {
     background: rgba(0, 0, 0, 0.9);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: scale(1.08);
   }
 }
 

@@ -11,7 +11,7 @@ import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { buildDeckFromState, DeckBuilderState } from '@/lib/deckBuilder'
 import { jsonParse } from '@/src/utils/json'
 import { getSession } from '@/lib/auth'
-import { broadcastPodState } from '@/src/lib/socketBroadcast'
+import { broadcastPodState, broadcastDraftState } from '@/src/lib/socketBroadcast'
 import { captureLimitedServerEvent } from '@/lib/posthog'
 import { hashAnalyticsId, LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
 import { NextRequest } from 'next/server'
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
 
     const pod = pool.pod_id
       ? await queryRow(
-        `SELECT share_id, settings FROM pods WHERE id = $1`,
+        `SELECT share_id, settings, competitive FROM pods WHERE id = $1`,
         [pool.pod_id]
       )
       : null
@@ -104,6 +104,12 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
     // If this pool belongs to a draft or sealed pod, broadcast readiness update to pod page
     if (pod?.share_id) {
       broadcastPodState(pod.share_id).catch(() => {})
+      // Competitive (Swiss Practice) pods render the roster from the draft `state`
+      // event, not `pod-state` — so push a draft broadcast too. Otherwise a player
+      // who just hit Play stays "Building…" in everyone else's roster until reload.
+      if (pod.competitive === true) {
+        broadcastDraftState(pod.share_id).catch(() => {})
+      }
     }
 
     return jsonResponse({ success: true })

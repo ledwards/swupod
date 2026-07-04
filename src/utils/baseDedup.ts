@@ -3,7 +3,8 @@
  *
  * When multiple sets are combined, many common bases are functionally
  * identical (same aspect, same HP, no game text). This deduplicates
- * them so the DeckBuilder shows one per aspect+HP combination.
+ * them so the DeckBuilder shows one per aspect+HP combination, including
+ * preview/next-set bases as they enter the catalog.
  */
 
 interface BaseCard {
@@ -20,7 +21,7 @@ interface BaseCard {
  *
  * Bases with the same primary aspect and same HP are functionally
  * identical across sets (e.g. a 30HP Vigilance base from SOR and
- * a 30HP Vigilance base from JTL). Keep only one per combination.
+ * a 30HP Vigilance base from ASH). Keep only one per combination.
  *
  * Sorts results by aspect order (Vigilance, Command, Aggression, Cunning)
  * then by HP descending, then by name.

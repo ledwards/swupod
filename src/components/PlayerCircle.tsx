@@ -22,7 +22,7 @@ interface Player {
   id: string
   seatNumber: number
   username?: string
-  pickStatus?: 'picked' | 'selected' | 'picking' | 'timeout'
+  pickStatus?: 'picked' | 'selected' | 'confirmed' | 'picking' | 'timeout'
   currentPackSize?: number
   draftedLeaders?: Leader[]
   leaderPack?: Leader[]
@@ -59,6 +59,8 @@ export interface PlayerCircleProps {
   hostId?: string
   onRemovePlayer?: (userId: string) => void
 }
+
+const isDoneStatus = (status?: string) => status === 'picked' || status === 'selected' || status === 'confirmed'
 
 /**
  * Circular layout for draft players
@@ -106,9 +108,22 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
   // Create array of seats (filled or empty)
   let seats: Seat[] = []
   if (hideEmptySeats) {
-    // Build seats from actual players — handles players in seats beyond maxPlayers
-    seats = players
-      .slice()
+    // Build seats from actual players — handles players in seats beyond maxPlayers.
+    // Dedupe by seatNumber defensively: a pod corrupted by a pre-fix join (one
+    // that collided onto an already-occupied seat — see findNextAvailableSeat in
+    // app/api/draft/[shareId]/join/route.ts) can have two players sharing a
+    // seat_number. Rendered directly, that produces two children with the same
+    // `seat-${n}` key and crashes the phase. Keep one occupant per seat (the
+    // current user wins their own seat; otherwise the first by seat/id order) so
+    // the draft survives legacy bad data. New joins can no longer create this.
+    const bySeat = new Map<number, (typeof players)[number]>()
+    for (const p of players.slice().sort((a, b) => a.seatNumber - b.seatNumber || String(a.id).localeCompare(String(b.id)))) {
+      const existing = bySeat.get(p.seatNumber)
+      if (!existing || (p.id === currentUserId && existing.id !== currentUserId)) {
+        bySeat.set(p.seatNumber, p)
+      }
+    }
+    seats = Array.from(bySeat.values())
       .sort((a, b) => a.seatNumber - b.seatNumber)
       .map(p => ({
         seatNumber: p.seatNumber,
@@ -181,6 +196,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
     switch (status) {
       case 'picked': return '#4CAF50'
       case 'selected': return '#4CAF50'  // Green - player has made their choice
+      case 'confirmed': return '#4CAF50'
       case 'picking': return '#FFC107'
       case 'timeout': return '#F44336'
       default: return '#666'
@@ -262,7 +278,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
             className="leader-info-status"
             style={{ color: getStatusColor(player.pickStatus) }}
           >
-            {player.pickStatus === 'picked' || player.pickStatus === 'selected' ? 'Done' : 'Picking...'}
+            {isDoneStatus(player.pickStatus) ? 'Done' : 'Picking...'}
           </div>
         )}
       </div>
@@ -343,7 +359,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
           className="leader-info-status"
           style={{ color: getStatusColor(player.pickStatus) }}
         >
-          {player.pickStatus === 'picked' || player.pickStatus === 'selected' ? 'Done' : 'Picking...'}
+          {isDoneStatus(player.pickStatus) ? 'Done' : 'Picking...'}
         </div>
       </div>
     )

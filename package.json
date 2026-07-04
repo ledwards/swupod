@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "npx tsx server.ts",
+    "dev": "NODE_OPTIONS=--max-old-space-size=8192 npx tsx server.ts",
     "//prebuild": "Fetches latest card data (non-fatal if API down) and busts Docker layer cache",
     "prebuild": "npx tsx scripts/fetchCards.ts || echo '⚠️  Card fetch failed, using existing data'; date > migrations/.buildstamp",
     "build": "next build",
@@ -47,7 +47,7 @@
     "test:fixes": "npx tsx src/utils/cardFixes.test.ts",
     "test:data": "npx tsx src/data/cards.test.ts; npx tsx src/data/cardCounts.test.ts",
     "test:counts": "npx tsx src/data/cardCounts.test.ts",
-    "qa": "npx tsx src/qa/packGeneration.test.ts && npx tsx src/qa/beltSlotAspects.test.ts && npx tsx src/qa/seamAwareBelt.test.ts && npx tsx src/qa/uc3Upgrade.test.ts",
+    "qa": "npx tsx src/qa/packGeneration.test.ts && npx tsx src/qa/beltSlotAspects.test.ts && npx tsx src/qa/seamAwareBelt.test.ts && npx tsx src/qa/uc3Upgrade.test.ts && npx tsx src/qa/lineStacking.test.ts",
     "dupe-stats": "bash scripts/gen-duplicate-stats.sh",
     "qa-warm": "npx tsx scripts/warmQaCache.ts",
     "test:e2e": "npx playwright test",

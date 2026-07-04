@@ -4,6 +4,7 @@ import './SubscribeModal.css'
 import { Modal } from './Modal'
 import Button from './Button'
 import { formatMembershipPrice, PATREON_URL } from '../utils/membership'
+import { PATREON_FEATURES } from '../utils/patreonFeatures'
 import { getSetConfig } from '../utils/setConfigs/index'
 import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 
@@ -124,13 +125,9 @@ export function SubscribeModal({
         )}
 
         <ul className="subscribe-modal-benefits">
-          <li><strong>Draft Reports</strong> — Review your draft history with detailed pick-by-pick logs, deck breakdowns, and personal notes</li>
-          <li><strong>Import Pool</strong> — Photograph your competitive sealed registration sheet and import the pool straight into the deckbuilder</li>
-          <li><strong>Professional Stats</strong> — Access draft and sealed data across top limited players</li>
-          <li><strong>Beta Access</strong> — Access early features and pre-release sets by becoming an exclusive beta tester</li>
-          <li><strong>Discord Access</strong> — Link Discord on Patreon and join the Pod server for your Friend of the Pod role and supporter-only channels</li>
-          <li><strong>Avatar Flair</strong> — Special avatar treatment so everyone knows you're a supporter</li>
-          <li><strong>Support the Pod</strong> — Earn the eternal gratitude of the community for being a supporter of the pod!</li>
+          {PATREON_FEATURES.map(f => (
+            <li key={f.id}><strong>{f.title}</strong> — {f.description}</li>
+          ))}
         </ul>
 
         <p className="subscribe-modal-pod-note">

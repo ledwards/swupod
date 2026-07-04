@@ -23,6 +23,21 @@
   margin-bottom: 1rem;
 }
 
+.matchmaking-panel-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.matchmaking-panel-eyebrow {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  font-size: 0.62rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
 .matchmaking-panel-label {
   font-family: 'Barlow', sans-serif;
   font-weight: 700;
@@ -30,6 +45,79 @@
   letter-spacing: 1.5px;
   color: var(--swiss-premium);
   text-transform: uppercase;
+}
+
+/* Pre-round roster (deck-building phase): players + deck-ready + host tag. */
+.matchmaking-roster {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.matchmaking-roster-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+}
+
+.matchmaking-roster-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  color: white;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.matchmaking-roster-host {
+  flex-shrink: 0;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  padding: 0.05rem 0.4rem;
+}
+
+.matchmaking-roster-ready {
+  flex-shrink: 0;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.matchmaking-roster-ready.is-ready {
+  color: #22c55e;
+}
+
+/* Player avatars in the "Your Round X match" callout. */
+.matchmaking-my-match-line {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.matchmaking-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  vertical-align: middle;
 }
 
 .matchmaking-how-toggle {
@@ -150,12 +238,33 @@
   margin-bottom: 1rem;
 }
 
+/* Pod owner: lock / unlock everyone's primary deck mid-event (host only). */
+.matchmaking-deck-lock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+
+.matchmaking-deck-lock-note {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+}
+
 /* Tabs */
 .matchmaking-tabs {
   display: flex;
   gap: 0.4rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-  padding-bottom: 0.65rem;
+  /* overflow-x: auto also clips vertical overflow, which was cutting off the
+     active tab's glow and the current/completed indicators. Pad top + sides
+     (with a compensating negative margin) so nothing clips. */
+  padding: 0.5rem 0.25rem 0.65rem;
+  margin-left: -0.25rem;
+  margin-right: -0.25rem;
   margin-bottom: 1rem;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -423,6 +532,21 @@
   border: 1px solid transparent;
 }
 
+/* Leader (leader side) + base, both landscape, under the name in each row. */
+.matchmaking-standing-cards {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-top: 4px;
+}
+.matchmaking-standing-card {
+  width: 56px;
+  height: auto;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: block;
+}
+
 .matchmaking-standing-row--mine {
   background: rgba(147, 197, 253, 0.08);
   border: 1px solid rgba(147, 197, 253, 0.2);
@@ -552,7 +676,7 @@
 
 .matchmaking-event-summary-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
 }
 
@@ -591,10 +715,18 @@
 
 .matchmaking-event-meta-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.12rem 0.55rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: 0.5rem;
+  row-gap: 0.05rem;
   font-family: 'Barlow', sans-serif;
 }
+/* The swatch sits in col 1 beside the name; name + record share col 2 and
+   share + win-rate share col 3, so the record/WR indent neatly under the name. */
+.matchmaking-event-meta-row .matchmaking-event-meta-name { grid-column: 2; }
+.matchmaking-event-meta-row .matchmaking-event-meta-record { grid-column: 2; }
+.matchmaking-event-meta-row .matchmaking-event-meta-share { grid-column: 3; }
+.matchmaking-event-meta-row .matchmaking-event-meta-rate { grid-column: 3; }
 
 .matchmaking-event-meta-name {
   overflow: hidden;
@@ -754,4 +886,57 @@
   .matchmaking-event-summary-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* Player self-drop footer */
+.matchmaking-self-drop {
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.matchmaking-self-drop-note {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* Meta-share pie + legend (Archetypes / Leaders). */
+.matchmaking-event-meta-body {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.matchmaking-event-pie {
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  margin-top: 2px;
+}
+.matchmaking-event-meta-body .matchmaking-event-meta-list {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.matchmaking-event-meta-swatch {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+/* Inline statistical context (e.g. "12% of pool") under each Your Pool stat. */
+.matchmaking-pool-context-ctx {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 1px;
 }

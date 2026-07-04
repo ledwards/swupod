@@ -1,14 +1,15 @@
 // @ts-nocheck
 'use client'
 
-import { useState, useEffect, useRef, use, useMemo } from 'react'
+import { useState, useEffect, useRef, use, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { loadPool, updatePool, claimPool } from '../../../../../src/utils/poolApi'
 import { getPackArtUrl } from '../../../../../src/utils/packArt'
 import { getSetConfig } from '../../../../../src/utils/setConfigs'
-import { getLatestReleasedSetCode } from '../../../../../src/utils/setConfigs/latest'
+import { getLatestReleasedSetCode, getKarabastCardPool } from '../../../../../src/utils/setConfigs/latest'
 import { useAuth } from '../../../../../src/contexts/AuthContext'
 import EditableTitle from '../../../../../src/components/EditableTitle'
+import PluginCTA, { usePluginCTA } from '../../../../../src/components/PluginCTA'
 import { getCachedCards, initializeCardCache } from '../../../../../src/utils/cardCache'
 // Fetch-based loader (NOT cardData) — 'use client' page; a cardData import
 // would embed the 8 MB cards.json in this bundle (U5, foundations hardening).
@@ -18,15 +19,16 @@ import { buildBaseCardMap, getBaseCardId } from '../../../../../src/utils/varian
 import { jsonParse } from '../../../../../src/utils/json'
 import { resolveArchetypeUuid, fetchArchetypeNickname } from '../../../../../src/utils/deckBuilderSharing'
 import { archetypeShortName } from '../../../../../src/utils/archetypeName'
-import { formatRecord } from '../../../../../src/utils/deckRecord'
+import { formatRecord, isRenderableMatchId } from '../../../../../src/utils/deckRecord'
 import { wayfinderMatchesUrl } from '../../../../../src/utils/wayfinderUrls'
-import { renderDeckImageBlob, renderPoolImageBlob } from '../../../../../src/services/deckImage'
+import { renderPoolImageBlob } from '../../../../../src/services/deckImage'
 import { calculateAspectPenalty } from '../../../../../src/services/cards/aspectPenalties'
 import Card from '../../../../../src/components/Card'
 import CardWithPreview from '../../../../../src/components/CardWithPreview'
 import Modal from '../../../../../src/components/Modal'
 import Button from '../../../../../src/components/Button'
 import DraftReportButton from '../../../../../src/components/DraftReportButton'
+import { useStickyTab } from '../../../../../src/hooks/useStickyTab'
 import PlayInstructions from '../../../../../src/components/PlayInstructions'
 import ChatPanel from '../../../../../src/components/ChatPanel'
 import MatchmakingPanel from '../../../../../src/components/MatchmakingPanel'
@@ -51,10 +53,15 @@ function WldBadge({
   wins: number; losses: number; draws: number; matchIds: string[]
 }) {
   const wayfinder = process.env.NEXT_PUBLIC_WAYFINDER_URL ?? 'https://plugin.wayfinder.news'
+  // Only link real captured-game ids — drop synthetic placeholders (e.g.
+  // "manual-recover-g2") that rendered as a dead "Match 1" link.
+  const links = (matchIds ?? []).filter(isRenderableMatchId)
+  const hasRecord = wins > 0 || losses > 0 || draws > 0
+  if (!hasRecord && links.length === 0) return null
   return (
     <div className="play-record-line">
       <span className="play-record-badge">{formatRecord(wins, losses, draws)}</span>
-      {matchIds.map((id, i) => (
+      {links.map((id, i) => (
         <a
           key={id}
           href={`${wayfinder}/matches/${id}`}
@@ -149,6 +156,7 @@ export default function PlayPage({ params }: PageProps) {
   const [showingPool, setShowingPool] = useState(false)
   const [loadingPool, setLoadingPool] = useState(false)
   const [postingToDiscord, setPostingToDiscord] = useState(false)
+  const [discordJustPosted, setDiscordJustPosted] = useState(false)
   const [postedToDiscord, setPostedToDiscord] = useState(() => {
     if (typeof window !== 'undefined' && resolvedParams?.shareId) {
       return localStorage.getItem(`postedToDiscord_${resolvedParams.shareId}`) === 'true'
@@ -158,6 +166,7 @@ export default function PlayPage({ params }: PageProps) {
   const [baseCardMap, setBaseCardMap] = useState<Map<string, string> | null>(null)
   const [claiming, setClaiming] = useState(false)
   const deckBuilderState = useMemo(() => jsonParse(pool?.deckBuilderState, {}), [pool?.deckBuilderState])
+
   // Deck (archetype) name. NEVER a made-up "Leader / Base" slash — use the
   // canonical swuapi archetype nickname, falling back to the consistent
   // "Leader Color HP" form (archetypeShortName) while it resolves.
@@ -204,12 +213,20 @@ export default function PlayPage({ params }: PageProps) {
     draft: competitiveDraft,
     isHost: isCompetitiveHost,
     players: draftPlayers,
+    loading: competitiveLoading,
+    refresh: refreshCompetitive,
   } = useDraftSocket(draftShareId, { enabled: !!draftShareId && pool?.poolType === 'draft' })
+
+  // Until the draft socket resolves we don't know whether this is a competitive
+  // (Swiss) pod — render a skeleton instead of guessing, which caused the normal
+  // play box to flash in and then get replaced by the Swiss box.
+  const competitiveUndetermined = Boolean(draftShareId) && pool?.poolType === 'draft' && competitiveLoading
 
   const isCompetitive = competitiveDraft?.competitive === true
   const competitiveRounds = (competitiveDraft?.rounds || []) as {
     roundNumber: number
     status: string
+    startedAt?: string | null
     matches: {
       id: string
       player1: { id: string; username: string; avatarUrl?: string } | null
@@ -228,6 +245,14 @@ export default function PlayPage({ params }: PageProps) {
   }[]
   const competitiveCurrentRound = competitiveDraft?.currentRound || 1
   const matchmakingStatus = competitiveDraft?.matchmakingStatus || 'deck_building'
+  // Pod-level deck lock override (host can unlock everyone's primary deck mid-event).
+  const decksUnlocked = competitiveDraft?.decksUnlocked === true
+  // While a competitive event is underway (deck building → matches), hide the
+  // Stats / Draft Log / Draft Report actions from PLAYERS — they reveal info that
+  // shouldn't be available mid-flow. They reappear for everyone once the Swiss
+  // event is complete. The ORGANIZER (pod host) keeps Draft Log + Draft Report
+  // throughout so they can run the event — see `isCompetitiveHost` below.
+  const swissInProgress = isCompetitive && matchmakingStatus !== 'complete'
 
   const getLimitedFormat = () => pool?.poolType === 'draft' ? 'draft' : 'sealed'
   const getLimitedMode = () => {
@@ -278,10 +303,11 @@ export default function PlayPage({ params }: PageProps) {
   // Detect the Wayfinder extension via the centralized hook (meta tag + event +
   // postMessage, with a localStorage bridge and the ?wayfinder=1/0 QA override).
   const { detected: wayfinderDetected, settled: wayfinderSettled } = useWayfinderDetection()
-  const wayfinderCardPool = useMemo(() => {
-    if (!pool?.setCode) return 'Unlimited'
-    return pool.setCode === getLatestReleasedSetCode() ? 'Current' : 'Unlimited'
-  }, [pool?.setCode])
+  // Companion pitch shown above the Swiss panel for logged-in players who don't
+  // have the Companion. shouldShow (with required) === !hasPlugin, so the banner
+  // and the full install CTA appear/disappear together.
+  const { shouldShow: showCompanionPitch } = usePluginCTA({ required: true })
+  const wayfinderCardPool = useMemo(() => getKarabastCardPool(pool?.setCode), [pool?.setCode])
   const practiceLaunch = useWayfinderPracticeLaunch({
     draftShareId,
     poolShareId: shareId,
@@ -290,6 +316,20 @@ export default function PlayPage({ params }: PageProps) {
     format: 'pool',
     onTrack: trackLimitedPlayAction,
   })
+
+  // Launch wrapper: after kicking off a game, re-read the draft ~32s later so that
+  // if the lobby is still "creating" (a silent Karabast failure with no lifecycle
+  // callback) the 30s server staleness surfaces a Retry instead of a stuck button.
+  const handlePracticeLaunch = useCallback((matchId: string) => {
+    const result = practiceLaunch.launchPracticeMatch(matchId)
+    window.setTimeout(() => { refreshCompetitive?.() }, 32000)
+    return result
+  }, [practiceLaunch, refreshCompetitive])
+
+  // After the Swiss event ends, the page splits into two tabs — "Swiss Practice
+  // Results" (final standings) and "Play" (play the deck) — so you can review your
+  // standings AND still play. Default to the standings tab.
+  const [postTab, setPostTab] = useStickyTab(['swiss', 'play'] as const, 'swiss', { storageKey: 'ptp:posttourney-tab' })
 
   // ?lobby=private|public deep link (from the /me Pools tab lobby buttons):
   // auto-opens the corresponding Karabast lobby once detected + owner.
@@ -684,8 +724,10 @@ export default function PlayPage({ params }: PageProps) {
         setPostedToDiscord(true)
         if (shareId) localStorage.setItem(`postedToDiscord_${shareId}`, 'true')
         trackLimitedPlayAction(LimitedPlayActions.POST_TO_DISCORD, { target: 'discord' })
-        setMessage('Deck posted to Discord!')
-        setMessageType('success')
+        // Transient confirmation rendered below the button row (not the shared
+        // message box), and fades out on its own.
+        setDiscordJustPosted(true)
+        setTimeout(() => setDiscordJustPosted(false), 4000)
       } else {
         const data = await res.json().catch(() => ({}))
         trackLimitedPlayAction(LimitedPlayActions.POST_TO_DISCORD, {
@@ -739,7 +781,7 @@ export default function PlayPage({ params }: PageProps) {
         return
       }
 
-      const blob = await renderDeckImageBlob({
+      const blob = await renderPoolImageBlob({
         cardPositions,
         activeLeader,
         activeBase,
@@ -747,6 +789,7 @@ export default function PlayPage({ params }: PageProps) {
         baseCard: cardPositions[activeBase]?.card || null,
         setCode: pool.setCode,
         poolType: pool.poolType === 'draft' ? 'draft' : 'sealed',
+        showSideboard: false,
         poolName: state.poolName || pool.name || null,
         ownerUsername: pool?.owner?.username || pool?.owner?.name || null,
         shareId: pool?.shareId || shareId,
@@ -798,6 +841,7 @@ export default function PlayPage({ params }: PageProps) {
         baseCard: activeBase ? cardPositions[activeBase]?.card || null : null,
         setCode: pool.setCode,
         poolType: pool.poolType === 'draft' ? 'draft' : 'sealed',
+        showSideboard: true,
         poolName: state.poolName || pool.name || null,
         ownerUsername: pool?.owner?.username || pool?.owner?.name || null,
         shareId: pool?.shareId || shareId,
@@ -921,6 +965,9 @@ export default function PlayPage({ params }: PageProps) {
           matchId,
           result_source: 'player_report',
         })
+        // The server broadcasts to every player; refresh our own view too so the
+        // reporter sees their result immediately without waiting on the round-trip.
+        refreshCompetitive?.()
       }
     } catch {
       trackLimitedPlayAction(LimitedPlayActions.MATCH_RESULT_SUBMIT, {
@@ -964,6 +1011,8 @@ export default function PlayPage({ params }: PageProps) {
           matchId,
           result_source: 'host_override',
         })
+        // Server broadcasts to all; refresh our own view so the host sees it now.
+        refreshCompetitive?.()
       }
     } catch {
       trackLimitedPlayAction(LimitedPlayActions.MATCH_RESULT_SUBMIT, {
@@ -996,6 +1045,26 @@ export default function PlayPage({ params }: PageProps) {
       }
     } catch {
       setMessage('Failed to boot player')
+      setMessageType('error')
+      setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+    }
+  }
+
+  const handleSelfDrop = async () => {
+    if (!draftShareId) return
+    try {
+      const res = await fetch(`/api/draft/${draftShareId}/matchmaking/drop`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setMessage(data.error || 'Failed to drop from event')
+        setMessageType('error')
+        setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      }
+    } catch {
+      setMessage('Failed to drop from event')
       setMessageType('error')
       setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
     }
@@ -1038,6 +1107,53 @@ export default function PlayPage({ params }: PageProps) {
       }
     } catch {
       setMessage('Failed to start matches')
+      setMessageType('error')
+      setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+    }
+  }
+
+  // Host-only: toggle the pod-level deck lock from the Swiss panel (same endpoint
+  // as the deckbuilder lock). The socket broadcast updates decksUnlocked for
+  // everyone, so the deckbuilder lock state and this button stay in sync.
+  const handleToggleDeckLock = async () => {
+    if (!draftShareId || !isCompetitiveHost) return
+    try {
+      const res = await fetch(`/api/draft/${draftShareId}/unlock-decks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ unlocked: !decksUnlocked }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setMessage(data.error || 'Failed to toggle deck lock')
+        setMessageType('error')
+        setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      }
+    } catch {
+      setMessage('Failed to toggle deck lock')
+      setMessageType('error')
+      setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+    }
+  }
+
+  // Host-only: cancel the whole event (tears down rounds + returns everyone to
+  // deck building). The confirm dialog lives in the Swiss panel.
+  const handleCancelEvent = async () => {
+    if (!draftShareId || !isCompetitiveHost) return
+    try {
+      const res = await fetch(`/api/draft/${draftShareId}/cancel-event`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setMessage(data.error || 'Failed to cancel event')
+        setMessageType('error')
+        setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      }
+    } catch {
+      setMessage('Failed to cancel event')
       setMessageType('error')
       setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
     }
@@ -1210,28 +1326,23 @@ export default function PlayPage({ params }: PageProps) {
           />
           {deckArchetypeName && <p className="play-deck-name">{deckArchetypeName}</p>}
           <p className="play-pool-type">{poolTypeLabel}</p>
-          <div className="play-header-actions">
-            <WldBadge
-              wins={pool.wins ?? 0}
-              losses={pool.losses ?? 0}
-              draws={pool.draws ?? 0}
-              matchIds={pool.wayfinderMatchIds ?? []}
-            />
-            {shareId && (
-              <Button
-                variant="secondary"
-                size="sm"
-                className="play-stats-button"
-                onClick={() => router.push(`/pool/${shareId}/deck/stats?tab=gamelog`)}
-              >
-                Stats
-              </Button>
-            )}
-          </div>
+          {/* The record badge ("No games yet" / W-L) is hidden while Swiss
+              Practice is underway — your Swiss record lives in the panel above. */}
+          {!(isCompetitive && matchmakingStatus !== 'complete') && (
+            <div className="play-header-actions">
+              <WldBadge
+                wins={pool.wins ?? 0}
+                losses={pool.losses ?? 0}
+                draws={pool.draws ?? 0}
+                matchIds={pool.wayfinderMatchIds ?? []}
+              />
+            </div>
+          )}
         </div>
 
-        {/* Login banner for logged-out users viewing anonymous (unowned) pools */}
-        {!isInfinitePool && !user && !pool?.owner && (
+        {/* Login banner for logged-out users — adapts copy to the pool/context
+            (competitive pod, someone's owned pool, or an unclaimed deck). */}
+        {!isInfinitePool && !user && (
           <div className="login-banner">
             <div className="login-banner-content">
               <div className="login-banner-icon">
@@ -1241,8 +1352,12 @@ export default function PlayPage({ params }: PageProps) {
                 </svg>
               </div>
               <div className="login-banner-text">
-                <h3>Save Your Deck</h3>
-                <p>Login with Discord to permanently save this deck to your account. You'll be able to access it from any device and see it in your deck history.</p>
+                <h3>{isCompetitive ? 'Sign in to play your matches' : pool?.owner ? 'Sign in to Protect the Pod' : 'Save Your Deck'}</h3>
+                <p>{isCompetitive
+                  ? 'Sign in with Discord to see your Swiss Practice pairings, launch your games, and report results. If this pod is yours, your match controls come back the moment you sign in.'
+                  : pool?.owner
+                    ? 'Sign in with Discord to access your decks, pods, and game history from any device.'
+                    : 'Login with Discord to permanently save this deck to your account. You\'ll be able to access it from any device and see it in your deck history.'}</p>
               </div>
               <a
                 href={`/api/auth/signin/discord?return_to=${encodeURIComponent(`/pool/${shareId}/deck/play`)}`}
@@ -1257,73 +1372,56 @@ export default function PlayPage({ params }: PageProps) {
           </div>
         )}
 
-        <PlayInstructions
-          shareId={shareId}
-          poolType={isSoloDraft ? 'sealed' : (pool?.poolType || 'sealed')}
-          setCode={pool?.setCode}
-          opponentName={firstOpponent?.username}
-          hasBye={hasBye}
-          isSoloDraft={isSoloDraft}
-          onCopyLink={isInfinitePool ? undefined : copyDeckLink}
-          onCopyJson={copyToClipboard}
-          onDownload={downloadJSON}
-          onDeckImage={exportDeckImage}
-          generatingImage={generatingImage}
-          message={message}
-          messageType={messageType}
-          showActions={true}
-          isOwner={isInfinitePool ? true : (!pool?.owner || !!isOwner)}
-          ownerName={pool?.owner?.username || pool?.owner?.name || null}
-          wayfinderDetected={wayfinderDetected}
-          isLoggedIn={Boolean(user)}
-          autoLobbyIntent={autoLobbyIntent}
-          analyticsContext={getLimitedAnalyticsContext()}
-        />
-
-        {/* Practice Hand / Post to Discord / Draft actions — below the
-            "Deck Complete" box, not above it. */}
-        <div className="practice-hand-button-container">
-          <button className="play-action-button" onClick={drawPracticeHand}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <g transform="rotate(-15 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
-              <g transform="rotate(0 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
-              <g transform="rotate(15 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
-            </svg>
-            Practice Hand
-          </button>
-          {!isInfinitePool && isOwner && user && (
-            <div className="post-to-discord-wrapper">
-              <button
-                className={`play-action-button${postedToDiscord ? ' posted' : ''}`}
-                onClick={postToDiscord}
-                disabled={postingToDiscord || postedToDiscord}
-              >
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
-                {postedToDiscord ? 'Posted!' : postingToDiscord ? 'Posting...' : 'Post to Discord'}
-              </button>
-              <span className="post-to-discord-help" data-tooltip="Share your deck to the Protect the Pod Discord for feedback and discussion. Makes your pool public.">i</span>
+        {/* Logged-in competitive player without the Companion: strongly nudge the
+            install above the Swiss panel — banner, then a lesser subhead, then the
+            full install CTA. */}
+        {isCompetitive && user && wayfinderSettled && showCompanionPitch && (
+          <div className="swiss-companion-pitch">
+            <div className="swiss-companion-pitch-alert" role="alert">
+              <h2 className="swiss-companion-pitch-title">
+                We strongly recommend Wayfinder Companion to make the Swiss
+                experience smoother for Competitive Draft. Just takes a minute to
+                set up.
+              </h2>
+              <p className="swiss-companion-pitch-sub">
+                Then you&apos;ll get recordings and analysis of your Limited and
+                Premier games as well!
+              </p>
             </div>
-          )}
-          {pool?.draftShareId && pool?.poolType === 'draft' && (
-            <button className="play-action-button" onClick={() => router.push(`/draft/${pool.draftShareId}/log`)}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
-              </svg>
-              Draft Log
-            </button>
-          )}
-          {pool?.draftShareId && pool?.poolType === 'draft' && isPatron && isOwner && (
-            <DraftReportButton draftShareId={pool.draftShareId} variant="play" />
-          )}
-        </div>
+            <PluginCTA required />
+          </div>
+        )}
 
-        {isCompetitive && user && (
+        {/* Once the Swiss event is over, split the page into Swiss-results vs
+            Play tabs (default: results). While it's underway there are no tabs —
+            the panel and the play actions stack as before. */}
+        {isCompetitive && user && matchmakingStatus === 'complete' && (
+          <div className="posttourney-tabs" role="tablist" aria-label="Swiss Practice">
+            <button
+              type="button"
+              className={`posttourney-tab ${postTab === 'swiss' ? 'active' : ''}`}
+              onClick={() => setPostTab('swiss')}
+              role="tab"
+              aria-selected={postTab === 'swiss'}
+            >
+              Swiss Practice Results
+            </button>
+            <button
+              type="button"
+              className={`posttourney-tab ${postTab === 'play' ? 'active' : ''}`}
+              onClick={() => setPostTab('play')}
+              role="tab"
+              aria-selected={postTab === 'play'}
+            >
+              Play
+            </button>
+          </div>
+        )}
+
+        {/* Swiss Practice panel sits at the top — above the play/deck-complete
+            CTA — taking the place of the normal pod status for competitive pods.
+            After the event, it lives under the "Swiss Practice Results" tab. */}
+        {isCompetitive && user && !(matchmakingStatus === 'complete' && postTab === 'play') && (
           <MatchmakingPanel
             rounds={competitiveRounds}
             currentRound={competitiveCurrentRound}
@@ -1340,12 +1438,16 @@ export default function PlayPage({ params }: PageProps) {
               baseAspects: Array.isArray((p as any).baseAspects) ? (p as any).baseAspects : [],
               baseHp: typeof (p as any).baseHp === 'number' ? (p as any).baseHp : null,
               archetypeName: (p as any).archetypeName || null,
+              leaderImageUrl: (p as any).leaderImageUrl || null,
+              baseImageUrl: (p as any).baseImageUrl || null,
               poolCardCount: typeof (p as any).poolCardCount === 'number' ? (p as any).poolCardCount : null,
+              isHost: Boolean((p as any).isHost),
+              isReady: Boolean((p as any).isReady),
             }))}
             wayfinderDetected={wayfinderDetected}
             wayfinderSettled={wayfinderSettled}
             hasCompanionBetaAccess={Boolean(user?.is_beta_tester || user?.is_admin)}
-            onPracticeLaunch={practiceLaunch.launchPracticeMatch}
+            onPracticeLaunch={handlePracticeLaunch}
             practiceLaunchPendingMatchId={practiceLaunch.pendingMatchId}
             practiceLaunchMessage={practiceLaunch.launchMessage}
             onReport={(matchId) => {
@@ -1365,9 +1467,141 @@ export default function PlayPage({ params }: PageProps) {
               setOverridingMatchId(matchId)
             }}
             onBoot={handleBootPlayer}
+            onSelfDrop={handleSelfDrop}
             onAssignBye={handleAssignBye}
             onStartMatches={handleStartMatches}
+            decksUnlocked={decksUnlocked}
+            onToggleDeckLock={handleToggleDeckLock}
+            onCancelEvent={handleCancelEvent}
           />
+        )}
+
+        {/* Skeleton while we don't yet know if this is a competitive (Swiss) pod —
+            render the right thing ONCE rather than flashing the normal play box.
+            After the event, the play box lives under the "Play" tab only. */}
+        {(isCompetitive && matchmakingStatus === 'complete' && postTab === 'swiss') ? null : competitiveUndetermined ? (
+          <div className="swiss-area-skeleton" aria-hidden="true">
+            <div className="swiss-area-skeleton-bar" />
+            <div className="swiss-area-skeleton-block" />
+            <div className="swiss-area-skeleton-row">
+              <div className="swiss-area-skeleton-pill" />
+              <div className="swiss-area-skeleton-pill" />
+            </div>
+          </div>
+        ) : /* While Swiss Practice is underway (matchmaking not yet 'complete'), the
+            Swiss panel + Play button drive everything — so skip the verbose
+            "Deck Complete!" guidance and just offer deck export. Once Swiss is
+            over (matchmakingStatus 'complete') fall back to the normal Play
+            instructions so the deck can still be played outside Swiss. */
+        isCompetitive && matchmakingStatus !== 'complete' ? (
+          <div className="swiss-deck-export">
+            <span className="swiss-deck-export-label">Play manually</span>
+            <div className="swiss-deck-export-actions">
+            {!isInfinitePool && (
+              <button className="swiss-deck-export-btn" onClick={copyDeckLink}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                Copy Link
+              </button>
+            )}
+            <button className="swiss-deck-export-btn" onClick={copyToClipboard}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              Copy JSON
+            </button>
+            <button className="swiss-deck-export-btn" onClick={downloadJSON}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Download
+            </button>
+            <button className="swiss-deck-export-btn" onClick={exportDeckImage} disabled={generatingImage}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              {generatingImage ? 'Generating…' : 'Deck Image'}
+            </button>
+            </div>
+            {message && (
+              <span className={`swiss-deck-export-msg swiss-deck-export-msg--${messageType || 'info'}`}>{message}</span>
+            )}
+          </div>
+        ) : (
+          <PlayInstructions
+            shareId={shareId}
+            poolType={isSoloDraft ? 'sealed' : (pool?.poolType || 'sealed')}
+            setCode={pool?.setCode}
+            opponentName={firstOpponent?.username}
+            hasBye={hasBye}
+            isSoloDraft={isSoloDraft}
+            onCopyLink={isInfinitePool ? undefined : copyDeckLink}
+            onCopyJson={copyToClipboard}
+            onDownload={downloadJSON}
+            onDeckImage={exportDeckImage}
+            generatingImage={generatingImage}
+            message={message}
+            messageType={messageType}
+            showActions={true}
+            isOwner={isInfinitePool ? true : (!pool?.owner || !!isOwner)}
+            pluginRequired={!!(isCompetitive && isOwner)}
+            ownerName={pool?.owner?.username || pool?.owner?.name || null}
+            wayfinderDetected={wayfinderDetected}
+            isLoggedIn={Boolean(user)}
+            autoLobbyIntent={autoLobbyIntent}
+            analyticsContext={getLimitedAnalyticsContext()}
+          />
+        )}
+
+        {/* Practice Hand / Post to Discord / Draft actions — below the
+            "Deck Complete" box, not above it. */}
+        <div className="practice-hand-button-container">
+          <Button variant="secondary" onClick={drawPracticeHand}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <g transform="rotate(-15 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
+              <g transform="rotate(0 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
+              <g transform="rotate(15 12 22)"><rect x="8" y="3" width="8" height="12" rx="1"></rect></g>
+            </svg>
+            Practice Hand
+          </Button>
+          {!isInfinitePool && isOwner && user && (
+            <div className="post-to-discord-wrapper">
+              <Button
+                variant="secondary"
+                onClick={postToDiscord}
+                disabled={postingToDiscord || postedToDiscord}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                {postedToDiscord ? 'Posted!' : postingToDiscord ? 'Posting...' : 'Post to Discord'}
+              </Button>
+              <span className="post-to-discord-help" data-tooltip="Share your deck to the Protect the Pod Discord for feedback and discussion. Makes your pool public.">i</span>
+            </div>
+          )}
+          {shareId && !swissInProgress && (
+            <Button variant="secondary" onClick={() => router.push(`/pool/${shareId}/deck/stats?tab=gamelog`)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 19V5"></path>
+                <path d="M4 19h16"></path>
+                <rect x="7" y="11" width="3" height="5" rx="1"></rect>
+                <rect x="12" y="8" width="3" height="8" rx="1"></rect>
+                <rect x="17" y="6" width="3" height="10" rx="1"></rect>
+              </svg>
+              Stats
+            </Button>
+          )}
+          {pool?.draftShareId && pool?.poolType === 'draft' && (!swissInProgress || isCompetitiveHost) && (
+            <Button variant="secondary" onClick={() => router.push(`/draft/${pool.draftShareId}/log`)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              Draft Log
+            </Button>
+          )}
+          {pool?.draftShareId && pool?.poolType === 'draft' && isPatron && isOwner && (!swissInProgress || isCompetitiveHost) && (
+            <DraftReportButton draftShareId={pool.draftShareId} variant="play" />
+          )}
+        </div>
+        {discordJustPosted && (
+          <div className="discord-post-toast">Posted to Discord!</div>
         )}
 
       </div>
@@ -1439,7 +1673,7 @@ export default function PlayPage({ params }: PageProps) {
         <Modal.Body>
           <div className="practice-hand-cards">
             {practiceHand?.cards.map((card, i) => (
-              <CardWithPreview key={`${card.id}-${i}`} card={card} />
+              <CardWithPreview key={`${card.id}-${i}`} card={card} statsSetCode={pool?.setCode} />
             ))}
           </div>
           {practiceHand && (
@@ -1465,6 +1699,9 @@ export default function PlayPage({ params }: PageProps) {
             matchId={reportingMatchId}
             player1Name={match.player1?.username || '???'}
             player2Name={match.player2?.username || '???'}
+            currentGame1={match.game1Result ?? null}
+            currentGame2={match.game2Result ?? null}
+            currentGame3={match.game3Result ?? null}
             onSubmit={handleReportResult}
             onClose={() => setReportingMatchId(null)}
           />
@@ -1481,6 +1718,9 @@ export default function PlayPage({ params }: PageProps) {
             player1Name={match.player1?.username || '???'}
             player2Name={match.player2?.username || '???'}
             isOverride
+            currentGame1={match.game1Result ?? null}
+            currentGame2={match.game2Result ?? null}
+            currentGame3={match.game3Result ?? null}
             onSubmit={handleOverrideResult}
             onClose={() => setOverridingMatchId(null)}
           />

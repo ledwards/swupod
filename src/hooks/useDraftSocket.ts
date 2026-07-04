@@ -4,6 +4,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { io, Socket } from 'socket.io-client'
 import { loadDraft } from '../utils/draftApi'
+import { estimateServerTimeOffsetMs } from '../utils/serverClock'
 
 // === TYPES ===
 
@@ -52,7 +53,9 @@ interface Draft {
   matchmakingStatus?: string;
   currentRound?: number;
   deckBuildDeadline?: string | null;
+  decksUnlocked?: boolean;
   rounds?: unknown[];
+  serverTimeOffsetMs?: number;
   [key: string]: unknown;
 }
 
@@ -75,7 +78,9 @@ interface SocketStateData {
   matchmakingStatus?: string;
   currentRound?: number;
   deckBuildDeadline?: string | null;
+  decksUnlocked?: boolean;
   rounds?: unknown[];
+  serverNow?: string;
 }
 
 /** Options for useDraftSocket hook */
@@ -202,7 +207,9 @@ export function useDraftSocket(
           matchmakingStatus: data.matchmakingStatus,
           currentRound: data.currentRound,
           deckBuildDeadline: data.deckBuildDeadline,
+          decksUnlocked: data.decksUnlocked,
           rounds: data.rounds,
+          serverTimeOffsetMs: prev.serverTimeOffsetMs ?? estimateServerTimeOffsetMs(data.serverNow),
         } : null)
 
         if (!shouldFetchPrivateData) return
@@ -215,6 +222,7 @@ export function useDraftSocket(
             myPlayer: fullData.myPlayer,
             isHost: fullData.isHost,
             isPlayer: fullData.isPlayer,
+            serverTimeOffsetMs: fullData.serverTimeOffsetMs ?? prev.serverTimeOffsetMs,
           } : null)
         } catch (err) {
           console.error('Error fetching user data:', err)

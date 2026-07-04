@@ -2,7 +2,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { getLatestReleasedSetCode } from '../utils/setConfigs/latest'
+import { getKarabastCardPool } from '../utils/setConfigs/latest'
 import { trackEvent } from '../hooks/useAnalytics'
 import { buildLimitedContext, LimitedAnalyticsEvents, LimitedPlayActions } from '../analytics/limitedEvents'
 import { buildLobbyName, isValidPrivateLobbyUrl } from '../utils/karabastLobby'
@@ -41,6 +41,9 @@ interface PlayInstructionsProps {
    *  CTA shown when the plugin is detected but the user isn't authenticated. */
   isLoggedIn?: boolean
   wayfinderDetected?: boolean
+  /** Companion is required here (competitive/Swiss pod) — force the install CTA
+   *  on even for users outside the rollout. Set only by the play page. */
+  pluginRequired?: boolean
   /** Whether the Companion extension itself is signed in. `null`/undefined =
    *  unknown (older build or no signal yet) — we don't nag. When explicitly
    *  `false` we swap the lobby flow for a "sign in from your toolbar" CTA. */
@@ -75,6 +78,7 @@ export default function PlayInstructions({
   ownerName = null,
   isLoggedIn = true,
   wayfinderDetected = false,
+  pluginRequired = false,
   pluginLoggedIn = null,
   autoLobbyIntent = null,
   analyticsContext = {},
@@ -85,8 +89,7 @@ export default function PlayInstructions({
   const companionBeta = isCompanionBeta(user)
   const inPod = poolType === 'draft' || poolType === 'sealed_pod'
   const viewingOthersDeck = !isOwner && ownerName
-  const isCurrentSet = setCode === getLatestReleasedSetCode()
-  const cardPoolName = isCurrentSet ? 'Current' : 'Unlimited'
+  const cardPoolName = getKarabastCardPool(setCode)
 
   const [activeTab, setActiveTab] = useState<'wayfinder' | 'manual'>('wayfinder')
   const [lobbyCount, setLobbyCount] = useState(0)
@@ -210,7 +213,7 @@ export default function PlayInstructions({
   function renderCompanionInstallPanel() {
     // The one universal install CTA. Autodetect = a single prominent button for
     // the browser you're in. It self-gates on rollout + Companion presence.
-    return <PluginCTA variant="autodetect" onChromeClick={() => trackInstallClick('chrome')} />
+    return <PluginCTA variant="autodetect" required={pluginRequired} onChromeClick={() => trackInstallClick('chrome')} />
   }
 
   function renderCompanionReadyPanel() {
@@ -401,6 +404,12 @@ export default function PlayInstructions({
       <div className="wayfinder-tab">
         {renderCompanionReadyPanel()}
 
+        <div className="wayfinder-sync-strip" aria-label="Wayfinder sync details">
+          <span>Pool and match linked</span>
+          <span>Result returns to PTP</span>
+          <span>Replay saved to My Stats</span>
+        </div>
+
         <div className="wayfinder-section">
           <button className="wayfinder-btn" onClick={() => dispatchCreateLobby('private')}>
             🔒 Create Private Lobby
@@ -462,7 +471,7 @@ export default function PlayInstructions({
         </div>
       )}
 
-      {viewingOthersDeck || (!companionBeta && !wayfinderDetected) ? (
+      {viewingOthersDeck || (!companionBeta && !wayfinderDetected && !pluginRequired) ? (
         <div className="play-steps">
           {renderManualSteps()}
         </div>

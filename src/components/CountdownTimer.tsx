@@ -2,6 +2,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { remainingTimerSeconds } from '../utils/serverClock'
 import './CountdownTimer.css'
 
 export interface CountdownTimerProps {
@@ -13,6 +14,7 @@ export interface CountdownTimerProps {
   compact?: boolean
   paused?: boolean
   pausedDurationSeconds?: number
+  serverTimeOffsetMs?: number
   onExpire?: () => void
 }
 
@@ -25,6 +27,7 @@ export interface CountdownTimerProps {
  * @param label - Label to show before the timer
  * @param paused - Whether the timer is paused
  * @param pausedDurationSeconds - Total seconds the timer has been paused
+ * @param serverTimeOffsetMs - Delta between the server clock and this browser clock
  * @param onExpire - Callback when timer expires (reaches 0)
  */
 function CountdownTimer({
@@ -36,6 +39,7 @@ function CountdownTimer({
   compact = false,
   paused = false,
   pausedDurationSeconds = 0,
+  serverTimeOffsetMs = 0,
   onExpire,
 }: CountdownTimerProps) {
   const [remainingSeconds, setRemainingSeconds] = useState(totalSeconds)
@@ -53,15 +57,12 @@ function CountdownTimer({
     }
 
     const calculateRemaining = () => {
-      const startTime = new Date(startedAt).getTime()
-      const now = Date.now()
-      const timeSinceStart = Math.floor((now - startTime) / 1000)
-
-      // If pausedDurationSeconds exceeds time since pick started, it's stale data
-      // from before a turn advance - ignore it
-      const effectivePausedDuration = pausedDurationSeconds > timeSinceStart ? 0 : pausedDurationSeconds
-      const elapsed = timeSinceStart - effectivePausedDuration
-      const remaining = Math.max(0, totalSeconds - elapsed)
+      const remaining = remainingTimerSeconds({
+        totalSeconds,
+        startedAt,
+        pausedDurationSeconds,
+        serverTimeOffsetMs,
+      })
       setRemainingSeconds(remaining)
 
       // Call onExpire callback when timer hits 0 (only once per timer period)
@@ -79,7 +80,7 @@ function CountdownTimer({
       const interval = setInterval(calculateRemaining, 1000)
       return () => clearInterval(interval)
     }
-  }, [totalSeconds, startedAt, active, paused, pausedDurationSeconds, onExpire])
+  }, [totalSeconds, startedAt, active, paused, pausedDurationSeconds, serverTimeOffsetMs, onExpire])
 
   const isWarning = remainingSeconds <= warningThreshold && remainingSeconds > 0
   const isCaution = remainingSeconds <= totalSeconds * 0.5 && remainingSeconds > warningThreshold

@@ -6,9 +6,11 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '../../src/contexts/AuthContext'
 import { usePublicPodsSocket } from '../../src/hooks/usePublicPodsSocket'
 import { dropFromDraft } from '../../src/utils/draftApi'
+import { getPackArtUrl } from '../../src/utils/packArt'
 import { ChatPanel } from '../../src/components/ChatPanel'
 import ConfirmModal from '../../src/components/ConfirmModal'
 import { PATREON_URL } from '../../src/utils/membership'
+import { COMPETITIVE_DRAFT_NEW_PATH, STANDARD_DRAFT_NEW_PATH } from '../../src/utils/draftCreationRoutes'
 import '../../src/App.css'
 import '../../src/components/LandingPage.css'
 import './draft.css'
@@ -108,15 +110,15 @@ export default function DraftLandingPage() {
   }, [isAuthenticated, user])
 
   const handleCreateStandard = () => {
-    router.push('/draft/new')
+    router.push(STANDARD_DRAFT_NEW_PATH)
   }
 
   const handleCreateCompetitive = () => {
-    router.push('/draft/new?competitive=1')
+    router.push(COMPETITIVE_DRAFT_NEW_PATH)
   }
 
   const handleLogin = () => {
-    const returnUrl = encodeURIComponent('/draft/new')
+    const returnUrl = encodeURIComponent(STANDARD_DRAFT_NEW_PATH)
     window.location.href = `/api/auth/signin/discord?return_to=${returnUrl}`
   }
 
@@ -283,10 +285,13 @@ export default function DraftLandingPage() {
           <div className="draft-history">
             <h2>Join a Draft</h2>
             <div className="history-list">
-              {draftPods.map((pod) => (
+              {draftPods.map((pod) => {
+                const artUrl = getPackArtUrl(pod.setCode)
+                return (
                 <div
                   key={`public-${pod.shareId}`}
-                  className="history-item"
+                  className={`history-item${artUrl ? ' history-item--art' : ''}`}
+                  style={artUrl ? { backgroundImage: `url("${artUrl}")` } : undefined}
                   role="button"
                   tabIndex={0}
                   onClick={() => router.push(`/draft/${pod.shareId}`)}
@@ -306,7 +311,8 @@ export default function DraftLandingPage() {
                     </span>
                   </div>
                 </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         )}
@@ -320,11 +326,14 @@ export default function DraftLandingPage() {
               <p className="history-empty">No drafts yet</p>
             ) : (
               <div className="history-list">
-                {history.map((pod) => (
+                {history.map((pod) => {
+                  const artUrl = getPackArtUrl(pod.setCode)
+                  return (
                   <div key={pod.id} className="history-item-wrapper">
                     <a
                       href={`/draft/${pod.shareId}`}
-                      className="history-item"
+                      className={`history-item${artUrl ? ' history-item--art' : ''}`}
+                      style={artUrl ? { backgroundImage: `url("${artUrl}")` } : undefined}
                       onClick={(e) => {
                         e.preventDefault()
                         router.push(`/draft/${pod.shareId}`)
@@ -369,7 +378,8 @@ export default function DraftLandingPage() {
                       </button>
                     )}
                   </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </div>

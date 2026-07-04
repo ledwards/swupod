@@ -85,65 +85,202 @@
 
 .match-card-dots {
   display: flex;
-  gap: 4px;
+  align-items: center;
+  gap: 7px;
 }
 
-.game-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.game-dot--pending {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.game-dot--win {
-  background: rgba(0, 200, 0, 0.8);
-}
-
-.game-dot--loss {
-  background: rgba(200, 0, 0, 0.7);
-}
-
-.game-dot--draw {
-  background: rgba(150, 185, 255, 0.7);
-}
-
-.match-card-boot {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  background: rgba(200, 0, 0, 0.3);
-  border: 1px solid rgba(255, 0, 0, 0.5);
-  color: rgba(255, 100, 100, 0.9);
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  font-size: 14px;
+/* Per-game result: green W (win), red L (loss), grey circle (not played), D (draw). */
+.game-result {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 800;
+  font-size: 0.82rem;
   line-height: 1;
+  min-width: 11px;
+  text-align: center;
+}
+.game-result--win { color: #22c55e; }
+.game-result--loss { color: #ef4444; }
+.game-result--draw { color: rgba(150, 185, 255, 0.85); }
+/* Unplayed games show a small grey circle rather than a dash. */
+.game-result--pending {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  min-width: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Per-player Companion indicator (left of name): green = connected,
+   blinking red = recording on Karabast. Replaces the Auto-recording tag. */
+.companion-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.companion-dot--connected {
+  background: #22c55e;
+  box-shadow: 0 0 4px rgba(34, 197, 94, 0.7);
+}
+.companion-dot--recording {
+  background: #ef4444;
+  box-shadow: 0 0 5px rgba(239, 68, 68, 0.9);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .companion-dot--recording {
+    animation: companion-rec-blink 1s ease-in-out infinite;
+  }
+}
+@keyframes companion-rec-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+.match-card-table {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 8px;
+}
+
+/* "View Match" / "Spectate Match" links beside the table number. Override the
+   global a:hover purple + the uppercase table styling. */
+.match-card-table-link,
+.match-card-table-link:visited,
+.match-card-table-link:active {
+  color: #93c5fd;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 600;
+}
+@media (hover: hover) and (pointer: fine) {
+  .match-card-table-link:hover { color: #bfdbfe; text-decoration: underline; }
+}
+
+/* Kick (host only): a bare red X — no circle — that fades in upper-right of a
+   player's name on hover and opens a confirm dialog. On touch (no hover) it
+   stays visible so hosts can still kick on mobile. */
+/* Wraps just the name so the kick X can anchor to the name's own top-right
+   corner (not the full-width player column). */
+.match-card-player-name-wrap {
+  position: relative;
+  display: flex;
+  min-width: 0;
+}
+
+/* Avatar wrapper so the kick badge can pin to the avatar's corner. */
+.match-card-avatar-wrap {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  line-height: 0;
+  margin-right: 5px;
+}
+
+/* Kick (✕) badge — same treatment as the draft pod's seat-remove-btn: a small
+   circular red badge with a white ring, pinned to the avatar's top-right.
+   Always visible on touch; fades in on hover for pointer devices. */
+.match-card-kick {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #d32f2f;
+  color: #fff;
+  border: 1.5px solid #fff;
+  outline: none;
+  padding: 0;
+  font-size: 9px;
+  line-height: 1;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  transition: all 0.2s ease;
+  z-index: 5;
+  transition: opacity 0.15s ease, background 0.15s ease, transform 0.15s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .match-card-boot:hover {
-    background: rgba(200, 0, 0, 0.6);
-    border-color: rgba(255, 0, 0, 0.8);
+  .match-card-kick {
+    opacity: 0;
+    pointer-events: none;
   }
+  .match-card-player:hover .match-card-kick {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .match-card-kick:hover {
+    background: #f44336;
+    border-color: #1a1a1a;
+    transform: scale(1.1);
+  }
+}
+
+/* Live action: play button is icon-only + green (variant primary). The 'open'
+   lobby link is an <a> styled as that button — kill the global link
+   underline/purple-hover so it reads as a button. */
+.match-card-live-open,
+.match-card-live-open:visited,
+.match-card-live-open:hover,
+.match-card-live-open:active {
+  text-decoration: none;
+  color: #fff;
+}
+
+.match-card-live-disabled-wrap {
+  display: inline-flex;
+}
+
+/* "(opponent) is ready!" beside the play button once a private lobby exists. */
+.match-card-live-ready {
+  color: #4ade80;
+  font-weight: 700;
+}
+
+/* Player avatar beside the name in a match card. */
+.match-card-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
 .match-card-footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 0.5rem;
+}
+
+/* Report button + status grouped at the right of the table row, adjacent. */
+.match-card-table-right {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* Inline "Report"/"Edit" button, just left of the status. Smallest button size
+   keeps the row from growing; reset the row's uppercase styling on it. */
+.match-card-report-inline {
+  display: inline-flex;
+  flex-shrink: 0;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .match-card-status {
@@ -243,6 +380,42 @@
   gap: 0.18rem;
 }
 
+/* Status text + the 55:00 round countdown, inline ("… In Progress · 52:34"). */
+.match-card-live-headline {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.match-card-live-sep {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.78rem;
+}
+.match-card-live-headline .countdown-timer {
+  display: inline-flex;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: #bfdbfe;
+}
+.match-card-live-headline .countdown-timer.warning .timer-value,
+.match-card-live-headline .countdown-timer.expired .timer-value {
+  color: #f87171;
+}
+/* Game ran past the round clock: hold at 0:00 and flash until a result lands. */
+.match-card-live-headline .countdown-timer.expired {
+  animation: round-timer-flash 1s steps(1, end) infinite;
+}
+@keyframes round-timer-flash {
+  50% { opacity: 0.2; }
+}
+
 .match-card-live-status {
   font-family: 'Barlow', sans-serif;
   font-size: 0.78rem;
@@ -285,6 +458,16 @@
 .match-card-live-watch {
   --ys-accent: #93c5fd;
   --ys-accent-bright: #bfdbfe;
+}
+
+/* Per-game replay links for a finished Bo3 (Game 1 / Game 2 / Game 3). */
+.match-card-live-replays {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-width: 0;
 }
 
 @media (hover: hover) and (pointer: fine) {

@@ -10,6 +10,8 @@
 import './Card.css'
 import type { CSSProperties, ReactNode, MouseEvent, TouchEvent, HTMLAttributes } from 'react'
 import { AspectIcon } from './AspectIcon'
+import { CardStatsBadge } from './CardStatsBadge'
+import { isBaseCard, isLeaderCard } from '../utils/cardFrame'
 
 export interface CardData {
   id: string
@@ -40,6 +42,8 @@ export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'childre
   stackIndex?: number
   showPenalty?: boolean
   penaltyAmount?: number
+  showStatsBadge?: boolean
+  statsSetCode?: string | null
   /** When true, render placeholder aspect names as icons instead of words. */
   aspectsAsIcons?: boolean
   onClick?: (e: MouseEvent<HTMLDivElement>) => void
@@ -108,6 +112,8 @@ export function Card({
   stackIndex = 0,
   showPenalty = false,
   penaltyAmount = 0,
+  showStatsBadge = true,
+  statsSetCode = null,
   aspectsAsIcons = false,
   onClick,
   onMouseEnter,
@@ -119,19 +125,22 @@ export function Card({
 }: CardProps) {
   if (!card) return null
 
+  const isLeader = isLeaderCard(card)
+  const isBase = isBaseCard(card)
+
   // Build class list using DeckBuilder.css class names
   const classes = [
     'canvas-card',
-    card.isLeader && 'leader',
-    card.isBase && 'base',
+    isLeader && 'leader',
+    isBase && 'base',
     card.isFoil && 'foil',
     card.isHyperspace && 'hyperspace',
     card.isShowcase && 'showcase',
     card.isPlaceholder && 'placeholder-card',
     selected && 'selected',
     hovered && 'hovered',
-    active && card.isLeader && 'active-leader',
-    active && card.isBase && 'active-base',
+    active && isLeader && 'active-leader',
+    active && isBase && 'active-base',
     disabled && 'disabled',
     filteredOut && 'filtered-out',
     stacked && 'stacked',
@@ -199,6 +208,8 @@ export function Card({
           </div>
         </div>
       )}
+
+      {showStatsBadge && card.imageUrl ? <CardStatsBadge card={card} setCode={statsSetCode} /> : null}
 
       {/* Badges container */}
       <div className="card-badges">

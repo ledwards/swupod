@@ -36,6 +36,7 @@ interface Pod {
   paused_duration_seconds: number
   competitive: boolean
   deck_lock_at: string | null
+  decks_unlocked: boolean
 }
 
 interface DraftPlayer {
@@ -54,6 +55,7 @@ interface DraftPlayer {
   pool_share_id: string | null
   deck_builder_state: string | Record<string, unknown> | null
   pool_cards: string | unknown[] | null
+  is_ready: boolean
 }
 
 interface PublicLeader {
@@ -83,7 +85,10 @@ interface PublicPlayer {
   baseAspects: string[]
   baseHp: number | null
   archetypeName: string | null
+  leaderImageUrl: string | null
+  baseImageUrl: string | null
   poolCardCount: number | null
+  isReady: boolean
 }
 
 interface BroadcastState {
@@ -105,7 +110,9 @@ interface BroadcastState {
   matchmakingStatus?: string
   currentRound?: number
   deckBuildDeadline?: string | null
+  decksUnlocked?: boolean
   rounds?: unknown[]
+  serverNow?: string
 }
 
 /**
@@ -125,7 +132,7 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
               dp.host_id, dp.timed, dp.timer_enabled, dp.timer_seconds, dp.pick_timeout_seconds,
               dp.started_at, dp.completed_at, dp.pick_started_at,
               dp.paused, dp.paused_at, dp.paused_duration_seconds, dp.competitive,
-              dp.deck_lock_at
+              dp.deck_lock_at, dp.decks_unlocked
        FROM pods dp WHERE dp.share_id = $1`,
       [shareId]
     ) as Pod | null
@@ -135,15 +142,19 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
       return
     }
 
-    // Get all players (public info only)
+    // Get all players (public info only). `is_ready` = the player has LOCKED a
+    // deck (hit Play → built_decks row), not merely picked a leader/base in the
+    // in-progress deckbuilder — this drives the Swiss Practice roster status.
     const players = await queryRows(
       `SELECT dpp.id, dpp.user_id, dpp.seat_number, dpp.pick_status, dpp.is_bot,
               dpp.dropped, dpp.leaders, dpp.drafted_leaders, dpp.drafted_cards, dpp.current_pack,
               u.username, u.avatar_url,
-              cp.share_id AS pool_share_id, cp.deck_builder_state, cp.cards AS pool_cards
+              cp.share_id AS pool_share_id, cp.deck_builder_state, cp.cards AS pool_cards,
+              CASE WHEN bd.id IS NOT NULL THEN true ELSE false END as is_ready
        FROM pod_players dpp
        JOIN users u ON dpp.user_id = u.id
        LEFT JOIN card_pools cp ON cp.pod_id = dpp.pod_id AND cp.user_id = dpp.user_id
+       LEFT JOIN built_decks bd ON bd.card_pool_id = cp.id
        WHERE dpp.pod_id = $1
        ORDER BY dpp.seat_number`,
       [pod.id]
@@ -191,7 +202,10 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
         baseAspects: deckIdentity.baseAspects,
         baseHp: deckIdentity.baseHp,
         archetypeName: deckIdentity.archetypeName,
+        leaderImageUrl: deckIdentity.leaderImageUrl,
+        baseImageUrl: deckIdentity.baseImageUrl,
         poolCardCount: Array.isArray(poolCards) ? poolCards.length : null,
+        isReady: p.is_ready === true,
       }
     })
 
@@ -212,6 +226,8 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
       pausedAt: pod.paused_at,
       pausedDurationSeconds: pod.paused_duration_seconds || 0,
       competitive: pod.competitive === true,
+      decksUnlocked: pod.decks_unlocked === true,
+      serverNow: new Date().toISOString(),
     }
 
     // Add matchmaking data for competitive pods in matchmaking phase

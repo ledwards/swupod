@@ -17,30 +17,22 @@
 }
 
 .draft-report-button.pool-variant {
-  margin: 1.5rem 0.75rem 0;
+  /* Spacing is owned by the .pool-action-buttons flex row in SealedPod.css so
+     this button aligns on the same baseline/height as its siblings. */
+  margin: 0;
 }
 
+/* Play-page Draft Report CTA: identical dimensions to its neighbouring
+   secondary buttons (the Button component owns padding + the 1px border width);
+   only the gold tint + glow set it apart. */
 .draft-report-button-play {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  font-family: 'Barlow', sans-serif;
-  border: 2px solid rgba(255, 215, 0, 0.6);
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border-radius: 8px;
+  border-color: rgba(255, 215, 0, 0.6) !important;
   box-shadow: 0 0 12px rgba(255, 215, 0, 0.2), inset 0 0 6px rgba(255, 215, 0, 0.03);
   animation: draftReportGlow 2s ease-in-out infinite alternate;
 }
 
 .draft-report-button-play:hover {
-  background: rgba(0, 0, 0, 0.85);
-  border-color: rgba(255, 215, 0, 0.9);
+  border-color: rgba(255, 215, 0, 0.9) !important;
+  box-shadow: 0 0 24px rgba(255, 215, 0, 0.5), inset 0 0 12px rgba(255, 215, 0, 0.1) !important;
   transform: translateY(-2px);
-  box-shadow: 0 0 24px rgba(255, 215, 0, 0.5), inset 0 0 12px rgba(255, 215, 0, 0.1);
 }

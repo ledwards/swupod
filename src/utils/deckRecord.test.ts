@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { formatRecord } from './deckRecord'
+import { formatRecord, isRenderableMatchId } from './deckRecord'
 
 describe('formatRecord', () => {
   it('formats wins, losses, draws, and integer win rate', () => {
@@ -9,7 +9,7 @@ describe('formatRecord', () => {
   })
 
   it('returns a visible non-empty empty label for zero games', () => {
-    assert.equal(formatRecord(0, 0, 0), 'No games')
+    assert.equal(formatRecord(0, 0, 0), 'No games yet')
     assert.equal(formatRecord(0, 0, 0, { emptyLabel: 'No reps yet' }), 'No reps yet')
     assert.notEqual(formatRecord(0, 0, 0), '')
   })
@@ -26,5 +26,24 @@ describe('formatRecord', () => {
   it('handles undefeated and winless records', () => {
     assert.equal(formatRecord(3, 0, 0), '3W-0L-0D (100%)')
     assert.equal(formatRecord(0, 3, 0), '0W-3L-0D (0%)')
+  })
+})
+
+describe('isRenderableMatchId', () => {
+  it('accepts a real captured-game id', () => {
+    assert.equal(isRenderableMatchId('abc123-uuid'), true)
+    assert.equal(isRenderableMatchId('ing-9f8e7d'), true)
+  })
+
+  it('rejects synthetic manual-recover placeholders (the spurious "Match 1" link bug)', () => {
+    assert.equal(isRenderableMatchId('manual-recover-g2'), false)
+    assert.equal(isRenderableMatchId('manual-recover-g1'), false)
+  })
+
+  it('rejects empty / whitespace / non-string ids', () => {
+    assert.equal(isRenderableMatchId(''), false)
+    assert.equal(isRenderableMatchId('   '), false)
+    assert.equal(isRenderableMatchId(null), false)
+    assert.equal(isRenderableMatchId(undefined), false)
   })
 })

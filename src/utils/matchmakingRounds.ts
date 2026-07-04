@@ -69,6 +69,8 @@ export interface MatchmakingGame {
 export interface MatchmakingRound {
   roundNumber: number
   status: string
+  /** When the round began (practice_rounds.created_at) — anchors the round clock. */
+  startedAt: Date | string | null
   matches: MatchmakingMatch[]
 }
 
@@ -86,6 +88,7 @@ export async function fetchRoundsWithMatches(
 ): Promise<MatchmakingRound[]> {
   const rows = await q(
     `SELECT pr.id AS round_id, pr.round_number, pr.status AS round_status,
+            pr.created_at AS round_created_at,
             pm.id AS match_id, pm.player1_id, pm.player2_id, pm.is_bye,
             pm.game1_result, pm.game2_result, pm.game3_result,
             pm.player1_submitted, pm.player2_submitted,
@@ -133,6 +136,7 @@ export async function fetchRoundsWithMatches(
       round = {
         roundNumber: Number(row['round_number']),
         status: String(row['round_status']),
+        startedAt: dateOrStringOrNull(row['round_created_at']),
         matches: [],
       }
       roundsById.set(roundId, round)

@@ -5,7 +5,7 @@
  * Run with: npx tsx src/utils/boosterPack.test.ts
  */
 
-import { generateBoosterPack, generateSealedPod, clearBeltCache } from './boosterPack'
+import { generateBoosterPack, generateSealedPod, generateSealedBox, clearBeltCache, stackBoxOrder } from './boosterPack'
 import { initializeCardCache, getCachedCards } from './cardCache'
 
 let passed = 0
@@ -30,6 +30,30 @@ function assert(condition: boolean, message?: string): asserts condition {
 function assertEqual<T>(actual: T, expected: T, message?: string): void {
   if (actual !== expected) {
     throw new Error(message || `Expected ${expected}, got ${actual}`)
+  }
+}
+
+function withMockedRandom<T>(value: number, fn: () => T): T {
+  const originalRandom = Math.random
+  Math.random = () => value
+  try {
+    return fn()
+  } finally {
+    Math.random = originalRandom
+  }
+}
+
+function withSeededRandom<T>(seed: number, fn: () => T): T {
+  const originalRandom = Math.random
+  let state = seed >>> 0
+  Math.random = () => {
+    state = (state * 1664525 + 1013904223) >>> 0
+    return state / 0x100000000
+  }
+  try {
+    return fn()
+  } finally {
+    Math.random = originalRandom
   }
 }
 
@@ -170,10 +194,18 @@ async function runTests(): Promise<void> {
       9,
       'ASH pack should contain 9 common cards'
     )
+    // ASH currently has no HSF art from FFG, so the slot uses Normal art as a
+    // fallback. It is still a Hyperspace Foil slot semantically and should
+    // render with the foil overlay.
+    assertEqual(
+      pack.cards.filter((c: Card) => c.isFoil).length,
+      1,
+      'ASH pack should contain exactly 1 foil slot'
+    )
     assertEqual(
       pack.cards.filter((c: Card) => c.isFoil && c.isHyperspace).length,
       1,
-      'ASH pack should contain 1 hyperspace foil slot'
+      'ASH foil slot should remain Hyperspace Foil even when art falls back to Normal'
     )
     assert(
       pack.cards.filter((c: Card) => c.isPlaceholder).every((c: Card) => !c.number && !c.cardId),
@@ -349,6 +381,30 @@ async function runTests(): Promise<void> {
     }
 
     assert(adjacentDupes <= 1, `Too many adjacent duplicate leaders: ${adjacentDupes}`)
+  })
+
+  test('FIXED: ASH 24-pack draft box gets rare leaders from physical leader sheets', () => {
+    const ashCards = getCachedCards('ASH')
+    if (ashCards.length === 0) {
+      console.log('\x1b[33m   Skipping: ASH placeholder catalog is not generated\x1b[0m')
+      return
+    }
+
+    withMockedRandom(0.5, () => {
+      const box = generateSealedBox(ashCards, 'ASH', 24)
+      const leaders = box.map((pack: Pack) => pack.cards.find((c: Card) => c.isLeader)).filter(Boolean)
+      const rareLeaders = leaders.filter((card: Card) => card.rarity === 'Rare')
+      const rareNames = rareLeaders.map((card: Card) => card.name)
+      const rareCounts = new Map<string, number>()
+      for (const name of rareNames) {
+        rareCounts.set(name, (rareCounts.get(name) || 0) + 1)
+      }
+      const maxSameRare = Math.max(0, ...Array.from(rareCounts.values()))
+
+      assertEqual(leaders.length, 24, 'Draft box should contain exactly 24 leader slots')
+      assert(rareLeaders.length > 0, 'ASH draft box should not be able to contain zero rare leaders')
+      assert(maxSameRare <= 2, `A rare leader appeared ${maxSameRare} times across independent leader belts: ${rareNames.join(', ')}`)
+    })
   })
 
   test('clearBeltCache causes new belt initialization', () => {
@@ -871,65 +927,73 @@ async function runTests(): Promise<void> {
     // Printer-faithful behavior: leader upgrades pull from an independent HS leader belt.
     // That means HS+Normal same-name pairs are allowed, but the rate should still stay
     // comfortably below "nearly every pod" territory.
-    clearBeltCache()
+    withSeededRandom(0x1eed3074, () => {
+      clearBeltCache()
 
-    const podCount = 100
-    let podsWithViolation = 0
-    const violationExamples: string[] = []
+      const podCount = 100
+      let podsWithViolation = 0
+      const violationExamples: string[] = []
 
-    for (let i = 0; i < podCount; i++) {
-      const pod = generateSealedPod(cards, 'SOR', 6)
+      for (let i = 0; i < podCount; i++) {
+        const pod = generateSealedPod(cards, 'SOR', 6)
 
-      // Collect all leaders in the pod
-      const leaders: Card[] = []
-      pod.forEach((pack: Pack) => {
-        const leader = pack.cards.find((c: Card) => c.isLeader)
-        if (leader) leaders.push(leader)
-      })
+        // Collect all leaders in the pod
+        const leaders: Card[] = []
+        pod.forEach((pack: Pack) => {
+          const leader = pack.cards.find((c: Card) => c.isLeader)
+          if (leader) leaders.push(leader)
+        })
 
-      // Check for same leader appearing as both HS and Normal
-      const leadersByName: Record<string, Card[]> = {}
-      for (const leader of leaders) {
-        if (!leadersByName[leader.name]) {
-          leadersByName[leader.name] = []
+        // Check for same leader appearing as both HS and Normal
+        const leadersByName: Record<string, Card[]> = {}
+        for (const leader of leaders) {
+          if (!leadersByName[leader.name]) {
+            leadersByName[leader.name] = []
+          }
+          leadersByName[leader.name].push(leader)
         }
-        leadersByName[leader.name].push(leader)
-      }
 
-      let podHasViolation = false
-      for (const [name, instances] of Object.entries(leadersByName)) {
-        const hasHS = instances.some(l => l.isHyperspace || l.variantType === 'Hyperspace')
-        const hasNormal = instances.some(l => !l.isHyperspace && l.variantType === 'Normal')
+        let podHasViolation = false
+        for (const [name, instances] of Object.entries(leadersByName)) {
+          const hasHS = instances.some(l => l.isHyperspace || l.variantType === 'Hyperspace')
+          const hasNormal = instances.some(l => !l.isHyperspace && l.variantType === 'Normal')
 
-        if (hasHS && hasNormal) {
-          podHasViolation = true
-          if (violationExamples.length < 3) {
-            violationExamples.push(`Pod ${i}: ${name} appears as both HS and Normal`)
+          if (hasHS && hasNormal) {
+            podHasViolation = true
+            if (violationExamples.length < 3) {
+              violationExamples.push(`Pod ${i}: ${name} appears as both HS and Normal`)
+            }
           }
         }
+
+        if (podHasViolation) {
+          podsWithViolation++
+        }
       }
 
-      if (podHasViolation) {
-        podsWithViolation++
+      const observedRate = podsWithViolation / podCount
+      const minExpectedRate = 0.10
+      const maxAcceptableRate = 0.60
+
+      console.log(`\x1b[36m   HS+Normal same-leader pod rate: ${(observedRate * 100).toFixed(1)}% (${podsWithViolation}/${podCount})\x1b[0m`)
+      console.log(`\x1b[36m   Independent-belt sanity band: ${(minExpectedRate * 100).toFixed(0)}%-${(maxAcceptableRate * 100).toFixed(0)}%\x1b[0m`)
+
+      if (violationExamples.length > 0) {
+        console.log(`\x1b[36m   Examples: ${violationExamples.join('; ')}\x1b[0m`)
       }
-    }
 
-    const observedRate = podsWithViolation / podCount
-    const maxAcceptableRate = 0.60
-
-    console.log(`\x1b[36m   HS+Normal same-leader pod rate: ${(observedRate * 100).toFixed(1)}% (${podsWithViolation}/${podCount})\x1b[0m`)
-    console.log(`\x1b[36m   Independent-belt sanity cap: ${(maxAcceptableRate * 100).toFixed(0)}%\x1b[0m`)
-
-    if (violationExamples.length > 0) {
-      console.log(`\x1b[36m   Examples: ${violationExamples.join('; ')}\x1b[0m`)
-    }
-
-    assert(
-      observedRate <= maxAcceptableRate,
-      `HS+Normal same-leader rate (${(observedRate * 100).toFixed(1)}%) exceeds ${(maxAcceptableRate * 100).toFixed(0)}% ` +
-      `for independent leader belts. ` +
-      `Examples: ${violationExamples.join('; ')}`
-    )
+      assert(
+        observedRate >= minExpectedRate,
+        `HS+Normal same-leader rate (${(observedRate * 100).toFixed(1)}%) is too low for independent leader belts. ` +
+        `This suggests leader upgrades are preserving the standard leader instead of pulling from the HS leader belt.`
+      )
+      assert(
+        observedRate <= maxAcceptableRate,
+        `HS+Normal same-leader rate (${(observedRate * 100).toFixed(1)}%) exceeds ${(maxAcceptableRate * 100).toFixed(0)}% ` +
+        `for independent leader belts. ` +
+        `Examples: ${violationExamples.join('; ')}`
+      )
+    })
   })
 
   console.log('')
@@ -1186,6 +1250,187 @@ async function runTests(): Promise<void> {
       `Expected ~${expectedCount} in ${packCount} packs, but found only ${hyperspaceFoilFound}. ` +
       `The foilToHyperfoil upgrade should use variantType === 'Hyperspace Foil' cards.`
     )
+  })
+
+  console.log('')
+  console.log('Line + Stacking Collation Tests (Set 7+)')
+  console.log('========================================')
+
+  // Helper: is a pack structurally valid (16 cards, 1 leader, 1 common base)?
+  // NOTE: sets 1-6 can also place a RARE base in the R/L slot, so we count the
+  // guaranteed *common* base slot (matches the existing suite's convention).
+  function isValidPack(pack: Pack): boolean {
+    if (!pack || !Array.isArray(pack.cards)) return false
+    if (pack.cards.length !== 16) return false
+    if (pack.cards.filter((c: Card) => c.isLeader).length !== 1) return false
+    if (pack.cards.filter((c: Card) => c.isBase && c.rarity === 'Common').length !== 1) return false
+    return true
+  }
+
+  // S1a: stackBoxOrder is exactly the line→box permutation.
+  // SPEC (LINE_STACKING_COLLATION_PLAN.md S1): line k (1-indexed) → box position
+  //   12-(k-1)/2 for odd k, 24-(k-2)/2 for even k (24-pack box, columns of 12).
+  // Reading box positions 12,24,11,23,...,1,13 must yield line order 1..24.
+  test('S1a: stackBoxOrder maps line order to the exact box permutation (ASH/LAW spec)', () => {
+    // Sentinels are line indices 1..24 (line order = generation sequence).
+    const line = Array.from({ length: 24 }, (_, i) => i + 1)
+    const box = stackBoxOrder(line)
+
+    // Expected box array: box[pos-1] = line pack that lands at that position.
+    // Derived directly from the spec mapping.
+    const expectedBox = new Array(24)
+    for (let k = 1; k <= 24; k++) {
+      const pos = (k % 2 === 1) ? 12 - (k - 1) / 2 : 24 - (k - 2) / 2
+      expectedBox[pos - 1] = k
+    }
+    assert(
+      JSON.stringify(box) === JSON.stringify(expectedBox),
+      `SPEC: stackBoxOrder must equal ${JSON.stringify(expectedBox)}, got ${JSON.stringify(box)}`
+    )
+
+    // Independent cross-check: reading positions 12,24,11,23,...,1,13 (Lee's order)
+    // must recover line order 1,2,3,...,24.
+    const readOrder = [12, 24, 11, 23, 10, 22, 9, 21, 8, 20, 7, 19, 6, 18, 5, 17, 4, 16, 3, 15, 2, 14, 1, 13]
+    const recovered = readOrder.map(pos => box[pos - 1])
+    assert(
+      JSON.stringify(recovered) === JSON.stringify(line),
+      `SPEC: reading box positions 12,24,...,1,13 must recover line order 1..24, got ${JSON.stringify(recovered)}`
+    )
+  })
+
+  test('S1a: stackBoxOrder returns odd/short arrays unchanged (no stacking)', () => {
+    const odd = Array.from({ length: 23 }, (_, i) => i + 1)
+    assert(JSON.stringify(stackBoxOrder(odd)) === JSON.stringify(odd), 'Odd-length array must be unchanged')
+
+    const one = [42]
+    assert(JSON.stringify(stackBoxOrder(one)) === JSON.stringify(one), 'Length-1 array must be unchanged')
+
+    const empty: number[] = []
+    assert(JSON.stringify(stackBoxOrder(empty)) === JSON.stringify(empty), 'Empty array must be unchanged')
+
+    // Even but not 24 (e.g. 6) still stacks by the general rule (columns of N/2).
+    const six = [1, 2, 3, 4, 5, 6]
+    const stackedSix = stackBoxOrder(six)
+    assert(stackedSix.length === 6, 'Even array must retain all elements')
+    assert(
+      JSON.stringify([...stackedSix].sort()) === JSON.stringify([...six].sort()),
+      'Stacking must be a permutation (same elements)'
+    )
+  })
+
+  test('S1a: stackBoxOrder preserves object identity (only order changes)', () => {
+    const objs = Array.from({ length: 24 }, (_, i) => ({ tag: i }))
+    const stacked = stackBoxOrder(objs)
+    // Every original object appears exactly once by reference.
+    for (const o of objs) {
+      assert(stacked.includes(o), `Original object tag=${o.tag} must survive stacking by reference`)
+    }
+    assert(stacked.length === 24, 'Stacked array must retain 24 elements')
+  })
+
+  // S1b: ASH generateSealedBox returns 24 valid packs; contents untouched by stacking.
+  test('S1b: ASH generateSealedBox(24) returns 24 valid packs (contents untouched)', () => {
+    const ashCards = getCachedCards('ASH')
+    if (ashCards.length === 0) {
+      console.log('\x1b[33m   Skipping: ASH placeholder catalog is not generated\x1b[0m')
+      return
+    }
+    clearBeltCache()
+    const box = generateSealedBox(ashCards, 'ASH', 24)
+    assertEqual(box.length, 24, 'ASH box should contain 24 packs')
+    box.forEach((pack: Pack, i: number) => {
+      assert(isValidPack(pack), `ASH box pack ${i + 1} must have 16 cards, 1 leader, 1 base`)
+    })
+  })
+
+  // S2: Sets 1-6 (setNumber < 7) get NO stacking — order is exactly as before.
+  // We assert this at the helper level (stacking only wired for Set 7+) plus a
+  // smoke check that JTL (set 4) boxes remain 24 valid packs.
+  test('S2: JTL (set 4) generateSealedBox(24) returns 24 valid packs (no stacking regression)', () => {
+    clearBeltCache()
+    const box = generateSealedBox(getCachedCards('JTL'), 'JTL', 24)
+    assertEqual(box.length, 24, 'JTL box should contain 24 packs')
+    box.forEach((pack: Pack, i: number) => {
+      assert(isValidPack(pack), `JTL box pack ${i + 1} must have 16 cards, 1 leader, 1 base`)
+    })
+  })
+
+  test('S2: SOR (set 1) generateSealedBox(24) returns 24 valid packs (no stacking regression)', () => {
+    clearBeltCache()
+    const box = generateSealedBox(cards, 'SOR', 24)
+    assertEqual(box.length, 24, 'SOR box should contain 24 packs')
+    box.forEach((pack: Pack, i: number) => {
+      assert(isValidPack(pack), `SOR box pack ${i + 1} must have 16 cards, 1 leader, 1 base`)
+    })
+  })
+
+  // S3: Sealed pods (Set 7+) are cut from a stacked virtual box — consecutive box positions.
+  test('S3: ASH generateSealedPod([], setCode, 24) equals exactly one full stacked box', () => {
+    const ashCards = getCachedCards('ASH')
+    if (ashCards.length === 0) {
+      console.log('\x1b[33m   Skipping: ASH placeholder catalog is not generated\x1b[0m')
+      return
+    }
+    clearBeltCache()
+    const pods = generateSealedPod(ashCards, 'ASH', 24)
+    assertEqual(pods.length, 24, 'A 24-pack ASH pod request should yield exactly one full box of 24 packs')
+    pods.forEach((pack: Pack, i: number) => {
+      assert(isValidPack(pack), `ASH pod-box pack ${i + 1} must have 16 cards, 1 leader, 1 base`)
+    })
+  })
+
+  test('S3: ASH 4 sequential 6-pack pods draw 24 packs from one virtual box (no shared refs)', () => {
+    const ashCards = getCachedCards('ASH')
+    if (ashCards.length === 0) {
+      console.log('\x1b[33m   Skipping: ASH placeholder catalog is not generated\x1b[0m')
+      return
+    }
+    clearBeltCache()
+    const allPacks: Pack[] = []
+    for (let podNum = 0; podNum < 4; podNum++) {
+      const pod = generateSealedPod(ashCards, 'ASH', 6)
+      assertEqual(pod.length, 6, `Pod ${podNum + 1} should have 6 packs`)
+      pod.forEach((pack: Pack, i: number) => {
+        assert(isValidPack(pack), `Pod ${podNum + 1} pack ${i + 1} must have 16 cards, 1 leader, 1 base`)
+      })
+      allPacks.push(...pod)
+    }
+    assertEqual(allPacks.length, 24, 'Four 6-pack pods should total 24 packs')
+
+    // No two pods share a pack object reference (each is a distinct pack).
+    for (let a = 0; a < allPacks.length; a++) {
+      for (let b = a + 1; b < allPacks.length; b++) {
+        assert(allPacks[a] !== allPacks[b], `Packs at ${a} and ${b} must be distinct object references`)
+      }
+    }
+  })
+
+  test('S3: clearBeltCache resets the virtual-box buffer (no stale state)', () => {
+    const ashCards = getCachedCards('ASH')
+    if (ashCards.length === 0) {
+      console.log('\x1b[33m   Skipping: ASH placeholder catalog is not generated\x1b[0m')
+      return
+    }
+    // Draw a partial pod to leave the buffer non-empty, then clear and redraw.
+    clearBeltCache()
+    const first = generateSealedPod(ashCards, 'ASH', 6)
+    assertEqual(first.length, 6, 'First pod should have 6 packs')
+    // clearBeltCache must discard any buffered remainder without errors.
+    clearBeltCache()
+    const afterClear = generateSealedPod(ashCards, 'ASH', 24)
+    assertEqual(afterClear.length, 24, 'After clearBeltCache a 24-pack pod should yield a full fresh box')
+    afterClear.forEach((pack: Pack, i: number) => {
+      assert(isValidPack(pack), `Post-clear pod-box pack ${i + 1} must be valid`)
+    })
+  })
+
+  test('S3: sets 1-6 pods keep independent-pack behavior (SOR pod of 6 is valid)', () => {
+    clearBeltCache()
+    const pod = generateSealedPod(cards, 'SOR', 6)
+    assertEqual(pod.length, 6, 'SOR pod should have 6 packs')
+    pod.forEach((pack: Pack, i: number) => {
+      assert(isValidPack(pack), `SOR pod pack ${i + 1} must have 16 cards, 1 leader, 1 base`)
+    })
   })
 
   console.log('')

@@ -125,17 +125,16 @@ function runTests(): void {
   })
 
   // ========================================================================
-  // CO-OCCURRENCE CONSTRAINTS
+  // CO-OCCURRENCE (leader + base CAN co-occur — real data falsified exclusivity)
   // ========================================================================
 
-  test('leader + base never co-occur in same plan', () => {
-    const belt = new HyperspaceUpgradeBelt()
-    for (let i = 0; i < TOTAL_DRAWS; i++) {
+  test('sets 1-6: leader + base never co-occur (past-set behavior preserved)', () => {
+    // Co-occurrence evidence exists only for Set 7+ (ASH pool-002 pack06).
+    // Groups 1-3/4-6 keep the exclusivity rule — never change past sets.
+    const belt = new HyperspaceUpgradeBelt() // '1-3' group
+    for (let i = 0; i < 10 * CYCLE_SIZE; i++) {
       const plan = belt.next()
-      assert(
-        !(plan.leader && plan.base),
-        `Plan ${i} has both leader and base HS — should never co-occur`
-      )
+      assert(!(plan.leader && plan.base), `Plan ${i} has both leader and base (forbidden for sets 1-6)`)
     }
   })
 
@@ -211,8 +210,8 @@ function runTests(): void {
   console.log('')
   console.log('\x1b[1m\x1b[35m🤠 LAW HyperspaceUpgradeBelt Tests\x1b[0m')
 
-  test('LAW: ~37% of plans have budget 0 (HS common is from dedicated belt, not upgrade)', () => {
-    // LAW config: budget-0 = 22/60 = 36.7%
+  test('LAW: ~43% of plans have budget 0 (HS common is from dedicated belt, not upgrade)', () => {
+    // LAW config: budget-0 = 26/60 = 43.3%
     const belt = new HyperspaceUpgradeBelt('LAW')
     let zeroCount = 0
     for (let i = 0; i < TOTAL_DRAWS; i++) {
@@ -220,30 +219,48 @@ function runTests(): void {
       if (countTrueSlots(plan) === 0) zeroCount++
     }
     const rate = zeroCount / TOTAL_DRAWS
-    console.log(`\x1b[36m   LAW budget-0 rate: ${(rate * 100).toFixed(1)}% (expected 36.7%)\x1b[0m`)
+    console.log(`\x1b[36m   LAW budget-0 rate: ${(rate * 100).toFixed(1)}% (expected 43.3%)\x1b[0m`)
     assert(
-      Math.abs(rate - 22 / 60) < 0.02,
-      `Budget-0 rate ${(rate * 100).toFixed(1)}% should be ~36.7%`
+      Math.abs(rate - 26 / 60) < 0.02,
+      `Budget-0 rate ${(rate * 100).toFixed(1)}% should be ~43.3%`
     )
   })
 
-  test('LAW: total upgrades per cycle approximately equals 46', () => {
-    // common: 0 (dedicated belt), so total = leader:10 + base:10 + uc1:4 + uc2:2 + uc3:20 = 46
+  test('LAW: total upgrades per cycle approximately equals 40', () => {
+    // common: 0 (dedicated belt), uc1/uc2: 0 (UC3 is the only UC upgrade slot),
+    // so total = leader:10 + base:10 + uc3:20 = 40
     const belt = new HyperspaceUpgradeBelt('LAW')
     let totalUpgrades = 0
     for (let i = 0; i < CYCLE_SIZE; i++) {
       totalUpgrades += countTrueSlots(belt.next())
     }
-    console.log(`\x1b[36m   LAW upgrades per cycle: ${totalUpgrades} (expected 46)\x1b[0m`)
-    assert(Math.abs(totalUpgrades - 46) <= 1, `Total upgrades per cycle = ${totalUpgrades}, expected 46 ±1`)
+    console.log(`\x1b[36m   LAW upgrades per cycle: ${totalUpgrades} (expected 40)\x1b[0m`)
+    assert(Math.abs(totalUpgrades - 40) <= 1, `Total upgrades per cycle = ${totalUpgrades}, expected 40 ±1`)
   })
 
-  test('LAW: leader + base never co-occur', () => {
+  test('FIXED: LAW/ASH UC1 and UC2 never upgrade to HS (SPEC: UC3 is the only UC upgrade slot for Set 7+; real ASH box observed 0/48)', () => {
     const belt = new HyperspaceUpgradeBelt('LAW')
     for (let i = 0; i < TOTAL_DRAWS; i++) {
       const plan = belt.next()
-      assert(!(plan.leader && plan.base), `Plan ${i} has both leader and base`)
+      assert(!plan.uc1, `Plan ${i} has uc1 upgrade — UC1 must never upgrade for Set 7+`)
+      assert(!plan.uc2, `Plan ${i} has uc2 upgrade — UC2 must never upgrade for Set 7+`)
     }
+  })
+
+  test('FIXED: LAW leader + base can co-occur (real ASH pool-002 pack06 had HS leader + HS base; only budget-2 plans, so 0-4 per 60-pack cycle)', () => {
+    // SPEC (L5): LAW group has budget-2 = 6/cycle, so leader+base co-occurrence is
+    // bounded above by 6/cycle and empirically lands roughly 0-4 per cycle. Over 50
+    // cycles it must be > 0 (co-occurrence is now possible) and well under the cap.
+    const CO_CYCLES = 50
+    const belt = new HyperspaceUpgradeBelt('LAW')
+    let coCount = 0
+    for (let i = 0; i < CO_CYCLES * CYCLE_SIZE; i++) {
+      const plan = belt.next()
+      if (plan.leader && plan.base) coCount++
+    }
+    console.log(`\x1b[36m   LAW leader+base co-occurrences over ${CO_CYCLES} cycles: ${coCount} (${(coCount / CO_CYCLES).toFixed(2)}/cycle)\x1b[0m`)
+    assert(coCount > 0, `LAW leader+base must be able to co-occur, got ${coCount} over ${CO_CYCLES} cycles`)
+    assert(coCount <= 300, `LAW leader+base co-occurrence ${coCount} unexpectedly high over ${CO_CYCLES} cycles (cap 300)`)
   })
 
   test('LAW: leader HS rate is approximately 1/6', () => {

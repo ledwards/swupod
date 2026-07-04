@@ -48,12 +48,17 @@ export class HyperfoilBelt {
   hopper: RawCard[]
   fillingPool: RawCard[]
   rarityQuantities: Record<string, number>
+  /** True when the set has no Hyperspace/HSF art yet and we fall back to
+   *  Normal card images. The slot is still a Hyperspace Foil; only the art
+   *  source is provisional. */
+  usingNormalFallback: boolean
 
   constructor(setCode: SetCode | string) {
     this.setCode = setCode as SetCode
     this.hopper = []
     this.fillingPool = []
     this.rarityQuantities = {}
+    this.usingNormalFallback = false
 
     this._initialize()
   }
@@ -95,6 +100,7 @@ export class HyperfoilBelt {
         !c.isBase &&
         (includeSpecial || c.rarity !== 'Special')
       )
+      this.usingNormalFallback = true
     }
 
     // Get target weights: use set config's hyperspaceFoilSlotWeights if available,
@@ -172,7 +178,9 @@ export class HyperfoilBelt {
 
   peek(count = 1): RawCard[] {
     this._fillIfNeeded()
-    return this.hopper.slice(0, count).map(c => ({ ...c, isFoil: true, isHyperspace: true }))
+    return this.hopper.slice(0, count).map(c =>
+      ({ ...c, isFoil: true, isHyperspace: true })
+    )
   }
 
   get size(): number {

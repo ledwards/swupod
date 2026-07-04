@@ -717,6 +717,46 @@ a.discord-login-button:active {
   color: #666;
 }
 
+/* Set expansion art as the row background, with a left-to-right scrim so text stays legible */
+.history-item--art {
+  background-color: #1e1e1e;
+  background-size: cover;
+  background-position: center 30%;
+  background-repeat: no-repeat;
+  position: relative;
+  overflow: hidden;
+}
+
+.history-item--art::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+    rgba(12, 12, 14, 0.94) 0%,
+    rgba(12, 12, 14, 0.82) 42%,
+    rgba(12, 12, 14, 0.5) 100%);
+  z-index: 0;
+  transition: background 0.2s;
+}
+
+/* Lift content above the scrim */
+.history-item--art > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .history-item--art:hover {
+    background-color: #1e1e1e;
+  }
+  .history-item--art:hover::before {
+    background: linear-gradient(90deg,
+      rgba(12, 12, 14, 0.88) 0%,
+      rgba(12, 12, 14, 0.72) 42%,
+      rgba(12, 12, 14, 0.38) 100%);
+  }
+}
+
 /* History item wrapper for delete button */
 .history-item-wrapper {
   display: flex;
@@ -1078,21 +1118,45 @@ a.discord-login-button:active {
   gap: 0.75rem;
   padding: 0.75rem 1.5rem;
   background: #000;
-  border: 2px solid rgba(255, 165, 0, 0.8);
+  border: 2px solid rgba(255, 80, 80, 0.8);
   border-radius: 6px;
   font-size: 1rem;
   font-weight: 600;
-  color: rgba(255, 180, 100, 1);
+  color: rgba(255, 100, 100, 1);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .draft-drop-button:hover:not(:disabled) {
   background: #000;
-  border-color: rgba(255, 165, 0, 1);
-  color: rgba(255, 200, 150, 1);
+  border-color: rgba(255, 0, 0, 0.8);
+  color: rgba(255, 150, 150, 1);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(255, 165, 0, 0.6);
+  box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
+}
+
+/* Competitive (Swiss) draft: Cancel Draft + Drop from Draft read as SOLID red at
+   rest — not just on hover — to make the destructive action unmistakable during a
+   competitive event. (.competitive is on the page root.) */
+.competitive .draft-cancel-button,
+.competitive .draft-drop-button {
+  background: rgba(220, 38, 38, 0.92);
+  border-color: rgba(255, 120, 120, 0.95);
+  color: #fff;
+}
+.competitive .draft-cancel-button:hover:not(:disabled),
+.competitive .draft-drop-button:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 1);
+  border-color: rgba(255, 165, 165, 1);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 0, 0, 0.55);
+}
+.competitive .draft-cancel-button:disabled,
+.competitive .draft-drop-button:disabled {
+  background: rgba(120, 30, 30, 0.5);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #888;
 }
 
 .draft-drop-button:disabled {
@@ -1379,6 +1443,30 @@ a.discord-login-button:active {
 .set-selection-header .setting-lock-competitive svg {
   color: #FFE27A;
   filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.4));
+}
+
+/* Swiss Rounds toggle in the OFF state: muted/neutral, no gold glow. */
+.set-selection-header .setting-lock-competitive.setting-lock-competitive-off {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: none;
+  box-shadow: none;
+}
+
+.set-selection-header .setting-lock-competitive.setting-lock-competitive-off svg {
+  color: rgba(255, 255, 255, 0.7);
+  filter: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .set-selection-header .setting-lock-competitive {
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .set-selection-header .setting-lock-competitive:hover {
+    transform: translateY(-2px);
+  }
 }
 
 /* Draft landing: Standard + Competitive button row */

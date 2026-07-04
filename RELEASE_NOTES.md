@@ -1,26 +1,69 @@
 # Release Notes
 
+## 07.03.2026
+
+### 🎴 Collation Fine-Tuning (LAW & ASH)
+- **Calibrated against a real box**: We opened a real ASH booster box card-by-card and used it to fine-tune pack generation — small refinements to hyperspace upgrade slots, foil rarities, and card ordering.
+- **Factory stacking order**: We also added the physical order packs get stacked into a box off the printing line, sharpening how sealed pools and draft boxes distribute duplicates.
+
+## 07.02.2026
+
+### 🐛 Bug Fixes
+- **Competitive pack review no longer burns the next timer**: The next pack timer now starts after the 30-second review window, so each new pack opens with the full scheduled pick time.
+
+## 06.29.2026
+
+### 🐛 Bug Fixes
+- **Draft countdowns are steadier with server latency**: Pick timers now sync to the server clock, so the visible countdown better matches when auto-picks actually happen.
+- **Leaders collate more like real draft boxes**: Thanks to @Scary3074, we found and fixed a bug where leaders were not being collated correctly, allowing far too much variance in common/rare leader occurrence. You should notice far more realistic leader distribution now, especially in draft pods.
+
+## 06.26.2026
+
+### 🔥 Ashes of the Empire
+- We spent the day watching ASH box opening videos and brought improvements to the realism of the packs. A few details remain, and our goal is to have those ironed out before ASH graduates from beta in a few weeks.
+
+## 06.24.2026
+
+### 🏆 Competitive Practice — Swiss Practice [Experimental]
+- **Play your competitive draft out in Swiss practice rounds**: After a competitive draft, your pod is paired into Swiss rounds automatically. Owners get a **Swiss Practice** toggle (on by default), and the same matchup never repeats while a rematch-free pairing exists.
+
+### 🎮 Live Play with the Wayfinder Companion [Experimental]
+- **One-click into your match**: With the Companion installed, hit **Play** and Protect the Pod spins up the Karabast lobby for you — your opponent sees **Join** appear automatically, no link-pasting.
+- **Results report themselves**: Game results flow back from the Companion to your match card automatically; the card shows three game dots for a Bo3 (grey until played).
+- **Manual reporting always works**: Even without the Companion, you can report a match's result by hand so a round can still advance.
+
+### 📊 Event Summary
+- **Results & Play tabs after the event**: A post-event view defaults to **Results**, with a **Play** tab alongside.
+- **See the metagame and your pool**: Meta-share pie charts and **Your Pool** rarity stats round out the event summary.
+
+### 🔧 Data Quality
+- **Manual-lobby recovery**: If the automatic lobby launch hiccups, you can still create the lobby yourself — your opponent's **Join** surfaces from it, and a result reported after a failed attempt is accepted.
+- **No more jammed events**: A match stuck "creating" resets after 30 seconds, and a practice game stuck in progress can no longer jam your matchmaking — even hours later.
+- **Only your series counts**: Games that don't belong to the Swiss series are rejected, so a stray Karabast game can't mis-grade your match.
+
+### ✨ Polish
+- **Set expansion art** now decorates draft lobby cards.
+- **Card picks show 2-up on mobile** for an easier read. Because I keep drafting on my phone in the Waymo.
+
+## 06.22.2026
+
+### 🐛 Bug Fixes
+- **Per-set stats now add up**: Filtering your stats by a set shows the correct matches, win rate, and game counts. Thanks for the quick report, @spacejunktroy.
+
 ## 06.20.2026
 
 ### 🎴 Competitive Draft — Pack Review
-
 - The between-pack **Review Your Cards** peek now fills the screen, so you can take in your whole pool at a glance during the 30-second window.
 - Group your drafted cards three ways with one tap — **Pack Order**, **Cost**, or **Aspect** — with graphical buttons matching the deck builder.
 - **Pack Order** lays cards out in rows by pack (like a freshly opened pool); **Cost** and **Aspect** stack them into labeled columns with cost and aspect icons.
 - **Small / Medium / Large** toggle to fit more cards in or see them bigger.
 
 ### 🏆 Competitive Practice Lobby & Timer
-
 - The Competitive Practice Mode rules are now a collapsible panel (collapsed by default), tucked below Host Controls so the lobby stays clean.
 - Timer settings read as fixed in Competitive Mode — **Round Timer: Competitive Rules** and **Pick Timer: disabled** — making it clear the official schedule is in effect and can't be changed.
 - The in-draft timer is now labeled **Round Timer** in Competitive Mode, matching the official per-card round schedule.
 
-### ✨ Polish
-
-- A little more breathing room above the "Selected" confirmation when you pick your leader.
-
-### 🎞️ Draft Report Slideshow
-
+### 🎥 Draft Report Slideshow
 - New Slideshow mode for Draft Reports
 - Review a finished draft with your pod, full-screen, ideal for screensharing on Discord — Slideshow Mode shows every seat's pack at each pick, sized to fill the screen with no scrolling.
 - Tabs across the top allow you to review one player at a time or the whole team at once
@@ -36,10 +79,6 @@
 
 ### 📊 Your Stats
 - New Your Leaders and Your Archetypes data visualization, plus a cleaned-up luck histogram and corrected spread (σ for the math dorks).
-
-### 🐛 Bug Fixes
-- Private lobby links paste cleanly (Karabast's new `/lobby?lobbyId=…` format).
-- Recorded games no longer double-count in deck stats, even if reported through more than one path.
 
 ## 06.19.2026
 

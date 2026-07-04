@@ -105,14 +105,14 @@ export async function run(client) {
           ? JSON.parse(player.drafted_leaders)
           : player.drafted_leaders || []
         leaders.forEach(c => c.id && cardIds.add(c.id))
-      } catch (e) { /* skip */ }
+      } catch { /* skip */ }
 
       try {
         const cards = typeof player.drafted_cards === 'string'
           ? JSON.parse(player.drafted_cards)
           : player.drafted_cards || []
         cards.forEach(c => c.id && cardIds.add(c.id))
-      } catch (e) { /* skip */ }
+      } catch { /* skip */ }
 
       draftPlayersMap.get(player.draft_pod_id).push({
         user_id: player.user_id,

@@ -394,6 +394,34 @@
   gap: 0.5rem;
 }
 
+.wayfinder-sync-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.wayfinder-sync-strip span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid rgba(74, 222, 128, 0.24);
+  border-radius: 8px;
+  background: rgba(74, 222, 128, 0.08);
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .wayfinder-sync-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
 .wayfinder-btn {
   width: 100%;
   padding: 12px 16px;

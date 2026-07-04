@@ -58,7 +58,7 @@ export async function run(client) {
       draftedLeaders = typeof player.drafted_leaders === 'string'
         ? JSON.parse(player.drafted_leaders)
         : player.drafted_leaders || []
-    } catch (e) { /* skip invalid JSON */ }
+    } catch { /* skip invalid JSON */ }
 
     // Parse drafted_cards
     let draftedCards = []
@@ -66,7 +66,7 @@ export async function run(client) {
       draftedCards = typeof player.drafted_cards === 'string'
         ? JSON.parse(player.drafted_cards)
         : player.drafted_cards || []
-    } catch (e) { /* skip invalid JSON */ }
+    } catch { /* skip invalid JSON */ }
 
     // Map each card_id to the player who drafted it
     for (const card of [...draftedLeaders, ...draftedCards]) {

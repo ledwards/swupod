@@ -7,6 +7,7 @@ import PoolBuilds from '../../../../src/components/PoolBuilds'
 import ChatPanel from '../../../../src/components/ChatPanel'
 import { loadPool, loadPoolWithRetry, updatePool } from '../../../../src/utils/poolApi'
 import { usePoolBuildsSocket } from '../../../../src/hooks/usePoolBuildsSocket'
+import { useDraftSocket } from '../../../../src/hooks/useDraftSocket'
 import { useAuth } from '../../../../src/contexts/AuthContext'
 import { useTrackPoolView } from '../../../../src/hooks/useTrackPoolView'
 import '../../../../src/App.css'
@@ -199,22 +200,80 @@ export default function DeckBuilderPage({ params }: PageProps) {
 
   const [deckBuildDeadline, setDeckBuildDeadline] = useState<string | null>(null)
   const [draftLimitedMode, setDraftLimitedMode] = useState<'solo' | 'group' | null>(null)
+  const [competitive, setCompetitive] = useState(false)
 
   useEffect(() => {
     if (!draftShareId || pool?.poolType !== 'draft') {
       setDraftLimitedMode(null)
+      setCompetitive(false)
       return
     }
     fetch(`/api/draft/${draftShareId}`)
       .then(res => res.ok ? res.json() : null)
-      .then(data => {
+      .then(payload => {
+        // /api/draft/[shareId] wraps its body in { success, data, message }, so
+        // the draft fields live under .data. Reading the top level made
+        // `competitive` (and deckBuildDeadline / isSolo) silently undefined,
+        // which made the Play button route competitive pods to /draft/[id]/pod
+        // instead of the single /pool/[id]/deck/play (Swiss) page.
+        const data = payload?.data ?? payload
         if (data?.deckBuildDeadline) {
           setDeckBuildDeadline(data.deckBuildDeadline)
         }
         setDraftLimitedMode(data?.settings?.isSolo === true ? 'solo' : 'group')
+        setCompetitive(data?.competitive === true)
       })
       .catch(() => {})
   }, [draftShareId, pool?.poolType])
+
+  // Live competitive lock state. Owner toggles propagate to every player via the
+  // draft socket, so the locked deckbuilder unlocks/relocks in real time.
+  const isDraftPool = pool?.poolType === 'draft'
+  const {
+    draft: competitiveDraft,
+    isHost: isCompetitiveHost,
+  } = useDraftSocket(draftShareId, { enabled: !!draftShareId && isDraftPool })
+
+  const isCompetitivePod = competitiveDraft?.competitive === true
+  const matchmakingStatus = competitiveDraft?.matchmakingStatus || 'deck_building'
+  const decksUnlocked = competitiveDraft?.decksUnlocked === true
+  // The primary competitive deck is frozen once Swiss Practice is underway
+  // (matchmaking active) OR the build deadline has passed — unless the pod owner
+  // has flipped the pod-level override. Child builds (forked decks) are never
+  // locked; players edit those freely.
+  const deadlinePassed = Boolean(
+    deckBuildDeadline && new Date(deckBuildDeadline).getTime() <= Date.now()
+  )
+  const swissPracticeActive = matchmakingStatus === 'active' || deadlinePassed
+  const isChildBuildForLock = Boolean(pool?.parentShareId)
+  const deckIsLocked = Boolean(
+    isCompetitivePod && swissPracticeActive && !decksUnlocked && !isChildBuildForLock
+  )
+  // Same Swiss-active, non-child context as the lock, but AFTER the owner has
+  // unlocked: the deck is editable again, yet the build deadline has passed, so we
+  // show the lock area in its "tap to lock again" state instead of a dead "0:00"
+  // build timer.
+  const deckUnlockedDuringSwiss = Boolean(
+    isCompetitivePod && swissPracticeActive && decksUnlocked && !isChildBuildForLock
+  )
+  // Hide Stats / Draft Log / Draft Report in the header while the competitive
+  // event is underway — they reappear once the Swiss event is complete.
+  const swissEventInProgress = Boolean(isCompetitivePod && matchmakingStatus !== 'complete')
+
+  const handleToggleLock = useCallback(async () => {
+    if (!draftShareId || !isCompetitiveHost) return
+    try {
+      await fetch(`/api/draft/${draftShareId}/unlock-decks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ unlocked: !decksUnlocked }),
+      })
+      // The socket broadcast updates decksUnlocked for everyone (including us).
+    } catch (err) {
+      console.error('Failed to toggle deck lock:', err)
+    }
+  }, [draftShareId, isCompetitiveHost, decksUnlocked])
 
   const rootShareId = pool?.parentShareId || pool?.shareId || null
   const isChildBuild = Boolean(pool?.parentShareId)
@@ -235,7 +294,7 @@ export default function DeckBuilderPage({ params }: PageProps) {
             setCode={setCode}
             onBack={handleBack}
             savedState={savedState}
-            onStateChange={canEdit ? handleDeckStateChange : undefined}
+            onStateChange={(canEdit && !deckIsLocked) ? handleDeckStateChange : undefined}
             shareId={shareId}
             poolCreatedAt={canEdit ? pool?.createdAt : undefined}
             poolType={pool?.poolType}
@@ -248,6 +307,13 @@ export default function DeckBuilderPage({ params }: PageProps) {
             rootShareId={rootShareId}
             currentUserId={user?.id || null}
             limitedMode={limitedMode}
+            competitive={competitive}
+            swissLocked={deckIsLocked}
+            swissUnlocked={deckUnlockedDuringSwiss}
+            swissInProgress={swissEventInProgress}
+            swissCanUnlock={isCompetitiveHost}
+            onToggleSwissLock={handleToggleLock}
+            poolParentShareId={pool?.parentShareId || null}
           />
         </div>
       </div>

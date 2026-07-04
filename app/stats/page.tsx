@@ -8,6 +8,8 @@ import { CardPreview } from '@/src/components/DeckBuilder/CardPreview'
 import { useAuth } from '@/src/contexts/AuthContext'
 import Button from '@/src/components/Button'
 import { AspectIcon, ASPECTS } from '@/src/components/AspectIcon'
+import CardDataTierList from '@/src/components/CardDataTierList'
+import { AspectFilterButtons, AspectsCell, TableFilter, useTableFilter } from '@/src/components/stats/TableFilters'
 import { LeaderCharts, CardCharts } from './StatsCharts'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
 import { PATREON_URL } from '@/src/utils/membership'
@@ -218,114 +220,6 @@ function StatsLegend({ user, showYou, showAll, showTop, showTournament, onToggle
   )
 }
 
-// === Table filter: search + aspect icons ===
-
-const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning']
-const FILTER_OPTIONS = [...ASPECTS, 'Neutral', 'Multicolor']
-
-function useTableFilter(startAllOn = true) {
-  const [search, setSearch] = useState('')
-  const [activeAspects, setActiveAspects] = useState<Set<string>>(startAllOn ? new Set(FILTER_OPTIONS) : new Set())
-
-  const toggleAspect = (aspect: string) => {
-    setActiveAspects(prev => {
-      const next = new Set(prev)
-      if (next.has(aspect)) {
-        next.delete(aspect)
-      } else {
-        next.add(aspect)
-      }
-      return next
-    })
-  }
-
-  const clearAll = () => setActiveAspects(new Set())
-
-  const filterFn = (card: { cardName: string; aspects: string[] }) => {
-    // Name search
-    if (search && !card.cardName.toLowerCase().includes(search.toLowerCase())) return false
-    // Aspect filter — no active aspects = nothing matches
-    if (activeAspects.size === 0) return false
-    // All on = show everything
-    if (activeAspects.size >= FILTER_OPTIONS.length) return true
-
-    const cardColorAspects = card.aspects.filter(a => COLOR_ASPECTS.includes(a))
-    const isNeutral = cardColorAspects.length === 0
-    const isMulticolor = cardColorAspects.length >= 2
-
-    let hasMatch = false
-    if (card.aspects.some(a => activeAspects.has(a))) hasMatch = true
-    if (activeAspects.has('Neutral') && isNeutral) hasMatch = true
-    if (activeAspects.has('Multicolor') && isMulticolor) hasMatch = true
-
-    return hasMatch
-  }
-
-  return { search, setSearch, activeAspects, toggleAspect, clearAll, filterFn }
-}
-
-function AspectFilterButtons({ activeAspects, toggleAspect, clearAll }: { activeAspects: Set<string>; toggleAspect: (a: string) => void; clearAll?: () => void }) {
-  return (
-    <div className="stats-aspect-filter">
-      {ASPECTS.map(aspect => (
-        <button
-          key={aspect}
-          className={`stats-aspect-btn ${activeAspects.has(aspect) ? 'active' : ''}`}
-          onClick={() => toggleAspect(aspect)}
-          title={aspect}
-        >
-          <AspectIcon aspect={aspect} size="sm" />
-        </button>
-      ))}
-      <button
-        className={`stats-aspect-btn stats-aspect-btn-text ${activeAspects.has('Neutral') ? 'active' : ''}`}
-        onClick={() => toggleAspect('Neutral')}
-        title="Neutral (no color aspects)"
-      >
-        <span className="stats-aspect-label">N</span>
-      </button>
-      <button
-        className={`stats-aspect-btn stats-aspect-btn-text stats-aspect-btn-multi ${activeAspects.has('Multicolor') ? 'active' : ''}`}
-        onClick={() => toggleAspect('Multicolor')}
-        title="Multicolor (2+ color aspects)"
-      >
-        <span className="stats-aspect-label">M</span>
-      </button>
-      {clearAll && (
-        <button
-          className="stats-aspect-btn stats-aspect-btn-text"
-          onClick={clearAll}
-          title="Clear all filters"
-          style={{ fontSize: '0.7rem', opacity: 0.7 }}
-        >
-          Clear
-        </button>
-      )}
-    </div>
-  )
-}
-
-function TableFilter({ search, setSearch, activeAspects, toggleAspect, clearAll }: {
-  search: string
-  setSearch: (s: string) => void
-  activeAspects: Set<string>
-  toggleAspect: (a: string) => void
-  clearAll?: () => void
-}) {
-  return (
-    <div className="stats-table-filter">
-      <input
-        type="text"
-        placeholder="Search cards..."
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-        className="stats-search-input"
-      />
-      <AspectFilterButtons activeAspects={activeAspects} toggleAspect={toggleAspect} clearAll={clearAll} />
-    </div>
-  )
-}
-
 function ChartFilter({ search, setSearch, activeAspects, toggleAspect, clearAll, includeHumans, includeBots, onToggleHumans, onToggleBots }: {
   search: string
   setSearch: (s: string) => void
@@ -362,20 +256,6 @@ function ChartFilter({ search, setSearch, activeAspects, toggleAspect, clearAll,
         <AspectFilterButtons activeAspects={activeAspects} toggleAspect={toggleAspect} clearAll={clearAll} />
       </div>
     </div>
-  )
-}
-
-// === Aspects cell helper ===
-
-function AspectsCell({ aspects }: { aspects: string[] }) {
-  return (
-    <td>
-      <div className="aspects-cell">
-        {aspects.map((aspect, i) => (
-          <img key={i} src={`/icons/${aspect.toLowerCase()}.png`} alt={aspect} className="aspect-icon" />
-        ))}
-      </div>
-    </td>
   )
 }
 
@@ -504,21 +384,6 @@ export default function StatsPage() {
             )}
           </span>
         </div>
-        {user && (
-          <button
-            className="stats-export-btn"
-            onClick={() => {
-              window.location.href = '/api/export/personal'
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-            Download Personal Data
-          </button>
-        )}
       </div>
 
       <div className="stats-tabs">
@@ -596,29 +461,55 @@ interface SetStatsTabProps {
 function SetStatsTab({ setCode, includeBots, includeHumans, startDate, endDate, user, showYou, showAll, showTop, showTournament, legendProps, isBlurred, canSeeFullStats }: SetStatsTabProps) {
   // Secondary subtab — persists across visits via localStorage; the page hash
   // belongs to the primary set tab, so this group stays out of the URL (url:false).
-  const [subTab, setSubTab] = useStickyTab(['sealed', 'draft'] as const, 'sealed', { url: false, storageKey: 'ptp:stats-subtab' })
+  const [subTab, setStickySubTab] = useStickyTab(STATS_SUBTABS, 'cards', { url: false, storageKey: 'ptp:stats-subtab' })
+
+  useEffect(() => {
+    const requestedTab = getUrlSearchParam(STATS_SUBTAB_PARAM)
+    const requestedView = getUrlSearchParam(CARD_DATA_VIEW_PARAM)
+    if (requestedTab === 'card-data') {
+      setStickySubTab('cards')
+    } else if (STATS_SUBTABS.includes(requestedTab as StatsSubTab)) {
+      setStickySubTab(requestedTab as StatsSubTab)
+    } else if (requestedView === 'tiers' || requestedView === 'table') {
+      setStickySubTab('cards')
+    }
+  }, [setStickySubTab])
+
+  const setSubTab = (next: StatsSubTab) => {
+    setStickySubTab(next)
+    replaceUrlSearchParam(STATS_SUBTAB_PARAM, next === 'cards' ? null : next)
+    if (next !== 'cards') replaceUrlSearchParam(CARD_DATA_VIEW_PARAM, null)
+  }
 
   return (
     <div className="generation-stats">
       <div className="stats-subtabs">
         <button
-          className={`stats-subtab ${subTab === 'sealed' ? 'active' : ''}`}
-          onClick={() => setSubTab('sealed')}
+          className={`stats-subtab ${subTab === 'cards' ? 'active' : ''}`}
+          onClick={() => setSubTab('cards')}
         >
-          Sealed
+          Cards
         </button>
         <button
           className={`stats-subtab ${subTab === 'draft' ? 'active' : ''}`}
           onClick={() => setSubTab('draft')}
         >
-          Draft
+          Draft Picks
+        </button>
+        <button
+          className={`stats-subtab ${subTab === 'sealed' ? 'active' : ''}`}
+          onClick={() => setSubTab('sealed')}
+        >
+          Sealed Decks
         </button>
       </div>
 
-      {subTab === 'sealed' ? (
-        <SealedTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} canSeeFullStats={canSeeFullStats} />
-      ) : (
+      {subTab === 'cards' ? (
+        <CardDataTierList setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} allowTable viewParamName={CARD_DATA_VIEW_PARAM} />
+      ) : subTab === 'draft' ? (
         <DraftTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} canSeeFullStats={canSeeFullStats} />
+      ) : (
+        <SealedTab setCode={setCode} includeBots={includeBots} includeHumans={includeHumans} startDate={startDate} endDate={endDate} user={user} showYou={showYou} showAll={showAll} showTop={showTop} showTournament={showTournament} legendProps={legendProps} isBlurred={isBlurred} canSeeFullStats={canSeeFullStats} />
       )}
     </div>
   )
@@ -699,6 +590,23 @@ type LeaderSortKey = 'cardName' | 'avgPickPosition' | 'firstPickPct' | 'timesPic
 type LeaderSelSortKey = 'cardName' | 'timesSelected' | 'selectionRate'
 
 const RARITY_ORDER: Record<string, number> = { 'Legendary': 0, 'Rare': 1, 'Uncommon': 2, 'Common': 3 }
+const STATS_SUBTABS = ['cards', 'draft', 'sealed'] as const
+type StatsSubTab = typeof STATS_SUBTABS[number]
+const STATS_SUBTAB_PARAM = 'tab'
+const CARD_DATA_VIEW_PARAM = 'view'
+
+function getUrlSearchParam(name: string): string | null {
+  if (typeof window === 'undefined') return null
+  return new URLSearchParams(window.location.search).get(name)
+}
+
+function replaceUrlSearchParam(name: string, value: string | null) {
+  if (typeof window === 'undefined') return
+  const url = new URL(window.location.href)
+  if (value) url.searchParams.set(name, value)
+  else url.searchParams.delete(name)
+  window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`)
+}
 
 // === Shared Skeleton ===
 

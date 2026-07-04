@@ -28,7 +28,7 @@ import { useEffect, useState } from 'react'
  *      `pluginLoggedIn` comes from live signals only.)
  *
  * `?wayfinder=1` / `?wayfinder=0` force presence and `?wflogin=1` / `?wflogin=0`
- * force sign-in state, for local QA (the extension only matches localhost:3000,
+ * force sign-in state — for local QA (the extension only matches localhost:3000,
  * so it can't be detected on other dev ports).
  */
 export interface WayfinderDetection {
@@ -105,7 +105,9 @@ export function useWayfinderDetection(): WayfinderDetection {
     const onMessage = (e: MessageEvent) => {
       if (e.source !== window) return
       const t = e.data?.type
-      if (t === 'wayfinder:installed' || t === 'wayfinder:metadata' || t === 'wayfinder:lobby-count') markLive()
+      if (t === 'wayfinder:installed' || t === 'wayfinder:metadata' || t === 'wayfinder:lobby-count') {
+        markLive()
+      }
       else if (t === 'wayfinder:auth-state') { markLive(); setPluginLoggedIn(Boolean(e.data.loggedIn)) }
     }
     document.addEventListener('wayfinder:installed', onInstalled)

@@ -196,6 +196,36 @@
   box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
 }
 
+/* Duplicate bottom draft timer — a second copy of the top timer, just below the
+   pick/confirm box. Only adds vertical spacing; the TimerPanel renders exactly as
+   it does at the top (no layout/visual overrides). */
+.timer-bar-bottom {
+  margin: 0.75rem 0 0.25rem;
+}
+
+/* Bottom stack mirrors the top inside-out, so its round indicator sits BELOW
+   the timer — flip the indicator's spacing to match. */
+.timer-bar-bottom .round-pick-info {
+  margin: 10px 0 0;
+}
+
+/* Review cost/aspect columns: Unit / Non-Unit sub-sections (mirrors deckbuilder). */
+.review-type-label {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  margin: 0.35rem 0 0.15rem;
+}
+.review-nonunits {
+  margin-top: 0.4rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
 
 .draft-layout {
   display: flex;
@@ -400,6 +430,15 @@
     padding: 0 0.25rem;
   }
 
+  /* Card picks: 2 cards per row on mobile. DraftableCard.css defaults to
+     width:100% (1 per row) on mobile; override it here so the pack reads as
+     a 2-up grid. gap is 0.4rem, so each card takes half minus half the gap. */
+  .pack-grid .draftable-card {
+    width: calc(50% - 0.2rem);
+    min-width: 0;
+    max-width: calc(50% - 0.2rem);
+  }
+
   .pack-controls {
     padding: 0.5rem;
     margin-bottom: 0.75rem;
@@ -448,6 +487,39 @@
   box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
 }
 
+.selection-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.selection-confirm-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  transition: all 0.2s ease;
+}
+
+.selection-confirm-button:hover:not(:disabled),
+.selection-confirm-button:focus-visible {
+  background: rgba(76, 175, 80, 0.25);
+  border-color: rgba(76, 175, 80, 0.55);
+  color: #fff;
+  outline: none;
+}
+
+.selection-confirm-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
 .deselect-button {
   position: absolute;
   top: 8px;
@@ -468,6 +540,10 @@
   background: rgba(255, 80, 80, 0.3);
   border-color: rgba(255, 80, 80, 0.6);
   color: #ff5050;
+}
+
+.deselect-button svg {
+  display: block;
 }
 
 .selection-info {
@@ -648,7 +724,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 .review-groupby {
   display: flex;
@@ -699,8 +775,9 @@
   gap: 8px;
 }
 .review-pack-card {
+  position: relative;
   flex-shrink: 0;
-  cursor: zoom-in;
+  cursor: default;
   transition: transform 0.1s ease;
 }
 .review-pack-img {
@@ -740,6 +817,16 @@
   border-radius: 6px;
   padding: 0.5rem;
 }
+
+/* Aspect grouping can produce many groups — wrap at ~6 per row instead of one
+   long horizontally-scrolling row. (Cost stays single-row: few, ordered cols.) */
+.review-columns--aspect {
+  flex-wrap: wrap;
+}
+.review-columns--aspect .review-column {
+  flex: 1 1 calc((100% - 5 * 8px) / 6);
+  min-width: 110px;
+}
 .review-col-header {
   display: flex;
   align-items: center;
@@ -763,7 +850,7 @@
 .review-stacked-card {
   position: relative;
   width: 100%;
-  cursor: zoom-in;
+  cursor: default;
 }
 .review-card-img {
   display: block;

@@ -15,6 +15,7 @@ import {
   officialGameForNumber,
   resultFromReporterPerspective,
   resultColumnForGameNumber,
+  resultIdempotencyKeyFor,
   summarizeCurrentPracticeGame,
   type PracticeMatchAggregateLike,
   type PracticeMatchGameLike,
@@ -132,6 +133,31 @@ describe('live Swiss Practice game helpers', () => {
     assert.equal(latestAttemptForGameNumber([staleCreating, freshCreating], 1)?.attemptNumber, 2)
   })
 
+  it('recovers a game stuck in_progress past the long window (the hours-old match jam)', () => {
+    const now = new Date('2026-06-19T22:00:00.000Z')
+    // ~2h in_progress with no result → abandoned → stale + retryable (the bug: an
+    // in_progress game previously had NO recovery path and jammed the match forever).
+    const stuck = game({
+      gameNumber: 1,
+      status: 'in_progress',
+      startedAt: '2026-06-19T20:00:00.000Z',
+      updatedAt: '2026-06-19T20:01:00.000Z',
+    })
+    assert.equal(isStalePracticeGame(stuck, { now }), true)
+    assert.equal(isRetryablePracticeGame(stuck, { now }), true)
+
+    // A game in_progress for only ~20 min is genuinely LIVE — never staled/interrupted.
+    const live = game({ gameNumber: 1, status: 'in_progress', updatedAt: '2026-06-19T21:40:00.000Z' })
+    assert.equal(isStalePracticeGame(live, { now }), false)
+    assert.equal(isRetryablePracticeGame(live, { now }), false)
+
+    // The read model surfaces the stuck game as retryable so the card can offer Retry.
+    const summary = summarizeCurrentPracticeGame(match(), [stuck], { now })
+    assert.equal(summary.status, 'in_progress')
+    assert.equal(summary.gameNumber, 1)
+    assert.equal(summary.retryable, true)
+  })
+
   it('summarizes pending, active, failed, and complete states for the live UI', () => {
     const now = new Date('2026-06-19T20:20:00.000Z')
     const inProgress = game({
@@ -184,5 +210,72 @@ describe('live Swiss Practice game helpers', () => {
     assert.equal(resultFromReporterPerspective('loss', false), 'player1')
     assert.equal(resultFromReporterPerspective('draw', true), 'draw')
     assert.equal(resultFromReporterPerspective('draw', false), 'draw')
+  })
+})
+
+describe('resultIdempotencyKeyFor (both-players-with-plugin dedup)', () => {
+  // When both players have the Companion, each reports the SAME physical game.
+  // The dedup key must be identical across the two reports, or the duplicate
+  // slips through and gets redirected into a phantom "next game" (one real game
+  // recorded as W-W). The two players' per-player wayfinderMatchId DIFFERS, so a
+  // key built only from that diverges — which was the bug.
+  const report = (overrides: Record<string, unknown>) => ({
+    wayfinderMatchId: 'm', practiceMatchGameId: null, wayfinderGameId: null, gameNumber: null, ...overrides,
+  }) as never
+
+  it('BUGGY: keying only on per-player wayfinderMatchId diverges for the two reporters', () => {
+    // Demonstrates why the wayfinderMatchId fallback alone is unsafe: two players
+    // reporting the same game carry different match ids.
+    const p1Key = `wayfinder-match:p1-match-abc:game:1`
+    const p2Key = `wayfinder-match:p2-match-xyz:game:1`
+    assert.notEqual(p1Key, p2Key)
+  })
+
+  it('FIXED: both players converge on the shared practiceMatchGameId for the claimed game', () => {
+    const player1 = resultIdempotencyKeyFor(report({ wayfinderMatchId: 'p1-match-abc', practiceMatchGameId: 'pmg-shared-1', gameNumber: 1 }), 1)
+    const player2 = resultIdempotencyKeyFor(report({ wayfinderMatchId: 'p2-match-xyz', practiceMatchGameId: 'pmg-shared-1', gameNumber: 1 }), 1)
+    assert.equal(player1, 'practice-game:pmg-shared-1:game:1')
+    assert.equal(player1, player2)
+  })
+
+  it('does NOT collapse a Bo3 game 2 reported against game 1\'s anchor onto game 1', () => {
+    // Single-lobby Bo3: games 2/3 are reported against game 1's practiceMatchGameId
+    // with an incremented number. Keying on the anchor alone would drop them.
+    const game1 = resultIdempotencyKeyFor(report({ practiceMatchGameId: 'pmg-1', gameNumber: 1 }), 1)
+    const game2 = resultIdempotencyKeyFor(report({ practiceMatchGameId: 'pmg-1', gameNumber: 2 }), 2)
+    assert.equal(game1, 'practice-game:pmg-1:game:1')
+    assert.equal(game2, 'practice-game:pmg-1:game:2')
+    assert.notEqual(game1, game2)
+  })
+
+  it('uses the REPORTED game number, not the resolved slot (which the redirect can bump)', () => {
+    // The duplicate game-1 report gets resolved to slot 2 by the redirect, but the
+    // key must still match game 1's — so it keys off the reported number (1).
+    const firstReport = resultIdempotencyKeyFor(report({ practiceMatchGameId: 'pmg-1', gameNumber: 1 }), 1)
+    const duplicateResolvedToSlot2 = resultIdempotencyKeyFor(report({ practiceMatchGameId: 'pmg-1', gameNumber: 1 }), 2)
+    assert.equal(firstReport, duplicateResolvedToSlot2)
+  })
+
+  it('continuation games (no claim anchor) converge on the shared Karabast game id', () => {
+    const player1 = resultIdempotencyKeyFor(report({ wayfinderMatchId: 'p1-match-abc', wayfinderGameId: 'ks-game-2', gameNumber: 2 }), 2)
+    const player2 = resultIdempotencyKeyFor(report({ wayfinderMatchId: 'p2-match-xyz', wayfinderGameId: 'ks-game-2', gameNumber: 2 }), 2)
+    assert.equal(player1, 'wayfinder-game:ks-game-2')
+    assert.equal(player1, player2)
+  })
+
+  it('prefers the claim anchor over the Karabast game id (most-shared first)', () => {
+    const key = resultIdempotencyKeyFor(report({ practiceMatchGameId: 'pmg-1', wayfinderGameId: 'ks-1', gameNumber: 1 }), 1)
+    assert.equal(key, 'practice-game:pmg-1:game:1')
+  })
+
+  it('falls back to match id + slot only when no shared id is present', () => {
+    const key = resultIdempotencyKeyFor(report({ wayfinderMatchId: 'm-only', gameNumber: 3 }), 3)
+    assert.equal(key, 'wayfinder-match:m-only:game:3')
+  })
+
+  it('canonicalizes ing-prefixed fallback match ids', () => {
+    const ingKey = resultIdempotencyKeyFor(report({ wayfinderMatchId: 'ing-match-123', gameNumber: 1 }), 1)
+    const bareKey = resultIdempotencyKeyFor(report({ wayfinderMatchId: 'match-123', gameNumber: 1 }), 1)
+    assert.equal(ingKey, bareKey)
   })
 })

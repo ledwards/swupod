@@ -93,6 +93,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       return jsonResponse({
         changed: false,
         stateVersion: pod.state_version,
+        serverNow: new Date().toISOString(),
       })
     }
 
@@ -182,6 +183,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       paused: pod.paused === true,
       pausedAt: pod.paused_at,
       pausedDurationSeconds: pod.paused_duration_seconds || 0,
+      serverNow: new Date().toISOString(),
     })
 
     // Add cache headers to reduce bandwidth usage

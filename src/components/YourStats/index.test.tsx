@@ -42,6 +42,7 @@ const POOL_HISTORY_SRC = read('PoolHistoryDashboard.tsx')
 const LOGGED_OUT_SRC = read('LoggedOutCTA.tsx')
 const CSS_SRC = read('YourStats.css')
 const STORE_BUTTONS_SRC = readFileSync(join(__dirname, '../WayfinderStoreButtons.tsx'), 'utf8')
+const PLUGIN_CTA_SRC = readFileSync(join(__dirname, '../PluginCTA.tsx'), 'utf8')
 
 const INDEX_CODE = stripComments(INDEX_SRC)
 const GAMEPLAY_CODE = stripComments(GAMEPLAY_SRC)
@@ -79,6 +80,7 @@ describe('<YourStats /> — index.tsx', () => {
     assert.match(INDEX_CODE, /import\s*\{[^}]*\bLuckSection\b/)
     assert.match(INDEX_CODE, /import\s*\{[^}]*\bLoggedOutCTA\b/)
     assert.match(INDEX_CODE, /import\s*\{[^}]*\bPoolHistoryDashboard\b/)
+    assert.match(INDEX_CODE, /import\s+CardDataTierList\s+from\s+['"]@\/src\/components\/CardDataTierList['"]/)
   })
 
   it('imports its co-located CSS', () => {
@@ -91,12 +93,13 @@ describe('<YourStats /> — index.tsx', () => {
     assert.ok(INDEX_CODE.includes('<LoggedOutCTA />'))
   })
 
-  it('renders Gameplay, Luck, Pools, and Meta tabs with Gameplay as the default', () => {
+  it('renders Gameplay, Tier List, Luck, Pools, and Meta tabs with Gameplay as the default', () => {
     // The active tab is now persisted via useStickyTab (URL #hash + localStorage,
     // so it survives refresh + deep link). 'gameplay' is still the fallback
     // default — the 2nd arg, after the ordered tab list.
     assert.match(INDEX_CODE, /useStickyTab<PersonalStatsTab>\(\s*\[[^\]]*\]\s*,\s*['"]gameplay['"]/)
     assert.match(INDEX_CODE, />\s*Gameplay\s*</)
+    assert.match(INDEX_CODE, />\s*Tier List\s*</)
     assert.match(INDEX_CODE, />\s*Luck\s*</)
     assert.match(INDEX_CODE, />\s*Pools\s*</)
     assert.match(INDEX_CODE, />\s*Meta\s*</)
@@ -119,12 +122,27 @@ describe('<YourStats /> — index.tsx', () => {
     assert.match(INDEX_CODE, /<MetaDashboard[\s\S]*?lockSet=\{!isAllSets\}/)
     assert.match(INDEX_CODE, /<ActivityDashboard[\s\S]*?setCode=\{setCode\}/)
     assert.match(INDEX_CODE, /<GameplayDashboard[\s\S]*?setCode=\{setCode\}/)
+    assert.match(INDEX_CODE, /<CardDataTierList[\s\S]*?setCode=\{setCode\}/)
   })
 
-  it('threads since/until props down to GameplayDashboard, ActivityDashboard, and LuckSection', () => {
+  it('threads since/until props down to GameplayDashboard, ActivityDashboard, LuckSection, and CardDataTierList', () => {
     assert.match(INDEX_CODE, /<GameplayDashboard[^>]*since=\{since\}[^>]*until=\{until\}/s)
     assert.match(INDEX_CODE, /<ActivityDashboard[^>]*since=\{since\}[^>]*until=\{until\}/s)
     assert.match(INDEX_CODE, /<LuckSection[^>]*since=\{since\}[^>]*until=\{until\}/s)
+    assert.match(INDEX_CODE, /<CardDataTierList[^>]*startDate=\{since\}[^>]*endDate=\{until\}/s)
+  })
+
+  it('reuses the shared CardDataTierList for /me Tier List rather than inlining a second tier grid', () => {
+    assert.match(INDEX_CODE, /activeTab === ['"]tier-list['"][\s\S]*?<CardDataTierList/)
+    assert.match(INDEX_CODE, /allowTable=\{false\}/)
+    assert.match(INDEX_CODE, /viewParamName=\{null\}/)
+    assert.doesNotMatch(INDEX_CODE, /card-data-tier-row/)
+  })
+
+  it('scopes the tier list to the signed-in user and links to the global meta tier list', () => {
+    assert.match(INDEX_CODE, /userId=\{user\.id\}/)
+    assert.match(INDEX_CODE, /const metaTierListHref = isAllSets[\s\S]*?\/stats\?tab=card-data/)
+    assert.match(INDEX_CODE, /metaTierListHref=\{metaTierListHref\}/)
   })
 
   it('handles the auth-loading state without flashing LoggedOutCTA', () => {
@@ -196,7 +214,6 @@ describe('<WayfinderStoreButtons />', () => {
     assert.match(STORE_BUTTONS_SRC, /Safari/i)
     assert.match(STORE_BUTTONS_SRC, /Firefox/i)
     assert.match(STORE_BUTTONS_SRC, /Coming soon/i)
-    assert.match(STORE_BUTTONS_SRC, /Powered by/i)
     assert.match(STORE_BUTTONS_SRC, /wayfinder\.news/i)
   })
 })
@@ -214,9 +231,10 @@ describe('<GameplayDashboard />', () => {
   })
 
   it('renders the Companion CTA on the Gameplay tab', () => {
-    assert.match(GAMEPLAY_CODE, /WayfinderCompanionLockup/)
-    assert.match(GAMEPLAY_CODE, /WayfinderStoreButtons/i)
-    assert.match(GAMEPLAY_CODE, /queue on Karabast[\s\S]*PTP pool/i)
+    assert.match(GAMEPLAY_CODE, /import\s+PluginCTA\s+from\s+['"]@\/src\/components\/PluginCTA['"]/)
+    assert.match(GAMEPLAY_CODE, /<PluginCTA variant="card" \/>/)
+    assert.match(GAMEPLAY_CODE, /<PluginCTA variant="compact" \/>/)
+    assert.match(PLUGIN_CTA_SRC, /queue on Karabast[\s\S]*PTP pool/i)
   })
 
   it('renders gameplay KPI and data-viz surfaces', () => {
@@ -307,11 +325,12 @@ describe('<ActivityDashboard />', () => {
   })
 
   it('renders a Companion onboarding state when all counters are zero', () => {
-    assert.match(ACTIVITY_CODE, /Start capturing play data/i)
-    assert.match(ACTIVITY_CODE, /Wayfinder Companion/i)
-    assert.match(ACTIVITY_CODE, /Karabast/i)
-    assert.match(ACTIVITY_CODE, /rewatch your replays/i)
-    assert.ok(ACTIVITY_CODE.includes('WayfinderStoreButtons'))
+    assert.match(ACTIVITY_CODE, /import\s+PluginCTA\s+from\s+['"]@\/src\/components\/PluginCTA['"]/)
+    assert.match(ACTIVITY_CODE, /<PluginCTA variant="card" \/>/)
+    assert.match(PLUGIN_CTA_SRC, /Wayfinder Companion/i)
+    assert.match(PLUGIN_CTA_SRC, /Karabast/i)
+    assert.match(PLUGIN_CTA_SRC, /rewatch your replays/i)
+    assert.match(PLUGIN_CTA_SRC, /WayfinderStoreButtons/)
     assert.match(ACTIVITY_CODE, /sealed pool/i)
     assert.match(ACTIVITY_CODE, /draft/i)
     // Links to /sealed and /draft.

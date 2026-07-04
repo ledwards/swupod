@@ -17,11 +17,13 @@ export type CardDensity = 'small' | 'medium' | 'large'
 export interface CardDensityToggleProps {
   value: CardDensity
   onChange: (density: CardDensity) => void
+  /** Which density options to show, in order. Defaults to all three. */
+  densities?: CardDensity[]
 }
 
-const DENSITIES: CardDensity[] = ['small', 'medium', 'large']
+const ALL_DENSITIES: CardDensity[] = ['small', 'medium', 'large']
 
-export function CardDensityToggle({ value, onChange }: CardDensityToggleProps) {
+export function CardDensityToggle({ value, onChange, densities = ALL_DENSITIES }: CardDensityToggleProps) {
   const handleClick = (density: CardDensity) => (e: MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
@@ -35,7 +37,7 @@ export function CardDensityToggle({ value, onChange }: CardDensityToggleProps) {
       role="group"
       aria-label="Card density"
     >
-      {DENSITIES.map(density => (
+      {densities.map(density => (
         <button
           key={density}
           type="button"

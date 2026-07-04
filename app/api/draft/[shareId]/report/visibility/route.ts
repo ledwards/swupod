@@ -14,6 +14,26 @@ export async function PATCH(request: NextRequest, { params }: RouteContext): Pro
 
   const { shareId } = await params
   const body = await request.json()
+
+  // Find the draft pod (needed by every branch below).
+  const pod = await queryRow(
+    `SELECT id, host_id FROM pods WHERE share_id = $1 AND pod_type = 'draft'`,
+    [shareId]
+  )
+  if (!pod) {
+    return NextResponse.json({ error: 'Draft not found' }, { status: 404 })
+  }
+
+  // Privileged Observer toggle (host only) — the public, no-login live slideshow
+  // link for streaming. Independent of report visibility.
+  if (typeof body.observerPublic === 'boolean') {
+    if (session.id !== pod.host_id) {
+      return NextResponse.json({ error: 'Only the draft host can change observer visibility' }, { status: 403 })
+    }
+    await query(`UPDATE pods SET observer_public = $1 WHERE id = $2`, [body.observerPublic, pod.id])
+    return NextResponse.json({ success: true, observerPublic: body.observerPublic })
+  }
+
   const { reportPublic, scope = 'player' } = body
 
   if (typeof reportPublic !== 'boolean') {
@@ -24,25 +44,19 @@ export async function PATCH(request: NextRequest, { params }: RouteContext): Pro
     return NextResponse.json({ error: 'scope must be player or draft' }, { status: 400 })
   }
 
-  // Find the draft pod
-  const pod = await queryRow(
-    `SELECT id, host_id FROM pods WHERE share_id = $1 AND pod_type = 'draft'`,
-    [shareId]
-  )
-  if (!pod) {
-    return NextResponse.json({ error: 'Draft not found' }, { status: 404 })
-  }
-
   if (scope === 'draft') {
     if (session.id !== pod.host_id) {
       return NextResponse.json({ error: 'Only the draft host can change draft visibility' }, { status: 403 })
     }
 
-    // Keep the draft's public surfaces in sync so the host can open or lock the whole report at once.
+    // Keep the draft's public surfaces in sync so the host can open or lock the
+    // whole report at once. Locking the draft (reportPublic=false) also revokes
+    // any active Privileged Observer link.
     await query(
       `UPDATE pods
        SET is_public = $1,
-           is_log_public = $1
+           is_log_public = $1,
+           observer_public = (observer_public AND $1)
        WHERE id = $2`,
       [reportPublic, pod.id]
     )

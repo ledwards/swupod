@@ -124,6 +124,20 @@ async function runTests() {
     assertEqual(result.length, 8, `Expected 8 common bases, got ${result.length}`)
   })
 
+  test('next-set 30HP common bases dedupe into existing aspect+HP cells', () => {
+    const cards = [
+      { name: 'SOR Blue 30', set: 'SOR', type: 'Base', isBase: true, rarity: 'Common', aspects: ['Vigilance'], hp: 30 },
+      { name: 'ASH Blue 30', set: 'ASH', type: 'Base', isBase: true, rarity: 'Common', aspects: ['Vigilance'], hp: 30 },
+      { name: 'ASH Yellow 30', set: 'ASH', type: 'Base', isBase: true, rarity: 'Common', aspects: ['Cunning'], hp: 30 },
+    ]
+    const result = deduplicateCommonBases(cards)
+
+    assertEqual(result.length, 2,
+      `Expected ASH Blue 30 to share SOR Blue 30's cell, got ${result.length} bases`)
+    assertEqual(result.filter(b => (b.aspects || [])[0] === 'Vigilance' && b.hp === 30).length, 1)
+    assertEqual(result.filter(b => (b.aspects || [])[0] === 'Cunning' && b.hp === 30).length, 1)
+  })
+
   // Test single-set behavior (normal draft/sealed)
   test('single set (SOR) produces 4 common bases (one per aspect)', () => {
     const sorCards = getCachedCards('SOR')

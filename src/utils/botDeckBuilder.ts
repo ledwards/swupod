@@ -15,7 +15,7 @@ import { STRATEGY_DISPLAY_NAMES, STRATEGY_DESCRIPTIONS, MIXIN_DISPLAY_NAMES, MIX
 import { postBotDeckSummaries } from '@/lib/discordLfg'
 import { getCardsBySet } from '@/src/utils/cardData'
 import { jsonParse } from '@/src/utils/json'
-import { broadcastPodState } from '@/src/lib/socketBroadcast'
+import { broadcastPodState, broadcastDraftState } from '@/src/lib/socketBroadcast'
 import { nanoid } from 'nanoid'
 
 const DECK_SIZE = 30
@@ -401,6 +401,11 @@ async function buildSingleBotDeck(
   // 8. Broadcast pod state update so pod page shows bots as "Ready"
   if (pod.share_id) {
     broadcastPodState(pod.share_id as string).catch(() => {})
+    // Competitive (Swiss Practice) pods read the roster from the draft `state`
+    // event, so push that too — otherwise a ready bot stays "Building…" there.
+    if (pod.competitive === true) {
+      broadcastDraftState(pod.share_id as string).catch(() => {})
+    }
   }
 
   // Return summary for Discord posting

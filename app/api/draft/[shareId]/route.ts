@@ -31,7 +31,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         dp.draft_state, dp.state_version, dp.started_at, dp.completed_at,
         dp.timer_enabled, dp.timer_seconds, dp.pick_timeout_seconds, dp.timed,
         dp.pick_started_at, dp.paused, dp.paused_at, dp.paused_duration_seconds,
-        dp.is_public, dp.competitive, dp.deck_lock_at,
+        dp.is_public, dp.observer_public, dp.competitive, dp.deck_lock_at, dp.decks_unlocked,
         dp.created_at, dp.updated_at,
         u.username as host_username,
         u.avatar_url as host_avatar
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
           dp.draft_state, dp.state_version, dp.started_at, dp.completed_at,
           dp.timer_enabled, dp.timer_seconds, dp.pick_timeout_seconds, dp.timed,
           dp.pick_started_at, dp.paused, dp.paused_at, dp.paused_duration_seconds,
-          dp.is_public, dp.competitive, dp.deck_lock_at,
+          dp.is_public, dp.observer_public, dp.competitive, dp.deck_lock_at, dp.decks_unlocked,
           dp.created_at, dp.updated_at,
           u.username as host_username,
           u.avatar_url as host_avatar
@@ -68,7 +68,9 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       )
     }
 
-    // Get all players
+    // Get all players. `is_ready` reflects whether the player has LOCKED a deck
+    // (hit Play → a built_decks row exists), NOT merely picked a leader/base in
+    // the in-progress deckbuilder. The Swiss Practice roster uses this.
     const players = await queryRows(
       `SELECT
         dpp.*,
@@ -77,10 +79,12 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         u.avatar_url,
         cp.share_id as pool_share_id,
         cp.deck_builder_state,
-        cp.cards as pool_cards
+        cp.cards as pool_cards,
+        CASE WHEN bd.id IS NOT NULL THEN true ELSE false END as is_ready
        FROM pod_players dpp
        JOIN users u ON dpp.user_id = u.id
        LEFT JOIN card_pools cp ON cp.pod_id = dpp.pod_id AND cp.user_id = dpp.user_id
+       LEFT JOIN built_decks bd ON bd.card_pool_id = cp.id
        WHERE dpp.pod_id = $1
        ORDER BY dpp.seat_number`,
       [pod.id]
@@ -141,7 +145,10 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       baseAspects: deckIdentity.baseAspects,
       baseHp: deckIdentity.baseHp,
       archetypeName: deckIdentity.archetypeName,
+      leaderImageUrl: deckIdentity.leaderImageUrl,
+      baseImageUrl: deckIdentity.baseImageUrl,
       poolCardCount: Array.isArray(poolCards) ? poolCards.length : null,
+      isReady: p.is_ready === true,
     }
   })
 
@@ -184,6 +191,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       },
       players: formattedPlayers,
       isPublic: pod.is_public || false,
+      observerPublic: pod.observer_public || false,
       isHost: session ? pod.host_id === session.id : false,
       isPlayer: !!myPlayer,
       myPlayer: myPlayer ? {
@@ -203,8 +211,10 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       paused: pod.paused === true,
       pausedAt: pod.paused_at,
       pausedDurationSeconds: pod.paused_duration_seconds || 0,
+      serverNow: new Date().toISOString(),
       competitive: pod.competitive === true,
       deckBuildDeadline: pod.deck_lock_at || null,
+      decksUnlocked: pod.decks_unlocked === true,
       matchmakingStatus,
       currentRound,
       rounds: roundsWithMatches,

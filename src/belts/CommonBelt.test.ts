@@ -245,9 +245,11 @@ async function runTests(): Promise<void> {
   // =========================================================
 
   test('SPEC: no duplicate card within 24 positions on Belt A (large belt)', () => {
-    // SPEC: Real-world common belts never repeat a card within ~24 positions
-    // Test with LAW Belt A (50 cards) - draw 200 cards to cross multiple seams
-    const belt = new CommonBelt('LAW', 'A')
+    // SPEC (sets 1-6 single-copy model): common belts never repeat a card
+    // within ~24 positions. Set 7+ uses the paired-copy line model (see the
+    // Set 7+ suite below) — real ASH box 001 line order shows pairs 1-3 packs
+    // apart, superseding this window for LAW/ASH.
+    const belt = new CommonBelt('JTL', 'A')
     const DEDUP_WINDOW = 24
     const TOTAL_DRAWS = 200
 
@@ -340,9 +342,10 @@ async function runTests(): Promise<void> {
   // =========================================================
 
   test('SPEC: every card in the belt appears with equal frequency (no exclusion)', () => {
-    // SPEC: A belt is a cyclic conveyor. Every card appears once per cycle.
-    // No card should EVER be excluded from a boot. Excluding cards corrupts occurrence rates.
-    const belt = new CommonBelt('LAW', 'A')
+    // SPEC (sets 1-6): a belt is a cyclic conveyor; every card appears once per
+    // cycle. Set 7+ paired boots serve every card exactly TWICE per cycle —
+    // covered by the Set 7+ suite below.
+    const belt = new CommonBelt('JTL', 'A')
     const beltSize = belt.beltCards.length
     const TOTAL_DRAWS = beltSize * 5  // 5 full cycles
 
@@ -380,8 +383,10 @@ async function runTests(): Promise<void> {
   // =========================================================
 
   test('SPEC: no adjacent cards share primary aspect on Belt A', () => {
-    // SPEC: Within a belt, the primary aspect (first listed) never repeats back-to-back
-    const belt = new CommonBelt('LAW', 'A')
+    // SPEC (sets 1-6): the primary aspect never repeats back-to-back. Set 7+
+    // paired boots allow <=3% forced adjacency (real ASH box 001 line order:
+    // ~1.2%) — covered by the Set 7+ suite below.
+    const belt = new CommonBelt('JTL', 'A')
     const TOTAL_DRAWS = 200
 
     const drawn: Array<{ id: string; name: string; aspects: string[] }> = []
@@ -408,7 +413,7 @@ async function runTests(): Promise<void> {
 
   test('SPEC: no adjacent cards share primary aspect on Belt B', () => {
     // SPEC: Same rule applies to Belt B
-    const belt = new CommonBelt('LAW', 'B')
+    const belt = new CommonBelt('JTL', 'B')
     const TOTAL_DRAWS = 200
 
     const drawn: Array<{ id: string; name: string; aspects: string[] }> = []
@@ -525,9 +530,9 @@ async function runTests(): Promise<void> {
   // the bug where neutral/mono-alignment cards appeared in only 10-15%
   // of sealed pools instead of ~50%.
   test('SPEC: small aspect groups are evenly distributed across belt (not front-loaded)', () => {
-    // LAW Belt A has 50 cards: Vigilance(22), Aggression(21), Villainy(3), Heroism(3), Neutral(1)
-    // Draw 24 cards (simulating 6 packs × 4 per pack from this belt).
-    // Each small-group card should appear in ~48% of pools (24/50).
+    // Sets 1-6 single-copy model (Set 7+ paired boots covered by their own
+    // suite). Draw 24 cards (6 packs x 4 per pack from this belt); each
+    // small-group card should appear in a healthy share of pools.
     // Old bug: they appeared in ~10% because they clustered at positions 3-13.
 
     const TRIALS = 200
@@ -535,7 +540,7 @@ async function runTests(): Promise<void> {
     const regularCards = new Map<string, number>()
 
     // Get the actual small-group card names from LAW Belt A
-    const beltACards = getBeltCards('LAW', 'A')
+    const beltACards = getBeltCards('JTL', 'A')
     const smallGroupNames = new Set<string>()
     const regularNames = new Set<string>()
     for (const card of beltACards) {
@@ -555,7 +560,7 @@ async function runTests(): Promise<void> {
     }
 
     for (let t = 0; t < TRIALS; t++) {
-      const belt = new CommonBelt('LAW', 'A')
+      const belt = new CommonBelt('JTL', 'A')
       const drawn = new Set<string>()
       for (let i = 0; i < 24; i++) {
         const card = belt.next()
@@ -590,6 +595,110 @@ async function runTests(): Promise<void> {
     const { poolA, poolB } = getCommonPools('SOR')
     assert(poolA.primary1.length > 0, 'Pool A primary1 should not be empty')
     assert(poolB.primary1.length > 0, 'Pool B primary1 should not be empty')
+  })
+
+  // ==========================================================================
+  // Set 7+ paired-copy boot (line model)
+  //
+  // SPEC source: real ASH box 001 read in factory line order
+  // (plans/LINE_STACKING_COLLATION_PLAN.md L1, plans/ASH_COLLATION_FINDINGS.md):
+  // a common's duplicate copies ride 1-3 packs apart on the line (gap 1 ×32,
+  // gap 3 ×17, gap 5 ×10 of ~90 measured repeats), never inside the same pack,
+  // with aspect interleaving and lane segment quotas intact. Long-gap repeats
+  // come from boot seams, not intra-boot placement.
+  // ==========================================================================
+
+  const MORALITY = new Set(['Villainy', 'Heroism'])
+  const primaryAspectOf = (c) => (c.aspects || []).find(a => !MORALITY.has(a)) || (c.aspects || [])[0] || null
+
+  test('FIXED: Set 7+ boot contains every belt card exactly twice (paired-copy sheet)', () => {
+    const belt = new CommonBelt('ASH', 'A')
+    const boot = belt.hopper
+    const counts = new Map()
+    for (const c of boot) counts.set(c.id, (counts.get(c.id) || 0) + 1)
+    assert(boot.length === belt.beltCards.length * 2,
+      `SPEC: Set 7+ boot = every card twice, expected ${belt.beltCards.length * 2} draws, got ${boot.length}`)
+    for (const [id, n] of counts) {
+      assert(n === 2, `SPEC: card ${id} should appear exactly twice per boot, got ${n}`)
+    }
+  })
+
+  test('FIXED: Set 7+ paired copies ride close on the line, never in the same pack', () => {
+    // Fresh belt: global draw 0 → pack segments are aligned drawSize-windows.
+    const belt = new CommonBelt('ASH', 'A')
+    const boot = belt.hopper
+    const drawSize = belt.segmentConfig.drawSize
+    const firstPos = new Map()
+    const gaps = []
+    boot.forEach((c, i) => {
+      if (firstPos.has(c.id)) {
+        const p1 = firstPos.get(c.id)
+        gaps.push(i - p1)
+        assert(Math.floor(p1 / drawSize) !== Math.floor(i / drawSize),
+          `SPEC: pair for ${c.name} landed in the same pack (positions ${p1}, ${i}) — real box: zero same-belt within-pack dups`)
+      } else {
+        firstPos.set(c.id, i)
+      }
+    })
+    assert(gaps.length > 0, 'boot should contain pairs')
+    const close = gaps.filter(g => g <= 4 * drawSize).length
+    // Real box 001 line order: intra-boot pair gaps <=4 packs ≈ 62% of pairs
+    // (histogram {1:32, 3:17, 4:1} of ~80 intra-boot repeats). Band: >=55%.
+    assert(close / gaps.length >= 0.55,
+      `SPEC: >=55% of pair gaps within 4 packs (real box ≈62%), got ${(close / gaps.length * 100).toFixed(0)}%`)
+    assert(Math.min(...gaps) >= 2,
+      `SPEC: pair gap must be >= 2 draws (no adjacent same card), got ${Math.min(...gaps)}`)
+  })
+
+  test('Set 7+ boot keeps aspect interleaving (adjacent same-primary <= 3%)', () => {
+    const belt = new CommonBelt('ASH', 'A')
+    const boot = belt.hopper
+    let same = 0
+    for (let i = 1; i < boot.length; i++) {
+      if (primaryAspectOf(boot[i]) && primaryAspectOf(boot[i]) === primaryAspectOf(boot[i - 1])) same++
+    }
+    assert(same / (boot.length - 1) <= 0.03,
+      `SPEC: aspect interleaving must survive pairing, got ${same}/${boot.length - 1} adjacent same-primary`)
+  })
+
+  test('Set 7+ boot keeps lane segment quotas (every aligned window has required aspects)', () => {
+    const belt = new CommonBelt('ASH', 'A')
+    const boot = belt.hopper
+    const drawSize = belt.segmentConfig.drawSize
+    const required = belt.segmentConfig.requiredAspects
+    let violations = 0
+    for (let s = 0; s + drawSize <= boot.length; s += drawSize) {
+      const w = boot.slice(s, s + drawSize)
+      for (const aspect of required) {
+        if (!w.some(c => (c.aspects || []).includes(aspect))) { violations++; break }
+      }
+    }
+    assert(violations === 0,
+      `SPEC: every aligned ${drawSize}-window must contain ${required.join('+')}, got ${violations} violations`)
+  })
+
+  test('sets 1-6 boots unchanged: every card exactly once per boot', () => {
+    const belt = new CommonBelt('JTL', 'A')
+    const boot = belt.hopper
+    const counts = new Map()
+    for (const c of boot) counts.set(c.id, (counts.get(c.id) || 0) + 1)
+    assert(boot.length === belt.beltCards.length,
+      `sets 1-6: boot length = pool size (single copies), expected ${belt.beltCards.length}, got ${boot.length}`)
+    for (const [id, n] of counts) {
+      assert(n === 1, `sets 1-6: card ${id} should appear exactly once per boot, got ${n}`)
+    }
+  })
+
+  test('Set 7+ multi-boot draw-through: no same card twice within any served pack', () => {
+    const belt = new CommonBelt('ASH', 'A')
+    const drawSize = belt.segmentConfig.drawSize
+    for (let p = 0; p < 75; p++) {
+      const pack = []
+      for (let d = 0; d < drawSize; d++) pack.push(belt.next())
+      const ids = pack.filter(Boolean).map(c => c.id)
+      assert(new Set(ids).size === ids.length,
+        `pack ${p} served the same common twice: ${pack.map(c => c && c.name).join(', ')}`)
+    }
   })
 
   console.log('')

@@ -168,18 +168,24 @@ export function PackSelector({
       >
         <div className="pack-selector-image">
           <img src={packImageUrl} alt={set.name} />
-          {showQuantityControls && isSelected && (
-            <div className="pack-selector-badge">
-              <button
-                className={`pack-selector-qty-btn ${count <= 1 ? 'hidden' : ''}`}
-                onClick={(e) => handleRemoveOne(set.code, e)}
-              >
-                −
-              </button>
-              <span className="pack-selector-count">{count}</span>
+          {showQuantityControls && (isSelected || !isMaxed) && (
+            <div className={`pack-selector-badge ${isSelected ? '' : 'pack-selector-badge--add-only'}`}>
+              {isSelected && (
+                <>
+                  <button
+                    className={`pack-selector-qty-btn ${count <= 1 ? 'hidden' : ''}`}
+                    onClick={(e) => handleRemoveOne(set.code, e)}
+                    aria-label={`Remove one ${set.name} pack`}
+                  >
+                    −
+                  </button>
+                  <span className="pack-selector-count">{count}</span>
+                </>
+              )}
               <button
                 className={`pack-selector-qty-btn ${selectedSets.length >= maxSelections ? 'hidden' : ''}`}
                 onClick={(e) => handleAddOne(set.code, e)}
+                aria-label={`Add one ${set.name} pack`}
               >
                 +
               </button>

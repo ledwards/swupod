@@ -45,15 +45,50 @@
   border-radius: 10px;
 }
 
-/* The "All" button is a plain pill — no avatar/identity, so it sizes to content. */
+/* The "All"/"None" toggle: Rule with Respect hyperspace card art behind a scrim
+   (ported from the slideshow worktree). */
 .slideshow-player-tab--all.btn {
   flex: 0 0 auto;
   max-width: none;
+  min-width: 84px;
   height: 72px;
   padding: 6px 16px;
   justify-content: center;
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 800;
+  position: relative;
+  overflow: hidden;
+}
+
+.slideshow-player-tab--all.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background-image: var(--slideshow-all-tab-art, none);
+  background-position: 50% 82%;
+  background-repeat: no-repeat;
+  background-size: 195% auto;
+  pointer-events: none;
+}
+
+.slideshow-player-tab--all.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.74)),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.32));
+  pointer-events: none;
+}
+
+.slideshow-player-tab--all-label {
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.92);
 }
 
 .slideshow-player-tab__avatar {

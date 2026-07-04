@@ -91,6 +91,7 @@ Domain-specific rules are in `.claude/rules/`:
 - **ui-components.md** — Button/Card/Modal usage, design tokens, style guide (scoped to components/CSS)
 - **mobile.md** — Hover rules, touch guards, chat collapse (scoped to components/hooks/CSS)
 - **architecture.md** — Services/hooks/components pattern, per-set configs (scoped to `src/`)
+- **patreon-features.md** — Single source of truth for Friends-of-the-Pod features; update `PATREON_FEATURES` (`src/utils/patreonFeatures.ts`) whenever you add/remove a patron-gated feature
 - **database.md** — PostgreSQL, migrations, Railway, auth (scoped to `lib/`, `migrations/`, `app/api/`)
 
 ## Plans & Documentation

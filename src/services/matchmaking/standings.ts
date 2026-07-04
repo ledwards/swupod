@@ -186,7 +186,14 @@ export function computeRankedStandings(
   })
 }
 
+/**
+ * Swiss standing shown next to a player: Swiss POINTS (2 per win, 1 per draw,
+ * 0 per loss) followed by the win-loss record, e.g. "2 (1-1)" or "4 (2-0)".
+ * Draws append to the parenthetical record, e.g. "3 (1-0-1)".
+ */
 export function formatRecord(record?: PlayerRecord | null): string {
   const value = record || emptyRecord()
-  return `${value.wins}-${value.losses}${value.draws > 0 ? `-${value.draws}` : ''}`
+  const points = value.wins * 2 + value.draws
+  const wl = `${value.wins}-${value.losses}${value.draws > 0 ? `-${value.draws}` : ''}`
+  return `${points} (${wl})`
 }

@@ -1,6 +1,7 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import {
+  completedGameReplays,
   confirmedCount,
   liveConsoleRoundOrder,
   liveGameAction,
@@ -8,7 +9,9 @@ import {
   liveRoundMatchGroups,
   nextActiveTabAfterRoundChange,
   roundProgressLabel,
+  rosterPlayerReady,
   roundTabState,
+  selfDropState,
   shouldShowInstallNudge,
   statusLine,
   wayfinderMatchState,
@@ -162,25 +165,30 @@ describe('MatchmakingPanel helpers', () => {
     )
   })
 
-  it('offers Play for a participant before the next live game is claimed', () => {
+  it('offers an icon-only Play for a participant before the next live game is claimed', () => {
     assert.deepEqual(
       liveGameAction({
         match: match({ currentGame: { status: 'pending', gameNumber: 1 } }),
         currentUserId: 'A',
         liveLaunchEnabled: true,
       }),
-      { kind: 'play', label: 'Play Game 1' }
+      { kind: 'play', label: '' }
     )
   })
 
-  it('hides live launch actions when Companion launch is not enabled', () => {
+  it('shows a disabled Play with an install tooltip when the live launch is unavailable', () => {
     assert.deepEqual(
       liveGameAction({
         match: match({ currentGame: { status: 'pending', gameNumber: 1 } }),
         currentUserId: 'A',
         liveLaunchEnabled: false,
       }),
-      { kind: 'none', label: '' }
+      {
+        kind: 'play',
+        label: '',
+        disabled: true,
+        tooltip: 'Install the Wayfinder Companion to launch from here — or play manually with Copy JSON / Copy Link below.',
+      }
     )
   })
 
@@ -197,7 +205,7 @@ describe('MatchmakingPanel helpers', () => {
         currentUserId: 'A',
         liveLaunchEnabled: true,
       }),
-      { kind: 'creating', label: 'Creating...', disabled: true }
+      { kind: 'creating', label: 'Creating...', disabled: true, tooltip: 'Opening your lobby — this takes a few seconds.' }
     )
 
     assert.deepEqual(
@@ -212,11 +220,29 @@ describe('MatchmakingPanel helpers', () => {
         currentUserId: 'B',
         liveLaunchEnabled: true,
       }),
-      { kind: 'waiting', label: 'Waiting for lobby', disabled: true }
+      { kind: 'waiting', label: 'Waiting for lobby', disabled: true, tooltip: 'Your opponent is opening the lobby — the link will appear here.' }
     )
   })
 
-  it('lets a participant join a ready lobby without exposing the raw link as the primary action', () => {
+  it('reverts a stuck "creating" game to a Play button once the 30s timeout fires', () => {
+    // SPEC: a lobby should appear within seconds; past the 30s max a stuck
+    // "creating" becomes a Play (retry) for both the creator and the opponent.
+    for (const userId of ['A', 'B']) {
+      assert.deepEqual(
+        liveGameAction({
+          match: match({
+            currentGame: { status: 'creating', gameNumber: 1, game: { createdByUserId: 'A' } },
+          }),
+          currentUserId: userId,
+          liveLaunchEnabled: true,
+          creatingTimedOut: true,
+        }),
+        { kind: 'play', label: '' }
+      )
+    }
+  })
+
+  it('turns a ready lobby into an open-link play button for any participant', () => {
     assert.deepEqual(
       liveGameAction({
         match: match({
@@ -229,8 +255,67 @@ describe('MatchmakingPanel helpers', () => {
         currentUserId: 'A',
         liveLaunchEnabled: true,
       }),
-      { kind: 'join', label: 'Join Game' }
+      { kind: 'open', label: '', href: 'https://karabast.net/?lobbyId=abc', iCreated: false, readyText: null }
     )
+  })
+
+  it('labels the open lobby and gives the opponent an enabled link even without the Companion', () => {
+    const lobby = {
+      status: 'lobby_ready',
+      gameNumber: 2,
+      lobbyUrl: 'https://karabast.net/?lobbyId=abc',
+      game: { createdByUserId: 'B' },
+    }
+    // Creator (B) sees "Lobby created".
+    assert.equal(
+      liveGameAction({ match: match({ currentGame: lobby }), currentUserId: 'B', liveLaunchEnabled: true }).readyText,
+      'Lobby created'
+    )
+    // The opponent (A) — even with NO Companion — gets an enabled open-link to
+    // the lobby labelled "<creator> is in the lobby".
+    const opponentView = liveGameAction({
+      match: match({ currentGame: lobby }),
+      currentUserId: 'A',
+      liveLaunchEnabled: false,
+    })
+    assert.equal(opponentView.kind, 'open')
+    assert.equal(opponentView.href, 'https://karabast.net/?lobbyId=abc')
+    assert.equal(opponentView.readyText, 'Benthic is in the lobby')
+  })
+
+  it('routes a plugin-capable JOINER to a Companion join (opens lobby + imports deck)', () => {
+    const lobby = {
+      status: 'lobby_ready',
+      gameNumber: 2,
+      lobbyUrl: 'https://karabast.net/lobby?lobbyId=abc',
+      game: { createdByUserId: 'B' },
+    }
+    // Opponent (A) created by B, A HAS a capable Companion → 'join' (launch),
+    // which claims (action:'join_lobby') and opens+imports via the plugin.
+    const joiner = liveGameAction({ match: match({ currentGame: lobby }), currentUserId: 'A', liveLaunchEnabled: true })
+    assert.equal(joiner.kind, 'join')
+    assert.equal(joiner.readyText, 'Benthic is in the lobby')
+    // Creator (B) is already in the lobby — stays on copy-link 'open', never join.
+    const creator = liveGameAction({ match: match({ currentGame: lobby }), currentUserId: 'B', liveLaunchEnabled: true })
+    assert.equal(creator.kind, 'open')
+    assert.equal(creator.iCreated, true)
+  })
+
+  it('disables Play once the game is in progress (already at the table)', () => {
+    const action = liveGameAction({
+      match: match({
+        currentGame: {
+          status: 'in_progress',
+          gameNumber: 1,
+          lobbyUrl: 'https://karabast.net/lobby?lobbyId=abc',
+          game: { createdByUserId: 'A' },
+        },
+      }),
+      currentUserId: 'A',
+      liveLaunchEnabled: true,
+    })
+    assert.equal(action.kind, 'play')
+    assert.equal(action.disabled, true)
   })
 
   it('reuses the watch/replay link path for spectators and completed matches', () => {
@@ -266,14 +351,14 @@ describe('MatchmakingPanel helpers', () => {
     )
   })
 
-  it('surfaces stale or failed lobby setup as a retry for participants', () => {
+  it('surfaces stale or failed lobby setup as a plain Play (re-launch) for participants', () => {
     assert.deepEqual(
       liveGameAction({
         match: match({ currentGame: { status: 'creating', gameNumber: 1, stale: true, retryable: true } }),
         currentUserId: 'A',
         liveLaunchEnabled: true,
       }),
-      { kind: 'retry', label: 'Retry Game 1' }
+      { kind: 'play', label: '' }
     )
 
     assert.deepEqual(
@@ -282,18 +367,134 @@ describe('MatchmakingPanel helpers', () => {
         currentUserId: 'A',
         liveLaunchEnabled: true,
       }),
-      { kind: 'retry', label: 'Retry Game 2' }
+      { kind: 'play', label: '' }
     )
   })
 
-  it('formats live game status with elapsed time for active games', () => {
+  it('labels an in-progress game without count-up elapsed (the round countdown replaces it)', () => {
     assert.equal(
       liveGameStatusLabel({ status: 'in_progress', gameNumber: 3, elapsedSeconds: 12 * 60 + 5 }),
-      'Game 3 In Progress · 12m'
+      'Game 3 In Progress'
     )
     assert.equal(
       liveGameStatusLabel({ status: 'in_progress', gameNumber: 1, elapsedSeconds: 65 * 60 }),
-      'Game 1 In Progress · 1h 05m'
+      'Game 1 In Progress'
     )
+  })
+})
+
+describe('selfDropState', () => {
+  const me = 'me'
+  const others = [{ id: 'me', dropped: false }, { id: 'other', dropped: false }]
+
+  it('lets an active, non-host player drop during a live round', () => {
+    assert.equal(
+      selfDropState({ isHost: false, matchmakingStatus: 'active', currentUserId: me, players: others }),
+      'can-drop'
+    )
+  })
+
+  it('hides the control from the host — they cancel the pod instead of dropping', () => {
+    assert.equal(
+      selfDropState({ isHost: true, matchmakingStatus: 'active', currentUserId: me, players: others }),
+      'hidden'
+    )
+  })
+
+  it('shows the dropped note once the player has dropped (even mid-round)', () => {
+    const players = [{ id: 'me', dropped: true }, { id: 'other', dropped: false }]
+    assert.equal(
+      selfDropState({ isHost: false, matchmakingStatus: 'active', currentUserId: me, players }),
+      'dropped'
+    )
+  })
+
+  it('hides the control before round 1 (deck building) and after the event completes', () => {
+    assert.equal(
+      selfDropState({ isHost: false, matchmakingStatus: 'deck_building', currentUserId: me, players: others }),
+      'hidden'
+    )
+    assert.equal(
+      selfDropState({ isHost: false, matchmakingStatus: 'complete', currentUserId: me, players: others }),
+      'hidden'
+    )
+  })
+
+  it('hides the control for a viewer who is not one of the players', () => {
+    assert.equal(
+      selfDropState({ isHost: false, matchmakingStatus: 'active', currentUserId: 'stranger', players: others }),
+      'hidden'
+    )
+  })
+
+  it('treats a dropped player as dropped even after the event completes (no resurrect)', () => {
+    const players = [{ id: 'me', dropped: true }]
+    assert.equal(
+      selfDropState({ isHost: false, matchmakingStatus: 'complete', currentUserId: me, players }),
+      'dropped'
+    )
+  })
+
+  // Bug: the pre-round roster showed "Ready" as soon as a player had a leader and
+  // base in their live deckbuilder — which is true for essentially every drafter
+  // before they ever hit Play. Readiness must track the LOCKED deck instead.
+  it('BUGGY: a player with a leader + base picked but no locked deck is NOT ready', () => {
+    assert.equal(
+      rosterPlayerReady({ activeLeaderName: 'Luke Skywalker', baseName: 'Echo Base', isReady: false }),
+      false
+    )
+  })
+
+  it('FIXED: a player is ready only once their deck is locked (hit Play → isReady)', () => {
+    assert.equal(rosterPlayerReady({ isReady: true }), true)
+  })
+
+  it('treats a missing readiness signal as not ready', () => {
+    assert.equal(rosterPlayerReady({ activeLeaderName: 'Leia Organa', baseName: 'Echo Base' }), false)
+  })
+})
+
+describe('completedGameReplays (per-game replays for a finished Bo3)', () => {
+  const withGames = (games: unknown[]) => ({ games } as never)
+
+  it('returns one replay per game, ordered by game number', () => {
+    const replays = completedGameReplays(withGames([
+      { gameNumber: 2, attemptNumber: 1, replayUrl: 'r2' },
+      { gameNumber: 1, attemptNumber: 1, replayUrl: 'r1' },
+    ]))
+    assert.deepEqual(replays, [
+      { gameNumber: 1, replayUrl: 'r1' },
+      { gameNumber: 2, replayUrl: 'r2' },
+    ])
+  })
+
+  it('keeps the latest attempt for a given game number', () => {
+    const replays = completedGameReplays(withGames([
+      { gameNumber: 1, attemptNumber: 1, replayUrl: 'old' },
+      { gameNumber: 1, attemptNumber: 2, replayUrl: 'new' },
+    ]))
+    assert.deepEqual(replays, [{ gameNumber: 1, replayUrl: 'new' }])
+  })
+
+  it('collapses games that share an identical replay URL to a single entry', () => {
+    // Legacy duplicate rows (from the old double-report bug) point at one replay.
+    const replays = completedGameReplays(withGames([
+      { gameNumber: 1, attemptNumber: 1, replayUrl: 'same' },
+      { gameNumber: 2, attemptNumber: 1, replayUrl: 'same' },
+    ]))
+    assert.deepEqual(replays, [{ gameNumber: 1, replayUrl: 'same' }])
+  })
+
+  it('ignores games without a replay URL', () => {
+    const replays = completedGameReplays(withGames([
+      { gameNumber: 1, attemptNumber: 1, replayUrl: null },
+      { gameNumber: 2, attemptNumber: 1, replayUrl: 'r2' },
+    ]))
+    assert.deepEqual(replays, [{ gameNumber: 2, replayUrl: 'r2' }])
+  })
+
+  it('returns empty when no games have replays', () => {
+    assert.deepEqual(completedGameReplays({ games: [] } as never), [])
+    assert.deepEqual(completedGameReplays({} as never), [])
   })
 })

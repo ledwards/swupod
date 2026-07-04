@@ -155,6 +155,22 @@ interface DeckBuilderProps {
   rootShareId?: string | null
   currentUserId?: string | null
   limitedMode?: 'solo' | 'group' | null
+  /** True when the parent draft is competitive — Play goes to the single play
+      URL (which renders the Swiss Practice panel) instead of the /pod hub. */
+  competitive?: boolean
+  /** Swiss Practice lock: when true the primary deck is read-only (no mutations).
+   *  View/sort/filter/preview stay fully interactive. */
+  swissLocked?: boolean
+  /** The pod owner can flip the pod-level lock for everyone. */
+  swissCanUnlock?: boolean
+  onToggleSwissLock?: () => void
+  /** Swiss Practice is underway but the owner has unlocked the decks: show the
+   *  lock area in its "tap to lock again" state instead of the expired build timer. */
+  swissUnlocked?: boolean
+  /** Competitive event in progress — hides Stats / Draft Log / Draft Report in the
+   *  header until the Swiss event is complete. */
+  swissInProgress?: boolean
+  poolParentShareId?: string | null
 }
 
 function DeckBuilder({
@@ -178,7 +194,14 @@ function DeckBuilder({
   deckBuildDeadline = null,
   rootShareId = null,
   currentUserId = null,
-  limitedMode = null
+  limitedMode = null,
+  competitive = false,
+  swissLocked = false,
+  swissCanUnlock = false,
+  onToggleSwissLock,
+  swissUnlocked = false,
+  swissInProgress = false,
+  poolParentShareId = null
 }: DeckBuilderProps) {
   const { user, isAuthenticated, signIn, isPatron } = useAuth()
   const isInfiniteMode = mode === 'infinite'
@@ -244,6 +267,7 @@ function DeckBuilder({
   }, [initialPoolName, originalBaseName])
 
   const handleRenamePool = (newName: string) => {
+    if (swissLocked) return // Primary deck (incl. its name) is frozen during Swiss Practice
     if (newName && newName.length > 80) return // Enforced by EditableTitle, but guard here too
     setCurrentPoolName(newName || null)
     setIsDefaultName(false) // User manually edited the name → no longer default
@@ -327,7 +351,7 @@ function DeckBuilder({
   const [arenaSearchQuery, setArenaSearchQuery] = useState('') // Arena view search query
   const [arenaPoolSortOption, setArenaPoolSortOption] = useState<'default' | 'aspect' | 'cost' | 'type'>('cost') // Arena view pool grouping (independent of grid view's poolSortOption)
   const [arenaDeckSortOption, setArenaDeckSortOption] = useState<'default' | 'aspect' | 'cost' | 'type'>('cost') // Arena view deck grouping
-  const [poolCardDensity, setPoolCardDensity] = useState<'small' | 'medium' | 'large'>('large') // Pool card density (arena+playmat)
+  const [poolCardDensity, setPoolCardDensity] = useState<'small' | 'medium' | 'large'>('small') // Pool card density (arena+playmat) — default small; persisted per-pool once the user changes it
   const [deckCardDensity, setDeckCardDensity] = useState<'small' | 'medium' | 'large'>('small') // Deck card density (arena+playmat)
   const deckBlocksRowRef = useRef<HTMLDivElement>(null)
   const [activeLeader, setActiveLeader] = useState<string | null>(null)
@@ -510,6 +534,7 @@ function DeckBuilder({
   // Format: "{archetype} ({SET}) {Sealed|Draft} {MM.DD.YY}" — only fires while
   // the name is still the auto-generated default (isDefaultName === true).
   const updatePoolName = useCallback(async (leaderCard: CardType | null, baseCard: CardType | null) => {
+    if (swissLocked) return // no writes to the primary deck while frozen
     if (!shareId || !isOwner) return
     if (!isDefaultName) return // user has customized; don't clobber
     if (!leaderCard) return
@@ -536,7 +561,7 @@ function DeckBuilder({
     } catch (err) {
       console.error('Failed to update pool name:', err)
     }
-  }, [shareId, isDefaultName, isOwner, setCode, poolType, poolCreatedAt])
+  }, [shareId, isDefaultName, isOwner, setCode, poolType, poolCreatedAt, swissLocked])
 
   // Update pool name when leader or base changes
   useEffect(() => {
@@ -560,8 +585,8 @@ function DeckBuilder({
     setSelectedCards,
     selectionBox,
     isSelecting,
-    handleMouseDown,
-    handleCanvasMouseDown,
+    handleMouseDown: rawHandleMouseDown,
+    handleCanvasMouseDown: rawHandleCanvasMouseDown,
   } = useDragAndDrop({
     cardPositions,
     setCardPositions,
@@ -576,6 +601,16 @@ function DeckBuilder({
     setHoveredCard,
     canvasRef,
   })
+
+  // Freeze drag/drop while the Swiss Practice lock is on.
+  const handleMouseDown = useCallback((e: React.MouseEvent, cardId: string) => {
+    if (swissLocked) return
+    rawHandleMouseDown(e, cardId)
+  }, [swissLocked, rawHandleMouseDown])
+  const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
+    if (swissLocked) return
+    rawHandleCanvasMouseDown(e)
+  }, [swissLocked, rawHandleCanvasMouseDown])
 
   // Card preview handling
   const {
@@ -601,6 +636,7 @@ function DeckBuilder({
 
   // Toggle a card between deck and sideboard sections
   const toggleCardSection = useCallback((cardId: string) => {
+    if (swissLocked) return // Swiss Practice: primary deck is frozen
     setHoveredCard(null)
     setCardPositions(prev => {
       if (isInfiniteMode) {
@@ -627,9 +663,10 @@ function DeckBuilder({
         }
       }
     })
-  }, [addInfiniteCardCopies, isInfiniteMode, removeInfiniteDeckCards])
+  }, [addInfiniteCardCopies, isInfiniteMode, removeInfiniteDeckCards, swissLocked])
 
   const moveCardToDeck = useCallback((cardId: string) => {
+    if (swissLocked) return
     setCardPositions(prev => {
       if (isInfiniteMode) {
         return addInfiniteCardCopies(prev, [cardId])
@@ -641,9 +678,10 @@ function DeckBuilder({
         [cardId]: { ...prev[cardId], section: 'deck', enabled: true, x: 0, y: 0 }
       }
     })
-  }, [addInfiniteCardCopies, isInfiniteMode])
+  }, [addInfiniteCardCopies, isInfiniteMode, swissLocked])
 
   const moveCardToPool = useCallback((cardId: string) => {
+    if (swissLocked) return
     setCardPositions(prev => {
       if (isInfiniteMode) {
         return removeInfiniteDeckCards(prev, [cardId])
@@ -655,10 +693,11 @@ function DeckBuilder({
         [cardId]: { ...prev[cardId], section: 'sideboard', enabled: false, x: 0, y: 0 }
       }
     })
-  }, [isInfiniteMode, removeInfiniteDeckCards])
+  }, [isInfiniteMode, removeInfiniteDeckCards, swissLocked])
 
   // Bulk move helpers for +All/-All buttons
   const moveCardsToDeck = useCallback((cardIds: string[]) => {
+    if (swissLocked) return
     setCardPositions(prev => {
       if (isInfiniteMode) {
         return addInfiniteCardCopies(prev, cardIds)
@@ -670,9 +709,10 @@ function DeckBuilder({
       })
       return updated
     })
-  }, [addInfiniteCardCopies, isInfiniteMode])
+  }, [addInfiniteCardCopies, isInfiniteMode, swissLocked])
 
   const moveCardsToPool = useCallback((cardIds: string[]) => {
+    if (swissLocked) return
     setCardPositions(prev => {
       if (isInfiniteMode) {
         return removeInfiniteDeckCards(prev, cardIds)
@@ -2317,7 +2357,11 @@ function DeckBuilder({
     }
 
     if (isDraftMode && draftShareId) {
-      window.location.href = `/draft/${draftShareId}/pod`
+      // Competitive/Swiss uses the single play URL (which renders the Swiss
+      // Practice panel); the /pod hub is only for casual draft pods.
+      window.location.href = competitive && shareId
+        ? `/pool/${shareId}/deck/play`
+        : `/draft/${draftShareId}/pod`
     } else if (!isDraftMode && draftShareId) {
       window.location.href = `/sealed/${draftShareId}/pod`
     } else if (shareId) {
@@ -2332,6 +2376,7 @@ function DeckBuilder({
     uiStorageKey,
     isDraftMode,
     draftShareId,
+    competitive,
     shareId,
     setCode,
     cards,
@@ -2377,16 +2422,31 @@ function DeckBuilder({
     }
   }, [forkInProgress, isAuthenticated, signIn, rootShareId, shareId, setCode, cards, buildDeckBuilderState, poolType])
 
+  // Swiss Practice lock: hand children NO-OP mutators so card moves, leader/base
+  // changes and reordering are all frozen. View/sort/filter setters are untouched.
+  const lockedSetCardPositions = useCallback((value) => {
+    if (swissLocked) return
+    setCardPositions(value)
+  }, [swissLocked])
+  const lockedSetActiveLeader = useCallback((value) => {
+    if (swissLocked) return
+    setActiveLeader(value)
+  }, [swissLocked])
+  const lockedSetActiveBase = useCallback((value) => {
+    if (swissLocked) return
+    setActiveBase(value)
+  }, [swissLocked])
+
   // Context value for child components
   const contextValue = useMemo(() => ({
     // Core state
     cardPositions,
-    setCardPositions,
+    setCardPositions: lockedSetCardPositions,
     isInfiniteMode,
     activeLeader,
-    setActiveLeader,
+    setActiveLeader: lockedSetActiveLeader,
     activeBase,
-    setActiveBase,
+    setActiveBase: lockedSetActiveBase,
     // Derived cards
     leaderCard,
     baseCard,
@@ -2452,6 +2512,7 @@ function DeckBuilder({
     aspectFilters, inAspectFilter, outAspectFilter, cardMatchesFilters,
     poolCardDensity, deckCardDensity,
     moveCardToDeck, moveCardToPool, toggleCardSection, moveCardsToDeck, moveCardsToPool,
+    lockedSetCardPositions, lockedSetActiveLeader, lockedSetActiveBase,
   ])
 
   return (
@@ -2488,6 +2549,12 @@ function DeckBuilder({
           rootShareId={rootShareId}
           currentUserId={currentUserId}
           subtitleOverride={isDefaultName ? (poolOwnerUsername ? `by ${poolOwnerUsername}` : null) : canonicalSubtitle}
+          competitive={competitive}
+          swissLocked={swissLocked}
+          swissCanUnlock={swissCanUnlock}
+          onToggleSwissLock={onToggleSwissLock}
+          swissUnlocked={swissUnlocked}
+          swissInProgress={swissInProgress}
         />
 
       {/* Selected Leader/Base and Deck/Sideboard Info - Sticky Bar */}
@@ -2529,6 +2596,9 @@ function DeckBuilder({
         showNavTooltip={showNavTooltip}
         hideTooltip={hideTooltip}
         onPlay={handlePlay}
+        deckBuildDeadline={deckBuildDeadline}
+        swissLocked={swissLocked}
+        swissUnlocked={swissUnlocked}
       />
 
       {/* View mode toggle - hidden when sticky (shown in nav bar instead) */}
@@ -2717,6 +2787,7 @@ function DeckBuilder({
                   .map(([cardId, pos]) => ({ cardId, card: pos.card }))}
                 selectedId={activeLeader}
                 onSelect={(cardId) => {
+                  if (swissLocked) return
                   setActiveLeader(cardId)
                   if (cardId && (poolSortOption === 'cost' || deckSortOption === 'cost')) {
                     enableAspectPenaltiesForBothSections()
@@ -2752,7 +2823,7 @@ function DeckBuilder({
               .sort(([, a], [, b]) => sortBaseCardsCommonFirst(a.card, b.card))
               .map(([cardId, pos]) => ({ cardId, card: pos.card }))}
             selectedId={activeBase}
-            onSelect={setActiveBase}
+            onSelect={lockedSetActiveBase}
             tableSort={tableSort}
             onSort={handleTableSort}
             defaultSort={sortBaseCardsCommonFirst}
@@ -2773,7 +2844,7 @@ function DeckBuilder({
           {/* Pool Section - Deck and Sideboard */}
           <PoolListSection
             cardPositions={cardPositions}
-            setCardPositions={setCardPositions}
+            setCardPositions={lockedSetCardPositions}
             deckSortOption={deckSortOption}
             isDraftMode={isDraftMode}
             isInfiniteMode={isInfiniteMode}

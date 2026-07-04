@@ -3,6 +3,7 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import { LAW_CONFIG } from './LAW'
+import { ASH_CONFIG } from './ASH'
 import { SET_CONFIGS, getSetConfig } from './index'
 
 describe('LAW_CONFIG', () => {
@@ -95,10 +96,8 @@ describe('LAW_CONFIG', () => {
   })
 
   describe('LAW-specific features', () => {
-    it('should have tripleAspect configuration', () => {
-      assert.ok(LAW_CONFIG.tripleAspect, 'Should have tripleAspect config')
-      assert.strictEqual(LAW_CONFIG.tripleAspect.enabled, true)
-      assert.ok(LAW_CONFIG.tripleAspect.beltAssignment, 'Should have belt assignment strategy')
+    it('should not carry a tripleAspect config (dead key removed; aspects[0] priority is the belt rule)', () => {
+      assert.strictEqual('tripleAspect' in LAW_CONFIG, false)
     })
   })
 
@@ -156,6 +155,44 @@ describe('LAW_CONFIG', () => {
       assert.ok(Math.abs(upgradeProbabilities.uc3ToPrestige - 1/18) < tolerance,
         `UC3 prestige rate should be ~1/18 (${1/18}), got ${upgradeProbabilities.uc3ToPrestige}`)
     })
+  })
+})
+
+describe('ASH_CONFIG', () => {
+  it('should set UC3 prestige to two tier-1 prestige cards per box on average', () => {
+    const rate = ASH_CONFIG.upgradeProbabilities.uc3ToPrestige
+    assert.strictEqual(rate, 1 / 12)
+    assert.strictEqual(rate * 24, 2)
+  })
+
+  it('should use ASH-calibrated foil slot weights (real box 001: commons heavier than LAW)', () => {
+    // SPEC: real ASH box 001 observed C20/U1/R1/S1/L1 in 24 foils.
+    // ASH overrides LAW's C65/U20 to C72/U13; R/S/L unchanged (on target IRL).
+    assert.deepStrictEqual(ASH_CONFIG.rarityWeights.hyperspaceFoilSlot, {
+      Common: 72,
+      Uncommon: 13,
+      Rare: 8,
+      Special: 4,
+      Legendary: 3,
+    })
+  })
+
+  it('should keep LAW foil slot weights unchanged (LAW-era 96-pack data)', () => {
+    assert.deepStrictEqual(LAW_CONFIG.rarityWeights.hyperspaceFoilSlot, {
+      Common: 65,
+      Uncommon: 20,
+      Rare: 8,
+      Special: 4,
+      Legendary: 3,
+    })
+  })
+
+  it('should never upgrade UC1/UC2 to hyperspace for Set 7+ (real ASH box: 0/48)', () => {
+    // SPEC: UC3 is the only uncommon upgrade slot for LAW and ASH.
+    assert.strictEqual(LAW_CONFIG.upgradeProbabilities.firstUCToHyperspaceUC, 0)
+    assert.strictEqual(LAW_CONFIG.upgradeProbabilities.secondUCToHyperspaceUC, 0)
+    assert.strictEqual(ASH_CONFIG.upgradeProbabilities.firstUCToHyperspaceUC, 0)
+    assert.strictEqual(ASH_CONFIG.upgradeProbabilities.secondUCToHyperspaceUC, 0)
   })
 })
 

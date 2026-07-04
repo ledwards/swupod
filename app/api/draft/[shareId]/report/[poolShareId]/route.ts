@@ -83,9 +83,15 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
 
   const activeLeaderByUser = new Map()
   const chosenBaseByUser = new Map()
+  // A player has "built a deck" once their pool has a deck_builder_state with
+  // card positions (the deck builder has been engaged).
+  const hasBuiltDeckByUser = new Map()
   for (const row of poolsResult.rows) {
     const dbs = typeof row.deck_builder_state === 'string' ? JSON.parse(row.deck_builder_state) : row.deck_builder_state
     if (dbs?.cardPositions) {
+      if (Object.keys(dbs.cardPositions).length > 0) {
+        hasBuiltDeckByUser.set(row.user_id, true)
+      }
       if (dbs.activeLeader) {
         const leaderPos = dbs.cardPositions[dbs.activeLeader]
         if (leaderPos?.card?.name) {
@@ -115,9 +121,13 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     draftedLeaders: row.drafted_leaders ? (typeof row.drafted_leaders === 'string' ? JSON.parse(row.drafted_leaders) : row.drafted_leaders) : [],
     activeLeaderName: activeLeaderByUser.get(row.user_id) || null,
     chosenBase: chosenBaseByUser.get(row.user_id) || null,
+    hasBuiltDeck: hasBuiltDeckByUser.get(row.user_id) === true,
     strategyName: row.strategy_name,
     mixinName: row.mixin_name,
   }))
+
+  // The draft report is only "ready" once at least one player has built a deck.
+  const reportReady = players.some(p => p.hasBuiltDeck)
 
   // Get target user's draft picks
   const allPacks = pod.all_packs ? (typeof pod.all_packs === 'string' ? JSON.parse(pod.all_packs) : pod.all_packs) : null
@@ -196,6 +206,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     isOwner,
     isHost,
     draftReportsPublic,
+    reportReady,
     picks,
     gameplay: {
       matches: matchesResult.rows.map(row => ({

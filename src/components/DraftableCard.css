@@ -1,6 +1,11 @@
 @import '../styles/animations.css';
 
 .draftable-card {
+  /* Proportional rainbow selection ring (shared system, see animations.css).
+     The ring is drawn as an inset border via ::before so it stays visible
+     even though the card keeps `overflow: hidden` to clip its image/foil. */
+  --rainbow-border-reference: 120px;
+  --rainbow-border-size: calc(var(--rainbow-border-reference) * var(--rainbow-border-thickness-ratio));
   position: relative;
   width: 120px;
   min-width: 120px;
@@ -33,12 +38,31 @@
 
 .draftable-card.selected {
   z-index: 100;
-  /* Holotable selection: green glow + ring (replaces the old rainbow border). */
-  box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.85), 0 6px 18px rgba(0, 255, 0, 0.5);
+}
+
+/* Selection indicator: animated rainbow ring (shared rainbow system).
+   Rendered as an inset border via mask-compositing so the gradient ring is
+   visible inside the card's `overflow: hidden` (which clips the image/foil). */
+.draftable-card.selected::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: var(--rainbow-border-size);
+  background: var(--rainbow-border-gradient);
+  background-size: var(--rainbow-border-background-size);
+  animation: var(--rainbow-border-animation);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 20;
 }
 
 
 .draftable-card.leader {
+  --rainbow-border-reference: 168px;
   width: 168px;
   min-width: 168px;
   max-width: 168px;
@@ -142,13 +166,8 @@
   z-index: 10;
   animation: foil-shimmer 6s linear infinite;
   filter: blur(8px);
-}
-
-
-/* Hyperspace treatment */
-.draftable-card.hyperspace {
-  border-color: #9C27B0 !important;
-  box-shadow: 0 0 10px rgba(156, 39, 176, 0.5);
+  /* Clip the blurred shimmer to the card so it never bleeds onto neighbors. */
+  clip-path: inset(0 round 7px);
 }
 
 /* Card image styles applied via inline styles in JSX */
@@ -237,19 +256,23 @@
   filter: blur(10px);
 }
 
-/* Mobile styles */
-@media (max-width: 768px) {
-  .draftable-card {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    border-radius: 8px;
-  }
-
+/* Phones only: one card per row, full width. Tablets and half-desktop windows
+   (e.g. ~756px = half a 14" MBP, or an iPad) keep the fixed card size so several
+   columns still fit — previously ≤768px collapsed them to a single full-width
+   column, which is wrong for anything bigger than a phone. */
+@media (max-width: 480px) {
+  .draftable-card,
   .draftable-card.leader {
     width: 100%;
     min-width: 0;
     max-width: 100%;
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .draftable-card {
+    border-radius: 8px;
   }
 
   /* Card image styles applied via inline styles in JSX */

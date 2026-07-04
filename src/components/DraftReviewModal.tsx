@@ -5,6 +5,7 @@ import { useState, useMemo, useRef, useEffect, type MouseEvent } from 'react'
 import './DraftReviewModal.css'
 import TimerPanel from './TimerPanel'
 import Button from './Button'
+import { CardStatsBadge } from './CardStatsBadge'
 
 interface Card {
   id: string
@@ -286,19 +287,33 @@ function DraftReviewModal({ draftedCards = [], draftedLeaders = [], onClose, pac
     setHoveredCardPreview(null)
   }
 
+  const statsSetCodeForCard = (card: Card | null | undefined) => (
+    draft?.settings?.draftMode === 'chaos'
+      ? card?.setCode || null
+      : draft?.setCode || null
+  )
+  const reviewCardIdentityAttrs = (card: Card | null | undefined) => ({
+    'data-card-name': card?.name || card?.title || undefined,
+    'data-card-id': card?.cardId || card?.card_id || undefined,
+  })
+
   const renderCard = (card: CardWithPickInfo) => (
     <div
       key={`${card.id}-${card.pickNumber}`}
       className="review-card"
+      {...reviewCardIdentityAttrs(card)}
       onMouseEnter={(e) => handleCardMouseEnter(e, card)}
       onMouseLeave={handleCardMouseLeave}
     >
       <img src={card.imageUrl} alt={card.name} className="review-card-image" />
+      {card.imageUrl ? (
+        <CardStatsBadge card={card} setCode={statsSetCodeForCard(card)} />
+      ) : null}
     </div>
   )
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="draft-review-overlay" onClick={onClose}>
       <div className="modal-content draft-review-modal" onClick={(e) => e.stopPropagation()}>
         <div className="review-controls">
           <div className="review-controls-left">
@@ -351,10 +366,14 @@ function DraftReviewModal({ draftedCards = [], draftedLeaders = [], onClose, pac
                   <div
                     key={idx}
                     className="review-leader"
+                    {...reviewCardIdentityAttrs(leader)}
                     onMouseEnter={(e) => handleCardMouseEnter(e, leader as CardWithPickInfo)}
                     onMouseLeave={handleCardMouseLeave}
                   >
                     <img src={leader.imageUrl} alt={leader.name} className="review-leader-image" />
+                    {leader.imageUrl ? (
+                      <CardStatsBadge card={leader} setCode={statsSetCodeForCard(leader)} />
+                    ) : null}
                   </div>
                 ))}
               </div>

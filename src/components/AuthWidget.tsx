@@ -36,6 +36,11 @@ interface Pod {
 // Total items in the Recent Activity section (active pod + pools + History button)
 const RECENT_ACTIVITY_TOTAL = 4
 
+// Import Pool is in limited testing — only admins and a short allowlist
+// (by Discord username or email) see it in the user menu.
+const IMPORT_POOL_USERNAMES = ['terronk']
+const IMPORT_POOL_EMAILS = ['lee@root.vc']
+
 interface RecentItem {
   url: string
   label: string
@@ -170,6 +175,12 @@ export default function AuthWidget() {
 
   const isHomepage = pathname === '/'
 
+  // Gate Import Pool to admins + the testing allowlist (covers "me"/lee, terronk).
+  const canImportPool =
+    user?.is_admin === true ||
+    IMPORT_POOL_EMAILS.includes((user?.email || '').toLowerCase()) ||
+    IMPORT_POOL_USERNAMES.includes((user?.username || '').toLowerCase())
+
   if (loading) {
     if (isHomepage) return null
     return (
@@ -267,23 +278,21 @@ export default function AuthWidget() {
             </div>
 
             <div className="auth-widget-drawer-menu">
-              {!isHomepage && (
-                <a
-                  href="/"
-                  className="auth-widget-drawer-menu-item"
-                  onClick={(e: MouseEvent<HTMLAnchorElement>) => {
-                    e.preventDefault()
-                    router.push('/')
-                    setDrawerOpen(false)
-                  }}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                  </svg>
-                  Home
-                </a>
-              )}
+              <a
+                href="/"
+                className="auth-widget-drawer-menu-item"
+                onClick={(e: MouseEvent<HTMLAnchorElement>) => {
+                  e.preventDefault()
+                  router.push('/')
+                  setDrawerOpen(false)
+                }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                Home
+              </a>
 
               <a
                 href="/me"
@@ -405,7 +414,7 @@ export default function AuthWidget() {
                 </a>
               )}
 
-              {isPatron && (
+              {canImportPool && (
                 <a
                   href="/import"
                   className="auth-widget-drawer-menu-item auth-widget-import-pool-item"

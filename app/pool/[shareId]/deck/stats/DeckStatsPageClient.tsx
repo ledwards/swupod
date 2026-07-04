@@ -501,7 +501,7 @@ export default function DeckStatsPageClient({ deck }: { deck: any }) {
 
   const totalRecordGames = Number(deck.record?.wins || 0) + Number(deck.record?.losses || 0) + Number(deck.record?.draws || 0)
   const recordPercent = totalRecordGames > 0 ? pct((Number(deck.record?.wins || 0) / totalRecordGames) * 100) : null
-  const recordLabel = String(deck.record?.label || 'No games')
+  const recordLabel = String(deck.record?.label || 'No games yet')
   const recordDisplay = recordPercent && !recordLabel.includes('%') ? `${recordLabel} (${recordPercent})` : recordLabel
 
   return (

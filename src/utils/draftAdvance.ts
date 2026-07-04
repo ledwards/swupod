@@ -140,17 +140,23 @@ export function isPackRoundExhausted(
     players.every(p => parseCurrentPack(p.current_pack).length === 0)
 }
 
+function isStagedPickStatus(status: string): boolean {
+  return status === 'selected' || status === 'confirmed'
+}
+
 /**
  * Whether a player has resolved their pick for the current staged round.
- * Resolved = they selected a card, OR their pack is already empty (nothing left
- * to pick — e.g. a depleted standard pack while a larger Carbonite pack is
- * still being drafted). Empty-pack players must NOT block the round, otherwise
- * an uneven-pack (Carbonite) draft can never finish its final pick (#19).
+ * Resolved = they confirmed a pick, selected a card for a staged fallback, OR
+ * their pack is already empty (nothing left to pick — e.g. a depleted standard
+ * pack while a larger Carbonite pack is still being drafted). Empty-pack
+ * players must NOT block the round, otherwise an uneven-pack (Carbonite) draft
+ * can never finish its final pick (#19).
  */
 export function isStagedPickResolved(
   player: Pick<DraftPlayer, 'pick_status' | 'selected_card_id' | 'current_pack'>
 ): boolean {
-  if (player.pick_status === 'selected' && player.selected_card_id) return true
+  if (player.pick_status === 'picked') return true
+  if (isStagedPickStatus(player.pick_status) && player.selected_card_id) return true
   return parseCurrentPack(player.current_pack).length === 0
 }
 
@@ -196,7 +202,7 @@ export async function processAllStagedPicks(podId: string): Promise<boolean> {
     )
 
     // Check if there are actually picks to process (must re-check after acquiring lock)
-    const hasPicksToProcess = players.some(p => p.selected_card_id && p.pick_status === 'selected')
+    const hasPicksToProcess = players.some(p => p.selected_card_id && isStagedPickStatus(p.pick_status))
     if (!hasPicksToProcess) {
       // No picks to process - already processed or nothing selected
       return false
@@ -552,6 +558,9 @@ async function advancePackDraftAfterPicks(
     if (pod.competitive && newPackNumber <= totalPacks) {
       draftState.reviewUntil = new Date(Date.now() + 30 * 1000).toISOString()
     }
+    const pickStartedAtOverride = pod.competitive && draftState.reviewUntil
+      ? draftState.reviewUntil
+      : null
 
     // Fetch all_packs only when we need to start a new pack
     // (not loaded in most queries to save memory)
@@ -580,10 +589,10 @@ async function advancePackDraftAfterPicks(
       `UPDATE pods
        SET draft_state = $1,
            state_version = state_version + 1,
-           pick_started_at = NOW(),
+           pick_started_at = COALESCE($3::timestamptz, NOW()),
            paused_duration_seconds = 0
        WHERE id = $2`,
-      [JSON.stringify(draftState), podId]
+      [JSON.stringify(draftState), podId, pickStartedAtOverride]
     )
 
   } else {

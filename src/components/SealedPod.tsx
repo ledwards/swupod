@@ -14,6 +14,7 @@ import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 import EditableTitle from './EditableTitle'
 import Button from './Button'
 import DraftReportButton from './DraftReportButton'
+import { CardStatsBadge } from './CardStatsBadge'
 
 interface Card {
   id?: string
@@ -395,6 +396,7 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
           {getCanonicalPoolSubtitle({ ownerName: poolOwnerUsername, setCode, poolType, createdAt })}
         </p>
         {saving && <p className="saving-indicator"></p>}
+        <div className="pool-action-buttons">
         {packs.length > 0 && (
           <Button
             variant="primary"
@@ -429,7 +431,7 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
           <Button
             variant="secondary"
             className="draft-log-button"
-            onClick={() => { window.location.href = `/draft/${draftShareId}/log` }}
+            onClick={() => { window.open(`/draft/${draftShareId}/log`, '_blank', 'noopener') }}
           >
             Draft Log
           </Button>
@@ -437,6 +439,7 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
         {draftShareId && isPatron && isOwner && (
           <DraftReportButton draftShareId={draftShareId} variant="pool" />
         )}
+        </div>
       </div>
 
       <div className="packs-container">
@@ -570,6 +573,9 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
                   )}
                   <div className="card-badges">
                   </div>
+                  {card.imageUrl ? (
+                    <CardStatsBadge card={card} setCode={setCode} />
+                  ) : null}
                 </div>
               ))}
             </div>

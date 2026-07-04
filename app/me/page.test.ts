@@ -28,19 +28,14 @@ describe('/me personal stats page', () => {
     assert.ok(SRC.includes('Download Personal Data'))
   })
 
-  it('defaults the Set filter to the newest set the viewer can open (pre-release only with access)', () => {
-    // Early access = beta tester or admin (same gate as /stats + EarlyAccessCTA).
-    assert.match(SRC, /is_beta_tester\s*\|\|\s*user\?\.is_admin/)
-    // The default comes from the shared beta-aware helper, NOT an unconditional
-    // eras[0] (which would hand ASH to viewers without early access).
-    assert.match(SRC, /getDefaultStatsSetTab\(hasEarlyAccess\)/)
-    assert.doesNotMatch(SRC, /getEras\(\)\[0\]\?\.setCode/)
-  })
-
-  it('re-syncs the default once auth resolves without clobbering a manual pick', () => {
-    // useAuth resolves after mount; an effect upgrades the default to ASH for
-    // early-access viewers, guarded by a ref set when the viewer picks a set.
-    assert.match(SRC, /userPickedSet\.current\s*=\s*true/)
-    assert.match(SRC, /if\s*\(\s*userPickedSet\.current\s*\)\s*return/)
+  it('defaults the Set filter to the newest set for every viewer (not hardcoded, not gated)', () => {
+    // The /me page opens on the NEWEST set for everyone: getDefaultStatsSetTab(true)
+    // takes STATS_SET_ORDER[0] (the pre-release set included) and auto-advances as
+    // sets ship. No beta/admin gate, no re-sync effect, no hardcoded set code.
+    assert.match(SRC, /useState<string>\(\(\)\s*=>\s*getDefaultStatsSetTab\(true\)\)/)
+    assert.doesNotMatch(SRC, /hasEarlyAccess/)
+    assert.doesNotMatch(SRC, /userPickedSet/)
+    // Not frozen on a literal set code (e.g. 'ASH'/"ASH") anywhere in the page.
+    assert.doesNotMatch(SRC, /['"]ASH['"]/)
   })
 })

@@ -73,7 +73,9 @@ export function useChat(
         if (inner.discordThreadUrl) {
           setDiscordThreadUrl(inner.discordThreadUrl)
         }
-      } else {
+      } else if (res.status !== 401 && res.status !== 403) {
+        // 401/403 are expected when logged out or not a chat participant — stay quiet
+        // (otherwise the dev error overlay pops for every logged-out viewer).
         console.error('[Chat] History fetch failed:', res.status, await res.text().catch(() => ''))
       }
     } catch (err) {

@@ -1,0 +1,385 @@
+pack,pos,number,name,subtitle,rarity,type,variant,normalNumber,foilLook,hyperspaceLook,confidence,note
+1,1,16,Shin Hati,Eager Adversary,Common,Leader,Normal,16,0,0,high,"Leader, sideways at start of row 1; standard bordered frame"
+1,2,19,Fortress of the Great Mothers,,Common,Base,Normal,19,0,0,high,"Base, landscape; 19/264 read"
+1,3,71,Battered Haulcraft,,Common,Unit,Normal,71,0,0,high,71/264 read
+1,4,188,Galvanized Leap,,Common,Event,Normal,188,0,0,medium,number line partially read (188/264)
+1,5,237,Mouse Droid,,Common,Unit,Normal,237,0,0,high,237/264 read
+1,6,89,Perseverance,,Common,Event,Normal,89,0,0,high,89/264 read
+1,7,503,Imperial Loyalist,,Common,Unit,Hyperspace,239,0,1,high,"printed 503, borderless full-art hyperspace frame"
+1,8,124,Protectorate Fighter,,Common,Unit,Normal,124,0,0,high,124/264 read
+1,9,189,Emperor's Messenger,,Common,Unit,Normal,189,0,0,high,189/264 read
+1,10,116,Ant Droid,,Common,Unit,Normal,116,0,0,high,116/264 read
+1,11,227,Heightened Awareness,,Common,Upgrade,Normal,227,0,0,high,227/264 read
+1,12,673,Pegasus Tri-Wing,,Common,Unit,Hyperspace Foil,171,1,1,high,printed 673 (hyperspace foil range); foil slot
+1,13,210,DDC Defender,,Uncommon,Upgrade,Normal,210,0,0,high,210/264 read
+1,14,125,Stolen Eta Shuttle,,Uncommon,Unit,Normal,125,0,0,high,125/264 read
+1,15,795,The Mandalorian,Devoted Rescuer,Legendary,Unit,Standard Prestige,62,0,0,high,"prestige dark frame, printed 795 (Standard Prestige)"
+1,16,247,One Must Destroy to Create,,Rare,Event,Normal,247,0,0,high,247/264 read
+2,1,3,Baylan Skoll,Power Beyond Dream,Common,Leader,Normal,3,0,0,high,"Leader, sideways at start of row 1; standard frame"
+2,2,25,Emperor's Observatory,,Common,Base,Normal,25,0,0,high,"Base, landscape"
+2,3,87,Cybernetic Enhancements,,Common,Upgrade,Normal,87,0,0,high,87/264 read
+2,4,164,Alamite Hunter,,Common,Unit,Normal,164,0,0,high,164/264 read
+2,5,80,Covert Believers,,Common,Unit,Normal,80,0,0,high,80/264 read
+2,6,244,Remnant Trooper Corps,,Common,Unit,Normal,244,0,0,high,244/264 read
+2,7,478,Amnesty Officer,,Common,Unit,Hyperspace,214,0,1,high,"printed 478, borderless full-art hyperspace frame"
+2,8,111,Children of the Watch,,Common,Unit,Normal,111,0,0,high,111/264 read
+2,9,263,The Way of the Mand'alor,,Common,Upgrade,Normal,263,0,0,high,263/264 read
+2,10,225,Tatooine Sand Beast,,Common,Unit,Normal,225,0,0,high,225/264 read
+2,11,129,Defenders of the Forest,,Common,Unit,Normal,129,0,0,high,129/264 read
+2,12,679,Onyx Cinder,Adventure Awaits,Rare,Unit,Hyperspace Foil,177,1,1,high,printed 679 (hyperspace foil); visible foil glare; foil slot
+2,13,178,Knobby White Ice Spider,,Uncommon,Unit,Normal,178,0,0,high,178/264 read
+2,14,109,T-6 Shuttle 1974,With a Mentor's Dedication,Uncommon,Unit,Normal,109,0,0,high,109/264 read
+2,15,50,Morgan Elsbeth,Life Abandoned,Uncommon,Unit,Normal,50,0,0,high,50/264 read
+2,16,36,Rukh,From the Shadows,Rare,Unit,Normal,36,0,0,high,36/264 read
+3,1,16,Shin Hati,Eager Adversary,Common,Leader,Normal,16,0,0,high,"Leader, sideways at start of row 1; standard frame"
+3,2,23,Ancient Henge,,Common,Base,Normal,23,0,0,high,"Base, landscape"
+3,3,145,Praetorian Elite,,Common,Unit,Normal,145,0,0,high,145/264 read
+3,4,48,Imperial Armored Commando,,Common,Unit,Normal,48,0,0,high,48/264 read
+3,5,167,Flarestar Attack Shuttle,,Common,Unit,Normal,167,0,0,high,167/264 read
+3,6,246,Exploit Advantage,,Common,Event,Normal,246,0,0,high,246/264 read
+3,7,523,LEP Ratcatcher,,Common,Unit,Hyperspace,259,0,1,medium,"printed 523 (no /264), hyperspace variant; number slightly blurry"
+3,8,232,Full of Surprises,,Common,Event,Normal,232,0,0,high,232/264 read
+3,9,95,Remnant Interceptor,,Common,Unit,Normal,95,0,0,high,95/264 read; dark art but normal frame
+3,10,205,Inspiring Veteran,,Common,Unit,Normal,205,0,0,medium,number partially read (20x/264); title match
+3,11,124,Protectorate Fighter,,Common,Unit,Normal,124,0,0,high,124/264 read
+3,12,560,Duchess's Protector,,Common,Unit,Hyperspace Foil,58,1,1,high,printed 560 (hyperspace foil); strong foil glare; foil slot
+3,13,44,Barriss Offee,Redeeming Herself,Uncommon,Unit,Normal,44,0,0,high,44/264 read
+3,14,172,Razor Crest,Outfitted Armament,Uncommon,Unit,Normal,172,0,0,high,172/264 read
+3,15,204,Blade Three,Bane of the Devastator,Uncommon,Unit,Normal,204,0,0,high,204/264 read
+3,16,247,One Must Destroy to Create,,Rare,Event,Normal,247,0,0,high,247/264 read
+4,1,17,Greef Karga,Gracious Magistrate,Common,Leader,Normal,17,0,0,medium,photo out of focus; ID via art match (clear top template-match score) + red/gold magistrate robe; plain leader frame = normal; printed number not directly readable
+4,2,20,"Nevarro City, Restored",,Common,Base,Normal,20,0,0,medium,art match: white buildings + green tree + mountains; number inferred (print unreadable)
+4,3,89,Perseverance,,Common,Event,Normal,89,0,0,medium,"blue Vigilance event, art of armored figures; top template match; number inferred"
+4,4,152,Inspired Recruit,,Common,Unit,Normal,152,0,0,medium,"art match: cheering figure with raised fist in crowd, red frame, empty text box; number inferred"
+4,5,58,Duchess's Protector,,Common,Unit,Normal,58,0,0,medium,art match: white/blue armored guard with staff in pale palace interior; single-line When Defeated text; number inferred
+4,6,143,Tempest Lieutenant,,Common,Unit,Normal,143,0,0,medium,"art match: officer in hatch of diagonal tank, warm forest light; red Overwhelm keyword block; number inferred; audit: black border edge + light frame rails present = Normal confirmed"
+4,7,527,The Way of the Mand'alor,,Common,Upgrade,Hyperspace,263,0,1,high,"audit confirmed Hyperspace 527: digits unreadable (blur) but card is full-bleed teal art with hyperspace crosshatch streaks running to the bottom-right corner and NO light side rails; confirmed-Normal 263 (pack13, read 263/264) shows framed art + light grey rails; edge brightness profile flat ~66-105 here vs bright-rail peak ~200 on pack04's known-Normal pos8 control"
+4,8,178,Knobby White Ice Spider,,Uncommon,Unit,Normal,178,0,0,medium,art match: dark purple spider on white web; red Hidden keyword block + When Played line; number inferred
+4,9,190,Peridea Bandit,,Common,Unit,Normal,190,0,0,medium,art match: lance-wielding riders on creatures atop rocks; number inferred; audit: framed art with gold-tan rails + cream textbox = Normal confirmed
+4,10,116,Ant Droid,,Common,Unit,Normal,116,0,0,medium,"art match: spindly droid in yellow-green field with mountains; one-line When Defeated: Draw a card; number inferred; audit: warm tan rail band (163,141,106) matches Normal 116 ref frame = Normal confirmed"
+4,11,193,Emperor's Champion,,Common,Unit,Normal,193,0,0,medium,art match: red-robed royal guard flanked by stormtroopers; number inferred
+4,12,741,Imperial Loyalist,,Common,Unit,Hyperspace Foil,239,1,1,medium,"foil slot, visible glare; art match: headphoned crewman at console with robed figures behind; HS-foil printing 741"
+4,13,471,Heroic Purrgil,,Common,Unit,Hyperspace,207,0,1,high,"audit confirmed Hyperspace 471: digits unreadable (blur) but Normal 207 has bright gold side rails (ref brightness ~200) which are completely absent here - left-edge profile flat dark 41-56 (dark starfield bleed matching ref 471), while adjacent pos14 Normal in the same dark photo corner shows clear rail bumps ~95-134; pack04 genuinely has TWO nonfoil HS commons (527 + 471)"
+4,14,88,The Conflict Within,,Uncommon,Upgrade,Normal,88,0,0,medium,art match: Darth Vader (left) and blond Luke in white (right); upgrade layout; number inferred
+4,15,217,Mayor's Majordomo,No Problem Groveling,Uncommon,Unit,Normal,217,0,0,medium,art match: green-robed figure with arms outstretched holding tablet (same card seen sharp in pack06); number inferred
+4,16,168,Migs Mayfeld,How About a Toast?,Rare,Unit,Normal,168,0,0,medium,"rare slot; art match: bald man firing pistol with red muzzle flashes, red frame, unique diamond in title; number inferred"
+5,1,277,Ezra Bridger,It's Now or Never,Common,Leader,Hyperspace,13,0,1,high,Leader sideways at start of row 1; printed 277 (hyperspace variant)
+5,2,21,Emperor's Throne Room,,Common,Base,Normal,21,0,0,high,printed 21/264
+5,3,260,Mos Espa Watermonger,,Common,Unit,Normal,260,0,0,high,
+5,4,69,Noti Nomad,,Common,Unit,Normal,69,0,0,high,
+5,5,188,Galvanized Leap,,Common,Event,Normal,188,0,0,high,printed 188/264 verified by zoom
+5,6,45,Reanimated Night Trooper,,Common,Unit,Normal,45,0,0,high,
+5,7,356,Foundling Rescue,,Common,Event,Hyperspace,92,0,1,high,printed 356 (hyperspace variant)
+5,8,250,Imperial Defector,,Common,Unit,Normal,250,0,0,high,
+5,9,120,Warrior of Clan Kryze,,Common,Unit,Normal,120,0,0,high,
+5,10,218,Ferry Droid,,Common,Unit,Normal,218,0,0,high,
+5,11,106,Pathfinder Sergeant,,Common,Unit,Normal,106,0,0,high,printed 106/264 verified by zoom
+5,12,638,Display of Strength,,Common,Event,Hyperspace Foil,136,1,1,high,"visible foil glare, hyperspace frame; printed number 638 matches DB hyperspace-foil row"
+5,13,156,R5-D4,Built for Adventure,Uncommon,Unit,Normal,156,0,0,high,
+5,14,115,The Student Guides the Master,,Uncommon,Event,Normal,115,0,0,high,
+5,15,49,Shin Hati,Going Somewhere?,Uncommon,Unit,Normal,49,0,0,high,
+5,16,90,Reforge,,Rare,Event,Normal,90,0,0,high,rare slot
+6,1,11,Cad Bane,Still Faster than You,Common,Leader,Normal,11,0,0,high,leader sideways at start of row 1; printed 11/264
+6,2,22,Kryze Castle,,Common,Base,Normal,22,0,0,high,printed 22/264
+6,3,173,Shydopp Pirate Skiff,,Common,Unit,Normal,173,0,0,high,
+6,4,81,Nebulon-C Frigate,,Common,Unit,Normal,81,0,0,high,
+6,5,171,Pegasus Tri-Wing,,Common,Unit,Normal,171,0,0,high,
+6,6,261,Noti Mobile Pod,,Common,Unit,Normal,261,0,0,high,
+6,7,409,Praetorian Elite,,Common,Unit,Hyperspace,145,0,1,high,"printed 409 (hyperspace variant), borderless frame"
+6,8,228,Preparation,,Common,Upgrade,Normal,228,0,0,high,
+6,9,96,Forest Patroller,,Common,Unit,Normal,96,0,0,high,
+6,10,254,Gallofree Transport,,Common,Unit,Normal,254,0,0,high,
+6,11,216,Mandalorian Scout,,Common,Unit,Normal,216,0,0,high,
+6,12,720,Ferry Droid,,Common,Unit,Hyperspace Foil,218,1,1,high,foil slot; visible glare and hyperspace burst frame; printed 720
+6,13,159,Alphabet Squadron U-Wing,Quiet Devotion,Uncommon,Unit,Normal,159,0,0,high,
+6,14,198,Nowhere to Hide,,Uncommon,Upgrade,Normal,198,0,0,high,
+6,15,217,Mayor's Majordomo,No Problem Groveling,Uncommon,Unit,Normal,217,0,0,high,
+6,16,84,Arcana Star Map,Path to Peridea,Legendary,Upgrade,Normal,84,0,0,high,rare/legendary slot
+7,1,2,Fennec Shand,Ready for War,Rare,Leader,Normal,2,0,0,high,read 2/264
+7,2,24,Dragonsnake Bog,,Common,Base,Normal,24,0,0,high,"read 24/264, Dagobah"
+7,3,71,Battered Haulcraft,,Common,Unit,Normal,71,0,0,high,read 71/264
+7,4,165,Clan Vizsla Soldier,,Common,Unit,Normal,165,0,0,high,read 165/264
+7,5,92,Foundling Rescue,,Common,Event,Normal,92,0,0,high,read 92/264
+7,6,240,Mandalorian Super Commandos,,Common,Unit,Normal,240,0,0,high,read 240/264
+7,7,362,AT-ST Raider,,Common,Unit,Hyperspace,98,0,1,high,"read 362, hyperspace variant"
+7,8,117,Outland Protector,,Common,Unit,Normal,117,0,0,high,read 117/264
+7,9,231,Diplomatic Pageantry,,Common,Event,Normal,231,0,0,high,read 231/264
+7,10,264,A New Order,,Common,Event,Normal,264,0,0,high,read 264/264
+7,11,138,Turning the Tide,,Common,Event,Normal,138,0,0,high,read 138/264
+7,12,656,Honorable Nite Owl,,Common,Unit,Hyperspace Foil,154,1,1,high,"read 656, hyperspace foil; visible shine and borderless frame"
+7,13,137,Wipe Them Out,,Uncommon,Event,Normal,137,0,0,high,read 137/264
+7,14,29,Scorpenek Annihilator Droid,,Uncommon,Unit,Normal,29,0,0,high,read 29/264
+7,15,354,Reforge,,Rare,Event,Hyperspace,90,0,1,high,"read 354, hyperspace variant"
+7,16,212,Peli Motto,You Bring the Cash?,Rare,Unit,Normal,212,0,0,high,read 212/264
+8,1,6,Sabine Wren,Bargaining on Belief,Common,Leader,Normal,6,0,0,high,read 6/264; Jedi-Mandalorian-Spectre leader
+8,2,20,"Nevarro City, Restored",,Common,Base,Normal,20,0,0,high,Nevarro base; number partially read as 20/264
+8,3,154,Honorable Nite Owl,,Common,Unit,Normal,154,0,0,high,read 154/264 (normal printing)
+8,4,86,Durasteel Plating,,Common,Upgrade,Normal,86,0,0,high,read 86/264
+8,5,176,Imposing Scout Walker,,Common,Unit,Normal,176,0,0,high,read 176/264
+8,6,82,Trexler Armored Marauder,,Common,Unit,Normal,82,0,0,high,read 82/264
+8,7,469,Inspiring Veteran,,Common,Unit,Hyperspace,205,0,1,high,"read 469, hyperspace variant"
+8,8,233,Keep Them Talking,,Common,Event,Normal,233,0,0,high,read 233/264
+8,9,136,Display of Strength,,Common,Event,Normal,136,0,0,high,read 136/264
+8,10,215,Flanking TIE Interceptor,,Common,Unit,Normal,215,0,0,high,read 215/264
+8,11,258,Grassroots Resistance,,Common,Event,Normal,258,0,0,high,read 258/264
+8,12,610,Crix Madine,Strike Team Strategist,Uncommon,Unit,Hyperspace Foil,108,1,1,high,"read 610, hyperspace foil; borderless frame with foil sparkle"
+8,13,142,Mortar Trooper,,Uncommon,Unit,Normal,142,0,0,high,read 142/264
+8,14,103,Long Live the Empire,,Uncommon,Event,Normal,103,0,0,high,read 103/264
+8,15,226,Qi'ra,Master of Teräs Käsi,Uncommon,Unit,Normal,226,0,0,high,read 226/264
+8,16,127,The Twins,We Don't Want War,Rare,Unit,Normal,127,0,0,high,read 127/264
+9,1,9,Ahsoka Tano,Trust in the Force,Common,Leader,Normal,9,0,0,high,read 9/264; Force-Jedi leader
+9,2,26,Freetown,,Common,Base,Normal,26,0,0,high,read 26/264; Tatooine base
+9,3,184,Follow Me,,Common,Event,Normal,184,0,0,high,read 184/264
+9,4,242,Death Trooper Squad,,Common,Unit,Normal,242,0,0,high,read 242/264
+9,5,75,Pit Droid Team,,Common,Unit,Normal,75,0,0,high,read 75/264
+9,6,181,Mark My Words,,Common,Upgrade,Normal,181,0,0,high,read 181/264
+9,7,504,Mandalorian Super Commandos,,Common,Unit,Hyperspace,240,0,1,high,"read 504, hyperspace variant"
+9,8,122,Consortium StarViper,,Common,Unit,Normal,122,0,0,high,read 122/264
+9,9,221,Helix Starfighter,,Common,Unit,Normal,221,0,0,high,read 221/264
+9,10,134,Warrior's Legacy,,Common,Upgrade,Normal,134,0,0,high,read 134/264
+9,11,249,Covert Veteran,,Common,Unit,Normal,249,0,0,high,read 249/264
+9,12,751,Covert Veteran,,Common,Unit,Hyperspace Foil,249,1,1,high,"read 751, hyperspace foil; duplicate of pos 11 in different printing"
+9,13,85,Grav Charge,,Uncommon,Upgrade,Normal,85,0,0,high,read 85/264
+9,14,38,Purrgil Ultra,,Uncommon,Unit,Normal,38,0,0,high,read 38/264
+9,15,414,Deadly Vulnerability,,Uncommon,Upgrade,Hyperspace,150,0,1,high,"read 414, hyperspace variant"
+9,16,202,Carson Teva,There's Something Going On,Rare,Unit,Normal,202,0,0,high,read 202/264
+10,1,273,Ahsoka Tano,Trust in the Force,Common,Leader,Hyperspace,9,0,1,high,"leader, sideways at start of row 1; CORRECTED 9->273: printed number reads 273, borderless full-art with radial hyperspace art bleeding to edges"
+10,2,25,Emperor's Observatory,,Common,Base,Normal,25,0,0,high,verified printed 25/264; black border
+10,3,259,LEP Ratcatcher,,Common,Unit,Normal,259,0,0,high,verified printed 259/264
+10,4,57,Lothal E-Wing,,Common,Unit,Normal,57,0,0,high,verified printed 57/264
+10,5,170,Desert Sharpshooter,,Common,Unit,Normal,170,0,0,high,verified printed 170/264
+10,6,91,Buy Time,,Common,Event,Normal,91,0,0,high,verified printed 91/264; black border
+10,7,438,StarFortress Heavy Bomber,,Common,Unit,Hyperspace,174,0,1,high,"CORRECTED 174->438: printed number reads 438 (no /264), borderless full-art with art bleeding to card edges"
+10,8,222,Unsanctioned Patrol,,Common,Unit,Normal,222,0,0,high,verified printed 222/264
+10,9,121,Blurrg,,Common,Unit,Normal,121,0,0,high,verified printed 121/264
+10,10,201,Open Circle Ace,,Common,Unit,Normal,201,0,0,high,verified printed 201/264
+10,11,130,Fang Fighter Squadron,,Common,Unit,Normal,130,0,0,high,verified printed 130/264
+10,12,578,Remnant Official,,Common,Unit,Hyperspace Foil,76,1,1,high,"CORRECTED 76->578: printed number reads 578, borderless silver full-art with foil shine (hyperspace foil)"
+10,13,146,Justifier,Relentless,Uncommon,Unit,Normal,146,0,0,high,verified printed 146/264
+10,14,223,Halo,Not According to Plan,Uncommon,Unit,Normal,223,0,0,high,verified printed 223/264
+10,15,253,Yellow Aces Bomber,,Uncommon,Unit,Normal,253,0,0,high,verified printed 253/264
+10,16,30,Marrok,Mysterious Warrior,Rare,Unit,Normal,30,0,0,high,rare slot; verified printed 30/264; black border
+11,1,13,Ezra Bridger,It's Now or Never,Common,Leader,Normal,13,0,0,high,"leader, sideways at start of row 1; verified printed 13/264, black border"
+11,2,19,Fortress of the Great Mothers,,Common,Base,Normal,19,0,0,high,"verified printed 19/264; location bar reads PERIDEA (base art title), black border"
+11,3,175,Wookiee Chieftain,,Common,Unit,Normal,175,0,0,high,verified printed 175/264
+11,4,73,Palace Chef Droid,,Common,Unit,Normal,73,0,0,high,verified printed 73/264
+11,5,238,Attendant Navigator,,Common,Unit,Normal,238,0,0,high,verified printed 238/264
+11,6,157,Danger Squadron Wingmen,,Common,Unit,Normal,157,0,0,high,verified printed 157/264
+11,7,333,Noti Nomad,,Common,Unit,Hyperspace,69,0,1,high,"CORRECTED 69->333: printed number reads 333 (no /264); borderless full-art, light desert art bleeds to card edges with glare on surface (nonfoil hyperspace number range)"
+11,8,213,Womp Rat,,Common,Unit,Normal,213,0,0,high,verified printed 213/264
+11,9,262,Faith in the Empire,,Common,Upgrade,Normal,262,0,0,high,verified printed 262/264
+11,10,126,Survivors' Langskib,,Common,Unit,Normal,126,0,0,high,verified printed 126/264
+11,11,207,Heroic Purrgil,,Common,Unit,Normal,207,0,0,high,verified printed 207/264
+11,12,600,AT-ST Raider,,Common,Unit,Hyperspace Foil,98,1,1,high,verified printed 600; borderless full-art with foil shine
+11,13,46,Scion Shuttle,At Morgan's Bidding,Uncommon,Unit,Normal,46,0,0,high,verified printed 46/264; dark art but normal frame
+11,14,113,Mandalorian Flagship,Captured from the Empire,Uncommon,Unit,Normal,113,0,0,high,verified printed 113/264
+11,15,162,Rash Action,,Uncommon,Event,Normal,162,0,0,high,verified printed 162/264
+11,16,179,Boba Fett's Rancor,Emotionally Complex Creature,Legendary,Unit,Normal,179,0,0,high,verified printed 179/264; legendary in rare slot
+12,1,14,The Mandalorian,We Can't Keep Running,Rare,Leader,Normal,14,0,0,high,"rare leader, sideways at start of row 1; verified printed 14/264, black border"
+12,2,21,Emperor's Throne Room,,Common,Base,Normal,21,0,0,high,"verified printed 21/264; location bar reads DEATH STAR, black border"
+12,3,76,Remnant Official,,Common,Unit,Normal,76,0,0,high,verified printed 76/264; black border
+12,4,166,Ewok Warrior,,Common,Unit,Normal,166,0,0,high,verified printed 166/264
+12,5,51,Reinforcing Light Cruiser,,Common,Unit,Normal,51,0,0,high,verified printed 51/264; dark art but normal frame
+12,6,370,Pathfinder Sergeant,,Common,Unit,Hyperspace,106,0,1,high,"CORRECTED 106->370: printed number reads 370 (no /264); borderless full-art, jungle art bleeds to card edges"
+12,7,497,Keep Them Talking,,Common,Event,Hyperspace,233,0,1,high,"CORRECTED 233->497: printed number reads 497 (no /264); borderless full-art with gold hairline rule, cantina art bleeds to card edges"
+12,8,140,Stronger Together,,Common,Event,Normal,140,0,0,high,verified printed 140/264
+12,9,225,Tatooine Sand Beast,,Common,Unit,Normal,225,0,0,high,verified printed 225/264
+12,10,251,Zealous Soldier,,Common,Unit,Normal,251,0,0,high,verified printed 251/264
+12,11,129,Defenders of the Forest,,Common,Unit,Normal,129,0,0,high,verified printed 129/264
+12,12,736,Masterstroke,,Common,Event,Hyperspace Foil,234,1,1,high,verified printed 736; borderless dark gray full-art with foil finish
+12,13,74,Mos Eisley Modifier,,Uncommon,Unit,Normal,74,0,0,high,verified printed 74/264
+12,14,139,Hold Them Off,,Uncommon,Event,Normal,139,0,0,high,verified printed 139/264
+12,15,220,Remnant Lookouts,,Uncommon,Unit,Normal,220,0,0,high,verified printed 220/264
+12,16,153,Green Leader,Crynyd's Sacrifice,Rare,Unit,Normal,153,0,0,high,rare slot; verified printed 153/264
+13,1,3,Baylan Skoll,Power Beyond Dream,Common,Leader,Normal,3,0,0,high,"leader, sideways at start of row 1; printed 3/264 verified, bordered normal frame"
+13,2,25,Emperor's Observatory,,Common,Base,Normal,25,0,0,high,"printed 25/264 verified, bordered"
+13,3,167,Flarestar Attack Shuttle,,Common,Unit,Normal,167,0,0,high,printed 167/264 verified
+13,4,261,Noti Mobile Pod,,Common,Unit,Normal,261,0,0,high,printed 261/264 verified
+13,5,48,Imperial Armored Commando,,Common,Unit,Normal,48,0,0,high,"printed 48/264 verified on zoom; full black border, art inside frame - NOT hyperspace (sparkle diamonds are standard ASH frame decor)"
+13,6,171,Pegasus Tri-Wing,,Common,Unit,Normal,171,0,0,high,printed 171/264 verified
+13,7,430,Ewok Warrior,,Common,Unit,Hyperspace,166,0,1,high,"CORRECTED from 166 Normal: borderless full-art with radiating streaks, printed bare number 430 verified on zoom (hyperspace nonfoil), no foil glare"
+13,8,111,Children of the Watch,,Common,Unit,Normal,111,0,0,high,printed 111/264 verified
+13,9,263,The Way of the Mand'alor,,Common,Upgrade,Normal,263,0,0,high,"printed 263/264 verified on full-card zoom; full black border, art inside frame - NOT hyperspace"
+13,10,234,Masterstroke,,Common,Event,Normal,234,0,0,high,printed 234/264 verified
+13,11,95,Remnant Interceptor,,Common,Unit,Normal,95,0,0,high,"printed 95/264 verified, bordered"
+13,12,626,Protectorate Fighter,,Common,Unit,Hyperspace Foil,124,1,1,high,"borderless full-art with foil sheen, printed bare number 626 re-verified on zoom"
+13,13,160,Kachirho Militia,,Uncommon,Unit,Normal,160,0,0,high,printed 160/264 verified
+13,14,64,The Armorer,Secrecy is Our Survival,Uncommon,Unit,Normal,64,0,0,high,printed 64/264 verified
+13,15,241,Marrok's Fiend Fighter,Formidable Pursuer,Uncommon,Unit,Normal,241,0,0,high,printed 241/264 verified
+13,16,27,Enoch,Solemn Servant,Rare,Unit,Normal,27,0,0,high,rare slot; printed 27/264 verified
+14,1,275,Cad Bane,Still Faster than You,Common,Leader,Hyperspace,11,0,1,high,"CORRECTED from 11 Normal: leader sideways at start of row 1, borderless full-art with radiating streaks, printed bare number 275 verified on zoom (hyperspace nonfoil)"
+14,2,23,Ancient Henge,,Common,Base,Normal,23,0,0,high,"printed 23/264 verified on full-card zoom, bordered"
+14,3,69,Noti Nomad,,Common,Unit,Normal,69,0,0,high,printed 69/264 verified
+14,4,164,Alamite Hunter,,Common,Unit,Normal,164,0,0,high,printed 164/264 verified
+14,5,87,Cybernetic Enhancements,,Common,Upgrade,Normal,87,0,0,high,printed 87/264 verified
+14,6,244,Remnant Trooper Corps,,Common,Unit,Normal,244,0,0,high,printed 244/264 verified
+14,7,482,Ferry Droid,,Common,Unit,Hyperspace,218,0,1,high,"CORRECTED from 218 Normal: borderless full-art with radiating streaks, printed bare number 482 verified on zoom (hyperspace nonfoil); this pack has both the hyperspace and the normal copy of Ferry Droid"
+14,8,218,Ferry Droid,,Common,Unit,Normal,218,0,0,high,"printed 218/264 verified, bordered normal frame; the other Ferry Droid copy (pos 7) is the hyperspace 482"
+14,9,120,Warrior of Clan Kryze,,Common,Unit,Normal,120,0,0,high,printed 120/264 verified
+14,10,252,N5 Sentry Droid,,Common,Unit,Normal,252,0,0,high,printed 252/264 verified
+14,11,190,Peridea Bandit,,Common,Unit,Normal,190,0,0,high,printed 190/264 verified
+14,12,588,Durasteel Plating,,Common,Upgrade,Hyperspace Foil,86,1,1,high,"borderless full-art with foil glare, printed bare number 588 re-verified on zoom"
+14,13,93,Captain Pellaeon,Plotting from the Shadows,Uncommon,Unit,Normal,93,0,0,high,"printed 93/264 verified, bordered normal frame"
+14,14,41,Outcast,Mercenary Starship,Uncommon,Unit,Normal,41,0,0,high,printed 41/264 verified
+14,15,420,R5-D4,Built for Adventure,Uncommon,Unit,Hyperspace,156,0,1,high,"CORRECTED from 156 Normal: borderless full-art with gold radiating streaks, printed bare number 420 verified on zoom (hyperspace nonfoil), no foil glare"
+14,16,224,Elzar Mann,Haunted by a Vision,Legendary,Unit,Normal,224,0,0,high,legendary in rare slot; printed 224/264 verified
+15,1,9,Ahsoka Tano,Trust in the Force,Common,Leader,Normal,9,0,0,high,"leader, sideways at start of row 1; printed 9/264 verified, bordered"
+15,2,20,"Nevarro City, Restored",,Common,Base,Normal,20,0,0,high,"printed 20/264 verified on full-card zoom, bordered"
+15,3,165,Clan Vizsla Soldier,,Common,Unit,Normal,165,0,0,high,"printed 165/264 (middle digit blurry, confirmed via Clan Vizsla Soldier title bar + Common rarity icon), bordered"
+15,4,81,Nebulon-C Frigate,,Common,Unit,Normal,81,0,0,high,printed 81/264 verified
+15,5,145,Praetorian Elite,,Common,Unit,Normal,145,0,0,high,"printed 145/264 verified, bordered (dark frame is normal ASH styling)"
+15,6,58,Duchess's Protector,,Common,Unit,Normal,58,0,0,high,printed 58/264 verified
+15,7,381,Outland Protector,,Common,Unit,Hyperspace,117,0,1,high,"CORRECTED from 117 Normal: borderless full-art with radiating streaks (art bleeds to card edge), printed bare number 381 verified on zoom (hyperspace nonfoil), no foil glare"
+15,8,106,Pathfinder Sergeant,,Common,Unit,Normal,106,0,0,high,printed 106/264 verified
+15,9,232,Full of Surprises,,Common,Event,Normal,232,0,0,high,printed 232/264 verified
+15,10,250,Imperial Defector,,Common,Unit,Normal,250,0,0,high,printed 250/264 verified
+15,11,131,Dinosaur Turtle,,Common,Unit,Normal,131,0,0,high,printed 131/264 verified
+15,12,695,Emperor's Champion,,Common,Unit,Hyperspace Foil,193,1,1,high,"borderless full-art with foil sheen, printed bare number 695 re-verified on zoom"
+15,13,56,Huyang,Your Aptitude Falls Short,Uncommon,Unit,Normal,56,0,0,high,printed 56/264 verified
+15,14,108,Crix Madine,Strike Team Strategist,Uncommon,Unit,Normal,108,0,0,high,printed 108/264 verified
+15,15,191,Shin Hati's Fiend Fighter,Compact and Agile,Uncommon,Unit,Normal,191,0,0,high,printed 191/264 verified
+15,16,39,Baylan Skoll,Fallen Jedi,Rare,Unit,Normal,39,0,0,high,"rare slot, unit version (not the leader); printed 39/264 verified"
+16,1,11,Cad Bane,Still Faster than You,Common,Leader,Normal,11,0,0,high,Printed 11/264 verified.
+16,2,22,Kryze Castle,,Common,Base,Normal,22,0,0,high,Printed 22/264 verified.
+16,3,143,Tempest Lieutenant,,Common,Unit,Normal,143,0,0,high,Printed 143/264 verified.
+16,4,260,Mos Espa Watermonger,,Common,Unit,Normal,260,0,0,high,Printed 260/264 verified.
+16,5,45,Reanimated Night Trooper,,Common,Unit,Normal,45,0,0,high,Printed 45/264 verified.
+16,6,174,StarFortress Heavy Bomber,,Common,Unit,Normal,174,0,0,high,Printed 174/264 verified.
+16,7,526,Faith in the Empire,,Common,Upgrade,Hyperspace,262,0,1,high,CORRECTED: previous pass had 262 Normal. Card is borderless (art bleeds to card edge) and prints ASH-EN 526 = hyperspace variant.
+16,8,214,Amnesty Officer,,Common,Unit,Normal,214,0,0,high,Printed 214/264 verified.
+16,9,98,AT-ST Raider,,Common,Unit,Normal,98,0,0,high,Printed 98/264 verified.
+16,10,233,Keep Them Talking,,Common,Event,Normal,233,0,0,high,Printed 233/264 verified.
+16,11,121,Blurrg,,Common,Unit,Normal,121,0,0,high,Printed 121/264 verified.
+16,12,766,A New Order,,Common,Event,Hyperspace Foil,264,1,1,high,CORRECTED: previous pass had 264 Normal foil with standard border. Card is actually borderless with foil sheen and prints ASH-EN 766 = hyperspace foil variant.
+16,13,147,The Cyborg Mech,Mysterious Threat,Uncommon,Unit,Normal,147,0,0,high,Printed 147/264 verified.
+16,14,54,Pointless to Resist,,Uncommon,Upgrade,Normal,54,0,0,high,Printed 54/264 verified.
+16,15,209,Ezra Bridger,The Force is All I Need,Uncommon,Unit,Normal,209,0,0,high,Printed 209/264 verified.
+16,16,200,Rehabilitation,,Rare,Event,Normal,200,0,0,high,Printed 200/264 verified.
+17,1,10,Bo-Katan Kryze,Reclaiming Mandalore,Rare,Leader,Normal,10,0,0,high,Rare leader. Printed 10/264 verified.
+17,2,286,Kryze Castle,,Common,Base,Hyperspace,22,0,1,high,CORRECTED: previous pass had 22 Normal. Card is borderless (art bleeds to card edges) and prints ASH-EN 286 = hyperspace base variant.
+17,3,80,Covert Believers,,Common,Unit,Normal,80,0,0,high,Printed 80/264 verified.
+17,4,246,Exploit Advantage,,Common,Event,Normal,246,0,0,high,Printed 246/264 verified.
+17,5,173,Shydopp Pirate Skiff,,Common,Unit,Normal,173,0,0,high,Printed 173/264 verified.
+17,6,78,B-Wing Rearguard,,Common,Unit,Normal,78,0,0,high,Printed 78/264 verified.
+17,7,407,Tempest Lieutenant,,Common,Unit,Hyperspace,143,0,1,high,CORRECTED: previous pass had 143 Normal. Card is borderless (forest art bleeds to card edges) and prints ASH-EN 407 = hyperspace variant.
+17,8,254,Gallofree Transport,,Common,Unit,Normal,254,0,0,high,Printed 254/264 verified.
+17,9,221,Helix Starfighter,,Common,Unit,Normal,221,0,0,high,Printed 221/264 verified.
+17,10,117,Outland Protector,,Common,Unit,Normal,117,0,0,high,Printed 117/264 verified.
+17,11,213,Womp Rat,,Common,Unit,Normal,213,0,0,high,Printed 213/264 verified.
+17,12,660,Han Solo,It'll Work,Special,Unit,Hyperspace Foil,158,1,1,high,Printed ASH-EN 660 re-verified; borderless full-art with foil sheen. Previous pass was already correct.
+17,13,119,Greef Karga,Introductions are in Order,Uncommon,Unit,Normal,119,0,0,high,Printed 119/264 verified.
+17,14,150,Deadly Vulnerability,,Uncommon,Upgrade,Normal,150,0,0,high,Printed 150/264 verified.
+17,15,236,Far Far Away,,Uncommon,Event,Normal,236,0,0,high,Printed 236/264 verified.
+17,16,132,Queen Soruna,Willing to Fight,Rare,Unit,Normal,132,0,0,high,Printed 132/264 verified.
+18,1,6,Sabine Wren,Bargaining on Belief,Common,Leader,Normal,6,0,0,high,Printed 6/264 verified; standard black-border leader frame.
+18,2,24,Dragonsnake Bog,,Common,Base,Normal,24,0,0,high,Printed 24/264 verified; standard black-border base frame.
+18,3,152,Inspired Recruit,,Common,Unit,Normal,152,0,0,high,Printed 152/264 verified.
+18,4,73,Palace Chef Droid,,Common,Unit,Normal,73,0,0,high,Printed 73/264 verified.
+18,5,141,TIE Striker,,Common,Unit,Normal,141,0,0,high,Printed 141/264 verified.
+18,6,240,Mandalorian Super Commandos,,Common,Unit,Normal,240,0,0,high,Printed 240/264 verified; dark art but standard frame.
+18,7,353,Perseverance,,Common,Event,Hyperspace,89,0,1,high,CORRECTED: previous pass had 89 Normal. Card is borderless (Mandalorian art bleeds to card edges) and prints ASH-EN 353 = hyperspace variant.
+18,8,262,Faith in the Empire,,Common,Upgrade,Normal,262,0,0,high,Printed 262/264 verified; this copy is the normal bordered variant.
+18,9,96,Forest Patroller,,Common,Unit,Normal,96,0,0,high,Printed 96/264 verified.
+18,10,222,Unsanctioned Patrol,,Common,Unit,Normal,222,0,0,high,Printed 222/264 verified.
+18,11,140,Stronger Together,,Common,Event,Normal,140,0,0,high,Printed 140/264 verified.
+18,12,672,Desert Sharpshooter,,Common,Unit,Hyperspace Foil,170,1,1,high,Printed ASH-EN 672 re-verified; borderless full-art foil. Previous pass was already correct.
+18,13,72,Doctor Pershing,Dedicated to Research,Uncommon,Unit,Normal,72,0,0,high,Printed 72/264 verified.
+18,14,35,Tatooine Repulsor Train,,Uncommon,Unit,Normal,35,0,0,high,Printed 35/264 verified.
+18,15,314,Morgan Elsbeth,Life Abandoned,Uncommon,Unit,Hyperspace,50,0,1,high,CORRECTED: previous pass had 50 Normal. Card is borderless (art bleeds to card edges) and prints ASH-EN 314 = hyperspace variant.
+18,16,135,The Darksaber,Icon of Leadership,Legendary,Upgrade,Normal,135,0,0,high,Printed 135/264 verified.
+19,1,17,Greef Karga,Gracious Magistrate,Common,Leader,Normal,17,0,0,high,audit: read 17/264
+19,2,26,Freetown,,Common,Base,Normal,26,0,0,high,audit: read 26/264
+19,3,57,Lothal E-Wing,,Common,Unit,Normal,57,0,0,high,read 57/264
+19,4,154,Honorable Nite Owl,,Common,Unit,Normal,154,0,0,high,read 154/264
+19,5,82,Trexler Armored Marauder,,Common,Unit,Normal,82,0,0,high,read 82/264
+19,6,157,Danger Squadron Wingmen,,Common,Unit,Normal,157,0,0,high,read 157/264
+19,7,492,Preparation,,Common,Upgrade,Hyperspace,228,0,1,high,audit correction (was 228 Normal): full-res crop shows printed bare 492 with NO /264 denominator; borderless art with hyperspace streaks; this is the pack's nonfoil HS common
+19,8,228,Preparation,,Common,Upgrade,Normal,228,0,0,high,read 228/264
+19,9,96,Forest Patroller,,Common,Unit,Normal,96,0,0,high,read 96/264
+19,10,254,Gallofree Transport,,Common,Unit,Normal,254,0,0,high,read 254/264
+19,11,216,Mandalorian Scout,,Common,Unit,Normal,216,0,0,high,read 216/264
+19,12,703,Open Circle Ace,,Common,Unit,Hyperspace Foil,201,1,1,high,"read 703; heavy foil glare, borderless frame"
+19,13,88,The Conflict Within,,Uncommon,Upgrade,Normal,88,0,0,high,read 88/264
+19,14,178,Knobby White Ice Spider,,Uncommon,Unit,Normal,178,0,0,high,read 178/264
+19,15,297,Grand Admiral Thrawn,Orchestrating His Return,Rare,Unit,Hyperspace,33,0,1,high,read 297; hyperspace borderless variant of rare unit
+19,16,70,At Attin Safety Droid,,Rare,Unit,Normal,70,0,0,high,read 70/264
+20,1,274,Bo-Katan Kryze,Reclaiming Mandalore,Rare,Leader,Hyperspace,10,0,1,high,read 274; borderless hyperspace leader
+20,2,25,Emperor's Observatory,,Common,Base,Normal,25,0,0,high,read 25/264; Pillio
+20,3,259,LEP Ratcatcher,,Common,Unit,Normal,259,0,0,high,read 259/264
+20,4,61,Strike Team Vanguard,,Common,Unit,Normal,61,0,0,high,read 61/264
+20,5,176,Imposing Scout Walker,,Common,Unit,Normal,176,0,0,high,read 176/264
+20,6,91,Buy Time,,Common,Event,Normal,91,0,0,high,read 91/264
+20,7,384,Warrior of Clan Kryze,,Common,Unit,Hyperspace,120,0,1,high,read 384; borderless full-art
+20,8,117,Outland Protector,,Common,Unit,Normal,117,0,0,high,read 117/264
+20,9,231,Diplomatic Pageantry,,Common,Event,Normal,231,0,0,high,read 231/264
+20,10,264,A New Order,,Common,Event,Normal,264,0,0,high,read 264/264
+20,11,138,Turning the Tide,,Common,Event,Normal,138,0,0,high,read 138/264
+20,12,580,B-Wing Rearguard,,Common,Unit,Hyperspace Foil,78,1,1,high,"read 580; glossy foil sheen, borderless"
+20,13,209,Ezra Bridger,The Force is All I Need,Uncommon,Unit,Normal,209,0,0,high,read 209/264
+20,14,97,Moff Gideon,Remnant Commander,Uncommon,Unit,Normal,97,0,0,high,read 97/264
+20,15,194,Snub Fighter Squadron,,Uncommon,Unit,Normal,194,0,0,high,read 194/264
+20,16,195,Helgait,Dooku Was a Visionary,Rare,Unit,Normal,195,0,0,high,read 195/264
+21,1,4,Grand Admiral Thrawn,Victory is Mine,Rare,Leader,Normal,4,0,0,high,read 4/264
+21,2,26,Freetown,,Common,Base,Normal,26,0,0,high,read 26/264; Tatooine
+21,3,239,Imperial Loyalist,,Common,Unit,Normal,239,0,0,high,read 239/264
+21,4,184,Follow Me,,Common,Event,Normal,184,0,0,high,read 184/264
+21,5,76,Remnant Official,,Common,Unit,Normal,76,0,0,high,read 76/264
+21,6,185,Intimidation,,Common,Event,Normal,185,0,0,high,read 185/264
+21,7,513,Covert Veteran,,Common,Unit,Hyperspace,249,0,1,high,read 513; hyperspace variant
+21,8,233,Keep Them Talking,,Common,Event,Normal,233,0,0,high,read 233/264
+21,9,136,Display of Strength,,Common,Event,Normal,136,0,0,high,read 136/264
+21,10,215,Flanking TIE Interceptor,,Common,Unit,Normal,215,0,0,high,read 215/264
+21,11,258,Grassroots Resistance,,Common,Event,Normal,258,0,0,high,read 258/264
+21,12,763,Noti Mobile Pod,,Common,Unit,Hyperspace Foil,261,1,1,high,read 763; heavy silvery foil glare
+21,13,49,Shin Hati,Going Somewhere?,Uncommon,Unit,Normal,49,0,0,high,read 49/264
+21,14,159,Alphabet Squadron U-Wing,Quiet Devotion,Uncommon,Unit,Normal,159,0,0,high,read 159/264
+21,15,462,Nowhere to Hide,,Uncommon,Upgrade,Hyperspace,198,0,1,high,read 462; hyperspace full-art variant
+21,16,144,Vane's Snub Fighter,Brash and Proud,Rare,Unit,Normal,144,0,0,high,read 144/264
+22,1,3,Baylan Skoll,Power Beyond Dream,Common,Leader,Normal,3,0,0,high,sideways leader; verified printed 3/264
+22,2,24,Dragonsnake Bog,,Common,Base,Normal,24,0,0,high,verified printed 24/264 (Dagobah base)
+22,3,75,Pit Droid Team,,Common,Unit,Normal,75,0,0,high,verified printed 75/264
+22,4,170,Desert Sharpshooter,,Common,Unit,Normal,170,0,0,high,verified printed 170/264
+22,5,238,Attendant Navigator,,Common,Unit,Normal,238,0,0,high,verified printed 238/264
+22,6,86,Durasteel Plating,,Common,Upgrade,Normal,86,0,0,high,verified printed 86/264
+22,7,440,Imposing Scout Walker,,Common,Unit,Hyperspace,176,0,1,high,CORRECTED: previous pass had 176 Normal; card is borderless and printed number reads 440 (no /264) = hyperspace nonfoil
+22,8,122,Consortium StarViper,,Common,Unit,Normal,122,0,0,high,verified printed 122/264
+22,9,221,Helix Starfighter,,Common,Unit,Normal,221,0,0,high,verified printed 221/264
+22,10,134,Warrior's Legacy,,Common,Upgrade,Normal,134,0,0,high,verified printed 134/264
+22,11,249,Covert Veteran,,Common,Unit,Normal,249,0,0,high,verified printed 249/264
+22,12,642,Stronger Together,,Common,Event,Hyperspace Foil,140,1,1,high,"CORRECTED: previous pass had 140 standard foil; card is borderless (art bleeds to edges, title bar overlaid) with foil sheen and printed number reads 642 (no /264) = hyperspace foil"
+22,13,99,Gozanti Assault Carrier,,Uncommon,Unit,Normal,99,0,0,high,verified printed 99/264
+22,14,67,Get Lost,,Uncommon,Event,Normal,67,0,0,high,verified printed 67/264
+22,15,208,Sabine Wren,I Learned the Hard Way,Uncommon,Unit,Normal,208,0,0,high,verified printed 208/264
+22,16,104,Dathomiri Magicks,,Rare,Event,Normal,104,0,0,high,verified printed 104/264
+23,1,16,Shin Hati,Eager Adversary,Common,Leader,Normal,16,0,0,high,sideways leader; verified printed 16/264
+23,2,23,Ancient Henge,,Common,Base,Normal,23,0,0,high,verified printed 23/264 (Seatos base)
+23,3,175,Wookiee Chieftain,,Common,Unit,Normal,175,0,0,high,verified printed 175/264
+23,4,242,Death Trooper Squad,,Common,Unit,Normal,242,0,0,high,verified printed 242/264
+23,5,51,Reinforcing Light Cruiser,,Common,Unit,Normal,51,0,0,high,verified printed 51/264
+23,6,166,Ewok Warrior,,Common,Unit,Normal,166,0,0,high,verified printed 166/264
+23,7,350,Durasteel Plating,,Common,Upgrade,Hyperspace,86,0,1,high,CORRECTED: previous pass had 86 Normal; printed number reads 350 (no /264) = hyperspace nonfoil; extended-art border visible on close crop
+23,8,222,Unsanctioned Patrol,,Common,Unit,Normal,222,0,0,high,verified printed 222/264
+23,9,121,Blurrg,,Common,Unit,Normal,121,0,0,high,verified printed 121/264
+23,10,201,Open Circle Ace,,Common,Unit,Normal,201,0,0,high,verified printed 201/264
+23,11,130,Fang Fighter Squadron,,Common,Unit,Normal,130,0,0,high,verified printed 130/264
+23,12,675,Shydopp Pirate Skiff,,Common,Unit,Hyperspace Foil,173,1,1,high,verified printed 675 (no /264); borderless full-art frame with gold foil sheen
+23,13,172,Razor Crest,Outfitted Armament,Uncommon,Unit,Normal,172,0,0,high,verified printed 172/264
+23,14,115,The Student Guides the Master,,Uncommon,Event,Normal,115,0,0,high,verified printed 115/264
+23,15,65,Home One,Heart of the Fleet,Uncommon,Unit,Normal,65,0,0,high,verified printed 65/264
+23,16,53,Pre Vizsla,Strong-Willed Ruler,Legendary,Unit,Normal,53,0,0,high,verified printed 53/264
+24,1,8,Moff Gideon,Indomitable Warlord,Common,Leader,Normal,8,0,0,high,sideways leader; verified printed 8/264
+24,2,287,Ancient Henge,,Common,Base,Hyperspace,23,0,1,high,CORRECTED: previous pass had 23 Normal; printed number reads 287 (no /264) = hyperspace nonfoil base (Seatos)
+24,3,239,Imperial Loyalist,,Common,Unit,Normal,239,0,0,high,verified printed 239/264
+24,4,185,Intimidation,,Common,Event,Normal,185,0,0,high,verified printed 185/264
+24,5,61,Strike Team Vanguard,,Common,Unit,Normal,61,0,0,high,verified printed 61/264
+24,6,141,TIE Striker,,Common,Unit,Normal,141,0,0,high,verified printed 141/264
+24,7,321,Lothal E-Wing,,Common,Unit,Hyperspace,57,0,1,high,CORRECTED: previous pass had 57 Normal; printed number reads 321 (no /264) = hyperspace nonfoil; extended-art border texture visible
+24,8,205,Inspiring Veteran,,Common,Unit,Normal,205,0,0,high,verified printed 205/264
+24,9,107,Clan Wren Loyalist,,Common,Unit,Normal,107,0,0,high,verified printed 107/264
+24,10,256,Rebel Infiltrators,,Common,Unit,Normal,256,0,0,high,verified printed 256/264
+24,11,193,Emperor's Champion,,Common,Unit,Normal,193,0,0,high,verified printed 193/264
+24,12,604,Ravager,Final Imperial Command,Legendary,Unit,Hyperspace Foil,102,1,1,high,verified printed 604 (no /264); borderless full-art frame with foil shine
+24,13,187,Reckoning,,Uncommon,Event,Normal,187,0,0,high,verified printed 187/264
+24,14,68,Domesticated Loth-Cat,,Uncommon,Unit,Normal,68,0,0,high,verified printed 68/264
+24,15,361,Moff Gideon,Remnant Commander,Uncommon,Unit,Hyperspace,97,0,1,high,CORRECTED: previous pass had 97 Normal; printed number reads 361 (no /264) = hyperspace nonfoil; extended-art border texture visible
+24,16,114,Sabine's Lightsaber,Not Alone,Rare,Upgrade,Normal,114,0,0,high,verified printed 114/264

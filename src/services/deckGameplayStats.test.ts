@@ -42,6 +42,21 @@ describe('buildDeckGameplayMetrics', () => {
     assert.equal(metrics.matchRecord.winRate, 0)
     assert.equal(metrics.gameRecord.winRate, 0)
   })
+
+  it('excludes leader mirrors from match and game records', () => {
+    const metrics = buildDeckGameplayMetrics([
+      { result: 'win', gameResults: ['W', 'W'], leaderName: 'Sabine Wren', opponent: { leaderName: 'Sabine Wren' } },
+      { result: 'loss', gameResults: ['L', 'W', 'L'], leaderName: 'Sabine Wren', opponent: { leaderName: 'Darth Vader' } },
+    ])
+
+    assert.equal(metrics.matchRecord.matches, 1)
+    assert.equal(metrics.matchRecord.wins, 0)
+    assert.equal(metrics.matchRecord.losses, 1)
+    assert.equal(metrics.gameRecord.wins, 1)
+    assert.equal(metrics.gameRecord.losses, 2)
+    assert.equal(metrics.distribution.find((bucket) => bucket.key === '1-2')?.count, 1)
+    assert.equal(metrics.distribution.find((bucket) => bucket.key === '2-0')?.count, 0)
+  })
 })
 
 describe('buildOpponentBreakdown', () => {
@@ -71,5 +86,17 @@ describe('buildOpponentBreakdown', () => {
     assert.equal(breakdown.length, 1)
     assert.equal(breakdown[0].opponentName, 'Unknown opponent')
     assert.equal(breakdown[0].matches, 1)
+  })
+
+  it('excludes leader mirrors from matchup records', () => {
+    const breakdown = buildOpponentBreakdown([
+      { result: 'win', leaderName: 'Sabine Wren', opponent: { username: 'Mirror', leaderName: 'Sabine Wren', baseName: 'Tarkintown', archetype: 'Sabine Aggro' } },
+      { result: 'loss', leaderName: 'Sabine Wren', opponent: { username: 'Control', leaderName: 'Darth Vader', baseName: 'Command Center', archetype: 'Vader Control' } },
+    ] as any)
+
+    assert.equal(breakdown.length, 1)
+    assert.equal(breakdown[0].leaderName, 'Darth Vader')
+    assert.equal(breakdown[0].matches, 1)
+    assert.equal(breakdown[0].losses, 1)
   })
 })

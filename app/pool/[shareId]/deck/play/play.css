@@ -186,9 +186,29 @@
 
 .practice-hand-button-container {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
   margin-bottom: 1rem;
+}
+
+/* Transient "Posted to Discord!" confirmation below the button row — fades out
+   on its own (state is cleared after the animation). */
+.discord-post-toast {
+  text-align: center;
+  margin-top: -0.5rem;
+  margin-bottom: 0.75rem;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #bbf7d0;
+  animation: discordPostToastFade 4s ease forwards;
+}
+@keyframes discordPostToastFade {
+  0%, 60% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 /* Login banner for logged-out users */
@@ -887,5 +907,198 @@ a.login-banner-button:focus {
 
   .practice-hand-stats {
     font-size: 0.8rem;
+  }
+}
+
+/* Companion pitch above the Swiss panel (logged-in player, no Companion): a
+   prominent banner, then a lesser subhead, then the full install CTA below. */
+.swiss-companion-pitch {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Alert-style callout: both lines centered INSIDE one bordered box. */
+.swiss-companion-pitch-alert {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid rgba(100, 181, 246, 0.4);
+  border-radius: 10px;
+  background: rgba(100, 181, 246, 0.1);
+  text-align: center;
+}
+
+.swiss-companion-pitch-title {
+  margin: 0;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  line-height: 1.35;
+  color: #fff;
+}
+
+.swiss-companion-pitch-sub {
+  margin: 0;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+@media (max-width: 640px) {
+  .swiss-companion-pitch-title {
+    font-size: 1rem;
+  }
+}
+
+/* Swiss-in-progress deck export box — no instructions; the Play button + Swiss
+   panel drive play, this is just quick export. */
+.swiss-deck-export {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;                /* match the Swiss panel header→content spacing */
+  margin: 1rem 0 2rem;      /* full width (matches the Swiss box); space before Practice Hand */
+  padding: 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.swiss-deck-export-label {
+  align-self: flex-start;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.swiss-deck-export-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.swiss-deck-export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.swiss-deck-export-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .swiss-deck-export-btn:not(:disabled):hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+}
+
+.swiss-deck-export-msg {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-left: 0.25rem;
+}
+.swiss-deck-export-msg--success { color: #4ade80; }
+.swiss-deck-export-msg--error { color: #fca5a5; }
+.swiss-deck-export-msg--info { color: rgba(255, 255, 255, 0.7); }
+
+/* Skeleton while we determine competitive vs normal play — render the right
+   thing ONCE instead of flashing the normal play box then swapping to Swiss. */
+.swiss-area-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin: 1rem 0;
+  padding: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+}
+.swiss-area-skeleton-bar { height: 18px; width: 45%; border-radius: 6px; }
+.swiss-area-skeleton-block { height: 120px; border-radius: 10px; }
+.swiss-area-skeleton-row { display: flex; gap: 0.6rem; }
+.swiss-area-skeleton-pill { height: 36px; width: 110px; border-radius: 8px; }
+.swiss-area-skeleton-bar,
+.swiss-area-skeleton-block,
+.swiss-area-skeleton-pill {
+  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.12) 37%, rgba(255,255,255,0.05) 63%);
+  background-size: 400% 100%;
+  animation: swiss-skeleton-shimmer 1.4s ease infinite;
+}
+@keyframes swiss-skeleton-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .swiss-area-skeleton-bar,
+  .swiss-area-skeleton-block,
+  .swiss-area-skeleton-pill { animation: none; }
+}
+
+/* Post-event tab strip: "Swiss Practice Results" / "Play". Real tabs (not toggle
+   pills), centered above the panel/play area once the Swiss event is complete. */
+.posttourney-tabs {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0 auto 16px;
+  padding: 0.1rem;
+}
+
+/* Real tab look — mirrors the deck-stats / YourStats tabs (.your-stats-tab)
+   so the Swiss tabs read as tabs, not toggle pills. */
+.posttourney-tab {
+  min-width: 120px;
+  padding: 0.7rem 1.4rem;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.posttourney-tab.active {
+  background: rgba(100, 181, 246, 0.16);
+  border-color: #64b5f6;
+  color: #fff;
+}
+
+.posttourney-tab:focus-visible {
+  outline: 2px solid #64b5f6;
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .posttourney-tab:hover:not(.active) {
+    color: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.06);
   }
 }

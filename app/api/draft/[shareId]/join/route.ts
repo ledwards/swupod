@@ -7,6 +7,7 @@ import { broadcastDraftState, broadcastSystemChatMessage } from '@/src/lib/socke
 import { postPlayerJoined, updatePodEmbed } from '@/lib/discordLfg'
 import { captureLimitedServerEvent } from '@/lib/posthog'
 import { LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
+import { findNextAvailableSeat } from '@/src/utils/draftSeats'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {
@@ -57,7 +58,20 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       [pod.id]
     )
 
-    const seatNumber = players.length + 1
+    // Take the LOWEST unoccupied seat, not players.length + 1. Bots fill seats
+    // top-down (add-bots), so a host + bots lobby leaves a low-numbered gap;
+    // counting rows pointed at an already-occupied seat → a duplicate
+    // seat_number that rendered as two children with the same React key
+    // (`seat-${n}` in PlayerCircle) and made the joining human invisible.
+    const seatNumber = findNextAvailableSeat(
+      players.map((p: { seat_number: number }) => p.seat_number),
+      pod.max_players,
+    )
+    if (seatNumber === null) {
+      // No free seat despite the current_players guard above (current_players
+      // can drift from the real row count). Refuse rather than create a dup.
+      return errorResponse('Draft is full', 400)
+    }
 
     // Add player
     await query(

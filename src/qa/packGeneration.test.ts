@@ -11,8 +11,12 @@
  * Results are written to: src/qa/results.json
  */
 
-import { generateBoosterPack, generateSealedPod, clearBeltCache } from '../utils/boosterPack'
+import { generateBoosterPack, generateSealedPod, generateSealedBox, clearBeltCache } from '../utils/boosterPack'
 import { initializeCardCache, getCachedCards } from '../utils/cardCache'
+import { LeaderBelt } from '../belts/LeaderBelt'
+import { HyperspaceLeaderBelt } from '../belts/HyperspaceLeaderBelt'
+import { ShowcaseLeaderBelt } from '../belts/ShowcaseLeaderBelt'
+import { LEADER_COMMON_PRINTS_PER_BOOT, LEADER_DEDUP_WINDOW } from '../belts/leaderSheet'
 import { writeFileSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
@@ -23,6 +27,11 @@ const __dirname = dirname(__filename)
 const POD_SAMPLE_SIZE = 100 // Number of sealed pods to generate for analysis
 const PACKS_PER_POD = 6
 const TOLERANCE = 0.15 // 15% tolerance for statistical tests
+const LEADER_QA_SETS = ['SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'SEC', 'ASH']
+const LEADER_BOX_QA_SET = 'ASH'
+const LEADER_BOX_QA_SAMPLE_SIZE = 1000
+const DRAFT_BOX_SIZE = 24
+const PACK_QA_SEED_BASE = 0x9a5eed00
 
 interface TestResult {
   suite: string
@@ -87,6 +96,30 @@ function assert(condition: boolean, message?: string): asserts condition {
   if (!condition) throw new Error(message || 'Assertion failed')
 }
 
+function withMockedRandom<T>(value: number, fn: () => T): T {
+  const originalRandom = Math.random
+  Math.random = () => value
+  try {
+    return fn()
+  } finally {
+    Math.random = originalRandom
+  }
+}
+
+function withSeededRandom<T>(seed: number, fn: () => T): T {
+  const originalRandom = Math.random
+  let state = seed >>> 0
+  Math.random = () => {
+    state = (state * 1664525 + 1013904223) >>> 0
+    return state / 0x100000000
+  }
+  try {
+    return fn()
+  } finally {
+    Math.random = originalRandom
+  }
+}
+
 function assertWithinTolerance(actual: number, expected: number, tolerance: number, message?: string): void {
   const diff = Math.abs(actual - expected)
   const maxDiff = expected * tolerance
@@ -110,6 +143,150 @@ interface Card {
   aspects?: string[]
   traits?: string[]
   type?: string
+}
+
+function leaderKey(card: Card): string {
+  return [card.name, (card as any).subtitle || '', card.type || 'Leader'].join('|')
+}
+
+function countBy<T>(items: T[], keyFn: (item: T) => string): Map<string, number> {
+  const counts = new Map<string, number>()
+  for (const item of items) {
+    const key = keyFn(item)
+    counts.set(key, (counts.get(key) || 0) + 1)
+  }
+  return counts
+}
+
+function assertLeaderSheetBoot(
+  setCode: string,
+  label: string,
+  createBelt: (setCode: string) => any,
+): void {
+  const belt = createBelt(setCode)
+  if (belt.fillingPool?.length === 0) return
+
+  const sheet = Array.from({ length: belt.bootSize }, () => belt.next()).filter(Boolean) as Card[]
+  const expectedCommonCount = belt.commonLeaders.length * LEADER_COMMON_PRINTS_PER_BOOT
+  const expectedRareCount = belt.rareLeaders.length
+
+  assert(sheet.length === belt.bootSize, `${label} ${setCode}: sheet returned ${sheet.length} cards, expected ${belt.bootSize}`)
+  assert(
+    sheet.filter(card => card.rarity === 'Common').length === expectedCommonCount,
+    `${label} ${setCode}: sheet common count does not match ${belt.commonLeaders.length} leaders x ${LEADER_COMMON_PRINTS_PER_BOOT}`
+  )
+  assert(
+    sheet.filter(card => card.rarity === 'Rare').length === expectedRareCount,
+    `${label} ${setCode}: sheet rare count does not match one print of each rare leader`
+  )
+
+  const commonCounts = countBy(sheet.filter(card => card.rarity === 'Common'), leaderKey)
+  const rareCounts = countBy(sheet.filter(card => card.rarity === 'Rare'), leaderKey)
+
+  for (const leader of belt.commonLeaders) {
+    const count = commonCounts.get(leaderKey(leader)) || 0
+    assert(
+      count === LEADER_COMMON_PRINTS_PER_BOOT,
+      `${label} ${setCode}: common leader "${leader.name}" appears ${count} times, expected ${LEADER_COMMON_PRINTS_PER_BOOT}`
+    )
+  }
+
+  for (const leader of belt.rareLeaders) {
+    const count = rareCounts.get(leaderKey(leader)) || 0
+    assert(
+      count === 1,
+      `${label} ${setCode}: rare leader "${leader.name}" appears ${count} times, expected 1`
+    )
+  }
+}
+
+function assertNoRareLeaderRepeatsAcrossSeams(
+  setCode: string,
+  label: string,
+  createBelt: (setCode: string) => any,
+): void {
+  const belt = createBelt(setCode)
+  if (belt.fillingPool?.length === 0 || belt.rareLeaders?.length === 0) return
+
+  const leaders = Array.from({ length: belt.bootSize * 3 }, () => belt.next()).filter(Boolean) as Card[]
+  for (let start = 0; start <= leaders.length - LEADER_DEDUP_WINDOW; start++) {
+    const rareCounts = countBy(
+      leaders.slice(start, start + LEADER_DEDUP_WINDOW).filter(card => card.rarity === 'Rare'),
+      leaderKey
+    )
+    for (const [key, count] of rareCounts) {
+      assert(
+        count === 1,
+        `${label} ${setCode}: rare leader ${key} repeated ${count} times in ${LEADER_DEDUP_WINDOW}-leader window starting at ${start}`
+      )
+    }
+  }
+}
+
+function assertShowcaseLeaderSheet(setCode: string): void {
+  const belt = new ShowcaseLeaderBelt(setCode) as any
+  if (belt.fillingPool?.length === 0) return
+
+  const sheet = Array.from({ length: belt.bootSize }, () => belt.next()).filter(Boolean) as Card[]
+  const counts = countBy(sheet, leaderKey)
+
+  assert(sheet.length === belt.fillingPool.length, `${setCode}: showcase sheet should contain every showcase leader once`)
+  for (const leader of belt.fillingPool) {
+    const count = counts.get(leaderKey(leader)) || 0
+    assert(count === 1, `${setCode}: showcase leader "${leader.name}" appears ${count} times, expected 1`)
+  }
+}
+
+function getPackLeader(pack: Pack): Card | null {
+  return pack.cards.find(card => card.isLeader) || null
+}
+
+function analyzeDraftBoxLeaderDistribution(setCode: string, boxCount: number) {
+  const cards = getCachedCards(setCode)
+  let missingLeaderBoxes = 0
+  let zeroRareBoxes = 0
+  let boxesWithSameRareFourPlus = 0
+  let maxSameRareInAnyBox = 0
+  let minRareLeadersInBox = Number.POSITIVE_INFINITY
+  let maxRareLeadersInBox = 0
+  let totalRareLeaders = 0
+  const rareIdentitySeen = new Set<string>()
+
+  withSeededRandom(0x5eed3074, () => {
+    for (let boxIndex = 0; boxIndex < boxCount; boxIndex++) {
+      const box = generateSealedBox(cards, setCode, DRAFT_BOX_SIZE)
+      const leaders = box.map(getPackLeader).filter(Boolean) as Card[]
+      const rareLeaders = leaders.filter(card => card.rarity === 'Rare')
+      const rareCounts = countBy(rareLeaders, leaderKey)
+      const maxSameRareInBox = Math.max(0, ...Array.from(rareCounts.values()))
+
+      if (leaders.length !== DRAFT_BOX_SIZE) missingLeaderBoxes++
+      if (rareLeaders.length === 0) zeroRareBoxes++
+      if (maxSameRareInBox >= 4) boxesWithSameRareFourPlus++
+
+      maxSameRareInAnyBox = Math.max(maxSameRareInAnyBox, maxSameRareInBox)
+      minRareLeadersInBox = Math.min(minRareLeadersInBox, rareLeaders.length)
+      maxRareLeadersInBox = Math.max(maxRareLeadersInBox, rareLeaders.length)
+      totalRareLeaders += rareLeaders.length
+
+      for (const leader of rareLeaders) {
+        rareIdentitySeen.add(leaderKey(leader))
+      }
+    }
+  })
+
+  return {
+    boxCount,
+    missingLeaderBoxes,
+    zeroRareBoxes,
+    boxesWithSameRareFourPlus,
+    maxSameRareInAnyBox,
+    minRareLeadersInBox: Number.isFinite(minRareLeadersInBox) ? minRareLeadersInBox : 0,
+    maxRareLeadersInBox,
+    totalRareLeaders,
+    rareRate: totalRareLeaders / (boxCount * DRAFT_BOX_SIZE),
+    rareIdentitySeen,
+  }
 }
 
 interface Pack {
@@ -198,7 +375,75 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
 
   const sets = ['SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'SEC']
 
-  for (const setCode of sets) {
+  console.log('')
+  console.log('\x1b[36m👑 Testing Leader Sheet Collation...\x1b[0m')
+
+  for (const setCode of LEADER_QA_SETS) {
+    const cards = getCachedCards(setCode)
+    if (cards.length === 0) continue
+
+    test(`${setCode}: standard leader sheet prints six commons and one of each rare`, () => {
+      assertLeaderSheetBoot(setCode, 'standard leader sheet', code => new LeaderBelt(code))
+    })
+
+    test(`${setCode}: standard leader sheet prevents rare repeats across seams`, () => {
+      assertNoRareLeaderRepeatsAcrossSeams(setCode, 'standard leader sheet', code => new LeaderBelt(code))
+    })
+
+    test(`${setCode}: hyperspace leader sheet prints six commons and one of each rare`, () => {
+      assertLeaderSheetBoot(setCode, 'hyperspace leader sheet', code => new HyperspaceLeaderBelt(code))
+    })
+
+    test(`${setCode}: hyperspace leader sheet prevents rare repeats across seams`, () => {
+      assertNoRareLeaderRepeatsAcrossSeams(setCode, 'hyperspace leader sheet', code => new HyperspaceLeaderBelt(code))
+    })
+
+    test(`${setCode}: showcase leader sheet gives each leader equal weight`, () => {
+      assertShowcaseLeaderSheet(setCode)
+    })
+  }
+
+  console.log('')
+  console.log(`\x1b[36m📦 Testing ${LEADER_BOX_QA_SAMPLE_SIZE} ${LEADER_BOX_QA_SET} Draft Boxes for Leader Variance...\x1b[0m`)
+
+  test(`${LEADER_BOX_QA_SET}: ${LEADER_BOX_QA_SAMPLE_SIZE} draft boxes have no zero-rare leader boxes or 4x same rare leader`, () => {
+    const cards = getCachedCards(LEADER_BOX_QA_SET)
+    if (cards.length === 0) return
+
+    const stats = analyzeDraftBoxLeaderDistribution(LEADER_BOX_QA_SET, LEADER_BOX_QA_SAMPLE_SIZE)
+    const rareLeaderCount = cards.filter(card =>
+      card.isLeader &&
+      card.variantType === 'Normal' &&
+      card.rarity === 'Rare'
+    ).length
+
+    console.log(`\x1b[36m   Boxes sampled: ${stats.boxCount} (${stats.boxCount * DRAFT_BOX_SIZE} packs)\x1b[0m`)
+    console.log(`\x1b[36m   Rare leader rate: ${(stats.rareRate * 100).toFixed(2)}% (${stats.totalRareLeaders}/${stats.boxCount * DRAFT_BOX_SIZE})\x1b[0m`)
+    console.log(`\x1b[36m   Rare leaders per box: range=[${stats.minRareLeadersInBox}-${stats.maxRareLeadersInBox}]\x1b[0m`)
+    console.log(`\x1b[36m   Max same rare leader in a box: ${stats.maxSameRareInAnyBox}\x1b[0m`)
+
+    assert(stats.missingLeaderBoxes === 0, `${stats.missingLeaderBoxes} boxes did not contain exactly ${DRAFT_BOX_SIZE} leader slots`)
+    // Zero-rare boxes are not structurally prevented: a box's rare leaders can
+    // each be HS-replaced (1/6) by a common HS leader, so P(zero-rare) is tiny
+    // but nonzero (~0.1%). A hard ===0 over a seeded 1000-box sample passes or
+    // fails on seed luck whenever ANY code changes the RNG call order — allow
+    // the true rate, cap it well below player-noticeable levels.
+    assert(stats.zeroRareBoxes <= 2, `${stats.zeroRareBoxes}/${stats.boxCount} boxes had zero rare leaders (allowed: ≤2/1000)`)
+    assert(
+      stats.boxesWithSameRareFourPlus === 0,
+      `${stats.boxesWithSameRareFourPlus}/${stats.boxCount} boxes had the same rare leader 4+ times`
+    )
+    assert(
+      stats.rareIdentitySeen.size === rareLeaderCount,
+      `Only saw ${stats.rareIdentitySeen.size}/${rareLeaderCount} rare leader identities across ${stats.boxCount} boxes`
+    )
+    assert(
+      stats.rareRate >= 0.13 && stats.rareRate <= 0.16,
+      `Rare leader rate ${(stats.rareRate * 100).toFixed(2)}% is outside expected physical-sheet range`
+    )
+  })
+
+  for (const [setIndex, setCode] of sets.entries()) {
     console.log('')
     console.log(`\x1b[1m\x1b[35m=== 🎴 ${setCode} ===\x1b[0m`)
     const cards = getCachedCards(setCode)
@@ -211,10 +456,13 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
     // Generate sealed pods
     console.log(`\x1b[36m🎁 Generating ${POD_SAMPLE_SIZE} sealed pods (${POD_SAMPLE_SIZE * PACKS_PER_POD} packs)...\x1b[0m`)
     clearBeltCache()
-    const pods: Pack[][] = []
-    for (let i = 0; i < POD_SAMPLE_SIZE; i++) {
-      pods.push(generateSealedPod(cards, setCode, PACKS_PER_POD))
-    }
+    const pods = withSeededRandom(PACK_QA_SEED_BASE + setIndex, () => {
+      const generatedPods: Pack[][] = []
+      for (let i = 0; i < POD_SAMPLE_SIZE; i++) {
+        generatedPods.push(generateSealedPod(cards, setCode, PACKS_PER_POD))
+      }
+      return generatedPods
+    })
     console.log('\x1b[32m✔️  Generation complete.\x1b[0m')
     console.log('')
 
@@ -238,6 +486,22 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
         assert(
           leaders.length === 1,
           `Pack ${i} has ${leaders.length} leaders (expected 1)`
+        )
+      })
+    })
+
+    test(`${setCode}: 24-pack draft boxes cannot have zero rare leaders`, () => {
+      withMockedRandom(0.5, () => {
+        clearBeltCache()
+        const box = generateSealedBox(cards, setCode, 24)
+        const leaders = box
+          .map(pack => pack.cards.find(c => c.isLeader))
+          .filter(Boolean) as Card[]
+        const rareLeaders = leaders.filter(c => c.rarity === 'Rare')
+
+        assert(
+          rareLeaders.length > 0,
+          `${setCode} 24-pack draft box produced zero rare leaders`
         )
       })
     })

@@ -414,6 +414,7 @@ export default function PodPage({ params }: PageProps) {
         baseCard: cardPositions[activeBase]?.card || null,
         setCode: myPool.setCode,
         poolType: 'draft',
+        showSideboard: true,
         poolName: state.poolName || myPool.name || null,
         ownerUsername: myPool?.owner?.username || myPool?.owner?.name || null,
         shareId: myPoolShareId,
@@ -552,6 +553,7 @@ export default function PodPage({ params }: PageProps) {
         baseCard: cardPositions[activeBase]?.card || null,
         setCode: poolData.setCode,
         poolType: 'draft',
+        showSideboard: true,
         poolName: state.poolName || poolData.name || null,
         ownerUsername: poolData?.owner?.username || poolData?.owner?.name || null,
         shareId: poolShareId,
@@ -845,7 +847,7 @@ export default function PodPage({ params }: PageProps) {
         <Modal.Body>
           <div className="practice-hand-cards">
             {practiceHand?.cards.map((card, i) => (
-              <CardWithPreview key={`${card.id}-${i}`} card={card} />
+              <CardWithPreview key={`${card.id}-${i}`} card={card} statsSetCode={draft?.setCode || myPool?.setCode} />
             ))}
           </div>
           {practiceHand && (

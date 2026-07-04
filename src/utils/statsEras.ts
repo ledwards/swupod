@@ -11,6 +11,8 @@
 import { getSetConfig, getAllSetCodes } from './setConfigs/index'
 
 export interface Era {
+  /** Stable filter id, e.g. "LAW" or "ASH-pre-release". */
+  id: string
   setCode: string
   /** Display label, e.g. "LAW · A Lawless Time". */
   label: string
@@ -18,6 +20,8 @@ export interface Era {
   start: string
   /** Exclusive-ish end (YYYY-MM-DD) — next set's release, or today. */
   end: string
+  /** Online card pool filter for overlapping preview eras. */
+  cardPool?: 'Next Set'
 }
 
 export interface Week {
@@ -56,10 +60,14 @@ function rangeLabel(start: Date, end: Date): string {
   return `${fmt(start)} – ${fmt(end)}`
 }
 
+const PRE_RELEASE_ERAS = [
+  { setCode: 'ASH', previousSetCode: 'LAW', cardPool: 'Next Set' as const },
+]
+
 /**
- * All eras, most recent first. Includes the next upcoming set (e.g. ASH) so it
- * can be selected before release — its era is forward-looking and gated behind
- * Friend-of-the-Pod early access; non-members see a join CTA instead of data.
+ * All eras, most recent first. Preview eras overlap the previous set's normal
+ * era because online play uses the upcoming set code with the Next Set card
+ * pool before tabletop release.
  */
 export function getEras(today: string = todayStr()): Era[] {
   const all = getAllSetCodes()
@@ -72,34 +80,43 @@ export function getEras(today: string = todayStr()): Era[] {
     .filter((x): x is { code: string; release: string; name: string; prerelease: string } => x != null)
     .sort((a, b) => a.release.localeCompare(b.release)) // ascending by release
 
-  const released = all.filter((s) => s.release <= today)
-
-  const eras: Era[] = released
+  const eras: Era[] = all
     .map((s, i) => {
-      const next = released[i + 1]
-      const end = next ? next.release : today
+      const next = all[i + 1]
       return {
+        id: s.code,
         setCode: s.code,
         label: `${s.code} · ${s.name}`,
         start: s.release,
-        end: end < today ? end : today,
+        end: next ? next.release : today,
       }
     })
     .filter((e) => e.start <= today)
-    .reverse()
 
-  // Prepend the nearest upcoming set (the "next set") as the most-recent era.
-  const upcoming = all.filter((s) => s.release > today)[0]
-  if (upcoming) {
-    eras.unshift({
-      setCode: upcoming.code,
-      label: `${upcoming.code} · ${upcoming.name}`,
-      start: upcoming.prerelease,
-      end: today > upcoming.prerelease ? today : upcoming.prerelease,
+  for (const preview of PRE_RELEASE_ERAS) {
+    const set = all.find((s) => s.code === preview.setCode)
+    const previousSet = all.find((s) => s.code === preview.previousSetCode)
+    if (!set || !previousSet || previousSet.release > today) continue
+
+    eras.push({
+      id: `${set.code}-pre-release`,
+      setCode: set.code,
+      label: `${set.code} Pre-Release`,
+      start: previousSet.release,
+      end: set.release,
+      cardPool: preview.cardPool,
     })
   }
 
-  return eras
+  return eras.sort((a, b) => {
+    const startOrder = b.start.localeCompare(a.start)
+    if (startOrder !== 0) return startOrder
+
+    const previewOrder = Number(Boolean(b.cardPool)) - Number(Boolean(a.cardPool))
+    if (previewOrder !== 0) return previewOrder
+
+    return b.end.localeCompare(a.end)
+  })
 }
 
 /**
@@ -109,11 +126,12 @@ export function getEras(today: string = todayStr()): Era[] {
  * `eras` is newest-first.
  */
 export function getCurrentEra(eras: Era[], today: string = todayStr()): Era | null {
-  if (eras.length === 0) return null
+  const dateOnlyEras = eras.filter((e) => !e.cardPool)
+  if (dateOnlyEras.length === 0) return null
   return (
-    eras.find((e) => e.start <= today && today < e.end) ||
-    eras.find((e) => e.start <= today) ||
-    eras[eras.length - 1] ||
+    dateOnlyEras.find((e) => e.start <= today && today < e.end) ||
+    dateOnlyEras.find((e) => e.start <= today) ||
+    dateOnlyEras[dateOnlyEras.length - 1] ||
     null
   )
 }

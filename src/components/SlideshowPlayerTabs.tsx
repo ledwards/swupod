@@ -24,12 +24,22 @@
  * state (true iff every unlocked seat is selected — never on a partial set).
  */
 
+import type { CSSProperties } from 'react'
 import './SlideshowPlayerTabs.css'
 import Button from './Button'
 import { ASPECT_COLORS } from '../utils/aspectColors'
 import type { SlideshowPlayerTabsProps, SlideshowSeat } from './DraftSlideshow'
 
 const AVATAR_FALLBACK = '/icons/discord-logo.png'
+
+// "All" / "None" toggle button background — the Rule with Respect hyperspace
+// card art (ported from the slideshow worktree).
+const RULE_WITH_RESPECT_HYPERSPACE_IMAGE =
+  'https://cdn.starwarsunlimited.com//card_0202375_EN_Rule_with_Respect_2ee7f9b662.png'
+
+function cssUrl(url: string): string {
+  return `url("${url.replace(/["\\]/g, '\\$&')}")`
+}
 
 /** Small lock glyph for locked (private) seats. Local so the file stays self-contained. */
 function LockIcon() {
@@ -129,8 +139,10 @@ export function SlideshowPlayerTabs({
         active={allSelected}
         onClick={onSelectAll}
         className="slideshow-player-tab slideshow-player-tab--all"
+        style={{ '--slideshow-all-tab-art': cssUrl(RULE_WITH_RESPECT_HYPERSPACE_IMAGE) } as CSSProperties}
+        aria-label={allSelected ? 'Deselect all players' : 'Select all players'}
       >
-        All
+        <span className="slideshow-player-tab--all-label">{allSelected ? 'None' : 'All'}</span>
       </Button>
 
       {(seats || []).map(seat => {

@@ -162,6 +162,27 @@ async function runTests(): Promise<void> {
     assert(counts.Rare > counts.Legendary, `Rares (${counts.Rare}) should exceed legendaries (${counts.Legendary})`)
   })
 
+  test('ASH: fallback art still returns Hyperspace Foil flags', () => {
+    const belt = new HyperfoilBelt('ASH')
+    assert(belt.fillingPool.length > 0, 'Filling pool should not be empty')
+    assert(
+      belt.fillingPool.every(c => c.variantType === 'Hyperspace Foil' || c.variantType === 'Hyperspace' || c.variantType === 'Normal'),
+      'Fallback pool should use the best available HSF, Hyperspace, or Normal card art source'
+    )
+    if (belt.usingNormalFallback) {
+      assert(belt.fillingPool.every(c => c.variantType === 'Normal'), 'Normal fallback pool should use Normal cards as art source')
+    }
+
+    const card = belt.next()
+    assert(card !== null, 'next() should return a card')
+    assert(
+      card.variantType === 'Hyperspace Foil' || card.variantType === 'Hyperspace' || card.variantType === 'Normal',
+      'Fallback card keeps the selected art source'
+    )
+    assert(card.isFoil === true, 'Fallback HSF should be marked foil')
+    assert(card.isHyperspace === true, 'Fallback HSF should be marked hyperspace')
+  })
+
   test('no repeating pattern: consecutive belt fills produce different sequences', () => {
     const belt = new HyperfoilBelt('SOR')
     const fillSize = Math.min(belt.fillingPool.length, 30)

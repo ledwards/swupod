@@ -35,6 +35,9 @@ export interface DeckIdentitySummary {
   baseAspects: string[]
   baseHp: number | null
   archetypeName: string | null
+  /** Landscape card art (leader = leader side) for standings display. */
+  leaderImageUrl: string | null
+  baseImageUrl: string | null
 }
 
 export interface EventMetaRow {
@@ -113,6 +116,8 @@ export function deckIdentityFromDeckState(
     baseAspects,
     baseHp,
     archetypeName,
+    leaderImageUrl: stringOrNull(leaderCard?.imageUrl),
+    baseImageUrl: stringOrNull(baseCard?.imageUrl),
   }
 }
 

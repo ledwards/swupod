@@ -668,9 +668,7 @@ export const COMMON_BELT_ASSIGNMENTS: Record<string, SetBeltAssignment> = {
       "Clandestine Connections"
     ]
   },
-  // LAW (Set 7) - Belt assignments TBD
-  // Triple-aspect cards are assigned using the assignTripleAspectCard helper
-  // For now, use auto-assignment based on aspects until static assignments are created
+  // LAW (Set 7) - aspect-based auto-assignment (assignCardToBelt, Block B rules)
   "LAW": {
     "beltA": [],
     "beltB": [],
@@ -747,6 +745,23 @@ const BELT_OVERRIDES: Record<string, Record<string, 'A' | 'B'>> = {
   'LAW': {
     'Hidden Hand Supplier': 'A',
   },
+  // ASH: physical box openings show the mono-H cards on Belt B, with neutral
+  // cards split 3/3 to keep the Block B common belts at 50/50.
+  'ASH': {
+    'Covert Veteran': 'B',
+    'Imperial Defector': 'B',
+    'Zealous Soldier': 'B',
+    'N5 Sentry Droid': 'B',
+    'Gallofree Transport': 'B',
+    'Rebel Infiltrators': 'B',
+    'Grassroots Resistance': 'B',
+    'LEP Ratcatcher': 'A',
+    'Mos Espa Watermonger': 'A',
+    'Noti Mobile Pod': 'A',
+    'Faith in the Empire': 'B',
+    "The Way of the Mand'alor": 'B',
+    'A New Order': 'B',
+  },
 }
 
 /**
@@ -800,9 +815,13 @@ export function assignCardToBelt(card: RawCard, block: BlockType): 'A' | 'B' {
     return 'B'
   }
 
-  // Block B (LAW+) — verified from physical pack openings:
-  // Belt A: Vigilance first, Aggression first, Villainy-only, Heroism-only
-  // Belt B: Cunning first, Command first, Neutral (no aspects)
+  // Block B (LAW+) — verified from real ASH box 001 (24 packs, slot-level):
+  // Lane A (pack positions 3-6): Vigilance first, Aggression first, Villainy-only
+  // Lane B (pack positions 8-11): Cunning first, Command first, Heroism-only
+  // Neutral (no aspects): appeared in BOTH lanes (~even split) — split by
+  // collector-number parity for a deterministic, balanced assignment.
+  // (Earlier rule had Heroism-only → A and all neutrals → B; box 001 showed
+  // 11+ Heroism-only commons in lane B and zero in lane A.)
   const firstAspect = aspects[0]
 
   // Blue (Vigilance) or Red (Aggression) as first aspect → Belt A
@@ -810,8 +829,8 @@ export function assignCardToBelt(card: RawCard, block: BlockType): 'A' | 'B' {
     return 'A'
   }
 
-  // Mono-aspect Villainy or Heroism → Belt A
-  if (aspects.length === 1 && (firstAspect === 'Villainy' || firstAspect === 'Heroism')) {
+  // Mono-aspect Villainy → Belt A
+  if (aspects.length === 1 && firstAspect === 'Villainy') {
     return 'A'
   }
 
@@ -820,20 +839,18 @@ export function assignCardToBelt(card: RawCard, block: BlockType): 'A' | 'B' {
     return 'B'
   }
 
-  // Neutral (no aspects) → Belt B
-  if (aspects.length === 0) {
+  // Mono-aspect Heroism → Belt B
+  if (aspects.length === 1 && firstAspect === 'Heroism') {
     return 'B'
+  }
+
+  // Neutral (no aspects) → split evenly across belts by collector number
+  if (aspects.length === 0) {
+    const num = parseInt(String(card.number || '0'), 10)
+    return num % 2 === 0 ? 'A' : 'B'
   }
 
   // Fallback for any edge cases
   return 'B'
 }
 
-/**
- * Check if a card is a triple-aspect card (has 3+ aspects)
- * @param card - Card object with aspects array
- * @returns boolean
- */
-export function isTripleAspectCard(card: RawCard): boolean {
-  return (card.aspects || []).length >= 3
-}

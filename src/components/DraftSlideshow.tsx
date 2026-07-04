@@ -26,7 +26,9 @@ import Button from './Button'
 import SlideshowPlayerTabs from './SlideshowPlayerTabs'
 import SlideshowStage from './SlideshowStage'
 import SlideshowNav from './SlideshowNav'
+import TimerPanel from './TimerPanel'
 import { getPackArtUrl } from '../utils/packArt'
+import { useLiveSlideshow } from '../hooks/useLiveSlideshow'
 import type {
   SlideshowResponse,
   SlideshowSeat,
@@ -77,10 +79,24 @@ export interface SlideshowNavProps {
 export interface DraftSlideshowProps {
   /** Draft share id — used to fetch the all-seats slideshow payload. */
   shareId: string
-  /** Set code — drives the immersive set-art background. */
-  setCode: string
+  /** Set code — drives the immersive set-art background. Optional in live mode
+   *  (falls back to the set code carried in the slideshow payload). */
+  setCode?: string
   /** Close the overlay (toggle off). */
   onClose: () => void
+  /**
+   * Live mode (Privileged Observer): subscribe to the draft socket and refetch
+   * picks as they arrive, instead of a one-shot fetch.
+   */
+  live?: boolean
+  /** Which gated live endpoint to hit (live mode only). */
+  mode?: 'observer'
+  /** Show the live round/pick timer (Privileged Observer). */
+  showTimer?: boolean
+  /** When on the latest slide, auto-advance to new picks as they arrive. */
+  followTail?: boolean
+  /** Public kiosk: hide the close affordance and disable Escape-to-close. */
+  publicMode?: boolean
 }
 
 type LoadState = 'loading' | 'ready' | 'error'
@@ -93,7 +109,16 @@ function pickLabel(pick: { packNumber: number; pickInPack: number } | undefined)
     : `Pack ${pick.packNumber} · Pick ${pick.pickInPack}`
 }
 
-export function DraftSlideshow({ shareId, setCode, onClose }: DraftSlideshowProps) {
+export function DraftSlideshow({
+  shareId,
+  setCode = '',
+  onClose,
+  live = false,
+  mode = 'observer',
+  showTimer = false,
+  followTail = false,
+  publicMode = false,
+}: DraftSlideshowProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const previouslyFocusedRef = useRef<HTMLElement | null>(null)
 
@@ -101,11 +126,20 @@ export function DraftSlideshow({ shareId, setCode, onClose }: DraftSlideshowProp
   const [data, setData] = useState<SlideshowResponse | null>(null)
   const [slideIndex, setSlideIndex] = useState(0)
   const [selectedSeats, setSelectedSeats] = useState<Set<number>>(() => new Set())
+  const initializedRef = useRef(false)
+  const prevSlideCountRef = useRef(0)
+  const slideIndexRef = useRef(0)
+
+  // Live data source (Privileged Observer). No-op unless `live`.
+  const liveSlideshow = useLiveSlideshow(shareId, mode, { enabled: live })
 
   const seats: SlideshowSeat[] = useMemo(() => data?.seats ?? [], [data])
   const slideCount = data?.slideCount ?? 0
   const cardsPerPack = data?.cardsPerPack ?? 0
-  const packArtUrl = setCode ? getPackArtUrl(setCode) : null
+  // In live mode the caller may not know the set up front; fall back to the set
+  // code carried in the slideshow payload so the immersive art still resolves.
+  const effectiveSetCode = setCode || data?.draft?.setCode || ''
+  const packArtUrl = effectiveSetCode ? getPackArtUrl(effectiveSetCode) : null
 
   // Seat numbers that are selectable (unlocked). Locked seats never enter the set.
   const unlockedSeatNumbers = useMemo(
@@ -113,8 +147,10 @@ export function DraftSlideshow({ shareId, setCode, onClose }: DraftSlideshowProp
     [seats],
   )
 
-  // Lazy-fetch the all-seats payload on first open only.
+  // Lazy-fetch the all-seats payload on first open only (non-live / completed
+  // report). Live mode uses useLiveSlideshow instead (synced just below).
   useEffect(() => {
+    if (live) return
     let cancelled = false
     async function fetchSlideshow() {
       try {
@@ -140,13 +176,52 @@ export function DraftSlideshow({ shareId, setCode, onClose }: DraftSlideshowProp
     return () => {
       cancelled = true
     }
-  }, [shareId])
+  }, [shareId, live])
+
+  // Live mode: sync useLiveSlideshow data into local state. Initialize the seat
+  // selection once; later refetches preserve the viewer's selection (and, unless
+  // follow-tail moves them, their current slide).
+  useEffect(() => {
+    if (!live) return
+    setLoadState(liveSlideshow.loadState)
+    if (liveSlideshow.data) {
+      setData(liveSlideshow.data)
+      if (!initializedRef.current) {
+        const unlocked = (liveSlideshow.data.seats || []).filter(s => !s.locked).map(s => s.seatNumber)
+        const initialSlideIndex = followTail
+          ? Math.max((liveSlideshow.data.slideCount || 1) - 1, 0)
+          : 0
+        setSelectedSeats(new Set(unlocked))
+        setSlideIndex(initialSlideIndex)
+        slideIndexRef.current = initialSlideIndex
+        initializedRef.current = true
+      }
+    }
+  }, [live, liveSlideshow.data, liveSlideshow.loadState, followTail])
 
   // Keep slideIndex clamped to [0, slideCount-1] when data arrives/changes.
   useEffect(() => {
     if (slideCount <= 0) return
     setSlideIndex(i => Math.min(Math.max(i, 0), slideCount - 1))
   }, [slideCount])
+
+  // Track the live slide so follow-tail can check "was at tail" without making
+  // slideIndex a dependency of the growth effect below.
+  useEffect(() => {
+    slideIndexRef.current = slideIndex
+  }, [slideIndex])
+
+  // Follow-tail: when new picks arrive AND the viewer was parked on the latest
+  // slide, dwell ~1s on the just-completed pick (so its highlight reads), then
+  // advance to the new latest. If they've scrubbed back, leave them put.
+  useEffect(() => {
+    const prev = prevSlideCountRef.current
+    prevSlideCountRef.current = slideCount
+    if (!followTail || prev <= 0 || slideCount <= prev) return
+    if (slideIndexRef.current < prev - 1) return // scrubbed back — don't follow
+    const t = setTimeout(() => setSlideIndex(slideCount - 1), 1000)
+    return () => clearTimeout(t)
+  }, [slideCount, followTail])
 
   // Selection handlers — selection can never be emptied (keeps the stage non-blank).
   const onToggleSeat = useCallback((seatNumber: number) => {
@@ -162,8 +237,13 @@ export function DraftSlideshow({ shareId, setCode, onClose }: DraftSlideshowProp
     })
   }, [])
 
+  // Toggle: if every unlocked seat is selected, clear to none; otherwise select
+  // all. (The "All" tab flips to "None" when everything is on.)
   const onSelectAll = useCallback(() => {
-    setSelectedSeats(new Set(unlockedSeatNumbers))
+    setSelectedSeats(prev => {
+      const allOn = unlockedSeatNumbers.length > 0 && unlockedSeatNumbers.every(n => prev.has(n))
+      return allOn ? new Set<number>() : new Set(unlockedSeatNumbers)
+    })
   }, [unlockedSeatNumbers])
 
   const onPrev = useCallback(() => {
@@ -181,7 +261,7 @@ export function DraftSlideshow({ shareId, setCode, onClose }: DraftSlideshowProp
   const handleKeyDown = useCallback(
     (e: globalThis.KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose()
+        if (!publicMode) onClose()
         return
       }
       // Constrain the Tab loop to focusables INSIDE the overlay (tabs + nav).
@@ -206,7 +286,7 @@ export function DraftSlideshow({ shareId, setCode, onClose }: DraftSlideshowProp
         }
       }
     },
-    [onClose, FOCUSABLE],
+    [onClose, publicMode, FOCUSABLE],
   )
 
   useEffect(() => {
@@ -263,16 +343,30 @@ export function DraftSlideshow({ shareId, setCode, onClose }: DraftSlideshowProp
       {packArtUrl && <div className="draft-slideshow-bg" style={backgroundStyle} aria-hidden="true" />}
       <div className="draft-slideshow-scrim" aria-hidden="true" />
 
-      {/* Close affordance (always available, even during loading/error). */}
-      <Button
-        variant="icon"
-        size="sm"
-        className="draft-slideshow-close"
-        onClick={onClose}
-        aria-label="Exit Slideshow Mode"
-      >
-        &times;
-      </Button>
+      {/* Close affordance (hidden in public kiosk mode). */}
+      {!publicMode && (
+        <Button
+          variant="icon"
+          size="sm"
+          className="draft-slideshow-close"
+          onClick={onClose}
+          aria-label="Exit Slideshow Mode"
+        >
+          &times;
+        </Button>
+      )}
+
+      {/* Live round/pick timer (Privileged Observer streaming overlay). */}
+      {showTimer && liveSlideshow.timer && (
+        <div className="draft-slideshow-timer">
+          <TimerPanel
+            draft={liveSlideshow.timer}
+            draftState={liveSlideshow.timer.draftState}
+            compact
+            isHost={false}
+          />
+        </div>
+      )}
 
       {loadState === 'ready' ? (
         <div className="draft-slideshow-layout">
@@ -317,10 +411,12 @@ export function DraftSlideshow({ shareId, setCode, onClose }: DraftSlideshowProp
               </div>
             ) : (
               <div className="draft-slideshow-error">
-                <p>Couldn&apos;t load the slideshow.</p>
-                <Button variant="back" onClick={onClose}>
-                  Close
-                </Button>
+                <p>{(live && liveSlideshow.error) || "Couldn't load the slideshow."}</p>
+                {!publicMode && (
+                  <Button variant="back" onClick={onClose}>
+                    Close
+                  </Button>
+                )}
               </div>
             )}
           </div>
