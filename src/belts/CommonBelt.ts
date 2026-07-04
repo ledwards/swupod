@@ -300,24 +300,22 @@ function segmentHasRequiredAspects(cards: RawCard[], requiredAspects: string[]):
 // their primary. See plans/LINE_STACKING_COLLATION_PLAN.md (L1).
 // ============================================================================
 
-// Pack-gap samplers weighted to the observed line histogram (gaps 1-9).
-// Gap PARITY controls player-visible pool duplication: odd gaps split across
-// the two box columns (clean pools), even gaps stay in one column (paired
-// pools). Real data shows both clean pools (most) and clumpy pools (~25-30%,
-// e.g. box 001 pool 1 with 7 same-column pairs, prague-taylor-b) — modeled as
-// per-boot sheet-cut variation: most boots are odd-heavy, some even-heavy.
-const PAIR_GAPS_ODD_HEAVY: number[] = []
+// Pack-gap sampler: the second-copy distance histogram measured from real ASH
+// box 001 in factory line order (gaps in packs). Gap PARITY matters: odd gaps
+// split a pair across the two box columns (player never sees the duplicate),
+// even gaps keep it in one column (player gets the pair). The measured mix is
+// odd-dominant with ~8% even — duplicate-heavy pools emerge from that even
+// share plus stacking alone, no synthetic modes. If the 6-box dataset shows a
+// fatter loaded-pool tail, model it as a PHYSICAL line disturbance (QC pack
+// drop / stacker slip — see LINE_STACKING_COLLATION_PLAN Phase 4), never as a
+// distribution knob.
+const PAIR_PACK_GAPS: number[] = []
 for (const [gap, weight] of [[1, 42], [3, 22], [5, 13], [7, 8], [9, 7], [6, 5], [8, 2], [4, 1]] as Array<[number, number]>) {
-  for (let i = 0; i < weight; i++) PAIR_GAPS_ODD_HEAVY.push(gap)
+  for (let i = 0; i < weight; i++) PAIR_PACK_GAPS.push(gap)
 }
-const PAIR_GAPS_EVEN_HEAVY: number[] = []
-for (const [gap, weight] of [[1, 26], [3, 14], [5, 8], [7, 5], [9, 4], [2, 14], [4, 12], [6, 10], [8, 7]] as Array<[number, number]>) {
-  for (let i = 0; i < weight; i++) PAIR_GAPS_EVEN_HEAVY.push(gap)
-}
-const EVEN_HEAVY_BOOT_RATE = 0.20
 
-function samplePairPackGapFrom(sampler: number[]): number {
-  return sampler[Math.floor(Math.random() * sampler.length)]!
+function samplePairPackGap(): number {
+  return PAIR_PACK_GAPS[Math.floor(Math.random() * PAIR_PACK_GAPS.length)]!
 }
 
 /**
@@ -339,9 +337,6 @@ function buildPairedBoot(
 ): RawCard[] | null {
   const packOf = (g: number) => Math.floor(g / drawSize)
   const MAX_ATTEMPTS = 12
-
-  // Per-boot sheet-cut parity mode (see sampler comment above)
-  const gapSampler = Math.random() < EVEN_HEAVY_BOOT_RATE ? PAIR_GAPS_EVEN_HEAVY : PAIR_GAPS_ODD_HEAVY
 
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
     const relaxGaps = attempt >= 8 // late attempts: spread echoes further
@@ -399,7 +394,7 @@ function buildPairedBoot(
         for (let j = 0; j < Math.min(10, stream.length); j++) {
           if (ok(stream[j]!)) {
             pick = stream.splice(j, 1)[0]!
-            const gapPacks = samplePairPackGapFrom(gapSampler) + (relaxGaps ? 2 : 0)
+            const gapPacks = samplePairPackGap() + (relaxGaps ? 2 : 0)
             pending.push({ card: pick, targetPack: currentPack + gapPacks, firstG: g })
             break
           }
@@ -422,7 +417,7 @@ function buildPairedBoot(
         const j = stream.findIndex(c => getPrimaryAspect(c) !== prevAspect)
         if (j >= 0) {
           pick = stream.splice(j, 1)[0]!
-          pending.push({ card: pick, targetPack: currentPack + samplePairPackGapFrom(gapSampler), firstG: g })
+          pending.push({ card: pick, targetPack: currentPack + samplePairPackGap(), firstG: g })
         }
       }
       if (!pick) {
