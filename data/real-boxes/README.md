@@ -1,5 +1,7 @@
 # Real Box Collation Data
 
+**Opening a new box? Follow `COLLECTION_GUIDE.md` in this directory.**
+
 Slot-level, treatment-aware transcriptions of real opened booster boxes, used to
 calibrate the pack generator. **Kept separate from `scripts/eval/fixtures/`** —
 those are scanner/OCR eval fixtures and do not encode treatment.
