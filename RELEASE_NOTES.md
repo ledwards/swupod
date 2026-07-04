@@ -3,7 +3,7 @@
 ## 07.03.2026
 
 ### 🎴 Collation Fine-Tuning (LAW & ASH)
-- **Calibrated against a real box**: We opened a real ASH booster box card-by-card and used it to fine-tune pack generation — small refinements to hyperspace upgrade slots, foil rarities, and card ordering.
+- **Calibrated against a real box**: Thanks to [Porg Depot](https://porgdepot.com/2026/07/02/ash-box-opening), we went through a real ASH booster box card-by-card and used it to fine-tune pack generation — small refinements to hyperspace upgrade slots, foil rarities, and card ordering.
 - **Factory stacking order**: We also added the physical order packs get stacked into a box off the printing line, sharpening how sealed pools and draft boxes distribute duplicates.
 
 ## 07.02.2026
