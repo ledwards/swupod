@@ -306,6 +306,28 @@ Provenance not yet confirmed (loose packs vs box position). Findings:
 - Note: pack01 was photographed in a nonstandard layout (leader at pos3) —
   structure stats for it are type-derived, not position-derived.
 
+## ⚠️ Evidence correction (2026-07-03, post-ship audit)
+
+Lee challenged the "pools with ≥10 dup identities" claim — and the audit found
+**prague-taylor-b (14 dup identities) is UNVERIFIED machine-generated ground
+truth** (`_needsHumanCorrection` flag: OCR labels never human-corrected). It is
+EXCLUDED from all calibration claims. Corrected verified evidence:
+- All 7 verified full event pools: 4,4,5,5,4,5,4 dup identities — **no verified
+  event pool reaches 10**. Lee's recollection was right.
+- Consecutive box-cut pools DO reach 10+: box 001 pool 4 (packs 19-24) = **10**
+  (all high-confidence number reads), box 001 pool 1 = **13** (7 normal+normal
+  pairs incl. #247 rare in packs 1&3; ~5 pairs have one leg in blurry pack 4 —
+  identity via art-match, still name-reliable), pool 002 (prerelease box) = **13**
+  (all number-verified).
+- Corrected stats (12 verified full pools): mean 6.4 dup identities; ≥10 in
+  3/12 = 25% — but the clumpy pools are ALL box cuts (3 of 5 box-cut pools ≥10)
+  and the clean pools are ALL event pools (0 of 7). **Open question for the
+  6-box data: are event pools not consecutive box cuts (TOs mixing packs), or
+  was box 001 unusual?** Our generator cuts pods from consecutive box positions,
+  so the box-cut distribution is the modeling target; 22% generated clumpy rate
+  is conservative vs the observed 3/5.
+- prague-taylor-b needs human correction before any future use.
+
 ## 🔎 Caveats
 
 - Single box (24 packs). All z-scores are one-box evidence.
