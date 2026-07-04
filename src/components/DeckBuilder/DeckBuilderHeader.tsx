@@ -224,7 +224,7 @@ export function DeckBuilderHeader({
             </span>
           </Button>
         </div>
-      ) : deckBuildDeadline ? (
+      ) : deckBuildDeadline && new Date(deckBuildDeadline).getTime() > Date.now() ? (
         <DeckBuildTimer deadline={deckBuildDeadline} />
       ) : null}
 
