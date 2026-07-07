@@ -439,14 +439,15 @@ export default function DraftLogPage({ params }: PageProps) {
             Download JSON
           </Button>
           {meta.isHost && (
-            <button
-              className={`draft-log-host-lock ${meta.isDraftPublic ? 'lock-public' : 'lock-private'}`}
+            <Button
+              variant="secondary"
               onClick={handleToggleDraftPublic}
               title={meta.isDraftPublic ? 'Draft is public - click to make private' : 'Draft is private - click to make public'}
+              style={{ color: meta.isDraftPublic ? '#81c784' : '#ff6b6b' }}
             >
               {meta.isDraftPublic ? <LockOpen size={14} /> : <LockClosed size={14} />}
-              <span>{meta.isDraftPublic ? 'Public' : 'Private'}</span>
-            </button>
+              {meta.isDraftPublic ? 'Public' : 'Private'}
+            </Button>
           )}
         </div>
 

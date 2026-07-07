@@ -102,7 +102,12 @@
   border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
 }
 
-.canvas-card > * {
+/* The card's own children clip to the rounded frame. Exclude the Wayfinder
+   Companion's injected badge/overlay (.wf-ptp-*): they position themselves
+   absolutely over the card, and must not be pulled into the card's flow/clip —
+   otherwise the stats badge drops below the image and grows the card, which the
+   rainbow selection ring then wraps as a "bleed" below the card. */
+.canvas-card > *:not(.wf-ptp-card-stat-badge):not(.wf-ptp-card-stats-overlay) {
   border-radius: 11px;
   overflow: hidden;
 }
@@ -247,7 +252,9 @@
   pointer-events: none;
 }
 
-.canvas-card > * {
+/* See note above: keep the Wayfinder Companion's injected badge/overlay out of
+   this rule so their absolute positioning + high z-index survive. */
+.canvas-card > *:not(.wf-ptp-card-stat-badge):not(.wf-ptp-card-stats-overlay) {
   position: relative;
   z-index: 1;
 }
