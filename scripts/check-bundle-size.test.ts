@@ -1,7 +1,7 @@
 // Unit tests for the bundle-size guard (U5, foundations hardening).
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import { extractChunkRefs, findViolations, type RouteReport } from './check-bundle-size'
+import { extractChunkRefs, findViolations, ROUTE_EXEMPTIONS, type RouteReport } from './check-bundle-size'
 
 const MB = 1024 * 1024
 
@@ -58,12 +58,20 @@ describe('bundle guard', () => {
       assert.strictEqual(violations.filter(v => v.kind === 'chunk').length, 1)
     })
 
-    it('the /deckbuilder/build exemption is ratcheted, not open-ended', () => {
-      const over = findViolations([report('/deckbuilder/build', [['static/chunks/cards.js', 7.75 * MB]])])
-      assert.ok(over.some(v => v.kind === 'route-total'), 'exceeding the exemption cap still fails')
+    it('the exemption table is EMPTY — every route lives under the global caps (N1)', () => {
+      assert.deepStrictEqual(
+        Object.keys(ROUTE_EXEMPTIONS),
+        [],
+        'ROUTE_EXEMPTIONS must stay empty: fix the oversized import (cardDataClient/cardSummary) instead of exempting the route'
+      )
+    })
 
-      const within = findViolations([report('/deckbuilder/build', [['static/chunks/cards.js', 7.25 * MB]])])
-      assert.deepStrictEqual(within, [], 'current known weight passes')
+    it('/deckbuilder/build gets no special treatment anymore', () => {
+      const over = findViolations([report('/deckbuilder/build', [['static/chunks/cards.js', 7.25 * MB]])])
+      assert.ok(
+        over.some(v => v.kind === 'chunk') && over.some(v => v.kind === 'route-total'),
+        'the old exempted weight now fails both caps'
+      )
     })
   })
 })

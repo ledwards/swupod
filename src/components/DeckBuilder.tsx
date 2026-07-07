@@ -33,7 +33,7 @@ import {
   getCanonicalPoolSubtitle,
   fetchUserBuild,
 } from '../utils/deckBuilderSharing'
-import { getAllCards } from '../utils/cardData'
+import { loadAllCards } from '../utils/cardDataClient'
 import Card from './Card'
 import { CardPreview } from './DeckBuilder/CardPreview'
 import { LeaderBaseSelector } from './DeckBuilder/LeaderBaseSelector'
@@ -540,7 +540,11 @@ function DeckBuilder({
     if (!leaderCard) return
 
     try {
-      ensureArchetypeIndexes(getAllCards() as any)
+      // Client loader, not src/utils/cardData: the static import embedded the
+      // ~9.5 MB cards.json in every bundle that touched DeckBuilder (the old
+      // /deckbuilder/build exemption). loadAllCards() is memoized and, in the
+      // deck-builder flows, already warmed by initializeCardCache().
+      ensureArchetypeIndexes((await loadAllCards()) as any)
       const leaderUuid = resolveArchetypeUuid(leaderCard as any, 'leader')
       const baseUuid = baseCard ? resolveArchetypeUuid(baseCard as any, 'base') : null
       const nickname = await fetchArchetypeNickname(leaderUuid, baseUuid)

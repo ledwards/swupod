@@ -33,21 +33,18 @@ export const MAX_CHUNK_BYTES = 2 * 1024 * 1024 // 2 MB
 export const MAX_ROUTE_TOTAL_BYTES = 3 * 1024 * 1024 // 3 MB
 
 /**
- * KNOWN OVERWEIGHT ROUTE (temporary exemption, ratcheted):
- * /deckbuilder/build still embeds cards.json because src/components/
- * DeckBuilder.tsx imports getAllCards from src/utils/cardData directly, and
- * that file is mid-refactor in a parallel branch (plans/REFACTORING_PLAN.md)
- * — it could not be modified as part of U5. The exemption is NOT open-ended:
- * the route is capped near its current weight (7.5 MB), so it can only shrink
- * after the card-data-client refactor.
- * Remove this entry when DeckBuilder switches to cardDataClient/cardCache.
+ * ROUTE EXEMPTIONS — must stay EMPTY (N1, 2026-07-07 arch refresh plan).
+ *
+ * The last exemption (/deckbuilder/build at 7.5 MB, added "temporarily"
+ * during U5) calcified for four weeks while DeckBuilder.tsx kept growing; it
+ * was retired by switching DeckBuilder's one cardData import to the client
+ * loader. Every route now lives under the global caps.
+ *
+ * If you are about to add an entry here: don't. Fix the import instead
+ * (src/utils/cardDataClient / cardSummary / a server route). The unit test
+ * pins this table empty so adding an exemption is a deliberate, reviewed act.
  */
-export const ROUTE_EXEMPTIONS: Record<string, { maxTotalBytes: number; reason: string }> = {
-  '/deckbuilder/build': {
-    maxTotalBytes: 7.5 * 1024 * 1024,
-    reason: 'DeckBuilder.tsx imports cardData directly (frozen during parallel refactor)',
-  },
-}
+export const ROUTE_EXEMPTIONS: Record<string, { maxTotalBytes: number; reason: string }> = {}
 
 export function extractChunkRefs(html: string): string[] {
   const refs = new Set<string>()
