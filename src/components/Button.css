@@ -14,7 +14,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  border-radius: 6px;
+  border-radius: var(--pt-radius-sm);
   text-decoration: none;
   color: white;
 }
@@ -32,7 +32,7 @@ a.btn:active {
    reset in index.css strips the native outline; restore a visible one for
    keyboard users without showing it on mouse click (:focus-visible). */
 .btn:focus-visible {
-  outline: 2px solid rgba(33, 150, 243, 0.9);
+  outline: 2px solid rgba(var(--pt-glow-interactive-rgb), 0.9);
   outline-offset: 2px;
 }
 
@@ -69,66 +69,66 @@ a.btn:active {
 
 /* Variant: Secondary (default) */
 .btn--secondary {
-  background: rgba(0, 0, 0, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(var(--pt-surface-base-rgb), 0.7);
+  border: 1px solid rgba(var(--pt-ink-rgb), 0.3);
   color: white;
 }
 
 .btn--secondary:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.85);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(var(--pt-surface-base-rgb), 0.85);
+  border-color: rgba(var(--pt-ink-rgb), 0.5);
   transform: translateY(-2px);
 }
 
 /* Variant: Primary (green glow) */
 .btn--primary {
-  background: rgba(0, 0, 0, 0.7);
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: rgba(var(--pt-surface-base-rgb), 0.7);
+  border: 2px solid rgba(var(--pt-ink-rgb), 0.4);
   color: white;
 }
 
 .btn--primary:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.85);
-  border-color: rgba(0, 255, 0, 0.8);
+  background: rgba(var(--pt-surface-base-rgb), 0.85);
+  border-color: rgba(var(--pt-glow-primary-rgb), 0.8);
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
+  box-shadow: 0 6px 16px rgba(var(--pt-glow-primary-rgb), 0.6);
 }
 
 /* Variant: Danger/Back (red glow) */
 .btn--danger,
 .btn--back {
-  background: rgba(0, 0, 0, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(var(--pt-surface-base-rgb), 0.7);
+  border: 1px solid rgba(var(--pt-ink-rgb), 0.3);
   color: white;
 }
 
 .btn--danger:hover:not(:disabled),
 .btn--back:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.85);
-  border-color: rgba(255, 0, 0, 0.8);
+  background: rgba(var(--pt-surface-base-rgb), 0.85);
+  border-color: rgba(var(--pt-glow-danger-rgb), 0.8);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
+  box-shadow: 0 6px 16px rgba(var(--pt-glow-danger-rgb), 0.6);
 }
 
 /* Variant: Interactive (blue glow) */
 .btn--interactive {
-  background: rgba(0, 0, 0, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(var(--pt-surface-base-rgb), 0.7);
+  border: 1px solid rgba(var(--pt-ink-rgb), 0.3);
   color: white;
 }
 
 .btn--interactive:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.85);
-  border-color: rgba(33, 150, 243, 0.8);
+  background: rgba(var(--pt-surface-base-rgb), 0.85);
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.8);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(33, 150, 243, 0.6);
+  box-shadow: 0 6px 16px rgba(var(--pt-glow-interactive-rgb), 0.6);
 }
 
 /* Variant: Warning (red "disabled" look - for action required states) */
 .btn--warning {
   background: rgba(100, 0, 0, 0.3);
-  border: 1px solid rgba(255, 0, 0, 0.6);
+  border: 1px solid rgba(var(--pt-glow-danger-rgb), 0.6);
   color: rgba(255, 200, 200, 1);
   opacity: 0.85;
   cursor: default;
@@ -142,14 +142,14 @@ a.btn:active {
 
 /* Variant: Discord */
 .btn--discord {
-  background: #5865F2;
+  background: var(--pt-discord);
   border: none;
   color: white;
-  border-radius: 8px;
+  border-radius: var(--pt-radius-md);
 }
 
 .btn--discord:hover:not(:disabled) {
-  background: #4752C4;
+  background: var(--pt-discord-deep);
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -165,18 +165,18 @@ a.btn--discord:active {
 
 /* Variant: Icon (square icon-only button) */
 .btn--icon {
-  background: rgba(0, 0, 0, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(var(--pt-surface-base-rgb), 0.7);
+  border: 1px solid rgba(var(--pt-ink-rgb), 0.3);
   color: white;
   padding: 0.5rem;
   width: 36px;
   height: 36px;
-  border-radius: 6px;
+  border-radius: var(--pt-radius-sm);
 }
 
 .btn--icon:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.85);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(var(--pt-surface-base-rgb), 0.85);
+  border-color: rgba(var(--pt-ink-rgb), 0.5);
   transform: translateY(-2px);
 }
 
@@ -201,21 +201,21 @@ a.btn--discord:active {
 /* Variant: Toggle (for sort/filter buttons with active state) */
 .btn--toggle {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(var(--pt-ink-rgb), 0.2);
+  color: rgba(var(--pt-ink-rgb), 0.7);
   padding: 0.4rem 0.8rem;
   font-size: 0.85rem;
 }
 
 .btn--toggle:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(var(--pt-ink-rgb), 0.1);
+  border-color: rgba(var(--pt-ink-rgb), 0.4);
   color: white;
 }
 
 .btn--toggle.btn--active {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(var(--pt-ink-rgb), 0.15);
+  border-color: rgba(var(--pt-ink-rgb), 0.5);
   color: white;
 }
 
@@ -227,16 +227,16 @@ a.btn--discord:active {
 }
 
 .btn--text-only.btn--primary {
-  color: rgba(0, 255, 0, 0.8);
+  color: rgba(var(--pt-glow-primary-rgb), 0.8);
 }
 
 .btn--text-only.btn--primary:hover:not(:disabled) {
   background: transparent;
   border: none;
-  color: rgba(0, 255, 0, 1);
+  color: rgba(var(--pt-glow-primary-rgb), 1);
   box-shadow: none;
   transform: none;
-  text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+  text-shadow: 0 0 8px rgba(var(--pt-glow-primary-rgb), 0.5);
 }
 
 .btn--text-only.btn--danger {
@@ -260,7 +260,7 @@ a.btn--discord:active {
 }
 
 .btn--custom-glow:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(var(--pt-surface-base-rgb), 0.85);
   border-color: rgba(var(--glow-r), var(--glow-g), var(--glow-b), 0.8);
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(var(--glow-r), var(--glow-g), var(--glow-b), 0.6);

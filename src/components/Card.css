@@ -62,7 +62,7 @@
 /* Keyboard focus ring for interactive cards (role="button" + tabIndex).
    Interactive-blue glow per DESIGN.md; only shows for keyboard users. */
 .canvas-card:focus-visible {
-  outline: 2px solid rgba(33, 150, 243, 0.95);
+  outline: 2px solid rgba(var(--pt-glow-interactive-rgb), 0.95);
   outline-offset: 3px;
   border-radius: 13px;
 }
@@ -266,7 +266,7 @@
   justify-content: center;
   align-items: center;
   padding: 1rem;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  background: linear-gradient(135deg, var(--pt-surface-modal-from) 0%, var(--pt-surface-modal-to) 100%);
   text-align: center;
   pointer-events: none;
 }
