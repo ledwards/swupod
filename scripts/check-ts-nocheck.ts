@@ -5,10 +5,16 @@
  * Counts files carrying `@ts-nocheck` across the repo's TS/TSX sources and
  * compares against the committed baseline (.ts-nocheck-baseline):
  *
- * - count > baseline → FAIL, listing the newly-opted-out files.
+ * - any @ts-nocheck file NOT in the baseline → FAIL naming it (even if the
+ *   total count is unchanged — a new file can't hide behind a removal).
  * - count < baseline → FAIL with "lower the baseline" (forces the win to be
  *   committed so the ratchet can never silently loosen again).
- * - count = baseline → PASS.
+ * - exact match → PASS.
+ *
+ * Ratchet v2 (N2, 2026-07-07 arch refresh): `--update` is MONOTONIC — it only
+ * accepts removals. Adding a file requires the explicit escape hatch
+ *   RATCHET_ALLOW_NEW=1 npx tsx scripts/check-ts-nocheck.ts --update --reason "why"
+ * which permanently records the date/files/reason in the baseline header.
  *
  * Update the baseline after removing headers:
  *   npx tsx scripts/check-ts-nocheck.ts --update
@@ -76,19 +82,41 @@ export function countNocheckFiles(root: string = REPO_ROOT): { count: number; fi
 export interface Baseline {
   count: number
   files: Set<string>
+  /** Audit trail of RATCHET_ALLOW_NEW escapes (`# `-prefixed lines in the file). */
+  header: string[]
 }
 
 /**
- * Baseline format: first line is the count, remaining lines are the file
+ * Baseline format: first line is the count, then optional `# `-prefixed
+ * header lines (the audit trail of RATCHET_ALLOW_NEW escapes), then the file
  * list (so a violation can name exactly the NEW files, not all 550+).
  */
-export function readBaseline(path: string = BASELINE_PATH): Baseline {
-  const lines = readFileSync(path, 'utf8').trim().split('\n')
+export function parseBaseline(raw: string, path: string = BASELINE_PATH): Baseline {
+  const lines = raw.trim().split('\n')
   const value = Number.parseInt(lines[0] ?? '', 10)
   if (!Number.isFinite(value) || value < 0) {
     throw new Error(`Invalid baseline in ${path}: ${JSON.stringify(lines[0])}`)
   }
-  return { count: value, files: new Set(lines.slice(1)) }
+  const header: string[] = []
+  const files = new Set<string>()
+  for (const line of lines.slice(1)) {
+    if (line.startsWith('#')) {
+      header.push(line.replace(/^#\s?/, ''))
+    } else if (line.trim() !== '') {
+      files.add(line)
+    }
+  }
+  return { count: value, files, header }
+}
+
+export function readBaseline(path: string = BASELINE_PATH): Baseline {
+  return parseBaseline(readFileSync(path, 'utf8'), path)
+}
+
+export function formatBaseline(files: string[], header: string[]): string {
+  const sorted = [...files].sort()
+  const headerLines = header.map((line) => `# ${line}`)
+  return [`${sorted.length}`, ...headerLines, ...sorted].join('\n') + '\n'
 }
 
 export interface RatchetResult {
@@ -117,12 +145,121 @@ export function evaluateRatchet(count: number, baseline: number, newFiles: strin
   return { ok: true, message: `✅ @ts-nocheck ratchet OK: ${count} files (baseline ${baseline}).` }
 }
 
+/**
+ * Ratchet v2 (N2, arch refresh plan): file-list-aware evaluation. A file not
+ * in the baseline fails even when the total count is unchanged, so a new
+ * `@ts-nocheck` file can never hide behind a simultaneous removal.
+ */
+export function evaluateRatchetFiles(currentFiles: string[], baseline: Baseline): RatchetResult {
+  const newFiles = currentFiles.filter((file) => !baseline.files.has(file))
+  if (newFiles.length > 0) {
+    return {
+      ok: false,
+      message:
+        `❌ @ts-nocheck ratchet FAILED: ${newFiles.length} file(s) carry @ts-nocheck but are not in the baseline.\n` +
+        `New TypeScript files must typecheck — do not add @ts-nocheck.\n` +
+        `Offending files:\n  ${newFiles.join('\n  ')}`,
+    }
+  }
+  if (currentFiles.length < baseline.count) {
+    return {
+      ok: false,
+      message:
+        `❌ @ts-nocheck count (${currentFiles.length}) is BELOW the baseline (${baseline.count}) — nice work!\n` +
+        `Commit the win: run \`npx tsx scripts/check-ts-nocheck.ts --update\` and commit .ts-nocheck-baseline.`,
+    }
+  }
+  return {
+    ok: true,
+    message: `✅ @ts-nocheck ratchet OK: ${currentFiles.length} files (baseline ${baseline.count}).`,
+  }
+}
+
+export interface UpdateOptions {
+  /** RATCHET_ALLOW_NEW=1 — the explicit escape hatch for adding files. */
+  allowNew: boolean
+  /** --reason "..." — required with allowNew; recorded in the baseline header. */
+  reason?: string
+  now?: Date
+}
+
+export interface UpdatePlan {
+  ok: boolean
+  message: string
+  /** The new baseline file content — only present when ok. */
+  content?: string
+}
+
+/**
+ * Ratchet v2 (N2): `--update` is monotonic. Removals are always permitted;
+ * additions are refused unless RATCHET_ALLOW_NEW=1 and a --reason are given,
+ * in which case the escape is recorded permanently in the baseline header.
+ */
+export function planBaselineUpdate(
+  currentFiles: string[],
+  baseline: Baseline,
+  options: UpdateOptions
+): UpdatePlan {
+  const additions = currentFiles.filter((file) => !baseline.files.has(file))
+  const removals = [...baseline.files].filter((file) => !currentFiles.includes(file))
+
+  if (additions.length > 0 && !options.allowNew) {
+    return {
+      ok: false,
+      message:
+        `❌ --update refused: it would ADD ${additions.length} file(s) to the @ts-nocheck baseline.\n` +
+        `The baseline is monotonic — new files must ship typed. Remove @ts-nocheck from:\n` +
+        `  ${additions.join('\n  ')}\n` +
+        `If this addition is genuinely justified (e.g. vendored/generated code), run:\n` +
+        `  RATCHET_ALLOW_NEW=1 npx tsx scripts/check-ts-nocheck.ts --update --reason "why"`,
+    }
+  }
+  if (additions.length > 0 && !options.reason) {
+    return {
+      ok: false,
+      message:
+        `❌ --update refused: RATCHET_ALLOW_NEW=1 requires --reason "..." so the escape is recorded in the baseline header.`,
+    }
+  }
+
+  const header = [...baseline.header]
+  if (additions.length > 0) {
+    const date = (options.now ?? new Date()).toISOString().slice(0, 10)
+    header.push(`${date}: +${additions.length} (${additions.join(', ')}) — ${options.reason}`)
+  }
+
+  const parts: string[] = []
+  if (additions.length > 0) parts.push(`+${additions.length} added (escape recorded)`)
+  if (removals.length > 0) parts.push(`-${removals.length} removed`)
+  return {
+    ok: true,
+    message: `Baseline updated: ${currentFiles.length} files${parts.length > 0 ? ` (${parts.join(', ')})` : ''}`,
+    content: formatBaseline(currentFiles, header),
+  }
+}
+
 function main(): void {
   const { count, files } = countNocheckFiles()
 
   if (process.argv.includes('--update')) {
-    writeFileSync(BASELINE_PATH, `${count}\n${files.join('\n')}\n`)
-    console.log(`Baseline updated: ${count}`)
+    let baseline: Baseline
+    try {
+      baseline = readBaseline()
+    } catch {
+      // First-time creation: nothing to ratchet against yet.
+      baseline = { count: 0, files: new Set(files), header: [] }
+    }
+    const reasonIndex = process.argv.indexOf('--reason')
+    const plan = planBaselineUpdate(files, baseline, {
+      allowNew: process.env['RATCHET_ALLOW_NEW'] === '1',
+      reason: reasonIndex !== -1 ? process.argv[reasonIndex + 1] : undefined,
+    })
+    if (!plan.ok) {
+      console.error(plan.message)
+      process.exit(1)
+    }
+    writeFileSync(BASELINE_PATH, plan.content!)
+    console.log(plan.message)
     return
   }
 
@@ -140,8 +277,7 @@ function main(): void {
     process.exit(1)
   }
 
-  const newFiles = files.filter((file) => !baseline.files.has(file))
-  const result = evaluateRatchet(count, baseline.count, count > baseline.count ? newFiles : [])
+  const result = evaluateRatchetFiles(files, baseline)
   console.log(result.message)
   process.exit(result.ok ? 0 : 1)
 }
