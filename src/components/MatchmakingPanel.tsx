@@ -539,7 +539,7 @@ export function MatchmakingPanel({
                         <span className="matchmaking-standing-name">
                           <span className="matchmaking-standing-name-line">
                             {player.username}
-                            {player.dropped && <span className="matchmaking-standing-dropped">dropped</span>}
+                            {player.dropped && <span className="matchmaking-standing-dropped">Dropped</span>}
                           </span>
                           {identity && (
                             <span className="matchmaking-standing-identity">{identity}</span>
