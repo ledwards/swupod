@@ -1,0 +1,208 @@
+{
+  "version": 1,
+  "description": "Pinned contract for the wayfinder (hub) \u21c4 swupod (PTP) Swiss Practice pipeline. Golden request/response fixtures per endpoint. Mirror fixtures live in the wayfinder repo (hand-duplicated by design \u2014 swupod wins ties, no shared package). Verified by app/api/plugin/v1/contract-pin.test.ts.",
+  "forwardCompatRule": "Server code must never require an extension version that isn't already published (0-48h store review lag + auto-update tail). Every field in optionalRequestFields MUST stay optional: the oldExtensionRequest fixtures pin the degraded old-client behavior and are first-class tests, not afterthoughts.",
+  "envelope": {
+    "success": "boolean",
+    "data": "object|null",
+    "message": "string|null"
+  },
+  "endpoints": {
+    "practiceMatchGameLifecycle": {
+      "method": "POST",
+      "path": "/api/plugin/v1/practice/match-game/lifecycle",
+      "auth": "Authorization: Bearer <PTP_SERVICE_KEY>",
+      "requiredRequestFields": [
+        "practiceMatchGameId",
+        "poolShareId",
+        "status"
+      ],
+      "optionalRequestFields": [
+        "lobbyId",
+        "lobbyUrl",
+        "spectateUrl",
+        "wayfinderMatchId",
+        "wayfinderGameId",
+        "failureReason",
+        "lifecycleIdempotencyKey",
+        "occurredAt"
+      ],
+      "statusValues": [
+        "lobby_ready",
+        "joined",
+        "in_progress",
+        "failed"
+      ],
+      "goldenRequest": {
+        "practiceMatchGameId": "{{practiceMatchGameId}}",
+        "poolShareId": "{{poolShareId}}",
+        "status": "lobby_ready",
+        "lobbyId": "{{lobbyId}}",
+        "lobbyUrl": "https://karabast.net/lobby/{{lobbyId}}",
+        "spectateUrl": "https://karabast.net/spectate/{{lobbyId}}",
+        "wayfinderMatchId": "{{wayfinderMatchId}}",
+        "wayfinderGameId": "{{wayfinderGameId}}",
+        "lifecycleIdempotencyKey": "{{idempotencyKey}}",
+        "occurredAt": "2026-07-07T20:00:00.000Z"
+      },
+      "oldExtensionRequest": {
+        "practiceMatchGameId": "{{practiceMatchGameId}}",
+        "poolShareId": "{{poolShareId}}",
+        "status": "lobby_ready",
+        "lobbyId": "{{lobbyId}}",
+        "lobbyUrl": "https://karabast.net/lobby/{{lobbyId}}"
+      },
+      "responseDataFields": {
+        "ok": "boolean",
+        "changed": "boolean",
+        "practiceMatchGameId": "string",
+        "podId": "string",
+        "shareId": "string",
+        "status": "string",
+        "previousStatus": "string"
+      }
+    },
+    "matchResult": {
+      "method": "POST",
+      "path": "/api/plugin/v1/match/result",
+      "auth": "Authorization: Bearer <PTP_SERVICE_KEY>",
+      "requiredRequestFields": [
+        "poolShareId",
+        "result",
+        "matchId"
+      ],
+      "optionalRequestFields": [
+        "gameNumber",
+        "replayUrl",
+        "practiceMatchGameId",
+        "wayfinderGameId",
+        "format",
+        "matchForfeit",
+        "opponentName",
+        "playerLeader",
+        "playerLeaderImage",
+        "playerBase",
+        "playerBaseImage",
+        "playerArchetype",
+        "opponentLeader",
+        "opponentLeaderImage",
+        "opponentBase",
+        "opponentBaseImage",
+        "opponentArchetype"
+      ],
+      "resultValues": [
+        "win",
+        "loss",
+        "draw"
+      ],
+      "goldenCompetitiveRequest": {
+        "poolShareId": "{{poolShareId}}",
+        "result": "win",
+        "matchId": "{{wayfinderMatchId}}",
+        "gameNumber": 1,
+        "format": "Limited",
+        "replayUrl": "https://wayfinder.news/playback/{{wayfinderMatchId}}",
+        "practiceMatchGameId": "{{practiceMatchGameId}}",
+        "wayfinderGameId": "{{wayfinderGameId}}",
+        "playerLeader": "Han Solo",
+        "playerLeaderImage": "https://example.test/han.png",
+        "playerBase": "Echo Base",
+        "playerBaseImage": "https://example.test/echo.png",
+        "playerArchetype": "Han Solo / Echo Base",
+        "opponentLeader": "Darth Vader",
+        "opponentLeaderImage": "https://example.test/vader.png",
+        "opponentBase": "Command Center",
+        "opponentBaseImage": "https://example.test/command.png",
+        "opponentArchetype": "Darth Vader / Command Center"
+      },
+      "oldExtensionCompetitiveRequest": {
+        "poolShareId": "{{poolShareId}}",
+        "result": "win",
+        "matchId": "{{wayfinderMatchId}}",
+        "gameNumber": 1,
+        "practiceMatchGameId": "{{practiceMatchGameId}}"
+      },
+      "oldExtensionCasualRequest": {
+        "poolShareId": "{{poolShareId}}",
+        "result": "win",
+        "matchId": "{{wayfinderMatchId}}"
+      },
+      "competitiveResponseDataFields": {
+        "ok": "boolean",
+        "competitive": "boolean",
+        "duplicate": "boolean"
+      },
+      "casualResponseDataFields": {
+        "ok": "boolean"
+      }
+    },
+    "swissSummary": {
+      "method": "GET",
+      "path": "/api/plugin/v1/practice/swiss-summary",
+      "auth": "Authorization: Bearer <PTP_SERVICE_KEY>",
+      "requiredQueryParams": [
+        "practiceMatchGameId",
+        "poolShareId"
+      ],
+      "goldenQuery": {
+        "practiceMatchGameId": "{{practiceMatchGameId}}",
+        "poolShareId": "{{poolShareId}}"
+      },
+      "responseDataFields": {
+        "status": "string",
+        "practiceMatchGameId": "string|null",
+        "poolShareId": "string|null",
+        "currentRound": "number|null",
+        "pairing": "object|null",
+        "playerRecord": "string|null",
+        "standings": "array",
+        "unavailableReason": "string|null"
+      },
+      "statusValues": [
+        "ready",
+        "unavailable"
+      ],
+      "pairingFields": {
+        "table": "string|null",
+        "opponent": "string|null",
+        "status": "string|null"
+      },
+      "standingFields": {
+        "rank": "number",
+        "playerName": "string",
+        "record": "string|null",
+        "points": "number|null"
+      }
+    },
+    "userData": {
+      "method": "GET",
+      "path": "/api/private/user-data",
+      "auth": "Authorization: Bearer <PTP_SERVICE_KEY>",
+      "requiredQueryParams": [
+        "discord_id"
+      ],
+      "goldenQuery": {
+        "discord_id": "{{discordId}}"
+      },
+      "responseDataFields": {
+        "user": "object|null",
+        "pools": "array",
+        "builtDecks": "array",
+        "draftPicks": "array"
+      },
+      "userFields": {
+        "id": "string",
+        "username": "string",
+        "discordId": "string",
+        "avatarUrl": "string|null",
+        "createdAt": "string"
+      },
+      "unknownUserResponseData": {
+        "user": null,
+        "pools": [],
+        "builtDecks": [],
+        "draftPicks": []
+      }
+    }
+  }
+}
