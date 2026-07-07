@@ -26,6 +26,10 @@ jobs:
       - run: npm run typecheck
       # Monotonic @ts-nocheck ratchet (U6): the count can only go down.
       - run: npm run check:ts-ratchet
+      # Banned design tells (D2, design refresh): per-file monotonic baselines
+      # for off-palette hexes, ALL-CAPS labels, gradient fills, side-stripes,
+      # and bounce easing. Existing debt is baselined; new debt fails CI.
+      - run: npm run check:design-tells
       # DB-backed suites (lib/db.test.ts, draft-advance concurrency, auth
       # privilege-freshness) skip loudly when no local test DB is reachable.
       - run: npm run test

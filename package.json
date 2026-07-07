@@ -29,6 +29,7 @@
     "snapshot-patrons": "npx tsx scripts/snapshot-patrons.ts",
     "check:bundle-size": "npx tsx scripts/check-bundle-size.ts",
     "check:ts-ratchet": "npx tsx scripts/check-ts-nocheck.ts",
+    "check:design-tells": "npx tsx scripts/check-design-tells.ts",
     "typecheck": "tsc --noEmit",
     "test": "npx tsx --test $(find src lib app scripts -name '*.test.ts' -not -path '*/qa/*' -not -path '*/node_modules/*' -not -name 'botEval.test.ts' | sort)",
     "test:eval": "npx tsx src/bots/behaviors/botEval.test.ts",
