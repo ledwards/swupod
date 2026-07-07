@@ -24,8 +24,11 @@ next-env.d.ts
 # Scratch screenshots / artifacts dropped by agents (chrome-devtools etc.)
 .tmp/
 .tmp-*/
+/tmp/
 # Scratch image / diff artifacts dropped by agents (playwright comparisons etc.)
 /_*.png
+# Playwright MCP scratch logs (console/page dumps)
+/.playwright-mcp/
 
 # Design-sync: converter scripts + generated upload bundle (local tooling only)
 .ds-sync/
