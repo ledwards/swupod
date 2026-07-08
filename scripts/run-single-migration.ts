@@ -10,6 +10,7 @@ import { readFileSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import pg from 'pg'
+import { requiresNoTransaction, splitSqlStatements } from '../lib/migrationSql'
 
 const { Client } = pg
 const __filename = fileURLToPath(import.meta.url)
@@ -67,11 +68,25 @@ async function main(): Promise<void> {
       }
       await mod.run(client)
     } else {
-      // Pass the entire file to pg's simple query protocol, which supports
-      // multi-statement SQL natively. Do NOT split on ';' — that breaks any
-      // statement whose comments or string literals contain a semicolon.
       const sql = readFileSync(migrationPath, 'utf-8')
-      await client.query(sql)
+      if (requiresNoTransaction(sql)) {
+        // Statements like CREATE INDEX CONCURRENTLY cannot run inside a
+        // transaction block — and pg's simple query protocol wraps a
+        // multi-statement string in one implicit transaction. Run these
+        // files statement-by-statement (each statement is its own implicit
+        // single-statement transaction). The splitter is comment/literal
+        // aware, so semicolons in comments (migration 062) don't break it.
+        console.log(`   (non-transactional migration: running ${migrationName} statement-by-statement)`)
+        for (const statement of splitSqlStatements(sql)) {
+          await client.query(statement)
+        }
+      } else {
+        // Pass the entire file to pg's simple query protocol, which supports
+        // multi-statement SQL natively and runs it atomically in one implicit
+        // transaction. Do NOT split on ';' blindly — that breaks any
+        // statement whose comments or string literals contain a semicolon.
+        await client.query(sql)
+      }
     }
 
     // Mark applied only after the migration body finishes without throwing
