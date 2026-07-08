@@ -249,6 +249,16 @@ async function seedClaimedGame(seeded: SeededMatch): Promise<string> {
 // The pins
 // ---------------------------------------------------------------------------
 
+// DB-independent: runs even when the test database is unavailable.
+describe('contract pin: version', () => {
+  it('pins contract version 1 — bump deliberately on any shape change and re-mirror wayfinder\'s copy', () => {
+    // wayfinder's mirror test (apps/web/tests/unit/ptp-practice-contract-pin.test.ts)
+    // asserts the same version, so a shape change without a re-mirror fails
+    // loudly on whichever side is stale instead of drifting silently.
+    assert.equal(contract.version, 1)
+  })
+})
+
 describe('contract pin: POST /api/plugin/v1/practice/match-game/lifecycle', { skip: !dbAvailable }, () => {
   const spec = contract.endpoints.practiceMatchGameLifecycle
 

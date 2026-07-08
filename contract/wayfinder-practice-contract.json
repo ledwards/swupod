@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "description": "Pinned contract for the wayfinder (hub) \u21c4 swupod (PTP) Swiss Practice pipeline. Golden request/response fixtures per endpoint. Mirror fixtures live in the wayfinder repo (hand-duplicated by design \u2014 swupod wins ties, no shared package). Verified by app/api/plugin/v1/contract-pin.test.ts.",
+  "description": "Pinned contract for the wayfinder (hub) \u21c4 swupod (PTP) Swiss Practice pipeline. Golden request/response fixtures per endpoint. Mirror fixture lives in the wayfinder repo at apps/web/tests/fixtures/wayfinder-practice-contract.json, verified there by apps/web/tests/unit/ptp-practice-contract-pin.test.ts (hand-duplicated by design \u2014 swupod wins ties, no shared package; re-mirror by copying this file byte-identically). Verified here by app/api/plugin/v1/contract-pin.test.ts. Both pin tests assert the version field \u2014 bump it on any shape change so a stale mirror fails loudly.",
   "forwardCompatRule": "Server code must never require an extension version that isn't already published (0-48h store review lag + auto-update tail). Every field in optionalRequestFields MUST stay optional: the oldExtensionRequest fixtures pin the degraded old-client behavior and are first-class tests, not afterthoughts.",
   "envelope": {
     "success": "boolean",
