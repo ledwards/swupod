@@ -351,7 +351,7 @@ function DeckBuilder({
   const [arenaSearchQuery, setArenaSearchQuery] = useState('') // Arena view search query
   const [arenaPoolSortOption, setArenaPoolSortOption] = useState<'default' | 'aspect' | 'cost' | 'type'>('cost') // Arena view pool grouping (independent of grid view's poolSortOption)
   const [arenaDeckSortOption, setArenaDeckSortOption] = useState<'default' | 'aspect' | 'cost' | 'type'>('cost') // Arena view deck grouping
-  const [poolCardDensity, setPoolCardDensity] = useState<'small' | 'medium' | 'large'>('large') // Pool card density (arena+playmat)
+  const [poolCardDensity, setPoolCardDensity] = useState<'small' | 'medium' | 'large'>('small') // Pool card density (arena+playmat) — default SMALL
   const [deckCardDensity, setDeckCardDensity] = useState<'small' | 'medium' | 'large'>('small') // Deck card density (arena+playmat)
   const deckBlocksRowRef = useRef<HTMLDivElement>(null)
   const [activeLeader, setActiveLeader] = useState<string | null>(null)

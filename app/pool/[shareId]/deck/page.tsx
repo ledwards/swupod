@@ -244,11 +244,20 @@ export default function DeckBuilderPage({ params }: PageProps) {
   const deadlinePassed = Boolean(
     deckBuildDeadline && new Date(deckBuildDeadline).getTime() <= Date.now()
   )
+  // A Swiss event is "long over" once the pod is 7+ days old. `matchmakingStatus`
+  // is live draft-socket state that can get stuck at 'active'/'deck_building' if
+  // the event ended without a clean 'complete' transition — which would otherwise
+  // strand the lock + "in progress" banner forever. Age is the backstop: after a
+  // week, treat the Swiss as over regardless of the (stale) live status.
+  const SWISS_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000
+  const swissLongOver = Boolean(
+    pool?.createdAt && (Date.now() - new Date(pool.createdAt).getTime()) >= SWISS_MAX_AGE_MS
+  )
   // Once the Swiss event is complete the deck is free again — no lock, no
   // "in progress" banner — even though the build deadline is (permanently) in
   // the past. `deadlinePassed` alone would otherwise keep the pod locked forever.
   const swissPracticeActive =
-    matchmakingStatus !== 'complete' &&
+    matchmakingStatus !== 'complete' && !swissLongOver &&
     (matchmakingStatus === 'active' || deadlinePassed)
   const isChildBuildForLock = Boolean(pool?.parentShareId)
   const deckIsLocked = Boolean(
@@ -263,7 +272,7 @@ export default function DeckBuilderPage({ params }: PageProps) {
   )
   // Hide Stats / Draft Log / Draft Report in the header while the competitive
   // event is underway — they reappear once the Swiss event is complete.
-  const swissEventInProgress = Boolean(isCompetitivePod && matchmakingStatus !== 'complete')
+  const swissEventInProgress = Boolean(isCompetitivePod && matchmakingStatus !== 'complete' && !swissLongOver)
 
   const handleToggleLock = useCallback(async () => {
     if (!draftShareId || !isCompetitiveHost) return

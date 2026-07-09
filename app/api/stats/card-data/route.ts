@@ -1,5 +1,6 @@
 // GET /api/stats/card-data - 17Lands-style card data, currently backed by decklist + match-result facts.
 import { queryRows } from '@/lib/db'
+import { requireFullStatsAccess } from '@/lib/auth'
 import { cachedAggregate, STATS_AGGREGATE_TTL_MS } from '@/lib/queryCache'
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
@@ -589,6 +590,13 @@ export async function GET(request: NextRequest): Promise<Response> {
     const tournamentOnly = url.searchParams.get('tournamentOnly') === 'true'
     const topPlayersOnly = url.searchParams.get('topPlayersOnly') === 'true'
     const userId = url.searchParams.get('userId') || null
+
+    // Locked cohorts (Competitive / Top Players) are patron/admin-only. Gate
+    // server-side before any data path (including the Wayfinder preferred
+    // source) so the values never reach a non-entitled client. You/All public.
+    if (tournamentOnly || topPlayersOnly) {
+      await requireFullStatsAccess(request)
+    }
 
     const shouldPreferWayfinder = shouldPreferWayfinderCardData({
       format,

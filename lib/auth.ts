@@ -270,6 +270,55 @@ export async function requireAdmin(request: Request): Promise<Session> {
 }
 
 /**
+ * Pure entitlement predicate for the locked /stats cohorts — the server-side
+ * equivalent of the client gate `isPatron === true || user?.is_admin`
+ * (app/stats/page.tsx). Takes a users row (is_admin / is_patron) and answers
+ * "may this account see Competitive + Top Player stats?"
+ *
+ * `users.is_patron` is the materialized source of truth: the patron-status
+ * endpoint (app/api/auth/patron-status) writes it TRUE on every positive
+ * resolution (DB flag, Discord role, or Patreon API), and the client calls
+ * that endpoint before it ever renders the /stats cohorts — so by the time a
+ * real patron's browser fires a tournamentOnly / topPlayersOnly request, the
+ * flag is already set. Admins are always entitled (patron-status returns
+ * isPatron:true for them without setting the flag), so is_admin is checked
+ * directly.
+ */
+export function canSeeFullStats(
+  row: { is_admin?: boolean | null; is_patron?: boolean | null } | null | undefined,
+): boolean {
+  if (!row) return false
+  return row.is_admin === true || row.is_patron === true
+}
+
+/**
+ * Server-side guard for stats requests scoped to the locked cohorts
+ * (tournamentOnly / topPlayersOnly). Resolves the caller's entitlement from
+ * the users table — the single source of truth shared with the /stats client
+ * gate — and throws when they are not entitled. handleApiError maps the thrown
+ * message to a 403, so a scraper hitting a locked cohort URL directly gets a
+ * 403 instead of the numbers.
+ *
+ * Anonymous callers (no session) are non-entitled and denied the same way —
+ * the locked values must never reach a non-entitled client, logged in or not.
+ *
+ * @throws Error('Full stats access required') when the caller is not entitled
+ */
+export async function requireFullStatsAccess(request: Request): Promise<void> {
+  const session = getSession(request)
+  if (!session) {
+    throw new Error('Full stats access required')
+  }
+  const row = await queryRow(
+    'SELECT is_admin, is_patron FROM users WHERE id = $1',
+    [session.id],
+  )
+  if (!canSeeFullStats(row)) {
+    throw new Error('Full stats access required')
+  }
+}
+
+/**
  * Sanitize an OAuth returnTo target so the post-login redirect can only land
  * on this app: a single leading slash (no protocol-relative `//host`, no
  * absolute URLs). Anything else collapses to '/'.

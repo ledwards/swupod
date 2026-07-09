@@ -1,21 +1,39 @@
+/* Pin the badge INSIDE the card's bottom-right corner, overlaid on the art.
+   position/bottom/right are !important so the host's broad descendant rules
+   (e.g. ".canvas-card > * { position: relative }") can't pull this badge into
+   the card's flow — which would drop it below the image, left-aligned, and
+   grow the card, causing the rainbow selection ring to "bleed" below it. */
 .card-stats-badge {
   align-items: center;
   background: rgba(4, 10, 18, 0.84);
   border: 1px solid rgba(186, 218, 255, 0.72);
   border-radius: 999px;
-  bottom: 5px;
+  bottom: 5px !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.42);
   color: #d9ecff;
   cursor: pointer;
   display: inline-flex;
   height: 24px;
   justify-content: center;
+  overflow: hidden;
   padding: 0;
-  position: absolute;
-  right: 5px;
+  position: absolute !important;
+  right: 5px !important;
+  left: auto !important;
+  top: auto !important;
   transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
   width: 24px;
   z-index: 35;
+}
+
+/* !important so the card-art sizing rule (".leaders-bases-container
+   .canvas-card.leader img { width:100%; object-fit:cover }") can't stretch and
+   crop this overlaid icon — it must stay small and fully contained. */
+.card-stats-badge img {
+  display: block;
+  height: 15px !important;
+  width: 15px !important;
+  object-fit: contain !important;
 }
 
 .card-stats-badge:hover,
@@ -83,17 +101,25 @@
 }
 
 .card-stats-modal-header button {
+  align-items: center;
   background: transparent;
   border: 1px solid rgba(186, 218, 255, 0.28);
   border-radius: 7px;
   color: #d7e4ef;
   cursor: pointer;
+  display: flex;
   flex: 0 0 auto;
   font: inherit;
   font-size: 18px;
   height: 32px;
+  justify-content: center;
   line-height: 1;
+  padding: 0;
   width: 32px;
+}
+
+.card-stats-modal-header button svg {
+  display: block;
 }
 
 .card-stats-modal-header button:hover,

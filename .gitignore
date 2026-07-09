@@ -122,3 +122,4 @@ ds-bundle/
 # temp verification artifacts (screenshots + throwaway specs)
 _verify-*
 **/_verify-*
+.env.fable-bak

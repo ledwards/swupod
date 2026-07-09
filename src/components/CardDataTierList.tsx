@@ -1,5 +1,6 @@
 'use client'
 
+import './CardDataStatsModal.css'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { CardPreviewProvider, CardName } from '@/src/components/CardNamePreview'
 import Modal from '@/src/components/Modal'
@@ -372,7 +373,7 @@ function CardDataModalStat({ label, value, detail }: { label: string; value: str
   )
 }
 
-function CardDataStatsModal({ card, onClose, formatLabel, sampleWarningLabel }: {
+export function CardDataStatsModal({ card, onClose, formatLabel, sampleWarningLabel }: {
   card: CardDataCard
   onClose: () => void
   formatLabel: string

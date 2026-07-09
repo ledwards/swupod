@@ -1,0 +1,310 @@
+/* Styles for CardDataStatsModal — extracted from app/stats/stats.css so the
+   reused modal is styled wherever it renders (stats page AND deckbuilder card
+   badge), not only on the page that happens to load stats.css. */
+
+/* grade badge (base + per-grade colors) */
+.card-grade {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.4rem;
+  min-height: 1.6rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-weight: 800;
+}
+
+.card-grade,
+.card-data-tier-label[class*="card-grade-"] {
+  --grade-rgb: 185, 205, 225;
+  --grade-text: #eef5fb; /* design-ok: verbatim extract from stats.css for reused CardDataStatsModal */
+  background:
+    linear-gradient(135deg, rgba(var(--grade-rgb), 0.2), rgba(var(--grade-rgb), 0.07)); /* design-ok: verbatim extract from stats.css for reused CardDataStatsModal */
+  border-color: rgba(var(--grade-rgb), 0.42);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(var(--grade-rgb), 0.04);
+  color: var(--grade-text);
+}
+
+.card-data-tier-label[class*="card-grade-"] {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.72);
+}
+
+.card-grade-aplus,
+.card-data-tier-label.card-grade-aplus {
+  --grade-rgb: 88, 214, 128;
+  --grade-text: #dfffe8; /* design-ok: verbatim extract from stats.css for reused CardDataStatsModal */
+}
+
+.card-grade-a,
+.card-data-tier-label.card-grade-a {
+  --grade-rgb: 107, 211, 126;
+  --grade-text: #e4ffe9; /* design-ok: verbatim extract from stats.css for reused CardDataStatsModal */
+}
+
+.card-grade-aminus,
+.card-data-tier-label.card-grade-aminus {
+  --grade-rgb: 140, 207, 109;
+  --grade-text: #ecffdf; /* design-ok: verbatim extract from stats.css for reused CardDataStatsModal */
+}
+
+.card-grade-bplus,
+.card-data-tier-label.card-grade-bplus {
+  --grade-rgb: 177, 197, 92;
+  --grade-text: #f5ffd7; /* design-ok: verbatim extract from stats.css for reused CardDataStatsModal */
+}
+
+.card-grade-b,
+.card-data-tier-label.card-grade-b {
+  --grade-rgb: 207, 185, 81;
+  --grade-text: #fff5ca; /* design-ok: verbatim extract from stats.css for reused CardDataStatsModal */
+}
+
+.card-grade-bminus,
+.card-data-tier-label.card-grade-bminus {
+  --grade-rgb: 224, 166, 76;
+  --grade-text: #ffe9c7; /* design-ok: verbatim extract from stats.css for reused CardDataStatsModal */
+}
+
+.card-grade-cplus,
+.card-data-tier-label.card-grade-cplus {
+  --grade-rgb: 226, 143, 70;
+  --grade-text: #ffdfc5; /* design-ok: verbatim extract from stats.css for reused CardDataStatsModal */
+}
+
+.card-grade-c,
+.card-data-tier-label.card-grade-c {
+  --grade-rgb: 220, 119, 69;
+  --grade-text: #ffd7c8; /* design-ok: verbatim extract from stats.css for reused CardDataStatsModal */
+}
+
+.card-grade-cminus,
+.card-data-tier-label.card-grade-cminus {
+  --grade-rgb: 211, 96, 70;
+  --grade-text: #ffd0c8; /* design-ok: verbatim extract from stats.css for reused CardDataStatsModal */
+}
+
+.card-grade-dplus,
+.card-data-tier-label.card-grade-dplus {
+  --grade-rgb: 198, 77, 74;
+  --grade-text: #ffc9c9; /* design-ok: verbatim extract from stats.css for reused CardDataStatsModal */
+}
+
+.card-grade-d,
+.card-data-tier-label.card-grade-d {
+  --grade-rgb: 184, 62, 70;
+  --grade-text: #ffc2c8; /* design-ok: verbatim extract from stats.css for reused CardDataStatsModal */
+}
+
+.card-grade-dminus,
+.card-data-tier-label.card-grade-dminus,
+.card-grade-f,
+.card-data-tier-label.card-grade-f {
+  --grade-rgb: 165, 48, 64;
+  --grade-text: #ffbcc6; /* design-ok: verbatim extract from stats.css for reused CardDataStatsModal */
+}
+
+.card-grade-u,
+.card-data-tier-label.card-grade-u {
+  --grade-rgb: 135, 149, 164;
+  --grade-text: rgba(237, 244, 250, 0.7);
+}
+
+
+/* card stats modal */
+.modal-overlay:has(.card-data-stats-modal) {
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content.card-data-stats-modal {
+  background: rgba(10, 13, 17, 0.98);
+  border: 1px solid rgba(205, 225, 244, 0.28);
+  border-radius: 10px;
+  max-height: min(760px, calc(100dvh - 2rem));
+  max-width: min(860px, calc(100vw - 2rem));
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0;
+  width: min(860px, calc(100vw - 2rem));
+}
+
+.card-data-stats-modal .modal-close {
+  background: rgba(4, 7, 10, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  font-size: 2rem;
+  height: 44px;
+  right: 0.9rem;
+  top: 0.9rem;
+  width: 44px;
+}
+
+.card-data-stats-modal-hero {
+  align-items: end;
+  background-color: rgba(32, 38, 45, 0.88);
+  background-position: center 26%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 210px;
+  padding: 1.4rem;
+  position: relative;
+}
+
+.card-data-stats-modal-hero-event {
+  background-position: center 68%;
+}
+
+.card-data-stats-modal-hero-base {
+  background-position: center 50%;
+}
+
+.card-data-stats-modal-hero::before {
+  background:
+    linear-gradient(90deg, rgba(5, 8, 12, 0.92), rgba(5, 8, 12, 0.5) 58%, rgba(5, 8, 12, 0.78)), /* design-ok: verbatim extract from stats.css for reused CardDataStatsModal */
+    linear-gradient(0deg, rgba(5, 8, 12, 0.92), rgba(5, 8, 12, 0.08)); /* design-ok: verbatim extract from stats.css for reused CardDataStatsModal */
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.card-data-stats-modal-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.card-data-stats-modal-eyebrow {
+  color: rgba(211, 225, 239, 0.68);
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.35rem;
+  text-transform: uppercase; /* design-ok: verbatim extract from stats.css for reused CardDataStatsModal */
+}
+
+.card-data-stats-modal-hero h3 {
+  color: #fff;
+  font-size: clamp(1.7rem, 4vw, 2.6rem);
+  line-height: 1;
+  margin: 0;
+  max-width: 720px;
+}
+
+.card-data-stats-modal-hero p {
+  color: rgba(232, 240, 248, 0.72);
+  font-size: 1rem;
+  font-weight: 650;
+  margin: 0.35rem 0 0;
+}
+
+.card-data-stats-modal-meta {
+  align-items: center;
+  color: rgba(211, 225, 239, 0.7);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  font-weight: 750;
+  gap: 0.45rem;
+  margin-top: 0.8rem;
+}
+
+.card-data-stats-modal-rarity {
+  align-items: center;
+  display: inline-flex;
+}
+
+.card-data-stats-modal-context {
+  align-items: center;
+  align-self: end;
+  color: rgba(232, 240, 248, 0.82);
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 850;
+  gap: 0.45rem;
+  justify-self: end;
+  line-height: 1;
+  padding: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+}
+
+.card-data-stats-modal-context > span:not(:last-child)::after {
+  color: rgba(211, 225, 239, 0.38);
+  content: "·";
+  margin-left: 0.45rem;
+}
+
+.card-data-stats-modal-body {
+  padding: 1rem;
+}
+
+.card-data-stats-modal-grid {
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.card-data-stats-modal-stat {
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+  display: grid;
+  gap: 0.2rem;
+  min-height: 92px;
+  padding: 0.75rem;
+}
+
+.card-data-stats-modal-stat span {
+  color: rgba(213, 226, 240, 0.64);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.card-data-stats-modal-stat strong {
+  color: #fff;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.card-data-stats-modal-stat small {
+  color: rgba(213, 226, 240, 0.58);
+  font-size: 0.74rem;
+}
+
+.card-data-stats-modal-warning {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f5c16f; /* design-ok: verbatim extract from stats.css for reused CardDataStatsModal */
+  font-size: 0.84rem;
+  margin: 1rem 0 0;
+  padding-top: 0.85rem;
+}
+
+@media (max-width: 760px) {
+  .card-data-stats-modal-hero {
+    grid-template-columns: 1fr;
+    min-height: 250px;
+    padding-right: 4.5rem;
+  }
+}
+
+/* rarity icon (used by the modal's grade/rarity row) */
+.card-data-rarity-icon {
+  display: block;
+  flex: 0 0 auto;
+  height: 16px;
+  object-fit: contain;
+  width: 16px;
+}
+
+.card-data-rarity-icon-missing {
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 50%;
+  opacity: 0.45;
+}

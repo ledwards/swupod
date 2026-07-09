@@ -79,6 +79,10 @@ export function handleApiError(error: unknown): Response {
     return errorResponse('Admin access required', 403)
   }
 
+  if (error.message === 'Full stats access required') {
+    return errorResponse('Full stats access required', 403)
+  }
+
   if (error.message.includes('duplicate key')) {
     return errorResponse('Resource already exists', 409)
   }

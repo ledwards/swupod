@@ -1371,6 +1371,20 @@
 
 .card-data-gated-shell--locked {
   min-height: 520px;
+  /* Stack the blurred preview and the gate overlay in a single grid cell.
+     The cell grows to the CTA panel (so the "requirements / support" panel is
+     never clipped) while the blurred tier-list backdrop behind it is clipped
+     to a short teaser. Previously the disabled content rendered at full length
+     (~6000px), forcing the user to scroll a whole page of blurred, unusable
+     rows on a locked box. */
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.card-data-gated-shell--locked > .card-data-gated-content,
+.card-data-gated-shell--locked > .card-data-gate-overlay {
+  grid-area: 1 / 1;
+  min-width: 0;
 }
 
 .card-data-gated-shell--locked .card-data-gated-content {
@@ -1378,6 +1392,18 @@
   opacity: 0.28;
   pointer-events: none;
   user-select: none;
+  /* Clip the blurred backdrop to a teaser; the overlay covers what remains. */
+  max-height: 520px;
+  overflow: hidden;
+}
+
+/* In the locked grid the overlay is a normal grid item (not absolutely
+   positioned) so the CTA panel height drives the cell — keeping the CTA fully
+   visible and vertically centered over the capped backdrop. */
+.card-data-gated-shell--locked > .card-data-gate-overlay {
+  position: relative;
+  inset: auto;
+  align-items: center;
 }
 
 .card-data-gate-overlay {

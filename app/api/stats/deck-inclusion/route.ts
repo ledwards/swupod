@@ -1,6 +1,7 @@
 // @ts-nocheck
 // GET /api/stats/deck-inclusion - Get deck inclusion metrics per card
 import { queryRows, queryRow } from '@/lib/db'
+import { requireFullStatsAccess } from '@/lib/auth'
 import { cachedAggregate, STATS_AGGREGATE_TTL_MS } from '@/lib/queryCache'
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
@@ -21,6 +22,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const tournamentOnly = url.searchParams.get('tournamentOnly') === 'true'
     const topPlayersOnly = url.searchParams.get('topPlayersOnly') === 'true'
     const userId = url.searchParams.get('userId') || null
+
+    // Locked cohorts (Competitive / Top Players) are patron/admin-only. Gate
+    // server-side at the definition layer so the values never reach a
+    // non-entitled client — not even via a direct API call. You/All are public.
+    if (tournamentOnly || topPlayersOnly) {
+      await requireFullStatsAccess(request)
+    }
 
     // Build card lookup maps — all variants merge to same card via name|type|subtitle key
     // See src/utils/cardNormalization.ts for the canonical normalization pattern

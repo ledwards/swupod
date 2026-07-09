@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { createPortal } from 'react-dom'
 import './CardStatsBadge.css'
+import Modal from './Modal'
+import { CardDataStatsModal } from './CardDataTierList'
 
 type CardLike = {
   id?: string | null
@@ -23,7 +24,6 @@ type CardLike = {
 
 type LookupResult = {
   cardData: any | null
-  pickData: any | null
 }
 
 const lookupCache = new Map<string, Promise<LookupResult>>()
@@ -90,19 +90,8 @@ async function lookupCardStats(card: CardLike, setCode: string): Promise<LookupR
         format: 'all',
         source: 'all',
       })
-      const pickParams = new URLSearchParams({
-        setCode,
-        since: '2020-01-01',
-        until: '2099-12-31',
-        type: cardType(card) === 'Leader' ? 'leaders' : 'cards',
-      })
 
-      const [cardDataResponse, pickDataResponse] = await Promise.all([
-        fetchJson(`/api/stats/card-data?${cardParams}`),
-        cardType(card) === 'Base'
-          ? Promise.resolve(null)
-          : fetchJson(`/api/stats/draft-picks?${pickParams}`).catch(() => null),
-      ])
+      const cardDataResponse = await fetchJson(`/api/stats/card-data?${cardParams}`)
 
       const section = cardType(card) === 'Leader'
         ? cardDataResponse?.leaders
@@ -112,33 +101,10 @@ async function lookupCardStats(card: CardLike, setCode: string): Promise<LookupR
 
       return {
         cardData: firstMatching(section, card),
-        pickData: firstMatching(pickDataResponse?.cards, card),
       }
     })())
   }
   return lookupCache.get(key)!
-}
-
-function pct(value: number | null | undefined): string {
-  return typeof value === 'number' && Number.isFinite(value) ? `${value.toFixed(1)}%` : '-'
-}
-
-function count(value: number | null | undefined): string {
-  return typeof value === 'number' && Number.isFinite(value) ? Math.round(value).toLocaleString() : '-'
-}
-
-function numberValue(value: number | null | undefined, digits = 2): string {
-  return typeof value === 'number' && Number.isFinite(value) ? value.toFixed(digits) : '-'
-}
-
-function Metric({ label, value, detail }: { label: string; value: string; detail?: string | null }) {
-  return (
-    <div className="card-stats-modal-metric">
-      <span>{label}</span>
-      <strong>{value}</strong>
-      {detail ? <small>{detail}</small> : null}
-    </div>
-  )
 }
 
 export function CardStatsBadge({
@@ -183,9 +149,8 @@ export function CardStatsBadge({
   if (!show || !card) return null
 
   const name = cardName(card)
-  const subtitle = cardSubtitle(card)
   const data = result?.cardData
-  const pick = result?.pickData
+  const formatLabel = resolvedSetCode === 'all' ? 'All sets' : resolvedSetCode
 
   return (
     <>
@@ -200,52 +165,29 @@ export function CardStatsBadge({
           setOpen(true)
         }}
       >
-        <svg aria-hidden="true" viewBox="0 0 16 16" width="14" height="14" focusable="false">
-          <path d="M2.5 12.5h11" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="1.4" />
-          <path d="M4 10V6.5M8 10V3.5M12 10V8" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
-        </svg>
+        <img src="/branding/wayfinder_icon.svg" alt="" aria-hidden="true" draggable={false} />
       </button>
 
-      {mounted && open && createPortal(
-        <div className="card-stats-modal-backdrop" onClick={() => setOpen(false)}>
-          <section
-            className="card-stats-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-label={`Card stats for ${name}`}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <header className="card-stats-modal-header">
-              <div>
-                <p>Card Stats</p>
-                <h2>{name}</h2>
-                <span>{[subtitle, resolvedSetCode === 'all' ? 'All sets' : resolvedSetCode, cardType(card)].filter(Boolean).join(' / ')}</span>
-              </div>
-              <button type="button" onClick={() => setOpen(false)} aria-label="Close card stats">x</button>
-            </header>
-
-            {loading ? (
-              <div className="card-stats-modal-note">Loading card stats...</div>
-            ) : error ? (
-              <div className="card-stats-modal-error">{error}</div>
-            ) : data || pick ? (
-              <>
-                <div className="card-stats-modal-grid">
-                  <Metric label="Grade" value={data?.grade || '-'} detail={data?.gradeStatusLabel || data?.gradeBasis || null} />
-                  <Metric label="GP WR" value={pct(data?.gpWr)} detail={data?.gpCount != null ? `${count(data.gpCount)} GP` : null} />
-                  <Metric label="Decks" value={count(data?.deckCount)} />
-                  <Metric label="Avg Pick" value={numberValue(pick?.avgPickPosition)} detail={pick?.timesPicked != null ? `${count(pick.timesPicked)} picks` : null} />
-                  <Metric label="First Pick" value={pct(pick?.firstPickPct)} />
-                  <Metric label="P1P1" value={pct(pick?.p1p1Pct)} />
-                </div>
-                {data?.sampleWarning ? <div className="card-stats-modal-note">{data.sampleWarning}</div> : null}
-              </>
-            ) : (
-              <div className="card-stats-modal-note">No card stats are available for this set yet.</div>
-            )}
-          </section>
-        </div>,
-        document.body,
+      {/* Reuse the canonical stats-page card modal (CardDataStatsModal) verbatim
+          once data has loaded. While loading / on error / when no stats exist,
+          reuse the same shared <Modal> chrome so the experience is identical. */}
+      {mounted && open && (
+        data ? (
+          <CardDataStatsModal
+            card={data}
+            onClose={() => setOpen(false)}
+            formatLabel={formatLabel}
+            sampleWarningLabel={data.sampleWarning}
+          />
+        ) : (
+          <Modal isOpen onClose={() => setOpen(false)} showCloseButton className="card-data-stats-modal">
+            <div className="card-data-stats-modal-body">
+              <p className="card-data-stats-modal-warning">
+                {loading ? `Loading card stats for ${name}…` : error ? error : 'No card stats are available for this set yet.'}
+              </p>
+            </div>
+          </Modal>
+        )
       )}
     </>
   )
