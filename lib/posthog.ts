@@ -1,5 +1,22 @@
-import { after } from 'next/server'
 import { buildLimitedContext } from '@/src/analytics/limitedEvents'
+
+// 'next/server' must NOT be imported at module top. This file is reachable
+// from the custom server.ts module graph (server.ts → discordLfg → here), and
+// requiring next/server there — before Next has installed its
+// globalThis.AsyncLocalStorage polyfill — crashes the whole boot with
+// "Invariant: AsyncLocalStorage accessed in runtime where it is not
+// available" (took prod down on the 2026-07-09 deploy). Load it lazily and
+// tolerate its absence.
+type AfterFn = (task: () => unknown) => void
+let afterPromise: Promise<AfterFn | null> | undefined
+function loadAfter(): Promise<AfterFn | null> {
+  if (!afterPromise) {
+    afterPromise = import('next/server')
+      .then(m => m.after as AfterFn)
+      .catch(() => null)
+  }
+  return afterPromise
+}
 
 function posthogKey() {
   return process.env.POSTHOG_KEY || process.env.NEXT_PUBLIC_POSTHOG_KEY || ''
@@ -51,13 +68,19 @@ export function captureServerEventLater(
     })
   // On Vercel serverless the function can freeze the instant the response is
   // sent, dropping un-awaited work. `after()` keeps the capture alive past the
-  // response flush. Outside a request scope (scripts/tests) `after()` throws —
-  // fall back to plain fire-and-forget.
-  try {
-    after(run)
-  } catch {
-    run()
-  }
+  // response flush. Outside a request scope (scripts/tests/custom server)
+  // `after()` throws or is unavailable — fall back to plain fire-and-forget.
+  void loadAfter().then(after => {
+    if (!after) {
+      run()
+      return
+    }
+    try {
+      after(run)
+    } catch {
+      run()
+    }
+  })
 }
 
 export function buildLimitedServerProperties(properties: Record<string, unknown> = {}) {
