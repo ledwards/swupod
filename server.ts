@@ -11,7 +11,8 @@ import { join } from 'path'
 import next from 'next'
 import { Server } from 'socket.io'
 import { query, queryRows } from './lib/db.js'
-import { broadcastPublicPodsUpdate } from './src/lib/socketBroadcast.js'
+import { broadcastPublicPodsUpdate, broadcastOpenGamesUpdate } from './src/lib/socketBroadcast.js'
+import { sweepOpenGames, delistOpenGamesForUser } from './src/services/openGames.js'
 import { deleteAbandonedPodRecords } from './src/utils/podCleanup.js'
 import { buildAllowedOrigins, makeAllowRequest, setupSocketServer } from './src/lib/socketServer.js'
 import { postUserMessageForPod, postLobbyMessage, deletePodMessage } from './lib/discordLfg.js'
@@ -147,7 +148,17 @@ app.prepare().then(() => {
         await broadcastPublicPodsUpdate()
       }
     },
+    delistOpenGames: async (userId: string) => {
+      const delisted = await delistOpenGamesForUser(userId)
+      if (delisted > 0) {
+        console.log(`[Delist] Poster ${userId} offline past grace, delisted ${delisted} open game(s)`)
+        await broadcastOpenGamesUpdate()
+      }
+    },
   })
+
+  // Expose live presence to broadcast/API layers (hostConnected dots on listings)
+  global.presenceMap = presenceMap
 
   // Abandoned pod cleanup
   const CLEANUP_INTERVAL_MS = 15 * 60 * 1000 // 15 minutes
@@ -203,8 +214,25 @@ app.prepare().then(() => {
     }
   }
 
+  // Open-games lifecycle sweep (R9/R20): transitions statuses + broadcasts,
+  // unlike the pod cleanup which deletes rows. Runs on its own faster cadence
+  // so the ~20-min accepted-match expiry stays close to spec.
+  const OPEN_GAMES_SWEEP_INTERVAL_MS = 5 * 60 * 1000
+  async function sweepOpenGamesJob(): Promise<void> {
+    try {
+      const { expired, abandoned } = await sweepOpenGames()
+      if (expired > 0 || abandoned > 0) {
+        console.log(`[OpenGames] Sweep: ${expired} expired, ${abandoned} abandoned`)
+        await broadcastOpenGamesUpdate()
+      }
+    } catch (err) {
+      console.error('[OpenGames] Sweep error:', err)
+    }
+  }
+
   server.listen(port, () => {
     console.log(`> Ready on http://localhost:${port}`)
     setInterval(cleanupAbandonedPods, CLEANUP_INTERVAL_MS)
+    setInterval(sweepOpenGamesJob, OPEN_GAMES_SWEEP_INTERVAL_MS)
   })
 })

@@ -29,6 +29,13 @@ export interface SocketServerDeps {
   delistPods: (userId: string) => Promise<void>
   /** How long a host may be offline before their public pods are delisted. */
   delistDelayMs?: number
+  /** Delist a disconnected poster's open-game listings (DB update + broadcast). */
+  delistOpenGames?: (userId: string) => Promise<void>
+  /**
+   * Open-game listings get a much longer grace than pods: a seek list's value
+   * is surviving the poster wandering off (Discord, another tab) for a while.
+   */
+  openGamesDelistDelayMs?: number
 }
 
 export interface SocketServerState {
@@ -36,9 +43,12 @@ export interface SocketServerState {
   presenceMap: Map<string, Set<string>>
   /** Pending host-delist timers (exposed for shutdown/tests). */
   delistTimers: Map<string, NodeJS.Timeout>
+  /** Pending open-game listing delist timers (exposed for shutdown/tests). */
+  openGamesDelistTimers: Map<string, NodeJS.Timeout>
 }
 
 const DEFAULT_DELIST_DELAY_MS = 60_000 // 60 seconds
+const DEFAULT_OPEN_GAMES_DELIST_DELAY_MS = 5 * 60_000 // 5 minutes
 
 /**
  * Compute the Socket.io CORS origin allow-list from the configured app URLs.
@@ -135,6 +145,29 @@ export function setupSocketServer(io: Server, deps: SocketServerDeps): SocketSer
     }
   }
 
+  const openGamesDelistDelayMs = deps.openGamesDelistDelayMs ?? DEFAULT_OPEN_GAMES_DELIST_DELAY_MS
+  const openGamesDelistTimers = new Map<string, NodeJS.Timeout>()
+
+  function startOpenGamesDelistTimer(userId: string): void {
+    if (!deps.delistOpenGames) return
+    cancelOpenGamesDelistTimer(userId)
+    const timer = setTimeout(() => {
+      openGamesDelistTimers.delete(userId)
+      deps.delistOpenGames!(userId).catch((err) => {
+        console.error('[Delist] Failed to delist open games:', err)
+      })
+    }, openGamesDelistDelayMs)
+    openGamesDelistTimers.set(userId, timer)
+  }
+
+  function cancelOpenGamesDelistTimer(userId: string): void {
+    const timer = openGamesDelistTimers.get(userId)
+    if (timer) {
+      clearTimeout(timer)
+      openGamesDelistTimers.delete(userId)
+    }
+  }
+
   function broadcastPresenceCount(): void {
     const count = presenceMap.size
     io.to('presence').emit('presence:count', { count })
@@ -166,7 +199,10 @@ export function setupSocketServer(io: Server, deps: SocketServerDeps): SocketSer
         presenceMap.set(user.id, new Set())
       }
       presenceMap.get(user.id)!.add(socket.id)
+      // Per-user room for targeted pushes (e.g. open-game accepted toasts).
+      socket.join(`user:${user.id}`)
       cancelDelistTimer(user.id)
+      cancelOpenGamesDelistTimer(user.id)
       broadcastPresenceCount()
     })
 
@@ -280,6 +316,16 @@ export function setupSocketServer(io: Server, deps: SocketServerDeps): SocketSer
       socket.leave('public-pods')
     })
 
+    // Lobby board room: read-only open-games list updates (no auth needed,
+    // mirrors public-pods).
+    socket.on('join-open-games', () => {
+      socket.join('open-games')
+    })
+
+    socket.on('leave-open-games', () => {
+      socket.leave('open-games')
+    })
+
     // Pool builds room: clients viewing /pool/:rootShareId/deck or /...deck/:buildId
     // join `pool-builds:${rootShareId}` to receive builds-changed pings whenever
     // any user (themselves OR another client) saves changes to the pool tree.
@@ -303,11 +349,12 @@ export function setupSocketServer(io: Server, deps: SocketServerDeps): SocketSer
         if (sockets.size === 0) {
           presenceMap.delete(user.id)
           startDelistTimer(user.id)
+          startOpenGamesDelistTimer(user.id)
         }
         broadcastPresenceCount()
       }
     })
   })
 
-  return { presenceMap, delistTimers }
+  return { presenceMap, delistTimers, openGamesDelistTimers }
 }
