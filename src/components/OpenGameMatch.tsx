@@ -265,8 +265,8 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
               </Button>
             ) : (
               <p className="lobby-match-note">
-                Your Companion needs an update to launch games one-click — update the extension, or
-                use the manual steps below.
+                One-click lobbies are part of the Companion preview — your installed Companion
+                doesn&apos;t support them yet. Use the manual steps below.
               </p>
             )}
           </>

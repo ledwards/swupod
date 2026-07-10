@@ -22,9 +22,9 @@ async function seedDeck(userId: string, setCode: string, format: string): Promis
   const db = getPool()
   const shareId = `e2e-${TEST_ID}-${Math.random().toString(36).slice(2, 10)}`
   const pool = await db.query(
-    `INSERT INTO card_pools (user_id, share_id, set_code, set_name, pool_type, cards)
-     VALUES ($1, $2, $3, $4, $5, '[]'::jsonb) RETURNING id`,
-    [userId, shareId, setCode, `${setCode} Set`, format]
+    `INSERT INTO card_pools (user_id, share_id, set_code, set_name, pool_type, cards, deck_builder_state)
+     VALUES ($1, $2, $3, $4, $5, '[]'::jsonb, $6::jsonb) RETURNING id`,
+    [userId, shareId, setCode, `${setCode} Set`, format, '{"activeLeader":"pos-l","activeBase":"pos-b","cardPositions":{"pos-l":{"card":{"name":"Test Leader","isLeader":true}},"pos-b":{"card":{"name":"Test Base","isBase":true,"aspects":[]}}}}']
   )
   await db.query(
     `INSERT INTO built_decks (card_pool_id, user_id, set_code, pool_type, leader, base, deck, sideboard)
@@ -195,13 +195,13 @@ test.describe('Lobby V1 — Open Games', () => {
 
     await row.getByRole('button', { name: 'Join' }).click()
 
-    // Filter line proves strict matching (R31): 1 draft of 2 total decks.
+    // Strict matching (R31): the subtitle counts eligible decks only, and the
+    // wrong-format deck is NOT rendered at all.
     // 15s: DeckPicker fetches (and auto-retries once) on a busy dev server.
-    await expect(page.getByText(/1 of\s+2 eligible/)).toBeVisible({ timeout: 15_000 })
-    // The wrong-format deck is present but disabled.
-    await expect(page.locator('.lobby-deck-off', { hasText: 'wrong set or format' })).toBeVisible()
+    await expect(page.getByText(/\(1 eligible\)/)).toBeVisible({ timeout: 15_000 })
+    await expect(page.locator('[role="radio"]')).toHaveCount(1)
 
-    await page.locator('[role="radio"]:not(.lobby-deck-off)').first().click()
+    await page.locator('[role="radio"]').first().click()
     await page.getByRole('button', { name: 'Join Game' }).click()
 
     // Joiner lands on the match page with both seats.
@@ -217,10 +217,14 @@ test.describe('Lobby V1 — Open Games', () => {
     await expect(page.getByText('Waiting for an opponent')).not.toBeVisible()
   })
 
-  test('either player can cancel the match (R20)', async () => {
+  test('either player can cancel the lobby (R20) — canceller returns to /lobby, opponent sees it closed', async () => {
     const { page } = joinerCtx
-    await page.getByRole('button', { name: 'Cancel match' }).click()
-    await expect(page.getByText(/cancelled/i).first()).toBeVisible({ timeout: 10_000 })
+    await page.getByRole('button', { name: 'Cancel this lobby' }).click()
+    // The canceller goes straight back to the lobby — no terminal screen.
+    await page.waitForURL(/\/lobby/, { timeout: 15_000 })
+    // The other player's match page shows the lobby-closed state (10s poll).
+    await expect(posterCtx.page.getByText(/Lobby closed|lobby was cancelled/i).first())
+      .toBeVisible({ timeout: 20_000 })
   })
 
   test('Play Now instantly matches two compatible seekers (AE1/AE2)', async () => {

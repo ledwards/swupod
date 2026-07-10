@@ -20,6 +20,7 @@ interface JoinGameModalProps {
 export default function JoinGameModal({ isOpen, onClose, game, onJoined }: JoinGameModalProps): React.JSX.Element | null {
   const [selected, setSelected] = useState<EligibleDeck | null>(null)
   const [busy, setBusy] = useState(false)
+  const [eligibleCount, setEligibleCount] = useState<number | null>(null)
   const { showToast } = useToast()
 
   if (!game) return null
@@ -70,15 +71,18 @@ export default function JoinGameModal({ isOpen, onClose, game, onJoined }: JoinG
           format={game.format}
           selected={selected?.poolShareId ?? null}
           onSelect={setSelected}
+          onEligibleCount={setEligibleCount}
         />
       </Modal.Body>
       <Modal.Actions>
         <Button variant="secondary" onClick={onClose} disabled={busy}>
           Cancel
         </Button>
-        <Button variant="primary" onClick={joinGame} disabled={!selected || busy}>
-          {busy ? 'Joining…' : 'Join Game'}
-        </Button>
+        {eligibleCount !== 0 && (
+          <Button variant="primary" onClick={joinGame} disabled={!selected || busy}>
+            {busy ? 'Joining…' : 'Join Game'}
+          </Button>
+        )}
       </Modal.Actions>
     </Modal>
   )

@@ -113,15 +113,18 @@ interface EligibleDeck {
 }
 
 /**
- * Deck eligibility (R23): the pool belongs to the user and has a built deck
- * (built_decks row = the site's own "clicked Play with a valid deck" definition).
+ * Deck eligibility (R23): the pool belongs to the user and its deck builder
+ * has a leader AND base selected (deck_builder_state — the same definition
+ * /me uses). NOT gated on built_decks: that row only exists once the player
+ * has clicked Play on the play page, which silently hid fully-built decks
+ * (Lee's ASH Sealed) from the picker and from post/join validation.
  */
 async function requireEligibleDeck(tx: TxClient, userId: string, poolId: string): Promise<EligibleDeck> {
   const pool = await tx.queryRow(
     `SELECT cp.id, cp.user_id, cp.set_code, cp.set_name, cp.pool_type, cp.hidden,
-            (bd.card_pool_id IS NOT NULL) AS deck_ready
+            (cp.deck_builder_state ->> 'activeLeader' IS NOT NULL
+             AND cp.deck_builder_state ->> 'activeBase' IS NOT NULL) AS deck_ready
      FROM card_pools cp
-     LEFT JOIN built_decks bd ON bd.card_pool_id = cp.id
      WHERE cp.id = $1`,
     [poolId]
   )
@@ -130,7 +133,7 @@ async function requireEligibleDeck(tx: TxClient, userId: string, poolId: string)
     throw new OpenGameError('forbidden', 'That pool belongs to another player', 403)
   }
   if (pool.hidden === true || pool.deck_ready !== true) {
-    throw new OpenGameError('deck_not_ready', 'Build and save a deck for this pool first', 400)
+    throw new OpenGameError('deck_not_ready', 'Build a deck for this pool first (pick a leader and base)', 400)
   }
   return {
     poolId: String(pool.id),

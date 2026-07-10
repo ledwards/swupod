@@ -79,9 +79,10 @@ interface PoolOpts {
 async function seedPool(userId: string, opts: PoolOpts = {}): Promise<string> {
   const { setCode = 'SEC', format = 'draft', built = true } = opts
   const pool = await queryRow(
-    `INSERT INTO card_pools (user_id, share_id, set_code, set_name, pool_type, cards)
-     VALUES ($1, $2, $3, $4, $5, '[]'::jsonb) RETURNING id`,
-    [userId, `og-test-${randomUUID().slice(0, 12)}`, setCode, `${setCode} Set`, format]
+    `INSERT INTO card_pools (user_id, share_id, set_code, set_name, pool_type, cards, deck_builder_state)
+     VALUES ($1, $2, $3, $4, $5, '[]'::jsonb, $6::jsonb) RETURNING id`,
+    [userId, `og-test-${randomUUID().slice(0, 12)}`, setCode, `${setCode} Set`, format,
+      built ? '{"activeLeader":"pos-l","activeBase":"pos-b","cardPositions":{"pos-l":{"card":{"name":"Test Leader","isLeader":true}},"pos-b":{"card":{"name":"Test Base","isBase":true,"aspects":[]}}}}' : '{}']
   )
   seededPools.push(pool.id)
   if (built) {

@@ -533,56 +533,6 @@ a.lobby-discord-tile:active {
   text-align: left;
 }
 
-.lobby-deck-filterline {
-  color: var(--pt-glow-interactive);
-  font-size: 0.8rem;
-}
-
-.lobby-deck {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  border: 1px solid var(--pt-border-subtle);
-  border-radius: var(--pt-radius-sm);
-  padding: 10px 13px;
-  cursor: pointer;
-  transition: border-color 0.2s ease;
-}
-
-.lobby-deck-selected {
-  border-color: rgba(var(--pt-glow-primary-rgb), 0.6);
-}
-
-.lobby-deck-off {
-  opacity: 0.4;
-  cursor: default;
-}
-
-.lobby-deck-radio {
-  width: 14px;
-  height: 14px;
-  border-radius: var(--pt-radius-full);
-  border: 1px solid var(--pt-ink-subtle);
-  flex: none;
-}
-
-.lobby-deck-radio-on {
-  border-color: var(--pt-glow-primary);
-  background: radial-gradient(circle at center, var(--pt-glow-primary) 45%, transparent 50%); /* design-ok: radio dot, not a resting surface fill */
-}
-
-.lobby-deck-name {
-  flex: 1;
-  min-width: 0;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.lobby-deck-name .lobby-row-meta {
-  display: block;
-  font-weight: 400;
-}
-
 /* ---- new game modal extras ---- */
 .lobby-vis-toggle {
   display: flex;

@@ -32,6 +32,9 @@ interface DeckPickerProps {
   format?: string
   selected: string | null
   onSelect: (deck: EligibleDeck) => void
+  /** Fires whenever the eligible count is known/changes (modal hides its
+   *  confirm button at zero). */
+  onEligibleCount?: (count: number) => void
 }
 
 /** ~6 items per page keeps the modal shorter than a viewport. */
@@ -71,12 +74,17 @@ function NoEligibleDecks({ setCode, format }: { setCode?: string | undefined; fo
         You don&apos;t have a {setCode} {formatLabel(format)} deck yet — make one first:
       </p>
       <div className="lobby-deck-empty-ctas">
-        <a href="/sealed" className={`btn btn--sm ${isDraft ? 'btn--secondary' : 'btn--primary'}`}>
-          Start a Solo Sealed
-        </a>
-        <a href="/draft/solo" className={`btn btn--sm ${isDraft ? 'btn--primary' : 'btn--secondary'}`}>
-          Start a Solo Draft
-        </a>
+        {/* Format-specific only: a sealed game needs a sealed deck, a draft
+            game a drafted one — never suggest the other format. */}
+        {isDraft ? (
+          <a href="/draft/solo" className="btn btn--sm btn--primary">
+            Start a Solo Draft
+          </a>
+        ) : (
+          <a href="/sealed" className="btn btn--sm btn--primary">
+            Start a Solo Sealed
+          </a>
+        )}
       </div>
       {isDraft && (
         <p className="lobby-deck-empty-alt">
@@ -87,7 +95,7 @@ function NoEligibleDecks({ setCode, format }: { setCode?: string | undefined; fo
   )
 }
 
-export default function DeckPicker({ setCode, format, selected, onSelect }: DeckPickerProps): React.JSX.Element {
+export default function DeckPicker({ setCode, format, selected, onSelect, onEligibleCount }: DeckPickerProps): React.JSX.Element {
   const [decks, setDecks] = useState<EligibleDeck[] | null>(null)
   const [error, setError] = useState(false)
   // Bumped by the Retry button to re-run the fetch effect.
@@ -132,6 +140,11 @@ export default function DeckPicker({ setCode, format, selected, onSelect }: Deck
 
   const filtered = Boolean(setCode || format)
   const eligible = decks?.filter(d => d.eligible) ?? []
+
+  useEffect(() => {
+    if (decks !== null) onEligibleCount?.(eligible.length)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [decks])
 
   // "ASH · Draft (4 eligible)" — the Join modal's one-line subtitle.
   const subtitle = filtered && (

@@ -43,14 +43,20 @@ export async function GET(request: NextRequest): Promise<Response> {
     const setCode = searchParams.get('setCode')
     const format = searchParams.get('format')
 
+    // Eligibility = the deck builder has a leader AND base picked
+    // (deck_builder_state) — the same definition /me uses. built_decks is
+    // only joined for recency: it exists solely after a Play click, and
+    // gating on it hid fully-built decks from the picker.
     const rows = await queryRows(
       `SELECT cp.share_id, cp.set_code, cp.set_name, cp.pool_type, cp.name,
-              cp.created_at, cp.deck_builder_state, bd.built_at
+              cp.created_at, cp.updated_at, cp.deck_builder_state, bd.built_at
        FROM card_pools cp
-       JOIN built_decks bd ON bd.card_pool_id = cp.id
+       LEFT JOIN built_decks bd ON bd.card_pool_id = cp.id
        WHERE cp.user_id = $1 AND cp.hidden IS NOT TRUE
-       ORDER BY bd.built_at DESC NULLS LAST
-       LIMIT 100`,
+         AND cp.deck_builder_state ->> 'activeLeader' IS NOT NULL
+         AND cp.deck_builder_state ->> 'activeBase' IS NOT NULL
+       ORDER BY COALESCE(bd.built_at, cp.updated_at, cp.created_at) DESC
+       LIMIT 300`,
       [session.id]
     )
 
@@ -88,7 +94,7 @@ export async function GET(request: NextRequest): Promise<Response> {
         setName: r.set_name ? String(r.set_name) : null,
         format: r.pool_type ? String(r.pool_type) : 'sealed',
         name,
-        builtAt: r.built_at ? String(r.built_at) : null,
+        builtAt: r.built_at ? String(r.built_at) : r.updated_at ? String(r.updated_at) : null,
         leaderName,
         leaderImageUrl: leaderCard?.imageUrl || leaderCard?.artUrl || null,
         // Hyperspace leader art (full-bleed) is the preferred item art on /me;

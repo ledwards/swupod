@@ -65,9 +65,9 @@ async function seedUser(name = 'ogl-user'): Promise<string> {
 async function seedPool(userId: string, setCode: string, format: string): Promise<{ id: string; shareId: string }> {
   const shareId = `ogl-test-${randomUUID().slice(0, 12)}`
   const pool = await queryRow(
-    `INSERT INTO card_pools (user_id, share_id, set_code, set_name, pool_type, cards)
-     VALUES ($1, $2, $3, $4, $5, '[]'::jsonb) RETURNING id`,
-    [userId, shareId, setCode, `${setCode} Set`, format]
+    `INSERT INTO card_pools (user_id, share_id, set_code, set_name, pool_type, cards, deck_builder_state)
+     VALUES ($1, $2, $3, $4, $5, '[]'::jsonb, $6::jsonb) RETURNING id`,
+    [userId, shareId, setCode, `${setCode} Set`, format, '{"activeLeader":"pos-l","activeBase":"pos-b","cardPositions":{"pos-l":{"card":{"name":"Test Leader","isLeader":true}},"pos-b":{"card":{"name":"Test Base","isBase":true,"aspects":[]}}}}']
   )
   seededPools.push(pool.id)
   await query(
