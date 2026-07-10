@@ -61,7 +61,7 @@ export default function JoinGameModal({ isOpen, onClose, game, onJoined }: JoinG
     }
   }
 
-  const title = game.hostUsername ? `Join ${game.hostUsername}'s game` : 'Join game'
+  const title = game.hostUsername ? `Join ${game.hostUsername}'s lobby` : 'Join lobby'
 
   return (
     <Modal className="lobby-deck-modal" isOpen={isOpen} onClose={onClose} title={title}>
@@ -80,7 +80,7 @@ export default function JoinGameModal({ isOpen, onClose, game, onJoined }: JoinG
         </Button>
         {eligibleCount !== 0 && (
           <Button variant="primary" onClick={joinGame} disabled={!selected || busy}>
-            {busy ? 'Joining…' : 'Join Game'}
+            {busy ? 'Joining…' : 'Join Lobby'}
           </Button>
         )}
       </Modal.Actions>

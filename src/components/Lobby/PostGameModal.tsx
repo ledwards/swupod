@@ -62,7 +62,7 @@ export default function PostGameModal({
   }
 
   return (
-    <Modal className="lobby-deck-modal" isOpen={isOpen} onClose={onClose} title="New Game">
+    <Modal className="lobby-deck-modal" isOpen={isOpen} onClose={onClose} title="New Lobby">
       <Modal.Body>
         <p className="lobby-row-meta">Choose your deck.</p>
         <DeckPicker selected={selectedShareId} onSelect={setSelected} />
@@ -109,7 +109,7 @@ export default function PostGameModal({
           Cancel
         </Button>
         <Button variant="primary" onClick={createGame} disabled={!selectedShareId || busy}>
-          {busy ? 'Creating…' : 'Create Game'}
+          {busy ? 'Creating…' : 'Create Lobby'}
         </Button>
       </Modal.Actions>
     </Modal>

@@ -238,7 +238,7 @@ app.prepare().then(() => {
   const OPEN_GAMES_SWEEP_INTERVAL_MS = 5 * 60 * 1000
   async function sweepOpenGamesJob(): Promise<void> {
     try {
-      const { expired, abandoned, expiredListings } = await sweepOpenGames()
+      const { expired, abandoned, expiredListings } = await sweepOpenGames({ onlineUserIds: [...presenceMap.keys()] })
       if (expired > 0 || abandoned > 0) {
         console.log(`[OpenGames] Sweep: ${expired} expired, ${abandoned} abandoned`)
         await broadcastOpenGamesUpdate()

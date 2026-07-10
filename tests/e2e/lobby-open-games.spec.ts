@@ -168,12 +168,12 @@ test.describe('Lobby V1 — Open Games', () => {
   test('poster creates a public open game through New Game', async () => {
     const { page } = posterCtx
     await page.goto('/lobby')
-    await page.getByRole('button', { name: 'New Game' }).click()
+    await page.getByRole('button', { name: 'New Lobby' }).click()
 
     // Deck picker: select the seeded draft deck.
     await expect(page.getByRole('dialog')).toBeVisible()
     await page.locator('[role="radio"]', { hasText: RUN_SET }).first().click()
-    await page.getByRole('button', { name: 'Create Game' }).click()
+    await page.getByRole('button', { name: 'Create Lobby' }).click()
 
     // Poster lands on the match page in the waiting state.
     await waitForMatchPage(page, 'player1_id', poster.user.id)
@@ -202,7 +202,7 @@ test.describe('Lobby V1 — Open Games', () => {
     await expect(page.locator('[role="radio"]')).toHaveCount(1)
 
     await page.locator('[role="radio"]').first().click()
-    await page.getByRole('button', { name: 'Join Game' }).click()
+    await page.getByRole('button', { name: 'Join Lobby' }).click()
 
     // Joiner lands on the match page with both seats.
     await waitForMatchPage(page, 'player2_id', joiner.user.id)

@@ -58,7 +58,7 @@ export default function OpenGamesColumn({
 
       {status === 'error' && (
         <div className="lobby-state lobby-state-error">
-          <p>Couldn&apos;t load live games.</p>
+          <p>Couldn&apos;t load live lobbies.</p>
           <Button variant="secondary" size="sm" onClick={retry}>
             Retry
           </Button>
@@ -74,9 +74,9 @@ export default function OpenGamesColumn({
 
       {boardEmpty && (
         <div className="lobby-state">
-          <p>No open games right now.</p>
+          <p>No open lobbies right now.</p>
           <Button variant="primary" size="sm" onClick={onNewGame}>
-            Post the First Game
+            Post the First Lobby
           </Button>
                     {recentCompleted.length > 0 && (
             <p className="lobby-state-sub">

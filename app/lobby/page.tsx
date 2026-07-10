@@ -196,7 +196,7 @@ function LobbyPageInner(): React.JSX.Element {
             : 'Still on the board.',
           kind: 'success',
           href: `/g/${game.shareId}`,
-          actionLabel: 'View game',
+          actionLabel: 'View lobby',
         })
       }
     } catch (error) {
@@ -325,8 +325,8 @@ function LobbyPageInner(): React.JSX.Element {
               <img className="lobby-art-img art-event" src={VERB_ART.newGame} alt="" />
             </span>
             <div className="mode-button-content">
-              <span className="mode-button-title">New Game</span>
-              <span className="mode-button-subtitle">Post a game</span>
+              <span className="mode-button-title">New Lobby</span>
+              <span className="mode-button-subtitle">Post a lobby</span>
             </div>
           </button>
         </div>

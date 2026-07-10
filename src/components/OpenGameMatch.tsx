@@ -56,10 +56,9 @@ const TERMINAL_COPY: Record<string, string> = {
 // The site's copy-link affordance (same pattern as PlayInstructions'
 // step-copy-button / MatchCard's CopyLobbyLink): copy with a 2s "Copied!"
 // state, falling back to opening the link if the clipboard is blocked.
-function CopyDeckLink({ poolShareId }: { poolShareId: string }) {
+function CopyLink({ url, label }: { url: string; label: string }) {
   const [copied, setCopied] = useState(false)
   const copy = async () => {
-    const url = `${window.location.origin}/pool/${poolShareId}/deck`
     try {
       await navigator.clipboard.writeText(url)
       setCopied(true)
@@ -74,9 +73,15 @@ function CopyDeckLink({ poolShareId }: { poolShareId: string }) {
         <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
         <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
       </svg>
-      {copied ? 'Copied!' : 'Copy deck link'}
+      {copied ? 'Copied!' : label}
     </button>
   )
+}
+
+function CopyDeckLink({ poolShareId }: { poolShareId: string }) {
+  // Rendered client-side only (the match page is fully client), so
+  // window is safe here.
+  return <CopyLink url={`${typeof window !== 'undefined' ? window.location.origin : ''}/pool/${poolShareId}/deck`} label="Copy deck link" />
 }
 
 export default function OpenGameMatch({ shareId }: { shareId: string }): React.JSX.Element {
@@ -243,6 +248,18 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
             </div>
           </div>
         ))}
+        {waitingForOpponent && game.visibility === 'private' && (
+          <div className="lobby-match-note lobby-match-visibility">
+            Private lobby — only people with the link can join.{' '}
+            <CopyLink
+              url={typeof window !== 'undefined' ? window.location.href : ''}
+              label="Copy lobby link"
+            />
+          </div>
+        )}
+        {waitingForOpponent && game.visibility === 'public' && (
+          <div className="lobby-match-note lobby-match-visibility">Listed on the board.</div>
+        )}
         {waitingForOpponent && (
           <>
             <span className="lobby-match-vs">vs</span>

@@ -398,16 +398,24 @@ export interface ResolvedListing {
   discordMessageId: string | null
 }
 
-export async function sweepOpenGames(): Promise<{
+export async function sweepOpenGames(options: { onlineUserIds?: string[] } = {}): Promise<{
   expired: number
   abandoned: number
   expiredListings: ResolvedListing[]
 }> {
   const { queryRows, query } = await import('@/lib/db')
+  const online = options.onlineUserIds ?? []
+  // 1h expiry applies to OFFLINE posters; a poster who's still connected
+  // keeps their listing alive up to a 6h hard cap.
   const expiredRows = await queryRows(
     `UPDATE open_games SET status = 'expired', resolved_at = NOW(), updated_at = NOW()
-     WHERE status = 'open' AND created_at < NOW() - INTERVAL '1 hour'
-     RETURNING share_id, format, discord_message_id`
+     WHERE status = 'open'
+       AND (
+         (created_at < NOW() - INTERVAL '1 hour' AND NOT (player1_id = ANY($1::uuid[])))
+         OR created_at < NOW() - INTERVAL '6 hours'
+       )
+     RETURNING share_id, format, discord_message_id`,
+    [online]
   )
   const abandoned = await query(
     `UPDATE open_games og SET status = 'abandoned', resolved_at = NOW(), updated_at = NOW()
