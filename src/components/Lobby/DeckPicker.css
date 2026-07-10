@@ -59,10 +59,10 @@
 .lobby-deck-option--selected::before {
   opacity: 1;
   /* The shared 400% panning gradient shows only one color slice on a row this
-     wide (reads as a plain orange border). Fit the full spectrum around the
-     ring instead and cycle it with hue-rotate so every color is always visible. */
-  background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8f00ff, #ff0000); /* design-ok: the sanctioned rainbow selection motif, sized for wide rows */
-  background-size: 100% 100%;
+     wide (reads as a plain orange border). Wrap the full spectrum around the
+     ring perimeter (conic — a linear gradient leaves the short edges a single
+     color) and cycle it with hue-rotate so every color is always visible. */
+  background: conic-gradient(from 0deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8f00ff, #ff0000); /* design-ok: the sanctioned rainbow selection motif, sized for wide rows */
   animation: lobby-rainbow-hue 3s linear infinite;
 }
 

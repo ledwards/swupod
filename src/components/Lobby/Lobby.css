@@ -829,6 +829,108 @@ a.lobby-discord-tile:active {
   padding-right: 72px;
 }
 
+/* The play page's action-bar trio, compacted for the pane header. */
+.lobby-deck-actions {
+  padding: 0 var(--pt-space-md) var(--pt-space-sm);
+  justify-content: center;
+}
+
+/* Deck image modal (DeckImageModal) — same block DeckBuilder.css/pod.css/
+   play.css each carry for their pages. */
+.deck-image-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 2rem;
+}
+
+.deck-image-modal-content {
+  position: relative;
+  max-width: 95vw;
+  max-height: 95vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.deck-image-modal-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+}
+
+.deck-image-modal-image {
+  max-width: 100%;
+  max-height: calc(95vh - 80px);
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.deck-image-modal-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.deck-image-modal-download,
+.deck-image-modal-toggle {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Barlow', sans-serif;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+.deck-image-modal-download {
+  border-color: rgba(0, 255, 0, 0.6);
+  background: rgba(0, 100, 0, 0.3);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .deck-image-modal-close:hover {
+    color: #ff6b6b; /* design-ok: copied verbatim from the play page's modal block */
+  }
+
+  .deck-image-modal-download:hover {
+    background: rgba(0, 100, 0, 0.5);
+    border-color: rgba(0, 255, 0, 0.8);
+    box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
+  }
+
+  .deck-image-modal-toggle:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+  }
+}
+
+.deck-image-modal-toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* Container layout for the shared card primitives (.canvas-card sizing and
    the leader/base landscape rules ride Card.css off these class names). */
 .lobby-deck-pane .leaders-bases-container {
@@ -836,6 +938,7 @@ a.lobby-discord-tile:active {
   flex-wrap: wrap;
   gap: 0.75rem;
   align-items: flex-start;
+  justify-content: center;
   padding: 8px 6px;
 }
 

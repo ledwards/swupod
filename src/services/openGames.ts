@@ -418,6 +418,39 @@ export async function listPublicOpenGames(): Promise<{
   }
 }
 
+/** The caller's own active listing (any visibility) — powers the "Your Open
+ *  Lobby" entry in the user menu. One-listing invariant makes LIMIT 1 exact. */
+export async function getMyOpenListing(userId: string): Promise<{
+  shareId: string
+  setCode: string
+  format: string
+  visibility: string
+  createdAt: string
+  deckName: string | null
+} | null> {
+  const { queryRow } = await import('@/lib/db')
+  const r = await queryRow(
+    `SELECT og.share_id, og.set_code, og.format, og.visibility, og.created_at,
+            cp.deck_builder_state, cp.name AS pool_name, cp.pool_type,
+            cp.created_at AS pool_created_at
+     FROM open_games og
+     JOIN card_pools cp ON cp.id = og.player1_pool_id
+     WHERE og.player1_id = $1 AND og.status = 'open'
+     ORDER BY og.created_at DESC
+     LIMIT 1`,
+    [userId]
+  )
+  if (!r) return null
+  return {
+    shareId: String(r.share_id),
+    setCode: String(r.set_code),
+    format: String(r.format),
+    visibility: String(r.visibility),
+    createdAt: String(r.created_at),
+    deckName: hostDeckName(r),
+  }
+}
+
 export async function getOpenGameByShareId(shareId: string): Promise<OpenGame | null> {
   const { queryRow } = await import('@/lib/db')
   const row = await queryRow('SELECT * FROM open_games WHERE share_id = $1', [shareId])

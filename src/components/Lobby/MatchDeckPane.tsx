@@ -13,12 +13,17 @@
  * ever fed the viewer's own pool share id — never the opponent's.
  */
 import { useCallback, useEffect, useState } from 'react'
-import Card, { type CardData } from '@/src/components/Card'
+import { createPortal } from 'react-dom'
+import { type CardData } from '@/src/components/Card'
+import { CardWithPreview } from '@/src/components/CardWithPreview'
 import Button from '@/src/components/Button'
+import { DeckImageModal } from '@/src/components/DeckBuilder/DeckImageModal'
+import { useToast } from '@/src/components/Toast'
 import { loadPool } from '@/src/utils/poolApi'
 import { jsonParse } from '@/src/utils/json'
-import { getCardTypeOrder } from '@/src/utils/cardSort'
+import { renderPoolImageBlob } from '@/src/services/deckImage'
 import type { Arena } from '@/src/types/card'
+import '@/src/components/PlayInstructions.css'
 
 interface DeckCard extends CardData {
   cost?: number | null
@@ -40,9 +45,13 @@ interface DeckState {
 
 interface PoolPayload {
   poolType?: string
+  setCode?: string
+  name?: string | null
   cards?: DeckCard[]
   packs?: Array<{ cards: DeckCard[] }>
   deckBuilderState?: string | DeckState
+  owner?: { username?: string | null; name?: string | null }
+  rootShareId?: string | null
 }
 
 interface DeckView {
@@ -52,15 +61,13 @@ interface DeckView {
   sideboard: DeckCard[]
 }
 
-// Flat display order: cost, then type, then name — the deck builder's
-// default ordering minus the aspect grouping.
-function byCostTypeName(a: DeckCard, b: DeckCard): number {
+// Karabast's lobby deck view sorts by cost ascending only, no type/arena
+// grouping (forceteki-client Lobby/Deck/Deck.tsx). Name is the tiebreak so
+// the flat order is deterministic where theirs relies on source order.
+function byCost(a: DeckCard, b: DeckCard): number {
   const costA = a.cost ?? 999
   const costB = b.cost ?? 999
   if (costA !== costB) return costA - costB
-  const orderA = getCardTypeOrder(a)
-  const orderB = getCardTypeOrder(b)
-  if (orderA !== orderB) return orderA - orderB
   return (a.name ?? '').toLowerCase().localeCompare((b.name ?? '').toLowerCase())
 }
 
@@ -103,8 +110,8 @@ export function buildDeckView(pool: PoolPayload): DeckView | null {
 
   if (!leader && !base && deck.length === 0) return null
 
-  deck.sort(byCostTypeName)
-  sideboard.sort(byCostTypeName)
+  deck.sort(byCost)
+  sideboard.sort(byCost)
   return { leader, base, deck, sideboard }
 }
 
@@ -127,12 +134,17 @@ function DeckSkeleton() {
 export default function MatchDeckPane({ poolShareId }: { poolShareId: string }): React.JSX.Element {
   const [status, setStatus] = useState<'loading' | 'error' | 'ready'>('loading')
   const [view, setView] = useState<DeckView | null>(null)
+  const [pool, setPool] = useState<PoolPayload | null>(null)
+  const [generatingImage, setGeneratingImage] = useState(false)
+  const [deckImageUrl, setDeckImageUrl] = useState<string | null>(null)
+  const { showToast } = useToast()
 
   const fetchDeck = useCallback(async () => {
     setStatus('loading')
     try {
-      const pool = await loadPool(poolShareId)
-      setView(buildDeckView(pool as PoolPayload))
+      const loaded = (await loadPool(poolShareId)) as PoolPayload
+      setPool(loaded)
+      setView(buildDeckView(loaded))
       setStatus('ready')
     } catch {
       setStatus('error')
@@ -143,12 +155,91 @@ export default function MatchDeckPane({ poolShareId }: { poolShareId: string }):
     fetchDeck()
   }, [fetchDeck])
 
+  // Share actions — the play page's action-bar trio (same classes/icons).
+  async function copyDeckLink(): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/pool/${poolShareId}/deck`)
+      showToast({ text: 'Deck link copied!', kind: 'success' })
+    } catch {
+      showToast({ text: 'Failed to copy link', kind: 'danger' })
+    }
+  }
+
+  async function copyDeckJson(): Promise<void> {
+    try {
+      const res = await fetch(`/api/pools/${poolShareId}/deck.json`)
+      if (!res.ok) throw new Error(String(res.status))
+      await navigator.clipboard.writeText(JSON.stringify(await res.json(), null, 2))
+      showToast({ text: 'Deck JSON copied to clipboard!', kind: 'success' })
+    } catch {
+      showToast({ text: 'Failed to copy deck JSON', kind: 'danger' })
+    }
+  }
+
+  // Canvas-rendered PNG via the shared renderer (same params as the play page).
+  async function exportDeckImage(): Promise<void> {
+    const state = jsonParse(pool?.deckBuilderState, null) as DeckState | null
+    if (!state?.cardPositions || !state.activeLeader || !state.activeBase) {
+      showToast({ text: 'No deck data found.', kind: 'danger' })
+      return
+    }
+    setGeneratingImage(true)
+    try {
+      const blob = await renderPoolImageBlob({
+        cardPositions: state.cardPositions,
+        activeLeader: state.activeLeader,
+        activeBase: state.activeBase,
+        leaderCard: state.cardPositions[state.activeLeader]?.card || null,
+        baseCard: state.cardPositions[state.activeBase]?.card || null,
+        setCode: pool?.setCode ?? '',
+        poolType: pool?.poolType === 'draft' ? 'draft' : 'sealed',
+        showSideboard: false,
+        poolName: (state as { poolName?: string }).poolName || pool?.name || null,
+        ownerUsername: pool?.owner?.username || pool?.owner?.name || null,
+        shareId: poolShareId,
+        rootShareId: pool?.rootShareId ?? null,
+      })
+      if (!blob) throw new Error('render failed')
+      setDeckImageUrl(URL.createObjectURL(blob))
+    } catch {
+      showToast({ text: 'Failed to generate deck image', kind: 'danger' })
+    } finally {
+      setGeneratingImage(false)
+    }
+  }
+
   return (
     <aside className="lobby-deck-pane" aria-label="Your deck">
       <h3 className="lobby-column-title">
         Your Deck{status === 'ready' && view ? ` (${view.deck.length} cards)` : ''}
         <span>only you can see this</span>
       </h3>
+      {status === 'ready' && view && (
+        <div className="play-instructions-actions lobby-deck-actions">
+          <button className="play-instructions-action-button primary" onClick={copyDeckLink}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+            Copy Link
+          </button>
+          <button className="play-instructions-action-button" onClick={copyDeckJson}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            Copy JSON
+          </button>
+          <button className="play-instructions-action-button" onClick={exportDeckImage} disabled={generatingImage}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+            {generatingImage ? 'Generating...' : 'Deck Image'}
+          </button>
+        </div>
+      )}
       <div className="lobby-deck-pane-body">
         {status === 'loading' && <DeckSkeleton />}
         {status === 'error' && (
@@ -163,12 +254,12 @@ export default function MatchDeckPane({ poolShareId }: { poolShareId: string }):
         {status === 'ready' && view && (
           <>
             <div className="leaders-bases-container">
-              {view.leader && <Card card={view.leader} showStatsBadge={false} />}
-              {view.base && <Card card={view.base} showStatsBadge={false} />}
+              {view.leader && <CardWithPreview card={view.leader} statsSetCode={pool?.setCode ?? null} />}
+              {view.base && <CardWithPreview card={view.base} statsSetCode={pool?.setCode ?? null} />}
             </div>
             <div className="cards-grid">
               {view.deck.map((card, i) => (
-                <Card card={card} showStatsBadge={false} key={`${card.id}-${i}`} />
+                <CardWithPreview card={card} statsSetCode={pool?.setCode ?? null} key={`${card.id}-${i}`} />
               ))}
             </div>
             {view.sideboard.length > 0 && (
@@ -176,7 +267,7 @@ export default function MatchDeckPane({ poolShareId }: { poolShareId: string }):
                 <h4 className="lobby-deck-subhead">Sideboard ({view.sideboard.length})</h4>
                 <div className="cards-grid">
                   {view.sideboard.map((card, i) => (
-                    <Card card={card} showStatsBadge={false} key={`${card.id}-${i}`} />
+                    <CardWithPreview card={card} statsSetCode={pool?.setCode ?? null} key={`${card.id}-${i}`} />
                   ))}
                 </div>
               </>
@@ -184,6 +275,17 @@ export default function MatchDeckPane({ poolShareId }: { poolShareId: string }):
           </>
         )}
       </div>
+      {deckImageUrl &&
+        createPortal(
+          <DeckImageModal
+            imageUrl={deckImageUrl}
+            onClose={() => setDeckImageUrl(null)}
+            poolName={pool?.name ?? ''}
+            setCode={pool?.setCode ?? ''}
+            poolType={pool?.poolType === 'draft' ? 'draft' : 'sealed'}
+          />,
+          document.body
+        )}
     </aside>
   )
 }
