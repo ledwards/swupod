@@ -135,6 +135,40 @@ empty, fall back to a *populated* tier's hopper before `_drawSynthesized`.
 
 ---
 
+### OPEN-3 — Real carbonite prestige slot can hold a LEADER prestige; generator excludes leaders
+
+Surfaced by real pull data (`data/real-boxes/ash-carbonite-001.csv`, n=1): an ASH
+carbonite pack's prestige slot held **Grogu (Charming Companion, Rare Leader),
+Standard Prestige #804**. But `CarbonitePrestigeBelt._initialize` builds every tier
+pool with `!c.isLeader && !c.isBase`, and the synthesis fallback likewise — so the
+generator can **never** emit a leader prestige. If real carbonite prestige includes
+leader prestiges, drop the `!c.isLeader` filter from the prestige pool (leaders DO
+have Standard/Foil/Serialized Prestige printings in the data). Confirm with more packs
+before changing — n=1 — but it's a concrete, code-verifiable gap.
+
+### OPEN-4 — Possible intra-block rarity ordering (Lee hypothesis, unconfirmed)
+
+Hypothesis: within a pack, the HS run and HSF run may come off the sheet in ascending
+or descending **rarity** order (a collation pattern). The generator draws each block
+slot as an independent weighted pull, so it emits **no** intra-block ordering. Can't
+be tested yet — pack 001 was laid grouped, not in pull order. Needs `pullOrder=true`
+photos (cards laid in exact pull order). `scripts/analyze-carbonite-corpus.ts` has an
+ordering pass (rarity- and number-monotonicity per block) that activates once such
+packs exist. If confirmed, model it as **belt emission order**, not a post-hoc sort
+(belt-system.md forbids reordering passes) — design discussion first.
+
+### 🎴 Corpus + first real data point (ash-carbonite-001)
+
+One real ASH carbonite pack, decoded via collector-number ranges (`Normal ≤264 · HS
+265–528 · HSF 529–766 · Showcase 767–784 · Prestige 785–925`) and cross-checked
+against `cards.json` (all 16 numbers confirmed exactly). It is a **textbook LAW+
+pack**: 1 HS leader + 1 prestige + 8 HS + 6 HSF. Block rarity mix (HS: 4C/1U/2R/1S;
+HSF: 4C/2U) sits inside the assumed weights. All 6 HSF are genuine `Hyperspace Foil`
+printings (529–766) — direct evidence for OPEN-1 reading (b) (use the real HSF
+variant, don't synthesize from Hyperspace source). Harness: `scripts/analyze-carbonite-corpus.ts`;
+schema/protocol: `data/real-boxes/README.md`. Once ~15–20 packs are logged, retune the
+flex/top/prestige/showcase weights (currently guesses) against the corpus.
+
 ## 📋 Spec-doc drift (flagged per "trust code over docs")
 
 `plans/CARBONITE_PACK_PLAN.md` is **stale** vs the code (code is ground truth):
