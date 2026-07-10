@@ -2,7 +2,7 @@
 
 /**
  * Join modal (R28/R31): pick which of your decks to bring — strictly
- * filtered to the game's set + format, ineligible decks greyed with reason.
+ * filtered to the game's set + format; ineligible decks are not shown.
  */
 import { useState } from 'react'
 import Modal from '@/src/components/Modal'
@@ -65,10 +65,6 @@ export default function JoinGameModal({ isOpen, onClose, game, onJoined }: JoinG
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
       <Modal.Body>
-        <p className="lobby-row-meta">
-          {game.setCode} · {game.format === 'draft' ? 'Draft' : 'Sealed'} — pick which of your decks
-          to bring.
-        </p>
         <DeckPicker
           setCode={game.setCode}
           format={game.format}

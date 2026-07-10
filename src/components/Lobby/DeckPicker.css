@@ -1,0 +1,130 @@
+/* ============================================================================
+ * DeckPicker (Lobby modals) — deck list items reuse the /me pool-build
+ * treatment from YourStats.css (.your-stats-pool-build + .your-stats-replay-*);
+ * selection is the shared animated rainbow ring from src/styles/animations.css
+ * (same system as .canvas-card.selected). Layout container (.lobby-deck-picker)
+ * comes from Lobby.css.
+ * ========================================================================== */
+
+.lobby-deck-picker {
+  /* The reused your-stats-* classes read these scope vars, normally defined
+     on .me-page/.your-stats (YourStats.css) — mirror them off the ink token
+     so the items render identically inside the lobby modals. */
+  --ys-border: rgba(var(--pt-ink-rgb), 0.12);
+  --ys-border-bright: rgba(var(--pt-ink-rgb), 0.24);
+  --ys-text-2: rgba(var(--pt-ink-rgb), 0.72);
+  --ys-text-3: rgba(var(--pt-ink-rgb), 0.5);
+  --ys-radius: 14px;
+  --ys-radius-sm: 10px;
+}
+
+/* "ASH · Draft (4 eligible)" subtitle under the Join modal title. */
+.lobby-deck-subtitle {
+  margin: 0 0 var(--pt-space-xs);
+  color: var(--pt-ink-subtle);
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+/* ----- selectable item wrapper: carries the rainbow selection ring -------- */
+.lobby-deck-option {
+  /* Proportional rainbow system (animations.css): leader-card reference width
+     gives the same ~2.5px ring thickness as selected leaders/bases. */
+  --rainbow-border-reference: 168px;
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--ys-radius);
+  cursor: pointer;
+}
+
+.lobby-deck-option::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--rainbow-border-size) * -1);
+  border-radius: calc(var(--ys-radius) + var(--rainbow-border-size));
+  background: var(--rainbow-border-gradient);
+  background-size: var(--rainbow-border-background-size);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.lobby-deck-option--selected::before {
+  opacity: 1;
+  animation: var(--rainbow-border-animation);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lobby-deck-option--selected::before {
+    animation: none;
+  }
+}
+
+/* Keyboard focus ring — interactive-blue glow per DESIGN.md (matches
+   .canvas-card:focus-visible). */
+.lobby-deck-option:focus-visible {
+  outline: 2px solid rgba(var(--pt-glow-interactive-rgb), 0.95);
+  outline-offset: 3px;
+}
+
+/* ----- compact the reused /me item for modal width ------------------------ */
+.lobby-deck-option .your-stats-pool-build {
+  min-height: 64px;
+}
+
+.lobby-deck-option .your-stats-replay-content {
+  min-height: 64px;
+  max-width: 76%;
+  padding: 0.55rem 0.85rem;
+  gap: 0.3rem;
+  justify-content: center;
+}
+
+.lobby-deck-option .your-stats-replay-combo strong {
+  font-size: 0.95rem;
+}
+
+/* The modal is far narrower than /me, so pull the leader art crop back into
+   frame (on /me it sits at width 32% / right -60px). */
+.lobby-deck-option .your-stats-pool-build-art img {
+  right: -20px;
+  width: 42%;
+}
+
+/* ----- pagination ---------------------------------------------------------- */
+.lobby-deck-pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--pt-space-sm);
+  margin-top: var(--pt-space-xs);
+}
+
+.lobby-deck-pager-count {
+  min-width: 3.5em;
+  text-align: center;
+  color: var(--pt-ink-subtle);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ----- zero-eligible-decks state (Join flow) ------------------------------- */
+.lobby-deck-empty-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--pt-space-sm);
+  margin-top: var(--pt-space-sm);
+}
+
+.lobby-deck-empty-ctas .btn {
+  text-decoration: none;
+}
+
+.lobby-deck-empty-alt {
+  margin: var(--pt-space-sm) 0 0;
+  font-size: 0.85rem;
+  color: var(--pt-ink-subtle);
+}

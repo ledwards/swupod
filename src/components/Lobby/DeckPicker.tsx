@@ -2,12 +2,15 @@
 
 /**
  * Deck picker for New Game / Join flows (R23/R31). Shows the caller's built
- * decks; ineligible decks (wrong set/format for the game being joined) are
- * greyed with the reason. Your deck choice is yours alone — opponents never
- * see it (R29).
+ * decks as the /me pool list items (leader art, pool name, meta), paginated,
+ * with the site's rainbow-border treatment marking the selection. Ineligible
+ * decks (wrong set/format for the game being joined) are not shown at all.
+ * Your deck choice is yours alone — opponents never see it (R29).
  */
 import { useEffect, useState } from 'react'
 import Button from '@/src/components/Button'
+import '@/src/components/YourStats/YourStats.css'
+import './DeckPicker.css'
 
 export interface EligibleDeck {
   poolShareId: string
@@ -17,6 +20,10 @@ export interface EligibleDeck {
   name: string | null
   builtAt: string | null
   eligible: boolean
+  leaderName: string | null
+  leaderImageUrl: string | null
+  leaderBackImageUrl: string | null
+  baseColor: string | null
 }
 
 interface DeckPickerProps {
@@ -27,10 +34,57 @@ interface DeckPickerProps {
   onSelect: (deck: EligibleDeck) => void
 }
 
-export function deckLabel(deck: EligibleDeck): string {
-  if (deck.name) return deck.name
-  const fmt = deck.format === 'draft' ? 'Draft' : 'Sealed'
-  return `${deck.setCode} ${fmt}${deck.builtAt ? ` — ${new Date(deck.builtAt).toLocaleDateString()}` : ''}`
+/** ~6 items per page keeps the modal shorter than a viewport. */
+const PAGE_SIZE = 6
+
+function formatLabel(format?: string): string {
+  return format === 'draft' ? 'Draft' : 'Sealed'
+}
+
+/** Zero-eligible-decks state (Join flow): link out to make a deck that fits
+ *  this game — Solo Sealed / Solo Draft, plus open draft pods for drafts. */
+function NoEligibleDecks({ setCode, format }: { setCode?: string | undefined; format?: string | undefined }): React.JSX.Element {
+  const isDraft = format === 'draft'
+  // Open draft pods are a faster on-ramp for draft games; count them so the
+  // link reads "or join a draft pod (2 open)".
+  const [openDraftPods, setOpenDraftPods] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (!isDraft) return
+    let cancelled = false
+    fetch('/api/pods/public')
+      .then(res => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
+      .then(json => {
+        if (cancelled) return
+        const pods = (json.data || json).pods || []
+        setOpenDraftPods(pods.filter((p: { podType?: string }) => p.podType === 'draft').length)
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [isDraft])
+
+  return (
+    <div className="lobby-state lobby-deck-empty">
+      <p>
+        You don&apos;t have a {setCode} {formatLabel(format)} deck yet — make one first:
+      </p>
+      <div className="lobby-deck-empty-ctas">
+        <a href="/sealed" className={`btn btn--sm ${isDraft ? 'btn--secondary' : 'btn--primary'}`}>
+          Start a Solo Sealed
+        </a>
+        <a href="/draft/solo" className={`btn btn--sm ${isDraft ? 'btn--primary' : 'btn--secondary'}`}>
+          Start a Solo Draft
+        </a>
+      </div>
+      {isDraft && (
+        <p className="lobby-deck-empty-alt">
+          or <a href="/draft">join a draft pod{openDraftPods !== null ? ` (${openDraftPods} open)` : ''}</a>
+        </p>
+      )}
+    </div>
+  )
 }
 
 export default function DeckPicker({ setCode, format, selected, onSelect }: DeckPickerProps): React.JSX.Element {
@@ -38,6 +92,7 @@ export default function DeckPicker({ setCode, format, selected, onSelect }: Deck
   const [error, setError] = useState(false)
   // Bumped by the Retry button to re-run the fetch effect.
   const [attempt, setAttempt] = useState(0)
+  const [page, setPage] = useState(0)
 
   useEffect(() => {
     let cancelled = false
@@ -46,6 +101,7 @@ export default function DeckPicker({ setCode, format, selected, onSelect }: Deck
     const params = new URLSearchParams()
     if (setCode) params.set('setCode', setCode)
     if (format) params.set('format', format)
+    setPage(0)
 
     // One failed fetch must not strand the picker in a dead-end error state
     // (a dev-server recompile or network blip is enough): retry once
@@ -74,6 +130,17 @@ export default function DeckPicker({ setCode, format, selected, onSelect }: Deck
     }
   }, [setCode, format, attempt])
 
+  const filtered = Boolean(setCode || format)
+  const eligible = decks?.filter(d => d.eligible) ?? []
+
+  // "ASH · Draft (4 eligible)" — the Join modal's one-line subtitle.
+  const subtitle = filtered && (
+    <p className="lobby-deck-subtitle">
+      {setCode} · {formatLabel(format)}
+      {decks !== null && <> ({eligible.length} eligible)</>}
+    </p>
+  )
+
   if (error) {
     return (
       <div className="lobby-state lobby-state-error">
@@ -92,11 +159,24 @@ export default function DeckPicker({ setCode, format, selected, onSelect }: Deck
       </div>
     )
   }
-  if (decks === null) return <div className="lobby-state">Loading your decks…</div>
+  if (decks === null) {
+    return (
+      <>
+        {subtitle}
+        <div className="lobby-state">Loading your decks…</div>
+      </>
+    )
+  }
 
-  const eligible = decks.filter(d => d.eligible)
-
-  if (decks.length === 0) {
+  if (eligible.length === 0) {
+    if (filtered) {
+      return (
+        <>
+          {subtitle}
+          <NoEligibleDecks setCode={setCode} format={format} />
+        </>
+      )
+    }
     return (
       <div className="lobby-state">
         No decks yet — run a Solo Sealed or Solo Draft first, build a deck, and
@@ -105,44 +185,85 @@ export default function DeckPicker({ setCode, format, selected, onSelect }: Deck
     )
   }
 
+  const pageCount = Math.max(1, Math.ceil(eligible.length / PAGE_SIZE))
+  const safePage = Math.min(page, pageCount - 1)
+  const pageDecks = eligible.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE)
+
   return (
-    <div className="lobby-deck-picker">
-      {(setCode || format) && (
-        <div className="lobby-deck-filterline">
-          Showing your {setCode} {format === 'draft' ? 'Draft' : 'Sealed'} decks ({eligible.length} of{' '}
-          {decks.length} eligible)
-        </div>
-      )}
-      {decks.map(deck => {
-        const isSelected = selected === deck.poolShareId
-        return (
-          <div
-            key={deck.poolShareId}
-            role="radio"
-            aria-checked={isSelected}
-            tabIndex={deck.eligible ? 0 : -1}
-            className={`lobby-deck${isSelected ? ' lobby-deck-selected' : ''}${deck.eligible ? '' : ' lobby-deck-off'}`}
-            onClick={() => deck.eligible && onSelect(deck)}
-            onKeyDown={e => {
-              if (deck.eligible && (e.key === 'Enter' || e.key === ' ')) onSelect(deck)
-            }}
-          >
-            <span className={`lobby-deck-radio${isSelected ? ' lobby-deck-radio-on' : ''}`} />
-            <span className="lobby-deck-name">
-              {deckLabel(deck)}
-              <span className="lobby-row-meta">
-                {deck.eligible
-                  ? `${deck.format === 'draft' ? 'Draft' : 'Sealed'}${deck.builtAt ? ` · built ${new Date(deck.builtAt).toLocaleDateString()}` : ''}`
-                  : 'wrong set or format for this game'}
-              </span>
+    <>
+      {subtitle}
+      <div className="lobby-deck-picker" role="radiogroup" aria-label="Your decks">
+        {pageDecks.map(deck => {
+          const isSelected = selected === deck.poolShareId
+          const artUrl = deck.leaderBackImageUrl || deck.leaderImageUrl
+          return (
+            <div
+              key={deck.poolShareId}
+              role="radio"
+              aria-checked={isSelected}
+              tabIndex={0}
+              className={`lobby-deck-option${isSelected ? ' lobby-deck-option--selected' : ''}`}
+              style={deck.baseColor ? ({ ['--row-tint' as never]: deck.baseColor }) : undefined}
+              onClick={() => onSelect(deck)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  onSelect(deck)
+                }
+              }}
+            >
+              {/* /me pool list item (PoolHistoryDashboard PoolBuildCard) reuse. */}
+              <div className="your-stats-pool-build">
+                <div className="your-stats-pool-build-art" aria-hidden="true">
+                  {artUrl ? (
+                    <img src={artUrl} alt="" loading="lazy" />
+                  ) : (
+                    <span className="your-stats-pool-build-art-fallback">
+                      {deck.leaderName ? deck.leaderName.charAt(0) : '·'}
+                    </span>
+                  )}
+                </div>
+                <div className="your-stats-replay-content">
+                  <div className="your-stats-replay-combo">
+                    <strong>{deck.name || `${deck.setCode} ${formatLabel(deck.format)}`}</strong>
+                    {deck.leaderName && <small>{deck.leaderName}</small>}
+                  </div>
+                  <div className="your-stats-replay-meta">
+                    <span className={`your-stats-format-tag your-stats-format-tag--${deck.format === 'draft' ? 'draft' : 'sealed'}`}>
+                      {formatLabel(deck.format)}
+                    </span>
+                    <span>{deck.setCode}</span>
+                    {deck.builtAt && <span>built {new Date(deck.builtAt).toLocaleDateString()}</span>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
+        })}
+        {pageCount > 1 && (
+          <div className="lobby-deck-pager">
+            <Button
+              variant="secondary"
+              size="xs"
+              disabled={safePage === 0}
+              onClick={() => setPage(p => Math.max(0, p - 1))}
+            >
+              Prev
+            </Button>
+            <span className="lobby-deck-pager-count">
+              {safePage + 1} / {pageCount}
             </span>
-            <span className="lobby-badge">{deck.setCode}</span>
-            <span className={`lobby-badge lobby-badge-format-${deck.format === 'draft' ? 'draft' : 'sealed'}`}>
-              {deck.format === 'draft' ? 'Draft' : 'Sealed'}
-            </span>
+            <Button
+              variant="secondary"
+              size="xs"
+              disabled={safePage >= pageCount - 1}
+              onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))}
+            >
+              Next
+            </Button>
           </div>
-        )
-      })}
-    </div>
+        )}
+      </div>
+    </>
   )
 }
