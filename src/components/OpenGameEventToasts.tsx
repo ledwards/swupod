@@ -17,12 +17,14 @@ interface OpenGameEvent {
   shareId?: string
 }
 
+// Lobby-language copy: these events are about the LOBBY lifecycle; only
+// `complete` talks about a game result.
 const TOAST_COPY: Record<string, { text: string; kind: 'info' | 'success' | 'danger'; action: string }> = {
-  accepted: { text: 'Someone joined your open game!', kind: 'success', action: 'Go to match' },
-  opponent_joined: { text: 'Your opponent is in the Karabast lobby.', kind: 'success', action: 'Open match' },
-  lobby_ready: { text: 'Your Karabast lobby is ready.', kind: 'info', action: 'Open match' },
-  cancelled: { text: 'Your open game was cancelled by your opponent.', kind: 'danger', action: 'Back to match' },
-  complete: { text: 'Game result recorded — nice one.', kind: 'success', action: 'View match' },
+  accepted: { text: 'Someone joined your lobby!', kind: 'success', action: 'Go to lobby' },
+  opponent_joined: { text: 'Your opponent is in the Karabast lobby.', kind: 'success', action: 'Open lobby' },
+  lobby_ready: { text: 'Your Karabast lobby is ready.', kind: 'info', action: 'Open lobby' },
+  cancelled: { text: 'Your opponent cancelled the lobby.', kind: 'danger', action: 'View lobby' },
+  complete: { text: 'Game result recorded — nice one.', kind: 'success', action: 'View result' },
 }
 
 export default function OpenGameEventToasts(): null {

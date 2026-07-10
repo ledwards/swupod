@@ -19,7 +19,12 @@ const NON_PTP_WARNING =
 interface OpenGamesColumnProps {
   board: OpenGamesBoard
   karabast: { available: boolean; lobbies: KarabastLobby[] }
+  /** Logged-in username — socket pushes are viewer-agnostic, so ownership of a
+   *  listing falls back to a username comparison when `mine` isn't carried. */
+  currentUsername?: string | null
   onJoin: (listing: OpenGameListing) => void
+  /** Remove your own listing (DELETE); the socket broadcast clears the row. */
+  onLeave: (listing: OpenGameListing) => void
   onNewGame: () => void
   onJoinKarabast: (lobby: KarabastLobby) => void
 }
@@ -34,7 +39,9 @@ interface OpenGamesColumnProps {
 export default function OpenGamesColumn({
   board,
   karabast,
+  currentUsername = null,
   onJoin,
+  onLeave,
   onNewGame,
   onJoinKarabast,
 }: OpenGamesColumnProps): React.JSX.Element {
@@ -84,7 +91,11 @@ export default function OpenGamesColumn({
       )}
 
       {status === 'ready' &&
-        listings.map(listing => (
+        listings.map(listing => {
+          const isMine =
+            listing.mine === true ||
+            (currentUsername != null && listing.host.username === currentUsername)
+          return (
           <div className="lobby-row" key={listing.shareId}>
             {listing.host.avatarUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -109,11 +120,24 @@ export default function OpenGamesColumn({
             <span className={`lobby-badge lobby-badge-format-${listing.format === 'draft' ? 'draft' : 'sealed'}`}>
               {listing.format === 'draft' ? 'Draft' : 'Sealed'}
             </span>
-            <Button variant="primary" size="sm" onClick={() => onJoin(listing)}>
-              Join
-            </Button>
+            {isMine ? (
+              // Your own listing: you can't join yourself — discard it instead
+              // (danger treatment: this throws the posted lobby away).
+              <Button variant="danger" size="sm" onClick={() => onLeave(listing)}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+                Leave
+              </Button>
+            ) : (
+              <Button variant="primary" size="sm" onClick={() => onJoin(listing)}>
+                Join
+              </Button>
+            )}
           </div>
-        ))}
+          )
+        })}
 
       {/* Karabast public lobbies, mixed into the same list (R33). */}
       {status === 'ready' &&

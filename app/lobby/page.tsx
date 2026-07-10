@@ -45,15 +45,17 @@ interface LobbyTile {
   artClass: 'art-unit' | 'art-event' | 'art-leader-unit'
 }
 
-const FORMAT_TILES: LobbyTile[] = [
+// "Solo Play" section (Lee's live-test feedback): just the two solo modes.
+const SOLO_TILES: LobbyTile[] = [
   // Same art the homepage's Solo section uses today.
   { title: 'Solo Sealed', sub: 'Build a deck from 6 packs', href: '/sealed', art: MODE_ART.draftSolo, artClass: 'art-unit' },
   { title: 'Solo Draft', sub: 'Draft against bots', href: '/draft/solo', art: MODE_ART.sealedSolo, artClass: 'art-event' },
-  // Han Solo (SOR-283 HYP) — UNIT side, as on the homepage's Other card.
-  { title: 'Other Formats', sub: 'Chaos, Pack Wars, and more', href: '/formats', art: 'https://cdn.starwarsunlimited.com//card_SWH_01_283_Hansolo_Leader_Unit_HYP_6c91c1ab96.png', artClass: 'art-leader-unit' },
 ]
 
-const UTILITY_TILES: LobbyTile[] = [
+// "Other" section: everything else, plus the Discord CTA appended in JSX.
+const OTHER_TILES: LobbyTile[] = [
+  // Han Solo (SOR-283 HYP) — UNIT side, as on the homepage's Other card.
+  { title: 'Other Formats', sub: 'Chaos, Pack Wars, and more', href: '/formats', art: 'https://cdn.starwarsunlimited.com//card_SWH_01_283_Hansolo_Leader_Unit_HYP_6c91c1ab96.png', artClass: 'art-leader-unit' },
   // R2-D2 (TWI, Unit, HYP) — existing homepage art.
   { title: 'My Stats', sub: 'Your performance and history', href: '/me', art: MODE_ART.myStats, artClass: 'art-unit' },
   // AT-ST (SOR-493, Unit, HYP) — existing homepage art.
@@ -63,6 +65,10 @@ const UTILITY_TILES: LobbyTile[] = [
   // Constructed Lightsaber (LOF-525, Upgrade, HYP) — build your weapon.
   { title: 'Deckbuilder', sub: 'Infinite copies of every card', href: '/deckbuilder', art: 'https://cdn.starwarsunlimited.com//card_05020525_EN_Constructed_Lightsaber_4cc328aeec.png', artClass: 'art-unit' },
 ]
+
+// Discord CTA label memory: once you've clicked through (or you're already a
+// member of the server) the pitch flips from "Join" to "Chat".
+const DISCORD_CTA_CLICKED_KEY = 'ptp-discord-cta-clicked'
 
 export default function LobbyPage(): React.JSX.Element {
   // useSearchParams requires a Suspense boundary for the build-time prerender.
@@ -89,6 +95,40 @@ function LobbyPageInner(): React.JSX.Element {
   const [playNowBusy, setPlayNowBusy] = useState(false)
   // R35: play-page CTA arrives as /lobby?pool=<shareId>#new-game
   const preselectPool = searchParams.get('pool')
+
+  // Discord CTA label: "Chat on Discord" once the user has clicked through
+  // before (localStorage) or is already in the server — the same
+  // /api/auth/discord-member check the homepage uses for its discord-cta.
+  const [discordCtaClicked, setDiscordCtaClicked] = useState(false)
+  const [isDiscordMember, setIsDiscordMember] = useState(false)
+  useEffect(() => {
+    try {
+      setDiscordCtaClicked(localStorage.getItem(DISCORD_CTA_CLICKED_KEY) === '1')
+    } catch { /* localStorage disabled */ }
+  }, [])
+  useEffect(() => {
+    if (!user) {
+      setIsDiscordMember(false)
+      return
+    }
+    let stale = false
+    fetch('/api/auth/discord-member', { credentials: 'include' })
+      .then(res => (res.ok ? res.json() : null))
+      .then(data => {
+        if (!stale && data) setIsDiscordMember(data.data?.isMember || false)
+      })
+      .catch(() => { /* check is best-effort; keep the Join pitch */ })
+    return () => {
+      stale = true
+    }
+  }, [user])
+  const discordCtaLabel = discordCtaClicked || isDiscordMember ? 'Chat on Discord' : 'Join the Discord'
+  const handleDiscordCtaClick = useCallback(() => {
+    try {
+      localStorage.setItem(DISCORD_CTA_CLICKED_KEY, '1')
+    } catch { /* localStorage disabled */ }
+    setDiscordCtaClicked(true)
+  }, [])
 
   // R26: anonymous action clicks round-trip through Discord OAuth and land
   // back in the lobby. The destination re-validates state on return.
@@ -173,6 +213,24 @@ function LobbyPageInner(): React.JSX.Element {
     [requireLogin]
   )
 
+  // Leave your own listing: DELETE it and let the socket broadcast clear the
+  // row for everyone (including this board). No success toast — the row
+  // disappearing is the feedback.
+  const handleLeave = useCallback(
+    async (listing: OpenGameListing) => {
+      try {
+        const res = await fetch(`/api/open-games/${listing.shareId}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        })
+        if (!res.ok) throw new Error(String(res.status))
+      } catch {
+        showToast({ text: 'Could not remove your lobby — try again.', kind: 'danger' })
+      }
+    },
+    [showToast]
+  )
+
   // R34 create-at-post: after creating, a capable Companion pre-creates the
   // public Karabast lobby before anyone joins.
   const handleCreated = useCallback(
@@ -229,6 +287,7 @@ function LobbyPageInner(): React.JSX.Element {
           </a>
         </header>
 
+        <h3 className="mode-section-header lobby-section-header">Join</h3>
         <div className="lobby-verbs">
           <button
             className="mode-button art-unit lobby-verb"
@@ -278,13 +337,16 @@ function LobbyPageInner(): React.JSX.Element {
           board={board}
           pods={pods}
           karabast={karabast}
+          currentUsername={user?.username ?? null}
           onJoin={handleJoin}
+          onLeave={handleLeave}
           onNewGame={handleNewGame}
           onJoinKarabast={handleJoinKarabast}
         />
 
-        <div className="lobby-tile-row">
-          {FORMAT_TILES.map(tile => (
+        <h3 className="mode-section-header lobby-section-header">Solo Play</h3>
+        <div className="lobby-tile-row lobby-tile-row-solo">
+          {SOLO_TILES.map(tile => (
             <button
               key={tile.title}
               className={`mode-button ${tile.artClass} lobby-mode-tile`}
@@ -302,8 +364,9 @@ function LobbyPageInner(): React.JSX.Element {
           ))}
         </div>
 
-        <div className="lobby-tile-row lobby-tile-row-utility">
-          {UTILITY_TILES.map(tile => (
+        <h3 className="mode-section-header lobby-section-header">Other</h3>
+        <div className="lobby-tile-row lobby-tile-row-other">
+          {OTHER_TILES.map(tile => (
             <button
               key={tile.title}
               className={`mode-button ${tile.artClass} lobby-mode-tile`}
@@ -324,11 +387,12 @@ function LobbyPageInner(): React.JSX.Element {
             href={DISCORD_INVITE_URL}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={handleDiscordCtaClick}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
               <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" fill="currentColor" />
             </svg>
-            Join the Discord
+            {discordCtaLabel}
           </a>
         </div>
 

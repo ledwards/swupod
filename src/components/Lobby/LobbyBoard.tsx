@@ -21,7 +21,9 @@ interface LobbyBoardProps {
   board: OpenGamesBoard
   pods: PublicPod[]
   karabast: { available: boolean; lobbies: KarabastLobby[] }
+  currentUsername?: string | null
   onJoin: (listing: OpenGameListing) => void
+  onLeave: (listing: OpenGameListing) => void
   onNewGame: () => void
   onJoinKarabast: (lobby: KarabastLobby) => void
 }
@@ -31,7 +33,9 @@ export default function LobbyBoard({
   board,
   pods,
   karabast,
+  currentUsername = null,
   onJoin,
+  onLeave,
   onNewGame,
   onJoinKarabast,
 }: LobbyBoardProps): React.JSX.Element {
@@ -40,7 +44,9 @@ export default function LobbyBoard({
       <OpenGamesColumn
         board={board}
         karabast={karabast}
+        currentUsername={currentUsername}
         onJoin={onJoin}
+        onLeave={onLeave}
         onNewGame={onNewGame}
         onJoinKarabast={onJoinKarabast}
       />

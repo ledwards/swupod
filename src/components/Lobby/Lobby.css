@@ -424,7 +424,13 @@ a.lobby-row-link:active {
   gap: 12px;
 }
 
-/* ---- tile rows: formats + utility (mode-button DNA, R30) ---- */
+/* ---- section headers: the homepage's .mode-section-header treatment,
+   with lobby-scale spacing between sections. ---- */
+.lobby-page .lobby-section-header {
+  margin: var(--pt-space-lg) 0 var(--pt-space-sm);
+}
+
+/* ---- tile rows: Solo Play (2 tiles) + Other (the rest, R30) ---- */
 .lobby-tile-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -432,8 +438,8 @@ a.lobby-row-link:active {
   margin-top: var(--pt-space-sm);
 }
 
-.lobby-tile-row-utility {
-  grid-template-columns: repeat(5, 1fr);
+.lobby-tile-row-solo {
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .lobby-page .mode-button.lobby-mode-tile {
@@ -450,7 +456,9 @@ a.lobby-row-link:active {
   font-size: 0.75rem;
 }
 
-/* Discord: the sanctioned solid-blurple brand handshake, tile-sized. */
+/* Discord: the sanctioned solid-blurple brand handshake, tile-sized.
+   Mirrors the homepage's .discord-cta (icon + gap, blurple, deep-blurple
+   hover with the -2px lift; white ink pinned on every anchor state). */
 .lobby-discord-tile,
 a.lobby-discord-tile,
 a.lobby-discord-tile:visited,
@@ -461,19 +469,28 @@ a.lobby-discord-tile:active {
   justify-content: center;
   gap: 8px;
   min-height: 64px;
-  border-radius: var(--pt-radius-md);
-  border: 1px solid var(--pt-discord);
+  padding: 10px 16px;
+  border: none;
+  border-radius: var(--pt-radius-sm);
   background: var(--pt-discord);
   color: var(--pt-ink);
+  font-family: 'Barlow', sans-serif;
   font-weight: 600;
   font-size: 0.95rem;
+  line-height: 1;
   text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.lobby-discord-tile svg {
+  flex-shrink: 0;
 }
 
 @media (hover: hover) and (pointer: fine) {
   a.lobby-discord-tile:hover {
     background: var(--pt-discord-deep);
     transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(var(--pt-surface-base-rgb), 0.4);
   }
 }
 
@@ -644,14 +661,118 @@ a.lobby-discord-tile:active {
   margin-top: var(--pt-space-md);
 }
 
-.lobby-mobile-notice {
-  display: none;
-  border: 1px solid rgba(var(--pt-gold-warning-rgb), 0.5);
-  border-radius: var(--pt-radius-sm);
-  padding: var(--pt-space-sm) var(--pt-space-md);
+/* ---- manual fallback panel (match page) — mirrors PlayInstructions'
+   manual column: kicker + title header above numbered steps, inside the
+   standard glass box. ---- */
+.lobby-manual-panel {
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-lg);
+  background: rgba(var(--pt-surface-base-rgb), 0.5);
+  backdrop-filter: blur(10px);
+  padding: var(--pt-space-lg);
+  margin: var(--pt-space-md) 0;
+  text-align: left;
+}
+
+.lobby-manual-kicker {
+  color: var(--pt-glow-interactive);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.35rem;
+}
+
+.lobby-manual-title {
+  margin: 0 0 var(--pt-space-xs);
+  font-size: 1.2rem;
+  line-height: 1.2;
+  color: var(--pt-ink);
+}
+
+.lobby-manual-note {
+  margin: 0 0 var(--pt-space-md);
+  color: var(--pt-ink-subtle);
+  font-size: 0.9rem;
+}
+
+.lobby-manual-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pt-space-md);
+}
+
+.lobby-manual-step {
+  display: flex;
+  gap: var(--pt-space-md);
+  align-items: flex-start;
+}
+
+.lobby-step-number {
+  width: 28px;
+  height: 28px;
+  background: rgba(var(--pt-glow-primary-rgb), 0.12);
+  border: 2px solid rgba(var(--pt-glow-primary-rgb), 0.7);
+  border-radius: var(--pt-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--pt-glow-primary);
+  flex-shrink: 0;
+}
+
+.lobby-manual-step-content h4 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  color: var(--pt-ink);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.lobby-manual-step-content p {
+  margin: 0;
   color: var(--pt-ink-muted);
   font-size: 0.9rem;
-  margin-bottom: var(--pt-space-md);
+}
+
+.lobby-manual-step-content a {
+  color: var(--pt-glow-interactive);
+  text-decoration: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lobby-manual-step-content a:hover {
+    text-decoration: underline;
+  }
+}
+
+/* Copy-link affordance (same pattern as PlayInstructions' step-copy-button):
+   small green-bordered pill with the link glyph + "Copied!" feedback. */
+.lobby-copy-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 28px;
+  padding: 0 0.6rem;
+  border: 1px solid rgba(var(--pt-glow-primary-rgb), 0.5);
+  background: rgba(var(--pt-glow-primary-rgb), 0.1);
+  color: var(--pt-glow-primary);
+  border-radius: var(--pt-radius-xs);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lobby-copy-button:hover {
+    background: rgba(var(--pt-glow-primary-rgb), 0.2);
+    border-color: var(--pt-glow-primary);
+  }
 }
 
 /* ---- mobile (R4: stacked, lobby first) ---- */
@@ -687,11 +808,7 @@ a.lobby-discord-tile:active {
   }
 
   .lobby-tile-row,
-  .lobby-tile-row-utility {
+  .lobby-tile-row-solo {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .lobby-mobile-notice {
-    display: block;
   }
 }

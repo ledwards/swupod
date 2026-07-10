@@ -11,6 +11,13 @@ export interface OpenGameListing {
   createdAt: string
   host: { username: string | null; avatarUrl: string | null }
   hostConnected?: boolean
+  /**
+   * True when the viewing user posted this listing (computed from the session
+   * by GET /api/open-games). Socket pushes are viewer-agnostic, so it's
+   * preserved from the last fetch there; components also fall back to a
+   * username comparison. No deck identity here (R29).
+   */
+  mine?: boolean
 }
 
 export interface RecentResult {
@@ -65,7 +72,14 @@ export function useOpenGamesSocket(): OpenGamesBoard {
         socket?.emit('join-open-games')
       })
       socket.on('open-games-update', (data: { listings: OpenGameListing[]; recentCompleted: RecentResult[] }) => {
-        setListings(data.listings || [])
+        // Socket broadcasts are viewer-agnostic (no session): carry `mine`
+        // forward from the initial fetch for listings we already know about.
+        setListings(previous =>
+          (data.listings || []).map(listing => ({
+            ...listing,
+            mine: listing.mine ?? previous.find(p => p.shareId === listing.shareId)?.mine ?? false,
+          }))
+        )
         setRecentCompleted(data.recentCompleted || [])
         setStatus('ready')
       })

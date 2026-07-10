@@ -4,7 +4,7 @@
  * POST /api/open-games  - create a listing ("New Game", R6/R28/R32).
  *                         Body: { poolShareId, visibility?: 'public'|'private' }
  */
-import { requireAuth } from '@/lib/auth'
+import { requireAuth, getSession } from '@/lib/auth'
 import { jsonResponse, errorResponse } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
 import { broadcastOpenGamesUpdate } from '@/src/lib/socketBroadcast'
@@ -13,14 +13,18 @@ import { postOpenGameCreated } from '@/lib/discordLfg'
 import { resolvePoolId, openGameErrorResponse } from './helpers'
 import { NextRequest } from 'next/server'
 
-export async function GET(): Promise<Response> {
+export async function GET(request: NextRequest): Promise<Response> {
   try {
     const { listings, recentCompleted } = await listPublicOpenGames()
     const presence = global.presenceMap
+    // Board stays anonymous-readable; the session (when present) only marks
+    // which listings belong to the viewer so the UI can offer Leave, not Join.
+    const session = getSession(request)
     return jsonResponse({
       listings: listings.map(({ hostId, ...listing }) => ({
         ...listing,
         hostConnected: presence ? presence.has(hostId as string) : true,
+        mine: session != null && String(hostId) === String(session.id),
       })),
       recentCompleted,
     })
