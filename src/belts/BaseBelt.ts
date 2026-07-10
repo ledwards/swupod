@@ -8,6 +8,7 @@
  */
 
 import { getCachedCards } from '../utils/cardCache';
+import { getSetConfig } from '../utils/setConfigs';
 import type { RawCard } from '../utils/cardData';
 import type { SetCode } from '../types';
 
@@ -32,6 +33,14 @@ function hasSameAspect(a: RawCard | undefined, b: RawCard | undefined): boolean 
   if (!a.aspects || !b.aspects) return false
   // Check if any aspect overlaps
   return a.aspects.some(aspect => b.aspects.includes(aspect))
+}
+
+/**
+ * Check if two cards are the same base (name + subtitle)
+ */
+function isSameBase(a: RawCard | undefined, b: RawCard | undefined): boolean {
+  if (!a || !b) return false
+  return a.name === b.name && (a.subtitle || '') === (b.subtitle || '')
 }
 
 export class BaseBelt {
@@ -81,26 +90,41 @@ export class BaseBelt {
 
   /**
    * Fill the hopper with a new batch of bases
+   *
+   * Sets 1-6: aspect-based adjacency dedup (no adjacent bases share an aspect).
+   * Set 7+: the base sheet rotates aspects on the LINE — real ASH box 001, read
+   * back in factory line order, shows only 1/21 adjacent same-aspect pairs. So
+   * the belt models the line by avoiding aspect adjacency AND same-name adjacency
+   * (aspect overlap nearly covers same-name for 2-per-aspect sheets, but both are
+   * kept for clarity). Player-visible base aspect randomness comes from box
+   * stacking (stackBoxOrder), not from the belt.
    */
   _fill(): void {
+    const setNumber = getSetConfig(this.setCode)?.setNumber ?? 0
+    const conflicts = setNumber >= 7
+      ? (a: RawCard | undefined, b: RawCard | undefined) => hasSameAspect(a, b) || isSameBase(a, b)
+      : hasSameAspect
+
     // Shuffle the bases for this boot
     const boot = shuffle([...this.fillingPool])
 
-    // Add each card, checking for aspect conflicts at the seam
+    // Add each card, checking for conflicts at the seam
     for (let i = 0; i < boot.length; i++) {
       const card = boot[i]!
       const prevCard = this.hopper[this.hopper.length - 1]
 
-      if (prevCard && hasSameAspect(card, prevCard)) {
-        // Move this card to back half of boot (remaining unprocessed cards)
-        // and try the next card instead
-        const remainingStart = i + 1
-        const remainingEnd = boot.length
-        const backHalfStart = Math.floor((remainingEnd - remainingStart) / 2) + remainingStart
-
-        if (backHalfStart < remainingEnd) {
-          // Swap with a card from the back half of remaining cards
-          const swapIdx = backHalfStart + Math.floor(Math.random() * (remainingEnd - backHalfStart))
+      if (prevCard && conflicts(card, prevCard)) {
+        // Look ahead through the remaining unprocessed cards for a non-conflicting
+        // card and swap it into this position. Best-effort: if none exists (e.g.
+        // the boot is exhausted), keep the current card and accept the seam.
+        let swapIdx = -1
+        for (let j = i + 1; j < boot.length; j++) {
+          if (!conflicts(boot[j], prevCard)) {
+            swapIdx = j
+            break
+          }
+        }
+        if (swapIdx >= 0) {
           const temp = boot[i]
           boot[i] = boot[swapIdx]!
           boot[swapIdx] = temp!
