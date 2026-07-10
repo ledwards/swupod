@@ -54,10 +54,12 @@ in frame and glare-free. To test intra-block rarity ordering, **lay cards in exa
 pull order** (top of stack → bottom) and set `pullOrder=true`; otherwise any layout
 works for rate calibration (the number decodes treatment; name→rarity is a DB lookup).
 
-- `ash-carbonite-001.csv` — one ASH carbonite pack (July 2026). Laid GROUPED
-  (leader+HS top, prestige+HSF bottom), so `pullOrder=false` — rate/treatment data
-  only, excluded from ordering analysis. Notable: prestige slot held a LEADER
-  prestige (Grogu). Findings: `plans/CARBONITE_COLLATION_FINDINGS.md`.
+- `ash-carbonite-box-001.csv` — first full ASH carbonite box, 12 packs (photos
+  IMG_3978–3989, July 2026), laid in **pull order** (`pullOrder=true`). Every card
+  decoded by collector number + `cards.json` lookup (number is authoritative — names
+  alone are ambiguous, e.g. two different "Grogu"s). Uniform structure `pos1 leader ·
+  pos2–9 HS · pos10 prestige · pos11–16 HSF`; HS run ascends by rarity, HSF descends.
+  Findings + change theses: `plans/CARBONITE_COLLATION_FINDINGS.md`.
 
 ```bash
 npx tsx scripts/analyze-carbonite-corpus.ts        # observed vs carboniteConstants weights

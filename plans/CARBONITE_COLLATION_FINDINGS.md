@@ -135,39 +135,78 @@ empty, fall back to a *populated* tier's hopper before `_drawSynthesized`.
 
 ---
 
-### OPEN-3 — Real carbonite prestige slot can hold a LEADER prestige; generator excludes leaders
+### OPEN-3 — RETRACTED (leader-prestige gap was a DB number-collision artifact)
 
-Surfaced by real pull data (`data/real-boxes/ash-carbonite-001.csv`, n=1): an ASH
-carbonite pack's prestige slot held **Grogu (Charming Companion, Rare Leader),
-Standard Prestige #804**. But `CarbonitePrestigeBelt._initialize` builds every tier
-pool with `!c.isLeader && !c.isBase`, and the synthesis fallback likewise — so the
-generator can **never** emit a leader prestige. If real carbonite prestige includes
-leader prestiges, drop the `!c.isLeader` filter from the prestige pool (leaders DO
-have Standard/Foil/Serialized Prestige printings in the data). Confirm with more packs
-before changing — n=1 — but it's a concrete, code-verifiable gap.
+Earlier read of one pack suggested a LEADER prestige (Grogu #804) the generator can't
+emit. **False.** `cards.json` has a number collision: the Leader "Grogu / Charming
+Companion" and the Legendary Unit "Grogu / Yes. Yes. Yes." share collector numbers
+(both list Hyperspace #419 and Standard Prestige #804). The physical cards pulled are
+the **Legendary Unit** Grogu (2/6 Force-Droid), not the leader. Across all 12 box
+packs, **0 prestige cards are leader-type** — the generator's `!isLeader` prestige
+filter is correct. (Minor DB hygiene note: the two Grogu entries' duplicate numbers
+are worth cleaning up, but they don't affect generation.)
 
-### OPEN-4 — Possible intra-block rarity ordering (Lee hypothesis, unconfirmed)
+### 📦 Box 001 — 12 ASH carbonite packs (pull-order), the real calibration data
 
-Hypothesis: within a pack, the HS run and HSF run may come off the sheet in ascending
-or descending **rarity** order (a collation pattern). The generator draws each block
-slot as an independent weighted pull, so it emits **no** intra-block ordering. Can't
-be tested yet — pack 001 was laid grouped, not in pull order. Needs `pullOrder=true`
-photos (cards laid in exact pull order). `scripts/analyze-carbonite-corpus.ts` has an
-ordering pass (rarity- and number-monotonicity per block) that activates once such
-packs exist. If confirmed, model it as **belt emission order**, not a post-hoc sort
-(belt-system.md forbids reordering passes) — design discussion first.
+`data/real-boxes/ash-carbonite-box-001.csv` — 12 packs from photos IMG_3978–3989,
+laid in **pull order** (front→back = left→right, top→bottom). Every card decoded by
+collector number and looked up in `cards.json` (number is authoritative; names alone
+are ambiguous — see the two Grogus). Run: `npx tsx scripts/analyze-carbonite-corpus.ts`.
 
-### 🎴 Corpus + first real data point (ash-carbonite-001)
+**Uniform structure, 12/12:** `pos1 Leader(HS) · pos2–9 HS×8 · pos10 Prestige · pos11–16 HSF×6`.
+Slot COUNTS match the generator (leader + prestige + 8 HS + 6 HSF). Two things the
+generator gets wrong and several rate refinements — see theses below.
 
-One real ASH carbonite pack, decoded via collector-number ranges (`Normal ≤264 · HS
-265–528 · HSF 529–766 · Showcase 767–784 · Prestige 785–925`) and cross-checked
-against `cards.json` (all 16 numbers confirmed exactly). It is a **textbook LAW+
-pack**: 1 HS leader + 1 prestige + 8 HS + 6 HSF. Block rarity mix (HS: 4C/1U/2R/1S;
-HSF: 4C/2U) sits inside the assumed weights. All 6 HSF are genuine `Hyperspace Foil`
-printings (529–766) — direct evidence for OPEN-1 reading (b) (use the real HSF
-variant, don't synthesize from Hyperspace source). Harness: `scripts/analyze-carbonite-corpus.ts`;
-schema/protocol: `data/real-boxes/README.md`. Once ~15–20 packs are logged, retune the
-flex/top/prestige/showcase weights (currently guesses) against the corpus.
+**Ordering is real and strong (answers OPEN-4):**
+- HS run ascends by rarity **12/12** (commons → the R/L "top" at pos 9; rarest-is-last 11/12).
+- HSF run descends **11/12** (elevated card at pos 11 → commons; rarest-is-first 11/12).
+- ⇒ the "hits" (HS-top pos9, Prestige pos10, HSF-top pos11) **cluster in the middle**.
+  Observed collation rank order is `C < U < Special < Rare < Legendary` (Special sits
+  just below Rare, consistently).
+
+**Rates (the numbers we were guessing):**
+| block | observed /pack (n=12) | generator spec /pack |
+|---|---|---|
+| HS (8) | C 4.75 · U 1.83 · R 0.92 · S 0.25 · L 0.25 | C 4.96 · U 1.89 · R 0.69 · S 0.23 · L 0.23 |
+| HS non-common count | always **3 (9pk) or 4 (3pk)** | 1–4 (wider, 3 random flex) |
+| HS **top** (pos9) | R 9 · L 3 · **S 0** · C 0 · U 0 | spec R60/**S20**/L20 |
+| HSF (6) | C 3.92 · U 1.50 · R 0.42 · S 0.08 · L 0.08 | C 3.72 · U 1.76 · R 0.40 · S 0.06 · L 0.06 |
+| HSF first (pos11) | **never Common** (U 6 · R 5 · L 1) | flex can be Common |
+| Prestige tiers | Standard 8 · **Foil 4** · Serialized 0 | 80 / **18** / 2 |
+| Leader showcase | 0/12 | 1/48 (✓, consistent) |
+
+**Cross-treatment pairs confirmed (validates the dedup fix):** same card in two
+treatments within one pack occurs naturally — Unsanctioned Patrol HS+HSF (pack 5),
+Preparation HS+HSF (pack 8), Shin Hati Prestige+HSF (pack 6), Ant Droid HS+HSF
+(pack 11). The FIX-1 dedup keys on treatment, so it allows these and only forbids
+identical printings — exactly matching reality (0 identical-printing dups in 12 packs).
+
+**All 72 HSF cards are genuine `Hyperspace Foil` printings (529–766)** — real evidence
+for OPEN-1 reading (b): LAW+ HSF slots should draw the real HSF variant, not synthesize
+Hyperspace + flag.
+
+### 🎯 Change theses from Box 001 (ranked; retune when box 002+ arrives)
+
+- **T1 — Move the prestige slot from index 1 → after the HS run (pos 10).** 12/12.
+  Reorder generator output to `leader, 8×HS, prestige, 6×HSF`. High-confidence, trivial.
+- **T2 — Emit each run rarity-sorted: HS ascending, HSF descending** (hits in the middle).
+  Do it as belt/collation emission order, NOT a post-hoc dedup-style reorder (belt rule).
+- **T3 — HS top slot (pos9) is R/L only, no Special; Legendary heavier.** Retune
+  `hsTopWeights` R60/S20/L20 → ~**R75 / L25 / S0**. Special shows up as a mid-run flex
+  upgrade instead (0/12 in the top, 3/12 as pos7–8 flex).
+- **T4 — Tighten the HS flex so non-common count stays 3–4** (reality never 2 or ≥5).
+  Model HS as ~5C + 2U + 1 R/L-top with a light single-upgrade layer, rather than 3
+  fully-random flex draws (which spread commons 4→7).
+- **T5 — Guarantee one ≥Uncommon HSF slot at pos 11** (never Common in 12 packs). HSF
+  rates otherwise already match spec — this is the one structural gap.
+- **T6 — Foil prestige likely under-weighted:** observed 33% vs spec 18% (Serialized
+  0/12, consistent with 2%). n=12 — bump toward ~25–30% only after box 002 confirms.
+- **T7 — Belt model verdict (Lee's question):** the tight non-common counts, the
+  guaranteed R/L-top + ≥U-HSF slots, and the clean rarity-sorted runs point to a
+  **structured collation** (dedicated rarity slots + light upgrade layer + sort) — i.e.
+  the "same belts as regular boxes" thesis. NOT random mixed-rarity carbonite sheets.
+  Keep the slot-belt architecture; fix ordering (T1/T2) + guaranteed slots (T3/T5) +
+  flex tightening (T4).
 
 ## 📋 Spec-doc drift (flagged per "trust code over docs")
 
