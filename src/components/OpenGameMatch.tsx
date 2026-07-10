@@ -169,8 +169,9 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
   return (
     <div className="lobby-match">
       <div className="lobby-mobile-notice">
-        Games play on Karabast, which needs a desktop browser — finish this match on your computer.
-        Your seat here is saved.
+        On mobile? Karabast plays fine in your browser — but the Companion extension is
+        desktop-only, so use the lobby link below when it appears (results won&apos;t auto-report
+        without the Companion).
       </div>
 
       <h2>{game.setCode} {formatLabel} — Open Game</h2>
