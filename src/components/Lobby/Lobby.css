@@ -352,3 +352,161 @@ a.lobby-tile-discord:active {
     width: 100%;
   }
 }
+
+/* ---- deck picker (U5) ---- */
+.lobby-deck-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pt-space-xs);
+}
+
+.lobby-deck-filterline {
+  color: var(--pt-glow-interactive);
+  font-size: 0.8rem;
+}
+
+.lobby-deck {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-sm);
+  padding: 10px 13px;
+  cursor: pointer;
+}
+
+.lobby-deck-selected {
+  border-color: rgba(var(--pt-glow-primary-rgb), 0.6);
+}
+
+.lobby-deck-off {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.lobby-deck-radio {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--pt-radius-full);
+  border: 1px solid var(--pt-ink-subtle);
+  flex: none;
+}
+
+.lobby-deck-radio-on {
+  border-color: var(--pt-glow-primary);
+  background: radial-gradient(circle at center, var(--pt-glow-primary) 45%, transparent 50%); /* design-ok: radio dot, not a resting surface fill */
+}
+
+.lobby-deck-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.lobby-deck-name .lobby-row-meta {
+  display: block;
+  font-weight: 400;
+}
+
+/* ---- new game modal extras ---- */
+.lobby-vis-toggle {
+  display: flex;
+  gap: var(--pt-space-xs);
+  margin: var(--pt-space-md) 0 var(--pt-space-xs);
+}
+
+.lobby-linkbox {
+  border: 1px dashed var(--pt-border);
+  border-radius: var(--pt-radius-xs);
+  padding: 8px 11px;
+  font-size: 0.8rem;
+  color: var(--pt-ink-subtle);
+  font-family: ui-monospace, Menlo, monospace;
+  margin-top: var(--pt-space-xs);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.lobby-check {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  margin-top: var(--pt-space-md);
+  font-size: 0.85rem;
+  color: var(--pt-ink-subtle);
+  cursor: pointer;
+}
+
+.lobby-check input {
+  margin-top: 2px;
+  accent-color: var(--pt-glow-primary);
+}
+
+.lobby-check strong {
+  color: var(--pt-ink);
+}
+
+/* ---- match page ---- */
+.lobby-match {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: var(--pt-space-md) var(--pt-space-md) var(--pt-space-xl);
+  color: var(--pt-ink);
+}
+
+.lobby-match-players {
+  display: flex;
+  align-items: center;
+  gap: var(--pt-space-md);
+  justify-content: center;
+  margin: var(--pt-space-lg) 0;
+  flex-wrap: wrap;
+}
+
+.lobby-match-vs {
+  color: var(--pt-ink-subtle);
+  font-weight: 700;
+}
+
+.lobby-match-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-md);
+  padding: 10px 16px;
+}
+
+.lobby-match-hero {
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-md);
+  background: rgba(var(--pt-surface-base-rgb), 0.7);
+  padding: var(--pt-space-lg);
+  text-align: center;
+  margin-bottom: var(--pt-space-md);
+}
+
+.lobby-match-note {
+  color: var(--pt-ink-subtle);
+  font-size: 0.85rem;
+  margin-top: var(--pt-space-md);
+}
+
+.lobby-mobile-notice {
+  display: none;
+  border: 1px solid rgba(var(--pt-gold-warning-rgb), 0.5);
+  border-radius: var(--pt-radius-sm);
+  padding: var(--pt-space-sm) var(--pt-space-md);
+  color: var(--pt-ink-muted);
+  font-size: 0.9rem;
+  margin-bottom: var(--pt-space-md);
+}
+
+@media (max-width: 900px) {
+  .lobby-mobile-notice {
+    display: block;
+  }
+}

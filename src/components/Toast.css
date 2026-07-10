@@ -1,0 +1,70 @@
+/* Global toast stack (U5). Tokens only. */
+
+.pt-toast-stack {
+  position: fixed;
+  top: var(--pt-space-md);
+  right: var(--pt-space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--pt-space-xs);
+  z-index: 1100;
+  max-width: 360px;
+}
+
+.pt-toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--pt-border);
+  border-radius: var(--pt-radius-sm);
+  background: rgba(var(--pt-surface-base-rgb), 0.92);
+  color: var(--pt-ink);
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  box-shadow: 0 8px 24px rgba(var(--pt-surface-base-rgb), 0.6);
+}
+
+.pt-toast-success {
+  border-color: rgba(var(--pt-glow-primary-rgb), 0.5);
+}
+
+.pt-toast-danger {
+  border-color: rgba(var(--pt-glow-danger-rgb), 0.5);
+}
+
+.pt-toast-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.pt-toast-action {
+  font: inherit;
+  font-weight: 600;
+  color: var(--pt-glow-interactive);
+  background: none;
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.5);
+  border-radius: var(--pt-radius-xs);
+  padding: 4px 10px;
+  cursor: pointer;
+  flex: none;
+}
+
+.pt-toast-dismiss {
+  font: inherit;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--pt-ink-subtle);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  flex: none;
+}
+
+@media (max-width: 600px) {
+  .pt-toast-stack {
+    left: var(--pt-space-md);
+    right: var(--pt-space-md);
+    max-width: none;
+  }
+}

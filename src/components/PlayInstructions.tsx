@@ -465,6 +465,15 @@ export default function PlayInstructions({
         </div>
       )}
 
+      {/* R35: route this deck into the Lobby with New Game prefilled. */}
+      {!viewingOthersDeck && shareId && (
+        <p>
+          <a className="btn btn--secondary btn--sm" href={`/lobby?pool=${encodeURIComponent(shareId)}#new-game`}>
+            Find an opponent in the Lobby
+          </a>
+        </p>
+      )}
+
       {viewingOthersDeck || (!companionBeta && !wayfinderDetected && !pluginRequired) ? (
         <div className="play-steps">
           {renderManualSteps()}
