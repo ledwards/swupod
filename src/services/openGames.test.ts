@@ -171,6 +171,21 @@ describe('openGames service (Lobby V1 spec)', { skip: !dbAvailable }, () => {
     }
   })
 
+  it('listings carry hostDeck (internal, host-only at the API) with the deck display name', async () => {
+    // hostDeck mirrors the hostId contract: present on the service payload so
+    // the API can show the host their own deck, stripped by every emit layer
+    // (GET for other viewers, socket broadcast) — R29 still holds publicly.
+    const u = await seedUser()
+    const p = await seedPool(u)
+    const game = await postOpenGame({ userId: u, poolId: p })
+    const { listings } = await listPublicOpenGames()
+    const mine = listings.find(l => l.shareId === game.shareId)
+    assert.ok(mine?.hostDeck, 'listing carries hostDeck internally')
+    // seedPool has no poolName/pool row name -> canonical archetype+date fallback
+    assert.equal(typeof mine.hostDeck.name, 'string')
+    assert.ok(mine.hostDeck.name.length > 0, 'deck name is non-empty')
+  })
+
   it('SPEC R18: join is atomic — two concurrent joins, exactly one wins', async () => {
     const poster = await seedUser('og-poster')
     const pp = await seedPool(poster)

@@ -14,6 +14,7 @@
  * Lock ordering is always advisory locks (sorted) -> row lock, in every path.
  */
 import type { TxClient } from '@/lib/db'
+import { archetypeShortName, poolDisplayName } from '@/src/utils/archetypeName'
 
 export const OPEN_LISTING_EXPIRY_MS = 60 * 60 * 1000 // R9 (revised 7/10): 1h
 export const ACCEPTED_NO_LOBBY_EXPIRY_MS = 20 * 60 * 1000 // R20: ~20 min
@@ -66,6 +67,9 @@ export interface OpenGameListing {
   host: { username: string | null; avatarUrl: string | null }
   /** Internal — consumers strip this after presence enrichment; never emitted. */
   hostId?: string
+  /** Internal — the host's own deck name; emit layers strip it and the API
+   *  returns it only to the host (R29: opponents never see deck identity). */
+  hostDeck?: { name: string | null }
   /** Filled in by the API/broadcast layer from the live presence map. */
   hostConnected?: boolean
 }
@@ -329,6 +333,41 @@ export async function cancelOpenGame(params: { gameId: string; userId: string })
 // Reads
 // ---------------------------------------------------------------------------
 
+/** Same display-name chain as the deck picker (eligible-decks) and /me:
+ *  deck builder poolName -> card_pools.name -> canonical archetype+date. */
+function hostDeckName(r: Record<string, unknown>): string | null {
+  const state = ((): Record<string, any> => {
+    const raw = r.deck_builder_state
+    if (!raw) return {}
+    if (typeof raw === 'string') {
+      try {
+        return JSON.parse(raw) || {}
+      } catch {
+        return {}
+      }
+    }
+    return typeof raw === 'object' ? (raw as Record<string, any>) : {}
+  })()
+  if (state.poolName) return String(state.poolName)
+  if (r.pool_name) return String(r.pool_name)
+  const positions = state.cardPositions || {}
+  const leaderCard = state.activeLeader ? positions[state.activeLeader]?.card : null
+  const baseCard = state.activeBase ? positions[state.activeBase]?.card : null
+  const leaderName = leaderCard?.name || leaderCard?.title || null
+  const archetype = archetypeShortName({
+    leaderShortName: leaderName ? leaderName.split(/[\s,]/)[0] || null : null,
+    leaderName,
+    baseAspects: Array.isArray(baseCard?.aspects) ? baseCard.aspects : [],
+    baseHp: typeof baseCard?.hp === 'number' ? baseCard.hp : null,
+  })
+  return poolDisplayName({
+    archetypeShort: archetype,
+    setCode: r.set_code ? String(r.set_code) : null,
+    poolType: r.pool_type ? String(r.pool_type) : null,
+    date: r.pool_created_at ? String(r.pool_created_at) : null,
+  })
+}
+
 /** Public board payload (R29: no deck identity, no internal ids). */
 export async function listPublicOpenGames(): Promise<{
   listings: OpenGameListing[]
@@ -337,9 +376,12 @@ export async function listPublicOpenGames(): Promise<{
   const { queryRows } = await import('@/lib/db')
   const rows = await queryRows(
     `SELECT og.share_id, og.set_code, og.set_name, og.format, og.created_at,
-            og.player1_id, u.username, u.avatar_url
+            og.player1_id, u.username, u.avatar_url,
+            cp.deck_builder_state, cp.name AS pool_name, cp.pool_type,
+            cp.created_at AS pool_created_at
      FROM open_games og
      JOIN users u ON u.id = og.player1_id
+     JOIN card_pools cp ON cp.id = og.player1_pool_id
      WHERE og.status = 'open' AND og.visibility = 'public'
      ORDER BY og.created_at DESC
      LIMIT 50`
@@ -365,6 +407,7 @@ export async function listPublicOpenGames(): Promise<{
         avatarUrl: r.avatar_url ? String(r.avatar_url) : null,
       },
       hostId: String(r.player1_id),
+      hostDeck: { name: hostDeckName(r) },
     })),
     recentCompleted: completed.map(r => ({
       setCode: String(r.set_code),

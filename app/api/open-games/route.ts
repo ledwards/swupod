@@ -21,11 +21,16 @@ export async function GET(request: NextRequest): Promise<Response> {
     // which listings belong to the viewer so the UI can offer Leave, not Join.
     const session = getSession(request)
     return jsonResponse({
-      listings: listings.map(({ hostId, ...listing }) => ({
-        ...listing,
-        hostConnected: presence ? presence.has(hostId as string) : true,
-        mine: session != null && String(hostId) === String(session.id),
-      })),
+      listings: listings.map(({ hostId, hostDeck, ...listing }) => {
+        const mine = session != null && String(hostId) === String(session.id)
+        return {
+          ...listing,
+          hostConnected: presence ? presence.has(hostId as string) : true,
+          mine,
+          // R29: deck identity goes to the host alone.
+          ...(mine ? { yourDeck: hostDeck } : {}),
+        }
+      }),
       recentCompleted,
     })
   } catch (error) {

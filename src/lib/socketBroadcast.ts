@@ -438,7 +438,7 @@ export async function broadcastOpenGamesUpdate(): Promise<void> {
     const { listings, recentCompleted } = await listPublicOpenGames()
     const presence = global.presenceMap
     io.to('open-games').emit('open-games-update', {
-      listings: listings.map(({ hostId, ...listing }) => ({
+      listings: listings.map(({ hostId, hostDeck, ...listing }) => ({
         ...listing,
         hostConnected: presence ? presence.has(hostId as string) : true,
       })),

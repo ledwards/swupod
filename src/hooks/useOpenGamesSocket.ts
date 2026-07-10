@@ -18,6 +18,9 @@ export interface OpenGameListing {
    * username comparison. No deck identity here (R29).
    */
   mine?: boolean
+  /** Your own deck's name — present only on your listing (GET is per-viewer;
+   *  socket pushes never carry it, so it's preserved from the last fetch). */
+  yourDeck?: { name: string | null } | undefined
 }
 
 export interface RecentResult {
@@ -75,10 +78,14 @@ export function useOpenGamesSocket(): OpenGamesBoard {
         // Socket broadcasts are viewer-agnostic (no session): carry `mine`
         // forward from the initial fetch for listings we already know about.
         setListings(previous =>
-          (data.listings || []).map(listing => ({
-            ...listing,
-            mine: listing.mine ?? previous.find(p => p.shareId === listing.shareId)?.mine ?? false,
-          }))
+          (data.listings || []).map(listing => {
+            const known = previous.find(p => p.shareId === listing.shareId)
+            return {
+              ...listing,
+              mine: listing.mine ?? known?.mine ?? false,
+              yourDeck: listing.yourDeck ?? known?.yourDeck,
+            }
+          })
         )
         setRecentCompleted(data.recentCompleted || [])
         setStatus('ready')

@@ -123,6 +123,7 @@ export default function OpenGamesColumn({
                 </span>
               </div>
               <div className="lobby-row-meta">
+                {isMine && listing.yourDeck?.name ? `${listing.yourDeck.name} · ` : ''}
                 {timeAgo(listing.createdAt)}
                 {listing.hostConnected === false ? ' · stepped away' : ''}
               </div>
