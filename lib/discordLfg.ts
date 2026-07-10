@@ -4,6 +4,7 @@
 
 import { queryRow, query } from '@/lib/db'
 import { generateDeckImage } from '@/lib/deckImageApi'
+import { captureServerEventLater } from '@/lib/posthog'
 
 const BOT_TOKEN = process.env['DISCORD_BOT_TOKEN']
 const DRAFT_NOW_CHANNEL_ID = process.env['DISCORD_DRAFT_NOW_CHANNEL_ID']
@@ -55,6 +56,71 @@ async function discordFetch(path: string, options: RequestInit = {}): Promise<Re
       ...options.headers,
     },
   })
+}
+
+export const POD_CHAT_WEBHOOK_NAME = 'Protect the Pod Chat'
+export const LOBBY_WEBHOOK_NAME = 'Protect the Pod Lobby'
+
+// In-memory cache for shared channel webhooks, keyed by `${channelId}:${name}`.
+const channelWebhookCache: Map<string, { id: string; token: string }> = new Map()
+
+/**
+ * Get or create the single named webhook for a channel.
+ *
+ * Discord caps channels at 15 webhooks (error 30007), so we must never
+ * create one webhook per pod — one shared webhook per channel serves every
+ * pod and user, because each execute overrides username/avatar and targets
+ * a thread via the ?thread_id= param. We match only webhooks that carry a
+ * `token` (Discord omits the token for webhooks other apps created), so a
+ * human-created webhook with the same name is never hijacked.
+ */
+export async function getOrCreateChannelWebhook(
+  channelId: string,
+  name: string
+): Promise<{ id: string; token: string } | null> {
+  const cacheKey = `${channelId}:${name}`
+  const cached = channelWebhookCache.get(cacheKey)
+  if (cached) return cached
+
+  try {
+    const listRes = await discordFetch(`/channels/${channelId}/webhooks`)
+    if (!listRes.ok) {
+      console.error(`[Discord LFG] Failed to list webhooks for channel ${channelId}:`, listRes.status, await listRes.text().catch(() => ''))
+      return null
+    }
+
+    const webhooks = await listRes.json()
+    const existing = webhooks.find((w: { name: string; token?: string }) => w.name === name && w.token)
+    if (existing) {
+      channelWebhookCache.set(cacheKey, { id: existing.id, token: existing.token })
+      return { id: existing.id, token: existing.token }
+    }
+
+    const createRes = await discordFetch(`/channels/${channelId}/webhooks`, {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    })
+    if (!createRes.ok) {
+      const body = await createRes.text().catch(() => '')
+      console.error(`[Discord LFG] Failed to create webhook "${name}" for channel ${channelId}:`, createRes.status, body)
+      // Surface to ops — a persistent creation failure (e.g. the 15-webhook
+      // cap, error 30007) silently kills pod/lobby chat sync otherwise.
+      captureServerEventLater('discord_webhook_create_failed', 'swupod-server', {
+        channelId,
+        webhookName: name,
+        status: createRes.status,
+        body: body.slice(0, 500),
+      })
+      return null
+    }
+
+    const webhook = await createRes.json()
+    channelWebhookCache.set(cacheKey, { id: webhook.id, token: webhook.token })
+    return { id: webhook.id, token: webhook.token }
+  } catch (err) {
+    console.error(`[Discord LFG] Error getting webhook "${name}" for channel ${channelId}:`, err)
+    return null
+  }
 }
 
 export function buildPodEmbed(pod: PodInfo, hostUsername: string, playerNames: string[]): Record<string, unknown> {
@@ -217,26 +283,13 @@ export async function postPodCreated(
     const thread = await threadRes.json()
     const threadId = thread.id
 
-    // 3. Create a webhook on the parent channel (not the thread — Discord doesn't allow
-    //    webhooks directly on threads). We post to threads via ?thread_id= param.
-    let webhookId: string | null = null
-    let webhookToken: string | null = null
-
-    const webhookRes = await discordFetch(`/channels/${channelId}/webhooks`, {
-      method: 'POST',
-      body: JSON.stringify({
-        name: 'Protect the Pod Chat',
-      }),
-    })
-
-    if (webhookRes.ok) {
-      const webhook = await webhookRes.json()
-      webhookId = webhook.id
-      webhookToken = webhook.token
-    } else {
-      console.error('[Discord LFG] Failed to create webhook:', webhookRes.status, await webhookRes.text())
-      // Continue — thread still usable for bot messages and history
-    }
+    // 3. Get the shared channel webhook (not per-pod, and not on the thread —
+    //    Discord doesn't allow webhooks on threads and caps channels at 15
+    //    webhooks). We post to threads via the ?thread_id= execute param.
+    const webhook = await getOrCreateChannelWebhook(channelId, POD_CHAT_WEBHOOK_NAME)
+    const webhookId: string | null = webhook?.id ?? null
+    const webhookToken: string | null = webhook?.token ?? null
+    // If null, continue — thread still usable for bot messages and history
 
     // 4. Post initial system message in thread
     const welcomeContent = pod.competitive
@@ -496,7 +549,7 @@ export async function deletePodMessage(pod: PodInfo): Promise<void> {
   if (!channelId) return
 
   const podRow = await queryRow(
-    'SELECT discord_message_id, discord_webhook_id FROM pods WHERE id = $1',
+    'SELECT discord_message_id FROM pods WHERE id = $1',
     [pod.id]
   )
   if (!podRow?.discord_message_id) return
@@ -509,16 +562,8 @@ export async function deletePodMessage(pod: PodInfo): Promise<void> {
     console.error('[Discord LFG] Error deleting pod message:', err)
   }
 
-  // Cleanup webhook
-  if (podRow.discord_webhook_id) {
-    try {
-      await discordFetch(`/webhooks/${podRow.discord_webhook_id}`, {
-        method: 'DELETE',
-      })
-    } catch {
-      // Non-critical — webhook may already be deleted
-    }
-  }
+  // Note: the pod's webhook is the shared per-channel webhook — never delete
+  // it here, or chat breaks for every other pod on the channel.
 }
 
 /**
@@ -603,55 +648,8 @@ export async function fetchThreadMessages(
 
 type LobbyType = 'draft' | 'sealed'
 
-// In-memory cache for lobby channel webhooks
-const lobbyWebhookCache: Map<string, { id: string; token: string }> = new Map()
-
 function getLobbyChannelId(lobbyType: LobbyType): string | undefined {
   return lobbyType === 'sealed' ? SEALED_NOW_CHANNEL_ID : DRAFT_NOW_CHANNEL_ID
-}
-
-/**
- * Get or create a webhook for a lobby channel.
- * Caches in memory so we only create once per server lifetime.
- */
-async function getLobbyWebhook(channelId: string): Promise<{ id: string; token: string } | null> {
-  if (lobbyWebhookCache.has(channelId)) {
-    return lobbyWebhookCache.get(channelId)!
-  }
-
-  try {
-    // Check for existing webhook we created
-    const res = await discordFetch(`/channels/${channelId}/webhooks`)
-    if (!res.ok) {
-      console.error(`[Discord Lobby] Failed to list webhooks for channel ${channelId}:`, res.status, await res.text().catch(() => ''))
-      return null
-    }
-
-    const webhooks = await res.json()
-    const existing = webhooks.find((w: { name: string }) => w.name === 'Protect the Pod Lobby')
-
-    if (existing) {
-      lobbyWebhookCache.set(channelId, { id: existing.id, token: existing.token })
-      return { id: existing.id, token: existing.token }
-    }
-
-    // Create new webhook
-    const createRes = await discordFetch(`/channels/${channelId}/webhooks`, {
-      method: 'POST',
-      body: JSON.stringify({ name: 'Protect the Pod Lobby' }),
-    })
-    if (!createRes.ok) {
-      console.error(`[Discord Lobby] Failed to create webhook for channel ${channelId}:`, createRes.status, await createRes.text().catch(() => ''))
-      return null
-    }
-
-    const webhook = await createRes.json()
-    lobbyWebhookCache.set(channelId, { id: webhook.id, token: webhook.token })
-    return { id: webhook.id, token: webhook.token }
-  } catch (err) {
-    console.error('[Discord Lobby] Error getting webhook:', err)
-    return null
-  }
 }
 
 /**
@@ -722,7 +720,7 @@ export async function postLobbyMessage(
   if (!channelId) return
 
   try {
-    const webhook = await getLobbyWebhook(channelId)
+    const webhook = await getOrCreateChannelWebhook(channelId, LOBBY_WEBHOOK_NAME)
     if (!webhook) {
       console.error('[Discord Lobby] No webhook available for', lobbyType)
       return
