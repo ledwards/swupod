@@ -19,8 +19,8 @@ import type { SortOption } from './SortControls'
 import { FilterWithModal } from './FilterWithModal'
 import { AspectPenaltyToggle } from './AspectPenaltyToggle'
 import type { CardPosition } from './AspectPenaltyToggle'
-import { BulkMoveButtons } from './BulkMoveButtons'
-import type { BulkMoveMode } from './BulkMoveButtons'
+import { ArenaActionsBar } from './ArenaActionsBar'
+import type { BulkMoveMode } from './ArenaActionsBar'
 import { useDeckBuilder } from '../../contexts/DeckBuilderContext'
 
 export interface SectionHeaderProps {
@@ -142,7 +142,7 @@ export function SectionHeader({
           cardCount={cardCount}
         />
         <AspectPenaltyToggle sortOption={sortOption || 'aspect'} />
-        <BulkMoveButtons mode={mode} />
+        <ArenaActionsBar mode={mode} />
       </div>
     </div>
   )

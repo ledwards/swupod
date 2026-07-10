@@ -8,6 +8,10 @@
 ### 🐛 Bug Fixes
 - **Discord pod chat is back**: A behind-the-scenes limit on Discord webhooks had quietly broken chat sync between pods and the #draft-now channel. Pod chat and lobby chat now share a single connection per channel, so messages flow between the web app and Discord reliably again.
 
+### 🃏 Deck Builder — Bulk Actions in Every View
+- **Playmat & Table get the full ACTIONS bar**: The bulk controls that used to live only in Arena view — **Swap**, **In Aspect**, **Out of Aspect**, and **+ All / − All** — now appear in Playmat and Table views too, so you can build fast no matter which view you prefer.
+- **Cleaner sticky header**: Your own pool now reads simply as **"Original"** in the sticky nav instead of "by Original".
+
 ## 07.04.2026
 
 ### 📸 Import Pool tune-up (under the hood)

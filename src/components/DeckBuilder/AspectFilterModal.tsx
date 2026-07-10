@@ -16,7 +16,7 @@ import AspectIcon from '../AspectIcon'
 import { calculateAspectPenalty } from '../../services/cards/aspectPenalties'
 import { useDeckBuilder } from '../../contexts/DeckBuilderContext'
 import type { CardPosition } from './AspectPenaltyToggle'
-import type { BulkMoveMode } from './BulkMoveButtons'
+import type { BulkMoveMode } from './ArenaActionsBar'
 
 type AspectSize = 'small' | 'medium' | 'large'
 type IconSize = 'sm' | 'md' | 'lg'

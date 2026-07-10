@@ -34,8 +34,10 @@ const isDeckCard = (pos) =>
   pos.section === 'deck' &&
   pos.visible && !pos.card.isBase && !pos.card.isLeader && pos.enabled !== false
 
+export type BulkMoveMode = 'pool' | 'deck'
+
 export interface ArenaActionsBarProps {
-  mode?: 'pool' | 'deck'
+  mode?: BulkMoveMode
 }
 
 export function ArenaActionsBar({ mode = 'pool' }: ArenaActionsBarProps) {
@@ -110,11 +112,6 @@ export function ArenaActionsBar({ mode = 'pool' }: ArenaActionsBarProps) {
   const handleOutOfAspect = (e: MouseEvent) => {
     stop(e)
     moveCardsToPool(outOfAspectDeckIds)
-  }
-
-  const handleTogglePenalties = (e: MouseEvent) => {
-    stop(e)
-    setShowAspectPenalties?.(!showAspectPenalties)
   }
 
   const addAllBtn = (
