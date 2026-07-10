@@ -8,6 +8,7 @@ import { buildLimitedContext, LimitedAnalyticsEvents, LimitedPlayActions } from 
 import { buildLobbyName, isValidPrivateLobbyUrl } from '../utils/karabastLobby'
 import { WayfinderCompanionLockup } from './WayfinderStoreButtons'
 import PluginCTA from '@/src/components/PluginCTA'
+import PlayPageLobbies from './Lobby/PlayPageLobbies'
 import Button from './Button'
 import { useAuth } from '../contexts/AuthContext'
 import { isCompanionBeta } from '../utils/companionBeta'
@@ -85,7 +86,7 @@ export default function PlayInstructions({
 }: PlayInstructionsProps) {
   // The Companion is beta-gated: non-beta players see the pre-plugin manual
   // flow only (no install pitch, no autojoin column).
-  const { user } = useAuth() as { user: { is_beta_tester?: boolean | null; is_admin?: boolean | null } | null }
+  const { user } = useAuth() as { user: { username?: string | null; is_beta_tester?: boolean | null; is_admin?: boolean | null } | null }
   const companionBeta = isCompanionBeta(user)
   const inPod = poolType === 'draft' || poolType === 'sealed_pod'
   const viewingOthersDeck = !isOwner && ownerName
@@ -465,13 +466,15 @@ export default function PlayInstructions({
         </div>
       )}
 
-      {/* R35: route this deck into the Lobby with New Game prefilled. */}
-      {!viewingOthersDeck && shareId && (
-        <p>
-          <a className="btn btn--secondary btn--sm" href={`/lobby?pool=${encodeURIComponent(shareId)}#new-game`}>
-            Find an opponent in the Lobby
-          </a>
-        </p>
+      {/* R35 → U6: the deck owner's live lobby options — join an open lobby
+          for this set+format with THIS deck, or post this deck to the Lobby. */}
+      {isOwner && !viewingOthersDeck && shareId && setCode && (
+        <PlayPageLobbies
+          poolShareId={shareId}
+          setCode={setCode}
+          format={poolType === 'draft' ? 'draft' : 'sealed'}
+          currentUsername={user?.username ?? null}
+        />
       )}
 
       {viewingOthersDeck || (!companionBeta && !wayfinderDetected && !pluginRequired) ? (

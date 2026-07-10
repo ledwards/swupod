@@ -1,0 +1,32 @@
+/* Play-page "Open Lobbies" section (Lobby V1, U6).
+   The lobby board's row vocabulary (Lobby.css: .lobby-column, .lobby-row,
+   .lobby-badge, .lobby-state, .skeleton-row) does the heavy lifting — only
+   the play-page glue lives here. Tokens only (tokens.css). */
+
+.play-page-lobbies {
+  margin: 0 0 var(--pt-space-lg);
+  text-align: left;
+}
+
+/* "{N} more in the Lobby →" — quieter than a listing row: a text-only
+   pointer to the full board, not another join target. */
+a.play-lobbies-more,
+a.play-lobbies-more:visited,
+a.play-lobbies-more:hover,
+a.play-lobbies-more:active {
+  color: var(--pt-ink-subtle);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a.play-lobbies-more:hover {
+    color: var(--pt-ink);
+  }
+}
+
+/* "Post This Deck" alongside a live listing — its own quiet footer row. */
+.play-lobbies-footer {
+  padding: 12px 18px;
+  border-top: 1px solid var(--pt-border-subtle);
+}
