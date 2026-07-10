@@ -4,8 +4,8 @@
  * /lobby — the lobby-as-homepage, shipped as an alternate homepage first
  * (R38). Direction A v3 skeleton on the homepage's own visual system:
  * `.landing-page` starfield background, `.mode-button` art buttons
- * (hyperspace variants, hover-revealed with the homepage fade), glass
- * board boxes, rainbow hover motif. LandingPage itself stays untouched;
+ * (hyperspace variants, art visible at rest and fading out on hover under
+ * the rainbow ring), glass board boxes. LandingPage itself stays untouched;
  * promotion to `/` is a separate, explicitly-approved flip.
  */
 import { useState, useCallback, useEffect, Suspense } from 'react'
@@ -45,17 +45,18 @@ interface LobbyTile {
   artClass: 'art-unit' | 'art-event' | 'art-leader-unit'
 }
 
-// "Solo Play" section (Lee's live-test feedback): just the two solo modes.
+// Tile row 1 (Lee's third design pass): the two solo modes + Other Formats.
+// No section headers — spacing alone separates the rows from the board.
 const SOLO_TILES: LobbyTile[] = [
   // Same art the homepage's Solo section uses today.
   { title: 'Solo Sealed', sub: 'Build a deck from 6 packs', href: '/sealed', art: MODE_ART.draftSolo, artClass: 'art-unit' },
   { title: 'Solo Draft', sub: 'Draft against bots', href: '/draft/solo', art: MODE_ART.sealedSolo, artClass: 'art-event' },
-]
-
-// "Other" section: everything else, plus the Discord CTA appended in JSX.
-const OTHER_TILES: LobbyTile[] = [
   // Han Solo (SOR-283 HYP) — UNIT side, as on the homepage's Other card.
   { title: 'Other Formats', sub: 'Chaos, Pack Wars, and more', href: '/formats', art: 'https://cdn.starwarsunlimited.com//card_SWH_01_283_Hansolo_Leader_Unit_HYP_6c91c1ab96.png', artClass: 'art-leader-unit' },
+]
+
+// Tile row 2: everything else, plus the Discord CTA appended in JSX.
+const OTHER_TILES: LobbyTile[] = [
   // R2-D2 (TWI, Unit, HYP) — existing homepage art.
   { title: 'My Stats', sub: 'Your performance and history', href: '/me', art: MODE_ART.myStats, artClass: 'art-unit' },
   // AT-ST (SOR-493, Unit, HYP) — existing homepage art.
@@ -287,8 +288,19 @@ function LobbyPageInner(): React.JSX.Element {
           </a>
         </header>
 
-        <h3 className="mode-section-header lobby-section-header">Join</h3>
         <div className="lobby-verbs">
+          <div className="lobby-live-strip">
+            <span className="lobby-online-pill">
+              <span className="lobby-online-dot" />
+              <span>
+                {playerCount} player{playerCount !== 1 ? 's' : ''} online
+              </span>
+            </span>
+            <span>
+              <strong>{board.listings.length}</strong> open {board.listings.length === 1 ? 'game' : 'games'} ·{' '}
+              <strong>{pods.length}</strong> {pods.length === 1 ? 'pod' : 'pods'} forming
+            </span>
+          </div>
           <button
             className="mode-button art-unit lobby-verb"
             disabled={playNowBusy || authLoading}
@@ -317,20 +329,6 @@ function LobbyPageInner(): React.JSX.Element {
               <span className="mode-button-subtitle">Post a game — public or private link</span>
             </div>
           </button>
-          <div className="lobby-live-strip">
-            <span className="lobby-online-pill">
-              <span className="lobby-online-dot" />
-              <span>
-                {playerCount} player{playerCount !== 1 ? 's' : ''} online
-              </span>
-            </span>
-            <span>
-              <strong>{board.listings.length}</strong> open {board.listings.length === 1 ? 'game' : 'games'} ·{' '}
-              <strong>{pods.length}</strong> {pods.length === 1 ? 'pod' : 'pods'} forming
-              <br />
-              playing, drafting &amp; deckbuilding
-            </span>
-          </div>
         </div>
 
         <LobbyBoard
@@ -344,7 +342,6 @@ function LobbyPageInner(): React.JSX.Element {
           onJoinKarabast={handleJoinKarabast}
         />
 
-        <h3 className="mode-section-header lobby-section-header">Solo Play</h3>
         <div className="lobby-tile-row lobby-tile-row-solo">
           {SOLO_TILES.map(tile => (
             <button
@@ -364,7 +361,6 @@ function LobbyPageInner(): React.JSX.Element {
           ))}
         </div>
 
-        <h3 className="mode-section-header lobby-section-header">Other</h3>
         <div className="lobby-tile-row lobby-tile-row-other">
           {OTHER_TILES.map(tile => (
             <button

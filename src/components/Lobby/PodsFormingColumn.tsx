@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import Button from '@/src/components/Button'
+import { getPackArtUrl } from '@/src/utils/packArt'
 import { timeAgo } from './OpenGamesColumn'
 
 interface PublicPod {
@@ -39,8 +40,14 @@ export default function PodsFormingColumn({ pods }: { pods: PublicPod[] }): Reac
       {pods.map(pod => {
         const label = pod.name || `${pod.setCode} ${pod.podType === 'sealed' ? 'Sealed' : 'Draft'} Pod`
         const joinPath = pod.podType === 'sealed' ? `/sealed/${pod.shareId}` : `/draft/${pod.shareId}`
+        // Set key art background, same as /draft's public pod rows.
+        const artUrl = getPackArtUrl(pod.setCode)
         return (
-          <div className="lobby-row" key={pod.shareId}>
+          <div
+            className={`lobby-row${artUrl ? ' lobby-row--art' : ''}`}
+            key={pod.shareId}
+            style={artUrl ? { backgroundImage: `url(${artUrl})` } : undefined}
+          >
             <div className="lobby-row-who">
               <div className="lobby-row-name">{label}</div>
               <div className="lobby-row-meta">

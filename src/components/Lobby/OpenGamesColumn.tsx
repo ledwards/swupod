@@ -1,6 +1,7 @@
 'use client'
 
 import Button from '@/src/components/Button'
+import { getPackArtUrl } from '@/src/utils/packArt'
 import type { OpenGamesBoard, OpenGameListing } from '@/src/hooks/useOpenGamesSocket'
 import type { KarabastLobby } from '@/src/hooks/useKarabastLobbies'
 
@@ -30,7 +31,7 @@ interface OpenGamesColumnProps {
 }
 
 /**
- * Open Games box (R6/R28/R29/R33): PTP listings and Karabast public lobbies
+ * Open Lobbies box (R6/R28/R29/R33): PTP listings and Karabast public lobbies
  * mixed in ONE list. Karabast-sourced rows explain their thinner data
  * ("listed on Karabast · player details unavailable") and carry the non-PTP
  * pool warning when applicable. Without the Companion, the last row links
@@ -50,9 +51,9 @@ export default function OpenGamesColumn({
   const boardEmpty = status === 'ready' && totalCount === 0
 
   return (
-    <section className="lobby-column" aria-label="Open games">
+    <section className="lobby-column" aria-label="Open lobbies">
       <h3 className="lobby-column-title">
-        Open Games ({totalCount})<span>waiting for an opponent</span>
+        Open Lobbies ({totalCount})<span>waiting for an opponent</span>
       </h3>
 
       {status === 'error' && (
@@ -95,8 +96,15 @@ export default function OpenGamesColumn({
           const isMine =
             listing.mine === true ||
             (currentUsername != null && listing.host.username === currentUsername)
+          // Set key art as a right-anchored row background (same treatment
+          // as /draft's public pod rows); rows without art stay plain glass.
+          const artUrl = getPackArtUrl(listing.setCode)
           return (
-          <div className="lobby-row" key={listing.shareId}>
+          <div
+            className={`lobby-row${artUrl ? ' lobby-row--art' : ''}`}
+            key={listing.shareId}
+            style={artUrl ? { backgroundImage: `url(${artUrl})` } : undefined}
+          >
             {listing.host.avatarUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img className="lobby-row-avatar" src={listing.host.avatarUrl} alt="" />
@@ -105,21 +113,21 @@ export default function OpenGamesColumn({
             )}
             <div className="lobby-row-who">
               <div className="lobby-row-name">
-                {listing.host.username || 'Unknown player'}
+                <span className="lobby-row-name-text">{listing.host.username || 'Unknown player'}</span>
                 <span
                   className={`lobby-host-dot${listing.hostConnected === false ? ' lobby-host-away' : ''}`}
                   title={listing.hostConnected === false ? 'Stepped away' : 'Online'}
                 />
+                <span className="lobby-badge">{listing.setCode}</span>
+                <span className={`lobby-badge lobby-badge-format-${listing.format === 'draft' ? 'draft' : 'sealed'}`}>
+                  {listing.format === 'draft' ? 'Draft' : 'Sealed'}
+                </span>
               </div>
               <div className="lobby-row-meta">
                 {timeAgo(listing.createdAt)}
                 {listing.hostConnected === false ? ' · stepped away' : ''}
               </div>
             </div>
-            <span className="lobby-badge">{listing.setCode}</span>
-            <span className={`lobby-badge lobby-badge-format-${listing.format === 'draft' ? 'draft' : 'sealed'}`}>
-              {listing.format === 'draft' ? 'Draft' : 'Sealed'}
-            </span>
             {isMine ? (
               // Your own listing: you can't join yourself — discard it instead
               // (danger treatment: this throws the posted lobby away).
@@ -147,18 +155,18 @@ export default function OpenGamesColumn({
             <div className="lobby-row-avatar lobby-row-avatar-unknown" title="Player details unavailable for games listed on Karabast" />
             <div className="lobby-row-who">
               <div className="lobby-row-name">
-                {lobby.name}
+                <span className="lobby-row-name-text">{lobby.name}</span>
                 {!lobby.isPtp && (
                   <span className="lobby-warn" title={NON_PTP_WARNING}>
                     ⚠
                   </span>
                 )}
+                <span className="lobby-badge lobby-badge-karabast">Karabast</span>
               </div>
               <div className="lobby-row-meta">
                 listed on Karabast · {lobby.waiting} waiting · player details unavailable
               </div>
             </div>
-            <span className="lobby-badge lobby-badge-karabast">Karabast</span>
             <Button variant="interactive" size="sm" onClick={() => onJoinKarabast(lobby)}>
               Join
             </Button>

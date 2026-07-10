@@ -90,10 +90,10 @@
   flex: none;
 }
 
-/* ---- verbs: two big art buttons (mode-button DNA) + live strip ---- */
+/* ---- verbs: live strip (left) + two big art buttons (mode-button DNA) ---- */
 .lobby-verbs {
   display: grid;
-  grid-template-columns: 1.2fr 1.2fr auto;
+  grid-template-columns: auto 1.2fr 1.2fr;
   gap: var(--pt-space-sm);
   align-items: stretch;
   margin-bottom: var(--pt-space-md);
@@ -113,14 +113,14 @@
   align-self: center;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 6px;
-  text-align: right;
+  text-align: left;
   color: var(--pt-ink-subtle);
   font-size: 0.9rem;
   line-height: 1.5;
   font-variant-numeric: tabular-nums;
-  padding-left: var(--pt-space-xs);
+  padding-right: var(--pt-space-xs);
 }
 
 .lobby-live-strip strong {
@@ -137,7 +137,9 @@
   inset: 0;
   overflow: hidden;
   border-radius: inherit;
-  opacity: 0;
+  /* Inverted hover (Lee, third pass): art is VISIBLE at rest and fades
+     out on hover while the rainbow ring appears. */
+  opacity: 1;
   transition: opacity 0.3s ease;
   pointer-events: none;
   z-index: 0;
@@ -180,7 +182,7 @@
 
 @media (hover: hover) and (pointer: fine) {
   .lobby-page .mode-button:hover:not(:disabled) .lobby-art {
-    opacity: 1;
+    opacity: 0;
   }
 }
 
@@ -195,7 +197,8 @@
   display: grid;
   grid-template-columns: 1.55fr 1fr;
   gap: var(--pt-space-md);
-  margin-bottom: var(--pt-space-md);
+  /* Half a line height down to the solo tile row (no section headers). */
+  margin-bottom: var(--pt-space-sm);
   /* Both boxes always share the row height (Lee: same height for aesthetics). */
   align-items: stretch;
 }
@@ -267,7 +270,47 @@
 
 @media (hover: hover) and (pointer: fine) {
   .lobby-row:hover {
-    background: rgba(var(--pt-ink-rgb), 0.04);
+    /* background-color (not the shorthand) so art rows keep their
+       background-image/size/position on hover. */
+    background-color: rgba(var(--pt-ink-rgb), 0.04);
+  }
+}
+
+/* Set key art rows — the /draft public-pod `.history-item--art` treatment:
+   right-anchored key art under a left→right dark scrim so text stays
+   legible on the glass row. The image itself arrives via inline
+   background-image (getPackArtUrl). */
+.lobby-row--art {
+  background-color: var(--pt-surface-modal-from);
+  background-size: cover;
+  background-position: right 30%;
+  background-repeat: no-repeat;
+  position: relative;
+  overflow: hidden;
+}
+
+.lobby-row--art::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(var(--pt-surface-base-rgb), 0.94) 0%, rgba(var(--pt-surface-base-rgb), 0.82) 42%, rgba(var(--pt-surface-base-rgb), 0.5) 100%); /* design-ok: legibility scrim over row key art, same as .history-item--art */
+  z-index: 0;
+  transition: background 0.2s;
+}
+
+/* Lift row content above the scrim */
+.lobby-row--art > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lobby-row--art:hover {
+    background-color: var(--pt-surface-modal-from);
+  }
+
+  .lobby-row--art:hover::before {
+    background: linear-gradient(90deg, rgba(var(--pt-surface-base-rgb), 0.88) 0%, rgba(var(--pt-surface-base-rgb), 0.72) 42%, rgba(var(--pt-surface-base-rgb), 0.38) 100%); /* design-ok: hover state of the key-art legibility scrim */
   }
 }
 
@@ -293,6 +336,12 @@
   align-items: center;
   gap: 7px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Name text truncates so the inline set/format tags stay visible. */
+.lobby-row-name-text {
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -424,22 +473,21 @@ a.lobby-row-link:active {
   gap: 12px;
 }
 
-/* ---- section headers: the homepage's .mode-section-header treatment,
-   with lobby-scale spacing between sections. ---- */
-.lobby-page .lobby-section-header {
-  margin: var(--pt-space-lg) 0 var(--pt-space-sm);
-}
-
-/* ---- tile rows: Solo Play (2 tiles) + Other (the rest, R30) ---- */
+/* ---- tile rows (no section headers — spacing separates them):
+   row 1 = Solo Sealed / Solo Draft / Other Formats,
+   row 2 = My Stats / Meta Stats / History / Deckbuilder / Discord ---- */
 .lobby-tile-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--pt-space-sm);
+  /* board↔solo gap: half a line height (collapses with the board's margin). */
   margin-top: var(--pt-space-sm);
 }
 
-.lobby-tile-row-solo {
-  grid-template-columns: repeat(2, 1fr);
+.lobby-tile-row-other {
+  grid-template-columns: repeat(5, 1fr);
+  /* solo↔other gap: one line height. */
+  margin-top: var(--pt-space-lg);
 }
 
 .lobby-page .mode-button.lobby-mode-tile {
@@ -743,18 +791,13 @@ a.lobby-discord-tile:active {
     grid-template-columns: 1fr;
   }
 
-  .lobby-live-strip {
-    text-align: left;
-    width: 100%;
-  }
-
   .lobby-verbs {
     grid-template-columns: 1fr;
   }
 
   .lobby-live-strip {
-    text-align: left;
-    padding-left: 0;
+    width: 100%;
+    padding-right: 0;
   }
 
   .lobby-tile-row,
