@@ -46,12 +46,11 @@ interface LobbyTile {
 }
 
 const FORMAT_TILES: LobbyTile[] = [
-  // Prepare for Takeoff (SOR-389, Event, HYP)
-  { title: 'Solo Sealed', sub: 'Build a deck from 6 packs', href: '/sealed', art: 'https://cdn.starwarsunlimited.com//card_SWH_01_389_Prepare_For_Takeoff_HYP_826e361e9c.png', artClass: 'art-event' },
-  // Recruit (SOR-387, Event, HYP) — drafting is recruiting your team.
-  { title: 'Solo Draft', sub: 'Draft against bots', href: '/draft/solo', art: 'https://cdn.starwarsunlimited.com//card_SWH_01_387_Recruit_HYP_ef8b67c79e.png', artClass: 'art-event' },
-  // Han Solo — Audacious Smuggler (SOR-283, Leader, HYP), same as home.
-  { title: 'Other Formats', sub: 'Chaos, Pack Wars, and more', href: '/formats', art: 'https://cdn.starwarsunlimited.com//card_SWH_01_283_Hansolo_Leader_HYP_a1f959baa9.png', artClass: 'art-leader-unit' },
+  // Same art the homepage's Solo section uses today.
+  { title: 'Solo Sealed', sub: 'Build a deck from 6 packs', href: '/sealed', art: MODE_ART.draftSolo, artClass: 'art-unit' },
+  { title: 'Solo Draft', sub: 'Draft against bots', href: '/draft/solo', art: MODE_ART.sealedSolo, artClass: 'art-event' },
+  // Han Solo (SOR-283 HYP) — UNIT side, as on the homepage's Other card.
+  { title: 'Other Formats', sub: 'Chaos, Pack Wars, and more', href: '/formats', art: 'https://cdn.starwarsunlimited.com//card_SWH_01_283_Hansolo_Leader_Unit_HYP_6c91c1ab96.png', artClass: 'art-leader-unit' },
 ]
 
 const UTILITY_TILES: LobbyTile[] = [
@@ -59,8 +58,8 @@ const UTILITY_TILES: LobbyTile[] = [
   { title: 'My Stats', sub: 'Your performance and history', href: '/me', art: MODE_ART.myStats, artClass: 'art-unit' },
   // AT-ST (SOR-493, Unit, HYP) — existing homepage art.
   { title: 'Meta Stats', sub: 'What the field is playing', href: '/stats', art: MODE_ART.stats, artClass: 'art-unit' },
-  // Jedi Holocron (LOF-315, Upgrade, HYP) — stored memories.
-  { title: 'History', sub: 'Your past pools and decks', href: '/history', art: 'https://cdn.starwarsunlimited.com//card_05020315_EN_Jedi_Holocron_e9dc1ca5c2.png', artClass: 'art-unit' },
+  // Darth Revan's Lightsabers — the homepage's History art.
+  { title: 'History', sub: 'Your past pools and decks', href: '/history', art: MODE_ART.history, artClass: 'art-unit' },
   // Constructed Lightsaber (LOF-525, Upgrade, HYP) — build your weapon.
   { title: 'Deckbuilder', sub: 'Infinite copies of every card', href: '/deckbuilder', art: 'https://cdn.starwarsunlimited.com//card_05020525_EN_Constructed_Lightsaber_4cc328aeec.png', artClass: 'art-unit' },
 ]
@@ -221,15 +220,13 @@ function LobbyPageInner(): React.JSX.Element {
     <div className="landing-page lobby-shell">
       <div className="lobby-page">
         <header className="lobby-header">
-          <a href="/" aria-label="Protect the Pod home">
-            <img className="lobby-header-logo" src="/ptp_logo400.png" alt="Protect the Pod" />
-          </a>
-          <div className="lobby-online-pill">
-            <span className="lobby-online-dot" />
-            <span>
-              {playerCount} player{playerCount !== 1 ? 's' : ''} online
+          <a className="lobby-brand" href="/" aria-label="Protect the Pod home">
+            <img className="lobby-header-logo" src="/ptp_logo400.png" alt="" />
+            <span className="lobby-brand-text">
+              <span className="lobby-brand-name">PROTECT THE POD</span>
+              <span className="lobby-brand-sub">The Star Wars Unlimited Limited Simulator</span>
             </span>
-          </div>
+          </a>
         </header>
 
         <div className="lobby-verbs">
@@ -238,7 +235,10 @@ function LobbyPageInner(): React.JSX.Element {
             disabled={playNowBusy || authLoading}
             onClick={handlePlayNow}
           >
-            <div className="mode-button-art" style={{ backgroundImage: `url("${VERB_ART.playNow}")` }} />
+            <span className="lobby-art" aria-hidden>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="lobby-art-img art-unit" src={VERB_ART.playNow} alt="" />
+            </span>
             <div className="mode-button-content">
               <span className="mode-button-title">Play Now</span>
               <span className="mode-button-subtitle">Jump into the next open game</span>
@@ -249,17 +249,28 @@ function LobbyPageInner(): React.JSX.Element {
             disabled={playNowBusy || authLoading}
             onClick={handleNewGame}
           >
-            <div className="mode-button-art" style={{ backgroundImage: `url("${VERB_ART.newGame}")` }} />
+            <span className="lobby-art" aria-hidden>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="lobby-art-img art-event" src={VERB_ART.newGame} alt="" />
+            </span>
             <div className="mode-button-content">
               <span className="mode-button-title">New Game</span>
               <span className="mode-button-subtitle">Post a game — public or private link</span>
             </div>
           </button>
           <div className="lobby-live-strip">
-            <strong>{board.listings.length}</strong> open {board.listings.length === 1 ? 'game' : 'games'} ·{' '}
-            <strong>{pods.length}</strong> {pods.length === 1 ? 'pod' : 'pods'} forming
-            <br />
-            <span>playing, drafting &amp; deckbuilding</span>
+            <span className="lobby-online-pill">
+              <span className="lobby-online-dot" />
+              <span>
+                {playerCount} player{playerCount !== 1 ? 's' : ''} online
+              </span>
+            </span>
+            <span>
+              <strong>{board.listings.length}</strong> open {board.listings.length === 1 ? 'game' : 'games'} ·{' '}
+              <strong>{pods.length}</strong> {pods.length === 1 ? 'pod' : 'pods'} forming
+              <br />
+              playing, drafting &amp; deckbuilding
+            </span>
           </div>
         </div>
 
@@ -279,7 +290,10 @@ function LobbyPageInner(): React.JSX.Element {
               className={`mode-button ${tile.artClass} lobby-mode-tile`}
               onClick={() => router.push(tile.href)}
             >
-              <div className="mode-button-art" style={{ backgroundImage: `url("${tile.art}")` }} />
+              <span className="lobby-art" aria-hidden>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className={`lobby-art-img ${tile.artClass}`} src={tile.art} alt="" />
+              </span>
               <div className="mode-button-content">
                 <span className="mode-button-title">{tile.title}</span>
                 {tile.sub && <span className="mode-button-subtitle">{tile.sub}</span>}
@@ -295,7 +309,10 @@ function LobbyPageInner(): React.JSX.Element {
               className={`mode-button ${tile.artClass} lobby-mode-tile`}
               onClick={() => router.push(tile.href)}
             >
-              <div className="mode-button-art" style={{ backgroundImage: `url("${tile.art}")` }} />
+              <span className="lobby-art" aria-hidden>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className={`lobby-art-img ${tile.artClass}`} src={tile.art} alt="" />
+              </span>
               <div className="mode-button-content">
                 <span className="mode-button-title">{tile.title}</span>
                 {tile.sub && <span className="mode-button-subtitle">{tile.sub}</span>}

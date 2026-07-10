@@ -34,10 +34,36 @@
   padding-right: 84px;
 }
 
+.lobby-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+
 .lobby-header-logo {
   height: 76px;
   width: auto;
   display: block;
+}
+
+.lobby-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lobby-brand-name {
+  color: var(--pt-ink);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.1em; /* brand wordmark lockup — mirrors the logo type */
+  line-height: 1.1;
+}
+
+.lobby-brand-sub {
+  color: var(--pt-ink-subtle);
+  font-size: 0.85rem;
 }
 
 .lobby-online-pill {
@@ -85,6 +111,10 @@
 
 .lobby-live-strip {
   align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
   text-align: right;
   color: var(--pt-ink-subtle);
   font-size: 0.9rem;
@@ -98,13 +128,86 @@
   font-weight: 600;
 }
 
+/* ---- card-art system for lobby buttons ----
+   Inner <img> instead of a background so the aspect-icon strip on the art's
+   left edge can be cropped DYNAMICALLY: clip-path percentages are relative
+   to the image itself, so the crop scales with the rendered art. */
+.lobby-page .lobby-art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lobby-page .lobby-art-img {
+  position: absolute;
+  right: 0;
+  height: 260%;
+  width: auto;
+  /* Crop the card's left edge (aspect icons live there) — image-relative. */
+  clip-path: inset(0 0 0 14%);
+  /* Fade the image's own left edge so it never lands as a hard seam —
+     also image-relative, scales with the art. */
+  -webkit-mask-image: linear-gradient(to right, transparent 12%, rgba(0, 0, 0, 1) 55%); /* design-ok: image-edge fade, not a fill */
+  mask-image: linear-gradient(to right, transparent 12%, rgba(0, 0, 0, 1) 55%); /* design-ok: image-edge fade, not a fill */
+}
+
+/* framing per card type (mirrors the homepage mode-button-art offsets) */
+.lobby-page .lobby-art-img.art-unit {
+  top: -38%;
+}
+
+.lobby-page .lobby-art-img.art-event {
+  top: -128%;
+}
+
+.lobby-page .lobby-art-img.art-leader-unit {
+  top: -38%;
+  right: -40px;
+}
+
+/* the homepage left→right fade, on every art button (top row included) */
+.lobby-page .lobby-art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.85) 35%, rgba(0, 0, 0, 0.35) 70%, rgba(0, 0, 0, 0) 100%); /* design-ok: legibility fade over hover art, same as mode-button-art */
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lobby-page .mode-button:hover:not(:disabled) .lobby-art {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lobby-page .lobby-art {
+    transition: none;
+  }
+}
+
 /* ---- board: two glass columns ---- */
 .lobby-board {
   display: grid;
   grid-template-columns: 1.55fr 1fr;
   gap: var(--pt-space-md);
   margin-bottom: var(--pt-space-md);
-  align-items: start;
+  /* Both boxes always share the row height (Lee: same height for aesthetics). */
+  align-items: stretch;
+}
+
+.lobby-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.lobby-column .lobby-state {
+  flex: 1;
+  justify-content: center;
 }
 
 .lobby-board.lobby-board-single {
