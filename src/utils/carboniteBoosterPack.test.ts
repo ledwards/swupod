@@ -613,6 +613,65 @@ async function runTests(): Promise<void> {
     }
   })
 
+  // ======================
+  // Within-pack duplicate invariant (FIX-1)
+  // ======================
+  console.log('')
+  console.log('\x1b[1m\x1b[35mWithin-Pack Duplicate Invariant\x1b[0m')
+
+  // Treatment key: two cards are the SAME physical printing iff same underlying
+  // card AND same treatment. Cross-treatment pairs (a card's HS + its HSF, or a
+  // Normal-foil + its HS) are DIFFERENT keys and remain allowed — matching the
+  // real-box rule (ASH_COLLATION_FINDINGS.md: real within-pack dups are all
+  // cross-treatment, zero same-treatment). isFoil/isHyperspace distinguish the
+  // HS vs HSF blocks, which the LAW+ generator synthesizes from the same
+  // Hyperspace source (shared id/number).
+  const treatmentKey = (c: any): string =>
+    `${c.id ?? `${c.name}|${c.number}`}|${c.variantType}|${c.isFoil ? 1 : 0}|${c.isHyperspace ? 1 : 0}`
+  const isDeckCard = (c: any): boolean => !c.isLeader && !c.isPrestige
+
+  test('FIXED: no identical-treatment duplicate within a pack (all sets)', () => {
+    // SPEC: belt-system.md "Only same-belt duplicates indicate a bug"; real packs
+    // (ASH_COLLATION_FINDINGS.md) show ZERO same-treatment within-pack dups. A
+    // premium carbonite pack must never contain the identical printing twice.
+    // Structural guarantee (deterministic), so === 0 is correct here — not a rate.
+    for (const setCode of ['JTL-CB', 'LOF-CB', 'SEC-CB', 'LAW-CB', 'ASH-CB']) {
+      clearCarboniteBeltCache()
+      let dupPacks = 0
+      const sample = 2000
+      for (let i = 0; i < sample; i++) {
+        const pack = generateCarboniteBoosterPack(setCode)
+        const keys = pack.cards.filter(isDeckCard).map(treatmentKey)
+        if (new Set(keys).size !== keys.length) dupPacks++
+      }
+      assertEqual(dupPacks, 0,
+        `${setCode}: ${dupPacks}/${sample} packs had an identical-treatment duplicate ` +
+        `(SPEC: 0 — carbonite packs never contain the same printing twice)`)
+    }
+  })
+
+  test('cross-treatment pairs are still allowed (dedup is not over-broad)', () => {
+    // SPEC: cross-treatment dups (same card, different treatment) are realistic and
+    // must NOT be removed. Over many LAW+ packs some HS + its HSF co-occur; assert
+    // the dedup does not forbid that (i.e. same underlying id can appear twice as
+    // long as the treatment differs). This is a guard against over-dedup.
+    clearCarboniteBeltCache()
+    let crossTreatmentSeen = false
+    for (let i = 0; i < 3000 && !crossTreatmentSeen; i++) {
+      const pack = generateCarboniteBoosterPack('LAW-CB')
+      const byCard: Record<string, Set<string>> = {}
+      for (const c of pack.cards.filter(isDeckCard) as any[]) {
+        const cardId = String(c.id ?? `${c.name}|${c.number}`)
+        const treat = `${c.isFoil ? 1 : 0}|${c.isHyperspace ? 1 : 0}`
+        ;(byCard[cardId] = byCard[cardId] || new Set()).add(treat)
+      }
+      if (Object.values(byCard).some(s => s.size > 1)) crossTreatmentSeen = true
+    }
+    assert(crossTreatmentSeen,
+      'Expected at least one LAW+ pack with the same card in two different treatments ' +
+      '(HS + HSF) over 3000 packs — dedup must not forbid cross-treatment pairs')
+  })
+
   console.log('')
   console.log('\x1b[35m' + '='.repeat(50) + '\x1b[0m')
   console.log(`\x1b[32m✅ Tests passed: ${passed}\x1b[0m`)

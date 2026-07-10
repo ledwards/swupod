@@ -46,6 +46,45 @@ interface Belt {
   next(): RawCard | null
 }
 
+/**
+ * Treatment identity of a printing. Two cards are the SAME physical card iff same
+ * underlying card AND same treatment (foil/hyperspace flags + variantType). The HS
+ * and HSF blocks are synthesized from the same Hyperspace source (shared id/number),
+ * so isFoil/isHyperspace are what distinguish them. Cross-treatment pairs (a card's
+ * HS + its HSF, or a Normal-foil + its HS) are DIFFERENT keys and remain allowed —
+ * matching the real-box rule (only same-treatment within-pack dups are a bug).
+ */
+function dedupKey(c: RawCard): string {
+  const anyC = c as any
+  const base = anyC.id ?? `${c.name}|${anyC.number}`
+  return `${base}|${c.variantType}|${c.isFoil ? 1 : 0}|${c.isHyperspace ? 1 : 0}`
+}
+
+/**
+ * Draw one card from a belt whose treatment is not already present in `seen`
+ * (placement dedup — belt-system.md: "Dedup by PLACEMENT, not exclusion").
+ *
+ * A collided card is rotated back onto its OWN belt's hopper tail (no exclusion —
+ * once-per-boot preserved) and the same belt is redrawn, so the slot's rarity/variant
+ * contract is preserved exactly. Bounded by `maxTries` as a safety valve so a pack is
+ * never short-changed; carbonite pools (45–264 cards) make the cap unreachable in
+ * practice. Carbonite-only: the standard pack path uses separate belt instances.
+ */
+function drawUnique(belt: Belt, seen: Set<string>, maxTries = 48): RawCard | null {
+  const held: RawCard[] = []
+  let card = belt.next()
+  let tries = 0
+  while (card && seen.has(dedupKey(card)) && tries < maxTries) {
+    held.push(card)
+    card = belt.next()
+    tries++
+  }
+  const hopper = (belt as any).hopper
+  if (held.length && Array.isArray(hopper)) hopper.push(...held)
+  if (card) seen.add(dedupKey(card))
+  return card
+}
+
 // === Belt Configs ===
 
 const COMMON_FOIL_CONFIG: CarboniteSlotBeltConfig = {
@@ -226,6 +265,10 @@ export function generateCarboniteBoosterPack(compositeCode: string): Pack {
   const isLawPlus = setNumber >= 7
 
   const packCards: RawCard[] = []
+  // Treatments already placed in THIS pack (deck cards only — leaders/prestige can't
+  // collide with deck belts). Guarantees no identical printing appears twice while
+  // still allowing cross-treatment pairs (HS + HSF of the same card). See drawUnique.
+  const seen = new Set<string>()
 
   // 1. Leader — always Hyperspace, with possible Showcase upgrade
   const leaderBelt = getCBLeaderBelt(baseCode)
@@ -265,31 +308,31 @@ export function generateCarboniteBoosterPack(compositeCode: string): Pack {
 
     // [2-5] HS Common x 4 (fixed)
     for (let i = 0; i < CARBONITE_CONSTANTS.law.hsCommon; i++) {
-      const card = hsCommonBelt.next()
+      const card = drawUnique(hsCommonBelt, seen)
       if (card) packCards.push(card)
     }
 
     // [6-8] HS Flex x 3 (weighted rarity)
     for (let i = 0; i < CARBONITE_CONSTANTS.law.hsFlex; i++) {
-      const card = hsFlexBelt.next()
+      const card = drawUnique(hsFlexBelt, seen)
       if (card) packCards.push(card)
     }
 
     // [9] HS Top x 1 (always R/S/L)
     for (let i = 0; i < CARBONITE_CONSTANTS.law.hsTop; i++) {
-      const card = hsTopBelt.next()
+      const card = drawUnique(hsTopBelt, seen)
       if (card) packCards.push(card)
     }
 
     // [10-13] HSF Flex x 4 (weighted rarity)
     for (let i = 0; i < CARBONITE_CONSTANTS.law.hsfFlex; i++) {
-      const card = hsfFlexBelt.next()
+      const card = drawUnique(hsfFlexBelt, seen)
       if (card) packCards.push(card)
     }
 
     // [14-15] HSF Common x 2 (fixed)
     for (let i = 0; i < CARBONITE_CONSTANTS.law.hsfCommon; i++) {
-      const card = hsfCommonBelt.next()
+      const card = drawUnique(hsfCommonBelt, seen)
       if (card) packCards.push(card)
     }
   } else {
@@ -305,18 +348,18 @@ export function generateCarboniteBoosterPack(compositeCode: string): Pack {
 
     // [1-4] Common Foil x 4
     for (let i = 0; i < CARBONITE_CONSTANTS.preLaw.commonFoils; i++) {
-      const foil = commonFoilBelt.next()
+      const foil = drawUnique(commonFoilBelt, seen)
       if (foil) packCards.push(foil)
     }
 
     // [5-6] Uncommon Foil x 2
     for (let i = 0; i < CARBONITE_CONSTANTS.preLaw.uncommonFoils; i++) {
-      const foil = ucFoilBelt.next()
+      const foil = drawUnique(ucFoilBelt, seen)
       if (foil) packCards.push(foil)
     }
 
     // [7] R/L Foil x 1
-    const rlFoil = foilRLBelt.next()
+    const rlFoil = drawUnique(foilRLBelt, seen)
     if (rlFoil) packCards.push(rlFoil)
 
     // [8] Prestige x 1
@@ -325,25 +368,25 @@ export function generateCarboniteBoosterPack(compositeCode: string): Pack {
 
     // [9-11] Common Hyperspace x 3
     for (let i = 0; i < CARBONITE_CONSTANTS.preLaw.commonHS; i++) {
-      const hsCard = commonHSBelt.next()
+      const hsCard = drawUnique(commonHSBelt, seen)
       if (hsCard) packCards.push(hsCard)
     }
 
     // [12] Uncommon Hyperspace x 1
     for (let i = 0; i < CARBONITE_CONSTANTS.preLaw.uncommonHS; i++) {
-      const hsCard = ucHSBelt.next()
+      const hsCard = drawUnique(ucHSBelt, seen)
       if (hsCard) packCards.push(hsCard)
     }
 
     // [13] R/L Hyperspace x 1
     for (let i = 0; i < CARBONITE_CONSTANTS.preLaw.rlHS; i++) {
-      const hsCard = rlHSBelt.next()
+      const hsCard = drawUnique(rlHSBelt, seen)
       if (hsCard) packCards.push(hsCard)
     }
 
     // [14-15] Hyperspace Foil x 2
     for (let i = 0; i < CARBONITE_CONSTANTS.preLaw.hsFoil; i++) {
-      const hfCard = hyperfoilBelt.next()
+      const hfCard = drawUnique(hyperfoilBelt, seen)
       if (hfCard) packCards.push(hfCard)
     }
   }
