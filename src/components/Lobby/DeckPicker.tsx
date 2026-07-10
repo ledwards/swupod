@@ -101,6 +101,9 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
   // Bumped by the Retry button to re-run the fetch effect.
   const [attempt, setAttempt] = useState(0)
   const [page, setPage] = useState(0)
+  // New Lobby flow (no pinned set/format): local single-select filters.
+  const [formatFilter, setFormatFilter] = useState<'sealed' | 'draft' | null>(null)
+  const [setFilter, setSetFilter] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -139,7 +142,15 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
   }, [setCode, format, attempt])
 
   const filtered = Boolean(setCode || format)
-  const eligible = decks?.filter(d => d.eligible) ?? []
+  const eligible = (decks?.filter(d => d.eligible) ?? []).filter(d =>
+    filtered
+      ? true
+      : (formatFilter === null || (d.format === 'draft' ? 'draft' : 'sealed') === formatFilter) &&
+        (setFilter === null || d.setCode === setFilter)
+  )
+  const availableSets = filtered
+    ? []
+    : [...new Set((decks ?? []).map(d => d.setCode))]
 
   useEffect(() => {
     if (decks !== null) onEligibleCount?.(eligible.length)
@@ -205,6 +216,40 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
   return (
     <>
       {subtitle}
+      {!filtered && (
+        <div className="lobby-deck-filters">
+          <div className="lobby-deck-filter-group">
+            {(['sealed', 'draft'] as const).map(f => (
+              <Button
+                key={f}
+                variant="toggle"
+                size="sm"
+                glowColor="blue"
+                active={formatFilter === f}
+                onClick={() => { setFormatFilter(cur => (cur === f ? null : f)); setPage(0) }}
+              >
+                {f === 'draft' ? 'Draft' : 'Sealed'}
+              </Button>
+            ))}
+          </div>
+          {availableSets.length > 1 && (
+            <div className="lobby-deck-filter-group">
+              {availableSets.map(sc => (
+                <Button
+                  key={sc}
+                  variant="toggle"
+                  size="sm"
+                  glowColor="blue"
+                  active={setFilter === sc}
+                  onClick={() => { setSetFilter(cur => (cur === sc ? null : sc)); setPage(0) }}
+                >
+                  {sc}
+                </Button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
       <div className="lobby-deck-picker" role="radiogroup" aria-label="Your decks">
         {pageDecks.map(deck => {
           const isSelected = selected === deck.poolShareId
@@ -246,7 +291,7 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
                       {formatLabel(deck.format)}
                     </span>
                     <span>{deck.setCode}</span>
-                    {deck.builtAt && <span>built {new Date(deck.builtAt).toLocaleDateString()}</span>}
+                    {deck.builtAt && <span>{new Date(deck.builtAt).toLocaleDateString()}</span>}
                   </div>
                 </div>
               </div>

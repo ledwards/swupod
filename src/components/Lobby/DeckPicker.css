@@ -58,7 +58,18 @@
 
 .lobby-deck-option--selected::before {
   opacity: 1;
-  animation: var(--rainbow-border-animation);
+  /* The shared 400% panning gradient shows only one color slice on a row this
+     wide (reads as a plain orange border). Fit the full spectrum around the
+     ring instead and cycle it with hue-rotate so every color is always visible. */
+  background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8f00ff, #ff0000); /* design-ok: the sanctioned rainbow selection motif, sized for wide rows */
+  background-size: 100% 100%;
+  animation: lobby-rainbow-hue 3s linear infinite;
+}
+
+@keyframes lobby-rainbow-hue {
+  to {
+    filter: hue-rotate(360deg);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -150,4 +161,35 @@
   overflow-y: auto;
   flex: 1;
   min-height: 0;
+}
+
+
+/* ---- picker-context overrides of the /me item (Lee) ------------------- */
+/* Quiet at rest: replace the aspect-colored tint wash with a neutral
+   legibility scrim — items must not look highlighted before selection. */
+.lobby-deck-option .your-stats-pool-build::before {
+  background: linear-gradient(105deg, rgba(var(--pt-surface-base-rgb), 0.85) 0%, rgba(var(--pt-surface-base-rgb), 0.45) 55%, rgba(var(--pt-surface-base-rgb), 0) 80%); /* design-ok: neutral scrim replacing the /me aspect tint inside the picker */
+}
+
+/* Art hover is fine; the COPY must not move — kill the /me lift/shadow. */
+@media (hover: hover) and (pointer: fine) {
+  .lobby-deck-option .your-stats-pool-build:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* ---- New Lobby filter toggles ---- */
+.lobby-deck-filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pt-space-xs);
+  margin-bottom: var(--pt-space-sm);
+}
+
+.lobby-deck-filter-group {
+  display: flex;
+  gap: var(--pt-space-xs);
+  flex-wrap: wrap;
+  justify-content: center;
 }

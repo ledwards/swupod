@@ -592,6 +592,11 @@ a.lobby-discord-tile:active {
   display: flex;
   gap: var(--pt-space-xs);
   margin: var(--pt-space-md) 0 var(--pt-space-xs);
+  justify-content: center;
+}
+
+.lobby-vis-note {
+  text-align: center;
 }
 
 .lobby-check {

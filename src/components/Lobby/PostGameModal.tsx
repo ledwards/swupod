@@ -85,7 +85,7 @@ export default function PostGameModal({
             Private link
           </Button>
         </div>
-        <p className="lobby-row-meta">
+        <p className="lobby-row-meta lobby-vis-note">
           {visibility === 'public'
             ? 'Listed on the board.'
             : 'Only people with the link can join.'}
