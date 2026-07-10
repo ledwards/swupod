@@ -2,7 +2,7 @@
 // Tests for API utilities - set filtering
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import { fetchSets } from './api'
+import { fetchSets, isSetBeta } from './api'
 import { hasRealCardsForSet } from './cardData'
 
 describe('fetchSets', () => {
@@ -15,7 +15,11 @@ describe('fetchSets', () => {
       assert.ok(setCodes.includes('SOR'), 'SOR should be included')
       assert.ok(setCodes.includes('SEC'), 'SEC should be included')
       assert.ok(sets.length >= 7, 'Should have at least the first 7 sets')
-      assert.ok(!setCodes.includes('ASH'), 'ASH should stay hidden by default while it is beta')
+      // Time-independent form of the beta gate: whatever today's date is,
+      // no set still before its prereleaseDate may appear by default.
+      for (const set of sets) {
+        assert.ok(!isSetBeta(set), `${set.code} is still beta (before prereleaseDate) and should be hidden by default`)
+      }
     })
 
     it('should include LAW with prereleaseDate', async () => {
@@ -35,9 +39,20 @@ describe('fetchSets', () => {
       }
     })
 
-    it('should hide ASH by default (beta gate)', async () => {
+    // Beta status is date-derived (isSetBeta: now < prereleaseDate), so
+    // these tests pin the clock around ASH's prereleaseDate (2026-07-10)
+    // instead of assuming ASH is beta "today" — that assumption expired
+    // the day ASH graduated and broke the suite.
+    it('should hide a set by default while it is beta (before prereleaseDate)', async (t) => {
+      t.mock.timers.enable({ apis: ['Date'], now: new Date('2026-07-09T00:00:00Z') })
       const sets = await fetchSets()
-      assert.ok(!sets.find(s => s.code === 'ASH'), 'ASH should not be visible by default')
+      assert.ok(!sets.find(s => s.code === 'ASH'), 'ASH should not be visible by default before its prereleaseDate')
+    })
+
+    it('should surface a set by default once its prereleaseDate arrives (beta graduation)', async (t) => {
+      t.mock.timers.enable({ apis: ['Date'], now: new Date('2026-07-10T00:00:00Z') })
+      const sets = await fetchSets()
+      assert.ok(sets.find(s => s.code === 'ASH'), 'ASH should be visible by default from its prereleaseDate onward')
     })
 
     it('SPEC: ASH visible to beta users only after at least one real card is synced', async () => {
@@ -99,9 +114,12 @@ describe('fetchSets', () => {
   })
 
   describe('peekUnreleased option (U3)', () => {
-    it('SPEC: appends the next unreleased set as a comingSoon teaser ONLY after first real card lands', async () => {
-      // Gate: hasRealCardsForSet. Today (0 real ASH cards) peekUnreleased
-      // returns nothing. After spoiler sync, ASH appears as a teaser.
+    it('SPEC: appends the next unreleased set as a comingSoon teaser ONLY after first real card lands', async (t) => {
+      // Gate: hasRealCardsForSet. Before spoiler sync peekUnreleased
+      // returns nothing; after it, ASH appears as a teaser. Pin the clock
+      // before ASH's prereleaseDate (2026-07-10) — from that date on ASH
+      // enters the catalog normally and no teaser is appended.
+      t.mock.timers.enable({ apis: ['Date'], now: new Date('2026-07-09T00:00:00Z') })
       const sets = await fetchSets({ peekUnreleased: true })
       const ash = sets.find(s => s.code === 'ASH')
       if (hasRealCardsForSet('ASH')) {
@@ -133,7 +151,9 @@ describe('fetchSets', () => {
       assert.ok(ashEntries.length <= 1, `ASH should appear at most once, got ${ashEntries.length}`)
     })
 
-    it('SPEC: teaser entry surfaces prereleaseDate and releaseDate from setConfigs', async () => {
+    it('SPEC: teaser entry surfaces prereleaseDate and releaseDate from setConfigs', async (t) => {
+      // Pinned before ASH's prereleaseDate so the teaser path actually runs.
+      t.mock.timers.enable({ apis: ['Date'], now: new Date('2026-07-09T00:00:00Z') })
       const sets = await fetchSets({ peekUnreleased: true })
       const ash = sets.find(s => s.code === 'ASH' && s.comingSoon)
       if (ash) {
