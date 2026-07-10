@@ -2,7 +2,6 @@
 
 import Button from '@/src/components/Button'
 import PluginCTA from '@/src/components/PluginCTA'
-import { getPackArtUrl } from '@/src/utils/packArt'
 import type { OpenGamesBoard, OpenGameListing } from '@/src/hooks/useOpenGamesSocket'
 import type { KarabastLobby } from '@/src/hooks/useKarabastLobbies'
 
@@ -27,9 +26,10 @@ interface OpenGamesColumnProps {
 }
 
 /**
- * Open Games column (R6/R28/R29). Rows reuse the site's `.history-item`
- * listing treatment (same as /draft, /sealed/pod, /history) with pack-art
- * backgrounds. Listings never show deck identity.
+ * Open Games column (R6/R28/R29): dense v3 rows — avatar, player, presence,
+ * set/format badges, Join. Deck identity never appears (R29). The
+ * "On Karabast Now" cross-listing (R33) lives at the bottom of the panel,
+ * with the Companion pitch in its place when no plugin is present (R36).
  */
 export default function OpenGamesColumn({
   board,
@@ -41,12 +41,14 @@ export default function OpenGamesColumn({
   const { status, listings, recentCompleted, retry } = board
 
   return (
-    <div className="draft-history lobby-column">
-      <h2>Open Games</h2>
+    <section className="lobby-column" aria-label="Open games">
+      <h3 className="lobby-column-title">
+        Open Games ({listings.length})<span>waiting for an opponent</span>
+      </h3>
 
       {status === 'error' && (
         <div className="lobby-state lobby-state-error">
-          Couldn&apos;t load live games.{' '}
+          <p>Couldn&apos;t load live games.</p>
           <Button variant="secondary" size="sm" onClick={retry}>
             Retry
           </Button>
@@ -54,7 +56,7 @@ export default function OpenGamesColumn({
       )}
 
       {status === 'loading' && (
-        <div className="history-list" aria-hidden>
+        <div className="lobby-skeleton-rows" aria-hidden>
           <div className="skeleton-row" />
           <div className="skeleton-row" />
         </div>
@@ -64,7 +66,7 @@ export default function OpenGamesColumn({
         <div className="lobby-state">
           <p>No open games right now.</p>
           <Button variant="primary" size="sm" onClick={onNewGame}>
-            Post the first game
+            Post the First Game
           </Button>
           <p className="lobby-state-sub">We&apos;ll ping the Discord when you do.</p>
           {recentCompleted.length > 0 && (
@@ -79,82 +81,70 @@ export default function OpenGamesColumn({
         </div>
       )}
 
-      {status === 'ready' && listings.length > 0 && (
-        <div className="history-list">
-          {listings.map(listing => {
-            const artUrl = getPackArtUrl(listing.setCode)
-            const formatLabel = listing.format === 'draft' ? 'Draft' : 'Sealed'
-            return (
-              <div
-                key={listing.shareId}
-                className={`history-item${artUrl ? ' history-item--art' : ''}`}
-                style={artUrl ? { backgroundImage: `url("${artUrl}")` } : undefined}
-                role="button"
-                tabIndex={0}
-                onClick={() => onJoin(listing)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') onJoin(listing)
-                }}
-              >
-                <div className="history-item-main">
-                  <span className="history-set">
-                    {listing.host.username || 'Unknown player'}
-                    {listing.hostConnected === false ? ' · stepped away' : ''}
-                  </span>
-                  <span className="history-status waiting">Join</span>
-                </div>
-                <div className="history-item-meta">
-                  <span className="history-date">
-                    {listing.setName || listing.setCode} {formatLabel} · {timeAgo(listing.createdAt)}
-                  </span>
-                </div>
+      {status === 'ready' &&
+        listings.map(listing => (
+          <div className="lobby-row" key={listing.shareId}>
+            {listing.host.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img className="lobby-row-avatar" src={listing.host.avatarUrl} alt="" />
+            ) : (
+              <div className="lobby-row-avatar" />
+            )}
+            <div className="lobby-row-who">
+              <div className="lobby-row-name">
+                {listing.host.username || 'Unknown player'}
+                <span
+                  className={`lobby-host-dot${listing.hostConnected === false ? ' lobby-host-away' : ''}`}
+                  title={listing.hostConnected === false ? 'Stepped away' : 'Online'}
+                />
               </div>
-            )
-          })}
-        </div>
-      )}
+              <div className="lobby-row-meta">
+                {timeAgo(listing.createdAt)}
+                {listing.hostConnected === false ? ' · stepped away' : ''}
+              </div>
+            </div>
+            <span className="lobby-badge">{listing.setCode}</span>
+            <span className={`lobby-badge lobby-badge-format-${listing.format === 'draft' ? 'draft' : 'sealed'}`}>
+              {listing.format === 'draft' ? 'Draft' : 'Sealed'}
+            </span>
+            <Button variant="primary" size="sm" onClick={() => onJoin(listing)}>
+              Join
+            </Button>
+          </div>
+        ))}
 
-      <h2 className="lobby-karabast-header">On Karabast Now</h2>
+      <div className="lobby-subhead">On Karabast Now · via Companion</div>
       {karabast.available ? (
         karabast.lobbies.length === 0 ? (
-          <div className="lobby-state">No public Karabast lobbies right now.</div>
-        ) : (
-          <div className="history-list">
-            {karabast.lobbies.map((lobby, i) => (
-              <div
-                key={`${lobby.lobbyId ?? lobby.name}-${i}`}
-                className="history-item"
-                role="button"
-                tabIndex={0}
-                onClick={() => onJoinKarabast(lobby)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') onJoinKarabast(lobby)
-                }}
-              >
-                <div className="history-item-main">
-                  <span className="history-set">
-                    {lobby.name}
-                    {!lobby.isPtp && (
-                      <span className="lobby-warn" title={NON_PTP_WARNING}>
-                        {' '}⚠
-                      </span>
-                    )}
-                  </span>
-                  <span className="history-status waiting">Join</span>
-                </div>
-                <div className="history-item-meta">
-                  <span className="history-date">
-                    Karabast public lobby · {lobby.waiting} waiting
-                    {lobby.isPtp ? ' · protectthepod.com' : ''}
-                  </span>
-                </div>
-              </div>
-            ))}
+          <div className="lobby-state">
+            <p>No public Karabast lobbies right now.</p>
           </div>
+        ) : (
+          karabast.lobbies.map((lobby, i) => (
+            <div className="lobby-row" key={`${lobby.lobbyId ?? lobby.name}-${i}`}>
+              <div className="lobby-row-who">
+                <div className="lobby-row-name">
+                  {lobby.name}
+                  {!lobby.isPtp && (
+                    <span className="lobby-warn" title={NON_PTP_WARNING}>
+                      ⚠
+                    </span>
+                  )}
+                </div>
+                <div className="lobby-row-meta">Karabast public lobby · {lobby.waiting} waiting</div>
+              </div>
+              {lobby.isPtp && <span className="lobby-badge lobby-badge-ptp">PTP</span>}
+              <Button variant="interactive" size="sm" onClick={() => onJoinKarabast(lobby)}>
+                Join
+              </Button>
+            </div>
+          ))
         )
       ) : (
-        <PluginCTA variant="compact" />
+        <div className="lobby-state">
+          <PluginCTA variant="compact" />
+        </div>
       )}
-    </div>
+    </section>
   )
 }
