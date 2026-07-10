@@ -36,6 +36,11 @@ export interface SocketServerDeps {
    * is surviving the poster wandering off (Discord, another tab) for a while.
    */
   openGamesDelistDelayMs?: number
+  /**
+   * Fired when a user's presence flips (first socket joins / last socket
+   * leaves) so live surfaces (the lobby board's host dots) can rebroadcast.
+   */
+  onPresenceChange?: (userId: string, online: boolean) => void
 }
 
 export interface SocketServerState {
@@ -198,11 +203,13 @@ export function setupSocketServer(io: Server, deps: SocketServerDeps): SocketSer
       if (!presenceMap.has(user.id)) {
         presenceMap.set(user.id, new Set())
       }
+      const wasOffline = presenceMap.get(user.id)!.size === 0
       presenceMap.get(user.id)!.add(socket.id)
       // Per-user room for targeted pushes (e.g. open-game accepted toasts).
       socket.join(`user:${user.id}`)
       cancelDelistTimer(user.id)
       cancelOpenGamesDelistTimer(user.id)
+      if (wasOffline) deps.onPresenceChange?.(user.id, true)
       broadcastPresenceCount()
     })
 
@@ -350,6 +357,7 @@ export function setupSocketServer(io: Server, deps: SocketServerDeps): SocketSer
           presenceMap.delete(user.id)
           startDelistTimer(user.id)
           startOpenGamesDelistTimer(user.id)
+          deps.onPresenceChange?.(user.id, false)
         }
         broadcastPresenceCount()
       }

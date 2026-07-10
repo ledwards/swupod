@@ -148,6 +148,19 @@ app.prepare().then(() => {
         await broadcastPublicPodsUpdate()
       }
     },
+    // Host presence dots on the lobby board must update in realtime — a
+    // poster sitting on their match page is NOT "stepped away". Debounced:
+    // reconnect storms (tab switches) collapse into one broadcast.
+    onPresenceChange: (() => {
+      let timer: NodeJS.Timeout | null = null
+      return () => {
+        if (timer) return
+        timer = setTimeout(() => {
+          timer = null
+          broadcastOpenGamesUpdate().catch(() => {})
+        }, 1500)
+      }
+    })(),
     delistOpenGames: async (userId: string) => {
       const delisted = await delistOpenGamesForUser(userId)
       if (delisted.length > 0) {

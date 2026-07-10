@@ -15,7 +15,7 @@
  */
 import type { TxClient } from '@/lib/db'
 
-export const OPEN_LISTING_EXPIRY_MS = 2 * 60 * 60 * 1000 // R9: 2h
+export const OPEN_LISTING_EXPIRY_MS = 60 * 60 * 1000 // R9 (revised 7/10): 1h
 export const ACCEPTED_NO_LOBBY_EXPIRY_MS = 20 * 60 * 1000 // R20: ~20 min
 export const LOBBY_READY_STALE_MS = 60 * 60 * 1000
 export const IN_PROGRESS_STALE_MS = 4 * 60 * 60 * 1000
@@ -406,7 +406,7 @@ export async function sweepOpenGames(): Promise<{
   const { queryRows, query } = await import('@/lib/db')
   const expiredRows = await queryRows(
     `UPDATE open_games SET status = 'expired', resolved_at = NOW(), updated_at = NOW()
-     WHERE status = 'open' AND created_at < NOW() - INTERVAL '2 hours'
+     WHERE status = 'open' AND created_at < NOW() - INTERVAL '1 hour'
      RETURNING share_id, format, discord_message_id`
   )
   const abandoned = await query(
