@@ -46,7 +46,7 @@ export default function PodsFormingColumn({ pods }: { pods: PublicPod[] }): Reac
           <div
             className={`lobby-row${artUrl ? ' lobby-row--art' : ''}`}
             key={pod.shareId}
-            style={artUrl ? { backgroundImage: `url(${artUrl})` } : undefined}
+            style={artUrl ? ({ ['--row-art' as never]: `url(${artUrl})` }) : undefined}
           >
             <div className="lobby-row-who">
               <div className="lobby-row-name">{label}</div>

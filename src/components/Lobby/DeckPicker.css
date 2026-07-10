@@ -42,12 +42,17 @@
   position: absolute;
   inset: calc(var(--rainbow-border-size) * -1);
   border-radius: calc(var(--ys-radius) + var(--rainbow-border-size));
+  padding: var(--rainbow-border-size);
   background: var(--rainbow-border-gradient);
   background-size: var(--rainbow-border-background-size);
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  /* Masked ring: only the uniform border band paints, regardless of what the
+     item itself renders underneath — even thickness on every edge. */
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); /* design-ok: mask plumbing for the ring, not a fill */
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); /* design-ok: mask plumbing for the ring, not a fill */
+  mask-composite: exclude;
   pointer-events: none;
+  z-index: 1;
 }
 
 .lobby-deck-option--selected::before {

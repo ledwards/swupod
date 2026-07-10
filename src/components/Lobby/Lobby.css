@@ -139,7 +139,7 @@
   border-radius: inherit;
   /* Inverted hover (Lee, third pass): art is VISIBLE at rest and fades
      out on hover while the rainbow ring appears. */
-  opacity: 1;
+  opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
   z-index: 0;
@@ -182,7 +182,7 @@
 
 @media (hover: hover) and (pointer: fine) {
   .lobby-page .mode-button:hover:not(:disabled) .lobby-art {
-    opacity: 0;
+    opacity: 1;
   }
 }
 
@@ -281,10 +281,8 @@
    legible on the glass row. The image itself arrives via inline
    background-image (getPackArtUrl). */
 .lobby-row--art {
-  background-color: var(--pt-surface-modal-from);
-  background-size: cover;
-  background-position: right 30%;
-  background-repeat: no-repeat;
+  /* Default black — the key art only appears on hover (Lee: too busy at rest).
+     The art rides ::before so the row's resting surface stays the plain glass. */
   position: relative;
   overflow: hidden;
 }
@@ -293,24 +291,32 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(var(--pt-surface-base-rgb), 0.94) 0%, rgba(var(--pt-surface-base-rgb), 0.82) 42%, rgba(var(--pt-surface-base-rgb), 0.5) 100%); /* design-ok: legibility scrim over row key art, same as .history-item--art */
+  background-image:
+    linear-gradient(90deg, rgba(var(--pt-surface-base-rgb), 0.9) 0%, rgba(var(--pt-surface-base-rgb), 0.75) 42%, rgba(var(--pt-surface-base-rgb), 0.4) 100%), /* design-ok: legibility scrim over hover-revealed key art */
+    var(--row-art, none); /* design-ok: hover-only key art + legibility scrim, same treatment as .history-item--art */
+  background-size: cover, cover;
+  background-position: center, right 30%;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 0.25s ease;
   z-index: 0;
-  transition: background 0.2s;
 }
 
-/* Lift row content above the scrim */
+/* Lift row content above the art layer */
 .lobby-row--art > * {
   position: relative;
   z-index: 1;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .lobby-row--art:hover {
-    background-color: var(--pt-surface-modal-from);
-  }
-
   .lobby-row--art:hover::before {
-    background: linear-gradient(90deg, rgba(var(--pt-surface-base-rgb), 0.88) 0%, rgba(var(--pt-surface-base-rgb), 0.72) 42%, rgba(var(--pt-surface-base-rgb), 0.38) 100%); /* design-ok: hover state of the key-art legibility scrim */
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lobby-row--art::before {
+    transition: none;
   }
 }
 

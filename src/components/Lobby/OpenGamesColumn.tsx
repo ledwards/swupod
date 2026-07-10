@@ -103,7 +103,7 @@ export default function OpenGamesColumn({
           <div
             className={`lobby-row${artUrl ? ' lobby-row--art' : ''}`}
             key={listing.shareId}
-            style={artUrl ? { backgroundImage: `url(${artUrl})` } : undefined}
+            style={artUrl ? ({ ['--row-art' as never]: `url(${artUrl})` }) : undefined}
           >
             {listing.host.avatarUrl ? (
               // eslint-disable-next-line @next/next/no-img-element

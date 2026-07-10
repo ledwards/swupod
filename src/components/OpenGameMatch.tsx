@@ -12,6 +12,7 @@
  * other player learns via their socket toast (OpenGameEventToasts).
  */
 import { useCallback, useEffect, useState } from 'react'
+import { io as socketIO, type Socket } from 'socket.io-client'
 import { useRouter } from 'next/navigation'
 import Button from '@/src/components/Button'
 import PluginCTA from '@/src/components/PluginCTA'
@@ -104,6 +105,27 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
     const interval = setInterval(fetchGame, 10_000)
     return () => clearInterval(interval)
   }, [fetchGame])
+
+  // Realtime: the server pushes open-game events to each seat's user room —
+  // refetch immediately when they're about THIS lobby (someone joined,
+  // cancelled, lobby ready, result in) instead of waiting out the poll.
+  useEffect(() => {
+    let socket: Socket | null = null
+    try {
+      socket = socketIO({ transports: ['websocket', 'polling'] })
+      socket.on('connect', () => {
+        socket?.emit('presence:join')
+      })
+      socket.on('open-game:event', (event: { shareId?: string }) => {
+        if (event?.shareId === shareId) fetchGame()
+      })
+    } catch {
+      // The poll covers socket unavailability.
+    }
+    return () => {
+      socket?.disconnect()
+    }
+  }, [shareId, fetchGame])
 
   const launcher = useWayfinderCasualLaunch({
     openGameShareId: shareId,
@@ -265,8 +287,7 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
               </Button>
             ) : (
               <p className="lobby-match-note">
-                One-click lobbies are part of the Companion preview — your installed Companion
-                doesn&apos;t support them yet. Use the manual steps below.
+                One-click lobbies need a newer Companion — use the manual steps below.
               </p>
             )}
           </>
