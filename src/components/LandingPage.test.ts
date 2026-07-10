@@ -117,8 +117,48 @@ describe('LandingPage', () => {
       upcomingSet: null,
       isPatron: false as boolean | null,
       isBetaTester: false,
-      dismissedVariantsForSet: {} as Partial<Record<'nonSubConversion' | 'patronNoBeta' | 'patronActivation' | 'none', boolean>>,
+      dismissedVariantsForSet: {} as Partial<Record<'nonSubConversion' | 'patronNoBeta' | 'patronActivation' | 'prereleaseLive' | 'none', boolean>>,
     }
+
+    it('SPEC: once the set crosses prereleaseDate, shows the live banner to a non-sub (set is GA for all)', () => {
+      const variant = selectHomepagePromoVariant({
+        ...base,
+        upcomingSet: ASH,
+        isPatron: false,
+        isPrerelease: true,
+      })
+      assert.strictEqual(variant, 'prereleaseLive')
+    })
+
+    it('SPEC: the live banner supersedes every beta variant regardless of patron/beta status', () => {
+      const patronBeta = selectHomepagePromoVariant({
+        ...base,
+        upcomingSet: ASH,
+        isPatron: true,
+        isBetaTester: true,
+        isPrerelease: true,
+      })
+      const patronNoBeta = selectHomepagePromoVariant({
+        ...base,
+        upcomingSet: ASH,
+        isPatron: true,
+        isBetaTester: false,
+        isPrerelease: true,
+      })
+      assert.strictEqual(patronBeta, 'prereleaseLive')
+      assert.strictEqual(patronNoBeta, 'prereleaseLive')
+    })
+
+    it('SPEC: dismissing the live banner hides it for the current set', () => {
+      const variant = selectHomepagePromoVariant({
+        ...base,
+        upcomingSet: ASH,
+        isPatron: false,
+        isPrerelease: true,
+        dismissedVariantsForSet: { prereleaseLive: true },
+      })
+      assert.strictEqual(variant, 'none')
+    })
 
     it('renders the non-sub conversion variant when an upcoming set is in window and user is non-sub', () => {
       const variant = selectHomepagePromoVariant({

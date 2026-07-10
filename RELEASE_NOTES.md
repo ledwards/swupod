@@ -2,6 +2,9 @@
 
 ## 07.10.2026
 
+### 🔥 Ashes of the Empire is Live!
+- **Open to all**: Ashes of the Empire has graduated from beta and is now available to every player — no membership required. Happy pre-release week, and thanks to everyone who helped test!
+
 ### 🐛 Bug Fixes
 - **Discord pod chat is back**: A behind-the-scenes limit on Discord webhooks had quietly broken chat sync between pods and the #draft-now channel. Pod chat and lobby chat now share a single connection per channel, so messages flow between the web app and Discord reliably again.
 
