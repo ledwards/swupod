@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation'
 import Button from '@/src/components/Button'
 import PluginCTA from '@/src/components/PluginCTA'
 import JoinGameModal from '@/src/components/Lobby/JoinGameModal'
+import MatchDeckPane from '@/src/components/Lobby/MatchDeckPane'
 import { useToast } from '@/src/components/Toast'
 import { useAuth } from '@/src/contexts/AuthContext'
 import { useCompanionCapability } from '@/src/hooks/useCompanionCapability'
@@ -222,9 +223,14 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
   const opponent = game.players.find(p => p && !p.you) ?? null
   const waitingForOpponent = game.status === 'open'
   const lobbyLink = launcher.lastClaim?.action === 'lobby_link' ? launcher.lastClaim.lobbyUrl : null
+  // Seated players (waiting or matched) get the Karabast-style split view:
+  // match column left, a read-only view of THEIR OWN deck right (R29 — the
+  // API only ever returns yourPoolShareId for your own seat).
+  const showDeckPane = isSeat && game.yourPoolShareId != null
 
   return (
-    <div className="lobby-match">
+    <div className={`lobby-match${showDeckPane ? ' lobby-match--split' : ''}`}>
+      <div className="lobby-match-main">
       <h2>{game.setCode} {formatLabel} — Open Game</h2>
 
       <div className="lobby-match-players">
@@ -379,6 +385,8 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
           Cancel this lobby
         </Button>
       )}
+      </div>
+      {showDeckPane && <MatchDeckPane poolShareId={game.yourPoolShareId!} />}
     </div>
   )
 }

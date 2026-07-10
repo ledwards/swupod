@@ -779,6 +779,90 @@ a.lobby-discord-tile:active {
   }
 }
 
+/* ---- match page split view (seated players): match column left, a
+   read-only pane of YOUR OWN deck right, Karabast-lobby style. Invite /
+   terminal views keep the plain single-column .lobby-match. ---- */
+.lobby-match--split {
+  max-width: 1280px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--pt-space-md);
+  align-items: start;
+}
+
+.lobby-match-main {
+  min-width: 0;
+}
+
+/* Deck pane: the .lobby-column glass panel, sticky beside the match column
+   and scrolling its own body when the deck runs tall. */
+.lobby-deck-pane {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: rgba(var(--pt-surface-base-rgb), 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-lg);
+  overflow: hidden;
+  text-align: left;
+  position: sticky;
+  top: var(--pt-space-md);
+  max-height: calc(100vh - 2 * var(--pt-space-md));
+}
+
+.lobby-deck-pane-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--pt-space-xs) var(--pt-space-sm) var(--pt-space-md);
+}
+
+/* Clearance for the site's floating auth widget (top-right), same move as
+   .lobby-header — the pane's title row sits underneath it on wide screens. */
+.lobby-deck-pane .lobby-column-title {
+  padding-right: 72px;
+}
+
+/* Container layout for the shared card primitives (.canvas-card sizing and
+   the leader/base landscape rules ride Card.css off these class names). */
+.lobby-deck-pane .leaders-bases-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 8px 6px;
+}
+
+.lobby-deck-pane .cards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: start;
+  padding: 6px;
+}
+
+.lobby-deck-subhead {
+  margin: var(--pt-space-sm) 0 0;
+  padding: 0 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--pt-ink-muted);
+}
+
+/* Layout-matched loading skeleton: leader/base row + a grid of card blanks. */
+.lobby-deck-skeleton-leader {
+  width: 168px;
+  aspect-ratio: 3.5 / 2.5;
+  border-radius: var(--pt-radius-md);
+}
+
+.lobby-deck-skeleton-card {
+  width: 120px;
+  aspect-ratio: 2.5 / 3.5;
+  border-radius: var(--pt-radius-md);
+}
+
 /* ---- mobile (R4: stacked, lobby first) ---- */
 @media (max-width: 900px) {
   .lobby-page {
@@ -809,5 +893,20 @@ a.lobby-discord-tile:active {
   .lobby-tile-row,
   .lobby-tile-row-solo {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Match split view stacks: deck pane below the match column, flowing with
+     the page instead of pinning + inner-scrolling. */
+  .lobby-match--split {
+    grid-template-columns: 1fr;
+  }
+
+  .lobby-deck-pane {
+    position: static;
+    max-height: none;
+  }
+
+  .lobby-deck-pane-body {
+    overflow-y: visible;
   }
 }
