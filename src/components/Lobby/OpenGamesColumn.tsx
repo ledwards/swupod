@@ -1,7 +1,6 @@
 'use client'
 
 import Button from '@/src/components/Button'
-import PluginCTA from '@/src/components/PluginCTA'
 import type { OpenGamesBoard, OpenGameListing } from '@/src/hooks/useOpenGamesSocket'
 import type { KarabastLobby } from '@/src/hooks/useKarabastLobbies'
 
@@ -26,10 +25,11 @@ interface OpenGamesColumnProps {
 }
 
 /**
- * Open Games column (R6/R28/R29): dense v3 rows — avatar, player, presence,
- * set/format badges, Join. Deck identity never appears (R29). The
- * "On Karabast Now" cross-listing (R33) lives at the bottom of the panel,
- * with the Companion pitch in its place when no plugin is present (R36).
+ * Open Games box (R6/R28/R29/R33): PTP listings and Karabast public lobbies
+ * mixed in ONE list. Karabast-sourced rows explain their thinner data
+ * ("listed on Karabast · player details unavailable") and carry the non-PTP
+ * pool warning when applicable. Without the Companion, the last row links
+ * straight to karabast.net so players can browse lobbies themselves.
  */
 export default function OpenGamesColumn({
   board,
@@ -39,11 +39,13 @@ export default function OpenGamesColumn({
   onJoinKarabast,
 }: OpenGamesColumnProps): React.JSX.Element {
   const { status, listings, recentCompleted, retry } = board
+  const totalCount = listings.length + (karabast.available ? karabast.lobbies.length : 0)
+  const boardEmpty = status === 'ready' && totalCount === 0
 
   return (
     <section className="lobby-column" aria-label="Open games">
       <h3 className="lobby-column-title">
-        Open Games ({listings.length})<span>waiting for an opponent</span>
+        Open Games ({totalCount})<span>waiting for an opponent</span>
       </h3>
 
       {status === 'error' && (
@@ -62,7 +64,7 @@ export default function OpenGamesColumn({
         </div>
       )}
 
-      {status === 'ready' && listings.length === 0 && (
+      {boardEmpty && (
         <div className="lobby-state">
           <p>No open games right now.</p>
           <Button variant="primary" size="sm" onClick={onNewGame}>
@@ -113,37 +115,47 @@ export default function OpenGamesColumn({
           </div>
         ))}
 
-      <div className="lobby-subhead">On Karabast Now · via Companion</div>
-      {karabast.available ? (
-        karabast.lobbies.length === 0 ? (
-          <div className="lobby-state">
-            <p>No public Karabast lobbies right now.</p>
-          </div>
-        ) : (
-          karabast.lobbies.map((lobby, i) => (
-            <div className="lobby-row" key={`${lobby.lobbyId ?? lobby.name}-${i}`}>
-              <div className="lobby-row-who">
-                <div className="lobby-row-name">
-                  {lobby.name}
-                  {!lobby.isPtp && (
-                    <span className="lobby-warn" title={NON_PTP_WARNING}>
-                      ⚠
-                    </span>
-                  )}
-                </div>
-                <div className="lobby-row-meta">Karabast public lobby · {lobby.waiting} waiting</div>
+      {/* Karabast public lobbies, mixed into the same list (R33). */}
+      {status === 'ready' &&
+        karabast.available &&
+        karabast.lobbies.map((lobby, i) => (
+          <div className="lobby-row" key={`kb-${lobby.lobbyId ?? lobby.name}-${i}`}>
+            <div className="lobby-row-avatar lobby-row-avatar-unknown" title="Player details unavailable for games listed on Karabast" />
+            <div className="lobby-row-who">
+              <div className="lobby-row-name">
+                {lobby.name}
+                {!lobby.isPtp && (
+                  <span className="lobby-warn" title={NON_PTP_WARNING}>
+                    ⚠
+                  </span>
+                )}
               </div>
-              {lobby.isPtp && <span className="lobby-badge lobby-badge-ptp">PTP</span>}
-              <Button variant="interactive" size="sm" onClick={() => onJoinKarabast(lobby)}>
-                Join
-              </Button>
+              <div className="lobby-row-meta">
+                listed on Karabast · {lobby.waiting} waiting · player details unavailable
+              </div>
             </div>
-          ))
-        )
-      ) : (
-        <div className="lobby-state">
-          <PluginCTA variant="compact" />
-        </div>
+            <span className="lobby-badge lobby-badge-karabast">Karabast</span>
+            <Button variant="interactive" size="sm" onClick={() => onJoinKarabast(lobby)}>
+              Join
+            </Button>
+          </div>
+        ))}
+
+      {/* No Companion: players can always browse Karabast's lobby themselves. */}
+      {status === 'ready' && !karabast.available && (
+        <a
+          className="lobby-row lobby-row-link"
+          href="https://karabast.net/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <div className="lobby-row-who">
+            <div className="lobby-row-name">More games on Karabast ↗</div>
+            <div className="lobby-row-meta">
+              Browse public lobbies on karabast.net — the Companion lists them here automatically.
+            </div>
+          </div>
+        </a>
       )}
     </section>
   )

@@ -26,11 +26,7 @@ interface LobbyBoardProps {
   onJoinKarabast: (lobby: KarabastLobby) => void
 }
 
-/**
- * Two-column live board (R1/AE4): Open Games (wider) beside Pods Forming.
- * When the pods column is empty it collapses and Open Games takes the row —
- * an empty board never reads as a ghost town, it reads as an invitation.
- */
+/** Two glass boxes side by side (R1): Open Games and Pods Forming — always both. */
 export default function LobbyBoard({
   board,
   pods,
@@ -39,10 +35,8 @@ export default function LobbyBoard({
   onNewGame,
   onJoinKarabast,
 }: LobbyBoardProps): React.JSX.Element {
-  const podsEmpty = pods.length === 0
-
   return (
-    <div className={`lobby-board${podsEmpty ? ' lobby-board-single' : ''}`}>
+    <div className="lobby-board">
       <OpenGamesColumn
         board={board}
         karabast={karabast}
@@ -50,7 +44,7 @@ export default function LobbyBoard({
         onNewGame={onNewGame}
         onJoinKarabast={onJoinKarabast}
       />
-      {!podsEmpty && <PodsFormingColumn pods={pods} />}
+      <PodsFormingColumn pods={pods} />
     </div>
   )
 }

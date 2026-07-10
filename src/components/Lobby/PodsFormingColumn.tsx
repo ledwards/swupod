@@ -16,7 +16,7 @@ interface PublicPod {
   createdAt: string
 }
 
-/** Pods Forming column (R15): the existing public pods, v3 seat-dot rows. */
+/** Pods Forming box (R15): the existing public pods, v3 seat-dot rows. */
 export default function PodsFormingColumn({ pods }: { pods: PublicPod[] }): React.JSX.Element {
   const router = useRouter()
 
@@ -25,6 +25,16 @@ export default function PodsFormingColumn({ pods }: { pods: PublicPod[] }): Reac
       <h3 className="lobby-column-title">
         Pods Forming ({pods.length})<span>live drafts &amp; sealed</span>
       </h3>
+
+      {pods.length === 0 && (
+        <div className="lobby-state">
+          <p>No pods forming right now.</p>
+          <Button variant="primary" size="sm" onClick={() => router.push('/draft')}>
+            Start a Pod
+          </Button>
+          <p className="lobby-state-sub">Public pods ping the Discord automatically.</p>
+        </div>
+      )}
 
       {pods.map(pod => {
         const label = pod.name || `${pod.setCode} ${pod.podType === 'sealed' ? 'Sealed' : 'Draft'} Pod`

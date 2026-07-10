@@ -4,11 +4,22 @@
    Glass panels: translucent black + blur, 1px white-alpha border, flat at
    rest; color only as interaction glow. Palette via tokens.css only. */
 
+.lobby-shell {
+  /* .landing-page supplies the homepage starfield + fades; we just stop it
+     from centering the lobby container's content and make it span the
+     viewport (the residual Vite body centering otherwise shrinks it). */
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 100vh;
+}
+
 .lobby-page {
+  width: 100%;
   max-width: 1100px;
   margin: 0 auto;
   padding: var(--pt-space-lg) var(--pt-space-md) var(--pt-space-xl);
   color: var(--pt-ink);
+  text-align: left;
   font-family: Barlow, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
@@ -20,7 +31,7 @@
   gap: var(--pt-space-md);
   margin-bottom: var(--pt-space-lg);
   /* Clearance for the site's floating auth widget (top-right). */
-  padding-right: 64px;
+  padding-right: 84px;
 }
 
 .lobby-header-logo {
@@ -53,25 +64,33 @@
   flex: none;
 }
 
-/* ---- verbs + live strip ---- */
+/* ---- verbs: two big art buttons (mode-button DNA) + live strip ---- */
 .lobby-verbs {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr auto;
   gap: var(--pt-space-sm);
-  flex-wrap: wrap;
+  align-items: stretch;
   margin-bottom: var(--pt-space-md);
 }
 
-.lobby-verbs-spacer {
-  flex: 1;
+.lobby-page .mode-button.lobby-verb {
+  width: 100%;
+  min-height: 92px;
+}
+
+.lobby-page .mode-button.lobby-verb .mode-button-title {
+  font-size: 1.35rem;
+  font-weight: 800;
 }
 
 .lobby-live-strip {
+  align-self: center;
   text-align: right;
   color: var(--pt-ink-subtle);
   font-size: 0.9rem;
   line-height: 1.5;
   font-variant-numeric: tabular-nums;
+  padding-left: var(--pt-space-xs);
 }
 
 .lobby-live-strip strong {
@@ -222,11 +241,28 @@
   color: var(--pt-glow-primary);
 }
 
-.lobby-badge-ptp {
+.lobby-badge-ptp,
+.lobby-badge-karabast {
   border-color: var(--pt-border-subtle);
   color: var(--pt-ink-subtle);
   font-weight: 600;
   letter-spacing: 0.02em;
+}
+
+/* Karabast-sourced rows: no PTP profile — dashed placeholder avatar. */
+.lobby-row-avatar-unknown {
+  border-style: dashed;
+  background: transparent;
+}
+
+/* Fallback row without the Companion: plain link to karabast.net. */
+a.lobby-row-link,
+a.lobby-row-link:visited,
+a.lobby-row-link:hover,
+a.lobby-row-link:active {
+  color: var(--pt-ink);
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .lobby-warn {
@@ -285,159 +321,87 @@
   gap: 12px;
 }
 
-/* ---- casual formats rollup (R30) ---- */
-.lobby-rollup {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--pt-space-md);
-  background: rgba(var(--pt-surface-base-rgb), 0.5);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--pt-border-subtle);
-  border-radius: var(--pt-radius-lg);
-  padding: 14px 18px;
-  color: var(--pt-ink);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .lobby-rollup:hover {
-    border-color: var(--pt-border-strong);
-    background: rgba(var(--pt-ink-rgb), 0.04);
-  }
-}
-
-.lobby-rollup-title {
-  display: block;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.lobby-rollup-sub {
-  display: block;
-  color: var(--pt-ink-subtle);
-  font-size: 0.85rem;
-  margin-top: 2px;
-}
-
-.lobby-rollup-chevron {
-  color: var(--pt-ink-subtle);
-  flex: none;
-  transition: transform 0.2s ease;
-}
-
-.lobby-rollup[aria-expanded='true'] .lobby-rollup-chevron {
-  transform: rotate(180deg);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .lobby-rollup-chevron {
-    transition: none;
-  }
-}
-
-/* compact art tiles — mode-button DNA at lobby density */
-.lobby-tiles {
+/* ---- tile rows: formats + utility (mode-button DNA, R30) ---- */
+.lobby-tile-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--pt-space-sm);
   margin-top: var(--pt-space-sm);
 }
 
-.lobby-tile {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 58px;
+.lobby-tile-row-utility {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.lobby-page .mode-button.lobby-mode-tile {
+  width: 100%;
+  min-height: 64px;
   padding: 10px 14px;
-  border: 1px solid var(--pt-border-subtle);
-  border-radius: var(--pt-radius-md);
-  background-color: rgba(var(--pt-surface-base-rgb), 0.5);
-  overflow: hidden;
-  color: var(--pt-ink);
-  font: inherit;
-  text-align: left;
-  text-decoration: none;
-  cursor: pointer;
-  transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
-.lobby-tile-art {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center 22%;
-  opacity: 0.35;
-  pointer-events: none;
-}
-
-.lobby-tile-art::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.35)); /* design-ok: legibility scrim over art, matches mode-button-art treatment */
-}
-
-.lobby-tile-title {
-  position: relative;
-  font-weight: 600;
+.lobby-page .mode-button.lobby-mode-tile .mode-button-title {
   font-size: 0.95rem;
 }
 
-.lobby-tile-sub {
-  position: relative;
-  color: var(--pt-ink-subtle);
-  font-size: 0.78rem;
-  margin-top: 1px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.lobby-page .mode-button.lobby-mode-tile .mode-button-subtitle {
+  font-size: 0.75rem;
+}
+
+/* Discord: the sanctioned solid-blurple brand handshake, tile-sized. */
+.lobby-discord-tile,
+a.lobby-discord-tile,
+a.lobby-discord-tile:visited,
+a.lobby-discord-tile:hover,
+a.lobby-discord-tile:active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 64px;
+  border-radius: var(--pt-radius-md);
+  border: 1px solid var(--pt-discord);
+  background: var(--pt-discord);
+  color: var(--pt-ink);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .lobby-tile:hover {
-    border-color: var(--pt-border-strong);
+  a.lobby-discord-tile:hover {
+    background: var(--pt-discord-deep);
     transform: translateY(-2px);
   }
 }
 
-.lobby-tile:focus-visible {
-  outline: none;
-  border-color: rgba(var(--pt-glow-interactive-rgb), 0.8);
-  box-shadow: 0 0 12px rgba(var(--pt-glow-interactive-rgb), 0.5);
-}
-
-/* utility track (R30) */
-.lobby-utility {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: var(--pt-space-sm);
-  margin-top: var(--pt-space-sm);
-}
-
-/* Discord tile: brand handshake — the one sanctioned solid fill */
-.lobby-tile-discord,
-a.lobby-tile-discord,
-a.lobby-tile-discord:visited,
-a.lobby-tile-discord:hover,
-a.lobby-tile-discord:active {
-  color: var(--pt-ink);
-  background-color: var(--pt-discord);
-  border-color: var(--pt-discord);
-  align-items: center;
-  flex-direction: row;
-  gap: 8px;
-  justify-content: center;
-}
-
+/* ---- rainbow hover motif (Lee): lobby art buttons glow foil, not green ---- */
 @media (hover: hover) and (pointer: fine) {
-  a.lobby-tile-discord:hover {
-    background-color: var(--pt-discord-deep);
+  .lobby-page .mode-button:hover:not(:disabled) {
+    border-color: transparent;
+    box-shadow: 0 6px 16px rgba(var(--pt-surface-base-rgb), 0.6);
+  }
+
+  .lobby-page .mode-button:hover:not(:disabled)::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 2px;
+    background: var(--rainbow-border-gradient); /* design-ok: hover-only rainbow ring (Lee), not a resting fill */
+    background-size: var(--rainbow-border-background-size);
+    animation: rainbow-border 3s linear infinite;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); /* design-ok: mask plumbing for the ring, not a fill */
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); /* design-ok: mask plumbing for the ring, not a fill */
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lobby-page .mode-button:hover:not(:disabled)::before {
+    animation: none;
   }
 }
 
@@ -594,7 +558,7 @@ a.lobby-tile-discord:active {
   }
 
   .lobby-header {
-    padding-right: 56px;
+    padding-right: 72px;
   }
 
   .lobby-header-logo {
@@ -610,11 +574,17 @@ a.lobby-tile-discord:active {
     width: 100%;
   }
 
-  .lobby-tiles {
-    grid-template-columns: repeat(2, 1fr);
+  .lobby-verbs {
+    grid-template-columns: 1fr;
   }
 
-  .lobby-utility {
+  .lobby-live-strip {
+    text-align: left;
+    padding-left: 0;
+  }
+
+  .lobby-tile-row,
+  .lobby-tile-row-utility {
     grid-template-columns: repeat(2, 1fr);
   }
 
