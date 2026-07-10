@@ -7,6 +7,7 @@
  * see it (R29).
  */
 import { useEffect, useState } from 'react'
+import Button from '@/src/components/Button'
 
 export interface EligibleDeck {
   poolShareId: string
@@ -35,18 +36,62 @@ export function deckLabel(deck: EligibleDeck): string {
 export default function DeckPicker({ setCode, format, selected, onSelect }: DeckPickerProps): React.JSX.Element {
   const [decks, setDecks] = useState<EligibleDeck[] | null>(null)
   const [error, setError] = useState(false)
+  // Bumped by the Retry button to re-run the fetch effect.
+  const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
+    let cancelled = false
+    let retried = false
+    let timer: ReturnType<typeof setTimeout> | undefined
     const params = new URLSearchParams()
     if (setCode) params.set('setCode', setCode)
     if (format) params.set('format', format)
-    fetch(`/api/open-games/eligible-decks?${params}`)
-      .then(res => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
-      .then(json => setDecks((json.data || json).decks || []))
-      .catch(() => setError(true))
-  }, [setCode, format])
 
-  if (error) return <div className="lobby-state lobby-state-error">Couldn&apos;t load your decks.</div>
+    // One failed fetch must not strand the picker in a dead-end error state
+    // (a dev-server recompile or network blip is enough): retry once
+    // automatically after 1s, then fall back to the Retry button.
+    const load = (): void => {
+      fetch(`/api/open-games/eligible-decks?${params}`)
+        .then(res => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
+        .then(json => {
+          if (!cancelled) setDecks((json.data || json).decks || [])
+        })
+        .catch(() => {
+          if (cancelled) return
+          if (!retried) {
+            retried = true
+            timer = setTimeout(load, 1000)
+          } else {
+            setError(true)
+          }
+        })
+    }
+    load()
+
+    return () => {
+      cancelled = true
+      if (timer) clearTimeout(timer)
+    }
+  }, [setCode, format, attempt])
+
+  if (error) {
+    return (
+      <div className="lobby-state lobby-state-error">
+        <p>Couldn&apos;t load your decks.</p>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => {
+            setError(false)
+            setDecks(null)
+            setAttempt(a => a + 1)
+          }}
+        >
+          Retry
+        </Button>
+      </div>
+    )
+  }
   if (decks === null) return <div className="lobby-state">Loading your decks…</div>
 
   const eligible = decks.filter(d => d.eligible)

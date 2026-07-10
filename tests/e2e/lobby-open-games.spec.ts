@@ -34,6 +34,64 @@ async function seedDeck(userId: string, setCode: string, format: string): Promis
   return shareId
 }
 
+/**
+ * Fail fast when the server at BASE_URL is not backed by the same database
+ * the test fixtures are seeded into. This suite seeds users/pools/decks via
+ * direct SQL (test-utils resolves DATABASE_URL || POSTGRES_URL, where
+ * .env.local's DATABASE_URL silently beats a shell POSTGRES_URL), while the
+ * server resolves its own env — a shared dev server whose .env.local points
+ * elsewhere makes every fixture invisible and the first deck radio times out
+ * 180s later with no clue. Probe: create a user THROUGH the server, then look
+ * it up through the fixture pool.
+ */
+async function assertServerDbMatchesFixtures(): Promise<void> {
+  const res = await fetch(`${BASE_URL}/api/test/create-user`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: 'LobbyDbProbe', testId: TEST_ID }),
+  }).catch((err: Error) => {
+    throw new Error(`DB probe: cannot reach ${BASE_URL}/api/test/create-user (${err.message}) — is the server running?`)
+  })
+  if (!res.ok) {
+    throw new Error(`DB probe: POST ${BASE_URL}/api/test/create-user returned ${res.status} — server misconfigured for E2E?`)
+  }
+  const json = await res.json()
+  const probeId = (json.data || json).user.id
+  const found = await getPool().query('SELECT 1 FROM users WHERE id = $1', [probeId])
+  if (found.rowCount === 0) {
+    throw new Error(
+      `SERVER/TEST DATABASE MISMATCH: the server at ${BASE_URL} wrote probe user ${probeId} to a different database than the one test fixtures use ` +
+        `(tests resolve DATABASE_URL || POSTGRES_URL after loading .env.local/.env). Restart the server against the tests' database, ` +
+        `or point BASE_URL/TEST_BASE_URL at a server that shares it — otherwise seeded decks can never appear in the UI.`
+    )
+  }
+}
+
+/**
+ * Wait for the match page after creating/joining a game — with recovery.
+ * The shared dev server hot-reloads whenever anyone edits source (this suite
+ * often runs alongside active development), and a Fast Refresh full reload of
+ * /lobby cancels the client-side router.push() fired right after the POST
+ * succeeds: the open_games row exists, only the navigation got eaten. Recover
+ * by going straight to the match URL (users can do the same via the share
+ * link). If the row does NOT exist, the action itself failed — fail loudly.
+ */
+async function waitForMatchPage(page: Page, seat: 'player1_id' | 'player2_id', userId: string): Promise<void> {
+  try {
+    await page.waitForURL(/\/g\//, { timeout: 30_000 })
+  } catch {
+    const row = await getPool().query(
+      `SELECT share_id FROM open_games WHERE ${seat} = $1 ORDER BY created_at DESC LIMIT 1`,
+      [userId]
+    )
+    if (row.rowCount === 0) {
+      throw new Error(`No open_games row with ${seat} = ${userId} — the create/join action itself failed (not just navigation)`)
+    }
+    console.warn(`[lobby-open-games] router.push to /g/ was lost (dev-server reload?) — recovering via direct navigation`)
+    await page.goto(`/g/${row.rows[0].share_id}`)
+  }
+}
+
 async function newUserContext(browser: Browser, user): Promise<{ context: BrowserContext; page: Page }> {
   const context = await browser.newContext({
     baseURL: BASE_URL,
@@ -54,6 +112,9 @@ test.describe('Lobby V1 — Open Games', () => {
   let joinerCtx: { context: BrowserContext; page: Page }
 
   test.beforeAll(async () => {
+    // Before seeding anything: one clear diagnostic beats a 180s timeout.
+    await assertServerDbMatchesFixtures()
+
     browser = await chromium.launch()
     poster = await createTestUser('LobbyPoster', TEST_ID)
     joiner = await createTestUser('LobbyJoiner', TEST_ID)
@@ -62,6 +123,30 @@ test.describe('Lobby V1 — Open Games', () => {
     // so the joiner's most-recent deck (which Play Now uses) is the draft one.
     await seedDeck(joiner.user.id, RUN_SET, 'sealed')
     await seedDeck(joiner.user.id, RUN_SET, 'draft')
+
+    // Warm the dev server's on-demand compiles before any UI interaction, and
+    // prove the seeded fixtures are visible through the server (auth + DB) so
+    // a failure here is a clear message, not a deck-radio timeout at line ~90.
+    const cookie = { cookie: `${poster.cookieName}=${poster.token}` }
+    const [, , , deckRes] = await Promise.all([
+      fetch(`${BASE_URL}/lobby`, { headers: cookie }),
+      fetch(`${BASE_URL}/g/warmup-probe`, { headers: cookie }),
+      fetch(`${BASE_URL}/api/open-games`, { headers: cookie }),
+      fetch(`${BASE_URL}/api/open-games/eligible-decks`, { headers: cookie }),
+    ])
+    if (!deckRes.ok) {
+      throw new Error(
+        `eligible-decks returned ${deckRes.status} for a freshly seeded test user — JWT_SECRET mismatch between tests and the server at ${BASE_URL}?`
+      )
+    }
+    const deckJson = await deckRes.json()
+    const decks = (deckJson.data || deckJson).decks || []
+    if (!decks.some((d: { setCode: string }) => d.setCode === RUN_SET)) {
+      throw new Error(
+        `Seeded ${RUN_SET} deck is not visible via ${BASE_URL}/api/open-games/eligible-decks — server and test fixtures are out of sync.`
+      )
+    }
+
     posterCtx = await newUserContext(browser, poster)
     joinerCtx = await newUserContext(browser, joiner)
   })
@@ -91,7 +176,7 @@ test.describe('Lobby V1 — Open Games', () => {
     await page.getByRole('button', { name: 'Create Game' }).click()
 
     // Poster lands on the match page in the waiting state.
-    await page.waitForURL(/\/g\//)
+    await waitForMatchPage(page, 'player1_id', poster.user.id)
     await expect(page.getByText('Waiting for an opponent')).toBeVisible()
   })
 
@@ -101,15 +186,18 @@ test.describe('Lobby V1 — Open Games', () => {
 
     // The listing shows the poster + set/format badges but NEVER deck
     // identity (R29).
+    // 15s: the row arrives over the socket, and a shared dev server can be
+    // mid-recompile — the 5s default expect timeout is too tight here.
     const row = page.locator('.lobby-row', { hasText: 'LobbyPoster' })
-    await expect(row).toBeVisible()
+    await expect(row).toBeVisible({ timeout: 15_000 })
     await expect(row.getByText(RUN_SET, { exact: true })).toBeVisible()
     await expect(row.getByText('Draft', { exact: true })).toBeVisible()
 
     await row.getByRole('button', { name: 'Join' }).click()
 
     // Filter line proves strict matching (R31): 1 draft of 2 total decks.
-    await expect(page.getByText(/1 of\s+2 eligible/)).toBeVisible()
+    // 15s: DeckPicker fetches (and auto-retries once) on a busy dev server.
+    await expect(page.getByText(/1 of\s+2 eligible/)).toBeVisible({ timeout: 15_000 })
     // The wrong-format deck is present but disabled.
     await expect(page.locator('.lobby-deck-off', { hasText: 'wrong set or format' })).toBeVisible()
 
@@ -117,9 +205,9 @@ test.describe('Lobby V1 — Open Games', () => {
     await page.getByRole('button', { name: 'Join Game' }).click()
 
     // Joiner lands on the match page with both seats.
-    await page.waitForURL(/\/g\//)
-    await expect(page.getByText('LobbyPoster')).toBeVisible()
-    await expect(page.getByText('LobbyJoiner (you)')).toBeVisible()
+    await waitForMatchPage(page, 'player2_id', joiner.user.id)
+    await expect(page.getByText('LobbyPoster')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByText('LobbyJoiner (you)')).toBeVisible({ timeout: 15_000 })
   })
 
   test('poster sees the match live (accepted) without reloading', async () => {
@@ -147,7 +235,7 @@ test.describe('Lobby V1 — Open Games', () => {
     const joinerPage = joinerCtx.page
     await joinerPage.goto('/lobby')
     await joinerPage.getByRole('button', { name: 'Play Now' }).click()
-    await joinerPage.waitForURL(/\/g\//, { timeout: 15_000 })
+    await waitForMatchPage(joinerPage, 'player2_id', joiner.user.id)
     await expect(joinerPage.getByText('LobbyPoster')).toBeVisible()
   })
 })
