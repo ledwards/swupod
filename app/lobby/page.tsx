@@ -2,14 +2,11 @@
 
 /**
  * /lobby — the lobby-as-homepage, shipped as an alternate homepage first
- * (R38): LandingPage stays untouched; promotion to `/` is a separate,
- * explicitly-approved flip.
- *
- * Layout per Direction A v4 (R27-R37): slim header (no nav bar), Play Now /
- * New Game verbs, two-column live board with Karabast cross-listing,
- * "Casual Formats" rollup (the existing /formats naming), utility track.
- * Anonymous visitors get the read-only board; any action routes through
- * Discord login with return-to-lobby intent (R26).
+ * (R38). Composes the EXISTING homepage system: landing logo + subtitle
+ * hero, players-online badge, `.history-item` listing rows, `.mode-button`
+ * tiles with card art, and `.discord-cta` — per DESIGN.md and the style
+ * guide. LandingPage itself stays untouched; promotion to `/` is a
+ * separate, explicitly-approved flip.
  */
 import { useState, useCallback, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -21,35 +18,27 @@ import { useKarabastLobbies, type KarabastLobby } from '@/src/hooks/useKarabastL
 import { useCompanionCapability } from '@/src/hooks/useCompanionCapability'
 import { buildWayfinderCasualCreatePayload } from '@/src/hooks/useWayfinderCasualLaunch'
 import { useToast } from '@/src/components/Toast'
-import LobbyVerbs from '@/src/components/Lobby/LobbyVerbs'
+import Button from '@/src/components/Button'
+import { MODE_ART } from '@/src/components/LandingPage'
 import LobbyBoard from '@/src/components/Lobby/LobbyBoard'
 import PostGameModal from '@/src/components/Lobby/PostGameModal'
 import JoinGameModal from '@/src/components/Lobby/JoinGameModal'
+import '@/src/components/LandingPage.css'
+import '@/app/draft/draft.css'
 import '@/src/components/Lobby/Lobby.css'
 
 const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/u6fkdDzWqF'
 
-const FORMAT_TILES: Array<{ label: string; href: string }> = [
-  { label: 'Solo Sealed', href: '/sealed' },
-  { label: 'Solo Draft', href: '/draft/solo' },
-  { label: 'Chaos Sealed', href: '/formats' },
-  { label: 'Pack Wars', href: '/formats' },
-  { label: 'Pack Blitz', href: '/formats' },
-  { label: 'Rotisserie', href: '/formats' },
-]
-
-const UTILITY_TILES: Array<{ label: string; href: string; discord?: boolean }> = [
-  { label: 'My Stats', href: '/me' },
-  { label: 'Global Stats', href: '/stats' },
-  { label: 'History', href: '/history' },
-  { label: 'Deckbuilder', href: '/deckbuilder' },
-  { label: 'Join the Discord', href: DISCORD_INVITE_URL, discord: true },
+const CASUAL_FORMAT_TILES: Array<{ title: string; subtitle: string; href: string; art: string }> = [
+  { title: 'Solo Sealed', subtitle: 'Build a deck from 6 packs', href: '/sealed', art: MODE_ART.draftSolo },
+  { title: 'Solo Draft', subtitle: 'Draft against bots', href: '/draft/solo', art: MODE_ART.sealedSolo },
+  { title: 'Other', subtitle: 'Chaos, Pack Wars, and more', href: '/formats', art: 'https://cdn.starwarsunlimited.com//card_SWH_01_283_Hansolo_Leader_Unit_HYP_6c91c1ab96.png' },
 ]
 
 export default function LobbyPage(): React.JSX.Element {
   // useSearchParams requires a Suspense boundary for the build-time prerender.
   return (
-    <Suspense fallback={<div className="lobby-page" />}>
+    <Suspense fallback={<div className="landing-page" />}>
       <LobbyPageInner />
     </Suspense>
   )
@@ -60,7 +49,7 @@ function LobbyPageInner(): React.JSX.Element {
   const searchParams = useSearchParams()
   // AuthContext is untyped JSX; the user object is snake_case (documented trap).
   const { user } = useAuth() as { user: { id: string; username?: string } | null }
-  const onlineCount = usePresence(user?.id)
+  const playerCount = usePresence(user?.id)
   const board = useOpenGamesSocket()
   const pods = usePublicPodsSocket()
   const karabast = useKarabastLobbies()
@@ -197,26 +186,107 @@ function LobbyPageInner(): React.JSX.Element {
   }, [])
 
   return (
-    <div className="lobby-page">
-      <header className="lobby-header">
-        <a className="lobby-wordmark" href="/">
-          Protect the Pod
+    <div className="landing-page">
+      <div className="landing-content">
+        <a href="/">
+          <img className="landing-logo" src="/ptp_logo400.png" alt="Protect the Pod Logo" />
         </a>
-        <div className="lobby-online-pill">
-          <span className="lobby-presence-dot" />
-          <strong>{onlineCount}</strong>
-          <span>online</span>
-        </div>
-      </header>
+        <h1 className="visually-hidden">Protect the Pod — Lobby</h1>
+        <h2 className="subtitle">
+          The Star Wars Unlimited<br />
+          Limited Lobby
+        </h2>
 
-      <LobbyVerbs
-        onPlayNow={handlePlayNow}
-        onNewGame={handleNewGame}
-        openGamesCount={board.listings.length}
-        podsFormingCount={pods.length}
-        onlineCount={onlineCount}
-        busy={playNowBusy}
-      />
+        {playerCount > 0 && (
+          <div className="players-online-landing">
+            <span className="online-dot-landing" />
+            <span>{playerCount} player{playerCount !== 1 ? 's' : ''} online</span>
+          </div>
+        )}
+
+        <div className="lobby-verbs">
+          <Button variant="primary" size="lg" disabled={playNowBusy} onClick={handlePlayNow}>
+            Play Now
+          </Button>
+          <Button variant="secondary" size="lg" disabled={playNowBusy} onClick={handleNewGame}>
+            New Game
+          </Button>
+        </div>
+        <div className="lobby-live-strip">
+          {board.listings.length} open {board.listings.length === 1 ? 'game' : 'games'} ·{' '}
+          {pods.length} {pods.length === 1 ? 'pod' : 'pods'} forming
+        </div>
+
+        <LobbyBoard
+          board={board}
+          pods={pods}
+          karabast={karabast}
+          onJoin={handleJoin}
+          onNewGame={handleNewGame}
+          onJoinKarabast={handleJoinKarabast}
+        />
+
+        <div className="mode-sections-row lobby-formats-row">
+          <div className="mode-section">
+            <h3 className="mode-section-header">Casual Formats</h3>
+            <div className="mode-column">
+              {(formatsOpen ? CASUAL_FORMAT_TILES : CASUAL_FORMAT_TILES.slice(0, 1)).map(tile => (
+                <button key={tile.title} className="mode-button art-unit" onClick={() => router.push(tile.href)}>
+                  <div className="mode-button-art" style={{ backgroundImage: `url("${tile.art}")` }} />
+                  <div className="mode-button-content">
+                    <span className="mode-button-title">{tile.title}</span>
+                    <span className="mode-button-subtitle">{tile.subtitle}</span>
+                  </div>
+                </button>
+              ))}
+              {!formatsOpen && (
+                <Button variant="secondary" size="sm" onClick={() => setFormatsOpen(true)}>
+                  More Formats
+                </Button>
+              )}
+            </div>
+          </div>
+
+          <div className="mode-section">
+            <h3 className="mode-section-header">More</h3>
+            <div className="mode-column">
+              <button className="mode-button art-unit" onClick={() => router.push('/deckbuilder')}>
+                <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.deckbuilder}")` }} />
+                <div className="mode-button-content">
+                  <span className="mode-button-title">Deckbuilder</span>
+                  <span className="mode-button-subtitle">Infinite copies of every card in a set</span>
+                </div>
+              </button>
+              <button className="mode-button art-unit" onClick={() => router.push('/history')}>
+                <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.history}")` }} />
+                <div className="mode-button-content">
+                  <span className="mode-button-title">History</span>
+                  <span className="mode-button-subtitle">Your past pools and decks</span>
+                </div>
+              </button>
+              <button className="mode-button art-unit" onClick={() => router.push('/me')}>
+                <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.myStats}")` }} />
+                <div className="mode-button-content">
+                  <span className="mode-button-title">My Stats</span>
+                  <span className="mode-button-subtitle">Your performance and history</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <a
+          className="discord-cta"
+          href={DISCORD_INVITE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" fill="currentColor" />
+          </svg>
+          Join the Discord
+        </a>
+      </div>
 
       <PostGameModal
         isOpen={newGameOpen}
@@ -244,61 +314,6 @@ function LobbyPageInner(): React.JSX.Element {
           router.push(`/g/${game.shareId}`)
         }}
       />
-
-      <LobbyBoard
-        board={board}
-        pods={pods}
-        karabast={karabast}
-        onJoin={handleJoin}
-        onNewGame={handleNewGame}
-        onJoinKarabast={handleJoinKarabast}
-      />
-
-      <button
-        type="button"
-        className="lobby-rollup"
-        aria-expanded={formatsOpen}
-        onClick={() => setFormatsOpen(open => !open)}
-      >
-        <span>
-          <span className="lobby-rollup-title">Casual Formats</span>
-          <span className="lobby-rollup-sub">
-            Alternative ways to play limited — Solo Draft · Solo Sealed · Chaos Sealed · Pack Wars ·
-            Pack Blitz · Rotisserie
-          </span>
-        </span>
-        <span className="lobby-rollup-chevron">{formatsOpen ? '▴' : '▾'}</span>
-      </button>
-
-      {formatsOpen && (
-        <div className="lobby-format-tiles">
-          {FORMAT_TILES.map(tile => (
-            <a key={tile.label} className="lobby-tile" href={tile.href}>
-              {tile.label}
-            </a>
-          ))}
-        </div>
-      )}
-
-      <div className="lobby-utility">
-        {UTILITY_TILES.map(tile =>
-          tile.discord ? (
-            <a
-              key={tile.label}
-              className="lobby-tile lobby-tile-discord"
-              href={tile.href}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {tile.label}
-            </a>
-          ) : (
-            <a key={tile.label} className="lobby-tile" href={tile.href}>
-              {tile.label}
-            </a>
-          )
-        )}
-      </div>
     </div>
   )
 }

@@ -99,13 +99,13 @@ test.describe('Lobby V1 — Open Games', () => {
     const { page } = joinerCtx
     await page.goto('/lobby')
 
-    // The listing shows the poster + badges but NEVER deck identity (R29).
-    const row = page.locator('.lobby-row', { hasText: 'LobbyPoster' })
+    // The listing reuses the site's history-item rows and shows the poster +
+    // set/format but NEVER deck identity (R29).
+    const row = page.locator('.history-item', { hasText: 'LobbyPoster' })
     await expect(row).toBeVisible()
-    await expect(row.getByText(RUN_SET)).toBeVisible()
-    await expect(row.getByText('Draft')).toBeVisible()
+    await expect(row.getByText(new RegExp(`${RUN_SET} Set Draft`))).toBeVisible()
 
-    await row.getByRole('button', { name: 'Join' }).click()
+    await row.click()
 
     // Filter line proves strict matching (R31): 1 draft of 2 total decks.
     await expect(page.getByText(/1 of\s+2 eligible/)).toBeVisible()
