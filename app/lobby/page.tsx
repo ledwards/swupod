@@ -170,7 +170,7 @@ function LobbyPageInner(): React.JSX.Element {
       if (!deck) {
         // R22: the no-deck funnel — get a deck first, then post it.
         showToast({
-          text: 'You need a built deck first — run a Solo Sealed and hit Play when your deck is ready.',
+          text: 'You need a deck first.',
           kind: 'info',
           href: '/sealed',
           actionLabel: 'Start Solo Sealed',
@@ -192,8 +192,8 @@ function LobbyPageInner(): React.JSX.Element {
       } else {
         showToast({
           text: action === 'posted'
-            ? `You're on the board with ${deck.name || deck.setCode} — we'll ping you when someone joins.`
-            : 'Still on the board — waiting for an opponent.',
+            ? `You're on the board with ${deck.name || deck.setCode}.`
+            : 'Still on the board.',
           kind: 'success',
           href: `/g/${game.shareId}`,
           actionLabel: 'View game',
@@ -326,7 +326,7 @@ function LobbyPageInner(): React.JSX.Element {
             </span>
             <div className="mode-button-content">
               <span className="mode-button-title">New Game</span>
-              <span className="mode-button-subtitle">Post a game — public or private link</span>
+              <span className="mode-button-subtitle">Post a game</span>
             </div>
           </button>
         </div>

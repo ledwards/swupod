@@ -64,7 +64,7 @@ export default function JoinGameModal({ isOpen, onClose, game, onJoined }: JoinG
   const title = game.hostUsername ? `Join ${game.hostUsername}'s game` : 'Join game'
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title}>
+    <Modal className="lobby-deck-modal" isOpen={isOpen} onClose={onClose} title={title}>
       <Modal.Body>
         <DeckPicker
           setCode={game.setCode}

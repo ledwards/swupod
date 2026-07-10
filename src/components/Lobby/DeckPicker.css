@@ -40,6 +40,7 @@
 .lobby-deck-option::before {
   content: '';
   position: absolute;
+  opacity: 0;
   inset: calc(var(--rainbow-border-size) * -1);
   border-radius: calc(var(--ys-radius) + var(--rainbow-border-size));
   padding: var(--rainbow-border-size);
@@ -132,4 +133,21 @@
   margin: var(--pt-space-sm) 0 0;
   font-size: 0.85rem;
   color: var(--pt-ink-subtle);
+}
+
+
+/* ---- deck modals: wider than the 28rem default, never taller than the
+   viewport — the list scrolls inside, header/actions always visible. ---- */
+.lobby-deck-modal {
+  max-width: min(92vw, 640px);
+  width: 100%;
+  max-height: calc(100vh - 4rem);
+  display: flex;
+  flex-direction: column;
+}
+
+.lobby-deck-modal .modal-body {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }

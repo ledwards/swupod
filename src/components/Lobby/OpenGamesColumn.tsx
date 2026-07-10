@@ -78,8 +78,7 @@ export default function OpenGamesColumn({
           <Button variant="primary" size="sm" onClick={onNewGame}>
             Post the First Game
           </Button>
-          <p className="lobby-state-sub">We&apos;ll ping the Discord when you do.</p>
-          {recentCompleted.length > 0 && (
+                    {recentCompleted.length > 0 && (
             <p className="lobby-state-sub">
               Recently played:{' '}
               {recentCompleted
@@ -164,7 +163,7 @@ export default function OpenGamesColumn({
                 <span className="lobby-badge lobby-badge-karabast">Karabast</span>
               </div>
               <div className="lobby-row-meta">
-                listed on Karabast · {lobby.waiting} waiting · player details unavailable
+                listed on Karabast · {lobby.waiting} waiting
               </div>
             </div>
             <Button variant="interactive" size="sm" onClick={() => onJoinKarabast(lobby)}>
@@ -184,7 +183,7 @@ export default function OpenGamesColumn({
           <div className="lobby-row-who">
             <div className="lobby-row-name">More games on Karabast ↗</div>
             <div className="lobby-row-meta">
-              Browse public lobbies on karabast.net — the Companion lists them here automatically.
+              Browse public lobbies on karabast.net.
             </div>
           </div>
         </a>

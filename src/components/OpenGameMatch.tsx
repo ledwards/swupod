@@ -48,9 +48,9 @@ interface MatchGame {
 // Terminal copy is LOBBY-language: these states end the lobby, not a game.
 const TERMINAL_COPY: Record<string, string> = {
   cancelled: 'This lobby was cancelled.',
-  expired: 'This lobby expired — playing manually? No problem, this just freed the slot.',
-  delisted: 'This lobby was delisted while its poster was away.',
-  abandoned: 'This lobby closed without a reported result — playing manually? No problem, this just freed the slot.',
+  expired: 'This lobby expired.',
+  delisted: 'This lobby was delisted.',
+  abandoned: 'This lobby closed without a result.',
 }
 
 // The site's copy-link affordance (same pattern as PlayInstructions'
@@ -287,7 +287,7 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
               </Button>
             ) : (
               <p className="lobby-match-note">
-                One-click lobbies need a newer Companion — use the manual steps below.
+                One-click lobbies need a newer Companion.
               </p>
             )}
           </>

@@ -33,8 +33,7 @@ export default function PodsFormingColumn({ pods }: { pods: PublicPod[] }): Reac
           <Button variant="primary" size="sm" onClick={() => router.push('/draft')}>
             Start a Pod
           </Button>
-          <p className="lobby-state-sub">Public pods ping the Discord automatically.</p>
-        </div>
+                  </div>
       )}
 
       {pods.map(pod => {

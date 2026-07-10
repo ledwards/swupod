@@ -62,9 +62,9 @@ export default function PostGameModal({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="New Game">
+    <Modal className="lobby-deck-modal" isOpen={isOpen} onClose={onClose} title="New Game">
       <Modal.Body>
-        <p className="lobby-row-meta">Choose your deck — opponents never see it.</p>
+        <p className="lobby-row-meta">Choose your deck.</p>
         <DeckPicker selected={selectedShareId} onSelect={setSelected} />
 
         <div className="lobby-vis-toggle">
@@ -87,8 +87,8 @@ export default function PostGameModal({
         </div>
         <p className="lobby-row-meta">
           {visibility === 'public'
-            ? 'Listed on the board — we ping the Discord too.'
-            : 'Unlisted: only people with the link can join. No Discord ping.'}
+            ? 'Listed on the board.'
+            : 'Only people with the link can join.'}
         </p>
 
         {companionCapable && (
@@ -99,8 +99,7 @@ export default function PostGameModal({
               onChange={e => setCreateKarabast(e.target.checked)}
             />
             <span>
-              <strong>Also create the lobby on Karabast now</strong> — it appears in Karabast&apos;s
-              public list named with protectthepod.com
+              <strong>Also create the lobby on Karabast now</strong>
             </span>
           </label>
         )}

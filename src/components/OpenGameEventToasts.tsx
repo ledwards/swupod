@@ -24,7 +24,7 @@ const TOAST_COPY: Record<string, { text: string; kind: 'info' | 'success' | 'dan
   opponent_joined: { text: 'Your opponent is in the Karabast lobby.', kind: 'success', action: 'Open lobby' },
   lobby_ready: { text: 'Your Karabast lobby is ready.', kind: 'info', action: 'Open lobby' },
   cancelled: { text: 'Your opponent cancelled the lobby.', kind: 'danger', action: 'View lobby' },
-  complete: { text: 'Game result recorded — nice one.', kind: 'success', action: 'View result' },
+  complete: { text: 'Result recorded.', kind: 'success', action: 'View result' },
 }
 
 export default function OpenGameEventToasts(): null {
