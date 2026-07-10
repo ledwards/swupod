@@ -1,18 +1,55 @@
 import { NextRequest } from 'next/server'
 import { requireServiceKey } from '@/lib/auth'
 import { errorResponse, handleApiError, jsonResponse } from '@/lib/utils'
-import { broadcastDraftState } from '@/src/lib/socketBroadcast'
+import { broadcastDraftState, broadcastOpenGamesUpdate, emitOpenGameEventToUser } from '@/src/lib/socketBroadcast'
 import {
   PracticeGameLifecycleError,
   recordPracticeMatchGameLifecycle,
   type PracticeGameLifecycleStatus,
 } from '@/src/services/matchmaking/liveGames'
+import {
+  OpenGameLiveError,
+  recordOpenGameLifecycle,
+  type OpenGameLifecycleStatus,
+} from '@/src/services/openGameLive'
 
 export async function POST(request: NextRequest): Promise<Response> {
   try {
     requireServiceKey(request)
 
     const body = await request.json()
+
+    // Casual open-game variant (Lobby V1): correlated by openGameId instead of
+    // practiceMatchGameId. Practice behavior below is untouched.
+    const openGameId = stringField(body.openGameId)
+    if (openGameId) {
+      const casualStatus = stringField(body.status) as OpenGameLifecycleStatus | null
+      if (!casualStatus) {
+        return errorResponse('status is required', 400)
+      }
+      const result = await recordOpenGameLifecycle({
+        openGameShareId: openGameId,
+        status: casualStatus,
+        lobbyId: stringField(body.lobbyId),
+        lobbyUrl: stringField(body.lobbyUrl),
+        spectateUrl: stringField(body.spectateUrl),
+        wayfinderMatchId: stringField(body.wayfinderMatchId),
+        wayfinderGameId: stringField(body.wayfinderGameId),
+        failureReason: stringField(body.failureReason),
+        lifecycleIdempotencyKey: stringField(body.lifecycleIdempotencyKey),
+        joinerPoolShareId: stringField(body.joinerPoolShareId),
+      })
+
+      if (!result.duplicate) {
+        if (result.boardChanged) broadcastOpenGamesUpdate().catch(() => {})
+        emitOpenGameEventToUser(result.player1Id, casualStatus, { shareId: result.shareId })
+        if (result.player2Id) {
+          emitOpenGameEventToUser(result.player2Id, casualStatus, { shareId: result.shareId })
+        }
+      }
+      return jsonResponse(result)
+    }
+
     const practiceMatchGameId = stringField(body.practiceMatchGameId)
     const poolShareId = stringField(body.poolShareId)
     const status = stringField(body.status) as PracticeGameLifecycleStatus | null
@@ -45,6 +82,10 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     return jsonResponse(result)
   } catch (error) {
+    if (error instanceof OpenGameLiveError) {
+      return jsonResponse({ error: error.message, code: error.code }, error.status)
+    }
+
     if (error instanceof PracticeGameLifecycleError) {
       return jsonResponse({ error: error.message, code: error.code }, error.status)
     }
