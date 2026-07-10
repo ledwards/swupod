@@ -41,6 +41,16 @@ top→bottom**, and no card covering another card's bottom edge. Pool 002's pack
 was laid out differently and cost analysis time; box 001 pack 4 was blurry and its
 16 cards had to be identified by artwork instead of numbers.
 
+### Batch option: 6 packs per layout (2-3 photos per spread)
+You can lay out 6 packs at once as 6 rows (one pack per row, 16 cards in pull
+order left→right, top row = first pack in removal order). BUT do not shoot the
+whole spread as one photo — 16 cards across ≈ 360px per card, and the collector
+number lines become unreadable (the readability bar is ~700px of width per card;
+box 001 worked at ~750px). Instead shoot each spread as 2-3 OVERLAPPING sections
+(e.g. left 8 columns, right 8 columns, generous overlap). ~8-12 photos per box.
+PILOT TEST before committing: shoot one spread, zoom into the smallest
+farthest-corner card on the phone — if you can read its "N/264" line, go.
+
 ### Photo quality bar
 - Overhead shot, whole layout in frame, phone parallel to the table.
 - **The printed collector number line (bottom-left of every card) is the data.**
