@@ -2,8 +2,15 @@
 // Tests for API utilities - set filtering
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import { fetchSets } from './api'
+import { fetchSets, isSetBeta } from './api'
 import { hasRealCardsForSet } from './cardData'
+import { ASH_CONFIG } from './setConfigs/ASH'
+
+// ASH visibility spec: hidden while beta (before prereleaseDate) OR until the
+// first real card syncs; a normal catalog entry once both gates open. These
+// flags keep the assertions valid on both sides of the prerelease boundary.
+const ashIsBeta = isSetBeta(ASH_CONFIG)
+const ashHiddenByDefault = ashIsBeta || !hasRealCardsForSet('ASH')
 
 describe('fetchSets', () => {
   describe('set filtering', () => {
@@ -15,7 +22,11 @@ describe('fetchSets', () => {
       assert.ok(setCodes.includes('SOR'), 'SOR should be included')
       assert.ok(setCodes.includes('SEC'), 'SEC should be included')
       assert.ok(sets.length >= 7, 'Should have at least the first 7 sets')
-      assert.ok(!setCodes.includes('ASH'), 'ASH should stay hidden by default while it is beta')
+      if (ashHiddenByDefault) {
+        assert.ok(!setCodes.includes('ASH'), 'ASH should stay hidden by default while it is beta')
+      } else {
+        assert.ok(setCodes.includes('ASH'), 'ASH should be visible by default once prerelease day arrives')
+      }
     })
 
     it('should include LAW with prereleaseDate', async () => {
@@ -35,9 +46,13 @@ describe('fetchSets', () => {
       }
     })
 
-    it('should hide ASH by default (beta gate)', async () => {
+    it('should gate ASH by default on beta status (beta gate)', async () => {
       const sets = await fetchSets()
-      assert.ok(!sets.find(s => s.code === 'ASH'), 'ASH should not be visible by default')
+      if (ashHiddenByDefault) {
+        assert.ok(!sets.find(s => s.code === 'ASH'), 'ASH should not be visible by default while beta')
+      } else {
+        assert.ok(sets.find(s => s.code === 'ASH'), 'ASH should be visible by default after its prerelease date')
+      }
     })
 
     it('SPEC: ASH visible to beta users only after at least one real card is synced', async () => {
@@ -104,13 +119,18 @@ describe('fetchSets', () => {
       // returns nothing. After spoiler sync, ASH appears as a teaser.
       const sets = await fetchSets({ peekUnreleased: true })
       const ash = sets.find(s => s.code === 'ASH')
-      if (hasRealCardsForSet('ASH')) {
+      if (!hasRealCardsForSet('ASH')) {
+        assert.ok(!ash, 'ASH teaser should stay hidden until first real card lands')
+      } else if (ashIsBeta) {
         assert.ok(ash, 'ASH teaser should appear after spoiler sync')
         assert.strictEqual(ash.comingSoon, true, 'appended ASH should carry comingSoon: true')
         assert.strictEqual(ash.name, 'Ashes of the Empire')
         assert.ok(ash.imageUrl, 'ASH teaser should have an imageUrl (from getPackArtUrl)')
       } else {
-        assert.ok(!ash, 'ASH teaser should stay hidden until first real card lands')
+        // Prerelease day has arrived: ASH flows through the normal catalog
+        // path, so it must appear as a regular entry, never as a teaser.
+        assert.ok(ash, 'ASH should be in the catalog after its prerelease date')
+        assert.notStrictEqual(ash.comingSoon, true, 'released ASH must not be marked comingSoon')
       }
     })
 
