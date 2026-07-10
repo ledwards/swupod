@@ -28,7 +28,7 @@ if (!connectionString) {
 let pool: pg.Pool | null = null
 let poolEnded = false
 
-function getPool(): pg.Pool {
+export function getPool(): pg.Pool {
   if (poolEnded || !pool) {
     pool = new pg.Pool({ connectionString })
     poolEnded = false
