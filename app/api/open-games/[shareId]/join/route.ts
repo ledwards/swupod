@@ -7,6 +7,8 @@ import { jsonResponse, errorResponse } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
 import { broadcastOpenGamesUpdate, emitOpenGameEventToUser } from '@/src/lib/socketBroadcast'
 import { joinOpenGame } from '@/src/services/openGames'
+import { resolveOpenGameMessage } from '@/lib/discordLfg'
+import { queryRow } from '@/lib/db'
 import { resolvePoolId, openGameErrorResponse } from '../../helpers'
 import { NextRequest } from 'next/server'
 
@@ -29,6 +31,13 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
 
     broadcastOpenGamesUpdate().catch(() => {})
     emitOpenGameEventToUser(game.player1Id, 'accepted', { shareId: game.shareId })
+    queryRow('SELECT discord_message_id FROM open_games WHERE id = $1', [game.id])
+      .then(async row => {
+        if (row?.discord_message_id) {
+          await resolveOpenGameMessage(game, String(row.discord_message_id), 'matched')
+        }
+      })
+      .catch(() => {})
     return jsonResponse({ game })
   } catch (error) {
     return openGameErrorResponse(error)

@@ -1053,3 +1053,107 @@ export async function postDeckToDiscord(opts: {
     return null
   }
 }
+
+// === Open Games (Lobby V1, U3) ===
+
+/** Per-user ping cooldown (R9/R20): post/cancel/repost churn never spams the channel. */
+const OPEN_GAME_PING_COOLDOWN_MS = 10 * 60 * 1000
+const openGameLastPingAt = new Map<string, number>()
+
+export interface OpenGamePingInfo {
+  shareId: string
+  setCode: string
+  setName: string | null
+  format: string
+  visibility: string
+}
+
+export function buildOpenGameEmbed(listing: OpenGamePingInfo, hostUsername: string): Record<string, unknown> {
+  const formatLabel = listing.format === 'draft' ? 'Draft' : 'Sealed'
+  return {
+    title: `⚔️ ${hostUsername} is looking for a game — ${listing.setCode} ${formatLabel}`,
+    // R29: never any deck identity here.
+    description: [
+      `**Set:** ${listing.setName || listing.setCode}`,
+      `**Format:** ${formatLabel}`,
+      '',
+      `**[Join in the Lobby](${APP_URL}/lobby)**`,
+      buildPodSourceDescription(formatLabel),
+    ].join('\n'),
+    color: 0x34d17b,
+  }
+}
+
+/**
+ * Ping the LFG channel for a new PUBLIC open-game listing. Returns the Discord
+ * message id (stored on the row for later resolution), or null when skipped
+ * (private listing, cooldown, missing config).
+ */
+export async function postOpenGameCreated(
+  listing: OpenGamePingInfo,
+  hostUsername: string,
+  hostUserId: string
+): Promise<string | null> {
+  if (!BOT_TOKEN) return null
+  if (listing.visibility !== 'public') return null
+  const channelId = getChannelId(listing.format)
+  if (!channelId) return null
+
+  const last = openGameLastPingAt.get(hostUserId)
+  if (last && Date.now() - last < OPEN_GAME_PING_COOLDOWN_MS) return null
+
+  try {
+    const msgRes = await discordFetch(`/channels/${channelId}/messages`, {
+      method: 'POST',
+      body: JSON.stringify({ embeds: [buildOpenGameEmbed(listing, hostUsername)] }),
+    })
+    if (!msgRes.ok) {
+      console.error('[Discord LFG] Failed to post open game:', msgRes.status, await msgRes.text())
+      return null
+    }
+    openGameLastPingAt.set(hostUserId, Date.now())
+    const msg = await msgRes.json()
+    return msg.id ?? null
+  } catch (err) {
+    console.error('[Discord LFG] Error posting open game:', err)
+    return null
+  }
+}
+
+/**
+ * Resolve a listing's channel message when it leaves the board so stale pings
+ * never route players to dead listings (matched / cancelled / expired).
+ */
+export async function resolveOpenGameMessage(
+  listing: Pick<OpenGamePingInfo, 'format'>,
+  messageId: string,
+  outcome: 'matched' | 'cancelled' | 'expired'
+): Promise<void> {
+  if (!BOT_TOKEN || !messageId) return
+  const channelId = getChannelId(listing.format)
+  if (!channelId) return
+
+  const label = outcome === 'matched' ? '✅ Matched!' : outcome === 'cancelled' ? '🚫 Cancelled' : '⏰ Expired'
+  try {
+    const res = await discordFetch(`/channels/${channelId}/messages/${messageId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        embeds: [{
+          title: `${label} — this game is no longer open`,
+          description: `*[See what's live in the Lobby](${APP_URL}/lobby)*`,
+          color: 0x777777,
+        }],
+      }),
+    })
+    if (!res.ok) {
+      console.error('[Discord LFG] Failed to resolve open game message:', res.status)
+    }
+  } catch (err) {
+    console.error('[Discord LFG] Error resolving open game message:', err)
+  }
+}
+
+/** Test hook: reset the in-memory ping cooldown state. */
+export function _resetOpenGamePingCooldowns(): void {
+  openGameLastPingAt.clear()
+}

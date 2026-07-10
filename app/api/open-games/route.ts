@@ -8,7 +8,8 @@ import { requireAuth } from '@/lib/auth'
 import { jsonResponse, errorResponse } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
 import { broadcastOpenGamesUpdate } from '@/src/lib/socketBroadcast'
-import { listPublicOpenGames, postOpenGame } from '@/src/services/openGames'
+import { listPublicOpenGames, postOpenGame, setOpenGameDiscordMessage } from '@/src/services/openGames'
+import { postOpenGameCreated } from '@/lib/discordLfg'
 import { resolvePoolId, openGameErrorResponse } from './helpers'
 import { NextRequest } from 'next/server'
 
@@ -43,7 +44,12 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     if (game.visibility === 'public') {
       broadcastOpenGamesUpdate().catch(() => {})
-      // Discord LFG ping lands here in U3 (cooldown-gated, public only).
+      // Discord LFG ping (R9): cooldown-gated inside, public only, never blocks.
+      postOpenGameCreated(game, session.username ?? 'A player', session.id)
+        .then(async messageId => {
+          if (messageId) await setOpenGameDiscordMessage(game.id, messageId)
+        })
+        .catch(() => {})
     }
     return jsonResponse({ game })
   } catch (error) {

@@ -389,11 +389,22 @@ export async function getOpenGameByShareId(shareId: string): Promise<OpenGame | 
  *  - lobby_ready with no progress for 60 min               -> abandoned
  *  - in_progress with no result for 4h                     -> abandoned
  */
-export async function sweepOpenGames(): Promise<{ expired: number; abandoned: number }> {
-  const { query } = await import('@/lib/db')
-  const expired = await query(
+export interface ResolvedListing {
+  shareId: string
+  format: string
+  discordMessageId: string | null
+}
+
+export async function sweepOpenGames(): Promise<{
+  expired: number
+  abandoned: number
+  expiredListings: ResolvedListing[]
+}> {
+  const { queryRows, query } = await import('@/lib/db')
+  const expiredRows = await queryRows(
     `UPDATE open_games SET status = 'expired', resolved_at = NOW(), updated_at = NOW()
-     WHERE status = 'open' AND created_at < NOW() - INTERVAL '2 hours'`
+     WHERE status = 'open' AND created_at < NOW() - INTERVAL '2 hours'
+     RETURNING share_id, format, discord_message_id`
   )
   const abandoned = await query(
     `UPDATE open_games og SET status = 'abandoned', resolved_at = NOW(), updated_at = NOW()
@@ -408,16 +419,35 @@ export async function sweepOpenGames(): Promise<{ expired: number; abandoned: nu
         OR (og.status = 'in_progress' AND og.updated_at < NOW() - INTERVAL '4 hours')
      )`
   )
-  return { expired: expired.rowCount ?? 0, abandoned: abandoned.rowCount ?? 0 }
+  return {
+    expired: expiredRows.length,
+    abandoned: abandoned.rowCount ?? 0,
+    expiredListings: expiredRows.map(r => ({
+      shareId: String(r.share_id),
+      format: String(r.format),
+      discordMessageId: r.discord_message_id ? String(r.discord_message_id) : null,
+    })),
+  }
 }
 
 /** Presence-grace delist (R9): open listings only — never touches live matches. */
-export async function delistOpenGamesForUser(userId: string): Promise<number> {
-  const { query } = await import('@/lib/db')
-  const res = await query(
+export async function delistOpenGamesForUser(userId: string): Promise<ResolvedListing[]> {
+  const { queryRows } = await import('@/lib/db')
+  const rows = await queryRows(
     `UPDATE open_games SET status = 'delisted', resolved_at = NOW(), updated_at = NOW()
-     WHERE player1_id = $1 AND status = 'open'`,
+     WHERE player1_id = $1 AND status = 'open'
+     RETURNING share_id, format, discord_message_id`,
     [userId]
   )
-  return res.rowCount ?? 0
+  return rows.map(r => ({
+    shareId: String(r.share_id),
+    format: String(r.format),
+    discordMessageId: r.discord_message_id ? String(r.discord_message_id) : null,
+  }))
+}
+
+/** Persist the Discord LFG message id for later resolution (U3). */
+export async function setOpenGameDiscordMessage(gameId: string, messageId: string): Promise<void> {
+  const { query } = await import('@/lib/db')
+  await query('UPDATE open_games SET discord_message_id = $2, updated_at = NOW() WHERE id = $1', [gameId, messageId])
 }

@@ -7,7 +7,9 @@ import { requireAuth } from '@/lib/auth'
 import { jsonResponse, errorResponse } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
 import { broadcastOpenGamesUpdate, emitOpenGameEventToUser } from '@/src/lib/socketBroadcast'
-import { playNow } from '@/src/services/openGames'
+import { playNow, setOpenGameDiscordMessage } from '@/src/services/openGames'
+import { postOpenGameCreated, resolveOpenGameMessage } from '@/lib/discordLfg'
+import { queryRow } from '@/lib/db'
 import { resolvePoolId, openGameErrorResponse } from '../helpers'
 import { NextRequest } from 'next/server'
 
@@ -28,6 +30,20 @@ export async function POST(request: NextRequest): Promise<Response> {
     }
     if (result.action === 'joined') {
       emitOpenGameEventToUser(result.game.player1Id, 'accepted', { shareId: result.game.shareId })
+      queryRow('SELECT discord_message_id FROM open_games WHERE id = $1', [result.game.id])
+        .then(async row => {
+          if (row?.discord_message_id) {
+            await resolveOpenGameMessage(result.game, String(row.discord_message_id), 'matched')
+          }
+        })
+        .catch(() => {})
+    }
+    if (result.action === 'posted') {
+      postOpenGameCreated(result.game, session.username ?? 'A player', session.id)
+        .then(async messageId => {
+          if (messageId) await setOpenGameDiscordMessage(result.game.id, messageId)
+        })
+        .catch(() => {})
     }
     return jsonResponse({ action: result.action, game: result.game })
   } catch (error) {

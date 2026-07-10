@@ -10,6 +10,7 @@ import { applyRateLimit } from '@/lib/rateLimit'
 import { queryRow } from '@/lib/db'
 import { broadcastOpenGamesUpdate, emitOpenGameEventToUser } from '@/src/lib/socketBroadcast'
 import { cancelOpenGame } from '@/src/services/openGames'
+import { resolveOpenGameMessage } from '@/lib/discordLfg'
 import { openGameErrorResponse } from '../helpers'
 import { NextRequest } from 'next/server'
 
@@ -87,12 +88,18 @@ export async function DELETE(request: NextRequest, { params }: RouteContext): Pr
 
     const { shareId } = await params
     const session = requireAuth(request)
-    const row = await queryRow('SELECT id, player1_id, player2_id FROM open_games WHERE share_id = $1', [shareId])
+    const row = await queryRow(
+      'SELECT id, player1_id, player2_id, status, format, discord_message_id FROM open_games WHERE share_id = $1',
+      [shareId]
+    )
     if (!row) return errorResponse('Game not found', 404)
 
     const game = await cancelOpenGame({ gameId: String(row.id), userId: session.id })
 
     broadcastOpenGamesUpdate().catch(() => {})
+    if (row.status === 'open' && row.discord_message_id) {
+      resolveOpenGameMessage({ format: String(row.format) }, String(row.discord_message_id), 'cancelled').catch(() => {})
+    }
     const other = session.id === row.player1_id ? row.player2_id : row.player1_id
     if (other) {
       emitOpenGameEventToUser(String(other), 'cancelled', { shareId: game.shareId })

@@ -15,7 +15,7 @@ import { broadcastPublicPodsUpdate, broadcastOpenGamesUpdate } from './src/lib/s
 import { sweepOpenGames, delistOpenGamesForUser } from './src/services/openGames.js'
 import { deleteAbandonedPodRecords } from './src/utils/podCleanup.js'
 import { buildAllowedOrigins, makeAllowRequest, setupSocketServer } from './src/lib/socketServer.js'
-import { postUserMessageForPod, postLobbyMessage, deletePodMessage } from './lib/discordLfg.js'
+import { postUserMessageForPod, postLobbyMessage, deletePodMessage, resolveOpenGameMessage } from './lib/discordLfg.js'
 import { shouldFailFastOnMigrationFailure } from './lib/migrationPolicy.js'
 
 declare global {
@@ -150,9 +150,14 @@ app.prepare().then(() => {
     },
     delistOpenGames: async (userId: string) => {
       const delisted = await delistOpenGamesForUser(userId)
-      if (delisted > 0) {
-        console.log(`[Delist] Poster ${userId} offline past grace, delisted ${delisted} open game(s)`)
+      if (delisted.length > 0) {
+        console.log(`[Delist] Poster ${userId} offline past grace, delisted ${delisted.length} open game(s)`)
         await broadcastOpenGamesUpdate()
+        for (const listing of delisted) {
+          if (listing.discordMessageId) {
+            resolveOpenGameMessage(listing, listing.discordMessageId, 'expired').catch(() => {})
+          }
+        }
       }
     },
   })
@@ -220,10 +225,15 @@ app.prepare().then(() => {
   const OPEN_GAMES_SWEEP_INTERVAL_MS = 5 * 60 * 1000
   async function sweepOpenGamesJob(): Promise<void> {
     try {
-      const { expired, abandoned } = await sweepOpenGames()
+      const { expired, abandoned, expiredListings } = await sweepOpenGames()
       if (expired > 0 || abandoned > 0) {
         console.log(`[OpenGames] Sweep: ${expired} expired, ${abandoned} abandoned`)
         await broadcastOpenGamesUpdate()
+        for (const listing of expiredListings) {
+          if (listing.discordMessageId) {
+            resolveOpenGameMessage(listing, listing.discordMessageId, 'expired').catch(() => {})
+          }
+        }
       }
     } catch (err) {
       console.error('[OpenGames] Sweep error:', err)
