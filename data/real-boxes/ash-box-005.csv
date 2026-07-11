@@ -181,7 +181,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 12,4,242,Death Trooper Squad,,Common,Unit,Villainy,Normal,242,0,0,high,read 242/264 clearly
 12,5,75,Pit Droid Team,,Common,Unit,Vigilance,Normal,75,0,0,high,read 75/264 clearly
 12,6,181,Mark My Words,,Common,Upgrade,Aggression,Normal,181,0,0,reviewed,"bordered Normal frame (""Learned"" type line); partial digits ""18X"" visible, confirmed via unique name match"
-12,7,61,Strike Team Vanguard,,Common,Unit,Vigilance/Heroism,Normal,61,0,0,high,"read 61/264, artist Marc Escaych"
+12,7,325,Strike Team Vanguard,,Common,Unit,Vigilance/Heroism,Hyperspace,61,0,1,reviewed,"Lee: HS-common slot always holds an HS common, no exceptions; corrected Normal->Hyperspace"
 12,8,131,Dinosaur Turtle,,Common,Unit,Command,Normal,131,0,0,high,"read 131/264, artist Marc Escaych"
 12,9,214,Amnesty Officer,,Common,Unit,Cunning,Normal,214,0,0,high,"read 214/264, artist Gabriel Gomez Almenzar"
 12,10,98,AT-ST Raider,,Common,Unit,Command/Villainy,Normal,98,0,0,high,"read 98/264, artist Reno"

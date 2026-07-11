@@ -592,6 +592,7 @@ numbers derived name+variant+slot). Rare slot **19R/5L (6th consecutive Lee box)
 foil 19C+5; dispersion 4/4/8/5 (clean — Lee case now 5/5 clean boxes, 20 clean pools
 + box-001's 2 clumpy = 2/24 ≈ 8% overall, still matching the shipped model);
 185 distinct. HS leader 4/24 + base 4/24, **leader+base co-occur in packs 2/8/13**
-(3/24 — hot vs ~1/36, review-confirmed; watch). pack6 genuine 2-HS-common. Open:
-pack12 shows 0 HS commons (its commons were high-conf first-pass reads outside
-review scope) — needs a targeted look at one photo.
+(3/24 — hot vs ~1/36, review-confirmed; watch). pack6 genuine 2-HS-common. RESOLVED:
+pack12 pos7 = Strike Team Vanguard Hyperspace #325 (Lee: the HS-common slot always
+holds an HS common, NO exceptions — treat 0-HS-common reads as transcription error).
+pack16 pos7=HS/pos11=Normal Remnant Interceptor pair confirmed by Lee.
