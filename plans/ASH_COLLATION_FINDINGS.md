@@ -629,3 +629,19 @@ mechanism and is working; no hidden ordering bug. Gap decomposition: generator r
 (Normal+own-HS/HSF) collision rate (M5 0.157 vs real 0.13). DECISION: no fix at n=39.
 Note: rare loud "CommonBelt A paired boot failed — single-copy boot" fallback observed
 once in 2500 boxes (logged, non-silent, acceptable).
+
+## 🎯 PAIR-GAP REFIT SHIPPED (2026-07-11) — the 6-box sheet spec replaces the box-001 fit
+Lee's directive: the ~7-8% duplicate-heavy pool rate was too high. Root cause found in
+the data: PAIR_PACK_GAPS was fit to box-001 ALONE — the one clumpy outlier. Re-measured
+from the SIX number-verified boxes (453 line-order second-copy gaps): {1:153, 3:107,
+5:82, 7:55, 9:37 | 6:5, 8:3, 10:6} = 4.2% even (Teddy boxes excluded: title-noise
+creates random-parity false pairs; box-001 alone read 9%, clean boxes 0-5%).
+Changes (red-green, CommonBelt.test.ts): PAIR_PACK_GAPS -> {1:34,3:24,5:18,7:12,9:8,
+6:2,8:2}; solver MAX_ATTEMPTS 12->40 (relax at 24) — the flatter odd tail needed more
+retry budget; 0 paired-boot fallbacks in 2000 boxes (old fit: ~1/2500; pre-bump: 30/2000).
+Results (vs observed 11-box): pool dup mean 6.22 (obs 6.18, was 6.72); loaded-pool tail
+4.7% (obs ~5.1%, was 7.3%); NN pairs 0.58 (obs 1.38 — ACCEPTED trade-off per Lee: same
+knob controls tail and NN texture; tail priority). Realized boot even-share ~6.0%
+(sampled 4.2% + ~2pp solver parity drift; old realized ~10.4%). All 9 benchmark metrics
+in band (docs/collation-benchmark-after-6box-refit.md); QA bands recalibrated
+(NN 0.25-2.0, loaded 1-10%); full test suite + QA + build green.

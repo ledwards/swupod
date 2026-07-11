@@ -600,12 +600,14 @@ async function runTests(): Promise<void> {
   // ==========================================================================
   // Set 7+ paired-copy boot (line model)
   //
-  // SPEC source: real ASH box 001 read in factory line order
-  // (plans/LINE_STACKING_COLLATION_PLAN.md L1, plans/ASH_COLLATION_FINDINGS.md):
-  // a common's duplicate copies ride 1-3 packs apart on the line (gap 1 ×32,
-  // gap 3 ×17, gap 5 ×10 of ~90 measured repeats), never inside the same pack,
-  // with aspect interleaving and lane segment quotas intact. Long-gap repeats
-  // come from boot seams, not intra-boot placement.
+  // SPEC source: SIX number-verified real ASH boxes (001-006) read in factory
+  // line order (plans/ASH_COLLATION_FINDINGS.md, 2026-07-11 refit): 453 measured
+  // second-copy gaps — {1:153, 3:107, 5:82, 7:55, 9:37 | even 6:5, 8:3, 10:6} =
+  // 95.8% odd / 4.2% even. The original fit used box-001 alone (8% even) — the
+  // one clumpy-outlier box — which over-produced duplicate-heavy pools (even
+  // gaps keep a pair in one box column → same sealed pool). Pairs never ride
+  // inside the same pack; aspect interleaving and lane segment quotas intact;
+  // long-gap repeats come from boot seams, not intra-boot placement.
   // ==========================================================================
 
   const MORALITY = new Set(['Villainy', 'Heroism'])
@@ -642,12 +644,37 @@ async function runTests(): Promise<void> {
     })
     assert(gaps.length > 0, 'boot should contain pairs')
     const close = gaps.filter(g => g <= 4 * drawSize).length
-    // Real box 001 line order: intra-boot pair gaps <=4 packs ≈ 62% of pairs
-    // (histogram {1:32, 3:17, 4:1} of ~80 intra-boot repeats). Band: >=55%.
-    assert(close / gaps.length >= 0.55,
-      `SPEC: >=55% of pair gaps within 4 packs (real box ≈62%), got ${(close / gaps.length * 100).toFixed(0)}%`)
+    // Six verified boxes, line order: pair gaps <=4 packs = 58% (263/453).
+    // Band: >=50% (sampling margin).
+    assert(close / gaps.length >= 0.50,
+      `SPEC: >=50% of pair gaps within 4 packs (6-box real ≈58%), got ${(close / gaps.length * 100).toFixed(0)}%`)
     assert(Math.min(...gaps) >= 2,
       `SPEC: pair gap must be >= 2 draws (no adjacent same card), got ${Math.min(...gaps)}`)
+  })
+
+  test('FIXED: Set 7+ REALIZED pair-gap even share ~6% (6-box refit; was ~10.4% on the box-001-only fit)', () => {
+    // SPEC: 6 number-verified boxes (001-006), 453 line-order second-copy gaps:
+    // sheet even share 19/453 = 4.2% (sampled spec in PAIR_PACK_GAPS). Even
+    // gaps keep a duplicate pair in ONE box column (same sealed pool). The
+    // boot solver's forced placements drift ~+2pp of parity, so the REALIZED
+    // boot share is ~6.0% at spec (measured 120-boot runs; old box-001-only
+    // fit realized ~10.4% and inflated duplicate-heavy pools 7.3% -> 3.8%).
+    // Band 4-8% (rate-based, never ===).
+    const drawSizeGaps = []
+    for (let b = 0; b < 120; b++) {
+      const belt = new CommonBelt('ASH', b % 2 === 0 ? 'A' : 'B')
+      const drawSize = belt.segmentConfig.drawSize
+      const firstPos = new Map()
+      belt.hopper.forEach((c, i) => {
+        if (firstPos.has(c.id)) {
+          drawSizeGaps.push(Math.floor(i / drawSize) - Math.floor(firstPos.get(c.id) / drawSize))
+        } else firstPos.set(c.id, i)
+      })
+    }
+    const even = drawSizeGaps.filter(g => g % 2 === 0).length
+    const share = even / drawSizeGaps.length
+    assert(share >= 0.04 && share <= 0.08,
+      `SPEC: realized even pair-gap share 4-8% (6-box sheet 4.2% + solver drift ~= 6%), got ${(share * 100).toFixed(1)}% of ${drawSizeGaps.length}`)
   })
 
   test('Set 7+ boot keeps aspect interleaving (adjacent same-primary <= 3%)', () => {
