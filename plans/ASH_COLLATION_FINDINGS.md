@@ -509,3 +509,51 @@ add 2 more exact points.
 Teddy detection artifacts (NOT real findings): "Showcase at UC3" (pack) = misread HS-UC;
 "Doc Defender" foreign card = misread DDC Defender (#210); numHScommons=0 everywhere =
 resolution can't see borderless frame. Raw per-pack summaries in scratch (crops/teddy-0X/out/).
+
+## Box-006 (Lee box5) & Box-007 (Lee box6) — 2026-07-11
+
+- **box-006 (Lee box5, sharp): LOCKED-draft, 24 packs.** Rare slot **19R/5L** (exact),
+  foil 20C+4, dispersion pools **6/5/5/7 (clean)**, 180 distinct. (leader/base variants
+  glare-obscured → unverified, but rare-slot/foil/dispersion reliable; pack18 2-HS-common,
+  pack23 foil@pos8 → canonical-slot fix pending opus verify.)
+- **box-007 (Lee box6, handheld, variable blur): PARTIAL — 22 unique packs of 23 photos.**
+  pack19 is a re-shoot DUP of pack20 (identical 16 cards; blurry original set aside);
+  box is missing ~2 packs (only 22 unique). Rare slot **17R/5L** (5L in 22 packs), foil
+  ~17C+5 → consistent with the quota. NOT usable for clean pool dispersion (incomplete).
+  Uncertain cards → manual-review package (like box-005). Lesson: Lee re-shoots blurry
+  packs, so watch for duplicate-pack photos (added dup detection to merge).
+
+# ✅ PHASE 4 — FINAL DECISION (10 boxes: box-001 + Lee 002/003/004/006/007 + Teddy ×4)
+
+### 1. 🔴 IMPLEMENT — rare & foil slots are per-box QUOTAS (hard), not per-pack RNG
+Rare-slot legendaries per box: **5,5,5,5,5** (Lee 001/002/003/004/006, number-verified)
++ 5 (box-007, 22pk) + Teddy 5,6,5,6 → **8 of 10 boxes exactly 5** (the two 6L are the
+low-res Teddy boxes; every number-verified box = 5). Foil commons ≈ 20/box everywhere.
+→ **HARD quota** (not just a tight distribution). Set 7+, sealed/draft boxes only:
+- Rare slot: exactly **5 Legendary + 19 Rare** per box, positions distributed across packs.
+- Foil slot: exactly **20 Common + 4 hit** foils per box; hit U:R:S:L split ≈ 5:1:1:1 (small n).
+- Single packs (Chaos/Pack-Wars): keep probabilistic at the marginal rates (5/24 L, 20/24 C).
+- Supersedes `rareSlotLegendaryRatio` and `foilSlotWeights` for boxes; update statsCalculations
+  expected-rates to the new marginals. Lands red-green + benchmark; sets 1-6 byte-identical.
+
+### 2. 🟠 IMPLEMENT — relax UncommonBelt aspect interleaving (Set 7+)
+Real uncommons ≈ random adjacent-aspect (8.3% vs 11.5% shuffled, 0.72×, n.s.), NOT the
+common sheet's hard rotation. `UncommonBelt.buildInterleavedSequence` over-rotates them
+toward ~0%. Relax to ~random; keep name-dedup.
+
+### 3. ✅ NO CHANGE — duplicate-tail / dispersion (the original "main event")
+20 real pools (known order): dup-identities mean **6.4**, clumpy (≥10) **2/20 = 10%**
+(both in box-001; Lee's case boxes all clean). Shipped knobless model: mean **6.7**, clumpy
+**~8%**. **They match.** Clumpy pools are real but rare and box-correlated; the shipped
+model's dispersion is already correct. → Do NOT add stretch-echo / change dedup windows.
+(Resolves the Phase-4 decision rule: "loaded pools rare → shipped model stands, change nothing.")
+
+### 4. ✅ NO CHANGE — aspect rules
+Common sheet: hard rotation (0/501) — keep. Rare/Legendary sheet: aspect-CLUSTERED on the
+line but random to the player (stacking scrambles it) — RareLegendaryBelt already gives
+random consumer adjacency; add nothing.
+
+### 5. ✅ CONFIRMED dead-on (no change)
+HS leader/base ≈1/6, leader+base HS co-occurrence real (~1/36), UC1/UC2 HS = 0, HS common
+1/pack, UC3 ~1/3 upgrade + outcome mix, within-pack dups all cross-variant, box-unique ≈185,
+stacking interleave (4 line-order tracers; box orientation varies per case slot).
