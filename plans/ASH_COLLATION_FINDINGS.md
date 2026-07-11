@@ -398,4 +398,39 @@ leader+base HS co-occurrence 0; UC3 = 15 Normal / 6 HS-UC / 2 HS-Rare / 1 Presti
 - ⚠️ Rare slot R:L both boxes 19/5 = 3.8:1 (model 5:1) — mild legendary-heavy lean.
 - ⚠️ 2-HS-common packs both boxes 2/24 ≈ 8% (model ~5%) — mild.
 
-(Boxes 003–007 pending; stacking + intra-case ordering analysis begins at ≥2 locked boxes.)
+## Box-003 (Lee box2) — LOCKED ✅
+
+**Duplicate-tail: CLEAN box.** Pools dup identities **5 / 8 / 6 / 5**; N+N pairs
+0/1/0/0; 186 distinct ✓; 6 same-pack collisions, all cross-variant. Zero clumpy.
+→ **Two-for-two clean case boxes** (8 pools, all 4–8, none ≥10).
+
+**Rates:** HS leader 4/24 (p3,9,13,20) ✓; HS base 3/24 (p9,14,20) ✓; **leader+base
+HS co-occurrence in 2 packs (p9, p20)** — confirms L5 non-exclusivity is real; UC3
+15 Normal / 5 HS-UC / 2 HS-Rare / 1 HS-Special / 1 Prestige (37.5% ✓); 2-HS-common
+1 pack (p15 #351+#506, verified); prestige 1; showcase 0.
+
+## 📊 Cross-box rate signals (boxes 001+002+003, 72 packs) — HARDENING
+
+Two signals are now consistent across THREE independent boxes and are strong
+recalibration candidates:
+
+- 🔴 **Foil-slot rarity: ~83% Common, not 72%.** Every box independently hit
+  **20 Common foils / 24**. Combined **60C / 7U / 2R / 1S / 2L of 72** =
+  C83.3% / U9.7% / R2.8% / S1.4% / L2.8% vs shipped **C72/U13/R8/S4/L3**.
+  Common under-modeled, Rare (8%→3%) and Special (4%→1.4%) over-modeled.
+  Candidate reweight ≈ **C83/U10/R3/S1.5/L2.5** (round after boxes 004–007).
+- 🔴 **Rare slot: 19R / 5L in ALL THREE boxes** → legendary ≈ 5/24 = 20.8%,
+  ratio **3.8:1**, not the shipped 5:1 (`rareSlotLegendaryRatio: 5`). Combined
+  57R/15L. Candidate: ratio ≈ **3.8** (legendary share ~21%). Remarkably tight
+  (3/3 identical) — highest-confidence recalibration so far.
+
+Weaker/mild (watch across remaining boxes):
+- 2-HS-common packs 5/72 ≈ 7% (model ~5%).
+- Prestige 1/box every box = 3/72 ≈ 1/24 pack (model uc3PrestigeRate 1/18 ≈ 1.3/box) — mild low.
+- Leader+base HS co-occurrence 2/72 (box-003 both) vs model ~1/36 — small n, but confirms it happens.
+
+Confirmed dead-on (do not touch): HS leader ≈1/6, HS base ≈1/6, UC1/UC2 HS = 0,
+foil always HSF, HS common 1/pack, UC3 ~1/3 upgrade, within-pack dups all cross-variant,
+box unique identities ~185.
+
+(Boxes 004–007 pending; stacking + intra-case ordering analysis next.)
