@@ -645,3 +645,27 @@ knob controls tail and NN texture; tail priority). Realized boot even-share ~6.0
 (sampled 4.2% + ~2pp solver parity drift; old realized ~10.4%). All 9 benchmark metrics
 in band (docs/collation-benchmark-after-6box-refit.md); QA bands recalibrated
 (NN 0.25-2.0, loaded 1-10%); full test suite + QA + build green.
+
+## 🔬 UNCOMMON DEEP-DIVE SHIPPED (2026-07-11)
+Three findings, one correction, one bug:
+1. CORRECTION: the earlier "UC sheet has no aspect rotation" claim used a broken
+   baseline (within-pack shuffle preserves the multiset). Against the correct
+   baseline (~20% adjacency if aspect-random), real within-pack adjacency 3.9%
+   (n=230) shows the UC sheet DOES rotate — interleave KEPT for all sets.
+2. BUG (physical): boosterPack drew 3 UCs then DISCARDED the drawn card on UC3
+   upgrade — ~8 phantom sheet-draws/box doubled UC seam repeats (12/box gen vs
+   6.7 real). Fix: UncommonBelt.putBack() — upgraded slots never advance the
+   normal-UC sheet (Set 7+ path only).
+3. SHEET SPEC: 6 verified boxes, 40 UC repeats in line order: 62% at <=9 packs,
+   parity 34 odd / 6 even (85% odd) — short-range echoes like the common sheet,
+   ~2-3 per 60-cycle. Implemented as _weaveEchoes: single-pass rebuild with a
+   pending-echo queue in FINAL pack arithmetic (splice-insertion corrupts its
+   own parity). Dedup window 24 -> 3 (config dedupWindows.uncommon): min repeat
+   distance 3 draws = observed 1-pack gap, never same-pack.
+Results (2000-box runs): UC same-pool NN pairs 0.20/pool (real ~0.18; was 0 at
+window 24, 0.38 naive window-2); pool dup mean 6.45 (obs 6.18); loaded tail 5.6%
+(obs ~5.1%); total NN 0.82 (obs 1.38). Benchmark M1 0.82 / M2 6.42 / M3 4.7% all
+in band (docs/collation-benchmark-after-uc-fix.md); tests 2122/0, qa 218/0, build green.
+Trade-off note: vs the commons-refit-only state (mean 6.23 / tail 3.8% / broken UC
+texture), this adds real UC texture at +0.2 mean / +1.7pp tail — both still at or
+below observed reality.

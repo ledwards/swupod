@@ -37,6 +37,7 @@ export interface PackRules {
   specialInHyperspaceSlots: boolean
   specialShowcaseLeaders: boolean
   baseLineAspectConflict: boolean
+  uncommonAspectInterleave: boolean
   lineStackingCollation: boolean
   carboniteTiered: boolean
   foilSlotIsHyperspaceFoil?: boolean
@@ -71,6 +72,7 @@ export interface DedupWindows {
   rareLegendary: number
   leaderCap: number
   hyperspaceLeaderCap: number | null
+  uncommon: number
 }
 
 export interface UpgradeProbabilities {

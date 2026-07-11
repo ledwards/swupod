@@ -46,6 +46,7 @@ export const SOR_CONFIG: SetConfig = {
     specialInHyperspaceSlots: constants.specialInHyperspaceSlot ?? false,
     specialShowcaseLeaders: false, // SOR showcase pool excludes Special-rarity leaders
     baseLineAspectConflict: constants.baseLineAspectConflict,
+    uncommonAspectInterleave: constants.uncommonAspectInterleave,
     lineStackingCollation: constants.lineStackingCollation,
     carboniteTiered: constants.carboniteTiered,
   },
@@ -71,6 +72,7 @@ export const SOR_CONFIG: SetConfig = {
     rareLegendary: constants.rareLegendaryDedupWindow,
     leaderCap: constants.leaderDedupWindowCap,
     hyperspaceLeaderCap: constants.hyperspaceLeaderDedupWindowCap,
+    uncommon: constants.uncommonDedupWindow,
   },
 
   // Upgrade probabilities

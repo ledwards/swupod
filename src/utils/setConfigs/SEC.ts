@@ -43,6 +43,7 @@ export const SEC_CONFIG: SetConfig = {
     specialInHyperspaceSlots: constants.specialInHyperspaceSlot ?? false,
     specialShowcaseLeaders: true,
     baseLineAspectConflict: constants.baseLineAspectConflict,
+    uncommonAspectInterleave: constants.uncommonAspectInterleave,
     lineStackingCollation: constants.lineStackingCollation,
     carboniteTiered: constants.carboniteTiered,  // true for Set 4+
   },
@@ -68,6 +69,7 @@ export const SEC_CONFIG: SetConfig = {
     rareLegendary: constants.rareLegendaryDedupWindow,
     leaderCap: constants.leaderDedupWindowCap,
     hyperspaceLeaderCap: constants.hyperspaceLeaderDedupWindowCap,
+    uncommon: constants.uncommonDedupWindow,
   },
 
   // Upgrade probabilities

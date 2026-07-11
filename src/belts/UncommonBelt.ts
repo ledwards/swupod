@@ -15,6 +15,7 @@
 import { getCachedCards } from '../utils/cardCache'
 import type { RawCard } from '../utils/cardData'
 import type { SetCode } from '../types'
+import { getSetConfig } from '../utils/setConfigs/index'
 
 /**
  * Shuffle an array in place (Fisher-Yates)
@@ -118,6 +119,11 @@ export class UncommonBelt {
   recentServed: string[]
   lastServedAspect: string | null
   DEDUP_WINDOW: number
+  aspectInterleave: boolean
+  seamParity: boolean
+  totalServed: number
+  lastServedDraw: Map<string, number>
+  _lastDrawUndo: { id: string; prev: number | undefined } | null
 
   constructor(setCode: SetCode | string) {
     this.setCode = setCode as SetCode
@@ -125,6 +131,9 @@ export class UncommonBelt {
     this.fillingPool = []
     this.recentServed = []
     this.lastServedAspect = null
+    this.totalServed = 0
+    this.lastServedDraw = new Map()
+    this._lastDrawUndo = null
 
     this._initialize()
   }
@@ -143,7 +152,17 @@ export class UncommonBelt {
       !c.isBase
     )
 
-    this.DEDUP_WINDOW = Math.min(24, Math.floor(this.fillingPool.length / 2))
+    // Config-driven (dedupWindows.uncommon): 24 for sets 1-6; 2 for line-stacking
+    // sets — the 6-box verified UC sheet shows seam repeats at pack-gaps 1-23
+    // (the 24-window forbade every real short-gap repeat). Never setNumber branches.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const cfg = getSetConfig(this.setCode) as any
+    this.DEDUP_WINDOW = Math.min(cfg?.dedupWindows?.uncommon ?? 24, Math.floor(this.fillingPool.length / 2))
+    this.aspectInterleave = cfg?.packRules?.uncommonAspectInterleave ?? true
+    // Line-stacking sets: seam repeats prefer ODD pack-gaps (6-box verified UC
+    // sheet: 34 odd / 6 even of 40 repeats = 85% odd) — same parity structure
+    // as the common sheet. Sheet-layout rule, applied at boot construction.
+    this.seamParity = cfg?.packRules?.lineStackingCollation === true
 
     // Initial fill
     this._fillIfNeeded()
@@ -213,8 +232,11 @@ export class UncommonBelt {
       }
     }
 
-    // Build early zone
-    const earlySequence = buildInterleavedSequence(earlyCards, lastAspect)
+    // Build early zone (line-stacking sets: plain shuffle — real UC sheet shows
+    // no aspect rotation; sets 1-6 keep the interleave)
+    const earlySequence = this.aspectInterleave
+      ? buildInterleavedSequence(earlyCards, lastAspect)
+      : shuffle([...earlyCards])
     const earlyZoneSize = Math.min(maxMinPos, earlySequence.length)
     const boot: RawCard[] = earlySequence.slice(0, earlyZoneSize)
 
@@ -227,11 +249,90 @@ export class UncommonBelt {
     const prevAspect = boot.length > 0
       ? getPrimaryAspect(boot[boot.length - 1]!)
       : lastAspect
-    const lateSequence = buildInterleavedSequence(remainingCards, prevAspect)
+    const lateSequence = this.aspectInterleave
+      ? buildInterleavedSequence(remainingCards, prevAspect)
+      : shuffle([...remainingCards])
     boot.push(...lateSequence)
 
-    this.hopper.push(...boot)
+    const finalBoot = this.seamParity ? this._weaveEchoes(boot) : boot
+
+    this.hopper.push(...finalBoot)
   }
+
+  /**
+   * Echo weaving (line-stacking sets): the real UC sheet repeats a small
+   * subset of cards at short pack-gaps with strong ODD parity — measured from
+   * six number-verified boxes (40 repeats): 34 odd / 6 even (85% odd), 62% at
+   * <=9 packs, ~6.7 repeats per box. Odd gaps split the pair across the two
+   * box columns; even gaps land it in one sealed pool.
+   *
+   * Single-pass rebuild with a pending-echo queue scheduled in FINAL pack
+   * arithmetic (same construction as the CommonBelt paired boot), so parity is
+   * exact by construction — splicing after the fact shifts downstream
+   * positions and corrupts parity. Sheet layout only: no post-hoc pack edits,
+   * no cross-belt awareness. Interleave-guarded; echoes defer a slot or drop
+   * rather than violate aspect adjacency.
+   */
+  _weaveEchoes(boot: RawCard[]): RawCard[] {
+    const UC_PER_PACK = 3
+    // Gap sampler (packs), 6-box verified short-gap histogram:
+    // odd {1:4, 5:6, 7:5, 9:4} | even {4:1, 6:2, 8:3} -> 76% odd
+    const GAPS: number[] = []
+    for (const [gap, w] of [[1, 4], [5, 6], [7, 5], [9, 4], [4, 1], [6, 2], [8, 3]] as Array<[number, number]>) {
+      for (let k = 0; k < w; k++) GAPS.push(gap)
+    }
+    const ECHO_COUNT = 2 + Math.floor(Math.random() * 2) // 2-3 per cycle: real short repeats ~4.2/box arrive via echoes + seam; same-pool UC pairs land at the observed ~0.18/pool
+    const echoIds = new Set(shuffle([...boot]).slice(0, ECHO_COUNT).map(c => c.id))
+    const basePack = Math.floor((this.totalServed + this.hopper.length) / UC_PER_PACK)
+    const out: RawCard[] = []
+    const pending: Array<{ card: RawCard; duePack: number; firstIdx: number }> = []
+    const stream = [...boot]
+    const packOfOut = () => basePack + Math.floor(out.length / UC_PER_PACK)
+    const okAfter = (c: RawCard) => {
+      const prev = out[out.length - 1]
+      if (prev && prev.id === c.id) return false // never adjacent same card
+      const a = getPrimaryAspect(c)
+      return !prev || a === null || getPrimaryAspect(prev) !== a
+    }
+    while (stream.length > 0 || pending.length > 0) {
+      let emitted = false
+      // due echoes first (exact final-pack parity)
+      for (let e = 0; e < pending.length; e++) {
+        const pd = pending[e]!
+        if (packOfOut() >= pd.duePack && out.length - pd.firstIdx >= 3) {
+          if (okAfter(pd.card)) {
+            out.push(pd.card); pending.splice(e, 1); emitted = true
+          } else if (packOfOut() > pd.duePack + 1) {
+            pending.splice(e, 1) // can't place without breaking interleave: drop
+          }
+          break
+        }
+      }
+      if (emitted) continue
+      // next primary card (bounded look-ahead for interleave)
+      let idx = -1
+      for (let j = 0; j < Math.min(8, stream.length); j++) {
+        if (okAfter(stream[j]!)) { idx = j; break }
+      }
+      if (idx === -1 && stream.length > 0) idx = 0
+      if (idx >= 0) {
+        const c = stream.splice(idx, 1)[0]!
+        out.push(c)
+        if (echoIds.has(c.id)) {
+          echoIds.delete(c.id)
+          const gap = GAPS[Math.floor(Math.random() * GAPS.length)]!
+          pending.push({ card: c, duePack: basePack + Math.floor((out.length - 1) / UC_PER_PACK) + gap, firstIdx: out.length - 1 })
+        }
+      } else if (pending.length > 0) {
+        // only pendings remain; emit respecting the min-distance rule
+        const e = pending.findIndex(pd => out.length - pd.firstIdx >= 3)
+        if (e >= 0) { out.push(pending[e]!.card); pending.splice(e, 1) }
+        else pending.length = 0 // cannot place without violating min distance: drop
+      }
+    }
+    return out
+  }
+
 
   /**
    * Get the next uncommon from the hopper
@@ -241,6 +342,9 @@ export class UncommonBelt {
 
     const card = this.hopper.shift()
     if (card) {
+      this._lastDrawUndo = { id: card.id, prev: this.lastServedDraw.get(card.id) }
+      this.lastServedDraw.set(card.id, this.totalServed)
+      this.totalServed++
       this.recentServed.push(card.id)
       if (this.recentServed.length > this.DEDUP_WINDOW) {
         this.recentServed.shift()
@@ -266,4 +370,21 @@ export class UncommonBelt {
   get size(): number {
     return this.hopper.length
   }
+  /**
+   * Return the most recently drawn card to the FRONT of the belt — physical
+   * semantics: an upgraded slot's card comes from another sheet, so the
+   * normal-UC sheet never advanced. Undoes the draw bookkeeping exactly.
+   * Only valid for the immediately preceding next() result.
+   */
+  putBack(card: RawCard): void {
+    if (!this._lastDrawUndo || this._lastDrawUndo.id !== card.id) return
+    this.hopper.unshift(card)
+    this.totalServed--
+    if (this._lastDrawUndo.prev === undefined) this.lastServedDraw.delete(card.id)
+    else this.lastServedDraw.set(card.id, this._lastDrawUndo.prev)
+    const r = this.recentServed.lastIndexOf(card.id)
+    if (r >= 0) this.recentServed.splice(r, 1)
+    this._lastDrawUndo = null
+  }
+
 }

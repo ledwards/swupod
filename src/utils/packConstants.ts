@@ -95,6 +95,8 @@ export interface PackConstants {
   rareLegendaryDedupWindow: number
   leaderDedupWindowCap: number
   hyperspaceLeaderDedupWindowCap: number | null
+  uncommonDedupWindow: number
+  uncommonAspectInterleave: boolean
   baseLineAspectConflict: boolean
   lineStackingCollation: boolean
   carboniteTiered: boolean
@@ -230,6 +232,8 @@ export const SETS_1_3_CONSTANTS: PackConstants = {
   rareLegendaryDedupWindow: 6,       // was: setNumber>=7 ? 3 : 6 in RareLegendaryBelt
   leaderDedupWindowCap: 24,          // was: setNumber>=7 ? 3 : LEADER_DEDUP_WINDOW(24)
   hyperspaceLeaderDedupWindowCap: null,
+  uncommonDedupWindow: 24,
+  uncommonAspectInterleave: true,
   baseLineAspectConflict: false,     // Set 7+ line rule only
   lineStackingCollation: false,      // Set 7+ only
   carboniteTiered: false,
@@ -360,6 +364,8 @@ export const SETS_4_6_CONSTANTS: PackConstants = {
   rareLegendaryDedupWindow: 6,
   leaderDedupWindowCap: 24,
   hyperspaceLeaderDedupWindowCap: null,
+  uncommonDedupWindow: 24,
+  uncommonAspectInterleave: true,
   baseLineAspectConflict: false,
   lineStackingCollation: false,
   carboniteTiered: false,
@@ -513,6 +519,14 @@ export const SET_7_PLUS_CONSTANTS: PackConstants = {
   rareLegendaryDedupWindow: 3,       // real ASH box 001: same-rare repeat at line gap 4
   leaderDedupWindowCap: 3,           // real ASH box 001: leader repeats at line gaps 3-5
   hyperspaceLeaderDedupWindowCap: 3,
+  // 6-box verified UC sheet (2026-07-11): repeats at pack-gaps 1-23 (seam-uniform,
+  // ~6.7/box) — the old 24-window forbade every real short-gap repeat; window 2
+  // allows them (min distance 3 draws = the observed 1-pack repeats). Aspect
+  // interleave STAYS ON: real within-pack adjacency is 3.9%, far below the ~20%
+  // a truly aspect-random 60-card sheet would give — the real sheet rotates.
+  // (An earlier no-rotation read used a broken within-pack shuffle baseline.)
+  uncommonDedupWindow: 3,  // min repeat distance 3 draws = the observed 1-pack gap; never same-pack
+  uncommonAspectInterleave: true,
   baseLineAspectConflict: true,      // base sheet rotates aspects on the LINE (box 001: 1/21)
   lineStackingCollation: true,       // factory line + box stacking model
   carboniteTiered: true,             // LAW+ tiered carbonite structure

@@ -58,6 +58,7 @@ export const ASH_CONFIG: SetConfig = {
     specialInHyperspaceSlots: constants.specialInHyperspaceSlot ?? false,
     specialShowcaseLeaders: true,
     baseLineAspectConflict: constants.baseLineAspectConflict,
+    uncommonAspectInterleave: constants.uncommonAspectInterleave,
     lineStackingCollation: constants.lineStackingCollation,
     carboniteTiered: constants.carboniteTiered,
   },
@@ -88,6 +89,7 @@ export const ASH_CONFIG: SetConfig = {
     rareLegendary: constants.rareLegendaryDedupWindow,
     leaderCap: constants.leaderDedupWindowCap,
     hyperspaceLeaderCap: constants.hyperspaceLeaderDedupWindowCap,
+    uncommon: constants.uncommonDedupWindow,
   },
 
   upgradeProbabilities: {

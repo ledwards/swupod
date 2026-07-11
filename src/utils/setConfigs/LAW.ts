@@ -70,6 +70,7 @@ export const LAW_CONFIG: SetConfig = {
     specialInHyperspaceSlots: constants.specialInHyperspaceSlot ?? false,
     specialShowcaseLeaders: true,
     baseLineAspectConflict: constants.baseLineAspectConflict,
+    uncommonAspectInterleave: constants.uncommonAspectInterleave,
     lineStackingCollation: constants.lineStackingCollation,
     carboniteTiered: constants.carboniteTiered,
   },
@@ -100,6 +101,7 @@ export const LAW_CONFIG: SetConfig = {
     rareLegendary: constants.rareLegendaryDedupWindow,
     leaderCap: constants.leaderDedupWindowCap,
     hyperspaceLeaderCap: constants.hyperspaceLeaderDedupWindowCap,
+    uncommon: constants.uncommonDedupWindow,
   },
 
   // Upgrade probabilities (belt-driven via HyperspaceUpgradeBelt with 'LAW' config)
