@@ -60,7 +60,8 @@ async function main() {
       const prestige = cards.find(c => c.isPrestige)
       if (prestige?.prestigeTier) tier[prestige.prestigeTier] = (tier[prestige.prestigeTier] || 0) + 1
       if (isLawPlus) {
-        const t = cards[9]; if (t) top[t.rarity] = (top[t.rarity] || 0) + 1
+        // ASH's calibrated layout puts the HS top at index 8 (pos 9); LAW's flat layout at 9.
+        const t = cards[set === 'ASH' ? 8 : 9]; if (t) top[t.rarity] = (top[t.rarity] || 0) + 1
       } else {
         const f = cards[7]; if (f) rlFoil[f.rarity] = (rlFoil[f.rarity] || 0) + 1
         const h = cards[13]; if (h) rlHS[h.rarity] = (rlHS[h.rarity] || 0) + 1

@@ -36,7 +36,7 @@ import { CarbonitePrestigeBelt } from '../belts/CarbonitePrestigeBelt'
 import { CarboniteSlotBelt, type CarboniteSlotBeltConfig } from '../belts/CarboniteSlotBelt'
 import { getSetConfig } from './setConfigs/index'
 import { getCachedCards } from './cardCache'
-import { CARBONITE_CONSTANTS, getCarboniteConstants, getBaseSetCode, isCarboniteSupported } from './carboniteConstants'
+import { CARBONITE_CONSTANTS, getCarboniteConstants, ASH_CARBONITE_LAYOUT, getBaseSetCode, isCarboniteSupported } from './carboniteConstants'
 
 interface Pack {
   cards: RawCard[]
@@ -148,6 +148,31 @@ const LAW_HSF_FLEX_CONFIG: CarboniteSlotBeltConfig = {
   outputFlags: { isFoil: true, isHyperspace: true },
   weights: CARBONITE_CONSTANTS.hsfFlexWeights,
 }
+
+// === ASH-specific configs (calibrated 48-pack case; see ASH_CARBONITE_LAYOUT) ===
+// Rarities are derived from weight keys so any dropped rarity is truly excluded (the
+// weighted belt floors every in-pool rarity to ≥1 copy/boot, so weight 0 alone leaks it).
+const ASH_HS_ELEVATED_CONFIG: CarboniteSlotBeltConfig = {
+  rarities: Object.keys(ASH_CARBONITE_LAYOUT.hsElevatedWeights),
+  sourceVariant: 'Hyperspace',
+  outputFlags: { isHyperspace: true },
+  weights: ASH_CARBONITE_LAYOUT.hsElevatedWeights,
+}
+const ASH_HSF_TOP_CONFIG: CarboniteSlotBeltConfig = {
+  rarities: Object.keys(ASH_CARBONITE_LAYOUT.hsfTopWeights),
+  sourceVariant: 'Hyperspace',
+  outputFlags: { isFoil: true, isHyperspace: true },
+  weights: ASH_CARBONITE_LAYOUT.hsfTopWeights,
+}
+const ASH_HSF_FLEX_CONFIG: CarboniteSlotBeltConfig = {
+  rarities: Object.keys(ASH_CARBONITE_LAYOUT.hsfFlexWeights),
+  sourceVariant: 'Hyperspace',
+  outputFlags: { isFoil: true, isHyperspace: true },
+  weights: ASH_CARBONITE_LAYOUT.hsfFlexWeights,
+}
+
+// Collation rank observed in real ASH packs: C < U < Special < R < L
+const CARBONITE_RARITY_RANK: Record<string, number> = { Common: 0, Uncommon: 1, Special: 2, Rare: 3, Legendary: 4 }
 
 // === Belt Cache ===
 
@@ -293,7 +318,47 @@ export function generateCarboniteBoosterPack(compositeCode: string): Pack {
     }
   }
 
-  if (isLawPlus) {
+  if (isLawPlus && baseCode === 'ASH') {
+    // === ASH carbonite — calibrated from a real 48-pack case ===
+    // leader, 8 HS (ascending, R/L top at pos 9), prestige (pos 10), 6 HSF (descending, ≥U top at pos 11)
+    const A = ASH_CARBONITE_LAYOUT
+    const rankOf = (c: RawCard) => CARBONITE_RARITY_RANK[(c as { rarity: string }).rarity] ?? 0
+
+    const prestigeBelt = getCBPrestigeBelt(baseCode)
+    const hsCommonBelt = getCBSlotBelt(baseCode, 'hs-common', COMMON_HS_CONFIG)
+    const hsElevatedBelt = getCBSlotBelt(baseCode, 'ash-hs-elev', ASH_HS_ELEVATED_CONFIG)
+    const hsTopWeights = getCarboniteConstants(baseCode).hsTopWeights
+    const hsTopConfig: CarboniteSlotBeltConfig = { ...LAW_HS_TOP_CONFIG, rarities: Object.keys(hsTopWeights), weights: hsTopWeights }
+    const hsTopBelt = getCBSlotBelt(baseCode, 'hs-top', hsTopConfig)
+    const hsfCommonBelt = getCBSlotBelt(baseCode, 'hsf-common', LAW_HSF_COMMON_CONFIG)
+    const hsfFlexBelt = getCBSlotBelt(baseCode, 'ash-hsf-flex', ASH_HSF_FLEX_CONFIG)
+    const hsfTopBelt = getCBSlotBelt(baseCode, 'ash-hsf-top', ASH_HSF_TOP_CONFIG)
+
+    // [2-9] HS run: (4 Common + 1 swing(79% C / 21% elevated) + 2 elevated) sorted ascending,
+    // then the dedicated R/L top at pos 9.
+    const hsRest: RawCard[] = []
+    for (let i = 0; i < A.hsCommon; i++) { const c = drawUnique(hsCommonBelt, seen); if (c) hsRest.push(c) }
+    { const swingBelt = Math.random() < A.hsSwingCommonRate ? hsCommonBelt : hsElevatedBelt
+      const c = drawUnique(swingBelt, seen); if (c) hsRest.push(c) }
+    for (let i = 0; i < A.hsElevated; i++) { const c = drawUnique(hsElevatedBelt, seen); if (c) hsRest.push(c) }
+    hsRest.sort((a, b) => rankOf(a) - rankOf(b)) // ascending collation (commons → uncommons)
+    packCards.push(...hsRest)
+    const hsTop = drawUnique(hsTopBelt, seen)
+    if (hsTop) packCards.push(hsTop) // pos 9: guaranteed R/L top
+
+    // [10] Prestige — real ASH packs place it after the HS run
+    const prestige = prestigeBelt.next()
+    if (prestige) packCards.push(prestige)
+
+    // [11-16] HSF run: the dedicated ≥Uncommon top at pos 11, then (3 Common + 2 flex) sorted descending.
+    const hsfTop = drawUnique(hsfTopBelt, seen)
+    if (hsfTop) packCards.push(hsfTop) // pos 11: guaranteed ≥U top
+    const hsfRest: RawCard[] = []
+    for (let i = 0; i < A.hsfCommon; i++) { const c = drawUnique(hsfCommonBelt, seen); if (c) hsfRest.push(c) }
+    for (let i = 0; i < A.hsfFlex; i++) { const c = drawUnique(hsfFlexBelt, seen); if (c) hsfRest.push(c) }
+    hsfRest.sort((a, b) => rankOf(b) - rankOf(a)) // descending collation (elevated → commons)
+    packCards.push(...hsfRest)
+  } else if (isLawPlus) {
     // LAW+ Carbonite: Prestige, tiered HS (4C + 3flex + 1top), tiered HSF (4flex + 2C)
     const prestigeBelt = getCBPrestigeBelt(baseCode)
     const hsCommonBelt = getCBSlotBelt(baseCode, 'hs-common', COMMON_HS_CONFIG)

@@ -222,8 +222,22 @@ non-ASH set keeps `CARBONITE_CONSTANTS`. Red-green in `carboniteBoosterPack.test
   slot's rarities drop Special entirely (the belt floors each in-pool rarity to ≥1
   copy/boot, so weight-0 alone leaked ~0.8% Special — had to exclude the rarity, not
   just zero its weight). ASH top now 0 Special; LAW top still R60/S20/L20.
-- Still open (layout/belt changes, staged for later): T1 prestige position, T2 run
-  ordering, T4 flex tightening, T5 guaranteed HSF slot.
+
+**ASH layout rebuilt (T1, T2, T4, T5) — `ASH_CARBONITE_LAYOUT` + a dedicated ASH branch
+in `generateCarboniteBoosterPack` (LAW keeps its flat branch untouched):**
+- **T1 shipped** — prestige emitted at pos 10 (index 9), after the HS run. 20k/20k.
+- **T2 shipped** — HS run sorted ascending (100%), HSF run: dedicated ≥U top at pos 11
+  then the rest sorted descending (~94%, matching the real ~88% — the non-descending
+  packs are top=U followed by a Special, exactly as observed).
+- **T4 shipped** — HS modelled as 4 Common + 1 swing(79% C / 21% elevated) + 2 elevated
+  (`{U85,S10,R5}`) + 1 top. Reproduces the marginals (C 4.79 · U 1.88 · R 0.90 · S 0.22
+  · L 0.21) AND the tight non-common count 3 (79%) / 4 (21%) — never 2 or ≥5.
+- **T5 shipped** — HSF has a dedicated top at pos 11 `{U50,R40,L10}` (never Common),
+  then 3 Common + 2 flex `{C45,U49,S6}`. Marginals C 3.90 · U 1.48 · R 0.40 · S 0.12 · L 0.10.
+- Within-pack treatment dedup (FIX-1) preserved through the new draws (0 identical dups).
+- Note: the generic `scripts/carbonite-benchmark.ts` measures the flat LAW+ spec, so its
+  ASH rows are now superseded by `scripts/analyze-carbonite-corpus.ts` (ASH vs real data).
+  Red-green + LAW-unchanged guards in `carboniteBoosterPack.test.ts`; QA is per-set.
 
 ### 🧭 Box-fill interleave (Lee's 6,12,5,11,4,10,3,9,2,8,1,7 theory) — NOT supported
 

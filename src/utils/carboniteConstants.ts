@@ -131,6 +131,32 @@ export const CARBONITE_SET_OVERRIDES: Record<string, {
 }
 
 /**
+ * ASH carbonite LAYOUT — calibrated from a real 48-pack case
+ * (data/real-boxes/ash-carbonite-box-00{1..4}.csv). ASH's HS/HSF runs are structured
+ * and rarity-sorted, unlike LAW's flat flex. These numbers reproduce the observed
+ * per-pack marginals almost exactly (C 4.79 · U 1.88 · R 0.92 · S 0.21 · L 0.21 in HS;
+ * HS non-common count 3 (79%) / 4 (21%); HS top R/L; HSF top never Common):
+ *
+ *   HS(8):  4 Common + 1 swing(79% Common / 21% elevated) + 2 elevated + 1 top(R/L),
+ *           emitted ASCENDING by rarity (commons → R/L top at pos 9).
+ *   HSF(6): 1 top(≥Uncommon) + 3 Common + 2 flex, emitted DESCENDING (elevated at
+ *           pos 11 → commons). Prestige is placed AFTER the HS run (pos 10), not pos 2.
+ *
+ * hs top weights come from CARBONITE_SET_OVERRIDES.ASH.hsTopWeights ({Rare:79,Legendary:21}).
+ */
+export const ASH_CARBONITE_LAYOUT = {
+  hsCommon: 4,
+  hsSwingCommonRate: 0.79,           // swing slot: P(Common); else elevated
+  hsElevated: 2,                     // always ≥Uncommon mid slots
+  hsElevatedWeights: { Uncommon: 85, Special: 10, Rare: 5 } as Record<string, number>,
+  hsfTop: 1,
+  hsfTopWeights: { Uncommon: 50, Rare: 40, Legendary: 10 } as Record<string, number>,
+  hsfCommon: 3,
+  hsfFlex: 2,
+  hsfFlexWeights: { Common: 45, Uncommon: 49, Special: 6 } as Record<string, number>,
+} as const
+
+/**
  * Resolve carbonite constants for a base set code, applying any per-set override.
  * Nested weight objects are replaced wholesale by the override (not deep-merged).
  */

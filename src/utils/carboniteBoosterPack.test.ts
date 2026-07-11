@@ -296,11 +296,14 @@ async function runTests(): Promise<void> {
   })
 
   // ======================
-  // ASH tests — LAW+ shape via setNumber >= 7
-  // (Set 8, placeholder catalog; inherits LAW pack rules verbatim)
+  // ASH tests — bespoke calibrated layout (real 48-pack case)
+  // Structure: [0] leader HS · [1-8] HS ascending (R/L top at 8) · [9] prestige (pos 10)
+  //            · [10-15] HSF (≥U top at 10, then descending)
   // ======================
   console.log('')
-  console.log('\x1b[1m\x1b[35mASH+ Carbonite (LAW-shaped)\x1b[0m')
+  console.log('\x1b[1m\x1b[35mASH Carbonite (calibrated layout)\x1b[0m')
+
+  const RANK: Record<string, number> = { Common: 0, Uncommon: 1, Special: 2, Rare: 3, Legendary: 4 }
 
   test('ASH-CB: pack has 16 cards', () => {
     clearCarboniteBeltCache()
@@ -310,73 +313,80 @@ async function runTests(): Promise<void> {
 
   test('ASH-CB: leader is Hyperspace or Showcase', () => {
     clearCarboniteBeltCache()
-    const pack = generateCarboniteBoosterPack('ASH-CB')
-    const leader = pack.cards[0]
+    const leader = generateCarboniteBoosterPack('ASH-CB').cards[0]
     assert(leader.isLeader, 'First card should be a leader')
-    assert(
-      leader.isHyperspace || leader.isShowcase,
-      `Leader should be HS or Showcase`
-    )
+    assert(leader.isHyperspace || leader.isShowcase, `Leader should be HS or Showcase`)
   })
 
-  test('ASH-CB: slot 1 is Prestige (proves LAW+ routing)', () => {
-    clearCarboniteBeltCache()
-    const pack = generateCarboniteBoosterPack('ASH-CB')
-    const prestige = pack.cards[1]
-    const prestigeVariants = ['Standard Prestige', 'Foil Prestige', 'Serialized Prestige']
-    assert(prestigeVariants.includes(prestige.variantType), `Slot 1 should be Prestige, got ${prestige.variantType}`)
-    assert(prestige.isPrestige === true, 'Slot 1 should have isPrestige flag')
-  })
-
-  test('ASH-CB: slots 2-5 are Common HS (fixed)', () => {
+  test('ASH-CB: prestige at pos 10 (index 9), after the HS run', () => {
+    // SPEC: real 48-pack case — prestige at pos 10 in 48/48 (generator used to emit at pos 2)
     clearCarboniteBeltCache()
     for (let p = 0; p < 10; p++) {
       const pack = generateCarboniteBoosterPack('ASH-CB')
-      for (let i = 2; i <= 5; i++) {
-        assert(pack.cards[i].isHyperspace === true, `Pack ${p}, slot ${i} should be hyperspace`)
-        assert(!pack.cards[i].isFoil, `Pack ${p}, slot ${i} should NOT be foil`)
-        assertEqual(pack.cards[i].rarity, 'Common',
-          `Pack ${p}, slot ${i}: should be Common, got ${pack.cards[i].rarity}`)
-      }
+      const prestige = pack.cards[9]
+      assert(['Standard Prestige', 'Foil Prestige', 'Serialized Prestige'].includes(prestige.variantType),
+        `Pack ${p}: index 9 should be Prestige, got ${prestige.variantType}`)
+      assert(prestige.isPrestige === true, `Pack ${p}: index 9 should have isPrestige`)
+      assert(!pack.cards[1].isPrestige, `Pack ${p}: index 1 should NOT be prestige anymore`)
     }
   })
 
-  test('ASH-CB: slot 9 is R/S/L HS (top slot)', () => {
+  test('ASH-CB: HS run (1-8) is all HS non-foil, ascending by rarity', () => {
+    // SPEC: real case — HS run ascends 48/48 (commons → R/L top)
     clearCarboniteBeltCache()
-    for (let p = 0; p < 20; p++) {
-      const pack = generateCarboniteBoosterPack('ASH-CB')
-      const card = pack.cards[9]
-      assert(card.isHyperspace === true, `Pack ${p}: slot 9 should be hyperspace`)
-      assert(!card.isFoil, `Pack ${p}: slot 9 should NOT be foil`)
-      assert(
-        card.rarity === 'Rare' || card.rarity === 'Legendary' || card.rarity === 'Special',
-        `Pack ${p}: slot 9 should be R/S/L, got ${card.rarity}`
-      )
+    for (let p = 0; p < 30; p++) {
+      const hs = generateCarboniteBoosterPack('ASH-CB').cards.slice(1, 9)
+      for (const c of hs) {
+        assert(c.isHyperspace === true && !c.isFoil, `Pack ${p}: HS run must be Hyperspace non-foil`)
+      }
+      const ranks = hs.map(c => RANK[c.rarity])
+      assert(ranks.every((v, i) => i === 0 || v >= ranks[i - 1]),
+        `Pack ${p}: HS run must be ascending by rarity, got ${hs.map(c => c.rarity).join(',')}`)
     }
   })
 
-  test('ASH-CB: slots 14-15 are Common HSF (fixed)', () => {
+  test('ASH-CB: HS top (pos 9 / index 8) is R/L only — never Special', () => {
+    // SPEC: real case — top R 38 / L 10 / S 0 over 48
     clearCarboniteBeltCache()
-    for (let p = 0; p < 10; p++) {
-      const pack = generateCarboniteBoosterPack('ASH-CB')
-      for (let i = 14; i <= 15; i++) {
-        assert(pack.cards[i].isFoil === true, `Pack ${p}, slot ${i} should be foil`)
-        assert(pack.cards[i].isHyperspace === true, `Pack ${p}, slot ${i} should be hyperspace`)
-        assertEqual(pack.cards[i].rarity, 'Common',
-          `Pack ${p}, slot ${i}: should be Common, got ${pack.cards[i].rarity}`)
+    for (let p = 0; p < 40; p++) {
+      const c = generateCarboniteBoosterPack('ASH-CB').cards[8]
+      assert(c.isHyperspace === true && !c.isFoil, `Pack ${p}: HS top must be Hyperspace non-foil`)
+      assert(c.rarity === 'Rare' || c.rarity === 'Legendary', `Pack ${p}: HS top must be R/L, got ${c.rarity}`)
+    }
+  })
+
+  test('ASH-CB: HSF run (10-15) is all HSF; top (pos 11) never Common', () => {
+    // SPEC: real case — HSF pos 11 is U 24 / R 19 / L 5, never Common (guaranteed ≥U slot)
+    clearCarboniteBeltCache()
+    for (let p = 0; p < 30; p++) {
+      const hsf = generateCarboniteBoosterPack('ASH-CB').cards.slice(10, 16)
+      for (const c of hsf) {
+        assert(c.isFoil === true && c.isHyperspace === true, `Pack ${p}: HSF run must be foil+hyperspace`)
       }
+      assert(hsf[0].rarity !== 'Common', `Pack ${p}: HSF top (pos 11) must be ≥Uncommon, got ${hsf[0].rarity}`)
+      // the remaining 5 (pos 12-16) descend by rarity
+      const restRanks = hsf.slice(1).map(c => RANK[c.rarity])
+      assert(restRanks.every((v, i) => i === 0 || v <= restRanks[i - 1]),
+        `Pack ${p}: HSF pos 12-16 must descend, got ${hsf.slice(1).map(c => c.rarity).join(',')}`)
+    }
+  })
+
+  test('ASH-CB: HS non-common count is 3 or 4 (real case never 2 or ≥5)', () => {
+    // SPEC: real case — non-common count 3 (38pk) / 4 (10pk) over 48
+    clearCarboniteBeltCache()
+    for (let p = 0; p < 200; p++) {
+      const hs = generateCarboniteBoosterPack('ASH-CB').cards.slice(1, 9)
+      const nc = hs.filter(c => c.rarity !== 'Common').length
+      assert(nc === 3 || nc === 4, `Pack ${p}: HS non-common count should be 3 or 4, got ${nc}`)
     }
   })
 
   test('ASH-CB: no Normal-only cards (every card has a variant flag)', () => {
     clearCarboniteBeltCache()
     for (let i = 0; i < 10; i++) {
-      const pack = generateCarboniteBoosterPack('ASH-CB')
-      for (const card of pack.cards) {
-        assert(
-          card.isFoil || card.isHyperspace || card.isShowcase || card.isPrestige,
-          `ASH-CB should have no Normal-only cards, found "${card.name}" with no variant flag`
-        )
+      for (const card of generateCarboniteBoosterPack('ASH-CB').cards) {
+        assert(card.isFoil || card.isHyperspace || card.isShowcase || card.isPrestige,
+          `ASH-CB should have no Normal-only cards, found "${card.name}" with no variant flag`)
       }
     }
   })
@@ -626,21 +636,23 @@ async function runTests(): Promise<void> {
   function prestigeTierPcts(setCode: string, n: number): Record<string, number> {
     clearCarboniteBeltCache()
     const counts: Record<string, number> = { tier1: 0, tier2: 0, serialized: 0 }
-    const prestigeIdx = ['LAW-CB', 'ASH-CB'].includes(setCode) ? 1 : 8
     for (let i = 0; i < n; i++) {
-      const pack = generateCarboniteBoosterPack(setCode)
-      const t = prestigeTierOf(pack.cards[prestigeIdx].variantType)
+      const prestige = generateCarboniteBoosterPack(setCode).cards.find(c => c.isPrestige)
+      const t = prestigeTierOf(prestige?.variantType)
       if (counts[t] !== undefined) counts[t]++
     }
     const tot = counts.tier1 + counts.tier2 + counts.serialized
     return { tier1: counts.tier1 / tot * 100, tier2: counts.tier2 / tot * 100, serialized: counts.serialized / tot * 100 }
   }
 
+  // HS top slot index differs by set: ASH's calibrated layout puts it at index 8 (pos 9);
+  // LAW's flat layout at index 9.
   function hsTopRarityPcts(setCode: string, n: number): Record<string, number> {
     clearCarboniteBeltCache()
+    const topIdx = setCode === 'ASH-CB' ? 8 : 9
     const counts: Record<string, number> = {}
     for (let i = 0; i < n; i++) {
-      const card = generateCarboniteBoosterPack(setCode).cards[9] // HS top slot
+      const card = generateCarboniteBoosterPack(setCode).cards[topIdx]
       counts[card.rarity] = (counts[card.rarity] || 0) + 1
     }
     const out: Record<string, number> = {}
