@@ -497,14 +497,12 @@ pos16) and foil common-count are the trustworthy signals.
 | teddy-03 | 24 | **19R / 5L** | 22C + 2 |
 | teddy-04 | 24 | 18R / 6L | 18C + 6 |
 
-**8-box verdict on the quota (Lee 4 verified + Teddy 4):** rare-slot legendaries per box
-= **5,5,5,5** (Lee, exact) + **5,6,5,6** (Teddy). Six of eight land on exactly 5L; the
-two 6L are both Teddy (likely low-res Rare→Legendary misreads, or mild variance). Foil
-common-count clusters ~18–22 ≈ 20/box everywhere. → **The per-box quota is real and
-corroborated across two independent cases.** Hard-exact-5 vs very-tight-distribution:
-Lee's number-verified boxes say exact-5; Teddy is consistent within its noise. Implement
-as a fixed per-box quota (5L+19R rare slot, 20C+4 foil); Lee box5/6 (tomorrow, verified)
-add 2 more exact points.
+**Rare-slot legendaries per box:** **5,5,5,5** (Lee, verified) + **5,6,5,6** (Teddy).
+⚠️ The two Teddy 6L are REAL (all 12 teddy-02/04 rare-slot legendaries verified genuine
+against the card DB — see the RETRACTED section below). So legendary count VARIES (5–6
+observed here; wider in the real population). Foil common-count clusters ~18–22 ≈ 20/box.
+→ The MEAN (~5L, ~20C) is well-supported; the "fixed count per box" is NOT — it was an
+over-read of ~3 correlated cases. Model as a sheet-cut with real variance, not a quota.
 
 Teddy detection artifacts (NOT real findings): "Showcase at UC3" (pack) = misread HS-UC;
 "Doc Defender" foreign card = misread DDC Defender (#210); numHScommons=0 everywhere =
@@ -525,16 +523,32 @@ resolution can't see borderless frame. Raw per-pack summaries in scratch (crops/
 
 # ✅ PHASE 4 — FINAL DECISION (10 boxes: box-001 + Lee 002/003/004/006/007 + Teddy ×4)
 
-### 1. 🔴 IMPLEMENT — rare & foil slots are per-box QUOTAS (hard), not per-pack RNG
-Rare-slot legendaries per box: **5,5,5,5,5** (Lee 001/002/003/004/006, number-verified)
-+ 5 (box-007, 22pk) + Teddy 5,6,5,6 → **8 of 10 boxes exactly 5** (the two 6L are the
-low-res Teddy boxes; every number-verified box = 5). Foil commons ≈ 20/box everywhere.
-→ **HARD quota** (not just a tight distribution). Set 7+, sealed/draft boxes only:
-- Rare slot: exactly **5 Legendary + 19 Rare** per box, positions distributed across packs.
-- Foil slot: exactly **20 Common + 4 hit** foils per box; hit U:R:S:L split ≈ 5:1:1:1 (small n).
-- Single packs (Chaos/Pack-Wars): keep probabilistic at the marginal rates (5/24 L, 20/24 C).
-- Supersedes `rareSlotLegendaryRatio` and `foilSlotWeights` for boxes; update statsCalculations
-  expected-rates to the new marginals. Lands red-green + benchmark; sets 1-6 byte-identical.
+### 1. ⚠️ RETRACTED — "hard per-box quota" was WRONG. Model the R/L + foil SHEETS instead.
+**CORRECTION (2026-07-11):** An earlier version of this section claimed a HARD per-box
+quota (exactly 5L+19R, 20C+4 every box) and dismissed the two Teddy boxes that read 6L as
+"likely low-res misreads." That dismissal was confirmation bias and is FALSE — verified by
+re-checking every agent-called Legendary in teddy-02/04 against the card DB: **all 12 are
+genuine Legendary cards (Chimaera ×3, Zeb Orrelios ×2, Eye of Sion, The Mandalorian
+Devoted Rescuer ×2, Summa-verminoth, Kelleran Beq, Boba Fett's Rancor, The Darksaber) —
+zero misread Rares.** So legendary count per box genuinely VARIES (observed 5 and 6; Lee
+confirms the real population ranges low-to-high around an advertised average). A "hard 5"
+is also non-physical: a printer has no per-box counter, only what's on the sheet.
+
+**What's actually true:** the R/L slot (and foil slot) are fed by **print sheets with a
+fixed composition** (~5L per 24 R/L cards on average), collated in sheet order; a box is a
+consecutive cut. The MEAN per box is set by the sheet; the COUNT per box varies because
+24-card cuts don't all contain the same number of Ls. My ~9 "boxes" were really ~3 cases
+(Lee = 1 sealed case, Teddy = 1 case, + display box) — within a case the boxes are
+correlated (contiguous sheet stretch), which made the count look artificially constant.
+
+**Corrected recommendation (Set 7+):** model the R/L and foil slots as **sheet-cuts** — a
+long sequence with the right composition, boxes = consecutive cuts — giving the correct
+average WITH real box-to-box variance. This may be close to the current per-pack model
+(Binomial(24,~1/6) already produces low-to-high legendary counts); the defensible change
+may shrink to **the mean/rate** (current ~4/box; if advertised avg is ~5, bump it) plus
+possibly a modest variance reduction if collation demonstrably spreads hits. DO NOT
+implement a fixed count. Needs boxes from INDEPENDENT cases/print-runs (not more from the
+same case) or public box-break data to characterize the true variance.
 
 ### 2. 🟠 IMPLEMENT — relax UncommonBelt aspect interleaving (Set 7+)
 Real uncommons ≈ random adjacent-aspect (8.3% vs 11.5% shuffled, 0.72×, n.s.), NOT the
@@ -565,7 +579,9 @@ name-match → number resolver (383/384 matched; "Sloane"→Grand Admiral Sloane
 QUOTA — HS leader/base, UC3 upgrades, prestige not captured (grid defaults them);
 dispersion invalid (grid is block-organized, not pull order). CSV: scratch/ash-box-display.csv.
 
-### 🔒 Quota now confirmed across ~9 boxes — rare slot 19R/5L in EVERY measured box
-Lee 001/002/003/004/006 (verified) + 005 (name-resolved) = 6 boxes exactly 19R/5L;
-Teddy 01 & 03 exact (02/04 read 5-6L, low-res noise); fan display box 19R/5L. The
-5-Legendary + 19-Rare per-box quota is as solid as any finding in this dataset.
+### ⚠️ Rare-slot ~5L/box AVERAGE well-supported; "fixed quota" RETRACTED
+Lee 001/002/003/004/006 + 005 = 6 boxes at 5L; fan display box 5L; **Teddy 02 & 04 = 6L
+(verified genuine legendaries, NOT misreads)**. So the MEAN is ~5L/box but the COUNT
+VARIES (5–6 here; low-to-high in the real population per Lee). This is ~3 correlated cases,
+not 9 independent boxes. The rare slot is a print SHEET (fixed composition, boxes = cuts) —
+model it as a sheet-cut with real variance, tuned to the average. NOT a fixed count.
