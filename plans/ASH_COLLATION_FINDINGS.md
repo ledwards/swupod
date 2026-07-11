@@ -585,3 +585,13 @@ Lee 001/002/003/004/006 + 005 = 6 boxes at 5L; fan display box 5L; **Teddy 02 & 
 VARIES (5–6 here; low-to-high in the real population per Lee). This is ~3 correlated cases,
 not 9 independent boxes. The rare slot is a print SHEET (fixed composition, boxes = cuts) —
 model it as a sheet-cut with real variance, tuned to the average. NOT a fixed count.
+
+## Box-005 (Lee box4, blurry/gone) — RESOLVED via name-validated review ✅ (2026-07-11)
+Lee reviewed all 174 uncertain cards by name (blank variant = confirmed Normal;
+numbers derived name+variant+slot). Rare slot **19R/5L (6th consecutive Lee box)**;
+foil 19C+5; dispersion 4/4/8/5 (clean — Lee case now 5/5 clean boxes, 20 clean pools
++ box-001's 2 clumpy = 2/24 ≈ 8% overall, still matching the shipped model);
+185 distinct. HS leader 4/24 + base 4/24, **leader+base co-occur in packs 2/8/13**
+(3/24 — hot vs ~1/36, review-confirmed; watch). pack6 genuine 2-HS-common. Open:
+pack12 shows 0 HS commons (its commons were high-conf first-pass reads outside
+review scope) — needs a targeted look at one photo.
