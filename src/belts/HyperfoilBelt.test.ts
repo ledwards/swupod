@@ -66,7 +66,10 @@ async function runTests(): Promise<void> {
   test('commons appear most frequently', () => {
     const belt = new HyperfoilBelt('SOR')
     const counts: Record<string, number> = { Common: 0, Uncommon: 0, Rare: 0, Legendary: 0 }
-    for (let i = 0; i < 200; i++) {
+    // 500 draws (not 200): the tightest ordinal here (Uncommon > Rare) had only a ~4.4σ
+    // margin at n=200; at n=500 it is ~6.9σ. Per .claude/rules/testing.md (seeded-RNG
+    // ordinals need a comfortable margin so pure variance never flips the ranking).
+    for (let i = 0; i < 500; i++) {
       const card = belt.next()
       counts[card.rarity] = (counts[card.rarity] || 0) + 1
     }
@@ -153,7 +156,11 @@ async function runTests(): Promise<void> {
   test('LAW: rarity distribution follows expected weights', () => {
     const belt = new HyperfoilBelt('LAW')
     const counts: Record<string, number> = { Common: 0, Uncommon: 0, Rare: 0, Special: 0, Legendary: 0 }
-    for (let i = 0; i < 300; i++) {
+    // 1500 draws (not 300): the tightest ordinal (Rare > Legendary) had only a ~3.0σ margin
+    // at n=300 (Rare ~26.7 vs Legendary ~11.3 per 300, diff sd ~5.1 → flipped ~0.16% of
+    // runs). At n=1500 the margin is ~6.7σ. Per .claude/rules/testing.md (seeded-RNG
+    // ordinals need a comfortable margin so pure variance never flips the ranking).
+    for (let i = 0; i < 1500; i++) {
       const card = belt.next()
       counts[card.rarity] = (counts[card.rarity] || 0) + 1
     }
