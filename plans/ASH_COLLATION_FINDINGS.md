@@ -433,4 +433,50 @@ Confirmed dead-on (do not touch): HS leader ≈1/6, HS base ≈1/6, UC1/UC2 HS =
 foil always HSF, HS common 1/pack, UC3 ~1/3 upgrade, within-pack dups all cross-variant,
 box unique identities ~185.
 
-(Boxes 004–007 pending; stacking + intra-case ordering analysis next.)
+## Box-004 (Lee box3) — LOCKED ✅
+
+Dup-tail CLEAN (pools 6/5/8/7, 182 distinct, 6 same-pack collisions all cross-variant)
+— **three-for-three clean case boxes.** Rates: HS leader 2/24 (p2,9); HS base 1/24 (p6);
+UC3 14 Normal / 6 HS-UC / 2 HS-Rare / 2 Prestige; prestige 2; 0 two-HS-common packs.
+Stacking: standard interleave, 2.45x (NOT flipped).
+
+## 🟥🟥 HEADLINE (boxes 001–004, 4/4 IDENTICAL): the rare & foil slots are PER-BOX QUOTAS, not per-pack draws
+
+The two "rate" signals above are actually the shadow of a **structural** fact:
+
+- **Rare slot = exactly 19 Rare + 5 Legendary EVERY box** (001,002,003,004 all 19/5).
+- **Foil slot = exactly 20 Common + 4 upgrades (U/R/S/L) EVERY box** (all four = 20C+4).
+
+Under the shipped model's **independent per-pack draws**, per-box counts are Binomial:
+rare-slot legendaries ~ B(24, 1/6) = 4 ± 1.8 → P(exactly 5) ≈ 0.19, so
+P(all 4 boxes = 5) ≈ **0.1%**. Foil commons ~ B(24, .72) = 17 ± 2.2 → P(all 4 = 20)
+is astronomically small. **4/4 exact on two independent metrics ⇒ these slots are fed
+by fixed per-box print sheets / quotas, not per-pack RNG.**
+
+Physical model: the rare/legendary slot for a box is one print sheet with a fixed
+layout of **19 R + 5 L**; the foil slot is a sheet with **20 C + 4 hits**. Each box
+consumes exactly one of each → fixed counts, near-zero per-box variance.
+
+**Implication for the generator (candidate NEW belt rule, not just a reweight):**
+make the rare-slot and foil-slot COMPOSITION a per-box quota for Set 7+:
+- Rare slot: guarantee exactly 5 Legendary + 19 Rare per 24-pack box (distribute the
+  positions across the box, don't draw each pack independently).
+- Foil slot: guarantee exactly 20 Common + 4 upgrade foils per box; within the 4
+  upgrades, the U/R/S/L split is where the remaining (small) randomness lives —
+  provisional pool across 4 boxes: {U:10, R:2, S:2, L:2} of 16 upgrade-foils.
+This also explains why the naive "reweight to C83/3.8:1" is the right MEAN but wrong
+MECHANISM — a quota nails both the mean AND the (near-zero) variance the data shows.
+
+⚠️ CONFIRM WITH BOXES 005–007. If boxes 5/6 also show 19/5 and 20C, the quota is
+locked (6/6). If any deviates, it's a tight distribution, not a hard quota — recalibrate
+means/variance instead. Either way the per-pack-independent model is wrong on variance.
+
+## 🧭 Stacking orientation by box (intra-case signal forming)
+- box-002 (case left-TOP): standard interleave (2.39x)
+- box-003 (case left-MID): **flipped right column** (1.97x corrected; 0.85x standard)
+- box-004 (case left-BOTTOM): standard interleave (2.45x)
+→ Left column orientation = std / flip / std (alternating by row?). Boxes 5–6 (right
+column) will show whether case assembly alternates box orientation — a case-level
+collation signature. (Model impact nil regardless; stackBoxOrder unchanged.)
+
+(Boxes 005–007 pending.)
