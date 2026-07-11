@@ -160,8 +160,9 @@ function usesLawPackRules(setCode: SetCode | string): boolean {
  * keep byte-identical behavior.
  */
 function usesLineStacking(setCode: SetCode | string): boolean {
-  const config = getSetConfig(setCode) as { setNumber?: number } | null;
-  return typeof config?.setNumber === 'number' && config.setNumber >= 7;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const config = getSetConfig(setCode) as any;
+  return config?.packRules?.lineStackingCollation === true;
 }
 
 /**

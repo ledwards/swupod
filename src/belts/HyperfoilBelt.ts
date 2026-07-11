@@ -35,13 +35,6 @@ const TARGET_WEIGHTS_SETS_1_3: Record<string, number> = {
   Special: 0,
 }
 
-const TARGET_WEIGHTS_SETS_4_6: Record<string, number> = {
-  Common: 75,
-  Uncommon: 17,
-  Rare: 4,
-  Special: 4,
-  Legendary: 0.3,
-}
 
 export class HyperfoilBelt {
   setCode: SetCode
@@ -70,9 +63,7 @@ export class HyperfoilBelt {
     const cards = getCachedCards(this.setCode)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const config = getSetConfig(this.setCode) as any
-    const setNumber = config?.setNumber || 1
-
-    const includeSpecial = setNumber >= 4
+    const includeSpecial = config?.packRules?.specialInHyperspaceSlots ?? false
 
     // Filter to Hyperspace Foil variant non-leader, non-base cards
     this.fillingPool = cards.filter(c =>
@@ -103,10 +94,8 @@ export class HyperfoilBelt {
       this.usingNormalFallback = true
     }
 
-    // Get target weights: use set config's hyperspaceFoilSlotWeights if available,
-    // otherwise fall back to hardcoded weights based on set number
-    const configWeights = config?.rarityWeights?.hyperspaceFoilSlot
-    const targetWeights = configWeights || (setNumber >= 4 ? TARGET_WEIGHTS_SETS_4_6 : TARGET_WEIGHTS_SETS_1_3)
+    // Target weights come from the set config (rarityWeights.hyperspaceFoilSlot)
+    const targetWeights = config?.rarityWeights?.hyperspaceFoilSlot ?? TARGET_WEIGHTS_SETS_1_3
 
     // Count unique cards per rarity
     const rarityCounts: Record<string, number> = {}

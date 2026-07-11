@@ -55,6 +55,11 @@ export const ASH_CONFIG: SetConfig = {
     hyperspaceCommonSlot: 5,
     prestigeInStandardPacks: true,
     specialInFoilSlot: constants.specialInFoilSlot,
+    specialInHyperspaceSlots: constants.specialInHyperspaceSlot ?? false,
+    specialShowcaseLeaders: true,
+    baseLineAspectConflict: constants.baseLineAspectConflict,
+    lineStackingCollation: constants.lineStackingCollation,
+    carboniteTiered: constants.carboniteTiered,
   },
 
   rarityWeights: {
@@ -68,12 +73,21 @@ export const ASH_CONFIG: SetConfig = {
       Special: 4,
       Legendary: 3,
     },
+    foilBeltTarget: constants.foilBeltTargetWeights,
     ucSlot3Upgraded: constants.ucSlot3UpgradedWeights,
     hyperspaceNonFoil: constants.hyperspaceNonFoilWeights,
   },
 
   beltRatios: {
     rareToLegendary: constants.rareSlotLegendaryRatio,
+    hyperspaceRareToLegendary: constants.hsRareSlotLegendaryRatio,
+  },
+
+  // Dedup windows (config-driven; belts must not branch on setNumber)
+  dedupWindows: {
+    rareLegendary: constants.rareLegendaryDedupWindow,
+    leaderCap: constants.leaderDedupWindowCap,
+    hyperspaceLeaderCap: constants.hyperspaceLeaderDedupWindowCap,
   },
 
   upgradeProbabilities: {

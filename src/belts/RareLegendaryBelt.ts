@@ -73,15 +73,10 @@ export class RareLegendaryBelt {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const config = getSetConfig(this.setCode) as any
 
-    // Determine ratio based on set number
-    // Sets 1-3: 7:1 (1 in 8), Sets 4+: 5:1 (1 in 6)
-    const setNumber = config?.setNumber || 1
-    this.ratio = setNumber <= 3 ? 7 : 5
-
-    // Set 7+ (LAW, ASH): loosen the same-card dedup window from 6 to 3 so same-rare
-    // repeats become possible at line gap 4 (real ASH box 001), matching factory
-    // collation. Sets 1-6 keep window 6. (LINE_STACKING_COLLATION_PLAN L4)
-    this.dedupWindow = setNumber >= 7 ? 3 : 6
+    // Ratio and dedup window come from the set config (beltRatios/dedupWindows);
+    // fallbacks preserve legacy behavior for unknown set codes.
+    this.ratio = config?.beltRatios?.rareToLegendary ?? 7
+    this.dedupWindow = config?.dedupWindows?.rareLegendary ?? 6
 
     // Check if this set puts rare bases in the base slot (no current sets do)
     // If so, exclude them from the rare slot. Otherwise, include them.

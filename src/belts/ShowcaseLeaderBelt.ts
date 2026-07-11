@@ -34,8 +34,7 @@ export class ShowcaseLeaderBelt {
   _initialize(): void {
     const cards = getCachedCards(this.setCode)
     const config = getSetConfig(this.setCode) as any
-    const setNumber = config?.setNumber || 1
-    const includeSpecial = setNumber >= 2
+    const includeSpecial = config?.packRules?.specialShowcaseLeaders ?? false
 
     this.fillingPool = cards.filter(c =>
       c.isLeader &&

@@ -222,8 +222,8 @@ export function generateCarboniteBoosterPack(compositeCode: string): Pack {
     throw new Error(`No config found for set ${baseCode}`)
   }
 
-  const setNumber = config.setNumber
-  const isLawPlus = setNumber >= 7
+  // Tiered (LAW+) carbonite structure is a config flag, not a setNumber branch
+  const isLawPlus = (config.packRules as any)?.carboniteTiered === true
 
   const packCards: RawCard[] = []
 

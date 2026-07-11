@@ -59,12 +59,9 @@ export class HyperspaceRareLegendaryBelt {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const config = getSetConfig(this.setCode) as any
 
-    // Determine ratio based on set number
-    const setNumber = config?.setNumber || 1
-    this.ratio = setNumber <= 3 ? 6 : 5
-
-    // Include Special rarity for sets 4+ (same sets that have specials in foil slot)
-    const includeSpecials = setNumber >= 4
+    // Ratio and Special inclusion come from the set config.
+    this.ratio = config?.beltRatios?.hyperspaceRareToLegendary ?? 6
+    const includeSpecials = config?.packRules?.specialInHyperspaceSlots ?? false
 
     // Filter to Hyperspace variant non-leader rares and legendaries
     this.rares = cards.filter(c =>

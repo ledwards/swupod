@@ -66,8 +66,8 @@ export class HyperspaceUpgradeBelt {
 
   constructor(setGroup: string = '1-3') {
     this.config = HS_BELT_CONFIGS[setGroup] || HS_BELT_CONFIGS['1-3']
-    // Set 7+ only (real ASH pool-002 pack06); groups 1-3/4-6 keep exclusivity
-    this.allowLeaderBaseCoOccurrence = setGroup === 'LAW'
+    // Group-config-driven (Set 7+ only, real ASH pool-002 pack06); other groups keep exclusivity
+    this.allowLeaderBaseCoOccurrence = this.config.allowLeaderBaseCoOccurrence ?? false
     this.hopper = []
     this._fill()
   }
