@@ -596,3 +596,23 @@ foil 19C+5; dispersion 4/4/8/5 (clean — Lee case now 5/5 clean boxes, 20 clean
 pack12 pos7 = Strike Team Vanguard Hyperspace #325 (Lee: the HS-common slot always
 holds an HS common, NO exceptions — treat 0-HS-common reads as transcription error).
 pack16 pos7=HS/pos11=Normal Remnant Interceptor pair confirmed by Lee.
+
+## 📚 FULL-DATASET ROLL-UP (2026-07-11, all 11 boxes + display box)
+
+Slot-level CSVs now committed: box-001 (Porg Depot) · 002-007 (Lee case; 007=22-pack
+partial) · 008-011 (Teddy case; 009=23 packs; Teddy variants structural, leaders/bases
+defaulted Normal; 010 distinct=169 caveat).
+
+**Rare-slot legendaries per box (final, full transcriptions):**
+5,5,5,5,5,5 (Lee 001-006) · 5 (007, 22pk) · 5,5,5 (Teddy 008/009/010) · **6 (Teddy 011,
+genuine)** · 5 (fan display). → mean ≈ 5.1/box (~21%, ≈ FFG's advertised 1-in-5 from JTL
+onward), with REAL variance (a verified 6L box). Sheet-cut model + rate recalibration
+5:1→4:1 stands as the recommendation; hard quota remains retracted.
+
+**Dispersion, all complete known-order boxes (9 boxes, 36 pools):** every pool 2-9 dup
+identities EXCEPT box-001's 13 & 10. Clumpy rate 2/36 ≈ 6% vs shipped model ~8% —
+**shipped dispersion confirmed, no change** (Phase-4 decision 3 reinforced).
+
+**Stacking:** Teddy complete boxes all show the factory interleave (mirror-column
+variant, 1.5-2.3x; box-to-box orientation varies as in Lee's case) — stacking model
+confirmed in a second independent case; stackBoxOrder unchanged.
