@@ -278,10 +278,13 @@ export class UncommonBelt {
     // Gap sampler (packs), 6-box verified short-gap histogram:
     // odd {1:4, 5:6, 7:5, 9:4} | even {4:1, 6:2, 8:3} -> 76% odd
     const GAPS: number[] = []
-    for (const [gap, w] of [[1, 4], [5, 6], [7, 5], [9, 4], [4, 1], [6, 2], [8, 3]] as Array<[number, number]>) {
+    // full 6-box histogram incl. the odd long-gap tail (long gaps are all odd
+    // in the real data — cross-column, they add repeat COUNT but no pool pairs)
+    for (const [gap, w] of [[1, 4], [5, 6], [7, 5], [9, 4], [4, 1], [6, 2], [8, 3],
+                            [11, 4], [13, 1], [15, 3], [17, 4], [19, 1], [21, 1], [23, 1]] as Array<[number, number]>) {
       for (let k = 0; k < w; k++) GAPS.push(gap)
     }
-    const ECHO_COUNT = 2 + Math.floor(Math.random() * 2) // 2-3 per cycle: real short repeats ~4.2/box arrive via echoes + seam; same-pool UC pairs land at the observed ~0.18/pool
+    const ECHO_COUNT = 6 + Math.floor(Math.random() * 2) // 6-7 per cycle -> ~6.7 visible repeats/box like the 6 verified boxes (boot-end echoes fall past the ~64 consumed draws)
     const echoIds = new Set(shuffle([...boot]).slice(0, ECHO_COUNT).map(c => c.id))
     const basePack = Math.floor((this.totalServed + this.hopper.length) / UC_PER_PACK)
     const out: RawCard[] = []

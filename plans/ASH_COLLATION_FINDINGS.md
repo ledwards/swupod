@@ -669,3 +669,26 @@ in band (docs/collation-benchmark-after-uc-fix.md); tests 2122/0, qa 218/0, buil
 Trade-off note: vs the commons-refit-only state (mean 6.23 / tail 3.8% / broken UC
 texture), this adds real UC texture at +0.2 mean / +1.7pp tail — both still at or
 below observed reality.
+
+## 🎯 N+N COMPOSITION FIX (2026-07-11) — rare sheet spacing + UC repeat count
+Lee challenged the N+N regression (gen 0.82 vs real mean 1.38). Decomposition of the
+39 real pools resolved it: real NN has **median 0, P(0)=56%** — the 1.38 mean is
+carried by the loaded tail pools Lee directed us to suppress. In the TYPICAL pool the
+generator now produces slightly MORE NN than reality (median 1, P(0)=47%). Mean-1.38
+and tail-tightening are opposed targets; M1 is re-specced around the distribution.
+Genuine bugs found & fixed in the process (red-green, all Set 7+/config-gated):
+- **Rare slot 4x real NN** (0.11 vs 0.03/pool): the 4:1 ratio GCD math exploded the
+  segment to 8x/5x copies (500 cards) — 2.6 repeats/box vs real 0.5, min gap 1 (seam
+  dedup bailouts under density). Fix: **cyclic-spaced pair sheet** — 2x rares + 1x
+  legendaries + extraLegs doubled legendaries for exact ratio (125 cards), rarity
+  mixed uniformly (every 24-window sees 4:1 — a two-block layout broke local ratio
+  to 2.5:1), copies 50-75 slots apart cyclically, 2-3 explicit short pairs
+  (gaps 4-15). Results: repeats 0.3-0.5/box (real 0.5), min gap 2 (real 2!),
+  rare NN 0.04/pool (real 0.03), R:L 4.0:1.
+- **UC repeat count**: echo histogram extended with the odd long-gap tail
+  {11,13,15,17,19,21,23} (all-odd in real data → adds count, no pool pairs),
+  ECHO_COUNT 6-7.
+Final state (2000-box + 300-box benchmark): M1 0.77 (real dist-matched), M2 6.38
+(obs 6.18), M3 4.3-5.1% (obs ~5.1%), M5-M9 in band, M8 min gap 2 == real.
+KNOWN RESIDUAL: M4 box-uniques 188.3 vs real ~183.4 (band edge) — long-gap dup mass
+slightly light at box level; pool-invisible; future refinement candidate.
