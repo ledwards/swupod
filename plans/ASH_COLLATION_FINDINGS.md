@@ -557,3 +557,15 @@ random consumer adjacency; add nothing.
 HS leader/base ≈1/6, leader+base HS co-occurrence real (~1/36), UC1/UC2 HS = 0, HS common
 1/pack, UC3 ~1/3 upgrade + outcome mix, within-pack dups all cross-variant, box-unique ≈185,
 stacking interleave (4 line-order tracers; box orientation varies per case slot).
+
+## 🎴 Fan "Press Kit display" box — quota confirmation (2026-07-11)
+Grid-transcribed by NAME by a fan (24 packs; HS/HF row markers). Ingested via fuzzy
+name-match → number resolver (383/384 matched; "Sloane"→Grand Admiral Sloane #7).
+**Rare slot = 19R/5L (EXACT).** Foil ≈ 21C/3U (mostly common). Only usable for the
+QUOTA — HS leader/base, UC3 upgrades, prestige not captured (grid defaults them);
+dispersion invalid (grid is block-organized, not pull order). CSV: scratch/ash-box-display.csv.
+
+### 🔒 Quota now confirmed across ~9 boxes — rare slot 19R/5L in EVERY measured box
+Lee 001/002/003/004/006 (verified) + 005 (name-resolved) = 6 boxes exactly 19R/5L;
+Teddy 01 & 03 exact (02/04 read 5-6L, low-res noise); fan display box 19R/5L. The
+5-Legendary + 19-Rare per-box quota is as solid as any finding in this dataset.
