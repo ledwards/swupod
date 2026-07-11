@@ -616,3 +616,16 @@ identities EXCEPT box-001's 13 & 10. Clumpy rate 2/36 ≈ 6% vs shipped model ~8
 **Stacking:** Teddy complete boxes all show the factory interleave (mirror-column
 variant, 1.5-2.3x; box-to-box orientation varies as in Lee's case) — stacking model
 confirmed in a second independent case; stackBoxOrder unchanged.
+
+## 🔬 Pool-mean significance analysis (2026-07-11, 10,000 generated pools)
+Generator converges to **6.72 ± 1.93** dup-ids/pool (so 6.18 observed vs 6.72 is a real
+generator-side property, not run noise). Box-clustered t-test on the 10 observed box
+means (6.17 ± 0.85): **p ≈ 0.075 — not significant at 95%**, suggestive only. Tail:
+observed 2/39 vs expected 3.05 @7.8% → **p ≈ 0.40, not high at all**. Line-order
+(unshuffled) pools run **16.2 dup-ids** (99% ≥10) — stacking is the dominant dispersal
+mechanism and is working; no hidden ordering bug. Gap decomposition: generator runs
++0.7 HOT on cross-variant collisions (5.51 vs ~4.8/pool) and −0.2 COLD on N+N pairs
+(1.16 vs 1.38) → net +0.54. Candidate knob if future data confirms: cross-belt
+(Normal+own-HS/HSF) collision rate (M5 0.157 vs real 0.13). DECISION: no fix at n=39.
+Note: rare loud "CommonBelt A paired boot failed — single-copy boot" fallback observed
+once in 2500 boxes (logged, non-silent, acceptable).
