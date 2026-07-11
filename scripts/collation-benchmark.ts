@@ -32,7 +32,7 @@ const sd = (a: number[]) => { const m = mean(a); return Math.sqrt(mean(a.map(x =
 // Real-data targets (sources: data/real-boxes/*, scripts/eval/fixtures/*;
 // see plans/ASH_COLLATION_FINDINGS.md)
 const TARGETS = {
-  M1: 'Normal+Normal pairs/pool — 6-box refit (even-share 4.2%): mean ~0.6, band 0.25-2.0 (real pools mean 1.38 — accepted trade-off for tighter tail)',
+  M1: 'Normal+Normal pairs/pool — DISTRIBUTION spec (39 real pools: median 0, P(0)=56%, mean carried by suppressed tail): gen target P(0) 40-60%, mean 0.4-1.2',
   M2: 'Dup identities/pool mean — 12 verified full pools mean ≈6.4 (prague-taylor-b excluded: unverified); band 5.5-8.0',
   M3: '% pools ≥10 dup identities — 11-box observed 2/39 ≈5% (both in outlier box-001); 6-box pair-gap refit targets ~4%, band 1-10%',
   M4: 'Box unique identities — real 183; band 178-188',

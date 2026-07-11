@@ -692,3 +692,15 @@ Final state (2000-box + 300-box benchmark): M1 0.77 (real dist-matched), M2 6.38
 (obs 6.18), M3 4.3-5.1% (obs ~5.1%), M5-M9 in band, M8 min gap 2 == real.
 KNOWN RESIDUAL: M4 box-uniques 188.3 vs real ~183.4 (band edge) — long-gap dup mass
 slightly light at box level; pool-invisible; future refinement candidate.
+
+## 🧭 N+N SPEC DECISION + event-pool resolution (2026-07-11)
+Lee asked which spec matches most players' real experience. Measured answer:
+- Random cross-box mixing would give ~13.5 dups/pool; real event pools show 4.4 →
+  **TOs hand out consecutive packs** — RESOLVES the old open question (event pools ARE
+  box cuts). Consecutive box-cut is the ONLY real player experience; the default models it.
+- M1 re-specced DISTRIBUTION-based: 39 real pools have NN median 0 / P(0)=56%; the 1.38
+  mean is tail-carried. Gen target: P(0) 40-60%, mean 0.4-1.2.
+- ⚠️ PRODUCT NOTE: "Randomize Packs" (random 6 of 24) measured at 9.95 dups/pool,
+  55% loaded — objectively clumpier than any real pool (random selection re-couples
+  the odd-gap pairs that stacking split across columns). Feature works against
+  collation realism; flagged for product review.
