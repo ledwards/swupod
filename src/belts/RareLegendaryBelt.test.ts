@@ -81,6 +81,18 @@ async function runTests(): Promise<void> {
     }
   })
 
+  test('FIXED: Set 7+ uses 4:1 ratio (1 in 5 legendary — FFG advertised rate, JTL onward)', () => {
+    // SPEC source: official starwarsunlimited.com "Updates and Rotations":
+    // "Legendary cards will appear... around 1 in every 5 packs" starting with
+    // JTL and going forward. 11 real ASH boxes observe 56L/264 packs = 21.2%
+    // rare-slot legendaries ~= the advertised 20%; advertised rate CANNOT
+    // include HS/HSF/Prestige legendaries (rare slot alone already hits ~21%).
+    for (const setCode of ['LAW', 'ASH']) {
+      const belt = new RareLegendaryBelt(setCode)
+      assertEqual(belt.ratio, 4, `${setCode} should use 4:1 ratio (1 in 5)`)
+    }
+  })
+
   test('hopper is filled on initialization', () => {
     const belt = new RareLegendaryBelt('SOR')
     assert(belt.hopper.length > belt.fillingPool.length, 'Hopper should be at least as large as filling pool after init')

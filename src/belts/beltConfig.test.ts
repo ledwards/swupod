@@ -41,8 +41,8 @@ const EXPECTED: Record<string, { rl: number; rlWindow: number; hsrl: number; lea
   JTL: { rl: 5, rlWindow: 6, hsrl: 5, leaderCap: 24 },
   LOF: { rl: 5, rlWindow: 6, hsrl: 5, leaderCap: 24 },
   SEC: { rl: 5, rlWindow: 6, hsrl: 5, leaderCap: 24 },
-  LAW: { rl: 5, rlWindow: 3, hsrl: 5, leaderCap: 3 },
-  ASH: { rl: 5, rlWindow: 3, hsrl: 5, leaderCap: 3 },
+  LAW: { rl: 4, rlWindow: 3, hsrl: 5, leaderCap: 3 },
+  ASH: { rl: 4, rlWindow: 3, hsrl: 5, leaderCap: 3 },
 }
 
 async function main() {

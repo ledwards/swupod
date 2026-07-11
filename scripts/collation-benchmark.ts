@@ -40,7 +40,7 @@ const TARGETS = {
   M6: 'Base same-aspect adjacency (consumer) — real 5/21 ≈ random 25%; band 15-35%',
   M7: 'Leader same-name repeat min gap (consumer) — real min 2; target ≤4',
   M8: 'Rare-slot same-name repeat min gap (consumer) — real min 2; target ≤4',
-  M9: 'Slot rates: HS leader ≈1/6, HS base ≈1/6, HS common =1/pack, UC1/UC2 HS =0, foil always HSF, R:L ≈5:1',
+  M9: 'Slot rates: HS leader ≈1/6, HS base ≈1/6, HS common =1/pack, UC1/UC2 HS =0, foil always HSF, R:L ≈4:1 (1-in-5 advertised; 11-box observed 21.2%)',
 }
 
 async function main() {

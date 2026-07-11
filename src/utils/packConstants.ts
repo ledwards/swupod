@@ -407,7 +407,10 @@ export const SET_7_PLUS_CONSTANTS: PackConstants = {
   // Rare Slot Legendary Ratio
   // Keeping similar to Set 4-6 until we have more data
   // ---------------------------------------------------------------------------
-  rareSlotLegendaryRatio: 5,
+  // 4:1 = 1-in-5 legendary — FFG advertised rate for JTL onward (official
+  // "Updates and Rotations"); 11 real ASH boxes observe 21.2% ~= advertised 20%.
+  // (Sets 4-6 remain at the shipped 5:1 pending an explicit past-sets decision.)
+  rareSlotLegendaryRatio: 4,
 
   // ---------------------------------------------------------------------------
   // Prestige Card Rate in Rare Slot

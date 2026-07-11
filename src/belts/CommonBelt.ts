@@ -1089,11 +1089,12 @@ export class CommonBelt {
     // Dedup window: min(24, floor(beltSize/2)) to ensure feasibility
     this.DEDUP_WINDOW = Math.min(24, Math.floor(this.beltCards.length / 2))
 
-    // Set 7+ normal lanes use the paired-copy line model (every card twice per
-    // boot, copies 1-3 packs apart — real ASH box 001 line order). Variant
-    // lanes (HS) and sets 1-6 keep single-copy boots.
+    // Line-stacking sets use the paired-copy line model on normal lanes (every
+    // card twice per boot, copies 1-3 packs apart — real box line order).
+    // Variant lanes (HS) and non-line-stacking sets keep single-copy boots.
+    // Config-driven (packRules.lineStackingCollation), never setNumber branches.
     this.usesPairedBoot =
-      (getSetConfig(setCode)?.setNumber ?? 0) >= 7 && variantType === 'Normal'
+      getSetConfig(setCode)?.packRules?.lineStackingCollation === true && variantType === 'Normal'
 
     // Track last served aspect for seam continuity
     this.lastServedAspect = null
