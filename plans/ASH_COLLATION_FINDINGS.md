@@ -480,3 +480,32 @@ column) will show whether case assembly alternates box orientation — a case-le
 collation signature. (Model impact nil regardless; stackBoxOrder unchanged.)
 
 (Boxes 005–007 pending.)
+
+## 📦 Teddy's case — 4 boxes (structural/rarity pass, 2026-07-11)
+
+Second case, 4 boxes from Teddy (unknown pull-order → NOT usable for pool/stacking/
+intra-case; used for order-INDEPENDENT quota + rate confirmation). Lower-res portrait
+photos: identity + rarity-icon reliable; the borderless-Hyperspace tell is NOT reliably
+visible → HS leader/base/common rates NOT measurable from Teddy, and foil-hit RARITY
+noisy (Rare-foil vs UC3 HS-Rare confusable). Rare-slot R/L (structurally locatable
+pos16) and foil common-count are the trustworthy signals.
+
+| Box | packs | rare slot | foil |
+|---|---|---|---|
+| teddy-01 | 24 | **19R / 5L** | 19C + 5 |
+| teddy-02 | 23 (1 pack missing) | 17R / 6L | 19C + 4 |
+| teddy-03 | 24 | **19R / 5L** | 22C + 2 |
+| teddy-04 | 24 | 18R / 6L | 18C + 6 |
+
+**8-box verdict on the quota (Lee 4 verified + Teddy 4):** rare-slot legendaries per box
+= **5,5,5,5** (Lee, exact) + **5,6,5,6** (Teddy). Six of eight land on exactly 5L; the
+two 6L are both Teddy (likely low-res Rare→Legendary misreads, or mild variance). Foil
+common-count clusters ~18–22 ≈ 20/box everywhere. → **The per-box quota is real and
+corroborated across two independent cases.** Hard-exact-5 vs very-tight-distribution:
+Lee's number-verified boxes say exact-5; Teddy is consistent within its noise. Implement
+as a fixed per-box quota (5L+19R rare slot, 20C+4 foil); Lee box5/6 (tomorrow, verified)
+add 2 more exact points.
+
+Teddy detection artifacts (NOT real findings): "Showcase at UC3" (pack) = misread HS-UC;
+"Doc Defender" foreign card = misread DDC Defender (#210); numHScommons=0 everywhere =
+resolution can't see borderless frame. Raw per-pack summaries in scratch (crops/teddy-0X/out/).
