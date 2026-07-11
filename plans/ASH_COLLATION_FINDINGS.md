@@ -351,3 +351,51 @@ the failure — treat package.json qa-script edits in merges as a red flag.
 - Single box (24 packs). All z-scores are one-box evidence.
 - pack04 variant calls are frame-inferred (blurry photo), not number-read.
 - Visual layout order assumed to preserve the order cards came out of the pack.
+
+---
+
+# 🧪 Phase 4 — 6-Box Case Recalibration (in progress, 2026-07-10)
+
+**Dataset:** Lee's sealed case of 6 ASH boxes (distinct from box-001 "Porg Depot").
+One pack per photo, removal order = left column top→bottom then right. Case removal
+order also captured (left column then right) → case factory-line hypothesis
+(box-level analog of the pack interleave): boxes **3,6,2,5,1,4**.
+
+**Box ↔ case ↔ file mapping:**
+
+| Lee box | case slot | CSV file |
+|---|---|---|
+| box1 | left-top | `ash-box-002.csv` |
+| box2 | left-mid | `ash-box-003.csv` |
+| box3 | left-bottom | `ash-box-004.csv` |
+| box4 | right-top | `ash-box-005.csv` |
+| box5 | right-mid | `ash-box-006.csv` |
+| box6 | right-bottom | `ash-box-007.csv` |
+
+Pipeline: HEIC→JPEG→62% overlapping quadrant crops → sonnet transcription
+(number-driven) → opus verification (re-crop/re-read flagged + low-confidence;
+canonicalize slots) → merge with reference cross-check (identity+variant derived
+from the printed number, normalNumber by identity lookup).
+
+## Box-002 (Lee box1) — LOCKED ✅
+
+**Duplicate-tail: CLEAN box.** Pools (removal order) dup identities **5 / 7 / 4 / 5**;
+Normal+Normal pairs **0 / 1 / 0 / 0**; 185 distinct (target 183 ✓); 4 same-pack
+collisions, all cross-variant. **Zero clumpy pools** (box-001 had two: 13, 10).
+→ First confirmation the clumpy tail is **box-dependent, not universal**.
+
+**Rate confirmations (on-model):** HS leader 3/24 (p8,15,20); HS base 2/24 (p2,18);
+leader+base HS co-occurrence 0; UC3 = 15 Normal / 6 HS-UC / 2 HS-Rare / 1 Prestige
+(37.5% upgrade ✓); prestige 1; showcase 0; UC1/UC2 HS = 0 ✓; foil slot always HSF ✓;
+2 packs with 2 HS commons (p11 #393+#340, p18 #344+#434 — verified real).
+
+**Accumulating recalibration signals (box-001 + box-002 agree):**
+- ⚠️ **Foil-slot rarity runs more common than the shipped C72/U13/R8/S4/L3.**
+  box-001 foils 20C/1U/1R/1S/1L; box-002 foils 20C/4U/0R/0S/0L → combined
+  **40C/5U/1R/1S/1L of 48 = 83% Common** (model 72%); R/S/L rarer than modeled.
+  Both boxes independently hit 20 commons/24. Candidate: raise foil common share
+  toward ~83%, lower R/S/L. HOLD exact weights for boxes 3–6 (R/S/L low-count).
+- ⚠️ Rare slot R:L both boxes 19/5 = 3.8:1 (model 5:1) — mild legendary-heavy lean.
+- ⚠️ 2-HS-common packs both boxes 2/24 ≈ 8% (model ~5%) — mild.
+
+(Boxes 003–007 pending; stacking + intra-case ordering analysis begins at ≥2 locked boxes.)
