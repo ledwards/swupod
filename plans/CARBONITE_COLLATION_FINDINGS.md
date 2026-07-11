@@ -146,34 +146,35 @@ packs, **0 prestige cards are leader-type** — the generator's `!isLeader` pres
 filter is correct. (Minor DB hygiene note: the two Grogu entries' duplicate numbers
 are worth cleaning up, but they don't affect generation.)
 
-### 📦 Box 001 — 12 ASH carbonite packs (pull-order), the real calibration data
+### 📦 Boxes 001–004 — 48 ASH carbonite packs (pull-order), the real calibration data
 
-`data/real-boxes/ash-carbonite-box-001.csv` — 12 packs from photos IMG_3978–3989,
-laid in **pull order** (front→back = left→right, top→bottom). Every card decoded by
-collector number and looked up in `cards.json` (number is authoritative; names alone
-are ambiguous — see the two Grogus). Run: `npx tsx scripts/analyze-carbonite-corpus.ts`.
+`data/real-boxes/ash-carbonite-box-00{1,2,3,4}.csv` — a full CASE (4 boxes × 12 packs,
+photos IMG_3978–4033), laid in **pull order** (front→back = left→right, top→bottom).
+Every card decoded by collector number and looked up in `cards.json` (number is
+authoritative; names alone are ambiguous — many leaders share a name+number with a
+unit). **All 768 numbers land in their expected treatment band (0 violations)** —
+strong internal consistency. Run: `npx tsx scripts/analyze-carbonite-corpus.ts`.
 
-**Uniform structure, 12/12:** `pos1 Leader(HS) · pos2–9 HS×8 · pos10 Prestige · pos11–16 HSF×6`.
-Slot COUNTS match the generator (leader + prestige + 8 HS + 6 HSF). Two things the
-generator gets wrong and several rate refinements — see theses below.
+**Uniform structure, 48/48:** `pos1 Leader(HS) · pos2–9 HS×8 · pos10 Prestige · pos11–16 HSF×6`.
+Slot COUNTS match the generator (leader + prestige + 8 HS + 6 HSF). The generator gets
+the prestige POSITION and several RATES wrong — see theses.
 
-**Ordering is real and strong (answers OPEN-4):**
-- HS run ascends by rarity **12/12** (commons → the R/L "top" at pos 9; rarest-is-last 11/12).
-- HSF run descends **11/12** (elevated card at pos 11 → commons; rarest-is-first 11/12).
+**Ordering is real and strong (answers OPEN-4), 48 packs:**
+- HS run ascends by rarity **48/48** (commons → the R/L "top" at pos 9; rarest-is-last 45/48).
+- HSF run descends **42/48** (elevated card at pos 11 → commons; rarest-is-first 42/48).
 - ⇒ the "hits" (HS-top pos9, Prestige pos10, HSF-top pos11) **cluster in the middle**.
-  Observed collation rank order is `C < U < Special < Rare < Legendary` (Special sits
-  just below Rare, consistently).
+  Observed collation rank order is `C < U < Special < Rare < Legendary`.
 
-**Rates (the numbers we were guessing):**
-| block | observed /pack (n=12) | generator spec /pack |
+**Rates (the numbers we were guessing) — n=48:**
+| block | observed /pack (n=48) | generator spec /pack |
 |---|---|---|
-| HS (8) | C 4.75 · U 1.83 · R 0.92 · S 0.25 · L 0.25 | C 4.96 · U 1.89 · R 0.69 · S 0.23 · L 0.23 |
-| HS non-common count | always **3 (9pk) or 4 (3pk)** | 1–4 (wider, 3 random flex) |
-| HS **top** (pos9) | R 9 · L 3 · **S 0** · C 0 · U 0 | spec R60/**S20**/L20 |
-| HSF (6) | C 3.92 · U 1.50 · R 0.42 · S 0.08 · L 0.08 | C 3.72 · U 1.76 · R 0.40 · S 0.06 · L 0.06 |
-| HSF first (pos11) | **never Common** (U 6 · R 5 · L 1) | flex can be Common |
-| Prestige tiers | Standard 8 · **Foil 4** · Serialized 0 | 80 / **18** / 2 |
-| Leader showcase | 0/12 | 1/48 (✓, consistent) |
+| HS (8) | C 4.79 · U 1.88 · R 0.92 · S 0.21 · L 0.21 | C 4.96 · U 1.89 · R 0.69 · S 0.23 · L 0.23 |
+| HS non-common count | always **3 (38pk) or 4 (10pk)** | 1–4 (wider, 3 random flex) |
+| HS **top** (pos9) | **R 38 · L 10 · S 0 · C 0 · U 0** (≈R79/L21) | spec R60/**S20**/L20 |
+| HSF (6) | C 3.90 · U 1.48 · R 0.40 · S 0.13 · L 0.10 | C 3.72 · U 1.76 · R 0.40 · S 0.06 · L 0.06 |
+| HSF first (pos11) | **never Common** (U 24 · R 19 · L 5 ≈ U50/R40/L10) | flex can be Common |
+| Prestige tiers | **Std 32 · Foil 15 · Ser 1 (67/31/2)** | 80 / 18 / 2 |
+| Leader showcase | 0/48 | 1/48 (✓, consistent) |
 
 **Cross-treatment pairs confirmed (validates the dedup fix):** same card in two
 treatments within one pack occurs naturally — Unsanctioned Patrol HS+HSF (pack 5),
@@ -191,16 +192,17 @@ Hyperspace + flag.
   Reorder generator output to `leader, 8×HS, prestige, 6×HSF`. High-confidence, trivial.
 - **T2 — Emit each run rarity-sorted: HS ascending, HSF descending** (hits in the middle).
   Do it as belt/collation emission order, NOT a post-hoc dedup-style reorder (belt rule).
-- **T3 — HS top slot (pos9) is R/L only, no Special; Legendary heavier.** Retune
-  `hsTopWeights` R60/S20/L20 → ~**R75 / L25 / S0**. Special shows up as a mid-run flex
-  upgrade instead (0/12 in the top, 3/12 as pos7–8 flex).
-- **T4 — Tighten the HS flex so non-common count stays 3–4** (reality never 2 or ≥5).
-  Model HS as ~5C + 2U + 1 R/L-top with a light single-upgrade layer, rather than 3
+- **T3 — HS top slot (pos9) is R/L only, no Special.** n=48: R 38 / L 10 / **S 0**.
+  Retune `hsTopWeights` R60/S20/L20 → **{Rare: 79, Legendary: 21}** (drop Special — it
+  appears only as a mid-run flex upgrade, 0/48 in the top).
+- **T4 — Tighten the HS flex so non-common count stays 3–4** (n=48: 3→38pk, 4→10pk;
+  never 2 or ≥5). Model HS as ~5C + 2U + 1 R/L-top with a ~20% single-upgrade, not 3
   fully-random flex draws (which spread commons 4→7).
-- **T5 — Guarantee one ≥Uncommon HSF slot at pos 11** (never Common in 12 packs). HSF
-  rates otherwise already match spec — this is the one structural gap.
-- **T6 — Foil prestige likely under-weighted:** observed 33% vs spec 18% (Serialized
-  0/12, consistent with 2%). n=12 — bump toward ~25–30% only after box 002 confirms.
+- **T5 — Guarantee one ≥Uncommon HSF slot at pos 11** (never Common in 48; U 24 / R 19
+  / L 5 ≈ **U50/R40/L10**). Add an HSF "top" at pos 11; the other 5 HSF ≈ 4C + 1 elevated.
+- **T6 — Prestige tiers are ~67/31/2, NOT 80/18/2.** n=48: Std 32 / Foil 15 / Ser 1.
+  Serialized is nailed at 2%; Foil is ~31% not 18%. Retune `prestigeTierWeights` →
+  **{tier1: 67, tier2: 31, serialized: 2}**.
 - **T7 — Belt model verdict (Lee's question):** the tight non-common counts, the
   guaranteed R/L-top + ≥U-HSF slots, and the clean rarity-sorted runs point to a
   **structured collation** (dedicated rarity slots + light upgrade layer + sort) — i.e.
