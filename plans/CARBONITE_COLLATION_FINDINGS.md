@@ -210,6 +210,30 @@ Hyperspace + flag.
   Keep the slot-belt architecture; fix ordering (T1/T2) + guaranteed slots (T3/T5) +
   flex tightening (T4).
 
+### ✅ Shipped (ASH-only, per-set overrides — LAW untouched)
+
+Carbonite rates are **per set** (LAW ≠ ASH — LAW e.g. has no guaranteed R/L HS top).
+Implemented as `CARBONITE_SET_OVERRIDES` + `getCarboniteConstants(setCode)`; every
+non-ASH set keeps `CARBONITE_CONSTANTS`. Red-green in `carboniteBoosterPack.test.ts`
+(incl. LAW-unchanged guards); per-set QA in `carboniteDistribution.test.ts`.
+- **T6 shipped** — ASH `prestigeTierWeights → {tier1:67, tier2:31, serialized:2}`
+  (verified 67.2/30.9/2.0; LAW stays 80/18/2).
+- **T3 shipped** — ASH `hsTopWeights → {Rare:79, Legendary:21}`, and the ASH hs-top
+  slot's rarities drop Special entirely (the belt floors each in-pool rarity to ≥1
+  copy/boot, so weight-0 alone leaked ~0.8% Special — had to exclude the rarity, not
+  just zero its weight). ASH top now 0 Special; LAW top still R60/S20/L20.
+- Still open (layout/belt changes, staged for later): T1 prestige position, T2 run
+  ordering, T4 flex tightening, T5 guaranteed HSF slot.
+
+### 🧭 Box-fill interleave (Lee's 6,12,5,11,4,10,3,9,2,8,1,7 theory) — NOT supported
+
+Tested over all 4 boxes: shared HS/HSF card names between fill-adjacent pack pairs =
+**0.477/pair** vs all-pairs baseline **0.515** (box-order-adjacent 0.432, same-row
+0.500 — all equal; the high-sharing 3–5 pairs are NOT fill-adjacent). No factory-line
+duplicate clustering — carbonite duplicates spread uniformly across pack pairs. So
+**no box-stacking model is needed for carbonite** (matches Lee: cross-pack order
+matters much less here than in regular boxes).
+
 ## 📋 Spec-doc drift (flagged per "trust code over docs")
 
 `plans/CARBONITE_PACK_PLAN.md` is **stale** vs the code (code is ground truth):

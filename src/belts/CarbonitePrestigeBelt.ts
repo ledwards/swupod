@@ -19,7 +19,7 @@
 import { getCachedCards } from '../utils/cardCache'
 import type { RawCard } from '../utils/cardData'
 import type { SetCode } from '../types'
-import { CARBONITE_CONSTANTS } from '../utils/carboniteConstants'
+import { getCarboniteConstants } from '../utils/carboniteConstants'
 
 /**
  * Shuffle an array in place (Fisher-Yates)
@@ -35,10 +35,9 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 /**
- * Roll a prestige tier based on weights
+ * Roll a prestige tier based on per-set weights
  */
-function rollPrestigeTier(): string {
-  const weights = CARBONITE_CONSTANTS.prestigeTierWeights
+function rollPrestigeTier(weights: { tier1: number; tier2: number; serialized: number }): string {
   const total = weights.tier1 + weights.tier2 + weights.serialized
   const roll = Math.random() * total
 
@@ -63,6 +62,8 @@ export class CarbonitePrestigeBelt {
   setCode: SetCode
   tiers: Record<string, TierPool>
   useSynthesis: boolean
+  // Per-set prestige tier weights (ASH differs from LAW — see carboniteConstants)
+  tierWeights: { tier1: number; tier2: number; serialized: number }
 
   // Synthesis fallback fields (used only when no real prestige cards exist)
   _synthFillingPool: RawCard[]
@@ -72,6 +73,7 @@ export class CarbonitePrestigeBelt {
     this.setCode = setCode as SetCode
     this.tiers = {}
     this.useSynthesis = false
+    this.tierWeights = getCarboniteConstants(setCode as string).prestigeTierWeights
     this._synthFillingPool = []
     this._synthHopper = []
 
@@ -153,7 +155,7 @@ export class CarbonitePrestigeBelt {
    * Used by carbonite packs.
    */
   next(): RawCard | null {
-    const tierKey = rollPrestigeTier()
+    const tierKey = rollPrestigeTier(this.tierWeights)
 
     if (this.useSynthesis) {
       return this._drawSynthesized(tierKey)

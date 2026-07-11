@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Carbonite Distribution QA
  *
@@ -15,7 +14,7 @@
 
 import { generateCarboniteBoosterPack, clearCarboniteBeltCache } from '../utils/carboniteBoosterPack'
 import { initializeCardCache } from '../utils/cardCache'
-import { CARBONITE_CONSTANTS } from '../utils/carboniteConstants'
+import { CARBONITE_CONSTANTS, getCarboniteConstants } from '../utils/carboniteConstants'
 
 let passed = 0
 let failed = 0
@@ -50,7 +49,7 @@ async function main() {
     const rlFoil: Record<string, number> = {}, rlHS: Record<string, number> = {}, top: Record<string, number> = {}
 
     for (let i = 0; i < SAMPLE; i++) {
-      const cards = generateCarboniteBoosterPack(code).cards as any[]
+      const cards = generateCarboniteBoosterPack(code).cards as unknown as any[]
       if (cards.length !== 16) notSized++
       const keys = cards.filter(isDeck).map(treatmentKey)
       if (new Set(keys).size !== keys.length) dupPacks++
@@ -80,17 +79,22 @@ async function main() {
     check(`${code}: showcase rate ~${scT.toFixed(1)}% (band ±2)`, Math.abs(scRate - scT) <= 2,
       `got ${scRate.toFixed(2)}%, spec ${scT.toFixed(2)}%`)
 
-    // Prestige tier1 band (spec 80%)
+    // Prestige tier1 band — per-set (ASH 67% vs LAW 80%)
+    const setConsts = getCarboniteConstants(set)
+    const tw = setConsts.prestigeTierWeights
+    const t1Exp = tw.tier1 / (tw.tier1 + tw.tier2 + tw.serialized) * 100
     const tTot = Object.values(tier).reduce((a, b) => a + b, 0)
     const t1 = pctOf(tier.tier1 || 0, tTot)
-    check(`${code}: prestige tier1 ~80% (band 75-85)`, t1 >= 75 && t1 <= 85, `got ${t1.toFixed(1)}%`)
+    check(`${code}: prestige tier1 ~${t1Exp.toFixed(0)}% (band ±8)`, Math.abs(t1 - t1Exp) <= 8, `got ${t1.toFixed(1)}%`)
 
-    // Weighted R/S/L slots — Rare majority ~70% / top ~60%
+    // Weighted R/S/L slots — HS top Rare per-set (ASH 79% R/L-only vs LAW 60%)
     if (isLawPlus) {
+      const tw2 = setConsts.hsTopWeights
+      const rExp = (tw2.Rare || 0) / Object.values(tw2).reduce((a, b) => a + b, 0) * 100
       const tt = Object.values(top).reduce((a, b) => a + b, 0)
       const r = pctOf(top.Rare || 0, tt)
       const forbidden = tt - (top.Rare || 0) - (top.Special || 0) - (top.Legendary || 0)
-      check(`${code}: HS-top Rare ~60% (band 54-66)`, r >= 54 && r <= 66, `got ${r.toFixed(1)}%`)
+      check(`${code}: HS-top Rare ~${rExp.toFixed(0)}% (band ±8)`, Math.abs(r - rExp) <= 8, `got ${r.toFixed(1)}%`)
       check(`${code}: HS-top only R/S/L`, forbidden === 0, `${forbidden} non-R/S/L`)
     } else {
       const fT = Object.values(rlFoil).reduce((a, b) => a + b, 0)

@@ -36,7 +36,7 @@ import { CarbonitePrestigeBelt } from '../belts/CarbonitePrestigeBelt'
 import { CarboniteSlotBelt, type CarboniteSlotBeltConfig } from '../belts/CarboniteSlotBelt'
 import { getSetConfig } from './setConfigs/index'
 import { getCachedCards } from './cardCache'
-import { CARBONITE_CONSTANTS, getBaseSetCode, isCarboniteSupported } from './carboniteConstants'
+import { CARBONITE_CONSTANTS, getCarboniteConstants, getBaseSetCode, isCarboniteSupported } from './carboniteConstants'
 
 interface Pack {
   cards: RawCard[]
@@ -298,7 +298,12 @@ export function generateCarboniteBoosterPack(compositeCode: string): Pack {
     const prestigeBelt = getCBPrestigeBelt(baseCode)
     const hsCommonBelt = getCBSlotBelt(baseCode, 'hs-common', COMMON_HS_CONFIG)
     const hsFlexBelt = getCBSlotBelt(baseCode, 'hs-flex', LAW_HS_FLEX_CONFIG)
-    const hsTopBelt = getCBSlotBelt(baseCode, 'hs-top', LAW_HS_TOP_CONFIG)
+    // HS top weights are per-set (ASH is R/L only, no Special — see carboniteConstants).
+    // Rarities are derived from the weight keys so a dropped rarity is truly excluded
+    // (the belt floors each in-pool rarity to >=1 copy/boot, so weight 0 alone leaks it).
+    const hsTopWeights = getCarboniteConstants(baseCode).hsTopWeights
+    const hsTopConfig: CarboniteSlotBeltConfig = { ...LAW_HS_TOP_CONFIG, rarities: Object.keys(hsTopWeights), weights: hsTopWeights }
+    const hsTopBelt = getCBSlotBelt(baseCode, 'hs-top', hsTopConfig)
     const hsfFlexBelt = getCBSlotBelt(baseCode, 'hsf-flex', LAW_HSF_FLEX_CONFIG)
     const hsfCommonBelt = getCBSlotBelt(baseCode, 'hsf-common', LAW_HSF_COMMON_CONFIG)
 

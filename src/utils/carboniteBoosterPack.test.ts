@@ -614,6 +614,69 @@ async function runTests(): Promise<void> {
   })
 
   // ======================
+  // Per-set ASH calibration (real 48-pack case: data/real-boxes/ash-carbonite-box-00{1..4})
+  // ASH overrides LAW; LAW behavior must stay unchanged.
+  // ======================
+  console.log('')
+  console.log('\x1b[1m\x1b[35mASH Per-Set Calibration (48-pack case)\x1b[0m')
+
+  const prestigeTierOf = (v: string): string =>
+    v === 'Standard Prestige' ? 'tier1' : v === 'Foil Prestige' ? 'tier2' : v === 'Serialized Prestige' ? 'serialized' : '?'
+
+  function prestigeTierPcts(setCode: string, n: number): Record<string, number> {
+    clearCarboniteBeltCache()
+    const counts: Record<string, number> = { tier1: 0, tier2: 0, serialized: 0 }
+    const prestigeIdx = ['LAW-CB', 'ASH-CB'].includes(setCode) ? 1 : 8
+    for (let i = 0; i < n; i++) {
+      const pack = generateCarboniteBoosterPack(setCode)
+      const t = prestigeTierOf(pack.cards[prestigeIdx].variantType)
+      if (counts[t] !== undefined) counts[t]++
+    }
+    const tot = counts.tier1 + counts.tier2 + counts.serialized
+    return { tier1: counts.tier1 / tot * 100, tier2: counts.tier2 / tot * 100, serialized: counts.serialized / tot * 100 }
+  }
+
+  function hsTopRarityPcts(setCode: string, n: number): Record<string, number> {
+    clearCarboniteBeltCache()
+    const counts: Record<string, number> = {}
+    for (let i = 0; i < n; i++) {
+      const card = generateCarboniteBoosterPack(setCode).cards[9] // HS top slot
+      counts[card.rarity] = (counts[card.rarity] || 0) + 1
+    }
+    const out: Record<string, number> = {}
+    for (const k of Object.keys(counts)) out[k] = counts[k] / n * 100
+    return out
+  }
+
+  test('FIXED: ASH prestige tiers ~67/31/2 (real 48-pack case), not 80/18/2', () => {
+    // SPEC: data/real-boxes/ash-carbonite-box-00{1..4}.csv — Std 32 / Foil 15 / Ser 1
+    const p = prestigeTierPcts('ASH-CB', 5000)
+    assert(p.tier1 > 61 && p.tier1 < 73, `ASH tier1 should be ~67%, got ${p.tier1.toFixed(1)}%`)
+    assert(p.tier2 > 25 && p.tier2 < 37, `ASH tier2 (Foil) should be ~31%, got ${p.tier2.toFixed(1)}%`)
+    assert(p.serialized > 0.5 && p.serialized < 4, `ASH serialized should be ~2%, got ${p.serialized.toFixed(1)}%`)
+  })
+
+  test('FIXED: ASH HS top slot is R/L only — 0 Special (real 48/48)', () => {
+    // SPEC: real case pos-9 top = R 38 / L 10 / S 0 -> hsTopWeights {Rare:79, Legendary:21}
+    const r = hsTopRarityPcts('ASH-CB', 4000)
+    assertEqual(r.Special || 0, 0, `ASH HS top must have 0 Special, got ${(r.Special || 0).toFixed(1)}%`)
+    assert((r.Rare || 0) > 72 && (r.Rare || 0) < 86, `ASH HS top Rare should be ~79%, got ${(r.Rare || 0).toFixed(1)}%`)
+    assert((r.Legendary || 0) > 13 && (r.Legendary || 0) < 29, `ASH HS top Legendary should be ~21%, got ${(r.Legendary || 0).toFixed(1)}%`)
+  })
+
+  test('LAW carbonite UNCHANGED: prestige tiers still ~80/18/2 (per-set isolation)', () => {
+    // SPEC: ASH override must NOT touch LAW — LAW keeps CARBONITE_CONSTANTS (80/18/2)
+    const p = prestigeTierPcts('LAW-CB', 5000)
+    assert(p.tier1 > 74 && p.tier1 < 86, `LAW tier1 should stay ~80%, got ${p.tier1.toFixed(1)}%`)
+  })
+
+  test('LAW carbonite UNCHANGED: HS top still includes Special (per-set isolation)', () => {
+    // SPEC: LAW hsTopWeights R60/S20/L20 — Special present; only ASH drops it
+    const r = hsTopRarityPcts('LAW-CB', 4000)
+    assert((r.Special || 0) > 10, `LAW HS top should still have ~20% Special, got ${(r.Special || 0).toFixed(1)}%`)
+  })
+
+  // ======================
   // Within-pack duplicate invariant (FIX-1)
   // ======================
   console.log('')

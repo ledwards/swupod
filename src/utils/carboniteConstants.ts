@@ -112,6 +112,38 @@ export const CARBONITE_CONSTANTS = {
 } as const
 
 /**
+ * Per-set carbonite overrides. Carbonite rates are PER SET — LAW and ASH are not
+ * identical (e.g. LAW has no guaranteed R/L HS top slot). Only override what real
+ * data proves for a specific set; every other set keeps CARBONITE_CONSTANTS.
+ *
+ * ASH: calibrated from a real 48-pack case (data/real-boxes/ash-carbonite-box-00{1..4}.csv):
+ *   - prestige tiers observed 67/31/2 (not 80/18/2); Serialized confirmed at 2%.
+ *   - HS top slot (pos 9) is R/L only — 0 Special in 48 packs (spec had S20).
+ */
+export const CARBONITE_SET_OVERRIDES: Record<string, {
+  prestigeTierWeights?: { tier1: number; tier2: number; serialized: number }
+  hsTopWeights?: Record<string, number>
+}> = {
+  ASH: {
+    prestigeTierWeights: { tier1: 67, tier2: 31, serialized: 2 },
+    hsTopWeights: { Rare: 79, Legendary: 21 },
+  },
+}
+
+/**
+ * Resolve carbonite constants for a base set code, applying any per-set override.
+ * Nested weight objects are replaced wholesale by the override (not deep-merged).
+ */
+export function getCarboniteConstants(baseSetCode: string) {
+  const ov = CARBONITE_SET_OVERRIDES[baseSetCode] || {}
+  return {
+    ...CARBONITE_CONSTANTS,
+    prestigeTierWeights: ov.prestigeTierWeights || CARBONITE_CONSTANTS.prestigeTierWeights,
+    hsTopWeights: ov.hsTopWeights || CARBONITE_CONSTANTS.hsTopWeights,
+  }
+}
+
+/**
  * Check if a set code supports Carbonite packs
  */
 export function isCarboniteSupported(baseSetCode: string): boolean {
