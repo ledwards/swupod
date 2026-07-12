@@ -287,29 +287,30 @@ async function runTests(): Promise<void> {
       `SPEC: Legendary rate should be ~${(expectedRate * 100).toFixed(1)}%, got ${(legendaryRate * 100).toFixed(1)}%`)
   })
 
-  test('HyperspaceRL: sets 4-6 use 5:1 ratio (~16.7% legendary)', () => {
-    // SPEC: Sets 4+ Hyperspace R/L slot has 5:1 ratio (1 in 6 = ~16.7% legendary)
+  test('HyperspaceRL: overall legendary rate = 1/(ratio+1) — specials do not dilute it', () => {
+    // SPEC: the HS R/L slot is `ratio`:1 (rares+specials):legendaries, so the OVERALL
+    // legendary rate (Legendary / all draws, specials INCLUDED in the denominator — what a
+    // player actually pulls) is 1/(ratio+1). Ratio comes from config (hsRareSlotLegendaryRatio),
+    // so this stays correct if it changes. The old test measured Legendary/(Rare+Legendary),
+    // excluding specials, which read 1/(ratio+1) regardless and masked a belt bug: specials
+    // were added at rare-frequency WITHOUT being counted in legMult, so the true overall rate
+    // was diluted (~14.5% at ratio 5, not 16.7%). See HyperspaceRareLegendaryBelt._fill.
     const belt = new HyperspaceRareLegendaryBelt('JTL')
     assertEqual(belt.ratio, 5, 'JTL should use 5:1 ratio')
+    const expectedRate = 1 / (belt.ratio + 1)  // ratio 5 → 1/6 ≈ 16.7%
 
-    // Validate actual output matches spec
-    const counts: Record<string, number> = { Rare: 0, Legendary: 0 }
-    for (let i = 0; i < 600; i++) {
-      const card = belt.next()
-      counts[card.rarity] = (counts[card.rarity] || 0) + 1
+    const N = 40000
+    let legendary = 0
+    for (let i = 0; i < N; i++) {
+      if (belt.next().rarity === 'Legendary') legendary++
     }
-    const total = counts.Rare + counts.Legendary
-    const legendaryRate = counts.Legendary / total
-    const expectedRate = 1 / 6  // ~16.7%
-    // Tolerance 0.08, not 0.05: the JTL R/L boot's MEASURED legendary rate is ~0.1452
-    // (sd 0.0097 over 600 draws) — the belt's effective ratio lands slightly under the
-    // nominal 5:1, so the true mean sits ~2.2σ below expectedRate and the old ±0.05 window's
-    // low edge (0.1167) was only ~2.9σ from the true mean → flaked ~0.13% of runs. ±0.08
-    // puts the nearest edge ~6σ from the measured mean (flake-free) while a real ratio bug
-    // (e.g. 50/50 → 0.50, or all-rare → 0) is still far outside. Per .claude/rules/testing.md
-    // (rate bands matched to the measured distribution).
-    assert(Math.abs(legendaryRate - expectedRate) < 0.08,
-      `SPEC: Legendary rate should be ~${(expectedRate * 100).toFixed(1)}% (measured belt mean ~14.5%, tol ±8%), got ${(legendaryRate * 100).toFixed(1)}%`)
+    const legendaryRate = legendary / N   // Legendary / ALL (rares + specials + legendaries)
+    // Band ±0.013 ≈ 7σ at N=40000 (sd ~0.00186) → flake-free at the true 1/(ratio+1); the old
+    // specials-diluted 14.5% is 0.0215 off (≈11σ) → clearly fails. Per .claude/rules/testing.md.
+    assert(Math.abs(legendaryRate - expectedRate) < 0.013,
+      `SPEC: overall Legendary rate should be 1/(ratio+1) = ${(expectedRate * 100).toFixed(1)}%, ` +
+      `got ${(legendaryRate * 100).toFixed(2)}% over ${N} draws. ~14.5% means specials are diluting ` +
+      `the slot (legMult omits specialCount).`)
   })
 
   test('HyperspaceRL: hopper refills', () => {

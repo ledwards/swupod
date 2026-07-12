@@ -149,8 +149,13 @@ export class HyperspaceRareLegendaryBelt {
       return
     }
 
-    // Use legMult = rareCount, rareMult = ratio * legCount
-    const legMult = rareCount
+    // Target: (rares + specials) : legendaries = ratio : 1, so overall legendary rate =
+    // 1/(ratio+1), matching the configured hsRareSlotLegendaryRatio. Specials ride with
+    // rares at the same per-card frequency, so they must be counted in the non-legendary
+    // base — otherwise `legMult = rareCount` makes rares:legs exactly ratio:1 and the
+    // specials pile on top, diluting the OVERALL legendary rate (~14.5% at ratio 5 instead
+    // of 16.7%). Including specialCount keeps (rares+specials):legs = ratio:1.
+    const legMult = rareCount + this.specials.length
     const rareMult = this.ratio * legCount
 
     // Find GCD to reduce multipliers
