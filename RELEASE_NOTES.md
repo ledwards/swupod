@@ -12,8 +12,10 @@ You should notice:
 
 - **Our simulator produces same-name duplicates at the same rate as real 6-pack pools.**
 - **We validated pull rates across the board**, from legendaries, to uncommon slot upgrades, to the distribution of rarities across foil slots, and more.
+- **Legendaries now hit the official ~1-in-5 rate for every Jump to Lightspeed–era set.** JTL, LOF, and SEC join LAW and ASH at Fantasy Flight's published rate (up from 1 in 6); pre-JTL sets (SOR, SHD, TWI) keep their original 1 in 8.
 - **Rares, uncommons, and foils updated to even more closely match the real print-sheet patterns**, down to details like how far apart a repeated card rides on the factory line. If you've opened a real box, our boxes should feel indistinguishable.
 - **Carbonite packs got the same treatment**, calibrated from a full real Carbonite case: pull rates, prestige placement, and pack layout now mirror the real product.
+- **Live pack-quality stats reset to today**, so the QA dashboards now reflect the freshly calibrated generator rather than older, pre-tuning data.
 
 Why it matters: if you practice sealed here, the pools you build from should be statistically the same pools you'd crack at your kitchen table or a store event.
 

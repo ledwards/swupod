@@ -23,7 +23,7 @@ import './stats.css'
 const tournamentPlayerCount = tournamentUserIds.length
 
 // Stats start date - default to env var, or 2026-02-12 when position-based slot_type tracking was deployed.
-const DEFAULT_START_DATE = process.env.NEXT_PUBLIC_STATS_START_DATE || '2026-02-12'
+const DEFAULT_START_DATE = process.env.NEXT_PUBLIC_STATS_START_DATE || '2026-07-11'
 
 // Format numbers with commas
 const fmt = (n: number) => n.toLocaleString()
