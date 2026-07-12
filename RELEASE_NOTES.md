@@ -1,5 +1,11 @@
 # Release Notes
 
+## 07.11.2026
+
+### 📊 Smarter Leader Draft Stats
+- **First-pick rate up front**: The Leaders table in Draft stats now leads with how often each leader is taken first, so the most-prioritized leaders rise to the top. The old "selection %" read near-identical for every leader — in a draft each leader gets picked eventually, so it told you nothing.
+- **"Picked over" head-to-heads**: Click a leader to see which leaders it's taken over when they share an opening pack — how often it beats a specific rival, with sample sizes. Friends of the Pod can split it by All vs Top players.
+
 ## 07.10.2026
 
 ### 🔥 Ashes of the Empire is Live!
