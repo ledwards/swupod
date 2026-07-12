@@ -90,6 +90,17 @@ export interface PackConstants {
   rareBaseRate: number
   specialInFoilSlot: boolean
   specialInHyperspaceSlot?: boolean
+  // --- Belt parameters (config-driven; belts must NOT branch on setNumber) ---
+  hsRareSlotLegendaryRatio: number
+  rareLegendaryDedupWindow: number
+  leaderDedupWindowCap: number
+  hyperspaceLeaderDedupWindowCap: number | null
+  uncommonDedupWindow: number
+  uncommonAspectInterleave: boolean
+  baseLineAspectConflict: boolean
+  lineStackingCollation: boolean
+  carboniteTiered: boolean
+  foilBeltTargetWeights: RarityWeights
   hyperspaceFoilSlotWeights?: RarityWeights
   prestigeInRareSlotRate?: number
   uc3PrestigeRate?: number
@@ -215,6 +226,18 @@ export const SETS_1_3_CONSTANTS: PackConstants = {
   // ---------------------------------------------------------------------------
   specialInFoilSlot: false,
   specialInHyperspaceSlot: false,
+
+  // Belt parameters (sets 1-3; values byte-identical to former belt hardcodes)
+  hsRareSlotLegendaryRatio: 6,       // was: setNumber<=3 ? 6 : 5 in HyperspaceRareLegendaryBelt
+  rareLegendaryDedupWindow: 6,       // was: setNumber>=7 ? 3 : 6 in RareLegendaryBelt
+  leaderDedupWindowCap: 24,          // was: setNumber>=7 ? 3 : LEADER_DEDUP_WINDOW(24)
+  hyperspaceLeaderDedupWindowCap: null,
+  uncommonDedupWindow: 24,
+  uncommonAspectInterleave: true,
+  baseLineAspectConflict: false,     // Set 7+ line rule only
+  lineStackingCollation: false,      // Set 7+ only
+  carboniteTiered: false,
+  foilBeltTargetWeights: { Common: 78, Uncommon: 17, Rare: 5, Legendary: 0.3, Special: 0 },
 }
 
 // ============================================================================
@@ -335,6 +358,18 @@ export const SETS_4_6_CONSTANTS: PackConstants = {
   // ---------------------------------------------------------------------------
   specialInFoilSlot: true,
   specialInHyperspaceSlot: true,
+
+  // Belt parameters (sets 4-6; values byte-identical to former belt hardcodes)
+  hsRareSlotLegendaryRatio: 5,
+  rareLegendaryDedupWindow: 6,
+  leaderDedupWindowCap: 24,
+  hyperspaceLeaderDedupWindowCap: null,
+  uncommonDedupWindow: 24,
+  uncommonAspectInterleave: true,
+  baseLineAspectConflict: false,
+  lineStackingCollation: false,
+  carboniteTiered: false,
+  foilBeltTargetWeights: { Common: 75, Uncommon: 17, Rare: 4, Special: 4, Legendary: 0.3 },
 }
 
 // ============================================================================
@@ -378,7 +413,10 @@ export const SET_7_PLUS_CONSTANTS: PackConstants = {
   // Rare Slot Legendary Ratio
   // Keeping similar to Set 4-6 until we have more data
   // ---------------------------------------------------------------------------
-  rareSlotLegendaryRatio: 5,
+  // 4:1 = 1-in-5 legendary — FFG advertised rate for JTL onward (official
+  // "Updates and Rotations"); 11 real ASH boxes observe 21.2% ~= advertised 20%.
+  // (Sets 4-6 remain at the shipped 5:1 pending an explicit past-sets decision.)
+  rareSlotLegendaryRatio: 4,
 
   // ---------------------------------------------------------------------------
   // Prestige Card Rate in Rare Slot
@@ -476,6 +514,24 @@ export const SET_7_PLUS_CONSTANTS: PackConstants = {
   specialInFoilSlot: true,
   specialInHyperspaceSlot: true,
 
+  // Belt parameters (Set 7+; values byte-identical to former belt hardcodes)
+  hsRareSlotLegendaryRatio: 5,
+  rareLegendaryDedupWindow: 3,       // real ASH box 001: same-rare repeat at line gap 4
+  leaderDedupWindowCap: 3,           // real ASH box 001: leader repeats at line gaps 3-5
+  hyperspaceLeaderDedupWindowCap: 3,
+  // 6-box verified UC sheet (2026-07-11): repeats at pack-gaps 1-23 (seam-uniform,
+  // ~6.7/box) — the old 24-window forbade every real short-gap repeat; window 2
+  // allows them (min distance 3 draws = the observed 1-pack repeats). Aspect
+  // interleave STAYS ON: real within-pack adjacency is 3.9%, far below the ~20%
+  // a truly aspect-random 60-card sheet would give — the real sheet rotates.
+  // (An earlier no-rotation read used a broken within-pack shuffle baseline.)
+  uncommonDedupWindow: 3,  // min repeat distance 3 draws = the observed 1-pack gap; never same-pack
+  uncommonAspectInterleave: true,
+  baseLineAspectConflict: true,      // base sheet rotates aspects on the LINE (box 001: 1/21)
+  lineStackingCollation: true,       // factory line + box stacking model
+  carboniteTiered: true,             // LAW+ tiered carbonite structure
+  foilBeltTargetWeights: { Common: 75, Uncommon: 17, Rare: 4, Special: 4, Legendary: 0.3 },
+
   // ---------------------------------------------------------------------------
   // Rare Bases in Rare Slot
   // All sets (1-7) put rare bases in the rare slot via RareLegendaryBelt.
@@ -494,6 +550,8 @@ export const SET_7_PLUS_CONSTANTS: PackConstants = {
 
 export interface HSBeltConfig {
   cycleSize: number
+  // Set 7+ only: leader+base HS may co-occur in one plan (real ASH pool-002 pack06)
+  allowLeaderBaseCoOccurrence?: boolean
   budgetDistribution: { 0: number, 1: number, 2: number }
   slotCounts: {
     leader: number
@@ -556,6 +614,8 @@ export const HS_BELT_CONFIGS: Record<string, HSBeltConfig> = {
   // UC3 can still upgrade to HS R/L (if prestige doesn't trigger first).
   'LAW': {
     cycleSize: 60,
+    // Set 7+ only: leader+base HS may co-occur in one plan (real ASH pool-002 pack06)
+    allowLeaderBaseCoOccurrence: true,
     budgetDistribution: { 0: 26, 1: 28, 2: 6 },
     slotCounts: {
       leader: 10,   // 1/6

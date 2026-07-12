@@ -2,6 +2,21 @@
 
 ## 07.11.2026
 
+### 🐳 Cracking Packs for the Pod
+
+**We opened over 300 real Ashes of the Empire packs, nearly 5,000 cards, catalogued one by one, and refined our pack generator to match.**
+
+This is the most extensive calibration we've ever done. Two full sealed cases, a display box, and a complete Carbonite case went under the microscope: every card, every slot, every duplicate, every foil. Then we tuned the simulator against what real printers actually do.
+
+You should notice:
+
+- **Our simulator produces same-name duplicates at the same rate as real 6-pack pools.**
+- **We validated pull rates across the board**, from legendaries, to uncommon slot upgrades, to the distribution of rarities across foil slots, and more.
+- **Rares, uncommons, and foils updated to even more closely match the real print-sheet patterns**, down to details like how far apart a repeated card rides on the factory line. If you've opened a real box, our boxes should feel indistinguishable.
+- **Carbonite packs got the same treatment**, calibrated from a full real Carbonite case: pull rates, prestige placement, and pack layout now mirror the real product.
+
+Why it matters: if you practice sealed here, the pools you build from should be statistically the same pools you'd crack at your kitchen table or a store event.
+
 ### 📊 Smarter Leader Draft Stats
 - **First-pick rate up front**: The Leaders table in Draft stats now leads with how often each leader is taken first, so the most-prioritized leaders rise to the top. The old "selection %" read near-identical for every leader — in a draft each leader gets picked eventually, so it told you nothing.
 - **"Picked over" head-to-heads**: Click a leader to see which leaders it's taken over when they share an opening pack — how often it beats a specific rival, with sample sizes. Friends of the Pod can split it by All vs Top players.

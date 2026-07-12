@@ -23,7 +23,6 @@ import {
 // Set 7+ (LAW/ASH): cap the per-card leader dedup gap at 3 so common-leader repeats
 // can occur at line gap 3 (real ASH box 001: gaps 3,4,5). Sets 1-6 keep the default
 // LEADER_DEDUP_WINDOW behavior. (LINE_STACKING_COLLATION_PLAN L3)
-const SET7_LEADER_DEDUP_CAP = 3
 
 export class LeaderBelt {
   setCode: SetCode
@@ -44,8 +43,7 @@ export class LeaderBelt {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const config = getSetConfig(this.setCode) as any
-    const setNumber = config?.setNumber || 1
-    this.dedupWindowCap = setNumber >= 7 ? SET7_LEADER_DEDUP_CAP : LEADER_DEDUP_WINDOW
+    this.dedupWindowCap = config?.dedupWindows?.leaderCap ?? LEADER_DEDUP_WINDOW
 
     this._initialize()
   }

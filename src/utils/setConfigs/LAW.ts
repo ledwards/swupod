@@ -67,6 +67,12 @@ export const LAW_CONFIG: SetConfig = {
 
     // Special rarity can appear in foil/hyperspace slots
     specialInFoilSlot: constants.specialInFoilSlot,
+    specialInHyperspaceSlots: constants.specialInHyperspaceSlot ?? false,
+    specialShowcaseLeaders: true,
+    baseLineAspectConflict: constants.baseLineAspectConflict,
+    uncommonAspectInterleave: constants.uncommonAspectInterleave,
+    lineStackingCollation: constants.lineStackingCollation,
+    carboniteTiered: constants.carboniteTiered,
   },
 
   // Rarity weights for different slots
@@ -79,6 +85,7 @@ export const LAW_CONFIG: SetConfig = {
       Special: 4,
       Legendary: 3,
     },
+    foilBeltTarget: constants.foilBeltTargetWeights,
     ucSlot3Upgraded: constants.ucSlot3UpgradedWeights,
     hyperspaceNonFoil: constants.hyperspaceNonFoilWeights,
   },
@@ -86,6 +93,15 @@ export const LAW_CONFIG: SetConfig = {
   // Belt ratios
   beltRatios: {
     rareToLegendary: constants.rareSlotLegendaryRatio,
+    hyperspaceRareToLegendary: constants.hsRareSlotLegendaryRatio,
+  },
+
+  // Dedup windows (config-driven; belts must not branch on setNumber)
+  dedupWindows: {
+    rareLegendary: constants.rareLegendaryDedupWindow,
+    leaderCap: constants.leaderDedupWindowCap,
+    hyperspaceLeaderCap: constants.hyperspaceLeaderDedupWindowCap,
+    uncommon: constants.uncommonDedupWindow,
   },
 
   // Upgrade probabilities (belt-driven via HyperspaceUpgradeBelt with 'LAW' config)

@@ -34,6 +34,12 @@ export interface CardCounts {
 export interface PackRules {
   rareBasesInRareSlot: boolean
   specialInFoilSlot: boolean
+  specialInHyperspaceSlots: boolean
+  specialShowcaseLeaders: boolean
+  baseLineAspectConflict: boolean
+  uncommonAspectInterleave: boolean
+  lineStackingCollation: boolean
+  carboniteTiered: boolean
   foilSlotIsHyperspaceFoil?: boolean
   guaranteedHyperspaceCommon?: boolean
   hyperspaceCommonSlot?: number
@@ -50,6 +56,7 @@ export interface RarityWeights {
 
 export interface SetRarityWeights {
   foilSlot?: RarityWeights | null
+  foilBeltTarget: RarityWeights
   hyperfoil?: RarityWeights
   hyperspaceFoilSlot?: RarityWeights
   ucSlot3Upgraded: RarityWeights
@@ -58,6 +65,14 @@ export interface SetRarityWeights {
 
 export interface BeltRatios {
   rareToLegendary: number
+  hyperspaceRareToLegendary: number
+}
+
+export interface DedupWindows {
+  rareLegendary: number
+  leaderCap: number
+  hyperspaceLeaderCap: number | null
+  uncommon: number
 }
 
 export interface UpgradeProbabilities {
@@ -85,6 +100,7 @@ export interface SetConfig {
   packRules: PackRules
   rarityWeights: SetRarityWeights
   beltRatios: BeltRatios
+  dedupWindows: DedupWindows
   upgradeProbabilities: UpgradeProbabilities
 }
 

@@ -59,12 +59,9 @@ export class HyperspaceRareLegendaryBelt {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const config = getSetConfig(this.setCode) as any
 
-    // Determine ratio based on set number
-    const setNumber = config?.setNumber || 1
-    this.ratio = setNumber <= 3 ? 6 : 5
-
-    // Include Special rarity for sets 4+ (same sets that have specials in foil slot)
-    const includeSpecials = setNumber >= 4
+    // Ratio and Special inclusion come from the set config.
+    this.ratio = config?.beltRatios?.hyperspaceRareToLegendary ?? 6
+    const includeSpecials = config?.packRules?.specialInHyperspaceSlots ?? false
 
     // Filter to Hyperspace variant non-leader rares and legendaries
     this.rares = cards.filter(c =>
@@ -152,8 +149,13 @@ export class HyperspaceRareLegendaryBelt {
       return
     }
 
-    // Use legMult = rareCount, rareMult = ratio * legCount
-    const legMult = rareCount
+    // Target: (rares + specials) : legendaries = ratio : 1, so overall legendary rate =
+    // 1/(ratio+1), matching the configured hsRareSlotLegendaryRatio. Specials ride with
+    // rares at the same per-card frequency, so they must be counted in the non-legendary
+    // base — otherwise `legMult = rareCount` makes rares:legs exactly ratio:1 and the
+    // specials pile on top, diluting the OVERALL legendary rate (~14.5% at ratio 5 instead
+    // of 16.7%). Including specialCount keeps (rares+specials):legs = ratio:1.
+    const legMult = rareCount + this.specials.length
     const rareMult = this.ratio * legCount
 
     // Find GCD to reduce multipliers

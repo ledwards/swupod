@@ -43,14 +43,15 @@ const PACK_RARE_OR_LEGENDARY = 1
 // LAW (Set 7+):
 //   guaranteedHyperspaceCommon = true → one common slot is HS-belt-managed
 //   → base commons per pack = 9 - 1 = 8
-//   beltRatios.rareToLegendary = 5 (constants.rareSlotLegendaryRatio = 5)
-//   → Rare = 1 × 5/6, Legendary = 1 × 1/6
+//   beltRatios.rareToLegendary = 4 (constants.rareSlotLegendaryRatio = 4;
+//   FFG advertised 1-in-5 legendary, JTL onward — refit 2026-07-11)
+//   → Rare = 1 × 4/5, Legendary = 1 × 1/5
 //   cardCounts.commons = 100, uncommons = 60, rares = 47, legendaries = 20
 const LAW_BASE_COMMONS_PER_PACK = PACK_COMMONS - 1 // 8
 const LAW_BASE_UNCOMMONS_PER_PACK = PACK_UNCOMMONS // 3
-const LAW_RL_RATIO = 5
-const LAW_RARES_PER_PACK = PACK_RARE_OR_LEGENDARY * (LAW_RL_RATIO / (LAW_RL_RATIO + 1)) // 5/6
-const LAW_LEGENDARIES_PER_PACK = PACK_RARE_OR_LEGENDARY * (1 / (LAW_RL_RATIO + 1)) // 1/6
+const LAW_RL_RATIO = 4
+const LAW_RARES_PER_PACK = PACK_RARE_OR_LEGENDARY * (LAW_RL_RATIO / (LAW_RL_RATIO + 1)) // 4/5
+const LAW_LEGENDARIES_PER_PACK = PACK_RARE_OR_LEGENDARY * (1 / (LAW_RL_RATIO + 1)) // 1/5
 const LAW_BASE_TOTAL_PER_PACK =
   LAW_BASE_COMMONS_PER_PACK +
   LAW_BASE_UNCOMMONS_PER_PACK +
@@ -126,12 +127,12 @@ describe('expectedDistribution', () => {
       assert.strictEqual(expected.rarity.Uncommon, LAW_BASE_UNCOMMONS_PER_PACK)
     })
 
-    it('matches the spec for Rare (1 R/L slot × 5/6 = 5/6 / pack)', () => {
+    it('matches the spec for Rare (1 R/L slot × 4/5 = 4/5 / pack)', () => {
       const expected = getExpectedPerPack('LAW')
       assert.ok(Math.abs(expected.rarity.Rare - LAW_RARES_PER_PACK) < FLOAT_TOL)
     })
 
-    it('matches the spec for Legendary (1 R/L slot × 1/6 = 1/6 / pack)', () => {
+    it('matches the spec for Legendary (1 R/L slot × 1/5 = 1/5 / pack)', () => {
       const expected = getExpectedPerPack('LAW')
       assert.ok(
         Math.abs(expected.rarity.Legendary - LAW_LEGENDARIES_PER_PACK) < FLOAT_TOL
@@ -344,15 +345,15 @@ describe('expectedDistribution', () => {
   })
 
   describe('LAW per-card expected (the bug-catcher)', () => {
-    it('per-card expected for a specific Legendary equals (1/6) × (1/20)', () => {
-      // SPEC: per-pack legendary expected = 1 R/L slot × 1/6 split =
-      // 1/6. Each of 20 LAW legendaries has equal share → 1/6 × 1/20 =
-      // 1/120 ≈ 0.00833.
+    it('per-card expected for a specific Legendary equals (1/5) × (1/20)', () => {
+      // SPEC: per-pack legendary expected = 1 R/L slot × 1/5 split =
+      // 1/5 (FFG advertised 1-in-5, JTL onward). Each of 20 LAW legendaries
+      // has equal share → 1/5 × 1/20 = 1/100 = 0.01.
       const expected = getExpectedPerPack('LAW')
       const SPEC_PER_LEGENDARY = LAW_LEGENDARIES_PER_PACK / LAW_POOL_LEGENDARIES
       assert.ok(
-        Math.abs(SPEC_PER_LEGENDARY - 1 / 120) < FLOAT_TOL,
-        `SPEC sanity: 1/6 × 1/20 should equal 1/120, got ${SPEC_PER_LEGENDARY}`
+        Math.abs(SPEC_PER_LEGENDARY - 1 / 100) < FLOAT_TOL,
+        `SPEC sanity: 1/5 × 1/20 should equal 1/100, got ${SPEC_PER_LEGENDARY}`
       )
       // Pick one known LAW Legendary cardId from cards.json — Cad Bane
       // (LAW-032). If this card is renumbered upstream, this id should
@@ -372,9 +373,9 @@ describe('expectedDistribution', () => {
       )
     })
 
-    it('per-card expected for a Rare in LAW equals (5/6) × (1/47)', () => {
-      // SPEC: per-pack rare expected = 1 R/L slot × 5/6 split = 5/6.
-      // 47 LAW rares → 5/6 × 1/47.
+    it('per-card expected for a Rare in LAW equals (4/5) × (1/47)', () => {
+      // SPEC: per-pack rare expected = 1 R/L slot × 4/5 split = 4/5.
+      // 47 LAW rares → 4/5 × 1/47.
       const expected = getExpectedPerPack('LAW')
       const SPEC_PER_RARE = LAW_RARES_PER_PACK / LAW_POOL_RARES
       // Pick a known LAW Rare from cards.json.
@@ -533,13 +534,13 @@ describe('expectedDistribution', () => {
       }
     })
 
-    it('Legendary scaled to 120 packs is approximately 20 (1/6 × 120 = 20)', () => {
-      // SPEC sanity: 120 packs × 1/6 legendary/pack = 20 legendaries expected.
+    it('Legendary scaled to 120 packs is approximately 24 (1/5 × 120 = 24)', () => {
+      // SPEC sanity: 120 packs × 1/5 legendary/pack = 24 legendaries expected.
       const perPack = getExpectedPerPack('LAW')
       const total = scaleExpected(perPack, 120)
       assert.ok(
-        Math.abs(total.rarity.Legendary - 20) < 1e-9,
-        `Expected 20 legendaries in 120 packs, got ${total.rarity.Legendary}`
+        Math.abs(total.rarity.Legendary - 24) < 1e-9,
+        `Expected 24 legendaries in 120 packs, got ${total.rarity.Legendary}`
       )
     })
 

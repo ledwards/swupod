@@ -351,3 +351,356 @@ the failure — treat package.json qa-script edits in merges as a red flag.
 - Single box (24 packs). All z-scores are one-box evidence.
 - pack04 variant calls are frame-inferred (blurry photo), not number-read.
 - Visual layout order assumed to preserve the order cards came out of the pack.
+
+---
+
+# 🧪 Phase 4 — 6-Box Case Recalibration (in progress, 2026-07-10)
+
+**Dataset:** Lee's sealed case of 6 ASH boxes (distinct from box-001 "Porg Depot").
+One pack per photo, removal order = left column top→bottom then right. Case removal
+order also captured (left column then right) → case factory-line hypothesis
+(box-level analog of the pack interleave): boxes **3,6,2,5,1,4**.
+
+**Box ↔ case ↔ file mapping:**
+
+| Lee box | case slot | CSV file |
+|---|---|---|
+| box1 | left-top | `ash-box-002.csv` |
+| box2 | left-mid | `ash-box-003.csv` |
+| box3 | left-bottom | `ash-box-004.csv` |
+| box4 | right-top | `ash-box-005.csv` |
+| box5 | right-mid | `ash-box-006.csv` |
+| box6 | right-bottom | `ash-box-007.csv` |
+
+Pipeline: HEIC→JPEG→62% overlapping quadrant crops → sonnet transcription
+(number-driven) → opus verification (re-crop/re-read flagged + low-confidence;
+canonicalize slots) → merge with reference cross-check (identity+variant derived
+from the printed number, normalNumber by identity lookup).
+
+## Box-002 (Lee box1) — LOCKED ✅
+
+**Duplicate-tail: CLEAN box.** Pools (removal order) dup identities **5 / 7 / 4 / 5**;
+Normal+Normal pairs **0 / 1 / 0 / 0**; 185 distinct (target 183 ✓); 4 same-pack
+collisions, all cross-variant. **Zero clumpy pools** (box-001 had two: 13, 10).
+→ First confirmation the clumpy tail is **box-dependent, not universal**.
+
+**Rate confirmations (on-model):** HS leader 3/24 (p8,15,20); HS base 2/24 (p2,18);
+leader+base HS co-occurrence 0; UC3 = 15 Normal / 6 HS-UC / 2 HS-Rare / 1 Prestige
+(37.5% upgrade ✓); prestige 1; showcase 0; UC1/UC2 HS = 0 ✓; foil slot always HSF ✓;
+2 packs with 2 HS commons (p11 #393+#340, p18 #344+#434 — verified real).
+
+**Accumulating recalibration signals (box-001 + box-002 agree):**
+- ⚠️ **Foil-slot rarity runs more common than the shipped C72/U13/R8/S4/L3.**
+  box-001 foils 20C/1U/1R/1S/1L; box-002 foils 20C/4U/0R/0S/0L → combined
+  **40C/5U/1R/1S/1L of 48 = 83% Common** (model 72%); R/S/L rarer than modeled.
+  Both boxes independently hit 20 commons/24. Candidate: raise foil common share
+  toward ~83%, lower R/S/L. HOLD exact weights for boxes 3–6 (R/S/L low-count).
+- ⚠️ Rare slot R:L both boxes 19/5 = 3.8:1 (model 5:1) — mild legendary-heavy lean.
+- ⚠️ 2-HS-common packs both boxes 2/24 ≈ 8% (model ~5%) — mild.
+
+## Box-003 (Lee box2) — LOCKED ✅
+
+**Duplicate-tail: CLEAN box.** Pools dup identities **5 / 8 / 6 / 5**; N+N pairs
+0/1/0/0; 186 distinct ✓; 6 same-pack collisions, all cross-variant. Zero clumpy.
+→ **Two-for-two clean case boxes** (8 pools, all 4–8, none ≥10).
+
+**Rates:** HS leader 4/24 (p3,9,13,20) ✓; HS base 3/24 (p9,14,20) ✓; **leader+base
+HS co-occurrence in 2 packs (p9, p20)** — confirms L5 non-exclusivity is real; UC3
+15 Normal / 5 HS-UC / 2 HS-Rare / 1 HS-Special / 1 Prestige (37.5% ✓); 2-HS-common
+1 pack (p15 #351+#506, verified); prestige 1; showcase 0.
+
+## 📊 Cross-box rate signals (boxes 001+002+003, 72 packs) — HARDENING
+
+Two signals are now consistent across THREE independent boxes and are strong
+recalibration candidates:
+
+- 🔴 **Foil-slot rarity: ~83% Common, not 72%.** Every box independently hit
+  **20 Common foils / 24**. Combined **60C / 7U / 2R / 1S / 2L of 72** =
+  C83.3% / U9.7% / R2.8% / S1.4% / L2.8% vs shipped **C72/U13/R8/S4/L3**.
+  Common under-modeled, Rare (8%→3%) and Special (4%→1.4%) over-modeled.
+  Candidate reweight ≈ **C83/U10/R3/S1.5/L2.5** (round after boxes 004–007).
+- 🔴 **Rare slot: 19R / 5L in ALL THREE boxes** → legendary ≈ 5/24 = 20.8%,
+  ratio **3.8:1**, not the shipped 5:1 (`rareSlotLegendaryRatio: 5`). Combined
+  57R/15L. Candidate: ratio ≈ **3.8** (legendary share ~21%). Remarkably tight
+  (3/3 identical) — highest-confidence recalibration so far.
+
+Weaker/mild (watch across remaining boxes):
+- 2-HS-common packs 5/72 ≈ 7% (model ~5%).
+- Prestige 1/box every box = 3/72 ≈ 1/24 pack (model uc3PrestigeRate 1/18 ≈ 1.3/box) — mild low.
+- Leader+base HS co-occurrence 2/72 (box-003 both) vs model ~1/36 — small n, but confirms it happens.
+
+Confirmed dead-on (do not touch): HS leader ≈1/6, HS base ≈1/6, UC1/UC2 HS = 0,
+foil always HSF, HS common 1/pack, UC3 ~1/3 upgrade, within-pack dups all cross-variant,
+box unique identities ~185.
+
+## Box-004 (Lee box3) — LOCKED ✅
+
+Dup-tail CLEAN (pools 6/5/8/7, 182 distinct, 6 same-pack collisions all cross-variant)
+— **three-for-three clean case boxes.** Rates: HS leader 2/24 (p2,9); HS base 1/24 (p6);
+UC3 14 Normal / 6 HS-UC / 2 HS-Rare / 2 Prestige; prestige 2; 0 two-HS-common packs.
+Stacking: standard interleave, 2.45x (NOT flipped).
+
+## 🟥🟥 HEADLINE (boxes 001–004, 4/4 IDENTICAL): the rare & foil slots are PER-BOX QUOTAS, not per-pack draws
+
+The two "rate" signals above are actually the shadow of a **structural** fact:
+
+- **Rare slot = exactly 19 Rare + 5 Legendary EVERY box** (001,002,003,004 all 19/5).
+- **Foil slot = exactly 20 Common + 4 upgrades (U/R/S/L) EVERY box** (all four = 20C+4).
+
+Under the shipped model's **independent per-pack draws**, per-box counts are Binomial:
+rare-slot legendaries ~ B(24, 1/6) = 4 ± 1.8 → P(exactly 5) ≈ 0.19, so
+P(all 4 boxes = 5) ≈ **0.1%**. Foil commons ~ B(24, .72) = 17 ± 2.2 → P(all 4 = 20)
+is astronomically small. **4/4 exact on two independent metrics ⇒ these slots are fed
+by fixed per-box print sheets / quotas, not per-pack RNG.**
+
+Physical model: the rare/legendary slot for a box is one print sheet with a fixed
+layout of **19 R + 5 L**; the foil slot is a sheet with **20 C + 4 hits**. Each box
+consumes exactly one of each → fixed counts, near-zero per-box variance.
+
+**Implication for the generator (candidate NEW belt rule, not just a reweight):**
+make the rare-slot and foil-slot COMPOSITION a per-box quota for Set 7+:
+- Rare slot: guarantee exactly 5 Legendary + 19 Rare per 24-pack box (distribute the
+  positions across the box, don't draw each pack independently).
+- Foil slot: guarantee exactly 20 Common + 4 upgrade foils per box; within the 4
+  upgrades, the U/R/S/L split is where the remaining (small) randomness lives —
+  provisional pool across 4 boxes: {U:10, R:2, S:2, L:2} of 16 upgrade-foils.
+This also explains why the naive "reweight to C83/3.8:1" is the right MEAN but wrong
+MECHANISM — a quota nails both the mean AND the (near-zero) variance the data shows.
+
+⚠️ CONFIRM WITH BOXES 005–007. If boxes 5/6 also show 19/5 and 20C, the quota is
+locked (6/6). If any deviates, it's a tight distribution, not a hard quota — recalibrate
+means/variance instead. Either way the per-pack-independent model is wrong on variance.
+
+## 🧭 Stacking orientation by box (intra-case signal forming)
+- box-002 (case left-TOP): standard interleave (2.39x)
+- box-003 (case left-MID): **flipped right column** (1.97x corrected; 0.85x standard)
+- box-004 (case left-BOTTOM): standard interleave (2.45x)
+→ Left column orientation = std / flip / std (alternating by row?). Boxes 5–6 (right
+column) will show whether case assembly alternates box orientation — a case-level
+collation signature. (Model impact nil regardless; stackBoxOrder unchanged.)
+
+(Boxes 005–007 pending.)
+
+## 📦 Teddy's case — 4 boxes (structural/rarity pass, 2026-07-11)
+
+Second case, 4 boxes from Teddy (unknown pull-order → NOT usable for pool/stacking/
+intra-case; used for order-INDEPENDENT quota + rate confirmation). Lower-res portrait
+photos: identity + rarity-icon reliable; the borderless-Hyperspace tell is NOT reliably
+visible → HS leader/base/common rates NOT measurable from Teddy, and foil-hit RARITY
+noisy (Rare-foil vs UC3 HS-Rare confusable). Rare-slot R/L (structurally locatable
+pos16) and foil common-count are the trustworthy signals.
+
+| Box | packs | rare slot | foil |
+|---|---|---|---|
+| teddy-01 | 24 | **19R / 5L** | 19C + 5 |
+| teddy-02 | 23 (1 pack missing) | 17R / 6L | 19C + 4 |
+| teddy-03 | 24 | **19R / 5L** | 22C + 2 |
+| teddy-04 | 24 | 18R / 6L | 18C + 6 |
+
+**Rare-slot legendaries per box:** **5,5,5,5** (Lee, verified) + **5,6,5,6** (Teddy).
+⚠️ The two Teddy 6L are REAL (all 12 teddy-02/04 rare-slot legendaries verified genuine
+against the card DB — see the RETRACTED section below). So legendary count VARIES (5–6
+observed here; wider in the real population). Foil common-count clusters ~18–22 ≈ 20/box.
+→ The MEAN (~5L, ~20C) is well-supported; the "fixed count per box" is NOT — it was an
+over-read of ~3 correlated cases. Model as a sheet-cut with real variance, not a quota.
+
+Teddy detection artifacts (NOT real findings): "Showcase at UC3" (pack) = misread HS-UC;
+"Doc Defender" foreign card = misread DDC Defender (#210); numHScommons=0 everywhere =
+resolution can't see borderless frame. Raw per-pack summaries in scratch (crops/teddy-0X/out/).
+
+## Box-006 (Lee box5) & Box-007 (Lee box6) — 2026-07-11
+
+- **box-006 (Lee box5, sharp): LOCKED-draft, 24 packs.** Rare slot **19R/5L** (exact),
+  foil 20C+4, dispersion pools **6/5/5/7 (clean)**, 180 distinct. (leader/base variants
+  glare-obscured → unverified, but rare-slot/foil/dispersion reliable; pack18 2-HS-common,
+  pack23 foil@pos8 → canonical-slot fix pending opus verify.)
+- **box-007 (Lee box6, handheld, variable blur): PARTIAL — 22 unique packs of 23 photos.**
+  pack19 is a re-shoot DUP of pack20 (identical 16 cards; blurry original set aside);
+  box is missing ~2 packs (only 22 unique). Rare slot **17R/5L** (5L in 22 packs), foil
+  ~17C+5 → consistent with the quota. NOT usable for clean pool dispersion (incomplete).
+  Uncertain cards → manual-review package (like box-005). Lesson: Lee re-shoots blurry
+  packs, so watch for duplicate-pack photos (added dup detection to merge).
+
+# ✅ PHASE 4 — FINAL DECISION (10 boxes: box-001 + Lee 002/003/004/006/007 + Teddy ×4)
+
+### 1. ⚠️ RETRACTED — "hard per-box quota" was WRONG. Model the R/L + foil SHEETS instead.
+**CORRECTION (2026-07-11):** An earlier version of this section claimed a HARD per-box
+quota (exactly 5L+19R, 20C+4 every box) and dismissed the two Teddy boxes that read 6L as
+"likely low-res misreads." That dismissal was confirmation bias and is FALSE — verified by
+re-checking every agent-called Legendary in teddy-02/04 against the card DB: **all 12 are
+genuine Legendary cards (Chimaera ×3, Zeb Orrelios ×2, Eye of Sion, The Mandalorian
+Devoted Rescuer ×2, Summa-verminoth, Kelleran Beq, Boba Fett's Rancor, The Darksaber) —
+zero misread Rares.** So legendary count per box genuinely VARIES (observed 5 and 6; Lee
+confirms the real population ranges low-to-high around an advertised average). A "hard 5"
+is also non-physical: a printer has no per-box counter, only what's on the sheet.
+
+**What's actually true:** the R/L slot (and foil slot) are fed by **print sheets with a
+fixed composition** (~5L per 24 R/L cards on average), collated in sheet order; a box is a
+consecutive cut. The MEAN per box is set by the sheet; the COUNT per box varies because
+24-card cuts don't all contain the same number of Ls. My ~9 "boxes" were really ~3 cases
+(Lee = 1 sealed case, Teddy = 1 case, + display box) — within a case the boxes are
+correlated (contiguous sheet stretch), which made the count look artificially constant.
+
+**Corrected recommendation (Set 7+):** model the R/L and foil slots as **sheet-cuts** — a
+long sequence with the right composition, boxes = consecutive cuts — giving the correct
+average WITH real box-to-box variance. This may be close to the current per-pack model
+(Binomial(24,~1/6) already produces low-to-high legendary counts); the defensible change
+may shrink to **the mean/rate** (current ~4/box; if advertised avg is ~5, bump it) plus
+possibly a modest variance reduction if collation demonstrably spreads hits. DO NOT
+implement a fixed count. Needs boxes from INDEPENDENT cases/print-runs (not more from the
+same case) or public box-break data to characterize the true variance.
+
+### 2. 🟠 IMPLEMENT — relax UncommonBelt aspect interleaving (Set 7+)
+Real uncommons ≈ random adjacent-aspect (8.3% vs 11.5% shuffled, 0.72×, n.s.), NOT the
+common sheet's hard rotation. `UncommonBelt.buildInterleavedSequence` over-rotates them
+toward ~0%. Relax to ~random; keep name-dedup.
+
+### 3. ✅ NO CHANGE — duplicate-tail / dispersion (the original "main event")
+20 real pools (known order): dup-identities mean **6.4**, clumpy (≥10) **2/20 = 10%**
+(both in box-001; Lee's case boxes all clean). Shipped knobless model: mean **6.7**, clumpy
+**~8%**. **They match.** Clumpy pools are real but rare and box-correlated; the shipped
+model's dispersion is already correct. → Do NOT add stretch-echo / change dedup windows.
+(Resolves the Phase-4 decision rule: "loaded pools rare → shipped model stands, change nothing.")
+
+### 4. ✅ NO CHANGE — aspect rules
+Common sheet: hard rotation (0/501) — keep. Rare/Legendary sheet: aspect-CLUSTERED on the
+line but random to the player (stacking scrambles it) — RareLegendaryBelt already gives
+random consumer adjacency; add nothing.
+
+### 5. ✅ CONFIRMED dead-on (no change)
+HS leader/base ≈1/6, leader+base HS co-occurrence real (~1/36), UC1/UC2 HS = 0, HS common
+1/pack, UC3 ~1/3 upgrade + outcome mix, within-pack dups all cross-variant, box-unique ≈185,
+stacking interleave (4 line-order tracers; box orientation varies per case slot).
+
+## 🎴 Fan "Press Kit display" box — quota confirmation (2026-07-11)
+Grid-transcribed by NAME by a fan (24 packs; HS/HF row markers). Ingested via fuzzy
+name-match → number resolver (383/384 matched; "Sloane"→Grand Admiral Sloane #7).
+**Rare slot = 19R/5L (EXACT).** Foil ≈ 21C/3U (mostly common). Only usable for the
+QUOTA — HS leader/base, UC3 upgrades, prestige not captured (grid defaults them);
+dispersion invalid (grid is block-organized, not pull order). CSV: scratch/ash-box-display.csv.
+
+### ⚠️ Rare-slot ~5L/box AVERAGE well-supported; "fixed quota" RETRACTED
+Lee 001/002/003/004/006 + 005 = 6 boxes at 5L; fan display box 5L; **Teddy 02 & 04 = 6L
+(verified genuine legendaries, NOT misreads)**. So the MEAN is ~5L/box but the COUNT
+VARIES (5–6 here; low-to-high in the real population per Lee). This is ~3 correlated cases,
+not 9 independent boxes. The rare slot is a print SHEET (fixed composition, boxes = cuts) —
+model it as a sheet-cut with real variance, tuned to the average. NOT a fixed count.
+
+## Box-005 (Lee box4, blurry/gone) — RESOLVED via name-validated review ✅ (2026-07-11)
+Lee reviewed all 174 uncertain cards by name (blank variant = confirmed Normal;
+numbers derived name+variant+slot). Rare slot **19R/5L (6th consecutive Lee box)**;
+foil 19C+5; dispersion 4/4/8/5 (clean — Lee case now 5/5 clean boxes, 20 clean pools
++ box-001's 2 clumpy = 2/24 ≈ 8% overall, still matching the shipped model);
+185 distinct. HS leader 4/24 + base 4/24, **leader+base co-occur in packs 2/8/13**
+(3/24 — hot vs ~1/36, review-confirmed; watch). pack6 genuine 2-HS-common. RESOLVED:
+pack12 pos7 = Strike Team Vanguard Hyperspace #325 (Lee: the HS-common slot always
+holds an HS common, NO exceptions — treat 0-HS-common reads as transcription error).
+pack16 pos7=HS/pos11=Normal Remnant Interceptor pair confirmed by Lee.
+
+## 📚 FULL-DATASET ROLL-UP (2026-07-11, all 11 boxes + display box)
+
+Slot-level CSVs now committed: box-001 (Porg Depot) · 002-007 (Lee case; 007=22-pack
+partial) · 008-011 (Teddy case; 009=23 packs; Teddy variants structural, leaders/bases
+defaulted Normal; 010 distinct=169 caveat).
+
+**Rare-slot legendaries per box (final, full transcriptions):**
+5,5,5,5,5,5 (Lee 001-006) · 5 (007, 22pk) · 5,5,5 (Teddy 008/009/010) · **6 (Teddy 011,
+genuine)** · 5 (fan display). → mean ≈ 5.1/box (~21%, ≈ FFG's advertised 1-in-5 from JTL
+onward), with REAL variance (a verified 6L box). Sheet-cut model + rate recalibration
+5:1→4:1 stands as the recommendation; hard quota remains retracted.
+
+**Dispersion, all complete known-order boxes (9 boxes, 36 pools):** every pool 2-9 dup
+identities EXCEPT box-001's 13 & 10. Clumpy rate 2/36 ≈ 6% vs shipped model ~8% —
+**shipped dispersion confirmed, no change** (Phase-4 decision 3 reinforced).
+
+**Stacking:** Teddy complete boxes all show the factory interleave (mirror-column
+variant, 1.5-2.3x; box-to-box orientation varies as in Lee's case) — stacking model
+confirmed in a second independent case; stackBoxOrder unchanged.
+
+## 🔬 Pool-mean significance analysis (2026-07-11, 10,000 generated pools)
+Generator converges to **6.72 ± 1.93** dup-ids/pool (so 6.18 observed vs 6.72 is a real
+generator-side property, not run noise). Box-clustered t-test on the 10 observed box
+means (6.17 ± 0.85): **p ≈ 0.075 — not significant at 95%**, suggestive only. Tail:
+observed 2/39 vs expected 3.05 @7.8% → **p ≈ 0.40, not high at all**. Line-order
+(unshuffled) pools run **16.2 dup-ids** (99% ≥10) — stacking is the dominant dispersal
+mechanism and is working; no hidden ordering bug. Gap decomposition: generator runs
++0.7 HOT on cross-variant collisions (5.51 vs ~4.8/pool) and −0.2 COLD on N+N pairs
+(1.16 vs 1.38) → net +0.54. Candidate knob if future data confirms: cross-belt
+(Normal+own-HS/HSF) collision rate (M5 0.157 vs real 0.13). DECISION: no fix at n=39.
+Note: rare loud "CommonBelt A paired boot failed — single-copy boot" fallback observed
+once in 2500 boxes (logged, non-silent, acceptable).
+
+## 🎯 PAIR-GAP REFIT SHIPPED (2026-07-11) — the 6-box sheet spec replaces the box-001 fit
+Lee's directive: the ~7-8% duplicate-heavy pool rate was too high. Root cause found in
+the data: PAIR_PACK_GAPS was fit to box-001 ALONE — the one clumpy outlier. Re-measured
+from the SIX number-verified boxes (453 line-order second-copy gaps): {1:153, 3:107,
+5:82, 7:55, 9:37 | 6:5, 8:3, 10:6} = 4.2% even (Teddy boxes excluded: title-noise
+creates random-parity false pairs; box-001 alone read 9%, clean boxes 0-5%).
+Changes (red-green, CommonBelt.test.ts): PAIR_PACK_GAPS -> {1:34,3:24,5:18,7:12,9:8,
+6:2,8:2}; solver MAX_ATTEMPTS 12->40 (relax at 24) — the flatter odd tail needed more
+retry budget; 0 paired-boot fallbacks in 2000 boxes (old fit: ~1/2500; pre-bump: 30/2000).
+Results (vs observed 11-box): pool dup mean 6.22 (obs 6.18, was 6.72); loaded-pool tail
+4.7% (obs ~5.1%, was 7.3%); NN pairs 0.58 (obs 1.38 — ACCEPTED trade-off per Lee: same
+knob controls tail and NN texture; tail priority). Realized boot even-share ~6.0%
+(sampled 4.2% + ~2pp solver parity drift; old realized ~10.4%). All 9 benchmark metrics
+in band (docs/collation-benchmark-after-6box-refit.md); QA bands recalibrated
+(NN 0.25-2.0, loaded 1-10%); full test suite + QA + build green.
+
+## 🔬 UNCOMMON DEEP-DIVE SHIPPED (2026-07-11)
+Three findings, one correction, one bug:
+1. CORRECTION: the earlier "UC sheet has no aspect rotation" claim used a broken
+   baseline (within-pack shuffle preserves the multiset). Against the correct
+   baseline (~20% adjacency if aspect-random), real within-pack adjacency 3.9%
+   (n=230) shows the UC sheet DOES rotate — interleave KEPT for all sets.
+2. BUG (physical): boosterPack drew 3 UCs then DISCARDED the drawn card on UC3
+   upgrade — ~8 phantom sheet-draws/box doubled UC seam repeats (12/box gen vs
+   6.7 real). Fix: UncommonBelt.putBack() — upgraded slots never advance the
+   normal-UC sheet (Set 7+ path only).
+3. SHEET SPEC: 6 verified boxes, 40 UC repeats in line order: 62% at <=9 packs,
+   parity 34 odd / 6 even (85% odd) — short-range echoes like the common sheet,
+   ~2-3 per 60-cycle. Implemented as _weaveEchoes: single-pass rebuild with a
+   pending-echo queue in FINAL pack arithmetic (splice-insertion corrupts its
+   own parity). Dedup window 24 -> 3 (config dedupWindows.uncommon): min repeat
+   distance 3 draws = observed 1-pack gap, never same-pack.
+Results (2000-box runs): UC same-pool NN pairs 0.20/pool (real ~0.18; was 0 at
+window 24, 0.38 naive window-2); pool dup mean 6.45 (obs 6.18); loaded tail 5.6%
+(obs ~5.1%); total NN 0.82 (obs 1.38). Benchmark M1 0.82 / M2 6.42 / M3 4.7% all
+in band (docs/collation-benchmark-after-uc-fix.md); tests 2122/0, qa 218/0, build green.
+Trade-off note: vs the commons-refit-only state (mean 6.23 / tail 3.8% / broken UC
+texture), this adds real UC texture at +0.2 mean / +1.7pp tail — both still at or
+below observed reality.
+
+## 🎯 N+N COMPOSITION FIX (2026-07-11) — rare sheet spacing + UC repeat count
+Lee challenged the N+N regression (gen 0.82 vs real mean 1.38). Decomposition of the
+39 real pools resolved it: real NN has **median 0, P(0)=56%** — the 1.38 mean is
+carried by the loaded tail pools Lee directed us to suppress. In the TYPICAL pool the
+generator now produces slightly MORE NN than reality (median 1, P(0)=47%). Mean-1.38
+and tail-tightening are opposed targets; M1 is re-specced around the distribution.
+Genuine bugs found & fixed in the process (red-green, all Set 7+/config-gated):
+- **Rare slot 4x real NN** (0.11 vs 0.03/pool): the 4:1 ratio GCD math exploded the
+  segment to 8x/5x copies (500 cards) — 2.6 repeats/box vs real 0.5, min gap 1 (seam
+  dedup bailouts under density). Fix: **cyclic-spaced pair sheet** — 2x rares + 1x
+  legendaries + extraLegs doubled legendaries for exact ratio (125 cards), rarity
+  mixed uniformly (every 24-window sees 4:1 — a two-block layout broke local ratio
+  to 2.5:1), copies 50-75 slots apart cyclically, 2-3 explicit short pairs
+  (gaps 4-15). Results: repeats 0.3-0.5/box (real 0.5), min gap 2 (real 2!),
+  rare NN 0.04/pool (real 0.03), R:L 4.0:1.
+- **UC repeat count**: echo histogram extended with the odd long-gap tail
+  {11,13,15,17,19,21,23} (all-odd in real data → adds count, no pool pairs),
+  ECHO_COUNT 6-7.
+Final state (2000-box + 300-box benchmark): M1 0.77 (real dist-matched), M2 6.38
+(obs 6.18), M3 4.3-5.1% (obs ~5.1%), M5-M9 in band, M8 min gap 2 == real.
+KNOWN RESIDUAL: M4 box-uniques 188.3 vs real ~183.4 (band edge) — long-gap dup mass
+slightly light at box level; pool-invisible; future refinement candidate.
+
+## 🧭 N+N SPEC DECISION + event-pool resolution (2026-07-11)
+Lee asked which spec matches most players' real experience. Measured answer:
+- Random cross-box mixing would give ~13.5 dups/pool; real event pools show 4.4 →
+  **TOs hand out consecutive packs** — RESOLVES the old open question (event pools ARE
+  box cuts). Consecutive box-cut is the ONLY real player experience; the default models it.
+- M1 re-specced DISTRIBUTION-based: 39 real pools have NN median 0 / P(0)=56%; the 1.38
+  mean is tail-carried. Gen target: P(0) 40-60%, mean 0.4-1.2.
+- ⚠️ PRODUCT NOTE: "Randomize Packs" (random 6 of 24) measured at 9.95 dups/pool,
+  55% loaded — objectively clumpier than any real pool (random selection re-couples
+  the odd-gap pairs that stacking split across columns). Feature works against
+  collation realism; flagged for product review.

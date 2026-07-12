@@ -73,15 +73,10 @@ export class RareLegendaryBelt {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const config = getSetConfig(this.setCode) as any
 
-    // Determine ratio based on set number
-    // Sets 1-3: 7:1 (1 in 8), Sets 4+: 5:1 (1 in 6)
-    const setNumber = config?.setNumber || 1
-    this.ratio = setNumber <= 3 ? 7 : 5
-
-    // Set 7+ (LAW, ASH): loosen the same-card dedup window from 6 to 3 so same-rare
-    // repeats become possible at line gap 4 (real ASH box 001), matching factory
-    // collation. Sets 1-6 keep window 6. (LINE_STACKING_COLLATION_PLAN L4)
-    this.dedupWindow = setNumber >= 7 ? 3 : 6
+    // Ratio and dedup window come from the set config (beltRatios/dedupWindows);
+    // fallbacks preserve legacy behavior for unknown set codes.
+    this.ratio = config?.beltRatios?.rareToLegendary ?? 7
+    this.dedupWindow = config?.dedupWindows?.rareLegendary ?? 6
 
     // Check if this set puts rare bases in the base slot (no current sets do)
     // If so, exclude them from the rare slot. Otherwise, include them.
@@ -162,18 +157,69 @@ export class RareLegendaryBelt {
     // Build segment with correct ratio
     const segment: RawCard[] = []
 
-    // Add rares (multiple copies)
-    for (let copy = 0; copy < finalRareMult; copy++) {
-      segment.push(...this.rares)
+    // Line-stacking sets: a non-integer copy ratio (e.g. 4:1 with 50R/20L needs
+    // 8x/5x under GCD) would explode the segment to 8 copies per rare — 5x the
+    // real box's repeat rate (10 verified boxes: ~0.5 same-rare repeats/box vs
+    // 2.6 generated at 8x density). The real sheet keeps low multiplicity:
+    // 2x every rare + 1x every legendary + a few uniformly-chosen legendaries
+    // doubled to hit the exact ratio (125 cards, 100R/25L = 4:1 for ASH).
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const cfgLS = (getSetConfig(this.setCode) as any)?.packRules?.lineStackingCollation === true
+    const RARE_COPIES = 2
+    const extraLegs = Math.round((RARE_COPIES * rareCount) / this.ratio) - legCount
+    if (cfgLS && extraLegs >= 0) {
+      // Cyclic-spaced pair sheet: rarity is mixed uniformly across the whole
+      // segment (every 24-pack window sees the exact 4:1 ratio — a two-block
+      // layout broke local ratio to 2.5:1 for fresh-per-box consumption), and
+      // each identity's two copies sit 50-75 slots apart cyclically, so no
+      // box window catches a pair. The 10 verified boxes show ~0.5 same-rare
+      // repeats/box (gaps 2-18): produced by 2-3 explicit short pairs below.
+      const doubled = shuffle([...this.legendaries]).slice(0, extraLegs)
+      const pairs = shuffle([...this.rares, ...doubled])           // 2 copies each
+      const singles = this.legendaries.filter(l => !doubled.some(d => d.id === l.id))
+      const size = pairs.length * 2 + singles.length
+      const slots: (RawCard | null)[] = new Array(size).fill(null)
+      const free = () => slots.map((v, i) => (v === null ? i : -1)).filter(i => i >= 0)
+      // short pairs first (linear gaps 4-15 packs; window 3 keeps gap >= 4)
+      const SHORT_PAIRS = 2 + Math.floor(Math.random() * 2)
+      const SHORT_GAPS = [4, 6, 8, 10, 12, 15]
+      for (let k = 0; k < pairs.length; k++) {
+        const card = pairs[k]!
+        const fr = free()
+        const a = fr[Math.floor(Math.random() * fr.length)]!
+        slots[a] = card
+        let b: number
+        if (k < SHORT_PAIRS) {
+          b = a + SHORT_GAPS[Math.floor(Math.random() * SHORT_GAPS.length)]!
+        } else {
+          b = (a + Math.floor(size * 0.4) + Math.floor(Math.random() * size * 0.2)) % size
+        }
+        // probe cyclically for a free slot near the target
+        for (let step = 0; step < size; step++) {
+          const cand = (b + step) % size
+          if (slots[cand] === null) { slots[cand] = card; break }
+        }
+      }
+      for (const single of shuffle([...singles])) {
+        const fr = free()
+        if (fr.length === 0) break
+        slots[fr[Math.floor(Math.random() * fr.length)]!] = single
+      }
+      segment.push(...(slots.filter(Boolean) as RawCard[]))
+    } else {
+      // Sets 1-6 (and any set where the low-multiplicity form can't hit the
+      // ratio): original exact-GCD construction, byte-identical.
+      for (let copy = 0; copy < finalRareMult; copy++) {
+        segment.push(...this.rares)
+      }
+      for (let copy = 0; copy < finalLegMult; copy++) {
+        segment.push(...this.legendaries)
+      }
     }
 
-    // Add legendaries (multiple copies)
-    for (let copy = 0; copy < finalLegMult; copy++) {
-      segment.push(...this.legendaries)
-    }
-
-    // Shuffle the segment
-    shuffle(segment)
+    // Shuffle the segment (line-stacking sets keep their two-block layout;
+    // dedup below still repairs any boundary adjacency)
+    if (!(cfgLS && extraLegs >= 0)) shuffle(segment)
 
     // Run full dedup on segment to remove duplicates within 6 slots
     this._fullDedup(segment)

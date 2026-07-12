@@ -39,20 +39,37 @@ export const SEC_CONFIG: SetConfig = {
   // Pack construction rules
   packRules: {
     rareBasesInRareSlot: true,
-    specialInFoilSlot: constants.specialInFoilSlot,  // true for Set 4+
+    specialInFoilSlot: constants.specialInFoilSlot,
+    specialInHyperspaceSlots: constants.specialInHyperspaceSlot ?? false,
+    specialShowcaseLeaders: true,
+    baseLineAspectConflict: constants.baseLineAspectConflict,
+    uncommonAspectInterleave: constants.uncommonAspectInterleave,
+    lineStackingCollation: constants.lineStackingCollation,
+    carboniteTiered: constants.carboniteTiered,  // true for Set 4+
   },
 
   // Rarity weights for different slots (from packConstants)
   rarityWeights: {
     foilSlot: constants.foilSlotWeights!,
     hyperfoil: constants.hyperfoilWeights,
+    foilBeltTarget: constants.foilBeltTargetWeights,
+    hyperspaceFoilSlot: constants.foilBeltTargetWeights,
     ucSlot3Upgraded: constants.ucSlot3UpgradedWeights,
     hyperspaceNonFoil: constants.hyperspaceNonFoilWeights,
   },
 
   // Belt ratios
   beltRatios: {
-    rareToLegendary: constants.rareSlotLegendaryRatio,  // 5:1 for R slot
+    rareToLegendary: constants.rareSlotLegendaryRatio,
+    hyperspaceRareToLegendary: constants.hsRareSlotLegendaryRatio,
+  },
+
+  // Dedup windows (config-driven; belts must not branch on setNumber)
+  dedupWindows: {
+    rareLegendary: constants.rareLegendaryDedupWindow,
+    leaderCap: constants.leaderDedupWindowCap,
+    hyperspaceLeaderCap: constants.hyperspaceLeaderDedupWindowCap,
+    uncommon: constants.uncommonDedupWindow,
   },
 
   // Upgrade probabilities

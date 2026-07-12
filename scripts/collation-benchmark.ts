@@ -32,15 +32,15 @@ const sd = (a: number[]) => { const m = mean(a); return Math.sqrt(mean(a.map(x =
 // Real-data targets (sources: data/real-boxes/*, scripts/eval/fixtures/*;
 // see plans/ASH_COLLATION_FINDINGS.md)
 const TARGETS = {
-  M1: 'Normal+Normal pairs/pool — real pools: 0,0,3,7 (box 001) and 10 (pool 002); band: mean 1.0-4.0, max ≥5',
+  M1: 'Normal+Normal pairs/pool — DISTRIBUTION spec (39 real pools: median 0, P(0)=56%, mean carried by suppressed tail): gen target P(0) 40-60%, mean 0.4-1.2',
   M2: 'Dup identities/pool mean — 12 verified full pools mean ≈6.4 (prague-taylor-b excluded: unverified); band 5.5-8.0',
-  M3: '% pools ≥10 dup identities — verified 3/12 ≈25% (all box-cut); knobless model runs ~9%, band 3-45% pending 6-box calibration',
+  M3: '% pools ≥10 dup identities — 11-box observed 2/39 ≈5% (both in outlier box-001); 6-box pair-gap refit targets ~4%, band 1-10%',
   M4: 'Box unique identities — real 183; band 178-188',
   M5: 'Within-pack dup groups/pack — real 4/30 ≈0.13, all cross-variant; band 0.10-0.20, ≥90% cross-variant',
   M6: 'Base same-aspect adjacency (consumer) — real 5/21 ≈ random 25%; band 15-35%',
   M7: 'Leader same-name repeat min gap (consumer) — real min 2; target ≤4',
   M8: 'Rare-slot same-name repeat min gap (consumer) — real min 2; target ≤4',
-  M9: 'Slot rates: HS leader ≈1/6, HS base ≈1/6, HS common =1/pack, UC1/UC2 HS =0, foil always HSF, R:L ≈5:1',
+  M9: 'Slot rates: HS leader ≈1/6, HS base ≈1/6, HS common =1/pack, UC1/UC2 HS =0, foil always HSF, R:L ≈4:1 (1-in-5 advertised; 11-box observed 21.2%)',
 }
 
 async function main() {
