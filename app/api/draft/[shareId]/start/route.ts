@@ -162,20 +162,25 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       timerStartedAt: null,
     }
 
-    // Store all packs in pod (for later rounds)
+    // Store all packs in pod (for later rounds). all_leader_packs snapshots the
+    // original per-seat leader packs (aligned to `packs`/player order) so leader
+    // pick-order analytics can see each opening's alternatives — see
+    // migration 076.
     await query(
       `UPDATE pods
        SET status = 'active',
            draft_state = $1,
            all_packs = $2,
+           all_leader_packs = $3,
            started_at = NOW(),
            pick_started_at = NOW(),
            paused_duration_seconds = 0,
            state_version = state_version + 1
-       WHERE id = $3`,
+       WHERE id = $4`,
       [
         JSON.stringify(draftState),
         JSON.stringify(packs),
+        JSON.stringify(leaders),
         pod.id
       ]
     )
