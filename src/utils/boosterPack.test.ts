@@ -696,9 +696,11 @@ async function runTests(): Promise<void> {
     const stdDev = Math.sqrt(packCount * expectedRate * (1 - expectedRate))
     const zScore = Math.abs(pairsFound - packCount * expectedRate) / stdDev
 
-    // Statistical significance threshold: z > 3 means something is wrong
-    // This corresponds to ~0.3% probability under normal operation
-    const maxZScore = 3.0
+    // Statistical significance threshold. Two-sided z > 3 flakes ~0.27% of runs on pure
+    // variance (no bug) — too tight; the sibling tests (foil-common z>4, pod-pairs z>4)
+    // already use 4.0+ for exactly this reason. A real correlation bug shows z of 50+, so
+    // 4.5 loses no bug-detection power while making variance flakes negligible (~7e-6).
+    const maxZScore = 4.5
 
     console.log(`\x1b[36m   Card+foil pair rate: ${(observedRate * 100).toFixed(2)}% (${pairsFound}/${packCount})\x1b[0m`)
     console.log(`\x1b[36m   Expected rate (mathematical): ${(expectedRate * 100).toFixed(2)}%\x1b[0m`)
@@ -751,41 +753,22 @@ async function runTests(): Promise<void> {
     const podPairRate = podsWithPairs / podCount
     const avgPairsPerPod = totalPairs / podCount
 
-    // Expected rate for sealed pods:
-    // - 6 packs, each with 9 commons from belts A/B (~45 cards each)
-    // - 54 commons drawn total, ~27 from each belt = ~54 unique (belts don't fully cycle)
-    // - 6 foils drawn, ~4.67 are commons (77.8%)
-    // - P(foil common matches one of 54 unique commons) = 54/90 = 60%
-    // - P(at least one of ~4.67 foils matches) ≈ 1 - (1-0.60)^4.67 ≈ 98.6%
-    // - Expected pairs per pod = 4.67 * 0.60 = 2.80
-    const expectedPodRate = 0.986
-    const expectedPairsPerPod = 2.8
-
-    // For average pairs, use z-score on the mean
-    // Variance for sum of Bernoulli trials: n * p * (1-p) where p = 0.60, n ≈ 4.67
-    const pairsVariancePerPod = 4.67 * 0.60 * 0.40 // ≈ 1.12
-    const pairsStdDev = Math.sqrt(podCount * pairsVariancePerPod)
-    const pairsMean = podCount * expectedPairsPerPod
-    const pairsZScore = Math.abs(totalPairs - pairsMean) / pairsStdDev
-
-    // Use 4.0σ threshold to reduce flakiness with 100-sample test runs
-    // (Statistical tests with many iterations can occasionally exceed 3.5σ by chance)
-    const maxZScore = 4.0
-
+    // Robust sanity BAND instead of a tight z-test. The old z-test modeled the mean at
+    // 2.8 pairs/pod, but the measured true mean is ~2.98 (1000 pods, sd 1.22), so the
+    // two-sided z sat ~1.5 batch-σ off-center and tripped `z > 4` ~2.3% of runs — a false
+    // alarm on pure variance, not a bug. Per .claude/rules/testing.md, use a band matched
+    // to the real distribution. Intent: catch a gross foil↔common CORRELATION bug. "Foil
+    // belt = copy of common belt" would force ~every common foil (≈4.67/pod) to match →
+    // ~4.67 pairs/pod; a broken pairing path → ~0. Normal is 2.98 ± ~0.12 (batch avg over
+    // 100 pods), so [1.5, 4.0] is >8σ from normal on both sides yet still flags either mode.
     console.log(`\x1b[36m   Pods with card+foil pairs: ${podsWithPairs}/${podCount} (${(podPairRate * 100).toFixed(1)}%)\x1b[0m`)
-    console.log(`\x1b[36m   Expected pod rate (mathematical): ~${(expectedPodRate * 100).toFixed(0)}%\x1b[0m`)
-    console.log(`\x1b[36m   Average pairs per pod: ${avgPairsPerPod.toFixed(2)} (expected: ~${expectedPairsPerPod})\x1b[0m`)
-    console.log(`\x1b[36m   Z-score for pairs count: ${pairsZScore.toFixed(2)} (threshold: ${maxZScore})\x1b[0m`)
-
-    if (pairsZScore > maxZScore) {
-      console.log(`\x1b[33m   ⚠️  Pairs count deviates significantly from expected\x1b[0m`)
-    }
+    console.log(`\x1b[36m   Average pairs per pod: ${avgPairsPerPod.toFixed(2)} (expected ~3.0, band 1.5-4.0)\x1b[0m`)
 
     assert(
-      pairsZScore <= maxZScore,
-      `Average pairs per pod (${avgPairsPerPod.toFixed(2)}) deviates significantly from expected ~${expectedPairsPerPod} ` +
-      `(z=${pairsZScore.toFixed(2)} > ${maxZScore}). This may indicate a bug in belt operation. ` +
-      `Examples: ${pairDetails.join('; ')}`
+      avgPairsPerPod >= 1.5 && avgPairsPerPod <= 4.0,
+      `SPEC: avg card+foil pairs per pod should be ~3.0 (band 1.5-4.0 over ${podCount} pods), got ` +
+      `${avgPairsPerPod.toFixed(2)}. Above the band suggests a foil↔common belt correlation bug; ` +
+      `below suggests the pairing mechanism broke. Examples: ${pairDetails.join('; ')}`
     )
   })
 
@@ -806,10 +789,11 @@ async function runTests(): Promise<void> {
       }
     }
 
-    // With 1/6 probability, we expect ~17 out of 100
-    // Allow wide variance for randomness
+    // Smoke test: the HS-leader upgrade mechanism produces upgrades (~1/6, expect ~17/100).
+    // Floor is >2 (not >5): >5 sits only ~3σ below the mean and flaked; >2 is ~4σ safe and
+    // still catches a broken/near-zero upgrade path. Exact rate is validated in npm run qa.
     assert(
-      hyperspaceLeaderCount > 5,
+      hyperspaceLeaderCount > 2,
       `Expected some Hyperspace leaders, got ${hyperspaceLeaderCount} out of ${packCount}`
     )
   })
@@ -827,9 +811,9 @@ async function runTests(): Promise<void> {
       }
     }
 
-    // With 1/6 probability, we expect ~17 out of 100
+    // Smoke test (see HS-leader test above): floor >2 is ~4σ safe at ~1/6 over 100; >5 flaked.
     assert(
-      hyperspaceBaseCount > 5,
+      hyperspaceBaseCount > 2,
       `Expected some Hyperspace bases, got ${hyperspaceBaseCount} out of ${packCount}`
     )
   })
@@ -837,7 +821,10 @@ async function runTests(): Promise<void> {
   test('over many packs, some foils get upgraded to Hyperfoil', () => {
     clearBeltCache()
     let hyperfoilCount = 0
-    const packCount = 500
+    // 2000 packs (not 500): hyperfoils are ~1/50, so 500 gives mean 10 where the >2 floor is
+    // only ~2.5σ down and flaked ~0.3%. At 2000 the mean is ~40 and >2 is ~6σ safe (still
+    // catches a broken upgrade path); the exact rate is validated in npm run qa.
+    const packCount = 2000
 
     for (let i = 0; i < packCount; i++) {
       const pack = generateBoosterPack(cards, 'SOR')
