@@ -13,6 +13,7 @@
 
 import { generateBoosterPack, generateSealedPod, generateSealedBox, clearBeltCache } from '../utils/boosterPack'
 import { initializeCardCache, getCachedCards } from '../utils/cardCache'
+import { getSetConfig } from '../utils/setConfigs/index'
 import { LeaderBelt } from '../belts/LeaderBelt'
 import { HyperspaceLeaderBelt } from '../belts/HyperspaceLeaderBelt'
 import { ShowcaseLeaderBelt } from '../belts/ShowcaseLeaderBelt'
@@ -1112,16 +1113,15 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
 
     const setNum = ['SOR', 'SHD', 'TWI'].includes(setCode) ? 1 : 4
 
-    // Legendary rate in R/L slot (card index 14)
-    // RareLegendaryBelt achieves target ratio:
-    // - Sets 1-3: 7:1 (7 rares per legendary) = 1 in 8 = 12.5%
-    // - Sets 4+: 5:1 (5 rares per legendary) = 1 in 6 = 16.7%
+    // Legendary rate in R/L slot (card index 14). Expected ratio comes from the set
+    // config (single source of truth) — sets 1-3 = 7:1 (1 in 8); JTL onward = 4:1 (1 in 5,
+    // FFG "Updates and Rotations": legendaries ~1 in 5 packs starting with Jump to Lightspeed).
     test(`${setCode}: legendary rate in R/L slot matches expected`, () => {
       const rlCards = allPacks.map(p => p.cards[14])
       const legendaryCount = rlCards.filter(c => c.rarity === 'Legendary').length
       const total = rlCards.length
 
-      const ratio = setNum <= 3 ? 7 : 5
+      const ratio = getSetConfig(setCode)?.beltRatios?.rareToLegendary ?? (setNum <= 3 ? 7 : 4)
       // Expected rate = 1 / (ratio + 1) because we want 1 legendary per ratio rares
       const expectedRate = 1 / (ratio + 1)
       const expected = total * expectedRate

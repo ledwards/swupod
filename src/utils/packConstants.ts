@@ -268,9 +268,11 @@ export const SETS_4_6_CONSTANTS: PackConstants = {
 
   // ---------------------------------------------------------------------------
   // Rare Slot Legendary Ratio (Question 15)
-  // Standard Legendary rate is 1 in 6 (5:1 ratio R:L, 5 rares per 1 legendary)
+  // FFG "Updates and Rotations": legendaries ~1 in 5 packs "starting with Jump to
+  // Lightspeed and going forward" (up from the original 1 in 8). JTL/LOF/SEC (sets 4-6)
+  // are JTL-onward, so they match LAW/ASH at 4:1 (1 in 5). Sets 1-3 keep 7:1 (1 in 8).
   // ---------------------------------------------------------------------------
-  rareSlotLegendaryRatio: 5,  // 5:1 means 5 rares for every 1 legendary (1 in 6)
+  rareSlotLegendaryRatio: 4,  // 4:1 means 4 rares for every 1 legendary (1 in 5)
 
   // ---------------------------------------------------------------------------
   // UC Slot 3 Upgrade Rate (Question 3)

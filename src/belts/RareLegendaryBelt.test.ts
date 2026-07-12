@@ -74,20 +74,14 @@ async function runTests(): Promise<void> {
     }
   })
 
-  test('sets 4-6 use 5:1 ratio (1 in 6 legendary)', () => {
-    for (const setCode of ['JTL', 'LOF', 'SEC']) {
-      const belt = new RareLegendaryBelt(setCode)
-      assertEqual(belt.ratio, 5, `${setCode} should use 5:1 ratio`)
-    }
-  })
-
-  test('FIXED: Set 7+ uses 4:1 ratio (1 in 5 legendary — FFG advertised rate, JTL onward)', () => {
+  test('FIXED: sets 4+ use 4:1 ratio (1 in 5 legendary — FFG advertised rate, JTL onward)', () => {
     // SPEC source: official starwarsunlimited.com "Updates and Rotations":
-    // "Legendary cards will appear... around 1 in every 5 packs" starting with
-    // JTL and going forward. 11 real ASH boxes observe 56L/264 packs = 21.2%
-    // rare-slot legendaries ~= the advertised 20%; advertised rate CANNOT
-    // include HS/HSF/Prestige legendaries (rare slot alone already hits ~21%).
-    for (const setCode of ['LAW', 'ASH']) {
+    // "Legendary cards will appear... around 1 in every 5 packs" starting with Jump to
+    // Lightspeed (JTL, set 4) and going forward — up from the original 1 in 8. So JTL/LOF/SEC
+    // match LAW/ASH at 4:1. 11 real ASH boxes observe 56L/264 packs = 21.2% rare-slot
+    // legendaries ~= the advertised 20%; the advertised rate CANNOT include HS/HSF/Prestige
+    // legendaries (the rare slot alone already hits ~21%).
+    for (const setCode of ['JTL', 'LOF', 'SEC', 'LAW', 'ASH']) {
       const belt = new RareLegendaryBelt(setCode)
       assertEqual(belt.ratio, 4, `${setCode} should use 4:1 ratio (1 in 5)`)
     }
@@ -143,7 +137,7 @@ async function runTests(): Promise<void> {
 
   test('rares appear more frequently than legendaries (matching spec ratio)', () => {
     // SPEC: Sets 1-3 should have 7:1 rare:legendary ratio (1 in 8 = 12.5% legendary)
-    // SPEC: Sets 4+ should have 5:1 rare:legendary ratio (1 in 6 = 16.7% legendary)
+    // SPEC: Sets 4+ (JTL onward) should have 4:1 rare:legendary ratio (1 in 5 = 20% legendary)
     const belt = new RareLegendaryBelt('SOR')
 
     // Sample many cards for statistical significance
