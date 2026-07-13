@@ -112,8 +112,25 @@ export class HyperfoilBelt {
       rarityCounts[card.rarity] = (rarityCounts[card.rarity] || 0) + 1
     }
 
-    // Calculate multipliers to achieve target distribution
-    const baseScale = 1000
+    // Calculate multipliers to achieve target distribution.
+    // LAW+ foil slot (sheetCut) needs high resolution. At the fixed 1000-scale a
+    // small rarity (rare 3% spread over ~50 cards = 0.6 copies/card) rounds UP to
+    // 1, so ~50 rare copies land instead of ~30 — the hit share inflates and the
+    // common share drops below its 83% target (~19/box vs real ~19.75). Scale so
+    // even the rarest positive-weight rarity gets several copies per card, so
+    // rounding barely perturbs the shares (mirrors FoilBelt's dynamic-scale fix).
+    let baseScale = 1000
+    if (this.sheetCut) {
+      const MIN_COPIES_PER_CARD = 8
+      let minWeightPerCard = Infinity
+      for (const rarity in rarityCounts) {
+        const pct = targetWeights[rarity] || 0
+        if (pct > 0) minWeightPerCard = Math.min(minWeightPerCard, pct / (rarityCounts[rarity] || 1))
+      }
+      if (minWeightPerCard < Infinity && minWeightPerCard > 0) {
+        baseScale = Math.ceil((MIN_COPIES_PER_CARD * 100) / minWeightPerCard)
+      }
+    }
     for (const rarity in rarityCounts) {
       const targetPct = targetWeights[rarity] || 0
       const uniqueCount = rarityCounts[rarity] || 1
