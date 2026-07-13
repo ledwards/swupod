@@ -4,6 +4,7 @@
 
 ### 🎴 Pack Contents
 - **Continued improvements to pack contents** as we calibrate against more real boxes.
+- **Foil rarity distribution tweaks** to better match real packs.
 
 ## 07.11.2026
 

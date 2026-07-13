@@ -112,29 +112,37 @@ export class HyperfoilBelt {
       rarityCounts[card.rarity] = (rarityCounts[card.rarity] || 0) + 1
     }
 
-    // Calculate multipliers to achieve target distribution.
-    // LAW+ foil slot (sheetCut) needs high resolution. At the fixed 1000-scale a
-    // small rarity (rare 3% spread over ~50 cards = 0.6 copies/card) rounds UP to
-    // 1, so ~50 rare copies land instead of ~30 — the hit share inflates and the
-    // common share drops below its 83% target (~19/box vs real ~19.75). Scale so
-    // even the rarest positive-weight rarity gets several copies per card, so
-    // rounding barely perturbs the shares (mirrors FoilBelt's dynamic-scale fix).
-    let baseScale = 1000
-    if (this.sheetCut) {
-      const MIN_COPIES_PER_CARD = 8
-      let minWeightPerCard = Infinity
+    // Per-card copy counts.
+    // Preferred: explicit foil-sheet copies from the set config (a real print
+    // stack — N sheets of 11×11). Every card of a rarity gets EXACTLY this many
+    // copies: equal frequency, exact ratio, no weight/rounding, normal sheet size.
+    // ASH: C15/U3/R1/S5/L2 over 100/60/50/8/20 cards → 1810 = 15×121−5.
+    const sheetCopies = config?.rarityWeights?.hyperspaceFoilSheetCopies
+    if (sheetCopies) {
       for (const rarity in rarityCounts) {
-        const pct = targetWeights[rarity] || 0
-        if (pct > 0) minWeightPerCard = Math.min(minWeightPerCard, pct / (rarityCounts[rarity] || 1))
+        this.rarityQuantities[rarity] = Math.max(1, Math.round(sheetCopies[rarity] ?? 1))
       }
-      if (minWeightPerCard < Infinity && minWeightPerCard > 0) {
-        baseScale = Math.ceil((MIN_COPIES_PER_CARD * 100) / minWeightPerCard)
+    } else {
+      // Weight-driven fallback (sets 1-6, and LAW until it gets a sheet). The LAW+
+      // foil slot (sheetCut) uses a higher baseScale so small rarities don't round
+      // up and inflate the hit share.
+      let baseScale = 1000
+      if (this.sheetCut) {
+        const MIN_COPIES_PER_CARD = 8
+        let minWeightPerCard = Infinity
+        for (const rarity in rarityCounts) {
+          const pct = targetWeights[rarity] || 0
+          if (pct > 0) minWeightPerCard = Math.min(minWeightPerCard, pct / (rarityCounts[rarity] || 1))
+        }
+        if (minWeightPerCard < Infinity && minWeightPerCard > 0) {
+          baseScale = Math.ceil((MIN_COPIES_PER_CARD * 100) / minWeightPerCard)
+        }
       }
-    }
-    for (const rarity in rarityCounts) {
-      const targetPct = targetWeights[rarity] || 0
-      const uniqueCount = rarityCounts[rarity] || 1
-      this.rarityQuantities[rarity] = Math.max(1, Math.round((targetPct / 100) * baseScale / uniqueCount))
+      for (const rarity in rarityCounts) {
+        const targetPct = targetWeights[rarity] || 0
+        const uniqueCount = rarityCounts[rarity] || 1
+        this.rarityQuantities[rarity] = Math.max(1, Math.round((targetPct / 100) * baseScale / uniqueCount))
+      }
     }
 
     // Initial fill

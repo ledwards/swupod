@@ -80,6 +80,17 @@ export const ASH_CONFIG: SetConfig = {
       Special: 2,
       Legendary: 2,
     },
+    // Real print-sheet realization of that ratio: a stack of 15 uncut 11×11 foil
+    // sheets (1815 positions, last sheet 5 blanks → 1810 cards). Per-card copies
+    // over the 100C/60U/50R/8S/20L foil pool give exactly 1500C/180U/50R/40S/40L
+    // = 82.9/9.9/2.8/2.2/2.2% — equal frequency, exact ratio, normal sheet size.
+    hyperspaceFoilSheetCopies: {
+      Common: 15,
+      Uncommon: 3,
+      Rare: 1,
+      Special: 5,
+      Legendary: 2,
+    },
     foilBeltTarget: constants.foilBeltTargetWeights,
     ucSlot3Upgraded: constants.ucSlot3UpgradedWeights,
     hyperspaceNonFoil: constants.hyperspaceNonFoilWeights,
