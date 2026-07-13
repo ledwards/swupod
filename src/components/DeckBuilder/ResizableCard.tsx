@@ -9,7 +9,6 @@
 
 import { useRef, useEffect, useState, type MouseEvent, type TouchEvent, type CSSProperties } from 'react'
 import type { CardData } from '../Card'
-import { CardStatsBadge } from '../CardStatsBadge'
 
 // Base card dimensions and radius ratio
 // At 120px width, radius should be ~6.4px (reduced by 20% from original 8px)
@@ -40,7 +39,6 @@ export interface ResizableCardProps {
   noHoverScale?: boolean
   // Arena-specific: disable rainbow border animation
   noRainbowBorder?: boolean
-  statsSetCode?: string | null
 }
 
 export function ResizableCard({
@@ -62,7 +60,6 @@ export function ResizableCard({
   style = {},
   noHoverScale = false,
   noRainbowBorder = false,
-  statsSetCode = null,
 }: ResizableCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [borderRadius, setBorderRadius] = useState(BASE_RADIUS)
@@ -157,8 +154,6 @@ export function ResizableCard({
           <div className="card-rarity">{card.rarity}</div>
         </div>
       )}
-
-      {card.imageUrl ? <CardStatsBadge card={card} setCode={statsSetCode} /> : null}
 
       {/* Aspect penalty badge */}
       {showPenalty && penaltyAmount > 0 && (
