@@ -1,5 +1,10 @@
 # Release Notes
 
+## 07.13.2026
+
+### 🎮 Clearer "Opening on Karabast" feedback
+- **The Companion lobby buttons now acknowledge your click.** Create Private/Public Lobby and Join now show an "Opening on Karabast…" state the moment you press them, so launching a game never feels like nothing happened. If Karabast is slow or unavailable, the Companion itself now follows up with a clear "didn't respond — try again" prompt instead of leaving you waiting.
+
 ## 07.11.2026
 
 ### 🐳 Cracking Packs for the Pod

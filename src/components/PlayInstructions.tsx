@@ -98,6 +98,27 @@ export default function PlayInstructions({
   const [cardPool, setCardPool] = useState(cardPoolName)
   const [wayfinderIconUrl, setWayfinderIconUrl] = useState<string | null>(null)
 
+  // Transient local "Opening…" feedback for the Companion lobby buttons. These
+  // post a fire-and-forget message to the Companion (which opens Karabast in a
+  // new tab), so there's no completion signal to react to here — we just give an
+  // immediate acknowledgement so the click never feels like it did nothing, then
+  // clear it after a few seconds. If Karabast is slow or unavailable, the
+  // Companion's own launch-status toast carries the richer "still opening /
+  // didn't respond, try again" status on top of this.
+  const [openingAction, setOpeningAction] = useState<'private' | 'public' | 'join' | null>(null)
+  const openingTimerRef = useRef<number | null>(null)
+  function markOpening(action: 'private' | 'public' | 'join') {
+    setOpeningAction(action)
+    if (openingTimerRef.current !== null) window.clearTimeout(openingTimerRef.current)
+    openingTimerRef.current = window.setTimeout(() => {
+      setOpeningAction(null)
+      openingTimerRef.current = null
+    }, 4000)
+  }
+  useEffect(() => () => {
+    if (openingTimerRef.current !== null) window.clearTimeout(openingTimerRef.current)
+  }, [])
+
   function trackPlayAction(action: string, extra: Record<string, unknown> = {}) {
     trackEvent(LimitedAnalyticsEvents.LIMITED_PLAY_ACTION_USED, {
       ...buildLimitedContext({
@@ -168,6 +189,7 @@ export default function PlayInstructions({
       // Public Karabast game name, e.g. "SEC Draft Leia Splash Green protectthepod.com".
       lobbyName: buildLobbyName({ setCode, poolType, archetypeName }),
     }, '*')
+    markOpening(privacy)
     trackPlayAction(
       privacy === 'private'
         ? LimitedPlayActions.WAYFINDER_CREATE_PRIVATE_LOBBY
@@ -196,6 +218,7 @@ export default function PlayInstructions({
       format: poolType === 'sealed_pod' ? 'pool' : poolType === 'draft' ? 'pool' : poolType,
       cardPool,
     }, '*')
+    markOpening('join')
     trackPlayAction(LimitedPlayActions.WAYFINDER_JOIN_PRIVATE_LOBBY, {
       target: 'wayfinder',
       card_pool: cardPool,
@@ -405,11 +428,11 @@ export default function PlayInstructions({
         {renderCompanionReadyPanel()}
 
         <div className="wayfinder-section">
-          <button className="wayfinder-btn" onClick={() => dispatchCreateLobby('private')}>
-            🔒 Create Private Lobby
+          <button className="wayfinder-btn" disabled={openingAction !== null} onClick={() => dispatchCreateLobby('private')}>
+            {openingAction === 'private' ? 'Opening on Karabast…' : '🔒 Create Private Lobby'}
           </button>
-          <button className="wayfinder-btn" onClick={() => dispatchCreateLobby('public')}>
-            🌐 Create Public Lobby
+          <button className="wayfinder-btn" disabled={openingAction !== null} onClick={() => dispatchCreateLobby('public')}>
+            {openingAction === 'public' ? 'Opening on Karabast…' : '🌐 Create Public Lobby'}
           </button>
           <button
             className="wayfinder-btn"
@@ -439,8 +462,8 @@ export default function PlayInstructions({
               onChange={e => { setJoinUrl(e.target.value); setJoinError(null) }}
               placeholder="https://karabast.net/lobby?lobbyId=..."
             />
-            <button className="wayfinder-join-btn" onClick={dispatchJoinPrivate}>
-              Join
+            <button className="wayfinder-join-btn" disabled={openingAction !== null} onClick={dispatchJoinPrivate}>
+              {openingAction === 'join' ? 'Opening…' : 'Join'}
             </button>
           </div>
           {joinError && <div className="wayfinder-error">{joinError}</div>}
