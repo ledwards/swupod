@@ -273,6 +273,11 @@ export class RareLegendaryBelt {
         singles.push(c)
       }
     }
+    // Shuffle which identities get the short-pair vs far-pair treatment — without
+    // this the same (pool-order) cards always get the close-copy layout and land
+    // in a box's first-24 cut twice more often, breaking equal occurrence within
+    // the rarity (rare CV ran 4.0% vs the uniform 2.9%).
+    shuffle(pairs)
     const size = cards.length
     const slots: (RawCard | null)[] = new Array(size).fill(null)
     const free = () => slots.map((v, i) => (v === null ? i : -1)).filter(i => i >= 0)
