@@ -1,5 +1,10 @@
 # Release Notes
 
+## 07.12.2026
+
+### 🎴 Pack Contents
+- **Continued improvements to pack contents** as we calibrate against more real boxes.
+
 ## 07.11.2026
 
 ### 🐳 Cracking Packs for the Pod

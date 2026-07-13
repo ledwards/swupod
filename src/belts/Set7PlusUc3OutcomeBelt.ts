@@ -72,14 +72,53 @@ export class Set7PlusUc3OutcomeBelt {
   }
 
   _fill(): void {
-    const cycle: Set7PlusUc3Outcome[] = []
+    // Prestige is a SHEET-CUT, not a coin flip. A real print sheet rations
+    // prestige to roughly one per N packs, so any 24-pack box lands on 1-2 and
+    // never a random cluster of 3-4. Shuffling prestige into the hopper (the old
+    // behavior) gave Binomial(24, rate) variance — it coughed up 4+/box a few %
+    // of the time, which is what a real box never does (11 boxes: max 2 ever).
+    //
+    // So: the HS-only outcomes still ride a shuffled hopper (they cluster fine
+    // IRL), but prestige is placed at near-even intervals with small jitter.
+    // With interval I and jitter <= I/6, consecutive prestige sit I ± I/3 apart,
+    // i.e. within [I*5/6, I*7/6]; for the default 1/18 (I = 18) that is [15, 21]
+    // — so no 24-window ever holds >2 or <1, matching the real box distribution.
+    const total = CYCLE_SIZE
+    const prestigeCount = this.outcomeCounts.prestige
+
+    const rest: Set7PlusUc3Outcome[] = []
     for (const [outcome, count] of Object.entries(this.outcomeCounts) as Array<[Set7PlusUc3Outcome, number]>) {
-      for (let i = 0; i < count; i++) {
-        cycle.push(outcome)
+      if (outcome === 'prestige') continue
+      for (let i = 0; i < count; i++) rest.push(outcome)
+    }
+    shuffle(rest)
+
+    const cycle: (Set7PlusUc3Outcome | null)[] = new Array(total).fill(null)
+
+    if (prestigeCount > 0) {
+      const interval = total / prestigeCount
+      const jitter = Math.max(0, Math.floor(interval / 6))
+      for (let k = 0; k < prestigeCount; k++) {
+        const wobble = jitter > 0 ? Math.floor(Math.random() * (2 * jitter + 1)) - jitter : 0
+        let pos = Math.round(k * interval + jitter + wobble)
+        if (pos >= total) pos = total - 1
+        if (pos < 0) pos = 0
+        // Collisions are rare with small jitter; probe forward for a free slot.
+        let guard = 0
+        while (cycle[pos] !== null && guard < total) {
+          pos = (pos + 1) % total
+          guard++
+        }
+        cycle[pos] = 'prestige'
       }
     }
-    shuffle(cycle)
-    this.hopper.push(...cycle)
+
+    let r = 0
+    for (let i = 0; i < total; i++) {
+      if (cycle[i] === null) cycle[i] = rest[r++]!
+    }
+
+    this.hopper.push(...(cycle as Set7PlusUc3Outcome[]))
   }
 
   next(): Set7PlusUc3Outcome {

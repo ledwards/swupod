@@ -18,7 +18,12 @@ import { SET_7_PLUS_CONSTANTS } from '../packConstants'
 import type { SetConfig } from './index'
 
 const constants = SET_7_PLUS_CONSTANTS
-const ASH_T1_PRESTIGE_RATE = 1 / 12
+// 11 fully-transcribed real boxes (Lee case + display box) show ~1.3 tier-1
+// prestige per 24-pack box (9 per 166 packs) with a tight spread (max 2 ever,
+// never 3+) — i.e. the LAW default of 1/18, delivered as ~1 guaranteed per box
+// plus a ~1/3 chance of a second. The earlier 1/12 ("~2/box") override was an
+// early guess the box data never bore out; it is the reason boxes could show 4.
+const ASH_T1_PRESTIGE_RATE = 1 / 18
 
 export const ASH_CONFIG: SetConfig = {
   setCode: 'ASH',
@@ -64,15 +69,16 @@ export const ASH_CONFIG: SetConfig = {
   },
 
   rarityWeights: {
-    // ASH override (real box 001, 24 foils: C20/U1/R1/S1/L1 — commons heavier,
-    // uncommons lighter than the LAW-derived C65/U20; R/S/L on target).
-    // Moderate shift, not chasing one box; revisit with box #2.
+    // ASH override calibrated on 11 real boxes: every box independently ran
+    // ~20 common foils / 24 (= 5/6 ≈ 83%), with R/S/L much rarer than the
+    // LAW-derived C65/U20/R8/S4/L3 modeled. Combined ~60C/7U/2R/1S/2L per 72
+    // foils → clean C83/U10/R3/S2/L2 (common share = 5/6).
     hyperspaceFoilSlot: {
-      Common: 72,
-      Uncommon: 13,
-      Rare: 8,
-      Special: 4,
-      Legendary: 3,
+      Common: 83,
+      Uncommon: 10,
+      Rare: 3,
+      Special: 2,
+      Legendary: 2,
     },
     foilBeltTarget: constants.foilBeltTargetWeights,
     ucSlot3Upgraded: constants.ucSlot3UpgradedWeights,
@@ -102,7 +108,8 @@ export const ASH_CONFIG: SetConfig = {
     secondUCToHyperspaceUC: constants.uncommonHyperspaceRate,
     commonToHyperspace: 0,
     rareToPrestige: 0,
-    // Box openings point to ~2 tier-1 prestige cards per 24-pack box.
+    // ~1.3 tier-1 prestige per 24-pack box (1/18), sheet-cut spaced by
+    // Set7PlusUc3OutcomeBelt so a box lands on 1-2 and never clusters 3+.
     // If the API has not published ASH prestige variants yet, standard packs
     // no-op this outcome rather than synthesizing an unknown checklist.
     uc3ToPrestige: ASH_T1_PRESTIGE_RATE,
