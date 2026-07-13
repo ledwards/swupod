@@ -31,7 +31,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 2,14,113,Mandalorian Flagship,Captured from the Empire,Uncommon,Unit,Command/Heroism,Normal,113,0,0,high,113/264 read
 2,15,162,Rash Action,,Uncommon,Event,Aggression/Heroism,Normal,162,0,0,high,162/264 read
 2,16,151,Operation Cinder,,Rare,Event,Aggression/Villainy,Normal,151,0,0,high,151/264 read
-3,1,8,Moff Gideon,Indomitable Warlord,Common,Leader,Command/Villainy,Normal,8,0,0,high,bordered leader frame confirms Normal; identity via unique subtitle; #8
+3,1,272,Moff Gideon,Indomitable Warlord,Common,Leader,Command/Villainy,Hyperspace,8,0,1,high,bordered leader frame confirms Normal; identity via unique subtitle; #8; variant corrected via 2026-07-12 number-first re-read (read 272)
 3,2,26,Freetown,,Common,Base,Cunning,Normal,26,0,0,high,26/264 read (rotated)
 3,3,78,B-Wing Rearguard,,Common,Unit,Vigilance,Normal,78,0,0,high,78/264 read
 3,4,174,StarFortress Heavy Bomber,,Common,Unit,Aggression,Normal,174,0,0,high,174/264 read
@@ -80,7 +80,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 5,15,194,Snub Fighter Squadron,,Uncommon,Unit,Cunning/Villainy,Normal,194,0,0,high,194/264 read
 5,16,247,One Must Destroy to Create,,Rare,Event,Villainy,Normal,247,0,0,high,247/264 read
 6,1,8,Moff Gideon,Indomitable Warlord,Common,Leader,Command/Villainy,Normal,8,0,0,high,"read as 9/264 initially but subtitle ""Indomitable Warlord"" only matches ref number 8; corrected"
-6,2,20,"Nevarro City, Restored",,Common,Base,Vigilance,Normal,20,0,0,high,"name uniquely matches ref 20 (only normal variant), art is standard full-frame not borderless"
+6,2,284,"Nevarro City, Restored",,Common,Base,Vigilance,Hyperspace,20,0,1,high,"name uniquely matches ref 20 (only normal variant), art is standard full-frame not borderless; variant corrected via 2026-07-12 number-first re-read (read 284)"
 6,3,152,Inspired Recruit,,Common,Unit,Aggression/Heroism,Normal,152,0,0,high,152/264 read
 6,4,58,Duchess's Protector,,Common,Unit,Vigilance/Heroism,Normal,58,0,0,high,58/264 read
 6,5,143,Tempest Lieutenant,,Common,Unit,Aggression/Villainy,Normal,143,0,0,high,143/264 read

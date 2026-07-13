@@ -16,7 +16,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 1,15,236,Far Far Away,,Uncommon,Event,Cunning,Normal,236,0,0,high,236/264 read
 1,16,43,Corona Four,Justice for Alderaan,Rare,Unit,Cunning/Vigilance/Heroism,Normal,43,0,0,medium,ASH-EN visible but digits cut off at photo bottom edge; inferred Normal 43 from standard black-border frame (not borderless) and elimination since foil slot already filled by pos12
 2,1,11,Cad Bane,Still Faster than You,Common,Leader,Aggression/Villainy,Normal,11,0,0,medium,"partial ""1/264"" corner digits, reference-matched to 11"
-2,2,21,Emperor's Throne Room,,Common,Base,Command,Normal,21,0,0,medium,"digits not clearly legible in corner strip; inferred Normal 21 by elimination (name unique, only Normal/Hyperspace exist)"
+2,2,285,Emperor's Throne Room,,Common,Base,Command,Hyperspace,21,0,1,high,"digits not clearly legible in corner strip; inferred Normal 21 by elimination (name unique, only Normal/Hyperspace exist); variant corrected via 2026-07-12 number-first re-read (read 285)"
 2,3,239,Imperial Loyalist,,Common,Unit,Villainy,Normal,239,0,0,high,239/264 read
 2,4,184,Follow Me,,Common,Event,Aggression,Normal,184,0,0,high,184/264 read
 2,5,76,Remnant Official,,Common,Unit,Vigilance,Normal,76,0,0,high,76/264 read

@@ -704,3 +704,58 @@ Lee asked which spec matches most players' real experience. Measured answer:
   55% loaded — objectively clumpier than any real pool (random selection re-couples
   the odd-gap pairs that stacking split across columns). Feature works against
   collation realism; flagged for product review.
+
+## 🔎 VARIANT RE-VERIFICATION SAGA (2026-07-12) — number-first or bust
+
+**Trigger:** Teddy's boxes (008-011) showed 0 HS leaders / 0 HS bases; Lee's
+hand count of the physical cards said ~19 HS leaders. Investigation found TWO
+stacked detection failures:
+
+1. **Title-driven transcription** (Teddy boxes) can't see same-rarity variants
+   at all — leader HS, base HS, UC3 HS-uncommon all defaulted to Normal.
+2. **Frame-based CV** (first re-pass) detects full-bleed HS treatment on
+   units/upgrades/events but NOT leaders/bases: **ASH HS leaders and bases KEEP
+   the framed layout** (name plate, panels). The only reliable tells are the
+   collector number (bare N>264 vs printed "N/264" fraction) and subtle
+   art-bleed at the edges. The frame pass found 2 of ~17 Teddy HS leaders.
+
+**The fix — number-first identification (the rule going forward):**
+- Normal 1-264 ("N/264" fraction), HS 265-528 (bare), HSF 529-766,
+  Showcase 767-784, Prestige 785+. **HS number = normal number + 264 exactly**,
+  so a card's name gives its two candidate numbers — reading is a 2-way
+  discrimination, not free OCR.
+- At photo blur limit, the number-GROUP WIDTH is decisive: "N/264" fractions
+  run ~0.7-1.0× the adjacent ASH·EN text width; bare HS numbers ~0.35-0.6×.
+  Calibrate per photo against same-card copies in sibling packs.
+
+**Re-read of all 11 boxes' leaders+bases (10 CV agents + Lee review of 12
+ambiguous cards):** 48 variant corrections total (30 Teddy, 18 Lee incl. box
+006 recorded as 0/0 that is actually 5 HS leaders + 4 HS bases, and a sleeved
+SHOWCASE Armorer 767 in box 004 pack 14).
+
+**FINAL verified rates (261 packs):**
+| Metric | Spec | Observed |
+|---|---|---|
+| Leader HS | 16.7% (1/6) | **44/261 = 16.9%** ✓ |
+| Base HS | 16.7% (1/6) | **41/261 = 15.7%** ✓ |
+| Showcase leader | 1/576 | 1/261 (n too small, plausible) |
+| Flank commons HS | 1/48 | 1.9% ✓ |
+
+Per-box: leader HS almost uniformly 4/box, base HS 4/box (boxes 1,2 lower) —
+box-level behavior looks quota-like, consistent with belt-driven upgrades.
+
+**RETRACTIONS:** the proposed leader-HS (1/6→1/12) and base-HS (1/6→1/16)
+recalibrations are DEAD — the deficits were detection artifacts. The
+"case-correlated variant richness" hypothesis is DEAD for leaders/bases.
+
+**SURVIVING recalibration candidates (observations rest on rarity/treatment
+signals that don't have this failure mode):**
+1. **UC3 prestige rate**: sim 2.0/box vs observed 1.09/box (config 1/12 →
+   ~1/22). Prestige treatment is unmissable; counts trusted.
+2. **HSF foil-slot rarity mix**: config C72/U13/R8/S4/L3, sim realizes
+   C70/R10.5 (sheet quantization), observed C82.4/U11.1/R3.1/S1.5/L1.9 across
+   all 11 boxes (every box ≥77% common). Rarity is identity-based; trusted.
+
+Open: Lee's Teddy hand count says 19 HS leaders, verified pass found 17; the
+two medium-confidence Normal leader calls (008|19 Armorer glare, 009|11 Baylan
+blur) are the candidates — pending Lee's per-box HS leader names.

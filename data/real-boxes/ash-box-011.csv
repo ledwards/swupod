@@ -32,7 +32,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 2,15,459,Helgait,Dooku Was a Visionary,Rare,Unit,Cunning/Villainy,Hyperspace,195,no,art appears grayscale/prestige-like sketch treatment,high,"UC3 upgrade slot: card is Rare not Uncommon, used Hyperspace printing per rule"
 2,16,40,Poe Dameron,I'll Come Back For You,Rare,Unit,Aggression/Cunning/Heroism,Normal,40,no,n/a,high,
 3,1,18,Grogu,Charming Companion,Rare,Leader,Cunning/Heroism,Normal,18,no,n/a,high,leader variant unverifiable at this res
-3,2,26,Freetown,,Common,Base,Cunning,Normal,26,no,n/a,high,base variant unverifiable at this res
+3,2,290,Freetown,,Common,Base,Cunning,Hyperspace,26,no,1,high,base variant unverifiable at this res; variant corrected via 2026-07-12 number-first re-read (read 290)
 3,3,170,Desert Sharpshooter,,Common,Unit,Aggression,Normal,170,no,no,high,
 3,4,238,Attendant Navigator,,Common,Unit,Villainy,Normal,238,no,no,high,
 3,5,86,Durasteel Plating,,Common,Upgrade,Vigilance,Normal,86,no,no,high,
@@ -47,7 +47,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 3,14,139,Hold Them Off,,Uncommon,Event,Command,Normal,139,no,no,high,
 3,15,236,Far Far Away,,Uncommon,Event,Cunning,Normal,236,no,no,high,
 3,16,43,Corona Four,Justice for Alderaan,Rare,Unit,Cunning/Vigilance/Heroism,Normal,43,no,n/a,high,
-4,1,9,Ahsoka Tano,Trust in the Force,Common,Leader,Command/Heroism,Normal,9,no,n/a,high,leader variant unverifiable at this res
+4,1,9,Ahsoka Tano,Trust in the Force,Common,Leader,Command/Heroism,Hyperspace,9,no,1,high,leader variant unverifiable at this res; variant corrected via 2026-07-12 CV+human review pass (human-review)
 4,2,21,Emperor's Throne Room,,Common,Base,Command,Normal,21,no,n/a,high,base variant unverifiable at this res
 4,3,175,Wookiee Chieftain,,Common,Unit,Aggression,Normal,175,no,no,high,
 4,4,242,Death Trooper Squad,,Common,Unit,Villainy,Normal,242,no,no,high,
@@ -127,8 +127,8 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 8,14,147,The Cyborg Mech,Mysterious Threat,Uncommon,Unit,Aggression/Villainy,Normal,147,no,no,high,
 8,15,54,Pointless to Resist,,Uncommon,Upgrade,Vigilance/Villainy,Normal,54,no,no,high,
 8,16,151,Operation Cinder,,Rare,Event,Aggression/Villainy,Normal,151,no,n/a,high,
-9,1,16,Shin Hati,Eager Adversary,Common,Leader,Cunning/Villainy,Normal,16,no,n/a,high,leader variant unverifiable at this res
-9,2,23,Ancient Henge,,Common,Base,Aggression,Normal,23,no,n/a,high,base variant unverifiable at this res
+9,1,280,Shin Hati,Eager Adversary,Common,Leader,Cunning/Villainy,Hyperspace,16,no,1,high,leader variant unverifiable at this res; variant corrected via 2026-07-12 number-first re-read (read 280)
+9,2,287,Ancient Henge,,Common,Base,Aggression,Hyperspace,23,no,1,high,base variant unverifiable at this res; variant corrected via 2026-07-12 number-first re-read (read 287)
 9,3,143,Tempest Lieutenant,,Common,Unit,Aggression/Villainy,Normal,143,no,no,high,
 9,4,260,Mos Espa Watermonger,,Common,Unit,,Normal,260,no,no,high,
 9,5,69,Noti Nomad,,Common,Unit,Vigilance,Normal,69,no,no,high,
@@ -224,7 +224,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 14,15,67,Get Lost,,Uncommon,Event,Vigilance/Heroism,Normal,67,no,no,high,
 14,16,149,Eviscerator,Burn Them Away,Rare,Unit,Aggression/Villainy,Normal,149,no,no,high,
 15,1,11,Cad Bane,Still Faster than You,Common,Leader,Aggression/Villainy,Normal,11,no,no,high,leader variant unverifiable at low res
-15,2,19,Fortress of the Great Mothers,,Common,Base,Vigilance,Normal,19,no,no,high,base variant unverifiable at low res
+15,2,283,Fortress of the Great Mothers,,Common,Base,Vigilance,Hyperspace,19,no,1,high,base variant unverifiable at low res; variant corrected via 2026-07-12 number-first re-read (read 283)
 15,3,76,Remnant Official,,Common,Unit,Vigilance,Normal,76,no,no,high,
 15,4,231,Diplomatic Pageantry,,Common,Event,Cunning,Normal,231,no,no,high,
 15,5,166,Ewok Warrior,,Common,Unit,Aggression,Normal,166,no,no,high,
@@ -239,7 +239,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 15,14,133,Trask Walker,,Uncommon,Unit,Command,Normal,133,no,no,high,
 15,15,220,Remnant Lookouts,,Uncommon,Unit,Cunning,Normal,220,no,no,high,
 15,16,62,The Mandalorian,Devoted Rescuer,Legendary,Unit,Vigilance/Heroism,Normal,62,no,no,high,leader is Cad Bane; this is the separate Legendary unit-side Mandalorian card in rare/legendary slot
-16,1,8,Moff Gideon,Indomitable Warlord,Common,Leader,Command/Villainy,Normal,8,no,no,high,leader variant unverifiable at low res
+16,1,8,Moff Gideon,Indomitable Warlord,Common,Leader,Command/Villainy,Hyperspace,8,no,1,high,leader variant unverifiable at low res; variant corrected via 2026-07-12 CV+human review pass (human-review)
 16,2,21,Emperor's Throne Room,,Common,Base,Command,Normal,21,no,no,high,base variant unverifiable at low res
 16,3,185,Intimidation,,Common,Event,Aggression,Normal,185,no,no,high,
 16,4,138,Turning the Tide,,Common,Event,Command,Normal,138,no,no,high,
@@ -320,7 +320,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 20,15,253,Yellow Aces Bomber,,Uncommon,Unit,Heroism,Normal,253,no,no,high,
 20,16,229,Camtono,,Rare,Upgrade,Cunning,Normal,229,no,no,high,
 21,1,16,Shin Hati,Eager Adversary,Common,Leader,Cunning/Villainy,Normal,16,no,no,high,leader variant unverifiable at low res
-21,2,22,Kryze Castle,,Common,Base,Command,Normal,22,no,no,high,base variant unverifiable at low res
+21,2,286,Kryze Castle,,Common,Base,Command,Hyperspace,22,no,1,high,base variant unverifiable at low res; variant corrected via 2026-07-12 number-first re-read (read 286)
 21,3,260,Mos Espa Watermonger,,Common,Unit,,Normal,260,no,no,high,
 21,4,252,N5 Sentry Droid,,Common,Unit,Heroism,Normal,252,no,no,high,
 21,5,45,Reanimated Night Trooper,,Common,Unit,Vigilance/Villainy,Normal,45,no,no,high,
@@ -335,7 +335,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 21,14,137,Wipe Them Out,,Uncommon,Event,Command,Normal,137,no,no,high,
 21,15,65,Home One,Heart of the Fleet,Uncommon,Unit,Vigilance/Heroism,Normal,65,no,no,high,
 21,16,163,Reckless Sacrifice,,Rare,Event,Aggression/Heroism,Normal,163,no,no,high,
-22,1,11,Cad Bane,Still Faster than You,Common,Leader,Aggression/Villainy,Normal,11,no,no,high,leader variant unverifiable at low res
+22,1,275,Cad Bane,Still Faster than You,Common,Leader,Aggression/Villainy,Hyperspace,11,no,1,high,leader variant unverifiable at low res; variant corrected via 2026-07-12 number-first re-read (read 275)
 22,2,19,Fortress of the Great Mothers,,Common,Base,Vigilance,Normal,19,no,no,high,base variant unverifiable at low res
 22,3,246,Exploit Advantage,,Common,Event,Villainy,Normal,246,no,no,high,
 22,4,250,Imperial Defector,,Common,Unit,Heroism,Normal,250,no,no,high,
@@ -365,7 +365,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 23,12,756,Gallofree Transport,,Common,Unit,Heroism,Hyperspace Foil,254,no,no,low,10 common-tier cards observed with no visible glare confirmed; foil assigned by structural elimination as last common before uncommon run
 23,13,103,Long Live the Empire,,Uncommon,Event,Command/Villainy,Normal,103,no,no,high,only 2 normal uncommons in this pack (structural deviation)
 23,14,85,Grav Charge,,Uncommon,Upgrade,Vigilance,Normal,85,no,no,high,only 2 normal uncommons in this pack (structural deviation)
-23,15,248,Neel,The Cutest Boy,Rare,Unit,Heroism,Normal,248,no,no,high,UC3 slot upgraded to Rare rarity instead of a 3rd uncommon; pack has 2 uncommons plus this Rare plus the Legendary rare-slot card
+23,15,248,Neel,The Cutest Boy,Rare,Unit,Heroism,Hyperspace,248,no,1,high,UC3 slot upgraded to Rare rarity instead of a 3rd uncommon; pack has 2 uncommons plus this Rare plus the Legendary rare-slot card; variant corrected via 2026-07-12 CV+human review pass (structural-rarity)
 23,16,161,Zeb Orrelios,Fists Work Every Time,Legendary,Unit,Aggression/Heroism,Normal,161,no,no,high,true rare/legendary slot card
 24,1,13,Ezra Bridger,It's Now or Never,Common,Leader,Aggression/Heroism,Normal,13,no,no,high,leader variant unverifiable at low res
 24,2,22,Kryze Castle,,Common,Base,Command,Normal,22,no,no,high,base variant unverifiable at low res
