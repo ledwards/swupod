@@ -56,6 +56,7 @@ export interface OpenGame {
   player2Id: string | null
   createdAt: string
   acceptedAt: string | null
+  bestOf: number
 }
 
 export interface OpenGameListing {
@@ -72,6 +73,7 @@ export interface OpenGameListing {
   hostDeck?: { name: string | null }
   /** Filled in by the API/broadcast layer from the live presence map. */
   hostConnected?: boolean
+  bestOf?: number
 }
 
 export interface RecentResult {
@@ -99,6 +101,7 @@ function rowToGame(row: Record<string, unknown>): OpenGame {
     player2Id: (row.player2_id as string) ?? null,
     createdAt: String(row.created_at),
     acceptedAt: row.accepted_at ? String(row.accepted_at) : null,
+    bestOf: Number(row.best_of) || 1,
   }
 }
 
@@ -165,10 +168,12 @@ export interface PostParams {
   userId: string
   poolId: string
   visibility?: 'public' | 'private'
+  bestOf?: number
 }
 
 async function postOpenGameInTx(tx: TxClient, params: PostParams): Promise<OpenGame> {
   const { userId, poolId, visibility = 'public' } = params
+  const bestOf = params.bestOf === 3 ? 3 : 1
   await lockUsers(tx, [userId])
   const deck = await requireEligibleDeck(tx, userId, poolId)
 
@@ -181,10 +186,10 @@ async function postOpenGameInTx(tx: TxClient, params: PostParams): Promise<OpenG
 
   const { generateShareId } = await import('@/lib/utils')
   const row = await tx.queryRow(
-    `INSERT INTO open_games (share_id, visibility, set_code, set_name, format, player1_id, player1_pool_id)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `INSERT INTO open_games (share_id, visibility, set_code, set_name, format, player1_id, player1_pool_id, best_of)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
      RETURNING *`,
-    [generateShareId(10), visibility, deck.setCode, deck.setName, deck.format, userId, deck.poolId]
+    [generateShareId(10), visibility, deck.setCode, deck.setName, deck.format, userId, deck.poolId, bestOf]
   )
   return rowToGame(row!)
 }
@@ -376,7 +381,7 @@ export async function listPublicOpenGames(): Promise<{
   const { queryRows } = await import('@/lib/db')
   const rows = await queryRows(
     `SELECT og.share_id, og.set_code, og.set_name, og.format, og.created_at,
-            og.player1_id, u.username, u.avatar_url,
+            og.best_of, og.player1_id, u.username, u.avatar_url,
             cp.deck_builder_state, cp.name AS pool_name, cp.pool_type,
             cp.created_at AS pool_created_at
      FROM open_games og
@@ -408,6 +413,7 @@ export async function listPublicOpenGames(): Promise<{
       },
       hostId: String(r.player1_id),
       hostDeck: { name: hostDeckName(r) },
+      bestOf: Number(r.best_of) || 1,
     })),
     recentCompleted: completed.map(r => ({
       setCode: String(r.set_code),
@@ -416,6 +422,39 @@ export async function listPublicOpenGames(): Promise<{
       players: [r.p1 ? String(r.p1) : null, r.p2 ? String(r.p2) : null],
     })),
   }
+}
+
+/**
+ * Bo1/Bo3 toggle (host only, while the listing is still open — once an
+ * opponent has joined the terms are locked).
+ */
+export async function setOpenGameBestOf(params: {
+  shareId: string
+  userId: string
+  bestOf: number
+}): Promise<OpenGame> {
+  if (params.bestOf !== 1 && params.bestOf !== 3) {
+    throw new OpenGameError('not_found', 'bestOf must be 1 or 3', 400)
+  }
+  const { queryRow } = await import('@/lib/db')
+  const existing = await queryRow(
+    'SELECT id, player1_id, status FROM open_games WHERE share_id = $1',
+    [params.shareId]
+  )
+  if (!existing) throw new OpenGameError('not_found', 'Game not found', 404)
+  if (String(existing.player1_id) !== String(params.userId)) {
+    throw new OpenGameError('forbidden', 'Only the host can change the match length', 403)
+  }
+  const row = await queryRow(
+    `UPDATE open_games SET best_of = $2, updated_at = NOW()
+     WHERE id = $1 AND status = 'open'
+     RETURNING *`,
+    [existing.id, params.bestOf]
+  )
+  if (!row) {
+    throw new OpenGameError('listing_gone', 'The lobby is no longer open — match length is locked', 409)
+  }
+  return rowToGame(row)
 }
 
 /** The caller's own active listing (any visibility) — powers the "Your Open

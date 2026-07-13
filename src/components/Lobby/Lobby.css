@@ -829,6 +829,19 @@ a.lobby-discord-tile:active {
   padding-right: 72px;
 }
 
+/* Bo1/Bo3 under the match heading: host gets the toggle, everyone else the terms. */
+.lobby-match-bestof {
+  display: flex;
+  gap: var(--pt-space-xs);
+  justify-content: center;
+  margin: calc(var(--pt-space-sm) * -1) 0 var(--pt-space-md);
+}
+
+.lobby-match-bestof-static {
+  color: var(--pt-ink-subtle);
+  font-size: 0.85rem;
+}
+
 /* The play page's action-bar trio, compacted for the pane header. */
 .lobby-deck-actions {
   padding: 0 var(--pt-space-md) var(--pt-space-sm);

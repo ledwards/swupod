@@ -49,7 +49,12 @@ export async function POST(request: NextRequest): Promise<Response> {
     if (!poolId) return errorResponse('poolShareId is required', 400)
 
     const visibility = body.visibility === 'private' ? 'private' : 'public'
-    const game = await postOpenGame({ userId: session.id, poolId, visibility })
+    const game = await postOpenGame({
+      userId: session.id,
+      poolId,
+      visibility,
+      bestOf: body.bestOf === 3 ? 3 : 1,
+    })
 
     if (game.visibility === 'public') {
       broadcastOpenGamesUpdate().catch(() => {})

@@ -19,6 +19,7 @@ const {
   playNow,
   cancelOpenGame,
   listPublicOpenGames,
+  setOpenGameBestOf,
   getOpenGameByShareId,
   sweepOpenGames,
   delistOpenGamesForUser,
@@ -184,6 +185,40 @@ describe('openGames service (Lobby V1 spec)', { skip: !dbAvailable }, () => {
     // seedPool has no poolName/pool row name -> canonical archetype+date fallback
     assert.equal(typeof mine.hostDeck.name, 'string')
     assert.ok(mine.hostDeck.name.length > 0, 'deck name is non-empty')
+  })
+
+  it('bestOf defaults to 1, posts as 3 when asked, and appears on listings', async () => {
+    const u = await seedUser()
+    const p1 = await seedPool(u)
+    const g1 = await postOpenGame({ userId: u, poolId: p1 })
+    assert.equal(g1.bestOf, 1)
+    const g2 = await postOpenGame({ userId: u, poolId: p1, bestOf: 3 })
+    assert.equal(g2.bestOf, 3)
+    const { listings } = await listPublicOpenGames()
+    assert.equal(listings.find(l => l.shareId === g2.shareId)?.bestOf, 3)
+  })
+
+  it('setOpenGameBestOf: host-only, and locked once the lobby is no longer open', async () => {
+    const host = await seedUser('og-bo-host')
+    const hp = await seedPool(host)
+    const game = await postOpenGame({ userId: host, poolId: hp })
+
+    const updated = await setOpenGameBestOf({ shareId: game.shareId, userId: host, bestOf: 3 })
+    assert.equal(updated.bestOf, 3)
+
+    const stranger = await seedUser('og-bo-stranger')
+    await assert.rejects(
+      () => setOpenGameBestOf({ shareId: game.shareId, userId: stranger, bestOf: 1 }),
+      (e: OpenGameError) => e.code === 'forbidden'
+    )
+
+    const joiner = await seedUser('og-bo-joiner')
+    const jp = await seedPool(joiner)
+    await joinOpenGame({ shareId: game.shareId, userId: joiner, poolId: jp })
+    await assert.rejects(
+      () => setOpenGameBestOf({ shareId: game.shareId, userId: host, bestOf: 1 }),
+      (e: OpenGameError) => e.code === 'listing_gone'
+    )
   })
 
   it('SPEC R18: join is atomic — two concurrent joins, exactly one wins', async () => {

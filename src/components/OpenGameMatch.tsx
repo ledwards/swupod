@@ -39,6 +39,7 @@ interface MatchGame {
   setCode: string
   setName: string | null
   format: string
+  bestOf: number
   result: string | null
   players: Array<MatchPlayer | null>
   yourPoolShareId: string | null
@@ -165,16 +166,36 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
   }
 
   const isSeat = game.yourSeat != null
+  const isHost = game.yourSeat === 1
   const isLive = ['open', 'accepted', 'lobby_ready', 'in_progress'].includes(game.status)
   const formatLabel = game.format === 'draft' ? 'Draft' : 'Sealed'
   const host = game.players[0]
+
+  // Bo1/Bo3 (host only, while the lobby is open) — optimistic, server-confirmed.
+  async function setBestOf(n: 1 | 3): Promise<void> {
+    if (!game || game.bestOf === n) return
+    const previous = game.bestOf
+    setGame({ ...game, bestOf: n })
+    try {
+      const res = await fetch(`/api/open-games/${game.shareId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ bestOf: n }),
+      })
+      if (!res.ok) throw new Error(String(res.status))
+    } catch {
+      setGame(current => (current ? { ...current, bestOf: previous } : current))
+      showToast({ text: 'Could not update the match length', kind: 'danger' })
+    }
+  }
 
   // ---- open listing, viewed by a potential joiner (private link path, R32)
   if (game.status === 'open' && !isSeat) {
     return (
       <div className="lobby-match">
         <h2>{host?.username || 'A player'} is looking for a game</h2>
-        <p className="lobby-row-meta">{game.setCode} · {formatLabel}</p>
+        <p className="lobby-row-meta">{game.setCode} · {formatLabel} · Best of {game.bestOf}</p>
         <Button
           variant="primary"
           size="lg"
@@ -231,7 +252,26 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
   return (
     <div className={`lobby-match${showDeckPane ? ' lobby-match--split' : ''}`}>
       <div className="lobby-match-main">
-      <h2>{game.setCode} {formatLabel} — Open Game</h2>
+      <h2>{game.setCode} {formatLabel} — Open Lobby</h2>
+
+      {isHost && game.status === 'open' ? (
+        <div className="lobby-match-bestof" role="group" aria-label="Match length">
+          {([1, 3] as const).map(n => (
+            <Button
+              key={n}
+              variant="toggle"
+              size="sm"
+              glowColor="blue"
+              active={game.bestOf === n}
+              onClick={() => setBestOf(n)}
+            >
+              Best of {n}
+            </Button>
+          ))}
+        </div>
+      ) : (
+        <div className="lobby-match-bestof lobby-match-bestof-static">Best of {game.bestOf}</div>
+      )}
 
       <div className="lobby-match-players">
         {game.players.filter(Boolean).map(player => (

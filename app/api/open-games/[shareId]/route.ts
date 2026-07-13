@@ -2,6 +2,7 @@
  * GET    /api/open-games/:shareId - viewer-shaped game state for the match /
  *                                   private-link page. Opponent deck identity
  *                                   is never included (R29).
+ * PATCH  /api/open-games/:shareId - host settings while open (bestOf 1|3).
  * DELETE /api/open-games/:shareId - cancel (either seat, any live status, R20).
  */
 import { getSession, requireAuth } from '@/lib/auth'
@@ -9,7 +10,7 @@ import { jsonResponse, errorResponse } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
 import { queryRow } from '@/lib/db'
 import { broadcastOpenGamesUpdate, emitOpenGameEventToUser } from '@/src/lib/socketBroadcast'
-import { cancelOpenGame } from '@/src/services/openGames'
+import { cancelOpenGame, setOpenGameBestOf } from '@/src/services/openGames'
 import { resolveOpenGameMessage } from '@/lib/discordLfg'
 import { openGameErrorResponse } from '../helpers'
 import { NextRequest } from 'next/server'
@@ -48,6 +49,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         setCode: row.set_code,
         setName: row.set_name,
         format: row.format,
+        bestOf: Number(row.best_of) || 1,
         result: row.result,
         createdAt: row.created_at,
         acceptedAt: row.accepted_at,
@@ -76,6 +78,27 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         yourSeat: isPlayer1 ? 1 : isPlayer2 ? 2 : null,
       },
     })
+  } catch (error) {
+    return openGameErrorResponse(error)
+  }
+}
+
+export async function PATCH(request: NextRequest, { params }: RouteContext): Promise<Response> {
+  try {
+    const rateLimitResponse = applyRateLimit(request)
+    if (rateLimitResponse) return rateLimitResponse
+
+    const { shareId } = await params
+    const session = requireAuth(request)
+    const body = await request.json().catch(() => ({}))
+    const game = await setOpenGameBestOf({
+      shareId,
+      userId: session.id,
+      bestOf: Number(body.bestOf),
+    })
+    // Board rows show Bo3, so keep them live too.
+    broadcastOpenGamesUpdate().catch(() => {})
+    return jsonResponse({ game })
   } catch (error) {
     return openGameErrorResponse(error)
   }

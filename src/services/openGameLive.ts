@@ -40,6 +40,7 @@ const ACTIVE_ATTEMPT_STATUSES = ['creating', 'lobby_ready', 'in_progress']
 
 export interface ClaimResult {
   action: 'create_lobby' | 'wait_for_lobby' | 'join_lobby' | 'open_lobby' | 'lobby_link'
+  bestOf?: number
   attemptId?: string
   lobbyName?: string
   lobbyUrl?: string
@@ -109,6 +110,7 @@ export async function claimOpenGame(params: {
       attemptId: String(next!.id),
       // R29: no archetype in the lobby name — deck identity stays hidden.
       lobbyName: buildLobbyName({ setCode: String(game.set_code), poolType: String(game.format) }),
+      bestOf: Number(game.best_of) || 1,
       gameStatus: String(game.status),
     }
   })

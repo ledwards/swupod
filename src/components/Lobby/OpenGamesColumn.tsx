@@ -121,6 +121,7 @@ export default function OpenGamesColumn({
                 <span className={`lobby-badge lobby-badge-format-${listing.format === 'draft' ? 'draft' : 'sealed'}`}>
                   {listing.format === 'draft' ? 'Draft' : 'Sealed'}
                 </span>
+                {listing.bestOf === 3 && <span className="lobby-badge">Bo3</span>}
               </div>
               <div className="lobby-row-meta">
                 {isMine && listing.yourDeck?.name ? `${listing.yourDeck.name} · ` : ''}

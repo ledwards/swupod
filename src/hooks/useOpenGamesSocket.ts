@@ -11,6 +11,7 @@ export interface OpenGameListing {
   createdAt: string
   host: { username: string | null; avatarUrl: string | null }
   hostConnected?: boolean
+  bestOf?: number
   /**
    * True when the viewing user posted this listing (computed from the session
    * by GET /api/open-games). Socket pushes are viewer-agnostic, so it's
