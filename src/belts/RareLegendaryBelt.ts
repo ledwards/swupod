@@ -165,24 +165,19 @@ export class RareLegendaryBelt {
     // doubled to hit the exact ratio (125 cards, 100R/25L = 4:1 for ASH).
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const cfgLS = (getSetConfig(this.setCode) as any)?.packRules?.lineStackingCollation === true
-    const RARE_COPIES = 2
-    const extraLegs = Math.round((RARE_COPIES * rareCount) / this.ratio) - legCount
-    if (cfgLS && extraLegs >= 0) {
-      // Rarity is a SHEET-CUT, not a coin flip. Real rare sheets space
-      // legendaries ~every (ratio+1) slots — Lee's ordered case, reconstructed in
-      // LINE order, shows L-to-L gaps mean ~5, range 1-9, mode 5 (NOT the
-      // geometric/binomial gaps a shuffled sheet gives, which let a 24-pack box
-      // hold anywhere from 0 to 11 legendaries vs the real fixed ~5).
-      //
-      // Build a rare stream and a legendary stream, each internally spacing its
-      // OWN same-card copies (50-75 slots apart + a few short pairs, so the
-      // ~0.5 same-rare-repeats/box the 10 verified boxes show is preserved), then
-      // MERGE by dropping a legendary every ~size/nLeg positions with jitter and
-      // a random phase. Result: ~5 legendaries in every 24-pack box (real sd
-      // ~0.3), local 4:1 ratio in every window, same-card copies still apart.
-      const doubled = shuffle([...this.legendaries]).slice(0, extraLegs)
-      const legStream = this._buildDupSpacedStream([...this.legendaries, ...doubled])
-      const rareStream = this._buildDupSpacedStream([...this.rares, ...this.rares])
+    if (cfgLS) {
+      // EQUAL FREQUENCY IS UNBREAKABLE: every rare gets the SAME copy count and
+      // every legendary the SAME copy count. finalRareMult / finalLegMult were
+      // already reduced from the ratio by GCD above — they ARE the LCM
+      // equal-frequency copies (ASH 50R/20L @ 4:1 → 8 per rare, 5 per legendary;
+      // 400:100 = 4:1). We size the sheet by that LCM rather than doubling a
+      // subset of legendaries to fake the ratio. Multiplicity does NOT drive the
+      // duplicate rate — SPACING does: each card's copies are laid ~one-pool
+      // apart (interleaved shuffled rounds), then the merge drops a legendary
+      // every ~size/legTotal slots (jitter + random phase) for the real 4:1
+      // rarity cadence (L-to-L gaps mean ~5, matching Lee's line-order boxes).
+      const rareStream = this._buildRounds(this.rares, finalRareMult)
+      const legStream = this._buildRounds(this.legendaries, finalLegMult)
       const size = legStream.length + rareStream.length
       const isLeg: boolean[] = new Array(size).fill(false)
       const interval = size / legStream.length
@@ -254,57 +249,58 @@ export class RareLegendaryBelt {
   }
 
   /**
-   * Shuffle a single-rarity pool and space each card's copies apart by PLACEMENT
-   * (50-75 slots cyclically, plus 2-3 explicit short pairs at gaps 4-15) — the
-   * same low-multiplicity dup-spacing the shipped pair-sheet used, but per rarity
-   * so the rarity merge in _fill can control legendary cadence independently.
-   * Cards appearing once are dropped into the remaining free slots.
+   * Build a single-rarity stream with EXACTLY `copies` of every card (equal
+   * frequency) as `copies` interleaved shuffled rounds — each round is the whole
+   * pool shuffled, so a card's copies sit ~one-pool-length apart (well beyond a
+   * 24-pack box). A window dedup fixes the round seams. Multiplicity here does
+   * not affect the box duplicate rate (spacing does): the merge in _fill spreads
+   * these further, and copies only collide in a box via the rare seam pair.
    */
-  _buildDupSpacedStream(cards: RawCard[]): RawCard[] {
-    const counts = new Map<string, number>()
-    for (const c of cards) counts.set(c.id, (counts.get(c.id) || 0) + 1)
-    const seen = new Set<string>()
-    const pairs: RawCard[] = []
-    const singles: RawCard[] = []
-    for (const c of cards) {
-      if ((counts.get(c.id) || 0) >= 2) {
-        if (!seen.has(c.id)) { pairs.push(c); seen.add(c.id) }
-      } else {
-        singles.push(c)
-      }
+  _buildRounds(cards: RawCard[], copies: number): RawCard[] {
+    const stream: RawCard[] = []
+    for (let r = 0; r < copies; r++) {
+      stream.push(...shuffle([...cards]))
     }
-    // Shuffle which identities get the short-pair vs far-pair treatment — without
-    // this the same (pool-order) cards always get the close-copy layout and land
-    // in a box's first-24 cut twice more often, breaking equal occurrence within
-    // the rarity (rare CV ran 4.0% vs the uniform 2.9%).
-    shuffle(pairs)
-    const size = cards.length
-    const slots: (RawCard | null)[] = new Array(size).fill(null)
-    const free = () => slots.map((v, i) => (v === null ? i : -1)).filter(i => i >= 0)
-    const SHORT_PAIRS = 2 + Math.floor(Math.random() * 2)
-    const SHORT_GAPS = [4, 6, 8, 10, 12, 15]
-    for (let k = 0; k < pairs.length; k++) {
-      const card = pairs[k]!
-      const fr = free()
-      const a = fr[Math.floor(Math.random() * fr.length)]!
-      slots[a] = card
-      let b: number
-      if (k < SHORT_PAIRS) {
-        b = a + SHORT_GAPS[Math.floor(Math.random() * SHORT_GAPS.length)]!
-      } else {
-        b = (a + Math.floor(size * 0.4) + Math.floor(Math.random() * size * 0.2)) % size
-      }
-      for (let step = 0; step < size; step++) {
-        const cand = (b + step) % size
-        if (slots[cand] === null) { slots[cand] = card; break }
-      }
+    this._fullDedup(stream)
+    this._injectShortPairs(stream, copies)
+    return stream
+  }
+
+  /**
+   * Real print sheets aren't perfectly spaced — a card occasionally has two
+   * copies a few slots apart (Lee's boxes: ~0.5 same-rare repeats/box, gaps
+   * 2-18). Pure rounds space every copy ~one-pool apart, killing that texture.
+   * Relocate ONE copy of a rotating subset of identities to sit a short gap from
+   * another copy. This is a SWAP (a copy moves, none are added/removed) so equal
+   * frequency is untouched, and which identities get the close pair rotates every
+   * fill so no card is favored long-run.
+   */
+  _injectShortPairs(stream: RawCard[], copies: number): void {
+    if (copies < 2 || stream.length < 40) return
+    const byId = new Map<string, number[]>()
+    stream.forEach((c, i) => {
+      const a = byId.get(c.id)
+      if (a) a.push(i); else byId.set(c.id, [i])
+    })
+    const ids = shuffle([...byId.keys()])
+    // ~6% of identities get a close pair per fill — empirically tuned to ~0.5
+    // same-card repeats per sealed box (real: 10 verified boxes ~0.5). Rotates
+    // every fill so no identity is favored long-run.
+    const nPairs = Math.round(ids.length * 0.06)
+    const GAPS = [2, 4, 6, 8, 10, 12, 15, 18]
+    for (let k = 0; k < nPairs && k < ids.length; k++) {
+      const positions = byId.get(ids[k])!
+      if (positions.length < 2) continue
+      const anchor = positions[Math.floor(Math.random() * positions.length)]!
+      const gap = GAPS[Math.floor(Math.random() * GAPS.length)]!
+      const dst = (anchor + gap) % stream.length
+      if (stream[dst]!.id === ids[k]) continue // already a close copy there
+      const src = positions.find(p => p !== anchor && p !== dst)
+      if (src === undefined) continue
+      const tmp = stream[src]!
+      stream[src] = stream[dst]!
+      stream[dst] = tmp
     }
-    for (const single of shuffle([...singles])) {
-      const fr = free()
-      if (fr.length === 0) break
-      slots[fr[Math.floor(Math.random() * fr.length)]!] = single
-    }
-    return slots.filter(Boolean) as RawCard[]
   }
 
   /**

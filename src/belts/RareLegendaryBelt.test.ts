@@ -333,6 +333,31 @@ async function runTests(): Promise<void> {
     assert(maxSeen <= 9, `SPEC: no box should reach the coin-flip extreme (10-11), saw max ${maxSeen}`)
   })
 
+  test('UNBREAKABLE: every card occurs the same number of times as its rarity peers on the sheet', () => {
+    // A sheet must give every card of a rarity the SAME copy count — no card
+    // doubled ad hoc to fake the ratio. LCM sizing makes equal frequency and the
+    // 4:1 ratio hold at once (ASH 50R/20L @ 4:1 → 8 per rare, 5 per legendary).
+    for (const setCode of ['ASH', 'LAW']) {
+      const belt = new RareLegendaryBelt(setCode)
+      const size = belt.size
+      const perCard = new Map<string, { rarity: string, n: number }>()
+      for (let i = 0; i < size; i++) {
+        const c = belt.next()
+        if (!c) break
+        const e = perCard.get(c.id) ?? { rarity: c.rarity, n: 0 }
+        e.n++
+        perCard.set(c.id, e)
+      }
+      const byRarity: Record<string, number[]> = {}
+      for (const { rarity, n } of perCard.values()) (byRarity[rarity] ??= []).push(n)
+      for (const [rarity, counts] of Object.entries(byRarity)) {
+        const min = Math.min(...counts)
+        const max = Math.max(...counts)
+        assert(min === max, `SPEC (${setCode}): every ${rarity} must have equal copies on the sheet, got ${min}-${max}`)
+      }
+    }
+  })
+
   console.log('')
   console.log('\x1b[35m' + '='.repeat(40) + '\x1b[0m')
   console.log(`\x1b[32m✅ Tests passed: ${passed}\x1b[0m`)
