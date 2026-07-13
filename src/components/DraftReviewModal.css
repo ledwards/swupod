@@ -96,6 +96,17 @@
   margin-right: 10px;
 }
 
+/* Player-name heading shown (in place of the timer) when viewing someone
+   else's pick history from the observer slideshow. */
+.draft-review-title {
+  color: white;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
 .sort-button {
   background: rgba(0, 0, 0, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.3);
