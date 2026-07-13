@@ -554,6 +554,12 @@ export interface HSBeltConfig {
   cycleSize: number
   // Set 7+ only: leader+base HS may co-occur in one plan (real ASH pool-002 pack06)
   allowLeaderBaseCoOccurrence?: boolean
+  // When true, each slot's upgrades are SPACED across the cycle (a real print
+  // sheet) instead of shuffled into random packs. Shuffling gives hypergeometric
+  // per-box spread (HS leader sd ~1.3); real ASH boxes run sd ~0.7, so the
+  // upgrades must be laid down spaced. budgetDistribution is ignored on this path
+  // (the per-pack budget emerges from where the spaced slots overlap).
+  spaceUpgrades?: boolean
   budgetDistribution: { 0: number, 1: number, 2: number }
   slotCounts: {
     leader: number
@@ -630,6 +636,30 @@ export const HS_BELT_CONFIGS: Record<string, HSBeltConfig> = {
     // total: 10+10+0+0+0+20 = 40 ✓
     // budget: 0×26 + 1×28 + 2×6 = 40 ✓
     // μ = 40/60 ≈ 0.67 belt upgrades + 1 guaranteed HS common = ~1.67 HS/pack
+  },
+  // ASH (Set 8): recalibrated on 6 sharp real boxes. HS leader ~3.4/box and HS
+  // base ~2.55/box — both BELOW LAW's 1/6 (4/box) — and BOTH spaced (real sd
+  // 0.7/1.0, well under a shuffled sheet's ~1.3). So: fewer per cycle AND laid
+  // down spaced. uc3 is 0 here — the UC3 HS/prestige outcomes are owned by
+  // Set7PlusUc3OutcomeBelt, so a uc3 count in this belt would be a phantom that
+  // only distorts the leader/base budget. common/uc1/uc2 stay 0 (dedicated HS
+  // common belt + UC3-only uncommon upgrades).
+  'ASH': {
+    cycleSize: 60,
+    allowLeaderBaseCoOccurrence: true,
+    spaceUpgrades: true,
+    // Ignored on the spaced path (kept only to satisfy the shared schema).
+    budgetDistribution: { 0: 48, 1: 10, 2: 2 },
+    slotCounts: {
+      leader: 8,    // 8/60 = 1/7.5 ≈ 3.2/box (real 3.4)
+      base: 6,      // 6/60 = 1/10  = 2.4/box (real 2.55)
+      common: 0,
+      uc1: 0,
+      uc2: 0,
+      uc3: 0,       // owned by Set7PlusUc3OutcomeBelt, not this belt
+    }
+    // total: 8+6 = 14 spaced upgrades/60; co-occurrence emerges where the two
+    // spaced sheets overlap (~1-2/cycle, matching real leader+base packs).
   },
 }
 
