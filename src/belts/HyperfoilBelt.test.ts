@@ -223,6 +223,29 @@ async function runTests(): Promise<void> {
     assert(diffPercent > 50, `At least 50% of positions should differ, got ${diffPercent.toFixed(1)}%`)
   })
 
+  test('FIXED: LAW+ foil slot is sheet-cut — hits per 24-pack box are tight, not binomial', () => {
+    // SPEC (11 real ASH boxes): common foils/box = 19.8 with stdev ~0.64 (always
+    // 19-21). A shuffled boot rolls each foil independently → stdev ~1.9 (boxes
+    // 16-24, some with 0-1 good foils, some with 7-8). The sheet-cut must ration
+    // the rarer "hit" foils so every 24-window lands near the mean.
+    const belt = new HyperfoilBelt('ASH')
+    const BOXES = 400
+    const commonCounts: number[] = []
+    for (let b = 0; b < BOXES; b++) {
+      let c = 0
+      for (let p = 0; p < 24; p++) {
+        if (belt.next().rarity === 'Common') c++
+      }
+      commonCounts.push(c)
+    }
+    const mean = commonCounts.reduce((a, v) => a + v, 0) / BOXES
+    const sd = Math.sqrt(commonCounts.reduce((a, v) => a + (v - mean) ** 2, 0) / BOXES)
+    const p = mean / 24
+    const binomialSd = Math.sqrt(24 * p * (1 - p)) // the shuffled-boot baseline
+    assert(sd < binomialSd * 0.6,
+      `SPEC: sheet-cut foil variance must be well below binomial — got sd ${sd.toFixed(2)} vs binomial ${binomialSd.toFixed(2)}`)
+  })
+
   console.log('')
   console.log('\x1b[35m' + '='.repeat(40) + '\x1b[0m')
   console.log(`\x1b[32m✅ Tests passed: ${passed}\x1b[0m`)

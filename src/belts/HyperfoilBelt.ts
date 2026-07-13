@@ -45,6 +45,11 @@ export class HyperfoilBelt {
    *  Normal card images. The slot is still a Hyperspace Foil; only the art
    *  source is provisional. */
   usingNormalFallback: boolean
+  /** True for LAW+ sets where this belt IS the every-pack foil slot. Those
+   *  sets get sheet-cut ordering (non-common "hit" foils spaced evenly) so a
+   *  24-pack box lands on ~20 common + ~4 hits every time — real boxes run
+   *  stdev ~0.6 on common count, not the ~1.9 a shuffled boot produces. */
+  sheetCut: boolean
 
   constructor(setCode: SetCode | string) {
     this.setCode = setCode as SetCode
@@ -52,6 +57,7 @@ export class HyperfoilBelt {
     this.fillingPool = []
     this.rarityQuantities = {}
     this.usingNormalFallback = false
+    this.sheetCut = false
 
     this._initialize()
   }
@@ -64,6 +70,9 @@ export class HyperfoilBelt {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const config = getSetConfig(this.setCode) as any
     const includeSpecial = config?.packRules?.specialInHyperspaceSlots ?? false
+    // LAW+ sets use this belt as the every-pack foil slot → sheet-cut ordering.
+    // Earlier sets use it only for the rare hyperfoil upgrade → keep pure shuffle.
+    this.sheetCut = config?.packRules?.foilSlotIsHyperspaceFoil === true
 
     // Filter to Hyperspace Foil variant non-leader, non-base cards
     this.fillingPool = cards.filter(c =>
@@ -145,17 +154,60 @@ export class HyperfoilBelt {
    * Fill the hopper with a new batch
    */
   _fill(): void {
-    const boot: RawCard[] = []
+    if (!this.sheetCut) {
+      // Sets 1-6 (rare hyperfoil upgrade): pure shuffle, unchanged.
+      const boot: RawCard[] = []
+      for (const card of this.fillingPool) {
+        const quantity = this.rarityQuantities[card.rarity] || 1
+        for (let i = 0; i < quantity; i++) boot.push(card)
+      }
+      shuffle(boot)
+      this.hopper.push(...boot)
+      return
+    }
 
+    // LAW+ foil slot: SHEET-CUT. Split the weighted boot into commons vs the
+    // rarer "hit" foils (U/R/S/L), then space the hits evenly so any 24-pack
+    // box lands on ~4 hits (real boxes: 3-5, stdev ~0.6) instead of the ~0-8 a
+    // shuffled boot coughs up. Exact per-cycle counts (and the rarity mix) are
+    // unchanged — only the ordering is rationed, like a real print sheet.
+    const commons: RawCard[] = []
+    const hits: RawCard[] = []
     for (const card of this.fillingPool) {
       const quantity = this.rarityQuantities[card.rarity] || 1
-      for (let i = 0; i < quantity; i++) {
-        boot.push(card)
+      const bucket = card.rarity === 'Common' ? commons : hits
+      for (let i = 0; i < quantity; i++) bucket.push(card)
+    }
+    shuffle(commons)
+    shuffle(hits)
+
+    const total = commons.length + hits.length
+    const boot: (RawCard | null)[] = new Array(total).fill(null)
+
+    if (hits.length > 0) {
+      const interval = total / hits.length
+      // Never fully rigid: real boxes wobble (common-foil stdev ~0.6, not 0).
+      const jitter = Math.max(1, Math.floor(interval / 6))
+      for (let k = 0; k < hits.length; k++) {
+        const wobble = jitter > 0 ? Math.floor(Math.random() * (2 * jitter + 1)) - jitter : 0
+        let pos = Math.round(k * interval + jitter + wobble)
+        if (pos >= total) pos = total - 1
+        if (pos < 0) pos = 0
+        let guard = 0
+        while (boot[pos] !== null && guard < total) {
+          pos = (pos + 1) % total
+          guard++
+        }
+        boot[pos] = hits[k]!
       }
     }
 
-    shuffle(boot)
-    this.hopper.push(...boot)
+    let c = 0
+    for (let i = 0; i < total; i++) {
+      if (boot[i] === null) boot[i] = commons[c++]!
+    }
+
+    this.hopper.push(...(boot as RawCard[]))
   }
 
   next(): RawCard | null {
