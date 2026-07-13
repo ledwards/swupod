@@ -188,11 +188,15 @@ export class HyperfoilBelt {
       const interval = total / hits.length
       // Never fully rigid: real boxes wobble (common-foil stdev ~0.6, not 0).
       const jitter = Math.max(1, Math.floor(interval / 6))
+      // Random phase: generateSealedBox clears belts per box, so a fresh box
+      // consumes the first 24 of a new boot. Without a phase every box would
+      // sample the identical window (a robotic 19 commons, stdev 0). A random
+      // phase makes fresh cuts land on different windows → real ~0.6 stdev.
+      const phase = Math.random() * interval
       for (let k = 0; k < hits.length; k++) {
         const wobble = jitter > 0 ? Math.floor(Math.random() * (2 * jitter + 1)) - jitter : 0
-        let pos = Math.round(k * interval + jitter + wobble)
-        if (pos >= total) pos = total - 1
-        if (pos < 0) pos = 0
+        let pos = Math.round(phase + k * interval + wobble) % total
+        if (pos < 0) pos += total
         let guard = 0
         while (boot[pos] !== null && guard < total) {
           pos = (pos + 1) % total

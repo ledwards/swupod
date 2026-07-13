@@ -98,11 +98,15 @@ export class Set7PlusUc3OutcomeBelt {
     if (prestigeCount > 0) {
       const interval = total / prestigeCount
       const jitter = Math.max(0, Math.floor(interval / 6))
+      // Random phase: generateSealedBox clears belts per box, so each fresh box
+      // consumes the FIRST 24 of a new cycle. Without a phase every box would
+      // sample the same window and the per-box mean would drift high (~2 instead
+      // of 1.3). A random phase makes a fresh cut land on a random window.
+      const phase = Math.random() * interval
       for (let k = 0; k < prestigeCount; k++) {
         const wobble = jitter > 0 ? Math.floor(Math.random() * (2 * jitter + 1)) - jitter : 0
-        let pos = Math.round(k * interval + jitter + wobble)
-        if (pos >= total) pos = total - 1
-        if (pos < 0) pos = 0
+        let pos = Math.round(phase + k * interval + wobble) % total
+        if (pos < 0) pos += total
         // Collisions are rare with small jitter; probe forward for a free slot.
         let guard = 0
         while (cycle[pos] !== null && guard < total) {

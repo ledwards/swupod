@@ -168,44 +168,69 @@ export class RareLegendaryBelt {
     const RARE_COPIES = 2
     const extraLegs = Math.round((RARE_COPIES * rareCount) / this.ratio) - legCount
     if (cfgLS && extraLegs >= 0) {
-      // Cyclic-spaced pair sheet: rarity is mixed uniformly across the whole
-      // segment (every 24-pack window sees the exact 4:1 ratio — a two-block
-      // layout broke local ratio to 2.5:1 for fresh-per-box consumption), and
-      // each identity's two copies sit 50-75 slots apart cyclically, so no
-      // box window catches a pair. The 10 verified boxes show ~0.5 same-rare
-      // repeats/box (gaps 2-18): produced by 2-3 explicit short pairs below.
+      // Rarity is a SHEET-CUT, not a coin flip. Real rare sheets space
+      // legendaries ~every (ratio+1) slots — Lee's ordered case, reconstructed in
+      // LINE order, shows L-to-L gaps mean ~5, range 1-9, mode 5 (NOT the
+      // geometric/binomial gaps a shuffled sheet gives, which let a 24-pack box
+      // hold anywhere from 0 to 11 legendaries vs the real fixed ~5).
+      //
+      // Build a rare stream and a legendary stream, each internally spacing its
+      // OWN same-card copies (50-75 slots apart + a few short pairs, so the
+      // ~0.5 same-rare-repeats/box the 10 verified boxes show is preserved), then
+      // MERGE by dropping a legendary every ~size/nLeg positions with jitter and
+      // a random phase. Result: ~5 legendaries in every 24-pack box (real sd
+      // ~0.3), local 4:1 ratio in every window, same-card copies still apart.
       const doubled = shuffle([...this.legendaries]).slice(0, extraLegs)
-      const pairs = shuffle([...this.rares, ...doubled])           // 2 copies each
-      const singles = this.legendaries.filter(l => !doubled.some(d => d.id === l.id))
-      const size = pairs.length * 2 + singles.length
-      const slots: (RawCard | null)[] = new Array(size).fill(null)
-      const free = () => slots.map((v, i) => (v === null ? i : -1)).filter(i => i >= 0)
-      // short pairs first (linear gaps 4-15 packs; window 3 keeps gap >= 4)
-      const SHORT_PAIRS = 2 + Math.floor(Math.random() * 2)
-      const SHORT_GAPS = [4, 6, 8, 10, 12, 15]
-      for (let k = 0; k < pairs.length; k++) {
-        const card = pairs[k]!
-        const fr = free()
-        const a = fr[Math.floor(Math.random() * fr.length)]!
-        slots[a] = card
-        let b: number
-        if (k < SHORT_PAIRS) {
-          b = a + SHORT_GAPS[Math.floor(Math.random() * SHORT_GAPS.length)]!
-        } else {
-          b = (a + Math.floor(size * 0.4) + Math.floor(Math.random() * size * 0.2)) % size
-        }
-        // probe cyclically for a free slot near the target
-        for (let step = 0; step < size; step++) {
-          const cand = (b + step) % size
-          if (slots[cand] === null) { slots[cand] = card; break }
+      const legStream = this._buildDupSpacedStream([...this.legendaries, ...doubled])
+      const rareStream = this._buildDupSpacedStream([...this.rares, ...this.rares])
+      const size = legStream.length + rareStream.length
+      const isLeg: boolean[] = new Array(size).fill(false)
+      const interval = size / legStream.length
+      // jitter = floor(interval/2) → L-to-L gaps span ~[1, 2*interval-1], matching
+      // the real 1-9 range at interval 5; independent wobble can't stack two gap-1s.
+      const jitter = Math.max(1, Math.floor(interval / 2))
+      const phase = Math.random() * interval // fresh-box cut samples a random window
+      for (let k = 0; k < legStream.length; k++) {
+        const wobble = Math.floor(Math.random() * (2 * jitter + 1)) - jitter
+        let pos = Math.round(phase + k * interval + wobble) % size
+        if (pos < 0) pos += size
+        let guard = 0
+        while (isLeg[pos] && guard < size) { pos = (pos + 1) % size; guard++ }
+        isLeg[pos] = true
+      }
+      let li = 0
+      let ri = 0
+      for (let i = 0; i < size; i++) {
+        segment.push(isLeg[i] ? legStream[li++]! : rareStream[ri++]!)
+      }
+
+      // Adjacency guard: the merged path can't run the identity dedup passes
+      // (they swap ACROSS rarities and would scramble the cadence), but the fill
+      // seam (and, rarely, a short-pair) can put the same card back-to-back. Fix
+      // every distance-1 collision by swapping with a same-rarity card elsewhere
+      // — cadence preserved because only like-rarity positions trade places.
+      const prevTail = this.hopper.length > 0 ? this.hopper[this.hopper.length - 1] : undefined
+      for (let i = 0; i < segment.length; i++) {
+        const left = i === 0 ? prevTail : segment[i - 1]
+        if (!isSameCard(left, segment[i])) continue
+        for (let j = 0; j < segment.length; j++) {
+          if (j === i || isLeg[j] !== isLeg[i]) continue
+          const a = segment[i]!
+          const b = segment[j]!
+          const iLeft = i === 0 ? prevTail : segment[i - 1]
+          if (!isSameCard(b, iLeft) && !isSameCard(b, segment[i + 1]) &&
+              !isSameCard(a, segment[j - 1]) && !isSameCard(a, segment[j + 1])) {
+            segment[i] = b
+            segment[j] = a
+            break
+          }
         }
       }
-      for (const single of shuffle([...singles])) {
-        const fr = free()
-        if (fr.length === 0) break
-        slots[fr[Math.floor(Math.random() * fr.length)]!] = single
-      }
-      segment.push(...(slots.filter(Boolean) as RawCard[]))
+
+      // Rarity spacing is intentional: do NOT run the identity dedup passes here.
+      // They swap by card identity ACROSS rarities and would scramble the merge.
+      // Each stream already spaced its own duplicates.
+      this.hopper.push(...segment)
     } else {
       // Sets 1-6 (and any set where the low-multiplicity form can't hit the
       // ratio): original exact-GCD construction, byte-identical.
@@ -215,23 +240,66 @@ export class RareLegendaryBelt {
       for (let copy = 0; copy < finalLegMult; copy++) {
         segment.push(...this.legendaries)
       }
+
+      // Shuffle and dedup by placement (identity passes are safe here — one flat
+      // pool, no rarity cadence to protect).
+      shuffle(segment)
+      this._fullDedup(segment)
+      const hopperStart = this.hopper.length
+      this.hopper.push(...segment)
+      if (!wasEmpty) {
+        this._seamDedup(hopperStart, segment.length)
+      }
     }
+  }
 
-    // Shuffle the segment (line-stacking sets keep their two-block layout;
-    // dedup below still repairs any boundary adjacency)
-    if (!(cfgLS && extraLegs >= 0)) shuffle(segment)
-
-    // Run full dedup on segment to remove duplicates within 6 slots
-    this._fullDedup(segment)
-
-    // Add segment to hopper
-    const hopperStart = this.hopper.length
-    this.hopper.push(...segment)
-
-    // Run seam dedup at the boundary if hopper wasn't empty
-    if (!wasEmpty) {
-      this._seamDedup(hopperStart, segment.length)
+  /**
+   * Shuffle a single-rarity pool and space each card's copies apart by PLACEMENT
+   * (50-75 slots cyclically, plus 2-3 explicit short pairs at gaps 4-15) — the
+   * same low-multiplicity dup-spacing the shipped pair-sheet used, but per rarity
+   * so the rarity merge in _fill can control legendary cadence independently.
+   * Cards appearing once are dropped into the remaining free slots.
+   */
+  _buildDupSpacedStream(cards: RawCard[]): RawCard[] {
+    const counts = new Map<string, number>()
+    for (const c of cards) counts.set(c.id, (counts.get(c.id) || 0) + 1)
+    const seen = new Set<string>()
+    const pairs: RawCard[] = []
+    const singles: RawCard[] = []
+    for (const c of cards) {
+      if ((counts.get(c.id) || 0) >= 2) {
+        if (!seen.has(c.id)) { pairs.push(c); seen.add(c.id) }
+      } else {
+        singles.push(c)
+      }
     }
+    const size = cards.length
+    const slots: (RawCard | null)[] = new Array(size).fill(null)
+    const free = () => slots.map((v, i) => (v === null ? i : -1)).filter(i => i >= 0)
+    const SHORT_PAIRS = 2 + Math.floor(Math.random() * 2)
+    const SHORT_GAPS = [4, 6, 8, 10, 12, 15]
+    for (let k = 0; k < pairs.length; k++) {
+      const card = pairs[k]!
+      const fr = free()
+      const a = fr[Math.floor(Math.random() * fr.length)]!
+      slots[a] = card
+      let b: number
+      if (k < SHORT_PAIRS) {
+        b = a + SHORT_GAPS[Math.floor(Math.random() * SHORT_GAPS.length)]!
+      } else {
+        b = (a + Math.floor(size * 0.4) + Math.floor(Math.random() * size * 0.2)) % size
+      }
+      for (let step = 0; step < size; step++) {
+        const cand = (b + step) % size
+        if (slots[cand] === null) { slots[cand] = card; break }
+      }
+    }
+    for (const single of shuffle([...singles])) {
+      const fr = free()
+      if (fr.length === 0) break
+      slots[fr[Math.floor(Math.random() * fr.length)]!] = single
+    }
+    return slots.filter(Boolean) as RawCard[]
   }
 
   /**
