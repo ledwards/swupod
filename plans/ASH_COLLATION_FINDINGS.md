@@ -773,3 +773,27 @@ blur) are the candidates — pending Lee's per-box HS leader names.
   HyperfoilBelt.test.ts pins ASH sheet composition to config weights ±1pt.
   Realized foil mix now C81.6/U11.5/R2.7/S2.2/L2.0.
 - Full `npm run test` (2126) + `npm run qa` green.
+
+## 🎯 RANDOMIZE PACKS FIXED (2026-07-12) — consecutive window, not scatter
+
+The sealed "Randomize Packs" feature picked 6 SCATTERED indices from the
+24-pack box, crossing collation windows: 11.35 dup-pairs/pool measured vs 6.72
+for a physical consecutive cut. Fixed: `pickRandomWindow()`
+(src/utils/packWindow.ts, spec-tested) deals a random CONSECUTIVE window,
+avoiding the current window's start when possible. Both call sites swapped
+(app/pools/new/page.tsx client randomize + POST /api/pools/:id/randomize).
+Measured after: 7.31 dup-pairs/pool — the mild residual over the first cut is
+real physics (mid-box windows straddle stacking-column boundaries, same as a
+mid-box cut from a real case). Draft-side box shuffling untouched (a pod
+consumes the whole box regardless).
+
+## 📌 STILL PARKED: M4 box-unique residual (and why no fix ships)
+
+Sim generates ~188.3 unique non-L/B names per 24-pack box vs real ~183 — the
+sim under-duplicates by ~5 names at BOX scale. No fix because: (1) it is
+invisible at pool scale — every player-facing 6-pack metric (dup mean/tail,
+N+N, UC pairs, rare gaps) matches the 11 boxes; (2) there is no obvious safe
+knob — pushing box-level duplication up means touching common-belt sheet size
+or pair frequencies, which would perturb the shipped pair-gap fit that pool
+realism rests on. Revisit only with more real boxes or a specific player-facing
+symptom.
