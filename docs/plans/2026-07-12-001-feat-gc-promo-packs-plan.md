@@ -295,10 +295,18 @@ regenerates `cards.json` containing them; no existing card test regresses.
 
 ---
 
-- [ ] U2. **Campaign catalog + claim-window + pack-draw service**
+- [x] U2. **Campaign catalog + claim-window + pack-draw service** ✅ 2026-07-12
 
 **Goal:** Pure logic defining the GC 2026 campaign: which promo `id`s are in the Silver vs Black pool,
 the claim window, and how a pack draws its cards.
+
+**Outcome:** `src/services/promoPacks.catalog.ts` (campaign data: Jul 24–26 2026 LA window, packSize 2,
+Silver/Black pools of the 21 U1 promo ids) + `src/services/promoPacks.ts` (pure: `getCampaign`,
+`isClaimWindowOpen` (DST-correct via `Intl` LA calendar date), `isClaimAllowed` (injected override),
+`drawEventPack` (sample-without-replacement, injectable rng + `resolveCard`)). 11 spec-first tests pass;
+all 21 pool ids verified to resolve to injected `GC 2026 Promo` cards. ⚠️ **Silver-vs-Black pool split
+is a documented placeholder to confirm** — the real per-pack contents aren't published; the split is a
+defensible default and is a pure data edit to change.
 
 **Requirements:** R4, R6, R12; supports R7, R9.
 
