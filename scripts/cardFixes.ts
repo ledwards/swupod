@@ -147,9 +147,67 @@ export const batchFixes: BatchFix[] = [
  * These run after individual and batch fixes
  */
 export const customTransforms: CustomTransform[] = [
+  // Inject GC 2026 promo cards (Silver/Black Event Pack contents). Runs FIRST — before the
+  // whitelist — so it can read the full raw card data and fall over to a real GC printing the
+  // moment swuapi has one.
+  //
+  // The official GC 2026 alt-art isn't in swuapi yet, so each catalog entry (src/data/promoPacks/
+  // gc2026-cards.json) is surfaced as a distinct 'GC 2026 Promo' variant cloned from its STANDARD
+  // printing — a valid stand-in now. Art resolution prefers, in order:
+  //   1. a real GC printing (a same-cardId sibling whose art carries the `_OP_` GC marker),
+  //   2. the catalog placeholderImage,
+  //   3. the base card's standard art.
+  // (1) makes the swap AUTOMATIC: when swuapi scrapes the GC art, the next data refresh uses it —
+  //     no code change. (No `_OP_` siblings exist for these cardIds today, so no false positives.)
+  //
+  // Keyed by unique synthetic `id` (shares the base cardId/number — id is the only unique key).
+  // Idempotent: the built cards.json already contains these and the runtime re-applies transforms,
+  // so ids already present are skipped. 'GC 2026 Promo' is whitelisted below so injected cards
+  // survive the filter; that admits only this synthetic type — it does NOT reintroduce the old
+  // promo variants (Weekly Play / PQ / SS) the filter guards against.
+  {
+    name: 'Inject GC 2026 promo cards',
+    transform: (cards: Card[]): Card[] => {
+      const catalog = (gc2026PromoCatalog as { cards?: any[] }).cards || []
+      const present = new Set(cards.map(c => c.id))
+      const sourceById = new Map(cards.map(c => [c.id, c]))
+      // Real GC art, when swuapi has it: a same-cardId sibling printing whose art carries `_OP_`.
+      const realArtByCardId = new Map<string, string>()
+      for (const c of cards) {
+        if (/_OP_/i.test(c.imageUrl || '') && c.cardId) realArtByCardId.set(c.cardId, c.imageUrl)
+      }
+
+      const injected: Card[] = []
+      for (const entry of catalog) {
+        if (present.has(entry.id)) continue          // already injected — idempotent
+        const source = sourceById.get(entry.sourceCardId)
+        if (!source) continue                         // underlying card missing — skip
+        const realArt = realArtByCardId.get(source.cardId)
+        injected.push({
+          ...source,
+          id: entry.id,                               // unique synthetic id (shares cardId with source)
+          variantType: 'GC 2026 Promo',
+          isFoil: false,
+          isHyperspace: false,
+          isShowcase: false,
+          isPrestige: false,
+          imageUrl: realArt || entry.placeholderImage || source.imageUrl,
+          gcPromo: {
+            campaign: 'gc2026',
+            pool: entry.pool,                         // 'silver' | 'black'
+            placeholder: !realArt,                    // true while showing the standard-printing stand-in
+          },
+        })
+      }
+      return injected.length ? [...cards, ...injected] : cards
+    },
+    isArrayTransform: true
+  },
+
   // Filter to only keep variants we need for sealed/draft
   // Exclude promo variants (PQ, SS, Prerelease, Weekly Play) which share IDs with Normal cards
-  // but have different content, causing lookup bugs
+  // but have different content, causing lookup bugs. ('GC 2026 Promo' is our own synthetic variant,
+  // injected just above, and is intentionally allowed through.)
   {
     name: 'Keep only draft-relevant variants',
     transform: (cards: Card[]): Card[] => {
@@ -162,6 +220,7 @@ export const customTransforms: CustomTransform[] = [
         'Standard Prestige',
         'Foil Prestige',
         'Serialized Prestige',
+        'GC 2026 Promo',
       ])
       return cards.filter(card => {
         const vt = card.variantType || ''
@@ -181,47 +240,6 @@ export const customTransforms: CustomTransform[] = [
         if (type.includes('Token')) return false
         return true
       })
-    },
-    isArrayTransform: true
-  },
-
-  // Re-inject GC 2026 promo cards (stopgap). The official GC alt-art / showcase promo
-  // printings are not in swuapi/strapi yet, so each catalog entry surfaces a promo as a
-  // distinct 'GC 2026 Promo' variant cloned from its STANDARD printing (a clean stand-in,
-  // per migration 050's "same game piece, different printing" philosophy).
-  //
-  // MUST run after 'Keep only draft-relevant variants' (the whitelist) — 'GC 2026 Promo' is
-  // deliberately NOT in allowedVariants, so injecting earlier would just be filtered out.
-  // Keyed by unique synthetic uuid `id` only (never by widening the variant-type whitelist),
-  // so migration 050's cardId-collision guard for the OTHER promo variants stays intact.
-  // Idempotent: the built cards.json already contains these, and the runtime re-applies
-  // transforms — so we skip any id already present.
-  {
-    name: 'Inject GC 2026 promo cards (stopgap)',
-    transform: (cards: Card[]): Card[] => {
-      const catalog = (gc2026PromoCatalog as { cards?: any[] }).cards || []
-      const present = new Set(cards.map(c => c.id))
-      const sourceById = new Map(cards.map(c => [c.id, c]))
-      const injected: Card[] = []
-
-      for (const entry of catalog) {
-        if (present.has(entry.id)) continue          // already injected — idempotent
-        const source = sourceById.get(entry.sourceCardId)
-        if (!source) continue                         // underlying card missing — skip (logged in report)
-        injected.push({
-          ...source,
-          id: entry.id,                               // unique synthetic id; shares cardId/number with source (documented stopgap)
-          variantType: 'GC 2026 Promo',
-          isFoil: false,
-          isHyperspace: false,
-          isShowcase: false,
-          isPrestige: false,
-          imageUrl: entry.imageUrl || source.imageUrl,
-          gcPromo: { campaign: 'gc2026', category: entry.category, obtain: entry.obtain },
-        })
-      }
-
-      return injected.length ? [...cards, ...injected] : cards
     },
     isArrayTransform: true
   },

@@ -73,9 +73,14 @@ function localCalendarDate(date: Date, timeZone: string): string {
 function sampleDistinct<T>(pool: readonly T[], count: number, rng: () => number): T[] {
   const arr = pool.slice()
   const n = Math.min(count, arr.length)
+  const out: T[] = []
   for (let i = 0; i < n; i++) {
     const j = i + Math.floor(rng() * (arr.length - i))
-    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+    // i and j are always valid indices; swap then take arr[i].
+    const a = arr[i] as T
+    arr[i] = arr[j] as T
+    arr[j] = a
+    out.push(arr[i] as T)
   }
-  return arr.slice(0, n)
+  return out
 }

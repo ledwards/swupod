@@ -128,11 +128,30 @@ function testCatalogShape(): boolean {
   for (const e of CATALOG) {
     if (!e.id?.startsWith('gc2026-')) { console.error(`  ❌ Bad id: ${e.id}`); return false }
     if (!e.sourceCardId) { console.error(`  ❌ ${e.id} missing sourceCardId`); return false }
-    if (!e.imageUrl?.startsWith('https://')) { console.error(`  ❌ ${e.id} bad imageUrl`); return false }
+    if (e.pool !== 'silver' && e.pool !== 'black') { console.error(`  ❌ ${e.id} bad pool: ${e.pool}`); return false }
+    if (!e.placeholderImage?.startsWith('https://')) { console.error(`  ❌ ${e.id} bad placeholderImage`); return false }
     if (ids.has(e.id)) { console.error(`  ❌ Duplicate id: ${e.id}`); return false }
     ids.add(e.id)
   }
-  console.log(`  ✓ ${CATALOG.length} catalog entries, unique gc2026- ids, https image URLs`)
+  console.log(`  ✓ ${CATALOG.length} catalog entries, unique gc2026- ids, silver/black pool, https placeholders`)
+  return true
+}
+
+/** Test 7 — fall-over: a real GC printing (_OP_ art on the same cardId) wins over the placeholder. */
+function testFallsOverToRealArt(): boolean {
+  console.log('\n[Test 7] Auto-falls-over to real GC art when swuapi has it')
+  const entry = CATALOG[0]
+  const source = sourceCardFor(entry)
+  const realArt = 'https://cdn.starwarsunlimited.com/card_00000000_EN_OP_real_gc_art.png'
+  // A same-cardId sibling carrying the _OP_ GC marker — as swuapi would provide once uploaded.
+  const realSibling = { ...source, id: 'real-op-sibling', variantType: 'Event Exclusive', imageUrl: realArt }
+
+  const out = fixCards([source, realSibling])
+  const promo = out.find((c: any) => c.id === entry.id)
+
+  if (promo.imageUrl !== realArt) { console.error(`  ❌ Expected real art, got ${promo.imageUrl}`); return false }
+  if (promo.gcPromo?.placeholder !== false) { console.error('  ❌ placeholder flag should be false once real art is used'); return false }
+  console.log('  ✓ Uses real _OP_ art and clears the placeholder flag')
   return true
 }
 
@@ -144,6 +163,7 @@ function runTests(): void {
     testIdempotent,
     testSkipsMissingSource,
     testCatalogShape,
+    testFallsOverToRealArt,
   ]
   let passed = 0, failed = 0
   for (const t of tests) {

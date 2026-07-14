@@ -246,13 +246,17 @@ U1/U2 and can be built in parallel.
 **Goal:** Make the specific GC 2026 Silver/Black promo cards resolvable from card data (by uuid `id`)
 without breaking the promo-collapse filter. Resolve the data-readiness risk first.
 
-**Outcome:** Data-readiness check confirmed the risk — `cards.raw.json` has **zero** ASH/TS26 promo
-variants. Took the **stopgap** branch: added `src/data/promoPacks/gc2026-cards.json` (21 resolved +
-8 pending TS26) sourced from the wayfinder `GC2026_PRIZE_CARDS` artifact (official prize list + leak +
-FFG stream dump), and a post-whitelist idempotent transform in `scripts/cardFixes.ts` that clones each
-promo from its Normal printing as a distinct `'GC 2026 Promo'` variant (standard art stand-in). 8 Twin
-Suns 2026 Showcase Leaders are `pending` (TS26 set not in swupod data). 6 U1 tests pass; 21 promos in
-`cards.json`, resolvable via `getCardsBySet`; belts unaffected (they whitelist `Normal`).
+**Outcome:** Data-readiness check confirmed the risk — `cards.raw.json` has **zero** GC 2026 promo
+variants. Built the **stopgap** with auto-fall-over: `src/data/promoPacks/gc2026-cards.json` holds the
+**18 authoritative Event Pack cards** (12 Silver + 6 Black), sourced from the current GC 2026 data on
+`claude/gc2026-schedule-page-88b1da` (`SILVER_PACK_ALT_ARTS` + Black Pack items) — a v1 draft had used
+GC 2025 prize-wall cards; corrected. The injection transform in `scripts/cardFixes.ts` runs **before**
+the whitelist, clones each promo from its Normal printing as a distinct `'GC 2026 Promo'` variant, and
+resolves art in order: **(1) a real GC printing (same-cardId `_OP_` sibling) → (2) placeholder standard
+art → (3) base art**. (1) makes the swap **automatic** when swuapi scrapes the GC art (no `_OP_` siblings
+exist for these cardIds today, so no false positives). `'GC 2026 Promo'` is whitelisted (safe: synthetic
+type only, doesn't reintroduce old promos). 7 U1 tests pass (incl. fall-over); 18 promos in `cards.json`,
+resolvable via `getCardsBySet`; belts unaffected (they whitelist `Normal`).
 
 **Requirements:** R12; unblocks R7, R10.
 
@@ -300,13 +304,13 @@ regenerates `cards.json` containing them; no existing card test regresses.
 **Goal:** Pure logic defining the GC 2026 campaign: which promo `id`s are in the Silver vs Black pool,
 the claim window, and how a pack draws its cards.
 
-**Outcome:** `src/services/promoPacks.catalog.ts` (campaign data: Jul 24–26 2026 LA window, packSize 2,
-Silver/Black pools of the 21 U1 promo ids) + `src/services/promoPacks.ts` (pure: `getCampaign`,
-`isClaimWindowOpen` (DST-correct via `Intl` LA calendar date), `isClaimAllowed` (injected override),
-`drawEventPack` (sample-without-replacement, injectable rng + `resolveCard`)). 11 spec-first tests pass;
-all 21 pool ids verified to resolve to injected `GC 2026 Promo` cards. ⚠️ **Silver-vs-Black pool split
-is a documented placeholder to confirm** — the real per-pack contents aren't published; the split is a
-defensible default and is a pure data edit to change.
+**Outcome:** `src/services/promoPacks.catalog.ts` (Jul 24–26 2026 LA window, packSize 2; **pools derived
+from the U1 card catalog's `pool` field — single source of truth**, 12 Silver + 6 Black) +
+`src/services/promoPacks.ts` (pure: `getCampaign`, `isClaimWindowOpen` (DST-correct via `Intl` LA
+calendar date), `isClaimAllowed` (injected override), `drawEventPack` (sample-without-replacement,
+injectable rng + `resolveCard`)). 11 spec-first tests pass; all 18 pool ids verified to resolve to
+injected `GC 2026 Promo` cards. Pool membership is now the **authoritative** GC 2026 Silver/Black Event
+Pack contents (not a placeholder).
 
 **Requirements:** R4, R6, R12; supports R7, R9.
 
