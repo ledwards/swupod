@@ -1,5 +1,14 @@
 # Release Notes
 
+## 07.13.2026
+
+### 🎮 Clearer "Opening on Karabast" feedback
+- **The Companion lobby buttons now acknowledge your click.** Create Private/Public Lobby and Join now show an "Opening on Karabast…" state the moment you press them, so launching a game never feels like nothing happened. If Karabast is slow or unavailable, the Companion itself now follows up with a clear "didn't respond — try again" prompt instead of leaving you waiting.
+
+### 🎴 Pack Contents
+- **Continued improvements to pack contents** as we calibrate against more real boxes.
+- **Foil rarity distribution tweaks** to better match real packs.
+
 ## 07.11.2026
 
 ### 🐳 Cracking Packs for the Pod
@@ -12,10 +21,16 @@ You should notice:
 
 - **Our simulator produces same-name duplicates at the same rate as real 6-pack pools.**
 - **We validated pull rates across the board**, from legendaries, to uncommon slot upgrades, to the distribution of rarities across foil slots, and more.
+- **Legendaries now hit the official ~1-in-5 rate for every Jump to Lightspeed–era set.** JTL, LOF, and SEC join LAW and ASH at Fantasy Flight's published rate (up from 1 in 6); pre-JTL sets (SOR, SHD, TWI) keep their original 1 in 8.
 - **Rares, uncommons, and foils updated to even more closely match the real print-sheet patterns**, down to details like how far apart a repeated card rides on the factory line. If you've opened a real box, our boxes should feel indistinguishable.
 - **Carbonite packs got the same treatment**, calibrated from a full real Carbonite case: pull rates, prestige placement, and pack layout now mirror the real product.
+- **Live pack-quality stats reset to today**, so the QA dashboards now reflect the freshly calibrated generator rather than older, pre-tuning data.
 
 Why it matters: if you practice sealed here, the pools you build from should be statistically the same pools you'd crack at your kitchen table or a store event.
+
+### 📊 Smarter Leader Draft Stats
+- **First-pick rate up front**: The Leaders table in Draft stats now leads with how often each leader is taken first, so the most-prioritized leaders rise to the top. The old "selection %" read near-identical for every leader — in a draft each leader gets picked eventually, so it told you nothing.
+- **"Picked over" head-to-heads**: Click a leader to see which leaders it's taken over when they share an opening pack — how often it beats a specific rival, with sample sizes. Friends of the Pod can split it by All vs Top players.
 
 ## 07.10.2026
 

@@ -268,9 +268,11 @@ export const SETS_4_6_CONSTANTS: PackConstants = {
 
   // ---------------------------------------------------------------------------
   // Rare Slot Legendary Ratio (Question 15)
-  // Standard Legendary rate is 1 in 6 (5:1 ratio R:L, 5 rares per 1 legendary)
+  // FFG "Updates and Rotations": legendaries ~1 in 5 packs "starting with Jump to
+  // Lightspeed and going forward" (up from the original 1 in 8). JTL/LOF/SEC (sets 4-6)
+  // are JTL-onward, so they match LAW/ASH at 4:1 (1 in 5). Sets 1-3 keep 7:1 (1 in 8).
   // ---------------------------------------------------------------------------
-  rareSlotLegendaryRatio: 5,  // 5:1 means 5 rares for every 1 legendary (1 in 6)
+  rareSlotLegendaryRatio: 4,  // 4:1 means 4 rares for every 1 legendary (1 in 5)
 
   // ---------------------------------------------------------------------------
   // UC Slot 3 Upgrade Rate (Question 3)
@@ -552,6 +554,12 @@ export interface HSBeltConfig {
   cycleSize: number
   // Set 7+ only: leader+base HS may co-occur in one plan (real ASH pool-002 pack06)
   allowLeaderBaseCoOccurrence?: boolean
+  // When true, each slot's upgrades are SPACED across the cycle (a real print
+  // sheet) instead of shuffled into random packs. Shuffling gives hypergeometric
+  // per-box spread (HS leader sd ~1.3); real ASH boxes run sd ~0.7, so the
+  // upgrades must be laid down spaced. budgetDistribution is ignored on this path
+  // (the per-pack budget emerges from where the spaced slots overlap).
+  spaceUpgrades?: boolean
   budgetDistribution: { 0: number, 1: number, 2: number }
   slotCounts: {
     leader: number
@@ -628,6 +636,33 @@ export const HS_BELT_CONFIGS: Record<string, HSBeltConfig> = {
     // total: 10+10+0+0+0+20 = 40 ✓
     // budget: 0×26 + 1×28 + 2×6 = 40 ✓
     // μ = 40/60 ≈ 0.67 belt upgrades + 1 guaranteed HS common = ~1.67 HS/pack
+  },
+  // ASH (Set 8): rates from the 2026-07-12 number-first variant re-verification
+  // of ALL 11 real boxes (261 packs): HS leader 46/261 = 17.6% and HS base
+  // 41/261 = 15.7% — both AT the 1/6 spec (per-box mode exactly 4/4). The
+  // earlier 3.4/2.55-per-box fit used pre-verification transcriptions that
+  // under-detected framed HS leaders/bases. Spacing stays: real boxes run
+  // nearly-uniform per-box counts (sd ~0.7), so upgrades are laid down SPACED.
+  // uc3 is 0 here — the UC3 HS/prestige outcomes are owned by
+  // Set7PlusUc3OutcomeBelt, so a uc3 count in this belt would be a phantom that
+  // only distorts the leader/base budget. common/uc1/uc2 stay 0 (dedicated HS
+  // common belt + UC3-only uncommon upgrades).
+  'ASH': {
+    cycleSize: 60,
+    allowLeaderBaseCoOccurrence: true,
+    spaceUpgrades: true,
+    // Ignored on the spaced path (kept only to satisfy the shared schema).
+    budgetDistribution: { 0: 48, 1: 10, 2: 2 },
+    slotCounts: {
+      leader: 10,   // 10/60 = 1/6 = 4/box (verified 46/261 = 4.2/box)
+      base: 10,     // 10/60 = 1/6 = 4/box (verified 41/261 = 3.8/box)
+      common: 0,
+      uc1: 0,
+      uc2: 0,
+      uc3: 0,       // owned by Set7PlusUc3OutcomeBelt, not this belt
+    }
+    // total: 10+10 = 20 spaced upgrades/60; co-occurrence emerges where the two
+    // spaced sheets overlap, matching real leader+base packs (e.g. 009 pack 14).
   },
 }
 

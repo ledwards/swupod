@@ -373,6 +373,8 @@ function getHSBeltGroup(setCode: SetCode | string): string | null {
   const n = config.setNumber;
   if (n >= 1 && n <= 3) return '1-3';
   if (n >= 4 && n <= 6) return '4-6';
+  // ASH (Set 8) has its own real-box-calibrated HS sheet (spaced, lower rates).
+  if (config.setCode === 'ASH') return 'ASH';
   if (n >= 7) return 'LAW';
   return null;
 }
@@ -395,6 +397,9 @@ function getCommonUpgradeBelt(setCode: SetCode | string): CommonUpgradeBelt | nu
   if (!usesLawPackRules(setCode)) return null;
   const key = `common-upgrade-${setCode}`;
   if (!beltCache.has(key)) {
+    // Default 1+1 per 48 (~1 second HS common/box) matches the 6 sharp real ASH
+    // boxes (1.18/box, sd 0.68) once HS common *leaders* are excluded from the
+    // count. No per-set override needed.
     beltCache.set(key, new CommonUpgradeBelt());
   }
   return beltCache.get(key) as CommonUpgradeBelt;

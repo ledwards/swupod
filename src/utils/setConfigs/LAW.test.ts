@@ -159,9 +159,10 @@ describe('LAW_CONFIG', () => {
 })
 
 describe('ASH_CONFIG', () => {
-  it('should set UC3 prestige to ~1.1 tier-1 prestige cards per box (11-box measured)', () => {
-    // SPEC: 11 verified real boxes (261 packs, 2026-07-12): 12 prestige = 4.6%
-    // of packs ≈ 1/22 → 24/22 ≈ 1.09 per box (per-box mode 1, max 2).
+  it('should set UC3 prestige to ~1.1 tier-1 prestige cards per box (11 verified boxes)', () => {
+    // SPEC: ALL 11 variant-verified boxes (261 packs, 2026-07-12): 12 prestige
+    // = 4.6% ≈ 1/22 → 24/22 ≈ 1.09/box (mode 1, max 2). The 1/18 fit predated
+    // the Teddy-box variant verification (it used only the 166 Lee-case packs).
     const rate = ASH_CONFIG.upgradeProbabilities.uc3ToPrestige
     assert.strictEqual(rate, 1 / 22)
     assert.ok(Math.abs(rate * 24 - 1.09) < 0.01)
@@ -169,10 +170,10 @@ describe('ASH_CONFIG', () => {
 
   it('should use ASH-calibrated foil slot weights (11 verified real boxes)', () => {
     // SPEC: 261 real foils observed C82.4/U11.1/R3.1/S1.5/L1.9 (every box
-    // ≥77% common). Replaces the box-001-only C72 fit.
+    // ≥77% common) → C83/U10/R3/S2/L2, realized by the 15×121 sheet stack.
     assert.deepStrictEqual(ASH_CONFIG.rarityWeights.hyperspaceFoilSlot, {
-      Common: 82,
-      Uncommon: 11,
+      Common: 83,
+      Uncommon: 10,
       Rare: 3,
       Special: 2,
       Legendary: 2,

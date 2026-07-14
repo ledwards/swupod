@@ -32,15 +32,16 @@ function eq(actual: unknown, expected: unknown, msg: string): void {
   if (actual !== expected) throw new Error(`${msg}: expected ${expected}, got ${actual}`)
 }
 
-// Today's correct values per set (source: FFG-era behavior shipped in the belts).
-// These pins guarantee the refactor is byte-identical.
+// Correct per-set belt params. Rare:legendary (rl) follows FFG's published rate:
+// sets 1-3 = 7:1 (1 in 8); JTL onward (sets 4+) = 4:1 (1 in 5, "starting with Jump to
+// Lightspeed and going forward"). hsrl (the hyperspace R/L slot) is tuned separately.
 const EXPECTED: Record<string, { rl: number; rlWindow: number; hsrl: number; leaderCap: number }> = {
   SOR: { rl: 7, rlWindow: 6, hsrl: 6, leaderCap: 24 },
   SHD: { rl: 7, rlWindow: 6, hsrl: 6, leaderCap: 24 },
   TWI: { rl: 7, rlWindow: 6, hsrl: 6, leaderCap: 24 },
-  JTL: { rl: 5, rlWindow: 6, hsrl: 5, leaderCap: 24 },
-  LOF: { rl: 5, rlWindow: 6, hsrl: 5, leaderCap: 24 },
-  SEC: { rl: 5, rlWindow: 6, hsrl: 5, leaderCap: 24 },
+  JTL: { rl: 4, rlWindow: 6, hsrl: 5, leaderCap: 24 },
+  LOF: { rl: 4, rlWindow: 6, hsrl: 5, leaderCap: 24 },
+  SEC: { rl: 4, rlWindow: 6, hsrl: 5, leaderCap: 24 },
   LAW: { rl: 4, rlWindow: 3, hsrl: 5, leaderCap: 3 },
   ASH: { rl: 4, rlWindow: 3, hsrl: 5, leaderCap: 3 },
 }

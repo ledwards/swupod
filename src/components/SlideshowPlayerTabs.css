@@ -117,9 +117,8 @@
   font-size: 0.85rem;
   font-weight: 700;
   color: white;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /* Never truncate a player's name — wrap the full name instead. */
+  overflow-wrap: anywhere;
 }
 
 .slideshow-player-tab__leader {

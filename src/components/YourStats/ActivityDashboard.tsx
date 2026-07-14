@@ -19,7 +19,7 @@
 import { useEffect, useState } from 'react'
 import PluginCTA from '@/src/components/PluginCTA'
 
-const STATS_START_DATE = process.env.NEXT_PUBLIC_STATS_START_DATE || '2026-02-12'
+const STATS_START_DATE = process.env.NEXT_PUBLIC_STATS_START_DATE || '2026-07-11'
 
 export interface ActivitySummary {
   packsCracked: number

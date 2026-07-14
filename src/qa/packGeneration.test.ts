@@ -13,6 +13,7 @@
 
 import { generateBoosterPack, generateSealedPod, generateSealedBox, clearBeltCache } from '../utils/boosterPack'
 import { initializeCardCache, getCachedCards } from '../utils/cardCache'
+import { getSetConfig } from '../utils/setConfigs/index'
 import { LeaderBelt } from '../belts/LeaderBelt'
 import { HyperspaceLeaderBelt } from '../belts/HyperspaceLeaderBelt'
 import { ShowcaseLeaderBelt } from '../belts/ShowcaseLeaderBelt'
@@ -424,11 +425,13 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
 
     assert(stats.missingLeaderBoxes === 0, `${stats.missingLeaderBoxes} boxes did not contain exactly ${DRAFT_BOX_SIZE} leader slots`)
     // Zero-rare boxes are not structurally prevented: a box's rare leaders can
-    // each be HS-replaced (1/6) by a common HS leader, so P(zero-rare) is tiny
-    // but nonzero (~0.1%). A hard ===0 over a seeded 1000-box sample passes or
-    // fails on seed luck whenever ANY code changes the RNG call order — allow
-    // the true rate, cap it well below player-noticeable levels.
-    assert(stats.zeroRareBoxes <= 2, `${stats.zeroRareBoxes}/${stats.boxCount} boxes had zero rare leaders (allowed: ≤2/1000)`)
+    // each be HS-replaced by a common HS leader, so P(zero-rare) is tiny but
+    // nonzero. Measured true rate: 0.85/1000 (17 in 20,000 ASH boxes). Over a
+    // seeded 1000-box sample that's Poisson(~0.85), so a ≤2 cap false-fails ~5.5%
+    // of RNG streams — any unrelated code change (e.g. a bigger foil boot) shifts
+    // the call order and can tip it. Cap at 6: negligible false-fail at the true
+    // rate (P≈0.03%) while still catching a real regression (≥6/1000 = 0.6%/box).
+    assert(stats.zeroRareBoxes <= 6, `${stats.zeroRareBoxes}/${stats.boxCount} boxes had zero rare leaders (allowed: ≤6/1000; measured true rate 0.85/1000)`)
     assert(
       stats.boxesWithSameRareFourPlus === 0,
       `${stats.boxesWithSameRareFourPlus}/${stats.boxCount} boxes had the same rare leader 4+ times`
@@ -1112,16 +1115,15 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
 
     const setNum = ['SOR', 'SHD', 'TWI'].includes(setCode) ? 1 : 4
 
-    // Legendary rate in R/L slot (card index 14)
-    // RareLegendaryBelt achieves target ratio:
-    // - Sets 1-3: 7:1 (7 rares per legendary) = 1 in 8 = 12.5%
-    // - Sets 4+: 5:1 (5 rares per legendary) = 1 in 6 = 16.7%
+    // Legendary rate in R/L slot (card index 14). Expected ratio comes from the set
+    // config (single source of truth) — sets 1-3 = 7:1 (1 in 8); JTL onward = 4:1 (1 in 5,
+    // FFG "Updates and Rotations": legendaries ~1 in 5 packs starting with Jump to Lightspeed).
     test(`${setCode}: legendary rate in R/L slot matches expected`, () => {
       const rlCards = allPacks.map(p => p.cards[14])
       const legendaryCount = rlCards.filter(c => c.rarity === 'Legendary').length
       const total = rlCards.length
 
-      const ratio = setNum <= 3 ? 7 : 5
+      const ratio = getSetConfig(setCode)?.beltRatios?.rareToLegendary ?? (setNum <= 3 ? 7 : 4)
       // Expected rate = 1 / (ratio + 1) because we want 1 legendary per ratio rares
       const expectedRate = 1 / (ratio + 1)
       const expected = total * expectedRate

@@ -120,7 +120,7 @@ interface QAResults {
 }
 
 // Stats start date
-const STATS_START_DATE = process.env.NEXT_PUBLIC_STATS_START_DATE || '2026-02-12'
+const STATS_START_DATE = process.env.NEXT_PUBLIC_STATS_START_DATE || '2026-07-11'
 
 // Format numbers with commas
 const fmt = (n: number) => n.toLocaleString()
