@@ -159,7 +159,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 10,14,41,Outcast,Mercenary Starship,Uncommon,Unit,Aggression/Cunning,Normal,41,543,305,high,
 10,15,56,Huyang,Your Aptitude Falls Short,Uncommon,Unit,Vigilance/Heroism,Normal,56,558,320,medium,"UC3 slot; no visible rarity/prestige upgrade at photo resolution, kept Normal Uncommon"
 10,16,79,Koska Reeves,Warrior of Mandalore,Rare,Unit,Vigilance,Normal,79,581,343,high,
-11,1,3,Baylan Skoll,Power Beyond Dream,Common,Leader,Vigilance/Villainy,Normal,3,,267,high,Leader variant unverifiable at photo resolution; defaulted Normal per rule
+11,1,267,Baylan Skoll,Power Beyond Dream,Common,Leader,Vigilance/Villainy,Hyperspace,3,,1,high,Leader variant unverifiable at photo resolution; defaulted Normal per rule; HS confirmed by Lee from physical cards (2026-07-12)
 11,2,285,Emperor's Throne Room,,Common,Base,Command,Hyperspace,21,,1,high,Base variant unverifiable at photo resolution; defaulted Normal per rule; variant corrected via 2026-07-12 number-first re-read (read 285)
 11,3,238,Attendant Navigator,,Common,Unit,Villainy,Normal,238,740,502,high,
 11,4,157,Danger Squadron Wingmen,,Common,Unit,Aggression/Heroism,Normal,157,659,421,high,

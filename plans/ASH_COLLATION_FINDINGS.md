@@ -759,3 +759,17 @@ signals that don't have this failure mode):**
 Open: Lee's Teddy hand count says 19 HS leaders, verified pass found 17; the
 two medium-confidence Normal leader calls (008|19 Armorer glare, 009|11 Baylan
 blur) are the candidates — pending Lee's per-box HS leader names.
+
+## 🎯 SHIPPED (2026-07-12): prestige + foil-mix recalibration; leader-count loose end closed
+
+- Lee confirmed both medium-confidence leaders (008|19 Armorer, 009|11 Baylan)
+  are HS from the physical cards → **final leader HS 46/261 = 17.6%**, at spec.
+  Teddy hand-count of 19 fully reconciled.
+- `ASH_T1_PRESTIGE_RATE` 1/12 → **1/22** (sim now 1.12/box vs observed 1.09).
+- `hyperspaceFoilSlot` C72/U13/R8/S4/L3 → **C82/U11/R3/S2/L2** (261 real foils).
+- **HyperfoilBelt sheet quantization fix**: baseScale 1000 → 10000. Per-card
+  integer copies at scale 1000 couldn't represent small-rarity targets (50
+  rares @3% → round(0.6)=1 copy each = 5% realized). Red-green: spec test in
+  HyperfoilBelt.test.ts pins ASH sheet composition to config weights ±1pt.
+  Realized foil mix now C81.6/U11.5/R2.7/S2.2/L2.0.
+- Full `npm run test` (2126) + `npm run qa` green.

@@ -6,7 +6,7 @@
  * Pack rules are a copy of LAW (Set 7) until FFG announces changes:
  * - No regular foils - foil slot is ALWAYS Hyperspace Foil
  * - Guaranteed Hyperspace card in every pack (last common slot)
- * - Prestige cards in standard boosters (~2 tier-1 prestige per box on average)
+ * - Prestige cards in standard boosters (~1.1 tier-1 prestige per box, 11-box measured)
  * - Showcase leaders are significantly rarer
  * - LAW-style multicolor symmetry with fewer multicolor cards than LAW
  *
@@ -18,7 +18,9 @@ import { SET_7_PLUS_CONSTANTS } from '../packConstants'
 import type { SetConfig } from './index'
 
 const constants = SET_7_PLUS_CONSTANTS
-const ASH_T1_PRESTIGE_RATE = 1 / 12
+// 11 verified real boxes (261 packs, 2026-07-12): 12 tier-1 prestige = 4.6% of
+// packs ≈ 1/22 → ~1.1/box. (Earlier 1/12 "~2/box" came from box-001 alone.)
+const ASH_T1_PRESTIGE_RATE = 1 / 22
 
 export const ASH_CONFIG: SetConfig = {
   setCode: 'ASH',
@@ -64,15 +66,14 @@ export const ASH_CONFIG: SetConfig = {
   },
 
   rarityWeights: {
-    // ASH override (real box 001, 24 foils: C20/U1/R1/S1/L1 — commons heavier,
-    // uncommons lighter than the LAW-derived C65/U20; R/S/L on target).
-    // Moderate shift, not chasing one box; revisit with box #2.
+    // 11 verified real boxes (261 foils, 2026-07-12): C82.4/U11.1/R3.1/S1.5/L1.9,
+    // every box ≥77% common. Replaces the box-001-only C72 fit.
     hyperspaceFoilSlot: {
-      Common: 72,
-      Uncommon: 13,
-      Rare: 8,
-      Special: 4,
-      Legendary: 3,
+      Common: 82,
+      Uncommon: 11,
+      Rare: 3,
+      Special: 2,
+      Legendary: 2,
     },
     foilBeltTarget: constants.foilBeltTargetWeights,
     ucSlot3Upgraded: constants.ucSlot3UpgradedWeights,
@@ -102,7 +103,7 @@ export const ASH_CONFIG: SetConfig = {
     secondUCToHyperspaceUC: constants.uncommonHyperspaceRate,
     commonToHyperspace: 0,
     rareToPrestige: 0,
-    // Box openings point to ~2 tier-1 prestige cards per 24-pack box.
+    // ~1.1 tier-1 prestige per 24-pack box (11 verified boxes: mode 1, max 2).
     // If the API has not published ASH prestige variants yet, standard packs
     // no-op this outcome rather than synthesizing an unknown checklist.
     uc3ToPrestige: ASH_T1_PRESTIGE_RATE,

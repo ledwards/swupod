@@ -287,7 +287,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 18,14,46,Scion Shuttle,At Morgan's Bidding,Uncommon,Unit,Vigilance/Villainy,Normal,46,no,no,high,
 18,15,97,Moff Gideon,Remnant Commander,Uncommon,Unit,Command/Villainy,Hyperspace,97,no,1,high,"UC3 slot; Unit version (not the Leader Moff Gideon); no upgrade treatment observed, kept Normal Uncommon; variant corrected via 2026-07-12 CV+human review pass (human-review)"
 18,16,55,Blade of Talzin,A Gift of Shadows,Rare,Upgrade,Vigilance/Villainy,Normal,55,no,no,high,
-19,1,1,The Armorer,Steel Shapes Us,Rare,Leader,Vigilance/Command,Normal,1,no,no,high,"Leader slot bottom-left; variant unverifiable, defaulted Normal per rule"
+19,1,265,The Armorer,Steel Shapes Us,Rare,Leader,Vigilance/Command,Hyperspace,1,no,1,high,"Leader slot bottom-left; variant unverifiable, defaulted Normal per rule; HS confirmed by Lee from physical cards (2026-07-12)"
 19,2,23,Ancient Henge,,Common,Base,Aggression,Normal,23,no,no,high,"Base slot bottom-right; variant unverifiable, defaulted Normal per rule"
 19,3,259,LEP Ratcatcher,,Common,Unit,,Normal,259,no,no,high,
 19,4,57,Lothal E-Wing,,Common,Unit,Vigilance/Heroism,Normal,57,no,no,high,

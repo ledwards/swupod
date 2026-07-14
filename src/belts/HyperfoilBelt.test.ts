@@ -190,6 +190,28 @@ async function runTests(): Promise<void> {
     assert(card.isHyperspace === true, 'Fallback HSF should be marked hyperspace')
   })
 
+  test('FIXED: ASH sheet composition matches configured foil weights within ±1pt per rarity', () => {
+    // SPEC: setConfigs/ASH.ts rarityWeights.hyperspaceFoilSlot = C82/U11/R3/S2/L2
+    // (11 verified real boxes, 261 foils). The old per-card rounding at
+    // baseScale=1000 quantized small rarities badly (e.g. 50 rares at target 3%
+    // -> round(0.6)=1 copy each = 5% realized, a +67% overshoot).
+    const SPEC: Record<string, number> = { Common: 82, Uncommon: 11, Rare: 3, Special: 2, Legendary: 2 }
+    const belt = new HyperfoilBelt('ASH')
+    // Deterministic sheet composition: copies per rarity from the belt's own sheet spec
+    const copies: Record<string, number> = {}
+    let total = 0
+    for (const card of belt.fillingPool) {
+      const q = belt.rarityQuantities[card.rarity] || 1
+      copies[card.rarity] = (copies[card.rarity] || 0) + q
+      total += q
+    }
+    for (const [rarity, targetPct] of Object.entries(SPEC)) {
+      const realized = 100 * (copies[rarity] || 0) / total
+      assert(Math.abs(realized - targetPct) <= 1.0,
+        `SPEC: ASH foil sheet ${rarity} should be ${targetPct}% ±1pt, got ${realized.toFixed(2)}%`)
+    }
+  })
+
   test('no repeating pattern: consecutive belt fills produce different sequences', () => {
     const belt = new HyperfoilBelt('SOR')
     const fillSize = Math.min(belt.fillingPool.length, 30)

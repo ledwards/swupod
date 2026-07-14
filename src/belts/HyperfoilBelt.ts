@@ -103,8 +103,12 @@ export class HyperfoilBelt {
       rarityCounts[card.rarity] = (rarityCounts[card.rarity] || 0) + 1
     }
 
-    // Calculate multipliers to achieve target distribution
-    const baseScale = 1000
+    // Calculate multipliers to achieve target distribution.
+    // baseScale sets the sheet quantization: per-card copies are integers, so
+    // small-unique-count rarities need a fine enough scale that rounding can't
+    // distort the realized mix (at 1000, 50 rares targeting 3% rounded 0.6 → 1
+    // copy each = 5% realized). 10000 keeps every rarity within ±0.5pt.
+    const baseScale = 10000
     for (const rarity in rarityCounts) {
       const targetPct = targetWeights[rarity] || 0
       const uniqueCount = rarityCounts[rarity] || 1
