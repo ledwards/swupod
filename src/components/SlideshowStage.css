@@ -125,7 +125,7 @@
   font: inherit;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #6ca8ff;
+  color: rgba(var(--pt-glow-interactive-rgb), 0.9);
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -133,7 +133,7 @@
 
 @media (hover: hover) and (pointer: fine) {
   .slideshow-stage-picks-link:hover {
-    color: #9ec9ff;
+    color: rgba(var(--pt-glow-interactive-rgb), 1);
   }
 }
 

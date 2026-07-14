@@ -1,5 +1,21 @@
 # Release Notes
 
+## 07.14.2026
+
+### 🔬 Every Card Re-Verified by Collector Number
+- **We went back through all 11 real Ashes of the Empire boxes and re-read every leader and base by its printed collector number.** The result: hyperspace leaders and bases pull at the true 1-in-6 rate, and real boxes land almost exactly 4 of each per box, so ours do too.
+- **Prestige tuned to reality**: about 1 tier-1 prestige per box (occasionally 2, never a flood), matching what the verified boxes actually held.
+- **Foil slot locked to the real print sheet**: the rarity mix now matches 261 real foils within a fraction of a percent.
+
+### 🔀 Randomize Packs Deals Like a Store
+- **Randomizing a sealed pool now hands you a consecutive run of packs from your box**, the same cut a store would pull off the shelf. The old version grabbed 6 packs from random spots in the box, which made pools noticeably clumpier with duplicates than real product.
+
+### 🤖 Bots Draft Like Humans
+- **Draft bots now value main-deck cards using real human picks**, built from over 160,000 pick decisions in completed drafts. Bots recognize the cards players actually fight over, so they compete for them too.
+
+### 📊 Pick Pref on Draft Picks
+- **New "Pick Pref" column in Draft Picks stats**: how often players take a card over other cards sharing its color in the same pack. It's the cleanest read on what the community thinks a card is worth.
+
 ## 07.13.2026
 
 ### 🎮 Clearer "Opening on Karabast" feedback
