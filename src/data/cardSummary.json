@@ -1,19 +1,19 @@
 {
   "LAW": {
-    "total": 907,
-    "real": 907,
+    "total": 917,
+    "real": 917,
     "normalTotal": 264,
     "normalReal": 264
   },
   "SOR": {
-    "total": 946,
-    "real": 946,
+    "total": 949,
+    "real": 949,
     "normalTotal": 252,
     "normalReal": 252
   },
   "SHD": {
-    "total": 958,
-    "real": 958,
+    "total": 959,
+    "real": 959,
     "normalTotal": 262,
     "normalReal": 262
   },
@@ -24,8 +24,8 @@
     "normalReal": 257
   },
   "JTL": {
-    "total": 1122,
-    "real": 1122,
+    "total": 1124,
+    "real": 1124,
     "normalTotal": 262,
     "normalReal": 262
   },
@@ -42,8 +42,8 @@
     "normalReal": 264
   },
   "ASH": {
-    "total": 925,
-    "real": 925,
+    "total": 930,
+    "real": 930,
     "normalTotal": 264,
     "normalReal": 264
   }

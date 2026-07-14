@@ -1,0 +1,296 @@
+{
+  "__meta": {
+    "campaign": "gc2026",
+    "note": "STOPGAP catalog. The official GC 2026 alt-art / showcase promo printings are not yet in swuapi/strapi (cards.raw.json has zero ASH/TS26 promo variants). Each entry re-injects an existing card as a 'GC 2026 Promo' variant, using the STANDARD printing as a clean stand-in (migration-050 philosophy: same game piece, different printing). Swap sourceCardId/imageUrl for the real promo printing once published.",
+    "source": "wayfinder apps/web/src/data/gc2026-schedule.ts GC2026_PRIZE_CARDS (official prize list + community leak + FFG stream dump)",
+    "generatedAt": "2026-07-12",
+    "resolvedCount": 21,
+    "pendingCount": 8
+  },
+  "cards": [
+    {
+      "id": "gc2026-promo-sri",
+      "name": "Single Reactor Ignition",
+      "set": "LAW",
+      "category": "Earned Promo",
+      "obtain": "LCQ participation",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_07010044_EN_Single_Reactor_Ignition_d8ce922f55.png",
+      "sourceCardId": "019d317d-52b7-7e92-89ed-aacc2cace16c"
+    },
+    {
+      "id": "gc2026-promo-luke",
+      "name": "Luke Skywalker",
+      "set": "ASH",
+      "category": "Earned Promo",
+      "obtain": "Day 1 participation",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_08010112_EN_Luke_Skywalker_547807ff50.png",
+      "subtitle": "Answering the Call",
+      "sourceCardId": "019e8f15-ef0e-7ff7-93a2-2764619ac935"
+    },
+    {
+      "id": "gc2026-promo-chimaera",
+      "name": "Chimaera",
+      "set": "ASH",
+      "category": "Earned Promo",
+      "obtain": "Day 2 participation",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_08010052_EN_Chimaera_c7c0ad6b5a.png",
+      "subtitle": "A Frightening Reality",
+      "sourceCardId": "019e8f15-ea9a-79ed-b2d4-d7cd29ce18e9"
+    },
+    {
+      "id": "gc2026-promo-finn",
+      "name": "Finn",
+      "set": "LAW",
+      "category": "Earned Promo",
+      "obtain": "Top 8",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_07010095_EN_Finn_b23b909b29.png",
+      "subtitle": "Looking Closer",
+      "sourceCardId": "019d3179-00dc-73d5-9695-b044e2704ff4"
+    },
+    {
+      "id": "gc2026-promo-ben-solo",
+      "name": "Ben Solo",
+      "set": "LAW",
+      "category": "Earned Promo",
+      "obtain": "Top 4",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_07010185_EN_Ben_Solo_5c3069c8e4.png",
+      "subtitle": "Facing the Light",
+      "sourceCardId": "019d317a-bcf3-7ec2-9e4e-c469a3c75dbc"
+    },
+    {
+      "id": "gc2026-promo-poe",
+      "name": "Poe Dameron",
+      "set": "ASH",
+      "category": "Earned Promo",
+      "obtain": "Finalist",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_08010040_EN_Poe_Dameron_c8279a93d4.png",
+      "subtitle": "I'll Come Back For You",
+      "sourceCardId": "019e8f15-e98c-7354-b3dd-4b159f1ea10f"
+    },
+    {
+      "id": "gc2026-promo-rey",
+      "name": "Rey",
+      "set": "LAW",
+      "category": "Earned Promo",
+      "obtain": "Champion",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_07010149_EN_Rey_e17dd083c3.png",
+      "subtitle": "Skywalker",
+      "sourceCardId": "019d317a-04db-710b-8ddd-cef65706ead1"
+    },
+    {
+      "id": "gc2026-att-vader",
+      "name": "Darth Vader",
+      "set": "ASH",
+      "category": "Attendee Promo",
+      "obtain": "Every ticket tier (Event Exclusive)",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_08010243_EN_Darth_Vader_0d8fb02fad.png",
+      "subtitle": "Meet Your Destiny",
+      "sourceCardId": "019e6d32-e544-7bb2-901f-507d6e64f7ca"
+    },
+    {
+      "id": "gc2026-att-quigon",
+      "name": "Qui-Gon Jinn",
+      "set": "LAW",
+      "category": "Attendee Promo",
+      "obtain": "Every ticket tier",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_07010237_EN_Qui_Gon_Jinn_facc6edc1e.png",
+      "subtitle": "Influencing Chance",
+      "sourceCardId": "019d317c-62da-7f57-83c1-45437abfcae2"
+    },
+    {
+      "id": "gc2026-att-huyang",
+      "name": "Huyang",
+      "set": "ASH",
+      "category": "Attendee Promo",
+      "obtain": "Early Badge Pickup",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_08010056_EN_Huyang_edbfc19172.png",
+      "subtitle": "Your Aptitude Falls Short",
+      "sourceCardId": "019e8f15-eb1e-7be1-ab6d-8446c19b52f6"
+    },
+    {
+      "id": "gc2026-att-maxrebo",
+      "name": "The Max Rebo Band",
+      "set": "LAW",
+      "category": "Attendee Promo",
+      "obtain": "Earlybird ticket",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_07010071_EN_The_Max_Rebo_Band_e3314923c7.png",
+      "subtitle": "Jatz-Wailers",
+      "sourceCardId": "019d3177-651e-7d79-a88b-7c4482654dd1"
+    },
+    {
+      "id": "gc2026-pw-superlaser",
+      "name": "Superlaser Blast",
+      "set": "SOR",
+      "category": "Prize Wall Variant",
+      "obtain": "Prize Wall",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_SWH_01_043_Superlaser_Blast_09e51a024d.png",
+      "sourceCardId": "019d3177-524c-79fb-a503-bbf08888bc7f"
+    },
+    {
+      "id": "gc2026-pw-razorcrest",
+      "name": "Razor Crest",
+      "set": "SHD",
+      "category": "Prize Wall Variant",
+      "obtain": "Prize Wall",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_SWH_02_044_Razor_Crest_08aa357135.png",
+      "subtitle": "Reliable Gunship",
+      "sourceCardId": "019d3177-925d-7e6d-9032-dbc1a65142ef"
+    },
+    {
+      "id": "gc2026-pw-krennic",
+      "name": "Director Krennic",
+      "set": "JTL",
+      "category": "Prize Wall Variant",
+      "obtain": "Prize Wall",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_04010032_EN_Director_Krennic_6e93034c45.png",
+      "subtitle": "On the Verge of Greatness",
+      "sourceCardId": "019d3179-c5b9-7848-bc35-7cc928dd8841"
+    },
+    {
+      "id": "gc2026-pw-chewbacca",
+      "name": "Chewbacca",
+      "set": "JTL",
+      "category": "Prize Wall Variant",
+      "obtain": "Prize Wall",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_04010103_EN_Chewbacca_913d687e41.png",
+      "subtitle": "Faithful First Mate",
+      "sourceCardId": "019d3179-d719-73b1-9c7c-e3937a2bf41e"
+    },
+    {
+      "id": "gc2026-sc-sor-luke",
+      "name": "Luke Skywalker",
+      "set": "SOR",
+      "category": "Showcase Leader",
+      "obtain": "Prize Wall",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_SWH_01_005_Luke_Skywalker_Leader_ce133fc923.png",
+      "subtitle": "Faithful Friend",
+      "sourceCardId": "019d3177-0a5a-7e36-8b97-bf6885129b7c"
+    },
+    {
+      "id": "gc2026-sc-sor-vader",
+      "name": "Darth Vader",
+      "set": "SOR",
+      "category": "Showcase Leader",
+      "obtain": "Prize Wall",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_SWH_01_010_Darth_Vader_Leader_2854ebf6ec.png",
+      "subtitle": "Dark Lord of the Sith",
+      "sourceCardId": "019d3177-1392-707d-aa99-5053140b4f57"
+    },
+    {
+      "id": "gc2026-base-daimyo",
+      "name": "Daimyo's Palace",
+      "set": "LAW",
+      "category": "Alt-Art Base",
+      "obtain": "Prestige VIP ticket",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_07010020_EN_Daimyo_s_Palace_Base_7ebc724de9.png",
+      "sourceCardId": "019d317d-4edd-7d8c-8a6b-6711f942c0a8"
+    },
+    {
+      "id": "gc2026-base-icc",
+      "name": "Imperial Command Complex",
+      "set": "LAW",
+      "category": "Alt-Art Base",
+      "obtain": "Prestige VIP ticket",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_07010024_EN_Imperial_Command_Complex_Base_b48267304b.png",
+      "sourceCardId": "019d3176-49a4-7a89-b573-4cb1129bbffe"
+    },
+    {
+      "id": "gc2026-base-stygeon",
+      "name": "Stygeon Spire",
+      "set": "LAW",
+      "category": "Alt-Art Base",
+      "obtain": "Prestige VIP ticket",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_07010027_EN_Stygeon_Spire_Base_79696b49ed.png",
+      "sourceCardId": "019d317d-4fb9-72df-8bcc-a93d030c7655"
+    },
+    {
+      "id": "gc2026-base-canto",
+      "name": "Canto Bight",
+      "set": "LAW",
+      "category": "Alt-Art Base",
+      "obtain": "Prestige VIP ticket",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_07010028_EN_Canto_Bight_Base_43b4a4b873.png",
+      "sourceCardId": "019d317d-4ff1-7dfb-aa96-2f4e33774444"
+    }
+  ],
+  "pending": [
+    {
+      "id": "gc2026-sc-dooku",
+      "name": "Count Dooku",
+      "set": "TS26",
+      "category": "Showcase Leader",
+      "obtain": "Prize Wall",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_TS_26010001_EN_Count_Dooku_Leader_410383f54c.png",
+      "subtitle": "Offering Aid",
+      "reason": "underlying set not in swupod card data yet"
+    },
+    {
+      "id": "gc2026-sc-anakin",
+      "name": "Anakin Skywalker",
+      "set": "TS26",
+      "category": "Showcase Leader",
+      "obtain": "Prize Wall",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_TS_26010002_EN_Anakin_Skywalker_Leader_73947a5e2e.png",
+      "subtitle": "Protect Her At All Costs",
+      "reason": "underlying set not in swupod card data yet"
+    },
+    {
+      "id": "gc2026-sc-maul",
+      "name": "Maul",
+      "set": "TS26",
+      "category": "Showcase Leader",
+      "obtain": "Prize Wall",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_TS_26010003_EN_Maul_Leader_84fa7f0d90.png",
+      "subtitle": "Collective Ambition",
+      "reason": "underlying set not in swupod card data yet"
+    },
+    {
+      "id": "gc2026-sc-padme",
+      "name": "Padmé Amidala",
+      "set": "TS26",
+      "category": "Showcase Leader",
+      "obtain": "Prize Wall",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_TS_26010004_EN_Padme_Amidala_Leader_5cb1f6aa4a.png",
+      "subtitle": "Follow My Lead",
+      "reason": "underlying set not in swupod card data yet"
+    },
+    {
+      "id": "gc2026-sc-savage",
+      "name": "Savage Opress",
+      "set": "TS26",
+      "category": "Showcase Leader",
+      "obtain": "Prize Wall",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_TS_26010005_EN_Savage_Opress_Leader_65f566fc07.png",
+      "subtitle": "You Must Have Your Revenge",
+      "reason": "underlying set not in swupod card data yet"
+    },
+    {
+      "id": "gc2026-sc-rex",
+      "name": "Rex",
+      "set": "TS26",
+      "category": "Showcase Leader",
+      "obtain": "Prize Wall",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_TS_26010006_EN_Rex_Leader_4d80edc36b.png",
+      "subtitle": "No Other Option",
+      "reason": "underlying set not in swupod card data yet"
+    },
+    {
+      "id": "gc2026-sc-asajj",
+      "name": "Asajj Ventress",
+      "set": "TS26",
+      "category": "Showcase Leader",
+      "obtain": "Prize Wall",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_TS_26010007_EN_Asajj_Ventress_Leader_fea4e2d457.png",
+      "reason": "underlying set not in swupod card data yet"
+    },
+    {
+      "id": "gc2026-sc-ahsoka",
+      "name": "Ahsoka Tano",
+      "set": "TS26",
+      "category": "Showcase Leader",
+      "obtain": "Prize Wall",
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_TS_26010008_EN_Ahsoka_Tano_Leader_c43b8949a5.png",
+      "reason": "underlying set not in swupod card data yet"
+    }
+  ]
+}

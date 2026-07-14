@@ -16,7 +16,9 @@ export type Aspect = 'Vigilance' | 'Command' | 'Aggression' | 'Cunning' | 'Villa
 export type Arena = 'Ground' | 'Space';
 
 export type VariantType = 'Normal' | 'Foil' | 'Hyperspace' | 'Hyperspace Foil' | 'Showcase'
-  | 'Standard Prestige' | 'Foil Prestige' | 'Serialized Prestige';
+  | 'Standard Prestige' | 'Foil Prestige' | 'Serialized Prestige'
+  // Stopgap variant for GC 2026 promo cards (see src/data/promoPacks/gc2026-cards.json).
+  | 'GC 2026 Promo';
 
 // === CARD INTERFACES ===
 

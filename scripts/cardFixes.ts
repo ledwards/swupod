@@ -8,6 +8,9 @@
  * Fixes are applied by scripts/postProcessCards.ts
  */
 
+// Stopgap catalog of GC 2026 promo cards (re-injected below). See the file's __meta for why.
+import gc2026PromoCatalog from '../src/data/promoPacks/gc2026-cards.json' with { type: 'json' }
+
 interface Card {
   id: string
   name: string
@@ -178,6 +181,47 @@ export const customTransforms: CustomTransform[] = [
         if (type.includes('Token')) return false
         return true
       })
+    },
+    isArrayTransform: true
+  },
+
+  // Re-inject GC 2026 promo cards (stopgap). The official GC alt-art / showcase promo
+  // printings are not in swuapi/strapi yet, so each catalog entry surfaces a promo as a
+  // distinct 'GC 2026 Promo' variant cloned from its STANDARD printing (a clean stand-in,
+  // per migration 050's "same game piece, different printing" philosophy).
+  //
+  // MUST run after 'Keep only draft-relevant variants' (the whitelist) — 'GC 2026 Promo' is
+  // deliberately NOT in allowedVariants, so injecting earlier would just be filtered out.
+  // Keyed by unique synthetic uuid `id` only (never by widening the variant-type whitelist),
+  // so migration 050's cardId-collision guard for the OTHER promo variants stays intact.
+  // Idempotent: the built cards.json already contains these, and the runtime re-applies
+  // transforms — so we skip any id already present.
+  {
+    name: 'Inject GC 2026 promo cards (stopgap)',
+    transform: (cards: Card[]): Card[] => {
+      const catalog = (gc2026PromoCatalog as { cards?: any[] }).cards || []
+      const present = new Set(cards.map(c => c.id))
+      const sourceById = new Map(cards.map(c => [c.id, c]))
+      const injected: Card[] = []
+
+      for (const entry of catalog) {
+        if (present.has(entry.id)) continue          // already injected — idempotent
+        const source = sourceById.get(entry.sourceCardId)
+        if (!source) continue                         // underlying card missing — skip (logged in report)
+        injected.push({
+          ...source,
+          id: entry.id,                               // unique synthetic id; shares cardId/number with source (documented stopgap)
+          variantType: 'GC 2026 Promo',
+          isFoil: false,
+          isHyperspace: false,
+          isShowcase: false,
+          isPrestige: false,
+          imageUrl: entry.imageUrl || source.imageUrl,
+          gcPromo: { campaign: 'gc2026', category: entry.category, obtain: entry.obtain },
+        })
+      }
+
+      return injected.length ? [...cards, ...injected] : cards
     },
     isArrayTransform: true
   },
