@@ -10,6 +10,7 @@ import { trackEvent, AnalyticsEvents } from '@/src/hooks/useAnalytics'
 import Button from '@/src/components/Button'
 import PackSelector from '@/src/components/PackSelector'
 import PackOpeningAnimation from '@/src/components/PackOpeningAnimation'
+import PromoPacksSection from '@/src/components/PromoPacksSection'
 import {
   getTeaserUserState,
   shouldPeekUnreleased,
@@ -242,6 +243,8 @@ export default function ChaosSealedPage() {
             })}
           </div>
         </div>
+
+        <PromoPacksSection />
 
         {error && <div className="error-message">{error}</div>}
 

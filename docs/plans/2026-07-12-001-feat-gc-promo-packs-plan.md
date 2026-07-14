@@ -441,7 +441,17 @@ page/Subscribe modal render it.
 
 ---
 
-- [ ] U5. **QR landing / claim page with gift moment**
+- [x] U5. **QR landing / claim page with gift moment** ✅ 2026-07-12
+
+**Outcome:** `app/gift/gc2026/page.tsx` (+ css) — geared to new users, force-logins anon via `signIn()`
+(return_to round-trip verified: redirects to `…/signin/discord?return_to=%2Fgift%2Fgc2026`), unlocks
+Silver via `POST /api/promo/claim`, plays the one-time `PackOpeningAnimation`, routes to
+`/formats/chaos-sealed`; handles already-owned (no replay), window-closed, error; subtle Friend-of-the-Pod
+nudge. `app/gift/gc2026/black/page.tsx` — the single Black entitlement-check surface (opens for patrons,
+soft Patreon CTA otherwise). Both fully typed (no `@ts-nocheck`). Logged-in claim/gift flow verified via
+build + anon redirect; full session+DB path is U8.
+
+
 
 **Goal:** The `/gift/gc2026` page: explain, force login, claim Silver, play the one-time gift animation,
 route to Chaos Sealed with a subtle Friend-of-the-Pod nudge.
@@ -484,7 +494,17 @@ logged-in unlock plays the animation and lands on Chaos Sealed; non-patron sees 
 
 ---
 
-- [ ] U6. **Promo Packs section on Chaos Sealed + Chaos Draft**
+- [x] U6. **Promo Packs section on Chaos Sealed + Chaos Draft** ✅ 2026-07-12
+
+**Outcome:** `src/components/PromoPacksSection.tsx` (+ css), mounted on **both** twin pages. Reads
+`GET /api/promo/entitlements` + `useAuth().isPatron` (renders nothing until both resolve — no wrong-state
+flash). Silver tile: owned → click opens a freshly-drawn pack (`PackOpeningAnimation` full-screen overlay,
+onComplete returns to the page); not owned → prompt linking `/gift/gc2026`. Black tile: always visible,
+locked ("Friends of the Pod unlocks this" / "Unlock your Black Pack") → `/gift/gc2026/black`. **Browser-
+verified** on both Chaos pages (anon: correct locked teases, design-token border, gradient tiles, no
+console errors). Fully typed (no `@ts-nocheck`).
+
+
 
 **Goal:** A shared section on both Chaos pages showing the unlocked Silver (clickable→open) and a
 locked Black tease (→ the Black surface).
