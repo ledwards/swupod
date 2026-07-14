@@ -10,6 +10,9 @@
 
 import { PROMO_CAMPAIGNS, type PromoCampaign, type PromoTier } from './promoPacks.catalog'
 
+// Re-export the catalog types so the service is the single public entry point.
+export type { PromoCampaign, PromoTier } from './promoPacks.catalog'
+
 /** A pack is always a `{ cards }` object (architecture rule). Card shape is caller-defined. */
 export interface EventPack<TCard = unknown> {
   readonly cards: TCard[]

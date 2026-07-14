@@ -347,7 +347,14 @@ Pack contents (not a placeholder).
 
 ---
 
-- [ ] U3. **Migration: `promo_entitlements` table**
+- [x] U3. **Migration: `promo_entitlements` table** ✅ 2026-07-12
+
+**Outcome:** `migrations/078_create_promo_entitlements.sql` — idempotent (`CREATE TABLE/INDEX IF NOT
+EXISTS`), unique `(user_id, campaign, promo_tier)` for `ON CONFLICT DO NOTHING`, `ON DELETE CASCADE`
+on the user only (grants are permanent — not tied to patron state). Mirrors `066`/`071`. ⚠️ Not yet run
+against a DB (no local Postgres in this worktree) — verify on dev before prod per the migration rule.
+
+
 
 **Goal:** Persistent, idempotent per-account entitlement storage.
 
@@ -377,7 +384,18 @@ tests (idempotent claim). Verify by running `npm run migrate:status` locally.
 
 ---
 
-- [ ] U4. **Claim + entitlement-read API + PATREON_FEATURES entry**
+- [x] U4. **Claim + entitlement-read API + PATREON_FEATURES entry** ✅ 2026-07-12
+
+**Outcome:** `app/api/promo/claim/route.ts` (POST: rate-limit → requireAuth → validate campaign/tier →
+server-enforced window with non-prod `PROMO_CLAIM_WINDOW_OVERRIDE` → Black reads `is_patron` from DB →
+idempotent `INSERT … ON CONFLICT DO NOTHING RETURNING id` → returns `{granted, alreadyOwned, pack}` with
+a freshly drawn gift pack). `app/api/promo/entitlements/route.ts` (GET: unknown campaign→400, anonymous→
+all-false, else `{silver, black}`). Added the **GC Black Pack** entry to `PATREON_FEATURES`. Routes are
+fully typed (no `@ts-nocheck`; ratchet stays 579). Tests exercise the DB-free paths against the real
+handlers (no-auth→401, unknown-campaign→400, anon→all-false); DB-dependent behavior is covered by U2's
+logic tests + U8 e2e. `next build` registers both routes.
+
+
 
 **Goal:** Server endpoints to claim a tier (idempotent, window- and patron-gated) and to read a user's
 entitlements; register the Black Pack as a patron feature.

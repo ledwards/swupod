@@ -60,6 +60,12 @@ export const PATREON_FEATURES: PatreonFeature[] = [
       'Dig into draft and sealed performance data from the top limited players — archetypes, win rates, and pick trends.',
   },
   {
+    id: 'gc-black-pack',
+    title: 'GC Black Pack',
+    description:
+      'Unlock and open the exclusive Galactic Championship 2026 Black Pack — alt-art event promos reserved for Friends of the Pod, on top of the Silver Pack anyone can claim.',
+  },
+  {
     id: 'avatar-flair',
     title: 'Avatar Flair',
     description:
