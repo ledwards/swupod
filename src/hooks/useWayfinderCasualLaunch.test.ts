@@ -48,6 +48,20 @@ describe('useWayfinderCasualLaunch helpers', () => {
     )
   })
 
+  it("FIXED: the claim's attemptId rides the create payload (per-attempt Companion dedup)", () => {
+    // The Companion dedups create intents per page load. Without a
+    // per-attempt key, a retry after the server superseded a wedged
+    // 'creating' attempt (60s) was silently swallowed — the "Create Game
+    // click does nothing" bug (terronk, 2026-07-15).
+    const payload = buildWayfinderCasualCreatePayload({ ...createOptions, attemptId: 'attempt-123' })
+    assert.equal(payload.attemptId, 'attempt-123')
+  })
+
+  it('SPEC: attemptId is omitted (not null/blank) when the claim has none', () => {
+    const payload = buildWayfinderCasualCreatePayload(createOptions)
+    assert.ok(!('attemptId' in payload))
+  })
+
   it('builds the join payload around the official lobby URL (no bestOf — the lobby already fixed it)', () => {
     const payload = buildWayfinderCasualJoinPayload({
       openGameShareId: 'og-share',

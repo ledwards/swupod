@@ -35,6 +35,7 @@ export function buildWayfinderCasualCreatePayload(opts: {
   lobbyName: string
   visibility: 'public' | 'private'
   bestOf?: number | undefined
+  attemptId?: string | undefined
 }) {
   return {
     type: 'wayfinder:casual-create-game',
@@ -45,6 +46,11 @@ export function buildWayfinderCasualCreatePayload(opts: {
     // The claim's match length — the Companion sets Karabast's Match Type
     // from this. Only an explicit 3 means Bo3; anything else is Bo1.
     bestOf: opts.bestOf === 3 ? 3 : 1,
+    // The claim's attempt row id. The Companion dedups create intents per
+    // page load; without a per-attempt key a retry after the server
+    // superseded a wedged attempt (60s) was silently swallowed — the
+    // "Create Game click does nothing" bug.
+    ...(opts.attemptId ? { attemptId: opts.attemptId } : {}),
     openGameId: opts.openGameShareId,
     poolShareId: opts.poolShareId,
     callbackContext: {
@@ -131,6 +137,7 @@ export function useWayfinderCasualLaunch({
             lobbyName: claim.lobbyName || 'protectthepod.com',
             visibility,
             bestOf: claim.bestOf,
+            attemptId: claim.attemptId,
           }),
           '*'
         )
