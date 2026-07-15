@@ -30,6 +30,21 @@ export default function GiftGc2026BlackPage() {
     if (!loading && !user) signIn()
   }, [loading, user, signIn])
 
+  // Reflect an existing Black entitlement on load (no re-prompt / replay).
+  useEffect(() => {
+    if (!user) return
+    let alive = true
+    fetch('/api/promo/entitlements?campaign=gc2026', { credentials: 'include' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (alive && json?.data?.black) setStatus((s) => (s === 'idle' ? 'already' : s))
+      })
+      .catch(() => {})
+    return () => {
+      alive = false
+    }
+  }, [user])
+
   const handleUnlock = async () => {
     setStatus('claiming')
     try {

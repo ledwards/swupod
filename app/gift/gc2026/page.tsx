@@ -29,6 +29,22 @@ export default function GiftGc2026Page() {
     if (!loading && !user) signIn()
   }, [loading, user, signIn])
 
+  // Reflect an existing entitlement on load: a returning owner sees "already
+  // unlocked", not the unlock button (F2 — no re-prompt, no replay).
+  useEffect(() => {
+    if (!user) return
+    let alive = true
+    fetch('/api/promo/entitlements?campaign=gc2026', { credentials: 'include' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (alive && json?.data?.silver) setStatus((s) => (s === 'idle' ? 'already' : s))
+      })
+      .catch(() => {})
+    return () => {
+      alive = false
+    }
+  }, [user])
+
   const handleUnlock = async () => {
     setStatus('claiming')
     try {
