@@ -150,6 +150,13 @@ export type OpenGameLifecycleStatus = 'lobby_ready' | 'opponent_joined' | 'in_pr
 export interface LifecycleParams {
   openGameShareId: string
   status: OpenGameLifecycleStatus
+  /**
+   * Set when the report arrived with a SESSION credential (the Companion's
+   * direct fallback while the Wayfinder hub is unreachable) instead of the
+   * service key. That caller must be a seat of the game — enforced here.
+   * Null/absent = trusted server-to-server call (hub, PTP_SERVICE_KEY).
+   */
+  actorUserId?: string | null
   lobbyId?: string | null
   lobbyUrl?: string | null
   spectateUrl?: string | null
@@ -174,6 +181,17 @@ export async function recordOpenGameLifecycle(params: LifecycleParams): Promise<
   const { withTransaction } = await import('@/lib/db')
   return withTransaction(async tx => {
     const game = await loadGameForUpdate(tx, params.openGameShareId)
+
+    // Session-credentialed reports (Companion direct fallback) are only valid
+    // from a seat of this game — anyone else's cookie is a 403, mirroring the
+    // claim path's seat gate.
+    if (
+      params.actorUserId &&
+      game.player1_id !== params.actorUserId &&
+      game.player2_id !== params.actorUserId
+    ) {
+      throw new OpenGameLiveError('forbidden', 'Only players in this game can do that', 403)
+    }
 
     const done = (duplicate: boolean, boardChanged = false): LifecycleResult => ({
       shareId: String(game.share_id),

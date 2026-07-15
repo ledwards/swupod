@@ -116,10 +116,37 @@ describe('openGameLive pipeline (Lobby V1 spec)', { skip: !dbAvailable }, () => 
     assert.equal(claim.action, 'create_lobby')
     assert.ok(claim.lobbyName?.includes('protectthepod.com'), 'lobby name carries the PTP marker (R33)')
     assert.ok(claim.lobbyName?.includes('SEC'), 'lobby name carries the set')
+    assert.equal(claim.bestOf, 1, 'claim carries the match length (SPEC: default Bo1)')
     const rows = await attempts(game.id)
     assert.equal(rows.length, 1)
     assert.equal(rows[0].status, 'creating')
     assert.equal(rows[0].created_by_user_id, poster)
+  })
+
+  it('a session-credentialed lifecycle report (Companion direct fallback) is seat-gated: stranger 403, seat lands', async () => {
+    const { game, poster } = await seedAcceptedGame()
+    await claimOpenGame({ shareId: game.shareId, userId: poster, companionCapable: true })
+    const stranger = await seedUser('ogl-lc-stranger')
+    await assert.rejects(
+      recordOpenGameLifecycle({
+        openGameShareId: game.shareId,
+        status: 'lobby_ready',
+        actorUserId: stranger,
+        lobbyUrl: 'https://karabast.net/lobby?lobbyId=lob-gate',
+        lifecycleIdempotencyKey: `k-${randomUUID()}`,
+      }),
+      (e: OpenGameLiveError) => e instanceof OpenGameLiveError && e.status === 403
+    )
+    // The seat's own session report lands exactly like a service-key report.
+    const res = await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'lobby_ready',
+      actorUserId: poster,
+      lobbyId: 'lob-gate',
+      lobbyUrl: 'https://karabast.net/lobby?lobbyId=lob-gate',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    assert.equal(res.gameStatus, 'lobby_ready')
   })
 
   it('second capable claim before lobby_ready waits; after lobby_ready it joins; incapable seat gets the display link (R37)', async () => {

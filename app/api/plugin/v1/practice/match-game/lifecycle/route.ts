@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { requireServiceKey } from '@/lib/auth'
+import { requireAuth, requireServiceKey } from '@/lib/auth'
 import { errorResponse, handleApiError, jsonResponse } from '@/lib/utils'
 import { broadcastDraftState, broadcastOpenGamesUpdate, emitOpenGameEventToUser } from '@/src/lib/socketBroadcast'
 import {
@@ -15,7 +15,20 @@ import {
 
 export async function POST(request: NextRequest): Promise<Response> {
   try {
-    requireServiceKey(request)
+    // Two credentials reach this route:
+    //  - the Wayfinder hub, server-to-server, with Bearer PTP_SERVICE_KEY
+    //    (practice AND casual), or
+    //  - the Companion itself, DIRECTLY, with the player's own session cookie
+    //    (casual only — the dev/self-heal fallback when the hub is
+    //    unreachable). That caller is authorized below by SEAT: the session
+    //    user must be a player in the open game, enforced in
+    //    recordOpenGameLifecycle via actorUserId.
+    let actorUserId: string | null = null
+    try {
+      requireServiceKey(request)
+    } catch {
+      actorUserId = requireAuth(request).id
+    }
 
     const body = await request.json()
 
@@ -29,6 +42,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       }
       const result = await recordOpenGameLifecycle({
         openGameShareId: openGameId,
+        actorUserId,
         status: casualStatus,
         lobbyId: stringField(body.lobbyId),
         lobbyUrl: stringField(body.lobbyUrl),
@@ -48,6 +62,12 @@ export async function POST(request: NextRequest): Promise<Response> {
         }
       }
       return jsonResponse(result)
+    }
+
+    // The Swiss Practice variant stays STRICTLY server-to-server: a session
+    // cookie is never enough here (only the casual seat-gated path above).
+    if (actorUserId) {
+      return errorResponse('Unauthorized', 401)
     }
 
     const practiceMatchGameId = stringField(body.practiceMatchGameId)

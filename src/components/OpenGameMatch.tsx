@@ -25,6 +25,9 @@ import { useAuth } from '@/src/contexts/AuthContext'
 import { useCompanionCapability } from '@/src/hooks/useCompanionCapability'
 import { useWayfinderCasualLaunch } from '@/src/hooks/useWayfinderCasualLaunch'
 import '@/src/components/Lobby/Lobby.css'
+// For .match-card-live-open — the ONE anchor-as-button treatment for a created
+// Karabast lobby link (Swiss Practice's MatchCard renders the same affordance).
+import '@/src/components/MatchCard.css'
 
 interface MatchPlayer {
   seat: number
@@ -292,6 +295,11 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
   // The joiner never creates the lobby (no race): until the host's Companion
   // reports a link, seat 2 just waits.
   const joinerWaiting = game.yourSeat === 2 && !lobbyLink
+  // Once the lobby exists, every seat gets the same open-the-lobby LINK
+  // (Swiss Practice's created-lobby affordance) — EXCEPT a Companion-capable
+  // joiner, whose click keeps routing through the Companion so it opens the
+  // lobby AND imports their deck (claim → join_lobby).
+  const showLobbyLink = Boolean(lobbyLink) && !(game.yourSeat === 2 && casualCapable)
   // Seated players (waiting or matched) get the Karabast-style split view:
   // match column left, a read-only view of THEIR OWN deck right (R29 — the
   // API only ever returns yourPoolShareId for your own seat).
@@ -382,6 +390,24 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
             <strong>Waiting for {host?.username || 'your opponent'} to create the Karabast lobby</strong>
             <span>The link will appear here.</span>
           </div>
+        ) : showLobbyLink ? (
+          // The lobby exists → a green play LINK to it, exactly the affordance
+          // Swiss Practice renders for its created lobby (MatchCard's
+          // match-card-live-open anchor: an <a> styled as the primary button).
+          // R37 (approved): DISPLAY of the Companion-captured lobby URL — never
+          // a paste input. Works with or without the Companion.
+          <a
+            className="btn btn--primary btn--lg match-card-live-open"
+            href={lobbyLink!}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open game lobby"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+            {game.yourSeat === 2 ? 'Join on Karabast' : 'Open the lobby'}
+          </a>
         ) : casualCapable ? (
           <>
             <Button variant="primary" size="lg" disabled={launcher.pending} onClick={() => launcher.launch('private')}>
@@ -397,29 +423,12 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
               </p>
             )}
           </>
-        ) : lobbyLink || (detected && !casualCapable) ? (
-          <>
-            {lobbyLink ? (
-              // R37 (approved): DISPLAY of the Companion-captured lobby URL —
-              // never a paste input.
-              <Button variant="primary" size="lg" onClick={() => window.open(lobbyLink, '_blank', 'noopener')}>
-                Open the lobby
-              </Button>
-            ) : (
-              <p className="lobby-match-note">
-                One-click lobbies need a newer Companion.
-              </p>
-            )}
-          </>
+        ) : detected && !casualCapable ? (
+          <p className="lobby-match-note">
+            One-click lobbies need a newer Companion.
+          </p>
         ) : (
-          <>
-            <PluginCTA variant="autodetect" />
-            {lobbyLink && (
-              <Button variant="primary" size="lg" onClick={() => window.open(lobbyLink, '_blank', 'noopener')}>
-                Open the lobby
-              </Button>
-            )}
-          </>
+          <PluginCTA variant="autodetect" />
         )}
 
       </div>

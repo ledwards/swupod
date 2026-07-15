@@ -15,6 +15,8 @@ export interface CasualClaim {
   attemptId?: string
   lobbyName?: string
   lobbyUrl?: string
+  /** Match length for create_lobby (drives Karabast's Match Type; default Bo1). */
+  bestOf?: number
   gameStatus: string
 }
 
@@ -32,6 +34,7 @@ export function buildWayfinderCasualCreatePayload(opts: {
   deckUrl: string
   lobbyName: string
   visibility: 'public' | 'private'
+  bestOf?: number | undefined
 }) {
   return {
     type: 'wayfinder:casual-create-game',
@@ -39,6 +42,9 @@ export function buildWayfinderCasualCreatePayload(opts: {
     openInNewTab: true,
     deckUrl: opts.deckUrl,
     lobbyName: opts.lobbyName,
+    // The claim's match length — the Companion sets Karabast's Match Type
+    // from this. Only an explicit 3 means Bo3; anything else is Bo1.
+    bestOf: opts.bestOf === 3 ? 3 : 1,
     openGameId: opts.openGameShareId,
     poolShareId: opts.poolShareId,
     callbackContext: {
@@ -124,6 +130,7 @@ export function useWayfinderCasualLaunch({
             deckUrl: resolvedDeckUrl,
             lobbyName: claim.lobbyName || 'protectthepod.com',
             visibility,
+            bestOf: claim.bestOf,
           }),
           '*'
         )
