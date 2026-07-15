@@ -36,7 +36,10 @@ export async function POST(request: NextRequest): Promise<Response> {
     // practiceMatchGameId. Practice behavior below is untouched.
     const openGameId = stringField(body.openGameId)
     if (openGameId) {
-      const casualStatus = stringField(body.status) as OpenGameLifecycleStatus | null
+      // The Companion reports the Karabast-side 'joined' event; the casual
+      // state machine calls that seat arrival 'opponent_joined' (R37 binding).
+      const rawStatus = stringField(body.status)
+      const casualStatus = (rawStatus === 'joined' ? 'opponent_joined' : rawStatus) as OpenGameLifecycleStatus | null
       if (!casualStatus) {
         return errorResponse('status is required', 400)
       }
