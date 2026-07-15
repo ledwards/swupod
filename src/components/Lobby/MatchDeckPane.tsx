@@ -269,12 +269,12 @@ export default function MatchDeckPane({ poolShareId }: { poolShareId: string }):
         {status === 'ready' && view && (
           <>
             <div className="leaders-bases-container">
-              {view.leader && <CardWithPreview card={view.leader} statsSetCode={pool?.setCode ?? null} />}
-              {view.base && <CardWithPreview card={view.base} statsSetCode={pool?.setCode ?? null} />}
+              {view.leader && <CardWithPreview card={view.leader} showStatsBadge={false} />}
+              {view.base && <CardWithPreview card={view.base} showStatsBadge={false} />}
             </div>
             <div className="cards-grid">
               {view.deck.map((card, i) => (
-                <CardWithPreview card={card} statsSetCode={pool?.setCode ?? null} key={`${card.id}-${i}`} />
+                <CardWithPreview card={card} showStatsBadge={false} key={`${card.id}-${i}`} />
               ))}
             </div>
             {view.sideboard.length > 0 && (
@@ -282,7 +282,7 @@ export default function MatchDeckPane({ poolShareId }: { poolShareId: string }):
                 <h4 className="lobby-deck-subhead">Sideboard ({view.sideboard.length})</h4>
                 <div className="cards-grid">
                   {view.sideboard.map((card, i) => (
-                    <CardWithPreview card={card} statsSetCode={pool?.setCode ?? null} key={`${card.id}-${i}`} />
+                    <CardWithPreview card={card} showStatsBadge={false} key={`${card.id}-${i}`} />
                   ))}
                 </div>
               </>
