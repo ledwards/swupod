@@ -207,6 +207,66 @@ describe('openGameLive pipeline (Lobby V1 spec)', { skip: !dbAvailable }, () => 
     assert.equal((await gameRow(game.id)).status, 'lobby_ready')
   })
 
+  it('a manual lobby_ready with NO prior claim/attempt creates the attempt row itself (host made the lobby by hand)', async () => {
+    // SPEC (manual-lobby binding): the host can ignore the one-click button
+    // and create the Karabast lobby by hand — no create_lobby claim ever
+    // happens, so no attempt row exists when the Companion reports
+    // lobby_ready. The ingest must create the row (attempt_number = max+1),
+    // land it in lobby_ready, and attribute it to the HOST (player1) so the
+    // host's next claim reopens their own lobby.
+    const { game, poster } = await seedAcceptedGame()
+    assert.equal((await attempts(game.id)).length, 0, 'precondition: no attempt row exists')
+
+    const res = await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'lobby_ready',
+      lobbyId: 'lob-manual',
+      lobbyUrl: 'https://karabast.net/lobby?lobbyId=lob-manual',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    assert.equal(res.duplicate, false)
+
+    const rows = await attempts(game.id)
+    assert.equal(rows.length, 1)
+    assert.equal(rows[0].attempt_number, 1)
+    assert.equal(rows[0].status, 'lobby_ready')
+    assert.equal(rows[0].created_by_user_id, poster, 'manual attempt is attributed to the host')
+    assert.equal(rows[0].lobby_url, 'https://karabast.net/lobby?lobbyId=lob-manual')
+    assert.equal((await gameRow(game.id)).status, 'lobby_ready', 'joiner sees the Join button')
+
+    // Host attribution matters behaviorally: the host's next claim must
+    // reopen THEIR lobby (open_lobby), never tell them to join it.
+    const reopen = await claimOpenGame({ shareId: game.shareId, userId: poster, companionCapable: true })
+    assert.equal(reopen.action, 'open_lobby')
+    assert.equal(reopen.lobbyUrl, 'https://karabast.net/lobby?lobbyId=lob-manual')
+  })
+
+  it('a manual lobby_ready after a FAILED attempt opens attempt 2 (max+1, not a resurrect)', async () => {
+    const { game, poster } = await seedAcceptedGame()
+    await claimOpenGame({ shareId: game.shareId, userId: poster, companionCapable: true })
+    await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'failed',
+      failureReason: 'deck fetch failed',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+
+    await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'lobby_ready',
+      lobbyId: 'lob-manual-2',
+      lobbyUrl: 'https://karabast.net/lobby?lobbyId=lob-manual-2',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+
+    const rows = await attempts(game.id)
+    assert.equal(rows.length, 2)
+    assert.equal(rows[0].status, 'failed')
+    assert.equal(rows[1].attempt_number, 2)
+    assert.equal(rows[1].status, 'lobby_ready')
+    assert.equal(rows[1].created_by_user_id, poster)
+  })
+
   it('failed creation is escapable: next capable claim starts attempt 2', async () => {
     const { game, poster } = await seedAcceptedGame()
     await claimOpenGame({ shareId: game.shareId, userId: poster, companionCapable: true })

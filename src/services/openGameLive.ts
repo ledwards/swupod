@@ -204,13 +204,18 @@ export async function recordOpenGameLifecycle(params: LifecycleParams): Promise<
       [game.id, ACTIVE_ATTEMPT_STATUSES]
     )
     if (!attempt) {
-      // Lifecycle can land before any claim recorded an attempt (edge: races,
-      // manual lobby detection). Create the attempt so the event has a home.
+      // Lifecycle can land before any claim recorded an attempt (races, and
+      // the MANUAL flow: the host makes the Karabast lobby by hand, so no
+      // create_lobby claim ever happened — the Companion's manual-lobby
+      // binding reports lobby_ready directly). Create the attempt so the
+      // event has a home, attributed to the host (player1 — only the host's
+      // Companion ever creates/binds a lobby) so their next claim resolves
+      // to open_lobby instead of join_lobby.
       attempt = await tx.queryRow(
-        `INSERT INTO open_game_lobby_attempts (open_game_id, attempt_number, status)
-         VALUES ($1, COALESCE((SELECT MAX(attempt_number) FROM open_game_lobby_attempts WHERE open_game_id = $1), 0) + 1, 'creating')
+        `INSERT INTO open_game_lobby_attempts (open_game_id, attempt_number, status, created_by_user_id)
+         VALUES ($1, COALESCE((SELECT MAX(attempt_number) FROM open_game_lobby_attempts WHERE open_game_id = $1), 0) + 1, 'creating', $2)
          RETURNING *`,
-        [game.id]
+        [game.id, game.player1_id]
       )
     }
 
