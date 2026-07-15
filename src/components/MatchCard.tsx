@@ -130,6 +130,38 @@ function CopyLobbyLink({ url }: { url: string }) {
   )
 }
 
+/**
+ * THE anchor-as-play-button for a live/created game lobby — the one
+ * implementation, used by Swiss Practice match cards and the open-lobby
+ * match page. An <a> styled as the primary button with the play icon.
+ */
+export function LiveLobbyLink({
+  href,
+  label,
+  size = 'sm',
+  className = '',
+}: {
+  href: string
+  label?: string
+  size?: 'sm' | 'lg'
+  className?: string
+}): React.JSX.Element {
+  return (
+    <a
+      className={`btn btn--primary btn--${size} match-card-live-open${className ? ` ${className}` : ''}`}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label || 'Open game lobby'}
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M8 5v14l11-7z" />
+      </svg>
+      {label}
+    </a>
+  )
+}
+
 export function MatchCard({
   match,
   currentUserId,
@@ -325,17 +357,7 @@ export function MatchCard({
       if (liveAction.iCreated && liveAction.href) {
         return <CopyLobbyLink url={liveAction.href} />
       }
-      return (
-        <a
-          className="btn btn--primary btn--sm match-card-live-button match-card-live-open"
-          href={liveAction.href || '#'}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Open game lobby"
-        >
-          {playIcon}
-        </a>
-      )
+      return <LiveLobbyLink href={liveAction.href || '#'} className="match-card-live-button" />
     }
 
     // No Companion + no lobby yet → a disabled green play button. Wrap it in a

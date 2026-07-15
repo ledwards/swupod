@@ -27,7 +27,7 @@ import { useWayfinderCasualLaunch } from '@/src/hooks/useWayfinderCasualLaunch'
 import '@/src/components/Lobby/Lobby.css'
 // For .match-card-live-open — the ONE anchor-as-button treatment for a created
 // Karabast lobby link (Swiss Practice's MatchCard renders the same affordance).
-import '@/src/components/MatchCard.css'
+import { LiveLobbyLink } from '@/src/components/MatchCard'
 
 interface MatchPlayer {
   seat: number
@@ -399,18 +399,11 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
           // match-card-live-open anchor: an <a> styled as the primary button).
           // R37 (approved): DISPLAY of the Companion-captured lobby URL — never
           // a paste input. Works with or without the Companion.
-          <a
-            className="btn btn--primary btn--lg match-card-live-open"
+          <LiveLobbyLink
             href={lobbyLink!}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Open game lobby"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-            {game.yourSeat === 2 ? 'Join on Karabast' : 'Open the lobby'}
-          </a>
+            size="lg"
+            label={game.yourSeat === 2 ? 'Join Game' : 'Open the lobby'}
+          />
         ) : casualCapable ? (
           <>
             <Button variant="primary" size="lg" disabled={launcher.pending} onClick={() => launcher.launch('private')}>
@@ -477,18 +470,9 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
             <div className="lobby-manual-step-content">
               <h4>Play</h4>
               {!casualCapable && lobbyLink ? (
-                <a
-                  className="btn btn--primary btn--lg match-card-live-open"
-                  href={lobbyLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Open game lobby"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                  Play on Karabast
-                </a>
+                <LiveLobbyLink href={lobbyLink} label="Join Game" />
+              ) : !casualCapable && game.yourSeat === 2 ? (
+                <p>Waiting for {host?.username || 'your opponent'} to start the game — the link will appear here.</p>
               ) : (
                 <p>Results report through the Companion.</p>
               )}

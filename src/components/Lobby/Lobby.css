@@ -878,6 +878,11 @@ a.lobby-discord-tile:active {
   margin-top: 60px;
 }
 
+/* The play link inside manual step 3 breathes off the step title. */
+.lobby-manual-step-content .match-card-live-open {
+  margin-top: 6px;
+}
+
 /* Joiner waiting state: title line + quieter subtitle. */
 .lobby-match-waiting {
   display: flex;
