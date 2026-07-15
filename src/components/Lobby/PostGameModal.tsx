@@ -88,14 +88,8 @@ export default function PostGameModal({
             Private link
           </Button>
         </div>
-        <p className="lobby-row-meta lobby-vis-note">
-          {visibility === 'public'
-            ? 'Listed on the board.'
-            : 'Only people with the link can join.'}
-        </p>
-
         {companionCapable && (
-          <label className="lobby-check">
+          <label className="lobby-check lobby-check-centered">
             <input
               type="checkbox"
               checked={createKarabast}
@@ -109,6 +103,12 @@ export default function PostGameModal({
             </span>
           </label>
         )}
+
+        <p className="lobby-row-meta lobby-vis-note">
+          {visibility === 'public'
+            ? 'Listed on the board.'
+            : 'Only people with the link can join.'}
+        </p>
       </Modal.Body>
       <Modal.Actions>
         <Button variant="secondary" onClick={onClose} disabled={busy}>

@@ -172,6 +172,9 @@
   overflow-y: auto;
   flex: 1;
   min-height: 0;
+  /* The scroll container clips anything past its padding box — glows, toggle
+     rings, and the selection ring need this inset to render un-clipped. */
+  padding: 6px 8px;
 }
 
 

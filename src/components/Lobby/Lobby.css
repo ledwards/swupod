@@ -642,6 +642,11 @@ a.lobby-discord-tile:active {
   text-align: center;
 }
 
+.lobby-check-centered {
+  justify-content: center;
+  margin: var(--pt-space-xs) 0 0;
+}
+
 .lobby-check {
   display: flex;
   gap: 9px;

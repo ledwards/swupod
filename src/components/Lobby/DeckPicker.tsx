@@ -323,10 +323,6 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
           value={query}
           onChange={e => { setQuery(e.target.value); setPage(0) }}
         />
-        <label className="lobby-deck-incomplete-toggle">
-          <input type="checkbox" checked={showIncomplete} onChange={toggleIncomplete} />
-          <span>Show incomplete</span>
-        </label>
         {!filtered && (
           <div className="lobby-deck-filter-group">
             {hasLatest && (
@@ -385,6 +381,10 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
             )}
           </div>
         )}
+        <label className="lobby-deck-incomplete-toggle">
+          <input type="checkbox" checked={showIncomplete} onChange={toggleIncomplete} />
+          <span>Show incomplete</span>
+        </label>
       </div>
       <div className="lobby-deck-picker" role="radiogroup" aria-label="Your decks">
         {pageDecks.map(deck => {
