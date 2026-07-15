@@ -169,7 +169,13 @@ export default function MatchDeckPane({ poolShareId }: { poolShareId: string }):
     try {
       const res = await fetch(`/api/pools/${poolShareId}/deck.json`)
       if (!res.ok) throw new Error(String(res.status))
-      await navigator.clipboard.writeText(JSON.stringify(await res.json(), null, 2))
+      const deckJson = await res.json()
+      // Karabast rejects deckless lists outright — better to say so here.
+      if (!Array.isArray(deckJson.deck) || deckJson.deck.length === 0) {
+        showToast({ text: 'Your deck is empty — finish building it first.', kind: 'danger' })
+        return
+      }
+      await navigator.clipboard.writeText(JSON.stringify(deckJson, null, 2))
       showToast({ text: 'Deck JSON copied to clipboard!', kind: 'success' })
     } catch {
       showToast({ text: 'Failed to copy deck JSON', kind: 'danger' })
@@ -212,34 +218,46 @@ export default function MatchDeckPane({ poolShareId }: { poolShareId: string }):
     <aside className="lobby-deck-pane" aria-label="Your deck">
       <h3 className="lobby-column-title">
         Your Deck{status === 'ready' && view ? ` (${view.deck.length} cards)` : ''}
-        <span>only you can see this</span>
+        {status === 'ready' && view && (
+          <span className="lobby-deck-actions" aria-label="Deck actions">
+            <button
+              className="play-instructions-action-button primary"
+              onClick={copyDeckLink}
+              title="Copy deck link"
+              aria-label="Copy deck link"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+            </button>
+            <button
+              className="play-instructions-action-button"
+              onClick={copyDeckJson}
+              title="Copy deck JSON"
+              aria-label="Copy deck JSON"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+            <button
+              className="play-instructions-action-button"
+              onClick={exportDeckImage}
+              disabled={generatingImage}
+              title="Deck image"
+              aria-label="Deck image"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+            </button>
+          </span>
+        )}
       </h3>
-      {status === 'ready' && view && (
-        <div className="play-instructions-actions lobby-deck-actions">
-          <button className="play-instructions-action-button primary" onClick={copyDeckLink}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-            </svg>
-            Copy Link
-          </button>
-          <button className="play-instructions-action-button" onClick={copyDeckJson}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-            Copy JSON
-          </button>
-          <button className="play-instructions-action-button" onClick={exportDeckImage} disabled={generatingImage}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-              <circle cx="8.5" cy="8.5" r="1.5"></circle>
-              <polyline points="21 15 16 10 5 21"></polyline>
-            </svg>
-            {generatingImage ? 'Generating...' : 'Deck Image'}
-          </button>
-        </div>
-      )}
       <div className="lobby-deck-pane-body">
         {status === 'loading' && <DeckSkeleton />}
         {status === 'error' && (

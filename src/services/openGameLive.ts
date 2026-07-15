@@ -98,6 +98,13 @@ export async function claimOpenGame(params: {
       return { action: 'wait_for_lobby', gameStatus: String(game.status) }
     }
 
+    // No race to create: only the HOST's Companion creates the Karabast
+    // lobby. The joiner waits for the link (join_lobby/lobby_link above once
+    // an attempt has a URL).
+    if (String(game.player1_id) !== String(params.userId)) {
+      return { action: 'wait_for_lobby', gameStatus: String(game.status) }
+    }
+
     const { buildLobbyName } = await import('@/src/utils/karabastLobby')
     const next = await tx.queryRow(
       `INSERT INTO open_game_lobby_attempts (open_game_id, attempt_number, status, created_by_user_id)

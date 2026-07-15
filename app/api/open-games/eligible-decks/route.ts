@@ -13,7 +13,7 @@
 import { requireAuth } from '@/lib/auth'
 import { jsonResponse } from '@/lib/utils'
 import { queryRows } from '@/lib/db'
-import { getAspectColor } from '@/src/utils/aspectColors'
+import { getAspectColor, getAspectColors } from '@/src/utils/aspectColors'
 import { archetypeShortName, poolDisplayName } from '@/src/utils/archetypeName'
 import { hyperspaceLeaderArtForCard } from '@/src/utils/hyperspaceLeaderArt'
 import { openGameErrorResponse } from '../helpers'
@@ -101,6 +101,12 @@ export async function GET(request: NextRequest): Promise<Response> {
         // fall back to the leader's unit-side art, then the portrait.
         leaderBackImageUrl: hyperspaceLeaderArtForCard(leaderCard) || leaderCard?.backImageUrl || null,
         baseColor: baseCard ? getAspectColor(baseCard) : null,
+        // Deck identity colors (leader + base color aspects, deduped) for the
+        // picker's gradient background.
+        aspectColors: [...new Set([
+          ...(leaderCard ? getAspectColors(leaderCard) : []),
+          ...(baseCard ? getAspectColors(baseCard) : []),
+        ])].slice(0, 3),
         eligible:
           (!setCode || String(r.set_code) === setCode) &&
           (!format || String(r.pool_type || 'sealed') === format),

@@ -11,7 +11,7 @@
  * Your own cancel routes straight back to /lobby (no terminal screen); the
  * other player learns via their socket toast (OpenGameEventToasts).
  */
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { io as socketIO, type Socket } from 'socket.io-client'
 import { useRouter } from 'next/navigation'
 import Button from '@/src/components/Button'
@@ -44,6 +44,7 @@ interface MatchGame {
   players: Array<MatchPlayer | null>
   yourPoolShareId: string | null
   yourSeat: number | null
+  lobbyUrl: string | null
   player2External: boolean
 }
 
@@ -133,6 +134,27 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
       socket?.disconnect()
     }
   }, [shareId, fetchGame])
+
+  // If the lobby dies under a seated player (cancelled/expired/abandoned —
+  // anything terminal except a real result), kick them back to the lobby with
+  // a toast instead of leaving them sitting in a dead room.
+  const prevStatusRef = useRef<string | null>(null)
+  useEffect(() => {
+    const status = game?.status ?? null
+    const prev = prevStatusRef.current
+    prevStatusRef.current = status
+    if (!game || game.yourSeat == null || status === null) return
+    const wasLive = prev !== null && ['open', 'accepted', 'lobby_ready', 'in_progress'].includes(prev)
+    const closedWithoutResult = ['cancelled', 'expired', 'delisted', 'abandoned'].includes(status)
+    if (wasLive && closedWithoutResult) {
+      // 'cancelled' already gets the global "Your opponent cancelled" toast
+      // (OpenGameEventToasts) — don't double up.
+      if (status !== 'cancelled') {
+        showToast({ text: TERMINAL_COPY[status] || 'This lobby closed.', kind: 'danger' })
+      }
+      router.push('/lobby')
+    }
+  }, [game, router, showToast])
 
   const launcher = useWayfinderCasualLaunch({
     openGameShareId: shareId,
@@ -243,7 +265,11 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
 
   const opponent = game.players.find(p => p && !p.you) ?? null
   const waitingForOpponent = game.status === 'open'
-  const lobbyLink = launcher.lastClaim?.action === 'lobby_link' ? launcher.lastClaim.lobbyUrl : null
+  const lobbyLink =
+    game.lobbyUrl ?? (launcher.lastClaim?.action === 'lobby_link' ? launcher.lastClaim.lobbyUrl : null)
+  // The joiner never creates the lobby (no race): until the host's Companion
+  // reports a link, seat 2 just waits.
+  const joinerWaiting = game.yourSeat === 2 && !lobbyLink
   // Seated players (waiting or matched) get the Karabast-style split view:
   // match column left, a read-only view of THEIR OWN deck right (R29 — the
   // API only ever returns yourPoolShareId for your own seat).
@@ -329,10 +355,19 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
       </div>
 
       <div className="lobby-match-hero">
-        {casualCapable ? (
+        {joinerWaiting ? (
+          <p className="lobby-match-note">
+            Waiting for {host?.username || 'your opponent'} to create the Karabast lobby — the
+            link will appear here.
+          </p>
+        ) : casualCapable ? (
           <>
             <Button variant="primary" size="lg" disabled={launcher.pending} onClick={() => launcher.launch('private')}>
-              {game.status === 'open' ? 'Open your Karabast lobby' : 'Play on Karabast'}
+              {game.status === 'open'
+                ? 'Open your Karabast lobby'
+                : game.yourSeat === 2
+                  ? 'Join on Karabast'
+                  : 'Play on Karabast'}
             </Button>
             {launcher.message && (
               <p className={`lobby-match-note${launcher.message.type === 'error' ? ' lobby-state-error' : ''}`}>
@@ -365,13 +400,6 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
           </>
         )}
 
-        {!casualCapable && !lobbyLink && isSeat && game.status !== 'open' && (
-          <p className="lobby-match-note">
-            <Button variant="secondary" size="sm" onClick={() => launcher.launch('private')}>
-              Check for the lobby
-            </Button>
-          </p>
-        )}
       </div>
 
       {/* Manual fallback panel — mirrors PlayInstructions' manual-mode box
@@ -398,12 +426,16 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
           <div className="lobby-manual-step">
             <span className="lobby-step-number">2</span>
             <div className="lobby-manual-step-content">
-              <h4>Create a Private Lobby</h4>
-              <p>
-                On{' '}
-                <a href="https://karabast.net" target="_blank" rel="noreferrer">karabast.net</a>,
-                create a private lobby and DM the lobby link to your opponent on Discord.
-              </p>
+              <h4>{game.yourSeat === 2 ? 'Join Their Lobby' : 'Create a Private Lobby'}</h4>
+              {game.yourSeat === 2 ? (
+                <p>Your opponent creates the lobby and DMs you the link on Discord.</p>
+              ) : (
+                <p>
+                  On{' '}
+                  <a href="https://karabast.net" target="_blank" rel="noreferrer">karabast.net</a>,
+                  create a private lobby and DM the lobby link to your opponent on Discord.
+                </p>
+              )}
             </div>
           </div>
           <div className="lobby-manual-step">

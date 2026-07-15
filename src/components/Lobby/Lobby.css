@@ -580,10 +580,11 @@ a.lobby-discord-tile:active {
 }
 
 /* ---- deck picker (modal-internal) ---- */
+/* 2-up grid (half-width items); DeckPicker.css carries the item styling. */
 .lobby-deck-picker {
-  display: flex;
-  flex-direction: column;
-  gap: var(--pt-space-xs);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
   text-align: left;
 }
 
@@ -842,10 +843,17 @@ a.lobby-discord-tile:active {
   font-size: 0.85rem;
 }
 
-/* The play page's action-bar trio, compacted for the pane header. */
+/* Icon-only deck actions, inline on the pane header's right edge (where the
+   "only you can see this" note used to sit). */
 .lobby-deck-actions {
-  padding: 0 var(--pt-space-md) var(--pt-space-sm);
-  justify-content: center;
+  display: inline-flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.lobby-deck-actions .play-instructions-action-button {
+  padding: 6px;
+  min-width: 0;
 }
 
 /* Deck image modal (DeckImageModal) — same block DeckBuilder.css/pod.css/
@@ -960,6 +968,7 @@ a.lobby-discord-tile:active {
   flex-wrap: wrap;
   gap: 0.5rem;
   align-items: start;
+  justify-content: center;
   padding: 6px;
 }
 

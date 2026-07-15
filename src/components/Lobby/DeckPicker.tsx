@@ -7,8 +7,9 @@
  * decks (wrong set/format for the game being joined) are not shown at all.
  * Your deck choice is yours alone — opponents never see it (R29).
  */
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Button from '@/src/components/Button'
+import { STATS_SET_ORDER } from '@/src/utils/statsSetTabs'
 import '@/src/components/YourStats/YourStats.css'
 import './DeckPicker.css'
 
@@ -24,6 +25,7 @@ export interface EligibleDeck {
   leaderImageUrl: string | null
   leaderBackImageUrl: string | null
   baseColor: string | null
+  aspectColors?: string[]
 }
 
 interface DeckPickerProps {
@@ -37,8 +39,18 @@ interface DeckPickerProps {
   onEligibleCount?: (count: number) => void
 }
 
-/** ~6 items per page keeps the modal shorter than a viewport. */
-const PAGE_SIZE = 6
+/** 2-up grid: 8 items = 4 rows, still shorter than a viewport. */
+const PAGE_SIZE = 8
+
+// Set buckets for the picker's filter bar: the latest standard set gets its
+// own button, everything else standard lives under "Older", and multi-set
+// pools (Chaos etc.) are "Other".
+const LATEST_SET: string = STATS_SET_ORDER[0]
+
+function setBucket(sc: string): 'latest' | 'older' | 'other' {
+  if (sc === LATEST_SET) return 'latest'
+  return (STATS_SET_ORDER as readonly string[]).includes(sc) ? 'older' : 'other'
+}
 
 function formatLabel(format?: string): string {
   return format === 'draft' ? 'Draft' : 'Sealed'
@@ -102,8 +114,20 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
   const [attempt, setAttempt] = useState(0)
   const [page, setPage] = useState(0)
   // New Lobby flow (no pinned set/format): local single-select filters.
+  // setFilter: null (all) | LATEST_SET | an older set code | 'other' (Chaos).
   const [formatFilter, setFormatFilter] = useState<'sealed' | 'draft' | null>(null)
   const [setFilter, setSetFilter] = useState<string | null>(null)
+  const [olderOpen, setOlderOpen] = useState(false)
+  const olderRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!olderOpen) return
+    const close = (e: MouseEvent): void => {
+      if (!olderRef.current?.contains(e.target as Node)) setOlderOpen(false)
+    }
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [olderOpen])
 
   useEffect(() => {
     let cancelled = false
@@ -142,15 +166,25 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
   }, [setCode, format, attempt])
 
   const filtered = Boolean(setCode || format)
+  const matchesSetFilter = (sc: string): boolean => {
+    if (setFilter === null) return true
+    if (setFilter === 'other') return setBucket(sc) === 'other'
+    return sc === setFilter
+  }
   const eligible = (decks?.filter(d => d.eligible) ?? []).filter(d =>
     filtered
       ? true
       : (formatFilter === null || (d.format === 'draft' ? 'draft' : 'sealed') === formatFilter) &&
-        (setFilter === null || d.setCode === setFilter)
+        matchesSetFilter(d.setCode)
   )
-  const availableSets = filtered
-    ? []
-    : [...new Set((decks ?? []).map(d => d.setCode))]
+  const availableSets = filtered ? [] : [...new Set((decks ?? []).map(d => d.setCode))]
+  const hasLatest = availableSets.some(sc => setBucket(sc) === 'latest')
+  const hasOther = availableSets.some(sc => setBucket(sc) === 'other')
+  // Older sets, newest first (STATS_SET_ORDER order).
+  const olderSets = (STATS_SET_ORDER as readonly string[]).filter(
+    sc => sc !== LATEST_SET && availableSets.includes(sc)
+  )
+  const olderActive = setFilter !== null && setFilter !== 'other' && setFilter !== LATEST_SET
 
   useEffect(() => {
     if (decks !== null) onEligibleCount?.(eligible.length)
@@ -232,22 +266,62 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
               </Button>
             ))}
           </div>
-          {availableSets.length > 1 && (
-            <div className="lobby-deck-filter-group">
-              {availableSets.map(sc => (
+          <div className="lobby-deck-filter-group">
+            {hasLatest && (
+              <Button
+                variant="toggle"
+                size="sm"
+                glowColor="blue"
+                active={setFilter === LATEST_SET}
+                onClick={() => { setSetFilter(cur => (cur === LATEST_SET ? null : LATEST_SET)); setPage(0) }}
+              >
+                {LATEST_SET}
+              </Button>
+            )}
+            {olderSets.length > 0 && (
+              <div className="lobby-deck-older" ref={olderRef}>
                 <Button
-                  key={sc}
                   variant="toggle"
                   size="sm"
                   glowColor="blue"
-                  active={setFilter === sc}
-                  onClick={() => { setSetFilter(cur => (cur === sc ? null : sc)); setPage(0) }}
+                  active={olderActive}
+                  onClick={() => setOlderOpen(open => !open)}
                 >
-                  {sc}
+                  {olderActive ? setFilter : 'Older'} ▾
                 </Button>
-              ))}
-            </div>
-          )}
+                {olderOpen && (
+                  <div className="lobby-deck-older-menu" role="menu">
+                    {olderSets.map(sc => (
+                      <button
+                        key={sc}
+                        type="button"
+                        role="menuitem"
+                        className={`lobby-deck-older-item${setFilter === sc ? ' lobby-deck-older-item--active' : ''}`}
+                        onClick={() => {
+                          setSetFilter(cur => (cur === sc ? null : sc))
+                          setOlderOpen(false)
+                          setPage(0)
+                        }}
+                      >
+                        {sc}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+            {hasOther && (
+              <Button
+                variant="toggle"
+                size="sm"
+                glowColor="blue"
+                active={setFilter === 'other'}
+                onClick={() => { setSetFilter(cur => (cur === 'other' ? null : 'other')); setPage(0) }}
+              >
+                Other
+              </Button>
+            )}
+          </div>
         </div>
       )}
       <div className="lobby-deck-picker" role="radiogroup" aria-label="Your decks">
@@ -261,7 +335,11 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
               aria-checked={isSelected}
               tabIndex={0}
               className={`lobby-deck-option${isSelected ? ' lobby-deck-option--selected' : ''}`}
-              style={deck.baseColor ? ({ ['--row-tint' as never]: deck.baseColor }) : undefined}
+              style={{
+                ['--deck-grad-a' as never]: deck.aspectColors?.[0] ?? deck.baseColor ?? '#2a3654',
+                ['--deck-grad-b' as never]:
+                  deck.aspectColors?.[deck.aspectColors.length - 1] ?? deck.baseColor ?? '#2a3654',
+              }}
               onClick={() => onSelect(deck)}
               onKeyDown={e => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -290,7 +368,7 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
                     <span className={`your-stats-format-tag your-stats-format-tag--${deck.format === 'draft' ? 'draft' : 'sealed'}`}>
                       {formatLabel(deck.format)}
                     </span>
-                    <span>{deck.setCode}</span>
+                    <span>{setBucket(deck.setCode) === 'other' ? 'Chaos' : deck.setCode}</span>
                     {deck.builtAt && <span>{new Date(deck.builtAt).toLocaleDateString()}</span>}
                   </div>
                 </div>

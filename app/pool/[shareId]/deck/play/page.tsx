@@ -659,6 +659,13 @@ export default function PlayPage({ params }: PageProps) {
       return
     }
 
+    if (!Array.isArray(deckData.deck) || deckData.deck.length === 0) {
+      setMessage('Your deck is empty — add cards to your deck before copying.')
+      setMessageType('error')
+      setTimeout(() => { setMessage(null); setMessageType(null) }, 3000)
+      return
+    }
+
     try {
       await navigator.clipboard.writeText(JSON.stringify(deckData, null, 2))
       trackLimitedPlayAction(LimitedPlayActions.COPY_DECK_JSON, {

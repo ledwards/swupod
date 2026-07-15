@@ -183,7 +183,7 @@ export function CardStatsBadge({
           <Modal isOpen onClose={() => setOpen(false)} showCloseButton className="card-data-stats-modal">
             <div className="card-data-stats-modal-body">
               <p className="card-data-stats-modal-warning">
-                {loading ? `Loading card stats for ${name}…` : error ? error : 'No card stats are available for this set yet.'}
+                {loading ? `Loading card stats for ${name}…` : error ? error : `No stats recorded for ${name} yet.`}
               </p>
             </div>
           </Modal>

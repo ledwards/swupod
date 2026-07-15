@@ -170,9 +170,10 @@ test.describe('Lobby V1 — Open Games', () => {
     await page.goto('/lobby')
     await page.getByRole('button', { name: 'New Lobby' }).click()
 
-    // Deck picker: select the seeded draft deck.
+    // Deck picker: select the seeded draft deck. (RUN_SET is synthetic, so
+    // the picker buckets it as "Other"/Chaos — match on the deck's leader.)
     await expect(page.getByRole('dialog')).toBeVisible()
-    await page.locator('[role="radio"]', { hasText: RUN_SET }).first().click()
+    await page.locator('[role="radio"]', { hasText: 'Draft' }).first().click()
     await page.getByRole('button', { name: 'Create Lobby' }).click()
 
     // Poster lands on the match page in the waiting state.
@@ -204,9 +205,11 @@ test.describe('Lobby V1 — Open Games', () => {
     await page.locator('[role="radio"]').first().click()
     await page.getByRole('button', { name: 'Join Lobby' }).click()
 
-    // Joiner lands on the match page with both seats.
+    // Joiner lands on the match page with both seats. (The host's name also
+    // appears in the "waiting for X to create the lobby" note — scope to the
+    // players list.)
     await waitForMatchPage(page, 'player2_id', joiner.user.id)
-    await expect(page.getByText('LobbyPoster')).toBeVisible({ timeout: 15_000 })
+    await expect(page.locator('.lobby-match-players').getByText('LobbyPoster')).toBeVisible({ timeout: 15_000 })
     await expect(page.getByText('LobbyJoiner (you)')).toBeVisible({ timeout: 15_000 })
   })
 
@@ -240,6 +243,6 @@ test.describe('Lobby V1 — Open Games', () => {
     await joinerPage.goto('/lobby')
     await joinerPage.getByRole('button', { name: 'Play Now' }).click()
     await waitForMatchPage(joinerPage, 'player2_id', joiner.user.id)
-    await expect(joinerPage.getByText('LobbyPoster')).toBeVisible()
+    await expect(joinerPage.locator('.lobby-match-players').getByText('LobbyPoster')).toBeVisible()
   })
 })

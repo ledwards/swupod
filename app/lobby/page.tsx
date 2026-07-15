@@ -297,7 +297,7 @@ function LobbyPageInner(): React.JSX.Element {
               </span>
             </span>
             <span>
-              <strong>{board.listings.length}</strong> open {board.listings.length === 1 ? 'game' : 'games'} ·{' '}
+              <strong>{board.listings.length}</strong> open {board.listings.length === 1 ? 'lobby' : 'lobbies'} ·{' '}
               <strong>{pods.length}</strong> {pods.length === 1 ? 'pod' : 'pods'} forming
             </span>
           </div>
@@ -326,7 +326,7 @@ function LobbyPageInner(): React.JSX.Element {
             </span>
             <div className="mode-button-content">
               <span className="mode-button-title">New Lobby</span>
-              <span className="mode-button-subtitle">Post a lobby</span>
+              <span className="mode-button-subtitle">Create a lobby</span>
             </div>
           </button>
         </div>

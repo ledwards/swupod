@@ -17,8 +17,8 @@ import type { TxClient } from '@/lib/db'
 import { archetypeShortName, poolDisplayName } from '@/src/utils/archetypeName'
 
 export const OPEN_LISTING_EXPIRY_MS = 60 * 60 * 1000 // R9 (revised 7/10): 1h
-export const ACCEPTED_NO_LOBBY_EXPIRY_MS = 20 * 60 * 1000 // R20: ~20 min
-export const LOBBY_READY_STALE_MS = 60 * 60 * 1000
+export const ACCEPTED_NO_LOBBY_EXPIRY_MS = 2 * 60 * 60 * 1000 // revised 7/15: 2h
+export const LOBBY_READY_STALE_MS = 2 * 60 * 60 * 1000 // revised 7/15: 2h
 export const IN_PROGRESS_STALE_MS = 4 * 60 * 60 * 1000
 
 export const PENDING_STATUSES = ['accepted', 'lobby_ready', 'in_progress'] as const
@@ -503,7 +503,7 @@ export async function getOpenGameByShareId(shareId: string): Promise<OpenGame | 
 /**
  * Terminal-escape sweep: no status can wedge a player out of the lobby.
  *  - open       > 2h                                      -> expired
- *  - accepted   > 20 min with no live lobby attempt        -> abandoned
+ *  - accepted   > 2h with no live lobby attempt            -> abandoned
  *  - lobby_ready with no progress for 60 min               -> abandoned
  *  - in_progress with no result for 4h                     -> abandoned
  */
@@ -517,8 +517,9 @@ export async function sweepOpenGames(options: { onlineUserIds?: string[] } = {})
   expired: number
   abandoned: number
   expiredListings: ResolvedListing[]
+  closedMatches: Array<{ shareId: string; playerIds: string[] }>
 }> {
-  const { queryRows, query } = await import('@/lib/db')
+  const { queryRows } = await import('@/lib/db')
   const online = options.onlineUserIds ?? []
   // 1h expiry applies to OFFLINE posters; a poster who's still connected
   // keeps their listing alive up to a 6h hard cap.
@@ -532,26 +533,33 @@ export async function sweepOpenGames(options: { onlineUserIds?: string[] } = {})
      RETURNING share_id, format, discord_message_id`,
     [online]
   )
-  const abandoned = await query(
+  const abandonedRows = await queryRows(
     `UPDATE open_games og SET status = 'abandoned', resolved_at = NOW(), updated_at = NOW()
      WHERE (
-        (og.status = 'accepted' AND og.accepted_at < NOW() - INTERVAL '20 minutes'
+        (og.status = 'accepted' AND og.accepted_at < NOW() - INTERVAL '2 hours'
           AND NOT EXISTS (
             SELECT 1 FROM open_game_lobby_attempts a
             WHERE a.open_game_id = og.id
               AND a.status IN ('lobby_ready', 'in_progress', 'complete')
           ))
-        OR (og.status = 'lobby_ready' AND og.updated_at < NOW() - INTERVAL '60 minutes')
+        OR (og.status = 'lobby_ready' AND og.updated_at < NOW() - INTERVAL '2 hours')
         OR (og.status = 'in_progress' AND og.updated_at < NOW() - INTERVAL '4 hours')
-     )`
+     )
+     RETURNING share_id, player1_id, player2_id`
   )
   return {
     expired: expiredRows.length,
-    abandoned: abandoned.rowCount ?? 0,
+    abandoned: abandonedRows.length,
     expiredListings: expiredRows.map(r => ({
       shareId: String(r.share_id),
       format: String(r.format),
       discordMessageId: r.discord_message_id ? String(r.discord_message_id) : null,
+    })),
+    // Every abandoned MATCH with its seats — the sweep job pushes 'closed'
+    // to both players so nobody sits in a dead lobby until a refresh.
+    closedMatches: abandonedRows.map(r => ({
+      shareId: String(r.share_id),
+      playerIds: [r.player1_id, r.player2_id].filter(Boolean).map(String),
     })),
   }
 }

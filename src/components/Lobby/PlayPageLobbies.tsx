@@ -197,7 +197,7 @@ export default function PlayPageLobbies({
 
           <div className="play-lobbies-footer">
             <Button variant="secondary" size="sm" onClick={postThisDeck} disabled={busy != null}>
-              {busy === 'post' ? 'Posting…' : 'Post This Deck to the Lobby'}
+              {busy === 'post' ? 'Creating…' : 'Create a Lobby with This Deck'}
             </Button>
           </div>
         </>
@@ -209,7 +209,7 @@ export default function PlayPageLobbies({
             No open lobbies for {setCode} {formatLabel} right now.
           </p>
           <Button variant="primary" size="sm" onClick={postThisDeck} disabled={busy != null}>
-            {busy === 'post' ? 'Posting…' : 'Post This Deck to the Lobby'}
+            {busy === 'post' ? 'Creating…' : 'Create a Lobby with This Deck'}
           </Button>
         </div>
       )}

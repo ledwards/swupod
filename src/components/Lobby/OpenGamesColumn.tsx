@@ -76,7 +76,7 @@ export default function OpenGamesColumn({
         <div className="lobby-state">
           <p>No open lobbies right now.</p>
           <Button variant="primary" size="sm" onClick={onNewGame}>
-            Post the First Lobby
+            Create a Lobby
           </Button>
                     {recentCompleted.length > 0 && (
             <p className="lobby-state-sub">

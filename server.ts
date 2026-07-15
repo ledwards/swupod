@@ -238,13 +238,20 @@ app.prepare().then(() => {
   const OPEN_GAMES_SWEEP_INTERVAL_MS = 5 * 60 * 1000
   async function sweepOpenGamesJob(): Promise<void> {
     try {
-      const { expired, abandoned, expiredListings } = await sweepOpenGames({ onlineUserIds: [...presenceMap.keys()] })
+      const { expired, abandoned, expiredListings, closedMatches } = await sweepOpenGames({ onlineUserIds: [...presenceMap.keys()] })
       if (expired > 0 || abandoned > 0) {
         console.log(`[OpenGames] Sweep: ${expired} expired, ${abandoned} abandoned`)
         await broadcastOpenGamesUpdate()
         for (const listing of expiredListings) {
           if (listing.discordMessageId) {
             resolveOpenGameMessage(listing, listing.discordMessageId, 'expired').catch(() => {})
+          }
+        }
+        // Kick both seats' match pages out of dead lobbies right away.
+        const { emitOpenGameEventToUser } = await import('./src/lib/socketBroadcast.js')
+        for (const match of closedMatches) {
+          for (const playerId of match.playerIds) {
+            emitOpenGameEventToUser(playerId, 'closed', { shareId: match.shareId })
           }
         }
       }

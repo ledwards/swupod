@@ -150,6 +150,13 @@ describe('openGameLive pipeline (Lobby V1 spec)', { skip: !dbAvailable }, () => 
     assert.equal(reopen.action, 'open_lobby')
   })
 
+  it('the joiner never creates: a capable acceptor claim with no attempt waits for the host', async () => {
+    const { game, acceptor } = await seedAcceptedGame()
+    const claim = await claimOpenGame({ shareId: game.shareId, userId: acceptor, companionCapable: true })
+    assert.equal(claim.action, 'wait_for_lobby')
+    assert.equal((await attempts(game.id)).length, 0, 'no attempt row — the host creates')
+  })
+
   it('lifecycle is idempotent per key and lobby_ready promotes the game status', async () => {
     const { game } = await seedAcceptedGame()
     await claimOpenGame({ shareId: game.shareId, userId: game.player1Id, companionCapable: true })

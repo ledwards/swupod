@@ -7,7 +7,8 @@
  * ========================================================================== */
 
 .lobby-deck-picker {
-  /* The reused your-stats-* classes read these scope vars, normally defined
+  /* Layout (2-up grid) lives in Lobby.css with the other modal internals.
+     The reused your-stats-* classes read these scope vars, normally defined
      on .me-page/.your-stats (YourStats.css) — mirror them off the ink token
      so the items render identically inside the lobby modals. */
   --ys-border: rgba(var(--pt-ink-rgb), 0.12);
@@ -58,11 +59,10 @@
 
 .lobby-deck-option--selected::before {
   opacity: 1;
-  /* The shared 400% panning gradient shows only one color slice on a row this
-     wide (reads as a plain orange border). Wrap the full spectrum around the
-     ring perimeter (conic — a linear gradient leaves the short edges a single
-     color) and cycle it with hue-rotate so every color is always visible. */
-  background: conic-gradient(from 0deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8f00ff, #ff0000); /* design-ok: the sanctioned rainbow selection motif, sized for wide rows */
+  /* Repeating diagonal spectrum with a short (144px) period: every edge —
+     including the short left/right ones — sweeps through multiple colors
+     (a single-pass linear or conic gradient leaves short edges one color). */
+  background: repeating-linear-gradient(135deg, #ff0000 0, #ff7f00 24px, #ffff00 48px, #00ff00 72px, #0000ff 96px, #8f00ff 120px, #ff0000 144px); /* design-ok: the sanctioned rainbow selection motif, sized for wide rows */
   animation: lobby-rainbow-hue 3s linear infinite;
 }
 
@@ -102,15 +102,19 @@
   font-size: 0.95rem;
 }
 
-/* The modal is far narrower than /me, so pull the leader art crop back into
-   frame (on /me it sits at width 32% / right -60px). */
+/* Items are now half-width (2-up), so the art crop hugs the right edge. */
 .lobby-deck-option .your-stats-pool-build-art img {
-  right: -20px;
-  width: 42%;
+  right: -12px;
+  width: 52%;
+}
+
+.lobby-deck-option .your-stats-replay-content {
+  max-width: 70%;
 }
 
 /* ----- pagination ---------------------------------------------------------- */
 .lobby-deck-pager {
+  grid-column: 1 / -1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -152,7 +156,10 @@
 .lobby-deck-modal {
   max-width: min(92vw, 640px);
   width: 100%;
-  max-height: calc(100vh - 4rem);
+  /* Breathing room: cap well below the viewport so the modal never reads as
+     a full-height sheet; the deck list scrolls inside. (.modal-content is
+     content-box, so its 2rem paddings sit on top of this figure.) */
+  max-height: min(600px, calc(100vh - 12rem));
   display: flex;
   flex-direction: column;
 }
@@ -165,10 +172,11 @@
 
 
 /* ---- picker-context overrides of the /me item (Lee) ------------------- */
-/* Quiet at rest: replace the aspect-colored tint wash with a neutral
-   legibility scrim — items must not look highlighted before selection. */
+/* Item background: a dimmed gradient of the DECK'S aspect colors (leader +
+   base), dark enough that the copy stays legible and selection still reads
+   from the rainbow ring alone. */
 .lobby-deck-option .your-stats-pool-build::before {
-  background: linear-gradient(105deg, rgba(var(--pt-surface-base-rgb), 0.85) 0%, rgba(var(--pt-surface-base-rgb), 0.45) 55%, rgba(var(--pt-surface-base-rgb), 0) 80%); /* design-ok: neutral scrim replacing the /me aspect tint inside the picker */
+  background: linear-gradient(105deg, color-mix(in srgb, var(--deck-grad-a, #2a3654) 42%, rgb(11, 15, 23)) 0%, color-mix(in srgb, var(--deck-grad-b, #2a3654) 30%, rgb(11, 15, 23)) 55%, rgba(11, 15, 23, 0) 85%); /* design-ok: deck-identity gradient requested for the picker items */
 }
 
 /* Art hover is fine; the COPY must not move — kill the /me lift/shadow. */
@@ -179,11 +187,13 @@
   }
 }
 
-/* ---- New Lobby filter toggles ---- */
+/* ---- New Lobby filter toggles: format left, set buckets right ---- */
 .lobby-deck-filters {
   display: flex;
-  flex-direction: column;
-  gap: var(--pt-space-xs);
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--pt-space-sm);
+  flex-wrap: wrap;
   margin-bottom: var(--pt-space-sm);
 }
 
@@ -191,5 +201,47 @@
   display: flex;
   gap: var(--pt-space-xs);
   flex-wrap: wrap;
-  justify-content: center;
+}
+
+/* "Older ▾" dropdown */
+.lobby-deck-older {
+  position: relative;
+}
+
+.lobby-deck-older-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 20;
+  min-width: 96px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.92);
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lobby-deck-older-item {
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  border-radius: var(--pt-radius-sm);
+  color: var(--pt-ink);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lobby-deck-older-item:hover {
+    background: rgba(var(--pt-glow-interactive-rgb), 0.18);
+  }
+}
+
+.lobby-deck-older-item--active {
+  background: rgba(var(--pt-glow-interactive-rgb), 0.25);
 }

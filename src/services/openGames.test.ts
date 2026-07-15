@@ -366,11 +366,11 @@ describe('openGames service (Lobby V1 spec)', { skip: !dbAvailable }, () => {
     const joiner = await seedUser('og-sweep-joiner')
     const joinerPool = await seedPool(joiner)
     await joinOpenGame({ shareId: staleAccepted.shareId, userId: joiner, poolId: joinerPool })
-    await query(`UPDATE open_games SET accepted_at = NOW() - INTERVAL '30 minutes' WHERE id = $1`, [staleAccepted.id])
+    await query(`UPDATE open_games SET accepted_at = NOW() - INTERVAL '3 hours' WHERE id = $1`, [staleAccepted.id])
 
     const staleLobby = await postOpenGame({ userId: u3, poolId: pools[2] })
     await query(
-      `UPDATE open_games SET status = 'lobby_ready', accepted_at = NOW() - INTERVAL '2 hours', updated_at = NOW() - INTERVAL '90 minutes' WHERE id = $1`,
+      `UPDATE open_games SET status = 'lobby_ready', accepted_at = NOW() - INTERVAL '4 hours', updated_at = NOW() - INTERVAL '3 hours' WHERE id = $1`,
       [staleLobby.id]
     )
 

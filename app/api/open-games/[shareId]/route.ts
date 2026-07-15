@@ -41,6 +41,20 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     const isPlayer2 = session?.id === row.player2_id
     const presence = global.presenceMap
 
+    // Seated players see the live Karabast lobby link as soon as the host's
+    // Companion reports it — no claim round-trip needed for display.
+    let lobbyUrl: string | null = null
+    if (isPlayer1 || isPlayer2) {
+      const attempt = await queryRow(
+        `SELECT lobby_url FROM open_game_lobby_attempts
+         WHERE open_game_id = $1 AND lobby_url IS NOT NULL
+           AND status IN ('creating', 'lobby_ready', 'joined', 'in_progress')
+         ORDER BY attempt_number DESC LIMIT 1`,
+        [row.id]
+      )
+      lobbyUrl = attempt?.lobby_url ? String(attempt.lobby_url) : null
+    }
+
     return jsonResponse({
       game: {
         shareId: row.share_id,
@@ -76,6 +90,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         // Each seat sees only its OWN deck reference (R29).
         yourPoolShareId: isPlayer1 ? row.p1_pool_share_id : isPlayer2 ? row.p2_pool_share_id : null,
         yourSeat: isPlayer1 ? 1 : isPlayer2 ? 2 : null,
+        lobbyUrl,
       },
     })
   } catch (error) {
