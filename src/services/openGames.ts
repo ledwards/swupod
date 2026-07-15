@@ -123,17 +123,18 @@ interface EligibleDeck {
 }
 
 /**
- * Deck eligibility (R23): the pool belongs to the user and its deck builder
- * has a leader AND base selected (deck_builder_state — the same definition
- * /me uses). NOT gated on built_decks: that row only exists once the player
- * has clicked Play on the play page, which silently hid fully-built decks
- * (Lee's ASH Sealed) from the picker and from post/join validation.
+ * Deck eligibility (R23, revised 7/15): the pool belongs to the user and its
+ * deck builder has a leader, a base, AND at least one deck-section card —
+ * leader+base alone let unbuilt decks reach lobbies (empty deck.json,
+ * Karabast rejects). Still NOT gated on built_decks: that row only exists
+ * once the player has clicked Play, which hid fully-built decks.
  */
 async function requireEligibleDeck(tx: TxClient, userId: string, poolId: string): Promise<EligibleDeck> {
   const pool = await tx.queryRow(
     `SELECT cp.id, cp.user_id, cp.set_code, cp.set_name, cp.pool_type, cp.hidden,
             (cp.deck_builder_state ->> 'activeLeader' IS NOT NULL
-             AND cp.deck_builder_state ->> 'activeBase' IS NOT NULL) AS deck_ready
+             AND cp.deck_builder_state ->> 'activeBase' IS NOT NULL
+             AND jsonb_path_exists(cp.deck_builder_state, '$.cardPositions.* ? (@.section == "deck" && @.visible == true)')) AS deck_ready
      FROM card_pools cp
      WHERE cp.id = $1`,
     [poolId]
@@ -143,7 +144,7 @@ async function requireEligibleDeck(tx: TxClient, userId: string, poolId: string)
     throw new OpenGameError('forbidden', 'That pool belongs to another player', 403)
   }
   if (pool.hidden === true || pool.deck_ready !== true) {
-    throw new OpenGameError('deck_not_ready', 'Build a deck for this pool first (pick a leader and base)', 400)
+    throw new OpenGameError('deck_not_ready', 'Finish building a deck for this pool first (leader, base, and deck cards)', 400)
   }
   return {
     poolId: String(pool.id),

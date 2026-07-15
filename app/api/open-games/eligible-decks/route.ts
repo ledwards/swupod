@@ -55,6 +55,7 @@ export async function GET(request: NextRequest): Promise<Response> {
        WHERE cp.user_id = $1 AND cp.hidden IS NOT TRUE
          AND cp.deck_builder_state ->> 'activeLeader' IS NOT NULL
          AND cp.deck_builder_state ->> 'activeBase' IS NOT NULL
+         AND jsonb_path_exists(cp.deck_builder_state, '$.cardPositions.* ? (@.section == "deck" && @.visible == true)')
        ORDER BY COALESCE(bd.built_at, cp.updated_at, cp.created_at) DESC
        LIMIT 300`,
       [session.id]
