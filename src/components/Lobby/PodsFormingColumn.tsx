@@ -22,9 +22,9 @@ export default function PodsFormingColumn({ pods }: { pods: PublicPod[] }): Reac
   const router = useRouter()
 
   return (
-    <section className="lobby-column" aria-label="Pods forming">
+    <section className="lobby-column" aria-label="Draft pods open">
       <h3 className="lobby-column-title">
-        Pods Forming ({pods.length})<span>live drafts &amp; sealed</span>
+        Draft Pods Open ({pods.length})
       </h3>
 
       {pods.length === 0 && (

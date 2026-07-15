@@ -53,7 +53,7 @@ export default function OpenGamesColumn({
   return (
     <section className="lobby-column" aria-label="Open lobbies">
       <h3 className="lobby-column-title">
-        Open Lobbies ({totalCount})<span>waiting for an opponent</span>
+        Open Lobbies ({totalCount})
       </h3>
 
       {status === 'error' && (
