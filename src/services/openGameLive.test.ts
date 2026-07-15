@@ -467,6 +467,61 @@ describe('openGameLive pipeline (Lobby V1 spec)', { skip: !dbAvailable }, () => 
     assert.equal(row.player2_external, true)
   })
 
+  it("R37 route boundary: a raw Companion 'joined' report maps to opponent_joined — stamps the seat arrival and delists the listing", async () => {
+    // The Companion emits the Karabast lifecycle name 'joined' verbatim (both
+    // via the hub and via its direct-to-PTP fallback); the casual state
+    // machine only knows 'opponent_joined'. The mapping lives at the plugin
+    // route boundary, so this spec must go through the route — calling the
+    // service directly would bypass the exact bug it pins.
+    const poster = await seedUser('ogl-raw-joined')
+    const pool = await seedPool(poster, 'SEC', 'draft')
+    const listing = await postOpenGame({ userId: poster, poolId: pool.id })
+    await claimOpenGame({ shareId: listing.shareId, userId: poster, companionCapable: true })
+    await recordOpenGameLifecycle({
+      openGameShareId: listing.shareId,
+      status: 'lobby_ready',
+      lobbyId: 'lob-raw-joined',
+      lobbyUrl: 'https://karabast.net/lobby?lobbyId=lob-raw-joined',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    const joiner = await seedUser('ogl-raw-joined-2')
+    const joinerPool = await seedPool(joiner, 'SEC', 'draft')
+
+    const serviceKey = `ogl-route-key-${randomUUID().slice(0, 8)}`
+    const priorServiceKey = process.env['PTP_SERVICE_KEY']
+    process.env['PTP_SERVICE_KEY'] = serviceKey
+    try {
+      const { POST } = await import('@/app/api/plugin/v1/practice/match-game/lifecycle/route')
+      const idempotencyKey = `k-${randomUUID()}`
+      const response = await POST(
+        new Request('http://localhost/api/plugin/v1/practice/match-game/lifecycle', {
+          method: 'POST',
+          headers: { authorization: `Bearer ${serviceKey}`, 'content-type': 'application/json' },
+          body: JSON.stringify({
+            openGameId: listing.shareId,
+            status: 'joined',
+            joinerPoolShareId: joinerPool.shareId,
+            lifecycleIdempotencyKey: idempotencyKey,
+          }),
+        }) as never
+      )
+      const envelope = await response.json()
+      assert.equal(response.status, 200, `expected 200, got ${response.status}: ${JSON.stringify(envelope)}`)
+      assert.equal(envelope.data.boardChanged, true, "a raw 'joined' on an open listing triggers the delist broadcast")
+      assert.equal(envelope.data.gameStatus, 'in_progress')
+
+      const row = await gameRow(listing.id)
+      assert.equal(row.status, 'in_progress', "raw 'joined' delists the open listing")
+      assert.equal(row.player2_id, joiner, 'joiner pool binding fires through the route mapping')
+      const [attempt] = await attempts(listing.id)
+      assert.ok(attempt.opponent_joined_at, "raw 'joined' stamps opponent_joined_at")
+      assert.equal(attempt.lifecycle_idempotency_key, idempotencyKey, 'idempotency key is recorded for the mapped report')
+    } finally {
+      if (priorServiceKey === undefined) delete process.env['PTP_SERVICE_KEY']
+      else process.env['PTP_SERVICE_KEY'] = priorServiceKey
+    }
+  })
+
   it('result finalize maps the reporting seat, completes the game, and writes the OPPOSITE seat idempotently', async () => {
     const { game, posterPool, acceptorPool, acceptor } = await seedAcceptedGame()
     const matchId = `wf-${randomUUID().slice(0, 8)}`
