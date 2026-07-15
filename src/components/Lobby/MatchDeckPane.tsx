@@ -237,7 +237,10 @@ export default function MatchDeckPane({ poolShareId }: { poolShareId: string }):
               title="Copy deck JSON"
               aria-label="Copy deck JSON"
             >
-              <span className="lobby-json-icon" aria-hidden="true">{'{ }'}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M9 4c-1.5 0-2 .8-2 2v3c0 1-.6 1.6-1.6 2 1 .4 1.6 1 1.6 2v3c0 1.2.5 2 2 2" />
+                <path d="M15 4c1.5 0 2 .8 2 2v3c0 1 .6 1.6 1.6 2-1 .4-1.6 1-1.6 2v3c0 1.2-.5 2-2 2" />
+              </svg>
             </button>
             <button
               className="play-instructions-action-button"

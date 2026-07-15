@@ -919,16 +919,6 @@ a.lobby-discord-tile:active {
   min-width: 0;
 }
 
-/* Copy-JSON glyph: the conventional {} mark, sized like the sibling svgs. */
-.lobby-json-icon {
-  display: inline-block;
-  min-width: 16px;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 16px;
-  letter-spacing: -1px;
-  text-align: center;
-}
 
 /* Deck image modal (DeckImageModal) — same block DeckBuilder.css/pod.css/
    play.css each carry for their pages. */
