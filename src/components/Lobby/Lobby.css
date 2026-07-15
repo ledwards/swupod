@@ -878,6 +878,13 @@ a.lobby-discord-tile:active {
   margin-top: 60px;
 }
 
+/* The hero centers its content — the Automatic kicker must sit left-aligned
+   exactly like the Manual box's kicker. */
+.lobby-match-hero .lobby-manual-kicker {
+  align-self: flex-start;
+  text-align: left;
+}
+
 /* "or" between the Automatic box and the Manual box: line — or — line. */
 .lobby-or-divider {
   display: flex;
