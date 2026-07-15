@@ -237,6 +237,44 @@ describe('openGames service (Lobby V1 spec)', { skip: !dbAvailable }, () => {
     assert.equal(after.listings.find(l => l.shareId === game.shareId)?.karabastLobbyId, 'kb-dedupe-1')
   })
 
+  it('joining exits the joiner\'s previous lobby (listing + stale pending match)', async () => {
+    const host = await seedUser('og-exit-host')
+    const hp = await seedPool(host)
+    const game = await postOpenGame({ userId: host, poolId: hp })
+
+    const joiner = await seedUser('og-exit-joiner')
+    const jp = await seedPool(joiner)
+    const oldListing = await postOpenGame({ userId: joiner, poolId: jp })
+    // …and a stale pending match with a third player.
+    const third = await seedUser('og-exit-third')
+    const tp = await seedPool(third)
+    const thirdListing = await postOpenGame({ userId: third, poolId: tp })
+    const stale = await joinOpenGame({ shareId: thirdListing.shareId, userId: joiner, poolId: jp })
+
+    const joined = await joinOpenGame({ shareId: game.shareId, userId: joiner, poolId: jp })
+    assert.equal(joined.status, 'accepted')
+    assert.equal((await gameRow(oldListing.id)).status, 'cancelled', 'own listing exited')
+    assert.equal((await gameRow(stale.id)).status, 'cancelled', 'stale pending match exited')
+  })
+
+  it('a host who is mid-match blocks joins with lobby-language copy', async () => {
+    const host = await seedUser('og-busy-host')
+    const hp = await seedPool(host)
+    const listing = await postOpenGame({ userId: host, poolId: hp })
+    // Host also has a pending match (stale listing scenario).
+    const other = await seedUser('og-busy-other')
+    const op = await seedPool(other)
+    const otherListing = await postOpenGame({ userId: other, poolId: op })
+    await joinOpenGame({ shareId: otherListing.shareId, userId: host, poolId: hp })
+
+    const joiner = await seedUser('og-busy-joiner')
+    const jp = await seedPool(joiner)
+    await assert.rejects(
+      () => joinOpenGame({ shareId: listing.shareId, userId: joiner, poolId: jp }),
+      (e: OpenGameError) => e.code === 'pending_match_exists' && !/game/.test(e.message)
+    )
+  })
+
   it('SPEC R18: join is atomic — two concurrent joins, exactly one wins', async () => {
     const poster = await seedUser('og-poster')
     const pp = await seedPool(poster)
@@ -282,21 +320,17 @@ describe('openGames service (Lobby V1 spec)', { skip: !dbAvailable }, () => {
     }
   })
 
-  it('SPEC R19: a user with a pending match cannot join another game', async () => {
+  it('SPEC R19 (revised 7/15): joining with a pending match EXITS it — replace, never block', async () => {
     const p1 = await seedUser('og-p1')
     const p2 = await seedUser('og-p2')
     const p3 = await seedUser('og-p3')
-    const [pool1, pool2, pool3a, pool3b] = await Promise.all([
-      seedPool(p1), seedPool(p2), seedPool(p3), seedPool(p3),
-    ])
-    void pool3b
+    const [pool1, pool2, pool3a] = await Promise.all([seedPool(p1), seedPool(p2), seedPool(p3)])
     const g1 = await postOpenGame({ userId: p1, poolId: pool1 })
     const g2 = await postOpenGame({ userId: p2, poolId: pool2 })
-    await joinOpenGame({ shareId: g1.shareId, userId: p3, poolId: pool3a })
-    await assert.rejects(
-      joinOpenGame({ shareId: g2.shareId, userId: p3, poolId: pool3a }),
-      (e: OpenGameError) => e instanceof OpenGameError && e.code === 'pending_match_exists'
-    )
+    const first = await joinOpenGame({ shareId: g1.shareId, userId: p3, poolId: pool3a })
+    const second = await joinOpenGame({ shareId: g2.shareId, userId: p3, poolId: pool3a })
+    assert.equal(second.status, 'accepted')
+    assert.equal((await gameRow(first.id)).status, 'cancelled', 'previous lobby exited on join')
   })
 
   it('SPEC R19: concurrent mutual-accept — A joins B\'s listing while B joins A\'s — yields exactly one match', async () => {

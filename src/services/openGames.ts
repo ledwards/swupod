@@ -238,8 +238,21 @@ async function joinOpenGameInTx(tx: TxClient, params: JoinParams): Promise<OpenG
     )
   }
 
-  if ((await pendingMatchCount(tx, [posterId, userId])) > 0) {
-    throw new OpenGameError('pending_match_exists', 'One of you already has a game in progress')
+  // Joining EXITS whatever the joiner had going (their own open listing and
+  // any stale pending match) — replace, never block, same spirit as R19.
+  await tx.query(
+    `UPDATE open_games SET status = 'cancelled', resolved_at = NOW(), updated_at = NOW()
+     WHERE id <> $2
+       AND (
+         (player1_id = $1 AND status = 'open')
+         OR ((player1_id = $1 OR player2_id = $1) AND status = ANY($3))
+       )`,
+    [userId, target.id, [...PENDING_STATUSES]]
+  )
+
+  // The HOST being mid-match is a real conflict (their listing is stale).
+  if ((await pendingMatchCount(tx, [posterId])) > 0) {
+    throw new OpenGameError('pending_match_exists', 'The host is already in another lobby')
   }
 
   // Poster's deck must still exist and be valid (R23); if not, delist.
