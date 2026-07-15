@@ -220,6 +220,83 @@ test.describe('Lobby V1 — Open Games', () => {
     await expect(page.getByText('Waiting for an opponent')).not.toBeVisible()
   })
 
+  test('dead Karabast lobby pre-game: failed(lobby_abandoned) reverts BOTH seats to the create state', async () => {
+    // The Companion's lifecycle reports are simulated with the same direct
+    // session-cookie POSTs the extension itself makes (hub-unreachable
+    // fallback) — extension behavior is test setup, not a user action.
+    const row = await getPool().query(
+      'SELECT share_id FROM open_games WHERE player1_id = $1 ORDER BY created_at DESC LIMIT 1',
+      [poster.user.id]
+    )
+    const shareId = row.rows[0].share_id
+    const lobbyId = `e2e-dead-${Date.now().toString(36)}`
+    const lobbyUrl = `https://karabast.net/lobby?lobbyId=${lobbyId}`
+    const headers = { 'Content-Type': 'application/json', cookie: `${poster.cookieName}=${poster.token}` }
+
+    // Host's Companion created the lobby → lobby_ready.
+    const ready = await fetch(`${BASE_URL}/api/plugin/v1/practice/match-game/lifecycle`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        openGameId: shareId,
+        status: 'lobby_ready',
+        lobbyId,
+        lobbyUrl,
+        lifecycleIdempotencyKey: `${shareId}:lobby_ready:0:${lobbyId}`,
+      }),
+    })
+    expect(ready.ok).toBeTruthy()
+
+    // Both seats surface the live lobby link (socket push or the 10s poll).
+    await expect(posterCtx.page.locator(`a[href="${lobbyUrl}"]`).first()).toBeVisible({ timeout: 20_000 })
+    await expect(joinerCtx.page.locator(`a[href="${lobbyUrl}"]`).first()).toBeVisible({ timeout: 20_000 })
+
+    // The host LEFT the Karabast lobby pre-game — Karabast destroyed it — the
+    // Companion reports failed(lobby_abandoned).
+    const dead = await fetch(`${BASE_URL}/api/plugin/v1/practice/match-game/lifecycle`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        openGameId: shareId,
+        status: 'failed',
+        failureReason: 'lobby_abandoned',
+        lifecycleIdempotencyKey: `${shareId}:failed:0:${lobbyId}`,
+      }),
+    })
+    expect(dead.ok).toBeTruthy()
+
+    // The API reverts lobby_ready → accepted and stops carrying the dead link.
+    const after = await (await fetch(`${BASE_URL}/api/open-games/${shareId}`, { headers })).json()
+    const game = (after.data || after).game
+    expect(game.status).toBe('accepted')
+    expect(game.lobbyUrl).toBeNull()
+
+    // Joiner flips back to the waiting-for-host state; the dead link is gone
+    // from both seats.
+    await expect(joinerCtx.page.getByText(/Waiting for .* to create the Karabast lobby/))
+      .toBeVisible({ timeout: 20_000 })
+    await expect(joinerCtx.page.locator(`a[href="${lobbyUrl}"]`)).toHaveCount(0)
+    await expect(posterCtx.page.locator(`a[href="${lobbyUrl}"]`)).toHaveCount(0, { timeout: 20_000 })
+
+    // With a capable Companion the host sees the create button again (fresh
+    // attempt). Capability is simulated with the extension's OWN announcement
+    // signals: the wayfinder-installed meta (with the casual-intents
+    // capability attribute) plus the wayfinder:installed document event.
+    const hostPage = await posterCtx.context.newPage()
+    await hostPage.goto(`/g/${shareId}`)
+    await hostPage.evaluate(() => {
+      const meta = document.createElement('meta')
+      meta.name = 'wayfinder-installed'
+      meta.content = 'true'
+      meta.setAttribute('data-casual-intents', 'true')
+      document.head.appendChild(meta)
+      document.dispatchEvent(new Event('wayfinder:installed'))
+    })
+    // useCompanionCapability re-reads the capability attribute on a 2s tick.
+    await expect(hostPage.getByRole('button', { name: 'Play on Karabast' })).toBeVisible({ timeout: 15_000 })
+    await hostPage.close()
+  })
+
   test('either player can cancel the lobby (R20) — canceller returns to /lobby, opponent sees it closed', async () => {
     const { page } = joinerCtx
     await page.getByRole('button', { name: 'Cancel this lobby' }).click()

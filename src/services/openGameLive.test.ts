@@ -309,6 +309,109 @@ describe('openGameLive pipeline (Lobby V1 spec)', { skip: !dbAvailable }, () => 
     assert.equal(rows.length, 2)
     assert.equal(rows[0].status, 'failed')
     assert.equal(rows[1].status, 'creating')
+    // A pre-lobby failure never touched the parent: the game stays accepted.
+    assert.equal((await gameRow(game.id)).status, 'accepted')
+  })
+
+  it('dead lobby pre-game: failed on the active lobby_ready attempt reverts the game to accepted and both seats recover', async () => {
+    // SPEC (dead-lobby recovery): the host created the Karabast lobby
+    // (lobby_ready) then LEFT it before the game started — Karabast destroyed
+    // the lobby, the Companion reports failed('lobby_abandoned'). The attempt
+    // must fail AND the game must revert lobby_ready → accepted so the GET
+    // stops carrying the dead lobbyUrl (its attempt query excludes failed
+    // attempts) and both /g/ pages re-render the create state. The host's
+    // next claim starts a FRESH attempt (new attemptId → new client dedup key).
+    const { game, poster } = await seedAcceptedGame()
+    const first = await claimOpenGame({ shareId: game.shareId, userId: poster, companionCapable: true })
+    assert.equal(first.action, 'create_lobby')
+    await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'lobby_ready',
+      lobbyId: 'lob-dead',
+      lobbyUrl: 'https://karabast.net/lobby?lobbyId=lob-dead',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    assert.equal((await gameRow(game.id)).status, 'lobby_ready', 'precondition: lobby promoted the game')
+
+    const res = await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'failed',
+      failureReason: 'lobby_abandoned',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    assert.equal(res.duplicate, false)
+    assert.equal(res.gameStatus, 'accepted', 'the game reverts lobby_ready -> accepted')
+
+    const rows = await attempts(game.id)
+    assert.equal(rows.length, 1)
+    assert.equal(rows[0].status, 'failed')
+    assert.equal(rows[0].failure_reason, 'lobby_abandoned')
+    assert.equal((await gameRow(game.id)).status, 'accepted')
+
+    // The failed attempt is escapable: the host can immediately create again,
+    // on a NEW attempt row (fresh attemptId, never the dead one).
+    const again = await claimOpenGame({ shareId: game.shareId, userId: poster, companionCapable: true })
+    assert.equal(again.action, 'create_lobby')
+    assert.notEqual(again.attemptId, first.attemptId, 'attempt N+1 gets a fresh id')
+    const rows2 = await attempts(game.id)
+    assert.equal(rows2.length, 2)
+    assert.equal(rows2[1].attempt_number, 2)
+    assert.equal(rows2[1].status, 'creating')
+  })
+
+  it('dead pre-created lobby on an OPEN listing: failed keeps the listing open (R34) and drops the lobby from the active set', async () => {
+    const poster = await seedUser('ogl-dead-open')
+    const pool = await seedPool(poster, 'JTL', 'sealed')
+    const listing = await postOpenGame({ userId: poster, poolId: pool.id })
+    await claimOpenGame({ shareId: listing.shareId, userId: poster, companionCapable: true })
+    await recordOpenGameLifecycle({
+      openGameShareId: listing.shareId,
+      status: 'lobby_ready',
+      lobbyId: 'lob-dead-open',
+      lobbyUrl: 'https://karabast.net/lobby?lobbyId=lob-dead-open',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    assert.equal((await gameRow(listing.id)).status, 'open', 'R34: pre-created lobby keeps the listing open')
+
+    await recordOpenGameLifecycle({
+      openGameShareId: listing.shareId,
+      status: 'failed',
+      failureReason: 'lobby_abandoned',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    assert.equal((await gameRow(listing.id)).status, 'open', 'the listing stays on the board')
+    const rows = await attempts(listing.id)
+    assert.equal(rows.length, 1)
+    assert.equal(rows[0].status, 'failed', 'no active attempt keeps the dead lobby URL alive')
+  })
+
+  it('a failed report on a completed game is acknowledged but never reverts it', async () => {
+    const { game, posterPool } = await seedAcceptedGame()
+    await claimOpenGame({ shareId: game.shareId, userId: game.player1Id, companionCapable: true })
+    await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'lobby_ready',
+      lobbyId: 'lob-done',
+      lobbyUrl: 'https://karabast.net/lobby?lobbyId=lob-done',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    await recordOpenGameResult({
+      openGameShareId: game.shareId,
+      reportingPoolShareId: posterPool.shareId,
+      result: 'win',
+      wayfinderMatchId: `wm-${randomUUID()}`,
+    })
+    assert.equal((await gameRow(game.id)).status, 'complete')
+
+    const res = await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'failed',
+      failureReason: 'lobby_abandoned',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    assert.equal(res.gameStatus, 'complete', 'terminal games acknowledge but never resurrect')
+    assert.equal((await gameRow(game.id)).status, 'complete')
+    assert.equal((await gameRow(game.id)).result, 'player1')
   })
 
   it('R34 create-at-post: the poster can claim their own OPEN listing to pre-create the lobby', async () => {

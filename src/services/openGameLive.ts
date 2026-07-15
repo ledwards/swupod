@@ -297,7 +297,14 @@ export async function recordOpenGameLifecycle(params: LifecycleParams): Promise<
            WHERE id = $1`,
           [attempt!.id, params.failureReason ?? null, key]
         )
-        // Parent stays put — the next claim starts a fresh attempt.
+        // Dead-lobby recovery: if the ACTIVE attempt had already promoted the
+        // game to lobby_ready and now died pre-game (host abandoned the
+        // Karabast lobby, automation collapse), revert to 'accepted' so the
+        // GET stops carrying a dead lobbyUrl and BOTH seats fall back to the
+        // create state (host: Create/Play button, joiner: waiting note). Never
+        // touches a game with a recorded result, and 'open'/'accepted'/
+        // 'in_progress' parents stay put — the next claim starts a fresh attempt.
+        if (parentStatus === 'lobby_ready' && game.result == null) parentStatus = 'accepted'
         break
       }
     }
