@@ -544,7 +544,13 @@ on the Black surface.
 
 ---
 
-- [ ] U7. **Selectable Event Packs inside Chaos Sealed / Chaos Draft** *(deferrable — see Phased Delivery)*
+- [ ] U7. **Selectable Event Packs inside Chaos Sealed / Chaos Draft** *(DEFERRED to Phase 2)*
+
+**Deferred rationale (2026-07-12):** Phase 1 (U1–U6, U8) delivers the full keepsake experience. U7
+modifies the core, `@ts-nocheck` chaos-generation paths (regression risk to a shipped feature) and needs a
+DB to verify; also, a 2-card promo pack inside a *draft* raises real design questions (draft expects
+~15-card packs). Best done as a separate, DB-backed PR — not built blind in this session.
+
 
 **Goal:** Let owned Event Packs be chosen as pack slots in Chaos generation, not just opened standalone.
 
@@ -577,7 +583,18 @@ output unchanged.
 
 ---
 
-- [ ] U8. **End-to-end claim flow (through the UI)**
+- [x] U8. **End-to-end claim flow (through the UI)** ✅ 2026-07-12 (written; needs a DB to run)
+
+**Outcome:** `tests/e2e/gc-promo-packs.spec.ts` — 4 tests, all driven through the UI (only test-user
+creation + cookie auth are server-to-server setup): AE1 Silver unlock from `/gift/gc2026` → gift animation
+→ Chaos Sealed shows Silver openable; AE2/F2 re-visit shows already-unlocked, no replay; AE3/F3 non-patron
+Black locked tease → Black surface CTA; AE4 patron unlocks Black. Extended `createTestUser` with an
+`isPatron` option (entitlement cleanup is automatic via `promo_entitlements` `ON DELETE CASCADE`). Verified
+the spec parses and all 4 tests are discovered (`playwright --list`). ⚠️ **Runs only against a Postgres
+with migration 078 + a dev server started with `PROMO_CLAIM_WINDOW_OVERRIDE=1`** — not runnable in this
+worktree (no local DB), same constraint as U3.
+
+
 
 **Goal:** Prove the full F1 happy path and the key gates drive correctly through real UI interactions.
 
