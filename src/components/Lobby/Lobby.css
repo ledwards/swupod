@@ -830,6 +830,26 @@ a.lobby-discord-tile:active {
   padding-right: 72px;
 }
 
+/* Joiner waiting state: title line + quieter subtitle. */
+.lobby-match-waiting {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  text-align: center;
+}
+
+.lobby-match-waiting strong {
+  color: var(--pt-ink);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.lobby-match-waiting span {
+  color: var(--pt-ink-subtle);
+  font-size: 0.85rem;
+}
+
 /* Bo1/Bo3 under the match heading: host gets the toggle, everyone else the terms. */
 .lobby-match-bestof {
   display: flex;

@@ -356,15 +356,15 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
 
       <div className="lobby-match-hero">
         {joinerWaiting ? (
-          <p className="lobby-match-note">
-            Waiting for {host?.username || 'your opponent'} to create the Karabast lobby — the
-            link will appear here.
-          </p>
+          <div className="lobby-match-note lobby-match-waiting">
+            <strong>Waiting for {host?.username || 'your opponent'} to create the Karabast lobby</strong>
+            <span>The link will appear here.</span>
+          </div>
         ) : casualCapable ? (
           <>
             <Button variant="primary" size="lg" disabled={launcher.pending} onClick={() => launcher.launch('private')}>
               {game.status === 'open'
-                ? 'Open your Karabast lobby'
+                ? 'Create Game'
                 : game.yourSeat === 2
                   ? 'Join on Karabast'
                   : 'Play on Karabast'}

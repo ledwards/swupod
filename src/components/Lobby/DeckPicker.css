@@ -59,10 +59,10 @@
 
 .lobby-deck-option--selected::before {
   opacity: 1;
-  /* Repeating diagonal spectrum with a short (144px) period: every edge —
-     including the short left/right ones — sweeps through multiple colors
+  /* Repeating diagonal spectrum with a SHORT (72px) period: every edge —
+     including the short left one — sweeps through several full color hops
      (a single-pass linear or conic gradient leaves short edges one color). */
-  background: repeating-linear-gradient(135deg, #ff0000 0, #ff7f00 24px, #ffff00 48px, #00ff00 72px, #0000ff 96px, #8f00ff 120px, #ff0000 144px); /* design-ok: the sanctioned rainbow selection motif, sized for wide rows */
+  background: repeating-linear-gradient(135deg, #ff0000 0, #ff7f00 12px, #ffff00 24px, #00ff00 36px, #0000ff 48px, #8f00ff 60px, #ff0000 72px); /* design-ok: the sanctioned rainbow selection motif, sized for wide rows */
   animation: lobby-rainbow-hue 3s linear infinite;
 }
 
@@ -102,10 +102,11 @@
   font-size: 0.95rem;
 }
 
-/* Items are now half-width (2-up), so the art crop hugs the right edge. */
+/* Items are now half-width (2-up). The art is pushed slightly PAST the right
+   edge so the aspect icon in the art's upper-right corner is cropped away. */
 .lobby-deck-option .your-stats-pool-build-art img {
-  right: -12px;
-  width: 52%;
+  right: -48px;
+  width: 56%;
 }
 
 .lobby-deck-option .your-stats-replay-content {
