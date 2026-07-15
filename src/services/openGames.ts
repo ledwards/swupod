@@ -74,6 +74,9 @@ export interface OpenGameListing {
   /** Filled in by the API/broadcast layer from the live presence map. */
   hostConnected?: boolean
   bestOf?: number
+  /** The listing's live Karabast lobby id (create-at-post) — used to dedupe
+   *  the same lobby out of the mixed-in Karabast rows. */
+  karabastLobbyId?: string | null
 }
 
 export interface RecentResult {
@@ -383,10 +386,16 @@ export async function listPublicOpenGames(): Promise<{
     `SELECT og.share_id, og.set_code, og.set_name, og.format, og.created_at,
             og.best_of, og.player1_id, u.username, u.avatar_url,
             cp.deck_builder_state, cp.name AS pool_name, cp.pool_type,
-            cp.created_at AS pool_created_at
+            cp.created_at AS pool_created_at, att.lobby_id AS karabast_lobby_id
      FROM open_games og
      JOIN users u ON u.id = og.player1_id
      JOIN card_pools cp ON cp.id = og.player1_pool_id
+     LEFT JOIN LATERAL (
+       SELECT a.lobby_id FROM open_game_lobby_attempts a
+       WHERE a.open_game_id = og.id AND a.lobby_id IS NOT NULL
+         AND a.status IN ('creating', 'lobby_ready', 'joined', 'in_progress')
+       ORDER BY a.attempt_number DESC LIMIT 1
+     ) att ON true
      WHERE og.status = 'open' AND og.visibility = 'public'
      ORDER BY og.created_at DESC
      LIMIT 50`
@@ -414,6 +423,7 @@ export async function listPublicOpenGames(): Promise<{
       hostId: String(r.player1_id),
       hostDeck: { name: hostDeckName(r) },
       bestOf: Number(r.best_of) || 1,
+      karabastLobbyId: r.karabast_lobby_id ? String(r.karabast_lobby_id) : null,
     })),
     recentCompleted: completed.map(r => ({
       setCode: String(r.set_code),

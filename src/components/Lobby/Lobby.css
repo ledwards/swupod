@@ -429,6 +429,48 @@ a.lobby-row-link:active {
   flex: none;
 }
 
+.lobby-check {
+  color: var(--pt-glow-primary);
+  cursor: help;
+  flex: none;
+  font-weight: 700;
+}
+
+/* Fast CSS tooltip (the native title delay is too slow): shows ~80ms after
+   hover; also fires on tap since :hover applies (mobile-visible, not
+   hover-gated content). */
+.lobby-tip {
+  position: relative;
+}
+
+.lobby-tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-md);
+  color: var(--pt-ink);
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: left;
+  white-space: normal;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease 0.08s;
+  z-index: 30;
+}
+
+.lobby-tip:hover::after,
+.lobby-tip:focus-visible::after {
+  opacity: 1;
+}
+
 /* seat dots (pods column) */
 .lobby-seats {
   display: flex;

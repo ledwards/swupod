@@ -221,6 +221,22 @@ describe('openGames service (Lobby V1 spec)', { skip: !dbAvailable }, () => {
     )
   })
 
+  it('listings carry the live Karabast lobby id for board dedupe', async () => {
+    const u = await seedUser()
+    const p = await seedPool(u)
+    const game = await postOpenGame({ userId: u, poolId: p })
+    const before = await listPublicOpenGames()
+    assert.equal(before.listings.find(l => l.shareId === game.shareId)?.karabastLobbyId, null)
+
+    await query(
+      `INSERT INTO open_game_lobby_attempts (open_game_id, attempt_number, status, lobby_id)
+       VALUES ($1, 1, 'lobby_ready', 'kb-dedupe-1')`,
+      [game.id]
+    )
+    const after = await listPublicOpenGames()
+    assert.equal(after.listings.find(l => l.shareId === game.shareId)?.karabastLobbyId, 'kb-dedupe-1')
+  })
+
   it('SPEC R18: join is atomic — two concurrent joins, exactly one wins', async () => {
     const poster = await seedUser('og-poster')
     const pp = await seedPool(poster)

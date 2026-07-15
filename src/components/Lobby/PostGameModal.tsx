@@ -29,7 +29,7 @@ export default function PostGameModal({
 }: PostGameModalProps): React.JSX.Element {
   const [selected, setSelected] = useState<EligibleDeck | null>(null)
   const [visibility, setVisibility] = useState<'public' | 'private'>('public')
-  const [createKarabast, setCreateKarabast] = useState(true)
+  const [createKarabast, setCreateKarabast] = useState(false)
   const [busy, setBusy] = useState(false)
   const { showToast } = useToast()
 
@@ -99,7 +99,7 @@ export default function PostGameModal({
               onChange={e => setCreateKarabast(e.target.checked)}
             />
             <span>
-              <strong>Also create the lobby on Karabast now</strong>
+              <strong>Findable by Karabast users</strong>
             </span>
           </label>
         )}

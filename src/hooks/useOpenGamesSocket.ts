@@ -12,6 +12,7 @@ export interface OpenGameListing {
   host: { username: string | null; avatarUrl: string | null }
   hostConnected?: boolean
   bestOf?: number
+  karabastLobbyId?: string | null
   /**
    * True when the viewing user posted this listing (computed from the session
    * by GET /api/open-games). Socket pushes are viewer-agnostic, so it's

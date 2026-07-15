@@ -15,7 +15,10 @@ export function timeAgo(iso: string): string {
 }
 
 const NON_PTP_WARNING =
-  'Created outside Protect the Pod — other simulators generate lower-quality pools, so you risk playing against an unrealistic deck.'
+  'Created by an unknown simulator or deckbuilder. Protect the Pod is the most high fidelity pack generator for SWU, so you risk playing against an unrealistic deck.'
+
+const PTP_VALIDATED =
+  'Validated — this pool was generated on Protect the Pod.'
 
 interface OpenGamesColumnProps {
   board: OpenGamesBoard
@@ -148,19 +151,26 @@ export default function OpenGamesColumn({
           )
         })}
 
-      {/* Karabast public lobbies, mixed into the same list (R33). */}
+      {/* Karabast public lobbies, mixed into the same list (R33). Lobbies
+          created THROUGH our board (create-at-post) are already listed above
+          as PTP rows — drop them here instead of double-showing. */}
       {status === 'ready' &&
         karabast.available &&
-        karabast.lobbies.map((lobby, i) => (
+        karabast.lobbies
+          .filter(lobby => {
+            if (!lobby.lobbyId) return true
+            return !listings.some(l => l.karabastLobbyId === lobby.lobbyId)
+          })
+          .map((lobby, i) => (
           <div className="lobby-row" key={`kb-${lobby.lobbyId ?? lobby.name}-${i}`}>
             <div className="lobby-row-avatar lobby-row-avatar-unknown" title="Player details unavailable for games listed on Karabast" />
             <div className="lobby-row-who">
               <div className="lobby-row-name">
                 <span className="lobby-row-name-text">{lobby.name}</span>
-                {!lobby.isPtp && (
-                  <span className="lobby-warn" title={NON_PTP_WARNING}>
-                    ⚠
-                  </span>
+                {lobby.isPtp ? (
+                  <span className="lobby-tip lobby-check" data-tip={PTP_VALIDATED}>✓</span>
+                ) : (
+                  <span className="lobby-tip lobby-warn" data-tip={NON_PTP_WARNING}>⚠</span>
                 )}
                 <span className="lobby-badge lobby-badge-karabast">Karabast</span>
               </div>
