@@ -108,7 +108,9 @@ export function buildDeckView(pool: PoolPayload): DeckView | null {
     }
   }
 
-  if (!leader && !base && deck.length === 0) return null
+  // Leader/base alone is not a deck — the pool's leftovers must not render
+  // as if they were one (they show under Sideboard otherwise).
+  if (deck.length === 0) return null
 
   deck.sort(byCost)
   sideboard.sort(byCost)

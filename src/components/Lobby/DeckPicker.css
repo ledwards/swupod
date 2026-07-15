@@ -304,3 +304,25 @@
 .lobby-deck-older-item--active {
   background: rgba(var(--pt-glow-interactive-rgb), 0.25);
 }
+
+
+/* Unfinished pools: B&W, quiet, whole card = "go build it". */
+.lobby-deck-option--incomplete {
+  filter: grayscale(1);
+  opacity: 0.55;
+}
+
+.lobby-deck-option--incomplete .your-stats-replay-combo small {
+  color: rgba(var(--pt-ink-rgb), 0.7);
+}
+
+/* "Show incomplete" — shares the filter row. */
+.lobby-deck-incomplete-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--pt-ink-subtle);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  cursor: pointer;
+}

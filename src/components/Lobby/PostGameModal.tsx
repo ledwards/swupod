@@ -5,7 +5,7 @@
  * set+format), choose Public vs Private link, and — with a capable
  * Companion — pre-create the Karabast lobby (default ON).
  */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Modal from '@/src/components/Modal'
 import Button from '@/src/components/Button'
 import DeckPicker, { type EligibleDeck } from './DeckPicker'
@@ -30,6 +30,9 @@ export default function PostGameModal({
   const [selected, setSelected] = useState<EligibleDeck | null>(null)
   const [visibility, setVisibility] = useState<'public' | 'private'>('public')
   const [createKarabast, setCreateKarabast] = useState(false)
+  useEffect(() => {
+    try { setCreateKarabast(localStorage.getItem('ptp:lobby-karabast-findable') === '1') } catch { /* no-op */ }
+  }, [])
   const [busy, setBusy] = useState(false)
   const { showToast } = useToast()
 
@@ -96,7 +99,10 @@ export default function PostGameModal({
             <input
               type="checkbox"
               checked={createKarabast}
-              onChange={e => setCreateKarabast(e.target.checked)}
+              onChange={e => {
+                setCreateKarabast(e.target.checked)
+                try { localStorage.setItem('ptp:lobby-karabast-findable', e.target.checked ? '1' : '0') } catch { /* no-op */ }
+              }}
             />
             <span>
               <strong>Findable by Karabast users</strong>

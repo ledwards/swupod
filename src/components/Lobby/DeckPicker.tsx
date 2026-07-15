@@ -21,6 +21,7 @@ export interface EligibleDeck {
   name: string | null
   builtAt: string | null
   eligible: boolean
+  complete?: boolean
   leaderName: string | null
   leaderImageUrl: string | null
   leaderBackImageUrl: string | null
@@ -119,6 +120,18 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
   const [setFilter, setSetFilter] = useState<string | null>(null)
   const [olderOpen, setOlderOpen] = useState(false)
   const [query, setQuery] = useState('')
+  // Persisted preference: show pools that don't have a finished deck yet.
+  const [showIncomplete, setShowIncomplete] = useState(false)
+  useEffect(() => {
+    try { setShowIncomplete(localStorage.getItem('ptp:picker-show-incomplete') === '1') } catch { /* no-op */ }
+  }, [])
+  const toggleIncomplete = (): void => {
+    setShowIncomplete(v => {
+      try { localStorage.setItem('ptp:picker-show-incomplete', v ? '0' : '1') } catch { /* no-op */ }
+      return !v
+    })
+    setPage(0)
+  }
   const olderRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -177,13 +190,21 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
     q === '' ||
     (d.name ?? '').toLowerCase().includes(q) ||
     (d.leaderName ?? '').toLowerCase().includes(q)
-  const eligible = (decks?.filter(d => d.eligible) ?? []).filter(d =>
+  const matchesLocalFilters = (d: EligibleDeck): boolean =>
     matchesQuery(d) &&
     (filtered
       ? true
       : (formatFilter === null || (d.format === 'draft' ? 'draft' : 'sealed') === formatFilter) &&
         matchesSetFilter(d.setCode))
-  )
+  const eligible = (decks?.filter(d => d.eligible) ?? []).filter(matchesLocalFilters)
+  // Unfinished pools (no deck yet): greyed, unselectable, click = open builder.
+  const incomplete = showIncomplete
+    ? (decks ?? []).filter(d =>
+        d.complete === false &&
+        matchesLocalFilters(d) &&
+        (!setCode || d.setCode === setCode) &&
+        (!format || d.format === format))
+    : []
   const availableSets = filtered ? [] : [...new Set((decks ?? []).map(d => d.setCode))]
   const hasLatest = availableSets.some(sc => setBucket(sc) === 'latest')
   const hasOther = availableSets.some(sc => setBucket(sc) === 'other')
@@ -302,6 +323,10 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
           value={query}
           onChange={e => { setQuery(e.target.value); setPage(0) }}
         />
+        <label className="lobby-deck-incomplete-toggle">
+          <input type="checkbox" checked={showIncomplete} onChange={toggleIncomplete} />
+          <span>Show incomplete</span>
+        </label>
         {!filtered && (
           <div className="lobby-deck-filter-group">
             {hasLatest && (
@@ -427,6 +452,38 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
             </div>
           )
         })}
+        {incomplete.map(deck => (
+          <div
+            key={deck.poolShareId}
+            role="button"
+            tabIndex={0}
+            className="lobby-deck-option lobby-deck-option--incomplete"
+            title="No deck built yet"
+            onClick={() => window.open(`/pool/${deck.poolShareId}/deck`, '_blank', 'noopener')}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                window.open(`/pool/${deck.poolShareId}/deck`, '_blank', 'noopener')
+              }
+            }}
+          >
+            <div className="your-stats-pool-build">
+              <div className="your-stats-pool-build-art" aria-hidden="true">
+                {(deck.leaderBackImageUrl || deck.leaderImageUrl) ? (
+                  <img src={deck.leaderBackImageUrl || deck.leaderImageUrl || ''} alt="" loading="lazy" />
+                ) : (
+                  <span className="your-stats-pool-build-art-fallback">·</span>
+                )}
+              </div>
+              <div className="your-stats-replay-content">
+                <div className="your-stats-replay-combo">
+                  <strong>{deck.name || `${deck.setCode} ${formatLabel(deck.format)}`}</strong>
+                  <small>Click to create a deck from this pool</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
         {pageCount > 1 && (
           <div className="lobby-deck-pager">
             <Button

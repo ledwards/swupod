@@ -49,13 +49,14 @@ export async function GET(request: NextRequest): Promise<Response> {
     // gating on it hid fully-built decks from the picker.
     const rows = await queryRows(
       `SELECT cp.share_id, cp.set_code, cp.set_name, cp.pool_type, cp.name,
-              cp.created_at, cp.updated_at, cp.deck_builder_state, bd.built_at
+              cp.created_at, cp.updated_at, cp.deck_builder_state, bd.built_at,
+              (cp.deck_builder_state ->> 'activeLeader' IS NOT NULL
+               AND cp.deck_builder_state ->> 'activeBase' IS NOT NULL
+               AND jsonb_path_exists(cp.deck_builder_state, '$.cardPositions.* ? (@.section == "deck" && @.visible == true)')) AS deck_complete
        FROM card_pools cp
        LEFT JOIN built_decks bd ON bd.card_pool_id = cp.id
        WHERE cp.user_id = $1 AND cp.hidden IS NOT TRUE
-         AND cp.deck_builder_state ->> 'activeLeader' IS NOT NULL
-         AND cp.deck_builder_state ->> 'activeBase' IS NOT NULL
-         AND jsonb_path_exists(cp.deck_builder_state, '$.cardPositions.* ? (@.section == "deck" && @.visible == true)')
+         AND cp.deck_builder_state IS NOT NULL
        ORDER BY COALESCE(bd.built_at, cp.updated_at, cp.created_at) DESC
        LIMIT 300`,
       [session.id]
@@ -108,7 +109,9 @@ export async function GET(request: NextRequest): Promise<Response> {
           ...(leaderCard ? getAspectColors(leaderCard) : []),
           ...(baseCard ? getAspectColors(baseCard) : []),
         ])].slice(0, 3),
+        complete: r.deck_complete === true,
         eligible:
+          r.deck_complete === true &&
           (!setCode || String(r.set_code) === setCode) &&
           (!format || String(r.pool_type || 'sealed') === format),
       }
