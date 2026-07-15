@@ -388,6 +388,7 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
       </div>
 
       <div className="lobby-match-hero">
+        <div className="lobby-manual-kicker">Automatic</div>
         {joinerWaiting ? (
           <>
             <div className="lobby-match-note lobby-match-waiting">
@@ -434,6 +435,8 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
 
       </div>
 
+      <div className="lobby-or-divider" aria-hidden="true">or</div>
+
       {/* Manual fallback panel — mirrors PlayInstructions' manual-mode box
           (kicker + title + numbered steps). Honest about the preview status;
           the lobby link is DMed by hand, never pasted into PTP. */}
@@ -473,10 +476,11 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
           <div className="lobby-manual-step">
             <span className="lobby-step-number">3</span>
             <div className="lobby-manual-step-content">
-              <h4>Play</h4>
-              {!casualCapable && lobbyLink ? (
-                <LiveLobbyLink href={lobbyLink} label="Join Game" />
-              ) : !casualCapable && game.yourSeat === 2 ? (
+              <h4>
+                Play
+                {!casualCapable && lobbyLink && <LiveLobbyLink href={lobbyLink} label="Join Game" />}
+              </h4>
+              {!casualCapable && lobbyLink ? null : !casualCapable && game.yourSeat === 2 ? (
                 <p>Waiting for {host?.username || 'your opponent'} to start the game — the link will appear here.</p>
               ) : (
                 <p>Results report through the Companion.</p>

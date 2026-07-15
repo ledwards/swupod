@@ -878,9 +878,21 @@ a.lobby-discord-tile:active {
   margin-top: 60px;
 }
 
-/* The play link inside manual step 3 breathes off the step title. */
-.lobby-manual-step-content .match-card-live-open {
-  margin-top: 6px;
+/* "or" between the Automatic box and the Manual box: line — or — line. */
+.lobby-or-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: var(--pt-space-sm) 0;
+  color: var(--pt-ink-subtle);
+  font-size: 0.85rem;
+}
+
+.lobby-or-divider::before,
+.lobby-or-divider::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--pt-border-subtle);
 }
 
 /* Joiner waiting state: title line + quieter subtitle. */
