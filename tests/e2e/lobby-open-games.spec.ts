@@ -225,9 +225,11 @@ test.describe('Lobby V1 — Open Games', () => {
     await page.getByRole('button', { name: 'Cancel this lobby' }).click()
     // The canceller goes straight back to the lobby — no terminal screen.
     await page.waitForURL(/\/lobby/, { timeout: 15_000 })
-    // The other player's match page shows the lobby-closed state (10s poll).
-    await expect(posterCtx.page.getByText(/Lobby closed|lobby was cancelled/i).first())
-      .toBeVisible({ timeout: 20_000 })
+    // The other player has NO dead-lobby page: they're kicked back to the
+    // lobby with the "opponent cancelled" toast (socket push or 10s poll).
+    await posterCtx.page.waitForURL(/\/lobby/, { timeout: 20_000 })
+    await expect(posterCtx.page.getByText(/lobby was cancelled|cancelled the lobby/i).first())
+      .toBeVisible({ timeout: 10_000 })
   })
 
   test('Play Now instantly matches two compatible seekers (AE1/AE2)', async () => {

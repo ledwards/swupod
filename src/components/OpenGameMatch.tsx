@@ -135,25 +135,23 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
     }
   }, [shareId, fetchGame])
 
-  // If the lobby dies under a seated player (cancelled/expired/abandoned —
-  // anything terminal except a real result), kick them back to the lobby with
-  // a toast instead of leaving them sitting in a dead room.
-  const prevStatusRef = useRef<string | null>(null)
+  // A lobby that closed without a result has NO page: anyone landing on (or
+  // sitting in) one is sent back to the lobby with a toast that stays until
+  // dismissed. Only 'complete' (a real result) keeps a screen.
+  const kickedRef = useRef(false)
   useEffect(() => {
     const status = game?.status ?? null
-    const prev = prevStatusRef.current
-    prevStatusRef.current = status
-    if (!game || game.yourSeat == null || status === null) return
-    const wasLive = prev !== null && ['open', 'accepted', 'lobby_ready', 'in_progress'].includes(prev)
-    const closedWithoutResult = ['cancelled', 'expired', 'delisted', 'abandoned'].includes(status)
-    if (wasLive && closedWithoutResult) {
-      // 'cancelled' already gets the global "Your opponent cancelled" toast
-      // (OpenGameEventToasts) — don't double up.
-      if (status !== 'cancelled') {
-        showToast({ text: TERMINAL_COPY[status] || 'This lobby closed.', kind: 'danger' })
-      }
-      router.push('/lobby')
-    }
+    if (!game || status === null || kickedRef.current) return
+    if (!['cancelled', 'expired', 'delisted', 'abandoned'].includes(status)) return
+    kickedRef.current = true
+    // The global event toast suppresses itself on this page, so this is the
+    // only notice the viewer gets — seat-aware copy for a cancel.
+    const text =
+      status === 'cancelled' && game.yourSeat != null
+        ? 'Your opponent cancelled the lobby.'
+        : TERMINAL_COPY[status] || 'This lobby closed.'
+    showToast({ text, kind: 'danger', durationMs: 0 })
+    router.push('/lobby')
   }, [game, router, showToast])
 
   const launcher = useWayfinderCasualLaunch({
@@ -244,20 +242,19 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
     )
   }
 
-  // ---- terminal states
+  // ---- terminal states: only a real result gets a screen; anything that
+  // closed without one is redirected by the kick effect above.
   if (!isLive) {
+    if (game.status !== 'complete') {
+      return <div className="lobby-match"><div className="lobby-state">Loading…</div></div>
+    }
     return (
       <div className="lobby-match">
         <h2>
-          {game.status === 'complete'
-            ? game.result === 'draw'
-              ? 'Draw'
-              : `${game.players[game.result === 'player1' ? 0 : 1]?.username || 'Someone'} won`
-            : 'Lobby closed'}
+          {game.result === 'draw'
+            ? 'Draw'
+            : `${game.players[game.result === 'player1' ? 0 : 1]?.username || 'Someone'} won`}
         </h2>
-        {game.status !== 'complete' && (
-          <p className="lobby-row-meta">{TERMINAL_COPY[game.status] || 'This lobby is no longer active.'}</p>
-        )}
         <Button variant="primary" onClick={() => router.push('/lobby')}>Back to the Lobby</Button>
       </div>
     )

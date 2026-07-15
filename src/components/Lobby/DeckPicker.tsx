@@ -118,6 +118,7 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
   const [formatFilter, setFormatFilter] = useState<'sealed' | 'draft' | null>(null)
   const [setFilter, setSetFilter] = useState<string | null>(null)
   const [olderOpen, setOlderOpen] = useState(false)
+  const [query, setQuery] = useState('')
   const olderRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -171,11 +172,17 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
     if (setFilter === 'other') return setBucket(sc) === 'other'
     return sc === setFilter
   }
+  const q = query.trim().toLowerCase()
+  const matchesQuery = (d: EligibleDeck): boolean =>
+    q === '' ||
+    (d.name ?? '').toLowerCase().includes(q) ||
+    (d.leaderName ?? '').toLowerCase().includes(q)
   const eligible = (decks?.filter(d => d.eligible) ?? []).filter(d =>
-    filtered
+    matchesQuery(d) &&
+    (filtered
       ? true
       : (formatFilter === null || (d.format === 'draft' ? 'draft' : 'sealed') === formatFilter) &&
-        matchesSetFilter(d.setCode)
+        matchesSetFilter(d.setCode))
   )
   const availableSets = filtered ? [] : [...new Set((decks ?? []).map(d => d.setCode))]
   const hasLatest = availableSets.some(sc => setBucket(sc) === 'latest')
@@ -227,6 +234,26 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
   }
 
   if (eligible.length === 0) {
+    if (q !== '') {
+      return (
+        <>
+          {subtitle}
+          <div className="lobby-deck-filters">
+            <input
+              type="search"
+              className="lobby-deck-search"
+              placeholder="Search decks"
+              aria-label="Search your decks"
+              value={query}
+              onChange={e => { setQuery(e.target.value); setPage(0) }}
+              // eslint-disable-next-line jsx-a11y/no-autofocus
+              autoFocus
+            />
+          </div>
+          <div className="lobby-state">No decks match &ldquo;{query.trim()}&rdquo;.</div>
+        </>
+      )
+    }
     if (filtered) {
       return (
         <>
@@ -250,8 +277,8 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
   return (
     <>
       {subtitle}
-      {!filtered && (
-        <div className="lobby-deck-filters">
+      <div className="lobby-deck-filters">
+        {!filtered && (
           <div className="lobby-deck-filter-group">
             {(['sealed', 'draft'] as const).map(f => (
               <Button
@@ -266,6 +293,16 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
               </Button>
             ))}
           </div>
+        )}
+        <input
+          type="search"
+          className="lobby-deck-search"
+          placeholder="Search decks"
+          aria-label="Search your decks"
+          value={query}
+          onChange={e => { setQuery(e.target.value); setPage(0) }}
+        />
+        {!filtered && (
           <div className="lobby-deck-filter-group">
             {hasLatest && (
               <Button
@@ -322,8 +359,8 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
               </Button>
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
       <div className="lobby-deck-picker" role="radiogroup" aria-label="Your decks">
         {pageDecks.map(deck => {
           const isSelected = selected === deck.poolShareId
@@ -348,6 +385,20 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
                 }
               }}
             >
+              <button
+                type="button"
+                className="lobby-deck-edit"
+                title="Edit this deck"
+                aria-label="Edit this deck"
+                onClick={e => {
+                  e.stopPropagation()
+                  window.open(`/pool/${deck.poolShareId}/deck`, '_blank', 'noopener')
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                </svg>
+              </button>
               {/* /me pool list item (PoolHistoryDashboard PoolBuildCard) reuse. */}
               <div className="your-stats-pool-build">
                 <div className="your-stats-pool-build-art" aria-hidden="true">
