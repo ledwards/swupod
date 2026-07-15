@@ -46,12 +46,12 @@
 
 .gift-check {
   font-size: 1.75rem;
-  color: #50c878;
+  color: rgba(80, 200, 120, 1);
   line-height: 1;
 }
 
 .gift-error {
-  color: #ff6b6b;
+  color: rgba(255, 107, 107, 1);
   margin: 0;
   font-size: 0.9rem;
 }

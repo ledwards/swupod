@@ -544,12 +544,16 @@ on the Black surface.
 
 ---
 
-- [ ] U7. **Selectable Event Packs inside Chaos Sealed / Chaos Draft** *(DEFERRED to Phase 2)*
+- [x] U7. **Selectable Event Packs inside Chaos Sealed** ✅ 2026-07-12 (Sealed done; Draft still deferred)
 
-**Deferred rationale (2026-07-12):** Phase 1 (U1–U6, U8) delivers the full keepsake experience. U7
-modifies the core, `@ts-nocheck` chaos-generation paths (regression risk to a shipped feature) and needs a
-DB to verify; also, a 2-card promo pack inside a *draft* raises real design questions (draft expects
-~15-card packs). Best done as a separate, DB-backed PR — not built blind in this session.
+**Outcome:** On Chaos Sealed, owned Event Packs are now **selectable into the pool** — `PromoPacksSection`
+gains a `selectable` mode (owned tiles toggle "+ Add to pool" ↔ "✓ In your pool" and report via
+`onSelectionChange`); the page threads `promoTiers` into the create request. `app/api/formats/chaos-sealed/
+route.ts` accepts `promoTiers`, **validates ownership server-side** against `promo_entitlements` (a client
+can't spoof an unowned tier), draws each owned Event Pack, and appends its cards to the pool. **Ground-truth
+verified**: a create with both tiers produced an 8-pack pool (6 sets + GC2026_SILVER + GC2026_BLACK) with 4
+GC 2026 Promo cards (2 per tier). E2e test #5 drives select→create→animation. Chaos **Draft** integration
+still deferred (a 2-card pack in a draft that expects ~15-card packs is a distinct design question).
 
 
 **Goal:** Let owned Event Packs be chosen as pack slots in Chaos generation, not just opened standalone.
@@ -583,16 +587,16 @@ output unchanged.
 
 ---
 
-- [x] U8. **End-to-end claim flow (through the UI)** ✅ 2026-07-12 (written; needs a DB to run)
+- [x] U8. **End-to-end claim flow (through the UI)** ✅ 2026-07-12 — **RAN GREEN 5/5**
 
-**Outcome:** `tests/e2e/gc-promo-packs.spec.ts` — 4 tests, all driven through the UI (only test-user
+**Outcome:** `tests/e2e/gc-promo-packs.spec.ts` — 5 tests, all driven through the UI (only test-user
 creation + cookie auth are server-to-server setup): AE1 Silver unlock from `/gift/gc2026` → gift animation
-→ Chaos Sealed shows Silver openable; AE2/F2 re-visit shows already-unlocked, no replay; AE3/F3 non-patron
-Black locked tease → Black surface CTA; AE4 patron unlocks Black. Extended `createTestUser` with an
-`isPatron` option (entitlement cleanup is automatic via `promo_entitlements` `ON DELETE CASCADE`). Verified
-the spec parses and all 4 tests are discovered (`playwright --list`). ⚠️ **Runs only against a Postgres
-with migration 078 + a dev server started with `PROMO_CLAIM_WINDOW_OVERRIDE=1`** — not runnable in this
-worktree (no local DB), same constraint as U3.
+→ Chaos Sealed; AE2/F2 re-visit shows already-unlocked, no replay; AE3/F3 non-patron Black locked tease →
+Black surface CTA; AE4 patron unlocks Black; +U7 select an owned Event Pack into a Chaos Sealed pool.
+Extended `createTestUser` with an `isPatron` option (entitlement cleanup is automatic via
+`promo_entitlements` `ON DELETE CASCADE`). **Executed 5/5 green** against a local Postgres (migration 078
+applied) with the dev server on `PROMO_CLAIM_WINDOW_OVERRIDE=1`; the run caught the F2 on-load bug (fixed).
+Re-run: `PROMO_CLAIM_WINDOW_OVERRIDE=1 npm run dev` then `npm run test:e2e -- --grep "GC 2026 Promo Packs"`.
 
 
 

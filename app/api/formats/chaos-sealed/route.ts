@@ -1,6 +1,6 @@
 // @ts-nocheck
 // POST /api/formats/chaos-sealed - Generate a Chaos Sealed pool (6 packs from 6 different sets)
-import { query } from '@/lib/db'
+import { query, queryRows } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 import { generateShareId, formatSetCodeRange } from '@/lib/utils'
 import { jsonResponse, errorResponse, parseBody, validateRequired, handleApiError } from '@/lib/utils'
@@ -8,7 +8,11 @@ import { getSetConfig } from '@/src/utils/setConfigs/index'
 import { generateBoosterPack } from '@/src/utils/boosterPack'
 import { isCarboniteCode, getBaseSetCode, isCarboniteSupported } from '@/src/utils/carboniteConstants'
 import { initializeCardCache } from '@/src/utils/cardCache'
+import { getAllCards } from '@/src/utils/cardData'
+import { getCampaign, drawEventPack } from '@/src/services/promoPacks'
 import { NextRequest, NextResponse } from 'next/server'
+
+const PROMO_CAMPAIGN = 'gc2026'
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -57,6 +61,34 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         setName: setConfigs[i].setName
       })
       allCards.push(...pack.cards)
+    }
+
+    // Optionally add the user's unlocked GC Event Packs as extra packs. Ownership is
+    // validated server-side against promo_entitlements — a client can't spoof a tier it
+    // hasn't claimed. Each Event Pack contributes its drawn cards to the pool.
+    const requestedTiers = Array.isArray(body.promoTiers)
+      ? body.promoTiers.filter((t: unknown): t is string => t === 'silver' || t === 'black')
+      : []
+    if (userId && requestedTiers.length > 0) {
+      const campaign = getCampaign(PROMO_CAMPAIGN)
+      if (campaign) {
+        const ownedRows = await queryRows(
+          'SELECT promo_tier FROM promo_entitlements WHERE user_id = $1 AND campaign = $2',
+          [userId, PROMO_CAMPAIGN]
+        )
+        const owned = new Set(ownedRows.map(r => r.promo_tier))
+        const cardsById = new Map(getAllCards().map(c => [c.id, c]))
+        for (const tier of [...new Set(requestedTiers)]) {
+          if (!owned.has(tier)) continue // silently skip tiers the user doesn't own
+          const eventPack = drawEventPack(campaign, tier as 'silver' | 'black', id => cardsById.get(id) ?? null)
+          packs.push({
+            ...eventPack,
+            setCode: `GC2026_${tier.toUpperCase()}`,
+            setName: `2026 GC ${tier === 'silver' ? 'Silver' : 'Black'} Pack`,
+          })
+          allCards.push(...eventPack.cards)
+        }
+      }
     }
 
     // Generate unique share ID

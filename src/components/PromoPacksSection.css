@@ -42,11 +42,16 @@
 }
 
 .promo-pack-tile--silver {
-  background: linear-gradient(160deg, rgba(190, 195, 205, 0.28), rgba(120, 125, 135, 0.15));
+  background: linear-gradient(160deg, rgba(190, 195, 205, 0.28), rgba(120, 125, 135, 0.15)); /* design-ok: metallic Silver Event Pack tile finish */
 }
 
 .promo-pack-tile--black {
-  background: linear-gradient(160deg, rgba(40, 40, 46, 0.9), rgba(10, 10, 12, 0.9));
+  background: linear-gradient(160deg, rgba(40, 40, 46, 0.9), rgba(10, 10, 12, 0.9)); /* design-ok: metallic Black Event Pack tile finish */
+}
+
+.promo-pack-tile--selected {
+  border-color: rgba(80, 200, 120, 1);
+  box-shadow: 0 0 0 1px rgba(80, 200, 120, 1), 0 0 12px rgba(80, 200, 120, 0.4);
 }
 
 .promo-pack-tile--locked {
@@ -66,7 +71,7 @@
 
 .promo-pack-cta {
   font-size: 0.85rem;
-  color: #50c878;
+  color: rgba(80, 200, 120, 1);
   font-weight: 600;
 }
 

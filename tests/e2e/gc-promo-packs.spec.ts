@@ -44,7 +44,8 @@ test.describe('GC 2026 Promo Packs', () => {
     await expect(page.getByRole('heading', { name: 'GC 2026 Promo Packs' })).toBeVisible()
     const silverTile = page.locator('.promo-pack-tile--silver')
     await expect(silverTile).toContainText('Silver Pack')
-    await expect(silverTile).toContainText('Open pack')
+    // On Chaos Sealed the owned pack is selectable into the pool (U7), not standalone-open.
+    await expect(silverTile).toContainText('Add to pool')
 
     await context.close()
   })
@@ -101,7 +102,41 @@ test.describe('GC 2026 Promo Packs', () => {
 
     await page.goto('/formats/chaos-sealed')
     const blackTile = page.locator('.promo-pack-tile--black')
-    await expect(blackTile).toContainText('Open pack')
+    await expect(blackTile).toContainText('Add to pool')
+
+    await context.close()
+  })
+
+  // U7 — an owned Event Pack is selectable into a Chaos Sealed pool, and its cards land in the pool.
+  test('adds an owned Silver Event Pack into a Chaos Sealed pool', async ({ browser }) => {
+    const context = await browser.newContext()
+    const user = await createTestUser('GcSelect', TEST_ID)
+    await login(context, user)
+    const page = await context.newPage()
+
+    // Unlock Silver first.
+    await page.goto('/gift/gc2026')
+    await page.getByRole('button', { name: /Unlock Event Packs/i }).click()
+    await expect(page.locator('.pack-opening-container')).toBeVisible()
+
+    await page.goto('/formats/chaos-sealed')
+    // Satisfy the set-pack requirement via the normal flow (default packCount = 6).
+    const addButtons = page.getByRole('button', { name: /Add one .* pack/i })
+    for (let i = 0; i < 6; i++) await addButtons.nth(i).click()
+
+    // Select the Silver Event Pack into the pool (U7).
+    const silverTile = page.locator('.promo-pack-tile--silver')
+    await silverTile.click()
+    await expect(silverTile).toContainText('In your pool')
+
+    const createBtn = page.getByRole('button', { name: /Create Chaos/i })
+    await expect(createBtn).toBeEnabled()
+    await createBtn.click()
+
+    // Create succeeds with the Event Pack included and the pool-opening animation plays.
+    // (That the drawn promo cards land in the stored pool is asserted directly against the
+    // pool data — see the ground-truth check in the plan's U7 outcome.)
+    await expect(page.locator('.pack-opening-container')).toBeVisible({ timeout: 25000 })
 
     await context.close()
   })

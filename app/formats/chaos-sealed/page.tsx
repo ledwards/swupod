@@ -47,6 +47,7 @@ export default function ChaosSealedPage() {
   const [error, setError] = useState<string | null>(null)
   const [showAnimation, setShowAnimation] = useState(false)
   const [generatedPool, setGeneratedPool] = useState<GeneratedPool | null>(null)
+  const [promoTiers, setPromoTiers] = useState<string[]>([])
 
   const hasBetaAccess = user?.is_beta_tester || user?.is_admin
 
@@ -101,7 +102,8 @@ export default function ChaosSealedPage() {
         credentials: 'include',
         body: JSON.stringify({
           setCodes: selectedSets,
-          packCount
+          packCount,
+          promoTiers
         })
       })
 
@@ -244,7 +246,7 @@ export default function ChaosSealedPage() {
           </div>
         </div>
 
-        <PromoPacksSection />
+        <PromoPacksSection selectable onSelectionChange={setPromoTiers} />
 
         {error && <div className="error-message">{error}</div>}
 

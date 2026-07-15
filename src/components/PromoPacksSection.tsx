@@ -15,11 +15,31 @@ const CAMPAIGN = 'gc2026'
 type Entitlements = { silver: boolean; black: boolean }
 type EventPack = { cards: unknown[] }
 
-export default function PromoPacksSection() {
+type PromoTier = 'silver' | 'black'
+
+// `selectable` (Chaos Sealed): owned tiles toggle into the pool being built and report the
+// selection up via onSelectionChange. Default (Chaos Draft): owned tiles open a standalone pack.
+export default function PromoPacksSection({
+  selectable = false,
+  onSelectionChange,
+}: {
+  selectable?: boolean
+  onSelectionChange?: (tiers: PromoTier[]) => void
+} = {}) {
   // AuthContext is untyped (.jsx → createContext(null)); cast to the shape we use.
   const { isPatron } = useAuth() as unknown as { isPatron: boolean | null }
   const [ent, setEnt] = useState<Entitlements | null>(null)
   const [pack, setPack] = useState<EventPack | null>(null)
+  const [selected, setSelected] = useState<Set<PromoTier>>(new Set())
+
+  const toggle = useCallback((tier: PromoTier) => {
+    setSelected((prev) => {
+      const next = new Set(prev)
+      next.has(tier) ? next.delete(tier) : next.add(tier)
+      onSelectionChange?.([...next])
+      return next
+    })
+  }, [onSelectionChange])
 
   useEffect(() => {
     let alive = true
@@ -72,14 +92,16 @@ export default function PromoPacksSection() {
         {/* Silver — anyone who claimed via the GC card. */}
         {ent.silver ? (
           <div
-            className="promo-pack-tile promo-pack-tile--silver"
+            className={`promo-pack-tile promo-pack-tile--silver${selectable && selected.has('silver') ? ' promo-pack-tile--selected' : ''}`}
             role="button"
             tabIndex={0}
-            onClick={() => openPack('silver')}
-            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && openPack('silver')}
+            onClick={() => (selectable ? toggle('silver') : openPack('silver'))}
+            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (selectable ? toggle('silver') : openPack('silver'))}
           >
             <span className="promo-pack-name">Silver Pack</span>
-            <span className="promo-pack-cta">Open pack</span>
+            <span className="promo-pack-cta">
+              {selectable ? (selected.has('silver') ? '✓ In your pool' : '+ Add to pool') : 'Open pack'}
+            </span>
           </div>
         ) : (
           <a className="promo-pack-tile promo-pack-tile--silver promo-pack-tile--locked" href="/gift/gc2026">
@@ -91,14 +113,16 @@ export default function PromoPacksSection() {
         {/* Black — Friends of the Pod. Always visible; locked until owned. */}
         {ent.black ? (
           <div
-            className="promo-pack-tile promo-pack-tile--black"
+            className={`promo-pack-tile promo-pack-tile--black${selectable && selected.has('black') ? ' promo-pack-tile--selected' : ''}`}
             role="button"
             tabIndex={0}
-            onClick={() => openPack('black')}
-            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && openPack('black')}
+            onClick={() => (selectable ? toggle('black') : openPack('black'))}
+            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (selectable ? toggle('black') : openPack('black'))}
           >
             <span className="promo-pack-name">Black Pack</span>
-            <span className="promo-pack-cta">Open pack</span>
+            <span className="promo-pack-cta">
+              {selectable ? (selected.has('black') ? '✓ In your pool' : '+ Add to pool') : 'Open pack'}
+            </span>
           </div>
         ) : (
           <a className="promo-pack-tile promo-pack-tile--black promo-pack-tile--locked" href="/gift/gc2026/black">
