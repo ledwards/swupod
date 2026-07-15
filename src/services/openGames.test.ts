@@ -275,6 +275,17 @@ describe('openGames service (Lobby V1 spec)', { skip: !dbAvailable }, () => {
     )
   })
 
+  it('the host can swap the deck while open; listing follows the new set/format', async () => {
+    const { setOpenGameDeck } = await import('./openGames')
+    const u = await seedUser('og-swap')
+    const p1 = await seedPool(u, { setCode: 'SEC', format: 'draft' })
+    const p2 = await seedPool(u, { setCode: 'LOF', format: 'sealed' })
+    const game = await postOpenGame({ userId: u, poolId: p1 })
+    const updated = await setOpenGameDeck({ shareId: game.shareId, userId: u, poolId: p2 })
+    assert.equal(updated.setCode, 'LOF')
+    assert.equal(updated.format, 'sealed')
+  })
+
   it('SPEC R18: join is atomic — two concurrent joins, exactly one wins', async () => {
     const poster = await seedUser('og-poster')
     const pp = await seedPool(poster)

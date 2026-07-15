@@ -18,6 +18,8 @@ import Button from '@/src/components/Button'
 import PluginCTA from '@/src/components/PluginCTA'
 import JoinGameModal from '@/src/components/Lobby/JoinGameModal'
 import MatchDeckPane from '@/src/components/Lobby/MatchDeckPane'
+import DeckPicker, { type EligibleDeck } from '@/src/components/Lobby/DeckPicker'
+import Modal from '@/src/components/Modal'
 import { useToast } from '@/src/components/Toast'
 import { useAuth } from '@/src/contexts/AuthContext'
 import { useCompanionCapability } from '@/src/hooks/useCompanionCapability'
@@ -95,6 +97,8 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
   const [game, setGame] = useState<MatchGame | null>(null)
   const [loadError, setLoadError] = useState(false)
   const [joinOpen, setJoinOpen] = useState(false)
+  const [changeDeckOpen, setChangeDeckOpen] = useState(false)
+  const [changeDeckBusy, setChangeDeckBusy] = useState(false)
 
   const fetchGame = useCallback(async () => {
     try {
@@ -153,6 +157,27 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
     showToast({ text, kind: 'danger', durationMs: 0 })
     router.push('/lobby')
   }, [game, router, showToast])
+
+  async function changeDeck(deck: EligibleDeck): Promise<void> {
+    if (!game || changeDeckBusy) return
+    setChangeDeckBusy(true)
+    try {
+      const res = await fetch(`/api/open-games/${game.shareId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ poolShareId: deck.poolShareId }),
+      })
+      const json = await res.json().catch(() => null)
+      if (!res.ok) throw new Error(json?.message || 'Could not change the deck')
+      setChangeDeckOpen(false)
+      fetchGame()
+    } catch (error) {
+      showToast({ text: error instanceof Error ? error.message : 'Could not change the deck', kind: 'danger' })
+    } finally {
+      setChangeDeckBusy(false)
+    }
+  }
 
   const launcher = useWayfinderCasualLaunch({
     openGameShareId: shareId,
@@ -455,7 +480,24 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
         </Button>
       )}
       </div>
-      {showDeckPane && <MatchDeckPane poolShareId={game.yourPoolShareId!} />}
+      {showDeckPane && (
+        <MatchDeckPane
+          poolShareId={game.yourPoolShareId!}
+          onChangeDeck={isHost && game.status === 'open' ? () => setChangeDeckOpen(true) : undefined}
+        />
+      )}
+      {isHost && game.status === 'open' && (
+        <Modal
+          className="lobby-deck-modal"
+          isOpen={changeDeckOpen}
+          onClose={() => setChangeDeckOpen(false)}
+          title="Change Deck"
+        >
+          <Modal.Body>
+            <DeckPicker selected={game.yourPoolShareId} onSelect={changeDeck} />
+          </Modal.Body>
+        </Modal>
+      )}
     </div>
   )
 }

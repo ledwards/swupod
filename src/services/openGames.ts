@@ -481,6 +481,36 @@ export async function setOpenGameBestOf(params: {
   return rowToGame(row)
 }
 
+/** Host swaps the listing's deck while it's still open (also updates the
+ *  listing's set/format — it follows the deck, R31). */
+export async function setOpenGameDeck(params: {
+  shareId: string
+  userId: string
+  poolId: string
+}): Promise<OpenGame> {
+  const { withTransaction } = await import('@/lib/db')
+  return withTransaction(async tx => {
+    await lockUsers(tx, [params.userId])
+    const row = await tx.queryRow('SELECT id, player1_id, status FROM open_games WHERE share_id = $1', [params.shareId])
+    if (!row) throw new OpenGameError('not_found', 'Game not found', 404)
+    if (String(row.player1_id) !== String(params.userId)) {
+      throw new OpenGameError('forbidden', 'Only the host can change the deck', 403)
+    }
+    const deck = await requireEligibleDeck(tx, params.userId, params.poolId)
+    const updated = await tx.queryRow(
+      `UPDATE open_games
+       SET player1_pool_id = $2, set_code = $3, set_name = $4, format = $5, updated_at = NOW()
+       WHERE id = $1 AND status = 'open'
+       RETURNING *`,
+      [row.id, deck.poolId, deck.setCode, deck.setName, deck.format]
+    )
+    if (!updated) {
+      throw new OpenGameError('listing_gone', 'The lobby is no longer open — the deck is locked', 409)
+    }
+    return rowToGame(updated)
+  })
+}
+
 /** The caller's own active listing (any visibility) — powers the "Your Open
  *  Lobby" entry in the user menu. One-listing invariant makes LIMIT 1 exact. */
 export async function getMyOpenListing(userId: string): Promise<{

@@ -10,7 +10,7 @@ import { jsonResponse, errorResponse } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
 import { queryRow } from '@/lib/db'
 import { broadcastOpenGamesUpdate, emitOpenGameEventToUser } from '@/src/lib/socketBroadcast'
-import { cancelOpenGame, setOpenGameBestOf } from '@/src/services/openGames'
+import { cancelOpenGame, setOpenGameBestOf, setOpenGameDeck } from '@/src/services/openGames'
 import { resolveOpenGameMessage } from '@/lib/discordLfg'
 import { openGameErrorResponse } from '../helpers'
 import { NextRequest } from 'next/server'
@@ -106,11 +106,15 @@ export async function PATCH(request: NextRequest, { params }: RouteContext): Pro
     const { shareId } = await params
     const session = requireAuth(request)
     const body = await request.json().catch(() => ({}))
-    const game = await setOpenGameBestOf({
-      shareId,
-      userId: session.id,
-      bestOf: Number(body.bestOf),
-    })
+    let game
+    if (body.poolShareId) {
+      const { resolvePoolId } = await import('../helpers')
+      const poolId = await resolvePoolId(String(body.poolShareId))
+      if (!poolId) return errorResponse('poolShareId is required', 400)
+      game = await setOpenGameDeck({ shareId, userId: session.id, poolId })
+    } else {
+      game = await setOpenGameBestOf({ shareId, userId: session.id, bestOf: Number(body.bestOf) })
+    }
     // Board rows show Bo3, so keep them live too.
     broadcastOpenGamesUpdate().catch(() => {})
     return jsonResponse({ game })

@@ -133,7 +133,14 @@ function DeckSkeleton() {
   )
 }
 
-export default function MatchDeckPane({ poolShareId }: { poolShareId: string }): React.JSX.Element {
+export default function MatchDeckPane({
+  poolShareId,
+  onChangeDeck,
+}: {
+  poolShareId: string
+  /** Opens the deck picker to swap this seat's deck (host, listing open). */
+  onChangeDeck?: (() => void) | undefined
+}): React.JSX.Element {
   const [status, setStatus] = useState<'loading' | 'error' | 'ready'>('loading')
   const [view, setView] = useState<DeckView | null>(null)
   const [pool, setPool] = useState<PoolPayload | null>(null)
@@ -269,7 +276,23 @@ export default function MatchDeckPane({ poolShareId }: { poolShareId: string }):
           </div>
         )}
         {status === 'ready' && !view && (
-          <div className="lobby-state">No deck has been built for this pool yet.</div>
+          <div className="lobby-state">
+            <p>No deck has been built for this pool yet.</p>
+            <div className="lobby-deck-empty-ctas">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => window.open(`/pool/${poolShareId}/deck`, '_blank', 'noopener')}
+              >
+                Open the Deck Builder
+              </Button>
+              {onChangeDeck && (
+                <Button variant="secondary" size="sm" onClick={onChangeDeck}>
+                  Change Deck
+                </Button>
+              )}
+            </div>
+          </div>
         )}
         {status === 'ready' && view && (
           <>
