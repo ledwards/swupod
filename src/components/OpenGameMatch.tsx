@@ -299,7 +299,10 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
   // (Swiss Practice's created-lobby affordance) — EXCEPT a Companion-capable
   // joiner, whose click keeps routing through the Companion so it opens the
   // lobby AND imports their deck (claim → join_lobby).
-  const showLobbyLink = Boolean(lobbyLink) && !(game.yourSeat === 2 && casualCapable)
+  // Hero link: capable host only (a capable joiner keeps the one-click join
+  // that auto-imports their deck; plugin-less users get the link as the LAST
+  // manual step, with the install CTA in the hero instead).
+  const showLobbyLink = Boolean(lobbyLink) && casualCapable && game.yourSeat !== 2
   // Seated players (waiting or matched) get the Karabast-style split view:
   // match column left, a read-only view of THEIR OWN deck right (R29 — the
   // API only ever returns yourPoolShareId for your own seat).
@@ -473,7 +476,22 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
             <span className="lobby-step-number">3</span>
             <div className="lobby-manual-step-content">
               <h4>Play</h4>
-              <p>Results report through the Companion.</p>
+              {!casualCapable && lobbyLink ? (
+                <a
+                  className="btn btn--primary btn--lg match-card-live-open"
+                  href={lobbyLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Open game lobby"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                  Play on Karabast
+                </a>
+              ) : (
+                <p>Results report through the Companion.</p>
+              )}
             </div>
           </div>
         </div>
