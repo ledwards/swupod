@@ -90,8 +90,26 @@ export async function claimOpenGame(params: {
     }
 
     if (active) {
-      // A creation is in flight (no lobby URL yet).
-      return { action: 'wait_for_lobby', gameStatus: String(game.status) }
+      // A creation in flight (no lobby URL yet). A 'creating' attempt whose
+      // Companion never reported back (closed tab, dev deck URL, extension
+      // not loaded) must not wedge the lobby forever: after 60s the HOST's
+      // next claim supersedes it and starts a fresh attempt.
+      const ageMs = Date.now() - new Date(String(active.created_at)).getTime()
+      const staleCreating =
+        String(active.status) === 'creating' &&
+        !active.lobby_url &&
+        ageMs > 60_000 &&
+        String(game.player1_id) === String(params.userId) &&
+        params.companionCapable
+      if (!staleCreating) {
+        return { action: 'wait_for_lobby', gameStatus: String(game.status) }
+      }
+      await tx.query(
+        `UPDATE open_game_lobby_attempts
+         SET status = 'failed', failure_reason = 'stale_creating_superseded', updated_at = NOW()
+         WHERE id = $1`,
+        [active.id]
+      )
     }
 
     if (!params.companionCapable) {

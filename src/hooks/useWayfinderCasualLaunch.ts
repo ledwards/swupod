@@ -143,7 +143,9 @@ export function useWayfinderCasualLaunch({
         window.open(claim.lobbyUrl, '_blank', 'noopener')
         setMessage('Reopening your lobby…', 'info')
       } else if (claim.action === 'wait_for_lobby') {
-        setMessage('Waiting for the lobby…', 'info')
+        // A creation is in flight. If the Companion never reports back, the
+        // server lets the host supersede the attempt after a minute.
+        setMessage('Lobby creation is in flight — if nothing opens, try again in a minute.', 'info')
       }
       return claim
     } catch (error) {

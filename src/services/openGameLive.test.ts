@@ -150,6 +150,33 @@ describe('openGameLive pipeline (Lobby V1 spec)', { skip: !dbAvailable }, () => 
     assert.equal(reopen.action, 'open_lobby')
   })
 
+  it('a stale URL-less creating attempt (>60s) is superseded by the host\'s next claim', async () => {
+    const { game, poster, acceptor } = await seedAcceptedGame()
+    await claimOpenGame({ shareId: game.shareId, userId: poster, companionCapable: true })
+
+    // Fresh attempt: everyone waits, including the host.
+    const fresh = await claimOpenGame({ shareId: game.shareId, userId: poster, companionCapable: true })
+    assert.equal(fresh.action, 'wait_for_lobby')
+
+    await query(
+      `UPDATE open_game_lobby_attempts SET created_at = NOW() - INTERVAL '2 minutes' WHERE open_game_id = $1`,
+      [game.id]
+    )
+
+    // Stale: the joiner still waits (never creates)…
+    const joinerWaits = await claimOpenGame({ shareId: game.shareId, userId: acceptor, companionCapable: true })
+    assert.equal(joinerWaits.action, 'wait_for_lobby')
+
+    // …but the host's claim supersedes and starts attempt 2.
+    const retry = await claimOpenGame({ shareId: game.shareId, userId: poster, companionCapable: true })
+    assert.equal(retry.action, 'create_lobby')
+    const rows = await attempts(game.id)
+    assert.equal(rows.length, 2)
+    assert.equal(rows[0].status, 'failed')
+    assert.equal(rows[0].failure_reason, 'stale_creating_superseded')
+    assert.equal(rows[1].status, 'creating')
+  })
+
   it('the joiner never creates: a capable acceptor claim with no attempt waits for the host', async () => {
     const { game, acceptor } = await seedAcceptedGame()
     const claim = await claimOpenGame({ shareId: game.shareId, userId: acceptor, companionCapable: true })

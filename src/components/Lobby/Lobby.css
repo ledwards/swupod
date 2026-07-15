@@ -826,8 +826,9 @@ a.lobby-discord-tile:active {
 
 /* Clearance for the site's floating auth widget (top-right), same move as
    .lobby-header — the pane's title row sits underneath it on wide screens. */
-.lobby-deck-pane .lobby-column-title {
-  padding-right: 72px;
+/* Start below the floating auth avatar so the header never collides. */
+.lobby-match--split .lobby-deck-pane {
+  margin-top: 60px;
 }
 
 /* Joiner waiting state: title line + quieter subtitle. */
