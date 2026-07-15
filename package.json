@@ -53,6 +53,7 @@
     "dupe-stats": "bash scripts/gen-duplicate-stats.sh",
     "qa-warm": "npx tsx scripts/warmQaCache.ts",
     "test:e2e": "npx playwright test",
+    "test:promo:e2e": "npx playwright test --config=playwright.promo.config.ts",
     "test:e2e:ui": "npx playwright test --ui",
     "test:e2e:headed": "npx playwright test --headed",
     "e2e": "npx tsx scripts/e2e.ts",

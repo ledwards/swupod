@@ -24,6 +24,21 @@ test.afterAll(async () => {
 })
 
 test.describe('GC 2026 Promo Packs', () => {
+  // One retry locally (CI already retries) to absorb the Next dev "first compile of a
+  // route" navigation race (net::ERR_ABORTED) that only bites the very first hit.
+  test.describe.configure({ retries: process.env.CI ? 2 : 1 })
+
+  // Pre-warm route compilation so the first real navigation in a test doesn't race the
+  // dev server compiling the page. Cheap, and eliminates the first-compile flake at source.
+  test.beforeAll(async ({ browser }) => {
+    const ctx = await browser.newContext()
+    const page = await ctx.newPage()
+    for (const path of ['/gift/gc2026', '/gift/gc2026/black', '/formats/chaos-sealed']) {
+      await page.goto(path, { waitUntil: 'commit' }).catch(() => {})
+    }
+    await ctx.close()
+  })
+
   // AE1 — Silver unlock happy path: gift page → claim → gift animation → packs live in Chaos.
   test('unlocks the Silver Pack from the gift page and it appears in Chaos Sealed', async ({ browser }) => {
     const context = await browser.newContext()
