@@ -389,10 +389,15 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
 
       <div className="lobby-match-hero">
         {joinerWaiting ? (
-          <div className="lobby-match-note lobby-match-waiting">
-            <strong>Waiting for {host?.username || 'your opponent'} to create the Karabast lobby</strong>
-            <span>The link will appear here.</span>
-          </div>
+          <>
+            <div className="lobby-match-note lobby-match-waiting">
+              <strong>Waiting for {host?.username || 'your opponent'} to create the Karabast lobby</strong>
+              <span>The link will appear here.</span>
+            </div>
+            {/* This surface needs the Companion RIGHT NOW → gate on live
+                detection, not past recorded games (same as Swiss required). */}
+            {!casualCapable && <PluginCTA variant="autodetect" required />}
+          </>
         ) : showLobbyLink ? (
           // The lobby exists → a green play LINK to it, exactly the affordance
           // Swiss Practice renders for its created lobby (MatchCard's
@@ -424,7 +429,7 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
             One-click lobbies need a newer Companion.
           </p>
         ) : (
-          <PluginCTA variant="autodetect" />
+          <PluginCTA variant="autodetect" required />
         )}
 
       </div>
