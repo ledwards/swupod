@@ -104,11 +104,9 @@ export default function PostGameModal({
           </label>
         )}
 
-        <p className="lobby-row-meta lobby-vis-note">
-          {visibility === 'public'
-            ? 'Listed on the board.'
-            : 'Only people with the link can join.'}
-        </p>
+        {visibility === 'private' && (
+          <p className="lobby-row-meta lobby-vis-note">Only people with the link can join.</p>
+        )}
       </Modal.Body>
       <Modal.Actions>
         <Button variant="secondary" onClick={onClose} disabled={busy}>

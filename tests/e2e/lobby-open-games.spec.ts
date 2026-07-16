@@ -395,7 +395,7 @@ test.describe('Lobby V1 — Open Games', () => {
     const posterPage = posterCtx.page
     await posterPage.goto('/lobby')
     await posterPage.getByRole('button', { name: 'Play Now' }).click()
-    await expect(posterPage.getByText(/on the board|waiting for an opponent/i).first())
+    await expect(posterPage.getByText(/waiting for an opponent/i).first())
       .toBeVisible({ timeout: 15_000 })
 
     // Joiner's Play Now accepts the oldest compatible listing instantly.

@@ -362,9 +362,6 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
             />
           </div>
         )}
-        {waitingForOpponent && game.visibility === 'public' && (
-          <div className="lobby-match-note lobby-match-visibility">Listed on the board.</div>
-        )}
         {waitingForOpponent && (
           <>
             <span className="lobby-match-vs">vs</span>
