@@ -387,6 +387,116 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
         )}
       </div>
 
+      {/* Companion users lead with Automatic; everyone else leads with
+          Manual (the mode they'll actually use goes on top). */}
+      {casualCapable ? (
+        <>
+      <div className="lobby-match-hero">
+        <div className="lobby-manual-kicker">Automatic</div>
+        {joinerWaiting ? (
+          <>
+            <div className="lobby-match-note lobby-match-waiting">
+              <strong>Waiting for {host?.username || 'your opponent'} to create the Karabast lobby</strong>
+              <span>The link will appear here.</span>
+            </div>
+            {/* This surface needs the Companion RIGHT NOW → gate on live
+                detection, not past recorded games (same as Swiss required). */}
+            {!casualCapable && <PluginCTA variant="autodetect" required />}
+          </>
+        ) : showLobbyLink ? (
+          // The lobby exists → a green play LINK to it, exactly the affordance
+          // Swiss Practice renders for its created lobby (MatchCard's
+          // match-card-live-open anchor: an <a> styled as the primary button).
+          // R37 (approved): DISPLAY of the Companion-captured lobby URL — never
+          // a paste input. Works with or without the Companion.
+          <LiveLobbyLink
+            href={lobbyLink!}
+            size="lg"
+            label={game.yourSeat === 2 ? 'Join Game' : 'Open the lobby'}
+          />
+        ) : casualCapable ? (
+          <>
+            <Button variant="primary" size="lg" disabled={launcher.pending} onClick={() => launcher.launch('private')}>
+              {game.status === 'open'
+                ? 'Create Game'
+                : game.yourSeat === 2
+                  ? 'Join on Karabast'
+                  : 'Play on Karabast'}
+            </Button>
+            {launcher.message && (
+              <p className={`lobby-match-note${launcher.message.type === 'error' ? ' lobby-state-error' : ''}`}>
+                {launcher.message.text}
+              </p>
+            )}
+          </>
+        ) : detected && !casualCapable ? (
+          <p className="lobby-match-note">
+            One-click lobbies need a newer Companion.
+          </p>
+        ) : (
+          <PluginCTA variant="autodetect" required />
+        )}
+
+      </div>
+
+      <div className="lobby-or-divider" aria-hidden="true">or</div>
+
+      {/* Manual fallback panel — mirrors PlayInstructions' manual-mode box
+          (kicker + title + numbered steps). Honest about the preview status;
+          the lobby link is DMed by hand, never pasted into PTP. */}
+      <div className="lobby-manual-panel">
+        <div className="lobby-manual-kicker">Manual</div>
+        <h3 className="lobby-manual-title">Set it up yourself on Karabast</h3>
+        <p className="lobby-manual-note">
+          The Companion integration is in preview — if it&apos;s acting up, the manual route
+          always works:
+        </p>
+        <div className="lobby-manual-steps">
+          <div className="lobby-manual-step">
+            <span className="lobby-step-number">1</span>
+            <div className="lobby-manual-step-content">
+              <h4>
+                Copy Your Deck
+                {game.yourPoolShareId && <CopyDeckLink poolShareId={game.yourPoolShareId} />}
+              </h4>
+              <p>Paste the deck link as your decklist on Karabast.</p>
+            </div>
+          </div>
+          <div className="lobby-manual-step">
+            <span className="lobby-step-number">2</span>
+            <div className="lobby-manual-step-content">
+              <h4>{game.yourSeat === 2 ? 'Join Their Lobby' : 'Create a Private Lobby'}</h4>
+              {game.yourSeat === 2 ? (
+                <p>Your opponent creates the lobby and DMs you the link on Discord.</p>
+              ) : (
+                <p>
+                  On{' '}
+                  <a href="https://karabast.net" target="_blank" rel="noreferrer">karabast.net</a>,
+                  create a private lobby and DM the lobby link to your opponent on Discord.
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="lobby-manual-step">
+            <span className="lobby-step-number">3</span>
+            <div className="lobby-manual-step-content">
+              <h4>
+                Play
+                {!casualCapable && lobbyLink && <LiveLobbyLink href={lobbyLink} label="Join Game" />}
+              </h4>
+              {!casualCapable && lobbyLink ? null : !casualCapable && game.yourSeat === 2 ? (
+                <p>Waiting for {host?.username || 'your opponent'} to start the game — the link will appear here.</p>
+              ) : (
+                <p>Results report through the Companion.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+        </>
+      ) : (
+        <>
       {/* Manual fallback panel — mirrors PlayInstructions' manual-mode box
           (kicker + title + numbered steps). Honest about the preview status;
           the lobby link is DMed by hand, never pasted into PTP. */}
@@ -490,6 +600,8 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
 
       </div>
 
+        </>
+      )}
       {isSeat && (
         <Button variant="danger" onClick={cancelGame}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
