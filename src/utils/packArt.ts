@@ -55,6 +55,9 @@ const PACK_IMAGE_URLS: Record<string, string> = {
   'SEC-CB': '/pack-images/sec-cb-pack.png',
   'LAW-CB': '/pack-images/law-cb-pack.png',
   'ASH-CB': '/pack-images/ash-cb-pack.png',
+  // GC 2026 Event Packs (placeholder art until the real pack renders are published).
+  GC2026_SILVER: '/pack-images/gc2026-silver-pack.png',
+  GC2026_BLACK: '/pack-images/gc2026-black-pack.png',
 }
 
 /**

@@ -22,6 +22,10 @@ type Status =
 type EventPack = { cards: unknown[] }
 
 const CHAOS_URL = '/formats/chaos-sealed'
+const PACK_IMAGE = {
+  silver: '/pack-images/gc2026-silver-pack.png',
+  black: '/pack-images/gc2026-black-pack.png',
+}
 
 export default function GiftGc2026Page() {
   // AuthContext is untyped (.jsx → createContext(null)); cast to the shape we use.
@@ -86,11 +90,13 @@ export default function GiftGc2026Page() {
 
   // Reuse the standard pack-opening experience for each tier.
   if ((status === 'openingSilver' || status === 'openingBlack') && pack) {
+    const isSilver = status === 'openingSilver'
     return (
       <PackOpeningAnimation
         packs={[pack] as never}
         packCount={1}
-        onComplete={() => setStatus(status === 'openingSilver' ? 'confirmSilver' : 'confirmBlack')}
+        packImageUrl={isSilver ? PACK_IMAGE.silver : PACK_IMAGE.black}
+        onComplete={() => setStatus(isSilver ? 'confirmSilver' : 'confirmBlack')}
       />
     )
   }

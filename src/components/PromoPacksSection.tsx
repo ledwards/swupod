@@ -11,6 +11,10 @@ import './PromoPacksSection.css'
 // as a full-screen overlay. The real gates are enforced server-side; this is UX only.
 
 const CAMPAIGN = 'gc2026'
+const PACK_IMAGE: Record<'silver' | 'black', string> = {
+  silver: '/pack-images/gc2026-silver-pack.png',
+  black: '/pack-images/gc2026-black-pack.png',
+}
 
 type Entitlements = { silver: boolean; black: boolean }
 type EventPack = { cards: unknown[] }
@@ -30,6 +34,7 @@ export default function PromoPacksSection({
   const { isPatron } = useAuth() as unknown as { isPatron: boolean | null }
   const [ent, setEnt] = useState<Entitlements | null>(null)
   const [pack, setPack] = useState<EventPack | null>(null)
+  const [openTier, setOpenTier] = useState<PromoTier>('silver')
   const [selected, setSelected] = useState<Set<PromoTier>>(new Set())
 
   const toggle = useCallback((tier: PromoTier) => {
@@ -65,7 +70,10 @@ export default function PromoPacksSection({
         body: JSON.stringify({ campaign: CAMPAIGN, tier }),
       })
       const json = await res.json().catch(() => null)
-      if (res.ok && json?.data?.pack) setPack(json.data.pack as EventPack)
+      if (res.ok && json?.data?.pack) {
+        setOpenTier(tier)
+        setPack(json.data.pack as EventPack)
+      }
     } catch {
       /* opening is best-effort; leave the tile as-is on failure */
     }
@@ -80,6 +88,7 @@ export default function PromoPacksSection({
       <PackOpeningAnimation
         packs={[pack] as never}
         packCount={1}
+        packImageUrl={PACK_IMAGE[openTier]}
         onComplete={() => setPack(null)}
       />
     )

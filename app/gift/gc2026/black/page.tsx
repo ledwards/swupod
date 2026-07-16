@@ -76,6 +76,7 @@ export default function GiftGc2026BlackPage() {
       <PackOpeningAnimation
         packs={[pack] as never}
         packCount={1}
+        packImageUrl="/pack-images/gc2026-black-pack.png"
         onComplete={() => router.push('/formats/chaos-sealed')}
       />
     )
