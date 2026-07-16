@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Lobby V1 Open Games E2E (U8).
  *
