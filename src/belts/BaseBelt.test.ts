@@ -7,6 +7,7 @@
 
 import { BaseBelt } from './BaseBelt'
 import { initializeCardCache, getCachedCards } from '../utils/cardCache'
+import { generateSealedBox, clearBeltCache } from '../utils/boosterPack'
 
 let passed = 0
 let failed = 0
@@ -124,6 +125,77 @@ async function runTests(): Promise<void> {
     assert(adjacentMatches <= 10, `Found ${adjacentMatches} adjacent aspect matches (max allowed: 10)`)
   })
 
+  test('FIXED: Set 7+ base belt separates aspects on the LINE (real ASH box 001 line order: 1/21 adjacent same-aspect)', () => {
+    const belt = new BaseBelt('ASH')
+    const sample: Array<{ aspects?: string[] }> = []
+    for (let i = 0; i < 400; i++) sample.push(belt.next())
+
+    let adjacentMatches = 0
+    for (let i = 1; i < sample.length; i++) {
+      const prev = sample[i - 1], curr = sample[i]
+      if (prev.aspects && curr.aspects && prev.aspects.some(a => curr.aspects!.includes(a))) {
+        adjacentMatches++
+      }
+    }
+    // SPEC: real ASH box 001 in LINE order shows the base sheet rotates aspects
+    // (1/21 adjacent same-aspect pairs). The line-level belt must model this;
+    // consumer-visible randomness comes from box stacking, not the belt.
+    // Tolerant of best-effort swap failures (~<=10% of 399).
+    assert(adjacentMatches <= 40,
+      `Set 7+ base belt should separate aspects on the line: got ${adjacentMatches}/399 (real ASH line: 1/21 ≈ 5%)`)
+  })
+
+  test('FIXED: Set 7+ base belt never serves the same base back-to-back', () => {
+    const belt = new BaseBelt('ASH')
+    let prev = belt.next()
+    for (let i = 0; i < 400; i++) {
+      const curr = belt.next()
+      assert(!(prev && curr && prev.name === curr.name && prev.subtitle === curr.subtitle),
+        `Same base served back-to-back at draw ${i}: ${curr?.name}`)
+      prev = curr
+    }
+  })
+
+  test('sets 1-6 base belts keep aspect seam dedup (unchanged)', () => {
+    const belt = new BaseBelt('JTL')
+    const sample: Array<{ aspects?: string[] }> = []
+    for (let i = 0; i < 50; i++) sample.push(belt.next())
+    let adjacentMatches = 0
+    for (let i = 1; i < sample.length; i++) {
+      const prev = sample[i - 1], curr = sample[i]
+      if (prev.aspects && curr.aspects && prev.aspects.some(a => curr.aspects!.includes(a))) {
+        adjacentMatches++
+      }
+    }
+    assert(adjacentMatches <= 10, `JTL should still dedup aspects: ${adjacentMatches} matches`)
+  })
+
+  test('Set 7+ consumer order shows ~random base aspect adjacency (stacking scrambles the line)', () => {
+    // Generate real ASH boxes and inspect the 24 packs in returned (box/consumer)
+    // order. The line separates aspects (~5%), but box stacking scrambles adjacency
+    // back toward random. Real photo-order data: 5/21 ≈ 24%; pure random ≈ 25%;
+    // line-separated WITHOUT stacking would be ~5% — so this also guards that
+    // stacking is actually applied to sealed boxes.
+    const numBoxes = 40
+    let sameAspectPairs = 0
+    let totalPairs = 0
+    clearBeltCache()
+    for (let b = 0; b < numBoxes; b++) {
+      const box = generateSealedBox([], 'ASH', 24)
+      const bases = box.map(pack => pack.cards.find(c => c.isBase))
+      for (let i = 1; i < bases.length; i++) {
+        const prev = bases[i - 1], curr = bases[i]
+        if (prev?.aspects && curr?.aspects) {
+          totalPairs++
+          if (prev.aspects.some(a => curr.aspects!.includes(a))) sameAspectPairs++
+        }
+      }
+    }
+    const rate = sameAspectPairs / totalPairs
+    assert(rate >= 0.10 && rate <= 0.40,
+      `Set 7+ consumer-order base aspect adjacency should be ~random (real photo order: 5/21 ≈ 24%), got ${(rate * 100).toFixed(1)}% (${sameAspectPairs}/${totalPairs})`)
+  })
+
   test('different belt instances start at different positions', () => {
     // Create multiple belts and check their first card varies
     const firstCards = new Set<string>()
@@ -178,34 +250,40 @@ async function runTests(): Promise<void> {
     const belt = new BaseBelt('SOR')
     const fillSize = belt.fillingPool.length
 
-    // Deploy entire first fill into an array
+    // First two fills should not be byte-for-byte identical (belt reshuffles each boot).
     const firstFill: string[] = []
-    for (let i = 0; i < fillSize; i++) {
-      firstFill.push(belt.next().id)
-    }
-
-    // Deploy second fill into an array
+    for (let i = 0; i < fillSize; i++) firstFill.push(belt.next().id)
     const secondFill: string[] = []
-    for (let i = 0; i < fillSize; i++) {
-      secondFill.push(belt.next().id)
-    }
-
-    // Arrays should not be identical
-    const areIdentical = firstFill.length === secondFill.length &&
-      firstFill.every((id, idx) => id === secondFill[idx])
-
+    for (let i = 0; i < fillSize; i++) secondFill.push(belt.next().id)
+    const areIdentical = firstFill.every((id, idx) => id === secondFill[idx])
     assert(!areIdentical, 'Consecutive belt fills should not produce identical sequences')
 
-    // Count how many positions are different
-    let differences = 0
-    for (let i = 0; i < Math.min(firstFill.length, secondFill.length); i++) {
-      if (firstFill[i] !== secondFill[i]) differences++
+    // Position-difference RATE, measured over a LARGE sample of consecutive fill-pairs.
+    //
+    // Comparing a single 8-position pair (as this test used to) is a tiny sample whose
+    // per-run rate swings from 0% to 100% — it flaked ~0.5% of runs at a hard 50%
+    // threshold (e.g. "got 37.5%" = 3/8). Per .claude/rules/testing.md, use a rate band
+    // over a large sample instead of a hard threshold on a handful of positions.
+    //
+    // SPEC: _fill() Fisher-Yates-reshuffles the pool for every boot, so consecutive
+    // fills are near-independent permutations of `fillSize` distinct bases. Expected
+    // position-match probability ≈ 1/fillSize, so expected differ rate ≈ 1 - 1/8 = 87.5%.
+    // Measured over 3000×500 fill-pairs: mean 87.4%, min 85.2% (aggregate rate per run
+    // is tightly concentrated over ~4000 positions). Assert >= 70% — ~15pts of margin
+    // below the observed floor so it never flakes, yet a belt that stopped reshuffling
+    // (repeating sequences) would crater far below 70% and fail.
+    let diff = 0, total = 0
+    let prev = secondFill
+    for (let p = 0; p < 500; p++) {
+      const fill: string[] = []
+      for (let i = 0; i < fillSize; i++) fill.push(belt.next().id)
+      for (let i = 0; i < fillSize; i++) { total++; if (prev[i] !== fill[i]) diff++ }
+      prev = fill
     }
-
-    // At least 50% of positions should be different (shuffled)
-    // Use >= to avoid flaky failures at exactly 50% (common with small pools like 8 bases)
-    const diffPercent = (differences / firstFill.length) * 100
-    assert(diffPercent >= 50, `At least 50% of positions should differ, got ${diffPercent.toFixed(1)}%`)
+    const diffPercent = (diff / total) * 100
+    assert(diffPercent >= 70,
+      `SPEC: consecutive belt fills should be well-shuffled — >= 70% of positions differ ` +
+      `over a large sample (expected ~87.5%), got ${diffPercent.toFixed(1)}% over ${total} positions`)
   })
 
   console.log('')

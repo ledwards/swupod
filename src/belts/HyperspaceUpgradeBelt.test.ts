@@ -125,17 +125,16 @@ function runTests(): void {
   })
 
   // ========================================================================
-  // CO-OCCURRENCE CONSTRAINTS
+  // CO-OCCURRENCE (leader + base CAN co-occur — real data falsified exclusivity)
   // ========================================================================
 
-  test('leader + base never co-occur in same plan', () => {
-    const belt = new HyperspaceUpgradeBelt()
-    for (let i = 0; i < TOTAL_DRAWS; i++) {
+  test('sets 1-6: leader + base never co-occur (past-set behavior preserved)', () => {
+    // Co-occurrence evidence exists only for Set 7+ (ASH pool-002 pack06).
+    // Groups 1-3/4-6 keep the exclusivity rule — never change past sets.
+    const belt = new HyperspaceUpgradeBelt() // '1-3' group
+    for (let i = 0; i < 10 * CYCLE_SIZE; i++) {
       const plan = belt.next()
-      assert(
-        !(plan.leader && plan.base),
-        `Plan ${i} has both leader and base HS — should never co-occur`
-      )
+      assert(!(plan.leader && plan.base), `Plan ${i} has both leader and base (forbidden for sets 1-6)`)
     }
   })
 
@@ -211,8 +210,8 @@ function runTests(): void {
   console.log('')
   console.log('\x1b[1m\x1b[35m🤠 LAW HyperspaceUpgradeBelt Tests\x1b[0m')
 
-  test('LAW: ~37% of plans have budget 0 (HS common is from dedicated belt, not upgrade)', () => {
-    // LAW config: budget-0 = 22/60 = 36.7%
+  test('LAW: ~43% of plans have budget 0 (HS common is from dedicated belt, not upgrade)', () => {
+    // LAW config: budget-0 = 26/60 = 43.3%
     const belt = new HyperspaceUpgradeBelt('LAW')
     let zeroCount = 0
     for (let i = 0; i < TOTAL_DRAWS; i++) {
@@ -220,30 +219,48 @@ function runTests(): void {
       if (countTrueSlots(plan) === 0) zeroCount++
     }
     const rate = zeroCount / TOTAL_DRAWS
-    console.log(`\x1b[36m   LAW budget-0 rate: ${(rate * 100).toFixed(1)}% (expected 36.7%)\x1b[0m`)
+    console.log(`\x1b[36m   LAW budget-0 rate: ${(rate * 100).toFixed(1)}% (expected 43.3%)\x1b[0m`)
     assert(
-      Math.abs(rate - 22 / 60) < 0.02,
-      `Budget-0 rate ${(rate * 100).toFixed(1)}% should be ~36.7%`
+      Math.abs(rate - 26 / 60) < 0.02,
+      `Budget-0 rate ${(rate * 100).toFixed(1)}% should be ~43.3%`
     )
   })
 
-  test('LAW: total upgrades per cycle approximately equals 46', () => {
-    // common: 0 (dedicated belt), so total = leader:10 + base:10 + uc1:4 + uc2:2 + uc3:20 = 46
+  test('LAW: total upgrades per cycle approximately equals 40', () => {
+    // common: 0 (dedicated belt), uc1/uc2: 0 (UC3 is the only UC upgrade slot),
+    // so total = leader:10 + base:10 + uc3:20 = 40
     const belt = new HyperspaceUpgradeBelt('LAW')
     let totalUpgrades = 0
     for (let i = 0; i < CYCLE_SIZE; i++) {
       totalUpgrades += countTrueSlots(belt.next())
     }
-    console.log(`\x1b[36m   LAW upgrades per cycle: ${totalUpgrades} (expected 46)\x1b[0m`)
-    assert(Math.abs(totalUpgrades - 46) <= 1, `Total upgrades per cycle = ${totalUpgrades}, expected 46 ±1`)
+    console.log(`\x1b[36m   LAW upgrades per cycle: ${totalUpgrades} (expected 40)\x1b[0m`)
+    assert(Math.abs(totalUpgrades - 40) <= 1, `Total upgrades per cycle = ${totalUpgrades}, expected 40 ±1`)
   })
 
-  test('LAW: leader + base never co-occur', () => {
+  test('FIXED: LAW/ASH UC1 and UC2 never upgrade to HS (SPEC: UC3 is the only UC upgrade slot for Set 7+; real ASH box observed 0/48)', () => {
     const belt = new HyperspaceUpgradeBelt('LAW')
     for (let i = 0; i < TOTAL_DRAWS; i++) {
       const plan = belt.next()
-      assert(!(plan.leader && plan.base), `Plan ${i} has both leader and base`)
+      assert(!plan.uc1, `Plan ${i} has uc1 upgrade — UC1 must never upgrade for Set 7+`)
+      assert(!plan.uc2, `Plan ${i} has uc2 upgrade — UC2 must never upgrade for Set 7+`)
     }
+  })
+
+  test('FIXED: LAW leader + base can co-occur (real ASH pool-002 pack06 had HS leader + HS base; only budget-2 plans, so 0-4 per 60-pack cycle)', () => {
+    // SPEC (L5): LAW group has budget-2 = 6/cycle, so leader+base co-occurrence is
+    // bounded above by 6/cycle and empirically lands roughly 0-4 per cycle. Over 50
+    // cycles it must be > 0 (co-occurrence is now possible) and well under the cap.
+    const CO_CYCLES = 50
+    const belt = new HyperspaceUpgradeBelt('LAW')
+    let coCount = 0
+    for (let i = 0; i < CO_CYCLES * CYCLE_SIZE; i++) {
+      const plan = belt.next()
+      if (plan.leader && plan.base) coCount++
+    }
+    console.log(`\x1b[36m   LAW leader+base co-occurrences over ${CO_CYCLES} cycles: ${coCount} (${(coCount / CO_CYCLES).toFixed(2)}/cycle)\x1b[0m`)
+    assert(coCount > 0, `LAW leader+base must be able to co-occur, got ${coCount} over ${CO_CYCLES} cycles`)
+    assert(coCount <= 300, `LAW leader+base co-occurrence ${coCount} unexpectedly high over ${CO_CYCLES} cycles (cap 300)`)
   })
 
   test('LAW: leader HS rate is approximately 1/6', () => {
@@ -265,6 +282,53 @@ function runTests(): void {
       if (belt.next().common) count++
     }
     assert(count === 0, `Common HS count should be 0 (dedicated belt), got ${count}`)
+  })
+
+  test('FIXED: ASH spaces HS leader/base on the sheet — right rate AND tight per-box spread', () => {
+    // SPEC (11 verified real boxes, 261 packs, number-first re-read 2026-07-12):
+    // HS leader 46/261 = 17.6% and HS base 41/261 = 15.7%, both AT 1/6 = 4/box
+    // (per-box mode exactly 4/4), and SPACED (real per-box sd ~0.7, well under
+    // a shuffled sheet's ~1.3). ASH config: leader 10/60, base 10/60, spaced.
+    const belt = new HyperspaceUpgradeBelt('ASH')
+    const BOXES = 1500
+    const lead: number[] = []
+    const base: number[] = []
+    for (let b = 0; b < BOXES; b++) {
+      let l = 0
+      let ba = 0
+      for (let p = 0; p < 24; p++) {
+        const plan = belt.next()
+        if (plan.leader) l++
+        if (plan.base) ba++
+      }
+      lead.push(l)
+      base.push(ba)
+    }
+    const mean = (xs: number[]) => xs.reduce((a, v) => a + v, 0) / xs.length
+    const sd = (xs: number[]) => { const m = mean(xs); return Math.sqrt(xs.reduce((a, v) => a + (v - m) ** 2, 0) / xs.length) }
+    const lm = mean(lead)
+    const bm = mean(base)
+    // Means on target (10/60*24 = 4.0 each).
+    assert(lm > 3.7 && lm < 4.3, `SPEC: HS leader ~4.0/box (1/6), got ${lm.toFixed(2)}`)
+    assert(bm > 3.7 && bm < 4.3, `SPEC: HS base ~4.0/box (1/6), got ${bm.toFixed(2)}`)
+    // Spread far tighter than a shuffled sheet (leader hypergeometric sd ≈ 1.3).
+    assert(sd(lead) < 0.9, `SPEC: HS leader must be spaced, not shuffled — sd ${sd(lead).toFixed(2)} (shuffled ≈ 1.3)`)
+    assert(sd(base) < 0.9, `SPEC: HS base must be spaced, not shuffled — sd ${sd(base).toFixed(2)} (shuffled ≈ 1.15)`)
+  })
+
+  test('LAW unchanged: leader + base still 1/6 via the shuffled budget path', () => {
+    // Guard: the ASH spaced path must not touch LAW.
+    const belt = new HyperspaceUpgradeBelt('LAW')
+    let l = 0
+    let b = 0
+    const N = 6000
+    for (let i = 0; i < N; i++) {
+      const plan = belt.next()
+      if (plan.leader) l++
+      if (plan.base) b++
+    }
+    assert(Math.abs(l / N - 1 / 6) / (1 / 6) < 0.06, `LAW leader HS should stay ~1/6, got ${(l / N).toFixed(3)}`)
+    assert(Math.abs(b / N - 1 / 6) / (1 / 6) < 0.06, `LAW base HS should stay ~1/6, got ${(b / N).toFixed(3)}`)
   })
 
   // ========================================================================

@@ -38,13 +38,6 @@ const TARGET_WEIGHTS_SETS_1_3: Record<string, number> = {
   Special: 0,
 }
 
-const TARGET_WEIGHTS_SETS_4_6: Record<string, number> = {
-  Common: 75,
-  Uncommon: 17,
-  Rare: 4,
-  Special: 4,
-  Legendary: 0.3,
-}
 
 export class FoilBelt {
   setCode: SetCode
@@ -69,7 +62,6 @@ export class FoilBelt {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const config = getSetConfig(this.setCode) as any
     const includeSpecial = config?.packRules?.specialInFoilSlot ?? false
-    const setNumber = config?.setNumber || 1
 
     // Filter to normal variant non-leader, non-base cards
     // Exclude Special rarity if not allowed for this set
@@ -80,8 +72,8 @@ export class FoilBelt {
       (includeSpecial || c.rarity !== 'Special')
     )
 
-    // Get target weights based on set number
-    const targetWeights = setNumber >= 4 ? TARGET_WEIGHTS_SETS_4_6 : TARGET_WEIGHTS_SETS_1_3
+    // Target weights come from the set config (rarityWeights.foilBeltTarget)
+    const targetWeights = config?.rarityWeights?.foilBeltTarget ?? TARGET_WEIGHTS_SETS_1_3
 
     // Count unique cards per rarity
     const rarityCounts: Record<string, number> = {}

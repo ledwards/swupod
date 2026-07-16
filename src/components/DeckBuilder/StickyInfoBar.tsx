@@ -290,7 +290,7 @@ export function StickyInfoBar({
         </div>
 
         {isInfoBarSticky && builderLabel && (
-          <span className="sticky-builder-label">by {builderLabel}</span>
+          <span className="sticky-builder-label">{builderLabel === 'Original' ? 'Original' : `by ${builderLabel}`}</span>
         )}
       </div>
 

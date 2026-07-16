@@ -9,6 +9,7 @@ import { fetchSetCards } from '../../../src/utils/api'
 import { getBaseSetCode } from '../../../src/utils/carboniteConstants'
 import { savePool } from '../../../src/utils/poolApi'
 import { getCyclingPackImageUrls, getRandomPackImageUrls } from '../../../src/utils/packArt'
+import { pickRandomWindow } from '../../../src/utils/packWindow'
 import { nanoid } from 'nanoid'
 import SealedPod from '../../../src/components/SealedPod'
 import PackOpeningAnimation from '../../../src/components/PackOpeningAnimation'
@@ -33,23 +34,6 @@ interface PoolData {
   isPublic: boolean
   boxPacks?: PackType[]
   packIndices?: number[]
-}
-
-/**
- * Generate N unique random indices from 0 to max-1
- */
-function generateRandomIndices(count: number, max: number): number[] {
-  const indices: number[] = []
-  const available = Array.from({ length: max }, (_, i) => i)
-
-  for (let i = 0; i < count; i++) {
-    const randomIndex = Math.floor(Math.random() * available.length)
-    indices.push(available[randomIndex])
-    available.splice(randomIndex, 1)
-  }
-
-  // Sort indices so packs appear in box order
-  return indices.sort((a, b) => a - b)
 }
 
 export default function NewPoolPage() {
@@ -187,8 +171,9 @@ export default function NewPoolPage() {
   const handleRandomize = useCallback(async () => {
     if (!pool?.boxPacks || !pool?.setCode) return
 
-    // Generate new random indices from the 24-pack box
-    const newIndices = generateRandomIndices(6, pool.boxPacks.length)
+    // Deal a fresh consecutive 6-pack window from the box (physical cut —
+    // scattered indices cross collation windows and clump duplicates)
+    const newIndices = pickRandomWindow(6, pool.boxPacks.length, pool.packIndices?.[0])
     const newPacks = newIndices.map(i => pool.boxPacks![i])
     const newCards = newPacks.flatMap(pack => pack.cards)
 

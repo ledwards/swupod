@@ -40,19 +40,36 @@ export const SHD_CONFIG: SetConfig = {
   packRules: {
     rareBasesInRareSlot: true,
     specialInFoilSlot: constants.specialInFoilSlot,
+    specialInHyperspaceSlots: constants.specialInHyperspaceSlot ?? false,
+    specialShowcaseLeaders: true,
+    baseLineAspectConflict: constants.baseLineAspectConflict,
+    uncommonAspectInterleave: constants.uncommonAspectInterleave,
+    lineStackingCollation: constants.lineStackingCollation,
+    carboniteTiered: constants.carboniteTiered,
   },
 
   // Rarity weights for different slots (from packConstants)
   rarityWeights: {
     foilSlot: constants.foilSlotWeights!,
     hyperfoil: constants.hyperfoilWeights,
+    foilBeltTarget: constants.foilBeltTargetWeights,
+    hyperspaceFoilSlot: constants.foilBeltTargetWeights,
     ucSlot3Upgraded: constants.ucSlot3UpgradedWeights,
     hyperspaceNonFoil: constants.hyperspaceNonFoilWeights,
   },
 
   // Belt ratios
   beltRatios: {
-    rareToLegendary: constants.rareSlotLegendaryRatio,  // 7:1 for R slot (1 in 8)
+    rareToLegendary: constants.rareSlotLegendaryRatio,
+    hyperspaceRareToLegendary: constants.hsRareSlotLegendaryRatio,
+  },
+
+  // Dedup windows (config-driven; belts must not branch on setNumber)
+  dedupWindows: {
+    rareLegendary: constants.rareLegendaryDedupWindow,
+    leaderCap: constants.leaderDedupWindowCap,
+    hyperspaceLeaderCap: constants.hyperspaceLeaderDedupWindowCap,
+    uncommon: constants.uncommonDedupWindow,
   },
 
   // Upgrade probabilities

@@ -9,6 +9,7 @@ import {
   COMMON_BELT_ASSIGNMENTS,
   getBlockForSet,
   getBeltConfig,
+  assignCardToBelt,
 } from './data/commonBeltAssignments'
 import { CommonBelt, getBeltCards } from './CommonBelt'
 import { initializeCardCache, getCachedCards } from '../utils/cardCache'
@@ -59,6 +60,55 @@ describe('Common Belt Assignments', () => {
           `${setCode} Belt A should be ~${expectedSize}, got ${beltASize}`)
       }
     })
+  })
+
+  describe('Block B (LAW/ASH) aspect lane assignment — SPEC from real ASH box 001', () => {
+    // Box 001 (24 packs, slot-level): lane A (pack pos 3-6) = Vigilance-first,
+    // Aggression-first, Villainy-only; lane B (pack pos 8-11) = Command-first,
+    // Cunning-first, Heroism-only; neutrals appeared in both lanes (~even).
+    const isNormalCommon = (c) =>
+      c.rarity === 'Common' && !c.isLeader && !c.isBase &&
+      (c.variantType || 'Normal') === 'Normal'
+
+    for (const setCode of ['LAW', 'ASH']) {
+      test(`${setCode}: every normal common is assigned to exactly one belt (completeness)`, () => {
+        const commons = getCachedCards(setCode).filter(isNormalCommon)
+        assert.ok(commons.length > 50, `${setCode} should have commons loaded, got ${commons.length}`)
+        for (const c of commons) {
+          const belt = assignCardToBelt(c, 'B')
+          assert.ok(belt === 'A' || belt === 'B', `${c.name} got invalid belt ${belt}`)
+        }
+        const sizeA = commons.filter(c => assignCardToBelt(c, 'B') === 'A').length
+        const sizeB = commons.length - sizeA
+        assert.ok(Math.abs(sizeA - sizeB) <= commons.length * 0.2,
+          `${setCode} belts should be roughly balanced: A=${sizeA}, B=${sizeB}`)
+      })
+
+      test(`${setCode}: lane rules match real box 001 (Vig/Agg/V-only→A, Cmd/Cun/H-only→B, neutrals split)`, () => {
+        const commons = getCachedCards(setCode).filter(isNormalCommon)
+        let neutralA = 0, neutralB = 0
+        for (const c of commons) {
+          const belt = assignCardToBelt(c, 'B')
+          const aspects = c.aspects || []
+          const first = aspects[0]
+          if (first === 'Vigilance' || first === 'Aggression') {
+            assert.strictEqual(belt, 'A', `${c.name} [${aspects.join('/')}] must be belt A`)
+          } else if (first === 'Cunning' || first === 'Command') {
+            assert.strictEqual(belt, 'B', `${c.name} [${aspects.join('/')}] must be belt B`)
+          } else if (aspects.length === 1 && first === 'Villainy') {
+            assert.strictEqual(belt, 'A', `Villainy-only ${c.name} must be belt A`)
+          } else if (aspects.length === 1 && first === 'Heroism') {
+            assert.strictEqual(belt, 'B', `Heroism-only ${c.name} must be belt B (box 001: 11+ in lane B, 0 in lane A)`)
+          } else if (aspects.length === 0) {
+            if (belt === 'A') neutralA++; else neutralB++
+          }
+        }
+        if (neutralA + neutralB >= 4) {
+          assert.ok(Math.abs(neutralA - neutralB) <= Math.ceil((neutralA + neutralB) / 2),
+            `neutrals should split across belts, got A=${neutralA} B=${neutralB}`)
+        }
+      })
+    }
   })
 
   describe('No Duplicates Within Belt', () => {

@@ -5,7 +5,7 @@
  * Run with: npx tsx src/utils/boosterPack.test.ts
  */
 
-import { generateBoosterPack, generateSealedPod, generateSealedBox, clearBeltCache } from './boosterPack'
+import { generateBoosterPack, generateSealedPod, generateSealedBox, clearBeltCache, stackBoxOrder } from './boosterPack'
 import { initializeCardCache, getCachedCards } from './cardCache'
 
 let passed = 0
@@ -696,9 +696,11 @@ async function runTests(): Promise<void> {
     const stdDev = Math.sqrt(packCount * expectedRate * (1 - expectedRate))
     const zScore = Math.abs(pairsFound - packCount * expectedRate) / stdDev
 
-    // Statistical significance threshold: z > 3 means something is wrong
-    // This corresponds to ~0.3% probability under normal operation
-    const maxZScore = 3.0
+    // Statistical significance threshold. Two-sided z > 3 flakes ~0.27% of runs on pure
+    // variance (no bug) — too tight; the sibling tests (foil-common z>4, pod-pairs z>4)
+    // already use 4.0+ for exactly this reason. A real correlation bug shows z of 50+, so
+    // 4.5 loses no bug-detection power while making variance flakes negligible (~7e-6).
+    const maxZScore = 4.5
 
     console.log(`\x1b[36m   Card+foil pair rate: ${(observedRate * 100).toFixed(2)}% (${pairsFound}/${packCount})\x1b[0m`)
     console.log(`\x1b[36m   Expected rate (mathematical): ${(expectedRate * 100).toFixed(2)}%\x1b[0m`)
@@ -751,41 +753,22 @@ async function runTests(): Promise<void> {
     const podPairRate = podsWithPairs / podCount
     const avgPairsPerPod = totalPairs / podCount
 
-    // Expected rate for sealed pods:
-    // - 6 packs, each with 9 commons from belts A/B (~45 cards each)
-    // - 54 commons drawn total, ~27 from each belt = ~54 unique (belts don't fully cycle)
-    // - 6 foils drawn, ~4.67 are commons (77.8%)
-    // - P(foil common matches one of 54 unique commons) = 54/90 = 60%
-    // - P(at least one of ~4.67 foils matches) ≈ 1 - (1-0.60)^4.67 ≈ 98.6%
-    // - Expected pairs per pod = 4.67 * 0.60 = 2.80
-    const expectedPodRate = 0.986
-    const expectedPairsPerPod = 2.8
-
-    // For average pairs, use z-score on the mean
-    // Variance for sum of Bernoulli trials: n * p * (1-p) where p = 0.60, n ≈ 4.67
-    const pairsVariancePerPod = 4.67 * 0.60 * 0.40 // ≈ 1.12
-    const pairsStdDev = Math.sqrt(podCount * pairsVariancePerPod)
-    const pairsMean = podCount * expectedPairsPerPod
-    const pairsZScore = Math.abs(totalPairs - pairsMean) / pairsStdDev
-
-    // Use 4.0σ threshold to reduce flakiness with 100-sample test runs
-    // (Statistical tests with many iterations can occasionally exceed 3.5σ by chance)
-    const maxZScore = 4.0
-
+    // Robust sanity BAND instead of a tight z-test. The old z-test modeled the mean at
+    // 2.8 pairs/pod, but the measured true mean is ~2.98 (1000 pods, sd 1.22), so the
+    // two-sided z sat ~1.5 batch-σ off-center and tripped `z > 4` ~2.3% of runs — a false
+    // alarm on pure variance, not a bug. Per .claude/rules/testing.md, use a band matched
+    // to the real distribution. Intent: catch a gross foil↔common CORRELATION bug. "Foil
+    // belt = copy of common belt" would force ~every common foil (≈4.67/pod) to match →
+    // ~4.67 pairs/pod; a broken pairing path → ~0. Normal is 2.98 ± ~0.12 (batch avg over
+    // 100 pods), so [1.5, 4.0] is >8σ from normal on both sides yet still flags either mode.
     console.log(`\x1b[36m   Pods with card+foil pairs: ${podsWithPairs}/${podCount} (${(podPairRate * 100).toFixed(1)}%)\x1b[0m`)
-    console.log(`\x1b[36m   Expected pod rate (mathematical): ~${(expectedPodRate * 100).toFixed(0)}%\x1b[0m`)
-    console.log(`\x1b[36m   Average pairs per pod: ${avgPairsPerPod.toFixed(2)} (expected: ~${expectedPairsPerPod})\x1b[0m`)
-    console.log(`\x1b[36m   Z-score for pairs count: ${pairsZScore.toFixed(2)} (threshold: ${maxZScore})\x1b[0m`)
-
-    if (pairsZScore > maxZScore) {
-      console.log(`\x1b[33m   ⚠️  Pairs count deviates significantly from expected\x1b[0m`)
-    }
+    console.log(`\x1b[36m   Average pairs per pod: ${avgPairsPerPod.toFixed(2)} (expected ~3.0, band 1.5-4.0)\x1b[0m`)
 
     assert(
-      pairsZScore <= maxZScore,
-      `Average pairs per pod (${avgPairsPerPod.toFixed(2)}) deviates significantly from expected ~${expectedPairsPerPod} ` +
-      `(z=${pairsZScore.toFixed(2)} > ${maxZScore}). This may indicate a bug in belt operation. ` +
-      `Examples: ${pairDetails.join('; ')}`
+      avgPairsPerPod >= 1.5 && avgPairsPerPod <= 4.0,
+      `SPEC: avg card+foil pairs per pod should be ~3.0 (band 1.5-4.0 over ${podCount} pods), got ` +
+      `${avgPairsPerPod.toFixed(2)}. Above the band suggests a foil↔common belt correlation bug; ` +
+      `below suggests the pairing mechanism broke. Examples: ${pairDetails.join('; ')}`
     )
   })
 
@@ -806,10 +789,11 @@ async function runTests(): Promise<void> {
       }
     }
 
-    // With 1/6 probability, we expect ~17 out of 100
-    // Allow wide variance for randomness
+    // Smoke test: the HS-leader upgrade mechanism produces upgrades (~1/6, expect ~17/100).
+    // Floor is >2 (not >5): >5 sits only ~3σ below the mean and flaked; >2 is ~4σ safe and
+    // still catches a broken/near-zero upgrade path. Exact rate is validated in npm run qa.
     assert(
-      hyperspaceLeaderCount > 5,
+      hyperspaceLeaderCount > 2,
       `Expected some Hyperspace leaders, got ${hyperspaceLeaderCount} out of ${packCount}`
     )
   })
@@ -827,9 +811,9 @@ async function runTests(): Promise<void> {
       }
     }
 
-    // With 1/6 probability, we expect ~17 out of 100
+    // Smoke test (see HS-leader test above): floor >2 is ~4σ safe at ~1/6 over 100; >5 flaked.
     assert(
-      hyperspaceBaseCount > 5,
+      hyperspaceBaseCount > 2,
       `Expected some Hyperspace bases, got ${hyperspaceBaseCount} out of ${packCount}`
     )
   })
@@ -837,7 +821,10 @@ async function runTests(): Promise<void> {
   test('over many packs, some foils get upgraded to Hyperfoil', () => {
     clearBeltCache()
     let hyperfoilCount = 0
-    const packCount = 500
+    // 2000 packs (not 500): hyperfoils are ~1/50, so 500 gives mean 10 where the >2 floor is
+    // only ~2.5σ down and flaked ~0.3%. At 2000 the mean is ~40 and >2 is ~6σ safe (still
+    // catches a broken upgrade path); the exact rate is validated in npm run qa.
+    const packCount = 2000
 
     for (let i = 0; i < packCount; i++) {
       const pack = generateBoosterPack(cards, 'SOR')
@@ -1250,6 +1237,187 @@ async function runTests(): Promise<void> {
       `Expected ~${expectedCount} in ${packCount} packs, but found only ${hyperspaceFoilFound}. ` +
       `The foilToHyperfoil upgrade should use variantType === 'Hyperspace Foil' cards.`
     )
+  })
+
+  console.log('')
+  console.log('Line + Stacking Collation Tests (Set 7+)')
+  console.log('========================================')
+
+  // Helper: is a pack structurally valid (16 cards, 1 leader, 1 common base)?
+  // NOTE: sets 1-6 can also place a RARE base in the R/L slot, so we count the
+  // guaranteed *common* base slot (matches the existing suite's convention).
+  function isValidPack(pack: Pack): boolean {
+    if (!pack || !Array.isArray(pack.cards)) return false
+    if (pack.cards.length !== 16) return false
+    if (pack.cards.filter((c: Card) => c.isLeader).length !== 1) return false
+    if (pack.cards.filter((c: Card) => c.isBase && c.rarity === 'Common').length !== 1) return false
+    return true
+  }
+
+  // S1a: stackBoxOrder is exactly the line→box permutation.
+  // SPEC (LINE_STACKING_COLLATION_PLAN.md S1): line k (1-indexed) → box position
+  //   12-(k-1)/2 for odd k, 24-(k-2)/2 for even k (24-pack box, columns of 12).
+  // Reading box positions 12,24,11,23,...,1,13 must yield line order 1..24.
+  test('S1a: stackBoxOrder maps line order to the exact box permutation (ASH/LAW spec)', () => {
+    // Sentinels are line indices 1..24 (line order = generation sequence).
+    const line = Array.from({ length: 24 }, (_, i) => i + 1)
+    const box = stackBoxOrder(line)
+
+    // Expected box array: box[pos-1] = line pack that lands at that position.
+    // Derived directly from the spec mapping.
+    const expectedBox = new Array(24)
+    for (let k = 1; k <= 24; k++) {
+      const pos = (k % 2 === 1) ? 12 - (k - 1) / 2 : 24 - (k - 2) / 2
+      expectedBox[pos - 1] = k
+    }
+    assert(
+      JSON.stringify(box) === JSON.stringify(expectedBox),
+      `SPEC: stackBoxOrder must equal ${JSON.stringify(expectedBox)}, got ${JSON.stringify(box)}`
+    )
+
+    // Independent cross-check: reading positions 12,24,11,23,...,1,13 (Lee's order)
+    // must recover line order 1,2,3,...,24.
+    const readOrder = [12, 24, 11, 23, 10, 22, 9, 21, 8, 20, 7, 19, 6, 18, 5, 17, 4, 16, 3, 15, 2, 14, 1, 13]
+    const recovered = readOrder.map(pos => box[pos - 1])
+    assert(
+      JSON.stringify(recovered) === JSON.stringify(line),
+      `SPEC: reading box positions 12,24,...,1,13 must recover line order 1..24, got ${JSON.stringify(recovered)}`
+    )
+  })
+
+  test('S1a: stackBoxOrder returns odd/short arrays unchanged (no stacking)', () => {
+    const odd = Array.from({ length: 23 }, (_, i) => i + 1)
+    assert(JSON.stringify(stackBoxOrder(odd)) === JSON.stringify(odd), 'Odd-length array must be unchanged')
+
+    const one = [42]
+    assert(JSON.stringify(stackBoxOrder(one)) === JSON.stringify(one), 'Length-1 array must be unchanged')
+
+    const empty: number[] = []
+    assert(JSON.stringify(stackBoxOrder(empty)) === JSON.stringify(empty), 'Empty array must be unchanged')
+
+    // Even but not 24 (e.g. 6) still stacks by the general rule (columns of N/2).
+    const six = [1, 2, 3, 4, 5, 6]
+    const stackedSix = stackBoxOrder(six)
+    assert(stackedSix.length === 6, 'Even array must retain all elements')
+    assert(
+      JSON.stringify([...stackedSix].sort()) === JSON.stringify([...six].sort()),
+      'Stacking must be a permutation (same elements)'
+    )
+  })
+
+  test('S1a: stackBoxOrder preserves object identity (only order changes)', () => {
+    const objs = Array.from({ length: 24 }, (_, i) => ({ tag: i }))
+    const stacked = stackBoxOrder(objs)
+    // Every original object appears exactly once by reference.
+    for (const o of objs) {
+      assert(stacked.includes(o), `Original object tag=${o.tag} must survive stacking by reference`)
+    }
+    assert(stacked.length === 24, 'Stacked array must retain 24 elements')
+  })
+
+  // S1b: ASH generateSealedBox returns 24 valid packs; contents untouched by stacking.
+  test('S1b: ASH generateSealedBox(24) returns 24 valid packs (contents untouched)', () => {
+    const ashCards = getCachedCards('ASH')
+    if (ashCards.length === 0) {
+      console.log('\x1b[33m   Skipping: ASH placeholder catalog is not generated\x1b[0m')
+      return
+    }
+    clearBeltCache()
+    const box = generateSealedBox(ashCards, 'ASH', 24)
+    assertEqual(box.length, 24, 'ASH box should contain 24 packs')
+    box.forEach((pack: Pack, i: number) => {
+      assert(isValidPack(pack), `ASH box pack ${i + 1} must have 16 cards, 1 leader, 1 base`)
+    })
+  })
+
+  // S2: Sets 1-6 (setNumber < 7) get NO stacking — order is exactly as before.
+  // We assert this at the helper level (stacking only wired for Set 7+) plus a
+  // smoke check that JTL (set 4) boxes remain 24 valid packs.
+  test('S2: JTL (set 4) generateSealedBox(24) returns 24 valid packs (no stacking regression)', () => {
+    clearBeltCache()
+    const box = generateSealedBox(getCachedCards('JTL'), 'JTL', 24)
+    assertEqual(box.length, 24, 'JTL box should contain 24 packs')
+    box.forEach((pack: Pack, i: number) => {
+      assert(isValidPack(pack), `JTL box pack ${i + 1} must have 16 cards, 1 leader, 1 base`)
+    })
+  })
+
+  test('S2: SOR (set 1) generateSealedBox(24) returns 24 valid packs (no stacking regression)', () => {
+    clearBeltCache()
+    const box = generateSealedBox(cards, 'SOR', 24)
+    assertEqual(box.length, 24, 'SOR box should contain 24 packs')
+    box.forEach((pack: Pack, i: number) => {
+      assert(isValidPack(pack), `SOR box pack ${i + 1} must have 16 cards, 1 leader, 1 base`)
+    })
+  })
+
+  // S3: Sealed pods (Set 7+) are cut from a stacked virtual box — consecutive box positions.
+  test('S3: ASH generateSealedPod([], setCode, 24) equals exactly one full stacked box', () => {
+    const ashCards = getCachedCards('ASH')
+    if (ashCards.length === 0) {
+      console.log('\x1b[33m   Skipping: ASH placeholder catalog is not generated\x1b[0m')
+      return
+    }
+    clearBeltCache()
+    const pods = generateSealedPod(ashCards, 'ASH', 24)
+    assertEqual(pods.length, 24, 'A 24-pack ASH pod request should yield exactly one full box of 24 packs')
+    pods.forEach((pack: Pack, i: number) => {
+      assert(isValidPack(pack), `ASH pod-box pack ${i + 1} must have 16 cards, 1 leader, 1 base`)
+    })
+  })
+
+  test('S3: ASH 4 sequential 6-pack pods draw 24 packs from one virtual box (no shared refs)', () => {
+    const ashCards = getCachedCards('ASH')
+    if (ashCards.length === 0) {
+      console.log('\x1b[33m   Skipping: ASH placeholder catalog is not generated\x1b[0m')
+      return
+    }
+    clearBeltCache()
+    const allPacks: Pack[] = []
+    for (let podNum = 0; podNum < 4; podNum++) {
+      const pod = generateSealedPod(ashCards, 'ASH', 6)
+      assertEqual(pod.length, 6, `Pod ${podNum + 1} should have 6 packs`)
+      pod.forEach((pack: Pack, i: number) => {
+        assert(isValidPack(pack), `Pod ${podNum + 1} pack ${i + 1} must have 16 cards, 1 leader, 1 base`)
+      })
+      allPacks.push(...pod)
+    }
+    assertEqual(allPacks.length, 24, 'Four 6-pack pods should total 24 packs')
+
+    // No two pods share a pack object reference (each is a distinct pack).
+    for (let a = 0; a < allPacks.length; a++) {
+      for (let b = a + 1; b < allPacks.length; b++) {
+        assert(allPacks[a] !== allPacks[b], `Packs at ${a} and ${b} must be distinct object references`)
+      }
+    }
+  })
+
+  test('S3: clearBeltCache resets the virtual-box buffer (no stale state)', () => {
+    const ashCards = getCachedCards('ASH')
+    if (ashCards.length === 0) {
+      console.log('\x1b[33m   Skipping: ASH placeholder catalog is not generated\x1b[0m')
+      return
+    }
+    // Draw a partial pod to leave the buffer non-empty, then clear and redraw.
+    clearBeltCache()
+    const first = generateSealedPod(ashCards, 'ASH', 6)
+    assertEqual(first.length, 6, 'First pod should have 6 packs')
+    // clearBeltCache must discard any buffered remainder without errors.
+    clearBeltCache()
+    const afterClear = generateSealedPod(ashCards, 'ASH', 24)
+    assertEqual(afterClear.length, 24, 'After clearBeltCache a 24-pack pod should yield a full fresh box')
+    afterClear.forEach((pack: Pack, i: number) => {
+      assert(isValidPack(pack), `Post-clear pod-box pack ${i + 1} must be valid`)
+    })
+  })
+
+  test('S3: sets 1-6 pods keep independent-pack behavior (SOR pod of 6 is valid)', () => {
+    clearBeltCache()
+    const pod = generateSealedPod(cards, 'SOR', 6)
+    assertEqual(pod.length, 6, 'SOR pod should have 6 packs')
+    pod.forEach((pack: Pack, i: number) => {
+      assert(isValidPack(pack), `SOR pod pack ${i + 1} must have 16 cards, 1 leader, 1 base`)
+    })
   })
 
   console.log('')

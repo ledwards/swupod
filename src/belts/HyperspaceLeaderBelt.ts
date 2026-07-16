@@ -8,6 +8,7 @@
  */
 
 import { getCachedCards } from '../utils/cardCache'
+import { getSetConfig } from '../utils/setConfigs'
 import type { RawCard } from '../utils/cardData'
 import type { SetCode } from '../types'
 import {
@@ -76,10 +77,13 @@ export class HyperspaceLeaderBelt {
 
   _fill(): void {
     const priorCards = [...this.recentCards, ...this.hopper].slice(-LEADER_DEDUP_WINDOW)
+    // Loosened dedup cap comes from the set config (dedupWindows.hyperspaceLeaderCap)
+    const hsCap = getSetConfig(this.setCode)?.dedupWindows?.hyperspaceLeaderCap
     const boot = buildLeaderSheetBoot({
       commonLeaders: this.commonLeaders,
       rareLeaders: this.rareLeaders,
       priorCards,
+      ...(hsCap != null ? { dedupWindowCap: hsCap } : {}),
     })
 
     this.hopper.push(...boot)

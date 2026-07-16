@@ -24,6 +24,7 @@ export type PromoVariant =
   | 'nonSubConversion'
   | 'patronNoBeta'
   | 'patronActivation'
+  | 'prereleaseLive'
 
 export interface PromoVariantInput {
   /** True when the user already has an active pod showing in .active-draft-banner. */
@@ -34,6 +35,13 @@ export interface PromoVariantInput {
   isPatron: boolean | null
   /** Whether the user has clicked "Join the Beta" (only meaningful when isPatron === true). */
   isBetaTester: boolean
+  /**
+   * True once the upcoming set has crossed its prereleaseDate (isPrerelease).
+   * At that point the set is generally available to everyone, so all the
+   * beta-oriented banners are stale — we show a single celebratory "live"
+   * banner instead. Defaults to false so pre-prerelease behavior is unchanged.
+   */
+  isPrerelease?: boolean
   /**
    * Per-variant dismissal flags keyed by setCode. A dismissal hides only the
    * variant the user actually closed: a logged-out user dismissing the
@@ -53,8 +61,14 @@ export function selectHomepagePromoVariant(input: PromoVariantInput): PromoVaria
   // Remaining priorities all require an upcoming set.
   if (!input.upcomingSet) return 'none'
 
+  // Once the set crosses its prereleaseDate it's live for everyone — the
+  // beta conversion / enroll / activation banners no longer apply. Show a
+  // single celebratory banner regardless of patron status. This is the
+  // automatic date-crossover swap.
   let target: PromoVariant
-  if (input.isPatron === false) {
+  if (input.isPrerelease) {
+    target = 'prereleaseLive'
+  } else if (input.isPatron === false) {
     target = 'nonSubConversion'
   } else if (input.isBetaTester) {
     // isPatron === true from here on.

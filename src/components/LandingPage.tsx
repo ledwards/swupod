@@ -22,7 +22,7 @@ import { wayfinderCompanionUrl } from '../utils/wayfinderUrls'
 import Button from './Button'
 import SubscribeModal from './SubscribeModal'
 import Countdown from './Countdown'
-import { getSetConfig } from '../utils/setConfigs/index'
+import { getSetConfig, isPrerelease } from '../utils/setConfigs/index'
 import { STANDARD_DRAFT_NEW_PATH } from '../utils/draftCreationRoutes'
 // Summary-backed (NOT cardData) — this is a 'use client' component; a
 // cardData import would embed the 8 MB cards.json in the landing bundle (U5).
@@ -110,7 +110,7 @@ function LandingPage() {
       return
     }
     const next: Partial<Record<PromoVariant, boolean>> = {}
-    for (const variant of ['nonSubConversion', 'patronNoBeta', 'patronActivation'] as const) {
+    for (const variant of ['nonSubConversion', 'patronNoBeta', 'patronActivation', 'prereleaseLive'] as const) {
       const key = promoDismissalKey(upcomingSet.setCode, variant)
       if (key && localStorage.getItem(key)) next[variant] = true
     }
@@ -224,6 +224,7 @@ function LandingPage() {
           upcomingSet,
           isPatron: isPreviewing ? false : isPatron,
           isBetaTester: isPreviewing ? false : Boolean(hasBetaAccess),
+          isPrerelease: upcomingSet ? isPrerelease(upcomingSet) : false,
           dismissedVariantsForSet: isPreviewing ? {} : dismissedVariantsForSet,
         })
 
@@ -274,8 +275,8 @@ function LandingPage() {
   useEffect(() => {
     if (promoVariant === 'none') return
     const surface =
-      promoVariant === 'patronActivation'
-        ? null // not a conversion event — already a patron
+      promoVariant === 'patronActivation' || promoVariant === 'prereleaseLive'
+        ? null // not a conversion event — already a patron / set is live for all
         : 'homepageBanner'
     if (!surface) return
     trackEvent(AnalyticsEvents.SUBSCRIBE_CTA_SHOWN, {
@@ -311,6 +312,34 @@ function LandingPage() {
 
   return (
     <div className="landing-page">
+      {promoVariant === 'prereleaseLive' && setName && (
+        <div
+          className="next-set-promo-banner next-set-promo-banner--feature"
+          role="region"
+          aria-label={`${setName} is live`}
+          style={promoBannerStyle}
+        >
+          <div className="next-set-promo-banner-stack">
+            <div className="next-set-promo-banner-text">
+              <div className="next-set-promo-banner-headline">
+                {setName} is live!
+              </div>
+              <div className="next-set-promo-banner-subhead">
+                Available to all. Happy pre-release week.
+              </div>
+            </div>
+          </div>
+          <Button
+            variant="icon"
+            size="sm"
+            className="next-set-promo-banner-dismiss"
+            aria-label="Dismiss banner"
+            onClick={() => handleDismissPromo('prereleaseLive')}
+          >
+            ×
+          </Button>
+        </div>
+      )}
       {promoVariant === 'nonSubConversion' && setName && (
         <div
           className="next-set-promo-banner next-set-promo-banner--feature"

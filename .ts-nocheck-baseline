@@ -1,4 +1,4 @@
-577
+576
 # 2026-07-09: +1 (app/api/stats/entitlement.test.ts) — entitlement.test.ts: server-side stats-gate test (item-7 refresh); DB-mocked test uses @ts-nocheck like the rest of the suite
 # 2026-07-09: +1 (app/sealed_pool/[shareId]/SealedPoolClient.tsx) — split sealed_pool: page.tsx is now a typechecked server component (real 404 gate); client logic moved verbatim to SealedPoolClient.tsx (keeps its @ts-nocheck)
 app/admin/page.tsx
@@ -292,7 +292,6 @@ src/components/DeckBuilder/ArenaPoolSection.tsx
 src/components/DeckBuilder/ArenaView.tsx
 src/components/DeckBuilder/AspectFilterModal.tsx
 src/components/DeckBuilder/AspectPenaltyToggle.tsx
-src/components/DeckBuilder/BulkMoveButtons.tsx
 src/components/DeckBuilder/CardDensityToggle.tsx
 src/components/DeckBuilder/CardGrid.test.ts
 src/components/DeckBuilder/CardGrid.tsx

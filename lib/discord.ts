@@ -97,8 +97,12 @@ export async function isGuildMember(discordId: string): Promise<boolean> {
     )
 
     if (!response.ok) {
-      const body = await response.text()
-      console.error('isGuildMember: Discord API error', response.status, body)
+      // 404 (Unknown Member, code 10007) just means the user isn't in the
+      // guild — an expected negative result, not an error worth logging.
+      if (response.status !== 404) {
+        const body = await response.text()
+        console.error('isGuildMember: Discord API error', response.status, body)
+      }
     }
 
     return response.ok

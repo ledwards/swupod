@@ -48,6 +48,7 @@ export class RareLegendaryBelt {
   rares: RawCard[]
   legendaries: RawCard[]
   ratio: number
+  dedupWindow: number
 
   constructor(setCode: SetCode | string) {
     this.setCode = setCode as SetCode
@@ -56,6 +57,10 @@ export class RareLegendaryBelt {
     this.rares = []
     this.legendaries = []
     this.ratio = 7 // Default, will be set based on config
+    // Same-card dedup window: forbids repeats within this many subsequent draws.
+    // Window 6 → min allowed repeat distance 7. Set 7+ (LAW/ASH) loosen to 3 so a
+    // same-rare repeat can occur at distance 4 (real ASH box 001), never back-to-back.
+    this.dedupWindow = 6
 
     this._initialize()
   }
@@ -68,10 +73,10 @@ export class RareLegendaryBelt {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const config = getSetConfig(this.setCode) as any
 
-    // Determine ratio based on set number
-    // Sets 1-3: 7:1 (1 in 8), Sets 4+: 5:1 (1 in 6)
-    const setNumber = config?.setNumber || 1
-    this.ratio = setNumber <= 3 ? 7 : 5
+    // Ratio and dedup window come from the set config (beltRatios/dedupWindows);
+    // fallbacks preserve legacy behavior for unknown set codes.
+    this.ratio = config?.beltRatios?.rareToLegendary ?? 7
+    this.dedupWindow = config?.dedupWindows?.rareLegendary ?? 6
 
     // Check if this set puts rare bases in the base slot (no current sets do)
     // If so, exclude them from the rare slot. Otherwise, include them.
@@ -152,29 +157,149 @@ export class RareLegendaryBelt {
     // Build segment with correct ratio
     const segment: RawCard[] = []
 
-    // Add rares (multiple copies)
-    for (let copy = 0; copy < finalRareMult; copy++) {
-      segment.push(...this.rares)
+    // Line-stacking sets: a non-integer copy ratio (e.g. 4:1 with 50R/20L needs
+    // 8x/5x under GCD) would explode the segment to 8 copies per rare — 5x the
+    // real box's repeat rate (10 verified boxes: ~0.5 same-rare repeats/box vs
+    // 2.6 generated at 8x density). The real sheet keeps low multiplicity:
+    // 2x every rare + 1x every legendary + a few uniformly-chosen legendaries
+    // doubled to hit the exact ratio (125 cards, 100R/25L = 4:1 for ASH).
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const cfgLS = (getSetConfig(this.setCode) as any)?.packRules?.lineStackingCollation === true
+    if (cfgLS) {
+      // EQUAL FREQUENCY IS UNBREAKABLE: every rare gets the SAME copy count and
+      // every legendary the SAME copy count. finalRareMult / finalLegMult were
+      // already reduced from the ratio by GCD above — they ARE the LCM
+      // equal-frequency copies (ASH 50R/20L @ 4:1 → 8 per rare, 5 per legendary;
+      // 400:100 = 4:1). We size the sheet by that LCM rather than doubling a
+      // subset of legendaries to fake the ratio. Multiplicity does NOT drive the
+      // duplicate rate — SPACING does: each card's copies are laid ~one-pool
+      // apart (interleaved shuffled rounds), then the merge drops a legendary
+      // every ~size/legTotal slots (jitter + random phase) for the real 4:1
+      // rarity cadence (L-to-L gaps mean ~5, matching Lee's line-order boxes).
+      const rareStream = this._buildRounds(this.rares, finalRareMult)
+      const legStream = this._buildRounds(this.legendaries, finalLegMult)
+      const size = legStream.length + rareStream.length
+      const isLeg: boolean[] = new Array(size).fill(false)
+      const interval = size / legStream.length
+      // jitter = floor(interval/2) → L-to-L gaps span ~[1, 2*interval-1], matching
+      // the real 1-9 range at interval 5; independent wobble can't stack two gap-1s.
+      const jitter = Math.max(1, Math.floor(interval / 2))
+      const phase = Math.random() * interval // fresh-box cut samples a random window
+      for (let k = 0; k < legStream.length; k++) {
+        const wobble = Math.floor(Math.random() * (2 * jitter + 1)) - jitter
+        let pos = Math.round(phase + k * interval + wobble) % size
+        if (pos < 0) pos += size
+        let guard = 0
+        while (isLeg[pos] && guard < size) { pos = (pos + 1) % size; guard++ }
+        isLeg[pos] = true
+      }
+      let li = 0
+      let ri = 0
+      for (let i = 0; i < size; i++) {
+        segment.push(isLeg[i] ? legStream[li++]! : rareStream[ri++]!)
+      }
+
+      // Adjacency guard: the merged path can't run the identity dedup passes
+      // (they swap ACROSS rarities and would scramble the cadence), but the fill
+      // seam (and, rarely, a short-pair) can put the same card back-to-back. Fix
+      // every distance-1 collision by swapping with a same-rarity card elsewhere
+      // — cadence preserved because only like-rarity positions trade places.
+      const prevTail = this.hopper.length > 0 ? this.hopper[this.hopper.length - 1] : undefined
+      for (let i = 0; i < segment.length; i++) {
+        const left = i === 0 ? prevTail : segment[i - 1]
+        if (!isSameCard(left, segment[i])) continue
+        for (let j = 0; j < segment.length; j++) {
+          if (j === i || isLeg[j] !== isLeg[i]) continue
+          const a = segment[i]!
+          const b = segment[j]!
+          const iLeft = i === 0 ? prevTail : segment[i - 1]
+          if (!isSameCard(b, iLeft) && !isSameCard(b, segment[i + 1]) &&
+              !isSameCard(a, segment[j - 1]) && !isSameCard(a, segment[j + 1])) {
+            segment[i] = b
+            segment[j] = a
+            break
+          }
+        }
+      }
+
+      // Rarity spacing is intentional: do NOT run the identity dedup passes here.
+      // They swap by card identity ACROSS rarities and would scramble the merge.
+      // Each stream already spaced its own duplicates.
+      this.hopper.push(...segment)
+    } else {
+      // Sets 1-6 (and any set where the low-multiplicity form can't hit the
+      // ratio): original exact-GCD construction, byte-identical.
+      for (let copy = 0; copy < finalRareMult; copy++) {
+        segment.push(...this.rares)
+      }
+      for (let copy = 0; copy < finalLegMult; copy++) {
+        segment.push(...this.legendaries)
+      }
+
+      // Shuffle and dedup by placement (identity passes are safe here — one flat
+      // pool, no rarity cadence to protect).
+      shuffle(segment)
+      this._fullDedup(segment)
+      const hopperStart = this.hopper.length
+      this.hopper.push(...segment)
+      if (!wasEmpty) {
+        this._seamDedup(hopperStart, segment.length)
+      }
     }
+  }
 
-    // Add legendaries (multiple copies)
-    for (let copy = 0; copy < finalLegMult; copy++) {
-      segment.push(...this.legendaries)
+  /**
+   * Build a single-rarity stream with EXACTLY `copies` of every card (equal
+   * frequency) as `copies` interleaved shuffled rounds — each round is the whole
+   * pool shuffled, so a card's copies sit ~one-pool-length apart (well beyond a
+   * 24-pack box). A window dedup fixes the round seams. Multiplicity here does
+   * not affect the box duplicate rate (spacing does): the merge in _fill spreads
+   * these further, and copies only collide in a box via the rare seam pair.
+   */
+  _buildRounds(cards: RawCard[], copies: number): RawCard[] {
+    const stream: RawCard[] = []
+    for (let r = 0; r < copies; r++) {
+      stream.push(...shuffle([...cards]))
     }
+    this._fullDedup(stream)
+    this._injectShortPairs(stream, copies)
+    return stream
+  }
 
-    // Shuffle the segment
-    shuffle(segment)
-
-    // Run full dedup on segment to remove duplicates within 6 slots
-    this._fullDedup(segment)
-
-    // Add segment to hopper
-    const hopperStart = this.hopper.length
-    this.hopper.push(...segment)
-
-    // Run seam dedup at the boundary if hopper wasn't empty
-    if (!wasEmpty) {
-      this._seamDedup(hopperStart, segment.length)
+  /**
+   * Real print sheets aren't perfectly spaced — a card occasionally has two
+   * copies a few slots apart (Lee's boxes: ~0.5 same-rare repeats/box, gaps
+   * 2-18). Pure rounds space every copy ~one-pool apart, killing that texture.
+   * Relocate ONE copy of a rotating subset of identities to sit a short gap from
+   * another copy. This is a SWAP (a copy moves, none are added/removed) so equal
+   * frequency is untouched, and which identities get the close pair rotates every
+   * fill so no card is favored long-run.
+   */
+  _injectShortPairs(stream: RawCard[], copies: number): void {
+    if (copies < 2 || stream.length < 40) return
+    const byId = new Map<string, number[]>()
+    stream.forEach((c, i) => {
+      const a = byId.get(c.id)
+      if (a) a.push(i); else byId.set(c.id, [i])
+    })
+    const ids = shuffle([...byId.keys()])
+    // ~6% of identities get a close pair per fill — empirically tuned to ~0.5
+    // same-card repeats per sealed box (real: 10 verified boxes ~0.5). Rotates
+    // every fill so no identity is favored long-run.
+    const nPairs = Math.round(ids.length * 0.06)
+    const GAPS = [2, 4, 6, 8, 10, 12, 15, 18]
+    for (let k = 0; k < nPairs && k < ids.length; k++) {
+      const positions = byId.get(ids[k])!
+      if (positions.length < 2) continue
+      const anchor = positions[Math.floor(Math.random() * positions.length)]!
+      const gap = GAPS[Math.floor(Math.random() * GAPS.length)]!
+      const dst = (anchor + gap) % stream.length
+      if (stream[dst]!.id === ids[k]) continue // already a close copy there
+      const src = positions.find(p => p !== anchor && p !== dst)
+      if (src === undefined) continue
+      const tmp = stream[src]!
+      stream[src] = stream[dst]!
+      stream[dst] = tmp
     }
   }
 
@@ -183,21 +308,22 @@ export class RareLegendaryBelt {
    * Scan entire segment for duplicates within 6 slots and fix them
    */
   _fullDedup(segment: RawCard[], maxPasses = 3): void {
+    const window = this.dedupWindow
     for (let pass = 0; pass < maxPasses; pass++) {
       let foundDuplicate = false
 
       for (let i = 0; i < segment.length; i++) {
         const card = segment[i]
 
-        // Check for duplicates within 6 slots ahead
-        for (let j = i + 1; j <= Math.min(i + 6, segment.length - 1); j++) {
+        // Check for duplicates within `window` slots ahead
+        for (let j = i + 1; j <= Math.min(i + window, segment.length - 1); j++) {
           if (isSameCard(card, segment[j])) {
             foundDuplicate = true
-            // Find a swap candidate from further away (outside the 6-slot window)
+            // Find a swap candidate from further away (outside the window)
             const swapCandidates: number[] = []
             for (let k = 0; k < segment.length; k++) {
-              // Must be outside the duplicate's 6-slot window
-              if (Math.abs(k - j) > 6 && Math.abs(k - i) > 6) {
+              // Must be outside the duplicate's window
+              if (Math.abs(k - j) > window && Math.abs(k - i) > window) {
                 // And not create a new duplicate
                 const wouldCreateDup = this._wouldCreateDuplicate(segment, k, segment[j]!)
                 if (!wouldCreateDup) {
@@ -225,7 +351,8 @@ export class RareLegendaryBelt {
    * Check if placing a card at index would create a duplicate within 6 slots
    */
   _wouldCreateDuplicate(segment: RawCard[], index: number, card: RawCard): boolean {
-    for (let offset = -6; offset <= 6; offset++) {
+    const window = this.dedupWindow
+    for (let offset = -window; offset <= window; offset++) {
       if (offset === 0) continue
       const checkIdx = index + offset
       if (checkIdx < 0 || checkIdx >= segment.length) continue
@@ -253,6 +380,7 @@ export class RareLegendaryBelt {
     // Prevent infinite recursion
     if (depth > 10) return
 
+    const window = this.dedupWindow
     const seamSize = Math.min(5, segmentLength)
     const backHalfStart = segmentStart + Math.floor(segmentLength / 2)
     const backHalfEnd = segmentStart + segmentLength
@@ -261,9 +389,9 @@ export class RareLegendaryBelt {
       const cardIndex = segmentStart + i
       const card = this.hopper[cardIndex]
 
-      // Check for duplicates within 6 slots (before and after)
+      // Check for duplicates within `window` slots (before and after)
       let hasDuplicate = false
-      for (let offset = -6; offset <= 6; offset++) {
+      for (let offset = -window; offset <= window; offset++) {
         if (offset === 0) continue
         const checkIndex = cardIndex + offset
         if (checkIndex < 0 || checkIndex >= this.hopper.length) continue

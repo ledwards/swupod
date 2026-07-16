@@ -68,9 +68,7 @@ export class CarboniteSlotBelt {
   _initialize(): void {
     const cards = getCachedCards(this.setCode)
     const setConfig = getSetConfig(this.setCode) as any
-    const setNumber = setConfig?.setNumber || 4
-
-    const includeSpecial = setNumber >= 4
+    const includeSpecial = setConfig?.packRules?.specialInHyperspaceSlots ?? true
     const raritySet = new Set(this.config.rarities)
 
     // Filter to source variant, matching rarities, non-leader, non-base

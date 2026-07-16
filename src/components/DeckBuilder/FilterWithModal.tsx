@@ -10,7 +10,7 @@
 import type { MouseEvent } from 'react'
 import Button from '../Button'
 import { AspectFilterModal } from './AspectFilterModal'
-import type { BulkMoveMode } from './BulkMoveButtons'
+import type { BulkMoveMode } from './ArenaActionsBar'
 
 export interface FilterWithModalProps {
   isOpen: boolean

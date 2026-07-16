@@ -3,31 +3,11 @@
 import { queryRow, query } from '@/lib/db'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { jsonParse } from '@/src/utils/json'
+import { pickRandomWindow } from '@/src/utils/packWindow'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {
   params: Promise<{ shareId: string }>
-}
-
-/**
- * Generate N unique random indices from 0 to max-1
- */
-function generateRandomIndices(count: number, max: number): number[] {
-  if (count > max) {
-    throw new Error(`Cannot pick ${count} unique indices from ${max} options`)
-  }
-
-  const indices: number[] = []
-  const available = Array.from({ length: max }, (_, i) => i)
-
-  for (let i = 0; i < count; i++) {
-    const randomIndex = Math.floor(Math.random() * available.length)
-    indices.push(available[randomIndex])
-    available.splice(randomIndex, 1)
-  }
-
-  // Sort indices so packs appear in box order
-  return indices.sort((a, b) => a - b)
 }
 
 export async function POST(request: NextRequest, { params }: RouteContext): Promise<NextResponse> {
@@ -56,8 +36,12 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
     const currentPacks = jsonParse(pool.packs) || []
     const packCount = Array.isArray(currentPacks) ? currentPacks.length : 6
 
-    // Generate new random indices
-    const newIndices = generateRandomIndices(packCount, boxPacks.length)
+    // Deal a fresh consecutive window from the box (physical cut — scattered
+    // indices cross collation windows and clump duplicates); avoid re-dealing
+    // the current window when the previous cut is known.
+    const currentIndices = jsonParse(pool.pack_indices)
+    const currentStart = Array.isArray(currentIndices) ? currentIndices[0] : undefined
+    const newIndices = pickRandomWindow(packCount, boxPacks.length, currentStart)
 
     // Get the packs at those indices
     const newPacks = newIndices.map(i => boxPacks[i])
