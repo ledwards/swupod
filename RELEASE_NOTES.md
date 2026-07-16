@@ -1,5 +1,10 @@
 # Release Notes
 
+## 07.16.2026
+
+### 🔧 Under the Hood
+- **Infrastructure groundwork and fixes** across matchmaking, deck exports, and the Wayfinder Companion pipeline. Deck JSON exports are now fully compatible with Karabast's paste-import.
+
 ## 07.14.2026
 
 ### 🔬 Every Card Re-Verified by Collector Number
