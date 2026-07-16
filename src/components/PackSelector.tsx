@@ -75,13 +75,12 @@ export function PackSelector({
     if (isMultiSelect && onSelectSets) {
       const count = getSetCount(setCode)
       if (count === 0) {
-        // First click: add the set
+        // First click: add the set. Once selected, quantity is controlled only by the
+        // +/- badges — clicking the card again is a no-op (so it never clears to 0 by
+        // accident).
         if (selectedSets.length < maxSelections) {
           onSelectSets([...selectedSets, setCode])
         }
-      } else {
-        // Already selected: remove all instances
-        onSelectSets(selectedSets.filter(s => s !== setCode))
       }
     } else if (onSelectSet) {
       onSelectSet(setCode)
@@ -173,7 +172,7 @@ export function PackSelector({
               {isSelected && (
                 <>
                   <button
-                    className={`pack-selector-qty-btn ${count <= 1 ? 'hidden' : ''}`}
+                    className={`pack-selector-qty-btn ${count < 1 ? 'hidden' : ''}`}
                     onClick={(e) => handleRemoveOne(set.code, e)}
                     aria-label={`Remove one ${set.name} pack`}
                   >

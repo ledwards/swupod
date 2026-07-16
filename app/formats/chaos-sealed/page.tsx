@@ -220,6 +220,8 @@ export default function ChaosSealedPage() {
           peekUnreleased={peekVariant}
         />
 
+        <PromoPacksSection selectable onSelectionChange={setPromoTiers} />
+
         <div className="chaos-sealed-section selected-sets-order">
           <h3>Your Chaos Sealed ({selectedSets.length}/{packCount})</h3>
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem', maxWidth: 740, margin: '0 auto' }}>
@@ -245,8 +247,6 @@ export default function ChaosSealedPage() {
             })}
           </div>
         </div>
-
-        <PromoPacksSection selectable onSelectionChange={setPromoTiers} />
 
         {error && <div className="error-message">{error}</div>}
 

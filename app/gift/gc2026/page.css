@@ -2,7 +2,20 @@
   min-height: 100vh;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
   padding: 2.5rem 1rem;
+  /* Standard Protect the Pod background: layered fades + the site texture. */
+  background-color: rgb(76, 77, 81);
+  background-image:
+    linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%), /* design-ok: standard PTP page background (same as .chaos-sealed-page) */
+    linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), /* design-ok: standard PTP page background */
+    linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), /* design-ok: standard PTP page background */
+    url("/background-images/bg-texture-crop.png");
+  background-size: 100% 100%, 100% 100%, 100% 100%, 150% auto;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  background-position: center center, center center, center center, center center;
+  color: white;
+  font-family: 'Barlow', sans-serif;
 }
 
 .gift-container {
@@ -11,16 +24,26 @@
   text-align: center;
 }
 
+.gift-hero {
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+  border-radius: 16px;
+  margin: 0 auto 1.5rem;
+  display: block;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
+}
+
 .gift-container h1 {
   font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin: 0 0 1rem;
 }
 
 .gift-lede {
   color: rgba(255, 255, 255, 0.85);
   line-height: 1.6;
-  margin: 0 auto 1.75rem;
+  margin: 0 auto 1.25rem;
   max-width: 34rem;
 }
 
@@ -29,15 +52,22 @@
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 12px;
   padding: 1.75rem;
+  margin-top: 0.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
 }
 
+.gift-panel h1 {
+  margin: 0;
+}
+
 .gift-panel-copy {
   margin: 0;
   color: rgba(255, 255, 255, 0.9);
+  line-height: 1.5;
+  max-width: 30rem;
 }
 
 .gift-panel--ok {
@@ -56,23 +86,7 @@
   font-size: 0.9rem;
 }
 
-.gift-black-nudge {
-  margin-top: 1.5rem;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.gift-black-nudge a {
-  color: rgba(255, 255, 255, 0.85);
-  text-decoration: underline;
-  white-space: nowrap;
-}
-
-.gift-black-nudge a:hover {
-  color: #fff;
-}
-
 .gift-page .loading {
-  padding: 3rem 0;
+  padding: 1rem 0;
   color: rgba(255, 255, 255, 0.7);
 }

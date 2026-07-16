@@ -1,10 +1,12 @@
+/* Match the other Chaos sections (.chaos-sealed-section / .chaos-draft-section): full
+   container width, same padding / border / spacing. */
 .promo-packs-section {
   background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
-  padding: 1.25rem;
-  margin: 1.25rem auto;
-  max-width: 740px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-sizing: border-box;
   text-align: center;
 }
 

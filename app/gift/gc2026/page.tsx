@@ -5,11 +5,23 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/src/contexts/AuthContext'
 import Button from '@/src/components/Button'
 import PackOpeningAnimation from '@/src/components/PackOpeningAnimation'
-import { PATREON_URL } from '@/src/utils/membership'
 import './page.css'
 
-type Status = 'idle' | 'claiming' | 'opening' | 'already' | 'closed' | 'error'
+// Flow states. The gift page is the whole experience — claim → open (reusing
+// PackOpeningAnimation) → a confirmation that unlocks the Black Pack for Friends of the Pod
+// and opens that the same way. No bounce to the old full-screen opening route.
+type Status =
+  | 'idle'
+  | 'claiming'
+  | 'openingSilver'
+  | 'confirmSilver'
+  | 'openingBlack'
+  | 'confirmBlack'
+  | 'closed'
+  | 'error'
 type EventPack = { cards: unknown[] }
+
+const CHAOS_URL = '/formats/chaos-sealed'
 
 export default function GiftGc2026Page() {
   // AuthContext is untyped (.jsx → createContext(null)); cast to the shape we use.
@@ -22,22 +34,20 @@ export default function GiftGc2026Page() {
   const router = useRouter()
   const [status, setStatus] = useState<Status>('idle')
   const [pack, setPack] = useState<EventPack | null>(null)
+  const [ownsBlack, setOwnsBlack] = useState(false)
+  const [heroOk, setHeroOk] = useState(true)
 
-  // Geared to not-yet-signed-up visitors: bounce straight to Discord sign-in,
-  // which returns here (?auth=success) to complete the claim.
-  useEffect(() => {
-    if (!loading && !user) signIn()
-  }, [loading, user, signIn])
-
-  // Reflect an existing entitlement on load: a returning owner sees "already
-  // unlocked", not the unlock button (F2 — no re-prompt, no replay).
+  // Reflect existing entitlements on load: a returning owner lands straight on the
+  // confirmation, not the unlock button (F2 — no re-prompt, no replay).
   useEffect(() => {
     if (!user) return
     let alive = true
     fetch('/api/promo/entitlements?campaign=gc2026', { credentials: 'include' })
       .then((res) => (res.ok ? res.json() : null))
       .then((json) => {
-        if (alive && json?.data?.silver) setStatus((s) => (s === 'idle' ? 'already' : s))
+        if (!alive || !json?.data) return
+        if (json.data.black) setOwnsBlack(true)
+        if (json.data.silver) setStatus((s) => (s === 'idle' ? 'confirmSilver' : s))
       })
       .catch(() => {})
     return () => {
@@ -45,107 +55,137 @@ export default function GiftGc2026Page() {
     }
   }, [user])
 
-  const handleUnlock = async () => {
-    setStatus('claiming')
-    try {
-      const res = await fetch('/api/promo/claim', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ campaign: 'gc2026', tier: 'silver' }),
-      })
-      const json = await res.json().catch(() => null)
-      if (!res.ok) {
-        setStatus(res.status === 403 ? 'closed' : 'error')
-        return
-      }
-      const data = json?.data
-      if (data?.granted) {
-        setPack(data.pack as EventPack)
-        setStatus('opening')
-      } else {
-        // Idempotent re-claim — no second gift moment (F2).
-        setStatus('already')
-      }
-    } catch {
-      setStatus('error')
-    }
+  const claim = async (tier: 'silver' | 'black') => {
+    const res = await fetch('/api/promo/claim', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ campaign: 'gc2026', tier }),
+    })
+    const json = await res.json().catch(() => null)
+    if (!res.ok) return { ok: false, closed: res.status === 403 && tier === 'silver' }
+    return { ok: true, pack: json?.data?.pack as EventPack | undefined }
   }
 
-  // The one-time gift moment, then off to where the packs live.
-  if (status === 'opening' && pack) {
+  const handleUnlockSilver = async () => {
+    setStatus('claiming')
+    const r = await claim('silver')
+    if (!r.ok) return setStatus(r.closed ? 'closed' : 'error')
+    setPack(r.pack ?? null)
+    setStatus('openingSilver')
+  }
+
+  const handleUnlockBlack = async () => {
+    setStatus('claiming')
+    const r = await claim('black')
+    if (!r.ok) return setStatus('error')
+    setOwnsBlack(true)
+    setPack(r.pack ?? null)
+    setStatus('openingBlack')
+  }
+
+  // Reuse the standard pack-opening experience for each tier.
+  if ((status === 'openingSilver' || status === 'openingBlack') && pack) {
     return (
       <PackOpeningAnimation
         packs={[pack] as never}
         packCount={1}
-        onComplete={() => router.push('/formats/chaos-sealed')}
+        onComplete={() => setStatus(status === 'openingSilver' ? 'confirmSilver' : 'confirmBlack')}
       />
-    )
-  }
-
-  if (loading || !user) {
-    return (
-      <div className="gift-page">
-        <div className="gift-container">
-          <div className="loading">Taking you to sign in…</div>
-        </div>
-      </div>
     )
   }
 
   return (
     <div className="gift-page">
       <div className="gift-container">
-        <h1>You met me at GC 2026 🎉</h1>
-        <p className="gift-lede">
-          Thanks for saying hi. This card unlocks the <strong>2026 Galactic Championship
-          Event Packs</strong> on your Protect the Pod account — a little digital keepsake of
-          the weekend.
-        </p>
-
-        {status === 'already' ? (
-          <div className="gift-panel gift-panel--ok">
-            <span className="gift-check">✓</span>
-            <p>Your Silver Pack is already unlocked.</p>
-            <Button variant="primary" size="lg" onClick={() => router.push('/formats/chaos-sealed')}>
-              Go to your packs
-            </Button>
-          </div>
-        ) : status === 'closed' ? (
-          <div className="gift-panel gift-panel--closed">
-            <p>The GC 2026 claim window has closed. Any packs you already unlocked are still yours.</p>
-            <Button variant="secondary" size="lg" onClick={() => router.push('/formats/chaos-sealed')}>
-              Go to your packs
-            </Button>
-          </div>
-        ) : (
-          <div className="gift-panel">
-            <p className="gift-panel-copy">
-              Unlock your <strong>Silver Pack</strong> and open it right now.
-            </p>
-            <Button variant="primary" size="lg" onClick={handleUnlock} disabled={status === 'claiming'}>
-              {status === 'claiming' ? 'Unlocking…' : 'Unlock Event Packs'}
-            </Button>
-            {status === 'error' && (
-              <p className="gift-error">Something went wrong. Give it another try in a moment.</p>
-            )}
-          </div>
+        {heroOk && (
+          <img
+            className="gift-hero"
+            src="/gift/gc2026-hero.png"
+            alt="Protect the Pod — GC 2026"
+            onError={() => setHeroOk(false)}
+          />
         )}
 
-        {/* Subtle, not-pushy Friend-of-the-Pod nudge for the Black Pack. */}
-        <div className="gift-black-nudge">
-          {isPatron === true ? (
-            <p>
-              As a Friend of the Pod you can also{' '}
-              <a href="/gift/gc2026/black">unlock your Black Pack →</a>
-            </p>
-          ) : (
-            <p>
-              Friends of the Pod also get an exclusive <strong>Black Pack</strong>.{' '}
-              <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">Become a Friend →</a>
-            </p>
-          )}
-        </div>
+        {(() => {
+          switch (status) {
+            case 'confirmSilver':
+              return (
+                <div className="gift-panel gift-panel--ok">
+                  <span className="gift-check">✓</span>
+                  <h1>Your Silver Pack is unlocked!</h1>
+                  <p className="gift-panel-copy">
+                    It&apos;s yours forever — pick it in your <strong>Chaos Sealed</strong> pools any time.
+                  </p>
+                  {isPatron === true && !ownsBlack && (
+                    <Button variant="primary" size="lg" onClick={handleUnlockBlack}>
+                      Unlock your Black Pack
+                    </Button>
+                  )}
+                  <Button variant="secondary" size="lg" onClick={() => router.push(CHAOS_URL)}>
+                    Go to your Chaos Sealed pools
+                  </Button>
+                </div>
+              )
+            case 'confirmBlack':
+              return (
+                <div className="gift-panel gift-panel--ok">
+                  <span className="gift-check">✓</span>
+                  <h1>Your Black Pack is unlocked!</h1>
+                  <p className="gift-panel-copy">
+                    Both Event Packs are on your account — use them in Chaos Sealed whenever you like.
+                  </p>
+                  <Button variant="primary" size="lg" onClick={() => router.push(CHAOS_URL)}>
+                    Go to your Chaos Sealed pools
+                  </Button>
+                </div>
+              )
+            case 'closed':
+              return (
+                <div className="gift-panel gift-panel--closed">
+                  <p>The GC 2026 claim window has closed. Any packs you already unlocked are still yours.</p>
+                  <Button variant="secondary" size="lg" onClick={() => router.push(CHAOS_URL)}>
+                    Go to your packs
+                  </Button>
+                </div>
+              )
+            default:
+              return (
+                <>
+                  <h1>You met me at GC 2026 🎉</h1>
+                  <p className="gift-lede">
+                    Thanks for saying hi. Hope you&apos;re having a great weekend!
+                  </p>
+                  <p className="gift-lede">
+                    This card unlocks the <strong>2026 Galactic Championship Event Packs</strong> on your
+                    Protect the Pod account — a little digital keepsake of the weekend. You can use unlocked
+                    Event Packs in your Chaos Sealed pools from now on, forever!
+                  </p>
+                  <div className="gift-panel">
+                    {loading ? (
+                      <div className="loading">Loading…</div>
+                    ) : !user ? (
+                      <Button variant="primary" size="lg" onClick={signIn}>
+                        Log in to claim your prize
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="primary"
+                        size="lg"
+                        onClick={handleUnlockSilver}
+                        disabled={status === 'claiming'}
+                      >
+                        {status === 'claiming' ? 'Unlocking…' : 'Unlock Event Packs'}
+                      </Button>
+                    )}
+                    {status === 'error' && (
+                      <p className="gift-error">Something went wrong. Give it another try in a moment.</p>
+                    )}
+                  </div>
+                </>
+              )
+          }
+        })()}
       </div>
     </div>
   )

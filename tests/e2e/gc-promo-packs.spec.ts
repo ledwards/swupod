@@ -77,7 +77,8 @@ test.describe('GC 2026 Promo Packs', () => {
     await expect(page.locator('.pack-opening-container')).toBeVisible()
 
     await page.goto('/gift/gc2026')
-    await expect(page.getByText(/already unlocked/i)).toBeVisible()
+    // Returning owner lands on the confirmation, not the unlock button — and no replay.
+    await expect(page.getByText(/Silver Pack is unlocked/i)).toBeVisible()
     await expect(page.locator('.pack-opening-container')).toHaveCount(0)
 
     await context.close()
