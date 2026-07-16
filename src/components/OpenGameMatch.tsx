@@ -387,56 +387,6 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
         )}
       </div>
 
-      <div className="lobby-match-hero">
-        <div className="lobby-manual-kicker">Automatic</div>
-        {joinerWaiting ? (
-          <>
-            <div className="lobby-match-note lobby-match-waiting">
-              <strong>Waiting for {host?.username || 'your opponent'} to create the Karabast lobby</strong>
-              <span>The link will appear here.</span>
-            </div>
-            {/* This surface needs the Companion RIGHT NOW → gate on live
-                detection, not past recorded games (same as Swiss required). */}
-            {!casualCapable && <PluginCTA variant="autodetect" required />}
-          </>
-        ) : showLobbyLink ? (
-          // The lobby exists → a green play LINK to it, exactly the affordance
-          // Swiss Practice renders for its created lobby (MatchCard's
-          // match-card-live-open anchor: an <a> styled as the primary button).
-          // R37 (approved): DISPLAY of the Companion-captured lobby URL — never
-          // a paste input. Works with or without the Companion.
-          <LiveLobbyLink
-            href={lobbyLink!}
-            size="lg"
-            label={game.yourSeat === 2 ? 'Join Game' : 'Open the lobby'}
-          />
-        ) : casualCapable ? (
-          <>
-            <Button variant="primary" size="lg" disabled={launcher.pending} onClick={() => launcher.launch('private')}>
-              {game.status === 'open'
-                ? 'Create Game'
-                : game.yourSeat === 2
-                  ? 'Join on Karabast'
-                  : 'Play on Karabast'}
-            </Button>
-            {launcher.message && (
-              <p className={`lobby-match-note${launcher.message.type === 'error' ? ' lobby-state-error' : ''}`}>
-                {launcher.message.text}
-              </p>
-            )}
-          </>
-        ) : detected && !casualCapable ? (
-          <p className="lobby-match-note">
-            One-click lobbies need a newer Companion.
-          </p>
-        ) : (
-          <PluginCTA variant="autodetect" required />
-        )}
-
-      </div>
-
-      <div className="lobby-or-divider" aria-hidden="true">or</div>
-
       {/* Manual fallback panel — mirrors PlayInstructions' manual-mode box
           (kicker + title + numbered steps). Honest about the preview status;
           the lobby link is DMed by hand, never pasted into PTP. */}
@@ -488,6 +438,56 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="lobby-or-divider" aria-hidden="true">or</div>
+
+      <div className="lobby-match-hero">
+        <div className="lobby-manual-kicker">Automatic</div>
+        {joinerWaiting ? (
+          <>
+            <div className="lobby-match-note lobby-match-waiting">
+              <strong>Waiting for {host?.username || 'your opponent'} to create the Karabast lobby</strong>
+              <span>The link will appear here.</span>
+            </div>
+            {/* This surface needs the Companion RIGHT NOW → gate on live
+                detection, not past recorded games (same as Swiss required). */}
+            {!casualCapable && <PluginCTA variant="autodetect" required />}
+          </>
+        ) : showLobbyLink ? (
+          // The lobby exists → a green play LINK to it, exactly the affordance
+          // Swiss Practice renders for its created lobby (MatchCard's
+          // match-card-live-open anchor: an <a> styled as the primary button).
+          // R37 (approved): DISPLAY of the Companion-captured lobby URL — never
+          // a paste input. Works with or without the Companion.
+          <LiveLobbyLink
+            href={lobbyLink!}
+            size="lg"
+            label={game.yourSeat === 2 ? 'Join Game' : 'Open the lobby'}
+          />
+        ) : casualCapable ? (
+          <>
+            <Button variant="primary" size="lg" disabled={launcher.pending} onClick={() => launcher.launch('private')}>
+              {game.status === 'open'
+                ? 'Create Game'
+                : game.yourSeat === 2
+                  ? 'Join on Karabast'
+                  : 'Play on Karabast'}
+            </Button>
+            {launcher.message && (
+              <p className={`lobby-match-note${launcher.message.type === 'error' ? ' lobby-state-error' : ''}`}>
+                {launcher.message.text}
+              </p>
+            )}
+          </>
+        ) : detected && !casualCapable ? (
+          <p className="lobby-match-note">
+            One-click lobbies need a newer Companion.
+          </p>
+        ) : (
+          <PluginCTA variant="autodetect" required />
+        )}
+
       </div>
 
       {isSeat && (
