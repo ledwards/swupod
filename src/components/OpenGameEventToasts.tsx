@@ -27,6 +27,7 @@ const TOAST_COPY: Record<string, { text: string; kind: 'info' | 'success' | 'dan
   // page, so the explanation must survive until you dismiss it.
   cancelled: { text: 'Your opponent cancelled the lobby.', kind: 'danger', action: 'View lobby', durationMs: 0 },
   complete: { text: 'Result recorded.', kind: 'success', action: 'View result' },
+  joiner_left: { text: 'Your opponent left — your lobby is back on the board.', kind: 'info', action: 'View lobby' },
 }
 
 export default function OpenGameEventToasts(): null {

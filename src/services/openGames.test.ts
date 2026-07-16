@@ -286,6 +286,28 @@ describe('openGames service (Lobby V1 spec)', { skip: !dbAvailable }, () => {
     assert.equal(updated.format, 'sealed')
   })
 
+  it('joiner exit vacates seat 2 and relists the host\'s lobby', async () => {
+    const { exitOpenGame } = await import('./openGames')
+    const host = await seedUser('og-exit2-host')
+    const hp = await seedPool(host)
+    const game = await postOpenGame({ userId: host, poolId: hp })
+    const joiner = await seedUser('og-exit2-join')
+    const jp = await seedPool(joiner)
+    await joinOpenGame({ shareId: game.shareId, userId: joiner, poolId: jp })
+
+    const exited = await exitOpenGame({ gameId: game.id, userId: joiner })
+    assert.equal(exited.status, 'open')
+    assert.equal(exited.player2Id, null)
+    const { listings } = await listPublicOpenGames()
+    assert.ok(listings.some(l => l.shareId === game.shareId), 'lobby back on the board')
+
+    // Host can't "exit"; a stranger can't either.
+    await assert.rejects(
+      () => exitOpenGame({ gameId: game.id, userId: host }),
+      (e: OpenGameError) => e.code === 'forbidden'
+    )
+  })
+
   it('SPEC R18: join is atomic — two concurrent joins, exactly one wins', async () => {
     const poster = await seedUser('og-poster')
     const pp = await seedPool(poster)

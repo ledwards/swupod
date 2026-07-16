@@ -296,16 +296,17 @@ test.describe('Lobby V1 — Open Games', () => {
     await hostPage.close()
   })
 
-  test('either player can cancel the lobby (R20) — canceller returns to /lobby, opponent sees it closed', async () => {
+  test('joiner exit (R20 revised) — joiner returns to /lobby, host relists and keeps waiting', async () => {
     const { page } = joinerCtx
-    await page.getByRole('button', { name: 'Cancel this lobby' }).click()
-    // The canceller goes straight back to the lobby — no terminal screen.
+    // Seat 2 gets "Exit Lobby", not cancel — leaving vacates the seat only.
+    await page.getByRole('button', { name: 'Exit Lobby' }).click()
     await page.waitForURL(/\/lobby/, { timeout: 15_000 })
-    // The other player has NO dead-lobby page: they're kicked back to the
-    // lobby with the "opponent cancelled" toast (socket push or 10s poll).
-    await posterCtx.page.waitForURL(/\/lobby/, { timeout: 20_000 })
-    await expect(posterCtx.page.getByText(/lobby was cancelled|cancelled the lobby/i).first())
-      .toBeVisible({ timeout: 10_000 })
+    // The HOST'S LOBBY SURVIVES: their match page returns to the waiting
+    // state (socket push or 10s poll) instead of closing.
+    await expect(posterCtx.page.getByText('Waiting for an opponent')).toBeVisible({ timeout: 20_000 })
+    // Host cleans up for the next test: cancel for real.
+    await posterCtx.page.getByRole('button', { name: 'Cancel this lobby' }).click()
+    await posterCtx.page.waitForURL(/\/lobby/, { timeout: 15_000 })
   })
 
   test('Play Now instantly matches two compatible seekers (AE1/AE2)', async () => {

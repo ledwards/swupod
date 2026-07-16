@@ -10,7 +10,7 @@ import { jsonResponse, errorResponse } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
 import { queryRow } from '@/lib/db'
 import { broadcastOpenGamesUpdate, emitOpenGameEventToUser } from '@/src/lib/socketBroadcast'
-import { cancelOpenGame, setOpenGameBestOf, setOpenGameDeck } from '@/src/services/openGames'
+import { cancelOpenGame, exitOpenGame, setOpenGameBestOf, setOpenGameDeck } from '@/src/services/openGames'
 import { resolveOpenGameMessage } from '@/lib/discordLfg'
 import { openGameErrorResponse } from '../helpers'
 import { NextRequest } from 'next/server'
@@ -136,7 +136,14 @@ export async function DELETE(request: NextRequest, { params }: RouteContext): Pr
     )
     if (!row) return errorResponse('Game not found', 404)
 
-    const game = await cancelOpenGame({ gameId: String(row.id), userId: session.id })
+    // Seat 2 exiting a pre-game lobby VACATES the seat; the host's lobby
+    // relists. Everyone else (host, or any seat once in progress) cancels.
+    const joinerExit =
+      String(row.player2_id) === String(session.id) &&
+      ['accepted', 'lobby_ready'].includes(String(row.status))
+    const game = joinerExit
+      ? await exitOpenGame({ gameId: String(row.id), userId: session.id })
+      : await cancelOpenGame({ gameId: String(row.id), userId: session.id })
 
     broadcastOpenGamesUpdate().catch(() => {})
     if (row.status === 'open' && row.discord_message_id) {
@@ -144,7 +151,7 @@ export async function DELETE(request: NextRequest, { params }: RouteContext): Pr
     }
     const other = session.id === row.player1_id ? row.player2_id : row.player1_id
     if (other) {
-      emitOpenGameEventToUser(String(other), 'cancelled', { shareId: game.shareId })
+      emitOpenGameEventToUser(String(other), joinerExit ? 'joiner_left' : 'cancelled', { shareId: game.shareId })
     }
     return jsonResponse({ game })
   } catch (error) {

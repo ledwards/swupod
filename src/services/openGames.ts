@@ -331,6 +331,33 @@ export async function playNow(params: { userId: string; poolId: string }): Promi
 // Cancel (R20: either player, any live status)
 // ---------------------------------------------------------------------------
 
+/**
+ * Seat-2 exit (pre-game): the joiner leaves and the HOST'S LOBBY SURVIVES —
+ * back to 'open' on the board, seat 2 vacated. (In progress or complete
+ * games can't be exited; the host path is cancelOpenGame.)
+ */
+export async function exitOpenGame(params: { gameId: string; userId: string }): Promise<OpenGame> {
+  const { withTransaction } = await import('@/lib/db')
+  return withTransaction(async tx => {
+    const row = await tx.queryRow('SELECT * FROM open_games WHERE id = $1', [params.gameId])
+    if (!row) throw new OpenGameError('not_found', 'Game not found', 404)
+    if (String(row.player2_id) !== String(params.userId)) {
+      throw new OpenGameError('forbidden', 'Only the joiner can exit', 403)
+    }
+    if (!['accepted', 'lobby_ready'].includes(String(row.status))) {
+      throw new OpenGameError('listing_gone', 'This lobby can no longer be exited')
+    }
+    const updated = await tx.queryRow(
+      `UPDATE open_games
+       SET status = 'open', player2_id = NULL, player2_pool_id = NULL,
+           player2_external = FALSE, accepted_at = NULL, updated_at = NOW()
+       WHERE id = $1 RETURNING *`,
+      [params.gameId]
+    )
+    return rowToGame(updated!)
+  })
+}
+
 export async function cancelOpenGame(params: { gameId: string; userId: string }): Promise<OpenGame> {
   const { withTransaction } = await import('@/lib/db')
   return withTransaction(async tx => {
