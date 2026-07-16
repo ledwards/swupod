@@ -1094,6 +1094,9 @@ export async function postOpenGameCreated(
   hostUsername: string,
   hostUserId: string
 ): Promise<string | null> {
+  // Feature flag (default OFF): open-lobby pings announce the feature to the
+  // whole Discord — silent-release mode keeps them dark until flipped via env.
+  if (process.env.DISCORD_LFG_OPEN_GAMES !== 'true') return null
   if (!BOT_TOKEN) return null
   if (listing.visibility !== 'public') return null
   const channelId = getChannelId(listing.format)
