@@ -522,6 +522,201 @@ describe('openGameLive pipeline (Lobby V1 spec)', { skip: !dbAvailable }, () => 
     }
   })
 
+  it('joiner_left_lobby pre-game reverts the seat arrival: parent back to lobby_ready, arrival cleared, player2 STAYS bound, joiner can re-join', async () => {
+    // SPEC (joiner-leave recovery): the PTP-paired joiner entered the
+    // Karabast lobby (opponent_joined) then LEFT it pre-game. The lobby
+    // SURVIVES (the host remains), so this is a seat-arrival revert — the
+    // mirror of opponent_joined, never a failure: clear opponent_joined_at,
+    // keep the attempt (and its lobby_url) alive, revert the parent's
+    // opponent_joined promotion, and NEVER unbind player2 — the joiner's
+    // page shows Join again, the host keeps the lobby link.
+    const { game, poster, acceptor } = await seedAcceptedGame()
+    await claimOpenGame({ shareId: game.shareId, userId: poster, companionCapable: true })
+    await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'lobby_ready',
+      lobbyId: 'lob-jl',
+      lobbyUrl: 'https://karabast.net/lobby?lobbyId=lob-jl',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'opponent_joined',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    assert.equal((await gameRow(game.id)).status, 'in_progress', 'precondition: the arrival promoted the game')
+    assert.ok((await attempts(game.id))[0].opponent_joined_at, 'precondition: arrival stamped')
+
+    const res = await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'joiner_left_lobby',
+      actorUserId: acceptor, // the joiner's own session (Companion direct fallback) is seat-gated OK
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    assert.equal(res.duplicate, false)
+    assert.equal(res.gameStatus, 'lobby_ready', 'the game reverts in_progress -> lobby_ready')
+
+    const row = await gameRow(game.id)
+    assert.equal(row.status, 'lobby_ready')
+    assert.equal(row.player2_id, acceptor, 'the PTP seat pairing STANDS — player2 is never unbound')
+    const [attempt] = await attempts(game.id)
+    assert.equal(attempt.status, 'lobby_ready', 'the attempt (and its lobby) stays alive')
+    assert.equal(attempt.opponent_joined_at, null, 'the arrival marker is cleared')
+    assert.equal(attempt.lobby_url, 'https://karabast.net/lobby?lobbyId=lob-jl', 'the lobby link keeps serving')
+
+    // The joiner's page is back in the join state: their next claim gets the
+    // SAME lobby to join, and the host's claim reopens it.
+    const rejoin = await claimOpenGame({ shareId: game.shareId, userId: acceptor, companionCapable: true })
+    assert.equal(rejoin.action, 'join_lobby')
+    assert.equal(rejoin.lobbyUrl, 'https://karabast.net/lobby?lobbyId=lob-jl')
+    const reopen = await claimOpenGame({ shareId: game.shareId, userId: poster, companionCapable: true })
+    assert.equal(reopen.action, 'open_lobby')
+
+    // Idempotent: same key → duplicate; a fresh key with nothing left to
+    // revert is acknowledged and non-destructive.
+    const dupKey = `k-${randomUUID()}`
+    await recordOpenGameLifecycle({ openGameShareId: game.shareId, status: 'joiner_left_lobby', lifecycleIdempotencyKey: dupKey })
+    const again = await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'joiner_left_lobby',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    assert.equal(again.gameStatus, 'lobby_ready', 're-reports find nothing to revert')
+    assert.equal((await attempts(game.id))[0].status, 'lobby_ready')
+  })
+
+  it('joiner_left_lobby never reverts a started game or a recorded result', async () => {
+    const { game, poster, posterPool } = await seedAcceptedGame()
+    await claimOpenGame({ shareId: game.shareId, userId: poster, companionCapable: true })
+    await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'lobby_ready',
+      lobbyId: 'lob-jl-started',
+      lobbyUrl: 'https://karabast.net/lobby?lobbyId=lob-jl-started',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'opponent_joined',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'in_progress',
+      wayfinderGameId: 'wg-jl-1',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+
+    // Once the game started, a (late/stale) joiner_left_lobby must not revert.
+    const late = await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'joiner_left_lobby',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    assert.equal(late.gameStatus, 'in_progress', 'a started game never reverts')
+    const [attempt] = await attempts(game.id)
+    assert.equal(attempt.status, 'in_progress')
+    assert.ok(attempt.opponent_joined_at, 'the arrival stamp survives')
+
+    // …and never after a result.
+    await recordOpenGameResult({
+      openGameShareId: game.shareId,
+      reportingPoolShareId: posterPool.shareId,
+      result: 'win',
+      wayfinderMatchId: `wm-${randomUUID()}`,
+    })
+    const after = await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'joiner_left_lobby',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    assert.equal(after.gameStatus, 'complete', 'terminal games acknowledge but never resurrect')
+    assert.equal((await gameRow(game.id)).result, 'player1')
+  })
+
+  it('joiner_left_lobby with no live attempt is acknowledged without minting an attempt row', async () => {
+    const { game } = await seedAcceptedGame()
+    const res = await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'joiner_left_lobby',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    assert.equal(res.duplicate, false)
+    assert.equal(res.gameStatus, 'accepted')
+    assert.equal((await attempts(game.id)).length, 0, 'no attempt row is created for a revert')
+  })
+
+  it('joiner_left_lobby for an UNPAIRED external joiner relists the open listing', async () => {
+    // R37 mirror: an external Karabast joiner (never bound a PTP seat)
+    // delisted the open listing on arrival; their pre-game leave puts the
+    // listing back on the board — there is no pairing to preserve.
+    const poster = await seedUser('ogl-jl-ext')
+    const pool = await seedPool(poster, 'SEC', 'draft')
+    const listing = await postOpenGame({ userId: poster, poolId: pool.id })
+    await claimOpenGame({ shareId: listing.shareId, userId: poster, companionCapable: true })
+    await recordOpenGameLifecycle({
+      openGameShareId: listing.shareId,
+      status: 'lobby_ready',
+      lobbyId: 'lob-jl-ext',
+      lobbyUrl: 'https://karabast.net/lobby?lobbyId=lob-jl-ext',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    await recordOpenGameLifecycle({
+      openGameShareId: listing.shareId,
+      status: 'opponent_joined',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    const mid = await gameRow(listing.id)
+    assert.equal(mid.status, 'in_progress')
+    assert.equal(mid.player2_external, true)
+
+    const res = await recordOpenGameLifecycle({
+      openGameShareId: listing.shareId,
+      status: 'joiner_left_lobby',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+    assert.equal(res.boardChanged, true, 'the relist pushes a board update')
+    const row = await gameRow(listing.id)
+    assert.equal(row.status, 'open', 'the unpaired listing returns to the board')
+    assert.equal(row.player2_external, false)
+    const [attempt] = await attempts(listing.id)
+    assert.equal(attempt.status, 'lobby_ready', 'the live lobby keeps serving the relisted game')
+  })
+
+  it('PTP-side seat-2 exit keeps a live lobby attempt: the relisted game hands the NEXT joiner the existing lobby (join_lobby)', async () => {
+    // SPEC (Exit Lobby × live Karabast lobby): the PTP joiner exiting on PTP
+    // vacates the seat and relists the game, but the HOST is still sitting in
+    // his Karabast lobby — the attempt (and its URL) must survive so the next
+    // joiner's claim goes straight to join_lobby with the existing lobby.
+    const { game, poster, acceptor } = await seedAcceptedGame('SEC', 'draft')
+    await claimOpenGame({ shareId: game.shareId, userId: poster, companionCapable: true })
+    await recordOpenGameLifecycle({
+      openGameShareId: game.shareId,
+      status: 'lobby_ready',
+      lobbyId: 'lob-exit',
+      lobbyUrl: 'https://karabast.net/lobby?lobbyId=lob-exit',
+      lifecycleIdempotencyKey: `k-${randomUUID()}`,
+    })
+
+    const { exitOpenGame } = await import('./openGames')
+    const exited = await exitOpenGame({ gameId: game.id, userId: acceptor })
+    assert.equal(exited.status, 'open', 'seat-2 exit relists the listing')
+    assert.equal(exited.player2Id, null)
+    const [attempt] = await attempts(game.id)
+    assert.equal(attempt.status, 'lobby_ready', 'the live lobby attempt STAYS — the host is still in it')
+    assert.equal(attempt.lobby_url, 'https://karabast.net/lobby?lobbyId=lob-exit')
+
+    // A NEW joiner accepts the relisted game and claims: straight to the
+    // existing lobby, no fresh create.
+    const nextJoiner = await seedUser('ogl-exit-next')
+    const nextPool = await seedPool(nextJoiner, 'SEC', 'draft')
+    await joinOpenGame({ shareId: game.shareId, userId: nextJoiner, poolId: nextPool.id })
+    const claim = await claimOpenGame({ shareId: game.shareId, userId: nextJoiner, companionCapable: true })
+    assert.equal(claim.action, 'join_lobby')
+    assert.equal(claim.lobbyUrl, 'https://karabast.net/lobby?lobbyId=lob-exit')
+    assert.equal((await attempts(game.id)).length, 1, 'no second attempt was minted')
+  })
+
   it('result finalize maps the reporting seat, completes the game, and writes the OPPOSITE seat idempotently', async () => {
     const { game, posterPool, acceptorPool, acceptor } = await seedAcceptedGame()
     const matchId = `wf-${randomUUID().slice(0, 8)}`

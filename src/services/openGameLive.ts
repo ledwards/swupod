@@ -145,7 +145,15 @@ export async function claimOpenGame(params: {
 // Lifecycle ingestion (Companion → PTP)
 // ---------------------------------------------------------------------------
 
-export type OpenGameLifecycleStatus = 'lobby_ready' | 'opponent_joined' | 'in_progress' | 'failed'
+export type OpenGameLifecycleStatus =
+  | 'lobby_ready'
+  | 'opponent_joined'
+  // The Karabast-side joiner LEFT a pre-game lobby that survives (Karabast
+  // keeps a lobby alive while the creator remains): a seat-arrival revert,
+  // the mirror of 'opponent_joined' — never a failure.
+  | 'joiner_left_lobby'
+  | 'in_progress'
+  | 'failed'
 
 export interface LifecycleParams {
   openGameShareId: string
@@ -221,6 +229,12 @@ export async function recordOpenGameLifecycle(params: LifecycleParams): Promise<
        ORDER BY attempt_number DESC LIMIT 1`,
       [game.id, ACTIVE_ATTEMPT_STATUSES]
     )
+    if (!attempt && params.status === 'joiner_left_lobby') {
+      // Nothing to revert: a seat-arrival revert with no live attempt (the
+      // attempt already failed/completed, or a stale report after the host
+      // recreated) is acknowledged, never a reason to mint an attempt row.
+      return done(false)
+    }
     if (!attempt) {
       // Lifecycle can land before any claim recorded an attempt (races, and
       // the MANUAL flow: the host makes the Karabast lobby by hand, so no
@@ -274,6 +288,43 @@ export async function recordOpenGameLifecycle(params: LifecycleParams): Promise<
           }
         }
         parentStatus = 'in_progress'
+        break
+      }
+      case 'joiner_left_lobby': {
+        // Seat-arrival REVERT (the mirror of 'opponent_joined'): the Karabast-
+        // side joiner left the lobby pre-game, but the lobby SURVIVES — the
+        // host is still sitting in it. Undo only the arrival markers so both
+        // /g/ pages fall back to the lobby link/join state:
+        //  - clear opponent_joined_at (and defensively revert a 'joined'
+        //    attempt status back to 'lobby_ready'),
+        //  - drop the parent's opponent_joined promotion ('in_progress' →
+        //    back to the attempt's own pre-arrival status),
+        //  - NEVER unbind player2: the PTP seat pairing stands — only the
+        //    Karabast-room presence reverted. (An UNPAIRED listing whose
+        //    external Karabast joiner left goes back on the board instead.)
+        // Only pre-game (the attempt never started) and never after a result;
+        // idempotent — re-reports find nothing left to revert.
+        const started = String(attempt!.status) === 'in_progress' || attempt!.started_at != null
+        if (started || game.result != null) break
+        await tx.query(
+          `UPDATE open_game_lobby_attempts
+           SET opponent_joined_at = NULL,
+               status = CASE WHEN status = 'joined' THEN 'lobby_ready' ELSE status END,
+               lifecycle_idempotency_key = COALESCE($2, lifecycle_idempotency_key), updated_at = NOW()
+           WHERE id = $1`,
+          [attempt!.id, key]
+        )
+        if (parentStatus === 'in_progress') {
+          if (game.player2_id == null) {
+            // R37 external joiner never bound a PTP seat: the pairing never
+            // existed, so the listing returns to the board.
+            await tx.query('UPDATE open_games SET player2_external = FALSE, updated_at = NOW() WHERE id = $1', [game.id])
+            parentStatus = 'open'
+            boardChanged = true
+          } else {
+            parentStatus = String(attempt!.status) === 'lobby_ready' ? 'lobby_ready' : 'accepted'
+          }
+        }
         break
       }
       case 'in_progress': {

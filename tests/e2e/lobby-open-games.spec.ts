@@ -296,6 +296,87 @@ test.describe('Lobby V1 — Open Games', () => {
     await hostPage.close()
   })
 
+  test('joiner leaves the Karabast lobby pre-game: joiner_left_lobby reverts the seat arrival, the lobby link survives on BOTH seats', async () => {
+    // Same simulation contract as the dead-lobby test above: the Companion's
+    // lifecycle reports are the extension's own session-cookie POSTs
+    // (hub-unreachable fallback) — extension behavior is test setup, not a
+    // user action. Flow: host's lobby_ready → joiner 'joined' (raw Companion
+    // status; the route maps it to opponent_joined) → the joiner LEAVES the
+    // Karabast lobby pre-game → joiner_left_lobby. The lobby SURVIVES (the
+    // host is still in it), so unlike lobby_abandoned the GET must KEEP the
+    // lobbyUrl and only revert the arrival: in_progress → lobby_ready.
+    const row = await getPool().query(
+      'SELECT share_id FROM open_games WHERE player1_id = $1 ORDER BY created_at DESC LIMIT 1',
+      [poster.user.id]
+    )
+    const shareId = row.rows[0].share_id
+    const lobbyId = `e2e-jleave-${Date.now().toString(36)}`
+    const lobbyUrl = `https://karabast.net/lobby?lobbyId=${lobbyId}`
+    const posterHeaders = { 'Content-Type': 'application/json', cookie: `${poster.cookieName}=${poster.token}` }
+    const joinerHeaders = { 'Content-Type': 'application/json', cookie: `${joiner.cookieName}=${joiner.token}` }
+    const getGame = async () => {
+      const res = await (await fetch(`${BASE_URL}/api/open-games/${shareId}`, { headers: posterHeaders })).json()
+      return (res.data || res).game
+    }
+
+    // Host's Companion created a fresh lobby (attempt 2 — attempt 1 died in
+    // the previous test).
+    const ready = await fetch(`${BASE_URL}/api/plugin/v1/practice/match-game/lifecycle`, {
+      method: 'POST',
+      headers: posterHeaders,
+      body: JSON.stringify({
+        openGameId: shareId,
+        status: 'lobby_ready',
+        lobbyId,
+        lobbyUrl,
+        lifecycleIdempotencyKey: `${shareId}:lobby_ready:0:${lobbyId}`,
+      }),
+    })
+    expect(ready.ok).toBeTruthy()
+    expect((await getGame()).status).toBe('lobby_ready')
+
+    // The joiner's Companion enters the lobby → raw 'joined' (seat arrival).
+    const joined = await fetch(`${BASE_URL}/api/plugin/v1/practice/match-game/lifecycle`, {
+      method: 'POST',
+      headers: joinerHeaders,
+      body: JSON.stringify({
+        openGameId: shareId,
+        status: 'joined',
+        lobbyId,
+        lifecycleIdempotencyKey: `${shareId}:joined:0:${lobbyId}`,
+      }),
+    })
+    expect(joined.ok).toBeTruthy()
+    expect((await getGame()).status).toBe('in_progress')
+
+    // The joiner LEAVES the Karabast lobby pre-game (their Companion tab
+    // navigated off the lobby URL before the game started).
+    const left = await fetch(`${BASE_URL}/api/plugin/v1/practice/match-game/lifecycle`, {
+      method: 'POST',
+      headers: joinerHeaders,
+      body: JSON.stringify({
+        openGameId: shareId,
+        status: 'joiner_left_lobby',
+        lobbyId,
+        lifecycleIdempotencyKey: `${shareId}:joiner_left_lobby:0:${lobbyId}`,
+      }),
+    })
+    expect(left.ok).toBeTruthy()
+
+    // Seat-arrival REVERT, not a failure: back to lobby_ready, the lobby link
+    // keeps serving, and the PTP pairing stands (the match page still shows
+    // both players — never a kick back to the board).
+    const game = await getGame()
+    expect(game.status).toBe('lobby_ready')
+    expect(game.lobbyUrl).toBe(lobbyUrl)
+
+    // Both /g/ pages settle on the join/link state (socket push or 10s poll):
+    // the joiner is offered the lobby again, the host keeps their link.
+    await expect(joinerCtx.page.locator(`a[href="${lobbyUrl}"]`).first()).toBeVisible({ timeout: 20_000 })
+    await expect(posterCtx.page.locator(`a[href="${lobbyUrl}"]`).first()).toBeVisible({ timeout: 20_000 })
+    await expect(joinerCtx.page.locator('.lobby-match-players').getByText('LobbyPoster')).toBeVisible()
+  })
+
   test('joiner exit (R20 revised) — joiner returns to /lobby, host relists and keeps waiting', async () => {
     const { page } = joinerCtx
     // Seat 2 gets "Exit Lobby", not cancel — leaving vacates the seat only.
