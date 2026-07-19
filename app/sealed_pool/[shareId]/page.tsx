@@ -12,10 +12,13 @@ interface PageProps {
 export default async function SealedPoolPage({ params }: PageProps) {
   const { shareId } = await params
 
+  // LEFT JOIN, not INNER: a sealed pool has no pod (pod_id IS NULL), so an inner
+  // join drops every sealed pool and 404s it. We only need the pod to detect a
+  // draft pool that should redirect; its absence is the normal sealed case.
   const row = await queryRow(
     `SELECT p.pod_type
        FROM card_pools cp
-       JOIN pods p ON p.id = cp.pod_id
+       LEFT JOIN pods p ON p.id = cp.pod_id
       WHERE cp.share_id = $1
       LIMIT 1`,
     [shareId],
