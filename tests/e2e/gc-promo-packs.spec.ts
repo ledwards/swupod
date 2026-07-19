@@ -146,6 +146,15 @@ test.describe('GC 2026 Promo Packs', () => {
 
     await expect(page.locator('.pack-opening-container')).toBeVisible({ timeout: 25000 })
 
+    // ...and the finished pool actually opens. Regression guard for the sealed_pool
+    // existence gate: it INNER JOINed pods, but every pool created outside a pod
+    // (chaos sealed, pack blitz, pack wars, rotisserie) has a NULL pod_id, so the
+    // join dropped it and the page 404'd with "Pool not found".
+    await page.locator('.skip-button').click()
+    await page.waitForURL(/\/(sealed_)?pool\/[a-zA-Z0-9_-]+/, { timeout: 30000 })
+    await expect(page.getByText(/Pool not found/i)).toHaveCount(0)
+    await expect(page.locator('.packs-container .card-item').first()).toBeVisible({ timeout: 20000 })
+
     await context.close()
   })
 })
