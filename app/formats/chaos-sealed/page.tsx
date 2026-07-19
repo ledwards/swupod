@@ -95,7 +95,7 @@ export default function ChaosSealedPage() {
                     description: 'Unlock your Black Pack',
                   }
                 : {
-                    label: 'Friends of the Pod',
+                    label: 'Friends only',
                     href: '/gift/gc2026/black',
                     description: 'Available to Friends of the Pod',
                   },

@@ -125,3 +125,4 @@ ds-bundle/
 _verify-*
 **/_verify-*
 .env.fable-bak
+.next-promo-e2e

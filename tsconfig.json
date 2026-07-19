@@ -65,7 +65,9 @@
     "app/**/*",
     "lib/**/*",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
+    ".next/dev/types/**/*.ts",
+    ".next-promo-e2e/types/**/*.ts",
+    ".next-promo-e2e/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

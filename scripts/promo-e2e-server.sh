@@ -19,5 +19,8 @@ DB_URL="$(node -e "require('dotenv').config({path:'.env.local',quiet:true});requ
 export POSTGRES_URL="${DB_URL:-${POSTGRES_URL:-}}"
 export PROMO_CLAIM_WINDOW_OVERRIDE=1
 export PORT="$PORT"
+# Own build dir: `next dev` takes an exclusive lock on distDir, so sharing .next with a
+# dev server the developer already has running fails with "Unable to acquire lock".
+export NEXT_DIST_DIR="${NEXT_DIST_DIR:-.next-promo-e2e}"
 
 exec npx tsx server.ts
