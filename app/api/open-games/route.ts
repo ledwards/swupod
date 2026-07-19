@@ -7,7 +7,7 @@
 import { requireAuth, getSession } from '@/lib/auth'
 import { jsonResponse, errorResponse } from '@/lib/utils'
 import { applyRateLimit } from '@/lib/rateLimit'
-import { broadcastOpenGamesUpdate } from '@/src/lib/socketBroadcast'
+import { broadcastOpenGamesUpdate, emitOpenGameEventToUser } from '@/src/lib/socketBroadcast'
 import { listPublicOpenGames, postOpenGame, setOpenGameDiscordMessage } from '@/src/services/openGames'
 import { postOpenGameCreated } from '@/lib/discordLfg'
 import { resolvePoolId, openGameErrorResponse } from './helpers'
@@ -49,12 +49,18 @@ export async function POST(request: NextRequest): Promise<Response> {
     if (!poolId) return errorResponse('poolShareId is required', 400)
 
     const visibility = body.visibility === 'private' ? 'private' : 'public'
-    const game = await postOpenGame({
+    const { displaced, ...game } = await postOpenGame({
       userId: session.id,
       poolId,
       visibility,
       bestOf: body.bestOf === 3 ? 3 : 1,
     })
+
+    // Posting exits any match the poster was still nominally in — kick the
+    // vacated seat out of that lobby, same as an explicit cancel (R20).
+    for (const match of displaced) {
+      emitOpenGameEventToUser(String(match.otherPlayerId), 'cancelled', { shareId: match.shareId })
+    }
 
     if (game.visibility === 'public') {
       broadcastOpenGamesUpdate().catch(() => {})
