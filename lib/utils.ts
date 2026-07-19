@@ -1,5 +1,6 @@
 // Utility functions
 import { customAlphabet } from 'nanoid'
+import { normalizeSetCodes } from '../src/utils/setCodeLabel'
 
 // Alphanumeric only (no dashes or underscores)
 const alphanumericNanoid = customAlphabet(
@@ -134,11 +135,16 @@ const SET_ORDER: Record<string, number> = {
 }
 
 /**
- * Format set codes as range if all consecutive, otherwise as list
+ * Format set codes as range if all consecutive, otherwise as list. Input is de-duped and
+ * Event Pack codes are shown as PROMO (see normalizeSetCodes) before formatting.
  * e.g., ['SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'SEC'] → "SOR-SEC" (all consecutive)
  * e.g., ['SOR', 'SHD', 'JTL', 'LOF'] → "SOR, SHD, JTL, LOF" (not all consecutive)
+ * e.g., ['SOR', 'SOR', 'GC2026_SILVER'] → "SOR, PROMO" (de-duped, Event Pack renamed)
  */
-export function formatSetCodeRange(setCodes: string[]): string {
+export function formatSetCodeRange(rawSetCodes: string[]): string {
+  // De-dupe and map Event Pack codes to PROMO first — callers pass the raw per-pack list
+  // from card_pools.set_code, which repeats a set once per pack.
+  const setCodes = normalizeSetCodes(rawSetCodes)
   if (setCodes.length === 0) return ''
   if (setCodes.length === 1) return setCodes[0] ?? ''
 
