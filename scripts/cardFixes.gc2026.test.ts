@@ -133,14 +133,18 @@ function testCatalogShape(): boolean {
     if (!e.id?.startsWith('gc2026-')) { console.error(`  ❌ Bad id: ${e.id}`); return false }
     if (!e.sourceCardId) { console.error(`  ❌ ${e.id} missing sourceCardId`); return false }
     if (e.pool !== 'silver' && e.pool !== 'black') { console.error(`  ❌ ${e.id} bad pool: ${e.pool}`); return false }
-    // Stand-in art is either a remote CDN printing or art vendored into public/. Vendored
-    // art must actually exist on disk — a broken path here renders an empty card.
+    // placeholderImage is optional: null means "no stand-in art — fall through to the base
+    // printing already in cards.json" (the Black pool, which has no GC art yet). When set,
+    // it's a remote CDN printing or art vendored into public/; vendored art must actually
+    // exist on disk, or the card renders empty.
     const img = e.placeholderImage
-    if (!img?.startsWith('https://') && !img?.startsWith('/')) {
-      console.error(`  ❌ ${e.id} bad placeholderImage: ${img}`); return false
-    }
-    if (img.startsWith('/') && !existsSync(join(PUBLIC_DIR, img))) {
-      console.error(`  ❌ ${e.id} placeholderImage missing from public/: ${img}`); return false
+    if (img != null) {
+      if (!img.startsWith('https://') && !img.startsWith('/')) {
+        console.error(`  ❌ ${e.id} bad placeholderImage: ${img}`); return false
+      }
+      if (img.startsWith('/') && !existsSync(join(PUBLIC_DIR, img))) {
+        console.error(`  ❌ ${e.id} placeholderImage missing from public/: ${img}`); return false
+      }
     }
     if (ids.has(e.id)) { console.error(`  ❌ Duplicate id: ${e.id}`); return false }
     ids.add(e.id)

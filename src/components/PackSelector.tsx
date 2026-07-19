@@ -16,7 +16,7 @@ import { getPackImageUrl } from '@/src/utils/packArt'
 import { getSetConfig } from '@/src/utils/setConfigs'
 import { isSetBeta, isSetPrerelease } from '@/src/utils/api'
 import { getBaseCode, sortSetsForDisplay } from '@/src/utils/packSelectorSort'
-import { MAX_PROMO_PACKS_PER_TIER } from '@/src/services/chaosSealedSelection'
+import { MAX_PROMO_PACKS_TOTAL } from '@/src/services/chaosSealedSelection'
 import type { SetData } from '@/src/utils/packSelectorSort'
 import SubscribeModal from './SubscribeModal'
 import { buildTeaserModalCopy } from './setSelectionTeaser'
@@ -72,15 +72,17 @@ export function PackSelector({
     return selectedSets.filter(s => s === setCode).length
   }
 
-  // Event Packs augment the pool instead of filling a slot, so they're capped per tier
-  // rather than by the pool's pack count — and they don't consume the pool's slots.
+  // Event Packs augment the pool instead of filling a slot: they don't consume the pool's
+  // slots, and they're capped by a shared total across both tiers rather than by the pool's
+  // pack count.
   const promoCodes = new Set(sets.filter(s => s.promo).map(s => s.code))
   const isPromoCode = (setCode: string) => promoCodes.has(setCode)
   const slotsUsed = selectedSets.filter(code => !isPromoCode(code)).length
+  const promosUsed = selectedSets.length - slotsUsed
 
   const canAddOne = (setCode: string) =>
     isPromoCode(setCode)
-      ? getSetCount(setCode) < MAX_PROMO_PACKS_PER_TIER
+      ? promosUsed < MAX_PROMO_PACKS_TOTAL
       : slotsUsed < maxSelections
 
   const handleSetClick = (setCode: string) => {

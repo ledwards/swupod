@@ -351152,7 +351152,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com/card_06010042_EN_Cassian_Andor_a0389fe762.png",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06010042_EN_Cassian_Andor_a0389fe762.png",
       "backImageUrl": null,
       "gcPromo": {
         "campaign": "gc2026",
@@ -351202,7 +351202,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com/card_06010103_EN_Mon_Mothma_2ec0020704.png",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06010103_EN_Mon_Mothma_2ec0020704.png",
       "backImageUrl": null,
       "gcPromo": {
         "campaign": "gc2026",
@@ -351253,7 +351253,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com/card_08010148_EN_Ninth_Sister_9b6a35fcb7.png",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_08010148_EN_Ninth_Sister_9b6a35fcb7.png",
       "backImageUrl": null,
       "isPlaceholder": false,
       "spoilerStatus": "spoiled",
@@ -351303,7 +351303,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com/card_07010214_EN_Boba_Fett_34cf2cf618.png",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_07010214_EN_Boba_Fett_34cf2cf618.png",
       "backImageUrl": null,
       "gcPromo": {
         "campaign": "gc2026",
@@ -351353,7 +351353,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com/card_06010209_EN_The_Mandalorian_8fbac7ec35.png",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06010209_EN_The_Mandalorian_8fbac7ec35.png",
       "backImageUrl": null,
       "gcPromo": {
         "campaign": "gc2026",
@@ -351401,7 +351401,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com/card_06010219_EN_Ebon_Hawk_e4da33f527.png",
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_06010219_EN_Ebon_Hawk_e4da33f527.png",
       "backImageUrl": null,
       "gcPromo": {
         "campaign": "gc2026",
@@ -351479,7 +351479,7 @@
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-07-19T18:29:48.743Z"
+      "generatedAt": "2026-07-19T21:07:25.821Z"
     },
     "lastProcessed": "2026-07-19"
   }

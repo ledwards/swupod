@@ -6,7 +6,7 @@
 import { test, describe } from 'node:test'
 import assert from 'node:assert'
 import {
-  MAX_PROMO_PACKS_PER_TIER,
+  MAX_PROMO_PACKS_TOTAL,
   MIN_LEADER_PACKS,
   packProvidesLeaders,
   promoTierForCode,
@@ -19,8 +19,8 @@ describe('chaosSealedSelection', () => {
     assert.strictEqual(MIN_LEADER_PACKS, 1)
   })
 
-  test('SPEC: you can add 1 of each Event Pack tier you own', () => {
-    assert.strictEqual(MAX_PROMO_PACKS_PER_TIER, 1)
+  test('SPEC: up to 8 Event Packs total may augment a pool', () => {
+    assert.strictEqual(MAX_PROMO_PACKS_TOTAL, 8)
   })
 
   describe('splitSelection', () => {
@@ -50,17 +50,24 @@ describe('chaosSealedSelection', () => {
   })
 
   describe('Event Pack cap', () => {
-    test('rejects more than one of the same tier', () => {
-      const result = validateChaosSealedSelection(['SOR', 'GC2026_SILVER', 'GC2026_SILVER'])
-      assert.strictEqual(result.ok, false)
-      assert.strictEqual(result.code, 'tooManyPromoPacks')
+    test('allows stacking several of the same tier', () => {
+      const result = validateChaosSealedSelection(['SOR', ...Array(4).fill('GC2026_SILVER')])
+      assert.strictEqual(result.ok, true)
     })
 
-    test('allows one of each tier alongside a full pool', () => {
+    test('allows exactly 8 Event Packs alongside a full pool', () => {
       const result = validateChaosSealedSelection([
-        'SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'LAW', 'GC2026_SILVER', 'GC2026_BLACK',
+        'SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'LAW',
+        ...Array(5).fill('GC2026_SILVER'), ...Array(3).fill('GC2026_BLACK'),
       ])
       assert.strictEqual(result.ok, true)
+    })
+
+    test('rejects a 9th Event Pack', () => {
+      const result = validateChaosSealedSelection(['SOR', ...Array(9).fill('GC2026_SILVER')])
+      assert.strictEqual(result.ok, false)
+      assert.strictEqual(result.code, 'tooManyPromoPacks')
+      assert.match(result.message ?? '', /up to 8 Event Packs/)
     })
   })
 

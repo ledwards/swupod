@@ -31,12 +31,12 @@ export function packProvidesLeaders(setCode: string): boolean {
 export const MIN_LEADER_PACKS = 1
 
 /**
- * Event Packs augment a pool rather than filling one of its slots: they don't count
- * against the chosen pack count, and you can add one of each tier you own. One-per-tier
- * matches the gift itself — one card at the show unlocks your Silver Pack, not a supply
- * of them.
+ * Event Packs augment a pool rather than filling one of its slots: they don't count against
+ * the chosen pack count. You can stack them up to this many total (across both tiers) — a
+ * cap that keeps a pool from being drowned in promo cards while still letting you lean into
+ * them.
  */
-export const MAX_PROMO_PACKS_PER_TIER = 1
+export const MAX_PROMO_PACKS_TOTAL = 8
 
 export interface SplitSelection {
   /** Ordinary set packs — these fill the pool's slots and count toward the pack count. */
@@ -73,13 +73,11 @@ export function validateChaosSealedSelection(setCodes: readonly string[]): Selec
 
   const { setPacks, promoPacks } = splitSelection(setCodes)
 
-  for (const tier of new Set(promoPacks)) {
-    if (promoPacks.filter(code => code === tier).length > MAX_PROMO_PACKS_PER_TIER) {
-      return {
-        ok: false,
-        code: 'tooManyPromoPacks',
-        message: `You can add ${MAX_PROMO_PACKS_PER_TIER} of each Event Pack you've unlocked.`,
-      }
+  if (promoPacks.length > MAX_PROMO_PACKS_TOTAL) {
+    return {
+      ok: false,
+      code: 'tooManyPromoPacks',
+      message: `You can add up to ${MAX_PROMO_PACKS_TOTAL} Event Packs.`,
     }
   }
 

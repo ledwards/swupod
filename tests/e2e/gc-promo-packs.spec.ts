@@ -123,9 +123,9 @@ test.describe('GC 2026 Promo Packs', () => {
     await context.close()
   })
 
-  // Event Packs augment the pool: they don't consume one of its slots, and you can add one
-  // of each tier you own.
-  test('Event Packs do not count against the pool pack count', async ({ browser }) => {
+  // Event Packs augment the pool: they don't consume one of its slots, and you can stack
+  // several — capped at 8 total across both tiers.
+  test('Event Packs do not count against the pool pack count and stack up to 8', async ({ browser }) => {
     const context = await browser.newContext()
     const user = await createTestUser('GcAugment', TEST_ID)
     await login(context, user)
@@ -143,14 +143,15 @@ test.describe('GC 2026 Promo Packs', () => {
     await expect(page.locator('.chaos-sealed-promo-row')).toBeVisible()
     await expect(page.getByRole('heading', { name: /Your Chaos Sealed \(0\/6\)/ })).toBeVisible()
 
-    // Capped at one per tier — the add control is hidden rather than offering a second.
+    // Stack up to 8 — the add control stays available through the 8th, then hides.
+    for (let i = 1; i < 8; i++) await addSilver.click()
+    await expect(page.locator('.chaos-sealed-promo-row img')).toHaveCount(8)
     await expect(addSilver).not.toBeVisible()
 
-    // Six set packs still fill the pool, with the Event Pack riding along on top.
+    // Event Packs never consume pool slots: six set packs still fill the pool.
     const addSetPack = page.locator('button[aria-label^="Add one "]')
     for (let i = 0; i < 6; i++) await addSetPack.first().click()
     await expect(page.getByRole('heading', { name: /Your Chaos Sealed \(6\/6\)/ })).toBeVisible()
-    await expect(page.locator('.chaos-sealed-promo-row')).toBeVisible()
     await expect(page.getByRole('button', { name: /Create Chaos/i })).toBeEnabled()
 
     await context.close()
