@@ -47160,6 +47160,50 @@
       "backImageUrl": null
     },
     {
+      "id": "019d3177-4cdf-7040-8182-60f1c81839cb",
+      "cardId": "SOR-002",
+      "name": "Darth Vader",
+      "subtitle": "Dark Lord of the Sith",
+      "set": "SOR",
+      "number": "2",
+      "rarity": "Special",
+      "type": "Leader",
+      "aspects": [
+        "Aggression",
+        "Villainy"
+      ],
+      "traits": [
+        "Force",
+        "Imperial",
+        "Sith"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 7,
+      "power": 5,
+      "hp": 8,
+      "frontText": "Action [1 resource, exhaust]: If you played a [Villainy] card this phase, deal 1 damage to a unit and 1 damage to a base.",
+      "backText": "On Attack: You may deal 2 damage to a unit.",
+      "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader. (Flip him, ready him, and move him to the ground arena.)",
+      "keywords": [],
+      "artist": "Borja Pindado",
+      "unique": true,
+      "doubleSided": true,
+      "variantType": "Hyperspace",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": true,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": true,
+      "isShowcase": false,
+      "isPrestige": false,
+      "prestigeTier": null,
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_SWOP_0106_002_Darth_Vader_Leader_HYP_3b847b861d.png",
+      "backImageUrl": "https://cdn.starwarsunlimited.com/card_SWOP_0106_002_Darth_Vader_Leader_Unit_HYP_063ef5cbe7.png"
+    },
+    {
       "id": "019d3177-4d15-7d05-973e-9d3ce542a039",
       "cardId": "SOR-002",
       "name": "Luke Skywalker",
@@ -130811,6 +130855,52 @@
       "isPrestige": false,
       "prestigeTier": null,
       "imageUrl": "https://cdn.starwarsunlimited.com//card_0264002b_IT_Doctor_Evazan_d9ee0b1cf4.png",
+      "backImageUrl": null
+    },
+    {
+      "id": "019d3179-1613-73b8-8382-7410167d0396",
+      "cardId": "TWI-007",
+      "name": "Separatist Commando",
+      "subtitle": null,
+      "set": "TWI",
+      "number": "7",
+      "rarity": "Common",
+      "type": "Unit",
+      "aspects": [
+        "Cunning",
+        "Villainy"
+      ],
+      "traits": [
+        "Separatist",
+        "Droid",
+        "Trooper"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 2,
+      "hp": 3,
+      "frontText": "While you control another Separatist unit, this unit gains Raid 2. (It gets +2/+0 while attacking.)",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Raid"
+      ],
+      "artist": "Amad Mir",
+      "unique": false,
+      "doubleSided": false,
+      "variantType": "Hyperspace",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": true,
+      "isShowcase": false,
+      "isPrestige": false,
+      "prestigeTier": null,
+      "imageUrl": "https://cdn.starwarsunlimited.com//card_0302007_EN_Separatist_Commando_3abda8a873.png",
       "backImageUrl": null
     },
     {
@@ -354930,14 +355020,14 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-07-18",
+    "lastUpdated": "2026-07-19",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
-    "totalCards": 8314,
+    "totalCards": 8316,
     "sets": [
       {
         "code": "SOR",
         "name": "Spark of Rebellion",
-        "cardCount": 981
+        "cardCount": 982
       },
       {
         "code": "SHD",
@@ -354947,7 +355037,7 @@
       {
         "code": "TWI",
         "name": "Twilight of the Republic",
-        "cardCount": 998
+        "cardCount": 999
       },
       {
         "code": "JTL",
