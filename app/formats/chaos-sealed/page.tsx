@@ -224,7 +224,9 @@ export default function ChaosSealedPage() {
   if (showAnimation && generatedPool) {
     return (
       <PackOpeningAnimation
-        packCount={packCount}
+        // Open every generated pack, not just the set-pack slot count — a pool is packCount
+        // set packs PLUS any Event Packs, so this can exceed packCount.
+        packCount={generatedPool.packs.length}
         packImageUrls={generatedPool.packImageUrls}
         cardBackUrl="/card-images/card-back.png"
         onComplete={handleAnimationComplete}

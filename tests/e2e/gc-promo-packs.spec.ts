@@ -185,9 +185,10 @@ test.describe('GC 2026 Promo Packs', () => {
     await expect(page.locator('.pack-opening-container')).toBeVisible()
 
     await page.goto('/formats/chaos-sealed')
-    // The 6 required set packs, plus an Event Pack that augments rather than replaces one.
-    const addButtons = page.locator('button[aria-label^="Add one "]')
-    for (let i = 0; i < 6; i++) await addButtons.nth(i).click()
+    // The 6 required set packs, plus 2 Event Packs that augment rather than replace them.
+    const addSetPack = page.locator('button[aria-label^="Add one "]')
+    for (let i = 0; i < 6; i++) await addSetPack.first().click()
+    await page.locator('button[aria-label="Add one 2026 GC Silver Pack pack"]').click()
     await page.locator('button[aria-label="Add one 2026 GC Silver Pack pack"]').click()
 
     const createBtn = page.getByRole('button', { name: /Create Chaos/i })
@@ -195,6 +196,11 @@ test.describe('GC 2026 Promo Packs', () => {
     await createBtn.click()
 
     await expect(page.locator('.pack-opening-container')).toBeVisible({ timeout: 25000 })
+
+    // Every generated pack opens, not just the set-pack slot count — 6 set + 2 Event = 8.
+    // (Regression: the animation was told to open only `packCount` packs, so the Event
+    // Packs — which sort first — were the only ones you got to open.)
+    await expect(page.locator('.pack-counter')).toHaveText(/\/\s*8/)
 
     // ...and the finished pool actually opens. Regression guard for the sealed_pool
     // existence gate: it INNER JOINed pods, but every pool created outside a pod
