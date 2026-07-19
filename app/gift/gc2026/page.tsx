@@ -107,7 +107,7 @@ export default function GiftGc2026Page() {
         {heroOk && (
           <img
             className="gift-hero"
-            src="/gift/gc2026-hero.png"
+            src="/gift/gc2026-hero.webp"
             alt="Protect the Pod — GC 2026"
             onError={() => setHeroOk(false)}
           />

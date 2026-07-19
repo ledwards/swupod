@@ -10,7 +10,6 @@ import { trackEvent, AnalyticsEvents } from '@/src/hooks/useAnalytics'
 import Button from '@/src/components/Button'
 import PackSelector from '@/src/components/PackSelector'
 import PackOpeningAnimation from '@/src/components/PackOpeningAnimation'
-import PromoPacksSection from '@/src/components/PromoPacksSection'
 import {
   getTeaserUserState,
   shouldPeekUnreleased,
@@ -47,7 +46,6 @@ export default function ChaosSealedPage() {
   const [error, setError] = useState<string | null>(null)
   const [showAnimation, setShowAnimation] = useState(false)
   const [generatedPool, setGeneratedPool] = useState<GeneratedPool | null>(null)
-  const [promoTiers, setPromoTiers] = useState<string[]>([])
 
   const hasBetaAccess = user?.is_beta_tester || user?.is_admin
 
@@ -62,7 +60,20 @@ export default function ChaosSealedPage() {
       try {
         setLoading(true)
         const setsData = await fetchSets({ includeBeta: hasBetaAccess, includeCarbonite: true, peekUnreleased })
-        setSets(setsData)
+        // Unlocked GC Event Packs are just packs — they belong in the same selector as the
+        // sets, with the same art and +/- controls, and flow through setCodes like any other.
+        const eventPacks: SetData[] = []
+        try {
+          const res = await fetch('/api/promo/entitlements?campaign=gc2026', { credentials: 'include' })
+          if (res.ok) {
+            const owned = (await res.json())?.data || {}
+            if (owned.silver) eventPacks.push({ code: 'GC2026_SILVER', name: '2026 GC Silver Pack' })
+            if (owned.black) eventPacks.push({ code: 'GC2026_BLACK', name: '2026 GC Black Pack' })
+          }
+        } catch {
+          // Non-fatal — just means no Event Packs offered this load.
+        }
+        setSets([...setsData, ...eventPacks])
       } catch (err) {
         setError('Failed to load sets')
       } finally {
@@ -102,8 +113,7 @@ export default function ChaosSealedPage() {
         credentials: 'include',
         body: JSON.stringify({
           setCodes: selectedSets,
-          packCount,
-          promoTiers
+          packCount
         })
       })
 
@@ -219,8 +229,6 @@ export default function ChaosSealedPage() {
           title={`Select ${packCount} Packs (${selectedSets.length}/${packCount})`}
           peekUnreleased={peekVariant}
         />
-
-        <PromoPacksSection selectable onSelectionChange={setPromoTiers} />
 
         <div className="chaos-sealed-section selected-sets-order">
           <h3>Your Chaos Sealed ({selectedSets.length}/{packCount})</h3>

@@ -10,7 +10,6 @@ import { getPackImageUrl } from '@/src/utils/packArt'
 import { trackEvent, AnalyticsEvents } from '@/src/hooks/useAnalytics'
 import Button from '@/src/components/Button'
 import PackSelector from '@/src/components/PackSelector'
-import PromoPacksSection from '@/src/components/PromoPacksSection'
 import {
   getTeaserUserState,
   shouldPeekUnreleased,
@@ -195,8 +194,6 @@ export default function ChaosDraftPage() {
             })}
           </div>
         </div>
-
-        <PromoPacksSection />
 
         {error && <div className="error-message">{error}</div>}
 

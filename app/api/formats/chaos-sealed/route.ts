@@ -30,9 +30,35 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return errorResponse('Must select between 1 and 12 packs', 400)
     }
 
-    // Validate all sets exist
+    // GC Event Packs are ordinary pack slots with their own set codes — they arrive in
+    // setCodes like any other pack. They're only generatable if the account actually owns
+    // that tier, validated server-side (a client can't spoof an unowned tier).
+    const promoTierForCode = (code: string): 'silver' | 'black' | null =>
+      code === 'GC2026_SILVER' ? 'silver' : code === 'GC2026_BLACK' ? 'black' : null
+
+    const campaign = getCampaign(PROMO_CAMPAIGN)
+    const requestedTiers = [...new Set(setCodes.map(promoTierForCode).filter(Boolean))]
+    if (requestedTiers.length > 0) {
+      if (!userId || !campaign) {
+        return errorResponse('Event Packs require an unlocked account', 403)
+      }
+      const ownedRows = await queryRows(
+        'SELECT promo_tier FROM promo_entitlements WHERE user_id = $1 AND campaign = $2',
+        [userId, PROMO_CAMPAIGN]
+      )
+      const owned = new Set(ownedRows.map(r => r.promo_tier))
+      if (requestedTiers.some(t => !owned.has(t))) {
+        return errorResponse('You have not unlocked that Event Pack', 403)
+      }
+    }
+
+    // Validate all non-promo sets exist
     const setConfigs = []
     for (const setCode of setCodes) {
+      if (promoTierForCode(setCode)) {
+        setConfigs.push(null) // promo slot — no set config
+        continue
+      }
       const baseCode = isCarboniteCode(setCode) ? getBaseSetCode(setCode) : setCode
       const setConfig = getSetConfig(baseCode)
       if (!setConfig) {
@@ -48,46 +74,31 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Initialize card cache (needed for server-side pack generation)
     await initializeCardCache()
 
-    // Generate packs (1 from each selected set)
+    // Generate packs (1 per selected slot, in the order chosen)
     const packs = []
     const allCards = []
+    let cardsById = null
 
     for (let i = 0; i < setCodes.length; i++) {
       const setCode = setCodes[i]
-      const pack = generateBoosterPack([], setCode)
-      packs.push({
-        ...pack,
-        setCode,
-        setName: setConfigs[i].setName
-      })
-      allCards.push(...pack.cards)
-    }
-
-    // Optionally add the user's unlocked GC Event Packs as extra packs. Ownership is
-    // validated server-side against promo_entitlements — a client can't spoof a tier it
-    // hasn't claimed. Each Event Pack contributes its drawn cards to the pool.
-    const requestedTiers = Array.isArray(body.promoTiers)
-      ? body.promoTiers.filter((t: unknown): t is string => t === 'silver' || t === 'black')
-      : []
-    if (userId && requestedTiers.length > 0) {
-      const campaign = getCampaign(PROMO_CAMPAIGN)
-      if (campaign) {
-        const ownedRows = await queryRows(
-          'SELECT promo_tier FROM promo_entitlements WHERE user_id = $1 AND campaign = $2',
-          [userId, PROMO_CAMPAIGN]
-        )
-        const owned = new Set(ownedRows.map(r => r.promo_tier))
-        const cardsById = new Map(getAllCards().map(c => [c.id, c]))
-        for (const tier of [...new Set(requestedTiers)]) {
-          if (!owned.has(tier)) continue // silently skip tiers the user doesn't own
-          const eventPack = drawEventPack(campaign, tier as 'silver' | 'black', id => cardsById.get(id) ?? null)
-          packs.push({
-            ...eventPack,
-            setCode: `GC2026_${tier.toUpperCase()}`,
-            setName: `2026 GC ${tier === 'silver' ? 'Silver' : 'Black'} Pack`,
-          })
-          allCards.push(...eventPack.cards)
-        }
+      const tier = promoTierForCode(setCode)
+      if (tier) {
+        if (!cardsById) cardsById = new Map(getAllCards().map(c => [c.id, c]))
+        const eventPack = drawEventPack(campaign, tier, id => cardsById.get(id) ?? null)
+        packs.push({
+          ...eventPack,
+          setCode,
+          setName: `2026 GC ${tier === 'silver' ? 'Silver' : 'Black'} Pack`,
+        })
+        allCards.push(...eventPack.cards)
+      } else {
+        const pack = generateBoosterPack([], setCode)
+        packs.push({
+          ...pack,
+          setCode,
+          setName: setConfigs[i].setName
+        })
+        allCards.push(...pack.cards)
       }
     }
 
@@ -135,7 +146,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       shareUrl,
       createdAt: pool.created_at,
       setCodes,
-      setNames: setConfigs.map(c => c.setName),
+      // setConfigs holds null for Event Pack slots — fall back to the generated pack's name.
+      setNames: setConfigs.map((c, i) => c ? c.setName : packs[i].setName),
       cardCount: allCards.length,
       packCount: packs.length
     }, 201)
