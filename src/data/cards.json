@@ -350561,7 +350561,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_07010068_EN_Millennium_Falcon_18a6ea8be1.png",
+      "imageUrl": "/promo-cards/gc2026/pwc-millennium-falcon.png",
       "backImageUrl": null,
       "gcPromo": {
         "campaign": "gc2026",
@@ -350611,15 +350611,15 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_08010050_EN_Morgan_Elsbeth_eb84dccb6b.png",
+      "imageUrl": "/promo-cards/gc2026/pwc-morgan-elsbeth.png",
       "backImageUrl": null,
+      "isPlaceholder": false,
+      "spoilerStatus": "spoiled",
       "gcPromo": {
         "campaign": "gc2026",
         "pool": "silver",
         "placeholder": true
-      },
-      "isPlaceholder": false,
-      "spoilerStatus": "spoiled"
+      }
     },
     {
       "id": "gc2026-lando-calrissian-eyes-open",
@@ -350663,7 +350663,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_07010108_EN_Lando_Calrissian_93f63db128.png",
+      "imageUrl": "/promo-cards/gc2026/pwc-lando.png",
       "backImageUrl": null,
       "gcPromo": {
         "campaign": "gc2026",
@@ -350711,7 +350711,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_07010067_EN_Jyn_Erso_580ca21b67.png",
+      "imageUrl": "/promo-cards/gc2026/pwc-jyn-erso.png",
       "backImageUrl": null,
       "gcPromo": {
         "campaign": "gc2026",
@@ -350761,7 +350761,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_06010090_EN_Director_Krennic_938687c941.png",
+      "imageUrl": "/promo-cards/gc2026/pwc-director-krennic.png",
       "backImageUrl": null,
       "gcPromo": {
         "campaign": "gc2026",
@@ -350808,7 +350808,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_06010133_EN_Syril_Karn_b50ff0f727.png",
+      "imageUrl": "/promo-cards/gc2026/pwc-syril-karn.png",
       "backImageUrl": null,
       "gcPromo": {
         "campaign": "gc2026",
@@ -350856,15 +350856,15 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_08010161_EN_Zeb_Orrelios_357789c622.png",
+      "imageUrl": "/promo-cards/gc2026/pwc-zeb.png",
       "backImageUrl": null,
+      "isPlaceholder": false,
+      "spoilerStatus": "spoiled",
       "gcPromo": {
         "campaign": "gc2026",
         "pool": "silver",
         "placeholder": true
-      },
-      "isPlaceholder": false,
-      "spoilerStatus": "spoiled"
+      }
     },
     {
       "id": "gc2026-cinta-kaz-the-struggle-comes-first",
@@ -350906,7 +350906,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_06010172_EN_Cinta_Kaz_538a4bdfc9.png",
+      "imageUrl": "/promo-cards/gc2026/pwc-cinta-kaz.png",
       "backImageUrl": null,
       "gcPromo": {
         "campaign": "gc2026",
@@ -350955,7 +350955,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_06010205_EN_Obi_Wan_Kenobi_1f3237cef3.png",
+      "imageUrl": "/promo-cards/gc2026/pwc-obi-wan.png",
       "backImageUrl": null,
       "gcPromo": {
         "campaign": "gc2026",
@@ -351003,7 +351003,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_05010213_EN_The_Legacy_Run_2b15d6d4c7.png",
+      "imageUrl": "/promo-cards/gc2026/pwc-legacy-run.png",
       "backImageUrl": null,
       "gcPromo": {
         "campaign": "gc2026",
@@ -351053,7 +351053,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_07010252_EN_Fett_s_Firespray_2d96cda17e.png",
+      "imageUrl": "/promo-cards/gc2026/pwc-firespray.png",
       "backImageUrl": null,
       "gcPromo": {
         "campaign": "gc2026",
@@ -351103,15 +351103,15 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_08010255_EN_Anakin_Skywalker_1a5b498e1f.png",
+      "imageUrl": "/promo-cards/gc2026/pwc-anakin.png",
       "backImageUrl": null,
+      "isPlaceholder": false,
+      "spoilerStatus": "spoiled",
       "gcPromo": {
         "campaign": "gc2026",
         "pool": "silver",
         "placeholder": true
-      },
-      "isPlaceholder": false,
-      "spoilerStatus": "spoiled"
+      }
     },
     {
       "id": "gc2026-cassian-andor-lay-low",
@@ -351255,13 +351255,13 @@
       "prestigeTier": null,
       "imageUrl": "https://cdn.starwarsunlimited.com/card_08010148_EN_Ninth_Sister_9b6a35fcb7.png",
       "backImageUrl": null,
+      "isPlaceholder": false,
+      "spoilerStatus": "spoiled",
       "gcPromo": {
         "campaign": "gc2026",
         "pool": "black",
         "placeholder": true
-      },
-      "isPlaceholder": false,
-      "spoilerStatus": "spoiled"
+      }
     },
     {
       "id": "gc2026-boba-fett-for-a-price",
@@ -351462,7 +351462,7 @@
         "placeholderStatus": "valid"
       }
     ],
-    "fixesApplied": 2,
+    "fixesApplied": 0,
     "ashPlaceholderCatalog": {
       "version": "2026-05-20-sec-shaped-law-multicolor-v2",
       "expectedNormalSlots": 264,
@@ -351479,8 +351479,8 @@
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-07-14T22:14:00.259Z"
+      "generatedAt": "2026-07-19T18:29:48.743Z"
     },
-    "lastProcessed": "2026-07-14"
+    "lastProcessed": "2026-07-19"
   }
 }

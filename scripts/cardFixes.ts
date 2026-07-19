@@ -151,25 +151,34 @@ export const customTransforms: CustomTransform[] = [
   // whitelist — so it can read the full raw card data and fall over to a real GC printing the
   // moment swuapi has one.
   //
-  // The official GC 2026 alt-art isn't in swuapi yet, so each catalog entry (src/data/promoPacks/
+  // swuapi doesn't carry the GC 2026 printings yet, so each catalog entry (src/data/promoPacks/
   // gc2026-cards.json) is surfaced as a distinct 'GC 2026 Promo' variant cloned from its STANDARD
-  // printing — a valid stand-in now. Art resolution prefers, in order:
+  // printing, with stand-in art. Art resolution prefers, in order:
   //   1. a real GC printing (a same-cardId sibling whose art carries the `_OP_` GC marker),
   //   2. the catalog placeholderImage,
   //   3. the base card's standard art.
   // (1) makes the swap AUTOMATIC: when swuapi scrapes the GC art, the next data refresh uses it —
   //     no code change. (No `_OP_` siblings exist for these cardIds today, so no false positives.)
   //
+  // What (2) actually is today differs by pool, and that's the point of the stand-in:
+  //   Silver — the REAL GC promo art (medallion + P26-EN set code), captured from the FFG
+  //            reveal stream and vendored to public/promo-cards/gc2026/.
+  //   Black  — no GC-treated art has been shown, so it falls back to the base printing.
+  //
   // Keyed by unique synthetic `id` (shares the base cardId/number — id is the only unique key).
-  // Idempotent: the built cards.json already contains these and the runtime re-applies transforms,
-  // so ids already present are skipped. 'GC 2026 Promo' is whitelisted below so injected cards
-  // survive the filter; that admits only this synthetic type — it does NOT reintroduce the old
-  // promo variants (Weekly Play / PQ / SS) the filter guards against.
+  // Re-runnable: previously injected cards are dropped and rebuilt from the catalog each pass, so
+  // catalog art/pool edits propagate instead of being pinned by whatever landed in cards.json
+  // first. 'GC 2026 Promo' is whitelisted below so injected cards survive the filter; that admits
+  // only this synthetic type — it does NOT reintroduce the old promo variants (Weekly Play / PQ /
+  // SS) the filter guards against.
   {
     name: 'Inject GC 2026 promo cards',
     transform: (cards: Card[]): Card[] => {
       const catalog = (gc2026PromoCatalog as { cards?: any[] }).cards || []
-      const present = new Set(cards.map(c => c.id))
+      // Drop any previously injected promo cards and rebuild from the catalog, so an art or
+      // pool change in the catalog actually propagates. (Skipping ids already present would
+      // leave stale art baked into cards.json forever.)
+      cards = cards.filter(c => !(c as any).gcPromo)
       const sourceById = new Map(cards.map(c => [c.id, c]))
       // Real GC art, when swuapi has it: a same-cardId sibling printing whose art carries `_OP_`.
       const realArtByCardId = new Map<string, string>()
@@ -179,7 +188,6 @@ export const customTransforms: CustomTransform[] = [
 
       const injected: Card[] = []
       for (const entry of catalog) {
-        if (present.has(entry.id)) continue          // already injected — idempotent
         const source = sourceById.get(entry.sourceCardId)
         if (!source) continue                         // underlying card missing — skip
         const realArt = realArtByCardId.get(source.cardId)
@@ -195,7 +203,10 @@ export const customTransforms: CustomTransform[] = [
           gcPromo: {
             campaign: 'gc2026',
             pool: entry.pool,                         // 'silver' | 'black'
-            placeholder: !realArt,                    // true while showing the standard-printing stand-in
+            // true while the art is our stand-in rather than swuapi's official record.
+            // Silver stands in with the real GC promo art captured from the FFG stream;
+            // Black has no GC-treated art yet, so it stands in with the base printing.
+            placeholder: !realArt,
           },
         })
       }
