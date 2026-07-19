@@ -275,6 +275,39 @@ describe('openGames service (Lobby V1 spec)', { skip: !dbAvailable }, () => {
     )
   })
 
+  it('FIXED: posting a new lobby exits the host\'s stale pending match, so joins work', async () => {
+    // BUG (7/18): the host got wedged in a pending match that never reached a
+    // terminal state (Karabast result never ingested / opponent vanished).
+    // Posting a fresh lobby left that row alone, so every joiner bounced off
+    // the host check with "The host is already in another lobby" — an
+    // unjoinable listing until the 2-4h sweep.
+    const host = await seedUser('og-wedged-host')
+    const hp = await seedPool(host)
+    const other = await seedUser('og-wedged-other')
+    const op = await seedPool(other)
+    const otherListing = await postOpenGame({ userId: other, poolId: op })
+    const stale = await joinOpenGame({ shareId: otherListing.shareId, userId: host, poolId: hp })
+    await query("UPDATE open_games SET status = 'in_progress' WHERE id = $1", [stale.id])
+
+    const listing = await postOpenGame({ userId: host, poolId: hp })
+    assert.equal((await gameRow(stale.id))!.status, 'cancelled', 'stale pending match exited')
+    // The displaced seat is reported so the API layer can notify them (R20 parity).
+    assert.deepEqual(listing.displaced, [{ shareId: stale.shareId, otherPlayerId: other }])
+
+    const joiner = await seedUser('og-wedged-joiner')
+    const jp = await seedPool(joiner)
+    const joined = await joinOpenGame({ shareId: listing.shareId, userId: joiner, poolId: jp })
+    assert.equal(joined.status, 'accepted', 'the new listing is joinable')
+  })
+
+  it('replacing an open listing displaces nobody (no opponent to notify)', async () => {
+    const u = await seedUser('og-replace-open')
+    const p = await seedPool(u)
+    await postOpenGame({ userId: u, poolId: p })
+    const second = await postOpenGame({ userId: u, poolId: p })
+    assert.deepEqual(second.displaced, [])
+  })
+
   it('the host can swap the deck while open; listing follows the new set/format', async () => {
     const { setOpenGameDeck } = await import('./openGames')
     const u = await seedUser('og-swap')

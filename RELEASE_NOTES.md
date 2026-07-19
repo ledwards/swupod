@@ -1,5 +1,10 @@
 # Release Notes
 
+## 07.19.2026
+
+### 🔧 Under the Hood
+- **Matchmaking fix**: starting a new game now properly closes out any earlier game you were still nominally in. Previously a game that never got a recorded result could leave your next one impossible for anyone to join.
+
 ## 07.16.2026
 
 ### 🔧 Under the Hood
