@@ -6,7 +6,12 @@ import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
 import type { RawCard } from '@/src/utils/cardData'
 import { buildCardLookupMaps, cardIdentityKey } from '@/src/utils/cardNormalization'
-import { computeCardGrades } from '@/src/services/cardDataMetrics'
+import {
+  CARD_GRADE_BUCKET_SCHEMES,
+  CARD_GRADE_PROVISIONAL_MIN_DENOMINATOR,
+  computeBucketedCardGrades,
+  computeCardGrades,
+} from '@/src/services/cardDataMetrics'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
 import { NextRequest } from 'next/server'
 
@@ -110,6 +115,7 @@ function gradeStatusLabel(status: string): string {
   if (status === 'sample-too-small') return 'Needs 50+ GP'
   if (status === 'slice-too-small') return 'Needs 25 cards'
   if (status === 'zero-variance') return 'No spread'
+  if (status === 'bucket-too-small') return 'Too few cards at this cost'
   return status
 }
 
@@ -435,6 +441,80 @@ function mergeWayfinderReplayRows<T extends Record<string, any>>(rows: T[], wayf
   })
 }
 
+/**
+ * Add per-cost-bucket grades alongside the existing global grade.
+ *
+ * The global `displayGrade` is left exactly as-is — it may come from Wayfinder
+ * (default limited view) or from the local GP path — so nothing regresses. The
+ * bucketed grades are always computed here, by PTP, from the raw counts on the
+ * row, which keeps a single grading method across both data sources.
+ *
+ * One metric basis is chosen for the whole slice: z-scores are only comparable
+ * within a common denominator, so a slice cannot mix GIH-graded and GP-graded
+ * cards. Leaders and bases are excluded — they have no cost and are graded by
+ * absolute win rate elsewhere.
+ */
+export function withBucketedCardGrades<T extends { cards?: any[] }>(payload: T): T {
+  const cards = payload?.cards || []
+  if (cards.length === 0) return payload
+
+  const gradableRows = cards.filter((card) => !card?.isLeader && !card?.isBase)
+  const useGih = gradableRows.some((card) => num(card.gihCount) > 0 && card.gihWins != null)
+
+  const inputs = gradableRows.map((card) => ({
+    key: cardDataRowStrictKey(card),
+    cost: card.cost ?? null,
+    wins: useGih ? num(card.gihWins) : num(card.gpWins),
+    denominator: useGih ? num(card.gihCount) : num(card.gpCount),
+  }))
+
+  const bySchemeByKey = new Map<string, Map<string, any>>()
+  for (const scheme of CARD_GRADE_BUCKET_SCHEMES) {
+    if (scheme === 'global') continue
+    bySchemeByKey.set(
+      scheme,
+      new Map(
+        computeBucketedCardGrades(inputs, scheme, {
+          // Grade at the provisional floor so these lenses have coverage
+          // comparable to the global column, which grades on very small
+          // samples. Everything below the full floor is flagged provisional.
+          minDenominator: CARD_GRADE_PROVISIONAL_MIN_DENOMINATOR,
+        }).map((grade) => [grade.key, grade]),
+      ),
+    )
+  }
+
+  return {
+    ...payload,
+    bucketedGradeBasis: useGih ? 'GIH WR' : 'GP WR',
+    cards: cards.map((card) => {
+      if (card?.isLeader || card?.isBase) return card
+      const key = cardDataRowStrictKey(card)
+      const gradesByScheme: Record<string, any> = {}
+      for (const [scheme, byKey] of bySchemeByKey.entries()) {
+        const grade = byKey.get(key)
+        if (!grade) continue
+        gradesByScheme[scheme] = {
+          grade: grade.grade,
+          status: grade.status,
+          provisional: grade.provisional,
+          statusLabel: grade.provisional ? 'Provisional' : gradeStatusLabel(grade.status),
+          bucketKey: grade.bucketKey,
+          bucketLabel: grade.bucketLabel,
+        }
+      }
+      return { ...card, gradesByScheme }
+    }),
+  }
+}
+
+function finalizeCardDataPayload<T extends { leaders?: any[]; bases?: any[]; cards?: any[] }>(
+  payload: T,
+  allCards: RawCard[],
+): T {
+  return withBucketedCardGrades(enrichPayloadWithHyperspaceImages(payload, allCards))
+}
+
 function mergeWayfinderReplayMetrics(payload: any, wayfinderPayload: any) {
   const wayfinderRows = [
     ...(wayfinderPayload?.leaders || []),
@@ -610,7 +690,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       try {
         const wayfinderPayload = await fetchWayfinderCardData(setCode, format)
         if (wayfinderPayload) {
-          const response = jsonResponse(enrichPayloadWithHyperspaceImages(wayfinderPayload, getAllCards()))
+          const response = jsonResponse(finalizeCardDataPayload(wayfinderPayload, getAllCards()))
           response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
           return response
         }
@@ -771,7 +851,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       try {
         const wayfinderPayload = await fetchWayfinderCardData(setCode, format)
         if (wayfinderPayload) {
-          const response = jsonResponse(enrichPayloadWithHyperspaceImages(wayfinderPayload, allCards))
+          const response = jsonResponse(finalizeCardDataPayload(wayfinderPayload, allCards))
           response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
           return response
         }
@@ -780,7 +860,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       }
     }
 
-    payload = enrichPayloadWithHyperspaceImages(payload, allCards)
+    payload = finalizeCardDataPayload(payload, allCards)
 
     const response = jsonResponse(payload)
     response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')

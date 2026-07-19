@@ -749,8 +749,35 @@
   border-top: 1px solid rgba(185, 205, 225, 0.14);
   display: grid;
   gap: 0.85rem;
-  grid-template-columns: max-content minmax(280px, 1fr) max-content;
+  grid-template-columns: max-content max-content minmax(240px, 1fr) max-content;
   padding-top: 0.85rem;
+}
+
+/* Cost/curve buckets are a full-width row: there can be seven of them, so this
+   strip wraps instead of overflowing the way the fixed-width segmented controls do. */
+.card-data-bucket-control {
+  border-top: 1px solid rgba(185, 205, 225, 0.14);
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+}
+
+.card-data-control-panel .card-data-bucket-segmented {
+  flex-wrap: wrap;
+  overflow: visible;
+  width: 100%;
+}
+
+/* Grades built on small samples must say so where the grades are, not in a
+   footnote. Amber rather than red: soft data, not an error. */
+.card-data-provisional-note {
+  background: rgba(var(--pt-amber-paused-rgb), 0.14);
+  border: 1px solid rgba(var(--pt-amber-paused-rgb), 0.38);
+  border-radius: 6px;
+  color: var(--pt-amber-paused);
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 0.6rem;
 }
 
 .card-data-control-panel .card-data-control {

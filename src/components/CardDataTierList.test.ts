@@ -22,9 +22,21 @@ describe('<CardDataTierList /> controls', () => {
 
   it('uses API-owned display grades instead of recomputing grade bands in React', () => {
     assert.doesNotMatch(COMPONENT_SRC, /computeCardGrades/)
-    assert.match(COMPONENT_SRC, /displayGrade: card\.displayGrade \?\? card\.grade \?\? null/)
+    // Bucketed grades are API-owned too — the client selects a lens, it never grades.
+    assert.doesNotMatch(COMPONENT_SRC, /computeBucketedCardGrades/)
+    assert.doesNotMatch(COMPONENT_SRC, /gradeFromZScore/)
+    assert.match(COMPONENT_SRC, /: card\.displayGrade \?\? card\.grade \?\? null/)
+    assert.match(COMPONENT_SRC, /const schemeGrade = isBucketedScheme \? card\.gradesByScheme\?\.\[activeGradeScheme\] : null/)
     assert.match(COMPONENT_SRC, /groups\.get\(card\.displayGrade \|\| ['"]U['"]\)\?\.push\(card\)/)
     assert.doesNotMatch(COMPONENT_SRC, /const inputs = rows\.map\(card => \(\{/)
+  })
+
+  it('grades leaders against the whole pool because they carry no cost', () => {
+    assert.match(COMPONENT_SRC, /const activeGradeScheme: CardGradeScheme = isLeaderView \? ['"]global['"] : gradeScheme/)
+  })
+
+  it('resets the bucket filter when the grading lens changes', () => {
+    assert.match(COMPONENT_SRC, /useEffect\(\(\) => \{ setBucketFilter\(['"]all['"]\) \}, \[activeGradeScheme\]\)/)
   })
 
   it('shows all requested rates on tier-list cards', () => {

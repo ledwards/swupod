@@ -99,6 +99,16 @@ async function main() {
   run(bin('psql'), [LOCAL, '-v', 'ON_ERROR_STOP=0', '-c', 'DROP SCHEMA public CASCADE; CREATE SCHEMA public;'])
   run(bin('psql'), [LOCAL, '-v', 'ON_ERROR_STOP=0', '-f', dumpFile])
 
+  // The restore above runs with ON_ERROR_STOP=0 and loads with triggers
+  // disabled, so a partially-failed restore leaves orphans and stale sequences
+  // behind while still reporting success. Always verify, and auto-repair the
+  // sequences (additive; nothing is deleted).
+  console.log('\n🔍 Verifying the restored database…')
+  spawnSync('npx', ['tsx', join(ROOT, 'scripts', 'verifyDevDb.ts'), '--fix'], {
+    stdio: 'inherit',
+    env: { ...process.env, TARGET_DATABASE_URL: LOCAL },
+  })
+
   console.log('\n✅ Local dev DB now mirrors production.')
   console.log(`   Restore the old local DB later with:`)
   console.log(`     psql "$DATABASE_URL" < ${backupFile}`)

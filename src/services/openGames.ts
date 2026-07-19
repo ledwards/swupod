@@ -89,6 +89,8 @@ export interface RecentResult {
 export interface PlayNowResult {
   action: 'joined' | 'posted' | 'waiting'
   game: OpenGame
+  /** Only on the 'posted' path — see PostOpenGameResult.displaced. */
+  displaced?: DisplacedMatch[]
 }
 
 function rowToGame(row: Record<string, unknown>): OpenGame {
@@ -175,17 +177,37 @@ export interface PostParams {
   bestOf?: number
 }
 
-async function postOpenGameInTx(tx: TxClient, params: PostParams): Promise<OpenGame> {
+/** A match this post exited on the poster's behalf. Transient — never persisted;
+ *  the API layer uses it to notify the vacated seat, then drops it. */
+export interface DisplacedMatch {
+  shareId: string
+  otherPlayerId: string | null
+}
+
+export interface PostOpenGameResult extends OpenGame {
+  displaced: DisplacedMatch[]
+}
+
+async function postOpenGameInTx(tx: TxClient, params: PostParams): Promise<PostOpenGameResult> {
   const { userId, poolId, visibility = 'public' } = params
   const bestOf = params.bestOf === 3 ? 3 : 1
   await lockUsers(tx, [userId])
   const deck = await requireEligibleDeck(tx, userId, poolId)
 
-  // R19: replace, never stack.
-  await tx.query(
+  // R19: replace, never stack — and (7/19) that now covers PENDING matches too,
+  // not just the poster's prior open listing. A host wedged in a stale
+  // 'accepted'/'lobby_ready'/'in_progress' row (Karabast result never ingested,
+  // opponent vanished) used to post a listing NOBODY could join: every joiner
+  // bounced off the host check in joinOpenGameInTx until the 2-4h sweep freed
+  // them. Posting a new lobby is an explicit "I'm done with whatever I was in",
+  // the same "replace, never block" spirit joinOpenGameInTx already applies to
+  // the joiner's own stale rows.
+  const displacedRows = await tx.queryRows(
     `UPDATE open_games SET status = 'cancelled', resolved_at = NOW(), updated_at = NOW()
-     WHERE player1_id = $1 AND status = 'open'`,
-    [userId]
+     WHERE (player1_id = $1 AND status = 'open')
+        OR ((player1_id = $1 OR player2_id = $1) AND status = ANY($2))
+     RETURNING share_id, player1_id, player2_id`,
+    [userId, [...PENDING_STATUSES]]
   )
 
   const { generateShareId } = await import('@/lib/utils')
@@ -195,10 +217,20 @@ async function postOpenGameInTx(tx: TxClient, params: PostParams): Promise<OpenG
      RETURNING *`,
     [generateShareId(10), visibility, deck.setCode, deck.setName, deck.format, userId, deck.poolId, bestOf]
   )
-  return rowToGame(row!)
+  return {
+    ...rowToGame(row!),
+    // Notification list only: an exited OPEN listing has no seat 2, so it
+    // drops out here and nobody is pinged for it.
+    displaced: displacedRows
+      .map(r => {
+        const other = String(r.player1_id) === userId ? r.player2_id : r.player1_id
+        return { shareId: String(r.share_id), otherPlayerId: other ? String(other) : null }
+      })
+      .filter(d => d.otherPlayerId !== null),
+  }
 }
 
-export async function postOpenGame(params: PostParams): Promise<OpenGame> {
+export async function postOpenGame(params: PostParams): Promise<PostOpenGameResult> {
   const { withTransaction } = await import('@/lib/db')
   return withTransaction(tx => postOpenGameInTx(tx, params))
 }
@@ -323,8 +355,8 @@ export async function playNow(params: { userId: string; poolId: string }): Promi
   )
   if (existing) return { action: 'waiting', game: rowToGame(existing) }
 
-  const game = await postOpenGame({ userId, poolId })
-  return { action: 'posted', game }
+  const { displaced, ...game } = await postOpenGame({ userId, poolId })
+  return { action: 'posted', game, displaced }
 }
 
 // ---------------------------------------------------------------------------
