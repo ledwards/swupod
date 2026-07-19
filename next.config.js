@@ -1,3 +1,4 @@
+/* global process */
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // A production `next build` writes to the same directory `next dev` is serving from, which

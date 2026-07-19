@@ -10,6 +10,7 @@ import { trackEvent, AnalyticsEvents } from '@/src/hooks/useAnalytics'
 import Button from '@/src/components/Button'
 import PackSelector from '@/src/components/PackSelector'
 import PackOpeningAnimation from '@/src/components/PackOpeningAnimation'
+import { validateChaosSealedSelection } from '@/src/services/chaosSealedSelection'
 import {
   getTeaserUserState,
   shouldPeekUnreleased,
@@ -48,6 +49,13 @@ export default function ChaosSealedPage() {
   const [generatedPool, setGeneratedPool] = useState<GeneratedPool | null>(null)
 
   const hasBetaAccess = user?.is_beta_tester || user?.is_admin
+
+  // A pool needs at least one Leader-bearing pack to be buildable. Hold the message back
+  // until the pool is full — mid-selection it would nag about a state the user is still
+  // on their way out of; once it's full it explains why Create Chaos is disabled.
+  const selectionValidation = validateChaosSealedSelection(selectedSets)
+  const selectionComplete = selectedSets.length === packCount
+  const selectionError = selectionComplete && !selectionValidation.ok ? selectionValidation.message : null
 
   const teaserState = getTeaserUserState(isPatron, user?.is_beta_tester, user?.is_admin)
   const peekUnreleased = shouldPeekUnreleased(teaserState)
@@ -130,7 +138,7 @@ export default function ChaosSealedPage() {
   }
 
   const handleGenerate = async () => {
-    if (selectedSets.length !== packCount) return
+    if (selectedSets.length !== packCount || !selectionValidation.ok) return
 
     try {
       setGenerating(true)
@@ -285,7 +293,9 @@ export default function ChaosSealedPage() {
           </div>
         </div>
 
-        {error && <div className="error-message">{error}</div>}
+        {(selectionError || error) && (
+          <div className="error-message" role="alert">{selectionError || error}</div>
+        )}
 
         <div className="chaos-sealed-actions">
           <Button
@@ -298,7 +308,7 @@ export default function ChaosSealedPage() {
           <Button
             variant="primary"
             size="lg"
-            disabled={selectedSets.length !== packCount || generating}
+            disabled={!selectionComplete || !selectionValidation.ok || generating}
             onClick={handleGenerate}
           >
             {generating ? 'Creating...' : 'Create Chaos'}

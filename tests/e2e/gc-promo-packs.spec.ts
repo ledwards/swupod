@@ -123,6 +123,34 @@ test.describe('GC 2026 Promo Packs', () => {
     await context.close()
   })
 
+  // A pool needs at least one Leader-bearing pack. Event Packs are Units only, so an
+  // all-Event-Pack pool would be unbuildable — the UI must say so and refuse to create it.
+  test('refuses to create a pool with no Leader-bearing pack', async ({ browser }) => {
+    const context = await browser.newContext()
+    const user = await createTestUser('GcNoLeader', TEST_ID)
+    await login(context, user)
+    const page = await context.newPage()
+
+    await page.goto('/gift/gc2026')
+    await page.getByRole('button', { name: /Unlock Event Packs/i }).click()
+    await expect(page.locator('.pack-opening-container')).toBeVisible()
+
+    await page.goto('/formats/chaos-sealed')
+    const addSilver = page.locator('button[aria-label="Add one 2026 GC Silver Pack pack"]')
+    for (let i = 0; i < 6; i++) await addSilver.click()
+
+    await expect(page.getByText(/no Leader\. Add at least one set pack/i)).toBeVisible()
+    await expect(page.getByRole('button', { name: /Create Chaos/i })).toBeDisabled()
+
+    // Swapping one Event Pack for a set pack clears it.
+    await page.locator('button[aria-label="Remove one 2026 GC Silver Pack pack"]').click()
+    await page.locator('button[aria-label^="Add one "]').first().click()
+    await expect(page.getByText(/no Leader\. Add at least one set pack/i)).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /Create Chaos/i })).toBeEnabled()
+
+    await context.close()
+  })
+
   // An owned Event Pack fills a pool slot exactly like a set pack.
   test('an owned Event Pack fills a Chaos Sealed slot like any other pack', async ({ browser }) => {
     const context = await browser.newContext()
