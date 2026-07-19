@@ -39,6 +39,10 @@ export async function POST(request: NextRequest): Promise<Response> {
         .catch(() => {})
     }
     if (result.action === 'posted') {
+      // Posting exits any match the poster was still nominally in (R20 parity).
+      for (const match of result.displaced ?? []) {
+        emitOpenGameEventToUser(String(match.otherPlayerId), 'cancelled', { shareId: match.shareId })
+      }
       postOpenGameCreated(result.game, session.username ?? 'A player', session.id)
         .then(async messageId => {
           if (messageId) await setOpenGameDiscordMessage(result.game.id, messageId)
