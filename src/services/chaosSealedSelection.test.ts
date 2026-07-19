@@ -6,15 +6,62 @@
 import { test, describe } from 'node:test'
 import assert from 'node:assert'
 import {
+  MAX_PROMO_PACKS_PER_TIER,
   MIN_LEADER_PACKS,
   packProvidesLeaders,
   promoTierForCode,
+  splitSelection,
   validateChaosSealedSelection,
 } from './chaosSealedSelection.ts'
 
 describe('chaosSealedSelection', () => {
   test('SPEC: a pool needs at least 1 Leader-bearing pack', () => {
     assert.strictEqual(MIN_LEADER_PACKS, 1)
+  })
+
+  test('SPEC: you can add 1 of each Event Pack tier you own', () => {
+    assert.strictEqual(MAX_PROMO_PACKS_PER_TIER, 1)
+  })
+
+  describe('splitSelection', () => {
+    test('SPEC: Event Packs augment the pool — only set packs fill its slots', () => {
+      const { setPacks, promoPacks } = splitSelection([
+        'SOR', 'GC2026_SILVER', 'LAW', 'GC2026_BLACK',
+      ])
+      assert.deepStrictEqual(setPacks, ['SOR', 'LAW'])
+      assert.deepStrictEqual(promoPacks, ['GC2026_SILVER', 'GC2026_BLACK'])
+    })
+
+    test('a six-pack pool plus both Event Packs still fills exactly six slots', () => {
+      const selection = ['SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'LAW', 'GC2026_SILVER', 'GC2026_BLACK']
+      const { setPacks, promoPacks } = splitSelection(selection)
+      assert.strictEqual(setPacks.length, 6, 'Event Packs must not consume pool slots')
+      assert.strictEqual(promoPacks.length, 2)
+    })
+
+    test('preserves the order packs were chosen in, within each group', () => {
+      const { setPacks } = splitSelection(['LAW', 'GC2026_SILVER', 'SOR'])
+      assert.deepStrictEqual(setPacks, ['LAW', 'SOR'])
+    })
+
+    test('an empty selection splits into two empty groups', () => {
+      assert.deepStrictEqual(splitSelection([]), { setPacks: [], promoPacks: [] })
+    })
+  })
+
+  describe('Event Pack cap', () => {
+    test('rejects more than one of the same tier', () => {
+      const result = validateChaosSealedSelection(['SOR', 'GC2026_SILVER', 'GC2026_SILVER'])
+      assert.strictEqual(result.ok, false)
+      assert.strictEqual(result.code, 'tooManyPromoPacks')
+    })
+
+    test('allows one of each tier alongside a full pool', () => {
+      const result = validateChaosSealedSelection([
+        'SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'LAW', 'GC2026_SILVER', 'GC2026_BLACK',
+      ])
+      assert.strictEqual(result.ok, true)
+    })
   })
 
   describe('promoTierForCode', () => {
@@ -45,24 +92,20 @@ describe('chaosSealedSelection', () => {
 
   describe('validateChaosSealedSelection', () => {
     test('rejects a pool built entirely from Event Packs', () => {
-      const result = validateChaosSealedSelection(Array(6).fill('GC2026_SILVER'))
+      const result = validateChaosSealedSelection(['GC2026_SILVER'])
       assert.strictEqual(result.ok, false)
       assert.strictEqual(result.code, 'noLeaderPack')
       assert.match(result.message ?? '', /Leader/)
     })
 
     test('rejects a mixed Silver + Black pool — neither tier has Leaders', () => {
-      const result = validateChaosSealedSelection([
-        'GC2026_SILVER', 'GC2026_SILVER', 'GC2026_BLACK',
-      ])
+      const result = validateChaosSealedSelection(['GC2026_SILVER', 'GC2026_BLACK'])
       assert.strictEqual(result.ok, false)
       assert.strictEqual(result.code, 'noLeaderPack')
     })
 
     test('accepts a pool at exactly the minimum: 1 set pack among Event Packs', () => {
-      const result = validateChaosSealedSelection([
-        'GC2026_SILVER', 'GC2026_SILVER', 'GC2026_BLACK', 'GC2026_SILVER', 'GC2026_BLACK', 'ASH',
-      ])
+      const result = validateChaosSealedSelection(['GC2026_SILVER', 'GC2026_BLACK', 'ASH'])
       assert.strictEqual(result.ok, true)
       assert.strictEqual(result.message, undefined)
     })

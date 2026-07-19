@@ -30,10 +30,33 @@ export function packProvidesLeaders(setCode: string): boolean {
 /** Minimum number of Leader-bearing packs a Chaos Sealed pool must contain. */
 export const MIN_LEADER_PACKS = 1
 
+/**
+ * Event Packs augment a pool rather than filling one of its slots: they don't count
+ * against the chosen pack count, and you can add one of each tier you own. One-per-tier
+ * matches the gift itself — one card at the show unlocks your Silver Pack, not a supply
+ * of them.
+ */
+export const MAX_PROMO_PACKS_PER_TIER = 1
+
+export interface SplitSelection {
+  /** Ordinary set packs — these fill the pool's slots and count toward the pack count. */
+  readonly setPacks: string[]
+  /** Event Packs — additive, capped per tier, rendered separately. */
+  readonly promoPacks: string[]
+}
+
+/** Split a selection into the packs that fill slots and the Event Packs that augment it. */
+export function splitSelection(setCodes: readonly string[]): SplitSelection {
+  return {
+    setPacks: setCodes.filter(packProvidesLeaders),
+    promoPacks: setCodes.filter(code => !packProvidesLeaders(code)),
+  }
+}
+
 export interface SelectionValidation {
   readonly ok: boolean
   /** Stable reason code for callers that branch; absent when ok. */
-  readonly code?: 'noLeaderPack'
+  readonly code?: 'noLeaderPack' | 'tooManyPromoPacks'
   /** User-facing copy. Rendered as-is by the page and returned by the API. */
   readonly message?: string
 }
@@ -47,11 +70,27 @@ const OK: SelectionValidation = { ok: true }
  */
 export function validateChaosSealedSelection(setCodes: readonly string[]): SelectionValidation {
   if (setCodes.length === 0) return OK
-  if (setCodes.filter(packProvidesLeaders).length >= MIN_LEADER_PACKS) return OK
-  return {
-    ok: false,
-    code: 'noLeaderPack',
-    message:
-      'Event Packs contain only Units, so a pool built entirely from them has no Leader. Add at least one set pack.',
+
+  const { setPacks, promoPacks } = splitSelection(setCodes)
+
+  for (const tier of new Set(promoPacks)) {
+    if (promoPacks.filter(code => code === tier).length > MAX_PROMO_PACKS_PER_TIER) {
+      return {
+        ok: false,
+        code: 'tooManyPromoPacks',
+        message: `You can add ${MAX_PROMO_PACKS_PER_TIER} of each Event Pack you've unlocked.`,
+      }
+    }
   }
+
+  if (setPacks.length < MIN_LEADER_PACKS) {
+    return {
+      ok: false,
+      code: 'noLeaderPack',
+      message:
+        'Event Packs contain only Units, so a pool built entirely from them has no Leader. Add at least one set pack.',
+    }
+  }
+
+  return OK
 }

@@ -10,7 +10,7 @@ import { trackEvent, AnalyticsEvents } from '@/src/hooks/useAnalytics'
 import Button from '@/src/components/Button'
 import PackSelector from '@/src/components/PackSelector'
 import PackOpeningAnimation from '@/src/components/PackOpeningAnimation'
-import { validateChaosSealedSelection } from '@/src/services/chaosSealedSelection'
+import { splitSelection, validateChaosSealedSelection } from '@/src/services/chaosSealedSelection'
 import {
   getTeaserUserState,
   shouldPeekUnreleased,
@@ -50,11 +50,11 @@ export default function ChaosSealedPage() {
 
   const hasBetaAccess = user?.is_beta_tester || user?.is_admin
 
-  // A pool needs at least one Leader-bearing pack to be buildable. Hold the message back
-  // until the pool is full — mid-selection it would nag about a state the user is still
-  // on their way out of; once it's full it explains why Create Chaos is disabled.
+  // Event Packs augment the pool — they don't fill one of its slots, so only set packs
+  // count toward packCount. Everything that reads "how full is the pool" uses setPacks.
+  const { setPacks, promoPacks } = splitSelection(selectedSets)
   const selectionValidation = validateChaosSealedSelection(selectedSets)
-  const selectionComplete = selectedSets.length === packCount
+  const selectionComplete = setPacks.length === packCount
   const selectionError = selectionComplete && !selectionValidation.ok ? selectionValidation.message : null
 
   const teaserState = getTeaserUserState(isPatron, user?.is_beta_tester, user?.is_admin)
@@ -68,9 +68,9 @@ export default function ChaosSealedPage() {
       try {
         setLoading(true)
         const setsData = await fetchSets({ includeBeta: hasBetaAccess, includeCarbonite: true, peekUnreleased })
-        // GC Event Packs always appear, in their own group. Unlocked ones behave exactly
-        // like any other pack (same art, same +/- controls, same pool slots); locked ones
-        // stay visible and say what's needed to get them.
+        // GC Event Packs always appear, in their own group. Unlocked ones are added with the
+        // same +/- controls as any other pack, but they augment the pool rather than filling
+        // one of its slots; locked ones stay visible and say what's needed to get them.
         let owned = { silver: false, black: false }
         try {
           const res = await fetch('/api/promo/entitlements?campaign=gc2026', { credentials: 'include' })
@@ -128,17 +128,27 @@ export default function ChaosSealedPage() {
     localStorage.setItem('chaos-sealed-sets', JSON.stringify(selectedSets))
   }, [selectedSets])
 
+  // Selections are stored as one flat list; these rebuild it from the two halves so a
+  // click removes the pack the user actually clicked on, in either row.
+  const removeSetPackAt = (index: number) => {
+    setSelectedSets([...setPacks.slice(0, index), ...setPacks.slice(index + 1), ...promoPacks])
+  }
+  const removePromoPackAt = (index: number) => {
+    setSelectedSets([...setPacks, ...promoPacks.slice(0, index), ...promoPacks.slice(index + 1)])
+  }
+
   const handlePackCountChange = (delta: number) => {
     const newCount = Math.max(1, Math.min(12, packCount + delta))
     setPackCount(newCount)
-    // Trim selections if new count is smaller
-    if (selectedSets.length > newCount) {
-      setSelectedSets(selectedSets.slice(0, newCount))
+    // Trim selections if new count is smaller. Only set packs occupy slots, so Event
+    // Packs survive the trim untouched.
+    if (setPacks.length > newCount) {
+      setSelectedSets([...setPacks.slice(0, newCount), ...promoPacks])
     }
   }
 
   const handleGenerate = async () => {
-    if (selectedSets.length !== packCount || !selectionValidation.ok) return
+    if (setPacks.length !== packCount || !selectionValidation.ok) return
 
     try {
       setGenerating(true)
@@ -263,24 +273,22 @@ export default function ChaosSealedPage() {
           onSelectSets={setSelectedSets}
           maxSelections={packCount}
           showQuantityControls={true}
-          title={`Select ${packCount} Packs (${selectedSets.length}/${packCount})`}
+          title={`Select ${packCount} Packs (${setPacks.length}/${packCount})`}
           peekUnreleased={peekVariant}
         />
 
         <div className="chaos-sealed-section selected-sets-order">
-          <h3>Your Chaos Sealed ({selectedSets.length}/{packCount})</h3>
+          <h3>Your Chaos Sealed ({setPacks.length}/{packCount})</h3>
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem', maxWidth: 740, margin: '0 auto' }}>
             {Array.from({ length: packCount }, (_, slotIndex) => slotIndex).map((slotIndex) => {
-              const setCode = selectedSets[slotIndex]
+              const setCode = setPacks[slotIndex]
               if (setCode) {
                 const packImageUrl = getPackImageUrl(setCode)
                 return (
                   <div
                     key={slotIndex}
                     style={{ width: 100, cursor: 'pointer' }}
-                    onClick={() => {
-                      setSelectedSets(prev => [...prev.slice(0, slotIndex), ...prev.slice(slotIndex + 1)])
-                    }}
+                    onClick={() => removeSetPackAt(slotIndex)}
                   >
                     <img src={packImageUrl} alt={setCode} style={{ width: '100%', display: 'block', borderRadius: 8 }} />
                   </div>
@@ -291,6 +299,25 @@ export default function ChaosSealedPage() {
               )
             })}
           </div>
+
+          {/* Event Packs ride along below the pool's slots, at half size — they add to the
+              pool without taking a slot, and the smaller row says so at a glance. */}
+          {promoPacks.length > 0 && (
+            <div className="chaos-sealed-promo-row">
+              <span className="chaos-sealed-promo-row-label">Plus your Event Packs</span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem' }}>
+                {promoPacks.map((setCode, promoIndex) => (
+                  <div
+                    key={`${setCode}-${promoIndex}`}
+                    style={{ width: 50, cursor: 'pointer' }}
+                    onClick={() => removePromoPackAt(promoIndex)}
+                  >
+                    <img src={getPackImageUrl(setCode)} alt={setCode} style={{ width: '100%', display: 'block', borderRadius: 4 }} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {(selectionError || error) && (

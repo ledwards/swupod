@@ -123,11 +123,11 @@ test.describe('GC 2026 Promo Packs', () => {
     await context.close()
   })
 
-  // A pool needs at least one Leader-bearing pack. Event Packs are Units only, so an
-  // all-Event-Pack pool would be unbuildable — the UI must say so and refuse to create it.
-  test('refuses to create a pool with no Leader-bearing pack', async ({ browser }) => {
+  // Event Packs augment the pool: they don't consume one of its slots, and you can add one
+  // of each tier you own.
+  test('Event Packs do not count against the pool pack count', async ({ browser }) => {
     const context = await browser.newContext()
-    const user = await createTestUser('GcNoLeader', TEST_ID)
+    const user = await createTestUser('GcAugment', TEST_ID)
     await login(context, user)
     const page = await context.newPage()
 
@@ -137,22 +137,43 @@ test.describe('GC 2026 Promo Packs', () => {
 
     await page.goto('/formats/chaos-sealed')
     const addSilver = page.locator('button[aria-label="Add one 2026 GC Silver Pack pack"]')
-    for (let i = 0; i < 6; i++) await addSilver.click()
+    await addSilver.click()
 
-    await expect(page.getByText(/no Leader\. Add at least one set pack/i)).toBeVisible()
-    await expect(page.getByRole('button', { name: /Create Chaos/i })).toBeDisabled()
+    // The Event Pack shows in its own row and the pool is still empty.
+    await expect(page.locator('.chaos-sealed-promo-row')).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Your Chaos Sealed \(0\/6\)/ })).toBeVisible()
 
-    // Swapping one Event Pack for a set pack clears it.
-    await page.locator('button[aria-label="Remove one 2026 GC Silver Pack pack"]').click()
-    await page.locator('button[aria-label^="Add one "]').first().click()
-    await expect(page.getByText(/no Leader\. Add at least one set pack/i)).toHaveCount(0)
+    // Capped at one per tier — the add control is hidden rather than offering a second.
+    await expect(addSilver).not.toBeVisible()
+
+    // Six set packs still fill the pool, with the Event Pack riding along on top.
+    const addSetPack = page.locator('button[aria-label^="Add one "]')
+    for (let i = 0; i < 6; i++) await addSetPack.first().click()
+    await expect(page.getByRole('heading', { name: /Your Chaos Sealed \(6\/6\)/ })).toBeVisible()
+    await expect(page.locator('.chaos-sealed-promo-row')).toBeVisible()
     await expect(page.getByRole('button', { name: /Create Chaos/i })).toBeEnabled()
 
     await context.close()
   })
 
-  // An owned Event Pack fills a pool slot exactly like a set pack.
-  test('an owned Event Pack fills a Chaos Sealed slot like any other pack', async ({ browser }) => {
+  // The Leader rule is now unreachable through the UI (six set packs are always required),
+  // but the API must still refuse a hand-rolled all-Event-Pack payload.
+  test('the API refuses a pool with no Leader-bearing pack', async ({ browser }) => {
+    const context = await browser.newContext()
+    const user = await createTestUser('GcNoLeader', TEST_ID)
+    await login(context, user)
+
+    const res = await context.request.post('/api/formats/chaos-sealed', {
+      data: { setCodes: ['GC2026_SILVER'], packCount: 1 },
+    })
+    expect(res.status()).toBe(400)
+    expect((await res.json()).message).toMatch(/no Leader\. Add at least one set pack/i)
+
+    await context.close()
+  })
+
+  // An owned Event Pack is generated into the pool on top of the six set packs.
+  test('an owned Event Pack is added to the generated pool on top of the set packs', async ({ browser }) => {
     const context = await browser.newContext()
     const user = await createTestUser('GcSelect', TEST_ID)
     await login(context, user)
@@ -163,9 +184,9 @@ test.describe('GC 2026 Promo Packs', () => {
     await expect(page.locator('.pack-opening-container')).toBeVisible()
 
     await page.goto('/formats/chaos-sealed')
-    // 5 regular set packs (Event Packs sort last in the grid) + 1 Event Pack = the 6 required.
+    // The 6 required set packs, plus an Event Pack that augments rather than replaces one.
     const addButtons = page.locator('button[aria-label^="Add one "]')
-    for (let i = 0; i < 5; i++) await addButtons.nth(i).click()
+    for (let i = 0; i < 6; i++) await addButtons.nth(i).click()
     await page.locator('button[aria-label="Add one 2026 GC Silver Pack pack"]').click()
 
     const createBtn = page.getByRole('button', { name: /Create Chaos/i })

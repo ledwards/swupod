@@ -10,7 +10,7 @@ import { isCarboniteCode, getBaseSetCode, isCarboniteSupported } from '@/src/uti
 import { initializeCardCache } from '@/src/utils/cardCache'
 import { getAllCards } from '@/src/utils/cardData'
 import { getCampaign, drawEventPack } from '@/src/services/promoPacks'
-import { promoTierForCode, validateChaosSealedSelection } from '@/src/services/chaosSealedSelection'
+import { promoTierForCode, splitSelection, validateChaosSealedSelection } from '@/src/services/chaosSealedSelection'
 import { NextRequest, NextResponse } from 'next/server'
 
 const PROMO_CAMPAIGN = 'gc2026'
@@ -26,20 +26,27 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const { setCodes } = body
 
-    // Validate pack count (1-12)
-    if (!Array.isArray(setCodes) || setCodes.length < 1 || setCodes.length > 12) {
+    if (!Array.isArray(setCodes)) {
       return errorResponse('Must select between 1 and 12 packs', 400)
     }
 
-    // A pool with no Leader-bearing pack can't be built into a deck. Enforced here too,
-    // not just in the page, so a hand-rolled request can't create a dead pool.
+    // Selection rules first: an all-Event-Pack request has zero slot packs, so the count
+    // check below would reject it with the wrong reason ("select between 1 and 12") rather
+    // than telling the caller it has no Leader.
     const selection = validateChaosSealedSelection(setCodes)
     if (!selection.ok) {
       return errorResponse(selection.message, 400)
     }
 
-    // GC Event Packs are ordinary pack slots with their own set codes — they arrive in
-    // setCodes like any other pack. They're only generatable if the account actually owns
+    // Validate pack count (1-12). Event Packs augment the pool rather than filling one of
+    // its slots, so the limit applies to set packs only.
+    const slotPackCount = splitSelection(setCodes).setPacks.length
+    if (slotPackCount < 1 || slotPackCount > 12) {
+      return errorResponse('Must select between 1 and 12 packs', 400)
+    }
+
+    // GC Event Packs arrive in setCodes alongside the set packs (they augment the pool
+    // rather than filling a slot). They're only generatable if the account actually owns
     // that tier, validated server-side (a client can't spoof an unowned tier).
     const campaign = getCampaign(PROMO_CAMPAIGN)
     const requestedTiers = [...new Set(setCodes.map(promoTierForCode).filter(Boolean))]

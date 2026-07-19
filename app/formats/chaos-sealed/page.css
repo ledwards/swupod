@@ -197,3 +197,20 @@ button.pack-count-btn:disabled {
     width: 70px;
   }
 }
+
+/* Event Packs sit below the pool's slots at half size — they add to the pool without
+   taking a slot, and the smaller row reads as "extra" rather than "part of the six". */
+.chaos-sealed-promo-row {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.chaos-sealed-promo-row-label {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  text-align: center;
+}
