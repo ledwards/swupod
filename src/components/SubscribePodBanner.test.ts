@@ -20,6 +20,10 @@ import assert from 'node:assert'
 import { shouldShowPodBanner } from './subscribePodBannerGate'
 import { hasRealCardsForSet } from '../utils/cardData'
 
+// Pinned clock: these specs describe an UPCOMING-set pod. "Upcoming" is relative to the
+// set's release date (ASH released 2026-07-17), so pin it rather than track today's date.
+const BEFORE_ASH_RELEASE = new Date('2026-05-26T00:00:00Z')
+
 // ASH is upcoming as of 2026-05-26 (prerelease 2026-07-10, release 2026-07-17),
 // BUT isSetUpcoming is gated on hasRealCardsForSet — so until the first real
 // ASH card lands, the predicate treats ASH as not-upcoming. The tests below
@@ -36,6 +40,7 @@ describe('shouldShowPodBanner — loading state', () => {
       isBetaTester: false,
       setCode: UPCOMING_SET,
       sessionDismissed: false,
+      now: BEFORE_ASH_RELEASE,
     })
     assert.deepStrictEqual(result, { show: false })
   })
@@ -48,6 +53,7 @@ describe('shouldShowPodBanner — non-sub joining unreleased-set pod', () => {
       isBetaTester: false,
       setCode: UPCOMING_SET,
       sessionDismissed: false,
+      now: BEFORE_ASH_RELEASE,
     })
     if (ASH_REAL_CARDS_SYNCED) {
       assert.deepStrictEqual(result, { show: true, variant: 'subscribe' })
@@ -62,6 +68,7 @@ describe('shouldShowPodBanner — non-sub joining unreleased-set pod', () => {
       isBetaTester: false,
       setCode: RELEASED_SET,
       sessionDismissed: false,
+      now: BEFORE_ASH_RELEASE,
     })
     assert.deepStrictEqual(result, { show: false })
   })
@@ -74,6 +81,7 @@ describe('shouldShowPodBanner — patron-with-beta', () => {
       isBetaTester: true,
       setCode: UPCOMING_SET,
       sessionDismissed: false,
+      now: BEFORE_ASH_RELEASE,
     })
     assert.deepStrictEqual(result, { show: false })
   })
@@ -86,6 +94,7 @@ describe('shouldShowPodBanner — patron-without-beta', () => {
       isBetaTester: false,
       setCode: UPCOMING_SET,
       sessionDismissed: false,
+      now: BEFORE_ASH_RELEASE,
     })
     if (ASH_REAL_CARDS_SYNCED) {
       assert.deepStrictEqual(result, { show: true, variant: 'activate' })
@@ -100,6 +109,7 @@ describe('shouldShowPodBanner — patron-without-beta', () => {
       isBetaTester: false,
       setCode: RELEASED_SET,
       sessionDismissed: false,
+      now: BEFORE_ASH_RELEASE,
     })
     assert.deepStrictEqual(result, { show: false })
   })
@@ -112,6 +122,7 @@ describe('shouldShowPodBanner — session dismissal', () => {
       isBetaTester: false,
       setCode: UPCOMING_SET,
       sessionDismissed: true,
+      now: BEFORE_ASH_RELEASE,
     })
     assert.deepStrictEqual(result, { show: false })
   })
@@ -122,6 +133,7 @@ describe('shouldShowPodBanner — session dismissal', () => {
       isBetaTester: false,
       setCode: UPCOMING_SET,
       sessionDismissed: true,
+      now: BEFORE_ASH_RELEASE,
     })
     assert.deepStrictEqual(result, { show: false })
   })
@@ -134,6 +146,7 @@ describe('shouldShowPodBanner — missing set code', () => {
       isBetaTester: false,
       setCode: null,
       sessionDismissed: false,
+      now: BEFORE_ASH_RELEASE,
     })
     assert.deepStrictEqual(result, { show: false })
   })
@@ -144,6 +157,7 @@ describe('shouldShowPodBanner — missing set code', () => {
       isBetaTester: false,
       setCode: undefined,
       sessionDismissed: false,
+      now: BEFORE_ASH_RELEASE,
     })
     assert.deepStrictEqual(result, { show: false })
   })
@@ -154,6 +168,7 @@ describe('shouldShowPodBanner — missing set code', () => {
       isBetaTester: false,
       setCode: '',
       sessionDismissed: false,
+      now: BEFORE_ASH_RELEASE,
     })
     assert.deepStrictEqual(result, { show: false })
   })
@@ -170,6 +185,7 @@ describe('shouldShowPodBanner — Carbonite siblings', () => {
       isBetaTester: false,
       setCode: 'ASH',
       sessionDismissed: false,
+      now: BEFORE_ASH_RELEASE,
     })
     if (ASH_REAL_CARDS_SYNCED) {
       assert.deepStrictEqual(result, { show: true, variant: 'subscribe' })
@@ -186,6 +202,7 @@ describe('shouldShowPodBanner — unknown set code', () => {
       isBetaTester: false,
       setCode: 'ZZZ',
       sessionDismissed: false,
+      now: BEFORE_ASH_RELEASE,
     })
     assert.deepStrictEqual(result, { show: false })
   })

@@ -20,6 +20,8 @@ export interface ShouldShowPodBannerArgs {
   setCode?: string | null
   /** Has the user dismissed this set's banner this session? */
   sessionDismissed: boolean
+  /** Injectable clock — "upcoming" is relative to the set's release date. Defaults to now. */
+  now?: Date
 }
 
 export type ShouldShowPodBannerResult =
@@ -42,10 +44,11 @@ export function shouldShowPodBanner({
   isBetaTester,
   setCode,
   sessionDismissed,
+  now,
 }: ShouldShowPodBannerArgs): ShouldShowPodBannerResult {
   if (isPatron === null) return { show: false }
   if (!setCode) return { show: false }
-  if (!isSetUpcoming(setCode)) return { show: false }
+  if (!isSetUpcoming(setCode, now)) return { show: false }
   if (sessionDismissed) return { show: false }
 
   if (isPatron === false) {

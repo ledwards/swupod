@@ -60,19 +60,48 @@ export default function ChaosSealedPage() {
       try {
         setLoading(true)
         const setsData = await fetchSets({ includeBeta: hasBetaAccess, includeCarbonite: true, peekUnreleased })
-        // Unlocked GC Event Packs are just packs — they belong in the same selector as the
-        // sets, with the same art and +/- controls, and flow through setCodes like any other.
-        const eventPacks: SetData[] = []
+        // GC Event Packs always appear, in their own group. Unlocked ones behave exactly
+        // like any other pack (same art, same +/- controls, same pool slots); locked ones
+        // stay visible and say what's needed to get them.
+        let owned = { silver: false, black: false }
         try {
           const res = await fetch('/api/promo/entitlements?campaign=gc2026', { credentials: 'include' })
-          if (res.ok) {
-            const owned = (await res.json())?.data || {}
-            if (owned.silver) eventPacks.push({ code: 'GC2026_SILVER', name: '2026 GC Silver Pack' })
-            if (owned.black) eventPacks.push({ code: 'GC2026_BLACK', name: '2026 GC Black Pack' })
-          }
+          if (res.ok) owned = { ...owned, ...((await res.json())?.data || {}) }
         } catch {
-          // Non-fatal — just means no Event Packs offered this load.
+          // Non-fatal — treat as not unlocked.
         }
+        const eventPacks: SetData[] = [
+          {
+            code: 'GC2026_SILVER',
+            name: '2026 GC Silver Pack',
+            promo: true,
+            ...(owned.silver ? {} : {
+              locked: {
+                label: 'Locked',
+                href: '/gift/gc2026',
+                description: 'Unlock it with your GC 2026 card',
+              },
+            }),
+          },
+          {
+            code: 'GC2026_BLACK',
+            name: '2026 GC Black Pack',
+            promo: true,
+            ...(owned.black ? {} : {
+              locked: isPatron
+                ? {
+                    label: 'Unlock',
+                    href: '/gift/gc2026/black',
+                    description: 'Unlock your Black Pack',
+                  }
+                : {
+                    label: 'Friends of the Pod',
+                    href: '/gift/gc2026/black',
+                    description: 'Available to Friends of the Pod',
+                  },
+            }),
+          },
+        ]
         setSets([...setsData, ...eventPacks])
       } catch (err) {
         setError('Failed to load sets')

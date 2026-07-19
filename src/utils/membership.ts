@@ -78,13 +78,17 @@ export function hasUpcomingSetSpoilers(setCode: string): boolean {
  * Accepts either a set code (string) or a SetConfig object. Unknown set
  * codes return false.
  */
-export function isSetUpcoming(setCodeOrConfig: string | SetConfig | null | undefined): boolean {
+export function isSetUpcoming(
+  setCodeOrConfig: string | SetConfig | null | undefined,
+  /** Injectable clock so callers/tests aren't at the mercy of the real date. */
+  now: Date = new Date(),
+): boolean {
   if (!setCodeOrConfig) return false
   const config: SetConfig | null = typeof setCodeOrConfig === 'string'
     ? getSetConfig(setCodeOrConfig.replace('-CB', ''))
     : setCodeOrConfig
   if (!config?.releaseDate) return false
-  const beforeRelease = new Date().toISOString() < new Date(config.releaseDate + 'T00:00:00Z').toISOString()
+  const beforeRelease = now.toISOString() < new Date(config.releaseDate + 'T00:00:00Z').toISOString()
   if (!beforeRelease) return false
   return hasUpcomingSetSpoilers(config.setCode)
 }

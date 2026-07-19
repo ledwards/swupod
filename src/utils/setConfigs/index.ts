@@ -156,7 +156,7 @@ export function isPrerelease(config: SetConfig): boolean {
 /**
  * Check if a set has been officially released
  */
-export function isReleased(config: SetConfig): boolean {
+export function isReleased(config: SetConfig, now: Date = new Date()): boolean {
   if (!config.releaseDate) return true
-  return new Date().toISOString() >= new Date(config.releaseDate + 'T00:00:00Z').toISOString()
+  return now.toISOString() >= new Date(config.releaseDate + 'T00:00:00Z').toISOString()
 }

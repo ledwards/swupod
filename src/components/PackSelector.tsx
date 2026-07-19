@@ -112,6 +112,31 @@ export function PackSelector({
   }
 
   const renderSetButton = (set: SetData) => {
+    // Locked variant: the pack is shown so you know it exists, but it can't be added yet.
+    // The badge says what's needed and the tile links to the page that explains how.
+    if (set.locked) {
+      return (
+        <a
+          key={set.code}
+          href={set.locked.href}
+          className="pack-selector-button pack-selector-button--coming-soon"
+          aria-label={`${set.name} — ${set.locked.description || set.locked.label}`}
+          style={{ '--set-color': getSetColor(set.code) } as React.CSSProperties}
+        >
+          <div className="pack-selector-image">
+            <img src={getPackImageUrl(set.code)} alt={set.name} />
+          </div>
+          <div className="pack-selector-content">
+            <span className="pack-selector-name">{set.name}</span>
+          </div>
+          <span className="pack-selector-coming-soon-badge">
+            <LockIconSm />
+            <span>{set.locked.label}</span>
+          </span>
+        </a>
+      )
+    }
+
     // "Coming Soon" teaser variant for unreleased sets injected by peekUnreleased.
     if (set.comingSoon) {
       const setColor = getSetColor(set.code)
@@ -209,6 +234,14 @@ export function PackSelector({
       {sortedSets.carbonite.length > 0 && (
         <div className="pack-selector-grid carbonite-row">
           {sortedSets.carbonite.map(renderSetButton)}
+        </div>
+      )}
+      {sortedSets.promos.length > 0 && (
+        <div className="pack-selector-promos">
+          <h4 className="pack-selector-subhead">GC 2026 Event Packs</h4>
+          <div className="pack-selector-grid pack-selector-grid--promos">
+            {sortedSets.promos.map(renderSetButton)}
+          </div>
         </div>
       )}
       <SubscribeModal

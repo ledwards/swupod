@@ -74,20 +74,32 @@ test.describe('GC 2026 Promo Packs', () => {
     await context.close()
   })
 
-  // AE3 / F3 — a non-patron gets the Friends-of-the-Pod CTA on the Black surface, and the
-  // Black Event Pack is never offered in the selector.
-  test('a non-patron sees the Friends-of-the-Pod CTA and no Black Event Pack', async ({ browser }) => {
+  // AE3 / F3 — locked Event Packs stay visible in the selector so you can see what's on
+  // offer; they just aren't addable, and they say what's needed.
+  test('shows locked Event Packs to a non-patron without making them addable', async ({ browser }) => {
     const context = await browser.newContext()
     const user = await createTestUser('GcNonPatron', TEST_ID)
     await login(context, user)
     const page = await context.newPage()
 
+    await page.goto('/formats/chaos-sealed')
+
+    // Silver: visible but locked behind the GC card.
+    await expect(
+      page.getByRole('link', { name: /2026 GC Silver Pack — Unlock it with your GC 2026 card/i })
+    ).toBeVisible()
+    await expect(page.locator('button[aria-label="Add one 2026 GC Silver Pack pack"]')).toHaveCount(0)
+
+    // Black: visible but reserved for Friends of the Pod.
+    await expect(
+      page.getByRole('link', { name: /2026 GC Black Pack — Available to Friends of the Pod/i })
+    ).toBeVisible()
+    await expect(page.locator('button[aria-label="Add one 2026 GC Black Pack pack"]')).toHaveCount(0)
+
+    // And the Black surface explains it.
     await page.goto('/gift/gc2026/black')
     await expect(page.getByText(/exclusive for Friends of the Pod/i)).toBeVisible()
     await expect(page.getByRole('button', { name: /Become a Friend of the Pod/i })).toBeVisible()
-
-    await page.goto('/formats/chaos-sealed')
-    await expect(page.locator('button[aria-label="Add one 2026 GC Black Pack pack"]')).toHaveCount(0)
 
     await context.close()
   })

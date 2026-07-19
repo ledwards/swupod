@@ -5,12 +5,15 @@ import { getLatestReleasedSetCode } from '../../../../../../../src/utils/setConf
 import { KARABAST_PUBLIC_LOBBY_NAME } from '../../../../../../../src/utils/karabastLobby.js'
 
 describe('getLatestReleasedSetCode', () => {
-  it('returns LAW — the highest setNumber (7) among all released sets', () => {
-    // SPEC: LAW has setNumber 7 and releaseDate 2026-03-13 (released)
-    // It is the latest released set as of the current date.
-    const expectedLatestSet = 'LAW'
-    const code = getLatestReleasedSetCode()
-    assert.equal(code, expectedLatestSet)
+  // Pinned clocks: "latest released" moves every time a set ships, so assert the spec at
+  // fixed dates instead of tracking today (this hardcoded LAW and broke when ASH released).
+  it('SPEC: returns LAW while it is the newest released set (before ASH release)', () => {
+    // LAW released 2026-03-13; ASH releases 2026-07-17.
+    assert.equal(getLatestReleasedSetCode(new Date('2026-07-01T00:00:00Z')), 'LAW')
+  })
+
+  it('SPEC: returns ASH once its release date has passed', () => {
+    assert.equal(getLatestReleasedSetCode(new Date('2026-07-18T00:00:00Z')), 'ASH')
   })
 })
 
