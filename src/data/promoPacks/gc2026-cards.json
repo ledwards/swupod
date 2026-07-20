@@ -117,13 +117,49 @@
       "subtitle": "You Were Right About Me"
     },
     {
+      "id": "gc2026-marrok-mysterious-warrior",
+      "pool": "black",
+      "sourceCardId": "019e8f15-e8da-72d8-af1b-a2ab89f3a018",
+      "name": "Marrok",
+      "set": "ASH",
+      "placeholderImage": "/promo-cards/gc2026/bp-marrok.png",
+      "subtitle": "Mysterious Warrior"
+    },
+    {
+      "id": "gc2026-wicket-yub-nub",
+      "pool": "black",
+      "sourceCardId": "019e8f15-e91e-759e-96f2-87bfc29523c4",
+      "name": "Wicket",
+      "set": "ASH",
+      "placeholderImage": "/promo-cards/gc2026/bp-wicket.png",
+      "subtitle": "Yub Nub!"
+    },
+    {
+      "id": "gc2026-pre-vizsla-strong-willed-ruler",
+      "pool": "black",
+      "sourceCardId": "019e8f15-eab5-78e8-9142-0242aea87487",
+      "name": "Pre Vizsla",
+      "set": "ASH",
+      "placeholderImage": "/promo-cards/gc2026/bp-pre-vizsla.png",
+      "subtitle": "Strong-Willed Ruler"
+    },
+    {
       "id": "gc2026-cassian-andor-lay-low",
       "pool": "black",
       "sourceCardId": "019d317c-2c9d-799f-9da5-189361904f28",
       "name": "Cassian Andor",
       "set": "SEC",
-      "placeholderImage": null,
+      "placeholderImage": "/promo-cards/gc2026/bp-cassian-andor.png",
       "subtitle": "Lay Low"
+    },
+    {
+      "id": "gc2026-bo-katan-kryze-for-all-of-mandalore",
+      "pool": "black",
+      "sourceCardId": "019e8f15-ee66-7409-b66c-a1c4d1601989",
+      "name": "Bo-Katan Kryze",
+      "set": "ASH",
+      "placeholderImage": "/promo-cards/gc2026/bp-bo-katan-kryze.png",
+      "subtitle": "For All of Mandalore"
     },
     {
       "id": "gc2026-mon-mothma-clinging-to-hope",
@@ -131,7 +167,7 @@
       "sourceCardId": "019d317c-3b53-71dc-ad6a-5944f1ffe1ad",
       "name": "Mon Mothma",
       "set": "SEC",
-      "placeholderImage": null,
+      "placeholderImage": "/promo-cards/gc2026/bp-mon-mothma.png",
       "subtitle": "Clinging to Hope"
     },
     {
@@ -140,7 +176,7 @@
       "sourceCardId": "019e8f15-f242-7421-bcc0-7cb3f8f1d9af",
       "name": "Ninth Sister",
       "set": "ASH",
-      "placeholderImage": null,
+      "placeholderImage": "/promo-cards/gc2026/bp-ninth-sister.png",
       "subtitle": "Hulking Inquisitor"
     },
     {
@@ -149,7 +185,7 @@
       "sourceCardId": "019d317b-77a5-7b8f-99cd-a7e1baca5bc7",
       "name": "Boba Fett",
       "set": "LAW",
-      "placeholderImage": null,
+      "placeholderImage": "/promo-cards/gc2026/bp-boba-fett.png",
       "subtitle": "For a Price"
     },
     {
@@ -158,7 +194,7 @@
       "sourceCardId": "019d317c-53aa-7b83-a87e-51d96d0c2bc0",
       "name": "The Mandalorian",
       "set": "SEC",
-      "placeholderImage": null,
+      "placeholderImage": "/promo-cards/gc2026/bp-the-mandalorian.png",
       "subtitle": "Cleaning Up Nevarro"
     },
     {
@@ -167,7 +203,7 @@
       "sourceCardId": "019d317c-55e0-7cbc-af9b-0758b1e741af",
       "name": "Ebon Hawk",
       "set": "SEC",
-      "placeholderImage": null,
+      "placeholderImage": "/promo-cards/gc2026/bp-ebon-hawk.png",
       "subtitle": "Cause and Effect"
     }
   ]

@@ -351114,6 +351114,162 @@
       }
     },
     {
+      "id": "gc2026-marrok-mysterious-warrior",
+      "cardId": "ASH-030",
+      "name": "Marrok",
+      "subtitle": "Mysterious Warrior",
+      "set": "ASH",
+      "number": "30",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Vigilance",
+        "Aggression",
+        "Villainy"
+      ],
+      "traits": [
+        "Force",
+        "Inquisitor"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 3,
+      "power": 2,
+      "hp": 6,
+      "frontText": "Sentinel\nWhile this unit is upgraded, he loses Sentinel and gains Saboteur.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Sentinel",
+        "Saboteur"
+      ],
+      "artist": "Omercan Cirit",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "GC 2026 Promo",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": false,
+      "prestigeTier": null,
+      "imageUrl": "/promo-cards/gc2026/bp-marrok.png",
+      "backImageUrl": null,
+      "isPlaceholder": false,
+      "spoilerStatus": "spoiled",
+      "gcPromo": {
+        "campaign": "gc2026",
+        "pool": "black",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "gc2026-wicket-yub-nub",
+      "cardId": "ASH-034",
+      "name": "Wicket",
+      "subtitle": "Yub Nub!",
+      "set": "ASH",
+      "number": "34",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Aggression",
+        "Heroism"
+      ],
+      "traits": [
+        "Ewok"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 1,
+      "power": 3,
+      "hp": 3,
+      "frontText": "Saboteur\nThis unit can't attack bases.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Saboteur"
+      ],
+      "artist": "Sandra Chlewińska",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "GC 2026 Promo",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": false,
+      "prestigeTier": null,
+      "imageUrl": "/promo-cards/gc2026/bp-wicket.png",
+      "backImageUrl": null,
+      "isPlaceholder": false,
+      "spoilerStatus": "spoiled",
+      "gcPromo": {
+        "campaign": "gc2026",
+        "pool": "black",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "gc2026-pre-vizsla-strong-willed-ruler",
+      "cardId": "ASH-053",
+      "name": "Pre Vizsla",
+      "subtitle": "Strong-Willed Ruler",
+      "set": "ASH",
+      "number": "53",
+      "rarity": "Legendary",
+      "type": "Unit",
+      "aspects": [
+        "Vigilance",
+        "Villainy"
+      ],
+      "traits": [
+        "Mandalorian",
+        "Official"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 8,
+      "power": 6,
+      "hp": 6,
+      "frontText": "When Played: Defeat any number of non‑leader units with a total of 6 or less remaining HP. Create a Mandalorian token for each unit defeated this way.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [],
+      "artist": "Gabriel Gómez Almenzar",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "GC 2026 Promo",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": false,
+      "prestigeTier": null,
+      "imageUrl": "/promo-cards/gc2026/bp-pre-vizsla.png",
+      "backImageUrl": null,
+      "isPlaceholder": false,
+      "spoilerStatus": "spoiled",
+      "gcPromo": {
+        "campaign": "gc2026",
+        "pool": "black",
+        "placeholder": true
+      }
+    },
+    {
       "id": "gc2026-cassian-andor-lay-low",
       "cardId": "SEC-042",
       "name": "Cassian Andor",
@@ -351152,8 +351308,59 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_06010042_EN_Cassian_Andor_a0389fe762.png",
+      "imageUrl": "/promo-cards/gc2026/bp-cassian-andor.png",
       "backImageUrl": null,
+      "gcPromo": {
+        "campaign": "gc2026",
+        "pool": "black",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "gc2026-bo-katan-kryze-for-all-of-mandalore",
+      "cardId": "ASH-105",
+      "name": "Bo-Katan Kryze",
+      "subtitle": "For All of Mandalore",
+      "set": "ASH",
+      "number": "105",
+      "rarity": "Rare",
+      "type": "Unit",
+      "aspects": [
+        "Command",
+        "Heroism"
+      ],
+      "traits": [
+        "Mandalorian"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 2,
+      "power": 2,
+      "hp": 4,
+      "frontText": "While you control another Mandalorian unit, this unit gains Raid 2.",
+      "backText": null,
+      "epicAction": null,
+      "keywords": [
+        "Raid"
+      ],
+      "artist": "Gabriel Gómez Almenzar",
+      "unique": true,
+      "doubleSided": false,
+      "variantType": "GC 2026 Promo",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": false,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": false,
+      "isShowcase": false,
+      "isPrestige": false,
+      "prestigeTier": null,
+      "imageUrl": "/promo-cards/gc2026/bp-bo-katan-kryze.png",
+      "backImageUrl": null,
+      "isPlaceholder": false,
+      "spoilerStatus": "spoiled",
       "gcPromo": {
         "campaign": "gc2026",
         "pool": "black",
@@ -351202,7 +351409,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_06010103_EN_Mon_Mothma_2ec0020704.png",
+      "imageUrl": "/promo-cards/gc2026/bp-mon-mothma.png",
       "backImageUrl": null,
       "gcPromo": {
         "campaign": "gc2026",
@@ -351253,7 +351460,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_08010148_EN_Ninth_Sister_9b6a35fcb7.png",
+      "imageUrl": "/promo-cards/gc2026/bp-ninth-sister.png",
       "backImageUrl": null,
       "isPlaceholder": false,
       "spoilerStatus": "spoiled",
@@ -351303,7 +351510,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_07010214_EN_Boba_Fett_34cf2cf618.png",
+      "imageUrl": "/promo-cards/gc2026/bp-boba-fett.png",
       "backImageUrl": null,
       "gcPromo": {
         "campaign": "gc2026",
@@ -351353,7 +351560,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_06010209_EN_The_Mandalorian_8fbac7ec35.png",
+      "imageUrl": "/promo-cards/gc2026/bp-the-mandalorian.png",
       "backImageUrl": null,
       "gcPromo": {
         "campaign": "gc2026",
@@ -351401,7 +351608,7 @@
       "isShowcase": false,
       "isPrestige": false,
       "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_06010219_EN_Ebon_Hawk_e4da33f527.png",
+      "imageUrl": "/promo-cards/gc2026/bp-ebon-hawk.png",
       "backImageUrl": null,
       "gcPromo": {
         "campaign": "gc2026",
@@ -351414,7 +351621,7 @@
     "version": "1.0.0",
     "lastUpdated": "2026-07-12",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
-    "totalCards": 8182,
+    "totalCards": 8186,
     "sets": [
       {
         "code": "SOR",
@@ -351454,8 +351661,8 @@
       {
         "code": "ASH",
         "name": "Ashes of the Empire",
-        "cardCount": 929,
-        "realCardCount": 929,
+        "cardCount": 933,
+        "realCardCount": 933,
         "placeholderCardCount": 0,
         "spoiledNormalCount": 264,
         "placeholderVersion": "2026-05-20-sec-shaped-law-multicolor-v2",
@@ -351474,13 +351681,13 @@
         "Hyperspace Foil"
       ],
       "bucketCount": 290,
-      "realCardCount": 929,
+      "realCardCount": 933,
       "placeholderCardCount": 0,
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-07-19T21:07:25.821Z"
+      "generatedAt": "2026-07-20T02:23:11.015Z"
     },
-    "lastProcessed": "2026-07-19"
+    "lastProcessed": "2026-07-20"
   }
 }

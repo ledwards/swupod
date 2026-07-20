@@ -69,7 +69,11 @@
     ".next-promo-e2e/types/**/*.ts",
     ".next-promo-e2e/dev/types/**/*.ts",
     ".next-build/types/**/*.ts",
-    ".next-build/dev/types/**/*.ts"
+    ".next-build/dev/types/**/*.ts",
+    ".next-proof/types/**/*.ts",
+    ".next-proof/dev/types/**/*.ts",
+    ".next-proof2/types/**/*.ts",
+    ".next-proof2/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
