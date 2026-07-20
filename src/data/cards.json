@@ -350613,13 +350613,13 @@
       "prestigeTier": null,
       "imageUrl": "/promo-cards/gc2026/pwc-morgan-elsbeth.png",
       "backImageUrl": null,
-      "isPlaceholder": false,
-      "spoilerStatus": "spoiled",
       "gcPromo": {
         "campaign": "gc2026",
         "pool": "silver",
         "placeholder": true
-      }
+      },
+      "isPlaceholder": false,
+      "spoilerStatus": "spoiled"
     },
     {
       "id": "gc2026-lando-calrissian-eyes-open",
@@ -350858,13 +350858,13 @@
       "prestigeTier": null,
       "imageUrl": "/promo-cards/gc2026/pwc-zeb.png",
       "backImageUrl": null,
-      "isPlaceholder": false,
-      "spoilerStatus": "spoiled",
       "gcPromo": {
         "campaign": "gc2026",
         "pool": "silver",
         "placeholder": true
-      }
+      },
+      "isPlaceholder": false,
+      "spoilerStatus": "spoiled"
     },
     {
       "id": "gc2026-cinta-kaz-the-struggle-comes-first",
@@ -351105,13 +351105,13 @@
       "prestigeTier": null,
       "imageUrl": "/promo-cards/gc2026/pwc-anakin.png",
       "backImageUrl": null,
-      "isPlaceholder": false,
-      "spoilerStatus": "spoiled",
       "gcPromo": {
         "campaign": "gc2026",
         "pool": "silver",
         "placeholder": true
-      }
+      },
+      "isPlaceholder": false,
+      "spoilerStatus": "spoiled"
     },
     {
       "id": "gc2026-marrok-mysterious-warrior",
@@ -351159,13 +351159,13 @@
       "prestigeTier": null,
       "imageUrl": "/promo-cards/gc2026/bp-marrok.png",
       "backImageUrl": null,
-      "isPlaceholder": false,
-      "spoilerStatus": "spoiled",
       "gcPromo": {
         "campaign": "gc2026",
         "pool": "black",
         "placeholder": true
-      }
+      },
+      "isPlaceholder": false,
+      "spoilerStatus": "spoiled"
     },
     {
       "id": "gc2026-wicket-yub-nub",
@@ -351211,13 +351211,13 @@
       "prestigeTier": null,
       "imageUrl": "/promo-cards/gc2026/bp-wicket.png",
       "backImageUrl": null,
-      "isPlaceholder": false,
-      "spoilerStatus": "spoiled",
       "gcPromo": {
         "campaign": "gc2026",
         "pool": "black",
         "placeholder": true
-      }
+      },
+      "isPlaceholder": false,
+      "spoilerStatus": "spoiled"
     },
     {
       "id": "gc2026-pre-vizsla-strong-willed-ruler",
@@ -351261,13 +351261,13 @@
       "prestigeTier": null,
       "imageUrl": "/promo-cards/gc2026/bp-pre-vizsla.png",
       "backImageUrl": null,
-      "isPlaceholder": false,
-      "spoilerStatus": "spoiled",
       "gcPromo": {
         "campaign": "gc2026",
         "pool": "black",
         "placeholder": true
-      }
+      },
+      "isPlaceholder": false,
+      "spoilerStatus": "spoiled"
     },
     {
       "id": "gc2026-cassian-andor-lay-low",
@@ -351359,13 +351359,13 @@
       "prestigeTier": null,
       "imageUrl": "/promo-cards/gc2026/bp-bo-katan-kryze.png",
       "backImageUrl": null,
-      "isPlaceholder": false,
-      "spoilerStatus": "spoiled",
       "gcPromo": {
         "campaign": "gc2026",
         "pool": "black",
         "placeholder": true
-      }
+      },
+      "isPlaceholder": false,
+      "spoilerStatus": "spoiled"
     },
     {
       "id": "gc2026-mon-mothma-clinging-to-hope",
@@ -351462,13 +351462,13 @@
       "prestigeTier": null,
       "imageUrl": "/promo-cards/gc2026/bp-ninth-sister.png",
       "backImageUrl": null,
-      "isPlaceholder": false,
-      "spoilerStatus": "spoiled",
       "gcPromo": {
         "campaign": "gc2026",
         "pool": "black",
         "placeholder": true
-      }
+      },
+      "isPlaceholder": false,
+      "spoilerStatus": "spoiled"
     },
     {
       "id": "gc2026-boba-fett-for-a-price",
@@ -351619,7 +351619,7 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-07-19",
+    "lastUpdated": "2026-07-20",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
     "totalCards": 8186,
     "sets": [
@@ -351669,7 +351669,7 @@
         "placeholderStatus": "valid"
       }
     ],
-    "fixesApplied": 0,
+    "fixesApplied": 2,
     "ashPlaceholderCatalog": {
       "version": "2026-05-20-sec-shaped-law-multicolor-v2",
       "expectedNormalSlots": 264,
@@ -351686,7 +351686,7 @@
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-07-20T08:28:21.211Z"
+      "generatedAt": "2026-07-20T09:23:47.325Z"
     },
     "lastProcessed": "2026-07-20"
   }
