@@ -105,12 +105,14 @@ export default function GiftGc2026Page() {
     <div className="gift-page">
       <div className="gift-container">
         {heroOk && (
-          <img
-            className="gift-hero"
-            src="/gift/gc2026-hero.webp"
-            alt="Protect the Pod — GC 2026"
-            onError={() => setHeroOk(false)}
-          />
+          <div className="gift-hero-wrap">
+            <img
+              className="gift-hero"
+              src="/gift/gc2026-hero.webp"
+              alt="Protect the Pod — GC 2026"
+              onError={() => setHeroOk(false)}
+            />
+          </div>
         )}
 
         {(() => {
@@ -167,7 +169,17 @@ export default function GiftGc2026Page() {
                     Protect the Pod account — a little digital keepsake of the weekend. You can use unlocked
                     Event Packs in your Chaos Sealed pools from now on, forever!
                   </p>
-                  <div className="gift-panel">
+                  <div className="gift-packs">
+                    <figure className="gift-pack">
+                      <img src={PACK_IMAGE.silver} alt="GC 2026 Silver Event Pack" />
+                      <figcaption className="gift-pack-label">SILVER PACK</figcaption>
+                    </figure>
+                    <figure className="gift-pack gift-pack--locked">
+                      <img src={PACK_IMAGE.black} alt="GC 2026 Black Event Pack" />
+                      <figcaption className="gift-pack-label">BLACK PACK</figcaption>
+                    </figure>
+                  </div>
+                  <div className="gift-cta">
                     {loading ? (
                       <div className="loading">Loading…</div>
                     ) : !user ? (

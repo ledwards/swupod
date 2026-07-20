@@ -98,7 +98,7 @@ test.describe('GC 2026 Promo Packs', () => {
 
     // And the Black surface explains it.
     await page.goto('/gift/gc2026/black')
-    await expect(page.getByText(/exclusive for Friends of the Pod/i)).toBeVisible()
+    await expect(page.getByText(/ten alt-art event promos/i)).toBeVisible()
     await expect(page.getByRole('button', { name: /Become a Friend of the Pod/i })).toBeVisible()
 
     await context.close()

@@ -11,6 +11,8 @@ import '../page.css'
 type Status = 'idle' | 'claiming' | 'opening' | 'already' | 'closed' | 'error'
 type EventPack = { cards: unknown[] }
 
+const BLACK_PACK_IMAGE = '/pack-images/gc2026-black-pack.png'
+
 // Single entitlement-checking surface for the Black Pack (plan U6/D7). Reached from the
 // Promo Packs section's locked Black tile and from the /gift/gc2026 nudge. Opens the pack
 // for Friends of the Pod; shows the soft CTA for everyone else.
@@ -25,6 +27,7 @@ export default function GiftGc2026BlackPage() {
   const router = useRouter()
   const [status, setStatus] = useState<Status>('idle')
   const [pack, setPack] = useState<EventPack | null>(null)
+  const [heroOk, setHeroOk] = useState(true)
 
   useEffect(() => {
     if (!loading && !user) signIn()
@@ -95,18 +98,40 @@ export default function GiftGc2026BlackPage() {
   return (
     <div className="gift-page">
       <div className="gift-container">
-        <h1>GC 2026 Black Pack</h1>
+        {heroOk && (
+          <div className="gift-hero-wrap">
+            <img
+              className="gift-hero"
+              src="/gift/gc2026-hero.webp"
+              alt="Protect the Pod — GC 2026"
+              onError={() => setHeroOk(false)}
+            />
+          </div>
+        )}
+
+        <h1>The GC 2026 Black Pack</h1>
 
         {isPatron !== true ? (
-          <div className="gift-panel">
-            <p className="gift-panel-copy">
-              The Black Pack is an <strong>exclusive for Friends of the Pod</strong> — alt-art
-              event promos on top of the Silver Pack anyone can claim.
+          <>
+            <p className="gift-lede">
+              The Black Pack is the <strong>Friends of the Pod</strong> half of the GC 2026 set —
+              ten alt-art event promos that stack on top of the Silver Pack anyone can claim.
             </p>
-            <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">
-              <Button variant="primary" size="lg">Become a Friend of the Pod</Button>
-            </a>
-          </div>
+            <div className="gift-packs">
+              <figure className="gift-pack">
+                <img src={BLACK_PACK_IMAGE} alt="GC 2026 Black Event Pack" />
+                <figcaption className="gift-pack-label">BLACK PACK</figcaption>
+              </figure>
+            </div>
+            <div className="gift-panel">
+              <p className="gift-panel-copy">
+                Become a Friend of the Pod to unlock it — then it&apos;s yours in Chaos Sealed forever.
+              </p>
+              <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">
+                <Button variant="primary" size="lg">Become a Friend of the Pod</Button>
+              </a>
+            </div>
+          </>
         ) : status === 'already' ? (
           <div className="gift-panel gift-panel--ok">
             <span className="gift-check">✓</span>
@@ -123,15 +148,23 @@ export default function GiftGc2026BlackPage() {
             </Button>
           </div>
         ) : (
-          <div className="gift-panel">
-            <p className="gift-panel-copy">Unlock your Black Pack and open it right now.</p>
-            <Button variant="primary" size="lg" onClick={handleUnlock} disabled={status === 'claiming'}>
-              {status === 'claiming' ? 'Unlocking…' : 'Unlock Black Pack'}
-            </Button>
-            {status === 'error' && (
-              <p className="gift-error">Something went wrong. Give it another try in a moment.</p>
-            )}
-          </div>
+          <>
+            <div className="gift-packs">
+              <figure className="gift-pack">
+                <img src={BLACK_PACK_IMAGE} alt="GC 2026 Black Event Pack" />
+                <figcaption className="gift-pack-label">BLACK PACK</figcaption>
+              </figure>
+            </div>
+            <div className="gift-panel">
+              <p className="gift-panel-copy">Unlock your Black Pack and open it right now.</p>
+              <Button variant="primary" size="lg" onClick={handleUnlock} disabled={status === 'claiming'}>
+                {status === 'claiming' ? 'Unlocking…' : 'Unlock Black Pack'}
+              </Button>
+              {status === 'error' && (
+                <p className="gift-error">Something went wrong. Give it another try in a moment.</p>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>
