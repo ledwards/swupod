@@ -31,7 +31,7 @@ const idsForPool = (pool: PromoTier): readonly string[] =>
 export const GC2026_CAMPAIGN: PromoCampaign = {
   id: 'gc2026',
   name: 'Galactic Championship 2026',
-  claimWindow: { startLA: '2026-07-24', endLA: '2026-07-26', timeZone: 'America/Los_Angeles' },
+  claimWindow: { startLA: '2026-07-23', endLA: '2026-07-27', timeZone: 'America/Los_Angeles' },
   packSize: 2,
   pools: {
     silver: idsForPool('silver'),

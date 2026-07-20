@@ -8,7 +8,7 @@
 //             even if the patron later lapses (the entitlement row is permanent).
 //   - Idempotent: re-claiming is a no-op ("already owned"), so the shared QR link
 //     can circulate freely without ever double-granting.
-//   - The claim window is GC weekend only (Jul 24–26 2026 LA). Non-production may
+//   - The claim window is Jul 23–27 2026 (America/Los_Angeles). Non-production may
 //     force it open via PROMO_CLAIM_WINDOW_OVERRIDE=1 for local/e2e runs.
 //
 // On success it also returns a freshly drawn pack so the landing page can play the

@@ -2,7 +2,7 @@
  * Tests for the GC 2026 promo-pack service (plan U2).
  *
  * Spec-first: window dates, pack size, and pool membership are asserted against the catalog
- * (src/services/promoPacks.catalog.ts) and the requirements (claim window = Jul 24–26 2026 LA).
+ * (src/services/promoPacks.catalog.ts) and the requirements (claim window = Jul 23–27 2026 LA).
  */
 
 import assert from 'node:assert/strict'
@@ -26,30 +26,30 @@ it('getCampaign resolves gc2026 and returns null for unknown', () => {
   assert.equal(getCampaign('nope'), null)
 })
 
-// ── isClaimWindowOpen — SPEC: GC weekend only, Jul 24–26 2026 America/Los_Angeles ──
+// ── isClaimWindowOpen — SPEC: Jul 23–27 2026 America/Los_Angeles (inclusive) ──
 const laNoon = (d: string) => new Date(`${d}T12:00:00-07:00`) // PDT is UTC-7 in July
 
-it('open on each day of GC weekend (Jul 24, 25, 26 LA)', () => {
-  for (const d of ['2026-07-24', '2026-07-25', '2026-07-26']) {
+it('open on each day of the window (Jul 23–27 LA)', () => {
+  for (const d of ['2026-07-23', '2026-07-24', '2026-07-25', '2026-07-26', '2026-07-27']) {
     assert.equal(isClaimWindowOpen(GC2026_CAMPAIGN, laNoon(d)), true, `expected ${d} open`)
   }
 })
 
-it('closed the day before and the day after (Jul 23 / Jul 27 LA)', () => {
-  assert.equal(isClaimWindowOpen(GC2026_CAMPAIGN, laNoon('2026-07-23')), false)
-  assert.equal(isClaimWindowOpen(GC2026_CAMPAIGN, laNoon('2026-07-27')), false)
+it('closed the day before and the day after (Jul 22 / Jul 28 LA)', () => {
+  assert.equal(isClaimWindowOpen(GC2026_CAMPAIGN, laNoon('2026-07-22')), false)
+  assert.equal(isClaimWindowOpen(GC2026_CAMPAIGN, laNoon('2026-07-28')), false)
 })
 
 it('boundaries are inclusive at the LA day edges', () => {
-  // 23:30 on Jul 26 LA → still open; 00:30 on Jul 27 LA → closed.
-  assert.equal(isClaimWindowOpen(GC2026_CAMPAIGN, new Date('2026-07-26T23:30:00-07:00')), true)
-  assert.equal(isClaimWindowOpen(GC2026_CAMPAIGN, new Date('2026-07-27T00:30:00-07:00')), false)
+  // 23:30 on Jul 27 LA → still open; 00:30 on Jul 28 LA → closed.
+  assert.equal(isClaimWindowOpen(GC2026_CAMPAIGN, new Date('2026-07-27T23:30:00-07:00')), true)
+  assert.equal(isClaimWindowOpen(GC2026_CAMPAIGN, new Date('2026-07-28T00:30:00-07:00')), false)
 })
 
 it('uses the LA calendar date, not UTC', () => {
-  // 06:00Z Jul 24 = 23:00 PDT Jul 23 → closed; 08:00Z Jul 24 = 01:00 PDT Jul 24 → open.
-  assert.equal(isClaimWindowOpen(GC2026_CAMPAIGN, new Date('2026-07-24T06:00:00Z')), false)
-  assert.equal(isClaimWindowOpen(GC2026_CAMPAIGN, new Date('2026-07-24T08:00:00Z')), true)
+  // 06:00Z Jul 23 = 23:00 PDT Jul 22 → closed; 08:00Z Jul 23 = 01:00 PDT Jul 23 → open.
+  assert.equal(isClaimWindowOpen(GC2026_CAMPAIGN, new Date('2026-07-23T06:00:00Z')), false)
+  assert.equal(isClaimWindowOpen(GC2026_CAMPAIGN, new Date('2026-07-23T08:00:00Z')), true)
 })
 
 // ── isClaimAllowed — override opens the window in non-prod only ──
