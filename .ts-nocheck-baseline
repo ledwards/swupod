@@ -1,7 +1,8 @@
-579
+580
 # 2026-07-09: +1 (app/api/stats/entitlement.test.ts) — entitlement.test.ts: server-side stats-gate test (item-7 refresh); DB-mocked test uses @ts-nocheck like the rest of the suite
 # 2026-07-09: +1 (app/sealed_pool/[shareId]/SealedPoolClient.tsx) — split sealed_pool: page.tsx is now a typechecked server component (real 404 gate); client logic moved verbatim to SealedPoolClient.tsx (keeps its @ts-nocheck)
 # 2026-07-14: +3 (app/api/stats/leader-openings/route.ts, src/services/leaderPickContext.test.ts, src/utils/leaderPackReconstruction.test.ts) — Backfill 3 pre-existing leader-stats files that carried @ts-nocheck since the branch base but were never added to the baseline (leader-openings route, leaderPickContext.test, leaderPackReconstruction.test); not new debt
+# 2026-07-20: +4 (scripts/copyPoolToDev.ts, scripts/lib/dbCopy.ts, scripts/lib/dbEnv.ts, scripts/verifyDevDb.ts) — Reconcile 4 pre-existing prod @ts-nocheck files (DB-copy engine: copyPoolToDev, lib/dbCopy, lib/dbEnv, verifyDevDb) surfaced by merging origin/main into the GC promo branch; drift inherited from prod, not new debt.
 app/admin/page.tsx
 app/api/admin/grant/route.test.ts
 app/api/admin/grant/route.ts
@@ -111,7 +112,6 @@ app/api/stats/deck-inclusion/route.ts
 app/api/stats/draft-picks/route.ts
 app/api/stats/entitlement.test.ts
 app/api/stats/generations/route.ts
-app/api/stats/leader-openings/route.ts
 app/api/stats/leader-selection/route.ts
 app/api/stats/leader-winrate/route.ts
 app/api/stats/me/luck/route.test.ts
@@ -191,10 +191,13 @@ lib/patreon.test.ts
 lib/utils.test.ts
 playwright.config.ts
 scripts/cardFixes.ts
+scripts/copyPoolToDev.ts
 scripts/copyUserToDev.ts
 scripts/e2e.ts
 scripts/fetchCards.ts
 scripts/generate-qa-badge.ts
+scripts/lib/dbCopy.ts
+scripts/lib/dbEnv.ts
 scripts/makeAdmin.test.ts
 scripts/makeAdmin.ts
 scripts/migrate-on-deploy.ts
@@ -211,6 +214,7 @@ scripts/sync-patrons-cron.test.ts
 scripts/sync-patrons-cron.ts
 scripts/test-backfill-migration.ts
 scripts/test-summary.ts
+scripts/verifyDevDb.ts
 server.ts
 src/belts/BaseBelt.test.ts
 src/belts/BaseBelt.ts
@@ -454,7 +458,6 @@ src/services/importPool/preprocessImage.ts
 src/services/importPool/sectionExtraction.ts
 src/services/importPool/tableGrouping.ts
 src/services/index.ts
-src/services/leaderPickContext.test.ts
 src/services/luckVerdict.test.ts
 src/services/matchmaking/pairing.test.ts
 src/services/matchmaking/results.test.ts
@@ -511,7 +514,6 @@ src/utils/infiniteDeckbuilder.test.ts
 src/utils/infiniteDeckbuilder.ts
 src/utils/json.test.ts
 src/utils/json.ts
-src/utils/leaderPackReconstruction.test.ts
 src/utils/markdown.ts
 src/utils/membership.test.ts
 src/utils/membership.ts
