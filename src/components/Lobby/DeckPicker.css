@@ -1,0 +1,331 @@
+/* ============================================================================
+ * DeckPicker (Lobby modals) — deck list items reuse the /me pool-build
+ * treatment from YourStats.css (.your-stats-pool-build + .your-stats-replay-*);
+ * selection is the shared animated rainbow ring from src/styles/animations.css
+ * (same system as .canvas-card.selected). Layout container (.lobby-deck-picker)
+ * comes from Lobby.css.
+ * ========================================================================== */
+
+.lobby-deck-picker {
+  /* Layout (2-up grid) lives in Lobby.css with the other modal internals.
+     The reused your-stats-* classes read these scope vars, normally defined
+     on .me-page/.your-stats (YourStats.css) — mirror them off the ink token
+     so the items render identically inside the lobby modals. */
+  --ys-border: rgba(var(--pt-ink-rgb), 0.12);
+  --ys-border-bright: rgba(var(--pt-ink-rgb), 0.24);
+  --ys-text-2: rgba(var(--pt-ink-rgb), 0.72);
+  --ys-text-3: rgba(var(--pt-ink-rgb), 0.5);
+  --ys-radius: 14px;
+  --ys-radius-sm: 10px;
+}
+
+/* "ASH · Draft (4 eligible)" subtitle under the Join modal title. */
+.lobby-deck-subtitle {
+  margin: 0 0 var(--pt-space-xs);
+  color: var(--pt-ink-subtle);
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+/* ----- selectable item wrapper: carries the rainbow selection ring -------- */
+.lobby-deck-option {
+  /* Proportional rainbow system (animations.css): leader-card reference width
+     gives the same ~2.5px ring thickness as selected leaders/bases. */
+  --rainbow-border-reference: 168px;
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--ys-radius);
+  cursor: pointer;
+}
+
+.lobby-deck-option::before {
+  content: '';
+  position: absolute;
+  opacity: 0;
+  /* Band drawn INSIDE the item bounds — an outside overhang gets clipped by
+     the modal body's scroll container (its left content edge cut the ring). */
+  inset: 0;
+  border-radius: var(--ys-radius);
+  padding: var(--rainbow-border-size);
+  background: var(--rainbow-border-gradient);
+  background-size: var(--rainbow-border-background-size);
+  /* Masked ring: only the uniform border band paints, regardless of what the
+     item itself renders underneath — even thickness on every edge. */
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); /* design-ok: mask plumbing for the ring, not a fill */
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); /* design-ok: mask plumbing for the ring, not a fill */
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.lobby-deck-option--selected::before {
+  opacity: 1;
+  /* The shared spectrum's exact stops as a smooth 210px repeating diagonal —
+     seamless (no tile seams), true colors (no hue-rotate distortion), and the
+     short left/right edges still cross a wide slice of the spectrum. Animated
+     by panning one full period (210px along the 135° axis = 297px of x). */
+  background: repeating-linear-gradient(135deg, #ff0000 0, #ff7f00 30px, #ffff00 60px, #00ff00 90px, #0000ff 120px, #4b0082 150px, #9400d3 180px, #ff0000 210px); /* design-ok: the sanctioned rainbow selection motif, sized for wide rows */
+  animation: lobby-rainbow-pan 5s linear infinite;
+}
+
+@keyframes lobby-rainbow-pan {
+  to {
+    background-position: 297px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lobby-deck-option--selected::before {
+    animation: none;
+  }
+}
+
+/* Keyboard focus ring — interactive-blue glow per DESIGN.md (matches
+   .canvas-card:focus-visible). */
+.lobby-deck-option:focus-visible {
+  outline: 2px solid rgba(var(--pt-glow-interactive-rgb), 0.95);
+  outline-offset: 3px;
+}
+
+/* ----- compact the reused /me item for modal width ------------------------ */
+.lobby-deck-option .your-stats-pool-build {
+  min-height: 64px;
+}
+
+.lobby-deck-option .your-stats-replay-content {
+  min-height: 64px;
+  max-width: 76%;
+  padding: 0.55rem 0.85rem;
+  gap: 0.3rem;
+  justify-content: center;
+}
+
+.lobby-deck-option .your-stats-replay-combo strong {
+  font-size: 0.95rem;
+}
+
+/* Items are now half-width (2-up). The art is pushed slightly PAST the right
+   edge so the aspect icon in the art's upper-right corner is cropped away. */
+.lobby-deck-option .your-stats-pool-build-art img {
+  right: -48px;
+  width: 56%;
+}
+
+.lobby-deck-option .your-stats-replay-content {
+  max-width: 70%;
+}
+
+/* ----- pagination ---------------------------------------------------------- */
+.lobby-deck-pager {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--pt-space-sm);
+  margin-top: var(--pt-space-xs);
+}
+
+.lobby-deck-pager-count {
+  min-width: 3.5em;
+  text-align: center;
+  color: var(--pt-ink-subtle);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ----- zero-eligible-decks state (Join flow) ------------------------------- */
+.lobby-deck-empty-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--pt-space-sm);
+  margin-top: var(--pt-space-sm);
+}
+
+.lobby-deck-empty-ctas .btn {
+  text-decoration: none;
+}
+
+.lobby-deck-empty-alt {
+  margin: var(--pt-space-sm) 0 0;
+  font-size: 0.85rem;
+  color: var(--pt-ink-subtle);
+}
+
+
+/* ---- deck modals: wider than the 28rem default, never taller than the
+   viewport — the list scrolls inside, header/actions always visible. ---- */
+.lobby-deck-modal {
+  max-width: min(92vw, 640px);
+  width: 100%;
+  /* Breathing room: cap well below the viewport so the modal never reads as
+     a full-height sheet; the deck list scrolls inside. (.modal-content is
+     content-box, so its 2rem paddings sit on top of this figure.) */
+  max-height: min(600px, calc(100vh - 12rem));
+  display: flex;
+  flex-direction: column;
+}
+
+.lobby-deck-modal .modal-body {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  /* The scroll container clips anything past its padding box — glows, toggle
+     rings, and the selection ring need this inset to render un-clipped. */
+  padding: 6px 8px;
+}
+
+
+/* ---- picker-context overrides of the /me item (Lee) ------------------- */
+/* Item background: a dimmed gradient of the DECK'S aspect colors (leader +
+   base), dark enough that the copy stays legible and selection still reads
+   from the rainbow ring alone. */
+.lobby-deck-option .your-stats-pool-build::before {
+  background: linear-gradient(105deg, color-mix(in srgb, var(--deck-grad-a, #2a3654) 42%, rgb(11, 15, 23)) 0%, color-mix(in srgb, var(--deck-grad-b, #2a3654) 30%, rgb(11, 15, 23)) 55%, rgba(11, 15, 23, 0) 85%); /* design-ok: deck-identity gradient requested for the picker items */
+}
+
+/* Art hover is fine; the COPY must not move — kill the /me lift/shadow. */
+@media (hover: hover) and (pointer: fine) {
+  .lobby-deck-option .your-stats-pool-build:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* ---- New Lobby filter toggles: format left, set buckets right ---- */
+.lobby-deck-filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--pt-space-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--pt-space-sm);
+}
+
+.lobby-deck-filter-group {
+  display: flex;
+  gap: var(--pt-space-xs);
+  flex-wrap: wrap;
+}
+
+/* Deck search — shares the filter row; grows between the button groups. */
+.lobby-deck-search {
+  flex: 1;
+  min-width: 110px;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: 999px;
+  color: var(--pt-ink);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+}
+
+.lobby-deck-search::placeholder {
+  color: var(--pt-ink-subtle);
+}
+
+.lobby-deck-search:focus-visible {
+  outline: 2px solid rgba(var(--pt-glow-interactive-rgb), 0.7);
+  outline-offset: 1px;
+}
+
+/* Per-item edit affordance: faint in the item's upper-right, brighter on
+   item hover (desktop); always visible/tappable so touch isn't hover-gated. */
+.lobby-deck-edit {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(var(--pt-ink-rgb), 0.15);
+  border-radius: var(--pt-radius-full);
+  color: rgba(var(--pt-ink-rgb), 0.4);
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lobby-deck-option:hover .lobby-deck-edit {
+    opacity: 1;
+  }
+
+  .lobby-deck-edit:hover {
+    color: var(--pt-ink);
+    border-color: rgba(var(--pt-ink-rgb), 0.4);
+  }
+}
+
+/* "Older ▾" dropdown */
+.lobby-deck-older {
+  position: relative;
+}
+
+.lobby-deck-older-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 20;
+  min-width: 96px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.92);
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lobby-deck-older-item {
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  border-radius: var(--pt-radius-sm);
+  color: var(--pt-ink);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lobby-deck-older-item:hover {
+    background: rgba(var(--pt-glow-interactive-rgb), 0.18);
+  }
+}
+
+.lobby-deck-older-item--active {
+  background: rgba(var(--pt-glow-interactive-rgb), 0.25);
+}
+
+
+/* Unfinished pools: B&W, quiet, whole card = "go build it". */
+.lobby-deck-option--incomplete {
+  filter: grayscale(1);
+  opacity: 0.55;
+}
+
+.lobby-deck-option--incomplete .your-stats-replay-combo small {
+  color: rgba(var(--pt-ink-rgb), 0.7);
+}
+
+/* "Show incomplete" — shares the filter row. */
+.lobby-deck-incomplete-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--pt-ink-subtle);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  cursor: pointer;
+}

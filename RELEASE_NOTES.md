@@ -1,5 +1,40 @@
 # Release Notes
 
+## 07.19.2026
+
+### 🔧 Under the Hood
+- **Matchmaking fix**: starting a new game now properly closes out any earlier game you were still nominally in. Previously a game that never got a recorded result could leave your next one impossible for anyone to join.
+
+## 07.16.2026
+
+### 🔧 Under the Hood
+- **Infrastructure groundwork and fixes** across matchmaking, deck exports, and the Wayfinder Companion pipeline. Deck JSON exports are now fully compatible with Karabast's paste-import.
+
+## 07.14.2026
+
+### 🔬 Every Card Re-Verified by Collector Number
+- **We went back through all 11 real Ashes of the Empire boxes and re-read every leader and base by its printed collector number.** The result: hyperspace leaders and bases pull at the true 1-in-6 rate, and real boxes land almost exactly 4 of each per box, so ours do too.
+- **Prestige tuned to reality**: about 1 tier-1 prestige per box (occasionally 2, never a flood), matching what the verified boxes actually held.
+- **Foil slot locked to the real print sheet**: the rarity mix now matches 261 real foils within a fraction of a percent.
+
+### 🔀 Randomize Packs Deals Like a Store
+- **Randomizing a sealed pool now hands you a consecutive run of packs from your box**, the same cut a store would pull off the shelf. The old version grabbed 6 packs from random spots in the box, which made pools noticeably clumpier with duplicates than real product.
+
+### 🤖 Bots Draft Like Humans
+- **Draft bots now value main-deck cards using real human picks**, built from over 160,000 pick decisions in completed drafts. Bots recognize the cards players actually fight over, so they compete for them too.
+
+### 📊 Pick Pref on Draft Picks
+- **New "Pick Pref" column in Draft Picks stats**: how often players take a card over other cards sharing its color in the same pack. It's the cleanest read on what the community thinks a card is worth.
+
+## 07.13.2026
+
+### 🎮 Clearer "Opening on Karabast" feedback
+- **The Companion lobby buttons now acknowledge your click.** Create Private/Public Lobby and Join now show an "Opening on Karabast…" state the moment you press them, so launching a game never feels like nothing happened. If Karabast is slow or unavailable, the Companion itself now follows up with a clear "didn't respond — try again" prompt instead of leaving you waiting.
+
+### 🎴 Pack Contents
+- **Continued improvements to pack contents** as we calibrate against more real boxes.
+- **Foil rarity distribution tweaks** to better match real packs.
+
 ## 07.11.2026
 
 ### 🐳 Cracking Packs for the Pod

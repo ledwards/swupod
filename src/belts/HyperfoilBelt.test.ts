@@ -190,6 +190,30 @@ async function runTests(): Promise<void> {
     assert(card.isHyperspace === true, 'Fallback HSF should be marked hyperspace')
   })
 
+  test('FIXED: ASH sheet composition matches configured foil weights within ±1pt per rarity', () => {
+    // SPEC: the 15×121 foil sheet stack (setConfigs/ASH.ts
+    // hyperspaceFoilSheetCopies C15/U3/R1/S5/L2 over 100/60/50/8/20 cards)
+    // realizes exactly C82.9/U9.9/R2.8/S2.2/L2.2 — matching the 11 verified
+    // boxes' C82.4/U11.1/R3.1/S1.5/L1.9 within sampling noise. The old
+    // weight-rounding path at baseScale=1000 overshot small rarities badly
+    // (50 rares at target 3% -> round(0.6)=1 copy each = 5% realized).
+    const SPEC: Record<string, number> = { Common: 82.9, Uncommon: 9.9, Rare: 2.8, Special: 2.2, Legendary: 2.2 }
+    const belt = new HyperfoilBelt('ASH')
+    // Deterministic sheet composition: copies per rarity from the belt's own sheet spec
+    const copies: Record<string, number> = {}
+    let total = 0
+    for (const card of belt.fillingPool) {
+      const q = belt.rarityQuantities[card.rarity] || 1
+      copies[card.rarity] = (copies[card.rarity] || 0) + q
+      total += q
+    }
+    for (const [rarity, targetPct] of Object.entries(SPEC)) {
+      const realized = 100 * (copies[rarity] || 0) / total
+      assert(Math.abs(realized - targetPct) <= 1.0,
+        `SPEC: ASH foil sheet ${rarity} should be ${targetPct}% ±1pt, got ${realized.toFixed(2)}%`)
+    }
+  })
+
   test('no repeating pattern: consecutive belt fills produce different sequences', () => {
     const belt = new HyperfoilBelt('SOR')
     const fillSize = Math.min(belt.fillingPool.length, 30)
@@ -221,6 +245,29 @@ async function runTests(): Promise<void> {
     // At least 50% of positions should be different (shuffled)
     const diffPercent = (differences / firstFill.length) * 100
     assert(diffPercent > 50, `At least 50% of positions should differ, got ${diffPercent.toFixed(1)}%`)
+  })
+
+  test('FIXED: LAW+ foil slot is sheet-cut — hits per 24-pack box are tight, not binomial', () => {
+    // SPEC (11 real ASH boxes): common foils/box = 19.8 with stdev ~0.64 (always
+    // 19-21). A shuffled boot rolls each foil independently → stdev ~1.9 (boxes
+    // 16-24, some with 0-1 good foils, some with 7-8). The sheet-cut must ration
+    // the rarer "hit" foils so every 24-window lands near the mean.
+    const belt = new HyperfoilBelt('ASH')
+    const BOXES = 400
+    const commonCounts: number[] = []
+    for (let b = 0; b < BOXES; b++) {
+      let c = 0
+      for (let p = 0; p < 24; p++) {
+        if (belt.next().rarity === 'Common') c++
+      }
+      commonCounts.push(c)
+    }
+    const mean = commonCounts.reduce((a, v) => a + v, 0) / BOXES
+    const sd = Math.sqrt(commonCounts.reduce((a, v) => a + (v - mean) ** 2, 0) / BOXES)
+    const p = mean / 24
+    const binomialSd = Math.sqrt(24 * p * (1 - p)) // the shuffled-boot baseline
+    assert(sd < binomialSd * 0.6,
+      `SPEC: sheet-cut foil variance must be well below binomial — got sd ${sd.toFixed(2)} vs binomial ${binomialSd.toFixed(2)}`)
   })
 
   console.log('')

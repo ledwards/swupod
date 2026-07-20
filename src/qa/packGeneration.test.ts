@@ -425,11 +425,13 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
 
     assert(stats.missingLeaderBoxes === 0, `${stats.missingLeaderBoxes} boxes did not contain exactly ${DRAFT_BOX_SIZE} leader slots`)
     // Zero-rare boxes are not structurally prevented: a box's rare leaders can
-    // each be HS-replaced (1/6) by a common HS leader, so P(zero-rare) is tiny
-    // but nonzero (~0.1%). A hard ===0 over a seeded 1000-box sample passes or
-    // fails on seed luck whenever ANY code changes the RNG call order — allow
-    // the true rate, cap it well below player-noticeable levels.
-    assert(stats.zeroRareBoxes <= 2, `${stats.zeroRareBoxes}/${stats.boxCount} boxes had zero rare leaders (allowed: ≤2/1000)`)
+    // each be HS-replaced by a common HS leader, so P(zero-rare) is tiny but
+    // nonzero. Measured true rate: 0.85/1000 (17 in 20,000 ASH boxes). Over a
+    // seeded 1000-box sample that's Poisson(~0.85), so a ≤2 cap false-fails ~5.5%
+    // of RNG streams — any unrelated code change (e.g. a bigger foil boot) shifts
+    // the call order and can tip it. Cap at 6: negligible false-fail at the true
+    // rate (P≈0.03%) while still catching a real regression (≥6/1000 = 0.6%/box).
+    assert(stats.zeroRareBoxes <= 6, `${stats.zeroRareBoxes}/${stats.boxCount} boxes had zero rare leaders (allowed: ≤6/1000; measured true rate 0.85/1000)`)
     assert(
       stats.boxesWithSameRareFourPlus === 0,
       `${stats.boxesWithSameRareFourPlus}/${stats.boxCount} boxes had the same rare leader 4+ times`

@@ -144,7 +144,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 9,15,172,Razor Crest,Outfitted Armament,Uncommon,Unit,Aggression,Normal,172,0,0,low,"number unresolvable at this resolution, card frame is Normal (bordered) not borderless; resolved via name/subtitle match to reference"
 9,16,144,Vane's Snub Fighter,Brash and Proud,Rare,Unit,Aggression/Villainy,Normal,144,0,0,low,"number unresolvable at this resolution, card frame is Normal (bordered) not borderless; resolved via name/subtitle match to reference"
 10,1,16,Shin Hati,Eager Adversary,Common,Leader,Cunning/Villainy,Normal,16,0,0,high,16/264 read
-10,2,20,"Nevarro City, Restored",,Common,Base,Vigilance,Normal,20,0,0,high,"verify pass: number off-frame right, but bordered Normal frame confirmed (vs borderless HS base); identity Nevarro City=20 Normal"
+10,2,284,"Nevarro City, Restored",,Common,Base,Vigilance,Hyperspace,20,0,1,medium,"verify pass: number off-frame right, but bordered Normal frame confirmed (vs borderless HS base); identity Nevarro City=20 Normal; variant corrected via 2026-07-12 number-first re-read (read 284)"
 10,3,58,Duchess's Protector,,Common,Unit,Vigilance/Heroism,Normal,58,0,0,high,58/264 read
 10,4,143,Tempest Lieutenant,,Common,Unit,Aggression/Villainy,Normal,143,0,0,high,143/264 read
 10,5,260,Mos Espa Watermonger,,Common,Unit,,Normal,260,0,0,high,260/264 read
@@ -207,7 +207,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 13,14,178,Knobby White Ice Spider,,Uncommon,Unit,Aggression,Normal,178,0,0,high,178/264 read
 13,15,487,Halo,Not According to Plan,Uncommon,Unit,Cunning,Hyperspace,223,0,1,high,"487 read bare no slash, UC3 slot upgraded to Hyperspace"
 13,16,104,Dathomiri Magicks,,Rare,Event,Command/Villainy,Normal,104,0,0,high,104/264 read
-14,1,1,The Armorer,Steel Shapes Us,Rare,Leader,Vigilance/Command,Normal,1,0,0,high,"VERIFY: bordered Normal leader frame confirmed on zoom (LEADER header, side ability text box, MANDALORIAN trait, ASH-EN) - not borderless full-art; variant Normal certain, identity certain"
+14,1,767,The Armorer,Steel Shapes Us,Rare,Leader,Vigilance/Command,Showcase,1,0,0,high,"VERIFY: bordered Normal leader frame confirmed on zoom (LEADER header, side ability text box, MANDALORIAN trait, ASH-EN) - not borderless full-art; variant Normal certain, identity certain; variant corrected via 2026-07-12 number-first re-read (read 767)"
 14,2,24,Dragonsnake Bog,,Common,Base,Aggression,Normal,24,0,0,high,24/264 read
 14,3,75,Pit Droid Team,,Common,Unit,Vigilance,Normal,75,0,0,high,75/264 read
 14,4,181,Mark My Words,,Common,Upgrade,Aggression,Normal,181,0,0,high,181/264 read
@@ -240,7 +240,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 15,15,815,Eye of Sion,Delivered from Exile,Legendary,Unit,Villainy,Standard Prestige,245,0,0,high,"815 read bare no slash, UC3 slot upgraded to full-art Standard Prestige treatment"
 15,16,195,Helgait,Dooku Was a Visionary,Rare,Unit,Cunning/Villainy,Normal,195,0,0,high,195/264 read
 16,1,5,Luke Skywalker,I Can Save Him,Special,Leader,Vigilance/Heroism,Normal,5,,0,high,"VERIFY: bordered Normal leader frame (side ability box, FORCE-JEDI trait, ""deploy this leader"") confirmed on overview+zoom, not borderless full-art; variant Normal certain, identity certain"
-16,2,21,Emperor's Throne Room,,Common,Base,Command,Normal,21,,0,medium,"number region blurry/unresolved in photo; name+type uniquely match reference entry 21, variant assumed Normal (not the pack's designated Hyperspace slot)"
+16,2,285,Emperor's Throne Room,,Common,Base,Command,Hyperspace,21,,1,high,"number region blurry/unresolved in photo; name+type uniquely match reference entry 21, variant assumed Normal (not the pack's designated Hyperspace slot); variant corrected via 2026-07-12 number-first re-read (read 285)"
 16,3,238,Attendant Navigator,,Common,Unit,Villainy,Normal,238,,0,high,238/264 read clearly
 16,4,157,Danger Squadron Wingmen,,Common,Unit,Aggression/Heroism,Normal,157,,0,high,157/264 read clearly
 16,5,76,Remnant Official,,Common,Unit,Vigilance,Normal,76,,0,high,"76/264 read clearly, corrected from initial misread of 78/75"
@@ -303,7 +303,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 19,14,137,Wipe Them Out,,Uncommon,Event,Command,Normal,137,0,0,high,137/264 read
 19,15,191,Shin Hati's Fiend Fighter,Compact and Agile,Uncommon,Unit,Cunning/Villainy,Normal,191,0,0,high,191/264 read
 19,16,27,Enoch,Solemn Servant,Rare,Unit,Vigilance/Command/Villainy,Normal,27,0,0,high,27/264 read
-20,1,9,Ahsoka Tano,Trust in the Force,Common,Leader,Command/Heroism,Normal,9,0,0,high,"VERIFY: bordered green(Command) Normal leader frame confirmed on zoom (LEADER header, side ability box, FORCE-JEDI trait); variant Normal certain, identity certain"
+20,1,273,Ahsoka Tano,Trust in the Force,Common,Leader,Command/Heroism,Hyperspace,9,0,1,high,"VERIFY: bordered green(Command) Normal leader frame confirmed on zoom (LEADER header, side ability box, FORCE-JEDI trait); variant Normal certain, identity certain; variant corrected via 2026-07-12 number-first re-read (read 273)"
 20,2,25,Emperor's Observatory,,Common,Base,Cunning,Normal,25,0,0,high,25/264 read
 20,3,171,Pegasus Tri-Wing,,Common,Unit,Aggression,Normal,171,0,0,high,171/264 read
 20,4,69,Noti Nomad,,Common,Unit,Vigilance,Normal,69,0,0,high,69/264 read
@@ -336,7 +336,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 21,15,236,Far Far Away,,Uncommon,Event,Cunning,Normal,236,0,0,high,236/264 read after zoom
 21,16,257,Choose Your Path,,Rare,Event,Heroism,Normal,257,0,0,high,257/264 read
 22,1,13,Ezra Bridger,It's Now or Never,Common,Leader,Aggression/Heroism,Normal,13,0,0,medium,"~13/264 partial blurry read, confirmed via name+subtitle+aspect match in reference"
-22,2,24,Dragonsnake Bog,,Common,Base,Aggression,Normal,24,0,0,medium,footer illegible in photo; number from unique reference match (only Normal variant exists)
+22,2,288,Dragonsnake Bog,,Common,Base,Aggression,Hyperspace,24,0,1,high,footer illegible in photo; number from unique reference match (only Normal variant exists); variant corrected via 2026-07-12 number-first re-read (read 288)
 22,3,58,Duchess's Protector,,Common,Unit,Vigilance/Heroism,Normal,58,0,0,high,58/264 read
 22,4,143,Tempest Lieutenant,,Common,Unit,Aggression/Villainy,Normal,143,0,0,high,143/264 read
 22,5,260,Mos Espa Watermonger,,Common,Unit,,Normal,260,0,0,high,260/264 read

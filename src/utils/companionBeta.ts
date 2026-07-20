@@ -1,15 +1,13 @@
 // Who sees the Wayfinder Companion PROMOTION (install pitches, the play-page
-// install/autojoin column, capture-gated /me surfaces). Everyone else sees the
-// product as it was before the plugin: no promotion, and a neutral "Coming soon"
-// where capture-gated stats would be.
+// install/autojoin column, capture-gated /me surfaces).
 //
-// ROLLOUT: admin-only for now (testing) → flip to beta (is_beta_tester) → then
-// remove the gate entirely. To beta-gate later, add `|| user?.is_beta_tester`.
+// GA (Lobby V1, 2026-07): the rollout gate is removed — everyone sees the
+// Companion promotion. The function (and its call sites) stay so a future
+// rollout of a new gated capability re-introduces a check in exactly one
+// place, and PluginCTA's `?plugincta=soon|hide` QA overrides keep working.
 //
 // NOTE: this gates PROMOTION only. Anyone who already HAS the plugin installed
-// (wayfinderDetected) gets the full functional behavior — lobby prompts, autojoin,
-// their captured stats — regardless of this flag. Gate detection-aware surfaces
-// on `isCompanionBeta(user) || wayfinderDetected`, not this flag alone.
-export function isCompanionBeta(user: { is_beta_tester?: boolean | null; is_admin?: boolean | null } | null | undefined): boolean {
-  return Boolean(user?.is_admin)
+// (wayfinderDetected) gets the full functional behavior regardless.
+export function isCompanionBeta(_user: { is_beta_tester?: boolean | null; is_admin?: boolean | null } | null | undefined): boolean {
+  return true
 }

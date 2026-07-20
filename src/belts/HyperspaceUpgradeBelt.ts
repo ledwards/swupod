@@ -80,6 +80,16 @@ export class HyperspaceUpgradeBelt {
   }
 
   _fill(): void {
+    // Spaced-sheet path (ASH): lay each slot's upgrades down at even intervals
+    // (jitter + random phase) instead of shuffling them into random packs, so a
+    // 24-pack box cut catches a tight, consistent count — the way a real print
+    // sheet spaces its hyperspace cards. Budget emerges from overlaps (leader +
+    // base can share a pack; nothing else upgrades, so a pack never exceeds 2).
+    if (this.config.spaceUpgrades) {
+      this._fillSpaced()
+      return
+    }
+
     const { cycleSize, budgetDistribution, slotCounts } = this.config
     const targetTotal =
       slotCounts.leader + slotCounts.base + slotCounts.common +
@@ -109,6 +119,53 @@ export class HyperspaceUpgradeBelt {
 
     // Push to hopper
     this.hopper.push(...plans)
+  }
+
+  /**
+   * Lay each slot type onto the cycle at spaced positions (a print sheet), then
+   * read off one plan per pack. No shuffle — the per-box count of each slot is
+   * therefore tight (real ASH: HS leader sd ~0.7, base ~1.0), and leader+base
+   * co-occur only where their two spaced sheets happen to overlap.
+   */
+  _fillSpaced(): void {
+    const { cycleSize, slotCounts } = this.config
+    const marks: Record<SlotKey, boolean[]> = {
+      leader: this._spacePositions(cycleSize, slotCounts.leader),
+      base: this._spacePositions(cycleSize, slotCounts.base),
+      common: this._spacePositions(cycleSize, slotCounts.common),
+      uc1: this._spacePositions(cycleSize, slotCounts.uc1),
+      uc2: this._spacePositions(cycleSize, slotCounts.uc2),
+      uc3: this._spacePositions(cycleSize, slotCounts.uc3),
+    }
+    const plans: UpgradePlan[] = []
+    for (let i = 0; i < cycleSize; i++) {
+      const plan = emptyPlan()
+      for (const slot of ALL_SLOTS) plan[slot] = marks[slot][i]!
+      plans.push(plan)
+    }
+    this.hopper.push(...plans)
+  }
+
+  /**
+   * Boolean cycle of length `n` with `count` marks spaced ~every n/count, with
+   * small jitter and a random phase (so a fresh box cut samples a random window
+   * and the per-box mean stays on target instead of drifting).
+   */
+  _spacePositions(n: number, count: number): boolean[] {
+    const marks: boolean[] = new Array(n).fill(false)
+    if (count <= 0) return marks
+    const interval = n / count
+    const jitter = Math.max(0, Math.floor(interval / 3))
+    const phase = Math.random() * interval
+    for (let k = 0; k < count; k++) {
+      const wobble = jitter > 0 ? Math.floor(Math.random() * (2 * jitter + 1)) - jitter : 0
+      let pos = Math.round(phase + k * interval + wobble) % n
+      if (pos < 0) pos += n
+      let guard = 0
+      while (marks[pos] && guard < n) { pos = (pos + 1) % n; guard++ }
+      marks[pos] = true
+    }
+    return marks
   }
 
   _buildPlans(

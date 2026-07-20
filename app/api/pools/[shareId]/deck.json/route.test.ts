@@ -334,7 +334,7 @@ describe('GET /api/pools/:shareId/deck.json', () => {
   })
 
   describe('export format (Karabast/SWUDB compatibility)', () => {
-    it('includes secondleader: null in export data', () => {
+    it('emits only Karabast-allowed root keys (no secondleader)', () => {
       const state: DeckBuilderState = {
         activeLeader: 'leader-1',
         activeBase: 'base-1',
@@ -363,17 +363,19 @@ describe('GET /api/pools/:shareId/deck.json', () => {
       const exportData = {
         metadata: { name: '[PTP] Test Deck', author: 'Protect the Pod' },
         leader: deckData.leader,
-        secondleader: null,
         base: deckData.base,
         deck: deckData.deck,
         sideboard: deckData.sideboard,
       }
 
-      // Karabast expects these exact top-level keys
+      // Karabast's paste-import validator ALLOWLISTS root keys
+      // (forceteki-client checkJson.ts: metadata, leader, base, deck,
+      // sideboard, deckID, deckSource) and rejects anything else — a
+      // `secondleader` key, even null, fails the whole import.
       assert.deepStrictEqual(Object.keys(exportData), [
-        'metadata', 'leader', 'secondleader', 'base', 'deck', 'sideboard',
+        'metadata', 'leader', 'base', 'deck', 'sideboard',
       ])
-      assert.strictEqual(exportData.secondleader, null)
+      assert.ok(!('secondleader' in exportData))
       assert.strictEqual(exportData.metadata.author, 'Protect the Pod')
       assert.ok(exportData.metadata.name.startsWith('[PTP]'))
     })

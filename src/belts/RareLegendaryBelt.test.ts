@@ -305,6 +305,59 @@ async function runTests(): Promise<void> {
     assert(diffPercent > 50, `At least 50% of positions should differ, got ${diffPercent.toFixed(1)}%`)
   })
 
+  test('FIXED: LAW+ legendaries are sheet-cut spaced — ~5 per 24-pack box, never a coin-flip cluster', () => {
+    // SPEC (11 real ASH boxes): rare-slot legendaries per box are welded to 5
+    // (one box had 6) — sd ~0.3. The OLD pair-sheet spaced duplicate COPIES but
+    // left rarity random, so legendaries/box was Binomial(24, 1/5) — sd ~1.9,
+    // a box could hold 0 or 11. Rarity must be spaced on the sheet.
+    const belt = new RareLegendaryBelt('ASH')
+    const BOXES = 800
+    const perBox: number[] = []
+    for (let b = 0; b < BOXES; b++) {
+      let legs = 0
+      for (let p = 0; p < 24; p++) {
+        if (belt.next()?.rarity === 'Legendary') legs++
+      }
+      perBox.push(legs)
+    }
+    const mean = perBox.reduce((a, v) => a + v, 0) / BOXES
+    const sd = Math.sqrt(perBox.reduce((a, v) => a + (v - mean) ** 2, 0) / BOXES)
+    const binomSd = Math.sqrt(24 * (mean / 24) * (1 - mean / 24)) // the coin-flip baseline (~1.9)
+    const maxSeen = Math.max(...perBox)
+    // SPEC: mean ~1-in-5 (4:1 ratio → ~4.8), and the spread FAR tighter than a
+    // coin flip (the definitive signal). Continuous belt draws cross 125-segment
+    // seams so the extreme tail is a touch wider than a fresh sealed-box cut
+    // ([4-6]); the coin-flip a box must NEVER reach is 10-11.
+    assert(mean > 4 && mean < 6, `SPEC: ~5 legendaries/box, got ${mean.toFixed(2)}`)
+    assert(sd < binomSd * 0.55, `SPEC: legendary spread must be well below coin-flip — sd ${sd.toFixed(2)} vs binomial ${binomSd.toFixed(2)}`)
+    assert(maxSeen <= 9, `SPEC: no box should reach the coin-flip extreme (10-11), saw max ${maxSeen}`)
+  })
+
+  test('UNBREAKABLE: every card occurs the same number of times as its rarity peers on the sheet', () => {
+    // A sheet must give every card of a rarity the SAME copy count — no card
+    // doubled ad hoc to fake the ratio. LCM sizing makes equal frequency and the
+    // 4:1 ratio hold at once (ASH 50R/20L @ 4:1 → 8 per rare, 5 per legendary).
+    for (const setCode of ['ASH', 'LAW']) {
+      const belt = new RareLegendaryBelt(setCode)
+      const size = belt.size
+      const perCard = new Map<string, { rarity: string, n: number }>()
+      for (let i = 0; i < size; i++) {
+        const c = belt.next()
+        if (!c) break
+        const e = perCard.get(c.id) ?? { rarity: c.rarity, n: 0 }
+        e.n++
+        perCard.set(c.id, e)
+      }
+      const byRarity: Record<string, number[]> = {}
+      for (const { rarity, n } of perCard.values()) (byRarity[rarity] ??= []).push(n)
+      for (const [rarity, counts] of Object.entries(byRarity)) {
+        const min = Math.min(...counts)
+        const max = Math.max(...counts)
+        assert(min === max, `SPEC (${setCode}): every ${rarity} must have equal copies on the sheet, got ${min}-${max}`)
+      }
+    }
+  })
+
   console.log('')
   console.log('\x1b[35m' + '='.repeat(40) + '\x1b[0m')
   console.log(`\x1b[32m✅ Tests passed: ${passed}\x1b[0m`)

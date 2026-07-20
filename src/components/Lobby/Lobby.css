@@ -1,0 +1,1135 @@
+@import '../../styles/animations.css';
+
+/* Lobby V1 — Direction A v3 skeleton in the holotable system (DESIGN.md).
+   Glass panels: translucent black + blur, 1px white-alpha border, flat at
+   rest; color only as interaction glow. Palette via tokens.css only. */
+
+.lobby-shell {
+  /* .landing-page supplies the homepage starfield + fades; we just stop it
+     from centering the lobby container's content and make it span the
+     viewport (the residual Vite body centering otherwise shrinks it). */
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.lobby-page {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--pt-space-lg) var(--pt-space-md) var(--pt-space-xl);
+  color: var(--pt-ink);
+  text-align: left;
+  font-family: Barlow, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+/* ---- compact header: small logo + online pill (R27: no nav bar) ---- */
+.lobby-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pt-space-md);
+  margin-bottom: var(--pt-space-lg);
+  /* Clearance for the site's floating auth widget (top-right). */
+  padding-right: 84px;
+}
+
+.lobby-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+
+.lobby-header-logo {
+  height: 76px;
+  width: auto;
+  display: block;
+}
+
+.lobby-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lobby-brand-name {
+  color: var(--pt-ink);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.1em; /* brand wordmark lockup — mirrors the logo type */
+  line-height: 1.1;
+}
+
+.lobby-brand-sub {
+  color: var(--pt-ink-subtle);
+  font-size: 0.85rem;
+}
+
+.lobby-online-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: 999px;
+  background: rgba(var(--pt-surface-base-rgb), 0.5);
+  backdrop-filter: blur(10px);
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  color: var(--pt-ink-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.lobby-online-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--pt-radius-full);
+  background: var(--pt-glow-primary);
+  box-shadow: 0 0 8px rgba(var(--pt-glow-primary-rgb), 0.6);
+  flex: none;
+}
+
+/* ---- verbs: live strip (left) + two big art buttons (mode-button DNA) ---- */
+.lobby-verbs {
+  display: grid;
+  grid-template-columns: auto 1.2fr 1.2fr;
+  gap: var(--pt-space-sm);
+  align-items: stretch;
+  margin-bottom: var(--pt-space-md);
+}
+
+.lobby-page .mode-button.lobby-verb {
+  width: 100%;
+  min-height: 92px;
+}
+
+.lobby-page .mode-button.lobby-verb .mode-button-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.lobby-live-strip {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  text-align: left;
+  color: var(--pt-ink-subtle);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  padding-right: var(--pt-space-xs);
+}
+
+.lobby-live-strip strong {
+  color: var(--pt-ink);
+  font-weight: 600;
+}
+
+/* ---- card-art system for lobby buttons ----
+   Inner <img> instead of a background so the aspect-icon strip on the art's
+   left edge can be cropped DYNAMICALLY: clip-path percentages are relative
+   to the image itself, so the crop scales with the rendered art. */
+.lobby-page .lobby-art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  /* Inverted hover (Lee, third pass): art is VISIBLE at rest and fades
+     out on hover while the rainbow ring appears. */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lobby-page .lobby-art-img {
+  position: absolute;
+  right: 0;
+  height: 260%;
+  width: auto;
+  /* Crop the card's left edge (aspect icons live there) — image-relative. */
+  clip-path: inset(0 0 0 14%);
+  /* Fade the image's own left edge so it never lands as a hard seam —
+     also image-relative, scales with the art. */
+  -webkit-mask-image: linear-gradient(to right, transparent 12%, rgba(0, 0, 0, 1) 55%); /* design-ok: image-edge fade, not a fill */
+  mask-image: linear-gradient(to right, transparent 12%, rgba(0, 0, 0, 1) 55%); /* design-ok: image-edge fade, not a fill */
+}
+
+/* framing per card type (mirrors the homepage mode-button-art offsets) */
+.lobby-page .lobby-art-img.art-unit {
+  top: -38%;
+}
+
+.lobby-page .lobby-art-img.art-event {
+  top: -128%;
+}
+
+.lobby-page .lobby-art-img.art-leader-unit {
+  top: -38%;
+  right: -40px;
+}
+
+/* the homepage left→right fade, on every art button (top row included) */
+.lobby-page .lobby-art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.85) 35%, rgba(0, 0, 0, 0.35) 70%, rgba(0, 0, 0, 0) 100%); /* design-ok: legibility fade over hover art, same as mode-button-art */
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lobby-page .mode-button:hover:not(:disabled) .lobby-art {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lobby-page .lobby-art {
+    transition: none;
+  }
+}
+
+/* ---- board: two glass columns ---- */
+.lobby-board {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: var(--pt-space-md);
+  /* Half a line height down to the solo tile row (no section headers). */
+  margin-bottom: var(--pt-space-sm);
+  /* Both boxes always share the row height (Lee: same height for aesthetics). */
+  align-items: stretch;
+}
+
+.lobby-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.lobby-column .lobby-state {
+  flex: 1;
+  justify-content: center;
+}
+
+.lobby-board.lobby-board-single {
+  grid-template-columns: 1fr;
+}
+
+.lobby-column {
+  background: rgba(var(--pt-surface-base-rgb), 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-lg);
+  overflow: hidden;
+}
+
+.lobby-column-title {
+  margin: 0;
+  padding: 14px 18px 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--pt-ink);
+  border-bottom: 1px solid var(--pt-border-subtle);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.lobby-column-title span {
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--pt-ink-subtle);
+}
+
+.lobby-subhead {
+  padding: 10px 18px 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--pt-ink-muted);
+  border-top: 1px solid var(--pt-border-subtle);
+  border-bottom: 1px solid var(--pt-border-subtle);
+  background: rgba(var(--pt-ink-rgb), 0.03);
+}
+
+/* rows */
+.lobby-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--pt-border-subtle);
+  transition: background 0.2s ease;
+}
+
+.lobby-row:last-child {
+  border-bottom: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lobby-row:hover {
+    /* background-color (not the shorthand) so art rows keep their
+       background-image/size/position on hover. */
+    background-color: rgba(var(--pt-ink-rgb), 0.04);
+  }
+}
+
+/* Set key art rows — the /draft public-pod `.history-item--art` treatment:
+   right-anchored key art under a left→right dark scrim so text stays
+   legible on the glass row. The image itself arrives via inline
+   background-image (getPackArtUrl). */
+.lobby-row--art {
+  /* Default black — the key art only appears on hover (Lee: too busy at rest).
+     The art rides ::before so the row's resting surface stays the plain glass. */
+  position: relative;
+  overflow: hidden;
+}
+
+.lobby-row--art::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(90deg, rgba(var(--pt-surface-base-rgb), 0.9) 0%, rgba(var(--pt-surface-base-rgb), 0.75) 42%, rgba(var(--pt-surface-base-rgb), 0.4) 100%), /* design-ok: legibility scrim over hover-revealed key art */
+    var(--row-art, none); /* design-ok: hover-only key art + legibility scrim, same treatment as .history-item--art */
+  background-size: cover, cover;
+  background-position: center, right 30%;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: 0;
+}
+
+/* Lift row content above the art layer */
+.lobby-row--art > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lobby-row--art:hover::before {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lobby-row--art::before {
+    transition: none;
+  }
+}
+
+.lobby-row-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--pt-radius-full);
+  flex: none;
+  border: 1px solid var(--pt-border-subtle);
+  object-fit: cover;
+  background: var(--pt-surface-modal-from);
+}
+
+.lobby-row-who {
+  min-width: 0;
+  flex: 1;
+}
+
+.lobby-row-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Name text truncates so the inline set/format tags stay visible. */
+.lobby-row-name-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lobby-row-meta {
+  color: var(--pt-ink-subtle);
+  font-size: 0.8rem;
+  margin-top: 1px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lobby-host-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--pt-radius-full);
+  background: var(--pt-glow-primary);
+  flex: none;
+}
+
+.lobby-host-dot.lobby-host-away {
+  background: transparent;
+  border: 1px solid var(--pt-ink-subtle);
+}
+
+/* set / format badges (v3): quiet chrome, semantic ink */
+.lobby-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border-radius: var(--pt-radius-xs);
+  padding: 2px 8px;
+  flex: none;
+  border: 1px solid var(--pt-border);
+  color: var(--pt-ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.lobby-badge-format-draft {
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.45);
+  color: var(--pt-glow-interactive);
+}
+
+.lobby-badge-format-sealed {
+  border-color: rgba(var(--pt-glow-primary-rgb), 0.35);
+  color: var(--pt-glow-primary);
+}
+
+.lobby-badge-ptp,
+.lobby-badge-karabast {
+  border-color: var(--pt-border-subtle);
+  color: var(--pt-ink-subtle);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Karabast-sourced rows: no PTP profile — dashed placeholder avatar. */
+.lobby-row-avatar-unknown {
+  border-style: dashed;
+  background: transparent;
+}
+
+/* Fallback row without the Companion: plain link to karabast.net. */
+a.lobby-row-link,
+a.lobby-row-link:visited,
+a.lobby-row-link:hover,
+a.lobby-row-link:active {
+  color: var(--pt-ink);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.lobby-warn {
+  color: var(--pt-gold-warning);
+  cursor: help;
+  flex: none;
+}
+
+.lobby-check {
+  color: var(--pt-glow-primary);
+  cursor: help;
+  flex: none;
+  font-weight: 700;
+}
+
+/* Fast CSS tooltip (the native title delay is too slow): shows ~80ms after
+   hover; also fires on tap since :hover applies (mobile-visible, not
+   hover-gated content). */
+.lobby-tip {
+  position: relative;
+}
+
+.lobby-tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-md);
+  color: var(--pt-ink);
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: left;
+  white-space: normal;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease 0.08s;
+  z-index: 30;
+}
+
+.lobby-tip:hover::after,
+.lobby-tip:focus-visible::after {
+  opacity: 1;
+}
+
+/* seat dots (pods column) */
+.lobby-seats {
+  display: flex;
+  gap: 4px;
+  flex: none;
+}
+
+.lobby-seat {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--pt-radius-full);
+  border: 1px solid var(--pt-ink-subtle);
+}
+
+.lobby-seat.lobby-seat-filled {
+  background: var(--pt-glow-primary);
+  border-color: var(--pt-glow-primary);
+}
+
+/* states */
+.lobby-state {
+  padding: var(--pt-space-lg) var(--pt-space-md);
+  text-align: center;
+  color: var(--pt-ink-subtle);
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--pt-space-xs);
+}
+
+.lobby-state p {
+  margin: 0;
+}
+
+.lobby-state-error {
+  color: var(--pt-gold-warning);
+}
+
+.lobby-state-sub {
+  font-size: 0.8rem;
+}
+
+.lobby-skeleton-rows {
+  padding: 12px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---- tile rows (no section headers — spacing separates them):
+   row 1 = Solo Sealed / Solo Draft / Other Formats,
+   row 2 = My Stats / Meta Stats / History / Deckbuilder / Discord ---- */
+.lobby-tile-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--pt-space-sm);
+  /* board↔solo gap: half a line height (collapses with the board's margin). */
+  margin-top: var(--pt-space-sm);
+}
+
+.lobby-tile-row-other {
+  grid-template-columns: repeat(5, 1fr);
+  /* solo↔other gap: one line height. */
+  margin-top: var(--pt-space-lg);
+}
+
+.lobby-page .mode-button.lobby-mode-tile {
+  width: 100%;
+  min-height: 64px;
+  padding: 10px 14px;
+}
+
+.lobby-page .mode-button.lobby-mode-tile .mode-button-title {
+  font-size: 0.95rem;
+}
+
+.lobby-page .mode-button.lobby-mode-tile .mode-button-subtitle {
+  font-size: 0.75rem;
+}
+
+/* Discord: the sanctioned solid-blurple brand handshake, tile-sized.
+   Mirrors the homepage's .discord-cta (icon + gap, blurple, deep-blurple
+   hover with the -2px lift; white ink pinned on every anchor state). */
+.lobby-discord-tile,
+a.lobby-discord-tile,
+a.lobby-discord-tile:visited,
+a.lobby-discord-tile:hover,
+a.lobby-discord-tile:active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 64px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: var(--pt-radius-sm);
+  background: var(--pt-discord);
+  color: var(--pt-ink);
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.lobby-discord-tile svg {
+  flex-shrink: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a.lobby-discord-tile:hover {
+    background: var(--pt-discord-deep);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(var(--pt-surface-base-rgb), 0.4);
+  }
+}
+
+/* ---- rainbow hover motif (Lee): lobby art buttons glow foil, not green ---- */
+@media (hover: hover) and (pointer: fine) {
+  .lobby-page .mode-button:hover:not(:disabled) {
+    border-color: transparent;
+    box-shadow: 0 6px 16px rgba(var(--pt-surface-base-rgb), 0.6);
+  }
+
+  .lobby-page .mode-button:hover:not(:disabled)::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 2px;
+    background: var(--rainbow-border-gradient); /* design-ok: hover-only rainbow ring (Lee), not a resting fill */
+    background-size: var(--rainbow-border-background-size);
+    animation: rainbow-border 3s linear infinite;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); /* design-ok: mask plumbing for the ring, not a fill */
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); /* design-ok: mask plumbing for the ring, not a fill */
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lobby-page .mode-button:hover:not(:disabled)::before {
+    animation: none;
+  }
+}
+
+/* ---- deck picker (modal-internal) ---- */
+/* 2-up grid (half-width items); DeckPicker.css carries the item styling. */
+.lobby-deck-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  text-align: left;
+}
+
+/* ---- new game modal extras ---- */
+.lobby-vis-toggle {
+  display: flex;
+  gap: var(--pt-space-xs);
+  margin: var(--pt-space-md) 0 var(--pt-space-xs);
+  justify-content: center;
+}
+
+.lobby-vis-note {
+  text-align: center;
+}
+
+.lobby-check-centered {
+  justify-content: center;
+  margin: var(--pt-space-xs) 0 0;
+}
+
+.lobby-check {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  margin-top: var(--pt-space-md);
+  font-size: 0.85rem;
+  color: var(--pt-ink-subtle);
+  cursor: pointer;
+  text-align: left;
+}
+
+.lobby-check input {
+  margin-top: 2px;
+  accent-color: var(--pt-glow-primary);
+}
+
+.lobby-check strong {
+  color: var(--pt-ink);
+}
+
+/* ---- match page ---- */
+.lobby-match {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: var(--pt-space-md) var(--pt-space-md) var(--pt-space-xl);
+  color: var(--pt-ink);
+  text-align: center;
+  font-family: Barlow, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.lobby-match-players {
+  display: flex;
+  align-items: center;
+  gap: var(--pt-space-md);
+  justify-content: center;
+  margin: var(--pt-space-lg) 0;
+  flex-wrap: wrap;
+}
+
+.lobby-match-vs {
+  color: var(--pt-ink-subtle);
+  font-weight: 700;
+}
+
+.lobby-match-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-md);
+  background: rgba(var(--pt-surface-base-rgb), 0.5);
+  backdrop-filter: blur(10px);
+  padding: 10px 16px;
+}
+
+.lobby-match-hero {
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-lg);
+  background: rgba(var(--pt-surface-base-rgb), 0.5);
+  backdrop-filter: blur(10px);
+  padding: var(--pt-space-lg);
+  text-align: center;
+  margin-bottom: var(--pt-space-md);
+}
+
+.lobby-match-note {
+  color: var(--pt-ink-subtle);
+  font-size: 0.85rem;
+  margin-top: var(--pt-space-md);
+}
+
+/* ---- manual fallback panel (match page) — mirrors PlayInstructions'
+   manual column: kicker + title header above numbered steps, inside the
+   standard glass box. ---- */
+.lobby-manual-panel {
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-lg);
+  background: rgba(var(--pt-surface-base-rgb), 0.5);
+  backdrop-filter: blur(10px);
+  padding: var(--pt-space-lg);
+  margin: var(--pt-space-md) 0;
+  text-align: left;
+}
+
+.lobby-manual-kicker {
+  color: var(--pt-glow-interactive);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.35rem;
+}
+
+.lobby-manual-title {
+  margin: 0 0 var(--pt-space-xs);
+  font-size: 1.2rem;
+  line-height: 1.2;
+  color: var(--pt-ink);
+}
+
+.lobby-manual-note {
+  margin: 0 0 var(--pt-space-md);
+  color: var(--pt-ink-subtle);
+  font-size: 0.9rem;
+}
+
+.lobby-manual-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pt-space-md);
+}
+
+.lobby-manual-step {
+  display: flex;
+  gap: var(--pt-space-md);
+  align-items: flex-start;
+}
+
+.lobby-step-number {
+  width: 28px;
+  height: 28px;
+  background: rgba(var(--pt-glow-primary-rgb), 0.12);
+  border: 2px solid rgba(var(--pt-glow-primary-rgb), 0.7);
+  border-radius: var(--pt-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--pt-glow-primary);
+  flex-shrink: 0;
+}
+
+.lobby-manual-step-content h4 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  color: var(--pt-ink);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.lobby-manual-step-content p {
+  margin: 0;
+  color: var(--pt-ink-muted);
+  font-size: 0.9rem;
+}
+
+.lobby-manual-step-content a {
+  color: var(--pt-glow-interactive);
+  text-decoration: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lobby-manual-step-content a:hover {
+    text-decoration: underline;
+  }
+}
+
+/* Copy-link affordance (same pattern as PlayInstructions' step-copy-button):
+   small green-bordered pill with the link glyph + "Copied!" feedback. */
+.lobby-copy-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 28px;
+  padding: 0 0.6rem;
+  border: 1px solid rgba(var(--pt-glow-primary-rgb), 0.5);
+  background: rgba(var(--pt-glow-primary-rgb), 0.1);
+  color: var(--pt-glow-primary);
+  border-radius: var(--pt-radius-xs);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lobby-copy-button:hover {
+    background: rgba(var(--pt-glow-primary-rgb), 0.2);
+    border-color: var(--pt-glow-primary);
+  }
+}
+
+/* ---- match page split view (seated players): match column left, a
+   read-only pane of YOUR OWN deck right, Karabast-lobby style. Invite /
+   terminal views keep the plain single-column .lobby-match. ---- */
+.lobby-match--split {
+  max-width: 1280px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--pt-space-md);
+  align-items: start;
+}
+
+.lobby-match-main {
+  min-width: 0;
+}
+
+/* Deck pane: the .lobby-column glass panel, sticky beside the match column
+   and scrolling its own body when the deck runs tall. */
+.lobby-deck-pane {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: rgba(var(--pt-surface-base-rgb), 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--pt-border-subtle);
+  border-radius: var(--pt-radius-lg);
+  overflow: hidden;
+  text-align: left;
+  position: sticky;
+  top: var(--pt-space-md);
+  max-height: calc(100vh - 2 * var(--pt-space-md));
+}
+
+.lobby-deck-pane-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--pt-space-xs) var(--pt-space-sm) var(--pt-space-md);
+}
+
+/* Clearance for the site's floating auth widget (top-right), same move as
+   .lobby-header — the pane's title row sits underneath it on wide screens. */
+/* Start below the floating auth avatar so the header never collides. */
+.lobby-match--split .lobby-deck-pane {
+  margin-top: 60px;
+}
+
+/* The hero centers its content — the Automatic kicker must sit left-aligned
+   exactly like the Manual box's kicker. */
+.lobby-match-hero .lobby-manual-kicker {
+  align-self: flex-start;
+  text-align: left;
+}
+
+/* "or" between the Automatic box and the Manual box: line — or — line. */
+.lobby-or-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: var(--pt-space-sm) 0;
+  color: var(--pt-ink-subtle);
+  font-size: 0.85rem;
+}
+
+.lobby-or-divider::before,
+.lobby-or-divider::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--pt-border-subtle);
+}
+
+/* Joiner waiting state: title line + quieter subtitle. */
+.lobby-match-waiting {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  text-align: center;
+}
+
+.lobby-match-waiting strong {
+  color: var(--pt-ink);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.lobby-match-waiting span {
+  color: var(--pt-ink-subtle);
+  font-size: 0.85rem;
+}
+
+/* Bo1/Bo3 under the match heading: host gets the toggle, everyone else the terms. */
+.lobby-match-bestof {
+  display: flex;
+  gap: var(--pt-space-xs);
+  justify-content: center;
+  margin: calc(var(--pt-space-sm) * -1) 0 var(--pt-space-md);
+}
+
+.lobby-match-bestof-static {
+  color: var(--pt-ink-subtle);
+  font-size: 0.85rem;
+}
+
+/* Icon-only deck actions, inline on the pane header's right edge (where the
+   "only you can see this" note used to sit). */
+.lobby-deck-actions {
+  display: inline-flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.lobby-deck-actions .play-instructions-action-button {
+  padding: 6px;
+  min-width: 0;
+}
+
+
+/* Deck image modal (DeckImageModal) — same block DeckBuilder.css/pod.css/
+   play.css each carry for their pages. */
+.deck-image-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 2rem;
+}
+
+.deck-image-modal-content {
+  position: relative;
+  max-width: 95vw;
+  max-height: 95vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.deck-image-modal-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+}
+
+.deck-image-modal-image {
+  max-width: 100%;
+  max-height: calc(95vh - 80px);
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.deck-image-modal-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.deck-image-modal-download,
+.deck-image-modal-toggle {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Barlow', sans-serif;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+.deck-image-modal-download {
+  border-color: rgba(0, 255, 0, 0.6);
+  background: rgba(0, 100, 0, 0.3);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .deck-image-modal-close:hover {
+    color: #ff6b6b; /* design-ok: copied verbatim from the play page's modal block */
+  }
+
+  .deck-image-modal-download:hover {
+    background: rgba(0, 100, 0, 0.5);
+    border-color: rgba(0, 255, 0, 0.8);
+    box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
+  }
+
+  .deck-image-modal-toggle:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+  }
+}
+
+.deck-image-modal-toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Container layout for the shared card primitives (.canvas-card sizing and
+   the leader/base landscape rules ride Card.css off these class names). */
+.lobby-deck-pane .leaders-bases-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 8px 6px;
+}
+
+.lobby-deck-pane .cards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: start;
+  justify-content: center;
+  padding: 6px;
+}
+
+.lobby-deck-subhead {
+  margin: var(--pt-space-sm) 0 0;
+  padding: 0 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--pt-ink-muted);
+}
+
+/* Layout-matched loading skeleton: leader/base row + a grid of card blanks. */
+.lobby-deck-skeleton-leader {
+  width: 168px;
+  aspect-ratio: 3.5 / 2.5;
+  border-radius: var(--pt-radius-md);
+}
+
+.lobby-deck-skeleton-card {
+  width: 120px;
+  aspect-ratio: 2.5 / 3.5;
+  border-radius: var(--pt-radius-md);
+}
+
+/* ---- mobile (R4: stacked, lobby first) ---- */
+@media (max-width: 900px) {
+  .lobby-page {
+    padding-top: var(--pt-space-md);
+  }
+
+  .lobby-header {
+    padding-right: 72px;
+  }
+
+  .lobby-header-logo {
+    height: 56px;
+  }
+
+  .lobby-board {
+    grid-template-columns: 1fr;
+  }
+
+  .lobby-verbs {
+    grid-template-columns: 1fr;
+  }
+
+  .lobby-live-strip {
+    width: 100%;
+    padding-right: 0;
+  }
+
+  .lobby-tile-row,
+  .lobby-tile-row-solo {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Match split view stacks: deck pane below the match column, flowing with
+     the page instead of pinning + inner-scrolling. */
+  .lobby-match--split {
+    grid-template-columns: 1fr;
+  }
+
+  .lobby-deck-pane {
+    position: static;
+    max-height: none;
+  }
+
+  .lobby-deck-pane-body {
+    overflow-y: visible;
+  }
+}

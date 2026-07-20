@@ -22,6 +22,8 @@
     "migrate:status": "npx tsx scripts/migrate.ts dev status && npx tsx scripts/migrate.ts prod status",
     "make-admin": "npx tsx scripts/makeAdmin.ts",
     "copy-user-to-dev": "npx tsx scripts/copyUserToDev.ts",
+    "copy-pool": "npx tsx scripts/copyPoolToDev.ts",
+    "db:verify": "npx tsx scripts/verifyDevDb.ts",
     "compute-theory": "npx tsx scripts/computePackTheory.ts",
     "pack-fidelity": "npx tsx scripts/comparePackActuals.ts",
     "clone-prod-to-local": "npx tsx scripts/cloneProdToLocal.ts",

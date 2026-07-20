@@ -16,6 +16,8 @@ import {
   forfeitPracticeMatch,
   recordPracticeMatchGameResult,
 } from '@/src/services/matchmaking/liveGames'
+import { OpenGameLiveError, recordOpenGameResult } from '@/src/services/openGameLive'
+import { broadcastOpenGamesUpdate, emitOpenGameEventToUser } from '@/src/lib/socketBroadcast'
 
 /**
  * Normalize a Wayfinder match id to its canonical (bare) form.
@@ -207,10 +209,42 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           ]
         )
       }
+
+      // Lobby V1 open game (additive): finalize the open_games row and the
+      // OPPOSITE seat from this single delivery. The reporter's own pool was
+      // just handled by the standard path above.
+      if (body.openGameId && typeof body.openGameId === 'string') {
+        const finalized = await recordOpenGameResult({
+          openGameShareId: body.openGameId,
+          reportingPoolShareId: poolShareId,
+          result,
+          wayfinderMatchId: matchId,
+          replayUrl: replayUrl ?? null,
+          playerLeader: playerLeader ?? null,
+          playerLeaderImage: playerLeaderImage ?? null,
+          playerBase: playerBase ?? null,
+          playerArchetype: playerArchetype ?? null,
+          opponentLeader: opponentLeader ?? null,
+          opponentLeaderImage: opponentLeaderImage ?? null,
+          opponentBase: opponentBase ?? null,
+          opponentArchetype: opponentArchetype ?? null,
+          opponentName: body.opponentName ?? null,
+        })
+        if (!finalized.duplicate && !finalized.terminal) {
+          broadcastOpenGamesUpdate().catch(() => {})
+          if (finalized.player1Id) emitOpenGameEventToUser(finalized.player1Id, 'complete', { shareId: finalized.shareId })
+          if (finalized.player2Id) emitOpenGameEventToUser(finalized.player2Id, 'complete', { shareId: finalized.shareId })
+        }
+        return jsonResponse({ ok: true, openGame: { duplicate: finalized.duplicate, terminal: finalized.terminal } })
+      }
     }
 
     return jsonResponse({ ok: true })
   } catch (error) {
+    if (error instanceof OpenGameLiveError) {
+      return errorResponse(error.message, error.status)
+    }
+
     if (error instanceof PracticeGameResultError) {
       return errorResponse(error.message, error.status)
     }

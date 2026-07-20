@@ -58,4 +58,10 @@ psql "$POSTGRES_URL" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" 2>/d
 psql "$POSTGRES_URL" < "$BACKUP_FILE"
 
 echo ""
+# Same reasoning as the clone scripts: the restore continues past errors, so
+# verify what actually landed. --fix repairs sequences only, deletes nothing.
+echo "🔍 Verifying the restored database..."
+TARGET_DATABASE_URL="$POSTGRES_URL" npx tsx "$(dirname "$0")/verifyDevDb.ts" --fix || true
+
+echo ""
 echo "✅ Done! Dev database restored from backup."

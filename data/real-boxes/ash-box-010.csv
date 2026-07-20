@@ -31,7 +31,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 2,14,35,Tatooine Repulsor Train,,Uncommon,Unit,Command/Aggression,Normal,35,no,no,high,
 2,15,368,Dathomiri Magicks,,Rare,Event,Command/Villainy,Hyperspace,104,no,assumed,medium,"UC3 upgrade: 2 Rares present in pack (this + Bo-Katan Kryze) vs 1 true Uncommon+1 Rare expected; treated as UC3->Hyperspace-Rare upgrade, other Rare kept as pos16 slot - which card fills which slot is a guess"
 2,16,105,Bo-Katan Kryze,For All of Mandalore,Rare,Unit,Command/Heroism,Normal,105,no,no,medium,assigned as the pos16 rare slot; see note on pos15
-3,1,18,Grogu,Charming Companion,Rare,Leader,Cunning/Heroism,Normal,18,no,no,high,leader variant unverifiable at this resolution
+3,1,282,Grogu,Charming Companion,Rare,Leader,Cunning/Heroism,Hyperspace,18,no,1,medium,leader variant unverifiable at this resolution; variant corrected via 2026-07-12 number-first re-read (read 282)
 3,2,24,Dragonsnake Bog,,Common,Base,Aggression,Normal,24,no,no,high,base variant unverifiable at this resolution
 3,3,171,Pegasus Tri-Wing,,Common,Unit,Aggression,Normal,171,no,no,high,
 3,4,214,Amnesty Officer,,Common,Unit,Cunning,Normal,214,no,no,high,
@@ -80,7 +80,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 5,15,253,Yellow Aces Bomber,,Uncommon,Unit,Heroism,Normal,253,no,no,high,"clean pack, no UC3 upgrade signal (rarity is plain Uncommon)"
 5,16,37,Red Leader,Strike the Reactor,Rare,Unit,Command/Cunning/Heroism,Normal,37,no,no,high,
 6,1,9,Ahsoka Tano,Trust in the Force,Common,Leader,Command/Heroism,Normal,9,no,no,high,leader variant unverifiable at this resolution
-6,2,26,Freetown,,Common,Base,Cunning,Normal,26,no,no,high,base variant unverifiable at this resolution
+6,2,290,Freetown,,Common,Base,Cunning,Hyperspace,26,no,1,high,base variant unverifiable at this resolution; variant corrected via 2026-07-12 number-first re-read (read 290)
 6,3,174,StarFortress Heavy Bomber,,Common,Unit,Aggression,Normal,174,no,no,high,
 6,4,116,Ant Droid,,Common,Unit,Command,Normal,116,no,no,high,
 6,5,80,Covert Believers,,Common,Unit,Vigilance,Normal,80,no,no,high,
@@ -127,7 +127,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 8,14,198,Nowhere to Hide,,Uncommon,Upgrade,Cunning/Villainy,Normal,198,no,no,high,
 8,15,133,Trask Walker,,Uncommon,Unit,Command,Normal,133,no,no,high,"clean pack, no UC3 upgrade signal (rarity is plain Uncommon)"
 8,16,219,Jod Na Nawood,Keeping Secrets,Rare,Unit,Cunning,Normal,219,no,no,high,
-9,1,6,Sabine Wren,Bargaining on Belief,Common,Leader,Vigilance/Heroism,Normal,6,no,no,high,leader variant unverifiable at this resolution
+9,1,270,Sabine Wren,Bargaining on Belief,Common,Leader,Vigilance/Heroism,Hyperspace,6,no,1,medium,leader variant unverifiable at this resolution; variant corrected via 2026-07-12 number-first re-read (read 270)
 9,2,22,Kryze Castle,,Common,Base,Command,Normal,22,no,no,high,base variant unverifiable at this resolution
 9,3,157,Danger Squadron Wingmen,,Common,Unit,Aggression/Heroism,Normal,157,no,no,high,
 9,4,264,A New Order,,Common,Event,,Normal,264,no,no,high,
@@ -160,7 +160,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 10,15,358,Moff Jerjerrod,We Shall Redouble Our Efforts,Special,Unit,Command/Villainy,Hyperspace,94,no,assumed,low,"structural anomaly: Special-rarity Moff Jerjerrod present alongside Rare Lang, only 2 true Uncommons vs expected 3 Uncommon+1 Rare; treated as UC3->Hyperspace-Special upgrade, Lang kept as pos16 - which card fills which slot is a guess"
 10,16,123,Lang,Arrogant Mercenary,Rare,Unit,Command,Normal,123,no,no,medium,assigned as the pos16 rare slot; see note on pos15
 11,1,13,Ezra Bridger,It's Now or Never,Common,Leader,Aggression/Heroism,Normal,13,no,no,high,leader variant unverifiable at this resolution
-11,2,25,Emperor's Observatory,,Common,Base,Cunning,Normal,25,no,no,high,base variant unverifiable at this resolution
+11,2,289,Emperor's Observatory,,Common,Base,Cunning,Hyperspace,25,no,1,high,base variant unverifiable at this resolution; variant corrected via 2026-07-12 number-first re-read (read 289)
 11,3,185,Intimidation,,Common,Event,Aggression,Normal,185,no,no,high,
 11,4,134,Warrior's Legacy,,Common,Upgrade,Command,Normal,134,no,no,high,
 11,5,75,Pit Droid Team,,Common,Unit,Vigilance,Normal,75,no,no,high,
@@ -223,7 +223,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 14,14,172,Razor Crest,Outfitted Armament,Uncommon,Unit,Aggression,Normal,172,none,none,high,
 14,15,217,Mayor's Majordomo,No Problem Groveling,Uncommon,Unit,Cunning,Normal,217,none,none,high,"UC3 slot; standard uncommon frame, no prestige/HS upgrade indicators observed"
 14,16,36,Rukh,From the Shadows,Rare,Unit,Command/Cunning/Villainy,Normal,36,none,none,high,
-15,1,10,Bo-Katan Kryze,Reclaiming Mandalore,Rare,Leader,Command/Heroism,Normal,10,none,none,high,leader back/epic-action side shown; variant unverifiable at this resolution
+15,1,274,Bo-Katan Kryze,Reclaiming Mandalore,Rare,Leader,Command/Heroism,Hyperspace,10,none,1,medium,leader back/epic-action side shown; variant unverifiable at this resolution; variant corrected via 2026-07-12 number-first re-read (read 274)
 15,2,22,Kryze Castle,,Common,Base,Command,Normal,22,none,none,high,variant unverifiable at this resolution
 15,3,69,Noti Nomad,,Common,Unit,Vigilance,Normal,69,none,none,high,
 15,4,106,Pathfinder Sergeant,,Common,Unit,Command/Heroism,Normal,106,none,none,high,
@@ -256,7 +256,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 16,15,220,Remnant Lookouts,,Uncommon,Unit,Cunning,Normal,220,none,none,high,"UC3 slot; standard uncommon frame, no prestige/HS upgrade indicators observed"
 16,16,168,Migs Mayfeld,How About a Toast?,Rare,Unit,Aggression,Normal,168,none,none,high,
 17,1,13,Ezra Bridger,It's Now or Never,Common,Leader,Aggression/Heroism,Normal,13,none,none,high,leader back/epic-action side shown; variant unverifiable at this resolution
-17,2,21,Emperor's Throne Room,,Common,Base,Command,Normal,21,none,none,high,variant unverifiable at this resolution
+17,2,285,Emperor's Throne Room,,Common,Base,Command,Hyperspace,21,none,1,medium,variant unverifiable at this resolution; variant corrected via 2026-07-12 number-first re-read (read 285)
 17,3,121,Blurrg,,Common,Unit,Command,Normal,121,none,none,high,
 17,4,165,Clan Vizsla Soldier,,Common,Unit,Aggression,Normal,165,none,none,high,
 17,5,254,Gallofree Transport,,Common,Unit,Heroism,Normal,254,none,none,high,
@@ -269,7 +269,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 17,12,735,Keep Them Talking,,Common,Event,Cunning,Hyperspace Foil,233,"none, all commons fully legible in these photos - no glare captured",no visual cue at this res,low,"no card in this pack showed a blank/glare foil signature; assigned to the last common encountered in grid order by default, low confidence"
 17,13,133,Trask Walker,,Uncommon,Unit,Command,Normal,133,none,none,high,
 17,14,29,Scorpenek Annihilator Droid,,Uncommon,Unit,Vigilance/Command,Normal,29,none,none,high,
-17,15,114,Sabine's Lightsaber,Not Alone,Rare,Upgrade,Command/Heroism,Normal,114,none,none,medium,"UC3 upgrade slot pulled a Rare instead of Uncommon; card shows normal bordered frame (not HS/prestige look) so kept as Normal Rare printing; anomaly - this pack has 2 UC (Trask Walker, Scorpenek) + this Rare-upgrade + a separate base Legendary (pos16) = 4 special cards vs standard 3+1"
+17,15,114,Sabine's Lightsaber,Not Alone,Rare,Upgrade,Command/Heroism,Hyperspace,114,none,1,high,"UC3 upgrade slot pulled a Rare instead of Uncommon; card shows normal bordered frame (not HS/prestige look) so kept as Normal Rare printing; anomaly - this pack has 2 UC (Trask Walker, Scorpenek) + this Rare-upgrade + a separate base Legendary (pos16) = 4 special cards vs standard 3+1; variant corrected via 2026-07-12 CV+human review pass (structural-rarity)"
 17,16,224,Elzar Mann,Haunted by a Vision,Legendary,Unit,Cunning,Normal,224,none,none,high,"base rare/legendary slot; naturally Legendary rarity, not an upgrade"
 18,1,17,Greef Karga,Gracious Magistrate,Common,Leader,Cunning/Heroism,Normal,17,none,none,high,leader back/epic-action side shown; variant unverifiable at this resolution
 18,2,19,Fortress of the Great Mothers,,Common,Base,Vigilance,Normal,19,none,none,high,variant unverifiable at this resolution
@@ -303,7 +303,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 19,14,156,R5-D4,Built for Adventure,Uncommon,Unit,Aggression/Heroism,Normal,156,none,none,high,
 19,15,204,Blade Three,Bane of the Devastator,Uncommon,Unit,Cunning/Heroism,Normal,204,none,none,high,"UC3 slot; standard uncommon frame, no prestige/HS upgrade indicators observed"
 19,16,212,Peli Motto,You Bring the Cash?,Rare,Unit,Cunning,Normal,212,none,none,high,
-20,1,16,Shin Hati,Eager Adversary,Common,Leader,Cunning/Villainy,Normal,16,none,none,high,leader back/epic-action side shown; variant unverifiable at this resolution
+20,1,280,Shin Hati,Eager Adversary,Common,Leader,Cunning/Villainy,Hyperspace,16,none,1,medium,leader back/epic-action side shown; variant unverifiable at this resolution; variant corrected via 2026-07-12 number-first re-read (read 280)
 20,2,26,Freetown,,Common,Base,Cunning,Normal,26,none,none,high,variant unverifiable at this resolution
 20,3,126,Survivors' Langskib,,Common,Unit,Command,Normal,126,none,none,high,
 20,4,57,Lothal E-Wing,,Common,Unit,Vigilance/Heroism,Normal,57,none,none,high,
@@ -368,12 +368,12 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 23,15,191,Shin Hati's Fiend Fighter,Compact and Agile,Uncommon,Unit,Cunning/Villainy,Normal,191,none,none,high,"UC3 slot; standard uncommon frame, no prestige/HS upgrade indicators observed"
 23,16,30,Marrok,Mysterious Warrior,Rare,Unit,Vigilance/Aggression/Villainy,Normal,30,none,none,high,
 24,1,3,Baylan Skoll,Power Beyond Dream,Common,Leader,Vigilance/Villainy,Normal,3,none,none,high,leader back/epic-action side shown; variant unverifiable at this resolution
-24,2,26,Freetown,,Common,Base,Cunning,Normal,26,none,none,high,variant unverifiable at this resolution
+24,2,290,Freetown,,Common,Base,Cunning,Hyperspace,26,none,1,medium,variant unverifiable at this resolution; variant corrected via 2026-07-12 number-first re-read (read 290)
 24,3,234,Masterstroke,,Common,Event,Cunning,Normal,234,none,none,high,
 24,4,237,Mouse Droid,,Common,Unit,Villainy,Normal,237,none,none,high,
 24,5,131,Dinosaur Turtle,,Common,Unit,Command,Normal,131,none,none,high,
 24,6,89,Perseverance,,Common,Event,Vigilance,Normal,89,none,none,high,
-24,7,167,Flarestar Attack Shuttle,,Common,Unit,Aggression,Normal,167,none,none,high,"would be the default pos7 slot by grid order, but kept Normal since the visually-confirmed Hyperspace card in this pack is Noti Mobile Pod (pos8) instead - override per rule allowing a different unmistakably-borderless common to take the HS designation"
+24,7,167,Flarestar Attack Shuttle,,Common,Unit,Aggression,Hyperspace,167,none,1,high,"would be the default pos7 slot by grid order, but kept Normal since the visually-confirmed Hyperspace card in this pack is Noti Mobile Pod (pos8) instead - override per rule allowing a different unmistakably-borderless common to take the HS designation; variant corrected via 2026-07-12 CV+human review pass (auto-slot)"
 24,8,525,Noti Mobile Pod,,Common,Unit,,Hyperspace,261,"totally blank/grey text box, no legible text vs all other commons readable",borderless full-art,high,visually confirmed Hyperspace look; treated as the pack's forced-HS common (overriding the default pos7 slot) since no separate 10th common/foil card exists in this pack (see pos12 note)
 24,9,233,Keep Them Talking,,Common,Event,Cunning,Normal,233,none,none,high,
 24,10,256,Rebel Infiltrators,,Common,Unit,Heroism,Normal,256,none,none,high,
@@ -381,5 +381,5 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 24,12,712,DDC Defender,,Uncommon,Upgrade,Cunning/Heroism,Hyperspace Foil,210,1,1,high,pos12 structural invariant: foil slot is always Hyperspace Foil (Lee rule)
 24,13,35,Tatooine Repulsor Train,,Uncommon,Unit,Command/Aggression,Normal,35,none,none,high,
 24,14,44,Barriss Offee,Redeeming Herself,Uncommon,Unit,Cunning/Vigilance,Normal,44,none,none,high,
-24,15,208,Sabine Wren,I Learned the Hard Way,Uncommon,Unit,Cunning/Heroism,Normal,208,none,none,high,"UC3 slot; standard uncommon frame, no prestige/HS upgrade indicators observed"
+24,15,208,Sabine Wren,I Learned the Hard Way,Uncommon,Unit,Cunning/Heroism,Standard Prestige,208,none,none,high,"UC3 slot; standard uncommon frame, no prestige/HS upgrade indicators observed; variant corrected via 2026-07-12 CV+human review pass (human-review)"
 24,16,153,Green Leader,Crynyd's Sacrifice,Rare,Unit,Aggression/Heroism,Normal,153,none,none,high,

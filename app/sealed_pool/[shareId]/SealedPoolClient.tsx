@@ -190,6 +190,13 @@ export default function SealedPoolClient({ shareId }: { shareId: string }) {
 
   return (
     <div className="app">
+      {!loading && rootShareId && (
+        <PoolBuilds
+          shareId={rootShareId}
+          currentUserId={user?.id || null}
+          isOwner={isOwner && !isChildBuild}
+        />
+      )}
       <SealedPod
         setCode={pool?.setCode}
         setName={pool?.setName}
@@ -207,13 +214,6 @@ export default function SealedPoolClient({ shareId }: { shareId: string }) {
         poolOwnerUsername={pool?.owner?.username || null}
         isDefaultName={getIsDefaultName()}
       />
-      {!loading && rootShareId && (
-        <PoolBuilds
-          shareId={rootShareId}
-          currentUserId={user?.id || null}
-          isOwner={isOwner && !isChildBuild}
-        />
-      )}
     </div>
   )
 }

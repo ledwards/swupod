@@ -434,3 +434,63 @@ a.auth-widget-login-circle:active {
     width: auto;
   }
 }
+
+
+/* "Your Open Lobby" — the first, most prominent menu entry while the user has
+   a listing waiting on the board (primary-green glow, live pulse dot). */
+.auth-widget-open-lobby-item {
+  border: 1px solid rgba(0, 255, 0, 0.4);
+  background: rgba(0, 255, 0, 0.07);
+  margin-bottom: 6px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .auth-widget-open-lobby-item:hover {
+    background: rgba(0, 255, 0, 0.14);
+    border-color: rgba(0, 255, 0, 0.65);
+    box-shadow: 0 0 12px rgba(0, 255, 0, 0.25);
+  }
+}
+
+.auth-widget-open-lobby-dot {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(0, 255, 0, 0.9);
+  box-shadow: 0 0 8px rgba(0, 255, 0, 0.7);
+  animation: auth-widget-lobby-pulse 2s ease-in-out infinite;
+}
+
+@keyframes auth-widget-lobby-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-widget-open-lobby-dot {
+    animation: none;
+  }
+}
+
+.auth-widget-open-lobby-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.auth-widget-open-lobby-text strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.auth-widget-open-lobby-text span {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

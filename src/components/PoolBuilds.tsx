@@ -196,6 +196,10 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
   // child-build page reflects ownership of that build, not the pool. This keeps
   // "delete any deck on my pool" from leaking to people who merely own one deck
   // on someone else's pool.
+  // A build counts as a deck once it has a leader or any cards in the deck.
+  // Empty entries (a freshly-created pool nobody has built from) are hidden.
+  const decks = builds.filter((b) => Boolean(b.leaderName) || b.deckCardCount > 0)
+
   const rootPoolOwnerId = builds.find((b) => b.isOriginal)?.builderUserId || null
   const iOwnPool = Boolean(currentUserId && rootPoolOwnerId && currentUserId === rootPoolOwnerId)
 
@@ -271,14 +275,20 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
   }, [shareId])
 
   if (loading) return null
-  if (!builds.length) return null
+  // Only surface entries that are actually a deck. A pool whose original entry
+  // has never been built renders as "No leader / No games yet" noise, so the
+  // whole section stays hidden until someone has built something — unless the
+  // call site parks its share / + chips in here (the deck builder header),
+  // in which case the row still has to exist.
+  const hasActionChips = Boolean(onCopyShare || onCreateBuild)
+  if (!decks.length && !hasActionChips) return null
 
-  const visible = builds.slice(0, VISIBLE_LIMIT)
-  const overflow = builds.slice(VISIBLE_LIMIT)
+  const visible = decks.slice(0, VISIBLE_LIMIT)
+  const overflow = decks.slice(VISIBLE_LIMIT)
 
   return (
     <div className="pool-builds">
-      <p className="pool-builds-label">Decks from this Pool:</p>
+      {decks.length > 0 && <p className="pool-builds-label">Decks from this Pool:</p>}
       <div className="pool-builds-list">
         {onCopyShare && (
           <button
@@ -308,7 +318,7 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
         {overflow.length > 0 && (
           <button className="pool-build-card pool-build-more" onClick={() => setModalOpen(true)}>
             <span className="pool-build-leader">+{overflow.length} more</span>
-            <span className="pool-build-meta">View all {builds.length}</span>
+            <span className="pool-build-meta">View all {decks.length}</span>
           </button>
         )}
         {onCreateBuild && (
@@ -333,7 +343,7 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="All Builds" showCloseButton className="modal--wide">
         <Modal.Body>
           <div className="pool-builds-modal-sections">
-            {groupBuildsByAuthor(builds).map(group => (
+            {groupBuildsByAuthor(decks).map(group => (
               <section
                 key={group.key}
                 className={`pool-builds-modal-section${group.key === 'original' ? ' pool-builds-modal-section--original' : ''}`}

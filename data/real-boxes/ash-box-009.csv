@@ -47,7 +47,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 3,14,38,Purrgil Ultra,,Uncommon,Unit,Command/Cunning,Normal,38,540,302,high,
 3,15,146,Justifier,Relentless,Uncommon,Unit,Aggression/Villainy,Normal,146,648,410,medium,"UC3 slot; no visible rarity/prestige upgrade at photo resolution, kept Normal Uncommon"
 3,16,104,Dathomiri Magicks,,Rare,Event,Command/Villainy,Normal,104,606,368,high,
-4,1,12,Vane,Quarrelsome Pirate,Rare,Leader,Aggression/Villainy,Normal,12,,276,high,Leader variant unverifiable at photo resolution; defaulted Normal per rule
+4,1,276,Vane,Quarrelsome Pirate,Rare,Leader,Aggression/Villainy,Hyperspace,12,,1,high,Leader variant unverifiable at photo resolution; defaulted Normal per rule; variant corrected via 2026-07-12 number-first re-read (read 276)
 4,2,23,Ancient Henge,,Common,Base,Aggression,Normal,23,,287,high,Base variant unverifiable at photo resolution; defaulted Normal per rule
 4,3,58,Duchess's Protector,,Common,Unit,Vigilance/Heroism,Normal,58,560,322,high,
 4,4,143,Tempest Lieutenant,,Common,Unit,Aggression/Villainy,Normal,143,645,407,high,
@@ -64,7 +64,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 4,15,191,Shin Hati's Fiend Fighter,Compact and Agile,Uncommon,Unit,Cunning/Villainy,Normal,191,693,455,medium,"UC3 slot; no visible rarity/prestige upgrade at photo resolution, kept Normal Uncommon"
 4,16,31,Hera Syndulla,Renegade General,Rare,Unit,Vigilance/Aggression/Heroism,Normal,31,533,295,high,
 5,1,9,Ahsoka Tano,Trust in the Force,Common,Leader,Command/Heroism,Normal,9,,273,high,Leader variant unverifiable at photo resolution; defaulted Normal per rule
-5,2,23,Ancient Henge,,Common,Base,Aggression,Normal,23,,287,high,Base variant unverifiable at photo resolution; defaulted Normal per rule
+5,2,287,Ancient Henge,,Common,Base,Aggression,Hyperspace,23,,1,high,Base variant unverifiable at photo resolution; defaulted Normal per rule; variant corrected via 2026-07-12 number-first re-read (read 287)
 5,3,188,Galvanized Leap,,Common,Event,Aggression,Normal,188,690,452,high,
 5,4,45,Reanimated Night Trooper,,Common,Unit,Vigilance/Villainy,Normal,45,547,309,high,
 5,5,173,Shydopp Pirate Skiff,,Common,Unit,Aggression,Normal,173,675,437,high,
@@ -127,7 +127,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 8,14,125,Stolen Eta Shuttle,,Uncommon,Unit,Command,Normal,125,627,389,high,
 8,15,194,Snub Fighter Squadron,,Uncommon,Unit,Cunning/Villainy,Normal,194,696,458,medium,"UC3 slot; no visible rarity/prestige upgrade at photo resolution, kept Normal Uncommon"
 8,16,211,Fateful Goodbye,,Rare,Event,Cunning/Heroism,Normal,211,713,475,high,
-9,1,3,Baylan Skoll,Power Beyond Dream,Common,Leader,Vigilance/Villainy,Normal,3,,267,high,Leader variant unverifiable at photo resolution; defaulted Normal per rule
+9,1,267,Baylan Skoll,Power Beyond Dream,Common,Leader,Vigilance/Villainy,Hyperspace,3,,1,high,Leader variant unverifiable at photo resolution; defaulted Normal per rule; variant corrected via 2026-07-12 number-first re-read (read 267)
 9,2,22,Kryze Castle,,Common,Base,Command,Normal,22,,286,high,Base variant unverifiable at photo resolution; defaulted Normal per rule
 9,3,75,Pit Droid Team,,Common,Unit,Vigilance,Normal,75,577,339,high,
 9,4,181,Mark My Words,,Common,Upgrade,Aggression,Normal,181,683,445,high,
@@ -159,8 +159,8 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 10,14,41,Outcast,Mercenary Starship,Uncommon,Unit,Aggression/Cunning,Normal,41,543,305,high,
 10,15,56,Huyang,Your Aptitude Falls Short,Uncommon,Unit,Vigilance/Heroism,Normal,56,558,320,medium,"UC3 slot; no visible rarity/prestige upgrade at photo resolution, kept Normal Uncommon"
 10,16,79,Koska Reeves,Warrior of Mandalore,Rare,Unit,Vigilance,Normal,79,581,343,high,
-11,1,3,Baylan Skoll,Power Beyond Dream,Common,Leader,Vigilance/Villainy,Normal,3,,267,high,Leader variant unverifiable at photo resolution; defaulted Normal per rule
-11,2,21,Emperor's Throne Room,,Common,Base,Command,Normal,21,,285,high,Base variant unverifiable at photo resolution; defaulted Normal per rule
+11,1,267,Baylan Skoll,Power Beyond Dream,Common,Leader,Vigilance/Villainy,Hyperspace,3,,1,high,Leader variant unverifiable at photo resolution; defaulted Normal per rule; HS confirmed by Lee from physical cards (2026-07-12)
+11,2,285,Emperor's Throne Room,,Common,Base,Command,Hyperspace,21,,1,high,Base variant unverifiable at photo resolution; defaulted Normal per rule; variant corrected via 2026-07-12 number-first re-read (read 285)
 11,3,238,Attendant Navigator,,Common,Unit,Villainy,Normal,238,740,502,high,
 11,4,157,Danger Squadron Wingmen,,Common,Unit,Aggression/Heroism,Normal,157,659,421,high,
 11,5,76,Remnant Official,,Common,Unit,Vigilance,Normal,76,578,340,high,
@@ -207,8 +207,8 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 13,14,54,Pointless to Resist,,Uncommon,Upgrade,Vigilance/Villainy,Normal,54,0,0,high,Card frame reads Condition subtype under Upgrade
 13,15,241,Marrok's Fiend Fighter,Formidable Pursuer,Uncommon,Unit,Villainy,Normal,241,0,0,high,"UC3 slot; standard uncommon frame, no prestige/showcase treatment visible"
 13,16,77,Ryder Azadi,Restored Governor,Rare,Unit,Vigilance,Normal,77,0,0,high,
-14,1,14,The Mandalorian,We Can't Keep Running,Rare,Leader,Aggression/Heroism,Normal,14,0,0,high,"Leader slot pos1 (row1 right); variant unverifiable at this resolution, defaulted Normal"
-14,2,21,Emperor's Throne Room,,Common,Base,Command,Normal,21,0,0,high,"Base slot pos2 (row1 left); variant unverifiable at this resolution, defaulted Normal"
+14,1,278,The Mandalorian,We Can't Keep Running,Rare,Leader,Aggression/Heroism,Hyperspace,14,0,1,high,"Leader slot pos1 (row1 right); variant unverifiable at this resolution, defaulted Normal; variant corrected via 2026-07-12 number-first re-read (read 278)"
+14,2,285,Emperor's Throne Room,,Common,Base,Command,Hyperspace,21,0,1,high,"Base slot pos2 (row1 left); variant unverifiable at this resolution, defaulted Normal; variant corrected via 2026-07-12 number-first re-read (read 285)"
 14,3,73,Palace Chef Droid,,Common,Unit,Vigilance,Normal,73,0,0,high,
 14,4,141,TIE Striker,,Common,Unit,Aggression/Villainy,Normal,141,0,0,high,
 14,5,240,Mandalorian Super Commandos,,Common,Unit,Villainy,Normal,240,0,0,high,
@@ -288,7 +288,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 18,15,791,Shin Hati,Going Somewhere?,Uncommon,Unit,Vigilance/Villainy,Standard Prestige,49,0,0,high,"UC3 slot; clearly elevated treatment (giant stylized name, full-bleed grayscale/sketch art, no standard border/text-box chrome) distinct from the other two plain-bordered uncommons this pack -- assigned Standard Prestige per rule"
 18,16,245,Eye of Sion,Delivered from Exile,Legendary,Unit,Villainy,Normal,245,0,0,high,Rare slot landed on a Legendary
 19,1,16,Shin Hati,Eager Adversary,Common,Leader,Cunning/Villainy,Normal,16,0,0,high,"Leader slot pos1 (row1 right); variant unverifiable at this resolution, defaulted Normal"
-19,2,24,Dragonsnake Bog,,Common,Base,Aggression,Normal,24,0,0,high,"Base slot pos2 (row1 left); variant unverifiable at this resolution, defaulted Normal"
+19,2,288,Dragonsnake Bog,,Common,Base,Aggression,Hyperspace,24,0,1,high,"Base slot pos2 (row1 left); variant unverifiable at this resolution, defaulted Normal; variant corrected via 2026-07-12 number-first re-read (read 288)"
 19,3,181,Mark My Words,,Common,Upgrade,Aggression,Normal,181,0,0,high,
 19,4,78,B-Wing Rearguard,,Common,Unit,Vigilance,Normal,78,0,0,high,
 19,5,174,StarFortress Heavy Bomber,,Common,Unit,Aggression,Normal,174,0,0,high,
@@ -303,7 +303,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 19,14,115,The Student Guides the Master,,Uncommon,Event,Command/Heroism,Normal,115,0,0,high,Card frame reads Learned subtype under Event
 19,15,226,Qi'ra,Master of Teräs Käsi,Uncommon,Unit,Cunning,Normal,226,0,0,medium,"UC3 slot; standard uncommon frame, no prestige/showcase treatment visible; title read as ""O'ra"" at low resolution but subtitle ""Master of Teräs Käsi"" confirms Qi'ra"
 19,16,33,Grand Admiral Thrawn,Orchestrating His Return,Rare,Unit,Command/Aggression/Villainy,Normal,33,0,0,high,
-20,1,16,Shin Hati,Eager Adversary,Common,Leader,Cunning/Villainy,Normal,16,0,0,high,"Leader slot pos1 (row1 right); variant unverifiable at this resolution, defaulted Normal"
+20,1,280,Shin Hati,Eager Adversary,Common,Leader,Cunning/Villainy,Hyperspace,16,0,1,high,"Leader slot pos1 (row1 right); variant unverifiable at this resolution, defaulted Normal; variant corrected via 2026-07-12 number-first re-read (read 280)"
 20,2,24,Dragonsnake Bog,,Common,Base,Aggression,Normal,24,0,0,high,"Base slot pos2 (row1 left); variant unverifiable at this resolution, defaulted Normal"
 20,3,87,Cybernetic Enhancements,,Common,Upgrade,Vigilance,Normal,87,0,0,high,Card frame reads Modification subtype under Upgrade
 20,4,164,Alamite Hunter,,Common,Unit,Aggression,Normal,164,0,0,high,

@@ -32,7 +32,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 2,15,194,Snub Fighter Squadron,,Uncommon,Unit,Cunning/Villainy,Normal,194,no,no,high,
 2,16,183,Whistling Birds,,Legendary,Upgrade,Aggression,Normal,183,no,no,high,
 3,1,6,Sabine Wren,Bargaining on Belief,Common,Leader,Vigilance/Heroism,Normal,6,no,no,high,printed number obscured by embossed-foil glare on leader border; identified via name+subtitle+rarity+aspect match and bordered (non-hyperspace) frame [VERIFY box-006: variant Normal confirmed by bordered leader/base frame; identity unique in reference]
-3,2,23,Ancient Henge,,Common,Base,Aggression,Normal,23,no,no,high,printed number not legible in available crops; identified via unique name and bordered (non-hyperspace) frame [VERIFY box-006: variant Normal confirmed by bordered leader/base frame; identity unique in reference]
+3,2,23,Ancient Henge,,Common,Base,Aggression,Hyperspace,23,no,1,medium,printed number not legible in available crops; identified via unique name and bordered (non-hyperspace) frame [VERIFY box-006: variant Normal confirmed by bordered leader/base frame; identity unique in reference]; variant corrected via 2026-07-12 number-first re-read (read None)
 3,3,238,Attendant Navigator,,Common,Unit,Villainy,Normal,238,no,no,high,
 3,4,86,Durasteel Plating,,Common,Upgrade,Vigilance,Normal,86,no,no,high,
 3,5,175,Wookiee Chieftain,,Common,Unit,Aggression,Normal,175,no,no,high,
@@ -47,7 +47,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 3,14,160,Kachirho Militia,,Uncommon,Unit,Aggression/Heroism,Normal,160,no,no,high,
 3,15,294,Marrok,Mysterious Warrior,Rare,Unit,Vigilance/Aggression/Villainy,Hyperspace,30,yes,no,high,"bare number 294; Rare card in Hyperspace form occupying pos15 (uncommon slot), no sanity rule violated"
 3,16,219,Jod Na Nawood,Keeping Secrets,Rare,Unit,Cunning,Normal,219,no,no,high,
-4,1,17,Greef Karga,Gracious Magistrate,Common,Leader,Cunning/Heroism,Normal,17,no,no,high,printed number obscured/out of focus at card edge; identified via name+subtitle+rarity+aspect match and bordered (non-hyperspace) frame; overview photo required 180-degree rotation to read (pull order runs bottom-to-top of raw photo) [VERIFY box-006: variant Normal confirmed by bordered leader/base frame; identity unique in reference]
+4,1,17,Greef Karga,Gracious Magistrate,Common,Leader,Cunning/Heroism,Hyperspace,17,no,1,medium,printed number obscured/out of focus at card edge; identified via name+subtitle+rarity+aspect match and bordered (non-hyperspace) frame; overview photo required 180-degree rotation to read (pull order runs bottom-to-top of raw photo) [VERIFY box-006: variant Normal confirmed by bordered leader/base frame; identity unique in reference]; variant corrected via 2026-07-12 number-first re-read (read None)
 4,2,19,Fortress of the Great Mothers,,Common,Base,Vigilance,Normal,19,no,no,high,printed number obscured/out of focus; identified via unique name and bordered (non-hyperspace) frame [VERIFY box-006: variant Normal confirmed by bordered leader/base frame; identity unique in reference]
 4,3,166,Ewok Warrior,,Common,Unit,Aggression,Normal,166,no,no,high,
 4,4,92,Foundling Rescue,,Common,Event,Vigilance,Normal,92,no,no,high,
@@ -95,7 +95,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 6,14,108,Crix Madine,Strike Team Strategist,Uncommon,Unit,Command/Heroism,Normal,108,no,no,high,
 6,15,253,Yellow Aces Bomber,,Uncommon,Unit,Heroism,Normal,253,no,no,high,UC3 slot
 6,16,102,Ravager,Final Imperial Command,Legendary,Unit,Command/Villainy,Normal,102,no,no,high,
-7,1,16,Shin Hati,Eager Adversary,Common,Leader,Cunning/Villainy,Normal,16,no,no,high,"number obscured by blur/reflection; identity confirmed via name+subtitle match, standard gold border confirms Normal [VERIFY box-006: variant Normal confirmed by bordered leader/base frame; identity unique in reference]"
+7,1,16,Shin Hati,Eager Adversary,Common,Leader,Cunning/Villainy,Hyperspace,16,no,1,medium,"number obscured by blur/reflection; identity confirmed via name+subtitle match, standard gold border confirms Normal [VERIFY box-006: variant Normal confirmed by bordered leader/base frame; identity unique in reference]; variant corrected via 2026-07-12 number-first re-read (read None)"
 7,2,20,"Nevarro City, Restored",,Common,Base,Vigilance,Normal,20,no,no,high,number obscured by blur; standard border and HP 30 confirm Normal [VERIFY box-006: variant Normal confirmed by bordered leader/base frame; identity unique in reference]
 7,3,48,Imperial Armored Commando,,Common,Unit,Vigilance/Villainy,Normal,48,no,no,high,severe glare fully obscured printed number; inferred from name match plus structure (pos7 already holds the sole HS common in this pack) [VERIFY: Normal bordered frame + Vigilance/Villainy confirmed; pack HS common is Perseverance #353]
 7,4,167,Flarestar Attack Shuttle,,Common,Unit,Aggression,Normal,167,no,no,high,
@@ -127,8 +127,8 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 8,14,41,Outcast,Mercenary Starship,Uncommon,Unit,Aggression/Cunning,Normal,41,no,no,high,
 8,15,379,The Student Guides the Master,,Uncommon,Event,Command/Heroism,Hyperspace,115,no,yes,high,
 8,16,101,The Great Mothers,With Strange Magicks,Rare,Unit,Command/Villainy,Normal,101,no,no,high,
-9,1,17,Greef Karga,Gracious Magistrate,Common,Leader,Cunning/Heroism,Normal,17,no,no,high,"exact digits illegible (blur); identity confirmed via name+subtitle match, standard border confirms Normal [VERIFY box-006: variant Normal confirmed by bordered leader/base frame; identity unique in reference]"
-9,2,22,Kryze Castle,,Common,Base,Command,Normal,22,no,no,high,"exact digits illegible (blur); location ""Kalevala"" and HP 30 confirm identity, standard border confirms Normal [VERIFY box-006: variant Normal confirmed by bordered leader/base frame; identity unique in reference]"
+9,1,17,Greef Karga,Gracious Magistrate,Common,Leader,Cunning/Heroism,Hyperspace,17,no,1,medium,"exact digits illegible (blur); identity confirmed via name+subtitle match, standard border confirms Normal [VERIFY box-006: variant Normal confirmed by bordered leader/base frame; identity unique in reference]; variant corrected via 2026-07-12 number-first re-read (read None)"
+9,2,22,Kryze Castle,,Common,Base,Command,Hyperspace,22,no,1,medium,"exact digits illegible (blur); location ""Kalevala"" and HP 30 confirm identity, standard border confirms Normal [VERIFY box-006: variant Normal confirmed by bordered leader/base frame; identity unique in reference]; variant corrected via 2026-07-12 number-first re-read (read None)"
 9,3,69,Noti Nomad,,Common,Unit,Vigilance,Normal,69,no,no,low,"number illegible due to glare; inferred from name match, Normal assumed since pos7 already holds the sole HS common"
 9,4,188,Galvanized Leap,,Common,Event,Aggression,Normal,188,no,no,low,"number illegible due to glare; inferred from name match, Normal assumed since pos7 already holds the sole HS common"
 9,5,45,Reanimated Night Trooper,,Common,Unit,Vigilance/Villainy,Normal,45,no,no,high,
@@ -207,8 +207,8 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 13,14,67,Get Lost,,Uncommon,Event,Vigilance/Heroism,Normal,67,no,no,high,"number ""67/264"" clearly read"
 13,15,367,Long Live the Empire,,Uncommon,Event,Command/Villainy,Hyperspace,103,no,yes,high,"number ""367"" (bare, no ""/264"") clearly read"
 13,16,28,Paz Vizsla,For a Brighter Future,Rare,Unit,Vigilance/Command/Heroism,Normal,28,no,no,high,"number ""28/264"" clearly read"
-14,1,8,Moff Gideon,Indomitable Warlord,Common,Leader,Command/Villainy,Normal,8,no,no,medium,"number digits not legible (dark/angled corner); frame is bordered, consistent with Normal"
-14,2,25,Emperor's Observatory,,Common,Base,Cunning,Normal,25,no,no,medium,"number digits not legible; frame is bordered, consistent with Normal"
+14,1,272,Moff Gideon,Indomitable Warlord,Common,Leader,Command/Villainy,Hyperspace,8,no,1,high,"number digits not legible (dark/angled corner); frame is bordered, consistent with Normal; variant corrected via 2026-07-12 number-first re-read (read 272)"
+14,2,25,Emperor's Observatory,,Common,Base,Cunning,Hyperspace,25,no,1,medium,"number digits not legible; frame is bordered, consistent with Normal; variant corrected via 2026-07-12 number-first re-read (read None)"
 14,3,181,Mark My Words,,Common,Upgrade,Aggression,Normal,181,no,no,high,"number ""181/264"" clearly read"
 14,4,259,LEP Ratcatcher,,Common,Unit,,Normal,259,no,no,high,"number ""259/264"" clearly read"
 14,5,57,Lothal E-Wing,,Common,Unit,Vigilance/Heroism,Normal,57,no,no,high,"number ""57/264"" clearly read"
@@ -240,7 +240,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 15,15,253,Yellow Aces Bomber,,Uncommon,Unit,Heroism,Normal,253,no,no,high,"number ""253/264"" clearly read"
 15,16,128,Bothan-5,New Republic Prison Ship,Rare,Unit,Command,Normal,128,no,no,high,"number ""128/264"" clearly read"
 16,1,9,Ahsoka Tano,Trust in the Force,Common,Leader,Command/Heroism,Normal,9,no,no,medium,collector-number bar illegible on leader (trait-line swash obscures it); identity+bordered frame used instead
-16,2,25,Emperor's Observatory,,Common,Base,Cunning,Normal,25,no,no,medium,collector-number bar blank/illegible on base card photo; identity+bordered frame used instead
+16,2,25,Emperor's Observatory,,Common,Base,Cunning,Hyperspace,25,no,1,low,collector-number bar blank/illegible on base card photo; identity+bordered frame used instead; variant corrected via 2026-07-12 number-first re-read (read None)
 16,3,157,Danger Squadron Wingmen,,Common,Unit,Aggression/Heroism,Normal,157,no,no,high,
 16,4,76,Remnant Official,,Common,Unit,Vigilance,Normal,76,no,no,high,
 16,5,166,Ewok Warrior,,Common,Unit,Aggression,Normal,166,no,no,high,
@@ -287,7 +287,7 @@ pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,
 18,14,156,R5-D4,Built for Adventure,Uncommon,Unit,Aggression/Heroism,Normal,156,no,no,high,
 18,15,415,Operation Cinder,,Rare,Event,Aggression/Villainy,Hyperspace,151,no,yes,high,sanity: pos15 is Rare (not Uncommon) and this pack has 2 Rares (pos15+pos16) instead of 1; reading clear/high-confidence so kept as observed
 18,16,63,Bo-Katan's Gauntlet,Reinforce from Above,Rare,Unit,Vigilance/Heroism,Normal,63,no,no,high,
-19,1,3,Baylan Skoll,Power Beyond Dream,Common,Leader,Vigilance/Villainy,Normal,3,0,0,medium,corner digits illegible due to glare; name+aspects (Vigilance/Villainy) uniquely match reference row 3
+19,1,3,Baylan Skoll,Power Beyond Dream,Common,Leader,Vigilance/Villainy,Hyperspace,3,0,1,medium,corner digits illegible due to glare; name+aspects (Vigilance/Villainy) uniquely match reference row 3; variant corrected via 2026-07-12 number-first re-read (read None)
 19,2,21,Emperor's Throne Room,,Common,Base,Command,Normal,21,0,0,medium,"holo glare washes out number strip; green colored border confirms Normal frame, unique name matches reference row 21"
 19,3,167,Flarestar Attack Shuttle,,Common,Unit,Aggression,Normal,167,0,0,medium,"167/264 read across two independent crops (q1,q2) but 6/8 digit ambiguous under blur; corrected to 167 via unique name+type cross-check (187 is Reckoning, an Uncommon Event, wrong type)"
 19,4,261,Noti Mobile Pod,,Common,Unit,,Normal,261,0,0,high,261/264 read clearly

@@ -59,6 +59,10 @@ export interface SetRarityWeights {
   foilBeltTarget: RarityWeights
   hyperfoil?: RarityWeights
   hyperspaceFoilSlot?: RarityWeights
+  // Explicit per-card copy counts for the foil sheet stack (real 11×11 sheets).
+  // When set, HyperfoilBelt uses these directly (equal frequency, exact ratio,
+  // no weight/rounding). Values are copies PER CARD of that rarity.
+  hyperspaceFoilSheetCopies?: RarityWeights
   ucSlot3Upgraded: RarityWeights
   hyperspaceNonFoil: RarityWeights
 }

@@ -1,4 +1,3 @@
-// @ts-nocheck
 // GET /api/stats/leader-openings - Contextual leader pick stats: which leaders
 // are taken OVER which, inside the same opening (fresh 3-leader) pack.
 //
@@ -15,9 +14,9 @@ import { getAllCards } from '@/src/utils/cardData'
 import { buildCardLookupMaps } from '@/src/utils/cardNormalization'
 import { computeLeaderContextStats } from '@/src/services/leaderPickContext'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 
-export async function GET(request: NextRequest): Promise<NextResponse> {
+export async function GET(request: NextRequest): Promise<Response> {
   try {
     const url = new URL(request.url)
     const setCode = url.searchParams.get('setCode') || 'SOR'
@@ -86,18 +85,19 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     // Build one opening per pick row: the seat's pack + the leader it took first.
     const openings: { openingLeaders: string[]; firstPick: string | null }[] = []
-    for (const row of rows) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    for (const row of rows as any[]) {
       const packs = typeof row.all_leader_packs === 'string'
         ? JSON.parse(row.all_leader_packs)
         : row.all_leader_packs
       if (!Array.isArray(packs)) continue
-      const seatIdx = (row.seat_number ?? 0) - 1
+      const seatIdx = Number(row.seat_number ?? 0) - 1
       const pack = packs[seatIdx]
       if (!Array.isArray(pack) || pack.length === 0) continue
 
       const openingLeaders = pack.map(nameOf).filter(Boolean) as string[]
       if (openingLeaders.length === 0) continue
-      const firstPick = cardMap.get(row.card_id)?.name || row.card_name || null
+      const firstPick = cardMap.get(row.card_id)?.name || (row.card_name as string | undefined) || null
       openings.push({ openingLeaders, firstPick })
     }
 
