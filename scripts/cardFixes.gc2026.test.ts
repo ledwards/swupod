@@ -153,21 +153,22 @@ function testCatalogShape(): boolean {
   return true
 }
 
-/** Test 7 — fall-over: a real GC printing (_OP_ art on the same cardId) wins over the placeholder. */
+/** Test 7 — fall-over: a real GC printing (same cardId, set code P26) wins over the placeholder. */
 function testFallsOverToRealArt(): boolean {
   console.log('\n[Test 7] Auto-falls-over to real GC art when swuapi has it')
   const entry = CATALOG[0]
   const source = sourceCardFor(entry)
-  const realArt = 'https://cdn.starwarsunlimited.com/card_00000000_EN_OP_real_gc_art.png'
-  // A same-cardId sibling carrying the _OP_ GC marker — as swuapi would provide once uploaded.
-  const realSibling = { ...source, id: 'real-op-sibling', variantType: 'Event Exclusive', imageUrl: realArt }
+  const realArt = 'https://cdn.starwarsunlimited.com//card_00000000_EN_GC_real_gc_art.png'
+  // A same-cardId sibling from the GC 2026 set (set code P26) — as swuapi will provide once the
+  // printings are ingested. (GC 2025 was P25; this mirrors that convention for 26.)
+  const realSibling = { ...source, id: 'real-p26-sibling', set: 'P26', variantType: 'Event Exclusive', imageUrl: realArt }
 
   const out = fixCards([source, realSibling])
   const promo = out.find((c: any) => c.id === entry.id)
 
   if (promo.imageUrl !== realArt) { console.error(`  ❌ Expected real art, got ${promo.imageUrl}`); return false }
   if (promo.gcPromo?.placeholder !== false) { console.error('  ❌ placeholder flag should be false once real art is used'); return false }
-  console.log('  ✓ Uses real _OP_ art and clears the placeholder flag')
+  console.log('  ✓ Uses the P26 printing and clears the placeholder flag')
   return true
 }
 

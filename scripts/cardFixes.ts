@@ -154,11 +154,11 @@ export const customTransforms: CustomTransform[] = [
   // swuapi doesn't carry the GC 2026 printings yet, so each catalog entry (src/data/promoPacks/
   // gc2026-cards.json) is surfaced as a distinct 'GC 2026 Promo' variant cloned from its STANDARD
   // printing, with stand-in art. Art resolution prefers, in order:
-  //   1. a real GC printing (a same-cardId sibling whose art carries the `_OP_` GC marker),
+  //   1. a real GC printing (a same-cardId sibling from the GC 2026 set — set code P26),
   //   2. the catalog placeholderImage,
   //   3. the base card's standard art.
-  // (1) makes the swap AUTOMATIC: when swuapi scrapes the GC art, the next data refresh uses it —
-  //     no code change. (No `_OP_` siblings exist for these cardIds today, so no false positives.)
+  // (1) makes the swap AUTOMATIC: when swuapi ingests the P26 printings, the next card sync uses
+  //     them — no code change. (No P26 sibling exists for these cardIds today, so no false positives.)
   //
   // What (2) actually is today differs by pool, and that's the point of the stand-in:
   //   Silver — the REAL GC promo art (medallion + P26-EN set code), captured from the FFG
@@ -180,10 +180,18 @@ export const customTransforms: CustomTransform[] = [
       // leave stale art baked into cards.json forever.)
       cards = cards.filter(c => !(c as any).gcPromo)
       const sourceById = new Map(cards.map(c => [c.id, c]))
-      // Real GC art, when swuapi has it: a same-cardId sibling printing whose art carries `_OP_`.
+      // Real GC art, once swuapi ingests it: a same-cardId sibling printing from the GC 2026
+      // organized-play set. Those cards carry set code P26 ("P26-EN"; GC 2025 was P25) — the
+      // authoritative marker. Keep an _OP_/_P26_ image-URL match as a fallback in case a printing
+      // arrives without its set stamped. No P26 (or _OP_) sibling exists for these cardIds today,
+      // so there are no false positives.
+      const isGc2026Printing = (c: Card): boolean => {
+        const set = String(c.set ?? c.setCode ?? '')
+        return /^P26\b/i.test(set) || /_OP_|_P26_/i.test(c.imageUrl || '')
+      }
       const realArtByCardId = new Map<string, string>()
       for (const c of cards) {
-        if (/_OP_/i.test(c.imageUrl || '') && c.cardId) realArtByCardId.set(c.cardId, c.imageUrl)
+        if (c.cardId && isGc2026Printing(c)) realArtByCardId.set(c.cardId, c.imageUrl)
       }
 
       const injected: Card[] = []
