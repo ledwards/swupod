@@ -252,3 +252,20 @@ button.pack-count-btn:disabled {
     height: 105px;
   }
 }
+
+/* Event Packs sit below the draft's slots at half size — opt-in, added to your pool after
+   the draft rather than drafted. Matches the chaos-sealed promo row. */
+.chaos-draft-promo-row {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.chaos-draft-promo-row-label {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  text-align: center;
+}

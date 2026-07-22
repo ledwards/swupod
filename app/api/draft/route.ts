@@ -1,7 +1,8 @@
 // @ts-nocheck
 // POST /api/draft - Create a new draft pod
-import { query, queryRow } from '@/lib/db'
+import { query, queryRow, queryRows } from '@/lib/db'
 import { requireAuth } from '@/lib/auth'
+import { promoTierForCode } from '@/src/services/chaosSealedSelection'
 import { generateShareId } from '@/lib/utils'
 import { jsonResponse, parseBody, validateRequired, handleApiError } from '@/lib/utils'
 import { getSetConfig } from '@/src/utils/setConfigs/index'
@@ -39,6 +40,24 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       const unavailableReason = getUnavailableSetReason(requestedSetCode, session)
       if (unavailableReason) {
         return jsonResponse({ error: unavailableReason }, 403)
+      }
+    }
+
+    // GC Event Packs (opt-in, Chaos Draft only) augment the owner's pool after the draft — they
+    // are never drafted, so they stay out of chaosSets/box generation. Validate the creator
+    // actually owns any tier they selected; a client can't spoof an unowned tier.
+    const eventPacks: string[] = Array.isArray(settings.eventPacks) ? settings.eventPacks : []
+    if (eventPacks.length > 0) {
+      const requestedTiers = [...new Set(eventPacks.map(promoTierForCode).filter(Boolean))]
+      if (requestedTiers.length > 0) {
+        const ownedRows = await queryRows(
+          'SELECT promo_tier FROM promo_entitlements WHERE user_id = $1 AND campaign = $2',
+          [session.id, 'gc2026']
+        )
+        const owned = new Set(ownedRows.map(r => r.promo_tier))
+        if (requestedTiers.some(t => !owned.has(t))) {
+          return jsonResponse({ error: 'You have not unlocked that Event Pack' }, 403)
+        }
       }
     }
 

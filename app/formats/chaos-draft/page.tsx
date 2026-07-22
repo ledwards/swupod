@@ -10,6 +10,7 @@ import { getPackImageUrl } from '@/src/utils/packArt'
 import { trackEvent, AnalyticsEvents } from '@/src/hooks/useAnalytics'
 import Button from '@/src/components/Button'
 import PackSelector from '@/src/components/PackSelector'
+import { splitSelection, validateChaosSealedSelection } from '@/src/services/chaosSealedSelection'
 import {
   getTeaserUserState,
   shouldPeekUnreleased,
@@ -41,6 +42,14 @@ export default function ChaosDraftPage() {
 
   const hasBetaAccess = user?.is_beta_tester || user?.is_admin
 
+  // Event Packs augment a drafted pool exactly like a sealed pool: they don't fill a draft
+  // slot (only set packs count toward packCount) and, opt-in, get added to the drafter's pool
+  // as a keepsake bonus. They are never drafted.
+  const { setPacks, promoPacks } = splitSelection(selectedSets)
+  const selectionValidation = validateChaosSealedSelection(selectedSets)
+  const selectionComplete = setPacks.length === packCount
+  const selectionError = selectionComplete && !selectionValidation.ok ? selectionValidation.message : null
+
   const teaserState = getTeaserUserState(isPatron, user?.is_beta_tester, user?.is_admin)
   const peekUnreleased = shouldPeekUnreleased(teaserState)
   const peekVariant: 'patreon' | 'beta' | false =
@@ -52,7 +61,48 @@ export default function ChaosDraftPage() {
       try {
         setLoading(true)
         const setsData = await fetchSets({ includeBeta: hasBetaAccess, includeCarbonite: true, peekUnreleased })
-        setSets(setsData)
+        // GC Event Packs appear in their own group, opt-in. Unlocked ones can be added (they
+        // augment the drafted pool); locked ones stay visible and say what's needed to get them.
+        let owned = { silver: false, black: false }
+        try {
+          const res = await fetch('/api/promo/entitlements?campaign=gc2026', { credentials: 'include' })
+          if (res.ok) owned = { ...owned, ...((await res.json())?.data || {}) }
+        } catch {
+          // Non-fatal — treat as not unlocked.
+        }
+        const eventPacks: SetData[] = [
+          {
+            code: 'GC2026_SILVER',
+            name: '2026 GC Silver Pack',
+            promo: true,
+            ...(owned.silver ? {} : {
+              locked: {
+                label: 'Locked',
+                href: '/gift/gc2026',
+                description: 'Unlock it with your GC 2026 card',
+              },
+            }),
+          },
+          {
+            code: 'GC2026_BLACK',
+            name: '2026 GC Black Pack',
+            promo: true,
+            ...(owned.black ? {} : {
+              locked: isPatron
+                ? {
+                    label: 'Unlock',
+                    href: '/gift/gc2026/black',
+                    description: 'Unlock your Black Pack',
+                  }
+                : {
+                    label: 'Friends only',
+                    href: '/gift/gc2026/black',
+                    description: 'Available to Friends of the Pod',
+                  },
+            }),
+          },
+        ]
+        setSets([...setsData, ...eventPacks])
       } catch (err) {
         setError('Failed to load sets')
       } finally {
@@ -70,16 +120,26 @@ export default function ChaosDraftPage() {
     localStorage.setItem('chaos-draft-sets', JSON.stringify(selectedSets))
   }, [selectedSets])
 
+  // Selections are one flat list; these rebuild it from the two halves so a click removes the
+  // pack the user actually clicked on, in either row.
+  const removeSetPackAt = (index: number) => {
+    setSelectedSets([...setPacks.slice(0, index), ...setPacks.slice(index + 1), ...promoPacks])
+  }
+  const removePromoPackAt = (index: number) => {
+    setSelectedSets([...setPacks, ...promoPacks.slice(0, index), ...promoPacks.slice(index + 1)])
+  }
+
   const handlePackCountChange = (delta: number) => {
     const newCount = Math.max(1, Math.min(12, packCount + delta))
     setPackCount(newCount)
-    if (selectedSets.length > newCount) {
-      setSelectedSets(selectedSets.slice(0, newCount))
+    // Only set packs occupy slots, so Event Packs survive the trim untouched.
+    if (setPacks.length > newCount) {
+      setSelectedSets([...setPacks.slice(0, newCount), ...promoPacks])
     }
   }
 
   const handleCreate = async () => {
-    if (selectedSets.length !== packCount) return
+    if (setPacks.length !== packCount || !selectionValidation.ok) return
 
     if (!isAuthenticated) {
       const returnUrl = encodeURIComponent('/formats/chaos-draft')
@@ -91,12 +151,15 @@ export default function ChaosDraftPage() {
       setCreating(true)
       setError(null)
 
-      const result = await createDraft(selectedSets[0], {
+      // chaosSets is the draftable packs only; Event Packs ride along in eventPacks and are
+      // appended to the pool afterward, never drafted.
+      const result = await createDraft(setPacks[0], {
         isPublic: false,
         settings: {
           isSolo: true,
           draftMode: 'chaos',
-          chaosSets: selectedSets
+          chaosSets: setPacks,
+          ...(promoPacks.length > 0 ? { eventPacks: promoPacks } : {}),
         }
       })
 
@@ -104,10 +167,11 @@ export default function ChaosDraftPage() {
       localStorage.removeItem('chaos-draft-sets')
       localStorage.removeItem('chaos-draft-count')
 
-      const uniqueSets = [...new Set(selectedSets)]
+      const uniqueSets = [...new Set(setPacks)]
       trackEvent(AnalyticsEvents.CHAOS_DRAFT_CREATED, {
-        set_codes: selectedSets,
+        set_codes: setPacks,
         unique_sets: uniqueSets.length,
+        event_packs: promoPacks.length,
         solo: true,
       })
 
@@ -165,24 +229,22 @@ export default function ChaosDraftPage() {
           onSelectSets={setSelectedSets}
           maxSelections={packCount}
           showQuantityControls={true}
-          title={`Select ${packCount} Packs (${selectedSets.length}/${packCount})`}
+          title={`Select ${packCount} Packs (${setPacks.length}/${packCount})`}
           peekUnreleased={peekVariant}
         />
 
         <div className="chaos-draft-section selected-sets-order">
-          <h3>Your Chaos Draft ({selectedSets.length}/{packCount})</h3>
+          <h3>Your Chaos Draft ({setPacks.length}/{packCount})</h3>
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem', maxWidth: 740, margin: '0 auto' }}>
             {Array.from({ length: packCount }, (_, slotIndex) => slotIndex).map((slotIndex) => {
-              const setCode = selectedSets[slotIndex]
+              const setCode = setPacks[slotIndex]
               if (setCode) {
                 const packImageUrl = getPackImageUrl(setCode)
                 return (
                   <div
                     key={slotIndex}
                     style={{ width: 100, cursor: 'pointer' }}
-                    onClick={() => {
-                      setSelectedSets(prev => [...prev.slice(0, slotIndex), ...prev.slice(slotIndex + 1)])
-                    }}
+                    onClick={() => removeSetPackAt(slotIndex)}
                   >
                     <img src={packImageUrl} alt={setCode} style={{ width: '100%', display: 'block', borderRadius: 8 }} />
                   </div>
@@ -193,9 +255,30 @@ export default function ChaosDraftPage() {
               )
             })}
           </div>
+
+          {/* Event Packs ride along below the draft's slots, at half size — opt-in, added to
+              your pool after the draft rather than drafted. */}
+          {promoPacks.length > 0 && (
+            <div className="chaos-draft-promo-row">
+              <span className="chaos-draft-promo-row-label">Plus your Event Packs</span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem' }}>
+                {promoPacks.map((setCode, promoIndex) => (
+                  <div
+                    key={`${setCode}-${promoIndex}`}
+                    style={{ width: 50, cursor: 'pointer' }}
+                    onClick={() => removePromoPackAt(promoIndex)}
+                  >
+                    <img src={getPackImageUrl(setCode)} alt={setCode} style={{ width: '100%', display: 'block', borderRadius: 4 }} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
-        {error && <div className="error-message">{error}</div>}
+        {(selectionError || error) && (
+          <div className="error-message" role="alert">{selectionError || error}</div>
+        )}
 
         <div className="chaos-draft-actions">
           <Button
@@ -208,7 +291,7 @@ export default function ChaosDraftPage() {
           <Button
             variant="primary"
             size="lg"
-            disabled={selectedSets.length !== packCount || creating}
+            disabled={!selectionComplete || !selectionValidation.ok || creating}
             onClick={handleCreate}
           >
             {creating ? 'Creating...' : 'Create Chaos'}

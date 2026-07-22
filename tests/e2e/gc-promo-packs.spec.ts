@@ -157,6 +157,35 @@ test.describe('GC 2026 Promo Packs', () => {
     await context.close()
   })
 
+  // Chaos Draft offers the same opt-in Event Packs (augment, not drafted) as Chaos Sealed.
+  test('Chaos Draft offers opt-in Event Packs that do not count against the draft pack count', async ({ browser }) => {
+    const context = await browser.newContext()
+    const user = await createTestUser('CdAugment', TEST_ID)
+    await login(context, user)
+    const page = await context.newPage()
+
+    await page.goto('/gift/gc2026')
+    await page.getByRole('button', { name: /Unlock Event Packs/i }).click()
+    await expect(page.locator('.pack-opening-container')).toBeVisible()
+
+    await page.goto('/formats/chaos-draft')
+    const addSilver = page.locator('button[aria-label="Add one 2026 GC Silver Pack pack"]')
+    await addSilver.click()
+
+    // Event Pack rides along in its own row; the draft slots are still empty.
+    await expect(page.locator('.chaos-draft-promo-row')).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Your Chaos Draft \(0\/3\)/ })).toBeVisible()
+
+    // Three set packs fill the draft; the Event Pack didn't consume a slot.
+    const addSetPack = page.locator('button[aria-label^="Add one "]')
+    for (let i = 0; i < 3; i++) await addSetPack.first().click()
+    await expect(page.getByRole('heading', { name: /Your Chaos Draft \(3\/3\)/ })).toBeVisible()
+    await expect(page.locator('.chaos-draft-promo-row')).toBeVisible()
+    await expect(page.getByRole('button', { name: /Create Chaos/i })).toBeEnabled()
+
+    await context.close()
+  })
+
   // The Leader rule is now unreachable through the UI (six set packs are always required),
   // but the API must still refuse a hand-rolled all-Event-Pack payload.
   test('the API refuses a pool with no Leader-bearing pack', async ({ browser }) => {

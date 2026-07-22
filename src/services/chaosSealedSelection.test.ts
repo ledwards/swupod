@@ -8,6 +8,7 @@ import assert from 'node:assert'
 import {
   MAX_PROMO_PACKS_TOTAL,
   MIN_LEADER_PACKS,
+  grantableEventPackCodes,
   packProvidesLeaders,
   promoTierForCode,
   splitSelection,
@@ -68,6 +69,37 @@ describe('chaosSealedSelection', () => {
       assert.strictEqual(result.ok, false)
       assert.strictEqual(result.code, 'tooManyPromoPacks')
       assert.match(result.message ?? '', /up to 8 Event Packs/)
+    })
+  })
+
+  describe('grantableEventPackCodes', () => {
+    test('SPEC: a seat only receives Event Pack tiers it owns', () => {
+      const codes = ['GC2026_SILVER', 'GC2026_BLACK']
+      assert.deepStrictEqual(grantableEventPackCodes(codes, new Set(['silver'])), ['GC2026_SILVER'])
+    })
+
+    test('a bot / non-owner (owns nothing) receives nothing', () => {
+      assert.deepStrictEqual(
+        grantableEventPackCodes(['GC2026_SILVER', 'GC2026_BLACK'], new Set()),
+        [],
+      )
+    })
+
+    test('an owner of both tiers receives both', () => {
+      const codes = ['GC2026_SILVER', 'GC2026_BLACK']
+      assert.deepStrictEqual(grantableEventPackCodes(codes, new Set(['silver', 'black'])), codes)
+    })
+
+    test('preserves duplicates — N copies of an owned tier yield N packs', () => {
+      const codes = ['GC2026_SILVER', 'GC2026_SILVER', 'GC2026_BLACK']
+      assert.deepStrictEqual(
+        grantableEventPackCodes(codes, new Set(['silver'])),
+        ['GC2026_SILVER', 'GC2026_SILVER'],
+      )
+    })
+
+    test('ignores non-promo codes', () => {
+      assert.deepStrictEqual(grantableEventPackCodes(['SOR', 'GC2026_SILVER'], new Set(['silver'])), ['GC2026_SILVER'])
     })
   })
 

@@ -1,10 +1,14 @@
 // @ts-nocheck
 // GET/POST /api/draft/:shareId/pool - Get or create a pool from drafted cards
-import { query, queryRow } from '@/lib/db'
+import { query, queryRow, queryRows } from '@/lib/db'
 import { requireAuth } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError, formatSetCodeRange } from '@/lib/utils'
 import { captureLimitedServerEvent } from '@/lib/posthog'
 import { LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
+import { promoTierForCode, grantableEventPackCodes } from '@/src/services/chaosSealedSelection'
+import { getCampaign, drawEventPack } from '@/src/services/promoPacks'
+import { initializeCardCache } from '@/src/utils/cardCache'
+import { getAllCards } from '@/src/utils/cardData'
 import { nanoid } from 'nanoid'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -104,6 +108,39 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     const defaultName = uniqueChaosSets
       ? `${formatSetCodeRange(uniqueChaosSets)} Chaos Draft ${month}/${day}/${year}`
       : `${pod.set_code} Draft ${month}/${day}/${year}`
+
+    // GC Event Packs (opt-in) augment this player's pool the same way they augment a sealed
+    // pool: opened as a keepsake bonus, never drafted. Only tiers THIS player actually owns are
+    // added — re-validated from promo_entitlements, so a bot or non-owner gets nothing even if
+    // the draft carried event packs.
+    const eventPackCodes: string[] = Array.isArray(settings.eventPacks) ? settings.eventPacks : []
+    if (eventPackCodes.length > 0) {
+      const requestedTiers = new Set(eventPackCodes.map(promoTierForCode).filter(Boolean))
+      const campaign = getCampaign('gc2026')
+      if (requestedTiers.size > 0 && campaign) {
+        const ownedRows = await queryRows(
+          'SELECT promo_tier FROM promo_entitlements WHERE user_id = $1 AND campaign = $2',
+          [session.id, 'gc2026']
+        )
+        const owned = new Set(ownedRows.map(r => r.promo_tier))
+        const grantable = grantableEventPackCodes(eventPackCodes, owned)
+        if (grantable.length > 0) {
+          await initializeCardCache()
+          const cardsById = new Map(getAllCards().map(c => [c.id, c]))
+          for (const code of grantable) {
+            const tier = promoTierForCode(code)
+            const pack = drawEventPack(campaign, tier, id => cardsById.get(id) ?? null)
+            allCards.push(...pack.cards)
+            formattedPacks.push({
+              cards: pack.cards,
+              setCode: code,
+              setName: `2026 GC ${tier === 'silver' ? 'Silver' : 'Black'} Pack`,
+              isEventPack: true,
+            })
+          }
+        }
+      }
+    }
 
     await query(
       `INSERT INTO card_pools (

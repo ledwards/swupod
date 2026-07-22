@@ -53,6 +53,22 @@ export function splitSelection(setCodes: readonly string[]): SplitSelection {
   }
 }
 
+/**
+ * Of the requested Event Pack codes, the ones an account may actually receive — i.e. whose tier
+ * it owns. Used to gate augmentation per-player: a Chaos Draft can carry Event Packs, but each
+ * seat only gets the tiers it has unlocked (a bot or non-owner gets nothing). Order and
+ * duplicates are preserved, so N copies of an owned tier yield N packs.
+ */
+export function grantableEventPackCodes(
+  codes: readonly string[],
+  ownedTiers: ReadonlySet<'silver' | 'black'>,
+): string[] {
+  return codes.filter(code => {
+    const tier = promoTierForCode(code)
+    return tier !== null && ownedTiers.has(tier)
+  })
+}
+
 export interface SelectionValidation {
   readonly ok: boolean
   /** Stable reason code for callers that branch; absent when ok. */
