@@ -173,14 +173,14 @@ test.describe('GC 2026 Promo Packs', () => {
     const addSilver = page.locator('button[aria-label="Add one 2026 GC Silver Pack pack"]')
     await addSilver.click()
 
-    // Event Pack rides along in its own row; the draft slots are still empty.
+    // Event Pack rides along in its own row; the draft slots are still empty (default 4).
     await expect(page.locator('.chaos-draft-promo-row')).toBeVisible()
-    await expect(page.getByRole('heading', { name: /Your Chaos Draft \(0\/3\)/ })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Your Chaos Draft \(0\/4\)/ })).toBeVisible()
 
-    // Three set packs fill the draft; the Event Pack didn't consume a slot.
+    // Four set packs fill the draft; the Event Pack didn't consume a slot.
     const addSetPack = page.locator('button[aria-label^="Add one "]')
-    for (let i = 0; i < 3; i++) await addSetPack.first().click()
-    await expect(page.getByRole('heading', { name: /Your Chaos Draft \(3\/3\)/ })).toBeVisible()
+    for (let i = 0; i < 4; i++) await addSetPack.first().click()
+    await expect(page.getByRole('heading', { name: /Your Chaos Draft \(4\/4\)/ })).toBeVisible()
     await expect(page.locator('.chaos-draft-promo-row')).toBeVisible()
     await expect(page.getByRole('button', { name: /Create Chaos/i })).toBeEnabled()
 

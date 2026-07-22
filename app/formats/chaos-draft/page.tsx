@@ -33,8 +33,9 @@ export default function ChaosDraftPage() {
     try { return JSON.parse(localStorage.getItem('chaos-draft-sets') || '[]') } catch { return [] }
   })
   const [packCount, setPackCount] = useState(() => {
-    if (typeof window === 'undefined') return 3
-    return Number(localStorage.getItem('chaos-draft-count')) || 3
+    if (typeof window === 'undefined') return 4
+    // Default 4; clamp to the 1–4 range in case a stale localStorage value predates the cap.
+    return Math.min(4, Number(localStorage.getItem('chaos-draft-count')) || 4)
   })
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
@@ -129,7 +130,7 @@ export default function ChaosDraftPage() {
   }
 
   const handlePackCountChange = (delta: number) => {
-    const newCount = Math.max(1, Math.min(12, packCount + delta))
+    const newCount = Math.max(1, Math.min(4, packCount + delta))
     setPackCount(newCount)
     // Only set packs occupy slots, so Event Packs survive the trim untouched.
     if (setPacks.length > newCount) {
@@ -216,7 +217,7 @@ export default function ChaosDraftPage() {
               className="pack-count-btn pack-count-plus"
               style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 22, height: 22, minWidth: 22, minHeight: 22, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.1)', color: 'white', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', padding: 0, lineHeight: 1 }}
               onClick={() => handlePackCountChange(1)}
-              disabled={packCount >= 12}
+              disabled={packCount >= 4}
             >+</button>
           </span>
           {' '}packs from any combination of sets!
