@@ -1,57 +1,53 @@
 # Event Packs in Chaos Draft
 
-**Status:** planned
-**Decided:** opt-in only; Chaos Draft only (never competitive/normal draft); augment model, exactly like Chaos Sealed.
+**Status:** built (v1)
+**Decided:** opt-in; Chaos Draft only (never competitive/normal draft). Event Packs are **drafted
+as their own bonus rounds** (updated from the earlier augment model, per user).
 
-## Why this is its own thing
+## Model
 
-An Event Pack is **2 cards, Units only, no Leaders/Bases**. It cannot be a real draft
-booster (you can't meaningfully pick-1-and-pass a 2-card no-leader pack). So Event Packs are
-**not drafted** — they are opened as a keepsake bonus and **appended to each owning player's
-final pool**, the same way they augment a Chaos Sealed pool. The draft engine (pick order,
-passing, rounds) is untouched.
+Each chaos draft round is one `chaosSets` entry → 8 packs (one per seat), dealt by
+`processBoxPacksForDraft` (`packIndex = packNum*8 + player`). An Event Pack simply becomes another
+`chaosSets` entry: it generates 8 two-card Event Packs and is drafted as a normal round — pick 1,
+pass the rest. So a "3-pack" chaos draft with one Event Pack opted in is a **4-round draft** (3
+set rounds + 1 Event Pack round appended last).
 
-## UX (mirrors Chaos Sealed)
+**Consequence (accepted):** because it's drafted, you keep **1** of the pack's 2 cards and pass
+the other — unlike the keepsake-augment model where you'd keep both.
 
-- Chaos Draft setup reuses `PackSelector`'s existing **promos group** — the same "GC 2026
-  Event Packs" tiles, locked states, and half-size "Plus your Event Packs" row.
-- **Opt-in:** an owner chooses to add their Event Pack(s); default is off/none. Non-owners see
-  the locked tiles (link to `/gift/gc2026`) but can't add them, exactly as in sealed.
-- Event Packs **do not count** against the pack count (`splitSelection`), same as sealed.
-- Only rendered in Chaos Draft — never surfaced in normal/competitive draft setup.
+Leaderless/baseless Event Packs pass through the pipeline cleanly: `processBoxPacksForDraft`
+guards leader/base extraction (`if (leaderIndex >= 0)`), so the Event Pack round contributes 0
+leaders and keeps both cards. The leader-draft phase is unaffected (leaders still come only from
+the set packs).
 
-## Implementation (reuse, no new modalities)
+## Implementation
 
-1. **`app/formats/chaos-draft/page.tsx`** — mirror the chaos-sealed page's Event Pack handling:
-   fetch `/api/promo/entitlements`, append owned/locked Event Packs to the `sets` passed to
-   `PackSelector`, use `splitSelection` so they augment, render the "Plus your Event Packs" row.
-   Send the chosen Event Pack tiers to `createDraft` as `settings.eventPacks` (separate from
-   `chaosSets`, which stays the draftable packs).
-2. **`app/api/draft/route.ts`** — persist `settings.eventPacks`, validated against the creator's
-   `promo_entitlements` server-side (a client can't spoof an unowned tier — same check as the
-   chaos-sealed route).
-3. **`app/api/draft/[shareId]/pool/route.ts`** — when the pod carries `settings.eventPacks`,
-   append `drawEventPack(...)` cards to the assembled pool **per player, gated on that player's
-   own entitlement** (re-validated from `promo_entitlements`; bots get nothing). This is the only
-   backend behavior change; drafting itself is unaffected.
-4. **Pool view** — the Event Pack cards already render like any pool card; add a small "GC 2026
-   Event Packs added" note so it's clear they weren't drafted.
+1. **`app/formats/chaos-draft/page.tsx`** — reuses the `PackSelector` promos group + `splitSelection`.
+   Event Packs show in their own opt-in row and don't inflate the set-pack count, but on submit
+   they're merged into `chaosSets` (`[...setPacks, ...promoPacks]`) so each becomes a drafted round.
+2. **`app/api/draft/route.ts`** — Event Pack codes in `chaosSets` skip the set-availability check
+   and are validated for entitlement instead (creator must own the tier; can't spoof). Box gen:
+   a promo code generates 8 `drawEventPack(...)` packs (same 8-per-slot shape as a set round). The
+   auto-name shows "GC Silver"/"GC Black".
+3. **`app/api/draft/[shareId]/start/route.ts`** — no change. `packsPerPlayer` and `chaosSetCount`
+   both derive from `chaosSets.length`, which now includes the Event Pack rounds automatically.
+4. **`app/api/draft/[shareId]/pool/route.ts`** — no change. Drafted Event Pack cards arrive via
+   `drafted_cards` like any pick; the pool groups them into the Event Pack round.
 
-**Reused verbatim:** `drawEventPack`, `promo_entitlements` query, `PROMO_SET_CODES` /
-`splitSelection` / `validateChaosSealedSelection` helpers, `PackSelector` promos group, the
-pack-opening components.
+**Reused verbatim:** `drawEventPack`, `promo_entitlements` check, `PROMO_SET_CODES`/`splitSelection`,
+`PackSelector` promos group.
 
-## Scope decision needed
+## Verification
 
-- **v1 = solo/creator path** (the common Chaos-Draft-vs-bots case): the creator opts in and
-  their owned Event Packs augment their pool. Simple, fully consistent with sealed.
-- **Multiplayer per-player opt-in** (each human adds their own at join time) is a larger UI
-  change — recommend deferring to a follow-up. The pool-assembly logic (step 3) is already
-  per-player, so multiplayer only needs a join-time opt-in UI later.
+- Engine test (direct): box for `[ASH,ASH,ASH,GC2026_SILVER]` → 32 packs; round sizes 14/14/14/**2**;
+  3 leaders (set packs only); Event round is all-silver promos, no leader.
+- Server smoke: create (201) → add 7 bots (200) → start (200 → `leader_draft`, 8 players).
+- E2e: setup shows the opt-in Event Packs that don't count toward the set-pack count.
+- Full 8-bot draft-to-completion e2e deferred (too slow for the suite); `draftAdvance` already
+  handles variable pack sizes, and the pool builds from `drafted_cards`.
 
-## Testing
+## Scope
 
-- Unit: pool assembly appends exactly the tiers a player owns; a non-owner / bot gets nothing;
-  opt-out adds nothing.
-- E2e: an owner sets up a Chaos Draft with Event Packs on, completes it, and their pool contains
-  the Event Pack cards on top of the drafted cards; the toggle is absent from normal draft setup.
+v1 = solo/creator (Chaos Draft vs bots). The Event Pack round is a pod-level opt-in gated on the
+creator's ownership; the 7 bots draft it too (fine for solo). Multiplayer per-seat entitlement is
+a follow-up if group Chaos Draft ever needs it.

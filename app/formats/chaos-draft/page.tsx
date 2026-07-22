@@ -42,9 +42,8 @@ export default function ChaosDraftPage() {
 
   const hasBetaAccess = user?.is_beta_tester || user?.is_admin
 
-  // Event Packs augment a drafted pool exactly like a sealed pool: they don't fill a draft
-  // slot (only set packs count toward packCount) and, opt-in, get added to the drafter's pool
-  // as a keepsake bonus. They are never drafted.
+  // Event Packs don't fill a set-pack slot (only set packs count toward packCount); opt-in,
+  // each selected Event Pack is drafted as its own bonus round appended after the set packs.
   const { setPacks, promoPacks } = splitSelection(selectedSets)
   const selectionValidation = validateChaosSealedSelection(selectedSets)
   const selectionComplete = setPacks.length === packCount
@@ -151,15 +150,15 @@ export default function ChaosDraftPage() {
       setCreating(true)
       setError(null)
 
-      // chaosSets is the draftable packs only; Event Packs ride along in eventPacks and are
-      // appended to the pool afterward, never drafted.
+      // Event Packs are drafted as their own bonus rounds, appended after the set packs — so
+      // they ride in chaosSets like any other pack (each becomes a round). They're shown in a
+      // separate opt-in row above, but functionally they're extra draft rounds.
       const result = await createDraft(setPacks[0], {
         isPublic: false,
         settings: {
           isSolo: true,
           draftMode: 'chaos',
-          chaosSets: setPacks,
-          ...(promoPacks.length > 0 ? { eventPacks: promoPacks } : {}),
+          chaosSets: [...setPacks, ...promoPacks],
         }
       })
 
@@ -256,11 +255,11 @@ export default function ChaosDraftPage() {
             })}
           </div>
 
-          {/* Event Packs ride along below the draft's slots, at half size — opt-in, added to
-              your pool after the draft rather than drafted. */}
+          {/* Event Packs ride along below the draft's slots, at half size — opt-in, each drafted
+              as its own bonus round after the set packs. */}
           {promoPacks.length > 0 && (
             <div className="chaos-draft-promo-row">
-              <span className="chaos-draft-promo-row-label">Plus your Event Packs</span>
+              <span className="chaos-draft-promo-row-label">Plus Event Pack rounds</span>
               <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem' }}>
                 {promoPacks.map((setCode, promoIndex) => (
                   <div

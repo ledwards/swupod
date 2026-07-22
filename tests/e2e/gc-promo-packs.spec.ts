@@ -157,7 +157,8 @@ test.describe('GC 2026 Promo Packs', () => {
     await context.close()
   })
 
-  // Chaos Draft offers the same opt-in Event Packs (augment, not drafted) as Chaos Sealed.
+  // Chaos Draft offers opt-in Event Packs in the same selector row; they don't count toward the
+  // set-pack count (each is drafted as its own bonus round instead).
   test('Chaos Draft offers opt-in Event Packs that do not count against the draft pack count', async ({ browser }) => {
     const context = await browser.newContext()
     const user = await createTestUser('CdAugment', TEST_ID)
