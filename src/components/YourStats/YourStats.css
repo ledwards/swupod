@@ -2627,14 +2627,6 @@ a.your-stats-logged-out-link:active {
   grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
   gap: 0.5rem;
 }
-/* Nudge the leader grid up under the subtitle — tighter on the meta roster,
-   gentler on the personal Gameplay grid. */
-.your-stats-wr--meta .your-stats-wr-grid {
-  margin-top: -20px;
-}
-.your-stats-wr--personal .your-stats-wr-grid {
-  margin-top: -10px;
-}
 .your-stats-wr-cell {
   position: relative;
   aspect-ratio: 1 / 1;
@@ -2655,10 +2647,14 @@ a.your-stats-logged-out-link:active {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Zoom into the central illustration and nudge it down so the framing centers
-     on the character (pushed down 10px from its old +5px offset). */
-  object-position: center 32%;
-  transform: translateY(15px) scale(1.55);
+  /* Frame ONLY the art band of the leader-unit card. On a leader unit the clean
+     illustration runs ~16%–56% of card height: name-plate chrome above, the
+     stat/trait bar below. object-position top + scale(1.8) about center lands
+     the crop window exactly on that band (verified against rendered crops of
+     real card images). Do not add translateY — any Y offset drags card chrome
+     into the square. */
+  object-position: center 0;
+  transform: scale(1.8);
 }
 .your-stats-wr-cell-art--empty {
   background: rgba(255, 255, 255, 0.08);
@@ -2691,7 +2687,7 @@ a.your-stats-logged-out-link:active {
 }
 @media (hover: hover) and (pointer: fine) {
   .your-stats-wr-cell:hover .your-stats-wr-cell-art {
-    transform: translateY(15px) scale(1.62);
+    transform: scale(1.88);
   }
 }
 
@@ -2872,10 +2868,11 @@ a.your-stats-logged-out-link:active {
 }
 
 .your-stats-meta-card-header h3 {
-  margin: 0.1rem 0 0;
+  margin: 0.25rem 0 0;
   font-size: 1.05rem;
   font-weight: 700;
   color: #fff;
+  line-height: 1.3;
 }
 
 .your-stats-meta-legend {
@@ -2892,10 +2889,10 @@ a.your-stats-logged-out-link:active {
 }
 
 .your-stats-meta-subtitle {
-  margin: 0.2rem 0 1rem;
+  margin: 0.5rem 0 1.1rem;
   color: var(--ys-text-3);
   font-size: 0.85rem;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 .your-stats-meta-bars {
