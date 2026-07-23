@@ -364,39 +364,6 @@
   font-style: italic;
 }
 
-.selection-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 0 0 auto;
-}
-
-.selection-confirm-button {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  color: #ddd;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 0.85rem;
-  font-weight: 700;
-  padding: 6px 10px;
-  transition: all 0.2s ease;
-}
-
-.selection-confirm-button:hover:not(:disabled),
-.selection-confirm-button:focus-visible {
-  background: rgba(76, 175, 80, 0.25);
-  border-color: rgba(76, 175, 80, 0.55);
-  color: white;
-  outline: none;
-}
-
-.selection-confirm-button:disabled {
-  cursor: wait;
-  opacity: 0.6;
-}
-
 .deselect-button {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -413,10 +380,6 @@
 .deselect-button:hover {
   background: rgba(255, 255, 255, 0.2);
   color: white;
-}
-
-.deselect-button svg {
-  display: block;
 }
 
 

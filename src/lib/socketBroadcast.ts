@@ -15,6 +15,8 @@ import type { Server as SocketIOServer } from 'socket.io'
 declare global {
   // eslint-disable-next-line no-var
   var io: SocketIOServer | undefined
+  // eslint-disable-next-line no-var
+  var presenceMap: Map<string, Set<string>> | undefined
 }
 
 interface Pod {
@@ -420,6 +422,46 @@ export async function broadcastPublicPodsUpdate(): Promise<void> {
   } catch (err) {
     console.error('Error broadcasting public pods update:', err)
   }
+}
+
+/**
+ * Broadcast the current open-games board to the lobby room. Called whenever a
+ * listing is created, joined, cancelled, delisted, or swept. Payload carries
+ * no deck identity (R29) — listings are shaped by listPublicOpenGames().
+ */
+export async function broadcastOpenGamesUpdate(): Promise<void> {
+  const io = global.io
+  if (!io) return
+
+  try {
+    const { listPublicOpenGames } = await import('@/src/services/openGames')
+    const { listings, recentCompleted } = await listPublicOpenGames()
+    const presence = global.presenceMap
+    io.to('open-games').emit('open-games-update', {
+      listings: listings.map(({ hostId, hostDeck, ...listing }) => ({
+        ...listing,
+        hostConnected: presence ? presence.has(hostId as string) : true,
+      })),
+      recentCompleted,
+      timestamp: Date.now(),
+    })
+  } catch (err) {
+    console.error('Error broadcasting open games update:', err)
+  }
+}
+
+/**
+ * Push a targeted open-game event to one player's sockets (accepted toast,
+ * opponent joined, cancelled). Uses the per-user room joined at presence:join.
+ */
+export function emitOpenGameEventToUser(
+  userId: string,
+  eventType: string,
+  data: Record<string, unknown> = {}
+): void {
+  const io = global.io
+  if (!io) return
+  io.to(`user:${userId}`).emit('open-game:event', { type: eventType, ...data, timestamp: Date.now() })
 }
 
 /**

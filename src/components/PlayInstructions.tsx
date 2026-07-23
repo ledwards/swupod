@@ -8,6 +8,7 @@ import { buildLimitedContext, LimitedAnalyticsEvents, LimitedPlayActions } from 
 import { buildLobbyName, isValidPrivateLobbyUrl } from '../utils/karabastLobby'
 import { WayfinderCompanionLockup } from './WayfinderStoreButtons'
 import PluginCTA from '@/src/components/PluginCTA'
+import PlayPageLobbies from './Lobby/PlayPageLobbies'
 import Button from './Button'
 import { useAuth } from '../contexts/AuthContext'
 import { isCompanionBeta } from '../utils/companionBeta'
@@ -85,7 +86,7 @@ export default function PlayInstructions({
 }: PlayInstructionsProps) {
   // The Companion is beta-gated: non-beta players see the pre-plugin manual
   // flow only (no install pitch, no autojoin column).
-  const { user } = useAuth() as { user: { is_beta_tester?: boolean | null; is_admin?: boolean | null } | null }
+  const { user } = useAuth() as { user: { username?: string | null; is_beta_tester?: boolean | null; is_admin?: boolean | null } | null }
   const companionBeta = isCompanionBeta(user)
   const inPod = poolType === 'draft' || poolType === 'sealed_pod'
   const viewingOthersDeck = !isOwner && ownerName
@@ -97,6 +98,27 @@ export default function PlayInstructions({
   const [joinError, setJoinError] = useState<string | null>(null)
   const [cardPool, setCardPool] = useState(cardPoolName)
   const [wayfinderIconUrl, setWayfinderIconUrl] = useState<string | null>(null)
+
+  // Transient local "Opening…" feedback for the Companion lobby buttons. These
+  // post a fire-and-forget message to the Companion (which opens Karabast in a
+  // new tab), so there's no completion signal to react to here — we just give an
+  // immediate acknowledgement so the click never feels like it did nothing, then
+  // clear it after a few seconds. If Karabast is slow or unavailable, the
+  // Companion's own launch-status toast carries the richer "still opening /
+  // didn't respond, try again" status on top of this.
+  const [openingAction, setOpeningAction] = useState<'private' | 'public' | 'join' | null>(null)
+  const openingTimerRef = useRef<number | null>(null)
+  function markOpening(action: 'private' | 'public' | 'join') {
+    setOpeningAction(action)
+    if (openingTimerRef.current !== null) window.clearTimeout(openingTimerRef.current)
+    openingTimerRef.current = window.setTimeout(() => {
+      setOpeningAction(null)
+      openingTimerRef.current = null
+    }, 4000)
+  }
+  useEffect(() => () => {
+    if (openingTimerRef.current !== null) window.clearTimeout(openingTimerRef.current)
+  }, [])
 
   function trackPlayAction(action: string, extra: Record<string, unknown> = {}) {
     trackEvent(LimitedAnalyticsEvents.LIMITED_PLAY_ACTION_USED, {
@@ -168,6 +190,7 @@ export default function PlayInstructions({
       // Public Karabast game name, e.g. "SEC Draft Leia Splash Green protectthepod.com".
       lobbyName: buildLobbyName({ setCode, poolType, archetypeName }),
     }, '*')
+    markOpening(privacy)
     trackPlayAction(
       privacy === 'private'
         ? LimitedPlayActions.WAYFINDER_CREATE_PRIVATE_LOBBY
@@ -196,6 +219,7 @@ export default function PlayInstructions({
       format: poolType === 'sealed_pod' ? 'pool' : poolType === 'draft' ? 'pool' : poolType,
       cardPool,
     }, '*')
+    markOpening('join')
     trackPlayAction(LimitedPlayActions.WAYFINDER_JOIN_PRIVATE_LOBBY, {
       target: 'wayfinder',
       card_pool: cardPool,
@@ -404,18 +428,12 @@ export default function PlayInstructions({
       <div className="wayfinder-tab">
         {renderCompanionReadyPanel()}
 
-        <div className="wayfinder-sync-strip" aria-label="Wayfinder sync details">
-          <span>Pool and match linked</span>
-          <span>Result returns to PTP</span>
-          <span>Replay saved to My Stats</span>
-        </div>
-
         <div className="wayfinder-section">
-          <button className="wayfinder-btn" onClick={() => dispatchCreateLobby('private')}>
-            🔒 Create Private Lobby
+          <button className="wayfinder-btn" disabled={openingAction !== null} onClick={() => dispatchCreateLobby('private')}>
+            {openingAction === 'private' ? 'Opening on Karabast…' : '🔒 Create Private Lobby'}
           </button>
-          <button className="wayfinder-btn" onClick={() => dispatchCreateLobby('public')}>
-            🌐 Create Public Lobby
+          <button className="wayfinder-btn" disabled={openingAction !== null} onClick={() => dispatchCreateLobby('public')}>
+            {openingAction === 'public' ? 'Opening on Karabast…' : '🌐 Create Public Lobby'}
           </button>
           <button
             className="wayfinder-btn"
@@ -445,8 +463,8 @@ export default function PlayInstructions({
               onChange={e => { setJoinUrl(e.target.value); setJoinError(null) }}
               placeholder="https://karabast.net/lobby?lobbyId=..."
             />
-            <button className="wayfinder-join-btn" onClick={dispatchJoinPrivate}>
-              Join
+            <button className="wayfinder-join-btn" disabled={openingAction !== null} onClick={dispatchJoinPrivate}>
+              {openingAction === 'join' ? 'Opening…' : 'Join'}
             </button>
           </div>
           {joinError && <div className="wayfinder-error">{joinError}</div>}
@@ -469,6 +487,17 @@ export default function PlayInstructions({
         <div className="play-solo-notice">
           This was a simulated pod — you can't play against the bots, but you can check out their decks from the draft log. You need to find a human opponent to play your deck!
         </div>
+      )}
+
+      {/* R35 → U6: the deck owner's live lobby options — join an open lobby
+          for this set+format with THIS deck, or post this deck to the Lobby. */}
+      {isOwner && !viewingOthersDeck && shareId && setCode && (
+        <PlayPageLobbies
+          poolShareId={shareId}
+          setCode={setCode}
+          format={poolType === 'draft' ? 'draft' : 'sealed'}
+          currentUsername={user?.username ?? null}
+        />
       )}
 
       {viewingOthersDeck || (!companionBeta && !wayfinderDetected && !pluginRequired) ? (

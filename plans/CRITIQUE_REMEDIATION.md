@@ -1,5 +1,15 @@
 # Critique Remediation Plan
 
+> **2026-07-07 reconciliation — SUPERSEDED by `docs/plans/2026-07-07-002-design-refresh-plan.md`.**
+> All P0s and nearly all checked items re-verified shipped in the current tree (evidence in the
+> refresh plan's Delta Audit A). Still-open items (filter-UI convergence, chart-palette
+> reconciliation, pools/new skeletons, emoji→SVG, `userScalable:false`, 44px targets) are carried
+> into refresh units D4–D6. New finding: the drift class returned on surfaces built after this
+> backlog — `YourStats.css` (23 bespoke hexes, 14 ALL-CAPS) and `MatchmakingPanel.css`
+> (`--swiss-*` off-system palette) — because the June fixes were per-instance with no CI guard
+> and no tokens file. Root-cause fixes are refresh units D1 (tokens.css) and D2 (banned-tells
+> checker). Do not extend this backlog; work from the refresh plan.
+
 Backlog from the whole-app `/impeccable critique` run on 2026-06-13 (score **20/40**,
 snapshot at `.impeccable/critique/2026-06-14T05-57-08Z__protectthepod-whole-app.md`).
 User direction: fix **all P0s**, full scope **incl. P2/minor**, and **pull the data

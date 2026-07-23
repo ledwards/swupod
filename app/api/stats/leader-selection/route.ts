@@ -1,6 +1,7 @@
 // @ts-nocheck
 // GET /api/stats/leader-selection - Get leader selection rates from built decks
 import { queryRows, queryRow } from '@/lib/db'
+import { requireFullStatsAccess } from '@/lib/auth'
 import { cachedAggregate, STATS_AGGREGATE_TTL_MS } from '@/lib/queryCache'
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
@@ -28,6 +29,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // builds have a NULL user_id; this is the "logged-in players" segment.
     const loggedInOnly = url.searchParams.get('loggedInOnly') === 'true'
     const loggedInFilter = loggedInOnly ? `AND bd.user_id IS NOT NULL` : ''
+
+    // Locked cohorts (Competitive / Top Players) are patron/admin-only. Gate
+    // server-side at the definition layer so the values never reach a
+    // non-entitled client — not even via a direct API call. You/All are public.
+    if (tournamentOnly || topPlayersOnly) {
+      await requireFullStatsAccess(request)
+    }
 
     // Build card lookup maps — all variants merge to same card via name|type key
     // See src/utils/cardNormalization.ts for the canonical normalization pattern

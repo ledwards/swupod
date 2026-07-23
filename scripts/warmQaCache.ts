@@ -13,7 +13,7 @@
 import { getAllSetCodes } from '../src/utils/setConfigs/index'
 
 const BASE = process.env.QA_WARM_BASE || 'http://localhost:3000'
-const SINCE = process.env.NEXT_PUBLIC_STATS_START_DATE || '2026-02-12'
+const SINCE = process.env.NEXT_PUBLIC_STATS_START_DATE || '2026-07-11'
 const ENDPOINTS = ['/api/stats/generations', '/api/public/pack-quality']
 
 async function warm() {

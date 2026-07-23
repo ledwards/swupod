@@ -1,0 +1,385 @@
+pack,pos,number,name,subtitle,rarity,type,aspects,variant,normalNumber,foilLook,hyperspaceLook,confidence,note
+1,1,18,Grogu,Charming Companion,Rare,Leader,Cunning/Heroism,Normal,18,0,0,high,"18/264 read (partial digits), gold border confirms Normal, landscape leader card"
+1,2,20,"Nevarro City, Restored",,Common,Base,Vigilance,Normal,20,0,0,high,"20/264 read clearly, landscape base card"
+1,3,240,Mandalorian Super Commandos,,Common,Unit,Villainy,Normal,240,0,0,high,240/264 read
+1,4,57,Lothal E-Wing,,Common,Unit,Vigilance/Heroism,Normal,57,0,0,high,57/264 read
+1,5,154,Honorable Nite Owl,,Common,Unit,Aggression/Heroism,Normal,154,0,0,high,154/264 read
+1,6,82,Trexler Armored Marauder,,Common,Unit,Vigilance,Normal,82,0,0,high,82/264 read
+1,7,501,Mouse Droid,,Common,Unit,Villainy,Hyperspace,237,0,1,high,"501 read bare no slash, borderless art bleed, the pack's one Hyperspace common"
+1,8,120,Warrior of Clan Kryze,,Common,Unit,Command,Normal,120,0,0,high,120/264 read
+1,9,252,N5 Sentry Droid,,Common,Unit,Heroism,Normal,252,0,0,high,252/264 read
+1,10,190,Peridea Bandit,,Common,Unit,Cunning/Villainy,Normal,190,0,0,high,190/264 read
+1,11,106,Pathfinder Sergeant,,Common,Unit,Command/Heroism,Normal,106,0,0,high,106/264 read
+1,12,570,Domesticated Loth-Cat,,Uncommon,Unit,Vigilance,Hyperspace Foil,68,1,1,high,"570 read bare no slash, foil slot pos12, borderless"
+1,13,187,Reckoning,,Uncommon,Event,Aggression,Normal,187,0,0,high,187/264 read
+1,14,68,Domesticated Loth-Cat,,Uncommon,Unit,Vigilance,Normal,68,0,0,high,"68/264 read, second copy of Loth-Cat in pack (regular, not the foil pos12 copy)"
+1,15,363,Gozanti Assault Carrier,,Uncommon,Unit,Command/Villainy,Hyperspace,99,0,1,high,"363 read bare no slash, UC3 slot upgraded to Hyperspace, borderless"
+1,16,135,The Darksaber,Icon of Leadership,Legendary,Upgrade,Command,Normal,135,0,0,high,135/264 read
+2,1,278,The Mandalorian,We Can't Keep Running,Rare,Leader,Aggression/Heroism,Hyperspace,14,0,1,high,"278 read bare (no slash), landscape leader card, matches Hyperspace ref exactly"
+2,2,23,Ancient Henge,,Common,Base,Aggression,Normal,23,0,0,high,"23/264 read, landscape base card"
+2,3,157,Danger Squadron Wingmen,,Common,Unit,Aggression/Heroism,Normal,157,0,0,high,157/264 read
+2,4,259,LEP Ratcatcher,,Common,Unit,,Normal,259,0,0,high,259/264 read
+2,5,61,Strike Team Vanguard,,Common,Unit,Vigilance/Heroism,Normal,61,0,0,high,61/264 read
+2,6,176,Imposing Scout Walker,,Common,Unit,Aggression,Normal,176,0,0,high,176/264 read
+2,7,428,Alamite Hunter,,Common,Unit,Aggression,Hyperspace,164,0,1,high,"428 read bare, borderless, the pack's one Hyperspace common"
+2,8,96,Forest Patroller,,Common,Unit,Command/Villainy,Normal,96,0,0,medium,"corner number blurred/illegible (fragment looked like 3x0 but no such variant exists for this card); inferred 96/264 Normal from visible green aspect border frame, name/art match, and pack sanity (HS common slot already used by Alamite Hunter)"
+2,9,232,Full of Surprises,,Common,Event,Cunning,Normal,232,0,0,high,232/264 read
+2,10,250,Imperial Defector,,Common,Unit,Heroism,Normal,250,0,0,high,250/264 read
+2,11,131,Dinosaur Turtle,,Common,Unit,Command,Normal,131,0,0,high,131/264 read
+2,12,582,Covert Believers,,Common,Unit,Vigilance,Hyperspace Foil,80,1,1,high,"582 read bare, foil slot pos12"
+2,13,210,DDC Defender,,Uncommon,Upgrade,Cunning/Heroism,Normal,210,0,0,high,210/264 read
+2,14,125,Stolen Eta Shuttle,,Uncommon,Unit,Command,Normal,125,0,0,high,125/264 read
+2,15,194,Snub Fighter Squadron,,Uncommon,Unit,Cunning/Villainy,Normal,194,0,0,high,"194/264 read, UC3 slot not upgraded"
+2,16,79,Koska Reeves,Warrior of Mandalore,Rare,Unit,Vigilance,Normal,79,0,0,high,79/264 read
+3,1,9,Ahsoka Tano,Trust in the Force,Common,Leader,Command/Heroism,Normal,9,0,0,high,"9/264 read (partial ""9/2"" + full ""9/264"" confirmed in secondary crop), landscape leader card"
+3,2,21,Emperor's Throne Room,,Common,Base,Command,Normal,21,0,0,high,"21/264 read (partial digits, corroborated by reference), landscape base card"
+3,3,91,Buy Time,,Common,Event,Vigilance,Normal,91,0,0,high,91/264 read
+3,4,239,Imperial Loyalist,,Common,Unit,Villainy,Normal,239,0,0,high,239/264 read
+3,5,184,Follow Me,,Common,Event,Aggression,Normal,184,0,0,high,184/264 read
+3,6,76,Remnant Official,,Common,Unit,Vigilance,Normal,76,0,0,high,76/264 read
+3,7,496,Full of Surprises,,Common,Event,Cunning,Hyperspace,232,0,1,high,"496 read bare (no slash) after zoom, borderless, pack's one Hyperspace common"
+3,8,214,Amnesty Officer,,Common,Unit,Cunning,Normal,214,0,0,high,214/264 read
+3,9,98,AT-ST Raider,,Common,Unit,Command/Villainy,Normal,98,0,0,high,98/264 read
+3,10,233,Keep Them Talking,,Common,Event,Cunning,Normal,233,0,0,high,233/264 read
+3,11,121,Blurrg,,Common,Unit,Command,Normal,121,0,0,high,121/264 read
+3,12,598,Forest Patroller,,Common,Unit,Command/Villainy,Hyperspace Foil,96,1,1,high,"598 read bare, foil slot pos12"
+3,13,160,Kachirho Militia,,Uncommon,Unit,Aggression/Heroism,Normal,160,0,0,high,160/264 read
+3,14,64,The Armorer,Secrecy is Our Survival,Uncommon,Unit,Vigilance/Heroism,Normal,64,0,0,high,64/264 read
+3,15,93,Captain Pellaeon,Plotting from the Shadows,Uncommon,Unit,Command/Villainy,Normal,93,0,0,high,93/264 read
+3,16,200,Rehabilitation,,Rare,Event,Cunning/Villainy,Normal,200,0,0,high,200/264 read
+4,1,11,Cad Bane,Still Faster than You,Common,Leader,Aggression/Villainy,Normal,11,0,0,high,11/264 read
+4,2,22,Kryze Castle,,Common,Base,Command,Normal,22,0,0,high,22/264 read
+4,3,185,Intimidation,,Common,Event,Aggression,Normal,185,0,0,high,185/264 read
+4,4,75,Pit Droid Team,,Common,Unit,Vigilance,Normal,75,0,0,high,75/264 read
+4,5,170,Desert Sharpshooter,,Common,Unit,Aggression,Normal,170,0,0,high,170/264 read
+4,6,238,Attendant Navigator,,Common,Unit,Villainy,Normal,238,0,0,high,238/264 read
+4,7,386,Consortium StarViper,,Common,Unit,Command,Hyperspace,122,0,1,high,"386 bare number read, no /264"
+4,8,254,Gallofree Transport,,Common,Unit,Heroism,Normal,254,0,0,high,254/264 read
+4,9,221,Helix Starfighter,,Common,Unit,Cunning,Normal,221,0,0,high,221/264 read
+4,10,117,Outland Protector,,Common,Unit,Command,Normal,117,0,0,high,117/264 read
+4,11,213,Womp Rat,,Common,Unit,Cunning,Normal,213,0,0,high,213/264 read
+4,12,761,LEP Ratcatcher,,Common,Unit,,Hyperspace Foil,259,1,1,high,"761 bare number read, no /264, foil sheen visible"
+4,13,41,Outcast,Mercenary Starship,Uncommon,Unit,Aggression/Cunning,Normal,41,0,0,high,41/264 read
+4,14,56,Huyang,Your Aptitude Falls Short,Uncommon,Unit,Vigilance/Heroism,Normal,56,0,0,high,56/264 read
+4,15,241,Marrok's Fiend Fighter,Formidable Pursuer,Uncommon,Unit,Villainy,Normal,241,0,0,high,241/264 read
+4,16,53,Pre Vizsla,Strong-Willed Ruler,Legendary,Unit,Vigilance/Villainy,Normal,53,0,0,low,"number printed off bottom edge of all source photos (full+quadrant+overview); frame shows standard black border not full-bleed, no foil sheen observed; inferred Normal 53/264 from reference+visual, unconfirmed by direct digit read"
+5,1,10,Bo-Katan Kryze,Reclaiming Mandalore,Rare,Leader,Command/Heroism,Normal,10,0,0,high,"10/264 read (partial, /264 cut but rarity+name match)"
+5,2,20,"Nevarro City, Restored",,Common,Base,Vigilance,Normal,20,0,0,high,20/264 read
+5,3,86,Durasteel Plating,,Common,Upgrade,Vigilance,Normal,86,0,0,high,86/264 read
+5,4,175,Wookiee Chieftain,,Common,Unit,Aggression,Normal,175,0,0,high,175/264 read
+5,5,242,Death Trooper Squad,,Common,Unit,Villainy,Normal,242,0,0,high,242/264 read
+5,6,51,Reinforcing Light Cruiser,,Common,Unit,Vigilance/Villainy,Normal,51,0,0,high,51/264 read
+5,7,435,Pegasus Tri-Wing,,Common,Unit,Aggression,Hyperspace,171,0,1,high,"435 bare number read, no /264"
+5,8,262,Faith in the Empire,,Common,Upgrade,,Normal,262,0,0,high,262/264 read
+5,9,96,Forest Patroller,,Common,Unit,Command/Villainy,Normal,96,0,0,high,96/264 read
+5,10,222,Unsanctioned Patrol,,Common,Unit,Cunning,Normal,222,0,0,high,222/264 read
+5,11,140,Stronger Together,,Common,Event,Command,Normal,140,0,0,high,140/264 read
+5,12,643,TIE Striker,,Common,Unit,Aggression/Villainy,Hyperspace Foil,141,1,1,high,"643 bare number read, no /264"
+5,13,108,Crix Madine,Strike Team Strategist,Uncommon,Unit,Command/Heroism,Normal,108,0,0,high,108/264 read
+5,14,147,The Cyborg Mech,Mysterious Threat,Uncommon,Unit,Aggression/Villainy,Normal,147,0,0,high,147/264 read
+5,15,473,Ezra Bridger,The Force is All I Need,Uncommon,Unit,Cunning/Heroism,Hyperspace,209,0,1,high,"473 bare number read, no /264"
+5,16,177,Onyx Cinder,Adventure Awaits,Rare,Unit,Aggression,Normal,177,0,0,high,177/264 read
+6,1,8,Moff Gideon,Indomitable Warlord,Common,Leader,Command/Villainy,Normal,8,0,0,high,8/264 read
+6,2,289,Emperor's Observatory,,Common,Base,Cunning,Hyperspace,25,0,1,high,"289 bare number read, no /264"
+6,3,166,Ewok Warrior,,Common,Unit,Aggression,Normal,166,0,0,high,166/264 read
+6,4,92,Foundling Rescue,,Common,Event,Vigilance,Normal,92,0,0,high,92/264 read
+6,5,181,Mark My Words,,Common,Upgrade,Aggression,Normal,181,0,0,high,181/264 read
+6,6,78,B-Wing Rearguard,,Common,Unit,Vigilance,Normal,78,0,0,high,78/264 read
+6,7,315,Reinforcing Light Cruiser,,Common,Unit,Vigilance/Villainy,Hyperspace,51,0,1,high,"315 bare number read, no /264"
+6,8,207,Heroic Purrgil,,Common,Unit,Cunning/Heroism,Normal,207,0,0,high,207/264 read
+6,9,258,Grassroots Resistance,,Common,Event,Heroism,Normal,258,0,0,high,258/264 read
+6,10,126,Survivors' Langskib,,Common,Unit,Command,Normal,126,0,0,high,126/264 read
+6,11,201,Open Circle Ace,,Common,Unit,Cunning/Heroism,Normal,201,0,0,high,201/264 read
+6,12,632,Fang Fighter Squadron,,Common,Unit,Command,Hyperspace Foil,130,1,1,high,"632 bare number read, no /264"
+6,13,54,Pointless to Resist,,Uncommon,Upgrade,Vigilance/Villainy,Normal,54,0,0,high,54/264 read
+6,14,209,Ezra Bridger,The Force is All I Need,Uncommon,Unit,Cunning/Heroism,Normal,209,0,0,high,209/264 read
+6,15,217,Mayor's Majordomo,No Problem Groveling,Uncommon,Unit,Cunning,Normal,217,0,0,high,217/264 read
+6,16,132,Queen Soruna,Willing to Fight,Rare,Unit,Command,Normal,132,0,0,high,132/264 read
+7,1,13,Ezra Bridger,It's Now or Never,Common,Leader,Aggression/Heroism,Normal,13,0,0,high,13/264 read
+7,2,26,Freetown,,Common,Base,Cunning,Normal,26,0,0,high,"verify pass: re-read bottom-right 26/264 with slash, bordered Normal frame confirmed"
+7,3,174,StarFortress Heavy Bomber,,Common,Unit,Aggression,Normal,174,0,0,high,174/264 read
+7,4,237,Mouse Droid,,Common,Unit,Villainy,Normal,237,0,0,high,237/264 read
+7,5,87,Cybernetic Enhancements,,Common,Upgrade,Vigilance,Normal,87,0,0,high,87/264 read
+7,6,164,Alamite Hunter,,Common,Unit,Aggression,Normal,164,0,0,medium,"164/264 read, 2nd digit blurry 5 vs 6, resolved via name match to reference"
+7,7,486,Unsanctioned Patrol,,Common,Unit,Cunning,Hyperspace,222,0,1,high,"486 bare read, no /264"
+7,8,136,Display of Strength,,Common,Event,Command,Normal,136,0,0,high,136/264 read
+7,9,249,Covert Veteran,,Common,Unit,Heroism,Normal,249,0,0,high,249/264 read
+7,10,216,Mandalorian Scout,,Common,Unit,Cunning,Normal,216,0,0,high,216/264 read
+7,11,122,Consortium StarViper,,Common,Unit,Command,Normal,122,0,0,high,122/264 read
+7,12,559,Lothal E-Wing,,Common,Unit,Vigilance/Heroism,Hyperspace Foil,57,1,1,high,"559 bare read, no /264, foil slot"
+7,13,119,Greef Karga,Introductions are in Order,Uncommon,Unit,Command,Normal,119,0,0,high,119/264 read
+7,14,150,Deadly Vulnerability,,Uncommon,Upgrade,Aggression/Villainy,Normal,150,0,0,high,150/264 read
+7,15,327,Bo-Katan's Gauntlet,Reinforce from Above,Rare,Unit,Vigilance/Heroism,Hyperspace,63,0,1,high,"327 bare read, no /264, UC3 upgraded to Hyperspace"
+7,16,47,Gar Saxon,Coveting Power,Rare,Unit,Vigilance/Villainy,Normal,47,0,0,high,47/264 read
+8,1,3,Baylan Skoll,Power Beyond Dream,Common,Leader,Vigilance/Villainy,Normal,3,0,0,high,3/264 read
+8,2,21,Emperor's Throne Room,,Common,Base,Command,Normal,21,0,0,high,"21/264 read, found on right edge info bar below DEATH STAR label"
+8,3,80,Covert Believers,,Common,Unit,Vigilance,Normal,80,0,0,high,80/264 read
+8,4,244,Remnant Trooper Corps,,Common,Unit,Villainy,Normal,244,0,0,high,244/264 read
+8,5,145,Praetorian Elite,,Common,Unit,Aggression/Villainy,Normal,145,0,0,high,145/264 read
+8,6,48,Imperial Armored Commando,,Common,Unit,Vigilance/Villainy,Normal,48,0,0,high,48/264 read
+8,7,528,A New Order,,Common,Event,,Hyperspace,264,0,1,high,"528 bare read, no /264"
+8,8,231,Diplomatic Pageantry,,Common,Event,Cunning,Normal,231,0,0,high,231/264 read
+8,9,130,Fang Fighter Squadron,,Common,Unit,Command,Normal,130,0,0,high,130/264 read
+8,10,215,Flanking TIE Interceptor,,Common,Unit,Cunning,Normal,215,0,0,high,215/264 read
+8,11,264,A New Order,,Common,Event,,Normal,264,0,0,high,"264/264 read, second copy of this common in pack"
+8,12,725,Halo,Not According to Plan,Uncommon,Unit,Cunning,Hyperspace Foil,223,1,1,high,"725 bare read, no /264, foil slot"
+8,13,72,Doctor Pershing,Dedicated to Research,Uncommon,Unit,Vigilance,Normal,72,0,0,high,72/264 read
+8,14,35,Tatooine Repulsor Train,,Uncommon,Unit,Command/Aggression,Normal,35,0,0,high,35/264 read
+8,15,253,Yellow Aces Bomber,,Uncommon,Unit,Heroism,Normal,253,0,0,high,253/264 read
+8,16,235,Sense Through the Force,,Rare,Event,Cunning,Normal,235,0,0,high,235/264 read
+9,1,275,Cad Bane,Still Faster than You,Common,Leader,Aggression/Villainy,Hyperspace,11,0,1,high,"275 bare read, no /264"
+9,2,26,Freetown,,Common,Base,Cunning,Normal,26,0,0,high,26/264 read
+9,3,167,Flarestar Attack Shuttle,,Common,Unit,Aggression,Normal,167,0,0,medium,"167/264 read, initially misread as 163, corrected via reference match"
+9,4,246,Exploit Advantage,,Common,Event,Villainy,Normal,246,0,0,medium,"246/264 read, initially misread as 248, corrected via reference match"
+9,5,89,Perseverance,,Common,Event,Vigilance,Normal,89,0,0,medium,"89/264 read, digits blurry, cross-checked via reference"
+9,6,152,Inspired Recruit,,Common,Unit,Aggression/Heroism,Normal,152,0,0,low,"number unresolvable at this resolution after repeated zoom attempts, resolved via name match to reference"
+9,7,393,Defenders of the Forest,,Common,Unit,Command,Hyperspace,129,0,1,medium,"393 bare read, digit ambiguous 8 vs 9, resolved via name match to reference"
+9,8,138,Turning the Tide,,Common,Event,Command,Normal,138,0,0,high,138/264 read
+9,9,228,Preparation,,Common,Upgrade,Cunning,Normal,228,0,0,high,228/264 read
+9,10,134,Warrior's Legacy,,Common,Upgrade,Command,Normal,134,0,0,high,134/264 read
+9,11,189,Emperor's Messenger,,Common,Unit,Cunning/Villainy,Normal,189,0,0,high,189/264 read
+9,12,717,Flanking TIE Interceptor,,Common,Unit,Cunning,Hyperspace Foil,215,1,1,high,"717 bare read, no /264, foil slot"
+9,13,88,The Conflict Within,,Uncommon,Upgrade,Vigilance,Normal,88,0,0,medium,"88/264 read, cross-checked via reference"
+9,14,178,Knobby White Ice Spider,,Uncommon,Unit,Aggression,Normal,178,0,0,high,178/264 read
+9,15,172,Razor Crest,Outfitted Armament,Uncommon,Unit,Aggression,Normal,172,0,0,low,"number unresolvable at this resolution, card frame is Normal (bordered) not borderless; resolved via name/subtitle match to reference"
+9,16,144,Vane's Snub Fighter,Brash and Proud,Rare,Unit,Aggression/Villainy,Normal,144,0,0,low,"number unresolvable at this resolution, card frame is Normal (bordered) not borderless; resolved via name/subtitle match to reference"
+10,1,16,Shin Hati,Eager Adversary,Common,Leader,Cunning/Villainy,Normal,16,0,0,high,16/264 read
+10,2,284,"Nevarro City, Restored",,Common,Base,Vigilance,Hyperspace,20,0,1,medium,"verify pass: number off-frame right, but bordered Normal frame confirmed (vs borderless HS base); identity Nevarro City=20 Normal; variant corrected via 2026-07-12 number-first re-read (read 284)"
+10,3,58,Duchess's Protector,,Common,Unit,Vigilance/Heroism,Normal,58,0,0,high,58/264 read
+10,4,143,Tempest Lieutenant,,Common,Unit,Aggression/Villainy,Normal,143,0,0,high,143/264 read
+10,5,260,Mos Espa Watermonger,,Common,Unit,,Normal,260,0,0,high,260/264 read
+10,6,69,Noti Nomad,,Common,Unit,Vigilance,Normal,69,0,0,high,69/264 read
+10,7,340,Remnant Official,,Common,Unit,Vigilance,Hyperspace,76,0,1,high,"bare 340 read, Hyperspace common"
+10,8,256,Rebel Infiltrators,,Common,Unit,Heroism,Normal,256,0,0,high,256/264 read
+10,9,98,AT-ST Raider,,Common,Unit,Command/Villainy,Normal,98,0,0,high,98/264 read
+10,10,234,Masterstroke,,Common,Event,Cunning,Normal,234,0,0,high,234/264 read
+10,11,131,Dinosaur Turtle,,Common,Unit,Command,Normal,131,0,0,high,131/264 read
+10,12,753,Zealous Soldier,,Common,Unit,Heroism,Hyperspace Foil,251,1,0,high,"bare 753 read, foil slot"
+10,13,209,Ezra Bridger,The Force is All I Need,Uncommon,Unit,Cunning/Heroism,Normal,209,0,0,high,209/264 read
+10,14,97,Moff Gideon,Remnant Commander,Uncommon,Unit,Command/Villainy,Normal,97,0,0,high,97/264 read
+10,15,806,Boba Fett's Rancor,Emotionally Complex Creature,Legendary,Unit,Aggression,Standard Prestige,179,0,0,high,"bare 806 read, UC3 upgraded to Standard Prestige"
+10,16,155,Grogu,Yes. Yes. Yes.,Legendary,Unit,Aggression/Heroism,Normal,155,0,0,high,155/264 read
+11,1,6,Sabine Wren,Bargaining on Belief,Common,Leader,Vigilance/Heroism,Normal,6,0,0,high,6/264 read
+11,2,25,Emperor's Observatory,,Common,Base,Cunning,Normal,25,0,0,high,25/264 read
+11,3,188,Galvanized Leap,,Common,Event,Aggression,Normal,188,0,0,high,188/264 read
+11,4,45,Reanimated Night Trooper,,Common,Unit,Vigilance/Villainy,Normal,45,0,0,high,45/264 read
+11,5,173,Shydopp Pirate Skiff,,Common,Unit,Aggression,Normal,173,0,0,high,173/264 read
+11,6,81,Nebulon-C Frigate,,Common,Unit,Vigilance,Normal,81,0,0,high,81/264 read
+11,7,448,Follow Me,,Common,Event,Aggression,Hyperspace,184,0,1,high,"bare 448 read, Hyperspace common"
+11,8,227,Heightened Awareness,,Common,Upgrade,Cunning,Normal,227,0,0,high,227/264 read
+11,9,251,Zealous Soldier,,Common,Unit,Heroism,Normal,251,0,0,high,251/264 read
+11,10,107,Clan Wren Loyalist,,Common,Unit,Command/Heroism,Normal,107,0,0,high,107/264 read
+11,11,214,Amnesty Officer,,Common,Unit,Cunning,Normal,214,0,0,high,214/264 read
+11,12,668,Ewok Warrior,,Common,Unit,Aggression,Hyperspace Foil,166,1,0,high,"bare 668 read, foil slot"
+11,13,49,Shin Hati,Going Somewhere?,Uncommon,Unit,Vigilance/Villainy,Normal,49,0,0,high,49/264 read
+11,14,159,Alphabet Squadron U-Wing,Quiet Devotion,Uncommon,Unit,Aggression/Heroism,Normal,159,0,0,high,159/264 read
+11,15,204,Blade Three,Bane of the Devastator,Uncommon,Unit,Cunning/Heroism,Normal,204,0,0,high,204/264 read
+11,16,34,Wicket,Yub Nub!,Rare,Unit,Command/Aggression/Heroism,Normal,34,0,0,high,34/264 read
+12,1,12,Vane,Quarrelsome Pirate,Rare,Leader,Aggression/Villainy,Normal,12,0,0,high,12/264 read
+12,2,23,Ancient Henge,,Common,Base,Aggression,Normal,23,0,0,high,23/264 read
+12,3,171,Pegasus Tri-Wing,,Common,Unit,Aggression,Normal,171,0,0,high,171/264 read
+12,4,261,Noti Mobile Pod,,Common,Unit,,Normal,261,0,0,high,261/264 read
+12,5,71,Battered Haulcraft,,Common,Unit,Vigilance,Normal,71,0,0,high,71/264 read
+12,6,165,Clan Vizsla Soldier,,Common,Unit,Aggression,Normal,165,0,0,high,165/264 read
+12,7,479,Flanking TIE Interceptor,,Common,Unit,Cunning,Hyperspace,215,0,1,high,"bare 479 read, Hyperspace common"
+12,8,111,Children of the Watch,,Common,Unit,Command/Heroism,Normal,111,0,0,high,111/264 read
+12,9,263,The Way of the Mand'alor,,Common,Upgrade,,Normal,263,0,0,high,263/264 read
+12,10,225,Tatooine Sand Beast,,Common,Unit,Cunning,Normal,225,0,0,high,225/264 read
+12,11,129,Defenders of the Forest,,Common,Unit,Command,Normal,129,0,0,high,129/264 read
+12,12,636,Warrior's Legacy,,Common,Upgrade,Command,Hyperspace Foil,134,1,0,low,number line cut off at photo frame edge in all 4 quadrants; foil slot position (pos12) + reference lookup used to infer 636
+12,13,99,Gozanti Assault Carrier,,Uncommon,Unit,Command/Villainy,Normal,99,0,0,low,number line cut off at photo frame edge in all 4 quadrants; no foil/HS sheen visible so Normal assumed via reference lookup
+12,14,67,Get Lost,,Uncommon,Event,Vigilance/Heroism,Normal,67,0,0,high,67/264 read
+12,15,332,Domesticated Loth-Cat,,Uncommon,Unit,Vigilance,Hyperspace,68,0,1,high,"bare 332 read, UC3 upgraded to Hyperspace"
+12,16,55,Blade of Talzin,A Gift of Shadows,Rare,Upgrade,Vigilance/Villainy,Normal,55,0,0,high,55/264 read
+13,1,11,Cad Bane,Still Faster than You,Common,Leader,Aggression/Villainy,Normal,11,0,0,high,11/264 read clearly
+13,2,26,Freetown,,Common,Base,Cunning,Normal,26,0,0,high,26/264 read on right edge of landscape base card
+13,3,176,Imposing Scout Walker,,Common,Unit,Aggression,Normal,176,0,0,high,176/264 read
+13,4,82,Trexler Armored Marauder,,Common,Unit,Vigilance,Normal,82,0,0,high,82/264 read
+13,5,184,Follow Me,,Common,Event,Aggression,Normal,184,0,0,high,184/264 read
+13,6,242,Death Trooper Squad,,Common,Unit,Villainy,Normal,242,0,0,high,242/264 read
+13,7,398,Warrior's Legacy,,Common,Upgrade,Command,Hyperspace,134,0,1,high,"398 read bare no slash, the pack's one Hyperspace common"
+13,8,190,Peridea Bandit,,Common,Unit,Cunning/Villainy,Normal,190,0,0,high,190/264 read
+13,9,116,Ant Droid,,Common,Unit,Command,Normal,116,0,0,high,116/264 read
+13,10,193,Emperor's Champion,,Common,Unit,Cunning/Villainy,Normal,193,0,0,high,193/264 read
+13,11,250,Imperial Defector,,Common,Unit,Heroism,Normal,250,0,0,high,250/264 read
+13,12,692,Peridea Bandit,,Common,Unit,Cunning/Villainy,Hyperspace Foil,190,1,1,high,"692 read bare no slash, foil slot pos12, second copy of Peridea Bandit in pack"
+13,13,65,Home One,Heart of the Fleet,Uncommon,Unit,Vigilance/Heroism,Normal,65,0,0,high,65/264 read
+13,14,178,Knobby White Ice Spider,,Uncommon,Unit,Aggression,Normal,178,0,0,high,178/264 read
+13,15,487,Halo,Not According to Plan,Uncommon,Unit,Cunning,Hyperspace,223,0,1,high,"487 read bare no slash, UC3 slot upgraded to Hyperspace"
+13,16,104,Dathomiri Magicks,,Rare,Event,Command/Villainy,Normal,104,0,0,high,104/264 read
+14,1,767,The Armorer,Steel Shapes Us,Rare,Leader,Vigilance/Command,Showcase,1,0,0,high,"VERIFY: bordered Normal leader frame confirmed on zoom (LEADER header, side ability text box, MANDALORIAN trait, ASH-EN) - not borderless full-art; variant Normal certain, identity certain; variant corrected via 2026-07-12 number-first re-read (read 767)"
+14,2,24,Dragonsnake Bog,,Common,Base,Aggression,Normal,24,0,0,high,24/264 read
+14,3,75,Pit Droid Team,,Common,Unit,Vigilance,Normal,75,0,0,high,75/264 read
+14,4,181,Mark My Words,,Common,Upgrade,Aggression,Normal,181,0,0,high,181/264 read
+14,5,259,LEP Ratcatcher,,Common,Unit,,Normal,259,0,0,high,259/264 read
+14,6,57,Lothal E-Wing,,Common,Unit,Vigilance/Heroism,Normal,57,0,0,high,57/264 read
+14,7,514,Imperial Defector,,Common,Unit,Heroism,Hyperspace,250,0,1,high,"514 read bare no slash, the pack's one Hyperspace common"
+14,8,120,Warrior of Clan Kryze,,Common,Unit,Command,Normal,120,0,0,high,120/264 read
+14,9,218,Ferry Droid,,Common,Unit,Cunning,Normal,218,0,0,high,218/264 read
+14,10,106,Pathfinder Sergeant,,Common,Unit,Command/Heroism,Normal,106,0,0,high,106/264 read
+14,11,228,Preparation,,Common,Upgrade,Cunning,Normal,228,0,0,high,228/264 read
+14,12,739,Mouse Droid,,Common,Unit,Villainy,Hyperspace Foil,237,1,1,high,"VERIFY: fresh bottom-left zoom confirms Mouse Droid (IMPERIAL-DROID, cost 1, RAID 1) with clear metallic foil sheen across borders/art; HF 739 = Mouse Droid (maps from HS 501). Identity+foil confirmed; bare number itself off-crop but mapping certain"
+14,13,109,T-6 Shuttle 1974,With a Mentor's Dedication,Uncommon,Unit,Command/Heroism,Normal,109,0,0,medium,"number not captured in any quadrant/overview photo (card bottom fell outside all crops); identified by name/subtitle/stats match, assumed Normal as UC1 slot"
+14,14,50,Morgan Elsbeth,Life Abandoned,Uncommon,Unit,Vigilance/Villainy,Normal,50,0,0,high,50/264 read
+14,15,226,Qi'ra,Master of Teräs Käsi,Uncommon,Unit,Cunning,Normal,226,0,0,high,226/264 read
+14,16,70,At Attin Safety Droid,,Rare,Unit,Vigilance,Normal,70,0,0,high,70/264 read
+15,1,6,Sabine Wren,Bargaining on Belief,Common,Leader,Vigilance/Heroism,Normal,6,0,0,medium,"number area obscured by glare on landscape leader card corner; identified by name/subtitle ""Bargaining on Belief"" match, standard frame visible so assumed Normal 6/264"
+15,2,23,Ancient Henge,,Common,Base,Aggression,Normal,23,0,0,medium,"23/264 partially read (blurry) on right edge of landscape base card; identified by name+subtitle ""Seatos"" match to reference"
+15,3,170,Desert Sharpshooter,,Common,Unit,Aggression,Normal,170,0,0,high,170/264 read
+15,4,91,Buy Time,,Common,Event,Vigilance,Normal,91,0,0,high,91/264 read
+15,5,175,Wookiee Chieftain,,Common,Unit,Aggression,Normal,175,0,0,high,175/264 read
+15,6,73,Palace Chef Droid,,Common,Unit,Vigilance,Normal,73,0,0,high,73/264 read
+15,7,491,Heightened Awareness,,Common,Upgrade,Cunning,Hyperspace,227,0,1,high,"491 read bare no slash, the pack's one Hyperspace common"
+15,8,96,Forest Patroller,,Common,Unit,Command/Villainy,Normal,96,0,0,high,96/264 read
+15,9,254,Gallofree Transport,,Common,Unit,Heroism,Normal,254,0,0,high,254/264 read
+15,10,216,Mandalorian Scout,,Common,Unit,Cunning,Normal,216,0,0,high,216/264 read
+15,11,117,Outland Protector,,Common,Unit,Command,Normal,117,0,0,high,117/264 read
+15,12,537,Tatooine Repulsor Train,,Uncommon,Unit,Command/Aggression,Hyperspace Foil,35,1,1,high,"537 read bare no slash, foil slot pos12"
+15,13,44,Barriss Offee,Redeeming Herself,Uncommon,Unit,Cunning/Vigilance,Normal,44,0,0,high,44/264 read
+15,14,172,Razor Crest,Outfitted Armament,Uncommon,Unit,Aggression,Normal,172,0,0,high,172/264 read
+15,15,815,Eye of Sion,Delivered from Exile,Legendary,Unit,Villainy,Standard Prestige,245,0,0,high,"815 read bare no slash, UC3 slot upgraded to full-art Standard Prestige treatment"
+15,16,195,Helgait,Dooku Was a Visionary,Rare,Unit,Cunning/Villainy,Normal,195,0,0,high,195/264 read
+16,1,5,Luke Skywalker,I Can Save Him,Special,Leader,Vigilance/Heroism,Normal,5,,0,high,"VERIFY: bordered Normal leader frame (side ability box, FORCE-JEDI trait, ""deploy this leader"") confirmed on overview+zoom, not borderless full-art; variant Normal certain, identity certain"
+16,2,285,Emperor's Throne Room,,Common,Base,Command,Hyperspace,21,,1,high,"number region blurry/unresolved in photo; name+type uniquely match reference entry 21, variant assumed Normal (not the pack's designated Hyperspace slot); variant corrected via 2026-07-12 number-first re-read (read 285)"
+16,3,238,Attendant Navigator,,Common,Unit,Villainy,Normal,238,,0,high,238/264 read clearly
+16,4,157,Danger Squadron Wingmen,,Common,Unit,Aggression/Heroism,Normal,157,,0,high,157/264 read clearly
+16,5,76,Remnant Official,,Common,Unit,Vigilance,Normal,76,,0,high,"76/264 read clearly, corrected from initial misread of 78/75"
+16,6,166,Ewok Warrior,,Common,Unit,Aggression,Normal,166,,0,high,"166/264 read clearly, artist REND confirmed"
+16,7,344,Covert Believers,,Common,Unit,Vigilance,Hyperspace,80,,0,medium,"bare number not directly confirmed legible; name+type match reference, positioned as 5th common (pos7) matching structure hint for the Hyperspace slot"
+16,8,231,Diplomatic Pageantry,,Common,Event,Cunning,Normal,231,,0,high,231/264 read clearly
+16,9,264,A New Order,,Common,Event,,Normal,264,,0,high,264/264 read clearly
+16,10,138,Turning the Tide,,Common,Event,Command,Normal,138,,0,high,138/264 read clearly
+16,11,233,Keep Them Talking,,Common,Event,Cunning,Normal,233,,0,high,233/264 read clearly
+16,12,609,Clan Wren Loyalist,,Common,Unit,Command/Heroism,Hyperspace Foil,107,1,0,medium,"VERIFY CORRECTION: fresh zoom of pos12 foil shows GREEN Command text/title-box borders (not Villainy grey) + blue HP 2 + combat/explosion art with firing figure (not the Imperial Loyalist standing-portrait); rules out Imperial Loyalist(741). Only Command ""loyalist"" is Clan Wren Loyalist HF=609. Printed number cut off at photo bottom edge, ID by frame aspect+title"
+16,13,99,Gozanti Assault Carrier,,Uncommon,Unit,Command/Villainy,Normal,99,,0,high,99/264 read clearly
+16,14,88,The Conflict Within,,Uncommon,Upgrade,Vigilance,Normal,88,,0,high,88/264 read clearly
+16,15,217,Mayor's Majordomo,No Problem Groveling,Uncommon,Unit,Cunning,Normal,217,,0,high,217/264 read clearly
+16,16,179,Boba Fett's Rancor,Emotionally Complex Creature,Legendary,Unit,Aggression,Normal,179,,0,high,179/264 read clearly
+17,1,3,Baylan Skoll,Power Beyond Dream,Common,Leader,Vigilance/Villainy,Normal,3,,0,medium,"name+subtitle ""Power Beyond Dream"" clearly legible and uniquely match reference #3; printed number digits themselves not pixel-confirmed (bottom-right corner unresolved in photo)"
+17,2,21,Emperor's Throne Room,,Common,Base,Command,Normal,21,,0,medium,"""30 BASE EMPEROR'S THRONE ROOM"" clearly legible, unique reference match; bare digits not pixel-confirmed"
+17,3,51,Reinforcing Light Cruiser,,Common,Unit,Vigilance/Villainy,Normal,51,,0,high,51/264 read clearly
+17,4,239,Imperial Loyalist,,Common,Unit,Villainy,Normal,239,,0,high,239/264 read clearly
+17,5,185,Intimidation,,Common,Event,Aggression,Normal,185,,0,high,185/264 read clearly
+17,6,61,Strike Team Vanguard,,Common,Unit,Vigilance/Heroism,Normal,61,,0,high,"61/264 read clearly, artist KAIHOUND STUDIOS confirmed"
+17,7,434,Desert Sharpshooter,,Common,Unit,Aggression,Hyperspace,170,,0,high,"434 bare number read clearly, borderless look confirmed, positioned as 5th common (pos7) matching structure hint"
+17,8,136,Display of Strength,,Common,Event,Command,Normal,136,,0,high,136/264 read clearly
+17,9,215,Flanking TIE Interceptor,,Common,Unit,Cunning,Normal,215,,0,high,215/264 read clearly
+17,10,258,Grassroots Resistance,,Common,Event,Heroism,Normal,258,,0,high,258/264 read clearly
+17,11,122,Consortium StarViper,,Common,Unit,Command,Normal,122,,0,high,122/264 read clearly
+17,12,687,Intimidation,,Common,Event,Aggression,Hyperspace Foil,185,1,0,high,"VERIFY: distinct physical foil card confirmed (foil sheen/streaks), left of R5-D4; ""INTIMIDATION / INNATE / ...4 or more cards"" text + number ""687"" both read clearly on fresh zoom; genuine 2nd copy (pos5 is Normal #185), NOT a duplicate-view artifact"
+17,13,156,R5-D4,Built for Adventure,Uncommon,Unit,Aggression/Heroism,Normal,156,,0,high,156/264 read clearly
+17,14,115,The Student Guides the Master,,Uncommon,Event,Command/Heroism,Normal,115,,0,high,115/264 read clearly
+17,15,505,Marrok's Fiend Fighter,Formidable Pursuer,Uncommon,Unit,Villainy,Hyperspace,241,,0,high,"505 bare number read clearly, borderless look confirmed"
+17,16,153,Green Leader,Crynyd's Sacrifice,Rare,Unit,Aggression/Heroism,Normal,153,,0,high,153/264 read clearly
+18,1,4,Grand Admiral Thrawn,Victory is Mine,Rare,Leader,Vigilance/Villainy,Normal,4,,0,medium,"name+subtitle ""Victory is Mine"" clearly legible and uniquely match reference #4; printed number digits not pixel-confirmed (bottom border region unresolved in photo)"
+18,2,19,Fortress of the Great Mothers,,Common,Base,Vigilance,Normal,19,,0,medium,"""BASE / FORTRESS OF THE GREAT MOTHERS / PERIDEA"" clearly legible, unique reference match; bare digits not pixel-confirmed"
+18,3,141,TIE Striker,,Common,Unit,Aggression/Villainy,Normal,141,,0,high,141/264 read clearly
+18,4,71,Battered Haulcraft,,Common,Unit,Vigilance,Normal,71,,0,high,71/264 read clearly
+18,5,188,Galvanized Leap,,Common,Event,Aggression,Normal,188,,0,high,188/264 read clearly
+18,6,237,Mouse Droid,,Common,Unit,Villainy,Normal,237,,0,high,237/264 read clearly
+18,7,380,Ant Droid,,Common,Unit,Command,Hyperspace,116,,0,high,"380 bare number read clearly, borderless look confirmed, positioned as 5th common (pos7) matching structure hint"
+18,8,221,Helix Starfighter,,Common,Unit,Cunning,Normal,221,,0,high,221/264 read clearly
+18,9,134,Warrior's Legacy,,Common,Upgrade,Command,Normal,134,,0,high,134/264 read clearly
+18,10,249,Covert Veteran,,Common,Unit,Heroism,Normal,249,,0,high,249/264 read clearly
+18,11,222,Unsanctioned Patrol,,Common,Unit,Cunning,Normal,222,,0,high,222/264 read clearly
+18,12,733,Diplomatic Pageantry,,Common,Event,Cunning,Hyperspace Foil,231,1,0,high,"733 bare number read clearly on close zoom (initially misread as 753, corrected on tighter crop), text/name match Diplomatic Pageantry exactly"
+18,13,49,Shin Hati,Going Somewhere?,Uncommon,Unit,Vigilance/Villainy,Normal,49,,0,high,49/264 read clearly
+18,14,159,Alphabet Squadron U-Wing,Quiet Devotion,Uncommon,Unit,Aggression/Heroism,Normal,159,,0,high,159/264 read clearly
+18,15,392,Bothan-5,New Republic Prison Ship,Rare,Unit,Command,Hyperspace,128,,0,high,392 bare number read clearly; Rare card occupying UC3 (pos15) slot per structure's allowed HS-rare upgrade
+18,16,118,8D8,Daimyo's Majordomo,Rare,Unit,Command,Normal,118,,0,medium,"name+subtitle ""Daimyo's Majordomo"" clearly legible and uniquely match reference #118; bordered/framed card style (not borderless) supports Normal variant, but exact digits not pixel-confirmed"
+19,1,16,Shin Hati,Eager Adversary,Common,Leader,Cunning/Villainy,Normal,16,0,0,medium,"16/264 read, blurry sideways corner"
+19,2,20,"Nevarro City, Restored",,Common,Base,Vigilance,Normal,20,0,0,high,20/264 read after zoom
+19,3,89,Perseverance,,Common,Event,Vigilance,Normal,89,0,0,high,89/264 read
+19,4,167,Flarestar Attack Shuttle,,Common,Unit,Aggression,Normal,167,0,0,high,167/264 read
+19,5,261,Noti Mobile Pod,,Common,Unit,,Normal,261,0,0,high,261/264 read after zoom
+19,6,48,Imperial Armored Commando,,Common,Unit,Vigilance/Villainy,Normal,48,0,0,high,48/264 read
+19,7,524,Mos Espa Watermonger,,Common,Unit,,Hyperspace,260,0,1,high,"524 bare read, HS common"
+19,8,121,Blurrg,,Common,Unit,Command,Normal,121,0,0,high,121/264 read
+19,9,201,Open Circle Ace,,Common,Unit,Cunning/Heroism,Normal,201,0,0,high,201/264 read
+19,10,130,Fang Fighter Squadron,,Common,Unit,Command,Normal,130,0,0,high,130/264 read
+19,11,213,Womp Rat,,Common,Unit,Cunning,Normal,213,0,0,high,213/264 read
+19,12,756,Gallofree Transport,,Common,Unit,Heroism,Hyperspace Foil,254,1,1,high,"756 bare read, foil slot"
+19,13,198,Nowhere to Hide,,Uncommon,Upgrade,Cunning/Villainy,Normal,198,0,0,high,198/264 read
+19,14,137,Wipe Them Out,,Uncommon,Event,Command,Normal,137,0,0,high,137/264 read
+19,15,191,Shin Hati's Fiend Fighter,Compact and Agile,Uncommon,Unit,Cunning/Villainy,Normal,191,0,0,high,191/264 read
+19,16,27,Enoch,Solemn Servant,Rare,Unit,Vigilance/Command/Villainy,Normal,27,0,0,high,27/264 read
+20,1,273,Ahsoka Tano,Trust in the Force,Common,Leader,Command/Heroism,Hyperspace,9,0,1,high,"VERIFY: bordered green(Command) Normal leader frame confirmed on zoom (LEADER header, side ability box, FORCE-JEDI trait); variant Normal certain, identity certain; variant corrected via 2026-07-12 number-first re-read (read 273)"
+20,2,25,Emperor's Observatory,,Common,Base,Cunning,Normal,25,0,0,high,25/264 read
+20,3,171,Pegasus Tri-Wing,,Common,Unit,Aggression,Normal,171,0,0,high,171/264 read
+20,4,69,Noti Nomad,,Common,Unit,Vigilance,Normal,69,0,0,high,69/264 read
+20,5,164,Alamite Hunter,,Common,Unit,Aggression,Normal,164,0,0,high,164/264 read
+20,6,87,Cybernetic Enhancements,,Common,Upgrade,Vigilance,Normal,87,0,0,high,87/264 read after zoom
+20,7,437,Shydopp Pirate Skiff,,Common,Unit,Aggression,Hyperspace,173,0,1,high,"437 bare read, HS common"
+20,8,262,Faith in the Empire,,Common,Upgrade,,Normal,262,0,0,high,262/264 read
+20,9,126,Survivors' Langskib,,Common,Unit,Command,Normal,126,0,0,high,126/264 read
+20,10,207,Heroic Purrgil,,Common,Unit,Cunning/Heroism,Normal,207,0,0,high,207/264 read
+20,11,140,Stronger Together,,Common,Event,Command,Normal,140,0,0,high,140/264 read
+20,12,699,Executor,Final Destruction of the Alliance,Special,Unit,Cunning/Villainy,Hyperspace Foil,197,1,1,high,"699 bare read, foil slot"
+20,13,29,Scorpenek Annihilator Droid,,Uncommon,Unit,Vigilance/Command,Normal,29,0,0,high,29/264 read
+20,14,142,Mortar Trooper,,Uncommon,Unit,Aggression/Villainy,Normal,142,0,0,high,142/264 read
+20,15,103,Long Live the Empire,,Uncommon,Event,Command/Villainy,Normal,103,0,0,high,103/264 read
+20,16,224,Elzar Mann,Haunted by a Vision,Legendary,Unit,Cunning,Normal,224,0,0,high,224/264 read
+21,1,8,Moff Gideon,Indomitable Warlord,Common,Leader,Command/Villainy,Normal,8,0,0,medium,corner text illegible in photo; frame style + reference match
+21,2,22,Kryze Castle,,Common,Base,Command,Normal,22,0,0,medium,corner text illegible in photo; frame style + reference match
+21,3,244,Remnant Trooper Corps,,Common,Unit,Villainy,Normal,244,0,0,high,244/264 read
+21,4,165,Clan Vizsla Soldier,,Common,Unit,Aggression,Normal,165,0,0,high,165/264 read
+21,5,81,Nebulon-C Frigate,,Common,Unit,Vigilance,Normal,81,0,0,high,81/264 read
+21,6,145,Praetorian Elite,,Common,Unit,Aggression/Villainy,Normal,145,0,0,high,145/264 read
+21,7,312,Imperial Armored Commando,,Common,Unit,Vigilance/Villainy,Hyperspace,48,0,1,high,"312 bare read, HS common"
+21,8,225,Tatooine Sand Beast,,Common,Unit,Cunning,Normal,225,0,0,high,225/264 read
+21,9,251,Zealous Soldier,,Common,Unit,Heroism,Normal,251,0,0,high,251/264 read
+21,10,129,Defenders of the Forest,,Common,Unit,Command,Normal,129,0,0,high,129/264 read
+21,11,205,Inspiring Veteran,,Common,Unit,Cunning/Heroism,Normal,205,0,0,high,205/264 read
+21,12,591,Perseverance,,Common,Event,Vigilance,Hyperspace Foil,89,1,1,high,"591 bare read, foil slot"
+21,13,85,Grav Charge,,Uncommon,Upgrade,Vigilance,Normal,85,0,0,high,85/264 read
+21,14,38,Purrgil Ultra,,Uncommon,Unit,Command/Cunning,Normal,38,0,0,high,38/264 read
+21,15,236,Far Far Away,,Uncommon,Event,Cunning,Normal,236,0,0,high,236/264 read after zoom
+21,16,257,Choose Your Path,,Rare,Event,Heroism,Normal,257,0,0,high,257/264 read
+22,1,13,Ezra Bridger,It's Now or Never,Common,Leader,Aggression/Heroism,Normal,13,0,0,medium,"~13/264 partial blurry read, confirmed via name+subtitle+aspect match in reference"
+22,2,288,Dragonsnake Bog,,Common,Base,Aggression,Hyperspace,24,0,1,high,footer illegible in photo; number from unique reference match (only Normal variant exists); variant corrected via 2026-07-12 number-first re-read (read 288)
+22,3,58,Duchess's Protector,,Common,Unit,Vigilance/Heroism,Normal,58,0,0,high,58/264 read
+22,4,143,Tempest Lieutenant,,Common,Unit,Aggression/Villainy,Normal,143,0,0,high,143/264 read
+22,5,260,Mos Espa Watermonger,,Common,Unit,,Normal,260,0,0,high,260/264 read
+22,6,45,Reanimated Night Trooper,,Common,Unit,Vigilance/Villainy,Normal,45,0,0,high,45/264 read
+22,7,395,Dinosaur Turtle,,Common,Unit,Command,Hyperspace,131,0,1,high,"395 read (bare number), Hyperspace common per pack structure"
+22,8,107,Clan Wren Loyalist,,Common,Unit,Command/Heroism,Normal,107,0,0,high,107/264 read
+22,9,256,Rebel Infiltrators,,Common,Unit,Heroism,Normal,256,0,0,high,256/264 read
+22,10,193,Emperor's Champion,,Common,Unit,Cunning/Villainy,Normal,193,0,0,high,193/264 read
+22,11,124,Protectorate Fighter,,Common,Unit,Command,Normal,124,0,0,high,124/264 read
+22,12,683,Mark My Words,,Common,Upgrade,Aggression,Hyperspace Foil,181,1,0,high,"683 read (bare number), foil slot"
+22,13,146,Justifier,Relentless,Uncommon,Unit,Aggression/Villainy,Normal,146,0,0,high,146/264 read
+22,14,223,Halo,Not According to Plan,Uncommon,Unit,Cunning,Normal,223,0,0,high,223/264 read
+22,15,352,The Conflict Within,,Uncommon,Upgrade,Vigilance,Hyperspace,88,0,1,high,352 read (bare number)
+22,16,186,Treacherous Minefield,,Rare,Event,Aggression,Normal,186,0,0,medium,"186/264 read from full quadrant view, not re-verified with tight zoom"
+23,1,6,Sabine Wren,Bargaining on Belief,Common,Leader,Vigilance/Heroism,Normal,6,0,0,medium,footer not cleanly zoomed; number from unique subtitle+aspect match in reference
+23,2,24,Dragonsnake Bog,,Common,Base,Aggression,Normal,24,0,0,high,24/264 read
+23,3,174,StarFortress Heavy Bomber,,Common,Unit,Aggression,Normal,174,0,0,high,174/264 read
+23,4,80,Covert Believers,,Common,Unit,Vigilance,Normal,80,0,0,high,80/264 read
+23,5,246,Exploit Advantage,,Common,Event,Villainy,Normal,246,0,0,high,"246/264 read, corrected from initial misread of 248 via reference cross-check"
+23,6,173,Shydopp Pirate Skiff,,Common,Unit,Aggression,Normal,173,0,0,medium,number illegible on repeated zoom attempts; 173 inferred from unique reference match
+23,7,454,Peridea Bandit,,Common,Unit,Cunning/Villainy,Hyperspace,190,0,1,high,454 read (bare number)
+23,8,189,Emperor's Messenger,,Common,Unit,Cunning/Villainy,Normal,189,0,0,high,189/264 read
+23,9,116,Ant Droid,,Common,Unit,Command,Normal,116,0,0,high,116/264 read
+23,10,227,Heightened Awareness,,Common,Upgrade,Cunning,Normal,227,0,0,high,227/264 read
+23,11,111,Children of the Watch,,Common,Unit,Command/Heroism,Normal,111,0,0,high,111/264 read
+23,12,618,Ant Droid,,Common,Unit,Command,Hyperspace Foil,116,1,0,high,"618 read (bare number), foil slot"
+23,13,46,Scion Shuttle,At Morgan's Bidding,Uncommon,Unit,Vigilance/Villainy,Normal,46,0,0,high,46/264 read
+23,14,113,Mandalorian Flagship,Captured from the Empire,Uncommon,Unit,Command/Heroism,Normal,113,0,0,high,113/264 read
+23,15,208,Sabine Wren,I Learned the Hard Way,Uncommon,Unit,Cunning/Heroism,Normal,208,0,0,high,208/264 read
+23,16,202,Carson Teva,There's Something Going On,Rare,Unit,Cunning/Heroism,Normal,202,0,0,high,202/264 read
+24,1,17,Greef Karga,Gracious Magistrate,Common,Leader,Cunning/Heroism,Normal,17,0,0,medium,name+subtitle+aspect unique match; footer digits not independently re-zoomed
+24,2,19,Fortress of the Great Mothers,,Common,Base,Vigilance,Normal,19,0,0,medium,name+aspect unique match; footer digits not independently re-zoomed
+24,3,78,B-Wing Rearguard,,Common,Unit,Vigilance,Normal,78,0,0,high,78/264 read
+24,4,152,Inspired Recruit,,Common,Unit,Aggression/Heroism,Normal,152,0,0,high,152/264 read
+24,5,73,Palace Chef Droid,,Common,Unit,Vigilance,Normal,73,0,0,high,73/264 read
+24,6,141,TIE Striker,,Common,Unit,Aggression/Villainy,Normal,141,0,0,high,141/264 read (rotated text)
+24,7,337,Palace Chef Droid,,Common,Unit,Vigilance,Hyperspace,73,0,1,high,"337 read (bare number), Hyperspace common per pack structure"
+24,8,263,The Way of the Mand'alor,,Common,Upgrade,,Normal,263,0,0,high,263/264 read
+24,9,234,Masterstroke,,Common,Event,Cunning,Normal,234,0,0,high,234/264 read
+24,10,95,Remnant Interceptor,,Common,Unit,Command/Villainy,Normal,95,0,0,high,95/264 read
+24,11,218,Ferry Droid,,Common,Unit,Cunning,Normal,218,0,0,high,218/264 read
+24,12,727,Tatooine Sand Beast,,Common,Unit,Cunning,Hyperspace Foil,225,1,0,high,"727 read (bare number), foil slot"
+24,13,162,Rash Action,,Uncommon,Event,Aggression/Heroism,Normal,162,0,0,high,162/264 read
+24,14,74,Mos Eisley Modifier,,Uncommon,Unit,Vigilance,Normal,74,0,0,high,74/264 read
+24,15,139,Hold Them Off,,Uncommon,Event,Command,Normal,139,0,0,high,139/264 read
+24,16,114,Sabine's Lightsaber,Not Alone,Rare,Upgrade,Command/Heroism,Normal,114,0,0,high,114/264 read

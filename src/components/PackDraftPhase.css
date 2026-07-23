@@ -196,17 +196,11 @@
   box-shadow: 0 6px 16px rgba(0, 255, 0, 0.6);
 }
 
-/* Duplicate bottom draft timer — a second copy of the top timer, just below the
+/* Duplicate bottom draft timer — a second copy of the top timer, just above the
    pick/confirm box. Only adds vertical spacing; the TimerPanel renders exactly as
    it does at the top (no layout/visual overrides). */
 .timer-bar-bottom {
   margin: 0.75rem 0 0.25rem;
-}
-
-/* Bottom stack mirrors the top inside-out, so its round indicator sits BELOW
-   the timer — flip the indicator's spacing to match. */
-.timer-bar-bottom .round-pick-info {
-  margin: 10px 0 0;
 }
 
 /* Review cost/aspect columns: Unit / Non-Unit sub-sections (mirrors deckbuilder). */
@@ -487,39 +481,6 @@
   box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
 }
 
-.selection-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 4px;
-}
-
-.selection-confirm-button {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
-  color: rgba(255, 255, 255, 0.85);
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 0.85rem;
-  font-weight: 700;
-  padding: 5px 10px;
-  transition: all 0.2s ease;
-}
-
-.selection-confirm-button:hover:not(:disabled),
-.selection-confirm-button:focus-visible {
-  background: rgba(76, 175, 80, 0.25);
-  border-color: rgba(76, 175, 80, 0.55);
-  color: #fff;
-  outline: none;
-}
-
-.selection-confirm-button:disabled {
-  cursor: wait;
-  opacity: 0.6;
-}
-
 .deselect-button {
   position: absolute;
   top: 8px;
@@ -540,10 +501,6 @@
   background: rgba(255, 80, 80, 0.3);
   border-color: rgba(255, 80, 80, 0.6);
   color: #ff5050;
-}
-
-.deselect-button svg {
-  display: block;
 }
 
 .selection-info {
@@ -777,7 +734,7 @@
 .review-pack-card {
   position: relative;
   flex-shrink: 0;
-  cursor: default;
+  cursor: zoom-in;
   transition: transform 0.1s ease;
 }
 .review-pack-img {
@@ -850,7 +807,7 @@
 .review-stacked-card {
   position: relative;
   width: 100%;
-  cursor: default;
+  cursor: zoom-in;
 }
 .review-card-img {
   display: block;

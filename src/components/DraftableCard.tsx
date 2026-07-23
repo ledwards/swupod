@@ -4,7 +4,6 @@
 import { useState, useRef, useEffect } from 'react'
 import type { MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
-import { CardStatsBadge } from './CardStatsBadge'
 import './DraftableCard.css'
 
 interface CardData {
@@ -39,7 +38,6 @@ export interface DraftableCardProps {
   selected?: boolean
   dimmed?: boolean
   useStaticPreview?: boolean
-  statsSetCode?: string | null
 }
 
 function DraftableCard({
@@ -50,8 +48,7 @@ function DraftableCard({
   disabled = false,
   selected = false,
   dimmed = false,
-  useStaticPreview = false,
-  statsSetCode = null
+  useStaticPreview = false
 }: DraftableCardProps) {
   const [imageError, setImageError] = useState(false)
   const [hoveredCardPreview, setHoveredCardPreview] = useState<CardPreview | null>(null)
@@ -251,7 +248,6 @@ function DraftableCard({
               <div className="placeholder-rarity">{card.rarity}</div>
             </div>
           )}
-          {card.imageUrl && !imageError ? <CardStatsBadge card={card} setCode={statsSetCode} /> : null}
         </div>
       </div>
 

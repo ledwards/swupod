@@ -47,12 +47,6 @@ export interface TimerPanelProps {
    * Drives the competitive Appendix C round-timer schedule. Ignored for casual.
    */
   cardsRemaining?: number
-  /**
-   * Where the Pack/Pick (or Leader round) indicator renders relative to the
-   * timer box. The top and bottom stacks mirror each other inside-out, so the
-   * bottom copy puts the round indicator BELOW the timer.
-   */
-  roundInfoPosition?: 'above' | 'below'
 }
 
 /**
@@ -60,7 +54,7 @@ export interface TimerPanelProps {
  * Shows either pick timeout or last player timer (whichever has less time remaining)
  * Both timers can be enabled/disabled independently
  */
-function TimerPanel({ draft, players = [], compact = false, isHost = false, onTogglePause, onUpdateTimerSettings, draftState = null, onTimerExpire, cardsRemaining = 0, roundInfoPosition = 'above' }: TimerPanelProps) {
+function TimerPanel({ draft, players = [], compact = false, isHost = false, onTogglePause, onUpdateTimerSettings, draftState = null, onTimerExpire, cardsRemaining = 0 }: TimerPanelProps) {
   const [activeTimer, setActiveTimer] = useState<'round' | 'lastPlayer'>('round')
   const [optimisticPaused, setOptimisticPaused] = useState<boolean | null>(null)
 
@@ -77,8 +71,8 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
   const isLastPlayerTimerEnabled = draft?.timerEnabled !== false
 
   // Competitive pods run the official Appendix C schedule: the round timer steps
-  // down as the pack/leaders deplete and is NOT host-customizable. `null` means
-  // the schedule auto-picks the last pack card — nothing to time.
+  // down as the pack/leaders deplete (60→…→5→auto) and is NOT host-customizable.
+  // `null` means the schedule auto-picks the last card — nothing to time.
   const isCompetitive = draft?.competitive === true
   const displayedPickSeconds = getDisplayPickSeconds({
     competitive: isCompetitive,
@@ -150,7 +144,7 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
 
   // Determine what should be shown. Competitive: always show the round timer on
   // the Appendix C schedule (hidden only when the schedule auto-picks the last
-  // pack card → null), and never the Last Player timer (not a sanctioned rule).
+  // card → null), and never the Last Player timer (not a sanctioned rule).
   const showRoundTimer = isCompetitive ? displayedPickSeconds !== null : isRoundTimerEnabled
   const showLastPlayerTimer = !isCompetitive && isLastPlayerTimerEnabled && isLastPlayer
 
@@ -175,19 +169,19 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
       : (compact ? "Pick" : "Pick Timeout:")
   const totalLeaderRounds = draftState?.totalPacks || draft?.settings?.chaosSets?.length || 3
 
-  const roundPickInfo = draftState?.phase === 'leader_draft' ? (
-    <div className="round-pick-info">
-      Leader {draftState?.leaderRound || 1}/{totalLeaderRounds}
-    </div>
-  ) : draftState?.phase === 'pack_draft' ? (
-    <div className="round-pick-info">
-      Pack {draftState?.packNumber || 1} - Pick {draftState?.pickInPack || 1}
-    </div>
-  ) : null
-
   return (
     <>
-      {roundInfoPosition === 'above' && roundPickInfo}
+      {/* Round/Pick info displayed ABOVE the timer box */}
+      {draftState?.phase === 'leader_draft' && (
+        <div className="round-pick-info">
+          Leader {draftState?.leaderRound || 1}/{totalLeaderRounds}
+        </div>
+      )}
+      {draftState?.phase === 'pack_draft' && (
+        <div className="round-pick-info">
+          Pack {draftState?.packNumber || 1} - Pick {draftState?.pickInPack || 1}
+        </div>
+      )}
 
       <div className={wrapperClass}>
         <div className={`timer-panel ${compact ? 'compact' : ''} ${isPaused ? 'paused' : ''}`}>
@@ -238,8 +232,6 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
           )}
         </div>
       </div>
-
-      {roundInfoPosition === 'below' && roundPickInfo}
 
       {/* Host timer controls — modify timers during active draft */}
       {isHost && onUpdateTimerSettings && !compact && !draft?.competitive && (

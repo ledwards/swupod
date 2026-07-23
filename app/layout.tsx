@@ -12,6 +12,7 @@
 
 import type { Metadata, Viewport } from 'next'
 import Providers from './providers'
+import '../src/styles/tokens.css'
 import '../src/index.css'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.protectthepod.com'
@@ -87,7 +88,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* Fonts — these are static link rels Next.js's metadata API
             doesn't have a first-class slot for. */}

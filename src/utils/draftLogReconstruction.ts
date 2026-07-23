@@ -81,7 +81,7 @@ function getPlayerBySeat(players: PlayerData[], seat: number): PlayerData | unde
  *
  * Returns: originalLeaders[playerIndex] = array of leader cards
  */
-function reconstructOriginalLeaderPacks(
+export function reconstructOriginalLeaderPacks(
   players: PlayerData[],
   totalSeats: number
 ): Array<Array<{ instanceId: string; [key: string]: unknown }>> {

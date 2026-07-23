@@ -1,6 +1,6 @@
 // @ts-nocheck
 // POST /api/formats/chaos-sealed - Generate a Chaos Sealed pool (6 packs from 6 different sets)
-import { query } from '@/lib/db'
+import { query, queryRows } from '@/lib/db'
 import { getSession } from '@/lib/auth'
 import { generateShareId, formatSetCodeRange } from '@/lib/utils'
 import { jsonResponse, errorResponse, parseBody, validateRequired, handleApiError } from '@/lib/utils'
@@ -8,7 +8,12 @@ import { getSetConfig } from '@/src/utils/setConfigs/index'
 import { generateBoosterPack } from '@/src/utils/boosterPack'
 import { isCarboniteCode, getBaseSetCode, isCarboniteSupported } from '@/src/utils/carboniteConstants'
 import { initializeCardCache } from '@/src/utils/cardCache'
+import { getAllCards } from '@/src/utils/cardData'
+import { getCampaign, drawEventPack } from '@/src/services/promoPacks'
+import { promoTierForCode, splitSelection, validateChaosSealedSelection } from '@/src/services/chaosSealedSelection'
 import { NextRequest, NextResponse } from 'next/server'
+
+const PROMO_CAMPAIGN = 'gc2026'
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -21,14 +26,51 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const { setCodes } = body
 
-    // Validate pack count (1-12)
-    if (!Array.isArray(setCodes) || setCodes.length < 1 || setCodes.length > 12) {
+    if (!Array.isArray(setCodes)) {
       return errorResponse('Must select between 1 and 12 packs', 400)
     }
 
-    // Validate all sets exist
+    // Selection rules first: an all-Event-Pack request has zero slot packs, so the count
+    // check below would reject it with the wrong reason ("select between 1 and 12") rather
+    // than telling the caller it has no Leader.
+    const selection = validateChaosSealedSelection(setCodes)
+    if (!selection.ok) {
+      return errorResponse(selection.message, 400)
+    }
+
+    // Validate pack count (1-12). Event Packs augment the pool rather than filling one of
+    // its slots, so the limit applies to set packs only.
+    const slotPackCount = splitSelection(setCodes).setPacks.length
+    if (slotPackCount < 1 || slotPackCount > 12) {
+      return errorResponse('Must select between 1 and 12 packs', 400)
+    }
+
+    // GC Event Packs arrive in setCodes alongside the set packs (they augment the pool
+    // rather than filling a slot). They're only generatable if the account actually owns
+    // that tier, validated server-side (a client can't spoof an unowned tier).
+    const campaign = getCampaign(PROMO_CAMPAIGN)
+    const requestedTiers = [...new Set(setCodes.map(promoTierForCode).filter(Boolean))]
+    if (requestedTiers.length > 0) {
+      if (!userId || !campaign) {
+        return errorResponse('Event Packs require an unlocked account', 403)
+      }
+      const ownedRows = await queryRows(
+        'SELECT promo_tier FROM promo_entitlements WHERE user_id = $1 AND campaign = $2',
+        [userId, PROMO_CAMPAIGN]
+      )
+      const owned = new Set(ownedRows.map(r => r.promo_tier))
+      if (requestedTiers.some(t => !owned.has(t))) {
+        return errorResponse('You have not unlocked that Event Pack', 403)
+      }
+    }
+
+    // Validate all non-promo sets exist
     const setConfigs = []
     for (const setCode of setCodes) {
+      if (promoTierForCode(setCode)) {
+        setConfigs.push(null) // promo slot — no set config
+        continue
+      }
       const baseCode = isCarboniteCode(setCode) ? getBaseSetCode(setCode) : setCode
       const setConfig = getSetConfig(baseCode)
       if (!setConfig) {
@@ -44,19 +86,32 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Initialize card cache (needed for server-side pack generation)
     await initializeCardCache()
 
-    // Generate packs (1 from each selected set)
+    // Generate packs (1 per selected slot, in the order chosen)
     const packs = []
     const allCards = []
+    let cardsById = null
 
     for (let i = 0; i < setCodes.length; i++) {
       const setCode = setCodes[i]
-      const pack = generateBoosterPack([], setCode)
-      packs.push({
-        ...pack,
-        setCode,
-        setName: setConfigs[i].setName
-      })
-      allCards.push(...pack.cards)
+      const tier = promoTierForCode(setCode)
+      if (tier) {
+        if (!cardsById) cardsById = new Map(getAllCards().map(c => [c.id, c]))
+        const eventPack = drawEventPack(campaign, tier, id => cardsById.get(id) ?? null)
+        packs.push({
+          ...eventPack,
+          setCode,
+          setName: `2026 GC ${tier === 'silver' ? 'Silver' : 'Black'} Pack`,
+        })
+        allCards.push(...eventPack.cards)
+      } else {
+        const pack = generateBoosterPack([], setCode)
+        packs.push({
+          ...pack,
+          setCode,
+          setName: setConfigs[i].setName
+        })
+        allCards.push(...pack.cards)
+      }
     }
 
     // Generate unique share ID
@@ -103,7 +158,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       shareUrl,
       createdAt: pool.created_at,
       setCodes,
-      setNames: setConfigs.map(c => c.setName),
+      // setConfigs holds null for Event Pack slots — fall back to the generated pack's name.
+      setNames: setConfigs.map((c, i) => c ? c.setName : packs[i].setName),
       cardCount: allCards.length,
       packCount: packs.length
     }, 201)

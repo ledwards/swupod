@@ -284,6 +284,53 @@ function runTests(): void {
     assert(count === 0, `Common HS count should be 0 (dedicated belt), got ${count}`)
   })
 
+  test('FIXED: ASH spaces HS leader/base on the sheet — right rate AND tight per-box spread', () => {
+    // SPEC (11 verified real boxes, 261 packs, number-first re-read 2026-07-12):
+    // HS leader 46/261 = 17.6% and HS base 41/261 = 15.7%, both AT 1/6 = 4/box
+    // (per-box mode exactly 4/4), and SPACED (real per-box sd ~0.7, well under
+    // a shuffled sheet's ~1.3). ASH config: leader 10/60, base 10/60, spaced.
+    const belt = new HyperspaceUpgradeBelt('ASH')
+    const BOXES = 1500
+    const lead: number[] = []
+    const base: number[] = []
+    for (let b = 0; b < BOXES; b++) {
+      let l = 0
+      let ba = 0
+      for (let p = 0; p < 24; p++) {
+        const plan = belt.next()
+        if (plan.leader) l++
+        if (plan.base) ba++
+      }
+      lead.push(l)
+      base.push(ba)
+    }
+    const mean = (xs: number[]) => xs.reduce((a, v) => a + v, 0) / xs.length
+    const sd = (xs: number[]) => { const m = mean(xs); return Math.sqrt(xs.reduce((a, v) => a + (v - m) ** 2, 0) / xs.length) }
+    const lm = mean(lead)
+    const bm = mean(base)
+    // Means on target (10/60*24 = 4.0 each).
+    assert(lm > 3.7 && lm < 4.3, `SPEC: HS leader ~4.0/box (1/6), got ${lm.toFixed(2)}`)
+    assert(bm > 3.7 && bm < 4.3, `SPEC: HS base ~4.0/box (1/6), got ${bm.toFixed(2)}`)
+    // Spread far tighter than a shuffled sheet (leader hypergeometric sd ≈ 1.3).
+    assert(sd(lead) < 0.9, `SPEC: HS leader must be spaced, not shuffled — sd ${sd(lead).toFixed(2)} (shuffled ≈ 1.3)`)
+    assert(sd(base) < 0.9, `SPEC: HS base must be spaced, not shuffled — sd ${sd(base).toFixed(2)} (shuffled ≈ 1.15)`)
+  })
+
+  test('LAW unchanged: leader + base still 1/6 via the shuffled budget path', () => {
+    // Guard: the ASH spaced path must not touch LAW.
+    const belt = new HyperspaceUpgradeBelt('LAW')
+    let l = 0
+    let b = 0
+    const N = 6000
+    for (let i = 0; i < N; i++) {
+      const plan = belt.next()
+      if (plan.leader) l++
+      if (plan.base) b++
+    }
+    assert(Math.abs(l / N - 1 / 6) / (1 / 6) < 0.06, `LAW leader HS should stay ~1/6, got ${(l / N).toFixed(3)}`)
+    assert(Math.abs(b / N - 1 / 6) / (1 / 6) < 0.06, `LAW base HS should stay ~1/6, got ${(b / N).toFixed(3)}`)
+  })
+
   // ========================================================================
   // SUMMARY
   // ========================================================================

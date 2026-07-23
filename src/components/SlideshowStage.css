@@ -100,14 +100,41 @@
   background: rgba(0, 0, 0, 0.5);
 }
 
+/* Name + "Picked Cards" link stacked under the avatar. */
+.slideshow-stage-label-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
 .slideshow-stage-name {
   font-weight: 600;
   font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.92);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /* Never truncate a player's name — wrap the full name instead. */
+  overflow-wrap: anywhere;
   min-width: 0;
+}
+
+.slideshow-stage-picks-link {
+  align-self: flex-start;
+  padding: 0;
+  background: none;
+  border: none;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(var(--pt-glow-interactive-rgb), 0.9);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .slideshow-stage-picks-link:hover {
+    color: rgba(var(--pt-glow-interactive-rgb), 1);
+  }
 }
 
 /* Cards in a single left-aligned row at the uniform fitted height. */

@@ -107,6 +107,8 @@ export async function fetchUserBuild(
 // current name is still the auto-default (true) or has been edited by the
 // user (false). Auto-rename only fires while `isDefaultName === true`.
 
+import { formatSetCodeLabel } from './setCodeLabel'
+
 export type PoolFormat = 'sealed' | 'draft' | string
 
 export function formatPoolDate(date: Date | string | null | undefined): string {
@@ -143,7 +145,8 @@ export interface DefaultPoolNameInputs {
 
 export function getDefaultPoolName({ ownerName, setCode, poolType, createdAt }: DefaultPoolNameInputs): string {
   const owner = ownerName?.trim()
-  const set = (setCode || '').toUpperCase()
+  // Multi-pack formats store every pack's code; show the distinct sets (Event Packs as PROMO).
+  const set = formatSetCodeLabel(setCode)
   const fmt = formatLabel(poolType)
   const date = formatPoolDate(createdAt)
   const ownerPart = owner ? `${owner}'s ` : ''
@@ -174,7 +177,8 @@ export function getDefaultBuildName({
 }: DefaultBuildNameInputs): string | null {
   if (archetypeNickname) {
     const archetype = stripArchetypeSetAndFormat(archetypeNickname)
-    const set = (setCode || '').toUpperCase()
+    // Multi-pack formats store every pack's code; show the distinct sets (Event Packs as PROMO).
+  const set = formatSetCodeLabel(setCode)
     const fmt = formatLabel(poolType)
     const date = formatPoolDate(createdAt)
     const setPart = set ? ` (${set})` : ''
@@ -263,7 +267,8 @@ export interface CanonicalSubtitleInputs {
 }
 
 export function getCanonicalPoolSubtitle({ ownerName, setCode, poolType, createdAt }: CanonicalSubtitleInputs): string {
-  const set = (setCode || '').toUpperCase()
+  // Multi-pack formats store every pack's code; show the distinct sets (Event Packs as PROMO).
+  const set = formatSetCodeLabel(setCode)
   const fmt = formatLabel(poolType)
   const date = formatPoolDate(createdAt)
   const owner = ownerName?.trim()

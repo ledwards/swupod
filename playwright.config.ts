@@ -71,7 +71,9 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:3000',
+    // Honor TEST_BASE_URL so a suite pointed at another port (e.g. a worktree
+    // dev server) reuses that server instead of booting a second one on :3000.
+    url: process.env.TEST_BASE_URL || 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },

@@ -1,5 +1,6 @@
 'use client'
 
+import './CardDataStatsModal.css'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { CardPreviewProvider, CardName } from '@/src/components/CardNamePreview'
 import Modal from '@/src/components/Modal'
@@ -14,6 +15,26 @@ type CardDataSortKey = 'cardName' | 'grade' | 'rarity' | 'gpWr' | 'gpCount' | 'd
 type CardDataView = 'table' | 'tiers'
 type CardMetricKey = 'gihWr' | 'ohWr' | 'gdWr' | 'gpWr'
 type CardKindFilter = 'leaders' | 'deck-cards' | 'units' | 'non-units'
+type CardGradeScheme = 'global' | 'cost' | 'curve-slot'
+
+interface CardSchemeGrade {
+  grade: string | null
+  status: string
+  provisional?: boolean
+  statusLabel: string
+  bucketKey: string | null
+  bucketLabel: string | null
+}
+
+// Which population a card is graded against. "Whole Set" is the historical
+// behaviour; the two bucketed lenses grade a card only against others competing
+// for the same deck slot, so a strong 2-drop is no longer buried beneath every
+// 5-drop just because win rate rises with cost.
+const GRADE_SCHEME_OPTIONS: Array<[CardGradeScheme, string, string]> = [
+  ['global', 'Whole Set', 'Every card graded against every other card in the set.'],
+  ['cost', 'By Cost', 'Each card graded only against others of the same cost.'],
+  ['curve-slot', 'By Turn', 'Each card graded against others in the same curve slot; 1- and 2-drops share Turn 1.'],
+]
 
 interface CardDataCard {
   cardName: string
@@ -57,7 +78,11 @@ interface CardDataCard {
   resourcedWhenSeen: number | null
   playedWar: number | null
   sampleWarning: string | null
+  gradesByScheme?: Partial<Record<CardGradeScheme, CardSchemeGrade>>
   displayGrade?: string | null
+  displayGradeStatusLabel?: string | null
+  displayBucketKey?: string | null
+  displayBucketLabel?: string | null
   displayMetricValue?: number | null
   displayMetricCount?: number | null
 }
@@ -72,6 +97,7 @@ interface CardDataStats {
   onlineLinkedDecks: number
   replayMetricsStatus: string
   gradeBasis: string
+  bucketedGradeBasis?: string
   leaders?: CardDataCard[]
   bases?: CardDataCard[]
   cards: CardDataCard[]
@@ -372,7 +398,7 @@ function CardDataModalStat({ label, value, detail }: { label: string; value: str
   )
 }
 
-function CardDataStatsModal({ card, onClose, formatLabel, sampleWarningLabel }: {
+export function CardDataStatsModal({ card, onClose, formatLabel, sampleWarningLabel }: {
   card: CardDataCard
   onClose: () => void
   formatLabel: string
@@ -487,6 +513,8 @@ export default function CardDataTierList({
   const [view, setView] = useState<CardDataView>(defaultView)
   const [selectedCard, setSelectedCard] = useState<CardDataCard | null>(null)
   const [cardKindFilter, setCardKindFilter] = useState<CardKindFilter>('deck-cards')
+  const [gradeScheme, setGradeScheme] = useState<CardGradeScheme>('global')
+  const [bucketFilter, setBucketFilter] = useState<string>('all')
   const [sortKey, setSortKey] = useState<CardDataSortKey>('grade')
   const [sortAsc, setSortAsc] = useState(false)
   const [hasRecordedGame, setHasRecordedGame] = useState(false)
@@ -498,6 +526,9 @@ export default function CardDataTierList({
   const activeView = allowTable ? view : 'tiers'
   const isLeaderView = cardKindFilter === 'leaders'
   const selectedMetric = isLeaderView ? LEADER_GRADE_METRIC : GIH_GRADE_METRIC
+  // Leaders carry no cost, so they are always graded against the whole pool.
+  const activeGradeScheme: CardGradeScheme = isLeaderView ? 'global' : gradeScheme
+  const isBucketedScheme = activeGradeScheme !== 'global'
 
   useEffect(() => {
     if (!allowTable || !viewParamName) return
@@ -618,13 +649,25 @@ export default function CardDataTierList({
 
   const decorateRowsFromApiGrades = (rows: CardDataCard[], metric: CardMetricKey) => {
     return {
-      provisional: rows.some(card => /provisional/i.test(card.gradePolicy || card.gradeStatus || card.sampleWarning || '')),
-      rows: rows.map(card => ({
-        ...card,
-        displayGrade: card.displayGrade ?? card.grade ?? null,
-        displayMetricValue: metricValue(card, metric),
-        displayMetricCount: metricCount(card, metric),
-      })),
+      provisional: isBucketedScheme
+        ? rows.some(card => card.gradesByScheme?.[activeGradeScheme]?.provisional)
+        : rows.some(card => /provisional/i.test(card.gradePolicy || card.gradeStatus || card.sampleWarning || '')),
+      rows: rows.map(card => {
+        const schemeGrade = isBucketedScheme ? card.gradesByScheme?.[activeGradeScheme] : null
+        return {
+          ...card,
+          displayGrade: isBucketedScheme
+            ? schemeGrade?.grade ?? null
+            : card.displayGrade ?? card.grade ?? null,
+          displayGradeStatusLabel: isBucketedScheme
+            ? schemeGrade?.statusLabel ?? 'Ungraded'
+            : card.gradeStatusLabel,
+          displayBucketKey: schemeGrade?.bucketKey ?? null,
+          displayBucketLabel: schemeGrade?.bucketLabel ?? null,
+          displayMetricValue: metricValue(card, metric),
+          displayMetricCount: metricCount(card, metric),
+        }
+      }),
     }
   }
 
@@ -650,7 +693,10 @@ export default function CardDataTierList({
   const rankedCardRows = useMemo(() => {
     const filtered = scopedCardRows.filter(cardFilter.filterFn)
     const ranked = decorateRowsFromApiGrades(filtered, selectedMetric)
-    const rows = sortRows(ranked.rows)
+    const bucketed = bucketFilter === 'all'
+      ? ranked.rows
+      : ranked.rows.filter(card => card.displayBucketKey === bucketFilter)
+    const rows = sortRows(bucketed)
     return {
       ...ranked,
       rows,
@@ -666,7 +712,26 @@ export default function CardDataTierList({
     cardData?.sourceDetail,
     cardFilter.search,
     cardFilter.activeAspects,
+    activeGradeScheme,
+    isBucketedScheme,
+    bucketFilter,
   ])
+
+  // Buckets present in the current slice, ordered as they appear on the curve.
+  const availableBuckets = useMemo(() => {
+    if (!isBucketedScheme) return []
+    const seen = new Map<string, string>()
+    for (const card of scopedCardRows) {
+      const bucket = card.gradesByScheme?.[activeGradeScheme]
+      if (bucket?.bucketKey && !seen.has(bucket.bucketKey)) {
+        seen.set(bucket.bucketKey, bucket.bucketLabel || bucket.bucketKey)
+      }
+    }
+    return [...seen.entries()].sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true }))
+  }, [scopedCardRows, activeGradeScheme, isBucketedScheme])
+
+  // A bucket selected under one lens has no meaning under another.
+  useEffect(() => { setBucketFilter('all') }, [activeGradeScheme])
 
   const hasCards = availableCardRows.length > 0
   const formatPct = (v: number) => `${v.toFixed(1)}%`
@@ -688,6 +753,12 @@ export default function CardDataTierList({
   })
   const activeMetricLabel = isLeaderView ? 'Leader WR' : cardDataMetricLabel(selectedMetric)
   const activeMetricFullLabel = isLeaderView ? 'Leader Win Rate' : cardDataMetricFullLabel(selectedMetric)
+  // A grade is only meaningful alongside the population it was graded against.
+  const gradedAgainstLabel = activeGradeScheme === 'global'
+    ? 'the whole set'
+    : activeGradeScheme === 'cost'
+      ? 'cards of the same cost'
+      : 'cards in the same curve slot'
   const shownCount = rankedCardRows.rows.length
   const formatLabel = format === 'all' ? 'All' : format === 'sealed' ? 'Sealed' : 'Draft'
   const scopedCount = scopedCardRows.length
@@ -948,7 +1019,10 @@ export default function CardDataTierList({
         <div className="card-data-section-header">
           <div>
             <h4>{isLeaderView ? 'Leaders Tier List' : 'Cards Tier List'}</h4>
-            <p>Grouped by {activeMetricFullLabel}</p>
+            <p>
+              Grouped by {activeMetricFullLabel}
+              {isLeaderView ? null : <> · graded against {gradedAgainstLabel}</>}
+            </p>
           </div>
           <div className="card-data-tier-header-actions">
             <div className="card-data-card-kind-toggle" role="tablist" aria-label="Card type">
@@ -1024,16 +1098,66 @@ export default function CardDataTierList({
                   </div>
                 </div>
 
+                {isLeaderView ? null : (
+                  <div className="card-data-control">
+                    <span className="card-data-control-label">Graded Against</span>
+                    <div className="card-data-segmented">
+                      {GRADE_SCHEME_OPTIONS.map(([value, label, hint]) => (
+                        <button
+                          key={value}
+                          type="button"
+                          title={hint}
+                          className={`card-data-segment ${gradeScheme === value ? 'active' : ''}`}
+                          onClick={() => setGradeScheme(value)}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <CardDataSearchAndFilter {...cardFilter} />
               </div>
+
+              {isBucketedScheme && availableBuckets.length > 0 ? (
+                <div className="card-data-control card-data-bucket-control">
+                  <span className="card-data-control-label">
+                    {activeGradeScheme === 'cost' ? 'Cost' : 'Curve Slot'}
+                  </span>
+                  <div className="card-data-segmented card-data-bucket-segmented">
+                    <button
+                      type="button"
+                      className={`card-data-segment ${bucketFilter === 'all' ? 'active' : ''}`}
+                      onClick={() => setBucketFilter('all')}
+                    >
+                      All
+                    </button>
+                    {availableBuckets.map(([key, label]) => (
+                      <button
+                        key={key}
+                        type="button"
+                        className={`card-data-segment ${bucketFilter === key ? 'active' : ''}`}
+                        onClick={() => setBucketFilter(key)}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
 
               <div className="card-stats-mode-row card-stats-mode-row--compact">
                 <CardDataMetricDefinitions />
                 <div className="card-data-muted">
                   {formatLabel} · {fmt(shownCount)} / {fmt(scopedCount)} {rowNoun} loaded
-                  {rankedCardRows.provisional ? ' · provisional grade thresholds' : ''}
                   {hasWayfinderReplayMetrics(cardData?.sourceDetail) ? ' · Wayfinder data' : ''}
                 </div>
+                {rankedCardRows.provisional ? (
+                  <span className="card-data-provisional-note">
+                    Provisional — some grades come from small samples. Treat as directional, not settled.
+                  </span>
+                ) : null}
               </div>
             </div>
 

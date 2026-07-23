@@ -209,3 +209,16 @@ Fixing the transaction primitive, the auth boundaries, and the gates fixes the w
 committed 2026-06-11 — U1 `ce3e3b9`, U2 `becaa26`, U3 `980752f`, U4 `53842a7`, U5 `2e8f793`,
 U6 `ba4f1a5`, U7 `1217b57`, U8 `993829b`. Marked `status: done` the same day the work shipped —
 per the megaplan rule that every plan touched by a commit gets its status updated in the same pass.
+
+**2026-07-07 reconciliation (arch refresh audit):** re-verified unit-by-unit against the current
+tree — `status: done` stands. All 8 units held, and the new Swiss Practice subsystem *adopted*
+the U1/U2 primitives (`src/services/matchmaking/liveGames.ts:567,729,948,1209`). Two asterisks,
+now owned by `docs/plans/2026-07-07-001-fix-arch-refresh-plan.md`:
+1. **U5:** the "temporary" `/deckbuilder/build` bundle exemption (7.5 MB,
+   `scripts/check-bundle-size.ts:35-50`) is still live; the parallel DeckBuilder refactor it was
+   waiting on never happened (the file grew 2,847 → 2,962 lines) and `cards.json` grew to 9.5 MB.
+   → refresh-plan unit N1.
+2. **U6:** the ratchet held mechanically (baseline = live count) but was deliberately bumped
+   upward four times (551 → 576 net, +25 new `@ts-nocheck` files: `b66636bf`, `fbfcb378`,
+   `6ac76cfa`, `5d4e41ca`). The guard stops accidental drift, not routine `--update` bumps.
+   → refresh-plan unit N2.

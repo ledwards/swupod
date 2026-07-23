@@ -44,12 +44,12 @@ export function isRoundTimerEnabled(draft: { timed?: boolean | null } | null | u
  *
  * Competitive pods enforce the official Appendix C schedule server-side, where
  * the budget steps down as the pack/leader pile depletes (14 cards→60s … 3→5s;
- * leaders 3→15s, 2→10s, 1→5s). The dial must show THAT schedule, not a fixed value —
+ * leaders 3→15s … 1→auto). The dial must show THAT schedule, not a fixed value —
  * otherwise the displayed clock disagrees with what actually force-picks the
  * player, increasingly so deep into a pack. Competitive timing is not
  * customizable; the configured round timeout is ignored. Returns null when the
- * schedule yields 0 (currently the last pack card is auto-picked, so there is
- * nothing to time and no timer should render).
+ * schedule yields 0 (the last card/leader is auto-picked, so there is nothing to
+ * time and no timer should render).
  *
  * Casual pods are unaffected: they keep the fixed, host-configured round timeout.
  */

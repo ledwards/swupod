@@ -24,7 +24,6 @@ interface ExportData {
     author: string
   }
   leader: DeckEntry | null
-  secondleader: DeckEntry | null
   base: DeckEntry | null
   deck: DeckEntry[]
   sideboard: DeckEntry[]
@@ -115,7 +114,6 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         author: 'Protect the Pod',
       },
       leader: deckData.leader,
-      secondleader: null,
       base: deckData.base,
       deck: deckData.deck,
       sideboard: deckData.sideboard,

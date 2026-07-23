@@ -1,0 +1,207 @@
+.gift-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 3rem 1rem 4rem;
+  /* Standard Protect the Pod background: layered fades + the site texture. */
+  background-color: rgb(76, 77, 81);
+  background-image:
+    linear-gradient(rgb(9, 9, 9) 0%, rgba(0, 0, 0, 0) 18.23%), /* design-ok: standard PTP page background (same as .chaos-sealed-page) */
+    linear-gradient(rgba(0, 0, 0, 0) 78.12%, rgb(9, 9, 9) 93.23%), /* design-ok: standard PTP page background */
+    linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), /* design-ok: standard PTP page background */
+    url("/background-images/bg-texture-crop.png");
+  background-size: 100% 100%, 100% 100%, 100% 100%, 150% auto;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  background-position: center center, center center, center center, center center;
+  color: white;
+  font-family: 'Barlow', sans-serif;
+}
+
+.gift-container {
+  width: 100%;
+  max-width: 560px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---- Hero -------------------------------------------------------------- */
+/* The art is feathered into the page rather than sitting in a hard frame: a
+   soft radial alpha mask melts the edges, and a warm glow lifts it off the
+   texture. */
+.gift-hero-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 1.75rem;
+  isolation: isolate;
+}
+
+.gift-hero-wrap::before {
+  /* Ambient glow pooled behind the art. */
+  content: "";
+  position: absolute;
+  inset: -14% -10% -6%;
+  z-index: -1;
+  background: radial-gradient(ellipse at 50% 42%, rgba(96, 130, 224, 0.38), rgba(0, 0, 0, 0) 68%); /* design-ok: hero ambient glow */
+  filter: blur(6px);
+}
+
+.gift-hero {
+  width: 100%;
+  height: auto;
+  display: block;
+  /* Feather every edge so there is no hard rectangle against the background. */
+  -webkit-mask-image: radial-gradient(122% 122% at 50% 48%, #000 62%, rgba(0, 0, 0, 0) 96%); /* design-ok: hero edge feather */
+  mask-image: radial-gradient(122% 122% at 50% 48%, #000 62%, rgba(0, 0, 0, 0) 96%); /* design-ok: hero edge feather */
+  filter: drop-shadow(0 12px 34px rgba(0, 0, 0, 0.55));
+}
+
+/* ---- Copy -------------------------------------------------------------- */
+.gift-container h1 {
+  font-size: 2.15rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.9rem;
+}
+
+.gift-lede {
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.6;
+  margin: 0 auto 1.1rem;
+  max-width: 34rem;
+}
+
+.gift-lede--fine {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+/* ---- Pack preview ------------------------------------------------------ */
+/* "Here's what you're unlocking" — the two Event Packs, so the gift feels
+   tangible before the button is pressed. */
+.gift-packs {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 0.25rem 0 1.75rem;
+}
+
+.gift-pack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 116px;
+}
+
+.gift-pack img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
+  transition: transform 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gift-pack img:hover {
+    transform: translateY(-3px);
+  }
+}
+
+.gift-pack-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.gift-pack--locked img {
+  opacity: 0.62;
+}
+
+/* ---- CTA (button-only states) ----------------------------------------- */
+/* A lone button doesn't need a bordered box around it — that reads as an empty
+   panel. Just center it and let it carry the weight. */
+.gift-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+/* ---- Panel ------------------------------------------------------------- */
+.gift-panel {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-top: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  backdrop-filter: blur(3px);
+}
+
+.gift-panel h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.gift-panel-copy {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.5;
+  max-width: 30rem;
+}
+
+.gift-panel--ok {
+  border-color: rgba(80, 200, 120, 0.45);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(80, 200, 120, 0.12), rgba(0, 0, 0, 0) 60%), /* design-ok: success panel wash */
+    rgba(0, 0, 0, 0.55);
+}
+
+.gift-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: rgba(80, 200, 120, 0.16);
+  border: 1px solid rgba(80, 200, 120, 0.5);
+  color: rgba(120, 220, 150, 1);
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.gift-error {
+  color: rgba(255, 107, 107, 1);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.gift-page .loading {
+  padding: 1rem 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ---- Responsive -------------------------------------------------------- */
+@media (max-width: 480px) {
+  .gift-container h1 {
+    font-size: 1.85rem;
+  }
+  .gift-packs {
+    gap: 1rem;
+  }
+  .gift-pack {
+    width: 96px;
+  }
+}

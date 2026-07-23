@@ -268,3 +268,32 @@
     height: 130px;
   }
 }
+
+/* Special event packs (e.g. GC promos): their own group below the regular sets,
+   using the same tiles so they behave and read like any other pack. */
+.pack-selector-promos {
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pack-selector-subhead {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  text-align: center;
+}
+
+.pack-selector-grid--promos {
+  justify-content: center;
+}
+
+/* Locked tiles render as links; the global a:hover rule would otherwise tint them. */
+a.pack-selector-button,
+a.pack-selector-button:visited,
+a.pack-selector-button:hover,
+a.pack-selector-button:active {
+  color: #fff;
+  text-decoration: none;
+}

@@ -62,7 +62,7 @@ async function runTests(): Promise<void> {
     })
 
     test(`${setCode}: all cards have valid variant types`, () => {
-      const validVariants = ['Normal', 'Hyperspace', 'Foil', 'Hyperspace Foil', 'Showcase', 'Standard Prestige', 'Foil Prestige', 'Serialized Prestige']
+      const validVariants = ['Normal', 'Hyperspace', 'Foil', 'Hyperspace Foil', 'Showcase', 'Standard Prestige', 'Foil Prestige', 'Serialized Prestige', 'GC 2026 Promo']
       cards.forEach((card: any) => {
         assert(
           validVariants.includes(card.variantType),

@@ -77,14 +77,13 @@ export class HyperspaceLeaderBelt {
 
   _fill(): void {
     const priorCards = [...this.recentCards, ...this.hopper].slice(-LEADER_DEDUP_WINDOW)
-    // Set 7+ uses the same loosened dedup cap as the normal LeaderBelt
-    // (real ASH box 001: leader repeats at line gaps 3-5)
-    const setNumber = getSetConfig(this.setCode)?.setNumber ?? 0
+    // Loosened dedup cap comes from the set config (dedupWindows.hyperspaceLeaderCap)
+    const hsCap = getSetConfig(this.setCode)?.dedupWindows?.hyperspaceLeaderCap
     const boot = buildLeaderSheetBoot({
       commonLeaders: this.commonLeaders,
       rareLeaders: this.rareLeaders,
       priorCards,
-      ...(setNumber >= 7 ? { dedupWindowCap: 3 } : {}),
+      ...(hsCap != null ? { dedupWindowCap: hsCap } : {}),
     })
 
     this.hopper.push(...boot)

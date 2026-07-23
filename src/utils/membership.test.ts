@@ -62,12 +62,21 @@ describe('formatMembershipPrice', () => {
 import { hasRealCardsForSet } from './cardData.ts'
 
 describe('isSetUpcoming', () => {
+  // Pinned clock: "upcoming" is relative to a set's release date, so these assert the spec
+  // rather than whatever today happens to be (ASH released 2026-07-11).
+  const BEFORE_ASH_RELEASE = new Date('2026-05-26T00:00:00Z')
+
   it('SPEC: returns true for upcoming sets only after a real card is synced', () => {
     if (hasRealCardsForSet('ASH')) {
-      assert.strictEqual(isSetUpcoming('ASH'), true, 'ASH should be upcoming once real card lands')
+      assert.strictEqual(isSetUpcoming('ASH', BEFORE_ASH_RELEASE), true, 'ASH should be upcoming once real card lands')
     } else {
-      assert.strictEqual(isSetUpcoming('ASH'), false, 'ASH stays gated until first real card')
+      assert.strictEqual(isSetUpcoming('ASH', BEFORE_ASH_RELEASE), false, 'ASH stays gated until first real card')
     }
+  })
+
+  it('SPEC: a set stops being upcoming once its release date passes', () => {
+    const AFTER_ASH_RELEASE = new Date('2026-07-18T00:00:00Z') // ASH released 2026-07-17
+    assert.strictEqual(isSetUpcoming('ASH', AFTER_ASH_RELEASE), false)
   })
 
   it('SPEC: returns false for already-released sets', () => {
@@ -77,7 +86,7 @@ describe('isSetUpcoming', () => {
 
   it('SPEC: treats Carbonite siblings the same as their base set', () => {
     // ASH-CB strips to ASH; gate applies the same way.
-    assert.strictEqual(isSetUpcoming('ASH-CB'), hasRealCardsForSet('ASH'))
+    assert.strictEqual(isSetUpcoming('ASH-CB', BEFORE_ASH_RELEASE), hasRealCardsForSet('ASH'))
   })
 
   it('SPEC: returns false for unknown set codes', () => {

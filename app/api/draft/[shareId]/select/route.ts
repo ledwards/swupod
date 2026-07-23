@@ -1,9 +1,10 @@
 // POST /api/draft/:shareId/select - Stage a selection (not a final pick)
-// Selection is stored temporarily. Players must confirm to finalize; timeout
-// processing still falls back to the staged selection.
+// Selection is stored temporarily until all players have selected
+// When all have selected, picks are processed automatically
 import { query, queryRow } from '@/lib/db'
 import { requireAuth } from '@/lib/auth'
 import { jsonResponse, errorResponse, parseBody, handleApiError } from '@/lib/utils'
+import { processAllStagedPicks } from '@/src/utils/draftAdvance'
 import { processBotTurns } from '@/src/utils/botLogic'
 import { checkAndEnforceTimeout } from '@/src/utils/draftTimeout'
 import { broadcastDraftState } from '@/src/lib/socketBroadcast'
@@ -121,9 +122,24 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       console.error('Error broadcasting draft state:', err)
     })
 
+    // Check if all players have now selected - if so, process picks immediately
+    // This handles the case of all-human drafts without relying on bot processing.
+    // processAllStagedPicks serializes per-pod via pg_advisory_xact_lock and
+    // re-checks "all selected" under the lock, so a concurrent caller simply
+    // waits and then no-ops — no retry loop or soft lock needed.
     if (cardId) {
-      // Trigger bot processing for drafts with bots. Bots soft-select now and
-      // auto-confirm once the human players have confirmed.
+      try {
+        const processed = await processAllStagedPicks(podId)
+        if (processed) {
+          // Broadcast after picks processed so clients see the advanced state
+          await broadcastDraftState(shareId)
+        }
+      } catch (err) {
+        console.error('Error processing picks:', err)
+      }
+
+      // Trigger bot processing for drafts with bots
+      // Don't await - let it run in background so response is fast
       processBotTurns(podId).catch(err => {
         console.error('Error processing bot turns:', err)
       })

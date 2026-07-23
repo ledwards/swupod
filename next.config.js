@@ -1,5 +1,11 @@
+/* global process */
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // A production `next build` writes to the same directory `next dev` is serving from, which
+  // leaves a running dev server handing out stale/missing chunks (the page renders unstyled).
+  // Point build-verification at its own dir instead:
+  //   NEXT_DIST_DIR=.next-build npx next build
+  distDir: process.env.NEXT_DIST_DIR || '.next',
   images: {
     remotePatterns: [
       {

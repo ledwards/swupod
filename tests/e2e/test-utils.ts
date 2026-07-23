@@ -28,7 +28,7 @@ if (!connectionString) {
 let pool: pg.Pool | null = null
 let poolEnded = false
 
-function getPool(): pg.Pool {
+export function getPool(): pg.Pool {
   if (poolEnded || !pool) {
     pool = new pg.Pool({ connectionString })
     poolEnded = false
@@ -51,16 +51,16 @@ interface TestUserResult {
 /**
  * Create a test user directly in the database
  */
-export async function createTestUser(username: string, testId: string, options?: { isBetaTester?: boolean; isAdmin?: boolean }): Promise<TestUserResult> {
+export async function createTestUser(username: string, testId: string, options?: { isBetaTester?: boolean; isAdmin?: boolean; isPatron?: boolean }): Promise<TestUserResult> {
   const uniqueId = `test_${testId}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
 
   // Insert user into database
   const db = getPool()
   const result = await db.query(
-    `INSERT INTO users (discord_id, username, email, avatar_url, is_beta_tester, is_admin)
-     VALUES ($1, $2, $3, $4, $5, $6)
+    `INSERT INTO users (discord_id, username, email, avatar_url, is_beta_tester, is_admin, is_patron)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
      RETURNING *`,
-    [uniqueId, username, `${uniqueId}@test.local`, null, options?.isBetaTester || false, options?.isAdmin || false]
+    [uniqueId, username, `${uniqueId}@test.local`, null, options?.isBetaTester || false, options?.isAdmin || false, options?.isPatron || false]
   )
 
   const user = result.rows[0]

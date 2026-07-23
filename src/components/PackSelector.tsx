@@ -16,6 +16,7 @@ import { getPackImageUrl } from '@/src/utils/packArt'
 import { getSetConfig } from '@/src/utils/setConfigs'
 import { isSetBeta, isSetPrerelease } from '@/src/utils/api'
 import { getBaseCode, sortSetsForDisplay } from '@/src/utils/packSelectorSort'
+import { MAX_PROMO_PACKS_TOTAL } from '@/src/services/chaosSealedSelection'
 import type { SetData } from '@/src/utils/packSelectorSort'
 import SubscribeModal from './SubscribeModal'
 import { buildTeaserModalCopy } from './setSelectionTeaser'
@@ -71,17 +72,29 @@ export function PackSelector({
     return selectedSets.filter(s => s === setCode).length
   }
 
+  // Event Packs augment the pool instead of filling a slot: they don't consume the pool's
+  // slots, and they're capped by a shared total across both tiers rather than by the pool's
+  // pack count.
+  const promoCodes = new Set(sets.filter(s => s.promo).map(s => s.code))
+  const isPromoCode = (setCode: string) => promoCodes.has(setCode)
+  const slotsUsed = selectedSets.filter(code => !isPromoCode(code)).length
+  const promosUsed = selectedSets.length - slotsUsed
+
+  const canAddOne = (setCode: string) =>
+    isPromoCode(setCode)
+      ? promosUsed < MAX_PROMO_PACKS_TOTAL
+      : slotsUsed < maxSelections
+
   const handleSetClick = (setCode: string) => {
     if (isMultiSelect && onSelectSets) {
       const count = getSetCount(setCode)
       if (count === 0) {
-        // First click: add the set
-        if (selectedSets.length < maxSelections) {
+        // First click: add the set. Once selected, quantity is controlled only by the
+        // +/- badges — clicking the card again is a no-op (so it never clears to 0 by
+        // accident).
+        if (canAddOne(setCode)) {
           onSelectSets([...selectedSets, setCode])
         }
-      } else {
-        // Already selected: remove all instances
-        onSelectSets(selectedSets.filter(s => s !== setCode))
       }
     } else if (onSelectSet) {
       onSelectSet(setCode)
@@ -90,7 +103,7 @@ export function PackSelector({
 
   const handleAddOne = (setCode: string, e: React.MouseEvent) => {
     e.stopPropagation()
-    if (onSelectSets && selectedSets.length < maxSelections) {
+    if (onSelectSets && canAddOne(setCode)) {
       onSelectSets([...selectedSets, setCode])
     }
   }
@@ -113,6 +126,31 @@ export function PackSelector({
   }
 
   const renderSetButton = (set: SetData) => {
+    // Locked variant: the pack is shown so you know it exists, but it can't be added yet.
+    // The badge says what's needed and the tile links to the page that explains how.
+    if (set.locked) {
+      return (
+        <a
+          key={set.code}
+          href={set.locked.href}
+          className="pack-selector-button pack-selector-button--coming-soon"
+          aria-label={`${set.name} — ${set.locked.description || set.locked.label}`}
+          style={{ '--set-color': getSetColor(set.code) } as React.CSSProperties}
+        >
+          <div className="pack-selector-image">
+            <img src={getPackImageUrl(set.code)} alt={set.name} />
+          </div>
+          <div className="pack-selector-content">
+            <span className="pack-selector-name">{set.name}</span>
+          </div>
+          <span className="pack-selector-coming-soon-badge">
+            <LockIconSm />
+            <span>{set.locked.label}</span>
+          </span>
+        </a>
+      )
+    }
+
     // "Coming Soon" teaser variant for unreleased sets injected by peekUnreleased.
     if (set.comingSoon) {
       const setColor = getSetColor(set.code)
@@ -152,7 +190,7 @@ export function PackSelector({
     // In single-select mode, mark unselected packs when one is selected
     const isUnselected = !isMultiSelect && selectedSet !== null && selectedSet !== set.code
     // In multi-select mode, mark unselected packs when max is reached
-    const isMaxed = isMultiSelect && !isSelected && selectedSets.length >= maxSelections
+    const isMaxed = isMultiSelect && !isSelected && !canAddOne(set.code)
 
     return (
       <div
@@ -173,7 +211,7 @@ export function PackSelector({
               {isSelected && (
                 <>
                   <button
-                    className={`pack-selector-qty-btn ${count <= 1 ? 'hidden' : ''}`}
+                    className={`pack-selector-qty-btn ${count < 1 ? 'hidden' : ''}`}
                     onClick={(e) => handleRemoveOne(set.code, e)}
                     aria-label={`Remove one ${set.name} pack`}
                   >
@@ -183,7 +221,7 @@ export function PackSelector({
                 </>
               )}
               <button
-                className={`pack-selector-qty-btn ${selectedSets.length >= maxSelections ? 'hidden' : ''}`}
+                className={`pack-selector-qty-btn ${canAddOne(set.code) ? '' : 'hidden'}`}
                 onClick={(e) => handleAddOne(set.code, e)}
                 aria-label={`Add one ${set.name} pack`}
               >
@@ -210,6 +248,14 @@ export function PackSelector({
       {sortedSets.carbonite.length > 0 && (
         <div className="pack-selector-grid carbonite-row">
           {sortedSets.carbonite.map(renderSetButton)}
+        </div>
+      )}
+      {sortedSets.promos.length > 0 && (
+        <div className="pack-selector-promos">
+          <h4 className="pack-selector-subhead">GC 2026 Event Packs</h4>
+          <div className="pack-selector-grid pack-selector-grid--promos">
+            {sortedSets.promos.map(renderSetButton)}
+          </div>
         </div>
       )}
       <SubscribeModal

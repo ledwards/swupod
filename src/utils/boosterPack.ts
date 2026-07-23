@@ -160,8 +160,9 @@ function usesLawPackRules(setCode: SetCode | string): boolean {
  * keep byte-identical behavior.
  */
 function usesLineStacking(setCode: SetCode | string): boolean {
-  const config = getSetConfig(setCode) as { setNumber?: number } | null;
-  return typeof config?.setNumber === 'number' && config.setNumber >= 7;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const config = getSetConfig(setCode) as any;
+  return config?.packRules?.lineStackingCollation === true;
 }
 
 /**
@@ -372,6 +373,8 @@ function getHSBeltGroup(setCode: SetCode | string): string | null {
   const n = config.setNumber;
   if (n >= 1 && n <= 3) return '1-3';
   if (n >= 4 && n <= 6) return '4-6';
+  // ASH (Set 8) has its own real-box-calibrated HS sheet (spaced, lower rates).
+  if (config.setCode === 'ASH') return 'ASH';
   if (n >= 7) return 'LAW';
   return null;
 }
@@ -394,6 +397,9 @@ function getCommonUpgradeBelt(setCode: SetCode | string): CommonUpgradeBelt | nu
   if (!usesLawPackRules(setCode)) return null;
   const key = `common-upgrade-${setCode}`;
   if (!beltCache.has(key)) {
+    // Default 1+1 per 48 (~1 second HS common/box) matches the 6 sharp real ASH
+    // boxes (1.18/box, sd 0.68) once HS common *leaders* are excluded from the
+    // count. No per-set override needed.
     beltCache.set(key, new CommonUpgradeBelt());
   }
   return beltCache.get(key) as CommonUpgradeBelt;
@@ -540,27 +546,38 @@ function applyUpgradePass(pack: Pack, setCode: SetCode | string): Pack {
     if (usesLawPackRules(setCode)) {
       const uc3OutcomeBelt = getSet7PlusUc3OutcomeBelt(setCode);
       const outcome: Set7PlusUc3Outcome = uc3OutcomeBelt ? uc3OutcomeBelt.next() : 'none';
+      // Physical sheet semantics: an upgraded UC3 comes from another sheet, so
+      // the normal-UC sheet never advanced — return the displaced card to the
+      // FRONT of the UncommonBelt (drawing 3-then-discarding burned ~8 phantom
+      // sheet positions per box and doubled UC seam repeats vs the 6 verified
+      // real boxes: ~12/box generated vs 6.7 observed).
+      const displacedUC3 = pack.cards[thirdUCIndex];
+      const returnDisplaced = () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const ub = getUncommonBelt(setCode) as any;
+        if (displacedUC3 && typeof ub.putBack === 'function') ub.putBack(displacedUC3);
+      };
 
       if (outcome === 'prestige') {
         const prestigeBelt = getPrestigeBelt(setCode);
         const prestige = prestigeBelt ? (prestigeBelt as CarbonitePrestigeBelt).nextTier1({ allowSynthesis: false }) : null;
-        if (prestige) pack.cards[thirdUCIndex] = prestige;
+        if (prestige) { pack.cards[thirdUCIndex] = prestige; returnDisplaced(); }
       } else if (outcome === 'hsUncommon') {
         const hsUCBelt = getHyperspaceUncommonBelt(setCode);
         const upgraded = hsUCBelt.next();
-        if (upgraded) pack.cards[thirdUCIndex] = upgraded;
+        if (upgraded) { pack.cards[thirdUCIndex] = upgraded; returnDisplaced(); }
       } else if (outcome === 'hsRare') {
         const hsRareBelt = getHyperspaceSingleRarityBelt(setCode, 'Rare');
         const upgraded = hsRareBelt.next();
-        if (upgraded) pack.cards[thirdUCIndex] = upgraded;
+        if (upgraded) { pack.cards[thirdUCIndex] = upgraded; returnDisplaced(); }
       } else if (outcome === 'hsSpecial') {
         const hsSpecialBelt = getHyperspaceSingleRarityBelt(setCode, 'Special');
         const upgraded = hsSpecialBelt.next();
-        if (upgraded) pack.cards[thirdUCIndex] = upgraded;
+        if (upgraded) { pack.cards[thirdUCIndex] = upgraded; returnDisplaced(); }
       } else if (outcome === 'hsLegendary') {
         const hsLegendaryBelt = getHyperspaceSingleRarityBelt(setCode, 'Legendary');
         const upgraded = hsLegendaryBelt.next();
-        if (upgraded) pack.cards[thirdUCIndex] = upgraded;
+        if (upgraded) { pack.cards[thirdUCIndex] = upgraded; returnDisplaced(); }
       }
     } else {
       const shouldUpgradeUC3 = hsPlan ? hsPlan.uc3 : (probs.thirdUCToHyperspaceRL && shouldUpgrade(probs.thirdUCToHyperspaceRL));

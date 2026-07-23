@@ -1,0 +1,1865 @@
+{
+  "set": "ASH",
+  "contests": 162053,
+  "humanSeats": 4156,
+  "minSeen": 20,
+  "generatedAt": "2026-07-12",
+  "cards": [
+    {
+      "name": "Darth Vader",
+      "subtitle": "Meet Your Destiny",
+      "rarity": "Special",
+      "aRate": 0.9574,
+      "aSeen": 141,
+      "rating": 99
+    },
+    {
+      "name": "Koska Reeves",
+      "subtitle": "Warrior of Mandalore",
+      "rarity": "Rare",
+      "aRate": 0.9164,
+      "aSeen": 287,
+      "rating": 100
+    },
+    {
+      "name": "Anakin Skywalker",
+      "subtitle": "You Were Right About Me",
+      "rarity": "Special",
+      "aRate": 0.9098,
+      "aSeen": 133,
+      "rating": 98
+    },
+    {
+      "name": "The Darksaber",
+      "subtitle": "Icon of Leadership",
+      "rarity": "Legendary",
+      "aRate": 0.9066,
+      "aSeen": 182,
+      "rating": 100
+    },
+    {
+      "name": "Whistling Birds",
+      "subtitle": "",
+      "rarity": "Legendary",
+      "aRate": 0.8957,
+      "aSeen": 211,
+      "rating": 99
+    },
+    {
+      "name": "Yellow Aces Bomber",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.8507,
+      "aSeen": 201,
+      "rating": 94
+    },
+    {
+      "name": "Jod Na Nawood",
+      "subtitle": "Keeping Secrets",
+      "rarity": "Rare",
+      "aRate": 0.8362,
+      "aSeen": 287,
+      "rating": 98
+    },
+    {
+      "name": "Chimaera",
+      "subtitle": "A Frightening Reality",
+      "rarity": "Legendary",
+      "aRate": 0.8257,
+      "aSeen": 218,
+      "rating": 97
+    },
+    {
+      "name": "Pre Vizsla",
+      "subtitle": "Strong-Willed Ruler",
+      "rarity": "Legendary",
+      "aRate": 0.8252,
+      "aSeen": 246,
+      "rating": 97
+    },
+    {
+      "name": "Ninth Sister",
+      "subtitle": "Hulking Inquisitor",
+      "rarity": "Legendary",
+      "aRate": 0.8173,
+      "aSeen": 197,
+      "rating": 97
+    },
+    {
+      "name": "Marrok's Fiend Fighter",
+      "subtitle": "Formidable Pursuer",
+      "rarity": "Uncommon",
+      "aRate": 0.7923,
+      "aSeen": 284,
+      "rating": 87
+    },
+    {
+      "name": "Sabine Wren",
+      "subtitle": "I Learned the Hard Way",
+      "rarity": "Uncommon",
+      "aRate": 0.7893,
+      "aSeen": 750,
+      "rating": 95
+    },
+    {
+      "name": "The Mandalorian",
+      "subtitle": "Devoted Rescuer",
+      "rarity": "Legendary",
+      "aRate": 0.7841,
+      "aSeen": 264,
+      "rating": 96
+    },
+    {
+      "name": "Imperial Armored Commando",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.7607,
+      "aSeen": 1726,
+      "rating": 96
+    },
+    {
+      "name": "The Cyborg Mech",
+      "subtitle": "Mysterious Threat",
+      "rarity": "Uncommon",
+      "aRate": 0.7387,
+      "aSeen": 861,
+      "rating": 94
+    },
+    {
+      "name": "Elzar Mann",
+      "subtitle": "Haunted by a Vision",
+      "rarity": "Legendary",
+      "aRate": 0.7341,
+      "aSeen": 173,
+      "rating": 95
+    },
+    {
+      "name": "Justifier",
+      "subtitle": "Relentless",
+      "rarity": "Uncommon",
+      "aRate": 0.694,
+      "aSeen": 902,
+      "rating": 92
+    },
+    {
+      "name": "Migs Mayfeld",
+      "subtitle": "How About a Toast?",
+      "rarity": "Rare",
+      "aRate": 0.6932,
+      "aSeen": 339,
+      "rating": 94
+    },
+    {
+      "name": "Zealous Soldier",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.686,
+      "aSeen": 484,
+      "rating": 77
+    },
+    {
+      "name": "Gorian Shard's Corsair",
+      "subtitle": "Pirate Warship",
+      "rarity": "Legendary",
+      "aRate": 0.6818,
+      "aSeen": 198,
+      "rating": 92
+    },
+    {
+      "name": "Blade Three",
+      "subtitle": "Bane of the Devastator",
+      "rarity": "Uncommon",
+      "aRate": 0.6811,
+      "aSeen": 834,
+      "rating": 90
+    },
+    {
+      "name": "Kelleran Beq",
+      "subtitle": "Where are the Others?",
+      "rarity": "Legendary",
+      "aRate": 0.6782,
+      "aSeen": 174,
+      "rating": 89
+    },
+    {
+      "name": "Shin Hati",
+      "subtitle": "Going Somewhere?",
+      "rarity": "Uncommon",
+      "aRate": 0.6762,
+      "aSeen": 1124,
+      "rating": 93
+    },
+    {
+      "name": "Luke Skywalker",
+      "subtitle": "Answering the Call",
+      "rarity": "Legendary",
+      "aRate": 0.665,
+      "aSeen": 197,
+      "rating": 93
+    },
+    {
+      "name": "Qi'ra",
+      "subtitle": "Master of Teräs Käsi",
+      "rarity": "Uncommon",
+      "aRate": 0.6625,
+      "aSeen": 714,
+      "rating": 90
+    },
+    {
+      "name": "Bo-Katan's Gauntlet",
+      "subtitle": "Reinforce from Above",
+      "rarity": "Rare",
+      "aRate": 0.6319,
+      "aSeen": 451,
+      "rating": 90
+    },
+    {
+      "name": "Imposing Scout Walker",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.6277,
+      "aSeen": 1343,
+      "rating": 89
+    },
+    {
+      "name": "Sabine's Lightsaber",
+      "subtitle": "Not Alone",
+      "rarity": "Rare",
+      "aRate": 0.6245,
+      "aSeen": 458,
+      "rating": 88
+    },
+    {
+      "name": "Bo-Katan Kryze",
+      "subtitle": "For All of Mandalore",
+      "rarity": "Rare",
+      "aRate": 0.6239,
+      "aSeen": 351,
+      "rating": 91
+    },
+    {
+      "name": "Unsanctioned Patrol",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.6236,
+      "aSeen": 1456,
+      "rating": 85
+    },
+    {
+      "name": "Mandalorian Super Commandos",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.6235,
+      "aSeen": 486,
+      "rating": 64
+    },
+    {
+      "name": "Moff Gideon",
+      "subtitle": "Remnant Commander",
+      "rarity": "Uncommon",
+      "aRate": 0.617,
+      "aSeen": 940,
+      "rating": 88
+    },
+    {
+      "name": "Queen Soruna",
+      "subtitle": "Willing to Fight",
+      "rarity": "Rare",
+      "aRate": 0.616,
+      "aSeen": 349,
+      "rating": 91
+    },
+    {
+      "name": "Green Leader",
+      "subtitle": "Crynyd's Sacrifice",
+      "rarity": "Rare",
+      "aRate": 0.6111,
+      "aSeen": 396,
+      "rating": 85
+    },
+    {
+      "name": "Gar Saxon",
+      "subtitle": "Coveting Power",
+      "rarity": "Rare",
+      "aRate": 0.6,
+      "aSeen": 455,
+      "rating": 87
+    },
+    {
+      "name": "Imperial Loyalist",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.5977,
+      "aSeen": 522,
+      "rating": 58
+    },
+    {
+      "name": "AT-ST Raider",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.5941,
+      "aSeen": 1786,
+      "rating": 84
+    },
+    {
+      "name": "Remnant Lookouts",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.5909,
+      "aSeen": 770,
+      "rating": 81
+    },
+    {
+      "name": "Huyang",
+      "subtitle": "Your Aptitude Falls Short",
+      "rarity": "Uncommon",
+      "aRate": 0.5816,
+      "aSeen": 1078,
+      "rating": 87
+    },
+    {
+      "name": "T-6 Shuttle 1974",
+      "subtitle": "With a Mentor's Dedication",
+      "rarity": "Uncommon",
+      "aRate": 0.5778,
+      "aSeen": 1061,
+      "rating": 84
+    },
+    {
+      "name": "Marrok",
+      "subtitle": "Mysterious Warrior",
+      "rarity": "Rare",
+      "aRate": 0.5718,
+      "aSeen": 397,
+      "rating": 86
+    },
+    {
+      "name": "Helgait",
+      "subtitle": "Dooku Was a Visionary",
+      "rarity": "Rare",
+      "aRate": 0.5625,
+      "aSeen": 416,
+      "rating": 79
+    },
+    {
+      "name": "Defenders of the Forest",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.5592,
+      "aSeen": 1613,
+      "rating": 84
+    },
+    {
+      "name": "N5 Sentry Droid",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.5581,
+      "aSeen": 525,
+      "rating": 52
+    },
+    {
+      "name": "Death Trooper Squad",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.558,
+      "aSeen": 500,
+      "rating": 52
+    },
+    {
+      "name": "StarFortress Heavy Bomber",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.5575,
+      "aSeen": 1453,
+      "rating": 83
+    },
+    {
+      "name": "Lang",
+      "subtitle": "Arrogant Mercenary",
+      "rarity": "Rare",
+      "aRate": 0.5574,
+      "aSeen": 305,
+      "rating": 86
+    },
+    {
+      "name": "Ezra Bridger",
+      "subtitle": "The Force is All I Need",
+      "rarity": "Uncommon",
+      "aRate": 0.5546,
+      "aSeen": 999,
+      "rating": 76
+    },
+    {
+      "name": "Vane's Snub Fighter",
+      "subtitle": "Brash and Proud",
+      "rarity": "Rare",
+      "aRate": 0.5416,
+      "aSeen": 469,
+      "rating": 78
+    },
+    {
+      "name": "Zeb Orrelios",
+      "subtitle": "Fists Work Every Time",
+      "rarity": "Legendary",
+      "aRate": 0.5387,
+      "aSeen": 284,
+      "rating": 81
+    },
+    {
+      "name": "Trask Walker",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.5351,
+      "aSeen": 897,
+      "rating": 82
+    },
+    {
+      "name": "Hold Them Off",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.535,
+      "aSeen": 1000,
+      "rating": 80
+    },
+    {
+      "name": "Imperial Defector",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.5344,
+      "aSeen": 494,
+      "rating": 49
+    },
+    {
+      "name": "The Twins",
+      "subtitle": "We Don't Want War",
+      "rarity": "Rare",
+      "aRate": 0.5343,
+      "aSeen": 335,
+      "rating": 83
+    },
+    {
+      "name": "Attendant Navigator",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.5329,
+      "aSeen": 456,
+      "rating": 45
+    },
+    {
+      "name": "Luke's Jedi Lightsaber",
+      "subtitle": "Constructed by Hand",
+      "rarity": "Special",
+      "aRate": 0.5314,
+      "aSeen": 207,
+      "rating": 81
+    },
+    {
+      "name": "Fennec Shand",
+      "subtitle": "The Galaxy Is Dangerous",
+      "rarity": "Uncommon",
+      "aRate": 0.5308,
+      "aSeen": 989,
+      "rating": 72
+    },
+    {
+      "name": "Shin Hati's Fiend Fighter",
+      "subtitle": "Compact and Agile",
+      "rarity": "Uncommon",
+      "aRate": 0.5296,
+      "aSeen": 980,
+      "rating": 73
+    },
+    {
+      "name": "Ewok Warrior",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.5296,
+      "aSeen": 1522,
+      "rating": 76
+    },
+    {
+      "name": "Eye of Sion",
+      "subtitle": "Delivered from Exile",
+      "rarity": "Legendary",
+      "aRate": 0.5291,
+      "aSeen": 172,
+      "rating": 45
+    },
+    {
+      "name": "Scorpenek Annihilator Droid",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.5284,
+      "aSeen": 846,
+      "rating": 82
+    },
+    {
+      "name": "Grassroots Resistance",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.5266,
+      "aSeen": 507,
+      "rating": 48
+    },
+    {
+      "name": "Halo",
+      "subtitle": "Not According to Plan",
+      "rarity": "Uncommon",
+      "aRate": 0.5217,
+      "aSeen": 853,
+      "rating": 71
+    },
+    {
+      "name": "Remnant Trooper Corps",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.5216,
+      "aSeen": 510,
+      "rating": 43
+    },
+    {
+      "name": "Morgan Elsbeth",
+      "subtitle": "Life Abandoned",
+      "rarity": "Uncommon",
+      "aRate": 0.5213,
+      "aSeen": 1270,
+      "rating": 78
+    },
+    {
+      "name": "Mandalorian Scout",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.5184,
+      "aSeen": 1632,
+      "rating": 72
+    },
+    {
+      "name": "Ryder Azadi",
+      "subtitle": "Restored Governor",
+      "rarity": "Rare",
+      "aRate": 0.5165,
+      "aSeen": 395,
+      "rating": 80
+    },
+    {
+      "name": "Razor Crest",
+      "subtitle": "Outfitted Armament",
+      "rarity": "Uncommon",
+      "aRate": 0.5075,
+      "aSeen": 1003,
+      "rating": 74
+    },
+    {
+      "name": "Heroic Purrgil",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.5072,
+      "aSeen": 1950,
+      "rating": 68
+    },
+    {
+      "name": "Paz Vizsla",
+      "subtitle": "For a Brighter Future",
+      "rarity": "Rare",
+      "aRate": 0.5059,
+      "aSeen": 423,
+      "rating": 79
+    },
+    {
+      "name": "Grogu",
+      "subtitle": "Yes. Yes. Yes.",
+      "rarity": "Legendary",
+      "aRate": 0.5054,
+      "aSeen": 277,
+      "rating": 74
+    },
+    {
+      "name": "Greef Karga",
+      "subtitle": "Introductions are in Order",
+      "rarity": "Uncommon",
+      "aRate": 0.4971,
+      "aSeen": 853,
+      "rating": 77
+    },
+    {
+      "name": "R5-D4",
+      "subtitle": "Built for Adventure",
+      "rarity": "Uncommon",
+      "aRate": 0.4969,
+      "aSeen": 1117,
+      "rating": 70
+    },
+    {
+      "name": "Leia Organa",
+      "subtitle": "Vigilant for Danger",
+      "rarity": "Special",
+      "aRate": 0.4947,
+      "aSeen": 188,
+      "rating": 77
+    },
+    {
+      "name": "Admiral Ackbar",
+      "subtitle": "Assume Attack Coordinates",
+      "rarity": "Legendary",
+      "aRate": 0.4916,
+      "aSeen": 238,
+      "rating": 75
+    },
+    {
+      "name": "Warrior of Clan Kryze",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4898,
+      "aSeen": 1717,
+      "rating": 74
+    },
+    {
+      "name": "Survivors' Langskib",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4864,
+      "aSeen": 1760,
+      "rating": 71
+    },
+    {
+      "name": "Flarestar Attack Shuttle",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4832,
+      "aSeen": 1606,
+      "rating": 69
+    },
+    {
+      "name": "Han Solo",
+      "subtitle": "It'll Work",
+      "rarity": "Special",
+      "aRate": 0.4821,
+      "aSeen": 224,
+      "rating": 70
+    },
+    {
+      "name": "B-Wing Rearguard",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4785,
+      "aSeen": 1741,
+      "rating": 73
+    },
+    {
+      "name": "Rebel Infiltrators",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4752,
+      "aSeen": 524,
+      "rating": 39
+    },
+    {
+      "name": "Carson Teva",
+      "subtitle": "There's Something Going On",
+      "rarity": "Rare",
+      "aRate": 0.4743,
+      "aSeen": 506,
+      "rating": 63
+    },
+    {
+      "name": "Shydopp Pirate Skiff",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4714,
+      "aSeen": 1693,
+      "rating": 63
+    },
+    {
+      "name": "Mando's N-1 Starfighter",
+      "subtitle": "Faster than a Fathier",
+      "rarity": "Rare",
+      "aRate": 0.4693,
+      "aSeen": 473,
+      "rating": 66
+    },
+    {
+      "name": "Captain Pellaeon",
+      "subtitle": "Plotting from the Shadows",
+      "rarity": "Uncommon",
+      "aRate": 0.4685,
+      "aSeen": 1063,
+      "rating": 71
+    },
+    {
+      "name": "Rancor Keeper",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.4641,
+      "aSeen": 918,
+      "rating": 75
+    },
+    {
+      "name": "Blurrg",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4626,
+      "aSeen": 1885,
+      "rating": 67
+    },
+    {
+      "name": "Pathfinder Sergeant",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4615,
+      "aSeen": 1974,
+      "rating": 65
+    },
+    {
+      "name": "Snub Fighter Squadron",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.4601,
+      "aSeen": 1028,
+      "rating": 55
+    },
+    {
+      "name": "Get Lost",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.459,
+      "aSeen": 1390,
+      "rating": 65
+    },
+    {
+      "name": "Poe Dameron",
+      "subtitle": "I'll Come Back For You",
+      "rarity": "Rare",
+      "aRate": 0.4573,
+      "aSeen": 433,
+      "rating": 66
+    },
+    {
+      "name": "Alphabet Squadron U-Wing",
+      "subtitle": "Quiet Devotion",
+      "rarity": "Uncommon",
+      "aRate": 0.4572,
+      "aSeen": 1157,
+      "rating": 61
+    },
+    {
+      "name": "Eviscerator",
+      "subtitle": "Burn Them Away",
+      "rarity": "Rare",
+      "aRate": 0.4568,
+      "aSeen": 556,
+      "rating": 68
+    },
+    {
+      "name": "Danger Squadron Wingmen",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4533,
+      "aSeen": 1829,
+      "rating": 62
+    },
+    {
+      "name": "Palace Chef Droid",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4525,
+      "aSeen": 1801,
+      "rating": 68
+    },
+    {
+      "name": "Gozanti Assault Carrier",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.4522,
+      "aSeen": 1161,
+      "rating": 65
+    },
+    {
+      "name": "Axe Woves",
+      "subtitle": "Undaunted",
+      "rarity": "Uncommon",
+      "aRate": 0.452,
+      "aSeen": 969,
+      "rating": 61
+    },
+    {
+      "name": "Tempest Lieutenant",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4473,
+      "aSeen": 1994,
+      "rating": 58
+    },
+    {
+      "name": "Peridea Bandit",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.445,
+      "aSeen": 2045,
+      "rating": 56
+    },
+    {
+      "name": "Tatooine Sand Beast",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4443,
+      "aSeen": 1866,
+      "rating": 54
+    },
+    {
+      "name": "Foundling Rescue",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.442,
+      "aSeen": 2025,
+      "rating": 62
+    },
+    {
+      "name": "Emperor's Champion",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4418,
+      "aSeen": 2080,
+      "rating": 49
+    },
+    {
+      "name": "Clan Vizsla Soldier",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4417,
+      "aSeen": 1630,
+      "rating": 59
+    },
+    {
+      "name": "Kachirho Militia",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.441,
+      "aSeen": 1161,
+      "rating": 57
+    },
+    {
+      "name": "Dinosaur Turtle",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4407,
+      "aSeen": 1938,
+      "rating": 61
+    },
+    {
+      "name": "Cobb Vanth",
+      "subtitle": "Let Me Handle This",
+      "rarity": "Rare",
+      "aRate": 0.44,
+      "aSeen": 550,
+      "rating": 67
+    },
+    {
+      "name": "Forest Patroller",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.436,
+      "aSeen": 2094,
+      "rating": 59
+    },
+    {
+      "name": "Warrior's Legacy",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4344,
+      "aSeen": 2088,
+      "rating": 57
+    },
+    {
+      "name": "Onyx Cinder",
+      "subtitle": "Adventure Awaits",
+      "rarity": "Rare",
+      "aRate": 0.4337,
+      "aSeen": 415,
+      "rating": 60
+    },
+    {
+      "name": "Masterstroke",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4326,
+      "aSeen": 2041,
+      "rating": 51
+    },
+    {
+      "name": "Bothan-5",
+      "subtitle": "New Republic Prison Ship",
+      "rarity": "Rare",
+      "aRate": 0.4286,
+      "aSeen": 434,
+      "rating": 69
+    },
+    {
+      "name": "Far Far Away",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.4259,
+      "aSeen": 1052,
+      "rating": 45
+    },
+    {
+      "name": "The Great Mothers",
+      "subtitle": "With Strange Magicks",
+      "rarity": "Rare",
+      "aRate": 0.4218,
+      "aSeen": 467,
+      "rating": 64
+    },
+    {
+      "name": "Desert Sharpshooter",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4209,
+      "aSeen": 1713,
+      "rating": 55
+    },
+    {
+      "name": "Durasteel Plating",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4207,
+      "aSeen": 2225,
+      "rating": 55
+    },
+    {
+      "name": "Pegasus Tri-Wing",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4178,
+      "aSeen": 1831,
+      "rating": 56
+    },
+    {
+      "name": "Battered Haulcraft",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4155,
+      "aSeen": 1863,
+      "rating": 58
+    },
+    {
+      "name": "Flanking TIE Interceptor",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4145,
+      "aSeen": 2007,
+      "rating": 46
+    },
+    {
+      "name": "Helix Starfighter",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4127,
+      "aSeen": 1885,
+      "rating": 46
+    },
+    {
+      "name": "Boba Fett's Rancor",
+      "subtitle": "Emotionally Complex Creature",
+      "rarity": "Legendary",
+      "aRate": 0.4118,
+      "aSeen": 255,
+      "rating": 60
+    },
+    {
+      "name": "Covert Veteran",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4117,
+      "aSeen": 515,
+      "rating": 35
+    },
+    {
+      "name": "Consortium StarViper",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4025,
+      "aSeen": 1943,
+      "rating": 53
+    },
+    {
+      "name": "Lothal E-Wing",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.4003,
+      "aSeen": 2126,
+      "rating": 54
+    },
+    {
+      "name": "Strike Team Vanguard",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.3986,
+      "aSeen": 2120,
+      "rating": 53
+    },
+    {
+      "name": "Mortar Trooper",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.3948,
+      "aSeen": 1150,
+      "rating": 47
+    },
+    {
+      "name": "Remnant Interceptor",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.3942,
+      "aSeen": 2156,
+      "rating": 47
+    },
+    {
+      "name": "Reinforcing Light Cruiser",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.394,
+      "aSeen": 2150,
+      "rating": 51
+    },
+    {
+      "name": "Ferry Droid",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.3932,
+      "aSeen": 1989,
+      "rating": 42
+    },
+    {
+      "name": "Praetorian Elite",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.3916,
+      "aSeen": 1923,
+      "rating": 43
+    },
+    {
+      "name": "Remnant Official",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.3898,
+      "aSeen": 1973,
+      "rating": 50
+    },
+    {
+      "name": "Inspiring Veteran",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.3882,
+      "aSeen": 2048,
+      "rating": 41
+    },
+    {
+      "name": "Knobby White Ice Spider",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.3864,
+      "aSeen": 1105,
+      "rating": 41
+    },
+    {
+      "name": "Ravager",
+      "subtitle": "Final Imperial Command",
+      "rarity": "Legendary",
+      "aRate": 0.386,
+      "aSeen": 272,
+      "rating": 52
+    },
+    {
+      "name": "Cybernetic Enhancements",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.3776,
+      "aSeen": 2214,
+      "rating": 44
+    },
+    {
+      "name": "Corona Four",
+      "subtitle": "Justice for Alderaan",
+      "rarity": "Rare",
+      "aRate": 0.3728,
+      "aSeen": 464,
+      "rating": 44
+    },
+    {
+      "name": "Stolen Eta Shuttle",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.371,
+      "aSeen": 1097,
+      "rating": 50
+    },
+    {
+      "name": "Fang Fighter Squadron",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.3579,
+      "aSeen": 2118,
+      "rating": 40
+    },
+    {
+      "name": "Honorable Nite Owl",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.3551,
+      "aSeen": 2033,
+      "rating": 40
+    },
+    {
+      "name": "Hera Syndulla",
+      "subtitle": "Renegade General",
+      "rarity": "Rare",
+      "aRate": 0.351,
+      "aSeen": 567,
+      "rating": 48
+    },
+    {
+      "name": "Barriss Offee",
+      "subtitle": "Redeeming Herself",
+      "rarity": "Uncommon",
+      "aRate": 0.3508,
+      "aSeen": 898,
+      "rating": 39
+    },
+    {
+      "name": "Open Circle Ace",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.3465,
+      "aSeen": 2228,
+      "rating": 35
+    },
+    {
+      "name": "Scion Shuttle",
+      "subtitle": "At Morgan's Bidding",
+      "rarity": "Uncommon",
+      "aRate": 0.3422,
+      "aSeen": 1496,
+      "rating": 42
+    },
+    {
+      "name": "Gallius Rax",
+      "subtitle": "Counselor to the Empire",
+      "rarity": "Legendary",
+      "aRate": 0.3401,
+      "aSeen": 344,
+      "rating": 48
+    },
+    {
+      "name": "Grav Charge",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.3397,
+      "aSeen": 1422,
+      "rating": 39
+    },
+    {
+      "name": "Doctor Pershing",
+      "subtitle": "Dedicated to Research",
+      "rarity": "Uncommon",
+      "aRate": 0.3393,
+      "aSeen": 1332,
+      "rating": 42
+    },
+    {
+      "name": "One Must Destroy to Create",
+      "subtitle": "",
+      "rarity": "Rare",
+      "aRate": 0.328,
+      "aSeen": 314,
+      "rating": 21
+    },
+    {
+      "name": "Executor",
+      "subtitle": "Final Destruction of the Alliance",
+      "rarity": "Special",
+      "aRate": 0.3234,
+      "aSeen": 201,
+      "rating": 37
+    },
+    {
+      "name": "Protectorate Fighter",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.322,
+      "aSeen": 2149,
+      "rating": 38
+    },
+    {
+      "name": "Wookiee Chieftain",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.3197,
+      "aSeen": 1961,
+      "rating": 35
+    },
+    {
+      "name": "Nebulon-C Frigate",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.3192,
+      "aSeen": 2152,
+      "rating": 38
+    },
+    {
+      "name": "Amnesty Officer",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.3124,
+      "aSeen": 2167,
+      "rating": 31
+    },
+    {
+      "name": "Reckless Sacrifice",
+      "subtitle": "",
+      "rarity": "Rare",
+      "aRate": 0.3106,
+      "aSeen": 586,
+      "rating": 33
+    },
+    {
+      "name": "8D8",
+      "subtitle": "Daimyo's Majordomo",
+      "rarity": "Rare",
+      "aRate": 0.3105,
+      "aSeen": 570,
+      "rating": 37
+    },
+    {
+      "name": "Covert Believers",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.3089,
+      "aSeen": 2169,
+      "rating": 36
+    },
+    {
+      "name": "Stronger Together",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.2991,
+      "aSeen": 2297,
+      "rating": 32
+    },
+    {
+      "name": "Bokken Saber",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.2982,
+      "aSeen": 1338,
+      "rating": 27
+    },
+    {
+      "name": "Gallofree Transport",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.2976,
+      "aSeen": 504,
+      "rating": 19
+    },
+    {
+      "name": "Buy Time",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.2948,
+      "aSeen": 2337,
+      "rating": 32
+    },
+    {
+      "name": "Crix Madine",
+      "subtitle": "Strike Team Strategist",
+      "rarity": "Uncommon",
+      "aRate": 0.2899,
+      "aSeen": 1290,
+      "rating": 33
+    },
+    {
+      "name": "Heightened Awareness",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.2892,
+      "aSeen": 2251,
+      "rating": 24
+    },
+    {
+      "name": "Rehabilitation",
+      "subtitle": "",
+      "rarity": "Rare",
+      "aRate": 0.2888,
+      "aSeen": 606,
+      "rating": 29
+    },
+    {
+      "name": "The Armorer",
+      "subtitle": "Secrecy is Our Survival",
+      "rarity": "Uncommon",
+      "aRate": 0.2861,
+      "aSeen": 1531,
+      "rating": 34
+    },
+    {
+      "name": "Reckoning",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.2843,
+      "aSeen": 1312,
+      "rating": 26
+    },
+    {
+      "name": "Blade of Talzin",
+      "subtitle": "A Gift of Shadows",
+      "rarity": "Rare",
+      "aRate": 0.2839,
+      "aSeen": 694,
+      "rating": 32
+    },
+    {
+      "name": "Grand Admiral Thrawn",
+      "subtitle": "Orchestrating His Return",
+      "rarity": "Rare",
+      "aRate": 0.2816,
+      "aSeen": 586,
+      "rating": 36
+    },
+    {
+      "name": "Jabba the Hutt",
+      "subtitle": "Eminence of Tatooine",
+      "rarity": "Rare",
+      "aRate": 0.276,
+      "aSeen": 576,
+      "rating": 30
+    },
+    {
+      "name": "Preparation",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.2751,
+      "aSeen": 2301,
+      "rating": 23
+    },
+    {
+      "name": "Trexler Armored Marauder",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.2737,
+      "aSeen": 2262,
+      "rating": 31
+    },
+    {
+      "name": "There Is No Conflict",
+      "subtitle": "",
+      "rarity": "Special",
+      "aRate": 0.2724,
+      "aSeen": 246,
+      "rating": 24
+    },
+    {
+      "name": "Deadly Vulnerability",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.2717,
+      "aSeen": 1314,
+      "rating": 26
+    },
+    {
+      "name": "Inspired Recruit",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.2696,
+      "aSeen": 2203,
+      "rating": 26
+    },
+    {
+      "name": "Outland Protector",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.2687,
+      "aSeen": 2263,
+      "rating": 27
+    },
+    {
+      "name": "At Attin Safety Droid",
+      "subtitle": "",
+      "rarity": "Rare",
+      "aRate": 0.2605,
+      "aSeen": 618,
+      "rating": 29
+    },
+    {
+      "name": "Enoch",
+      "subtitle": "Solemn Servant",
+      "rarity": "Rare",
+      "aRate": 0.2593,
+      "aSeen": 509,
+      "rating": 34
+    },
+    {
+      "name": "Mouse Droid",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.2593,
+      "aSeen": 459,
+      "rating": 14
+    },
+    {
+      "name": "Operation Cinder",
+      "subtitle": "",
+      "rarity": "Rare",
+      "aRate": 0.2566,
+      "aSeen": 530,
+      "rating": 28
+    },
+    {
+      "name": "Mos Eisley Modifier",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.2519,
+      "aSeen": 1457,
+      "rating": 30
+    },
+    {
+      "name": "Baylan Skoll",
+      "subtitle": "Fallen Jedi",
+      "rarity": "Rare",
+      "aRate": 0.2505,
+      "aSeen": 519,
+      "rating": 29
+    },
+    {
+      "name": "Unfettered Ambition",
+      "subtitle": "",
+      "rarity": "Rare",
+      "aRate": 0.2459,
+      "aSeen": 606,
+      "rating": 23
+    },
+    {
+      "name": "Follow Me",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.2452,
+      "aSeen": 2210,
+      "rating": 21
+    },
+    {
+      "name": "Duchess's Protector",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.2394,
+      "aSeen": 2423,
+      "rating": 28
+    },
+    {
+      "name": "TIE Striker",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.2372,
+      "aSeen": 2234,
+      "rating": 22
+    },
+    {
+      "name": "Home One",
+      "subtitle": "Heart of the Fleet",
+      "rarity": "Uncommon",
+      "aRate": 0.2365,
+      "aSeen": 1552,
+      "rating": 25
+    },
+    {
+      "name": "Children of the Watch",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.2338,
+      "aSeen": 2429,
+      "rating": 23
+    },
+    {
+      "name": "Improvised Identity",
+      "subtitle": "",
+      "rarity": "Legendary",
+      "aRate": 0.2216,
+      "aSeen": 361,
+      "rating": 17
+    },
+    {
+      "name": "Tatooine Repulsor Train",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.2207,
+      "aSeen": 1196,
+      "rating": 25
+    },
+    {
+      "name": "Turning the Tide",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.2177,
+      "aSeen": 2439,
+      "rating": 19
+    },
+    {
+      "name": "Pointless to Resist",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.2159,
+      "aSeen": 1649,
+      "rating": 20
+    },
+    {
+      "name": "Clan Wren Loyalist",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.2141,
+      "aSeen": 2546,
+      "rating": 19
+    },
+    {
+      "name": "Reanimated Night Trooper",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.2127,
+      "aSeen": 2478,
+      "rating": 22
+    },
+    {
+      "name": "Full of Surprises",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.2059,
+      "aSeen": 2390,
+      "rating": 13
+    },
+    {
+      "name": "Red Leader",
+      "subtitle": "Strike the Reactor",
+      "rarity": "Rare",
+      "aRate": 0.1958,
+      "aSeen": 664,
+      "rating": 20
+    },
+    {
+      "name": "The Conflict Within",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.1949,
+      "aSeen": 1539,
+      "rating": 18
+    },
+    {
+      "name": "Perseverance",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.194,
+      "aSeen": 2526,
+      "rating": 16
+    },
+    {
+      "name": "Mandalorian Flagship",
+      "subtitle": "Captured from the Empire",
+      "rarity": "Uncommon",
+      "aRate": 0.1932,
+      "aSeen": 1387,
+      "rating": 17
+    },
+    {
+      "name": "Outcast",
+      "subtitle": "Mercenary Starship",
+      "rarity": "Uncommon",
+      "aRate": 0.1906,
+      "aSeen": 1170,
+      "rating": 16
+    },
+    {
+      "name": "Galvanized Leap",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.1902,
+      "aSeen": 2224,
+      "rating": 12
+    },
+    {
+      "name": "Fateful Goodbye",
+      "subtitle": "",
+      "rarity": "Rare",
+      "aRate": 0.1881,
+      "aSeen": 638,
+      "rating": 11
+    },
+    {
+      "name": "Ant Droid",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.1878,
+      "aSeen": 2460,
+      "rating": 15
+    },
+    {
+      "name": "Womp Rat",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.186,
+      "aSeen": 2258,
+      "rating": 9
+    },
+    {
+      "name": "Peli Motto",
+      "subtitle": "You Bring the Cash?",
+      "rarity": "Rare",
+      "aRate": 0.1818,
+      "aSeen": 649,
+      "rating": 11
+    },
+    {
+      "name": "Choose Your Path",
+      "subtitle": "",
+      "rarity": "Rare",
+      "aRate": 0.1789,
+      "aSeen": 285,
+      "rating": 10
+    },
+    {
+      "name": "Pit Droid Team",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.1761,
+      "aSeen": 2532,
+      "rating": 15
+    },
+    {
+      "name": "Treacherous Minefield",
+      "subtitle": "",
+      "rarity": "Rare",
+      "aRate": 0.1761,
+      "aSeen": 653,
+      "rating": 10
+    },
+    {
+      "name": "Display of Strength",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.1759,
+      "aSeen": 2479,
+      "rating": 12
+    },
+    {
+      "name": "Long Live the Empire",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.1734,
+      "aSeen": 1453,
+      "rating": 16
+    },
+    {
+      "name": "Wicket",
+      "subtitle": "Yub Nub!",
+      "rarity": "Rare",
+      "aRate": 0.1731,
+      "aSeen": 624,
+      "rating": 18
+    },
+    {
+      "name": "Keep Them Talking",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.1716,
+      "aSeen": 2290,
+      "rating": 6
+    },
+    {
+      "name": "Diplomatic Pageantry",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.1714,
+      "aSeen": 2450,
+      "rating": 7
+    },
+    {
+      "name": "Nowhere to Hide",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.1711,
+      "aSeen": 1356,
+      "rating": 5
+    },
+    {
+      "name": "Neel",
+      "subtitle": "The Cutest Boy",
+      "rarity": "Rare",
+      "aRate": 0.1643,
+      "aSeen": 286,
+      "rating": 6
+    },
+    {
+      "name": "Noti Nomad",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.1642,
+      "aSeen": 2436,
+      "rating": 13
+    },
+    {
+      "name": "Camtono",
+      "subtitle": "",
+      "rarity": "Rare",
+      "aRate": 0.1635,
+      "aSeen": 630,
+      "rating": 8
+    },
+    {
+      "name": "Domesticated Loth-Cat",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.1606,
+      "aSeen": 1519,
+      "rating": 13
+    },
+    {
+      "name": "DDC Defender",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.157,
+      "aSeen": 1376,
+      "rating": 3
+    },
+    {
+      "name": "Rukh",
+      "subtitle": "From the Shadows",
+      "rarity": "Rare",
+      "aRate": 0.1524,
+      "aSeen": 617,
+      "rating": 14
+    },
+    {
+      "name": "Mark My Words",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.1523,
+      "aSeen": 2259,
+      "rating": 5
+    },
+    {
+      "name": "Rash Action",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.152,
+      "aSeen": 1349,
+      "rating": 4
+    },
+    {
+      "name": "Wipe Them Out",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.1518,
+      "aSeen": 1383,
+      "rating": 10
+    },
+    {
+      "name": "Dathomiri Magicks",
+      "subtitle": "",
+      "rarity": "Rare",
+      "aRate": 0.1498,
+      "aSeen": 641,
+      "rating": 9
+    },
+    {
+      "name": "Mayor's Majordomo",
+      "subtitle": "No Problem Groveling",
+      "rarity": "Uncommon",
+      "aRate": 0.1459,
+      "aSeen": 1213,
+      "rating": 2
+    },
+    {
+      "name": "Arcana Star Map",
+      "subtitle": "Path to Peridea",
+      "rarity": "Legendary",
+      "aRate": 0.138,
+      "aSeen": 384,
+      "rating": 7
+    },
+    {
+      "name": "Purrgil Ultra",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.133,
+      "aSeen": 1271,
+      "rating": 8
+    },
+    {
+      "name": "Moff Jerjerrod",
+      "subtitle": "We Shall Redouble Our Efforts",
+      "rarity": "Special",
+      "aRate": 0.1306,
+      "aSeen": 314,
+      "rating": 6
+    },
+    {
+      "name": "Alamite Hunter",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.1289,
+      "aSeen": 2125,
+      "rating": 3
+    },
+    {
+      "name": "Summa-verminoth",
+      "subtitle": "",
+      "rarity": "Legendary",
+      "aRate": 0.115,
+      "aSeen": 426,
+      "rating": 4
+    },
+    {
+      "name": "Reforge",
+      "subtitle": "",
+      "rarity": "Rare",
+      "aRate": 0.1076,
+      "aSeen": 660,
+      "rating": 3
+    },
+    {
+      "name": "Sense Through the Force",
+      "subtitle": "",
+      "rarity": "Rare",
+      "aRate": 0.101,
+      "aSeen": 594,
+      "rating": 1
+    },
+    {
+      "name": "Emperor's Messenger",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.1001,
+      "aSeen": 2468,
+      "rating": 1
+    },
+    {
+      "name": "The Student Guides the Master",
+      "subtitle": "",
+      "rarity": "Uncommon",
+      "aRate": 0.1,
+      "aSeen": 1390,
+      "rating": 2
+    },
+    {
+      "name": "Intimidation",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.0643,
+      "aSeen": 2334,
+      "rating": 0
+    },
+    {
+      "name": "Exploit Advantage",
+      "subtitle": "",
+      "rarity": "Common",
+      "aRate": 0.0551,
+      "aSeen": 490,
+      "rating": 0
+    }
+  ]
+}

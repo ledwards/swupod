@@ -1,7 +1,7 @@
 {
   "LAW": {
-    "total": 907,
-    "real": 907,
+    "total": 912,
+    "real": 912,
     "normalTotal": 264,
     "normalReal": 264
   },
@@ -30,20 +30,20 @@
     "normalReal": 262
   },
   "LOF": {
-    "total": 1160,
-    "real": 1160,
+    "total": 1161,
+    "real": 1161,
     "normalTotal": 264,
     "normalReal": 264
   },
   "SEC": {
-    "total": 1193,
-    "real": 1193,
+    "total": 1201,
+    "real": 1201,
     "normalTotal": 264,
     "normalReal": 264
   },
   "ASH": {
-    "total": 925,
-    "real": 925,
+    "total": 933,
+    "real": 933,
     "normalTotal": 264,
     "normalReal": 264
   }

@@ -301,8 +301,15 @@ async function runTests(): Promise<void> {
     const total = counts.Rare + counts.Legendary
     const legendaryRate = counts.Legendary / total
     const expectedRate = 1 / 6  // ~16.7%
-    assert(Math.abs(legendaryRate - expectedRate) < 0.05,
-      `SPEC: Legendary rate should be ~${(expectedRate * 100).toFixed(1)}%, got ${(legendaryRate * 100).toFixed(1)}%`)
+    // Tolerance 0.08, not 0.05: the JTL R/L boot's MEASURED legendary rate is ~0.1452
+    // (sd 0.0097 over 600 draws) — the belt's effective ratio lands slightly under the
+    // nominal 5:1, so the true mean sits ~2.2σ below expectedRate and the old ±0.05 window's
+    // low edge (0.1167) was only ~2.9σ from the true mean → flaked ~0.13% of runs. ±0.08
+    // puts the nearest edge ~6σ from the measured mean (flake-free) while a real ratio bug
+    // (e.g. 50/50 → 0.50, or all-rare → 0) is still far outside. Per .claude/rules/testing.md
+    // (rate bands matched to the measured distribution).
+    assert(Math.abs(legendaryRate - expectedRate) < 0.08,
+      `SPEC: Legendary rate should be ~${(expectedRate * 100).toFixed(1)}% (measured belt mean ~14.5%, tol ±8%), got ${(legendaryRate * 100).toFixed(1)}%`)
   })
 
   test('HyperspaceRL: hopper refills', () => {

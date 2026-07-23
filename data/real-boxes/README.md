@@ -37,3 +37,32 @@ those are scanner/OCR eval fixtures and do not encode treatment.
 npx tsx scripts/analyze-real-box.ts data/real-boxes/ash-box-001.csv            # box stats
 npx tsx scripts/analyze-real-box.ts data/real-boxes/ash-box-001.csv --compare  # + generator comparison
 ```
+
+## Carbonite corpus (`ash-carbonite-*.csv`)
+
+Real carbonite pulls, used to calibrate the parts of the generator we've been
+**guessing** at (flex/top rarity weights, prestige tier split, showcase rate,
+leader-in-prestige) — everything beyond the fixed slot skeleton. Extends the schema
+with two columns: `slotRole` (`leader`/`prestige`/`hs`/`hsf`) and `pullOrder`
+(`true` only if the row order is the EXACT order cards came out of the pack).
+
+Treatment is decoded from the printed collector number (ASH ranges):
+`Normal ≤264 · Hyperspace 265–528 · Hyperspace Foil 529–766 · Showcase 767–784 · Prestige 785–925`.
+
+**Photo protocol:** one pack per photo, all 16 cards, bottom-right collector number
+in frame and glare-free. To test intra-block rarity ordering, **lay cards in exact
+pull order** (top of stack → bottom) and set `pullOrder=true`; otherwise any layout
+works for rate calibration (the number decodes treatment; name→rarity is a DB lookup).
+
+- `ash-carbonite-box-00{1,2,3,4}.csv` — a full ASH carbonite CASE: 4 boxes × 12 packs
+  (photos IMG_3978–4033, July 2026), laid in **pull order** (`pullOrder=true`). Every
+  card decoded by collector number + `cards.json` lookup (number is authoritative —
+  names alone are ambiguous; many leaders share a name+number with a unit). All 768
+  numbers validated in-band. Uniform structure `pos1 leader · pos2–9 HS · pos10
+  prestige · pos11–16 HSF`; HS run ascends by rarity (R/L top at pos9), HSF descends.
+  n=48 rates + change theses (prestige tiers 67/31/2, HS-top R/L-only, etc.):
+  `plans/CARBONITE_COLLATION_FINDINGS.md`.
+
+```bash
+npx tsx scripts/analyze-carbonite-corpus.ts        # observed vs carboniteConstants weights
+```

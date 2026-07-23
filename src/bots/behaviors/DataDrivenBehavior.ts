@@ -11,6 +11,7 @@
  */
 
 import { POWERFUL_CARDS, POWERFUL_CARD_BONUS } from '../data/powerfulCards'
+import { CARD_RANKINGS } from '../data/cardRankings'
 import { LEADER_RANKINGS } from '../data/leaderRankings'
 import type { RawCard } from '../../utils/cardData'
 import type { SetDraftStats, DeckProfile } from '../data/draftStats'
@@ -150,6 +151,14 @@ export class DataDrivenBehavior {
         // Position 1 -> 100, Position 14 -> ~0
         return Math.max(0, 100 - (cardStat.avgPickPosition - 1) * (100 / 13))
       }
+    }
+
+    // Static Bradley-Terry ratings from real human draft picks (0-100
+    // within-aspect percentile) — better than rarity when no live DB stats
+    const setCode0 = context.setCode || card.set || 'SOR'
+    const btRating = CARD_RANKINGS[setCode0]?.[card.name || '']
+    if (btRating != null) {
+      return btRating
     }
 
     // Fallback: rarity-based scoring

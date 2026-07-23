@@ -44,9 +44,16 @@ function loadEnvFile(path: string) {
 }
 loadEnvFile('/Users/lee/Repos/ledwards/swupod/.env.local')
 
-const REPO_ROOT = '/Users/lee/Repos/ledwards/swupod'
+// Default to the current checkout so the eval runs correctly from a git
+// worktree; override with REPO_ROOT=... if needed.
+const REPO_ROOT = process.env.REPO_ROOT || process.cwd()
 const FIXTURES_DIR = join(REPO_ROOT, 'scripts/eval/fixtures')
 const RESULTS_DIR = join(REPO_ROOT, 'scripts/eval/results')
+
+import { fmtCost, fmtTokens, sumUsage } from './pricing'
+// Mirrors the pipeline's model resolution (lib/anthropic.ts + section/omr
+// extraction) so cost lines price against the model that actually ran.
+const EXTRACT_MODEL = process.env.IMPORT_EXTRACT_MODEL || 'claude-opus-4-7'
 
 interface GroundTruthRow {
   name: string
@@ -83,6 +90,7 @@ interface FixtureScore {
   converged?: boolean
   bestIteration?: number
   elapsedSec?: number
+  usage?: import('./pricing').UsageLike
   perIterCounts?: Array<{ iter: number; pool: number; deck: number; leaders: number; bases: number }>
   iterationFailures?: string[]
   sectionsCount?: number
@@ -125,18 +133,34 @@ async function evalFixture(name: string): Promise<FixtureScore> {
   if (!truth.rows || truth.rows.length === 0) {
     return { name, status: 'skipped', reason: 'ground-truth.json has empty rows[]' }
   }
+  // A _note marks a model-generated STARTER truth awaiting human verification.
+  // Scoring against unverified truth poisons the aggregate, so skip it.
+  if (truth._note) {
+    return { name, status: 'skipped', reason: 'ground truth is an unverified starter (_note present)' }
+  }
   if (!existsSync(photo1) || !existsSync(photo2)) {
     return { name, status: 'skipped', reason: 'missing photo1.jpg or photo2.jpg' }
   }
 
-  const { extractPoolFromImages } = await import('../../lib/anthropic')
+  // EXTRACT_ARCH selects the architecture under test. Default is the one
+  // PROD serves (whole-table, ~$1.17/sheet at opus rates); 'cells' is the
+  // OMR cell-strip pipeline (<$0.10 target); 'legacy' is the multi-sample
+  // sidecar-failure fallback ($18/sheet, cache never hits).
+  const mod = await import('../../lib/anthropic')
+  const arch = (process.env.EXTRACT_ARCH || 'wholetable').toLowerCase()
+  const extract =
+    arch === 'legacy'
+      ? mod.extractPoolFromImages
+      : arch === 'cells'
+        ? mod.extractPoolFromImagesCells
+        : mod.extractPoolFromImagesWholeTable
   const p1 = readFileSync(photo1).toString('base64')
   const p2 = readFileSync(photo2).toString('base64')
 
   const start = Date.now()
   let result: any
   try {
-    result = await extractPoolFromImages(
+    result = await extract(
       [
         { data: p1, mediaType: 'image/jpeg' },
         { data: p2, mediaType: 'image/jpeg' },
@@ -250,6 +274,7 @@ async function evalFixture(name: string): Promise<FixtureScore> {
     converged: result.converged,
     bestIteration: result.bestIteration,
     elapsedSec,
+    usage: result.usage,
     perIterCounts: result.iterations.map((it: any) => ({
       iter: it.iteration,
       pool: it.poolSum,
@@ -294,6 +319,9 @@ function reportFixture(s: FixtureScore) {
   console.log(
     `iterations: ${s.iterations} (best=${s.bestIteration}, converged=${s.converged}, elapsed=${s.elapsedSec!.toFixed(1)}s)`,
   )
+  if (s.usage) {
+    console.log(`tokens: ${fmtTokens(s.usage)}  cost: ${fmtCost(EXTRACT_MODEL, s.usage)}`)
+  }
   if (s.tableBreakdown && s.tableBreakdown.length > 0) {
     console.log(`table breakdown:`)
     console.log(`  ${'table'.padEnd(13)} ${'pool sum'.padStart(8)}  ${'deck sum'.padStart(8)}  rows-marked  rows-in-deck`)
@@ -345,6 +373,11 @@ function reportAggregate(scored: FixtureScore[]) {
   console.log(`mean qty error: ${meanQtyErr.toFixed(2)}`)
   console.log(`mean iterations: ${meanIters.toFixed(1)}`)
   console.log(`total elapsed: ${totalElapsed.toFixed(0)}s`)
+  const totalUsage = sumUsage(ok.map((s) => s.usage))
+  if (totalUsage.apiCalls > 0) {
+    console.log(`total tokens: ${fmtTokens(totalUsage)}`)
+    console.log(`TOTAL COST: ${fmtCost(EXTRACT_MODEL, totalUsage)}`)
+  }
 }
 
 async function main() {

@@ -100,8 +100,8 @@ export class BaseBelt {
    * stacking (stackBoxOrder), not from the belt.
    */
   _fill(): void {
-    const setNumber = getSetConfig(this.setCode)?.setNumber ?? 0
-    const conflicts = setNumber >= 7
+    const lineAspectRule = getSetConfig(this.setCode)?.packRules?.baseLineAspectConflict === true
+    const conflicts = lineAspectRule
       ? (a: RawCard | undefined, b: RawCard | undefined) => hasSameAspect(a, b) || isSameBase(a, b)
       : hasSameAspect
 

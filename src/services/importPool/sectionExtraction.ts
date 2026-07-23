@@ -21,8 +21,12 @@ import type Anthropic from '@anthropic-ai/sdk'
 import sharp from 'sharp'
 import type { TableName } from './tableGrouping'
 import { autoOrientToPortrait } from './preprocessImage'
+import { addResponseUsage, type ExtractUsage } from './extractUsage'
 
-const MODEL = 'claude-opus-4-7'
+// Keep in sync with lib/anthropic.ts — IMPORT_EXTRACT_MODEL overrides ALL
+// extraction phases (a hardcoded copy here once silently pinned Phase 2 to
+// opus while Phase 1 A/B'd other models).
+const MODEL = process.env.IMPORT_EXTRACT_MODEL || 'claude-opus-4-7'
 const MAX_TOKENS = 6000 // ~50 cards × 100 bytes JSON ≈ 5KB output
 
 export interface TableExtractionRow {
@@ -291,6 +295,7 @@ export async function extractTableFromCrop(
   tableCards: any[],
   setCode: string,
   hint?: TableExtractionHint,
+  usage?: ExtractUsage,
 ): Promise<{ rows: TableExtractionRow[]; outputTokens: number }> {
   if (tableCards.length === 0) {
     return { rows: [], outputTokens: 0 }
@@ -354,6 +359,7 @@ export async function extractTableFromCrop(
     }
   }
 
+  addResponseUsage(usage, response.usage)
   if (response.stop_reason === 'max_tokens') {
     throw new Error(
       `extractTableFromCrop(${tableName}): max_tokens hit (${MAX_TOKENS}, output=${response.usage.output_tokens})`,
@@ -409,6 +415,7 @@ export async function extractTableMultiSample(
   setCode: string,
   samples: number,
   hint?: TableExtractionHint,
+  usage?: ExtractUsage,
 ): Promise<{
   rows: TableExtractionRow[]
   outputTokens: number
@@ -425,7 +432,7 @@ export async function extractTableMultiSample(
     }
   }
   if (n === 1) {
-    const r = await extractTableFromCrop(client, cropBuffer, tableName, tableCards, setCode, hint)
+    const r = await extractTableFromCrop(client, cropBuffer, tableName, tableCards, setCode, hint, usage)
     const poolMarkedCount = new Map<number, number>()
     const deckMarkedCount = new Map<number, number>()
     for (const row of r.rows) {
@@ -441,7 +448,7 @@ export async function extractTableMultiSample(
 
   const sampleResults = await Promise.all(
     Array.from({ length: n }).map(() =>
-      extractTableFromCrop(client, cropBuffer, tableName, tableCards, setCode, hint).catch(
+      extractTableFromCrop(client, cropBuffer, tableName, tableCards, setCode, hint, usage).catch(
         (err) => {
           console.warn(`[multi-sample] ${tableName}: sample failed: ${(err as Error).message}`)
           return null

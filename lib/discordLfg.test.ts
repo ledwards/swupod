@@ -148,3 +148,33 @@ describe('getOrCreateChannelWebhook', () => {
     assert.equal(webhook, null)
   })
 })
+
+describe('Open game LFG (Lobby V1, U3)', async () => {
+  const { buildOpenGameEmbed } = await import('./discordLfg.ts')
+  const listing = {
+    shareId: 'og-abc123',
+    setCode: 'SEC',
+    setName: 'Secrets of Power',
+    format: 'draft',
+    visibility: 'public',
+  }
+
+  it('SPEC R29: embed carries player/set/format but never deck identity', () => {
+    const embed = buildOpenGameEmbed(listing, 'Leia')
+    const json = JSON.stringify(embed)
+    assert.match(String(embed.title), /Leia/)
+    assert.match(String(embed.title), /SEC Draft/)
+    assert.ok(!/leader|archetype|base/i.test(json), 'no deck identity fields in the embed')
+  })
+
+  it('SPEC R33: embed names protectthepod.com and links to the lobby', () => {
+    const embed = buildOpenGameEmbed(listing, 'Leia')
+    assert.match(String(embed.description), /protectthepod\.com/)
+    assert.match(String(embed.description), /\/lobby\)/)
+  })
+
+  it('labels sealed listings as Sealed', () => {
+    const embed = buildOpenGameEmbed({ ...listing, format: 'sealed' }, 'Han')
+    assert.match(String(embed.title), /SEC Sealed/)
+  })
+})

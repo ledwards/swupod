@@ -1,5 +1,80 @@
 # Release Notes
 
+## 07.19.2026
+
+### 🔧 Under the Hood
+- **Matchmaking fix**: starting a new game now properly closes out any earlier game you were still nominally in. Previously a game that never got a recorded result could leave your next one impossible for anyone to join.
+
+## 07.16.2026
+
+### 🔧 Under the Hood
+- **Infrastructure groundwork and fixes** across matchmaking, deck exports, and the Wayfinder Companion pipeline. Deck JSON exports are now fully compatible with Karabast's paste-import.
+
+## 07.14.2026
+
+### 🔬 Every Card Re-Verified by Collector Number
+- **We went back through all 11 real Ashes of the Empire boxes and re-read every leader and base by its printed collector number.** The result: hyperspace leaders and bases pull at the true 1-in-6 rate, and real boxes land almost exactly 4 of each per box, so ours do too.
+- **Prestige tuned to reality**: about 1 tier-1 prestige per box (occasionally 2, never a flood), matching what the verified boxes actually held.
+- **Foil slot locked to the real print sheet**: the rarity mix now matches 261 real foils within a fraction of a percent.
+
+### 🔀 Randomize Packs Deals Like a Store
+- **Randomizing a sealed pool now hands you a consecutive run of packs from your box**, the same cut a store would pull off the shelf. The old version grabbed 6 packs from random spots in the box, which made pools noticeably clumpier with duplicates than real product.
+
+### 🤖 Bots Draft Like Humans
+- **Draft bots now value main-deck cards using real human picks**, built from over 160,000 pick decisions in completed drafts. Bots recognize the cards players actually fight over, so they compete for them too.
+
+### 📊 Pick Pref on Draft Picks
+- **New "Pick Pref" column in Draft Picks stats**: how often players take a card over other cards sharing its color in the same pack. It's the cleanest read on what the community thinks a card is worth.
+
+## 07.13.2026
+
+### 🎮 Clearer "Opening on Karabast" feedback
+- **The Companion lobby buttons now acknowledge your click.** Create Private/Public Lobby and Join now show an "Opening on Karabast…" state the moment you press them, so launching a game never feels like nothing happened. If Karabast is slow or unavailable, the Companion itself now follows up with a clear "didn't respond — try again" prompt instead of leaving you waiting.
+
+### 🎴 Pack Contents
+- **Continued improvements to pack contents** as we calibrate against more real boxes.
+- **Foil rarity distribution tweaks** to better match real packs.
+
+## 07.11.2026
+
+### 🐳 Cracking Packs for the Pod
+
+**We opened over 300 real Ashes of the Empire packs, nearly 5,000 cards, catalogued one by one, and refined our pack generator to match.**
+
+This is the most extensive calibration we've ever done. Two full sealed cases, a display box, and a complete Carbonite case went under the microscope: every card, every slot, every duplicate, every foil. Then we tuned the simulator against what real printers actually do.
+
+You should notice:
+
+- **Our simulator produces same-name duplicates at the same rate as real 6-pack pools.**
+- **We validated pull rates across the board**, from legendaries, to uncommon slot upgrades, to the distribution of rarities across foil slots, and more.
+- **Legendaries now hit the official ~1-in-5 rate for every Jump to Lightspeed–era set.** JTL, LOF, and SEC join LAW and ASH at Fantasy Flight's published rate (up from 1 in 6); pre-JTL sets (SOR, SHD, TWI) keep their original 1 in 8.
+- **Rares, uncommons, and foils updated to even more closely match the real print-sheet patterns**, down to details like how far apart a repeated card rides on the factory line. If you've opened a real box, our boxes should feel indistinguishable.
+- **Carbonite packs got the same treatment**, calibrated from a full real Carbonite case: pull rates, prestige placement, and pack layout now mirror the real product.
+- **Live pack-quality stats reset to today**, so the QA dashboards now reflect the freshly calibrated generator rather than older, pre-tuning data.
+
+Why it matters: if you practice sealed here, the pools you build from should be statistically the same pools you'd crack at your kitchen table or a store event.
+
+### 📊 Smarter Leader Draft Stats
+- **First-pick rate up front**: The Leaders table in Draft stats now leads with how often each leader is taken first, so the most-prioritized leaders rise to the top. The old "selection %" read near-identical for every leader — in a draft each leader gets picked eventually, so it told you nothing.
+- **"Picked over" head-to-heads**: Click a leader to see which leaders it's taken over when they share an opening pack — how often it beats a specific rival, with sample sizes. Friends of the Pod can split it by All vs Top players.
+
+## 07.10.2026
+
+### 🔥 Ashes of the Empire is Live!
+- **Open to all**: Ashes of the Empire has graduated from beta to pre-release and is now available to everyone. Expect subtle changes as we get our hands on more packs for analysis. Happy pre-release week, and thanks to everyone who helped test!
+
+### 🐛 Bug Fixes
+- **Discord pod chat is back**: A behind-the-scenes limit on Discord webhooks had quietly broken chat sync between pods and the #draft-now channel. Pod chat and lobby chat now share a single connection per channel, so messages flow between the web app and Discord reliably again.
+
+### 🃏 Deck Builder — Bulk Actions in Every View
+- **Playmat & Table get the full ACTIONS bar**: The bulk controls that used to live only in Arena view — **Swap**, **In Aspect**, **Out of Aspect**, and **+ All / − All** — now appear in Playmat and Table views too, so you can build fast no matter which view you prefer.
+- **Cleaner sticky header**: Your own pool now reads simply as **"Original"** in the sticky nav instead of "by Original".
+
+## 07.04.2026
+
+### 📸 Import Pool tune-up (under the hood)
+- **Faster, leaner sheet reading**: Reworked how the AI reads registration sheets during import — same accuracy, roughly 40% less compute per sheet, and better internal telemetry so we can keep improving it.
+
 ## 07.03.2026
 
 ### 🎴 Collation Fine-Tuning (LAW & ASH)

@@ -19,6 +19,16 @@ export interface SetData {
    * non-selectable teaser that opens SubscribeModal on click.
    */
   comingSoon?: boolean
+  /**
+   * Marker for special event packs (e.g. GC promo packs). These render in their own
+   * group below the regular sets but behave exactly like ordinary packs when selectable.
+   */
+  promo?: boolean
+  /**
+   * When set, the pack is shown but not selectable: it renders the locked treatment with
+   * `label` on the badge and links to `href` to explain how to unlock it.
+   */
+  locked?: { label: string; href: string; description?: string }
 }
 
 /** Strip -CB suffix to get the base set code */
@@ -41,12 +51,15 @@ export function getSetNumber(setCode: string): number {
  * Sort sets for display: regular boosters on top, carbonite below the line.
  * Within each group, sets are sorted by release order.
  */
-export function sortSetsForDisplay(sets: SetData[]): { main: SetData[], carbonite: SetData[] } {
+export function sortSetsForDisplay(sets: SetData[]): { main: SetData[], carbonite: SetData[], promos: SetData[] } {
   const main: SetData[] = []
   const carbonite: SetData[] = []
+  const promos: SetData[] = []
 
   for (const set of sets) {
-    if (set.carbonite) {
+    if (set.promo) {
+      promos.push(set)
+    } else if (set.carbonite) {
       carbonite.push(set)
     } else {
       main.push(set)
@@ -56,5 +69,5 @@ export function sortSetsForDisplay(sets: SetData[]): { main: SetData[], carbonit
   main.sort((a, b) => getSetNumber(a.code) - getSetNumber(b.code))
   carbonite.sort((a, b) => getSetNumber(a.code) - getSetNumber(b.code))
 
-  return { main, carbonite }
+  return { main, carbonite, promos }
 }

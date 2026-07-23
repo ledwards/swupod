@@ -55,6 +55,11 @@ import PluginCTA, { usePluginCTA } from '@/src/components/PluginCTA'
 - Font: Barlow, weights 400/600/700
 - Hover lift: `translateY(-2px)`
 
+## Type Spacing (headers & copy)
+- **NEVER pull content up over text with negative margins** (`margin-top: -Npx`) — it overlaps/clips the copy. Shrink the gap-creating margins instead.
+- Section header stacks (eyebrow → h3 → subtitle → content) need minimum gaps: 0.25rem / 0.5rem / 1rem. Subtitles get `line-height: 1.4+`.
+- Cropped card-art tiles (leader grids): reuse `.your-stats-wr-cell-art` (`object-position: center 0; transform: scale(1.8)`). **No card chrome may show; never translateY the art.** Verify crops visually. See STYLE_GUIDE "Cropped Card-Art Thumbnails".
+
 ## Icon + Text Spacing
 **Every button/element with an icon and text MUST have a gap.** Use `gap: 8px` in flex containers, or a space character between inline SVG and text.
 

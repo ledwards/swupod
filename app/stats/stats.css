@@ -749,8 +749,35 @@
   border-top: 1px solid rgba(185, 205, 225, 0.14);
   display: grid;
   gap: 0.85rem;
-  grid-template-columns: max-content minmax(280px, 1fr) max-content;
+  grid-template-columns: max-content max-content minmax(240px, 1fr) max-content;
   padding-top: 0.85rem;
+}
+
+/* Cost/curve buckets are a full-width row: there can be seven of them, so this
+   strip wraps instead of overflowing the way the fixed-width segmented controls do. */
+.card-data-bucket-control {
+  border-top: 1px solid rgba(185, 205, 225, 0.14);
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+}
+
+.card-data-control-panel .card-data-bucket-segmented {
+  flex-wrap: wrap;
+  overflow: visible;
+  width: 100%;
+}
+
+/* Grades built on small samples must say so where the grades are, not in a
+   footnote. Amber rather than red: soft data, not an error. */
+.card-data-provisional-note {
+  background: rgba(var(--pt-amber-paused-rgb), 0.14);
+  border: 1px solid rgba(var(--pt-amber-paused-rgb), 0.38);
+  border-radius: 6px;
+  color: var(--pt-amber-paused);
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 0.6rem;
 }
 
 .card-data-control-panel .card-data-control {
@@ -1371,6 +1398,20 @@
 
 .card-data-gated-shell--locked {
   min-height: 520px;
+  /* Stack the blurred preview and the gate overlay in a single grid cell.
+     The cell grows to the CTA panel (so the "requirements / support" panel is
+     never clipped) while the blurred tier-list backdrop behind it is clipped
+     to a short teaser. Previously the disabled content rendered at full length
+     (~6000px), forcing the user to scroll a whole page of blurred, unusable
+     rows on a locked box. */
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.card-data-gated-shell--locked > .card-data-gated-content,
+.card-data-gated-shell--locked > .card-data-gate-overlay {
+  grid-area: 1 / 1;
+  min-width: 0;
 }
 
 .card-data-gated-shell--locked .card-data-gated-content {
@@ -1378,6 +1419,18 @@
   opacity: 0.28;
   pointer-events: none;
   user-select: none;
+  /* Clip the blurred backdrop to a teaser; the overlay covers what remains. */
+  max-height: 520px;
+  overflow: hidden;
+}
+
+/* In the locked grid the overlay is a normal grid item (not absolutely
+   positioned) so the CTA panel height drives the cell — keeping the CTA fully
+   visible and vertically centered over the capped backdrop. */
+.card-data-gated-shell--locked > .card-data-gate-overlay {
+  position: relative;
+  inset: auto;
+  align-items: center;
 }
 
 .card-data-gate-overlay {

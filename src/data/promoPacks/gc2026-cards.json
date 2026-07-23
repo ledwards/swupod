@@ -1,0 +1,210 @@
+{
+  "__meta": {
+    "campaign": "gc2026",
+    "name": "Galactic Championship 2026",
+    "note": "Authoritative GC 2026 Silver/Black Event Pack contents (source: wayfinder gc2026-schedule.ts SILVER_PACK_ALT_ARTS + Black Pack items, branch claude/gc2026-schedule-page-88b1da). Official GC alt-art isn't in swuapi yet, so `placeholderImage` is the STANDARD printing as a stand-in. The injection transform auto-falls-over to a real GC printing (a same-cardId sibling with _OP_ art) the moment swuapi scrapes it — no code change needed.",
+    "silverCount": 12,
+    "blackCount": 6,
+    "generatedAt": "2026-07-14"
+  },
+  "cards": [
+    {
+      "id": "gc2026-millennium-falcon-dodging-patrols",
+      "pool": "silver",
+      "sourceCardId": "019d3177-5659-7554-9fb6-567bd3b71f4b",
+      "name": "Millennium Falcon",
+      "set": "LAW",
+      "placeholderImage": "/promo-cards/gc2026/pwc-millennium-falcon.png",
+      "subtitle": "Dodging Patrols"
+    },
+    {
+      "id": "gc2026-morgan-elsbeth-life-abandoned",
+      "pool": "silver",
+      "sourceCardId": "019e8f15-ea6f-7cd0-8970-ae02acde4a6b",
+      "name": "Morgan Elsbeth",
+      "set": "ASH",
+      "placeholderImage": "/promo-cards/gc2026/pwc-morgan-elsbeth.png",
+      "subtitle": "Life Abandoned"
+    },
+    {
+      "id": "gc2026-lando-calrissian-eyes-open",
+      "pool": "silver",
+      "sourceCardId": "019d3179-195f-770a-9931-40589ba8c3b7",
+      "name": "Lando Calrissian",
+      "set": "LAW",
+      "placeholderImage": "/promo-cards/gc2026/pwc-lando.png",
+      "subtitle": "Eyes Open"
+    },
+    {
+      "id": "gc2026-jyn-erso-take-the-next-chance",
+      "pool": "silver",
+      "sourceCardId": "019d3177-5133-7f2d-b4f0-6cc5ae339c32",
+      "name": "Jyn Erso",
+      "set": "LAW",
+      "placeholderImage": "/promo-cards/gc2026/pwc-jyn-erso.png",
+      "subtitle": "Take the Next Chance"
+    },
+    {
+      "id": "gc2026-director-krennic-i-lose-nothing-but-time",
+      "pool": "silver",
+      "sourceCardId": "019d317c-386e-7ca1-8b81-0880f1f70fb4",
+      "name": "Director Krennic",
+      "set": "SEC",
+      "placeholderImage": "/promo-cards/gc2026/pwc-director-krennic.png",
+      "subtitle": "I Lose Nothing But Time"
+    },
+    {
+      "id": "gc2026-syril-karn-where-is-he",
+      "pool": "silver",
+      "sourceCardId": "019d317c-4204-763e-a2ac-25486158ef01",
+      "name": "Syril Karn",
+      "set": "SEC",
+      "placeholderImage": "/promo-cards/gc2026/pwc-syril-karn.png",
+      "subtitle": "Where Is He?"
+    },
+    {
+      "id": "gc2026-zeb-orrelios-fists-work-every-time",
+      "pool": "silver",
+      "sourceCardId": "019e8f15-f30d-7b7a-9443-eac206930f25",
+      "name": "Zeb Orrelios",
+      "set": "ASH",
+      "placeholderImage": "/promo-cards/gc2026/pwc-zeb.png",
+      "subtitle": "Fists Work Every Time"
+    },
+    {
+      "id": "gc2026-cinta-kaz-the-struggle-comes-first",
+      "pool": "silver",
+      "sourceCardId": "019d317c-4b15-7d21-98ed-c310aa17eb5f",
+      "name": "Cinta Kaz",
+      "set": "SEC",
+      "placeholderImage": "/promo-cards/gc2026/pwc-cinta-kaz.png",
+      "subtitle": "The Struggle Comes First"
+    },
+    {
+      "id": "gc2026-obi-wan-kenobi-finding-what-doesn-t-exist",
+      "pool": "silver",
+      "sourceCardId": "019d317c-52cb-7ee0-8adf-46f49ed25005",
+      "name": "Obi-Wan Kenobi",
+      "set": "SEC",
+      "placeholderImage": "/promo-cards/gc2026/pwc-obi-wan.png",
+      "subtitle": "Finding What Doesn't Exist"
+    },
+    {
+      "id": "gc2026-the-legacy-run-doomed-debris",
+      "pool": "silver",
+      "sourceCardId": "019d317b-0fdb-73e0-8be1-ce622e1768ec",
+      "name": "The Legacy Run",
+      "set": "LOF",
+      "placeholderImage": "/promo-cards/gc2026/pwc-legacy-run.png",
+      "subtitle": "Doomed Debris"
+    },
+    {
+      "id": "gc2026-fett-s-firespray-in-pursuit",
+      "pool": "silver",
+      "sourceCardId": "019d317d-0311-71e6-b9f9-6faeb0c4ace6",
+      "name": "Fett's Firespray",
+      "set": "LAW",
+      "placeholderImage": "/promo-cards/gc2026/pwc-firespray.png",
+      "subtitle": "In Pursuit"
+    },
+    {
+      "id": "gc2026-anakin-skywalker-you-were-right-about-me",
+      "pool": "silver",
+      "sourceCardId": "019e6d32-e54d-7fb3-bba1-5f2a06f2e221",
+      "name": "Anakin Skywalker",
+      "set": "ASH",
+      "placeholderImage": "/promo-cards/gc2026/pwc-anakin.png",
+      "subtitle": "You Were Right About Me"
+    },
+    {
+      "id": "gc2026-marrok-mysterious-warrior",
+      "pool": "black",
+      "sourceCardId": "019e8f15-e8da-72d8-af1b-a2ab89f3a018",
+      "name": "Marrok",
+      "set": "ASH",
+      "placeholderImage": "/promo-cards/gc2026/bp-marrok.png",
+      "subtitle": "Mysterious Warrior"
+    },
+    {
+      "id": "gc2026-wicket-yub-nub",
+      "pool": "black",
+      "sourceCardId": "019e8f15-e91e-759e-96f2-87bfc29523c4",
+      "name": "Wicket",
+      "set": "ASH",
+      "placeholderImage": "/promo-cards/gc2026/bp-wicket.png",
+      "subtitle": "Yub Nub!"
+    },
+    {
+      "id": "gc2026-pre-vizsla-strong-willed-ruler",
+      "pool": "black",
+      "sourceCardId": "019e8f15-eab5-78e8-9142-0242aea87487",
+      "name": "Pre Vizsla",
+      "set": "ASH",
+      "placeholderImage": "/promo-cards/gc2026/bp-pre-vizsla.png",
+      "subtitle": "Strong-Willed Ruler"
+    },
+    {
+      "id": "gc2026-cassian-andor-lay-low",
+      "pool": "black",
+      "sourceCardId": "019d317c-2c9d-799f-9da5-189361904f28",
+      "name": "Cassian Andor",
+      "set": "SEC",
+      "placeholderImage": "/promo-cards/gc2026/bp-cassian-andor.png",
+      "subtitle": "Lay Low"
+    },
+    {
+      "id": "gc2026-bo-katan-kryze-for-all-of-mandalore",
+      "pool": "black",
+      "sourceCardId": "019e8f15-ee66-7409-b66c-a1c4d1601989",
+      "name": "Bo-Katan Kryze",
+      "set": "ASH",
+      "placeholderImage": "/promo-cards/gc2026/bp-bo-katan-kryze.png",
+      "subtitle": "For All of Mandalore"
+    },
+    {
+      "id": "gc2026-mon-mothma-clinging-to-hope",
+      "pool": "black",
+      "sourceCardId": "019d317c-3b53-71dc-ad6a-5944f1ffe1ad",
+      "name": "Mon Mothma",
+      "set": "SEC",
+      "placeholderImage": "/promo-cards/gc2026/bp-mon-mothma.png",
+      "subtitle": "Clinging to Hope"
+    },
+    {
+      "id": "gc2026-ninth-sister-hulking-inquisitor",
+      "pool": "black",
+      "sourceCardId": "019e8f15-f242-7421-bcc0-7cb3f8f1d9af",
+      "name": "Ninth Sister",
+      "set": "ASH",
+      "placeholderImage": "/promo-cards/gc2026/bp-ninth-sister.png",
+      "subtitle": "Hulking Inquisitor"
+    },
+    {
+      "id": "gc2026-boba-fett-for-a-price",
+      "pool": "black",
+      "sourceCardId": "019d317b-77a5-7b8f-99cd-a7e1baca5bc7",
+      "name": "Boba Fett",
+      "set": "LAW",
+      "placeholderImage": "/promo-cards/gc2026/bp-boba-fett.png",
+      "subtitle": "For a Price"
+    },
+    {
+      "id": "gc2026-the-mandalorian-cleaning-up-nevarro",
+      "pool": "black",
+      "sourceCardId": "019d317c-53aa-7b83-a87e-51d96d0c2bc0",
+      "name": "The Mandalorian",
+      "set": "SEC",
+      "placeholderImage": "/promo-cards/gc2026/bp-the-mandalorian.png",
+      "subtitle": "Cleaning Up Nevarro"
+    },
+    {
+      "id": "gc2026-ebon-hawk-cause-and-effect",
+      "pool": "black",
+      "sourceCardId": "019d317c-55e0-7cbc-af9b-0758b1e741af",
+      "name": "Ebon Hawk",
+      "set": "SEC",
+      "placeholderImage": "/promo-cards/gc2026/bp-ebon-hawk.png",
+      "subtitle": "Cause and Effect"
+    }
+  ]
+}

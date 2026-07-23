@@ -34,6 +34,12 @@ export interface CardCounts {
 export interface PackRules {
   rareBasesInRareSlot: boolean
   specialInFoilSlot: boolean
+  specialInHyperspaceSlots: boolean
+  specialShowcaseLeaders: boolean
+  baseLineAspectConflict: boolean
+  uncommonAspectInterleave: boolean
+  lineStackingCollation: boolean
+  carboniteTiered: boolean
   foilSlotIsHyperspaceFoil?: boolean
   guaranteedHyperspaceCommon?: boolean
   hyperspaceCommonSlot?: number
@@ -50,14 +56,27 @@ export interface RarityWeights {
 
 export interface SetRarityWeights {
   foilSlot?: RarityWeights | null
+  foilBeltTarget: RarityWeights
   hyperfoil?: RarityWeights
   hyperspaceFoilSlot?: RarityWeights
+  // Explicit per-card copy counts for the foil sheet stack (real 11×11 sheets).
+  // When set, HyperfoilBelt uses these directly (equal frequency, exact ratio,
+  // no weight/rounding). Values are copies PER CARD of that rarity.
+  hyperspaceFoilSheetCopies?: RarityWeights
   ucSlot3Upgraded: RarityWeights
   hyperspaceNonFoil: RarityWeights
 }
 
 export interface BeltRatios {
   rareToLegendary: number
+  hyperspaceRareToLegendary: number
+}
+
+export interface DedupWindows {
+  rareLegendary: number
+  leaderCap: number
+  hyperspaceLeaderCap: number | null
+  uncommon: number
 }
 
 export interface UpgradeProbabilities {
@@ -85,6 +104,7 @@ export interface SetConfig {
   packRules: PackRules
   rarityWeights: SetRarityWeights
   beltRatios: BeltRatios
+  dedupWindows: DedupWindows
   upgradeProbabilities: UpgradeProbabilities
 }
 
@@ -140,7 +160,7 @@ export function isPrerelease(config: SetConfig): boolean {
 /**
  * Check if a set has been officially released
  */
-export function isReleased(config: SetConfig): boolean {
+export function isReleased(config: SetConfig, now: Date = new Date()): boolean {
   if (!config.releaseDate) return true
-  return new Date().toISOString() >= new Date(config.releaseDate + 'T00:00:00Z').toISOString()
+  return now.toISOString() >= new Date(config.releaseDate + 'T00:00:00Z').toISOString()
 }

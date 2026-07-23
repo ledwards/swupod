@@ -59,7 +59,10 @@ async function runTests(): Promise<void> {
     assertEqual(counts.hsLegendary, 17, 'hsLegendary count should be exact')
   })
 
-  test('outcome belt supports ASH prestige rate from box openings', () => {
+  test('outcome belt honors a custom prestige rate (mechanism)', () => {
+    // The belt supports an arbitrary per-set prestige rate; exact cycle counts
+    // must track it. (ASH itself now runs the 1/18 default — see the sheet-cut
+    // test below — this only checks the rate plumbing.)
     const belt = new Set7PlusUc3OutcomeBelt({ prestigeRate: 1 / 12 })
     const counts: Record<string, number> = {}
 
@@ -68,12 +71,39 @@ async function runTests(): Promise<void> {
       counts[outcome] = (counts[outcome] || 0) + 1
     }
 
-    assertEqual(counts.none, 1300, 'none count should adjust for ASH prestige rate')
+    assertEqual(counts.none, 1300, 'none count should adjust for the custom rate')
     assertEqual(counts.prestige, 180, 'prestige count should be 1/12 of the cycle')
     assertEqual(counts.hsUncommon, 408, 'hsUncommon count should stay LAW-shaped')
     assertEqual(counts.hsRare, 204, 'hsRare count should stay LAW-shaped')
     assertEqual(counts.hsSpecial, 51, 'hsSpecial count should stay LAW-shaped')
     assertEqual(counts.hsLegendary, 17, 'hsLegendary count should stay LAW-shaped')
+  })
+
+  test('FIXED: prestige is sheet-cut spaced — every 24-pack box gets 1-2, never 3+', () => {
+    // SPEC (11 real ASH boxes): prestige per 24-pack box is 1-2, max 2 ever,
+    // ~1/3 of boxes carry a second (mean ~1.3 = 1/18). The OLD shuffled hopper
+    // produced Binomial(24, 1/18) variance and clustered 3-4/box a few % of the
+    // time — the DD "4 in a box" report. Placement must ration prestige so no
+    // 24-pack window clusters.
+    const belt = new Set7PlusUc3OutcomeBelt() // default 1/18
+    const BOXES = 3000
+    let minCount = Infinity
+    let maxCount = 0
+    let boxesWithTwo = 0
+    for (let b = 0; b < BOXES; b++) {
+      let count = 0
+      for (let p = 0; p < 24; p++) {
+        if (belt.next() === 'prestige') count++
+      }
+      if (count < minCount) minCount = count
+      if (count > maxCount) maxCount = count
+      if (count === 2) boxesWithTwo++
+    }
+    assert(maxCount <= 2, `SPEC: no box may exceed 2 prestige, saw ${maxCount}`)
+    assert(minCount >= 1, `SPEC: every box should carry >=1 prestige, saw ${minCount}`)
+    const twoRate = boxesWithTwo / BOXES
+    assert(twoRate > 0.15 && twoRate < 0.5,
+      `SPEC: ~1/3 of boxes carry a 2nd prestige (1 + 1/3 = 1/18), got ${twoRate.toFixed(3)}`)
   })
 
   test('outcome belt refills after one cycle', () => {

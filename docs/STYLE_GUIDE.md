@@ -238,6 +238,52 @@ Card boxes have reduced top padding to minimize space between header and box edg
 - **Counts in parens**: "Your Deck (28 cards)"
 - **No top margin**: Header sits close to box top edge
 
+## Type Spacing — Section Header Stacks (eyebrow → heading → subtitle)
+
+Stat/dashboard sections (Your Stats, Meta, deck stats) use a three-line header
+stack. Give the copy room to breathe — cramped type here is a recurring bug.
+
+```css
+.your-stats-eyebrow      { font-size: 0.78rem; margin-bottom: 0.25rem; }  /* muted kicker */
+.your-stats-meta-card-header h3 { font-size: 1.05rem; line-height: 1.3; margin: 0.25rem 0 0; }
+.your-stats-meta-subtitle { font-size: 0.85rem; line-height: 1.5; margin: 0.5rem 0 1.1rem; }
+```
+
+### Rules
+
+- **NEVER use negative margins to pull content up over preceding text.** If the
+  gap between a subtitle and its content looks too big, shrink the margins that
+  create the gap — do not drag the content up with `margin-top: -Npx`. Negative
+  margins overlap and clip the copy at other breakpoints/content lengths.
+- Minimum gaps in a header stack: eyebrow → heading `0.25rem`, heading →
+  subtitle `0.5rem`, subtitle → content `1rem`.
+- Body/subtitle copy gets `line-height: 1.4–1.5`, never `1` or `1.1`.
+- Reuse the existing classes above; don't hand-roll a new header stack.
+
+## Cropped Card-Art Thumbnails (leader grids)
+
+Square leader tiles (Win rate by leader) crop the card image down to just the
+illustration. On a leader-unit card the clean art band runs **~16%–56% of card
+height** — name-plate chrome sits above it, the stat/trait bar below it.
+
+```css
+.your-stats-wr-cell-art {
+  object-fit: cover;
+  object-position: center 0;   /* top-align the cover layout */
+  transform: scale(1.8);       /* zoom about center lands on the art band */
+}
+```
+
+### Rules
+
+- **No card chrome may be visible** in a cropped tile — no top border/name
+  plate, no stat badges or trait banner. If any chrome shows, fix the crop.
+- **Never add `translateY(...)`** to the art — any Y offset drags card chrome
+  into the square.
+- When touching this crop, verify visually against real card images (render the
+  crop window with a script or screenshot the page) before shipping — don't
+  eyeball the math.
+
 ## Search Inputs
 
 Search boxes must be **slim**. Do NOT build tall, full-width "pill" search bars.

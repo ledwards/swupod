@@ -12,16 +12,21 @@
 
 import { AuthProvider } from '../src/contexts/AuthContext'
 import { PostHogProvider } from '../src/contexts/PostHogProvider'
+import { ToastProvider } from '../src/components/Toast'
 import AuthWidget from '../src/components/AuthWidget'
 import BetaWelcomeToast from '../src/components/BetaWelcomeToast'
+import OpenGameEventToasts from '../src/components/OpenGameEventToasts'
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
       <PostHogProvider>
-        <AuthWidget />
-        <BetaWelcomeToast />
-        {children}
+        <ToastProvider>
+          <AuthWidget />
+          <BetaWelcomeToast />
+          <OpenGameEventToasts />
+          {children}
+        </ToastProvider>
       </PostHogProvider>
     </AuthProvider>
   )

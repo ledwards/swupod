@@ -146,39 +146,6 @@
   }
 }
 
-/* Host-level lock button in top nav */
-.draft-log-host-lock {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.4rem 0.75rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.8rem;
-  font-family: 'Barlow', sans-serif;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.draft-log-host-lock.lock-private {
-  color: #ff6b6b;
-  border-color: rgba(255, 107, 107, 0.3);
-}
-
-.draft-log-host-lock.lock-public {
-  color: #81c784;
-  border-color: rgba(129, 199, 132, 0.3);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .draft-log-host-lock:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.9);
-  }
-}
-
 /* Tabs - folder/tab style matching stats page */
 .draft-log-tabs {
   display: flex;

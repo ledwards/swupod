@@ -12,8 +12,8 @@
 }
 
 .match-card--mine {
-  border-color: rgba(147, 197, 253, 0.58);
-  box-shadow: 0 0 14px rgba(147, 197, 253, 0.16);
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.58);
+  box-shadow: 0 0 14px rgba(var(--pt-glow-interactive-rgb), 0.16);
 }
 
 .match-card--confirmed {
@@ -36,7 +36,7 @@
 }
 
 .match-card-player--winner .match-card-player-name {
-  color: #bfdbfe;
+  color: rgba(var(--pt-glow-primary-rgb), 0.9);
   font-weight: 700;
 }
 
@@ -59,27 +59,26 @@
 
 .match-card-player-record {
   flex-shrink: 0;
-  border: 1px solid rgba(147, 197, 253, 0.28);
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.3);
   border-radius: 999px;
-  background: rgba(147, 197, 253, 0.08);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.08);
   padding: 0.08rem 0.4rem;
   font-family: 'Barlow', sans-serif;
   font-size: 0.72rem;
   font-weight: 700;
   line-height: 1.35;
-  color: #bfdbfe;
+  color: rgba(var(--pt-ink-rgb), 0.86);
 }
 
 .match-card-player-name--bye {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(var(--pt-ink-rgb), 0.7);
 }
 
 .match-card-vs {
   font-family: 'Barlow', sans-serif;
   font-weight: 400;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
-  text-transform: uppercase;
+  color: rgba(var(--pt-ink-rgb), 0.7);
   flex-shrink: 0;
 }
 
@@ -98,9 +97,9 @@
   min-width: 11px;
   text-align: center;
 }
-.game-result--win { color: #22c55e; }
-.game-result--loss { color: #ef4444; }
-.game-result--draw { color: rgba(150, 185, 255, 0.85); }
+.game-result--win { color: rgba(var(--pt-glow-primary-rgb), 0.85); }
+.game-result--loss { color: rgba(var(--pt-glow-danger-rgb), 0.85); }
+.game-result--draw { color: rgba(var(--pt-ink-rgb), 0.7); }
 /* Unplayed games show a small grey circle rather than a dash. */
 .game-result--pending {
   display: inline-block;
@@ -123,12 +122,12 @@
   vertical-align: middle;
 }
 .companion-dot--connected {
-  background: #22c55e;
-  box-shadow: 0 0 4px rgba(34, 197, 94, 0.7);
+  background: rgba(var(--pt-glow-primary-rgb), 0.85);
+  box-shadow: 0 0 4px rgba(var(--pt-glow-primary-rgb), 0.7);
 }
 .companion-dot--recording {
-  background: #ef4444;
-  box-shadow: 0 0 5px rgba(239, 68, 68, 0.9);
+  background: rgba(var(--pt-glow-danger-rgb), 0.9);
+  box-shadow: 0 0 5px rgba(var(--pt-glow-danger-rgb), 0.9);
 }
 @media (prefers-reduced-motion: no-preference) {
   .companion-dot--recording {
@@ -148,8 +147,7 @@
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(var(--pt-ink-rgb), 0.7);
   margin-bottom: 8px;
 }
 
@@ -158,14 +156,14 @@
 .match-card-table-link,
 .match-card-table-link:visited,
 .match-card-table-link:active {
-  color: #93c5fd;
+  color: rgba(var(--pt-glow-interactive-rgb), 0.9);
   text-decoration: none;
   text-transform: none;
   letter-spacing: 0;
   font-weight: 600;
 }
 @media (hover: hover) and (pointer: fine) {
-  .match-card-table-link:hover { color: #bfdbfe; text-decoration: underline; }
+  .match-card-table-link:hover { color: rgba(var(--pt-glow-interactive-rgb), 1); text-decoration: underline; }
 }
 
 /* Kick (host only): a bare red X — no circle — that fades in upper-right of a
@@ -198,9 +196,9 @@
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  background: #d32f2f;
-  color: #fff;
-  border: 1.5px solid #fff;
+  background: rgba(var(--pt-glow-danger-rgb), 0.82);
+  color: var(--pt-ink);
+  border: 1.5px solid var(--pt-ink);
   outline: none;
   padding: 0;
   font-size: 9px;
@@ -223,8 +221,8 @@
     pointer-events: auto;
   }
   .match-card-kick:hover {
-    background: #f44336;
-    border-color: #1a1a1a;
+    background: var(--pt-glow-danger);
+    border-color: var(--pt-surface-modal-from);
     transform: scale(1.1);
   }
 }
@@ -232,12 +230,15 @@
 /* Live action: play button is icon-only + green (variant primary). The 'open'
    lobby link is an <a> styled as that button — kill the global link
    underline/purple-hover so it reads as a button. */
-.match-card-live-open,
-.match-card-live-open:visited,
-.match-card-live-open:hover,
-.match-card-live-open:active {
+a.match-card-live-open,
+a.match-card-live-open:visited,
+a.match-card-live-open:hover,
+a.match-card-live-open:active {
   text-decoration: none;
-  color: #fff;
+  color: var(--pt-ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .match-card-live-disabled-wrap {
@@ -246,7 +247,7 @@
 
 /* "(opponent) is ready!" beside the play button once a private lobby exists. */
 .match-card-live-ready {
-  color: #4ade80;
+  color: rgba(var(--pt-glow-primary-rgb), 0.85);
   font-weight: 700;
 }
 
@@ -287,52 +288,50 @@
   font-family: 'Barlow', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .match-card-status--in-progress {
-  color: rgba(100, 200, 255, 0.9);
+  color: rgba(var(--pt-glow-interactive-rgb), 0.95);
 }
 
 .match-card-status--awaiting-confirmation {
-  color: #c4b5fd;
+  color: var(--pt-amber-paused);
 }
 
 .match-card-status--complete {
-  color: rgba(0, 200, 0, 0.8);
+  color: rgba(var(--pt-glow-primary-rgb), 0.8);
 }
 
 .match-card-status--bye {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(var(--pt-ink-rgb), 0.7);
 }
 
 .match-card-wayfinder-link {
   font-family: 'Barlow', sans-serif;
   font-size: 0.75rem;
-  color: #93c5fd;
+  color: rgba(var(--pt-glow-interactive-rgb), 0.9);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .match-card-wayfinder-state {
-  border: 1px solid rgba(147, 197, 253, 0.28);
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.3);
   border-radius: 999px;
-  background: rgba(147, 197, 253, 0.08);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.08);
   padding: 0.12rem 0.45rem;
   font-family: 'Barlow', sans-serif;
   font-size: 0.68rem;
   font-weight: 800;
-  color: #bfdbfe;
+  color: rgba(var(--pt-ink-rgb), 0.86);
   letter-spacing: 0.04em;
-  text-transform: uppercase;
   white-space: nowrap;
 }
 
 .match-card-wayfinder-state--recorded {
-  border-color: rgba(147, 197, 253, 0.35);
-  background: rgba(147, 197, 253, 0.1);
-  color: #bfdbfe;
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.38);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.1);
+  color: rgba(var(--pt-ink-rgb), 0.86);
 }
 
 .match-card-live {
@@ -340,37 +339,37 @@
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.65rem;
-  border: 1px solid rgba(100, 181, 246, 0.24);
-  border-radius: 8px;
-  background: rgba(100, 181, 246, 0.08);
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.24);
+  border-radius: var(--pt-radius-md);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.08);
   padding: 0.55rem 0.65rem;
 }
 
 .match-card-live--pending {
-  border-color: rgba(167, 139, 250, 0.24);
-  background: rgba(167, 139, 250, 0.065);
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.18);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.05);
 }
 
 .match-card-live--creating,
 .match-card-live--lobby_ready {
-  border-color: rgba(167, 139, 250, 0.3);
-  background: rgba(167, 139, 250, 0.08);
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.28);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.07);
 }
 
 .match-card-live--in_progress {
-  border-color: rgba(100, 181, 246, 0.34);
-  background: rgba(100, 181, 246, 0.1);
+  border-color: rgba(var(--pt-glow-interactive-rgb), 0.34);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.1);
 }
 
 .match-card-live--complete {
-  border-color: rgba(34, 197, 94, 0.28);
-  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(var(--pt-glow-primary-rgb), 0.24);
+  background: rgba(var(--pt-glow-primary-rgb), 0.06);
 }
 
 .match-card-live--failed,
 .match-card-live--voided {
-  border-color: rgba(248, 113, 113, 0.3);
-  background: rgba(248, 113, 113, 0.08);
+  border-color: rgba(var(--pt-glow-danger-rgb), 0.3);
+  background: rgba(var(--pt-glow-danger-rgb), 0.07);
 }
 
 .match-card-live-copy {
@@ -389,7 +388,7 @@
   flex-wrap: wrap;
 }
 .match-card-live-sep {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(var(--pt-ink-rgb), 0.7);
   font-size: 0.78rem;
 }
 .match-card-live-headline .countdown-timer {
@@ -402,11 +401,11 @@
   font-weight: 800;
   letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
-  color: #bfdbfe;
+  color: rgba(var(--pt-ink-rgb), 0.86);
 }
 .match-card-live-headline .countdown-timer.warning .timer-value,
 .match-card-live-headline .countdown-timer.expired .timer-value {
-  color: #f87171;
+  color: rgba(var(--pt-glow-danger-rgb), 0.85);
 }
 /* Game ran past the round clock: hold at 0:00 and flash until a result lands. */
 .match-card-live-headline .countdown-timer.expired {
@@ -421,7 +420,6 @@
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
   color: rgba(255, 255, 255, 0.86);
 }
 
@@ -433,15 +431,16 @@
 }
 
 .match-card-live-message--error {
-  color: #fecaca;
+  /* Softened text-only danger per DESIGN.md (#FF6464 idiom). */
+  color: rgba(255, 100, 100, 0.95);
 }
 
 .match-card-live-message--success {
-  color: #bbf7d0;
+  color: rgba(var(--pt-glow-primary-rgb), 0.8);
 }
 
 .match-card-live-message--info {
-  color: #bfdbfe;
+  color: rgba(var(--pt-ink-rgb), 0.86);
 }
 
 .match-card-live-actions {
@@ -456,8 +455,8 @@
 }
 
 .match-card-live-watch {
-  --ys-accent: #93c5fd;
-  --ys-accent-bright: #bfdbfe;
+  --ys-accent: var(--pt-glow-interactive);
+  --ys-accent-bright: var(--pt-glow-interactive);
 }
 
 /* Per-game replay links for a finished Bo3 (Game 1 / Game 2 / Game 3). */
@@ -472,7 +471,7 @@
 
 @media (hover: hover) and (pointer: fine) {
   .match-card-wayfinder-link:hover {
-    color: #bfdbfe;
+    color: rgba(var(--pt-glow-interactive-rgb), 1);
     text-decoration: underline;
   }
 }

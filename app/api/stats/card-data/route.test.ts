@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { enrichPayloadWithHyperspaceImages, mapWayfinderRowsToCardDataStats, shouldPreferWayfinderCardData } from './route'
+import { enrichPayloadWithHyperspaceImages, mapWayfinderRowsToCardDataStats, shouldPreferWayfinderCardData, withBucketedCardGrades } from './route'
 
 describe('/api/stats/card-data Wayfinder mapping', () => {
   it('keeps All formats on the local aggregate so leaders and bases remain available', () => {
@@ -206,5 +206,98 @@ describe('/api/stats/card-data Wayfinder mapping', () => {
     assert.equal(enriched.cards[0].hyperspaceImageUrl, 'ash-hyperspace-unit.png')
     assert.equal(enriched.leaders[0].hyperspaceBackImageUrl, 'hyperspace-leader-back.png')
     assert.equal(enriched.bases[0].hyperspaceImageUrl, 'hyperspace-base.png')
+  })
+})
+
+describe('/api/stats/card-data bucketed grades', () => {
+  // 30 cheap cards winning ~45%, 30 expensive ones winning ~55% — the cost
+  // confound. Global grading buries the cheap half; per-cost grading must not.
+  const payload = {
+    cards: [
+      ...Array.from({ length: 30 }, (_, i) => ({
+        cardName: `Cheap ${i}`, subtitle: null, cardType: 'Unit', cost: 2,
+        gihCount: 200, gihWins: 85 + i, gpCount: 200, gpWins: 85 + i,
+        displayGrade: 'D', grade: 'D',
+      })),
+      ...Array.from({ length: 30 }, (_, i) => ({
+        cardName: `Pricey ${i}`, subtitle: null, cardType: 'Unit', cost: 5,
+        gihCount: 200, gihWins: 105 + i, gpCount: 200, gpWins: 105 + i,
+        displayGrade: 'A', grade: 'A',
+      })),
+      { cardName: 'A Leader', subtitle: null, cardType: 'Leader', isLeader: true, cost: null,
+        gihCount: null, gihWins: null, gpCount: 200, gpWins: 120, displayGrade: 'A+', grade: 'A+' },
+    ],
+  }
+
+  it('SPEC: leaves the existing global grade untouched', () => {
+    const result = withBucketedCardGrades(payload)
+    assert.equal(result.cards[0]!.displayGrade, 'D')
+    assert.equal(result.cards[30]!.displayGrade, 'A')
+  })
+
+  it('SPEC: grades the best cheap card the same as the best expensive card', () => {
+    const result = withBucketedCardGrades(payload)
+    const bestCheap = result.cards.find((c: any) => c.cardName === 'Cheap 29')
+    const bestPricey = result.cards.find((c: any) => c.cardName === 'Pricey 29')
+
+    assert.equal(bestCheap.gradesByScheme.cost.grade, bestPricey.gradesByScheme.cost.grade)
+    assert.equal(bestCheap.gradesByScheme.cost.bucketLabel, '2-Drop')
+    assert.equal(bestPricey.gradesByScheme.cost.bucketLabel, '5-Drop')
+  })
+
+  it('SPEC: exposes both bucketed schemes and reports the basis used', () => {
+    const result = withBucketedCardGrades(payload)
+
+    assert.equal(result.bucketedGradeBasis, 'GIH WR')
+    assert.equal(result.cards[0]!.gradesByScheme['curve-slot'].bucketLabel, 'Turn 1 Plays (1-2)')
+    assert.equal(result.cards[30]!.gradesByScheme['curve-slot'].bucketLabel, 'Turn 4 Plays (5)')
+  })
+
+  it('SPEC: leaves leaders out of cost bucketing entirely', () => {
+    const result = withBucketedCardGrades(payload)
+    const leader = result.cards.find((c: any) => c.isLeader)
+
+    assert.equal(leader.gradesByScheme, undefined)
+    assert.equal(leader.displayGrade, 'A+')
+  })
+
+  it('SPEC: falls back to GP when no replay metrics are present', () => {
+    const gpOnly = { cards: payload.cards.map((c: any) => ({ ...c, gihCount: null, gihWins: null })) }
+    assert.equal(withBucketedCardGrades(gpOnly).bucketedGradeBasis, 'GP WR')
+  })
+
+  it('SPEC: small-sample bucketed grades are labelled Provisional', () => {
+    // 30 cards at 20 games in hand: above the provisional floor, below the full one.
+    const thin = {
+      cards: Array.from({ length: 30 }, (_, i) => ({
+        cardName: `Thin ${i}`, subtitle: null, cardType: 'Unit', cost: 2,
+        gihCount: 20, gihWins: 8 + i * 0.1, gpCount: 20, gpWins: 8 + i * 0.1,
+        displayGrade: 'C', grade: 'C',
+      })),
+    }
+    const result = withBucketedCardGrades(thin)
+    const cost = result.cards[0]!.gradesByScheme.cost
+
+    assert.equal(cost.provisional, true)
+    assert.equal(cost.statusLabel, 'Provisional')
+    assert.notEqual(cost.grade, null)
+  })
+
+  it('SPEC: cards below the provisional floor are still refused a grade', () => {
+    const tiny = {
+      cards: Array.from({ length: 30 }, (_, i) => ({
+        cardName: `Tiny ${i}`, subtitle: null, cardType: 'Unit', cost: 2,
+        gihCount: 3, gihWins: 1, gpCount: 3, gpWins: 1,
+        displayGrade: 'C', grade: 'C',
+      })),
+    }
+    const cost = withBucketedCardGrades(tiny).cards[0]!.gradesByScheme.cost
+
+    assert.equal(cost.grade, null)
+    assert.equal(cost.status, 'sample-too-small')
+  })
+
+  it('SPEC: an empty payload is returned untouched', () => {
+    assert.deepEqual(withBucketedCardGrades({ cards: [] }), { cards: [] })
   })
 })

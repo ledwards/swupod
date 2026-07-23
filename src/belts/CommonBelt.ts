@@ -300,17 +300,21 @@ function segmentHasRequiredAspects(cards: RawCard[], requiredAspects: string[]):
 // their primary. See plans/LINE_STACKING_COLLATION_PLAN.md (L1).
 // ============================================================================
 
-// Pack-gap sampler: the second-copy distance histogram measured from real ASH
-// box 001 in factory line order (gaps in packs). Gap PARITY matters: odd gaps
-// split a pair across the two box columns (player never sees the duplicate),
-// even gaps keep it in one column (player gets the pair). The measured mix is
-// odd-dominant with ~8% even — duplicate-heavy pools emerge from that even
-// share plus stacking alone, no synthetic modes. If the 6-box dataset shows a
-// fatter loaded-pool tail, model it as a PHYSICAL line disturbance (QC pack
-// drop / stacker slip — see LINE_STACKING_COLLATION_PLAN Phase 4), never as a
-// distribution knob.
+// Pack-gap sampler: the second-copy distance histogram of the print sheet,
+// measured in factory line order. Gap PARITY matters: odd gaps split a pair
+// across the two box columns (player never sees the duplicate), even gaps keep
+// it in one column (player gets the pair, usually in the same sealed pool).
+//
+// REFIT 2026-07-11: originally fit to box 001 ALONE (~8% even) — which turned
+// out to be the one clumpy-outlier box, so the model over-produced duplicate-
+// heavy pools (~7.3% of pools >=10 dup identities vs ~4-5% observed). The spec
+// below is measured from SIX number-verified boxes (001-006), 453 second-copy
+// gaps in line order: {1:153, 3:107, 5:82, 7:55, 9:37 | 6:5, 8:3, 10:6} =
+// 95.8% odd / 4.2% even. (Teddy boxes 008-011 excluded from this measurement:
+// title-driven low-res transcription creates false pairs at random parity.)
+// Still no synthetic modes — this is the sheet layout, nothing else.
 const PAIR_PACK_GAPS: number[] = []
-for (const [gap, weight] of [[1, 42], [3, 22], [5, 13], [7, 8], [9, 7], [6, 5], [8, 2], [4, 1]] as Array<[number, number]>) {
+for (const [gap, weight] of [[1, 34], [3, 24], [5, 18], [7, 12], [9, 8], [6, 2], [8, 2]] as Array<[number, number]>) {
   for (let i = 0; i < weight; i++) PAIR_PACK_GAPS.push(gap)
 }
 
@@ -336,10 +340,13 @@ function buildPairedBoot(
   lastAspect: string | null
 ): RawCard[] | null {
   const packOf = (g: number) => Math.floor(g / drawSize)
-  const MAX_ATTEMPTS = 12
+  // 40 attempts: the 6-box refit distribution (flatter odd tail, 2026-07-11)
+  // needs a bigger retry budget than the box-001 fit; retries are cheap and
+  // gap relaxation (+2, parity-preserving) only kicks in on late attempts.
+  const MAX_ATTEMPTS = 40
 
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-    const relaxGaps = attempt >= 8 // late attempts: spread echoes further
+    const relaxGaps = attempt >= 24 // late attempts: spread echoes further
     const stream = [...primary]
     const out: RawCard[] = []
     // targetPack is exact: echoes land in their sampled pack, and when a pack
@@ -1082,11 +1089,12 @@ export class CommonBelt {
     // Dedup window: min(24, floor(beltSize/2)) to ensure feasibility
     this.DEDUP_WINDOW = Math.min(24, Math.floor(this.beltCards.length / 2))
 
-    // Set 7+ normal lanes use the paired-copy line model (every card twice per
-    // boot, copies 1-3 packs apart — real ASH box 001 line order). Variant
-    // lanes (HS) and sets 1-6 keep single-copy boots.
+    // Line-stacking sets use the paired-copy line model on normal lanes (every
+    // card twice per boot, copies 1-3 packs apart — real box line order).
+    // Variant lanes (HS) and non-line-stacking sets keep single-copy boots.
+    // Config-driven (packRules.lineStackingCollation), never setNumber branches.
     this.usesPairedBoot =
-      (getSetConfig(setCode)?.setNumber ?? 0) >= 7 && variantType === 'Normal'
+      getSetConfig(setCode)?.packRules?.lineStackingCollation === true && variantType === 'Normal'
 
     // Track last served aspect for seam continuity
     this.lastServedAspect = null

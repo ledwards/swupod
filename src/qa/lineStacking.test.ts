@@ -86,11 +86,11 @@ async function run() {
       `Reading box positions 12,24,11,… must recover line order 1..24, got ${readBack.join(',')}`)
   })
 
-  test('SPEC: Normal+Normal pool pairs exist and vary (real pools: 0-10; band mean 0.6-4.0)', () => {
+  test('SPEC: Normal+Normal pool pairs exist and vary (6-box refit 2026-07-11: even-share 4.2% -> mean ~0.6; band 0.25-2.0)', () => {
     const m = mean(nnPairs)
     console.log(`\x1b[36m   nn-pairs/pool: mean ${m.toFixed(2)}, max ${Math.max(...nnPairs)}\x1b[0m`)
-    assert(m >= 0.6 && m <= 4.0, `nn-pairs/pool mean ${m.toFixed(2)} outside band 0.6-4.0`)
-    assert(Math.max(...nnPairs) >= 3, `max nn-pairs ${Math.max(...nnPairs)} — loaded pools missing`)
+    assert(m >= 0.25 && m <= 2.0, `nn-pairs/pool mean ${m.toFixed(2)} outside band 0.25-2.0`)
+    assert(Math.max(...nnPairs) >= 2, `max nn-pairs ${Math.max(...nnPairs)} — loaded pools missing`)
     assert(nnPairs.some(x => x === 0), 'clean 0-pair pools missing')
   })
 
@@ -100,10 +100,10 @@ async function run() {
     assert(m >= 5.5 && m <= 8.5, `dup identities/pool mean ${m.toFixed(2)} outside band 5.5-8.5`)
   })
 
-  test('SPEC: loaded pool rate (≥10 dup identities) in band 3-45% (knobless emergent tail; 6-box data recalibrates)', () => {
+  test('SPEC: loaded pool rate (≥10 dup identities) in band 1-10% (6-box refit: even-share 4.2% -> ~3.8%; Lee 2026-07-11 tightening)', () => {
     const rate = dupIds.filter(x => x >= 10).length / dupIds.length
     console.log(`\x1b[36m   loaded pools: ${(rate * 100).toFixed(1)}%\x1b[0m`)
-    assert(rate >= 0.03 && rate <= 0.45, `loaded pool rate ${(rate * 100).toFixed(1)}% outside band 3-45%`)
+    assert(rate >= 0.01 && rate <= 0.10, `loaded pool rate ${(rate * 100).toFixed(1)}% outside band 1-10%`)
   })
 
   test('SPEC: box unique identities in band 176-190 (real 183)', () => {

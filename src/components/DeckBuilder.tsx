@@ -33,7 +33,7 @@ import {
   getCanonicalPoolSubtitle,
   fetchUserBuild,
 } from '../utils/deckBuilderSharing'
-import { getAllCards } from '../utils/cardData'
+import { loadAllCards } from '../utils/cardDataClient'
 import Card from './Card'
 import { CardPreview } from './DeckBuilder/CardPreview'
 import { LeaderBaseSelector } from './DeckBuilder/LeaderBaseSelector'
@@ -351,7 +351,7 @@ function DeckBuilder({
   const [arenaSearchQuery, setArenaSearchQuery] = useState('') // Arena view search query
   const [arenaPoolSortOption, setArenaPoolSortOption] = useState<'default' | 'aspect' | 'cost' | 'type'>('cost') // Arena view pool grouping (independent of grid view's poolSortOption)
   const [arenaDeckSortOption, setArenaDeckSortOption] = useState<'default' | 'aspect' | 'cost' | 'type'>('cost') // Arena view deck grouping
-  const [poolCardDensity, setPoolCardDensity] = useState<'small' | 'medium' | 'large'>('small') // Pool card density (arena+playmat) — default small; persisted per-pool once the user changes it
+  const [poolCardDensity, setPoolCardDensity] = useState<'small' | 'medium' | 'large'>('small') // Pool card density (arena+playmat) — default SMALL
   const [deckCardDensity, setDeckCardDensity] = useState<'small' | 'medium' | 'large'>('small') // Deck card density (arena+playmat)
   const deckBlocksRowRef = useRef<HTMLDivElement>(null)
   const [activeLeader, setActiveLeader] = useState<string | null>(null)
@@ -540,7 +540,11 @@ function DeckBuilder({
     if (!leaderCard) return
 
     try {
-      ensureArchetypeIndexes(getAllCards() as any)
+      // Client loader, not src/utils/cardData: the static import embedded the
+      // ~9.5 MB cards.json in every bundle that touched DeckBuilder (the old
+      // /deckbuilder/build exemption). loadAllCards() is memoized and, in the
+      // deck-builder flows, already warmed by initializeCardCache().
+      ensureArchetypeIndexes((await loadAllCards()) as any)
       const leaderUuid = resolveArchetypeUuid(leaderCard as any, 'leader')
       const baseUuid = baseCard ? resolveArchetypeUuid(baseCard as any, 'base') : null
       const nickname = await fetchArchetypeNickname(leaderUuid, baseUuid)

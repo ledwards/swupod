@@ -1,6 +1,7 @@
 // @ts-nocheck
 // GET /api/stats/draft-picks - Get draft pick analytics per card
 import { queryRows, queryRow } from '@/lib/db'
+import { requireFullStatsAccess } from '@/lib/auth'
 import { cachedAggregate, STATS_AGGREGATE_TTL_MS } from '@/lib/queryCache'
 import { jsonResponse, handleApiError } from '@/lib/utils'
 import { getAllCards } from '@/src/utils/cardData'
@@ -24,6 +25,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // "Logged-in players" segment: picks made by a signed-in (registered) drafter.
     const loggedInOnly = url.searchParams.get('loggedInOnly') === 'true'
     const loggedInFilter = loggedInOnly ? `AND dp.user_id IS NOT NULL` : ''
+
+    // Locked cohorts (Competitive / Top Players) are patron/admin-only. Gate
+    // server-side at the definition layer so the values never reach a
+    // non-entitled client — not even via a direct API call. You/All are public.
+    if (tournamentOnly || topPlayersOnly) {
+      await requireFullStatsAccess(request)
+    }
 
     // Build card lookup maps — all variants merge to same card via name|type key
     // See src/utils/cardNormalization.ts for the canonical normalization pattern

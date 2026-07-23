@@ -309,7 +309,7 @@ export default function DraftRoomPage({ params }: PageProps) {
     }
   }
 
-  const handleSelect = async (cardId: string | null) => {
+  const handleSelect = async (cardId: string) => {
     if (selecting) return
     setSelecting(true)
     setError(null)
@@ -533,9 +533,7 @@ export default function DraftRoomPage({ params }: PageProps) {
               myPlayer={myPlayer}
               draftState={draftState}
               onSelect={handleSelect}
-              onConfirm={handlePick}
               loading={selecting}
-              confirming={picking}
               error={error}
               isHost={isHost}
               onTogglePause={handleTogglePause}
@@ -557,9 +555,7 @@ export default function DraftRoomPage({ params }: PageProps) {
               myPlayer={myPlayer}
               draftState={draftState}
               onSelect={handleSelect}
-              onConfirm={handlePick}
               loading={selecting}
-              confirming={picking}
               error={error}
               isHost={isHost}
               onTogglePause={handleTogglePause}

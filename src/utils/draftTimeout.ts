@@ -32,7 +32,6 @@ interface DraftPlayer {
   id: string
   pod_id: string
   pick_status: string
-  selected_card_id: string | null
   leaders: string | RawCard[]
   drafted_leaders: string | RawCard[]
   drafted_cards: string | RawCard[]
@@ -46,47 +45,6 @@ interface DraftState {
   packNumber?: number
   pickInPack?: number
   reviewUntil?: string
-}
-
-function parseCards(value: string | RawCard[] | null | undefined): RawCard[] {
-  if (Array.isArray(value)) return value
-  if (typeof value !== 'string') return []
-  try {
-    const parsed = JSON.parse(value)
-    return Array.isArray(parsed) ? parsed : []
-  } catch {
-    return []
-  }
-}
-
-function remainingPickItems(player: DraftPlayer, phase: string | undefined): RawCard[] {
-  return phase === 'leader_draft'
-    ? parseCards(player.leaders)
-    : parseCards(player.current_pack)
-}
-
-export function isTimeoutResolvedPlayer(player: DraftPlayer, phase: string | undefined): boolean {
-  if (player.pick_status === 'picked') return true
-  if ((player.pick_status === 'selected' || player.pick_status === 'confirmed') && player.selected_card_id) {
-    return true
-  }
-  return remainingPickItems(player, phase).length === 0
-}
-
-export function shouldProcessStagedPicksOnTimeout(
-  players: DraftPlayer[],
-  phase: string | undefined
-): boolean {
-  return players.length > 0 &&
-    players.every(player => isTimeoutResolvedPlayer(player, phase)) &&
-    players.some(player =>
-      (player.pick_status === 'selected' || player.pick_status === 'confirmed') &&
-      Boolean(player.selected_card_id)
-    )
-}
-
-function timeoutReferencePlayer(players: DraftPlayer[], phase: string | undefined): DraftPlayer | null {
-  return players.find(player => remainingPickItems(player, phase).length > 0) ?? players[0] ?? null
 }
 
 /**
@@ -128,13 +86,18 @@ export async function checkAndEnforceTimeout(podId: string): Promise<boolean> {
     return false
   }
 
-  const allPlayers = await queryRows(
+  // Get players who haven't selected
+  const players = await queryRows(
     `SELECT * FROM pod_players
-     WHERE pod_id = $1
+     WHERE pod_id = $1 AND pick_status = 'picking'
      ORDER BY seat_number`,
     [podId]
-  ) as DraftPlayer[]
-  const players = allPlayers.filter(player => player.pick_status === 'picking')
+  )
+
+  if (players.length === 0) {
+    // Everyone has selected, nothing to do
+    return false
+  }
 
   const pickStartedAt = new Date(pod.pick_started_at).getTime()
   const now = Date.now()
@@ -159,15 +122,15 @@ export async function checkAndEnforceTimeout(podId: string): Promise<boolean> {
   if (pod.competitive) {
     // For competitive pods, use Appendix C per-card timers instead of round/last-player timers
     const { getCompetitivePickTimeout, getLeaderPickTimeout } = await import('@/src/services/matchmaking/timers')
-    const referencePlayer = timeoutReferencePlayer(players.length > 0 ? players : allPlayers, phase)
-    if (!referencePlayer) return false
 
     let timeoutSeconds: number
     if (phase === 'leader_draft') {
-      const leaders = parseCards(referencePlayer.leaders)
+      const leaders = typeof players[0].leaders === 'string'
+        ? JSON.parse(players[0].leaders) : players[0].leaders || []
       timeoutSeconds = getLeaderPickTimeout(leaders.length)
     } else {
-      const pack = parseCards(referencePlayer.current_pack)
+      const pack = typeof players[0].current_pack === 'string'
+        ? JSON.parse(players[0].current_pack) : players[0].current_pack || []
       timeoutSeconds = getCompetitivePickTimeout(pack.length)
     }
 
@@ -203,13 +166,6 @@ export async function checkAndEnforceTimeout(podId: string): Promise<boolean> {
     }
   }
 
-  const hasNoPickingPlayers = players.length === 0
-  const shouldProcessAlreadyStaged = hasNoPickingPlayers &&
-    shouldProcessStagedPicksOnTimeout(allPlayers, phase)
-  if (hasNoPickingPlayers && !shouldProcessAlreadyStaged) {
-    return false
-  }
-
   // Try to acquire lock using atomic update
   // Use state_version for locking instead of pick_started_at to avoid timestamp precision issues
   const lockResult = await query(
@@ -225,17 +181,6 @@ export async function checkAndEnforceTimeout(podId: string): Promise<boolean> {
   if (lockResult.rowCount === 0) {
     // Another process already handled this timeout or state changed
     return false
-  }
-
-  if (shouldProcessAlreadyStaged) {
-    const processed = await processAllStagedPicks(podId)
-    if (processed) {
-      processBotTurns(podId).catch(err => {
-        console.error('[TIMEOUT] Error processing bot turns after staged timeout:', err)
-      })
-    }
-
-    return processed
   }
 
   // Force selections for each player who hasn't selected

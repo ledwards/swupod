@@ -1,7 +1,10 @@
 // @ts-nocheck
 // POST /api/draft - Create a new draft pod
-import { query, queryRow } from '@/lib/db'
+import { query, queryRow, queryRows } from '@/lib/db'
 import { requireAuth } from '@/lib/auth'
+import { promoTierForCode } from '@/src/services/chaosSealedSelection'
+import { getCampaign, drawEventPack } from '@/src/services/promoPacks'
+import { getAllCards } from '@/src/utils/cardData'
 import { generateShareId } from '@/lib/utils'
 import { jsonResponse, parseBody, validateRequired, handleApiError } from '@/lib/utils'
 import { getSetConfig } from '@/src/utils/setConfigs/index'
@@ -36,9 +39,26 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       ? settings.chaosSets
       : [setCode]
     for (const requestedSetCode of requestedSetCodes) {
+      if (promoTierForCode(requestedSetCode)) continue // Event Packs are validated separately (entitlement, below)
       const unavailableReason = getUnavailableSetReason(requestedSetCode, session)
       if (unavailableReason) {
         return jsonResponse({ error: unavailableReason }, 403)
+      }
+    }
+
+    // GC Event Packs (opt-in, Chaos Draft only) ride in chaosSets as their own drafted rounds —
+    // each becomes a round the whole pod drafts, just a 2-card one. Validate the creator actually
+    // owns any tier they selected; a client can't spoof an unowned tier.
+    const eventPackCodes: string[] = requestedSetCodes.filter(promoTierForCode)
+    if (eventPackCodes.length > 0) {
+      const requestedTiers = [...new Set(eventPackCodes.map(promoTierForCode))]
+      const ownedRows = await queryRows(
+        'SELECT promo_tier FROM promo_entitlements WHERE user_id = $1 AND campaign = $2',
+        [session.id, 'gc2026']
+      )
+      const owned = new Set(ownedRows.map(r => r.promo_tier))
+      if (requestedTiers.some(t => !owned.has(t))) {
+        return jsonResponse({ error: 'You have not unlocked that Event Pack' }, 403)
       }
     }
 
@@ -62,10 +82,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       const month = String(now.getMonth() + 1).padStart(2, '0')
       const day = String(now.getDate()).padStart(2, '0')
       const year = now.getFullYear()
-      // Compress duplicate sets: [LAW, LAW, LAW] → "LAW x3"
+      // Compress duplicate sets: [LAW, LAW, LAW] → "LAW x3". Event Pack codes get a friendly label.
       const counts: Record<string, number> = {}
       for (const s of settings.chaosSets) {
-        counts[s] = (counts[s] || 0) + 1
+        const tier = promoTierForCode(s)
+        const label = tier === 'silver' ? 'GC Silver' : tier === 'black' ? 'GC Black' : s
+        counts[label] = (counts[label] || 0) + 1
       }
       const setList = Object.entries(counts)
         .map(([code, count]) => count > 1 ? `${code} x${count}` : code)
@@ -85,10 +107,22 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (settings.draftMode === 'chaos' && settings.chaosSets) {
       clearBeltCache()
       boxPacks = []
+      const campaign = getCampaign('gc2026')
+      let cardsById = null
       for (const chaosSetCode of settings.chaosSets) {
-        // Generate 8 packs per set for chaos draft
-        const setPacks = generateSealedBox([], chaosSetCode, 8)
-        boxPacks.push(...setPacks)
+        const tier = promoTierForCode(chaosSetCode)
+        if (tier && campaign) {
+          // Event Pack round: one 2-card Event Pack per seat (8), same box shape as a set round
+          // (8 packs per chaosSets slot). The draft deals it like any other round — pick 1, pass.
+          if (!cardsById) cardsById = new Map(getAllCards().map(c => [c.id, c]))
+          for (let i = 0; i < 8; i++) {
+            boxPacks.push(drawEventPack(campaign, tier, id => cardsById.get(id) ?? null))
+          }
+        } else {
+          // Generate 8 packs per set for chaos draft
+          const setPacks = generateSealedBox([], chaosSetCode, 8)
+          boxPacks.push(...setPacks)
+        }
       }
     } else {
       // Normal draft - generate 24 packs from one set

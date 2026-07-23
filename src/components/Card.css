@@ -62,7 +62,7 @@
 /* Keyboard focus ring for interactive cards (role="button" + tabIndex).
    Interactive-blue glow per DESIGN.md; only shows for keyboard users. */
 .canvas-card:focus-visible {
-  outline: 2px solid rgba(33, 150, 243, 0.95);
+  outline: 2px solid rgba(var(--pt-glow-interactive-rgb), 0.95);
   outline-offset: 3px;
   border-radius: 13px;
 }
@@ -102,7 +102,12 @@
   border-radius: calc(var(--rainbow-border-radius) + var(--rainbow-border-size));
 }
 
-.canvas-card > * {
+/* The card's own children clip to the rounded frame. Exclude the Wayfinder
+   Companion's injected badge/overlay (.wf-ptp-*): they position themselves
+   absolutely over the card, and must not be pulled into the card's flow/clip —
+   otherwise the stats badge drops below the image and grows the card, which the
+   rainbow selection ring then wraps as a "bleed" below the card. */
+.canvas-card > *:not(.wf-ptp-card-stat-badge):not(.wf-ptp-card-stats-overlay) {
   border-radius: 11px;
   overflow: hidden;
 }
@@ -247,7 +252,9 @@
   pointer-events: none;
 }
 
-.canvas-card > * {
+/* See note above: keep the Wayfinder Companion's injected badge/overlay out of
+   this rule so their absolute positioning + high z-index survive. */
+.canvas-card > *:not(.wf-ptp-card-stat-badge):not(.wf-ptp-card-stats-overlay) {
   position: relative;
   z-index: 1;
 }
@@ -259,7 +266,7 @@
   justify-content: center;
   align-items: center;
   padding: 1rem;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  background: linear-gradient(135deg, var(--pt-surface-modal-from) 0%, var(--pt-surface-modal-to) 100%);
   text-align: center;
   pointer-events: none;
 }

@@ -14,7 +14,6 @@ import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 import EditableTitle from './EditableTitle'
 import Button from './Button'
 import DraftReportButton from './DraftReportButton'
-import { CardStatsBadge } from './CardStatsBadge'
 
 interface Card {
   id?: string
@@ -573,9 +572,6 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
                   )}
                   <div className="card-badges">
                   </div>
-                  {card.imageUrl ? (
-                    <CardStatsBadge card={card} setCode={setCode} />
-                  ) : null}
                 </div>
               ))}
             </div>

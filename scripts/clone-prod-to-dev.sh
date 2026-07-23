@@ -94,6 +94,13 @@ psql "$DEV_DB_URL" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" 2>/dev
 psql "$DEV_DB_URL" < "$PROD_DUMP_FILE"
 
 echo ""
+# The restore above continues past errors and loads with triggers disabled, so a
+# partially-failed restore can leave orphans and stale sequences behind while
+# still looking successful. Always verify; --fix repairs sequences only.
+echo "🔍 Verifying the restored database..."
+TARGET_DATABASE_URL="$DEV_DB_URL" npx tsx "$(dirname "$0")/verifyDevDb.ts" --fix || true
+
+echo ""
 echo "✅ Done! Your dev database now mirrors production."
 echo ""
 echo "To restore your original dev database later:"

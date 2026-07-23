@@ -26,10 +26,10 @@ The extension is **not in this repo**. It lives in a sibling repo:
 ## Install / store links
 
 - Chrome Web Store: `https://chromewebstore.google.com/detail/wayfinder-companion/econclbajpendbppldcnpngjfddcogfh`
-- Safari / App Store: `https://apps.apple.com/app/id6779564194`
-- Firefox AMO: `https://addons.mozilla.org/en-US/firefox/addon/51dd34375c8e4087bdf5/`
-- Downloads also via Wayfinder web where applicable:
-  `/api/plugins/download?platform={chrome|safari|firefox}`
+- Downloads also via Wayfinder web: `/api/plugins/download?platform={chrome|safari}`
+- Firefox / Safari mobile availability is limited by each browser's extension
+  model (see `PluginInstallInlineCta` in the Wayfinder `apps/web` repo for the
+  canonical per-platform copy/handling).
 
 ## How this app detects + talks to it
 
@@ -41,28 +41,6 @@ The extension is **not in this repo**. It lives in a sibling repo:
 - **Messaging:** the extension posts `window.postMessage` events such as
   `wayfinder:lobby-count` and `wayfinder:metadata`.
 - **URL:** `process.env.NEXT_PUBLIC_WAYFINDER_URL ?? 'https://plugin.wayfinder.news'`.
-
-## Data contract and UI surfacing
-
-Protect the Pod receives Wayfinder game data through two service endpoints:
-
-- `GET /api/plugin/v1/play/{format}/{shareId}` returns the set code, format,
-  Karabast card pool, competitive flag, and public lobby name needed to launch
-  the correct Limited game from a PTP pool.
-- `POST /api/plugin/v1/match/result` records the completed game or match with
-  `poolShareId`, `matchId`, `result`, optional `gameNumber`, `replayUrl`,
-  `practiceMatchGameId`, `wayfinderGameId`, `format`, and captured deck identity
-  fields for both player and opponent.
-
-Those fields surface in the app in three places:
-
-- `src/components/PlayInstructions.tsx` shows the user that the pool/match is
-  linked, results return to PTP, and replays appear in My Stats.
-- `src/components/MatchCard.tsx` shows live Swiss status, spectate links, and
-  per-game replay links once Wayfinder reports them.
-- `src/components/YourStats/GameplayDashboard.tsx` and
-  `app/api/stats/me/gameplay/route.ts` display personal replay history from both
-  `practice_matches` and `casual_matches`.
 
 ## Personal performance page ("My Stats")
 

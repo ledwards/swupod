@@ -26,9 +26,46 @@ jobs:
       - run: npm run typecheck
       # Monotonic @ts-nocheck ratchet (U6): the count can only go down.
       - run: npm run check:ts-ratchet
+      # Banned design tells (D2, design refresh): per-file monotonic baselines
+      # for off-palette hexes, ALL-CAPS labels, gradient fills, side-stripes,
+      # and bounce easing. Existing debt is baselined; new debt fails CI.
+      - run: npm run check:design-tells
       # DB-backed suites (lib/db.test.ts, draft-advance concurrency, auth
       # privilege-freshness) skip loudly when no local test DB is reachable.
       - run: npm run test
+
+  migrations-fresh:
+    # Fresh-DB migration guard: every migration must apply from ZERO against
+    # an empty database (regeneration is the verification). This is what
+    # catches statements that cannot run inside pg's implicit multi-statement
+    # transaction — e.g. 044's CREATE INDEX CONCURRENTLY, which silently
+    # hard-blocked fresh deploys until the runner learned to execute
+    # non-transactional migrations statement-by-statement.
+    name: Fresh-DB migration guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run check:migrations-fresh
+        env:
+          MIGRATIONS_FRESH_ADMIN_URL: postgresql://postgres@localhost:5432/postgres
 
   bundle-guard:
     name: Build + bundle-size guard (U5)

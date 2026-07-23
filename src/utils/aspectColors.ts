@@ -92,33 +92,6 @@ function darkenColor(hex: string, percent: number): string {
   return rgbToHex(r, g, b);
 }
 
-function relativeLuminance(rgb: RGB): number {
-  const toLinear = (value: number): number => {
-    const channel = value / 255;
-    return channel <= 0.03928
-      ? channel / 12.92
-      : Math.pow((channel + 0.055) / 1.055, 2.4);
-  };
-
-  return (
-    0.2126 * toLinear(rgb.r) +
-    0.7152 * toLinear(rgb.g) +
-    0.0722 * toLinear(rgb.b)
-  );
-}
-
-/**
- * Keeps aspect-colored labels readable on dark UI surfaces.
- * Villainy is intentionally near-black for borders/backgrounds, but black text
- * disappears in the draft selection banner.
- */
-export function getReadableAspectTextColor(color: string): string {
-  const rgb = hexToRgb(color);
-  if (!rgb) return color;
-
-  return relativeLuminance(rgb) < 0.18 ? '#f0f0f0' : color;
-}
-
 // === CARD COLOR FUNCTIONS ===
 
 /** Card-like object with aspects */

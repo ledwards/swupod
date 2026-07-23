@@ -1,0 +1,76 @@
+/**
+ * Design tokens — the DESIGN.md palette as code (D1, 2026-07-07 design
+ * refresh plan).
+ *
+ * DESIGN.md's frontmatter is the SOURCE of these values; this file is its
+ * generated truth in CSS. The two can never diverge silently:
+ * src/styles/tokens.test.ts parses both and asserts 1:1 parity.
+ *
+ * Naming:
+ *   colors.<name>   → --pt-<name>
+ *   rounded.<name>  → --pt-radius-<name>
+ *   spacing.<name>  → --pt-space-<name>
+ *
+ * Derived `--pt-*-rgb` channel triplets exist so alpha composition keeps a
+ * single source: `rgba(var(--pt-glow-interactive-rgb), 0.6)`. Each triplet is
+ * asserted against its base hex by the parity test.
+ *
+ * Rules of use (see DESIGN.md for the full system):
+ * - Light-Not-Paint: saturated tokens are hover/focus glows, never resting fills.
+ * - Aspect tokens are game data, never generic UI accents.
+ * - No bespoke hexes in component CSS — `npm run check:design-tells` objects.
+ */
+
+:root {
+  /* ------ colors ------ */
+  --pt-bg-void: #0A0A0A;
+  --pt-surface-base: #000000;
+  --pt-surface-modal-from: #1A1A1A;
+  --pt-surface-modal-to: #2A2A2A;
+  --pt-page-base: #4C4D51;
+  --pt-ink: #FFFFFF;
+  --pt-ink-muted: #FFFFFFCC;
+  --pt-ink-subtle: #FFFFFFB3;
+  --pt-ink-base: #FFFFFFDE;
+  --pt-border: #FFFFFF4D;
+  --pt-border-strong: #FFFFFF80;
+  --pt-border-subtle: #FFFFFF33;
+  --pt-glow-primary: #00FF00;
+  --pt-glow-danger: #FF0000;
+  --pt-glow-interactive: #2196F3;
+  --pt-discord: #5865F2;
+  --pt-discord-deep: #4752C4;
+  --pt-amber-paused: #FFC107;
+  --pt-gold-warning: #FFD700;
+  --pt-aspect-vigilance: #4A90E2;
+  --pt-aspect-command: #27AE60;
+  --pt-aspect-aggression: #E74C3C;
+  --pt-aspect-cunning: #F1C40F;
+  --pt-aspect-villainy: #1A1A1A;
+  --pt-aspect-heroism: #F0F0F0;
+  --pt-aspect-none: #888888;
+
+  /* ------ derived RGB channel triplets (base asserted by parity test) ------ */
+  --pt-ink-rgb: 255, 255, 255;
+  --pt-surface-base-rgb: 0, 0, 0;
+  --pt-glow-primary-rgb: 0, 255, 0;
+  --pt-glow-danger-rgb: 255, 0, 0;
+  --pt-glow-interactive-rgb: 33, 150, 243;
+  --pt-amber-paused-rgb: 255, 193, 7;
+  --pt-gold-warning-rgb: 255, 215, 0;
+
+  /* ------ radii (UI-chrome scale; card radius is geometry-derived) ------ */
+  --pt-radius-xs: 4px;
+  --pt-radius-sm: 6px;
+  --pt-radius-md: 8px;
+  --pt-radius-lg: 12px;
+  --pt-radius-card: 11px;
+  --pt-radius-full: 50%;
+
+  /* ------ spacing ------ */
+  --pt-space-xs: 0.5rem;
+  --pt-space-sm: 0.75rem;
+  --pt-space-md: 1rem;
+  --pt-space-lg: 1.5rem;
+  --pt-space-xl: 2rem;
+}

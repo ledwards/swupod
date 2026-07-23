@@ -641,6 +641,62 @@ test('handles draft with no leaders', () => {
   assert(pick !== null, 'Should still pick a card with no leaders')
 })
 
+// --- Data-driven card rankings (Bradley-Terry from real human picks) ---
+console.log('\n\x1b[36mData-Driven Card Rankings\x1b[0m')
+
+test('SPEC: CARD_RANKINGS rating is the quality score for ranked sets', () => {
+  const behavior = new DataDrivenBehavior()
+  // The Darksaber is rated 100 in ASH rankings (top within-aspect BT percentile)
+  const q = behavior._calculateQualityScore(
+    mockCard('The Darksaber', { rarity: 'Common', aspects: ['Command'], set: 'ASH' }),
+    null, { setCode: 'ASH' }
+  )
+  assert(q === 100, `Ranked card quality should equal its BT rating (100), got ${q}`)
+})
+
+test('SPEC: high-rated ASH Common outranks low-rated ASH Rare (real picks beat rarity)', () => {
+  const behavior = new DataDrivenBehavior()
+  // Whistling Birds: rating 99; Exploit Advantage: rating 0 (humans avoid it)
+  const good = behavior._calculateQualityScore(
+    mockCard('Whistling Birds', { rarity: 'Common', aspects: ['Vigilance'], set: 'ASH' }),
+    null, { setCode: 'ASH' }
+  )
+  const bad = behavior._calculateQualityScore(
+    mockCard('Exploit Advantage', { rarity: 'Rare', aspects: ['Cunning'], set: 'ASH' }),
+    null, { setCode: 'ASH' }
+  )
+  assert(good > bad, `Rating 99 Common (${good}) should beat rating 0 Rare (${bad})`)
+})
+
+test('SPEC: unranked card in a ranked set falls back to rarity scoring', () => {
+  const behavior = new DataDrivenBehavior()
+  const q = behavior._calculateQualityScore(
+    mockCard('Totally Unknown Card', { rarity: 'Legendary', aspects: ['Command'], set: 'ASH' }),
+    null, { setCode: 'ASH' }
+  )
+  assert(q === 80, `Unranked Legendary should use rarity fallback (80), got ${q}`)
+})
+
+test('SPEC: sets without rankings are unaffected (SOR uses rarity/powerful path)', () => {
+  const behavior = new DataDrivenBehavior()
+  const q = behavior._calculateQualityScore(
+    mockCard('Vanquish', { rarity: 'Common', aspects: ['Vigilance'] }),
+    null, { setCode: 'SOR' }
+  )
+  // Common 15 + powerful bonus — must NOT hit a rankings path
+  assert(q > 15 && q < 100, `SOR powerful common should score rarity+bonus, got ${q}`)
+})
+
+test('SPEC: DB stats still win over static rankings when present', () => {
+  const behavior = new DataDrivenBehavior()
+  const stats = mockStats({ cardStats: new Map([mockCardStat('The Darksaber', 14)]) })
+  const q = behavior._calculateQualityScore(
+    mockCard('The Darksaber', { rarity: 'Common', aspects: ['Command'], set: 'ASH' }),
+    stats, { setCode: 'ASH' }
+  )
+  assert(q === 0, `Live DB stats (avgPos 14 -> 0) should override static rating, got ${q}`)
+})
+
 // Summary
 console.log('\n\x1b[35m============================\x1b[0m')
 console.log(`\x1b[32m✅ Tests passed: ${passed}\x1b[0m`)

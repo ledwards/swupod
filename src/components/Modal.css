@@ -22,9 +22,9 @@
 
 /* Content */
 .modal-content {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
+  background: linear-gradient(135deg, var(--pt-surface-modal-from) 0%, var(--pt-surface-modal-to) 100%);
+  border: 2px solid rgba(var(--pt-ink-rgb), 0.3);
+  border-radius: var(--pt-radius-lg);
   padding: 2rem;
   /* Hug the content by default — a one-line confirm should not render in a
      fixed 500px box. Caps keep it readable and viewport-safe; large/full
@@ -93,13 +93,13 @@
 }
 
 .modal-title--danger {
-  color: #ffd700;
+  color: var(--pt-gold-warning);
 }
 
 /* Body */
 .modal-body {
   margin: 0 0 1.5rem 0;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(var(--pt-ink-rgb), 0.8);
   line-height: 1.6;
 }
 

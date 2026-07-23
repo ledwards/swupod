@@ -51,6 +51,12 @@ export default function AuthWidget() {
   const { user, loading, signOut, isPatron } = useAuth()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [activePod, setActivePod] = useState<RecentItem | null>(null)
+  const [myLobby, setMyLobby] = useState<{
+    shareId: string
+    setCode: string
+    format: string
+    deckName: string | null
+  } | null>(null)
   const [recentPools, setRecentPools] = useState<RecentItem[]>([])
   const [hasShowcases, setHasShowcases] = useState(false)
   const [loadingData, setLoadingData] = useState(false)
@@ -98,9 +104,13 @@ export default function AuthWidget() {
       Promise.all([
         fetchUserPools(user.id),
         fetch('/api/draft/history', { credentials: 'include' }).then(r => r.json()),
-        fetch(`/api/users/${user.id}/showcase-leaders?limit=1`).then(r => r.ok ? r.json() : { total: 0 })
+        fetch(`/api/users/${user.id}/showcase-leaders?limit=1`).then(r => r.ok ? r.json() : { total: 0 }),
+        fetch('/api/open-games/mine', { credentials: 'include' })
+          .then(r => (r.ok ? r.json() : { listing: null }))
+          .catch(() => ({ listing: null })),
       ])
-        .then(([poolsData, draftData, showcaseData]) => {
+        .then(([poolsData, draftData, showcaseData, lobbyData]) => {
+          setMyLobby((lobbyData?.data || lobbyData)?.listing ?? null)
           const showcaseTotal = showcaseData?.data?.total || showcaseData?.total || 0
           setHasShowcases(showcaseTotal > 0)
 
@@ -278,6 +288,28 @@ export default function AuthWidget() {
             </div>
 
             <div className="auth-widget-drawer-menu">
+              {myLobby && (
+                <a
+                  href={`/g/${myLobby.shareId}`}
+                  className="auth-widget-drawer-menu-item auth-widget-open-lobby-item"
+                  onClick={(e: MouseEvent<HTMLAnchorElement>) => {
+                    e.preventDefault()
+                    router.push(`/g/${myLobby.shareId}`)
+                    setDrawerOpen(false)
+                  }}
+                >
+                  <span className="auth-widget-open-lobby-dot" aria-hidden="true" />
+                  <span className="auth-widget-open-lobby-text">
+                    <strong>Your Open Lobby</strong>
+                    <span>
+                      {myLobby.deckName ||
+                        `${myLobby.setCode} ${myLobby.format === 'draft' ? 'Draft' : 'Sealed'}`}{' '}
+                      · waiting for an opponent
+                    </span>
+                  </span>
+                </a>
+              )}
+
               <a
                 href="/"
                 className="auth-widget-drawer-menu-item"

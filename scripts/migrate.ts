@@ -11,6 +11,7 @@ import { dirname, join } from 'path'
 import pg from 'pg'
 import dotenv from 'dotenv'
 import readline from 'readline'
+import { requiresNoTransaction, splitSqlStatements } from '../lib/migrationSql'
 
 const { Client } = pg
 
@@ -155,7 +156,17 @@ async function runMigration(client: pg.Client, migrationFile: MigrationFile): Pr
   } else {
     // Read and execute SQL migration
     const migrationSQL = readFileSync(migrationPath, 'utf-8')
-    await client.query(migrationSQL)
+    if (requiresNoTransaction(migrationSQL)) {
+      // CREATE INDEX CONCURRENTLY etc. cannot run inside a transaction
+      // block; a multi-statement simple query IS one implicit transaction.
+      // Run statement-by-statement instead (see lib/migrationSql.ts).
+      console.log(`   (non-transactional migration: running ${migrationName} statement-by-statement)`)
+      for (const statement of splitSqlStatements(migrationSQL)) {
+        await client.query(statement)
+      }
+    } else {
+      await client.query(migrationSQL)
+    }
   }
 
   // Mark as applied

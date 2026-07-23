@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react'
 import PlayerCircle from './PlayerCircle'
 import DraftableCard from './DraftableCard'
 import TimerPanel from './TimerPanel'
-import { getReadableAspectTextColor, getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
+import { getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
 import './LeaderDraftPhase.css'
 
 interface Leader {
@@ -22,12 +22,11 @@ interface Leader {
 
 interface Player {
   id: string
-  pickStatus?: 'picked' | 'selected' | 'confirmed' | 'picking' | 'timeout'
+  pickStatus?: 'picked' | 'selected' | 'picking' | 'timeout'
   [key: string]: unknown
 }
 
 interface MyPlayer extends Player {
-  selectedCardId?: string | null
   leaders?: Leader[]
   draftedLeaders?: Leader[]
 }
@@ -48,9 +47,7 @@ interface LeaderDraftPhaseProps {
   myPlayer: MyPlayer | null
   draftState: DraftState | null
   onSelect: (cardId: string | null) => void
-  onConfirm: (cardId: string) => void
   loading: boolean
-  confirming?: boolean
   error: string | null
   isHost: boolean
   onTogglePause: () => void
@@ -65,9 +62,7 @@ function LeaderDraftPhase({
   myPlayer,
   draftState,
   onSelect,
-  onConfirm,
   loading,
-  confirming = false,
   error,
   isHost,
   onTogglePause,
@@ -77,9 +72,8 @@ function LeaderDraftPhase({
 }: LeaderDraftPhaseProps) {
   const leaders = myPlayer?.leaders || []
   const draftedLeaders = myPlayer?.draftedLeaders || []
-  const stagedPickStatuses = new Set(['selected', 'confirmed'])
-  const canSelect = (myPlayer?.pickStatus === 'picking' || stagedPickStatuses.has(myPlayer?.pickStatus || '')) && leaders.length > 0
-  const hasSelected = stagedPickStatuses.has(myPlayer?.pickStatus || '')
+  const canSelect = (myPlayer?.pickStatus === 'picking' || myPlayer?.pickStatus === 'selected') && leaders.length > 0
+  const hasSelected = myPlayer?.pickStatus === 'selected'
   const round = draftState?.leaderRound || 1
   const totalLeaderRounds = draftState?.totalPacks || draft?.settings?.chaosSets?.length || 3
   // Spectators (anyone viewing who isn't one of the drafters) get no `myPlayer`.
@@ -97,15 +91,12 @@ function LeaderDraftPhase({
   // Load selection from localStorage on mount and when round changes
   useEffect(() => {
     const stored = localStorage.getItem(storageKey)
-    const serverSelected = myPlayer?.selectedCardId || null
-    const nextSelection = serverSelected || stored
-    if (nextSelection && leaders.some(l => (l.instanceId || l.id) === nextSelection)) {
-      localStorage.setItem(storageKey, nextSelection)
-      setSelectedCardId(nextSelection)
+    if (stored && leaders.some(l => (l.instanceId || l.id) === stored)) {
+      setSelectedCardId(stored)
     } else {
       setSelectedCardId(null)
     }
-  }, [storageKey, leaders, myPlayer?.selectedCardId])
+  }, [storageKey, leaders])
 
   // Sync localStorage selection with server on mount (in case of refresh)
   // Only re-send if the stored leader is still in the current leaders array
@@ -155,8 +146,12 @@ function LeaderDraftPhase({
     const myStatus = myPublicPlayer?.pickStatus || myPlayer?.pickStatus
 
     const iPicked = myStatus === 'picked'
-    // Check if all players have confirmed picks.
-    const allPlayersDone = players?.length > 0 && players.every(p => p.pickStatus === 'picked')
+    const iSelected = myStatus === 'selected'
+
+    // Check if all players are done (picked or selected)
+    const allPlayersDone = players?.length > 0 && players.every(p =>
+      p.pickStatus === 'picked' || p.pickStatus === 'selected'
+    )
 
     // Get first leader ID to track pack identity
     const firstLeaderId = leaders[0]?.instanceId || leaders[0]?.id || null
@@ -201,7 +196,7 @@ function LeaderDraftPhase({
   }, [myPlayer?.pickStatus, leaders, showPassing, players])
 
   const handleCardClick = (card: Leader) => {
-    if (loading || confirming || !canSelect) return
+    if (loading || !canSelect) return
 
     const cardId = card.instanceId || card.id
 
@@ -224,16 +219,9 @@ function LeaderDraftPhase({
 
   const handleDeselect = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (loading || confirming) return
     localStorage.removeItem(storageKey)
     setSelectedCardId(null)
     onSelect(null)
-  }
-
-  const handleConfirmSelection = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    if (!selectedCardId || loading || confirming) return
-    onConfirm(selectedCardId)
   }
 
   // Leader draft always passes right
@@ -306,7 +294,9 @@ function LeaderDraftPhase({
           <div className="available-leaders">
             <h3>
               {hasSelected
-                ? 'Confirm Selection'
+                ? (players?.some(p => p.pickStatus !== 'picked' && p.pickStatus !== 'selected')
+                    ? 'Waiting for other players...'
+                    : 'Ready')
                 : canSelect
                   ? (round === totalLeaderRounds ? 'Select Your Final Leader' : 'Select a Leader')
                   : 'Waiting...'}
@@ -362,7 +352,6 @@ function LeaderDraftPhase({
             if (!selectedLeader || !selectedLeader.name) return null
             const firstAspect = selectedLeader.aspects?.[0]
             const aspectColor = firstAspect ? getSingleAspectColor(firstAspect) : NO_ASPECT_COLOR
-            const leaderNameColor = getReadableAspectTextColor(aspectColor)
             return (
               <div
                 className="selection-confirmation-banner"
@@ -373,29 +362,25 @@ function LeaderDraftPhase({
               >
                 <div className="selection-info">
                   <span className="selection-label">Selected:</span>
-                  <span className="selection-card-name" style={{ color: leaderNameColor }}>
+                  <span className="selection-card-name" style={{ color: aspectColor }}>
                     {selectedLeader.name || selectedLeader.title || 'Leader'}
                   </span>
                   {selectedLeader.subtitle && (
                     <span className="selection-card-subtitle">{selectedLeader.subtitle}</span>
                   )}
                 </div>
-                <div className="selection-actions">
-                  <button
-                    type="button"
-                    className="selection-confirm-button"
-                    onClick={(e) => handleConfirmSelection(e)}
-                    disabled={loading || confirming}
-                  >
-                    {confirming ? 'Confirming...' : 'Confirm'}
-                  </button>
-                  <button type="button" className="deselect-button" onClick={(e) => handleDeselect(e)} aria-label="Clear selection" title="Deselect">
+                {hasSelected ? (
+                  players?.some(p => p.pickStatus !== 'picked' && p.pickStatus !== 'selected') ? (
+                    <div className="selection-status-text">Waiting for other players...</div>
+                  ) : null
+                ) : (
+                  <button className="deselect-button" onClick={(e) => handleDeselect(e)} title="Deselect">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <line x1="18" y1="6" x2="6" y2="18"></line>
                       <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
                   </button>
-                </div>
+                )}
               </div>
             )
           })()}
