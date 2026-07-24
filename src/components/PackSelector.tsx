@@ -207,21 +207,29 @@ export function PackSelector({
         <div className="pack-selector-image">
           <img src={packImageUrl} alt={set.name} />
           {showQuantityControls && (isSelected || !isMaxed) && (
-            <div className={`pack-selector-badge ${isSelected ? '' : 'pack-selector-badge--add-only'}`}>
-              {isSelected && (
-                <>
-                  <button
-                    className={`pack-selector-qty-btn ${count < 1 ? 'hidden' : ''}`}
-                    onClick={(e) => handleRemoveOne(set.code, e)}
-                    aria-label={`Remove one ${set.name} pack`}
-                  >
-                    −
-                  </button>
-                  <span className="pack-selector-count">{count}</span>
-                </>
-              )}
+            // Fixed 3-cell stepper. The −, count, and + each own a stable slot so
+            // tapping + or − never moves the button out from under your finger.
+            <div className="pack-selector-stepper">
               <button
-                className={`pack-selector-qty-btn ${canAddOne(set.code) ? '' : 'hidden'}`}
+                type="button"
+                className="pack-selector-qty-btn pack-selector-qty-btn--minus"
+                data-hidden={!isSelected}
+                tabIndex={isSelected ? 0 : -1}
+                aria-hidden={!isSelected}
+                onClick={(e) => handleRemoveOne(set.code, e)}
+                aria-label={`Remove one ${set.name} pack`}
+              >
+                −
+              </button>
+              <span className="pack-selector-count" data-hidden={!isSelected} aria-hidden={!isSelected}>
+                {count}
+              </span>
+              <button
+                type="button"
+                className="pack-selector-qty-btn pack-selector-qty-btn--plus"
+                data-hidden={!canAddOne(set.code)}
+                tabIndex={canAddOne(set.code) ? 0 : -1}
+                aria-hidden={!canAddOne(set.code)}
                 onClick={(e) => handleAddOne(set.code, e)}
                 aria-label={`Add one ${set.name} pack`}
               >
