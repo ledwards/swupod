@@ -6,6 +6,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh; /* exclude mobile browser chrome so bottom-anchored UI stays visible */
   overflow: hidden;
   z-index: 10000;
 
@@ -627,7 +628,7 @@
   }
 
   .pack-counter {
-    bottom: 3%;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 32px);
     font-size: 1.5rem;
   }
 
