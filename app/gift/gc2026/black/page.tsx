@@ -155,6 +155,12 @@ export default function GiftGc2026BlackPage() {
                 <figcaption className="gift-pack-label">BLACK PACK</figcaption>
               </figure>
             </div>
+            <p className="gift-disclaimer">
+              Heads up: Fantasy Flight Games hasn&apos;t released the official GC 2026 alt-art
+              yet, so the cards you unlock show <strong>placeholder images</strong> for now.
+              They&apos;ll switch to the final art automatically once FFG publishes it — the pack
+              on your account stays exactly the same.
+            </p>
             <div className="gift-panel">
               <p className="gift-panel-copy">Unlock your Black Pack and open it right now.</p>
               <Button variant="primary" size="lg" onClick={handleUnlock} disabled={status === 'claiming'}>
