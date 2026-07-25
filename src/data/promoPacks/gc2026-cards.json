@@ -2,7 +2,7 @@
   "__meta": {
     "campaign": "gc2026",
     "name": "Galactic Championship 2026",
-    "note": "Authoritative GC 2026 Silver/Black Event Pack contents (source: wayfinder gc2026-schedule.ts SILVER_PACK_ALT_ARTS + Black Pack items, branch claude/gc2026-schedule-page-88b1da). Official GC alt-art isn't in swuapi yet, so `placeholderImage` is the STANDARD printing as a stand-in. The injection transform auto-falls-over to a real GC printing (a same-cardId sibling with _OP_ art) the moment swuapi scrapes it — no code change needed.",
+    "note": "Authoritative GC 2026 Silver/Black Event Pack contents (source: wayfinder gc2026-schedule.ts SILVER_PACK_ALT_ARTS + Black Pack items, branch claude/gc2026-schedule-page-88b1da). The official GC alt-art has been revealed but isn't in swuapi yet, so `placeholderImage` is the revealed alt-art cropped from the FFG reveal stream (see tmp/crop-promo-cards.sh) as an interim stand-in. The injection transform auto-falls-over to a real GC printing (a same-cardId sibling with _OP_ art) the moment swuapi scrapes it — no code change needed.",
     "silverCount": 12,
     "blackCount": 6,
     "generatedAt": "2026-07-14"

@@ -123,6 +123,20 @@
   opacity: 0.62;
 }
 
+/* Placeholder-art disclaimer — the official GC 2026 alt-art isn't in the card
+   database yet, so unlocked cards currently show stand-in images. */
+.gift-disclaimer {
+  max-width: 34rem;
+  margin: 0 auto 1.5rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.62);
+}
+
 /* ---- CTA (button-only states) ----------------------------------------- */
 /* A lone button doesn't need a bordered box around it — that reads as an empty
    panel. Just center it and let it carry the weight. */

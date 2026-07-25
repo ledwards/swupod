@@ -179,6 +179,13 @@ export default function GiftGc2026Page() {
                       <figcaption className="gift-pack-label">BLACK PACK</figcaption>
                     </figure>
                   </div>
+                  <p className="gift-disclaimer">
+                    Heads up: the official GC 2026 alt-art has been revealed, but it isn&apos;t in
+                    the card database yet — so the cards you unlock show{' '}
+                    <strong>placeholder images</strong> for now. They&apos;ll switch to the final
+                    art automatically once it&apos;s added. The packs on your account stay exactly
+                    the same.
+                  </p>
                   <div className="gift-cta">
                     {loading ? (
                       <div className="loading">Loading…</div>
