@@ -47160,50 +47160,6 @@
       "backImageUrl": null
     },
     {
-      "id": "019d3177-4cdf-7040-8182-60f1c81839cb",
-      "cardId": "SOR-002",
-      "name": "Darth Vader",
-      "subtitle": "Dark Lord of the Sith",
-      "set": "SOR",
-      "number": "2",
-      "rarity": "Special",
-      "type": "Leader",
-      "aspects": [
-        "Aggression",
-        "Villainy"
-      ],
-      "traits": [
-        "Force",
-        "Imperial",
-        "Sith"
-      ],
-      "arenas": [
-        "Ground"
-      ],
-      "cost": 7,
-      "power": 5,
-      "hp": 8,
-      "frontText": "Action [1 resource, exhaust]: If you played a [Villainy] card this phase, deal 1 damage to a unit and 1 damage to a base.",
-      "backText": "On Attack: You may deal 2 damage to a unit.",
-      "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader. (Flip him, ready him, and move him to the ground arena.)",
-      "keywords": [],
-      "artist": "Borja Pindado",
-      "unique": true,
-      "doubleSided": true,
-      "variantType": "Hyperspace",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": true,
-      "isBase": false,
-      "isFoil": false,
-      "isHyperspace": true,
-      "isShowcase": false,
-      "isPrestige": false,
-      "prestigeTier": null,
-      "imageUrl": "https://cdn.starwarsunlimited.com/card_SWOP_0106_002_Darth_Vader_Leader_HYP_3b847b861d.png",
-      "backImageUrl": "https://cdn.starwarsunlimited.com/card_SWOP_0106_002_Darth_Vader_Leader_Unit_HYP_063ef5cbe7.png"
-    },
-    {
       "id": "019d3177-4d15-7d05-973e-9d3ce542a039",
       "cardId": "SOR-002",
       "name": "Luke Skywalker",
@@ -354976,12 +354932,12 @@
     "version": "1.0.0",
     "lastUpdated": "2026-07-26",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
-    "totalCards": 8315,
+    "totalCards": 8314,
     "sets": [
       {
         "code": "SOR",
         "name": "Spark of Rebellion",
-        "cardCount": 982
+        "cardCount": 981
       },
       {
         "code": "SHD",
