@@ -1,5 +1,10 @@
 # Release Notes
 
+## 07.30.2026
+
+### 🔧 Under the Hood
+- **Draft timer reliability**: a round of refinements to how pick timers stay in sync across every player's browser, so the countdown you see always matches the one the draft is actually running on — in casual and competitive pods alike, and across pauses.
+
 ## 07.19.2026
 
 ### 🔧 Under the Hood
