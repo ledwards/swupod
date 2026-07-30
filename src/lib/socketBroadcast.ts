@@ -164,7 +164,7 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
 
     const draftState = jsonParse<Record<string, unknown>>(pod.draft_state, {}) as Record<string, unknown>
 
-    const isLeaderDraftPhase = draftState?.phase === 'leader_draft'
+    const isLeaderDraftPhase = draftState?.phase === 'leader_draft' || draftState?.phase === 'leader_preview'
 
     // Build PUBLIC player data (visible to all)
     const publicPlayers: PublicPlayer[] = players.map(p => {
@@ -343,10 +343,11 @@ export async function broadcastSealedPodState(shareId: string): Promise<void> {
   try {
     const pod = await queryRow(
       `SELECT dp.id, dp.share_id, dp.status, dp.state_version, dp.set_code, dp.set_name,
-              dp.host_id, dp.current_players, dp.max_players, dp.settings
+              dp.host_id, dp.current_players, dp.max_players, dp.settings,
+              dp.competitive, dp.deck_lock_at, dp.decks_unlocked
        FROM pods dp WHERE dp.share_id = $1 AND dp.pod_type = 'sealed'`,
       [shareId]
-    ) as { id: string; share_id: string; status: string; state_version: number; set_code: string; set_name: string; host_id: string; current_players: number; max_players: number; settings: string | Record<string, unknown> } | null
+    ) as { id: string; share_id: string; status: string; state_version: number; set_code: string; set_name: string; host_id: string; current_players: number; max_players: number; settings: string | Record<string, unknown>; competitive: boolean | null; deck_lock_at: string | null; decks_unlocked: boolean | null } | null
 
     if (!pod) {
       io.to(`sealed:${shareId}`).emit('deleted')
@@ -370,6 +371,9 @@ export async function broadcastSealedPodState(shareId: string): Promise<void> {
       status: pod.status,
       currentPlayers: pod.current_players,
       maxPlayers: pod.max_players,
+      competitive: pod.competitive === true,
+      deckBuildDeadline: pod.deck_lock_at || null,
+      decksUnlocked: pod.decks_unlocked === true,
       settings,
       players: players.map(p => ({
         id: p.user_id,

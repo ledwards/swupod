@@ -4,6 +4,8 @@
 import { useState } from 'react'
 import Button from './Button'
 import EditableTitle from './EditableTitle'
+import CollapsibleSection from './CollapsibleSection'
+import CompetitivePracticeRules from './CompetitivePracticeRules'
 import { formatPoolLabel } from '../utils/poolDisplayName'
 import { trackEvent } from '../hooks/useAnalytics'
 import { buildLimitedContext, LimitedAnalyticsEvents } from '../analytics/limitedEvents'
@@ -55,6 +57,7 @@ interface SealedPodLobbyProps {
   hostId?: string
   maxPlayers?: number
   isPublic?: boolean
+  competitive?: boolean
   onStart: () => void
   onLeave: () => void
   onCancel: () => void
@@ -78,6 +81,7 @@ export default function SealedPodLobby({
   hostId,
   maxPlayers,
   isPublic,
+  competitive = false,
   onStart,
   onLeave,
   onCancel,
@@ -150,8 +154,11 @@ export default function SealedPodLobby({
                 className="setting-select"
                 value={maxPlayers || 8}
                 onChange={(e) => onSettingsChange({ maxPlayers: Number(e.target.value) })}
+                disabled={competitive}
+                title={competitive ? 'Competitive Sealed pods are capped at 8 players' : undefined}
               >
-                {Array.from({ length: 15 }, (_, i) => i + 2).map(n => (
+                {/* Competitive Sealed pods are capped at 8 players */}
+                {Array.from({ length: (competitive ? 8 : 16) - 1 }, (_, i) => i + 2).map(n => (
                   <option key={n} value={n}>{n}</option>
                 ))}
               </select>
@@ -175,6 +182,19 @@ export default function SealedPodLobby({
               <span>{isPublic ? 'Public' : 'Private'}</span>
             </button>
           </div>
+        </div>
+      )}
+
+      {competitive && (
+        <div className="cpm-rules-panel">
+          <CollapsibleSection
+            title="Competitive Sealed"
+            variant="default"
+            defaultExpanded={false}
+            className="cpm-rules-collapsible"
+          >
+            <CompetitivePracticeRules showTitle={false} format="sealed" />
+          </CollapsibleSection>
         </div>
       )}
 

@@ -1,10 +1,11 @@
 // @ts-nocheck
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
 import { initializeCardCache } from '../../../src/utils/cardCache'
+import { initialSealedCompetitiveFromSearch } from '../../../src/utils/draftCreationRoutes'
 import SetSelection from '../../../src/components/SetSelection'
 import Button from '../../../src/components/Button'
 import { trackEvent } from '../../../src/hooks/useAnalytics'
@@ -12,11 +13,19 @@ import { getOrCreateLimitedFlowId, LimitedAnalyticsEvents } from '../../../src/a
 import '../../../src/App.css'
 import '../../draft/draft.css'
 
-export default function NewSealedPodPage() {
+function NewSealedPodPageContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { user, isAuthenticated, loading: authLoading } = useAuth()
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Standard entry points pass competitive=0 (or nothing); the Competitive
+  // Sealed button passes competitive=1.
+  const [competitive, setCompetitive] = useState(() => initialSealedCompetitiveFromSearch(searchParams))
+
+  useEffect(() => {
+    setCompetitive(initialSealedCompetitiveFromSearch(searchParams))
+  }, [searchParams])
   const [isPublic, setIsPublic] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('pod-visibility')
@@ -38,7 +47,10 @@ export default function NewSealedPodPage() {
   }, [])
 
   const handleLogin = () => {
-    const returnUrl = encodeURIComponent('/sealed/new')
+    const path = typeof window !== 'undefined'
+      ? `/sealed/new${window.location.search || ''}`
+      : '/sealed/new'
+    const returnUrl = encodeURIComponent(path)
     window.location.href = `/api/auth/signin/discord?return_to=${returnUrl}`
   }
 
@@ -55,6 +67,7 @@ export default function NewSealedPodPage() {
       flow_id: flowId,
       set_code: setCode,
       is_public: isPublic,
+      competitive,
     })
 
     try {
@@ -62,7 +75,7 @@ export default function NewSealedPodPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ setCode, isPublic, flowId }),
+        body: JSON.stringify({ setCode, isPublic, competitive, flowId }),
       })
 
       if (!response.ok) {
@@ -153,9 +166,49 @@ export default function NewSealedPodPage() {
     </button>
   )
 
+  // Owner toggle: checked = Competitive Sealed (8 packs, timed deck build,
+  // Swiss matchmaking); unchecked = standard 6-pack sealed pod. Mirrors the
+  // adjacent lock button's visual language; glows when on.
+  const competitiveToggle = (
+    <button
+      type="button"
+      className={`setting-lock setting-lock-competitive${competitive ? '' : ' setting-lock-competitive-off'}`}
+      onClick={() => setCompetitive(v => !v)}
+      aria-pressed={competitive}
+      title={competitive
+        ? 'Competitive Sealed ON — 8 packs each, 20-minute deck build, Swiss matchmaking. Uncheck for a standard sealed pod.'
+        : 'Competitive Sealed OFF — this will be a standard 6-pack sealed pod. Check for 8 packs, a timed deck build, and Swiss matchmaking.'}
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/>
+        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/>
+        <path d="M4 22h16"/>
+        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22"/>
+        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22"/>
+        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+      </svg>
+      <span>Competitive Sealed{competitive ? ' ✓' : ''}</span>
+    </button>
+  )
+
+  const headerActions = (
+    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+      {lockButton}
+      {competitiveToggle}
+    </div>
+  )
+
   return (
     <div className="app">
-      <SetSelection onSetSelect={handleSetSelect} onBack={handleBack} headerAction={lockButton} />
+      <SetSelection onSetSelect={handleSetSelect} onBack={handleBack} headerAction={headerActions} />
     </div>
+  )
+}
+
+export default function NewSealedPodPage() {
+  return (
+    <Suspense fallback={<div className="draft-page-bg"><div className="loading"></div></div>}>
+      <NewSealedPodPageContent />
+    </Suspense>
   )
 }

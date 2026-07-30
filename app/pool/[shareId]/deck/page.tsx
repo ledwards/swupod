@@ -190,6 +190,12 @@ export default function DeckBuilderPage({ params }: PageProps) {
   const poolName = getPoolNameFromState()
 
   const draftShareId = pool?.draftShareId || null
+  // Pools that can belong to a competitive pod: draft pools always have a pod;
+  // sealed pools only when they came from a sealed pod (draftShareId resolves via
+  // card_pools.pod_id). Solo sealed pools have no pod and stay out of this path.
+  const isPodPool = Boolean(draftShareId) && (
+    pool?.poolType === 'draft' || pool?.poolType === 'sealed' || pool?.poolType === 'sealed_pod'
+  )
   const isOwner = user && pool?.owner && user.id === (pool.owner.id || pool.userId)
   // Anonymous pools (no owner) are editable + auto-saved by anyone, matching the
   // API (PUT /api/pools/:id allows edits when user_id is null) and the create
@@ -203,7 +209,9 @@ export default function DeckBuilderPage({ params }: PageProps) {
   const [competitive, setCompetitive] = useState(false)
 
   useEffect(() => {
-    if (!draftShareId || pool?.poolType !== 'draft') {
+    // Competitive pods exist for draft AND sealed pods — the /api/draft/[shareId]
+    // route serves both (it has no pod_type filter).
+    if (!draftShareId || !isPodPool) {
       setDraftLimitedMode(null)
       setCompetitive(false)
       return
@@ -228,11 +236,11 @@ export default function DeckBuilderPage({ params }: PageProps) {
 
   // Live competitive lock state. Owner toggles propagate to every player via the
   // draft socket, so the locked deckbuilder unlocks/relocks in real time.
-  const isDraftPool = pool?.poolType === 'draft'
+  // Enabled for any pod-backed pool (draft pods and sealed pods alike).
   const {
     draft: competitiveDraft,
     isHost: isCompetitiveHost,
-  } = useDraftSocket(draftShareId, { enabled: !!draftShareId && isDraftPool })
+  } = useDraftSocket(draftShareId, { enabled: !!draftShareId && isPodPool })
 
   const isCompetitivePod = competitiveDraft?.competitive === true
   const matchmakingStatus = competitiveDraft?.matchmakingStatus || 'deck_building'

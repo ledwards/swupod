@@ -23,7 +23,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       `SELECT
         dp.id, dp.share_id, dp.host_id, dp.status, dp.current_players, dp.max_players,
         dp.set_code, dp.set_name, dp.name, dp.settings, dp.state_version,
-        dp.is_public,
+        dp.is_public, dp.competitive, dp.deck_lock_at, dp.decks_unlocked,
         dp.created_at, dp.updated_at,
         u.username as host_username,
         u.avatar_url as host_avatar
@@ -80,6 +80,9 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       },
       players: formattedPlayers,
       isPublic: pod.is_public || false,
+      competitive: pod.competitive === true,
+      deckBuildDeadline: pod.deck_lock_at || null,
+      decksUnlocked: pod.decks_unlocked === true,
       isHost: session ? pod.host_id === session.id : false,
       isPlayer,
       createdAt: pod.created_at,

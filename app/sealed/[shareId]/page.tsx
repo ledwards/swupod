@@ -272,6 +272,10 @@ export default function SealedPodPage({ params }: PageProps) {
 
   if (!pod) return null
 
+  // Standard sealed deals 6 packs, Competitive Sealed deals 8 — only used as a
+  // fallback when the pool's own packs haven't loaded.
+  const fallbackPackCount = pod.competitive ? 8 : 6
+
   // Phase: Pack Opening Animation
   if (postStartPhase === 'animation' && poolData) {
     const packs = poolData.packs && poolData.packs.length > 0
@@ -281,8 +285,8 @@ export default function SealedPodPage({ params }: PageProps) {
     return (
       <div className="app">
         <PackOpeningAnimation
-          packCount={packs?.length || 6}
-          packImageUrls={getCyclingPackImageUrls(pod.setCode, packs?.length || 6)}
+          packCount={packs?.length || fallbackPackCount}
+          packImageUrls={getCyclingPackImageUrls(pod.setCode, packs?.length || fallbackPackCount)}
           packs={packs}
           onComplete={() => setPostStartPhase('pool-review')}
           setCode={pod.setCode}
@@ -331,8 +335,9 @@ export default function SealedPodPage({ params }: PageProps) {
   const packArtUrl = getPackArtUrl(pod.setCode)
 
   // Phase: Lobby (waiting for players / host to start)
+  // `.competitive` on the page root applies the gold competitive theme (draft.css)
   return (
-    <div className="page-with-chat">
+    <div className={`page-with-chat${pod.competitive ? ' competitive' : ''}`}>
       <div className="page-content">
         <div className="pod-page">
           {packArtUrl && (
@@ -353,6 +358,7 @@ export default function SealedPodPage({ params }: PageProps) {
               hostId={pod?.host?.id}
               maxPlayers={pod?.maxPlayers}
               isPublic={pod?.isPublic}
+              competitive={pod?.competitive === true}
               onStart={handleStart}
               onLeave={handleLeave}
               onCancel={handleCancel}

@@ -5,6 +5,7 @@ import { requireAuth } from '@/lib/auth'
 import { generateShareId, formatSetCodeRange } from '@/lib/utils'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { generateSealedBox, clearBeltCache } from '@/src/utils/boosterPack'
+import { sealedPacksPerPlayer } from '@/src/utils/sealedPodConfig'
 import { initializeCardCache } from '@/src/utils/cardCache'
 import { computeRandomPairings } from '@/src/utils/podPairings'
 import { broadcastSealedPodState, broadcastPublicPodsUpdate, broadcastSystemChatMessage } from '@/src/lib/socketBroadcast'
@@ -54,9 +55,10 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       return errorResponse('Need at least 2 players to start', 400)
     }
 
-    // Generate packs for all players (6 packs each)
+    // Generate packs for all players (6 each, 8 each for Competitive Sealed)
+    const packsPerPlayer = sealedPacksPerPlayer(pod.competitive === true)
     await initializeCardCache()
-    const totalPacks = players.length * 6
+    const totalPacks = players.length * packsPerPlayer
     clearBeltCache()
     const allPacks = generateSealedBox([], pod.set_code, totalPacks)
 
@@ -75,7 +77,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
 
     for (let i = 0; i < players.length; i++) {
       const player = players[i]
-      const playerPacks = allPacks.slice(i * 6, (i + 1) * 6)
+      const playerPacks = allPacks.slice(i * packsPerPlayer, (i + 1) * packsPerPlayer)
       const allCards = playerPacks.flatMap(pack => pack.cards || pack)
 
       const poolShareId = generateShareId(8)
@@ -113,7 +115,8 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
           format: 'sealed',
           mode: 'group',
           setCode: pod.set_code,
-          pack_count: 6,
+          competitive: pod.competitive === true,
+          pack_count: packsPerPlayer,
           poolShareId,
           podShareId: shareId,
         }
@@ -130,12 +133,16 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       pairings: pairings,
     }
 
+    // Competitive Sealed: deck-build deadline starts the moment packs are dealt
+    // (analogue of the 20-minute deck_lock_at set on competitive draft completion
+    // in src/utils/draftAdvance.ts).
     await query(
       `UPDATE pods
        SET status = 'complete',
            settings = $1,
            state_version = state_version + 1,
-           completed_at = NOW()
+           completed_at = NOW()${pod.competitive ? `,
+           deck_lock_at = NOW() + interval '20 minutes'` : ''}
        WHERE id = $2`,
       [JSON.stringify(updatedSettings), pod.id]
     )
@@ -174,6 +181,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
         format: 'sealed',
         mode: 'group',
         setCode: pod.set_code,
+        competitive: pod.competitive === true,
         human_players: humanCount,
         bot_players: botCount,
         current_players: players.length,
@@ -187,6 +195,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
         format: 'sealed',
         mode: 'group',
         setCode: pod.set_code,
+        competitive: pod.competitive === true,
         duration_seconds: durationSeconds,
         human_players: humanCount,
         bot_players: botCount,

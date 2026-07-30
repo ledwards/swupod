@@ -31,9 +31,9 @@ export const PATREON_FEATURES: PatreonFeature[] = [
   },
   {
     id: 'competitive-draft-mode',
-    title: 'Competitive Draft Mode',
+    title: 'Competitive Draft & Sealed',
     description:
-      "Draft like it's a real event: official Appendix C pick timers plus best-of-three matchmaking that pairs your pod into rounds after the draft.",
+      "Practice like it's a real event: official Appendix C pick timers for draft, 8-pack Competitive Sealed with a timed deck build, and best-of-three Swiss matchmaking that pairs your pod into rounds.",
   },
   {
     id: 'privileged-observer',

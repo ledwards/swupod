@@ -207,20 +207,26 @@ export default function PlayPage({ params }: PageProps) {
   const [reportingMatchId, setReportingMatchId] = useState<string | null>(null)
   const [overridingMatchId, setOverridingMatchId] = useState<string | null>(null)
 
-  // Draft socket for competitive mode — enabled only for draft pools
+  // Draft socket for competitive mode — enabled for pod-backed pools (draft pods
+  // AND sealed pods; Competitive Sealed uses the same Swiss pipeline, and the
+  // /api/draft/[shareId] routes have no pod_type filter). Solo sealed pools have
+  // no pod, so draftShareId is null and this stays off.
   const draftShareId = pool?.draftShareId || null
+  const isPodPool = Boolean(draftShareId) && (
+    pool?.poolType === 'draft' || pool?.poolType === 'sealed' || pool?.poolType === 'sealed_pod'
+  )
   const {
     draft: competitiveDraft,
     isHost: isCompetitiveHost,
     players: draftPlayers,
     loading: competitiveLoading,
     refresh: refreshCompetitive,
-  } = useDraftSocket(draftShareId, { enabled: !!draftShareId && pool?.poolType === 'draft' })
+  } = useDraftSocket(draftShareId, { enabled: !!draftShareId && isPodPool })
 
   // Until the draft socket resolves we don't know whether this is a competitive
   // (Swiss) pod — render a skeleton instead of guessing, which caused the normal
   // play box to flash in and then get replaced by the Swiss box.
-  const competitiveUndetermined = Boolean(draftShareId) && pool?.poolType === 'draft' && competitiveLoading
+  const competitiveUndetermined = Boolean(draftShareId) && isPodPool && competitiveLoading
 
   const isCompetitive = competitiveDraft?.competitive === true
   const competitiveRounds = (competitiveDraft?.rounds || []) as {
