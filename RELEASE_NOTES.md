@@ -1,5 +1,13 @@
 # Release Notes
 
+## 07.30.2026
+
+### 🏆 Tier Lists Now Graded by Real Draft Picks
+- **ASH tier grades on Stats and My Stats now come from how the community actually drafts**, not from small-sample win rates. Leaders are ranked by a Plackett–Luce model over every reconstructed leader pick, and deck cards by a within-aspect Bradley–Terry model over 160,000+ pick decisions — the same methodology behind our GC 2026 Draft Prep report, which independently matched expert rankings.
+- **No more one-game A+ leaders.** Grades now require a real sample; ultra-rare leaders show as ungraded until enough drafts have seen them. Thin samples are labeled Provisional.
+- **The tier list is complete**: every graded leader and card appears, even ones without recorded match results yet. Win rates (GIH, OH, GD, GP) stay visible as context — they just no longer decide the tiers.
+- **Cost and Turn lenses** now grade on the same pick-preference scale, so a great 2-drop finally out-grades a mediocre 5-drop.
+
 ## 07.19.2026
 
 ### 🔧 Under the Hood

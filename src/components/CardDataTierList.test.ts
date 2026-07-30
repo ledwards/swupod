@@ -142,3 +142,33 @@ describe('<CardDataTierList /> styling contracts', () => {
     assert.match(STATS_CSS, /\.modal-content\.card-data-stats-modal\s*\{[\s\S]*?max-height:\s*min\(760px,\s*calc\(100dvh - 2rem\)\);[\s\S]*?overflow-y:\s*auto;/)
   })
 })
+
+describe('<CardDataTierList /> pick-preference grading', () => {
+  it('recognizes pick-graded rows by gradePolicy, never recomputing grades client-side', () => {
+    assert.match(COMPONENT_SRC, /card\.gradePolicy === ['"]pick-preference-bt['"] \|\| card\.gradePolicy === ['"]leader-pick-preference-pl['"]/)
+  })
+
+  it('labels the tier list with the pick-preference methodology when the API says so', () => {
+    assert.match(COMPONENT_SRC, /cardData\?\.gradeMethodology === ['"]pick-preference['"]/)
+    assert.match(COMPONENT_SRC, /Draft Pick Preference \(Plackett-Luce\)/)
+    assert.match(COMPONENT_SRC, /Draft Pick Preference \(Bradley-Terry\)/)
+  })
+
+  it('shows pick metrics on tiles for pick-graded rows and keeps win rates as context', () => {
+    assert.match(COMPONENT_SRC, /Pick: \$\{formatTierCardPct\(card\.pickRate\)\} · APR \$\{formatPickAta\(card\.ata\)\} · WR: \$\{formatTierCardPct\(card\.gpWr\)\}/)
+    assert.match(COMPONENT_SRC, /Pick: \$\{formatTierCardPct\(card\.pickRate\)\} · ATA \$\{formatPickAta\(card\.ata\)\} · GIH: \$\{formatTierCardPct\(card\.gihWr\)\}/)
+  })
+
+  it('titles grade badges with the row-level grade basis so pick and win-rate grades read differently', () => {
+    assert.match(COMPONENT_SRC, /title=\{`\$\{card\.gradeBasis \|\| activeMetricLabel\} grade`\}/)
+  })
+
+  it('surfaces provisional pick grades in the provisional note detection', () => {
+    assert.match(COMPONENT_SRC, /\[card\.gradePolicy, card\.gradeStatus, card\.gradeStatusLabel, card\.sampleWarning\]\.filter\(Boolean\)\.join\(' '\)/)
+  })
+
+  it('documents the pick-preference metrics in the definitions panel', () => {
+    assert.match(COMPONENT_SRC, /Pick Preference \(decides grades\)/)
+    assert.match(COMPONENT_SRC, /showPickPreference=\{isPickMethodology\}/)
+  })
+})

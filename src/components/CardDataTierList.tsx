@@ -78,6 +78,12 @@ interface CardDataCard {
   resourcedWhenSeen: number | null
   playedWar: number | null
   sampleWarning: string | null
+  /** Pick-preference fields — present on sets graded from draft pick behavior. */
+  pickRating?: number | null
+  pickRate?: number | null
+  inAspectRate?: number | null
+  pickSeen?: number | null
+  ata?: number | null
   gradesByScheme?: Partial<Record<CardGradeScheme, CardSchemeGrade>>
   displayGrade?: string | null
   displayGradeStatusLabel?: string | null
@@ -98,6 +104,9 @@ interface CardDataStats {
   replayMetricsStatus: string
   gradeBasis: string
   bucketedGradeBasis?: string
+  /** 'pick-preference' on sets whose tiers come from draft pick behavior. */
+  gradeMethodology?: string
+  pickDataGeneratedAt?: string | null
   leaders?: CardDataCard[]
   bases?: CardDataCard[]
   cards: CardDataCard[]
@@ -218,13 +227,32 @@ function RarityIcon({ rarity }: { rarity: string }) {
   )
 }
 
-function CardDataMetricDefinitions() {
+function CardDataMetricDefinitions({ showPickPreference = false }: { showPickPreference?: boolean }) {
   return (
     <details className="card-data-definitions">
       <summary>
         <span>Metric Definitions</span>
       </summary>
       <div className="card-data-definitions-grid">
+        {showPickPreference ? (
+          <section className="card-data-definition-group">
+            <h4>Pick Preference (decides grades)</h4>
+            <dl>
+              <div className="card-data-definition-row">
+                <dt>Pick %</dt>
+                <dd>How often drafters take this card when it is visible in the pack.</dd>
+              </div>
+              <div className="card-data-definition-row">
+                <dt>ATA / APR</dt>
+                <dd>Average pick position when taken (cards) or average leader-round when taken (leaders).</dd>
+              </div>
+              <div className="card-data-definition-row">
+                <dt>Grade</dt>
+                <dd>Model strength fitted from real pick contests — within-aspect Bradley-Terry for cards, Plackett-Luce for leaders — mapped to letter bands. Win rates below are shown as context and do not decide grades.</dd>
+              </div>
+            </dl>
+          </section>
+        ) : null}
         <section className="card-data-definition-group">
           <h4>Win Rates</h4>
           <dl>
@@ -327,6 +355,17 @@ function gradeClassSuffix(grade: string) {
   return grade.replace('+', 'plus').replace('-', 'minus').toLowerCase()
 }
 
+// Tiers on pick-preference sets are decided by draft pick behavior (Bradley-
+// Terry for cards, Plackett-Luce for leaders) — the row's gradePolicy says so.
+function cardIsPickGraded(card: Pick<CardDataCard, 'gradePolicy'>) {
+  return card.gradePolicy === 'pick-preference-bt' || card.gradePolicy === 'leader-pick-preference-pl'
+}
+
+function formatPickAta(value: number | null | undefined) {
+  if (value == null || !Number.isFinite(value)) return '—'
+  return value.toFixed(value < 10 ? 1 : 0)
+}
+
 function CardDataLockIcon() {
   return (
     <span className="card-data-gate-lock" aria-hidden="true">
@@ -407,6 +446,15 @@ export function CardDataStatsModal({ card, onClose, formatLabel, sampleWarningLa
   const artUrl = cardDataTileImageUrl(card)
   const grade = card.displayGrade || 'U'
   const leaderWins = roundedMetricWins(card.gpWr, card.gpCount, card.gpWins)
+  const pickStats = cardIsPickGraded(card) ? (card.isLeader ? [
+    { label: 'Pick Rate', value: formatCardDataPct(card.pickRate), detail: `seen in ${fmt(Math.round(card.pickSeen || 0))} leader picks` },
+    { label: 'Avg Pick Round', value: formatPickAta(card.ata) },
+  ] : [
+    { label: 'Pick Rate (when seen)', value: formatCardDataPct(card.pickRate), detail: `${fmt(Math.round(card.pickSeen || 0))} pick contests` },
+    { label: 'In-Aspect Pick Rate', value: formatCardDataPct(card.inAspectRate) },
+    { label: 'Avg Taken At', value: formatPickAta(card.ata) },
+    ...(card.pickRating == null ? [] : [{ label: 'Pick Rating', value: String(card.pickRating), detail: '0-100 Bradley-Terry percentile' }]),
+  ]) : []
   const metricStats = card.isLeader ? [
     { label: 'Leader WR', value: formatCardDataPct(card.gpWr), detail: `${fmt(leaderWins)} / ${fmt(Math.round(card.gpCount || 0))} games` },
     { label: 'Decks', value: fmt(card.deckCount || 0) },
@@ -446,7 +494,7 @@ export function CardDataStatsModal({ card, onClose, formatLabel, sampleWarningLa
       </div>
       <div className="card-data-stats-modal-body">
         <div className="card-data-stats-modal-grid">
-          {metricStats.map(stat => (
+          {[...pickStats, ...metricStats].map(stat => (
             <CardDataModalStat key={stat.label} {...stat} />
           ))}
         </div>
@@ -651,7 +699,7 @@ export default function CardDataTierList({
     return {
       provisional: isBucketedScheme
         ? rows.some(card => card.gradesByScheme?.[activeGradeScheme]?.provisional)
-        : rows.some(card => /provisional/i.test(card.gradePolicy || card.gradeStatus || card.sampleWarning || '')),
+        : rows.some(card => /provisional/i.test([card.gradePolicy, card.gradeStatus, card.gradeStatusLabel, card.sampleWarning].filter(Boolean).join(' '))),
       rows: rows.map(card => {
         const schemeGrade = isBucketedScheme ? card.gradesByScheme?.[activeGradeScheme] : null
         return {
@@ -752,7 +800,10 @@ export default function CardDataTierList({
     isBase: Boolean(card.isBase),
   })
   const activeMetricLabel = isLeaderView ? 'Leader WR' : cardDataMetricLabel(selectedMetric)
-  const activeMetricFullLabel = isLeaderView ? 'Leader Win Rate' : cardDataMetricFullLabel(selectedMetric)
+  const isPickMethodology = cardData?.gradeMethodology === 'pick-preference'
+  const activeMetricFullLabel = isPickMethodology
+    ? (isLeaderView ? 'Draft Pick Preference (Plackett-Luce)' : 'Draft Pick Preference (Bradley-Terry)')
+    : isLeaderView ? 'Leader Win Rate' : cardDataMetricFullLabel(selectedMetric)
   // A grade is only meaningful alongside the population it was graded against.
   const gradedAgainstLabel = activeGradeScheme === 'global'
     ? 'the whole set'
@@ -787,7 +838,7 @@ export default function CardDataTierList({
   const gradeBadge = (card: CardDataCard) => {
     const grade = card.displayGrade
     return grade ? (
-      <span className={`card-grade card-grade-${gradeClassSuffix(grade)}`} title={`${activeMetricLabel} grade`}>
+      <span className={`card-grade card-grade-${gradeClassSuffix(grade)}`} title={`${card.gradeBasis || activeMetricLabel} grade`}>
         {grade}
       </span>
     ) : (
@@ -797,13 +848,25 @@ export default function CardDataTierList({
 
   const metricTile = (card: CardDataCard) => {
     if (card.isLeader) {
+      if (cardIsPickGraded(card)) {
+        return `Pick: ${formatTierCardPct(card.pickRate)} · APR ${formatPickAta(card.ata)} · WR: ${formatTierCardPct(card.gpWr)}`
+      }
       const wins = roundedMetricWins(card.gpWr, card.gpCount, card.gpWins)
       return `Leader WR: ${formatTierCardPct(card.gpWr)} · ${fmt(wins)}/${fmt(Math.round(card.gpCount || 0))} games`
+    }
+    if (cardIsPickGraded(card)) {
+      return `Pick: ${formatTierCardPct(card.pickRate)} · ATA ${formatPickAta(card.ata)} · GIH: ${formatTierCardPct(card.gihWr)}`
     }
     return `GIH: ${formatTierCardPct(card.gihWr)} · OH: ${formatTierCardPct(card.ohWr)} · GD: ${formatTierCardPct(card.gdWr)} · GP ${formatTierCardPct(card.gpWr)}`
   }
 
   const metricTileTitle = (card: CardDataCard) => {
+    if (cardIsPickGraded(card)) {
+      const seen = fmt(Math.round(card.pickSeen || 0))
+      return card.isLeader
+        ? `Graded on leader pick preference · seen in ${seen} leader picks`
+        : `Graded on pick preference · seen in ${seen} pick contests`
+    }
     if (card.isLeader) {
       return `Leader win-rate sample: ${cardDataGamesLabel(card.gpCount)}`
     }
@@ -859,7 +922,7 @@ export default function CardDataTierList({
             <SortHeader label="Name" col="cardName" />
             <th className="aspects-col">Aspects</th>
             <SortHeader label="Rarity" col="rarity" />
-            <SortHeader label="Grade" col="grade" title="Derived from GIH within the active filters." />
+            <SortHeader label="Grade" col="grade" title={isPickMethodology ? 'Derived from draft pick preference (within-aspect Bradley-Terry).' : 'Derived from GIH within the active filters.'} />
             <SortHeader label="GIH Sample" col="gpCount" title="Games in hand sample used for grading." />
             <SortHeader label="GIH WR" col="gpWr" title={activeMetricLabel} />
             <th>GP WR</th>
@@ -918,7 +981,7 @@ export default function CardDataTierList({
             <SortHeader label="Name" col="cardName" />
             <th className="aspects-col">Aspects</th>
             <SortHeader label="Rarity" col="rarity" />
-            <SortHeader label="Grade" col="grade" title="Derived from leader win rate within the active filters." />
+            <SortHeader label="Grade" col="grade" title={isPickMethodology ? 'Derived from leader draft pick preference (Plackett-Luce).' : 'Derived from leader win rate within the active filters.'} />
             <SortHeader label="Leader WR" col="gpWr" title="Win rate in games played with this leader." />
             <SortHeader label="Games" col="gpCount" title="Games played with this leader." />
             <th>Sample</th>
@@ -1148,7 +1211,7 @@ export default function CardDataTierList({
               ) : null}
 
               <div className="card-stats-mode-row card-stats-mode-row--compact">
-                <CardDataMetricDefinitions />
+                <CardDataMetricDefinitions showPickPreference={isPickMethodology} />
                 <div className="card-data-muted">
                   {formatLabel} · {fmt(shownCount)} / {fmt(scopedCount)} {rowNoun} loaded
                   {hasWayfinderReplayMetrics(cardData?.sourceDetail) ? ' · Wayfinder data' : ''}
