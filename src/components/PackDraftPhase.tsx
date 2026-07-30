@@ -18,6 +18,7 @@ import { getSingleAspectColor, NO_ASPECT_COLOR } from '../utils/aspectColors'
 import { getSetConfig } from '../utils/setConfigs'
 import { getDraftPackDisplayOrder } from '../utils/draftPackDisplayOrder'
 import { serverSyncedNowMs } from '../utils/serverClock'
+import { INTER_PACK_REVIEW_SECONDS } from '../services/matchmaking/timers'
 import './PackDraftPhase.css'
 
 const ReviewIcon = () => (
@@ -387,7 +388,7 @@ function PackDraftPhase({
     new Date(draftState.reviewUntil).getTime() > serverSyncedNowMs(draft?.serverTimeOffsetMs || 0)
 
   const reviewStartedAt = isReviewPeriod
-    ? new Date(new Date(draftState!.reviewUntil!).getTime() - 30 * 1000).toISOString()
+    ? new Date(new Date(draftState!.reviewUntil!).getTime() - INTER_PACK_REVIEW_SECONDS * 1000).toISOString()
     : null
 
   if (isReviewPeriod) {
@@ -402,7 +403,7 @@ function PackDraftPhase({
               <h3 className="review-title">Review Your Cards</h3>
               <span className="review-subtitle">Next pack in</span>
               <CountdownTimer
-                totalSeconds={30}
+                totalSeconds={INTER_PACK_REVIEW_SECONDS}
                 startedAt={reviewStartedAt}
                 active={true}
                 label=""
