@@ -6,9 +6,10 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
 import { useDraftSocket } from '../../../src/hooks/useDraftSocket'
 import { usePresence } from '../../../src/hooks/usePresence'
-import { joinDraft, leaveDraft, startDraft, randomizeSeats, randomizePacks, makePick, selectCard, updateSettings, togglePause, dropFromDraft } from '../../../src/utils/draftApi'
+import { joinDraft, leaveDraft, startDraft, beginPicking, randomizeSeats, randomizePacks, makePick, selectCard, updateSettings, togglePause, dropFromDraft } from '../../../src/utils/draftApi'
 import { formatPoolLabel } from '../../../src/utils/poolDisplayName'
 import DraftLobby from '../../../src/components/DraftLobby'
+import LeaderPreviewPhase from '../../../src/components/LeaderPreviewPhase'
 import LeaderDraftPhase from '../../../src/components/LeaderDraftPhase'
 import PackDraftPhase from '../../../src/components/PackDraftPhase'
 import { getPackArtUrl } from '../../../src/utils/packArt'
@@ -43,6 +44,7 @@ export default function DraftRoomPage({ params }: PageProps) {
   const [shareId, setShareId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [startingDraft, setStartingDraft] = useState(false)
+  const [beginningPicking, setBeginningPicking] = useState(false)
   const [randomizing, setRandomizing] = useState(false)
   const [randomizingPacks, setRandomizingPacks] = useState(false)
   const [addingBot, setAddingBot] = useState(false)
@@ -236,6 +238,21 @@ export default function DraftRoomPage({ params }: PageProps) {
       setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setStartingDraft(false)
+    }
+  }
+
+  // Leader preview → leader draft: host opens picking and starts timers
+  const handleBeginPicking = async () => {
+    if (beginningPicking) return
+    setBeginningPicking(true)
+    setError(null)
+    try {
+      await beginPicking(shareId)
+      // WebSocket broadcast will update state
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error')
+    } finally {
+      setBeginningPicking(false)
     }
   }
 
@@ -523,6 +540,23 @@ export default function DraftRoomPage({ params }: PageProps) {
     if (status === 'active') {
       const phase = draftState?.phase
 
+      if (phase === 'leader_preview') {
+        return (
+          <>
+            {connectionBanner}
+            <LeaderPreviewPhase
+              draft={draft}
+              players={players}
+              myPlayer={myPlayer}
+              isHost={isHost}
+              onBeginPicking={handleBeginPicking}
+              beginningPicking={beginningPicking}
+              error={error}
+            />
+          </>
+        )
+      }
+
       if (phase === 'leader_draft') {
         return (
           <>
@@ -607,10 +641,12 @@ export default function DraftRoomPage({ params }: PageProps) {
                       />
                     </h1>
                   </div>
-                  {status === 'active' && (draftState?.phase === 'leader_draft' || draftState?.phase === 'pack_draft') && (
+                  {status === 'active' && (draftState?.phase === 'leader_preview' || draftState?.phase === 'leader_draft' || draftState?.phase === 'pack_draft') && (
                     <div className="draft-subhead-row" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span className="draft-round-info">
-                        {draftState?.phase === 'leader_draft' ? 'Leader Drafting Phase' : 'Drafting Phase'}
+                        {draftState?.phase === 'leader_preview'
+                          ? 'Leaders Revealed'
+                          : draftState?.phase === 'leader_draft' ? 'Leader Drafting Phase' : 'Drafting Phase'}
                       </span>
                       {draft?.competitive && (
                         <>

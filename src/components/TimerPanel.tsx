@@ -148,8 +148,11 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
   const showRoundTimer = isCompetitive ? displayedPickSeconds !== null : isRoundTimerEnabled
   const showLastPlayerTimer = !isCompetitive && isLastPlayerTimerEnabled && isLastPlayer
 
-  // If neither timer should be shown, render invisible placeholder to prevent layout shift
-  if (!isDrafting || (!showRoundTimer && !showLastPlayerTimer)) {
+  // If neither timer should be shown, render invisible placeholder to prevent
+  // layout shift. The leader preview never runs timers (pick_started_at is
+  // NULL until the host starts the draft) — placeholder there too, so raw
+  // phase consumers (e.g. the Privileged Observer kiosk) stay sane.
+  if (!isDrafting || draftState?.phase === 'leader_preview' || (!showRoundTimer && !showLastPlayerTimer)) {
     if (compact) return null
     return <div className="timer-bar-placeholder" aria-hidden="true" />
   }

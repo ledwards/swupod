@@ -1,6 +1,14 @@
-.leader-draft-phase {
+.leader-draft-phase,
+.leader-preview-phase {
   padding: 20px;
   margin: 0 auto;
+}
+
+/* Leader preview: host's Start Draft button under the revealed leader pack */
+.preview-start-section {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
 }
 
 

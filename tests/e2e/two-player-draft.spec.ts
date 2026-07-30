@@ -122,8 +122,19 @@ test.describe('2-player draft', () => {
 
     await pages[0].waitForTimeout(1000)
 
-    // === STEP 3: Start draft ===
+    // === STEP 3: Start draft (two-stage: Ready → leader preview → Start Draft) ===
     console.log('\n--- STEP 3: Starting draft ---')
+    const readyButton = pages[0].locator('button:has-text("Ready")')
+    await expect(readyButton).toBeEnabled({ timeout: 10000 })
+    await readyButton.click()
+
+    // Leader preview: leaders revealed on both pages, no picking yet
+    await pages[0].waitForSelector('.leader-preview-phase', { timeout: 20000 })
+    await pages[1].waitForSelector('.leader-preview-phase', { timeout: 20000 })
+    await expect(pages[0].locator('.leader-preview-phase .leaders-grid .draftable-card').first()).toBeVisible({ timeout: 10000 })
+    console.log('✓ Leader preview - leaders revealed')
+
+    // Host opens picking
     const startButton = pages[0].locator('button:has-text("Start Draft")')
     await expect(startButton).toBeEnabled({ timeout: 10000 })
     await startButton.click()

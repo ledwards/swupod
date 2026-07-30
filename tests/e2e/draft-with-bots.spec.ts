@@ -112,8 +112,17 @@ test.describe('Draft with bots', () => {
     const playerCountText = await page.locator('.player-count').textContent()
     debugLog(`  Player count: ${playerCountText}`)
 
-    // === STEP 2: Start draft ===
+    // === STEP 2: Start draft (two-stage: Ready → leader preview → Start Draft) ===
     debugLog('\n--- STEP 2: Starting draft ---')
+    const readyButton = page.locator('button:has-text("Ready")')
+    await expect(readyButton).toBeEnabled({ timeout: 10000 })
+    await readyButton.click()
+
+    // Leader preview: leaders revealed, no picking yet
+    await page.waitForSelector('.leader-preview-phase', { timeout: 30000 })
+    debugLog('✓ Leader preview - leaders revealed')
+
+    // Host opens picking
     const startButton = page.locator('button:has-text("Start Draft")')
     await expect(startButton).toBeEnabled({ timeout: 10000 })
     await startButton.click()

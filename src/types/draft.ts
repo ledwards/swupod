@@ -8,7 +8,7 @@ import type { DraftPack } from './pack';
 
 // === DRAFT ENUMS ===
 
-export type DraftPhase = 'lobby' | 'leader_draft' | 'pack_draft' | 'complete';
+export type DraftPhase = 'lobby' | 'leader_preview' | 'leader_draft' | 'pack_draft' | 'complete';
 
 export type DraftStatus = 'waiting' | 'active' | 'paused' | 'completed';
 

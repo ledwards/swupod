@@ -168,6 +168,21 @@ export async function startDraft(shareId: string): Promise<StartResult> {
 }
 
 /**
+ * Open picking after the leader preview (host only).
+ * Flips the draft from 'leader_preview' to 'leader_draft' and starts timers.
+ * @param shareId - Share ID of the draft
+ * @returns Start result
+ */
+export async function beginPicking(shareId: string): Promise<StartResult> {
+  try {
+    return await httpClient.post<StartResult>(`/draft/${shareId}/begin-picking`, {})
+  } catch (error) {
+    console.error('Failed to begin picking:', error)
+    throw error
+  }
+}
+
+/**
  * Randomize seat assignments (host only)
  * @param shareId - Share ID of the draft
  * @returns Randomize result

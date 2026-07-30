@@ -142,8 +142,17 @@ test.describe('Full 8-player draft', () => {
     const playerCountText = await pages[0].locator('.player-count').textContent()
     console.log(`  Final player count: ${playerCountText}`)
 
-    // === STEP 3: Start draft ===
+    // === STEP 3: Start draft (two-stage: Ready → leader preview → Start Draft) ===
     console.log('\n--- STEP 3: Starting draft ---')
+    const readyButton = pages[0].locator('button:has-text("Ready")')
+    await expect(readyButton).toBeEnabled({ timeout: 10000 })
+    await readyButton.click()
+
+    // Leader preview: leaders revealed, no picking yet
+    await pages[0].waitForSelector('.leader-preview-phase', { timeout: 30000 })
+    console.log('✓ Leader preview - leaders revealed')
+
+    // Host opens picking
     const startButton = pages[0].locator('button:has-text("Start Draft")')
     await expect(startButton).toBeEnabled({ timeout: 10000 })
     await startButton.click()

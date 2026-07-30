@@ -64,6 +64,11 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       ? JSON.parse(pod.draft_state)
       : pod.draft_state
 
+    // Leader preview is look-only — picking opens when the host starts the draft
+    if (draftState.phase === 'leader_preview') {
+      return errorResponse("Draft hasn't started yet", 400)
+    }
+
     // Validate the card is available (if selecting, not unselecting)
     if (cardId) {
       if (draftState.phase === 'leader_draft') {

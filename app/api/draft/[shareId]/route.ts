@@ -100,8 +100,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     const draftState = jsonParse(pod.draft_state, {})
     const settings = jsonParse(pod.settings, {})
 
-    // Check if we're in leader draft phase (show leader packs to all)
-    const isLeaderDraftPhase = draftState?.phase === 'leader_draft'
+    // Check if we're in leader preview/draft phase (show leader packs to all)
+    const isLeaderDraftPhase = draftState?.phase === 'leader_draft' || draftState?.phase === 'leader_preview'
 
     // Format players for response
   const formattedPlayers = players.map(p => {
