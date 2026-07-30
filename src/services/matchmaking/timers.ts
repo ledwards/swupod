@@ -28,3 +28,10 @@ export function getCompetitivePickTimeout(cardsRemaining: number): number {
 export function getLeaderPickTimeout(leadersRemaining: number): number {
   return LEADER_TIMEOUTS[leadersRemaining] ?? 0
 }
+
+/**
+ * Review window competitive pods get between packs. The pick clock starts when
+ * this closes, not when the pack is dealt — otherwise the review would eat half
+ * of the first pick's allowance above.
+ */
+export const INTER_PACK_REVIEW_SECONDS = 30

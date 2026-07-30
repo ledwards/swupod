@@ -62,6 +62,36 @@ export function remainingTimerSeconds({
   return Math.max(0, totalSeconds - elapsed)
 }
 
+/**
+ * Push a timer's start forward by however long a pause actually overlapped it.
+ *
+ * The round timer subtracts an accumulated `pausedDurationSeconds`, but the
+ * Last Player timer has no such term — it is read straight off its start
+ * timestamp by both the client countdown and server-side enforcement. Rather
+ * than thread a second paused-duration accumulator through both, resume shifts
+ * the start timestamp itself.
+ *
+ * Only the overlap counts: a pause that began before this timer started did not
+ * freeze it, so the shift is measured from whichever came later.
+ *
+ * @returns the new ISO start timestamp, or null if there is nothing to shift.
+ */
+export function shiftTimerStartForPause(
+  startedAt: string | null | undefined,
+  pausedAt: string | Date | null | undefined,
+  nowMs: number = Date.now(),
+): string | null {
+  const startedAtMs = timestampMs(startedAt)
+  const pausedAtMs = timestampMs(pausedAt)
+  if (startedAtMs === null || pausedAtMs === null) return null
+
+  const frozenFromMs = Math.max(startedAtMs, pausedAtMs)
+  const frozenMs = nowMs - frozenFromMs
+  if (frozenMs <= 0) return null
+
+  return new Date(startedAtMs + frozenMs).toISOString()
+}
+
 function timestampMs(value: string | number | Date | null | undefined): number | null {
   if (value instanceof Date) {
     const ms = value.getTime()

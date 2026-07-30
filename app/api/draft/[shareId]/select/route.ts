@@ -7,6 +7,12 @@ import { jsonResponse, errorResponse, parseBody, handleApiError } from '@/lib/ut
 import { processAllStagedPicks } from '@/src/utils/draftAdvance'
 import { processBotTurns } from '@/src/utils/botLogic'
 import { checkAndEnforceTimeout } from '@/src/utils/draftTimeout'
+import {
+  stageSelection,
+  clearSelection,
+  stagingSourceForPhase,
+  markLastPlayerStartIfNeeded,
+} from '@/src/utils/draftSelection'
 import { broadcastDraftState } from '@/src/lib/socketBroadcast'
 import { NextRequest } from 'next/server'
 
@@ -102,14 +108,38 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       }
     }
 
-    // Update player's selection (temporary, not a final pick)
-    await query(
-      `UPDATE pod_players
-       SET selected_card_id = $1,
-           pick_status = $2
-       WHERE id = $3`,
-      [cardId, cardId ? 'selected' : 'picking', player.id]
-    )
+    // Update player's selection (temporary, not a final pick).
+    // The validation above ran against a snapshot read before this write; if a
+    // timeout advanced the draft in between, the pack has rotated and the card
+    // is gone. stageSelection re-checks availability in the same statement, so
+    // a selection can never be staged against a pack we no longer hold — which
+    // would otherwise be silently dropped by processAllStagedPicks, costing the
+    // player their pick and leaving the pack one card oversized.
+    const playerId = player.id as string
+    const stagingSource = cardId ? stagingSourceForPhase(draftState.phase) : null
+    if (cardId && stagingSource) {
+      const staged = await stageSelection(playerId, cardId, stagingSource)
+      if (!staged) {
+        broadcastDraftState(shareId).catch(err => {
+          console.error('Error broadcasting after stale selection:', err)
+        })
+        return errorResponse('Draft state changed, please refresh', 409)
+      }
+    } else if (cardId) {
+      // Phase has nothing selectable (nothing to validate against) — preserve
+      // the historical write rather than rejecting.
+      await query(
+        `UPDATE pod_players SET selected_card_id = $1, pick_status = 'selected' WHERE id = $2`,
+        [cardId, playerId]
+      )
+    } else {
+      await clearSelection(playerId)
+    }
+
+    // If that left exactly one player still picking, start the Last Player
+    // timer. Bot picks do this too — without it here, the timer never engages
+    // in an all-human pod and the server has nothing to enforce.
+    await markLastPlayerStartIfNeeded(podId)
 
     // Increment state version so other clients see the update
     await query(

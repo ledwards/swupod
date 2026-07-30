@@ -5,6 +5,8 @@ import { requireAuth } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { processBotTurns } from '@/src/utils/botLogic'
 import { broadcastDraftState } from '@/src/lib/socketBroadcast'
+import { shiftTimerStartForPause } from '@/src/utils/serverClock'
+import { jsonParse } from '@/src/utils/json'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {
@@ -45,14 +47,28 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       const pausedDuration = Math.floor((now.getTime() - pausedAt.getTime()) / 1000)
       const totalPausedDuration = (pod.paused_duration_seconds || 0) + pausedDuration
 
+      // paused_duration_seconds only offsets the round timer. The Last Player
+      // countdown is read straight off draft_state.lastPlayerStartedAt, so
+      // without this it would resume already expired.
+      const draftState = jsonParse(pod.draft_state, {})
+      const shiftedLastPlayerStart = shiftTimerStartForPause(
+        draftState?.lastPlayerStartedAt,
+        pausedAt,
+        now.getTime()
+      )
+      const updatedDraftState = shiftedLastPlayerStart
+        ? JSON.stringify({ ...draftState, lastPlayerStartedAt: shiftedLastPlayerStart })
+        : null
+
       await query(
         `UPDATE pods
          SET paused = false,
              paused_at = NULL,
              paused_duration_seconds = $1,
+             draft_state = COALESCE($3::jsonb, draft_state),
              state_version = state_version + 1
          WHERE id = $2`,
-        [totalPausedDuration, pod.id]
+        [totalPausedDuration, pod.id, updatedDraftState]
       )
 
       // After resuming, check if all players have selected and process picks

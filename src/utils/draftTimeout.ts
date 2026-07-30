@@ -48,6 +48,14 @@ interface DraftState {
 }
 
 /**
+ * Test seams — only assigned by tests (e.g. to land a human selection inside
+ * the enforcement race window). No-ops in production.
+ */
+export const _testSeams: {
+  beforeForcePicks?: () => Promise<void> | void
+} = {}
+
+/**
  * Check if timeout has been exceeded and force picks if needed
  * Uses atomic locking to prevent concurrent timeout enforcement
  * @param podId - Draft pod ID
@@ -183,8 +191,12 @@ export async function checkAndEnforceTimeout(podId: string): Promise<boolean> {
     return false
   }
 
+  await _testSeams.beforeForcePicks?.()
+
   // Force selections for each player who hasn't selected
-  // Uses topPlayer bot strategy for smart picks instead of random
+  // Uses topPlayer bot strategy for smart picks instead of random.
+  // `players` was read before the lock, so a player may have selected since —
+  // each force is guarded on pick_status = 'picking' to respect that.
   for (const player of players) {
     if (phase === 'leader_draft') {
       await forceLeaderSelect(player, draftState)
@@ -206,8 +218,67 @@ export async function checkAndEnforceTimeout(podId: string): Promise<boolean> {
 }
 
 /**
+ * Shortest timer any pod can be running (the Appendix C floor before a pick is
+ * auto-taken). Pods younger than this cannot possibly have expired.
+ */
+const MIN_ENFORCEABLE_TIMER_SECONDS = 5
+
+/** Cap on pods enforced per sweep, so one pass can never run unbounded. */
+const SWEEP_POD_LIMIT = 200
+
+/**
+ * Enforce expired pick timers across every active draft, independent of client
+ * traffic.
+ *
+ * checkAndEnforceTimeout otherwise runs only when a client happens to hit the
+ * draft/state/select routes, and the live draft page is socket-driven rather
+ * than polling — so historically the only thing that fired a timeout was a
+ * connected client's countdown reaching zero. That fails exactly when it
+ * matters: backgrounded tabs get their intervals throttled (mobile Safari
+ * suspends JS outright), and the client's one-shot expiry callback never
+ * retries if it lands a hair early against the server clock. Either way the
+ * round hangs until somebody foregrounds a tab.
+ *
+ * Called on an interval by server.ts. Each pod is enforced independently so one
+ * bad pod cannot stall the sweep.
+ *
+ * @returns how many pods had picks forced
+ */
+export async function sweepExpiredDraftTimers(): Promise<number> {
+  // Cheap prefilter — checkAndEnforceTimeout re-reads each pod and does the
+  // real per-timer math (round vs last-player vs Appendix C).
+  const pods = await queryRows(
+    `SELECT id FROM pods
+     WHERE status = 'active'
+       AND COALESCE(paused, false) = false
+       AND pick_started_at IS NOT NULL
+       AND pick_started_at < NOW() - ($1 || ' seconds')::interval
+     ORDER BY pick_started_at
+     LIMIT $2`,
+    [String(MIN_ENFORCEABLE_TIMER_SECONDS), SWEEP_POD_LIMIT]
+  )
+
+  let enforced = 0
+  for (const pod of pods) {
+    try {
+      // Broadcasts on its own via processBotTurns when it forces picks.
+      if (await checkAndEnforceTimeout(pod.id as string)) enforced++
+    } catch (err) {
+      console.error(`[DraftTimers] Enforcement failed for pod ${pod.id}:`, err)
+    }
+  }
+
+  return enforced
+}
+
+/**
  * Force a smart leader selection for a timed-out player.
  * Uses the topPlayer bot strategy to pick the best leader.
+ *
+ * Every write here is guarded on the player still being 'picking'. The player
+ * list was read before the lock was taken, so a human selection can land in
+ * between — and their own choice must always beat the forced one. That is the
+ * whole point of staging a selection before the timer runs out.
  */
 async function forceLeaderSelect(player: DraftPlayer, draftState: DraftState): Promise<void> {
   const leaders: RawCard[] = typeof player.leaders === 'string'
@@ -216,7 +287,8 @@ async function forceLeaderSelect(player: DraftPlayer, draftState: DraftState): P
 
   if (leaders.length === 0) {
     await query(
-      `UPDATE pod_players SET pick_status = 'selected', selected_card_id = NULL WHERE id = $1`,
+      `UPDATE pod_players SET pick_status = 'selected', selected_card_id = NULL
+       WHERE id = $1 AND pick_status = 'picking'`,
       [player.id]
     )
     return
@@ -237,7 +309,7 @@ async function forceLeaderSelect(player: DraftPlayer, draftState: DraftState): P
     `UPDATE pod_players
      SET selected_card_id = $1,
          pick_status = 'selected'
-     WHERE id = $2`,
+     WHERE id = $2 AND pick_status = 'picking'`,
     [cardId, player.id]
   )
 }
@@ -246,6 +318,9 @@ async function forceLeaderSelect(player: DraftPlayer, draftState: DraftState): P
  * Force a smart card selection for a timed-out player.
  * Uses the topPlayer bot strategy to pick the best card based on
  * the player's drafted leaders and cards.
+ *
+ * Guarded on pick_status = 'picking' for the same reason as forceLeaderSelect:
+ * a selection the player made in the race window must never be overwritten.
  */
 async function forcePackSelect(player: DraftPlayer, draftState: DraftState): Promise<void> {
   const currentPack: RawCard[] = typeof player.current_pack === 'string'
@@ -254,7 +329,8 @@ async function forcePackSelect(player: DraftPlayer, draftState: DraftState): Pro
 
   if (currentPack.length === 0) {
     await query(
-      `UPDATE pod_players SET pick_status = 'selected', selected_card_id = NULL WHERE id = $1`,
+      `UPDATE pod_players SET pick_status = 'selected', selected_card_id = NULL
+       WHERE id = $1 AND pick_status = 'picking'`,
       [player.id]
     )
     return
@@ -284,7 +360,7 @@ async function forcePackSelect(player: DraftPlayer, draftState: DraftState): Pro
     `UPDATE pod_players
      SET selected_card_id = $1,
          pick_status = 'selected'
-     WHERE id = $2`,
+     WHERE id = $2 AND pick_status = 'picking'`,
     [cardId, player.id]
   )
 }
