@@ -1,5 +1,15 @@
 # Release Notes
 
+## 07.30.2026
+
+### 🏆 Competitive Sealed
+- **Sealed goes competitive.** Friends of the Pod can now spin up a Competitive Sealed pod: every player opens **8 booster packs** for a deeper pool, decks lock after a 20-minute build window, and the pod flows straight into Swiss practice rounds — the same structured play Competitive Draft pods get, now for sealed.
+- The gold competitive treatment carries through the whole flow, from the create page to the lobby, so everyone at the table knows the stakes.
+
+### 👀 Leader Reveal Before the Draft
+- **Drafts now open with a leader reveal.** When the host hits **Ready**, packs are dealt and every player's leader options appear around the table — a moment to scope out what the pod is working with before anything is picked.
+- Nothing can be selected and no clocks run during the reveal. When the table has had its look, the host hits **Start Draft** to open picking (and start the pick timers in timed and competitive pods).
+
 ## 07.19.2026
 
 ### 🔧 Under the Hood
