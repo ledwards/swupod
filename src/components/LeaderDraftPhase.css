@@ -1,6 +1,24 @@
-.leader-draft-phase {
+.leader-draft-phase,
+.leader-preview-phase {
   padding: 20px;
   margin: 0 auto;
+}
+
+/* The preview exists to show the leaders off, so the cards stay bright and
+   normal-cursored even though they aren't clickable yet — the shared
+   .draftable-card.disabled treatment (60% opacity, not-allowed cursor) reads
+   as "broken" on the one screen whose whole job is the reveal. They remain
+   unclickable: DraftableCard still gets disabled, this only restyles it. */
+.leader-preview-phase .draftable-card.disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+/* Leader preview: host's Start Draft button under the revealed leader pack */
+.preview-start-section {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
 }
 
 
@@ -470,7 +488,8 @@
 }
 
 @media (max-width: 768px) {
-  .leader-draft-phase {
+  .leader-draft-phase,
+  .leader-preview-phase {
     padding: 0 10px;
   }
 

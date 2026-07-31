@@ -4,6 +4,8 @@
 import { useState } from 'react'
 import Button from './Button'
 import EditableTitle from './EditableTitle'
+import CollapsibleSection from './CollapsibleSection'
+import CompetitivePracticeRules from './CompetitivePracticeRules'
 import { formatPoolLabel } from '../utils/poolDisplayName'
 import { trackEvent } from '../hooks/useAnalytics'
 import { buildLimitedContext, LimitedAnalyticsEvents } from '../analytics/limitedEvents'
@@ -55,6 +57,9 @@ interface SealedPodLobbyProps {
   hostId?: string
   maxPlayers?: number
   isPublic?: boolean
+  competitive?: boolean
+  /** Packs each player opens — fixed at creation, shown read-only to everyone. */
+  packsPerPlayer?: number
   onStart: () => void
   onLeave: () => void
   onCancel: () => void
@@ -78,6 +83,8 @@ export default function SealedPodLobby({
   hostId,
   maxPlayers,
   isPublic,
+  competitive = false,
+  packsPerPlayer,
   onStart,
   onLeave,
   onCancel,
@@ -117,6 +124,8 @@ export default function SealedPodLobby({
   // Admins can bypass the 2-player minimum for testing/facilitation.
   const canStart = isHost && (players.length >= 2 || (isAdmin && players.length >= 1))
 
+  const showPackCount = typeof packsPerPlayer === 'number' && packsPerPlayer > 0
+
   return (
     <div className="sealed-pod-lobby">
       <h1>
@@ -141,8 +150,19 @@ export default function SealedPodLobby({
         </Button>
       </div>
 
-      {isHost && onSettingsChange && (
+      {(showPackCount || (isHost && onSettingsChange)) && (
         <div className="sealed-pod-settings">
+          {/* Read-only pack count — fixed when the pod is created, so joiners
+              can see whether it's a 6- or 8-pack pod before sitting down. */}
+          {showPackCount && (
+            <div className="settings-row">
+              <span className="setting-item">
+                <span className="setting-label">Packs:</span>
+                <span>{packsPerPlayer} each</span>
+              </span>
+            </div>
+          )}
+          {isHost && onSettingsChange && (
           <div className="settings-row settings-row-spread">
             <span className="setting-item">
               <span className="setting-label">Max Players:</span>
@@ -150,8 +170,11 @@ export default function SealedPodLobby({
                 className="setting-select"
                 value={maxPlayers || 8}
                 onChange={(e) => onSettingsChange({ maxPlayers: Number(e.target.value) })}
+                disabled={competitive}
+                title={competitive ? 'Competitive Sealed pods are capped at 8 players' : undefined}
               >
-                {Array.from({ length: 15 }, (_, i) => i + 2).map(n => (
+                {/* Competitive Sealed pods are capped at 8 players */}
+                {Array.from({ length: (competitive ? 8 : 16) - 1 }, (_, i) => i + 2).map(n => (
                   <option key={n} value={n}>{n}</option>
                 ))}
               </select>
@@ -175,6 +198,20 @@ export default function SealedPodLobby({
               <span>{isPublic ? 'Public' : 'Private'}</span>
             </button>
           </div>
+          )}
+        </div>
+      )}
+
+      {competitive && (
+        <div className="cpm-rules-panel">
+          <CollapsibleSection
+            title="Competitive Sealed"
+            variant="default"
+            defaultExpanded={false}
+            className="cpm-rules-collapsible"
+          >
+            <CompetitivePracticeRules showTitle={false} format="sealed" />
+          </CollapsibleSection>
         </div>
       )}
 

@@ -311,7 +311,13 @@ test.describe('8-player CPM full UI flow', () => {
     // ── Phase 3: Competitive draft (leader + 3 packs, UI clicks) ────────────
     console.log('\n--- PHASE 3: Competitive draft ---')
 
-    // Host clicks Start Draft
+    // Host clicks Ready (deals packs → leader preview), then Start Draft
+    const readyButton = pages[0].locator('button:has-text("Ready")')
+    await expect(readyButton).toBeEnabled({ timeout: 15000 })
+    await readyButton.click()
+    await pages[0].waitForSelector('.leader-preview-phase', { timeout: 30000 })
+    console.log('  ✓ Leader preview — leaders revealed')
+
     const startButton = pages[0].locator('button:has-text("Start Draft")')
     await expect(startButton).toBeEnabled({ timeout: 15000 })
     await startButton.click()

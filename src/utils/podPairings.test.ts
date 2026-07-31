@@ -8,7 +8,7 @@
  */
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import { computePairings } from './podPairings'
+import { computePairings, computeSealedPodPairings } from './podPairings'
 
 // Helper to create players with sequential seats
 function makePlayers(count, startSeat = 1) {
@@ -17,6 +17,50 @@ function makePlayers(count, startSeat = 1) {
     seatNumber: startSeat + i,
   }))
 }
+
+// SPEC (src/utils/podPairings.ts computeSealedPodPairings):
+//   Casual sealed pod      -> a stored random pairing, rendered by /sealed/:id/pod
+//   Competitive Sealed pod -> NOTHING stored; round 1 comes from the Swiss
+//                             bracket (pairRound1) when the host starts matches
+describe('computeSealedPodPairings', () => {
+  it('pairs a casual sealed pod so the pod hub can show "Your Opponent"', () => {
+    const result = computeSealedPodPairings(makePlayers(8), false)
+
+    assert.notStrictEqual(result, null)
+    assert.strictEqual(result.matches.length, 4)
+    assert.strictEqual(result.byePlayerId, null)
+  })
+
+  it('gives a casual odd-count sealed pod a bye', () => {
+    const result = computeSealedPodPairings(makePlayers(7), false)
+
+    assert.strictEqual(result.matches.length, 3)
+    assert.notStrictEqual(result.byePlayerId, null)
+  })
+
+  it('BUGGY: a competitive pod must NOT get random pairings that contradict Swiss', () => {
+    const result = computeSealedPodPairings(makePlayers(8), true)
+
+    assert.strictEqual(result, null)
+  })
+
+  it('FIXED: competitive returns null for every player count', () => {
+    for (const count of [0, 1, 2, 3, 7, 8]) {
+      assert.strictEqual(
+        computeSealedPodPairings(makePlayers(count), true),
+        null,
+        `competitive pod with ${count} players must store no pairings`
+      )
+    }
+  })
+
+  it('never pairs a casual pod with fewer than 2 players', () => {
+    const result = computeSealedPodPairings(makePlayers(1), false)
+
+    assert.strictEqual(result.matches.length, 0)
+    assert.strictEqual(result.byePlayerId, 'player-1')
+  })
+})
 
 describe('computePairings', () => {
   describe('even player counts', () => {

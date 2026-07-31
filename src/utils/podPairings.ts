@@ -76,6 +76,29 @@ export function computeRandomPairings(
   return { matches, byePlayerId }
 }
 
+/**
+ * Round-1 pairings persisted on a sealed pod's settings when packs are dealt.
+ *
+ * SPEC:
+ * - CASUAL sealed pods store a one-off random pairing. `/sealed/:id/pod` renders
+ *   it under "Your Opponent" — that hub is the whole match experience.
+ * - COMPETITIVE Sealed pods store NOTHING. Their round 1 is paired by the Swiss
+ *   bracket (`pairRound1`) when the host starts matches, so a stored random
+ *   pairing would authoritatively name an opponent the bracket never gave the
+ *   player.
+ *
+ * @param players - Players in the pod
+ * @param competitive - Whether the pod is a Competitive (Swiss Practice) pod
+ * @returns Pairings to persist, or null when the pod must not store any
+ */
+export function computeSealedPodPairings(
+  players: PairingPlayer[],
+  competitive: boolean
+): PairingResult | null {
+  if (competitive) return null
+  return computeRandomPairings(players)
+}
+
 export function computePairings(
   players: PairingPlayer[],
   storedByePlayerId: string | null = null

@@ -50,11 +50,22 @@ function PlayerSeat({
         return '#4CAF50' // Green
       case 'picking':
         return '#FFC107' // Yellow
+      case 'waiting':
+        return '#9E9E9E' // Neutral — picking hasn't opened yet
       case 'timeout':
         return '#F44336' // Red
       default:
         return '#444' // Gray (default border)
     }
+  }
+
+  // 'waiting' is the leader preview: leaders are revealed but nobody can pick
+  // until the host starts the draft. Calling those seats "Picking..." made
+  // players click cards that do nothing and conclude the app was broken.
+  const getStatusLabel = (status?: string): string => {
+    if (status === 'picked') return 'Done'
+    if (status === 'waiting') return 'Ready'
+    return 'Picking...'
   }
 
   // Use passed statusColor or derive from player status
@@ -124,7 +135,7 @@ function PlayerSeat({
           className="seat-status"
           style={{ color: getStatusColor(player?.pickStatus) }}
         >
-          {player?.pickStatus === 'picked' ? 'Done' : 'Picking...'}
+          {getStatusLabel(player?.pickStatus)}
         </div>
       )}
       <div className="seat-name">

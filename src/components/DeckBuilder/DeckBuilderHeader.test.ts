@@ -3,24 +3,20 @@
  * DeckBuilderHeader Tests
  *
  * Tests the play button redirect logic:
- * - Draft pools redirect to /draft/:shareId/pod
- * - Sealed pools redirect to /pool/:shareId/deck/play
+ * - Competitive pods (draft OR sealed) redirect to /pool/:shareId/deck/play
+ * - Casual draft pods redirect to /draft/:shareId/pod
+ * - Casual sealed pods redirect to /sealed/:shareId/pod
  * - Redirect only when deck is legal (leader + base + 30 cards)
  */
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
+import { resolvePlayDestination } from '../../utils/deckBuilderSharing.ts'
 
-// Simulate the handlePlay redirect logic from DeckBuilderHeader
-function getPlayRedirectUrl(isDeckLegal, isDraftMode, draftShareId, shareId) {
+// The redirect the DeckBuilder's handlePlay performs, gated on deck legality.
+// The URL itself comes from the real shared resolver, not a copy of it.
+function getPlayRedirectUrl(isDeckLegal, poolType, podShareId, shareId, competitive = false) {
   if (!isDeckLegal) return null
-
-  if (isDraftMode && draftShareId) {
-    return `/draft/${draftShareId}/pod`
-  } else if (!isDraftMode && draftShareId) {
-    return `/sealed/${draftShareId}/pod`
-  } else {
-    return `/pool/${shareId}/deck/play`
-  }
+  return resolvePlayDestination({ poolType, podShareId, competitive, shareId })
 }
 
 // Simulate deck legality check
@@ -31,33 +27,50 @@ function isDeckLegal(activeLeader, activeBase, deckCardCount) {
 describe('DeckBuilderHeader play redirect', () => {
   describe('redirect URL logic', () => {
     it('redirects draft pool to pod page', () => {
-      const url = getPlayRedirectUrl(true, true, 'draft-abc', 'pool-xyz')
+      const url = getPlayRedirectUrl(true, 'draft', 'draft-abc', 'pool-xyz')
       assert.strictEqual(url, '/draft/draft-abc/pod')
     })
 
     it('redirects solo sealed pool to play page', () => {
-      const url = getPlayRedirectUrl(true, false, null, 'pool-xyz')
+      const url = getPlayRedirectUrl(true, 'sealed', null, 'pool-xyz')
       assert.strictEqual(url, '/pool/pool-xyz/deck/play')
     })
 
     it('redirects sealed pod pool to sealed pod page', () => {
-      const url = getPlayRedirectUrl(true, false, 'sealed-abc', 'pool-xyz')
+      const url = getPlayRedirectUrl(true, 'sealed', 'sealed-abc', 'pool-xyz')
       assert.strictEqual(url, '/sealed/sealed-abc/pod')
     })
 
-    it('redirects draft pool without draftShareId to play page', () => {
-      const url = getPlayRedirectUrl(true, true, null, 'pool-xyz')
+    it('redirects draft pool without a pod to play page', () => {
+      const url = getPlayRedirectUrl(true, 'draft', null, 'pool-xyz')
       assert.strictEqual(url, '/pool/pool-xyz/deck/play')
     })
 
     it('returns null when deck is not legal', () => {
-      const url = getPlayRedirectUrl(false, true, 'draft-abc', 'pool-xyz')
+      const url = getPlayRedirectUrl(false, 'draft', 'draft-abc', 'pool-xyz')
       assert.strictEqual(url, null)
     })
 
     it('returns null for illegal sealed deck', () => {
-      const url = getPlayRedirectUrl(false, false, null, 'pool-xyz')
+      const url = getPlayRedirectUrl(false, 'sealed', null, 'pool-xyz')
       assert.strictEqual(url, null)
+    })
+  })
+
+  describe('competitive pods (Swiss Practice)', () => {
+    it('NEW CODE: competitive SEALED pod goes to the Swiss play page, not the casual sealed hub', () => {
+      const url = getPlayRedirectUrl(true, 'sealed', 'sealed-abc', 'pool-xyz', true)
+      assert.strictEqual(url, '/pool/pool-xyz/deck/play')
+    })
+
+    it('OLD CODE: competitive sealed pod must NOT land on /sealed/:id/pod', () => {
+      const url = getPlayRedirectUrl(true, 'sealed', 'sealed-abc', 'pool-xyz', true)
+      assert.notStrictEqual(url, '/sealed/sealed-abc/pod')
+    })
+
+    it('competitive DRAFT pod goes to the Swiss play page', () => {
+      const url = getPlayRedirectUrl(true, 'draft', 'draft-abc', 'pool-xyz', true)
+      assert.strictEqual(url, '/pool/pool-xyz/deck/play')
     })
   })
 

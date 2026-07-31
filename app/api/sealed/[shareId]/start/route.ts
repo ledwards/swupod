@@ -5,8 +5,9 @@ import { requireAuth } from '@/lib/auth'
 import { generateShareId, formatSetCodeRange } from '@/lib/utils'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { generateSealedBox, clearBeltCache } from '@/src/utils/boosterPack'
+import { sealedPacksPerPlayer, competitiveSealedDeckLockMinutes } from '@/src/utils/sealedPodConfig'
 import { initializeCardCache } from '@/src/utils/cardCache'
-import { computeRandomPairings } from '@/src/utils/podPairings'
+import { computeSealedPodPairings } from '@/src/utils/podPairings'
 import { broadcastSealedPodState, broadcastPublicPodsUpdate, broadcastSystemChatMessage } from '@/src/lib/socketBroadcast'
 import { markPodStarted } from '@/lib/discordLfg'
 import { captureLimitedServerEvent } from '@/lib/posthog'
@@ -54,18 +55,27 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       return errorResponse('Need at least 2 players to start', 400)
     }
 
-    // Generate packs for all players (6 packs each)
+    // Pod settings hold the host's pack choice (6 or 8, chosen at creation).
+    const currentSettings = typeof pod.settings === 'string'
+      ? JSON.parse(pod.settings)
+      : pod.settings || {}
+
+    // Generate packs for all players (the pod's configured count; always 8 for
+    // Competitive Sealed)
+    const packsPerPlayer = sealedPacksPerPlayer(pod.competitive === true, currentSettings.packsPerPlayer)
     await initializeCardCache()
-    const totalPacks = players.length * 6
+    const totalPacks = players.length * packsPerPlayer
     clearBeltCache()
     const allPacks = generateSealedBox([], pod.set_code, totalPacks)
 
-    // Compute random pairings
+    // Round-1 pairings for the casual sealed pod hub. Competitive Sealed gets
+    // NONE — its round 1 comes from the Swiss bracket when the host starts
+    // matches, and a stored random pairing would contradict it.
     const pairingPlayers = players.map(p => ({
       userId: p.user_id,
       seatNumber: p.seat_number,
     }))
-    const pairings = computeRandomPairings(pairingPlayers)
+    const pairings = computeSealedPodPairings(pairingPlayers, pod.competitive === true)
 
     // Create a card_pool for each player
     const now = new Date()
@@ -75,7 +85,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
 
     for (let i = 0; i < players.length; i++) {
       const player = players[i]
-      const playerPacks = allPacks.slice(i * 6, (i + 1) * 6)
+      const playerPacks = allPacks.slice(i * packsPerPlayer, (i + 1) * packsPerPlayer)
       const allCards = playerPacks.flatMap(pack => pack.cards || pack)
 
       const poolShareId = generateShareId(8)
@@ -113,31 +123,40 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
           format: 'sealed',
           mode: 'group',
           setCode: pod.set_code,
-          pack_count: 6,
+          competitive: pod.competitive === true,
+          pack_count: packsPerPlayer,
           poolShareId,
           podShareId: shareId,
         }
       )
     }
 
-    // Store pairings in settings and mark complete
-    const currentSettings = typeof pod.settings === 'string'
-      ? JSON.parse(pod.settings)
-      : pod.settings || {}
+    // Store pairings in settings and mark complete. Competitive pods keep the
+    // key absent entirely (`computeSealedPodPairings` returns null) so nothing
+    // downstream can read a casual pairing that contradicts the Swiss bracket.
+    const updatedSettings = pairings
+      ? { ...currentSettings, pairings }
+      : { ...currentSettings }
+    if (!pairings) delete updatedSettings.pairings
 
-    const updatedSettings = {
-      ...currentSettings,
-      pairings: pairings,
-    }
-
+    // Competitive Sealed: unlike a draft — where players are already done
+    // interacting when the deadline is set (src/utils/draftAdvance.ts) — sealed
+    // players still have to open 8 packs and review the pool before the
+    // deckbuilder loads. So the deadline is the pack-opening allowance PLUS the
+    // full 20-minute build window; DeckBuildTimer derives its start from
+    // (deadline − 20 minutes), so the build clock does not begin ticking until
+    // the pack-opening allowance is up.
     await query(
       `UPDATE pods
        SET status = 'complete',
            settings = $1,
            state_version = state_version + 1,
-           completed_at = NOW()
+           completed_at = NOW()${pod.competitive ? `,
+           deck_lock_at = NOW() + make_interval(mins => $3::int)` : ''}
        WHERE id = $2`,
-      [JSON.stringify(updatedSettings), pod.id]
+      pod.competitive
+        ? [JSON.stringify(updatedSettings), pod.id, competitiveSealedDeckLockMinutes()]
+        : [JSON.stringify(updatedSettings), pod.id]
     )
 
     broadcastSealedPodState(shareId).catch(err => {
@@ -174,6 +193,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
         format: 'sealed',
         mode: 'group',
         setCode: pod.set_code,
+        competitive: pod.competitive === true,
         human_players: humanCount,
         bot_players: botCount,
         current_players: players.length,
@@ -187,6 +207,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
         format: 'sealed',
         mode: 'group',
         setCode: pod.set_code,
+        competitive: pod.competitive === true,
         duration_seconds: durationSeconds,
         human_players: humanCount,
         bot_players: botCount,

@@ -2,6 +2,26 @@
 
 ## 07.30.2026
 
+### 🎴 8-Pack Sealed
+
+**Sealed now comes in two sizes: the classic 6-pack pool, or 8 packs for a deeper build.**
+
+The choice sits right where you pick your set, solo or in a pod, and it's open to everyone — no account needed for solo sealed.
+
+Two extra packs changes the shape of a pool. There are more playables to sort through, a better shot at the bombs and the cheap interaction that hold a deck together, and enough depth to commit to a second aspect instead of settling for what showed up. If you've wanted sealed pools with more to build from, build from more.
+
+- **Every pod remembers what it was created with**, and the lobby shows the count up front, so everyone knows what they're sitting down to before they join.
+- Competitive Sealed pods are always 8 packs.
+
+### 🏆 Competitive Sealed
+- **Sealed goes competitive.** Friends of the Pod can spin up a Competitive Sealed pod for a full table of 8: everyone opens 8 packs, decks lock after a 20-minute build window, and the pod flows straight into Swiss practice rounds — the same structured play Competitive Draft pods get, now for sealed.
+- **Anyone can join one.** Creating a Competitive Sealed pod is a Friends of the Pod perk; sitting down at someone else's table is open to everybody.
+- The gold competitive treatment carries through the whole flow, from the create page to the lobby, so everyone at the table knows the stakes.
+
+### 👀 Leader Reveal Before the Draft
+- **Drafts now open with a leader reveal.** When the host hits **Ready**, packs are dealt and every player's leader options appear around the table — a moment to scope out what the pod is working with before anything is picked.
+- Nothing can be selected and no clocks run during the reveal. When the table has had its look, the host hits **Start Draft** to open picking (and start the pick timers in timed and competitive pods).
+
 ### 🔧 Under the Hood
 - **Draft timer reliability**: a round of refinements to how pick timers stay in sync across every player's browser, so the countdown you see always matches the one the draft is actually running on — in casual and competitive pods alike, and across pauses.
 

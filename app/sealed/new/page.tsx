@@ -1,22 +1,52 @@
 // @ts-nocheck
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
 import { initializeCardCache } from '../../../src/utils/cardCache'
+import { initialSealedCompetitiveFromSearch } from '../../../src/utils/draftCreationRoutes'
 import SetSelection from '../../../src/components/SetSelection'
+import SealedPackCountToggle from '../../../src/components/SealedPackCountToggle'
+import {
+  STANDARD_SEALED_PACKS_PER_PLAYER,
+  COMPETITIVE_SEALED_PACKS_PER_PLAYER,
+} from '../../../src/utils/sealedPodConfig'
 import Button from '../../../src/components/Button'
+import { extractApiErrorMessage } from '../../../src/repositories/httpClient'
 import { trackEvent } from '../../../src/hooks/useAnalytics'
 import { getOrCreateLimitedFlowId, LimitedAnalyticsEvents } from '../../../src/analytics/limitedEvents'
 import '../../../src/App.css'
 import '../../draft/draft.css'
 
-export default function NewSealedPodPage() {
+function NewSealedPodPageContent() {
   const router = useRouter()
-  const { user, isAuthenticated, loading: authLoading } = useAuth()
+  const searchParams = useSearchParams()
+  const { user, isAuthenticated, isPatron, loading: authLoading } = useAuth()
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Standard entry points pass competitive=0 (or nothing); the Competitive
+  // Sealed button passes competitive=1. Starts OFF and is only armed once
+  // patron status has actually resolved (see below).
+  const [competitive, setCompetitive] = useState(false)
+
+  // Competitive Sealed is a Friends of the Pod feature (the real gate is
+  // server-side in POST /api/sealed). Non-patrons can't arm it here — not by
+  // clicking the toggle, and not by deep-linking ?competitive=1 either.
+  // `isPatron` is null until the status call resolves; don't decide before then,
+  // or a patron's deep link gets thrown away.
+  useEffect(() => {
+    if (isPatron === null) return
+    setCompetitive(isPatron === true && initialSealedCompetitiveFromSearch(searchParams))
+  }, [searchParams, isPatron])
+
+  // Free 6-vs-8 pack choice for standard pods. Competitive Sealed is always 8,
+  // so the toggle locks while it's on — the standard choice is remembered here
+  // and restored when competitive goes back off.
+  const [standardPackCount, setStandardPackCount] = useState(STANDARD_SEALED_PACKS_PER_PLAYER)
+  const packsPerPlayer = competitive
+    ? COMPETITIVE_SEALED_PACKS_PER_PLAYER
+    : standardPackCount
   const [isPublic, setIsPublic] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('pod-visibility')
@@ -38,7 +68,10 @@ export default function NewSealedPodPage() {
   }, [])
 
   const handleLogin = () => {
-    const returnUrl = encodeURIComponent('/sealed/new')
+    const path = typeof window !== 'undefined'
+      ? `/sealed/new${window.location.search || ''}`
+      : '/sealed/new'
+    const returnUrl = encodeURIComponent(path)
     window.location.href = `/api/auth/signin/discord?return_to=${returnUrl}`
   }
 
@@ -55,6 +88,8 @@ export default function NewSealedPodPage() {
       flow_id: flowId,
       set_code: setCode,
       is_public: isPublic,
+      competitive,
+      pack_count: packsPerPlayer,
     })
 
     try {
@@ -62,12 +97,15 @@ export default function NewSealedPodPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ setCode, isPublic, flowId }),
+        body: JSON.stringify({ setCode, isPublic, competitive, packsPerPlayer, flowId }),
       })
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}))
-        throw new Error(data.message || 'Failed to create sealed pod')
+        // The API returns two error shapes ({ message } and { data: { error } });
+        // reading only `.message` swallowed the Friends of the Pod 403 and showed
+        // a generic "Failed to create sealed pod" instead.
+        throw new Error(extractApiErrorMessage(data, 'Failed to create sealed pod'))
       }
 
       const json = await response.json()
@@ -153,9 +191,64 @@ export default function NewSealedPodPage() {
     </button>
   )
 
+  // Owner toggle: checked = Competitive Sealed (8 packs, timed deck build,
+  // Swiss matchmaking); unchecked = standard 6-pack sealed pod. Mirrors the
+  // adjacent lock button's visual language; glows when on.
+  const competitiveToggle = (
+    <button
+      type="button"
+      className={`setting-lock setting-lock-competitive${competitive ? '' : ' setting-lock-competitive-off'}`}
+      onClick={() => setCompetitive(v => !v)}
+      aria-pressed={competitive}
+      disabled={authLoading || isPatron !== true}
+      title={isPatron !== true
+        ? 'Friends of the Pod only — Competitive Sealed'
+        : competitive
+          ? 'Competitive Sealed ON — 8 packs each, 20-minute deck build, Swiss matchmaking. Uncheck for a standard sealed pod.'
+          : 'Competitive Sealed OFF — this will be a standard 6-pack sealed pod. Check for 8 packs, a timed deck build, and Swiss matchmaking.'}
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/>
+        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5C17 4 17 7 17 7"/>
+        <path d="M4 22h16"/>
+        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22"/>
+        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22"/>
+        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+      </svg>
+      <span>Competitive Sealed{competitive ? ' ✓' : ''}</span>
+    </button>
+  )
+
+  const packCountToggle = (
+    <SealedPackCountToggle
+      value={packsPerPlayer}
+      onChange={setStandardPackCount}
+      disabled={competitive}
+      title={competitive
+        ? 'Competitive Sealed is always 8 packs per player.'
+        : 'Packs dealt to each player'}
+    />
+  )
+
+  const headerActions = (
+    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+      {lockButton}
+      {competitiveToggle}
+      {packCountToggle}
+    </div>
+  )
+
   return (
     <div className="app">
-      <SetSelection onSetSelect={handleSetSelect} onBack={handleBack} headerAction={lockButton} />
+      <SetSelection onSetSelect={handleSetSelect} onBack={handleBack} headerAction={headerActions} />
     </div>
+  )
+}
+
+export default function NewSealedPodPage() {
+  return (
+    <Suspense fallback={<div className="draft-page-bg"><div className="loading"></div></div>}>
+      <NewSealedPodPageContent />
+    </Suspense>
   )
 }

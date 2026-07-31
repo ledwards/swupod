@@ -7,6 +7,7 @@ import {
   buildCancelledEmbed,
   buildPodEmbed,
   buildPodSourceDescription,
+  buildPodStartedMessage,
   buildStartedEmbed,
   getOrCreateChannelWebhook,
 } from './discordLfg.ts'
@@ -61,6 +62,42 @@ describe('Discord LFG pod source description', () => {
 
 // Discord caps channels at 15 webhooks (error 30007). These tests pin the
 // find-or-create behavior that keeps us at one shared webhook per channel.
+describe('buildPodStartedMessage', () => {
+  it('gives a casual pod the plain send-off', () => {
+    assert.equal(
+      buildPodStartedMessage(draftPod),
+      '🚀 **Limited Draft** has started! Good luck everyone!'
+    )
+  })
+
+  it('gives a competitive DRAFT pod the drafter send-off', () => {
+    assert.equal(
+      buildPodStartedMessage({ ...draftPod, competitive: true }),
+      '🏆 **Limited Draft** (Competitive Practice · Best of 3) has started! May the best drafter win!'
+    )
+  })
+
+  it('BUGGY: a competitive SEALED pod used to say "may the best drafter win"', () => {
+    const content = buildPodStartedMessage({ ...sealedPod, competitive: true })
+
+    assert.doesNotMatch(content, /drafter/)
+  })
+
+  it('FIXED: a competitive SEALED pod names the deckbuilder instead', () => {
+    assert.equal(
+      buildPodStartedMessage({ ...sealedPod, competitive: true }),
+      '🏆 **Sealed League** (Competitive Practice · Best of 3) has started! May the best deckbuilder win!'
+    )
+  })
+
+  it('falls back to "{set name} Sealed" when the pod is unnamed', () => {
+    assert.equal(
+      buildPodStartedMessage({ ...sealedPod, name: null, competitive: true }),
+      '🏆 **Legacy of the Force Sealed** (Competitive Practice · Best of 3) has started! May the best deckbuilder win!'
+    )
+  })
+})
+
 describe('getOrCreateChannelWebhook', () => {
   const realFetch = globalThis.fetch
 

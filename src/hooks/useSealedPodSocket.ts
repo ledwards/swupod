@@ -31,6 +31,9 @@ interface SealedPod {
   players: SealedPodPlayer[]
   isHost: boolean
   isPlayer: boolean
+  competitive?: boolean
+  deckBuildDeadline?: string | null
+  decksUnlocked?: boolean
   createdAt: string
 }
 
@@ -39,6 +42,9 @@ interface SocketStateData {
   status: string
   currentPlayers: number
   maxPlayers: number
+  competitive?: boolean
+  deckBuildDeadline?: string | null
+  decksUnlocked?: boolean
   settings: Record<string, unknown>
   players: SealedPodPlayer[]
   timestamp: number
@@ -128,6 +134,9 @@ export function useSealedPodSocket(
           status: data.status,
           currentPlayers: data.currentPlayers,
           maxPlayers: data.maxPlayers,
+          competitive: data.competitive === true,
+          deckBuildDeadline: data.deckBuildDeadline ?? prev.deckBuildDeadline ?? null,
+          decksUnlocked: data.decksUnlocked === true,
           settings: data.settings,
           players: data.players,
           stateVersion: data.stateVersion,

@@ -4,7 +4,6 @@ import { query, queryRow, queryRows } from '@/lib/db'
 import { requireAuth } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { generateDraftPacks, processBoxPacksForDraft } from '@/src/utils/draftLogic'
-import { processBotTurns } from '@/src/utils/botLogic'
 import { initializeCardCache } from '@/src/utils/cardCache'
 import { trackBulkGenerations, PACK_SLOT_TYPES } from '@/src/utils/trackGeneration'
 import { broadcastDraftState, broadcastSystemChatMessage } from '@/src/lib/socketBroadcast'
@@ -127,8 +126,10 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       console.error('Failed to track draft pack generations:', err)
     })
 
-    // Assign leaders and first pack to each player
-    // Note: packs are objects { cards: [...] }, extract .cards for current_pack
+    // Assign leaders and first pack to each player.
+    // Note: packs are objects { cards: [...] }, extract .cards for current_pack.
+    // pick_status stays 'waiting' during the leader preview — nobody can pick
+    // until the host begins picking via /begin-picking.
     for (let i = 0; i < players.length; i++) {
       const player = players[i]
       const playerLeaders = leaders[i]
@@ -139,7 +140,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
         `UPDATE pod_players
          SET leaders = $1,
              current_pack = $2,
-             pick_status = 'picking',
+             pick_status = 'waiting',
              drafted_leaders = '[]',
              committed_leader = NULL,
              committed_base_color = NULL
@@ -152,20 +153,31 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       )
     }
 
-    // Update draft state
+    // Update draft state — 'leader_preview' is the look-around-the-table phase:
+    // leaders are revealed to everyone, but picking and timers don't start
+    // until the host hits Start Draft (POST /begin-picking → 'leader_draft').
+    //
+    // previewStartedAt marks when the preview began. Only the host can start
+    // picking, so nothing advances a pod out of this phase on its own — this
+    // timestamp is what lets sweepStalledLeaderPreviews CANCEL a pod that has
+    // sat here for 24 hours because the host never came back.
     const draftState = {
-      phase: 'leader_draft',
+      phase: 'leader_preview',
       leaderRound: 1,
       totalPacks: packsPerPlayer,
       packNumber: 0, // Will be 1 when leader draft completes
       pickInPack: 0,
       timerStartedAt: null,
+      previewStartedAt: new Date().toISOString(),
     }
 
     // Store all packs in pod (for later rounds). all_leader_packs snapshots the
     // original per-seat leader packs (aligned to `packs`/player order) so leader
     // pick-order analytics can see each opening's alternatives — see
     // migration 076.
+    // pick_started_at stays NULL during the preview — draftTimeout returns
+    // early on null and TimerPanel renders its placeholder, so no timers run
+    // until /begin-picking sets it.
     await query(
       `UPDATE pods
        SET status = 'active',
@@ -173,7 +185,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
            all_packs = $2,
            all_leader_packs = $3,
            started_at = NOW(),
-           pick_started_at = NOW(),
+           pick_started_at = NULL,
            paused_duration_seconds = 0,
            state_version = state_version + 1
        WHERE id = $4`,
@@ -185,12 +197,8 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       ]
     )
 
-    // console.log('[START] Draft state updated, triggering bot turns')
-
-    // Trigger bot picks in the background
-    processBotTurns(pod.id).catch(err => {
-      console.error('Error processing bot turns after start:', err)
-    })
+    // No bot turns during the leader preview — bots pick once /begin-picking
+    // flips everyone to 'picking'.
 
     // Broadcast state update to SSE clients
     broadcastDraftState(shareId).catch(err => {
@@ -233,7 +241,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
     // console.log('[START] Returning success response')
     return jsonResponse({
       message: 'Draft started',
-      phase: 'leader_draft',
+      phase: 'leader_preview',
       playerCount: players.length,
     })
   } catch (error) {

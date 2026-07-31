@@ -1,16 +1,20 @@
 // @ts-nocheck
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { initializeCardCache } from '../../src/utils/cardCache'
 import SetSelection from '../../src/components/SetSelection'
+import SealedPackCountToggle from '../../src/components/SealedPackCountToggle'
+import { STANDARD_SEALED_PACKS_PER_PLAYER } from '../../src/utils/sealedPodConfig'
 import { trackEvent } from '../../src/hooks/useAnalytics'
 import { getOrCreateLimitedFlowId, LimitedAnalyticsEvents } from '../../src/analytics/limitedEvents'
 import '../../src/App.css'
 
 export default function SoloSealedPage() {
   const router = useRouter()
+  // Free 6-vs-8 pack choice; carried to /pools/new as ?packs=N.
+  const [packCount, setPackCount] = useState(STANDARD_SEALED_PACKS_PER_PLAYER)
 
   useEffect(() => {
     initializeCardCache().catch((error) => {
@@ -27,9 +31,10 @@ export default function SoloSealedPage() {
       source_route: '/sealed',
       flow_id: flowId,
       set_code: setCode,
+      pack_count: packCount,
     })
     const flowParam = flowId ? `&flowId=${encodeURIComponent(flowId)}` : ''
-    window.location.href = `/pools/new?set=${setCode}${flowParam}`
+    window.location.href = `/pools/new?set=${setCode}&packs=${packCount}${flowParam}`
   }
 
   const handleBack = () => {
@@ -38,7 +43,12 @@ export default function SoloSealedPage() {
 
   return (
     <div className="app">
-      <SetSelection onSetSelect={handleSetSelect} onBack={handleBack} title="Solo Sealed" />
+      <SetSelection
+        onSetSelect={handleSetSelect}
+        onBack={handleBack}
+        title="Solo Sealed"
+        headerAction={<SealedPackCountToggle value={packCount} onChange={setPackCount} />}
+      />
     </div>
   )
 }

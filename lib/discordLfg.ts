@@ -196,6 +196,25 @@ export function buildStartedEmbed(pod: PodInfo, hostUsername: string, playerName
   }
 }
 
+/**
+ * The message posted in a pod's Discord thread when the pod starts.
+ *
+ * SPEC:
+ * - Competitive pods get the gold trophy + the "Competitive Practice · Best of 3"
+ *   qualifier, and a sign-off that matches the FORMAT — a Competitive Sealed pod
+ *   never says "may the best drafter win".
+ * - Casual pods (draft or sealed) get the plain rocket send-off.
+ */
+export function buildPodStartedMessage(pod: PodInfo): string {
+  const podType = pod.pod_type === 'sealed' ? 'Sealed' : 'Draft'
+  const podLabel = pod.name || `${pod.set_name} ${podType}`
+  if (pod.competitive !== true) {
+    return `🚀 **${podLabel}** has started! Good luck everyone!`
+  }
+  const competitor = pod.pod_type === 'sealed' ? 'deckbuilder' : 'drafter'
+  return `🏆 **${podLabel}** (Competitive Practice · Best of 3) has started! May the best ${competitor} win!`
+}
+
 export function buildCancelledEmbed(pod: PodInfo, hostUsername: string, playerNames: string[]): Record<string, unknown> {
   const podType = pod.pod_type === 'sealed' ? 'Sealed' : 'Draft'
   const isCompetitive = pod.competitive === true
@@ -421,15 +440,10 @@ export async function markPodStarted(
 
     // Post system message in thread
     if (podRow.discord_thread_id) {
-      const podType = pod.pod_type === 'sealed' ? 'Sealed' : 'Draft'
-      const podLabel = pod.name || `${pod.set_name} ${podType}`
-      const startContent = pod.competitive
-        ? `🏆 **${podLabel}** (Competitive Practice · Best of 3) has started! May the best drafter win!`
-        : `🚀 **${podLabel}** has started! Good luck everyone!`
       await discordFetch(`/channels/${podRow.discord_thread_id}/messages`, {
         method: 'POST',
         body: JSON.stringify({
-          content: startContent,
+          content: buildPodStartedMessage(pod),
         }),
       })
     }

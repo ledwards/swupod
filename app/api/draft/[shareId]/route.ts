@@ -1,13 +1,12 @@
 // @ts-nocheck
 // GET /api/draft/:shareId - Get draft pod details
 // DELETE /api/draft/:shareId - Delete draft pod (host only)
-import { query, queryRow, queryRows } from '@/lib/db'
+import { queryRow, queryRows } from '@/lib/db'
 import { getSession, requireAuth } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { getPackArtUrl } from '@/src/utils/packArt'
 import { checkAndEnforceTimeout } from '@/src/utils/draftTimeout'
-import { markPodCancelled, deletePodMessage } from '@/lib/discordLfg'
-import { broadcastDraftState, broadcastSystemChatMessage } from '@/src/lib/socketBroadcast'
+import { cancelDraftPod } from '@/src/utils/podCleanup'
 import { jsonParse } from '@/src/utils/json'
 import { resolveCatalogCards } from '@/src/services/cards/cardCatalogResolver'
 import { deckIdentityFromDeckState } from '@/src/services/matchmaking/eventAnalytics'
@@ -100,8 +99,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     const draftState = jsonParse(pod.draft_state, {})
     const settings = jsonParse(pod.settings, {})
 
-    // Check if we're in leader draft phase (show leader packs to all)
-    const isLeaderDraftPhase = draftState?.phase === 'leader_draft'
+    // Check if we're in leader preview/draft phase (show leader packs to all)
+    const isLeaderDraftPhase = draftState?.phase === 'leader_draft' || draftState?.phase === 'leader_preview'
 
     // Format players for response
   const formattedPlayers = players.map(p => {
@@ -231,8 +230,7 @@ export async function DELETE(request: NextRequest, { params }: RouteContext): Pr
 
     // Get pod and verify host
     const pod = await queryRow(
-      `SELECT id, host_id, share_id, set_code, set_name, name, max_players, current_players, pod_type, is_public
-       FROM pods WHERE share_id = $1`,
+      `SELECT id, host_id FROM pods WHERE share_id = $1`,
       [shareId]
     )
 
@@ -244,80 +242,15 @@ export async function DELETE(request: NextRequest, { params }: RouteContext): Pr
       return errorResponse('Only the host can delete the draft', 403)
     }
 
-    // BEFORE DELETING: Fix card_generation attribution for any cards from this draft
-    // This ensures showcases are attributed to the correct user even after the draft is deleted
-    const players = await queryRows(
-      `SELECT pp.user_id, pp.is_bot, pp.drafted_leaders, pp.drafted_cards, u.username
-       FROM pod_players pp
-       JOIN users u ON pp.user_id = u.id
-       WHERE pp.pod_id = $1 AND pp.user_id IS NOT NULL`,
-      [pod.id]
+    // The teardown (card attribution, chat + Discord notices, deletion, the
+    // 'deleted' broadcast) lives in cancelDraftPod so the stalled-preview sweep
+    // cancels pods exactly the way the host does, instead of drifting into a
+    // second implementation.
+    await cancelDraftPod(
+      pod.id,
+      session.username,
+      `❌ **${session.username}** cancelled the draft.`
     )
-
-    // Build a map of card_id -> user_id for all drafted cards
-    for (const player of players) {
-      const cardIds: string[] = []
-
-      try {
-        const leaders = typeof player.drafted_leaders === 'string'
-          ? JSON.parse(player.drafted_leaders)
-          : player.drafted_leaders || []
-        leaders.forEach((c: { id?: string }) => c.id && cardIds.push(c.id))
-      } catch (e) { /* skip invalid JSON */ }
-
-      try {
-        const cards = typeof player.drafted_cards === 'string'
-          ? JSON.parse(player.drafted_cards)
-          : player.drafted_cards || []
-        cards.forEach((c: { id?: string }) => c.id && cardIds.push(c.id))
-      } catch (e) { /* skip invalid JSON */ }
-
-      // Update card_generations for this player's drafted cards
-      if (cardIds.length > 0) {
-        await query(
-          `UPDATE card_generations
-           SET user_id = $1
-           WHERE source_type = 'draft'
-             AND source_share_id = $2
-             AND card_id = ANY($3)
-             AND user_id IS NULL`,
-          [player.user_id, pod.share_id, cardIds]
-        )
-      }
-    }
-
-    // Notify web chat before deleting
-    broadcastSystemChatMessage(shareId, `❌ **${session.username}** cancelled the draft.`)
-
-    // Notify all connected clients that the draft is deleted
-    broadcastDraftState(shareId).catch(() => {})
-
-    // Discord LFG: handle Discord message (must run before pod deletion)
-    // Auto-decide: delete message entirely if <2 humans (not a real multiplayer pod),
-    // otherwise mark as cancelled with red ❌ for history
-    const humanCount = players.filter((p: { is_bot: boolean }) => !p.is_bot).length
-    const podInfo = { id: pod.id, share_id: pod.share_id, set_code: pod.set_code, set_name: pod.set_name, name: pod.name, max_players: pod.max_players, current_players: pod.current_players, pod_type: pod.pod_type || 'draft', competitive: pod.competitive === true }
-
-    if (humanCount < 2) {
-      // Not a real multiplayer pod — delete the Discord message entirely
-      await deletePodMessage(podInfo).catch(() => {})
-      await query(
-        `UPDATE pods SET discord_message_id = NULL, discord_thread_id = NULL,
-         discord_webhook_id = NULL, discord_webhook_token = NULL WHERE id = $1`,
-        [pod.id]
-      ).catch(() => {})
-    } else {
-      // Real multiplayer pod — mark the embed as cancelled for history
-      const playerNames = players.map((p: { username: string }) => p.username)
-      await markPodCancelled(podInfo, session.username, playerNames).catch(() => {})
-    }
-
-    // Delete associated card_pools (dependent destroy)
-    // The generations are kept for history, but pools from this draft are cleaned up
-    await query('DELETE FROM card_pools WHERE pod_id = $1', [pod.id])
-
-    // Delete pod (cascade will remove players)
-    await query('DELETE FROM pods WHERE id = $1', [pod.id])
 
     return jsonResponse({ message: 'Draft deleted successfully' })
   } catch (error) {

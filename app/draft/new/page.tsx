@@ -17,16 +17,20 @@ import '../draft.css'
 function NewDraftPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, isAuthenticated, loading: authLoading } = useAuth()
+  const { user, isAuthenticated, isPatron, loading: authLoading } = useAuth()
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   // Direct /draft/new defaults ON; explicit Standard Draft entry points pass
-  // competitive=0 so the owner lands in normal draft mode.
-  const [competitive, setCompetitive] = useState(() => initialDraftCompetitiveFromSearch(searchParams))
+  // competitive=0 so the owner lands in normal draft mode. Competitive is a
+  // Friends of the Pod feature, so it stays off for everyone else.
+  const [competitive, setCompetitive] = useState(false)
 
+  // `isPatron` is null until the status call resolves; deciding before then
+  // would either discard a patron's deep link or arm a value the server rejects.
   useEffect(() => {
-    setCompetitive(initialDraftCompetitiveFromSearch(searchParams))
-  }, [searchParams])
+    if (isPatron === null) return
+    setCompetitive(isPatron === true && initialDraftCompetitiveFromSearch(searchParams))
+  }, [searchParams, isPatron])
   const [isPublic, setIsPublic] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('pod-visibility')
@@ -165,9 +169,12 @@ function NewDraftPageContent() {
       className={`setting-lock setting-lock-competitive${competitive ? '' : ' setting-lock-competitive-off'}`}
       onClick={() => setCompetitive(v => !v)}
       aria-pressed={competitive}
-      title={competitive
-        ? 'Swiss Rounds ON — runs the full competitive Swiss flow (draft → Swiss matchmaking). Uncheck for a normal draft.'
-        : 'Swiss Rounds OFF — this will be a normal draft. Check to run the competitive Swiss flow.'}
+      disabled={authLoading || isPatron !== true}
+      title={isPatron !== true
+        ? 'Friends of the Pod only'
+        : competitive
+          ? 'Swiss Rounds ON — runs the full competitive Swiss flow (draft → Swiss matchmaking). Uncheck for a normal draft.'
+          : 'Swiss Rounds OFF — this will be a normal draft. Check to run the competitive Swiss flow.'}
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
         <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/>

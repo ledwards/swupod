@@ -48,7 +48,9 @@ export async function PATCH(request: NextRequest, { params }: RouteContext): Pro
       values.push(body.isPublic)
     }
 
-    if (typeof body.maxPlayers === 'number' && body.maxPlayers >= 2 && body.maxPlayers <= 16) {
+    // Competitive Sealed pods are capped at 8 players.
+    const maxAllowed = pod.competitive === true ? 8 : 16
+    if (typeof body.maxPlayers === 'number' && body.maxPlayers >= 2 && body.maxPlayers <= maxAllowed) {
       if (body.maxPlayers >= pod.current_players) {
         updates.push('max_players = $' + paramIndex++)
         values.push(body.maxPlayers)

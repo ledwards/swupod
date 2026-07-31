@@ -143,6 +143,15 @@ export default function SealedPodPlayPage({ params }: PageProps) {
     }
   }, [shareId, fetchPod])
 
+  // Competitive Sealed never belongs on this casual hub: its pairings come from
+  // the Swiss bracket, and only /pool/:shareId/deck/play renders the Swiss
+  // panel. Bounce anyone who arrives here from an old link or history entry.
+  useEffect(() => {
+    if (podData?.draft?.competitive === true && podData?.myPoolShareId) {
+      router.replace(`/pool/${podData.myPoolShareId}/deck/play`)
+    }
+  }, [podData?.draft?.competitive, podData?.myPoolShareId, router])
+
   // Load own pool data + record built deck for readiness tracking
   useEffect(() => {
     if (!podData?.myPoolShareId) return

@@ -1459,6 +1459,17 @@ a.discord-login-button:active {
   filter: none;
 }
 
+/* Competitive is a Friends of the Pod feature — non-patrons see the toggle,
+   greyed out, with a "Friends of the Pod only" tooltip. */
+.set-selection-header .setting-lock-competitive:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.set-selection-header .setting-lock-competitive:disabled:hover {
+  transform: none;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .set-selection-header .setting-lock-competitive {
     cursor: pointer;

@@ -7,6 +7,7 @@ import { useAuth } from '../../../src/contexts/AuthContext'
 import { useSealedPodSocket } from '../../../src/hooks/useSealedPodSocket'
 import { usePresence } from '../../../src/hooks/usePresence'
 import { getPackArtUrl, getCyclingPackImageUrls } from '../../../src/utils/packArt'
+import { sealedPacksPerPlayer } from '../../../src/utils/sealedPodConfig'
 import { loadPool } from '../../../src/utils/poolApi'
 import SealedPodLobby from '../../../src/components/SealedPodLobby'
 import PackOpeningAnimation from '../../../src/components/PackOpeningAnimation'
@@ -272,6 +273,14 @@ export default function SealedPodPage({ params }: PageProps) {
 
   if (!pod) return null
 
+  // The pod's configured pack count (6 or 8; Competitive Sealed is always 8).
+  // Shown read-only in the lobby, and used as the pack-opening fallback when
+  // the pool's own packs haven't loaded.
+  const configuredPackCount = sealedPacksPerPlayer(
+    pod.competitive === true,
+    pod.settings?.packsPerPlayer
+  )
+
   // Phase: Pack Opening Animation
   if (postStartPhase === 'animation' && poolData) {
     const packs = poolData.packs && poolData.packs.length > 0
@@ -281,8 +290,8 @@ export default function SealedPodPage({ params }: PageProps) {
     return (
       <div className="app">
         <PackOpeningAnimation
-          packCount={packs?.length || 6}
-          packImageUrls={getCyclingPackImageUrls(pod.setCode, packs?.length || 6)}
+          packCount={packs?.length || configuredPackCount}
+          packImageUrls={getCyclingPackImageUrls(pod.setCode, packs?.length || configuredPackCount)}
           packs={packs}
           onComplete={() => setPostStartPhase('pool-review')}
           setCode={pod.setCode}
@@ -331,8 +340,9 @@ export default function SealedPodPage({ params }: PageProps) {
   const packArtUrl = getPackArtUrl(pod.setCode)
 
   // Phase: Lobby (waiting for players / host to start)
+  // `.competitive` on the page root applies the gold competitive theme (draft.css)
   return (
-    <div className="page-with-chat">
+    <div className={`page-with-chat${pod.competitive ? ' competitive' : ''}`}>
       <div className="page-content">
         <div className="pod-page">
           {packArtUrl && (
@@ -353,6 +363,8 @@ export default function SealedPodPage({ params }: PageProps) {
               hostId={pod?.host?.id}
               maxPlayers={pod?.maxPlayers}
               isPublic={pod?.isPublic}
+              competitive={pod?.competitive === true}
+              packsPerPlayer={configuredPackCount}
               onStart={handleStart}
               onLeave={handleLeave}
               onCancel={handleCancel}

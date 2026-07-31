@@ -15,6 +15,7 @@ import { broadcastPublicPodsUpdate, broadcastOpenGamesUpdate } from './src/lib/s
 import { sweepOpenGames, delistOpenGamesForUser } from './src/services/openGames.js'
 import { deleteAbandonedPodRecords } from './src/utils/podCleanup.js'
 import { sweepExpiredDraftTimers } from './src/utils/draftTimeout.js'
+import { sweepStalledLeaderPreviews } from './src/utils/draftPreview.js'
 import { buildAllowedOrigins, makeAllowRequest, setupSocketServer } from './src/lib/socketServer.js'
 import { postUserMessageForPod, postLobbyMessage, deletePodMessage, resolveOpenGameMessage } from './lib/discordLfg.js'
 import { shouldFailFastOnMigrationFailure } from './lib/migrationPolicy.js'
@@ -264,6 +265,9 @@ app.prepare().then(() => {
   // Draft pick-timer sweep: enforce expired pick timers regardless of whether
   // any client is connected to notice (see sweepExpiredDraftTimers).
   // Competitive Appendix C timers go as low as 5s, so sweep on that cadence.
+  // The stalled-preview sweep rides the same interval. It never starts a draft
+  // — only the host can do that — it CANCELS pods that hit Ready and then sat
+  // on the leader preview for 24 hours because the host never came back.
   const DRAFT_TIMER_SWEEP_INTERVAL_MS = 5 * 1000
   let draftTimerSweepInFlight = false
 
@@ -278,6 +282,14 @@ app.prepare().then(() => {
       }
     } catch (err) {
       console.error('[DraftTimers] Sweep error:', err)
+    }
+    try {
+      const cancelled = await sweepStalledLeaderPreviews()
+      if (cancelled > 0) {
+        console.log(`[LeaderPreview] Cancelled ${cancelled} stalled pod(s)`)
+      }
+    } catch (err) {
+      console.error('[LeaderPreview] Sweep error:', err)
     } finally {
       draftTimerSweepInFlight = false
     }

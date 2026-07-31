@@ -57,7 +57,8 @@ const XIcon = () => (
   </svg>
 )
 
-const PlayIcon = () => (
+// Shared with LeaderPreviewPhase — the ONE play icon for start-draft actions.
+export const PlayIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
     <polygon points="5 3 19 12 5 21 5 3"></polygon>
   </svg>
@@ -492,6 +493,8 @@ function HostControls({
         )}
 
         <div className="controls-row cancel-controls">
+          {/* "Ready" deals packs and reveals leaders (leader preview) —
+              the host then starts picking with "Start Draft" during the preview. */}
           <Button
             variant="primary"
             className="control-button"
@@ -499,7 +502,7 @@ function HostControls({
             disabled={startingDraft || !canStart}
           >
             <PlayIcon />
-            <span>{startingDraft ? 'Starting...' : 'Start Draft'}</span>
+            <span>{startingDraft ? 'Dealing...' : 'Ready'}</span>
           </Button>
 
           {showCancelButton && (

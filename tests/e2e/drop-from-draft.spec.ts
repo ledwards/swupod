@@ -134,8 +134,18 @@ test.describe('Drop from Draft', () => {
     console.log(`  Players in lobby: ${playerCountBefore}`)
     expect(playerCountBefore).toBe(2)
 
-    // === STEP 3: Organizer starts draft ===
+    // === STEP 3: Organizer starts draft (two-stage: Ready → preview → Start Draft) ===
     console.log('\n--- STEP 3: Organizer starts draft ---')
+    const readyButton = organizerPage.locator('button:has-text("Ready")')
+    await expect(readyButton).toBeEnabled({ timeout: 10000 })
+    await readyButton.click()
+
+    // Leader preview: leaders revealed on both pages, no picking yet
+    await organizerPage.waitForSelector('.leader-preview-phase', { timeout: 20000 })
+    await playerPage.waitForSelector('.leader-preview-phase', { timeout: 20000 })
+    console.log('✓ Leader preview - leaders revealed')
+
+    // Organizer opens picking
     const startButton = organizerPage.locator('button:has-text("Start Draft")')
     await expect(startButton).toBeEnabled({ timeout: 10000 })
     await startButton.click()
