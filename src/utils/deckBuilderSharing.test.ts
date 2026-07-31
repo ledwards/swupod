@@ -5,6 +5,7 @@ import {
   getBuildName,
   getBuildDeckBuilderState,
   shouldBuildFromSharedPool,
+  resolvePlayDestination,
   formatPoolDate,
   stripArchetypeSetAndFormat,
   getDefaultPoolName,
@@ -57,6 +58,86 @@ describe('deckBuilderSharing', () => {
         }),
         false
       )
+    })
+  })
+
+  // SPEC (src/utils/deckBuilderSharing.ts resolvePlayDestination):
+  //   competitive pod (any format) -> /pool/:shareId/deck/play  (Swiss panel)
+  //   casual draft pod             -> /draft/:podShareId/pod
+  //   casual sealed pod            -> /sealed/:podShareId/pod
+  //   no pod                       -> /pool/:shareId/deck/play
+  describe('resolvePlayDestination', () => {
+    it('sends a casual draft pod to the draft pod hub', () => {
+      assert.strictEqual(
+        resolvePlayDestination({ poolType: 'draft', podShareId: 'pod-1', shareId: 'pool-1' }),
+        '/draft/pod-1/pod'
+      )
+    })
+
+    it('sends a casual sealed pod to the sealed pod hub', () => {
+      assert.strictEqual(
+        resolvePlayDestination({ poolType: 'sealed', podShareId: 'pod-1', shareId: 'pool-1' }),
+        '/sealed/pod-1/pod'
+      )
+    })
+
+    it('sends a solo pool straight to its play page', () => {
+      assert.strictEqual(
+        resolvePlayDestination({ poolType: 'sealed', podShareId: null, shareId: 'pool-1' }),
+        '/pool/pool-1/deck/play'
+      )
+    })
+
+    it('NEW CODE: a COMPETITIVE SEALED pod goes to the Swiss play page', () => {
+      assert.strictEqual(
+        resolvePlayDestination({
+          poolType: 'sealed',
+          podShareId: 'pod-1',
+          competitive: true,
+          shareId: 'pool-1',
+        }),
+        '/pool/pool-1/deck/play'
+      )
+    })
+
+    it('OLD CODE: competitive sealed used to be stranded on the casual sealed hub', () => {
+      assert.notStrictEqual(
+        resolvePlayDestination({
+          poolType: 'sealed',
+          podShareId: 'pod-1',
+          competitive: true,
+          shareId: 'pool-1',
+        }),
+        '/sealed/pod-1/pod'
+      )
+    })
+
+    it('a competitive draft pod goes to the Swiss play page', () => {
+      assert.strictEqual(
+        resolvePlayDestination({
+          poolType: 'draft',
+          podShareId: 'pod-1',
+          competitive: true,
+          shareId: 'pool-1',
+        }),
+        '/pool/pool-1/deck/play'
+      )
+    })
+
+    it('falls back to the pod hub when a competitive pool has no share id', () => {
+      assert.strictEqual(
+        resolvePlayDestination({
+          poolType: 'sealed',
+          podShareId: 'pod-1',
+          competitive: true,
+          shareId: null,
+        }),
+        '/sealed/pod-1/pod'
+      )
+    })
+
+    it('returns null when there is nowhere to go', () => {
+      assert.strictEqual(resolvePlayDestination({ poolType: 'sealed' }), null)
     })
   })
 

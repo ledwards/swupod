@@ -32,9 +32,10 @@ export function CompetitivePracticeRules({ showTitle = true, swissOnly = false, 
         <div className="cpm-rules-section">
           <h4>Deck Build</h4>
           <ul>
-            <li>20 minutes to build your deck once packs are opened.</li>
+            <li>5 minutes to open your packs and look over your pool.</li>
+            <li>Then a full 20 minutes to build — the build timer doesn&apos;t start until the pack-opening time is up.</li>
             <li>Warnings at 5:00 (yellow) and 1:00 (red).</li>
-            <li>At 0:00 your deck auto-locks as-is and you're sent to the play page.</li>
+            <li>At 0:00 your deck auto-locks as-is and you&apos;re sent to the play page.</li>
           </ul>
         </div>
 

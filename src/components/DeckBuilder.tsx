@@ -25,6 +25,7 @@ import {
   getBuildDeckBuilderState,
   getBuildName,
   shouldBuildFromSharedPool,
+  resolvePlayDestination,
   getDefaultPoolName,
   getDefaultBuildName,
   ensureArchetypeIndexes,
@@ -2360,16 +2361,17 @@ function DeckBuilder({
       return
     }
 
-    if (isDraftMode && draftShareId) {
-      // Competitive/Swiss uses the single play URL (which renders the Swiss
-      // Practice panel); the /pod hub is only for casual draft pods.
-      window.location.href = competitive && shareId
-        ? `/pool/${shareId}/deck/play`
-        : `/draft/${draftShareId}/pod`
-    } else if (!isDraftMode && draftShareId) {
-      window.location.href = `/sealed/${draftShareId}/pod`
-    } else if (shareId) {
-      window.location.href = `/pool/${shareId}/deck/play`
+    // Competitive/Swiss uses the single play URL (which renders the Swiss
+    // Practice panel) for BOTH draft and sealed pods; the /pod hubs are only
+    // for casual pods.
+    const destination = resolvePlayDestination({
+      poolType,
+      podShareId: draftShareId,
+      competitive,
+      shareId,
+    })
+    if (destination) {
+      window.location.href = destination
     }
   }, [
     isInfiniteMode,
@@ -2378,7 +2380,6 @@ function DeckBuilder({
     isOwner,
     localStorageKey,
     uiStorageKey,
-    isDraftMode,
     draftShareId,
     competitive,
     shareId,

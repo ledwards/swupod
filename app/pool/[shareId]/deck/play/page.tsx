@@ -1393,8 +1393,8 @@ export default function PlayPage({ params }: PageProps) {
             <div className="swiss-companion-pitch-alert" role="alert">
               <h2 className="swiss-companion-pitch-title">
                 We strongly recommend Wayfinder Companion to make the Swiss
-                experience smoother for Competitive Draft. Just takes a minute to
-                set up.
+                experience smoother for {pool?.poolType === 'draft' ? 'Competitive Draft' : 'Competitive Sealed'}.
+                Just takes a minute to set up.
               </h2>
               <p className="swiss-companion-pitch-sub">
                 Then you&apos;ll get recordings and analysis of your Limited and

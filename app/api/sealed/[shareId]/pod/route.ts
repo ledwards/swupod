@@ -21,7 +21,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     const pod = await queryRow(
       `SELECT
         dp.id, dp.share_id, dp.host_id, dp.status, dp.set_code, dp.set_name,
-        dp.settings, dp.completed_at
+        dp.settings, dp.completed_at, dp.competitive
        FROM pods dp
        WHERE dp.share_id = $1 AND dp.pod_type = 'sealed'`,
       [shareId]
@@ -122,6 +122,10 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         hostId: pod.host_id,
         status: pod.status,
         completedAt: pod.completed_at,
+        // Competitive Sealed pods have no stored pairings — this hub's casual
+        // "Your Opponent" card is meaningless for them, so the page bounces
+        // them to the Swiss play page instead.
+        competitive: pod.competitive === true,
       },
       players: players.map(p => ({
         id: p.user_id,

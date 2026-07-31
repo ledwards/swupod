@@ -13,6 +13,7 @@ import {
   COMPETITIVE_SEALED_PACKS_PER_PLAYER,
 } from '../../../src/utils/sealedPodConfig'
 import Button from '../../../src/components/Button'
+import { extractApiErrorMessage } from '../../../src/repositories/httpClient'
 import { trackEvent } from '../../../src/hooks/useAnalytics'
 import { getOrCreateLimitedFlowId, LimitedAnalyticsEvents } from '../../../src/analytics/limitedEvents'
 import '../../../src/App.css'
@@ -21,16 +22,23 @@ import '../../draft/draft.css'
 function NewSealedPodPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, isAuthenticated, loading: authLoading } = useAuth()
+  const { user, isAuthenticated, isPatron, loading: authLoading } = useAuth()
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   // Standard entry points pass competitive=0 (or nothing); the Competitive
-  // Sealed button passes competitive=1.
-  const [competitive, setCompetitive] = useState(() => initialSealedCompetitiveFromSearch(searchParams))
+  // Sealed button passes competitive=1. Starts OFF and is only armed once
+  // patron status has actually resolved (see below).
+  const [competitive, setCompetitive] = useState(false)
 
+  // Competitive Sealed is a Friends of the Pod feature (the real gate is
+  // server-side in POST /api/sealed). Non-patrons can't arm it here — not by
+  // clicking the toggle, and not by deep-linking ?competitive=1 either.
+  // `isPatron` is null until the status call resolves; don't decide before then,
+  // or a patron's deep link gets thrown away.
   useEffect(() => {
-    setCompetitive(initialSealedCompetitiveFromSearch(searchParams))
-  }, [searchParams])
+    if (isPatron === null) return
+    setCompetitive(isPatron === true && initialSealedCompetitiveFromSearch(searchParams))
+  }, [searchParams, isPatron])
 
   // Free 6-vs-8 pack choice for standard pods. Competitive Sealed is always 8,
   // so the toggle locks while it's on — the standard choice is remembered here
@@ -94,7 +102,10 @@ function NewSealedPodPageContent() {
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}))
-        throw new Error(data.message || 'Failed to create sealed pod')
+        // The API returns two error shapes ({ message } and { data: { error } });
+        // reading only `.message` swallowed the Friends of the Pod 403 and showed
+        // a generic "Failed to create sealed pod" instead.
+        throw new Error(extractApiErrorMessage(data, 'Failed to create sealed pod'))
       }
 
       const json = await response.json()
@@ -189,9 +200,12 @@ function NewSealedPodPageContent() {
       className={`setting-lock setting-lock-competitive${competitive ? '' : ' setting-lock-competitive-off'}`}
       onClick={() => setCompetitive(v => !v)}
       aria-pressed={competitive}
-      title={competitive
-        ? 'Competitive Sealed ON — 8 packs each, 20-minute deck build, Swiss matchmaking. Uncheck for a standard sealed pod.'
-        : 'Competitive Sealed OFF — this will be a standard 6-pack sealed pod. Check for 8 packs, a timed deck build, and Swiss matchmaking.'}
+      disabled={authLoading || isPatron !== true}
+      title={isPatron !== true
+        ? 'Friends of the Pod only — Competitive Sealed'
+        : competitive
+          ? 'Competitive Sealed ON — 8 packs each, 20-minute deck build, Swiss matchmaking. Uncheck for a standard sealed pod.'
+          : 'Competitive Sealed OFF — this will be a standard 6-pack sealed pod. Check for 8 packs, a timed deck build, and Swiss matchmaking.'}
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
         <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/>

@@ -8,6 +8,8 @@
  * - Competitive Sealed pods are always 8 packs per player, whatever is requested.
  * - Standard sealed pods allow 2–16 players (default 8).
  * - Competitive Sealed pods are capped at 8 players.
+ * - Competitive Sealed gives 5 minutes to open packs, then a full 20 minutes to
+ *   build — so the pod's deck-build deadline is 25 minutes after the deal.
  */
 
 export const STANDARD_SEALED_PACKS_PER_PLAYER = 6
@@ -18,6 +20,29 @@ export const SEALED_PACK_COUNT_OPTIONS: readonly number[] = [
   STANDARD_SEALED_PACKS_PER_PLAYER,
   COMPETITIVE_SEALED_PACKS_PER_PLAYER,
 ]
+
+/**
+ * The build window Competitive Sealed promises, in minutes. Matches the
+ * competitive-draft deck build window (and `DeckBuildTimer`'s 20-minute
+ * countdown window).
+ */
+export const COMPETITIVE_SEALED_BUILD_MINUTES = 20
+
+/**
+ * Grace period between packs being dealt and the build clock starting.
+ * Sealed players must sit through the pack-opening animation (8 packs) and the
+ * pool review before the deckbuilder loads; without this allowance the promised
+ * 20 minutes of BUILDING would be silently eaten by pack opening.
+ */
+export const COMPETITIVE_SEALED_PACK_OPENING_MINUTES = 5
+
+/**
+ * Minutes from "packs dealt" to `pods.deck_lock_at` for a Competitive Sealed
+ * pod: the pack-opening allowance plus the full build window.
+ */
+export function competitiveSealedDeckLockMinutes(): number {
+  return COMPETITIVE_SEALED_PACK_OPENING_MINUTES + COMPETITIVE_SEALED_BUILD_MINUTES
+}
 
 export const STANDARD_SEALED_MIN_PLAYERS = 2
 export const STANDARD_SEALED_MAX_PLAYERS = 16

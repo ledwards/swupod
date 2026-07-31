@@ -195,6 +195,68 @@ describe('httpClient', () => {
         }
       )
     })
+
+    // SPEC: the API emits TWO error shapes and both must surface their message.
+    //   errorResponse('msg', 403)           -> { data: null,             message: 'msg' }
+    //   jsonResponse({ error: 'msg' }, 403) -> { data: { error: 'msg' }, message: null }
+    it('NEW CODE: surfaces { data: { error } } bodies (the Friends of the Pod 403)', async () => {
+      mockFetch({
+        ok: false,
+        status: 403,
+        json: async () => ({
+          success: false,
+          data: { error: 'Friends of the Pod required to create Competitive Sealed' },
+          message: null,
+        }),
+      })
+
+      const { httpClient, HttpError } = await import('./httpClient.js')
+
+      await assert.rejects(
+        () => httpClient.post('/sealed', {}),
+        (err: any) => {
+          assert(err instanceof HttpError)
+          assert.strictEqual(
+            err.message,
+            'Friends of the Pod required to create Competitive Sealed'
+          )
+          assert.strictEqual(err.status, 403)
+          return true
+        }
+      )
+    })
+  })
+
+  describe('extractApiErrorMessage', () => {
+    it('reads the top-level message shape (errorResponse)', async () => {
+      const { extractApiErrorMessage } = await import('./httpClient.js')
+      assert.strictEqual(
+        extractApiErrorMessage({ success: false, data: null, message: 'Nope' }, 'fallback'),
+        'Nope'
+      )
+    })
+
+    it('BUGGY: reading only .message swallowed { data: { error } } bodies', async () => {
+      const { extractApiErrorMessage } = await import('./httpClient.js')
+      assert.strictEqual(
+        extractApiErrorMessage(
+          { success: false, data: { error: 'Friends of the Pod required' }, message: null },
+          'fallback'
+        ),
+        'Friends of the Pod required'
+      )
+    })
+
+    it('falls back when the body carries no message at all', async () => {
+      const { extractApiErrorMessage } = await import('./httpClient.js')
+      assert.strictEqual(extractApiErrorMessage({}, 'fallback'), 'fallback')
+      assert.strictEqual(extractApiErrorMessage(null, 'fallback'), 'fallback')
+      assert.strictEqual(extractApiErrorMessage('oops', 'fallback'), 'fallback')
+      assert.strictEqual(
+        extractApiErrorMessage({ data: { error: '   ' }, message: null }, 'fallback'),
+        'fallback'
+      )
+    })
   })
 
   describe('URL handling', () => {

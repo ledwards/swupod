@@ -14,6 +14,49 @@ export function shouldBuildFromSharedPool({
   return Boolean(!isInfiniteMode && !isOwner && shareId && !draftShareId)
 }
 
+export interface PlayDestinationOptions {
+  /** `card_pools.pool_type` — 'draft' for draft pools, 'sealed' for sealed pools. */
+  poolType?: string | null
+  /** Share id of the pod this pool came from, or null for a solo pool. */
+  podShareId?: string | null
+  /** True when the pod is a Competitive (Swiss Practice) pod. */
+  competitive?: boolean
+  /** Share id of the pool itself. */
+  shareId?: string | null
+}
+
+/**
+ * Where "Ready to Play" sends the player.
+ *
+ * SPEC:
+ * - Competitive pods — draft AND sealed — go to `/pool/:shareId/deck/play`.
+ *   That is the ONLY page that renders the Swiss Practice panel (pairings,
+ *   "Start Round 1", result reporting), so both formats must land there.
+ * - Casual draft pod  → `/draft/:podShareId/pod`
+ * - Casual sealed pod → `/sealed/:podShareId/pod`
+ * - No pod at all (solo pool) → `/pool/:shareId/deck/play`
+ *
+ * Returns null when there is nothing to navigate to (no ids at all).
+ */
+export function resolvePlayDestination({
+  poolType = null,
+  podShareId = null,
+  competitive = false,
+  shareId = null,
+}: PlayDestinationOptions): string | null {
+  // Competitive is decided by the POD, not the pool format. Checking poolType
+  // first is what stranded Competitive Sealed on the casual sealed hub.
+  if (competitive && shareId) {
+    return `/pool/${shareId}/deck/play`
+  }
+  if (podShareId) {
+    return poolType === 'draft'
+      ? `/draft/${podShareId}/pod`
+      : `/sealed/${podShareId}/pod`
+  }
+  return shareId ? `/pool/${shareId}/deck/play` : null
+}
+
 export function getBuildName(parentName: string | null | undefined, displayName: string | null | undefined): string | null {
   if (!parentName) return null
   return displayName ? `${parentName} – ${displayName}'s Build` : `${parentName} (Build)`

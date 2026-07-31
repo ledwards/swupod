@@ -49,7 +49,7 @@ interface LobbyTile {
 // No section headers — spacing alone separates the rows from the board.
 const SOLO_TILES: LobbyTile[] = [
   // Same art the homepage's Solo section uses today.
-  { title: 'Solo Sealed', sub: 'Build a deck from 6 packs', href: '/sealed', art: MODE_ART.draftSolo, artClass: 'art-unit' },
+  { title: 'Solo Sealed', sub: 'Build a deck from 6 or 8 packs', href: '/sealed', art: MODE_ART.draftSolo, artClass: 'art-unit' },
   { title: 'Solo Draft', sub: 'Draft against bots', href: '/draft/solo', art: MODE_ART.sealedSolo, artClass: 'art-event' },
   // Han Solo (SOR-283 HYP) — UNIT side, as on the homepage's Other card.
   { title: 'Other Formats', sub: 'Chaos, Pack Wars, and more', href: '/formats', art: 'https://cdn.starwarsunlimited.com//card_SWH_01_283_Hansolo_Leader_Unit_HYP_6c91c1ab96.png', artClass: 'art-leader-unit' },

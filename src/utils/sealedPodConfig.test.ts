@@ -6,12 +6,17 @@
 // - Competitive Sealed = 8 packs per player, whatever was requested.
 // - Standard sealed allows 2–16 players (default 8).
 // - Competitive Sealed is capped at exactly 8 players.
+// - Competitive Sealed promises 20 minutes of BUILDING, preceded by a 5-minute
+//   pack-opening allowance — so deck_lock_at is 25 minutes after the deal.
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import {
   sealedPacksPerPlayer,
   sealedMaxPlayers,
   normalizeSealedPackCount,
+  competitiveSealedDeckLockMinutes,
+  COMPETITIVE_SEALED_BUILD_MINUTES,
+  COMPETITIVE_SEALED_PACK_OPENING_MINUTES,
   SEALED_PACK_COUNT_OPTIONS,
 } from './sealedPodConfig'
 
@@ -97,5 +102,28 @@ describe('sealedMaxPlayers', () => {
     assert.strictEqual(sealedMaxPlayers(true), 8)
     assert.strictEqual(sealedMaxPlayers(true, 16), 8)
     assert.strictEqual(sealedMaxPlayers(true, 2), 8)
+  })
+})
+
+describe('competitiveSealedDeckLockMinutes', () => {
+  it('SPEC: the promised build window is 20 minutes', () => {
+    assert.strictEqual(COMPETITIVE_SEALED_BUILD_MINUTES, 20)
+  })
+
+  it('SPEC: packs get a 5-minute opening allowance before the build clock starts', () => {
+    assert.strictEqual(COMPETITIVE_SEALED_PACK_OPENING_MINUTES, 5)
+  })
+
+  it('BUGGY: a 20-minute deadline set at deal time ate the build window with pack opening', () => {
+    // Sealed players still have to open 8 packs and review the pool before the
+    // deckbuilder loads, so the deadline must be LONGER than the build window.
+    assert.ok(
+      competitiveSealedDeckLockMinutes() > COMPETITIVE_SEALED_BUILD_MINUTES,
+      'deck_lock_at must leave room for pack opening on top of the build window'
+    )
+  })
+
+  it('FIXED: deck_lock_at is 25 minutes after the deal (5 opening + 20 building)', () => {
+    assert.strictEqual(competitiveSealedDeckLockMinutes(), 25)
   })
 })

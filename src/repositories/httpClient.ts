@@ -37,6 +37,32 @@ export class HttpError extends Error {
 }
 
 /**
+ * Pull the human-readable message out of an API error body.
+ *
+ * The API has TWO error shapes and both must be understood:
+ *   errorResponse('msg', 403)          -> { success: false, data: null,        message: 'msg' }
+ *   jsonResponse({ error: 'msg' }, 403) -> { success: false, data: { error: 'msg' }, message: null }
+ *
+ * Reading only `.message` (the old behaviour) swallowed every route that uses
+ * the second shape — e.g. the Friends of the Pod gate on Competitive Sealed /
+ * Competitive Draft creation, which surfaced as a generic "Try Again" screen.
+ *
+ * @param body - Parsed JSON error body (any shape)
+ * @param fallback - Message to use when the body carries none
+ */
+export function extractApiErrorMessage(body: unknown, fallback: string): string {
+  if (!body || typeof body !== 'object') return fallback
+  const outer = body as { message?: unknown; error?: unknown; data?: unknown }
+  const inner = (outer.data && typeof outer.data === 'object' ? outer.data : {}) as {
+    message?: unknown
+    error?: unknown
+  }
+  const candidates = [outer.message, outer.error, inner.error, inner.message]
+  const found = candidates.find(c => typeof c === 'string' && c.trim().length > 0)
+  return (found as string) || fallback
+}
+
+/**
  * Make an HTTP request with standardized error handling
  *
  * @param url - URL path (will be prefixed with API_BASE)
@@ -79,9 +105,7 @@ async function request<T = unknown>(url: string, options: RequestOptions = {}): 
 
     try {
       errorData = await response.json()
-      errorMessage = (errorData as { message?: string; error?: string })?.message ||
-        (errorData as { message?: string; error?: string })?.error ||
-        errorMessage
+      errorMessage = extractApiErrorMessage(errorData, errorMessage)
     } catch {
       // Response wasn't JSON, use status text
       errorMessage = response.statusText || errorMessage

@@ -28,6 +28,17 @@ Built by subagents in phases; this session is the project manager.
   revisited: a seat is `pod_players.user_id` and there is no guest-token identity, so
   an anonymous player could not reliably reclaim their seat/pool across requests.
 
+## Leader preview liveness (2026-07-30, user)
+- A draft that hits "Ready" (enters `leader_preview`) and never progresses is
+  **auto-cancelled after 24 hours**, reusing the existing host Cancel Draft path.
+- **No auto-start.** A draft never begins picking without the host.
+- Players **can leave during `leader_preview`** — the in-session escape hatch, so a
+  vanished host never traps anyone.
+- Why this matters: the two-stage start removed the old liveness guarantee. Packs and
+  the pick timer used to start atomically, so an absent host was harmless (the pick
+  timer force-picked and the draft completed). With `pick_started_at` NULL during
+  preview, nothing advances the pod but the host.
+
 ## Phase 2 — Player Ready flow + audio cue engine
 
 ### Player Ready (lobby) — also the browser-audio unlock
