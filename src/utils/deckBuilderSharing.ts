@@ -1,3 +1,5 @@
+import { packCountNameSuffix } from './sealedFormat'
+
 export interface SharedPoolPlayOptions {
   isInfiniteMode?: boolean
   isOwner?: boolean
@@ -178,15 +180,19 @@ export function stripArchetypeSetAndFormat(nickname: string): string {
     .trim()
 }
 
-// "{owner}'s {SET} {Sealed|Draft} Pool {MM.DD.YY}"  e.g. "terronk's LAW Sealed Pool 05.28.26"
+// "{owner}'s {SET} {Sealed|Draft} Pool {(N-pack)} {MM.DD.YY}"
+// e.g. "terronk's LAW Sealed Pool (8-pack) 05.28.26"
 export interface DefaultPoolNameInputs {
   ownerName?: string | null
   setCode?: string | null
   poolType?: PoolFormat | null
   createdAt?: Date | string | null
+  /** Sealed packs opened for this pool — 6-pack and 8-pack sealed are
+   *  different formats. Omitted when unknown (see utils/sealedFormat). */
+  packCount?: number | null
 }
 
-export function getDefaultPoolName({ ownerName, setCode, poolType, createdAt }: DefaultPoolNameInputs): string {
+export function getDefaultPoolName({ ownerName, setCode, poolType, createdAt, packCount }: DefaultPoolNameInputs): string {
   const owner = ownerName?.trim()
   // Multi-pack formats store every pack's code; show the distinct sets (Event Packs as PROMO).
   const set = formatSetCodeLabel(setCode)
@@ -194,8 +200,9 @@ export function getDefaultPoolName({ ownerName, setCode, poolType, createdAt }: 
   const date = formatPoolDate(createdAt)
   const ownerPart = owner ? `${owner}'s ` : ''
   const setPart = set ? `${set} ` : ''
+  const packPart = packCountNameSuffix(poolType === 'draft' ? null : packCount)
   const datePart = date ? ` ${date}` : ''
-  return `${ownerPart}${setPart}${fmt} Pool${datePart}`.trim()
+  return `${ownerPart}${setPart}${fmt} Pool${packPart}${datePart}`.trim()
 }
 
 // "{archetype-without-set-or-format} ({SET}) {Sealed|Draft} {MM.DD.YY}"

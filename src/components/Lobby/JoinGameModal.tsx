@@ -3,6 +3,8 @@
 /**
  * Join modal (R28/R31): pick which of your decks to bring — strictly
  * filtered to the game's set + format; ineligible decks are not shown.
+ * Sealed pack count is part of that format: an 8-pack game only offers
+ * 8-pack decks.
  */
 import { useState } from 'react'
 import Modal from '@/src/components/Modal'
@@ -13,7 +15,14 @@ import { useToast } from '@/src/components/Toast'
 interface JoinGameModalProps {
   isOpen: boolean
   onClose: () => void
-  game: { shareId: string; setCode: string; format: string; hostUsername?: string | null } | null
+  game: {
+    shareId: string
+    setCode: string
+    format: string
+    /** Sealed packs behind the listing — null/absent means "don't filter". */
+    packsPerPlayer?: number | null
+    hostUsername?: string | null
+  } | null
   onJoined: (game: { shareId: string }) => void
 }
 
@@ -69,6 +78,7 @@ export default function JoinGameModal({ isOpen, onClose, game, onJoined }: JoinG
         <DeckPicker
           setCode={game.setCode}
           format={game.format}
+          packsPerPlayer={game.packsPerPlayer ?? null}
           selected={selected?.poolShareId ?? null}
           onSelect={setSelected}
           onEligibleCount={setEligibleCount}

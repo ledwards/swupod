@@ -16,6 +16,7 @@ import { queryRows } from '@/lib/db'
 import { getAspectColor, getAspectColors } from '@/src/utils/aspectColors'
 import { archetypeShortName, poolDisplayName } from '@/src/utils/archetypeName'
 import { hyperspaceLeaderArtForCard } from '@/src/utils/hyperspaceLeaderArt'
+import { packBucketsMatch, poolPackBucketSql, toPackBucket } from '@/src/utils/sealedFormat'
 import { openGameErrorResponse } from '../helpers'
 import { NextRequest } from 'next/server'
 
@@ -42,6 +43,11 @@ export async function GET(request: NextRequest): Promise<Response> {
     const { searchParams } = new URL(request.url)
     const setCode = searchParams.get('setCode')
     const format = searchParams.get('format')
+    // Sealed pack count is part of the format the Join flow filters on: a
+    // 6-pack deck is never eligible for an 8-pack game (HARD SPLIT). It only
+    // applies alongside a pinned `format` — the unfiltered New Game picker
+    // lists every bucket.
+    const requestedPacks = toPackBucket(searchParams.get('packs'))
 
     // Eligibility = the deck builder has a leader AND base picked
     // (deck_builder_state) — the same definition /me uses. built_decks is
@@ -50,10 +56,12 @@ export async function GET(request: NextRequest): Promise<Response> {
     const rows = await queryRows(
       `SELECT cp.share_id, cp.set_code, cp.set_name, cp.pool_type, cp.name,
               cp.created_at, cp.updated_at, cp.deck_builder_state, bd.built_at,
+              ${poolPackBucketSql('cp', 'ppk')} AS packs_per_player,
               (cp.deck_builder_state ->> 'activeLeader' IS NOT NULL
                AND cp.deck_builder_state ->> 'activeBase' IS NOT NULL
                AND jsonb_path_exists(cp.deck_builder_state, '$.cardPositions.* ? (@.section == "deck" && @.visible == true)')) AS deck_complete
        FROM card_pools cp
+       LEFT JOIN card_pools ppk ON ppk.id = cp.parent_pool_id
        LEFT JOIN built_decks bd ON bd.card_pool_id = cp.id
        WHERE cp.user_id = $1 AND cp.hidden IS NOT TRUE
          AND cp.deck_builder_state IS NOT NULL
@@ -65,6 +73,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     const decks = rows.map(r => {
       // Leader/base identity comes from deck_builder_state, same as /me's
       // pool history (built_decks.leader holds only {id, count}).
+      const packsPerPlayer = toPackBucket(r.packs_per_player)
       const state = parseDeckBuilderState(r.deck_builder_state)
       const positions = state.cardPositions || {}
       const leaderCard = state.activeLeader ? positions[state.activeLeader]?.card : null
@@ -88,6 +97,7 @@ export async function GET(request: NextRequest): Promise<Response> {
           setCode: r.set_code ? String(r.set_code) : null,
           poolType: r.pool_type ? String(r.pool_type) : null,
           date: r.created_at ? String(r.created_at) : null,
+          packCount: packsPerPlayer,
         })
 
       return {
@@ -95,6 +105,7 @@ export async function GET(request: NextRequest): Promise<Response> {
         setCode: String(r.set_code),
         setName: r.set_name ? String(r.set_name) : null,
         format: r.pool_type ? String(r.pool_type) : 'sealed',
+        packsPerPlayer,
         name,
         builtAt: r.built_at ? String(r.built_at) : r.updated_at ? String(r.updated_at) : null,
         leaderName,
@@ -113,7 +124,9 @@ export async function GET(request: NextRequest): Promise<Response> {
         eligible:
           r.deck_complete === true &&
           (!setCode || String(r.set_code) === setCode) &&
-          (!format || String(r.pool_type || 'sealed') === format),
+          (!format || String(r.pool_type || 'sealed') === format) &&
+          // Pack bucket only narrows a format-pinned (Join) request.
+          (!format || packBucketsMatch(packsPerPlayer, requestedPacks)),
       }
     })
 

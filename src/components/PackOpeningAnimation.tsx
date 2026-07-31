@@ -531,7 +531,7 @@ export default function PackOpeningAnimation({
             className="randomize-button"
             onClick={handleRandomizeWithAnimation}
             disabled={isRandomizing || (shufflePhase !== 'idle' && shufflePhase !== 'entered')}
-            title="Shuffle which 6 packs you get from a 24-pack booster box"
+            title={`Shuffle which ${packCount} packs you get from a 24-pack booster box`}
           >
             {shufflePhase === 'exiting' || shufflePhase === 'entering' ? 'Shuffling...' : 'Shuffle Packs'}
           </Button>

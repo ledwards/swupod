@@ -17,6 +17,7 @@ import Button from '@/src/components/Button'
 import { useToast } from '@/src/components/Toast'
 import { useOpenGamesSocket, type OpenGameListing } from '@/src/hooks/useOpenGamesSocket'
 import { timeAgo } from './OpenGamesColumn'
+import { packBucketsMatch, packCountLabel } from '@/src/utils/sealedFormat'
 import './Lobby.css'
 import './PlayPageLobbies.css'
 
@@ -26,6 +27,10 @@ interface PlayPageLobbiesProps {
   setCode: string
   /** Normalized play format ('sealed_pod' and friends collapse to 'sealed'). */
   format: 'draft' | 'sealed'
+  /** This deck's sealed pack bucket. Pack count is part of the format and the
+   *  split is HARD: a 6-pack deck is never offered an 8-pack lobby. Null for
+   *  draft. Absent = unknown, which matches nothing sealed (fail closed). */
+  packsPerPlayer?: number | null
   /** Logged-in username — socket pushes are viewer-agnostic, so ownership of
    *  a listing falls back to a username comparison when `mine` isn't carried
    *  (same fallback the lobby board uses). */
@@ -41,6 +46,7 @@ export default function PlayPageLobbies({
   poolShareId,
   setCode,
   format,
+  packsPerPlayer = null,
   currentUsername = null,
 }: PlayPageLobbiesProps): React.JSX.Element {
   const { status, listings, retry } = useOpenGamesSocket()
@@ -55,6 +61,8 @@ export default function PlayPageLobbies({
           listing =>
             listing.setCode === setCode &&
             normalizeFormat(listing.format) === format &&
+            // HARD SPLIT: same sealed pack bucket only.
+            packBucketsMatch(listing.packsPerPlayer, packsPerPlayer) &&
             listing.mine !== true &&
             !(
               currentUsername != null &&
@@ -65,12 +73,13 @@ export default function PlayPageLobbies({
         // GET already returns newest-first; sort defensively so "most recent"
         // holds for socket pushes too.
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-    [listings, setCode, format, currentUsername]
+    [listings, setCode, format, packsPerPlayer, currentUsername]
   )
 
   const top = matches[0] ?? null
   const extraCount = Math.max(0, matches.length - 1)
   const formatLabel = format === 'draft' ? 'Draft' : 'Sealed'
+  const packLabel = packCountLabel(packsPerPlayer)
 
   function redirectToLogin(): void {
     const returnTo = window.location.pathname + window.location.search
@@ -141,7 +150,7 @@ export default function PlayPageLobbies({
   return (
     <section className="lobby-column play-page-lobbies" aria-label="Open lobbies">
       <h3 className="lobby-column-title">
-        Open Lobbies<span>{setCode} {formatLabel}</span>
+        Open Lobbies<span>{setCode} {formatLabel}{packLabel ? ` · ${packLabel}` : ''}</span>
       </h3>
 
       {status === 'error' && (
@@ -183,6 +192,7 @@ export default function PlayPageLobbies({
             </div>
             <span className="lobby-badge">{top.setCode}</span>
             <span className={`lobby-badge lobby-badge-format-${format}`}>{formatLabel}</span>
+            {packLabel && <span className="lobby-badge">{packLabel}</span>}
             <Button variant="primary" size="sm" onClick={() => joinListing(top)} disabled={busy != null}>
               {busy === 'join' ? 'Joining…' : 'Join'}
             </Button>
@@ -206,7 +216,7 @@ export default function PlayPageLobbies({
       {status === 'ready' && !top && (
         <div className="lobby-state">
           <p>
-            No open lobbies for {setCode} {formatLabel} right now.
+            No open lobbies for {setCode} {formatLabel}{packLabel ? ` (${packLabel})` : ''} right now.
           </p>
           <Button variant="primary" size="sm" onClick={postThisDeck} disabled={busy != null}>
             {busy === 'post' ? 'Creating…' : 'Create a Lobby with This Deck'}

@@ -15,6 +15,13 @@
  */
 import type { TxClient } from '@/lib/db'
 import { archetypeShortName, poolDisplayName } from '@/src/utils/archetypeName'
+import { packCountLabel, packBucketsMatch, poolPackBucketSql, toPackBucket } from '@/src/utils/sealedFormat'
+
+/** Derived sealed pack bucket for the LISTING's own pool (`cp` + parent `ppk`). */
+const LISTING_PACK_BUCKET_SQL = `${poolPackBucketSql('cp', 'ppk')} AS packs_per_player`
+/** The LEFT JOIN that `poolPackBucketSql('cp', 'ppk')` needs (builds inherit
+ *  their parent pool's packs — a build row is saved with packs: null). */
+const PARENT_POOL_JOIN = 'LEFT JOIN card_pools ppk ON ppk.id = cp.parent_pool_id'
 
 export const OPEN_LISTING_EXPIRY_MS = 60 * 60 * 1000 // R9 (revised 7/10): 1h
 export const ACCEPTED_NO_LOBBY_EXPIRY_MS = 2 * 60 * 60 * 1000 // revised 7/15: 2h
@@ -74,6 +81,10 @@ export interface OpenGameListing {
   /** Filled in by the API/broadcast layer from the live presence map. */
   hostConnected?: boolean
   bestOf?: number
+  /** Sealed pack bucket behind the host's deck — 6-pack and 8-pack sealed are
+   *  different formats and never pair. `null` only for formats with no
+   *  pack-count dimension (draft, chaos, …). */
+  packsPerPlayer?: number | null
   /** The listing's live Karabast lobby id (create-at-post) — used to dedupe
    *  the same lobby out of the mixed-in Karabast rows. */
   karabastLobbyId?: string | null
@@ -122,6 +133,10 @@ interface EligibleDeck {
   setCode: string
   setName: string | null
   format: string
+  /** Sealed pack bucket the pool belongs to — a format dimension (6-pack and
+   *  8-pack sealed never pair). Always a number for sealed pools; `null` only
+   *  for formats with no pack-count dimension (draft, chaos, …). */
+  packsPerPlayer: number | null
 }
 
 /**
@@ -134,10 +149,12 @@ interface EligibleDeck {
 async function requireEligibleDeck(tx: TxClient, userId: string, poolId: string): Promise<EligibleDeck> {
   const pool = await tx.queryRow(
     `SELECT cp.id, cp.user_id, cp.set_code, cp.set_name, cp.pool_type, cp.hidden,
+            ${LISTING_PACK_BUCKET_SQL},
             (cp.deck_builder_state ->> 'activeLeader' IS NOT NULL
              AND cp.deck_builder_state ->> 'activeBase' IS NOT NULL
              AND jsonb_path_exists(cp.deck_builder_state, '$.cardPositions.* ? (@.section == "deck" && @.visible == true)')) AS deck_ready
      FROM card_pools cp
+     ${PARENT_POOL_JOIN}
      WHERE cp.id = $1`,
     [poolId]
   )
@@ -153,6 +170,7 @@ async function requireEligibleDeck(tx: TxClient, userId: string, poolId: string)
     setCode: String(pool.set_code),
     setName: pool.set_name ? String(pool.set_name) : null,
     format: pool.pool_type ? String(pool.pool_type) : 'sealed',
+    packsPerPlayer: toPackBucket(pool.packs_per_player),
   }
 }
 
@@ -249,8 +267,12 @@ export interface JoinParams {
 async function joinOpenGameInTx(tx: TxClient, params: JoinParams): Promise<OpenGame> {
   const { userId, poolId } = params
   const target = await tx.queryRow(
-    `SELECT id, player1_id, player1_pool_id, set_code, format, status FROM open_games
-     WHERE ${params.gameId ? 'id = $1' : 'share_id = $1'}`,
+    `SELECT og.id, og.player1_id, og.player1_pool_id, og.set_code, og.format, og.status,
+            ${LISTING_PACK_BUCKET_SQL}
+     FROM open_games og
+     LEFT JOIN card_pools cp ON cp.id = og.player1_pool_id
+     ${PARENT_POOL_JOIN}
+     WHERE ${params.gameId ? 'og.id = $1' : 'og.share_id = $1'}`,
     [params.gameId ?? params.shareId]
   )
   if (!target) throw new OpenGameError('not_found', 'Game not found', 404)
@@ -263,10 +285,21 @@ async function joinOpenGameInTx(tx: TxClient, params: JoinParams): Promise<OpenG
   await lockUsers(tx, [posterId, userId])
 
   const deck = await requireEligibleDeck(tx, userId, poolId)
-  if (deck.setCode !== target.set_code || deck.format !== target.format) {
+  // HARD SPLIT: sealed pack count is part of the format. A 6-pack deck can
+  // never join an 8-pack game, and no crafted request can cross it — this is
+  // the server-side gate, not a UI filter. Legacy sealed pools land in the
+  // 6-pack bucket by rule (see utils/sealedFormat spec 3), so every pool sits
+  // in exactly one bucket.
+  const targetPacks = toPackBucket(target.packs_per_player)
+  if (
+    deck.setCode !== target.set_code ||
+    deck.format !== target.format ||
+    !packBucketsMatch(deck.packsPerPlayer, targetPacks)
+  ) {
+    const packs = packCountLabel(targetPacks)
     throw new OpenGameError(
       'format_mismatch',
-      `This game is ${target.set_code} ${target.format} — pick a matching deck`,
+      `This game is ${target.set_code} ${target.format}${packs ? ` (${packs})` : ''} — pick a matching deck`,
       400
     )
   }
@@ -328,13 +361,19 @@ export async function playNow(params: { userId: string; poolId: string }): Promi
 
   const deck = await withTransaction(tx => requireEligibleDeck(tx, userId, poolId))
 
+  // HARD SPLIT: only listings in this deck's own pack bucket are candidates.
+  // IS NOT DISTINCT FROM so the non-sealed case (both NULL) still matches,
+  // while 6 vs 8 — and 6 vs NULL — never do.
   const candidates = await queryRows(
-    `SELECT id FROM open_games
-     WHERE status = 'open' AND visibility = 'public'
-       AND set_code = $1 AND format = $2 AND player1_id != $3
-     ORDER BY created_at ASC
+    `SELECT og.id FROM open_games og
+     LEFT JOIN card_pools cp ON cp.id = og.player1_pool_id
+     ${PARENT_POOL_JOIN}
+     WHERE og.status = 'open' AND og.visibility = 'public'
+       AND og.set_code = $1 AND og.format = $2 AND og.player1_id != $3
+       AND ${poolPackBucketSql('cp', 'ppk')} IS NOT DISTINCT FROM $4::int
+     ORDER BY og.created_at ASC
      LIMIT 5`,
-    [deck.setCode, deck.format, userId]
+    [deck.setCode, deck.format, userId, deck.packsPerPlayer]
   )
 
   for (const candidate of candidates) {
@@ -446,6 +485,7 @@ function hostDeckName(r: Record<string, unknown>): string | null {
     setCode: r.set_code ? String(r.set_code) : null,
     poolType: r.pool_type ? String(r.pool_type) : null,
     date: r.pool_created_at ? String(r.pool_created_at) : null,
+    packCount: toPackBucket(r.packs_per_player),
   })
 }
 
@@ -462,10 +502,12 @@ export async function listPublicOpenGames(): Promise<{
     `SELECT og.share_id, og.set_code, og.set_name, og.format, og.created_at,
             og.best_of, og.player1_id, u.username, u.avatar_url,
             cp.deck_builder_state, cp.name AS pool_name, cp.pool_type,
-            cp.created_at AS pool_created_at, att.lobby_id AS karabast_lobby_id
+            cp.created_at AS pool_created_at, att.lobby_id AS karabast_lobby_id,
+            ${LISTING_PACK_BUCKET_SQL}
      FROM open_games og
      JOIN users u ON u.id = og.player1_id
      JOIN card_pools cp ON cp.id = og.player1_pool_id
+     ${PARENT_POOL_JOIN}
      LEFT JOIN LATERAL (
        SELECT a.lobby_id FROM open_game_lobby_attempts a
        WHERE a.open_game_id = og.id AND a.lobby_id IS NOT NULL
@@ -504,6 +546,7 @@ export async function listPublicOpenGames(): Promise<{
       hostId: String(r.player1_id),
       hostDeck: { name: hostDeckName(r) },
       bestOf: Number(r.best_of) || 1,
+      packsPerPlayer: toPackBucket(r.packs_per_player),
       karabastLobbyId: r.karabast_lobby_id ? String(r.karabast_lobby_id) : null,
     })),
     recentCompleted: completed.map(r => ({
@@ -584,6 +627,7 @@ export async function getMyOpenListing(userId: string): Promise<{
   shareId: string
   setCode: string
   format: string
+  packsPerPlayer: number | null
   visibility: string
   createdAt: string
   deckName: string | null
@@ -592,9 +636,10 @@ export async function getMyOpenListing(userId: string): Promise<{
   const r = await queryRow(
     `SELECT og.share_id, og.set_code, og.format, og.visibility, og.created_at,
             cp.deck_builder_state, cp.name AS pool_name, cp.pool_type,
-            cp.created_at AS pool_created_at
+            cp.created_at AS pool_created_at, ${LISTING_PACK_BUCKET_SQL}
      FROM open_games og
      JOIN card_pools cp ON cp.id = og.player1_pool_id
+     ${PARENT_POOL_JOIN}
      WHERE og.player1_id = $1 AND og.status = 'open'
      ORDER BY og.created_at DESC
      LIMIT 1`,
@@ -605,6 +650,7 @@ export async function getMyOpenListing(userId: string): Promise<{
     shareId: String(r.share_id),
     setCode: String(r.set_code),
     format: String(r.format),
+    packsPerPlayer: toPackBucket(r.packs_per_player),
     visibility: String(r.visibility),
     createdAt: String(r.created_at),
     deckName: hostDeckName(r),

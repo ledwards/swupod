@@ -663,9 +663,14 @@ export default function PodPage({ params }: PageProps) {
         {/* In solo mode, show play instructions and actions below pod status */}
         {isSolo && (
           <>
+            {/* This pool is a DRAFT pool even in solo mode — pass the real type
+                so the lobby list, the Karabast lobby name and the Companion
+                intent all describe a draft deck. The solo-specific "no podmates
+                to message" manual flow is driven by isSoloDraft, not by
+                mislabelling the pool as sealed. */}
             <PlayInstructions
               shareId={myPoolShareId}
-              poolType="sealed"
+              poolType="draft"
               setCode={draft?.setCode || myPool?.setCode}
               hasBye={false}
               isSoloDraft={true}

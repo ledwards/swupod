@@ -20,6 +20,9 @@ interface PlayInstructionsProps {
   shareId: string | null
   poolType: 'draft' | 'sealed' | 'sealed_pod' | string
   setCode?: string | null
+  /** This pool's sealed pack bucket (from /api/pools/:shareId). Pack count is
+   *  part of the sealed format — 6-pack and 8-pack lobbies never mix. */
+  packsPerPlayer?: number | null
   /** Deck archetype name, used to build the public Karabast game name. */
   archetypeName?: string | null
   opponentName?: string | null
@@ -62,6 +65,7 @@ export default function PlayInstructions({
   shareId,
   poolType,
   setCode = null,
+  packsPerPlayer = null,
   archetypeName = null,
   opponentName = null,
   hasBye = false,
@@ -88,7 +92,13 @@ export default function PlayInstructions({
   // flow only (no install pitch, no autojoin column).
   const { user } = useAuth() as { user: { username?: string | null; is_beta_tester?: boolean | null; is_admin?: boolean | null } | null }
   const companionBeta = isCompanionBeta(user)
-  const inPod = poolType === 'draft' || poolType === 'sealed_pod'
+  // Pod manual steps ("create a private lobby, message your podmate") only make
+  // sense when there are human podmates. A solo (bot) draft is still a DRAFT
+  // pool — callers must pass poolType="draft" — but its owner has nobody to
+  // message, so it gets the standalone "3 ways to play" steps instead. This
+  // used to be bought by passing poolType="sealed" for solo drafts, which also
+  // mislabelled the deck to the open-lobby list and the Karabast lobby name.
+  const inPod = (poolType === 'draft' || poolType === 'sealed_pod') && !isSoloDraft
   const viewingOthersDeck = !isOwner && ownerName
   const cardPoolName = getKarabastCardPool(setCode)
 
@@ -496,6 +506,7 @@ export default function PlayInstructions({
           poolShareId={shareId}
           setCode={setCode}
           format={poolType === 'draft' ? 'draft' : 'sealed'}
+          packsPerPlayer={packsPerPlayer}
           currentUsername={user?.username ?? null}
         />
       )}

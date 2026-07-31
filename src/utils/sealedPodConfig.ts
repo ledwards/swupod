@@ -3,9 +3,10 @@
  *
  * SPEC:
  * - Sealed deals 6 booster packs per player by default.
- * - Everyone can choose 6 or 8 packs at creation (solo pools and sealed pods);
- *   no other value is accepted — anything else falls back to 6.
- * - Competitive Sealed pods are always 8 packs per player, whatever is requested.
+ * - Everyone can choose 6 or 8 packs at creation (solo pools, sealed pods, and
+ *   Competitive Sealed alike); no other value is accepted.
+ * - An unspecified count falls back to 6, except Competitive Sealed which
+ *   defaults to 8.
  * - Standard sealed pods allow 2–16 players (default 8).
  * - Competitive Sealed pods are capped at 8 players.
  * - Competitive Sealed gives 5 minutes to open packs, then a full 20 minutes to
@@ -54,25 +55,28 @@ export const COMPETITIVE_SEALED_MAX_PLAYERS = 8
  * query params and JSON bodies can be passed straight in.
  */
 export function normalizeSealedPackCount(
-  requested?: number | string | null
+  requested?: number | string | null,
+  fallback: number = STANDARD_SEALED_PACKS_PER_PLAYER
 ): number {
   const parsed = typeof requested === 'string' ? Number(requested) : requested
   return typeof parsed === 'number' && SEALED_PACK_COUNT_OPTIONS.includes(parsed)
     ? parsed
-    : STANDARD_SEALED_PACKS_PER_PLAYER
+    : fallback
 }
 
 /**
- * Packs dealt to each player when a sealed pod starts.
- * Competitive Sealed ignores the request and always deals 8.
+ * Packs dealt to each player when a sealed pod starts. Competitive Sealed picks
+ * 6 or 8 like everyone else; it only differs in defaulting to 8 when the pod
+ * carries no stored choice (including pods created before the choice existed).
  */
 export function sealedPacksPerPlayer(
   competitive: boolean,
   requested?: number | string | null
 ): number {
-  return competitive
-    ? COMPETITIVE_SEALED_PACKS_PER_PLAYER
-    : normalizeSealedPackCount(requested)
+  return normalizeSealedPackCount(
+    requested,
+    competitive ? COMPETITIVE_SEALED_PACKS_PER_PLAYER : STANDARD_SEALED_PACKS_PER_PLAYER
+  )
 }
 
 /**

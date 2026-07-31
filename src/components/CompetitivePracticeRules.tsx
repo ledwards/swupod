@@ -23,7 +23,7 @@ export function CompetitivePracticeRules({ showTitle = true, swissOnly = false, 
         <div className="cpm-rules-section">
           <h4>Sealed Pool</h4>
           <ul>
-            <li>Each player opens 8 booster packs instead of the standard 6.</li>
+            <li>Each player opens the pod&apos;s pack count — 6 or 8, chosen at creation.</li>
             <li>Up to 8 players per pod.</li>
             <li>Everyone opens packs at the same time and builds from their own pool.</li>
           </ul>

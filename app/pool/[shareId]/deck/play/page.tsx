@@ -113,6 +113,8 @@ interface PoolData {
   shareId: string
   setCode: string
   poolType?: string
+  /** Sealed pack bucket — part of the sealed format (6-pack vs 8-pack). */
+  packsPerPlayer?: number | null
   deckBuilderState?: string | DeckBuilderState
   name?: string
   owner?: PoolOwner | null
@@ -1534,10 +1536,13 @@ export default function PlayPage({ params }: PageProps) {
             )}
           </div>
         ) : (
+          // Always the pool's REAL type — a solo draft pool is still a draft
+          // pool. The solo-specific manual flow keys off isSoloDraft below.
           <PlayInstructions
             shareId={shareId}
-            poolType={isSoloDraft ? 'sealed' : (pool?.poolType || 'sealed')}
+            poolType={pool?.poolType || 'sealed'}
             setCode={pool?.setCode}
+            packsPerPlayer={pool?.packsPerPlayer ?? null}
             opponentName={firstOpponent?.username}
             hasBye={hasBye}
             isSoloDraft={isSoloDraft}

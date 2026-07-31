@@ -547,6 +547,9 @@ a.lobby-row-link:active {
 
 .lobby-page .mode-button.lobby-mode-tile {
   width: 100%;
+  /* the homepage's 225px floor would overflow a 5-up grid row; the track
+     sizes the tile here. */
+  min-width: 0;
   min-height: 64px;
   padding: 10px 14px;
 }
@@ -559,41 +562,77 @@ a.lobby-row-link:active {
   font-size: 0.75rem;
 }
 
-/* Discord: the sanctioned solid-blurple brand handshake, tile-sized.
-   Mirrors the homepage's .discord-cta (icon + gap, blurple, deep-blurple
-   hover with the -2px lift; white ink pinned on every anchor state). */
-.lobby-discord-tile,
-a.lobby-discord-tile,
-a.lobby-discord-tile:visited,
-a.lobby-discord-tile:hover,
-a.lobby-discord-tile:active {
+/* Discord: a SIBLING of the mode tiles, not a foreign blue block — it wears
+   the same dark shell, size, and title/subtitle stack as the four tiles it
+   sits beside. Brand identity is carried by the blurple ring, the blurple
+   hover glow, and the mark blown up as the tile's "card art". White ink is
+   pinned on every anchor state (global a:hover would tint it purple). */
+.lobby-page a.lobby-discord-tile,
+.lobby-page a.lobby-discord-tile:visited,
+.lobby-page a.lobby-discord-tile:hover,
+.lobby-page a.lobby-discord-tile:active {
+  /* anchors miss the global border-box reset — without this the tile renders
+     24px taller and wider than the buttons beside it. */
+  box-sizing: border-box;
+  color: var(--pt-ink);
+  text-decoration: none;
+  border-color: rgba(var(--pt-discord-rgb), 0.9);
+}
+
+/* icon + label share the title line (house rule: icons always get a gap) */
+.lobby-page .lobby-discord-tile .mode-button-title {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 64px;
-  padding: 10px 16px;
-  border: none;
-  border-radius: var(--pt-radius-sm);
-  background: var(--pt-discord);
-  color: var(--pt-ink);
-  font-family: 'Barlow', sans-serif;
-  font-weight: 600;
-  font-size: 0.95rem;
-  line-height: 1;
-  text-decoration: none;
-  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-.lobby-discord-tile svg {
-  flex-shrink: 0;
+.lobby-page .lobby-discord-tile .mode-button-title svg {
+  flex: none;
+}
+
+/* the mark rides the right edge exactly where its neighbors' card art does */
+.lobby-page .lobby-discord-art {
+  position: absolute;
+  top: 50%;
+  right: -18px;
+  /* art scale, not a fill: it rides the right edge and the .lobby-art fade
+     takes the rest, the same read as the card art on its neighbors. */
+  height: 78%;
+  width: auto;
+  transform: translateY(-50%);
+  color: var(--pt-discord);
+  opacity: 0.9;
+}
+
+/* Phone/tablet: no hover to reveal the mark, so the art rides at rest (dimmed)
+   and the inline icon steps aside — the label needs that room at this width. */
+@media (max-width: 900px) {
+  .lobby-page .lobby-discord-tile .lobby-art {
+    opacity: 1;
+  }
+
+  /* quieter at rest than on hover — the subtitle wraps over it here */
+  .lobby-page .lobby-discord-art {
+    opacity: 0.45;
+  }
+
+  .lobby-page .lobby-discord-tile .mode-button-title svg {
+    display: none;
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {
-  a.lobby-discord-tile:hover {
-    background: var(--pt-discord-deep);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(var(--pt-surface-base-rgb), 0.4);
+  .lobby-page a.lobby-discord-tile:hover:not(:disabled) {
+    background: rgba(var(--pt-surface-base-rgb), 0.85);
+    border-color: var(--pt-discord);
+    box-shadow: 0 6px 16px rgba(var(--pt-discord-rgb), 0.55);
+  }
+
+  /* brand glow instead of the rainbow ring its neighbors get */
+  .lobby-page a.lobby-discord-tile:hover:not(:disabled)::before {
+    display: none;
   }
 }
 
