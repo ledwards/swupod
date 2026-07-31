@@ -40,6 +40,13 @@ describe('/admin page', () => {
         'Page must import AdminGrantPanel from @/src/components/admin/AdminGrantPanel'
       )
     })
+
+    it('imports AdminVoicePackInvitePanel from @/src/components/admin/AdminVoicePackInvitePanel', () => {
+      assert.ok(
+        /from\s*['"]@\/src\/components\/admin\/AdminVoicePackInvitePanel['"]/.test(pageSource),
+        'Page must import AdminVoicePackInvitePanel from @/src/components/admin/AdminVoicePackInvitePanel'
+      )
+    })
   })
 
   describe('Server component shape', () => {
@@ -118,19 +125,31 @@ describe('/admin page', () => {
       )
     })
 
-    it('renders AdminGrantPanel as the only child — no nav/chrome leakage', () => {
-      // Scope-control: the only JSX tag in the rendered output should be AdminGrantPanel.
-      // Count JSX-opening tags that look like components (<Capitalized) or HTML elements
-      // in the return statement region.
+    it('renders <AdminVoicePackInvitePanel /> for admin sessions', () => {
+      assert.ok(
+        pageSource.includes('<AdminVoicePackInvitePanel'),
+        'Admin-only render must include <AdminVoicePackInvitePanel /> (creator voice packs)'
+      )
+    })
+
+    it('renders ONLY admin panels — no nav/chrome leakage', () => {
+      // Scope-control: /admin is a bare stack of admin panels. Every capitalized JSX
+      // tag in the file must be one of them — no layout, nav, header or page chrome
+      // may creep in. Adding a panel means adding it to this allowlist deliberately.
+      const ALLOWED_PANELS = ['<AdminGrantPanel', '<AdminVoicePackInvitePanel']
       const returnMatch = pageSource.match(/return\s*\(?\s*(<[\s\S]*?>)/)
       const tagMatches = pageSource.match(/<[A-Z][A-Za-z0-9]*/g) || []
-      // Should be exactly one capitalized component tag: <AdminGrantPanel
-      assert.strictEqual(
-        tagMatches.length,
-        1,
-        `Page should render exactly one component (AdminGrantPanel), found ${tagMatches.length}: ${tagMatches.join(', ')}`
+      const unexpected = tagMatches.filter((tag) => !ALLOWED_PANELS.includes(tag))
+      assert.deepStrictEqual(
+        unexpected,
+        [],
+        `Page rendered non-panel components: ${unexpected.join(', ')}`
       )
-      assert.strictEqual(tagMatches[0], '<AdminGrantPanel')
+      assert.strictEqual(
+        new Set(tagMatches).size,
+        ALLOWED_PANELS.length,
+        `Page should render every admin panel exactly once, found: ${tagMatches.join(', ')}`
+      )
       assert.ok(returnMatch, 'Page must have a return statement rendering JSX')
     })
   })

@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { verifyToken } from '@/lib/auth'
 import AdminGrantPanel from '@/src/components/admin/AdminGrantPanel'
+import AdminVoicePackInvitePanel from '@/src/components/admin/AdminVoicePackInvitePanel'
 
 export default async function AdminPage() {
   const cookieStore = await cookies()
@@ -14,5 +15,10 @@ export default async function AdminPage() {
     notFound()
   }
 
-  return <AdminGrantPanel />
+  return (
+    <>
+      <AdminGrantPanel />
+      <AdminVoicePackInvitePanel />
+    </>
+  )
 }

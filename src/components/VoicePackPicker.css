@@ -1,0 +1,56 @@
+/**
+ * VoicePackPicker styles.
+ *
+ * Section header stack follows docs/STYLE_GUIDE.md ("Type Spacing"): heading →
+ * subtitle 0.5rem, subtitle → content 1rem, subtitle line-height 1.5. Title case per
+ * the section-header guidance. The 8px gap on the option is the mandatory icon+text
+ * gap from .claude/rules/ui-components.md. No hover rules here — Button owns those.
+ */
+
+.voice-pack-picker {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Barlow', sans-serif;
+}
+
+.voice-pack-picker-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+}
+
+.voice-pack-picker-subtitle {
+  margin: 0.5rem 0 1rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.voice-pack-picker-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.voice-pack-picker-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.voice-pack-picker-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.voice-pack-picker-error {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: rgba(255, 200, 200, 0.95);
+}

@@ -1,0 +1,127 @@
+/**
+ * AdminVoicePackInvitePanel styles. Co-located with the component and matched to
+ * AdminGrantPanel.css so the two panels read as one admin surface.
+ *
+ * Tokens only (docs/STYLE_GUIDE.md): dark rgba(0,0,0,0.7) card, rgba(255,255,255,0.3)
+ * border, Barlow. No hover rules here, so nothing needs the mobile hover gate.
+ */
+
+.voice-invite-panel {
+  font-family: 'Barlow', sans-serif;
+  color: white;
+  max-width: 640px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.voice-invite-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.voice-invite-subtitle {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.voice-invite-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.voice-invite-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.voice-invite-input {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.95rem;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+}
+
+.voice-invite-input:focus {
+  outline: none;
+  border-color: rgba(33, 150, 243, 0.8);
+}
+
+.voice-invite-toggle-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.voice-invite-actions {
+  display: flex;
+}
+
+.voice-invite-success {
+  padding: 0.75rem 1rem;
+  background: rgba(0, 255, 0, 0.08);
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.voice-invite-success-line {
+  margin: 0;
+}
+
+.voice-invite-url {
+  font-family: 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 6px;
+  padding: 0.5rem 0.6rem;
+  overflow-wrap: anywhere;
+}
+
+.voice-invite-copy-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.voice-invite-expiry {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.voice-invite-error {
+  padding: 0.75rem 1rem;
+  background: rgba(255, 0, 0, 0.08);
+  border: 1px solid rgba(255, 0, 0, 0.4);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: rgba(255, 200, 200, 0.95);
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .voice-invite-panel {
+    margin: 1rem;
+    padding: 1rem;
+  }
+}
