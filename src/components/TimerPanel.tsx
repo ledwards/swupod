@@ -43,6 +43,13 @@ export interface TimerPanelProps {
   draftState?: DraftState | null
   onTimerExpire?: () => void
   /**
+   * Opt in to the spoken countdown cues. PackDraftPhase renders this panel
+   * TWICE (top + bottom); like `onTimerExpire`, cues belong to the TOP instance
+   * only or every clip double-fires. Cues are competitive-only — the Appendix C
+   * round timer is the clock they describe.
+   */
+  cues?: boolean
+  /**
    * Cards left in the player's pack (pack draft) or leaders left (leader draft).
    * Drives the competitive Appendix C round-timer schedule. Ignored for casual.
    */
@@ -54,7 +61,7 @@ export interface TimerPanelProps {
  * Shows either pick timeout or last player timer (whichever has less time remaining)
  * Both timers can be enabled/disabled independently
  */
-function TimerPanel({ draft, players = [], compact = false, isHost = false, onTogglePause, onUpdateTimerSettings, draftState = null, onTimerExpire, cardsRemaining = 0 }: TimerPanelProps) {
+function TimerPanel({ draft, players = [], compact = false, isHost = false, onTogglePause, onUpdateTimerSettings, draftState = null, onTimerExpire, cues = false, cardsRemaining = 0 }: TimerPanelProps) {
   const [activeTimer, setActiveTimer] = useState<'round' | 'lastPlayer'>('round')
   const [optimisticPaused, setOptimisticPaused] = useState<boolean | null>(null)
 
@@ -80,6 +87,11 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
     itemsRemaining: cardsRemaining,
     roundTimeoutSeconds: pickTimeoutSeconds,
   })
+  // Voice cues ride the competitive round timer only. The pack id is read
+  // defensively — the field arrives with the creator voice packs and may be
+  // absent, which just means the built-in pack.
+  const cuesEnabled = cues === true && isCompetitive
+  const cuePackId = (draft?.voicePackId ?? draft?.settings?.voicePackId ?? null) as string | null
   const isPaused = optimisticPaused !== null ? optimisticPaused : draft?.paused === true
   const pausedDurationSeconds = draft?.pausedDurationSeconds || 0
   const serverTimeOffsetMs = draft?.serverTimeOffsetMs || 0
@@ -226,6 +238,8 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
                   pausedDurationSeconds={pausedDurationSeconds}
                   serverTimeOffsetMs={serverTimeOffsetMs}
                   onExpire={onTimerExpire}
+                  cues={cuesEnabled}
+                  cuePackId={cuePackId}
                 />
               )}
               {isHost && onTogglePause && (

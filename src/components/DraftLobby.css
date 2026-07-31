@@ -33,6 +33,34 @@
   flex: 1;
 }
 
+.lobby-ready-panel {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.lobby-ready-panel .lobby-ready-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lobby-ready-count {
+  color: #ccc;
+  font-size: 0.95rem;
+  margin: 12px 0 0;
+}
+
+.lobby-ready-hint {
+  color: #888;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin: 6px 0 0;
+}
+
 .player-actions {
   background: #1e1e1e;
   border: 2px solid #333;

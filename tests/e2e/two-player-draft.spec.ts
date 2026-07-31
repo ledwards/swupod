@@ -125,7 +125,14 @@ test.describe('2-player draft', () => {
 
     // === STEP 3: Start draft (two-stage: Ready → leader preview → Start Draft) ===
     console.log('\n--- STEP 3: Starting draft ---')
-    const readyButton = pages[0].locator('button:has-text("Ready")')
+    // Both human seats press Ready (migration 079) before packs can be dealt.
+    for (const readyPage of pages) {
+      const playerReady = readyPage.locator('.lobby-ready-button')
+      await expect(playerReady).toBeEnabled({ timeout: 10000 })
+      await playerReady.click()
+    }
+
+    const readyButton = pages[0].locator('button:has-text("Deal Packs")')
     await expect(readyButton).toBeEnabled({ timeout: 10000 })
     await readyButton.click()
 

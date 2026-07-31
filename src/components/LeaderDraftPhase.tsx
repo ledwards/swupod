@@ -255,6 +255,7 @@ function LeaderDraftPhase({
             onUpdateTimerSettings={onUpdateTimerSettings}
             draftState={draftState}
             onTimerExpire={onTimerExpire}
+            cues={true}
             cardsRemaining={leaders.length}
           />
 

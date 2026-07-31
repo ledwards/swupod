@@ -16,6 +16,8 @@ interface Player {
   username?: string
   avatarUrl?: string
   pickStatus?: string
+  /** Lobby handshake (migration 079). Bots arrive already true. */
+  lobbyReady?: boolean
 }
 
 export interface PlayerSeatProps {
@@ -24,6 +26,8 @@ export interface PlayerSeatProps {
   isCurrentUser?: boolean
   isEmpty?: boolean
   showStatus?: boolean
+  /** Lobby only: draw who has pressed Ready, using the same check + status line. */
+  showLobbyReady?: boolean
   statusColor?: string | null
   isPatron?: boolean
   isHost?: boolean
@@ -37,6 +41,7 @@ function PlayerSeat({
   isCurrentUser,
   isEmpty,
   showStatus = false,
+  showLobbyReady = false,
   statusColor = null,
   isPatron = false,
   isHost = false,
@@ -68,8 +73,14 @@ function PlayerSeat({
     return 'Picking...'
   }
 
+  // Lobby readiness reuses the in-draft "done" treatment (green ring + check +
+  // status line) rather than inventing a second visual language for "ready".
+  const lobbyReady = player?.lobbyReady === true
+
   // Use passed statusColor or derive from player status
-  const borderColor = statusColor || (player?.pickStatus ? getStatusColor(player.pickStatus) : undefined)
+  const borderColor = statusColor
+    || (showLobbyReady && lobbyReady ? '#4CAF50' : undefined)
+    || (player?.pickStatus ? getStatusColor(player.pickStatus) : undefined)
 
   if (isEmpty) {
     return (
@@ -118,7 +129,7 @@ function PlayerSeat({
           size={44}
           fallback={player?.username?.[0]?.toUpperCase() || '?'}
         />
-        {showStatus && player?.pickStatus === 'picked' && (
+        {((showStatus && player?.pickStatus === 'picked') || (showLobbyReady && lobbyReady)) && (
           <div className="status-check">✓</div>
         )}
       </div>
@@ -136,6 +147,14 @@ function PlayerSeat({
           style={{ color: getStatusColor(player?.pickStatus) }}
         >
           {getStatusLabel(player?.pickStatus)}
+        </div>
+      )}
+      {showLobbyReady && !showStatus && (
+        <div
+          className="seat-status"
+          style={{ color: lobbyReady ? '#4CAF50' : '#9E9E9E' }}
+        >
+          {lobbyReady ? 'Ready' : 'Not Ready'}
         </div>
       )}
       <div className="seat-name">

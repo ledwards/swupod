@@ -27,6 +27,8 @@ interface Player {
   draftedLeaders?: Leader[]
   leaderPack?: Leader[]
   activeLeaderName?: string | null
+  /** Lobby handshake (migration 079). Bots arrive already true. */
+  lobbyReady?: boolean
   chosenBase?: { name: string; aspects?: string[]; imageUrl?: string; backImageUrl?: string } | null
 }
 
@@ -51,6 +53,8 @@ export interface PlayerCircleProps {
   maxPlayers?: number
   currentUserId?: string
   showStatus?: boolean
+  /** Lobby only: draw who has pressed Ready around the table. */
+  showLobbyReady?: boolean
   draft?: Draft
   hideEmptySeats?: boolean
   showLeaderInfo?: boolean | 'simple'
@@ -65,7 +69,7 @@ export interface PlayerCircleProps {
  * Current user is always at the bottom (6 o'clock)
  * Other players arranged clockwise from bottom-left
  */
-function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = false, draft, hideEmptySeats = false, showLeaderInfo = false, passDirection = null, leaderRound = 1, hostId, onRemovePlayer }: PlayerCircleProps) {
+function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = false, showLobbyReady = false, draft, hideEmptySeats = false, showLeaderInfo = false, passDirection = null, leaderRound = 1, hostId, onRemovePlayer }: PlayerCircleProps) {
   const { isPatron } = useAuth()
   const [hoveredLeaderPreview, setHoveredLeaderPreview] = useState<Leader | null>(null)
   const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -539,6 +543,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
                 isCurrentUser={seat.isCurrentUser}
                 isEmpty={!seat.player}
                 showStatus={showStatus}
+                showLobbyReady={showLobbyReady}
                 isPatron={seat.isCurrentUser && isPatron}
                 isHost={!!hostId && seat.player?.id === hostId}
                 isHostViewing={!!onRemovePlayer}

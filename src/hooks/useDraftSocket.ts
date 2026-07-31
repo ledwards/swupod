@@ -220,6 +220,9 @@ export function useDraftSocket(
           currentRound: data.currentRound,
           deckBuildDeadline: data.deckBuildDeadline,
           decksUnlocked: data.decksUnlocked,
+          // Without this the merge keeps the stale REST `settings` and a
+          // mid-lobby voice pack change never reaches the table.
+          voicePackId: data.voicePackId ?? null,
           rounds: data.rounds,
           serverTimeOffsetMs: prev.serverTimeOffsetMs ?? estimateServerTimeOffsetMs(data.serverNow),
         } : null)

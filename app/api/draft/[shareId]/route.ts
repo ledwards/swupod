@@ -148,6 +148,11 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       baseImageUrl: deckIdentity.baseImageUrl,
       poolCardCount: Array.isArray(poolCards) ? poolCards.length : null,
       isReady: p.is_ready === true,
+      // Lobby handshake (migration 079) — distinct from `isReady` above, which
+      // means "deck locked". Bots are ready by definition. Mirrors what
+      // broadcastDraftState emits so an initial page load and a socket update
+      // agree about who has readied.
+      lobbyReady: p.is_bot === true || p.lobby_ready === true,
     }
   })
 

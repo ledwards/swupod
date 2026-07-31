@@ -39,6 +39,7 @@ interface Pod {
   competitive: boolean
   deck_lock_at: string | null
   decks_unlocked: boolean
+  settings: string | Record<string, unknown> | null
 }
 
 interface DraftPlayer {
@@ -58,6 +59,7 @@ interface DraftPlayer {
   deck_builder_state: string | Record<string, unknown> | null
   pool_cards: string | unknown[] | null
   is_ready: boolean
+  lobby_ready: boolean
 }
 
 interface PublicLeader {
@@ -91,6 +93,7 @@ interface PublicPlayer {
   baseImageUrl: string | null
   poolCardCount: number | null
   isReady: boolean
+  lobbyReady: boolean
 }
 
 interface BroadcastState {
@@ -109,6 +112,12 @@ interface BroadcastState {
   pausedAt: string | null
   pausedDurationSeconds: number
   competitive: boolean
+  /**
+   * Voice pack the host chose for this pod, or null for the default pack.
+   * Broadcast so a mid-lobby change reaches every seat — the REST payload's
+   * `settings` is only read on initial load.
+   */
+  voicePackId: string | null
   matchmakingStatus?: string
   currentRound?: number
   deckBuildDeadline?: string | null
@@ -134,7 +143,7 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
               dp.host_id, dp.timed, dp.timer_enabled, dp.timer_seconds, dp.pick_timeout_seconds,
               dp.started_at, dp.completed_at, dp.pick_started_at,
               dp.paused, dp.paused_at, dp.paused_duration_seconds, dp.competitive,
-              dp.deck_lock_at, dp.decks_unlocked
+              dp.deck_lock_at, dp.decks_unlocked, dp.settings
        FROM pods dp WHERE dp.share_id = $1`,
       [shareId]
     ) as Pod | null
@@ -150,6 +159,7 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
     const players = await queryRows(
       `SELECT dpp.id, dpp.user_id, dpp.seat_number, dpp.pick_status, dpp.is_bot,
               dpp.dropped, dpp.leaders, dpp.drafted_leaders, dpp.drafted_cards, dpp.current_pack,
+              dpp.lobby_ready,
               u.username, u.avatar_url,
               cp.share_id AS pool_share_id, cp.deck_builder_state, cp.cards AS pool_cards,
               CASE WHEN bd.id IS NOT NULL THEN true ELSE false END as is_ready
@@ -208,6 +218,9 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
         baseImageUrl: deckIdentity.baseImageUrl,
         poolCardCount: Array.isArray(poolCards) ? poolCards.length : null,
         isReady: p.is_ready === true,
+        // Lobby handshake (migration 079) — distinct from `isReady` above,
+        // which means "deck locked". Bots are ready by definition.
+        lobbyReady: p.is_bot === true || p.lobby_ready === true,
       }
     })
 
@@ -228,6 +241,9 @@ export async function broadcastDraftState(shareId: string): Promise<void> {
       pausedAt: pod.paused_at,
       pausedDurationSeconds: pod.paused_duration_seconds || 0,
       competitive: pod.competitive === true,
+      voicePackId: (jsonParse<Record<string, unknown>>(pod.settings, {}) as {
+        voicePackId?: string | null
+      })?.voicePackId ?? null,
       decksUnlocked: pod.decks_unlocked === true,
       serverNow: new Date().toISOString(),
     }

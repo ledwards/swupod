@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
 import { useDraftSocket } from '../../../src/hooks/useDraftSocket'
 import { usePresence } from '../../../src/hooks/usePresence'
-import { joinDraft, leaveDraft, startDraft, beginPicking, randomizeSeats, randomizePacks, makePick, selectCard, updateSettings, togglePause, dropFromDraft } from '../../../src/utils/draftApi'
+import { joinDraft, leaveDraft, startDraft, beginPicking, randomizeSeats, randomizePacks, makePick, selectCard, updateSettings, togglePause, dropFromDraft, setLobbyReady } from '../../../src/utils/draftApi'
+import useVoicePackAudio from '../../../src/hooks/useVoicePackAudio'
 import { formatPoolLabel } from '../../../src/utils/poolDisplayName'
 import DraftLobby from '../../../src/components/DraftLobby'
 import LeaderPreviewPhase from '../../../src/components/LeaderPreviewPhase'
@@ -28,6 +29,22 @@ import { usePresenceActivity } from '../../../src/hooks/usePresenceActivity'
 interface PageProps {
   params: Promise<{ shareId: string }>
 }
+
+const SpeakerOnIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+  </svg>
+)
+
+const SpeakerOffIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+    <line x1="23" y1="9" x2="17" y2="15"></line>
+    <line x1="17" y1="9" x2="23" y2="15"></line>
+  </svg>
+)
 
 const InfoIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ verticalAlign: 'middle' }}>
@@ -62,6 +79,7 @@ export default function DraftRoomPage({ params }: PageProps) {
   const [removeConfirmPlayer, setRemoveConfirmPlayer] = useState<{ id: string, username: string } | null>(null)
   const [isRemoving, setIsRemoving] = useState(false)
   const [showRulesModal, setShowRulesModal] = useState(false)
+  const [togglingReady, setTogglingReady] = useState(false)
   const [nowTick, setNowTick] = useState(() => Date.now())
 
   // Get shareId from params
@@ -156,6 +174,39 @@ export default function DraftRoomPage({ params }: PageProps) {
     new Date(draftState.reviewUntil).getTime() > nowTick + (draft?.serverTimeOffsetMs || 0)
   )
 
+  // --- Voice cues -------------------------------------------------------
+  // The pack is whatever the pod selected; the field may be absent (creator
+  // voice packs ship separately) and that just means the built-in pack.
+  const voicePackId = draft?.voicePackId ?? draft?.settings?.voicePackId ?? null
+  const { play: playCue, prime: primeCues, muted: cuesMuted, toggleMuted: toggleCuesMuted } = useVoicePackAudio(voicePackId)
+
+  // Clicking the speaker is a user gesture too — use it to unlock audio for
+  // anyone who never pressed Ready (spectators, late joiners). Priming while
+  // muted is silent: every clip is played muted and immediately paused.
+  const handleToggleCues = () => {
+    primeCues()
+    toggleCuesMuted()
+  }
+
+  // Phase transitions are announced from the socket broadcast, so every client
+  // hears them at the same moment (rather than only whoever clicked).
+  const phaseKey = status === 'waiting' ? 'lobby' : (draftState?.phase ?? null)
+  const previousPhaseRef = useRef<string | null | undefined>(undefined)
+  useEffect(() => {
+    if (loading || !draft) return
+    const previous = previousPhaseRef.current
+    previousPhaseRef.current = phaseKey
+    // First settled render: adopt the phase silently. Opening a page that is
+    // already in the leader preview must not announce a deal that happened
+    // before you arrived.
+    if (previous === undefined || previous === phaseKey) return
+    if (phaseKey === 'leader_preview') {
+      playCue('ready-the-draft')
+    } else if (previous === 'leader_preview' && phaseKey === 'leader_draft') {
+      playCue('start-the-draft')
+    }
+  }, [phaseKey, loading, draft, playCue])
+
   // Detect when current user is kicked (was a player, now isn't, still in waiting)
   const wasPlayerRef = useRef(false)
   useEffect(() => {
@@ -226,6 +277,26 @@ export default function DraftRoomPage({ params }: PageProps) {
       router.push('/draft')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
+    }
+  }
+
+  // The Ready click is also the user gesture that unlocks audio in this
+  // browser: primeCues() plays every clip muted and pauses it, so the later
+  // programmatic .play() calls (phase cues, countdowns) are allowed. It MUST
+  // run synchronously inside the click handler — after an await the gesture is
+  // spent and the browser blocks playback for the rest of the draft.
+  const handleToggleReady = async () => {
+    if (togglingReady) return
+    primeCues()
+    setTogglingReady(true)
+    setError(null)
+    try {
+      await setLobbyReady(shareId)
+      // WebSocket broadcast will update state
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error')
+    } finally {
+      setTogglingReady(false)
     }
   }
 
@@ -526,6 +597,8 @@ export default function DraftRoomPage({ params }: PageProps) {
           onAddBot={handleAddBot}
           onSettingsChange={handleSettingsChange}
           onLeave={handleLeave}
+          onToggleReady={handleToggleReady}
+          togglingReady={togglingReady}
           onRemovePlayer={isHost ? handleRemovePlayer : undefined}
           onSwitchToSolo={handleSwitchToSolo}
           startingDraft={startingDraft}
@@ -630,6 +703,23 @@ export default function DraftRoomPage({ params }: PageProps) {
           <div className="sealed-pod-content">
             <div className="draft-room">
               <div className="draft-header">
+                {/* Voice-cue mute. Lives in the page header on purpose: it has
+                    to be reachable in the lobby AND every draft phase, by
+                    players as well as the host — TimerPanel's host controls are
+                    hidden for competitive pods, which is exactly where the cues
+                    matter most. */}
+                <div className="draft-header-actions">
+                  <Button
+                    variant="icon"
+                    size="sm"
+                    onClick={handleToggleCues}
+                    title={cuesMuted ? 'Unmute draft voice calls' : 'Mute draft voice calls'}
+                    aria-label={cuesMuted ? 'Unmute draft voice calls' : 'Mute draft voice calls'}
+                    aria-pressed={cuesMuted}
+                  >
+                    {cuesMuted ? <SpeakerOffIcon /> : <SpeakerOnIcon />}
+                  </Button>
+                </div>
                   <div className="draft-header-center">
                   <div className="draft-title-row">
                     <h1>

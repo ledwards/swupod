@@ -18,9 +18,16 @@ const CopyIcon = () => (
   </svg>
 )
 
+const CheckIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12"></polyline>
+  </svg>
+)
+
 interface Player {
   id: string
   isBot?: boolean
+  lobbyReady?: boolean
   [key: string]: unknown
 }
 
@@ -43,9 +50,11 @@ interface DraftLobbyProps {
   onAddBot: () => void
   onSettingsChange: (settings: unknown) => void
   onLeave: () => void
+  onToggleReady: () => void
   onRemovePlayer?: (userId: string) => void
   onSwitchToSolo?: () => void
   startingDraft: boolean
+  togglingReady?: boolean
   randomizing: boolean
   randomizingPacks?: boolean
   addingBot: boolean
@@ -65,9 +74,11 @@ function DraftLobby({
   onAddBot,
   onSettingsChange,
   onLeave,
+  onToggleReady,
   onRemovePlayer,
   onSwitchToSolo,
   startingDraft,
+  togglingReady,
   randomizing,
   randomizingPacks,
   addingBot,
@@ -78,6 +89,15 @@ function DraftLobby({
   const maxPlayers = draft?.maxPlayers || 8
   const isFull = players.length >= maxPlayers
   const [copied, setCopied] = useState(false)
+
+  // Lobby readiness. Bots arrive ready (the server marks them so), which keeps
+  // solo/bot pods a single click for the host. `players[].id` is the seat id,
+  // which is what `draft.myPlayer.id` holds.
+  const humanPlayers = players.filter(p => !p.isBot)
+  const readyHumans = humanPlayers.filter(p => p.lobbyReady === true)
+  const allHumansReady = readyHumans.length === humanPlayers.length
+  const myLobbyPlayer = players.find(p => p.id === draft?.myPlayer?.id)
+  const iAmReady = myLobbyPlayer?.lobbyReady === true
 
   const handleCopyShareUrl = async () => {
     const url = `${window.location.origin}/draft/${shareId}`
@@ -114,6 +134,7 @@ function DraftLobby({
             enableTooltip={false}
             hostId={draft?.host?.id}
             hideEmptySeats={false}
+            showLobbyReady={true}
             onRemovePlayer={onRemovePlayer}
           />
           <p className="player-count">
@@ -131,6 +152,28 @@ function DraftLobby({
         </div>
 
         <div className="controls-section">
+          {isPlayer && (
+            <div className="lobby-ready-panel">
+              <Button
+                variant={iAmReady ? 'toggle' : 'primary'}
+                active={iAmReady}
+                glowColor={iAmReady ? 'blue' : null}
+                className="lobby-ready-button"
+                onClick={onToggleReady}
+                disabled={togglingReady}
+              >
+                <CheckIcon />
+                <span>{iAmReady ? "You're Ready" : "I'm Ready"}</span>
+              </Button>
+              <p className="lobby-ready-count">
+                {readyHumans.length} / {humanPlayers.length} players ready
+              </p>
+              <p className="lobby-ready-hint">
+                Ready also turns on the draft's voice calls in this browser.
+              </p>
+            </div>
+          )}
+
           {isHost && (
             <HostControls
               draft={draft}
@@ -146,6 +189,7 @@ function DraftLobby({
               randomizingPacks={randomizingPacks}
               addingBot={addingBot}
               isFull={isFull}
+              allHumansReady={allHumansReady}
               shareId={shareId}
               onSwitchToSolo={onSwitchToSolo}
               isAdmin={isAdmin}

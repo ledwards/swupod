@@ -136,7 +136,14 @@ test.describe('Drop from Draft', () => {
 
     // === STEP 3: Organizer starts draft (two-stage: Ready → preview → Start Draft) ===
     console.log('\n--- STEP 3: Organizer starts draft ---')
-    const readyButton = organizerPage.locator('button:has-text("Ready")')
+    // Both human seats press Ready (migration 079) before packs can be dealt.
+    for (const readyPage of [organizerPage, playerPage]) {
+      const playerReady = readyPage.locator('.lobby-ready-button')
+      await expect(playerReady).toBeEnabled({ timeout: 10000 })
+      await playerReady.click()
+    }
+
+    const readyButton = organizerPage.locator('button:has-text("Deal Packs")')
     await expect(readyButton).toBeEnabled({ timeout: 10000 })
     await readyButton.click()
 

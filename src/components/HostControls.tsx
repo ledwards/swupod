@@ -5,6 +5,7 @@ import { useState } from 'react'
 import type { ChangeEvent, MouseEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import Button from './Button'
+import VoicePackPicker from './VoicePackPicker'
 import './HostControls.css'
 
 const CopyIcon = () => (
@@ -98,6 +99,12 @@ export interface HostControlsProps {
   randomizingPacks?: boolean
   addingBot?: boolean
   isFull?: boolean
+  /**
+   * Every HUMAN seat has pressed Ready in the lobby (bots are always ready).
+   * Gates the deal button — see migration 079. Defaults to true so callers that
+   * have no ready flow are unaffected.
+   */
+  allHumansReady?: boolean
   shareId?: string
   showCancelButton?: boolean
   onSwitchToSolo?: () => void
@@ -118,6 +125,7 @@ function HostControls({
   randomizingPacks,
   addingBot,
   isFull,
+  allHumansReady = true,
   shareId,
   showCancelButton = true,
   onSwitchToSolo,
@@ -162,7 +170,11 @@ function HostControls({
   // Solo mode (entered from Solo button) allows 1 human + bots; pod mode needs 2+ humans.
   // Admins bypass the 2-human requirement for testing/facilitation.
   const isSoloDraft = draft?.settings?.isSolo === true
-  const canStart = playerCount >= 2 && (humanPlayerCount >= 2 || isSoloDraft || isAdmin)
+  const hasEnoughPlayers = playerCount >= 2 && (humanPlayerCount >= 2 || isSoloDraft || isAdmin)
+  // Dealing is also gated on the lobby handshake: every human must press Ready,
+  // which is the click that unlocks voice cues in their browser.
+  const canStart = hasEnoughPlayers && allHumansReady
+  const waitingOnReady = hasEnoughPlayers && !allHumansReady
   const needsMoreHumans = playerCount >= 2 && humanPlayerCount < 2 && !isSoloDraft && !isAdmin
   const adminOverrideActive = isAdmin && playerCount >= 2 && humanPlayerCount < 2 && !isSoloDraft
   const canAddBot = playerCount < (draft?.maxPlayers || 8)
@@ -345,6 +357,10 @@ function HostControls({
         </div>
       </div>
 
+      {/* Renders nothing unless the host owns an unlocked pack. Whatever they
+          pick plays for everyone at the table, not just for them. */}
+      {shareId && <VoicePackPicker shareId={shareId} isHost={true} />}
+
       <div className="controls-section">
         {/* Row 1: Randomize Seats + Shuffle Packs */}
         <div className="controls-row secondary-controls">
@@ -488,13 +504,20 @@ function HostControls({
           </div>
         )}
 
-        {isFull && (
+        {waitingOnReady && (
+          <div className="min-players-note">
+            <p>Waiting for every player to press Ready.</p>
+          </div>
+        )}
+
+        {isFull && !waitingOnReady && (
           <p className="ready-to-start">Ready to Start</p>
         )}
 
         <div className="controls-row cancel-controls">
-          {/* "Ready" deals packs and reveals leaders (leader preview) —
-              the host then starts picking with "Start Draft" during the preview. */}
+          {/* "Deal Packs" deals packs and reveals leaders (leader preview) —
+              the host then starts picking with "Start Draft" during the preview.
+              Enabled only once every human seat has pressed Ready. */}
           <Button
             variant="primary"
             className="control-button"
@@ -502,7 +525,7 @@ function HostControls({
             disabled={startingDraft || !canStart}
           >
             <PlayIcon />
-            <span>{startingDraft ? 'Dealing...' : 'Ready'}</span>
+            <span>{startingDraft ? 'Dealing...' : 'Deal Packs'}</span>
           </Button>
 
           {showCancelButton && (

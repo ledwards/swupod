@@ -183,6 +183,25 @@ export async function beginPicking(shareId: string): Promise<StartResult> {
 }
 
 /**
+ * Set the calling player's lobby readiness. The host's Deal Packs button is
+ * gated on every human seat being ready.
+ * @param shareId - Share ID of the draft
+ * @param ready - Desired readiness (omit to toggle)
+ * @returns The stored readiness
+ */
+export async function setLobbyReady(shareId: string, ready?: boolean): Promise<{ ready: boolean }> {
+  try {
+    return await httpClient.post<{ ready: boolean }>(
+      `/draft/${shareId}/ready`,
+      ready === undefined ? {} : { ready }
+    )
+  } catch (error) {
+    console.error('Failed to set ready:', error)
+    throw error
+  }
+}
+
+/**
  * Randomize seat assignments (host only)
  * @param shareId - Share ID of the draft
  * @returns Randomize result

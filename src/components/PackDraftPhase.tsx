@@ -574,6 +574,7 @@ function PackDraftPhase({
             onUpdateTimerSettings={onUpdateTimerSettings}
             draftState={draftState}
             onTimerExpire={onTimerExpire}
+            cues={true}
             cardsRemaining={currentPack.length}
           />
 

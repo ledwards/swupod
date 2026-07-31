@@ -125,7 +125,13 @@ test.describe('Draft with bots', () => {
       const playerCountText = await page.locator('.player-count').textContent()
       debugLog(`  Player count: ${playerCountText}`)
 
-      const readyButton = page.locator('button:has-text("Ready")')
+      // The host is a human seat too, so they Ready up first (bots are always
+      // ready), then deal packs.
+      const playerReady = page.locator('.lobby-ready-button')
+      await expect(playerReady).toBeEnabled({ timeout: 10000 })
+      await playerReady.click()
+
+      const readyButton = page.locator('button:has-text("Deal Packs")')
       await expect(readyButton).toBeEnabled({ timeout: 10000 })
       await readyButton.click()
     } else {
