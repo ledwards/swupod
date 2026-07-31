@@ -142,7 +142,7 @@
   grid-template-columns: 1fr 1fr 1fr;
   align-items: stretch;
   height: 46px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.5) 65%, transparent);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.5) 65%, transparent); /* design-ok: legibility scrim over photographic pack art, not a decorative resting fill — a flat fill either hides the art or leaves a hard edge */
   z-index: 10;
 }
 
