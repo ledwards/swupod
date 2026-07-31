@@ -58,6 +58,14 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       ? JSON.parse(pod.draft_state)
       : pod.draft_state
 
+    // Leader preview is look-only — picking opens when the draft starts.
+    // Mirrors the guard in select/route.ts. Without it a pick landing in this
+    // phase matches neither branch below and returns 'Pick successful' having
+    // done nothing at all.
+    if (draftState.phase === 'leader_preview') {
+      return errorResponse("Draft hasn't started yet", 400)
+    }
+
     type PickCard = {
       id?: string; instanceId?: string; name?: string; set?: string; rarity?: string
       type?: string; variantType?: string; pickNumber?: number; leaderRound?: number

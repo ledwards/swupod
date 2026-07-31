@@ -156,6 +156,11 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
     // Update draft state — 'leader_preview' is the look-around-the-table phase:
     // leaders are revealed to everyone, but picking and timers don't start
     // until the host hits Start Draft (POST /begin-picking → 'leader_draft').
+    //
+    // previewStartedAt marks when the preview began. Only the host can start
+    // picking, so nothing advances a pod out of this phase on its own — this
+    // timestamp is what lets sweepStalledLeaderPreviews CANCEL a pod that has
+    // sat here for 24 hours because the host never came back.
     const draftState = {
       phase: 'leader_preview',
       leaderRound: 1,
@@ -163,6 +168,7 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       packNumber: 0, // Will be 1 when leader draft completes
       pickInPack: 0,
       timerStartedAt: null,
+      previewStartedAt: new Date().toISOString(),
     }
 
     // Store all packs in pod (for later rounds). all_leader_packs snapshots the

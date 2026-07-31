@@ -2,13 +2,17 @@
 // preview (host only). The lobby "Ready" (POST /start) deals packs and reveals
 // leaders in the 'leader_preview' phase with no timers; this route flips the
 // draft to 'leader_draft', starts the pick timer, and lets everyone pick.
-import { query, queryRow } from '@/lib/db'
+import { queryRow } from '@/lib/db'
 import { requireAuth } from '@/lib/auth'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
-import { processBotTurns } from '@/src/utils/botLogic'
-import { broadcastDraftState } from '@/src/lib/socketBroadcast'
+import { beginPickingTransition } from '@/src/utils/draftPreview'
 import { jsonParse } from '@/src/utils/json'
 import { NextRequest } from 'next/server'
+
+// The transition itself lives in src/utils/draftPreview so the host's button
+// and the preview-deadline sweep run exactly the same code path. Re-exported
+// because it is part of this route's tested surface.
+export { buildBeginPickingDraftState } from '@/src/utils/draftPreview'
 
 interface RouteContext {
   params: Promise<{ shareId: string }>
@@ -46,16 +50,6 @@ export function validateBeginPicking(
   return { ok: true, draftState }
 }
 
-/**
- * Build the next draft_state for the transition, preserving every other key
- * (leaderRound, totalPacks, packNumber, ...). Exported for unit tests.
- */
-export function buildBeginPickingDraftState(
-  draftState: Record<string, unknown>
-): Record<string, unknown> {
-  return { ...draftState, phase: 'leader_draft' }
-}
-
 export async function POST(request: NextRequest, { params }: RouteContext): Promise<Response> {
   try {
     const { shareId } = await params
@@ -77,37 +71,15 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       return errorResponse(validation.message, validation.status)
     }
 
-    const podId = pod.id as string
-    const nextDraftState = buildBeginPickingDraftState(validation.draftState)
-
-    // Open picking for everyone (bots included — processBotTurns picks for them)
-    await query(
-      `UPDATE pod_players SET pick_status = 'picking' WHERE pod_id = $1`,
-      [podId]
-    )
-
-    // Flip phase and start the pick timer. Bumping state_version is CRITICAL:
-    // useDraftSocket only re-fetches private data (leaders/currentPack) when
-    // stateVersion increases.
-    await query(
-      `UPDATE pods
-       SET draft_state = $1,
-           pick_started_at = NOW(),
-           paused_duration_seconds = 0,
-           state_version = state_version + 1
-       WHERE id = $2`,
-      [JSON.stringify(nextDraftState), podId]
-    )
-
-    // Trigger bot picks in the background
-    processBotTurns(podId).catch(err => {
-      console.error('Error processing bot turns after begin-picking:', err)
-    })
-
-    // Broadcast the phase change to all connected clients
-    broadcastDraftState(shareId).catch(err => {
-      console.error('Error broadcasting draft state:', err)
-    })
+    // Atomic + idempotent: the validation above ran against a snapshot read, so
+    // a second call (host with two tabs, or the deadline sweep firing at the
+    // same moment) can get this far too. Only one of them transitions; the
+    // loser must do nothing rather than re-stamp the timer and reset seats the
+    // winner's bots have already moved on.
+    const transitioned = await beginPickingTransition(pod.id as string, shareId)
+    if (!transitioned) {
+      return errorResponse('Draft is not in the leader preview phase', 409)
+    }
 
     return jsonResponse({
       message: 'Picking started',

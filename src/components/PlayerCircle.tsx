@@ -22,7 +22,7 @@ interface Player {
   id: string
   seatNumber: number
   username?: string
-  pickStatus?: 'picked' | 'selected' | 'picking' | 'timeout'
+  pickStatus?: 'waiting' | 'picked' | 'selected' | 'picking' | 'timeout'
   currentPackSize?: number
   draftedLeaders?: Leader[]
   leaderPack?: Leader[]
@@ -195,8 +195,22 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
       case 'picked': return '#4CAF50'
       case 'selected': return '#4CAF50'  // Green - player has made their choice
       case 'picking': return '#FFC107'
+      case 'waiting': return '#9E9E9E'   // Neutral - picking hasn't opened yet
       case 'timeout': return '#F44336'
       default: return '#666'
+    }
+  }
+
+  // 'waiting' is the leader preview: packs are dealt and leaders are revealed,
+  // but nobody can pick until the host starts the draft. Labelling those seats
+  // "Picking..." made players click leaders that do nothing and conclude the
+  // app was broken.
+  const getStatusLabel = (status?: string) => {
+    switch (status) {
+      case 'picked':
+      case 'selected': return 'Done'
+      case 'waiting': return 'Ready'
+      default: return 'Picking...'
     }
   }
 
@@ -275,7 +289,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
             className="leader-info-status"
             style={{ color: getStatusColor(player.pickStatus) }}
           >
-            {player.pickStatus === 'picked' || player.pickStatus === 'selected' ? 'Done' : 'Picking...'}
+            {getStatusLabel(player.pickStatus)}
           </div>
         )}
       </div>
@@ -356,7 +370,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
           className="leader-info-status"
           style={{ color: getStatusColor(player.pickStatus) }}
         >
-          {player.pickStatus === 'picked' || player.pickStatus === 'selected' ? 'Done' : 'Picking...'}
+          {getStatusLabel(player.pickStatus)}
         </div>
       </div>
     )
