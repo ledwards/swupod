@@ -27,6 +27,7 @@ import SubscribePodBanner from '../../../../src/components/SubscribePodBanner'
 import '../../../../src/App.css'
 import './pod.css'
 import '../../../../src/components/ChatPanel.css'
+import { usePresenceActivity } from '../../../../src/hooks/usePresenceActivity'
 
 const CrownIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="#FFD700" stroke="none">
@@ -51,6 +52,7 @@ export default function PodPage({ params }: PageProps) {
   const router = useRouter()
   const { user } = useAuth()
   const { podData, loading, error } = usePodSocket(shareId)
+  usePresenceActivity('drafting')
   const [viewingDeckImage, setViewingDeckImage] = useState<string | null>(null)
   const [generatingForPlayer, setGeneratingForPlayer] = useState<string | null>(null)
   const [myPool, setMyPool] = useState(null)

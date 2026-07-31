@@ -439,7 +439,7 @@ export async function broadcastOpenGamesUpdate(): Promise<void> {
 
   try {
     const { listPublicOpenGames } = await import('@/src/services/openGames')
-    const { listings, recentCompleted } = await listPublicOpenGames()
+    const { listings, recentCompleted, gamesToday } = await listPublicOpenGames()
     const presence = global.presenceMap
     io.to('open-games').emit('open-games-update', {
       listings: listings.map(({ hostId, hostDeck, ...listing }) => ({
@@ -447,6 +447,7 @@ export async function broadcastOpenGamesUpdate(): Promise<void> {
         hostConnected: presence ? presence.has(hostId as string) : true,
       })),
       recentCompleted,
+      gamesToday,
       timestamp: Date.now(),
     })
   } catch (err) {

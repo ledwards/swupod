@@ -43,13 +43,73 @@ export interface SocketServerDeps {
   onPresenceChange?: (userId: string, online: boolean) => void
 }
 
+/**
+ * What an online player is doing, declared by the page they have open
+ * (usePresenceActivity). Anyone who declares nothing is browsing — reading
+ * stats, sitting on the lobby, or holding a tab open.
+ *
+ * Declared rather than inferred from room membership: the deck builder joins
+ * the draft room of the pod its pool came from, so rooms reported builders as
+ * drafters, and the room that would have distinguished them (pool-builds)
+ * does not reliably connect.
+ */
+export type PresenceActivity = 'drafting' | 'building'
+
+const PRESENCE_ACTIVITIES: readonly PresenceActivity[] = ['drafting', 'building']
+
+/** The lobby's live strip: a total is useless without what it's made of. */
+export interface PresenceBreakdown {
+  count: number
+  drafting: number
+  building: number
+  browsing: number
+}
+
+/**
+ * One socket's declared activity, carrying the userId because the socket that
+ * declares it is NOT the socket that registered presence — a page opens its
+ * own connection while the global toast listener holds the presence one.
+ */
+interface SocketActivity {
+  userId: string
+  activity: PresenceActivity
+}
+
 export interface SocketServerState {
   /** userId → live socket ids. Used by abandoned-pod cleanup to detect offline hosts. */
   presenceMap: Map<string, Set<string>>
+  /** socketId → its owner's activity. Absent sockets contribute nothing. */
+  activityMap: Map<string, SocketActivity>
   /** Pending host-delist timers (exposed for shutdown/tests). */
   delistTimers: Map<string, NodeJS.Timeout>
   /** Pending open-game listing delist timers (exposed for shutdown/tests). */
   openGamesDelistTimers: Map<string, NodeJS.Timeout>
+}
+
+/**
+ * Fold declared activities into one bucket per user. A player with several
+ * tabs counts once, under the most involved thing they have open — drafting
+ * in one tab with a builder in another is drafting. Only users who are
+ * actually online are counted, so the three buckets always sum to the total
+ * the strip shows beside them.
+ */
+export function summarizePresence(
+  presenceMap: Map<string, Set<string>>,
+  activityMap: Map<string, SocketActivity>
+): PresenceBreakdown {
+  const best = new Map<string, PresenceActivity>()
+  for (const { userId, activity } of activityMap.values()) {
+    if (!presenceMap.has(userId)) continue
+    if (activity === 'drafting' || !best.has(userId)) best.set(userId, activity)
+  }
+  let drafting = 0
+  let building = 0
+  for (const activity of best.values()) {
+    if (activity === 'drafting') drafting++
+    else building++
+  }
+  const count = presenceMap.size
+  return { count, drafting, building, browsing: count - drafting - building }
 }
 
 const DEFAULT_DELIST_DELAY_MS = 60_000 // 60 seconds
@@ -128,6 +188,10 @@ export function setupSocketServer(io: Server, deps: SocketServerDeps): SocketSer
   // In-memory presence tracking: userId → Set<socketId>
   const presenceMap = new Map<string, Set<string>>()
 
+  // socketId → its owner's activity, from the rooms the socket joins. Users
+  // with no entry anywhere are browsing.
+  const activityMap = new Map<string, SocketActivity>()
+
   // Delist timers: when a host disconnects, wait before hiding their public pods
   const delistTimers = new Map<string, NodeJS.Timeout>()
 
@@ -174,8 +238,28 @@ export function setupSocketServer(io: Server, deps: SocketServerDeps): SocketSer
   }
 
   function broadcastPresenceCount(): void {
-    const count = presenceMap.size
-    io.to('presence').emit('presence:count', { count })
+    io.to('presence').emit('presence:count', summarizePresence(presenceMap, activityMap))
+  }
+
+  /**
+   * Record what a socket is doing, against the session user that owns it.
+   * Anonymous sockets are ignored — they are not counted as online either, so
+   * crediting them would push a bucket past the total.
+   *
+   * A socket accumulates rooms rather than overwriting, so the order the
+   * page happens to emit its joins in cannot change the answer, and leaving
+   * one room cannot wipe another that is still held.
+   */
+  function setActivity(socket: Socket, activity: PresenceActivity | null): void {
+    const user = socketUser(socket)
+    if (!user) return
+    if (activity === null) {
+      if (activityMap.delete(socket.id)) broadcastPresenceCount()
+      return
+    }
+    if (activityMap.get(socket.id)?.activity === activity) return
+    activityMap.set(socket.id, { userId: user.id, activity })
+    broadcastPresenceCount()
   }
 
   // Authentication middleware: derive identity from the session cookie that
@@ -191,7 +275,7 @@ export function setupSocketServer(io: Server, deps: SocketServerDeps): SocketSer
     // Presence tracking - subscribe to count updates (no auth needed)
     socket.on('presence:subscribe', () => {
       socket.join('presence')
-      socket.emit('presence:count', { count: presenceMap.size })
+      socket.emit('presence:count', summarizePresence(presenceMap, activityMap))
     })
 
     // Presence tracking - join as a counted user. Identity comes from the
@@ -211,6 +295,21 @@ export function setupSocketServer(io: Server, deps: SocketServerDeps): SocketSer
       cancelOpenGamesDelistTimer(user.id)
       if (wasOffline) deps.onPresenceChange?.(user.id, true)
       broadcastPresenceCount()
+    })
+
+    // The draft/pod/rotisserie and sealed/pool-builds rooms double as the
+    // activity signal behind the lobby's live strip — joining one is what
+    // makes a player count as drafting or building rather than browsing.
+    // What this page is, for the lobby's live strip. Requires auth for the
+    // same reason presence:join does — an uncounted user must not be able to
+    // inflate a bucket past the total.
+    socket.on('presence:activity', (activity: unknown) => {
+      if (activity === null || activity === undefined) {
+        setActivity(socket, null)
+        return
+      }
+      if (!PRESENCE_ACTIVITIES.includes(activity as PresenceActivity)) return
+      setActivity(socket, activity as PresenceActivity)
     })
 
     socket.on('join-draft', (shareId: string) => {
@@ -349,6 +448,9 @@ export function setupSocketServer(io: Server, deps: SocketServerDeps): SocketSer
     })
 
     socket.on('disconnect', () => {
+      // Always drop the activity entry, counted user or not, so the map can't
+      // grow unbounded across anonymous connects.
+      activityMap.delete(socket.id)
       const user = socketUser(socket)
       if (user && presenceMap.has(user.id)) {
         const sockets = presenceMap.get(user.id)!
@@ -359,10 +461,10 @@ export function setupSocketServer(io: Server, deps: SocketServerDeps): SocketSer
           startOpenGamesDelistTimer(user.id)
           deps.onPresenceChange?.(user.id, false)
         }
-        broadcastPresenceCount()
       }
+      broadcastPresenceCount()
     })
   })
 
-  return { presenceMap, delistTimers, openGamesDelistTimers }
+  return { presenceMap, activityMap, delistTimers, openGamesDelistTimers }
 }

@@ -453,6 +453,9 @@ function hostDeckName(r: Record<string, unknown>): string | null {
 export async function listPublicOpenGames(): Promise<{
   listings: OpenGameListing[]
   recentCompleted: RecentResult[]
+  /** Games finished in the last 24h — the one live number that is rarely
+   *  zero, so a quiet minute still reads as an active site. */
+  gamesToday: number
 }> {
   const { queryRows } = await import('@/lib/db')
   const rows = await queryRows(
@@ -482,7 +485,12 @@ export async function listPublicOpenGames(): Promise<{
      ORDER BY og.completed_at DESC
      LIMIT 5`
   )
+  const todayRow = await queryRows(
+    `SELECT COUNT(*)::int AS n FROM open_games
+     WHERE status = 'complete' AND completed_at > NOW() - INTERVAL '24 hours'`
+  )
   return {
+    gamesToday: Number(todayRow[0]?.n) || 0,
     listings: rows.map(r => ({
       shareId: String(r.share_id),
       setCode: String(r.set_code),

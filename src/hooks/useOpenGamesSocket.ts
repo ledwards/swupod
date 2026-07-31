@@ -40,6 +40,8 @@ export interface OpenGamesBoard {
   status: 'loading' | 'ready' | 'error'
   listings: OpenGameListing[]
   recentCompleted: RecentResult[]
+  /** Games finished in the last 24h — the lobby strip's never-zero signal. */
+  gamesToday: number
   retry: () => void
 }
 
@@ -51,6 +53,7 @@ export function useOpenGamesSocket(): OpenGamesBoard {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [listings, setListings] = useState<OpenGameListing[]>([])
   const [recentCompleted, setRecentCompleted] = useState<RecentResult[]>([])
+  const [gamesToday, setGamesToday] = useState(0)
 
   const fetchBoard = useCallback(async () => {
     try {
@@ -60,6 +63,7 @@ export function useOpenGamesSocket(): OpenGamesBoard {
       const data = json.data || json
       setListings(data.listings || [])
       setRecentCompleted(data.recentCompleted || [])
+      setGamesToday(data.gamesToday || 0)
       setStatus('ready')
     } catch (err) {
       console.error('Failed to fetch open games:', err)
@@ -76,7 +80,7 @@ export function useOpenGamesSocket(): OpenGamesBoard {
       socket.on('connect', () => {
         socket?.emit('join-open-games')
       })
-      socket.on('open-games-update', (data: { listings: OpenGameListing[]; recentCompleted: RecentResult[] }) => {
+      socket.on('open-games-update', (data: { listings: OpenGameListing[]; recentCompleted: RecentResult[]; gamesToday?: number }) => {
         // Socket broadcasts are viewer-agnostic (no session): carry `mine`
         // forward from the initial fetch for listings we already know about.
         setListings(previous =>
@@ -90,6 +94,7 @@ export function useOpenGamesSocket(): OpenGamesBoard {
           })
         )
         setRecentCompleted(data.recentCompleted || [])
+        if (typeof data.gamesToday === 'number') setGamesToday(data.gamesToday)
         setStatus('ready')
       })
     } catch (err) {
@@ -109,5 +114,5 @@ export function useOpenGamesSocket(): OpenGamesBoard {
     fetchBoard()
   }, [fetchBoard])
 
-  return { status, listings, recentCompleted, retry }
+  return { status, listings, recentCompleted, gamesToday, retry }
 }

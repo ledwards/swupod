@@ -123,7 +123,7 @@ function LandingPage() {
       setWasRemoved(true)
     }
   }, [])
-  const playerCount = usePresence(user?.id)
+  const { count: playerCount } = usePresence(user?.id)
   const publicPods = usePublicPodsSocket()
   const [activeDraft, setActiveDraft] = useState<ActiveDraft | null>(null)
   const [activeSealedPod, setActiveSealedPod] = useState<ActiveSealedPod | null>(null)

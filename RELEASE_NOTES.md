@@ -2,6 +2,19 @@
 
 ## 07.30.2026
 
+### 🟢 The Lobby Tells You What Everyone's Doing
+
+**"21 players online" next to "0 open lobbies" reads like a room full of people who won't play with you. It never meant that.**
+
+The online count includes everyone with the site open — mid-draft, mid-build, or reading stats. Now the lobby says so: **N online — X drafting · Y building · Z browsing**, with a count of games finished in the last day. When nobody's queued up, you can see it's because they're busy, not because they passed on your game.
+
+### 🃏 Open Lobby Page Polish
+- **The lobby page sits on the site's proper background** instead of flat black.
+- **Deck Image works from the lobby.** It was producing grey boxes with card names instead of the cards.
+- **Your Deck stays put.** The deck pane no longer grows tall enough to scroll the whole page — it scrolls inside its own panel.
+- **Copy confirmations appear right under the buttons** that fired them, instead of in the corner of the screen.
+- The **Your Open Lobby** row in your profile menu no longer cuts off its own text or border.
+
 ### 🎴 8-Pack Sealed
 
 **Sealed now comes in two sizes: the classic 6-pack pool, or 8 packs for a deeper build.**

@@ -12,6 +12,7 @@ import { useAuth } from '../../../../src/contexts/AuthContext'
 import { useTrackPoolView } from '../../../../src/hooks/useTrackPoolView'
 import '../../../../src/App.css'
 import '../../../../src/components/ChatPanel.css'
+import { usePresenceActivity } from '../../../../src/hooks/usePresenceActivity'
 
 interface CardType {
   id?: string
@@ -306,6 +307,8 @@ export default function DeckBuilderPage({ params }: PageProps) {
       : 'solo'
 
   usePoolBuildsSocket(rootShareId)
+  // Deck builder — always building, even for a pool that came out of a pod.
+  usePresenceActivity('building')
 
   return (
     <div className={draftShareId ? 'page-with-chat' : ''}>

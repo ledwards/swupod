@@ -19,6 +19,7 @@ import '../../../src/App.css'
 import '../../draft/draft.css'
 import '../../draft/[shareId]/pod/pod.css'
 import '../../../src/components/ChatPanel.css'
+import { usePresenceActivity } from '../../../src/hooks/usePresenceActivity'
 
 interface PageProps {
   params: Promise<{ shareId: string }>
@@ -32,6 +33,7 @@ export default function SealedPodPage({ params }: PageProps) {
   const router = useRouter()
   const { user, isAuthenticated, loading: authLoading } = useAuth()
   usePresence(user?.id)
+  usePresenceActivity('building')
   const [shareId, setShareId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [starting, setStarting] = useState(false)

@@ -23,6 +23,7 @@ import '../../../src/App.css'
 import '../draft.css'
 import '../../../src/components/SealedPod.css'
 import '../../../src/components/ChatPanel.css'
+import { usePresenceActivity } from '../../../src/hooks/usePresenceActivity'
 
 interface PageProps {
   params: Promise<{ shareId: string }>
@@ -41,6 +42,7 @@ export default function DraftRoomPage({ params }: PageProps) {
   const router = useRouter()
   const { user, isAuthenticated, loading: authLoading } = useAuth()
   usePresence(user?.id)
+  usePresenceActivity('drafting')
   const [shareId, setShareId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [startingDraft, setStartingDraft] = useState(false)

@@ -12,7 +12,7 @@ process.env['JWT_SECRET'] = 'socket-test-secret'
 const { Server } = await import('socket.io')
 const { io: ioClient } = await import('socket.io-client')
 const { createToken } = await import('@/lib/auth')
-const { setupSocketServer, buildAllowedOrigins, makeAllowRequest } = await import('./socketServer')
+const { setupSocketServer, buildAllowedOrigins, makeAllowRequest, summarizePresence } = await import('./socketServer')
 
 type ClientSocket = ReturnType<typeof ioClient>
 
@@ -197,6 +197,104 @@ describe('socket server auth', () => {
 
     assert.ok(state.presenceMap.has(realUser.id), 'presence keyed by the session user id')
     assert.ok(!state.presenceMap.has('forged-user-id'), 'forged id must not be counted')
+  })
+
+  // SPEC (lobby live strip): the online total splits into drafting +
+  // building + browsing, and those three ALWAYS sum to the total — the strip
+  // shows all three, so a bucket that doesn't add up is a visible lie.
+  it('presence breakdown always sums to the online total', () => {
+    const presence = new Map([
+      ['u-draft', new Set(['s1'])],
+      ['u-build', new Set(['s2'])],
+      ['u-idle', new Set(['s3'])],
+    ])
+    const activity = new Map([
+      ['s1', { userId: 'u-draft', activity: 'drafting' as const }],
+      ['s2', { userId: 'u-build', activity: 'building' as const }],
+    ])
+    const summary = summarizePresence(presence, activity)
+    assert.deepStrictEqual(summary, { count: 3, drafting: 1, building: 1, browsing: 1 })
+    assert.strictEqual(summary.drafting + summary.building + summary.browsing, summary.count)
+  })
+
+  // SPEC: one human = one count, under the most involved thing they have
+  // open. Multiple tabs collapse to a single bucket — never 1 drafting + 1
+  // building, which would overshoot the total.
+  it('a multi-tab user counts once, under their most involved activity', () => {
+    const presence = new Map([['u-multi', new Set(['s1', 's2', 's3'])]])
+    // Distinct sockets, same human — exactly how the site behaves: the
+    // presence socket, a builder tab, and a draft tab are three connections.
+    const activity = new Map([
+      ['s2', { userId: 'u-multi', activity: 'building' as const }],
+      ['s3', { userId: 'u-multi', activity: 'drafting' as const }],
+    ])
+    assert.deepStrictEqual(summarizePresence(presence, activity), {
+      count: 1,
+      drafting: 1,
+      building: 0,
+      browsing: 0,
+    })
+  })
+
+  // SPEC: a player who declares no activity is browsing — the bucket that
+  // explains "N online, 0 open lobbies" instead of contradicting it.
+  it('counts everyone with no declared activity as browsing', () => {
+    const presence = new Map([
+      ['u1', new Set(['s1'])],
+      ['u2', new Set(['s2'])],
+    ])
+    assert.deepStrictEqual(summarizePresence(presence, new Map()), {
+      count: 2,
+      drafting: 0,
+      building: 0,
+      browsing: 2,
+    })
+  })
+
+  // SPEC: the deck builder joins BOTH pool-builds and (for a pod-derived
+  // pool) the draft room it came from — on two separate sockets. Only the
+  // builder ever joins pool-builds, so that room decides; otherwise every
+  // deck built off a draft pod reports as still drafting.
+  it('a deck builder on a pod pool counts as building, not drafting', () => {
+    const presence = new Map([['u-builder', new Set(['s1', 's2'])]])
+    const activity = new Map([
+      ['s1', { userId: 'u-builder', activities: new Set(['drafting' as const]) }],
+      ['s2', { userId: 'u-builder', activities: new Set(['building' as const]) }],
+    ])
+    assert.deepStrictEqual(summarizePresence(presence, activity), {
+      count: 1,
+      drafting: 0,
+      building: 1,
+      browsing: 0,
+    })
+  })
+
+  it('declaring an activity moves a player out of browsing, and clearing it back', async () => {
+    const token = createToken(otherUser)
+    const authed = connect({ token })
+    await connected(authed)
+    authed.emit('presence:join')
+    await sleep(150)
+
+    const before = summarizePresence(state.presenceMap, state.activityMap)
+    assert.ok(before.browsing >= 1, 'a freshly connected player is browsing')
+
+    const drafting = new Promise<number>(resolve => {
+      authed.on('presence:count', (data: { drafting: number }) => {
+        if (data.drafting > 0) resolve(data.drafting)
+      })
+    })
+    authed.emit('presence:activity', 'drafting')
+    assert.ok((await drafting) >= 1, 'declaring drafting broadcasts a drafting count')
+
+    authed.emit('presence:activity', null)
+    await sleep(150)
+    assert.strictEqual(
+      summarizePresence(state.presenceMap, state.activityMap).drafting,
+      0,
+      'clearing the activity returns them to browsing'
+    )
+    authed.disconnect()
   })
 
   it('anonymous presence:join is not counted', async () => {

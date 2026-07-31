@@ -85,7 +85,7 @@ function LobbyPageInner(): React.JSX.Element {
   const searchParams = useSearchParams()
   // AuthContext is untyped JSX; the user object is snake_case (documented trap).
   const { user, loading: authLoading } = useAuth() as { user: { id: string; username?: string } | null; loading: boolean }
-  const playerCount = usePresence(user?.id)
+  const presence = usePresence(user?.id)
   const board = useOpenGamesSocket()
   const pods = usePublicPodsSocket()
   const karabast = useKarabastLobbies()
@@ -293,12 +293,26 @@ function LobbyPageInner(): React.JSX.Element {
             <span className="lobby-online-pill">
               <span className="lobby-online-dot" />
               <span>
-                {playerCount} player{playerCount !== 1 ? 's' : ''} online
+                {presence.count} player{presence.count !== 1 ? 's' : ''} online
               </span>
             </span>
+            {/* A bare total next to "0 open lobbies" reads as a room full of
+                people refusing to play with you. The split says what they're
+                actually doing, so the zero below is a gap you can fill rather
+                than a rejection. */}
+            {presence.count > 0 && (
+              <span className="lobby-presence-breakdown">
+                {presence.drafting > 0 && <><strong>{presence.drafting}</strong> drafting · </>}
+                {presence.building > 0 && <><strong>{presence.building}</strong> building · </>}
+                <strong>{presence.browsing}</strong> browsing
+              </span>
+            )}
             <span>
               <strong>{board.listings.length}</strong> open {board.listings.length === 1 ? 'lobby' : 'lobbies'} ·{' '}
               <strong>{pods.length}</strong> {pods.length === 1 ? 'pod' : 'pods'} forming
+              {board.gamesToday > 0 && (
+                <> · <strong>{board.gamesToday}</strong> {board.gamesToday === 1 ? 'game' : 'games'} today</>
+              )}
             </span>
           </div>
           <button

@@ -15,7 +15,7 @@ import { NextRequest } from 'next/server'
 
 export async function GET(request: NextRequest): Promise<Response> {
   try {
-    const { listings, recentCompleted } = await listPublicOpenGames()
+    const { listings, recentCompleted, gamesToday } = await listPublicOpenGames()
     const presence = global.presenceMap
     // Board stays anonymous-readable; the session (when present) only marks
     // which listings belong to the viewer so the UI can offer Leave, not Join.
@@ -32,6 +32,7 @@ export async function GET(request: NextRequest): Promise<Response> {
         }
       }),
       recentCompleted,
+      gamesToday,
     })
   } catch (error) {
     return openGameErrorResponse(error)

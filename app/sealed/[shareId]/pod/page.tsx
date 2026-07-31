@@ -25,6 +25,7 @@ import SubscribePodBanner from '../../../../src/components/SubscribePodBanner'
 import '../../../../src/App.css'
 import '../../../draft/[shareId]/pod/pod.css'
 import '../../../../src/components/ChatPanel.css'
+import { usePresenceActivity } from '../../../../src/hooks/usePresenceActivity'
 
 const CrownIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="#FFD700" stroke="none">
@@ -48,6 +49,7 @@ export default function SealedPodPlayPage({ params }: PageProps) {
   const { shareId } = use(params)
   const router = useRouter()
   const { user } = useAuth()
+  usePresenceActivity('building')
   const [podData, setPodData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

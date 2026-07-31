@@ -128,6 +128,13 @@
   font-weight: 600;
 }
 
+/* What the online players are actually doing — quieter than the counts it
+   explains, so the pill and the lobby/pod line stay the things you read. */
+.lobby-presence-breakdown {
+  font-size: 0.82rem;
+  color: var(--pt-ink-muted);
+}
+
 /* ---- card-art system for lobby buttons ----
    Inner <img> instead of a background so the aspect-icon strip on the art's
    left edge can be cropped DYNAMICALLY: clip-path percentages are relative
