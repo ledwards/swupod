@@ -637,7 +637,8 @@
   position: absolute;
   top: -6px;
   right: -6px;
-  background: linear-gradient(135deg, rgb(33, 150, 243) 0%, rgb(100, 181, 246) 100%);
+  /* Flat-at-rest: badges take a solid token fill, not a gradient. */
+  background: var(--pt-glow-interactive);
   color: #fff;
   font-size: 0.6rem;
   font-weight: 700;

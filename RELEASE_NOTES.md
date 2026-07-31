@@ -1,5 +1,10 @@
 # Release Notes
 
+## 07.31.2026 Part 2
+
+### 🎨 UI Improvements
+- **The "Coming Soon" badge sits flat.** The blue gradient behind it is now a single solid blue, matching the rest of the interface, and it reads the same way everywhere it appears — set pickers, pack pickers, and rotisserie.
+
 ## 07.31.2026
 
 ### 🔧 Under the Hood
