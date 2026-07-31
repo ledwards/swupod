@@ -11,6 +11,8 @@ const SRC = readFileSync(join(__dirname, 'PlayInstructions.tsx'), 'utf8')
 const CSS = readFileSync(join(__dirname, 'PlayInstructions.css'), 'utf8')
 const STORE_BUTTONS = readFileSync(join(__dirname, 'WayfinderStoreButtons.tsx'), 'utf8')
 const ANALYTICS = readFileSync(join(__dirname, '../analytics/limitedEvents.ts'), 'utf8')
+const POD_PAGE = readFileSync(join(__dirname, '../../app/draft/[shareId]/pod/page.tsx'), 'utf8')
+const PLAY_PAGE = readFileSync(join(__dirname, '../../app/pool/[shareId]/deck/play/page.tsx'), 'utf8')
 
 describe('<PlayInstructions /> Companion adoption', () => {
   it('pitches the Companion via the canonical PluginCTA component', () => {
@@ -64,5 +66,50 @@ describe('<PlayInstructions /> Companion adoption', () => {
   it('tracks Companion install CTA clicks through limited play analytics', () => {
     assert.ok(ANALYTICS.includes("WAYFINDER_INSTALL_CTA: 'wayfinder_install_cta'"))
     assert.ok(SRC.includes('LimitedPlayActions.WAYFINDER_INSTALL_CTA'))
+  })
+})
+
+// SPEC: `poolType` describes the POOL, not the UI variant. It is the single
+// input that decides which open lobbies the deck owner is offered
+// (PlayPageLobbies `format`), what the public Karabast lobby is named
+// (buildLobbyName), and the Companion intent's format — so a draft pool must
+// always be declared 'draft'. Solo (bot) drafts previously passed 'sealed' to
+// borrow the standalone manual steps; that showed a draft-deck owner sealed
+// lobbies, whose joins the server rejects on the format gate
+// (joinOpenGameInTx, src/services/openGames.ts).
+describe('<PlayInstructions /> pool type is the pool, not the UI variant', () => {
+  it('FIXED: solo draft pods declare the pool as a draft, not sealed', () => {
+    // The solo branch of the draft pod page. Its sibling non-solo branch has
+    // always passed poolType="draft" for the same kind of pool.
+    assert.ok(
+      !/poolType="sealed"/.test(POD_PAGE),
+      'draft pod page must never declare a sealed poolType — every pool it renders is a draft pool'
+    )
+    assert.equal(
+      (POD_PAGE.match(/poolType="draft"/g) || []).length,
+      2,
+      'both the solo and non-solo PlayInstructions branches declare poolType="draft"'
+    )
+  })
+
+  it('FIXED: the play page resolves poolType from the pool record for solo drafts too', () => {
+    assert.ok(
+      !/isSoloDraft \? 'sealed'/.test(PLAY_PAGE),
+      'solo drafts must not be relabelled sealed — poolType comes from the pool record'
+    )
+    assert.match(PLAY_PAGE, /poolType=\{pool\?\.poolType \|\| 'sealed'\}/)
+  })
+
+  it('routes solo drafts to the standalone manual steps via isSoloDraft', () => {
+    // The behaviour the old mislabelling was buying: a solo drafter has no
+    // human podmates to message, so they get the "3 ways to play" steps.
+    assert.match(
+      SRC,
+      /const inPod = \(poolType === 'draft' \|\| poolType === 'sealed_pod'\) && !isSoloDraft/
+    )
+  })
+
+  it('derives the open-lobby format straight from poolType', () => {
+    assert.match(SRC, /format=\{poolType === 'draft' \? 'draft' : 'sealed'\}/)
   })
 })

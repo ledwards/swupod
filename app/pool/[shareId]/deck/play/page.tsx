@@ -1536,9 +1536,11 @@ export default function PlayPage({ params }: PageProps) {
             )}
           </div>
         ) : (
+          // Always the pool's REAL type — a solo draft pool is still a draft
+          // pool. The solo-specific manual flow keys off isSoloDraft below.
           <PlayInstructions
             shareId={shareId}
-            poolType={isSoloDraft ? 'sealed' : (pool?.poolType || 'sealed')}
+            poolType={pool?.poolType || 'sealed'}
             setCode={pool?.setCode}
             packsPerPlayer={pool?.packsPerPlayer ?? null}
             opponentName={firstOpponent?.username}
