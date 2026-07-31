@@ -10,6 +10,7 @@ import { getBaseSetCode } from '../../../src/utils/carboniteConstants'
 import { savePool } from '../../../src/utils/poolApi'
 import { getCyclingPackImageUrls, getRandomPackImageUrls } from '../../../src/utils/packArt'
 import { pickRandomWindow } from '../../../src/utils/packWindow'
+import { normalizeSealedPackCount, STANDARD_SEALED_PACKS_PER_PLAYER } from '../../../src/utils/sealedPodConfig'
 import { nanoid } from 'nanoid'
 import SealedPod from '../../../src/components/SealedPod'
 import PackOpeningAnimation from '../../../src/components/PackOpeningAnimation'
@@ -45,6 +46,9 @@ export default function NewPoolPage() {
   const [showAnimation, setShowAnimation] = useState(true)
   const [poolReady, setPoolReady] = useState(false)
   const [packImageUrls, setPackImageUrls] = useState<string[]>([])
+  // Packs in this pool — 6 by default, 8 when the sealed page passed ?packs=8.
+  // Anything else falls back to 6 (normalizeSealedPackCount).
+  const [packCount, setPackCount] = useState(STANDARD_SEALED_PACKS_PER_PLAYER)
 
   useEffect(() => {
     async function createNewPool() {
@@ -63,6 +67,10 @@ export default function NewPoolPage() {
 
         // Store set code for animation
         setSetCode(urlSetCode)
+
+        // Pack count comes from the sealed set-selection toggle (6 or 8 only)
+        const urlPackCount = normalizeSealedPackCount(urlParams.get('packs'))
+        setPackCount(urlPackCount)
 
         // Initialize card cache if not already initialized
         if (!isCacheInitialized()) {
@@ -99,8 +107,8 @@ export default function NewPoolPage() {
 
         // Generate sealed box (24 packs) for randomization support
         const boxPacks = generateSealedBox(cards, urlSetCode)
-        // Take first 6 packs as the initial display
-        const initialIndices = [0, 1, 2, 3, 4, 5]
+        // Take the first N packs of the box as the initial display
+        const initialIndices = Array.from({ length: urlPackCount }, (_, i) => i)
         const generatedPacks = initialIndices.map(i => boxPacks[i])
         const allCards = generatedPacks.flatMap(pack => pack.cards)
 
@@ -124,7 +132,7 @@ export default function NewPoolPage() {
         // Set pool state - but don't show it yet (wait for animation)
         // Note: Pool is saved when animation completes to capture any randomization
         setPool(poolData)
-        setPackImageUrls(getCyclingPackImageUrls(urlSetCode, 6))
+        setPackImageUrls(getCyclingPackImageUrls(urlSetCode, urlPackCount))
         setPoolReady(true)
         setLoading(false)
       } catch (err) {
@@ -171,14 +179,15 @@ export default function NewPoolPage() {
   const handleRandomize = useCallback(async () => {
     if (!pool?.boxPacks || !pool?.setCode) return
 
-    // Deal a fresh consecutive 6-pack window from the box (physical cut —
-    // scattered indices cross collation windows and clump duplicates)
-    const newIndices = pickRandomWindow(6, pool.boxPacks.length, pool.packIndices?.[0])
+    // Deal a fresh consecutive window of the same size from the box (physical
+    // cut — scattered indices cross collation windows and clump duplicates)
+    const windowSize = pool.packs?.length || packCount
+    const newIndices = pickRandomWindow(windowSize, pool.boxPacks.length, pool.packIndices?.[0])
     const newPacks = newIndices.map(i => pool.boxPacks![i])
     const newCards = newPacks.flatMap(pack => pack.cards)
 
     // Randomize pack art variants
-    setPackImageUrls(getRandomPackImageUrls(pool.setCode, 6))
+    setPackImageUrls(getRandomPackImageUrls(pool.setCode, windowSize))
 
     // Update pool state with new packs
     setPool(prev => prev ? {
@@ -187,7 +196,7 @@ export default function NewPoolPage() {
       cards: newCards,
       packIndices: newIndices,
     } : null)
-  }, [pool?.boxPacks, pool?.setCode])
+  }, [pool?.boxPacks, pool?.setCode, pool?.packs?.length, packCount])
 
   // Show pack opening animation
   // Gate on packImageUrls being populated so the first paint already has
@@ -198,7 +207,7 @@ export default function NewPoolPage() {
   if (showAnimation && setCode && packImageUrls.length > 0) {
     return (
       <PackOpeningAnimation
-        packCount={6}
+        packCount={packCount}
         packImageUrls={packImageUrls}
         cardBackUrl="/card-images/card-back.png"
         onComplete={handleAnimationComplete}

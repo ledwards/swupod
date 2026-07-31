@@ -1,21 +1,77 @@
 // Sealed pod config — spec tests.
 //
-// SPEC (Competitive Sealed):
-// - Standard sealed = 6 packs per player.
-// - Competitive Sealed = 8 packs per player.
+// SPEC:
+// - Sealed defaults to 6 packs per player.
+// - Players may choose 6 or 8 packs; nothing else is accepted (fallback 6).
+// - Competitive Sealed = 8 packs per player, whatever was requested.
 // - Standard sealed allows 2–16 players (default 8).
 // - Competitive Sealed is capped at exactly 8 players.
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import { sealedPacksPerPlayer, sealedMaxPlayers } from './sealedPodConfig'
+import {
+  sealedPacksPerPlayer,
+  sealedMaxPlayers,
+  normalizeSealedPackCount,
+  SEALED_PACK_COUNT_OPTIONS,
+} from './sealedPodConfig'
+
+describe('normalizeSealedPackCount', () => {
+  it('SPEC: the only selectable pack counts are 6 and 8', () => {
+    assert.deepStrictEqual([...SEALED_PACK_COUNT_OPTIONS], [6, 8])
+  })
+
+  it('SPEC: 6 and 8 are both accepted', () => {
+    assert.strictEqual(normalizeSealedPackCount(6), 6)
+    assert.strictEqual(normalizeSealedPackCount(8), 8)
+  })
+
+  it('SPEC: numeric strings (URL params) are accepted', () => {
+    assert.strictEqual(normalizeSealedPackCount('6'), 6)
+    assert.strictEqual(normalizeSealedPackCount('8'), 8)
+  })
+
+  it('SPEC: missing values fall back to 6', () => {
+    assert.strictEqual(normalizeSealedPackCount(), 6)
+    assert.strictEqual(normalizeSealedPackCount(null), 6)
+    assert.strictEqual(normalizeSealedPackCount(undefined), 6)
+  })
+
+  it('SPEC: invalid values fall back to 6', () => {
+    assert.strictEqual(normalizeSealedPackCount(7), 6)
+    assert.strictEqual(normalizeSealedPackCount(0), 6)
+    assert.strictEqual(normalizeSealedPackCount(-8), 6)
+    assert.strictEqual(normalizeSealedPackCount(24), 6)
+    assert.strictEqual(normalizeSealedPackCount(6.5), 6)
+    assert.strictEqual(normalizeSealedPackCount('eight'), 6)
+    assert.strictEqual(normalizeSealedPackCount(''), 6)
+  })
+})
 
 describe('sealedPacksPerPlayer', () => {
-  it('SPEC: standard sealed deals 6 packs per player', () => {
+  it('SPEC: standard sealed deals 6 packs per player by default', () => {
     assert.strictEqual(sealedPacksPerPlayer(false), 6)
+    assert.strictEqual(sealedPacksPerPlayer(false, null), 6)
+  })
+
+  it('SPEC: standard sealed honors a requested 6 or 8', () => {
+    assert.strictEqual(sealedPacksPerPlayer(false, 6), 6)
+    assert.strictEqual(sealedPacksPerPlayer(false, 8), 8)
+    assert.strictEqual(sealedPacksPerPlayer(false, '8'), 8)
+  })
+
+  it('SPEC: standard sealed falls back to 6 for invalid requests', () => {
+    assert.strictEqual(sealedPacksPerPlayer(false, 12), 6)
+    assert.strictEqual(sealedPacksPerPlayer(false, 'lots'), 6)
   })
 
   it('SPEC: Competitive Sealed deals 8 packs per player', () => {
     assert.strictEqual(sealedPacksPerPlayer(true), 8)
+  })
+
+  it('SPEC: Competitive Sealed ignores the requested count', () => {
+    assert.strictEqual(sealedPacksPerPlayer(true, 6), 8)
+    assert.strictEqual(sealedPacksPerPlayer(true, '6'), 8)
+    assert.strictEqual(sealedPacksPerPlayer(true, 12), 8)
   })
 })
 

@@ -7,6 +7,11 @@ import { useAuth } from '../../../src/contexts/AuthContext'
 import { initializeCardCache } from '../../../src/utils/cardCache'
 import { initialSealedCompetitiveFromSearch } from '../../../src/utils/draftCreationRoutes'
 import SetSelection from '../../../src/components/SetSelection'
+import SealedPackCountToggle from '../../../src/components/SealedPackCountToggle'
+import {
+  STANDARD_SEALED_PACKS_PER_PLAYER,
+  COMPETITIVE_SEALED_PACKS_PER_PLAYER,
+} from '../../../src/utils/sealedPodConfig'
 import Button from '../../../src/components/Button'
 import { trackEvent } from '../../../src/hooks/useAnalytics'
 import { getOrCreateLimitedFlowId, LimitedAnalyticsEvents } from '../../../src/analytics/limitedEvents'
@@ -26,6 +31,14 @@ function NewSealedPodPageContent() {
   useEffect(() => {
     setCompetitive(initialSealedCompetitiveFromSearch(searchParams))
   }, [searchParams])
+
+  // Free 6-vs-8 pack choice for standard pods. Competitive Sealed is always 8,
+  // so the toggle locks while it's on — the standard choice is remembered here
+  // and restored when competitive goes back off.
+  const [standardPackCount, setStandardPackCount] = useState(STANDARD_SEALED_PACKS_PER_PLAYER)
+  const packsPerPlayer = competitive
+    ? COMPETITIVE_SEALED_PACKS_PER_PLAYER
+    : standardPackCount
   const [isPublic, setIsPublic] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('pod-visibility')
@@ -68,6 +81,7 @@ function NewSealedPodPageContent() {
       set_code: setCode,
       is_public: isPublic,
       competitive,
+      pack_count: packsPerPlayer,
     })
 
     try {
@@ -75,7 +89,7 @@ function NewSealedPodPageContent() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ setCode, isPublic, competitive, flowId }),
+        body: JSON.stringify({ setCode, isPublic, competitive, packsPerPlayer, flowId }),
       })
 
       if (!response.ok) {
@@ -191,10 +205,22 @@ function NewSealedPodPageContent() {
     </button>
   )
 
+  const packCountToggle = (
+    <SealedPackCountToggle
+      value={packsPerPlayer}
+      onChange={setStandardPackCount}
+      disabled={competitive}
+      title={competitive
+        ? 'Competitive Sealed is always 8 packs per player.'
+        : 'Packs dealt to each player'}
+    />
+  )
+
   const headerActions = (
-    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
       {lockButton}
       {competitiveToggle}
+      {packCountToggle}
     </div>
   )
 

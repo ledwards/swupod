@@ -55,8 +55,14 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       return errorResponse('Need at least 2 players to start', 400)
     }
 
-    // Generate packs for all players (6 each, 8 each for Competitive Sealed)
-    const packsPerPlayer = sealedPacksPerPlayer(pod.competitive === true)
+    // Pod settings hold the host's pack choice (6 or 8, chosen at creation).
+    const currentSettings = typeof pod.settings === 'string'
+      ? JSON.parse(pod.settings)
+      : pod.settings || {}
+
+    // Generate packs for all players (the pod's configured count; always 8 for
+    // Competitive Sealed)
+    const packsPerPlayer = sealedPacksPerPlayer(pod.competitive === true, currentSettings.packsPerPlayer)
     await initializeCardCache()
     const totalPacks = players.length * packsPerPlayer
     clearBeltCache()
@@ -124,10 +130,6 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
     }
 
     // Store pairings in settings and mark complete
-    const currentSettings = typeof pod.settings === 'string'
-      ? JSON.parse(pod.settings)
-      : pod.settings || {}
-
     const updatedSettings = {
       ...currentSettings,
       pairings: pairings,

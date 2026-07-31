@@ -6,7 +6,7 @@ import { generateShareId } from '@/lib/utils'
 import { jsonResponse, parseBody, validateRequired, handleApiError } from '@/lib/utils'
 import { getSetConfig } from '@/src/utils/setConfigs/index'
 import { getUnavailableSetReason } from '@/src/utils/setAvailability'
-import { sealedMaxPlayers } from '@/src/utils/sealedPodConfig'
+import { sealedMaxPlayers, sealedPacksPerPlayer } from '@/src/utils/sealedPodConfig'
 import { broadcastPublicPodsUpdate } from '@/src/lib/socketBroadcast'
 import { postPodCreated } from '@/lib/discordLfg'
 import { captureLimitedServerEvent } from '@/lib/posthog'
@@ -43,6 +43,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const setName = setConfig?.setName || setCode
     const podName = competitive ? `${setName} Competitive Sealed` : `${setName} Sealed`
     const effectiveMaxPlayers = sealedMaxPlayers(competitive, body.maxPlayers)
+    // Pack count is a free 6-or-8 choice for standard pods; never trust the
+    // client value, and Competitive Sealed is always 8. Persisted in the
+    // existing settings JSONB — no new column.
+    const packsPerPlayer = sealedPacksPerPlayer(competitive, body.packsPerPlayer)
 
     // Generate share ID with retry logic
     let shareId = generateShareId(8)
@@ -83,7 +87,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             1,        // Host counts as first player
             false,    // no timer for sealed
             0,
-            JSON.stringify({}),
+            JSON.stringify({ packsPerPlayer }),
             JSON.stringify({ phase: 'lobby' }),
             1,
             'sealed',
@@ -159,6 +163,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         setCode,
         is_public: podIsPublic,
         competitive,
+        pack_count: packsPerPlayer,
         max_players: effectiveMaxPlayers,
         current_players: 1,
         human_players: 1,

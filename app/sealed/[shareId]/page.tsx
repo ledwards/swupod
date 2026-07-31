@@ -7,6 +7,7 @@ import { useAuth } from '../../../src/contexts/AuthContext'
 import { useSealedPodSocket } from '../../../src/hooks/useSealedPodSocket'
 import { usePresence } from '../../../src/hooks/usePresence'
 import { getPackArtUrl, getCyclingPackImageUrls } from '../../../src/utils/packArt'
+import { sealedPacksPerPlayer } from '../../../src/utils/sealedPodConfig'
 import { loadPool } from '../../../src/utils/poolApi'
 import SealedPodLobby from '../../../src/components/SealedPodLobby'
 import PackOpeningAnimation from '../../../src/components/PackOpeningAnimation'
@@ -272,9 +273,13 @@ export default function SealedPodPage({ params }: PageProps) {
 
   if (!pod) return null
 
-  // Standard sealed deals 6 packs, Competitive Sealed deals 8 — only used as a
-  // fallback when the pool's own packs haven't loaded.
-  const fallbackPackCount = pod.competitive ? 8 : 6
+  // The pod's configured pack count (6 or 8; Competitive Sealed is always 8).
+  // Shown read-only in the lobby, and used as the pack-opening fallback when
+  // the pool's own packs haven't loaded.
+  const configuredPackCount = sealedPacksPerPlayer(
+    pod.competitive === true,
+    pod.settings?.packsPerPlayer
+  )
 
   // Phase: Pack Opening Animation
   if (postStartPhase === 'animation' && poolData) {
@@ -285,8 +290,8 @@ export default function SealedPodPage({ params }: PageProps) {
     return (
       <div className="app">
         <PackOpeningAnimation
-          packCount={packs?.length || fallbackPackCount}
-          packImageUrls={getCyclingPackImageUrls(pod.setCode, packs?.length || fallbackPackCount)}
+          packCount={packs?.length || configuredPackCount}
+          packImageUrls={getCyclingPackImageUrls(pod.setCode, packs?.length || configuredPackCount)}
           packs={packs}
           onComplete={() => setPostStartPhase('pool-review')}
           setCode={pod.setCode}
@@ -359,6 +364,7 @@ export default function SealedPodPage({ params }: PageProps) {
               maxPlayers={pod?.maxPlayers}
               isPublic={pod?.isPublic}
               competitive={pod?.competitive === true}
+              packsPerPlayer={configuredPackCount}
               onStart={handleStart}
               onLeave={handleLeave}
               onCancel={handleCancel}

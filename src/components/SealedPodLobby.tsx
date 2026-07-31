@@ -58,6 +58,8 @@ interface SealedPodLobbyProps {
   maxPlayers?: number
   isPublic?: boolean
   competitive?: boolean
+  /** Packs each player opens — fixed at creation, shown read-only to everyone. */
+  packsPerPlayer?: number
   onStart: () => void
   onLeave: () => void
   onCancel: () => void
@@ -82,6 +84,7 @@ export default function SealedPodLobby({
   maxPlayers,
   isPublic,
   competitive = false,
+  packsPerPlayer,
   onStart,
   onLeave,
   onCancel,
@@ -121,6 +124,8 @@ export default function SealedPodLobby({
   // Admins can bypass the 2-player minimum for testing/facilitation.
   const canStart = isHost && (players.length >= 2 || (isAdmin && players.length >= 1))
 
+  const showPackCount = typeof packsPerPlayer === 'number' && packsPerPlayer > 0
+
   return (
     <div className="sealed-pod-lobby">
       <h1>
@@ -145,8 +150,19 @@ export default function SealedPodLobby({
         </Button>
       </div>
 
-      {isHost && onSettingsChange && (
+      {(showPackCount || (isHost && onSettingsChange)) && (
         <div className="sealed-pod-settings">
+          {/* Read-only pack count — fixed when the pod is created, so joiners
+              can see whether it's a 6- or 8-pack pod before sitting down. */}
+          {showPackCount && (
+            <div className="settings-row">
+              <span className="setting-item">
+                <span className="setting-label">Packs:</span>
+                <span>{packsPerPlayer} each</span>
+              </span>
+            </div>
+          )}
+          {isHost && onSettingsChange && (
           <div className="settings-row settings-row-spread">
             <span className="setting-item">
               <span className="setting-label">Max Players:</span>
@@ -182,6 +198,7 @@ export default function SealedPodLobby({
               <span>{isPublic ? 'Public' : 'Private'}</span>
             </button>
           </div>
+          )}
         </div>
       )}
 
