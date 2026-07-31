@@ -14,6 +14,7 @@ The online count includes everyone with the site open — mid-draft, mid-build, 
 - **Your Deck stays put.** The deck pane no longer grows tall enough to scroll the whole page — it scrolls inside its own panel.
 - **Copy confirmations appear right under the buttons** that fired them, instead of in the corner of the screen.
 - The **Your Open Lobby** row in your profile menu no longer cuts off its own text or border.
+- **"PROTECT THE POD" in the lobby header is set in the logo's own type** — the wide, squared letterforms with the logo's steel finish — instead of a plain bold sans that didn't match the art sitting next to it.
 
 ## 07.30.2026 Part 2
 
