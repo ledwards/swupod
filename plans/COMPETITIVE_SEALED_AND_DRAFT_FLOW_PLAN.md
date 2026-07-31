@@ -17,6 +17,17 @@ Built by subagents in phases; this session is the project manager.
    no timers); host-only "Start Draft" → `POST /api/draft/[shareId]/begin-picking` opens
    picking + starts timers.
 
+## Product decisions (2026-07-30, user)
+- **Pack count is free for everyone.** A 6 / 8 pack toggle lives on the sealed
+  set-selection pages (solo and pod). Not gated.
+- **Competitive Sealed stays Friends-of-the-Pod to CREATE, open to JOIN.** It keeps
+  8 packs, 8 players, the 20-min deck lock, and Swiss practice rounds. Pack count is
+  no longer what distinguishes it — the organized event is.
+- **Sealed pods remain account-only.** No guest seats. Anonymous users are served by
+  solo sealed (`/pools/new`), which already allows anonymous pools. Blocker if ever
+  revisited: a seat is `pod_players.user_id` and there is no guest-token identity, so
+  an anonymous player could not reliably reclaim their seat/pool across requests.
+
 ## Phase 2 — Player Ready flow + audio cue engine
 
 ### Player Ready (lobby) — also the browser-audio unlock

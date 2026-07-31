@@ -2,8 +2,12 @@
 
 ## 07.30.2026
 
+### 🎴 Choose Your Pool Size: 6 or 8 Packs
+- **Sealed now opens with a pack-count choice.** Pick 6 packs for the classic pool or 8 for a deeper one, right where you pick your set — solo or in a pod, for everyone, no account required for solo.
+
 ### 🏆 Competitive Sealed
-- **Sealed goes competitive.** Friends of the Pod can now spin up a Competitive Sealed pod: every player opens **8 booster packs** for a deeper pool, decks lock after a 20-minute build window, and the pod flows straight into Swiss practice rounds — the same structured play Competitive Draft pods get, now for sealed.
+- **Sealed goes competitive.** Friends of the Pod can spin up a Competitive Sealed pod for a full table of 8: everyone opens 8 packs, decks lock after a 20-minute build window, and the pod flows straight into Swiss practice rounds — the same structured play Competitive Draft pods get, now for sealed.
+- **Anyone can join one.** Creating a Competitive Sealed pod is a Friends of the Pod perk; sitting down at someone else's table is open to everybody.
 - The gold competitive treatment carries through the whole flow, from the create page to the lobby, so everyone at the table knows the stakes.
 
 ### 👀 Leader Reveal Before the Draft
