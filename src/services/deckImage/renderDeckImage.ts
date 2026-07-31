@@ -48,10 +48,14 @@ function makeResolvers(setCode: string) {
   const getBaseCardId = (card: unknown): string => getBaseCardIdRaw(card, baseCardMap) || ''
   // Resolve a deck card to the front art of its NORMAL (standard) variant — never
   // the foil/hyperspace printing the player owns. For a leader the Normal variant's
-  // imageUrl is the LEADER side (landscape). Falls back to the card's own art.
+  // imageUrl is the LEADER side (landscape). Falls back to the card's own art:
+  // frontArt, then imageUrl (the field pool payloads actually carry). Without
+  // the imageUrl step, a caller whose card cache is cold renders every card as
+  // a grey placeholder. The last resort is the real card-back path — the
+  // asset lives under /card-images/, not at the root.
   const normalFrontArt = (card: any): string => {
     const normal = baseCardMap.get(cardIdentityKey(card))
-    return (normal && normal.imageUrl) || card.frontArt || '/card-back.png'
+    return (normal && normal.imageUrl) || card.frontArt || card.imageUrl || '/card-images/card-back.png'
   }
   return { getBaseCardId, normalFrontArt }
 }

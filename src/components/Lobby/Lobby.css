@@ -669,6 +669,9 @@ a.lobby-discord-tile:active {
 
 /* ---- match page ---- */
 .lobby-match {
+  /* The .landing-page shell centers its children, which would shrink-wrap this
+     column to its content width — same reason .lobby-page claims full width. */
+  width: 100%;
   max-width: 760px;
   margin: 0 auto;
   padding: var(--pt-space-md) var(--pt-space-md) var(--pt-space-xl);
@@ -873,9 +876,13 @@ a.lobby-discord-tile:active {
 
 /* Clearance for the site's floating auth widget (top-right), same move as
    .lobby-header — the pane's title row sits underneath it on wide screens. */
-/* Start below the floating auth avatar so the header never collides. */
+/* Start below the floating auth avatar so the header never collides. The
+   offset comes out of the pane's own height budget too: a full-viewport pane
+   pushed down 60px is 60px taller than the viewport, which scrolls the whole
+   page. The deck scrolls inside its own body — never the page. */
 .lobby-match--split .lobby-deck-pane {
   margin-top: 60px;
+  max-height: calc(100vh - 60px - 2 * var(--pt-space-md));
 }
 
 /* The hero centers its content — the Automatic kicker must sit left-aligned
@@ -946,6 +953,15 @@ a.lobby-discord-tile:active {
 .lobby-deck-actions .play-instructions-action-button {
   padding: 6px;
   min-width: 0;
+}
+
+/* Copy/export confirmation sits directly under the buttons that fired it.
+   Same .play-instructions-message treatment the play page uses, tightened to
+   the panel: it slots between the header and the scrolling deck body. */
+.lobby-deck-pane .play-instructions-message {
+  margin: 0 var(--pt-space-sm) var(--pt-space-xs);
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
 }
 
 
@@ -1118,18 +1134,18 @@ a.lobby-discord-tile:active {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  /* Match split view stacks: deck pane below the match column, flowing with
-     the page instead of pinning + inner-scrolling. */
+  /* Match split view stacks: deck pane below the match column. It stops
+     pinning, but keeps a height cap so a 30-card deck can't push the rest of
+     the page miles down — the deck still scrolls inside its own body. */
   .lobby-match--split {
     grid-template-columns: 1fr;
   }
 
-  .lobby-deck-pane {
+  .lobby-deck-pane,
+  .lobby-match--split .lobby-deck-pane {
     position: static;
-    max-height: none;
-  }
-
-  .lobby-deck-pane-body {
-    overflow-y: visible;
+    max-height: 70vh;
+    /* Stacked below the match column — no floating auth widget to clear. */
+    margin-top: 0;
   }
 }

@@ -247,6 +247,10 @@ a.auth-widget-login-circle:active {
 
 .auth-widget-drawer-menu-item {
   width: 100%;
+  /* There is no global border-box outside the mobile media query, so a
+     bordered variant (.auth-widget-open-lobby-item) at width:100% renders 2px
+     wider than the drawer and gets its right border clipped off. */
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -487,10 +491,12 @@ a.auth-widget-login-circle:active {
   color: rgba(255, 255, 255, 0.95);
 }
 
+/* Wraps rather than truncating: the deck name plus "waiting for an opponent"
+   never fits one drawer-width line, and an ellipsis eats the part that says
+   what the row is actually telling you. */
 .auth-widget-open-lobby-text span {
   font-size: 12px;
+  line-height: 1.35;
   color: rgba(255, 255, 255, 0.6);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
 }

@@ -18,9 +18,9 @@ import { type CardData } from '@/src/components/Card'
 import { CardWithPreview } from '@/src/components/CardWithPreview'
 import Button from '@/src/components/Button'
 import { DeckImageModal } from '@/src/components/DeckBuilder/DeckImageModal'
-import { useToast } from '@/src/components/Toast'
 import { loadPool } from '@/src/utils/poolApi'
 import { jsonParse } from '@/src/utils/json'
+import { initializeCardCache } from '@/src/utils/cardCache'
 import { renderPoolImageBlob } from '@/src/services/deckImage'
 import type { Arena } from '@/src/types/card'
 import '@/src/components/PlayInstructions.css'
@@ -72,6 +72,20 @@ function byCost(a: DeckCard, b: DeckCard): number {
 }
 
 /**
+ * The saved deck_builder_state positions carry a serialized copy of each card
+ * that frequently lacks the art fields; the pool payload carries the canonical
+ * objects (imageUrl etc.). Everything that renders card art resolves through
+ * this — the DOM view AND the canvas deck-image export.
+ */
+function makeCardResolver(pool: PoolPayload): (key: string, pos: CardPosition) => DeckCard {
+  const poolCards: DeckCard[] = (pool.poolType === 'draft'
+    ? pool.cards || []
+    : (pool.packs ? pool.packs.flatMap(pack => pack.cards) : pool.cards) || [])
+  const byId = new Map(poolCards.filter(card => card?.id).map(card => [card.id, card]))
+  return (key, pos) => byId.get(pos.card?.id ?? key) ?? pos.card
+}
+
+/**
  * Build the read-only view from a pool payload. Mirrors the deck.json export
  * route's section filters (deck: visible + enabled, sideboard: visible;
  * leader/base via activeLeader/activeBase), but keeps full card objects so
@@ -82,14 +96,7 @@ export function buildDeckView(pool: PoolPayload): DeckView | null {
   const positions = state?.cardPositions
   if (!positions) return null
 
-  // The saved positions carry a serialized copy of each card; the pool
-  // payload carries the canonical objects (imageUrl etc.). Prefer canonical.
-  const poolCards: DeckCard[] = (pool.poolType === 'draft'
-    ? pool.cards || []
-    : (pool.packs ? pool.packs.flatMap(pack => pack.cards) : pool.cards) || [])
-  const byId = new Map(poolCards.filter(card => card?.id).map(card => [card.id, card]))
-  const resolve = (key: string, pos: CardPosition): DeckCard =>
-    byId.get(pos.card?.id ?? key) ?? pos.card
+  const resolve = makeCardResolver(pool)
 
   let leader: DeckCard | null = null
   let base: DeckCard | null = null
@@ -146,7 +153,15 @@ export default function MatchDeckPane({
   const [pool, setPool] = useState<PoolPayload | null>(null)
   const [generatingImage, setGeneratingImage] = useState(false)
   const [deckImageUrl, setDeckImageUrl] = useState<string | null>(null)
-  const { showToast } = useToast()
+  // Feedback for the three deck actions lands inline under the buttons that
+  // fired it (.play-instructions-message, the play page's treatment) rather
+  // than in a screen-corner toast far from the click.
+  const [actionMessage, setActionMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
+
+  const flashMessage = useCallback((text: string, type: 'success' | 'error'): void => {
+    setActionMessage({ text, type })
+    setTimeout(() => setActionMessage(null), 3000)
+  }, [])
 
   const fetchDeck = useCallback(async () => {
     setStatus('loading')
@@ -168,9 +183,9 @@ export default function MatchDeckPane({
   async function copyDeckLink(): Promise<void> {
     try {
       await navigator.clipboard.writeText(`${window.location.origin}/pool/${poolShareId}/deck`)
-      showToast({ text: 'Deck link copied!', kind: 'success' })
+      flashMessage('Deck link copied!', 'success')
     } catch {
-      showToast({ text: 'Failed to copy link', kind: 'danger' })
+      flashMessage('Failed to copy link', 'error')
     }
   }
 
@@ -181,13 +196,13 @@ export default function MatchDeckPane({
       const deckJson = await res.json()
       // Karabast rejects deckless lists outright — better to say so here.
       if (!Array.isArray(deckJson.deck) || deckJson.deck.length === 0) {
-        showToast({ text: 'Your deck is empty — finish building it first.', kind: 'danger' })
+        flashMessage('Your deck is empty — finish building it first.', 'error')
         return
       }
       await navigator.clipboard.writeText(JSON.stringify(deckJson, null, 2))
-      showToast({ text: 'Deck JSON copied to clipboard!', kind: 'success' })
+      flashMessage('Deck JSON copied!', 'success')
     } catch {
-      showToast({ text: 'Failed to copy deck JSON', kind: 'danger' })
+      flashMessage('Failed to copy deck JSON', 'error')
     }
   }
 
@@ -195,17 +210,31 @@ export default function MatchDeckPane({
   async function exportDeckImage(): Promise<void> {
     const state = jsonParse(pool?.deckBuilderState, null) as DeckState | null
     if (!state?.cardPositions || !state.activeLeader || !state.activeBase) {
-      showToast({ text: 'No deck data found.', kind: 'danger' })
+      flashMessage('No deck data found.', 'error')
       return
     }
     setGeneratingImage(true)
     try {
+      // The renderer downgrades each card to its Normal variant's art through
+      // the card cache. Unlike the deck builder, nothing on this page has
+      // warmed that cache — without this the lookup misses every card and the
+      // image comes out as grey name-only boxes.
+      await initializeCardCache().catch(() => { /* fall back to per-card art */ })
+      // Resolve the saved position copies to the pool's canonical cards so the
+      // renderer's fallback has real art to work with (same as the DOM view).
+      const resolve = makeCardResolver(pool ?? {})
+      const cardPositions = Object.fromEntries(
+        Object.entries(state.cardPositions).map(([key, pos]) => [
+          key,
+          pos?.card ? { ...pos, card: resolve(key, pos) } : pos,
+        ])
+      )
       const blob = await renderPoolImageBlob({
-        cardPositions: state.cardPositions,
+        cardPositions,
         activeLeader: state.activeLeader,
         activeBase: state.activeBase,
-        leaderCard: state.cardPositions[state.activeLeader]?.card || null,
-        baseCard: state.cardPositions[state.activeBase]?.card || null,
+        leaderCard: cardPositions[state.activeLeader]?.card || null,
+        baseCard: cardPositions[state.activeBase]?.card || null,
         setCode: pool?.setCode ?? '',
         poolType: pool?.poolType === 'draft' ? 'draft' : 'sealed',
         showSideboard: false,
@@ -217,7 +246,7 @@ export default function MatchDeckPane({
       if (!blob) throw new Error('render failed')
       setDeckImageUrl(URL.createObjectURL(blob))
     } catch {
-      showToast({ text: 'Failed to generate deck image', kind: 'danger' })
+      flashMessage('Failed to generate deck image', 'error')
     } finally {
       setGeneratingImage(false)
     }
@@ -267,6 +296,11 @@ export default function MatchDeckPane({
           </span>
         )}
       </h3>
+      {actionMessage && (
+        <div className={`play-instructions-message ${actionMessage.type}`} role="status">
+          {actionMessage.text}
+        </div>
+      )}
       <div className="lobby-deck-pane-body">
         {status === 'loading' && <DeckSkeleton />}
         {status === 'error' && (
