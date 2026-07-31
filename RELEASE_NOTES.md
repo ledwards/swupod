@@ -1,14 +1,6 @@
 # Release Notes
 
-## 07.30.2026 Part 2
-
-### 🎨 UI Improvements
-- **Quieter lobby copy.** A public game no longer tells you "Listed on the board." in the post-game modal and on the open-game screen — posting it there is the whole point, so the note only stated the obvious. Private games still say "Only people with the link can join," where the distinction actually matters.
-
-### 🔧 Under the Hood
-- **Solo drafters see draft lobbies again.** A solo draft deck was being described to the lobby as a sealed deck, so its owner was offered sealed games their deck could never join. It now matches on draft, like every other draft deck.
-
-## 07.30.2026
+## 07.30.2026 Part 3
 
 ### 🟢 The Lobby Tells You What Everyone's Doing
 
@@ -22,6 +14,16 @@ The online count includes everyone with the site open — mid-draft, mid-build, 
 - **Your Deck stays put.** The deck pane no longer grows tall enough to scroll the whole page — it scrolls inside its own panel.
 - **Copy confirmations appear right under the buttons** that fired them, instead of in the corner of the screen.
 - The **Your Open Lobby** row in your profile menu no longer cuts off its own text or border.
+
+## 07.30.2026 Part 2
+
+### 🎨 UI Improvements
+- **Quieter lobby copy.** A public game no longer tells you "Listed on the board." in the post-game modal and on the open-game screen — posting it there is the whole point, so the note only stated the obvious. Private games still say "Only people with the link can join," where the distinction actually matters.
+
+### 🔧 Under the Hood
+- **Solo drafters see draft lobbies again.** A solo draft deck was being described to the lobby as a sealed deck, so its owner was offered sealed games their deck could never join. It now matches on draft, like every other draft deck.
+
+## 07.30.2026
 
 ### 🎴 8-Pack Sealed
 
