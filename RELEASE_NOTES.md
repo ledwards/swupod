@@ -22,6 +22,12 @@ Two extra packs changes the shape of a pool. There are more playables to sort th
 - **Drafts now open with a leader reveal.** When the host hits **Ready**, packs are dealt and every player's leader options appear around the table — a moment to scope out what the pod is working with before anything is picked.
 - Nothing can be selected and no clocks run during the reveal. When the table has had its look, the host hits **Start Draft** to open picking (and start the pick timers in timed and competitive pods).
 
+### 🏆 Tier Lists Now Graded by Real Draft Picks
+- **ASH tier grades on Stats and My Stats now come from how the community actually drafts**, not from small-sample win rates. Leaders are ranked by a Plackett–Luce model over every reconstructed leader pick, and deck cards by a within-aspect Bradley–Terry model over 160,000+ pick decisions — the same methodology behind our GC 2026 Draft Prep report, which independently matched expert rankings.
+- **No more one-game A+ leaders.** Grades now require a real sample; ultra-rare leaders show as ungraded until enough drafts have seen them. Thin samples are labeled Provisional.
+- **The tier list is complete**: every graded leader and card appears, even ones without recorded match results yet. Win rates (GIH, OH, GD, GP) stay visible as context — they just no longer decide the tiers.
+- **Cost and Turn lenses** now grade on the same pick-preference scale, so a great 2-drop finally out-grades a mediocre 5-drop.
+
 ### 🔧 Under the Hood
 - **Draft timer reliability**: a round of refinements to how pick timers stay in sync across every player's browser, so the countdown you see always matches the one the draft is actually running on — in casual and competitive pods alike, and across pauses.
 

@@ -301,3 +301,138 @@ describe('/api/stats/card-data bucketed grades', () => {
     assert.deepEqual(withBucketedCardGrades({ cards: [] }), { cards: [] })
   })
 })
+
+describe('/api/stats/card-data pick-preference grades', async () => {
+  const { withPickPreferenceGrades } = await import('./route')
+
+  const meta = (name, subtitle, overrides = {}) => ({
+    id: `${name}-id`, cardId: `ASH_${name.replace(/\s+/g, '')}`, number: '001',
+    name, subtitle, set: 'ASH', rarity: 'Common', type: 'Unit', aspects: ['Command'],
+    cost: 3, variantType: 'Normal', isLeader: false, isBase: false,
+    imageUrl: `https://img.test/${name}.png`, backImageUrl: null,
+    ...overrides,
+  })
+
+  // 30 graded cards on a strength ladder + one thin card below the seen floor.
+  const statCards = Array.from({ length: 30 }, (_, i) => ({
+    name: `Pick Card ${i}`, subtitle: '', rarity: 'Common',
+    rating: Math.round((100 * i) / 29), bt: Number(Math.exp((i - 15) / 7).toFixed(4)),
+    aRate: 0.5, aSeen: 400, seen: 900, pickRate: 0.3, ata: 5,
+  }))
+  const statLeaders = [
+    { name: 'Dominant Leader', subtitle: 'One', rarity: 'Common', strength: 5.02, seen: 2201, picked: 1725, pickRate: 0.78, apr: 1.28 },
+    { name: 'Strong Leader', subtitle: 'Two', rarity: 'Common', strength: 1.91, seen: 2577, picked: 1602, pickRate: 0.62, apr: 1.52 },
+    { name: 'Mid Leader', subtitle: 'Three', rarity: 'Common', strength: 0.74, seen: 2939, picked: 1314, pickRate: 0.45, apr: 1.93 },
+    { name: 'Low Leader', subtitle: 'Four', rarity: 'Rare', strength: 0.17, seen: 3471, picked: 758, pickRate: 0.22, apr: 2.49 },
+    { name: 'Lower Leader', subtitle: 'Five', rarity: 'Rare', strength: 0.07, seen: 648, picked: 73, pickRate: 0.11, apr: 2.69 },
+    { name: 'Floor Leader', subtitle: 'Six', rarity: 'Rare', strength: 0.03, seen: 680, picked: 44, pickRate: 0.06, apr: 2.83 },
+    { name: 'Special Leader', subtitle: 'Ultra Rare', rarity: 'Special', strength: 1.96, seen: 2, picked: 2, pickRate: 1, apr: null },
+  ]
+  const stats = { set: 'ASH', minSeen: 20, contests: 100000, leaderContests: 5000, generatedAt: '2026-07-30', cards: statCards, leaders: statLeaders }
+
+  const allCards = [
+    ...statCards.map((card) => meta(card.name, null)),
+    ...statLeaders.map((leader) => meta(leader.name, leader.subtitle, { type: 'Leader', isLeader: true, cost: 0 })),
+  ]
+
+  const leaderRow = (name, subtitle, grade, gpWr, gpCount) => ({
+    cardName: name, subtitle, cardType: 'Leader', isLeader: true, isBase: false, rarity: 'Common',
+    aspects: ['Command'], cost: null, grade, displayGrade: grade, gradeBasis: 'Leader WR',
+    gradeStatus: 'graded', gradeStatusLabel: 'Graded', gradePolicy: 'leader-win-rate',
+    deckCount: 5, rawCopies: 5, gpCount, gpWins: Math.round((gpWr / 100) * gpCount), gpWr,
+  })
+
+  it('SPEC: sets without pick data are untouched', () => {
+    const payload = { setCode: 'SOR', leaders: [leaderRow('Any', null, 'A+', 71.4, 7)], cards: [] }
+    assert.deepEqual(withPickPreferenceGrades(payload, allCards, null), payload)
+  })
+
+  it('SPEC: a v1 stats file without strengths leaves win-rate grades alone', () => {
+    const v1 = { set: 'ASH', minSeen: 20, cards: [{ name: 'Pick Card 1', subtitle: '', rating: 90, aRate: 0.9, aSeen: 400 }] }
+    const payload = { setCode: 'ASH', leaders: [leaderRow('Dominant Leader', 'One', 'B+', 58.8, 68)], cards: [] }
+    const result = withPickPreferenceGrades(payload, allCards, v1)
+    assert.equal(result.leaders[0].grade, 'B+')
+    assert.equal(result.leaders[0].gradePolicy, 'leader-win-rate')
+  })
+
+  it('SPEC: leader tiers come from Plackett-Luce strength, not win rate', () => {
+    const payload = {
+      setCode: 'ASH',
+      leaders: [
+        // Win-rate order says Low > Dominant (the prod bug this switch fixes).
+        leaderRow('Low Leader', 'Four', 'A+', 71.4, 7),
+        leaderRow('Dominant Leader', 'One', 'B+', 58.8, 68),
+      ],
+      cards: [],
+    }
+    const result = withPickPreferenceGrades(payload, allCards, stats)
+    const byName = new Map(result.leaders.map((row) => [row.cardName, row]))
+    const gradeRank = (g) => ['F', 'D-', 'D', 'D+', 'C-', 'C', 'C+', 'B-', 'B', 'B+', 'A-', 'A', 'A+'].indexOf(g)
+    assert.ok(
+      gradeRank(byName.get('Dominant Leader').displayGrade) > gradeRank(byName.get('Low Leader').displayGrade),
+      `expected Dominant > Low, got ${byName.get('Dominant Leader').displayGrade} vs ${byName.get('Low Leader').displayGrade}`,
+    )
+    assert.equal(byName.get('Dominant Leader').gradePolicy, 'leader-pick-preference-pl')
+    assert.equal(byName.get('Dominant Leader').gradeBasis, 'Leader Pick Preference')
+    // Win-rate metrics survive as metrics.
+    assert.equal(byName.get('Dominant Leader').gpWr, 58.8)
+    assert.equal(byName.get('Dominant Leader').pickRate, 78)
+    assert.equal(byName.get('Dominant Leader').ata, 1.28)
+  })
+
+  it('SPEC: an ultra-rare leader below the seen floor is ungraded, never A+ on two sightings', () => {
+    const payload = { setCode: 'ASH', leaders: [leaderRow('Special Leader', 'Ultra Rare', 'A+', 100, 2)], cards: [] }
+    const result = withPickPreferenceGrades(payload, allCards, stats)
+    const special = result.leaders.find((row) => row.cardName === 'Special Leader')
+    assert.equal(special.displayGrade, null)
+    assert.equal(special.gradeStatus, 'sample-too-small')
+  })
+
+  it('SPEC: leaders missing from the slice are appended so the tier list is complete', () => {
+    const payload = { setCode: 'ASH', leaders: [leaderRow('Dominant Leader', 'One', 'B+', 58.8, 68)], cards: [] }
+    const result = withPickPreferenceGrades(payload, allCards, stats)
+    assert.equal(result.leaders.length, statLeaders.length)
+    const synthetic = result.leaders.find((row) => row.cardName === 'Mid Leader')
+    assert.equal(synthetic.gpCount, 0)
+    assert.equal(synthetic.gpWr, null)
+    assert.notEqual(synthetic.displayGrade, null)
+    assert.equal(synthetic.imageUrl, 'https://img.test/Mid Leader.png')
+  })
+
+  it('SPEC: card tiers come from Bradley-Terry strengths with bucketed lenses attached', () => {
+    const cardRow = (name) => ({
+      cardName: name, subtitle: null, cardType: 'Unit', isLeader: false, isBase: false,
+      rarity: 'Common', aspects: ['Command'], cost: 3, grade: 'F', displayGrade: 'F',
+      gradeStatus: 'graded', gradeStatusLabel: 'Graded', gradePolicy: 'wayfinder',
+      deckCount: 3, rawCopies: 3, gpCount: 12, gpWins: 3, gpWr: 25,
+      gradesByScheme: { cost: { grade: 'F', status: 'graded', statusLabel: 'Graded', bucketKey: '3', bucketLabel: '3-Drop' } },
+    })
+    const payload = { setCode: 'ASH', leaders: [], cards: [cardRow('Pick Card 29'), cardRow('Pick Card 0')] }
+    const result = withPickPreferenceGrades(payload, allCards, stats)
+    const best = result.cards.find((row) => row.cardName === 'Pick Card 29')
+    const worst = result.cards.find((row) => row.cardName === 'Pick Card 0')
+    assert.ok(['A+', 'A', 'A-'].includes(best.displayGrade), `best got ${best.displayGrade}`)
+    assert.ok(['F', 'D-'].includes(worst.displayGrade), `worst got ${worst.displayGrade}`)
+    assert.equal(best.gradePolicy, 'pick-preference-bt')
+    assert.equal(best.gradesByScheme.cost.bucketKey, '3')
+    // The whole graded set is appended, so the tier list is complete.
+    assert.equal(result.cards.length, statCards.length)
+    assert.equal(result.gradeMethodology, 'pick-preference')
+    assert.equal(result.gradeBasis, 'Pick Preference')
+  })
+
+  it('SPEC: a slice card with no pick data is ungraded rather than falling back to win rate', () => {
+    const stranger = {
+      cardName: 'Unknown Card', subtitle: null, cardType: 'Unit', isLeader: false, isBase: false,
+      rarity: 'Common', aspects: [], cost: 2, grade: 'A+', displayGrade: 'A+',
+      gradeStatus: 'graded', gradeStatusLabel: 'Graded', gradePolicy: 'wayfinder',
+      deckCount: 1, rawCopies: 1, gpCount: 4, gpWins: 4, gpWr: 100,
+      gradesByScheme: { cost: { grade: 'A+', status: 'graded', statusLabel: 'Graded', bucketKey: '2', bucketLabel: '2-Drop' } },
+    }
+    const result = withPickPreferenceGrades({ setCode: 'ASH', leaders: [], cards: [stranger] }, allCards, stats)
+    const row = result.cards.find((candidate) => candidate.cardName === 'Unknown Card')
+    assert.equal(row.displayGrade, null)
+    assert.equal(row.gradeStatus, 'sample-too-small')
+    assert.equal(row.gradesByScheme.cost, undefined)
+  })
+})

@@ -12,6 +12,19 @@ import {
   computeBucketedCardGrades,
   computeCardGrades,
 } from '@/src/services/cardDataMetrics'
+import {
+  PICK_GRADE_BASIS_CARDS,
+  PICK_GRADE_BASIS_LEADERS,
+  PICK_GRADE_POLICY_CARDS,
+  PICK_GRADE_POLICY_LEADERS,
+  computeBucketedCardPickGrades,
+  computeCardPickGrades,
+  computeLeaderPickGrades,
+  pickGradeStatusLabel,
+  pickIdentityKey,
+} from '@/src/services/pickPreferenceGrades'
+import type { PickGrade, PickPreferenceSetStats } from '@/src/services/pickPreferenceGrades'
+import { pickPreferenceStatsForSet } from '@/src/data/pickPreferences'
 import tournamentUserIds from '@/src/data/tournament-user-ids.json'
 import { NextRequest } from 'next/server'
 
@@ -508,11 +521,237 @@ export function withBucketedCardGrades<T extends { cards?: any[] }>(payload: T):
   }
 }
 
+/**
+ * Best card record per pick identity for resolving cost, art, and metadata —
+ * preferring this set's Normal printing.
+ */
+function buildPickCardMetaLookup(allCards: RawCard[], setCode: string): Map<string, RawCard> {
+  const score = (card: RawCard) =>
+    (card.set === setCode ? 2 : 0) + (card.variantType === 'Normal' ? 1 : 0)
+  const lookup = new Map<string, RawCard>()
+  for (const card of allCards) {
+    const key = pickIdentityKey(card.name, card.subtitle)
+    const existing = lookup.get(key)
+    if (!existing || score(card) > score(existing)) lookup.set(key, card)
+  }
+  return lookup
+}
+
+function syntheticPickRow(meta: RawCard, isLeader: boolean) {
+  return {
+    cardName: meta.name,
+    cardId: meta.cardId || meta.id || null,
+    subtitle: meta.subtitle || null,
+    rarity: meta.rarity || 'Unknown',
+    cardType: meta.type || (isLeader ? 'Leader' : 'Unit'),
+    aspects: Array.isArray(meta.aspects) ? meta.aspects : [],
+    cost: meta.cost ?? null,
+    imageUrl: meta.imageUrl || null,
+    backImageUrl: meta.backImageUrl || null,
+    collectorNumber: meta.cardId || meta.number || null,
+    setCode: meta.set || null,
+    isLeader,
+    isBase: false,
+    deckCount: 0,
+    rawCopies: 0,
+    gpCount: 0,
+    gpWins: 0,
+    gpWr: null,
+    ohCount: null,
+    ohWr: null,
+    gdCount: null,
+    gdWr: null,
+    gihCount: null,
+    gihWr: null,
+    gnsCount: null,
+    gnsWr: null,
+    iih: null,
+    playedRate: null,
+    resourcedWhenSeen: null,
+    playedWar: null,
+    sampleWarning: null,
+  }
+}
+
+/**
+ * Switch tier grades to draft pick preference for sets with committed pick
+ * data (src/data/pickPreferences/): leaders graded from Plackett-Luce
+ * strengths over leader-round choice sets, deck cards from within-aspect
+ * Bradley-Terry strengths, both mapped onto the existing letter bands via
+ * log-strength z-scores. Win-rate columns remain as metrics; they no longer
+ * decide tiers for covered sets.
+ *
+ * Sets without a data file are untouched (per-set behavior rule), as is any
+ * file that predates the v2 strengths. Graded cards missing from the slice
+ * (never in a recorded-match deck) are appended with empty win-rate metrics so
+ * the tier list is complete.
+ */
+export function withPickPreferenceGrades<T extends { setCode?: string; leaders?: any[]; bases?: any[]; cards?: any[] }>(
+  payload: T,
+  allCards: RawCard[],
+  statsOverride?: PickPreferenceSetStats | null,
+): T {
+  const stats: PickPreferenceSetStats | null = statsOverride !== undefined
+    ? statsOverride
+    : pickPreferenceStatsForSet(payload?.setCode)
+  if (!stats) return payload
+
+  const hasCardStrengths = stats.cards.some((card) => card.bt != null && card.bt > 0)
+  const leaderStats = stats.leaders || []
+  const hasLeaderStrengths = leaderStats.some((leader) => leader.strength != null && leader.strength > 0)
+  if (!hasCardStrengths && !hasLeaderStrengths) return payload
+
+  const minSeen = stats.minSeen
+  const metaLookup = buildPickCardMetaLookup(allCards, String(payload.setCode))
+  const rowKey = (row: any) => pickIdentityKey(row.cardName || row.name, row.subtitle)
+
+  const cardGrades = hasCardStrengths ? computeCardPickGrades(stats.cards, { minSeen }) : new Map<string, PickGrade>()
+  const leaderGrades = hasLeaderStrengths ? computeLeaderPickGrades(leaderStats, { minSeen }) : new Map<string, PickGrade>()
+  const cardStatsByKey = new Map(stats.cards.map((card) => [pickIdentityKey(card.name, card.subtitle), card]))
+  const leaderStatsByKey = new Map(leaderStats.map((leader) => [pickIdentityKey(leader.name, leader.subtitle), leader]))
+
+  const costByKey = new Map(
+    stats.cards.map((card) => {
+      const key = pickIdentityKey(card.name, card.subtitle)
+      return [key, metaLookup.get(key)?.cost ?? null] as const
+    }),
+  )
+  const bucketedByScheme = hasCardStrengths
+    ? {
+        cost: computeBucketedCardPickGrades(stats.cards, costByKey, 'cost', { minSeen }),
+        'curve-slot': computeBucketedCardPickGrades(stats.cards, costByKey, 'curve-slot', { minSeen }),
+      }
+    : null
+
+  const statusLabel = (grade: PickGrade | undefined) => {
+    if (!grade) return pickGradeStatusLabel('sample-too-small', minSeen)
+    return grade.provisional ? 'Provisional' : pickGradeStatusLabel(grade.status, minSeen)
+  }
+
+  const gradesBySchemeFor = (key: string) => {
+    if (!bucketedByScheme) return {}
+    const schemes: Record<string, any> = {}
+    for (const [scheme, byKey] of Object.entries(bucketedByScheme)) {
+      const grade = byKey.get(key)
+      if (!grade) continue
+      schemes[scheme] = {
+        grade: grade.grade,
+        status: grade.status,
+        provisional: grade.provisional,
+        statusLabel: grade.provisional ? 'Provisional' : pickGradeStatusLabel(grade.status, minSeen),
+        bucketKey: grade.bucketKey,
+        bucketLabel: grade.bucketLabel,
+      }
+    }
+    return schemes
+  }
+
+  const decorateLeaderRow = (row: any) => {
+    const key = rowKey(row)
+    const grade = leaderGrades.get(key)
+    const stat = leaderStatsByKey.get(key)
+    return {
+      ...row,
+      grade: grade?.grade ?? null,
+      displayGrade: grade?.grade ?? null,
+      gradeBasis: PICK_GRADE_BASIS_LEADERS,
+      gradeStatus: grade?.status ?? 'sample-too-small',
+      gradeStatusLabel: statusLabel(grade),
+      gradePolicy: PICK_GRADE_POLICY_LEADERS,
+      pickRating: null,
+      pickRate: rateToPct(stat?.pickRate),
+      inAspectRate: null,
+      pickSeen: stat?.seen ?? null,
+      ata: stat?.apr ?? null,
+    }
+  }
+
+  const decorateCardRow = (row: any) => {
+    const key = rowKey(row)
+    const grade = cardGrades.get(key)
+    const stat = cardStatsByKey.get(key)
+    return {
+      ...row,
+      grade: grade?.grade ?? null,
+      displayGrade: grade?.grade ?? null,
+      gradeBasis: PICK_GRADE_BASIS_CARDS,
+      gradeStatus: grade?.status ?? 'sample-too-small',
+      gradeStatusLabel: statusLabel(grade),
+      gradePolicy: PICK_GRADE_POLICY_CARDS,
+      pickRating: stat?.rating ?? null,
+      pickRate: rateToPct(stat?.pickRate),
+      inAspectRate: rateToPct(stat?.aRate),
+      pickSeen: stat?.seen ?? stat?.aSeen ?? null,
+      ata: stat?.ata ?? null,
+      gradesByScheme: gradesBySchemeFor(key),
+    }
+  }
+
+  const isLeaderRow = (row: any) => Boolean(row?.isLeader) || String(row?.cardType || '').toLowerCase().includes('leader')
+  const isBaseRow = (row: any) => Boolean(row?.isBase) || String(row?.cardType || '').toLowerCase().includes('base')
+
+  const decorateRow = (row: any) => {
+    if (isBaseRow(row)) return row
+    if (isLeaderRow(row)) return hasLeaderStrengths ? decorateLeaderRow(row) : row
+    return hasCardStrengths ? decorateCardRow(row) : row
+  }
+
+  const leaders = (payload.leaders || []).map(decorateRow)
+  const cards = (payload.cards || []).map(decorateRow)
+
+  // Complete the tier list: graded identities the slice never saw (no recorded
+  // matches yet) still belong on it.
+  const presentKeys = new Set([...leaders, ...cards, ...(payload.bases || [])].map(rowKey))
+  // Only this set's own cards qualify — carbonite drafts leak old-set leaders
+  // into the pick data as one-off sightings, and those don't belong on the
+  // set's tier list.
+  if (hasLeaderStrengths) {
+    for (const leader of leaderStats) {
+      const key = pickIdentityKey(leader.name, leader.subtitle)
+      if (presentKeys.has(key)) continue
+      const meta = metaLookup.get(key)
+      if (!meta || meta.set !== payload.setCode) continue
+      presentKeys.add(key)
+      leaders.push(decorateLeaderRow(syntheticPickRow(meta, true)))
+    }
+  }
+  if (hasCardStrengths) {
+    for (const card of stats.cards) {
+      const key = pickIdentityKey(card.name, card.subtitle)
+      if (presentKeys.has(key)) continue
+      const meta = metaLookup.get(key)
+      if (!meta || meta.set !== payload.setCode) continue
+      if (meta.isLeader || meta.isBase || meta.type === 'Leader' || meta.type === 'Base') continue
+      presentKeys.add(key)
+      cards.push(decorateCardRow(syntheticPickRow(meta, false)))
+    }
+  }
+
+  const byGradeThenRating = (a: any, b: any) =>
+    (GRADE_SORT[b.displayGrade ?? ''] ?? -1) - (GRADE_SORT[a.displayGrade ?? ''] ?? -1) ||
+    (b.pickRating ?? -1) - (a.pickRating ?? -1) ||
+    (b.pickRate ?? -1) - (a.pickRate ?? -1) ||
+    String(a.cardName || '').localeCompare(String(b.cardName || ''))
+
+  return {
+    ...payload,
+    gradeMethodology: 'pick-preference',
+    gradeBasis: PICK_GRADE_BASIS_CARDS,
+    bucketedGradeBasis: PICK_GRADE_BASIS_CARDS,
+    pickDataGeneratedAt: stats.generatedAt || null,
+    leaders: leaders.sort(byGradeThenRating),
+    cards: cards.sort(byGradeThenRating),
+  }
+}
+
 function finalizeCardDataPayload<T extends { leaders?: any[]; bases?: any[]; cards?: any[] }>(
   payload: T,
   allCards: RawCard[],
 ): T {
-  return withBucketedCardGrades(enrichPayloadWithHyperspaceImages(payload, allCards))
+  return enrichPayloadWithHyperspaceImages(
+    withPickPreferenceGrades(withBucketedCardGrades(payload), allCards),
+    allCards,
+  )
 }
 
 function mergeWayfinderReplayMetrics(payload: any, wayfinderPayload: any) {

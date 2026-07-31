@@ -52,6 +52,16 @@ async function main() {
 
   const stats = new Map() // identity -> accumulators
   const pairs = new Map() // "idA%%idB" (sorted) -> {a: wins for A, b: wins for B}
+  const leaderStats = new Map() // identity -> accumulators (leader rounds)
+  const leaderChoiceSets = [] // { ids: string[], chosen: string } — full PL choice sets
+  const getLeader = (c) => {
+    const k = identity(c)
+    if (!leaderStats.has(k)) leaderStats.set(k, {
+      name: c.name, subtitle: c.subtitle || '', rarity: c.rarity, aspects: c.aspects || [],
+      seen: 0, picked: 0, aprSum: 0,
+    })
+    return leaderStats.get(k)
+  }
   const get = (c) => {
     const k = identity(c)
     if (!stats.has(k)) stats.set(k, {
@@ -61,7 +71,7 @@ async function main() {
     return stats.get(k)
   }
 
-  let contests = 0, humanSeats = 0, skipped = 0
+  let contests = 0, leaderContests = 0, humanSeats = 0, skipped = 0
   for (let i = 0; i < pods.length; i++) {
     const pod = pods[i]
     if (i % 25 === 0) console.log(`   pod ${i + 1}/${pods.length} (contests so far: ${contests})`)
@@ -93,7 +103,23 @@ async function main() {
       } catch { skipped++; continue }
 
       for (const pick of picks) {
-        if (pick.type !== 'card' || !pick.pickedInstanceId) continue
+        if (!pick.pickedInstanceId) continue
+        if (pick.type === 'leader') {
+          // Leader rounds are full Plackett-Luce choice sets: the drafter chose
+          // one leader from everything visible in the leader pack.
+          const visible = pick.visibleCards || []
+          if (visible.length < 2) continue
+          const chosen = visible.find(c => c.instanceId === pick.pickedInstanceId)
+          if (!chosen) continue
+          leaderContests++
+          for (const c of visible) getLeader(c).seen++
+          const cs = getLeader(chosen)
+          cs.picked++
+          cs.aprSum += pick.pickInPack
+          leaderChoiceSets.push({ ids: visible.map(identity), chosen: identity(chosen) })
+          continue
+        }
+        if (pick.type !== 'card') continue
         const visible = pick.visibleCards || []
         if (visible.length < 2) continue // last card of a pack = no contest
         const chosen = visible.find(c => c.instanceId === pick.pickedInstanceId)
@@ -134,7 +160,59 @@ async function main() {
     }
   }
 
-  console.log(`\n📊 ${contests} contests from ${humanSeats} human seats (${skipped} pods/seats skipped)\n`)
+  console.log(`\n📊 ${contests} card contests + ${leaderContests} leader contests from ${humanSeats} human seats (${skipped} pods/seats skipped)\n`)
+
+  // Plackett-Luce fit (MM algorithm) over full leader-round choice sets:
+  // s_i <- W_i / sum over sets containing i of 1 / (sum of s_j in that set).
+  console.log('👑 Fitting Plackett-Luce on leader choice sets...')
+  const plIds = new Set()
+  for (const set of leaderChoiceSets) for (const id of set.ids) plIds.add(id)
+  const plStrength = new Map([...plIds].map(id => [id, 1]))
+  const plWins = new Map([...plIds].map(id => [id, 0]))
+  for (const set of leaderChoiceSets) plWins.set(set.chosen, (plWins.get(set.chosen) || 0) + 1)
+  for (let iter = 0; iter < 500; iter++) {
+    const denom = new Map([...plIds].map(id => [id, 0]))
+    for (const set of leaderChoiceSets) {
+      let total = 0
+      for (const id of set.ids) total += plStrength.get(id)
+      if (total <= 0) continue
+      const d = 1 / total
+      for (const id of set.ids) denom.set(id, denom.get(id) + d)
+    }
+    for (const id of plIds) {
+      const w = plWins.get(id) || 0
+      plStrength.set(id, w > 0 ? w / Math.max(denom.get(id), 1e-9) : 1e-6)
+    }
+    // Normalize on the well-sampled leaders only: carbonite drafts inject
+    // off-set leaders seen once or twice whose degenerate strengths would
+    // otherwise dominate the geometric mean and make every number unreadable.
+    // PL is scale-invariant, so this changes presentation, not fit.
+    const anchorIds = [...plIds].filter(id => (leaderStats.get(id)?.seen || 0) >= MIN_SEEN)
+    const normIds = anchorIds.length > 0 ? anchorIds : [...plIds]
+    if (normIds.length > 0) {
+      let logSum = 0; for (const id of normIds) logSum += Math.log(plStrength.get(id))
+      const gm = Math.exp(logSum / normIds.length)
+      for (const id of plIds) plStrength.set(id, plStrength.get(id) / gm)
+    }
+  }
+
+  const leaderRows = [...leaderStats.entries()]
+    .map(([k, s]) => ({
+      strength: plStrength.get(k) ?? null,
+      name: s.name, subtitle: s.subtitle, rarity: s.rarity, aspects: (s.aspects || []).join('/'),
+      seen: s.seen, picked: s.picked,
+      pickRate: s.seen ? s.picked / s.seen : null,
+      apr: s.picked ? s.aprSum / s.picked : null,
+    }))
+    .sort((a, b) => (b.strength ?? -1) - (a.strength ?? -1))
+
+  if (leaderRows.length > 0) {
+    console.log('\n=== LEADERS by Plackett-Luce strength ===')
+    console.log('    PL   pick%   APR    seen  leader')
+    for (const r of leaderRows) {
+      console.log(`${(r.strength ?? 0).toFixed(3).padStart(7)}  ${r.pickRate == null ? '  — ' : (100 * r.pickRate).toFixed(0).padStart(3) + '%'}  ${r.apr == null ? '  — ' : r.apr.toFixed(2).padStart(5)}  ${String(r.seen).padStart(6)}  ${r.name}${r.subtitle ? ' — ' + r.subtitle : ''}`)
+    }
+  }
 
   // Bradley-Terry fit (MM algorithm) over within-aspect pairwise contests.
   // s_i <- W_i / sum_j n_ij / (s_i + s_j); rating = percentile of log-strength.
@@ -219,7 +297,9 @@ export const CARD_RANKINGS: Record<string, Record<string, number>> = ${JSON.stri
     console.log(`\n🤖 Wrote card rankings -> ${EMIT}`)
   }
   // Player-facing aggregate stats (committed to src/data/pickPreferences/ —
-  // aggregate card stats only, no player data)
+  // aggregate card stats only, no player data). v2: adds Bradley-Terry
+  // strengths per card and a Plackett-Luce leaders section, which back the
+  // pick-preference tier grades on /stats and /me (pickPreferenceGrades.ts).
   const EMIT_STATS = arg('emit-stats', '')
   if (EMIT_STATS) {
     const statCards = rows
@@ -232,17 +312,35 @@ export const CARD_RANKINGS: Record<string, Record<string, number>> = ${JSON.stri
         aRate: Number((r.aRate ?? 0).toFixed(4)),
         aSeen: r.aSeen,
         rating: r.rating,
+        bt: r.bt == null ? null : Number(r.bt.toFixed(4)),
+        seen: r.seen,
+        pickRate: Number(r.pickRate.toFixed(4)),
+        ata: r.ata == null ? null : Number(r.ata.toFixed(2)),
       }))
+    // Leaders are emitted regardless of MIN_SEEN — grading gates on `seen`
+    // downstream, and ultra-rare leaders should surface as "insufficient
+    // sample" rather than silently vanish.
+    const statLeaders = leaderRows.map(r => ({
+      name: r.name,
+      subtitle: r.subtitle,
+      rarity: r.rarity,
+      strength: r.strength == null ? null : Number(r.strength.toFixed(4)),
+      seen: r.seen,
+      picked: r.picked,
+      pickRate: r.pickRate == null ? null : Number(r.pickRate.toFixed(4)),
+      apr: r.apr == null ? null : Number(r.apr.toFixed(2)),
+    }))
     writeFileSync(EMIT_STATS, JSON.stringify({
-      set: SET, contests, humanSeats, minSeen: MIN_SEEN,
+      set: SET, contests, leaderContests, humanSeats, minSeen: MIN_SEEN,
       generatedAt: new Date().toISOString().slice(0, 10),
       cards: statCards,
+      leaders: statLeaders,
     }, null, 2))
-    console.log(`\n📈 Wrote ${statCards.length} card stats -> ${EMIT_STATS}`)
+    console.log(`\n📈 Wrote ${statCards.length} card stats + ${statLeaders.length} leaders -> ${EMIT_STATS}`)
   }
   if (OUT) {
-    writeFileSync(OUT, JSON.stringify({ set: SET, contests, humanSeats, minSeen: MIN_SEEN, cards: rows }, null, 2))
-    console.log(`\n💾 Wrote ${rows.length} cards -> ${OUT}`)
+    writeFileSync(OUT, JSON.stringify({ set: SET, contests, leaderContests, humanSeats, minSeen: MIN_SEEN, cards: rows, leaders: leaderRows }, null, 2))
+    console.log(`\n💾 Wrote ${rows.length} cards + ${leaderRows.length} leaders -> ${OUT}`)
   }
   process.exit(0)
 }

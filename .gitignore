@@ -125,3 +125,4 @@ _verify-*
 **/_verify-*
 .env.fable-bak
 .next-*
+.claude/settings.local.json.bak
