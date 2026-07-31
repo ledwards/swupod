@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useState, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
 import { initializeCardCache } from '../../../src/utils/cardCache'
@@ -40,13 +40,23 @@ function NewSealedPodPageContent() {
     setCompetitive(isPatron === true && initialSealedCompetitiveFromSearch(searchParams))
   }, [searchParams, isPatron])
 
-  // Free 6-vs-8 pack choice for standard pods. Competitive Sealed is always 8,
-  // so the toggle locks while it's on — the standard choice is remembered here
-  // and restored when competitive goes back off.
-  const [standardPackCount, setStandardPackCount] = useState(STANDARD_SEALED_PACKS_PER_PLAYER)
-  const packsPerPlayer = competitive
-    ? COMPETITIVE_SEALED_PACKS_PER_PLAYER
-    : standardPackCount
+  // Free 6-vs-8 pack choice, available in both modes. Turning Competitive
+  // Sealed on moves the default to 8 — its usual pool size — but the host can
+  // still pick 6, and an explicit choice is never overwritten.
+  const [packsPerPlayer, setPacksPerPlayer] = useState(STANDARD_SEALED_PACKS_PER_PLAYER)
+  const packCountTouched = useRef(false)
+
+  useEffect(() => {
+    if (packCountTouched.current) return
+    setPacksPerPlayer(competitive
+      ? COMPETITIVE_SEALED_PACKS_PER_PLAYER
+      : STANDARD_SEALED_PACKS_PER_PLAYER)
+  }, [competitive])
+
+  const choosePackCount = (count: number) => {
+    packCountTouched.current = true
+    setPacksPerPlayer(count)
+  }
   const [isPublic, setIsPublic] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('pod-visibility')
@@ -222,11 +232,8 @@ function NewSealedPodPageContent() {
   const packCountToggle = (
     <SealedPackCountToggle
       value={packsPerPlayer}
-      onChange={setStandardPackCount}
-      disabled={competitive}
-      title={competitive
-        ? 'Competitive Sealed is always 8 packs per player.'
-        : 'Packs dealt to each player'}
+      onChange={choosePackCount}
+      title="Packs dealt to each player"
     />
   )
 
