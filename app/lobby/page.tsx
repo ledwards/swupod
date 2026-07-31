@@ -409,6 +409,8 @@ function LobbyPageInner(): React.JSX.Element {
                 shareId: joinTarget.shareId,
                 setCode: joinTarget.setCode,
                 format: joinTarget.format,
+                // Sealed pack count is part of the format (hard split).
+                packsPerPlayer: joinTarget.packsPerPlayer ?? null,
                 hostUsername: joinTarget.host.username,
               }
               : null

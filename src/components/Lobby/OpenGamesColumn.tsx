@@ -2,6 +2,7 @@
 
 import Button from '@/src/components/Button'
 import { getPackArtUrl } from '@/src/utils/packArt'
+import { packCountLabel } from '@/src/utils/sealedFormat'
 import type { OpenGamesBoard, OpenGameListing } from '@/src/hooks/useOpenGamesSocket'
 import type { KarabastLobby } from '@/src/hooks/useKarabastLobbies'
 
@@ -124,6 +125,11 @@ export default function OpenGamesColumn({
                 <span className={`lobby-badge lobby-badge-format-${listing.format === 'draft' ? 'draft' : 'sealed'}`}>
                   {listing.format === 'draft' ? 'Draft' : 'Sealed'}
                 </span>
+                {/* Pack count is part of the sealed format — a 6-pack deck
+                    can't join an 8-pack game, so the row says which it is. */}
+                {packCountLabel(listing.packsPerPlayer) && (
+                  <span className="lobby-badge">{packCountLabel(listing.packsPerPlayer)}</span>
+                )}
                 {listing.bestOf === 3 && <span className="lobby-badge">Bo3</span>}
               </div>
               <div className="lobby-row-meta">

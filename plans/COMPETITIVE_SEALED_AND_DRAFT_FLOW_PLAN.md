@@ -28,6 +28,17 @@ Built by subagents in phases; this session is the project manager.
   revisited: a seat is `pod_players.user_id` and there is no guest-token identity, so
   an anonymous player could not reliably reclaim their seat/pool across requests.
 
+## Pack count is a format (2026-07-30, user)
+- 6 or 8 packs is chosen freely by everyone — solo pools, sealed pods, and
+  Competitive Sealed alike. Competitive only differs in defaulting to 8.
+- Pack count is **metadata that behaves like a format**: it belongs in the deck's
+  display name, and matchmaking treats it as a hard split.
+- **6-pack and 8-pack sealed NEVER pair.** Enforced server-side, not just filtered
+  in the UI. Not a soft label players can choose to cross.
+- Legacy sealed pools (created before the choice existed) must land in exactly one
+  bucket by a documented rule — never guessed into the wrong one, never able to
+  pair with both.
+
 ## Leader preview liveness (2026-07-30, user)
 - A draft that hits "Ready" (enters `leader_preview`) and never progresses is
   **auto-cancelled after 24 hours**, reusing the existing host Cancel Draft path.

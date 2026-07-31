@@ -256,6 +256,8 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
         setCode,
         poolType: 'sealed',
         createdAt: new Date(),
+        // 6-pack vs 8-pack sealed are different formats — name says which.
+        packCount: generatedPacks.length,
       })
       const poolData = {
         setCode,

@@ -6,6 +6,7 @@ import { generateShareId, formatSetCodeRange } from '@/lib/utils'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
 import { generateSealedBox, clearBeltCache } from '@/src/utils/boosterPack'
 import { sealedPacksPerPlayer, competitiveSealedDeckLockMinutes } from '@/src/utils/sealedPodConfig'
+import { packCountNameSuffix } from '@/src/utils/sealedFormat'
 import { initializeCardCache } from '@/src/utils/cardCache'
 import { computeSealedPodPairings } from '@/src/utils/podPairings'
 import { broadcastSealedPodState, broadcastPublicPodsUpdate, broadcastSystemChatMessage } from '@/src/lib/socketBroadcast'
@@ -89,7 +90,9 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       const allCards = playerPacks.flatMap(pack => pack.cards || pack)
 
       const poolShareId = generateShareId(8)
-      const defaultName = `${pod.set_code} Sealed ${month}/${day}/${year}`
+      // Pack count is a format distinction (6-pack vs 8-pack sealed match
+      // separately in the lobby), so it goes in the pool's display name.
+      const defaultName = `${pod.set_code} Sealed${packCountNameSuffix(packsPerPlayer)} ${month}/${day}/${year}`
 
       await query(
         `INSERT INTO card_pools (

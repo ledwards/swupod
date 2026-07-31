@@ -7,6 +7,7 @@ import { requireAuth } from '@/lib/auth'
 import { jsonResponse, errorResponse, parseBody, handleApiError, formatSetCodeRange } from '@/lib/utils'
 import { jsonParse } from '@/src/utils/json'
 import { resolveCatalogCards } from '@/src/services/cards/cardCatalogResolver'
+import { sealedPackBucket } from '@/src/utils/sealedFormat'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface RouteContext {
@@ -48,6 +49,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
           u.id as owner_id,
           u.username as owner_username,
           pp.share_id as parent_share_id,
+          pp.packs as parent_packs,
           CASE
             WHEN cp.parent_pool_id IS NULL THEN
               (SELECT COUNT(*) FROM card_pools WHERE parent_pool_id = cp.id)
@@ -137,6 +139,14 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     // Parse JSON fields from database
     let cards = jsonParse(pool.cards)
     let packs = jsonParse(pool.packs)
+    // Capture the raw pack count BEFORE any per-format reshaping below —
+    // it is the pool's sealed FORMAT bucket (6-pack vs 8-pack never pair).
+    const rawParentPacks = jsonParse(pool.parent_packs)
+    const packsPerPlayer = sealedPackBucket({
+      poolType: pool.pool_type || 'sealed',
+      packCount: Array.isArray(packs) ? packs.length : null,
+      parentPackCount: Array.isArray(rawParentPacks) ? rawParentPacks.length : null,
+    })
     let deckBuilderState = jsonParse(pool.deck_builder_state)
 
     // Handle rotisserie pools - extract user's picked cards
@@ -216,6 +226,10 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       draws: pool.draws ?? 0,
       wayfinderMatchIds: pool.wayfinder_match_ids ?? [],
       parentShareId: pool.parent_share_id || null,
+      // Sealed pack count is a FORMAT distinction (6-pack sealed never pairs
+      // with 8-pack). Derived, never stored twice; a build inherits its
+      // parent's packs. Null for draft and every other format.
+      packsPerPlayer,
       buildCount: parseInt(pool.build_count || '0', 10),
       owner: pool.owner_id
         ? {

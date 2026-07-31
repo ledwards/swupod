@@ -12,6 +12,10 @@ export interface OpenGameListing {
   host: { username: string | null; avatarUrl: string | null }
   hostConnected?: boolean
   bestOf?: number
+  /** Sealed packs behind the host's deck. 6-pack and 8-pack sealed are
+   *  different formats, so this is part of what a joiner must match.
+   *  `null`/absent for draft & other formats, and for legacy pools. */
+  packsPerPlayer?: number | null
   karabastLobbyId?: string | null
   /**
    * True when the viewing user posted this listing (computed from the session

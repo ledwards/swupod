@@ -10,6 +10,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Button from '@/src/components/Button'
 import { STATS_SET_ORDER } from '@/src/utils/statsSetTabs'
+import { packBucketsMatch, packCountLabel } from '@/src/utils/sealedFormat'
 import '@/src/components/YourStats/YourStats.css'
 import './DeckPicker.css'
 
@@ -18,6 +19,9 @@ export interface EligibleDeck {
   setCode: string
   setName: string | null
   format: string
+  /** Sealed packs this pool was opened from — part of the format (6-pack and
+   *  8-pack sealed never match). Null for draft/chaos and legacy pools. */
+  packsPerPlayer?: number | null
   name: string | null
   builtAt: string | null
   eligible: boolean
@@ -33,6 +37,10 @@ interface DeckPickerProps {
   /** Filter to a specific game's set+format (Join flow); omit for New Game. */
   setCode?: string
   format?: string
+  /** Sealed pack bucket of the game being joined — part of the format, and a
+   *  hard split (a 6-pack deck is never offered for an 8-pack game). Only
+   *  applies alongside `format`; the unfiltered New Game picker ignores it. */
+  packsPerPlayer?: number | null
   selected: string | null
   onSelect: (deck: EligibleDeck) => void
   /** Fires whenever the eligible count is known/changes (modal hides its
@@ -59,7 +67,7 @@ function formatLabel(format?: string): string {
 
 /** Zero-eligible-decks state (Join flow): link out to make a deck that fits
  *  this game — Solo Sealed / Solo Draft, plus open draft pods for drafts. */
-function NoEligibleDecks({ setCode, format }: { setCode?: string | undefined; format?: string | undefined }): React.JSX.Element {
+function NoEligibleDecks({ setCode, format, packsPerPlayer }: { setCode?: string | undefined; format?: string | undefined; packsPerPlayer?: number | null }): React.JSX.Element {
   const isDraft = format === 'draft'
   // Open draft pods are a faster on-ramp for draft games; count them so the
   // link reads "or join a draft pod (2 open)".
@@ -84,7 +92,9 @@ function NoEligibleDecks({ setCode, format }: { setCode?: string | undefined; fo
   return (
     <div className="lobby-state lobby-deck-empty">
       <p>
-        You don&apos;t have a {setCode} {formatLabel(format)} deck yet — make one first:
+        You don&apos;t have a {setCode} {formatLabel(format)}
+        {packCountLabel(packsPerPlayer) ? ` (${packCountLabel(packsPerPlayer)})` : ''} deck
+        yet — make one first:
       </p>
       <div className="lobby-deck-empty-ctas">
         {/* Format-specific only: a sealed game needs a sealed deck, a draft
@@ -108,7 +118,7 @@ function NoEligibleDecks({ setCode, format }: { setCode?: string | undefined; fo
   )
 }
 
-export default function DeckPicker({ setCode, format, selected, onSelect, onEligibleCount }: DeckPickerProps): React.JSX.Element {
+export default function DeckPicker({ setCode, format, packsPerPlayer = null, selected, onSelect, onEligibleCount }: DeckPickerProps): React.JSX.Element {
   const [decks, setDecks] = useState<EligibleDeck[] | null>(null)
   const [error, setError] = useState(false)
   // Bumped by the Retry button to re-run the fetch effect.
@@ -150,6 +160,9 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
     const params = new URLSearchParams()
     if (setCode) params.set('setCode', setCode)
     if (format) params.set('format', format)
+    // Sealed pack count is part of the format: the server marks 6-pack decks
+    // ineligible for an 8-pack game (and vice versa).
+    if (packsPerPlayer) params.set('packs', String(packsPerPlayer))
     setPage(0)
 
     // One failed fetch must not strand the picker in a dead-end error state
@@ -177,7 +190,7 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
       cancelled = true
       if (timer) clearTimeout(timer)
     }
-  }, [setCode, format, attempt])
+  }, [setCode, format, packsPerPlayer, attempt])
 
   const filtered = Boolean(setCode || format)
   const matchesSetFilter = (sc: string): boolean => {
@@ -203,7 +216,9 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
         d.complete === false &&
         matchesLocalFilters(d) &&
         (!setCode || d.setCode === setCode) &&
-        (!format || d.format === format))
+        (!format || d.format === format) &&
+        // Pack bucket only narrows a format-pinned (Join) picker.
+        (!format || packBucketsMatch(d.packsPerPlayer, packsPerPlayer)))
     : []
   const availableSets = filtered ? [] : [...new Set((decks ?? []).map(d => d.setCode))]
   const hasLatest = availableSets.some(sc => setBucket(sc) === 'latest')
@@ -219,10 +234,12 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [decks])
 
-  // "ASH · Draft (4 eligible)" — the Join modal's one-line subtitle.
+  // "ASH · Draft (4 eligible)" / "LAW · Sealed · 8-pack (2 eligible)" —
+  // the Join modal's one-line subtitle.
   const subtitle = filtered && (
     <p className="lobby-deck-subtitle">
       {setCode} · {formatLabel(format)}
+      {packCountLabel(packsPerPlayer) ? ` · ${packCountLabel(packsPerPlayer)}` : ''}
       {decks !== null && <> ({eligible.length} eligible)</>}
     </p>
   )
@@ -279,7 +296,7 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
       return (
         <>
           {subtitle}
-          <NoEligibleDecks setCode={setCode} format={format} />
+          <NoEligibleDecks setCode={setCode} format={format} packsPerPlayer={packsPerPlayer} />
         </>
       )
     }
@@ -445,6 +462,10 @@ export default function DeckPicker({ setCode, format, selected, onSelect, onElig
                       {formatLabel(deck.format)}
                     </span>
                     <span>{setBucket(deck.setCode) === 'other' ? 'Chaos' : deck.setCode}</span>
+                    {/* 6-pack vs 8-pack sealed are different formats. */}
+                    {packCountLabel(deck.packsPerPlayer) && (
+                      <span>{packCountLabel(deck.packsPerPlayer)}</span>
+                    )}
                     {deck.builtAt && <span>{new Date(deck.builtAt).toLocaleDateString()}</span>}
                   </div>
                 </div>

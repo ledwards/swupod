@@ -6,6 +6,7 @@ import type { MouseEvent } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { fetchUserPools } from '../utils/poolApi'
 import { formatPoolLabel } from '../utils/poolDisplayName'
+import { packCountNameSuffix } from '../utils/sealedFormat'
 import { poolDisplayName } from '../utils/archetypeName'
 import { useRouter, usePathname } from 'next/navigation'
 import UserAvatar from './UserAvatar'
@@ -55,6 +56,8 @@ export default function AuthWidget() {
     shareId: string
     setCode: string
     format: string
+    /** Sealed pack bucket — part of the format (6-pack vs 8-pack). */
+    packsPerPlayer?: number | null
     deckName: string | null
   } | null>(null)
   const [recentPools, setRecentPools] = useState<RecentItem[]>([])
@@ -303,7 +306,7 @@ export default function AuthWidget() {
                     <strong>Your Open Lobby</strong>
                     <span>
                       {myLobby.deckName ||
-                        `${myLobby.setCode} ${myLobby.format === 'draft' ? 'Draft' : 'Sealed'}`}{' '}
+                        `${myLobby.setCode} ${myLobby.format === 'draft' ? 'Draft' : 'Sealed'}${packCountNameSuffix(myLobby.packsPerPlayer)}`}{' '}
                       · waiting for an opponent
                     </span>
                   </span>

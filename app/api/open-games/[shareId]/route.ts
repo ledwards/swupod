@@ -12,6 +12,7 @@ import { queryRow } from '@/lib/db'
 import { broadcastOpenGamesUpdate, emitOpenGameEventToUser } from '@/src/lib/socketBroadcast'
 import { cancelOpenGame, exitOpenGame, setOpenGameBestOf, setOpenGameDeck } from '@/src/services/openGames'
 import { resolveOpenGameMessage } from '@/lib/discordLfg'
+import { poolPackBucketSql, toPackBucket } from '@/src/utils/sealedFormat'
 import { openGameErrorResponse } from '../helpers'
 import { NextRequest } from 'next/server'
 
@@ -26,11 +27,13 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
     const row = await queryRow(
       `SELECT og.*, u1.username AS p1_username, u1.avatar_url AS p1_avatar,
               u2.username AS p2_username, u2.avatar_url AS p2_avatar,
-              cp1.share_id AS p1_pool_share_id, cp2.share_id AS p2_pool_share_id
+              cp1.share_id AS p1_pool_share_id, cp2.share_id AS p2_pool_share_id,
+              ${poolPackBucketSql('cp1', 'ppk1')} AS packs_per_player
        FROM open_games og
        JOIN users u1 ON u1.id = og.player1_id
        LEFT JOIN users u2 ON u2.id = og.player2_id
        LEFT JOIN card_pools cp1 ON cp1.id = og.player1_pool_id
+       LEFT JOIN card_pools ppk1 ON ppk1.id = cp1.parent_pool_id
        LEFT JOIN card_pools cp2 ON cp2.id = og.player2_pool_id
        WHERE og.share_id = $1`,
       [shareId]
@@ -63,6 +66,8 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         setCode: row.set_code,
         setName: row.set_name,
         format: row.format,
+        // Sealed pack count is a format distinction (6-pack vs 8-pack never pair).
+        packsPerPlayer: toPackBucket(row.packs_per_player),
         bestOf: Number(row.best_of) || 1,
         result: row.result,
         createdAt: row.created_at,
