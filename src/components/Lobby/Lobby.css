@@ -53,12 +53,21 @@
   gap: 2px;
 }
 
+/* Brand wordmark — set in Orbitron 900 to echo the logo's squared, wide
+   letterforms (Barlow 800 read as generic bold sans next to the art), and
+   filled with the logo's steel gradient rather than flat white. */
 .lobby-brand-name {
-  color: var(--pt-ink);
-  font-size: 1.35rem;
-  font-weight: 800;
-  letter-spacing: 0.1em; /* brand wordmark lockup — mirrors the logo type */
-  line-height: 1.1;
+  font-family: Orbitron, Barlow, system-ui, sans-serif;
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+  color: var(--pt-ink); /* fallback before the gradient clip applies */
+  background: linear-gradient(180deg, #ffffff 0%, #dbe6f2 34%, #93a7bd 52%, #e8f1fa 68%, #b9c8d8 100%); /* design-ok: chrome fill on the wordmark, matches the logo art */
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.65));
 }
 
 .lobby-brand-sub {
@@ -1137,6 +1146,12 @@ a.lobby-row-link:active {
 
   .lobby-header-logo {
     height: 56px;
+  }
+
+  /* Orbitron sets wider than Barlow — step it down so the wordmark still
+     clears the floating auth widget on one line. */
+  .lobby-brand-name {
+    font-size: 0.95rem;
   }
 
   .lobby-board {
