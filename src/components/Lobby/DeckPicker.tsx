@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from 'react'
 import Button from '@/src/components/Button'
 import { STATS_SET_ORDER } from '@/src/utils/statsSetTabs'
 import { packBucketsMatch, packCountLabel } from '@/src/utils/sealedFormat'
+import { deckCreationLinkForListing } from '@/src/utils/deckCreationLink'
 import '@/src/components/YourStats/YourStats.css'
 import './DeckPicker.css'
 
@@ -65,10 +66,12 @@ function formatLabel(format?: string): string {
   return format === 'draft' ? 'Draft' : 'Sealed'
 }
 
-/** Zero-eligible-decks state (Join flow): link out to make a deck that fits
- *  this game — Solo Sealed / Solo Draft, plus open draft pods for drafts. */
+/** Zero-eligible-decks state (Join flow): a working deep link to make a deck
+ *  that actually fits THIS game — set and (for sealed) pack count already
+ *  chosen — plus open draft pods for drafts. See utils/deckCreationLink. */
 function NoEligibleDecks({ setCode, format, packsPerPlayer }: { setCode?: string | undefined; format?: string | undefined; packsPerPlayer?: number | null }): React.JSX.Element {
   const isDraft = format === 'draft'
+  const makeDeck = deckCreationLinkForListing({ setCode, format, packsPerPlayer })
   // Open draft pods are a faster on-ramp for draft games; count them so the
   // link reads "or join a draft pod (2 open)".
   const [openDraftPods, setOpenDraftPods] = useState<number | null>(null)
@@ -97,17 +100,13 @@ function NoEligibleDecks({ setCode, format, packsPerPlayer }: { setCode?: string
         yet — make one first:
       </p>
       <div className="lobby-deck-empty-ctas">
-        {/* Format-specific only: a sealed game needs a sealed deck, a draft
-            game a drafted one — never suggest the other format. */}
-        {isDraft ? (
-          <a href="/draft/solo" className="btn btn--sm btn--primary">
-            Start a Solo Draft
-          </a>
-        ) : (
-          <a href="/sealed" className="btn btn--sm btn--primary">
-            Start a Solo Sealed
-          </a>
-        )}
+        {/* Deep-linked: for sealed this lands on /pools/new with THIS game's
+            set and pack count already chosen, so the pool it creates is
+            actually joinable here. Format-specific only — a sealed game needs
+            a sealed deck, a draft game a drafted one (deckCreationLink). */}
+        <a href={makeDeck.href} className="btn btn--sm btn--primary">
+          {makeDeck.label}
+        </a>
       </div>
       {isDraft && (
         <p className="lobby-deck-empty-alt">
@@ -301,9 +300,21 @@ export default function DeckPicker({ setCode, format, packsPerPlayer = null, sel
       )
     }
     return (
-      <div className="lobby-state">
-        No decks yet — run a Solo Sealed or Solo Draft first, build a deck, and
-        it&apos;ll show up here ready to play.
+      <div className="lobby-state lobby-deck-empty">
+        <p>
+          No decks yet — run a Solo Sealed or Solo Draft first, build a deck,
+          and it&apos;ll show up here ready to play.
+        </p>
+        {/* New Game flow: no listing is pinned, so there is no set or pack
+            count to deep-link — these are the plain set pickers. */}
+        <div className="lobby-deck-empty-ctas">
+          <a href="/sealed" className="btn btn--sm btn--primary">
+            Start a Solo Sealed
+          </a>
+          <a href="/draft/solo" className="btn btn--sm btn--secondary">
+            Start a Solo Draft
+          </a>
+        </div>
       </div>
     )
   }
