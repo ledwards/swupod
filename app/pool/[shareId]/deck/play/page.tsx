@@ -113,6 +113,8 @@ interface PoolData {
   shareId: string
   setCode: string
   poolType?: string
+  /** Sealed pack bucket — part of the sealed format (6-pack vs 8-pack). */
+  packsPerPlayer?: number | null
   deckBuilderState?: string | DeckBuilderState
   name?: string
   owner?: PoolOwner | null
@@ -1538,6 +1540,7 @@ export default function PlayPage({ params }: PageProps) {
             shareId={shareId}
             poolType={isSoloDraft ? 'sealed' : (pool?.poolType || 'sealed')}
             setCode={pool?.setCode}
+            packsPerPlayer={pool?.packsPerPlayer ?? null}
             opponentName={firstOpponent?.username}
             hasBye={hasBye}
             isSoloDraft={isSoloDraft}

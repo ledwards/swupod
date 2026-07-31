@@ -69,14 +69,21 @@ describe('sealedPacksPerPlayer', () => {
     assert.strictEqual(sealedPacksPerPlayer(false, 'lots'), 6)
   })
 
-  it('SPEC: Competitive Sealed deals 8 packs per player', () => {
+  it('SPEC: Competitive Sealed defaults to 8 packs per player', () => {
     assert.strictEqual(sealedPacksPerPlayer(true), 8)
+    assert.strictEqual(sealedPacksPerPlayer(true, null), 8)
   })
 
-  it('SPEC: Competitive Sealed ignores the requested count', () => {
-    assert.strictEqual(sealedPacksPerPlayer(true, 6), 8)
-    assert.strictEqual(sealedPacksPerPlayer(true, '6'), 8)
+  it('NEW CODE: Competitive Sealed honors a requested 6 or 8', () => {
+    // OLD CODE forced 8 regardless of what the host chose.
+    assert.strictEqual(sealedPacksPerPlayer(true, 6), 6)
+    assert.strictEqual(sealedPacksPerPlayer(true, '6'), 6)
+    assert.strictEqual(sealedPacksPerPlayer(true, 8), 8)
+  })
+
+  it('SPEC: Competitive Sealed falls back to 8 for invalid requests', () => {
     assert.strictEqual(sealedPacksPerPlayer(true, 12), 8)
+    assert.strictEqual(sealedPacksPerPlayer(true, 'lots'), 8)
   })
 })
 

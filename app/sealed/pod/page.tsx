@@ -181,8 +181,7 @@ export default function SealedPodLandingPage() {
         <h1>Sealed Pod</h1>
         <p className="draft-description">
           Open booster packs and build a deck with friends. Everyone opens packs at the
-          same time and builds from their own pool — 6 packs each in Standard,
-          8 in Competitive Sealed.
+          same time and builds from their own pool — 6 or 8 packs each, your call.
         </p>
 
         {error && <div className="error-message">{error}</div>}
@@ -205,7 +204,7 @@ export default function SealedPodLandingPage() {
                     className="primary-button create-draft-button draft-competitive-button"
                     onClick={handleCreateCompetitive}
                     disabled={authLoading || !isPatron}
-                    title={isPatron ? 'Competitive Sealed — 8 packs, timed deck build, Swiss matchmaking' : 'Friends of the Pod only'}
+                    title={isPatron ? 'Competitive Sealed — timed deck build, Swiss matchmaking' : 'Friends of the Pod only'}
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                       <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/>

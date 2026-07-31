@@ -6,6 +6,8 @@
 // when that's unavailable we build a degraded local fallback from the deck data
 // so a deck never renders as a bare "Ahsoka" missing its "Blue 30".
 
+import { packCountNameSuffix } from './sealedFormat'
+
 const COLOR_ASPECTS = ['Vigilance', 'Command', 'Aggression', 'Cunning'] as const
 
 const ASPECT_COLOR_NAME: Record<string, string> = {
@@ -101,16 +103,22 @@ export interface PoolDisplayNameInputs {
   setCode?: string | null
   poolType?: string | null
   date?: string | Date | null
+  /** Sealed packs opened for this pool — a format distinction (6-pack vs
+   *  8-pack sealed are different formats). Omitted when unknown. */
+  packCount?: number | null
 }
 
 /**
  * Canonical pool display name:
- *   - has a deck: "{Archetype Short Name} {MM.DD.YYYY}"  e.g. "Cad Splash Blue 04.13.2026"
- *   - no deck:    "{SET} {Draft|Sealed} {MM.DD.YYYY}"     e.g. "SEC Sealed 03.16.2026"
+ *   - has a deck: "{Archetype Short Name} {(N-pack)} {MM.DD.YYYY}"  e.g. "Cad Splash Blue (8-pack) 04.13.2026"
+ *   - no deck:    "{SET} {Draft|Sealed} {(N-pack)} {MM.DD.YYYY}"    e.g. "SEC Sealed (6-pack) 03.16.2026"
+ * The pack parenthetical always sits immediately before the date, and is left
+ * out entirely when the count is unknown (legacy pools).
  */
-export function poolDisplayName({ archetypeShort, setCode, poolType, date }: PoolDisplayNameInputs): string {
+export function poolDisplayName({ archetypeShort, setCode, poolType, date, packCount }: PoolDisplayNameInputs): string {
   const datePart = formatPoolDateLong(date)
-  const suffix = datePart ? ` ${datePart}` : ''
+  const packs = packCountNameSuffix(packCount)
+  const suffix = `${packs}${datePart ? ` ${datePart}` : ''}`
   const archetype = (archetypeShort || '').trim()
   if (archetype) return `${archetype}${suffix}`
   const fmt = poolType === 'draft' ? 'Draft' : 'Sealed'

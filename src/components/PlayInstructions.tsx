@@ -20,6 +20,9 @@ interface PlayInstructionsProps {
   shareId: string | null
   poolType: 'draft' | 'sealed' | 'sealed_pod' | string
   setCode?: string | null
+  /** This pool's sealed pack bucket (from /api/pools/:shareId). Pack count is
+   *  part of the sealed format — 6-pack and 8-pack lobbies never mix. */
+  packsPerPlayer?: number | null
   /** Deck archetype name, used to build the public Karabast game name. */
   archetypeName?: string | null
   opponentName?: string | null
@@ -62,6 +65,7 @@ export default function PlayInstructions({
   shareId,
   poolType,
   setCode = null,
+  packsPerPlayer = null,
   archetypeName = null,
   opponentName = null,
   hasBye = false,
@@ -496,6 +500,7 @@ export default function PlayInstructions({
           poolShareId={shareId}
           setCode={setCode}
           format={poolType === 'draft' ? 'draft' : 'sealed'}
+          packsPerPlayer={packsPerPlayer}
           currentUsername={user?.username ?? null}
         />
       )}

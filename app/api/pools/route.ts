@@ -6,6 +6,7 @@ import { generateShareId, formatSetCodeRange } from '@/lib/utils'
 import { jsonResponse, parseBody, validateRequired, handleApiError } from '@/lib/utils'
 import { getSetConfig } from '@/src/utils/setConfigs/index'
 import { getUnavailableSetReason } from '@/src/utils/setAvailability'
+import { sealedPackBucket, packCountNameSuffix } from '@/src/utils/sealedFormat'
 import { trackBulkGenerations, PACK_SLOT_TYPES } from '@/src/utils/trackGeneration'
 import { captureLimitedServerEvent } from '@/lib/posthog'
 import { hashAnalyticsId, LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
@@ -73,8 +74,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       shareId = generateShareId(8)
     }
 
+    // Sealed pack count is a FORMAT distinction (6-pack vs 8-pack sealed are
+    // different formats for lobby matchmaking), so it goes in the pool's name.
+    // Derived from the packs array — never stored twice. Builds arrive with
+    // packs: null and inherit the parent's count; unknown means no suffix.
+    const packCount = sealedPackBucket({
+      poolType,
+      packCount: Array.isArray(packs) ? packs.length : null,
+    })
+
     // Helper function to generate default pool name.
-    // Format: "{setCodeDisplay} {Sealed|Draft|...} {MM.DD.YY}"
+    // Format: "{setCodeDisplay} {Sealed|Draft|...} Pool {(N-pack)} {MM.DD.YY}"
     // Matches getDefaultBuildName() format once a leader is picked, so the
     // date stays consistent across the auto-rename → user-edit lifecycle.
     const generatePoolName = (poolType: string, setCode: string) => {
@@ -86,7 +96,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       const mm = String(now.getMonth() + 1).padStart(2, '0')
       const dd = String(now.getDate()).padStart(2, '0')
       const yy = String(now.getFullYear()).slice(-2)
-      return `${setCodeDisplay} ${formatType} Pool ${mm}.${dd}.${yy}`
+      return `${setCodeDisplay} ${formatType} Pool${packCountNameSuffix(packCount)} ${mm}.${dd}.${yy}`
     }
 
     // Insert pool with retry logic to handle unique constraint violations

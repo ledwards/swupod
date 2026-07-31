@@ -23,6 +23,7 @@ import Modal from '@/src/components/Modal'
 import { useToast } from '@/src/components/Toast'
 import { useAuth } from '@/src/contexts/AuthContext'
 import { useCompanionCapability } from '@/src/hooks/useCompanionCapability'
+import { packCountLabel } from '@/src/utils/sealedFormat'
 import { useWayfinderCasualLaunch } from '@/src/hooks/useWayfinderCasualLaunch'
 import '@/src/components/Lobby/Lobby.css'
 // For .match-card-live-open — the ONE anchor-as-button treatment for a created
@@ -44,6 +45,8 @@ interface MatchGame {
   setCode: string
   setName: string | null
   format: string
+  /** Sealed pack bucket — part of the format (6-pack never pairs with 8-pack). */
+  packsPerPlayer?: number | null
   bestOf: number
   result: string | null
   players: Array<MatchPlayer | null>
@@ -217,6 +220,8 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
   const isHost = game.yourSeat === 1
   const isLive = ['open', 'accepted', 'lobby_ready', 'in_progress'].includes(game.status)
   const formatLabel = game.format === 'draft' ? 'Draft' : 'Sealed'
+  // Pack count is a format distinction, so it reads inline with the format.
+  const packLabel = packCountLabel(game.packsPerPlayer)
   const host = game.players[0]
 
   // Bo1/Bo3 (host only, while the lobby is open) — optimistic, server-confirmed.
@@ -243,7 +248,7 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
     return (
       <div className="lobby-match">
         <h2>{host?.username || 'A player'} is looking for a game</h2>
-        <p className="lobby-row-meta">{game.setCode} · {formatLabel} · Best of {game.bestOf}</p>
+        <p className="lobby-row-meta">{game.setCode} · {formatLabel}{packLabel ? ` · ${packLabel}` : ''} · Best of {game.bestOf}</p>
         <Button
           variant="primary"
           size="lg"
@@ -260,7 +265,7 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
         <JoinGameModal
           isOpen={joinOpen}
           onClose={() => setJoinOpen(false)}
-          game={{ shareId: game.shareId, setCode: game.setCode, format: game.format, hostUsername: host?.username ?? null }}
+          game={{ shareId: game.shareId, setCode: game.setCode, format: game.format, packsPerPlayer: game.packsPerPlayer ?? null, hostUsername: host?.username ?? null }}
           onJoined={() => {
             setJoinOpen(false)
             fetchGame()
@@ -311,7 +316,7 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
   return (
     <div className={`lobby-match${showDeckPane ? ' lobby-match--split' : ''}`}>
       <div className="lobby-match-main">
-      <h2>{game.setCode} {formatLabel} — Open Lobby</h2>
+      <h2>{game.setCode} {formatLabel}{packLabel ? ` (${packLabel})` : ''} — Open Lobby</h2>
 
       {isHost && game.status === 'open' ? (
         <div className="lobby-match-bestof" role="group" aria-label="Match length">

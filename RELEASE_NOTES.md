@@ -11,7 +11,8 @@ The choice sits right where you pick your set, solo or in a pod, and it's open t
 Two extra packs changes the shape of a pool. There are more playables to sort through, a better shot at the bombs and the cheap interaction that hold a deck together, and enough depth to commit to a second aspect instead of settling for what showed up. If you've wanted sealed pools with more to build from, build from more.
 
 - **Every pod remembers what it was created with**, and the lobby shows the count up front, so everyone knows what they're sitting down to before they join.
-- Competitive Sealed pods are always 8 packs.
+- Competitive Sealed pods choose too — they just start at 8.
+- **Pool size is part of the format.** Sealed decks carry their pack count in the name, and the lobby only pairs like with like — a 6-pack pool never lands across the table from an 8-pack one.
 
 ### 🏆 Competitive Sealed
 - **Sealed goes competitive.** Friends of the Pod can spin up a Competitive Sealed pod for a full table of 8: everyone opens 8 packs, decks lock after a 20-minute build window, and the pod flows straight into Swiss practice rounds — the same structured play Competitive Draft pods get, now for sealed.

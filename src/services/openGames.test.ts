@@ -75,15 +75,24 @@ interface PoolOpts {
   setCode?: string
   format?: string
   built?: boolean
+  /** Number of entries in the pool's `packs` array — the sealed FORMAT bucket.
+   *  `null` leaves packs NULL (legacy pool / build). */
+  packs?: number | null
+  /** Parent pool id, so a build can inherit its parent's pack bucket. */
+  parentPoolId?: string | null
 }
 
 async function seedPool(userId: string, opts: PoolOpts = {}): Promise<string> {
-  const { setCode = 'SEC', format = 'draft', built = true } = opts
+  const { setCode = 'SEC', format = 'draft', built = true, packs = null, parentPoolId = null } = opts
+  const packsJson = packs === null
+    ? null
+    : JSON.stringify(Array.from({ length: packs }, () => ({ cards: [] })))
   const pool = await queryRow(
-    `INSERT INTO card_pools (user_id, share_id, set_code, set_name, pool_type, cards, deck_builder_state)
-     VALUES ($1, $2, $3, $4, $5, '[]'::jsonb, $6::jsonb) RETURNING id`,
+    `INSERT INTO card_pools (user_id, share_id, set_code, set_name, pool_type, cards, deck_builder_state, packs, parent_pool_id)
+     VALUES ($1, $2, $3, $4, $5, '[]'::jsonb, $6::jsonb, $7::jsonb, $8) RETURNING id`,
     [userId, `og-test-${randomUUID().slice(0, 12)}`, setCode, `${setCode} Set`, format,
-      built ? '{"activeLeader":"pos-l","activeBase":"pos-b","cardPositions":{"pos-l":{"card":{"name":"Test Leader","isLeader":true}},"pos-b":{"card":{"name":"Test Base","isBase":true,"aspects":[]}},"pos-c1":{"card":{"id":"T_1","name":"Test Card"},"section":"deck","visible":true,"enabled":true}}}' : '{}']
+      built ? '{"activeLeader":"pos-l","activeBase":"pos-b","cardPositions":{"pos-l":{"card":{"name":"Test Leader","isLeader":true}},"pos-b":{"card":{"name":"Test Base","isBase":true,"aspects":[]}},"pos-c1":{"card":{"id":"T_1","name":"Test Card"},"section":"deck","visible":true,"enabled":true}}}' : '{}',
+      packsJson, parentPoolId]
   )
   seededPools.push(pool.id)
   if (built) {
@@ -384,6 +393,132 @@ describe('openGames service (Lobby V1 spec)', { skip: !dbAvailable }, () => {
         (e: OpenGameError) => e instanceof OpenGameError && e.code === 'format_mismatch'
       )
     }
+  })
+
+  // -------------------------------------------------------------------------
+  // Sealed pack count as a FORMAT dimension — HARD SPLIT.
+  // SPEC: src/utils/sealedFormat.ts (1)-(4).
+  // -------------------------------------------------------------------------
+
+  it('SPEC pack-format: a 6-pack sealed deck can NEVER join an 8-pack sealed game', async () => {
+    const setCode = `P8${randomUUID().slice(0, 3).toUpperCase()}`
+    const poster = await seedUser()
+    const eightPack = await seedPool(poster, { setCode, format: 'sealed', packs: 8 })
+    const game = await postOpenGame({ userId: poster, poolId: eightPack })
+
+    const joiner = await seedUser('og-joiner')
+    const sixPack = await seedPool(joiner, { setCode, format: 'sealed', packs: 6 })
+    await assert.rejects(
+      joinOpenGame({ shareId: game.shareId, userId: joiner, poolId: sixPack }),
+      (e: OpenGameError) => e instanceof OpenGameError && e.code === 'format_mismatch'
+    )
+  })
+
+  it('SPEC pack-format: an 8-pack sealed deck CAN join an 8-pack sealed game', async () => {
+    const setCode = `P8${randomUUID().slice(0, 3).toUpperCase()}`
+    const poster = await seedUser()
+    const game = await postOpenGame({
+      userId: poster,
+      poolId: await seedPool(poster, { setCode, format: 'sealed', packs: 8 }),
+    })
+    const joiner = await seedUser('og-joiner')
+    const joined = await joinOpenGame({
+      shareId: game.shareId,
+      userId: joiner,
+      poolId: await seedPool(joiner, { setCode, format: 'sealed', packs: 8 }),
+    })
+    assert.equal(joined.status, 'accepted')
+  })
+
+  it('SPEC pack-format: a build inherits its parent pool\'s bucket, so it joins like the parent', async () => {
+    const setCode = `PB${randomUUID().slice(0, 3).toUpperCase()}`
+    const poster = await seedUser()
+    const game = await postOpenGame({
+      userId: poster,
+      poolId: await seedPool(poster, { setCode, format: 'sealed', packs: 8 }),
+    })
+    const joiner = await seedUser('og-joiner')
+    const parent = await seedPool(joiner, { setCode, format: 'sealed', packs: 8, built: false })
+    // A build is saved with packs: null and must NOT fall back to the legacy bucket.
+    const build = await seedPool(joiner, { setCode, format: 'sealed', packs: null, parentPoolId: parent })
+    const joined = await joinOpenGame({ shareId: game.shareId, userId: joiner, poolId: build })
+    assert.equal(joined.status, 'accepted')
+  })
+
+  it('SPEC pack-format legacy: a sealed pool with no packs lands in the 6-pack bucket — and ONLY there', async () => {
+    const setCode = `PL${randomUUID().slice(0, 3).toUpperCase()}`
+    // ...it plays 6-pack games:
+    const sixHost = await seedUser()
+    const sixGame = await postOpenGame({
+      userId: sixHost,
+      poolId: await seedPool(sixHost, { setCode, format: 'sealed', packs: 6 }),
+    })
+    const legacyUser = await seedUser('og-legacy')
+    const legacyPool = await seedPool(legacyUser, { setCode, format: 'sealed', packs: null })
+    const joined = await joinOpenGame({ shareId: sixGame.shareId, userId: legacyUser, poolId: legacyPool })
+    assert.equal(joined.status, 'accepted')
+
+    // ...and is rejected from 8-pack games. Never both buckets.
+    const eightHost = await seedUser('og-eight')
+    const eightGame = await postOpenGame({
+      userId: eightHost,
+      poolId: await seedPool(eightHost, { setCode, format: 'sealed', packs: 8 }),
+    })
+    const legacyUser2 = await seedUser('og-legacy2')
+    await assert.rejects(
+      joinOpenGame({
+        shareId: eightGame.shareId,
+        userId: legacyUser2,
+        poolId: await seedPool(legacyUser2, { setCode, format: 'sealed', packs: null }),
+      }),
+      (e: OpenGameError) => e instanceof OpenGameError && e.code === 'format_mismatch'
+    )
+  })
+
+  it('SPEC pack-format: playNow never pairs across buckets — it posts its own listing instead', async () => {
+    const setCode = `PN${randomUUID().slice(0, 3).toUpperCase()}`
+    const poster = await seedUser()
+    const posted = await playNow({
+      userId: poster,
+      poolId: await seedPool(poster, { setCode, format: 'sealed', packs: 8 }),
+    })
+    assert.equal(posted.action, 'posted')
+
+    const joiner = await seedUser('og-joiner')
+    const mine = await playNow({
+      userId: joiner,
+      poolId: await seedPool(joiner, { setCode, format: 'sealed', packs: 6 }),
+    })
+    assert.equal(mine.action, 'posted', '6-pack must not be matched into the open 8-pack listing')
+
+    // A same-bucket player DOES get matched into the 8-pack listing.
+    const peer = await seedUser('og-peer')
+    const matched = await playNow({
+      userId: peer,
+      poolId: await seedPool(peer, { setCode, format: 'sealed', packs: 8 }),
+    })
+    assert.equal(matched.action, 'joined')
+    assert.equal(matched.game.shareId, posted.game.shareId)
+  })
+
+  it('SPEC pack-format: the public board exposes each listing\'s bucket (and none for draft)', async () => {
+    const setCode = `PV${randomUUID().slice(0, 3).toUpperCase()}`
+    const sealedHost = await seedUser()
+    const sealedGame = await postOpenGame({
+      userId: sealedHost,
+      poolId: await seedPool(sealedHost, { setCode, format: 'sealed', packs: 8 }),
+    })
+    const draftHost = await seedUser('og-draft')
+    const draftGame = await postOpenGame({
+      userId: draftHost,
+      poolId: await seedPool(draftHost, { setCode, format: 'draft', packs: 3 }),
+    })
+
+    const { listings } = await listPublicOpenGames()
+    const sealedRow = listings.find(l => l.shareId === sealedGame.shareId)
+    const draftRow = listings.find(l => l.shareId === draftGame.shareId)
+    assert.equal(sealedRow?.packsPerPlayer, 8)
+    assert.equal(draftRow?.packsPerPlayer, null, 'draft has no pack-count dimension')
   })
 
   it('SPEC R19 (revised 7/15): joining with a pending match EXITS it — replace, never block', async () => {
