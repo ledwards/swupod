@@ -1,5 +1,10 @@
 # Release Notes
 
+## 07.31.2026
+
+### 🔧 Under the Hood
+- **Deck builds now update live across your other tabs and devices.** Saving a deck in one place has always been meant to refresh the build list everywhere else you have that pool open. The socket carrying those updates was configured in a way that could never connect, so it had quietly never worked — the notification was sent and nothing was listening.
+
 ## 07.30.2026 Part 3
 
 ### 🟢 The Lobby Tells You What Everyone's Doing

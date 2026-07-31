@@ -15,7 +15,18 @@ export function usePoolBuildsSocket(rootShareId: string | null | undefined): voi
     if (!rootShareId) return
     let socket: Socket | null = null
     try {
-      socket = socketIO({ transports: ['websocket', 'polling'] })
+      // Default transports — polling first, upgrading to websocket — as every
+      // other socket hook here uses. This hook used to force websocket first,
+      // which raised `connect_error: websocket error` on a permanent retry
+      // loop and never connected, so `join-pool-builds` was never sent and
+      // cross-client build updates silently did nothing.
+      //
+      // forceNew keeps this on its own connection. io() otherwise multiplexes
+      // — the default options would hand back the socket usePresence and
+      // useDraftSocket are on, and the disconnect() below would then tear
+      // THEIR socket down on unmount. A dedicated socket also guarantees
+      // 'connect' still fires for the join.
+      socket = socketIO({ forceNew: true })
       socket.on('connect', () => {
         socket?.emit('join-pool-builds', rootShareId)
       })
