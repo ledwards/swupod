@@ -14,6 +14,7 @@ import { query, queryRows } from './lib/db.js'
 import { broadcastPublicPodsUpdate, broadcastOpenGamesUpdate } from './src/lib/socketBroadcast.js'
 import { sweepOpenGames, delistOpenGamesForUser } from './src/services/openGames.js'
 import { deleteAbandonedPodRecords } from './src/utils/podCleanup.js'
+import { sweepExpiredDraftTimers } from './src/utils/draftTimeout.js'
 import { buildAllowedOrigins, makeAllowRequest, setupSocketServer } from './src/lib/socketServer.js'
 import { postUserMessageForPod, postLobbyMessage, deletePodMessage, resolveOpenGameMessage } from './lib/discordLfg.js'
 import { shouldFailFastOnMigrationFailure } from './lib/migrationPolicy.js'
@@ -260,9 +261,32 @@ app.prepare().then(() => {
     }
   }
 
+  // Draft pick-timer sweep: enforce expired pick timers regardless of whether
+  // any client is connected to notice (see sweepExpiredDraftTimers).
+  // Competitive Appendix C timers go as low as 5s, so sweep on that cadence.
+  const DRAFT_TIMER_SWEEP_INTERVAL_MS = 5 * 1000
+  let draftTimerSweepInFlight = false
+
+  async function sweepDraftTimersJob(): Promise<void> {
+    // A slow sweep must not stack up behind itself.
+    if (draftTimerSweepInFlight) return
+    draftTimerSweepInFlight = true
+    try {
+      const enforced = await sweepExpiredDraftTimers()
+      if (enforced > 0) {
+        console.log(`[DraftTimers] Forced picks in ${enforced} pod(s)`)
+      }
+    } catch (err) {
+      console.error('[DraftTimers] Sweep error:', err)
+    } finally {
+      draftTimerSweepInFlight = false
+    }
+  }
+
   server.listen(port, () => {
     console.log(`> Ready on http://localhost:${port}`)
     setInterval(cleanupAbandonedPods, CLEANUP_INTERVAL_MS)
     setInterval(sweepOpenGamesJob, OPEN_GAMES_SWEEP_INTERVAL_MS)
+    setInterval(sweepDraftTimersJob, DRAFT_TIMER_SWEEP_INTERVAL_MS)
   })
 })

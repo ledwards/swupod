@@ -23,6 +23,7 @@ import { withTransaction, type TxClient } from '@/lib/db'
 import { captureLimitedServerEvent } from '@/lib/posthog'
 import { LimitedAnalyticsEvents } from '@/src/analytics/limitedEvents'
 import { getPassDirection, getLeaderPassDirection, getNextSeat } from './draftLogic'
+import { INTER_PACK_REVIEW_SECONDS } from '@/src/services/matchmaking/timers'
 import { buildBotDecks } from './botDeckBuilder'
 import { attributePickedCard } from './trackGeneration'
 import type { RawCard } from './cardData'
@@ -548,9 +549,15 @@ async function advancePackDraftAfterPicks(
     draftState.pickInPack = 1
     delete draftState.lastPlayerStartedAt // Clear last player timer for new pack
 
-    // Add review period for competitive pods between packs
+    // Add review period for competitive pods between packs. The pick clock has
+    // to start when the review closes rather than now, or the review burns half
+    // of pick 1's Appendix C allowance (60s of timer against 30s of drafting).
+    // A future pick_started_at reads as zero elapsed on both sides: server
+    // enforcement sees negative elapsed, and the client countdown floors at 0.
+    let pickClockStartsAt: string | null = null
     if (pod.competitive && newPackNumber <= totalPacks) {
-      draftState.reviewUntil = new Date(Date.now() + 30 * 1000).toISOString()
+      draftState.reviewUntil = new Date(Date.now() + INTER_PACK_REVIEW_SECONDS * 1000).toISOString()
+      pickClockStartsAt = draftState.reviewUntil
     }
 
     // Fetch all_packs only when we need to start a new pack
@@ -580,10 +587,10 @@ async function advancePackDraftAfterPicks(
       `UPDATE pods
        SET draft_state = $1,
            state_version = state_version + 1,
-           pick_started_at = NOW(),
+           pick_started_at = COALESCE($3::timestamptz, NOW()),
            paused_duration_seconds = 0
        WHERE id = $2`,
-      [JSON.stringify(draftState), podId]
+      [JSON.stringify(draftState), podId, pickClockStartsAt]
     )
 
   } else {

@@ -22,6 +22,9 @@ Two extra packs changes the shape of a pool. There are more playables to sort th
 - **Drafts now open with a leader reveal.** When the host hits **Ready**, packs are dealt and every player's leader options appear around the table — a moment to scope out what the pod is working with before anything is picked.
 - Nothing can be selected and no clocks run during the reveal. When the table has had its look, the host hits **Start Draft** to open picking (and start the pick timers in timed and competitive pods).
 
+### 🔧 Under the Hood
+- **Draft timer reliability**: a round of refinements to how pick timers stay in sync across every player's browser, so the countdown you see always matches the one the draft is actually running on — in casual and competitive pods alike, and across pauses.
+
 ## 07.19.2026
 
 ### 🔧 Under the Hood

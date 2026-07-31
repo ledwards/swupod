@@ -8,6 +8,7 @@
 
 import { query, queryRow, queryRows, withAdvisoryLock } from '@/lib/db'
 import { processAllStagedPicks } from './draftAdvance'
+import { markLastPlayerStartIfNeeded } from './draftSelection'
 import { getBehavior, assignStrategies, createStrategy } from '@/src/bots/behaviors/index'
 import { ALL_MIXINS } from '@/src/bots/behaviors/mixins'
 import { broadcastDraftState } from '@/src/lib/socketBroadcast'
@@ -317,36 +318,14 @@ async function makeBotLeaderPick(bot: BotPlayer, draftState: DraftState): Promis
     [cardId, bot.id]
   )
 
-  // Check if only one player remains picking (for last player timer)
-  const remainingPickers = await queryRows(
-    `SELECT id FROM pod_players WHERE pod_id = $1 AND pick_status = 'picking'`,
+  // If that left one player picking, start the Last Player timer.
+  await markLastPlayerStartIfNeeded(bot.pod_id)
+
+  // Increment state version so clients see the update
+  await query(
+    `UPDATE pods SET state_version = state_version + 1 WHERE id = $1`,
     [bot.pod_id]
   )
-
-  if (remainingPickers.length === 1) {
-    // One player left - set lastPlayerStartedAt if not already set
-    const pod = await queryRow('SELECT draft_state FROM pods WHERE id = $1', [bot.pod_id])
-    const currentState = jsonParse<DraftState>(pod?.draft_state, {}) as DraftState
-
-    if (!currentState.lastPlayerStartedAt) {
-      currentState.lastPlayerStartedAt = new Date().toISOString()
-      await query(
-        `UPDATE pods SET draft_state = $1, state_version = state_version + 1 WHERE id = $2`,
-        [JSON.stringify(currentState), bot.pod_id]
-      )
-    } else {
-      await query(
-        `UPDATE pods SET state_version = state_version + 1 WHERE id = $1`,
-        [bot.pod_id]
-      )
-    }
-  } else {
-    // Increment state version so clients see the update
-    await query(
-      `UPDATE pods SET state_version = state_version + 1 WHERE id = $1`,
-      [bot.pod_id]
-    )
-  }
 
   return true
 }
@@ -409,36 +388,14 @@ async function makeBotCardPick(bot: BotPlayer, draftState: DraftState): Promise<
     [cardId, bot.id]
   )
 
-  // Check if only one player remains picking (for last player timer)
-  const remainingPickers = await queryRows(
-    `SELECT id FROM pod_players WHERE pod_id = $1 AND pick_status = 'picking'`,
+  // If that left one player picking, start the Last Player timer.
+  await markLastPlayerStartIfNeeded(bot.pod_id)
+
+  // Increment state version so clients see the update
+  await query(
+    `UPDATE pods SET state_version = state_version + 1 WHERE id = $1`,
     [bot.pod_id]
   )
-
-  if (remainingPickers.length === 1) {
-    // One player left - set lastPlayerStartedAt if not already set
-    const pod = await queryRow('SELECT draft_state FROM pods WHERE id = $1', [bot.pod_id])
-    const currentState = jsonParse<DraftState>(pod?.draft_state, {}) as DraftState
-
-    if (!currentState.lastPlayerStartedAt) {
-      currentState.lastPlayerStartedAt = new Date().toISOString()
-      await query(
-        `UPDATE pods SET draft_state = $1, state_version = state_version + 1 WHERE id = $2`,
-        [JSON.stringify(currentState), bot.pod_id]
-      )
-    } else {
-      await query(
-        `UPDATE pods SET state_version = state_version + 1 WHERE id = $1`,
-        [bot.pod_id]
-      )
-    }
-  } else {
-    // Increment state version so clients see the update
-    await query(
-      `UPDATE pods SET state_version = state_version + 1 WHERE id = $1`,
-      [bot.pod_id]
-    )
-  }
 
   return true
 }

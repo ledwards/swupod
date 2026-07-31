@@ -11,7 +11,45 @@ import { initializeCardCache } from '../utils/cardCache'
 let passed = 0
 let failed = 0
 
+// ============================================================================
+// Deterministic RNG
+//
+// The belt draws entropy from Math.random() in three places: boot shuffles,
+// echo-subset selection, and echo gap sampling. Unseeded, every assertion in
+// this file samples a fresh distribution on each run, so the statistical specs
+// fail on unlucky tails — the occurrence-count spec below tripped roughly 1 run
+// in 100 (measured: 29 of 3000 trials), which read as "flaky in the full suite,
+// fine in isolation" purely because the full suite is run more often.
+//
+// Each test seeds Math.random() from a hash of its own name, so runs are
+// reproducible AND tests stay independent: adding, removing, or reordering a
+// test does not shift any other test's draw sequence.
+// ============================================================================
+
+function mulberry32(seed: number): () => number {
+  let a = seed >>> 0
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0
+    let t = a
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+// FNV-1a over the test name — stable across runs and platforms
+function seedFor(name: string): number {
+  let h = 0x811c9dc5
+  for (let i = 0; i < name.length; i++) {
+    h ^= name.charCodeAt(i)
+    h = Math.imul(h, 0x01000193)
+  }
+  return h >>> 0
+}
+
 function test(name: string, fn: () => void): void {
+  const realRandom = Math.random
+  Math.random = mulberry32(seedFor(name))
   try {
     fn()
     console.log(`\x1b[32m✅ ${name}\x1b[0m`)
@@ -20,6 +58,8 @@ function test(name: string, fn: () => void): void {
     console.log(`\x1b[31m❌ ${name}\x1b[0m`)
     console.log(`\x1b[33m   ${(e as Error).message}\x1b[0m`)
     failed++
+  } finally {
+    Math.random = realRandom
   }
 }
 
@@ -259,35 +299,73 @@ async function runTests(): Promise<void> {
   })
 
   test('SPEC: every uncommon appears with equal frequency (no exclusion)', () => {
-    // SPEC: Every card appears once per cycle — plus, on line-stacking sets,
-    // a small random echo subset appears twice (the 6-box verified UC sheet
-    // repeats 2-3 cards per cycle at short odd-dominant gaps). No card is
-    // ever excluded, and no card runs more than once-per-cycle ahead.
-    const belt = new UncommonBelt('LAW')
-    const beltSize = belt.fillingPool.length
+    // SPEC: Every card appears exactly once per boot — plus, on line-stacking
+    // sets, a small random echo subset appears a second time (the 6-box
+    // verified UC sheet repeats 2-3 cards per cycle at short odd-dominant
+    // gaps). No card is ever excluded, and no card is served more than twice
+    // in a boot.
+    //
+    // Bounds below are STRUCTURAL, derived from that spec — not tuned to an
+    // observed run. With beltSize B, CYCLES C, and at most E echoes per boot:
+    //   TOTAL_DRAWS = B * C
+    //   boot length is B..B+E, so
+    //   fully consumed boots >= floor(B*C / (B+E))  -> per-card floor (no exclusion)
+    //   boots touched        <= ceil (B*C / B) = C  -> per-card ceiling, x2 for the echo
+    // For LAW (B=60, C=5, E=7) that is 4 <= count <= 10.
+    //
+    // The previous ceiling (CYCLES + ceil(CYCLES/2) = 8) was a guess rather
+    // than a structural bound: a card echoed in 4 of the 5 boots legitimately
+    // reaches 9, which occurs in ~1% of runs and was this test's flakiness.
+    // Widening to the true ceiling does not weaken the spec, because the
+    // distribution's TIGHTNESS is now asserted directly below instead of being
+    // implied by a hand-picked ceiling.
+    const MAX_ECHOES_PER_BOOT = 7   // sheet spec: 6-7 repeats per cycle (~6.7/box)
     const CYCLES = 5
-    const TOTAL_DRAWS = beltSize * CYCLES
+    const TRIALS = 50               // deterministic under the seeded RNG above
 
-    const counts = new Map<string, number>()
-    for (let i = 0; i < TOTAL_DRAWS; i++) {
-      const card = belt.next()
-      counts.set(card.id, (counts.get(card.id) || 0) + 1)
-    }
+    const probe = new UncommonBelt('LAW')
+    const beltSize = probe.fillingPool.length
+    const TOTAL_DRAWS = beltSize * CYCLES
+    const MIN_COUNT = Math.floor(TOTAL_DRAWS / (beltSize + MAX_ECHOES_PER_BOOT))
+    const MAX_COUNT = 2 * Math.ceil(TOTAL_DRAWS / beltSize)
 
     let wrongCount = 0
+    let tightObservations = 0
+    let totalObservations = 0
     const details: string[] = []
-    for (const card of belt.fillingPool) {
-      const count = counts.get(card.id) || 0
-      // echoes make a card's count run at most one ahead per elapsed cycle;
-      // fewer draws happen for late cards when echoes lengthen cycles
-      if (count < CYCLES - 1 || count > CYCLES + Math.ceil(CYCLES / 2)) {
-        wrongCount++
-        details.push(`"${card.name}" appeared ${count} times (expected ~${CYCLES})`)
+
+    for (let trial = 0; trial < TRIALS; trial++) {
+      const belt = new UncommonBelt('LAW')
+      const counts = new Map<string, number>()
+      for (let i = 0; i < TOTAL_DRAWS; i++) {
+        const card = belt.next()
+        counts.set(card.id, (counts.get(card.id) || 0) + 1)
+      }
+
+      for (const card of belt.fillingPool) {
+        const count = counts.get(card.id) || 0
+        totalObservations++
+        // "tight" = the card was echoed in at most 2 of the elapsed boots
+        if (count >= CYCLES - 1 && count <= CYCLES + 2) tightObservations++
+        if (count < MIN_COUNT || count > MAX_COUNT) {
+          wrongCount++
+          details.push(`"${card.name}" appeared ${count} times in trial ${trial} (expected ${MIN_COUNT}-${MAX_COUNT})`)
+        }
       }
     }
 
+    // Hard invariant: no exclusion, and never more than one echo per boot.
     assert(wrongCount === 0,
       `SPEC: ${wrongCount} cards had wrong occurrence count:\n  ${details.slice(0, 5).join('\n  ')}`)
+
+    // Uniformity: only 6-7 of ${beltSize} cards echo per boot, so the count
+    // distribution must stay clustered on CYCLES. Measured over 3000 unseeded
+    // trials, 99.6% of observations land in [CYCLES-1, CYCLES+2]; asserting 97%
+    // leaves margin while still failing loudly if the belt ever starts favoring
+    // a subset of cards (the failure mode a bare min/max bound cannot see).
+    const tightRate = tightObservations / totalObservations
+    assert(tightRate >= 0.97,
+      `SPEC: >=97% of counts should land in [${CYCLES - 1}, ${CYCLES + 2}] (echoes are a small subset), got ${(tightRate * 100).toFixed(2)}%`)
   })
 
   // =========================================================
