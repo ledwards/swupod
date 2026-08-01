@@ -619,7 +619,17 @@ branch's side would delete the `CardDataTierList` architecture the current tier
 grades are built on.
 
 **To build this**: re-implement inside `CardDataTierList.tsx` against current
-main. The branch still holds two self-contained, tested modules worth reusing
-verbatim — `src/services/wayfinderCardStatsBridge.ts` (240L, with tests) and
+main. Two self-contained, tested modules are worth reusing verbatim —
+`src/services/wayfinderCardStatsBridge.ts` (240L, with tests) and
 `src/components/WayfinderCardStatsButton.tsx` (281L). Neither conflicts with
 main; only the page wiring is stale.
+
+The branch was deleted on 2026-07-31 and its tip archived as the tag
+`archive/17l-card-analytics` (`1856cc55`), so those modules are permanently
+recoverable without a branch cluttering the list:
+
+```bash
+git show archive/17l-card-analytics:src/services/wayfinderCardStatsBridge.ts
+git show archive/17l-card-analytics:src/components/WayfinderCardStatsButton.tsx
+git checkout archive/17l-card-analytics -- src/services/wayfinderCardStatsBridge.ts
+```
