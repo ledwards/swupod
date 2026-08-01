@@ -53,6 +53,10 @@ export default function OpenGamesColumn({
   const { status, listings, recentCompleted, retry } = board
   const totalCount = listings.length + (karabast.available ? karabast.lobbies.length : 0)
   const boardEmpty = status === 'ready' && totalCount === 0
+  const recentPlayedLabel = recentCompleted
+    .slice(0, 3)
+    .map(r => `${r.players.filter(Boolean).join(' vs ')} (${r.setCode})`)
+    .join(' · ')
 
   return (
     <section className="lobby-column" aria-label="Open lobbies">
@@ -82,13 +86,11 @@ export default function OpenGamesColumn({
           <Button variant="primary" size="sm" onClick={onNewGame}>
             Create a Lobby
           </Button>
-                    {recentCompleted.length > 0 && (
-            <p className="lobby-state-sub">
-              Recently played:{' '}
-              {recentCompleted
-                .slice(0, 3)
-                .map(r => `${r.players.filter(Boolean).join(' vs ')} (${r.setCode})`)
-                .join(' · ')}
+          {recentCompleted.length > 0 && (
+            // Single line, ellipsised (see .lobby-state-sub) — the full recap
+            // stays available as the title.
+            <p className="lobby-state-sub" title={recentPlayedLabel}>
+              Recently played: {recentPlayedLabel}
             </p>
           )}
         </div>

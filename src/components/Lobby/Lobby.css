@@ -528,6 +528,15 @@ a.lobby-row-link:active {
 
 .lobby-state-sub {
   font-size: 0.8rem;
+  /* One line only — the recap wraps badly once two or three games are
+     listed, so clip the overflow to an ellipsis instead. `align-self` is
+     what bounds it: the column centers its children, so an auto-width
+     line would size to its own text and overflow rather than clip. */
+  align-self: stretch;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .lobby-skeleton-rows {
