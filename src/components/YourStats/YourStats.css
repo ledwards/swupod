@@ -914,11 +914,11 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+/* Crop: see "Canonical leader-art thumbnail crop" at the foot of this file. */
 .your-stats-replay-art img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 16%;
 }
 
 .your-stats-replay-art-fallback {
@@ -978,7 +978,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 16%;
 }
 
 .your-stats-replay-opp-name {
@@ -1026,7 +1025,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 16%;
 }
 
 .your-stats-side-art svg {
@@ -1272,7 +1270,6 @@ a.your-stats-watch-btn:active {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 14%;
 }
 
 .your-stats-leader-art-fallback {
@@ -2647,14 +2644,7 @@ a.your-stats-logged-out-link:active {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Frame ONLY the art band of the leader-unit card. On a leader unit the clean
-     illustration runs ~16%–56% of card height: name-plate chrome above, the
-     stat/trait bar below. object-position top + scale(1.8) about center lands
-     the crop window exactly on that band (verified against rendered crops of
-     real card images). Do not add translateY — any Y offset drags card chrome
-     into the square. */
-  object-position: center 0;
-  transform: scale(1.8);
+  /* Crop: see "Canonical leader-art thumbnail crop" at the foot of this file. */
 }
 .your-stats-wr-cell-art--empty {
   background: rgba(255, 255, 255, 0.08);
@@ -3758,7 +3748,6 @@ a.your-stats-logged-out-link:active {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 22%;
 }
 
 .your-stats-replay-opp-thumb svg {
@@ -4009,11 +3998,6 @@ a.your-stats-logged-out-link:active {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Unit-side (back) leader art. Zoom past the card frame so only the central
-     character art shows. The crop sits at center 30% with no vertical nudge —
-     pulled up 10px from its old +10px offset so the face isn't clipped low. */
-  object-position: center 30%;
-  transform: translateY(0px) scale(1.5);
 }
 
 .your-stats-leaders-legend-dot {
@@ -4045,4 +4029,33 @@ a.your-stats-logged-out-link:active {
   flex: 0 0 auto;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+}
+
+/* ===========================================================================
+   Canonical leader-art thumbnail crop — square art boxes
+   ===========================================================================
+   Leader unit-side art is a 286×400 PORTRAIT card: name-plate chrome across the
+   top, the illustration through the middle, the stat/trait bar at the bottom.
+   In a square box `object-fit: cover` matches the WIDTH, so the full card height
+   lands inside the box and that bottom trait bar shows as card "chrome".
+
+   `object-position: center 0` + `scale(1.8)` frames the crop window on ~16%–56%
+   of card height — illustration only, no chrome. Because both the cover fit and
+   the scale are pure ratios, that window is identical at every box size, so a
+   26px thumb and an 82px grid cell crop the same way.
+
+   Do NOT reintroduce a px `translateY()`: a fixed pixel nudge is a different
+   fraction of a 26px box than of an 82px one, which is exactly how the old
+   per-thumb tunings kept letting the trait bar back in on the small ones.
+   Verified against rendered crops of real card images.
+   =========================================================================== */
+.your-stats-replay-art img,
+.your-stats-replay-opp-art img,
+.your-stats-side-art img,
+.your-stats-leader-art img,
+.your-stats-replay-opp-thumb img,
+.your-stats-leaders-legend-art img,
+.your-stats-wr-cell-art {
+  object-position: center 0;
+  transform: scale(1.8);
 }

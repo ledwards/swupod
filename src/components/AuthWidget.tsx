@@ -7,7 +7,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { fetchUserPools } from '../utils/poolApi'
 import { formatPoolLabel } from '../utils/poolDisplayName'
 import { packCountNameSuffix } from '../utils/sealedFormat'
-import { poolDisplayName } from '../utils/archetypeName'
+import { poolDisplayName, formatPoolDateLong } from '../utils/archetypeName'
 import { useRouter, usePathname } from 'next/navigation'
 import UserAvatar from './UserAvatar'
 import './AuthWidget.css'
@@ -46,6 +46,24 @@ interface RecentItem {
   url: string
   label: string
   kind: 'pod' | 'pool'
+}
+
+/**
+ * Menu-only label for a chaos pool. Chaos pools carry a comma-joined setCode
+ * ("SOR,SOR,GC2026_SILVER,GC2026_BLACK,…") that blows a drawer row out to two
+ * lines and reads as noise; here it collapses to the canonical "Chaos Sealed"
+ * label that formatPoolLabel already produces elsewhere. Pool pages keep the
+ * full canonical name — this shortening is for the user menu only.
+ *
+ * Returns null when the pool isn't chaos, or when it has a deck (the archetype
+ * name already replaces the set code entirely).
+ */
+function chaosMenuLabel(pool: SealedPool): string | null {
+  if (!(pool.setCode || '').includes(',')) return null
+  if ((pool.leaderName || '').trim()) return null
+  const kind = formatPoolLabel(pool.setCode, pool.poolType === 'draft' ? 'draft' : 'sealed')
+  const date = formatPoolDateLong(pool.createdAt)
+  return date ? `${kind} ${date}` : kind
 }
 
 export default function AuthWidget() {
@@ -159,7 +177,7 @@ export default function AuthWidget() {
               // Canonical pool name: archetype + date when there's a deck, else
               // SET + format + date. The recent-pools list only carries the
               // leader (no base), so the archetype is the leader name here.
-              label: poolDisplayName({
+              label: chaosMenuLabel(p) || poolDisplayName({
                 archetypeShort: p.leaderName,
                 setCode: p.setCode,
                 poolType: p.poolType,
@@ -304,10 +322,13 @@ export default function AuthWidget() {
                   <span className="auth-widget-open-lobby-dot" aria-hidden="true" />
                   <span className="auth-widget-open-lobby-text">
                     <strong>Your Open Lobby</strong>
+                    {/* One line, not two: "Your Open Lobby" already says it's
+                        open and waiting, so the subtitle carries only the thing
+                        the heading can't — which deck/format is queued up.
+                        Appending "· waiting for an opponent" wrapped the row. */}
                     <span>
                       {myLobby.deckName ||
-                        `${myLobby.setCode} ${myLobby.format === 'draft' ? 'Draft' : 'Sealed'}${packCountNameSuffix(myLobby.packsPerPlayer)}`}{' '}
-                      · waiting for an opponent
+                        `${formatPoolLabel(myLobby.setCode, myLobby.format === 'draft' ? 'draft' : 'sealed')}${packCountNameSuffix(myLobby.packsPerPlayer)}`}
                     </span>
                   </span>
                 </a>
