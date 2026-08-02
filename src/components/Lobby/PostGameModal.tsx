@@ -2,8 +2,8 @@
 
 /**
  * New Game modal (R28/R31/R32/R34): pick a deck (it sets the game's
- * set+format), choose Public vs Private link, and — with a capable
- * Companion — pre-create the Karabast lobby (default ON).
+ * set+format), choose Public vs Private, and — on a PUBLIC game with a capable
+ * Companion — pre-create the Karabast lobby so Karabast users can find it.
  */
 import { useEffect, useState } from 'react'
 import Modal from '@/src/components/Modal'
@@ -38,6 +38,15 @@ export default function PostGameModal({
 
   const selectedShareId = selected?.poolShareId ?? initialPoolShareId
 
+  // Listing on Karabast is a PUBLIC-only affordance: a private lobby is
+  // link-only, so publishing it to Karabast's public list would contradict the
+  // choice the user just made. Derived once and used for BOTH the checkbox and
+  // the value handed to onCreated, so the two can't drift — the preference is
+  // remembered in localStorage, so `createKarabast` can be true on open without
+  // the user having touched it this session.
+  const karabastOffered = companionCapable && visibility === 'public'
+  const karabastFindable = karabastOffered && createKarabast
+
   async function createGame(): Promise<void> {
     if (!selectedShareId || busy) return
     setBusy(true)
@@ -53,7 +62,7 @@ export default function PostGameModal({
         throw new Error(json?.message || 'Could not create the game')
       }
       const game = (json.data || json).game
-      onCreated(game, companionCapable && createKarabast)
+      onCreated(game, karabastFindable)
     } catch (error) {
       showToast({
         text: error instanceof Error ? error.message : 'Could not create the game',
@@ -88,7 +97,7 @@ export default function PostGameModal({
             Private
           </Button>
         </div>
-        {companionCapable && (
+        {karabastOffered && (
           <label className="lobby-check lobby-check-centered">
             <input
               type="checkbox"
