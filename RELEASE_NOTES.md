@@ -1,5 +1,10 @@
 # Release Notes
 
+## 08.01.2026 Part 2
+
+### 🔒 Bug Fixes
+- **"Findable by Karabast users" only appears on public lobbies.** It was offered on private ones too, and because the setting is remembered between lobbies, a private lobby could be listed publicly on Karabast without you touching the checkbox — the opposite of what "Private" means.
+
 ## 08.01.2026
 
 ### 🎉 Karabast Games Show Up For Everyone
