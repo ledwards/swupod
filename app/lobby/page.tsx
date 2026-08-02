@@ -8,7 +8,7 @@
  * the rainbow ring), glass board boxes. LandingPage itself stays untouched;
  * promotion to `/` is a separate, explicitly-approved flip.
  */
-import { useState, useCallback, useEffect, Suspense } from 'react'
+import { useState, useCallback, useEffect, Suspense, Fragment } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/src/contexts/AuthContext'
 import { usePresence } from '@/src/hooks/usePresence'
@@ -22,19 +22,11 @@ import { MODE_ART } from '@/src/components/LandingPage'
 import LobbyBoard from '@/src/components/Lobby/LobbyBoard'
 import PostGameModal from '@/src/components/Lobby/PostGameModal'
 import JoinGameModal from '@/src/components/Lobby/JoinGameModal'
+import JoinKarabastModal from '@/src/components/Lobby/JoinKarabastModal'
 import '@/src/components/LandingPage.css'
 import '@/src/components/Lobby/Lobby.css'
 
 const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 'https://discord.gg/u6fkdDzWqF'
-
-// All art is HYPERSPACE variants from the card catalog; the art-* class must
-// match the card's type (unit/event/leader) for correct framing.
-const VERB_ART = {
-  // Millennium Falcon — Piece of Junk (SOR-455, Unit, HYP): jump in and go.
-  playNow: 'https://cdn.starwarsunlimited.com//card_SWH_01_455_Millennium_Falcon_HYP_874755c830.png',
-  // Spark of Rebellion (SOR-462, Event, HYP): the spark that starts it.
-  newGame: 'https://cdn.starwarsunlimited.com//card_SWH_01_462_Spark_Of_Rebellion_HYP_9986103388.png',
-}
 
 interface LobbyTile {
   title: string
@@ -98,7 +90,7 @@ function LobbyPageInner(): React.JSX.Element {
   const { showToast } = useToast()
   const [newGameOpen, setNewGameOpen] = useState(false)
   const [joinTarget, setJoinTarget] = useState<OpenGameListing | null>(null)
-  const [playNowBusy, setPlayNowBusy] = useState(false)
+  const [karabastTarget, setKarabastTarget] = useState<KarabastLobby | null>(null)
   // R35: play-page CTA arrives as /lobby?pool=<shareId>#new-game
   const preselectPool = searchParams.get('pool')
 
@@ -160,56 +152,6 @@ function LobbyPageInner(): React.JSX.Element {
     if (!requireLogin('#new-game')) return
     setNewGameOpen(true)
   }, [requireLogin])
-
-  // Play Now (R8/AE1/AE2): one click with the most recent eligible deck —
-  // the server accepts the oldest compatible listing or posts/keeps a seek.
-  const handlePlayNow = useCallback(async () => {
-    if (!requireLogin('#play-now')) return
-    if (playNowBusy) return
-    setPlayNowBusy(true)
-    try {
-      const decksRes = await fetch('/api/open-games/eligible-decks', { credentials: 'include' })
-      const decksJson = await decksRes.json().catch(() => null)
-      const decks = (decksJson?.data || decksJson)?.decks || []
-      const deck = decks[0]
-      if (!deck) {
-        // R22: the no-deck funnel — get a deck first, then post it.
-        showToast({
-          text: 'You need a deck first.',
-          kind: 'info',
-          href: '/sealed',
-          actionLabel: 'Start Solo Sealed',
-          durationMs: 12000,
-        })
-        return
-      }
-      const res = await fetch('/api/open-games/play-now', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ poolShareId: deck.poolShareId }),
-      })
-      const json = await res.json().catch(() => null)
-      if (!res.ok) throw new Error(json?.message || 'Play Now failed')
-      const { action, game } = json.data || json
-      if (action === 'joined') {
-        router.push(`/g/${game.shareId}`)
-      } else {
-        showToast({
-          text: action === 'posted'
-            ? `You're on the board with ${deck.name || deck.setCode}.`
-            : 'Still on the board.',
-          kind: 'success',
-          href: `/g/${game.shareId}`,
-          actionLabel: 'View lobby',
-        })
-      }
-    } catch (error) {
-      showToast({ text: error instanceof Error ? error.message : 'Play Now failed', kind: 'danger' })
-    } finally {
-      setPlayNowBusy(false)
-    }
-  }, [requireLogin, playNowBusy, router, showToast])
 
   const handleJoin = useCallback(
     (listing: OpenGameListing) => {
@@ -273,11 +215,12 @@ function LobbyPageInner(): React.JSX.Element {
     [router]
   )
 
+  // Karabast lobbies take a deck like any other game: pick one, then the
+  // Companion loads it and drops you into that lobby (wayfinder:join-lobby).
+  // The picker is unfiltered — the relay carries no set or pack count, so the
+  // lobby name is the only signal and the player reads it themselves.
   const handleJoinKarabast = useCallback((lobby: KarabastLobby) => {
-    // Joining a Karabast lobby happens on Karabast; the Companion handles
-    // deck load + linkback (R33/R37). Plain navigation, no gating.
-    window.open('https://karabast.net/', '_blank', 'noopener')
-    void lobby
+    setKarabastTarget(lobby)
   }, [])
 
   return (
@@ -286,14 +229,9 @@ function LobbyPageInner(): React.JSX.Element {
         <header className="lobby-header">
           <a className="lobby-brand" href="/" aria-label="Protect the Pod home">
             <img className="lobby-header-logo" src="/ptp_logo400.png" alt="" />
-            <span className="lobby-brand-text">
-              <span className="lobby-brand-name">PROTECT THE POD</span>
-              <span className="lobby-brand-sub">The Star Wars Unlimited Limited Simulator</span>
-            </span>
           </a>
-        </header>
-
-        <div className="lobby-verbs">
+          <h1 className="lobby-visually-hidden">Protect the Pod</h1>
+          <p className="lobby-tagline">The Star Wars Unlimited Limited Simulator</p>
           <div className="lobby-live-strip">
             <span className="lobby-online-pill">
               <span className="lobby-online-dot" />
@@ -301,54 +239,36 @@ function LobbyPageInner(): React.JSX.Element {
                 {presence.count} player{presence.count !== 1 ? 's' : ''} online
               </span>
             </span>
-            {/* A bare total next to "0 open lobbies" reads as a room full of
-                people refusing to play with you. The split says what they're
-                actually doing, so the zero below is a gap you can fill rather
-                than a rejection. */}
-            {presence.count > 0 && (
-              <span className="lobby-presence-breakdown">
-                {presence.drafting > 0 && <><strong>{presence.drafting}</strong> drafting · </>}
-                {presence.building > 0 && <><strong>{presence.building}</strong> building · </>}
-                <strong>{presence.browsing}</strong> browsing
-              </span>
-            )}
-            <span>
-              <strong>{board.listings.length}</strong> open {board.listings.length === 1 ? 'lobby' : 'lobbies'} ·{' '}
-              <strong>{pods.length}</strong> {pods.length === 1 ? 'pod' : 'pods'} forming
-              {board.gamesToday > 0 && (
-                <> · <strong>{board.gamesToday}</strong> {board.gamesToday === 1 ? 'game' : 'games'} today</>
-              )}
-            </span>
+            {/* One dot-separated run of what is actually happening. A zero is
+                never a line item: "0 open lobbies" reads as a room full of
+                people refusing to play with you, while an omission just reads
+                as a gap you can fill. Board counts first, then what the people
+                online are doing, then today's total. */}
+            {(() => {
+              const activities: React.ReactNode[] = []
+              const push = (n: number, label: React.ReactNode): void => {
+                if (n > 0) activities.push(<><strong>{n}</strong> {label}</>)
+              }
+              push(board.listings.length, `open ${board.listings.length === 1 ? 'lobby' : 'lobbies'}`)
+              push(pods.length, `${pods.length === 1 ? 'pod' : 'pods'} forming`)
+              push(presence.drafting, 'drafting')
+              push(presence.building, 'building')
+              push(presence.browsing, 'solo play')
+              push(board.gamesToday, `${board.gamesToday === 1 ? 'game' : 'games'} today`)
+              if (activities.length === 0) return null
+              return (
+                <span>
+                  {activities.map((a, i) => (
+                    <Fragment key={i}>
+                      {i > 0 && ' · '}
+                      {a}
+                    </Fragment>
+                  ))}
+                </span>
+              )
+            })()}
           </div>
-          <button
-            className="mode-button art-unit lobby-verb"
-            disabled={playNowBusy || authLoading}
-            onClick={handlePlayNow}
-          >
-            <span className="lobby-art" aria-hidden>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="lobby-art-img art-unit" src={VERB_ART.playNow} alt="" />
-            </span>
-            <div className="mode-button-content">
-              <span className="mode-button-title">Play Now</span>
-              <span className="mode-button-subtitle">Jump into the next open game</span>
-            </div>
-          </button>
-          <button
-            className="mode-button art-event lobby-verb"
-            disabled={playNowBusy || authLoading}
-            onClick={handleNewGame}
-          >
-            <span className="lobby-art" aria-hidden>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="lobby-art-img art-event" src={VERB_ART.newGame} alt="" />
-            </span>
-            <div className="mode-button-content">
-              <span className="mode-button-title">New Lobby</span>
-              <span className="mode-button-subtitle">Create a lobby</span>
-            </div>
-          </button>
-        </div>
+        </header>
 
         <LobbyBoard
           board={board}
@@ -451,6 +371,12 @@ function LobbyPageInner(): React.JSX.Element {
             setJoinTarget(null)
             router.push(`/g/${game.shareId}`)
           }}
+        />
+
+        <JoinKarabastModal
+          isOpen={karabastTarget != null}
+          onClose={() => setKarabastTarget(null)}
+          lobby={karabastTarget}
         />
       </div>
     </div>

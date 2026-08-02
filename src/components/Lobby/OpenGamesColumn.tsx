@@ -60,154 +60,149 @@ export default function OpenGamesColumn({
 
   return (
     <section className="lobby-column" aria-label="Open lobbies">
+      {/* The create action lives here now that the big "New Lobby" verb is
+          gone. The empty state's own button only shows at zero listings, so
+          without this there'd be no way to open a lobby once the board fills. */}
       <h3 className="lobby-column-title">
         Open Lobbies ({totalCount})
+        <Button variant="primary" size="xs" onClick={onNewGame}>
+          New Lobby
+        </Button>
       </h3>
 
-      {status === 'error' && (
-        <div className="lobby-state lobby-state-error">
-          <p>Couldn&apos;t load live lobbies.</p>
-          <Button variant="secondary" size="sm" onClick={retry}>
-            Retry
-          </Button>
-        </div>
-      )}
+      {/* The rows scroll inside the column so a busy board never grows
+          the page past the fold — see the no-fold budget in Lobby.css. */}
+      <div className="lobby-column-body">
 
-      {status === 'loading' && (
-        <div className="lobby-skeleton-rows" aria-hidden>
-          <div className="skeleton-row" />
-          <div className="skeleton-row" />
-        </div>
-      )}
-
-      {boardEmpty && (
-        <div className="lobby-state">
-          <p>No open lobbies right now.</p>
-          <Button variant="primary" size="sm" onClick={onNewGame}>
-            Create a Lobby
-          </Button>
-          {recentCompleted.length > 0 && (
-            // Single line, ellipsised (see .lobby-state-sub) — the full recap
-            // stays available as the title.
-            <p className="lobby-state-sub" title={recentPlayedLabel}>
-              Recently played: {recentPlayedLabel}
-            </p>
-          )}
-        </div>
-      )}
-
-      {status === 'ready' &&
-        listings.map(listing => {
-          const isMine =
-            listing.mine === true ||
-            (currentUsername != null && listing.host.username === currentUsername)
-          // Set key art as a right-anchored row background (same treatment
-          // as /draft's public pod rows); rows without art stay plain glass.
-          const artUrl = getPackArtUrl(listing.setCode)
-          return (
-          <div
-            className={`lobby-row${artUrl ? ' lobby-row--art' : ''}`}
-            key={listing.shareId}
-            style={artUrl ? ({ ['--row-art' as never]: `url(${artUrl})` }) : undefined}
-          >
-            {listing.host.avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img className="lobby-row-avatar" src={listing.host.avatarUrl} alt="" />
-            ) : (
-              <div className="lobby-row-avatar" />
-            )}
-            <div className="lobby-row-who">
-              <div className="lobby-row-name">
-                <span className="lobby-row-name-text">{listing.host.username || 'Unknown player'}</span>
-                <span
-                  className={`lobby-host-dot${listing.hostConnected === false ? ' lobby-host-away' : ''}`}
-                  title={listing.hostConnected === false ? 'Stepped away' : 'Online'}
-                />
-                <span className="lobby-badge">{listing.setCode}</span>
-                <span className={`lobby-badge lobby-badge-format-${listing.format === 'draft' ? 'draft' : 'sealed'}`}>
-                  {listing.format === 'draft' ? 'Draft' : 'Sealed'}
-                </span>
-                {/* Pack count is part of the sealed format — a 6-pack deck
-                    can't join an 8-pack game, so the row says which it is. */}
-                {packCountLabel(listing.packsPerPlayer) && (
-                  <span className="lobby-badge">{packCountLabel(listing.packsPerPlayer)}</span>
-                )}
-                {listing.bestOf === 3 && <span className="lobby-badge">Bo3</span>}
-              </div>
-              <div className="lobby-row-meta">
-                {isMine && listing.yourDeck?.name ? `${listing.yourDeck.name} · ` : ''}
-                {timeAgo(listing.createdAt)}
-                {listing.hostConnected === false ? ' · stepped away' : ''}
-              </div>
-            </div>
-            {isMine ? (
-              // Your own listing: you can't join yourself — discard it instead
-              // (danger treatment: this throws the posted lobby away).
-              <Button variant="danger" size="sm" onClick={() => onLeave(listing)}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <polyline points="3 6 5 6 21 6" />
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                </svg>
-                Leave
-              </Button>
-            ) : (
-              <Button variant="primary" size="sm" onClick={() => onJoin(listing)}>
-                Join
-              </Button>
-            )}
-          </div>
-          )
-        })}
-
-      {/* Karabast public lobbies, mixed into the same list (R33). Lobbies
-          created THROUGH our board (create-at-post) are already listed above
-          as PTP rows — drop them here instead of double-showing. */}
-      {status === 'ready' &&
-        karabast.available &&
-        karabast.lobbies
-          .filter(lobby => {
-            if (!lobby.lobbyId) return true
-            return !listings.some(l => l.karabastLobbyId === lobby.lobbyId)
-          })
-          .map((lobby, i) => (
-          <div className="lobby-row" key={`kb-${lobby.lobbyId ?? lobby.name}-${i}`}>
-            <div className="lobby-row-avatar lobby-row-avatar-unknown" title="Player details unavailable for games listed on Karabast" />
-            <div className="lobby-row-who">
-              <div className="lobby-row-name">
-                <span className="lobby-row-name-text">{lobby.name}</span>
-                {lobby.isPtp ? (
-                  <span className="lobby-tip lobby-check" data-tip={PTP_VALIDATED}>✓</span>
-                ) : (
-                  <span className="lobby-tip lobby-warn" data-tip={NON_PTP_WARNING}>⚠</span>
-                )}
-                <span className="lobby-badge lobby-badge-karabast">Karabast</span>
-              </div>
-              <div className="lobby-row-meta">
-                listed on Karabast · {lobby.waiting} waiting
-              </div>
-            </div>
-            <Button variant="interactive" size="sm" onClick={() => onJoinKarabast(lobby)}>
-              Join
+        {status === 'error' && (
+          <div className="lobby-state lobby-state-error">
+            <p>Couldn&apos;t load live lobbies.</p>
+            <Button variant="secondary" size="sm" onClick={retry}>
+              Retry
             </Button>
           </div>
-        ))}
+        )}
 
-      {/* No Companion: players can always browse Karabast's lobby themselves. */}
-      {status === 'ready' && !karabast.available && (
-        <a
-          className="lobby-row lobby-row-link"
-          href="https://karabast.net/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <div className="lobby-row-who">
-            <div className="lobby-row-name">More games on Karabast ↗</div>
-            <div className="lobby-row-meta">
-              Browse public lobbies on karabast.net.
-            </div>
+        {status === 'loading' && (
+          <div className="lobby-skeleton-rows" aria-hidden>
+            <div className="skeleton-row" />
+            <div className="skeleton-row" />
           </div>
-        </a>
-      )}
+        )}
+
+        {boardEmpty && (
+          <div className="lobby-state">
+            <p>No open lobbies right now.</p>
+            <Button variant="primary" size="sm" onClick={onNewGame}>
+              Create a Lobby
+            </Button>
+            {recentCompleted.length > 0 && (
+              // Single line, ellipsised (see .lobby-state-sub) — the full recap
+              // stays available as the title.
+              <p className="lobby-state-sub" title={recentPlayedLabel}>
+                Recently played: {recentPlayedLabel}
+              </p>
+            )}
+          </div>
+        )}
+
+        {status === 'ready' &&
+          listings.map(listing => {
+            const isMine =
+              listing.mine === true ||
+              (currentUsername != null && listing.host.username === currentUsername)
+            // Set key art as a right-anchored row background (same treatment
+            // as /draft's public pod rows); rows without art stay plain glass.
+            const artUrl = getPackArtUrl(listing.setCode)
+            return (
+            <div
+              className={`lobby-row${artUrl ? ' lobby-row--art' : ''}`}
+              key={listing.shareId}
+              style={artUrl ? ({ ['--row-art' as never]: `url(${artUrl})` }) : undefined}
+            >
+              {listing.host.avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img className="lobby-row-avatar" src={listing.host.avatarUrl} alt="" />
+              ) : (
+                <div className="lobby-row-avatar" />
+              )}
+              <div className="lobby-row-who">
+                <div className="lobby-row-name">
+                  <span className="lobby-row-name-text">{listing.host.username || 'Unknown player'}</span>
+                  <span
+                    className={`lobby-host-dot${listing.hostConnected === false ? ' lobby-host-away' : ''}`}
+                    title={listing.hostConnected === false ? 'Stepped away' : 'Online'}
+                  />
+                  <span className="lobby-badge">{listing.setCode}</span>
+                  <span className={`lobby-badge lobby-badge-format-${listing.format === 'draft' ? 'draft' : 'sealed'}`}>
+                    {listing.format === 'draft' ? 'Draft' : 'Sealed'}
+                  </span>
+                  {/* Pack count is part of the sealed format — a 6-pack deck
+                      can't join an 8-pack game, so the row says which it is. */}
+                  {packCountLabel(listing.packsPerPlayer) && (
+                    <span className="lobby-badge">{packCountLabel(listing.packsPerPlayer)}</span>
+                  )}
+                  {listing.bestOf === 3 && <span className="lobby-badge">Bo3</span>}
+                </div>
+                <div className="lobby-row-meta">
+                  {isMine && listing.yourDeck?.name ? `${listing.yourDeck.name} · ` : ''}
+                  {timeAgo(listing.createdAt)}
+                  {listing.hostConnected === false ? ' · stepped away' : ''}
+                </div>
+              </div>
+              {isMine ? (
+                // Your own listing: you can't join yourself — discard it instead
+                // (danger treatment: this throws the posted lobby away).
+                <Button variant="danger" size="sm" onClick={() => onLeave(listing)}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                  Leave
+                </Button>
+              ) : (
+                <Button variant="primary" size="sm" onClick={() => onJoin(listing)}>
+                  Join
+                </Button>
+              )}
+            </div>
+            )
+          })}
+
+        {/* Karabast public lobbies, mixed into the same list (R33). Lobbies
+            created THROUGH our board (create-at-post) are already listed above
+            as PTP rows — drop them here instead of double-showing. */}
+        {status === 'ready' &&
+          karabast.available &&
+          karabast.lobbies
+            .filter(lobby => {
+              if (!lobby.lobbyId) return true
+              return !listings.some(l => l.karabastLobbyId === lobby.lobbyId)
+            })
+            .map((lobby, i) => (
+            <div className="lobby-row" key={`kb-${lobby.lobbyId ?? lobby.name}-${i}`}>
+              <div className="lobby-row-avatar lobby-row-avatar-unknown" title="Player details unavailable for games listed on Karabast" />
+              <div className="lobby-row-who">
+                <div className="lobby-row-name">
+                  <span className="lobby-row-name-text">{lobby.name}</span>
+                  {lobby.isPtp ? (
+                    <span className="lobby-tip lobby-check" data-tip={PTP_VALIDATED}>✓</span>
+                  ) : (
+                    <span className="lobby-tip lobby-warn" data-tip={NON_PTP_WARNING}>⚠</span>
+                  )}
+                  <span className="lobby-badge lobby-badge-karabast">Karabast</span>
+                </div>
+                <div className="lobby-row-meta">
+                  listed on Karabast · {lobby.waiting} waiting
+                </div>
+              </div>
+              <Button variant="interactive" size="sm" onClick={() => onJoinKarabast(lobby)}>
+                Join
+              </Button>
+            </div>
+          ))}
+
+      </div>
     </section>
   )
 }

@@ -85,7 +85,7 @@ export default function PostGameModal({
             glowColor="blue"
             onClick={() => setVisibility('private')}
           >
-            Private link
+            Private
           </Button>
         </div>
         {companionCapable && (

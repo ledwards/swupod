@@ -1,5 +1,30 @@
 # Release Notes
 
+## 08.01.2026
+
+### 🎉 Karabast Games Show Up For Everyone
+
+**There have been live limited games on Karabast this whole time. Unless you had the Companion extension installed, the lobby never showed you a single one.**
+
+The board only ever learned about Karabast games from the extension relaying them out of your own browser. No extension, no games — forever, with no hint anything was missing. Protect the Pod now reads Karabast's public lobby list itself, so the draft and sealed games waiting over there are on the board for everyone.
+
+You can join one with any of your limited decks. Karabast listings don't say which set they want, so the deck picker doesn't guess — every limited deck is offered and the lobby name tells you what the host is after.
+
+### 🎮 A Calmer Lobby
+
+- **The lobby leads with the logo again**, with the online counts underneath it where they used to be.
+- **"Play Now" and "New Lobby" are gone.** Play Now grabbed whichever pool happened to be first — built or not — and then told you to go finish building it. Creating a lobby now lives on the Open Lobbies panel itself.
+- **The whole lobby fits one screen** on a desktop, with no fold. A busy board scrolls inside its own panel instead of pushing everything else off the bottom.
+- **The activity line only counts what's happening.** No more "0 open lobbies · 0 pods forming" — an activity that isn't happening simply isn't listed. "Browsing" is now "solo play".
+
+### 🐞 Bug Fixes
+
+- **The deck picker stopped hiding its own controls.** The deck list sat in an invisible scrolling window, so the page buttons, the set filters and the public/private choice were all parked below a fold with nothing to indicate they were there. Everything is visible at once now, and the number of decks per page adapts to your screen so it stays that way.
+- **Deck tags stay on one line** instead of wrapping and doubling the height of every row.
+- **The picker opens on the current set**, which is the deck almost everyone is reaching for.
+- **Ashes of the Empire and Jump to Lightspeed count as current sets again.** The list of rotation-legal sets was written out by hand, so it went stale the moment a set released — ASH had been out for three weeks without being added, and JTL had been dropped a year early. Games launched with those decks asked Karabast for the wrong card pool. Rotation is now worked out from the release calendar, so it can't drift again.
+- **"Private link" is just "Private."**
+
 ## 07.31.2026 Part 2
 
 ### 🎨 UI Improvements

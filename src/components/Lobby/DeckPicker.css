@@ -19,6 +19,15 @@
   --ys-radius-sm: 10px;
 }
 
+/* Karabast join: why the picker isn't filtered for you. */
+.lobby-karabast-note {
+  margin: 0 0 var(--pt-space-xs);
+  color: var(--pt-ink-subtle);
+  font-size: 0.85rem;
+  text-align: left;
+  line-height: 1.4;
+}
+
 /* "ASH · Draft (4 eligible)" subtitle under the Join modal title. */
 .lobby-deck-subtitle {
   margin: 0 0 var(--pt-space-xs);
@@ -118,12 +127,21 @@
 
 /* ----- pagination ---------------------------------------------------------- */
 .lobby-deck-pager {
-  grid-column: 1 / -1;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--pt-space-sm);
   margin-top: var(--pt-space-xs);
+}
+
+/* Tags stay on ONE line — wrapping them was silently doubling every item's
+   height, which is most of what forced the modal to scroll in the first
+   place. Anything that doesn't fit is clipped, not stacked. */
+.lobby-deck-option .your-stats-replay-meta {
+  flex-wrap: nowrap;
+  overflow: hidden;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .lobby-deck-pager-count {
@@ -155,25 +173,22 @@
 }
 
 
-/* ---- deck modals: wider than the 28rem default, never taller than the
-   viewport — the list scrolls inside, header/actions always visible. ---- */
+/* ---- deck modals: wider than the 28rem default, and NEVER an inner
+   scroller. An inner scroll container hid the pager, the set filters and the
+   visibility toggle below an invisible fold with no affordance to find them.
+   The modal sizes to its content instead; the page size is tuned so that
+   content fits a short laptop viewport. ---- */
 .lobby-deck-modal {
   max-width: min(92vw, 640px);
   width: 100%;
-  /* Breathing room: cap well below the viewport so the modal never reads as
-     a full-height sheet; the deck list scrolls inside. (.modal-content is
-     content-box, so its 2rem paddings sit on top of this figure.) */
-  max-height: min(600px, calc(100vh - 12rem));
   display: flex;
   flex-direction: column;
 }
 
 .lobby-deck-modal .modal-body {
-  overflow-y: auto;
-  flex: 1;
-  min-height: 0;
-  /* The scroll container clips anything past its padding box — glows, toggle
-     rings, and the selection ring need this inset to render un-clipped. */
+  /* Everything visible: no overflow, no clipping. The inset gives the glows,
+     toggle rings and the selection ring room to paint. */
+  overflow: visible;
   padding: 6px 8px;
 }
 
