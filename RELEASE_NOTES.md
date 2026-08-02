@@ -1,5 +1,12 @@
 # Release Notes
 
+## 08.01.2026
+
+### 🎨 UI Improvements
+- **Leader thumbnails show art, not card edges.** Every small square leader image on the stats pages — the usage legend, the leader list, the match rows, the opponent thumbs — was cropped by its own hand-tuned offset, and most of them let the card's trait bar sit along the bottom of the box. They all now use the same crop as the win-rate grid, which frames the illustration and nothing else. Because that crop is a ratio rather than a pixel nudge, it holds at every thumbnail size instead of drifting back on the small ones.
+- **Chaos pools say "Chaos" in your menu.** A chaos pool's set list ran to `SOR,SOR,GC2026_SILVER,GC2026_BLACK…` and wrapped the menu row onto a second line. In the menu it now reads "Chaos Sealed", the same name it goes by everywhere else.
+- **The Your Open Lobby row is one line.** It said the lobby was waiting for an opponent directly under a heading that already said so. The subtitle now carries just the deck or format that's queued up.
+
 ## 07.31.2026 Part 2
 
 ### 🎨 UI Improvements
