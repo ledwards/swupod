@@ -167,13 +167,21 @@ async function runTests(): Promise<void> {
     assert(pack.cards.every((c: Card) => c.set === 'SOR'), 'All cards should be from SOR set')
   })
 
-  test('all cards are Normal or Hyperspace or Showcase variants', () => {
+  // SPEC (CLAUDE.md "Card Variant Types"): a booster's cards are Normal,
+  // Hyperspace, Hyperspace Foil, or Showcase. 'Hyperspace Foil' was missing
+  // here, so this failed whenever the foilToHyperfoil upgrade fired — a ~1/50
+  // per-pack event that the neighbouring "Hyperspace Foil variants appear at
+  // ~1/50 rate" test asserts is CORRECT behaviour. One random pack, so it
+  // failed ~7% of runs (measured 2/30) and CI had simply been getting lucky.
+  test('all cards are Normal or Hyperspace or Hyperspace Foil or Showcase variants', () => {
     clearBeltCache()
     const pack = generateBoosterPack(cards, 'SOR')
-    const validVariants = ['Normal', 'Hyperspace', 'Showcase']
+    const validVariants = ['Normal', 'Hyperspace', 'Hyperspace Foil', 'Showcase']
     assert(
       pack.cards.every((c: Card) => validVariants.includes(c.variantType || 'Normal')),
-      'All cards should be Normal, Hyperspace, or Showcase variants'
+      `All cards should be Normal, Hyperspace, Hyperspace Foil, or Showcase variants; got ${[
+        ...new Set(pack.cards.map((c: Card) => c.variantType || 'Normal')),
+      ].join(', ')}`
     )
   })
 

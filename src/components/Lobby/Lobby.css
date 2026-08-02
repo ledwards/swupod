@@ -16,63 +16,85 @@
 .lobby-page {
   width: 100%;
   max-width: 1100px;
-  margin: 0 auto;
-  padding: var(--pt-space-lg) var(--pt-space-md) var(--pt-space-xl);
+  /* Auto block margins centre the lobby in the leftover height on tall screens
+     (the homepage centres its hero the same way) without flexbox centering's
+     trap: if content ever exceeds the viewport, auto margins collapse to 0 and
+     the overflow stays reachable instead of spilling off the top. */
+  margin: auto;
+  /* Capped at the viewport, with the board as the only section allowed to
+     shrink (everything else is `flex: none`). So a busy board scrolls inside
+     its own columns instead of pushing the page past the fold. No global
+     border-box on desktop, hence the explicit one — the cap must include the
+     page padding or it overflows by exactly that much. */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  max-height: 100vh;
+  /* Vertical padding joins the no-fold budget; the horizontal stays fixed. */
+  padding: clamp(12px, 2.5vh, 24px) var(--pt-space-md) clamp(14px, 3.2vh, 32px);
   color: var(--pt-ink);
   text-align: left;
   font-family: Barlow, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
-/* ---- compact header: small logo + online pill (R27: no nav bar) ---- */
+/* ---- hero header: the homepage lockup, centered ----
+   Badge over tagline, mirroring `.landing-content`, so the lobby reads as the
+   same product rather than a different app behind a compact nav bar.
+
+   NO-FOLD BUDGET: the lobby has to fit one desktop screen with no scroll, and
+   a hero costs far more height than the nav row it replaces. So every vertical
+   dimension from here down — hero, section rhythm, button heights — is
+   `clamp(floor, Nvh, ceiling)`: full size on a tall screen, quietly compressed
+   on a short one, never a fold. Change one and re-check the total. */
 .lobby-header {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--pt-space-md);
-  margin-bottom: var(--pt-space-lg);
-  /* Clearance for the site's floating auth widget (top-right). */
-  padding-right: 84px;
+  text-align: center;
+  gap: 2px;
+  margin-bottom: clamp(10px, 2.2vh, 24px);
+  flex: none;
+  /* No auth-widget clearance needed here: a centered hero never reaches the
+     top-right corner the floating avatar sits in. */
 }
 
 .lobby-brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+  display: block;
   text-decoration: none;
 }
 
 .lobby-header-logo {
-  height: 76px;
-  width: auto;
+  width: clamp(84px, 15vh, 190px);
+  height: auto;
   display: block;
+  transition: transform 0.2s ease;
 }
 
-.lobby-brand-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+@media (hover: hover) and (pointer: fine) {
+  .lobby-header-logo:hover {
+    transform: translateY(-2px);
+  }
 }
 
-/* Brand wordmark — set in Orbitron 900 to echo the logo's squared, wide
-   letterforms (Barlow 800 read as generic bold sans next to the art), and
-   filled with the logo's steel gradient rather than flat white. */
-.lobby-brand-name {
-  font-family: Orbitron, Barlow, system-ui, sans-serif;
-  font-size: 1.2rem;
-  font-weight: 900;
-  letter-spacing: 0.02em;
-  line-height: 1.15;
-  color: var(--pt-ink); /* fallback before the gradient clip applies */
-  background: linear-gradient(180deg, #ffffff 0%, #dbe6f2 34%, #93a7bd 52%, #e8f1fa 68%, #b9c8d8 100%); /* design-ok: chrome fill on the wordmark, matches the logo art */
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.65));
+.lobby-tagline {
+  margin: 0;
+  color: var(--pt-ink);
+  font-weight: 400;
+  font-size: clamp(0.95rem, 1.7vh, 1.3rem);
+  line-height: 1.3;
 }
 
-.lobby-brand-sub {
-  color: var(--pt-ink-subtle);
-  font-size: 0.85rem;
+/* The badge art carries the name visually; this keeps a real <h1> on the page. */
+.lobby-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .lobby-online-pill {
@@ -100,48 +122,28 @@
 }
 
 /* ---- verbs: live strip (left) + two big art buttons (mode-button DNA) ---- */
-.lobby-verbs {
-  display: grid;
-  grid-template-columns: auto 1.2fr 1.2fr;
-  gap: var(--pt-space-sm);
-  align-items: stretch;
-  margin-bottom: var(--pt-space-md);
-}
+/* The "Play Now" / "New Lobby" verb row is gone — Play Now silently grabbed
+   your first eligible pool (built or not) and New Lobby duplicated the create
+   action that now sits in the Open Lobbies title row. The live strip moved up
+   under the logo, where it was originally. */
 
-.lobby-page .mode-button.lobby-verb {
-  width: 100%;
-  min-height: 92px;
-}
-
-.lobby-page .mode-button.lobby-verb .mode-button-title {
-  font-size: 1.35rem;
-  font-weight: 800;
-}
-
+/* Sits inside the hero, centred under the tagline. */
 .lobby-live-strip {
-  align-self: center;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 6px;
-  text-align: left;
+  margin-top: clamp(6px, 1.2vh, 12px);
+  text-align: center;
   color: var(--pt-ink-subtle);
   font-size: 0.9rem;
   line-height: 1.5;
   font-variant-numeric: tabular-nums;
-  padding-right: var(--pt-space-xs);
 }
 
 .lobby-live-strip strong {
   color: var(--pt-ink);
   font-weight: 600;
-}
-
-/* What the online players are actually doing — quieter than the counts it
-   explains, so the pill and the lobby/pod line stay the things you read. */
-.lobby-presence-breakdown {
-  font-size: 0.82rem;
-  color: var(--pt-ink-muted);
 }
 
 /* ---- card-art system for lobby buttons ----
@@ -213,15 +215,31 @@
   display: grid;
   grid-template-columns: 1.55fr 1fr;
   gap: var(--pt-space-md);
-  /* Half a line height down to the solo tile row (no section headers). */
-  margin-bottom: var(--pt-space-sm);
+  /* The gap to the solo tile row is the tile row's own margin-top. In flex the
+     two no longer collapse into one, so this side stays at 0. */
+  margin-bottom: 0;
   /* Both boxes always share the row height (Lee: same height for aesthetics). */
   align-items: stretch;
+  /* The one section that gives when the viewport is short: min-height:0 lets
+     it shrink below its content, which pushes the overflow into the columns'
+     own scrollers rather than onto the page. */
+  min-height: 0;
 }
 
 .lobby-column {
   display: flex;
   flex-direction: column;
+  /* Let the column shrink below its rows so the body below can scroll. */
+  min-height: 0;
+}
+
+/* The rows' scroll container. The title row stays pinned above it. */
+.lobby-column-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .lobby-column .lobby-state {
@@ -508,7 +526,8 @@ a.lobby-row-link:active {
 
 /* states */
 .lobby-state {
-  padding: var(--pt-space-lg) var(--pt-space-md);
+  /* The empty state sets the board's height, so it's on the budget too. */
+  padding: clamp(14px, 3.2vh, 32px) var(--pt-space-md);
   text-align: center;
   color: var(--pt-ink-subtle);
   font-size: 0.9rem;
@@ -553,14 +572,15 @@ a.lobby-row-link:active {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--pt-space-sm);
-  /* board↔solo gap: half a line height (collapses with the board's margin). */
-  margin-top: var(--pt-space-sm);
+  /* board↔solo gap: half a line height. */
+  margin-top: clamp(6px, 1.2vh, 12px);
+  flex: none;
 }
 
 .lobby-tile-row-other {
   grid-template-columns: repeat(5, 1fr);
   /* solo↔other gap: one line height. */
-  margin-top: var(--pt-space-lg);
+  margin-top: clamp(10px, 3vh, 32px);
 }
 
 .lobby-page .mode-button.lobby-mode-tile {
@@ -568,7 +588,9 @@ a.lobby-row-link:active {
   /* the homepage's 225px floor would overflow a 5-up grid row; the track
      sizes the tile here. */
   min-width: 0;
-  min-height: 64px;
+  /* .mode-button ships a flat height: 104px — override it, not min-height. */
+  min-height: 0;
+  height: clamp(60px, 9vh, 88px);
   padding: 10px 14px;
 }
 
@@ -1170,33 +1192,20 @@ a.lobby-row-link:active {
 @media (max-width: 900px) {
   .lobby-page {
     padding-top: var(--pt-space-md);
+    /* No no-fold budget on mobile: the layout stacks and the page is meant to
+       scroll, so drop the viewport cap and let the board run to its full
+       height rather than trapping rows in a short inner scroller. */
+    display: block;
+    max-height: none;
   }
 
-  .lobby-header {
-    padding-right: 72px;
-  }
-
-  .lobby-header-logo {
-    height: 56px;
-  }
-
-  /* Orbitron sets wider than Barlow — step it down so the wordmark still
-     clears the floating auth widget on one line. */
-  .lobby-brand-name {
-    font-size: 0.95rem;
+  .lobby-column-body {
+    display: block;
+    overflow-y: visible;
   }
 
   .lobby-board {
     grid-template-columns: 1fr;
-  }
-
-  .lobby-verbs {
-    grid-template-columns: 1fr;
-  }
-
-  .lobby-live-strip {
-    width: 100%;
-    padding-right: 0;
   }
 
   .lobby-tile-row,
