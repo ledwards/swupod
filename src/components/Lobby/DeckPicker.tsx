@@ -49,8 +49,36 @@ interface DeckPickerProps {
   onEligibleCount?: (count: number) => void
 }
 
-/** 2-up grid: 8 items = 4 rows, still shorter than a viewport. */
-const PAGE_SIZE = 8
+/* The modal never scrolls internally, so the page size has to be whatever
+   actually fits the viewport — a fixed 8 overflowed the top of the screen on
+   any laptop shorter than ~830px. Measured against the tallest deck modal
+   (New Lobby, which also carries the visibility toggle): one 2-up row costs
+   108px + a 10px gap, and the modal's fixed chrome — title, filters, toggle,
+   actions, padding — is ~352px. */
+const DECK_ROW_H = 118
+const MODAL_CHROME_H = 352
+const VIEWPORT_MARGIN = 24
+const MIN_ROWS = 1
+const MAX_ROWS = 4
+
+function rowsForViewport(viewportH: number): number {
+  const rows = Math.floor((viewportH - VIEWPORT_MARGIN - MODAL_CHROME_H + 10) / DECK_ROW_H)
+  return Math.min(MAX_ROWS, Math.max(MIN_ROWS, rows))
+}
+
+/** Decks per page (2-up grid), sized so the modal always fits on screen. */
+function usePageSize(): number {
+  // Starts at the conservative floor so the first paint can't overflow before
+  // the real viewport height is known (and so SSR has no `window`).
+  const [rows, setRows] = useState(MIN_ROWS)
+  useEffect(() => {
+    const compute = (): void => setRows(rowsForViewport(window.innerHeight))
+    compute()
+    window.addEventListener('resize', compute)
+    return () => window.removeEventListener('resize', compute)
+  }, [])
+  return rows * 2
+}
 
 // Set buckets for the picker's filter bar: the latest standard set gets its
 // own button, everything else standard lives under "Older", and multi-set
@@ -118,6 +146,7 @@ function NoEligibleDecks({ setCode, format, packsPerPlayer }: { setCode?: string
 }
 
 export default function DeckPicker({ setCode, format, packsPerPlayer = null, selected, onSelect, onEligibleCount }: DeckPickerProps): React.JSX.Element {
+  const PAGE_SIZE = usePageSize()
   const [decks, setDecks] = useState<EligibleDeck[] | null>(null)
   const [error, setError] = useState(false)
   // Bumped by the Retry button to re-run the fetch effect.
@@ -232,6 +261,17 @@ export default function DeckPicker({ setCode, format, packsPerPlayer = null, sel
     if (decks !== null) onEligibleCount?.(eligible.length)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [decks])
+
+  // Open on the current set — that's the pool almost everyone is bringing, and
+  // an unfiltered list buries it under every deck they've ever built. Runs once
+  // per load, and only for the unfiltered picker; the chip still toggles off.
+  const setDefaultedRef = useRef(false)
+  useEffect(() => {
+    if (filtered || decks === null || setDefaultedRef.current) return
+    setDefaultedRef.current = true
+    if (decks.some(d => setBucket(d.setCode) === 'latest')) setSetFilter(LATEST_SET)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [decks, filtered])
 
   // "ASH · Draft (4 eligible)" / "LAW · Sealed · 8-pack (2 eligible)" —
   // the Join modal's one-line subtitle.
@@ -477,7 +517,11 @@ export default function DeckPicker({ setCode, format, packsPerPlayer = null, sel
                     {packCountLabel(deck.packsPerPlayer) && (
                       <span>{packCountLabel(deck.packsPerPlayer)}</span>
                     )}
-                    {deck.builtAt && <span>{new Date(deck.builtAt).toLocaleDateString()}</span>}
+                    {/* Month/day only: the tag row is capped to one line, and a
+                        full y/m/d date was the piece that got clipped. */}
+                    {deck.builtAt && (
+                      <span>{new Date(deck.builtAt).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric' })}</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -516,30 +560,32 @@ export default function DeckPicker({ setCode, format, packsPerPlayer = null, sel
             </div>
           </div>
         ))}
-        {pageCount > 1 && (
-          <div className="lobby-deck-pager">
-            <Button
-              variant="secondary"
-              size="xs"
-              disabled={safePage === 0}
-              onClick={() => setPage(p => Math.max(0, p - 1))}
-            >
-              Prev
-            </Button>
-            <span className="lobby-deck-pager-count">
-              {safePage + 1} / {pageCount}
-            </span>
-            <Button
-              variant="secondary"
-              size="xs"
-              disabled={safePage >= pageCount - 1}
-              onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))}
-            >
-              Next
-            </Button>
-          </div>
-        )}
       </div>
+      {/* Outside the grid on purpose: as a grid item it read as another deck
+          tile and got lost at the bottom of the list. */}
+      {pageCount > 1 && (
+        <div className="lobby-deck-pager">
+          <Button
+            variant="secondary"
+            size="xs"
+            disabled={safePage === 0}
+            onClick={() => setPage(p => Math.max(0, p - 1))}
+          >
+            Prev
+          </Button>
+          <span className="lobby-deck-pager-count">
+            {safePage + 1} / {pageCount}
+          </span>
+          <Button
+            variant="secondary"
+            size="xs"
+            disabled={safePage >= pageCount - 1}
+            onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))}
+          >
+            Next
+          </Button>
+        </div>
+      )}
     </>
   )
 }
