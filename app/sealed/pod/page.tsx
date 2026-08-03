@@ -181,7 +181,7 @@ export default function SealedPodLandingPage() {
         <h1>Sealed Pod</h1>
         <p className="draft-description">
           Open booster packs and build a deck with friends. Everyone opens packs at the
-          same time and builds from their own pool — 6 or 8 packs each, your call.
+          same time and builds from their own pool — 6 or 8 packs each.
         </p>
 
         {error && <div className="error-message">{error}</div>}

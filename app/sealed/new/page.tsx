@@ -215,7 +215,7 @@ function NewSealedPodPageContent() {
         ? 'Friends of the Pod only — Competitive Sealed'
         : competitive
           ? 'Competitive Sealed ON — 8 packs each, 20-minute deck build, Swiss matchmaking. Uncheck for a standard sealed pod.'
-          : 'Competitive Sealed OFF — this will be a standard 6-pack sealed pod. Check for 8 packs, a timed deck build, and Swiss matchmaking.'}
+          : 'Competitive Sealed OFF — this will be a standard sealed pod (6 or 8 packs). Check for 8 packs, a timed deck build, and Swiss matchmaking.'}
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
         <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 7 7 7 7"/>

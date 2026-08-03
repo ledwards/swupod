@@ -529,7 +529,7 @@ function LandingPage() {
                 <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.draftSolo}")` }} />
                 <div className="mode-button-content">
                   <span className="mode-button-title">Sealed</span>
-                  <span className="mode-button-subtitle">Build a deck from 6 packs</span>
+                  <span className="mode-button-subtitle">Build a deck from 6 or 8 packs</span>
                 </div>
               </button>
               <button className="mode-button art-event" onClick={() => router.push('/draft/solo')}>
