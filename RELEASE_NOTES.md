@@ -1,5 +1,10 @@
 # Release Notes
 
+## 08.03.2026
+
+### 🐞 Bug Fixes
+- **Solo Draft starts drafting instead of showing you a lobby.** Picking a set built the draft and filled the other seven seats with bots, then dropped you on the multiplayer waiting room — seat circle, "8 / 8 players", and a Share URL for a game nobody could join — and you still had to press Start. It now goes straight to your leader pack. Same for "Switch to Solo Mode" on a pod that never filled up.
+
 ## 08.01.2026 Part 3
 
 ### 🎉 The Lobby Is The Homepage
