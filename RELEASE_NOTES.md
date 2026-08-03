@@ -1,5 +1,28 @@
 # Release Notes
 
+## 08.01.2026 Part 3
+
+### 🎉 The Lobby Is The Homepage
+
+**Protect the Pod has always been a great place to open packs and build decks. The part that never worked was the last step: finding someone to play against.**
+
+You'd build something you were proud of, and then… go ask in Discord. Or not bother. The lobby fixes that, and it's now the first thing you see.
+
+**Every open game is on the front page.** Games waiting for an opponent, draft pods forming, and — this is the new part — **the limited games running on Karabast right now.** You can see who's around, what they're playing, and how many people are mid-draft or mid-build, without asking anyone.
+
+Join a game and bring any deck you've built. Post yours and wait for someone. Start a pod. It's all one screen.
+
+### 🔌 The Wayfinder Companion Makes It Seamless
+
+You don't need the Companion for any of this — the board shows you everything either way.
+
+What the Companion does is remove the busywork. Click Join and it loads your deck and drops you straight into the game — no exporting, no copying JSON, no pasting into Karabast, no re-picking your leader. It also records how your games actually went, so your stats fill in on their own.
+
+With it, going from "I built a deck" to "I'm playing a game" is one click.
+
+### 📖 Also
+- The old homepage's links, release notes, and disclaimer all moved across with it — nothing's lost, it's just at the bottom now.
+
 ## 08.01.2026 Part 2
 
 ### 🔒 Bug Fixes

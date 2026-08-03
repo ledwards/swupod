@@ -7,10 +7,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { usePresence } from '../hooks/usePresence'
 import { usePublicPodsSocket } from '../hooks/usePublicPodsSocket'
 import { formatPoolLabel } from '../utils/poolDisplayName'
-import {
-  PATREON_URL,
-  getUpcomingSetForPromo,
-} from '../utils/membership'
+import { getUpcomingSetForPromo } from '../utils/membership'
 import {
   selectHomepagePromoVariant,
   promoDismissalKey,
@@ -18,7 +15,7 @@ import {
 } from './landingPagePromo'
 import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 import ReleaseNotes from './ReleaseNotes'
-import { wayfinderCompanionUrl } from '../utils/wayfinderUrls'
+import SiteFooter from './SiteFooter'
 import Button from './Button'
 import SubscribeModal from './SubscribeModal'
 import Countdown from './Countdown'
@@ -617,34 +614,7 @@ function LandingPage() {
           </div>
         </div>
       </div>
-      <div className="landing-disclaimer">
-        <div className="landing-footer-links">
-          <a href="/stats" onClick={(e) => { e.preventDefault(); router.push('/stats') }}>Stats</a>
-          <span className="footer-separator">·</span>
-          <a href="/qa" onClick={(e) => { e.preventDefault(); router.push('/qa') }}>QA</a>
-          <span className="footer-separator">·</span>
-          <a href="/api" onClick={(e) => { e.preventDefault(); router.push('/api') }}>API</a>
-          <span className="footer-separator">·</span>
-          <a href="https://github.com/ledwards/swupod" target="_blank" rel="noopener noreferrer">GitHub</a>
-          <span className="footer-separator">·</span>
-          <a href={PATREON_URL} target="_blank" rel="noopener noreferrer">Patreon</a>
-          <span className="footer-separator">·</span>
-          <a href="https://swag.protectthepod.com" target="_blank" rel="noopener noreferrer">Swag</a>
-          <span className="footer-separator">·</span>
-          {hasBetaAccess && (
-            <>
-              <a href={wayfinderCompanionUrl()} target="_blank" rel="noopener noreferrer">Companion</a>
-              <span className="footer-separator">·</span>
-            </>
-          )}
-          <a href="/support-the-pod" onClick={(e) => { e.preventDefault(); router.push('/support-the-pod') }}>Support the Pod</a>
-          <span className="footer-separator">·</span>
-          <a href="/terms-of-service" onClick={(e) => { e.preventDefault(); router.push('/terms-of-service') }}>Terms</a>
-          <span className="footer-separator">·</span>
-          <a href="/privacy-policy" onClick={(e) => { e.preventDefault(); router.push('/privacy-policy') }}>Privacy</a>
-        </div>
-        <p>Protect the Pod is in no way affiliated with Disney or Fantasy Flight Games. Star Wars characters, cards, logos, and art are property of Disney and/or Fantasy Flight Games.</p>
-      </div>
+      <SiteFooter />
     </div>
   )
 }
