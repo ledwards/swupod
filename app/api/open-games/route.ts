@@ -55,6 +55,10 @@ export async function POST(request: NextRequest): Promise<Response> {
       poolId,
       visibility,
       bestOf: body.bestOf === 3 ? 3 : 1,
+      // The host's "Findable by Karabast users" choice. Persisted so later
+      // surfaces (the match page's Create Game) read the real intent instead of
+      // inferring it from visibility. Clamped to public lobbies in the service.
+      karabastFindable: body.karabastFindable === true,
     })
 
     // Posting exits any match the poster was still nominally in — kick the
