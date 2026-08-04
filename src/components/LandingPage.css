@@ -670,27 +670,25 @@ a.discord-cta:active {
 }
 
 /* ---- live state on the homepage (A + D) ----------------------------------
-   The presence line's breakdown, and the board that sits below the fold. The
-   hero and the mode columns above are deliberately untouched: the homepage's
-   first impression is the same one it has always had. */
+   The presence line's breakdown, and the board below the fold. The hero and
+   the mode columns above are deliberately untouched: the homepage's first
+   impression is the same one it has always had. */
 .landing-live-line strong {
   color: white;
   font-weight: 600;
 }
 
+/* Same box as .mode-sections-row, so the board's left and right edges land on
+   the button grid's edges rather than running wider than it. */
 .landing-board {
   width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 var(--pt-space-md) var(--pt-space-xl);
-  box-sizing: border-box;
-  text-align: left;
+  max-width: 1200px;
+  margin-top: 2.5rem;
 }
 
-.landing-board-title {
-  margin: 0 0 var(--pt-space-sm);
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: var(--pt-ink);
-  text-align: center;
+/* The board's own columns are sized for the lobby page's narrower container;
+   at this width give Open Lobbies the extra room so its rows (avatar, name,
+   set/format badges, age, Join) sit on one line instead of wrapping. */
+.landing-board .lobby-board {
+  grid-template-columns: 1.7fr 1fr;
 }

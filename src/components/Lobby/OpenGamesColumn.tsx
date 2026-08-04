@@ -186,7 +186,7 @@ export default function OpenGamesColumn({
                 <div className="lobby-row-name">
                   <span className="lobby-row-name-text">{lobby.name}</span>
                   {lobby.isPtp ? (
-                    <span className="lobby-tip lobby-check" data-tip={PTP_VALIDATED}>✓</span>
+                    <span className="lobby-tip lobby-verified" data-tip={PTP_VALIDATED}>✓</span>
                   ) : (
                     <span className="lobby-tip lobby-warn" data-tip={NON_PTP_WARNING}>⚠</span>
                   )}

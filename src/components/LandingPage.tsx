@@ -638,20 +638,20 @@ function LandingPage() {
             </div>
           </div>
         </div>
+        {/* The live board, below the fold. Sits inside .landing-content and
+            carries .mode-sections-row's own max-width, so its edges line up
+            with the button grid above rather than running wider. */}
+        <section className="landing-board" aria-label="Open games">
+          <h3 className="mode-section-header">Playing right now</h3>
+          <LobbyBoardSection
+            board={openGames}
+            pods={publicPods}
+            karabast={karabast}
+            companionCapable={casualCapable}
+            returnPath="/"
+          />
+        </section>
       </div>
-      {/* The live board, below the fold. The hero and the mode columns are
-          untouched — this is what someone finds when they scroll, rather than
-          something competing with the front door. */}
-      <section className="landing-board" aria-label="Open games">
-        <h2 className="landing-board-title">Playing right now</h2>
-        <LobbyBoardSection
-          board={openGames}
-          pods={publicPods}
-          karabast={karabast}
-          companionCapable={casualCapable}
-          returnPath="/"
-        />
-      </section>
       <SiteFooter />
     </div>
   )
