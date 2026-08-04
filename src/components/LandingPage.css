@@ -678,12 +678,29 @@ a.discord-cta:active {
   font-weight: 600;
 }
 
-/* Same box as .mode-sections-row, so the board's left and right edges land on
-   the button grid's edges rather than running wider than it. */
+/* The board must FIT the button grid, never widen it. .landing-content is a
+   centred column flex, so a child wider than the buttons drags the whole
+   container out with it — which is what a `width: 100%; max-width: 1200px`
+   board did here, stretching the grid from its natural 739px to 1200px.
+   align-self: stretch fills whatever width the buttons establish, and the
+   min-width: 0 chain below lets the board's own contents shrink to fit
+   instead of pushing back. */
 .landing-board {
-  width: 100%;
-  max-width: 1200px;
+  align-self: stretch;
+  /* width:0 keeps the board out of .landing-content's intrinsic width entirely
+     (its max-content is far wider than the buttons), and min-width:100% then
+     renders it at whatever width the buttons settled on. Without the width:0
+     the board drags the grid from its natural 739px out to 1200px. */
+  width: 0;
+  min-width: 100%;
   margin-top: 2.5rem;
+}
+
+.landing-board .lobby-board,
+.landing-board .lobby-column,
+.landing-board .lobby-row,
+.landing-board .lobby-row-who {
+  min-width: 0;
 }
 
 /* The board's own columns are sized for the lobby page's narrower container;

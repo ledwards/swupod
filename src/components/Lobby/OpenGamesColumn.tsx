@@ -3,6 +3,7 @@
 import Button from '@/src/components/Button'
 import { getPackArtUrl } from '@/src/utils/packArt'
 import { packCountLabel } from '@/src/utils/sealedFormat'
+import { shortenLobbyName } from '@/src/utils/lobbyNameDisplay'
 import type { OpenGamesBoard, OpenGameListing } from '@/src/hooks/useOpenGamesSocket'
 import type { KarabastLobby } from '@/src/hooks/useKarabastLobbies'
 
@@ -60,14 +61,8 @@ export default function OpenGamesColumn({
 
   return (
     <section className="lobby-column" aria-label="Open lobbies">
-      {/* The create action lives here now that the big "New Lobby" verb is
-          gone. The empty state's own button only shows at zero listings, so
-          without this there'd be no way to open a lobby once the board fills. */}
       <h3 className="lobby-column-title">
         Open Lobbies ({totalCount})
-        <Button variant="primary" size="xs" onClick={onNewGame}>
-          New Lobby
-        </Button>
       </h3>
 
       {/* The rows scroll inside the column so a busy board never grows
@@ -184,7 +179,7 @@ export default function OpenGamesColumn({
               <div className="lobby-row-avatar lobby-row-avatar-unknown" title="Player details unavailable for games listed on Karabast" />
               <div className="lobby-row-who">
                 <div className="lobby-row-name">
-                  <span className="lobby-row-name-text">{lobby.name}</span>
+                  <span className="lobby-row-name-text" title={lobby.name}>{shortenLobbyName(lobby.name)}</span>
                   {lobby.isPtp ? (
                     <span className="lobby-tip lobby-verified" data-tip={PTP_VALIDATED}>✓</span>
                   ) : (
