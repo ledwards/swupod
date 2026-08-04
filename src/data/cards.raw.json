@@ -28347,95 +28347,6 @@
       "backImageUrl": null
     },
     {
-      "id": "019d3176-e82a-7520-abd0-7bef6e83a6fb",
-      "cardId": "LAW-787",
-      "name": "Hound's Tooth",
-      "subtitle": "Hunters' Approach",
-      "set": "LAW",
-      "number": "787",
-      "rarity": "Rare",
-      "type": "Unit",
-      "aspects": [
-        "Vigilance",
-        "Command",
-        "Villainy"
-      ],
-      "traits": [
-        "Underworld",
-        "Vehicle",
-        "Transport"
-      ],
-      "arenas": [
-        "Space"
-      ],
-      "cost": 7,
-      "power": 4,
-      "hp": 8,
-      "frontText": "When Attack Ends: If this unit survived, you may defeat a unit with less power than this unit.",
-      "backText": null,
-      "epicAction": null,
-      "keywords": [],
-      "artist": "Vincent Dutrait",
-      "unique": true,
-      "doubleSided": false,
-      "variantType": "Standard Prestige",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": false,
-      "isBase": false,
-      "isFoil": false,
-      "isHyperspace": false,
-      "isShowcase": false,
-      "isPrestige": true,
-      "prestigeTier": "tier1",
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_07060787_EN_Highsinger_Carb_A_9bdf285c21.png",
-      "backImageUrl": null
-    },
-    {
-      "id": "019d3176-e85f-7d38-9de1-247914025d39",
-      "cardId": "LAW-788",
-      "name": "Highsinger",
-      "subtitle": "Deadly Droid",
-      "set": "LAW",
-      "number": "788",
-      "rarity": "Rare",
-      "type": "Unit",
-      "aspects": [
-        "Command",
-        "Aggression"
-      ],
-      "traits": [
-        "Underworld",
-        "Droid",
-        "Bounty Hunter"
-      ],
-      "arenas": [
-        "Ground"
-      ],
-      "cost": 3,
-      "power": 4,
-      "hp": 2,
-      "frontText": "When Played: Give an Experience token to another friendly Command unit.\nWhen Defeated: Give an Experience token to a friendly Aggression unit.",
-      "backText": null,
-      "epicAction": null,
-      "keywords": [],
-      "artist": "Vincent Dutrait",
-      "unique": true,
-      "doubleSided": false,
-      "variantType": "Standard Prestige",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": false,
-      "isBase": false,
-      "isFoil": false,
-      "isHyperspace": false,
-      "isShowcase": false,
-      "isPrestige": true,
-      "prestigeTier": "tier1",
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_07060788_EN_Hounds_Tooth_Carb_A_4084c4c8a1.png",
-      "backImageUrl": null
-    },
-    {
       "id": "019d3176-e8a1-7afb-81c4-94ec09ae488c",
       "cardId": "LAW-789",
       "name": "Latts Razzi",
@@ -29862,95 +29773,6 @@
       "isPrestige": true,
       "prestigeTier": "tier2",
       "imageUrl": "https://cdn.starwarsunlimited.com//card_07330825_EN_Bossk_Carb_B_4a22c9b2f7.png",
-      "backImageUrl": null
-    },
-    {
-      "id": "019d3176-f019-7355-b4fb-f83c55322cd8",
-      "cardId": "LAW-826",
-      "name": "Hound's Tooth",
-      "subtitle": "Hunters' Approach",
-      "set": "LAW",
-      "number": "826",
-      "rarity": "Rare",
-      "type": "Unit",
-      "aspects": [
-        "Vigilance",
-        "Command",
-        "Villainy"
-      ],
-      "traits": [
-        "Underworld",
-        "Vehicle",
-        "Transport"
-      ],
-      "arenas": [
-        "Space"
-      ],
-      "cost": 7,
-      "power": 4,
-      "hp": 8,
-      "frontText": "When Attack Ends: If this unit survived, you may defeat a unit with less power than this unit.",
-      "backText": null,
-      "epicAction": null,
-      "keywords": [],
-      "artist": "Vincent Dutrait",
-      "unique": true,
-      "doubleSided": false,
-      "variantType": "Foil Prestige",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": false,
-      "isBase": false,
-      "isFoil": true,
-      "isHyperspace": false,
-      "isShowcase": false,
-      "isPrestige": true,
-      "prestigeTier": "tier2",
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_07330826_EN_Highsinger_Carb_B_87b54a25e5.png",
-      "backImageUrl": null
-    },
-    {
-      "id": "019d3176-f070-7551-b30b-288fd3f87ef1",
-      "cardId": "LAW-827",
-      "name": "Highsinger",
-      "subtitle": "Deadly Droid",
-      "set": "LAW",
-      "number": "827",
-      "rarity": "Rare",
-      "type": "Unit",
-      "aspects": [
-        "Command",
-        "Aggression"
-      ],
-      "traits": [
-        "Underworld",
-        "Droid",
-        "Bounty Hunter"
-      ],
-      "arenas": [
-        "Ground"
-      ],
-      "cost": 3,
-      "power": 4,
-      "hp": 2,
-      "frontText": "When Played: Give an Experience token to another friendly Command unit.\nWhen Defeated: Give an Experience token to a friendly Aggression unit.",
-      "backText": null,
-      "epicAction": null,
-      "keywords": [],
-      "artist": "Vincent Dutrait",
-      "unique": true,
-      "doubleSided": false,
-      "variantType": "Foil Prestige",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": false,
-      "isBase": false,
-      "isFoil": true,
-      "isHyperspace": false,
-      "isShowcase": false,
-      "isPrestige": true,
-      "prestigeTier": "tier2",
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_07330827_EN_Hounds_Tooth_Carb_B_76f5f6e188.png",
       "backImageUrl": null
     },
     {
@@ -31562,95 +31384,6 @@
       "isPrestige": true,
       "prestigeTier": "serialized",
       "imageUrl": "https://cdn.starwarsunlimited.com//card_07340864_EN_Bossk_Carb_C_9e0b687efd.png",
-      "backImageUrl": null
-    },
-    {
-      "id": "019d3176-f8d4-766d-9a75-c40a17a2e757",
-      "cardId": "LAW-865",
-      "name": "Hound's Tooth",
-      "subtitle": "Hunters' Approach",
-      "set": "LAW",
-      "number": "865",
-      "rarity": "Rare",
-      "type": "Unit",
-      "aspects": [
-        "Vigilance",
-        "Command",
-        "Villainy"
-      ],
-      "traits": [
-        "Underworld",
-        "Vehicle",
-        "Transport"
-      ],
-      "arenas": [
-        "Space"
-      ],
-      "cost": 7,
-      "power": 4,
-      "hp": 8,
-      "frontText": "When Attack Ends: If this unit survived, you may defeat a unit with less power than this unit.",
-      "backText": null,
-      "epicAction": null,
-      "keywords": [],
-      "artist": "Vincent Dutrait",
-      "unique": true,
-      "doubleSided": false,
-      "variantType": "Serialized Prestige",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": false,
-      "isBase": false,
-      "isFoil": true,
-      "isHyperspace": false,
-      "isShowcase": false,
-      "isPrestige": true,
-      "prestigeTier": "serialized",
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_07340865_EN_Highsinger_Carb_C_a8906fcf01.png",
-      "backImageUrl": null
-    },
-    {
-      "id": "019d3176-f90d-7aa5-8035-8055eb44da96",
-      "cardId": "LAW-866",
-      "name": "Highsinger",
-      "subtitle": "Deadly Droid",
-      "set": "LAW",
-      "number": "866",
-      "rarity": "Rare",
-      "type": "Unit",
-      "aspects": [
-        "Command",
-        "Aggression"
-      ],
-      "traits": [
-        "Underworld",
-        "Droid",
-        "Bounty Hunter"
-      ],
-      "arenas": [
-        "Ground"
-      ],
-      "cost": 3,
-      "power": 4,
-      "hp": 2,
-      "frontText": "When Played: Give an Experience token to another friendly Command unit.\nWhen Defeated: Give an Experience token to a friendly Aggression unit.",
-      "backText": null,
-      "epicAction": null,
-      "keywords": [],
-      "artist": "Vincent Dutrait",
-      "unique": true,
-      "doubleSided": false,
-      "variantType": "Serialized Prestige",
-      "marketPrice": null,
-      "lowPrice": null,
-      "isLeader": false,
-      "isBase": false,
-      "isFoil": true,
-      "isHyperspace": false,
-      "isShowcase": false,
-      "isPrestige": true,
-      "prestigeTier": "serialized",
-      "imageUrl": "https://cdn.starwarsunlimited.com//card_07340866_EN_Hounds_Tooth_Carb_C_9df57c0972.png",
       "backImageUrl": null
     },
     {
@@ -354930,9 +354663,9 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-08-03",
+    "lastUpdated": "2026-08-04",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
-    "totalCards": 8314,
+    "totalCards": 8308,
     "sets": [
       {
         "code": "SOR",
@@ -354967,7 +354700,7 @@
       {
         "code": "LAW",
         "name": "A Lawless Time",
-        "cardCount": 913
+        "cardCount": 907
       },
       {
         "code": "ASH",

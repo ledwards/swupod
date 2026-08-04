@@ -28,6 +28,25 @@ interface UseWayfinderCasualLaunchOptions {
   onMessage?: (text: string, type: CasualLaunchMessageType) => void
 }
 
+/**
+ * Privacy for the Karabast lobby the Companion creates, derived from the PTP
+ * lobby's own visibility.
+ *
+ * A PUBLIC PTP lobby is an open invitation already listed on the board, and
+ * "Findable by Karabast users" is only offered on public lobbies — so its
+ * Karabast lobby has to be PUBLIC too, or the game the host just advertised is
+ * invisible to the Karabast players it was advertised to. A PRIVATE PTP lobby
+ * is link-only, so its Karabast lobby stays private.
+ *
+ * Anything unrecognised fails CLOSED to private: a lobby wrongly made public is
+ * exposed to strangers, while one wrongly kept private is merely inconvenient.
+ */
+export function karabastLobbyPrivacy(
+  visibility: string | null | undefined
+): 'public' | 'private' {
+  return visibility === 'public' ? 'public' : 'private'
+}
+
 export function buildWayfinderCasualCreatePayload(opts: {
   openGameShareId: string
   poolShareId: string

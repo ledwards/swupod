@@ -24,7 +24,7 @@ import { useToast } from '@/src/components/Toast'
 import { useAuth } from '@/src/contexts/AuthContext'
 import { useCompanionCapability } from '@/src/hooks/useCompanionCapability'
 import { packCountLabel } from '@/src/utils/sealedFormat'
-import { useWayfinderCasualLaunch } from '@/src/hooks/useWayfinderCasualLaunch'
+import { useWayfinderCasualLaunch, karabastLobbyPrivacy } from '@/src/hooks/useWayfinderCasualLaunch'
 import '@/src/components/Lobby/Lobby.css'
 // For .match-card-live-open — the ONE anchor-as-button treatment for a created
 // Karabast lobby link (Swiss Practice's MatchCard renders the same affordance).
@@ -418,7 +418,7 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
           />
         ) : casualCapable ? (
           <>
-            <Button variant="primary" size="lg" disabled={launcher.pending} onClick={() => launcher.launch('private')}>
+            <Button variant="primary" size="lg" disabled={launcher.pending} onClick={() => launcher.launch(karabastLobbyPrivacy(game.visibility))}>
               {game.status === 'open'
                 ? 'Create Game'
                 : game.yourSeat === 2
@@ -579,7 +579,7 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
           />
         ) : casualCapable ? (
           <>
-            <Button variant="primary" size="lg" disabled={launcher.pending} onClick={() => launcher.launch('private')}>
+            <Button variant="primary" size="lg" disabled={launcher.pending} onClick={() => launcher.launch(karabastLobbyPrivacy(game.visibility))}>
               {game.status === 'open'
                 ? 'Create Game'
                 : game.yourSeat === 2
