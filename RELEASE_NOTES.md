@@ -1,5 +1,10 @@
 # Release Notes
 
+## 08.03.2026
+
+### 🐞 Bug Fixes
+- **A lobby set to be findable on Karabast now actually shows up there.** Creating the game from the match page always made a *private* Karabast lobby, whatever you'd chosen — so the game was invisible to the Karabast players you'd just advertised it to. It now follows the lobby's own setting: public lobbies get a public Karabast lobby, private ones stay link-only.
+
 ## 08.01.2026 Part 3
 
 ### 🎉 The Lobby Is The Homepage
