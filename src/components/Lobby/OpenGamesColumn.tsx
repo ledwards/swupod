@@ -7,6 +7,14 @@ import { shortenLobbyName } from '@/src/utils/lobbyNameDisplay'
 import type { OpenGamesBoard, OpenGameListing } from '@/src/hooks/useOpenGamesSocket'
 import type { KarabastLobby } from '@/src/hooks/useKarabastLobbies'
 
+/** Compact form for narrow rows: "now", "13m", "2h". */
+export function timeAgoShort(iso: string): string {
+  const mins = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60_000))
+  if (mins < 1) return 'now'
+  if (mins < 60) return `${mins}m`
+  return `${Math.round(mins / 60)}h`
+}
+
 export function timeAgo(iso: string): string {
   const ms = Date.now() - new Date(iso).getTime()
   const mins = Math.max(0, Math.round(ms / 60_000))

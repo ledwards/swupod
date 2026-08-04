@@ -3,7 +3,8 @@
 import { useRouter } from 'next/navigation'
 import Button from '@/src/components/Button'
 import { getPackArtUrl } from '@/src/utils/packArt'
-import { timeAgo } from './OpenGamesColumn'
+import { shortenLobbyName } from '@/src/utils/lobbyNameDisplay'
+import { timeAgoShort } from './OpenGamesColumn'
 
 interface PublicPod {
   shareId: string
@@ -47,25 +48,31 @@ export default function PodsFormingColumn({ pods }: { pods: PublicPod[] }): Reac
           const artUrl = getPackArtUrl(pod.setCode)
           return (
             <div
-              className={`lobby-row${artUrl ? ' lobby-row--art' : ''}`}
+              className={`lobby-row lobby-row--pod${artUrl ? ' lobby-row--art' : ''}`}
               key={pod.shareId}
               style={artUrl ? ({ ['--row-art' as never]: `url(${artUrl})` }) : undefined}
             >
-              <div className="lobby-row-who">
-                <div className="lobby-row-name">{label}</div>
-                <div className="lobby-row-meta">
-                  host: {pod.host?.username || 'unknown'} · {pod.currentPlayers}/{pod.maxPlayers} ·{' '}
-                  {timeAgo(pod.createdAt)}
+              {/* One line of text, then the seats. This column is the narrow
+                  one, so name + host + seats + Join side by side truncated the
+                  name to "Ash" and the host to "ho...". */}
+              <div className="lobby-pod-line" title={label}>
+                <strong>{shortenLobbyName(label)}</strong>
+                <span className="lobby-pod-meta">
+                  {' · '}{pod.host?.username || 'unknown'}
+                  {' · '}{pod.currentPlayers}/{pod.maxPlayers}
+                  {' · '}{timeAgoShort(pod.createdAt)}
+                </span>
+              </div>
+              <div className="lobby-pod-foot">
+                <div className="lobby-seats" aria-label={`${pod.currentPlayers} of ${pod.maxPlayers} seats filled`}>
+                  {Array.from({ length: Math.min(pod.maxPlayers, 8) }, (_, i) => (
+                    <span key={i} className={`lobby-seat${i < pod.currentPlayers ? ' lobby-seat-filled' : ''}`} />
+                  ))}
                 </div>
+                <Button variant="primary" size="sm" onClick={() => router.push(joinPath)}>
+                  Join
+                </Button>
               </div>
-              <div className="lobby-seats" aria-label={`${pod.currentPlayers} of ${pod.maxPlayers} seats filled`}>
-                {Array.from({ length: Math.min(pod.maxPlayers, 8) }, (_, i) => (
-                  <span key={i} className={`lobby-seat${i < pod.currentPlayers ? ' lobby-seat-filled' : ''}`} />
-                ))}
-              </div>
-              <Button variant="primary" size="sm" onClick={() => router.push(joinPath)}>
-                Join
-              </Button>
             </div>
           )
         })}

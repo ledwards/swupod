@@ -522,6 +522,51 @@ a.lobby-row-link:active {
 }
 
 /* seat dots (pods column) */
+/* Pod rows stack: one line of text, then the seat dots and Join beneath it.
+   Side by side, this column is too narrow — the name truncated to "Ash" and
+   the host to "ho...". */
+.lobby-row--pod {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+/* The NAME gives, not the line. Truncating the whole line cut the tail, so
+   host / seats / age — the bits you actually scan — disappeared first. */
+.lobby-pod-line {
+  display: flex;
+  align-items: baseline;
+  min-width: 0;
+  white-space: nowrap;
+  font-size: 0.95rem;
+}
+
+.lobby-pod-line strong {
+  color: var(--pt-ink);
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lobby-pod-meta {
+  flex: none;
+  color: var(--pt-ink-subtle);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.lobby-pod-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Join sits at the far end, seats keep the left. */
+.lobby-pod-foot > :last-child {
+  margin-left: auto;
+}
+
 .lobby-seats {
   display: flex;
   gap: 4px;
