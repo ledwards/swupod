@@ -668,3 +668,29 @@ a.discord-cta:active {
     font-size: 0.65rem;
   }
 }
+
+/* ---- live state on the homepage (A + D) ----------------------------------
+   The presence line's breakdown, and the board that sits below the fold. The
+   hero and the mode columns above are deliberately untouched: the homepage's
+   first impression is the same one it has always had. */
+.landing-live-line strong {
+  color: white;
+  font-weight: 600;
+}
+
+.landing-board {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 var(--pt-space-md) var(--pt-space-xl);
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.landing-board-title {
+  margin: 0 0 var(--pt-space-sm);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--pt-ink);
+  text-align: center;
+}

@@ -11,17 +11,12 @@ import { useState, useCallback, useEffect, Suspense, Fragment } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/src/contexts/AuthContext'
 import { usePresence } from '@/src/hooks/usePresence'
-import { useOpenGamesSocket, type OpenGameListing } from '@/src/hooks/useOpenGamesSocket'
+import { useOpenGamesSocket } from '@/src/hooks/useOpenGamesSocket'
 import { usePublicPodsSocket } from '@/src/hooks/usePublicPodsSocket'
-import { useKarabastLobbies, type KarabastLobby } from '@/src/hooks/useKarabastLobbies'
+import { useKarabastLobbies } from '@/src/hooks/useKarabastLobbies'
 import { useCompanionCapability } from '@/src/hooks/useCompanionCapability'
-import { buildWayfinderCasualCreatePayload, karabastLobbyPrivacy } from '@/src/hooks/useWayfinderCasualLaunch'
-import { useToast } from '@/src/components/Toast'
 import { MODE_ART } from '@/src/components/LandingPage'
-import LobbyBoard from '@/src/components/Lobby/LobbyBoard'
-import PostGameModal from '@/src/components/Lobby/PostGameModal'
-import JoinGameModal from '@/src/components/Lobby/JoinGameModal'
-import JoinKarabastModal from '@/src/components/Lobby/JoinKarabastModal'
+import LobbyBoardSection from '@/src/components/Lobby/LobbyBoardSection'
 import ReleaseNotes from '@/src/components/ReleaseNotes'
 import SiteFooter from '@/src/components/SiteFooter'
 import '@/src/components/LandingPage.css'
@@ -82,16 +77,12 @@ function LobbyPageInner(): React.JSX.Element {
   const router = useRouter()
   const searchParams = useSearchParams()
   // AuthContext is untyped JSX; the user object is snake_case (documented trap).
-  const { user, loading: authLoading } = useAuth() as { user: { id: string; username?: string } | null; loading: boolean }
+  const { user } = useAuth() as { user: { id: string; username?: string } | null }
   const presence = usePresence(user?.id)
   const board = useOpenGamesSocket()
   const pods = usePublicPodsSocket()
   const karabast = useKarabastLobbies()
   const { casualCapable } = useCompanionCapability()
-  const { showToast } = useToast()
-  const [newGameOpen, setNewGameOpen] = useState(false)
-  const [joinTarget, setJoinTarget] = useState<OpenGameListing | null>(null)
-  const [karabastTarget, setKarabastTarget] = useState<KarabastLobby | null>(null)
   // R35: play-page CTA arrives as /lobby?pool=<shareId>#new-game
   const preselectPool = searchParams.get('pool')
 
@@ -127,107 +118,6 @@ function LobbyPageInner(): React.JSX.Element {
       localStorage.setItem(DISCORD_CTA_CLICKED_KEY, '1')
     } catch { /* localStorage disabled */ }
     setDiscordCtaClicked(true)
-  }, [])
-
-  // R26: anonymous action clicks round-trip through Discord OAuth and land
-  // back in the lobby. The destination re-validates state on return.
-  const requireLogin = useCallback((intent?: string): boolean => {
-    if (user) return true
-    // Auth still resolving: swallow the click instead of misreading a
-    // logged-in user as anonymous and bouncing them through OAuth.
-    if (authLoading) return false
-    const returnTo = intent ? `/lobby${intent}` : '/lobby'
-    window.location.href = `/api/auth/signin/discord?return_to=${encodeURIComponent(returnTo)}`
-    return false
-  }, [user, authLoading])
-
-  // Hash-anchor deep links (house rule: hash, not ?tab=): #new-game opens the
-  // modal, including the post-OAuth return trip.
-  useEffect(() => {
-    if (user && window.location.hash === '#new-game') {
-      setNewGameOpen(true)
-    }
-  }, [user])
-
-  const handleNewGame = useCallback(() => {
-    if (!requireLogin('#new-game')) return
-    setNewGameOpen(true)
-  }, [requireLogin])
-
-  const handleJoin = useCallback(
-    (listing: OpenGameListing) => {
-      if (!requireLogin()) return
-      setJoinTarget(listing)
-    },
-    [requireLogin]
-  )
-
-  // Leave your own listing: DELETE it and let the socket broadcast clear the
-  // row for everyone (including this board). No success toast — the row
-  // disappearing is the feedback.
-  const handleLeave = useCallback(
-    async (listing: OpenGameListing) => {
-      try {
-        const res = await fetch(`/api/open-games/${listing.shareId}`, {
-          method: 'DELETE',
-          credentials: 'include',
-        })
-        if (!res.ok) throw new Error(String(res.status))
-      } catch {
-        showToast({ text: 'Could not remove your lobby — try again.', kind: 'danger' })
-      }
-    },
-    [showToast]
-  )
-
-  // R34 create-at-post: after creating, a capable Companion pre-creates the
-  // public Karabast lobby before anyone joins.
-  const handleCreated = useCallback(
-    async (
-      game: { shareId: string; visibility: string; karabastFindable?: boolean },
-      createKarabastLobby: boolean
-    ) => {
-      setNewGameOpen(false)
-      if (createKarabastLobby) {
-        try {
-          const res = await fetch(`/api/open-games/${game.shareId}/claim`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ companionCapable: true }),
-          })
-          const json = await res.json().catch(() => null)
-          const claim = (json?.data || json)?.claim
-          if (claim?.action === 'create_lobby') {
-            window.postMessage(
-              buildWayfinderCasualCreatePayload({
-                openGameShareId: game.shareId,
-                poolShareId: '',
-                deckUrl: `${window.location.origin}/g/${game.shareId}`,
-                lobbyName: claim.lobbyName || 'protectthepod.com',
-                // One source of truth with the match page's Create Game button:
-                // both derive privacy from the persisted findability flag, so
-                // pre-created and match-time lobbies can't disagree.
-                visibility: karabastLobbyPrivacy(game),
-              }),
-              '*'
-            )
-          }
-        } catch {
-          // Lobby pre-creation is best-effort; the match-time handshake covers it.
-        }
-      }
-      router.push(`/g/${game.shareId}`)
-    },
-    [router]
-  )
-
-  // Karabast lobbies take a deck like any other game: pick one, then the
-  // Companion loads it and drops you into that lobby (wayfinder:join-lobby).
-  // The picker is unfiltered — the relay carries no set or pack count, so the
-  // lobby name is the only signal and the player reads it themselves.
-  const handleJoinKarabast = useCallback((lobby: KarabastLobby) => {
-    setKarabastTarget(lobby)
   }, [])
 
   return (
@@ -280,15 +170,14 @@ function LobbyPageInner(): React.JSX.Element {
           </div>
         </header>
 
-        <LobbyBoard
+
+        <LobbyBoardSection
           board={board}
           pods={pods}
           karabast={karabast}
-          currentUsername={user?.username ?? null}
-          onJoin={handleJoin}
-          onLeave={handleLeave}
-          onNewGame={handleNewGame}
-          onJoinKarabast={handleJoinKarabast}
+          companionCapable={casualCapable}
+          returnPath="/lobby"
+          initialPoolShareId={preselectPool}
         />
 
         <div className="lobby-tile-row lobby-tile-row-solo">
@@ -354,40 +243,8 @@ function LobbyPageInner(): React.JSX.Element {
           </a>
         </div>
 
-        <PostGameModal
-          isOpen={newGameOpen}
-          onClose={() => setNewGameOpen(false)}
-          onCreated={handleCreated}
-          companionCapable={casualCapable}
-          initialPoolShareId={preselectPool}
-        />
 
-        <JoinGameModal
-          isOpen={joinTarget != null}
-          onClose={() => setJoinTarget(null)}
-          game={
-            joinTarget
-              ? {
-                shareId: joinTarget.shareId,
-                setCode: joinTarget.setCode,
-                format: joinTarget.format,
-                // Sealed pack count is part of the format (hard split).
-                packsPerPlayer: joinTarget.packsPerPlayer ?? null,
-                hostUsername: joinTarget.host.username,
-              }
-              : null
-          }
-          onJoined={game => {
-            setJoinTarget(null)
-            router.push(`/g/${game.shareId}`)
-          }}
-        />
 
-        <JoinKarabastModal
-          isOpen={karabastTarget != null}
-          onClose={() => setKarabastTarget(null)}
-          lobby={karabastTarget}
-        />
       </div>
       {/* Outside .lobby-page on purpose. The page is capped at 100vh so the
           lobby itself never folds; the footer sits below that, the way a
