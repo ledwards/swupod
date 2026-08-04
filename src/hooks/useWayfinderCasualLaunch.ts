@@ -29,22 +29,29 @@ interface UseWayfinderCasualLaunchOptions {
 }
 
 /**
- * Privacy for the Karabast lobby the Companion creates, derived from the PTP
- * lobby's own visibility.
+ * Privacy for the Karabast lobby the Companion creates for an open game.
  *
- * A PUBLIC PTP lobby is an open invitation already listed on the board, and
- * "Findable by Karabast users" is only offered on public lobbies — so its
- * Karabast lobby has to be PUBLIC too, or the game the host just advertised is
- * invisible to the Karabast players it was advertised to. A PRIVATE PTP lobby
- * is link-only, so its Karabast lobby stays private.
+ * Driven by the host's PERSISTED "Findable by Karabast users" choice, not by
+ * the lobby's visibility. Visibility alone was wrong in both directions: it
+ * published public lobbies whose host never asked for Karabast, and (before
+ * 69b632b7) kept private the lobbies of hosts who did.
  *
- * Anything unrecognised fails CLOSED to private: a lobby wrongly made public is
- * exposed to strangers, while one wrongly kept private is merely inconvenient.
+ * Findability additionally requires a public lobby — a private one is
+ * link-only, so publishing it to Karabast's public list would contradict the
+ * host's choice. That invariant is also a CHECK constraint on open_games, so
+ * this is a second line of defence rather than the only one.
+ *
+ * Fails CLOSED on anything missing or unrecognised: a lobby wrongly made public
+ * is exposed to strangers, while one wrongly kept private is merely
+ * inconvenient.
  */
-export function karabastLobbyPrivacy(
-  visibility: string | null | undefined
-): 'public' | 'private' {
-  return visibility === 'public' ? 'public' : 'private'
+export function karabastLobbyPrivacy(game: {
+  visibility?: string | null
+  karabastFindable?: boolean | null
+}): 'public' | 'private' {
+  return game.karabastFindable === true && game.visibility === 'public'
+    ? 'public'
+    : 'private'
 }
 
 export function buildWayfinderCasualCreatePayload(opts: {

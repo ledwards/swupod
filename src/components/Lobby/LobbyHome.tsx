@@ -15,7 +15,7 @@ import { useOpenGamesSocket, type OpenGameListing } from '@/src/hooks/useOpenGam
 import { usePublicPodsSocket } from '@/src/hooks/usePublicPodsSocket'
 import { useKarabastLobbies, type KarabastLobby } from '@/src/hooks/useKarabastLobbies'
 import { useCompanionCapability } from '@/src/hooks/useCompanionCapability'
-import { buildWayfinderCasualCreatePayload } from '@/src/hooks/useWayfinderCasualLaunch'
+import { buildWayfinderCasualCreatePayload, karabastLobbyPrivacy } from '@/src/hooks/useWayfinderCasualLaunch'
 import { useToast } from '@/src/components/Toast'
 import { MODE_ART } from '@/src/components/LandingPage'
 import LobbyBoard from '@/src/components/Lobby/LobbyBoard'
@@ -183,7 +183,10 @@ function LobbyPageInner(): React.JSX.Element {
   // R34 create-at-post: after creating, a capable Companion pre-creates the
   // public Karabast lobby before anyone joins.
   const handleCreated = useCallback(
-    async (game: { shareId: string; visibility: string }, createKarabastLobby: boolean) => {
+    async (
+      game: { shareId: string; visibility: string; karabastFindable?: boolean },
+      createKarabastLobby: boolean
+    ) => {
       setNewGameOpen(false)
       if (createKarabastLobby) {
         try {
@@ -202,7 +205,10 @@ function LobbyPageInner(): React.JSX.Element {
                 poolShareId: '',
                 deckUrl: `${window.location.origin}/g/${game.shareId}`,
                 lobbyName: claim.lobbyName || 'protectthepod.com',
-                visibility: 'public',
+                // One source of truth with the match page's Create Game button:
+                // both derive privacy from the persisted findability flag, so
+                // pre-created and match-time lobbies can't disagree.
+                visibility: karabastLobbyPrivacy(game),
               }),
               '*'
             )

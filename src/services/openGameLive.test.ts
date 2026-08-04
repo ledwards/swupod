@@ -782,3 +782,51 @@ describe('openGameLive pipeline (Lobby V1 spec)', { skip: !dbAvailable }, () => 
     assert.equal((await gameRow(game.id)).status, 'cancelled')
   })
 })
+
+// ---------------------------------------------------------------------------
+// Karabast findability — the host's "Findable by Karabast users" choice.
+// Persisted on the game so every later surface (notably the match page's
+// Create Game button) reads the real intent instead of inferring it from
+// visibility, which was wrong in both directions.
+// ---------------------------------------------------------------------------
+describe('open game karabast findability', { skip: !dbAvailable }, () => {
+  async function post(visibility: 'public' | 'private', karabastFindable: boolean) {
+    const user = await seedUser('ogl-findable')
+    const pool = await seedPool(user, 'SEC', 'draft')
+    return postOpenGame({ userId: user, poolId: pool.id, visibility, karabastFindable })
+  }
+
+  it('a public lobby marked findable persists the flag', async () => {
+    const listing = await post('public', true)
+    assert.equal(listing.karabastFindable, true)
+    assert.equal((await gameRow(listing.id)).karabast_findable, true)
+  })
+
+  it('SPEC: findability defaults OFF — an unasked-for lobby is never published', async () => {
+    const user = await seedUser('ogl-findable-default')
+    const pool = await seedPool(user, 'SEC', 'draft')
+    const listing = await postOpenGame({ userId: user, poolId: pool.id })
+    assert.equal(listing.karabastFindable, false)
+    assert.equal((await gameRow(listing.id)).karabast_findable, false)
+  })
+
+  // Publishing to a public list contradicts a link-only lobby. The service
+  // clamps rather than letting the row hit the CHECK constraint, so a stale
+  // client sending the contradiction gets a sane lobby, not a 500.
+  it('SPEC: findability on a PRIVATE lobby is clamped off, not a DB error', async () => {
+    const listing = await post('private', true)
+    assert.equal(listing.visibility, 'private')
+    assert.equal(listing.karabastFindable, false)
+    assert.equal((await gameRow(listing.id)).karabast_findable, false)
+  })
+
+  // The clamp is defence in depth; the schema is the backstop. If a future code
+  // path bypasses the service, the database still refuses the contradiction.
+  it('SPEC: the CHECK constraint refuses private + findable at the schema level', async () => {
+    const listing = await post('public', true)
+    await assert.rejects(
+      () => query('UPDATE open_games SET visibility = $2 WHERE id = $1', [listing.id, 'private']),
+      /open_games_karabast_findable_check/
+    )
+  })
+})

@@ -55,7 +55,10 @@ export default function PostGameModal({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ poolShareId: selectedShareId, visibility }),
+        // karabastFindable is PERSISTED on the game so later surfaces (the
+        // match page's Create Game) read the host's real choice rather than
+        // inferring it from visibility.
+        body: JSON.stringify({ poolShareId: selectedShareId, visibility, karabastFindable }),
       })
       const json = await res.json().catch(() => null)
       if (!res.ok) {

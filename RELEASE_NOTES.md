@@ -1,5 +1,10 @@
 # Release Notes
 
+## 08.03.2026 Part 2
+
+### 🐞 Bug Fixes
+- **"Findable by Karabast users" is now remembered on the lobby itself.** Your choice only ever existed in the browser tab you created the lobby in, so anything later had to guess at it from whether the lobby was public — and the guess was wrong both ways round. A public lobby you hadn't marked findable could still be published to Karabast, and a lobby you *had* marked findable could still come out private. The lobby now carries your actual choice, and every path reads it.
+
 ## 08.03.2026
 
 ### 🐞 Bug Fixes

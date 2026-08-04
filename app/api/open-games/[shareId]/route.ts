@@ -69,6 +69,9 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
         // Sealed pack count is a format distinction (6-pack vs 8-pack never pair).
         packsPerPlayer: toPackBucket(row.packs_per_player),
         bestOf: Number(row.best_of) || 1,
+        // Drives the privacy of the Karabast lobby the Companion creates from
+        // this page — see karabastLobbyPrivacy().
+        karabastFindable: row.karabast_findable === true,
         result: row.result,
         createdAt: row.created_at,
         acceptedAt: row.accepted_at,

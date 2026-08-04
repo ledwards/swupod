@@ -64,6 +64,9 @@ export interface OpenGame {
   createdAt: string
   acceptedAt: string | null
   bestOf: number
+  /** Host asked for this lobby to be published to Karabast's PUBLIC game list.
+   *  Implies visibility === 'public' (enforced by a CHECK constraint). */
+  karabastFindable: boolean
 }
 
 export interface OpenGameListing {
@@ -118,6 +121,7 @@ function rowToGame(row: Record<string, unknown>): OpenGame {
     createdAt: String(row.created_at),
     acceptedAt: row.accepted_at ? String(row.accepted_at) : null,
     bestOf: Number(row.best_of) || 1,
+    karabastFindable: row.karabast_findable === true,
   }
 }
 
@@ -193,6 +197,8 @@ export interface PostParams {
   poolId: string
   visibility?: 'public' | 'private'
   bestOf?: number
+  /** Host ticked "Findable by Karabast users". Ignored on a private lobby. */
+  karabastFindable?: boolean
 }
 
 /** A match this post exited on the poster's behalf. Transient — never persisted;
@@ -209,6 +215,10 @@ export interface PostOpenGameResult extends OpenGame {
 async function postOpenGameInTx(tx: TxClient, params: PostParams): Promise<PostOpenGameResult> {
   const { userId, poolId, visibility = 'public' } = params
   const bestOf = params.bestOf === 3 ? 3 : 1
+  // Publishing to Karabast's public list is a PUBLIC-only affordance: a private
+  // lobby is link-only. Clamped here as well as in the CHECK constraint so a
+  // stale client can't post the contradiction and get a 500 from the database.
+  const karabastFindable = params.karabastFindable === true && visibility === 'public'
   await lockUsers(tx, [userId])
   const deck = await requireEligibleDeck(tx, userId, poolId)
 
@@ -230,10 +240,10 @@ async function postOpenGameInTx(tx: TxClient, params: PostParams): Promise<PostO
 
   const { generateShareId } = await import('@/lib/utils')
   const row = await tx.queryRow(
-    `INSERT INTO open_games (share_id, visibility, set_code, set_name, format, player1_id, player1_pool_id, best_of)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    `INSERT INTO open_games (share_id, visibility, set_code, set_name, format, player1_id, player1_pool_id, best_of, karabast_findable)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
      RETURNING *`,
-    [generateShareId(10), visibility, deck.setCode, deck.setName, deck.format, userId, deck.poolId, bestOf]
+    [generateShareId(10), visibility, deck.setCode, deck.setName, deck.format, userId, deck.poolId, bestOf, karabastFindable]
   )
   return {
     ...rowToGame(row!),
