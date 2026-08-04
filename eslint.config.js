@@ -5,7 +5,19 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist/**', '.next/**', 'node_modules/**', '.worktrees/**']),
+  // Git worktrees actually live under .claude/worktrees/, NOT .worktrees/ — the
+  // old pattern matched nothing, so `npm run lint` walked every worktree's
+  // node_modules and .next and reported ~151k phantom errors, which buries any
+  // real one. .worktrees/** is kept in case a worktree is ever put there.
+  // ds-bundle/ is a gitignored vendored bundle (minified, not our source).
+  globalIgnores([
+    'dist/**',
+    '.next/**',
+    'node_modules/**',
+    '.worktrees/**',
+    '.claude/worktrees/**',
+    'ds-bundle/**',
+  ]),
   {
     files: ['**/*.{js,jsx}'],
     extends: [
