@@ -54,6 +54,9 @@ interface MatchGame {
   yourSeat: number | null
   lobbyUrl: string | null
   player2External: boolean
+  /** Host asked for this lobby to be published to Karabast's public list.
+   *  Drives the privacy of the Karabast lobby created from this page. */
+  karabastFindable?: boolean
 }
 
 // Terminal copy is LOBBY-language: these states end the lobby, not a game.
@@ -418,7 +421,7 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
           />
         ) : casualCapable ? (
           <>
-            <Button variant="primary" size="lg" disabled={launcher.pending} onClick={() => launcher.launch(karabastLobbyPrivacy(game.visibility))}>
+            <Button variant="primary" size="lg" disabled={launcher.pending} onClick={() => launcher.launch(karabastLobbyPrivacy(game))}>
               {game.status === 'open'
                 ? 'Create Game'
                 : game.yourSeat === 2
@@ -579,7 +582,7 @@ export default function OpenGameMatch({ shareId }: { shareId: string }): React.J
           />
         ) : casualCapable ? (
           <>
-            <Button variant="primary" size="lg" disabled={launcher.pending} onClick={() => launcher.launch(karabastLobbyPrivacy(game.visibility))}>
+            <Button variant="primary" size="lg" disabled={launcher.pending} onClick={() => launcher.launch(karabastLobbyPrivacy(game))}>
               {game.status === 'open'
                 ? 'Create Game'
                 : game.yourSeat === 2

@@ -80,26 +80,50 @@ describe('useWayfinderCasualLaunch helpers', () => {
 })
 
 describe('karabastLobbyPrivacy', () => {
-  // A PUBLIC PTP lobby is an open invitation already listed on the board, and
-  // "Findable by Karabast users" is only offered on public lobbies. Its
-  // Karabast lobby must therefore be PUBLIC, or the game the host just
-  // advertised is invisible to the Karabast players it was advertised to.
-  it("BUGGY -> FIXED: a public PTP lobby creates a PUBLIC Karabast lobby", () => {
-    assert.equal(karabastLobbyPrivacy('public'), 'public')
+  // The host's "Findable by Karabast users" choice is now PERSISTED on the
+  // game, so every surface reads the real intent instead of inferring it from
+  // visibility. Inferring was wrong in both directions: it published public
+  // lobbies whose host never asked for Karabast, and kept private the ones who
+  // did.
+  it('FIXED: a findable public lobby creates a PUBLIC Karabast lobby', () => {
+    assert.equal(
+      karabastLobbyPrivacy({ visibility: 'public', karabastFindable: true }),
+      'public'
+    )
   })
 
-  it('SPEC: a private PTP lobby stays private — it is link-only', () => {
-    assert.equal(karabastLobbyPrivacy('private'), 'private')
+  it('FIXED: a public lobby the host did NOT mark findable stays private', () => {
+    assert.equal(
+      karabastLobbyPrivacy({ visibility: 'public', karabastFindable: false }),
+      'private'
+    )
+  })
+
+  it('SPEC: a private lobby is link-only, so it is never published', () => {
+    assert.equal(
+      karabastLobbyPrivacy({ visibility: 'private', karabastFindable: true }),
+      'private'
+    )
+    assert.equal(
+      karabastLobbyPrivacy({ visibility: 'private', karabastFindable: false }),
+      'private'
+    )
   })
 
   // Over-publishing is the harmful direction: a lobby wrongly made public is
   // exposed to strangers, while one wrongly kept private is merely
-  // inconvenient. Anything unrecognised must fail closed.
-  it('SPEC: an unknown/absent visibility fails closed to private', () => {
-    assert.equal(karabastLobbyPrivacy(undefined), 'private')
-    assert.equal(karabastLobbyPrivacy(null), 'private')
-    assert.equal(karabastLobbyPrivacy(''), 'private')
-    assert.equal(karabastLobbyPrivacy('Public'), 'private')
-    assert.equal(karabastLobbyPrivacy('unlisted'), 'private')
+  // inconvenient. Missing/unknown values must fail closed.
+  it('SPEC: missing or unrecognised values fail closed to private', () => {
+    assert.equal(karabastLobbyPrivacy({}), 'private')
+    assert.equal(karabastLobbyPrivacy({ visibility: 'public' }), 'private')
+    assert.equal(karabastLobbyPrivacy({ karabastFindable: true }), 'private')
+    assert.equal(
+      karabastLobbyPrivacy({ visibility: 'Public', karabastFindable: true }),
+      'private'
+    )
+    assert.equal(
+      karabastLobbyPrivacy({ visibility: null, karabastFindable: null }),
+      'private'
+    )
   })
 })
