@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import {
   buildWayfinderCasualCreatePayload,
   buildWayfinderCasualJoinPayload,
+  karabastLobbyPrivacy,
 } from './useWayfinderCasualLaunch'
 
 const createOptions = {
@@ -75,5 +76,30 @@ describe('useWayfinderCasualLaunch helpers', () => {
     assert.equal(payload.openGameId, 'og-share')
     assert.equal(payload.callbackContext.poolShareId, 'pool-share')
     assert.ok(!('bestOf' in payload))
+  })
+})
+
+describe('karabastLobbyPrivacy', () => {
+  // A PUBLIC PTP lobby is an open invitation already listed on the board, and
+  // "Findable by Karabast users" is only offered on public lobbies. Its
+  // Karabast lobby must therefore be PUBLIC, or the game the host just
+  // advertised is invisible to the Karabast players it was advertised to.
+  it("BUGGY -> FIXED: a public PTP lobby creates a PUBLIC Karabast lobby", () => {
+    assert.equal(karabastLobbyPrivacy('public'), 'public')
+  })
+
+  it('SPEC: a private PTP lobby stays private — it is link-only', () => {
+    assert.equal(karabastLobbyPrivacy('private'), 'private')
+  })
+
+  // Over-publishing is the harmful direction: a lobby wrongly made public is
+  // exposed to strangers, while one wrongly kept private is merely
+  // inconvenient. Anything unrecognised must fail closed.
+  it('SPEC: an unknown/absent visibility fails closed to private', () => {
+    assert.equal(karabastLobbyPrivacy(undefined), 'private')
+    assert.equal(karabastLobbyPrivacy(null), 'private')
+    assert.equal(karabastLobbyPrivacy(''), 'private')
+    assert.equal(karabastLobbyPrivacy('Public'), 'private')
+    assert.equal(karabastLobbyPrivacy('unlisted'), 'private')
   })
 })
