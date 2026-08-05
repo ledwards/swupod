@@ -154,12 +154,13 @@ export default function OpenGamesColumn({
                 </div>
               </div>
               {isMine ? (
-                // Your own listing: you can't join yourself — discard it instead
-                // (danger treatment: this throws the posted lobby away).
+                // Your own listing: you can't join yourself — take it down
+                // instead. An X, not a bin: this withdraws a posting, it
+                // doesn't destroy the pool or the deck behind it.
                 <Button variant="danger" size="sm" onClick={() => onLeave(listing)}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <polyline points="3 6 5 6 21 6" />
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
                   Leave
                 </Button>

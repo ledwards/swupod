@@ -12,11 +12,14 @@ import { SET_CONFIGS } from './setConfigs/index'
  *    badge, filter chip and deck tag in the app ("Ashes of the Empire" → ASH)
  *  - the protectthepod.com attribution suffix is dropped, because the row
  *    already carries the ✓ validated marker that means exactly that
+ *  - a trailing "Practice" is dropped: "Competitive Practice" is Competitive
  *
  * Anything else is left alone: this abbreviates, it doesn't summarise.
  */
 
 const PTP_SUFFIX = /\s*protectthepod\.com\s*$/i
+/** "Competitive Practice" is just Competitive — the noun adds nothing. */
+const PRACTICE_SUFFIX = /\s+practice\s*$/i
 
 /** Longest first, so "A Lawless Time" can't be shadowed by a shorter match. */
 const SET_NAMES: { name: string; code: string }[] = Object.values(SET_CONFIGS)
@@ -32,6 +35,7 @@ export function shortenLobbyName(raw: string | null | undefined): string {
   let name = (raw || '').trim()
   if (!name) return 'Karabast lobby'
   name = name.replace(PTP_SUFFIX, '').trim()
+  name = name.replace(PRACTICE_SUFFIX, '').trim()
   for (const { name: full, code } of SET_NAMES) {
     name = name.replace(new RegExp(escapeRegExp(full), 'gi'), code)
   }

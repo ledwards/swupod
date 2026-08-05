@@ -58,7 +58,7 @@ export default function PodsFormingColumn({ pods }: { pods: PublicPod[] }): Reac
               <div className="lobby-pod-line" title={label}>
                 <strong>{shortenLobbyName(label)}</strong>
                 <span className="lobby-pod-meta">
-                  {' · '}{pod.host?.username || 'unknown'}
+                  {pod.host?.username || 'unknown'}
                   {' · '}{pod.currentPlayers}/{pod.maxPlayers}
                   {' · '}{timeAgoShort(pod.createdAt)}
                 </span>

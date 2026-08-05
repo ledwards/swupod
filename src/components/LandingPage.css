@@ -686,6 +686,10 @@ a.discord-cta:active {
    min-width: 0 chain below lets the board's own contents shrink to fit
    instead of pushing back. */
 .landing-board {
+  /* .landing-content centres everything; the board's rows are left-aligned
+     copy, and inheriting centre made each row's second line sit adrift under
+     the first rather than under the name. */
+  text-align: left;
   align-self: stretch;
   /* width:0 keeps the board out of .landing-content's intrinsic width entirely
      (its max-content is far wider than the buttons), and min-width:100% then

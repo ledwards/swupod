@@ -6,7 +6,7 @@ describe('shortenLobbyName', () => {
   it('SPEC: a full set name becomes its set code', () => {
     assert.strictEqual(
       shortenLobbyName('Ashes of the Empire Competitive Practice'),
-      'ASH Competitive Practice'
+      'ASH Competitive'
     )
     assert.strictEqual(shortenLobbyName('A Lawless Time Draft'), 'LAW Draft')
   })
@@ -33,8 +33,16 @@ describe('shortenLobbyName', () => {
     assert.strictEqual(shortenLobbyName('Friday night games'), 'Friday night games')
   })
 
-  it('does not summarise — unknown words survive', () => {
-    assert.strictEqual(shortenLobbyName('ASH Competitive Practice'), 'ASH Competitive Practice')
+  it('SPEC: a trailing "Practice" is dropped', () => {
+    assert.strictEqual(shortenLobbyName('ASH Competitive Practice'), 'ASH Competitive')
+  })
+
+  it('only drops Practice at the end, never mid-name', () => {
+    assert.strictEqual(shortenLobbyName('Practice makes perfect'), 'Practice makes perfect')
+  })
+
+  it('does not summarise — other unknown words survive', () => {
+    assert.strictEqual(shortenLobbyName('ASH Friday Night Sealed'), 'ASH Friday Night Sealed')
   })
 
   it('falls back rather than rendering an empty row', () => {

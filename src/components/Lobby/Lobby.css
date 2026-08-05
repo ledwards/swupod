@@ -531,26 +531,23 @@ a.lobby-row-link:active {
   gap: 6px;
 }
 
-/* The NAME gives, not the line. Truncating the whole line cut the tail, so
-   host / seats / age — the bits you actually scan — disappeared first. */
+/* Name over meta, each on its own line. Squeezing both onto one line meant
+   something always had to be cut; two lines costs a little height and cuts
+   nothing. */
 .lobby-pod-line {
-  display: flex;
-  align-items: baseline;
   min-width: 0;
-  white-space: nowrap;
   font-size: 0.95rem;
 }
 
 .lobby-pod-line strong {
+  display: block;
   color: var(--pt-ink);
   font-weight: 600;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.25;
 }
 
 .lobby-pod-meta {
-  flex: none;
+  display: block;
   color: var(--pt-ink-subtle);
   font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
