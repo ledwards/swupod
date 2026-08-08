@@ -46351,6 +46351,50 @@
       "backImageUrl": null
     },
     {
+      "id": "019d3177-4cdf-7040-8182-60f1c81839cb",
+      "cardId": "SOR-002",
+      "name": "Darth Vader",
+      "subtitle": "Dark Lord of the Sith",
+      "set": "SOR",
+      "number": "2",
+      "rarity": "Special",
+      "type": "Leader",
+      "aspects": [
+        "Aggression",
+        "Villainy"
+      ],
+      "traits": [
+        "Force",
+        "Imperial",
+        "Sith"
+      ],
+      "arenas": [
+        "Ground"
+      ],
+      "cost": 7,
+      "power": 5,
+      "hp": 8,
+      "frontText": "Action [1 resource, exhaust]: If you played a [Villainy] card this phase, deal 1 damage to a unit and 1 damage to a base.",
+      "backText": "On Attack: You may deal 2 damage to a unit.",
+      "epicAction": "Epic Action: If you control 7 or more resources, deploy this leader. (Flip him, ready him, and move him to the ground arena.)",
+      "keywords": [],
+      "artist": "Borja Pindado",
+      "unique": true,
+      "doubleSided": true,
+      "variantType": "Hyperspace",
+      "marketPrice": null,
+      "lowPrice": null,
+      "isLeader": true,
+      "isBase": false,
+      "isFoil": false,
+      "isHyperspace": true,
+      "isShowcase": false,
+      "isPrestige": false,
+      "prestigeTier": null,
+      "imageUrl": "https://cdn.starwarsunlimited.com/card_SWOP_0106_002_Darth_Vader_Leader_HYP_3b847b861d.png",
+      "backImageUrl": "https://cdn.starwarsunlimited.com/card_SWOP_0106_002_Darth_Vader_Leader_Unit_HYP_063ef5cbe7.png"
+    },
+    {
       "id": "019d3177-4d93-7478-97cc-ee46d736f384",
       "cardId": "SOR-057",
       "name": "Protector",
@@ -351352,14 +351396,14 @@
   ],
   "metadata": {
     "version": "1.0.0",
-    "lastUpdated": "2026-08-06",
+    "lastUpdated": "2026-08-08",
     "description": "Star Wars: Unlimited card database fetched from swuapi.com API",
-    "totalCards": 8180,
+    "totalCards": 8181,
     "sets": [
       {
         "code": "SOR",
         "name": "Spark of Rebellion",
-        "cardCount": 981
+        "cardCount": 982
       },
       {
         "code": "SHD",
@@ -351419,8 +351463,8 @@
       "spoiledNormalCount": 264,
       "status": "valid",
       "contradictions": [],
-      "generatedAt": "2026-08-06T09:14:10.022Z"
+      "generatedAt": "2026-08-08T07:33:51.160Z"
     },
-    "lastProcessed": "2026-08-06"
+    "lastProcessed": "2026-08-08"
   }
 }
