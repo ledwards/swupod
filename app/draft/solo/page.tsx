@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
-import { createDraft } from '../../../src/utils/draftApi'
+import { createDraft, startDraft } from '../../../src/utils/draftApi'
 import { initializeCardCache } from '../../../src/utils/cardCache'
 import { trackEvent, AnalyticsEvents } from '../../../src/hooks/useAnalytics'
 import { getOrCreateLimitedFlowId, LimitedAnalyticsEvents } from '../../../src/analytics/limitedEvents'
@@ -57,7 +57,21 @@ export default function SoloDraftPage() {
         credentials: 'include',
       })
 
-      // Navigate to the draft lobby
+      // Start it here rather than leaving it in `waiting`. A solo draft used to
+      // land on the shared multiplayer lobby — seat circle, "8 / 8 players",
+      // and a Share URL for a game nobody can join — and you had to press Start
+      // yourself. Nothing there applies when the other seven seats are bots.
+      // Starting first means the same navigation drops you straight into the
+      // leader preview, which is where solo actually begins.
+      try {
+        await startDraft(result.shareId)
+      } catch (startErr) {
+        // Best effort: if the start call fails, still send them to the draft
+        // rather than stranding them on the set picker. The lobby's own Start
+        // button is the fallback.
+        console.error('Failed to auto-start solo draft:', startErr)
+      }
+
       router.push(`/draft/${result.shareId}`)
     } catch (err) {
       console.error('Failed to create solo draft:', err)

@@ -1,5 +1,10 @@
 # Release Notes
 
+## 08.12.2026 Part 2
+
+### 🐞 Bug Fixes
+- **Solo Draft goes straight to drafting.** Picking a set dropped you on the multiplayer waiting room first, with a share link and a Start button, even though the other seven seats were bots.
+
 ## 08.12.2026
 
 ### 🎉 New Features
