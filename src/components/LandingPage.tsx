@@ -543,6 +543,19 @@ function LandingPage() {
             </Button>
           </div>
         )}
+        {/* Above the mode buttons: what's actually happening comes before the
+            menu of things you could start. Carries .mode-sections-row's own
+            max-width so its edges line up with the buttons below it. */}
+        <section className="landing-board" aria-label="Open games">
+          <h3 className="mode-section-header">Play Now!</h3>
+          <LobbyBoardSection
+            board={openGames}
+            pods={publicPods}
+            karabast={karabast}
+            companionCapable={casualCapable}
+            returnPath="/"
+          />
+        </section>
         <div className="mode-sections-row">
           <div className="mode-section">
             <h3 className="mode-section-header">Solo</h3>
@@ -638,19 +651,6 @@ function LandingPage() {
             </div>
           </div>
         </div>
-        {/* The live board, below the fold. Sits inside .landing-content and
-            carries .mode-sections-row's own max-width, so its edges line up
-            with the button grid above rather than running wider. */}
-        <section className="landing-board" aria-label="Open games">
-          <h3 className="mode-section-header">Playing right now</h3>
-          <LobbyBoardSection
-            board={openGames}
-            pods={publicPods}
-            karabast={karabast}
-            companionCapable={casualCapable}
-            returnPath="/"
-          />
-        </section>
       </div>
       <SiteFooter />
     </div>

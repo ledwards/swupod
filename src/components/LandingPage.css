@@ -670,9 +670,9 @@ a.discord-cta:active {
 }
 
 /* ---- live state on the homepage (A + D) ----------------------------------
-   The presence line's breakdown, and the board below the fold. The hero and
-   the mode columns above are deliberately untouched: the homepage's first
-   impression is the same one it has always had. */
+   The presence line's breakdown, and the live board. The board sits between
+   the hero and the mode buttons: what is happening right now reads before the
+   menu of things you could start. The hero itself is untouched. */
 .landing-live-line strong {
   color: white;
   font-weight: 600;
@@ -697,7 +697,8 @@ a.discord-cta:active {
      the board drags the grid from its natural 739px out to 1200px. */
   width: 0;
   min-width: 100%;
-  margin-top: 2.5rem;
+  /* It sits ABOVE the mode buttons now, so the gap belongs underneath it. */
+  margin-bottom: 2.5rem;
 }
 
 .landing-board .lobby-board,
