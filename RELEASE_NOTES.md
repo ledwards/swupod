@@ -1,11 +1,13 @@
 # Release Notes
 
-## 08.04.2026
+## 08.12.2026
 
-### 🎉 Open Games On The Homepage
-- **The homepage shows who's playing.** Open games, draft pods forming, and the limited games running on Karabast now sit under the mode buttons.
-- **The online count says what people are doing** — drafting, building, in solo play — instead of just a total.
-- **With the Wayfinder Companion, joining is one click.** It loads your deck and drops you into the game.
+### 🎉 New Features
+- **Open games are on the homepage.** Games waiting for an opponent, pods forming, and limited games on Karabast — above the mode buttons.
+- **The online count says what people are doing** — drafting, building, solo play.
+
+### 🎨 UI Improvements
+- **"Live Pod" is now "With Friends".**
 
 ## 08.03.2026 Part 2
 

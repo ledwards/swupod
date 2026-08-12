@@ -587,7 +587,7 @@ function LandingPage() {
             </div>
           </div>
           <div className="mode-section">
-            <h3 className="mode-section-header">Live Pod</h3>
+            <h3 className="mode-section-header">With Friends</h3>
             <div className="mode-column">
               <button className="mode-button art-event" onClick={() => router.push('/sealed/pod')}>
                 <div className="mode-button-art" style={{ backgroundImage: `url("${MODE_ART.sealedLive}")` }} />

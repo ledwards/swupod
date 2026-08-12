@@ -315,7 +315,7 @@ a.discord-cta:active {
   }
 }
 
-/* Three-column layout: Solo / Live Pod / Deckbuilder */
+/* Three-column layout: Solo / With Friends / Deckbuilder */
 .mode-sections-row {
   display: flex;
   gap: 2rem;
