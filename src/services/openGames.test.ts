@@ -16,7 +16,6 @@ const { query, queryRow, closePool } = db
 const {
   postOpenGame,
   joinOpenGame,
-  playNow,
   cancelOpenGame,
   listPublicOpenGames,
   setOpenGameBestOf,
@@ -475,31 +474,6 @@ describe('openGames service (Lobby V1 spec)', { skip: !dbAvailable }, () => {
     )
   })
 
-  it('SPEC pack-format: playNow never pairs across buckets — it posts its own listing instead', async () => {
-    const setCode = `PN${randomUUID().slice(0, 3).toUpperCase()}`
-    const poster = await seedUser()
-    const posted = await playNow({
-      userId: poster,
-      poolId: await seedPool(poster, { setCode, format: 'sealed', packs: 8 }),
-    })
-    assert.equal(posted.action, 'posted')
-
-    const joiner = await seedUser('og-joiner')
-    const mine = await playNow({
-      userId: joiner,
-      poolId: await seedPool(joiner, { setCode, format: 'sealed', packs: 6 }),
-    })
-    assert.equal(mine.action, 'posted', '6-pack must not be matched into the open 8-pack listing')
-
-    // A same-bucket player DOES get matched into the 8-pack listing.
-    const peer = await seedUser('og-peer')
-    const matched = await playNow({
-      userId: peer,
-      poolId: await seedPool(peer, { setCode, format: 'sealed', packs: 8 }),
-    })
-    assert.equal(matched.action, 'joined')
-    assert.equal(matched.game.shareId, posted.game.shareId)
-  })
 
   it('SPEC pack-format: the public board exposes each listing\'s bucket (and none for draft)', async () => {
     const setCode = `PV${randomUUID().slice(0, 3).toUpperCase()}`
@@ -559,33 +533,6 @@ describe('openGames service (Lobby V1 spec)', { skip: !dbAvailable }, () => {
     assert.equal(pending.n, 1, 'the pair must end with exactly one pending match')
   })
 
-  it('SPEC R18/AE1/AE2: playNow accepts the oldest compatible listing, else posts; own listing is idempotent-wait', async () => {
-    // Unique set code per run: playNow matches by set+format, so shared codes
-    // would collide with listings left over from earlier runs.
-    const runSet = `T${randomUUID().slice(0, 7)}`
-    const poster = await seedUser('og-pn-poster')
-    const posterPool = await seedPool(poster, { setCode: runSet, format: 'sealed' })
-    const posted = await playNow({ userId: poster, poolId: posterPool })
-    assert.equal(posted.action, 'posted')
-
-    // Same caller again: own listing must NOT be self-accepted; idempotent waiting.
-    const again = await playNow({ userId: poster, poolId: posterPool })
-    assert.equal(again.action, 'waiting')
-    assert.equal(again.game.id, posted.game.id)
-
-    // A compatible caller instantly matches the oldest listing.
-    const joiner = await seedUser('og-pn-joiner')
-    const joinerPool = await seedPool(joiner, { setCode: runSet, format: 'sealed' })
-    const matched = await playNow({ userId: joiner, poolId: joinerPool })
-    assert.equal(matched.action, 'joined')
-    assert.equal(matched.game.id, posted.game.id)
-
-    // Incompatible caller posts their own listing instead.
-    const other = await seedUser('og-pn-other')
-    const otherPool = await seedPool(other, { setCode: runSet, format: 'draft' })
-    const posted2 = await playNow({ userId: other, poolId: otherPool })
-    assert.equal(posted2.action, 'posted')
-  })
 
   it('SPEC R20: either player can cancel an accepted match; strangers cannot', async () => {
     const p1 = await seedUser()

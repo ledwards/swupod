@@ -100,13 +100,6 @@ export interface RecentResult {
   players: Array<string | null>
 }
 
-export interface PlayNowResult {
-  action: 'joined' | 'posted' | 'waiting'
-  game: OpenGame
-  /** Only on the 'posted' path — see PostOpenGameResult.displaced. */
-  displaced?: DisplacedMatch[]
-}
-
 function rowToGame(row: Record<string, unknown>): OpenGame {
   return {
     id: row.id as string,
@@ -364,49 +357,6 @@ export async function joinOpenGame(params: JoinParams): Promise<OpenGame> {
 // ---------------------------------------------------------------------------
 // Play Now (R8/AE1/AE2): accept oldest compatible listing, else post.
 // ---------------------------------------------------------------------------
-
-export async function playNow(params: { userId: string; poolId: string }): Promise<PlayNowResult> {
-  const { withTransaction, queryRows, queryRow } = await import('@/lib/db')
-  const { userId, poolId } = params
-
-  const deck = await withTransaction(tx => requireEligibleDeck(tx, userId, poolId))
-
-  // HARD SPLIT: only listings in this deck's own pack bucket are candidates.
-  // IS NOT DISTINCT FROM so the non-sealed case (both NULL) still matches,
-  // while 6 vs 8 — and 6 vs NULL — never do.
-  const candidates = await queryRows(
-    `SELECT og.id FROM open_games og
-     LEFT JOIN card_pools cp ON cp.id = og.player1_pool_id
-     ${PARENT_POOL_JOIN}
-     WHERE og.status = 'open' AND og.visibility = 'public'
-       AND og.set_code = $1 AND og.format = $2 AND og.player1_id != $3
-       AND ${poolPackBucketSql('cp', 'ppk')} IS NOT DISTINCT FROM $4::int
-     ORDER BY og.created_at ASC
-     LIMIT 5`,
-    [deck.setCode, deck.format, userId, deck.packsPerPlayer]
-  )
-
-  for (const candidate of candidates) {
-    try {
-      const game = await joinOpenGame({ gameId: String(candidate.id), userId, poolId })
-      return { action: 'joined', game }
-    } catch (error) {
-      if (error instanceof OpenGameError && error.code === 'listing_gone') continue
-      throw error
-    }
-  }
-
-  // AE2 idempotence: an existing listing with this deck means "keep waiting".
-  const existing = await queryRow(
-    `SELECT * FROM open_games
-     WHERE player1_id = $1 AND status = 'open' AND player1_pool_id = $2`,
-    [userId, poolId]
-  )
-  if (existing) return { action: 'waiting', game: rowToGame(existing) }
-
-  const { displaced, ...game } = await postOpenGame({ userId, poolId })
-  return { action: 'posted', game, displaced }
-}
 
 // ---------------------------------------------------------------------------
 // Cancel (R20: either player, any live status)

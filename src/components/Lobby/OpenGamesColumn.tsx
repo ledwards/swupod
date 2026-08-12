@@ -69,8 +69,16 @@ export default function OpenGamesColumn({
 
   return (
     <section className="lobby-column" aria-label="Open lobbies">
+      {/* Create lives in the title bar ONLY when there are rows. At zero the
+          empty state carries its own "Create a Lobby" — showing both at once
+          was the redundancy that got this removed the first time. */}
       <h3 className="lobby-column-title">
         Open Lobbies ({totalCount})
+        {totalCount > 0 && (
+          <Button variant="primary" size="xs" onClick={onNewGame}>
+            New Lobby
+          </Button>
+        )}
       </h3>
 
       {/* The rows scroll inside the column so a busy board never grows
