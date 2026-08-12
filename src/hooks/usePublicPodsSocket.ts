@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { io as socketIO, Socket } from 'socket.io-client'
 
-interface PublicPod {
+export interface PublicPod {
   shareId: string
   podType: string
   setCode: string

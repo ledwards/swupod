@@ -1,72 +1,38 @@
 # Release Notes
 
+## 08.12.2026
+
+### 🎉 New Features
+- **Open games are on the homepage.** Games waiting for an opponent, pods forming, and limited games on Karabast — above the mode buttons.
+- **The online count says what people are doing** — drafting, building, solo play.
+
+### 🎨 UI Improvements
+- **"Live Pod" is now "With Friends".**
+
 ## 08.03.2026 Part 2
 
 ### 🐞 Bug Fixes
-- **"Findable by Karabast users" is now remembered on the lobby itself.** Your choice only ever existed in the browser tab you created the lobby in, so anything later had to guess at it from whether the lobby was public — and the guess was wrong both ways round. A public lobby you hadn't marked findable could still be published to Karabast, and a lobby you *had* marked findable could still come out private. The lobby now carries your actual choice, and every path reads it.
+- **"Findable by Karabast users" is remembered on the lobby itself.** The choice only existed in the tab you created it in, so everything afterwards guessed from public/private — and guessed wrong both ways.
 
 ## 08.03.2026
 
 ### 🐞 Bug Fixes
-- **A lobby set to be findable on Karabast now actually shows up there.** Creating the game from the match page always made a *private* Karabast lobby, whatever you'd chosen — so the game was invisible to the Karabast players you'd just advertised it to. It now follows the lobby's own setting: public lobbies get a public Karabast lobby, private ones stay link-only.
-
-## 08.01.2026 Part 3
-
-### 🎉 The Lobby Is The Homepage
-
-**Protect the Pod has always been a great place to open packs and build decks. The part that never worked was the last step: finding someone to play against.**
-
-You'd build something you were proud of, and then… go ask in Discord. Or not bother. The lobby fixes that, and it's now the first thing you see.
-
-**Every open game is on the front page.** Games waiting for an opponent, draft pods forming, and — this is the new part — **the limited games running on Karabast right now.** You can see who's around, what they're playing, and how many people are mid-draft or mid-build, without asking anyone.
-
-Join a game and bring any deck you've built. Post yours and wait for someone. Start a pod. It's all one screen.
-
-### 🔌 The Wayfinder Companion Makes It Seamless
-
-You don't need the Companion for any of this — the board shows you everything either way.
-
-What the Companion does is remove the busywork. Click Join and it loads your deck and drops you straight into the game — no exporting, no copying JSON, no pasting into Karabast, no re-picking your leader. It also records how your games actually went, so your stats fill in on their own.
-
-With it, going from "I built a deck" to "I'm playing a game" is one click.
-
-### 📖 Also
-- The old homepage's links, release notes, and disclaimer all moved across with it — nothing's lost, it's just at the bottom now.
+- **A lobby marked findable on Karabast actually shows up there.** Creating from the match page always made a private Karabast lobby, whatever you'd picked.
 
 ## 08.01.2026 Part 2
 
 ### 🔒 Bug Fixes
-- **"Findable by Karabast users" only appears on public lobbies.** It was offered on private ones too, and because the setting is remembered between lobbies, a private lobby could be listed publicly on Karabast without you touching the checkbox — the opposite of what "Private" means.
+- **"Findable by Karabast users" only appears on public lobbies.** It was offered on private ones too, and since the setting is remembered, a private lobby could get listed on Karabast without you touching it.
 
 ## 08.01.2026
 
-### 🎉 Karabast Games Show Up For Everyone
-
-**There have been live limited games on Karabast this whole time. Unless you had the Companion extension installed, the lobby never showed you a single one.**
-
-The board only ever learned about Karabast games from the extension relaying them out of your own browser. No extension, no games — forever, with no hint anything was missing. Protect the Pod now reads Karabast's public lobby list itself, so the draft and sealed games waiting over there are on the board for everyone.
-
-You can join one with any of your limited decks. Karabast listings don't say which set they want, so the deck picker doesn't guess — every limited deck is offered and the lobby name tells you what the host is after.
-
-### 🎮 A Calmer Lobby
-
-- **The lobby leads with the logo again**, with the online counts underneath it where they used to be.
-- **"Play Now" and "New Lobby" are gone.** Play Now grabbed whichever pool happened to be first — built or not — and then told you to go finish building it. Creating a lobby now lives on the Open Lobbies panel itself.
-- **The whole lobby fits one screen** on a desktop, with no fold. A busy board scrolls inside its own panel instead of pushing everything else off the bottom.
-- **The activity line only counts what's happening.** No more "0 open lobbies · 0 pods forming" — an activity that isn't happening simply isn't listed. "Browsing" is now "solo play".
-
 ### 🐞 Bug Fixes
-
-- **The deck picker stopped hiding its own controls.** The deck list sat in an invisible scrolling window, so the page buttons, the set filters and the public/private choice were all parked below a fold with nothing to indicate they were there. Everything is visible at once now, and the number of decks per page adapts to your screen so it stays that way.
-- **Deck tags stay on one line** instead of wrapping and doubling the height of every row.
-- **The picker opens on the current set**, which is the deck almost everyone is reaching for.
-- **Ashes of the Empire and Jump to Lightspeed count as current sets again.** The list of rotation-legal sets was written out by hand, so it went stale the moment a set released — ASH had been out for three weeks without being added, and JTL had been dropped a year early. Games launched with those decks asked Karabast for the wrong card pool. Rotation is now worked out from the release calendar, so it can't drift again.
-- **"Private link" is just "Private."**
+- **Ashes of the Empire and Jump to Lightspeed count as current sets again.** The rotation-legal set list was kept by hand and had gone stale, so games launched with those decks asked Karabast for the wrong card pool. It's now worked out from the release calendar.
+- **The deck picker shows all of its controls.** Page buttons, set filters and the public/private choice were below an invisible scroll. Tags stay on one line, and it opens on the current set.
 
 ### 🎨 UI Improvements
-- **Leader thumbnails show art, not card edges.** Every small square leader image on the stats pages — the usage legend, the leader list, the match rows, the opponent thumbs — was cropped by its own hand-tuned offset, and most of them let the card's trait bar sit along the bottom of the box. They all now use the same crop as the win-rate grid, which frames the illustration and nothing else. Because that crop is a ratio rather than a pixel nudge, it holds at every thumbnail size instead of drifting back on the small ones.
-- **Chaos pools say "Chaos" in your menu.** A chaos pool's set list ran to `SOR,SOR,GC2026_SILVER,GC2026_BLACK…` and wrapped the menu row onto a second line. In the menu it now reads "Chaos Sealed", the same name it goes by everywhere else.
-- **The Your Open Lobby row is one line.** It said the lobby was waiting for an opponent directly under a heading that already said so. The subtitle now carries just the deck or format that's queued up.
+- **Leader thumbnails show art, not card edges.** Every small leader image on the stats pages now uses the same crop as the win-rate grid, and it holds at any size.
+- **Chaos pools say "Chaos" in your menu** instead of a run of set codes.
 
 ## 07.31.2026 Part 2
 

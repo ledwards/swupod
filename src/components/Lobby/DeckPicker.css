@@ -19,6 +19,15 @@
   --ys-radius-sm: 10px;
 }
 
+/* The confirm button relabels while the request is in flight ("Create Lobby"
+   -> "Creating…"), which is 21px narrower. .modal-actions is flex-end, so the
+   whole row slid ~20px sideways on click and snapped back on completion — it
+   read as the buttons expanding or duplicating. Reserving the width means the
+   label can change without moving anything. */
+.lobby-deck-modal .modal-actions > :last-child {
+  min-width: 11rem;
+}
+
 /* Karabast join: why the picker isn't filtered for you. */
 .lobby-karabast-note {
   margin: 0 0 var(--pt-space-xs);

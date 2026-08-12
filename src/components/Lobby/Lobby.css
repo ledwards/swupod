@@ -380,10 +380,22 @@
   text-overflow: ellipsis;
 }
 
-/* Name text truncates so the inline set/format tags stay visible. */
+/* Name text truncates so the inline set/format tags stay visible. A flex item
+   defaults to min-width:auto, which refuses to shrink below its content — so
+   without this the ellipsis never engages and a long name (e.g. a Karabast
+   lobby carrying the protectthepod.com suffix) pushes the badges out of the
+   row instead. */
 .lobby-row-name-text {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Badges are the thing the truncation is protecting — never shrink them. */
+.lobby-row-name .lobby-badge,
+.lobby-row-name .lobby-tip,
+.lobby-row-name .lobby-host-dot {
+  flex: none;
 }
 
 .lobby-row-meta {
@@ -463,7 +475,11 @@ a.lobby-row-link:active {
   flex: none;
 }
 
-.lobby-check {
+/* The PTP-validated tick on a Karabast row. Named apart from .lobby-check —
+   the modal's checkbox label owns that name further down this file, and being
+   defined later it was winning, dropping its margin-top and font-size onto
+   this inline marker and making the row two lines tall. */
+.lobby-verified {
   color: var(--pt-glow-primary);
   cursor: help;
   flex: none;
@@ -506,6 +522,48 @@ a.lobby-row-link:active {
 }
 
 /* seat dots (pods column) */
+/* Pod rows stack: one line of text, then the seat dots and Join beneath it.
+   Side by side, this column is too narrow — the name truncated to "Ash" and
+   the host to "ho...". */
+.lobby-row--pod {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+/* Name over meta, each on its own line. Squeezing both onto one line meant
+   something always had to be cut; two lines costs a little height and cuts
+   nothing. */
+.lobby-pod-line {
+  min-width: 0;
+  font-size: 0.95rem;
+}
+
+.lobby-pod-line strong {
+  display: block;
+  color: var(--pt-ink);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.lobby-pod-meta {
+  display: block;
+  color: var(--pt-ink-subtle);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.lobby-pod-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Join sits at the far end, seats keep the left. */
+.lobby-pod-foot > :last-child {
+  margin-left: auto;
+}
+
 .lobby-seats {
   display: flex;
   gap: 4px;

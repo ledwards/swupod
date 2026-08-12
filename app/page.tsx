@@ -3,7 +3,7 @@
 
 import { Suspense, useState, useEffect } from 'react'
 import '../src/App.css'
-import LobbyHome from '../src/components/Lobby/LobbyHome'
+import LandingPage from '../src/components/LandingPage'
 import TermsOfService from '../src/components/TermsOfService'
 import PrivacyPolicy from '../src/components/PrivacyPolicy'
 import About from '../src/components/About'
@@ -65,7 +65,7 @@ export default function Home() {
     <div className="app">
       {view === 'landing' && (
         <Suspense fallback={null}>
-          <LobbyHome />
+          <LandingPage />
         </Suspense>
       )}
       {view === 'terms-of-service' && (
