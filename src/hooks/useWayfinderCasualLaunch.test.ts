@@ -77,6 +77,37 @@ describe('useWayfinderCasualLaunch helpers', () => {
     assert.equal(payload.callbackContext.poolShareId, 'pool-share')
     assert.ok(!('bestOf' in payload))
   })
+
+  // The Safari dead-click (2026-08-12): this hook awaits the claim before
+  // posting, and Safari discards the click's user activation across that await
+  // — so the Companion's window.open was refused and "Join on Karabast" did
+  // nothing. The page now opens the tab itself and says so; the Companion then
+  // only stashes the intent instead of opening a second tab.
+  it('FIXED: the create payload tells the Companion when the page already opened the tab', () => {
+    assert.equal(
+      buildWayfinderCasualCreatePayload({ ...createOptions, tabOpenedByPage: true }).tabOpenedByPage,
+      true
+    )
+  })
+
+  it('FIXED: the join payload carries the same flag', () => {
+    assert.equal(
+      buildWayfinderCasualJoinPayload({
+        openGameShareId: 'og-share',
+        poolShareId: 'pool-share',
+        deckUrl: 'https://protectthepod.com/pool/pool-share/deck/play',
+        lobbyUrl: 'https://karabast.net/lobby?lobbyId=123',
+        tabOpenedByPage: true,
+      }).tabOpenedByPage,
+      true
+    )
+  })
+
+  it('SPEC: the flag is an explicit false when the Companion owns the open (Chrome/Firefox)', () => {
+    // Never undefined-by-omission: the Companion reads `=== true`, and an
+    // explicit false keeps the two paths visibly distinct in the payload.
+    assert.equal(buildWayfinderCasualCreatePayload(createOptions).tabOpenedByPage, false)
+  })
 })
 
 describe('karabastLobbyPrivacy', () => {

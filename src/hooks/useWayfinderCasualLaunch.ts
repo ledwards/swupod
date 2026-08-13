@@ -7,6 +7,11 @@
  * do; the Companion intents do the Karabast work.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
+import {
+  openCompanionHandoffTab,
+  KARABAST_HOME_URL,
+  type CompanionTabHandoff,
+} from '@/src/utils/companionTabHandoff'
 
 export type CasualLaunchMessageType = 'success' | 'error' | 'info'
 
@@ -62,11 +67,16 @@ export function buildWayfinderCasualCreatePayload(opts: {
   visibility: 'public' | 'private'
   bestOf?: number | undefined
   attemptId?: string | undefined
+  tabOpenedByPage?: boolean | undefined
 }) {
   return {
     type: 'wayfinder:casual-create-game',
     privacy: opts.visibility,
     openInNewTab: true,
+    // Safari: this page already opened the tab inside the click (the claim
+    // fetch above would have burned the user activation the Companion's
+    // window.open needs). The Companion just stashes the intent for it.
+    tabOpenedByPage: opts.tabOpenedByPage === true,
     deckUrl: opts.deckUrl,
     lobbyName: opts.lobbyName,
     // The claim's match length — the Companion sets Karabast's Match Type
@@ -93,10 +103,13 @@ export function buildWayfinderCasualJoinPayload(opts: {
   poolShareId: string
   deckUrl: string
   lobbyUrl: string
+  tabOpenedByPage?: boolean | undefined
 }) {
   return {
     type: 'wayfinder:casual-join-game',
     openInNewTab: true,
+    /** See the create payload: Safari's tab is already open by this point. */
+    tabOpenedByPage: opts.tabOpenedByPage === true,
     lobbyUrl: opts.lobbyUrl,
     deckUrl: opts.deckUrl,
     openGameId: opts.openGameShareId,
@@ -137,6 +150,10 @@ export function useWayfinderCasualLaunch({
    */
   const launch = useCallback(async (visibility: 'public' | 'private' = 'private'): Promise<CasualClaim | null> => {
     if (!openGameShareId || !poolShareId) return null
+    // FIRST, before any await: on Safari the destination tab has to be opened
+    // while this click's user activation is still alive. Null on every other
+    // platform — there the Companion opens the tab from its background.
+    const handoff: CompanionTabHandoff | null = openCompanionHandoffTab()
     setPending(true)
     try {
       const response = await fetch(`/api/open-games/${openGameShareId}/claim`, {
@@ -164,9 +181,13 @@ export function useWayfinderCasualLaunch({
             visibility,
             bestOf: claim.bestOf,
             attemptId: claim.attemptId,
+            tabOpenedByPage: handoff != null,
           }),
           '*'
         )
+        // Post first, then steer: the Companion stashes the intent for this tab
+        // to claim, and Karabast takes far longer to boot than that write.
+        handoff?.navigate(KARABAST_HOME_URL)
         setMessage('Creating your Karabast lobby from the Companion…', 'info')
       } else if (claim.action === 'join_lobby' && claim.lobbyUrl) {
         window.postMessage(
@@ -175,20 +196,31 @@ export function useWayfinderCasualLaunch({
             poolShareId,
             deckUrl: resolvedDeckUrl,
             lobbyUrl: claim.lobbyUrl,
+            tabOpenedByPage: handoff != null,
           }),
           '*'
         )
+        handoff?.navigate(claim.lobbyUrl)
         setMessage('Opening the lobby from the Companion…', 'info')
       } else if (claim.action === 'open_lobby' && claim.lobbyUrl) {
-        window.open(claim.lobbyUrl, '_blank', 'noopener')
+        // No Companion work here — just show the lobby. Reuse the tab we
+        // pre-opened (window.open after the await is refused on Safari too).
+        if (handoff) handoff.navigate(claim.lobbyUrl)
+        else window.open(claim.lobbyUrl, '_blank', 'noopener')
         setMessage('Reopening your lobby…', 'info')
       } else if (claim.action === 'wait_for_lobby') {
         // A creation is in flight. If the Companion never reports back, the
         // server lets the host supersede the attempt after a minute.
+        handoff?.close()
         setMessage('Lobby creation is in flight — if nothing opens, try again in a minute.', 'info')
+      } else {
+        // Nothing to launch (an unknown action, or a lobby URL the claim
+        // omitted) — never leave the pre-opened tab sitting blank.
+        handoff?.close()
       }
       return claim
     } catch (error) {
+      handoff?.close()
       setMessage(error instanceof Error ? error.message : 'Could not launch the game', 'error')
       return null
     } finally {

@@ -67,4 +67,24 @@ describe('useWayfinderPracticeLaunch helpers', () => {
     assert.equal(payload.practiceMatchGameId, 'game-1')
     assert.equal(payload.callbackContext.poolShareId, 'pool-share')
   })
+
+  // Swiss Practice launches through the same claim-then-post shape as casual
+  // open games, so it hit the same Safari dead-click: the await burns the
+  // click's user activation and the Companion's window.open is refused. The
+  // page opens the tab itself on Safari and flags it here.
+  it('FIXED: both payloads carry tabOpenedByPage when the page opened the tab', () => {
+    assert.equal(
+      buildWayfinderPracticeCreatePayload({ ...payloadOptions, tabOpenedByPage: true }).tabOpenedByPage,
+      true
+    )
+    assert.equal(
+      buildWayfinderPracticeJoinPayload({ ...payloadOptions, tabOpenedByPage: true }).tabOpenedByPage,
+      true
+    )
+  })
+
+  it('SPEC: the flag is an explicit false when the Companion owns the open', () => {
+    assert.equal(buildWayfinderPracticeCreatePayload(payloadOptions).tabOpenedByPage, false)
+    assert.equal(buildWayfinderPracticeJoinPayload(payloadOptions).tabOpenedByPage, false)
+  })
 })

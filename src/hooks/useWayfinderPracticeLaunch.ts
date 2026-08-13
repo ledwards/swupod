@@ -1,6 +1,11 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import {
+  openCompanionHandoffTab,
+  KARABAST_HOME_URL,
+  type CompanionTabHandoff,
+} from '@/src/utils/companionTabHandoff'
 
 export type PracticeLaunchMessageType = 'success' | 'error' | 'info'
 
@@ -47,6 +52,13 @@ interface WayfinderPracticePayloadOptions {
   deckUrl: string
   format: string
   cardPool: string
+  /**
+   * Safari: this page already opened the destination tab inside the click,
+   * because the claim fetch below burns the user activation the Companion's
+   * own window.open needs. The Companion then only stashes the intent.
+   * See src/utils/companionTabHandoff.ts.
+   */
+  tabOpenedByPage?: boolean
 }
 
 const CLAIM_ERROR_MESSAGE = 'Could not launch that Swiss Practice game.'
@@ -58,11 +70,13 @@ export function buildWayfinderPracticeCreatePayload({
   deckUrl,
   format,
   cardPool,
+  tabOpenedByPage,
 }: WayfinderPracticePayloadOptions) {
   return {
     type: 'wayfinder:practice-create-game',
     privacy: 'private',
     openInNewTab: true,
+    tabOpenedByPage: tabOpenedByPage === true,
     deckUrl,
     format,
     cardPool,
@@ -85,10 +99,12 @@ export function buildWayfinderPracticeJoinPayload({
   deckUrl,
   format,
   cardPool,
+  tabOpenedByPage,
 }: WayfinderPracticePayloadOptions) {
   return {
     type: 'wayfinder:practice-join-game',
     openInNewTab: true,
+    tabOpenedByPage: tabOpenedByPage === true,
     lobbyUrl: claim.lobbyUrl,
     deckUrl,
     format,
@@ -172,6 +188,13 @@ export function useWayfinderPracticeLaunch({
       return
     }
 
+    // FIRST, before any await: on Safari the destination tab must be opened
+    // while this click's user activation is still alive (the claim fetch below
+    // discards it, and the Companion's window.open would then be refused —
+    // "the button does nothing"). Null on Chrome/Firefox, whose Companion
+    // opens the tab from its background. See src/utils/companionTabHandoff.ts.
+    const handoff: CompanionTabHandoff | null = openCompanionHandoffTab()
+
     setPendingMatchId(matchId)
     setLaunchMessage(null)
 
@@ -212,7 +235,13 @@ export function useWayfinderPracticeLaunch({
 
       if (claim.action === 'create_lobby') {
         if (!claim.practiceMatchGameId) throw new Error(CLAIM_ERROR_MESSAGE)
-        window.postMessage(buildWayfinderPracticeCreatePayload(payloadOptions), '*')
+        window.postMessage(
+          buildWayfinderPracticeCreatePayload({ ...payloadOptions, tabOpenedByPage: handoff != null }),
+          '*'
+        )
+        // Post first, then steer: the Companion stashes the intent for this tab
+        // to claim, and Karabast takes far longer to boot than that write.
+        handoff?.navigate(KARABAST_HOME_URL)
         setMessage(matchId, `Creating Game ${claim.gameNumber || ''} from Wayfinder...`.trim(), 'info')
         onTrack?.('swiss_practice_game_create_lobby', {
           target: 'wayfinder',
@@ -225,10 +254,15 @@ export function useWayfinderPracticeLaunch({
 
       if (claim.action === 'join_lobby') {
         if (!claim.lobbyUrl) {
+          handoff?.close()
           setMessage(matchId, 'The lobby is still being prepared.', 'info')
           return
         }
-        window.postMessage(buildWayfinderPracticeJoinPayload(payloadOptions), '*')
+        window.postMessage(
+          buildWayfinderPracticeJoinPayload({ ...payloadOptions, tabOpenedByPage: handoff != null }),
+          '*'
+        )
+        handoff?.navigate(claim.lobbyUrl)
         setMessage(matchId, 'Opening your game from Wayfinder...', 'info')
         onTrack?.('swiss_practice_game_join_lobby', {
           target: 'wayfinder',
@@ -238,6 +272,9 @@ export function useWayfinderPracticeLaunch({
         })
         return
       }
+
+      // Nothing else launches a tab — close the one we opened on spec.
+      handoff?.close()
 
       if (claim.action === 'wait_for_lobby') {
         setMessage(matchId, 'Waiting for your opponent to finish creating the lobby.', 'info')
@@ -257,6 +294,7 @@ export function useWayfinderPracticeLaunch({
 
       setMessage(matchId, 'Use manual reporting while this live game is being resolved.', 'info')
     } catch (error) {
+      handoff?.close()
       const text = error instanceof Error ? error.message : CLAIM_ERROR_MESSAGE
       setMessage(matchId, text, 'error')
       onTrack?.('swiss_practice_game_claim_failed', {
