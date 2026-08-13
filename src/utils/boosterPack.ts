@@ -106,6 +106,14 @@ const beltCache = new Map<string, Belt>();
 // Track which common belt to start with for alternating (true = start with A)
 let startWithBeltA = true;
 
+/**
+ * A booster box is ALWAYS 24 packs. This is a property of the physical product,
+ * not a tunable: `stackBoxOrder` assembles two interleaved columns of BOX_SIZE/2,
+ * and the belts' boot length is calibrated so one boot ≈ one box. Enforced for
+ * Set 7+ in `generateStackedBox`.
+ */
+export const BOX_SIZE = 24;
+
 // Per-set virtual-box buffer for Set 7+ sealed pods.
 // Real boxes are stacked from the factory line into two interleaved columns and
 // consumed top-down by column; pods must be cut from consecutive box positions.
@@ -833,7 +841,7 @@ export function generateSealedPod(_cards: RawCard[], setCode: SetCode | string, 
     while (packs.length < packCount) {
       let buffer = virtualBoxBuffer.get(key);
       if (!buffer || buffer.length === 0) {
-        buffer = generateStackedBox(_cards, setCode, 24);
+        buffer = generateStackedBox(_cards, setCode, BOX_SIZE);
         virtualBoxBuffer.set(key, buffer);
       }
       const need = packCount - packs.length;
@@ -865,7 +873,7 @@ export function generateSealedPod(_cards: RawCard[], setCode: SetCode | string, 
  * @param boxSize - Number of packs in box (default 24)
  * @returns Array of pack objects (each with cards array)
  */
-export function generateSealedBox(_cards: RawCard[], setCode: SetCode | string, boxSize: number = 24): Pack[] {
+export function generateSealedBox(_cards: RawCard[], setCode: SetCode | string, boxSize: number = BOX_SIZE): Pack[] {
   // Clear belt cache for fresh box generation
   // This ensures the box starts with fresh belts for proper collation
   clearBeltCache();
@@ -881,7 +889,19 @@ export function generateSealedBox(_cards: RawCard[], setCode: SetCode | string, 
  * Sets 1-6 return line order unchanged; Set 7+ returns box order. Pack contents
  * are never touched — only the array order changes.
  */
-function generateStackedBox(_cards: RawCard[], setCode: SetCode | string, boxSize: number = 24): Pack[] {
+function generateStackedBox(_cards: RawCard[], setCode: SetCode | string, boxSize: number = BOX_SIZE): Pack[] {
+  // A booster box is ALWAYS 24 packs. Column depth (BOX_SIZE/2) and the belt boot
+  // length are both properties of the product, not parameters — stacking any other
+  // size invents a box that does not exist and drags a boot seam into the middle
+  // of a player's pool. If you need N packs, cut them from real boxes with
+  // generateSealedPod. See .claude/rules/belt-system.md.
+  if (usesLineStacking(setCode) && boxSize !== BOX_SIZE) {
+    throw new Error(
+      `A ${setCode} box is always ${BOX_SIZE} packs, got ${boxSize}. ` +
+      `Use generateSealedPod([], '${setCode}', ${boxSize}) to cut ${boxSize} packs from real boxes.`
+    );
+  }
+
   const linePacks: Pack[] = [];
   for (let i = 0; i < boxSize; i++) {
     linePacks.push(generateBoosterPack(_cards, setCode));

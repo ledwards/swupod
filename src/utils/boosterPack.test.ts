@@ -5,7 +5,7 @@
  * Run with: npx tsx src/utils/boosterPack.test.ts
  */
 
-import { generateBoosterPack, generateSealedPod, generateSealedBox, clearBeltCache, stackBoxOrder } from './boosterPack'
+import { generateBoosterPack, generateSealedPod, generateSealedBox, clearBeltCache, stackBoxOrder, BOX_SIZE } from './boosterPack'
 import { initializeCardCache, getCachedCards } from './cardCache'
 
 let passed = 0
@@ -1372,6 +1372,58 @@ async function runTests(): Promise<void> {
     pods.forEach((pack: Pack, i: number) => {
       assert(isValidPack(pack), `ASH pod-box pack ${i + 1} must have 16 cards, 1 leader, 1 base`)
     })
+  })
+
+  // S4: A booster box is ALWAYS 24 packs. Column depth (BOX_SIZE/2) and the belt
+  // boot length are properties of the product, not parameters. Stacking any other
+  // size invents a box that does not exist: it changes which line packs land
+  // adjacent in a player's pool and drags a belt boot seam into the middle of it.
+  //
+  // This is the guard that was missing when the sealed pod route passed
+  // `players * packsPerPlayer` — a 5-player pod (n=30) produced seats with 11-13
+  // duplicate identities per pool against a 5.5-8.5 spec band.
+  test('S4: SPEC — a Set 7+ box is always 24 packs; generateSealedBox rejects any other size', () => {
+    assertEqual(BOX_SIZE, 24, 'BOX_SIZE must be 24 — a booster box is 24 packs')
+    if (getCachedCards('ASH').length === 0) {
+      console.log('\x1b[33m   Skipping: ASH placeholder catalog is not generated\x1b[0m')
+      return
+    }
+    for (const badSize of [8, 12, 16, 30, 48]) {
+      let threw = false
+      try {
+        clearBeltCache()
+        generateSealedBox([], 'ASH', badSize)
+      } catch {
+        threw = true
+      }
+      assert(threw, `generateSealedBox([], 'ASH', ${badSize}) must throw — a box is always ${BOX_SIZE} packs`)
+    }
+  })
+
+  test('S4: SPEC — Sets 1-6 have no box stacking, so non-24 sizes stay legal (no regression)', () => {
+    clearBeltCache()
+    const box = generateSealedBox(cards, 'SOR', 8)
+    assertEqual(box.length, 8, 'SOR (set 1) must still allow an 8-pack request')
+    box.forEach((pack: Pack, i: number) => {
+      assert(isValidPack(pack), `SOR 8-pack request: pack ${i + 1} must be a valid pack`)
+    })
+  })
+
+  test('S4: SPEC — generateSealedPod is the supported way to cut N packs from real boxes', () => {
+    if (getCachedCards('ASH').length === 0) {
+      console.log('\x1b[33m   Skipping: ASH placeholder catalog is not generated\x1b[0m')
+      return
+    }
+    // Sizes that are NOT a box: each must succeed, because the pod path cuts
+    // consecutive box positions and opens a fresh 24-pack box when one runs dry.
+    for (const n of [6, 8, 12, 16, 30, 48]) {
+      clearBeltCache()
+      const packs = generateSealedPod([], 'ASH', n)
+      assertEqual(packs.length, n, `generateSealedPod([], 'ASH', ${n}) should return ${n} packs`)
+      packs.forEach((pack: Pack, i: number) => {
+        assert(isValidPack(pack), `ASH pod (n=${n}) pack ${i + 1} must be a valid pack`)
+      })
+    }
   })
 
   test('S3: ASH 4 sequential 6-pack pods draw 24 packs from one virtual box (no shared refs)', () => {

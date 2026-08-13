@@ -10,7 +10,7 @@ import { jsonResponse, parseBody, validateRequired, handleApiError } from '@/lib
 import { getSetConfig } from '@/src/utils/setConfigs/index'
 import { getUnavailableSetReason } from '@/src/utils/setAvailability'
 import { initializeCardCache } from '@/src/utils/cardCache'
-import { generateSealedBox, clearBeltCache } from '@/src/utils/boosterPack'
+import { generateSealedBox, generateSealedPod, clearBeltCache } from '@/src/utils/boosterPack'
 import { defaultRoundTimerEnabled } from '@/src/utils/draftTimerDefaults'
 import { broadcastPublicPodsUpdate } from '@/src/lib/socketBroadcast'
 import { postPodCreated } from '@/lib/discordLfg'
@@ -119,8 +119,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             boxPacks.push(drawEventPack(campaign, tier, id => cardsById.get(id) ?? null))
           }
         } else {
-          // Generate 8 packs per set for chaos draft
-          const setPacks = generateSealedBox([], chaosSetCode, 8)
+          // Generate 8 packs per set for chaos draft. A box is always 24 packs,
+          // so cut the 8 from a real box rather than stacking an 8-pack array as
+          // if it were one. See .claude/rules/belt-system.md.
+          const setPacks = generateSealedPod([], chaosSetCode, 8)
           boxPacks.push(...setPacks)
         }
       }

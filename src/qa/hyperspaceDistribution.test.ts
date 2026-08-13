@@ -338,10 +338,21 @@ async function run(): Promise<void> {
       lawPacks.push(generateBoosterPack(lawCards, 'LAW'))
     }
 
-    // Helper: count HS cards excluding the HSF slot (index 15)
+    // SPEC — physical LAW+/Set 7+ pack order, transcribed from real ASH box 001
+    // (plans/ASH_COLLATION_FINDINGS.md): pos1 leader · pos2 base · pos3-11 commons
+    // (pos7 = common slot 5 = guaranteed HS common) · pos12 foil · pos13-15
+    // uncommons (pos15 = UC3) · pos16 rare/legendary. Zero-indexed below.
+    // NOTE: this differs from Sets 1-6, where the foil is last (index 15) and the
+    // R/L slot is index 14. These constants were previously the Sets 1-6 values,
+    // so all three LAW assertions below silently measured the wrong slot.
+    const LAW_HS_COMMON_INDEX = 6   // pos7
+    const LAW_FOIL_INDEX = 11       // pos12 — always Hyperspace Foil on LAW+
+    const LAW_RARE_INDEX = 15       // pos16
+
+    // Helper: count HS cards excluding the always-HS foil slot
     function countHSCardsExcludingHSF(pack: Pack): number {
       return pack.cards.filter((c, i) =>
-        i !== 15 && (c.variantType === 'Hyperspace' || c.isHyperspace === true)
+        i !== LAW_FOIL_INDEX && (c.variantType === 'Hyperspace' || c.isHyperspace === true)
       ).length
     }
 
@@ -355,10 +366,10 @@ async function run(): Promise<void> {
       assert(allCorrect, `${badPacks.length} packs had wrong card count (expected 16)`)
     })
 
-    test('LAW: HSF slot (index 15) is always present and HS-marked', () => {
+    test(`SPEC: LAW foil slot (pos12, index ${LAW_FOIL_INDEX}) is always present and Hyperspace Foil`, () => {
       let hsfCount = 0
       lawPacks.forEach(pack => {
-        const hsf = pack.cards[15]
+        const hsf = pack.cards[LAW_FOIL_INDEX]
         if (hsf && hsf.isFoil && hsf.isHyperspace) {
           hsfCount++
         }
@@ -376,20 +387,30 @@ async function run(): Promise<void> {
       assert(rate >= 0.97, `Expected ≥97% of packs to have ≥1 HS (excl HSF), got ${(rate * 100).toFixed(1)}%`)
     })
 
-    test('LAW: HS common at slot 9 (index 10, last common) is 100% guaranteed', () => {
+    test(`SPEC: LAW HS common at common slot 5 (pos7, index ${LAW_HS_COMMON_INDEX}) is 100% guaranteed`, () => {
       let hsCommonCount = 0
       lawPacks.forEach(pack => {
-        const card = pack.cards[10] // Last common slot (slot 9) = index 10
+        const card = pack.cards[LAW_HS_COMMON_INDEX]
         if (card && (card.variantType === 'Hyperspace' || card.isHyperspace === true)) {
           hsCommonCount++
         }
       })
       const rate = hsCommonCount / SAMPLE_SIZE
-      console.log(`\x1b[36m   HS common (index 10, slot 9): ${hsCommonCount}/${SAMPLE_SIZE} (${(rate * 100).toFixed(1)}%, expected 100%)\x1b[0m`)
+      console.log(`\x1b[36m   HS common (pos7, index ${LAW_HS_COMMON_INDEX}): ${hsCommonCount}/${SAMPLE_SIZE} (${(rate * 100).toFixed(1)}%, expected 100%)\x1b[0m`)
       assert(
         rate >= 0.99,
         `LAW HS common rate should be ~100%, got ${(rate * 100).toFixed(1)}%`
       )
+    })
+
+    test(`SPEC: LAW R/L slot (pos16, index ${LAW_RARE_INDEX}) is NEVER Hyperspace`, () => {
+      const violations = lawPacks.filter(p => {
+        const rl = p.cards[LAW_RARE_INDEX]
+        return rl && (rl.variantType === 'Hyperspace' || rl.isHyperspace === true)
+      }).length
+      console.log(`\x1b[36m   R/L slot HS violations: ${violations}/${SAMPLE_SIZE} (spec: 0)\x1b[0m`)
+      assert(violations === 0,
+        `R/L slot must never be Hyperspace (HS rares only via UC3 upgrade), got ${violations}`)
     })
 
     test('LAW: leader HS rate is approximately 1/6', () => {

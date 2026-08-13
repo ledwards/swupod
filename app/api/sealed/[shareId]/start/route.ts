@@ -4,7 +4,7 @@ import { query, queryRow, queryRows } from '@/lib/db'
 import { requireAuth } from '@/lib/auth'
 import { generateShareId, formatSetCodeRange } from '@/lib/utils'
 import { jsonResponse, errorResponse, handleApiError } from '@/lib/utils'
-import { generateSealedBox, clearBeltCache } from '@/src/utils/boosterPack'
+import { generateSealedPod, clearBeltCache } from '@/src/utils/boosterPack'
 import { sealedPacksPerPlayer, competitiveSealedDeckLockMinutes } from '@/src/utils/sealedPodConfig'
 import { packCountNameSuffix } from '@/src/utils/sealedFormat'
 import { initializeCardCache } from '@/src/utils/cardCache'
@@ -67,7 +67,14 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
     await initializeCardCache()
     const totalPacks = players.length * packsPerPlayer
     clearBeltCache()
-    const allPacks = generateSealedBox([], pod.set_code, totalPacks)
+    // A booster box is ALWAYS 24 packs — column depth and belt boot length are
+    // properties of the product, not parameters. generateSealedPod cuts each
+    // seat's packs from consecutive positions of real 24-pack boxes, opening a
+    // fresh box when one runs dry. Passing players*packsPerPlayer to
+    // generateSealedBox instead stacks a 12/16/30/48-pack array as if it were a
+    // box, which drags a belt boot seam into the middle of a seat's pool.
+    // See .claude/rules/belt-system.md and src/qa/sealedPodCollation.test.ts.
+    const allPacks = generateSealedPod([], pod.set_code, totalPacks)
 
     // Round-1 pairings for the casual sealed pod hub. Competitive Sealed gets
     // NONE — its round 1 comes from the Swiss bracket when the host starts

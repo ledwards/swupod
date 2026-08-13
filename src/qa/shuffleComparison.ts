@@ -7,7 +7,11 @@
  * 2. Random 6 packs from 24 (single box shuffle)
  * 3. Random 6 packs from 72 (multi-box shuffle - 3 boxes)
  *
- * Run with: npx tsx src/qa/shuffleComparison.test.ts
+ * ANALYSIS SCRIPT, NOT A TEST — it makes no assertions and takes ~6 minutes, so it
+ * is deliberately not part of `npm run qa`. Named without `.test.ts` (like
+ * duplicateAnalysis.ts) so it is not mistaken for an orphaned suite.
+ *
+ * Run with: npx tsx src/qa/shuffleComparison.ts
  */
 
 import { generateSealedBox, generateBoosterPack, clearBeltCache } from '../utils/boosterPack'
