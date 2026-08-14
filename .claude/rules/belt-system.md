@@ -108,19 +108,48 @@ unused-but-correct code path) — not tuning knobs.
 - **Primary aspect interleaving**: No adjacent cards share the same primary aspect (aspects[0])
 - **Equal occurrence rate**: Every card appears exactly once per boot
 
-### Equal occurrence must survive the upgrade pass
-Once-per-boot is necessary but NOT sufficient — a card can still be short-printed if
-its POSITION in the boot is deterministic and that position maps to a slot that gets
-upgraded. Boot length and per-pack draw count set the phase: the uncommon boot is 60
-and packs take 3, so `60 ≡ 0 (mod 3)` and belt position → pack slot never rotates.
+### Equal occurrence is not enough — position must be random too
+Once-per-boot is necessary but NOT sufficient. A boot is only partly consumed before
+the belt is thrown away, so a card with a DETERMINISTIC position in the boot is
+printed at a different rate than one whose position varies — even though both appear
+exactly once per boot.
 
-That is a real bug this repo shipped: `buildInterleavedSequence` picked strictly the
-largest remaining aspect group, so a singleton aspect landed at the tail of every
-boot → always the UC3 slot → replaced by the UC3 upgrade ~1/3 of the time. ASH has
-exactly one Heroism-primary and one Villainy-primary uncommon; both came out ~2x
-short (8.3σ below pool mean). Fixed by choosing among eligible groups at random,
-weighted by remaining count, with a feasibility guard (an aspect holding more than
-`ceil((remaining-1)/2)` must be placed now, else adjacency becomes unavoidable).
+The consumption arithmetic is the whole story. `generateSealedBox` clears the belt
+cache, so **every box gets a fresh belt**. A box consumes 24 packs x 3 = **72**
+uncommon draws against a **60**-card boot, so it burns all of boot 1 plus a 12-draw
+overhang into boot 2. A uniformly placed card therefore averages 72/60 = **1.200**
+draws per box; a card pinned to the end of the boot can never land in that overhang
+and averages ~**1.0**.
+
+That is a real bug this repo shipped. `buildInterleavedSequence` picked strictly the
+largest remaining aspect group, so an aspect holding only ONE card never became
+"largest" until the very end and was placed at boot index 58-59 of 60 **every single
+time** (measured over 3000 fresh belts: min 58, max 59). ASH has exactly one
+Heroism-primary and one Villainy-primary uncommon out of 60, and both were
+short-printed — 121 and 164 appearances against a pool mean of 263.1 over 250 boxes,
+i.e. **8.7σ and 6.1σ** low (σ = sqrt(mean) = 16.2).
+
+Fixed by choosing among eligible aspect groups at random, weighted by remaining
+count, with a feasibility guard: an aspect holding more than `ceil((remaining-1)/2)`
+must be placed now, else alternation becomes impossible. That guard is the only thing
+largest-first was really enforcing; the fixed ordering it also imposed was the bug.
+
+Result: per-card sd **23.0 -> 4.1** (variance 31x tighter), max/min **2.29 -> 1.08**,
+worst card **8.7σ -> 0.51σ**. Note the healthy signature is SUB-Poisson: sd 4.1
+against a Poisson floor of 16.2 is what a sheet should look like; the pre-fix sd of
+23.0 was 1.4x Poisson, which is the tell that something structural, not sampling, was
+wrong.
+
+**Correction (supersedes commit 7b6a96a6's message):** this is NOT a UC3 phase lock.
+That commit claimed the boot tail mapped to the UC3 slot via `60 ≡ 0 (mod 3)` and the
+UC3 upgrade ate the card. Measured UC3-slot share for the two cards was 36.2%/35.7%
+against a pool mean of 33.4% — worth ~1% of the deficit, not 32%. Belt draws (0.90) x
+UC3 effect (0.99) predicts 0.89 but 0.46 was observed, so a residual factor of ~1.9
+between belt draws and final pack appearances is **still undecomposed**. Ruled out so
+far: the UC3 upgrade, the belt's `_lastDrawUndo` hook (present but never called from
+`boosterPack.ts`), and per-card draw rates on a single long-running belt (uniform to
+98%). Suspect the fresh-belt-per-box interaction with `_weaveEchoes` and refill
+timing. If you touch this code, re-derive it — do not trust the residual to be small.
 
 - Ordering rules must enforce a CONSTRAINT, never impose a fixed position.
 - `src/qa/printerDistribution.test.ts` guards this: every card within 6σ of its

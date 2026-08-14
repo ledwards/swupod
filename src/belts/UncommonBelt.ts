@@ -94,13 +94,23 @@ function buildInterleavedSequence(cards: RawCard[], lastAspect: string | null): 
       // Otherwise choose at random, weighted by how many cards each aspect has
       // left. The weighting keeps aspects evenly spread; the randomness removes
       // the fixed sheet POSITION that strict largest-first handed to small aspect
-      // groups. A singleton aspect was placed at the tail of every boot, and
-      // because the uncommon boot is 60 cards with 3 uncommons per pack (60 ≡ 0
-      // mod 3) that tail position mapped to the UC3 slot in every single pack —
-      // where the UC3 upgrade then replaced the card on ~1/3 of its appearances.
-      // ASH has exactly one Heroism-primary and one Villainy-primary uncommon,
-      // and both were short-printed ~2x (Yellow Aces Bomber 8.3σ below its pool
-      // mean). See src/qa/printerDistribution.test.ts.
+      // groups.
+      //
+      // Measured (3000 fresh belts): a singleton-primary-aspect card landed at
+      // boot index 58-59 of 60 EVERY time (min 58, max 59). A box uses a fresh
+      // belt and consumes 72 uncommon draws against a 60-card boot, so a
+      // uniformly placed card averages 72/60 = 1.200 draws/box while a
+      // boot-tail card cannot appear in the 12-draw overhang of boot 2 and
+      // averages ~1.0 (measured 1.084/1.101). ASH has exactly one
+      // Heroism-primary and one Villainy-primary uncommon out of 60, and both
+      // were short-printed: 121 and 164 appearances against a pool mean of
+      // 263.1 over 250 boxes — 8.7σ and 6.1σ low (σ = sqrt(mean) = 16.2).
+      //
+      // NOT a UC3 phase lock: their measured UC3-slot share was 36.2%/35.7%
+      // against a pool mean of 33.4%, worth ~1% of the deficit. Belt draws
+      // (0.90) x UC3 effect (0.99) predicts 0.89 but 0.46 was observed, so a
+      // residual factor of ~1.9 remains undecomposed.
+      // See src/qa/printerDistribution.test.ts.
       const eligible = available.filter(k => k !== prevAspect)
       const pool = eligible.length > 0 ? eligible : available
       const total = pool.reduce((sum, k) => sum + groups.get(k)!.length, 0)
