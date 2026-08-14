@@ -1409,6 +1409,56 @@ async function runTests(): Promise<void> {
     })
   })
 
+  // S5: Sets 1-6 must never acquire Set 7+ pack rules. The plan promises
+  // "byte-identical behavior" for old sets, but nothing pinned it, so a Set 7+
+  // feature could leak into them unnoticed. Output is random, so this pins the
+  // structural signatures that separate the blocks (measured spec, not
+  // implementation internals):
+  //   Sets 1-6 — foil LAST (index 15), R/L at index 14, foil only occasionally
+  //              hyperspace, NO guaranteed HS common.
+  //   LAW+     — foil at index 11 (pos12), R/L at index 15, foil ALWAYS
+  //              Hyperspace Foil, exactly 1 guaranteed HS common per pack.
+  const LEGACY_SETS = ['SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'SEC']
+  test('S5: SPEC — Sets 1-6 keep the legacy pack layout (foil last, R/L at 14)', () => {
+    const N = 300
+    for (const setCode of LEGACY_SETS) {
+      if (getCachedCards(setCode).length === 0) {
+        console.log(`\x1b[33m   Skipping ${setCode}: no card data\x1b[0m`)
+        continue
+      }
+      clearBeltCache()
+      let foilLast = 0, rlAt14 = 0
+      for (let i = 0; i < N; i++) {
+        const p = generateBoosterPack([], setCode).cards
+        assertEqual(p.length, 16, `${setCode} pack must have 16 cards`)
+        if (p[15]?.isFoil) foilLast++
+        if ((p[14]?.rarity === 'Rare' || p[14]?.rarity === 'Legendary') && !p[14]?.isFoil) rlAt14++
+      }
+      assert(foilLast === N, `${setCode}: foil must be the LAST card (index 15) in every pack, got ${foilLast}/${N}`)
+      assert(rlAt14 === N, `${setCode}: index 14 must be the Rare/Legendary slot in every pack, got ${rlAt14}/${N}`)
+    }
+  })
+
+  test('S5: SPEC — Sets 1-6 have no guaranteed HS common and no always-hyperspace foil slot', () => {
+    const N = 300
+    for (const setCode of LEGACY_SETS) {
+      if (getCachedCards(setCode).length === 0) continue
+      clearBeltCache()
+      let hsCommons = 0, hsFoils = 0
+      for (let i = 0; i < N; i++) {
+        const p = generateBoosterPack([], setCode).cards
+        hsCommons += p.slice(2, 11).filter((c: Card) => c.isHyperspace).length
+        if (p[15]?.isFoil && p[15]?.isHyperspace) hsFoils++
+      }
+      // LAW+ guarantees exactly 1 HS common per pack; legacy sets must stay well below.
+      assert(hsCommons / N < 0.5,
+        `${setCode}: ${(hsCommons / N).toFixed(2)} HS commons/pack — the Set 7+ guaranteed HS common leaked in`)
+      // LAW+ foil slot is ALWAYS Hyperspace Foil; legacy foils only occasionally are.
+      assert(hsFoils / N < 0.25,
+        `${setCode}: ${(100 * hsFoils / N).toFixed(0)}% hyperspace foils — the Set 7+ foilSlotIsHyperspaceFoil rule leaked in`)
+    }
+  })
+
   test('S4: SPEC — generateSealedPod is the supported way to cut N packs from real boxes', () => {
     if (getCachedCards('ASH').length === 0) {
       console.log('\x1b[33m   Skipping: ASH placeholder catalog is not generated\x1b[0m')

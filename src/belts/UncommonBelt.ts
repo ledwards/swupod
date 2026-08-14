@@ -77,36 +77,45 @@ function buildInterleavedSequence(cards: RawCard[], lastAspect: string | null): 
   let totalRemaining = cards.length
 
   while (totalRemaining > 0) {
-    let placed = false
-    sortedKeys.sort((a, b) =>
-      (groups.get(b)?.length || 0) - (groups.get(a)?.length || 0)
-    )
+    const available = sortedKeys.filter(k => (groups.get(k)?.length || 0) > 0)
 
-    for (const key of sortedKeys) {
-      const pool = groups.get(key)!
-      if (pool.length === 0) continue
-      if (key === prevAspect) continue
+    // Feasibility guard: an alternating arrangement of `total` cards exists iff
+    // the largest aspect holds at most ceil(total / 2). So if placing anything
+    // ELSE (leaving total-1) would break that bound for some aspect, that aspect
+    // must go now. This is the only thing the old "always take the largest group"
+    // rule was really enforcing.
+    const forcedIdx = available.findIndex(k => groups.get(k)!.length > Math.ceil((totalRemaining - 1) / 2))
+    const forced = forcedIdx >= 0 ? available[forcedIdx]! : undefined
 
-      const card = pool.shift()!
-      result.push(card)
-      prevAspect = key
-      totalRemaining--
-      placed = true
-      break
-    }
-
-    if (!placed) {
-      for (const key of sortedKeys) {
-        const pool = groups.get(key)!
-        if (pool.length > 0) {
-          const card = pool.shift()!
-          result.push(card)
-          prevAspect = key
-          totalRemaining--
-          break
-        }
+    let choice: string | null
+    if (forcedIdx >= 0 && forced !== prevAspect) {
+      choice = forced as string | null
+    } else {
+      // Otherwise choose at random, weighted by how many cards each aspect has
+      // left. The weighting keeps aspects evenly spread; the randomness removes
+      // the fixed sheet POSITION that strict largest-first handed to small aspect
+      // groups. A singleton aspect was placed at the tail of every boot, and
+      // because the uncommon boot is 60 cards with 3 uncommons per pack (60 ≡ 0
+      // mod 3) that tail position mapped to the UC3 slot in every single pack —
+      // where the UC3 upgrade then replaced the card on ~1/3 of its appearances.
+      // ASH has exactly one Heroism-primary and one Villainy-primary uncommon,
+      // and both were short-printed ~2x (Yellow Aces Bomber 8.3σ below its pool
+      // mean). See src/qa/printerDistribution.test.ts.
+      const eligible = available.filter(k => k !== prevAspect)
+      const pool = eligible.length > 0 ? eligible : available
+      const total = pool.reduce((sum, k) => sum + groups.get(k)!.length, 0)
+      let roll = Math.random() * total
+      choice = pool[pool.length - 1]!
+      for (const k of pool) {
+        roll -= groups.get(k)!.length
+        if (roll <= 0) { choice = k; break }
       }
     }
+
+    const card = groups.get(choice)!.shift()!
+    result.push(card)
+    prevAspect = choice
+    totalRemaining--
   }
 
   return result

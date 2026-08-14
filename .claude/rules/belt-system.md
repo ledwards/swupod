@@ -108,6 +108,24 @@ unused-but-correct code path) — not tuning knobs.
 - **Primary aspect interleaving**: No adjacent cards share the same primary aspect (aspects[0])
 - **Equal occurrence rate**: Every card appears exactly once per boot
 
+### Equal occurrence must survive the upgrade pass
+Once-per-boot is necessary but NOT sufficient — a card can still be short-printed if
+its POSITION in the boot is deterministic and that position maps to a slot that gets
+upgraded. Boot length and per-pack draw count set the phase: the uncommon boot is 60
+and packs take 3, so `60 ≡ 0 (mod 3)` and belt position → pack slot never rotates.
+
+That is a real bug this repo shipped: `buildInterleavedSequence` picked strictly the
+largest remaining aspect group, so a singleton aspect landed at the tail of every
+boot → always the UC3 slot → replaced by the UC3 upgrade ~1/3 of the time. ASH has
+exactly one Heroism-primary and one Villainy-primary uncommon; both came out ~2x
+short (8.3σ below pool mean). Fixed by choosing among eligible groups at random,
+weighted by remaining count, with a feasibility guard (an aspect holding more than
+`ceil((remaining-1)/2)` must be placed now, else adjacency becomes unavoidable).
+
+- Ordering rules must enforce a CONSTRAINT, never impose a fixed position.
+- `src/qa/printerDistribution.test.ts` guards this: every card within 6σ of its
+  rarity-pool mean, σ = sqrt(mean).
+
 ## Pack Slot Indices (they differ by block — check before indexing a pack)
 - **Sets 1-6**: `0` leader · `1` base · `2-10` commons · `11-13` uncommons · `14` R/L · `15` foil
 - **LAW+ (Set 7+)**: `0` leader · `1` base · `2-10` commons (`6` = the guaranteed HS
