@@ -1564,8 +1564,12 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
+  /* The hover transform makes this a stacking context, so the lift has to
+     happen on the wrapper — otherwise neighbouring pool cards paint over the
+     rainbow ring, which is drawn outside the card box. */
   .pool-card.pickable:hover {
     transform: translateY(-4px) scale(1.02);
+    z-index: 3;
   }
 
   .pool-card.pickable:hover .canvas-card::before {

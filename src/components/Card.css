@@ -124,12 +124,17 @@
   animation: var(--rainbow-border-animation);
 }
 
+/* Enlarged cards must paint above their neighbours. Without the lift, cards
+   later in DOM order cover the scaled card's edges — and its rainbow selection
+   ring, which sits outside the card box, gets clipped by them. */
 .canvas-card:hover {
   transform: scale(1.05);
+  z-index: 3;
 }
 
 .canvas-card.hovered {
   transform: scale(1.125);
+  z-index: 3;
 }
 
 .canvas-card.selected {
