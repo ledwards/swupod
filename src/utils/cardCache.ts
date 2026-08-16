@@ -33,6 +33,7 @@ async function loadCardSource(): Promise<RawCard[]> {
 
 // Cache for all cards organized by set
 const cardCache = new Map<SetCode, RawCard[]>();
+const cardByIdCache = new Map<string, RawCard>();
 
 // Flag to track if cache is initialized
 let cacheInitialized = false;
@@ -62,8 +63,12 @@ export function initializeCardCache(): Promise<void> {
   initPromise = loadCardSource()
     .then((cards) => {
       cardCache.clear();
+      cardByIdCache.clear();
       for (const card of cards) {
         const setCode = card.set as SetCode;
+        if (card.id) {
+          cardByIdCache.set(card.id, card);
+        }
         const existing = cardCache.get(setCode);
         if (existing) {
           existing.push(card);
@@ -96,6 +101,15 @@ export function getCachedCards(setCode: SetCode | string): RawCard[] {
     return [];
   }
   return cardCache.get(setCode as SetCode) || [];
+}
+
+export function getCachedCardById(id: string | null | undefined): RawCard | null {
+  if (!id) return null;
+  if (!cacheInitialized) {
+    initializeCardCache().catch(() => {});
+    return null;
+  }
+  return cardByIdCache.get(id) || null;
 }
 
 /**

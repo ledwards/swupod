@@ -14,7 +14,7 @@
  *   (like Leia Organa) exist as both Leaders and Units
  */
 
-import { getCachedCards } from './cardCache'
+import { getCachedCardById, getCachedCards } from './cardCache'
 import { cardIdentityKey } from './cardNormalization'
 import type { RawCard } from './cardData'
 import type { SetCode } from '../types'
@@ -96,8 +96,16 @@ export function buildBaseCardMap(setCode: SetCode | string | null | undefined): 
 export function getBaseCardId(card: RawCard | null | undefined, baseCardMap?: Map<string, RawCard>): string | null {
   if (!card) return null
 
+  let resolvedCard = card
+  if ((!resolvedCard.cardId || !resolvedCard.type) && resolvedCard.id) {
+    const cached = getCachedCardById(resolvedCard.id)
+    if (cached) {
+      resolvedCard = cached
+    }
+  }
+
   // Look up the Normal variant by identity key (name|type|subtitle)
-  const key = cardIdentityKey(card)
+  const key = cardIdentityKey(resolvedCard)
   const baseCard = baseCardMap?.get(key)
 
   if (baseCard && baseCard.cardId) {
@@ -106,6 +114,9 @@ export function getBaseCardId(card: RawCard | null | undefined, baseCardMap?: Ma
   }
 
   // Fallback: use the card's own cardId if available
+  if (resolvedCard.cardId) {
+    return formatCardIdForExport(resolvedCard.cardId)
+  }
   if (card.cardId) {
     return formatCardIdForExport(card.cardId)
   }
