@@ -215,6 +215,23 @@ test('getBaseCardId handles missing map gracefully', () => {
   assert(result !== null, 'Should return fallback ID even without map')
 })
 
+test('reprint card without cardId still resolves for export', () => {
+  const map = buildBaseCardMap('ASH')
+  const secReprint = getCachedCards('SEC').find(c =>
+    c.name === 'Grassroots Resistance' &&
+    c.variantType === 'Normal'
+  )
+
+  assert(secReprint, 'Expected SEC Grassroots Resistance to exist')
+
+  // Reproduces legacy/partial deck state entries that carry only `id` + `name`.
+  const partialCard = { id: secReprint.id, name: secReprint.name }
+  const exportId = getBaseCardId(partialCard as any, map)
+
+  assert(exportId, 'Expected export ID for reprint card represented without cardId')
+  assert(/^[A-Z]{3}_\d{3,}$/.test(exportId), `Expected SWUDB format for export ID, got: ${exportId}`)
+})
+
 test('getBaseCardId returns consistent IDs across all variant types of same card', () => {
   const map = buildBaseCardMap('SOR')
   const cards = getCachedCards('SOR')
