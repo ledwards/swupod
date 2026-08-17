@@ -105,10 +105,18 @@ async function main() {
     eq(getSetConfig('SOR')!.rarityWeights.hyperspaceFoilSlot.Common, 78, 'SOR hyperfoil C')
     eq(getSetConfig('JTL')!.rarityWeights.hyperspaceFoilSlot.Common, 75, 'JTL hyperfoil C')
   })
-  test('HS upgrade leader+base co-occurrence flag lives in HS_BELT_CONFIGS', () => {
+  // Leader+base HS co-occurrence is allowed on EVERY group. Real ASH pool-002
+  // pack06 held both in one pack, so the old exclusivity rule assigned a
+  // physically real pack probability zero. It is the same press for every set,
+  // so the ban is gone everywhere — not just for the set we happen to have
+  // transcribed boxes for. How OFTEN they co-occur still differs by group (the
+  // budget cap suppresses it below the independent 1/36; only ASH's spaced sheet
+  // reaches it), but no group may forbid it outright.
+  test('HS upgrade leader+base co-occurrence is permitted on every group', () => {
+    eq(new HyperspaceUpgradeBelt('ASH').allowLeaderBaseCoOccurrence, true, 'ASH group')
     eq(new HyperspaceUpgradeBelt('LAW').allowLeaderBaseCoOccurrence, true, 'LAW group')
-    eq(new HyperspaceUpgradeBelt('4-6').allowLeaderBaseCoOccurrence, false, '4-6 group')
-    eq(new HyperspaceUpgradeBelt('1-3').allowLeaderBaseCoOccurrence, false, '1-3 group')
+    eq(new HyperspaceUpgradeBelt('4-6').allowLeaderBaseCoOccurrence, true, '4-6 group')
+    eq(new HyperspaceUpgradeBelt('1-3').allowLeaderBaseCoOccurrence, true, '1-3 group')
   })
 
   // WIRING: belts must FOLLOW a patched config (proves no parallel hardcode)

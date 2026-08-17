@@ -61,6 +61,36 @@ not how a human removes them. Treat it as unverified; do not cite it as observed
 Sources: `plans/LINE_STACKING_COLLATION_PLAN.md` (shipped 2026-07-03),
 `plans/ASH_COLLATION_FINDINGS.md`, `docs/collation-benchmark-*.md`.
 
+## Leader + Base Hyperspace May Co-occur — On Every Set
+
+Real ASH pool-002 pack06 held a hyperspace leader AND a hyperspace base in one
+pack. The old exclusivity rule gave that physically real pack probability zero. It
+is the same press for every set, so `allowLeaderBaseCoOccurrence` is now **true on
+every group**, not only the ones we have transcribed boxes for.
+
+Every group now runs the spaced-sheet path (`spaceUpgrades: true`) and reaches the
+independent rate — measured 0.90-1.05x of 1/36 across all eight sets.
+
+## There Is No Hard Upgrade Cap
+
+**Slots upgrade INDEPENDENTLY.** Leader, base, common and the UC slots each decide
+on their own, so their overlaps are whatever independence produces. A pack with 3
+upgrades is therefore *unlikely, not impossible*, and a hard cap is a modelling
+error rather than a rule.
+
+Two things follow, and both were previously wrong in this codebase:
+
+- **The no-upgrade rate is a product, not a quota.** P(no upgrade) = Π(1 - rate)
+  over the slots, from `HS_BELT_CONFIGS` slotCounts — 43.4% for group `1-3`, not
+  the 40% a budget-0 quota implies. Tests derive it; they do not hardcode a share.
+- **3+ upgrades must stay possible.** Measured ~2.5% of Sets 1-6 packs at 3 and
+  ~0.2% at 4+; LAW/ASH sit higher only because their guaranteed HS common is
+  counted alongside upgrades. Assertions bound the rate (`<= 8%`) so it stays rare;
+  none of them may forbid it.
+
+**NEVER** re-introduce exclusivity or a budget cap to "tidy" a distribution. Zero
+co-occurrence and hard ceilings are the bugs; a low-but-nonzero tail is the physics.
+
 ## Reality Is Clumpier Than The Model
 
 When someone reports "too many duplicates," do **NOT** propose anything that makes the

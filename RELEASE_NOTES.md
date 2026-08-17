@@ -1,5 +1,10 @@
 # Release Notes
 
+## 08.16.2026 Part 2
+
+### 🃏 Pack Changes
+- **Pack collation refinements.** Card frequencies and hyperspace distribution now track real print sheets more closely, across every set.
+
 ## 08.16.2026
 
 ### 🎨 UI Improvements

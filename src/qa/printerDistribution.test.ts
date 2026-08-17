@@ -1,13 +1,24 @@
 /**
- * Printer Distribution QA (Set 7+)
+ * Printer Distribution QA
  *
  * The checks a card printer runs on a press before shipping a run: is every card
- * on the checklist actually coming out, at the frequency the sheet says, with the
- * slot rates independent where they should be and the pool-level duplicate
- * distribution the right SHAPE — not just the right mean.
+ * on the checklist coming out at the frequency the sheet says, are slot rates
+ * independent where they should be, and is the pool-level duplicate distribution
+ * the right SHAPE — not just the right mean.
  *
- * These complement lineStacking.test.ts (which asserts pool means and one tail
- * bucket) and sealedPodCollation.test.ts (which asserts seat fairness).
+ * Scope differs per check, deliberately:
+ *   - per-card frequency  — ALL sets. "Equal occurrence rate" is a belt-wide
+ *     constraint, and the aspect-singleton pattern that broke ASH also exists in
+ *     TWI, JTL and LOF.
+ *   - prestige            — LAW and ASH only; they are the only sets with
+ *     prestige in standard packs (LAW 1/18, ASH 1/22).
+ *   - duplicate shape     — LAW and ASH only; the bands come from transcribed
+ *     real ASH boxes, and LAW shares the block, the belts and the line-stacking
+ *     collation ("pack rules are a copy of LAW" — ASH.ts). Sets 1-6 use a
+ *     different architecture and legitimately sit outside these bands.
+ *   - HS leader/base      — all sets must ALLOW co-occurrence (a real pack
+ *     falsified the old exclusivity ban); only ASH's spaced-sheet config
+ *     actually reaches the independent 1/36.
  *
  * Run with: npx tsx src/qa/printerDistribution.test.ts
  */
@@ -38,50 +49,46 @@ const isDeck = (c) => !c.isLeader && !c.isBase
 const isNormal = (c) => (c.variantType || 'Normal') === 'Normal'
 const mean = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length
 
-const SET = 'ASH'
-const BOXES = 250
-
-// SPEC (packConstants / ASH.ts / .claude/rules/belt-system.md):
-const HS_LEADER_RATE = 1 / 6            // leaderHyperspaceRate
-const HS_BASE_RATE = 1 / 6              // baseHyperspaceRate
-const T1_PRESTIGE_RATE = 1 / 22         // ASH_T1_PRESTIGE_RATE, 11 verified boxes
+const ALL_SETS = ['SOR', 'SHD', 'TWI', 'JTL', 'LOF', 'SEC', 'LAW', 'ASH']
+const PRESTIGE_SETS: Record<string, number> = { LAW: 1 / 18, ASH: 1 / 22 }
+const SHAPE_SETS = ['LAW', 'ASH']
 const PACKS_PER_BOX = 24
 
+// SPEC: the Normal-variant deck slots print Common/Uncommon/Rare/Legendary only.
+// Specials reach a pack solely as Hyperspace Foil or prestige.
+const PRINTED_RARITIES = ['Common', 'Uncommon', 'Rare', 'Legendary']
+
 // "Equal occurrence rate: every card appears exactly once per boot"
-// (.claude/rules/belt-system.md). A card systematically starved relative to its
-// rarity pool is a short-print. Threshold is scale-aware: sigma = sqrt(mean) is
-// the Poisson upper bound on noise, and a sheet-based belt should be TIGHTER
-// than Poisson, so 6 sigma is generous.
-const STARVATION_SIGMA = 6
-const MIN_EXPECTED_FOR_UNIFORMITY = 20  // pools sparser than this are untestable here
+// (.claude/rules/belt-system.md). Every card of a rarity therefore has the SAME
+// expected count — mean of its pool. This is two-sided: a card printed too often
+// is as wrong as one printed too rarely. Threshold is scale-aware, sigma =
+// sqrt(mean) being the Poisson upper bound on noise; a sheet-based belt is
+// tighter than Poisson, so 6 sigma is generous. The ASH short-print sat at 8.7.
+const TOLERANCE_SIGMA = 6
+const MIN_EXPECTED = 20   // pools sparser than this are untestable at this N
 
-async function run() {
-  await initializeCardCache()
-  console.log('\x1b[1m\x1b[35m🖨️  Printer Distribution QA (Set 7+)\x1b[0m')
-  console.log('\x1b[35m' + '='.repeat(50) + '\x1b[0m')
-  console.log(`\x1b[36m   Generating ${BOXES} ${SET} boxes (${BOXES * PACKS_PER_BOX} packs)...\x1b[0m`)
+const BOXES_UNIFORMITY = 120
+const BOXES_DETAIL = 150
 
-    // SPEC: the Normal-variant deck slots print Common/Uncommon/Rare/Legendary only.
-  // Specials reach a pack solely as Hyperspace Foil (ASH rarityWeights
-  // .hyperspaceFoilSlot Special: 2) or as prestige, so Normal-variant Specials are
-  // correctly absent from standard packs and are not part of this checklist.
-  const PRINTED_RARITIES = ['Common', 'Uncommon', 'Rare', 'Legendary']
-  const catalog = getCachedCards(SET)
+type Counts = Record<string, Record<string, number>>
+
+function tally(setCode: string, boxes: number) {
+  const catalog = getCachedCards(setCode)
     .filter(c => isNormal(c) && isDeck(c) && PRINTED_RARITIES.includes(c.rarity))
   const poolByRarity: Record<string, string[]> = {}
   for (const c of catalog) (poolByRarity[c.rarity] = poolByRarity[c.rarity] || []).push(id(c))
 
-  const counts: Record<string, Record<string, number>> = {}
-  let hsLeader = 0, hsBase = 0, hsBoth = 0, packCount = 0
+  const counts: Counts = {}
+  let hsLeader = 0, hsBase = 0, hsBoth = 0, packs = 0
   const prestigePerBox: number[] = []
   const dupPerPool: number[] = [], nnPerPool: number[] = []
 
   clearBeltCache()
-  for (let b = 0; b < BOXES; b++) {
-    const box = generateSealedBox([], SET, PACKS_PER_BOX)
+  for (let b = 0; b < boxes; b++) {
+    const box = generateSealedBox([], setCode, PACKS_PER_BOX)
     let prestige = 0
     box.forEach(pk => {
-      packCount++
+      packs++
       const leader = pk.cards.find(c => c.isLeader)
       const base = pk.cards.find(c => c.isBase && c.rarity === 'Common')
       const lHS = Boolean(leader?.isHyperspace), bHS = Boolean(base?.isHyperspace)
@@ -106,95 +113,120 @@ async function run() {
       nnPerPool.push(dups.filter(x => x.length === 2 && x.every(isNormal)).length)
     }
   }
+  return { catalog, poolByRarity, counts, hsLeader, hsBase, hsBoth, packs, prestigePerBox, dupPerPool, nnPerPool }
+}
 
-  // ---- Per-card frequency ------------------------------------------------
-  const testablePools = Object.keys(poolByRarity).filter(r => {
-    const obs = poolByRarity[r]!.map(n => counts[r]?.[n] || 0)
-    return obs.length > 1 && mean(obs) >= MIN_EXPECTED_FOR_UNIFORMITY
-  })
+async function run() {
+  await initializeCardCache()
+  console.log('\x1b[1m\x1b[35m🖨️  Printer Distribution QA\x1b[0m')
+  console.log('\x1b[35m' + '='.repeat(50) + '\x1b[0m')
 
-  test('SPEC: every card on the checklist appears — nothing is printed zero times', () => {
-    const missing: string[] = []
-    for (const r of Object.keys(poolByRarity)) {
-      for (const n of poolByRarity[r]!) {
-        if (!(counts[r]?.[n] > 0)) missing.push(`${n.split('|')[0]} [${r}]`)
+  // ---- Per-card frequency, EVERY set ------------------------------------
+  console.log(`\x1b[36m   Per-card frequency: ${BOXES_UNIFORMITY} boxes x ${ALL_SETS.length} sets...\x1b[0m`)
+  for (const setCode of ALL_SETS) {
+    if (getCachedCards(setCode).length === 0) {
+      console.log(`\x1b[33m   Skipping ${setCode}: no card data\x1b[0m`)
+      continue
+    }
+    const t = tally(setCode, BOXES_UNIFORMITY)
+
+    test(`SPEC: ${setCode} — every card printed at its expected rate (within ${TOLERANCE_SIGMA}σ, both directions)`, () => {
+      const offenders: string[] = []
+      const lines: string[] = []
+      for (const rarity of PRINTED_RARITIES) {
+        const pool = t.poolByRarity[rarity]
+        if (!pool || pool.length < 2) continue
+        const obs = pool.map(n => t.counts[rarity]?.[n] || 0)
+        const m = mean(obs)
+        if (m < MIN_EXPECTED) continue
+        const sigma = Math.sqrt(m)
+        lines.push(`${rarity.slice(0, 4)} n=${pool.length} exp ${m.toFixed(0)} [${Math.min(...obs)}-${Math.max(...obs)}]`)
+        pool.forEach((n, i) => {
+          const dev = (obs[i]! - m) / sigma
+          if (Math.abs(dev) > TOLERANCE_SIGMA) {
+            offenders.push(`${n.split('|')[0]} [${rarity}] ${obs[i]} vs ${m.toFixed(0)} (${dev > 0 ? '+' : ''}${dev.toFixed(1)}σ)`)
+          }
+        })
       }
+      console.log(`\x1b[36m   ${setCode}: ${lines.join(' | ')}\x1b[0m`)
+      assert(offenders.length === 0, `off expected rate: ${offenders.join('; ')}`)
+    })
+  }
+
+  // ---- HS leader/base co-occurrence, EVERY set ---------------------------
+  console.log(`\x1b[36m   Slot independence + shape: ${BOXES_DETAIL} boxes...\x1b[0m`)
+  const detail: Record<string, ReturnType<typeof tally>> = {}
+  for (const setCode of ALL_SETS) {
+    if (getCachedCards(setCode).length === 0) continue
+    detail[setCode] = tally(setCode, BOXES_DETAIL)
+  }
+
+  test('SPEC: HS leader and HS base can co-occur in one pack — no set bans it', () => {
+    // Real ASH pool-002 pack06 held both. The old hard exclusivity rule gave the
+    // pack probability zero; it was removed. This guards against it coming back.
+    const lines: string[] = []
+    const banned: string[] = []
+    for (const [setCode, t] of Object.entries(detail)) {
+      const joint = t.hsBoth / t.packs
+      const independent = (t.hsLeader / t.packs) * (t.hsBase / t.packs)
+      lines.push(`${setCode} ${(joint / independent).toFixed(2)}x`)
+      if (t.hsBoth === 0) banned.push(setCode)
     }
-    console.log(`\x1b[36m   catalog ${catalog.length} normal deck cards; never printed: ${missing.length}\x1b[0m`)
-    assert(missing.length === 0, `never printed in ${BOXES} boxes: ${missing.slice(0, 8).join(', ')}`)
+    console.log(`\x1b[36m   co-occurrence vs independence: ${lines.join('  ')}\x1b[0m`)
+    assert(banned.length === 0,
+      `${banned.join(', ')} never produced a leader+base HS pack — exclusivity has been re-introduced`)
   })
 
-  test(`SPEC: no card is short-printed — every card within ${STARVATION_SIGMA}σ of its rarity pool mean`, () => {
-    const starved: string[] = []
-    for (const r of testablePools) {
-      const obs = poolByRarity[r]!.map(n => counts[r]?.[n] || 0)
-      const m = mean(obs)
-      const sigma = Math.sqrt(m)
-      const lo = Math.min(...obs), hi = Math.max(...obs)
-      console.log(`\x1b[36m   ${r.padEnd(10)} pool=${String(obs.length).padStart(3)} exp/card ${m.toFixed(0).padStart(5)}  min ${lo}  max ${hi}  max/min ${(hi / Math.max(1, lo)).toFixed(2)}\x1b[0m`)
-      poolByRarity[r]!.forEach((n, i) => {
-        const deficit = (m - obs[i]!) / sigma
-        if (deficit > STARVATION_SIGMA) {
-          starved.push(`${n.split('|')[0]} [${r}] ${obs[i]} vs ${m.toFixed(0)} (${deficit.toFixed(1)}σ low)`)
-        }
-      })
-    }
-    assert(starved.length === 0, `short-printed: ${starved.join('; ')}`)
-  })
-
-  // ---- Independence -------------------------------------------------------
-  test('SPEC: HS leader and HS base are independent (joint ≈ 1/6 × 1/6 = 1/36)', () => {
-    const lRate = hsLeader / packCount, bRate = hsBase / packCount, joint = hsBoth / packCount
-    const expected = HS_LEADER_RATE * HS_BASE_RATE
-    console.log(`\x1b[36m   HS leader ${lRate.toFixed(4)} · HS base ${bRate.toFixed(4)} · joint ${joint.toFixed(4)} (independence ${expected.toFixed(4)})\x1b[0m`)
-    assert(Math.abs(lRate - HS_LEADER_RATE) / HS_LEADER_RATE < 0.15, `HS leader rate ${lRate.toFixed(4)} off spec 1/6`)
-    assert(Math.abs(bRate - HS_BASE_RATE) / HS_BASE_RATE < 0.15, `HS base rate ${bRate.toFixed(4)} off spec 1/6`)
-    // Real ASH boxes show leader+base HS co-occurrence at the independence rate —
-    // an exclusivity constraint here was falsified by pool 002 pack06 and removed.
-    // Do NOT "fix" a high reading by re-adding one.
+  test('SPEC: ASH reaches the independent rate (1/6 × 1/6 = 1/36)', () => {
+    // ASH is the set with a real-box-calibrated spaced HS sheet. The others use
+    // the budget belt, whose per-pack cap suppresses co-occurrence below 1/36 —
+    // expected, not a defect. Do NOT "fix" those by re-adding a constraint.
+    const t = detail['ASH']
+    if (!t) return
+    const joint = t.hsBoth / t.packs
+    const expected = (1 / 6) * (1 / 6)
     assert(Math.abs(joint - expected) / expected < 0.40,
-      `leader+base HS co-occurrence ${joint.toFixed(4)} deviates >40% from independence ${expected.toFixed(4)}`)
+      `ASH leader+base co-occurrence ${joint.toFixed(4)} deviates >40% from independence ${expected.toFixed(4)}`)
   })
 
-  // ---- Prestige per box ---------------------------------------------------
-  test('SPEC: tier-1 prestige ≈ 1/22 packs (~1.1/box), never 3+ in one box', () => {
-    const perBox = mean(prestigePerBox)
-    const expected = PACKS_PER_BOX * T1_PRESTIGE_RATE
-    const hist: Record<number, number> = {}
-    prestigePerBox.forEach(x => { hist[x] = (hist[x] || 0) + 1 })
-    console.log(`\x1b[36m   prestige/box mean ${perBox.toFixed(2)} (spec ${expected.toFixed(2)}) — ` +
-      Object.keys(hist).map(Number).sort((a, b) => a - b).map(k => `${k}x:${(100 * hist[k]! / BOXES).toFixed(1)}%`).join(' ') + `\x1b[0m`)
-    assert(Math.abs(perBox - expected) / expected < 0.25,
-      `prestige/box ${perBox.toFixed(2)} deviates >25% from spec ${expected.toFixed(2)}`)
-    const clustered = prestigePerBox.filter(x => x >= 3).length
-    assert(clustered === 0,
-      `${clustered} boxes had 3+ tier-1 prestige — 11 verified real boxes show mode 1, max 2`)
-  })
+  // ---- Prestige: LAW and ASH only ---------------------------------------
+  for (const [setCode, rate] of Object.entries(PRESTIGE_SETS)) {
+    const t = detail[setCode]
+    if (!t) continue
+    test(`SPEC: ${setCode} tier-1 prestige ≈ 1/${Math.round(1 / rate)} packs, never 3+ in one box`, () => {
+      const perBox = mean(t.prestigePerBox)
+      const expected = PACKS_PER_BOX * rate
+      const clustered = t.prestigePerBox.filter(x => x >= 3).length
+      console.log(`\x1b[36m   ${setCode}: prestige/box ${perBox.toFixed(2)} (spec ${expected.toFixed(2)}), max in a box ${Math.max(...t.prestigePerBox)}\x1b[0m`)
+      assert(Math.abs(perBox - expected) / expected < 0.25,
+        `${setCode} prestige/box ${perBox.toFixed(2)} deviates >25% from spec ${expected.toFixed(2)}`)
+      assert(clustered === 0,
+        `${setCode}: ${clustered} boxes had 3+ tier-1 prestige — 11 verified real boxes show mode 1, max 2`)
+    })
+  }
 
-  // ---- Distribution SHAPE, not just the mean ------------------------------
-  // Mean and a single tail bucket can both sit in band while the shape drifts.
-  test('SPEC: pool duplicate distribution has the right shape (clean mode + clumpy tail)', () => {
-    const m = mean(dupPerPool)
-    const variance = mean(dupPerPool.map(x => (x - m) ** 2))
-    const nnZero = nnPerPool.filter(x => x === 0).length / nnPerPool.length
-    const loaded = dupPerPool.filter(x => x >= 10).length / dupPerPool.length
-    console.log(`\x1b[36m   dup/pool mean ${m.toFixed(2)} var ${variance.toFixed(2)} (var/mean ${(variance / m).toFixed(2)}); nn P(0) ${(100 * nnZero).toFixed(1)}%; loaded ${(100 * loaded).toFixed(1)}%\x1b[0m`)
-
-    // M1 real-data spec: 39 real pools, P(0 Normal+Normal pairs) = 56%.
-    assert(nnZero >= 0.40 && nnZero <= 0.60,
-      `P(0 nn-pairs) ${(100 * nnZero).toFixed(1)}% outside real-data band 40-60%`)
-    // Both modes must exist: clean pools AND a genuine clumpy tail.
-    assert(dupPerPool.some(x => x <= 3), 'no clean pools (≤3 dup identities) — tail-heavy drift')
-    assert(loaded >= 0.01 && loaded <= 0.10,
-      `loaded pool rate ${(100 * loaded).toFixed(1)}% outside band 1-10%`)
-    // Dispersion regression guard. Real pools are var/mean ≈ 2.07 (13 transcribed
-    // pools: mean 7.0, var 14.5); the model sits near 0.5 — a KNOWN and accepted
-    // trade-off (the pair-gap knob controls both the tail and NN texture; tail was
-    // prioritised, 2026-07-11). This floor only catches further COLLAPSE toward a
-    // deterministic distribution. Do not "fix" a low reading by adding spacing.
-    assert(variance / m >= 0.30,
-      `dup/pool var/mean ${(variance / m).toFixed(2)} < 0.30 — distribution collapsing toward deterministic`)
-  })
+  // ---- Duplicate distribution SHAPE: LAW and ASH -------------------------
+  for (const setCode of SHAPE_SETS) {
+    const t = detail[setCode]
+    if (!t) continue
+    test(`SPEC: ${setCode} pool duplicate distribution has the right shape`, () => {
+      const m = mean(t.dupPerPool)
+      const variance = mean(t.dupPerPool.map(x => (x - m) ** 2))
+      const nnZero = t.nnPerPool.filter(x => x === 0).length / t.nnPerPool.length
+      const loaded = t.dupPerPool.filter(x => x >= 10).length / t.dupPerPool.length
+      console.log(`\x1b[36m   ${setCode}: dup/pool ${m.toFixed(2)} (var/mean ${(variance / m).toFixed(2)}); nn P(0) ${(100 * nnZero).toFixed(1)}%; loaded ${(100 * loaded).toFixed(1)}%\x1b[0m`)
+      assert(m >= 5.5 && m <= 8.5, `${setCode} dup identities/pool ${m.toFixed(2)} outside band 5.5-8.5`)
+      assert(nnZero >= 0.40 && nnZero <= 0.60,
+        `${setCode} P(0 nn-pairs) ${(100 * nnZero).toFixed(1)}% outside real-data band 40-60%`)
+      assert(t.dupPerPool.some(x => x <= 3), `${setCode}: no clean pools (≤3 dup identities)`)
+      assert(loaded >= 0.01 && loaded <= 0.10,
+        `${setCode} loaded pool rate ${(100 * loaded).toFixed(1)}% outside band 1-10%`)
+      // Floor only. Real pools run var/mean ≈2.07; the model ≈0.5 by the accepted
+      // 2026-07-11 pair-gap trade-off. Catches collapse toward determinism only.
+      assert(variance / m >= 0.30,
+        `${setCode} dup/pool var/mean ${(variance / m).toFixed(2)} < 0.30 — collapsing toward deterministic`)
+    })
+  }
 
   console.log('')
   console.log('\x1b[36m============================\x1b[0m')

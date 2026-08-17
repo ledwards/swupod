@@ -589,6 +589,13 @@ export interface HSBeltConfig {
 export const HS_BELT_CONFIGS: Record<string, HSBeltConfig> = {
   // NOTE: Rare slot NEVER upgrades to HS. HS rares only appear via UC3 upgrade.
   '1-3': {
+    // Real ASH pool-002 pack06 held a hyperspace leader AND base in one pack,
+    // falsifying the old exclusivity rule. It is the same physical press for every
+    // set, so the hard ban is gone here too. The budget cap still limits how often
+    // they can share a pack, so this lands well below the independent 1/36 —
+    // see .claude/rules/belt-system.md.
+    allowLeaderBaseCoOccurrence: true,
+    spaceUpgrades: true,
     cycleSize: 60,
     budgetDistribution: { 0: 24, 1: 26, 2: 10 },
     slotCounts: {
@@ -602,6 +609,13 @@ export const HS_BELT_CONFIGS: Record<string, HSBeltConfig> = {
     // total: 10+10+12+4+2+8 = 46 ✓
   },
   '4-6': {
+    // Real ASH pool-002 pack06 held a hyperspace leader AND base in one pack,
+    // falsifying the old exclusivity rule. It is the same physical press for every
+    // set, so the hard ban is gone here too. The budget cap still limits how often
+    // they can share a pack, so this lands well below the independent 1/36 —
+    // see .claude/rules/belt-system.md.
+    allowLeaderBaseCoOccurrence: true,
+    spaceUpgrades: true,
     cycleSize: 60,
     budgetDistribution: { 0: 24, 1: 26, 2: 10 },
     slotCounts: {
@@ -621,6 +635,7 @@ export const HS_BELT_CONFIGS: Record<string, HSBeltConfig> = {
   // box observation: 0/48 UC1/UC2 hyperspace upgrades; all HS uncommons via UC3).
   // UC3 can still upgrade to HS R/L (if prestige doesn't trigger first).
   'LAW': {
+    spaceUpgrades: true,
     cycleSize: 60,
     // Set 7+ only: leader+base HS may co-occur in one plan (real ASH pool-002 pack06)
     allowLeaderBaseCoOccurrence: true,

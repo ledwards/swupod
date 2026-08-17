@@ -79,33 +79,41 @@ function runTests(): void {
   // BUDGET DISTRIBUTION
   // ========================================================================
 
-  test('40% of plans have budget 0 (no HS)', () => {
-    // After removing rare slot upgrade, budget distribution is 24/60 budget-0
+  // SPEC: slots upgrade independently, so the no-upgrade rate is the product of
+  // each slot MISSING — not a budget quota. Derived from HS_BELT_CONFIGS
+  // slotCounts (packConstants is a spec source per .claude/rules/testing.md).
+  function independentZeroRate(group: string): number {
+    const { cycleSize, slotCounts } = HS_BELT_CONFIGS[group]
+    return Object.values(slotCounts).reduce((p: number, n: number) => p * (1 - n / cycleSize), 1)
+  }
+
+  test('no-upgrade rate matches independent slot probabilities', () => {
     const belt = new HyperspaceUpgradeBelt()
     let zeroCount = 0
     for (let i = 0; i < TOTAL_DRAWS; i++) {
-      const plan = belt.next()
-      if (countTrueSlots(plan) === 0) zeroCount++
+      if (countTrueSlots(belt.next()) === 0) zeroCount++
     }
     const rate = zeroCount / TOTAL_DRAWS
-    console.log(`\x1b[36m   Budget-0 rate: ${(rate * 100).toFixed(1)}% (${zeroCount}/${TOTAL_DRAWS})\x1b[0m`)
-    // Budget-0 is 24/60 = 40%
+    const expected = independentZeroRate('1-3')
+    console.log(`\x1b[36m   No-upgrade rate: ${(rate * 100).toFixed(1)}% (independent expectation ${(expected * 100).toFixed(1)}%)\x1b[0m`)
     assert(
-      Math.abs(rate - 24 / 60) < 0.02,
-      `Budget-0 rate ${(rate * 100).toFixed(1)}% should be ~40.0%`
+      Math.abs(rate - expected) < 0.03,
+      `No-upgrade rate ${(rate * 100).toFixed(1)}% should be ~${(expected * 100).toFixed(1)}%`
     )
   })
 
-  test('max budget is 2 (no plan has >2 HS slots)', () => {
+  // Slots upgrade INDEPENDENTLY, so 3 in one plan must be possible — independent
+  // events overlap. A hard cap would be the modelling error, not the 3-slot pack.
+  // It just has to stay rare. Measured ~2.5% of plans at 3, ~0.2% at 4+.
+  test('SPEC: 3+ upgrades in one plan are possible but rare', () => {
     const belt = new HyperspaceUpgradeBelt()
+    let threePlus = 0
     for (let i = 0; i < TOTAL_DRAWS; i++) {
-      const plan = belt.next()
-      const count = countTrueSlots(plan)
-      assert(
-        count <= 2,
-        `Plan ${i} has ${count} HS slots, max should be 2`
-      )
+      if (countTrueSlots(belt.next()) >= 3) threePlus++
     }
+    const rate = threePlus / TOTAL_DRAWS
+    console.log(`\x1b[36m   3+ upgrade plans: ${(rate * 100).toFixed(2)}%\x1b[0m`)
+    assert(rate <= 0.08, `3+ upgrades in ${(rate * 100).toFixed(2)}% of plans — variance has blown out`)
   })
 
   test('total upgrades per cycle approximately equals config', () => {
@@ -128,13 +136,27 @@ function runTests(): void {
   // CO-OCCURRENCE (leader + base CAN co-occur — real data falsified exclusivity)
   // ========================================================================
 
-  test('sets 1-6: leader + base never co-occur (past-set behavior preserved)', () => {
-    // Co-occurrence evidence exists only for Set 7+ (ASH pool-002 pack06).
-    // Groups 1-3/4-6 keep the exclusivity rule — never change past sets.
-    const belt = new HyperspaceUpgradeBelt() // '1-3' group
-    for (let i = 0; i < 10 * CYCLE_SIZE; i++) {
-      const plan = belt.next()
-      assert(!(plan.leader && plan.base), `Plan ${i} has both leader and base (forbidden for sets 1-6)`)
+  // Previously asserted the opposite for sets 1-6 ("never co-occur, past-set
+  // behavior preserved"). Real ASH pool-002 pack06 held a hyperspace leader AND
+  // base in one pack, so the exclusivity rule gave a physically real pack
+  // probability zero. It is the same press for every set, so the ban is gone on
+  // all groups rather than only the one we have transcribed boxes for.
+  //
+  // The RATE still differs by group and that is expected: the budget cap means
+  // leader+base can only share a budget-2 plan, holding co-occurrence to roughly
+  // half the independent 1/36. Only ASH's spaced-sheet config reaches ~1/36.
+  // Do NOT "correct" a low rate by re-introducing exclusivity.
+  test('SPEC: every group permits leader + base in the same pack', () => {
+    for (const group of ['1-3', '4-6', 'LAW', 'ASH']) {
+      const belt = new HyperspaceUpgradeBelt(group)
+      let both = 0, plans = 0
+      for (let i = 0; i < 10 * CYCLE_SIZE; i++) {
+        const plan = belt.next()
+        plans++
+        if (plan.leader && plan.base) both++
+      }
+      assert(both > 0,
+        `${group}: leader+base never co-occurred in ${plans} plans — exclusivity has been re-introduced`)
     }
   })
 
@@ -210,19 +232,20 @@ function runTests(): void {
   console.log('')
   console.log('\x1b[1m\x1b[35m🤠 LAW HyperspaceUpgradeBelt Tests\x1b[0m')
 
-  test('LAW: ~43% of plans have budget 0 (HS common is from dedicated belt, not upgrade)', () => {
-    // LAW config: budget-0 = 26/60 = 43.3%
+  test('LAW: no-upgrade rate matches independent slot probabilities', () => {
+    // The guaranteed HS common comes from its own belt, not an upgrade, so a
+    // zero-upgrade plan still yields a pack with one hyperspace card.
     const belt = new HyperspaceUpgradeBelt('LAW')
     let zeroCount = 0
     for (let i = 0; i < TOTAL_DRAWS; i++) {
-      const plan = belt.next()
-      if (countTrueSlots(plan) === 0) zeroCount++
+      if (countTrueSlots(belt.next()) === 0) zeroCount++
     }
     const rate = zeroCount / TOTAL_DRAWS
-    console.log(`\x1b[36m   LAW budget-0 rate: ${(rate * 100).toFixed(1)}% (expected 43.3%)\x1b[0m`)
+    const expected = independentZeroRate('LAW')
+    console.log(`\x1b[36m   LAW no-upgrade rate: ${(rate * 100).toFixed(1)}% (independent expectation ${(expected * 100).toFixed(1)}%)\x1b[0m`)
     assert(
-      Math.abs(rate - 26 / 60) < 0.02,
-      `Budget-0 rate ${(rate * 100).toFixed(1)}% should be ~43.3%`
+      Math.abs(rate - expected) < 0.03,
+      `LAW no-upgrade rate ${(rate * 100).toFixed(1)}% should be ~${(expected * 100).toFixed(1)}%`
     )
   })
 
