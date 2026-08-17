@@ -96,20 +96,21 @@ function buildInterleavedSequence(cards: RawCard[], lastAspect: string | null): 
       // the fixed sheet POSITION that strict largest-first handed to small aspect
       // groups.
       //
-      // Measured (3000 fresh belts): a singleton-primary-aspect card landed at
-      // boot index 58-59 of 60 EVERY time (min 58, max 59). A box uses a fresh
-      // belt and consumes 72 uncommon draws against a 60-card boot, so a
-      // uniformly placed card averages 72/60 = 1.200 draws/box while a
-      // boot-tail card cannot appear in the 12-draw overhang of boot 2 and
-      // averages ~1.0 (measured 1.084/1.101). ASH has exactly one
-      // Heroism-primary and one Villainy-primary uncommon out of 60, and both
-      // were short-printed: 121 and 164 appearances against a pool mean of
-      // 263.1 over 250 boxes — 8.7σ and 6.1σ low (σ = sqrt(mean) = 16.2).
+      // Measured: strict largest-first pinned a singleton-primary-aspect card
+      // to boot index ~62.8 of a ~66.5-card boot, every time. That collides
+      // with the belt's real per-box HORIZON, which is not the draw count:
+      // a box calls next() 72 times, but ~8.64 of those are handed back by
+      // putBack() when the UC3 slot is upgraded, so the belt only ADVANCES
+      // 72 - 8.64 = 63.36 positions before it is thrown away (fresh belt per
+      // box — generateSealedBox clears the cache). Pinned index 62.8 vs
+      // horizon 63.36 put the card exactly on the cliff: reached in only 59.5%
+      // of boxes, 0.537 net appearances/box against a pool mean of 1.056.
       //
-      // NOT a UC3 phase lock: their measured UC3-slot share was 36.2%/35.7%
-      // against a pool mean of 33.4%, worth ~1% of the deficit. Belt draws
-      // (0.90) x UC3 effect (0.99) predicts 0.89 but 0.46 was observed, so a
-      // residual factor of ~1.9 remains undecomposed.
+      // ASH has exactly one Heroism-primary and one Villainy-primary uncommon
+      // out of 60; both were short-printed — 121 and 164 appearances against a
+      // pool mean of 263.1 over 250 boxes, 8.7σ and 6.1σ low (σ = sqrt(mean)).
+      // Not a UC3 phase lock: their UC3-slot share was 36.2%/35.7% vs a 33.4%
+      // pool mean. The slot they landed in never mattered; being reached did.
       // See src/qa/printerDistribution.test.ts.
       const eligible = available.filter(k => k !== prevAspect)
       const pool = eligible.length > 0 ? eligible : available

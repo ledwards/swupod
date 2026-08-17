@@ -114,12 +114,19 @@ the belt is thrown away, so a card with a DETERMINISTIC position in the boot is
 printed at a different rate than one whose position varies — even though both appear
 exactly once per boot.
 
-The consumption arithmetic is the whole story. `generateSealedBox` clears the belt
-cache, so **every box gets a fresh belt**. A box consumes 24 packs x 3 = **72**
-uncommon draws against a **60**-card boot, so it burns all of boot 1 plus a 12-draw
-overhang into boot 2. A uniformly placed card therefore averages 72/60 = **1.200**
-draws per box; a card pinned to the end of the boot can never land in that overhang
-and averages ~**1.0**.
+The consumption arithmetic is the whole story, and the key number is NOT the draw
+count. `generateSealedBox` clears the belt cache, so **every box gets a fresh belt**.
+A box calls `next()` 24 x 3 = **72** times — but when the UC3 slot is upgraded,
+`boosterPack.ts` calls `UncommonBelt.putBack()`, which returns the card to the FRONT
+of the hopper (physically right: the upgrade came off a different sheet, so the UC
+sheet never advanced). Measured **8.64 putbacks per box**, so the belt only ADVANCES
+
+    72 - 8.64 = 63.36 positions per box
+
+against a boot of ~66.5 cards (60 distinct + ~6.5 woven echoes). **That advance, not
+72, is the horizon.** A card placed past index ~63 in the boot is simply never reached
+before the belt is thrown away. Pool check: 63.36 / 60 = 1.056 net appearances per
+card per box, against 1.059 measured.
 
 That is a real bug this repo shipped. `buildInterleavedSequence` picked strictly the
 largest remaining aspect group, so an aspect holding only ONE card never became
@@ -140,16 +147,22 @@ against a Poisson floor of 16.2 is what a sheet should look like; the pre-fix sd
 23.0 was 1.4x Poisson, which is the tell that something structural, not sampling, was
 wrong.
 
-**Correction (supersedes commit 7b6a96a6's message):** this is NOT a UC3 phase lock.
-That commit claimed the boot tail mapped to the UC3 slot via `60 ≡ 0 (mod 3)` and the
-UC3 upgrade ate the card. Measured UC3-slot share for the two cards was 36.2%/35.7%
-against a pool mean of 33.4% — worth ~1% of the deficit, not 32%. Belt draws (0.90) x
-UC3 effect (0.99) predicts 0.89 but 0.46 was observed, so a residual factor of ~1.9
-between belt draws and final pack appearances is **still undecomposed**. Ruled out so
-far: the UC3 upgrade, the belt's `_lastDrawUndo` hook (present but never called from
-`boosterPack.ts`), and per-card draw rates on a single long-running belt (uniform to
-98%). Suspect the fresh-belt-per-box interaction with `_weaveEchoes` and refill
-timing. If you touch this code, re-derive it — do not trust the residual to be small.
+**Why it was a 2x hit and not a 5% one — the numbers collided.** The pinned index was
+**62.8**; the horizon is **63.36**. The card sat exactly on the cliff edge, so it was
+reached in only **59.5%** of boxes: 0.537 net appearances/box against a pool mean of
+1.056, i.e. ~51%. Had the pin been at index 55, or the UC3 upgrade rate a little
+lower, the same bug would have been invisible.
+
+Two consequences worth carrying:
+
+- **The horizon moves when unrelated rates move.** Raising the UC3 upgrade rate
+  increases putbacks and pulls the horizon in, silently starving whatever sits near
+  it. The uncommon lane has no safety margin here — 63.36 of a 66.5-card boot means
+  the last ~3 boot positions are already dead weight in every box.
+- **Commit 7b6a96a6's message was wrong** and is superseded. It blamed a UC3 phase
+  lock via `60 ≡ 0 (mod 3)`. Measured UC3-slot share for the two cards was
+  36.2%/35.7% against a pool mean of 33.4% — about 1% of the deficit, not 32%. The
+  slot a card lands in was never the issue; whether it was reached at all was.
 
 - Ordering rules must enforce a CONSTRAINT, never impose a fixed position.
 - `src/qa/printerDistribution.test.ts` guards this: every card within 6σ of its
