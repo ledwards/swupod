@@ -157,8 +157,18 @@ Two consequences worth carrying:
 
 - **The horizon moves when unrelated rates move.** Raising the UC3 upgrade rate
   increases putbacks and pulls the horizon in, silently starving whatever sits near
-  it. The uncommon lane has no safety margin here — 63.36 of a 66.5-card boot means
-  the last ~3 boot positions are already dead weight in every box.
+  it. There is no safety margin: 63.36 of a ~66.5-card boot means the last ~3 boot
+  positions are never reached in a fresh-belt box. With random placement that is
+  fair (every card has the same ~5% chance of landing there in a given box) — it
+  only bites when something is placed there DETERMINISTICALLY, which is exactly the
+  failure above. `printerDistribution.test.ts` is the guard.
+- **Fill lazily, not eagerly.** `_fillIfNeeded` used to top the hopper back up to a
+  full boot, so a fresh belt built an entire second boot after ~7 draws and then
+  threw it away: 69.5 of 132.8 cards built per box were never served (**52.3%**).
+  It now fills only when the hopper is empty — 8.7 of 72.1 (**12.1%**), and the
+  persistent-belt pod path went 1.5% -> 0.4%. Serving ORDER is untouched (all 9
+  collation metrics in band), because a boot that was never reached cannot affect
+  what was.
 - **Commit 7b6a96a6's message was wrong** and is superseded. It blamed a UC3 phase
   lock via `60 ≡ 0 (mod 3)`. Measured UC3-slot share for the two cards was
   36.2%/35.7% against a pool mean of 33.4% — about 1% of the deficit, not 32%. The

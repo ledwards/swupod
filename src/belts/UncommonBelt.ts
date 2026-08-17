@@ -189,11 +189,26 @@ export class UncommonBelt {
   }
 
   /**
-   * Fill the hopper if it needs more cards
+   * Fill the hopper if it needs more cards.
+   *
+   * Fills LAZILY — only when the hopper is actually empty. Topping the hopper
+   * back up to a full boot (the old behaviour) meant a fresh belt built a
+   * second boot after 7 draws that it then never touched: `generateSealedBox`
+   * throws the belt away after a box, and a box only advances the belt
+   * 72 - ~8.6 putbacks = ~63 positions against a ~66.5-card boot. Measured
+   * waste was 69.5 of 132.8 cards built per box (52.3%). Filling on empty
+   * builds the second boot only when a caller genuinely runs past the first,
+   * which is the persistent-belt pod path (`generateSealedPod`, where belts
+   * carry across boxes and waste was already only 1.5%).
+   *
+   * This is a laziness change, not a collation change: the ORDER cards are
+   * served in is untouched, and boot-boundary dedup still has its inputs —
+   * `_fill` seeds from `recentServed` (capped at DEDUP_WINDOW) when the hopper
+   * is empty, exactly as it does from seam cards when it is not.
    */
   _fillIfNeeded(): void {
     if (this.fillingPool.length === 0) return
-    while (this.hopper.length < this.fillingPool.length) {
+    while (this.hopper.length === 0) {
       this._fill()
     }
   }

@@ -176,22 +176,32 @@ async function runTests(): Promise<void> {
     assert(card2.modified === undefined, 'Cards should be copies, not references')
   })
 
-  test('hopper refills when depleted', () => {
+  // SPEC: the belt never runs dry — it keeps serving valid cards for as long as
+  // it is asked, across any number of boot boundaries.
+  //
+  // This previously asserted the eager-fill MECHANISM (hopper size back above
+  // fillingPool.length after a refill), which is an implementation detail: the
+  // belt now fills lazily, only when the hopper is actually empty, because
+  // topping up eagerly built a whole second boot per box that was thrown away
+  // unused (52.3% of everything the belt built). Refilling is observable through
+  // continued service, not through hopper depth.
+  test('SPEC: hopper refills when depleted — the belt never runs dry', () => {
     const belt = new UncommonBelt('SOR')
-    const fillingPoolSize = belt.fillingPool.length
+    const poolSize = belt.fillingPool.length
+    const poolIds = new Set(belt.fillingPool.map(c => c.id))
 
-    // Drain the hopper to exactly the threshold
-    while (belt.size > fillingPoolSize) {
-      belt.next()
+    // Drain well past several boot boundaries.
+    const drawn: string[] = []
+    for (let i = 0; i < poolSize * 4; i++) {
+      const card = belt.next()
+      assert(card !== null, `Belt ran dry at draw ${i + 1} — it must refill indefinitely`)
+      assert(poolIds.has(card!.id), `Draw ${i + 1} served a card outside the filling pool`)
+      drawn.push(card!.id)
     }
 
-    // Pull one more (hopper is still at threshold, won't refill yet)
-    belt.next()
-    // Pull another (hopper is now below threshold, should trigger refill)
-    belt.next()
-
-    // After refill, hopper should be larger than filling pool again
-    assert(belt.size >= fillingPoolSize, `Hopper should refill. Size: ${belt.size}, threshold: ${fillingPoolSize}`)
+    // Crossing boots must keep serving the whole checklist, not loop a subset.
+    assertEqual(new Set(drawn).size, poolSize,
+      'Every uncommon in the pool should appear across four boots')
   })
 
   test('different belt instances start at different positions', () => {
