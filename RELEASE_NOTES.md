@@ -1,5 +1,10 @@
 # Release Notes
 
+## 08.16.2026
+
+### 🎨 UI Improvements
+- **The homepage is built for a phone.** Open Lobbies and Draft Pods stack one above the other instead of sharing a line, and the page now uses the full width of the screen. Lobby names, set and format badges, and the Join buttons all have room to read at any size.
+
 ## 08.12.2026 Part 2
 
 ### 🐞 Bug Fixes

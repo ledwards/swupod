@@ -624,6 +624,26 @@ a.discord-cta:active {
     background-size: 100% 100%, 100% 100%, 100% 100%, 300% auto;
   }
 
+  /* .landing-page is a centring flex column, so .landing-content is
+     shrink-to-fit: it sizes to its widest child. On a phone that child is a
+     mode button sitting on its 225px min-width floor — which left the entire
+     page rendering as a 225px ribbon down the middle of a 375px screen, with
+     the board's rows squeezed to match. Stretch the column to the viewport and
+     give it real side gutters; the buttons and board fill the room from there.
+     Mobile only: on desktop the shrink-to-fit width is what holds the button
+     grid at its natural 739px instead of the 1200px max-width. */
+  .landing-content {
+    align-self: stretch;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 2rem 1rem;
+  }
+
+  /* The 225px floor is a desktop three-up concern; here it IS the constraint. */
+  .mode-button {
+    min-width: 0;
+  }
+
   .landing-content h1 {
     font-size: 2.5rem;
   }
@@ -710,7 +730,113 @@ a.discord-cta:active {
 
 /* The board's own columns are sized for the lobby page's narrower container;
    at this width give Open Lobbies the extra room so its rows (avatar, name,
-   set/format badges, age, Join) sit on one line instead of wrapping. */
-.landing-board .lobby-board {
-  grid-template-columns: 1.7fr 1fr;
+   set/format badges, age, Join) sit on one line instead of wrapping.
+
+   DESKTOP ONLY — gated behind the same 900px line Lobby.css stacks the board
+   at. Unscoped, this selector (0,2,0) outranked Lobby.css's mobile
+   `.lobby-board { grid-template-columns: 1fr }` (0,1,0), so the homepage kept
+   two columns on a phone: at 375px each one is ~160px wide, and "Draft Pods
+   Open (0)" broke across four lines with "Start a Pod" under it in three. */
+@media (min-width: 901px) {
+  .landing-board .lobby-board {
+    grid-template-columns: 1.7fr 1fr;
+  }
+}
+
+/* ---- the board on a phone -------------------------------------------------
+   The columns stack, so every row finally has the full page width — but the
+   row internals were still tuned for a two-column desktop board, where the
+   name gets an ellipsis and the badges (which never shrink) always win. At
+   375px the badges took the whole line: the username was truncated to LITERALLY
+   zero width, the last badge was cut mid-word at the row edge, and the meta
+   line under it ended in an ellipsis after three words.
+
+   The name line wraps here instead. A second line costs a few pixels of height
+   on a page that already scrolls; truncation costs the one piece of
+   information — who you'd be playing — that the row exists to carry. */
+@media (max-width: 768px) {
+  .landing-board .lobby-column-title {
+    /* "Open Lobbies (2)" + New Lobby, side by side, neither one broken. */
+    flex-wrap: wrap;
+    padding: 12px 14px 10px;
+  }
+
+  .landing-board .lobby-column-title .btn {
+    white-space: nowrap;
+  }
+
+  /* Narrower side padding buys ~8px per row back for the content. */
+  .landing-board .lobby-row {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  /* Once the name wraps the row is three lines tall, and a centred avatar
+     floats in the middle of its own gutter, tied to nothing. Top-align it (and
+     Join) with the name it belongs to. Pod rows are column-flex — `stretch` is
+     what keeps their Join pinned right — so they keep their own alignment. */
+  .landing-board .lobby-row:not(.lobby-row--pod) {
+    align-items: flex-start;
+  }
+
+  /* Badges drop to their own line rather than squeezing the name out. */
+  .landing-board .lobby-row-name {
+    flex-wrap: wrap;
+    row-gap: 5px;
+    white-space: normal;
+    overflow: visible;
+  }
+
+  .landing-board .lobby-row-name-text {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    /* Usernames are a single unbroken token — without this a long one just
+       overflows the row instead of wrapping. */
+    overflow-wrap: anywhere;
+  }
+
+  /* Deck name · age · "stepped away" — all of it fits on two lines here. */
+  .landing-board .lobby-row-meta,
+  .landing-board .lobby-pod-meta {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  /* Join/Leave keeps its full label no matter how the name wraps. */
+  .landing-board .lobby-row > .btn {
+    flex: none;
+    white-space: nowrap;
+  }
+
+  /* The non-PTP warning tooltip is a fixed 250px centred on its ⚠ marker, and
+     the marker sits wherever the name happens to end — so on a 375px screen it
+     hung off the left edge and the column's `overflow: hidden` sheared the
+     first ~40px off every line ("...an unknown simulator or"). It's the one
+     piece of copy on the row that only exists to be read.
+
+     Anchor it to the ROW instead of the marker (static tip → the row becomes
+     the containing block) and let it span the row's width. The column stops
+     clipping too: on a phone the rows have no background of their own to spill
+     past the rounded corners (`.lobby-row--art`'s key art is hover-gated, and
+     there is no hover here), so nothing but the tooltip escapes. */
+  .landing-board .lobby-column {
+    overflow: visible;
+  }
+
+  .landing-board .lobby-row {
+    position: relative;
+  }
+
+  .landing-board .lobby-tip {
+    position: static;
+  }
+
+  .landing-board .lobby-tip::after {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    transform: none;
+  }
 }
