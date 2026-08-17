@@ -51,4 +51,13 @@ find the missing ~4 base tallies.
 - qty disagreements (opus vs fable): Lost and Forgotten 1/0→1/1 · Pirate Snub 1→2 · Follower of the Code 1/0→1/1 · Target Tagger 2→1 · Mercenary Fleet 2/1→1/1 · That's a Rock 1/1→1/0 · Champion's KT9 1/1→2/1 · Unmarked Credits 1/0→1/1 · 4-LOM 1→2 · Kessel Hulk 2→1
 - fable-only rows to confirm: Choke on Aspirations, Stalwart Fleet Trooper 1/1, Callous Bounty Hunter, Night Wind Assailants, Criminal Contact 2/1
 
-Delete this file when all five fixtures are verified.
+## sq-rwc-lee-ash — NEW (added 2026-08-16): verify vs your own memory of the pool
+First ASH fixture (SQ Redwood City 8/15, you, sealed). Starter is a
+Fable-in-chat native-res read: 91/96 pool, 29 deck, 6L/6B. Open items are
+listed in the fixture's `_note`: ~5 unresolved pool marks, four
+ambiguous PLAYED-column singles (V72/V83/A188/Cu228), Throne Room marked
+PLAYED-only, Multicolor marks in the RIGHT MARGIN (28/35/42), and three
+RED verifier-ink spots (V52 note, C100 struck out, A173 note). You built
+this pool — settle each from memory, fix expectedTotals.deck, delete _note.
+
+Delete this file when all six fixtures are verified.

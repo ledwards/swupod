@@ -92,6 +92,26 @@ For the active cost roadmap see `plans/IMPORT_POOL_COST_PLAN.md`.
    Tile anything bigger (the agentic extractor and strip generator do;
    whole-table crops mostly fit).
 
+10. **The OMR sidecar is LAW-geometry-specific — ASH sheets fail
+    SILENTLY (found 2026-08-16).** On the first real ASH sheet, the
+    actual page 1 produced zero identified tables (no warning), and
+    page 2 was misclassified as page 1 with LAW table names mapped onto
+    the wrong rectangles — every crop then scored 0/0 against a
+    mismatched vocabulary. Prod impact: ASH imports return silent
+    empties from the whole-table path. Table identification needs
+    per-set page templates (ASH: 8-row Bases, 48-card Vigilance/Command,
+    18-card Multicolor numbered 27-44 on page 2). The agentic extractor
+    also needs a higher turn cap for ASH's denser layout (24 was not
+    enough), and its error path must still report token usage.
+11. **Players mark outside the cells.** ASH's Multicolor table prints
+    aspect icons inside the qty-cell area, and the player marked in the
+    RIGHT MARGIN instead (rows 28/35/42 on the first ASH fixture). Also
+    seen: active base marked in PLAYED with TOTAL left blank, and RED
+    verifier ink (margin notes, struck-through marks) from event deck
+    checks. Extraction prompts and the resolve UI should expect
+    nonstandard mark placement and verifier corrections on real
+    tournament sheets.
+
 ## Operational learnings
 
 - **Cost accounting is now wired end-to-end** (`ExtractUsage` sink
