@@ -116,6 +116,18 @@ enough boxes to be an effect?* If the behavior matches real boxes, say so and ch
 Look for plain implementation errors (wrong box size, line-vs-box-order mixups, an
 unused-but-correct code path) — not tuning knobs.
 
+**How to answer that question properly.** `printerDistribution.test.ts` parses the
+transcribed boxes in `data/real-boxes/*.csv` directly and runs a two-sample
+Kolmogorov-Smirnov test of duplicates-per-pool against the generator — 42 complete
+real pools in consumer order versus 1400 generated. D currently sits at 0.15-0.18
+against an α=0.05 critical value of 0.213: consistent, with the generator slightly
+high on the mean (6.6-6.75 vs 6.19 real) and thinner in the low tail.
+
+That is the strongest statement the available data supports, and it is what to re-run
+before claiming any duplicate-rate change is an improvement. Mean, P(0) and a single
+tail bucket can all sit in band while the SHAPE drifts — KS is what catches that. Do
+not swap it for a mean comparison.
+
 ## Belt Types
 - **LeaderBelt**: 1 leader per pack, alternates common/rare with seam deduplication
 - **BaseBelt**: 1 common base per pack, aspect-based deduplication

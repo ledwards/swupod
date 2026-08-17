@@ -23,8 +23,65 @@
  * Run with: npx tsx src/qa/printerDistribution.test.ts
  */
 
+import { readFileSync, readdirSync, existsSync } from 'node:fs'
+import { join } from 'node:path'
 import { generateSealedBox, clearBeltCache } from '../utils/boosterPack'
 import { initializeCardCache, getCachedCards } from '../utils/cardCache'
+
+const REAL_BOX_DIR = join(import.meta.dirname, '..', '..', 'data', 'real-boxes')
+
+/** Minimal CSV reader — the real-box transcriptions quote fields containing commas. */
+function parseCsv(text: string): Record<string, string>[] {
+  const lines = text.split('\n').filter(l => l.trim())
+  const header = lines[0]!.split(',').map(h => h.trim())
+  return lines.slice(1).map(line => {
+    const cells: string[] = []
+    let cur = '', quoted = false
+    for (const ch of line) {
+      if (ch === '"') quoted = !quoted
+      else if (ch === ',' && !quoted) { cells.push(cur); cur = '' }
+      else cur += ch
+    }
+    cells.push(cur)
+    const row: Record<string, string> = {}
+    header.forEach((h, i) => { row[h] = (cells[i] || '').trim() })
+    return row
+  })
+}
+
+/**
+ * Duplicate identities per 6-pack pool from the TRANSCRIBED ASH boxes, in
+ * consumer order (box positions 1-6, 7-12, 13-18, 19-24) — the same definition
+ * the generator side uses. Incomplete pools are skipped rather than padded.
+ */
+function realPoolDuplicates(): number[] {
+  if (!existsSync(REAL_BOX_DIR)) return []
+  const pools: number[] = []
+  for (const file of readdirSync(REAL_BOX_DIR).filter(f => /^ash-box-\d+\.csv$/.test(f))) {
+    const rows = parseCsv(readFileSync(join(REAL_BOX_DIR, file), 'utf8'))
+    const byPack: Record<number, Record<string, string>[]> = {}
+    for (const r of rows) {
+      const p = parseInt(r.pack!, 10)
+      if (p) (byPack[p] = byPack[p] || []).push(r)
+    }
+    for (let g = 0; g < 4; g++) {
+      const packs = [1, 2, 3, 4, 5, 6].map(k => byPack[g * 6 + k])
+      if (packs.some(p => !p)) continue
+      const byId: Record<string, number> = {}
+      packs.flat().filter(r => r!.type !== 'Leader' && r!.type !== 'Base')
+        .forEach(r => { const k = `${r!.name}|${r!.subtitle || ''}`; byId[k] = (byId[k] || 0) + 1 })
+      pools.push(Object.values(byId).filter(n => n > 1).length)
+    }
+  }
+  return pools
+}
+
+/** Two-sample Kolmogorov-Smirnov statistic: max gap between empirical CDFs. */
+function ksStatistic(a: number[], b: number[]): number {
+  const values = [...new Set([...a, ...b])].sort((x, y) => x - y)
+  const cdf = (s: number[], v: number) => s.filter(x => x <= v).length / s.length
+  return values.reduce((d, v) => Math.max(d, Math.abs(cdf(a, v) - cdf(b, v))), 0)
+}
 
 let passed = 0
 let failed = 0
@@ -69,6 +126,10 @@ const MIN_EXPECTED = 20   // pools sparser than this are untestable at this N
 
 const BOXES_UNIFORMITY = 120
 const BOXES_DETAIL = 150
+// Shape and KS compare full distributions, so they need a bigger sample than the
+// rate checks: at 150 boxes LAW's P(0 nn-pairs) sits ~1pp above its 40% floor and
+// flakes. At 350 it is stable at 42.6-43.9%.
+const BOXES_SHAPE = 350
 
 type Counts = Record<string, Record<string, number>>
 
@@ -206,9 +267,11 @@ async function run() {
   }
 
   // ---- Duplicate distribution SHAPE: LAW and ASH -------------------------
+  const shapeTally: Record<string, ReturnType<typeof tally>> = {}
   for (const setCode of SHAPE_SETS) {
-    const t = detail[setCode]
-    if (!t) continue
+    if (getCachedCards(setCode).length === 0) continue
+    const t = tally(setCode, BOXES_SHAPE)
+    shapeTally[setCode] = t
     test(`SPEC: ${setCode} pool duplicate distribution has the right shape`, () => {
       const m = mean(t.dupPerPool)
       const variance = mean(t.dupPerPool.map(x => (x - m) ** 2))
@@ -227,6 +290,30 @@ async function run() {
         `${setCode} dup/pool var/mean ${(variance / m).toFixed(2)} < 0.30 — collapsing toward deterministic`)
     })
   }
+
+  // ---- Full-distribution agreement with the transcribed boxes -------------
+  // The bands above check the mean, the P(0) point and one tail bucket. All
+  // three can sit in range while the SHAPE drifts. This compares the whole
+  // empirical CDF of duplicates-per-pool against the real ASH boxes with a
+  // two-sample Kolmogorov-Smirnov test — the strongest statement available from
+  // the data we actually have. ASH only: KS needs pools in consumer order, and
+  // the LAW fixtures are event pools with no recorded box position.
+  test('SPEC: duplicate distribution matches the transcribed ASH boxes (KS, α=0.05)', () => {
+    const real = realPoolDuplicates()
+    if (real.length < 20) {
+      console.log(`\x1b[33m   Skipping: only ${real.length} complete real pools available\x1b[0m`)
+      return
+    }
+    const gen = (shapeTally['ASH'] ?? detail['ASH'])!.dupPerPool
+    const d = ksStatistic(real, gen)
+    const critical = 1.36 * Math.sqrt(1 / real.length + 1 / gen.length)
+    console.log(`\x1b[36m   real n=${real.length} mean ${mean(real).toFixed(2)} · generated n=${gen.length} mean ${mean(gen).toFixed(2)}\x1b[0m`)
+    console.log(`\x1b[36m   KS D=${d.toFixed(4)}  critical=${critical.toFixed(4)}\x1b[0m`)
+    assert(d <= critical,
+      `KS D=${d.toFixed(4)} exceeds the α=0.05 critical value ${critical.toFixed(4)} — ` +
+      `the generated duplicate distribution no longer matches the real boxes in shape, ` +
+      `even if its mean and tail still sit in band`)
+  })
 
   console.log('')
   console.log('\x1b[36m============================\x1b[0m')
