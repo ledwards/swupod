@@ -140,10 +140,7 @@ async function run() {
   // immediately before it. So a 3-box pod runs ~3.2-3.6 spread by construction.
   // Do NOT "fix" that by suppressing duplicates in later boxes.
   //
-  // What IS assertable: pods that fit inside one box must be flat, and no seat
-  // anywhere may exceed a gross ceiling. The invented-box bug produced 17.3-18.3
-  // on the worst seats; the real range is 11.0-14.4.
-  const EIGHT_PACK_CEILING = 16.0
+  // What IS assertable: pods that fit inside one box must be flat.
   const SINGLE_BOX_SPREAD_MAX = 1.5
 
   test(`SPEC: 8-pack pods fitting inside one box are flat (spread ≤ ${SINGLE_BOX_SPREAD_MAX})`, () => {
@@ -156,15 +153,19 @@ async function run() {
     }
   })
 
-  test(`SPEC: no 8-pack seat exceeds ${EIGHT_PACK_CEILING} dup identities (invented boxes produced 17-18)`, () => {
-    for (const players of [4, 8]) {  // multi-box pods
-      const m = dealPod(players, 8).map(s => s.dupMean)
-      const worst = Math.max(...m)
-      console.log(`\x1b[36m   ${players}p x8 (multi-box): dupIds ${m.map(x => x.toFixed(1)).join(' ')}  worst ${worst.toFixed(2)}\x1b[0m`)
-      assert(worst <= EIGHT_PACK_CEILING,
-        `${players}p 8-pack worst seat ${worst.toFixed(2)} > ${EIGHT_PACK_CEILING} — packs are not being cut from real 24-pack boxes`)
-    }
-  })
+  // The multi-box worst-seat ceiling that used to live here has been removed.
+  // It was marginal by construction: normal behaviour runs 13.0 +/-1.6 and the
+  // invented-box bug it guarded produced 17.3-18.3, so the two distributions
+  // nearly touch. A 16.0 ceiling sat 1.9 sd above normal (~3% false alarms);
+  // moving it to 4 sd means 19.3, which would no longer catch the bug. A
+  // worst/median ratio separates no better (normal 1.152 +/-0.125 vs bug 1.482,
+  // 2.0 sd at best), and tightening it by sample size needs ~4x the trials.
+  //
+  // It is also redundant. Passing a non-24 box size to a Set 7+ generator now
+  // THROWS (generateStackedBox, guarded by the S4 specs in boosterPack.test.ts),
+  // so the regression is caught structurally and immediately rather than
+  // inferred from a noisy seat statistic. A hard invariant beats a statistical
+  // proxy that cannot separate the hypotheses.
 
   console.log('')
   console.log('\x1b[36m============================\x1b[0m')
