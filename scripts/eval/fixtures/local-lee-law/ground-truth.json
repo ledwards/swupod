@@ -1,5 +1,5 @@
 {
-  "fixtureName": "casual-lee-law",
+  "fixtureName": "local-lee-law",
   "setCode": "LAW",
   "expectedTotals": {
     "pool": 96,
@@ -548,7 +548,7 @@
       "deckQty": 0
     },
     {
-      "name": "Benthic “Two Tubes”",
+      "name": "Benthic \u201cTwo Tubes\u201d",
       "subtitle": "The War Has Just Begun",
       "type": "Unit",
       "poolQty": 1,
