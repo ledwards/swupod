@@ -1,5 +1,10 @@
 # Release Notes
 
+## 08.18.2026 Part 2
+
+### 🃏 Pack Changes
+- **Commons no longer end a print run on a repeated aspect.** The last two cards off a common belt shared a primary aspect about 7% of the time; aspects now alternate cleanly the whole way through.
+
 ## 08.18.2026
 
 ### 🎨 UI Improvements

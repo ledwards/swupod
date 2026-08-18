@@ -382,60 +382,52 @@ async function runTests(): Promise<void> {
   // SPEC: No adjacent cards with same primary aspect
   // =========================================================
 
+  // A single belt is roughly four boots, and the failure this guards against
+  // shows up in ~7% of boots — so one belt missed it 93% of the time and made
+  // the suite flaky rather than green. Sample enough fresh belts that a
+  // regression fails every run.
+  const BELT_SAMPLES = 60
+
+  const countAdjacentAspectViolations = (pool: 'A' | 'B') => {
+    let violations = 0
+    const details: string[] = []
+
+    for (let sample = 0; sample < BELT_SAMPLES; sample++) {
+      const belt = new CommonBelt('JTL', pool)
+      const drawn: Array<{ id: string; name: string; aspects: string[] }> = []
+      for (let i = 0; i < 200; i++) drawn.push(belt.next())
+
+      for (let i = 1; i < drawn.length; i++) {
+        const prevAspect = drawn[i - 1].aspects?.[0]
+        const currAspect = drawn[i].aspects?.[0]
+        if (prevAspect && currAspect && prevAspect === currAspect) {
+          violations++
+          details.push(
+            `belt ${sample} positions ${i - 1}-${i}: "${drawn[i - 1].name}" (${prevAspect}) → "${drawn[i].name}" (${currAspect})`
+          )
+        }
+      }
+    }
+
+    return { violations, details }
+  }
+
   test('SPEC: no adjacent cards share primary aspect on Belt A', () => {
     // SPEC (sets 1-6): the primary aspect never repeats back-to-back. Set 7+
     // paired boots allow <=3% forced adjacency (real ASH box 001 line order:
     // ~1.2%) — covered by the Set 7+ suite below.
-    const belt = new CommonBelt('JTL', 'A')
-    const TOTAL_DRAWS = 200
-
-    const drawn: Array<{ id: string; name: string; aspects: string[] }> = []
-    for (let i = 0; i < TOTAL_DRAWS; i++) {
-      drawn.push(belt.next())
-    }
-
-    let violations = 0
-    const violationDetails: string[] = []
-    for (let i = 1; i < drawn.length; i++) {
-      const prevAspect = drawn[i - 1].aspects?.[0]
-      const currAspect = drawn[i].aspects?.[0]
-      if (prevAspect && currAspect && prevAspect === currAspect) {
-        violations++
-        violationDetails.push(
-          `positions ${i - 1}-${i}: "${drawn[i - 1].name}" (${prevAspect}) → "${drawn[i].name}" (${currAspect})`
-        )
-      }
-    }
+    const { violations, details } = countAdjacentAspectViolations('A')
 
     assert(violations === 0,
-      `SPEC: No adjacent same primary aspect. Found ${violations} violations:\n  ${violationDetails.slice(0, 5).join('\n  ')}`)
+      `SPEC: No adjacent same primary aspect. Found ${violations} violations:\n  ${details.slice(0, 5).join('\n  ')}`)
   })
 
   test('SPEC: no adjacent cards share primary aspect on Belt B', () => {
     // SPEC: Same rule applies to Belt B
-    const belt = new CommonBelt('JTL', 'B')
-    const TOTAL_DRAWS = 200
-
-    const drawn: Array<{ id: string; name: string; aspects: string[] }> = []
-    for (let i = 0; i < TOTAL_DRAWS; i++) {
-      drawn.push(belt.next())
-    }
-
-    let violations = 0
-    const violationDetails: string[] = []
-    for (let i = 1; i < drawn.length; i++) {
-      const prevAspect = drawn[i - 1].aspects?.[0]
-      const currAspect = drawn[i].aspects?.[0]
-      if (prevAspect && currAspect && prevAspect === currAspect) {
-        violations++
-        violationDetails.push(
-          `positions ${i - 1}-${i}: "${drawn[i - 1].name}" (${prevAspect}) → "${drawn[i].name}" (${currAspect})`
-        )
-      }
-    }
+    const { violations, details } = countAdjacentAspectViolations('B')
 
     assert(violations === 0,
-      `SPEC: No adjacent same primary aspect on Belt B. Found ${violations} violations:\n  ${violationDetails.slice(0, 5).join('\n  ')}`)
+      `SPEC: No adjacent same primary aspect on Belt B. Found ${violations} violations:\n  ${details.slice(0, 5).join('\n  ')}`)
   })
 
   test('SPEC: no adjacent same primary aspect across seam boundary', () => {
