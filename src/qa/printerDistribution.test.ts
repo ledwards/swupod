@@ -278,7 +278,16 @@ async function run() {
       const nnZero = t.nnPerPool.filter(x => x === 0).length / t.nnPerPool.length
       const loaded = t.dupPerPool.filter(x => x >= 10).length / t.dupPerPool.length
       console.log(`\x1b[36m   ${setCode}: dup/pool ${m.toFixed(2)} (var/mean ${(variance / m).toFixed(2)}); nn P(0) ${(100 * nnZero).toFixed(1)}%; loaded ${(100 * loaded).toFixed(1)}%\x1b[0m`)
-      assert(m >= 5.5 && m <= 8.5, `${setCode} dup identities/pool ${m.toFixed(2)} outside band 5.5-8.5`)
+      // The 5.5-8.5 mean band is calibrated on 42 transcribed ASH pools. It is
+      // NOT validated for LAW: the only genuinely real LAW pools available are
+      // three (casual-lee-law, sq-lee-law, sq-tom-law) at 4, 5, 4 duplicates —
+      // below this band. Three pools is far too few to refit against (this repo
+      // already paid for fitting PAIR_PACK_GAPS to box-001 alone), so the
+      // generator is left alone and LAW simply does not assert the ASH mean.
+      // Revisit if more real LAW pools are transcribed.
+      if (setCode === 'ASH') {
+        assert(m >= 5.5 && m <= 8.5, `${setCode} dup identities/pool ${m.toFixed(2)} outside band 5.5-8.5`)
+      }
       assert(nnZero >= 0.40 && nnZero <= 0.60,
         `${setCode} P(0 nn-pairs) ${(100 * nnZero).toFixed(1)}% outside real-data band 40-60%`)
       assert(t.dupPerPool.some(x => x <= 3), `${setCode}: no clean pools (≤3 dup identities)`)

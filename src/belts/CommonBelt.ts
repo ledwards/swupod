@@ -493,8 +493,18 @@ function buildAspectTargetPositions(cards: RawCard[]): Map<string | null, number
   const total = cards.length
   for (const [aspect, count] of groups) {
     const positions: number[] = []
+    const stride = total / count
+    // Random phase. Without it these targets are a pure function of (count, total),
+    // so an aspect group of size 1 gets the SAME target index in every boot forever
+    // — and if that index lands on the hyperspace-upgrade slot, that one card eats
+    // the whole upgrade rate for the lane. JTL belt A has exactly one aspectless
+    // common (Evasive Maneuver); it was pinned to pack index 5, the block-A
+    // hyperspaceSlot, and survived at 89% where every sibling sat at 102-104%.
+    // Spacing is what matters here, not phase; the sibling smallGroupTargets code
+    // above already randomises its phase the same way.
+    const offset = Math.random() * stride
     for (let i = 0; i < count; i++) {
-      positions.push(Math.round(((i + 0.5) * total) / count - 0.5))
+      positions.push(Math.round(offset + i * stride))
     }
     targets.set(aspect, positions)
   }
