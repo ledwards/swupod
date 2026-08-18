@@ -12,7 +12,11 @@ import { generateSealedPod, clearBeltCache } from '../utils/boosterPack'
 import { initializeCardCache, getCachedCards } from '../utils/cardCache'
 import { SETS_1_3_CONSTANTS, SETS_4_6_CONSTANTS } from '../utils/packConstants'
 
-const POD_SAMPLE_SIZE = 100 // Sealed pods to generate (600 packs)
+// 200 pods = 1200 packs = ~1200 foils. Doubled from 100 deliberately: chi-squared
+// scales with N, so a larger sample lets the threshold move from p=0.01 to p=0.001
+// WITHOUT losing sensitivity. At 600 foils p=0.01 detects a 3pp shift; at 1200
+// foils p=0.001 detects the same 3pp — but false-alarms 10x less often.
+const POD_SAMPLE_SIZE = 200 // Sealed pods to generate (1200 packs)
 const PACKS_PER_POD = 6
 
 interface Card {
@@ -116,12 +120,22 @@ async function runQA(silentMode = false): Promise<TestResult[]> {
       chiSquared += Math.pow(observed - expected, 2) / expected
     })
 
-    // df = 3 (4 categories - 1), critical value at p=0.01 is 11.345
-    // Using p=0.01 because foilSlotWeights are approximate (depend on card count per rarity)
-    const pValueThreshold = 11.345
+    // df = 3 (4 categories - 1). p=0.001, NOT p=0.01.
+    //
+    // A chi-squared test rejects at its alpha rate BY CONSTRUCTION when the null is
+    // true — at p=0.01 this test fails 1 run in 100 with nothing wrong, which is
+    // measured (1 spurious failure in 71 runs) and unacceptable for a suite that
+    // gates every change. The generator itself is fine: over 60 independent
+    // samples chi-squared means 3.04 against df=3, and observed shares sit within
+    // 0.3pp of the configured weights.
+    //
+    // p=0.001 with the doubled sample keeps 3pp detection while cutting spurious
+    // failures to 1 run in 1000. Real drift is nowhere near the line: the
+    // short-print defects found in this codebase ran 6-9 sigma.
+    const pValueThreshold = 16.266
     if (chiSquared > pValueThreshold) {
       throw new Error(
-        `Chi-squared = ${chiSquared.toFixed(2)} > ${pValueThreshold} (p < 0.05). ` +
+        `Chi-squared = ${chiSquared.toFixed(2)} > ${pValueThreshold} (p < 0.001). ` +
         `Distribution: C=${foilByRarity.Common} U=${foilByRarity.Uncommon} R=${foilByRarity.Rare} L=${foilByRarity.Legendary} ` +
         `Expected weights: C=${weights.Common} U=${weights.Uncommon} R=${weights.Rare} L=${weights.Legendary}`
       )
@@ -175,11 +189,11 @@ async function runQA(silentMode = false): Promise<TestResult[]> {
       }
     })
 
-    // df = 4 (5 categories - 1), critical value at p=0.01 is 13.277
-    const pValueThreshold = 13.277
+    // df = 4 (5 categories - 1). p=0.001, not p=0.01 — same reasoning as above.
+    const pValueThreshold = 18.467
     if (chiSquared > pValueThreshold) {
       throw new Error(
-        `Chi-squared = ${chiSquared.toFixed(2)} > ${pValueThreshold} (p < 0.01). ` +
+        `Chi-squared = ${chiSquared.toFixed(2)} > ${pValueThreshold} (p < 0.001). ` +
         `Distribution: C=${foilByRarity46.Common} U=${foilByRarity46.Uncommon} R=${foilByRarity46.Rare} S=${foilByRarity46.Special} L=${foilByRarity46.Legendary} ` +
         `Expected weights: C=${weights.Common} U=${weights.Uncommon} R=${weights.Rare} S=${weights.Special} L=${weights.Legendary}`
       )
