@@ -1,10 +1,15 @@
 # Release Notes
 
+## 08.18.2026 Part 2
+
+### 🎨 UI Improvements
+- **Sets are listed newest first on a phone.** The two newest sets sat above the rest in their own row, so the column read 7, 8, 6, 5 — it now runs straight from the most recent set to the oldest.
+
 ## 08.18.2026
 
 ### 🎨 UI Improvements
 - **Set picking stacks properly on a phone.** The two newest sets shared a line above the rest of the grid; every set now sits in one clean vertical column.
-- **The deck builder's top bar reads straight.** The base name lined up with neither the leader's name nor its subtitle, and the build label ("Original") disappeared behind your avatar. The names now share a line and the build label has its own.
+- **The deck builder's top bar reads straight.** The base name lined up with neither the leader's name nor its subtitle, and the build label ("Original") disappeared behind your avatar. The names now share a line, and the build label stays clear of the avatar.
 
 ### 🐞 Bug Fixes
 - **Tapping a card no longer leaves it stuck enlarged.** A tapped card stayed blown up until you tapped a different one.

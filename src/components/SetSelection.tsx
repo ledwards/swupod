@@ -11,6 +11,7 @@ import {
   getTeaserUserState,
   shouldPeekUnreleased,
 } from './setSelectionTeaser'
+import { splitSetsForDisplay } from './setSelectionOrder'
 import { trackEvent, AnalyticsEvents } from '../hooks/useAnalytics'
 
 interface SetData {
@@ -31,8 +32,7 @@ export interface SetSelectionProps {
 
 function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelectionProps) {
   const { user, isPatron } = useAuth()
-  const [sets, setSets] = useState<SetData[]>([])
-  const [latestSets, setLatestSets] = useState<SetData[]>([])
+  const [rawSets, setRawSets] = useState<SetData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [imageFallbacks, setImageFallbacks] = useState<Record<string, number>>({})
@@ -51,50 +51,6 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
   const [teaserModalOpen, setTeaserModalOpen] = useState(false)
   const [teaserModalSet, setTeaserModalSet] = useState<SetData | null>(null)
 
-  // Map set codes to their set numbers for sorting
-  const getSetNumber = (setCode: string): number => {
-    const setCodeMap: Record<string, number> = {
-      'SOR': 1, // Spark of Rebellion
-      'SHD': 2, // Shadows of the Galaxy
-      'TWI': 3, // Twilight of the Republic
-      'JTL': 4, // Jump to Lightspeed
-      'LOF': 5, // Legends of the Force
-      'SEC': 6, // Secrets of Power
-      'LAW': 7, // A Lawless Time
-      'ASH': 8, // Ashes of the Empire
-      // Future sets will be 9, 10, etc.
-    }
-    return setCodeMap[setCode] || 999 // Unknown sets go to end
-  }
-
-  // Sort sets in display order: [7, 8, 9, 4, 5, 6, 1, 2, 3]
-  // This creates the layout: Row 1: [7, 8, 9] or [4, 5, 6], Row 2: [1, 2, 3]
-  // When vertical (single column), sort in reverse set number order (6, 5, 4, 3, 2, 1)
-  const sortSetsForDisplay = (sets: SetData[], vertical = false): SetData[] => {
-    return [...sets].sort((a, b) => {
-      const numA = getSetNumber(a.code)
-      const numB = getSetNumber(b.code)
-
-      // When vertical, reverse order by set number
-      if (vertical) {
-        return numB - numA // Reverse: highest number first
-      }
-
-      // Define display order: [7, 8, 9, 4, 5, 6, 1, 2, 3]
-      // Future-proof: when 7, 8, 9 come out, they'll be at the top
-      const displayOrder = [7, 8, 9, 4, 5, 6, 1, 2, 3]
-      const indexA = displayOrder.indexOf(numA)
-      const indexB = displayOrder.indexOf(numB)
-
-      // If not in display order, put at end
-      if (indexA === -1 && indexB === -1) return numA - numB
-      if (indexA === -1) return 1
-      if (indexB === -1) return -1
-
-      return indexA - indexB
-    })
-  }
-
   // Check if we're in vertical (single column) mode
   useEffect(() => {
     const checkVertical = () => {
@@ -106,8 +62,6 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
     return () => window.removeEventListener('resize', checkVertical)
   }, [])
 
-  const [rawSets, setRawSets] = useState<SetData[]>([])
-
   useEffect(() => {
     // Wait for patron status to resolve before fetching. Without this guard
     // we'd briefly fetch without peekUnreleased and then re-fetch with it,
@@ -118,10 +72,7 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
       try {
         setLoading(true)
         const setsData = await fetchSets({ includeBeta: hasBetaAccess, peekUnreleased })
-        const regular = setsData.filter((set: SetData) => getSetNumber(set.code) < 7)
-        const latest = setsData.filter((set: SetData) => getSetNumber(set.code) >= 7)
-        setRawSets(regular)
-        setLatestSets(latest)
+        setRawSets(setsData)
       } catch (err) {
         setError((err as Error).message)
       } finally {
@@ -131,13 +82,10 @@ function SetSelection({ onSetSelect, onBack, title, headerAction }: SetSelection
     loadSets()
   }, [hasBetaAccess, peekUnreleased, teaserState])
 
-  // Sort sets whenever rawSets or isVertical changes
-  useEffect(() => {
-    if (rawSets.length > 0) {
-      const sortedSets = sortSetsForDisplay(rawSets, isVertical)
-      setSets(sortedSets)
-    }
-  }, [rawSets, isVertical])
+  // Both containers come from one split so they stay in one order. On mobile
+  // they stack into a single column, so that column runs newest-first end to
+  // end; on desktop they are two separate blocks in the fixed grid order.
+  const { latest: latestSets, regular: sets } = splitSetsForDisplay(rawSets, isVertical)
 
   // U7 — track teaser exposure once per render cycle when a Coming Soon
   // teaser is visible to the current user. Captures "non-sub saw the
