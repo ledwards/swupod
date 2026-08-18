@@ -40,7 +40,18 @@ async function run() {
   console.log('\x1b[1m\x1b[35m📦 Line + Stacking Collation QA (Set 7+)\x1b[0m')
   console.log('\x1b[35m' + '='.repeat(50) + '\x1b[0m')
 
-  const BOXES = 40
+  // 250 boxes, not 40. At 40 the two rate assertions below sat under 2 standard
+  // deviations from their band edges — nn P(0) 0.466 +/-0.037 against a 0.40 floor,
+  // loaded 0.063 +/-0.020 against a 0.10 ceiling — so each false-alarmed on roughly
+  // 6-7% of runs with nothing wrong, and this suite failed ~12% of the time.
+  //
+  // nn P(0) is the binding one: the model sits near 0.45 against a 0.40 floor, so
+  // there is only ~0.05 of headroom and the only lever is sample size (rate
+  // estimates tighten as 1/sqrt(N)). 500 boxes puts it beyond 4 sd and loaded
+  // beyond 6. Costs ~4s instead of ~1.5s. Do not narrow this back down without
+  // re-measuring the margins — the bands themselves are real-data-derived and
+  // should not be widened to compensate.
+  const BOXES = 500
   clearBeltCache()
 
   const nnPairs = []
