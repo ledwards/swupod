@@ -30,6 +30,7 @@ const SETS = [
   { code: 'SEC', name: 'Secrets of Power' },
   { code: 'LAW', name: 'A Lawless Time' },
   { code: 'ASH', name: 'Ashes of the Empire' },
+  { code: 'HMW', name: 'Homeworlds' },
 ]
 
 // Set codes we want to include

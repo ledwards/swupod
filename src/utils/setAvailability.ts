@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { getCardMetadata } from './cardData'
-import { getSetConfig, isBeta } from './setConfigs/index'
+import { getSetConfig, isBeta, isReleased } from './setConfigs/index'
 
 interface SessionLike {
   is_beta_tester?: boolean
@@ -38,11 +38,18 @@ export function getUnavailableSetReason(setCode: string, session?: SessionLike |
     .filter(Boolean)
 
   for (const code of codes) {
-    if (code === 'ASH' && !hasSpoiledCardsForSet(code)) {
-      return 'ASH is not available until the first spoiler sync completes.'
+    const config = getSetConfig(code)
+
+    // An unreleased set is scaffolded (config, belts, art) long before swuapi
+    // has a single card for it, so it can be selectable-in-principle while
+    // being unopenable in practice. Gate on real spoiled cards, not on a
+    // hardcoded set code — this used to name ASH literally, which meant every
+    // new set silently shipped a pack-generation crash until someone
+    // remembered to add its branch.
+    if (config && !isReleased(config) && !hasSpoiledCardsForSet(code)) {
+      return `${code} is not available until the first spoiler sync completes.`
     }
 
-    const config = getSetConfig(code)
     if (config && isBeta(config) && !hasBetaSetAccess(session)) {
       return `${code} requires beta access before prerelease.`
     }

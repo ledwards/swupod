@@ -15,7 +15,8 @@ This directory contains detailed documentation for each Star Wars: Unlimited set
 | [Legends of the Force](LOF.md) | LOF | A | 2025-07-11 | Released |
 | [Secrets of Power](SEC.md) | SEC | A | 2025-11-07 | Released |
 | [A Lawless Time](LAW.md) | LAW | B | 2026-03-13 | Released |
-| [Ashes of the Empire](ASH.md) | ASH | B | 2026-07-17 | Spoiler Beta |
+| [Ashes of the Empire](ASH.md) | ASH | B | 2026-07-17 | Released |
+| Homeworlds | HMW | B | 2026-10-09 | Scaffolded |
 
 ## Block Definitions
 
@@ -34,7 +35,7 @@ This directory contains detailed documentation for each Star Wars: Unlimited set
 - 5:1 rare-to-legendary ratio
 - Special rarity cards appear in packs
 
-### Block B (Sets 7+: LAW, ASH)
+### Block B (Sets 7+: LAW, ASH, HMW)
 - LAW-style two common belts with a roughly 50/50 split: Belt A fills slots 1-4, Belt B fills slots 6-9
 - Slot 5 is GUARANTEED Hyperspace common
 - Foil slot is ALWAYS Hyperspace Foil (no regular foils)

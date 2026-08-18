@@ -35,6 +35,8 @@ const EXPANSION_ART_URLS: Record<string, string> = {
   LAW: '/expansion-art/law.png',
   // Ashes of the Empire - Set 8
   ASH: '/expansion-art/ash.png',
+  // Homeworlds - Set 9
+  HMW: '/expansion-art/hmw.png',
 }
 
 /**

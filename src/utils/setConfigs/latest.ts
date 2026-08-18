@@ -34,6 +34,16 @@ export function getLatestReleasedSetCode(now: Date = new Date()): string {
  * So: legal = every released set in the newest released batch, or the one
  * before it. Sets 1-3 are batch 0, 4-6 batch 1, 7-9 batch 2, and so on.
  *
+ * ONLY CORE SETS COUNT. A numbered core set is the only thing that rotates
+ * anything — non-core products (Icons, Weekly Play, Twin Suns, Intro Battle,
+ * promo/convention/judge sets) have no set number, never enter a rotation
+ * batch, and never push an older batch out. Icons in particular is NOT set 10:
+ * it does not rotate sets 4-6 (JTL/LOF/SEC) out, and it is not draftable or
+ * sealed-legal — it only shows up in Chaos. Set 10, whenever it ships, is what
+ * rotates that batch. If a non-core product ever needs a SetConfig, it must be
+ * given no setNumber (or be excluded here) or this function will silently
+ * rotate the format wrong.
+ *
  * This tracks the published schedule. An unscheduled, individually-announced
  * rotation (a ban, an errata'd set pulled early) is not modelled — that would
  * need an explicit override list, and it has never happened.

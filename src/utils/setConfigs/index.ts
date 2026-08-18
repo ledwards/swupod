@@ -13,6 +13,7 @@ import { LOF_CONFIG } from './LOF'
 import { SEC_CONFIG } from './SEC'
 import { LAW_CONFIG } from './LAW'
 import { ASH_CONFIG } from './ASH'
+import { HMW_CONFIG } from './HMW'
 import type { SetCode } from '../../types'
 
 export interface LeaderBaseCounts {
@@ -120,6 +121,7 @@ export const SET_CONFIGS: Record<string, SetConfig> = {
   'SEC': SEC_CONFIG,
   'LAW': LAW_CONFIG,
   'ASH': ASH_CONFIG,
+  'HMW': HMW_CONFIG,
 }
 
 /**
@@ -141,20 +143,24 @@ export function getAllSetCodes(): string[] {
 
 /**
  * Check if a set is in beta state (before prereleaseDate)
+ *
+ * `now` is injectable purely so the date crossovers can be tested — these
+ * three predicates decide who can open a set at all, and an untestable
+ * `new Date()` meant the gate was only ever verified by waiting for the day.
  */
-export function isBeta(config: SetConfig): boolean {
+export function isBeta(config: SetConfig, now: Date = new Date()): boolean {
   if (!config.prereleaseDate) return false
-  return new Date().toISOString() < new Date(config.prereleaseDate + 'T00:00:00Z').toISOString()
+  return now.toISOString() < new Date(config.prereleaseDate + 'T00:00:00Z').toISOString()
 }
 
 /**
  * Check if a set is in pre-release state (between prereleaseDate and releaseDate)
  */
-export function isPrerelease(config: SetConfig): boolean {
+export function isPrerelease(config: SetConfig, now: Date = new Date()): boolean {
   if (!config.prereleaseDate || !config.releaseDate) return false
-  const now = new Date().toISOString()
-  return now >= new Date(config.prereleaseDate + 'T00:00:00Z').toISOString() &&
-         now < new Date(config.releaseDate + 'T00:00:00Z').toISOString()
+  const nowIso = now.toISOString()
+  return nowIso >= new Date(config.prereleaseDate + 'T00:00:00Z').toISOString() &&
+         nowIso < new Date(config.releaseDate + 'T00:00:00Z').toISOString()
 }
 
 /**
