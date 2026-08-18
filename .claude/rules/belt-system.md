@@ -189,7 +189,7 @@ against a Poisson floor of 16.2 is what a sheet should look like; the pre-fix sd
 23.0 was 1.4x Poisson, which is the tell that something structural, not sampling, was
 wrong.
 
-**Why it was a 2x hit and not a 5% one — the numbers collided.** The pinned index was
+**Why it was a 2x hit and not a 5% one — the numbers collided.** Its fixed index was
 **62.8**; the horizon is **63.36**. The card sat exactly on the cliff edge, so it was
 reached in only **59.5%** of boxes: 0.537 net appearances/box against a pool mean of
 1.056, i.e. ~51%. Had the pin been at index 55, or the UC3 upgrade rate a little

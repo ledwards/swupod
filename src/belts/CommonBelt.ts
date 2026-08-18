@@ -498,7 +498,7 @@ function buildAspectTargetPositions(cards: RawCard[]): Map<string | null, number
     // so an aspect group of size 1 gets the SAME target index in every boot forever
     // — and if that index lands on the hyperspace-upgrade slot, that one card eats
     // the whole upgrade rate for the lane. JTL belt A has exactly one aspectless
-    // common (Evasive Maneuver); it was pinned to pack index 5, the block-A
+    // common (Evasive Maneuver); it landed at pack index 5 in EVERY pack — the block-A
     // hyperspaceSlot, and survived at 89% where every sibling sat at 102-104%.
     // Spacing is what matters here, not phase; the sibling smallGroupTargets code
     // above already randomises its phase the same way.
@@ -942,9 +942,19 @@ function buildConstrainedBoot(
         const bOverdue = (pos - (bTargetList[bTargetIndex] ?? pos)) * ((bTargetList.length + 1) / cards.length)
         if (aOverdue !== bOverdue) return bOverdue - aOverdue
 
-        const aRequiredCount = requiredAspects.filter(aspect => cardHasAspect(a, aspect)).length
-        const bRequiredCount = requiredAspects.filter(aspect => cardHasAspect(b, aspect)).length
-        if (aRequiredCount !== bRequiredCount) return bRequiredCount - aRequiredCount
+        // Whether a card HELPS cover the required aspects, not how many it
+        // carries. Counting them hands a permanent advantage to whichever card
+        // carries the most, and if exactly one card in a lane carries two, it
+        // wins this tiebreak at every position until it is placed — so it lands
+        // at the front of every boot. LAW belt B's Devaronian Doorbuster (the
+        // only Command+Cunning card) sat at index 0-2 in 100% of boots and
+        // survived at 90.5% against a 99.4% lane median; belt A's Bith Brute
+        // (only Vigilance+Aggression) the same at 93.0%. Feasibility is still
+        // guaranteed by urgentAspects above and windowsRemainFeasible below —
+        // this tiebreak only needs to prefer a card that helps at all.
+        const aHelpsRequired = requiredAspects.some(aspect => cardHasAspect(a, aspect)) ? 1 : 0
+        const bHelpsRequired = requiredAspects.some(aspect => cardHasAspect(b, aspect)) ? 1 : 0
+        if (aHelpsRequired !== bHelpsRequired) return bHelpsRequired - aHelpsRequired
 
         return Math.random() - 0.5
       })

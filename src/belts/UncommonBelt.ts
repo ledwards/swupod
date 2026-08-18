@@ -96,13 +96,14 @@ function buildInterleavedSequence(cards: RawCard[], lastAspect: string | null): 
       // the fixed sheet POSITION that strict largest-first handed to small aspect
       // groups.
       //
-      // Measured: strict largest-first pinned a singleton-primary-aspect card
-      // to boot index ~62.8 of a ~66.5-card boot, every time. That collides
-      // with the belt's real per-box HORIZON, which is not the draw count:
+      // Measured: strict largest-first put a singleton-primary-aspect card at
+      // boot index ~62.8 of a ~66.5-card boot every time — the same slot, never
+      // varying. That collides with the belt's real per-box HORIZON, which is
+      // not the draw count:
       // a box calls next() 72 times, but ~8.64 of those are handed back by
       // putBack() when the UC3 slot is upgraded, so the belt only ADVANCES
       // 72 - 8.64 = 63.36 positions before it is thrown away (fresh belt per
-      // box — generateSealedBox clears the cache). Pinned index 62.8 vs
+      // box — generateSealedBox clears the cache). That fixed index 62.8 vs
       // horizon 63.36 put the card exactly on the cliff: reached in only 59.5%
       // of boxes, 0.537 net appearances/box against a pool mean of 1.056.
       //
