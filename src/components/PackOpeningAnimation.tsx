@@ -244,12 +244,21 @@ export default function PackOpeningAnimation({
 
     const { screenWidth, screenHeight, cardHeight, cardWidth, leaderWidth, leaderHeight, cardGap, mobile } = getLayoutValues()
 
+    // Where the carousel actually sits. Measuring beats recomputing it here:
+    // its offset is a safe-area-aware calc() in the CSS, so any constant
+    // mirrored into JS drifts on devices with a home-indicator inset.
+    const carouselRect = useCarousel
+      ? containerRef.current?.querySelector('.packs-carousel')?.getBoundingClientRect() ?? null
+      : null
+
     // Calculate the position of the pack being opened
     let packX: number, packY: number
     if (useCarousel) {
       // Carousel mode (mobile or overflow): pack is centered
       packX = screenWidth / 2
-      packY = mobile ? screenHeight * 0.82 : screenHeight - 160 - packHeight / 2
+      packY = carouselRect
+        ? carouselRect.top + carouselRect.height / 2
+        : mobile ? screenHeight * 0.82 : screenHeight - 160 - packHeight / 2
     } else {
       // Desktop row: packs in a single row
       const totalPacksWidth = packCount * packWidth + (packCount - 1) * packGap
@@ -267,19 +276,31 @@ export default function PackOpeningAnimation({
     const newCards: FlyingCard[] = []
 
     if (mobile) {
-      // MOBILE LAYOUT: 4 rows, all positions as % of screenHeight
+      // MOBILE LAYOUT: 4 rows, fitted between the top controls and the packs
       // Row 1: 2 leaders/bases (landscape)
       // Row 2: 5 cards
       // Row 3: 5 cards
       // Row 4: 4 cards
       const rowGap = screenHeight * 0.01
-      const cardsStartY = screenHeight * 0.04
 
-      // Scale cards down if they don't fit in the cards zone (~55% of screen)
-      const cardsZoneHeight = screenHeight * 0.55
+      // Skip (top right) and Open All (top left) are pinned at top: 40px, stand
+      // ~40px tall, and both paint above the cards. Start the rows below that
+      // band, or the leaders land underneath the buttons.
+      const cardsStartY = 96
+
+      // The rows run from there down to the top of the pack carousel, which is
+      // anchored above the pack counter. The fallback mirrors .packs-carousel
+      // in the CSS for the case where the element isn't measurable yet.
+      const packsTop = carouselRect ? carouselRect.top : screenHeight - 70 - 154
+      const cardsZoneHeight = packsTop - cardsStartY - rowGap
       // 4 rows: 1 leader row + 3 card rows, with 3 gaps between them
       const availableForCards = cardsZoneHeight - leaderHeight - 3 * rowGap
-      const maxCardHeight = availableForCards / 3
+      // Cards only ever scale down, so a roomy screen leaves them at their
+      // natural size and a short one shrinks them to fit instead of running
+      // into the packs. The floor keeps a small phone in landscape — almost no
+      // room between the controls and the packs — legible rather than letting
+      // the scale collapse to zero or go negative.
+      const maxCardHeight = Math.max(availableForCards / 3, cardHeight * 0.5)
       let mobileCardWidth = cardWidth
       let mobileCardHeight = cardHeight
       let mobileLeaderWidth = leaderWidth

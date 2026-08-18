@@ -632,6 +632,20 @@
     font-size: 1.5rem;
   }
 
+  /* Sit the packs above the counter instead of on top of it. The height is
+     what makes that possible: with no height the flex box collapses (every
+     pack inside is absolutely positioned), so the packs centred on a
+     zero-height line and `bottom` was really their midpoint — they hung ~77px
+     below the value it named, right across the counter, which paints above
+     them at z-index 300. 154px is the 140px pack at its 1.1 active scale.
+     Anchoring to the same safe-area baseline as the counter keeps the two
+     together across devices; the old 15% drifted into the counter on short
+     viewports and under Safari's bottom toolbar. */
+  .packs-carousel:not(.desktop) {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 32px + 2.4rem);
+    height: 154px;
+  }
+
   /* Flying cards - smaller on mobile */
   .flying-card {
     /* Card sizes are set via CSS variables from JS */
