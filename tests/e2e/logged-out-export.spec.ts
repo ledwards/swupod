@@ -2,6 +2,7 @@
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
 import pg from 'pg'
+import { launchOptions } from './browser-launch'
 
 /**
  * Logged-out user export E2E test
@@ -38,8 +39,7 @@ test.describe('Logged-out user export flow', () => {
     console.log(`${'='.repeat(50)}\n`)
 
     browser = await chromium.launch({
-      headless: false,
-      slowMo: 50,
+      ...launchOptions,
     })
 
     // NO AUTH - create context without any cookies

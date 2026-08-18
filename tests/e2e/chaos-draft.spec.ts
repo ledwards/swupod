@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
+import { launchOptions } from './browser-launch'
 
 /**
  * Chaos Draft E2E test
@@ -28,7 +29,7 @@ test.describe('Chaos Draft', () => {
   let user: any
 
   test.beforeAll(async () => {
-    browser = await chromium.launch({ headless: false, slowMo: 50 })
+    browser = await chromium.launch(launchOptions)
 
     user = await createTestUser('ChaosDraftPlayer', TEST_ID, { isBetaTester: true })
 
@@ -172,7 +173,7 @@ test.describe('Chaos Formats Open Access', () => {
   let page: Page
 
   test.beforeAll(async () => {
-    browser = await chromium.launch({ headless: false, slowMo: 50 })
+    browser = await chromium.launch(launchOptions)
 
     // Anonymous user - no auth cookie
     context = await browser.newContext({

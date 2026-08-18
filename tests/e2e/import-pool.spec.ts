@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
+import { launchOptions } from './browser-launch'
 
 /**
  * Import Pool E2E (U11) — smoke test.
@@ -34,7 +35,7 @@ test.describe('Import Pool', () => {
   let browser: Browser
 
   test.beforeAll(async () => {
-    browser = await chromium.launch({ headless: false, slowMo: 50 })
+    browser = await chromium.launch(launchOptions)
   })
 
   test.afterAll(async () => {

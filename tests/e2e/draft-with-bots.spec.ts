@@ -2,6 +2,7 @@
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { debugLog, debugError, testLog } from './debug-utils.ts'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
+import { launchOptions } from './browser-launch'
 
 /**
  * 1 human + 7 bots draft E2E test
@@ -35,8 +36,7 @@ test.describe('Draft with bots', () => {
     debugLog(`${'='.repeat(50)}\n`)
 
     browser = await chromium.launch({
-      headless: false,
-      slowMo: 50,
+      ...launchOptions,
     })
 
     // Create test user

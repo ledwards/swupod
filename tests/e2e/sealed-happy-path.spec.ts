@@ -2,6 +2,7 @@
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
 import { waitForCardsToLoad } from './helpers.ts'
+import { launchOptions } from './browser-launch'
 
 /**
  * Full Sealed Happy Path E2E test
@@ -32,8 +33,7 @@ test.describe('Sealed happy path', () => {
     console.log(`${'='.repeat(50)}\n`)
 
     browser = await chromium.launch({
-      headless: false,
-      slowMo: 50,
+      ...launchOptions,
     })
 
     // Create test user
