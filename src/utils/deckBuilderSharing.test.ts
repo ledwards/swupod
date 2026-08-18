@@ -4,6 +4,7 @@ import assert from 'node:assert'
 import {
   getBuildName,
   getBuildDeckBuilderState,
+  getNewBuildDeckBuilderState,
   shouldBuildFromSharedPool,
   resolvePlayDestination,
   formatPoolDate,
@@ -179,6 +180,69 @@ describe('deckBuilderSharing', () => {
       const fallbackState = { activeLeader: 'leader-1' }
       assert.deepStrictEqual(getBuildDeckBuilderState(null, fallbackState), fallbackState)
       assert.deepStrictEqual(getBuildDeckBuilderState({}, fallbackState), fallbackState)
+    })
+  })
+
+  describe('getNewBuildDeckBuilderState', () => {
+    const state = {
+      cardPositions: {
+        'pool-1': { section: 'deck' },
+        'pool-2': { section: 'sideboard' },
+        'leader-0': { section: 'leaders-bases' },
+      },
+      deckCardIds: ['pool-1'],
+      sideboardCardIds: ['pool-2'],
+      activeLeader: 'leader-0',
+      activeBase: 'base-0',
+      sectionLabels: [{ text: 'Deck' }],
+      sectionBounds: { deck: { minY: 90 } },
+      canvasHeight: 1200,
+      poolName: 'SEC Sealed',
+      isDefaultName: true,
+      sessionId: 'abc',
+    }
+
+    it('empties the deck and clears the leader/base selection', () => {
+      const fresh = getNewBuildDeckBuilderState(state)
+
+      assert.deepStrictEqual(fresh.cardPositions, {})
+      assert.deepStrictEqual(fresh.deckCardIds, [])
+      assert.deepStrictEqual(fresh.sideboardCardIds, [])
+      assert.strictEqual(fresh.activeLeader, null)
+      assert.strictEqual(fresh.activeBase, null)
+    })
+
+    it('keeps everything that is not deck contents', () => {
+      const fresh = getNewBuildDeckBuilderState(state)
+
+      assert.deepStrictEqual(fresh.sectionLabels, state.sectionLabels)
+      assert.deepStrictEqual(fresh.sectionBounds, state.sectionBounds)
+      assert.strictEqual(fresh.canvasHeight, 1200)
+      assert.strictEqual(fresh.poolName, 'SEC Sealed')
+      assert.strictEqual(fresh.isDefaultName, true)
+      assert.strictEqual(fresh.sessionId, 'abc')
+    })
+
+    it('does not mutate the source state', () => {
+      getNewBuildDeckBuilderState(state)
+
+      assert.strictEqual(Object.keys(state.cardPositions).length, 3)
+      assert.strictEqual(state.activeLeader, 'leader-0')
+    })
+
+    it('resets state that arrives as a raw JSON string', () => {
+      const fresh = getNewBuildDeckBuilderState(JSON.stringify(state))
+
+      assert.deepStrictEqual(fresh.cardPositions, {})
+      assert.strictEqual(fresh.activeLeader, null)
+      assert.strictEqual(fresh.activeBase, null)
+      assert.strictEqual(fresh.poolName, 'SEC Sealed')
+    })
+
+    it('passes through non-object state untouched', () => {
+      assert.strictEqual(getNewBuildDeckBuilderState(null), null)
+      assert.strictEqual(getNewBuildDeckBuilderState(undefined), undefined)
+      assert.strictEqual(getNewBuildDeckBuilderState('not json'), 'not json')
     })
   })
 

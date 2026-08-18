@@ -217,14 +217,14 @@ export default function DraftPoolPage({ params }: PageProps) {
 
   return (
     <div className="app">
-      {!loading && rootShareId && (
-        <PoolBuilds
-          shareId={rootShareId}
-          currentUserId={user?.id || null}
-          isOwner={isOwner && !isChildBuild}
-        />
-      )}
       <SealedPod
+        buildsSlot={!loading && rootShareId ? (
+          <PoolBuilds
+            shareId={rootShareId}
+            currentUserId={user?.id || null}
+            isOwner={isOwner && !isChildBuild}
+          />
+        ) : null}
         setCode={pool?.setCode}
         setName={pool?.setName}
         poolType="draft"

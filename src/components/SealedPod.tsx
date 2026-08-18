@@ -63,6 +63,8 @@ export interface SealedPodProps {
   poolOwnerUsername?: string | null
   draftShareId?: string | null
   isDefaultName?: boolean
+  /** Rendered directly under the Build Deck / Copy Link row (the pool's builds strip). */
+  buildsSlot?: React.ReactNode
 }
 
 // Helper function to get set name from set code
@@ -77,7 +79,7 @@ function getSetColor(setCode: string) {
   return config?.color || '#ffffff'
 }
 
-function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPacks = null, shareId = null, poolType = 'sealed', setName = null, poolName: initialPoolName = null, createdAt = null, isLoading = false, poolOwnerId = null, poolOwnerUsername = null, draftShareId = null, isDefaultName = false }: SealedPodProps) {
+function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPacks = null, shareId = null, poolType = 'sealed', setName = null, poolName: initialPoolName = null, createdAt = null, isLoading = false, poolOwnerId = null, poolOwnerUsername = null, draftShareId = null, isDefaultName = false, buildsSlot = null }: SealedPodProps) {
   const { user, isPatron } = useAuth()
   const [cards, setCards] = useState<Card[]>([])
   const [packs, setPacks] = useState<Pack[]>([])
@@ -441,6 +443,7 @@ function SealedPod({ setCode, onBack, onBuildDeck, onPacksGenerated, initialPack
           <DraftReportButton draftShareId={draftShareId} variant="pool" />
         )}
         </div>
+        {buildsSlot}
       </div>
 
       <div className="packs-container">

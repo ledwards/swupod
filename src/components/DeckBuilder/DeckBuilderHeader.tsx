@@ -15,6 +15,7 @@ import Button from '../Button'
 import DraftReportButton from '../DraftReportButton'
 import PoolBuilds from '../PoolBuilds'
 import { savePool } from '../../utils/poolApi'
+import { getNewBuildDeckBuilderState } from '../../utils/deckBuilderSharing'
 import DeckBuildTimer from './DeckBuildTimer'
 import type { CardPosition } from './AspectPenaltyToggle'
 import type { MessageType } from './DeleteDeckSection'
@@ -110,6 +111,8 @@ export function DeckBuilderHeader({
   const [buildMessage, setBuildMessage] = useState<string | null>(null)
 
   // Handle build from pool action — always creates a new build (no dedup).
+  // The new build starts from the pool, not from the deck currently on screen:
+  // every card is back in the pool and no leader/base is picked.
   const handleBuildFromPool = async () => {
     if (!isAuthenticated) {
       signIn()
@@ -124,7 +127,7 @@ export function DeckBuilderHeader({
         setCode: setCode,
         cards: cards,
         packs: null,
-        deckBuilderState: savedState,
+        deckBuilderState: getNewBuildDeckBuilderState(savedState),
         poolType: poolType,
         name: null,
         isPublic: false,

@@ -5,7 +5,11 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* Must match `body` below. The canvas is painted from <html> when it has a
+     background, so a lighter value here shows as a grey bar across the top of
+     the page whenever the first in-flow element's top margin collapses out of
+     <body> (e.g. the "Decks from this Pool" strip's 1.5rem margin). */
+  background-color: hsl(0 0% 4%);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

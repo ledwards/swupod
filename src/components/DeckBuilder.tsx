@@ -23,6 +23,7 @@ import { deletePool, savePool, updatePool } from '../utils/poolApi'
 import { getPackArtUrl } from '../utils/packArt'
 import {
   getBuildDeckBuilderState,
+  getNewBuildDeckBuilderState,
   getBuildName,
   shouldBuildFromSharedPool,
   resolvePlayDestination,
@@ -2392,7 +2393,9 @@ function DeckBuilder({
   ])
 
   // Fork the current pool into a new child build owned by the current user.
-  // Triggered from the lock modal when a non-owner attempts to edit.
+  // Triggered from the lock modal when a non-owner attempts to edit. It's a
+  // "Start New Deck", so the fork keeps the pool but not the locked deck: no
+  // cards in the deck, no leader/base selected.
   const handleStartNewBuildFromLock = useCallback(async () => {
     if (forkInProgress) return
     if (!isAuthenticated) {
@@ -2407,7 +2410,7 @@ function DeckBuilder({
         setCode,
         cards,
         packs: null,
-        deckBuilderState: buildDeckBuilderState,
+        deckBuilderState: getNewBuildDeckBuilderState(buildDeckBuilderState),
         poolType,
         name: null,
         isPublic: false,

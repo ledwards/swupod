@@ -79,6 +79,42 @@ export function getBuildDeckBuilderState(currentState: unknown, fallbackState: u
   return hasDeckState ? currentState : fallbackState
 }
 
+/**
+ * Deck builder state for a brand-new build off a pool.
+ *
+ * A new build starts from the POOL, not from whatever deck happened to be on
+ * screen when it was created: every card goes back to the pool (nothing in the
+ * deck or sideboard) and no leader/base is selected. Everything that isn't deck
+ * contents — canvas layout, pool name, session — carries over untouched.
+ *
+ * DeckBuilder treats an empty `cardPositions` as "lay this pool out fresh"
+ * (see the restore effect in DeckBuilder.tsx), so clearing it is what actually
+ * resets the build rather than merely hiding the inherited cards.
+ */
+export function getNewBuildDeckBuilderState(state: unknown): unknown {
+  // The state can still arrive as the raw JSON string straight off the pool row
+  // (getBuildDeckBuilderState's fallback branch), so normalize before resetting
+  // — otherwise the reset would silently no-op on that path.
+  let parsed: unknown = state
+  if (typeof parsed === 'string') {
+    try {
+      parsed = JSON.parse(parsed)
+    } catch {
+      return state
+    }
+  }
+  if (!parsed || typeof parsed !== 'object') return state
+
+  return {
+    ...(parsed as Record<string, unknown>),
+    cardPositions: {},
+    deckCardIds: [],
+    sideboardCardIds: [],
+    activeLeader: null,
+    activeBase: null,
+  }
+}
+
 // === Find existing build (replaces server-side dedup) ==================
 //
 // We don't dedup on the server — multiple builds per (user, parent) are by design.
