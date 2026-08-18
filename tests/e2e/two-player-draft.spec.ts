@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
+import { launchOptions } from './browser-launch'
 
 /**
  * 2-player draft E2E test - quick version that validates core draft mechanics
@@ -33,8 +34,7 @@ test.describe('2-player draft', () => {
     console.log(`${'='.repeat(50)}\n`)
 
     browser = await chromium.launch({
-      headless: false,
-      slowMo: 50,
+      ...launchOptions,
     })
 
     // Create 2 test users

@@ -2,6 +2,7 @@
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
 import { waitForCardsToLoad } from './helpers.ts'
+import { launchOptions } from './browser-launch'
 
 /**
  * Chaos Sealed E2E test
@@ -29,7 +30,7 @@ test.describe('Chaos Sealed', () => {
   let user: any
 
   test.beforeAll(async () => {
-    browser = await chromium.launch({ headless: false, slowMo: 50 })
+    browser = await chromium.launch(launchOptions)
 
     user = await createTestUser('ChaosSealedPlayer', TEST_ID, { isBetaTester: true })
 

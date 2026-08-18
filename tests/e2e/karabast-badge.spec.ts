@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { createTestUser, cleanupTestUsers, closeDb } from "./test-utils.ts";
+import { launchOptions } from './browser-launch'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -66,7 +67,7 @@ test.describe("W/L/D badge on PTP play page", () => {
     db = await getPool();
     user = await createTestUser("BadgePlayer", TEST_ID);
 
-    browser = await chromium.launch({ headless: false, slowMo: 50 });
+    browser = await chromium.launch(launchOptions);
     context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
 
     const urlObj = new URL(BASE_URL);

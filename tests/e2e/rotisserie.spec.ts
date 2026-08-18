@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
+import { launchOptions } from './browser-launch'
 
 /**
  * Rotisserie Draft E2E test
@@ -27,7 +28,7 @@ test.describe('Rotisserie Draft', () => {
   let draftShareId: string
 
   test.beforeAll(async () => {
-    browser = await chromium.launch({ headless: false, slowMo: 50 })
+    browser = await chromium.launch(launchOptions)
 
     user = await createTestUser('RotisseriePlayer', TEST_ID, { isBetaTester: true })
 
