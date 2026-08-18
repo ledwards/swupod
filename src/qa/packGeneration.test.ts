@@ -995,19 +995,23 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
     // CHARACTERIZATION baselines for the SEEDED sample this suite draws
     // (withSeededRandom + PACK_QA_SEED_BASE), re-characterized 2026-08-16.
     //
-    // These are NOT the generator's true rates. The seeded 100-pod sample runs
-    // systematically LOW: measured unseeded over 2000 pods, SOR dupAny is 3.42,
-    // but the seeded draw gives 2.79 — and every set is biased the same
-    // direction. Compare against these numbers only; do not read them as the
-    // real duplicate rate, and do not "fix" the generator to reach them.
+    // What these metrics actually are — the names mislead:
+    //   dupBase/tripBase = excess copies BY NAME among Normal-variant cards only
+    //   dupAny/tripAny   = excess copies of the EXACT SAME PRINTING (card.id, so
+    //                      variant-specific: a Normal and its Hyperspace do NOT
+    //                      pair here). Both count n-1 / n-2 excess, NOT a count
+    //                      of duplicated identities.
+    // A variant-invariant "duplicate identities per pool" figure is a different
+    // statistic and runs much higher — do not compare the two. See
+    // printerDistribution.test.ts for that one.
     //
-    // Because they pin one fixed seed, ANY legitimate generator change re-rolls
-    // the stream and shifts these. Re-characterize deliberately when that
-    // happens (verify the true unseeded distribution is unchanged first, as was
-    // done here), rather than nudging the seed until it passes.
-    //
-    // dupBase/tripBase stay 0.0 — invariants (a pool must never hold two of the
-    // same base), not measurements.
+    // The seeded PRNG is NOT biased: over 40 seeds it means 3.435 (sd 0.134)
+    // against Math.random's 3.433 (sd 0.121) on the same statistic. What the
+    // seed does is pin ONE draw, and this suite's happens to sit low in that
+    // range. So ANY legitimate generator change re-rolls the stream and shifts
+    // these numbers. Re-characterize deliberately when that happens — verify the
+    // true unseeded distribution is unchanged first, as was done here — rather
+    // than nudging the seed until it passes.
     const EXPECTED_BY_SET: Record<string, {
       dupBase: { mean: number; stdDev: number };
       dupAny: { mean: number; stdDev: number };
