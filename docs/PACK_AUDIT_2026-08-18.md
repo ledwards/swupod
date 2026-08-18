@@ -143,11 +143,15 @@ five are marked `_note` (STARTER / deck-only / draft registration), one
 eval but not usable as collation ground truth. Three remain. Anyone recomputing
 this must apply the same filtering or they will get a false result.
 
-**The single highest-value thing that would improve confidence is one
-transcribed box from any of SOR–SEC.** It does not need variant IDs or careful
-frame-matching — spotting which cards are hyperspace is enough to check
-leader/base co-occurrence and hyperspace-per-pack, the two assumptions Sets 1-6
-currently rest on without evidence.
+**The single highest-value thing that would improve confidence is a
+transcribed box from any of SOR–SEC** — tracked as an open item in
+`plans/ASH_COLLATION_FINDINGS.md` ("OPEN: transcribe a Sets 1-6 box"), which
+carries the power maths: one box is a coin flip (~49% chance of the decisive
+observation), two is the sensible minimum, four gets past 90%.
+
+It does not need variant IDs or careful frame-matching — spotting which cards are
+hyperspace is enough to check leader/base co-occurrence and hyperspace-per-pack,
+the two assumptions Sets 1-6 currently rest on without evidence.
 
 ## Defects fixed on the way to this table
 

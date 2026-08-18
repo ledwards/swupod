@@ -797,3 +797,81 @@ knob — pushing box-level duplication up means touching common-belt sheet size
 or pair frequencies, which would perturb the shipped pair-gap fit that pool
 realism rests on. Revisit only with more real boxes or a specific player-facing
 symptom.
+
+---
+
+## 📋 OPEN: transcribe a Sets 1-6 box (2026-08-18)
+
+**Why this is now the highest-value data collection.** Sets 1-6 have **zero**
+transcribed packs. Every ASH parameter cites real boxes; the Sets 1-6 configs
+cite nothing but derived rates (`// 1/6`, `// ~1/15`). That was tolerable while
+their collation was frozen — it no longer is. On 2026-08-16 two model rules
+changed for Sets 1-6 on physical reasoning alone, with no data from those sets:
+
+1. **Leader+base hyperspace co-occurrence** went from a hard ban (rate exactly
+   0.000) to independence (~1.00x of 1/36). Justified by real ASH pool-002
+   pack06 holding both, plus "it is the same press for every set" — but never
+   observed in a Sets 1-6 pack.
+2. **The hard 2-upgrade budget cap** was removed, so 3+ hyperspace cards in one
+   pack became possible (measured 2.6-3.2% of Sets 1-6 packs).
+
+Both are falsifiable by eye. Neither has been checked against product.
+
+See `docs/PACK_AUDIT_2026-08-18.md` for the full measured state of all 8 sets.
+
+### What one box actually buys (do the power maths before ordering six)
+
+Both questions are **existence proofs**, not rate estimates: under the old rules
+each was structurally impossible, so a single observed instance settles it. Under
+the current model, per 24-pack box, expected counts are ~0.67 leader+base packs
+and ~0.70 three-hyperspace packs. Probability of seeing at least one:
+
+| boxes | sees a leader+base pack | sees a 3+ HS pack |
+|---|---|---|
+| 1 | 48.7% | 50.1% |
+| 2 | 73.6% | 75.1% |
+| 4 | 93.1% | 93.8% |
+| 6 | 98.2% | 98.5% |
+
+So **one box is a coin flip** — a positive result is decisive, a null result
+proves nothing. Two boxes is the sensible minimum; four gets past 90%.
+
+Note the asymmetry: *finding* one of these confirms the current model outright.
+*Not* finding one across several boxes would be the interesting result, and would
+mean revisiting whether Sets 1-6 really do share ASH's press behaviour.
+
+### Minimum viable capture — much cheaper than the ASH effort
+
+This does **not** need the number-first / CV variant re-verification that boxes
+008-011 required. Hyperspace cards are identifiable by frame at a glance. Per
+pack, all that is needed is:
+
+- which slot (if any) holds a hyperspace **leader**
+- which slot (if any) holds a hyperspace **base**
+- total hyperspace cards in the pack
+
+That alone answers both open questions. Removal order does not even matter for
+these two, since they are per-pack properties.
+
+**If** the standard 16-card grid from `data/real-boxes/COLLECTION_GUIDE.md` is
+followed instead (strict removal order, one photo per pack), the same box also
+yields duplicate-per-pool and box-unique figures — but note 24 packs is only 4
+pools, so with a per-pool sd near 1.9 a single box constrains the duplicate
+distribution only very loosely. Do not expect it to settle collation shape.
+
+### Which set
+
+Any of SOR / SHD / TWI / JTL / LOF / SEC. Prefer whichever is cheapest to source
+— but record which it is, because the two blocks differ: Sets 1-3 and Sets 4-6
+use different `HS_BELT_CONFIGS` groups and different common-belt lane splits
+(60/30 vs 50/50), so a result from one block does not automatically transfer to
+the other.
+
+### Success criteria
+
+- [ ] At least one pack observed holding both a hyperspace leader and a
+      hyperspace base → confirms the 2026-08-16 independence change for that block
+- [ ] At least one pack observed with 3+ hyperspace cards → confirms removing the
+      budget cap
+- [ ] Neither observed across 4+ boxes → **escalate**: the Sets 1-6 change was
+      reasoned, not measured, and would need revisiting
