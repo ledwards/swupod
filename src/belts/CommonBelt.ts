@@ -284,6 +284,37 @@ function buildInterleavedSequence(cards: RawCard[], lastAspect: string | null): 
   return result
 }
 
+/**
+ * Can what is left still be laid out with no two adjacent primary aspects?
+ *
+ * The classic bound: a group of m cards needs m-1 separators, so it fits in r
+ * positions only while m <= ceil(r/2) — and only floor(r/2) if it is also the
+ * aspect just placed, since it cannot take the next position. Cards with no
+ * primary aspect never conflict, so they count toward r but form no group.
+ *
+ * `counts` holds the remaining per-aspect totals; nulls are not in it.
+ */
+function aspectsRemainAlternatable(
+  counts: Map<string, number>,
+  remainingTotal: number,
+  prevAspect: string | null
+): boolean {
+  let maxAspect: string | null = null
+  let maxCount = 0
+  for (const [aspect, n] of counts) {
+    if (n > maxCount) {
+      maxCount = n
+      maxAspect = aspect
+    }
+  }
+  if (maxCount === 0) return true
+
+  const cap = maxAspect === prevAspect
+    ? Math.floor(remainingTotal / 2)
+    : Math.ceil(remainingTotal / 2)
+  return maxCount <= cap
+}
+
 function segmentHasRequiredAspects(cards: RawCard[], requiredAspects: string[]): boolean {
   return requiredAspects.every(aspect => cards.some(card => cardHasAspect(card, aspect)))
 }
@@ -908,6 +939,18 @@ function buildConstrainedBoot(
     return true
   }
 
+  // Whether this belt's aspect mix admits a clean alternation at all. JTL's
+  // 49-card boots do (20 of 49 against a bound of 25); Belt B's 30-card boot
+  // does not. A belt that can be laid out cleanly should retry on a fresh
+  // shuffle rather than settle for a repeat, and one that cannot must not burn
+  // all 2000 attempts discovering that every time.
+  const beltAspectCounts = new Map<string, number>()
+  for (const card of cards) {
+    const primary = getPrimaryAspect(card)
+    if (primary) beltAspectCounts.set(primary, (beltAspectCounts.get(primary) || 0) + 1)
+  }
+  const beltCanAlternate = aspectsRemainAlternatable(beltAspectCounts, cards.length, null)
+
   function buildByWindows(remainingCards: RawCard[], prevAspect: string | null): RawCard[] | null {
     const remaining = [...remainingCards]
     const result: RawCard[] = []
@@ -959,25 +1002,80 @@ function buildConstrainedBoot(
         return Math.random() - 0.5
       })
 
+      // Per-aspect totals for what is still on the sheet, so each candidate can
+      // be checked against the endgame in O(1) rather than rescanning.
+      const remainingCounts = new Map<string, number>()
+      for (const card of remaining) {
+        const primary = getPrimaryAspect(card)
+        if (primary) remainingCounts.set(primary, (remainingCounts.get(primary) || 0) + 1)
+      }
+
       let chosen: RawCard | null = null
-      const hasAspectAlternative = ordered.some(candidate => getPrimaryAspect(candidate) !== currentPrevAspect)
+
+      // Preferred pass: never repeat an aspect, and only take a card that
+      // leaves the rest still alternatable. Looking one step ahead is the
+      // whole fix — the old rule accepted whatever the last card happened to
+      // be, so a greedy that kept no different-aspect card in reserve ended
+      // ~7% of JTL boots on a repeated aspect.
       for (const candidate of ordered) {
         const candidatePrimary = getPrimaryAspect(candidate)
-        if (
-          candidatePrimary &&
-          candidatePrimary === currentPrevAspect &&
-          hasAspectAlternative
-        ) {
-          continue
-        }
+        if (candidatePrimary && candidatePrimary === currentPrevAspect) continue
 
         const nextRemaining = remaining.filter(card => card.id !== candidate.id)
         if (!windowsRemainFeasible([...result, candidate], nextRemaining)) {
           continue
         }
 
+        if (candidatePrimary) {
+          remainingCounts.set(candidatePrimary, remainingCounts.get(candidatePrimary)! - 1)
+        }
+        const stillAlternatable = aspectsRemainAlternatable(
+          remainingCounts,
+          nextRemaining.length,
+          candidatePrimary
+        )
+        if (candidatePrimary) {
+          remainingCounts.set(candidatePrimary, remainingCounts.get(candidatePrimary)! + 1)
+        }
+        if (!stillAlternatable) continue
+
         chosen = candidate
         break
+      }
+
+      // On a belt that can alternate, a dead end means this shuffle was
+      // unlucky — not that a repeat is required. Give up on the attempt and
+      // let the loop below try another arrangement; that is what its 2000
+      // attempts are for, and it is the difference between 0.1% of belts
+      // ending on a repeat and none.
+      if (!chosen && beltCanAlternate) {
+        return null
+      }
+
+      // Belts that cannot alternate at all — Belt B's 30-card boot holds more
+      // of one aspect than there are gaps to separate them — would fail every
+      // attempt and land in the fallback builder, which ignores the dedup
+      // window. Keep the old rule for those so they keep the boot they had.
+      if (!chosen) {
+        const hasAspectAlternative = ordered.some(candidate => getPrimaryAspect(candidate) !== currentPrevAspect)
+        for (const candidate of ordered) {
+          const candidatePrimary = getPrimaryAspect(candidate)
+          if (
+            candidatePrimary &&
+            candidatePrimary === currentPrevAspect &&
+            hasAspectAlternative
+          ) {
+            continue
+          }
+
+          const nextRemaining = remaining.filter(card => card.id !== candidate.id)
+          if (!windowsRemainFeasible([...result, candidate], nextRemaining)) {
+            continue
+          }
+
+          chosen = candidate
+          break
+        }
       }
 
       if (!chosen) {
