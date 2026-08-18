@@ -14,6 +14,14 @@ This directory contains Playwright end-to-end tests for the Protect the Pod appl
    npx playwright install
    ```
 
+3. Point the suite at a database. Most specs seed a user or a pod through
+   `test-utils.ts`, so without this they all fail at the first query:
+   ```bash
+   # .env.local (gitignored), or exported in your shell
+   DATABASE_URL=postgresql://user@localhost:5432/swupod
+   ```
+   Run `npm run migrate:dev` against it first so the schema exists.
+
 ## Running Tests
 
 ### Run all tests

@@ -21,14 +21,23 @@ const COOKIE_NAME = 'swupod_session'
 
 // Database connection - lazy initialized and safely reusable
 const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL
-if (!connectionString) {
-  console.error('No DATABASE_URL or POSTGRES_URL found. Check .env or .env.local in:', projectRoot)
-}
 
 let pool: pg.Pool | null = null
 let poolEnded = false
 
 export function getPool(): pg.Pool {
+  // Fail with the actual cause. Without a connection string pg falls back to
+  // its own defaults and dials localhost:5432, so an unconfigured checkout
+  // reported dozens of `connect ECONNREFUSED 127.0.0.1:5432` failures spread
+  // across every DB-backed spec — one missing variable wearing the costume of
+  // a broken suite. Say so once, here, where it can be acted on.
+  if (!connectionString) {
+    throw new Error(
+      'E2E tests need a database: set DATABASE_URL (or POSTGRES_URL), or put it in ' +
+      `.env.local / .env in ${projectRoot}. ` +
+      'Without it pg silently defaults to localhost:5432 and every DB-backed spec fails.'
+    )
+  }
   if (poolEnded || !pool) {
     pool = new pg.Pool({ connectionString })
     poolEnded = false
