@@ -1,5 +1,10 @@
 # Release Notes
 
+## 08.18.2026 Part 3
+
+### 🔧 Maintenance
+- **Hover state is gated on devices that can hover.** Tapping a card left it marked as hovered behind the scenes, since a tap fires a hover-start that never gets a matching hover-end. The visible symptom was fixed in the last release; this clears the state itself.
+
 ## 08.18.2026 Part 2
 
 ### 🎨 UI Improvements

@@ -54,6 +54,7 @@ import { ViewModeToggle, type ViewMode } from './DeckBuilder/ViewModeToggle'
 import { ArenaView } from './DeckBuilder/ArenaView'
 import { CollapsibleSectionHeader } from './DeckBuilder/CollapsibleSectionHeader'
 import { getTypeStringOrder } from '../utils/cardSort'
+import { guardHoverSetter } from '../utils/hoverCapability'
 import { useDeckExport } from '../hooks/useDeckExport'
 import { useDragAndDrop } from '../hooks/useDragAndDrop'
 import { useCardPreview } from '../hooks/useCardPreview'
@@ -315,7 +316,15 @@ function DeckBuilder({
   const [allSetCards, setAllSetCards] = useState<CardType[]>([])
   const [sectionLabels, setSectionLabels] = useState<SectionLabel[]>([])
   const [sectionBounds, setSectionBounds] = useState<Record<string, SectionBound>>({})
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null)
+  const [hoveredCard, setHoveredCardState] = useState<string | null>(null)
+  // Guarded at the source rather than at each hover handler: this setter is
+  // handed to the drag hook, the deck-builder context, ArenaView and
+  // LeaderBaseSelector, and is called from six different mouseenter handlers.
+  // A tap synthesizes mouseenter and never fires mouseleave, so an unguarded
+  // set left the tapped card stuck in its .hovered style. Wrapping once means
+  // every consumer inherits the gate and a new call site cannot reintroduce
+  // the bug. Clearing still passes through everywhere.
+  const setHoveredCard = useMemo(() => guardHoverSetter(setHoveredCardState), [])
   // Start with 'grid' for SSR consistency, then update to 'arena' on desktop after hydration
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [viewModeInitialized, setViewModeInitialized] = useState(false)
