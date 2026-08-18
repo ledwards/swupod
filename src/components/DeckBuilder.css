@@ -1732,11 +1732,12 @@
     padding-right: 60px;
   }
 
-  /* Build label gets its own line under the leader and base rather than
-     trailing off the end of the identity row into the avatar's corner. */
+  /* The build label keeps its place after the base name — the reserve above
+     is what stops it sliding under the avatar. It wraps to its own line only
+     when the names are long enough to push it there, which costs a line on a
+     fixed bar that is already taller than the content offset below it. */
   .sticky-builder-label {
-    flex-basis: 100%;
-    margin-left: 0;
+    margin-left: 0.5rem;
   }
 
   .deck-info-bar.sticky .deck-counts-info {
@@ -1970,7 +1971,6 @@
   }
 
   .sticky-builder-label {
-    flex-basis: auto;
     margin-left: 0.75rem;
   }
 }

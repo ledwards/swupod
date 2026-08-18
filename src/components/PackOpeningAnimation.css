@@ -642,7 +642,10 @@
      together across devices; the old 15% drifted into the counter on short
      viewports and under Safari's bottom toolbar. */
   .packs-carousel:not(.desktop) {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 32px + 2.4rem);
+    /* 32px counter offset + its 36px line box + 16px of air. Measured on an
+       iPhone 13 viewport: guessing at the line box from the font size left
+       only 2px between the packs and the counter. */
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 84px);
     height: 154px;
   }
 
