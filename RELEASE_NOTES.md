@@ -1,24 +1,14 @@
 # Release Notes
 
-## 08.18.2026 Part 3
-
-### 🔧 Maintenance
-- **Hover state is gated on devices that can hover.** Tapping a card left it marked as hovered behind the scenes, since a tap fires a hover-start that never gets a matching hover-end. The visible symptom was fixed in the last release; this clears the state itself.
-
-## 08.18.2026 Part 2
-
-### 🎨 UI Improvements
-- **Sets are listed newest first on a phone.** The two newest sets sat above the rest in their own row, so the column read 7, 8, 6, 5 — it now runs straight from the most recent set to the oldest.
-
 ## 08.18.2026
 
 ### 🎨 UI Improvements
-- **Set picking stacks properly on a phone.** The two newest sets shared a line above the rest of the grid; every set now sits in one clean vertical column.
-- **The deck builder's top bar reads straight.** The base name lined up with neither the leader's name nor its subtitle, and the build label ("Original") disappeared behind your avatar. The names now share a line, and the build label stays clear of the avatar.
+- **Sets stack one per line on a phone, newest first.** The two newest sets shared a row above the grid, so the column read 7, 8, 6, 5 — it now runs straight from the most recent set to the oldest.
+- **The deck builder's top bar lines up.** The base name sat between the leader's name and subtitle; it now shares the leader's line, and the build label no longer hides behind your avatar.
 
 ### 🐞 Bug Fixes
-- **Tapping a card no longer leaves it stuck enlarged.** A tapped card stayed blown up until you tapped a different one.
-- **Nothing sits on top of your cards when a pack opens.** The pack counter was printed across the booster art, and the first row of cards landed underneath the Skip and Open All buttons.
+- **Tapping a card no longer leaves it stuck enlarged.**
+- **Nothing covers your cards when a pack opens.** The pack counter was printed across the booster art, and the top row of cards landed under the Skip and Open All buttons.
 
 ## 08.16.2026 Part 2
 
