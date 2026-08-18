@@ -128,6 +128,41 @@ before claiming any duplicate-rate change is an improvement. Mean, P(0) and a si
 tail bucket can all sit in band while the SHAPE drifts — KS is what catches that. Do
 not swap it for a mean comparison.
 
+## Boot Granularity — Why Some Cards Are Built And Never Served
+
+A boot is ATOMIC: it holds every card in the lane a whole number of times, and the
+aspect interleave, echo weaving and dedup windows all operate on the complete set.
+A box consumes whatever it consumes and the belt is then discarded
+(`generateSealedBox` clears the cache). The leftover is arithmetic, not a leak:
+
+    unserved = (boot size x boots built) - (slots per pack x 24 - putBacks)
+
+Measured against prediction on ASH, 200 boxes:
+
+| lane | boot | draws/box | predicted unserved | measured |
+|---|---|---|---|---|
+| Common A | 50 cards x 2 copies = 100 | 4 slots x 24 = 96 | 4 (4.0%) | 4.0 (4.0%) |
+| Common B | 50 x 2 = 100 | 4 x 24 = 96 | 4 (4.0%) | 4.0 (4.0%) |
+| Uncommon | 60 + ~6.5 echoes = 66.5 | 3 x 24 = 72, minus 8.78 putBacks = 63.22 advance | 7.9 (11.2%) | 7.97 (11.2%) |
+
+Every term is a fixed property of the product (50 commons per lane, 4 slots, 24
+packs) or a measured rate (UC3 upgrade -> `putBack()`, which returns the card and
+does NOT advance the belt). **This is not a bug and must not be "optimised" by
+shrinking the boot** — a partial boot breaks equal occurrence, which is the
+invariant the whole collation model rests on.
+
+It is also harmless to fairness. Placement is random, so the unreached tail is a
+different set of cards every box; no card is systematically disadvantaged. When a
+card WAS systematically parked in the tail, that was the 2026-08-18 short-print
+family of bugs — see above.
+
+**Where the waste actually concentrates** is not the tail but rarely-drawn variant
+lanes. The 1-in-48 common upgrade draws `CommonBelt(A|B, 'Hyperspace')` about once
+per box, and each draw builds a full 50-card boot that is then thrown away — 98%
+unserved. Same atomic-boot property, far worse ratio. Left alone deliberately: it
+is CPU only, and the alternative (lazy or partial boots) would compromise the
+equal-occurrence guarantee for a lane that feeds real packs.
+
 ## Belt Types
 - **LeaderBelt**: 1 leader per pack, alternates common/rare with seam deduplication
 - **BaseBelt**: 1 common base per pack, aspect-based deduplication
@@ -245,3 +280,10 @@ After ANY change to belts, boosterPack.ts, upgrade logic, or pack structure:
 npm run test && npm run qa
 ```
 NEVER commit pack generation changes without seeing all QA and unit tests pass.
+
+`npm run qa:fast` (~35s, 7 suites) exists for the inner loop — it drops the three
+whole-catalog sweeps (`printerDistribution` ~53s, `sealedPodCollation`,
+`foilDistribution`) that dominate the 120s full run. Iterate with `qa:fast`, but
+the **gate before committing is the full `npm run qa`**: the dropped suites are
+exactly the ones that catch per-card short-prints and seat fairness, which is the
+bug family this belt system actually produces.
