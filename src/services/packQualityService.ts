@@ -60,6 +60,23 @@ export interface DuplicateMetric {
   status: 'expected' | 'slight_variance' | 'outlier' | 'insufficient_data'
 }
 
+/**
+ * NOTE ON THESE FIELD NAMES — they do not say what they measure, and the names
+ * are a published contract (`/api/public/pack-quality`) so they are not renamed.
+ *
+ *   baseTreatmentDuplicates   sum of (n-1) over card NAMES, counting only cards
+ *                             whose treatment is 'base' (Normal variant)
+ *   anyTreatmentDuplicates    sum of (n-1) over exact card_id. "any treatment"
+ *                             reads as variant-invariant but is the opposite:
+ *                             keying on card_id makes it variant-SPECIFIC, so a
+ *                             Normal and its Hyperspace never pair here
+ *   *Triplicates              same, summing (n-2)
+ *
+ * All four are EXCESS COPIES, not counts of duplicated identities. Misreading
+ * them as variant-invariant identity counts produced a wrong analysis on
+ * 2026-08-18. The QA-side equivalents in src/qa/packGeneration.test.ts have been
+ * renamed to excessNormalByName / excessSamePrinting for exactly this reason.
+ */
 export interface DuplicateMetricGroup {
   sampleSize: number
   baseTreatmentDuplicates: DuplicateMetric

@@ -996,8 +996,8 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
     // (withSeededRandom + PACK_QA_SEED_BASE), re-characterized 2026-08-16.
     //
     // What these metrics actually are — the names mislead:
-    //   dupBase/tripBase = excess copies BY NAME among Normal-variant cards only
-    //   dupAny/tripAny   = excess copies of the EXACT SAME PRINTING (card.id, so
+    //   excessNormalByName/excessNormalByName3Plus = excess copies BY NAME among Normal-variant cards only
+    //   excessSamePrinting/excessSamePrinting3Plus   = excess copies of the EXACT SAME PRINTING (card.id, so
     //                      variant-specific: a Normal and its Hyperspace do NOT
     //                      pair here). Both count n-1 / n-2 excess, NOT a count
     //                      of duplicated identities.
@@ -1013,26 +1013,26 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
     // true unseeded distribution is unchanged first, as was done here — rather
     // than nudging the seed until it passes.
     const EXPECTED_BY_SET: Record<string, {
-      dupBase: { mean: number; stdDev: number };
-      dupAny: { mean: number; stdDev: number };
-      tripBase: { mean: number; stdDev: number };
-      tripAny: { mean: number; stdDev: number };
+      excessNormalByName: { mean: number; stdDev: number };
+      excessSamePrinting: { mean: number; stdDev: number };
+      excessNormalByName3Plus: { mean: number; stdDev: number };
+      excessSamePrinting3Plus: { mean: number; stdDev: number };
     }> = {
       // Recalibrated after moving standard-pack upgrades onto independent variant belts.
-      SOR: { dupBase: { mean: 0.0, stdDev: 0.10 }, dupAny: { mean: 2.79, stdDev: 1.27 }, tripBase: { mean: 0.0, stdDev: 0.05 }, tripAny: { mean: 0.11, stdDev: 0.313 } },
-      SHD: { dupBase: { mean: 0.0, stdDev: 0.10 }, dupAny: { mean: 2.95, stdDev: 1.05 }, tripBase: { mean: 0.0, stdDev: 0.05 }, tripAny: { mean: 0.03, stdDev: 0.171 } },
-      TWI: { dupBase: { mean: 0.0, stdDev: 0.10 }, dupAny: { mean: 3.0, stdDev: 1.13 }, tripBase: { mean: 0.0, stdDev: 0.05 }, tripAny: { mean: 0.03, stdDev: 0.171 } },
-      JTL: { dupBase: { mean: 0.0, stdDev: 0.10 }, dupAny: { mean: 2.72, stdDev: 1.1 }, tripBase: { mean: 0.0, stdDev: 0.05 }, tripAny: { mean: 0.06, stdDev: 0.237 } },
-      LOF: { dupBase: { mean: 0.0, stdDev: 0.10 }, dupAny: { mean: 2.74, stdDev: 1.12 }, tripBase: { mean: 0.0, stdDev: 0.05 }, tripAny: { mean: 0.06, stdDev: 0.237 } },
-      SEC: { dupBase: { mean: 0.0, stdDev: 0.10 }, dupAny: { mean: 2.64, stdDev: 1.14 }, tripBase: { mean: 0.0, stdDev: 0.05 }, tripAny: { mean: 0.01, stdDev: 0.099 } },
+      SOR: { excessNormalByName: { mean: 0.0, stdDev: 0.10 }, excessSamePrinting: { mean: 2.79, stdDev: 1.27 }, excessNormalByName3Plus: { mean: 0.0, stdDev: 0.05 }, excessSamePrinting3Plus: { mean: 0.11, stdDev: 0.313 } },
+      SHD: { excessNormalByName: { mean: 0.0, stdDev: 0.10 }, excessSamePrinting: { mean: 2.95, stdDev: 1.05 }, excessNormalByName3Plus: { mean: 0.0, stdDev: 0.05 }, excessSamePrinting3Plus: { mean: 0.03, stdDev: 0.171 } },
+      TWI: { excessNormalByName: { mean: 0.0, stdDev: 0.10 }, excessSamePrinting: { mean: 3.0, stdDev: 1.13 }, excessNormalByName3Plus: { mean: 0.0, stdDev: 0.05 }, excessSamePrinting3Plus: { mean: 0.03, stdDev: 0.171 } },
+      JTL: { excessNormalByName: { mean: 0.0, stdDev: 0.10 }, excessSamePrinting: { mean: 2.72, stdDev: 1.1 }, excessNormalByName3Plus: { mean: 0.0, stdDev: 0.05 }, excessSamePrinting3Plus: { mean: 0.06, stdDev: 0.237 } },
+      LOF: { excessNormalByName: { mean: 0.0, stdDev: 0.10 }, excessSamePrinting: { mean: 2.74, stdDev: 1.12 }, excessNormalByName3Plus: { mean: 0.0, stdDev: 0.05 }, excessSamePrinting3Plus: { mean: 0.06, stdDev: 0.237 } },
+      SEC: { excessNormalByName: { mean: 0.0, stdDev: 0.10 }, excessSamePrinting: { mean: 2.64, stdDev: 1.14 }, excessNormalByName3Plus: { mean: 0.0, stdDev: 0.05 }, excessSamePrinting3Plus: { mean: 0.01, stdDev: 0.099 } },
     }
     const EXPECTED = EXPECTED_BY_SET[setCode] || EXPECTED_BY_SET.SOR
 
     // Calculate duplicate/triplicate stats for each pod
-    const podDupBaseStats: number[] = []
-    const podDupAnyStats: number[] = []
-    const podTripBaseStats: number[] = []
-    const podTripAnyStats: number[] = []
+    const podExcessNormalByName: number[] = []
+    const podExcessSamePrinting: number[] = []
+    const podExcessNormalByName3Plus: number[] = []
+    const podExcessSamePrinting3Plus: number[] = []
 
     pods.forEach(pod => {
       // Flatten all cards, excluding leaders and bases
@@ -1046,21 +1046,21 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
       normalCards.forEach(c => {
         baseNameCounts[c.name] = (baseNameCounts[c.name] || 0) + 1
       })
-      const baseDupes = Object.values(baseNameCounts).filter(n => n > 1).reduce((sum, n) => sum + (n - 1), 0)
-      const baseTrips = Object.values(baseNameCounts).filter(n => n > 2).reduce((sum, n) => sum + (n - 2), 0)
+      const excessNormalName = Object.values(baseNameCounts).filter(n => n > 1).reduce((sum, n) => sum + (n - 1), 0)
+      const excessNormalName3 = Object.values(baseNameCounts).filter(n => n > 2).reduce((sum, n) => sum + (n - 2), 0)
 
       // Any treatment: exact card id
       const exactIdCounts: Record<string, number> = {}
       allCards.forEach(c => {
         exactIdCounts[c.id] = (exactIdCounts[c.id] || 0) + 1
       })
-      const anyDupes = Object.values(exactIdCounts).filter(n => n > 1).reduce((sum, n) => sum + (n - 1), 0)
-      const anyTrips = Object.values(exactIdCounts).filter(n => n > 2).reduce((sum, n) => sum + (n - 2), 0)
+      const excessSamePrint = Object.values(exactIdCounts).filter(n => n > 1).reduce((sum, n) => sum + (n - 1), 0)
+      const excessSamePrint3 = Object.values(exactIdCounts).filter(n => n > 2).reduce((sum, n) => sum + (n - 2), 0)
 
-      podDupBaseStats.push(baseDupes)
-      podDupAnyStats.push(anyDupes)
-      podTripBaseStats.push(baseTrips)
-      podTripAnyStats.push(anyTrips)
+      podExcessNormalByName.push(excessNormalName)
+      podExcessSamePrinting.push(excessSamePrint)
+      podExcessNormalByName3Plus.push(excessNormalName3)
+      podExcessSamePrinting3Plus.push(excessSamePrint3)
     })
 
     // Calculate observed statistics
@@ -1071,10 +1071,10 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
       return { mean, stdDev }
     }
 
-    const dupBaseObs = calcObservedStats(podDupBaseStats)
-    const dupAnyObs = calcObservedStats(podDupAnyStats)
-    const tripBaseObs = calcObservedStats(podTripBaseStats)
-    const tripAnyObs = calcObservedStats(podTripAnyStats)
+    const excessNormalByNameObs = calcObservedStats(podExcessNormalByName)
+    const excessSamePrintingObs = calcObservedStats(podExcessSamePrinting)
+    const excessNormalByName3PlusObs = calcObservedStats(podExcessNormalByName3Plus)
+    const excessSamePrinting3PlusObs = calcObservedStats(podExcessSamePrinting3Plus)
 
     // Z-score for comparing observed mean to expected mean
     // Standard error of mean = σ / √n
@@ -1083,49 +1083,49 @@ async function runQA(silentMode: boolean = false): Promise<TestResult[]> {
       return se > 0 ? (observed - expected) / se : 0
     }
 
-    const dupBaseZ = calcZScore(dupBaseObs.mean, EXPECTED.dupBase.mean, EXPECTED.dupBase.stdDev, pods.length)
-    const dupAnyZ = calcZScore(dupAnyObs.mean, EXPECTED.dupAny.mean, EXPECTED.dupAny.stdDev, pods.length)
-    const tripBaseZ = calcZScore(tripBaseObs.mean, EXPECTED.tripBase.mean, EXPECTED.tripBase.stdDev, pods.length)
-    const tripAnyZ = calcZScore(tripAnyObs.mean, EXPECTED.tripAny.mean, EXPECTED.tripAny.stdDev, pods.length)
+    const excessNormalByNameZ = calcZScore(excessNormalByNameObs.mean, EXPECTED.excessNormalByName.mean, EXPECTED.excessNormalByName.stdDev, pods.length)
+    const excessSamePrintingZ = calcZScore(excessSamePrintingObs.mean, EXPECTED.excessSamePrinting.mean, EXPECTED.excessSamePrinting.stdDev, pods.length)
+    const excessNormalByName3PlusZ = calcZScore(excessNormalByName3PlusObs.mean, EXPECTED.excessNormalByName3Plus.mean, EXPECTED.excessNormalByName3Plus.stdDev, pods.length)
+    const excessSamePrinting3PlusZ = calcZScore(excessSamePrinting3PlusObs.mean, EXPECTED.excessSamePrinting3Plus.mean, EXPECTED.excessSamePrinting3Plus.stdDev, pods.length)
 
-    console.log(`\x1b[36m   Duplicates (base): ${dupBaseObs.mean.toFixed(2)}±${dupBaseObs.stdDev.toFixed(2)} (expected ${EXPECTED.dupBase.mean.toFixed(2)}±${EXPECTED.dupBase.stdDev.toFixed(2)}, z=${dupBaseZ.toFixed(2)})\x1b[0m`)
-    console.log(`\x1b[36m   Duplicates (any): ${dupAnyObs.mean.toFixed(2)}±${dupAnyObs.stdDev.toFixed(2)} (expected ${EXPECTED.dupAny.mean.toFixed(2)}±${EXPECTED.dupAny.stdDev.toFixed(2)}, z=${dupAnyZ.toFixed(2)})\x1b[0m`)
-    console.log(`\x1b[36m   Triplicates (base): ${tripBaseObs.mean.toFixed(3)}±${tripBaseObs.stdDev.toFixed(3)} (expected ${EXPECTED.tripBase.mean.toFixed(3)}±${EXPECTED.tripBase.stdDev.toFixed(3)}, z=${tripBaseZ.toFixed(2)})\x1b[0m`)
-    console.log(`\x1b[36m   Triplicates (any): ${tripAnyObs.mean.toFixed(3)}±${tripAnyObs.stdDev.toFixed(3)} (expected ${EXPECTED.tripAny.mean.toFixed(3)}±${EXPECTED.tripAny.stdDev.toFixed(3)}, z=${tripAnyZ.toFixed(2)})\x1b[0m`)
+    console.log(`\x1b[36m   Excess Normal copies by name: ${excessNormalByNameObs.mean.toFixed(2)}±${excessNormalByNameObs.stdDev.toFixed(2)} (expected ${EXPECTED.excessNormalByName.mean.toFixed(2)}±${EXPECTED.excessNormalByName.stdDev.toFixed(2)}, z=${excessNormalByNameZ.toFixed(2)})\x1b[0m`)
+    console.log(`\x1b[36m   Excess copies of same printing: ${excessSamePrintingObs.mean.toFixed(2)}±${excessSamePrintingObs.stdDev.toFixed(2)} (expected ${EXPECTED.excessSamePrinting.mean.toFixed(2)}±${EXPECTED.excessSamePrinting.stdDev.toFixed(2)}, z=${excessSamePrintingZ.toFixed(2)})\x1b[0m`)
+    console.log(`\x1b[36m   Excess beyond 2, Normal by name: ${excessNormalByName3PlusObs.mean.toFixed(3)}±${excessNormalByName3PlusObs.stdDev.toFixed(3)} (expected ${EXPECTED.excessNormalByName3Plus.mean.toFixed(3)}±${EXPECTED.excessNormalByName3Plus.stdDev.toFixed(3)}, z=${excessNormalByName3PlusZ.toFixed(2)})\x1b[0m`)
+    console.log(`\x1b[36m   Excess beyond 2, same printing: ${excessSamePrinting3PlusObs.mean.toFixed(3)}±${excessSamePrinting3PlusObs.stdDev.toFixed(3)} (expected ${EXPECTED.excessSamePrinting3Plus.mean.toFixed(3)}±${EXPECTED.excessSamePrinting3Plus.stdDev.toFixed(3)}, z=${excessSamePrinting3PlusZ.toFixed(2)})\x1b[0m`)
 
     // Tests: z-score should be within ±3.5 (99.95% confidence interval)
     // Using 3.5 instead of 3.0 to reduce false positives with 100-sample test runs
     const Z_THRESHOLD = 3.5
 
-    test(`${setCode}: duplicate rate (base treatment) statistically matches expected`, () => {
+    test(`${setCode}: excess Normal copies by name matches expected`, () => {
       assert(
-        Math.abs(dupBaseZ) <= Z_THRESHOLD,
-        `Duplicates (base) z-score ${dupBaseZ.toFixed(2)} exceeds ±${Z_THRESHOLD}. ` +
-        `Observed ${dupBaseObs.mean.toFixed(2)}, expected ${EXPECTED.dupBase.mean.toFixed(2)}`
+        Math.abs(excessNormalByNameZ) <= Z_THRESHOLD,
+        `Excess-Normal-by-name z-score ${excessNormalByNameZ.toFixed(2)} exceeds ±${Z_THRESHOLD}. ` +
+        `Observed ${excessNormalByNameObs.mean.toFixed(2)}, expected ${EXPECTED.excessNormalByName.mean.toFixed(2)}`
       )
     })
 
-    test(`${setCode}: duplicate rate (any treatment) statistically matches expected`, () => {
+    test(`${setCode}: excess copies of the same printing matches expected`, () => {
       assert(
-        Math.abs(dupAnyZ) <= Z_THRESHOLD,
-        `Duplicates (any) z-score ${dupAnyZ.toFixed(2)} exceeds ±${Z_THRESHOLD}. ` +
-        `Observed ${dupAnyObs.mean.toFixed(2)}, expected ${EXPECTED.dupAny.mean.toFixed(2)}`
+        Math.abs(excessSamePrintingZ) <= Z_THRESHOLD,
+        `Excess-same-printing z-score ${excessSamePrintingZ.toFixed(2)} exceeds ±${Z_THRESHOLD}. ` +
+        `Observed ${excessSamePrintingObs.mean.toFixed(2)}, expected ${EXPECTED.excessSamePrinting.mean.toFixed(2)}`
       )
     })
 
-    test(`${setCode}: triplicate rate (base treatment) statistically matches expected`, () => {
+    test(`${setCode}: excess beyond 2 Normal copies by name matches expected`, () => {
       assert(
-        Math.abs(tripBaseZ) <= Z_THRESHOLD,
-        `Triplicates (base) z-score ${tripBaseZ.toFixed(2)} exceeds ±${Z_THRESHOLD}. ` +
-        `Observed ${tripBaseObs.mean.toFixed(3)}, expected ${EXPECTED.tripBase.mean.toFixed(3)}`
+        Math.abs(excessNormalByName3PlusZ) <= Z_THRESHOLD,
+        `Excess-beyond-2-Normal z-score ${excessNormalByName3PlusZ.toFixed(2)} exceeds ±${Z_THRESHOLD}. ` +
+        `Observed ${excessNormalByName3PlusObs.mean.toFixed(3)}, expected ${EXPECTED.excessNormalByName3Plus.mean.toFixed(3)}`
       )
     })
 
-    test(`${setCode}: triplicate rate (any treatment) statistically matches expected`, () => {
+    test(`${setCode}: excess beyond 2 copies of the same printing matches expected`, () => {
       assert(
-        Math.abs(tripAnyZ) <= Z_THRESHOLD,
-        `Triplicates (any) z-score ${tripAnyZ.toFixed(2)} exceeds ±${Z_THRESHOLD}. ` +
-        `Observed ${tripAnyObs.mean.toFixed(3)}, expected ${EXPECTED.tripAny.mean.toFixed(3)}`
+        Math.abs(excessSamePrinting3PlusZ) <= Z_THRESHOLD,
+        `Excess-beyond-2-same-printing z-score ${excessSamePrinting3PlusZ.toFixed(2)} exceeds ±${Z_THRESHOLD}. ` +
+        `Observed ${excessSamePrinting3PlusObs.mean.toFixed(3)}, expected ${EXPECTED.excessSamePrinting3Plus.mean.toFixed(3)}`
       )
     })
 
