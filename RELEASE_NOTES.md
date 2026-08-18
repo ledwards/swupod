@@ -1,5 +1,15 @@
 # Release Notes
 
+## 08.18.2026
+
+### 🎨 UI Improvements
+- **Set picking stacks properly on a phone.** The two newest sets shared a line above the rest of the grid; every set now sits in one clean vertical column.
+- **The deck builder's top bar reads straight.** The base name lined up with neither the leader's name nor its subtitle, and the build label ("Original") disappeared behind your avatar. The names now share a line and the build label has its own.
+
+### 🐞 Bug Fixes
+- **Tapping a card no longer leaves it stuck enlarged.** A tapped card stayed blown up until you tapped a different one.
+- **Nothing sits on top of your cards when a pack opens.** The pack counter was printed across the booster art, and the first row of cards landed underneath the Skip and Open All buttons.
+
 ## 08.16.2026 Part 2
 
 ### 🃏 Pack Changes
