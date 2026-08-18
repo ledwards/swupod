@@ -88,6 +88,12 @@
 
 
 @media (max-width: 900px) {
+  .beta-sets-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+
   .set-card--beta {
     width: 100%;
     max-width: none;
@@ -108,7 +114,13 @@
   max-width: 450px;
 }
 
+/* Mobile: pure vertical stack - never two set cards side by side */
 @media (max-width: 900px) {
+  .latest-sets-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .latest-sets-row .set-card {
     width: 100%;
     max-width: none;
@@ -260,6 +272,12 @@
 
   .sets-grid {
     gap: 1.25rem;
+  }
+
+  .latest-sets-row,
+  .beta-sets-row {
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
   }
 
   .set-info {

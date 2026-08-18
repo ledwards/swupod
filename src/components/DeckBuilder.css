@@ -251,9 +251,13 @@
   flex-shrink: 0;
 }
 
+/* Baseline, not centre. The leader is a two-line column (name over subtitle)
+   while the base is a single line, so centring floated the base name into the
+   gap between the leader's two lines and lined it up with neither. Baseline
+   puts the base name on the leader title's own line. */
 .selected-cards-info {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
@@ -1721,6 +1725,21 @@
     display: none;
   }
 
+  /* The auth avatar is fixed at top:15px/right:15px and floats above this bar,
+     which is full-bleed on mobile (the desktop margin-right that reserved its
+     corner is dropped up top). Keep the identity row out from under it. */
+  .deck-info-bar .selected-cards-info {
+    padding-right: 60px;
+  }
+
+  /* The build label keeps its place after the base name — the reserve above
+     is what stops it sliding under the avatar. It wraps to its own line only
+     when the names are long enough to push it there, which costs a line on a
+     fixed bar that is already taller than the content offset below it. */
+  .sticky-builder-label {
+    margin-left: 0.5rem;
+  }
+
   .deck-info-bar.sticky .deck-counts-info {
     margin-left: 0;
     margin-right: 0;
@@ -1943,6 +1962,16 @@
   /* Hide view mode toggle from deck-counts-info in landscape mobile */
   .deck-counts-info .view-mode-toggle-container {
     display: none;
+  }
+
+  /* Landscape is one compact row and already reserves the avatar's corner with
+     its own margin-right, so the build label stays inline here. */
+  .deck-info-bar .selected-cards-info {
+    padding-right: 0;
+  }
+
+  .sticky-builder-label {
+    margin-left: 0.75rem;
   }
 }
 

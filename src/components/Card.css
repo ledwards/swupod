@@ -126,15 +126,22 @@
 
 /* Enlarged cards must paint above their neighbours. Without the lift, cards
    later in DOM order cover the scaled card's edges — and its rainbow selection
-   ring, which sits outside the card box, gets clipped by them. */
-.canvas-card:hover {
-  transform: scale(1.05);
-  z-index: 3;
-}
+   ring, which sits outside the card box, gets clipped by them.
 
-.canvas-card.hovered {
-  transform: scale(1.125);
-  z-index: 3;
+   Both enlarge states are hover-driven, so both sit behind the hover-capability
+   guard. On touch there is no hover to leave: :hover sticks to the last card
+   tapped, and .hovered is set from the synthesized mouseenter that a tap fires,
+   so without this guard a tapped card stayed enlarged until you tapped another. */
+@media (hover: hover) and (pointer: fine) {
+  .canvas-card:hover {
+    transform: scale(1.05);
+    z-index: 3;
+  }
+
+  .canvas-card.hovered {
+    transform: scale(1.125);
+    z-index: 3;
+  }
 }
 
 .canvas-card.selected {
@@ -472,11 +479,13 @@
   }
 
   /* Disable the hover enlarge on narrow viewports - no enlarged preview.
-     Wrapped in the hover-capability guard so taps on touch devices (where
-     :hover sticks) never trigger it, and scoped to leave the selection
-     rainbow on selected/active cards intact (it must stay visible on hover). */
+     Touch devices never enlarge at all (the enlarge rules are behind the
+     hover-capability guard), so this only has to cover a narrow window on a
+     real pointer. Scoped to leave the selection rainbow on selected/active
+     cards intact (it must stay visible on hover). */
   @media (hover: hover) and (pointer: fine) {
-    .canvas-card:hover {
+    .canvas-card:hover,
+    .canvas-card.hovered {
       transform: none !important;
       z-index: auto !important;
     }
