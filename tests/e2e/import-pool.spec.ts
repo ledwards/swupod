@@ -7,7 +7,8 @@ import { launchOptions } from './browser-launch'
  * Import Pool E2E (U11) — smoke test.
  *
  * Coverage:
- *   - Homepage Import Pool button is visible and navigates to /import-pool
+ *   - Import Pool is gated out of the user menu for logged-out visitors, and
+ *     reachable from it for an entitled (admin/allowlisted) user
  *   - Logged-out users see the auth-prompt screen on /import-pool
  *   - Non-patron logged-in users hit the patron gate at the API level (server-side)
  *   - Admin users (who bypass the patron gate) see the wizard
@@ -65,22 +66,31 @@ test.describe('Import Pool', () => {
     return { context, page }
   }
 
-  test('homepage shows Import Pool button on the bottom row', async () => {
+  test('Import Pool is not offered to a logged-out visitor', async () => {
     const { context, page } = await newPageAs(null)
     try {
       await page.goto(BASE_URL)
-      await expect(page.getByText('Import Pool', { exact: true })).toBeVisible({ timeout: 10000 })
-      await expect(page.getByText('Limited Deckbuilder')).toBeVisible()
+      await expect(page.locator('.mode-button-deckbuilder')).toBeVisible({ timeout: 10000 })
+      // The entry point lives in the user menu behind the admin/allowlist gate,
+      // so an anonymous visitor has no way in. (The words "Import Pool" can
+      // still appear in the release-notes panel, hence the specific locator.)
+      await expect(page.locator('.auth-widget-import-pool-item')).toHaveCount(0)
     } finally {
       await context.close()
     }
   })
 
-  test('clicking Import Pool navigates to /import', async () => {
-    const { context, page } = await newPageAs(null)
+  test('an entitled user reaches /import from the user menu', async () => {
+    const user = await createTestUser('ImportPoolMenuTester', TEST_ID, { isAdmin: true })
+    const { context, page } = await newPageAs(user)
     try {
       await page.goto(BASE_URL)
-      await page.getByText('Import Pool', { exact: true }).click()
+      await page.getByRole('button', { name: 'User menu' }).click()
+
+      const item = page.locator('.auth-widget-import-pool-item')
+      await expect(item).toBeVisible({ timeout: 10000 })
+      await item.click()
+
       await expect(page).toHaveURL(/\/import/, { timeout: 10000 })
     } finally {
       await context.close()
@@ -91,7 +101,9 @@ test.describe('Import Pool', () => {
     const { context, page } = await newPageAs(null)
     try {
       await page.goto(`${BASE_URL}/import`)
-      await expect(page.getByText('Sign in with Discord')).toBeVisible({ timeout: 10000 })
+      // The phrase appears twice — in the explanatory note and on the button.
+      await expect(page.getByRole('button', { name: 'Sign in with Discord' }))
+        .toBeVisible({ timeout: 10000 })
       await expect(page.getByText('Friends of the Pod')).toBeVisible()
     } finally {
       await context.close()
@@ -116,8 +128,10 @@ test.describe('Import Pool', () => {
         },
       })
       expect(response.status()).toBe(403)
+      // jsonResponse wraps every payload as { success, data, message }, so the
+      // gate's code sits under data.
       const body = await response.json()
-      expect(body.code).toBe('PATRON_REQUIRED')
+      expect(body.data?.code ?? body.code).toBe('PATRON_REQUIRED')
     } finally {
       await context.close()
     }
@@ -140,8 +154,10 @@ test.describe('Import Pool', () => {
         },
       })
       expect(response.status()).toBe(403)
+      // jsonResponse wraps every payload as { success, data, message }, so the
+      // gate's code sits under data.
       const body = await response.json()
-      expect(body.code).toBe('PATRON_REQUIRED')
+      expect(body.data?.code ?? body.code).toBe('PATRON_REQUIRED')
     } finally {
       await context.close()
     }

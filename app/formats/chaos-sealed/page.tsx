@@ -289,6 +289,7 @@ export default function ChaosSealedPage() {
                 return (
                   <div
                     key={slotIndex}
+                    data-testid="tray-pack"
                     style={{ width: 100, cursor: 'pointer' }}
                     onClick={() => removeSetPackAt(slotIndex)}
                   >
@@ -297,7 +298,7 @@ export default function ChaosSealedPage() {
                 )
               }
               return (
-                <div key={slotIndex} style={{ width: 100, aspectRatio: '2.5 / 3.5', borderRadius: 8, border: '2px dashed rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)' }} />
+                <div key={slotIndex} data-testid="tray-slot-empty" style={{ width: 100, aspectRatio: '2.5 / 3.5', borderRadius: 8, border: '2px dashed rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)' }} />
               )
             })}
           </div>

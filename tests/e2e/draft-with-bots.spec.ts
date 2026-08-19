@@ -28,6 +28,8 @@ test.describe('Draft with bots', () => {
   let page: Page
   let user: any
   let shareId: string | null = null
+  /** Errors and warnings from the page, for failure diagnostics. */
+  const consoleLog: string[] = []
 
   test.beforeAll(async () => {
     debugLog(`\n${'='.repeat(50)}`)
@@ -64,9 +66,15 @@ test.describe('Draft with bots', () => {
     await context.addCookies([cookieConfig])
 
     page = await context.newPage()
+    // Keep the warnings too: the draft refuses a pick with a console.warn
+    // ("Card no longer in pack"), which is invisible if only errors are read.
     page.on('console', msg => {
-      if (msg.type() === 'error') {
+      const type = msg.type()
+      if (type === 'error') {
         debugLog(`  [Error]:`, msg.text().slice(0, 80))
+      }
+      if (type === 'error' || type === 'warning') {
+        consoleLog.push(`${type}: ${msg.text().slice(0, 200)}`)
       }
     })
 
@@ -105,18 +113,23 @@ test.describe('Draft with bots', () => {
     shareId = page.url().split('/draft/')[1]?.split('?')[0]
     debugLog(`✓ Solo draft created: ${shareId}`)
 
-    await page.waitForSelector('.draft-lobby', { timeout: 10000 })
-
-    // Verify bots were added
-    await page.waitForTimeout(2000)
-    const playerCountText = await page.locator('.player-count').textContent()
-    debugLog(`  Player count: ${playerCountText}`)
+    // A solo draft fills its seats with bots and starts itself, so it can land
+    // straight in the leader preview — .draft-lobby only renders while the
+    // draft is still 'waiting'. Take whichever arrives.
+    await page.waitForSelector('.draft-lobby, .leader-preview-phase', { timeout: 30000 })
 
     // === STEP 2: Start draft (two-stage: Ready → leader preview → Start Draft) ===
     debugLog('\n--- STEP 2: Starting draft ---')
-    const readyButton = page.locator('button:has-text("Ready")')
-    await expect(readyButton).toBeEnabled({ timeout: 10000 })
-    await readyButton.click()
+    if (await page.locator('.draft-lobby').isVisible().catch(() => false)) {
+      const playerCountText = await page.locator('.player-count').textContent()
+      debugLog(`  Player count: ${playerCountText}`)
+
+      const readyButton = page.locator('button:has-text("Ready")')
+      await expect(readyButton).toBeEnabled({ timeout: 10000 })
+      await readyButton.click()
+    } else {
+      debugLog('  (Solo draft started itself — no waiting lobby)')
+    }
 
     // Leader preview: leaders revealed, no picking yet
     await page.waitForSelector('.leader-preview-phase', { timeout: 30000 })
@@ -251,30 +264,56 @@ test.describe('Draft with bots', () => {
       // Click a card with retry (click may be missed if loading state changes mid-click)
       const cardCount = await page.locator(packSelector).count()
       debugLog(`      Clicking card (${cardCount} available)...`)
+      // With seven bots the pick submits and the next pack arrives within a
+      // beat, so a click that worked usually leaves NO .selected card behind —
+      // the whole pack has been replaced. Any of "a card is selected", "the
+      // pack changed" or "the pack is gone" means the click landed.
       let cardSelected = false
+      let lastClickError = 'none'
+      // The pack we actually picked from, so the wait below knows what it is
+      // waiting to move on from.
+      let pickedFrom = ''
       for (let clickAttempt = 0; clickAttempt < 5 && !cardSelected; clickAttempt++) {
         if (page.url().includes('/pool/')) { cardSelected = true; break }
+        const before = await packSignature()
+        pickedFrom = before
         const available = await page.locator(packSelector).count()
         if (available > 0) {
-          await page.locator(packSelector).first().click({ timeout: 2000 }).catch(() => {})
+          await page.locator(packSelector).first().click({ timeout: 2000 })
+            .catch((e: Error) => { lastClickError = e.message.split('\n')[0] })
           await page.waitForTimeout(500)
         }
         const hasSelection = await page.locator('.pack-grid .draftable-card.selected').count() > 0
         if (hasSelection) { cardSelected = true; break }
+        const after = await packSignature()
+        if (after !== before) { cardSelected = true; break }
         // Also check if pick was auto-submitted
         const wasPicked = await page.locator('.pack-grid .draftable-card').count() === 0
         if (wasPicked) { cardSelected = true; break }
         await page.waitForTimeout(500)
       }
       if (!cardSelected) {
-        throw new Error(`Pick ${pick}: Failed to select a card after multiple attempts`)
+        // Say what actually went wrong — a silent click failure here used to
+        // surface only as "failed after multiple attempts".
+        const state = await page.evaluate(() => ({
+          cards: document.querySelectorAll('.pack-grid .draftable-card').length,
+          selected: document.querySelectorAll('.pack-grid .draftable-card.selected').length,
+          disabled: document.querySelectorAll('.pack-grid .draftable-card.disabled').length,
+          skeletons: document.querySelectorAll('.skeleton-card').length,
+          status: document.querySelector('.no-cards')?.textContent || null,
+        }))
+        throw new Error(
+          `Pick ${pick}: Failed to select a card. last click error: ${lastClickError}; ` +
+          `state: ${JSON.stringify(state)}; ` +
+          `console: ${JSON.stringify(consoleLog.slice(-5))}`,
+        )
       }
       debugLog(`      ✓ Card selected`)
 
-      // Wait for pick to advance (bots will pick quickly)
+      // Wait for the next pack to arrive (bots pick quickly)
       if (pick < PICKS_TO_TEST && !page.url().includes('/pool/')) {
         debugLog(`      Waiting for next pick...`)
-        await waitForPickAdvance(1, pick)
+        await waitForNextPack(pickedFrom)
       }
     }
 
@@ -356,24 +395,35 @@ test.describe('Draft with bots', () => {
     throw new Error('Timeout waiting for pack draft phase - draft stuck')
   }
 
-  // Helper: Wait for pack pick to advance past current pick (FAILS on timeout)
-  async function waitForPickAdvance(currentPack: number, currentPick: number): Promise<void> {
+  /** The cards currently on offer, as a comparable string. */
+  async function packSignature(): Promise<string> {
+    return page.$$eval('.pack-grid .draftable-card', (els) =>
+      els.map((e) => e.getAttribute('aria-label')).join('|'))
+  }
+
+  /**
+   * Wait until the next pack is in front of us and pickable.
+   *
+   * There is no pick counter to read: .round-pick-info lives inside TimerPanel,
+   * which renders a bare placeholder when no timer is running — and a solo
+   * draft has timers off by default. What is always true is that a pick passes
+   * the pack on, so wait for a settled grid that isn't the one just picked
+   * from — `previousSignature` is the pack the last pick was made from.
+   * FAILS on timeout.
+   */
+  async function waitForNextPack(previousSignature: string): Promise<void> {
     for (let attempts = 0; attempts < 60; attempts++) { // 30 seconds
-      try {
-        await pollServer()
+      await pollServer()
 
-        if (page.url().includes('/pool/')) return
+      if (page.url().includes('/pool/')) return
 
-        const roundInfo = await page.locator('.round-pick-info').textContent({ timeout: 500 })
-        const match = roundInfo?.match(/Pack (\d+) - Pick (\d+)/)
-        if (match) {
-          const pack = parseInt(match[1])
-          const pick = parseInt(match[2])
-          if (pack > currentPack || (pack === currentPack && pick > currentPick)) return
-        }
-      } catch {}
+      const passing = await page.locator('.skeleton-card').count()
+      if (passing === 0) {
+        const signature = await packSignature()
+        if (signature && signature !== previousSignature) return
+      }
       await page.waitForTimeout(500)
     }
-    throw new Error(`Timeout waiting to advance past Pack ${currentPack} Pick ${currentPick} - draft stuck`)
+    throw new Error('Timeout waiting for the next pack - draft stuck')
   }
 })

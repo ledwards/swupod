@@ -27,6 +27,28 @@ test.describe.configure({ mode: 'serial' })
 test.skip(({ browserName, isMobile }) => browserName !== 'chromium' || isMobile, 'Desktop Chromium only')
 test.setTimeout(180000) // 3min — real Anthropic call inside
 
+/**
+ * The registration-sheet photos to drive the wizard with.
+ *
+ * A HEIC pair exercises the HEIC→JPG server-side conversion, which is where
+ * the suspected crop bug lives — but the photos are somebody's own, not
+ * fixtures in the repo, so the paths come from the environment. Comma-separate
+ * two paths in IMPORT_POOL_CROP_PHOTOS.
+ */
+function cropPhotos(): string[] {
+  const raw = process.env.IMPORT_POOL_CROP_PHOTOS
+  if (!raw) {
+    throw new Error(
+      'IMPORT_POOL_CROP_PHOTOS is not set. Point it at two registration-sheet ' +
+      'photos, comma-separated, e.g. IMPORT_POOL_CROP_PHOTOS=a.HEIC,b.HEIC',
+    )
+  }
+  const paths = raw.split(',').map((s) => s.trim()).filter(Boolean)
+  const missing = paths.filter((p) => !fs.existsSync(p))
+  if (missing.length) throw new Error(`IMPORT_POOL_CROP_PHOTOS: no such file(s): ${missing.join(', ')}`)
+  return paths
+}
+
 test.describe('Import Pool — crop verification', () => {
   let browser
   let user
@@ -62,12 +84,8 @@ test.describe('Import Pool — crop verification', () => {
     await page.goto(`${BASE_URL}/import`)
     await page.waitForLoadState('networkidle')
 
-    // Upload Lee's actual HEIC pair — exercises the HEIC→JPG server-side
-    // conversion path which is where the suspected crop bug lives.
-    const photo1 = '/Users/lee/Downloads/IMG_3239.HEIC'
-    const photo2 = '/Users/lee/Downloads/IMG_3240.HEIC'
     const fileInput = page.locator('input[type="file"]').first()
-    await fileInput.setInputFiles([photo1, photo2])
+    await fileInput.setInputFiles(cropPhotos())
 
     // Wait for both photos to upload — match only loaded photo figures, not
     // the "Add another" label (which shares the import-pool-image-card class

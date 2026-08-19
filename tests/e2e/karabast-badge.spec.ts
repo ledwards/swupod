@@ -102,11 +102,7 @@ test.describe("W/L/D badge on PTP play page", () => {
     await page.waitForSelector('.play-header', { timeout: 15_000 });
 
     // WldBadge returns null when all zeros — no badge element should be present
-    const badgeVisible = await page
-      .locator("text=/\\dW \\dL \\dD/")
-      .isVisible()
-      .catch(() => false);
-    expect(badgeVisible).toBe(false);
+    await expect(page.locator(".play-record-badge")).toHaveCount(0);
   });
 
   test("badge shows W/L/D record when pool has match results", async () => {
@@ -116,8 +112,10 @@ test.describe("W/L/D badge on PTP play page", () => {
     await page.goto(`${BASE_URL}/pool/${shareId}/deck/play`, { waitUntil: "networkidle" });
     await page.waitForSelector('.play-header', { timeout: 15_000 });
 
-    const badge = page.locator("text=/3W 1L 0D/");
+    // formatRecord renders "3W-1L-0D (75%)" — hyphenated, with the win rate.
+    const badge = page.locator(".play-record-badge");
     await expect(badge).toBeVisible({ timeout: 10_000 });
+    await expect(badge).toHaveText(/3W-1L-0D/);
   });
 
   test("badge renders one link per match result pointing to Wayfinder", async () => {

@@ -150,29 +150,45 @@ test.describe('Logged-out user export flow', () => {
       await page.waitForTimeout(500)
     }
 
-    // Add cards to deck
-    const poolCards = page.locator('.canvas-card:not(.leader):not(.base)')
+    // Add cards to deck. The builder opens in arena view, where pool cards are
+    // .resizable-card inside .arena-pool-section — only leaders and bases are
+    // still .canvas-card. Cover both so this survives a view-mode default flip.
+    // Both halves are scoped to a pool container: an unscoped .canvas-card
+    // fallback also matches the chosen leader/base echoed in the info bar,
+    // which sits earlier in the DOM and is not clickable.
+    //
+    // Duplicates stack, and only the top card of a stack (.is-last) is fully
+    // clickable — aim at a buried one and the enlarged card in front of it
+    // intercepts the click.
+    const poolCardSelector =
+      '.arena-pool-section .arena-stacked-card.is-last .resizable-card, ' +
+      '.pool-section .canvas-card:not(.leader):not(.base)'
+    const poolCards = page.locator(poolCardSelector)
     const poolCardCount = await poolCards.count()
     console.log(`  Found ${poolCardCount} pool cards`)
+    expect(poolCardCount).toBeGreaterThan(0)
 
     const cardsToAdd = Math.min(35, poolCardCount)
     let cardsAdded = 0
     for (let i = 0; i < cardsToAdd && cardsAdded < 35; i++) {
+      // Clicking moves the card into the deck, so always take what is first.
+      const card = page.locator(poolCardSelector).first()
       try {
-        const availableCards = page.locator('.canvas-card:not(.leader):not(.base)')
-        const count = await availableCards.count()
-        if (count === 0) break
-        const card = availableCards.nth(i % count)
-        if (await card.isVisible({ timeout: 500 }).catch(() => false)) {
-          await card.click()
-          cardsAdded++
-          await page.waitForTimeout(50)
-        }
-      } catch {
-        // Card might have moved
+        await card.click({ timeout: 3000 })
+        cardsAdded++
+        // Park the pointer: a card left hovered is scaled up and swallows the
+        // click meant for its neighbour.
+        await page.mouse.move(0, 0)
+        await page.waitForTimeout(50)
+      } catch (e: any) {
+        // Pool exhausted, or the head of the list will not take a click. Say
+        // which — a silent break here reads as "the pool was empty".
+        console.log(`  Stopped after ${cardsAdded}: ${String(e.message).split('\n').slice(0, 12).join(' / ')}`)
+        break
       }
     }
     console.log(`✓ Added ${cardsAdded} cards to deck`)
+    expect(cardsAdded).toBeGreaterThan(0)
 
     // Wait for auto-save (should succeed now for anonymous pools)
     console.log('  Waiting for auto-save (should succeed for anonymous pool)...')

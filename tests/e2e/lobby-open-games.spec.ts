@@ -167,7 +167,13 @@ test.describe('Lobby V1 — Open Games', () => {
   test('poster creates a public open game through New Game', async () => {
     const { page } = posterCtx
     await page.goto('/lobby')
-    await page.getByRole('button', { name: 'New Lobby' }).click()
+    // The create CTA is in the column title as "New Lobby" once the board has
+    // rows, and in the empty state as "Create a Lobby" — a fresh test database
+    // gives the latter.
+    await page
+      .getByRole('button', { name: /^(New Lobby|Create a Lobby)$/ })
+      .first()
+      .click()
 
     // Deck picker: select the seeded draft deck. (RUN_SET is synthetic, so
     // the picker buckets it as "Other"/Chaos — match on the deck's leader.)
@@ -390,19 +396,15 @@ test.describe('Lobby V1 — Open Games', () => {
     await posterCtx.page.waitForURL(/\/lobby/, { timeout: 15_000 })
   })
 
-  test('Play Now instantly matches two compatible seekers (AE1/AE2)', async () => {
-    // Poster goes first: empty board → posts a seek.
-    const posterPage = posterCtx.page
-    await posterPage.goto('/lobby')
-    await posterPage.getByRole('button', { name: 'Play Now' }).click()
-    await expect(posterPage.getByText(/waiting for an opponent/i).first())
-      .toBeVisible({ timeout: 15_000 })
-
-    // Joiner's Play Now accepts the oldest compatible listing instantly.
-    const joinerPage = joinerCtx.page
-    await joinerPage.goto('/lobby')
-    await joinerPage.getByRole('button', { name: 'Play Now' }).click()
-    await waitForMatchPage(joinerPage, 'player2_id', joiner.user.id)
-    await expect(joinerPage.locator('.lobby-match-players').getByText('LobbyPoster')).toBeVisible()
-  })
+  /*
+   * The "Play Now instantly matches two compatible seekers (AE1/AE2)" test
+   * lived here.
+   *
+   * Play Now is gone from the product — see the note in Lobby.css: the verb row
+   * was removed because Play Now silently grabbed your first eligible pool
+   * (built or not), and New Lobby duplicated the create action that now lives
+   * in the Open Lobbies title row. With no button to press there is no
+   * behaviour left to assert, so the test went with the feature rather than
+   * being kept alive against a surface that no longer exists.
+   */
 })

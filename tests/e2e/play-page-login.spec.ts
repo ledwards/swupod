@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { settleNewPool } from './helpers.ts'
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { closeDb } from './test-utils.ts'
 import pg from 'pg'
@@ -90,8 +91,9 @@ test.describe('Play page Discord login button', () => {
     await expect(page.locator('.sets-grid .set-card').first()).toBeVisible({ timeout: 10000 })
     await page.locator('.sets-grid .set-card').first().click()
 
-    await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 30000 })
-    poolShareId = page.url().split('/pool/')[1]?.split('/')[0]?.split('?')[0]
+    // Settle on the pool: dismiss the pack-opening animation and wait for the
+    // row to exist, or /deck/play renders "Pool not found" and no login banner.
+    poolShareId = await settleNewPool(page)
     console.log(`✓ Pool created: ${poolShareId}`)
 
     // === STEP 2: Navigate to Play page ===

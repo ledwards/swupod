@@ -15,17 +15,18 @@ export default defineConfig({
      claimable inside a date range. This config has no such server, so picking
      the file up here just runs six tests that cannot pass. Run them with
      `npm run test:promo:e2e`. */
-  testIgnore: /gc-promo-packs\.spec\.ts/,
-  /* Parallel, but know what that costs. regression.spec, lobby-open-games.spec
-     and multiplayer.spec produce 24 failures together on 4 workers and 0 on one:
-     several specs assert on globally visible state, and the landing board lists
-     whatever open games exist right now.
-
-     Serialising the WHOLE suite does not fix it though — measured 74 failures on
-     4 workers against 72 on one, for 3x the runtime (20min -> 1.3h). Every spec
-     file passes alone and the suite fails either way, so the dominant cause is
-     state accumulating across a run, not how tests are scheduled. Not worth the
-     runtime until that is found. */
+  /* import-pool-crop-verify is a diagnostic, not a regression test: it needs
+     two real registration-sheet photos on disk and makes a live, paid
+     Anthropic extraction call. Point IMPORT_POOL_CROP_PHOTOS at a pair of
+     photos and run `npm run test:e2e:crop-verify` when investigating crops. */
+  testIgnore: /(gc-promo-packs|import-pool-crop-verify)\.spec\.ts/,
+  /* Parallel. Serialising the whole suite was measured and does not help:
+     74 failures on 4 workers against 72 on one, for 3x the runtime
+     (20min -> 1.3h). The failures that looked scheduling-dependent reproduce
+     one spec at a time — they were stale expectations, not interference — so
+     the parallel runtime is the better trade. Specs that do share globally
+     visible state (the landing board lists whatever open games exist right
+     now) declare `test.describe.configure({ mode: 'serial' })` themselves. */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code */
   forbidOnly: !!process.env.CI,
@@ -114,6 +115,20 @@ export default defineConfig({
     // dev server) reuses that server instead of booting a second one on :3000.
     url: process.env.TEST_BASE_URL || 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
+    env: {
+      /* `npm start` runs the built server, which means NODE_ENV=production, and
+         the /api/test/* routes refuse to run in production unless this is set.
+         Those routes are how the suite mints users and pods, so without it every
+         spec that needs a logged-in fixture fails with a 403 that has nothing to
+         do with the behaviour under test. */
+      ALLOW_TEST_USERS: '1',
+      /* Socket.io only accepts origins built from APP_URL and friends, plus
+         localhost — and localhost is added for dev only. `npm start` is
+         production, so without this every websocket handshake from the suite
+         is refused with a 400 and the app runs with no real-time layer at all,
+         quietly falling back to polling. */
+      APP_URL: process.env.TEST_BASE_URL || 'http://localhost:3000',
+    },
     /* A cold production build is minutes, not seconds — and a CI runner is
        slower than a laptop. Generous on purpose: a build that overruns this
        fails the job for a reason that has nothing to do with any test. */

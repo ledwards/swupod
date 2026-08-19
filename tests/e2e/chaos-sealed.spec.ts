@@ -3,6 +3,7 @@ import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwrig
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
 import { waitForCardsToLoad } from './helpers.ts'
 import { launchOptions } from './browser-launch'
+import { requiredPackCount, trayPacks, expectSelected, duplicateButtons } from './chaos-helpers.ts'
 
 /**
  * Chaos Sealed E2E test
@@ -28,6 +29,8 @@ test.describe('Chaos Sealed', () => {
   let context: BrowserContext
   let page: Page
   let user: any
+  /** Slots the picker asked for, so the pool assertion scales with it. */
+  let requiredPacks = 0
 
   test.beforeAll(async () => {
     browser = await chromium.launch(launchOptions)
@@ -95,66 +98,50 @@ test.describe('Chaos Sealed', () => {
     console.log('✓ Generate button disabled with no selection')
   })
 
-  test('select 6 packs using + button for duplicates', async () => {
+  test('fill the pool, using + to take a second copy of a set', async () => {
     const setButtons = page.locator('.pack-selector-button')
+    const required = await requiredPackCount(page)
+    requiredPacks = required
+    // Sealed always wants more slots than the three distinct sets below, which
+    // is what leaves room for the duplicate this test is about.
+    expect(required).toBeGreaterThan(3)
 
-    // Click first 3 sets once each
-    await setButtons.nth(0).click()
-    await page.waitForTimeout(200)
-    await setButtons.nth(1).click()
-    await page.waitForTimeout(200)
-    await setButtons.nth(2).click()
-    await page.waitForTimeout(200)
-    await expect(page.locator('h3').first()).toContainText('3/6')
+    for (let i = 0; i < 3; i++) {
+      await setButtons.nth(i).click()
+      await expectSelected(page, i + 1, required)
+    }
 
-    // Use + button to add 3 more from the first 3 sets
-    // The + buttons are inside selected set-buttons
-    const plusButtons = page.locator('.pack-selector-button.selected .pack-selector-qty-btn--plus').filter({ hasText: '+' })
-    const plusCount = await plusButtons.count()
-    expect(plusCount).toBeGreaterThanOrEqual(1)
+    // A second copy of the first set, via its + control.
+    await expect(duplicateButtons(page).first()).toBeVisible()
+    await duplicateButtons(page).first().click()
+    await expectSelected(page, 4, required)
 
-    await plusButtons.first().click()
-    await page.waitForTimeout(200)
-    await expect(page.locator('h3').first()).toContainText('4/6')
+    // Distinct sets for whatever slots remain. One selection so far was a
+    // duplicate, so the next unused set button is at index `selected - 1`.
+    for (let selected = 4; selected < required; selected++) {
+      await setButtons.nth(selected - 1).click()
+      await expectSelected(page, selected + 1, required)
+    }
 
-    // Click 2 more different sets
-    await setButtons.nth(3).click()
-    await page.waitForTimeout(200)
-    await setButtons.nth(4).click()
-    await page.waitForTimeout(200)
-    await expect(page.locator('h3').first()).toContainText('6/6')
+    await expect(trayPacks(page)).toHaveCount(required)
 
-    // Selected packs tray shows 6 packs
-    const selectedPacks = page.locator('.selected-pack:not(.skeleton)')
-    await expect(selectedPacks).toHaveCount(6)
-
-    // Generate button is now enabled
     const genButton = page.locator('button:has-text("Create Chaos")')
     await expect(genButton).toBeEnabled()
-    console.log('✓ Selected 6 packs, generate button enabled')
+    console.log(`✓ Selected ${required} packs, generate button enabled`)
   })
 
   test('deselect a pack by clicking it in the tray', async () => {
-    const selectedPacks = page.locator('.selected-pack:not(.skeleton)')
-    await selectedPacks.first().click()
-    await page.waitForTimeout(200)
+    const required = await requiredPackCount(page)
 
-    await expect(page.locator('h3').first()).toContainText('5/6')
+    await trayPacks(page).first().click()
+    await expectSelected(page, required - 1, required)
 
     const genButton = page.locator('button:has-text("Create Chaos")')
     await expect(genButton).toBeDisabled()
 
-    // Re-add to get back to 6
-    const setButtons = page.locator('.pack-selector-button')
-    // Click an unselected set or use + on a selected one
-    const plusButtons = page.locator('.pack-selector-button.selected .pack-selector-qty-btn--plus').filter({ hasText: '+' })
-    if (await plusButtons.count() > 0) {
-      await plusButtons.first().click()
-    } else {
-      await setButtons.nth(5).click()
-    }
-    await page.waitForTimeout(200)
-    await expect(page.locator('h3').first()).toContainText('6/6')
+    // Put it back, so the next test starts from a complete pool.
+    await duplicateButtons(page).first().click()
+    await expectSelected(page, required, required)
     console.log('✓ Deselect and reselect works')
   })
 
@@ -166,19 +153,26 @@ test.describe('Chaos Sealed', () => {
     // Should show "Creating..." state
     await expect(page.locator('button:has-text("Creating...")')).toBeVisible({ timeout: 5000 })
 
-    // Should navigate to /pool/<shareId>
-    await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 30000 })
+    // The generated pool opens in a pack-opening animation on this same URL —
+    // finishing or skipping it is what routes to /pool/<shareId>, so waiting on
+    // the URL first would just time out with the packs sitting on screen.
+    await expect(page.locator('.skip-button')).toBeVisible({ timeout: 60000 })
+    await waitForCardsToLoad(page)
+
+    // The page pushes /pool/<shareId>, which redirects a sealed pool on to
+    // /sealed_pool/<shareId> — so match either.
+    await page.waitForURL(/\/(sealed_)?pool\/[a-zA-Z0-9_-]+/, { timeout: 30000 })
     const url = page.url()
-    expect(url).toContain('/pool/')
+    expect(url).toMatch(/\/(sealed_)?pool\//)
     console.log(`✓ Navigated to pool: ${url}`)
 
-    // Wait for cards to load (handles pack opening animation)
     await waitForCardsToLoad(page)
     await page.waitForTimeout(2000)
 
-    // Should have cards visible (6 packs * 16 cards = 96)
+    // A pack is 16 cards; allow slack for however the pool is rendered rather
+    // than pinning a total that moves with the picker's default.
     const cardCount = await page.locator('.card-image, .pool-card, .canvas-card').count()
-    expect(cardCount).toBeGreaterThanOrEqual(80)
+    expect(cardCount).toBeGreaterThanOrEqual(requiredPacks * 13)
     console.log(`✓ Pool has ${cardCount} cards`)
   })
 

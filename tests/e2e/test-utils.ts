@@ -74,15 +74,23 @@ export async function createTestUser(username: string, testId: string, options?:
 
   const user = result.rows[0]
 
-  // Create JWT token (must include is_beta_tester for requireBetaAccess)
+  // Mint the token the way lib/auth.ts createToken() does.
+  //
+  // auth_version matters: the privileged gates (requireBetaAccess,
+  // requireAdmin) call assertPrivilegeFresh, which fails CLOSED on a token
+  // with no auth_version claim. A test user minted without it is logged in
+  // everywhere except the routes it was given beta access for — which reads
+  // as "Authentication required" on a page that is showing your avatar.
   const token = jwt.sign(
     {
       id: user.id,
+      discord_id: user.discord_id,
       email: user.email,
       username: user.username,
       avatar_url: user.avatar_url,
       is_beta_tester: user.is_beta_tester || false,
       is_admin: user.is_admin || false,
+      auth_version: typeof user.auth_version === 'number' ? user.auth_version : 1,
     },
     JWT_SECRET,
     { expiresIn: '1d' }

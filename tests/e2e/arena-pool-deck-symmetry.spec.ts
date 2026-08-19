@@ -85,6 +85,8 @@ test.describe('Arena Pool/Deck symmetry', () => {
     // Each section header is followed by an .arena-section-controls toolbar with same children
     const summarize = async (headerSelector: string) => {
       return await page.evaluate((sel) => {
+        const label = (b: Element) =>
+          (b.textContent || '').replace(/[\u2212\u2013\u2014]/g, '-').replace(/\s+/g, ' ').trim()
         const header = document.querySelector(sel)
         const controls = header?.nextElementSibling
         if (!controls?.classList.contains('arena-section-controls')) return null
@@ -92,8 +94,10 @@ test.describe('Arena Pool/Deck symmetry', () => {
           sortBtns: controls.querySelectorAll('.inline-sort-controls button').length,
           filterBtn: !!controls.querySelector('.filter-button'),
           penaltyText: controls.textContent?.includes('Select a leader') || controls.textContent?.includes('Aspect Penalties'),
-          addAll: !!Array.from(controls.querySelectorAll('button')).find(b => b.textContent?.trim() === '+ All'),
-          removeAll: !!Array.from(controls.querySelectorAll('button')).find(b => b.textContent?.trim() === '- All'),
+          // The remove button is labelled with a real minus sign (U+2212), not
+          // a hyphen, so normalise before comparing or it never matches.
+          addAll: !!Array.from(controls.querySelectorAll('button')).find(b => label(b) === '+ All'),
+          removeAll: !!Array.from(controls.querySelectorAll('button')).find(b => label(b) === '- All'),
           // Single-line layout
           height: controls.getBoundingClientRect().height,
         }

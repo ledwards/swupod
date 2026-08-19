@@ -1,7 +1,13 @@
 // @ts-nocheck
 import { test, expect } from '@playwright/test'
 import { waitForNetworkIdle, shouldIgnoreError } from './helpers.ts'
+import { requiredPackCount, trayPacks, expectSelected } from './chaos-helpers.ts'
 
+/**
+ * /solo/chaos-draft is a redirect onto /formats/chaos-draft, kept so old links
+ * keep working. These tests enter through the old URL and assert the picker
+ * they land on; chaos-draft.spec.ts covers creating a draft from it.
+ */
 test.describe('Solo Chaos Draft Page', () => {
   test.beforeEach(async ({ page }) => {
     const errors: string[] = []
@@ -40,38 +46,29 @@ test.describe('Solo Chaos Draft Page', () => {
     await expect(page.locator('h3').first()).toContainText(/Select \d+ Packs \(0\/\d+\)/)
 
     // Create button is disabled
-    const createButton = page.locator('button:has-text("Create Chaos Draft")')
+    const createButton = page.locator('button:has-text("Create Chaos")')
     await expect(createButton).toBeDisabled()
 
     // Check no JS errors
     expect((page as any).errors).toHaveLength(0)
   })
 
-  test('select 3 packs and create button enables', async ({ page }) => {
+  test('selecting a pack for every slot enables the create button', async ({ page }) => {
     await page.goto('/solo/chaos-draft')
     await waitForNetworkIdle(page)
     await expect(page.locator('.pack-selector-button').first()).toBeVisible({ timeout: 10000 })
 
     const setButtons = page.locator('.pack-selector-button')
+    const required = await requiredPackCount(page)
 
-    await setButtons.nth(0).click()
-    await page.waitForTimeout(200)
-    await expect(page.locator('h3').first()).toContainText(/\(1\/\d+\)/)
+    for (let i = 0; i < required; i++) {
+      await setButtons.nth(i).click()
+      await expectSelected(page, i + 1, required)
+    }
 
-    await setButtons.nth(1).click()
-    await page.waitForTimeout(200)
-    await expect(page.locator('h3').first()).toContainText('2/3')
+    await expect(trayPacks(page)).toHaveCount(required)
 
-    await setButtons.nth(2).click()
-    await page.waitForTimeout(200)
-    await expect(page.locator('h3').first()).toContainText('3/3')
-
-    // Selected packs tray shows 3 packs
-    const selectedPacks = page.locator('.selected-pack:not(.skeleton)')
-    await expect(selectedPacks).toHaveCount(3)
-
-    // Create button is enabled
-    const createButton = page.locator('button:has-text("Create Chaos Draft")')
+    const createButton = page.locator('button:has-text("Create Chaos")')
     await expect(createButton).toBeEnabled()
   })
 

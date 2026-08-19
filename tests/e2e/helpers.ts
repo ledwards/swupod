@@ -257,3 +257,35 @@ export async function isMobileView(page: Page): Promise<boolean> {
   const size = await getViewportSize(page)
   return size != null && size.width <= 768
 }
+
+/**
+ * Wait until a freshly created pool is readable server-side.
+ *
+ * /pools/new routes to /pool/<shareId> as soon as the packs are generated and
+ * saves the pool behind the pack-opening animation, so a test that jumps
+ * straight on to another route can beat the write and be told "Pool not found".
+ * Poll the API rather than sleeping — the write lands whenever it lands.
+ */
+export async function waitForPoolPersisted(page: Page, shareId: string): Promise<void> {
+  await expect
+    .poll(async () => (await page.request.get(`/api/pools/${shareId}`)).status(), {
+      timeout: 60000,
+      message: `pool ${shareId} was never persisted`,
+    })
+    .toBe(200)
+}
+
+/**
+ * From a page already navigating to a new pool: settle on /pool/<shareId>,
+ * dismiss the pack-opening animation, and return the id once it is persisted.
+ */
+export async function settleNewPool(page: Page): Promise<string> {
+  await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 60000 })
+  const shareId = page.url().split('/pool/')[1]?.split('/')[0]?.split('?')[0] as string
+
+  const skip = page.locator('.skip-button')
+  if (await skip.count()) await skip.click().catch(() => {})
+
+  await waitForPoolPersisted(page, shareId)
+  return shareId
+}

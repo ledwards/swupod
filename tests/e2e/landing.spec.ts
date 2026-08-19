@@ -33,12 +33,16 @@ test.describe('Landing Page', () => {
     // Check logo is visible
     await expect(page.locator('.landing-logo')).toBeVisible()
 
-    // Check Solo and Live Pod section headers are visible
-    await expect(page.locator('.mode-section-header').nth(0)).toContainText('Solo')
-    await expect(page.locator('.mode-section-header').nth(1)).toContainText('Live Pod')
+    // The three mode columns, in order. Scoped to .mode-section because the
+    // open-games board above them carries a .mode-section-header of its own
+    // ("Play Now!") and would otherwise be nth(0).
+    const columnHeaders = page.locator('.mode-section .mode-section-header')
+    await expect(columnHeaders.nth(0)).toContainText('Solo')
+    await expect(columnHeaders.nth(1)).toContainText('With Friends')
+    await expect(columnHeaders.nth(2)).toContainText('Deckbuilder')
 
     // Mode buttons across three columns. Logged out: Solo (Sealed/Draft/Other) +
-    // Live Pod (Sealed/Draft/Other) + Deckbuilder (Limited/My Stats) = 8.
+    // With Friends (Sealed/Draft/Other) + Deckbuilder (Limited/My Stats) = 8.
     // (History only appears in the Deckbuilder column when signed in.)
     const modeButtons = page.locator('.mode-button')
     await expect(modeButtons).toHaveCount(8)
@@ -74,7 +78,7 @@ test.describe('Landing Page', () => {
     await page.goto('/')
     await waitForNetworkIdle(page)
 
-    // Click the Draft button in Live Pod column
+    // Click the Draft button in the With Friends column
     const liveColumn = page.locator('.mode-section').nth(1)
     await liveColumn.locator('.mode-button', { hasText: 'Draft' }).click()
 

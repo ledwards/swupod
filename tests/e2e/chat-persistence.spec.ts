@@ -78,7 +78,8 @@ test.describe('Chat Persistence - Sealed Pod', () => {
       },
     })
 
-    expect(response.ok()).toBeTruthy()
+    // Say what the API objected to — a bare "false" here tells you nothing.
+    expect(response.ok(), `POST /api/draft ${response.status()}: ${await response.text()}`).toBeTruthy()
     const data = await response.json()
     shareId = (data.data || data).shareId
     expect(shareId).toBeTruthy()
@@ -98,7 +99,7 @@ test.describe('Chat Persistence - Sealed Pod', () => {
     // Check for the private pod notice
     const notice = page.locator('.chat-private-pod-notice')
     await expect(notice).toBeVisible({ timeout: 10_000 })
-    await expect(notice).toContainText("Private pods don't have persistent chat")
+    await expect(notice).toContainText('Private pods do not store chat history')
   })
 
   test('host sees Make Pod Public button', async () => {
@@ -192,7 +193,8 @@ test.describe('Chat Persistence - Draft Pod', () => {
       },
     })
 
-    expect(response.ok()).toBeTruthy()
+    // Say what the API objected to — a bare "false" here tells you nothing.
+    expect(response.ok(), `POST /api/draft ${response.status()}: ${await response.text()}`).toBeTruthy()
     const data = await response.json()
     shareId = (data.data || data).shareId
     expect(shareId).toBeTruthy()
@@ -211,7 +213,7 @@ test.describe('Chat Persistence - Draft Pod', () => {
 
     const notice = page.locator('.chat-private-pod-notice')
     await expect(notice).toBeVisible({ timeout: 10_000 })
-    await expect(notice).toContainText("Private pods don't have persistent chat")
+    await expect(notice).toContainText('Private pods do not store chat history')
   })
 
   test('draft host sees Make Pod Public button', async () => {

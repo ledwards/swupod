@@ -81,12 +81,15 @@ test.describe('Kick Player - Draft Lobby', () => {
     await hostPage.goto(`${BASE_URL}/draft/new`)
     await hostPage.waitForLoadState('networkidle')
 
-    // Select a set and create
-    const setButton = hostPage.locator('.set-option').first()
+    // Select a set and create. /draft/new renders the shared SetSelection, so
+    // the tiles are .set-card — there is no .set-option anywhere in the app.
+    const setButton = hostPage.locator('.set-card').first()
     await setButton.click()
 
-    // Wait for draft creation and redirect
-    await hostPage.waitForURL(/\/draft\/[a-zA-Z0-9]+/, { timeout: 15000 })
+    // Wait for draft creation and redirect. Exclude "new": we are already on
+    // /draft/new, so a pattern that accepts it resolves immediately and the
+    // share id comes out as the literal string "new".
+    await hostPage.waitForURL(/\/draft\/(?!new)[a-zA-Z0-9_-]+/, { timeout: 30000 })
     const url = hostPage.url()
     shareId = url.split('/draft/')[1]
     expect(shareId).toBeTruthy()
@@ -151,8 +154,9 @@ test.describe('Kick Player - Draft Lobby', () => {
   })
 
   test('confirming removal kicks the player', async () => {
-    // Click the danger button in the modal to confirm
-    const confirmBtn = hostPage.locator('.modal-overlay .btn-danger')
+    // Confirm with the modal's danger button. It is the shared Button
+    // component, whose modifier class is .btn--danger (not .btn-danger).
+    const confirmBtn = hostPage.locator('.modal-overlay .btn--danger')
     await confirmBtn.click()
 
     // Modal should close

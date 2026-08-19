@@ -211,9 +211,12 @@ test.describe('Import Pool — Resolve UI', () => {
     await page.waitForSelector('button:has-text("Import Pool"):not([disabled])', { timeout: 5000 })
     await page.click('button:has-text("Import Pool")')
 
-    // Step 2 — Resolve
+    // Step 2 — Resolve. The step is tabbed by section now: one table at a
+    // time, with the tab strip choosing which. There is no all-sections list
+    // and no "All" row filter any more.
     await page.waitForSelector('h2:has-text("Review Pool Registration")', { timeout: 10000 })
-    await expect(page.locator('table.ip-table').first()).toBeVisible()
+    await expect(page.locator('.ip-section-tabs')).toBeVisible()
+    await expect(page.locator('.ip-section-panel__table table').first()).toBeVisible()
 
     // Wait a beat so all card images load before screenshot
     await page.waitForTimeout(1500)
@@ -227,39 +230,32 @@ test.describe('Import Pool — Resolve UI', () => {
     await page.screenshot({ path: firstScreen, fullPage: false })
     console.log(`  First screen: ${firstScreen}\n`)
 
-    // Sanity checks. Default view hides poolQty=0 rows ("show only my pool"),
-    // so we should see ~70-90 rows: 6 leaders + 6 bases + ~70 unique others.
-    const rowCount = await page.locator('tbody tr.ip-row').count()
-    console.log(`  Rendered row count (pool-only): ${rowCount}`)
-    expect(rowCount).toBeGreaterThan(50)
-    expect(rowCount).toBeLessThan(120)
+    // The tab strip covers leaders, bases and every aspect, and ends with the
+    // full-sheet button — so more than the six aspects alone.
+    const tabs = page.locator('.ip-section-tab-wrap')
+    const tabCount = await tabs.count()
+    console.log(`  Section tabs: ${tabCount}`)
+    expect(tabCount).toBeGreaterThan(5)
 
-    // Toggle "show all rows" and re-count
-    // Click the "All" filter button in the segmented row-filter group
-    await page.click('.ip-toggle-group button:has-text("All")')
-    await page.waitForTimeout(200)
-    const allRowCount = await page.locator('tbody tr.ip-row').count()
-    console.log(`  Rendered row count (all): ${allRowCount}`)
-    expect(allRowCount).toBeGreaterThan(200)
+    // Leaders first, bases second — the order buildSectionTabs() lays down.
+    const tabTitle = async (i: number) =>
+      ((await tabs.nth(i).locator('button.ip-section-tab').first().getAttribute('title')) || '').toLowerCase()
+    expect(await tabTitle(0)).toContain('leaders')
+    expect(await tabTitle(1)).toContain('bases')
 
-    const sectionCount = await page.locator('.ip-section').count()
-    console.log(`  Aspect sections: ${sectionCount}`)
-    expect(sectionCount).toBeGreaterThan(5)
-
-    // Confirm the FIRST section is "Leaders"
-    const firstSectionTitle = await page
-      .locator('.ip-section .ip-section__title')
-      .first()
-      .innerText()
-    console.log(`  First section: "${firstSectionTitle.trim()}"`)
-    expect(firstSectionTitle.trim().toLowerCase()).toBe('leaders')
-
-    const secondSectionTitle = await page
-      .locator('.ip-section .ip-section__title')
-      .nth(1)
-      .innerText()
-    console.log(`  Second section: "${secondSectionTitle.trim()}"`)
-    expect(secondSectionTitle.trim().toLowerCase()).toBe('bases')
+    // Every tab renders its own rows; together they are the whole pool. The
+    // fixture is ~80 unique cards over 6 leaders and 6 bases.
+    let totalRows = 0
+    for (let i = 0; i < tabCount; i++) {
+      const title = await tabTitle(i)
+      // The trailing full-sheet button opens a modal rather than a section.
+      if (title.includes('full source sheet')) continue
+      await tabs.nth(i).locator('button.ip-section-tab').first().click()
+      await page.waitForTimeout(150)
+      totalRows += await page.locator('.ip-section-panel__table tbody tr.ip-source-modal__row').count()
+    }
+    console.log(`  Rendered rows across all sections: ${totalRows}`)
+    expect(totalRows).toBeGreaterThan(50)
 
     // === Persistence test: reload mid-Resolve must keep us on Resolve ===
     // Inspect what we wrote to localStorage
@@ -284,8 +280,12 @@ test.describe('Import Pool — Resolve UI', () => {
     console.log(`  Post-reload H2: "${visibleH2}"`)
     expect(visibleH2).toContain('Review')
 
-    const postReloadRows = await page.locator('tbody tr.ip-row').count()
-    console.log(`  Post-reload row count: ${postReloadRows}`)
-    expect(postReloadRows).toBeGreaterThan(50)
+    // Only the active section's table renders, so this is that section's rows,
+    // not the whole pool — it just has to be non-empty.
+    const postReloadRows = await page
+      .locator('.ip-section-panel__table tbody tr.ip-source-modal__row')
+      .count()
+    console.log(`  Post-reload row count (active section): ${postReloadRows}`)
+    expect(postReloadRows).toBeGreaterThan(0)
   })
 })

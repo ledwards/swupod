@@ -45,10 +45,19 @@ test.describe('Solo Draft Page', () => {
 
     await expect(page.locator('.set-card').first()).toBeVisible({ timeout: 10000 })
 
-    // Click a set — should trigger auth flow (redirect to Discord, then back)
-    // The full round-trip: /api/auth/signin/discord → Discord OAuth → callback → /solo/draft
-    // We verify the auth flow happened by checking we end up back with auth params
+    // Clicking a set hands off to Discord: /api/auth/signin/discord redirects
+    // to discord.com, which the suite deliberately cannot reach (every external
+    // host resolves to nothing), so waiting for that navigation to *load* would
+    // always time out. Assert the hand-off itself, including the path the user
+    // comes back to.
+    const signin = page.waitForRequest(
+      (req) => req.url().includes('/api/auth/signin/discord'),
+      { timeout: 15000 },
+    )
     await page.locator('.set-card').first().click()
-    await page.waitForURL(/discord\.com|\/solo\/draft\?auth=/, { timeout: 15000 })
+    const request = await signin
+
+    const returnTo = new URL(request.url()).searchParams.get('return_to')
+    expect(returnTo).toBe('/draft/solo')
   })
 })

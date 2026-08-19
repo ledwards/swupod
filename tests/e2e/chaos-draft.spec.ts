@@ -2,6 +2,7 @@
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
 import { launchOptions } from './browser-launch'
+import { requiredPackCount, trayPacks, expectSelected } from './chaos-helpers.ts'
 
 /**
  * Chaos Draft E2E test
@@ -94,50 +95,34 @@ test.describe('Chaos Draft', () => {
     console.log('✓ Create button disabled with no selection')
   })
 
-  test('select 3 packs and see them in the tray', async () => {
-    // Click first 3 different sets
+  test('selecting a pack for every slot fills the tray and enables create', async () => {
     const setButtons = page.locator('.pack-selector-button')
+    const required = await requiredPackCount(page)
 
-    await setButtons.nth(0).click()
-    await page.waitForTimeout(200)
-    await expect(page.locator('h3').first()).toContainText(/\(1\/\d+\)/)
+    for (let i = 0; i < required; i++) {
+      await setButtons.nth(i).click()
+      await expectSelected(page, i + 1, required)
+    }
 
-    await setButtons.nth(1).click()
-    await page.waitForTimeout(200)
-    await expect(page.locator('h3').first()).toContainText('2/3')
+    await expect(trayPacks(page)).toHaveCount(required)
 
-    await setButtons.nth(2).click()
-    await page.waitForTimeout(200)
-    await expect(page.locator('h3').first()).toContainText('3/3')
-
-    // Selected packs tray shows 3 packs (non-skeleton)
-    const selectedPacks = page.locator('.selected-pack:not(.skeleton)')
-    await expect(selectedPacks).toHaveCount(3)
-
-    // Create button is now enabled
     const createButton = page.locator('button:has-text("Create Chaos")')
     await expect(createButton).toBeEnabled()
-    console.log('✓ Selected 3 packs, create button enabled')
+    console.log(`✓ Selected ${required} packs, create button enabled`)
   })
 
   test('deselect a pack by clicking it in the tray', async () => {
-    // Click the first selected pack to remove it
-    const selectedPacks = page.locator('.selected-pack:not(.skeleton)')
-    await selectedPacks.first().click()
-    await page.waitForTimeout(200)
+    const required = await requiredPackCount(page)
 
-    // Should be back to 2/3
-    await expect(page.locator('h3').first()).toContainText('2/3')
+    await trayPacks(page).first().click()
+    await expectSelected(page, required - 1, required)
 
-    // Create button disabled again
     const createButton = page.locator('button:has-text("Create Chaos")')
     await expect(createButton).toBeDisabled()
 
-    // Re-select to get back to 3
-    const setButtons = page.locator('.pack-selector-button')
-    await setButtons.nth(0).click()
-    await page.waitForTimeout(200)
-    await expect(page.locator('h3').first()).toContainText('3/3')
+    // Put it back, so the next test starts from a complete selection.
+    await page.locator('.pack-selector-button').nth(0).click()
+    await expectSelected(page, required, required)
     console.log('✓ Deselect and reselect works')
   })
 
@@ -213,8 +198,8 @@ test.describe('Chaos Formats Open Access', () => {
     await page.goto(`${BASE_URL}/formats`)
     await page.waitForLoadState('networkidle')
 
-    // Should see formats page
-    await expect(page.locator('h1')).toHaveText('Other Formats', { timeout: 10000 })
+    // Should see formats page (the page is titled "Casual Formats")
+    await expect(page.locator('h1')).toHaveText('Casual Formats', { timeout: 10000 })
     console.log('✓ Anonymous user can access formats page')
   })
 })
