@@ -180,9 +180,11 @@ test.describe('Deck Builder', () => {
     // Look for action buttons in the deck builder header
     const actionButton = page.locator('button:has-text("Select a Leader"), button:has-text("Select a Base"), button:has-text("Share"), button:has-text("Clone"), button:has-text("Play")')
 
-    // At least one action button should exist
-    const count = await actionButton.count()
-    expect(count).toBeGreaterThan(0)
+    // Wait for one, rather than counting the instant the deck builder appears.
+    // The header buttons render after the pool finishes loading, so an
+    // immediate count sees 0 and reports "no action buttons" for what is only
+    // a page that has not finished rendering yet.
+    await expect(actionButton.first()).toBeVisible({ timeout: 20000 })
   })
 })
 

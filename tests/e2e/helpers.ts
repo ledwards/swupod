@@ -13,6 +13,12 @@ export const IGNORED_ERROR_PATTERNS: string[] = [
   'TypeError: Failed to fetch',
   'net::ERR_',
   'NetworkError',
+  // Socket.io reconnect churn. Specs navigate constantly, and a page that
+  // unloads mid-handshake aborts the socket and logs this. The server is fine:
+  // the polling handshake returns a sid advertising a websocket upgrade, and
+  // the upgrade itself answers 101. Scoped to the socket.io endpoint so a
+  // genuinely broken websocket elsewhere still surfaces.
+  "WebSocket connection to 'ws://localhost:3000/socket.io/",
 ]
 
 /**
