@@ -1,4 +1,4 @@
-580
+578
 # 2026-07-09: +1 (app/api/stats/entitlement.test.ts) — entitlement.test.ts: server-side stats-gate test (item-7 refresh); DB-mocked test uses @ts-nocheck like the rest of the suite
 # 2026-07-09: +1 (app/sealed_pool/[shareId]/SealedPoolClient.tsx) — split sealed_pool: page.tsx is now a typechecked server component (real 404 gate); client logic moved verbatim to SealedPoolClient.tsx (keeps its @ts-nocheck)
 # 2026-07-14: +3 (app/api/stats/leader-openings/route.ts, src/services/leaderPickContext.test.ts, src/utils/leaderPackReconstruction.test.ts) — Backfill 3 pre-existing leader-stats files that carried @ts-nocheck since the branch base but were never added to the baseline (leader-openings route, leaderPickContext.test, leaderPackReconstruction.test); not new debt
@@ -424,7 +424,6 @@ src/qa/foilDistribution.test.ts
 src/qa/hyperspaceDistribution.test.ts
 src/qa/packGeneration.test.ts
 src/qa/seamAwareBelt.test.ts
-src/qa/shuffleComparison.test.ts
 src/qa/uc3Upgrade.test.ts
 src/repositories/httpClient.test.ts
 src/repositories/httpClient.ts
@@ -569,7 +568,6 @@ tests/e2e/live-swiss-fake-companion.spec.ts
 tests/e2e/live-swiss-self-drop.spec.ts
 tests/e2e/logged-out-export.spec.ts
 tests/e2e/multiplayer-draft.spec.ts
-tests/e2e/multiplayer.spec.ts
 tests/e2e/pack-opening-mobile-layout.spec.ts
 tests/e2e/play-page-login.spec.ts
 tests/e2e/regression.spec.ts
