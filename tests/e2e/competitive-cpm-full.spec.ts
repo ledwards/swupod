@@ -237,18 +237,19 @@ test.describe('8-player CPM full UI flow', () => {
     await pages[0].goto(`${BASE_URL}/draft`)
     await pages[0].waitForLoadState('networkidle')
 
-    // Toggle Competitive (only visible to patrons/admins)
-    const competitiveToggle = pages[0].locator('button.setting-lock', { hasText: 'Standard' })
-    await expect(competitiveToggle).toBeVisible({ timeout: 10000 })
-    await competitiveToggle.click()
-    await expect(pages[0].locator('button.setting-lock', { hasText: 'Competitive' })).toBeVisible()
-    console.log('  ✓ Host toggled Competitive on /draft')
+    // Competitive is its own create button now (patrons/admins only). It routes
+    // to /draft/new?competitive=1, which arrives with Swiss Rounds already on —
+    // there is no Standard/Competitive toggle on /draft to flip any more.
+    const competitiveCreate = pages[0].locator('button.draft-competitive-button')
+    await expect(competitiveCreate).toBeEnabled({ timeout: 10000 })
+    await competitiveCreate.click()
+    console.log('  ✓ Host chose Competitive Draft on /draft')
 
-    // Click Create Draft
-    await pages[0].click('.create-draft-button, button:has-text("Create Draft")')
-
-    // SetSelection page should now appear
+    // SetSelection page should now appear, with Swiss Rounds armed
     await pages[0].waitForSelector('.set-selection', { timeout: 15000 })
+    const swissToggle = pages[0].locator('button.setting-lock-competitive')
+    await expect(swissToggle).toBeVisible({ timeout: 10000 })
+    await expect(swissToggle).not.toHaveClass(/setting-lock-competitive-off/)
 
     // Pick the first set card (may be in .latest-sets-row or .sets-grid)
     await pages[0].locator('.set-card').first().click()

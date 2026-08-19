@@ -13,7 +13,22 @@ import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
 import { waitForNetworkIdle, shouldIgnoreError, checkLayoutIssues } from './helpers.ts'
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
-const TEST_ID = 'chat_persist'
+/*
+ * One id per describe, not one for the file.
+ *
+ * cleanupTestUsers deletes every user matching the id, and the three describes
+ * below run in parallel (fullyParallel) — so with a shared id the first block
+ * to finish deleted the users the other two were still using. That surfaced as
+ * a foreign-key violation creating a draft pod ("draft_pods_host_id_fkey") and
+ * as a chat panel that never appeared, neither of which is about chat.
+ *
+ * Date.now() keeps ids distinct between runs as well, so a killed run leaves
+ * nothing behind that the next one has to reconcile.
+ */
+const RUN_ID = `chat_persist_${Date.now()}`
+const SEALED_TEST_ID = `${RUN_ID}_sealed`
+const DRAFT_TEST_ID = `${RUN_ID}_draft`
+const MOBILE_TEST_ID = `${RUN_ID}_mobile`
 
 test.describe('Chat Persistence - Sealed Pod', () => {
   test.describe.configure({ mode: 'serial' })
@@ -26,7 +41,7 @@ test.describe('Chat Persistence - Sealed Pod', () => {
   let shareId: string
 
   test.beforeAll(async () => {
-    user = await createTestUser('ChatTestHost', TEST_ID, { isBetaTester: true })
+    user = await createTestUser('ChatTestHost', SEALED_TEST_ID, { isBetaTester: true })
     browser = await chromium.launch()
     context = await browser.newContext({
       baseURL: BASE_URL,
@@ -58,7 +73,7 @@ test.describe('Chat Persistence - Sealed Pod', () => {
         })
       } catch { /* pod may already be deleted */ }
     }
-    await cleanupTestUsers(TEST_ID)
+    await cleanupTestUsers(SEALED_TEST_ID)
     await closeDb()
     await context?.close()
     await browser?.close()
@@ -145,7 +160,7 @@ test.describe('Chat Persistence - Draft Pod', () => {
   let shareId: string
 
   test.beforeAll(async () => {
-    user = await createTestUser('ChatDraftHost', TEST_ID, { isBetaTester: true })
+    user = await createTestUser('ChatDraftHost', DRAFT_TEST_ID, { isBetaTester: true })
     browser = await chromium.launch()
     context = await browser.newContext({
       baseURL: BASE_URL,
@@ -174,7 +189,7 @@ test.describe('Chat Persistence - Draft Pod', () => {
         })
       } catch { /* pod may already be deleted */ }
     }
-    await cleanupTestUsers(TEST_ID)
+    await cleanupTestUsers(DRAFT_TEST_ID)
     await closeDb()
     await context?.close()
     await browser?.close()
@@ -228,11 +243,11 @@ test.describe('Chat Panel - Mobile', () => {
   let user: any
 
   test.beforeAll(async () => {
-    user = await createTestUser('ChatMobileUser', TEST_ID, { isBetaTester: true })
+    user = await createTestUser('ChatMobileUser', MOBILE_TEST_ID, { isBetaTester: true })
   })
 
   test.afterAll(async () => {
-    await cleanupTestUsers(TEST_ID)
+    await cleanupTestUsers(MOBILE_TEST_ID)
     await closeDb()
   })
 

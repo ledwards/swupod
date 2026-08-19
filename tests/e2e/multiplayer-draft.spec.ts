@@ -265,25 +265,47 @@ test.describe('Full 8-player draft', () => {
   }
 
   // Helper: Have all players select a card
+  /**
+   * Every player picks a card, and we make sure the pick actually registered.
+   *
+   * A swallowed click here stalls the whole draft: the table waits forever for
+   * a player who never picked, and the failure surfaces two helpers later as
+   * "timeout waiting for new cards". So retry, and confirm each pick either by
+   * the card going .selected or by the pack in front of the player changing.
+   */
   async function selectCardForAllPlayers(gridSelector: string): Promise<void> {
-    await Promise.all(pages.map(async (page, idx) => {
-      try {
-        // Check if already selected
-        const hasSelected = await page.locator(`${gridSelector} .draftable-card.selected`).count() > 0
-        if (hasSelected) return
+    const stuck: string[] = []
 
-        // Find available cards (not selected, not dimmed)
-        const cards = await page.locator(`${gridSelector} .draftable-card:not(.selected):not(.dimmed)`).all()
-        if (cards.length > 0) {
-          // Pick randomly from first few
-          const pickIdx = Math.floor(Math.random() * Math.min(cards.length, 3))
-          await cards[pickIdx].click()
-          await page.waitForTimeout(100 + Math.random() * 200)
-        }
-      } catch (e) {
-        // Ignore - player might be in transition
+    await Promise.all(pages.map(async (page, idx) => {
+      const available = page.locator(`${gridSelector} .draftable-card:not(.selected):not(.dimmed)`)
+      const selected = page.locator(`${gridSelector} .draftable-card.selected`)
+      const signature = () =>
+        page.$$eval(`${gridSelector} .draftable-card`, (els) =>
+          els.map((e) => e.getAttribute('aria-label')).join('|'))
+
+      for (let attempt = 0; attempt < 5; attempt++) {
+        if (await selected.count() > 0) return
+
+        const count = await available.count().catch(() => 0)
+        // No cards on offer: this player has already picked and is waiting.
+        if (count === 0) return
+
+        const before = await signature().catch(() => '')
+        const pickIdx = Math.floor(Math.random() * Math.min(count, 3))
+        await available.nth(pickIdx).click({ timeout: 5000 }).catch(() => {})
+        await page.waitForTimeout(200 + Math.random() * 200)
+
+        if (await selected.count() > 0) return
+        // The pick can submit outright, replacing the pack — that counts.
+        if (await signature().catch(() => '') !== before) return
       }
+
+      stuck.push(`player ${idx + 1}`)
     }))
+
+    if (stuck.length > 0) {
+      throw new Error(`Could not register a pick for: ${stuck.join(', ')}`)
+    }
   }
 
   // Helper: Wait for passing skeleton to show (indicates pick was registered)

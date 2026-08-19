@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { test, expect } from '@playwright/test'
 import { shouldIgnoreError } from './helpers.ts'
+import { getStatsSetTabs, getDefaultStatsSetTab } from '../../src/utils/statsSetTabs.ts'
 
 /**
  * Stats page E2E tests
@@ -17,6 +18,12 @@ import { shouldIgnoreError } from './helpers.ts'
 
 // Stats page loads slowly due to 9+ parallel API calls — use longer timeout
 const STATS_TIMEOUT = 60000
+
+/* The tabs a logged-out viewer gets, from the page's own source of truth. Every
+   released set is a tab and the newest one is selected, so counting them here
+   just re-breaks the day a set ships (it did — LAW and 7 tabs, then ASH). */
+const SET_TABS = getStatsSetTabs(false)
+const DEFAULT_SET_TAB = getDefaultStatsSetTab(false)
 
 /** Navigate to /stats, open the Sealed Decks sub-tab, and wait for real data. */
 async function gotoStats(page) {
@@ -67,14 +74,15 @@ test.describe('Stats Page', () => {
     // Header
     await expect(page.locator('.stats-header h1')).toHaveText('Stats')
 
-    // Set tabs should be visible
+    // Set tabs should be visible — one per released set, newest first
     const tabs = page.locator('.stats-tab')
-    await expect(tabs).toHaveCount(7)
-    await expect(tabs.first()).toHaveText('LAW')
+    await expect(tabs).toHaveCount(SET_TABS.length)
+    await expect(tabs.first()).toHaveText(SET_TABS[0])
 
-    // Sub-tabs (Sealed / Draft) should be visible — Sealed is first
-    await expect(page.locator('.stats-subtab').first()).toHaveText('Sealed')
-    await expect(page.locator('.stats-subtab').last()).toHaveText('Draft')
+    // Sub-tabs: Cards, then Draft Picks, then Sealed Decks
+    const subtabs = page.locator('.stats-subtab')
+    await expect(subtabs.first()).toHaveText('Cards')
+    await expect(subtabs.last()).toHaveText('Sealed Decks')
   })
 
   test('should show legend bar with You/All/Tournament/Top toggles', async ({ page }) => {
@@ -191,8 +199,8 @@ test.describe('Stats Page', () => {
   test('should switch between set tabs', async ({ page }) => {
     await gotoStats(page)
 
-    // LAW should be active by default
-    await expect(page.locator('.stats-tab.active')).toHaveText('LAW')
+    // The newest set the viewer can see is active by default
+    await expect(page.locator('.stats-tab.active')).toHaveText(DEFAULT_SET_TAB)
 
     // Click SEC tab and wait for it to become active
     await page.locator('.stats-tab:text("SEC")').click()
@@ -205,12 +213,12 @@ test.describe('Stats Page', () => {
   test('should switch between Sealed and Draft sub-tabs', async ({ page }) => {
     await gotoStats(page)
 
-    // Sealed should be active by default
-    await expect(page.locator('.stats-subtab.active')).toHaveText('Sealed')
+    // gotoStats opens Sealed Decks, which is the view these tests describe.
+    await expect(page.locator('.stats-subtab.active')).toHaveText('Sealed Decks')
 
-    // Click Draft sub-tab and wait for it to become active
-    await page.locator('.stats-subtab:text("Draft")').click()
-    await expect(page.locator('.stats-subtab.active')).toHaveText('Draft', { timeout: 10000 })
+    // Click the Draft Picks sub-tab and wait for it to become active
+    await page.getByRole('button', { name: 'Draft Picks' }).click()
+    await expect(page.locator('.stats-subtab.active')).toHaveText('Draft Picks', { timeout: 10000 })
 
     // Wait for draft data to load (table, empty state, or real legend toggle)
     await page.waitForSelector('.stats-table, .stats-empty, .stats-legend-toggle', { timeout: 30000 })
