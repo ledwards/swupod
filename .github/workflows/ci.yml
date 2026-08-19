@@ -84,3 +84,63 @@ jobs:
         env:
           JWT_SECRET: ci-build-only-secret
       - run: npm run check:bundle-size
+
+  e2e:
+    # Playwright E2E. Nothing ran this suite before, which is exactly how it
+    # drifted: eleven specs launched a headed browser (impossible without a
+    # display), and the whole thing dialled a default Postgres port when
+    # DATABASE_URL was unset. Both were invisible because no job executed them.
+    #
+    # NOT gating yet — continue-on-error. The suite currently has ~72 known
+    # failures whose dominant cause is state accumulating across a run (every
+    # spec file passes alone; the suite fails together, parallel or serial).
+    # Blocking every PR on that would just get the job disabled. This reports
+    # instead, so the number is visible and can be driven down. Drop
+    # continue-on-error the moment it reaches zero — a non-gating test job is
+    # only worth having on the way to a gating one.
+    name: E2E (reporting only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    continue-on-error: true
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres@localhost:5432/swupod_e2e
+      POSTGRES_URL: postgresql://postgres@localhost:5432/swupod_e2e
+      # `next build` refuses to start with the development fallback secret, and
+      # the specs sign their own session cookies with this same value.
+      JWT_SECRET: ci-e2e-only-secret
+      NEXTAUTH_SECRET: ci-e2e-only-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: psql postgresql://postgres@localhost:5432/postgres -c 'CREATE DATABASE swupod_e2e'
+      - run: npm run migrate:dev
+      # Chromium only. The config asks for five browsers under CI; that is five
+      # times the bill for a suite that is not green in one yet.
+      - run: npx playwright install --with-deps chromium
+      # Playwright builds and serves the app itself (see webServer in
+      # playwright.config.ts) — it must own the server, or it starts a second
+      # one on the same port. --retries=0 because retrying known failures
+      # triples the runtime and tells us nothing; restore retries with gating.
+      - run: npx playwright test --project=chromium --retries=0 --reporter=line
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
