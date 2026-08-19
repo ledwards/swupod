@@ -96,13 +96,13 @@ test.describe('Chat Persistence - Sealed Pod', () => {
     }
 
     // Check for the private pod notice
-    const notice = page.locator('.chat-private-notice')
+    const notice = page.locator('.chat-private-pod-notice')
     await expect(notice).toBeVisible({ timeout: 10_000 })
     await expect(notice).toContainText("Private pods don't have persistent chat")
   })
 
   test('host sees Make Pod Public button', async () => {
-    const makePublicButton = page.locator('.chat-private-notice button:has-text("Make Pod Public")')
+    const makePublicButton = page.locator('.chat-private-pod-notice button:has-text("Make Pod Public")')
     await expect(makePublicButton).toBeVisible()
   })
 
@@ -114,14 +114,14 @@ test.describe('Chat Persistence - Sealed Pod', () => {
   })
 
   test('clicking Make Pod Public removes notice', async () => {
-    const makePublicButton = page.locator('.chat-private-notice button:has-text("Make Pod Public")')
+    const makePublicButton = page.locator('.chat-private-pod-notice button:has-text("Make Pod Public")')
     await makePublicButton.click()
 
     // Wait for the settings update to propagate
     await page.waitForTimeout(2000)
 
     // The private notice should disappear
-    const notice = page.locator('.chat-private-notice')
+    const notice = page.locator('.chat-private-pod-notice')
     await expect(notice).not.toBeVisible({ timeout: 10_000 })
   })
 
@@ -209,13 +209,13 @@ test.describe('Chat Persistence - Draft Pod', () => {
       await page.waitForTimeout(500)
     }
 
-    const notice = page.locator('.chat-private-notice')
+    const notice = page.locator('.chat-private-pod-notice')
     await expect(notice).toBeVisible({ timeout: 10_000 })
     await expect(notice).toContainText("Private pods don't have persistent chat")
   })
 
   test('draft host sees Make Pod Public button', async () => {
-    const makePublicButton = page.locator('.chat-private-notice button:has-text("Make Pod Public")')
+    const makePublicButton = page.locator('.chat-private-pod-notice button:has-text("Make Pod Public")')
     await expect(makePublicButton).toBeVisible()
   })
 })
@@ -267,7 +267,7 @@ test.describe('Chat Panel - Mobile', () => {
     const overlay = page.locator('.chat-overlay')
     await expect(overlay).toBeVisible()
 
-    const notice = page.locator('.chat-private-notice')
+    const notice = page.locator('.chat-private-pod-notice')
     await expect(notice).toBeVisible()
 
     // Clean up pod

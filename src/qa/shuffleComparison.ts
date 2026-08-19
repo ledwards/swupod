@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Shuffle vs Sequential Pack Comparison Test
  *
@@ -79,7 +78,7 @@ function generateRandomIndices(count: number, max: number): number[] {
 
   for (let i = 0; i < count; i++) {
     const randomIndex = Math.floor(Math.random() * available.length)
-    indices.push(available[randomIndex])
+    indices.push(available[randomIndex]!)  // randomIndex is drawn from available.length
     available.splice(randomIndex, 1)
   }
 
@@ -166,7 +165,7 @@ async function runComparison() {
       clearBeltCache()
       const box = generateSealedBox(cards, setCode, 24)
       const indices = generateRandomIndices(PACKS_PER_POOL, 24)
-      return indices.map(i => box[i])
+      return indices.map(i => box[i]!)  // indices are bounded by the box size
     })
 
     // Scenario 3: Random 6 from 72 (multi-box shuffle - RESETS belts between boxes)
@@ -181,7 +180,7 @@ async function runComparison() {
         }
       }
       const indices = generateRandomIndices(PACKS_PER_POOL, 72)
-      return indices.map(i => allPacks[i])
+      return indices.map(i => allPacks[i]!)  // indices are bounded by allPacks.length
     })
 
     // Scenario 4: Random 6 from 72 (continuous belt - NO resets)
@@ -194,7 +193,7 @@ async function runComparison() {
         allPacks.push(generateBoosterPack(cards, setCode))
       }
       const indices = generateRandomIndices(PACKS_PER_POOL, 72)
-      return indices.map(i => allPacks[i])
+      return indices.map(i => allPacks[i]!)  // indices are bounded by allPacks.length
     })
 
     // Scenario 5: Stratified random from 24 (pick 1 from each zone of 4)
@@ -209,7 +208,7 @@ async function runComparison() {
         const pick = zoneStart + Math.floor(Math.random() * 4)
         indices.push(pick)
       }
-      return indices.map(i => box[i])
+      return indices.map(i => box[i]!)  // indices are bounded by the box size
     })
 
     // Scenario 6: Random start, sequential picks (preserves adjacency)
@@ -220,7 +219,7 @@ async function runComparison() {
       // Pick random starting position (0-18), then take 6 sequential packs
       const start = Math.floor(Math.random() * 19) // 0-18 so we can fit 6 packs
       const indices = [start, start+1, start+2, start+3, start+4, start+5]
-      return indices.map(i => box[i])
+      return indices.map(i => box[i]!)  // indices are bounded by the box size
     })
 
     // Scenario 7: 3+3 with gap (random start, 3 sequential, skip some, 3 more)
@@ -232,7 +231,7 @@ async function runComparison() {
       const start1 = Math.floor(Math.random() * 10) // 0-9
       const start2 = 12 + Math.floor(Math.random() * 10) // 12-21
       const indices = [start1, start1+1, start1+2, start2, start2+1, start2+2]
-      return indices.map(i => box[i])
+      return indices.map(i => box[i]!)  // indices are bounded by the box size
     })
 
     // Scenario 8: 2+2+2 with gaps
@@ -245,7 +244,7 @@ async function runComparison() {
       const start2 = 8 + Math.floor(Math.random() * 6) // 8-13
       const start3 = 16 + Math.floor(Math.random() * 7) // 16-22
       const indices = [start1, start1+1, start2, start2+1, start3, start3+1]
-      return indices.map(i => box[i])
+      return indices.map(i => box[i]!)  // indices are bounded by the box size
     })
 
     // Scenario 9: Every other pack (skip 1 between each)
@@ -256,7 +255,7 @@ async function runComparison() {
       // Start random, take every other pack
       const start = Math.floor(Math.random() * 13) // 0-12 so we fit 6 with gaps
       const indices = [start, start+2, start+4, start+6, start+8, start+10]
-      return indices.map(i => box[i])
+      return indices.map(i => box[i]!)  // indices are bounded by the box size
     })
 
     // Scenario 10: Skip 2 between each pack
@@ -267,7 +266,7 @@ async function runComparison() {
       // Start random, skip 2 between each
       const start = Math.floor(Math.random() * 9) // 0-8 so we fit 6 with gaps
       const indices = [start, start+3, start+6, start+9, start+12, start+15]
-      return indices.map(i => box[i])
+      return indices.map(i => box[i]!)  // indices are bounded by the box size
     })
 
     // Print results

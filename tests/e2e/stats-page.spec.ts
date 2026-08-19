@@ -11,15 +11,25 @@ import { shouldIgnoreError } from './helpers.ts'
  * These tests run against the live page (logged out) so "You" rows show "Log in".
  * Tournament/Top checkboxes are disabled (paywall) unless logged in as patron/admin.
  *
- * Default sub-tab is Sealed (not Draft).
+ * The page's default sub-tab is Cards (the tier list); gotoStats selects Sealed
+ * Decks, which is the view these assertions describe.
  */
 
 // Stats page loads slowly due to 9+ parallel API calls — use longer timeout
 const STATS_TIMEOUT = 60000
 
-/** Navigate to /stats and wait for real data to render (not skeleton) */
+/** Navigate to /stats, open the Sealed Decks sub-tab, and wait for real data. */
 async function gotoStats(page) {
   await page.goto('/stats', { timeout: STATS_TIMEOUT, waitUntil: 'domcontentloaded' })
+
+  // The default sub-tab is Cards, which is the tier-list view and has no legend
+  // bar — everything below asserts on the legend, its You/All/Tournament/Top
+  // toggles and the card tables, all of which live in the Sealed and Draft
+  // views. The default used to be Sealed (this file's own header still says so),
+  // so these tests silently began asserting against a page that no longer had
+  // any of it. Select the tab the tests are actually about.
+  await page.getByRole('button', { name: 'Sealed Decks' }).click()
+
   // Wait for actual content — .stats-legend-toggle only appears in the real StatsLegend, not the skeleton.
   // Also accept .stats-empty for sets with no data.
   await page.waitForSelector('.stats-legend-toggle, .stats-empty', { timeout: 45000 })
@@ -28,6 +38,10 @@ async function gotoStats(page) {
 test.describe('Stats Page', () => {
   test.setTimeout(STATS_TIMEOUT)
   test.describe.configure({ retries: 1 })
+
+  // Sealed decks are seeded in tests/e2e/global-setup.ts — before any spec
+  // runs, because the server caches the aggregate for five minutes and the
+  // first page load in the run decides what every later one sees.
 
   test.beforeEach(async ({ page }) => {
     const errors: string[] = []

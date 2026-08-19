@@ -368,7 +368,10 @@ function ChatContent({
   return (
     <>
       {showJoinDiscord && !dismissedJoinNotice && (
-        <div className="chat-private-notice">
+        // Two different notices share .chat-private-notice for its styling, and
+        // when both show, any selector for one matches both. The modifier says
+        // which is which — this one is not about privacy at all.
+        <div className="chat-private-notice chat-join-discord-notice">
           <button className="chat-private-notice-dismiss" onClick={() => setDismissedJoinNotice?.(true)} aria-label="Dismiss">&times;</button>
           <p>Join our Discord server to get the most out of pod chat.</p>
           <Button
@@ -381,7 +384,7 @@ function ChatContent({
         </div>
       )}
       {!isPublic && !isLobbyMode && isHost && !dismissedPrivateNotice && (
-        <div className="chat-private-notice">
+        <div className="chat-private-notice chat-private-pod-notice">
           <button className="chat-private-notice-dismiss" onClick={() => setDismissedPrivateNotice?.(true)} aria-label="Dismiss">&times;</button>
           <p>Private pods do not store chat history.</p>
           <p>Messages are live only.</p>

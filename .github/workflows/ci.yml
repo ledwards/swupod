@@ -138,6 +138,11 @@ jobs:
       # one on the same port. --retries=0 because retrying known failures
       # triples the runtime and tells us nothing; restore retries with gating.
       - run: npx playwright test --project=chromium --retries=0 --reporter=line
+      # The GC promo specs are excluded from the default config (they need a
+      # server with the claim window open) and would otherwise never run at all
+      # — which is the drift this job exists to stop.
+      - run: npm run test:promo:e2e
+        if: always()
       - uses: actions/upload-artifact@v4
         if: always()
         with:
