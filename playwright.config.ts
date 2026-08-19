@@ -42,6 +42,18 @@ export default defineConfig({
 
     /* Video on failure */
     video: 'on-first-retry',
+
+    /* Hermetic: every host except the app itself resolves to nothing.
+       Pages pull card art from an external CDN, and `page.goto` waits for the
+       load event — so on any machine that cannot reach it, those requests hang
+       until something upstream gives up. Measured on a production build: 14.4s
+       to load the landing page and 14.1s for Terms of Service, a static page,
+       against the suite's own 10s budget. Failing the lookup instantly costs
+       nothing real (the app already falls back when art will not load) and
+       stops the suite depending on a third party being up and fast. */
+    launchOptions: {
+      args: ['--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE localhost'],
+    },
   },
 
   /* Configure projects for major browsers
