@@ -16,10 +16,23 @@ export default defineConfig({
   workers: 1,
   retries: process.env.CI ? 2 : 1,
   reporter: [['list']],
+  /* These tests claim a pack, generate a pool and sit through the opening
+     animation. The 30s default left one of them waiting 25s for the animation
+     inside a 30s budget — unwinnable regardless of the app. */
+  timeout: 120 * 1000,
   use: {
     baseURL: BASE_URL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    /* Bound actions so a stale selector fails with its call log instead of
+       burning the whole test budget in silence. */
+    actionTimeout: 15_000,
+    /* Hermetic, for the same reason as the default config: card art comes from
+       an external CDN, page loads wait on it, and a machine that cannot reach
+       it spends the budget waiting instead of testing. */
+    launchOptions: {
+      args: ['--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE localhost'],
+    },
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
