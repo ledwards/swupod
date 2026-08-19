@@ -34,7 +34,7 @@ test.describe('Solo Page', () => {
 
     // Check format cards are visible
     await expect(page.locator('.format-mode-card h3', { hasText: /^Chaos Sealed$/ })).toBeVisible()
-    await expect(page.locator('.format-mode-card h3', { hasText: /^Chaos Draft$/ })).toBeVisible()
+    await expect(page.locator('.format-mode-card h3', { hasText: /^Solo Chaos Draft$/ })).toBeVisible()
 
     // Check Pack Wars and Pack Blitz cards appear
     await expect(page.locator('.format-mode-card h3', { hasText: /^Pack Wars$/ })).toBeVisible()
@@ -79,8 +79,8 @@ test.describe('Solo Page', () => {
     await page.waitForLoadState('domcontentloaded')
     await expect(page.locator('.format-mode-card').first()).toBeVisible({ timeout: 10000 })
 
-    // Click the Chaos Draft card
-    await page.locator('.format-mode-card', { hasText: /^Chaos Draft/ }).click()
+    // Click the Solo Chaos Draft card
+    await page.locator('.format-mode-card', { hasText: /^Solo Chaos Draft/ }).click()
 
     // Should navigate to /formats/chaos-draft
     await page.waitForURL('/formats/chaos-draft', { timeout: 10000 })
@@ -131,6 +131,6 @@ test.describe('Solo Page - Mobile', () => {
 
     // Format cards should be visible
     await expect(page.locator('.format-mode-card h3', { hasText: /^Chaos Sealed$/ })).toBeVisible()
-    await expect(page.locator('.format-mode-card h3', { hasText: /^Chaos Draft$/ })).toBeVisible()
+    await expect(page.locator('.format-mode-card h3', { hasText: /^Solo Chaos Draft$/ })).toBeVisible()
   })
 })
