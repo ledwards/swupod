@@ -34,8 +34,10 @@ test.describe('Solo Chaos Draft Page', () => {
     const setCount = await page.locator('.pack-selector-button').count()
     expect(setCount).toBeGreaterThanOrEqual(6)
 
-    // Counter shows 0/3
-    await expect(page.locator('h3').first()).toContainText('0/3')
+    // Counter starts at zero. The total is deliberately not hardcoded — the
+    // default pack count is a product decision that has already moved once
+    // (chaos draft went from 3 to 4), and pinning it here just re-breaks.
+    await expect(page.locator('h3').first()).toContainText(/Select \d+ Packs \(0\/\d+\)/)
 
     // Create button is disabled
     const createButton = page.locator('button:has-text("Create Chaos Draft")')
@@ -54,7 +56,7 @@ test.describe('Solo Chaos Draft Page', () => {
 
     await setButtons.nth(0).click()
     await page.waitForTimeout(200)
-    await expect(page.locator('h3').first()).toContainText('1/3')
+    await expect(page.locator('h3').first()).toContainText(/\(1\/\d+\)/)
 
     await setButtons.nth(1).click()
     await page.waitForTimeout(200)

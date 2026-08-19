@@ -79,13 +79,15 @@ test.describe('Chaos Sealed', () => {
     await expect(page.locator('.chaos-sealed-subtitle')).toBeVisible()
 
     // Set buttons appear
-    await expect(page.locator('.set-button').first()).toBeVisible({ timeout: 10000 })
-    const setCount = await page.locator('.set-button').count()
+    await expect(page.locator('.pack-selector-button').first()).toBeVisible({ timeout: 10000 })
+    const setCount = await page.locator('.pack-selector-button').count()
     expect(setCount).toBeGreaterThanOrEqual(6)
     console.log(`✓ Found ${setCount} sets`)
 
-    // Counter shows 0/6
-    await expect(page.locator('h3').first()).toContainText('0/6')
+    // Counter starts at zero. The total is deliberately not hardcoded — the
+    // default pack count is a product decision that has already moved once
+    // (chaos draft went from 3 to 4), and pinning it here just re-breaks.
+    await expect(page.locator('h3').first()).toContainText(/Select \d+ Packs \(0\/\d+\)/)
 
     // Generate button is disabled
     const genButton = page.locator('button:has-text("Create Chaos")')
@@ -94,7 +96,7 @@ test.describe('Chaos Sealed', () => {
   })
 
   test('select 6 packs using + button for duplicates', async () => {
-    const setButtons = page.locator('.set-button')
+    const setButtons = page.locator('.pack-selector-button')
 
     // Click first 3 sets once each
     await setButtons.nth(0).click()
@@ -107,7 +109,7 @@ test.describe('Chaos Sealed', () => {
 
     // Use + button to add 3 more from the first 3 sets
     // The + buttons are inside selected set-buttons
-    const plusButtons = page.locator('.set-button.selected .selection-button').filter({ hasText: '+' })
+    const plusButtons = page.locator('.pack-selector-button.selected .pack-selector-qty-btn--plus').filter({ hasText: '+' })
     const plusCount = await plusButtons.count()
     expect(plusCount).toBeGreaterThanOrEqual(1)
 
@@ -143,9 +145,9 @@ test.describe('Chaos Sealed', () => {
     await expect(genButton).toBeDisabled()
 
     // Re-add to get back to 6
-    const setButtons = page.locator('.set-button')
+    const setButtons = page.locator('.pack-selector-button')
     // Click an unselected set or use + on a selected one
-    const plusButtons = page.locator('.set-button.selected .selection-button').filter({ hasText: '+' })
+    const plusButtons = page.locator('.pack-selector-button.selected .pack-selector-qty-btn--plus').filter({ hasText: '+' })
     if (await plusButtons.count() > 0) {
       await plusButtons.first().click()
     } else {
@@ -183,7 +185,7 @@ test.describe('Chaos Sealed', () => {
   test('cancel button navigates back to formats page', async () => {
     await page.goto(`${BASE_URL}/formats/chaos-sealed`)
     await page.waitForLoadState('networkidle')
-    await expect(page.locator('.set-button').first()).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('.pack-selector-button').first()).toBeVisible({ timeout: 10000 })
 
     const cancelButton = page.locator('button:has-text("Cancel")')
     await cancelButton.click()

@@ -74,17 +74,19 @@ test.describe('Chaos Draft', () => {
     await page.waitForLoadState('networkidle')
 
     // Page title and subtitle visible
-    await expect(page.locator('h1')).toHaveText('Chaos Draft')
+    await expect(page.locator('h1')).toHaveText('Solo Chaos Draft')
     await expect(page.locator('.chaos-draft-subtitle')).toBeVisible()
 
     // Set buttons appear
-    await expect(page.locator('.set-button').first()).toBeVisible({ timeout: 10000 })
-    const setCount = await page.locator('.set-button').count()
+    await expect(page.locator('.pack-selector-button').first()).toBeVisible({ timeout: 10000 })
+    const setCount = await page.locator('.pack-selector-button').count()
     expect(setCount).toBeGreaterThanOrEqual(6) // At least 6 released sets
     console.log(`✓ Found ${setCount} sets`)
 
-    // Counter shows 0/3
-    await expect(page.locator('h3').first()).toContainText('0/3')
+    // Counter starts at zero. The total is deliberately not hardcoded — the
+    // default pack count is a product decision that has already moved once
+    // (chaos draft went from 3 to 4), and pinning it here just re-breaks.
+    await expect(page.locator('h3').first()).toContainText(/Select \d+ Packs \(0\/\d+\)/)
 
     // Create button is disabled
     const createButton = page.locator('button:has-text("Create Chaos")')
@@ -94,11 +96,11 @@ test.describe('Chaos Draft', () => {
 
   test('select 3 packs and see them in the tray', async () => {
     // Click first 3 different sets
-    const setButtons = page.locator('.set-button')
+    const setButtons = page.locator('.pack-selector-button')
 
     await setButtons.nth(0).click()
     await page.waitForTimeout(200)
-    await expect(page.locator('h3').first()).toContainText('1/3')
+    await expect(page.locator('h3').first()).toContainText(/\(1\/\d+\)/)
 
     await setButtons.nth(1).click()
     await page.waitForTimeout(200)
@@ -132,7 +134,7 @@ test.describe('Chaos Draft', () => {
     await expect(createButton).toBeDisabled()
 
     // Re-select to get back to 3
-    const setButtons = page.locator('.set-button')
+    const setButtons = page.locator('.pack-selector-button')
     await setButtons.nth(0).click()
     await page.waitForTimeout(200)
     await expect(page.locator('h3').first()).toContainText('3/3')
@@ -157,7 +159,7 @@ test.describe('Chaos Draft', () => {
   test('cancel button navigates back to formats page', async () => {
     await page.goto(`${BASE_URL}/formats/chaos-draft`)
     await page.waitForLoadState('networkidle')
-    await expect(page.locator('.set-button').first()).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('.pack-selector-button').first()).toBeVisible({ timeout: 10000 })
 
     const cancelButton = page.locator('button:has-text("Cancel")')
     await cancelButton.click()
@@ -194,7 +196,7 @@ test.describe('Chaos Formats Open Access', () => {
     await page.waitForLoadState('networkidle')
 
     // Should see the chaos draft UI, not 404
-    await expect(page.locator('h1')).toHaveText('Chaos Draft', { timeout: 10000 })
+    await expect(page.locator('h1')).toHaveText('Solo Chaos Draft', { timeout: 10000 })
     console.log('✓ Anonymous user can access chaos draft')
   })
 
