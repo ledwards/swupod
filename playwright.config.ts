@@ -6,6 +6,10 @@ import { defineConfig, devices } from '@playwright/test'
  */
 export default defineConfig({
   testDir: './tests/e2e',
+  /* Seed the stats fixtures before any test runs — see tests/e2e/global-setup.ts
+     for why this cannot live in a spec's beforeAll. */
+  globalSetup: './tests/e2e/global-setup.ts',
+  globalTeardown: './tests/e2e/global-teardown.ts',
   /* The GC promo giveaway has its own harness — playwright.promo.config.ts boots
      a server with the claim window forced open, because the feature is only
      claimable inside a date range. This config has no such server, so picking
