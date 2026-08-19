@@ -92,7 +92,9 @@ export default defineConfig({
     // dev server) reuses that server instead of booting a second one on :3000.
     url: process.env.TEST_BASE_URL || 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
-    /* A cold production build is minutes, not seconds. */
-    timeout: (process.env.E2E_DEV ? 120 : 600) * 1000,
+    /* A cold production build is minutes, not seconds — and a CI runner is
+       slower than a laptop. Generous on purpose: a build that overruns this
+       fails the job for a reason that has nothing to do with any test. */
+    timeout: (process.env.E2E_DEV ? 120 : 900) * 1000,
   },
 })
