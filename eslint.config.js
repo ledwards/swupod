@@ -13,6 +13,11 @@ export default defineConfig([
   globalIgnores([
     'dist/**',
     '.next/**',
+    // The promo e2e builds into .next-promo-e2e (its own distDir, so it can run
+    // alongside a dev server). Same story as .next: run that suite once and
+    // lint reports thousands of errors from generated bundles. .gitignore
+    // already covers `.next-*`; this keeps lint in step with it.
+    '.next-*/**',
     'node_modules/**',
     '.worktrees/**',
     '.claude/worktrees/**',

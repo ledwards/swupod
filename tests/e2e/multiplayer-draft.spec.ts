@@ -271,12 +271,12 @@ test.describe('Full 8-player draft', () => {
 
       // Halfway through, reload whoever is still empty-handed.
       //
-      // The draft page takes its updates from the socket alone — there is no
-      // periodic refetch — so a page that misses one 'state' broadcast waits
-      // for the next one, which for a player whose pack has already arrived
-      // never comes. A reload refetches and unsticks it. The CPM spec carries
-      // the same fallback for the same reason. Worth revisiting in the app:
-      // a client that misses a broadcast currently has no way back on its own.
+      // This used to fire once per pack: a page that missed one 'state'
+      // broadcast had nothing to correct it, because the next broadcast
+      // describes the next change. useDraftSocket now runs a reconcile poll
+      // that catches exactly that, and this stopped firing — so if you see it
+      // in the output again, the app's backstop is the thing to look at, not
+      // this wait.
       if (!nudged && attempts === 60) {
         nudged = true
         const stalled = counts
