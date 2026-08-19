@@ -654,23 +654,74 @@ test.describe('8-player CPM full UI flow', () => {
       return out
     }
 
-    const reportResultViaUI = async (page: Page, matchId: string, pattern: Pattern): Promise<void> => {
-      // If the Report button isn't visible, reload — the page may be stale
+    const reportResultViaUI = async (
+      page: Page,
+      matchId: string,
+      pattern: Pattern,
+      roundNum: number,
+    ): Promise<void> => {
+      // Match cards only render on the active round's tab, so a reload has to
+      // put the page back on that tab — otherwise the reload "fixes" a stale
+      // page into one showing a different round, and the report button stays
+      // missing.
       const btnSelector = `[data-testid="match-report-button-${matchId}"]`
-      const isVisible = await page.locator(btnSelector).isVisible().catch(() => false)
+      const openRoundTab = () =>
+        page.locator(`[data-testid="matchmaking-tab-round-${roundNum}"]`).click({ timeout: 5000 }).catch(() => null)
+
+      let isVisible = await page.locator(btnSelector).isVisible().catch(() => false)
+      if (!isVisible) {
+        await openRoundTab()
+        isVisible = await page.locator(btnSelector).isVisible().catch(() => false)
+      }
       if (!isVisible) {
         await page.reload({ waitUntil: 'domcontentloaded', timeout: 30000 })
         await page.waitForSelector('[data-testid="matchmaking-panel"]', { timeout: 20000 })
+        await openRoundTab()
       }
+      await expect(page.locator(btnSelector)).toBeVisible({ timeout: 20000 })
       await page.locator(`${btnSelector} button`).click({ timeout: 10000 })
       await page.waitForSelector('[data-testid="result-report-modal"]', { timeout: 10000 })
-      if (pattern[0]) await page.locator(`[data-testid="game-game1-${pattern[0]}"]`).click()
-      if (pattern[1]) await page.locator(`[data-testid="game-game2-${pattern[1]}"]`).click()
+
+      // Each game unlocks the next: game 2 is disabled until game 1 is set,
+      // game 3 until the match is 1–1. Wait for the button to be enabled and
+      // confirm the pick took, or the next click waits on a button that will
+      // never enable.
+      const pickGame = async (gameKey: string, choice: string): Promise<void> => {
+        const button = page.locator(`[data-testid="game-${gameKey}-${choice}"]`)
+        for (let attempt = 0; attempt < 3; attempt++) {
+          await expect(button).toBeEnabled({ timeout: 10000 })
+          await button.click({ timeout: 10000 })
+          const took = await button.evaluate(
+            (el) => el.classList.contains('btn--active'),
+            undefined,
+            { timeout: 5000 },
+          ).catch(() => false)
+          if (took) return
+          await page.waitForTimeout(500)
+        }
+        const state = await page.evaluate((key) => {
+          const row = document.querySelector(`[data-testid="game-row-${key}"]`)
+          return {
+            modalOpen: !!document.querySelector('[data-testid="result-report-modal"]'),
+            rowFound: !!row,
+            buttons: row
+              ? Array.from(row.querySelectorAll('button')).map((b) => `${b.getAttribute('data-testid')}=${b.className}`)
+              : [],
+          }
+        }, gameKey)
+        throw new Error(`${gameKey}/${choice} never registered: ${JSON.stringify(state)}`)
+      }
+
+      if (pattern[0]) await pickGame('game1', pattern[0])
+      if (pattern[1]) await pickGame('game2', pattern[1])
       if (pattern[2]) {
         await page.waitForSelector('[data-testid="game-row-game3"]', { timeout: 5000 })
-        await page.locator(`[data-testid="game-game3-${pattern[2]}"]`).click()
+        await pickGame('game3', pattern[2])
       }
-      await page.locator('[data-testid="result-report-submit"] button').click()
+
+      const submit = page.locator('[data-testid="result-report-submit"] button')
+      await expect(submit).toBeEnabled({ timeout: 10000 })
+      await submit.click({ timeout: 10000 })
       await page.waitForSelector('[data-testid="result-report-modal"]', { state: 'detached', timeout: 10000 })
     }
 
@@ -773,8 +824,8 @@ test.describe('8-player CPM full UI flow', () => {
           await pages[idx].locator(`[data-testid="matchmaking-tab-round-${roundNum}"]`).click().catch(() => null)
         }
 
-        await reportResultViaUI(pages[p1Idx], pairing.matchId, pattern)
-        await reportResultViaUI(pages[p2Idx], pairing.matchId, pattern)
+        await reportResultViaUI(pages[p1Idx], pairing.matchId, pattern, roundNum)
+        await reportResultViaUI(pages[p2Idx], pairing.matchId, pattern, roundNum)
 
         // Confirm match is finalized on host (with reload fallback)
         try {

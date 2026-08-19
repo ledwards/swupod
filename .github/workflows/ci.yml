@@ -91,13 +91,14 @@ jobs:
     # display), and the whole thing dialled a default Postgres port when
     # DATABASE_URL was unset. Both were invisible because no job executed them.
     #
-    # NOT gating yet — continue-on-error. The suite currently has ~72 known
-    # failures whose dominant cause is state accumulating across a run (every
-    # spec file passes alone; the suite fails together, parallel or serial).
-    # Blocking every PR on that would just get the job disabled. This reports
-    # instead, so the number is visible and can be driven down. Drop
-    # continue-on-error the moment it reaches zero — a non-gating test job is
-    # only worth having on the way to a gating one.
+    # NOT gating yet — continue-on-error. The suite was at ~72 failures when
+    # this job was added; they were overwhelmingly stale expectations plus a
+    # non-hermetic harness (test-only API routes refused in a production build,
+    # socket.io rejecting localhost, a shared test id letting one spec delete
+    # another's users), not the mystery cross-run state it was first blamed on.
+    # Those are fixed. Kept reporting-only for a few green runs to confirm it
+    # holds on a CI runner; drop continue-on-error once it does — a non-gating
+    # test job is only worth having on the way to a gating one.
     name: E2E (reporting only)
     runs-on: ubuntu-latest
     timeout-minutes: 60

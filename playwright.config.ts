@@ -45,6 +45,12 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('/')` */
     baseURL: process.env.TEST_BASE_URL || 'http://localhost:3000',
 
+    /* An action with no timeout does not fail, it hangs. One stale selector
+       inside an 8-player spec sat on a disabled button for 25 minutes against
+       that spec's 90-minute budget, producing no output at all. Bounded, the
+       same situation fails in seconds with the call log that names it. */
+    actionTimeout: 15_000,
+
     /* Collect trace when retrying the failed test */
     trace: 'on-first-retry',
 
