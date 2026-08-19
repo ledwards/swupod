@@ -224,7 +224,15 @@ test.describe('Responsive Breakpoints', () => {
       // Logo and mode buttons should be visible
       await expect(page.locator('.landing-logo')).toBeVisible()
       await expect(page.locator('.mode-button').first()).toBeVisible()
-      await expect(page.locator('.mode-section')).toHaveCount(2)
+      // Name the sections rather than counting them. This asserted a count of
+      // 2 long after Deckbuilder made it 3, and a bare count says nothing about
+      // which one went missing — it just breaks again the next time a section
+      // is added, which is how it came to be wrong in the first place.
+      for (const section of ['Solo', 'With Friends', 'Deckbuilder']) {
+        await expect(
+          page.locator('.mode-section .mode-section-header', { hasText: section })
+        ).toBeVisible()
+      }
     })
   }
 })
