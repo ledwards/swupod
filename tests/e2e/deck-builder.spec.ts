@@ -5,6 +5,34 @@ import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
 
 const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:3000'
 
+/**
+ * Finish the pack-opening step, then open the deck builder for the new pool.
+ *
+ * A pool is persisted during the opening flow, not the moment its URL appears.
+ * Going straight to /pool/{id}/deck therefore races the save: the deck page
+ * cannot load the pool, bounces to /sealed, and every assertion after it fails
+ * with "element(s) not found" — which reads as a broken deck builder rather
+ * than a pool that does not exist yet. Skip the animation the way a user can,
+ * wait for the pool to actually be readable, and only then navigate.
+ */
+async function openDeckBuilderForNewPool(page: Page): Promise<string> {
+  await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 60000 })
+  const shareId = page.url().split('/pool/')[1]?.split('/')[0] as string
+
+  const skip = page.locator('.skip-button')
+  if (await skip.count()) await skip.click().catch(() => {})
+
+  await expect
+    .poll(async () => (await page.request.get(`${BASE_URL}/api/pools/${shareId}`)).status(), {
+      timeout: 60000,
+      message: `pool ${shareId} was never persisted`,
+    })
+    .toBe(200)
+
+  await page.goto(`/pool/${shareId}/deck`)
+  return shareId
+}
+
 test.describe('Deck Builder', () => {
   // Store pool shareId for reuse across tests
   let poolShareId: string | null = null
@@ -38,12 +66,7 @@ test.describe('Deck Builder', () => {
     await page.locator('.sets-grid .set-card').first().scrollIntoViewIfNeeded()
     await page.locator('.sets-grid .set-card').first().click()
     // Sealed flow: /sealed → /pools/new?set=X (pack animation) → /pool/{shareId}
-    await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 60000 })
-
-    // Extract shareId and navigate to deck builder
-    const poolUrl = page.url()
-    poolShareId = poolUrl.split('/pool/')[1]?.split('/')[0]
-    await page.goto(`/pool/${poolShareId}/deck`)
+    poolShareId = await openDeckBuilderForNewPool(page)
 
     // Wait for deck builder to render (leaders & bases section is always present)
     await expect(page.locator('.deck-builder, .leaders-bases-section, .leaders-bases-container').first()).toBeVisible({ timeout: 30000 })
@@ -65,10 +88,7 @@ test.describe('Deck Builder', () => {
     await page.locator('.sets-grid .set-card').first().scrollIntoViewIfNeeded()
     await page.locator('.sets-grid .set-card').first().click()
     // Sealed flow: /sealed → /pools/new?set=X (pack animation) → /pool/{shareId}
-    await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 60000 })
-    const poolUrl = page.url()
-    const shareId = poolUrl.split('/pool/')[1]?.split('/')[0]
-    await page.goto(`/pool/${shareId}/deck`)
+    const shareId = await openDeckBuilderForNewPool(page)
 
     // Wait for deck builder to load
     await expect(page.locator('.deck-builder, .card-grid').first()).toBeVisible({ timeout: 30000 })
@@ -95,10 +115,7 @@ test.describe('Deck Builder', () => {
     await page.locator('.sets-grid .set-card').first().scrollIntoViewIfNeeded()
     await page.locator('.sets-grid .set-card').first().click()
     // Sealed flow: /sealed → /pools/new?set=X (pack animation) → /pool/{shareId}
-    await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 60000 })
-    const poolUrl = page.url()
-    const shareId = poolUrl.split('/pool/')[1]?.split('/')[0]
-    await page.goto(`/pool/${shareId}/deck`)
+    const shareId = await openDeckBuilderForNewPool(page)
 
     // Wait for deck builder to render
     await expect(page.locator('.deck-builder, .leaders-bases-section').first()).toBeVisible({ timeout: 30000 })
@@ -133,10 +150,7 @@ test.describe('Deck Builder', () => {
     await page.locator('.sets-grid .set-card').first().scrollIntoViewIfNeeded()
     await page.locator('.sets-grid .set-card').first().click()
     // Sealed flow: /sealed → /pools/new?set=X (pack animation) → /pool/{shareId}
-    await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 60000 })
-    const poolUrl = page.url()
-    const shareId = poolUrl.split('/pool/')[1]?.split('/')[0]
-    await page.goto(`/pool/${shareId}/deck`)
+    const shareId = await openDeckBuilderForNewPool(page)
 
     // Wait for deck builder
     await expect(page.locator('.deck-builder, .leaders-bases-section, .leaders-bases-container').first()).toBeVisible({ timeout: 30000 })
@@ -158,10 +172,7 @@ test.describe('Deck Builder', () => {
     await page.locator('.sets-grid .set-card').first().scrollIntoViewIfNeeded()
     await page.locator('.sets-grid .set-card').first().click()
     // Sealed flow: /sealed → /pools/new?set=X (pack animation) → /pool/{shareId}
-    await page.waitForURL(/\/pool\/[a-zA-Z0-9_-]+/, { timeout: 60000 })
-    const poolUrl = page.url()
-    const shareId = poolUrl.split('/pool/')[1]?.split('/')[0]
-    await page.goto(`/pool/${shareId}/deck`)
+    const shareId = await openDeckBuilderForNewPool(page)
 
     // Wait for deck builder
     await expect(page.locator('.deck-builder, .leaders-bases-section').first()).toBeVisible({ timeout: 30000 })
