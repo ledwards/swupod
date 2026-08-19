@@ -289,3 +289,14 @@ export async function settleNewPool(page: Page): Promise<string> {
   await waitForPoolPersisted(page, shareId)
   return shareId
 }
+
+/**
+ * Has this page landed on the finished draft's pool?
+ *
+ * A completed draft goes to /pool/<id>, which immediately redirects a draft
+ * pool on to /draft_pool/<id> (sealed pools go to /sealed_pool/<id>). Testing
+ * for "/pool/" alone misses the destination it actually settles on.
+ */
+export function isOnPoolPage(url: string): boolean {
+  return /\/(draft_pool|sealed_pool|pool)\//.test(url)
+}

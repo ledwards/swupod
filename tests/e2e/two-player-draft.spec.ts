@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { isOnPoolPage } from './helpers.ts'
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
 import { launchOptions } from './browser-launch'
@@ -514,7 +515,7 @@ test.describe('2-player draft', () => {
         pages.map(async (page) => {
           try {
             // Check for completion
-            if (page.url().includes('/pool/')) return true
+            if (isOnPoolPage(page.url())) return true
             const complete = await page.locator('.draft-complete').isVisible({ timeout: 100 }).catch(() => false)
             if (complete) return true
 

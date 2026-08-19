@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { isOnPoolPage } from './helpers.ts'
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
 import { launchOptions } from './browser-launch'
@@ -201,11 +202,11 @@ test.describe('Full 8-player draft', () => {
 
         // Wait for pick to advance (unless last pick of last pack)
         if (!(pack === 3 && pick === 14)) {
-          // Wait for passing skeleton to confirm picks are registered
+          // Wait for passing skeleton to confirm picks are registered. The new
+          // pack is then waited for by waitForAllPlayersReady at the top of the
+          // next iteration — waiting for it twice only split one budget in two,
+          // and the first half is what kept running out.
           await waitForPassingSkeleton()
-
-          // Wait for new cards to appear (pack passed)
-          await waitForNewCardsAfterPassing('.pack-grid')
         }
 
         console.log(' ✓')
@@ -221,11 +222,17 @@ test.describe('Full 8-player draft', () => {
     let p1Complete = false
     for (let i = 0; i < 30; i++) {
       await pages[0].waitForTimeout(1000)
-      if (pages[0].url().includes('/pool/')) {
+      if (isOnPoolPage(pages[0].url())) {
         p1Complete = true
         break
       }
-      const isComplete = await pages[0].locator('.draft-complete, .deck-builder').isVisible().catch(() => false)
+      // The finished draft lands on its pool page, whose tell is the Build Deck
+      // button — .draft-complete/.deck-builder belong to other screens.
+      const isComplete = await pages[0]
+        .locator('.draft-complete, .deck-builder, button:has-text("Build Deck")')
+        .first()
+        .isVisible()
+        .catch(() => false)
       if (isComplete) {
         p1Complete = true
         break
@@ -251,17 +258,43 @@ test.describe('Full 8-player draft', () => {
   // Helper: Wait for majority of players to have selectable cards
   async function waitForAllPlayersReady(selector: string): Promise<void> {
     const threshold = Math.ceil(NUM_PLAYERS * 0.9) // 90% of players
-    let attempts = 0
-    while (attempts < 60) {
-      const counts = await Promise.all(
+    let counts: number[] = []
+    let nudged = false
+    // 60s: eight live browsers passing a pack around is not fast, and the
+    // slowest page decides. Half this was enough to fail on pack 2 with the
+    // draft perfectly healthy.
+    for (let attempts = 0; attempts < 120; attempts++) {
+      counts = await Promise.all(
         pages.map(page => page.locator(selector).count().catch(() => 0))
       )
-      const readyCount = counts.filter(c => c > 0).length
-      if (readyCount >= threshold) return
+      if (counts.filter(c => c > 0).length >= threshold) return
+
+      // Halfway through, reload whoever is still empty-handed.
+      //
+      // The draft page takes its updates from the socket alone — there is no
+      // periodic refetch — so a page that misses one 'state' broadcast waits
+      // for the next one, which for a player whose pack has already arrived
+      // never comes. A reload refetches and unsticks it. The CPM spec carries
+      // the same fallback for the same reason. Worth revisiting in the app:
+      // a client that misses a broadcast currently has no way back on its own.
+      if (!nudged && attempts === 60) {
+        nudged = true
+        const stalled = counts
+          .map((c, i) => (c === 0 ? i : -1))
+          .filter((i) => i >= 0)
+        if (stalled.length > 0) {
+          console.log(`      nudging stalled pages: ${stalled.map((i) => `P${i + 1}`).join(', ')}`)
+          await Promise.all(stalled.map((i) =>
+            pages[i].reload({ waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => null)))
+        }
+      }
+
       await pages[0].waitForTimeout(500)
-      attempts++
     }
-    throw new Error(`Timeout waiting for cards: ${selector}`)
+    // Name the players still empty-handed — "timeout waiting for cards" alone
+    // says nothing about whether one page stalled or the table did.
+    const empty = counts.map((c, i) => (c === 0 ? `P${i + 1}` : null)).filter(Boolean)
+    throw new Error(`Timeout waiting for cards (${selector}). No cards for: ${empty.join(', ')}`)
   }
 
   // Helper: Have all players select a card
@@ -326,22 +359,6 @@ test.describe('Full 8-player draft', () => {
     return false // Timeout, but don't throw - might be last pick
   }
 
-  // Helper: Wait for new cards to appear after passing
-  async function waitForNewCardsAfterPassing(gridSelector: string): Promise<void> {
-    const threshold = Math.ceil(NUM_PLAYERS * 0.9) // 90% of players should have cards
-    let attempts = 0
-    while (attempts < 60) {
-      const counts = await Promise.all(
-        pages.map(page => page.locator(`${gridSelector} .draftable-card`).count().catch(() => 0))
-      )
-      const readyCount = counts.filter(c => c > 0).length
-      if (readyCount >= threshold) return
-      await pages[0].waitForTimeout(500)
-      attempts++
-    }
-    throw new Error(`Timeout waiting for new cards: ${gridSelector}`)
-  }
-
   // Helper: Wait for leader round to advance
   async function waitForLeaderRoundAdvance(currentRound: number): Promise<void> {
     const threshold = Math.ceil(NUM_PLAYERS * 0.9)
@@ -392,7 +409,7 @@ test.describe('Full 8-player draft', () => {
         pages.map(async (page) => {
           try {
             // Check for completion
-            if (page.url().includes('/pool/')) return true
+            if (isOnPoolPage(page.url())) return true
             const complete = await page.locator('.draft-complete').isVisible({ timeout: 100 }).catch(() => false)
             if (complete) return true
 

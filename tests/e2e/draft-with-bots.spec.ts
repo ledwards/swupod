@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { isOnPoolPage } from './helpers.ts'
 import { test, expect, chromium, Browser, BrowserContext, Page } from '@playwright/test'
 import { debugLog, debugError, testLog } from './debug-utils.ts'
 import { createTestUser, cleanupTestUsers, closeDb } from './test-utils.ts'
@@ -169,7 +170,7 @@ test.describe('Draft with bots', () => {
           await pollServer()
           const inPack = await page.locator('.pack-draft-phase').isVisible().catch(() => false)
           if (inPack) { foundLeaders = true; break }
-          if (page.url().includes('/pool/')) { foundLeaders = true; break }
+          if (isOnPoolPage(page.url())) { foundLeaders = true; break }
           const count = await page.locator(leaderSelector).count()
           if (count > 0) { foundLeaders = true; break }
           await page.waitForTimeout(500)
@@ -194,7 +195,7 @@ test.describe('Draft with bots', () => {
           if (await page.locator('.pack-draft-phase').isVisible().catch(() => false)) {
             leaderSelected = true; break
           }
-          if (page.url().includes('/pool/')) {
+          if (isOnPoolPage(page.url())) {
             leaderSelected = true; break
           }
           const available = await page.locator(leaderSelector).count()
@@ -236,7 +237,7 @@ test.describe('Draft with bots', () => {
       debugLog(`    Pick ${pick}/${PICKS_TO_TEST}:`)
 
       // Check if draft completed
-      if (page.url().includes('/pool/')) {
+      if (isOnPoolPage(page.url())) {
         debugLog('      (draft complete)')
         break
       }
@@ -246,14 +247,14 @@ test.describe('Draft with bots', () => {
       let foundCards = false
       for (let wait = 0; wait < 30; wait++) { // 15 seconds max
         await pollServer()
-        if (page.url().includes('/pool/')) { foundCards = true; break }
+        if (isOnPoolPage(page.url())) { foundCards = true; break }
         const hasSkeleton = await page.locator('.skeleton-card').first().isVisible().catch(() => false)
         if (hasSkeleton) { await page.waitForTimeout(500); continue }
         const count = await page.locator(packSelector).count()
         if (count > 0) { foundCards = true; break }
         await page.waitForTimeout(500)
       }
-      if (page.url().includes('/pool/')) {
+      if (isOnPoolPage(page.url())) {
         debugLog('      (draft complete)')
         break
       }
@@ -274,7 +275,7 @@ test.describe('Draft with bots', () => {
       // waiting to move on from.
       let pickedFrom = ''
       for (let clickAttempt = 0; clickAttempt < 5 && !cardSelected; clickAttempt++) {
-        if (page.url().includes('/pool/')) { cardSelected = true; break }
+        if (isOnPoolPage(page.url())) { cardSelected = true; break }
         const before = await packSignature()
         pickedFrom = before
         const available = await page.locator(packSelector).count()
@@ -311,7 +312,7 @@ test.describe('Draft with bots', () => {
       debugLog(`      ✓ Card selected`)
 
       // Wait for the next pack to arrive (bots pick quickly)
-      if (pick < PICKS_TO_TEST && !page.url().includes('/pool/')) {
+      if (pick < PICKS_TO_TEST && !isOnPoolPage(page.url())) {
         debugLog(`      Waiting for next pick...`)
         await waitForNextPack(pickedFrom)
       }
@@ -331,7 +332,7 @@ test.describe('Draft with bots', () => {
 
     // Check for various success conditions
     const stillInDraft = currentUrl.includes('/draft/')
-    const onPoolPage = currentUrl.includes('/pool/') || currentUrl.includes('/pool')
+    const onPoolPage = isOnPoolPage(currentUrl)
     const inPackPhase = await page.locator('.pack-draft-phase').isVisible().catch(() => false)
     const hasPoolContent = await page.locator('text=Draft Pool').isVisible().catch(() => false)
     const hasBuildDeck = await page.locator('button:has-text("Build Deck")').isVisible().catch(() => false)
@@ -369,7 +370,7 @@ test.describe('Draft with bots', () => {
         const inPackDraft = await page.locator('.pack-draft-phase').isVisible().catch(() => false)
         if (inPackDraft) return
 
-        if (page.url().includes('/pool/')) return
+        if (isOnPoolPage(page.url())) return
 
         const roundInfo = await page.locator('.round-pick-info').textContent({ timeout: 500 })
         const match = roundInfo?.match(/Leader (\d+)/)
@@ -388,7 +389,7 @@ test.describe('Draft with bots', () => {
       const isVisible = await page.locator('.pack-draft-phase').isVisible().catch(() => false)
       if (isVisible) return
 
-      if (page.url().includes('/pool/')) return
+      if (isOnPoolPage(page.url())) return
 
       await page.waitForTimeout(500)
     }
@@ -415,7 +416,7 @@ test.describe('Draft with bots', () => {
     for (let attempts = 0; attempts < 60; attempts++) { // 30 seconds
       await pollServer()
 
-      if (page.url().includes('/pool/')) return
+      if (isOnPoolPage(page.url())) return
 
       const passing = await page.locator('.skeleton-card').count()
       if (passing === 0) {
