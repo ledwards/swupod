@@ -1,6 +1,8 @@
 // @ts-nocheck
 import { test, expect } from '@playwright/test'
 import { shouldIgnoreError } from './helpers.ts'
+import { seedSealedStats, cleanupSeededStats } from './seed-stats.ts'
+import { closeDb } from './test-utils.ts'
 
 /**
  * Stats page E2E tests
@@ -38,6 +40,19 @@ async function gotoStats(page) {
 test.describe('Stats Page', () => {
   test.setTimeout(STATS_TIMEOUT)
   test.describe.configure({ retries: 1 })
+
+  // The page aggregates real sealed decks. With none, it renders "No sealed
+  // data available" — correctly — and every assertion below has nothing to
+  // stand on. Seed a few decks so the legend, tables and aspect icons exist.
+  test.beforeAll(async () => {
+    await cleanupSeededStats()
+    await seedSealedStats('ASH', 8)
+  })
+
+  test.afterAll(async () => {
+    await cleanupSeededStats()
+    await closeDb()
+  })
 
   test.beforeEach(async ({ page }) => {
     const errors: string[] = []
