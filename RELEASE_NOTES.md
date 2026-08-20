@@ -1,5 +1,11 @@
 # Release Notes
 
+## 08.19.2026
+
+### 🐞 Bug Fixes
+- **A draft no longer stalls waiting for a pack that already arrived.** The table passes packs over a live connection, and if one of those messages went missing your screen sat empty until someone reloaded — the next message was about the next pick, so it never caught you up. The page now notices it has fallen behind and fetches the pack itself.
+- **The deck builder's arena buttons stay on screen on a phone.** + All, Swap and the aspect filters ran off the right edge of the screen where they couldn't be tapped; they wrap onto a second line now. Desktop keeps the single row.
+
 ## 08.18.2026 Part 2
 
 ### 🃏 Pack Changes
