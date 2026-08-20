@@ -86,23 +86,28 @@ jobs:
       - run: npm run check:bundle-size
 
   e2e:
-    # Playwright E2E. Nothing ran this suite before, which is exactly how it
-    # drifted: eleven specs launched a headed browser (impossible without a
-    # display), and the whole thing dialled a default Postgres port when
-    # DATABASE_URL was unset. Both were invisible because no job executed them.
+    # Playwright E2E — gating.
     #
-    # NOT gating yet — continue-on-error. The suite was at ~72 failures when
-    # this job was added; they were overwhelmingly stale expectations plus a
-    # non-hermetic harness (test-only API routes refused in a production build,
-    # socket.io rejecting localhost, a shared test id letting one spec delete
-    # another's users), not the mystery cross-run state it was first blamed on.
-    # Those are fixed. Kept reporting-only for a few green runs to confirm it
-    # holds on a CI runner; drop continue-on-error once it does — a non-gating
-    # test job is only worth having on the way to a gating one.
-    name: E2E (reporting only)
+    # Nothing ran this suite before, which is exactly how it drifted: eleven
+    # specs launched a headed browser (impossible without a display), and the
+    # whole thing dialled a default Postgres port when DATABASE_URL was unset.
+    # Both were invisible because no job executed them. It was added
+    # reporting-only at ~72 failures; those were overwhelmingly stale
+    # expectations plus a non-hermetic harness (test-only API routes refused in
+    # a production build, socket.io rejecting localhost, a shared test id
+    # letting one spec delete another's users), not the mystery cross-run state
+    # first blamed for them.
+    #
+    # The suite is green, so it gates: a test job that cannot fail the build
+    # teaches everyone to scroll past it. If it goes red, the fix is the code
+    # or the spec — not continue-on-error.
+    name: E2E
     runs-on: ubuntu-latest
-    timeout-minutes: 60
-    continue-on-error: true
+    # Generous because the config runs CI serially (workers: 1) and retries
+    # failures twice, so a single bad spec costs three times its runtime. The
+    # parallel local run is ~15min; serial on a slower runner is a different
+    # number, and a job killed by its own clock reads as a product failure.
+    timeout-minutes: 120
     services:
       postgres:
         image: postgres:18
@@ -132,13 +137,14 @@ jobs:
       - run: psql postgresql://postgres@localhost:5432/postgres -c 'CREATE DATABASE swupod_e2e'
       - run: npm run migrate:dev
       # Chromium only. The config asks for five browsers under CI; that is five
-      # times the bill for a suite that is not green in one yet.
+      # times the bill, and the specs skip themselves off chromium anyway.
       - run: npx playwright install --with-deps chromium
       # Playwright builds and serves the app itself (see webServer in
       # playwright.config.ts) — it must own the server, or it starts a second
-      # one on the same port. --retries=0 because retrying known failures
-      # triples the runtime and tells us nothing; restore retries with gating.
-      - run: npx playwright test --project=chromium --retries=0 --reporter=line
+      # one on the same port. Retries come from the config (2 under CI): now
+      # that this gates, a single flake should not block a PR — but a repeat
+      # failure still does.
+      - run: npx playwright test --project=chromium --reporter=line
       # The GC promo specs are excluded from the default config (they need a
       # server with the claim window open) and would otherwise never run at all
       # — which is the drift this job exists to stop.
