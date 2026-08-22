@@ -4,9 +4,17 @@
  * AdminVoicePackInvitePanel
  *
  * Mints the single-use creator link for a voice pack and hands the admin a URL to
- * send. Sits beside AdminGrantPanel on /admin and follows the same shape: a small
+ * send. Sits below AdminGrantPanel on /admin and follows the same shape: a small
  * dark card, Button variant="toggle" glowColor="blue" for the segmented choice, a
  * primary CTA, and a success/error region below.
+ *
+ * COPY MATTERS HERE. On /admin this panel sits directly under "Admin: Grant Access",
+ * which flips is_admin / is_beta_tester / is_patron on an existing account — and the
+ * two were genuinely mistaken for each other ("this is who has access to the voice
+ * pack once created, or who has access to the link? not clear"). So the title names
+ * the OUTCOME (a creator builds a pack), the subtitle spells out the whole lifecycle,
+ * and an explicit disclaimer says this grants nobody any access to anything. Do not
+ * shorten these back down to "Creator Voice Pack Link".
  *
  * The route returns a PATH, not an absolute URL, so the link is composed here
  * against window.location.origin — the same code then works on localhost, a preview
@@ -71,14 +79,27 @@ export default function AdminVoicePackInvitePanel() {
 
   return (
     <div className="voice-invite-panel">
-      <h2 className="voice-invite-title">Admin: Creator Voice Pack Link</h2>
-      <p className="voice-invite-subtitle">
-        Mints a one-time link a creator can use to upload their voice pack and choose a
-        redemption code. Nothing else links to that page, so this is the only way in.
-      </p>
+      <header className="voice-invite-header">
+        <span className="voice-invite-eyebrow">Voice packs</span>
+        <h2 className="voice-invite-title">Invite a creator to record a voice pack</h2>
+        <p className="voice-invite-subtitle">
+          Makes a one-time link that you send to an outside creator — a streamer, a
+          podcast, anyone with a voice. They open it, record the seven draft calls, pick
+          their own redemption code, and publish. The link works exactly once and then
+          dies; nothing else on the site points at that page.
+        </p>
+        <p className="voice-invite-not">
+          This grants nobody access to anything. It does not touch accounts, roles or
+          permissions — that is the &ldquo;Grant Access&rdquo; panel above. Once the pack
+          is published, players unlock it themselves by entering the creator&rsquo;s code
+          at <code className="voice-invite-inline-code">/redeem</code>.
+        </p>
+      </header>
 
       <label className="voice-invite-field">
-        <span className="voice-invite-label">Who is this for? (optional note)</span>
+        <span className="voice-invite-label">
+          Which creator is this for? (optional note, only you see it)
+        </span>
         <input
           className="voice-invite-input"
           type="text"
@@ -108,14 +129,15 @@ export default function AdminVoicePackInvitePanel() {
 
       <div className="voice-invite-actions">
         <Button variant="primary" disabled={status === 'submitting'} onClick={handleCreate}>
-          {status === 'submitting' ? 'Creating…' : 'Create Link'}
+          {status === 'submitting' ? 'Creating…' : 'Create creator link'}
         </Button>
       </div>
 
       {status === 'success' && invite && (
         <div className="voice-invite-success" role="status">
           <p className="voice-invite-success-line">
-            Send this to {invite.note || 'the creator'}. It works once, then it&apos;s dead.
+            Send this to {invite.note || 'the creator'}. It works once — the moment they
+            publish their pack, the link is dead.
           </p>
           <code className="voice-invite-url">{invite.url}</code>
           <div className="voice-invite-copy-row">

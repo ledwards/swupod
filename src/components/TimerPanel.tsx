@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import CountdownTimer from './CountdownTimer'
+import VoiceCueMuteButton from './VoiceCueMuteButton'
 import TimerButton from './TimerButton'
 import { isRoundTimerEnabled as computeRoundTimerEnabled, getDisplayPickSeconds } from '../utils/draftTimerDefaults'
 import { elapsedTimerSeconds } from '../utils/serverClock'
@@ -247,6 +248,10 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
               )}
             </>
           )}
+          {/* `cuesEnabled` = cues && competitive. Voice is a Competitive
+              Practice feature, and only the top of PackDraftPhase's two panels
+              passes `cues`, so this yields exactly one button. */}
+          {cuesEnabled && <VoiceCueMuteButton packId={cuePackId} />}
         </div>
       </div>
 

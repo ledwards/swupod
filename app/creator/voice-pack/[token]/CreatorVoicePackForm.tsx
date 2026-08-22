@@ -7,12 +7,19 @@
  * uploads a logo. Every clip gets a real <audio controls> preview built from an object
  * URL so they can hear exactly what a table will hear before submitting.
  *
+ * TWO WAYS IN, ONE WAY OUT: a clip can be recorded in the browser (ClipRecorder →
+ * MediaRecorder → File) or chosen with the file picker. Both land in the same `clips`
+ * map as a `File`, so there is exactly one submit path and one set of validation
+ * rules. The recorder is additive — it hides itself where MediaRecorder or the mic is
+ * unavailable, and the picker always remains.
+ *
  * Client-side size checks are a courtesy (fail fast on a 20 MB WAV); the server
  * re-validates declared mime, magic bytes and size on every part and is the only
  * authority. Submitting consumes the link.
  */
 import { useEffect, useRef, useState } from 'react'
 import Button from '@/src/components/Button'
+import ClipRecorder from '@/src/components/ClipRecorder'
 import {
   VOICE_PACK_CLIP_TYPES,
   normalizeVoicePackCode,
@@ -47,17 +54,17 @@ const CLIP_GUIDE: Record<VoicePackClipType, { label: string; when: string; sugge
   'count-30': {
     label: '30 seconds left',
     when: 'Pick-timer warning.',
-    suggestion: '“Thirty seconds.”',
+    suggestion: '“Thirty seconds remaining.”',
   },
   'count-15': {
     label: '15 seconds left',
     when: 'Pick-timer warning.',
-    suggestion: '“Fifteen seconds.”',
+    suggestion: '“Fifteen seconds remaining.”',
   },
   'count-5': {
     label: '5 seconds left',
     when: 'Pick-timer warning.',
-    suggestion: '“Five seconds!”',
+    suggestion: '“Five seconds remaining!”',
   },
   'time-is-up': {
     label: 'Time is up',
@@ -187,9 +194,10 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
           hears you.
         </p>
         <p className="creator-vp-fineprint">
-          This link works once. Audio files up to {MAX_CLIP_BYTES / KB} KB each (MP3, M4A,
-          OGG, WAV or WebM); logo up to {MAX_LOGO_BYTES / KB / KB} MB (PNG, JPEG, WebP or
-          GIF).
+          Record each line right here with your mic, or upload audio you already have —
+          either way you can play it back before you publish. This link works once. Audio
+          files up to {MAX_CLIP_BYTES / KB} KB each (MP3, M4A, OGG, WAV or WebM); logo up
+          to {MAX_LOGO_BYTES / KB / KB} MB (PNG, JPEG, WebP or GIF).
         </p>
 
         <section className="creator-vp-section">
@@ -271,6 +279,12 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
                 </div>
                 <p className="creator-vp-clip-when">{guide.when}</p>
                 <p className="creator-vp-clip-suggestion">Suggested: {guide.suggestion}</p>
+                <ClipRecorder
+                  clip={clip}
+                  label={guide.label}
+                  hasClip={Boolean(file)}
+                  onRecorded={(recorded) => pickClip(clip, recorded)}
+                />
                 <input
                   className="creator-vp-file"
                   type="file"

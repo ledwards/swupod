@@ -39,6 +39,10 @@ function NewDraftPageContent() {
     return true
   })
 
+  // Voice pack chosen while setting the pod up. The pod does not exist yet, so the
+  // choice is held here and applied to it the instant it does (see handleSetSelect).
+  // Renders nothing for a host who has not unlocked a pack — they get the default.
+
   const togglePublic = () => {
     const next = !isPublic
     setIsPublic(next)
@@ -189,9 +193,11 @@ function NewDraftPageContent() {
   )
 
   const headerActions = (
-    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-      {lockButton}
-      {swissToggle}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        {lockButton}
+        {swissToggle}
+      </div>
     </div>
   )
 

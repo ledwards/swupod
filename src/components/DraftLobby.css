@@ -203,3 +203,17 @@
     margin-top: 0.25rem;
   }
 }
+
+/* Ready and the voice-cue mute share one row; the counts sit beneath. */
+.lobby-ready-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.lobby-ready-row .lobby-ready-button,
+.lobby-ready-row .lobby-ready-mute {
+  flex: none;
+}

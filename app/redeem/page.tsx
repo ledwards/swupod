@@ -10,6 +10,11 @@
  * On success the confirmation shows the creator's logo, and clicking the logo plays
  * that pack's `greeting` clip — the click is itself the user gesture browsers require
  * before audio may play.
+ *
+ * Both states lead with the Protect the Pod badge (`/ptp_logo400.png` — the same
+ * lockup the homepage and the lobby head with; the mark stacked over the logotype is
+ * baked into that one asset). Landing here from a creator's stream may be someone's
+ * first sight of the site, so it has to say whose site it is before it asks for a code.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/src/contexts/AuthContext'
@@ -24,6 +29,21 @@ interface ClaimedPack {
   creatorName: string | null
   logoUrl: string
   greetingUrl: string | null
+}
+
+/**
+ * The Protect the Pod badge, linked home. `/ptp_logo400.png` is the whole lockup —
+ * mark over logotype in one asset — exactly as `.landing-logo` and
+ * `.lobby-header-logo` use it. Never pair it with `/ptp_logotype.png`; that would
+ * print "PROTECT THE POD" twice.
+ */
+function RedeemBrandHero() {
+  return (
+    <a className="redeem-brand" href="/" aria-label="Protect the Pod home">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img className="redeem-brand-logo" src="/ptp_logo400.png" alt="Protect the Pod" />
+    </a>
+  )
 }
 
 export default function RedeemPage() {
@@ -98,19 +118,20 @@ export default function RedeemPage() {
   if (status === 'done' && pack) {
     return (
       <div className="redeem-page">
+        <RedeemBrandHero />
         <div className="redeem-card redeem-card--done">
-          <h1 className="redeem-title">
-            {alreadyOwned ? 'You already have this one' : 'Unlocked!'}
-          </h1>
-          <p className="redeem-copy">
-            <strong>{pack.displayName}</strong>
-            {pack.creatorName ? ` by ${pack.creatorName}` : ''} is on your account for good.
-            Pick it when you host a draft and everyone at your table hears it.
-          </p>
+          <header className="redeem-header">
+            <span className="redeem-eyebrow">
+              {alreadyOwned ? 'Already in your collection' : 'Voice pack unlocked'}
+            </span>
+            <h1 className="redeem-title">
+              {alreadyOwned ? 'You already have this one' : 'Unlocked!'}
+            </h1>
+          </header>
 
           <button
             type="button"
-            className="redeem-logo-button"
+            className={`redeem-logo-button${playing ? ' is-playing' : ''}`}
             onClick={playGreeting}
             disabled={!pack.greetingUrl}
             aria-label={`Play the greeting from ${pack.displayName}`}
@@ -119,10 +140,25 @@ export default function RedeemPage() {
             <img className="redeem-logo" src={pack.logoUrl} alt={pack.displayName} />
           </button>
           <p className="redeem-fineprint">
-            {playing ? 'Playing…' : 'Tap the logo to hear the greeting'}
+            {!pack.greetingUrl
+              ? ' '
+              : playing
+                ? 'Playing…'
+                : 'Tap the logo to hear the greeting'}
+          </p>
+
+          <p className="redeem-pack-name">{pack.displayName}</p>
+          {pack.creatorName && <p className="redeem-pack-creator">by {pack.creatorName}</p>}
+
+          <p className="redeem-copy">
+            It is on your account for good. Pick it when you host a draft and everyone at
+            your table hears it.
           </p>
 
           <div className="redeem-actions">
+            <a className="btn btn--primary btn--md" href="/">
+              Host a draft
+            </a>
             <Button variant="secondary" onClick={redeemAnother}>
               Redeem another code
             </Button>
@@ -134,12 +170,16 @@ export default function RedeemPage() {
 
   return (
     <div className="redeem-page">
+      <RedeemBrandHero />
       <div className="redeem-card">
-        <h1 className="redeem-title">Redeem a code</h1>
-        <p className="redeem-copy">
-          Got a code from a creator? Enter it here to unlock their voice pack. It stays on
-          your account, and when you host a draft the whole table hears it.
-        </p>
+        <header className="redeem-header">
+          <span className="redeem-eyebrow">Creator voice packs</span>
+          <h1 className="redeem-title">Redeem a code</h1>
+          <p className="redeem-copy">
+            Got a code from a creator? Enter it here to unlock their voice pack. It stays
+            on your account, and when you host a draft the whole table hears it.
+          </p>
+        </header>
 
         {loading ? (
           <div className="loading">Loading…</div>

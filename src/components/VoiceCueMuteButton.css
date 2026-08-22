@@ -1,0 +1,9 @@
+/* Never stretch: the timer bar and the lobby ready row are both flex. */
+.voice-cue-mute {
+  flex: none;
+}
+
+/* The compact timer panel stacks vertically. */
+.timer-panel.compact .voice-cue-mute {
+  align-self: center;
+}

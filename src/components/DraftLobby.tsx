@@ -5,6 +5,7 @@ import { useState } from 'react'
 import PlayerCircle from './PlayerCircle'
 import HostControls from './HostControls'
 import Button from './Button'
+import VoiceCueMuteButton from './VoiceCueMuteButton'
 import CollapsibleSection from './CollapsibleSection'
 import CompetitivePracticeRules from './CompetitivePracticeRules'
 import { trackEvent } from '../hooks/useAnalytics'
@@ -154,23 +155,35 @@ function DraftLobby({
         <div className="controls-section">
           {isPlayer && (
             <div className="lobby-ready-panel">
-              <Button
-                variant={iAmReady ? 'toggle' : 'primary'}
-                active={iAmReady}
-                glowColor={iAmReady ? 'blue' : null}
-                className="lobby-ready-button"
-                onClick={onToggleReady}
-                disabled={togglingReady}
-              >
-                <CheckIcon />
-                <span>{iAmReady ? "You're Ready" : "I'm Ready"}</span>
-              </Button>
+              <div className="lobby-ready-row">
+                <Button
+                  variant={iAmReady ? 'toggle' : 'primary'}
+                  active={iAmReady}
+                  glowColor={iAmReady ? 'blue' : null}
+                  className="lobby-ready-button"
+                  onClick={onToggleReady}
+                  disabled={togglingReady}
+                >
+                  <CheckIcon />
+                  <span>{iAmReady ? "You're Ready" : "I'm Ready"}</span>
+                </Button>
+                {/* Same control as the timer bar. It belongs here too: the
+                    lobby is where `ready-the-draft` plays, and TimerPanel
+                    renders nothing before the draft is active. Competitive
+                    only — a casual pod has no voice at all. */}
+                {draft?.competitive && <VoiceCueMuteButton
+                  packId={(draft?.voicePackId ?? draft?.settings?.voicePackId ?? null) as string | null}
+                  className="lobby-ready-mute"
+                />}
+              </div>
               <p className="lobby-ready-count">
                 {readyHumans.length} / {humanPlayers.length} players ready
               </p>
-              <p className="lobby-ready-hint">
-                Ready also turns on the draft's voice calls in this browser.
-              </p>
+              {draft?.competitive && (
+                <p className="lobby-ready-hint">
+                  Ready also turns on the draft&apos;s voice calls in this browser.
+                </p>
+              )}
             </div>
           )}
 

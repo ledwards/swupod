@@ -357,9 +357,12 @@ function HostControls({
         </div>
       </div>
 
-      {/* Renders nothing unless the host owns an unlocked pack. Whatever they
-          pick plays for everyone at the table, not just for them. */}
-      {shareId && <VoicePackPicker shareId={shareId} isHost={true} />}
+      {/* The pack is normally chosen during pod setup (/draft/new); this is where a
+          host changes their mind once the lobby exists. Renders nothing unless the
+          host owns an unlocked pack, and only in Competitive Practice. Whatever
+          they pick plays for everyone at the
+          table, not just for them — and picking it also unlocks audio on this page. */}
+      {isCompetitive && shareId && <VoicePackPicker shareId={shareId} isHost={true} />}
 
       <div className="controls-section">
         {/* Row 1: Randomize Seats + Shuffle Packs */}

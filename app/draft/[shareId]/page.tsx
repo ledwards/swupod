@@ -30,22 +30,6 @@ interface PageProps {
   params: Promise<{ shareId: string }>
 }
 
-const SpeakerOnIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-  </svg>
-)
-
-const SpeakerOffIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-    <line x1="23" y1="9" x2="17" y2="15"></line>
-    <line x1="17" y1="9" x2="23" y2="15"></line>
-  </svg>
-)
-
 const InfoIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ verticalAlign: 'middle' }}>
     <circle cx="12" cy="12" r="10"></circle>
@@ -178,22 +162,20 @@ export default function DraftRoomPage({ params }: PageProps) {
   // The pack is whatever the pod selected; the field may be absent (creator
   // voice packs ship separately) and that just means the built-in pack.
   const voicePackId = draft?.voicePackId ?? draft?.settings?.voicePackId ?? null
-  const { play: playCue, prime: primeCues, muted: cuesMuted, toggleMuted: toggleCuesMuted } = useVoicePackAudio(voicePackId)
-
-  // Clicking the speaker is a user gesture too — use it to unlock audio for
-  // anyone who never pressed Ready (spectators, late joiners). Priming while
-  // muted is silent: every clip is played muted and immediately paused.
-  const handleToggleCues = () => {
-    primeCues()
-    toggleCuesMuted()
-  }
+  const { play: playCue, prime: primeCues } = useVoicePackAudio(voicePackId)
 
   // Phase transitions are announced from the socket broadcast, so every client
   // hears them at the same moment (rather than only whoever clicked).
+  // Voice cues are a Competitive Practice feature — a casual pod stays silent.
   const phaseKey = status === 'waiting' ? 'lobby' : (draftState?.phase ?? null)
   const previousPhaseRef = useRef<string | null | undefined>(undefined)
   useEffect(() => {
     if (loading || !draft) return
+    if (!draft.competitive) {
+      // Still track the phase so enabling never replays an old transition.
+      previousPhaseRef.current = phaseKey
+      return
+    }
     const previous = previousPhaseRef.current
     previousPhaseRef.current = phaseKey
     // First settled render: adopt the phase silently. Opening a page that is
@@ -703,23 +685,6 @@ export default function DraftRoomPage({ params }: PageProps) {
           <div className="sealed-pod-content">
             <div className="draft-room">
               <div className="draft-header">
-                {/* Voice-cue mute. Lives in the page header on purpose: it has
-                    to be reachable in the lobby AND every draft phase, by
-                    players as well as the host — TimerPanel's host controls are
-                    hidden for competitive pods, which is exactly where the cues
-                    matter most. */}
-                <div className="draft-header-actions">
-                  <Button
-                    variant="icon"
-                    size="sm"
-                    onClick={handleToggleCues}
-                    title={cuesMuted ? 'Unmute draft voice calls' : 'Mute draft voice calls'}
-                    aria-label={cuesMuted ? 'Unmute draft voice calls' : 'Mute draft voice calls'}
-                    aria-pressed={cuesMuted}
-                  >
-                    {cuesMuted ? <SpeakerOffIcon /> : <SpeakerOnIcon />}
-                  </Button>
-                </div>
                   <div className="draft-header-center">
                   <div className="draft-title-row">
                     <h1>

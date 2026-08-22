@@ -12,6 +12,9 @@
  *    from the lobby Ready click: it plays every clip muted and immediately
  *    pauses it, which spends the gesture on all seven at once. Everything after
  *    that (phase transitions, countdowns, expiry) is allowed to speak.
+ *    Choosing a voice pack is a gesture too, so VoicePackPicker calls
+ *    `prime(packId, { announce: 'greeting' })`: it unlocks the newly chosen
+ *    pack AND plays that pack's greeting, so the host hears what they picked.
  * 3. THE MUTE PREFERENCE. Persisted via useLocalStorage, and shared across
  *    every hook instance in the tab — the header toggle and the CountdownTimer
  *    are separate mounts and must not disagree.
@@ -49,7 +52,15 @@ function poolKey(packId: string, clip: VoicePackClip): string {
   return `${packId}::${clip}`
 }
 
-/** Play an element muted and immediately pause it — spends a user gesture on it. */
+/**
+ * Play an element muted and immediately pause it — spends a user gesture on it.
+ *
+ * The pause lands one microtask later, which is a race when the same gesture also
+ * wants a clip to be HEARD (the pack picker announcing a greeting): a newly created
+ * element is primed on creation and then asked to speak. `muted` is the interlock —
+ * an audible play clears it, so a prime whose promise resolves to an unmuted element
+ * knows something else claimed it and leaves it alone.
+ */
 function primeElement(el: HTMLAudioElement): void {
   try {
     el.muted = true
@@ -57,6 +68,7 @@ function primeElement(el: HTMLAudioElement): void {
     if (result && typeof result.then === 'function') {
       result
         .then(() => {
+          if (!el.muted) return
           el.pause()
           el.currentTime = 0
           el.muted = false
@@ -94,11 +106,32 @@ function ensureAudio(packId: string, clip: VoicePackClip): HTMLAudioElement | nu
   }
 }
 
+/** Options for `prime`. */
+export interface PrimeOptions {
+  /**
+   * Clip to play OUT LOUD as part of the gesture instead of priming it silently.
+   * Used when the host picks a pack: they hear the pack's greeting, which both
+   * confirms the choice and proves audio is working on that page.
+   */
+  announce?: VoicePackClip
+}
+
 export interface VoicePackAudio {
-  /** Play a clip. No-ops when muted, unavailable, or the browser refuses. */
+  /** Play a clip from the active pack. No-ops when muted, unavailable, or refused. */
   play: (clip: VoicePackClip) => void
-  /** Unlock audio for this client. MUST be called from a user gesture handler. */
-  prime: () => void
+  /**
+   * Play a clip from a SPECIFIC pack — for the moment a pack is being chosen, when
+   * the hook's own `packId` prop is still the previous selection.
+   */
+  playFrom: (packId: string | null | undefined, clip: VoicePackClip) => void
+  /**
+   * Unlock audio for this client. MUST be called from a user gesture handler,
+   * synchronously, before any `await`.
+   *
+   * @param packId - Pack to unlock; omitted → the active pack
+   * @param options - `announce` plays one clip aloud instead of silently
+   */
+  prime: (packId?: string | null, options?: PrimeOptions) => void
   /** Whether cues are muted on this client. */
   muted: boolean
   setMuted: (muted: boolean) => void
@@ -134,18 +167,16 @@ export function useVoicePackAudio(packId?: string | null): VoicePackAudio {
     for (const clip of VOICE_PACK_CLIPS) ensureAudio(activePackId, clip)
   }, [activePackId])
 
-  const prime = useCallback(() => {
-    hasPrimed = true
-    for (const clip of VOICE_PACK_CLIPS) {
-      const el = ensureAudio(activePackId, clip)
-      if (el) primeElement(el)
-    }
-  }, [activePackId])
-
-  const play = useCallback((clip: VoicePackClip) => {
-    if (mutedRef.current) return
-    const el = ensureAudio(activePackId, clip)
+  const playFrom = useCallback((packId: string | null | undefined, clip: VoicePackClip) => {
+    const id = normalizedPackId(packId)
+    const el = ensureAudio(id, clip)
     if (!el) return
+    // Muted still spends the gesture on the element: a player who unmutes later
+    // should not need another click to hear anything.
+    if (mutedRef.current) {
+      primeElement(el)
+      return
+    }
     try {
       el.muted = false
       el.currentTime = 0
@@ -156,7 +187,24 @@ export function useVoicePackAudio(packId?: string | null): VoicePackAudio {
     } catch {
       /* ignore */
     }
-  }, [activePackId])
+  }, [])
+
+  const prime = useCallback((packId?: string | null, options?: PrimeOptions) => {
+    hasPrimed = true
+    const id = packId === undefined ? activePackId : normalizedPackId(packId)
+    for (const clip of VOICE_PACK_CLIPS) {
+      if (options?.announce === clip) {
+        playFrom(id, clip)
+        continue
+      }
+      const el = ensureAudio(id, clip)
+      if (el) primeElement(el)
+    }
+  }, [activePackId, playFrom])
+
+  const play = useCallback((clip: VoicePackClip) => {
+    playFrom(activePackId, clip)
+  }, [activePackId, playFrom])
 
   const setMuted = useCallback((next: boolean) => {
     setPersistedMuted(next)
@@ -168,7 +216,7 @@ export function useVoicePackAudio(packId?: string | null): VoicePackAudio {
     setMuted(!mutedRef.current)
   }, [setMuted])
 
-  return { play, prime, muted, setMuted, toggleMuted }
+  return { play, playFrom, prime, muted, setMuted, toggleMuted }
 }
 
 export default useVoicePackAudio

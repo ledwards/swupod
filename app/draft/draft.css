@@ -247,19 +247,6 @@
   position: relative;
 }
 
-/* Header-right utilities (voice-cue mute). Absolute so the title stays
-   optically centred no matter how many utilities sit here. */
-.draft-header-actions {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  z-index: 2;
-}
-
 .draft-header-center {
   display: flex;
   flex-direction: column;
@@ -1285,12 +1272,6 @@ a.discord-login-button:active {
     flex-direction: column;
     gap: 4px;
     padding: 0.75rem 0.5rem 0.25rem;
-  }
-
-  .draft-header-actions {
-    right: 8px;
-    top: 8px;
-    transform: none;
   }
 
   .draft-header-center h1 {

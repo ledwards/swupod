@@ -126,3 +126,6 @@ _verify-*
 .env.fable-bak
 .next-*
 .claude/settings.local.json.bak
+
+# Local voice-pack A/B comparison scratch (not shipped)
+public/sounds/voice-packs/_candidates/

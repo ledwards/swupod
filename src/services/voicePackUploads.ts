@@ -44,6 +44,21 @@ const DECLARED_AUDIO: Record<string, AudioMime> = {
   'audio/webm': 'audio/webm',
 }
 
+/**
+ * Canonical mime for a declared Content-Type, or null when it is not on the audio
+ * allowlist. Parameters (`;codecs=opus`, `;charset=binary`) are stripped — MediaRecorder
+ * always appends one — and case is ignored.
+ *
+ * Exported so the recorder in the creator form can check its own output against the
+ * SAME allowlist the server enforces, instead of keeping a second copy of the list.
+ *
+ * @param declaredType - Content-Type string from a form part or a Blob
+ */
+export function canonicalAudioMime(declaredType: string): AudioMime | null {
+  const key = (declaredType || '').toLowerCase().split(';')[0]!.trim()
+  return DECLARED_AUDIO[key] ?? null
+}
+
 const DECLARED_IMAGE: Record<string, ImageMime> = {
   'image/png': 'image/png',
   'image/jpeg': 'image/jpeg',
@@ -110,7 +125,7 @@ export type UploadCheck<M> =
  * enforced on the bytes we actually received (not a client-reported length).
  */
 export function validateClipUpload(declaredType: string, bytes: Uint8Array): UploadCheck<AudioMime> {
-  const declared = DECLARED_AUDIO[(declaredType || '').toLowerCase().split(';')[0]!.trim()]
+  const declared = canonicalAudioMime(declaredType)
   if (!declared) {
     return { ok: false, error: `Unsupported audio type "${declaredType}". Use MP3, M4A, OGG, WAV or WebM.` }
   }

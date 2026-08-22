@@ -20,10 +20,28 @@
   gap: 1rem;
 }
 
+/* Eyebrow → title → subtitle → disclaimer. STYLE_GUIDE minimum gaps: 0.25 / 0.5 /
+   1rem, subtitle line-height 1.4+. Wrapped in its own <header> so the panel's
+   `gap: 1rem` does not blow the stack apart — the margins below own the rhythm. */
+.voice-invite-header {
+  display: block;
+}
+
+.voice-invite-eyebrow {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .voice-invite-title {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 700;
+  line-height: 1.3;
   letter-spacing: 0.02em;
 }
 
@@ -32,6 +50,25 @@
   font-size: 0.85rem;
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.65);
+}
+
+/* The "you are not granting anyone anything" line — the whole reason this panel
+   was retitled. Quieter than the subtitle, but still readable at a glance. */
+.voice-invite-not {
+  margin: 0.5rem 0 0;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.75);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+}
+
+.voice-invite-inline-code {
+  font-family: 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .voice-invite-field {

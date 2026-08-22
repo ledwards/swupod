@@ -48,6 +48,23 @@
   flex-shrink: 0;
 }
 
+/* Compact: the draft setup header, where the picker sits under the pod toggles and
+   has to stay one tidy centered block rather than a panel section. */
+.voice-pack-picker--compact {
+  align-items: center;
+  max-width: 32rem;
+  text-align: center;
+}
+
+.voice-pack-picker--compact .voice-pack-picker-title {
+  font-size: 0.9rem;
+}
+
+.voice-pack-picker--compact .voice-pack-picker-subtitle {
+  margin: 0.25rem 0 0.75rem;
+  font-size: 0.8rem;
+}
+
 .voice-pack-picker-error {
   margin: 0.75rem 0 0;
   font-size: 0.85rem;
