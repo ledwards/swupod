@@ -11,7 +11,15 @@
  * MediaRecorder → File) or chosen with the file picker. Both land in the same `clips`
  * map as a `File`, so there is exactly one submit path and one set of validation
  * rules. The recorder is additive — it hides itself where MediaRecorder or the mic is
- * unavailable, and the picker always remains.
+ * unavailable, and the picker always remains. A restored draft is a third door into
+ * that same map, and is likewise just a `File`.
+ *
+ * THE WORK SURVIVES THE TAB. Recording seven lines takes more than one sitting, and
+ * the invite link is not spent by looking at it — only a successful submit spends it.
+ * `useVoicePackDraft` therefore restores this token's clips and typed fields on mount
+ * and writes every change back (blobs to IndexedDB, text to localStorage), then wipes
+ * the draft once the pack is published so a spent link never shows ghost data. Where
+ * storage is unavailable the hook degrades to nothing and the form behaves as before.
  *
  * Client-side size checks are a courtesy (fail fast on a 20 MB WAV); the server
  * re-validates declared mime, magic bytes and size on every part and is the only
@@ -19,7 +27,7 @@
  */
 import { useEffect, useRef, useState } from 'react'
 import Button from '@/src/components/Button'
-import ClipRecorder from '@/src/components/ClipRecorder'
+import useVoicePackDraft from '@/src/hooks/useVoicePackDraft'
 import {
   VOICE_PACK_CLIP_TYPES,
   normalizeVoicePackCode,
@@ -27,51 +35,14 @@ import {
   type VoicePackClipType,
 } from '@/src/services/voicePacks'
 import {
-  AUDIO_ACCEPT,
   IMAGE_ACCEPT,
   MAX_CLIP_BYTES,
   MAX_LOGO_BYTES,
 } from '@/src/services/voicePackUploads'
+import { voicePackAssetUrl } from '@/src/utils/voicePackAssets'
+import CreatorClipRow, { CLIP_GUIDE } from './CreatorClipRow'
+import '@/src/styles/backgrounds.css'
 import './creator-voice-pack.css'
-
-/** What each cue is for, in the creator's language, with a suggested line. */
-const CLIP_GUIDE: Record<VoicePackClipType, { label: string; when: string; suggestion: string }> = {
-  greeting: {
-    label: 'Greeting',
-    when: 'Plays when someone unlocks your pack, and any time they click your logo.',
-    suggestion: '“Hey — welcome to the pod!”',
-  },
-  'ready-the-draft': {
-    label: 'Ready the draft',
-    when: 'Plays for the whole table when the host deals the packs.',
-    suggestion: '“Ready the draft.”',
-  },
-  'start-the-draft': {
-    label: 'Start the draft',
-    when: 'Plays for the whole table when picking opens.',
-    suggestion: '“Start the draft!”',
-  },
-  'count-30': {
-    label: '30 seconds left',
-    when: 'Pick-timer warning.',
-    suggestion: '“Thirty seconds remaining.”',
-  },
-  'count-15': {
-    label: '15 seconds left',
-    when: 'Pick-timer warning.',
-    suggestion: '“Fifteen seconds remaining.”',
-  },
-  'count-5': {
-    label: '5 seconds left',
-    when: 'Pick-timer warning.',
-    suggestion: '“Five seconds remaining!”',
-  },
-  'time-is-up': {
-    label: 'Time is up',
-    when: 'Plays when the pick timer runs out.',
-    suggestion: '“Time is up.”',
-  },
-}
 
 const KB = 1024
 
@@ -90,15 +61,73 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [savedCode, setSavedCode] = useState<string | null>(null)
 
+  const draft = useVoicePackDraft(token)
+  const { restored, saveText, saveClip, removeClip, clear: clearDraft } = draft
+
   // Object URLs must be revoked or the tab leaks a blob per re-pick.
   const urlsRef = useRef<string[]>([])
   const [clipUrls, setClipUrls] = useState<Partial<Record<VoicePackClipType, string>>>({})
   const [logoUrl, setLogoUrl] = useState<string | null>(null)
 
+  // Re-picking the same file only fires onChange if the input was reset, so the
+  // discard control needs a handle on each picker.
+  const fileInputsRef = useRef<Partial<Record<VoicePackClipType, HTMLInputElement | null>>>({})
+
+  // Set the moment the creator edits a text field, so a restore arriving late
+  // cannot overwrite what they are in the middle of typing.
+  const typedRef = useRef(false)
+
+  // ONE example plays at a time, on its own element — a creator's own preview
+  // player is never hijacked or reset by hearing the default pack.
+  const exampleAudioRef = useRef<HTMLAudioElement | null>(null)
+  const [playingExample, setPlayingExample] = useState<VoicePackClipType | null>(null)
+
   useEffect(() => {
     const urls = urlsRef.current
     return () => urls.forEach((u) => URL.revokeObjectURL(u))
   }, [])
+
+  useEffect(
+    () => () => {
+      exampleAudioRef.current?.pause()
+      exampleAudioRef.current = null
+    },
+    []
+  )
+
+  // Restore runs once, when the hook reports what was on this device. Anything the
+  // creator has already touched during the (sub-second) load wins over the draft.
+  useEffect(() => {
+    if (!restored) return
+    // A saved draft is authoritative over the invite's suggested pack name — the
+    // creator may well have renamed it — but never over live typing.
+    if (restored.text && !typedRef.current) {
+      setCode(restored.text.code)
+      setDisplayName(restored.text.displayName)
+      setCreatorName(restored.text.creatorName)
+    }
+    const restoredClips = restored.clips
+    if (Object.keys(restoredClips).length === 0) return
+    setClips((prev) => ({ ...restoredClips, ...prev }))
+    setClipUrls((prev) => {
+      const next = { ...prev }
+      for (const clip of VOICE_PACK_CLIP_TYPES) {
+        const file = restoredClips[clip]
+        if (file && !next[clip]) next[clip] = trackUrl(file)
+      }
+      return next
+    })
+  }, [restored])
+
+  /**
+   * Text autosave, driven by the keystroke rather than by a state effect: a
+   * creator who only LOOKS at the page must store nothing, or their next visit
+   * would claim to have restored work they never did. The hook debounces.
+   */
+  function saveTypedText(next: Partial<Record<'code' | 'displayName' | 'creatorName', string>>) {
+    typedRef.current = true
+    saveText({ code, displayName, creatorName, ...next })
+  }
 
   function trackUrl(file: File): string {
     const url = URL.createObjectURL(file)
@@ -115,6 +144,54 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
     }
     setClips((prev) => ({ ...prev, [clip]: file }))
     setClipUrls((prev) => ({ ...prev, [clip]: trackUrl(file) }))
+    saveClip(clip, file)
+  }
+
+  function registerClipInput(clip: VoicePackClipType, el: HTMLInputElement | null) {
+    fileInputsRef.current[clip] = el
+  }
+
+  /** Throw one clip away: page state, preview, file picker and stored draft alike. */
+  function discardClip(clip: VoicePackClipType) {
+    setErrorMessage(null)
+    setClips((prev) => {
+      const next = { ...prev }
+      delete next[clip]
+      return next
+    })
+    setClipUrls((prev) => {
+      const url = prev[clip]
+      if (url) {
+        URL.revokeObjectURL(url)
+        urlsRef.current = urlsRef.current.filter((u) => u !== url)
+      }
+      const next = { ...prev }
+      delete next[clip]
+      return next
+    })
+    const input = fileInputsRef.current[clip]
+    if (input) input.value = ''
+    removeClip(clip)
+  }
+
+  /** Play (or stop) the default pack's version of one line. */
+  function toggleExample(clip: VoicePackClipType) {
+    let audio = exampleAudioRef.current
+    if (!audio) {
+      audio = new Audio()
+      audio.addEventListener('ended', () => setPlayingExample(null))
+      audio.addEventListener('error', () => setPlayingExample(null))
+      exampleAudioRef.current = audio
+    }
+    audio.pause()
+    if (playingExample === clip) {
+      setPlayingExample(null)
+      return
+    }
+    audio.src = voicePackAssetUrl(clip)
+    audio.currentTime = 0
+    setPlayingExample(clip)
+    audio.play().catch(() => setPlayingExample(null))
   }
 
   function pickLogo(file: File | null) {
@@ -156,6 +233,9 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
       if (!res.ok || !json?.success) {
         throw new Error(json?.message ?? `Upload failed (HTTP ${res.status})`)
       }
+      // The link is spent and the pack is live — the draft would only ever come
+      // back as ghost data on a dead link.
+      clearDraft()
       setSavedCode(json.data.code as string)
       setStatus('done')
     } catch (err) {
@@ -166,7 +246,7 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
 
   if (status === 'done' && savedCode) {
     return (
-      <div className="creator-vp-page">
+      <div className="creator-vp-page page-background">
         <div className="creator-vp-card creator-vp-card--done">
           <h1 className="creator-vp-title">Your voice pack is live</h1>
           <p className="creator-vp-copy">
@@ -185,7 +265,7 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
   }
 
   return (
-    <div className="creator-vp-page">
+    <div className="creator-vp-page page-background">
       <div className="creator-vp-card">
         <h1 className="creator-vp-title">Build your voice pack</h1>
         <p className="creator-vp-copy">
@@ -200,6 +280,13 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
           to {MAX_LOGO_BYTES / KB / KB} MB (PNG, JPEG, WebP or GIF).
         </p>
 
+        {draft.notice && (
+          <p className="creator-vp-restored" role="status">
+            {draft.notice}
+            {logo === null && ' Your logo is not saved here — choose it again before you publish.'}
+          </p>
+        )}
+
         <section className="creator-vp-section">
           <h2 className="creator-vp-section-title">Your pack</h2>
 
@@ -211,7 +298,10 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
               value={displayName}
               maxLength={60}
               placeholder="e.g. The Pod Cast Voice Pack"
-              onChange={(e) => setDisplayName(e.target.value)}
+              onChange={(e) => {
+                setDisplayName(e.target.value)
+                saveTypedText({ displayName: e.target.value })
+              }}
             />
           </label>
 
@@ -223,7 +313,10 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
               value={creatorName}
               maxLength={60}
               placeholder="Shown under the pack name"
-              onChange={(e) => setCreatorName(e.target.value)}
+              onChange={(e) => {
+                setCreatorName(e.target.value)
+                saveTypedText({ creatorName: e.target.value })
+              }}
             />
           </label>
 
@@ -238,7 +331,10 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
               autoCapitalize="characters"
               autoCorrect="off"
               spellCheck={false}
-              onChange={(e) => setCode(e.target.value)}
+              onChange={(e) => {
+                setCode(e.target.value)
+                saveTypedText({ code: e.target.value })
+              }}
             />
             <span className="creator-vp-hint">
               {code.length === 0
@@ -267,36 +363,20 @@ export default function CreatorVoicePackForm({ token, note }: Props) {
         </section>
 
         <section className="creator-vp-section">
-          <h2 className="creator-vp-section-title">The seven lines</h2>
-          {VOICE_PACK_CLIP_TYPES.map((clip) => {
-            const guide = CLIP_GUIDE[clip]
-            const file = clips[clip]
-            return (
-              <div className="creator-vp-clip" key={clip}>
-                <div className="creator-vp-clip-head">
-                  <span className="creator-vp-clip-label">{guide.label}</span>
-                  {file && <span className="creator-vp-clip-ok">Ready</span>}
-                </div>
-                <p className="creator-vp-clip-when">{guide.when}</p>
-                <p className="creator-vp-clip-suggestion">Suggested: {guide.suggestion}</p>
-                <ClipRecorder
-                  clip={clip}
-                  label={guide.label}
-                  hasClip={Boolean(file)}
-                  onRecorded={(recorded) => pickClip(clip, recorded)}
-                />
-                <input
-                  className="creator-vp-file"
-                  type="file"
-                  accept={AUDIO_ACCEPT}
-                  onChange={(e) => pickClip(clip, e.target.files?.[0] ?? null)}
-                />
-                {clipUrls[clip] && (
-                  <audio className="creator-vp-audio" controls src={clipUrls[clip]} />
-                )}
-              </div>
-            )
-          })}
+          <h2 className="creator-vp-section-title">Audio Script</h2>
+          {VOICE_PACK_CLIP_TYPES.map((clip) => (
+            <CreatorClipRow
+              key={clip}
+              clip={clip}
+              file={clips[clip]}
+              previewUrl={clipUrls[clip]}
+              playingExample={playingExample === clip}
+              onPick={pickClip}
+              onDiscard={discardClip}
+              onToggleExample={toggleExample}
+              registerInput={registerClipInput}
+            />
+          ))}
         </section>
 
         {missingClips.length > 0 && (

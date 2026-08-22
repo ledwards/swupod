@@ -27,11 +27,12 @@
 import { useEffect, useState } from 'react'
 import Button from '@/src/components/Button'
 import useVoicePackAudio from '@/src/hooks/useVoicePackAudio'
+import { DEFAULT_VOICE_PACK_NAME } from '@/src/utils/voicePackAssets'
 import './VoicePackPicker.css'
 
 /**
  * The host's most recent choice, so a new pod starts on the pack they used
- * last rather than resetting to Default every time. Purely a convenience
+ * last rather than resetting to the built-in pack every time. Purely a convenience
  * default — a pod's stored selection always wins once it has one.
  */
 export const LAST_VOICE_PACK_KEY = 'ptp-last-voice-pack'
@@ -160,7 +161,7 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
           disabled={saving}
           onClick={() => choose(null)}
         >
-          Default
+          {DEFAULT_VOICE_PACK_NAME}
         </Button>
         {packs.map((pack) => (
           <Button

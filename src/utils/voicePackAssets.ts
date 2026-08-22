@@ -23,6 +23,12 @@ export type VoicePackClip = (typeof VOICE_PACK_CLIPS)[number]
 /** The pack id that means "the built-in pack shipped with the app". */
 export const DEFAULT_VOICE_PACK_ID = 'default'
 
+/** Display name for the built-in pack — a droid who announces your draft. */
+export const DEFAULT_VOICE_PACK_NAME = 'Leebo'
+
+/** One-line description of the built-in pack, shown beside the name. */
+export const DEFAULT_VOICE_PACK_DESCRIPTION = 'A droid with opinions about your picks'
+
 /** Static directory holding the default pack's mp3s. */
 export const DEFAULT_VOICE_PACK_DIR = '/sounds/voice-packs/default'
 

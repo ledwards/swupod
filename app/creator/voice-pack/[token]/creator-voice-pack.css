@@ -23,9 +23,14 @@
  * @media (hover: hover) and (pointer: fine).
  */
 
+/* Background: the shared `.page-background` class from src/styles/backgrounds.css
+   is applied in the TSX — same textured image, black wash and top/bottom fades the
+   homepage uses. Nothing here may declare a background of its own or the page
+   stops matching the rest of the site. */
 .creator-vp-page {
   font-family: 'Barlow', sans-serif;
   color: var(--pt-ink);
+  min-height: 100vh;
   padding: 2.5rem 1rem 4rem;
   display: flex;
   flex-direction: column;
@@ -100,6 +105,19 @@
   font-size: 0.82rem;
   line-height: 1.5;
   color: rgba(var(--pt-ink-rgb), 0.6);
+}
+
+/* "We got your work back" — only ever rendered when something really was
+   restored, so it reads as good news rather than as chrome. */
+.creator-vp-restored {
+  margin: 0.5rem 0 0;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--pt-ink-subtle);
+  background: rgba(var(--pt-glow-interactive-rgb), 0.08);
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.4);
+  border-radius: var(--pt-radius-md);
 }
 
 /* ---------- sections ---------- */
@@ -289,18 +307,47 @@
   color: rgba(var(--pt-ink-rgb), 0.65);
 }
 
+/* Suggested line + the "Example" player for it. The example belongs beside the
+   line it demonstrates, not in a controls bar somewhere below. */
+.creator-vp-clip-suggestion-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.5rem;
+}
+
 .creator-vp-clip-suggestion {
   margin-top: 0;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
   font-size: 0.85rem;
   line-height: 1.45;
   color: rgba(var(--pt-ink-rgb), 0.5);
   font-style: italic;
 }
 
-.creator-vp-audio {
-  width: 100%;
+/* Icon + label need the mandatory gap (.claude/rules/ui-components.md). */
+.creator-vp-example,
+.creator-vp-discard {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+/* The creator's own take, and the one control that throws it away. */
+.creator-vp-clip-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
   margin-top: 0.5rem;
+}
+
+.creator-vp-audio {
+  flex: 1 1 220px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 /* The "Still needed: …" line the form prints after the cue list. Same class as the
