@@ -4,19 +4,35 @@
 
 ### 🔊 Your Draft Has a Voice
 
-**Drafts now call themselves out loud.** A voice announces when packs are dealt and when picking opens, counts you down at thirty, fifteen and five seconds, and tells the table when time is up. It works in every draft, casual or competitive.
+**If you drafted at the Galactic Championships in Las Vegas this year, you know the feeling** — a voice over the room dealing you in, counting the table down, calling time. Drafts here do that now.
 
-Six voices ship with it. **Leebo** is a droid with opinions about your picks, and there are five language packs — **English, Français, Deutsch, Español and Italiano** — so the calls can come in the language your table actually speaks. Everyone gets the language packs.
+A voice announces when packs are dealt and when picking opens, calls each new pick, counts down at thirty, fifteen and five seconds, and tells the table when time is up. It works in every draft, casual or Competitive Practice.
 
-- **Friends of the Pod get every voice on the platform**: Leebo, the language packs, and every creator pack anyone has ever published, with no codes to redeem.
-- **Everyone else** gets the language packs, plus any creator pack they unlock with a code at [/redeem](/redeem).
-- **The host picks the voice, and the whole table hears it** — including players who have not unlocked it themselves.
+Six voices ship with it — **English (American), English (British), Français, Deutsch, Español and Italiano** — so the calls can come in the language your table actually speaks. The host chooses one and everybody hears the same voice.
 
-Sound is off until someone asks for it: pressing **Ready** in the lobby turns the calls on for that browser, and the speaker beside it mutes them again. Your choice is remembered.
+The calls are on by default. The speaker button — beside Ready in the lobby, and next to the timer once the draft starts — silences them for you alone, and that browser remembers your choice.
 
-### 🎙️ Creators Can Record Their Own
+### 🎁 One to Redeem
 
-Creators can now record a voice pack — seven short lines and a logo, straight from the browser mic — and hand out a code that unlocks it. Their link keeps working afterwards, so they can come back and change a line without disturbing anyone who already redeemed it.
+**Keep an eye out for special voice packs.** They're unlocked with a code, and they're not all ours.
+
+Here's your first, for reading this far: go to **[/redeem](/redeem)** and enter **LEEBO**. He's a droid, and he has opinions about your picks.
+
+### 🎯 Staged Picks
+
+**Clicking a card no longer takes it.** Your click stages the card and a **Confirm Pick** button appears under the pack — so a misclick costs you nothing, and you can change your mind as often as you like until you press it.
+
+The point isn't only the undo. **If the clock runs out while you're holding a decision, the card you staged is the card you get** — the timer commits your choice instead of throwing it away and letting a bot strategy pick for you. Confirm locks it in for good and tells the table you're done.
+
+**And the last card of a pack is shown before it's taken.** When one card is left there's nothing to decide, so it's picked for you — but that used to happen between frames, and a card you never saw would just appear in your pool. It's held on screen for a moment first, with no clock, because you aren't being asked to choose.
+
+### 🐞 Bug Fixes
+
+- **Other players' leader picks are private again.** Once someone locked in a leader, their seat drew that one brighter than the rest of their pack — so the whole table could read a choice nobody had announced.
+- **Ready can't be taken back.** It's what the host's Deal Packs button waits on, so a seat that could withdraw it could hold everyone up. It's a single press now, and the button becomes a plain confirmation.
+- **The card-size buttons no longer shove the view buttons sideways** when you switch between pack, cost and aspect grouping in the pack review.
+- **Cards in the aspect view are the size they should be.** They grew or shrank depending on how many aspects you happened to draft; they're a fixed size now, and the row simply fits more columns.
+- **The redeem and admin pages look like the rest of the site** instead of a flat black page.
 
 ## 08.19.2026
 

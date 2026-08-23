@@ -51,6 +51,26 @@ export function normalizeVoicePackCode(raw: unknown): string {
   return raw.replace(/\s+/g, '').toUpperCase()
 }
 
+/**
+ * The creator name Protect the Pod publishes its own packs under (migration 086).
+ *
+ * It is what separates a PREMIUM pack — one we wrote and voiced — from a CREATOR
+ * pack somebody else recorded, which is the only distinction the picker draws
+ * between them. Stored on the row like any other creator's name rather than as a
+ * flag, because that is exactly what it is: these packs go through the same
+ * publishing path as everyone else's.
+ */
+export const PTP_CREATOR_NAME = 'Protect the Pod'
+
+/**
+ * Whether a pack is one of ours rather than an outside creator's.
+ *
+ * @param creatorName - The pack's `creatorName`
+ */
+export function isPremiumVoicePack(creatorName: string | null | undefined): boolean {
+  return (creatorName ?? '').trim().toLowerCase() === PTP_CREATOR_NAME.toLowerCase()
+}
+
 /** Minimum/maximum normalized code length. Short enough to read off a stream overlay. */
 export const VOICE_PACK_CODE_MIN = 3
 export const VOICE_PACK_CODE_MAX = 24

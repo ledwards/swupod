@@ -29,6 +29,7 @@ import useVoicePackAudio from '@/src/hooks/useVoicePackAudio'
 import StyledSelect from '@/src/components/StyledSelect'
 import type { StyledSelectOption } from '@/src/components/StyledSelect'
 import { BUILT_IN_VOICE_PACKS, DEFAULT_VOICE_PACK_ID } from '@/src/utils/voicePackAssets'
+import { isPremiumVoicePack } from '@/src/services/voicePacks'
 import { PATREON_URL } from '@/src/utils/membership'
 import './VoicePackPicker.css'
 
@@ -159,23 +160,32 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
   // something to choose, even before anyone unlocks a creator pack.
   if (!isHost) return null
 
-  // Order: everything the viewer has unlocked under "Special" — Leebo included, who
-  // is simply the first creator pack — then the free language packs under "Default".
-  // Nothing here special-cases a pack id.
+  // Three groups, in this order: Premium (packs Protect the Pod wrote and voiced),
+  // Creator (packs somebody else recorded and handed out a code for), then the
+  // free language packs. A group is only labelled if it has something in it — the
+  // label rides the group's FIRST option, so an empty group contributes nothing
+  // and the viewer never sees a heading over nothing. Nothing here special-cases
+  // a pack id; Premium is decided by who published the pack.
+  const premiumPacks = packs.filter(pack => isPremiumVoicePack(pack.creatorName))
+  const creatorPacks = packs.filter(pack => !isPremiumVoicePack(pack.creatorName))
+
+  const unlockedOption = (pack: OwnedPack, i: number, groupLabel: string): StyledSelectOption => ({
+    value: pack.id,
+    label: pack.displayName,
+    ...(pack.creatorName ? { description: `by ${pack.creatorName}` } : {}),
+    ...(pack.logoUrl ? { iconUrl: pack.logoUrl } : {}),
+    ...(i === 0 ? { groupLabel } : {}),
+  })
+
   const options: StyledSelectOption[] = [
-    ...packs.map((pack, i): StyledSelectOption => ({
-      value: pack.id,
-      label: pack.displayName,
-      ...(pack.creatorName ? { description: `by ${pack.creatorName}` } : {}),
-      ...(pack.logoUrl ? { iconUrl: pack.logoUrl } : {}),
-      ...(i === 0 ? { groupLabel: 'Special' } : {}),
-    })),
+    ...premiumPacks.map((pack, i) => unlockedOption(pack, i, 'Premium')),
+    ...creatorPacks.map((pack, i) => unlockedOption(pack, i, 'Creator')),
     ...BUILT_IN_VOICE_PACKS.map((pack, i): StyledSelectOption => ({
       value: pack.id,
       label: pack.name,
       description: pack.description,
       iconUrl: pack.icon,
-      ...(i === 0 ? { groupLabel: 'Default' } : {}),
+      ...(i === 0 ? { groupLabel: 'Languages' } : {}),
     })),
   ]
 
