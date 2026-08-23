@@ -63,6 +63,12 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
   const [packs, setPacks] = useState<OwnedPack[]>([])
   const [isPatron, setIsPatron] = useState(false)
   const [selected, setSelected] = useState<string | null>(value ?? null)
+  // Whether the pod's stored choice has arrived. Until it has, this control knows
+  // nothing, and the one thing it must not do is guess: rendering `selected ?? DEFAULT`
+  // showed "Zoe (American English)" on every load and then snapped to whatever the pod
+  // actually uses a moment later. In the controlled mode the value comes from props,
+  // so there is nothing to wait for.
+  const [loaded, setLoaded] = useState(shareId === undefined)
   const [saving, setSaving] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const { prime } = useVoicePackAudio(selected)
@@ -86,6 +92,7 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
         : Promise.resolve(null),
     ]).then(([entitlements, podSelection]) => {
       if (!alive) return
+      setLoaded(true)
       const owned = entitlements?.data?.packs || []
       setPacks(owned)
       setIsPatron(entitlements?.data?.isPatron === true)
@@ -171,6 +178,22 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
       ...(i === 0 ? { groupLabel: 'Default' } : {}),
     })),
   ]
+
+  // Same shape, no claim. Holding the space keeps the panel from jumping when the
+  // real control arrives, which was the other half of what made this jarring.
+  if (!loaded) {
+    return (
+      <div className={`voice-pack-picker${compact ? ' voice-pack-picker--compact' : ''}`}>
+        <StyledSelect
+          options={[{ value: '', label: 'Loading voices…' }]}
+          value=""
+          onChange={() => {}}
+          disabled
+          ariaLabel="Voice pack for this draft"
+        />
+      </div>
+    )
+  }
 
   return (
     <div className={`voice-pack-picker${compact ? ' voice-pack-picker--compact' : ''}`}>

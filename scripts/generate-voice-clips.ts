@@ -53,10 +53,42 @@ const PACKS: Record<string, PackRecipe> = {
   english: {
     voice: 'Zoe (Premium)',
     dir: 'public/sounds/voice-packs/english',
+    // The complete script, every line confirmed against the shipped mp3 by exact
+    // encoded duration — these are the words already in the pack, not a guess at
+    // them, so regenerating a clip reproduces it rather than replacing it.
     lines: {
-      'time-is-up': 'Time is up.',
+      greeting: 'Hi, this is Zoe. Welcome to the Pod!',
+      'ready-the-draft': 'Ready to draft.',
+      'start-the-draft': 'Start the draft!',
       'count-30': 'Thirty seconds remaining.',
+      'count-15': 'Fifteen seconds remaining.',
+      'count-5': 'Five seconds remaining.',
+      'time-is-up': 'Time is up.',
+      'sound-on': 'Sound on.',
       'timer-paused': 'Timer paused.',
+      'timer-resumed': 'Timer resumed.',
+      'next-pick': 'Next pick begins.',
+    },
+  },
+  british: {
+    // The best British voice this Mac has. Apple ships no Premium en_GB; Enhanced
+    // is the tier below it and well clear of the novelty en_GB voices (Flo, Rocko,
+    // Grandpa and friends). If a Premium British voice is ever downloaded, change
+    // this one line and rerun.
+    voice: 'Daniel (Enhanced)',
+    dir: 'public/sounds/voice-packs/british',
+    // Word for word the American script, so the two packs differ only in accent.
+    lines: {
+      greeting: 'Hi, this is Daniel. Welcome to the Pod!',
+      'ready-the-draft': 'Ready to draft.',
+      'start-the-draft': 'Start the draft!',
+      'count-30': 'Thirty seconds remaining.',
+      'count-15': 'Fifteen seconds remaining.',
+      'count-5': 'Five seconds remaining.',
+      'time-is-up': 'Time is up.',
+      'sound-on': 'Sound on.',
+      'timer-paused': 'Timer paused.',
+      'timer-resumed': 'Timer resumed.',
       'next-pick': 'Next pick begins.',
     },
   },
@@ -129,14 +161,17 @@ function parseArgs(argv: string[]) {
 function main(): void {
   const args = parseArgs(process.argv.slice(2))
   const clip = args.get('clip')
+  const allClips = args.get('all-clips') === true
   const onlyPack = args.get('pack')
   const dryRun = args.get('dry-run') === true
 
-  if (typeof clip !== 'string') {
-    console.error('Missing --clip. Known clips:\n  ' + VOICE_PACK_CLIP_TYPES.join('\n  '))
+  if (!allClips && typeof clip !== 'string') {
+    console.error(
+      'Missing --clip (or pass --all-clips). Known clips:\n  ' + VOICE_PACK_CLIP_TYPES.join('\n  ')
+    )
     process.exit(1)
   }
-  if (!(VOICE_PACK_CLIP_TYPES as readonly string[]).includes(clip)) {
+  if (!allClips && !(VOICE_PACK_CLIP_TYPES as readonly string[]).includes(clip as string)) {
     console.error(`Unknown clip "${clip}". Known clips:\n  ` + VOICE_PACK_CLIP_TYPES.join('\n  '))
     process.exit(1)
   }
@@ -146,6 +181,7 @@ function main(): void {
   }
 
   const packNames = typeof onlyPack === 'string' ? [onlyPack] : Object.keys(PACKS)
+  const clipNames = allClips ? [...VOICE_PACK_CLIP_TYPES] : [clip as VoicePackClipType]
   const scratch = join(tmpdir(), `ptp-voice-${process.pid}`)
   mkdirSync(scratch, { recursive: true })
 
@@ -153,17 +189,18 @@ function main(): void {
   try {
     for (const name of packNames) {
       const pack = PACKS[name]
-      const line = pack.lines[clip as VoicePackClipType]
+      for (const currentClip of clipNames) {
+      const line = pack.lines[currentClip]
       if (!line) {
         // Not a failure: the table only records lines that have been confirmed.
-        console.warn(`  ${name.padEnd(9)} SKIP — no line recorded for "${clip}"`)
+        console.warn(`  ${name.padEnd(9)} ${currentClip.padEnd(16)} SKIP — no line recorded`)
         continue
       }
-      const out = join(pack.dir, `${clip}.mp3`)
-      console.log(`  ${name.padEnd(9)} ${pack.voice.padEnd(18)} "${line}"`)
+      const out = join(pack.dir, `${currentClip}.mp3`)
+      console.log(`  ${name.padEnd(9)} ${currentClip.padEnd(16)} ${pack.voice.padEnd(18)} "${line}"`)
       if (dryRun) continue
 
-      const aiff = join(scratch, `${name}.aiff`)
+      const aiff = join(scratch, `${name}-${currentClip}.aiff`)
       execFileSync('say', ['-v', pack.voice, '-o', aiff, line], { stdio: 'pipe' })
       mkdirSync(dirname(out), { recursive: true })
       // Mono 44.1k, matching every clip already in the packs.
@@ -174,6 +211,7 @@ function main(): void {
       })
       if (!existsSync(out)) throw new Error(`ffmpeg produced nothing for ${out}`)
       written += 1
+      }
     }
   } finally {
     rmSync(scratch, { recursive: true, force: true })

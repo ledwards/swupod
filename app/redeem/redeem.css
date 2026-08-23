@@ -282,3 +282,132 @@
     font-size: 1.5rem;
   }
 }
+
+/* --- Unlocked: the card, and the playlist beside it -------------------------
+   Side by side where there is room, stacked underneath where there is not. The
+   card keeps its own width so the reward still reads as the main event and the
+   playlist is what you turn to next. */
+.redeem-done-layout {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.redeem-done-layout .redeem-card {
+  flex: 0 1 480px;
+}
+
+.redeem-playlist {
+  flex: 0 1 340px;
+  align-self: stretch;
+  padding: 1.25rem;
+  background: rgba(var(--pt-surface-base-rgb), 0.7);
+  border: 1px solid var(--pt-border);
+  border-radius: var(--pt-radius-lg);
+  text-align: left;
+}
+
+.redeem-playlist-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--pt-ink);
+}
+
+.redeem-playlist-intro {
+  margin: 0.25rem 0 0.85rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--pt-ink-muted);
+}
+
+.redeem-playlist-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+/* The whole row is the button — a 12px glyph is a poor target, especially on a
+   phone, and the label is the thing people are actually aiming at. */
+.redeem-playlist-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  background: rgba(var(--pt-surface-base-rgb), 0.5);
+  border: 1px solid transparent;
+  border-radius: var(--pt-radius-sm);
+  color: var(--pt-ink);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.redeem-playlist-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(var(--pt-glow-interactive-rgb), 0.18);
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.45);
+  color: var(--pt-ink);
+}
+
+.redeem-playlist-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.redeem-playlist-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.redeem-playlist-when {
+  font-size: 0.76rem;
+  line-height: 1.35;
+  color: rgba(var(--pt-ink-rgb), 0.6);
+}
+
+.redeem-playlist-row.is-playing {
+  background: rgba(var(--pt-glow-primary-rgb), 0.1);
+  border-color: rgba(var(--pt-glow-primary-rgb), 0.45);
+}
+
+.redeem-playlist-row.is-playing .redeem-playlist-glyph {
+  background: rgba(var(--pt-glow-primary-rgb), 0.22);
+  border-color: rgba(var(--pt-glow-primary-rgb), 0.55);
+}
+
+/* Hover fires on tap without this gate (.claude/rules/mobile.md). */
+@media (hover: hover) and (pointer: fine) {
+  .redeem-playlist-row:hover {
+    background: rgba(var(--pt-surface-base-rgb), 0.85);
+    border-color: var(--pt-border);
+  }
+}
+
+@media (max-width: 900px) {
+  .redeem-done-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .redeem-done-layout .redeem-card,
+  .redeem-playlist {
+    flex: 0 1 auto;
+    width: 100%;
+    max-width: 480px;
+  }
+}

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60" role="img" aria-label="English (British)">
+<defs><clipPath id="c"><circle cx="30" cy="30" r="30"/></clipPath></defs>
+<!-- Union Flag, squared and circle-clipped to match the other pack icons. The
+     saltire counterchange is simplified — at 20px on a dropdown row the offset
+     is not resolvable, and the centred version reads cleaner. -->
+<g clip-path="url(#c)">
+<rect width="60" height="60" fill="#012169"/>
+<path d="M0,0 L60,60 M60,0 L0,60" stroke="#FFF" stroke-width="14"/>
+<path d="M0,0 L60,60 M60,0 L0,60" stroke="#C8102E" stroke-width="6"/>
+<path d="M30,0 V60 M0,30 H60" stroke="#FFF" stroke-width="20"/>
+<path d="M30,0 V60 M0,30 H60" stroke="#C8102E" stroke-width="12"/>
+</g></svg>

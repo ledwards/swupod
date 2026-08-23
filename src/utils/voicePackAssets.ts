@@ -46,10 +46,17 @@ export interface BuiltInVoicePack {
 export const BUILT_IN_VOICE_PACKS: readonly BuiltInVoicePack[] = [
   {
     id: 'english',
-    name: 'Zoe (English)',
-    description: 'Voice in English',
+    name: 'Zoe (American English)',
+    description: 'Voice in American English',
     dir: '/sounds/voice-packs/english',
     icon: '/icons/voice-packs/english.svg',
+  },
+  {
+    id: 'british',
+    name: 'Daniel (British English)',
+    description: 'Voice in British English',
+    dir: '/sounds/voice-packs/british',
+    icon: '/icons/voice-packs/british.svg',
   },
   {
     id: 'french',

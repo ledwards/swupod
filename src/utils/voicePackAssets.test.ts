@@ -98,9 +98,11 @@ describe('isBuiltInVoicePack', () => {
     assert.strictEqual(isBuiltInVoicePack('abc123'), false)
   })
 
-  it('SPEC: the shipped set is the five language packs, and nothing else', () => {
+  it('SPEC: the shipped set is the free language packs, and nothing else', () => {
+    // American English leads (it is DEFAULT_VOICE_PACK_ID) with British directly
+    // under it, then the other languages. Order is the dropdown's order.
     assert.deepStrictEqual(BUILT_IN_VOICE_PACKS.map(p => p.id),
-      ['english', 'french', 'german', 'spanish', 'italian'])
+      ['english', 'british', 'french', 'german', 'spanish', 'italian'])
   })
 
   it('SPEC: Leebo is NOT built in — he is a creator pack served from the API', () => {

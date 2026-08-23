@@ -27,67 +27,10 @@ import ClipRecorder from '@/src/components/ClipRecorder'
 import { type VoicePackClipType } from '@/src/services/voicePacks'
 import { AUDIO_ACCEPT } from '@/src/services/voicePackUploads'
 
-/** What each cue is for, in the creator's language, with a suggested line. */
-export const CLIP_GUIDE: Record<
-  VoicePackClipType,
-  { label: string; when: string; suggestion: string }
-> = {
-  greeting: {
-    label: 'Greeting',
-    when: 'Plays when someone unlocks your pack, and any time they click your logo.',
-    suggestion: '“Hello there, this is Leebo. Welcome to the Pod!”',
-  },
-  'ready-the-draft': {
-    label: 'Ready the draft',
-    when: 'Plays for the whole table when the host deals the packs.',
-    suggestion: '“Ready to draft.”',
-  },
-  'start-the-draft': {
-    label: 'Start the draft',
-    when: 'Plays for the whole table when picking opens.',
-    suggestion: '“Start the draft!”',
-  },
-  'count-30': {
-    label: '30 seconds left',
-    when: 'Pick-timer warning.',
-    suggestion: '“Thirty seconds remaining.”',
-  },
-  'count-15': {
-    label: '15 seconds left',
-    when: 'Pick-timer warning.',
-    suggestion: '“Fifteen seconds remaining.”',
-  },
-  'count-5': {
-    label: '5 seconds left',
-    when: 'Pick-timer warning.',
-    suggestion: '“Five seconds remaining!”',
-  },
-  'time-is-up': {
-    label: 'Time is up',
-    when: 'Plays when the pick timer runs out.',
-    suggestion: '“Time is up.”',
-  },
-  'sound-on': {
-    label: 'Sound on',
-    when: 'Plays when a player turns the draft calls on.',
-    suggestion: '“Sound on.”',
-  },
-  'timer-paused': {
-    label: 'Timer paused',
-    when: 'Plays for the table when the host pauses the clock.',
-    suggestion: '“Timer paused.”',
-  },
-  'timer-resumed': {
-    label: 'Timer resumed',
-    when: 'Plays for the table when the host restarts the clock.',
-    suggestion: '“Timer resumed.”',
-  },
-  'next-pick': {
-    label: 'Next pick',
-    when: 'Plays when a fresh pack reaches a player and the pick clock restarts.',
-    suggestion: '“Next pick begins.”',
-  },
-}
+// Re-exported so existing importers of this module keep working; the guide is
+// shared with the redemption confirmation now.
+import { CLIP_GUIDE } from '@/src/services/voicePackClipGuide'
+export { CLIP_GUIDE }
 
 const PlayIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

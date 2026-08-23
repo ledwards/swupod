@@ -20,7 +20,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/src/contexts/AuthContext'
 import Button from '@/src/components/Button'
-import { normalizeVoicePackCode } from '@/src/services/voicePacks'
+import { normalizeVoicePackCode, type VoicePackClipType } from '@/src/services/voicePacks'
+import { CLIP_GUIDE } from '@/src/services/voicePackClipGuide'
+import { VOICE_PACK_CLIPS, voicePackAssetUrl } from '@/src/utils/voicePackAssets'
 import './redeem.css'
 
 interface ClaimedPack {
@@ -29,6 +31,8 @@ interface ClaimedPack {
   displayName: string
   creatorName: string | null
   logoUrl: string
+  /** The clip slots this pack actually filled — a pack may be short a few. */
+  clips?: VoicePackClipType[]
   greetingUrl: string | null
 }
 
@@ -44,6 +48,74 @@ function RedeemBrandHero() {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img className="redeem-brand-logo" src="/ptp_logo400.png" alt="Protect the Pod" />
     </a>
+  )
+}
+
+/** ▶ / ■ for a row that is idle / playing. */
+function PlayGlyph({ playing }: { playing: boolean }) {
+  return playing ? (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <rect x="5" y="5" width="14" height="14" rx="2" />
+    </svg>
+  ) : (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <polygon points="6 4 20 12 6 20" />
+    </svg>
+  )
+}
+
+/**
+ * Everything the pack can say, one row per cue, each played on demand.
+ *
+ * Nothing here plays by itself. Somebody who has just unlocked a voice wants to
+ * hear it, but on their own terms — so this is a list of buttons, not a reel.
+ *
+ * Rows follow VOICE_PACK_CLIPS (cue order — greeting, the calls, the countdown,
+ * the timer), filtered to what this pack actually filled, because a creator pack
+ * can be published a slot or two short and a dead button is worse than no button.
+ */
+function VoicePackPlaylist({
+  pack,
+  playingClip,
+  onPlay,
+}: {
+  pack: ClaimedPack
+  playingClip: VoicePackClipType | null
+  onPlay: (clip: VoicePackClipType) => void
+}) {
+  const available = pack.clips ?? []
+  const rows = VOICE_PACK_CLIPS.filter(clip => available.includes(clip as VoicePackClipType))
+  if (rows.length === 0) return null
+
+  return (
+    <aside className="redeem-playlist" aria-label={`Clips in ${pack.displayName}`}>
+      <h2 className="redeem-playlist-title">Hear it</h2>
+      <p className="redeem-playlist-intro">Every call this pack makes. Press one to play it.</p>
+      <ul className="redeem-playlist-rows">
+        {rows.map(clip => {
+          const guide = CLIP_GUIDE[clip as VoicePackClipType]
+          const isPlaying = playingClip === clip
+          return (
+            <li key={clip}>
+              <button
+                type="button"
+                className={`redeem-playlist-row${isPlaying ? ' is-playing' : ''}`}
+                onClick={() => onPlay(clip as VoicePackClipType)}
+                aria-label={`${isPlaying ? 'Stop' : 'Play'} ${guide.label}`}
+              >
+                <span className="redeem-playlist-glyph">
+                  <PlayGlyph playing={isPlaying} />
+                </span>
+                <span className="redeem-playlist-text">
+                  <span className="redeem-playlist-label">{guide.label}</span>
+                  <span className="redeem-playlist-when">{guide.when}</span>
+                </span>
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+    </aside>
   )
 }
 
@@ -64,29 +136,41 @@ export default function RedeemPage() {
   // was unlocked some other day.
   const [ownedPackName, setOwnedPackName] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [playing, setPlaying] = useState(false)
 
+  // ONE player for the whole page. The logo and every row in the playlist go
+  // through it, so a second click always replaces the first rather than layering
+  // on top of it — the same rule the draft's cue engine follows.
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const [playingClip, setPlayingClip] = useState<VoicePackClipType | null>(null)
 
-  // Preload the greeting the moment we know the pack, so the logo click is instant.
-  useEffect(() => {
-    if (!pack?.greetingUrl) return
-    const audio = new Audio(pack.greetingUrl)
-    audio.preload = 'auto'
-    audio.addEventListener('ended', () => setPlaying(false))
-    audioRef.current = audio
-    return () => {
-      audio.pause()
+  // Nothing plays on arrival. Unlocking a pack should not shout at whoever is
+  // sitting in a quiet room; every clip here is played on purpose.
+  const playClip = useCallback((packId: string, clip: VoicePackClipType) => {
+    const current = audioRef.current
+    if (current) {
+      current.pause()
       audioRef.current = null
     }
-  }, [pack])
+    // Clicking the row that is already playing stops it.
+    if (playingClip === clip) {
+      setPlayingClip(null)
+      return
+    }
+    const audio = new Audio(voicePackAssetUrl(clip, packId))
+    audio.addEventListener('ended', () => {
+      setPlayingClip(current => (current === clip ? null : current))
+    })
+    audioRef.current = audio
+    setPlayingClip(clip)
+    audio.play().catch(() => {
+      setPlayingClip(current => (current === clip ? null : current))
+    })
+  }, [playingClip])
 
-  const playGreeting = useCallback(() => {
-    const audio = audioRef.current
-    if (!audio) return
-    audio.currentTime = 0
-    setPlaying(true)
-    audio.play().catch(() => setPlaying(false))
+  // Stop anything mid-sentence when the page goes away.
+  useEffect(() => () => {
+    audioRef.current?.pause()
+    audioRef.current = null
   }, [])
 
   async function handleRedeem() {
@@ -120,9 +204,11 @@ export default function RedeemPage() {
   }
 
   if (status === 'done' && pack) {
+    const hasGreeting = (pack.clips ?? []).includes('greeting')
     return (
       <div className="redeem-page page-background">
         <RedeemBrandHero />
+        <div className="redeem-done-layout">
         <div className="redeem-card redeem-card--done">
           <header className="redeem-header">
             <span className="redeem-eyebrow">Voice pack unlocked</span>
@@ -131,18 +217,18 @@ export default function RedeemPage() {
 
           <button
             type="button"
-            className={`redeem-logo-button${playing ? ' is-playing' : ''}`}
-            onClick={playGreeting}
-            disabled={!pack.greetingUrl}
+            className={`redeem-logo-button${playingClip === 'greeting' ? ' is-playing' : ''}`}
+            onClick={() => playClip(pack.id, 'greeting')}
+            disabled={!hasGreeting}
             aria-label={`Play the greeting from ${pack.displayName}`}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className="redeem-logo" src={pack.logoUrl} alt={pack.displayName} />
           </button>
           <p className="redeem-fineprint">
-            {!pack.greetingUrl
+            {!hasGreeting
               ? ' '
-              : playing
+              : playingClip === 'greeting'
                 ? 'Playing…'
                 : 'Tap the logo to hear the greeting'}
           </p>
@@ -166,6 +252,13 @@ export default function RedeemPage() {
               Host a draft
             </a>
           </div>
+        </div>
+
+        <VoicePackPlaylist
+          pack={pack}
+          playingClip={playingClip}
+          onPlay={(clip) => playClip(pack.id, clip)}
+        />
         </div>
       </div>
     )
