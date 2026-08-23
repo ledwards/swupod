@@ -225,9 +225,10 @@
   flex: none;
 }
 
-/* "I'm Ready" and "You're Ready" are different lengths AND the button swaps
+/* "I'm Ready" and "I'm Not Ready" are different lengths AND the button swaps
    variant on toggle, which changes its padding and border too. A min-width
-   cannot hold that still — the box has to be a fixed size in both states. */
+   cannot hold that still — the box has to be a fixed size in both states, wide
+   enough for the longer label. */
 .lobby-ready-row .lobby-ready-button {
   width: 12rem;
   min-width: 12rem;

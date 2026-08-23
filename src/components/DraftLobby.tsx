@@ -187,7 +187,12 @@ function DraftLobby({
                   disabled={togglingReady}
                 >
                   <CheckIcon />
-                  <span>{iAmReady ? "You're Ready" : "I'm Ready"}</span>
+                  {/* One voice. This is a toggle, so both labels are the same
+                      assertion the press makes — not "I'm Ready" flipping to the
+                      app answering back "You're Ready", which read as two
+                      unrelated controls. The tick and the blue glow carry the
+                      current state; the words carry what pressing does. */}
+                  <span>{iAmReady ? "I'm Not Ready" : "I'm Ready"}</span>
                 </Button>
                 {/* Same control as the timer bar. It belongs here too: the
                     lobby is where `ready-the-draft` plays, and TimerPanel
