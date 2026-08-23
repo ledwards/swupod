@@ -217,8 +217,15 @@ export function useVoicePackAudio(packId?: string | null): VoicePackAudio {
   }, [])
 
   const prime = useCallback((packId?: string | null, options?: PrimeOptions) => {
+    // `hasPrimed` is flipped AFTER the loop, on purpose. ensureAudio primes any
+    // element it creates once the pool has been primed before; setting the flag
+    // up front made it do that here too, so every freshly created element was
+    // primed twice — once by ensureAudio, once by us. The second prime resolves
+    // to an element the first already unmuted, assumes another caller claimed
+    // it, and leaves it playing. That is the "all seven clips at once" bug, and
+    // it fires exactly when a pack's elements do not exist yet: the first time
+    // you pick a given pack.
     const wasPrimed = hasPrimed
-    hasPrimed = true
     const id = packId === undefined ? activePackId : normalizedPackId(packId)
     for (const clip of VOICE_PACK_CLIPS) {
       if (options?.announce === clip) {
@@ -227,11 +234,11 @@ export function useVoicePackAudio(packId?: string | null): VoicePackAudio {
       }
       const existed = hasAudio(id, clip)
       const el = ensureAudio(id, clip)
-      // A brand-new element was already primed inside ensureAudio (when the
-      // pool had been primed before). Priming it again is the double-prime
-      // that makes clips audible.
+      // Prime only what ensureAudio did not: elements that already existed, or
+      // everything when the pool had never been primed (ensureAudio skipped).
       if (el && (existed || !wasPrimed)) primeElement(el)
     }
+    hasPrimed = true
   }, [activePackId, playFrom])
 
   const play = useCallback((clip: VoicePackClip) => {

@@ -1,5 +1,23 @@
 # Release Notes
 
+## 08.23.2026
+
+### 🔊 Your Draft Has a Voice
+
+**Drafts now call themselves out loud.** A voice announces when packs are dealt and when picking opens, counts you down at thirty, fifteen and five seconds, and tells the table when time is up. It works in every draft, casual or competitive.
+
+Six voices ship with it. **Leebo** is a droid with opinions about your picks, and there are five language packs — **English, Français, Deutsch, Español and Italiano** — so the calls can come in the language your table actually speaks. Everyone gets the language packs.
+
+- **Friends of the Pod get every voice on the platform**: Leebo, the language packs, and every creator pack anyone has ever published, with no codes to redeem.
+- **Everyone else** gets the language packs, plus any creator pack they unlock with a code at [/redeem](/redeem).
+- **The host picks the voice, and the whole table hears it** — including players who have not unlocked it themselves.
+
+Sound is off until someone asks for it: pressing **Ready** in the lobby turns the calls on for that browser, and the speaker beside it mutes them again. Your choice is remembered.
+
+### 🎙️ Creators Can Record Their Own
+
+Creators can now record a voice pack — seven short lines and a logo, straight from the browser mic — and hand out a code that unlocks it. Their link keeps working afterwards, so they can come back and change a line without disturbing anyone who already redeemed it.
+
 ## 08.19.2026
 
 ### 🐞 Bug Fixes

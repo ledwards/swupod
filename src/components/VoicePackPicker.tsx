@@ -29,6 +29,7 @@ import useVoicePackAudio from '@/src/hooks/useVoicePackAudio'
 import StyledSelect from '@/src/components/StyledSelect'
 import type { StyledSelectOption } from '@/src/components/StyledSelect'
 import { BUILT_IN_VOICE_PACKS, DEFAULT_VOICE_PACK_ID } from '@/src/utils/voicePackAssets'
+import { PATREON_URL } from '@/src/utils/membership'
 import './VoicePackPicker.css'
 
 /**
@@ -60,6 +61,7 @@ interface Props {
 
 export default function VoicePackPicker({ shareId, isHost, value, onChange, compact }: Props) {
   const [packs, setPacks] = useState<OwnedPack[]>([])
+  const [isPatron, setIsPatron] = useState(false)
   const [selected, setSelected] = useState<string | null>(value ?? null)
   const [saving, setSaving] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -86,6 +88,7 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
       if (!alive) return
       const owned = entitlements?.data?.packs || []
       setPacks(owned)
+      setIsPatron(entitlements?.data?.isPatron === true)
       if (shareId) {
         const podPick = podSelection?.data?.voicePackId ?? null
         if (podPick) {
@@ -149,6 +152,10 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
   // something to choose, even before anyone unlocks a creator pack.
   if (!isHost) return null
 
+  // Leebo is a Friends of the Pod pack, so a non-patron's fallback has to be a
+  // language pack — English, the closest match to how this behaved before.
+  const defaultId = isPatron ? DEFAULT_VOICE_PACK_ID : 'english'
+
   // Leebo heads the list; everything after him is a language pack.
   const leebo = BUILT_IN_VOICE_PACKS.find(p => p.id === DEFAULT_VOICE_PACK_ID)
   const languagePacks = BUILT_IN_VOICE_PACKS.filter(p => p.id !== DEFAULT_VOICE_PACK_ID)
@@ -156,7 +163,7 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
   // Order the user asked for: Leebo alone at the top with no header, then
   // anything they have unlocked under "Special", then the language packs.
   const options: StyledSelectOption[] = [
-    ...(leebo ? [{
+    ...(leebo && isPatron ? [{
       value: leebo.id,
       label: leebo.name,
       description: leebo.description,
@@ -182,10 +189,26 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
     <div className={`voice-pack-picker${compact ? ' voice-pack-picker--compact' : ''}`}>
       <StyledSelect
         options={options}
-        value={selected ?? DEFAULT_VOICE_PACK_ID}
+        value={selected ?? defaultId}
         onChange={choose}
         disabled={saving}
         ariaLabel="Voice pack for this draft"
+        {...(isPatron ? {} : {
+          footer: (
+            <a
+              className="voice-pack-upsell"
+              href={PATREON_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="voice-pack-upsell-title">Unlock every voice</span>
+              <span className="voice-pack-upsell-copy">
+                Friends of the Pod get Leebo and every creator&apos;s voice pack — or
+                redeem a creator&apos;s code to add just theirs.
+              </span>
+            </a>
+          ),
+        })}
       />
       {errorMessage && (
         <p className="voice-pack-picker-error" role="alert">

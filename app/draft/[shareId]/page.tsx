@@ -166,16 +166,10 @@ export default function DraftRoomPage({ params }: PageProps) {
 
   // Phase transitions are announced from the socket broadcast, so every client
   // hears them at the same moment (rather than only whoever clicked).
-  // Voice cues are a Competitive Practice feature — a casual pod stays silent.
   const phaseKey = status === 'waiting' ? 'lobby' : (draftState?.phase ?? null)
   const previousPhaseRef = useRef<string | null | undefined>(undefined)
   useEffect(() => {
     if (loading || !draft) return
-    if (!draft.competitive) {
-      // Still track the phase so enabling never replays an old transition.
-      previousPhaseRef.current = phaseKey
-      return
-    }
     const previous = previousPhaseRef.current
     previousPhaseRef.current = phaseKey
     // First settled render: adopt the phase silently. Opening a page that is

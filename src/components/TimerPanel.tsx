@@ -91,7 +91,10 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
   // Voice cues ride the competitive round timer only. The pack id is read
   // defensively — the field arrives with the creator voice packs and may be
   // absent, which just means the built-in pack.
-  const cuesEnabled = cues === true && isCompetitive
+  // Voice runs in every draft now, not just Competitive Practice — the cue
+  // service already suppresses a threshold that would not fit the pick, which
+  // is what makes casual timers safe.
+  const cuesEnabled = cues === true
   const cuePackId = (draft?.voicePackId ?? draft?.settings?.voicePackId ?? null) as string | null
   const isPaused = optimisticPaused !== null ? optimisticPaused : draft?.paused === true
   const pausedDurationSeconds = draft?.pausedDurationSeconds || 0

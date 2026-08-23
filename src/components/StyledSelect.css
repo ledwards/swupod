@@ -146,3 +146,11 @@
   gap: 2px;
   min-width: 0;
 }
+
+/* Footer slot: not an option, so it gets its own treatment rather than looking
+   like something you can pick. */
+.styled-select-footer {
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid var(--pt-border-subtle);
+}

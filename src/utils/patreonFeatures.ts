@@ -66,6 +66,12 @@ export const PATREON_FEATURES: PatreonFeature[] = [
       'Unlock and open the exclusive Galactic Championship 2026 Black Pack — alt-art event promos reserved for Friends of the Pod, on top of the Silver Pack anyone can claim.',
   },
   {
+    id: 'every-voice-pack',
+    title: 'Every Voice Pack',
+    description:
+      'Leebo and every creator voice pack on the platform, without redeeming a single code — your draft calls, in whoever you like. Everyone gets the language packs; the rest are yours.',
+  },
+  {
     id: 'avatar-flair',
     title: 'Avatar Flair',
     description:

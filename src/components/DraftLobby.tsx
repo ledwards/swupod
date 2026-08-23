@@ -170,9 +170,8 @@ function DraftLobby({
                 </Button>
                 {/* Same control as the timer bar. It belongs here too: the
                     lobby is where `ready-the-draft` plays, and TimerPanel
-                    renders nothing before the draft is active. Competitive
-                    only — a casual pod has no voice at all. */}
-                {draft?.competitive && <VoiceCueMuteButton
+                    renders nothing before the draft is active. */}
+                {<VoiceCueMuteButton
                   packId={(draft?.voicePackId ?? draft?.settings?.voicePackId ?? null) as string | null}
                   className="lobby-ready-mute"
                 />}
@@ -182,7 +181,7 @@ function DraftLobby({
               </p>
               {/* Its own line under Ready. Host only; whatever they choose
                   plays for the whole table. */}
-              {draft?.competitive && isHost && shareId && (
+              {isHost && shareId && (
                 <VoicePackPicker shareId={shareId} isHost={true} />
               )}
             </div>

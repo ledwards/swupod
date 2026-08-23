@@ -27,6 +27,11 @@ export interface StyledSelectOption {
 
 export interface StyledSelectProps {
   options: StyledSelectOption[]
+  /**
+   * Rendered at the bottom of the open list. Not an option — it is skipped by
+   * keyboard navigation and cannot be selected. Used for the upsell row.
+   */
+  footer?: React.ReactNode
   value: string
   onChange: (value: string) => void
   disabled?: boolean
@@ -41,6 +46,7 @@ export default function StyledSelect({
   disabled = false,
   ariaLabel,
   className,
+  footer,
 }: StyledSelectProps) {
   const [open, setOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -174,6 +180,11 @@ export default function StyledSelect({
               </div>
             </li>
           ))}
+          {footer && (
+            <li role="presentation" className="styled-select-footer">
+              {footer}
+            </li>
+          )}
         </ul>
       )}
     </div>
