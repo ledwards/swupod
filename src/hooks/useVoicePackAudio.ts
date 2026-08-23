@@ -270,6 +270,11 @@ export function useVoicePackAudio(packId?: string | null): VoicePackAudio {
   }, [activePackId, playFrom])
 
   const setMuted = useCallback((next: boolean) => {
+    // Update the ref synchronously. `mutedRef` is otherwise assigned during
+    // render, so a play() in the same tick as the toggle — unmuting and
+    // immediately announcing "sound on" — would still read the old value and
+    // silently prime instead of speaking.
+    mutedRef.current = next
     setPersistedMuted(next)
     setLocalMuted(next)
     mutedSubscribers.forEach(listener => listener(next))

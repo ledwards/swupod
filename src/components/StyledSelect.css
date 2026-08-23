@@ -72,6 +72,14 @@
   list-style: none;
   max-height: 19rem;
   overflow-y: auto;
+  /* Subtle "there is more below" cue: the last row fades against the panel
+     unless you are already at the bottom. Pure CSS, no scroll listener. */
+  background-image: linear-gradient(to top, rgba(var(--pt-surface-base-rgb), 0.85), rgba(var(--pt-surface-base-rgb), 0) 2.5rem); /* design-ok: scroll affordance, signals more rows below */
+  background-attachment: local, scroll;
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-size: 100% 2.5rem;
+  scrollbar-width: thin;
   background: var(--pt-surface-modal-from);
   border: 1px solid var(--pt-border-strong);
   border-radius: 8px;

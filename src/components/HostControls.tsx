@@ -5,6 +5,7 @@ import { useState } from 'react'
 import type { ChangeEvent, MouseEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import Button from './Button'
+import VoicePackPicker from './VoicePackPicker'
 import './HostControls.css'
 
 const CopyIcon = () => (
@@ -163,6 +164,7 @@ function HostControls({
   // Admins bypass the 2-human requirement for testing/facilitation.
   const isSoloDraft = draft?.settings?.isSolo === true
   const hasEnoughPlayers = playerCount >= 2 && (humanPlayerCount >= 2 || isSoloDraft || isAdmin)
+  const adminCanBypassMinimum = isAdmin && !isSoloDraft && humanPlayerCount < 2 && playerCount >= 2
   // Dealing is also gated on the lobby handshake: every human must press Ready,
   // which is the click that unlocks voice cues in their browser.
   const canStart = hasEnoughPlayers && allHumansReady
@@ -340,43 +342,7 @@ function HostControls({
 
 
       <div className="controls-section">
-        {/* Row 1: Randomize Seats + Shuffle Packs */}
-        <div className="controls-row secondary-controls">
-          <Button
-            variant="secondary"
-            glowColor="blue"
-            className="control-button"
-            onClick={onRandomize}
-            disabled={randomizing || playerCount < 2}
-            title="Shuffle player seating order"
-          >
-            <DiceIcon />
-            <span>{randomizing ? 'Randomizing...' : 'Randomize Seats'}</span>
-          </Button>
-
-          {onRandomizePacks && (
-            <Button
-              variant="secondary"
-              glowColor="blue"
-              className="control-button"
-              onClick={() => {
-                if (typeof window !== 'undefined') {
-                  const sound = new Audio('/sounds/shuffling-hand.mp3')
-                  sound.volume = 0.5
-                  sound.play().catch(() => {})
-                }
-                onRandomizePacks()
-              }}
-              disabled={randomizingPacks || playerCount < 2}
-              title="Shuffle which packs you get from the booster box"
-            >
-              <DiceIcon />
-              <span>{randomizingPacks ? 'Shuffling...' : 'Shuffle Packs'}</span>
-            </Button>
-          )}
-        </div>
-
-        {/* Row 2: Add Bot + Privileged Observer */}
+        {/* Add Bot + Privileged Observer */}
         <div className="controls-row secondary-controls">
           <Button
             variant="secondary"
@@ -414,6 +380,50 @@ function HostControls({
             </Button>
           ))}
         </div>
+        {/* Randomize Seats + Shuffle Packs — below Add Bot / Observer. */}
+        <div className="controls-row secondary-controls">
+          <Button
+            variant="secondary"
+            glowColor="blue"
+            className="control-button"
+            onClick={onRandomize}
+            disabled={randomizing || playerCount < 2}
+            title="Shuffle player seating order"
+          >
+            <DiceIcon />
+            <span>{randomizing ? 'Randomizing...' : 'Randomize Seats'}</span>
+          </Button>
+
+          {onRandomizePacks && (
+            <Button
+              variant="secondary"
+              glowColor="blue"
+              className="control-button"
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  const sound = new Audio('/sounds/shuffling-hand.mp3')
+                  sound.volume = 0.5
+                  sound.play().catch(() => {})
+                }
+                onRandomizePacks()
+              }}
+              disabled={randomizingPacks || playerCount < 2}
+              title="Shuffle which packs you get from the booster box"
+            >
+              <DiceIcon />
+              <span>{randomizingPacks ? 'Shuffling...' : 'Shuffle Packs'}</span>
+            </Button>
+          )}
+        </div>
+
+        {/* Voice pack, last in the host's settings stack. Whatever the host
+            picks plays for the whole table, not just for them. */}
+        {shareId && (
+          <div className="controls-row host-voice-row">
+            <VoicePackPicker shareId={shareId} isHost={true} />
+          </div>
+        )}
+
 
         {observerEnabled && (
           <div
@@ -482,6 +492,15 @@ function HostControls({
         {waitingOnReady && (
           <div className="min-players-note">
             <p>Waiting for every player to press Ready.</p>
+          </div>
+        )}
+
+        {/* Admins may start below the normal two-human minimum. Says so rather
+            than leaving a host wondering why the button is live — and sits in
+            the same fixed-height slot, so nothing shifts when it appears. */}
+        {adminCanBypassMinimum && (
+          <div className="min-players-note">
+            <p>Admin override: you can start with fewer than 2 humans.</p>
           </div>
         )}
 

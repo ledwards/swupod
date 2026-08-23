@@ -591,3 +591,9 @@
 .start-state-note:empty {
   min-height: 4.5rem;
 }
+
+/* Whatever message lands here is vertically centred in the reserved space, so
+   a one-line note and a three-line note occupy the same box. */
+.start-state-note > * {
+  margin: 0;
+}

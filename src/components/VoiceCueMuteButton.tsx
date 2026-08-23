@@ -36,7 +36,7 @@ export interface VoiceCueMuteButtonProps {
 }
 
 export default function VoiceCueMuteButton({ packId, className }: VoiceCueMuteButtonProps) {
-  const { muted, toggleMuted, prime } = useVoicePackAudio(packId)
+  const { muted, toggleMuted, prime, play } = useVoicePackAudio(packId)
 
   return (
     <Button
@@ -45,7 +45,14 @@ export default function VoiceCueMuteButton({ packId, className }: VoiceCueMuteBu
       className={`voice-cue-mute ${muted ? 'is-muted' : 'is-on'}${className ? ` ${className}` : ''}`}
       // Priming here is deliberate: this is a user gesture, so it doubles as
       // the audio unlock for spectators and late joiners who never hit Ready.
-      onClick={() => { prime(); toggleMuted() }}
+      onClick={() => {
+        // Turning sound ON announces itself; turning it OFF stays silent, which
+        // is the whole point of turning it off.
+        const turningOn = muted
+        prime()
+        toggleMuted()
+        if (turningOn) play('sound-on')
+      }}
       aria-pressed={muted}
       aria-label={muted ? 'Unmute draft voice cues' : 'Mute draft voice cues'}
       title={muted ? 'Voice cues muted' : 'Voice cues on'}

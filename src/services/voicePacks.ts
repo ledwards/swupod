@@ -22,6 +22,7 @@ export const VOICE_PACK_CLIP_TYPES = [
   'count-15',
   'count-5',
   'time-is-up',
+  'sound-on',
 ] as const
 
 export type VoicePackClipType = (typeof VOICE_PACK_CLIP_TYPES)[number]

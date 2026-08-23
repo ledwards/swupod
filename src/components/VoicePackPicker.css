@@ -133,3 +133,20 @@
     background: rgba(var(--pt-ink-rgb), 0.06);
   }
 }
+
+/* The picker is a block inside a centred column; without this the select keeps
+   its own max-width and hugs the left, leaving dead space on the right. This
+   has been the cause of the "not centered" reports. */
+.host-voice-row {
+  justify-content: center;
+}
+
+.host-voice-row .voice-pack-picker {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.host-voice-row .styled-select {
+  margin-inline: auto;
+}

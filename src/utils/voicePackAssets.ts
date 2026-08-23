@@ -16,6 +16,7 @@ export const VOICE_PACK_CLIPS = [
   'count-15',
   'count-5',
   'time-is-up',
+  'sound-on',
 ] as const
 
 export type VoicePackClip = (typeof VOICE_PACK_CLIPS)[number]
@@ -38,41 +39,41 @@ export const BUILT_IN_VOICE_PACKS: readonly BuiltInVoicePack[] = [
   {
     id: 'leebo',
     name: 'Leebo',
-    description: 'A droid with opinions',
+    description: "Protect the Pod's AI Copilot",
     dir: '/sounds/voice-packs/leebo',
     icon: '/icons/voice-packs/leebo.png',
   },
   {
     id: 'english',
-    name: 'English (American)',
+    name: 'Zoe (English)',
     description: 'Voice in English',
     dir: '/sounds/voice-packs/english',
     icon: '/icons/voice-packs/english.svg',
   },
   {
     id: 'french',
-    name: 'Français',
+    name: 'Audrey (Français)',
     description: 'Les annonces en français',
     dir: '/sounds/voice-packs/french',
     icon: '/icons/voice-packs/french.svg',
   },
   {
     id: 'german',
-    name: 'Deutsch',
+    name: 'Anna (Deutsch)',
     description: 'Die Ansagen auf Deutsch',
     dir: '/sounds/voice-packs/german',
     icon: '/icons/voice-packs/german.svg',
   },
   {
     id: 'spanish',
-    name: 'Español',
+    name: 'Marisol (Español)',
     description: 'Los avisos en español',
     dir: '/sounds/voice-packs/spanish',
     icon: '/icons/voice-packs/spanish.svg',
   },
   {
     id: 'italian',
-    name: 'Italiano',
+    name: 'Federica (Italiano)',
     description: 'Gli annunci in italiano',
     dir: '/sounds/voice-packs/italian',
     icon: '/icons/voice-packs/italian.svg',
@@ -86,7 +87,7 @@ export const DEFAULT_VOICE_PACK_ID = 'leebo'
 export const DEFAULT_VOICE_PACK_NAME = 'Leebo'
 
 /** One-line description of the default pack. */
-export const DEFAULT_VOICE_PACK_DESCRIPTION = 'A droid with opinions'
+export const DEFAULT_VOICE_PACK_DESCRIPTION = "Protect the Pod's AI Copilot"
 
 /**
  * The built-in pack for an id, or null if the id is not built in (i.e. it is a

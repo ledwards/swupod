@@ -229,3 +229,9 @@
     min-width: 45px;
   }
 }
+
+/* The name sat too far under the status line; pull it up so the two read as
+   one block. The seat's flex gap owns the rest of the rhythm. */
+.player-seat .seat-name {
+  margin-top: -2px;
+}

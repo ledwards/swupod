@@ -50,9 +50,22 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
 
     // Get current players
     const players = await queryRows(
-      'SELECT seat_number FROM pod_players WHERE pod_id = $1',
+      `SELECT pp.seat_number, u.discord_id
+         FROM pod_players pp
+         LEFT JOIN users u ON u.id = pp.user_id
+        WHERE pp.pod_id = $1`,
       [pod.id]
     )
+
+    // Bot identity used to be derived from players.length, but the eight bots
+    // have stable discord_ids and pod_players is UNIQUE(pod_id, user_id). After
+    // a player is removed the count shifts, the index lands on a bot already
+    // seated, and the insert dies on the constraint — surfacing as "Resource
+    // already exists". Choose from the bots that are actually free instead.
+    const seatedBotIds = new Set(
+      players.map(p => p.discord_id).filter((d): d is string => typeof d === 'string')
+    )
+    const freeBotConfigs = BOT_CONFIGS.filter(b => !seatedBotIds.has(b.discordId))
 
     const takenSeats = new Set(players.map(p => p.seat_number))
     const availableSeats: number[] = []
@@ -66,14 +79,18 @@ export async function POST(request: NextRequest, { params }: RouteContext): Prom
       return errorResponse('Draft is full', 400)
     }
 
-    const botsToAdd = Math.min(count, availableSeats.length)
+    if (freeBotConfigs.length === 0) {
+      return errorResponse('Every bot is already in this draft', 400)
+    }
+
+    const botsToAdd = Math.min(count, availableSeats.length, freeBotConfigs.length)
     const addedBots: { name: string; seatNumber: number }[] = []
 
     for (let i = 0; i < botsToAdd; i++) {
       const seatNumber = availableSeats[i]
-      const botIndex = (players.length + i) % BOT_CONFIGS.length
-      const botConfig = BOT_CONFIGS[botIndex]
-      const botAvatar = BOT_AVATARS[botIndex % BOT_AVATARS.length]
+      const botConfig = freeBotConfigs[i]
+      if (!botConfig) break
+      const botAvatar = BOT_AVATARS[BOT_CONFIGS.indexOf(botConfig) % BOT_AVATARS.length]
 
       // Find or create bot user with stable discord_id
       const userResult = await query(

@@ -67,6 +67,11 @@ export const CLIP_GUIDE: Record<
     when: 'Plays when the pick timer runs out.',
     suggestion: '“Time is up.”',
   },
+  'sound-on': {
+    label: 'Sound on',
+    when: 'Plays when a player turns the draft calls on.',
+    suggestion: '“Sound on.”',
+  },
 }
 
 const PlayIcon = () => (

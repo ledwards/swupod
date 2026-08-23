@@ -73,12 +73,15 @@ describe('POST /api/voice-packs/submit — insert vs update', () => {
     assert.equal(voicePackInviteAccess({ used_at: null, expires_at: lapsed }, null, now), 'denied')
   })
 
-  it('SPEC: a first publish must carry all seven clips', () => {
-    assert.equal(missingVoicePackClips(['greeting'], []).length, 6)
+  it('SPEC: a first publish must carry every clip', () => {
+    assert.equal(
+      missingVoicePackClips(['greeting'], []).length,
+      VOICE_PACK_CLIP_TYPES.length - 1
+    )
     assert.equal(missingVoicePackClips(VOICE_PACK_CLIP_TYPES, []).length, 0)
   })
 
-  it('SPEC: an edit may send one clip and omit the other six', () => {
+  it('SPEC: an edit may send one clip and omit the rest', () => {
     assert.equal(missingVoicePackClips(['count-5'], VOICE_PACK_CLIP_TYPES).length, 0)
   })
 

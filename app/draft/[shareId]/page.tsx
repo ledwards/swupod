@@ -267,7 +267,10 @@ export default function DraftRoomPage({ params }: PageProps) {
   // wondering whether anything happened.
   const handleToggleReady = async () => {
     if (togglingReady) return
-    primeCues(voicePackId, { announce: 'greeting' })
+    // Readying up greets you; un-readying should not — hearing a welcome as you
+    // step back out reads as a bug.
+    const readyingUp = !(players.find(p => p.id === myPlayer?.id)?.lobbyReady === true)
+    primeCues(voicePackId, readyingUp ? { announce: 'greeting' } : undefined)
     setTogglingReady(true)
     setError(null)
     try {

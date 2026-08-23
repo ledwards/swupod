@@ -188,18 +188,18 @@ describe('restoredDraftNotice', () => {
   it('SPEC: recordings only, singular and plural', () => {
     assert.strictEqual(
       restoredDraftNotice(1, false),
-      'Picked up where you left off — 1 of 7 recordings was restored from this browser.'
+      'Picked up where you left off — 1 of 8 recordings was restored from this browser.'
     )
     assert.strictEqual(
       restoredDraftNotice(5, false),
-      'Picked up where you left off — 5 of 7 recordings were restored from this browser.'
+      'Picked up where you left off — 5 of 8 recordings were restored from this browser.'
     )
   })
 
   it('SPEC: both', () => {
     assert.strictEqual(
-      restoredDraftNotice(7, true),
-      'Picked up where you left off — your pack details and 7 of 7 recordings were restored from this browser.'
+      restoredDraftNotice(8, true),
+      'Picked up where you left off — your pack details and 8 of 8 recordings were restored from this browser.'
     )
   })
 })

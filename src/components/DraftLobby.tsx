@@ -6,7 +6,6 @@ import PlayerCircle from './PlayerCircle'
 import HostControls from './HostControls'
 import Button from './Button'
 import VoiceCueMuteButton from './VoiceCueMuteButton'
-import VoicePackPicker from './VoicePackPicker'
 import CollapsibleSection from './CollapsibleSection'
 import CompetitivePracticeRules from './CompetitivePracticeRules'
 import { trackEvent } from '../hooks/useAnalytics'
@@ -179,11 +178,6 @@ function DraftLobby({
               <p className="lobby-ready-count">
                 {readyHumans.length} / {humanPlayers.length} players ready
               </p>
-              {/* Its own line under Ready. Host only; whatever they choose
-                  plays for the whole table. */}
-              {isHost && shareId && (
-                <VoicePackPicker shareId={shareId} isHost={true} />
-              )}
             </div>
           )}
 
