@@ -21,10 +21,50 @@ dotenv.config()
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-// Get environment from command line argument
+// Argument parsing is deliberately strict and fails closed.
+//
+// It used to be neither. `npx tsx scripts/migrate.ts status` put "status" where
+// the ENVIRONMENT is read, so it became an unrecognised env that silently
+// disabled the production confirmation; the command was read from argv[3] and
+// so defaulted to "migrate". A command that reads like a status check migrated
+// production without asking. That happened on 2026-08-23.
+//
+// Two invariants now hold:
+//   1. The environment must be exactly "dev" or "prod". Anything else exits.
+//   2. Whether we confirm is decided by the DATABASE WE ARE ABOUT TO WRITE TO,
+//      not by the label the caller typed — `env` does not choose a database,
+//      POSTGRES_URL does (see getDatabaseUrl), so the label was never a safe
+//      guard on its own.
+const VALID_ENVS = ['dev', 'prod'] as const
+const VALID_COMMANDS = ['migrate', 'status'] as const
+
 const args = process.argv.slice(2)
-const env = args.find(a => !a.startsWith('--')) || 'dev'
-const isProd = env === 'prod'
+const positional = args.filter(a => !a.startsWith('-'))
+const [rawEnv = 'dev', rawCommand = 'migrate', ...extraPositional] = positional
+
+if (!VALID_ENVS.includes(rawEnv as (typeof VALID_ENVS)[number])) {
+  console.error(`❌ Unknown environment "${rawEnv}".`)
+  console.error(`   Expected one of: ${VALID_ENVS.join(', ')}`)
+  console.error('   Usage: tsx scripts/migrate.ts <dev|prod> [migrate|status] [--yes]')
+  console.error('   (Refusing to guess — an unrecognised environment used to skip the')
+  console.error('    production confirmation and migrate whatever POSTGRES_URL pointed at.)')
+  process.exit(1)
+}
+
+if (!VALID_COMMANDS.includes(rawCommand as (typeof VALID_COMMANDS)[number])) {
+  console.error(`❌ Unknown command "${rawCommand}".`)
+  console.error(`   Expected one of: ${VALID_COMMANDS.join(', ')}`)
+  process.exit(1)
+}
+
+if (extraPositional.length > 0) {
+  console.error(`❌ Unexpected argument(s): ${extraPositional.join(', ')}`)
+  console.error('   Usage: tsx scripts/migrate.ts <dev|prod> [migrate|status] [--yes]')
+  process.exit(1)
+}
+
+const env = rawEnv
+const declaredProd = env === 'prod'
 const skipConfirm = args.includes('--yes') || args.includes('-y') || process.env.CI === 'true'
 
 interface MigrationFile {
@@ -39,12 +79,29 @@ interface MigrationRow {
 }
 
 // Get database URL based on environment
+/**
+ * Whether a connection string points at something that is not a local database.
+ *
+ * This is the real guard. `env` is only a label the caller typed — it does not
+ * select a database, POSTGRES_URL does. So we decide "is this production?" from
+ * the host we are actually about to write to.
+ */
+function looksLikeRemoteDatabase(connectionString: string): boolean {
+  try {
+    const host = new URL(connectionString).hostname.toLowerCase()
+    return !(host === 'localhost' || host === '127.0.0.1' || host === '::1' || host.endsWith('.local'))
+  } catch {
+    // Unparseable: assume the riskier answer.
+    return true
+  }
+}
+
 function getDatabaseUrl(): string {
   const dbUrl = process.env.POSTGRES_URL
   if (!dbUrl) {
     console.error('❌ Error: POSTGRES_URL is not set in environment variables')
     console.error('   Set it in your .env file or as an environment variable')
-    if (isProd) {
+    if (declaredProd) {
       console.error('   For production migrations, ensure POSTGRES_URL points to production database')
     } else {
       console.error('   For development migrations, ensure POSTGRES_URL points to development database')
@@ -265,7 +322,9 @@ async function showStatus(client: pg.Client, envName: string): Promise<void> {
 
 // Main migration function
 async function runMigrations(): Promise<void> {
-  const command = process.argv[3] || 'migrate'
+  // Use the validated command from the top of the file. Reading argv[3]
+  // directly is what made `migrate.ts status` fall through to "migrate".
+  const command = rawCommand
   let client: pg.Client | null = null
 
   if (command === 'status') {
@@ -277,6 +336,17 @@ async function runMigrations(): Promise<void> {
   }
 
   // For production, require confirmation (unless --yes flag or CI environment)
+  // Confirm when EITHER the caller said prod or the connection string points
+  // somewhere remote. The second half is what stops a mislabelled invocation
+  // from writing to production unchallenged.
+  const targetIsRemote = looksLikeRemoteDatabase(getDatabaseUrl())
+  const isProd = declaredProd || targetIsRemote
+
+  if (declaredProd !== targetIsRemote) {
+    console.warn(`\n⚠️  Environment says "${env}" but POSTGRES_URL points at a ${targetIsRemote ? 'REMOTE' : 'LOCAL'} host.`)
+    console.warn('   Trusting the connection string, not the label.')
+  }
+
   if (isProd && !skipConfirm) {
     const confirmed = await confirmProductionMigration()
     if (!confirmed) {
@@ -287,6 +357,7 @@ async function runMigrations(): Promise<void> {
   try {
     const dbUrl = getDatabaseUrl()
     console.log(`\n🔧 Connecting to ${isProd ? 'PRODUCTION' : 'DEVELOPMENT'} database...`)
+    console.log(`   Host: ${(() => { try { return new URL(getDatabaseUrl()).hostname } catch { return 'unparseable' } })()}`)
     console.log(`   Environment: ${env}`)
 
     client = createDbClient(dbUrl)
