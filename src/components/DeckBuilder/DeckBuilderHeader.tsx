@@ -15,7 +15,7 @@ import Button from '../Button'
 import DraftReportButton from '../DraftReportButton'
 import PoolBuilds from '../PoolBuilds'
 import { savePool } from '../../utils/poolApi'
-import { getNewBuildDeckBuilderState } from '../../utils/deckBuilderSharing'
+import { getNewBuildDeckBuilderState, resolveDeckShareUrl } from '../../utils/deckBuilderSharing'
 import DeckBuildTimer from './DeckBuildTimer'
 import type { CardPosition } from './AspectPenaltyToggle'
 import type { MessageType } from './DeleteDeckSection'
@@ -144,10 +144,11 @@ export function DeckBuilderHeader({
     }
   }
 
-  // Handle copy share URL
+  // Handle copy share URL — links to THIS deck page, not the pool redirect.
   const handleCopyShareUrl = async () => {
+    const deckPath = resolveDeckShareUrl({ shareId, rootShareId })
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}/pool/${shareId}`)
+      await navigator.clipboard.writeText(`${window.location.origin}${deckPath}`)
       setShareMessage('Copied!')
       setTimeout(() => setShareMessage(null), 2500)
     } catch (err) {
@@ -247,6 +248,24 @@ export function DeckBuilderHeader({
           </Button>
         )}
 
+        {/* Copy Link + inline status (status sits LEFT of the icon) */}
+        {!isInfiniteMode && shareId && (
+          <span className="share-button-group">
+            {shareMessage && <span className="inline-status">{shareMessage}</span>}
+            <Button
+              variant="secondary"
+              className="export-button"
+              onClick={handleCopyShareUrl}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+              <span>Copy Link</span>
+            </Button>
+          </span>
+        )}
+
         {shareId && !swissInProgress && (
           <Button
             variant="secondary"
@@ -263,8 +282,6 @@ export function DeckBuilderHeader({
             <span>Stats</span>
           </Button>
         )}
-
-        {/* Copy Share URL moved to the PoolBuilds card list (icon-only chip). */}
 
         {/* Draft Log button — hidden when the owner is a patron (they get the
             richer Draft Report button below instead). */}
@@ -299,7 +316,6 @@ export function DeckBuilderHeader({
           activeShareId={shareId || null}
           onCreateBuild={handleBuildFromPool}
           createBuildMessage={buildMessage}
-          onCopyShare={shareId ? handleCopyShareUrl : undefined}
         />
       )}
 

@@ -1288,28 +1288,40 @@ function DeckBuilder({
     }
   }, [uiStorageKey])
 
-  // Detect when deck-info-bar becomes sticky
+  // Detect when deck-info-bar becomes sticky.
+  //
+  // The ref is read INSIDE checkSticky, never captured when the effect runs.
+  // The bar mounts after this effect on a slow pool load, and React can swap
+  // the node on a re-render; the old code grabbed infoBarRef.current up front
+  // and bailed on null, so a late-mounting bar left the page with no scroll
+  // listener at all for the rest of the session — the sticky bar simply never
+  // appeared. Bailing now skips one check instead of every future one.
+  //
+  // checkSticky runs straight off the scroll event rather than inside
+  // requestAnimationFrame: browsers already fire scroll at most once per frame,
+  // and rAF never runs at all in a backgrounded tab, which stranded the bar
+  // mid-scroll.
   useEffect(() => {
-    const infoBar = infoBarRef.current
-    if (!infoBar) return
-
     const checkSticky = () => {
+      const infoBar = infoBarRef.current
       if (!infoBar) return
       const rect = infoBar.getBoundingClientRect()
       // Trigger sticky mode 120px before it actually sticks (at top: 20px)
-      const isSticky = rect.top <= 140
-      setIsInfoBarSticky(isSticky)
+      setIsInfoBarSticky(rect.top <= 140)
     }
 
     // Check on scroll and resize
-    const handleScroll = () => requestAnimationFrame(checkSticky)
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    window.addEventListener('resize', handleScroll, { passive: true })
+    window.addEventListener('scroll', checkSticky, { passive: true })
+    window.addEventListener('resize', checkSticky, { passive: true })
     checkSticky() // Initial check
+    // ...and again once the bar has had a chance to mount, so a page restored
+    // at a scrolled position is correct without waiting for the user to scroll.
+    const settle = setTimeout(checkSticky, 0)
 
     return () => {
-      window.removeEventListener('scroll', handleScroll)
-      window.removeEventListener('resize', handleScroll)
+      clearTimeout(settle)
+      window.removeEventListener('scroll', checkSticky)
+      window.removeEventListener('resize', checkSticky)
     }
   }, [])
 
@@ -2599,6 +2611,7 @@ function DeckBuilder({
         isAuthenticated={isAuthenticated}
         signIn={signIn}
         shareId={shareId}
+        rootShareId={rootShareId}
         draftShareId={draftShareId}
         setErrorMessage={setErrorMessage}
         setMessageType={setMessageType}

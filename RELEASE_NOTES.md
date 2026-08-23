@@ -2,6 +2,14 @@
 
 ## 08.23.2026
 
+### 🐞 Bug Fixes
+
+- **Copy Link is back on the deck pages**, in the button row between Ready to Play and Stats. It copies the link to the deck you're actually looking at, so sharing a specific build lands people on that build.
+- **Copy Link is in the sticky bar too**, beside Play and Clone, so you can grab the link without scrolling back to the top.
+- **The sticky deck bar keeps up with the scroll.** It could stall mid-scroll and leave the bar's buttons behind; it now tracks the page directly and settles correctly whichever way you're scrolling.
+
+## 08.23.2026
+
 ### 🔊 Your Draft Has a Voice
 
 **If you drafted at the Galactic Championships in Las Vegas this year, you know the feeling** — a voice over the room dealing you in, counting the table down, calling time. Drafts here do that now.

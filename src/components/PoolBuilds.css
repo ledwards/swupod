@@ -99,9 +99,8 @@
   font-weight: 600;
 }
 
-/* + and share buttons — declared LAST so their rules win the cascade against .pool-build-card */
-.pool-build-add,
-.pool-build-share {
+/* + button — declared LAST so its rules win the cascade against .pool-build-card */
+.pool-build-add {
   flex-direction: row;
   align-items: center;
   justify-content: center;
@@ -113,8 +112,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .pool-build-add:hover,
-  .pool-build-share:hover {
+  .pool-build-add:hover {
     color: white;
   }
 }

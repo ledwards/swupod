@@ -77,7 +77,6 @@ interface PoolBuildsProps {
   activeShareId?: string | null  // shareId of the build currently being viewed
   onCreateBuild?: () => void
   createBuildMessage?: string | null
-  onCopyShare?: () => void
 }
 
 const VISIBLE_LIMIT = 6
@@ -183,7 +182,7 @@ function BuildCard({
   )
 }
 
-export default function PoolBuilds({ shareId, currentUserId, isOwner = false, activeShareId = null, onCreateBuild, createBuildMessage = null, onCopyShare }: PoolBuildsProps) {
+export default function PoolBuilds({ shareId, currentUserId, isOwner = false, activeShareId = null, onCreateBuild, createBuildMessage = null }: PoolBuildsProps) {
   const [builds, setBuilds] = useState<Build[]>([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
@@ -278,9 +277,9 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
   // Only surface entries that are actually a deck. A pool whose original entry
   // has never been built renders as "No leader / No games yet" noise, so the
   // whole section stays hidden until someone has built something — unless the
-  // call site parks its share / + chips in here (the deck builder header),
-  // in which case the row still has to exist.
-  const hasActionChips = Boolean(onCopyShare || onCreateBuild)
+  // call site parks its + chip in here (the deck builder header), in which case
+  // the row still has to exist.
+  const hasActionChips = Boolean(onCreateBuild)
   if (!decks.length && !hasActionChips) return null
 
   const visible = decks.slice(0, VISIBLE_LIMIT)
@@ -290,20 +289,6 @@ export default function PoolBuilds({ shareId, currentUserId, isOwner = false, ac
     <div className="pool-builds">
       {decks.length > 0 && <p className="pool-builds-label">Decks from this Pool:</p>}
       <div className="pool-builds-list">
-        {onCopyShare && (
-          <button
-            type="button"
-            className="pool-build-card pool-build-share"
-            onClick={onCopyShare}
-            title="Copy share URL"
-            aria-label="Copy share URL"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-            </svg>
-          </button>
-        )}
         {visible.map(b => (
           <BuildCard
             key={b.shareId}

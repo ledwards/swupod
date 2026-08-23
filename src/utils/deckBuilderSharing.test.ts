@@ -7,6 +7,7 @@ import {
   getNewBuildDeckBuilderState,
   shouldBuildFromSharedPool,
   resolvePlayDestination,
+  resolveDeckShareUrl,
   formatPoolDate,
   stripArchetypeSetAndFormat,
   getDefaultPoolName,
@@ -67,6 +68,37 @@ describe('deckBuilderSharing', () => {
   //   casual draft pod             -> /draft/:podShareId/pod
   //   casual sealed pod            -> /sealed/:podShareId/pod
   //   no pod                       -> /pool/:shareId/deck/play
+  // SPEC (src/utils/deckBuilderSharing.ts resolveDeckShareUrl):
+  // Copy Link on a deck page copies the DECK page you are looking at, never
+  // /pool/:shareId — that path is a redirect to the pool's card view, so on a
+  // build it sent people to the build's pool instead of the deck.
+  describe('resolveDeckShareUrl', () => {
+    it('links a child build at its canonical /pool/:root/deck/:build path', () => {
+      assert.strictEqual(
+        resolveDeckShareUrl({ shareId: 'build-1', rootShareId: 'root-1' }),
+        '/pool/root-1/deck/build-1'
+      )
+    })
+
+    it('links a root pool at /pool/:shareId/deck', () => {
+      assert.strictEqual(
+        resolveDeckShareUrl({ shareId: 'root-1', rootShareId: 'root-1' }),
+        '/pool/root-1/deck'
+      )
+    })
+
+    it('links at /pool/:shareId/deck when there is no root', () => {
+      assert.strictEqual(
+        resolveDeckShareUrl({ shareId: 'pool-9', rootShareId: null }),
+        '/pool/pool-9/deck'
+      )
+    })
+
+    it('returns null with no shareId to link', () => {
+      assert.strictEqual(resolveDeckShareUrl({ shareId: null, rootShareId: 'root-1' }), null)
+    })
+  })
+
   describe('resolvePlayDestination', () => {
     it('sends a casual draft pod to the draft pod hub', () => {
       assert.strictEqual(

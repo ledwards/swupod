@@ -59,6 +59,36 @@ export function resolvePlayDestination({
   return shareId ? `/pool/${shareId}/deck/play` : null
 }
 
+export interface DeckShareUrlOptions {
+  /** Share id of the pool or build currently on screen. */
+  shareId?: string | null
+  /** Share id of the ROOT pool this build hangs off, or the pool's own id. */
+  rootShareId?: string | null
+}
+
+/**
+ * Where "Copy Link" points on a deck page.
+ *
+ * SPEC:
+ * - A child build → `/pool/:rootShareId/deck/:shareId` (its canonical URL).
+ * - A root pool (or no root at all) → `/pool/:shareId/deck`.
+ * - Never `/pool/:shareId` — that route is a redirect to the pool's CARD view,
+ *   so on a build it landed people on the build's pool rather than the deck
+ *   they were being shown.
+ *
+ * Returns a path, not an absolute URL; callers prefix `window.location.origin`.
+ * Returns null when there is no pool to link to.
+ */
+export function resolveDeckShareUrl({
+  shareId = null,
+  rootShareId = null,
+}: DeckShareUrlOptions): string | null {
+  if (!shareId) return null
+  return rootShareId && rootShareId !== shareId
+    ? `/pool/${rootShareId}/deck/${shareId}`
+    : `/pool/${shareId}/deck`
+}
+
 export function getBuildName(parentName: string | null | undefined, displayName: string | null | undefined): string | null {
   if (!parentName) return null
   return displayName ? `${parentName} – ${displayName}'s Build` : `${parentName} (Build)`
