@@ -71,15 +71,19 @@ const PACKS: Record<string, PackRecipe> = {
     },
   },
   british: {
-    // The best British voice this Mac has. Apple ships no Premium en_GB; Enhanced
-    // is the tier below it and well clear of the novelty en_GB voices (Flo, Rocko,
-    // Grandpa and friends). If a Premium British voice is ever downloaded, change
-    // this one line and rerun.
-    voice: 'Daniel (Enhanced)',
+    // NOT Daniel, and this is the whole reason: Leebo is Daniel (en-GB) under the
+    // droid chain, and an undisguised Daniel beside him sounded like the same
+    // person doing two jobs. That rules out the only Enhanced British voice on
+    // this machine, so the pack takes the best of the character set instead.
+    // Audition the rest at /sounds/voice-packs/_candidates/british.html.
+    //
+    // Apple ships no Premium en_GB here. Downloading one (Serena, Jamie) and
+    // putting its name on this line is the real upgrade.
+    voice: 'Shelley (English (UK))',
     dir: 'public/sounds/voice-packs/british',
     // Word for word the American script, so the two packs differ only in accent.
     lines: {
-      greeting: 'Hi, this is Daniel. Welcome to the Pod!',
+      greeting: 'Hi, this is Shelley. Welcome to the Pod!',
       'ready-the-draft': 'Ready to draft.',
       'start-the-draft': 'Start the draft!',
       'count-30': 'Thirty seconds remaining.',
