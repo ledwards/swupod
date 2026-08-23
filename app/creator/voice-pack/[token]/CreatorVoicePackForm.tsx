@@ -190,7 +190,7 @@ export default function CreatorVoicePackForm({ token, note, published }: Props) 
     setErrorMessage(null)
     if (!file) return
     if (file.size > MAX_CLIP_BYTES) {
-      setErrorMessage(`${CLIP_GUIDE[clip].label}: that file is over ${MAX_CLIP_BYTES / KB} KB.`)
+      setErrorMessage(`${CLIP_GUIDE[clip].label}: that file is over ${MAX_CLIP_BYTES / KB / KB} MB.`)
       return
     }
     setClips((prev) => ({ ...prev, [clip]: file }))
@@ -385,7 +385,7 @@ export default function CreatorVoicePackForm({ token, note, published }: Props) 
           {published
             ? 'A line you leave alone keeps the audio it already has.'
             : 'Bookmark this link: it is how you come back and change your pack later.'}{' '}
-          Audio files up to {MAX_CLIP_BYTES / KB} KB each (MP3, M4A, OGG, WAV or WebM); logo
+          Audio files up to {MAX_CLIP_BYTES / KB / KB} MB each (MP3, M4A, OGG, WAV or WebM); logo
           up to {MAX_LOGO_BYTES / KB / KB} MB (PNG, JPEG, WebP or GIF).
         </p>
 

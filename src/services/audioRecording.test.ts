@@ -129,7 +129,7 @@ describe('recordingRejection', () => {
   it('SPEC: a recording over the clip cap is rejected with a clear, actionable message', () => {
     const message = recordingRejection(MAX_CLIP_BYTES + 1)
     assert.ok(message, 'must not be silently accepted')
-    assert.match(message!, /KB/, 'names the limit')
+    assert.match(message!, /MB/, 'names the limit')
     assert.match(message!, /shorter|again/i, 'tells the creator what to do')
   })
 

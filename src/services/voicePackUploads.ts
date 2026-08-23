@@ -15,8 +15,20 @@
  * picture, and we serve logos from our own origin.
  */
 
-/** 1 MB. A 1–3 second voice line is comfortably under this even as WAV. */
-export const MAX_CLIP_BYTES = 1024 * 1024
+/**
+ * 5 MB per clip.
+ *
+ * A spoken line is a few hundred KB as MP3, so this is not sized for the audio —
+ * it is sized for what creators actually hand over: an uncompressed WAV straight
+ * out of a recorder, or a line with a few seconds of room tone on either end. The
+ * old 1 MB cap was arithmetically fine and rejected real files anyway.
+ *
+ * Note that a publish sends every staged clip in ONE request, so the ceiling on a
+ * whole submission is this times the number of slots. That is a deliberate
+ * upper bound rather than an expectation — hitting it means every one of eleven
+ * lines is a maxed-out WAV.
+ */
+export const MAX_CLIP_BYTES = 5 * 1024 * 1024
 /** 2 MB for the pack logo. */
 export const MAX_LOGO_BYTES = 2 * 1024 * 1024
 

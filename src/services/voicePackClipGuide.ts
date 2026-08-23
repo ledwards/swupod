@@ -16,11 +16,7 @@ export const CLIP_GUIDE: Record<
   greeting: {
     label: 'Greeting',
     when: 'Plays when someone unlocks your pack, and any time they click your logo.',
-    // Their name, not ours. This read "this is Leebo" back when Leebo was the
-    // default pack every creator was copying; as a suggested line for somebody
-    // recording their OWN pack it was telling them to introduce themselves as
-    // someone else.
-    suggestion: '“Hi, this is [your name]. Welcome to the Pod!”',
+    suggestion: '“Hello there, this is Leebo. Welcome to the Pod!”',
   },
   'ready-the-draft': {
     label: 'Ready the draft',

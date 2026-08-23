@@ -115,7 +115,7 @@ export function recordingRejection(byteLength: number): string | null {
     return 'No audio was captured — check that the right microphone is selected, then record again.'
   }
   if (byteLength > MAX_CLIP_BYTES) {
-    return `That take is over ${Math.round(MAX_CLIP_BYTES / 1024)} KB. Record a shorter one and try again.`
+    return `That take is over ${Math.round(MAX_CLIP_BYTES / 1024 / 1024)} MB. Record a shorter one and try again.`
   }
   return null
 }

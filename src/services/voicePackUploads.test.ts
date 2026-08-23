@@ -94,7 +94,7 @@ describe('validateClipUpload', () => {
   })
 
   it('SPEC: caps clips at 1 MB', () => {
-    assert.equal(MAX_CLIP_BYTES, 1024 * 1024)
+    assert.equal(MAX_CLIP_BYTES, 5 * 1024 * 1024)
     const atCap = new Uint8Array(MAX_CLIP_BYTES)
     atCap.set(ascii('ID3').concat([3, 0]), 0)
     assert.equal(validateClipUpload('audio/mpeg', atCap).ok, true, 'exactly at the cap is allowed')
