@@ -27,6 +27,9 @@
   font-family: 'Barlow', sans-serif;
   color: var(--pt-ink);
   min-height: 100vh;
+  /* Without this the 2.5rem + 4rem of padding lands OUTSIDE the 100vh, so the page
+     scrolled by exactly its own padding no matter how short the content was. */
+  box-sizing: border-box;
   padding: 2.5rem 1rem 4rem;
   display: flex;
   flex-direction: column;
@@ -300,7 +303,10 @@
 }
 
 .redeem-playlist {
-  flex: 0 1 340px;
+  /* Wide enough for two columns of rows. Eleven cues in one column overflowed the
+     viewport on a laptop, which put the last few calls below the fold on the one
+     screen where somebody actually wants to press all of them. */
+  flex: 0 1 560px;
   align-self: stretch;
   padding: 1.25rem;
   background: rgba(var(--pt-surface-base-rgb), 0.7);
@@ -327,8 +333,8 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.3rem;
 }
 
@@ -362,7 +368,10 @@
   color: var(--pt-ink);
 }
 
+/* min-width:0 on both this and .redeem-playlist-when: without it a flex/grid child
+   refuses to shrink below its content and the ellipsis never engages. */
 .redeem-playlist-text {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -378,6 +387,13 @@
   font-size: 0.76rem;
   line-height: 1.35;
   color: rgba(var(--pt-ink-rgb), 0.6);
+  /* One line, clipped: the full sentence is on the row's title attribute. Left to
+     wrap, the longest of these ran four lines in a half-width column and made the
+     two-column layout TALLER than the one-column one it replaced. */
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .redeem-playlist-row.is-playing {
@@ -409,5 +425,11 @@
     flex: 0 1 auto;
     width: 100%;
     max-width: 480px;
+  }
+
+  /* Stacked under the card there is no width to split, and a 230px column cannot
+     hold "Plays when a fresh pack reaches a player…" at any useful size. */
+  .redeem-playlist-rows {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

@@ -102,6 +102,9 @@ function VoicePackPlaylist({
                 className={`redeem-playlist-row${isPlaying ? ' is-playing' : ''}`}
                 onClick={() => onPlay(clip as VoicePackClipType)}
                 aria-label={`${isPlaying ? 'Stop' : 'Play'} ${guide.label}`}
+                // The description is clipped to one line in the two-column layout,
+                // so the full sentence lives here rather than being lost.
+                title={guide.when}
               >
                 <span className="redeem-playlist-glyph">
                   <PlayGlyph playing={isPlaying} />
