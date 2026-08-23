@@ -6,6 +6,7 @@
 
 - **Copy Link is back on the deck pages**, in the button row between Ready to Play and Stats. It copies the link to the deck you're actually looking at, so sharing a specific build lands people on that build.
 - **Copy Link is in the sticky bar too**, beside Play and Clone, so you can grab the link without scrolling back to the top.
+- **The sticky deck bar keeps up with the scroll.** It could stall mid-scroll and leave the bar's buttons behind; it now tracks the page directly and settles correctly whichever way you're scrolling.
 
 ## 08.23.2026
 
