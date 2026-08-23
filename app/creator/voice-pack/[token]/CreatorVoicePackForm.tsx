@@ -119,6 +119,8 @@ export default function CreatorVoicePackForm({ token, note, published }: Props) 
   // player is never hijacked or reset by hearing the default pack.
   const exampleAudioRef = useRef<HTMLAudioElement | null>(null)
   const [playingExample, setPlayingExample] = useState<VoicePackClipType | null>(null)
+  /** The clip currently being fetched from the default pack, if any. */
+  const [usingDefault, setUsingDefault] = useState<VoicePackClipType | null>(null)
 
   useEffect(() => {
     const urls = urlsRef.current
@@ -194,6 +196,38 @@ export default function CreatorVoicePackForm({ token, note, published }: Props) 
     setClips((prev) => ({ ...prev, [clip]: file }))
     setClipUrls((prev) => ({ ...prev, [clip]: trackUrl(file) }))
     saveClip(clip, file)
+  }
+
+  /**
+   * Take our own American English line for this cue as the creator's clip.
+   *
+   * It is the same audio the Example button plays, fetched and handed to
+   * `pickClip` as if the creator had chosen the file themselves — so it lands in
+   * page state, the preview player and the saved draft by exactly one path, and
+   * can be discarded like any other take.
+   *
+   * A pack is only publishable with every slot filled, and a creator who wants
+   * their voice on the calls but not on "Sound on" had no way through that
+   * without recording lines they did not care about.
+   */
+  async function useDefaultClip(clip: VoicePackClipType) {
+    if (usingDefault) return
+    setErrorMessage(null)
+    setUsingDefault(clip)
+    try {
+      // No pack id: the same default the Example button plays, so the button and
+      // the audio it hands over can never drift apart.
+      const response = await fetch(voicePackAssetUrl(clip))
+      if (!response.ok) throw new Error(String(response.status))
+      const blob = await response.blob()
+      pickClip(clip, new File([blob], `${clip}.mp3`, { type: blob.type || 'audio/mpeg' }))
+    } catch {
+      setErrorMessage(
+        `${CLIP_GUIDE[clip].label}: the default line could not be loaded. Record or upload one instead.`
+      )
+    } finally {
+      setUsingDefault(null)
+    }
   }
 
   function registerClipInput(clip: VoicePackClipType, el: HTMLInputElement | null) {
@@ -343,7 +377,7 @@ export default function CreatorVoicePackForm({ token, note, published }: Props) 
         <p className="creator-vp-copy">
           {published
             ? 'Everything you published is here. Change what you like and publish again — anyone who has already redeemed your code hears the new version straight away.'
-            : 'Record seven short lines and pick a redemption code. Players who enter your code unlock your voice for their drafts — when they host, everyone at their table hears you.'}
+            : `Record ${VOICE_PACK_CLIP_TYPES.length} short lines and pick a redemption code. Players who enter your code unlock your voice for their drafts — when they host, everyone at their table hears you.`}
         </p>
         <p className="creator-vp-fineprint">
           Record each line right here with your mic, or upload audio you already have —
@@ -465,6 +499,8 @@ export default function CreatorVoicePackForm({ token, note, published }: Props) 
               onPick={pickClip}
               onDiscard={discardClip}
               onToggleExample={toggleExample}
+              onUseDefault={useDefaultClip}
+              usingDefault={usingDefault === clip}
               registerInput={registerClipInput}
             />
           ))}

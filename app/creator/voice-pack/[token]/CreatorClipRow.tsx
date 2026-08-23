@@ -2,8 +2,9 @@
 
 /**
  * One cue row of the creator form: what the line is for, what to say, a way to
- * HEAR the default pack say it, the recorder, the file picker, the creator's own
- * playback and the control that throws that take away.
+ * HEAR the default pack say it, a way to TAKE that default as your own, the
+ * recorder, the file picker, the creator's own playback and the control that
+ * throws that take away.
  *
  * Presentational on purpose — every piece of state (which clip is playing, which
  * clips exist, the persisted draft) belongs to CreatorVoicePackForm, which is the
@@ -14,7 +15,7 @@
  * this pack ALREADY publishes (its own player, badged "Published"), or holding a new
  * local take that will replace it on publish (badged "New take", with the discard
  * control that falls back to the published audio). A published clip that reads as an
- * empty slot would make an editing creator re-record all seven lines.
+ * empty slot would make an editing creator re-record every line.
  *
  * Icons are the site's existing glyphs, copied verbatim rather than redrawn: the
  * play triangle (TimerButton/HostControls), the stop square (ClipRecorder) and the
@@ -70,6 +71,10 @@ interface Props {
   onPick: (clip: VoicePackClipType, file: File | null) => void
   onDiscard: (clip: VoicePackClipType) => void
   onToggleExample: (clip: VoicePackClipType) => void
+  /** Take the default pack's line for this cue as the creator's own clip. */
+  onUseDefault: (clip: VoicePackClipType) => void
+  /** Whether that default is being fetched right now. */
+  usingDefault: boolean
   /** Hands the file input up, so discarding can reset it (see the form). */
   registerInput: (clip: VoicePackClipType, el: HTMLInputElement | null) => void
 }
@@ -83,6 +88,8 @@ export default function CreatorClipRow({
   onPick,
   onDiscard,
   onToggleExample,
+  onUseDefault,
+  usingDefault,
   registerInput,
 }: Props) {
   const guide = CLIP_GUIDE[clip]
@@ -115,6 +122,21 @@ export default function CreatorClipRow({
         >
           {playingExample ? <StopIcon /> : <PlayIcon />}
           <span>{playingExample ? 'Stop' : 'Example'}</span>
+        </Button>
+        {/* Sits beside the example on purpose: it hands over the very audio the
+            example just played. A pack needs every slot filled to publish, and a
+            creator who cares about the draft calls but not about "Sound on"
+            otherwise had to record lines they did not want in their own voice. */}
+        <Button
+          variant="secondary"
+          size="xs"
+          textOnly
+          className="creator-vp-use-default"
+          onClick={() => onUseDefault(clip)}
+          disabled={usingDefault}
+          aria-label={`Use the default line for ${guide.label}`}
+        >
+          <span>{usingDefault ? 'Adding…' : 'Use default'}</span>
         </Button>
       </div>
       {showPublished && (

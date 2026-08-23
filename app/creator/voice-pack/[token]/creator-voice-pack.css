@@ -347,12 +347,25 @@
 
 /* Suggested line + the "Example" player for it. The example belongs beside the
    line it demonstrates, not in a controls bar somewhere below. */
+/* Suggested line, then the two things you can do with it: hear our version, or
+   take our version. The line itself takes the slack so the buttons stay put from
+   row to row rather than sliding around with the length of the sentence. */
 .creator-vp-clip-suggestion-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   margin-bottom: 0.5rem;
+}
+
+.creator-vp-clip-suggestion-row .creator-vp-clip-suggestion {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.creator-vp-example,
+.creator-vp-use-default {
+  flex: none;
 }
 
 .creator-vp-clip-suggestion {

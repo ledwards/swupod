@@ -1,7 +1,7 @@
 /**
  * Creator voice-pack draft — the pure half of "don't lose my work".
  *
- * A creator records five of seven lines, closes the tab, and comes back to the
+ * A creator records some of the lines, closes the tab, and comes back to the
  * same invite link (viewing never spends it — only a successful submit does).
  * They should find their work, not an empty form. This module owns the shapes
  * and the rules; `src/utils/voicePackDraftStorage.ts` owns the I/O and

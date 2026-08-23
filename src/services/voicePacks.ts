@@ -182,7 +182,7 @@ export function voicePackInviteAccess(
  * The cue slots that would STILL be empty after a submit — counting both what
  * this request uploads and what the pack already holds.
  *
- * A new pack must arrive with all seven (a half-filled pack plays silence at a
+ * A new pack must arrive with every slot filled (a half-filled pack plays silence at a
  * real table), but an edit only has to send the lines being replaced: a slot the
  * creator does not touch keeps its published audio.
  *
