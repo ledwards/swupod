@@ -17,6 +17,8 @@ export const VOICE_PACK_CLIPS = [
   'count-5',
   'time-is-up',
   'sound-on',
+  'timer-paused',
+  'timer-resumed',
 ] as const
 
 export type VoicePackClip = (typeof VOICE_PACK_CLIPS)[number]

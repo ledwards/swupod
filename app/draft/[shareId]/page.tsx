@@ -183,6 +183,20 @@ export default function DraftRoomPage({ params }: PageProps) {
     }
   }, [phaseKey, loading, draft, playCue])
 
+  // Pause/resume is a host action every seat should hear, so it rides the
+  // broadcast the same way phase changes do rather than firing for whoever
+  // clicked. First settled render adopts the state silently — arriving at an
+  // already-paused draft must not announce a pause that happened before you.
+  const isPaused = draft?.paused === true
+  const previousPausedRef = useRef<boolean | undefined>(undefined)
+  useEffect(() => {
+    if (loading || !draft) return
+    const previous = previousPausedRef.current
+    previousPausedRef.current = isPaused
+    if (previous === undefined || previous === isPaused) return
+    playCue(isPaused ? 'timer-paused' : 'timer-resumed')
+  }, [isPaused, loading, draft, playCue])
+
   // Detect when current user is kicked (was a player, now isn't, still in waiting)
   const wasPlayerRef = useRef(false)
   useEffect(() => {
@@ -824,8 +838,10 @@ export default function DraftRoomPage({ params }: PageProps) {
         isOpen={showRulesModal}
         onClose={() => setShowRulesModal(false)}
         title="Competitive Practice Rules"
+        variant="wide"
+        className="cpm-rules-modal"
       >
-        <Modal.Body>
+        <Modal.Body className="cpm-rules-modal-body">
           <CompetitivePracticeRules showTitle={false} />
         </Modal.Body>
         <Modal.Actions>

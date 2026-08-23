@@ -22,13 +22,13 @@ import Button from './Button'
  *   - isOpen: boolean - whether modal is visible
  *   - onClose: function - called when overlay clicked or escape pressed
  *   - title: string (optional) - modal title
- *   - variant: 'default' | 'danger' | 'image' - styling variant
+ *   - variant: 'default' | 'danger' | 'image' | 'wide' - styling variant
  *   - showCloseButton: boolean - show X button (default: false)
  *   - className: string - additional class for modal content
  *   - children: content to render inside modal
  */
 
-type ModalVariant = 'default' | 'danger' | 'image'
+type ModalVariant = 'default' | 'danger' | 'image' | 'wide'
 
 export interface ModalProps {
   isOpen: boolean

@@ -107,3 +107,57 @@
 .cpm-rules-collapsible .collapsible-section__content {
   padding-top: 12px;
 }
+
+/* ---- Rules in a modal ------------------------------------------------------
+   The full rules are long — draft rules, two timer tables, deck build, matches.
+   In a single narrow column they run off the top and bottom of the screen with
+   no way to reach the ends. Two columns plus a scrollable body keeps the whole
+   thing on screen at desktop sizes. */
+.cpm-rules-modal {
+  /* Never taller than the viewport, so the body can own the scrolling. */
+  max-height: min(90vh, 60rem);
+  display: flex;
+  flex-direction: column;
+}
+
+.cpm-rules-modal-body {
+  overflow-y: auto;
+  /* Scroll here rather than letting the dialog grow past the screen. */
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+@media (min-width: 900px) {
+  .cpm-rules-modal-body .cpm-rules {
+    column-count: 2;
+    column-gap: 2.5rem;
+  }
+
+  /* A section must not be split across the column break — a heading stranded
+     at the foot of one column with its table in the next is unreadable. */
+  .cpm-rules-modal-body .cpm-rules-section,
+  .cpm-rules-modal-body .cpm-rules-intro,
+  .cpm-rules-modal-body table {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .cpm-rules-modal-body .cpm-rules-intro {
+    column-span: all;
+  }
+}
+
+/* Phones: fill the screen and scroll, rather than a small box of long text. */
+@media (max-width: 768px) {
+  .cpm-rules-modal {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+
+  .cpm-rules-modal-body .cpm-rules {
+    column-count: 1;
+  }
+}

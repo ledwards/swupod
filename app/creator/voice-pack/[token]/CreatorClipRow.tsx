@@ -72,6 +72,16 @@ export const CLIP_GUIDE: Record<
     when: 'Plays when a player turns the draft calls on.',
     suggestion: '“Sound on.”',
   },
+  'timer-paused': {
+    label: 'Timer paused',
+    when: 'Plays for the table when the host pauses the clock.',
+    suggestion: '“Timer paused.”',
+  },
+  'timer-resumed': {
+    label: 'Timer resumed',
+    when: 'Plays for the table when the host restarts the clock.',
+    suggestion: '“Timer resumed.”',
+  },
 }
 
 const PlayIcon = () => (

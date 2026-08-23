@@ -597,3 +597,50 @@
 .start-state-note > * {
   margin: 0;
 }
+
+/* ---- Host control rows share one grid, so edges never move ----------------
+   Add Bot / Enable Observer / Randomize Seats / Shuffle Packs all change their
+   label with state ("Adding…", "Copy Observer Link", "Shuffling…"), and a flex
+   row sizes each button to its text — so every row had different left and
+   right edges, and they shifted as state changed.
+
+   Two equal columns of a fixed-width track fixes both: a button always fills
+   its cell, so the row's edges are set by the grid rather than by the words
+   inside it. The voice picker spans the same track, so it lines up too. */
+.controls-section .controls-row.secondary-controls,
+.controls-section .host-voice-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  max-width: 30rem;
+  margin-inline: auto;
+  justify-content: initial;
+}
+
+/* The picker is one control, not two — it spans both columns. */
+.controls-section .host-voice-row {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.controls-section .controls-row.secondary-controls > * {
+  width: 100%;
+}
+
+/* Buttons fill their cell and keep their label centred, whatever it says. */
+.controls-section .controls-row.secondary-controls .control-button {
+  width: 100%;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+/* The picker's own max-width would otherwise leave dead space in the cell. */
+.controls-section .host-voice-row .styled-select {
+  max-width: none;
+}
+
+@media (max-width: 520px) {
+  .controls-section .controls-row.secondary-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

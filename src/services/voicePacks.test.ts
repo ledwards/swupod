@@ -41,7 +41,7 @@ import { BUILT_IN_VOICE_PACKS } from '../utils/voicePackAssets'
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 
 describe('voice pack clip types', () => {
-  it('SPEC: is exactly the 8 cue slots, in cue order', () => {
+  it('SPEC: is exactly these cue slots, in cue order', () => {
     assert.deepEqual(VOICE_PACK_CLIP_TYPES as readonly string[], [
       'greeting',
       'ready-the-draft',
@@ -51,6 +51,8 @@ describe('voice pack clip types', () => {
       'count-5',
       'time-is-up',
       'sound-on',
+      'timer-paused',
+      'timer-resumed',
     ])
   })
 
@@ -58,10 +60,11 @@ describe('voice pack clip types', () => {
     // 080 created the constraint with seven ids and is already applied in
     // production, so it can never be edited — 082 replaces the constraint with
     // the full set. The current shape therefore lives in 082, not 080.
-    const sql = readFileSync(join(REPO_ROOT, 'migrations', '082_voice_pack_sound_on_clip.sql'), 'utf8')
+    // The newest migration that rewrites the constraint is the live shape.
+    const sql = readFileSync(join(REPO_ROOT, 'migrations', '083_voice_pack_timer_clips.sql'), 'utf8')
     const check = sql.slice(sql.indexOf('ADD CONSTRAINT voice_pack_assets_clip_type_check'))
     for (const clip of VOICE_PACK_CLIP_TYPES) {
-      assert.ok(check.includes(`'${clip}'`), `migration 082 CHECK is missing '${clip}'`)
+      assert.ok(check.includes(`'${clip}'`), `latest CHECK migration is missing '${clip}'`)
     }
     const quoted = check.match(/'[a-z0-9-]+'/g) ?? []
     assert.equal(quoted.length, VOICE_PACK_CLIP_TYPES.length)
@@ -222,27 +225,25 @@ describe('which cue slots a submit still has to fill', () => {
   })
 
   it('SPEC: a slot is missing only when neither the upload nor the pack has it', () => {
-    const published = ['greeting', 'ready-the-draft', 'start-the-draft', 'count-30', 'count-15', 'sound-on']
+    // everything published except 'time-is-up', which the upload also omits
+    const published = VOICE_PACK_CLIP_TYPES.filter(c => c !== 'time-is-up' && c !== 'count-5')
     assert.deepEqual(missingVoicePackClips(['count-5'], published), ['time-is-up'])
   })
 
   it('returns the missing slots in cue order, never duplicated', () => {
-    assert.deepEqual(missingVoicePackClips(['count-5', 'count-5'], ['greeting']), [
-      'ready-the-draft',
-      'start-the-draft',
-      'count-30',
-      'count-15',
-      'time-is-up',
-      'sound-on',
-    ])
+    assert.deepEqual(
+      missingVoicePackClips(['count-5', 'count-5'], ['greeting']),
+      VOICE_PACK_CLIP_TYPES.filter(c => c !== 'greeting' && c !== 'count-5')
+    )
   })
 
   it('ignores ids that are not cue slots', () => {
-    // slice(0, -2) publishes everything except the last two slots.
-    assert.deepEqual(missingVoicePackClips(['logo', 'count-10'], VOICE_PACK_CLIP_TYPES.slice(0, -2)), [
-      'time-is-up',
-      'sound-on',
-    ])
+    // Unknown ids contribute nothing, so the unpublished tail stays missing.
+    const published = VOICE_PACK_CLIP_TYPES.slice(0, -2)
+    assert.deepEqual(
+      missingVoicePackClips(['logo', 'count-10'], published),
+      VOICE_PACK_CLIP_TYPES.slice(-2)
+    )
   })
 })
 

@@ -153,6 +153,28 @@ function DraftLobby({
         </div>
 
         <div className="controls-section">
+          {isHost && (
+            <HostControls
+              draft={draft}
+              playerCount={players.length}
+              humanPlayerCount={players.filter(p => !p.isBot).length}
+              onStart={onStart}
+              onRandomize={onRandomize}
+              onRandomizePacks={onRandomizePacks}
+              onAddBot={onAddBot}
+              onSettingsChange={onSettingsChange}
+              startingDraft={startingDraft}
+              randomizing={randomizing}
+              randomizingPacks={randomizingPacks}
+              addingBot={addingBot}
+              isFull={isFull}
+              allHumansReady={allHumansReady}
+              shareId={shareId}
+              onSwitchToSolo={onSwitchToSolo}
+              isAdmin={isAdmin}
+            />
+          )}
+
           {isPlayer && (
             <div className="lobby-ready-panel">
               <div className="lobby-ready-row">
@@ -181,27 +203,6 @@ function DraftLobby({
             </div>
           )}
 
-          {isHost && (
-            <HostControls
-              draft={draft}
-              playerCount={players.length}
-              humanPlayerCount={players.filter(p => !p.isBot).length}
-              onStart={onStart}
-              onRandomize={onRandomize}
-              onRandomizePacks={onRandomizePacks}
-              onAddBot={onAddBot}
-              onSettingsChange={onSettingsChange}
-              startingDraft={startingDraft}
-              randomizing={randomizing}
-              randomizingPacks={randomizingPacks}
-              addingBot={addingBot}
-              isFull={isFull}
-              allHumansReady={allHumansReady}
-              shareId={shareId}
-              onSwitchToSolo={onSwitchToSolo}
-              isAdmin={isAdmin}
-            />
-          )}
 
           {draft?.competitive && (
             <div className="cpm-rules-panel">

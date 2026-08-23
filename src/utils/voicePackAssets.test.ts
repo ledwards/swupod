@@ -23,7 +23,7 @@ import {
 } from './voicePackAssets'
 
 describe('voice pack clip slots', () => {
-  it('SPEC: exactly the 8 named clips', () => {
+  it('SPEC: exactly these named clips, in cue order', () => {
     assert.deepStrictEqual([...VOICE_PACK_CLIPS], [
       'greeting',
       'ready-the-draft',
@@ -33,6 +33,8 @@ describe('voice pack clip slots', () => {
       'count-5',
       'time-is-up',
       'sound-on',
+      'timer-paused',
+      'timer-resumed',
     ])
   })
 
@@ -100,9 +102,9 @@ describe('isBuiltInVoicePack', () => {
 })
 
 describe('voicePackAssetUrls', () => {
-  it('returns all 8 clips in play order for preloading', () => {
+  it('returns every clip in play order for preloading', () => {
     const urls = voicePackAssetUrls('xyz')
-    assert.strictEqual(urls.length, 8)
+    assert.strictEqual(urls.length, VOICE_PACK_CLIPS.length)
     assert.deepStrictEqual(urls.map(u => u.clip), [...VOICE_PACK_CLIPS])
     assert.strictEqual(urls[0].url, '/api/voice-packs/xyz/asset/greeting')
   })
