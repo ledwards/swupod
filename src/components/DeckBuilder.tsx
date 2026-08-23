@@ -2599,6 +2599,7 @@ function DeckBuilder({
         isAuthenticated={isAuthenticated}
         signIn={signIn}
         shareId={shareId}
+        rootShareId={rootShareId}
         draftShareId={draftShareId}
         setErrorMessage={setErrorMessage}
         setMessageType={setMessageType}
