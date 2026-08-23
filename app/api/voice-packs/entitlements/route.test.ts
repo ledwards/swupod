@@ -6,14 +6,17 @@
 //   - Everyone else holds exactly the packs they redeemed a code for.
 //   - Anonymous callers get an empty list, never a 401 — the picker renders a
 //     locked state, it does not bounce the visitor to a login.
-//   - The built-in packs are never in this payload: the language packs are free and
-//     the client already ships them; which built-ins are patron-only is a rule
-//     (PATRON_ONLY_BUILT_IN_VOICE_PACK_IDS), not a row in this response.
+//   - The built-in packs (the languages) are never in this payload: the client
+//     already ships them and they need no unlock.
+//   - Leebo is NOT a built-in. He is the first creator pack (migration 086), so he
+//     appears here exactly like any other — with unlockedVia 'code' when redeemed
+//     and 'friend-of-the-pod' when the pledge is what opens it.
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import { NextRequest } from 'next/server'
 import { GET } from './route'
-import { canUseVoicePack, PATRON_ONLY_BUILT_IN_VOICE_PACK_IDS } from '@/src/services/voicePacks'
+import { canUseVoicePack } from '@/src/services/voicePacks'
+import { BUILT_IN_VOICE_PACKS } from '@/src/utils/voicePackAssets'
 
 function anonymous(): NextRequest {
   return new NextRequest('http://localhost/api/voice-packs/entitlements')
@@ -37,22 +40,21 @@ describe('GET /api/voice-packs/entitlements', () => {
   it('SPEC: no built-in pack is ever listed here', async () => {
     const body = await (await GET(anonymous())).json()
     const ids = (body.data.packs as { id: string }[]).map((p) => p.id)
-    for (const builtIn of PATRON_ONLY_BUILT_IN_VOICE_PACK_IDS) {
-      assert.equal(ids.includes(builtIn), false)
+    for (const pack of BUILT_IN_VOICE_PACKS) {
+      assert.equal(ids.includes(pack.id), false, `${pack.id} is free and must not be listed`)
     }
   })
 
   // Contract (DB-dependent), asserted on the shared rule where it is pure:
   it('documents the tiering the query implements', () => {
-    const CREATOR = 'ba5eba11-0000-4000-8000-000000000001'
     // A patron holds every active pack…
     assert.equal(
-      canUseVoicePack(CREATOR, { isBuiltIn: false, isPatron: true, hasEntitlement: false }),
+      canUseVoicePack({ isBuiltIn: false, isPatron: true, hasEntitlement: false }),
       true
     )
     // …everyone else holds only what they redeemed.
     assert.equal(
-      canUseVoicePack(CREATOR, { isBuiltIn: false, isPatron: false, hasEntitlement: false }),
+      canUseVoicePack({ isBuiltIn: false, isPatron: false, hasEntitlement: false }),
       false
     )
     // The query mirrors that with `WHERE vp.status = 'active' AND ($2 OR e.user_id
@@ -61,6 +63,7 @@ describe('GET /api/voice-packs/entitlements', () => {
     //
     // unlockedVia: 'code' when an entitlement row exists (permanent, survives a
     // lapsed pledge), otherwise 'friend-of-the-pod'.
-    assert.ok(true)
+    //
+    // Leebo is gathered by that same query — there is no second pass for him.
   })
 })

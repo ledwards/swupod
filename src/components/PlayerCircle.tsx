@@ -5,6 +5,7 @@ import { useState, useRef, useEffect, memo } from 'react'
 import { createPortal } from 'react-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { ASPECT_COLORS } from '../utils/aspectColors'
+import { splitDraftedLeaders } from '../services/leaderReveal'
 import PlayerSeat from './PlayerSeat'
 import './PlayerCircle.css'
 
@@ -58,6 +59,12 @@ export interface PlayerCircleProps {
   draft?: Draft
   hideEmptySeats?: boolean
   showLeaderInfo?: boolean | 'simple'
+  /**
+   * Show every player's active-leader choice, not just the viewer's own. Only
+   * the post-draft report may set this — mid-draft it hands the table a pick
+   * that has not been disclosed. See services/leaderReveal.ts.
+   */
+  revealChoices?: boolean
   passDirection?: 'left' | 'right' | null
   leaderRound?: number
   hostId?: string
@@ -69,7 +76,7 @@ export interface PlayerCircleProps {
  * Current user is always at the bottom (6 o'clock)
  * Other players arranged clockwise from bottom-left
  */
-function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = false, showLobbyReady = false, draft, hideEmptySeats = false, showLeaderInfo = false, passDirection = null, leaderRound = 1, hostId, onRemovePlayer }: PlayerCircleProps) {
+function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = false, showLobbyReady = false, draft, hideEmptySeats = false, showLeaderInfo = false, revealChoices = false, passDirection = null, leaderRound = 1, hostId, onRemovePlayer }: PlayerCircleProps) {
   const { isPatron } = useAuth()
   const [hoveredLeaderPreview, setHoveredLeaderPreview] = useState<Leader | null>(null)
   const previewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -219,26 +226,27 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
   }
 
   // Render simple leader info - for pack draft and report seating
-  const renderSimpleLeaderInfo = (player?: Player) => {
+  const renderSimpleLeaderInfo = (player?: Player, isCurrentUser?: boolean) => {
     if (!player) return null
 
     const draftedLeaders = player.draftedLeaders || []
     const displayName = player.username || `Player ${player.seatNumber}`
 
-    // Split into chosen leader (first match only) and unchosen pool
-    let chosenLeader: Leader | null = null
-    const unchosenLeaders: Leader[] = []
-    let foundActive = false
-    for (const leader of draftedLeaders) {
-      if (!foundActive && player.activeLeaderName && leader.name === player.activeLeaderName) {
-        chosenLeader = leader
-        foundActive = true
-      } else {
-        unchosenLeaders.push(leader)
-      }
-    }
+    // Which leader this player has locked in is theirs to disclose. Their own
+    // seat may show it, and the report shows everyone's because the pools are
+    // public by then; to anybody else mid-draft the leaders come back as one
+    // list and are drawn identically. Dimming two of three announced the pick
+    // just as loudly as labelling it.
+    const canSeeChoice = revealChoices === true || isCurrentUser === true
+    const { chosenLeader, otherLeaders: unchosenLeaders } = splitDraftedLeaders({
+      draftedLeaders,
+      activeLeaderName: player.activeLeaderName,
+      reveal: canSeeChoice,
+    })
+    // The base is the same class of secret, and it sits in the same block.
+    const chosenBase = canSeeChoice ? player.chosenBase : null
 
-    const hasChosenSection = chosenLeader || player.chosenBase
+    const hasChosenSection = chosenLeader || chosenBase
     const showDivider = hasChosenSection && unchosenLeaders.length > 0
 
     return (
@@ -259,24 +267,30 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
               {renderAspectIcons(chosenLeader.aspects)}
             </div>
           )}
-          {player.chosenBase && (
+          {chosenBase && (
             <div className="leader-info-item">
               <span
                 className="leader-name hoverable"
                 style={{
                   fontStyle: 'italic',
-                  color: player.chosenBase.aspects?.[0] ? (ASPECT_COLORS[player.chosenBase.aspects[0]] || 'white') : 'white',
+                  color: chosenBase.aspects?.[0] ? (ASPECT_COLORS[chosenBase.aspects[0]] || 'white') : 'white',
                 }}
-                onMouseEnter={() => handleLeaderMouseEnter(player.chosenBase as Leader)}
+                onMouseEnter={() => handleLeaderMouseEnter(chosenBase as Leader)}
                 onMouseLeave={handleLeaderMouseLeave}
               >
-                {player.chosenBase.name}
+                {chosenBase.name}
               </span>
-              {renderAspectIcons(player.chosenBase.aspects)}
+              {renderAspectIcons(chosenBase.aspects)}
             </div>
           )}
           {unchosenLeaders.map((leader, idx) => (
-            <div key={idx} className="leader-info-item" style={{ opacity: 0.5 }}>
+            <div
+              key={idx}
+              className="leader-info-item"
+              // Dim only when there is a highlighted choice to contrast against.
+              // With the choice hidden the whole list is drawn the same.
+              style={hasChosenSection ? { opacity: 0.5 } : undefined}
+            >
               <span
                 className="leader-name hoverable"
                 onMouseEnter={() => handleLeaderMouseEnter(leader)}
@@ -581,7 +595,7 @@ function PlayerCircle({ players, maxPlayers = 8, currentUserId, showStatus = fal
               }}
             >
               {showLeaderInfo === 'simple'
-                ? renderSimpleLeaderInfo(seat.player)
+                ? renderSimpleLeaderInfo(seat.player, seat.isCurrentUser)
                 : renderLeaderInfo(seat.player, seat.isCurrentUser)}
             </div>
           )

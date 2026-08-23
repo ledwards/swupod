@@ -7,9 +7,10 @@
  * visitor gets a Discord login button; signInWithDiscord already returns them to this
  * exact path afterwards, so the code they were about to type is one step away.
  *
- * On success the confirmation shows the creator's logo, and clicking the logo plays
- * that pack's `greeting` clip — the click is itself the user gesture browsers require
+ * On success the confirmation shows the pack's logo, and clicking the logo plays that
+ * pack's `greeting` clip — the click is itself the user gesture browsers require
  * before audio may play.
+
  *
  * Both states lead with the Protect the Pod badge (`/ptp_logo400.png` — the same
  * lockup the homepage and the lobby head with; the mark stacked over the logotype is
@@ -55,9 +56,13 @@ export default function RedeemPage() {
   }
 
   const [code, setCode] = useState('')
-  const [status, setStatus] = useState<'idle' | 'claiming' | 'done' | 'error'>('idle')
+  const [status, setStatus] = useState<'idle' | 'claiming' | 'done' | 'owned' | 'error'>('idle')
   const [pack, setPack] = useState<ClaimedPack | null>(null)
-  const [alreadyOwned, setAlreadyOwned] = useState(false)
+  // Re-entering a code you already hold is not a failure and not an unlock — it
+  // is a fact about your account. It stays on the entry form and says so in a
+  // notice, rather than replaying the whole "Unlocked!" reward for a pack that
+  // was unlocked some other day.
+  const [ownedPackName, setOwnedPackName] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [playing, setPlaying] = useState(false)
 
@@ -88,6 +93,7 @@ export default function RedeemPage() {
     const normalized = normalizeVoicePackCode(code)
     setStatus('claiming')
     setErrorMessage(null)
+    setOwnedPackName(null)
     try {
       const res = await fetch('/api/voice-packs/claim', {
         method: 'POST',
@@ -99,20 +105,18 @@ export default function RedeemPage() {
       if (!res.ok || !json?.success) {
         throw new Error(json?.message ?? 'That code is not valid.')
       }
-      setPack(json.data.pack as ClaimedPack)
-      setAlreadyOwned(json.data.alreadyOwned === true)
+      const claimed = json.data.pack as ClaimedPack
+      if (json.data.alreadyOwned === true) {
+        setOwnedPackName(claimed.displayName)
+        setStatus('owned')
+        return
+      }
+      setPack(claimed)
       setStatus('done')
     } catch (err) {
       setErrorMessage(err instanceof Error ? err.message : 'That code is not valid.')
       setStatus('error')
     }
-  }
-
-  function redeemAnother() {
-    setPack(null)
-    setCode('')
-    setAlreadyOwned(false)
-    setStatus('idle')
   }
 
   if (status === 'done' && pack) {
@@ -121,12 +125,8 @@ export default function RedeemPage() {
         <RedeemBrandHero />
         <div className="redeem-card redeem-card--done">
           <header className="redeem-header">
-            <span className="redeem-eyebrow">
-              {alreadyOwned ? 'Already in your collection' : 'Voice pack unlocked'}
-            </span>
-            <h1 className="redeem-title">
-              {alreadyOwned ? 'You already have this one' : 'Unlocked!'}
-            </h1>
+            <span className="redeem-eyebrow">Voice pack unlocked</span>
+            <h1 className="redeem-title">Unlocked!</h1>
           </header>
 
           <button
@@ -147,21 +147,24 @@ export default function RedeemPage() {
                 : 'Tap the logo to hear the greeting'}
           </p>
 
-          <p className="redeem-pack-name">{pack.displayName}</p>
-          {pack.creatorName && <p className="redeem-pack-creator">by {pack.creatorName}</p>}
+          <div className="redeem-pack-identity">
+            <p className="redeem-pack-name">{pack.displayName}</p>
+            {pack.creatorName && <p className="redeem-pack-creator">by {pack.creatorName}</p>}
+          </div>
 
+          {/* Reads on from the identity block above it — "Leebo, by Protect the Pod,
+              is added to your account!" — which is why the two sit tight together and
+              this line stands alone. The line below has to hold one line at the card's
+              width; it is worded to the space, so do not lengthen it casually. */}
+          <p className="redeem-added">is added to your account!</p>
           <p className="redeem-copy">
-            It is on your account for good. Pick it when you host a draft and everyone at
-            your table hears it.
+            Pick it when you host a draft and your whole table hears it.
           </p>
 
           <div className="redeem-actions">
-            <a className="btn btn--primary btn--md" href="/">
+            <a className="btn btn--primary btn--md" href="/draft">
               Host a draft
             </a>
-            <Button variant="secondary" onClick={redeemAnother}>
-              Redeem another code
-            </Button>
           </div>
         </div>
       </div>
@@ -203,7 +206,7 @@ export default function RedeemPage() {
                 spellCheck={false}
                 onChange={(e) => {
                   setCode(e.target.value)
-                  if (status === 'error') setStatus('idle')
+                  if (status === 'error' || status === 'owned') setStatus('idle')
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && code.trim()) handleRedeem()
@@ -222,6 +225,13 @@ export default function RedeemPage() {
               </Button>
             </div>
           </>
+        )}
+
+        {status === 'owned' && (
+          <div className="redeem-notice" role="status">
+            You already own {ownedPackName ?? 'this voice pack'}. Pick it when you host a
+            draft and your whole table hears it.
+          </div>
         )}
 
         {status === 'error' && errorMessage && (

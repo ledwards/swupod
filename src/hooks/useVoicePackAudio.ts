@@ -9,21 +9,30 @@
  *    so a cue that fires on a 5-second pick is not still buffering.
  * 2. THE AUTOPLAY UNLOCK. Browsers only allow programmatic `.play()` on an
  *    element that has already played during a user gesture. `prime()` is called
- *    from the lobby Ready click: it plays every clip muted and immediately
- *    pauses it, which spends the gesture on all seven at once. Everything after
- *    that (phase transitions, countdowns, expiry) is allowed to speak.
- *    Choosing a voice pack is a gesture too, so VoicePackPicker calls
- *    `prime(packId, { announce: 'greeting' })`: it unlocks the newly chosen
- *    pack AND plays that pack's greeting, so the host hears what they picked.
+ *    from the lobby Ready click: it spends that gesture on every clip at once,
+ *    silently, so everything after it (phase transitions, countdowns, expiry) is
+ *    allowed to speak. Choosing a voice pack is a gesture too, so
+ *    VoicePackPicker calls `prime(packId, { announce: 'greeting' })`: it unlocks
+ *    the newly chosen pack AND plays that pack's greeting.
  * 3. THE MUTE PREFERENCE. Persisted via useLocalStorage, and shared across
  *    every hook instance in the tab — the header toggle and the CountdownTimer
  *    are separate mounts and must not disagree.
  *
- * The pool and the mute state are module-level on purpose: a draft page mounts
- * this hook in several places and they all have to be the same speaker.
+ * WHAT IS NOT HERE ANY MORE: the one-clip-at-a-time rule. Overlapping cues ("it
+ * played a bunch of audio at once") were re-fixed three times in this file with
+ * successively cleverer prime/play interlocks, and came back each time. That
+ * rule now lives in services/voiceCueSpeaker.ts, where an element can only be
+ * heard if `speak()` unmuted it and `speak()` silences everything else first —
+ * so no ordering of `play()` promise resolutions can produce two voices. This
+ * hook does pack ids, preloading and the mute preference, and nothing else may
+ * unmute an element.
+ *
+ * The speaker and the mute state are module-level on purpose: a draft page
+ * mounts this hook in several places and they all have to be the same speaker.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import useLocalStorage from './common/useLocalStorage'
+import { createVoiceCueSpeaker } from '../services/voiceCueSpeaker'
 import {
   DEFAULT_VOICE_PACK_ID,
   VOICE_PACK_CLIPS,
@@ -39,9 +48,25 @@ const CUE_VOLUME = 0.9
 
 // --- module-level shared state (one speaker per tab) ---
 
-const audioPool = new Map<string, HTMLAudioElement>()
+/**
+ * The single speaker for the tab. Every element it hands out is muted at rest,
+ * and it is the only thing allowed to unmute one. See voiceCueSpeaker.ts for why
+ * that is a hard rule rather than a convention.
+ */
+const speaker = createVoiceCueSpeaker(url => {
+  if (typeof window === 'undefined' || typeof window.Audio === 'undefined') return null
+  const el = new window.Audio(url)
+  el.preload = 'auto'
+  el.volume = CUE_VOLUME
+  return el
+})
+
 const mutedSubscribers = new Set<(muted: boolean) => void>()
-/** True once a user gesture has primed the pool; new elements prime on creation. */
+/**
+ * True once a user gesture has unlocked audio. Elements created afterwards (the
+ * host switches to a pack whose clips have never been loaded) are primed on
+ * sight, since their own gesture has already been and gone.
+ */
 let hasPrimed = false
 
 function normalizedPackId(packId?: string | null): string {
@@ -53,106 +78,12 @@ function normalizedPackId(packId?: string | null): string {
   return trimmed === '' ? DEFAULT_VOICE_PACK_ID : trimmed
 }
 
-/**
- * Silence every pooled clip except `keep`.
- *
- * The draft speaks one line at a time — there is no arrangement of cues where
- * two clips should overlap. Enforcing that here makes "several clips at once"
- * impossible by construction, rather than relying on every prime/play path
- * staying correct forever. Priming races have already produced that symptom
- * twice; this is the backstop.
- */
-function silenceOthers(keep: HTMLAudioElement | null): void {
-  for (const el of audioPool.values()) {
-    if (el === keep) continue
-    if (el.paused || el.muted) continue
-    try {
-      el.pause()
-      el.currentTime = 0
-    } catch {
-      /* ignore */
-    }
-  }
-}
-
 function poolKey(packId: string, clip: VoicePackClip): string {
   return `${packId}::${clip}`
 }
 
-/**
- * Elements with a prime in flight. `ensureAudio` primes a newly created element
- * and `prime()` then primes the whole pack, so without this the same element is
- * primed twice: the first .then() pauses and unmutes it, the second sees an
- * unmuted element, assumes something else claimed it, and lets it keep
- * playing — audibly. Seven clips at once is what that sounds like.
- */
-const primingInFlight = new WeakSet<HTMLAudioElement>()
-
-/**
- * Play an element muted and immediately pause it — spends a user gesture on it.
- *
- * The pause lands one microtask later, which is a race when the same gesture also
- * wants a clip to be HEARD (the pack picker announcing a greeting): a newly created
- * element is primed on creation and then asked to speak. `muted` is the interlock —
- * an audible play clears it, so a prime whose promise resolves to an unmuted element
- * knows something else claimed it and leaves it alone.
- */
-function primeElement(el: HTMLAudioElement): void {
-  if (primingInFlight.has(el)) return
-  // Never silently restart something that is already speaking — the announce
-  // clip is playing on this very gesture.
-  if (!el.paused && !el.muted) return
-  primingInFlight.add(el)
-  try {
-    el.muted = true
-    const result = el.play()
-    if (result && typeof result.then === 'function') {
-      result
-        .then(() => {
-          primingInFlight.delete(el)
-          if (!el.muted) return
-          el.pause()
-          el.currentTime = 0
-          el.muted = false
-        })
-        .catch(() => {
-          primingInFlight.delete(el)
-          el.muted = false
-        })
-    } else {
-      primingInFlight.delete(el)
-      el.pause()
-      el.currentTime = 0
-      el.muted = false
-    }
-  } catch {
-    primingInFlight.delete(el)
-    el.muted = false
-  }
-}
-
-function hasAudio(packId: string, clip: VoicePackClip): boolean {
-  return audioPool.has(poolKey(packId, clip))
-}
-
-function ensureAudio(packId: string, clip: VoicePackClip): HTMLAudioElement | null {
-  if (typeof window === 'undefined' || typeof window.Audio === 'undefined') return null
-  const key = poolKey(packId, clip)
-  const existing = audioPool.get(key)
-  if (existing) return existing
-  try {
-    const el = new window.Audio(voicePackAssetUrl(clip, packId))
-    el.preload = 'auto'
-    el.volume = CUE_VOLUME
-    audioPool.set(key, el)
-    // The pack can change (host picks a creator pack) after the gesture was
-    // already spent. Best effort: prime the newcomer too; a rejection is
-    // swallowed exactly like every other play attempt.
-    if (hasPrimed) primeElement(el)
-    return el
-  } catch {
-    return null
-  }
+function ensureAudio(packId: string, clip: VoicePackClip) {
+  return speaker.ensure(poolKey(packId, clip), voicePackAssetUrl(clip, packId))
 }
 
 /** Options for `prime`. */
@@ -173,6 +104,12 @@ export interface VoicePackAudio {
    * the hook's own `packId` prop is still the previous selection.
    */
   playFrom: (packId: string | null | undefined, clip: VoicePackClip) => void
+  /**
+   * Play clips back to back, each starting when the one before it ends. Used for
+   * the calls that are really one sentence in two pieces ("next pick begins" →
+   * "thirty seconds remaining"). Still one voice at a time; a later `play` wins.
+   */
+  playSequence: (clips: readonly VoicePackClip[]) => void
   /**
    * Unlock audio for this client. MUST be called from a user gesture handler,
    * synchronously, before any `await`.
@@ -211,56 +148,40 @@ export function useVoicePackAudio(packId?: string | null): VoicePackAudio {
     }
   }, [])
 
-  // Preload the active pack.
+  // Preload the active pack. Once a gesture has been spent, a pack that arrives
+  // later (the host switches mid-draft) has missed it, so unlock its clips here.
   useEffect(() => {
-    for (const clip of VOICE_PACK_CLIPS) ensureAudio(activePackId, clip)
+    for (const clip of VOICE_PACK_CLIPS) {
+      const el = ensureAudio(activePackId, clip)
+      if (el && hasPrimed) speaker.prime(el)
+    }
   }, [activePackId])
 
   const playFrom = useCallback((packId: string | null | undefined, clip: VoicePackClip) => {
-    const id = normalizedPackId(packId)
-    const el = ensureAudio(id, clip)
+    const el = ensureAudio(normalizedPackId(packId), clip)
     if (!el) return
     // Muted still spends the gesture on the element: a player who unmutes later
     // should not need another click to hear anything.
     if (mutedRef.current) {
-      primeElement(el)
+      speaker.prime(el)
       return
     }
-    try {
-      // Nothing else may be speaking when this starts.
-      silenceOthers(el)
-      el.muted = false
-      el.currentTime = 0
-      const result = el.play()
-      // The established idiom: a blocked or interrupted play is never an error
-      // the player should see.
-      if (result && typeof result.catch === 'function') result.catch(() => {})
-    } catch {
-      /* ignore */
-    }
+    speaker.speak(el)
   }, [])
 
   const prime = useCallback((packId?: string | null, options?: PrimeOptions) => {
-    // `hasPrimed` is flipped AFTER the loop, on purpose. ensureAudio primes any
-    // element it creates once the pool has been primed before; setting the flag
-    // up front made it do that here too, so every freshly created element was
-    // primed twice — once by ensureAudio, once by us. The second prime resolves
-    // to an element the first already unmuted, assumes another caller claimed
-    // it, and leaves it playing. That is the "all seven clips at once" bug, and
-    // it fires exactly when a pack's elements do not exist yet: the first time
-    // you pick a given pack.
-    const wasPrimed = hasPrimed
     const id = packId === undefined ? activePackId : normalizedPackId(packId)
     for (const clip of VOICE_PACK_CLIPS) {
       if (options?.announce === clip) {
         playFrom(id, clip)
         continue
       }
-      const existed = hasAudio(id, clip)
       const el = ensureAudio(id, clip)
-      // Prime only what ensureAudio did not: elements that already existed, or
-      // everything when the pool had never been primed (ensureAudio skipped).
-      if (el && (existed || !wasPrimed)) primeElement(el)
+      // Priming an element twice is now simply silent, so this needs none of the
+      // "was it already there / had we primed before" bookkeeping that used to
+      // guard it — and that bookkeeping is exactly what kept getting the overlap
+      // bug wrong.
+      if (el) speaker.prime(el)
     }
     hasPrimed = true
   }, [activePackId, playFrom])
@@ -268,6 +189,19 @@ export function useVoicePackAudio(packId?: string | null): VoicePackAudio {
   const play = useCallback((clip: VoicePackClip) => {
     playFrom(activePackId, clip)
   }, [activePackId, playFrom])
+
+  const playSequence = useCallback((clips: readonly VoicePackClip[]) => {
+    const elements = clips
+      .map(clip => ensureAudio(activePackId, clip))
+      .filter((el): el is NonNullable<typeof el> => el !== null)
+    if (elements.length === 0) return
+    // Muted still spends the gesture, same as playFrom.
+    if (mutedRef.current) {
+      for (const el of elements) speaker.prime(el)
+      return
+    }
+    speaker.speakSequence(elements)
+  }, [activePackId])
 
   const setMuted = useCallback((next: boolean) => {
     // Update the ref synchronously. `mutedRef` is otherwise assigned during
@@ -284,7 +218,7 @@ export function useVoicePackAudio(packId?: string | null): VoicePackAudio {
     setMuted(!mutedRef.current)
   }, [setMuted])
 
-  return { play, playFrom, prime, muted, setMuted, toggleMuted }
+  return { play, playFrom, playSequence, prime, muted, setMuted, toggleMuted }
 }
 
 export default useVoicePackAudio

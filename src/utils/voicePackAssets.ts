@@ -19,14 +19,20 @@ export const VOICE_PACK_CLIPS = [
   'sound-on',
   'timer-paused',
   'timer-resumed',
+  'next-pick',
 ] as const
 
 export type VoicePackClip = (typeof VOICE_PACK_CLIPS)[number]
 
 /**
- * Packs that ship with the app. Every account has all of these — they need no
- * redemption code, unlike a creator's pack. Static files under `dir`, so they
- * cost no database round trip.
+ * Packs that ship with the app: the language packs, and nothing else. Every account
+ * has all of these — they need no redemption code, unlike a creator's pack. Static
+ * files under `dir`, so they cost no database round trip.
+ *
+ * Leebo is NOT here. He is a creator pack (the first one, by Protect the Pod), a row
+ * in voice_packs seeded by migration 086, redeemed with the code LEEBO and served
+ * from /api/voice-packs/[id]/asset/[clip] like anyone else's. "Built in" means free,
+ * with no exceptions to remember.
  */
 export interface BuiltInVoicePack {
   id: string
@@ -38,13 +44,6 @@ export interface BuiltInVoicePack {
 }
 
 export const BUILT_IN_VOICE_PACKS: readonly BuiltInVoicePack[] = [
-  {
-    id: 'leebo',
-    name: 'Leebo',
-    description: "Protect the Pod's AI Copilot",
-    dir: '/sounds/voice-packs/leebo',
-    icon: '/icons/voice-packs/leebo.png',
-  },
   {
     id: 'english',
     name: 'Zoe (English)',
@@ -82,14 +81,13 @@ export const BUILT_IN_VOICE_PACKS: readonly BuiltInVoicePack[] = [
   },
 ] as const
 
-/** The pack used when a pod has chosen nothing. */
-export const DEFAULT_VOICE_PACK_ID = 'leebo'
-
-/** Display name for the default pack. */
-export const DEFAULT_VOICE_PACK_NAME = 'Leebo'
-
-/** One-line description of the default pack. */
-export const DEFAULT_VOICE_PACK_DESCRIPTION = "Protect the Pod's AI Copilot"
+/**
+ * The pack used when a pod has chosen nothing.
+ *
+ * English, because the default has to be a pack EVERY viewer may use: a pod that has
+ * unlocked nothing still needs cues it is allowed to hear.
+ */
+export const DEFAULT_VOICE_PACK_ID = 'english'
 
 /**
  * The built-in pack for an id, or null if the id is not built in (i.e. it is a

@@ -1,0 +1,22 @@
+@import '../../src/styles/backgrounds.css';
+
+/**
+ * /admin page shell.
+ *
+ * The panels below carry their own card chrome; this file only supplies the page
+ * they sit on. `.page-background` (src/styles/backgrounds.css, imported above —
+ * nothing else on this route pulls it in, and without the import the class is
+ * inert and the page renders flat) paints the site's textured image, black wash
+ * and top/bottom fades, exactly as the homepage, /redeem and the creator page do.
+ *
+ * Nothing here may declare a background of its own or the page stops matching
+ * the rest of the site.
+ */
+.admin-page {
+  font-family: 'Barlow', sans-serif;
+  color: var(--pt-ink);
+  min-height: 100vh;
+  /* The panels own their vertical rhythm (`margin: 2rem auto`); this padding is
+     only so the first card does not touch the top fade. */
+  padding: 1.5rem 1rem 4rem;
+}

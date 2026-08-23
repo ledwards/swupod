@@ -16,9 +16,9 @@
 // app/api/promo/entitlements/route.ts), so the picker can render its locked state
 // without special-casing auth.
 //
-// The BUILT-IN packs are not in this payload at all — they ship with the app and the
-// client already knows them. Which of them are patron-only is a rule, not data:
-// PATRON_ONLY_BUILT_IN_VOICE_PACK_IDS in src/services/voicePacks.ts.
+// The BUILT-IN packs are not in this payload at all — the language packs ship with
+// the app, are free to everyone, and the client already knows them. Everything listed
+// here is a creator pack, Leebo included: he is the first one rather than a rule.
 //
 // Each pack carries the URLs the cue engine needs, so a consumer never string-builds
 // an asset path itself.

@@ -6,8 +6,9 @@
  *    files under public/sounds/voice-packs/<pack>/<clip>.mp3, and every
  *    account has all of them — no redemption needed."
  *
- * Creator packs (Phase 3) live in the database and are served from
- * /api/voice-packs/[id]/asset/[clip].
+ * The built-in set is now exactly the language packs. Creator packs (Phase 3) live
+ * in the database and are served from /api/voice-packs/[id]/asset/[clip] — Leebo
+ * among them, seeded by migration 086 as the first pack by Protect the Pod.
  */
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
@@ -35,6 +36,7 @@ describe('voice pack clip slots', () => {
       'sound-on',
       'timer-paused',
       'timer-resumed',
+      'next-pick',
     ])
   })
 
@@ -52,9 +54,9 @@ describe('voice pack clip slots', () => {
 
 describe('voicePackAssetUrl', () => {
   it('SPEC: a built-in pack is served statically from its own directory', () => {
-    assert.strictEqual(voicePackAssetUrl('greeting', null), '/sounds/voice-packs/leebo/greeting.mp3')
-    assert.strictEqual(voicePackAssetUrl('count-30', 'default'), '/sounds/voice-packs/leebo/count-30.mp3')
-    assert.strictEqual(voicePackAssetUrl('time-is-up'), '/sounds/voice-packs/leebo/time-is-up.mp3')
+    assert.strictEqual(voicePackAssetUrl('greeting', null), '/sounds/voice-packs/english/greeting.mp3')
+    assert.strictEqual(voicePackAssetUrl('count-30', 'default'), '/sounds/voice-packs/english/count-30.mp3')
+    assert.strictEqual(voicePackAssetUrl('time-is-up'), '/sounds/voice-packs/english/time-is-up.mp3')
     assert.strictEqual(voicePackAssetUrl('greeting', 'french'), '/sounds/voice-packs/french/greeting.mp3')
     assert.strictEqual(voicePackAssetUrl('time-is-up', 'italian'), '/sounds/voice-packs/italian/time-is-up.mp3')
   })
@@ -74,14 +76,15 @@ describe('voicePackAssetUrl', () => {
   })
 
   it('an undefined/blank pack id (broadcast field not populated yet) falls back to default', () => {
-    assert.strictEqual(voicePackAssetUrl('start-the-draft', undefined), '/sounds/voice-packs/leebo/start-the-draft.mp3')
-    assert.strictEqual(voicePackAssetUrl('start-the-draft', '   '), '/sounds/voice-packs/leebo/start-the-draft.mp3')
+    assert.strictEqual(voicePackAssetUrl('start-the-draft', undefined), '/sounds/voice-packs/english/start-the-draft.mp3')
+    assert.strictEqual(voicePackAssetUrl('start-the-draft', '   '), '/sounds/voice-packs/english/start-the-draft.mp3')
   })
 })
 
 describe('isBuiltInVoicePack', () => {
   it('SPEC: null, undefined, blank and "default" all mean the default pack', () => {
-    assert.strictEqual(DEFAULT_VOICE_PACK_ID, 'leebo')
+    // The default must be a pack EVERY viewer may use, so it is a language pack.
+    assert.strictEqual(DEFAULT_VOICE_PACK_ID, 'english')
     assert.strictEqual(isBuiltInVoicePack(null), true)
     assert.strictEqual(isBuiltInVoicePack(undefined), true)
     assert.strictEqual(isBuiltInVoicePack(''), true)
@@ -95,9 +98,19 @@ describe('isBuiltInVoicePack', () => {
     assert.strictEqual(isBuiltInVoicePack('abc123'), false)
   })
 
-  it('SPEC: the shipped set is Leebo plus the four language packs', () => {
+  it('SPEC: the shipped set is the five language packs, and nothing else', () => {
     assert.deepStrictEqual(BUILT_IN_VOICE_PACKS.map(p => p.id),
-      ['leebo', 'english', 'french', 'german', 'spanish', 'italian'])
+      ['english', 'french', 'german', 'spanish', 'italian'])
+  })
+
+  it('SPEC: Leebo is NOT built in — he is a creator pack served from the API', () => {
+    // He is a voice_packs row (migration 086). Treating him as built in would hand
+    // his audio to everyone for free and 404 on the uuid cast in the asset route.
+    assert.strictEqual(isBuiltInVoicePack('leebo'), false)
+    assert.strictEqual(
+      voicePackAssetUrl('greeting', 'leebo'),
+      '/api/voice-packs/leebo/asset/greeting'
+    )
   })
 })
 

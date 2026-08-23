@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { verifyToken } from '@/lib/auth'
 import AdminGrantPanel from '@/src/components/admin/AdminGrantPanel'
 import AdminVoicePackInvitePanel from '@/src/components/admin/AdminVoicePackInvitePanel'
+import './admin.css'
 
 export default async function AdminPage() {
   const cookieStore = await cookies()
@@ -16,9 +17,9 @@ export default async function AdminPage() {
   }
 
   return (
-    <>
+    <div className="admin-page page-background">
       <AdminGrantPanel />
       <AdminVoicePackInvitePanel />
-    </>
+    </div>
   )
 }

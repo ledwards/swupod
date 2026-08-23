@@ -69,7 +69,7 @@ export const PATREON_FEATURES: PatreonFeature[] = [
     id: 'every-voice-pack',
     title: 'Every Voice Pack',
     description:
-      'Leebo and every creator voice pack on the platform, without redeeming a single code — your draft calls, in whoever you like. Everyone gets the language packs; the rest are yours.',
+      'Every creator voice pack on the platform, Leebo included, without redeeming a single code — your draft calls, in whoever you like. Everyone gets the language packs; the rest are yours.',
   },
   {
     id: 'avatar-flair',

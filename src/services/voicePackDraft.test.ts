@@ -185,21 +185,26 @@ describe('restoredDraftNotice', () => {
     )
   })
 
+  // The total is the number of clip slots, so it is read from the list rather
+  // than typed in — adding a cue used to fail these three on the count alone,
+  // which said nothing about whether the sentence was right.
+  const TOTAL = VOICE_PACK_CLIP_TYPES.length
+
   it('SPEC: recordings only, singular and plural', () => {
     assert.strictEqual(
       restoredDraftNotice(1, false),
-      'Picked up where you left off — 1 of 10 recordings was restored from this browser.'
+      `Picked up where you left off — 1 of ${TOTAL} recordings was restored from this browser.`
     )
     assert.strictEqual(
       restoredDraftNotice(5, false),
-      'Picked up where you left off — 5 of 10 recordings were restored from this browser.'
+      `Picked up where you left off — 5 of ${TOTAL} recordings were restored from this browser.`
     )
   })
 
   it('SPEC: both', () => {
     assert.strictEqual(
-      restoredDraftNotice(10, true),
-      'Picked up where you left off — your pack details and 10 of 10 recordings were restored from this browser.'
+      restoredDraftNotice(TOTAL, true),
+      `Picked up where you left off — your pack details and ${TOTAL} of ${TOTAL} recordings were restored from this browser.`
     )
   })
 })

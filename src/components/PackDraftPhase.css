@@ -688,6 +688,17 @@
   gap: 8px;
 }
 
+/* Reserved whether or not the density toggle is rendered — the toggle only
+   applies to the grouped views, and letting it come and go moved the group-by
+   buttons under the cursor every time the view changed. 64px is the toggle's own
+   width: 2 × 26px buttons + 4px gap + 2 × 3px padding + 2 × 1px border. */
+.review-density-slot {
+  display: flex;
+  justify-content: flex-end;
+  flex: none;
+  min-width: 64px;
+}
+
 /* Graphical group-by buttons (cost badge, mirrors DeckBuilder SortControls) */
 .review-sort-cost {
   position: relative;
@@ -777,12 +788,25 @@
 
 /* Aspect grouping can produce many groups — wrap at ~6 per row instead of one
    long horizontally-scrolling row. (Cost stays single-row: few, ordered cols.) */
+/* A card is the same size here as in every other review view. These columns used
+   to be `flex: 1 1 <a sixth>`, so a draft with three aspect groups gave each
+   column a third of the row and the cards came out enormous — the size changed
+   with how many aspects you happened to draft. The column is now exactly a card
+   plus its padding, and the row simply fits as many as it can. */
 .review-columns--aspect {
   flex-wrap: wrap;
+  justify-content: center;
+  --review-aspect-col-w: 148px;
+}
+.review-columns--aspect[data-density="small"] {
+  --review-aspect-col-w: 112px;
 }
 .review-columns--aspect .review-column {
-  flex: 1 1 calc((100% - 5 * 8px) / 6);
-  min-width: 110px;
+  /* 0.5rem padding each side, so the card inside is 132px / 96px — the same
+     widths .review-packs uses. */
+  flex: 0 0 auto;
+  width: var(--review-aspect-col-w);
+  min-width: var(--review-aspect-col-w);
 }
 .review-col-header {
   display: flex;
@@ -891,5 +915,8 @@
 @media (max-width: 768px) {
   .review-period { min-height: 0; padding: 8px; }
   .review-column { min-width: 64px; padding: 0.3rem; }
+  /* Same idea on a phone, just a card-width that fits one. */
+  .review-columns--aspect { --review-aspect-col-w: 100px; }
+  .review-columns--aspect[data-density="small"] { --review-aspect-col-w: 84px; }
   .review-col-header { min-height: 30px; }
 }

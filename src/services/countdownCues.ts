@@ -6,9 +6,15 @@
  *
  * 1. DURATION-AWARE. Competitive pods run the Appendix C schedule
  *    (`src/services/matchmaking/timers.ts`), where a pick can be 30s, 15s, 10s
- *    or 5s. Announcing "thirty seconds" the instant a 30-second pick starts is
- *    nonsense, so a threshold only speaks when it lands at least
- *    `MIN_LEAD_SECONDS` after the start of the period.
+ *    or 5s. A mark cannot be *crossed* on a period no longer than itself — the
+ *    clock never passes 30 on a 30-second pick — so such a mark is announced at
+ *    the START of the period instead, paired with the next-pick call: "next pick
+ *    begins", then "thirty seconds remaining". `openingCountdownThreshold` picks
+ *    that mark; `crossedCountdownThresholds` handles the rest.
+ *
+ *    Between them no mark is silently dropped: a threshold either sits far
+ *    enough inside the period to be crossed (`<= total - MIN_LEAD_SECONDS`) or
+ *    it is the period's own length and opens it.
  * 2. ONCE PER PERIOD. Every client ticks the same timer; a threshold must fire
  *    exactly once per `pick_started_at`. The caller passes what has already
  *    fired and resets that set when the period changes.
@@ -21,8 +27,10 @@ export const COUNTDOWN_THRESHOLDS = [30, 15, 5] as const
 export type CountdownThreshold = (typeof COUNTDOWN_THRESHOLDS)[number]
 
 /**
- * A threshold must sit at least this far below the total to be worth saying.
- * "30 seconds" on a 30- or 31-second pick is noise, not information.
+ * A threshold must sit at least this far below the total to be worth CROSSING.
+ * Announcing "30 seconds" one second into a 31-second pick is not a countdown, it
+ * is an echo of the length — so a mark this close to the top opens the period
+ * instead (see `openingCountdownThreshold`).
  */
 export const MIN_LEAD_SECONDS = 2
 
@@ -55,6 +63,27 @@ export function isThresholdAudible(threshold: number, totalSeconds: number): boo
 /** Thresholds that will ever speak during a period of this length. */
 export function audibleThresholds(totalSeconds: number): CountdownThreshold[] {
   return COUNTDOWN_THRESHOLDS.filter(t => isThresholdAudible(t, totalSeconds))
+}
+
+/**
+ * The mark that announces a period's LENGTH rather than being counted down to.
+ *
+ * This is the mark sitting in the top `MIN_LEAD_SECONDS` of the period — the one
+ * the clock can never be seen to cross, because it is at or above where the clock
+ * starts. A 30-second pick opens with "thirty seconds remaining"; a 15-second
+ * leader pick opens with "fifteen". A 10-second pick has no such mark (5 is far
+ * enough inside to be crossed normally) and simply opens with the next-pick call.
+ *
+ * @param totalSeconds - Total length of the timer period
+ * @returns The threshold to announce at the start, or null
+ */
+export function openingCountdownThreshold(totalSeconds: number): CountdownThreshold | null {
+  if (!Number.isFinite(totalSeconds) || totalSeconds <= 0) return null
+  return (
+    COUNTDOWN_THRESHOLDS.find(
+      threshold => threshold <= totalSeconds && threshold > totalSeconds - MIN_LEAD_SECONDS
+    ) ?? null
+  )
 }
 
 export interface CountdownCrossingInput {

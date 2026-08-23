@@ -152,23 +152,10 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
   // something to choose, even before anyone unlocks a creator pack.
   if (!isHost) return null
 
-  // Leebo is a Friends of the Pod pack, so a non-patron's fallback has to be a
-  // language pack — English, the closest match to how this behaved before.
-  const defaultId = isPatron ? DEFAULT_VOICE_PACK_ID : 'english'
-
-  // Leebo heads the list; everything after him is a language pack.
-  const leebo = BUILT_IN_VOICE_PACKS.find(p => p.id === DEFAULT_VOICE_PACK_ID)
-  const languagePacks = BUILT_IN_VOICE_PACKS.filter(p => p.id !== DEFAULT_VOICE_PACK_ID)
-
-  // Order the user asked for: Leebo alone at the top with no header, then
-  // anything they have unlocked under "Special", then the language packs.
+  // Order: everything the viewer has unlocked under "Special" — Leebo included, who
+  // is simply the first creator pack — then the free language packs under "Default".
+  // Nothing here special-cases a pack id.
   const options: StyledSelectOption[] = [
-    ...(leebo && isPatron ? [{
-      value: leebo.id,
-      label: leebo.name,
-      description: leebo.description,
-      iconUrl: leebo.icon,
-    }] : []),
     ...packs.map((pack, i): StyledSelectOption => ({
       value: pack.id,
       label: pack.displayName,
@@ -176,7 +163,7 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
       ...(pack.logoUrl ? { iconUrl: pack.logoUrl } : {}),
       ...(i === 0 ? { groupLabel: 'Special' } : {}),
     })),
-    ...languagePacks.map((pack, i): StyledSelectOption => ({
+    ...BUILT_IN_VOICE_PACKS.map((pack, i): StyledSelectOption => ({
       value: pack.id,
       label: pack.name,
       description: pack.description,
@@ -189,7 +176,7 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
     <div className={`voice-pack-picker${compact ? ' voice-pack-picker--compact' : ''}`}>
       <StyledSelect
         options={options}
-        value={selected ?? defaultId}
+        value={selected ?? DEFAULT_VOICE_PACK_ID}
         onChange={choose}
         disabled={saving}
         ariaLabel="Voice pack for this draft"
@@ -203,8 +190,8 @@ export default function VoicePackPicker({ shareId, isHost, value, onChange, comp
             >
               <span className="voice-pack-upsell-title">Unlock every voice</span>
               <span className="voice-pack-upsell-copy">
-                Friends of the Pod get Leebo and every creator&apos;s voice pack — or
-                redeem a creator&apos;s code to add just theirs.
+                Friends of the Pod get every creator&apos;s voice pack without a code
+                — or redeem a creator&apos;s code to add just theirs.
               </span>
             </a>
           ),

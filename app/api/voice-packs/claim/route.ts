@@ -1,6 +1,10 @@
 // POST /api/voice-packs/claim — redeem a creator code, unlocking that voice pack on
 // the caller's account forever.
 //
+// EVERY code names a voice_packs row — Leebo's included. He is the first creator
+// pack (by Protect the Pod, seeded by migration 086, code LEEBO), not a special case,
+// so there is exactly one lookup and one grant path here.
+//
 // Shape follows app/api/promo/claim/route.ts exactly: rate limit → requireAuth →
 // validate → idempotent `INSERT ... ON CONFLICT DO NOTHING RETURNING id`, so
 // re-entering a code you already own is a harmless no-op and the response still

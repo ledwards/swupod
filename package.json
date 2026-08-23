@@ -15,6 +15,7 @@
     "start": "NODE_ENV=production npx tsx server.ts",
     "lint": "eslint .",
     "fetch-cards": "npx tsx scripts/fetchCards.ts",
+    "voice:generate": "npx tsx scripts/generate-voice-clips.ts",
     "show-fixes": "npx tsx scripts/showFixes.ts",
     "migrate": "npx tsx scripts/migrate.ts dev",
     "migrate:dev": "npx tsx scripts/migrate.ts dev",

@@ -251,9 +251,9 @@ function TimerPanel({ draft, players = [], compact = false, isHost = false, onTo
               )}
             </>
           )}
-          {/* `cuesEnabled` = cues && competitive. Voice is a Competitive
-              Practice feature, and only the top of PackDraftPhase's two panels
-              passes `cues`, so this yields exactly one button. */}
+          {/* `cuesEnabled` is just `cues` — voice runs in every draft now, not
+              only Competitive Practice. Only the top of PackDraftPhase's two
+              panels passes `cues`, so this still yields exactly one button. */}
           {cuesEnabled && <VoiceCueMuteButton packId={cuePackId} />}
         </div>
       </div>

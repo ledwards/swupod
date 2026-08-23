@@ -82,6 +82,11 @@ export const CLIP_GUIDE: Record<
     when: 'Plays for the table when the host restarts the clock.',
     suggestion: '“Timer resumed.”',
   },
+  'next-pick': {
+    label: 'Next pick',
+    when: 'Plays when a fresh pack reaches a player and the pick clock restarts.',
+    suggestion: '“Next pick begins.”',
+  },
 }
 
 const PlayIcon = () => (

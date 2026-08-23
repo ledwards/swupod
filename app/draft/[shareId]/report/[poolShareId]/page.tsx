@@ -463,6 +463,9 @@ export default function DraftReportPage({ params }: PageProps) {
               maxPlayers={draft.maxPlayers}
               currentUserId={user?.id}
               showLeaderInfo="simple"
+              // The draft is over and every pool on this page is already public,
+              // so the active-leader highlight is safe here and nowhere else.
+              revealChoices
             />
           </div>
         )}

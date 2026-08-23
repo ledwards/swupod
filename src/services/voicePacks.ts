@@ -10,9 +10,13 @@
  */
 
 /**
- * The 7 cue slots a voice pack fills. These exact strings are the ids the cue
- * engine plays, the `clip_type` values migration 080 allows, and the last path
- * segment of /api/voice-packs/[id]/asset/[clip].
+ * The cue slots a voice pack fills. These exact strings are the ids the cue
+ * engine plays, the `clip_type` values the CHECK constraint allows, and the
+ * last path segment of /api/voice-packs/[id]/asset/[clip].
+ *
+ * Adding one means a migration that replaces the constraint (see 087), an entry
+ * in CLIP_GUIDE so creators know what to record, and audio in every built-in
+ * pack — `npm run voice:generate` does that last part.
  */
 export const VOICE_PACK_CLIP_TYPES = [
   'greeting',
@@ -25,6 +29,7 @@ export const VOICE_PACK_CLIP_TYPES = [
   'sound-on',
   'timer-paused',
   'timer-resumed',
+  'next-pick',
 ] as const
 
 export type VoicePackClipType = (typeof VOICE_PACK_CLIP_TYPES)[number]
@@ -175,53 +180,23 @@ export function missingVoicePackClips(
 /**
  * WHO MAY USE WHICH PACK.
  *
- * Three tiers, and the middle one is the whole point:
+ * Two tiers, and that is the whole of it:
  *
  *   - The language packs (English, Français, Deutsch, Español, Italiano) ship with
  *     the app and are free to everyone. They are how a table that has unlocked
  *     nothing still hears its cues in its own language.
- *   - Leebo is a Friend of the Pod pack. It ships in the same folder as the
- *     language packs, so "built in" alone can no longer mean "free" — this list is
- *     what separates them.
- *   - Creator packs are unlocked one at a time with a code… unless the viewer is a
- *     Friend of the Pod, who gets every pack on the platform without redeeming
+ *   - Creator packs — Leebo included, who is simply the first of them, published by
+ *     Protect the Pod — are unlocked one at a time with a code… unless the viewer is
+ *     a Friend of the Pod, who gets every pack on the platform without redeeming
  *     anything.
+ *
+ * There is no third tier and no special-cased pack id. A pack either ships with the
+ * app or is a row in voice_packs; nothing in between.
  *
  * `is_patron` MUST be read from the users table at the moment of the check, never
  * from the JWT — the claim is not in the token and would be stale if it were (same
  * rule as app/api/promo/claim/route.ts).
  */
-export const PATRON_ONLY_BUILT_IN_VOICE_PACK_IDS = ['leebo'] as const
-
-/**
- * Whether a built-in pack id is one of the Friends-of-the-Pod built-ins.
- * A creator pack id (a UUID) is never one of these.
- *
- * @param packId - Pack id from pod settings or a request
- */
-export function isPatronOnlyBuiltInVoicePack(packId: unknown): boolean {
-  return (
-    typeof packId === 'string' &&
-    (PATRON_ONLY_BUILT_IN_VOICE_PACK_IDS as readonly string[]).includes(packId.trim())
-  )
-}
-
-/** The default for a viewer who is not a Friend of the Pod. */
-export const FREE_DEFAULT_VOICE_PACK_ID = 'english'
-
-/**
- * The pack a viewer falls back to when nothing has been chosen.
- *
- * Leebo used to be the universal default, which stops being true the moment Leebo
- * becomes a patron pack: a non-patron's default has to be something they are
- * actually allowed to hear. Expressed as "the best pack this viewer may use" rather
- * than as two unrelated constants, so there is one rule to change if the tiers move.
- *
- * @param isPatron - Friend of the Pod (or admin), read from the database
- */
-export function defaultVoicePackIdForViewer(isPatron: boolean): string {
-  return isPatron ? PATRON_ONLY_BUILT_IN_VOICE_PACK_IDS[0] : FREE_DEFAULT_VOICE_PACK_ID
-}
 
 export interface VoicePackAccess {
   /** Whether the id is a pack that ships with the app (see isBuiltInVoicePack). */
@@ -235,15 +210,17 @@ export interface VoicePackAccess {
 /**
  * Whether a viewer may select or play a pack.
  *
- * Takes the three facts as arguments rather than looking them up, so this stays a
- * pure rule that the pod-selection route and any future surface can share instead
- * of each re-deriving the tiers.
+ * Takes the facts as an argument rather than looking them up, so this stays a pure
+ * rule that the pod-selection route and any future surface can share instead of each
+ * re-deriving the tiers. It no longer takes the pack id: the tiers turn on what is
+ * TRUE of the pack, never on which pack it is.
  *
- * @param packId - Pack id being selected
- * @param access - What is true about the id and the viewer
+ * A built-in is allowed outright; a creator pack is "Friend of the Pod OR redeemed".
+ *
+ * @param access - What is true about the pack and the viewer
  */
-export function canUseVoicePack(packId: unknown, access: VoicePackAccess): boolean {
-  if (access.isBuiltIn && !isPatronOnlyBuiltInVoicePack(packId)) return true
+export function canUseVoicePack(access: VoicePackAccess): boolean {
+  if (access.isBuiltIn) return true
   return access.isPatron || access.hasEntitlement
 }
 

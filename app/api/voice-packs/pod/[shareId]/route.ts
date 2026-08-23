@@ -13,9 +13,10 @@
 // Two server-side gates on the write, both required:
 //   1. the caller must be pods.host_id, and
 //   2. the caller must be allowed the pack — see canUseVoicePack in
-//      src/services/voicePacks.ts. The three tiers: the language packs are free to
-//      everyone; Leebo is a Friend of the Pod pack; a creator pack needs either a
-//      redeemed entitlement or Friend of the Pod (who holds the whole platform).
+//      src/services/voicePacks.ts. Two tiers: the language packs are free to
+//      everyone; a creator pack (Leebo included — he is the first one, not a special
+//      case) needs either a redeemed entitlement or Friend of the Pod, who holds the
+//      whole platform.
 // The host's unlock is what covers the table, so it must be the host's own unlock —
 // a player cannot set a pack, and a host cannot set one they do not hold.
 import { NextRequest } from 'next/server'
@@ -24,11 +25,7 @@ import { query, queryRow } from '@/lib/db'
 import { jsonResponse, errorResponse, parseBody, handleApiError } from '@/lib/utils'
 import { isBuiltInVoicePack } from '@/src/utils/voicePackAssets'
 import { broadcastDraftState } from '@/src/lib/socketBroadcast'
-import {
-  voicePackLogoUrl,
-  canUseVoicePack,
-  isPatronOnlyBuiltInVoicePack,
-} from '@/src/services/voicePacks'
+import { voicePackLogoUrl, canUseVoicePack } from '@/src/services/voicePacks'
 
 interface RouteContext {
   params: Promise<{ shareId: string }>
@@ -55,7 +52,7 @@ export async function GET(request: NextRequest, { params }: RouteContext): Promi
       return jsonResponse({ voicePackId: null, pack: null, isHost: session?.id === pod['host_id'] })
     }
 
-    // Built-in packs are not database rows — their ids are slugs like 'leebo',
+    // Built-in packs are not database rows — their ids are slugs like 'english',
     // and passing one to a uuid column throws 22P02. The client already knows
     // every built-in, so hand the id straight back.
     if (isBuiltInVoicePack(voicePackId)) {
@@ -105,7 +102,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext): Promi
     const raw = body.voicePackId
     const clearing = raw === null || raw === '' || raw === undefined
     // Two shapes are legal: a creator pack (UUID, must be unlocked) and a
-    // built-in pack (a known slug like 'leebo' that ships with the app and
+    // built-in pack (a known slug like 'english' that ships with the app and
     // needs no entitlement).
     const builtIn = !clearing && typeof raw === 'string' && isBuiltInVoicePack(raw)
     if (!clearing && !builtIn && (typeof raw !== 'string' || !UUID_RE.test(raw))) {
@@ -127,40 +124,30 @@ export async function PUT(request: NextRequest, { params }: RouteContext): Promi
         [pod['id']]
       )
     } else {
-      const patronOnlyBuiltIn = isPatronOnlyBuiltInVoicePack(raw)
-      const freeBuiltIn = builtIn && !patronOnlyBuiltIn
-
-      if (!freeBuiltIn) {
-        // Everything except a language pack needs the viewer checked. `is_patron`
-        // comes from the users table, never the JWT (which does not carry it).
+      if (!builtIn) {
+        // A creator pack needs the viewer checked. `is_patron` comes from the users
+        // table, never the JWT (which does not carry it).
         const viewer = await queryRow('SELECT is_patron, is_admin FROM users WHERE id = $1', [
           session.id,
         ])
         const isPatron = viewer?.['is_patron'] === true || viewer?.['is_admin'] === true
 
-        // A built-in has no entitlement row to hold — Leebo is patron or nothing.
-        const hasEntitlement = builtIn
-          ? false
-          : (await queryRow(
-              `SELECT vp.id FROM voice_pack_entitlements e
-                 JOIN voice_packs vp ON vp.id = e.pack_id
-                WHERE e.user_id = $1 AND e.pack_id = $2 AND vp.status = 'active'`,
-              [session.id, raw]
-            )) !== null
+        const hasEntitlement =
+          (await queryRow(
+            `SELECT vp.id FROM voice_pack_entitlements e
+               JOIN voice_packs vp ON vp.id = e.pack_id
+              WHERE e.user_id = $1 AND e.pack_id = $2 AND vp.status = 'active'`,
+            [session.id, raw]
+          )) !== null
 
-        if (!canUseVoicePack(raw, { isBuiltIn: builtIn, isPatron, hasEntitlement })) {
-          return errorResponse(
-            patronOnlyBuiltIn
-              ? 'That voice pack is for Friends of the Pod'
-              : 'You have not unlocked that voice pack',
-            403
-          )
+        if (!canUseVoicePack({ isBuiltIn: false, isPatron, hasEntitlement })) {
+          return errorResponse('You have not unlocked that voice pack', 403)
         }
 
         // A patron passes the tier check without an entitlement, so the pack's own
         // existence still has to be confirmed — canUseVoicePack cannot know whether
         // a UUID names a live pack.
-        if (!builtIn && !hasEntitlement) {
+        if (!hasEntitlement) {
           const active = await queryRow(
             `SELECT id FROM voice_packs WHERE id = $1 AND status = 'active'`,
             [raw]

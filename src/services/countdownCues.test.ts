@@ -19,6 +19,7 @@ import {
   crossedCountdownCues,
   crossedCountdownThresholds,
   isThresholdAudible,
+  openingCountdownThreshold,
 } from './countdownCues'
 
 describe('countdown cue thresholds', () => {
@@ -191,5 +192,60 @@ describe('crossedCountdownCues', () => {
       crossedCountdownCues({ previousSeconds: 16, currentSeconds: 15, totalSeconds: 30 }),
       ['count-15']
     )
+  })
+})
+
+describe('openingCountdownThreshold', () => {
+  it('SPEC: a mark equal to the period length opens the period', () => {
+    // The old rule dropped these on the floor: the clock starts AT 30, so it can
+    // never be watched crossing 30, and "thirty seconds" was simply never said on
+    // a 30-second pick. It is now announced up front instead.
+    assert.equal(openingCountdownThreshold(30), 30)
+    assert.equal(openingCountdownThreshold(15), 15)
+    assert.equal(openingCountdownThreshold(5), 5)
+  })
+
+  it('SPEC: a mark just inside the top also opens, rather than echoing a second in', () => {
+    assert.equal(openingCountdownThreshold(31), 30)
+    assert.equal(openingCountdownThreshold(16), 15)
+  })
+
+  it('SPEC: null when every mark is far enough inside to be crossed normally', () => {
+    // A 10s pick crosses 5 in the ordinary way, so nothing opens it.
+    assert.equal(openingCountdownThreshold(10), null)
+    assert.equal(openingCountdownThreshold(17), null)
+    assert.equal(openingCountdownThreshold(60), null)
+  })
+
+  it('SPEC: no mark is both crossed and used as an opening', () => {
+    for (let total = 1; total <= 120; total += 1) {
+      const opening = openingCountdownThreshold(total)
+      if (opening === null) continue
+      assert.equal(
+        isThresholdAudible(opening, total),
+        false,
+        `${opening} would be announced twice on a ${total}s period`
+      )
+    }
+  })
+
+  it('SPEC: every mark at or below the length is accounted for, none silently dropped', () => {
+    for (let total = 1; total <= 120; total += 1) {
+      const opening = openingCountdownThreshold(total)
+      for (const threshold of COUNTDOWN_THRESHOLDS) {
+        if (threshold > total) continue
+        assert.ok(
+          isThresholdAudible(threshold, total) || opening === threshold,
+          `${threshold} is neither crossed nor an opening on a ${total}s period`
+        )
+      }
+    }
+  })
+
+  it('nonsense lengths do not open anything', () => {
+    assert.equal(openingCountdownThreshold(0), null)
+    assert.equal(openingCountdownThreshold(-5), null)
+    assert.equal(openingCountdownThreshold(Number.NaN), null)
+    assert.equal(openingCountdownThreshold(Number.POSITIVE_INFINITY), null)
   })
 })

@@ -1,3 +1,5 @@
+@import '../../src/styles/backgrounds.css';
+
 /**
  * /redeem — code entry and the unlock confirmation.
  *
@@ -17,7 +19,10 @@
 
 /* Background comes from the shared `.page-background` class (applied in the
    TSX) — the homepage's textured image, black wash and top/bottom fades.
-   Nothing here may declare a background or the page stops matching the site. */
+   The stylesheet that DEFINES that class has to be pulled in here: nothing else
+   on this route imports it, and without the import the class is inert and the
+   page renders flat. Nothing below may declare a background of its own or the
+   page stops matching the site. */
 .redeem-page {
   font-family: 'Barlow', sans-serif;
   color: var(--pt-ink);
@@ -102,18 +107,35 @@
 
 /* ---------- the unlocked pack ---------- */
 
+/* Pack name + creator are one unit — "Leebo, by Protect the Pod" — and the
+   sentence under them finishes it. They live in their own wrapper so the card's
+   `gap: 0.5rem` falls around the pair instead of between them; without it the
+   creator line drifted a full 12px off its own name. */
+.redeem-pack-identity {
+  margin-top: 0.75rem;
+}
+
 .redeem-pack-name {
-  margin: 0.75rem 0 0;
+  margin: 0;
   font-size: 1.2rem;
   font-weight: 700;
   line-height: 1.3;
 }
 
 .redeem-pack-creator {
-  margin: 0.25rem 0 0;
+  margin: 0.1rem 0 0;
   font-size: 0.9rem;
-  line-height: 1.4;
+  line-height: 1.35;
   color: rgba(var(--pt-ink-rgb), 0.6);
+}
+
+/* The sentence the identity block runs into, so it sits tight under the creator
+   rather than reading as a new paragraph. */
+.redeem-added {
+  margin: 0.35rem 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.35;
 }
 
 .redeem-logo-button {
@@ -170,10 +192,15 @@
   color: var(--pt-ink-subtle);
 }
 
+/* Codes are stored and compared uppercase (`normalizeVoicePackCode` uppercases
+   before the lookup, so entry is case-insensitive either way). Typing shows caps
+   to match, which is display-only on purpose: the state keeps whatever was typed
+   and the normalizer owns the single uppercasing, so the two can never disagree. */
 .redeem-input {
   font-family: 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
   font-size: 1.2rem;
   letter-spacing: 0.14em;
+  text-transform: uppercase; /* design-ok: codes are canonically uppercase, not styling */
   text-align: center;
   color: var(--pt-ink);
   background: rgba(var(--pt-surface-base-rgb), 0.5);
@@ -202,6 +229,19 @@
   padding: 0.75rem 1rem;
   background: rgba(var(--pt-glow-danger-rgb), 0.08);
   border: 1px solid rgba(var(--pt-glow-danger-rgb), 0.4);
+  border-radius: var(--pt-radius-sm);
+  font-size: 0.9rem;
+  color: var(--pt-ink);
+  line-height: 1.4;
+}
+
+/* Same banner shape as the error, deliberately NOT the danger colour: entering a
+   code you already own is information, not a mistake. Interactive blue reads as
+   "here is something about your account" rather than "you did that wrong". */
+.redeem-notice {
+  padding: 0.75rem 1rem;
+  background: rgba(var(--pt-glow-interactive-rgb), 0.08);
+  border: 1px solid rgba(var(--pt-glow-interactive-rgb), 0.4);
   border-radius: var(--pt-radius-sm);
   font-size: 0.9rem;
   color: var(--pt-ink);

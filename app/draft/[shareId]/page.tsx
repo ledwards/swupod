@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import { useState, useEffect, useRef, use } from 'react'
+import { useState, useEffect, useRef, useCallback, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../../../src/contexts/AuthContext'
 import { useDraftSocket } from '../../../src/hooks/useDraftSocket'
@@ -21,6 +21,13 @@ import EditableTitle from '../../../src/components/EditableTitle'
 import ChatPanel from '../../../src/components/ChatPanel'
 import CompetitivePracticeRules from '../../../src/components/CompetitivePracticeRules'
 import '../../../src/App.css'
+
+/**
+ * How long to wait for the dealing sound before saying the line anyway. The clip
+ * runs about a second at 4x; this only matters when neither `ended` nor `error`
+ * ever fires, which some browsers manage when a tab is backgrounded mid-load.
+ */
+const DEALING_SOUND_MAX_MS = 4000
 import '../draft.css'
 import '../../../src/components/SealedPod.css'
 import '../../../src/components/ChatPanel.css'
@@ -164,6 +171,49 @@ export default function DraftRoomPage({ params }: PageProps) {
   const voicePackId = draft?.voicePackId ?? draft?.settings?.voicePackId ?? null
   const { play: playCue, prime: primeCues } = useVoicePackAudio(voicePackId)
 
+  // The same dealing sound the pack-opening screen uses, at the same 4x speed.
+  // It is a plain Audio element, not a voice-pack clip, so it is not gated on the
+  // cue mute (which governs the announcer's voice) and the speaker does not know
+  // about it.
+  //
+  // `onEnded` runs when the cards have finished shuffling — the announcer talks
+  // over the deal otherwise. It is called exactly once, and it is called even
+  // when the sound cannot play at all: a missing file or a browser that refuses
+  // autoplay must not swallow the spoken call that follows it. The timeout is the
+  // backstop for the case where neither `ended` nor `error` ever fires.
+  const playDealingSound = useCallback((onEnded?: () => void) => {
+    let done = false
+    const finish = () => {
+      if (done) return
+      done = true
+      if (timer) clearTimeout(timer)
+      onEnded?.()
+    }
+    let timer: ReturnType<typeof setTimeout> | null = null
+
+    if (typeof window === 'undefined') {
+      finish()
+      return
+    }
+    try {
+      const sound = new Audio('/sounds/card-mixing.mp3')
+      sound.volume = 0.5
+      sound.preservesPitch = false
+      sound.playbackRate = 4.0
+      sound.addEventListener('ended', finish, { once: true })
+      sound.addEventListener('error', finish, { once: true })
+      sound.addEventListener('canplaythrough', () => {
+        sound.playbackRate = 4.0
+        // A 4x deal is about a second; if it will not start, say the line anyway.
+        sound.play().catch(finish)
+      }, { once: true })
+      timer = setTimeout(finish, DEALING_SOUND_MAX_MS)
+      sound.load()
+    } catch {
+      finish()
+    }
+  }, [])
+
   // Phase transitions are announced from the socket broadcast, so every client
   // hears them at the same moment (rather than only whoever clicked).
   const phaseKey = status === 'waiting' ? 'lobby' : (draftState?.phase ?? null)
@@ -177,11 +227,13 @@ export default function DraftRoomPage({ params }: PageProps) {
     // before you arrived.
     if (previous === undefined || previous === phaseKey) return
     if (phaseKey === 'leader_preview') {
-      playCue('ready-the-draft')
+      // Packs have just been dealt and the leaders are on screen. The announcer
+      // waits for the shuffle to finish rather than talking over it.
+      playDealingSound(() => playCue('ready-the-draft'))
     } else if (previous === 'leader_preview' && phaseKey === 'leader_draft') {
       playCue('start-the-draft')
     }
-  }, [phaseKey, loading, draft, playCue])
+  }, [phaseKey, loading, draft, playCue, playDealingSound])
 
   // Pause/resume is a host action every seat should hear, so it rides the
   // broadcast the same way phase changes do rather than firing for whoever

@@ -3,7 +3,11 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { remainingTimerSeconds } from '../utils/serverClock'
-import { countdownCueClip, crossedCountdownThresholds } from '../services/countdownCues'
+import {
+  countdownCueClip,
+  crossedCountdownThresholds,
+  openingCountdownThreshold,
+} from '../services/countdownCues'
 import useVoicePackAudio from '../hooks/useVoicePackAudio'
 import './CountdownTimer.css'
 
@@ -58,13 +62,19 @@ function CountdownTimer({
 }: CountdownTimerProps) {
   const [remainingSeconds, setRemainingSeconds] = useState(totalSeconds)
   const hasExpiredRef = useRef(false)
-  const { play } = useVoicePackAudio(cuePackId)
+  const { play, playSequence } = useVoicePackAudio(cuePackId)
   // Cue bookkeeping. This component is the ONLY place that knows how many
   // seconds are left, so the countdown cues live here — but each threshold
   // fires at most once per timer period, hence the refs.
   const previousRemainingRef = useRef<number | null>(null)
   const firedThresholdsRef = useRef<Set<number>>(new Set())
   const spokeExpiryRef = useRef(false)
+  const spokeOpeningRef = useRef(false)
+  // Whether this component has already lived through a period. The first one is
+  // the pick you arrived on — either you have just been told "start the draft",
+  // or you opened the page mid-pick — and neither wants a "next pick begins" on
+  // top of it.
+  const seenAPeriodRef = useRef(false)
 
   // Reset expired flag when timer restarts (new startedAt)
   useEffect(() => {
@@ -74,9 +84,11 @@ function CountdownTimer({
   // A new period (new pick, or a new Appendix C allowance for the same pack)
   // gets a clean slate of cues.
   useEffect(() => {
+    if (previousRemainingRef.current !== null) seenAPeriodRef.current = true
     previousRemainingRef.current = null
     firedThresholdsRef.current = new Set()
     spokeExpiryRef.current = false
+    spokeOpeningRef.current = false
   }, [startedAt, totalSeconds])
 
   useEffect(() => {
@@ -95,6 +107,28 @@ function CountdownTimer({
       setRemainingSeconds(remaining)
 
       if (cues) {
+        // A fresh period opens with the next-pick call, and — when the period's
+        // length is itself a countdown mark — the mark right behind it, because
+        // the clock can never be watched crossing a mark it starts on. That pair
+        // is one sentence: "next pick begins", "thirty seconds remaining".
+        if (
+          !spokeOpeningRef.current &&
+          previousRemainingRef.current === null &&
+          seenAPeriodRef.current &&
+          // Only when we caught the start. Landing on a pick already half gone
+          // must not announce it as new.
+          remaining >= totalSeconds - 1
+        ) {
+          spokeOpeningRef.current = true
+          const opening = openingCountdownThreshold(totalSeconds)
+          if (opening === null) {
+            play('next-pick')
+          } else {
+            firedThresholdsRef.current.add(opening)
+            playSequence(['next-pick', countdownCueClip(opening)])
+          }
+        }
+
         const crossed = crossedCountdownThresholds({
           previousSeconds: previousRemainingRef.current,
           currentSeconds: remaining,

@@ -412,6 +412,14 @@ function PackDraftPhase({
               />
             </div>
             <div className="review-controls">
+              {/* Card size sits LEFT of the group-by buttons and keeps its space
+                  whether or not it is showing, so the group-by buttons stay put
+                  as you move between views instead of sliding sideways. */}
+              <div className="review-density-slot">
+                {(reviewGroupBy === 'cost' || reviewGroupBy === 'aspect') && (
+                  <CardDensityToggle value={reviewDensity} onChange={setReviewDensity} densities={['small', 'large']} />
+                )}
+              </div>
               <div className="review-groupby" role="group" aria-label="Group cards by">
                 <Button
                   variant="toggle" glowColor="blue" active={reviewGroupBy === 'pack'}
@@ -442,9 +450,6 @@ function PackDraftPhase({
                   <img src="/icons/heroism.png" alt="Aspect" style={{ width: '20px', height: '20px', display: 'block' }} />
                 </Button>
               </div>
-              {(reviewGroupBy === 'cost' || reviewGroupBy === 'aspect') && (
-                <CardDensityToggle value={reviewDensity} onChange={setReviewDensity} densities={['small', 'large']} />
-              )}
             </div>
           </div>
           {reviewGroupBy === 'pack' ? (
@@ -470,7 +475,7 @@ function PackDraftPhase({
               ))}
             </div>
           ) : (
-            <div className={`review-columns review-columns--${reviewGroupBy}`}>
+            <div className={`review-columns review-columns--${reviewGroupBy}`} data-density={reviewDensity}>
               {reviewGroups.map(group => {
                 const aspects = group.cards[0]?.aspects || []
                 // Separate by type within each bucket (Unit vs Non-Unit), mirroring
